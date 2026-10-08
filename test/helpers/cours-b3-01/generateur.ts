@@ -738,7 +738,7 @@ export function genererJeuB301(graine: number): JeuB301 {
     PRODUITS.map((produit) => {
       const marge =
         (CATEGORIES.find((c) => c.categorie === produit.categorie)
-          ?.tauxDeMarge ?? 0) + hasard.tirage.decimal(-0.05, 0.05, 0.01);
+          ?.tauxDeMarque ?? 0) + hasard.tirage.decimal(-0.05, 0.05, 0.01);
       return [produit.id, arrondi(produit.prix * (1 - marge), 2)] as const;
     }),
   );

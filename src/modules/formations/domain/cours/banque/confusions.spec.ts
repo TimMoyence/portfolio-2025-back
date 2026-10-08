@@ -326,7 +326,6 @@ const CONFUSIONS_DU_B3_01 = {
   'plage-fixe-au-lieu-de-tableau': { concept: 'tableau-croise-dynamique' },
   'pourcentage-du-mauvais-total': { concept: 'tableau-croise-dynamique' },
   'graphique-sans-question': { concept: 'choix-du-graphique' },
-  'camembert-pour-evolution': { concept: 'choix-du-graphique' },
   'objectif-annuel-pour-cumul': { concept: 'tableau-de-bord' },
   'evolution-sur-annee-pleine': { concept: 'tableau-de-bord' },
   'kpi-sans-contexte': { concept: 'tableau-de-bord' },
@@ -334,6 +333,15 @@ const CONFUSIONS_DU_B3_01 = {
   'commandes-comptees-pour-lignes': { concept: 'granularite' },
   'type-de-variable-confondu': { concept: 'jeu-de-donnees' },
   'espaces-non-supprimes': { concept: 'nettoyage' },
+  'part-douteuse-estimee-sans-mesure': { concept: 'qualite-des-donnees' },
+  'cle-prise-pour-categorie': { concept: 'cle-et-relation' },
+  'correction-certaine-renvoyee-a-un-humain': {
+    concept: 'qualite-des-donnees',
+  },
+  'famille-de-probleme-mal-nommee': { concept: 'agregation-conditionnelle' },
+  'bornes-comptees-dans-le-delai': { concept: 'calcul-sur-dates' },
+  'tcd-filtre-ou-dates-mal-groupees': { concept: 'tableau-croise-dynamique' },
+  'detail-au-lieu-de-synthese': { concept: 'tableau-de-bord' },
 };
 
 describe('libelleDeConcept', () => {
@@ -517,8 +525,8 @@ describe('CONFUSIONS', () => {
     attendreDansLaBanque(CONFUSIONS_DU_B2_06);
   });
 
-  it('ajoute en dernier les vingt-trois confusions de données du B3-01', () => {
-    expect(Object.keys(CONFUSIONS)).toHaveLength(119);
+  it('ajoute en dernier les vingt-neuf confusions de données du B3-01', () => {
+    expect(Object.keys(CONFUSIONS)).toHaveLength(125);
     expect(Object.keys(CONFUSIONS).slice(96)).toEqual(
       Object.keys(CONFUSIONS_DU_B3_01),
     );
@@ -548,6 +556,13 @@ describe('CONFUSIONS', () => {
     expect(libelleDeConfusion('casse-non-normalisee')).toContain('Power Query');
     expect(libelleDeConfusion('type-de-variable-confondu')).not.toContain(
       'identifiant',
+    );
+  });
+
+  it('laisse au TCD le filtre resté actif et les années réunies, à la période agrégée la table entière', () => {
+    expect(libelleDeConfusion('periode-mal-delimitee')).not.toContain('filtre');
+    expect(libelleDeConfusion('tcd-filtre-ou-dates-mal-groupees')).toContain(
+      'filtre',
     );
   });
 

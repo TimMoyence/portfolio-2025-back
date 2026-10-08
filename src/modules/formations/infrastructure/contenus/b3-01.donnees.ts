@@ -110,20 +110,26 @@ export const PIEGES_B3_01: PiegesB301 = {
     'valeur-extreme-ignoree': 10,
   },
   'b3-01-a2-retards': { 'jours-calendaires-pour-ouvres': 481 },
-  'b3-01-a2-taux-marge': { 'moyenne-simple-des-taux': 35.4 },
+  'b3-01-a2-taux-marge': {
+    'moyenne-simple-des-taux': 35.4,
+    'marque-confondue-avec-marge': 47,
+  },
   'b3-01-a2-part-info-rennes': { 'pourcentage-du-mauvais-total': 1.5 },
   'b3-01-a3-agences-sous-objectif': { 'objectif-annuel-pour-cumul': 12 },
   'b3-01-a3-atteinte-rennes': { 'objectif-annuel-pour-cumul': 33.8 },
   'b3-01-a3-ca-2026': { 'periode-mal-delimitee': 1_313_125 },
   'b3-01-a3-evolution': { 'evolution-sur-annee-pleine': -22.1 },
-  'b3-01-a3-marge-marseille': { 'moyenne-simple-des-taux': 28.7 },
+  'b3-01-a3-marge-marseille': {
+    'moyenne-simple-des-taux': 28.7,
+    'marque-confondue-avec-marge': 36.9,
+  },
   'b3-01-a3-quarantaine': { 'suppression-au-lieu-de-signalement': 0 },
 };
 
 export const CLASSEURS_B3_01 = {
-  brut: '/assets/cours/b3-01/B3-01_export_ventes.0e0f6342.xlsx',
-  repriseActe2: '/assets/cours/b3-01/B3-01_reprise_acte_2.e63154db.xlsx',
-  repriseActe3: '/assets/cours/b3-01/B3-01_reprise_acte_3.dccca981.xlsx',
+  brut: '/assets/cours/b3-01/B3-01_export_ventes.ab0980c3.xlsx',
+  repriseActe2: '/assets/cours/b3-01/B3-01_reprise_acte_2.84b36eb4.xlsx',
+  repriseActe3: '/assets/cours/b3-01/B3-01_reprise_acte_3.553ec6f4.xlsx',
 } as const;
 
 export const HISTOIRES_B3_01: Readonly<Record<HistoireB301, number>> = {

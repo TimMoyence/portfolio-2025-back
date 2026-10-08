@@ -186,7 +186,11 @@ après la validation du brainstorming :
 
 Catalogue : le courriel d'ouverture et son classeur brut, la carte de la séance, les neuf traces
 écrites, le tableau des familles, le graphique trompeur et la fiche mémo. Tout le reste est servi
-en séance, dont les deux classeurs de reprise, qui portent des colonnes calculées. Aucun écran
+en séance, dont les deux classeurs de reprise, qui portent les réponses des ateliers précédents :
+la reprise de l'acte 2 en valeurs seulement, celle de l'acte 3 dans `T_Commandes`, avec les
+colonnes de l'acte 2 écrites en formules recopiées ligne à ligne. Ce ne sont pas des colonnes
+calculées de tableau : `exceljs` ne sait pas les écrire, et une ligne collée sous le tableau
+ne reçoit pas ces formules d'elle-même. Aucun écran
 catalogue ne porte une réponse : le classeur brut est la matière de l'exercice, pas son résultat.
 
 ### 2.8 Notation
@@ -283,9 +287,9 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
 - Titre public : « Vote : le fichier et Dupont, Bordeaux »
 - Question 1 : dans un export de ≈ 4 000 lignes, quelle part est fausse ou douteuse : moins de
   1 %, environ 5 %, environ 15 %, plus de 30 % ? Pas de révélation ici : la réponse tombe à la
-  correction de l'atelier A1-14 (environ 15 % dans ce fichier, § 4.3). Pièges, pour la seule
-  remédiation : moins de 1 % `texte-pris-pour-nombre`, environ 5 % `casse-non-normalisee`, plus
-  de 30 % `doublons-supprimes-sur-une-colonne`.
+  correction de l'atelier A1-14 (environ 15 % dans ce fichier, § 4.3). Les trois mauvaises
+  estimations portent, pour la seule remédiation, le piège `part-douteuse-estimee-sans-mesure`,
+  remédié vers A1-10 : seule une colonne de contrôle mesure la part douteuse.
 - Question 2 (`questionJumelle`) : « Dupont – Bordeaux » suffit-il à identifier un client ?
   Oui ; non, il faut aussi le code postal ; non, il faut un identifiant attribué par le système. Les
   deux mauvaises réponses portent le piège `libelle-pris-pour-cle`. Révélation commentée : deux
@@ -317,7 +321,8 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
   `date_livraison`), catégorie (`ville`), numérique (`quantite`, `prix_unitaire_ht`, `remise`,
   `ca_ht`), booléen (`facturee`). Pièges `identifiant-pris-pour-nombre` (`n_commande`, qui
   contient des chiffres, pris pour une mesure), `type-de-variable-confondu` (dates, mesures et
-  booléen), `libelle-pris-pour-cle`.
+  booléen), `cle-prise-pour-categorie` (`agence_id` rangée parmi les catégories),
+  `libelle-pris-pour-cle` (`ville` rangée parmi les identifiants).
 
 #### A1-08 · `B3-01-A1-08-ATELIER-GRANULARITE` — 4 min · `questionnaire` · séance
 
@@ -332,7 +337,7 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
 #### A1-09 · `B3-01-A1-09-VOTE-CA-TEXTE` — 2 min · `fp-vote` · séance
 
 - Titre public : « Vote : un CA aligné à gauche »
-- Une cellule de `ca_ht` affiche « 1 250,00 € », alignée à gauche. Que fait `SOMME` de la
+- Une cellule de `ca_ht` affiche « 1 150,00 € », alignée à gauche. Que fait `SOMME` de la
   colonne ? Elle l'ajoute ; elle l'ignore, sans aucun message ; elle affiche une erreur
   `#VALEUR!`. Les deux mauvaises réponses portent le piège `texte-pris-pour-nombre`.
   Révélation : elle l'ignore sans prévenir — c'est le pire cas.
@@ -343,7 +348,9 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
 - `definition` : faux (l'erreur est certaine), suspect (l'erreur est possible) ; `property` : la
   grille 2 × 2 et sa case vide, « suspect · automatique » ; `method` : rien de douteux ne se
   corrige seul ; on ne supprime pas, on signale (colonne de contrôle, onglet `Quarantaine`) ;
-  `example` : une quantité de −2 est-elle une erreur ou un avoir ? On demande.
+  le faux certain se corrige par formule dans une nouvelle colonne, et le doublon exact se retire
+  par Supprimer les doublons, sur une copie ; `example` : une quantité de −2 est-elle une erreur
+  ou un avoir ? On demande.
 
 #### A1-11 · `B3-01-A1-11-COURS-OUTILS` — 3 min · v2 `lesson` · catalogue
 
@@ -357,8 +364,10 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
 #### A1-12 · `B3-01-A1-12-EXEMPLE-NETTOYAGE` — 3 min · `fp-worked` · séance
 
 - Titre public : « Exemple guidé : deux cellules à soigner »
-- Étape 1 : « ␣bordeaux␣ » → `=NOMPROPRE(SUPPRESPACE(E2))` → « Bordeaux ». Étape 2 :
-  « 1 250,00 € » → `=CNUM(SUBSTITUE(SUBSTITUE(L2;" €";"");" ";""))` → 1250. Étape 3 :
+- Deux cellules réelles du classeur brut, vérifiées par le spec des données : E783
+  (« ␣Bordeaux␣ ») et L2971 (« 1 150,00 € »). Chaque formule s'écrit en ligne 2 puis se recopie.
+  Étape 1 : `=NOMPROPRE(SUPPRESPACE(E2))`, qui rend « Bordeaux » en ligne 783. Étape 2 :
+  `=CNUM(SUBSTITUE(SUBSTITUE(L2;" €";"");" ";""))`, qui rend 1150 en ligne 2971. Étape 3 :
   vérifier avec `ESTNUM`. Le fichier sépare les milliers par une espace ordinaire ; les notes
   formateur signalent que les vrais exports utilisent souvent l'espace insécable, `UNICAR(160)`
   (`CAR(160)` ne la désigne pas sous Excel pour Mac).
@@ -372,14 +381,17 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
   deux fois ; CA ≠ quantité × prix × (1 − remise)) ; faux · humain (`produit_id` absent du
   référentiel ; livraison antérieure à la commande) ; suspect · humain (date « 05/04/26 » d'un
   autre système ; quantité négative ; prix unitaire dix fois le prix catalogue ; client en double
-  probable dans `Clients`). Pièges `suspect-corrige-sans-validation`,
-  `suppression-au-lieu-de-signalement`.
+  probable dans `Clients`). Une carte « faux · automatique » mal classée porte le piège
+  `correction-certaine-renvoyee-a-un-humain` ; une carte « faux · humain » ou « suspect · humain »
+  mal classée, `suspect-corrige-sans-validation`. Aucune carte ne porte
+  `suppression-au-lieu-de-signalement` : le tri ne propose pas de supprimer.
 
 #### A1-14 · `B3-01-A1-14-ATELIER-NETTOYAGE` — 12 min · `questionnaire` · séance
 
 - Titre public : « Exercice 4 — Nettoyer l’export »
 - Temps : réflexion 1 min · travail 9 min · correction 2 min.
-- Essentiel : copie de `Commandes`, colonnes nettoyées `ville` et `ca_ht` en N et O, en fin de
+- Essentiel : effacer d'abord le filtre de l'exercice 2 (sinon la copie ne garde que C-10234),
+  puis copie de `Commandes`, colonnes nettoyées `ville` et `ca_ht` en N et O, en fin de
   tableau et sans insérer de colonne (la formule `controle` désigne les colonnes brutes par leur
   lettre), suppression des doublons exacts, colonne `controle` sur les dates brutes :
   `=SI(OU(C2<B2;I2<=0;G2="");"À vérifier";"OK")`, où C est `date_livraison`, B
@@ -412,12 +424,12 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
 #### A2-01 · `B3-01-A2-01-VOTE-FAMILLE` — 3 min · `fp-vote` · séance
 
 - Titre public : « Vote : quelle famille de problème ? »
-- Pièce jointe : `B3-01_reprise_acte_2.xlsx`, ouverte par tous.
+- Pièce jointe : `B3-01_reprise_acte_2.<empreinte>.xlsx`, ouverte par tous.
 - Nadia demande « le CA de Rennes en informatique en 2026 ». Est-ce chercher, compter,
   additionner sous conditions ou regrouper ? Révélation : additionner sous conditions, après avoir
-  cherché la catégorie du produit. Pièges, pour la seule remédiation : chercher
-  `plage-recherche-non-figee`, compter `lignes-comptees-pour-commandes`, regrouper
-  `periode-mal-delimitee`, tous trois remédiés vers A2-03.
+  cherché la catégorie du produit. Pièges, pour la seule remédiation : chercher et compter
+  `famille-de-probleme-mal-nommee`, remédiés vers le tableau des familles A2-02 ; regrouper
+  `periode-mal-delimitee`, remédié vers A2-03.
 
 #### A2-02 · `B3-01-A2-02-FAMILLES` — 3 min · v2 `table` · catalogue
 
@@ -447,20 +459,23 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
   `INDEX`/`EQUIV`. Défi : colonne `cout` (quantité × coût unitaire).
 - `b3-01-a2-ca-rennes-info` : CA HT de Rennes en informatique, janvier à septembre 2026 ; pièges
   `critere-mal-ecrit` (critère de date `">=DATE(2026;1;1)"` sans `&` : aucune ligne) et
-  `periode-mal-delimitee` (toutes dates).
+  `periode-mal-delimitee` (toutes dates). La correction signale l'autre cause d'un total nul : une
+  colonne `categorie` recopiée sans `$`.
 - `b3-01-a2-remises-marseille` : nombre de lignes de Marseille dont la remise dépasse 15 % ;
   piège `critere-mal-ecrit` (critère écrit 15 au lieu de 0,15).
 - `b3-01-a2-ca-ouest` : CA HT de la région Ouest, janvier à septembre 2026 ; pièges
-  `plage-recherche-non-figee` (colonne `region` recopiée sans figer `Agences`) et
-  `periode-mal-delimitee`.
+  `plage-recherche-non-figee` (colonne `region` recopiée sans figer `Agences` : avant la ligne
+  14, la seule ligne Ouest trouvée, la ligne 2, date de 2025) et `periode-mal-delimitee`. La
+  correction signale l'autre cause d'un total nul : un critère de date tout entier entre
+  guillemets.
 
 #### A2-05 · `B3-01-A2-05-VOTE-DELAI` — 2 min · `fp-vote` · séance
 
 - Titre public : « Vote : vendredi, lundi »
 - Le contrat compte les délais en jours ouvrés. Commande le vendredi, livraison le lundi : quel
-  délai ? 3 jours ouvrés ; 1 jour ouvré ; 0 jour ouvré. Les deux mauvaises réponses portent le
-  piège `jours-calendaires-pour-ouvres`. Révélation : 3 jours
-  calendaires, 1 jour ouvré — le contrat parle de jours ouvrés.
+  délai ? 3 jours ouvrés (`jours-calendaires-pour-ouvres`) ; 1 jour ouvré ; 2 jours ouvrés
+  (`bornes-comptees-dans-le-delai` : `NB.JOURS.OUVRES` pris tel quel, sans le − 1). Révélation :
+  3 jours calendaires, 1 jour ouvré — le contrat parle de jours ouvrés.
 
 #### A2-06 · `B3-01-A2-06-COURS-TEMPS-STATS` — 3 min · v2 `lesson` · catalogue
 
@@ -468,8 +483,10 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
 - `property` : une date est un nombre de jours ; `NB.JOURS.OUVRES(début;fin)` compte les jours
   ouvrés, `SERIE.JOUR.OUVRE(début;n)` donne la date n jours ouvrés plus tard, `JOURSEM`,
   `DATEDIF(début;fin;"m")`, `TEMPS(h;m;s)` ; `method` : un délai long et rare tire la moyenne,
-  pas la médiane ; `property` : taux de marge = `SOMME(marge) ÷ SOMME(CA)`, jamais la moyenne des
-  taux de ligne ; `SOMMEPROD(quantite;prix−cout)` calcule la marge sans colonne intermédiaire.
+  pas la médiane ; `property` : taux de marque = `SOMME(marge) ÷ SOMME(CA HT)`, jamais la moyenne
+  des taux de ligne ; le taux de marge, lui, divise la marge par le coût d'achat HT, d'où la
+  consigne d'écrire toujours le dénominateur ; `SOMMEPROD(quantite;prix−cout)` calcule la marge
+  sans colonne intermédiaire.
 - Jours fériés : non comptés dans ce cours (les fonctions acceptent une liste en dernier
   argument ; encadré).
 
@@ -483,8 +500,9 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
   ouvrés ; pièges `jours-calendaires-pour-ouvres`, `valeur-extreme-ignoree`.
 - `b3-01-a2-retards` : nombre de lignes 2026 livrées après la promesse (commande + 5 jours
   ouvrés, `SERIE.JOUR.OUVRE`) ; piège `jours-calendaires-pour-ouvres`.
-- `b3-01-a2-taux-marge` : taux de marge du réseau, janvier à septembre 2026, en % ; piège
-  `moyenne-simple-des-taux`.
+- `b3-01-a2-taux-marge` : taux de marque du réseau (marge ÷ CA HT), janvier à septembre 2026,
+  en % ; pièges `moyenne-simple-des-taux` et `marque-confondue-avec-marge` (marge ÷ coût
+  d'achat). L'identifiant garde son nom d'origine.
 
 #### A2-08 · `B3-01-A2-08-VOTE-NOUVELLES-LIGNES` — 2 min · `fp-vote` · séance
 
@@ -517,7 +535,8 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
 - `b3-01-a2-part-info-rennes` : part de l'informatique dans le CA de Rennes de janvier à
   septembre 2026, en % ; piège `pourcentage-du-mauvais-total`.
 - `b3-01-a2-meilleur-trimestre` (vote noté) : le trimestre au CA le plus élevé du réseau, parmi
-  les sept trimestres (T4 2025) ; pièges `periode-mal-delimitee` : T2 2026 (le filtre
+  les sept trimestres (T4 2025) ; pièges `tcd-filtre-ou-dates-mal-groupees`, remédiés vers
+  A2-09 : T2 2026 (le filtre
   `annee` = 2026 de l'exemple A2-10 resté actif) et T2 2025 (trimestres regroupés sans l'année,
   qui cumulent deux printemps).
 
@@ -534,8 +553,9 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
 #### A3-01 · `B3-01-A3-01-GRAPHIQUE-TROMPEUR` — 1 min · v2 `chart` · catalogue
 
 - Titre public : « Un graphique de la direction »
-- Barres du CA 2025 (année pleine) de Rennes et de Nantes, axe des ordonnées commençant juste
-  sous la plus petite valeur (`axisRanges`) : Rennes paraît vendre trois fois moins que Nantes.
+- Barres du CA 2025 (année pleine) de Rennes et de Nantes, axe des ordonnées de 47 500 € à
+  60 000 € (`axisRanges`) : la barre de Rennes est environ trois fois plus basse que celle de
+  Nantes, comme le dit le commentaire du collègue (rapport des hauteurs vérifié par le spec).
   Valeurs arrondies à la centaine d'euros, issues du jeu de données : arrondies au millier,
   elles donneraient un écart de 12 % au lieu des 13 % que le classeur ouvert en A3-02 montre. L'année 2025 est choisie parce
   qu'aucune question ne porte sur le CA 2025 d'une agence : l'écran public ne livre aucune
@@ -544,7 +564,7 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
 #### A3-02 · `B3-01-A3-02-VOTE-GRAPHIQUE` — 2 min · `fp-vote` · séance
 
 - Titre public : « Vote : que décidez-vous ? »
-- Pièce jointe : `B3-01_reprise_acte_3.xlsx`, ouverte par tous.
+- Pièce jointe : `B3-01_reprise_acte_3.<empreinte>.xlsx`, ouverte par tous.
 - D'après le graphique de l'écran précédent, Rennes a-t-elle vendu trois fois moins que Nantes
   en 2025 ? Oui ; non, l'axe est tronqué ; impossible à dire. Les deux mauvaises réponses portent le piège `axe-tronque-lu-comme-ecart`,
   repris du B2-01. Révélation : l'axe tronqué grossit l'écart ; on montre le même graphique
@@ -563,11 +583,11 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
 
 - Titre public : « Exercice 8 — À chaque question son graphique »
 - Temps : réflexion 1 min · travail 2 min · correction 1 min.
-- Six questions de la direction, six catégories (barres, courbe, empilé, histogramme, nuage,
-  KPI) : quelle agence vend le plus ; comment évolue le CA mois par mois ; de quoi est fait le CA
-  de Rennes ; comment se répartissent les délais de livraison ; la remise fait-elle baisser la
-  marge ; où en est le CA cumulé face à l'objectif. Pièges `camembert-pour-evolution`,
-  `graphique-sans-question`.
+- Six questions de la direction, six catégories (barres, courbe, empilé, histogramme
+  « répartition par tranches », nuage, KPI) : quelle agence vend le plus ; comment évolue le CA
+  mois par mois ; de quoi est fait le CA de Rennes ; comment se répartissent les délais de
+  livraison ; la remise fait-elle baisser la marge ; où en est le CA cumulé face à l'objectif.
+  Piège `graphique-sans-question` sur chaque carte : aucune catégorie ne propose de camembert.
 
 #### A3-05 · `B3-01-A3-05-ATELIER-GRAPHIQUES` — 8 min · `questionnaire` · séance
 
@@ -576,7 +596,9 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
 - Essentiel : tableau de synthèse par agence (CA cumulé par `SOMME.SI.ENS` sur `T_Commandes`,
   objectif cumulé par `SOMME.SI.ENS` sur `Objectifs`, taux d'atteinte), puis graphique en barres
   groupées CA et objectif, titre qui conclut, légende, axe depuis zéro. Un TCD seul ne suffit
-  pas : l'objectif vit dans une autre table (encadré 365 : le modèle de données les relie).
+  pas : l'objectif vit dans une autre table (encadré 365 : mettre `Objectifs` sous forme de
+  tableau, puis relier `T_Commandes` et `Objectifs` à `Agences` par `agence_id` dans le modèle de
+  données ; `Agences` est la seule table aux `agence_id` uniques).
   Défi : courbe du CA mensuel 2025 et 2026 superposées.
 - `b3-01-a3-agences-sous-objectif` : nombre d'agences dont le CA cumulé est sous l'objectif
   cumulé ; piège `objectif-annuel-pour-cumul`.
@@ -586,16 +608,18 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
 #### A3-06 · `B3-01-A3-06-VOTE-TRENTE-SECONDES` — 3 min · `fp-vote` · séance
 
 - Titre public : « Vote : trente secondes »
-- Nadia a trente secondes avant le comité. Que voit-elle d'abord : le tableau de toutes les
-  lignes ; quatre chiffres avec leur comparaison ; dix graphiques ? Pièges : le tableau
-  `kpi-sans-contexte`, les dix graphiques `graphique-sans-question`. Révélation : quatre chiffres
-  en contexte, puis le détail sur demande.
+- Nadia a trente secondes avant le comité. Que voit-elle d'abord : quatre chiffres avec leur
+  comparaison ; le tableau de toutes les lignes ; dix graphiques ; quatre chiffres sans
+  comparaison ? Pièges : le tableau `detail-au-lieu-de-synthese`, les dix graphiques
+  `graphique-sans-question`, les chiffres sans comparaison `kpi-sans-contexte`. Révélation :
+  quatre chiffres en contexte, puis le détail sur demande.
 
 #### A3-07 · `B3-01-A3-07-COURS-DASHBOARD` — 3 min · v2 `lesson` · catalogue
 
 - Titre public : « Cours : l’anatomie d’un tableau de bord »
 - `definition` : un tableau de bord répond à une question de décision ; `property` : 4 KPI,
-  chacun avec un contexte (objectif, N − 1), 2 graphiques, des segments qui filtrent les TCD
+  chacun avec un contexte (l'objectif cumulé sur les mêmes mois, ou la même période de N − 1),
+  2 graphiques, des segments qui filtrent les TCD
   connectés et leurs graphiques (pas les cellules calculées par formule), les anomalies en MFC ; `method` : une recommandation = constat chiffré → cause → action ;
   `example` hors dossier : « Caen : délai médian de 7 jours ouvrés contre 4 dans le réseau ;
   changement de transporteur en mars ; renégocier le contrat ou revenir à l'ancien » ; aucune
@@ -607,6 +631,7 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
 - Exemple lu, pas refait : l'énoncé décrit sa feuille (une agence par ligne dès la ligne 5, taux
   d'atteinte en E, deux TCD à côté), puisque la synthèse de A3-05 n'a ni mise en page imposée ni
   TCD ; le formateur montre les gestes au pupitre, les étudiants les reprennent en A3-09.
+- L'énoncé demande de faire ressortir les agences sous 95 % de leur objectif.
 - Étapes : MFC par formule `=$E5<0,95` en rouge sur le taux d'atteinte ; barres de données sur
   le CA ; segment « région » relié aux deux TCD (« Connexions de rapport »).
 
@@ -615,14 +640,14 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
 - Titre public : « Exercice 10 — Le tableau de bord Direction »
 - Temps : réflexion 1 min · travail 12 min · correction 2 min.
 - Essentiel : onglet `Dashboard` avec 4 KPI (CA cumulé 2026, évolution par rapport à 2025, taux
-  de marge, lignes en quarantaine), le graphique de A3-05, un TCD marge par agence en MFC, deux
+  de marque, lignes en quarantaine), le graphique de A3-05, un TCD marge par agence en MFC, deux
   segments connectés à ce TCD (région, catégorie). Défi : mise en page A4 paysage pour impression.
 - `b3-01-a3-ca-2026` : CA HT cumulé de janvier à septembre 2026 ; piège
   `periode-mal-delimitee` (toute la table, 2025 compris).
 - `b3-01-a3-evolution` : évolution du CA par rapport à janvier-septembre 2025, en % ; piège
   `evolution-sur-annee-pleine`.
-- `b3-01-a3-marge-marseille` : taux de marge de Marseille de janvier à septembre 2026, en % ;
-  piège `moyenne-simple-des-taux`.
+- `b3-01-a3-marge-marseille` : taux de marque de Marseille (marge ÷ CA HT) de janvier à
+  septembre 2026, en % ; pièges `moyenne-simple-des-taux` et `marque-confondue-avec-marge`.
 - `b3-01-a3-quarantaine` : nombre de lignes en quarantaine ; piège
   `suppression-au-lieu-de-signalement` (0 : une ligne supprimée ne laisse rien en quarantaine).
 
@@ -695,7 +720,7 @@ aucune ligne doublonnée (F3) ne porte une autre anomalie.
 | Code | Anomalie                                                                                  | Case de la grille  |   Lignes |
 | ---- | ----------------------------------------------------------------------------------------- | ------------------ | -------: |
 | F1   | `ville` en majuscules, en minuscules ou entourée d'espaces                                | faux · automatique |      310 |
-| F2   | `ca_ht` stocké en texte (« 1 250,00 € », espaces ordinaires)                              | faux · automatique |      180 |
+| F2   | `ca_ht` stocké en texte (« 1 150,00 € », espaces ordinaires)                              | faux · automatique |      180 |
 | F3   | ligne exportée deux fois à l'identique                                                    | faux · automatique |       46 |
 | F4   | `ca_ht` = quantité × prix, remise oubliée, écart de plus d'1 €                            | faux · automatique |       24 |
 | F5   | `date_commande` en texte au format ISO « 2026-03-15 »                                     | faux · automatique |       40 |
@@ -707,19 +732,20 @@ aucune ligne doublonnée (F3) ne porte une autre anomalie.
 | S3   | `prix_unitaire_ht` d'une fourniture égal à dix fois le prix catalogue                     | suspect · humain   |        6 |
 | S4   | client en double probable dans `Clients` (même raison sociale et ville, deux `client_id`) | suspect · humain   | 4 paires |
 
-Total des lignes de `Commandes` touchées : 660, soit environ 16 % des lignes uniques, d'où la
-révélation de la première question du vote A1-04 (« environ 15 % »). La colonne `controle` de A1-14, appliquée aux dates
+Total des lignes de `Commandes` touchées : 660, dont les 46 copies F3. Hors doublons, 614 des
+4 098 lignes uniques sont fausses ou douteuses, soit environ 15 % : la révélation de la première
+question du vote A1-04 (« environ 15 % »). La colonne `controle` de A1-14, appliquée aux dates
 brutes, attrape H2, H3, S2 et les dates restées en texte F5 et S1 : 14 + 11 + 8 + 40 + 12 = 85
 lignes. F4, H1 et S3 relèvent du défi et de la quarantaine du classeur de reprise.
 
 ### 4.4 Les quatre histoires cachées
 
-| Histoire                 | Paramètre semé                                                                                                                                                                                      | Ce que le tableau de bord montre                                                           |
-| ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| Marseille, la marge fond | à partir de janvier 2026, le commercial C26 prend 45 % des lignes de l'agence et accorde des remises de 18 à 30 % (réseau : 0 à 10 %)                                                               | CA au-dessus de l'objectif, taux de marge en chute                                         |
-| Rennes, sous l'objectif  | l'informatique de Rennes baisse de 40 % en 2026 par rapport à 2025, les autres catégories sont stables                                                                                              | taux d'atteinte le plus bas du réseau                                                      |
-| Lille, la croissance     | CA de Lille de janvier à septembre 2026 supérieur de 25 % à celui de 2025, dans chacune de ses catégories                                                                                           | plus forte évolution du réseau                                                             |
-| Strasbourg, les retards  | à partir de mars 2026, délai de livraison de Strasbourg tiré entre 6 et 12 jours ouvrés (réseau : 1 à 5), et 8 % de ses lignes de mars à juillet en rupture, livrées 40 à 60 jours ouvrés plus tard | délai médian et nombre de retards hors norme ; moyenne tirée vers le haut par les ruptures |
+| Histoire                 | Paramètre semé                                                                                                                                                                                                                                                                          | Ce que le tableau de bord montre                                                           |
+| ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| Marseille, la marge fond | à partir de janvier 2026, le commercial C26 prend 45 % des lignes de l'agence et accorde des remises de 18 à 30 % (réseau : 0 à 10 %)                                                                                                                                                   | CA au-dessus de l'objectif, taux de marque en chute                                        |
+| Rennes, sous l'objectif  | l'informatique de Rennes baisse de 40 % en 2026 par rapport à 2025, les autres catégories sont stables                                                                                                                                                                                  | taux d'atteinte le plus bas du réseau                                                      |
+| Lille, la croissance     | CA de Lille de janvier à septembre 2026 supérieur de 25 % à celui de 2025, dans chacune de ses catégories                                                                                                                                                                               | plus forte évolution du réseau                                                             |
+| Strasbourg, les retards  | à partir de mars 2026, délai de livraison de Strasbourg tiré entre 6 et 12 jours ouvrés (réseau : 1 à 5), et 8 % de ses lignes de mars à juillet tirées en rupture, livrées 40 à 60 jours ouvrés plus tard (environ deux mois) ; avec la graine, les ruptures tombent d'avril à juillet | délai médian et nombre de retards hors norme ; moyenne tirée vers le haut par les ruptures |
 
 Aucune livraison n'est postérieure au 9 octobre 2026, date de l'export : une rupture de fin de
 période est plafonnée à cette date. Les objectifs suivent la règle d'un contrôleur de gestion :
@@ -729,13 +755,14 @@ d'une agence vaut donc environ son évolution sur un an, divisée par 1,05.
 
 ### 4.5 Les classeurs de reprise
 
-- **Reprise 1** (`B3-01_reprise_acte_2.xlsx`) : `Commandes` sans F1 à F5 (corrigées), sans les
+- **Reprise 1** (`B3-01_reprise_acte_2.<empreinte>.xlsx`) : `Commandes` sans F1 à F5 (corrigées), sans les
   doublons F3, sans les lignes H1, H2, H3, S1, S2 et S3, déplacées dans `Quarantaine` avec une
   colonne `motif` ; référentiels inchangés, `Clients` avec une colonne `doublon_probable` qui
   porte, pour chaque client d'une paire S4, le `client_id` de son jumeau (vide sinon).
-- **Reprise 2** (`B3-01_reprise_acte_3.xlsx`) : reprise 1, plus le tableau structuré
-  `T_Commandes` et ses colonnes `annee`, `region`, `categorie`, `cout`, `marge`,
-  `delai_ouvre`, `date_promise`, `en_retard`, écrites en formules avec leur valeur. Pas de TCD :
+- **Reprise 2** (`B3-01_reprise_acte_3.<empreinte>.xlsx`) : reprise 1, plus le tableau
+  structuré `T_Commandes` et ses colonnes `annee`, `region`, `categorie`, `cout`, `marge`,
+  `delai_ouvre`, `date_promise`, `en_retard`, écrites en formules recopiées ligne à ligne avec
+  leur valeur, et non en colonnes calculées de tableau (§ 2.7). Pas de TCD :
   `exceljs` ne sait pas en créer, et les étudiants construisent ceux du tableau de bord à
   l'atelier A3-09.
 
@@ -795,7 +822,7 @@ recalcul à la sémantique d'Excel vivent sous `test/helpers/cours-b3-01/`.
 | `b3-01-a3-atteinte-rennes`       | CA ÷ objectif cumulé de AG06, janvier à septembre 2026, en %                                               |      79,0 |
 | `b3-01-a3-ca-2026`               | CA du réseau, janvier à septembre 2026                                                                     |   575 046 |
 | `b3-01-a3-evolution`             | CA janvier-septembre 2026 ÷ CA janvier-septembre 2025 − 1, en %                                            |       8,6 |
-| `b3-01-a3-marge-marseille`       | taux de marge de AG09, janvier à septembre 2026, en %                                                      |      26,9 |
+| `b3-01-a3-marge-marseille`       | taux de marque de AG09 (marge ÷ CA HT), janvier à septembre 2026, en %                                     |      26,9 |
 | `b3-01-a3-quarantaine`           | lignes de l'onglet `Quarantaine` de la reprise 1 : H1 + H2 + H3 + S1 + S2 + S3                             |        60 |
 
 Les valeurs-pièges sont recalculées de la même façon, en reproduisant l'erreur de la confusion :
@@ -815,18 +842,20 @@ Les valeurs-pièges sont recalculées de la même façon, en reproduisant l'erre
 | `b3-01-a2-delai-strasbourg`      | `jours-calendaires-pour-ouvres`      | médiane de `date_livraison − date_commande`                            |        11 |
 | `b3-01-a2-delai-strasbourg`      | `valeur-extreme-ignoree`             | moyenne au lieu de la médiane, arrondie à l'entier demandé             |        10 |
 | `b3-01-a2-retards`               | `jours-calendaires-pour-ouvres`      | livraison après `date_commande + 5`                                    |       481 |
-| `b3-01-a2-taux-marge`            | `moyenne-simple-des-taux`            | moyenne des taux de marge des lignes                                   |      35,4 |
+| `b3-01-a2-taux-marge`            | `moyenne-simple-des-taux`            | moyenne des taux de marque des lignes                                  |      35,4 |
+| `b3-01-a2-taux-marge`            | `marque-confondue-avec-marge`        | marge ÷ coût d'achat (`quantite × cout_unitaire`), 2026                |      47,0 |
 | `b3-01-a2-part-info-rennes`      | `pourcentage-du-mauvais-total`       | CA Informatique de AG06 ÷ CA du réseau                                 |       1,5 |
 | `b3-01-a3-agences-sous-objectif` | `objectif-annuel-pour-cumul`         | CA 2026 comparé à tous les objectifs de l'agence (21 mois)             |        12 |
 | `b3-01-a3-atteinte-rennes`       | `objectif-annuel-pour-cumul`         | CA 2026 de AG06 ÷ tous ses objectifs (21 mois)                         |      33,8 |
 | `b3-01-a3-ca-2026`               | `periode-mal-delimitee`              | CA de toute la table, janvier 2025 à septembre 2026                    | 1 313 125 |
 | `b3-01-a3-evolution`             | `evolution-sur-annee-pleine`         | CA janvier-septembre 2026 ÷ CA de toute l'année 2025 − 1               |     −22,1 |
-| `b3-01-a3-marge-marseille`       | `moyenne-simple-des-taux`            | moyenne des taux de marge des lignes de AG09                           |      28,7 |
+| `b3-01-a3-marge-marseille`       | `moyenne-simple-des-taux`            | moyenne des taux de marque des lignes de AG09                          |      28,7 |
+| `b3-01-a3-marge-marseille`       | `marque-confondue-avec-marge`        | marge ÷ coût d'achat de AG09, janvier à septembre 2026                 |      36,9 |
 | `b3-01-a3-quarantaine`           | `suppression-au-lieu-de-signalement` | lignes douteuses supprimées : la quarantaine reste vide                |         0 |
 
 Le spec vérifie aussi les quatre histoires (§ 4.4) sur le jeu généré : Rennes au taux d'atteinte
 le plus bas (79 %), Lille à la plus forte évolution (+23,1 %), Marseille à la plus forte baisse
-de marge (32,3 % de janvier à septembre 2025, 26,9 % sur la même période de 2026) avec un
+de taux de marque (32,3 % de janvier à septembre 2025, 26,9 % sur la même période de 2026) avec un
 objectif atteint, Strasbourg au délai médian
 2026 le plus long (8 jours ouvrés contre 2 en 2025), et un meilleur trimestre devant le suivant
 de plus de 2 %.
@@ -842,40 +871,48 @@ l'énoncent.
 `agregation-conditionnelle`, `calcul-sur-dates`, `indicateur-statistique`,
 `tableau-croise-dynamique`, `choix-du-graphique`, `tableau-de-bord`.
 
-**Confusions** : vingt-trois nouvelles et trois reprises de la banque B2, qui décrivent déjà la même
-erreur (`valeur-extreme-ignoree`, `moyenne-simple-des-taux`, `axe-tronque-lu-comme-ecart`). `reference-absolue-ignoree` reste
+**Confusions** : vingt-neuf nouvelles et quatre reprises de la banque B2, qui décrivent déjà la même
+erreur (`valeur-extreme-ignoree`, `moyenne-simple-des-taux`, `axe-tronque-lu-comme-ecart`,
+`marque-confondue-avec-marge`). `reference-absolue-ignoree` reste
 distincte de `reference-relative-non-figee` : l'une lit mal le `$` d'une formule recopiée,
 l'autre oublie de l'écrire. `critere-mal-ecrit` ne couvre que l'opérateur joint par `&` et le
 pourcentage ; le critère sans guillemets est `critere-sans-guillemets`.
 
-| Identifiant                          | Concept                   | Libellé                                                              | Remédiation                        |
-| ------------------------------------ | ------------------------- | -------------------------------------------------------------------- | ---------------------------------- |
-| `reference-absolue-ignoree`          | reference-de-cellule      | Recopier une formule sans voir ce que le `$` fige.                   | B3-01-A2-03-COURS-CHERCHER-AGREGER |
-| `identifiant-pris-pour-nombre`       | jeu-de-donnees            | Prendre un identifiant qui contient des chiffres pour une quantité.  | B3-01-A1-05-COURS-DONNEE           |
-| `lignes-comptees-pour-commandes`     | granularite               | Compter les lignes quand on cherche les commandes.                   | B3-01-A1-05-COURS-DONNEE           |
-| `libelle-pris-pour-cle`              | cle-et-relation           | Relier deux tables par un nom ou une ville.                          | B3-01-A1-06-COURS-RELATIONS        |
-| `suspect-corrige-sans-validation`    | qualite-des-donnees       | Corriger seul une donnée douteuse.                                   | B3-01-A1-10-COURS-GRILLE           |
-| `suppression-au-lieu-de-signalement` | qualite-des-donnees       | Supprimer une ligne au lieu de la signaler.                          | B3-01-A1-10-COURS-GRILLE           |
-| `texte-pris-pour-nombre`             | nettoyage                 | Additionner une colonne dont des nombres sont du texte.              | B3-01-A1-11-COURS-OUTILS           |
-| `casse-non-normalisee`               | nettoyage                 | Laisser « Bordeaux » et « BORDEAUX » s'écrire de deux façons.        | B3-01-A1-11-COURS-OUTILS           |
-| `doublons-supprimes-sur-une-colonne` | nettoyage                 | Dédoublonner sur une seule colonne et perdre des lignes distinctes.  | B3-01-A1-11-COURS-OUTILS           |
-| `plage-recherche-non-figee`          | recherche-dans-une-table  | Recopier une recherche sans figer la table.                          | B3-01-A2-03-COURS-CHERCHER-AGREGER |
-| `critere-mal-ecrit`                  | agregation-conditionnelle | Écrire un critère sans joindre l'opérateur par `&`, ou 15 pour 15 %. | B3-01-A2-03-COURS-CHERCHER-AGREGER |
-| `periode-mal-delimitee`              | agregation-conditionnelle | Agréger une autre période que celle de la question.                  | B3-01-A2-03-COURS-CHERCHER-AGREGER |
-| `jours-calendaires-pour-ouvres`      | calcul-sur-dates          | Soustraire deux dates quand le contrat compte des jours ouvrés.      | B3-01-A2-06-COURS-TEMPS-STATS      |
-| `valeur-extreme-ignoree` (B2-02)     | choix-du-resume           | Résumer par la moyenne une série tirée par une valeur extrême.       | B3-01-A2-06-COURS-TEMPS-STATS      |
-| `moyenne-simple-des-taux` (B2-01)    | moyenne-ponderee          | Faire la moyenne simple de taux au lieu de les pondérer.             | B3-01-A2-06-COURS-TEMPS-STATS      |
-| `plage-fixe-au-lieu-de-tableau`      | tableau-croise-dynamique  | Construire sur une plage fixe qui ne voit pas les nouvelles lignes.  | B3-01-A2-09-COURS-TCD              |
-| `pourcentage-du-mauvais-total`       | tableau-croise-dynamique  | Afficher le % du total général au lieu du % de la ligne.             | B3-01-A2-09-COURS-TCD              |
-| `graphique-sans-question`            | choix-du-graphique        | Choisir un graphique avant la question à laquelle il répond.         | B3-01-A3-03-COURS-GRAPHIQUES       |
-| `camembert-pour-evolution`           | choix-du-graphique        | Montrer une évolution par un camembert.                              | B3-01-A3-03-COURS-GRAPHIQUES       |
-| `axe-tronque-lu-comme-ecart` (B2-01) | lecture-graphique         | Juger une évolution à la hauteur des barres sans lire l'axe.         | B3-01-A3-03-COURS-GRAPHIQUES       |
-| `objectif-annuel-pour-cumul`         | tableau-de-bord           | Comparer neuf mois à tous les objectifs, sans filtrer la période.    | B3-01-A3-07-COURS-DASHBOARD        |
-| `evolution-sur-annee-pleine`         | tableau-de-bord           | Comparer neuf mois de 2026 à douze mois de 2025.                     | B3-01-A3-07-COURS-DASHBOARD        |
-| `kpi-sans-contexte`                  | tableau-de-bord           | Afficher un chiffre sans objectif ni comparaison.                    | B3-01-A3-07-COURS-DASHBOARD        |
-| `commandes-comptees-pour-lignes`     | granularite               | Compter une commande quand on cherche ses lignes.                    | B3-01-A1-05-COURS-DONNEE           |
-| `type-de-variable-confondu`          | jeu-de-donnees            | Ranger une date, une mesure ou un booléen sous un autre type.        | B3-01-A1-05-COURS-DONNEE           |
-| `espaces-non-supprimes`              | nettoyage                 | Compter « Bordeaux » et « Bordeaux␣ » comme deux villes.             | B3-01-A1-11-COURS-OUTILS           |
+| Identifiant                                | Concept                   | Libellé                                                              | Remédiation                        |
+| ------------------------------------------ | ------------------------- | -------------------------------------------------------------------- | ---------------------------------- |
+| `reference-absolue-ignoree`                | reference-de-cellule      | Recopier une formule sans voir ce que le `$` fige.                   | B3-01-A2-03-COURS-CHERCHER-AGREGER |
+| `identifiant-pris-pour-nombre`             | jeu-de-donnees            | Prendre un identifiant qui contient des chiffres pour une quantité.  | B3-01-A1-05-COURS-DONNEE           |
+| `lignes-comptees-pour-commandes`           | granularite               | Compter les lignes quand on cherche les commandes.                   | B3-01-A1-05-COURS-DONNEE           |
+| `libelle-pris-pour-cle`                    | cle-et-relation           | Relier deux tables par un nom ou une ville.                          | B3-01-A1-06-COURS-RELATIONS        |
+| `cle-prise-pour-categorie`                 | cle-et-relation           | Ranger une clé comme agence_id parmi les catégories.                 | B3-01-A1-06-COURS-RELATIONS        |
+| `part-douteuse-estimee-sans-mesure`        | qualite-des-donnees       | Estimer à l'œil la part des lignes fausses ou douteuses.             | B3-01-A1-10-COURS-GRILLE           |
+| `suspect-corrige-sans-validation`          | qualite-des-donnees       | Corriger seul une donnée douteuse.                                   | B3-01-A1-10-COURS-GRILLE           |
+| `correction-certaine-renvoyee-a-un-humain` | qualite-des-donnees       | Renvoyer à un humain une erreur que le fichier permet de corriger.   | B3-01-A1-10-COURS-GRILLE           |
+| `suppression-au-lieu-de-signalement`       | qualite-des-donnees       | Supprimer une ligne au lieu de la signaler.                          | B3-01-A1-10-COURS-GRILLE           |
+| `texte-pris-pour-nombre`                   | nettoyage                 | Additionner une colonne dont des nombres sont du texte.              | B3-01-A1-11-COURS-OUTILS           |
+| `casse-non-normalisee`                     | nettoyage                 | Laisser « Bordeaux » et « BORDEAUX » s'écrire de deux façons.        | B3-01-A1-11-COURS-OUTILS           |
+| `doublons-supprimes-sur-une-colonne`       | nettoyage                 | Dédoublonner sur une seule colonne et perdre des lignes distinctes.  | B3-01-A1-11-COURS-OUTILS           |
+| `famille-de-probleme-mal-nommee`           | agregation-conditionnelle | Nommer une seule famille de problème, ou la mauvaise.                | B3-01-A2-02-FAMILLES               |
+| `plage-recherche-non-figee`                | recherche-dans-une-table  | Recopier une recherche sans figer la table.                          | B3-01-A2-03-COURS-CHERCHER-AGREGER |
+| `critere-mal-ecrit`                        | agregation-conditionnelle | Écrire un critère sans joindre l'opérateur par `&`, ou 15 pour 15 %. | B3-01-A2-03-COURS-CHERCHER-AGREGER |
+| `periode-mal-delimitee`                    | agregation-conditionnelle | Agréger la table entière au lieu des seuls mois demandés.            | B3-01-A2-03-COURS-CHERCHER-AGREGER |
+| `jours-calendaires-pour-ouvres`            | calcul-sur-dates          | Soustraire deux dates quand le contrat compte des jours ouvrés.      | B3-01-A2-06-COURS-TEMPS-STATS      |
+| `bornes-comptees-dans-le-delai`            | calcul-sur-dates          | Prendre NB.JOURS.OUVRES tel quel, bornes comprises, sans le − 1.     | B3-01-A2-06-COURS-TEMPS-STATS      |
+| `valeur-extreme-ignoree` (B2-02)           | choix-du-resume           | Résumer par la moyenne une série tirée par une valeur extrême.       | B3-01-A2-06-COURS-TEMPS-STATS      |
+| `moyenne-simple-des-taux` (B2-01)          | moyenne-ponderee          | Faire la moyenne simple de taux au lieu de les pondérer.             | B3-01-A2-06-COURS-TEMPS-STATS      |
+| `marque-confondue-avec-marge` (B2-01)      | pourcentage               | Diviser la marge par le coût d'achat pour un taux de marque.         | B3-01-A2-06-COURS-TEMPS-STATS      |
+| `plage-fixe-au-lieu-de-tableau`            | tableau-croise-dynamique  | Construire sur une plage fixe qui ne voit pas les nouvelles lignes.  | B3-01-A2-09-COURS-TCD              |
+| `pourcentage-du-mauvais-total`             | tableau-croise-dynamique  | Afficher le % du total général au lieu du % de la ligne.             | B3-01-A2-09-COURS-TCD              |
+| `tcd-filtre-ou-dates-mal-groupees`         | tableau-croise-dynamique  | Lire un TCD au filtre resté actif ou aux dates groupées sans années. | B3-01-A2-09-COURS-TCD              |
+| `graphique-sans-question`                  | choix-du-graphique        | Choisir un graphique avant la question à laquelle il répond.         | B3-01-A3-03-COURS-GRAPHIQUES       |
+| `axe-tronque-lu-comme-ecart` (B2-01)       | lecture-graphique         | Juger une évolution à la hauteur des barres sans lire l'axe.         | B3-01-A3-03-COURS-GRAPHIQUES       |
+| `objectif-annuel-pour-cumul`               | tableau-de-bord           | Comparer neuf mois à tous les objectifs, sans filtrer la période.    | B3-01-A3-07-COURS-DASHBOARD        |
+| `evolution-sur-annee-pleine`               | tableau-de-bord           | Comparer neuf mois de 2026 à douze mois de 2025.                     | B3-01-A3-07-COURS-DASHBOARD        |
+| `kpi-sans-contexte`                        | tableau-de-bord           | Afficher un chiffre sans objectif ni comparaison.                    | B3-01-A3-07-COURS-DASHBOARD        |
+| `detail-au-lieu-de-synthese`               | tableau-de-bord           | Montrer le détail des lignes là où la décision attend une synthèse.  | B3-01-A3-07-COURS-DASHBOARD        |
+| `commandes-comptees-pour-lignes`           | granularite               | Compter une commande quand on cherche ses lignes.                    | B3-01-A1-05-COURS-DONNEE           |
+| `type-de-variable-confondu`                | jeu-de-donnees            | Ranger une date, une mesure ou un booléen sous un autre type.        | B3-01-A1-05-COURS-DONNEE           |
+| `espaces-non-supprimes`                    | nettoyage                 | Compter « Bordeaux » et « Bordeaux␣ » comme deux villes.             | B3-01-A1-11-COURS-OUTILS           |
 
 ## 6. Fonctionnalités à construire
 
@@ -891,31 +928,35 @@ rouges d'abord dans le spec de la structure : un cours `b3` sans `fp-escape` se 
 
 Propriété commune facultative `pieceJointe` : `libelle` et `fichier`, chemin public absolu comme
 les images des B2 (`/assets/cours/b2-02/v2/…`). Le schéma stocké l'impose de la forme
-`^/assets/cours/[a-z0-9-]+/[A-Za-z0-9_-]+(\.[0-9a-f]{8})?\.(xlsx|csv|pdf)$` : ni `..`, ni
-sous-dossier, ni autre extension. Elle est servie au poste, au pupitre et à la projection.
-Rendus :
+`^/assets/cours/[a-z0-9-]+/[A-Za-z0-9_-]+\.[0-9a-f]{8}\.(xlsx|csv|pdf)$` : ni `..`, ni
+sous-dossier, ni autre extension, et toujours un suffixe de huit caractères hexadécimaux. Elle est
+servie au poste, au pupitre et à la projection. Rendus :
 
-- **poste étudiant** : bouton « Télécharger le classeur » ;
-- **pupitre** : lien, pour vérifier le fichier ;
-- **projection** : mention « Le classeur est sur votre poste », sans lien.
+- **poste étudiant** et **pupitre** : lien de téléchargement « Télécharger {libellé} » ;
+- **projection** : mention « Sur votre poste : {libellé} », sans lien.
+
+Nom des fichiers : chaque classeur porte les 8 premiers caractères hexadécimaux du SHA-256 de ses
+propres octets (`B3-01_reprise_acte_2.84b36eb4.xlsx`), l'empreinte que le manifeste enregistre.
+L'écriture des classeurs les nomme d'après le fichier écrit et retire la version précédente ; le
+spec des classeurs et la garde du front vérifient que le suffixe est bien le début de l'empreinte
+du fichier. Un classeur corrigé change donc de nom, et aucun cache ne sert l'ancien.
 
 Diffusion : la pièce jointe suit la diffusion de l'écran. Les deux classeurs de reprise sont
-portés par des écrans de séance ; comme tout fichier sous `assets/`, ils restent lisibles par qui
-connaît leur adresse. Leur nom porte donc les 8 premiers caractères hexadécimaux de leur empreinte
-(`B3-01_reprise_acte_2.3f9a1c0e.xlsx`), pour qu'on ne les devine pas depuis le nom du classeur
-brut. Le classeur brut porte lui aussi son empreinte, et le contrat des pièces jointes l'exige de
-tout fichier : un classeur corrigé change de nom, et aucun cache ne sert l'ancien. Le risque
-résiduel est accepté : les scores sont formatifs. Les trois rendus sont vérifiés
-côte à côte : un écran de cours est le même en projection, au pupitre et au poste.
+portés par des écrans de séance, mais comme tout fichier sous `assets/`, ils restent lisibles par
+qui connaît leur adresse, et les dépôts du back et du front sont publics : leur nom n'est pas un
+secret. Le suffixe sert le cache, pas la protection. Le risque est accepté : les classeurs portent
+les réponses d'ateliers formatifs, sans note. Les trois rendus sont vérifiés côte à côte : un
+écran de cours est le même en projection, au pupitre et au poste.
 
 ### 6.3 Générateur et classeurs
 
 Côté back : `b3-01.donnees.ts` (paramètres, noms des classeurs, valeurs attendues en constantes)
 dans les contenus ; générateur et écriture des classeurs sous `test/helpers/cours-b3-01/` ;
 classeurs et manifeste versionnés sous `test/fixtures/formations/b3-01/`. Côté front : copie des
-classeurs et du manifeste dans `src/assets/cours/b3-01/`, et un test `node --test` de
-`test:guards` qui vérifie l'empreinte de chaque fichier copié contre le manifeste. Le manifeste
-relie ainsi les deux copies.
+classeurs dans `src/assets/cours/b3-01/`, copie du manifeste dans
+`src/testing/fixtures/b3-01.classeurs.manifest.json` (hors des assets servis), et un test
+`node --test` de `test:guards` qui vérifie l'empreinte de chaque fichier copié contre le
+manifeste et son suffixe contre cette empreinte. Le manifeste relie ainsi les deux copies.
 
 Le corrigé formateur est recalculé par Microsoft Excel pour Mac, piloté par AppleScript
 (ouverture, calcul, enregistrement en CSV), et chaque cellule de résultat est comparée au § 5.1. Les classeurs sont ensuite ouverts dans Excel
@@ -954,7 +995,7 @@ v2 `grid`, les familles par v2 `table`.
 | `B3-01_export_ventes.<empreinte>.xlsx`  | export brut                        | A1-02 | catalogue |
 | `B3-01_reprise_acte_2.<empreinte>.xlsx` | reprise du début de l'acte 2       | A2-01 | seance    |
 | `B3-01_reprise_acte_3.<empreinte>.xlsx` | reprise du début de l'acte 3       | A3-02 | seance    |
-| `classeurs.manifest.json`               | empreintes des fichiers et onglets | —     | —         |
+| `classeurs.manifest.json` (non servi)   | empreintes des fichiers et onglets | —     | —         |
 
 ### 8.3 Sources
 

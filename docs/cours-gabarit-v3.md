@@ -126,7 +126,8 @@ papier, que la fiche de conception décrit écran par écran.
 5. Instantané régénéré (`ECRIRE_INSTANTANE=1`) et copié dans les fixtures du front.
 6. Paramètres du cours dans les e2e DB (`formations-e2e-seance`, `formations-cours-publies`) :
    une entrée de `cellulesDesFeuilles` par écran `fp-sheet`, dans l'ordre du déroulé.
-7. Côté front : `COURS_BTS`, carte de la liste des formations, entrée SEO, XLF fr/en.
+7. Côté front : `COURS_EN_SEANCE` (`cours-en-seance.ts`), carte de la liste des formations,
+   entrée SEO, XLF fr/en.
 
 ## 8. Gabarit b3 des cours Bachelor 3
 

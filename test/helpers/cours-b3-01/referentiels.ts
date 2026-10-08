@@ -7,7 +7,7 @@ export type Categorie =
 export interface ParametresDeCategorie {
   readonly categorie: Categorie;
   readonly partDuBudget: number;
-  readonly tauxDeMarge: number;
+  readonly tauxDeMarque: number;
   readonly quantites: readonly (readonly [number, number])[];
 }
 
@@ -15,7 +15,7 @@ export const CATEGORIES: readonly ParametresDeCategorie[] = [
   {
     categorie: 'Mobilier',
     partDuBudget: 0.4,
-    tauxDeMarge: 0.38,
+    tauxDeMarque: 0.38,
     quantites: [
       [1, 25],
       [2, 22],
@@ -30,7 +30,7 @@ export const CATEGORIES: readonly ParametresDeCategorie[] = [
   {
     categorie: 'Informatique',
     partDuBudget: 0.38,
-    tauxDeMarge: 0.22,
+    tauxDeMarque: 0.22,
     quantites: [
       [1, 30],
       [2, 25],
@@ -43,7 +43,7 @@ export const CATEGORIES: readonly ParametresDeCategorie[] = [
   {
     categorie: 'Fournitures',
     partDuBudget: 0.11,
-    tauxDeMarge: 0.45,
+    tauxDeMarque: 0.45,
     quantites: [
       [5, 20],
       [10, 30],
@@ -56,7 +56,7 @@ export const CATEGORIES: readonly ParametresDeCategorie[] = [
   {
     categorie: 'Maintenance',
     partDuBudget: 0.11,
-    tauxDeMarge: 0.55,
+    tauxDeMarque: 0.55,
     quantites: [
       [1, 50],
       [2, 30],

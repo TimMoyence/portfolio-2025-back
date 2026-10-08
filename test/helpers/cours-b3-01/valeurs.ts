@@ -64,8 +64,8 @@ export interface IndicateursDAgence {
   readonly ca2026: number;
   readonly atteinte: number;
   readonly evolution: number;
-  readonly tauxDeMarge2025: number;
-  readonly tauxDeMarge2026: number;
+  readonly tauxDeMarque2025: number;
+  readonly tauxDeMarque2026: number;
   readonly delaiMedian2026: number;
 }
 
@@ -150,8 +150,12 @@ const caDe = (ventes: readonly Vente[]): number =>
 const margeDe = (vente: Vente): number =>
   vente.quantite * (vente.prix * (1 - vente.remise) - vente.coutUnitaire);
 
-const tauxDeMarge = (ventes: readonly Vente[]): number =>
+const tauxDeMarque = (ventes: readonly Vente[]): number =>
   somme(ventes.map(margeDe)) / caDe(ventes);
+
+const tauxDeMarge = (ventes: readonly Vente[]): number =>
+  somme(ventes.map(margeDe)) /
+  somme(ventes.map((vente) => vente.quantite * vente.coutUnitaire));
 
 const moyenneDesTaux = (ventes: readonly Vente[]): number =>
   moyenne(
@@ -215,8 +219,8 @@ export function indicateursParAgence(
           ca2026: caDe(de2026),
           atteinte: caDe(de2026) / objectifsDe(jeu, agence, moisDe2026),
           evolution: caDe(de2026) / caDe(jusquASeptembre) - 1,
-          tauxDeMarge2025: tauxDeMarge(jusquASeptembre),
-          tauxDeMarge2026: tauxDeMarge(de2026),
+          tauxDeMarque2025: tauxDeMarque(jusquASeptembre),
+          tauxDeMarque2026: tauxDeMarque(de2026),
           delaiMedian2026: mediane(de2026.map(delaiOuvre)),
         },
       ];
@@ -339,7 +343,7 @@ function valeursDesActes2Et3(jeu: JeuB301) {
         de2026,
         (vente) => vente.livraison > serieJourOuvre(vente.date, DELAI_PROMIS),
       ).length,
-      'b3-01-a2-taux-marge': pourcent(tauxDeMarge(de2026)),
+      'b3-01-a2-taux-marge': pourcent(tauxDeMarque(de2026)),
       'b3-01-a2-part-info-rennes': pourcent(
         caDe(informatiqueDeRennes2026) / caDe(deRennes2026),
       ),
@@ -348,7 +352,7 @@ function valeursDesActes2Et3(jeu: JeuB301) {
       'b3-01-a3-atteinte-rennes': pourcent(indicateurs[RENNES].atteinte),
       'b3-01-a3-ca-2026': euros(caDe(de2026)),
       'b3-01-a3-evolution': pourcent(caDe(de2026) / caJusquASeptembre2025 - 1),
-      'b3-01-a3-marge-marseille': pourcent(tauxDeMarge(deMarseille2026)),
+      'b3-01-a3-marge-marseille': pourcent(tauxDeMarque(deMarseille2026)),
       'b3-01-a3-quarantaine': ongletDe(jeu.reprise1, 'Quarantaine').lignes
         .length,
     },
@@ -398,6 +402,7 @@ function valeursDesActes2Et3(jeu: JeuB301) {
       },
       'b3-01-a2-taux-marge': {
         'moyenne-simple-des-taux': pourcent(moyenneDesTaux(de2026)),
+        'marque-confondue-avec-marge': pourcent(tauxDeMarge(de2026)),
       },
       'b3-01-a2-part-info-rennes': {
         'pourcentage-du-mauvais-total': pourcent(
@@ -423,6 +428,7 @@ function valeursDesActes2Et3(jeu: JeuB301) {
       },
       'b3-01-a3-marge-marseille': {
         'moyenne-simple-des-taux': pourcent(moyenneDesTaux(deMarseille2026)),
+        'marque-confondue-avec-marge': pourcent(tauxDeMarge(deMarseille2026)),
       },
       'b3-01-a3-quarantaine': {
         'suppression-au-lieu-de-signalement':
@@ -444,7 +450,7 @@ function histoiresDe(jeu: JeuB301): Readonly<Record<HistoireB301, number>> {
     'ca-2025-rennes': arrondi(indicateurs[RENNES].ca2025, -2),
     'ca-2025-nantes': arrondi(indicateurs[NANTES].ca2025, -2),
     'taux-de-marge-marseille-2025': pourcent(
-      indicateurs[MARSEILLE].tauxDeMarge2025,
+      indicateurs[MARSEILLE].tauxDeMarque2025,
     ),
     'evolution-informatique-rennes': pourcent(
       caDe(filtrer(informatiqueDeRennes, en2026)) /

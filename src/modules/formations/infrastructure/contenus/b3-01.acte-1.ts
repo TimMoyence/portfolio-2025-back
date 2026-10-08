@@ -139,9 +139,9 @@ export const ACTE_1: moteur.Acte = [
           'Dans un export commercial d’environ 4 000 lignes, quelle part des lignes est fausse ou douteuse, à votre avis ?',
           'Environ 15 % des lignes',
           [
-            ['Moins de 1 % des lignes', 'texte-pris-pour-nombre'],
-            ['Environ 5 % des lignes', 'casse-non-normalisee'],
-            ['Plus de 30 % des lignes', 'doublons-supprimes-sur-une-colonne'],
+            ['Moins de 1 % des lignes', 'part-douteuse-estimee-sans-mesure'],
+            ['Environ 5 % des lignes', 'part-douteuse-estimee-sans-mesure'],
+            ['Plus de 30 % des lignes', 'part-douteuse-estimee-sans-mesure'],
           ],
         ),
         moteur.vote(
@@ -331,7 +331,7 @@ export const ACTE_1: moteur.Acte = [
               id: 'agence-id',
               libelle: 'agence_id',
               categorie: 'identifiant',
-              confusion: 'libelle-pris-pour-cle',
+              confusion: 'cle-prise-pour-categorie',
               justification:
                 'la clé qui renvoie à l’onglet Agences, pas le nom de la ville',
             },
@@ -481,7 +481,7 @@ export const ACTE_1: moteur.Acte = [
     [
       [
         'b3-01-a1-granularite',
-        'Une commande occupe une à cinq lignes, une par produit : le fichier compte plus de lignes que de commandes. Pour compter des commandes, on compte des n_commande distincts.',
+        'Une commande regroupe un à cinq produits, une ligne par produit, et les lignes exportées deux fois, vues à l’exercice 4, en ajoutent : le fichier compte plus de lignes que de commandes. Pour compter des commandes, on compte des n_commande distincts.',
       ],
       [
         'b3-01-a1-lignes-commande',
@@ -507,7 +507,7 @@ export const ACTE_1: moteur.Acte = [
           'b3-01-a1-ca-texte',
           'nettoyage',
           false,
-          'Dans la colonne ca_ht, une cellule affiche « 1 250,00 € », alignée à gauche. Que fait =SOMME(L:L) de cette cellule ?',
+          'Dans la colonne ca_ht, une cellule affiche « 1 150,00 € », alignée à gauche. Que fait =SOMME(L:L) de cette cellule ?',
           'Elle l’ignore, sans aucun message',
           [
             ['Elle l’ajoute au total', 'texte-pris-pour-nombre'],
@@ -554,7 +554,7 @@ export const ACTE_1: moteur.Acte = [
           title: 'La grille 2 × 2',
           text: 'On croise la certitude (faux, suspect) et le correcteur (automatique, humain).',
           steps: [
-            'Faux · automatique : on corrige par formule, en gardant la trace (casse, espaces, nombre en texte, doublon exact).',
+            'Faux · automatique : on corrige par formule dans une nouvelle colonne, en gardant la trace (casse, espaces, nombre en texte) ; le doublon exact se retire par Supprimer les doublons, sur une copie.',
             'Faux · humain : on signale et on demande la bonne valeur (produit inconnu, commercial absent).',
             'Suspect · humain : on signale et on demande s’il s’agit d’une erreur.',
             'Suspect · automatique : case vide.',
@@ -635,22 +635,22 @@ export const ACTE_1: moteur.Acte = [
         exemple: {
           id: 'b3-01-a1-exemple-nettoyage',
           enonce:
-            'Deux cellules de l’onglet Commandes : en E2, la ville « bordeaux », entourée d’espaces ; en L2, le ca_ht saisi comme le texte « 1 250,00 € ».',
+            'Deux cellules de l’onglet Commandes du classeur brut : en E783, la ville « Bordeaux », entourée d’espaces ; en L2971, le ca_ht saisi comme le texte « 1 150,00 € ». Chaque formule s’écrit en ligne 2, puis se recopie jusqu’en bas.',
           etapes: [
             {
               id: 'ville',
               intitule: 'La ville',
               raisonnement:
-                'Dans une nouvelle colonne, =NOMPROPRE(SUPPRESPACE(E2)) retire les espaces en trop, puis met une majuscule initiale : « Bordeaux ».',
+                'Dans une nouvelle colonne, =NOMPROPRE(SUPPRESPACE(E2)) retire les espaces en trop, puis met une majuscule initiale. Recopiée, elle rend « Bordeaux » en ligne 783.',
               invite:
-                'Quelle formule rend « Bordeaux » dans une nouvelle colonne ?',
+                'Quelle formule, écrite en ligne 2 et recopiée, rend « Bordeaux » en ligne 783 ?',
             },
             {
               id: 'montant',
               intitule: 'Le montant',
               raisonnement:
-                'SUBSTITUE retire d’abord « € », puis l’espace des milliers ; CNUM convertit le texte qui reste. =CNUM(SUBSTITUE(SUBSTITUE(L2;" €";"");" ";"")) rend le nombre 1250.',
-              invite: 'Quelle formule convertit « 1 250,00 € » en nombre ?',
+                'SUBSTITUE retire d’abord « € », puis l’espace des milliers ; CNUM convertit le texte qui reste. =CNUM(SUBSTITUE(SUBSTITUE(L2;" €";"");" ";"")), recopiée, rend le nombre 1150 en ligne 2971, et laisse intacts les montants déjà en nombre.',
+              invite: 'Quelle formule convertit « 1 150,00 € » en nombre ?',
             },
             {
               id: 'verifier',
@@ -706,15 +706,15 @@ export const ACTE_1: moteur.Acte = [
               id: 'ville-mal-ecrite',
               libelle: 'Ville écrite « BORDEAUX » ou entourée d’espaces',
               categorie: 'faux-automatique',
-              confusion: 'suppression-au-lieu-de-signalement',
+              confusion: 'correction-certaine-renvoyee-a-un-humain',
               justification:
                 'erreur certaine ; SUPPRESPACE et NOMPROPRE la corrigent',
             },
             {
               id: 'ca-en-texte',
-              libelle: 'ca_ht stocké en texte : « 1 250,00 € »',
+              libelle: 'ca_ht stocké en texte : « 1 150,00 € »',
               categorie: 'faux-automatique',
-              confusion: 'suppression-au-lieu-de-signalement',
+              confusion: 'correction-certaine-renvoyee-a-un-humain',
               justification:
                 'erreur certaine ; SUBSTITUE puis CNUM la corrigent',
             },
@@ -722,7 +722,7 @@ export const ACTE_1: moteur.Acte = [
               id: 'ligne-en-double',
               libelle: 'Ligne exportée deux fois, à l’identique',
               categorie: 'faux-automatique',
-              confusion: 'suppression-au-lieu-de-signalement',
+              confusion: 'correction-certaine-renvoyee-a-un-humain',
               justification:
                 'doublon exact : Supprimer les doublons, toutes colonnes cochées',
             },
@@ -730,14 +730,14 @@ export const ACTE_1: moteur.Acte = [
               id: 'ca-mal-calcule',
               libelle: 'ca_ht différent de quantité × prix × (1 − remise)',
               categorie: 'faux-automatique',
-              confusion: 'suppression-au-lieu-de-signalement',
+              confusion: 'correction-certaine-renvoyee-a-un-humain',
               justification: 'la bonne valeur se recalcule depuis la ligne',
             },
             {
               id: 'produit-inconnu',
               libelle: 'produit_id absent du référentiel Produits',
               categorie: 'faux-humain',
-              confusion: 'suppression-au-lieu-de-signalement',
+              confusion: 'suspect-corrige-sans-validation',
               justification:
                 'erreur certaine, mais le bon produit n’est pas dans le fichier',
             },
@@ -745,7 +745,7 @@ export const ACTE_1: moteur.Acte = [
               id: 'livraison-avant-commande',
               libelle: 'Livraison antérieure à la commande',
               categorie: 'faux-humain',
-              confusion: 'suppression-au-lieu-de-signalement',
+              confusion: 'suspect-corrige-sans-validation',
               justification:
                 'impossible, mais laquelle des deux dates est fausse ?',
             },
@@ -793,7 +793,7 @@ export const ACTE_1: moteur.Acte = [
     [
       [
         'faux-automatique',
-        'Ville mal écrite, nombre en texte, doublon exact, ca_ht mal calculé : l’erreur est certaine et la bonne valeur se déduit du fichier. On corrige par formule, dans une nouvelle colonne.',
+        'Ville mal écrite, nombre en texte, doublon exact, ca_ht mal calculé : l’erreur est certaine et la bonne valeur se déduit du fichier. On corrige par formule, dans une nouvelle colonne ; le doublon exact se retire par Supprimer les doublons, sur une copie.',
       ],
       [
         'faux-humain',
@@ -827,7 +827,7 @@ export const ACTE_1: moteur.Acte = [
       proprietes: {
         intitule: 'Exercice 4 — Nettoyer l’export',
         consigne:
-          'Essentiel, sur une copie de l’onglet Commandes : nettoyez ville et ca_ht dans deux nouvelles colonnes, en N et O, sans insérer de colonne ; supprimez les doublons exacts, toutes les colonnes cochées ; ajoutez une colonne controle sur les dates brutes, =SI(OU(C2<B2;I2<=0;G2="");"À vérifier";"OK"), où C est date_livraison, B date_commande, I quantite et G commercial_id. Défi : convertissez les dates ISO par DATEVAL, recalculez ca_ht et signalez les écarts de plus d’un euro.',
+          'Essentiel : effacez d’abord le filtre de l’exercice 2, puis, sur une copie de l’onglet Commandes, nettoyez ville et ca_ht dans deux nouvelles colonnes, en N et O, sans insérer de colonne ; supprimez les doublons exacts, toutes les colonnes cochées ; ajoutez une colonne controle sur les dates brutes, =SI(OU(C2<B2;I2<=0;G2="");"À vérifier";"OK"), où C est date_livraison, B date_commande, I quantite et G commercial_id. Défi : convertissez les dates ISO par DATEVAL, recalculez ca_ht et signalez les écarts de plus d’un euro.',
         regime: 'focus',
         ordre: 'fixe',
         questions: [
@@ -885,7 +885,7 @@ export const ACTE_1: moteur.Acte = [
       ],
       [
         'b3-01-a1-a-verifier',
-        'La colonne controle marque 85 lignes « À vérifier » : livraisons antérieures à la commande, quantités négatives, commercial absent et dates restées en texte. Avec les anomalies corrigées par formule, environ 16 % des lignes uniques étaient fausses ou douteuses : la réponse au premier vote de la séance. Convertir les dates par DATEVAL avant le contrôle aurait corrigé seul des dates douteuses, et n’en aurait signalé que 39.',
+        'La colonne controle marque 85 lignes « À vérifier » : livraisons antérieures à la commande, quantités négatives, commercial absent et dates restées en texte. Avec les anomalies corrigées par formule, 614 des 4 098 lignes uniques étaient fausses ou douteuses, environ 15 % : la réponse au premier vote de la séance. Convertir les dates par DATEVAL avant le contrôle aurait corrigé seul des dates douteuses, et n’en aurait signalé que 39.',
       ],
     ],
   ),

@@ -29,8 +29,11 @@ export const ACTE_2: moteur.Acte = [
           'Nadia demande « le CA de Rennes en informatique en 2026 ». De quelle famille de problème s’agit-il ?',
           'Additionner sous conditions, après avoir cherché la catégorie',
           [
-            ['Chercher une valeur dans une table', 'plage-recherche-non-figee'],
-            ['Compter les lignes de Rennes', 'lignes-comptees-pour-commandes'],
+            [
+              'Chercher une valeur dans une table',
+              'famille-de-probleme-mal-nommee',
+            ],
+            ['Compter les lignes de Rennes', 'famille-de-probleme-mal-nommee'],
             ['Regrouper toutes les ventes de Rennes', 'periode-mal-delimitee'],
           ],
         ),
@@ -243,7 +246,7 @@ export const ACTE_2: moteur.Acte = [
     [
       [
         'b3-01-a2-ca-rennes-info',
-        'SOMME.SI.ENS sur ca_ht, avec trois critères : agence_id égal à AG06, categorie égale à Informatique, date_commande ">="&DATE(2026;1;1). Résultat : 8 342 €. Écrit tout entier entre guillemets, le critère de date ne compare qu’à un texte : aucune ligne, 0 €. Sans critère de date, on additionne aussi 2025 : 27 862 €.',
+        'SOMME.SI.ENS sur ca_ht, avec trois critères : agence_id égal à AG06, categorie égale à Informatique, date_commande ">="&DATE(2026;1;1). Résultat : 8 342 €. Écrit tout entier entre guillemets, le critère de date ne compare qu’à un texte : aucune ligne, 0 €. Une colonne categorie recopiée sans $ donne aussi 0 € : la plage de Produits glisse, et les lignes de 2026 ne trouvent plus leur catégorie. Sans critère de date, on additionne aussi 2025 : 27 862 €.',
       ],
       [
         'b3-01-a2-remises-marseille',
@@ -251,7 +254,7 @@ export const ACTE_2: moteur.Acte = [
       ],
       [
         'b3-01-a2-ca-ouest',
-        'La région Ouest réunit Nantes (AG05) et Rennes (AG06) : 77 850 € de janvier à septembre 2026. Recopiée sans $, la plage de recherche glisse d’une ligne à chaque ligne : dès la ligne 14, elle a quitté la table et plus aucune agence n’est trouvée. La seule ligne Ouest trouvée avant date de 2025 : sur 2026, le total tombe à 0 €. Sans critère de date : 188 908 €.',
+        'La région Ouest réunit Nantes (AG05) et Rennes (AG06) : 77 850 € de janvier à septembre 2026. Recopiée sans $, la plage de recherche glisse d’une ligne à chaque ligne : dès la ligne 14, elle a quitté la table et plus aucune agence n’est trouvée. Avant la ligne 14, la seule ligne Ouest trouvée, la ligne 2, date de 2025 : sur 2026, le total tombe à 0 €. Un critère de date écrit tout entier entre guillemets donne aussi 0 €. Sans critère de date : 188 908 €.',
       ],
     ],
   ),
@@ -277,10 +280,7 @@ export const ACTE_2: moteur.Acte = [
           '1 jour ouvré',
           [
             ['3 jours ouvrés', 'jours-calendaires-pour-ouvres'],
-            [
-              '0 jour ouvré : le week-end ne compte pas',
-              'jours-calendaires-pour-ouvres',
-            ],
+            ['2 jours ouvrés', 'bornes-comptees-dans-le-delai'],
           ],
         ),
       ],
@@ -335,8 +335,8 @@ export const ACTE_2: moteur.Acte = [
         },
         {
           kind: 'property',
-          title: 'Taux de marge : un ratio de sommes',
-          text: 'Taux de marge = SOMME(marge) ÷ SOMME(CA), jamais la moyenne des taux de chaque ligne : une petite ligne très margée pèserait autant qu’une grosse commande. SOMMEPROD multiplie terme à terme puis additionne : elle calcule une marge totale sans colonne intermédiaire.',
+          title: 'Taux de marque : un ratio de sommes',
+          text: 'Taux de marque = SOMME(marge) ÷ SOMME(CA HT), jamais la moyenne des taux de chaque ligne : une petite ligne très margée pèserait autant qu’une grosse commande. Le taux de marge, lui, divise la marge par le coût d’achat HT : écrivez toujours le dénominateur. SOMMEPROD multiplie terme à terme puis additionne : elle calcule une marge totale sans colonne intermédiaire.',
         },
         {
           kind: 'example',
@@ -357,7 +357,7 @@ export const ACTE_2: moteur.Acte = [
       notes: moteur.puces(
         'Temps : réflexion 1 min · travail 7 min',
         'Réflexion : faire dire en quelle unité le contrat compte les délais avant d’écrire la colonne.',
-        'Pièges : soustraire les dates ; résumer par la moyenne ; faire la moyenne des taux de ligne.',
+        'Pièges : soustraire les dates ; résumer par la moyenne ; faire la moyenne des taux de ligne ; diviser la marge par le coût d’achat.',
       ),
       proprietes: {
         intitule: 'Exercice 6 — Délais et marge',
@@ -383,9 +383,9 @@ export const ACTE_2: moteur.Acte = [
           questionChiffree(
             'b3-01-a2-taux-marge',
             'indicateur-statistique',
-            'Quel est le taux de marge du réseau, de janvier à septembre 2026 ?',
+            'Quel est le taux de marque du réseau (marge ÷ CA HT), de janvier à septembre 2026 ?',
             '%',
-            ['moyenne-simple-des-taux'],
+            ['moyenne-simple-des-taux', 'marque-confondue-avec-marge'],
           ),
         ],
       },
@@ -409,7 +409,7 @@ export const ACTE_2: moteur.Acte = [
       ],
       [
         'b3-01-a2-taux-marge',
-        'Marge de la période ÷ CA de la période : 32,0 % de janvier à septembre 2026. La moyenne des taux de marge de chaque ligne donne 35,4 % : une petite ligne très margée y pèse autant qu’une grosse commande.',
+        'Marge de la période ÷ CA HT de la période : un taux de marque de 32,0 % de janvier à septembre 2026. La moyenne des taux de chaque ligne donne 35,4 % : une petite ligne très margée y pèse autant qu’une grosse commande. Divisée par le coût d’achat, la même marge donne 47,0 % : c’est le taux de marge, un autre indicateur.',
       ],
     ],
   ),
@@ -583,8 +583,8 @@ export const ACTE_2: moteur.Acte = [
             'Quel trimestre a réalisé le plus fort CA du réseau, du premier trimestre 2025 au troisième trimestre 2026 ?',
             'T4 2025',
             [
-              ['T2 2026', 'periode-mal-delimitee'],
-              ['T2 2025', 'periode-mal-delimitee'],
+              ['T2 2026', 'tcd-filtre-ou-dates-mal-groupees'],
+              ['T2 2025', 'tcd-filtre-ou-dates-mal-groupees'],
             ],
           ),
         ],

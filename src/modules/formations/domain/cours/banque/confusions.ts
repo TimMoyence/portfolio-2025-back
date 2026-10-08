@@ -554,10 +554,6 @@ const DEFINITIONS = {
     libelle:
       'Choisir un graphique avant la question à laquelle il doit répondre.',
   },
-  'camembert-pour-evolution': {
-    concept: 'choix-du-graphique',
-    libelle: 'Montrer une évolution dans le temps par un camembert.',
-  },
   'objectif-annuel-pour-cumul': {
     concept: 'tableau-de-bord',
     libelle:
@@ -576,7 +572,7 @@ const DEFINITIONS = {
   'periode-mal-delimitee': {
     concept: 'agregation-conditionnelle',
     libelle:
-      'Agréger une autre période que celle de la question, toute la table, un filtre resté actif ou deux années réunies.',
+      'Agréger une autre période que celle de la question : la table entière au lieu des seuls mois demandés.',
   },
   'commandes-comptees-pour-lignes': {
     concept: 'granularite',
@@ -592,6 +588,41 @@ const DEFINITIONS = {
     concept: 'nettoyage',
     libelle:
       'Compter « Bordeaux » et « Bordeaux » suivi d’une espace comme deux villes faute de SUPPRESPACE.',
+  },
+  'part-douteuse-estimee-sans-mesure': {
+    concept: 'qualite-des-donnees',
+    libelle:
+      'Estimer à l’œil la part des lignes fausses ou douteuses : seule une colonne de contrôle la mesure.',
+  },
+  'cle-prise-pour-categorie': {
+    concept: 'cle-et-relation',
+    libelle:
+      'Ranger une clé comme agence_id parmi les catégories : elle relie deux tables, et le libellé vit dans la table qu’elle désigne.',
+  },
+  'correction-certaine-renvoyee-a-un-humain': {
+    concept: 'qualite-des-donnees',
+    libelle:
+      'Renvoyer à un humain une erreur certaine dont la bonne valeur se déduit du fichier : une formule la corrige.',
+  },
+  'famille-de-probleme-mal-nommee': {
+    concept: 'agregation-conditionnelle',
+    libelle:
+      'Nommer une seule famille de problème, ou la mauvaise, quand la question demande de chercher une catégorie puis d’additionner sous conditions.',
+  },
+  'bornes-comptees-dans-le-delai': {
+    concept: 'calcul-sur-dates',
+    libelle:
+      'Prendre NB.JOURS.OUVRES tel quel pour un délai : il compte le jour de départ et le jour d’arrivée, d’où le − 1.',
+  },
+  'tcd-filtre-ou-dates-mal-groupees': {
+    concept: 'tableau-croise-dynamique',
+    libelle:
+      'Lire un TCD dont un filtre est resté actif ou dont les dates sont groupées sans les années : il ampute ou mêle les périodes.',
+  },
+  'detail-au-lieu-de-synthese': {
+    concept: 'tableau-de-bord',
+    libelle:
+      'Montrer le détail des lignes là où la décision attend quelques indicateurs, chacun avec sa comparaison.',
   },
 } as const satisfies Readonly<Record<string, DefinitionConfusion>>;
 

@@ -1,5 +1,11 @@
 import { createHash } from 'node:crypto';
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import {
+  mkdirSync,
+  readFileSync,
+  readdirSync,
+  rmSync,
+  writeFileSync,
+} from 'node:fs';
 import { join } from 'node:path';
 import { Workbook, type Cell, type CellValue, type Worksheet } from 'exceljs';
 import { GRAINE_B3_01 } from './generateur';
@@ -29,7 +35,7 @@ export interface EmpreinteDOnglet {
 
 export interface ClasseurAPublier {
   readonly role: RoleDuClasseur;
-  readonly fichier: string;
+  readonly base: string;
   readonly classeur: Classeur;
   readonly onglets: readonly EmpreinteDOnglet[];
   readonly tableau?: { readonly onglet: string; readonly nom: string };
@@ -102,27 +108,17 @@ function empreintesDes(classeur: Classeur): EmpreinteDOnglet[] {
   }));
 }
 
-function suffixeDe(onglets: readonly EmpreinteDOnglet[]): string {
-  return sha256(onglets.map((onglet) => onglet.empreinte).join('|')).slice(
-    0,
-    LONGUEUR_DU_SUFFIXE,
-  );
-}
-
 export function classeursPublies(jeu: JeuB301): readonly ClasseurAPublier[] {
   const publie = (
     role: RoleDuClasseur,
     base: string,
     classeur: Classeur,
-  ): ClasseurAPublier => {
-    const onglets = empreintesDes(classeur);
-    return {
-      role,
-      fichier: `${base}.${suffixeDe(onglets)}.xlsx`,
-      classeur,
-      onglets,
-    };
-  };
+  ): ClasseurAPublier => ({
+    role,
+    base,
+    classeur,
+    onglets: empreintesDes(classeur),
+  });
   return [
     publie('brut', 'B3-01_export_ventes', jeu.brut),
     publie('repriseActe2', 'B3-01_reprise_acte_2', jeu.reprise1),
@@ -200,19 +196,32 @@ export function nouveauClasseur(): Workbook {
   return classeur;
 }
 
-export async function ecrireClasseur(
-  publie: Pick<ClasseurAPublier, 'classeur' | 'tableau'>,
-  chemin: string,
-): Promise<void> {
+async function octetsDuClasseur(publie: ClasseurAPublier): Promise<Buffer> {
   const classeur = nouveauClasseur();
   for (const [nom, onglet] of Object.entries(publie.classeur)) {
     ajouterLOnglet(classeur, nom, onglet, publie.tableau);
   }
-  await classeur.xlsx.writeFile(chemin);
+  return Buffer.from(await classeur.xlsx.writeBuffer());
 }
 
 export function empreinteDuFichier(chemin: string): string {
   return sha256(readFileSync(chemin));
+}
+
+function retirerLesVersionsPerimees(
+  dossier: string,
+  base: string,
+  fichierCourant: string,
+): void {
+  for (const nom of readdirSync(dossier)) {
+    if (
+      nom.startsWith(`${base}.`) &&
+      nom.endsWith('.xlsx') &&
+      nom !== fichierCourant
+    ) {
+      rmSync(join(dossier, nom));
+    }
+  }
 }
 
 export async function ecrireLesClasseurs(
@@ -220,18 +229,23 @@ export async function ecrireLesClasseurs(
   dossier: string,
 ): Promise<void> {
   mkdirSync(dossier, { recursive: true });
-  const publies = classeursPublies(jeu);
-  for (const publie of publies) {
-    await ecrireClasseur(publie, join(dossier, publie.fichier));
+  const classeurs: ManifesteDesClasseurs['classeurs'][number][] = [];
+  for (const publie of classeursPublies(jeu)) {
+    const octets = await octetsDuClasseur(publie);
+    const empreinte = sha256(octets);
+    const fichier = `${publie.base}.${empreinte.slice(0, LONGUEUR_DU_SUFFIXE)}.xlsx`;
+    writeFileSync(join(dossier, fichier), octets);
+    retirerLesVersionsPerimees(dossier, publie.base, fichier);
+    classeurs.push({
+      role: publie.role,
+      fichier,
+      empreinte,
+      onglets: publie.onglets,
+    });
   }
   const manifeste: ManifesteDesClasseurs = {
     graine: GRAINE_B3_01,
-    classeurs: publies.map((publie) => ({
-      role: publie.role,
-      fichier: publie.fichier,
-      empreinte: empreinteDuFichier(join(dossier, publie.fichier)),
-      onglets: publie.onglets,
-    })),
+    classeurs,
   };
   writeFileSync(
     join(dossier, MANIFESTE),

@@ -72,6 +72,32 @@ function libellesDuVote(id: string): string[] {
   return Object.values(tirer(COURS, 0).libellesOptions[id]);
 }
 
+function confusionsDuVote(screenId: string): (string | null)[] {
+  return questionsDe(screenId).flatMap((question) =>
+    question.type === 'vote'
+      ? question.options.map(({ confusion }) => confusion)
+      : [],
+  );
+}
+
+function attendusDe(screenId: string) {
+  return questionsDe(screenId).flatMap((question) =>
+    question.type === 'classement' ? question.corrige.attendus : [],
+  );
+}
+
+function enonceDe(id: string): string {
+  return (
+    numeriquesStockees().find((question) => question.id === id)?.enonce ?? ''
+  ).replaceAll(ESPACES_TYPOGRAPHIQUES, ' ');
+}
+
+function remediationDe(confusion: string): string | undefined {
+  return Object.entries(COURS_B3_01.remediations ?? {}).find(
+    ([cle]) => cle === confusion,
+  )?.[1];
+}
+
 function explicationsDe(screenId: string): string[] {
   const ecran = COURS.ecrans.find((candidat) => candidat.id === screenId);
   return (ecran?.correctionSurPlace?.explications ?? []).map((explication) =>
@@ -100,7 +126,7 @@ fiche.decrireLaFicheDuCours('B3-01', COURS, {
   noteesParType: [4, 18, 3, 0, 0],
   enigmes: 0,
   rappels: 0,
-  remediations: 26,
+  remediations: 33,
   options: 12,
   catalogue: [
     'A1-02',
@@ -328,11 +354,101 @@ describe('B3-01 — acte 1 : consignes et corrections exactes', () => {
     }
   });
 
-  it('A1-07 · rattache les dates, les mesures et le booléen à la confusion de type, n_commande à ses chiffres', () => {
-    const attendus = questionsDe('B3-01-A1-07-TRI-COLONNES').flatMap(
-      (question) =>
-        question.type === 'classement' ? question.corrige.attendus : [],
+  it('A1-04 · rattache chaque estimation fausse de la part douteuse à la confusion de l’estimation', () => {
+    expect(confusionsDuVote('B3-01-A1-04-VOTE-PART-ET-CLE')).toEqual([
+      null,
+      'part-douteuse-estimee-sans-mesure',
+      'part-douteuse-estimee-sans-mesure',
+      'part-douteuse-estimee-sans-mesure',
+      null,
+      'libelle-pris-pour-cle',
+      'libelle-pris-pour-cle',
+    ]);
+    expect(remediationDe('part-douteuse-estimee-sans-mesure')).toBe(
+      'B3-01-A1-10-COURS-GRILLE',
     );
+  });
+
+  it('A1-07 · diagnostique agence_id rangée parmi les catégories comme une clé prise pour une catégorie', () => {
+    expect(
+      attendusDe('B3-01-A1-07-TRI-COLONNES').find(
+        ({ carteId }) => carteId === 'agence-id',
+      )?.confusionSiErreur,
+    ).toBe('cle-prise-pour-categorie');
+    expect(remediationDe('cle-prise-pour-categorie')).toBe(
+      'B3-01-A1-06-COURS-RELATIONS',
+    );
+  });
+
+  it('A1-08 · ne borne pas à cinq les lignes d’une commande du brut, doublons compris', () => {
+    const [granularite] = explicationsDe('B3-01-A1-08-ATELIER-GRANULARITE');
+
+    expect(granularite).not.toContain('une à cinq lignes');
+    expect(granularite).toContain('exportées deux fois');
+  });
+
+  it('A1-12 · cite deux cellules du classeur brut telles qu’elles y sont', () => {
+    const texte = texteDe('B3-01-A1-12-EXEMPLE-NETTOYAGE');
+
+    expect(texte).toContain(
+      'en E783, la ville « Bordeaux », entourée d’espaces',
+    );
+    expect(texte).toContain(
+      'en L2971, le ca_ht saisi comme le texte « 1 150,00 € »',
+    );
+    expect(texte).not.toContain('« bordeaux »');
+    expect(texte).not.toContain('1 250');
+  });
+
+  it('A1-13 · diagnostique un mauvais classement par la confusion qui le décrit, jamais par une suppression', () => {
+    const attendus = attendusDe('B3-01-A1-13-TRI-ANOMALIES');
+    const confusionsDe = (categorie: string) =>
+      new Set(
+        attendus
+          .filter(({ categorieId }) => categorieId === categorie)
+          .map(({ confusionSiErreur }) => confusionSiErreur),
+      );
+
+    expect(confusionsDe('faux-automatique')).toEqual(
+      new Set(['correction-certaine-renvoyee-a-un-humain']),
+    );
+    expect(confusionsDe('faux-humain')).toEqual(
+      new Set(['suspect-corrige-sans-validation']),
+    );
+    expect(remediationDe('correction-certaine-renvoyee-a-un-humain')).toBe(
+      'B3-01-A1-10-COURS-GRILLE',
+    );
+  });
+
+  it('A1-10 et A1-13 · retirent le doublon exact par Supprimer les doublons, sans le corriger par formule', () => {
+    const [fauxAutomatique] = explicationsDe('B3-01-A1-13-TRI-ANOMALIES');
+
+    for (const texte of [
+      texteDe('B3-01-A1-10-COURS-GRILLE'),
+      fauxAutomatique,
+    ]) {
+      expect(texte).toContain(
+        'le doublon exact se retire par Supprimer les doublons',
+      );
+    }
+  });
+
+  it('A1-14 · fait effacer le filtre de l’exercice 2 avant de copier l’onglet Commandes', () => {
+    expect(texteDe('B3-01-A1-14-ATELIER-NETTOYAGE')).toContain(
+      'effacez d’abord le filtre de l’exercice 2',
+    );
+  });
+
+  it('A1-14 · chiffre la part douteuse sur les lignes uniques, hors doublons : environ 15 %', () => {
+    const aVerifier = explicationsDe('B3-01-A1-14-ATELIER-NETTOYAGE').at(-1);
+
+    expect(aVerifier).toContain('614 des 4 098 lignes uniques');
+    expect(aVerifier).toContain('environ 15 %');
+    expect(aVerifier).not.toContain('16 %');
+  });
+
+  it('A1-07 · rattache les dates, les mesures et le booléen à la confusion de type, n_commande à ses chiffres', () => {
+    const attendus = attendusDe('B3-01-A1-07-TRI-COLONNES');
     const horsIdentifiants = attendus.filter(
       ({ categorieId }) => !['identifiant', 'categorie'].includes(categorieId),
     );
@@ -459,5 +575,152 @@ describe('B3-01 — actes 2 et 3 : consignes et corrections exactes', () => {
       expect(histoire).toContain('Cause :');
       expect(histoire).toContain('Action :');
     }
+  });
+
+  it('A2-01 · rattache les familles mal nommées à la confusion de la famille', () => {
+    expect(confusionsDuVote('B3-01-A2-01-VOTE-FAMILLE')).toEqual([
+      null,
+      'famille-de-probleme-mal-nommee',
+      'famille-de-probleme-mal-nommee',
+      'periode-mal-delimitee',
+    ]);
+    expect(remediationDe('famille-de-probleme-mal-nommee')).toBe(
+      'B3-01-A2-02-FAMILLES',
+    );
+  });
+
+  it('A2-04 · donne au total nul ses deux causes, à la première et à la troisième question', () => {
+    const [rennes, , ouest] = explicationsDe('B3-01-A2-04-ATELIER-RECHERCHE');
+
+    expect(rennes).toContain(
+      'Une colonne categorie recopiée sans $ donne aussi 0 €',
+    );
+    expect(ouest).toContain(
+      'Un critère de date écrit tout entier entre guillemets donne aussi 0 €',
+    );
+    expect(ouest).toContain(
+      'Avant la ligne 14, la seule ligne Ouest trouvée, la ligne 2, date de 2025',
+    );
+  });
+
+  it('A2-05 · propose le délai de NB.JOURS.OUVRES sans le − 1, diagnostiqué comme tel', () => {
+    expect(libellesDuVote('b3-01-a2-delai')).toContain('2 jours ouvrés');
+    expect(confusionsDuVote('B3-01-A2-05-VOTE-DELAI')).toEqual([
+      null,
+      'jours-calendaires-pour-ouvres',
+      'bornes-comptees-dans-le-delai',
+    ]);
+    expect(remediationDe('bornes-comptees-dans-le-delai')).toBe(
+      'B3-01-A2-06-COURS-TEMPS-STATS',
+    );
+  });
+
+  it('A2-06, A2-07, A3-09 et A3-10 · nomment taux de marque la marge rapportée au CA HT, et piègent le taux de marge', () => {
+    for (const ecran of [
+      'B3-01-A2-06-COURS-TEMPS-STATS',
+      'B3-01-A2-07-ATELIER-DELAIS-MARGE',
+      'B3-01-A3-09-ATELIER-DASHBOARD',
+      'B3-01-A3-10-RECOMMANDATIONS',
+    ]) {
+      expect(texteDe(ecran)).toMatch(/[Tt]aux de marque/);
+    }
+    for (const id of [
+      'b3-01-a2-taux-marge',
+      'b3-01-a3-marge-marseille',
+    ] as const) {
+      expect(enonceDe(id)).toContain('taux de marque');
+      expect(enonceDe(id)).toContain('marge ÷ CA HT');
+      expect(Object.keys(PIEGES_B3_01[id])).toContain(
+        'marque-confondue-avec-marge',
+      );
+    }
+    expect(remediationDe('marque-confondue-avec-marge')).toBe(
+      'B3-01-A2-06-COURS-TEMPS-STATS',
+    );
+  });
+
+  it('A2-11 · diagnostique un trimestre mal lu par la confusion du TCD, qui renvoie à sa trace', () => {
+    expect(confusionsDuVote('B3-01-A2-11-ATELIER-TCD')).toEqual([
+      null,
+      'tcd-filtre-ou-dates-mal-groupees',
+      'tcd-filtre-ou-dates-mal-groupees',
+    ]);
+    expect(remediationDe('tcd-filtre-ou-dates-mal-groupees')).toBe(
+      'B3-01-A2-09-COURS-TCD',
+    );
+  });
+
+  it('A3-01 · trace Rennes environ trois fois plus bas que Nantes, comme le dit le commentaire du collègue', () => {
+    const { axisRanges } = feuille.proprietesV2(
+      COURS_B3_01,
+      'B3-01-A3-01-GRAPHIQUE-TROMPEUR',
+    );
+    const [[debut, fin]] = axisRanges as [[number, number]];
+    const hauteur = (valeur: number): number =>
+      (valeur - debut) / (fin - debut);
+    const rapport =
+      hauteur(HISTOIRES_B3_01['ca-2025-nantes']) /
+      hauteur(HISTOIRES_B3_01['ca-2025-rennes']);
+
+    expect(rapport).toBeGreaterThan(2.5);
+    expect(rapport).toBeLessThan(3.5);
+    expect(debut).toBe(47_500);
+    expect(texteDe('B3-01-A3-02-VOTE-GRAPHIQUE')).toContain(
+      'L’axe part de 47 500 €',
+    );
+  });
+
+  it('A3-04 · nomme l’histogramme par la répartition et ne diagnostique aucune carte par un camembert absent', () => {
+    expect(texteDe('B3-01-A3-04-TRI-GRAPHIQUES')).toContain(
+      'Histogramme (répartition par tranches)',
+    );
+    expect(
+      attendusDe('B3-01-A3-04-TRI-GRAPHIQUES').map(
+        ({ confusionSiErreur }) => confusionSiErreur,
+      ),
+    ).not.toContain('camembert-pour-evolution');
+  });
+
+  it('A3-05 · relie T_Commandes et Objectifs à Agences, la seule table aux identifiants uniques', () => {
+    const texte = texteDe('B3-01-A3-05-ATELIER-GRAPHIQUES');
+
+    expect(texte).toContain(
+      'reliez T_Commandes et Objectifs à Agences par agence_id',
+    );
+    expect(texte).not.toContain('relie les deux tables');
+  });
+
+  it('A3-06 · diagnostique chaque option par l’erreur qu’elle commet', () => {
+    expect(confusionsDuVote('B3-01-A3-06-VOTE-TRENTE-SECONDES')).toEqual([
+      null,
+      'detail-au-lieu-de-synthese',
+      'graphique-sans-question',
+      'kpi-sans-contexte',
+    ]);
+    expect(remediationDe('detail-au-lieu-de-synthese')).toBe(
+      'B3-01-A3-07-COURS-DASHBOARD',
+    );
+  });
+
+  it('A3-07 · enseigne l’objectif cumulé sur les mêmes mois, que l’exercice 9 demande', () => {
+    expect(texteDe('B3-01-A3-07-COURS-DASHBOARD')).toContain(
+      'l’objectif cumulé sur les mêmes mois',
+    );
+  });
+
+  it('A3-08 · fait ressortir les agences sous 95 % de leur objectif, pas « en retard »', () => {
+    const texte = texteDe('B3-01-A3-08-EXEMPLE-MFC-SEGMENTS');
+
+    expect(texte).not.toContain('en retard');
+    expect(texte).toContain(
+      'Faites ressortir les agences sous 95 % de leur objectif',
+    );
+  });
+
+  it('A3-10 · date les ruptures de Strasbourg d’avril à juillet, livrées environ deux mois plus tard', () => {
+    const strasbourg = explicationsDe('B3-01-A3-10-RECOMMANDATIONS').at(-1);
+
+    expect(strasbourg).toContain('ruptures de stock d’avril à juillet');
+    expect(strasbourg).toContain('livrées environ deux mois plus tard');
   });
 });

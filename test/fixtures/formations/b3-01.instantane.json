@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "24cf90175794847099cc7adf09aead3fac23fdc9b490fed0843b559f0298f3f1",
+  "empreinte": "5c6ee9661b8f4946dec345be929617e7a8bbd7a645809b2d7d44d90ec7fe3e7e",
   "sujet": {
     "id": "b3-01-donnee-brute-decision",
     "titre": "Expert Data : de la donnée brute à la décision",
@@ -92,7 +92,7 @@
         },
         "pieceJointe": {
           "libelle": "Export des ventes Norvane (classeur Excel)",
-          "fichier": "/assets/cours/b3-01/B3-01_export_ventes.0e0f6342.xlsx"
+          "fichier": "/assets/cours/b3-01/B3-01_export_ventes.ab0980c3.xlsx"
         }
       },
       {
@@ -476,7 +476,7 @@
         "donnees": {
           "question": {
             "id": "b3-01-a1-ca-texte",
-            "enonce": "Dans la colonne ca_ht, une cellule affiche « 1 250,00 € », alignée à gauche. Que fait =SOMME(L:L) de cette cellule ?",
+            "enonce": "Dans la colonne ca_ht, une cellule affiche « 1 150,00 € », alignée à gauche. Que fait =SOMME(L:L) de cette cellule ?",
             "options": [
               {
                 "id": "elle-affiche-une-erreur-valeur-09701c18",
@@ -521,7 +521,7 @@
                     "title": "La grille 2 × 2",
                     "text": "On croise la certitude (faux, suspect) et le correcteur (automatique, humain).",
                     "steps": [
-                      "Faux · automatique : on corrige par formule, en gardant la trace (casse, espaces, nombre en texte, doublon exact).",
+                      "Faux · automatique : on corrige par formule dans une nouvelle colonne, en gardant la trace (casse, espaces, nombre en texte) ; le doublon exact se retire par Supprimer les doublons, sur une copie.",
                       "Faux · humain : on signale et on demande la bonne valeur (produit inconnu, commercial absent).",
                       "Suspect · humain : on signale et on demande s’il s’agit d’une erreur.",
                       "Suspect · automatique : case vide."
@@ -612,19 +612,19 @@
         "donnees": {
           "exemple": {
             "id": "b3-01-a1-exemple-nettoyage",
-            "enonce": "Deux cellules de l’onglet Commandes : en E2, la ville « bordeaux », entourée d’espaces ; en L2, le ca_ht saisi comme le texte « 1 250,00 € ».",
+            "enonce": "Deux cellules de l’onglet Commandes du classeur brut : en E783, la ville « Bordeaux », entourée d’espaces ; en L2971, le ca_ht saisi comme le texte « 1 150,00 € ». Chaque formule s’écrit en ligne 2, puis se recopie jusqu’en bas.",
             "etapes": [
               {
                 "id": "ville",
                 "intitule": "La ville",
-                "raisonnement": "Dans une nouvelle colonne, =NOMPROPRE(SUPPRESPACE(E2)) retire les espaces en trop, puis met une majuscule initiale : « Bordeaux ».",
-                "invite": "Quelle formule rend « Bordeaux » dans une nouvelle colonne ?"
+                "raisonnement": "Dans une nouvelle colonne, =NOMPROPRE(SUPPRESPACE(E2)) retire les espaces en trop, puis met une majuscule initiale. Recopiée, elle rend « Bordeaux » en ligne 783.",
+                "invite": "Quelle formule, écrite en ligne 2 et recopiée, rend « Bordeaux » en ligne 783 ?"
               },
               {
                 "id": "montant",
                 "intitule": "Le montant",
-                "raisonnement": "SUBSTITUE retire d’abord « € », puis l’espace des milliers ; CNUM convertit le texte qui reste. =CNUM(SUBSTITUE(SUBSTITUE(L2;\" €\";\"\");\" \";\"\")) rend le nombre 1250.",
-                "invite": "Quelle formule convertit « 1 250,00 € » en nombre ?"
+                "raisonnement": "SUBSTITUE retire d’abord « € », puis l’espace des milliers ; CNUM convertit le texte qui reste. =CNUM(SUBSTITUE(SUBSTITUE(L2;\" €\";\"\");\" \";\"\")), recopiée, rend le nombre 1150 en ligne 2971, et laisse intacts les montants déjà en nombre.",
+                "invite": "Quelle formule convertit « 1 150,00 € » en nombre ?"
               },
               {
                 "id": "verifier",
@@ -693,7 +693,7 @@
               },
               {
                 "id": "ca-en-texte",
-                "libelle": "ca_ht stocké en texte : « 1 250,00 € »"
+                "libelle": "ca_ht stocké en texte : « 1 150,00 € »"
               }
             ],
             "categories": [
@@ -732,7 +732,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 4 — Nettoyer l’export",
-          "consigne": "Essentiel, sur une copie de l’onglet Commandes : nettoyez ville et ca_ht dans deux nouvelles colonnes, en N et O, sans insérer de colonne ; supprimez les doublons exacts, toutes les colonnes cochées ; ajoutez une colonne controle sur les dates brutes, =SI(OU(C2<B2;I2<=0;G2=\"\");\"À vérifier\";\"OK\"), où C est date_livraison, B date_commande, I quantite et G commercial_id. Défi : convertissez les dates ISO par DATEVAL, recalculez ca_ht et signalez les écarts de plus d’un euro.",
+          "consigne": "Essentiel : effacez d’abord le filtre de l’exercice 2, puis, sur une copie de l’onglet Commandes, nettoyez ville et ca_ht dans deux nouvelles colonnes, en N et O, sans insérer de colonne ; supprimez les doublons exacts, toutes les colonnes cochées ; ajoutez une colonne controle sur les dates brutes, =SI(OU(C2<B2;I2<=0;G2=\"\");\"À vérifier\";\"OK\"), où C est date_livraison, B date_commande, I quantite et G commercial_id. Défi : convertissez les dates ISO par DATEVAL, recalculez ca_ht et signalez les écarts de plus d’un euro.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -874,7 +874,7 @@
         },
         "pieceJointe": {
           "libelle": "Classeur de reprise de l’acte 2",
-          "fichier": "/assets/cours/b3-01/B3-01_reprise_acte_2.e63154db.xlsx"
+          "fichier": "/assets/cours/b3-01/B3-01_reprise_acte_2.84b36eb4.xlsx"
         }
       },
       {
@@ -1144,8 +1144,8 @@
                 "libelle": "3 jours ouvrés"
               },
               {
-                "id": "0-jour-ouvre-le-week-end-ne-compte-pas-ca0f98ba",
-                "libelle": "0 jour ouvré : le week-end ne compte pas"
+                "id": "2-jours-ouvres-2be741c0",
+                "libelle": "2 jours ouvrés"
               }
             ]
           }
@@ -1190,8 +1190,8 @@
                   },
                   {
                     "kind": "property",
-                    "title": "Taux de marge : un ratio de sommes",
-                    "text": "Taux de marge = SOMME(marge) ÷ SOMME(CA), jamais la moyenne des taux de chaque ligne : une petite ligne très margée pèserait autant qu’une grosse commande. SOMMEPROD multiplie terme à terme puis additionne : elle calcule une marge totale sans colonne intermédiaire."
+                    "title": "Taux de marque : un ratio de sommes",
+                    "text": "Taux de marque = SOMME(marge) ÷ SOMME(CA HT), jamais la moyenne des taux de chaque ligne : une petite ligne très margée pèserait autant qu’une grosse commande. Le taux de marge, lui, divise la marge par le coût d’achat HT : écrivez toujours le dénominateur. SOMMEPROD multiplie terme à terme puis additionne : elle calcule une marge totale sans colonne intermédiaire."
                   },
                   {
                     "kind": "example",
@@ -1262,7 +1262,7 @@
               "donnees": {
                 "question": {
                   "id": "b3-01-a2-taux-marge",
-                  "enonce": "Quel est le taux de marge du réseau, de janvier à septembre 2026 ? En %, sans le symbole, arrondi au dixième de point.",
+                  "enonce": "Quel est le taux de marque du réseau (marge ÷ CA HT), de janvier à septembre 2026 ? En %, sans le symbole, arrondi au dixième de point.",
                   "unite": "%",
                   "metadonnees": {
                     "concepts": ["calcul-sur-dates", "indicateur-statistique"],
@@ -1518,12 +1518,12 @@
                     "tone": "teal"
                   }
                 ],
-                "axisRanges": [[49000, 60000]],
-                "axisLabels": ["49 000 à 60 000 €"],
+                "axisRanges": [[47500, 60000]],
+                "axisLabels": ["47 500 à 60 000 €"],
                 "unit": "€",
                 "source": "Export des ventes de Norvane Équipement, CA arrondi à la centaine d’euros (données fictives).",
                 "kind": "bars",
-                "description": "Diagramme en barres : CA HT 2025 de Rennes et de Nantes, axe vertical de 49 000 € à 60 000 € ; barres de 51 600 € et 59 500 €."
+                "description": "Diagramme en barres : CA HT 2025 de Rennes et de Nantes, axe vertical de 47 500 € à 60 000 € ; barres de 51 600 € et 59 500 €."
               }
             },
             "metadonnees": {
@@ -1564,7 +1564,7 @@
         },
         "pieceJointe": {
           "libelle": "Classeur de reprise de l’acte 3",
-          "fichier": "/assets/cours/b3-01/B3-01_reprise_acte_3.dccca981.xlsx"
+          "fichier": "/assets/cours/b3-01/B3-01_reprise_acte_3.553ec6f4.xlsx"
         }
       },
       {
@@ -1671,7 +1671,7 @@
               },
               {
                 "id": "histogramme",
-                "libelle": "Histogramme"
+                "libelle": "Histogramme (répartition par tranches)"
               },
               {
                 "id": "nuage",
@@ -1700,7 +1700,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 9 — CA et objectif par agence",
-          "consigne": "Essentiel, dans le classeur de reprise de l’acte 3 : une synthèse par agence, de janvier à septembre 2026 : le CA cumulé par SOMME.SI.ENS sur T_Commandes, l’objectif cumulé par SOMME.SI.ENS sur Objectifs, le taux d’atteinte. Puis un graphique en barres groupées CA et objectif, avec un titre qui conclut, une légende et un axe depuis zéro. Si vous avez Excel 365, le modèle de données relie les deux tables dans un TCD. Défi : les courbes du CA mensuel 2025 et 2026, superposées.",
+          "consigne": "Essentiel, dans le classeur de reprise de l’acte 3 : une synthèse par agence, de janvier à septembre 2026 : le CA cumulé par SOMME.SI.ENS sur T_Commandes, l’objectif cumulé par SOMME.SI.ENS sur Objectifs, le taux d’atteinte. Puis un graphique en barres groupées CA et objectif, avec un titre qui conclut, une légende et un axe depuis zéro. Si vous avez Excel 365, mettez Objectifs sous forme de tableau, puis reliez T_Commandes et Objectifs à Agences par agence_id dans le modèle de données : un TCD lit alors le CA et l’objectif côte à côte. Défi : les courbes du CA mensuel 2025 et 2026, superposées.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -1753,16 +1753,20 @@
             "enonce": "Nadia a trente secondes avant le comité. Que doit-elle voir d’abord ?",
             "options": [
               {
-                "id": "le-tableau-de-toutes-les-lignes-d52eeee3",
-                "libelle": "Le tableau de toutes les lignes"
-              },
-              {
                 "id": "dix-graphiques-9bc9ca67",
                 "libelle": "Dix graphiques"
               },
               {
+                "id": "quatre-chiffres-sans-comparaison-2f8e645d",
+                "libelle": "Quatre chiffres, sans comparaison"
+              },
+              {
                 "id": "quatre-chiffres-chacun-avec-sa-comparais-da3f031e",
                 "libelle": "Quatre chiffres, chacun avec sa comparaison"
+              },
+              {
+                "id": "le-tableau-de-toutes-les-lignes-d52eeee3",
+                "libelle": "Le tableau de toutes les lignes"
               }
             ]
           }
@@ -1795,7 +1799,7 @@
                     "title": "Ce qu’il contient",
                     "text": "Une page, lisible en trente secondes.",
                     "steps": [
-                      "Quatre indicateurs clés, chacun avec son contexte : l’objectif, ou la même période de l’an passé.",
+                      "Quatre indicateurs clés, chacun avec son contexte : l’objectif cumulé sur les mêmes mois, ou la même période de l’an passé.",
                       "Deux graphiques, chacun avec un titre qui conclut.",
                       "Des segments : un clic filtre tous les TCD connectés et leurs graphiques.",
                       "Les anomalies signalées par mise en forme conditionnelle."
@@ -1833,7 +1837,7 @@
         "donnees": {
           "exemple": {
             "id": "b3-01-a3-exemple-mfc",
-            "enonce": "Une feuille de synthèse : une agence par ligne à partir de la ligne 5, le taux d’atteinte en colonne E ; à côté, deux TCD, le CA par mois et la marge par agence. Faites ressortir les agences en retard, puis reliez un segment aux deux TCD.",
+            "enonce": "Une feuille de synthèse : une agence par ligne à partir de la ligne 5, le taux d’atteinte en colonne E ; à côté, deux TCD, le CA par mois et la marge par agence. Faites ressortir les agences sous 95 % de leur objectif, puis reliez un segment aux deux TCD.",
             "etapes": [
               {
                 "id": "mfc",
@@ -1873,7 +1877,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 10 — Le tableau de bord Direction",
-          "consigne": "Essentiel, dans un onglet Dashboard : quatre indicateurs (CA cumulé 2026, évolution par rapport à la même période de 2025, taux de marge, lignes en quarantaine), le graphique de l’exercice 9, un TCD de la marge par agence avec une mise en forme conditionnelle, et deux segments connectés à ce TCD, region et categorie. Défi : une mise en page A4 paysage, prête à imprimer.",
+          "consigne": "Essentiel, dans un onglet Dashboard : quatre indicateurs (CA cumulé 2026, évolution par rapport à la même période de 2025, taux de marque, lignes en quarantaine), le graphique de l’exercice 9, un TCD de la marge par agence avec une mise en forme conditionnelle, et deux segments connectés à ce TCD, region et categorie. Défi : une mise en page A4 paysage, prête à imprimer.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -1916,7 +1920,7 @@
               "donnees": {
                 "question": {
                   "id": "b3-01-a3-marge-marseille",
-                  "enonce": "Quel est le taux de marge de Marseille (AG09), de janvier à septembre 2026 ? En %, sans le symbole, arrondi au dixième de point.",
+                  "enonce": "Quel est le taux de marque de Marseille (AG09), marge ÷ CA HT, de janvier à septembre 2026 ? En %, sans le symbole, arrondi au dixième de point.",
                   "unite": "%",
                   "metadonnees": {
                     "concepts": ["tableau-de-bord", "indicateur-statistique"],
@@ -2254,7 +2258,7 @@
         },
         "pieceJointe": {
           "libelle": "Export des ventes Norvane (classeur Excel)",
-          "fichier": "/assets/cours/b3-01/B3-01_export_ventes.0e0f6342.xlsx"
+          "fichier": "/assets/cours/b3-01/B3-01_export_ventes.ab0980c3.xlsx"
         },
         "notes": "• Lire le courriel à voix haute, puis faire télécharger le classeur depuis le poste.\n• Vérifier qu’il s’ouvre sans réparation et que l’onglet Commandes est visible.\n• Annoncer la séance : six niveaux, deux pauses de 15 minutes, un tableau de bord pour le comité de jeudi.",
         "diffusion": "catalogue",
@@ -2380,16 +2384,8 @@
             "bonneReponse": "Environ 15 % des lignes",
             "confusions": [
               {
-                "id": "texte-pris-pour-nombre",
-                "libelle": "Additionner une colonne dont certains nombres sont du texte : la somme les ignore sans prévenir."
-              },
-              {
-                "id": "casse-non-normalisee",
-                "libelle": "Laisser une même ville s’écrire « Bordeaux » et « BORDEAUX » : Excel les confond, mais Power Query et les autres outils en comptent deux."
-              },
-              {
-                "id": "doublons-supprimes-sur-une-colonne",
-                "libelle": "Dédoublonner sur une seule colonne et perdre des lignes distinctes qui la partagent."
+                "id": "part-douteuse-estimee-sans-mesure",
+                "libelle": "Estimer à l’œil la part des lignes fausses ou douteuses : seule une colonne de contrôle la mesure."
               }
             ]
           },
@@ -2894,7 +2890,7 @@
         "explications": [
           {
             "reference": "b3-01-a1-granularite",
-            "texte": "Une commande occupe une à cinq lignes, une par produit : le fichier compte plus de lignes que de commandes. Pour compter des commandes, on compte des n_commande distincts."
+            "texte": "Une commande regroupe un à cinq produits, une ligne par produit, et les lignes exportées deux fois, vues à l’exercice 4, en ajoutent : le fichier compte plus de lignes que de commandes. Pour compter des commandes, on compte des n_commande distincts."
           },
           {
             "reference": "b3-01-a1-lignes-commande",
@@ -2911,7 +2907,7 @@
         "donnees": {
           "question": {
             "id": "b3-01-a1-ca-texte",
-            "enonce": "Dans la colonne ca_ht, une cellule affiche « 1 250,00 € », alignée à gauche. Que fait =SOMME(L:L) de cette cellule ?",
+            "enonce": "Dans la colonne ca_ht, une cellule affiche « 1 150,00 € », alignée à gauche. Que fait =SOMME(L:L) de cette cellule ?",
             "options": [
               {
                 "id": "elle-affiche-une-erreur-valeur-09701c18",
@@ -2946,7 +2942,7 @@
         "questions": [
           {
             "id": "b3-01-a1-ca-texte",
-            "enonce": "Dans la colonne ca_ht, une cellule affiche « 1 250,00 € », alignée à gauche. Que fait =SOMME(L:L) de cette cellule ?",
+            "enonce": "Dans la colonne ca_ht, une cellule affiche « 1 150,00 € », alignée à gauche. Que fait =SOMME(L:L) de cette cellule ?",
             "options": [
               {
                 "id": "elle-affiche-une-erreur-valeur-09701c18",
@@ -3000,7 +2996,7 @@
                     "title": "La grille 2 × 2",
                     "text": "On croise la certitude (faux, suspect) et le correcteur (automatique, humain).",
                     "steps": [
-                      "Faux · automatique : on corrige par formule, en gardant la trace (casse, espaces, nombre en texte, doublon exact).",
+                      "Faux · automatique : on corrige par formule dans une nouvelle colonne, en gardant la trace (casse, espaces, nombre en texte) ; le doublon exact se retire par Supprimer les doublons, sur une copie.",
                       "Faux · humain : on signale et on demande la bonne valeur (produit inconnu, commercial absent).",
                       "Suspect · humain : on signale et on demande s’il s’agit d’une erreur.",
                       "Suspect · automatique : case vide."
@@ -3103,19 +3099,19 @@
         "donnees": {
           "exemple": {
             "id": "b3-01-a1-exemple-nettoyage",
-            "enonce": "Deux cellules de l’onglet Commandes : en E2, la ville « bordeaux », entourée d’espaces ; en L2, le ca_ht saisi comme le texte « 1 250,00 € ».",
+            "enonce": "Deux cellules de l’onglet Commandes du classeur brut : en E783, la ville « Bordeaux », entourée d’espaces ; en L2971, le ca_ht saisi comme le texte « 1 150,00 € ». Chaque formule s’écrit en ligne 2, puis se recopie jusqu’en bas.",
             "etapes": [
               {
                 "id": "ville",
                 "intitule": "La ville",
-                "raisonnement": "Dans une nouvelle colonne, =NOMPROPRE(SUPPRESPACE(E2)) retire les espaces en trop, puis met une majuscule initiale : « Bordeaux ».",
-                "invite": "Quelle formule rend « Bordeaux » dans une nouvelle colonne ?"
+                "raisonnement": "Dans une nouvelle colonne, =NOMPROPRE(SUPPRESPACE(E2)) retire les espaces en trop, puis met une majuscule initiale. Recopiée, elle rend « Bordeaux » en ligne 783.",
+                "invite": "Quelle formule, écrite en ligne 2 et recopiée, rend « Bordeaux » en ligne 783 ?"
               },
               {
                 "id": "montant",
                 "intitule": "Le montant",
-                "raisonnement": "SUBSTITUE retire d’abord « € », puis l’espace des milliers ; CNUM convertit le texte qui reste. =CNUM(SUBSTITUE(SUBSTITUE(L2;\" €\";\"\");\" \";\"\")) rend le nombre 1250.",
-                "invite": "Quelle formule convertit « 1 250,00 € » en nombre ?"
+                "raisonnement": "SUBSTITUE retire d’abord « € », puis l’espace des milliers ; CNUM convertit le texte qui reste. =CNUM(SUBSTITUE(SUBSTITUE(L2;\" €\";\"\");\" \";\"\")), recopiée, rend le nombre 1150 en ligne 2971, et laisse intacts les montants déjà en nombre.",
+                "invite": "Quelle formule convertit « 1 150,00 € » en nombre ?"
               },
               {
                 "id": "verifier",
@@ -3190,7 +3186,7 @@
               },
               {
                 "id": "ca-en-texte",
-                "libelle": "ca_ht stocké en texte : « 1 250,00 € »"
+                "libelle": "ca_ht stocké en texte : « 1 150,00 € »"
               }
             ],
             "categories": [
@@ -3290,7 +3286,7 @@
         "explications": [
           {
             "reference": "faux-automatique",
-            "texte": "Ville mal écrite, nombre en texte, doublon exact, ca_ht mal calculé : l’erreur est certaine et la bonne valeur se déduit du fichier. On corrige par formule, dans une nouvelle colonne."
+            "texte": "Ville mal écrite, nombre en texte, doublon exact, ca_ht mal calculé : l’erreur est certaine et la bonne valeur se déduit du fichier. On corrige par formule, dans une nouvelle colonne ; le doublon exact se retire par Supprimer les doublons, sur une copie."
           },
           {
             "reference": "faux-humain",
@@ -3314,7 +3310,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 4 — Nettoyer l’export",
-          "consigne": "Essentiel, sur une copie de l’onglet Commandes : nettoyez ville et ca_ht dans deux nouvelles colonnes, en N et O, sans insérer de colonne ; supprimez les doublons exacts, toutes les colonnes cochées ; ajoutez une colonne controle sur les dates brutes, =SI(OU(C2<B2;I2<=0;G2=\"\");\"À vérifier\";\"OK\"), où C est date_livraison, B date_commande, I quantite et G commercial_id. Défi : convertissez les dates ISO par DATEVAL, recalculez ca_ht et signalez les écarts de plus d’un euro.",
+          "consigne": "Essentiel : effacez d’abord le filtre de l’exercice 2, puis, sur une copie de l’onglet Commandes, nettoyez ville et ca_ht dans deux nouvelles colonnes, en N et O, sans insérer de colonne ; supprimez les doublons exacts, toutes les colonnes cochées ; ajoutez une colonne controle sur les dates brutes, =SI(OU(C2<B2;I2<=0;G2=\"\");\"À vérifier\";\"OK\"), où C est date_livraison, B date_commande, I quantite et G commercial_id. Défi : convertissez les dates ISO par DATEVAL, recalculez ca_ht et signalez les écarts de plus d’un euro.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -3471,7 +3467,7 @@
           },
           {
             "reference": "b3-01-a1-a-verifier",
-            "texte": "La colonne controle marque 85 lignes « À vérifier » : livraisons antérieures à la commande, quantités négatives, commercial absent et dates restées en texte. Avec les anomalies corrigées par formule, environ 16 % des lignes uniques étaient fausses ou douteuses : la réponse au premier vote de la séance. Convertir les dates par DATEVAL avant le contrôle aurait corrigé seul des dates douteuses, et n’en aurait signalé que 39."
+            "texte": "La colonne controle marque 85 lignes « À vérifier » : livraisons antérieures à la commande, quantités négatives, commercial absent et dates restées en texte. Avec les anomalies corrigées par formule, 614 des 4 098 lignes uniques étaient fausses ou douteuses, environ 15 % : la réponse au premier vote de la séance. Convertir les dates par DATEVAL avant le contrôle aurait corrigé seul des dates douteuses, et n’en aurait signalé que 39."
           }
         ]
       },
@@ -3548,7 +3544,7 @@
         },
         "pieceJointe": {
           "libelle": "Classeur de reprise de l’acte 2",
-          "fichier": "/assets/cours/b3-01/B3-01_reprise_acte_2.e63154db.xlsx"
+          "fichier": "/assets/cours/b3-01/B3-01_reprise_acte_2.84b36eb4.xlsx"
         },
         "notes": "• Ouvrir d’abord le classeur de reprise, tous, y compris ceux qui ont tout réussi : les résultats se compareront sur la même base.\n• Temps « réfléchir » du niveau 3 : vote non noté, 2 min de vote et 1 min de révélation.\n• Faire dire les deux familles dans l’ordre : on cherche la catégorie, puis on additionne.",
         "diffusion": "seance",
@@ -3559,16 +3555,12 @@
             "bonneReponse": "Additionner sous conditions, après avoir cherché la catégorie",
             "confusions": [
               {
-                "id": "plage-recherche-non-figee",
-                "libelle": "Recopier une recherche sans figer la table : la plage glisse et les dernières lignes ne sont plus trouvées."
-              },
-              {
-                "id": "lignes-comptees-pour-commandes",
-                "libelle": "Compter les lignes quand on cherche les commandes : une commande compte autant de lignes que de produits."
+                "id": "famille-de-probleme-mal-nommee",
+                "libelle": "Nommer une seule famille de problème, ou la mauvaise, quand la question demande de chercher une catégorie puis d’additionner sous conditions."
               },
               {
                 "id": "periode-mal-delimitee",
-                "libelle": "Agréger une autre période que celle de la question, toute la table, un filtre resté actif ou deux années réunies."
+                "libelle": "Agréger une autre période que celle de la question : la table entière au lieu des seuls mois demandés."
               }
             ]
           }
@@ -3879,7 +3871,7 @@
               },
               {
                 "id": "periode-mal-delimitee",
-                "libelle": "Agréger une autre période que celle de la question, toute la table, un filtre resté actif ou deux années réunies."
+                "libelle": "Agréger une autre période que celle de la question : la table entière au lieu des seuls mois demandés."
               }
             ]
           },
@@ -3903,7 +3895,7 @@
               },
               {
                 "id": "periode-mal-delimitee",
-                "libelle": "Agréger une autre période que celle de la question, toute la table, un filtre resté actif ou deux années réunies."
+                "libelle": "Agréger une autre période que celle de la question : la table entière au lieu des seuls mois demandés."
               }
             ]
           }
@@ -3929,7 +3921,7 @@
         "explications": [
           {
             "reference": "b3-01-a2-ca-rennes-info",
-            "texte": "SOMME.SI.ENS sur ca_ht, avec trois critères : agence_id égal à AG06, categorie égale à Informatique, date_commande \">=\"&DATE(2026;1;1). Résultat : 8 342 €. Écrit tout entier entre guillemets, le critère de date ne compare qu’à un texte : aucune ligne, 0 €. Sans critère de date, on additionne aussi 2025 : 27 862 €."
+            "texte": "SOMME.SI.ENS sur ca_ht, avec trois critères : agence_id égal à AG06, categorie égale à Informatique, date_commande \">=\"&DATE(2026;1;1). Résultat : 8 342 €. Écrit tout entier entre guillemets, le critère de date ne compare qu’à un texte : aucune ligne, 0 €. Une colonne categorie recopiée sans $ donne aussi 0 € : la plage de Produits glisse, et les lignes de 2026 ne trouvent plus leur catégorie. Sans critère de date, on additionne aussi 2025 : 27 862 €."
           },
           {
             "reference": "b3-01-a2-remises-marseille",
@@ -3937,7 +3929,7 @@
           },
           {
             "reference": "b3-01-a2-ca-ouest",
-            "texte": "La région Ouest réunit Nantes (AG05) et Rennes (AG06) : 77 850 € de janvier à septembre 2026. Recopiée sans $, la plage de recherche glisse d’une ligne à chaque ligne : dès la ligne 14, elle a quitté la table et plus aucune agence n’est trouvée. La seule ligne Ouest trouvée avant date de 2025 : sur 2026, le total tombe à 0 €. Sans critère de date : 188 908 €."
+            "texte": "La région Ouest réunit Nantes (AG05) et Rennes (AG06) : 77 850 € de janvier à septembre 2026. Recopiée sans $, la plage de recherche glisse d’une ligne à chaque ligne : dès la ligne 14, elle a quitté la table et plus aucune agence n’est trouvée. Avant la ligne 14, la seule ligne Ouest trouvée, la ligne 2, date de 2025 : sur 2026, le total tombe à 0 €. Un critère de date écrit tout entier entre guillemets donne aussi 0 €. Sans critère de date : 188 908 €."
           }
         ]
       },
@@ -3961,8 +3953,8 @@
                 "libelle": "3 jours ouvrés"
               },
               {
-                "id": "0-jour-ouvre-le-week-end-ne-compte-pas-ca0f98ba",
-                "libelle": "0 jour ouvré : le week-end ne compte pas"
+                "id": "2-jours-ouvres-2be741c0",
+                "libelle": "2 jours ouvrés"
               }
             ]
           }
@@ -3978,6 +3970,10 @@
               {
                 "id": "jours-calendaires-pour-ouvres",
                 "libelle": "Soustraire deux dates quand le contrat compte des jours ouvrés."
+              },
+              {
+                "id": "bornes-comptees-dans-le-delai",
+                "libelle": "Prendre NB.JOURS.OUVRES tel quel pour un délai : il compte le jour de départ et le jour d’arrivée, d’où le − 1."
               }
             ]
           }
@@ -3996,8 +3992,8 @@
                 "libelle": "3 jours ouvrés"
               },
               {
-                "id": "0-jour-ouvre-le-week-end-ne-compte-pas-ca0f98ba",
-                "libelle": "0 jour ouvré : le week-end ne compte pas"
+                "id": "2-jours-ouvres-2be741c0",
+                "libelle": "2 jours ouvrés"
               }
             ]
           }
@@ -4051,8 +4047,8 @@
                   },
                   {
                     "kind": "property",
-                    "title": "Taux de marge : un ratio de sommes",
-                    "text": "Taux de marge = SOMME(marge) ÷ SOMME(CA), jamais la moyenne des taux de chaque ligne : une petite ligne très margée pèserait autant qu’une grosse commande. SOMMEPROD multiplie terme à terme puis additionne : elle calcule une marge totale sans colonne intermédiaire."
+                    "title": "Taux de marque : un ratio de sommes",
+                    "text": "Taux de marque = SOMME(marge) ÷ SOMME(CA HT), jamais la moyenne des taux de chaque ligne : une petite ligne très margée pèserait autant qu’une grosse commande. Le taux de marge, lui, divise la marge par le coût d’achat HT : écrivez toujours le dénominateur. SOMMEPROD multiplie terme à terme puis additionne : elle calcule une marge totale sans colonne intermédiaire."
                   },
                   {
                     "kind": "example",
@@ -4129,7 +4125,7 @@
               "donnees": {
                 "question": {
                   "id": "b3-01-a2-taux-marge",
-                  "enonce": "Quel est le taux de marge du réseau, de janvier à septembre 2026 ? En %, sans le symbole, arrondi au dixième de point.",
+                  "enonce": "Quel est le taux de marque du réseau (marge ÷ CA HT), de janvier à septembre 2026 ? En %, sans le symbole, arrondi au dixième de point.",
                   "unite": "%",
                   "metadonnees": {
                     "concepts": ["calcul-sur-dates", "indicateur-statistique"],
@@ -4143,7 +4139,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 1 min · travail 7 min · correction 2 min\n• Réflexion : faire dire en quelle unité le contrat compte les délais avant d’écrire la colonne.\n• Pièges : soustraire les dates ; résumer par la moyenne ; faire la moyenne des taux de ligne.\n• Corriger question par question ; sur la médiane, trier les délais de Strasbourg pour montrer les ruptures en bas de colonne.\n• Défi : JOURSEM(B2;2)=5 repère un vendredi ; dans Clients, DATEDIF(E2;DATE(2026;9;30);\"m\") donne l’ancienneté en mois au 30 septembre 2026.\n• Transition : « Et si l’export d’octobre arrive ? Un vote. »",
+        "notes": "• Temps : réflexion 1 min · travail 7 min · correction 2 min\n• Réflexion : faire dire en quelle unité le contrat compte les délais avant d’écrire la colonne.\n• Pièges : soustraire les dates ; résumer par la moyenne ; faire la moyenne des taux de ligne ; diviser la marge par le coût d’achat.\n• Corriger question par question ; sur la médiane, trier les délais de Strasbourg pour montrer les ruptures en bas de colonne.\n• Défi : JOURSEM(B2;2)=5 repère un vendredi ; dans Clients, DATEDIF(E2;DATE(2026;9;30);\"m\") donne l’ancienneté en mois au 30 septembre 2026.\n• Transition : « Et si l’export d’octobre arrive ? Un vote. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [
@@ -4178,6 +4174,10 @@
               {
                 "id": "moyenne-simple-des-taux",
                 "libelle": "Faire la moyenne simple de taux au lieu de les pondérer par leurs bases."
+              },
+              {
+                "id": "marque-confondue-avec-marge",
+                "libelle": "Confondre le taux de marque (marge ÷ prix de vente HT) et le taux de marge (marge ÷ coût d’achat HT)."
               }
             ]
           }
@@ -4195,7 +4195,7 @@
           },
           {
             "id": "b3-01-a2-taux-marge",
-            "enonce": "Quel est le taux de marge du réseau, de janvier à septembre 2026 ? En %, sans le symbole, arrondi au dixième de point.",
+            "enonce": "Quel est le taux de marque du réseau (marge ÷ CA HT), de janvier à septembre 2026 ? En %, sans le symbole, arrondi au dixième de point.",
             "options": null
           }
         ],
@@ -4211,7 +4211,7 @@
           },
           {
             "reference": "b3-01-a2-taux-marge",
-            "texte": "Marge de la période ÷ CA de la période : 32,0 % de janvier à septembre 2026. La moyenne des taux de marge de chaque ligne donne 35,4 % : une petite ligne très margée y pèse autant qu’une grosse commande."
+            "texte": "Marge de la période ÷ CA HT de la période : un taux de marque de 32,0 % de janvier à septembre 2026. La moyenne des taux de chaque ligne donne 35,4 % : une petite ligne très margée y pèse autant qu’une grosse commande. Divisée par le coût d’achat, la même marge donne 47,0 % : c’est le taux de marge, un autre indicateur."
           }
         ]
       },
@@ -4467,8 +4467,8 @@
             "bonneReponse": "T4 2025",
             "confusions": [
               {
-                "id": "periode-mal-delimitee",
-                "libelle": "Agréger une autre période que celle de la question, toute la table, un filtre resté actif ou deux années réunies."
+                "id": "tcd-filtre-ou-dates-mal-groupees",
+                "libelle": "Lire un TCD dont un filtre est resté actif ou dont les dates sont groupées sans les années : il ampute ou mêle les périodes."
               }
             ]
           }
@@ -4579,12 +4579,12 @@
                     "tone": "teal"
                   }
                 ],
-                "axisRanges": [[49000, 60000]],
-                "axisLabels": ["49 000 à 60 000 €"],
+                "axisRanges": [[47500, 60000]],
+                "axisLabels": ["47 500 à 60 000 €"],
                 "unit": "€",
                 "source": "Export des ventes de Norvane Équipement, CA arrondi à la centaine d’euros (données fictives).",
                 "kind": "bars",
-                "description": "Diagramme en barres : CA HT 2025 de Rennes et de Nantes, axe vertical de 49 000 € à 60 000 € ; barres de 51 600 € et 59 500 €."
+                "description": "Diagramme en barres : CA HT 2025 de Rennes et de Nantes, axe vertical de 47 500 € à 60 000 € ; barres de 51 600 € et 59 500 €."
               }
             },
             "metadonnees": {
@@ -4631,7 +4631,7 @@
         },
         "pieceJointe": {
           "libelle": "Classeur de reprise de l’acte 3",
-          "fichier": "/assets/cours/b3-01/B3-01_reprise_acte_3.dccca981.xlsx"
+          "fichier": "/assets/cours/b3-01/B3-01_reprise_acte_3.553ec6f4.xlsx"
         },
         "notes": "• Ouvrir d’abord le classeur de reprise de l’acte 3, tous, y compris ceux qui ont tout réussi.\n• Temps « réfléchir » du niveau 5 : vote non noté, 1 min de vote et 1 min de révélation.\n• Révélation : redessiner au tableau les deux barres depuis zéro.",
         "diffusion": "seance",
@@ -4672,7 +4672,7 @@
           "type": "revelation",
           "titre": "Un axe tronqué grossit l’écart",
           "lignes": [
-            "L’axe part de 49 000 € : les barres ne montrent que ce qui dépasse ce seuil.",
+            "L’axe part de 47 500 € : les barres ne montrent que ce qui dépasse ce seuil.",
             "Rennes a vendu 51 600 €, Nantes 59 500 € : environ 13 % de moins, pas trois fois moins.",
             "Depuis zéro, les deux barres ont presque la même hauteur. Un axe tronqué se signale, ou ne se montre pas à un comité."
           ]
@@ -4788,7 +4788,7 @@
               },
               {
                 "id": "histogramme",
-                "libelle": "Histogramme"
+                "libelle": "Histogramme (répartition par tranches)"
               },
               {
                 "id": "nuage",
@@ -4808,7 +4808,7 @@
             }
           }
         },
-        "notes": "• Temps : réflexion 1 min · travail 2 min · correction 1 min\n• Réflexion : faire dire, pour chaque question, si elle compare, suit le temps, décompose, répartit ou relie.\n• Pièges : un camembert pour une évolution ; un graphique choisi avant la question.\n• Corriger en partant de la carte la plus ratée (taux d’erreur au pupitre).\n• Transition : « Le graphique de la direction : exercice 9. »",
+        "notes": "• Temps : réflexion 1 min · travail 2 min · correction 1 min\n• Réflexion : faire dire, pour chaque question, si elle compare, suit le temps, décompose, répartit ou relie.\n• Pièges : une évolution rangée en barres ; un histogramme confondu avec des barres ; un graphique choisi avant la question.\n• Corriger en partant de la carte la plus ratée (taux d’erreur au pupitre).\n• Transition : « Le graphique de la direction : exercice 9. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -4862,7 +4862,7 @@
           },
           {
             "reference": "courbe",
-            "texte": "Suivre le CA mois par mois : une courbe. Un camembert ne montre pas le temps."
+            "texte": "Suivre le CA mois par mois : une courbe, qui relie les mois dans l’ordre. Des barres comparent, elles ne montrent pas une tendance."
           },
           {
             "reference": "empile",
@@ -4890,7 +4890,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 9 — CA et objectif par agence",
-          "consigne": "Essentiel, dans le classeur de reprise de l’acte 3 : une synthèse par agence, de janvier à septembre 2026 : le CA cumulé par SOMME.SI.ENS sur T_Commandes, l’objectif cumulé par SOMME.SI.ENS sur Objectifs, le taux d’atteinte. Puis un graphique en barres groupées CA et objectif, avec un titre qui conclut, une légende et un axe depuis zéro. Si vous avez Excel 365, le modèle de données relie les deux tables dans un TCD. Défi : les courbes du CA mensuel 2025 et 2026, superposées.",
+          "consigne": "Essentiel, dans le classeur de reprise de l’acte 3 : une synthèse par agence, de janvier à septembre 2026 : le CA cumulé par SOMME.SI.ENS sur T_Commandes, l’objectif cumulé par SOMME.SI.ENS sur Objectifs, le taux d’atteinte. Puis un graphique en barres groupées CA et objectif, avec un titre qui conclut, une légende et un axe depuis zéro. Si vous avez Excel 365, mettez Objectifs sous forme de tableau, puis reliez T_Commandes et Objectifs à Agences par agence_id dans le modèle de données : un TCD lit alors le CA et l’objectif côte à côte. Défi : les courbes du CA mensuel 2025 et 2026, superposées.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -4991,16 +4991,20 @@
             "enonce": "Nadia a trente secondes avant le comité. Que doit-elle voir d’abord ?",
             "options": [
               {
-                "id": "le-tableau-de-toutes-les-lignes-d52eeee3",
-                "libelle": "Le tableau de toutes les lignes"
-              },
-              {
                 "id": "dix-graphiques-9bc9ca67",
                 "libelle": "Dix graphiques"
               },
               {
+                "id": "quatre-chiffres-sans-comparaison-2f8e645d",
+                "libelle": "Quatre chiffres, sans comparaison"
+              },
+              {
                 "id": "quatre-chiffres-chacun-avec-sa-comparais-da3f031e",
                 "libelle": "Quatre chiffres, chacun avec sa comparaison"
+              },
+              {
+                "id": "le-tableau-de-toutes-les-lignes-d52eeee3",
+                "libelle": "Le tableau de toutes les lignes"
               }
             ]
           }
@@ -5014,12 +5018,16 @@
             "bonneReponse": "Quatre chiffres, chacun avec sa comparaison",
             "confusions": [
               {
-                "id": "kpi-sans-contexte",
-                "libelle": "Afficher un chiffre seul, sans objectif ni comparaison qui dise s’il est bon."
+                "id": "detail-au-lieu-de-synthese",
+                "libelle": "Montrer le détail des lignes là où la décision attend quelques indicateurs, chacun avec sa comparaison."
               },
               {
                 "id": "graphique-sans-question",
                 "libelle": "Choisir un graphique avant la question à laquelle il doit répondre."
+              },
+              {
+                "id": "kpi-sans-contexte",
+                "libelle": "Afficher un chiffre seul, sans objectif ni comparaison qui dise s’il est bon."
               }
             ]
           }
@@ -5030,16 +5038,20 @@
             "enonce": "Nadia a trente secondes avant le comité. Que doit-elle voir d’abord ?",
             "options": [
               {
-                "id": "le-tableau-de-toutes-les-lignes-d52eeee3",
-                "libelle": "Le tableau de toutes les lignes"
-              },
-              {
                 "id": "dix-graphiques-9bc9ca67",
                 "libelle": "Dix graphiques"
               },
               {
+                "id": "quatre-chiffres-sans-comparaison-2f8e645d",
+                "libelle": "Quatre chiffres, sans comparaison"
+              },
+              {
                 "id": "quatre-chiffres-chacun-avec-sa-comparais-da3f031e",
                 "libelle": "Quatre chiffres, chacun avec sa comparaison"
+              },
+              {
+                "id": "le-tableau-de-toutes-les-lignes-d52eeee3",
+                "libelle": "Le tableau de toutes les lignes"
               }
             ]
           }
@@ -5049,7 +5061,7 @@
           "titre": "Quatre chiffres en contexte, le détail sur demande",
           "lignes": [
             "En trente secondes, on lit quatre chiffres, pas quatre mille lignes ni dix graphiques.",
-            "Chaque chiffre porte sa comparaison : l’objectif, ou la même période de l’an passé.",
+            "Chaque chiffre porte sa comparaison : l’objectif, ou la même période de l’an passé. Seul, un chiffre ne dit ni bien ni mal.",
             "Le détail vient ensuite, sur demande : graphiques, TCD et segments."
           ]
         }
@@ -5081,7 +5093,7 @@
                     "title": "Ce qu’il contient",
                     "text": "Une page, lisible en trente secondes.",
                     "steps": [
-                      "Quatre indicateurs clés, chacun avec son contexte : l’objectif, ou la même période de l’an passé.",
+                      "Quatre indicateurs clés, chacun avec son contexte : l’objectif cumulé sur les mêmes mois, ou la même période de l’an passé.",
                       "Deux graphiques, chacun avec un titre qui conclut.",
                       "Des segments : un clic filtre tous les TCD connectés et leurs graphiques.",
                       "Les anomalies signalées par mise en forme conditionnelle."
@@ -5125,7 +5137,7 @@
         "donnees": {
           "exemple": {
             "id": "b3-01-a3-exemple-mfc",
-            "enonce": "Une feuille de synthèse : une agence par ligne à partir de la ligne 5, le taux d’atteinte en colonne E ; à côté, deux TCD, le CA par mois et la marge par agence. Faites ressortir les agences en retard, puis reliez un segment aux deux TCD.",
+            "enonce": "Une feuille de synthèse : une agence par ligne à partir de la ligne 5, le taux d’atteinte en colonne E ; à côté, deux TCD, le CA par mois et la marge par agence. Faites ressortir les agences sous 95 % de leur objectif, puis reliez un segment aux deux TCD.",
             "etapes": [
               {
                 "id": "mfc",
@@ -5171,7 +5183,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 10 — Le tableau de bord Direction",
-          "consigne": "Essentiel, dans un onglet Dashboard : quatre indicateurs (CA cumulé 2026, évolution par rapport à la même période de 2025, taux de marge, lignes en quarantaine), le graphique de l’exercice 9, un TCD de la marge par agence avec une mise en forme conditionnelle, et deux segments connectés à ce TCD, region et categorie. Défi : une mise en page A4 paysage, prête à imprimer.",
+          "consigne": "Essentiel, dans un onglet Dashboard : quatre indicateurs (CA cumulé 2026, évolution par rapport à la même période de 2025, taux de marque, lignes en quarantaine), le graphique de l’exercice 9, un TCD de la marge par agence avec une mise en forme conditionnelle, et deux segments connectés à ce TCD, region et categorie. Défi : une mise en page A4 paysage, prête à imprimer.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -5214,7 +5226,7 @@
               "donnees": {
                 "question": {
                   "id": "b3-01-a3-marge-marseille",
-                  "enonce": "Quel est le taux de marge de Marseille (AG09), de janvier à septembre 2026 ? En %, sans le symbole, arrondi au dixième de point.",
+                  "enonce": "Quel est le taux de marque de Marseille (AG09), marge ÷ CA HT, de janvier à septembre 2026 ? En %, sans le symbole, arrondi au dixième de point.",
                   "unite": "%",
                   "metadonnees": {
                     "concepts": ["tableau-de-bord", "indicateur-statistique"],
@@ -5245,7 +5257,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 1 min · travail 12 min · correction 2 min\n• Réflexion : faire dire les quatre indicateurs et la comparaison de chacun avant de construire.\n• Annoncer le palier défi aux plus rapides : il se corrige oralement, sans note.\n• Pièges : toute la table au lieu de 2026 ; neuf mois comparés à douze ; moyenne des taux ; lignes douteuses supprimées.\n• Corriger question par question, en commençant par la moins réussie (score sous chaque correction).\n• Projeter un tableau de bord réussi : quatre indicateurs, chacun avec sa comparaison.\n• Transition : « Ce tableau de bord raconte quatre histoires : vos recommandations. »",
+        "notes": "• Temps : réflexion 1 min · travail 12 min · correction 2 min\n• Réflexion : faire dire les quatre indicateurs et la comparaison de chacun avant de construire.\n• Annoncer le palier défi aux plus rapides : il se corrige oralement, sans note.\n• Pièges : toute la table au lieu de 2026 ; neuf mois comparés à douze ; moyenne des taux ; marge divisée par le coût d’achat ; lignes douteuses supprimées.\n• Corriger question par question, en commençant par la moins réussie (score sous chaque correction).\n• Projeter un tableau de bord réussi : quatre indicateurs, chacun avec sa comparaison.\n• Transition : « Ce tableau de bord raconte quatre histoires : vos recommandations. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [
@@ -5255,7 +5267,7 @@
             "confusions": [
               {
                 "id": "periode-mal-delimitee",
-                "libelle": "Agréger une autre période que celle de la question, toute la table, un filtre resté actif ou deux années réunies."
+                "libelle": "Agréger une autre période que celle de la question : la table entière au lieu des seuls mois demandés."
               }
             ]
           },
@@ -5276,6 +5288,10 @@
               {
                 "id": "moyenne-simple-des-taux",
                 "libelle": "Faire la moyenne simple de taux au lieu de les pondérer par leurs bases."
+              },
+              {
+                "id": "marque-confondue-avec-marge",
+                "libelle": "Confondre le taux de marque (marge ÷ prix de vente HT) et le taux de marge (marge ÷ coût d’achat HT)."
               }
             ]
           },
@@ -5303,7 +5319,7 @@
           },
           {
             "id": "b3-01-a3-marge-marseille",
-            "enonce": "Quel est le taux de marge de Marseille (AG09), de janvier à septembre 2026 ? En %, sans le symbole, arrondi au dixième de point.",
+            "enonce": "Quel est le taux de marque de Marseille (AG09), marge ÷ CA HT, de janvier à septembre 2026 ? En %, sans le symbole, arrondi au dixième de point.",
             "options": null
           },
           {
@@ -5324,7 +5340,7 @@
           },
           {
             "reference": "b3-01-a3-marge-marseille",
-            "texte": "Marge de Marseille ÷ CA de Marseille, de janvier à septembre 2026 : 26,9 %. La moyenne des taux de chaque ligne donne 28,7 % : les petites lignes y pèsent autant que les grosses."
+            "texte": "Marge de Marseille ÷ CA HT de Marseille, de janvier à septembre 2026 : un taux de marque de 26,9 %. La moyenne des taux de chaque ligne donne 28,7 % : les petites lignes y pèsent autant que les grosses. Divisée par le coût d’achat, la même marge donne 36,9 % : c’est le taux de marge, un autre indicateur."
           },
           {
             "reference": "b3-01-a3-quarantaine",
@@ -5380,7 +5396,7 @@
         "explications": [
           {
             "reference": "marseille",
-            "texte": "Marseille : la marge fond. Taux de marge de 32,3 % de janvier à septembre 2025, 26,9 % sur la même période de 2026, alors que le CA dépasse l’objectif. Cause : depuis janvier, le commercial C26 accorde des remises de 18 à 30 %, quand le réseau reste entre 0 et 10 %. Action : encadrer les remises, au-delà de 10 % sur validation de la direction."
+            "texte": "Marseille : la marge fond. Taux de marque de 32,3 % de janvier à septembre 2025, 26,9 % sur la même période de 2026, alors que le CA dépasse l’objectif. Cause : depuis janvier, le commercial C26 accorde des remises de 18 à 30 %, quand le réseau reste entre 0 et 10 %. Action : encadrer les remises, au-delà de 10 % sur validation de la direction."
           },
           {
             "reference": "rennes",
@@ -5392,7 +5408,7 @@
           },
           {
             "reference": "strasbourg",
-            "texte": "Strasbourg : les retards. Délai médian de 8 jours ouvrés en 2026, contre 2 en 2025, et des ruptures livrées deux à trois mois plus tard. Le contrat promet 5 jours ouvrés. Cause : le décrochage date de mars 2026 et touche toutes les catégories, signe d’un problème de transport à l’agence, aggravé par des ruptures de stock de mars à juillet. Action : traiter le transport et le stock de Strasbourg avant de perdre ses clients."
+            "texte": "Strasbourg : les retards. Délai médian de 8 jours ouvrés en 2026, contre 2 en 2025, et des ruptures livrées environ deux mois plus tard. Le contrat promet 5 jours ouvrés. Cause : le décrochage date de mars 2026 et touche toutes les catégories, signe d’un problème de transport à l’agence, aggravé par des ruptures de stock d’avril à juillet. Action : traiter le transport et le stock de Strasbourg avant de perdre ses clients."
           }
         ]
       },
@@ -5593,26 +5609,33 @@
       "commandes-comptees-pour-lignes": "B3-01-A1-05-COURS-DONNEE",
       "type-de-variable-confondu": "B3-01-A1-05-COURS-DONNEE",
       "libelle-pris-pour-cle": "B3-01-A1-06-COURS-RELATIONS",
+      "cle-prise-pour-categorie": "B3-01-A1-06-COURS-RELATIONS",
+      "part-douteuse-estimee-sans-mesure": "B3-01-A1-10-COURS-GRILLE",
       "suspect-corrige-sans-validation": "B3-01-A1-10-COURS-GRILLE",
+      "correction-certaine-renvoyee-a-un-humain": "B3-01-A1-10-COURS-GRILLE",
       "suppression-au-lieu-de-signalement": "B3-01-A1-10-COURS-GRILLE",
       "texte-pris-pour-nombre": "B3-01-A1-11-COURS-OUTILS",
       "casse-non-normalisee": "B3-01-A1-11-COURS-OUTILS",
       "espaces-non-supprimes": "B3-01-A1-11-COURS-OUTILS",
       "doublons-supprimes-sur-une-colonne": "B3-01-A1-11-COURS-OUTILS",
+      "famille-de-probleme-mal-nommee": "B3-01-A2-02-FAMILLES",
       "plage-recherche-non-figee": "B3-01-A2-03-COURS-CHERCHER-AGREGER",
       "critere-mal-ecrit": "B3-01-A2-03-COURS-CHERCHER-AGREGER",
       "periode-mal-delimitee": "B3-01-A2-03-COURS-CHERCHER-AGREGER",
       "jours-calendaires-pour-ouvres": "B3-01-A2-06-COURS-TEMPS-STATS",
+      "bornes-comptees-dans-le-delai": "B3-01-A2-06-COURS-TEMPS-STATS",
       "valeur-extreme-ignoree": "B3-01-A2-06-COURS-TEMPS-STATS",
       "moyenne-simple-des-taux": "B3-01-A2-06-COURS-TEMPS-STATS",
+      "marque-confondue-avec-marge": "B3-01-A2-06-COURS-TEMPS-STATS",
       "plage-fixe-au-lieu-de-tableau": "B3-01-A2-09-COURS-TCD",
       "pourcentage-du-mauvais-total": "B3-01-A2-09-COURS-TCD",
+      "tcd-filtre-ou-dates-mal-groupees": "B3-01-A2-09-COURS-TCD",
       "graphique-sans-question": "B3-01-A3-03-COURS-GRAPHIQUES",
-      "camembert-pour-evolution": "B3-01-A3-03-COURS-GRAPHIQUES",
       "axe-tronque-lu-comme-ecart": "B3-01-A3-03-COURS-GRAPHIQUES",
       "objectif-annuel-pour-cumul": "B3-01-A3-07-COURS-DASHBOARD",
       "evolution-sur-annee-pleine": "B3-01-A3-07-COURS-DASHBOARD",
-      "kpi-sans-contexte": "B3-01-A3-07-COURS-DASHBOARD"
+      "kpi-sans-contexte": "B3-01-A3-07-COURS-DASHBOARD",
+      "detail-au-lieu-de-synthese": "B3-01-A3-07-COURS-DASHBOARD"
     }
   },
   "catalogue": {
@@ -5679,7 +5702,7 @@
         },
         "pieceJointe": {
           "libelle": "Export des ventes Norvane (classeur Excel)",
-          "fichier": "/assets/cours/b3-01/B3-01_export_ventes.0e0f6342.xlsx"
+          "fichier": "/assets/cours/b3-01/B3-01_export_ventes.ab0980c3.xlsx"
         }
       },
       {
@@ -5913,7 +5936,7 @@
                     "title": "La grille 2 × 2",
                     "text": "On croise la certitude (faux, suspect) et le correcteur (automatique, humain).",
                     "steps": [
-                      "Faux · automatique : on corrige par formule, en gardant la trace (casse, espaces, nombre en texte, doublon exact).",
+                      "Faux · automatique : on corrige par formule dans une nouvelle colonne, en gardant la trace (casse, espaces, nombre en texte) ; le doublon exact se retire par Supprimer les doublons, sur une copie.",
                       "Faux · humain : on signale et on demande la bonne valeur (produit inconnu, commercial absent).",
                       "Suspect · humain : on signale et on demande s’il s’agit d’une erreur.",
                       "Suspect · automatique : case vide."
@@ -6262,8 +6285,8 @@
                   },
                   {
                     "kind": "property",
-                    "title": "Taux de marge : un ratio de sommes",
-                    "text": "Taux de marge = SOMME(marge) ÷ SOMME(CA), jamais la moyenne des taux de chaque ligne : une petite ligne très margée pèserait autant qu’une grosse commande. SOMMEPROD multiplie terme à terme puis additionne : elle calcule une marge totale sans colonne intermédiaire."
+                    "title": "Taux de marque : un ratio de sommes",
+                    "text": "Taux de marque = SOMME(marge) ÷ SOMME(CA HT), jamais la moyenne des taux de chaque ligne : une petite ligne très margée pèserait autant qu’une grosse commande. Le taux de marge, lui, divise la marge par le coût d’achat HT : écrivez toujours le dénominateur. SOMMEPROD multiplie terme à terme puis additionne : elle calcule une marge totale sans colonne intermédiaire."
                   },
                   {
                     "kind": "example",
@@ -6403,12 +6426,12 @@
                     "tone": "teal"
                   }
                 ],
-                "axisRanges": [[49000, 60000]],
-                "axisLabels": ["49 000 à 60 000 €"],
+                "axisRanges": [[47500, 60000]],
+                "axisLabels": ["47 500 à 60 000 €"],
                 "unit": "€",
                 "source": "Export des ventes de Norvane Équipement, CA arrondi à la centaine d’euros (données fictives).",
                 "kind": "bars",
-                "description": "Diagramme en barres : CA HT 2025 de Rennes et de Nantes, axe vertical de 49 000 € à 60 000 € ; barres de 51 600 € et 59 500 €."
+                "description": "Diagramme en barres : CA HT 2025 de Rennes et de Nantes, axe vertical de 47 500 € à 60 000 € ; barres de 51 600 € et 59 500 €."
               }
             },
             "metadonnees": {
@@ -6533,7 +6556,7 @@
                     "title": "Ce qu’il contient",
                     "text": "Une page, lisible en trente secondes.",
                     "steps": [
-                      "Quatre indicateurs clés, chacun avec son contexte : l’objectif, ou la même période de l’an passé.",
+                      "Quatre indicateurs clés, chacun avec son contexte : l’objectif cumulé sur les mêmes mois, ou la même période de l’an passé.",
                       "Deux graphiques, chacun avec un titre qui conclut.",
                       "Des segments : un clic filtre tous les TCD connectés et leurs graphiques.",
                       "Les anomalies signalées par mise en forme conditionnelle."

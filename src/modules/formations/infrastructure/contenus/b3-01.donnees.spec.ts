@@ -287,6 +287,13 @@ describe('jeu Norvane du B3-01', () => {
     );
   });
 
+  it('porte au brut les deux cellules que cite l’exemple A1-12 : E783 entourée d’espaces, L2971 en texte', () => {
+    const aLaLigne = (rang: number): Ligne => commandesBrutes[rang - 2];
+
+    expect(valeurDe(aLaLigne(783), 'ville')).toBe(' Bordeaux ');
+    expect(valeurDe(aLaLigne(2971), 'ca_ht')).toBe('1 150,00 €');
+  });
+
   it('ne laisse trouver sans $ qu’une ligne de l’Ouest, commandée en 2025', () => {
     const agences = ongletDe(jeu.reprise1, 'Agences').lignes;
     const rangs = agences.map((agence) => texteDe(agence, 'agence_id'));
@@ -322,11 +329,11 @@ describe('jeu Norvane du B3-01', () => {
       expect(extreme((a) => indicateurs[a].evolution, 'max')).toBe('AG01');
     });
 
-    it('fait chuter le taux de marge de Marseille plus que partout ailleurs, au-dessus de son objectif', () => {
+    it('fait chuter le taux de marque de Marseille plus que partout ailleurs, au-dessus de son objectif', () => {
       expect(
         extreme(
           (a) =>
-            indicateurs[a].tauxDeMarge2026 - indicateurs[a].tauxDeMarge2025,
+            indicateurs[a].tauxDeMarque2026 - indicateurs[a].tauxDeMarque2025,
           'min',
         ),
       ).toBe('AG09');
@@ -378,7 +385,7 @@ describe('jeu Norvane du B3-01', () => {
       }
     });
 
-    it('fait décrocher Strasbourg en mars 2026 dans toutes ses catégories, ruptures de mars à juillet', () => {
+    it('fait décrocher Strasbourg en mars 2026 dans toutes ses catégories, ruptures d’avril à juillet livrées environ deux mois plus tard', () => {
       const de2026 = lignesDe('AG12', 2026);
       const medianeDe = (lignes: readonly Ligne[]): number =>
         mediane(lignes.map(delaiOuvreDe));
@@ -395,12 +402,15 @@ describe('jeu Norvane du B3-01', () => {
           ),
         ).toBeGreaterThanOrEqual(6);
       }
-      expect(ruptures.length).toBeGreaterThan(0);
-      expect(
-        ruptures.filter(
-          (ligne) => periodeDe(ligne).mois < 3 || periodeDe(ligne).mois > 7,
-        ),
-      ).toEqual([]);
+      expect(new Set(ruptures.map((ligne) => periodeDe(ligne).mois))).toEqual(
+        new Set([4, 5, 6, 7]),
+      );
+      for (const ligne of ruptures) {
+        const joursCalendaires =
+          nombreDe(ligne, 'date_livraison') - nombreDe(ligne, 'date_commande');
+        expect(joursCalendaires).toBeGreaterThanOrEqual(50);
+        expect(joursCalendaires).toBeLessThanOrEqual(75);
+      }
     });
   });
 

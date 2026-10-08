@@ -33,13 +33,13 @@ export const ACTE_3: moteur.Acte = [
           tone: 'teal',
         },
       ],
-      axisRanges: [[49000, 60000]],
-      axisLabels: ['49 000 à 60 000 €'],
+      axisRanges: [[47500, 60000]],
+      axisLabels: ['47 500 à 60 000 €'],
       unit: '€',
       source:
         'Export des ventes de Norvane Équipement, CA arrondi à la centaine d’euros (données fictives).',
       description:
-        'Diagramme en barres : CA HT 2025 de Rennes et de Nantes, axe vertical de 49 000 € à 60 000 € ; barres de 51 600 € et 59 500 €.',
+        'Diagramme en barres : CA HT 2025 de Rennes et de Nantes, axe vertical de 47 500 € à 60 000 € ; barres de 51 600 € et 59 500 €.',
     },
   ),
   {
@@ -77,7 +77,7 @@ export const ACTE_3: moteur.Acte = [
         type: 'revelation',
         titre: 'Un axe tronqué grossit l’écart',
         lignes: [
-          'L’axe part de 49 000 € : les barres ne montrent que ce qui dépasse ce seuil.',
+          'L’axe part de 47 500 € : les barres ne montrent que ce qui dépasse ce seuil.',
           'Rennes a vendu 51 600 €, Nantes 59 500 € : environ 13 % de moins, pas trois fois moins.',
           'Depuis zéro, les deux barres ont presque la même hauteur. Un axe tronqué se signale, ou ne se montre pas à un comité.',
         ],
@@ -139,7 +139,7 @@ export const ACTE_3: moteur.Acte = [
       notes: moteur.puces(
         'Temps : réflexion 1 min · travail 2 min',
         'Réflexion : faire dire, pour chaque question, si elle compare, suit le temps, décompose, répartit ou relie.',
-        'Pièges : un camembert pour une évolution ; un graphique choisi avant la question.',
+        'Pièges : une évolution rangée en barres ; un histogramme confondu avec des barres ; un graphique choisi avant la question.',
       ),
       proprietes: {
         modalite: 'binome',
@@ -154,7 +154,7 @@ export const ACTE_3: moteur.Acte = [
             ['barres', 'Barres'],
             ['courbe', 'Courbe'],
             ['empile', 'Barres empilées'],
-            ['histogramme', 'Histogramme'],
+            ['histogramme', 'Histogramme (répartition par tranches)'],
             ['nuage', 'Nuage de points'],
             ['kpi', 'Indicateur et son contexte'],
           ],
@@ -170,7 +170,7 @@ export const ACTE_3: moteur.Acte = [
               id: 'ca-mois-par-mois',
               libelle: 'Comment évolue le CA, mois par mois ?',
               categorie: 'courbe',
-              confusion: 'camembert-pour-evolution',
+              confusion: 'graphique-sans-question',
               justification: 'on suit une mesure dans le temps',
             },
             {
@@ -219,7 +219,7 @@ export const ACTE_3: moteur.Acte = [
       ],
       [
         'courbe',
-        'Suivre le CA mois par mois : une courbe. Un camembert ne montre pas le temps.',
+        'Suivre le CA mois par mois : une courbe, qui relie les mois dans l’ordre. Des barres comparent, elles ne montrent pas une tendance.',
       ],
       [
         'empile',
@@ -255,7 +255,7 @@ export const ACTE_3: moteur.Acte = [
       proprietes: {
         intitule: 'Exercice 9 — CA et objectif par agence',
         consigne:
-          'Essentiel, dans le classeur de reprise de l’acte 3 : une synthèse par agence, de janvier à septembre 2026 : le CA cumulé par SOMME.SI.ENS sur T_Commandes, l’objectif cumulé par SOMME.SI.ENS sur Objectifs, le taux d’atteinte. Puis un graphique en barres groupées CA et objectif, avec un titre qui conclut, une légende et un axe depuis zéro. Si vous avez Excel 365, le modèle de données relie les deux tables dans un TCD. Défi : les courbes du CA mensuel 2025 et 2026, superposées.',
+          'Essentiel, dans le classeur de reprise de l’acte 3 : une synthèse par agence, de janvier à septembre 2026 : le CA cumulé par SOMME.SI.ENS sur T_Commandes, l’objectif cumulé par SOMME.SI.ENS sur Objectifs, le taux d’atteinte. Puis un graphique en barres groupées CA et objectif, avec un titre qui conclut, une légende et un axe depuis zéro. Si vous avez Excel 365, mettez Objectifs sous forme de tableau, puis reliez T_Commandes et Objectifs à Agences par agence_id dans le modèle de données : un TCD lit alors le CA et l’objectif côte à côte. Défi : les courbes du CA mensuel 2025 et 2026, superposées.',
         regime: 'focus',
         ordre: 'fixe',
         questions: [
@@ -316,8 +316,9 @@ export const ACTE_3: moteur.Acte = [
           'Nadia a trente secondes avant le comité. Que doit-elle voir d’abord ?',
           'Quatre chiffres, chacun avec sa comparaison',
           [
-            ['Le tableau de toutes les lignes', 'kpi-sans-contexte'],
+            ['Le tableau de toutes les lignes', 'detail-au-lieu-de-synthese'],
             ['Dix graphiques', 'graphique-sans-question'],
+            ['Quatre chiffres, sans comparaison', 'kpi-sans-contexte'],
           ],
         ),
       ],
@@ -326,7 +327,7 @@ export const ACTE_3: moteur.Acte = [
         titre: 'Quatre chiffres en contexte, le détail sur demande',
         lignes: [
           'En trente secondes, on lit quatre chiffres, pas quatre mille lignes ni dix graphiques.',
-          'Chaque chiffre porte sa comparaison : l’objectif, ou la même période de l’an passé.',
+          'Chaque chiffre porte sa comparaison : l’objectif, ou la même période de l’an passé. Seul, un chiffre ne dit ni bien ni mal.',
           'Le détail vient ensuite, sur demande : graphiques, TCD et segments.',
         ],
       },
@@ -360,7 +361,7 @@ export const ACTE_3: moteur.Acte = [
           title: 'Ce qu’il contient',
           text: 'Une page, lisible en trente secondes.',
           steps: [
-            'Quatre indicateurs clés, chacun avec son contexte : l’objectif, ou la même période de l’an passé.',
+            'Quatre indicateurs clés, chacun avec son contexte : l’objectif cumulé sur les mêmes mois, ou la même période de l’an passé.',
             'Deux graphiques, chacun avec un titre qui conclut.',
             'Des segments : un clic filtre tous les TCD connectés et leurs graphiques.',
             'Les anomalies signalées par mise en forme conditionnelle.',
@@ -396,7 +397,7 @@ export const ACTE_3: moteur.Acte = [
         exemple: {
           id: 'b3-01-a3-exemple-mfc',
           enonce:
-            'Une feuille de synthèse : une agence par ligne à partir de la ligne 5, le taux d’atteinte en colonne E ; à côté, deux TCD, le CA par mois et la marge par agence. Faites ressortir les agences en retard, puis reliez un segment aux deux TCD.',
+            'Une feuille de synthèse : une agence par ligne à partir de la ligne 5, le taux d’atteinte en colonne E ; à côté, deux TCD, le CA par mois et la marge par agence. Faites ressortir les agences sous 95 % de leur objectif, puis reliez un segment aux deux TCD.',
           etapes: [
             {
               id: 'mfc',
@@ -445,12 +446,12 @@ export const ACTE_3: moteur.Acte = [
         'Temps : réflexion 1 min · travail 12 min',
         'Réflexion : faire dire les quatre indicateurs et la comparaison de chacun avant de construire.',
         'Annoncer le palier défi aux plus rapides : il se corrige oralement, sans note.',
-        'Pièges : toute la table au lieu de 2026 ; neuf mois comparés à douze ; moyenne des taux ; lignes douteuses supprimées.',
+        'Pièges : toute la table au lieu de 2026 ; neuf mois comparés à douze ; moyenne des taux ; marge divisée par le coût d’achat ; lignes douteuses supprimées.',
       ),
       proprietes: {
         intitule: 'Exercice 10 — Le tableau de bord Direction',
         consigne:
-          'Essentiel, dans un onglet Dashboard : quatre indicateurs (CA cumulé 2026, évolution par rapport à la même période de 2025, taux de marge, lignes en quarantaine), le graphique de l’exercice 9, un TCD de la marge par agence avec une mise en forme conditionnelle, et deux segments connectés à ce TCD, region et categorie. Défi : une mise en page A4 paysage, prête à imprimer.',
+          'Essentiel, dans un onglet Dashboard : quatre indicateurs (CA cumulé 2026, évolution par rapport à la même période de 2025, taux de marque, lignes en quarantaine), le graphique de l’exercice 9, un TCD de la marge par agence avec une mise en forme conditionnelle, et deux segments connectés à ce TCD, region et categorie. Défi : une mise en page A4 paysage, prête à imprimer.',
         regime: 'focus',
         ordre: 'fixe',
         questions: [
@@ -471,9 +472,9 @@ export const ACTE_3: moteur.Acte = [
           questionChiffree(
             'b3-01-a3-marge-marseille',
             'indicateur-statistique',
-            'Quel est le taux de marge de Marseille (AG09), de janvier à septembre 2026 ?',
+            'Quel est le taux de marque de Marseille (AG09), marge ÷ CA HT, de janvier à septembre 2026 ?',
             '%',
-            ['moyenne-simple-des-taux'],
+            ['moyenne-simple-des-taux', 'marque-confondue-avec-marge'],
           ),
           questionChiffree(
             'b3-01-a3-quarantaine',
@@ -504,7 +505,7 @@ export const ACTE_3: moteur.Acte = [
       ],
       [
         'b3-01-a3-marge-marseille',
-        'Marge de Marseille ÷ CA de Marseille, de janvier à septembre 2026 : 26,9 %. La moyenne des taux de chaque ligne donne 28,7 % : les petites lignes y pèsent autant que les grosses.',
+        'Marge de Marseille ÷ CA HT de Marseille, de janvier à septembre 2026 : un taux de marque de 26,9 %. La moyenne des taux de chaque ligne donne 28,7 % : les petites lignes y pèsent autant que les grosses. Divisée par le coût d’achat, la même marge donne 36,9 % : c’est le taux de marge, un autre indicateur.',
       ],
       [
         'b3-01-a3-quarantaine',
@@ -562,7 +563,7 @@ export const ACTE_3: moteur.Acte = [
     [
       [
         'marseille',
-        'Marseille : la marge fond. Taux de marge de 32,3 % de janvier à septembre 2025, 26,9 % sur la même période de 2026, alors que le CA dépasse l’objectif. Cause : depuis janvier, le commercial C26 accorde des remises de 18 à 30 %, quand le réseau reste entre 0 et 10 %. Action : encadrer les remises, au-delà de 10 % sur validation de la direction.',
+        'Marseille : la marge fond. Taux de marque de 32,3 % de janvier à septembre 2025, 26,9 % sur la même période de 2026, alors que le CA dépasse l’objectif. Cause : depuis janvier, le commercial C26 accorde des remises de 18 à 30 %, quand le réseau reste entre 0 et 10 %. Action : encadrer les remises, au-delà de 10 % sur validation de la direction.',
       ],
       [
         'rennes',
@@ -574,7 +575,7 @@ export const ACTE_3: moteur.Acte = [
       ],
       [
         'strasbourg',
-        'Strasbourg : les retards. Délai médian de 8 jours ouvrés en 2026, contre 2 en 2025, et des ruptures livrées deux à trois mois plus tard. Le contrat promet 5 jours ouvrés. Cause : le décrochage date de mars 2026 et touche toutes les catégories, signe d’un problème de transport à l’agence, aggravé par des ruptures de stock de mars à juillet. Action : traiter le transport et le stock de Strasbourg avant de perdre ses clients.',
+        'Strasbourg : les retards. Délai médian de 8 jours ouvrés en 2026, contre 2 en 2025, et des ruptures livrées environ deux mois plus tard. Le contrat promet 5 jours ouvrés. Cause : le décrochage date de mars 2026 et touche toutes les catégories, signe d’un problème de transport à l’agence, aggravé par des ruptures de stock d’avril à juillet. Action : traiter le transport et le stock de Strasbourg avant de perdre ses clients.',
       ],
     ],
   ),

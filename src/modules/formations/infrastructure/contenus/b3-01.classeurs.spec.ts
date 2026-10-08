@@ -1,3 +1,4 @@
+import { mkdirSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import {
   classeursPublies,
@@ -26,12 +27,22 @@ const CORRIGE_FORMATEUR = join(
   RACINE,
   '.tmp/b3-01/B3-01_corrige_formateur.xlsx',
 );
+const DOSSIER_D_ESSAI = join(RACINE, '.tmp/b3-01/ecriture');
 const DELAI_D_ECRITURE_MS = 120_000;
+const LONGUEUR_DU_SUFFIXE = 8;
 
 const jeu = genererJeuB301(GRAINE_B3_01);
 const publies = classeursPublies(jeu);
+const fichierPublie = (publie: ClasseurAPublier): string =>
+  lireLeManifeste(DOSSIER_DES_CLASSEURS).classeurs.find(
+    ({ role }) => role === publie.role,
+  )?.fichier ?? '';
 const cheminDe = (publie: ClasseurAPublier): string =>
-  join(DOSSIER_DES_CLASSEURS, publie.fichier);
+  join(DOSSIER_DES_CLASSEURS, fichierPublie(publie));
+const nomAttendu = (base: string, empreinte: string): string =>
+  `${base}.${empreinte.slice(0, LONGUEUR_DU_SUFFIXE)}.xlsx`;
+const classeursDuDossier = (dossier: string): Set<string> =>
+  new Set(readdirSync(dossier).filter((nom) => nom.endsWith('.xlsx')));
 
 describe('classeurs du B3-01', () => {
   beforeAll(async () => {
@@ -41,12 +52,19 @@ describe('classeurs du B3-01', () => {
     }
   }, DELAI_D_ECRITURE_MS);
 
-  it('publie les classeurs sous les noms que sert le cours, chacun suffixé de son empreinte', () => {
+  it('publie les classeurs sous les noms que sert le cours, chacun suffixé des huit premiers caractères de l’empreinte de ses octets', () => {
+    const { classeurs } = lireLeManifeste(DOSSIER_DES_CLASSEURS);
+
+    for (const publie of publies) {
+      expect(fichierPublie(publie)).toBe(
+        nomAttendu(publie.base, empreinteDuFichier(cheminDe(publie))),
+      );
+    }
     expect(
       Object.fromEntries(
-        publies.map((publie) => [
-          publie.role,
-          `/assets/cours/b3-01/${publie.fichier}`,
+        classeurs.map(({ role, fichier }) => [
+          role,
+          `/assets/cours/b3-01/${fichier}`,
         ]),
       ),
     ).toEqual(CLASSEURS_B3_01);
@@ -80,12 +98,45 @@ describe('classeurs du B3-01', () => {
     expect(manifeste.classeurs).toEqual(
       publies.map((publie) => ({
         role: publie.role,
-        fichier: publie.fichier,
+        fichier: fichierPublie(publie),
         empreinte: empreinteDuFichier(cheminDe(publie)),
         onglets: publie.onglets,
       })),
     );
   });
+
+  it('ne garde parmi les fixtures aucun classeur hors du manifeste', () => {
+    expect(classeursDuDossier(DOSSIER_DES_CLASSEURS)).toEqual(
+      new Set(publies.map(fichierPublie)),
+    );
+  });
+
+  it(
+    'nomme chaque classeur écrit d’après ses octets et retire ceux d’une écriture précédente',
+    async () => {
+      rmSync(DOSSIER_D_ESSAI, { recursive: true, force: true });
+      mkdirSync(DOSSIER_D_ESSAI, { recursive: true });
+      const perime = 'B3-01_export_ventes.00000000.xlsx';
+      writeFileSync(join(DOSSIER_D_ESSAI, perime), '');
+
+      await ecrireLesClasseurs(jeu, DOSSIER_D_ESSAI);
+      const { classeurs } = lireLeManifeste(DOSSIER_D_ESSAI);
+
+      expect(classeursDuDossier(DOSSIER_D_ESSAI)).toEqual(
+        new Set(classeurs.map(({ fichier }) => fichier)),
+      );
+      for (const { fichier, empreinte } of classeurs) {
+        expect(empreinteDuFichier(join(DOSSIER_D_ESSAI, fichier))).toBe(
+          empreinte,
+        );
+        expect(fichier).toMatch(
+          new RegExp(`\\.${empreinte.slice(0, LONGUEUR_DU_SUFFIXE)}\\.xlsx$`),
+        );
+      }
+      rmSync(DOSSIER_D_ESSAI, { recursive: true, force: true });
+    },
+    DELAI_D_ECRITURE_MS,
+  );
 
   it('fige la ligne d’en-tête de chaque onglet', async () => {
     for (const publie of publies) {
