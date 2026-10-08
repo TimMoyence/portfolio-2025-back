@@ -425,7 +425,7 @@ export function buildPieceJointe(
 ): { libelle: string; fichier: string } {
   return {
     libelle: 'Télécharger l’export des ventes',
-    fichier: '/assets/cours/b3-01/B3-01_export_ventes.xlsx',
+    fichier: '/assets/cours/b3-01/B3-01_export_ventes.0c1d2e3f.xlsx',
     ...overrides,
   };
 }

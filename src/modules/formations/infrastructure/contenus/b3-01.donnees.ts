@@ -121,7 +121,7 @@ export const PIEGES_B3_01: PiegesB301 = {
 };
 
 export const CLASSEURS_B3_01 = {
-  brut: '/assets/cours/b3-01/B3-01_export_ventes.xlsx',
+  brut: '/assets/cours/b3-01/B3-01_export_ventes.0e0f6342.xlsx',
   repriseActe2: '/assets/cours/b3-01/B3-01_reprise_acte_2.e63154db.xlsx',
   repriseActe3: '/assets/cours/b3-01/B3-01_reprise_acte_3.dccca981.xlsx',
 } as const;

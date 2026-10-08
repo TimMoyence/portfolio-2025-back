@@ -110,7 +110,7 @@ function suffixeDe(onglets: readonly EmpreinteDOnglet[]): string {
 }
 
 export function classeursPublies(jeu: JeuB301): readonly ClasseurAPublier[] {
-  const reprise = (
+  const publie = (
     role: RoleDuClasseur,
     base: string,
     classeur: Classeur,
@@ -124,15 +124,10 @@ export function classeursPublies(jeu: JeuB301): readonly ClasseurAPublier[] {
     };
   };
   return [
+    publie('brut', 'B3-01_export_ventes', jeu.brut),
+    publie('repriseActe2', 'B3-01_reprise_acte_2', jeu.reprise1),
     {
-      role: 'brut',
-      fichier: 'B3-01_export_ventes.xlsx',
-      classeur: jeu.brut,
-      onglets: empreintesDes(jeu.brut),
-    },
-    reprise('repriseActe2', 'B3-01_reprise_acte_2', jeu.reprise1),
-    {
-      ...reprise('repriseActe3', 'B3-01_reprise_acte_3', jeu.reprise2),
+      ...publie('repriseActe3', 'B3-01_reprise_acte_3', jeu.reprise2),
       tableau: TABLEAU_DES_COMMANDES,
     },
   ];

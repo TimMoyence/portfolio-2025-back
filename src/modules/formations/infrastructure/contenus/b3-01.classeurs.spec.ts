@@ -41,7 +41,7 @@ describe('classeurs du B3-01', () => {
     }
   }, DELAI_D_ECRITURE_MS);
 
-  it('publie les classeurs sous les noms que sert le cours, reprises suffixées de leur empreinte', () => {
+  it('publie les classeurs sous les noms que sert le cours, chacun suffixé de son empreinte', () => {
     expect(
       Object.fromEntries(
         publies.map((publie) => [
@@ -50,8 +50,8 @@ describe('classeurs du B3-01', () => {
         ]),
       ),
     ).toEqual(CLASSEURS_B3_01);
-    expect(CLASSEURS_B3_01.brut).toBe(
-      '/assets/cours/b3-01/B3-01_export_ventes.xlsx',
+    expect(CLASSEURS_B3_01.brut).toMatch(
+      /^\/assets\/cours\/b3-01\/B3-01_export_ventes\.[0-9a-f]{8}\.xlsx$/,
     );
     expect(CLASSEURS_B3_01.repriseActe2).toMatch(
       /^\/assets\/cours\/b3-01\/B3-01_reprise_acte_2\.[0-9a-f]{8}\.xlsx$/,

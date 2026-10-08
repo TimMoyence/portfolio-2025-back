@@ -144,13 +144,13 @@ rapides sans retarder la correction collective.
 
 | Classeur                                | Servi sur | Contenu                                                                                        |
 | --------------------------------------- | --------- | ---------------------------------------------------------------------------------------------- |
-| `B3-01_export_ventes.xlsx`              | A1-02     | Export brut : `Commandes` sale, `Clients`, `Produits`, `Agences`, `Objectifs`                  |
+| `B3-01_export_ventes.<empreinte>.xlsx`  | A1-02     | Export brut : `Commandes` sale, `Clients`, `Produits`, `Agences`, `Objectifs`                  |
 | `B3-01_reprise_acte_2.<empreinte>.xlsx` | A2-01     | `Commandes` nettoyée (lignes saines seulement), `Quarantaine`, référentiels inchangés          |
 | `B3-01_reprise_acte_3.<empreinte>.xlsx` | A3-02     | Reprise 1 + tableau structuré `T_Commandes` avec région, catégorie, coût, marge, délai, retard |
 
 À l'ouverture des actes 2 et 3, **tout le monde ouvre le classeur de reprise**, y compris ceux
-qui ont tout réussi : les résultats saisis se comparent ainsi à une même base. Les deux classeurs
-de reprise sont publiés sous un nom suffixé de leur empreinte (§ 6.2).
+qui ont tout réussi : les résultats saisis se comparent ainsi à une même base. Les trois classeurs
+sont publiés sous un nom suffixé de leur empreinte (§ 6.2).
 
 Les formules montrées à l'écran s'écrivent sans espace avant `;`, `:` ou `!`. La typographie
 automatique des contenus n'épargne qu'un texte qui commence par `=` : une formule glissée dans une
@@ -269,7 +269,7 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
 - Lundi 12 octobre, 8 h. Nadia Ferrand, directrice commerciale de Norvane Équipement, écrit :
   « Voici l'export des ventes depuis janvier 2025. Qu'est-ce qui ne va pas dans mon réseau ? J'ai
   le comité de direction jeudi. » Mention « Données fictives ».
-- Pièce jointe : `B3-01_export_ventes.xlsx`.
+- Pièce jointe : `B3-01_export_ventes.<empreinte>.xlsx`.
 
 #### A1-03 · `B3-01-A1-03-CARTE` — 2 min · v2 `grid` · catalogue
 
@@ -903,7 +903,9 @@ Diffusion : la pièce jointe suit la diffusion de l'écran. Les deux classeurs d
 portés par des écrans de séance ; comme tout fichier sous `assets/`, ils restent lisibles par qui
 connaît leur adresse. Leur nom porte donc les 8 premiers caractères hexadécimaux de leur empreinte
 (`B3-01_reprise_acte_2.3f9a1c0e.xlsx`), pour qu'on ne les devine pas depuis le nom du classeur
-brut. Le risque résiduel est accepté : les scores sont formatifs. Les trois rendus sont vérifiés
+brut. Le classeur brut porte lui aussi son empreinte, et le contrat des pièces jointes l'exige de
+tout fichier : un classeur corrigé change de nom, et aucun cache ne sert l'ancien. Le risque
+résiduel est accepté : les scores sont formatifs. Les trois rendus sont vérifiés
 côte à côte : un écran de cours est le même en projection, au pupitre et au poste.
 
 ### 6.3 Générateur et classeurs
@@ -949,7 +951,7 @@ v2 `grid`, les familles par v2 `table`.
 
 | Fichier                                 | Rôle                               | Écran | Diffusion |
 | --------------------------------------- | ---------------------------------- | ----- | --------- |
-| `B3-01_export_ventes.xlsx`              | export brut                        | A1-02 | catalogue |
+| `B3-01_export_ventes.<empreinte>.xlsx`  | export brut                        | A1-02 | catalogue |
 | `B3-01_reprise_acte_2.<empreinte>.xlsx` | reprise du début de l'acte 2       | A2-01 | seance    |
 | `B3-01_reprise_acte_3.<empreinte>.xlsx` | reprise du début de l'acte 3       | A3-02 | seance    |
 | `classeurs.manifest.json`               | empreintes des fichiers et onglets | —     | —         |

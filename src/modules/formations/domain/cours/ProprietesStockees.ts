@@ -55,7 +55,7 @@ const cadrageDuRenvoi = z
   .transform(({ extrait }) => (extrait === undefined ? {} : { extrait }));
 
 const FICHIER_DE_PIECE_JOINTE =
-  /^\/assets\/cours\/[a-z0-9-]+\/[A-Za-z0-9_-]+(\.[0-9a-f]{8})?\.(xlsx|csv|pdf)$/;
+  /^\/assets\/cours\/[a-z0-9-]+\/[A-Za-z0-9_-]+\.[0-9a-f]{8}\.(xlsx|csv|pdf)$/;
 
 const pieceJointe = z
   .object({

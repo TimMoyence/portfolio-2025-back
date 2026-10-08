@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "6d9539d22616c8c437fb2b8f50ccffc0a69e0b374a3d50b431eaea6f5c860a76",
+  "empreinte": "24cf90175794847099cc7adf09aead3fac23fdc9b490fed0843b559f0298f3f1",
   "sujet": {
     "id": "b3-01-donnee-brute-decision",
     "titre": "Expert Data : de la donnée brute à la décision",
@@ -92,7 +92,7 @@
         },
         "pieceJointe": {
           "libelle": "Export des ventes Norvane (classeur Excel)",
-          "fichier": "/assets/cours/b3-01/B3-01_export_ventes.xlsx"
+          "fichier": "/assets/cours/b3-01/B3-01_export_ventes.0e0f6342.xlsx"
         }
       },
       {
@@ -2254,7 +2254,7 @@
         },
         "pieceJointe": {
           "libelle": "Export des ventes Norvane (classeur Excel)",
-          "fichier": "/assets/cours/b3-01/B3-01_export_ventes.xlsx"
+          "fichier": "/assets/cours/b3-01/B3-01_export_ventes.0e0f6342.xlsx"
         },
         "notes": "• Lire le courriel à voix haute, puis faire télécharger le classeur depuis le poste.\n• Vérifier qu’il s’ouvre sans réparation et que l’onglet Commandes est visible.\n• Annoncer la séance : six niveaux, deux pauses de 15 minutes, un tableau de bord pour le comité de jeudi.",
         "diffusion": "catalogue",
@@ -5679,7 +5679,7 @@
         },
         "pieceJointe": {
           "libelle": "Export des ventes Norvane (classeur Excel)",
-          "fichier": "/assets/cours/b3-01/B3-01_export_ventes.xlsx"
+          "fichier": "/assets/cours/b3-01/B3-01_export_ventes.0e0f6342.xlsx"
         }
       },
       {

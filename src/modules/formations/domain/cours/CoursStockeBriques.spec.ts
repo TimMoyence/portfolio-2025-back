@@ -693,6 +693,10 @@ describe('stockage multi-briques (B1)', () => {
       ['exécutable', '/assets/cours/b3-01/B3-01.exe'],
       ['à macros', '/assets/cours/b3-01/B3-01.xlsm'],
       ['à l empreinte tronquée', '/assets/cours/b3-01/B3-01_reprise.3f9a.xlsx'],
+      [
+        'sans empreinte, qu un cache servirait encore après une correction',
+        '/assets/cours/b3-01/B3-01_export_ventes.xlsx',
+      ],
     ])('refuse une pièce jointe au fichier %s', (_cas, fichier) => {
       expect(() =>
         lireEcran(
