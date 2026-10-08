@@ -7,4 +7,5 @@ export const [
   COURS_B2_04,
   COURS_B2_05,
   COURS_B2_06,
+  COURS_B3_01,
 ] = CONTENUS;
