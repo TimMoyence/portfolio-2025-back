@@ -12,7 +12,10 @@ import type {
 import type { EtatParticipant } from '../src/modules/formations/domain/contrats/pilotage';
 import type { EcranPublic } from '../src/modules/formations/domain/contrats/tirage';
 import type { ValeurProduction } from '../src/modules/formations/domain/contrats/resultats';
-import { questionsDe } from '../src/modules/formations/domain/cours/Cours';
+import {
+  estReservee,
+  questionsDe,
+} from '../src/modules/formations/domain/cours/Cours';
 import { activitesLibres } from '../src/modules/formations/domain/cours/EcranServi';
 import {
   tirer,
@@ -31,6 +34,10 @@ import {
   COURS_B3_01,
 } from './factories/contenus-publies';
 import { prefixeDuCours } from './factories/contenus-de-cours.factory';
+import {
+  classeursReservesDe,
+  octetsDuClasseur,
+} from './helpers/classeurs-reserves';
 import { clesSecretesDans } from './helpers/cles-du-corrige';
 import { describeDb } from './helpers/db-integration-datasource';
 import { CODE_HTTP, codeDe } from './helpers/formations-banc-seance';
@@ -91,10 +98,17 @@ function piecesJointesAttendues(
   cours: Cours,
   ids: readonly string[],
 ): [string, unknown][] {
-  return ids.map((id) => [
-    id,
-    cours.ecrans.find((ecran) => ecran.id === id)?.pieceJointe,
-  ]);
+  return ids.map((id) => {
+    const pieceJointe = cours.ecrans.find(
+      (ecran) => ecran.id === id,
+    )?.pieceJointe;
+    return [
+      id,
+      pieceJointe !== undefined && estReservee(pieceJointe)
+        ? { libelle: pieceJointe.libelle, reservee: true }
+        : pieceJointe,
+    ];
+  });
 }
 
 function idsDesRappels(reponse: Response): string[] {
@@ -145,6 +159,7 @@ interface AttenduDuCours {
   readonly enigmes: number;
   readonly piecesJointes: readonly string[];
   readonly piecesJointesAuCatalogue: readonly string[];
+  readonly classeursReserves: readonly string[];
   readonly intervalleLibre: {
     readonly premier: number;
     readonly dernier: number;
@@ -214,6 +229,9 @@ function seanceComplete(
 
       const poste = (methode: Methode, suffixe: string, jeton: string): Test =>
         request(serveur())[methode](chemin(suffixe)).set(EN_TETE_JETON, jeton);
+
+      const pieceJointeAuPoste = (ecranId: string, jeton: string): Test =>
+        poste('get', `/sessions/${sessionId}/pieces-jointes/${ecranId}`, jeton);
 
       const piloter = (corps: Record<string, unknown>): Test =>
         formateur('patch', `/sessions/${sessionId}/control`).send(corps);
@@ -1064,6 +1082,9 @@ function seanceComplete(
           )) {
             enAvance.push(await ecrire());
           }
+          for (const { ecranId } of classeursReservesDe(cours)) {
+            enAvance.push(await pieceJointeAuPoste(ecranId, postes[1].jeton));
+          }
           enAvance.forEach(noterConflit);
 
           await formateur(
@@ -1164,11 +1185,33 @@ function seanceComplete(
             postes[0].jeton,
           ).expect(OK);
 
+          const telechargements: [string, boolean, boolean][] = [];
+          for (const { ecranId, classeur } of classeursReservesDe(cours)) {
+            const octets = octetsDuClasseur(classeur);
+            const auPoste = await pieceJointeAuPoste(ecranId, postes[0].jeton)
+              .responseType('blob')
+              .expect(OK);
+            const auPupitre = await formateur(
+              'get',
+              `/sessions/${sessionId}/deroule/pieces-jointes/${ecranId}`,
+            )
+              .responseType('blob')
+              .expect(OK);
+            telechargements.push([
+              ecranId,
+              octets.equals(auPoste.body as Buffer),
+              octets.equals(auPupitre.body as Buffer),
+            ]);
+          }
+
           expect(
             piecesJointesDe(
               (sujetDeroule.body as { ecrans: EcranPublic[] }).ecrans,
             ),
           ).toEqual(piecesJointesDuCours(attendu.piecesJointes));
+          expect(telechargements).toEqual(
+            attendu.classeursReserves.map((ecranId) => [ecranId, true, true]),
+          );
           expect([...briquesJouees].sort(parOrdreAlphabetique)).toEqual(
             [...new Set(cours.ecrans.map((ecran) => ecran.brique))].sort(
               parOrdreAlphabetique,
@@ -1581,12 +1624,14 @@ const TRAME_DES_COURS_B2: Pick<
   | 'enigmes'
   | 'piecesJointes'
   | 'piecesJointesAuCatalogue'
+  | 'classeursReserves'
   | 'intervalleLibre'
 > = {
   jalons: 3,
   enigmes: 4,
   piecesJointes: [],
   piecesJointesAuCatalogue: [],
+  classeursReserves: [],
   intervalleLibre: { premier: 1, dernier: 20 },
 };
 
@@ -1646,5 +1691,6 @@ seanceComplete(COURS_B3_01, {
     'B3-01-A3-02-VOTE-GRAPHIQUE',
   ],
   piecesJointesAuCatalogue: ['B3-01-A1-02-COURRIEL'],
+  classeursReserves: ['B3-01-A2-01-VOTE-FAMILLE', 'B3-01-A3-02-VOTE-GRAPHIQUE'],
   intervalleLibre: { premier: 1, dernier: 20 },
 });

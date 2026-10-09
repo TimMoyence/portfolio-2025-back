@@ -43,6 +43,7 @@ import { LibererPosteUseCase } from '../../src/modules/formations/application/Li
 import { SyntheseRappelsUseCase } from '../../src/modules/formations/application/SyntheseRappels.useCase';
 import { LireEtatParticipantUseCase } from '../../src/modules/formations/application/LireEtatParticipant.useCase';
 import { SubmitProductionUseCase } from '../../src/modules/formations/application/SubmitProduction.useCase';
+import { TelechargerPieceJointeUseCase } from '../../src/modules/formations/application/TelechargerPieceJointe.useCase';
 import { TenterEnigmeUseCase } from '../../src/modules/formations/application/TenterEnigme.useCase';
 import type { IAnswersRepository } from '../../src/modules/formations/domain/IAnswers.repository';
 import type { IEscapeRepository } from '../../src/modules/formations/domain/IEscape.repository';
@@ -52,15 +53,22 @@ import type { IRappelsServisRepository } from '../../src/modules/formations/doma
 import type { IFreeResponsesRepository } from '../../src/modules/formations/domain/IFreeResponses.repository';
 import type { IIncidentsRepository } from '../../src/modules/formations/domain/IIncidents.repository';
 import type { IMasteryRepository } from '../../src/modules/formations/domain/IMastery.repository';
-import type { IParticipantsRepository } from '../../src/modules/formations/domain/IParticipants.repository';
+import type {
+  IParticipantsRepository,
+  ParticipantRecord,
+} from '../../src/modules/formations/domain/IParticipants.repository';
 import type { IScoresRepository } from '../../src/modules/formations/domain/IScores.repository';
-import type { ISessionsRepository } from '../../src/modules/formations/domain/ISessions.repository';
+import type {
+  ISessionsRepository,
+  SessionRecord,
+} from '../../src/modules/formations/domain/ISessions.repository';
 import type { ITeacherAnnotationsRepository } from '../../src/modules/formations/domain/ITeacherAnnotations.repository';
 import type { Cours } from '../../src/modules/formations/domain/contrats/cours';
 import type { ICatalogueCours } from '../../src/modules/formations/domain/cours/ICatalogueCours.port';
 import {
   ANSWERS_REPOSITORY,
   CATALOGUE_COURS,
+  CLASSEURS_DE_COURS,
   FORMATION_MAILER,
   FREE_RESPONSES_REPOSITORY,
   INCIDENTS_REPOSITORY,
@@ -74,6 +82,7 @@ import {
   SESSIONS_REPOSITORY,
   TEACHER_ANNOTATIONS_REPOSITORY,
 } from '../../src/modules/formations/domain/token';
+import { ClasseursSurDisque } from '../../src/modules/formations/infrastructure/classeurs/ClasseursSurDisque';
 import { SessionStateCacheService } from '../../src/modules/formations/infrastructure/SessionStateCache.service';
 import { CleEtudiantService } from '../../src/modules/formations/interfaces/CleEtudiant.service';
 import { CodeScanProtectionService } from '../../src/modules/formations/interfaces/CodeScanProtection.service';
@@ -87,7 +96,10 @@ import {
   EN_TETE_JETON,
   ParticipantTokenService,
 } from '../../src/modules/formations/interfaces/ParticipantToken.service';
-import { createMockFormationMailer } from '../factories/formation.factory';
+import {
+  createMockDepotsFormations,
+  createMockFormationMailer,
+} from '../factories/formation.factory';
 import {
   buildCoursDeTest,
   creerCatalogueDeTest,
@@ -188,6 +200,7 @@ export function fournisseursFormations(
     DueQuestionsUseCase,
     LireSujetUseCase,
     LireDerouleUseCase,
+    TelechargerPieceJointeUseCase,
     LireCoursPublicUseCase,
     LireLivretUseCase,
     ManageTeacherAnnotationsUseCase,
@@ -211,6 +224,7 @@ export function fournisseursFormations(
     { provide: FORMATION_MAILER, useValue: depots.mailer },
     { provide: CATALOGUE_COURS, useValue: catalogue },
     { provide: SESSION_STATE_CACHE, useClass: SessionStateCacheService },
+    { provide: CLASSEURS_DE_COURS, useClass: ClasseursSurDisque },
   ];
 }
 
@@ -231,6 +245,16 @@ export function compilerModuleFormations(
       { provide: APP_GUARD, useClass: ThrottlerGuard },
     ],
   }).compile();
+}
+
+export function simulerSeance(
+  depots: ReturnType<typeof createMockDepotsFormations>,
+  seance: SessionRecord,
+  participant: ParticipantRecord,
+): void {
+  jest.clearAllMocks();
+  depots.sessions.findById.mockResolvedValue(seance);
+  depots.participants.findById.mockResolvedValue(participant);
 }
 
 export async function monterApplicationFormations(

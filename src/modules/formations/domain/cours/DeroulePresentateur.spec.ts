@@ -9,6 +9,7 @@ import {
   buildEcranAPieceJointe,
   buildEcranDeBrique,
   buildPieceJointe,
+  buildPieceJointeReservee,
   buildQuestionnaireCorrigeSurPlace,
   EXPLICATIONS_SUR_PLACE,
 } from '../../../../../test/factories/ecrans-stockes.factory';
@@ -37,6 +38,21 @@ describe('deroulePresentateur', () => {
 
     expect(vote.pieceJointe).toEqual(buildPieceJointe());
     expect(citation).not.toHaveProperty('pieceJointe');
+  });
+
+  it('sert au pupitre une pièce réservée sans nommer son classeur, téléchargé par la séance', () => {
+    const avecReprise = lireCoursStocke(
+      buildCoursDeBriques([
+        buildEcranAPieceJointe('fp-vote', buildPieceJointeReservee()),
+      ]),
+    );
+
+    const [vote] = deroulePresentateur(avecReprise, 0).ecrans;
+
+    expect(vote.pieceJointe).toEqual({
+      libelle: buildPieceJointeReservee().libelle,
+      reservee: true,
+    });
   });
 
   it('reprend le sujet du tirage de reference', () => {

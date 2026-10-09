@@ -157,8 +157,8 @@ export const PIEGES_B3_01: PiegesB301 = {
 
 export const CLASSEURS_B3_01 = {
   brut: '/assets/cours/b3-01/B3-01_export_ventes.d4f2ceab.xlsx',
-  repriseActe2: '/assets/cours/b3-01/B3-01_reprise_acte_2.67aba78a.xlsx',
-  repriseActe3: '/assets/cours/b3-01/B3-01_reprise_acte_3.88056d14.xlsx',
+  repriseActe2: 'b3-01/B3-01_reprise_acte_2.67aba78a.xlsx',
+  repriseActe3: 'b3-01/B3-01_reprise_acte_3.88056d14.xlsx',
 } as const;
 
 export const HISTOIRES_B3_01: Readonly<Record<HistoireB301, number>> = {

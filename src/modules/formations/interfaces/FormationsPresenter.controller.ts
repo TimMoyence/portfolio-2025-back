@@ -33,6 +33,10 @@ import { ListFreeResponsesUseCase } from '../application/ListFreeResponses.useCa
 import { OpenSessionUseCase } from '../application/OpenSession.useCase';
 import { StreamSessionUseCase } from '../application/StreamSession.useCase';
 import { SyntheseRappelsUseCase } from '../application/SyntheseRappels.useCase';
+import {
+  type ClasseurTelecharge,
+  TelechargerPieceJointeUseCase,
+} from '../application/TelechargerPieceJointe.useCase';
 import type { DerouleCours } from '../domain/cours/DeroulePresentateur';
 import type { FreeResponseRecord } from '../domain/IFreeResponses.repository';
 import { ControlSessionRequestDto } from './dto/contrat/control-session.request.dto';
@@ -48,6 +52,7 @@ import {
   LectureDeSeance,
   PilotageDeSeance,
 } from './formations-acces';
+import { TelechargementDePieceJointe } from './piece-jointe-telechargee';
 import {
   LIMITE_CONTROLE_PAR_MINUTE,
   LIMITE_SYNTHESE_PAR_MINUTE,
@@ -73,6 +78,7 @@ export class FormationsPresenterController {
     private readonly results: GetSessionResultsUseCase,
     private readonly streamSession: StreamSessionUseCase,
     private readonly lireDeroule: LireDerouleUseCase,
+    private readonly telechargerPieceJointe: TelechargerPieceJointeUseCase,
     private readonly listFreeResponses: ListFreeResponsesUseCase,
     private readonly syntheseRappels: SyntheseRappelsUseCase,
   ) {}
@@ -222,6 +228,23 @@ export class FormationsPresenterController {
     @Req() request: Request,
   ): Promise<DerouleCours> {
     return this.lireDeroule.execute(id, acteurDe(request));
+  }
+
+  @Get('sessions/:id/deroule/pieces-jointes/:ecranId')
+  @LectureDeSeance()
+  @TelechargementDePieceJointe(
+    'Sert au formateur le classeur réservé d un écran de sa séance',
+  )
+  pieceJointeDuDeroule(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Param('ecranId') ecranId: string,
+    @Req() request: Request,
+  ): Promise<ClasseurTelecharge> {
+    return this.telechargerPieceJointe.pourLeFormateur(
+      id,
+      acteurDe(request),
+      ecranId,
+    );
   }
 
   @Get('sessions/:id/free-responses')

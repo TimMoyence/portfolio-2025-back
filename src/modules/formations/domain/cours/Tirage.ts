@@ -18,9 +18,11 @@ import { creerCacheLRU } from './CacheLRU';
 import type { Rng, Tirage } from './Aleatoire';
 import type { ConfusionId } from './banque/confusions';
 import { ecranCorrigePar, ecransCorrigeantDe } from './Corrections';
-import { estInteractif } from './Cours';
+import { estInteractif, estReservee } from './Cours';
 import type {
   AuMoinsUn,
+  PieceJointe,
+  PieceJointeServie,
   QuestionNumerique,
   QuestionVote,
   QuestionVoteTiree,
@@ -35,6 +37,7 @@ const PROPRIETES_RESERVEES_AU_FORMATEUR: readonly string[] = [
   'questions',
   'corrige',
   'banque',
+  'correctionSurPlace',
 ];
 
 const SEL_CARTES = 0x0ca7de5;
@@ -197,10 +200,16 @@ function projeterEcran(
       : { cadrageDuRenvoi: ecran.cadrageDuRenvoi }),
     ...(ecran.pieceJointe === undefined
       ? {}
-      : { pieceJointe: ecran.pieceJointe }),
+      : { pieceJointe: pieceJointeServie(ecran.pieceJointe) }),
     ...(ecranCorrige === null ? {} : { ecranCorrige }),
     ...(resoluPar.length === 0 ? {} : { resoluPar: [...resoluPar] }),
   };
+}
+
+function pieceJointeServie(pieceJointe: PieceJointe): PieceJointeServie {
+  return estReservee(pieceJointe)
+    ? { libelle: pieceJointe.libelle, reservee: true }
+    : pieceJointe;
 }
 
 function questionAttachee(ecran: Ecran): QuestionVote | undefined {

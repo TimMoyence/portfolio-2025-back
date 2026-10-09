@@ -4,7 +4,10 @@ import type {
   CoursPublic as CoursPublicActuel,
   EcranPublic as EcranPublicActuel,
 } from '../cours/CoursPublic';
-import type { ExplicationDeCorrection, PieceJointe } from '../cours/Cours';
+import type {
+  ExplicationDeCorrection,
+  PieceJointeServie,
+} from '../cours/Cours';
 import type { CorrigeTire, LibellesDesOptions } from '../cours/Tirage';
 import type { CorrigeEcranPresentateur } from './deroule';
 import type { VotePublic } from './donnees-publiques';
@@ -28,7 +31,7 @@ export interface EcranPublic extends EcranPublicActuel {
   readonly titre: string | null;
   readonly renvoi?: string;
   readonly cadrageDuRenvoi?: CadrageDuRenvoi;
-  readonly pieceJointe?: PieceJointe;
+  readonly pieceJointe?: PieceJointeServie;
   readonly ecranCorrige?: string;
   readonly resoluPar?: readonly string[];
   readonly correction?: CorrectionServie;

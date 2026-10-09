@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { test } from 'node:test';
 
@@ -10,6 +10,8 @@ import {
 } from './lib/migrations-chargees.mjs';
 
 const root = new URL('..', import.meta.url).pathname;
+const CLASSEURS_DANS_DIST = 'modules/formations/infrastructure/classeurs';
+const CLASSEURS = join('src', CLASSEURS_DANS_DIST);
 
 void test('le build produit les points d entree utilises par Docker et les migrations', () => {
   execFileSync('pnpm', ['build'], { cwd: root, stdio: 'pipe' });
@@ -30,6 +32,23 @@ void test('le build produit les points d entree utilises par Docker et les migra
     viaTsNode: false,
   });
   assert.equal(chargeesEnProduction.length, fichiersDeMigration(root).length);
+});
+
+void test('le build embarque, octet pour octet, les classeurs que le serveur sert en séance', () => {
+  execFileSync('pnpm', ['build'], { cwd: root, stdio: 'pipe' });
+  const sources = join(root, CLASSEURS);
+  const classeurs = readdirSync(sources, { recursive: true }).filter((nom) =>
+    /\.(xlsx|csv|pdf)$/.test(String(nom)),
+  );
+
+  assert.notEqual(classeurs.length, 0);
+  for (const classeur of classeurs) {
+    assert.deepEqual(
+      readFileSync(join(root, 'dist', CLASSEURS_DANS_DIST, String(classeur))),
+      readFileSync(join(sources, String(classeur))),
+      String(classeur),
+    );
+  }
 });
 
 void test('les commandes de production utilisent les points d entree du build', () => {

@@ -1,5 +1,6 @@
 import type { Piege } from '../../src/modules/formations/domain/AnswerGrading';
 import type { Bareme } from '../../src/modules/formations/domain/Bareme';
+import type { IClasseursDeCours } from '../../src/modules/formations/domain/IClasseursDeCours.port';
 import type { BaremeV2 } from '../../src/modules/formations/domain/contrats/bareme';
 import type {
   AnswerRecord,
@@ -235,6 +236,12 @@ export function buildActeurFormation(
 
 export function buildAdministrateur(): ActeurFormation {
   return buildActeurFormation({ id: 'admin-uuid', roles: ['admin'] });
+}
+
+export const OCTETS_DU_CLASSEUR = Uint8Array.from([0x50, 0x4b, 0x03, 0x04]);
+
+export function createMockClasseursDeCours(): jest.Mocked<IClasseursDeCours> {
+  return { lire: jest.fn().mockResolvedValue(OCTETS_DU_CLASSEUR) };
 }
 
 export function buildParticipantRecord(

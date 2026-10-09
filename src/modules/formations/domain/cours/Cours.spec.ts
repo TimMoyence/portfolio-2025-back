@@ -18,6 +18,7 @@ import {
 import type { Cours, Ecran } from '../contrats/cours';
 import { creerRng, creerTirage } from './Aleatoire';
 import {
+  classeurATelecharger,
   estInteractif,
   questionNumerique,
   questionsDe,
@@ -25,6 +26,26 @@ import {
   questionVote,
 } from './Cours';
 import { lireCoursStocke } from './CoursStocke';
+
+describe('classeurATelecharger', () => {
+  it.each([
+    [
+      'b3-01/B3-01_reprise_acte_2.67aba78a.xlsx',
+      'B3-01_reprise_acte_2.xlsx',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    ],
+    ['b3-01/releve.0c1d2e3f.csv', 'releve.csv', 'text/csv; charset=utf-8'],
+    ['b3-01/fiche.0c1d2e3f.pdf', 'fiche.pdf', 'application/pdf'],
+  ])('nomme %s sans son empreinte et donne son type', (classeur, nom, type) => {
+    expect(classeurATelecharger(classeur)).toEqual({ nom, type });
+  });
+
+  it('refuse un classeur hors du format servi', () => {
+    expect(() =>
+      classeurATelecharger('b3-01/B3-01_reprise_acte_2.xlsm'),
+    ).toThrow('Classeur hors du format servi');
+  });
+});
 
 const EXPOSITIONS = [
   'fp-quote',

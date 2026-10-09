@@ -57,12 +57,23 @@ const cadrageDuRenvoi = z
 const FICHIER_DE_PIECE_JOINTE =
   /^\/assets\/cours\/[a-z0-9-]+\/[A-Za-z0-9_-]+\.[0-9a-f]{8}\.(xlsx|csv|pdf)$/;
 
-const pieceJointe = z
-  .object({
-    libelle: texte,
-    fichier: z.string().regex(FICHIER_DE_PIECE_JOINTE),
-  })
-  .strict();
+export const CLASSEUR_RESERVE =
+  /^[a-z0-9-]+\/[A-Za-z0-9_-]+\.[0-9a-f]{8}\.(xlsx|csv|pdf)$/;
+
+const pieceJointe = z.union([
+  z
+    .object({
+      libelle: texte,
+      fichier: z.string().regex(FICHIER_DE_PIECE_JOINTE),
+    })
+    .strict(),
+  z
+    .object({
+      libelle: texte,
+      classeur: z.string().regex(CLASSEUR_RESERVE),
+    })
+    .strict(),
+]);
 
 const quizNote = z
   .object({

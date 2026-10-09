@@ -430,6 +430,16 @@ export function buildPieceJointe(
   };
 }
 
+export function buildPieceJointeReservee(
+  overrides: Partial<{ libelle: string; classeur: string }> = {},
+): { libelle: string; classeur: string } {
+  return {
+    libelle: 'Classeur de reprise de l’acte 2',
+    classeur: 'b3-01/B3-01_reprise_acte_2.3f9a1c0e.xlsx',
+    ...overrides,
+  };
+}
+
 export function buildEcranAPieceJointe(
   brique: string,
   pieceJointe: Record<string, unknown> = buildPieceJointe(),
@@ -439,6 +449,18 @@ export function buildEcranAPieceJointe(
     ...overrides,
     proprietes: { ...buildProprietesStockees(brique), pieceJointe },
   });
+}
+
+export function buildCoursAPiecesJointes(
+  reservee: Record<string, unknown> = buildPieceJointeReservee(),
+): ContenuDeCoursBrut {
+  return buildCoursDeBriques([
+    buildEcranDeBrique('fp-quote'),
+    buildEcranAPieceJointe('fp-vote', reservee),
+    buildEcranAPieceJointe('fp-story', buildPieceJointe(), {
+      diffusion: 'catalogue',
+    }),
+  ]);
 }
 
 export function buildEcranDeTableau(

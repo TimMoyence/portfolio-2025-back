@@ -6,6 +6,7 @@ import {
   buildEcranAPieceJointe,
   buildEcranDeBrique,
   buildPieceJointe,
+  buildPieceJointeReservee,
 } from '../../../../../test/factories/ecrans-stockes.factory';
 import { lireCoursStocke } from './CoursStocke';
 import {
@@ -59,9 +60,7 @@ describe('projeterCatalogue (B19)', () => {
   });
 
   it('sert la pièce jointe d un écran du catalogue, pas celle d un écran de séance', () => {
-    const reprise = buildPieceJointe({
-      fichier: '/assets/cours/b3-01/B3-01_reprise_acte_2.3f9a1c0e.xlsx',
-    });
+    const reprise = buildPieceJointeReservee();
     const cours = lireCoursStocke(
       buildCoursDeBriques([
         buildEcranAPieceJointe('fp-story', buildPieceJointe(), {
@@ -75,7 +74,22 @@ describe('projeterCatalogue (B19)', () => {
 
     expect(courriel.pieceJointe).toEqual(buildPieceJointe());
     expect(vote).not.toHaveProperty('pieceJointe');
-    expect(tirer(cours, 0).sujet.ecrans[1].pieceJointe).toEqual(reprise);
+    expect(tirer(cours, 0).sujet.ecrans[1].pieceJointe).toEqual({
+      libelle: reprise.libelle,
+      reservee: true,
+    });
+  });
+
+  it('ne nomme jamais le classeur d une pièce réservée dans le sujet servi', () => {
+    const cours = lireCoursStocke(
+      buildCoursDeBriques([
+        buildEcranAPieceJointe('fp-vote', buildPieceJointeReservee()),
+      ]),
+    );
+
+    expect(JSON.stringify(tirer(cours, 0).sujet)).not.toContain(
+      buildPieceJointeReservee().classeur,
+    );
   });
 
   it('sert en clair toute version historique, lue en diffusion catalogue', () => {

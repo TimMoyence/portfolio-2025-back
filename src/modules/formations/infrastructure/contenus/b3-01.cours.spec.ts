@@ -15,7 +15,7 @@ import {
   valeursDevoileesParLesExplications,
 } from '../../../../../test/helpers/relecture-de-cours';
 import { libelleDeConfusion } from '../../domain/cours/banque/confusions';
-import { questionsDuCours } from '../../domain/cours/Cours';
+import { estReservee, questionsDuCours } from '../../domain/cours/Cours';
 import { tirer } from '../../domain/cours/Tirage';
 import { COURS_B3_01 } from './b3-01.cours';
 import {
@@ -259,18 +259,22 @@ describe('B3-01 — valeurs servies face au jeu Norvane', () => {
 });
 
 describe('B3-01 — pièces jointes du § 8.2', () => {
+  const jointes = COURS.ecrans.flatMap((ecran) =>
+    ecran.pieceJointe === undefined
+      ? []
+      : [
+          {
+            ecran: ecran.id.slice(6, 11),
+            diffusion: ecran.diffusion,
+            reservee: estReservee(ecran.pieceJointe),
+            fichier: estReservee(ecran.pieceJointe)
+              ? ecran.pieceJointe.classeur
+              : ecran.pieceJointe.fichier,
+          },
+        ],
+  );
+
   it('joint chaque classeur à son écran, dans la diffusion prévue', () => {
-    const jointes = COURS.ecrans.flatMap((ecran) =>
-      ecran.pieceJointe === undefined
-        ? []
-        : [
-            {
-              ecran: ecran.id.slice(6, 11),
-              diffusion: ecran.diffusion,
-              fichier: ecran.pieceJointe.fichier,
-            },
-          ],
-    );
     const attendues = piecesJointesDuDocument(DOCUMENT);
 
     expect(jointes.map(({ fichier }) => fichier)).toEqual(
@@ -282,6 +286,16 @@ describe('B3-01 — pièces jointes du § 8.2', () => {
     attendues.forEach(({ motif }, rang) => {
       expect(jointes[rang].fichier.split('/').at(-1)).toMatch(motif);
     });
+  });
+
+  it('réserve à la séance les reprises, que seul le serveur sert, et laisse l’export brut public', () => {
+    expect(jointes.map(({ ecran, reservee }) => ({ ecran, reservee }))).toEqual(
+      [
+        { ecran: 'A1-02', reservee: false },
+        { ecran: 'A2-01', reservee: true },
+        { ecran: 'A3-02', reservee: true },
+      ],
+    );
   });
 });
 

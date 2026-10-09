@@ -58,7 +58,7 @@ export const ACTE_3: moteur.Acte = [
       modalite: 'solo',
       pieceJointe: {
         libelle: 'Classeur de reprise de l’acte 3',
-        fichier: CLASSEURS_B3_01.repriseActe3,
+        classeur: CLASSEURS_B3_01.repriseActe3,
       },
       questions: [
         moteur.vote(

@@ -37,6 +37,7 @@ describe('FormationsPresenterController', () => {
     results as never,
     streamSession as never,
     lireDeroule as never,
+    { pourLeFormateur: jest.fn() } as never,
     listFreeResponses as never,
     syntheseRappels as never,
   );

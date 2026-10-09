@@ -2,7 +2,12 @@ import type { Cours, Ecran } from '../contrats/cours';
 import type { TirageDuCours } from '../contrats/tirage';
 import { cueillirDansArbre, estObjet } from './ArbreDeValeurs';
 import type { Gabarit } from './Cours';
-import { estInteractif, questionsDe, questionsDuCours } from './Cours';
+import {
+  estInteractif,
+  estReservee,
+  questionsDe,
+  questionsDuCours,
+} from './Cours';
 import { ecranCorrigePar } from './Corrections';
 import {
   controlerConfidentialite,
@@ -33,6 +38,7 @@ export const REGLES_STRUCTURE = [
   'atelier-questions-fermees',
   'confidentialite',
   'catalogue-sans-question',
+  'piece-jointe-selon-la-diffusion',
   'media-sans-licence',
   'options-neutres',
   'gabarit-budget',
@@ -739,6 +745,26 @@ function controlerCatalogue({ cours }: Analyse): readonly Manquement[] {
   );
 }
 
+function controlerPiecesJointes({ cours }: Analyse): readonly Manquement[] {
+  return cours.ecrans.flatMap((ecran, rang) => {
+    if (ecran.pieceJointe === undefined) {
+      return [];
+    }
+    const enSeance = ecran.diffusion === 'seance';
+    if (estReservee(ecran.pieceJointe) === enSeance) {
+      return [];
+    }
+    return [
+      {
+        ecran: nomEcran(ecran, rang),
+        raison: enSeance
+          ? `la pièce jointe de l'écran de séance « ${nomEcran(ecran, rang)} » est un fichier public : n'importe qui la téléchargerait avant la séance.`
+          : `la pièce jointe de l'écran du catalogue « ${nomEcran(ecran, rang)} » est réservée à la séance : personne ne pourrait la télécharger.`,
+      },
+    ];
+  });
+}
+
 function mediasDe(valeur: unknown): readonly string[] {
   return cueillirDansArbre(valeur, (cle, element) =>
     CLES_DE_MEDIA.includes(cle) && typeof element === 'string'
@@ -819,6 +845,7 @@ const REGLES: readonly Regle[] = [
     controler: ({ cours, tirage }) => controlerConfidentialite(cours, tirage),
   },
   { id: 'catalogue-sans-question', controler: controlerCatalogue },
+  { id: 'piece-jointe-selon-la-diffusion', controler: controlerPiecesJointes },
   { id: 'media-sans-licence', controler: controlerMedias },
   { id: 'options-neutres', controler: controlerOptions },
   {
