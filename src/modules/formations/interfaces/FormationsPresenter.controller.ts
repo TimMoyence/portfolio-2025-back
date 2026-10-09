@@ -229,6 +229,10 @@ export class FormationsPresenterController {
   }
 
   @Get('sessions/:id/deroule/pieces-jointes/:ecranId')
+  @ApiNotFoundResponse({
+    description:
+      'Séance introuvable, ou écran sans classeur réservé (PIECE_JOINTE_INTROUVABLE)',
+  })
   @LectureDeSeance()
   @TelechargementDePieceJointe(
     'Sert au formateur le classeur réservé d un écran de sa séance',

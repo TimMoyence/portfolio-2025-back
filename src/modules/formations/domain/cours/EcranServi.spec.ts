@@ -5,6 +5,7 @@ import {
 import {
   buildCasAQuestionsLibres,
   buildCorrectionDeReponses,
+  buildCorrectionDExemple,
   buildCoursAPiecesJointes,
   buildCoursDeBriques,
   buildEcranDeBrique,
@@ -318,5 +319,47 @@ describe('pieceJointeServieAuPoste', () => {
     expect(() => pieceJointeServieAuPoste(seance(), cours, ecranId)).toThrow(
       PieceJointeIntrouvableError,
     );
+  });
+
+  describe('portée par un écran de correction, en rythme libre', () => {
+    const exercice = buildEcranDeBrique('fp-numeric');
+    const correction = buildCorrectionDExemple(exercice.screenId);
+    const coursCorrige = lireCoursStocke(
+      buildCoursDeBriques([
+        exercice,
+        {
+          ...correction,
+          proprietes: {
+            ...correction.proprietes,
+            pieceJointe: buildPieceJointeReservee(),
+          },
+        },
+      ]),
+    );
+    const libre = (
+      pilotageEcrans: Readonly<Record<string, PilotageEcran>>,
+    ) => ({
+      etat: 'en_cours' as const,
+      modeRythme: 'libre' as const,
+      ecranCourant: 0,
+      intervalleLibre: { premier: 0, dernier: 1 },
+      pilotageEcrans,
+    });
+
+    it('retient la pièce tant que l écran corrigé reste caché au poste', () => {
+      expect(() =>
+        pieceJointeServieAuPoste(libre({}), coursCorrige, correction.screenId),
+      ).toThrow(EcranNonServiError);
+    });
+
+    it('rend la pièce une fois l écran corrigé révélé', () => {
+      expect(
+        pieceJointeServieAuPoste(
+          libre({ [exercice.screenId]: { revele: true } }),
+          coursCorrige,
+          correction.screenId,
+        ),
+      ).toEqual(buildPieceJointeReservee());
+    });
   });
 });

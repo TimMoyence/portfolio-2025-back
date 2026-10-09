@@ -10,12 +10,7 @@ import type {
   ExecutionContext,
   NestInterceptor,
 } from '@nestjs/common';
-import {
-  ApiNotFoundResponse,
-  ApiOkResponse,
-  ApiOperation,
-  ApiProduces,
-} from '@nestjs/swagger';
+import { ApiOkResponse, ApiOperation, ApiProduces } from '@nestjs/swagger';
 import { map, type Observable } from 'rxjs';
 import type { ClasseurTelecharge } from '../domain/IClasseursDeCours.port';
 
@@ -57,10 +52,6 @@ export function TelechargementDePieceJointe(resume: string): MethodDecorator {
     ApiOkResponse({
       description: 'Classeur réservé à la séance, en pièce jointe',
       schema: { type: 'string', format: 'binary' },
-    }),
-    ApiNotFoundResponse({
-      description:
-        'Écran pas encore projeté au poste (ECRAN_NON_SERVI) ou sans classeur réservé (PIECE_JOINTE_INTROUVABLE)',
     }),
   );
 }

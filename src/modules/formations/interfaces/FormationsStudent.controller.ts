@@ -498,6 +498,17 @@ export class FormationsStudentController {
     'Sert au participant le classeur réservé d un écran déjà projeté',
   )
   @ApiUnauthorizedResponse({ description: 'Jeton de participant invalide' })
+  @ApiNotFoundResponse({
+    description:
+      'Écran pas encore projeté au poste, ou dont l’écran corrigé reste caché (ECRAN_NON_SERVI) ; écran sans classeur réservé (PIECE_JOINTE_INTROUVABLE)',
+  })
+  @ApiConflictResponse({
+    description:
+      'Classeur portant les réponses d’une activité dont la correction n’est pas encore révélée (PIECE_JOINTE_RETENUE)',
+  })
+  @ApiTooManyRequestsResponse({
+    description: 'Plus de vingt téléchargements par minute depuis ce poste',
+  })
   pieceJointe(
     @Param('id', ParseUUIDPipe) sessionId: string,
     @Param('ecranId') ecranId: string,
