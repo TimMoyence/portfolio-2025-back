@@ -9,6 +9,7 @@ import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './common/interfaces/filters/all-exceptions.filter';
 import { DomainExceptionFilter } from './common/interfaces/filters/DomainExceptionFilter';
 import { bornerLesCorpsDeRequete } from './common/interfaces/http/corps-de-requete';
+import { ouvrirAuxOrigines } from './common/interfaces/http/cors';
 import { logBootstrapStep } from './runtime/log-bootstrap-step';
 
 async function bootstrap() {
@@ -38,11 +39,7 @@ async function bootstrap() {
   // pour echapper au rate-limiting.
   app.set('trust proxy', 1);
 
-  app.enableCors({
-    origin: corsOrigins,
-    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
-    credentials: true,
-  });
+  ouvrirAuxOrigines(app, corsOrigins);
 
   // Limite globale du body parser : 600 KB couvre les imports CSV
   // (max 500 KB cote DTO @MaxLength) avec une marge pour l'overhead

@@ -30,12 +30,15 @@ import { LireEtatParticipantUseCase } from './application/LireEtatParticipant.us
 import { SubmitProductionUseCase } from './application/SubmitProduction.useCase';
 import { TenterEnigmeUseCase } from './application/TenterEnigme.useCase';
 import { SynchroniserCoursUseCase } from './application/SynchroniserCours.useCase';
+import { TelechargerPieceJointeUseCase } from './application/TelechargerPieceJointe.useCase';
+import { ClasseursSurDisque } from './infrastructure/classeurs/ClasseursSurDisque';
 import { CONTENUS } from './infrastructure/contenus';
 import { PublicationDesCoursRepositoryTypeORM } from './infrastructure/PublicationDesCours.repository.typeorm';
 import { SynchronisationAuDemarrageService } from './infrastructure/SynchronisationAuDemarrage.service';
 import {
   ANSWERS_REPOSITORY,
   CATALOGUE_COURS,
+  CLASSEURS_DE_COURS,
   CONTENUS_DES_COURS,
   ESCAPE_REPOSITORY,
   PUBLICATION_DES_COURS,
@@ -150,6 +153,7 @@ import { ParticipantTokenService } from './interfaces/ParticipantToken.service';
     DueQuestionsUseCase,
     LireSujetUseCase,
     LireDerouleUseCase,
+    TelechargerPieceJointeUseCase,
     ManageTeacherAnnotationsUseCase,
     ListSessionParticipantsUseCase,
     ListFreeResponsesUseCase,
@@ -220,6 +224,10 @@ import { ParticipantTokenService } from './interfaces/ParticipantToken.service';
     {
       provide: CONTENUS_DES_COURS,
       useValue: CONTENUS,
+    },
+    {
+      provide: CLASSEURS_DE_COURS,
+      useClass: ClasseursSurDisque,
     },
     SynchroniserCoursUseCase,
     SynchronisationAuDemarrageService,

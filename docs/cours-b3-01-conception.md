@@ -49,7 +49,7 @@
 - **Gabarit `b3`** : 40 écrans au plus, 180 minutes au plus, cycle réfléchir → comprendre →
   s'exercer, trois temps par exercice ; ni `fp-escape` obligatoire ni mode papier.
 - **Une seule fonctionnalité nouvelle du runtime : la pièce jointe d'écran** (le classeur
-  téléchargeable depuis le poste étudiant).
+  téléchargeable depuis le poste étudiant), publique au catalogue, réservée à la séance sinon.
 
 ## 1. Objectifs d'apprentissage et public
 
@@ -152,7 +152,10 @@ rapides sans retarder la correction collective.
 
 À l'ouverture des actes 2 et 3, **tout le monde ouvre le classeur de reprise**, y compris ceux
 qui ont tout réussi : les résultats saisis se comparent ainsi à une même base. Les trois classeurs
-sont publiés sous un nom suffixé de leur empreinte (§ 6.2).
+portent un nom suffixé de leur empreinte (§ 6.2). L'export brut est un fichier public du front ;
+les deux reprises ne sont servies que par l'API, à un poste dont l'écran est déjà projeté et dont
+les ateliers repris sont révélés : A1-13 et A1-14 pour l'acte 2, plus A2-04 et A2-07 pour l'acte 3.
+En rythme piloté, amener la séance sur l'écran de la reprise les révèle d'office.
 
 Les formules montrées à l'écran s'écrivent sans espace avant `;`, `:` ou `!`. La typographie
 automatique des contenus n'épargne qu'un texte qui commence par `=` : une formule glissée dans une
@@ -194,6 +197,8 @@ colonnes de l'acte 2 écrites en formules recopiées ligne à ligne. Ce ne sont 
 calculées de tableau : `exceljs` ne sait pas les écrire, et une ligne collée sous le tableau
 ne reçoit pas ces formules d'elle-même. Aucun écran
 catalogue ne porte une réponse : le classeur brut est la matière de l'exercice, pas son résultat.
+Les deux reprises sont des pièces jointes réservées à la séance (§ 6.2) : aucune URL du site ne
+les sert hors de la séance. Le dépôt du back étant public, elles y restent lisibles.
 
 ### 2.8 Notation
 
@@ -1057,13 +1062,25 @@ rouges d'abord dans le spec de la structure : un cours `b3` sans `fp-escape` se 
 
 ### 6.2 Pièce jointe d'écran
 
-Propriété commune facultative `pieceJointe` : `libelle` et `fichier`, chemin public absolu comme
-les images des B2 (`/assets/cours/b2-02/v2/…`). Le schéma stocké l'impose de la forme
-`^/assets/cours/[a-z0-9-]+/[A-Za-z0-9_-]+\.[0-9a-f]{8}\.(xlsx|csv|pdf)$` : ni `..`, ni
-sous-dossier, ni autre extension, et toujours un suffixe de huit caractères hexadécimaux. Elle est
-servie au poste, au pupitre et à la projection. Rendus :
+Propriété commune facultative `pieceJointe`, sous l'une de deux formes, selon la diffusion de
+l'écran (règle de publication `piece-jointe-selon-la-diffusion`) :
 
-- **poste étudiant** et **pupitre** : lien de téléchargement « Télécharger {libellé} » ;
+- **publique**, sur un écran du catalogue : `libelle` et `fichier`, chemin public absolu comme les
+  images des B2 (`/assets/cours/b2-02/v2/…`), de la forme
+  `^/assets/cours/[a-z0-9-]+/[A-Za-z0-9_-]+\.[0-9a-f]{8}\.(xlsx|csv|pdf)$`. C'est l'export brut
+  d'A1-02 ;
+- **réservée à la séance**, sur un écran de séance : `libelle` et `classeur`, chemin relatif au
+  dossier des classeurs du back, de la forme
+  `^[a-z0-9-]+/[A-Za-z0-9_-]+\.[0-9a-f]{8}\.(xlsx|csv|pdf)$`. Ce sont les deux reprises.
+
+Dans les deux cas : ni `..`, ni sous-dossier, ni autre extension, et toujours un suffixe de huit
+caractères hexadécimaux. Le sujet, le déroulé et le catalogue servent une pièce réservée sous la
+forme `{ libelle, reservee: true }`, sans le nom de son classeur. Rendus :
+
+- **poste étudiant** et **pupitre** : bouton « Télécharger {libellé} ». Une pièce publique se
+  télécharge à son adresse ; une pièce réservée par l'API, au poste par
+  `GET sessions/:id/pieces-jointes/:ecranId` avec le jeton du participant, au pupitre par
+  `GET sessions/:id/deroule/pieces-jointes/:ecranId` ;
 - **projection** : mention « Sur votre poste : {libellé} », sans lien.
 
 Nom des fichiers : chaque classeur porte les 8 premiers caractères hexadécimaux du SHA-256 de ses
@@ -1072,25 +1089,34 @@ L'écriture des classeurs les nomme d'après le fichier écrit et retire la vers
 spec des classeurs et la garde du front vérifient que le suffixe est bien le début de l'empreinte
 du fichier. Un classeur corrigé change donc de nom, et aucun cache ne sert l'ancien.
 
-Diffusion : la pièce jointe suit la diffusion de l'écran. Les deux classeurs de reprise sont
-portés par des écrans de séance, mais comme tout fichier sous `assets/`, ils restent lisibles par
-qui connaît leur adresse, et les dépôts du back et du front sont publics : leur nom n'est pas un
-secret. Le suffixe sert le cache, pas la protection. La reprise de l'acte 2 porte, nettoyées, les
-réponses notées de l'acte 1 (lignes uniques, CA converti, villes, quarantaine), et la reprise de
-l'acte 3 les colonnes cherchées de l'acte 2. Le risque est accepté : un étudiant qui irait chercher
-le classeur avant son écran contournerait l'exercice d'une séance en présentiel, où le formateur
-voit les postes ; aucun rendu certificatif ne repose sur ces valeurs. Les trois rendus sont vérifiés côte à côte : un
-écran de cours est le même en projection, au pupitre et au poste.
+Diffusion : la pièce jointe suit la diffusion de l'écran. La reprise de l'acte 2 porte, nettoyées,
+les réponses notées de l'acte 1 (lignes uniques, CA converti, villes, quarantaine), et la reprise
+de l'acte 3 les colonnes cherchées de l'acte 2. Les dépôts du back et du front sont publics : un
+fichier sous `assets/` serait lisible par qui connaît son adresse, et le suffixe sert le cache, pas
+la protection. Les reprises ne sont donc pas des assets du site : le poste ne les obtient qu'une
+fois leur écran projeté (`404` `ECRAN_NON_SERVI` avant) et les ateliers qu'elles `reprennent`
+révélés (`409` `PIECE_JOINTE_RETENUE` avant), avec son jeton de participant, dans la limite de
+vingt téléchargements par minute ; la réponse porte `Cache-Control: private, no-store`. En rythme
+libre, le formateur révèle lui-même ces ateliers avant d'ouvrir la reprise. Le formateur
+propriétaire de la séance, ou un administrateur, les télécharge depuis le pupitre avant la
+projection. Après la clôture, le poste reçoit toutes les reprises du cours. Le dépôt du back
+restant public, ses classeurs y sont lisibles : cette limite est connue et hors du périmètre du
+site. Les trois
+rendus sont vérifiés côte à côte : un écran de cours est le même en projection, au pupitre et au
+poste.
 
 ### 6.3 Générateur et classeurs
 
 Côté back : `b3-01.donnees.ts` (paramètres, noms des classeurs, valeurs attendues en constantes)
 dans les contenus ; générateur et écriture des classeurs sous `test/helpers/cours-b3-01/` ;
-classeurs et manifeste versionnés sous `test/fixtures/formations/b3-01/`. Côté front : copie des
-classeurs dans `src/assets/cours/b3-01/`, copie du manifeste dans
-`src/testing/fixtures/b3-01.classeurs.manifest.json` (hors des assets servis), et un test
-`node --test` de `test:guards` qui vérifie l'empreinte de chaque fichier copié contre le
-manifeste et son suffixe contre cette empreinte. Le manifeste relie ainsi les deux copies.
+classeurs et manifeste versionnés sous `src/modules/formations/infrastructure/classeurs/b3-01/`,
+que l'adaptateur `ClasseursSurDisque` lit. Le build (`scripts/copier-classeurs.mjs`) copie dans
+`dist/` les classeurs de ce dossier, sans le manifeste ; un test de `test:guards` vérifie qu'ils y
+sont octet pour octet. Côté front : copie du seul export brut dans `src/assets/cours/b3-01/`,
+copie du manifeste dans `src/testing/fixtures/b3-01.classeurs.manifest.json` (hors des assets
+servis), et un test `node --test` de `test:guards` qui vérifie que chaque fichier servi est la
+pièce publique d'un écran de l'instantané, son empreinte contre le manifeste et son suffixe contre
+cette empreinte. Le manifeste relie ainsi les deux copies.
 
 Le corrigé formateur sera recalculé par Microsoft Excel pour Mac, piloté par AppleScript
 (ouverture, calcul forcé, enregistrement en `xlsx` sous un autre nom), dès qu'Office sera installé
@@ -1127,12 +1153,12 @@ v2 `grid`, les familles par v2 `table`.
 
 ### 8.2 Catalogue des médias
 
-| Fichier                                 | Rôle                               | Écran | Diffusion |
-| --------------------------------------- | ---------------------------------- | ----- | --------- |
-| `B3-01_export_ventes.<empreinte>.xlsx`  | export brut                        | A1-02 | catalogue |
-| `B3-01_reprise_acte_2.<empreinte>.xlsx` | reprise du début de l'acte 2       | A2-01 | seance    |
-| `B3-01_reprise_acte_3.<empreinte>.xlsx` | reprise du début de l'acte 3       | A3-02 | seance    |
-| `classeurs.manifest.json` (non servi)   | empreintes des fichiers et onglets | —     | —         |
+| Fichier                                 | Rôle                               | Écran | Diffusion | Servi par                     |
+| --------------------------------------- | ---------------------------------- | ----- | --------- | ----------------------------- |
+| `B3-01_export_ventes.<empreinte>.xlsx`  | export brut                        | A1-02 | catalogue | front, `/assets/cours/b3-01/` |
+| `B3-01_reprise_acte_2.<empreinte>.xlsx` | reprise du début de l'acte 2       | A2-01 | seance    | API, poste et pupitre         |
+| `B3-01_reprise_acte_3.<empreinte>.xlsx` | reprise du début de l'acte 3       | A3-02 | seance    | API, poste et pupitre         |
+| `classeurs.manifest.json` (non servi)   | empreintes des fichiers et onglets | —     | —         | —                             |
 
 ### 8.3 Sources
 

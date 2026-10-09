@@ -40,6 +40,7 @@ import {
 } from './corriges.factory';
 import {
   buildAnswerRecord,
+  buildBareme,
   buildParticipantRecord,
   buildSessionRecord,
   createMockParticipantsRepo,
@@ -808,6 +809,21 @@ export function monterDepotsDeParticipation(
     ...depots,
     participation: creerParticipationEnSeance({ ...depots, catalogue }),
   };
+}
+
+export function buildSeanceDuCours(
+  cours: Cours,
+  graine: number,
+  session: Partial<SessionRecord> = {},
+): SessionRecord {
+  return buildSessionRecord({
+    courseSlug: cours.slug,
+    bareme: buildBareme({
+      tirages: [{ seed: graine, solutions: tirer(cours, graine).solutions }],
+    }),
+    ecranCourant: cours.ecrans.length - 1,
+    ...session,
+  });
 }
 
 export function monterParticipationSurLeDernierEcran(cours: Cours) {

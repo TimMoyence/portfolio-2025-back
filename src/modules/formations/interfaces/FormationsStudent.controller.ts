@@ -42,7 +42,9 @@ import { SaveFreeResponseUseCase } from '../application/SaveFreeResponse.useCase
 import { StreamSessionUseCase } from '../application/StreamSession.useCase';
 import { SubmitAnswerUseCase } from '../application/SubmitAnswer.useCase';
 import { SubmitProductionUseCase } from '../application/SubmitProduction.useCase';
+import { TelechargerPieceJointeUseCase } from '../application/TelechargerPieceJointe.useCase';
 import { TenterEnigmeUseCase } from '../application/TenterEnigme.useCase';
+import type { ClasseurTelecharge } from '../domain/IClasseursDeCours.port';
 import { DeclarerJalonUseCase } from '../application/DeclarerJalon.useCase';
 import { DefisUseCase } from '../application/Defis.useCase';
 import { LireEtatParticipantUseCase } from '../application/LireEtatParticipant.useCase';
@@ -79,6 +81,7 @@ import {
   LIMITE_INCIDENTS_PAR_PARTICIPANT,
   LIMITE_JALONS_PAR_PARTICIPANT,
   LIMITE_JOIN_PAR_CODE,
+  LIMITE_PIECES_JOINTES_PAR_PARTICIPANT,
   LIMITE_RAPPELS_PAR_PARTICIPANT,
   LIMITE_REPONSES_PAR_PARTICIPANT,
   LIMITE_REVISION_PAR_PARTICIPANT,
@@ -91,6 +94,7 @@ import {
   EN_TETE_JETON,
   ParticipantTokenService,
 } from './ParticipantToken.service';
+import { TelechargementDePieceJointe } from './piece-jointe-telechargee';
 
 @ApiTags('formations')
 @Public()
@@ -109,6 +113,7 @@ export class FormationsStudentController {
     private readonly streamSession: StreamSessionUseCase,
     private readonly dueQuestions: DueQuestionsUseCase,
     private readonly lireSujet: LireSujetUseCase,
+    private readonly telechargerPieceJointe: TelechargerPieceJointeUseCase,
     private readonly saveFreeResponse: SaveFreeResponseUseCase,
     private readonly tokens: ParticipantTokenService,
     private readonly clesEtudiants: CleEtudiantService,
@@ -484,6 +489,35 @@ export class FormationsStudentController {
       sessionId,
       participantId: request.participantId!,
     });
+  }
+
+  @LimiteParParticipant(LIMITE_PIECES_JOINTES_PAR_PARTICIPANT)
+  @UseGuards(ParticipantTokenGuard)
+  @Get('sessions/:id/pieces-jointes/:ecranId')
+  @TelechargementDePieceJointe(
+    'Sert au participant le classeur réservé d un écran déjà projeté',
+  )
+  @ApiUnauthorizedResponse({ description: 'Jeton de participant invalide' })
+  @ApiNotFoundResponse({
+    description:
+      'Écran pas encore projeté au poste, ou dont l’écran corrigé reste caché (ECRAN_NON_SERVI) ; écran sans classeur réservé (PIECE_JOINTE_INTROUVABLE)',
+  })
+  @ApiConflictResponse({
+    description:
+      'Classeur portant les réponses d’une activité dont la correction n’est pas encore révélée (PIECE_JOINTE_RETENUE)',
+  })
+  @ApiTooManyRequestsResponse({
+    description: 'Plus de vingt téléchargements par minute depuis ce poste',
+  })
+  pieceJointe(
+    @Param('id', ParseUUIDPipe) sessionId: string,
+    @Param('ecranId') ecranId: string,
+    @Req() request: Request,
+  ): Promise<ClasseurTelecharge> {
+    return this.telechargerPieceJointe.pourLeParticipant(
+      { sessionId, participantId: request.participantId! },
+      ecranId,
+    );
   }
 
   @LimiteParParticipant(LIMITE_FLUX_PAR_PARTICIPANT)

@@ -225,6 +225,30 @@ describe('tirer', () => {
     expect(sujet).not.toContain(aDire);
   });
 
+  it('ne sert pas la correction sur place glissée dans les propriétés d un récit', () => {
+    const explication = 'Il reste 4 098 lignes une fois les doublons retirés.';
+    const recit = {
+      id: 'E-RECIT',
+      brique: 'fp-story',
+      dureeMinutes: 3,
+      concepts: ['proportion'],
+      notes: 'Objectif : raconter.',
+      proprietes: {
+        titre: 'Le courriel de Nadia',
+        correctionSurPlace: {
+          explications: [{ reference: 'Q1', texte: explication }],
+        },
+      },
+    } as unknown as Ecran;
+
+    const sujet = JSON.stringify(
+      tirer(buildCoursDeTest({ ecrans: [recit] }), 0).sujet,
+    );
+
+    expect(sujet).not.toContain('"correctionSurPlace"');
+    expect(sujet).not.toContain(explication);
+  });
+
   it('range les donnees de chaque brique sous la propriete de la table partagee avec le front, soeurs du § 9.4 comprises', () => {
     const SOEURS_DU_CONTRAT = ['delaiMs', 'questionJumelle', 'etayage'];
     const ecrans = tirer(cours, 5).sujet.ecrans.filter(

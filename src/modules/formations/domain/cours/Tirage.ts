@@ -18,9 +18,10 @@ import { creerCacheLRU } from './CacheLRU';
 import type { Rng, Tirage } from './Aleatoire';
 import type { ConfusionId } from './banque/confusions';
 import { ecranCorrigePar, ecransCorrigeantDe } from './Corrections';
-import { estInteractif } from './Cours';
+import { estInteractif, estReservee } from './Cours';
 import type {
   AuMoinsUn,
+  PieceJointeServie,
   QuestionNumerique,
   QuestionVote,
   QuestionVoteTiree,
@@ -35,6 +36,7 @@ const PROPRIETES_RESERVEES_AU_FORMATEUR: readonly string[] = [
   'questions',
   'corrige',
   'banque',
+  'correctionSurPlace',
 ];
 
 const SEL_CARTES = 0x0ca7de5;
@@ -195,12 +197,23 @@ function projeterEcran(
     ...(ecran.cadrageDuRenvoi === undefined
       ? {}
       : { cadrageDuRenvoi: ecran.cadrageDuRenvoi }),
-    ...(ecran.pieceJointe === undefined
-      ? {}
-      : { pieceJointe: ecran.pieceJointe }),
+    ...pieceJointeServie(ecran),
     ...(ecranCorrige === null ? {} : { ecranCorrige }),
     ...(resoluPar.length === 0 ? {} : { resoluPar: [...resoluPar] }),
   };
+}
+
+function pieceJointeServie(ecran: Ecran): {
+  readonly pieceJointe?: PieceJointeServie;
+} {
+  const { pieceJointe } = ecran;
+  if (pieceJointe === undefined) {
+    return {};
+  }
+  if (estReservee(pieceJointe)) {
+    return { pieceJointe: { libelle: pieceJointe.libelle, reservee: true } };
+  }
+  return ecran.diffusion === 'catalogue' ? { pieceJointe } : {};
 }
 
 function questionAttachee(ecran: Ecran): QuestionVote | undefined {

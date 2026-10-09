@@ -15,7 +15,7 @@ import {
   correctionsRevelables,
   demandeDeCorrection,
 } from './CorrectionSurPlace';
-import { lireCoursStocke } from './CoursStocke';
+import { ContenuDeCoursInvalideError, lireCoursStocke } from './CoursStocke';
 import { correctionSurPlaceServie } from './Diffusion';
 import { assertPilotageCompatible, fusionnerPilotage } from './PilotageEcrans';
 import { tirer } from './Tirage';
@@ -40,6 +40,15 @@ describe('correction sur place', () => {
     expect(questionnaire.correctionSurPlace?.explications).toEqual(
       EXPLICATIONS_SUR_PLACE,
     );
+  });
+
+  it('refuse un récit qui porterait une correction sur place, que sa lecture laisserait dans ses propriétés', () => {
+    const recit = buildCoursDeBriques([
+      buildCorrigeSurPlace('fp-story', EXPLICATIONS_SUR_PLACE),
+    ]);
+
+    expect(() => lireCoursStocke(recit)).toThrow(ContenuDeCoursInvalideError);
+    expect(() => lireCoursStocke(recit)).toThrow(/correctionSurPlace/);
   });
 
   it('ne projette jamais les explications dans le sujet', () => {

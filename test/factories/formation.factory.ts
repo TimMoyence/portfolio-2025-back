@@ -1,5 +1,9 @@
 import type { Piege } from '../../src/modules/formations/domain/AnswerGrading';
 import type { Bareme } from '../../src/modules/formations/domain/Bareme';
+import type {
+  ClasseurTelecharge,
+  IClasseursDeCours,
+} from '../../src/modules/formations/domain/IClasseursDeCours.port';
 import type { BaremeV2 } from '../../src/modules/formations/domain/contrats/bareme';
 import type {
   AnswerRecord,
@@ -235,6 +239,23 @@ export function buildActeurFormation(
 
 export function buildAdministrateur(): ActeurFormation {
   return buildActeurFormation({ id: 'admin-uuid', roles: ['admin'] });
+}
+
+export const OCTETS_DU_CLASSEUR = Uint8Array.from([0x50, 0x4b, 0x03, 0x04]);
+
+export function buildClasseurTelecharge(
+  overrides: Partial<ClasseurTelecharge> = {},
+): ClasseurTelecharge {
+  return {
+    nom: 'B3-01_reprise_acte_2.xlsx',
+    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    contenu: OCTETS_DU_CLASSEUR,
+    ...overrides,
+  };
+}
+
+export function createMockClasseursDeCours(): jest.Mocked<IClasseursDeCours> {
+  return { lire: jest.fn().mockResolvedValue(buildClasseurTelecharge()) };
 }
 
 export function buildParticipantRecord(

@@ -20,7 +20,8 @@ export const ACTE_2: moteur.Acte = [
       modalite: 'solo',
       pieceJointe: {
         libelle: 'Classeur de reprise de l’acte 2',
-        fichier: CLASSEURS_B3_01.repriseActe2,
+        classeur: CLASSEURS_B3_01.repriseActe2,
+        reprend: ['B3-01-A1-13-TRI-ANOMALIES', 'B3-01-A1-14-ATELIER-NETTOYAGE'],
       },
       questions: [
         moteur.vote(

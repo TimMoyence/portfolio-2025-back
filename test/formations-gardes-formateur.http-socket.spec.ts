@@ -31,6 +31,7 @@ import { GLOBAL_VALIDATION_PIPE_OPTIONS } from './helpers/validation-pipe';
 const COURS = buildCoursDeTest({ slug: 'cours-gardes-formateur' });
 const SESSION_ID = 'c3333333-3333-4333-8333-333333333333';
 const PARTICIPANT_ID = 'e5555555-5555-4555-8555-555555555555';
+const ECRAN_ID = COURS.ecrans[0].id;
 const FORMATEUR_ID = 'a1111111-1111-4111-8111-111111111111';
 const JETON_FORMATEUR = 'jeton-formateur';
 const JETON_ETUDIANT_SANS_ROLE = 'jeton-sans-role';
@@ -54,6 +55,10 @@ const ROUTES_FORMATEUR: readonly RouteFormateur[] = [
   { methode: 'get', chemin: `sessions/${SESSION_ID}/results` },
   { methode: 'get', chemin: `sessions/${SESSION_ID}/report` },
   { methode: 'get', chemin: `sessions/${SESSION_ID}/deroule` },
+  {
+    methode: 'get',
+    chemin: `sessions/${SESSION_ID}/deroule/pieces-jointes/${ECRAN_ID}`,
+  },
   { methode: 'get', chemin: `sessions/${SESSION_ID}/free-responses` },
   { methode: 'get', chemin: `sessions/${SESSION_ID}/rappels/synthese` },
   { methode: 'get', chemin: `sessions/${SESSION_ID}/participants` },
@@ -221,6 +226,7 @@ describe('Gardes reelles des routes formateur (e2e http socket)', () => {
             ].toLowerCase();
           const chemin = (Reflect.getMetadata(PATH_METADATA, handler) as string)
             .replace(':participantId', PARTICIPANT_ID)
+            .replace(':ecranId', ECRAN_ID)
             .replace(':id', SESSION_ID)
             .replace(':slug', COURS.slug);
           return `${methode} ${chemin}`;

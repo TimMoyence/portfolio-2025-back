@@ -9,6 +9,7 @@ import {
   buildEcranAPieceJointe,
   buildEcranDeBrique,
   buildPieceJointe,
+  buildPieceJointeReservee,
   buildQuestionnaireCorrigeSurPlace,
   EXPLICATIONS_SUR_PLACE,
 } from '../../../../../test/factories/ecrans-stockes.factory';
@@ -25,18 +26,35 @@ describe('deroulePresentateur', () => {
   const ecran = (id: string): EcranDeroule =>
     deroule.ecrans.find((candidat) => candidat.id === id)!;
 
-  it('sert au pupitre la pièce jointe d un écran de séance', () => {
+  it('sert au pupitre la pièce jointe publique d un écran du catalogue', () => {
     const avecClasseur = lireCoursStocke(
       buildCoursDeBriques([
         buildEcranDeBrique('fp-quote'),
-        buildEcranAPieceJointe('fp-vote'),
+        buildEcranAPieceJointe('fp-story', buildPieceJointe(), {
+          diffusion: 'catalogue',
+        }),
       ]),
     );
 
-    const [citation, vote] = deroulePresentateur(avecClasseur, 0).ecrans;
+    const [citation, recit] = deroulePresentateur(avecClasseur, 0).ecrans;
 
-    expect(vote.pieceJointe).toEqual(buildPieceJointe());
+    expect(recit.pieceJointe).toEqual(buildPieceJointe());
     expect(citation).not.toHaveProperty('pieceJointe');
+  });
+
+  it('sert au pupitre une pièce réservée sans nommer son classeur, téléchargé par la séance', () => {
+    const avecReprise = lireCoursStocke(
+      buildCoursDeBriques([
+        buildEcranAPieceJointe('fp-vote', buildPieceJointeReservee()),
+      ]),
+    );
+
+    const [vote] = deroulePresentateur(avecReprise, 0).ecrans;
+
+    expect(vote.pieceJointe).toEqual({
+      libelle: buildPieceJointeReservee().libelle,
+      reservee: true,
+    });
   });
 
   it('reprend le sujet du tirage de reference', () => {

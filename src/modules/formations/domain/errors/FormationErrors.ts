@@ -274,6 +274,24 @@ export class TentativesEpuiseesError extends ResourceConflictError {
   }
 }
 
+export class PieceJointeIntrouvableError extends ResourceNotFoundError {
+  readonly code = 'PIECE_JOINTE_INTROUVABLE';
+
+  constructor(screenId: string) {
+    super(`L’écran ${screenId} ne joint aucun classeur réservé à la séance.`);
+  }
+}
+
+export class PieceJointeRetenueError extends ResourceConflictError {
+  readonly code = 'PIECE_JOINTE_RETENUE';
+
+  constructor(screenId: string) {
+    super(
+      `Le classeur de l’écran ${screenId} porte les réponses d’une activité encore ouverte : il sera servi une fois sa correction révélée.`,
+    );
+  }
+}
+
 export class EcranNonServiError extends ResourceNotFoundError {
   readonly code = 'ECRAN_NON_SERVI';
 

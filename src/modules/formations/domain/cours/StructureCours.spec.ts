@@ -3,6 +3,8 @@ import {
   buildCorrectionDExemple,
   buildEcranDeBrique,
   buildEcranDeTableau,
+  buildPieceJointe,
+  buildPieceJointeReservee,
   buildProprietesStockees,
   NOTES_DU_FORMATEUR,
 } from '../../../../../test/factories/ecrans-stockes.factory';
@@ -46,7 +48,7 @@ const avecAtelierDe = (dureeMinutes: number): Cours =>
   ]);
 
 describe('verifierStructure', () => {
-  it('expose les vingt et une regles de structure dans l ordre applique aux violations', () => {
+  it('expose les vingt-trois regles de structure dans l ordre applique aux violations', () => {
     expect(REGLES_STRUCTURE).toEqual([
       'exposition-continue',
       'ratio-interaction',
@@ -63,6 +65,8 @@ describe('verifierStructure', () => {
       'atelier-questions-fermees',
       'confidentialite',
       'catalogue-sans-question',
+      'piece-jointe-selon-la-diffusion',
+      'reprise-apres-ses-activites',
       'media-sans-licence',
       'options-neutres',
       'gabarit-budget',
@@ -523,6 +527,68 @@ describe('verifierStructure — diffusion, medias et options', () => {
 
     expect(regles(cours)).toEqual(['catalogue-sans-question']);
   });
+
+  it('refuse une pièce jointe publique sur un écran de séance : n importe qui la téléchargerait avant la séance', () => {
+    const cours = recomposer(base, [
+      ouverture,
+      citation,
+      { ...atelier, pieceJointe: buildPieceJointe() },
+      cloture,
+    ]);
+
+    expect(regles(cours)).toEqual(['piece-jointe-selon-la-diffusion']);
+  });
+
+  it('refuse une pièce réservée sur un écran du catalogue : hors séance, personne ne pourrait la télécharger', () => {
+    const cours = recomposer(base, [
+      ouverture,
+      {
+        ...citation,
+        diffusion: 'catalogue',
+        pieceJointe: buildPieceJointeReservee(),
+      },
+      atelier,
+      cloture,
+    ]);
+
+    expect(regles(cours)).toEqual(['piece-jointe-selon-la-diffusion']);
+  });
+
+  it('accepte une pièce publique au catalogue et une pièce réservée en séance', () => {
+    const cours = recomposer(base, [
+      ouverture,
+      { ...citation, diffusion: 'catalogue', pieceJointe: buildPieceJointe() },
+      {
+        ...atelier,
+        pieceJointe: buildPieceJointeReservee({ reprend: [ouverture.id] }),
+      },
+      cloture,
+    ]);
+
+    expect(regles(cours)).toEqual([]);
+  });
+
+  it.each([
+    ['un écran absent du cours', () => 'B2-01-A9-99-ABSENT'],
+    ['un écran qui la suit', () => cloture.id],
+    ['l écran qui la porte', () => atelier.id],
+    ['un écran sans activité', () => citation.id],
+  ])(
+    'refuse une pièce réservée qui reprend %s : aucune révélation ne fermerait ses réponses',
+    (_cas, repris) => {
+      const cours = recomposer(base, [
+        ouverture,
+        citation,
+        {
+          ...atelier,
+          pieceJointe: buildPieceJointeReservee({ reprend: [repris()] }),
+        },
+        cloture,
+      ]);
+
+      expect(regles(cours)).toEqual(['reprise-apres-ses-activites']);
+    },
+  );
 
   const recitIllustre = (src: string): Ecran =>
     lireEcranStocke(

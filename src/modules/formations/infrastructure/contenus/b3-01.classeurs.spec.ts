@@ -24,7 +24,7 @@ import { ongletDe } from '../../../../../test/helpers/cours-b3-01/modele';
 import { CLASSEURS_B3_01, VALEURS_B3_01 } from './b3-01.donnees';
 
 const RACINE = join(__dirname, '../../../../..');
-const DOSSIER_DES_CLASSEURS = join(RACINE, 'test/fixtures/formations/b3-01');
+const DOSSIER_DES_CLASSEURS = join(__dirname, '../classeurs/b3-01');
 const CORRIGE_FORMATEUR = join(
   RACINE,
   '.tmp/b3-01/B3-01_corrige_formateur.xlsx',
@@ -65,22 +65,22 @@ describe('classeurs du B3-01', () => {
         nomAttendu(publie.base, empreinteDuFichier(cheminDe(publie))),
       );
     }
-    expect(
-      Object.fromEntries(
-        classeurs.map(({ role, fichier }) => [
-          role,
-          `/assets/cours/b3-01/${fichier}`,
-        ]),
-      ),
-    ).toEqual(CLASSEURS_B3_01);
+    const fichiers = Object.fromEntries(
+      classeurs.map(({ role, fichier }) => [role, fichier]),
+    );
+    expect(CLASSEURS_B3_01).toEqual({
+      brut: `/assets/cours/b3-01/${fichiers.brut}`,
+      repriseActe2: `b3-01/${fichiers.repriseActe2}`,
+      repriseActe3: `b3-01/${fichiers.repriseActe3}`,
+    });
     expect(CLASSEURS_B3_01.brut).toMatch(
       /^\/assets\/cours\/b3-01\/B3-01_export_ventes\.[0-9a-f]{8}\.xlsx$/,
     );
     expect(CLASSEURS_B3_01.repriseActe2).toMatch(
-      /^\/assets\/cours\/b3-01\/B3-01_reprise_acte_2\.[0-9a-f]{8}\.xlsx$/,
+      /^b3-01\/B3-01_reprise_acte_2\.[0-9a-f]{8}\.xlsx$/,
     );
     expect(CLASSEURS_B3_01.repriseActe3).toMatch(
-      /^\/assets\/cours\/b3-01\/B3-01_reprise_acte_3\.[0-9a-f]{8}\.xlsx$/,
+      /^b3-01\/B3-01_reprise_acte_3\.[0-9a-f]{8}\.xlsx$/,
     );
   });
 

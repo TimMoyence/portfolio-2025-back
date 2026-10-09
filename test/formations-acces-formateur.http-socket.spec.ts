@@ -17,6 +17,7 @@ import {
   monterApplicationFormations,
   PREFIXE_API,
   serveurHttpDe,
+  simulerSeance,
 } from './helpers/formations-harness';
 import { applicationDeLaSuite } from './helpers/nest-test-app';
 import {
@@ -82,9 +83,9 @@ describe('Acces formateur aux annotations, participants et reponses libres (e2e 
     depots.annotations.save.mock.calls.length;
 
   beforeEach(() => {
-    jest.clearAllMocks();
-    depots.sessions.findById.mockResolvedValue(seance());
-    depots.participants.findById.mockResolvedValue(
+    simulerSeance(
+      depots,
+      seance(),
       buildParticipantRecord({ id: PARTICIPANT_ID, sessionId: SESSION_ID }),
     );
   });

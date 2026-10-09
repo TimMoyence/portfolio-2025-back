@@ -1,6 +1,7 @@
 import {
   buildCorrectionDeReponses,
   buildCorrectionDExemple,
+  buildCoursAPiecesJointes,
   buildCoursDeBriques,
   buildEcranDeBrique,
 } from '../../../../../test/factories/ecrans-stockes.factory';
@@ -43,5 +44,13 @@ describe('écrans de correction', () => {
       'B2-01-A2-03-ATELIER-1',
       'B2-01-A2-06-POINTS',
     ]);
+  });
+
+  it('révèle, dès sa reprise atteinte, chaque écran dont la pièce réservée porte les réponses', () => {
+    const aReprise = lireCoursStocke(buildCoursAPiecesJointes());
+    const [repris] = aReprise.ecrans;
+
+    expect(sourcesAReveler(aReprise, 0)).toEqual([]);
+    expect(sourcesAReveler(aReprise, 1)).toEqual([repris.id]);
   });
 });

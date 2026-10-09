@@ -10,6 +10,7 @@ import {
   buildEcranAPieceJointe,
   buildEcranDeBrique,
   buildPieceJointe,
+  buildPieceJointeReservee,
   buildProprietesStockees,
   buildProprietesTableDeVerite,
   QUESTIONS_LIBRES_DE_MISSION,
@@ -677,8 +678,8 @@ describe('stockage multi-briques (B1)', () => {
       expect(
         lireEcran(
           buildEcranAPieceJointe('fp-vote', buildPieceJointe({ fichier })),
-        ).pieceJointe?.fichier,
-      ).toBe(fichier);
+        ).pieceJointe,
+      ).toEqual(buildPieceJointe({ fichier }));
     });
 
     it.each([
@@ -722,6 +723,47 @@ describe('stockage multi-briques (B1)', () => {
     ])('refuse une pièce jointe %s', (_cas, pieceJointe) => {
       expect(() =>
         lireEcran(buildEcranAPieceJointe('fp-story', pieceJointe)),
+      ).toThrow(ContenuDeCoursInvalideError);
+    });
+
+    it('accepte un classeur réservé à la séance, rangé sous le dossier de son cours', () => {
+      expect(
+        lireEcran(buildEcranAPieceJointe('fp-vote', buildPieceJointeReservee()))
+          .pieceJointe,
+      ).toEqual(buildPieceJointeReservee());
+    });
+
+    it.each([
+      ['qui remonte d un dossier', '../b3-01/B3-01_reprise.0c1d2e3f.xlsx'],
+      [
+        'qui remonte depuis le dossier du cours',
+        'b3-01/../B3-01.0c1d2e3f.xlsx',
+      ],
+      ['sans dossier de cours', 'B3-01_reprise.0c1d2e3f.xlsx'],
+      ['absolu', '/b3-01/B3-01_reprise.0c1d2e3f.xlsx'],
+      ['rangé dans un sous-dossier', 'b3-01/reprises/B3-01.0c1d2e3f.xlsx'],
+      ['encodé', 'b3-01/%2e%2e%2fsecret.0c1d2e3f.xlsx'],
+      ['sans empreinte', 'b3-01/B3-01_reprise.xlsx'],
+      ['exécutable', 'b3-01/B3-01_reprise.0c1d2e3f.exe'],
+    ])('refuse un classeur réservé %s', (_cas, classeur) => {
+      expect(() =>
+        lireEcran(
+          buildEcranAPieceJointe(
+            'fp-vote',
+            buildPieceJointeReservee({ classeur }),
+          ),
+        ),
+      ).toThrow(ContenuDeCoursInvalideError);
+    });
+
+    it('refuse une pièce jointe à la fois publique et réservée', () => {
+      expect(() =>
+        lireEcran(
+          buildEcranAPieceJointe('fp-vote', {
+            ...buildPieceJointe(),
+            classeur: buildPieceJointeReservee().classeur,
+          }),
+        ),
       ).toThrow(ContenuDeCoursInvalideError);
     });
 

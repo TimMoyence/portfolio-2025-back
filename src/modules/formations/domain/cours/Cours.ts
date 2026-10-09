@@ -234,9 +234,30 @@ export interface SocleHistorique {
   readonly pieceJointe?: PieceJointe;
 }
 
-export interface PieceJointe {
+interface PieceJointePublique {
   readonly libelle: string;
   readonly fichier: string;
+}
+
+export interface PieceJointeReservee {
+  readonly libelle: string;
+  readonly classeur: string;
+  readonly reprend: readonly string[];
+}
+
+export type PieceJointe = PieceJointePublique | PieceJointeReservee;
+
+interface PieceJointeServieEnSeance {
+  readonly libelle: string;
+  readonly reservee: true;
+}
+
+export type PieceJointeServie = PieceJointePublique | PieceJointeServieEnSeance;
+
+export function estReservee(
+  pieceJointe: PieceJointe,
+): pieceJointe is PieceJointeReservee {
+  return 'classeur' in pieceJointe;
 }
 
 export interface ExplicationDeCorrection {

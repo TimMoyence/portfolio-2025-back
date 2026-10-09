@@ -247,3 +247,60 @@ describe('OpenAPI contrat B2-01', () => {
     expect(servie('/sessions/{id}/sujet')).toBe(true);
   });
 });
+
+describe('OpenAPI des pièces jointes réservées', () => {
+  let document: DocumentOpenApi;
+
+  beforeAll(async () => {
+    const app = await monterApplicationFormations(createMockDepotsFormations());
+    document = SwaggerModule.createDocument(app, new DocumentBuilder().build());
+    await fermerApplication(app);
+  });
+
+  const reponsesDe = (suffixe: string): Record<string, string> => {
+    const chemin = Object.keys(document.paths).find((candidat) =>
+      candidat.endsWith(suffixe),
+    );
+    if (chemin === undefined) {
+      throw new Error(`Chemin OpenAPI absent : ${suffixe}`);
+    }
+    return Object.fromEntries(
+      Object.entries(document.paths[chemin].get?.responses ?? {}).map(
+        ([statut, reponse]) => [
+          statut,
+          reponse !== undefined && 'description' in reponse
+            ? reponse.description
+            : '',
+        ],
+      ),
+    );
+  };
+
+  it('documente au poste la reprise retenue, le plafond et l écran pas encore servi', () => {
+    const poste = reponsesDe('/sessions/{id}/pieces-jointes/{ecranId}');
+
+    expect({
+      retenue: poste['409'],
+      plafond: poste['429'],
+      introuvable: poste['404'],
+    }).toEqual({
+      retenue: expect.stringContaining('PIECE_JOINTE_RETENUE'),
+      plafond: expect.any(String),
+      introuvable: expect.stringMatching(
+        /ECRAN_NON_SERVI.*PIECE_JOINTE_INTROUVABLE/,
+      ),
+    });
+  });
+
+  it('ne promet au pupitre ni retenue ni écran non servi', () => {
+    const pupitre = reponsesDe(
+      '/sessions/{id}/deroule/pieces-jointes/{ecranId}',
+    );
+
+    expect({ retenue: pupitre['409'], introuvable: pupitre['404'] }).toEqual({
+      retenue: undefined,
+      introuvable: expect.stringContaining('PIECE_JOINTE_INTROUVABLE'),
+    });
+    expect(pupitre['404']).not.toContain('ECRAN_NON_SERVI');
+  });
+});

@@ -8,7 +8,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "prepare": "husky",
-    "build": "rm -rf dist && ./node_modules/.bin/tsc -p tsconfig.build.json --outDir dist",
+    "build": "rm -rf dist && ./node_modules/.bin/tsc -p tsconfig.build.json --outDir dist && node scripts/copier-classeurs.mjs",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "format:check": "prettier --check \"src/**/*.ts\" \"test/**/*.ts\" \"docs/**/*.md\" \"README.md\" \"CONTRIBUTING.md\" \"AGENTS.md\" \".github/**/*.{md,yml,yaml}\" \"*.{json,mjs,cjs,yml,yaml}\"",
     "start": "node -r tsconfig-paths/register -r ts-node/register src/main.ts",

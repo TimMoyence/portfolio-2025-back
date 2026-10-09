@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "0cb447a1f092520c9c56904bad80b40c86fa092be7b24fa6183baebf71d9b04a",
+  "empreinte": "376922d059db49751eb5bdc6ea47690191a9b71a6b70e589394b2b86f499b627",
   "sujet": {
     "id": "b3-01-donnee-brute-decision",
     "titre": "Expert Data : de la donnée brute à la décision",
@@ -874,7 +874,7 @@
         },
         "pieceJointe": {
           "libelle": "Classeur de reprise de l’acte 2",
-          "fichier": "/assets/cours/b3-01/B3-01_reprise_acte_2.67aba78a.xlsx"
+          "reservee": true
         }
       },
       {
@@ -1564,7 +1564,7 @@
         },
         "pieceJointe": {
           "libelle": "Classeur de reprise de l’acte 3",
-          "fichier": "/assets/cours/b3-01/B3-01_reprise_acte_3.88056d14.xlsx"
+          "reservee": true
         }
       },
       {
@@ -3552,7 +3552,7 @@
         },
         "pieceJointe": {
           "libelle": "Classeur de reprise de l’acte 2",
-          "fichier": "/assets/cours/b3-01/B3-01_reprise_acte_2.67aba78a.xlsx"
+          "reservee": true
         },
         "notes": "• Ouvrir d’abord le classeur de reprise, tous, y compris ceux qui ont tout réussi : les résultats se compareront sur la même base.\n• Montrer l’onglet Quarantaine : les lignes à demander, chacune avec son motif. Les dates ISO, que DATEVAL convertit sans ambiguïté, n’y sont plus ; les produits inconnus et les prix hors norme, que le contrôle de l’exercice 4 ne voyait pas, y sont.\n• Temps « réfléchir » du niveau 3 : vote non noté, 2 min de vote et 1 min de révélation.\n• Faire dire les deux familles dans l’ordre : on cherche la catégorie, puis on additionne.",
         "diffusion": "seance",
@@ -4667,7 +4667,7 @@
         },
         "pieceJointe": {
           "libelle": "Classeur de reprise de l’acte 3",
-          "fichier": "/assets/cours/b3-01/B3-01_reprise_acte_3.88056d14.xlsx"
+          "reservee": true
         },
         "notes": "• Ouvrir d’abord le classeur de reprise de l’acte 3, tous, y compris ceux qui ont tout réussi.\n• Temps « réfléchir » du niveau 5 : vote non noté, 1 min de vote et 1 min de révélation.\n• Révélation : redessiner au tableau les deux barres depuis zéro.",
         "diffusion": "seance",

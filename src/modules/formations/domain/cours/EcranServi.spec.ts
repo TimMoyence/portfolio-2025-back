@@ -5,8 +5,11 @@ import {
 import {
   buildCasAQuestionsLibres,
   buildCorrectionDeReponses,
+  buildCorrectionDExemple,
+  buildCoursAPiecesJointes,
   buildCoursDeBriques,
   buildEcranDeBrique,
+  buildPieceJointeReservee,
 } from '../../../../../test/factories/ecrans-stockes.factory';
 import { lireCoursStocke } from './CoursStocke';
 import { ResourceNotFoundError } from '../../../../common/domain/errors/ResourceNotFoundError';
@@ -15,12 +18,15 @@ import type { PilotageEcran } from '../contrats/pilotage';
 import {
   EcranNonServiError,
   PhaseFermeeError,
+  PieceJointeIntrouvableError,
+  PieceJointeRetenueError,
 } from '../errors/FormationErrors';
 import {
   activitesLibres,
   assertCorrectionNonProjetee,
   assertEcranServi,
   dernierEcranServi,
+  pieceJointeServieAuPoste,
   rangDeLaQuestion,
   rangDeLEcran,
 } from './EcranServi';
@@ -252,5 +258,108 @@ describe('assertCorrectionNonProjetee (SEC-1)', () => {
         ATELIER.screenId,
       );
     }).toThrow(PhaseFermeeError);
+  });
+});
+
+describe('pieceJointeServieAuPoste', () => {
+  const cours = lireCoursStocke(buildCoursAPiecesJointes());
+  const [REPRIS, REPRISE, PUBLIQUE] = cours.ecrans.map(({ id }) => id);
+  const seance = (
+    diffusion: Partial<DiffusionDeSeance> = {},
+    pilotageEcrans: Readonly<Record<string, PilotageEcran>> = {
+      [REPRIS]: { revele: true },
+    },
+  ) => ({ ...PILOTE, ...diffusion, pilotageEcrans });
+
+  it('rend la pièce réservée d un écran servi dont les écrans repris sont révélés', () => {
+    expect(pieceJointeServieAuPoste(seance(), cours, REPRISE)).toEqual(
+      buildPieceJointeReservee({ reprend: [REPRIS] }),
+    );
+  });
+
+  it.each([
+    ['en rythme piloté', {}],
+    [
+      'en rythme libre',
+      {
+        modeRythme: 'libre' as const,
+        intervalleLibre: { premier: 0, dernier: 2 },
+      },
+    ],
+  ])(
+    'retient la pièce tant qu un écran dont elle porte les réponses reste ouvert, %s',
+    (_cas, rythme) => {
+      expect(() =>
+        pieceJointeServieAuPoste(seance(rythme, {}), cours, REPRISE),
+      ).toThrow(PieceJointeRetenueError);
+    },
+  );
+
+  it('retient la pièce d un écran pas encore servi, même ses écrans repris révélés', () => {
+    expect(() =>
+      pieceJointeServieAuPoste(seance({ ecranCourant: 0 }), cours, REPRISE),
+    ).toThrow(EcranNonServiError);
+  });
+
+  it('rend la pièce une fois la séance close, sans révélation', () => {
+    expect(
+      pieceJointeServieAuPoste(
+        seance({ etat: 'terminee', ecranCourant: 0 }, {}),
+        cours,
+        REPRISE,
+      ),
+    ).toEqual(buildPieceJointeReservee({ reprend: [REPRIS] }));
+  });
+
+  it.each([
+    ['dont la pièce est publique', PUBLIQUE],
+    ['sans pièce jointe', REPRIS],
+    ['inconnu du cours', 'B2-01-A9-99-INCONNU'],
+  ])('ne trouve aucune pièce réservée sur un écran %s', (_cas, ecranId) => {
+    expect(() => pieceJointeServieAuPoste(seance(), cours, ecranId)).toThrow(
+      PieceJointeIntrouvableError,
+    );
+  });
+
+  describe('portée par un écran de correction, en rythme libre', () => {
+    const exercice = buildEcranDeBrique('fp-numeric');
+    const correction = buildCorrectionDExemple(exercice.screenId);
+    const coursCorrige = lireCoursStocke(
+      buildCoursDeBriques([
+        exercice,
+        {
+          ...correction,
+          proprietes: {
+            ...correction.proprietes,
+            pieceJointe: buildPieceJointeReservee(),
+          },
+        },
+      ]),
+    );
+    const libre = (
+      pilotageEcrans: Readonly<Record<string, PilotageEcran>>,
+    ) => ({
+      etat: 'en_cours' as const,
+      modeRythme: 'libre' as const,
+      ecranCourant: 0,
+      intervalleLibre: { premier: 0, dernier: 1 },
+      pilotageEcrans,
+    });
+
+    it('retient la pièce tant que l écran corrigé reste caché au poste', () => {
+      expect(() =>
+        pieceJointeServieAuPoste(libre({}), coursCorrige, correction.screenId),
+      ).toThrow(EcranNonServiError);
+    });
+
+    it('rend la pièce une fois l écran corrigé révélé', () => {
+      expect(
+        pieceJointeServieAuPoste(
+          libre({ [exercice.screenId]: { revele: true } }),
+          coursCorrige,
+          correction.screenId,
+        ),
+      ).toEqual(buildPieceJointeReservee());
+    });
   });
 });
