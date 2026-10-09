@@ -153,7 +153,9 @@ rapides sans retarder la correction collective.
 À l'ouverture des actes 2 et 3, **tout le monde ouvre le classeur de reprise**, y compris ceux
 qui ont tout réussi : les résultats saisis se comparent ainsi à une même base. Les trois classeurs
 portent un nom suffixé de leur empreinte (§ 6.2). L'export brut est un fichier public du front ;
-les deux reprises ne sont servies que par l'API, à un poste dont l'écran est déjà projeté.
+les deux reprises ne sont servies que par l'API, à un poste dont l'écran est déjà projeté et dont
+les ateliers repris sont révélés : A1-13 et A1-14 pour l'acte 2, plus A2-04 et A2-07 pour l'acte 3.
+En rythme piloté, amener la séance sur l'écran de la reprise les révèle d'office.
 
 Les formules montrées à l'écran s'écrivent sans espace avant `;`, `:` ou `!`. La typographie
 automatique des contenus n'épargne qu'un texte qui commence par `=` : une formule glissée dans une
@@ -195,8 +197,8 @@ colonnes de l'acte 2 écrites en formules recopiées ligne à ligne. Ce ne sont 
 calculées de tableau : `exceljs` ne sait pas les écrire, et une ligne collée sous le tableau
 ne reçoit pas ces formules d'elle-même. Aucun écran
 catalogue ne porte une réponse : le classeur brut est la matière de l'exercice, pas son résultat.
-Les deux reprises sont des pièces jointes réservées à la séance (§ 6.2) : aucune URL publique ne
-les sert.
+Les deux reprises sont des pièces jointes réservées à la séance (§ 6.2) : aucune URL du site ne
+les sert hors de la séance. Le dépôt du back étant public, elles y restent lisibles.
 
 ### 2.8 Notation
 
@@ -1091,11 +1093,15 @@ Diffusion : la pièce jointe suit la diffusion de l'écran. La reprise de l'acte
 les réponses notées de l'acte 1 (lignes uniques, CA converti, villes, quarantaine), et la reprise
 de l'acte 3 les colonnes cherchées de l'acte 2. Les dépôts du back et du front sont publics : un
 fichier sous `assets/` serait lisible par qui connaît son adresse, et le suffixe sert le cache, pas
-la protection. Les reprises ne sont donc pas des assets : le poste ne les obtient qu'une fois leur
-écran projeté (`404` `ECRAN_NON_SERVI` avant), avec son jeton de participant, dans la limite de
-vingt téléchargements par minute ; la réponse porte `Cache-Control: private, no-store`. Le
-formateur propriétaire de la séance, ou un administrateur, les télécharge depuis le pupitre avant
-la projection. Après la clôture, le poste garde l'accès aux reprises déjà projetées. Les trois
+la protection. Les reprises ne sont donc pas des assets du site : le poste ne les obtient qu'une
+fois leur écran projeté (`404` `ECRAN_NON_SERVI` avant) et les ateliers qu'elles `reprennent`
+révélés (`409` `PIECE_JOINTE_RETENUE` avant), avec son jeton de participant, dans la limite de
+vingt téléchargements par minute ; la réponse porte `Cache-Control: private, no-store`. En rythme
+libre, le formateur révèle lui-même ces ateliers avant d'ouvrir la reprise. Le formateur
+propriétaire de la séance, ou un administrateur, les télécharge depuis le pupitre avant la
+projection. Après la clôture, le poste reçoit toutes les reprises du cours. Le dépôt du back
+restant public, ses classeurs y sont lisibles : cette limite est connue et hors du périmètre du
+site. Les trois
 rendus sont vérifiés côte à côte : un écran de cours est le même en projection, au pupitre et au
 poste.
 

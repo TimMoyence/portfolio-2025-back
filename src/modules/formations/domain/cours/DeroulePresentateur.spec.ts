@@ -26,17 +26,19 @@ describe('deroulePresentateur', () => {
   const ecran = (id: string): EcranDeroule =>
     deroule.ecrans.find((candidat) => candidat.id === id)!;
 
-  it('sert au pupitre la pièce jointe d un écran de séance', () => {
+  it('sert au pupitre la pièce jointe publique d un écran du catalogue', () => {
     const avecClasseur = lireCoursStocke(
       buildCoursDeBriques([
         buildEcranDeBrique('fp-quote'),
-        buildEcranAPieceJointe('fp-vote'),
+        buildEcranAPieceJointe('fp-story', buildPieceJointe(), {
+          diffusion: 'catalogue',
+        }),
       ]),
     );
 
-    const [citation, vote] = deroulePresentateur(avecClasseur, 0).ecrans;
+    const [citation, recit] = deroulePresentateur(avecClasseur, 0).ecrans;
 
-    expect(vote.pieceJointe).toEqual(buildPieceJointe());
+    expect(recit.pieceJointe).toEqual(buildPieceJointe());
     expect(citation).not.toHaveProperty('pieceJointe');
   });
 

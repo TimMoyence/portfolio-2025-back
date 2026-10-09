@@ -8,7 +8,7 @@ import {
   questionsDe,
   questionsDuCours,
 } from './Cours';
-import { ecranCorrigePar } from './Corrections';
+import { ecranCorrigePar, ecransReprisPar } from './Corrections';
 import {
   controlerConfidentialite,
   type Manquement,
@@ -39,6 +39,7 @@ export const REGLES_STRUCTURE = [
   'confidentialite',
   'catalogue-sans-question',
   'piece-jointe-selon-la-diffusion',
+  'reprise-apres-ses-activites',
   'media-sans-licence',
   'options-neutres',
   'gabarit-budget',
@@ -765,6 +766,25 @@ function controlerPiecesJointes({ cours }: Analyse): readonly Manquement[] {
   });
 }
 
+function controlerReprises({ cours }: Analyse): readonly Manquement[] {
+  const rangs = rangsParNom(cours);
+  return cours.ecrans.flatMap((ecran, rang) =>
+    ecransReprisPar(ecran)
+      .filter((repris) => {
+        const rangRepris = rangs.get(repris);
+        return (
+          rangRepris === undefined ||
+          rangRepris >= rang ||
+          !estInteractif(cours.ecrans[rangRepris])
+        );
+      })
+      .map((repris) => ({
+        ecran: nomEcran(ecran, rang),
+        raison: `la pièce réservée de « ${nomEcran(ecran, rang)} » reprend « ${repris} », qui n'est pas une activité antérieure du cours : aucune révélation ne fermerait les réponses qu'elle porte.`,
+      })),
+  );
+}
+
 function mediasDe(valeur: unknown): readonly string[] {
   return cueillirDansArbre(valeur, (cle, element) =>
     CLES_DE_MEDIA.includes(cle) && typeof element === 'string'
@@ -846,6 +866,7 @@ const REGLES: readonly Regle[] = [
   },
   { id: 'catalogue-sans-question', controler: controlerCatalogue },
   { id: 'piece-jointe-selon-la-diffusion', controler: controlerPiecesJointes },
+  { id: 'reprise-apres-ses-activites', controler: controlerReprises },
   { id: 'media-sans-licence', controler: controlerMedias },
   { id: 'options-neutres', controler: controlerOptions },
   {

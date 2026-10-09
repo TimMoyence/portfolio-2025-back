@@ -16,12 +16,10 @@ import { tirer } from './Tirage';
 
 export const GRAINE_DU_CATALOGUE = 0;
 
-export const ECRAN_VERROUILLE = 'ecran-verrouille';
-
 export function ecranVerrouille(ecran: EcranPublic): EcranPublic {
   return {
     id: ecran.id,
-    type: ECRAN_VERROUILLE,
+    type: 'ecran-verrouille',
     titre: ecran.titre,
     duree: ecran.duree,
     interactif: false,

@@ -17,7 +17,7 @@ import {
   ApiProduces,
 } from '@nestjs/swagger';
 import { map, type Observable } from 'rxjs';
-import type { ClasseurTelecharge } from '../application/TelechargerPieceJointe.useCase';
+import type { ClasseurTelecharge } from '../domain/IClasseursDeCours.port';
 
 function fichierTelecharge({
   nom,

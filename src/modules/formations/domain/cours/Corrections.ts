@@ -1,4 +1,5 @@
 import type { Cours, Ecran } from '../contrats/cours';
+import { estReservee } from './Cours';
 
 export function ecranCorrigePar(ecran: Ecran): string | null {
   if (ecran.brique === 'fp-worked') {
@@ -18,14 +19,20 @@ export function ecranCorrigePar(ecran: Ecran): string | null {
   return null;
 }
 
+export function ecransReprisPar(ecran: Ecran): readonly string[] {
+  return ecran.pieceJointe !== undefined && estReservee(ecran.pieceJointe)
+    ? ecran.pieceJointe.reprend
+    : [];
+}
+
 export function sourcesAReveler(
   cours: Cours,
   dernierRangAtteint: number,
 ): readonly string[] {
-  return cours.ecrans
-    .slice(0, dernierRangAtteint + 1)
-    .map((ecran) => ecranCorrigePar(ecran))
-    .filter((source): source is string => source !== null);
+  return cours.ecrans.slice(0, dernierRangAtteint + 1).flatMap((ecran) => {
+    const source = ecranCorrigePar(ecran);
+    return [...(source === null ? [] : [source]), ...ecransReprisPar(ecran)];
+  });
 }
 
 export function correctionsDe(

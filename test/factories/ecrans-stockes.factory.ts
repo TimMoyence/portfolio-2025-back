@@ -430,12 +430,19 @@ export function buildPieceJointe(
   };
 }
 
+type PieceJointeReserveeBrute = {
+  libelle: string;
+  classeur: string;
+  reprend: string[];
+};
+
 export function buildPieceJointeReservee(
-  overrides: Partial<{ libelle: string; classeur: string }> = {},
-): { libelle: string; classeur: string } {
+  overrides: Partial<PieceJointeReserveeBrute> = {},
+): PieceJointeReserveeBrute {
   return {
     libelle: 'Classeur de reprise de l’acte 2',
     classeur: 'b3-01/B3-01_reprise_acte_2.3f9a1c0e.xlsx',
+    reprend: [],
     ...overrides,
   };
 }
@@ -452,11 +459,15 @@ export function buildEcranAPieceJointe(
 }
 
 export function buildCoursAPiecesJointes(
-  reservee: Record<string, unknown> = buildPieceJointeReservee(),
+  reservee: Partial<PieceJointeReserveeBrute> = {},
 ): ContenuDeCoursBrut {
+  const repris = buildEcranDeBrique('fp-numeric');
   return buildCoursDeBriques([
-    buildEcranDeBrique('fp-quote'),
-    buildEcranAPieceJointe('fp-vote', reservee),
+    repris,
+    buildEcranAPieceJointe(
+      'fp-vote',
+      buildPieceJointeReservee({ reprend: [repris.screenId], ...reservee }),
+    ),
     buildEcranAPieceJointe('fp-story', buildPieceJointe(), {
       diffusion: 'catalogue',
     }),

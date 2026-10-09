@@ -260,10 +260,12 @@ export function simulerSeance(
 export async function monterApplicationFormations(
   depots: DepotsFormations,
   catalogue: ICatalogueCours = CATALOGUE_FORMATIONS_TEST,
+  configurer: (app: INestApplication) => void = () => undefined,
 ): Promise<INestApplication> {
   const moduleRef = await compilerModuleFormations(depots, catalogue);
 
   const app = moduleRef.createNestApplication();
+  configurer(app);
   signerLesIdentitesDeTest(app);
   app.setGlobalPrefix(PREFIXE_API);
   app.useGlobalFilters(new AllExceptionsFilter(), new DomainExceptionFilter());

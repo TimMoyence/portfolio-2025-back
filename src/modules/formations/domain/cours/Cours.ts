@@ -242,6 +242,7 @@ interface PieceJointePublique {
 export interface PieceJointeReservee {
   readonly libelle: string;
   readonly classeur: string;
+  readonly reprend: readonly string[];
 }
 
 export type PieceJointe = PieceJointePublique | PieceJointeReservee;
@@ -257,30 +258,6 @@ export function estReservee(
   pieceJointe: PieceJointe,
 ): pieceJointe is PieceJointeReservee {
   return 'classeur' in pieceJointe;
-}
-
-const TYPES_DES_CLASSEURS = {
-  xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-  csv: 'text/csv; charset=utf-8',
-  pdf: 'application/pdf',
-} as const;
-
-const NOM_SUFFIXE_DE_SON_EMPREINTE =
-  /^(?:.*\/)?([A-Za-z0-9_-]+)\.[0-9a-f]{8}\.(xlsx|csv|pdf)$/;
-
-export function classeurATelecharger(classeur: string): {
-  readonly nom: string;
-  readonly type: string;
-} {
-  const correspondance = NOM_SUFFIXE_DE_SON_EMPREINTE.exec(classeur);
-  if (correspondance === null) {
-    throw new Error(`Classeur hors du format servi : ${classeur}`);
-  }
-  const [, base, extension] = correspondance;
-  return {
-    nom: `${base}.${extension}`,
-    type: TYPES_DES_CLASSEURS[extension as keyof typeof TYPES_DES_CLASSEURS],
-  };
 }
 
 export interface ExplicationDeCorrection {

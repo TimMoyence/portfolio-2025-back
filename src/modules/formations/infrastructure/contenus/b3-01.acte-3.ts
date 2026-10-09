@@ -59,6 +59,12 @@ export const ACTE_3: moteur.Acte = [
       pieceJointe: {
         libelle: 'Classeur de reprise de l’acte 3',
         classeur: CLASSEURS_B3_01.repriseActe3,
+        reprend: [
+          'B3-01-A1-13-TRI-ANOMALIES',
+          'B3-01-A1-14-ATELIER-NETTOYAGE',
+          'B3-01-A2-04-ATELIER-RECHERCHE',
+          'B3-01-A2-07-ATELIER-DELAIS-MARGE',
+        ],
       },
       questions: [
         moteur.vote(

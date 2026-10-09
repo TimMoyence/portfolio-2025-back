@@ -33,11 +33,9 @@ import { ListFreeResponsesUseCase } from '../application/ListFreeResponses.useCa
 import { OpenSessionUseCase } from '../application/OpenSession.useCase';
 import { StreamSessionUseCase } from '../application/StreamSession.useCase';
 import { SyntheseRappelsUseCase } from '../application/SyntheseRappels.useCase';
-import {
-  type ClasseurTelecharge,
-  TelechargerPieceJointeUseCase,
-} from '../application/TelechargerPieceJointe.useCase';
+import { TelechargerPieceJointeUseCase } from '../application/TelechargerPieceJointe.useCase';
 import type { DerouleCours } from '../domain/cours/DeroulePresentateur';
+import type { ClasseurTelecharge } from '../domain/IClasseursDeCours.port';
 import type { FreeResponseRecord } from '../domain/IFreeResponses.repository';
 import { ControlSessionRequestDto } from './dto/contrat/control-session.request.dto';
 import { SyntheseRappelsResponseDto } from './dto/contrat/synthese-rappels.response.dto';

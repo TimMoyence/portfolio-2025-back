@@ -21,7 +21,6 @@ import { ecranCorrigePar, ecransCorrigeantDe } from './Corrections';
 import { estInteractif, estReservee } from './Cours';
 import type {
   AuMoinsUn,
-  PieceJointe,
   PieceJointeServie,
   QuestionNumerique,
   QuestionVote,
@@ -198,18 +197,23 @@ function projeterEcran(
     ...(ecran.cadrageDuRenvoi === undefined
       ? {}
       : { cadrageDuRenvoi: ecran.cadrageDuRenvoi }),
-    ...(ecran.pieceJointe === undefined
-      ? {}
-      : { pieceJointe: pieceJointeServie(ecran.pieceJointe) }),
+    ...pieceJointeServie(ecran),
     ...(ecranCorrige === null ? {} : { ecranCorrige }),
     ...(resoluPar.length === 0 ? {} : { resoluPar: [...resoluPar] }),
   };
 }
 
-function pieceJointeServie(pieceJointe: PieceJointe): PieceJointeServie {
-  return estReservee(pieceJointe)
-    ? { libelle: pieceJointe.libelle, reservee: true }
-    : pieceJointe;
+function pieceJointeServie(ecran: Ecran): {
+  readonly pieceJointe?: PieceJointeServie;
+} {
+  const { pieceJointe } = ecran;
+  if (pieceJointe === undefined) {
+    return {};
+  }
+  if (estReservee(pieceJointe)) {
+    return { pieceJointe: { libelle: pieceJointe.libelle, reservee: true } };
+  }
+  return ecran.diffusion === 'catalogue' ? { pieceJointe } : {};
 }
 
 function questionAttachee(ecran: Ecran): QuestionVote | undefined {

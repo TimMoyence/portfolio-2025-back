@@ -80,6 +80,16 @@ describe('projeterCatalogue (B19)', () => {
     });
   });
 
+  it('ne sert pas la pièce publique qu une version antérieure portait sur un écran de séance', () => {
+    const cours = lireCoursStocke(
+      buildCoursDeBriques([
+        buildEcranAPieceJointe('fp-vote', buildPieceJointe()),
+      ]),
+    );
+
+    expect(tirer(cours, 0).sujet.ecrans[0]).not.toHaveProperty('pieceJointe');
+  });
+
   it('ne nomme jamais le classeur d une pièce réservée dans le sujet servi', () => {
     const cours = lireCoursStocke(
       buildCoursDeBriques([

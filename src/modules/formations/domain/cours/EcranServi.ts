@@ -1,10 +1,13 @@
 import type { Cours, Ecran } from '../contrats/cours';
-import { correctionsDe } from './Corrections';
-import { questionsDe } from './Cours';
+import { correctionsDe, ecranCorrigePar } from './Corrections';
+import { estReservee, questionsDe } from './Cours';
+import type { PieceJointeReservee } from './Cours';
 import type { PilotageEcran } from '../contrats/pilotage';
 import {
   EcranNonServiError,
   PhaseFermeeError,
+  PieceJointeIntrouvableError,
+  PieceJointeRetenueError,
 } from '../errors/FormationErrors';
 import type { FreeRange, PacingMode } from '../PacingMode';
 import type { SessionState } from '../SessionState';
@@ -15,6 +18,10 @@ export interface DiffusionDeSeance {
   readonly ecranCourant: number;
   readonly intervalleLibre: FreeRange | null;
 }
+
+type SeancePilotee = DiffusionDeSeance & {
+  readonly pilotageEcrans: Readonly<Record<string, PilotageEcran>>;
+};
 
 export function dernierEcranServi(
   seance: DiffusionDeSeance,
@@ -47,9 +54,7 @@ export function etayageAtteint(pilotage: PilotageEcran | undefined): number {
 }
 
 export function assertCorrectionNonProjetee(
-  seance: DiffusionDeSeance & {
-    readonly pilotageEcrans: Readonly<Record<string, PilotageEcran>>;
-  },
+  seance: SeancePilotee,
   cours: Cours,
   screenId: string,
 ): void {
@@ -64,6 +69,34 @@ export function assertCorrectionNonProjetee(
   ) {
     throw new PhaseFermeeError(screenId);
   }
+}
+
+export function pieceJointeServieAuPoste(
+  seance: SeancePilotee,
+  cours: Cours,
+  screenId: string,
+): PieceJointeReservee {
+  const rang = rangDeLEcran(cours, screenId);
+  if (rang < 0) {
+    throw new PieceJointeIntrouvableError(screenId);
+  }
+  const ecran = cours.ecrans[rang];
+  const revele = (source: string): boolean =>
+    seance.etat === 'terminee' ||
+    seance.pilotageEcrans[source]?.revele === true;
+  assertEcranServi(seance, rang, screenId, cours.ecrans.length);
+  const source = ecranCorrigePar(ecran);
+  if (source !== null && !revele(source)) {
+    throw new EcranNonServiError(screenId);
+  }
+  const { pieceJointe } = ecran;
+  if (pieceJointe === undefined || !estReservee(pieceJointe)) {
+    throw new PieceJointeIntrouvableError(screenId);
+  }
+  if (!pieceJointe.reprend.every(revele)) {
+    throw new PieceJointeRetenueError(screenId);
+  }
+  return pieceJointe;
 }
 
 export function rangDeLEcran(cours: Cours, screenId: string): number {

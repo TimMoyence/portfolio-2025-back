@@ -48,7 +48,7 @@ const avecAtelierDe = (dureeMinutes: number): Cours =>
   ]);
 
 describe('verifierStructure', () => {
-  it('expose les vingt-deux regles de structure dans l ordre applique aux violations', () => {
+  it('expose les vingt-trois regles de structure dans l ordre applique aux violations', () => {
     expect(REGLES_STRUCTURE).toEqual([
       'exposition-continue',
       'ratio-interaction',
@@ -66,6 +66,7 @@ describe('verifierStructure', () => {
       'confidentialite',
       'catalogue-sans-question',
       'piece-jointe-selon-la-diffusion',
+      'reprise-apres-ses-activites',
       'media-sans-licence',
       'options-neutres',
       'gabarit-budget',
@@ -557,12 +558,37 @@ describe('verifierStructure — diffusion, medias et options', () => {
     const cours = recomposer(base, [
       ouverture,
       { ...citation, diffusion: 'catalogue', pieceJointe: buildPieceJointe() },
-      { ...atelier, pieceJointe: buildPieceJointeReservee() },
+      {
+        ...atelier,
+        pieceJointe: buildPieceJointeReservee({ reprend: [ouverture.id] }),
+      },
       cloture,
     ]);
 
     expect(regles(cours)).toEqual([]);
   });
+
+  it.each([
+    ['un écran absent du cours', () => 'B2-01-A9-99-ABSENT'],
+    ['un écran qui la suit', () => cloture.id],
+    ['l écran qui la porte', () => atelier.id],
+    ['un écran sans activité', () => citation.id],
+  ])(
+    'refuse une pièce réservée qui reprend %s : aucune révélation ne fermerait ses réponses',
+    (_cas, repris) => {
+      const cours = recomposer(base, [
+        ouverture,
+        citation,
+        {
+          ...atelier,
+          pieceJointe: buildPieceJointeReservee({ reprend: [repris()] }),
+        },
+        cloture,
+      ]);
+
+      expect(regles(cours)).toEqual(['reprise-apres-ses-activites']);
+    },
+  );
 
   const recitIllustre = (src: string): Ecran =>
     lireEcranStocke(

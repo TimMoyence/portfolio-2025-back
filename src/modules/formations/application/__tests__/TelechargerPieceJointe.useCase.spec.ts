@@ -11,36 +11,40 @@ import {
 import {
   buildActeurFormation,
   buildAdministrateur,
+  buildClasseurTelecharge,
   buildParticipantRecord,
   createMockClasseursDeCours,
   createMockParticipantsRepo,
   createMockSessionsRepo,
-  OCTETS_DU_CLASSEUR,
 } from '../../../../../test/factories/formation.factory';
-import { verifierIntrouvables } from '../../../../../test/helpers/gardes-de-seance';
+import {
+  verifierGardesDeParticipant,
+  verifierIntrouvables,
+} from '../../../../../test/helpers/gardes-de-seance';
 import { lireCoursStocke } from '../../domain/cours/CoursStocke';
 import {
   EcranNonServiError,
   PieceJointeIntrouvableError,
+  PieceJointeRetenueError,
   SessionNotOwnedError,
 } from '../../domain/errors/FormationErrors';
 import type { SessionRecord } from '../../domain/ISessions.repository';
 import { LectureDeSeance } from '../LectureDeSeance';
-import { LireSujetUseCase } from '../LireSujet.useCase';
 import { TelechargerPieceJointeUseCase } from '../TelechargerPieceJointe.useCase';
 
 const SEED = 4242;
-const RESERVEE = buildPieceJointeReservee();
-const COURS = lireCoursStocke(buildCoursAPiecesJointes(RESERVEE));
-const [CITATION, VOTE, RECIT] = COURS.ecrans.map((ecran) => ecran.id);
-const SESSION = buildSeanceDuCours(COURS, SEED);
+const COURS = lireCoursStocke(buildCoursAPiecesJointes());
+const [REPRIS, VOTE, RECIT] = COURS.ecrans.map((ecran) => ecran.id);
+const RESERVEE = buildPieceJointeReservee({ reprend: [REPRIS] });
+const SESSION = buildSeanceDuCours(COURS, SEED, {
+  pilotageEcrans: { [REPRIS]: { revele: true } },
+});
 const PARTICIPANT = buildParticipantRecord({
   sessionId: SESSION.id,
   seed: SEED,
 });
 const PROPRIETAIRE = buildActeurFormation({ id: SESSION.teacherId });
-const XLSX =
-  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+const CLASSEUR = buildClasseurTelecharge();
 
 describe('TelechargerPieceJointeUseCase', () => {
   let sessions: ReturnType<typeof createMockSessionsRepo>;
@@ -70,7 +74,6 @@ describe('TelechargerPieceJointeUseCase', () => {
       catalogue,
     });
     sut = new TelechargerPieceJointeUseCase(
-      new LireSujetUseCase(participation),
       participation,
       new LectureDeSeance(sessions, catalogue),
       classeurs,
@@ -78,12 +81,8 @@ describe('TelechargerPieceJointeUseCase', () => {
   });
 
   describe('au poste du participant', () => {
-    it('sert le classeur réservé d un écran projeté, sous son nom sans empreinte', async () => {
-      await expect(pourLeParticipant(VOTE)).resolves.toEqual({
-        nom: 'B3-01_reprise_acte_2.xlsx',
-        type: XLSX,
-        contenu: OCTETS_DU_CLASSEUR,
-      });
+    it('sert le classeur réservé d un écran projeté dont les écrans repris sont révélés', async () => {
+      await expect(pourLeParticipant(VOTE)).resolves.toEqual(CLASSEUR);
       expect(classeurs.lire).toHaveBeenCalledWith(RESERVEE.classeur);
     });
 
@@ -94,17 +93,36 @@ describe('TelechargerPieceJointeUseCase', () => {
       expect(classeurs.lire).not.toHaveBeenCalled();
     });
 
-    it('sert le classeur une fois la séance close', async () => {
-      enSeance({ ecranCourant: 0, etat: 'terminee' });
+    it.each([
+      ['en rythme piloté', {}],
+      [
+        'en rythme libre, l écran de la reprise ouvert',
+        {
+          modeRythme: 'libre' as const,
+          intervalleLibre: { premier: 0, dernier: 2 },
+        },
+      ],
+    ])(
+      'refuse le classeur tant qu un écran dont il porte les réponses n est pas révélé, %s',
+      async (_cas, rythme) => {
+        enSeance({ ...rythme, pilotageEcrans: {} });
 
-      await expect(pourLeParticipant(VOTE)).resolves.toMatchObject({
-        nom: 'B3-01_reprise_acte_2.xlsx',
-      });
+        await expect(pourLeParticipant(VOTE)).rejects.toThrow(
+          PieceJointeRetenueError,
+        );
+        expect(classeurs.lire).not.toHaveBeenCalled();
+      },
+    );
+
+    it('sert le classeur une fois la séance close, sans révélation', async () => {
+      enSeance({ ecranCourant: 0, etat: 'terminee', pilotageEcrans: {} });
+
+      await expect(pourLeParticipant(VOTE)).resolves.toEqual(CLASSEUR);
     });
 
     it.each([
       ['dont la pièce jointe est publique, servie par le front', () => RECIT],
-      ['sans pièce jointe', () => CITATION],
+      ['sans pièce jointe', () => REPRIS],
       ['inconnu du cours', () => 'B2-01-A9-99-INCONNU'],
     ])('refuse un écran %s', async (_cas, ecranId) => {
       await expect(pourLeParticipant(ecranId())).rejects.toThrow(
@@ -113,8 +131,21 @@ describe('TelechargerPieceJointeUseCase', () => {
       expect(classeurs.lire).not.toHaveBeenCalled();
     });
 
+    it('ne lit la séance qu une fois par téléchargement', async () => {
+      await pourLeParticipant(VOTE);
+
+      expect(sessions.findById).toHaveBeenCalledTimes(1);
+      expect(participants.findById).toHaveBeenCalledTimes(1);
+    });
+
     verifierIntrouvables(() => ({
       sessions,
+      participants,
+      executer: () => pourLeParticipant(VOTE),
+      effetsInterdits: () => [classeurs.lire],
+    }));
+
+    verifierGardesDeParticipant(() => ({
       participants,
       executer: () => pourLeParticipant(VOTE),
       effetsInterdits: () => [classeurs.lire],
@@ -122,22 +153,18 @@ describe('TelechargerPieceJointeUseCase', () => {
   });
 
   describe('au pupitre du formateur', () => {
-    it('sert au propriétaire le classeur réservé, même avant sa projection', async () => {
-      enSeance({ ecranCourant: 0 });
+    it('sert au propriétaire le classeur réservé, avant sa projection et sa révélation', async () => {
+      enSeance({ ecranCourant: 0, pilotageEcrans: {} });
 
       await expect(
         sut.pourLeFormateur(SESSION.id, PROPRIETAIRE, VOTE),
-      ).resolves.toEqual({
-        nom: 'B3-01_reprise_acte_2.xlsx',
-        type: XLSX,
-        contenu: OCTETS_DU_CLASSEUR,
-      });
+      ).resolves.toEqual(CLASSEUR);
     });
 
     it('sert le classeur à un administrateur', async () => {
       await expect(
         sut.pourLeFormateur(SESSION.id, buildAdministrateur(), VOTE),
-      ).resolves.toMatchObject({ nom: 'B3-01_reprise_acte_2.xlsx' });
+      ).resolves.toEqual(CLASSEUR);
     });
 
     it('refuse le classeur à un formateur qui n est pas le propriétaire', async () => {

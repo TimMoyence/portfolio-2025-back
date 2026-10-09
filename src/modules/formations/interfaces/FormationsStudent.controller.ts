@@ -42,11 +42,9 @@ import { SaveFreeResponseUseCase } from '../application/SaveFreeResponse.useCase
 import { StreamSessionUseCase } from '../application/StreamSession.useCase';
 import { SubmitAnswerUseCase } from '../application/SubmitAnswer.useCase';
 import { SubmitProductionUseCase } from '../application/SubmitProduction.useCase';
-import {
-  type ClasseurTelecharge,
-  TelechargerPieceJointeUseCase,
-} from '../application/TelechargerPieceJointe.useCase';
+import { TelechargerPieceJointeUseCase } from '../application/TelechargerPieceJointe.useCase';
 import { TenterEnigmeUseCase } from '../application/TenterEnigme.useCase';
+import type { ClasseurTelecharge } from '../domain/IClasseursDeCours.port';
 import { DeclarerJalonUseCase } from '../application/DeclarerJalon.useCase';
 import { DefisUseCase } from '../application/Defis.useCase';
 import { LireEtatParticipantUseCase } from '../application/LireEtatParticipant.useCase';
