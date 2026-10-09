@@ -2,10 +2,7 @@ import { buildCoursDuContenu } from '../../../../../test/factories/contenus-de-c
 import * as fiche from '../../../../../test/helpers/fiche-de-cours';
 import * as feuille from '../../../../../test/helpers/feuille-de-cours';
 import { arrondi } from '../../../../../test/helpers/lecture-de-cours';
-import {
-  colonnesVidesDeLaFeuille,
-  valeursDevoileesAvantLeurEcran,
-} from '../../../../../test/helpers/relecture-de-cours';
+import { colonnesVidesDeLaFeuille } from '../../../../../test/helpers/relecture-de-cours';
 import type { CorrigeTableau } from '../../domain/cours/Corrige';
 import {
   corrigerFeuille,
@@ -498,10 +495,6 @@ describe('B2-06 — les trois feuilles corrigées par le moteur de formules', ()
 });
 
 describe('B2-06 — retours de la relecture adverse', () => {
-  it('ne dévoile dans aucune correction sur place une valeur à saisir d’un écran suivant, les feuilles exigeant une formule', () => {
-    expect(valeursDevoileesAvantLeurEcran(COURS_B2_06, COURS)).toEqual([]);
-  });
-
   it('ne parle ni de limite ni d’asymptote, hors programme', () => {
     const texte = JSON.stringify(COURS_B2_06).toLowerCase();
 

@@ -195,6 +195,9 @@ function projeterEcran(
     ...(ecran.cadrageDuRenvoi === undefined
       ? {}
       : { cadrageDuRenvoi: ecran.cadrageDuRenvoi }),
+    ...(ecran.pieceJointe === undefined
+      ? {}
+      : { pieceJointe: ecran.pieceJointe }),
     ...(ecranCorrige === null ? {} : { ecranCorrige }),
     ...(resoluPar.length === 0 ? {} : { resoluPar: [...resoluPar] }),
   };

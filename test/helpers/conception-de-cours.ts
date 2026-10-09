@@ -6,6 +6,10 @@ const ENTETE_DE_FICHE = /^#### (A\d-\d{2}) · `(B\d-\d{2}-[^`]+)`/;
 const TITRE_PUBLIC = /Titre public : « (.+) »$/;
 const PREMIER_CODE = /`([^`]+)`/;
 const RENDU_V2 = /v2 `([^`]+)`/;
+const TITRE_DES_REMEDIATIONS = 'Concepts, confusions et remédiations';
+const TITRE_DES_VALEURS = 'Les valeurs attendues';
+const EMPREINTE_DU_NOM = '<empreinte>';
+const CARACTERES_SPECIAUX = /[.*+?^${}()|[\]\\]/g;
 
 export interface LigneDeVueDEnsemble {
   readonly rang: number;
@@ -24,6 +28,12 @@ export interface MediaDuDocument {
   readonly licence: string;
   readonly fichiers: readonly string[];
   readonly attribution: string;
+}
+
+export interface PieceJointeDuDocument {
+  readonly motif: RegExp;
+  readonly ecran: string;
+  readonly diffusion: string;
 }
 
 export function lireConception(fichier: string): string {
@@ -98,17 +108,41 @@ export function titresPublics(document: string): ReadonlyMap<string, string> {
   return titres;
 }
 
+function enteteDeSection(document: string, titre: string): string {
+  const entete = document
+    .split('\n')
+    .find((ligne) => ligne.startsWith('### ') && ligne.endsWith(` ${titre}`));
+  if (entete === undefined) {
+    throw new Error(`section introuvable dans le document : ${titre}`);
+  }
+  return entete;
+}
+
 export function remediationsDuDocument(
   document: string,
 ): Readonly<Record<string, string>> {
   return Object.fromEntries(
-    lignesDeSection(document, '### 5.9', ['### 5.10'])
+    lignesDeSection(
+      document,
+      enteteDeSection(document, TITRE_DES_REMEDIATIONS),
+      ['### ', '## '],
+    )
       .filter((ligne) => ligne.startsWith('| `'))
       .map((ligne) => {
         const [confusion, , , cible] = cellules(ligne);
         return [premierCode(confusion), cible];
       }),
   );
+}
+
+export function lignesDesValeursAttendues(document: string): string[][] {
+  return lignesDeSection(
+    document,
+    enteteDeSection(document, TITRE_DES_VALEURS),
+    ['### ', '## '],
+  )
+    .filter((ligne) => ligne.startsWith('| `'))
+    .map(cellules);
 }
 
 export function mediasDuDocument(document: string): MediaDuDocument[] {
@@ -124,6 +158,27 @@ export function mediasDuDocument(document: string): MediaDuDocument[] {
         attribution: attribution.replace(/^« /, '').replace(/ »$/, ''),
       };
     });
+}
+
+export function piecesJointesDuDocument(
+  document: string,
+): PieceJointeDuDocument[] {
+  return lignesDeSection(document, '### 8.2', ['### 8.3'])
+    .filter((ligne) => ligne.startsWith('| `'))
+    .map(cellules)
+    .filter(([, , ecran]) => ecran !== '—')
+    .map(([fichier, , ecran, diffusion]) => ({
+      motif: motifDuNomPublie(premierCode(fichier)),
+      ecran,
+      diffusion,
+    }));
+}
+
+function motifDuNomPublie(nom: string): RegExp {
+  const morceaux = nom
+    .split(EMPREINTE_DU_NOM)
+    .map((morceau) => morceau.replaceAll(CARACTERES_SPECIAUX, '\\$&'));
+  return new RegExp(`^${morceaux.join('[0-9a-f]{8}')}$`, 'u');
 }
 
 export function texteNormalise(document: string): string {

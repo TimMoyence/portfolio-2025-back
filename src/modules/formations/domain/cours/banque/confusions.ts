@@ -480,6 +480,170 @@ const DEFINITIONS = {
     libelle:
       'Prendre l’ordonnée à l’origine b de z = ax + b pour le coefficient du modèle : ce coefficient vaut e^b.',
   },
+  'reference-absolue-ignoree': {
+    concept: 'reference-de-cellule',
+    libelle:
+      'Lire une formule recopiée sans voir ce que le $ fige : la référence figée ne glisse pas, la référence relative glisse.',
+  },
+  'identifiant-pris-pour-nombre': {
+    concept: 'jeu-de-donnees',
+    libelle:
+      'Prendre un identifiant qui contient des chiffres pour une quantité qu’on additionne.',
+  },
+  'lignes-comptees-pour-commandes': {
+    concept: 'granularite',
+    libelle:
+      'Compter les lignes quand on cherche les commandes : une commande compte autant de lignes que de produits.',
+  },
+  'libelle-pris-pour-cle': {
+    concept: 'cle-et-relation',
+    libelle:
+      'Relier deux tables par un nom ou une ville au lieu de leur identifiant commun.',
+  },
+  'suspect-corrige-sans-validation': {
+    concept: 'qualite-des-donnees',
+    libelle:
+      'Corriger seul une donnée douteuse au lieu de la signaler à qui peut la vérifier.',
+  },
+  'suppression-au-lieu-de-signalement': {
+    concept: 'qualite-des-donnees',
+    libelle:
+      'Supprimer une ligne douteuse au lieu de la mettre de côté avec son motif.',
+  },
+  'texte-pris-pour-nombre': {
+    concept: 'nettoyage',
+    libelle:
+      'Additionner une colonne dont certains nombres sont du texte : la somme les ignore sans prévenir.',
+  },
+  'casse-non-normalisee': {
+    concept: 'nettoyage',
+    libelle:
+      'Laisser une même ville s’écrire « Bordeaux » et « BORDEAUX » : Excel les confond, mais Power Query et les autres outils en comptent deux.',
+  },
+  'doublons-supprimes-sur-une-colonne': {
+    concept: 'nettoyage',
+    libelle:
+      'Dédoublonner sur une seule colonne et perdre des lignes distinctes qui la partagent.',
+  },
+  'plage-recherche-non-figee': {
+    concept: 'recherche-dans-une-table',
+    libelle:
+      'Recopier une recherche sans figer la table : la plage glisse et les dernières lignes ne sont plus trouvées.',
+  },
+  'critere-mal-ecrit': {
+    concept: 'agregation-conditionnelle',
+    libelle:
+      'Écrire un critère de comparaison sans joindre l’opérateur à la cellule par & (">="&H1), ou 15 au lieu de 15 %.',
+  },
+  'jours-calendaires-pour-ouvres': {
+    concept: 'calcul-sur-dates',
+    libelle: 'Soustraire deux dates quand le contrat compte des jours ouvrés.',
+  },
+  'plage-fixe-au-lieu-de-tableau': {
+    concept: 'tableau-croise-dynamique',
+    libelle:
+      'Construire sur une plage fixe qui ne voit pas les lignes ajoutées ensuite.',
+  },
+  'pourcentage-du-mauvais-total': {
+    concept: 'tableau-croise-dynamique',
+    libelle:
+      'Afficher la part du total général quand la question porte sur la part dans la ligne.',
+  },
+  'graphique-sans-question': {
+    concept: 'choix-du-graphique',
+    libelle:
+      'Choisir un graphique avant la question à laquelle il doit répondre.',
+  },
+  'objectif-annuel-pour-cumul': {
+    concept: 'tableau-de-bord',
+    libelle:
+      'Comparer un cumul de neuf mois à tous les objectifs de l’agence, sans filtrer la période.',
+  },
+  'evolution-sur-annee-pleine': {
+    concept: 'tableau-de-bord',
+    libelle:
+      'Comparer une année en cours, incomplète, à une année pleine au lieu de la même période.',
+  },
+  'kpi-sans-contexte': {
+    concept: 'tableau-de-bord',
+    libelle:
+      'Afficher un chiffre seul, sans objectif ni comparaison qui dise s’il est bon.',
+  },
+  'periode-mal-delimitee': {
+    concept: 'agregation-conditionnelle',
+    libelle:
+      'Agréger une autre période que celle de la question : la table entière au lieu des seuls mois demandés.',
+  },
+  'commandes-comptees-pour-lignes': {
+    concept: 'granularite',
+    libelle:
+      'Compter une commande quand on cherche ses lignes : une commande de trois produits occupe trois lignes.',
+  },
+  'type-de-variable-confondu': {
+    concept: 'jeu-de-donnees',
+    libelle:
+      'Ranger une date, une mesure ou un booléen sous un autre type : le type dit le calcul permis.',
+  },
+  'espaces-non-supprimes': {
+    concept: 'nettoyage',
+    libelle:
+      'Compter « Bordeaux » et « Bordeaux » suivi d’une espace comme deux villes faute de SUPPRESPACE.',
+  },
+  'part-douteuse-estimee-sans-mesure': {
+    concept: 'qualite-des-donnees',
+    libelle:
+      'Estimer à l’œil la part des lignes fausses ou douteuses au lieu de la mesurer, anomalie par anomalie.',
+  },
+  'cle-prise-pour-categorie': {
+    concept: 'cle-et-relation',
+    libelle:
+      'Ranger un identifiant comme agence_id ou commercial_id parmi les catégories : c’est un code qui désigne une seule entité, et son libellé vit dans l’onglet qu’il désigne, quand il existe.',
+  },
+  'correction-certaine-renvoyee-a-un-humain': {
+    concept: 'qualite-des-donnees',
+    libelle:
+      'Renvoyer à un humain une erreur certaine dont la bonne valeur se déduit du fichier : une formule la corrige.',
+  },
+  'famille-de-probleme-mal-nommee': {
+    concept: 'agregation-conditionnelle',
+    libelle:
+      'Nommer une seule famille de problème, ou la mauvaise, quand la question demande de chercher une catégorie puis d’additionner sous conditions.',
+  },
+  'bornes-comptees-dans-le-delai': {
+    concept: 'calcul-sur-dates',
+    libelle:
+      'Prendre NB.JOURS.OUVRES tel quel pour un délai : il compte le jour de départ et le jour d’arrivée, d’où le − 1.',
+  },
+  'tcd-filtre-ou-dates-mal-groupees': {
+    concept: 'tableau-croise-dynamique',
+    libelle:
+      'Lire un TCD dont un filtre manque ou reste actif, ou dont les dates sont groupées sans les années : il ampute ou mêle les périodes.',
+  },
+  'detail-au-lieu-de-synthese': {
+    concept: 'tableau-de-bord',
+    libelle:
+      'Montrer le détail des lignes là où la décision attend quelques indicateurs, chacun avec sa comparaison.',
+  },
+  'en-tete-compte-comme-ligne': {
+    concept: 'jeu-de-donnees',
+    libelle:
+      'Compter la ligne d’en-tête parmi les données : NBVAL sur toute la colonne compte aussi le nom de la colonne.',
+  },
+  'controle-apres-correction': {
+    concept: 'qualite-des-donnees',
+    libelle:
+      'Lire le contrôle sur des données déjà corrigées : recalculé, il ne compte plus les défauts du fichier reçu.',
+  },
+  'pourcentage-du-total-de-colonne': {
+    concept: 'tableau-croise-dynamique',
+    libelle:
+      'Afficher le % du total de la colonne quand la question porte sur la part dans la ligne : la case donne alors le poids de la ligne dans la colonne.',
+  },
+  'mediane-sur-liste-trop-large': {
+    concept: 'indicateur-statistique',
+    libelle:
+      'Prendre la médiane d’une liste trop large : un critère oublié l’élargit, et sous un filtre MEDIANE compte aussi les lignes masquées, là où AGREGAT(12;5;plage) ne garde que les lignes visibles.',
+  },
 } as const satisfies Readonly<Record<string, DefinitionConfusion>>;
 
 export const CONFUSIONS = typographierEnProfondeur(DEFINITIONS);

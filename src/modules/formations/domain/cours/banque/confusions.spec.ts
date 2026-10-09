@@ -6,6 +6,7 @@ import {
   CONCEPTS_DU_B2_04,
   CONCEPTS_DU_B2_05,
   CONCEPTS_DU_B2_06,
+  CONCEPTS_DU_B3_01,
   libelleDeConcept,
 } from './concepts';
 import {
@@ -309,6 +310,44 @@ const CONFUSIONS_DU_B2_06 = {
   'ordonnee-non-exponentiee': { concept: 'ajustement-exponentiel' },
 };
 
+const CONFUSIONS_DU_B3_01 = {
+  'reference-absolue-ignoree': { concept: 'reference-de-cellule' },
+  'identifiant-pris-pour-nombre': { concept: 'jeu-de-donnees' },
+  'lignes-comptees-pour-commandes': { concept: 'granularite' },
+  'libelle-pris-pour-cle': { concept: 'cle-et-relation' },
+  'suspect-corrige-sans-validation': { concept: 'qualite-des-donnees' },
+  'suppression-au-lieu-de-signalement': { concept: 'qualite-des-donnees' },
+  'texte-pris-pour-nombre': { concept: 'nettoyage' },
+  'casse-non-normalisee': { concept: 'nettoyage' },
+  'doublons-supprimes-sur-une-colonne': { concept: 'nettoyage' },
+  'plage-recherche-non-figee': { concept: 'recherche-dans-une-table' },
+  'critere-mal-ecrit': { concept: 'agregation-conditionnelle' },
+  'jours-calendaires-pour-ouvres': { concept: 'calcul-sur-dates' },
+  'plage-fixe-au-lieu-de-tableau': { concept: 'tableau-croise-dynamique' },
+  'pourcentage-du-mauvais-total': { concept: 'tableau-croise-dynamique' },
+  'graphique-sans-question': { concept: 'choix-du-graphique' },
+  'objectif-annuel-pour-cumul': { concept: 'tableau-de-bord' },
+  'evolution-sur-annee-pleine': { concept: 'tableau-de-bord' },
+  'kpi-sans-contexte': { concept: 'tableau-de-bord' },
+  'periode-mal-delimitee': { concept: 'agregation-conditionnelle' },
+  'commandes-comptees-pour-lignes': { concept: 'granularite' },
+  'type-de-variable-confondu': { concept: 'jeu-de-donnees' },
+  'espaces-non-supprimes': { concept: 'nettoyage' },
+  'part-douteuse-estimee-sans-mesure': { concept: 'qualite-des-donnees' },
+  'cle-prise-pour-categorie': { concept: 'cle-et-relation' },
+  'correction-certaine-renvoyee-a-un-humain': {
+    concept: 'qualite-des-donnees',
+  },
+  'famille-de-probleme-mal-nommee': { concept: 'agregation-conditionnelle' },
+  'bornes-comptees-dans-le-delai': { concept: 'calcul-sur-dates' },
+  'tcd-filtre-ou-dates-mal-groupees': { concept: 'tableau-croise-dynamique' },
+  'detail-au-lieu-de-synthese': { concept: 'tableau-de-bord' },
+  'en-tete-compte-comme-ligne': { concept: 'jeu-de-donnees' },
+  'controle-apres-correction': { concept: 'qualite-des-donnees' },
+  'pourcentage-du-total-de-colonne': { concept: 'tableau-croise-dynamique' },
+  'mediane-sur-liste-trop-large': { concept: 'indicateur-statistique' },
+};
+
 describe('libelleDeConcept', () => {
   it('nomme chaque concept de la banque autrement que par son identifiant', () => {
     expect(CONCEPTS.filter((id) => libelleDeConcept(id) === id)).toEqual([]);
@@ -345,8 +384,30 @@ describe('CONCEPTS', () => {
     ]);
   });
 
-  it('ajoute en dernier les quatre concepts d’exponentielle et de logarithme du B2-06', () => {
-    expect(CONCEPTS.slice(40)).toEqual([...CONCEPTS_DU_B2_06]);
+  it('ajoute en dernier les treize concepts de données du B3-01', () => {
+    expect(CONCEPTS.slice(44)).toEqual([...CONCEPTS_DU_B3_01]);
+    expect(CONCEPTS_DU_B3_01).toEqual([
+      'reference-de-cellule',
+      'jeu-de-donnees',
+      'cle-et-relation',
+      'granularite',
+      'qualite-des-donnees',
+      'nettoyage',
+      'recherche-dans-une-table',
+      'agregation-conditionnelle',
+      'calcul-sur-dates',
+      'indicateur-statistique',
+      'tableau-croise-dynamique',
+      'choix-du-graphique',
+      'tableau-de-bord',
+    ]);
+    expect(libelleDeConcept('tableau-croise-dynamique')).toBe(
+      'Tableau croisé dynamique',
+    );
+  });
+
+  it('ajoute à la suite les quatre concepts d’exponentielle et de logarithme du B2-06', () => {
+    expect(CONCEPTS.slice(40, 44)).toEqual([...CONCEPTS_DU_B2_06]);
     expect(CONCEPTS_DU_B2_06).toEqual([
       'fonction-exponentielle',
       'logarithme-neperien',
@@ -461,12 +522,72 @@ describe('CONFUSIONS', () => {
     attendreDansLaBanque(CONFUSIONS_DU_B2_04);
   });
 
-  it('ajoute en dernier les neuf confusions d’exponentielle et de logarithme du B2-06', () => {
-    expect(Object.keys(CONFUSIONS)).toHaveLength(96);
-    expect(Object.keys(CONFUSIONS).slice(87)).toEqual(
+  it('ajoute à la suite les neuf confusions d’exponentielle et de logarithme du B2-06', () => {
+    expect(Object.keys(CONFUSIONS).slice(87, 96)).toEqual(
       Object.keys(CONFUSIONS_DU_B2_06),
     );
     attendreDansLaBanque(CONFUSIONS_DU_B2_06);
+  });
+
+  it('ajoute en dernier les trente-trois confusions de données du B3-01', () => {
+    expect(Object.keys(CONFUSIONS)).toHaveLength(129);
+    expect(Object.keys(CONFUSIONS).slice(96)).toEqual(
+      Object.keys(CONFUSIONS_DU_B3_01),
+    );
+    attendreDansLaBanque(CONFUSIONS_DU_B3_01);
+  });
+
+  it('distingue la lecture du $ d une formule recopiée de l oubli du $', () => {
+    expect(libelleDeConfusion('reference-absolue-ignoree')).not.toBe(
+      libelleDeConfusion('reference-relative-non-figee'),
+    );
+    expect(libelleDeConfusion('critere-mal-ecrit')).not.toContain('guillemets');
+  });
+
+  it('nomme chaque sens de la granularité par sa propre confusion', () => {
+    expect(libelleDeConfusion('lignes-comptees-pour-commandes')).toContain(
+      'quand on cherche les commandes',
+    );
+    expect(libelleDeConfusion('commandes-comptees-pour-lignes')).toContain(
+      'quand on cherche ses lignes',
+    );
+  });
+
+  it('impute l écart des villes aux espaces, le comptage d Excel ignorant la casse', () => {
+    expect(libelleDeConfusion('espaces-non-supprimes')).toContain(
+      'SUPPRESPACE',
+    );
+    expect(libelleDeConfusion('casse-non-normalisee')).toContain('Power Query');
+    expect(libelleDeConfusion('type-de-variable-confondu')).not.toContain(
+      'identifiant',
+    );
+  });
+
+  it('laisse au TCD le filtre resté actif et les années réunies, à la période agrégée la table entière', () => {
+    expect(libelleDeConfusion('periode-mal-delimitee')).not.toContain('filtre');
+    expect(libelleDeConfusion('tcd-filtre-ou-dates-mal-groupees')).toContain(
+      'dont un filtre manque ou reste actif',
+    );
+  });
+
+  it('nomme la médiane d une liste trop large par son résultat, qu un critère oublié ou MEDIANE sous un filtre l élargisse', () => {
+    const libelle = libelleDeConfusion('mediane-sur-liste-trop-large');
+
+    expect(libelle).toContain('liste trop large');
+    expect(libelle).toContain('un critère oublié');
+    expect(libelle).toContain('MEDIANE compte aussi les lignes masquées');
+    expect(libelle).toContain(
+      'AGREGAT(12;5;plage) ne garde que les lignes visibles',
+    );
+  });
+
+  it('décrit l identifiant par les chiffres qu il contient et le piège d objectif par la table entière', () => {
+    expect(libelleDeConfusion('identifiant-pris-pour-nombre')).toContain(
+      'contient des chiffres',
+    );
+    expect(libelleDeConfusion('objectif-annuel-pour-cumul')).toContain(
+      'tous les objectifs',
+    );
   });
 
   it('ajoute à la suite les huit confusions de mathématiques financières du B2-05', () => {

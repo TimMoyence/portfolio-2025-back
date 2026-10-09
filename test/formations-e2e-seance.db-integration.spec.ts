@@ -10,6 +10,7 @@ import type {
   QuestionProduction,
 } from '../src/modules/formations/domain/contrats/cours';
 import type { EtatParticipant } from '../src/modules/formations/domain/contrats/pilotage';
+import type { EcranPublic } from '../src/modules/formations/domain/contrats/tirage';
 import type { ValeurProduction } from '../src/modules/formations/domain/contrats/resultats';
 import { questionsDe } from '../src/modules/formations/domain/cours/Cours';
 import { activitesLibres } from '../src/modules/formations/domain/cours/EcranServi';
@@ -27,6 +28,7 @@ import {
   COURS_B2_04,
   COURS_B2_05,
   COURS_B2_06,
+  COURS_B3_01,
 } from './factories/contenus-publies';
 import { prefixeDuCours } from './factories/contenus-de-cours.factory';
 import { clesSecretesDans } from './helpers/cles-du-corrige';
@@ -51,6 +53,7 @@ import {
   bonneValeur,
   estProduction,
   productionJuste,
+  productionVide,
   reponseDEnigme,
   valeurPiegee,
 } from './helpers/reponses-de-cours';
@@ -58,7 +61,6 @@ import { silenceNestLogger } from './helpers/silence-nest-logger';
 
 const VERSION_COURS = VERSION_PUBLIEE_SUR_BASE_NEUVE;
 const VERSION_DU_BAREME = 2;
-const ENIGMES_DU_COURS = 4;
 const TYPES_NOTABLES = 5;
 const CAPACITE = 4;
 const FORMATEUR = 'e1111111-1111-4111-8111-111111111111:teacher';
@@ -75,6 +77,24 @@ const { OK, CREE, SANS_CONTENU, INVALIDE, INTROUVABLE, CONFLIT } = CODE_HTTP;
 
 function parOrdreAlphabetique(gauche: string, droite: string): number {
   return gauche.localeCompare(droite);
+}
+
+function piecesJointesDe(ecrans: readonly EcranPublic[]): [string, unknown][] {
+  return ecrans.flatMap((ecran) =>
+    ecran.pieceJointe === undefined
+      ? []
+      : [[ecran.id, ecran.pieceJointe] as [string, unknown]],
+  );
+}
+
+function piecesJointesAttendues(
+  cours: Cours,
+  ids: readonly string[],
+): [string, unknown][] {
+  return ids.map((id) => [
+    id,
+    cours.ecrans.find((ecran) => ecran.id === id)?.pieceJointe,
+  ]);
 }
 
 function idsDesRappels(reponse: Response): string[] {
@@ -122,6 +142,9 @@ interface AttenduDuCours {
   readonly cellulesDesFeuilles: readonly number[];
   readonly exerciceEnAvance: string;
   readonly jalons: number;
+  readonly enigmes: number;
+  readonly piecesJointes: readonly string[];
+  readonly piecesJointesAuCatalogue: readonly string[];
   readonly intervalleLibre: {
     readonly premier: number;
     readonly dernier: number;
@@ -273,13 +296,38 @@ function seanceComplete(
         return reponse;
       };
 
+      const ecranFacultatif = <B extends Ecran['brique']>(
+        brique: B,
+      ): Extract<Ecran, { readonly brique: B }> | undefined =>
+        cours.ecrans.find(
+          (ecran): ecran is Extract<Ecran, { readonly brique: B }> =>
+            ecran.brique === brique,
+        );
+
       const ecranDe = (brique: Ecran['brique']): Ecran => {
-        const trouve = cours.ecrans.find((ecran) => ecran.brique === brique);
+        const trouve = ecranFacultatif(brique);
         if (trouve === undefined) {
           throw new Error(`Le ${PREFIXE} publie n a aucun ecran ${brique}`);
         }
         return trouve;
       };
+
+      const piecesJointesDuCours = (
+        ids: readonly string[],
+      ): [string, unknown][] => piecesJointesAttendues(cours, ids);
+
+      const ecranDuSujet = async (
+        ecranId: string,
+      ): Promise<EcranPublic | undefined> =>
+        (
+          (
+            await poste(
+              'get',
+              `/sessions/${sessionId}/sujet`,
+              postes[0].jeton,
+            ).expect(OK)
+          ).body as { ecrans: EcranPublic[] }
+        ).ecrans.find((servi) => servi.id === ecranId);
 
       const productionDe = (ecran: Ecran): QuestionProduction => {
         const question = questionsDe(ecran).find(estProduction);
@@ -301,24 +349,59 @@ function seanceComplete(
         await signaler(postes[1]).expect(SANS_CONTENU);
       };
 
-      const jouerVote = async (ecran: Ecran): Promise<void> => {
-        if (ecran.brique !== 'fp-vote' || ecran.questionJumelle === undefined) {
-          throw new Error(`L ecran ${ecran.id} n est pas un vote jumele`);
+      const retardataire = (): Poste => postes[2];
+
+      const voterSaufLeRetardataire = async (
+        question: Question,
+      ): Promise<void> => {
+        for (const unPoste of postes.filter(
+          (candidat) => candidat !== retardataire(),
+        )) {
+          await repondre(unPoste, question).expect(CREE);
         }
-        const retardataire = postes[2];
+      };
+
+      const jouerVoteSimple = async (ecran: Ecran): Promise<void> => {
+        if (ecran.brique !== 'fp-vote') {
+          throw new Error(`L ecran ${ecran.id} n est pas un vote`);
+        }
+        await voterSaufLeRetardataire(ecran.question);
+        await piloter({
+          pilotage: { screenId: ecran.id, revele: true },
+        }).expect(SANS_CONTENU);
+        const apresRevelation = noterConflit(
+          await repondre(retardataire(), ecran.question),
+        );
+        const retourEnArriere = noterConflit(
+          await piloter({ pilotage: { screenId: ecran.id, revele: false } }),
+        );
+
+        expect({
+          apresRevelation: [apresRevelation.status, codeDe(apresRevelation)],
+          retourEnArriere: [retourEnArriere.status, codeDe(retourEnArriere)],
+        }).toEqual({
+          apresRevelation: [CONFLIT, 'PHASE_FERMEE'],
+          retourEnArriere: [CONFLIT, 'PHASE_NON_MONOTONE'],
+        });
+      };
+
+      const jouerVote = async (ecran: Ecran): Promise<void> => {
+        if (ecran.brique !== 'fp-vote') {
+          throw new Error(`L ecran ${ecran.id} n est pas un vote`);
+        }
+        if (ecran.questionJumelle === undefined) {
+          await jouerVoteSimple(ecran);
+          return;
+        }
         const jumelleFermee = noterConflit(
           await repondre(postes[0], ecran.questionJumelle),
         );
-        for (const unPoste of postes.filter(
-          (candidat) => candidat !== retardataire,
-        )) {
-          await repondre(unPoste, ecran.question).expect(CREE);
-        }
+        await voterSaufLeRetardataire(ecran.question);
         await piloter({
           pilotage: { screenId: ecran.id, phase: 'discussion' },
         }).expect(SANS_CONTENU);
         const principaleFermee = noterConflit(
-          await repondre(retardataire, ecran.question),
+          await repondre(retardataire(), ecran.question),
         );
         await piloter({
           pilotage: { screenId: ecran.id, phase: 'revote' },
@@ -350,6 +433,14 @@ function seanceComplete(
       const jouerProductions = async (ecran: Ecran): Promise<void> => {
         const question = productionDe(ecran);
         const juste = productionJuste(question);
+        const vide = noterConflit(
+          await produire(postes[0], question, productionVide(question)),
+        );
+        expect([ecran.id, vide.status, codeDe(vide)]).toEqual([
+          ecran.id,
+          INVALIDE,
+          'PRODUCTION_VIDE',
+        ]);
         for (const unPoste of postes) {
           const valeur: ValeurProduction =
             unPoste.profil === 'ignorant'
@@ -377,10 +468,7 @@ function seanceComplete(
           cellules: { ...juste.cellules, [premiere]: FORMULE_HORS_SUJET },
         };
         const vide = noterConflit(
-          await produire(postes[0], question, {
-            type: 'feuille',
-            cellules: {},
-          }),
+          await produire(postes[0], question, productionVide(question)),
         );
         const parfaite = await produire(postes[0], question, juste).expect(
           CREE,
@@ -643,53 +731,117 @@ function seanceComplete(
         libre: Ecran,
         texte: string,
       ): Record<string, () => Test> => {
-        const feuille = ecranDe('fp-sheet');
-        const coffre = ecranDe('fp-escape');
-        const jalon = ecranDe('fp-pulse');
-        const defi = ecranDe('fp-challenge');
-        if (
-          coffre.brique !== 'fp-escape' ||
-          jalon.brique !== 'fp-pulse' ||
-          defi.brique !== 'fp-challenge'
-        ) {
-          throw new Error(`Ecrans du ${PREFIXE} mal identifies`);
-        }
+        const production = cours.ecrans.find((ecran) =>
+          questionsDe(ecran).some(estProduction),
+        );
+        const coffre = ecranFacultatif('fp-escape');
+        const jalon = ecranFacultatif('fp-pulse');
+        const defi = ecranFacultatif('fp-challenge');
         return {
-          production: () =>
-            produire(
-              auteur,
-              productionDe(feuille),
-              productionJuste(productionDe(feuille)),
-            ),
-          enigme: () =>
-            poste(
-              'post',
-              `/sessions/${sessionId}/escape/${coffre.proprietes.parcours.id}/tentatives`,
-              auteur.jeton,
-            ).send({
-              enigmeId: coffre.enigmes[0].id,
-              reponse: '1',
-              dureeMs: DUREE_MS,
-            }),
-          jalon: () =>
-            poste(
-              'put',
-              `/sessions/${sessionId}/pulses/${jalon.proprietes.sondage.id}`,
-              auteur.jeton,
-            ).send({ etat: 'clair' }),
           reponseLibre: () =>
             ecrireLibrement(auteur, {
               screenId: libre.id,
               activityId: (activitesLibres(cours).get(libre.id) ?? [''])[0],
               response: texte,
             }),
-          defi: () =>
-            poste(
-              'post',
-              `/sessions/${sessionId}/defis/${defi.proprietes.probleme.id}/tentative`,
-              auteur.jeton,
-            ).send({ texte, dureeMs: DUREE_MS }),
+          ...(production === undefined
+            ? {}
+            : {
+                production: () =>
+                  produire(
+                    auteur,
+                    productionDe(production),
+                    productionJuste(productionDe(production)),
+                  ),
+              }),
+          ...(coffre === undefined
+            ? {}
+            : {
+                enigme: () =>
+                  poste(
+                    'post',
+                    `/sessions/${sessionId}/escape/${coffre.proprietes.parcours.id}/tentatives`,
+                    auteur.jeton,
+                  ).send({
+                    enigmeId: coffre.enigmes[0].id,
+                    reponse: '1',
+                    dureeMs: DUREE_MS,
+                  }),
+              }),
+          ...(jalon === undefined
+            ? {}
+            : {
+                jalon: () =>
+                  poste(
+                    'put',
+                    `/sessions/${sessionId}/pulses/${jalon.proprietes.sondage.id}`,
+                    auteur.jeton,
+                  ).send({ etat: 'clair' }),
+              }),
+          ...(defi === undefined
+            ? {}
+            : {
+                defi: () =>
+                  poste(
+                    'post',
+                    `/sessions/${sessionId}/defis/${defi.proprietes.probleme.id}/tentative`,
+                    auteur.jeton,
+                  ).send({ texte, dureeMs: DUREE_MS }),
+              }),
         };
+      };
+
+      const conflitsAttendus = (): string[] =>
+        [
+          'ECRAN_NON_SERVI',
+          'PHASE_FERMEE',
+          'PHASE_NON_MONOTONE',
+          'PRODUCTION_VIDE',
+          'SEANCE_COMPLETE',
+          'SEANCE_NON_DEMARREE',
+          ...(ecranFacultatif('fp-escape') === undefined
+            ? []
+            : ['ENIGME_VERROUILLEE', 'TENTATIVES_EPUISEES']),
+        ].sort(parOrdreAlphabetique);
+
+      const jouerCorrectionSurPlace = async (ecran: Ecran): Promise<void> => {
+        const explications = ecran.correctionSurPlace?.explications ?? [];
+        const corrigeables = questionsDe(ecran)
+          .filter(
+            (question) =>
+              question.type === 'vote' || question.type === 'numeric',
+          )
+          .map((question) => question.id);
+        for (const devoilees of explications.map((_, rang) => rang + 1)) {
+          await piloter({
+            pilotage: { screenId: ecran.id, explicationsDevoilees: devoilees },
+          }).expect(SANS_CONTENU);
+          const toutes =
+            ecran.brique !== 'questionnaire' ||
+            devoilees === explications.length;
+          const references = new Set(
+            explications
+              .slice(0, devoilees)
+              .map((explication) => explication.reference),
+          );
+          const correction = (await ecranDuSujet(ecran.id))?.correction;
+
+          expect({
+            ecran: ecran.id,
+            devoilees,
+            explications: correction?.explications?.length,
+            questions: correction?.questions.map(
+              (question) => question.questionId,
+            ),
+          }).toEqual({
+            ecran: ecran.id,
+            devoilees,
+            explications: toutes ? explications.length : devoilees,
+            questions: corrigeables.filter(
+              (id) => toutes || references.has(id),
+            ),
+          });
+        }
       };
 
       const jouerRythmeLibre = async (): Promise<void> => {
@@ -771,6 +923,7 @@ function seanceComplete(
           await signalerUnIncident();
         }
         await jouerReponsesLibres(ecran);
+        await jouerCorrectionSurPlace(ecran);
       };
 
       afterAll(() => {
@@ -799,7 +952,7 @@ function seanceComplete(
         async () => {
           const servi = await catalogueServi<{
             version: number;
-            ecrans: { titre: string }[];
+            ecrans: EcranPublic[];
           }>();
 
           const ouverture = await formateur('post', '/sessions')
@@ -816,6 +969,7 @@ function seanceComplete(
             capacite: seance?.capacite,
             ecrans: cours.ecrans.length,
             titres: servi.ecrans.length,
+            piecesJointes: piecesJointesDe(servi.ecrans),
           }).toEqual({
             servi: VERSION_COURS,
             version: VERSION_COURS,
@@ -823,6 +977,9 @@ function seanceComplete(
             capacite: CAPACITE,
             ecrans: ECRANS_DU_COURS,
             titres: ECRANS_DU_COURS,
+            piecesJointes: piecesJointesDuCours(
+              attendu.piecesJointesAuCatalogue,
+            ),
           });
         },
         DELAI_TEST_MS,
@@ -892,11 +1049,15 @@ function seanceComplete(
           }
           const enAvance = [
             await repondre(postes[1], questionsDe(ecranDe('questionnaire'))[0]),
-            await poste(
-              'get',
-              `/sessions/${sessionId}/rappels`,
-              postes[1].jeton,
-            ),
+            ...(ecranFacultatif('fp-spaced') === undefined
+              ? []
+              : [
+                  await poste(
+                    'get',
+                    `/sessions/${sessionId}/rappels`,
+                    postes[1].jeton,
+                  ),
+                ]),
           ];
           for (const ecrire of Object.values(
             ecrituresDesBriques(postes[1], exercice, 'Trop tot.'),
@@ -940,6 +1101,9 @@ function seanceComplete(
               (reponse) => reponse.participantId === evince.participantId,
             ).length,
             ecransDuSujet: (sujet.body as { ecrans: unknown[] }).ecrans.length,
+            piecesJointesDuSujet: piecesJointesDe(
+              (sujet.body as { ecrans: EcranPublic[] }).ecrans,
+            ),
             secretsDuSujet: clesSecretesDans(sujet.body),
             questionsDues: Array.isArray(
               (dues.body as { questions: unknown[] }).questions,
@@ -953,6 +1117,9 @@ function seanceComplete(
             graineLiberee: evince.graine,
             reponsesDeLEvince: 1,
             ecransDuSujet: ECRANS_DU_COURS,
+            piecesJointesDuSujet: piecesJointesDuCours(
+              attendu.piecesJointes.filter((id) => id === rappel.id),
+            ),
             secretsDuSujet: [],
             questionsDues: true,
           });
@@ -991,22 +1158,25 @@ function seanceComplete(
             `deroule des ${ECRANS_DU_COURS} ecrans : ${((Date.now() - debutDesFlux) / 1000).toFixed(1)} s`,
           );
           await jouerRythmeLibre();
+          const sujetDeroule = await poste(
+            'get',
+            `/sessions/${sessionId}/sujet`,
+            postes[0].jeton,
+          ).expect(OK);
 
+          expect(
+            piecesJointesDe(
+              (sujetDeroule.body as { ecrans: EcranPublic[] }).ecrans,
+            ),
+          ).toEqual(piecesJointesDuCours(attendu.piecesJointes));
           expect([...briquesJouees].sort(parOrdreAlphabetique)).toEqual(
             [...new Set(cours.ecrans.map((ecran) => ecran.brique))].sort(
               parOrdreAlphabetique,
             ),
           );
-          expect([...conflitsObserves].sort(parOrdreAlphabetique)).toEqual([
-            'ECRAN_NON_SERVI',
-            'ENIGME_VERROUILLEE',
-            'PHASE_FERMEE',
-            'PHASE_NON_MONOTONE',
-            'PRODUCTION_VIDE',
-            'SEANCE_COMPLETE',
-            'SEANCE_NON_DEMARREE',
-            'TENTATIVES_EPUISEES',
-          ]);
+          expect([...conflitsObserves].sort(parOrdreAlphabetique)).toEqual(
+            conflitsAttendus(),
+          );
         },
         DELAI_TEST_MS,
       );
@@ -1030,7 +1200,7 @@ function seanceComplete(
             const pousse = bilan as BilanPousse;
             return (
               Object.keys(pousse.jalons).length === attendu.jalons &&
-              pousse.enigmes.length === ENIGMES_DU_COURS
+              pousse.enigmes.length === attendu.enigmes
             );
           };
           await attendreQue(
@@ -1122,10 +1292,10 @@ function seanceComplete(
       it(
         'tient les annotations et les reponses libres au pupitre',
         async () => {
-          const feuille = ecranDe('fp-sheet');
+          const atelier = ecranDe('questionnaire');
           await formateur('post', `/sessions/${sessionId}/annotations`)
             .send({
-              screenId: feuille.id,
+              screenId: atelier.id,
               note: 'Recopie a revoir sur la colonne des taux.',
             })
             .expect(CREE);
@@ -1152,7 +1322,8 @@ function seanceComplete(
           const maitrise = await formateur(
             'get',
             `/sessions/${sessionId}/rappels/synthese`,
-          ).expect(OK);
+          );
+          const rappelEspace = ecranFacultatif('fp-spaced') !== undefined;
 
           const listeDesParticipants = (
             participants.body as {
@@ -1179,8 +1350,11 @@ function seanceComplete(
               resultats.body as ResultatsDeSeance
             ).resultats.questions.filter((question) => question.total > 0)
               .length,
-            conceptsSuivis:
-              (maitrise.body as { concepts: unknown[] }).concepts.length > 0,
+            maitrise: [
+              maitrise.status,
+              rappelEspace &&
+                (maitrise.body as { concepts: unknown[] }).concepts.length > 0,
+            ],
           }).toEqual({
             annotations: 1,
             libres: true,
@@ -1188,7 +1362,7 @@ function seanceComplete(
             participantsEvinces: [evince.participantId],
             ecransDuDeroule: ECRANS_DU_COURS,
             questionsAgregees: expect.any(Number),
-            conceptsSuivis: true,
+            maitrise: rappelEspace ? [OK, true] : [INTROUVABLE, false],
           });
         },
         DELAI_TEST_MS,
@@ -1257,12 +1431,42 @@ function seanceComplete(
             questionsNotees: attendu.questionsNotees,
             notation: TYPES_NOTABLES,
             jalons: attendu.jalons,
-            enigmes: ENIGMES_DU_COURS,
+            enigmes: attendu.enigmes,
             scores: true,
             synthese: 1,
             copies: CAPACITE,
           });
           expect(JSON.stringify(bilan)).not.toContain('[object Object]');
+
+          const activitesDuCours = cours.ecrans.flatMap(
+            (ecran) => activitesLibres(cours).get(ecran.id) ?? [],
+          );
+          const ecritesParLesAuteurs = cours.ecrans
+            .slice(1)
+            .flatMap((ecran) => activitesLibres(cours).get(ecran.id) ?? []);
+          const synthese = banc.mailer.sendSyntheseFormateur.mock.calls[0][1];
+          expect(
+            Object.fromEntries(
+              bilan.participants.map((participant) => [
+                participant.prenom,
+                participant.reponsesLibres
+                  .map((libre) => libre.activityId)
+                  .filter((activite) => activitesDuCours.includes(activite)),
+              ]),
+            ),
+          ).toEqual({
+            'Prenom-E1': ecritesParLesAuteurs,
+            'Prenom-E2': ecritesParLesAuteurs,
+            'Prenom-E3': [],
+            'Prenom-E4': [],
+          });
+          expect(
+            synthese.participants.map(
+              (participant) => participant.reponsesLibres,
+            ),
+          ).toEqual(
+            bilan.participants.map((participant) => participant.reponsesLibres),
+          );
         },
         DELAI_TEST_MS,
       );
@@ -1371,7 +1575,23 @@ function seanceComplete(
   );
 }
 
+const TRAME_DES_COURS_B2: Pick<
+  AttenduDuCours,
+  | 'jalons'
+  | 'enigmes'
+  | 'piecesJointes'
+  | 'piecesJointesAuCatalogue'
+  | 'intervalleLibre'
+> = {
+  jalons: 3,
+  enigmes: 4,
+  piecesJointes: [],
+  piecesJointesAuCatalogue: [],
+  intervalleLibre: { premier: 1, dernier: 20 },
+};
+
 seanceComplete(COURS_B2_01, {
+  ...TRAME_DES_COURS_B2,
   questionsNotees: 31,
   cellulesDesFeuilles: [17],
   exerciceEnAvance: 'B2-01-A2-06-POINTS',
@@ -1380,41 +1600,51 @@ seanceComplete(COURS_B2_01, {
 });
 
 seanceComplete(COURS_B2_02, {
+  ...TRAME_DES_COURS_B2,
   questionsNotees: 16,
   cellulesDesFeuilles: [6],
   exerciceEnAvance: 'B2-02-A2-04-EXEMPLE-NUAGE',
-  jalons: 3,
-  intervalleLibre: { premier: 1, dernier: 20 },
 });
 
 seanceComplete(COURS_B2_03, {
+  ...TRAME_DES_COURS_B2,
   questionsNotees: 18,
   cellulesDesFeuilles: [5, 10, 34],
   exerciceEnAvance: 'B2-03-A2-04-EXEMPLE-MORGAN',
-  jalons: 3,
-  intervalleLibre: { premier: 1, dernier: 20 },
 });
 
 seanceComplete(COURS_B2_04, {
+  ...TRAME_DES_COURS_B2,
   questionsNotees: 18,
   cellulesDesFeuilles: [5, 10, 16],
   exerciceEnAvance: 'B2-04-A2-04-EXEMPLE-GEOMETRIQUE',
-  jalons: 3,
-  intervalleLibre: { premier: 1, dernier: 20 },
 });
 
 seanceComplete(COURS_B2_05, {
+  ...TRAME_DES_COURS_B2,
   questionsNotees: 18,
   cellulesDesFeuilles: [10, 9, 17],
   exerciceEnAvance: 'B2-05-A2-04-EXEMPLE-ANNUITES',
-  jalons: 3,
-  intervalleLibre: { premier: 1, dernier: 20 },
 });
 
 seanceComplete(COURS_B2_06, {
+  ...TRAME_DES_COURS_B2,
   questionsNotees: 18,
   cellulesDesFeuilles: [13, 12, 10],
   exerciceEnAvance: 'B2-06-A2-04-EXEMPLE-DOUBLEMENT',
-  jalons: 3,
+});
+
+seanceComplete(COURS_B3_01, {
+  questionsNotees: 25,
+  cellulesDesFeuilles: [],
+  exerciceEnAvance: 'B3-01-A1-12-EXEMPLE-NETTOYAGE',
+  jalons: 0,
+  enigmes: 0,
+  piecesJointes: [
+    'B3-01-A1-02-COURRIEL',
+    'B3-01-A2-01-VOTE-FAMILLE',
+    'B3-01-A3-02-VOTE-GRAPHIQUE',
+  ],
+  piecesJointesAuCatalogue: ['B3-01-A1-02-COURRIEL'],
   intervalleLibre: { premier: 1, dernier: 20 },
 });

@@ -5,6 +5,7 @@ import {
   smtpSimule,
   type MailEnvoye,
 } from '../../../../test/factories/mailer.factory';
+import { buildRapportParticipant } from '../../../../test/factories/formation.factory';
 import type {
   CopieEtudiant,
   RapportParticipant,
@@ -19,29 +20,13 @@ const LIBELLE_CONFUSION = 'Croire que la hausse et la baisse s annulent.';
 
 const mockedCreateTransport = creationDeTransportSimulee();
 
-function buildParticipant(
-  overrides: Partial<RapportParticipant> = {},
-): RapportParticipant {
-  return {
-    prenom: 'Theo',
-    nom: 'Martin',
-    email: 'theo.martin@example.com',
-    completion: 1,
-    note: 20,
-    sousSeuil: false,
-    reponses: [],
-    incidents: 0,
-    ...overrides,
-  };
-}
-
 function buildRapport(overrides: Partial<RapportSession> = {}): RapportSession {
   return {
     courseSlug: 'b1-09-interets-composes',
     code: '4271',
     ouverteLe: new Date('2026-09-11T08:00:00.000Z'),
     fermeeLe: new Date('2026-09-11T11:30:00.000Z'),
-    participants: [buildParticipant()],
+    participants: [buildRapportParticipant()],
     conceptsFragiles: [],
     libellesDesConcepts: {},
     ...overrides,
@@ -56,7 +41,7 @@ function buildCopie(overrides: Partial<CopieEtudiant> = {}): CopieEtudiant {
   return {
     courseSlug: 'b1-09-interets-composes',
     code: '4271',
-    participant: buildParticipant(),
+    participant: buildRapportParticipant(),
     lienRevision: 'https://asilidesign.fr/cours/revision?token=abc123',
     ...overrides,
   };
@@ -94,7 +79,9 @@ function buildRapportAvecReponses(
   participantOverrides: Partial<RapportParticipant> = {},
 ): RapportSession {
   return buildRapport({
-    participants: [buildParticipant({ ...participantOverrides, reponses })],
+    participants: [
+      buildRapportParticipant({ ...participantOverrides, reponses }),
+    ],
   });
 }
 
@@ -181,6 +168,35 @@ describe('FormationMailerService', () => {
       });
       expect(csv).not.toContain('"o3"');
       expect(csv).not.toContain('hausse-baisse-symetriques');
+    });
+
+    it('V6 · ajoute au csv une ligne par réponse libre du participant, après ses réponses notées et sans verdict', async () => {
+      const rapport = buildRapportAvecReponses([buildReponse()], {
+        reponsesLibres: [
+          {
+            screenId: 'B3-01-A1-15-REGLES-ACTE-1',
+            activityId: 'b3-01-a1-regles:regle-comprendre',
+            reponse: '=SOMME seulement après la colonne "controle"',
+          },
+        ],
+      });
+
+      const lignes = (await envoyerEtObtenirCsv(rapport))
+        .slice(1)
+        .split('\r\n');
+
+      expect(lignes).toHaveLength(3);
+      expect(lignes[2].split(';')).toEqual([
+        '"Theo"',
+        '"Martin"',
+        '"theo.martin@example.com"',
+        '"b3-01-a1-regles:regle-comprendre"',
+        '"réponse libre"',
+        '"\'=SOMME seulement après la colonne ""controle"""',
+        '""',
+        '""',
+        '""',
+      ]);
     });
 
     it('neutralise un nom d etudiant commencant par un signe egal', async () => {
@@ -277,7 +293,7 @@ describe('FormationMailerService', () => {
     }
 
     const copieAvec = (participant: Partial<RapportParticipant>) =>
-      copie({ participant: buildParticipant(participant) });
+      copie({ participant: buildRapportParticipant(participant) });
 
     it('envoie la copie au participant avec un lien de revision', async () => {
       const attendue = buildCopie();

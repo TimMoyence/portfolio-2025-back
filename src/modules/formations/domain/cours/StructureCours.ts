@@ -1,6 +1,7 @@
 import type { Cours, Ecran } from '../contrats/cours';
 import type { TirageDuCours } from '../contrats/tirage';
 import { cueillirDansArbre, estObjet } from './ArbreDeValeurs';
+import type { Gabarit } from './Cours';
 import { estInteractif, questionsDe, questionsDuCours } from './Cours';
 import { ecranCorrigePar } from './Corrections';
 import {
@@ -787,11 +788,17 @@ interface Regle {
   readonly controler: (analyse: Analyse) => readonly Manquement[];
 }
 
-function auGabaritV3(
+function auxGabarits(
+  gabarits: readonly Gabarit[],
   controler: (cours: Cours) => readonly Manquement[],
 ): Regle['controler'] {
-  return ({ cours }) => (cours.gabarit === 'v3' ? controler(cours) : []);
+  return ({ cours }) =>
+    cours.gabarit !== undefined && gabarits.includes(cours.gabarit)
+      ? controler(cours)
+      : [];
 }
+
+const GABARITS_A_CYCLE: readonly Gabarit[] = ['v3', 'b3'];
 
 const REGLES: readonly Regle[] = [
   { id: 'exposition-continue', controler: controlerExposition },
@@ -814,15 +821,21 @@ const REGLES: readonly Regle[] = [
   { id: 'catalogue-sans-question', controler: controlerCatalogue },
   { id: 'media-sans-licence', controler: controlerMedias },
   { id: 'options-neutres', controler: controlerOptions },
-  { id: 'gabarit-budget', controler: auGabaritV3(controlerBudget) },
-  { id: 'gabarit-cycle', controler: auGabaritV3(controlerCycle) },
+  {
+    id: 'gabarit-budget',
+    controler: auxGabarits(GABARITS_A_CYCLE, controlerBudget),
+  },
+  {
+    id: 'gabarit-cycle',
+    controler: auxGabarits(GABARITS_A_CYCLE, controlerCycle),
+  },
   {
     id: 'gabarit-temps-exercice',
-    controler: auGabaritV3(controlerTempsDesExercices),
+    controler: auxGabarits(GABARITS_A_CYCLE, controlerTempsDesExercices),
   },
   {
     id: 'gabarit-mini-situation',
-    controler: auGabaritV3(controlerMiniSituation),
+    controler: auxGabarits(['v3'], controlerMiniSituation),
   },
 ];
 

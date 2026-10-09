@@ -10,7 +10,9 @@ import {
   buildActeurFormation,
   buildAdministrateur,
   buildAnswerRecord,
+  buildFreeResponseRecord,
   buildResultatQuestion,
+  buildSessionRecord,
   createMockDepotsFormations,
 } from '../../../../../test/factories/formation.factory';
 import type { ICatalogueCours } from '../../domain/cours/ICatalogueCours.port';
@@ -43,11 +45,36 @@ describe('GetSessionResultsUseCase', () => {
       catalogue,
       depots.pulses,
       depots.escape,
+      depots.freeResponses,
     );
 
   beforeEach(() => {
     depots = createMockDepotsFormations();
     sut = monter(creerCatalogueDeTest());
+  });
+
+  it('V6 · joint au rapport de chaque participant les réponses libres de la séance', async () => {
+    depots.freeResponses.listBySession.mockResolvedValue([
+      buildFreeResponseRecord({ response: 'Je nomme chaque colonne.' }),
+    ]);
+
+    const rapport = await sut.execute('session-uuid', PROPRIETAIRE);
+
+    expect(depots.freeResponses.listBySession).toHaveBeenCalledWith(
+      'session-uuid',
+    );
+    expect(rapport.participants[0].reponsesLibres).toEqual([
+      expect.objectContaining({ reponse: 'Je nomme chaque colonne.' }),
+    ]);
+  });
+
+  it('R1-25 · ne lit pas les réponses libres pour un bilan qui les écarte', async () => {
+    const bilan = await sut.bilanDe(buildSessionRecord(), {
+      sansReponsesLibres: true,
+    });
+
+    expect(depots.freeResponses.listBySession).not.toHaveBeenCalled();
+    expect(bilan.resultats.participants[0].reponsesLibres).toEqual([]);
   });
 
   it('rend la valeur envoyee telle quelle quand le cours de la seance est absent du catalogue', async () => {

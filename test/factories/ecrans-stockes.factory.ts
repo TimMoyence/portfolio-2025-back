@@ -420,6 +420,27 @@ export function buildEcranDeBrique(
   };
 }
 
+export function buildPieceJointe(
+  overrides: Partial<{ libelle: string; fichier: string }> = {},
+): { libelle: string; fichier: string } {
+  return {
+    libelle: 'Télécharger l’export des ventes',
+    fichier: '/assets/cours/b3-01/B3-01_export_ventes.0c1d2e3f.xlsx',
+    ...overrides,
+  };
+}
+
+export function buildEcranAPieceJointe(
+  brique: string,
+  pieceJointe: Record<string, unknown> = buildPieceJointe(),
+  overrides: Partial<EcranDeCoursBrut> = {},
+): EcranDeCoursBrut {
+  return buildEcranDeBrique(brique, {
+    ...overrides,
+    proprietes: { ...buildProprietesStockees(brique), pieceJointe },
+  });
+}
+
 export function buildEcranDeTableau(
   screenId: string,
   lignes: readonly Record<string, string>[],

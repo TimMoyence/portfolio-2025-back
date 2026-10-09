@@ -6,7 +6,9 @@ import {
 import {
   BRIQUES_STOCKEES,
   buildCoursDeBriques,
+  buildEcranAPieceJointe,
   buildEcranDeBrique,
+  buildPieceJointe,
   buildQuestionnaireCorrigeSurPlace,
   EXPLICATIONS_SUR_PLACE,
 } from '../../../../../test/factories/ecrans-stockes.factory';
@@ -22,6 +24,20 @@ describe('deroulePresentateur', () => {
   const deroule = deroulePresentateur(cours, 424);
   const ecran = (id: string): EcranDeroule =>
     deroule.ecrans.find((candidat) => candidat.id === id)!;
+
+  it('sert au pupitre la pièce jointe d un écran de séance', () => {
+    const avecClasseur = lireCoursStocke(
+      buildCoursDeBriques([
+        buildEcranDeBrique('fp-quote'),
+        buildEcranAPieceJointe('fp-vote'),
+      ]),
+    );
+
+    const [citation, vote] = deroulePresentateur(avecClasseur, 0).ecrans;
+
+    expect(vote.pieceJointe).toEqual(buildPieceJointe());
+    expect(citation).not.toHaveProperty('pieceJointe');
+  });
 
   it('reprend le sujet du tirage de reference', () => {
     const sujet = tirer(cours, 424).sujet;

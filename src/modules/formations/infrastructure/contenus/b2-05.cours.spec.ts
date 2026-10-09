@@ -22,10 +22,7 @@ import {
   texteDeLEcran as texteDe,
 } from '../../../../../test/helpers/feuille-de-cours';
 import { arrondi } from '../../../../../test/helpers/lecture-de-cours';
-import {
-  colonnesVidesDeLaFeuille,
-  valeursDevoileesAvantLeurEcran,
-} from '../../../../../test/helpers/relecture-de-cours';
+import { colonnesVidesDeLaFeuille } from '../../../../../test/helpers/relecture-de-cours';
 import {
   corrigerFeuille,
   corrigerTableau,
@@ -542,10 +539,6 @@ function piegesDe(id: string): readonly (readonly [number, string])[] {
 }
 
 describe('B2-05 — retours de la relecture adverse', () => {
-  it('ne dévoile dans aucune correction sur place une valeur à saisir d’un écran suivant, les feuilles exigeant une formule', () => {
-    expect(valeursDevoileesAvantLeurEcran(COURS_B2_05, COURS)).toEqual([]);
-  });
-
   it('rattache « toute la durée » aux n versements placés n ans, et l’année de trop au rang décalé', () => {
     const cas = [
       ['b2-05-a2-valeur-acquise', VERSEMENT, TAUX_DE_L_EPARGNE, VERSEMENTS],

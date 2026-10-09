@@ -231,6 +231,12 @@ export interface SocleHistorique {
   readonly renvoi?: string;
   readonly cadrageDuRenvoi?: CadrageDuRenvoi;
   readonly correctionSurPlace?: CorrectionSurPlace;
+  readonly pieceJointe?: PieceJointe;
+}
+
+export interface PieceJointe {
+  readonly libelle: string;
+  readonly fichier: string;
 }
 
 export interface ExplicationDeCorrection {
@@ -251,8 +257,8 @@ export type Ecran = {
   };
 }[BriqueDExpositionHistorique];
 
-export const GABARITS = ['v3'] as const;
-type Gabarit = (typeof GABARITS)[number];
+export const GABARITS = ['v3', 'b3'] as const;
+export type Gabarit = (typeof GABARITS)[number];
 
 export interface Cours {
   readonly slug: string;

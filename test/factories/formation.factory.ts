@@ -10,7 +10,10 @@ import type {
   IIncidentsRepository,
   IncidentInput,
 } from '../../src/modules/formations/domain/IIncidents.repository';
-import type { IFormationMailer } from '../../src/modules/formations/domain/IFormationMailer.port';
+import type {
+  IFormationMailer,
+  RapportParticipant,
+} from '../../src/modules/formations/domain/IFormationMailer.port';
 import type {
   FreeResponseRecord,
   IFreeResponsesRepository,
@@ -326,6 +329,23 @@ export function buildResultatQuestion(
     parOption: null,
     scoreMoyen: null,
     parCle: null,
+    ...overrides,
+  };
+}
+
+export function buildRapportParticipant(
+  overrides: Partial<RapportParticipant> = {},
+): RapportParticipant {
+  return {
+    prenom: 'Theo',
+    nom: 'Martin',
+    email: 'theo.martin@example.com',
+    completion: 1,
+    note: 20,
+    sousSeuil: false,
+    reponses: [],
+    reponsesLibres: [],
+    incidents: 0,
     ...overrides,
   };
 }

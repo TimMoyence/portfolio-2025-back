@@ -1,9 +1,12 @@
 import {
   buildCorrectionDeReponses,
+  buildCoursDeBriques,
   buildEcranDeBrique,
 } from '../../../../../test/factories/ecrans-stockes.factory';
 import {
+  buildCoursB3,
   buildCoursV3,
+  buildEcransSansMiniSituation,
   buildEcransV3Conformes,
   buildExerciceV3,
   buildLeconV3,
@@ -13,7 +16,9 @@ import {
   notesDExercice,
 } from '../../../../../test/factories/gabarit-v3.factory';
 import { buildCoursConforme } from '../../../../../test/factories/structure.factory';
+import type { Cours } from '../contrats/cours';
 import type { EcranDeCoursBrut } from './CoursStocke';
+import { ContenuDeCoursInvalideError, lireCoursStocke } from './CoursStocke';
 import { verifierStructure } from './StructureCours';
 
 const REGLES_DU_GABARIT = [
@@ -23,17 +28,39 @@ const REGLES_DU_GABARIT = [
   'gabarit-mini-situation',
 ];
 
-function violationsDuGabarit(ecrans: readonly EcranDeCoursBrut[]) {
-  return verifierStructure(buildCoursV3(ecrans))
+function violationsDuGabarit(
+  ecrans: readonly EcranDeCoursBrut[],
+  construire: (ecrans: readonly EcranDeCoursBrut[]) => Cours = buildCoursV3,
+) {
+  return verifierStructure(construire(ecrans))
     .filter((violation) => REGLES_DU_GABARIT.includes(violation.regle))
     .map(({ regle, ecran }) => ({ regle, ecran }));
+}
+
+const BUDGET_DEPASSE = { regle: 'gabarit-budget', ecran: null };
+const ECRANS_AU_DELA_DU_BUDGET = 41;
+
+function auDelaDuBudget(
+  ecrans: readonly EcranDeCoursBrut[],
+): EcranDeCoursBrut[] {
+  const lectures = Array.from(
+    { length: ECRANS_AU_DELA_DU_BUDGET - ecrans.length },
+    (_, rang) =>
+      buildEcranDeBrique('fp-quote', {
+        screenId: `B2-02-A2-${String(rang + 10).padStart(2, '0')}-LECTURE`,
+        dureeMinutes: 1,
+        diffusion: 'catalogue',
+      }),
+  );
+  return [...ecrans.slice(0, -1), ...lectures, ...ecrans.slice(-1)];
 }
 
 function remplacer(
   id: string,
   remplacant: (ecran: EcranDeCoursBrut) => EcranDeCoursBrut | null,
+  ecrans: readonly EcranDeCoursBrut[] = buildEcransV3Conformes(),
 ): EcranDeCoursBrut[] {
-  return buildEcransV3Conformes().flatMap((ecran) => {
+  return ecrans.flatMap((ecran) => {
     if (ecran.screenId !== id) {
       return [ecran];
     }
@@ -56,21 +83,10 @@ describe('verifierStructure — gabarit v3', () => {
 
   describe('budget', () => {
     it('refuse plus de quarante écrans', () => {
-      const ecrans = buildEcransV3Conformes();
-      const lectures = Array.from({ length: 33 }, (_, rang) =>
-        buildEcranDeBrique('fp-quote', {
-          screenId: `B2-02-A2-${String(rang + 10).padStart(2, '0')}-LECTURE`,
-          dureeMinutes: 1,
-          diffusion: 'catalogue',
-        }),
-      );
-      const trop = [...ecrans.slice(0, -1), ...lectures, ...ecrans.slice(-1)];
+      const trop = auDelaDuBudget(buildEcransV3Conformes());
 
       expect(trop).toHaveLength(41);
-      expect(violationsDuGabarit(trop)).toContainEqual({
-        regle: 'gabarit-budget',
-        ecran: null,
-      });
+      expect(violationsDuGabarit(trop)).toContainEqual(BUDGET_DEPASSE);
     });
 
     it('refuse plus de cent quatre-vingts minutes de travail', () => {
@@ -79,10 +95,7 @@ describe('verifierStructure — gabarit v3', () => {
         dureeMinutes: 160,
       }));
 
-      expect(violationsDuGabarit(long)).toContainEqual({
-        regle: 'gabarit-budget',
-        ecran: null,
-      });
+      expect(violationsDuGabarit(long)).toContainEqual(BUDGET_DEPASSE);
     });
   });
 
@@ -205,13 +218,7 @@ describe('verifierStructure — gabarit v3', () => {
 
   describe('mini-situation CCF', () => {
     it('refuse un cours v3 sans mini-situation', () => {
-      const sans = buildEcransV3Conformes().filter(
-        (ecran) =>
-          ecran.screenId !== IDS_V3.miniSituation &&
-          ecran.screenId !== IDS_V3.correctionFinale,
-      );
-
-      expect(violationsDuGabarit(sans)).toEqual([
+      expect(violationsDuGabarit(buildEcransSansMiniSituation())).toEqual([
         { regle: 'gabarit-mini-situation', ecran: null },
       ]);
     });
@@ -236,5 +243,65 @@ describe('verifierStructure — gabarit v3', () => {
         { regle: 'gabarit-mini-situation', ecran: apres.screenId },
       ]);
     });
+  });
+});
+
+describe('verifierStructure — gabarit b3', () => {
+  const remplacerEnB3 = (
+    id: string,
+    remplacant: (ecran: EcranDeCoursBrut) => EcranDeCoursBrut | null,
+  ) => remplacer(id, remplacant, buildEcransSansMiniSituation());
+
+  it('accepte un cours b3 sans mini-situation CCF', () => {
+    expect(verifierStructure(buildCoursB3())).toEqual([]);
+  });
+
+  it('refuse plus de quarante écrans', () => {
+    const trop = auDelaDuBudget(buildEcransSansMiniSituation());
+
+    expect(trop).toHaveLength(41);
+    expect(violationsDuGabarit(trop, buildCoursB3)).toContainEqual(
+      BUDGET_DEPASSE,
+    );
+  });
+
+  it('refuse plus de cent quatre-vingts minutes de travail', () => {
+    const long = remplacerEnB3(IDS_V3.lecon, (lecon) => ({
+      ...lecon,
+      dureeMinutes: 170,
+    }));
+
+    expect(violationsDuGabarit(long, buildCoursB3)).toContainEqual(
+      BUDGET_DEPASSE,
+    );
+  });
+
+  it('refuse une trace écrite sans temps de réflexion depuis le dernier exercice', () => {
+    const sansReflexion = remplacerEnB3(IDS_V3.reflexion, () => null);
+
+    expect(violationsDuGabarit(sansReflexion, buildCoursB3)).toEqual([
+      { regle: 'gabarit-cycle', ecran: IDS_V3.lecon },
+    ]);
+  });
+
+  it('refuse un exercice sans temps de réflexion et de travail annoncés', () => {
+    const muet = remplacerEnB3(IDS_V3.exercice, (exercice) => ({
+      ...exercice,
+      notes: '• Relancer les binômes bloqués.',
+    }));
+
+    expect(violationsDuGabarit(muet, buildCoursB3)).toEqual([
+      { regle: 'gabarit-temps-exercice', ecran: IDS_V3.exercice },
+    ]);
+  });
+
+  it('refuse à la lecture un gabarit inconnu', () => {
+    expect(() =>
+      lireCoursStocke(
+        buildCoursDeBriques(buildEcransSansMiniSituation(), {
+          gabarit: 'b4',
+        } as never),
+      ),
+    ).toThrow(ContenuDeCoursInvalideError);
   });
 });

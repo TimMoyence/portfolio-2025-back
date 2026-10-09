@@ -3,7 +3,10 @@ import type {
   CorrigeProduction,
   CorrigeFeuille,
 } from '../../src/modules/formations/domain/cours/Corrige';
-import { questionsDuCours } from '../../src/modules/formations/domain/cours/Cours';
+import {
+  questionsDuCours,
+  type Gabarit,
+} from '../../src/modules/formations/domain/cours/Cours';
 import type { ContenuDeCours } from '../../src/modules/formations/domain/cours/CoursStocke';
 import { projeterCatalogue } from '../../src/modules/formations/domain/cours/Diffusion';
 import type { ValeurFormule } from '../../src/modules/formations/domain/cours/Formule';
@@ -43,6 +46,7 @@ export interface FicheAttendue {
   readonly options: number;
   readonly catalogue: readonly string[];
   readonly corrigesSurPlace?: readonly string[];
+  readonly gabarit?: Gabarit;
 }
 
 export const FICHE_DU_GABARIT_V3 = {
@@ -76,14 +80,15 @@ export function pointsImprimes(texte: string): number[] {
   );
 }
 
-function decrireLeGabaritV3(
+function decrireLeGabarit(
   code: string,
   cours: Cours,
+  gabarit: Gabarit,
   corrigesSurPlace: readonly string[],
 ): void {
-  describe(`${code} — gabarit v3`, () => {
-    it('déclare le gabarit v3, dont contrat-des-cours contrôle les règles', () => {
-      expect(cours.gabarit).toBe('v3');
+  describe(`${code} — gabarit ${gabarit}`, () => {
+    it(`déclare le gabarit ${gabarit}, dont contrat-des-cours contrôle les règles`, () => {
+      expect(cours.gabarit).toBe(gabarit);
     });
 
     it('corrige chaque exercice sur son propre écran, sans écran de correction qui le suive', () => {
@@ -156,7 +161,7 @@ export function decrireLaFicheDuCours(
       ).toHaveLength(attendu.rappels);
     });
 
-    it(`remédie ses ${attendu.remediations} confusions vers l’écran du § 5.9`, () => {
+    it(`remédie ses ${attendu.remediations} confusions vers l’écran de son tableau des remédiations`, () => {
       expect(cours.remediations).toEqual(remediationsDuDocument(document));
       expect(Object.keys(cours.remediations)).toHaveLength(
         attendu.remediations,
@@ -196,7 +201,12 @@ export function decrireLaFicheDuCours(
   });
 
   if (attendu.corrigesSurPlace !== undefined) {
-    decrireLeGabaritV3(code, cours, attendu.corrigesSurPlace);
+    decrireLeGabarit(
+      code,
+      cours,
+      attendu.gabarit ?? 'v3',
+      attendu.corrigesSurPlace,
+    );
   }
 }
 

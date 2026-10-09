@@ -3,7 +3,9 @@ import {
   buildCorrectionDeReponses,
   buildCorrectionDExemple,
   buildCoursDeBriques,
+  buildEcranAPieceJointe,
   buildEcranDeBrique,
+  buildPieceJointe,
 } from '../../../../../test/factories/ecrans-stockes.factory';
 import { lireCoursStocke } from './CoursStocke';
 import {
@@ -54,6 +56,26 @@ describe('projeterCatalogue (B19)', () => {
       ...sujet,
       ecrans: [sujet.ecrans[0], ecranVerrouille(sujet.ecrans[1])],
     });
+  });
+
+  it('sert la pièce jointe d un écran du catalogue, pas celle d un écran de séance', () => {
+    const reprise = buildPieceJointe({
+      fichier: '/assets/cours/b3-01/B3-01_reprise_acte_2.3f9a1c0e.xlsx',
+    });
+    const cours = lireCoursStocke(
+      buildCoursDeBriques([
+        buildEcranAPieceJointe('fp-story', buildPieceJointe(), {
+          diffusion: 'catalogue',
+        }),
+        buildEcranAPieceJointe('fp-vote', reprise),
+      ]),
+    );
+
+    const [courriel, vote] = projeterCatalogue(cours).ecrans;
+
+    expect(courriel.pieceJointe).toEqual(buildPieceJointe());
+    expect(vote).not.toHaveProperty('pieceJointe');
+    expect(tirer(cours, 0).sujet.ecrans[1].pieceJointe).toEqual(reprise);
   });
 
   it('sert en clair toute version historique, lue en diffusion catalogue', () => {

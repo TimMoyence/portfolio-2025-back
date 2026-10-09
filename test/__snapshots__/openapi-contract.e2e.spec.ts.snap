@@ -1291,6 +1291,13 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
         },
         "type": "array",
       },
+      "reponsesLibres": {
+        "description": "Réponses libres du poste, dans l’ordre des écrans puis des activités",
+        "items": {
+          "$ref": "#/components/schemas/RapportReponseLibreResponseDto",
+        },
+        "type": "array",
+      },
       "sousSeuil": {
         "example": false,
         "type": "boolean",
@@ -1303,6 +1310,7 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
       "completion",
       "note",
       "sousSeuil",
+      "reponsesLibres",
       "incidents",
       "reponses",
     ],
@@ -1376,6 +1384,28 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
       "dureeMs",
       "type",
       "score",
+    ],
+    "type": "object",
+  },
+  "RapportReponseLibreResponseDto": {
+    "properties": {
+      "activityId": {
+        "example": "b3-01-a1-regles:regle-comprendre",
+        "type": "string",
+      },
+      "reponse": {
+        "example": "Je lis le dictionnaire des données avant de calculer.",
+        "type": "string",
+      },
+      "screenId": {
+        "example": "B3-01-A1-15-REGLES-ACTE-1",
+        "type": "string",
+      },
+    },
+    "required": [
+      "screenId",
+      "activityId",
+      "reponse",
     ],
     "type": "object",
   },

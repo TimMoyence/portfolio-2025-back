@@ -23,7 +23,10 @@ import { ouvrirTirages } from '../src/modules/formations/domain/cours/OuvertureT
 import { verifierStructure } from '../src/modules/formations/domain/cours/StructureCours';
 import { tirer } from '../src/modules/formations/domain/cours/Tirage';
 import { CONTENUS } from '../src/modules/formations/infrastructure/contenus';
-import { prefixeDuCours } from './factories/contenus-de-cours.factory';
+import {
+  buildCoursDuContenu,
+  prefixeDuCours,
+} from './factories/contenus-de-cours.factory';
 import { tireurSequentiel } from './factories/cours.factory';
 import { describeDb } from './helpers/db-integration-datasource';
 import {
@@ -46,7 +49,7 @@ function attendreLaMemeValeur(
   expect(recalculee).toEqual(attendue);
 }
 
-const CELLULES_DE_LA_FEUILLE: Readonly<Record<string, number>> = {
+const CELLULES_DE_LA_FEUILLE: Readonly<Partial<Record<string, number>>> = {
   'b2-01-traitement-information-chiffree': 17,
   'b2-02-series-statistiques': 6,
   'b2-03-logique': 5,
@@ -148,61 +151,78 @@ for (const contenu of CONTENUS) {
       ).toBe(instantaneDe(contenu).empreinte);
     });
 
-    it('recalcule depuis la base chaque valeur du corrigé de la feuille (AC-11)', () => {
-      const corrige = corrigeDeLaFeuille();
-      const formules = Object.fromEntries(
-        corrige.attendus.map((attendu) => [
-          attendu.reference,
-          attendu.formuleReference,
-        ]),
-      );
-
-      const resultats = evaluerFeuille({
-        lignes: corrige.plan.lignes,
-        colonnes: corrige.plan.colonnes,
-        cellules: { ...corrige.plan.cellules, ...formules },
-      });
-
-      expect(corrige.attendus).toHaveLength(cellulesDeLaFeuille);
-      for (const attendu of corrige.attendus) {
-        attendreLaMemeValeur(
-          resultats.get(attendu.reference)?.valeur ?? null,
-          attendu.valeur,
-        );
-      }
-    });
-
-    it('corrige les deux productions relues de la base sans aucune cellule à revoir', () => {
-      const feuille = corrigeDeLaFeuille();
-      const tableau = corrigeDuTableau();
-      const rangs = [
-        ...new Set(tableau.attendus.map((attendu) => attendu.rang)),
-      ];
-      const saisies = rangs.map((rang) =>
-        Object.fromEntries(
-          tableau.attendus
-            .filter((attendu) => attendu.rang === rang)
-            .map((attendu) => [attendu.cle, attendu.valeur]),
+    it('relit la pièce jointe de chaque écran telle que le fichier la déclare', () => {
+      expect(cours.ecrans.map((ecran) => ecran.pieceJointe ?? null)).toEqual(
+        buildCoursDuContenu(contenu).ecrans.map(
+          (ecran) => ecran.pieceJointe ?? null,
         ),
       );
+    });
 
-      const surFeuille = corrigerFeuille(
-        feuille,
-        Object.fromEntries(
-          feuille.attendus.map((attendu) => [
+    if (cellulesDeLaFeuille === undefined) {
+      it('ne déclare aucune production feuille ou tableau à recalculer', () => {
+        expect(corrigesDesProductions()).toEqual([]);
+      });
+    } else {
+      it('recalcule depuis la base chaque valeur du corrigé de la feuille (AC-11)', () => {
+        const corrige = corrigeDeLaFeuille();
+        const formules = Object.fromEntries(
+          corrige.attendus.map((attendu) => [
             attendu.reference,
             attendu.formuleReference,
           ]),
-        ),
-      );
-      const surTableau = corrigerTableau(tableau, saisies);
+        );
 
-      expect(surFeuille.verdicts.filter((cellule) => !cellule.juste)).toEqual(
-        [],
-      );
-      expect(surTableau.verdicts.filter((ligne) => !ligne.juste)).toEqual([]);
-      expect([surFeuille.correcte, surTableau.correcte]).toEqual([true, true]);
-    });
+        const resultats = evaluerFeuille({
+          lignes: corrige.plan.lignes,
+          colonnes: corrige.plan.colonnes,
+          cellules: { ...corrige.plan.cellules, ...formules },
+        });
+
+        expect(corrige.attendus).toHaveLength(cellulesDeLaFeuille);
+        for (const attendu of corrige.attendus) {
+          attendreLaMemeValeur(
+            resultats.get(attendu.reference)?.valeur ?? null,
+            attendu.valeur,
+          );
+        }
+      });
+
+      it('corrige les deux productions relues de la base sans aucune cellule à revoir', () => {
+        const feuille = corrigeDeLaFeuille();
+        const tableau = corrigeDuTableau();
+        const rangs = [
+          ...new Set(tableau.attendus.map((attendu) => attendu.rang)),
+        ];
+        const saisies = rangs.map((rang) =>
+          Object.fromEntries(
+            tableau.attendus
+              .filter((attendu) => attendu.rang === rang)
+              .map((attendu) => [attendu.cle, attendu.valeur]),
+          ),
+        );
+
+        const surFeuille = corrigerFeuille(
+          feuille,
+          Object.fromEntries(
+            feuille.attendus.map((attendu) => [
+              attendu.reference,
+              attendu.formuleReference,
+            ]),
+          ),
+        );
+        const surTableau = corrigerTableau(tableau, saisies);
+
+        expect(surFeuille.verdicts.filter((cellule) => !cellule.juste)).toEqual(
+          [],
+        );
+        expect(surTableau.verdicts.filter((ligne) => !ligne.juste)).toEqual([]);
+        expect([surFeuille.correcte, surTableau.correcte]).toEqual([
+          true,
+          true,
+        ]);
+      });
+    }
 
     it('refuse en base une diffusion hors catalogue et séance', async () => {
       const [{ id }]: { id: string }[] = await contexte.dataSource.query(

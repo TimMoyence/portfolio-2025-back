@@ -1,4 +1,5 @@
 import type { Cours } from '../../src/modules/formations/domain/contrats/cours';
+import type { CorrectionSurPlace } from '../../src/modules/formations/domain/cours/Cours';
 import {
   type ContenuDeCours,
   type ContenuDeCoursBrut,
@@ -19,6 +20,35 @@ export function buildCoursDuContenu(
   version = VERSION_PUBLIEE_DE_TEST,
 ): Cours {
   return lireCoursStocke(buildContenuDuCours(contenu, version));
+}
+
+export function buildCoursAvecExplicationAllongee(
+  cours: Cours,
+  reference: string,
+  ajout: string,
+): Cours {
+  let allongees = 0;
+  const [premier, ...autres] = cours.ecrans.map((ecran) => {
+    const correction = ecran.correctionSurPlace;
+    if (correction === undefined) {
+      return ecran;
+    }
+    const [premiere, ...suite] = correction.explications.map((explication) => {
+      if (explication.reference !== reference) {
+        return explication;
+      }
+      allongees += 1;
+      return { ...explication, texte: `${explication.texte} ${ajout}` };
+    });
+    const correctionSurPlace: CorrectionSurPlace = {
+      explications: [premiere, ...suite],
+    };
+    return { ...ecran, correctionSurPlace };
+  });
+  if (allongees !== 1) {
+    throw new Error(`${reference} : ${allongees} explication(s) au lieu d’une`);
+  }
+  return { ...cours, ecrans: [premier, ...autres] };
 }
 
 export function prefixeDuCours(contenu: ContenuDeCours): string {
