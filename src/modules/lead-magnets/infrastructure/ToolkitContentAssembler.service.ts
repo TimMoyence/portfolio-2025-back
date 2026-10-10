@@ -1,5 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import type { InteractionProfile } from '../domain/InteractionProfile';
+import {
+  AI_LEVELS,
+  type AiLevel,
+  type InteractionProfile,
+} from '../domain/InteractionProfile';
 import type { IToolkitContentAssembler } from '../domain/IToolkitContentAssembler';
 import type {
   CheatsheetEntry,
@@ -104,9 +108,7 @@ export class ToolkitContentAssemblerService implements IToolkitContentAssembler 
     }));
   }
 
-  private getAllowedLevels(
-    level: 'debutant' | 'intermediaire' | 'avance' | null,
-  ): Set<string> {
+  private getAllowedLevels(level: AiLevel | null): ReadonlySet<AiLevel> {
     switch (level) {
       case 'debutant':
         return new Set(['debutant']);
@@ -115,7 +117,7 @@ export class ToolkitContentAssemblerService implements IToolkitContentAssembler 
       case 'avance':
         return new Set(['intermediaire', 'avance']);
       default:
-        return new Set(['debutant', 'intermediaire', 'avance']);
+        return new Set(AI_LEVELS);
     }
   }
 }
