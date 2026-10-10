@@ -1,5 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import type { Transporter } from 'nodemailer';
+import { estObjet } from '../../../common/domain/est-objet';
+import { tronquer } from '../../../common/domain/texte/tronquer';
+import { optionalMetadata } from '../../../common/domain/validation/domain-validators';
 import {
   escapeHtml,
   escapeUrl,
@@ -7,11 +10,17 @@ import {
   type EscapedHtml,
 } from '../../../common/infrastructure/mail/html-escape.util';
 import { createOptionalSmtpTransporter } from '../../../common/infrastructure/mail/smtp-transporter.util';
+import { entetesDeDesabonnement } from '../../../common/infrastructure/mail/entetes-de-desabonnement';
+import {
+  adresseDeReponse,
+  expediteurDesCourriels,
+} from '../../../config/adresses-de-courriel';
+import { lienDeDesabonnement } from '../../../config/urls-publiques';
 import type {
   ArticleBroadcastMailer,
   BroadcastRecipient,
 } from '../application/article-broadcast.repository';
-import { articlePageUrl, publicApiUrl } from '../application/article-settings';
+import { articlePageUrl } from '../application/article-settings';
 import type { ArticleRecord } from '../application/articles.repository';
 
 const ITEMS_PER_SECTION = 3;
@@ -58,37 +67,26 @@ interface ContenuDuMessage {
   copy: (typeof COPY)[keyof typeof COPY];
 }
 
-function text(value: unknown): string | null {
-  return typeof value === 'string' && value.trim() ? value.trim() : null;
-}
-
-function truncate(value: string, max: number): string {
-  const chars = Array.from(value);
-  return chars.length <= max ? value : `${chars.slice(0, max - 1).join('')}…`;
-}
-
 function emailSections(raw: unknown[]): EmailSection[] {
   return raw.flatMap((section): EmailSection[] => {
-    if (!section || typeof section !== 'object') return [];
-    const record = section as Record<string, unknown>;
-    const title = text(record.title);
+    if (!estObjet(section)) return [];
+    const title = optionalMetadata(section.title);
     if (!title) return [];
-    const items = Array.isArray(record.items) ? record.items : [];
+    const items = Array.isArray(section.items) ? section.items : [];
     return [
       {
         title,
         items: items
-          .flatMap((item): EmailItem[] => {
-            if (!item || typeof item !== 'object') return [];
-            const fields = item as Record<string, unknown>;
-            const itemText = text(fields.text);
-            const url = text(fields.url);
+          .flatMap((item: unknown): EmailItem[] => {
+            if (!estObjet(item)) return [];
+            const itemText = optionalMetadata(item.text);
+            const url = optionalMetadata(item.url);
             if (!itemText || !url) return [];
             return [
               {
-                entity: text(fields.entity) ?? '',
-                text: truncate(itemText, MAX_ITEM_TEXT),
-                source: text(fields.source) ?? '',
+                entity: optionalMetadata(item.entity) ?? '',
+                text: tronquer(itemText, MAX_ITEM_TEXT),
+                source: optionalMetadata(item.source) ?? '',
                 url,
               },
             ];
@@ -97,14 +95,6 @@ function emailSections(raw: unknown[]): EmailSection[] {
       },
     ];
   });
-}
-
-function bareAddress(value: string): string {
-  const open = value.indexOf('<');
-  const close = value.indexOf('>', open + 1);
-  return open < 0 || close < 0
-    ? value.trim()
-    : value.slice(open + 1, close).trim();
 }
 
 @Injectable()
@@ -128,8 +118,8 @@ export class ArticleBroadcastMailerService implements ArticleBroadcastMailer {
     recipient: BroadcastRecipient,
   ): Promise<void> {
     if (!this.transporter) throw new Error('SMTP transport not configured');
-    const replyTo = process.env.SMTP_REPLY_TO ?? 'contact@asilidesign.fr';
-    const unsubscribeUrl = `${publicApiUrl('newsletter/unsubscribe')}?token=${encodeURIComponent(recipient.unsubscribeToken)}`;
+    const replyTo = adresseDeReponse();
+    const unsubscribeUrl = lienDeDesabonnement(recipient.unsubscribeToken);
     const articleUrl = articlePageUrl(article.locale, article.slug);
     const copy = COPY[article.locale];
     const greeting = recipient.firstName
@@ -145,13 +135,12 @@ export class ArticleBroadcastMailerService implements ArticleBroadcastMailer {
     };
 
     await this.transporter.sendMail({
-      from: process.env.SMTP_FROM,
+      from: expediteurDesCourriels(),
       to: recipient.email,
       replyTo,
       subject: article.title,
       headers: {
-        'List-Unsubscribe': `<mailto:${bareAddress(replyTo)}?subject=unsubscribe>, <${unsubscribeUrl}>`,
-        'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+        ...entetesDeDesabonnement(replyTo, unsubscribeUrl),
         'List-Id': LIST_ID,
       },
       text: this.plainText(contenu),

@@ -142,6 +142,16 @@ describe('AuditReportHtmlRendererService', () => {
     expect(html).toContain('llms.txt');
   });
 
+  it('date le rapport et traduit gravité, impact et effort', () => {
+    const html = rendre();
+
+    expect(html).toContain('15 avril 2026');
+    expect(html).toContain('<span class="severity-badge">Eleve</span>');
+    expect(html).toContain('<td class="backlog-impact">Eleve</td>');
+    expect(html).toContain('<td class="backlog-effort">Faible</td>');
+    expect(html).toContain('Effort : Faible');
+  });
+
   it('echappe les balises HTML injectees dans les chaines LLM', () => {
     const expert = buildExpertReport({
       executiveSummary: '<script>alert(1)</script>',
@@ -154,6 +164,17 @@ describe('AuditReportHtmlRendererService', () => {
     expect(html).toContain('&lt;script&gt;alert(1)&lt;/script&gt;');
     expect(html).not.toContain('<img src=x onerror=alert(1)>');
     expect(html).toContain('&lt;img src=x onerror=alert(1)&gt;');
+  });
+
+  it('ne lit pas un llms.txt rangé dans un tableau comme une analyse', () => {
+    const html = service.render(
+      buildAudit({ keyChecks: { llmsTxt: [{ present: true }] } }),
+      buildClientReport(),
+      buildExpertReport(),
+    );
+
+    expect(html).toContain('Non analyse.');
+    expect(html).not.toContain('Statut : Absent');
   });
 
   it('utilise des page-break-before CSS pour separer les sections', () => {

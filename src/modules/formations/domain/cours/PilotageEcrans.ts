@@ -1,3 +1,4 @@
+import { dansLesBornes } from '../../../../common/domain/nombres/dans-les-bornes';
 import type { Ecran } from '../contrats/cours';
 import type {
   PilotageDemande,
@@ -60,7 +61,7 @@ function assertReglagesDeLaMachine(
       refuser(`paramètre ${cle} absent de l’écran`);
       return;
     }
-    if (valeur < parametre.min || valeur > parametre.max) {
+    if (!dansLesBornes(valeur, parametre)) {
       refuser(`réglage ${cle} hors de [${parametre.min} ; ${parametre.max}]`);
     }
   }

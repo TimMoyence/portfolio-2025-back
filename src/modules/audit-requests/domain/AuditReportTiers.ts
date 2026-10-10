@@ -1,7 +1,8 @@
 import type { EngineCoverage } from './EngineCoverage';
 
-type ReportSeverity = 'high' | 'medium' | 'low';
-type CrossPageSeverity = 'critical' | ReportSeverity;
+export type ReportSeverity = 'high' | 'medium' | 'low';
+export type CrossPageSeverity = 'critical' | ReportSeverity;
+export type FindingImpact = 'traffic' | 'indexation' | 'conversion';
 
 export interface ClientReportSynthesis {
   readonly executiveSummary: string;

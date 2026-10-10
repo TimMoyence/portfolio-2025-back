@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { dansLesBornes } from '../../../../common/domain/nombres/dans-les-bornes';
 import { CHAMPS_EXTRAITS_DU_CAS } from '../contrats/cours';
 import type { CorrigeProduction, CorrigeTableau } from './Corrige';
 import {
@@ -27,6 +28,7 @@ import {
   confusion,
   identifiantDeQuestion,
   media,
+  signalerDoublons,
   signaleurDe,
   sourceDeVideo,
   texte,
@@ -97,20 +99,16 @@ const quizNote = z
   })
   .strict()
   .superRefine((quiz, contexte) => {
-    const signaler = (champ: string, message: string): void => {
-      contexte.addIssue({ code: 'custom', path: [champ], message });
-    };
+    const signaler = signaleurDe(contexte);
     if (quiz.optionIds.length !== quiz.options.length) {
-      signaler('optionIds', 'un identifiant par option est attendu');
+      signaler(['optionIds'], 'un identifiant par option est attendu');
     }
-    if (new Set(quiz.optionIds).size !== quiz.optionIds.length) {
-      signaler('optionIds', 'deux options portent le même identifiant');
-    }
+    signalerDoublons(quiz.optionIds, ['optionIds'], signaler);
     if (quiz.correctIndex >= quiz.options.length) {
-      signaler('correctIndex', 'la bonne réponse désigne une option absente');
+      signaler(['correctIndex'], 'la bonne réponse désigne une option absente');
     }
     if (quiz.confusions.length !== quiz.options.length - 1) {
-      signaler('confusions', 'une confusion par option piège est attendue');
+      signaler(['confusions'], 'une confusion par option piège est attendue');
     }
   });
 
@@ -272,34 +270,30 @@ const proprietesRecitStockees = z
   })
   .strict()
   .superRefine((proprietes, contexte) => {
+    const signaler = signaleurDe(contexte);
     const { presentation, interaction } = proprietes;
     if (
       presentation === undefined &&
       (proprietes.titre === undefined || proprietes.paragraphes === undefined)
     ) {
-      contexte.addIssue({
-        code: 'custom',
-        path: ['presentation'],
-        message: 'écran sans présentation ni titre et paragraphes à afficher',
-      });
+      signaler(
+        ['presentation'],
+        'écran sans présentation ni titre et paragraphes à afficher',
+      );
     }
     const affiche = quizAffiche(presentation);
     if (affiche !== undefined && !afficheLeQuizNote(affiche, interaction)) {
-      contexte.addIssue({
-        code: 'custom',
-        path: ['interaction'],
-        message:
-          'le quiz affiché et le quiz noté diffèrent (identifiant, question ou options)',
-      });
+      signaler(
+        ['interaction'],
+        'le quiz affiché et le quiz noté diffèrent (identifiant, question ou options)',
+      );
     }
     const corrige = rangCorrige(proprietes.correction);
     if (corrige !== undefined && corrige !== interaction?.correctIndex) {
-      contexte.addIssue({
-        code: 'custom',
-        path: ['correction'],
-        message:
-          'la correction désigne une autre bonne réponse que le quiz noté',
-      });
+      signaler(
+        ['correction'],
+        'la correction désigne une autre bonne réponse que le quiz noté',
+      );
     }
   });
 
@@ -313,13 +307,11 @@ const correctionSurPlace = z
     explications: auMoinsUn(
       z.object({ reference: texte, texte }).strict(),
     ).superRefine((explications, contexte) => {
-      const references = explications.map(({ reference }) => reference);
-      if (new Set(references).size !== references.length) {
-        contexte.addIssue({
-          code: 'custom',
-          message: 'deux explications portent la même référence',
-        });
-      }
+      signalerDoublons(
+        explications.map(({ reference }) => reference),
+        [],
+        signaleurDe(contexte),
+      );
     }),
   })
   .strict();
@@ -372,16 +364,11 @@ const proprietesCas = z
   })
   .strict()
   .superRefine(({ questionsLibres = [] }, contexte) => {
-    const vus = new Set<string>();
-    for (const [position, { id }] of questionsLibres.entries()) {
-      if (vus.has(id)) {
-        signaleurDe(contexte)(
-          ['questionsLibres', position, 'id'],
-          `question libre ${id} en double`,
-        );
-      }
-      vus.add(id);
-    }
+    signalerDoublons(
+      questionsLibres.map(({ id }) => id),
+      ['questionsLibres'],
+      signaleurDe(contexte),
+    );
   });
 
 const proprietesExemple = z
@@ -433,14 +420,14 @@ function signalerPrereglagesHorsParametres(support: string): (
   contexte: z.RefinementCtx,
 ) => void {
   return (proprietes, contexte) => {
+    const signaler = signaleurDe(contexte);
     const cles = new Set(proprietes.parametres.map(({ cle }) => cle));
     proprietes.prereglages?.forEach(({ valeurs }, rang) => {
       for (const cle of Object.keys(valeurs).filter((c) => !cles.has(c))) {
-        contexte.addIssue({
-          code: 'custom',
-          path: ['prereglages', rang, 'valeurs', cle],
-          message: `le préréglage règle un paramètre absent ${support} : ${cle}`,
-        });
+        signaler(
+          ['prereglages', rang, 'valeurs', cle],
+          `le préréglage règle un paramètre absent ${support} : ${cle}`,
+        );
       }
     });
   };
@@ -467,7 +454,7 @@ function defautDeLEtape(
   if (curseur === undefined) {
     return `l’animation règle un paramètre absent ${support}`;
   }
-  if (valeur < curseur.min || valeur > curseur.max) {
+  if (!dansLesBornes(valeur, curseur)) {
     return `l’animation sort des bornes du curseur ${curseur.cle} : ${valeur}`;
   }
   if (!Number.isInteger((valeur - curseur.min) / curseur.pas)) {
@@ -564,11 +551,10 @@ const proprietesTrace = z
         ({ libelle }) => libelle === trace.reference,
       )
     ) {
-      contexte.addIssue({
-        code: 'custom',
-        path: ['reference'],
-        message: `la référence ne nomme aucun préréglage du tracé : ${trace.reference}`,
-      });
+      signaleurDe(contexte)(
+        ['reference'],
+        `la référence ne nomme aucun préréglage du tracé : ${trace.reference}`,
+      );
     }
   });
 

@@ -20,8 +20,8 @@ import {
 } from '../../../../../test/helpers/cles-du-corrige';
 import type { Ecran } from '../contrats/cours';
 import type { Tolerance } from '../GradingCore';
+import type { AuMoinsUn } from '../../../../common/domain/au-moins-un';
 import { questionVote } from './Cours';
-import type { AuMoinsUn } from './Cours';
 import { lireCoursStocke } from './CoursStocke';
 import { questionDeVote, slugOption } from './QuestionStockee';
 import {

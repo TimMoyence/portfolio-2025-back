@@ -1,3 +1,4 @@
+import { somme } from '../../src/common/domain/nombres/statistiques';
 import type { Cours } from '../../src/modules/formations/domain/contrats/cours';
 import type {
   CorrigeProduction,
@@ -265,7 +266,7 @@ export function decrireLaMiniSituation(
 
       expect(enigmes).toHaveLength(4);
       expect(new Set(tableur)).toEqual(new Set([3]));
-      expect(enigmes.reduce((total, points) => total + points, 3)).toBe(10);
+      expect(somme(enigmes) + 3).toBe(10);
     });
   });
 }

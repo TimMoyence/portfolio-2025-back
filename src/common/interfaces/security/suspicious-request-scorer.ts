@@ -1,4 +1,5 @@
 import type { SourceDEnv } from '../../../config/env-readers.util';
+import { somme } from '../../domain/nombres/statistiques';
 import { cheminDeLApi } from '../../../config/prefixe-api';
 
 export interface RequestScoringContext {
@@ -153,7 +154,7 @@ export function scoreRequest(
     scoreMissingAcceptLanguage(ctx),
   ];
 
-  const total = signals.reduce((sum, signal) => sum + signal.score, 0);
+  const total = somme(signals.map((signal) => signal.score));
 
   return {
     score: Math.min(total, MAX_SCORE),

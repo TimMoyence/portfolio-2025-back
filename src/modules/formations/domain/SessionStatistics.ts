@@ -1,3 +1,11 @@
+import { estAuMoinsUn } from '../../../common/domain/au-moins-un';
+import { arrondi } from '../../../common/domain/nombres/arrondi';
+import {
+  ecartTypePopulation,
+  mediane,
+  moyenne,
+  proportion,
+} from '../../../common/domain/nombres/statistiques';
 import type { RapportParticipant } from './IFormationMailer.port';
 import { REGLE_DE_NOTATION } from './RegleDeNotation';
 import type { ResultatsSeance } from './ResultatsSeance';
@@ -7,7 +15,6 @@ const {
   decimalesStatistiques,
   statistiquesSurQuestionsNotees,
 } = REGLE_DE_NOTATION;
-const ECHELLE_D_ARRONDI = 10 ** decimalesStatistiques;
 
 export interface StatistiquesSeance {
   readonly moyenne: number;
@@ -22,19 +29,6 @@ export function calculerStatistiquesSeance(
   participants: readonly RapportParticipant[],
   resultats: ResultatsSeance,
 ): StatistiquesSeance {
-  const notes = participants
-    .map((participant) => participant.note)
-    .sort((a, b) => a - b);
-  const moyenne =
-    notes.length === 0
-      ? 0
-      : notes.reduce((total, note) => total + note, 0) / notes.length;
-  const mediane = medianeDe(notes);
-  const variance =
-    notes.length === 0
-      ? 0
-      : notes.reduce((total, note) => total + (note - moyenne) ** 2, 0) /
-        notes.length;
   const questionsComptees = statistiquesSurQuestionsNotees
     ? resultats.questions.filter((question) => question.noteCompte)
     : resultats.questions;
@@ -47,14 +41,14 @@ export function calculerStatistiquesSeance(
     0,
   );
   return {
-    moyenne: arrondir(moyenne),
-    mediane: arrondir(mediane),
-    dispersion: arrondir(Math.sqrt(variance)),
-    tauxParticipation:
-      participants.length === 0
-        ? 0
-        : participants.filter((participant) => participant.completion > 0)
-            .length / participants.length,
+    ...repartitionDesNotes(
+      participants
+        .map((participant) => participant.note)
+        .sort((gauche, droite) => gauche - droite),
+    ),
+    tauxParticipation: estAuMoinsUn(participants)
+      ? proportion(participants, (participant) => participant.completion > 0)
+      : 0,
     tauxReussite: reponses === 0 ? 0 : correctes / reponses,
     questionsProblemes: questionsComptees
       .filter(
@@ -66,14 +60,19 @@ export function calculerStatistiquesSeance(
   };
 }
 
-function medianeDe(notes: readonly number[]): number {
-  if (notes.length === 0) return 0;
-  const milieu = Math.floor(notes.length / 2);
-  return notes.length % 2 === 0
-    ? (notes[milieu - 1] + notes[milieu]) / 2
-    : notes[milieu];
+function repartitionDesNotes(
+  notes: readonly number[],
+): Pick<StatistiquesSeance, 'moyenne' | 'mediane' | 'dispersion'> {
+  if (!estAuMoinsUn(notes)) {
+    return { moyenne: 0, mediane: 0, dispersion: 0 };
+  }
+  return {
+    moyenne: arrondir(moyenne(notes)),
+    mediane: arrondir(mediane(notes)),
+    dispersion: arrondir(ecartTypePopulation(notes)),
+  };
 }
 
 function arrondir(valeur: number): number {
-  return Math.round(valeur * ECHELLE_D_ARRONDI) / ECHELLE_D_ARRONDI;
+  return arrondi(valeur, decimalesStatistiques);
 }

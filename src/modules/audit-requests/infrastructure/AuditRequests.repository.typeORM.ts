@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { estObjet } from '../../../common/domain/est-objet';
 import { DepotDeRequetes } from '../../../common/infrastructure/typeorm/DepotDeRequetes';
 import {
   AuditSnapshot,
@@ -8,7 +9,7 @@ import {
 import { AuditRequest } from '../domain/AuditRequest';
 import { AuditRequestResponse } from '../domain/AuditRequestResponse';
 import type { IAuditRequestsRepository } from '../domain/IAuditRequests.repository';
-import { resolveAuditLocale } from '../domain/audit-locale.util';
+import { LocaleCode } from '../../../common/domain/value-objects/LocaleCode';
 import { AuditRequestEntity } from './entities/AuditRequest.entity';
 
 const UPDATABLE_STATE_KEYS = [
@@ -47,7 +48,7 @@ export class AuditRequestsRepositoryTypeORM
         processingStatus: 'PENDING',
         progress: 0,
         step: 'Queued',
-        locale: resolveAuditLocale(data.locale),
+        locale: LocaleCode.resolve(data.locale).value,
         redirectChain: [],
         keyChecks: {},
         quickWins: [],
@@ -122,7 +123,7 @@ export class AuditRequestsRepositoryTypeORM
       websiteName: entity.websiteName,
       contactMethod: entity.contactMethod as 'EMAIL' | 'PHONE',
       contactValue: entity.contactValue,
-      locale: resolveAuditLocale(entity.locale),
+      locale: LocaleCode.resolve(entity.locale).value,
       done: entity.done,
       processingStatus: entity.processingStatus ?? 'PENDING',
       progress: entity.progress ?? 0,
@@ -152,22 +153,16 @@ export class AuditRequestsRepositoryTypeORM
   }
 
   private safeObject(value: unknown): Record<string, unknown> {
-    if (!value || typeof value !== 'object' || Array.isArray(value)) return {};
-    return value as Record<string, unknown>;
+    return this.safeNullableObject(value) ?? {};
   }
 
   private safeNullableObject(value: unknown): Record<string, unknown> | null {
-    if (!value || typeof value !== 'object' || Array.isArray(value))
-      return null;
-    return value as Record<string, unknown>;
+    return estObjet(value) ? value : null;
   }
 
   private safeNumberObject(value: unknown): Record<string, number> {
-    if (!value || typeof value !== 'object' || Array.isArray(value)) return {};
     const output: Record<string, number> = {};
-    for (const [key, entry] of Object.entries(
-      value as Record<string, unknown>,
-    )) {
+    for (const [key, entry] of Object.entries(this.safeObject(value))) {
       if (typeof entry === 'number' && Number.isFinite(entry)) {
         output[key] = entry;
       }

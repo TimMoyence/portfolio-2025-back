@@ -1,7 +1,24 @@
+import type { ArticleBroadcastRecord } from '../../src/modules/articles/application/article-broadcast.repository';
 import type {
   ArticleRecord,
   ArticleWrite,
 } from '../../src/modules/articles/application/articles.repository';
+
+export function buildArticleBroadcastRecord(
+  overrides: Partial<ArticleBroadcastRecord> = {},
+): ArticleBroadcastRecord {
+  return {
+    id: 'broadcast-1',
+    articleRecordId: 'record-1',
+    status: 'scheduled',
+    sendAfter: new Date('2026-09-23T07:44:00.000Z'),
+    lockedUntil: null,
+    sentCount: 0,
+    failedCount: 0,
+    completedAt: null,
+    ...overrides,
+  };
+}
 
 export function buildArticleWrite(
   overrides: Partial<ArticleWrite> = {},
@@ -24,6 +41,16 @@ export function buildArticleWrite(
     updatedAt: new Date('2026-09-23T04:15:00.000Z'),
     contentSha256: 'a'.repeat(64),
     ...overrides,
+  };
+}
+
+export function createMockArticlesService() {
+  return {
+    ingest: jest.fn(),
+    getDelivery: jest.fn(),
+    listPublished: jest.fn(),
+    getPublishedBySlug: jest.fn(),
+    feed: jest.fn(),
   };
 }
 

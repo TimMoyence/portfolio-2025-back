@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { dateLongue } from '../../../common/domain/texte/date-longue';
 import type {
   CheatsheetEntry,
   PromptEntry,
@@ -23,11 +24,7 @@ import { ACCENT } from './toolkit-html/toolkit-palette';
 @Injectable()
 export class ToolkitHtmlRendererService {
   render(content: ToolkitContent): string {
-    const date = new Date().toLocaleDateString('fr-FR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
+    const date = dateLongue(new Date());
 
     const cover = this.renderCover(content, date);
     const stats = this.renderStatsPage();

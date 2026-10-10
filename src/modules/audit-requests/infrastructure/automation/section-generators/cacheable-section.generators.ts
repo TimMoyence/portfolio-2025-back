@@ -1,6 +1,7 @@
 import type { BaseLanguageModelInput } from '@langchain/core/language_models/base';
 import type { RunnableConfig } from '@langchain/core/runnables';
 import type { ChatOpenAI } from '@langchain/openai';
+import type { ZodType } from 'zod';
 import type { AuditLocale } from '../../../domain/audit-locale.util';
 import type {
   ClientCommsSection,
@@ -19,10 +20,8 @@ import {
 import { wrapUntrustedUserPayload } from '../shared/prompt-sanitize.util';
 import { CachingSectionRunner } from './caching-section.runner';
 import {
-  buildClientCommsSystemBlocks,
-  buildExecutionSystemBlocks,
-  buildExecutiveSystemBlocks,
-  buildPrioritySystemBlocks,
+  buildSystemBlocks,
+  type SectionAPrompt,
 } from './section-prompts.builder';
 
 export type InvokeTrackedFn = <T>(
@@ -38,12 +37,12 @@ export type InvokeTrackedFn = <T>(
   signal?: AbortSignal,
 ) => Promise<T>;
 
-export interface CacheableSectionDeps {
+interface CacheableSectionDeps {
   cachingRunner: CachingSectionRunner;
   invokeTracked: InvokeTrackedFn;
 }
 
-export interface CacheableSectionArgs {
+interface CacheableSectionArgs {
   llm: ChatOpenAI;
   payload: Record<string, unknown>;
   locale: AuditLocale;
@@ -65,119 +64,54 @@ export function buildOpenAiMessages(
   ];
 }
 
-export function generateExecutiveSection(
+type GenerateurDeSection<T> = (
   deps: CacheableSectionDeps,
   args: CacheableSectionArgs,
-): Promise<ExecutiveSection> {
-  const { llm, payload, locale, retryMode, signal } = args;
-  const systemBlocks = buildExecutiveSystemBlocks(locale, retryMode);
-  return deps.cachingRunner.run<ExecutiveSection>({
-    section: 'executive',
-    schema: executiveSectionSchema,
-    systemBlocks,
-    payload,
-    locale,
-    signal,
-    openAiFallback: () => {
-      const chain = llm.withStructuredOutput(executiveSectionSchema);
-      return deps.invokeTracked(
-        chain,
-        buildOpenAiMessages(systemBlocks, payload),
-        'executive',
-        locale,
-        signal,
-      );
-    },
-  });
-}
+) => Promise<T>;
 
-export function generatePrioritySection(
-  deps: CacheableSectionDeps,
-  args: CacheableSectionArgs,
-): Promise<PrioritySection> {
-  const { llm, payload, locale, retryMode, signal } = args;
-  const systemBlocks = buildPrioritySystemBlocks(locale, retryMode);
-  return deps.cachingRunner.run<PrioritySection>({
-    section: 'priority',
-    schema: prioritySectionSchema,
-    systemBlocks,
-    payload,
-    locale,
-    signal,
-    openAiFallback: () => {
-      const chain = llm.withStructuredOutput(prioritySectionSchema);
-      return deps.invokeTracked(
-        chain,
-        buildOpenAiMessages(systemBlocks, payload),
-        'priority',
-        locale,
-        signal,
-      );
-    },
-  });
-}
-
-export function generateExecutionSection(
-  deps: CacheableSectionDeps,
-  args: CacheableSectionArgs,
-): Promise<ExecutionSection> {
-  const { llm, payload, locale, retryMode, signal } = args;
-  const systemBlocks = buildExecutionSystemBlocks(locale, retryMode);
-  return deps.cachingRunner.run<ExecutionSection>({
-    section: 'execution',
-    schema: executionSectionSchema,
-    systemBlocks,
-    payload,
-    locale,
-    signal,
-    openAiFallback: () => {
-      const chain = llm.withStructuredOutput(executionSectionSchema);
-      return deps.invokeTracked(
-        chain,
-        buildOpenAiMessages(systemBlocks, payload),
-        'execution',
-        locale,
-        signal,
-      );
-    },
-  });
-}
-
-export function generateClientCommsSection(
-  deps: CacheableSectionDeps,
-  args: CacheableSectionArgs,
-): Promise<ClientCommsSection> {
-  const { llm, payload, locale, retryMode, signal } = args;
-  const systemBlocks = buildClientCommsSystemBlocks(locale, retryMode);
-  return deps.cachingRunner.run<ClientCommsSection>({
-    section: 'client_comms',
-    schema: clientCommsSectionSchema,
-    systemBlocks,
-    payload,
-    locale,
-    signal,
-    openAiFallback: () => {
-      const chain = llm.withStructuredOutput(clientCommsSectionSchema);
-      return deps.invokeTracked(
-        chain,
-        buildOpenAiMessages(systemBlocks, payload),
-        'client_comms',
-        locale,
-        signal,
-      );
-    },
-  });
+function generateurDeSection<T extends FanoutSection>(
+  section: Exclude<SectionAPrompt, 'user_summary'>,
+  schema: ZodType<T>,
+): GenerateurDeSection<T> {
+  return (deps, { llm, payload, locale, retryMode, signal }) => {
+    const systemBlocks = buildSystemBlocks(section, locale, retryMode);
+    return deps.cachingRunner.run<T>({
+      section,
+      schema,
+      systemBlocks,
+      payload,
+      locale,
+      signal,
+      openAiFallback: () =>
+        deps.invokeTracked(
+          llm.withStructuredOutput<T>(schema),
+          buildOpenAiMessages(systemBlocks, payload),
+          section,
+          locale,
+          signal,
+        ),
+    });
+  };
 }
 
 export const GENERATEURS_DE_SECTION: Record<
   FanoutSectionName,
-  (
-    deps: CacheableSectionDeps,
-    args: CacheableSectionArgs,
-  ) => Promise<FanoutSection>
+  GenerateurDeSection<FanoutSection>
 > = {
-  executiveSection: generateExecutiveSection,
-  prioritySection: generatePrioritySection,
-  executionSection: generateExecutionSection,
-  clientCommsSection: generateClientCommsSection,
+  executiveSection: generateurDeSection<ExecutiveSection>(
+    'executive',
+    executiveSectionSchema,
+  ),
+  prioritySection: generateurDeSection<PrioritySection>(
+    'priority',
+    prioritySectionSchema,
+  ),
+  executionSection: generateurDeSection<ExecutionSection>(
+    'execution',
+    executionSectionSchema,
+  ),
+  clientCommsSection: generateurDeSection<ClientCommsSection>(
+    'client_comms',
+    clientCommsSectionSchema,
+  ),
 };

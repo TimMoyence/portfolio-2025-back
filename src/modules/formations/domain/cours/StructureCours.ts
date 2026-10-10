@@ -1,6 +1,10 @@
+import { avecVirgule } from '../../../../common/domain/nombres/ecriture-francaise';
+import { somme } from '../../../../common/domain/nombres/statistiques';
+import { listeEntreGuillemets } from '../../../../common/domain/texte/liste-entre-guillemets';
+import { sansDiacritiques } from '../../../../common/domain/texte/sans-diacritiques';
 import type { Cours, Ecran } from '../contrats/cours';
 import type { TirageDuCours } from '../contrats/tirage';
-import { cueillirDansArbre, estObjet } from './ArbreDeValeurs';
+import { cueillirDansArbre, cueillirSous } from './ArbreDeValeurs';
 import type { Gabarit } from './Cours';
 import {
   estInteractif,
@@ -73,7 +77,6 @@ const RATIO_INTERACTION_MINIMAL = 0.3;
 const BRIQUE_OUVERTURE = 'fp-recall';
 const BRIQUE_CLOTURE = 'fp-exit';
 const PREFIXE_REFERENCE = 'ref:';
-const DIACRITIQUES = /\p{M}/gu;
 const PUCE_DES_NOTES = /^\s*•/;
 const DUREE_MINIMALE_D_ATELIER = 8;
 const DUREE_MAXIMALE_D_ATELIER = 15;
@@ -102,10 +105,6 @@ function minutesDe(ecran: Ecran): number {
   return estDureeValide(ecran.dureeMinutes) ? ecran.dureeMinutes : 0;
 }
 
-function enFrancais(part: number): string {
-  return part.toFixed(2).replace('.', ',');
-}
-
 function verdictDuBloc(
   bloc: readonly string[],
   cumul: number,
@@ -113,7 +112,7 @@ function verdictDuBloc(
   if (cumul <= EXPOSITION_MAXIMALE_MINUTES) {
     return [];
   }
-  const nommes = bloc.map((nom) => `« ${nom} »`).join(', ');
+  const nommes = listeEntreGuillemets(bloc);
   return [
     {
       ecran: bloc[0],
@@ -169,12 +168,14 @@ function controlerRatio({ cours }: Analyse): readonly Manquement[] {
   if (questionsDuCours(cours).length === 0) {
     return [];
   }
-  const interaction = cours.ecrans
-    .filter((ecran) => estInteractif(ecran))
-    .reduce((total, ecran) => total + minutesDe(ecran), 0);
-  const exposition = cours.ecrans
-    .filter((ecran) => !estInteractif(ecran))
-    .reduce((total, ecran) => total + minutesDe(ecran), 0);
+  const minutesDesEcrans = (interactifs: boolean): number =>
+    somme(
+      cours.ecrans
+        .filter((ecran) => estInteractif(ecran) === interactifs)
+        .map(minutesDe),
+    );
+  const interaction = minutesDesEcrans(true);
+  const exposition = minutesDesEcrans(false);
   if (interaction + exposition === 0) {
     return [
       {
@@ -192,7 +193,7 @@ function controlerRatio({ cours }: Analyse): readonly Manquement[] {
   return [
     {
       ecran: null,
-      raison: `${interaction} min d'écrans interactifs pour ${exposition} min d'exposition, soit un ratio de ${enFrancais(interaction / exposition)} : le plancher est de ${enFrancais(RATIO_INTERACTION_MINIMAL)}.`,
+      raison: `${interaction} min d'écrans interactifs pour ${exposition} min d'exposition, soit un ratio de ${avecVirgule(interaction / exposition, 2)} : le plancher est de ${avecVirgule(RATIO_INTERACTION_MINIMAL, 2)}.`,
     },
   ];
 }
@@ -277,7 +278,7 @@ function controlerDureeCours({ cours }: Analyse): readonly Manquement[] {
 }
 
 function normaliser(identifiant: string): string {
-  return identifiant.normalize('NFD').replace(DIACRITIQUES, '').toLowerCase();
+  return sansDiacritiques(identifiant).toLowerCase();
 }
 
 function voisinIndistinct(
@@ -305,21 +306,19 @@ function raisonIntrouvable(
   return `${sujet} « ${identifiant} » est un identifiant distinct de « ${voisin} » : la casse et les accents ne sont jamais rapprochés en silence.`;
 }
 
+function referenceDe(element: unknown): readonly string[] | null {
+  if (typeof element !== 'string') {
+    return null;
+  }
+  return element.startsWith(PREFIXE_REFERENCE)
+    ? [element.slice(PREFIXE_REFERENCE.length)]
+    : [];
+}
+
 function referencesDansValeur(valeur: unknown): readonly string[] {
-  if (typeof valeur === 'string') {
-    return valeur.startsWith(PREFIXE_REFERENCE)
-      ? [valeur.slice(PREFIXE_REFERENCE.length)]
-      : [];
-  }
-  if (Array.isArray(valeur)) {
-    return valeur.flatMap((element: unknown) => referencesDansValeur(element));
-  }
-  if (estObjet(valeur)) {
-    return Object.values(valeur).flatMap((element) =>
-      referencesDansValeur(element),
-    );
-  }
-  return [];
+  return cueillirSous('proprietes', valeur, (_cle, element) =>
+    referenceDe(element),
+  );
 }
 
 function proprietesDe(ecran: Ecran): unknown {
@@ -640,7 +639,7 @@ function tempsTropLong(temp: TempsNote): readonly Manquement[] {
 }
 
 function suiteTropCourte(suite: readonly TempsNote[]): readonly Manquement[] {
-  const minutes = suite.reduce((total, temp) => total + temp.minutes, 0);
+  const minutes = somme(suite.map((temp) => temp.minutes));
   if (minutes >= DUREE_MINIMALE_D_ATELIER) {
     return [];
   }

@@ -6,9 +6,11 @@ import {
 } from '@nestjs/common';
 import {
   ARTICLE_BROADCAST_REPOSITORY,
+  type ArticleBroadcastRecord,
   type ArticleBroadcastRepository,
   type ModeratedArticle,
 } from './article-broadcast.repository';
+import { clotureDeDiffusion, estAnnulable } from './cloture-de-diffusion';
 
 const MODERATION_LIST_LIMIT = 30;
 
@@ -43,16 +45,8 @@ export class ArticleModerationService {
   async withdraw(articleId: string, now: Date = new Date()) {
     const item = await this.find(articleId);
     await this.broadcasts.setArticleStatus(item.article.id, 'withdrawn');
-    if (
-      item.broadcast &&
-      (item.broadcast.status === 'scheduled' ||
-        item.broadcast.status === 'sending')
-    ) {
-      await this.broadcasts.updateBroadcast(item.broadcast.id, {
-        status: 'cancelled',
-        lockedUntil: null,
-        completedAt: now,
-      });
+    if (estAnnulable(item.broadcast)) {
+      await this.annuler(item.broadcast, now);
     }
     return this.view(await this.find(articleId));
   }
@@ -76,16 +70,18 @@ export class ArticleModerationService {
 
   async cancelBroadcast(articleId: string, now: Date = new Date()) {
     const item = await this.find(articleId);
-    const status = item.broadcast?.status;
-    if (!item.broadcast || (status !== 'scheduled' && status !== 'sending')) {
+    if (!estAnnulable(item.broadcast)) {
       throw new ConflictException('Broadcast can no longer be cancelled');
     }
-    await this.broadcasts.updateBroadcast(item.broadcast.id, {
-      status: 'cancelled',
-      lockedUntil: null,
-      completedAt: now,
-    });
+    await this.annuler(item.broadcast, now);
     return this.view(await this.find(articleId));
+  }
+
+  private annuler(broadcast: ArticleBroadcastRecord, now: Date): Promise<void> {
+    return this.broadcasts.updateBroadcast(
+      broadcast.id,
+      clotureDeDiffusion('cancelled', now),
+    );
   }
 
   private async find(articleId: string): Promise<ModeratedArticle> {

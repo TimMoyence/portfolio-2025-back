@@ -1,4 +1,5 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
+import { messageDErreur } from '../../../common/domain/errors/message-d-erreur';
 import {
   ARTICLE_BROADCAST_MAILER,
   ARTICLE_BROADCAST_REPOSITORY,
@@ -12,6 +13,10 @@ import {
   broadcastBatchSize,
   broadcastEnabled,
 } from './article-settings';
+import {
+  clotureDeDiffusion,
+  type StatutDeCloture,
+} from './cloture-de-diffusion';
 import {
   ARTICLES_REPOSITORY,
   type ArticleRecord,
@@ -54,7 +59,7 @@ function redactToken(token: string): string {
 }
 
 function redactedError(error: unknown): string {
-  const message = error instanceof Error ? error.message : String(error);
+  const message = messageDErreur(error);
   let redacted = '';
   let token = '';
   for (const char of message) {
@@ -183,14 +188,13 @@ export class ArticleBroadcastService {
 
   private async close(
     broadcast: ArticleBroadcastRecord,
-    status: 'cancelled' | 'expired',
+    status: StatutDeCloture,
     now: Date,
   ): Promise<BroadcastRunResult> {
-    await this.broadcasts.updateBroadcast(broadcast.id, {
-      status,
-      lockedUntil: null,
-      completedAt: now,
-    });
+    await this.broadcasts.updateBroadcast(
+      broadcast.id,
+      clotureDeDiffusion(status, now),
+    );
     this.logger.warn(`Article broadcast ${broadcast.id} ${status}`);
     return { status, broadcastId: broadcast.id, sent: 0, failed: 0 };
   }

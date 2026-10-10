@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import type { LlmsTxtAnalysis } from '../../domain/AiIndexability';
+import { scoreSur100 } from '../../domain/score-sur-100';
 import { SafeFetchService } from './safe-fetch.service';
 
 /**
@@ -101,7 +102,7 @@ export class LlmsTxtAnalyzerService {
     if (hasFull) score += 15;
     if (size > 200) score += 10;
     score -= issues.length * 5;
-    return Math.max(0, Math.min(100, score));
+    return scoreSur100(score);
   }
 
   private absent(url: string): LlmsTxtAnalysis {

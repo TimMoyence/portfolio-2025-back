@@ -1,6 +1,9 @@
+import { nombreFrancais } from '../../../../common/domain/nombres/ecriture-francaise';
+import { tronquer } from '../../../../common/domain/texte/tronquer';
 import type { Cours, Ecran, Question } from '../contrats/cours';
 import type { EcranPublic, TirageDuCours } from '../contrats/tirage';
-import { cueillirDansArbre, estObjet } from './ArbreDeValeurs';
+import { estObjet } from '../../../../common/domain/est-objet';
+import { cueillirDansArbre, cueillirSous } from './ArbreDeValeurs';
 import type { CorrigeProduction } from './Corrige';
 import { questionsDe } from './Cours';
 import { projeterCatalogue } from './Diffusion';
@@ -19,7 +22,6 @@ const DECIMALES_DES_ATTENDUS: readonly number[] = [2, 4, 6];
 const DECIMALES_D_UNE_FEUILLE: readonly number[] = [4, 6];
 const FACTEUR_DE_POURCENTAGE = 100;
 const CHIFFRES_SIGNIFICATIFS_MINIMUM = 3;
-const TAILLE_D_UN_GROUPE = 3;
 const LONGUEUR_D_EXTRAIT = 80;
 const ESPACE_INSECABLE = String.fromCodePoint(0x00a0);
 const ESPACE_FINE_INSECABLE = String.fromCodePoint(0x202f);
@@ -76,19 +78,6 @@ function contientSansCasse(texte: string, segment: string): boolean {
     .includes(normaliser(segment).toLowerCase());
 }
 
-function enFrancais(valeur: number, decimales: number): string {
-  const [entier, fraction = ''] = Math.abs(valeur)
-    .toFixed(decimales)
-    .split('.');
-  const groupes: string[] = [];
-  for (let fin = entier.length; fin > 0; fin -= TAILLE_D_UN_GROUPE) {
-    groupes.unshift(entier.slice(Math.max(0, fin - TAILLE_D_UN_GROUPE), fin));
-  }
-  const signe = valeur < 0 ? '-' : '';
-  const decimal = fraction === '' ? '' : `,${fraction}`;
-  return `${signe}${groupes.join(' ')}${decimal}`;
-}
-
 function decimalesDe(forme: string): number {
   const [, fraction = ''] = normaliser(forme).split(',');
   let longueur = 0;
@@ -111,20 +100,28 @@ function chiffresSignificatifs(valeur: number): number {
   return fin - debut;
 }
 
+function sansLaQuestion(
+  objet: Readonly<Record<string, unknown>>,
+): Readonly<Record<string, unknown>> {
+  return Object.fromEntries(
+    Object.entries(objet).filter(([cle]) => !CLES_DE_LA_QUESTION.includes(cle)),
+  );
+}
+
 function chainesDe(valeur: unknown, exclue: string | null): string[] {
-  if (typeof valeur === 'string') {
-    return [valeur];
-  }
-  if (Array.isArray(valeur)) {
-    return valeur.flatMap((element: unknown) => chainesDe(element, exclue));
-  }
-  if (!estObjet(valeur)) {
-    return [];
-  }
-  const propre = exclue !== null && valeur.id === exclue;
-  return Object.entries(valeur)
-    .filter(([cle]) => !(propre && CLES_DE_LA_QUESTION.includes(cle)))
-    .flatMap(([, element]) => chainesDe(element, exclue));
+  const retenir = (
+    _cle: string,
+    element: unknown,
+  ): readonly string[] | null => {
+    if (typeof element === 'string') {
+      return [element];
+    }
+    if (exclue !== null && estObjet(element) && element.id === exclue) {
+      return cueillirDansArbre(sansLaQuestion(element), retenir);
+    }
+    return null;
+  };
+  return cueillirSous('donnees', valeur, retenir);
 }
 
 const CLES_DES_NOMBRES_DU_NUAGE: readonly string[] = [
@@ -171,7 +168,7 @@ function textesDeLEcran(
     decimales === undefined
       ? []
       : valeursDesGraphiques(ecran.donnees).map((valeur) =>
-          enFrancais(valeur, decimales),
+          nombreFrancais(valeur, decimales),
         );
   return [...titre, ...chainesDe(ecran.donnees, exclue), ...valeurs];
 }
@@ -201,12 +198,6 @@ function unParEcran(textes: readonly TextePublic[]): readonly TextePublic[] {
   return [...premiers.values()];
 }
 
-function extrait(texte: string): string {
-  return texte.length <= LONGUEUR_D_EXTRAIT
-    ? texte
-    : `${texte.slice(0, LONGUEUR_D_EXTRAIT)}…`;
-}
-
 function signaler(
   cible: QuestionPlacee,
   volet: string,
@@ -215,7 +206,7 @@ function signaler(
 ): readonly Manquement[] {
   return unParEcran(textes).map((texte) => ({
     ecran: texte.ecran,
-    raison: `volet ${volet} : ${indice}, réponse de la question « ${cible.question.id} » (écran « ${cible.ecran.id} »), paraît dans un texte public de l'écran « ${texte.ecran} » : « ${extrait(texte.texte)} ».`,
+    raison: `volet ${volet} : ${indice}, réponse de la question « ${cible.question.id} » (écran « ${cible.ecran.id} »), paraît dans un texte public de l'écran « ${texte.ecran} » : « ${tronquer(texte.texte, LONGUEUR_D_EXTRAIT)} ».`,
   }));
 }
 
@@ -304,8 +295,8 @@ function formesDesAttendus(corrige: CorrigeProduction): readonly string[] {
     ...new Set(
       valeurs.flatMap((valeur) =>
         decimales.flatMap((precision) => [
-          enFrancais(Math.abs(valeur), precision),
-          enFrancais(Math.abs(valeur) * FACTEUR_DE_POURCENTAGE, precision),
+          nombreFrancais(Math.abs(valeur), precision),
+          nombreFrancais(Math.abs(valeur) * FACTEUR_DE_POURCENTAGE, precision),
         ]),
       ),
     ),

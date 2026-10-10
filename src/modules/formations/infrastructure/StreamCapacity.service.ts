@@ -1,7 +1,11 @@
 import { randomUUID } from 'node:crypto';
 import { Injectable, Logger, OnModuleDestroy } from '@nestjs/common';
-import Redis, { type RedisOptions } from 'ioredis';
-import { envInt, envString } from '../../../config/env-readers.util';
+import Redis from 'ioredis';
+import {
+  journalDErreursRedis,
+  optionsRedis,
+  resoudreConnexionRedis,
+} from '../../../common/infrastructure/redis/connexion-redis';
 import { PlafondDeFluxAtteintError } from '../domain/errors/FormationErrors';
 import type {
   IStreamCapacity,
@@ -11,7 +15,6 @@ import type {
 
 const PREFIX = '{formations:stream}:capacity:';
 const LEASE_TTL_MS = 30_000;
-const MAX_RETRIES = 3;
 
 const ACQUIRE_SCRIPT = `
 local now = tonumber(ARGV[1])
@@ -59,26 +62,24 @@ return 1
 export class StreamCapacityService implements IStreamCapacity, OnModuleDestroy {
   private readonly logger = new Logger(StreamCapacityService.name);
   private readonly redis: Redis | null;
-  private redisErrors = 0;
   private connexion: Promise<Redis> | null = null;
+  private readonly signalerErreur = journalDErreursRedis({
+    libelle: 'Redis indisponible pour le plafond de flux',
+    avertir: (message) => this.logger.warn(message),
+  });
 
   constructor() {
-    const url = envString('REDIS_URL');
-    const host = envString('REDIS_HOST');
-    const port = envString('REDIS_PORT');
-    if (url) {
-      this.redis = new Redis(url, this.options());
-    } else if (host && port) {
-      this.redis = new Redis({
-        ...this.options(),
-        host,
-        port: Math.max(1, envInt('REDIS_PORT', 6379)),
-        username: envString('REDIS_USERNAME'),
-        password: envString('REDIS_PASSWORD'),
-      });
-    } else {
-      this.redis = null;
-    }
+    const connexion = resoudreConnexionRedis();
+    this.redis =
+      connexion === undefined
+        ? null
+        : new Redis(
+            optionsRedis(connexion, {
+              lazyConnect: true,
+              enableOfflineQueue: false,
+              maxRetriesPerRequest: 1,
+            }),
+          );
   }
 
   async acquire(
@@ -129,16 +130,6 @@ export class StreamCapacityService implements IStreamCapacity, OnModuleDestroy {
     }
   }
 
-  private options(): RedisOptions {
-    return {
-      lazyConnect: true,
-      enableOfflineQueue: false,
-      maxRetriesPerRequest: 1,
-      retryStrategy: (times: number) =>
-        times > MAX_RETRIES ? null : Math.min(times * 500, 3000),
-    };
-  }
-
   private async client(): Promise<Redis> {
     if (this.redis === null) {
       throw new Error('Redis n’est pas configuré pour le plafond de flux.');
@@ -153,12 +144,7 @@ export class StreamCapacityService implements IStreamCapacity, OnModuleDestroy {
       return await this.connexion;
     } catch (error) {
       this.connexion = null;
-      this.redisErrors += 1;
-      if (this.redisErrors <= MAX_RETRIES) {
-        this.logger.warn(
-          `Redis indisponible pour le plafond de flux: ${String(error)}`,
-        );
-      }
+      this.signalerErreur(error);
       throw error;
     }
   }

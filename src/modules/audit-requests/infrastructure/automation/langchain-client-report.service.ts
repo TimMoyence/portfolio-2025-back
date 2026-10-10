@@ -1,36 +1,38 @@
 import { ChatOpenAI } from '@langchain/openai';
 import { Injectable, Logger } from '@nestjs/common';
 import { z } from 'zod';
+import { compacterBlancs } from '../../../../common/domain/texte/compacter-blancs';
 import type { AiIndexabilitySignals } from '../../domain/AiIndexability';
-import type { ClientReportSynthesis } from '../../domain/AuditReportTiers';
+import type {
+  ClientReportSynthesis,
+  FindingImpact,
+  ReportSeverity,
+} from '../../domain/AuditReportTiers';
 import type { BusinessType } from '../../domain/BusinessType';
 import { businessTypePromptHint } from '../../domain/BusinessType';
 import type { EngineCoverage } from '../../domain/EngineCoverage';
-import {
-  AuditLocale,
-  resolveAuditLocale,
-} from '../../domain/audit-locale.util';
+import { AuditLocale, localeDeRedaction } from '../../domain/audit-locale.util';
 import { withHardTimeout } from './llm-execution.guardrails';
 import { LlmLimiteParLaConfig } from './llm-executor.port';
+import { reportSeveritySchema } from './schemas/audit-report.schemas';
 import { impactLocalise } from './shared/finding-priority.util';
 import { localizedText } from './shared/locale-text.util';
+import { severityRank } from './shared/severity.util';
+import { scoreMoyenSur100, scoreSur100 } from '../../domain/score-sur-100';
 
-const severitySchema = z.enum(['high', 'medium', 'low']);
-
-const SEVERITY_LABELS_FR: Record<z.infer<typeof severitySchema>, string> = {
+const SEVERITY_LABELS_FR: Record<ReportSeverity, string> = {
   high: 'priorite haute',
   medium: 'priorite moyenne',
   low: 'priorite basse',
 };
 
-const SEVERITY_LABELS_EN: Record<z.infer<typeof severitySchema>, string> = {
+const SEVERITY_LABELS_EN: Record<ReportSeverity, string> = {
   high: 'high priority',
   medium: 'medium priority',
   low: 'low priority',
 };
 
 const pillarStatusSchema = z.enum(['critical', 'warning', 'ok']);
-const effortSchema = z.enum(['low', 'medium', 'high']);
 
 const clientReportSchema = z.object({
   executiveSummary: z.string().min(1),
@@ -39,7 +41,7 @@ const clientReportSchema = z.object({
       z.object({
         title: z.string().min(1),
         impact: z.string().min(1),
-        severity: severitySchema,
+        severity: reportSeveritySchema,
       }),
     )
     .min(1)
@@ -70,7 +72,7 @@ const clientReportSchema = z.object({
       z.object({
         title: z.string().min(1),
         businessImpact: z.string().min(1),
-        effort: effortSchema,
+        effort: reportSeveritySchema,
       }),
     )
     .min(3)
@@ -87,8 +89,8 @@ type ClientReportZodOutput = z.infer<typeof clientReportSchema>;
 export interface ClientReportFinding {
   readonly title: string;
   readonly description: string;
-  readonly severity: 'high' | 'medium' | 'low';
-  readonly impact: 'traffic' | 'indexation' | 'conversion';
+  readonly severity: ReportSeverity;
+  readonly impact: FindingImpact;
 }
 
 export interface ClientReportContext {
@@ -118,10 +120,7 @@ export class LangchainClientReportService extends LlmLimiteParLaConfig {
   private readonly logger = new Logger(LangchainClientReportService.name);
 
   async generate(context: ClientReportContext): Promise<ClientReportSynthesis> {
-    const locale = resolveAuditLocale(
-      context.locale,
-      resolveAuditLocale(this.config.llmLanguage, 'fr'),
-    );
+    const locale = localeDeRedaction(context.locale, this.config.llmLanguage);
 
     if (!this.config.openAiApiKey) {
       this.logger.log(
@@ -247,50 +246,50 @@ export class LangchainClientReportService extends LlmLimiteParLaConfig {
     context: ClientReportContext,
   ): ClientReportSynthesis {
     const topFindings = result.topFindings.slice(0, 5).map((finding) => ({
-      title: this.cleanText(finding.title),
-      impact: this.cleanText(finding.impact),
+      title: compacterBlancs(finding.title),
+      impact: compacterBlancs(finding.impact),
       severity: finding.severity,
     }));
 
     const quickWins = result.quickWins.slice(0, 5).map((entry) => ({
-      title: this.cleanText(entry.title),
-      businessImpact: this.cleanText(entry.businessImpact),
+      title: compacterBlancs(entry.title),
+      businessImpact: compacterBlancs(entry.businessImpact),
       effort: entry.effort,
     }));
 
     const pillarScorecard = this.ensureSevenPillars(
       result.pillarScorecard.map((entry) => ({
         pillar: entry.pillar,
-        score: this.clampScore(entry.score),
-        target: this.clampScore(entry.target),
+        score: scoreSur100(entry.score),
+        target: scoreSur100(entry.target),
         status: entry.status,
       })),
       context,
     );
 
     return {
-      executiveSummary: this.cleanText(result.executiveSummary),
+      executiveSummary: compacterBlancs(result.executiveSummary),
       topFindings,
       googleVsAiMatrix: {
         googleVisibility: {
-          score: this.clampScore(
-            result.googleVsAiMatrix.googleVisibility.score,
-          ),
-          summary: this.cleanText(
+          score: scoreSur100(result.googleVsAiMatrix.googleVisibility.score),
+          summary: compacterBlancs(
             result.googleVsAiMatrix.googleVisibility.summary,
           ),
         },
         aiVisibility: {
-          score: this.clampScore(result.googleVsAiMatrix.aiVisibility.score),
-          summary: this.cleanText(result.googleVsAiMatrix.aiVisibility.summary),
+          score: scoreSur100(result.googleVsAiMatrix.aiVisibility.score),
+          summary: compacterBlancs(
+            result.googleVsAiMatrix.aiVisibility.summary,
+          ),
         },
       },
       pillarScorecard,
       quickWins,
       cta: {
-        title: this.cleanText(result.cta.title),
-        description: this.cleanText(result.cta.description),
-        actionLabel: this.cleanText(result.cta.actionLabel),
+        title: compacterBlancs(result.cta.title),
+        description: compacterBlancs(result.cta.description),
+        actionLabel: compacterBlancs(result.cta.actionLabel),
       },
     };
   }
@@ -340,10 +339,7 @@ export class LangchainClientReportService extends LlmLimiteParLaConfig {
   ): ClientReportSynthesis {
     const sortedFindings = [...context.findings]
       .filter((entry) => entry.title.trim().length > 0)
-      .sort(
-        (a, b) =>
-          this.severityWeight(b.severity) - this.severityWeight(a.severity),
-      );
+      .sort((a, b) => severityRank(b.severity) - severityRank(a.severity));
 
     const topFindings = sortedFindings.slice(0, 5).map((finding) => ({
       title: finding.title,
@@ -604,7 +600,7 @@ export class LangchainClientReportService extends LlmLimiteParLaConfig {
   ): number {
     const raw = pillarScores[pillar];
     if (typeof raw === 'number' && Number.isFinite(raw)) {
-      return this.clampScore(raw);
+      return scoreSur100(raw);
     }
     return 0;
   }
@@ -615,28 +611,11 @@ export class LangchainClientReportService extends LlmLimiteParLaConfig {
     return 'critical';
   }
 
-  private severityWeight(severity: 'high' | 'medium' | 'low'): number {
-    if (severity === 'high') return 3;
-    if (severity === 'medium') return 2;
-    return 1;
-  }
-
   private averageScore(values: Array<number | undefined>): number {
     const numeric = values.filter(
       (value): value is number =>
         typeof value === 'number' && Number.isFinite(value),
     );
-    if (numeric.length === 0) return 0;
-    const avg = numeric.reduce((acc, value) => acc + value, 0) / numeric.length;
-    return this.clampScore(Math.round(avg));
-  }
-
-  private clampScore(value: number): number {
-    if (!Number.isFinite(value)) return 0;
-    return Math.max(0, Math.min(100, Math.round(value)));
-  }
-
-  private cleanText(value: string): string {
-    return value.replace(/\s+/g, ' ').trim();
+    return scoreMoyenSur100(numeric);
   }
 }

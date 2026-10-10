@@ -1,4 +1,24 @@
-import { lienAvecJeton } from './lien-avec-jeton';
+import { lienAvecJeton, lienAvecParametres } from './lien-avec-jeton';
+
+describe('lienAvecParametres', () => {
+  it('pose chaque parametre en remplacant ceux deja presents', () => {
+    expect(
+      lienAvecParametres('https://asilidesign.fr/cours/revision?session=old', {
+        session: 's1',
+        participant: 'p1',
+        token: 'abc',
+      }),
+    ).toBe(
+      'https://asilidesign.fr/cours/revision?session=s1&participant=p1&token=abc',
+    );
+  });
+
+  it('encode chaque parametre ajoute a une base relative', () => {
+    expect(
+      lienAvecParametres('/cours/revision', { session: 'a b', token: 'c&d' }),
+    ).toBe('/cours/revision?session=a%20b&token=c%26d');
+  });
+});
 
 describe('lienAvecJeton', () => {
   it('ajoute le jeton en parametre de requete', () => {

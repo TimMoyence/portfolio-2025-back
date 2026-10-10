@@ -1,11 +1,15 @@
 import type { ChatOpenAI } from '@langchain/openai';
 import {
-  generateClientCommsSection,
-  generateExecutionSection,
-  generateExecutiveSection,
-  generatePrioritySection,
-} from './cacheable-section.generators';
+  clientCommsSectionSchema,
+  executiveSectionSchema,
+  executionSectionSchema,
+  prioritySectionSchema,
+} from '../schemas/audit-report.schemas';
+import { GENERATEURS_DE_SECTION } from './cacheable-section.generators';
 import type { CachingSectionRunner } from './caching-section.runner';
+import { buildSystemBlocks } from './section-prompts.builder';
+
+const generateExecutiveSection = GENERATEURS_DE_SECTION.executiveSection;
 
 interface RunSpy {
   runner: CachingSectionRunner;
@@ -46,47 +50,30 @@ describe('cacheable section generators', () => {
     retryMode: false,
   };
 
-  it('generateExecutiveSection delegue au runner avec section=executive', async () => {
-    const { runner, runCalls } = buildRunnerSpy({ ok: true });
-    const invokeTracked = jest.fn();
-    await generateExecutiveSection(
-      { cachingRunner: runner, invokeTracked },
-      baseArgs,
-    );
-    expect(runCalls[0].section).toBe('executive');
-    expect(runCalls[0].payload).toEqual({ key: 'value' });
-    expect(runCalls[0].systemBlocks.length).toBeGreaterThanOrEqual(2);
-  });
-
-  it('generatePrioritySection delegue au runner avec section=priority', async () => {
-    const { runner, runCalls } = buildRunnerSpy({});
-    const invokeTracked = jest.fn();
-    await generatePrioritySection(
-      { cachingRunner: runner, invokeTracked },
-      baseArgs,
-    );
-    expect(runCalls[0].section).toBe('priority');
-  });
-
-  it('generateExecutionSection delegue au runner avec section=execution', async () => {
-    const { runner, runCalls } = buildRunnerSpy({});
-    const invokeTracked = jest.fn();
-    await generateExecutionSection(
-      { cachingRunner: runner, invokeTracked },
-      baseArgs,
-    );
-    expect(runCalls[0].section).toBe('execution');
-  });
-
-  it('generateClientCommsSection delegue au runner avec section=client_comms', async () => {
-    const { runner, runCalls } = buildRunnerSpy({});
-    const invokeTracked = jest.fn();
-    await generateClientCommsSection(
-      { cachingRunner: runner, invokeTracked },
-      baseArgs,
-    );
-    expect(runCalls[0].section).toBe('client_comms');
-  });
+  it.each([
+    ['executiveSection', 'executive', executiveSectionSchema],
+    ['prioritySection', 'priority', prioritySectionSchema],
+    ['executionSection', 'execution', executionSectionSchema],
+    ['clientCommsSection', 'client_comms', clientCommsSectionSchema],
+  ] as const)(
+    '%s delegue au runner sa section, son schema et ses blocs systeme',
+    async (generateur, section, schema) => {
+      const { runner, runCalls } = buildRunnerSpy({ ok: true });
+      const invokeTracked = jest.fn();
+      await GENERATEURS_DE_SECTION[generateur](
+        { cachingRunner: runner, invokeTracked },
+        baseArgs,
+      );
+      expect(runCalls[0]).toEqual(
+        expect.objectContaining({
+          section,
+          schema,
+          payload: { key: 'value' },
+          systemBlocks: buildSystemBlocks(section, 'fr', false),
+        }),
+      );
+    },
+  );
 
   it('ajoute le retry constraint aux systemBlocks quand retryMode=true', async () => {
     const { runner, runCalls } = buildRunnerSpy({});

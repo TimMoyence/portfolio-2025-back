@@ -7,10 +7,7 @@ import type { NestExpressApplication } from '@nestjs/platform-express';
 import { DomainExceptionFilter } from '../src/common/interfaces/filters/DomainExceptionFilter';
 import { bornerLesCorpsDeRequete } from '../src/common/interfaces/http/corps-de-requete';
 import { PREFIXE_API_PAR_DEFAUT } from '../src/config/prefixe-api';
-import type {
-  Cours,
-  Ecran,
-} from '../src/modules/formations/domain/contrats/cours';
+import type { Cours } from '../src/modules/formations/domain/contrats/cours';
 import { libelleDeConfusion } from '../src/modules/formations/domain/cours/banque/confusions';
 import { questionNumerique } from '../src/modules/formations/domain/cours/Cours';
 import { lireCoursStocke } from '../src/modules/formations/domain/cours/CoursStocke';
@@ -47,7 +44,7 @@ import { LIMITE_SUJET_PAR_PARTICIPANT } from '../src/modules/formations/interfac
 import { EN_TETE_JETON } from '../src/modules/formations/interfaces/ParticipantToken.service';
 import {
   buildCoursDeClasse,
-  buildCoursDeTest,
+  buildCoursDeTestAvecNumerique,
   buildCoursSansTirageValide,
   creerCatalogueDeTest,
 } from './factories/cours.factory';
@@ -111,13 +108,7 @@ function construireCoursSentinelle(solution: number): Cours {
     tolerance: { type: 'relative', valeur: 0.005 },
     pieges: [{ confusion: TEMOIN.misconception, valeur: () => TEMOIN.piege }],
   });
-  const [premier, ...suite] = buildCoursDeTest().ecrans.map(
-    (ecran): Ecran =>
-      ecran.id === 'E-NUM' && ecran.brique === 'fp-numeric'
-        ? { ...ecran, question }
-        : ecran,
-  );
-  return buildCoursDeTest({ ecrans: [premier, ...suite] });
+  return buildCoursDeTestAvecNumerique(question);
 }
 
 const COURS_SENTINELLE = construireCoursSentinelle(TEMOIN.solution);

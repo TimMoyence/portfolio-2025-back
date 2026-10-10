@@ -536,26 +536,20 @@ const ACTE_1: moteur.Acte = [
       ],
     ],
   ),
-  {
-    screenId: 'B2-01-A1-11-JALON-1',
-    titre: 'Jalon 1 : où en êtes-vous ?',
-    diffusion: 'seance',
-    brique: 'fp-pulse',
-    dureeMinutes: 1,
-    concepts: ['contrat-de-lecture'],
-    notes: moteur.puces(
-      '30 s de vote anonyme.',
-      'Si plus de 30 % « Perdu » : reprendre la fiche A1-06 en 2 min sur « Inflation : 4,9 ».',
-      'Transition : « Acte 2 · Auditer : comparer sans tromper. Retour en 1786. »',
-    ),
-    proprietes: {
-      sondage: {
-        id: 'b2-01-a1-jalon',
-        invite:
-          'Je sais dire ce que mesure chaque chiffre du tableau de bord : unité, base, période.',
-      },
+  moteur.pulsation(
+    {
+      screenId: 'B2-01-A1-11-JALON-1',
+      titre: 'Jalon 1 : où en êtes-vous ?',
+      concepts: ['contrat-de-lecture'],
     },
-  },
+    {
+      id: 'b2-01-a1-jalon',
+      invite:
+        'Je sais dire ce que mesure chaque chiffre du tableau de bord : unité, base, période.',
+    },
+    'Si plus de 30 % « Perdu » : reprendre la fiche A1-06 en 2 min sur « Inflation : 4,9 ».',
+    'Transition : « Acte 2 · Auditer : comparer sans tromper. Retour en 1786. »',
+  ),
 ];
 
 const ACTE_2: moteur.Acte = [
@@ -873,7 +867,7 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['point-de-pourcentage'],
       notes: moteur.puces(
-        'Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.',
+        moteur.REPONSES_SOUS_CHAQUE_ETAPE,
         'À l’étape 1, guetter « −2,3 % » : exiger « points ».',
       ),
       proprietes: {
@@ -1050,26 +1044,20 @@ const ACTE_2: moteur.Acte = [
       },
     },
   ),
-  {
-    screenId: 'B2-01-A2-08-JALON-2',
-    titre: 'Jalon 2 : où en êtes-vous ?',
-    diffusion: 'seance',
-    brique: 'fp-pulse',
-    dureeMinutes: 1,
-    concepts: ['contrat-de-lecture'],
-    notes: moteur.puces(
-      '30 s de vote anonyme.',
-      'Si plus de 30 % « Perdu » : reprendre la Q3 de l’atelier 1 (commandes ≠ CA) et la Q6 (coût ≠ prix de vente).',
-      'Transition : « Acte 3 : un prix monte, puis redescend. »',
-    ),
-    proprietes: {
-      sondage: {
-        id: 'b2-01-a2-jalon',
-        invite:
-          'Je sais choisir la bonne base et repérer une comparaison trompeuse (axe, population de référence, taux de marge ou de marque).',
-      },
+  moteur.pulsation(
+    {
+      screenId: 'B2-01-A2-08-JALON-2',
+      titre: 'Jalon 2 : où en êtes-vous ?',
+      concepts: ['contrat-de-lecture'],
     },
-  },
+    {
+      id: 'b2-01-a2-jalon',
+      invite:
+        'Je sais choisir la bonne base et repérer une comparaison trompeuse (axe, population de référence, taux de marge ou de marque).',
+    },
+    'Si plus de 30 % « Perdu » : reprendre la Q3 de l’atelier 1 (commandes ≠ CA) et la Q6 (coût ≠ prix de vente).',
+    'Transition : « Acte 3 : un prix monte, puis redescend. »',
+  ),
 ];
 
 const CONSIGNE_DE_L_ATELIER_2 =
@@ -1244,7 +1232,7 @@ const ACTE_3: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['evolutions-successives'],
       notes: moteur.puces(
-        'Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.',
+        moteur.REPONSES_SOUS_CHAQUE_ETAPE,
         'Pièges : étapes 4-5, retirer 10 % de 13,75 € (12,375 € au lieu de 12,50 €) ; étape 6, retirer 20 % du TTC (2 880 € au lieu de 3 000 €).',
       ),
       proprietes: {
@@ -1359,7 +1347,7 @@ const ACTE_3: moteur.Acte = [
       dureeMinutes: 3,
       concepts: ['indice-base-100', 'taux-moyen'],
       notes: moteur.puces(
-        'Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.',
+        moteur.REPONSES_SOUS_CHAQUE_ETAPE,
         'Pièges : lire 119,10 comme +119,10 % ; diviser 19,10 par 3 (6,37 %).',
         'Vérifier que chacun sait taper 1,19102 ^ (1 ÷ 3) sur sa calculatrice.',
       ),
@@ -1650,26 +1638,20 @@ const ACTE_3: moteur.Acte = [
       renvoi: 'B2-01-A3-08-INDICE-PRIX',
     },
   ),
-  {
-    screenId: 'B2-01-A3-10-JALON-3',
-    titre: 'Jalon 3 : où en êtes-vous ?',
-    diffusion: 'seance',
-    brique: 'fp-pulse',
-    dureeMinutes: 1,
-    concepts: ['evolutions-successives', 'indice-base-100', 'taux-moyen'],
-    notes: moteur.puces(
-      '30 s de vote anonyme.',
-      'Si plus de 30 % « Perdu » : au retour de pause, rejouer la machine à coefficients (A3-02) et l’étape « Taux annuel moyen » de A3-06.',
-      'Annoncer la pause de 15 min ; au retour, acte 4 au tableur.',
-    ),
-    proprietes: {
-      sondage: {
-        id: 'b2-01-a3-jalon',
-        invite:
-          'Je sais enchaîner des évolutions avec des coefficients, lire un indice base 100 et calculer un taux moyen.',
-      },
+  moteur.pulsation(
+    {
+      screenId: 'B2-01-A3-10-JALON-3',
+      titre: 'Jalon 3 : où en êtes-vous ?',
+      concepts: ['evolutions-successives', 'indice-base-100', 'taux-moyen'],
     },
-  },
+    {
+      id: 'b2-01-a3-jalon',
+      invite:
+        'Je sais enchaîner des évolutions avec des coefficients, lire un indice base 100 et calculer un taux moyen.',
+    },
+    'Si plus de 30 % « Perdu » : au retour de pause, rejouer la machine à coefficients (A3-02) et l’étape « Taux annuel moyen » de A3-06.',
+    'Annoncer la pause de 15 min ; au retour, acte 4 au tableur.',
+  ),
 ];
 
 const TRANSCRIPTION_DE_LA_CAPSULE = [
@@ -2226,26 +2208,19 @@ const ACTE_4: moteur.Acte = [
       ],
     ],
   ),
-  {
-    screenId: 'B2-01-A4-06-JALON-4',
-    titre: 'Jalon 4 : où en êtes-vous ?',
-    diffusion: 'seance',
-    brique: 'fp-pulse',
-    dureeMinutes: 1,
-    concepts: ['tableur'],
-    notes: moteur.puces(
-      '30 s de vote anonyme.',
-      'Si plus de 30 % « Perdu » : rejouer la capsule de 1 min 02 à 1 min 34 (#DIV/0!, puis $C$6).',
-      'Transition : « Acte 5 : défendre une décision. D’abord, une infirmière en 1858. »',
-    ),
-    proprietes: {
-      sondage: {
-        id: 'b2-01-a4-jalon',
-        invite:
-          'Je sais écrire une formule recopiable et contrôler un tableau.',
-      },
+  moteur.pulsation(
+    {
+      screenId: 'B2-01-A4-06-JALON-4',
+      titre: 'Jalon 4 : où en êtes-vous ?',
+      concepts: ['tableur'],
     },
-  },
+    {
+      id: 'b2-01-a4-jalon',
+      invite: 'Je sais écrire une formule recopiable et contrôler un tableau.',
+    },
+    'Si plus de 30 % « Perdu » : rejouer la capsule de 1 min 02 à 1 min 34 (#DIV/0!, puis $C$6).',
+    'Transition : « Acte 5 : défendre une décision. D’abord, une infirmière en 1858. »',
+  ),
 ];
 
 const DONNEES_PAR_CANAL =
@@ -2294,7 +2269,7 @@ const ACTE_5: moteur.Acte = [
       dureeMinutes: 3,
       concepts: ['moyenne-ponderee'],
       notes: moteur.puces(
-        'Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.',
+        moteur.REPONSES_SOUS_CHAQUE_ETAPE,
         'Étapes difficiles : 5 (que serait la marge avec la répartition de 2024 ?) et 6 (négation d’un « si… alors » : « il existe… et… »).',
       ),
       proprietes: {
@@ -2940,26 +2915,20 @@ const ACTE_5: moteur.Acte = [
       },
     },
   },
-  {
-    screenId: 'B2-01-A5-09-JALON-5',
-    titre: 'Jalon 5 : où en êtes-vous ?',
-    diffusion: 'seance',
-    brique: 'fp-pulse',
-    dureeMinutes: 1,
-    concepts: ['moyenne-ponderee'],
-    notes: moteur.puces(
-      '30 s de vote anonyme.',
-      'Si plus de 30 % « Perdu » : refaire au tableau l’étape « Taux global 2024 » de A5-03 (poids × taux).',
-      'Transition : « Jeudi, 13 h 30. Avant d’entrer, un détour par Venise. »',
-    ),
-    proprietes: {
-      sondage: {
-        id: 'b2-01-a5-jalon',
-        invite:
-          'Je sais expliquer un écart par un effet de répartition et défendre une recommandation chiffrée.',
-      },
+  moteur.pulsation(
+    {
+      screenId: 'B2-01-A5-09-JALON-5',
+      titre: 'Jalon 5 : où en êtes-vous ?',
+      concepts: ['moyenne-ponderee'],
     },
-  },
+    {
+      id: 'b2-01-a5-jalon',
+      invite:
+        'Je sais expliquer un écart par un effet de répartition et défendre une recommandation chiffrée.',
+    },
+    'Si plus de 30 % « Perdu » : refaire au tableau l’étape « Taux global 2024 » de A5-03 (poids × taux).',
+    'Transition : « Jeudi, 13 h 30. Avant d’entrer, un détour par Venise. »',
+  ),
 ];
 
 const PARCOURS_DU_COFFRE = 'b2-01-a6-coffre';

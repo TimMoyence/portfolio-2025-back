@@ -1,6 +1,7 @@
 import { ChatOpenAI } from '@langchain/openai';
 import { Injectable, Logger } from '@nestjs/common';
 import { z } from 'zod';
+import type { ReportSeverity } from '../../domain/AuditReportTiers';
 import type { EngineCoverage, EngineScore } from '../../domain/EngineCoverage';
 import { AuditLocale } from '../../domain/audit-locale.util';
 import {
@@ -11,11 +12,13 @@ import { LlmLimiteParLaConfig } from './llm-executor.port';
 import { isTimeoutError } from './shared/error.util';
 import { localizedText } from './shared/locale-text.util';
 import { traiterEnParallele } from './shared/traitement-concurrent.util';
+import { reportSeveritySchema } from './schemas/audit-report.schemas';
 import {
   engineCoverageSchema,
   engineScoreSchema,
 } from './schemas/engine-coverage.schema';
 import { UrlIndexabilityResult } from './url-indexability.service';
+import { scoreMoyenSur100, scoreSur100 } from '../../domain/score-sur-100';
 
 const pageRecapSchema = z.object({
   summary: z.string().min(1),
@@ -25,7 +28,7 @@ const pageRecapSchema = z.object({
   trustScore: z.number().min(0).max(100),
   ctaScore: z.number().min(0).max(100),
   seoCopyScore: z.number().min(0).max(100),
-  priority: z.enum(['high', 'medium', 'low']),
+  priority: reportSeveritySchema,
   language: z.enum(['fr', 'en', 'mixed', 'unknown']),
   engineScores: engineCoverageSchema,
 });
@@ -33,7 +36,7 @@ const pageRecapSchema = z.object({
 export interface PageAiRecap {
   url: string;
   finalUrl: string | null;
-  priority: 'high' | 'medium' | 'low';
+  priority: ReportSeverity;
   language: 'fr' | 'en' | 'mixed' | 'unknown';
   wordingScore: number;
   trustScore: number;
@@ -74,7 +77,7 @@ export interface AnalyzePageRecapsInput {
 const UNVERIFIABLE_BLOCKER_RE = /not verifiable|non verifiable/i;
 const UNVERIFIABLE_ENGINE_SCORE = 50;
 
-function priorityFromScore(score: number): 'high' | 'medium' | 'low' {
+function priorityFromScore(score: number): ReportSeverity {
   if (score < 45) return 'high';
   if (score < 65) return 'medium';
   return 'low';
@@ -262,10 +265,10 @@ export class PageAiRecapService extends LlmLimiteParLaConfig {
           finalUrl: page.finalUrl,
           priority: result.priority,
           language: result.language,
-          wordingScore: this.clampScore(result.wordingScore),
-          trustScore: this.clampScore(result.trustScore),
-          ctaScore: this.clampScore(result.ctaScore),
-          seoCopyScore: this.clampScore(result.seoCopyScore),
+          wordingScore: scoreSur100(result.wordingScore),
+          trustScore: scoreSur100(result.trustScore),
+          ctaScore: scoreSur100(result.ctaScore),
+          seoCopyScore: scoreSur100(result.seoCopyScore),
           summary: result.summary.trim(),
           topIssues: result.topIssues
             .map((entry) => entry.trim())
@@ -361,7 +364,7 @@ export class PageAiRecapService extends LlmLimiteParLaConfig {
     );
     const score = hasUnverifiableBlocker
       ? UNVERIFIABLE_ENGINE_SCORE
-      : this.clampScore(value.score);
+      : scoreSur100(value.score);
 
     return {
       engine: expected,
@@ -506,10 +509,10 @@ export class PageAiRecapService extends LlmLimiteParLaConfig {
       );
     }
 
-    wording = this.clampScore(wording);
-    trust = this.clampScore(trust);
-    cta = this.clampScore(cta);
-    seoCopy = this.clampScore(seoCopy);
+    wording = scoreSur100(wording);
+    trust = scoreSur100(trust);
+    cta = scoreSur100(cta);
+    seoCopy = scoreSur100(seoCopy);
 
     const minScore = Math.min(wording, trust, cta, seoCopy);
     const priority = priorityFromScore(minScore);
@@ -805,7 +808,7 @@ export class PageAiRecapService extends LlmLimiteParLaConfig {
   ): EngineScore {
     return {
       engine,
-      score: this.clampScore(score),
+      score: scoreSur100(score),
       indexable,
       strengths: Array.from(new Set(lists.strengths)).slice(0, 5),
       blockers: Array.from(new Set(lists.blockers)).slice(0, 5),
@@ -815,20 +818,12 @@ export class PageAiRecapService extends LlmLimiteParLaConfig {
 
   private buildSummary(recaps: PageAiRecap[]): PageAiRecapSummary {
     const priorityCounts = { high: 0, medium: 0, low: 0 };
-    let wording = 0;
-    let trust = 0;
-    let cta = 0;
-    let seoCopy = 0;
     let llmRecaps = 0;
     let fallbackRecaps = 0;
     const issueCount = new Map<string, number>();
 
     for (const recap of recaps) {
       priorityCounts[recap.priority] += 1;
-      wording += recap.wordingScore;
-      trust += recap.trustScore;
-      cta += recap.ctaScore;
-      seoCopy += recap.seoCopyScore;
       if (recap.source === 'llm') {
         llmRecaps += 1;
       } else {
@@ -840,22 +835,23 @@ export class PageAiRecapService extends LlmLimiteParLaConfig {
       }
     }
 
-    const total = recaps.length;
     const topRecurringIssues = [...issueCount.entries()]
       .sort((a, b) => b[1] - a[1])
       .slice(0, 6)
       .map(([issue]) => issue);
+    const scoreMoyen = (lire: (recap: PageAiRecap) => number): number =>
+      scoreMoyenSur100(recaps.map(lire));
 
     return {
-      totalPages: total,
+      totalPages: recaps.length,
       llmRecaps,
       fallbackRecaps,
       priorityCounts,
       averageScores: {
-        wording: this.clampScore(Math.round(wording / Math.max(1, total))),
-        trust: this.clampScore(Math.round(trust / Math.max(1, total))),
-        cta: this.clampScore(Math.round(cta / Math.max(1, total))),
-        seoCopy: this.clampScore(Math.round(seoCopy / Math.max(1, total))),
+        wording: scoreMoyen((recap) => recap.wordingScore),
+        trust: scoreMoyen((recap) => recap.trustScore),
+        cta: scoreMoyen((recap) => recap.ctaScore),
+        seoCopy: scoreMoyen((recap) => recap.seoCopyScore),
       },
       topRecurringIssues,
     };
@@ -879,9 +875,5 @@ export class PageAiRecapService extends LlmLimiteParLaConfig {
     if (hasFrenchMarkers) return 'fr';
     if (hasEnglishMarkers) return 'en';
     return 'unknown';
-  }
-
-  private clampScore(value: number): number {
-    return Math.max(0, Math.min(100, Math.round(value)));
   }
 }

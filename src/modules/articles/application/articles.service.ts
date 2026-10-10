@@ -16,12 +16,8 @@ import {
   type ArticlesRepository,
 } from './articles.repository';
 import { Inject } from '@nestjs/common';
-import {
-  articlePageUrl,
-  broadcastDelayMs,
-  publicApiUrl,
-  siteUrl,
-} from './article-settings';
+import { urlDuSite, urlPubliqueDeLApi } from '../../../config/urls-publiques';
+import { articlePageUrl, broadcastDelayMs } from './article-settings';
 
 const FEED_LANGUAGE = { fr: 'fr-FR', en: 'en' } as const;
 const FEED_DESCRIPTION = {
@@ -178,12 +174,12 @@ export class ArticlesService {
           : latest,
       null,
     );
-    const selfUrl = publicApiUrl(`articles/feed.xml?locale=${locale}`);
+    const selfUrl = urlPubliqueDeLApi(`articles/feed.xml?locale=${locale}`);
     return (
       '<?xml version="1.0" encoding="UTF-8"?>' +
       '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel>' +
       `<title>Asili Design — Articles</title>` +
-      `<link>${this.escapeXml(siteUrl() + '/' + locale + '/articles')}</link>` +
+      `<link>${this.escapeXml(urlDuSite() + '/' + locale + '/articles')}</link>` +
       `<description>${this.escapeXml(FEED_DESCRIPTION[locale])}</description>` +
       `<atom:link href="${this.escapeXml(selfUrl)}" rel="self" type="application/rss+xml"/>` +
       `<language>${FEED_LANGUAGE[locale]}</language>` +

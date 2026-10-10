@@ -38,4 +38,17 @@ describe('calculerStatistiquesSeance', () => {
       questionsProblemes: ['Q1'],
     });
   });
+
+  it('somme les notes triées, sans quoi 11,875 tomberait à 11,87', () => {
+    const repondues = [1, 12, 8, 4, 12, 7, 11, 2];
+
+    const statistiques = calculerStatistiquesSeance(
+      repondues.map((questions) =>
+        buildRapportParticipant({ note: (questions / 12) * 20 }),
+      ),
+      { participants: repondues.length, questions: [] },
+    );
+
+    expect(statistiques).toMatchObject({ moyenne: 11.88 });
+  });
 });

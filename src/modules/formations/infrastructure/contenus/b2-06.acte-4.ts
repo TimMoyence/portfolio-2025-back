@@ -82,7 +82,7 @@ export const ACTE_4: moteur.Acte = [
       dureeMinutes: 14,
       concepts: ['tableur', 'ajustement-exponentiel', 'prevision'],
       notes: moteur.puces(
-        'Temps : réflexion 3 min · travail 11 min',
+        moteur.tempsDeLExercice(3, 11),
         'Réflexion : chacun écrit sur papier les étapes de l’ajustement, de z = ln y au coefficient a, puis les formules de la ligne 2.',
         'Erreurs à chercher : PENTE sur la colonne B ; séries de PENTE inversées ; F2 = E2 sans EXP ; EXP(1)*D2*4.',
         'Papier : formules écrites sur la copie, valeurs calculées à la calculatrice ; en CCF, la question se fait devant l’examinateur.',
@@ -146,7 +146,7 @@ export const ACTE_4: moteur.Acte = [
         'prevision',
       ],
       notes: moteur.puces(
-        'Temps : réflexion 2 min · travail 10 min',
+        moteur.tempsDeLExercice(2, 10),
         'Réflexion : relire le dossier et noter, pour chaque question, s’il faut calculer une valeur de f, résoudre une équation ou une inéquation, ou comparer deux valeurs.',
         'Indices disponibles après 60 s. À 8 min, projeter l’énigme la moins résolue.',
         'Papier : quatre questions rédigées du livret, sans code de coffre.',

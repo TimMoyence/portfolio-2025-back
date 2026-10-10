@@ -1,9 +1,13 @@
+import {
+  arrondi,
+  auMillionieme,
+} from '../../../../common/domain/nombres/arrondi';
+import type { AuMoinsUnModifiable } from '../../../../common/domain/au-moins-un';
 import type { ConceptId } from '../../domain/cours/banque/concepts';
 import type { ContenuDeCours } from '../../domain/cours/CoursStocke';
 import * as moteur from './briques';
 import {
   anneesEtRangs,
-  auMillionieme,
   avecVirgule,
   colonneDeValeurs,
   colonneRecopiee,
@@ -153,7 +157,7 @@ const PLAN_DES_DEUX_HYPOTHESES = {
   ],
 };
 
-const ATTENDUS_DES_DEUX_HYPOTHESES: moteur.AuMoinsUn<AttenduDeFeuille> = [
+const ATTENDUS_DES_DEUX_HYPOTHESES: AuMoinsUnModifiable<AttenduDeFeuille> = [
   ...colonneRecopiee(
     {
       colonne: 'D',
@@ -233,7 +237,7 @@ const PLAN_DE_LA_BOUTIQUE = {
   ],
 };
 
-const ATTENDUS_DE_LA_BOUTIQUE: moteur.AuMoinsUn<AttenduDeFeuille> = [
+const ATTENDUS_DE_LA_BOUTIQUE: AuMoinsUnModifiable<AttenduDeFeuille> = [
   ...colonneRecopiee(
     {
       colonne: 'C',
@@ -564,7 +568,7 @@ const ACTE_1: moteur.Acte = [
       dureeMinutes: 3,
       concepts: ['suite-arithmetique', 'ajustement-affine', 'tableur'],
       notes: moteur.puces(
-        '3 min, enchaînées sur la page 1 : 6 min pour les deux pages.',
+        moteur.DEUXIEME_PAGE_DE_COURS,
         'Relier au vote de rappel : la pente 43,9 de la droite du B2-02 est la raison, arrondie à 44.',
         'Faire taper la formule sans $ sur un poste volontaire, puis la recopier : la colonne se bloque, l’erreur fixe la règle.',
       ),
@@ -613,10 +617,7 @@ const ACTE_1: moteur.Acte = [
       brique: 'fp-worked',
       dureeMinutes: 4,
       concepts: ['suite-arithmetique', 'tableur'],
-      notes: moteur.puces(
-        'Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.',
-        'Papier : réponses sous chaque étape du livret.',
-      ),
+      notes: moteur.puces(...moteur.NOTES_DE_L_EXEMPLE_ETAPE_PAR_ETAPE),
       proprietes: {
         modalite: 'solo',
         exemple: {
@@ -684,7 +685,7 @@ const ACTE_1: moteur.Acte = [
       dureeMinutes: 8,
       concepts: ['suite-arithmetique'],
       notes: moteur.puces(
-        'Temps : réflexion 2 min · travail 6 min',
+        moteur.tempsDeLExercice(2, 6),
         'Réflexion : écrire u₀, la raison et ce que représente le rang 0 avant de calculer.',
         'Pièges : un rang de trop ; u₀ et r échangés ; répondre par l’année quand on demande un nombre d’années.',
         'Papier : exercice 1 du livret.',
@@ -756,7 +757,7 @@ const ACTE_1: moteur.Acte = [
     {
       minutes: 2,
       notes: [
-        'Corriger question par question, en commençant par la moins réussie (score sous chaque correction).',
+        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE_SOUS_SON_SCORE,
         'Transition : « Faisons calculer tout le plan par le tableur : exercice 2. »',
       ],
     },
@@ -788,7 +789,7 @@ const ACTE_1: moteur.Acte = [
       dureeMinutes: 6,
       concepts: ['tableur', 'suite-arithmetique'],
       notes: moteur.puces(
-        'Temps : réflexion 1 min · travail 5 min',
+        moteur.tempsDeLExercice(1, 5),
         'Réflexion : écrire sur papier la formule de C3, puis ce qu’elle devient en C4 une fois recopiée.',
         'Erreurs à chercher : la raison écrite en dur (44) ; F1 sans $ : la colonne reste bloquée à 870.',
         'Papier : formule écrite sur la copie, puis les cinq valeurs calculées à la main.',
@@ -830,26 +831,20 @@ const ACTE_1: moteur.Acte = [
       ],
     ],
   ),
-  {
-    screenId: 'B2-04-A1-12-JALON',
-    titre: 'Jalon 1 : suites arithmétiques',
-    diffusion: 'seance',
-    brique: 'fp-pulse',
-    dureeMinutes: 1,
-    concepts: ['suite-arithmetique'],
-    notes: moteur.puces(
-      '30 s de vote anonyme.',
-      'Si plus de 30 % « Perdu » : reprendre la trace écrite A1-07 après la pause.',
-      'Pause de 15 minutes, hors durée programmée.',
-    ),
-    proprietes: {
-      sondage: {
-        id: 'b2-04-a1-jalon',
-        invite:
-          'Je sais reconnaître une suite arithmétique, calculer un terme et l’écrire au tableur.',
-      },
+  moteur.pulsation(
+    {
+      screenId: 'B2-04-A1-12-JALON',
+      titre: 'Jalon 1 : suites arithmétiques',
+      concepts: ['suite-arithmetique'],
     },
-  },
+    {
+      id: 'b2-04-a1-jalon',
+      invite:
+        'Je sais reconnaître une suite arithmétique, calculer un terme et l’écrire au tableur.',
+    },
+    'Si plus de 30 % « Perdu » : reprendre la trace écrite A1-07 après la pause.',
+    moteur.PAUSE_HORS_DUREE,
+  ),
 ];
 
 const ACTE_2: moteur.Acte = [
@@ -946,7 +941,7 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 3,
       concepts: ['suite-geometrique', 'tableur'],
       notes: moteur.puces(
-        '3 min, enchaînées sur la page 1 : 6 min pour les deux pages.',
+        moteur.DEUXIEME_PAGE_DE_COURS,
         'Question : « − 5 % par an : la raison est-elle négative ? » Non : 0,95, positive et plus petite que 1.',
         'Relier à la réflexion A2-01 : faire relire les réponses qui ont ajouté les taux.',
       ),
@@ -994,10 +989,7 @@ const ACTE_2: moteur.Acte = [
       brique: 'fp-worked',
       dureeMinutes: 4,
       concepts: ['suite-geometrique'],
-      notes: moteur.puces(
-        'Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.',
-        'Papier : réponses sous chaque étape du livret.',
-      ),
+      notes: moteur.puces(...moteur.NOTES_DE_L_EXEMPLE_ETAPE_PAR_ETAPE),
       proprietes: {
         modalite: 'solo',
         exemple: {
@@ -1065,7 +1057,7 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 9,
       concepts: ['suite-geometrique'],
       notes: moteur.puces(
-        'Temps : réflexion 2 min · travail 7 min',
+        moteur.tempsDeLExercice(2, 7),
         'Réflexion : écrire v₀ et la raison, puis poser le calcul de v₃ sans l’effectuer.',
         'Pièges : raison 0,06 ; taux ajoutés (3 × 6 % = 18 %) ; un rang de trop.',
         'Papier : exercice 3 du livret.',
@@ -1126,7 +1118,7 @@ const ACTE_2: moteur.Acte = [
     {
       minutes: 2,
       notes: [
-        'Corriger question par question, en commençant par la moins réussie.',
+        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE,
         'Transition : « Mettons les deux hypothèses côte à côte au tableur : exercice 4. »',
       ],
     },
@@ -1158,7 +1150,7 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 8,
       concepts: ['tableur', 'suite-geometrique'],
       notes: moteur.puces(
-        'Temps : réflexion 2 min · travail 6 min',
+        moteur.tempsDeLExercice(2, 6),
         'Réflexion : écrire sur papier la formule de D3, puis ce qu’elle devient en D4 une fois recopiée.',
         'Erreurs à chercher : =D2*$G$2 (le taux seul) ; G2 sans $ ; le taux écrit en dur.',
         'Papier : les deux formules écrites sur la copie, puis les valeurs de 2026 et 2030 à la calculatrice.',
@@ -1204,25 +1196,19 @@ const ACTE_2: moteur.Acte = [
       ],
     ],
   ),
-  {
-    screenId: 'B2-04-A2-07-JALON',
-    titre: 'Jalon 2 : suites géométriques',
-    diffusion: 'seance',
-    brique: 'fp-pulse',
-    dureeMinutes: 1,
-    concepts: ['suite-geometrique'],
-    notes: moteur.puces(
-      '30 s de vote anonyme.',
-      'Si plus de 30 % « Perdu » : reprendre la trace écrite A2-02 sur la raison et le taux.',
-    ),
-    proprietes: {
-      sondage: {
-        id: 'b2-04-a2-jalon',
-        invite:
-          'Je sais passer d’un taux à une raison, calculer un terme d’une suite géométrique et l’écrire au tableur.',
-      },
+  moteur.pulsation(
+    {
+      screenId: 'B2-04-A2-07-JALON',
+      titre: 'Jalon 2 : suites géométriques',
+      concepts: ['suite-geometrique'],
     },
-  },
+    {
+      id: 'b2-04-a2-jalon',
+      invite:
+        'Je sais passer d’un taux à une raison, calculer un terme d’une suite géométrique et l’écrire au tableur.',
+    },
+    'Si plus de 30 % « Perdu » : reprendre la trace écrite A2-02 sur la raison et le taux.',
+  ),
 ];
 
 const ACTE_3: moteur.Acte = [
@@ -1260,7 +1246,7 @@ const ACTE_3: moteur.Acte = [
         {
           label: 'Hypothèse B : + 6 % par an',
           values: termes(
-            (rang) => Number(hypotheseB(rang).toFixed(2)),
+            (rang) => arrondi(hypotheseB(rang), 2),
             0,
             DERNIER_RANG_DU_PLAN,
           ),
@@ -1380,7 +1366,7 @@ const ACTE_3: moteur.Acte = [
       dureeMinutes: 3,
       concepts: ['somme-de-termes', 'tableur'],
       notes: moteur.puces(
-        '3 min, enchaînées sur la page 1 : 6 min pour les deux pages.',
+        moteur.DEUXIEME_PAGE_DE_COURS,
         'Question : « De 2026 à 2028 inclus, combien de loyers ? » Trois, pas deux.',
         'Insister : un terme est la valeur d’une année, une somme est un total sur plusieurs années.',
       ),
@@ -1428,10 +1414,7 @@ const ACTE_3: moteur.Acte = [
       brique: 'fp-worked',
       dureeMinutes: 4,
       concepts: ['algorithme-de-seuil', 'somme-de-termes'],
-      notes: moteur.puces(
-        'Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.',
-        'Papier : réponses sous chaque étape du livret.',
-      ),
+      notes: moteur.puces(...moteur.NOTES_DE_L_EXEMPLE_ETAPE_PAR_ETAPE),
       proprietes: {
         modalite: 'solo',
         exemple: {
@@ -1499,7 +1482,7 @@ const ACTE_3: moteur.Acte = [
       dureeMinutes: 5,
       concepts: ['algorithme-de-seuil'],
       notes: moteur.puces(
-        'Temps : réflexion 1 min · travail 4 min',
+        moteur.tempsDeLExercice(1, 4),
         'Réflexion : lire l’algorithme à voix basse et dire ce qu’il cherche.',
         'Pièges : écrire le u d’avant le calcul ; répondre V au dernier passage.',
         'Papier : tableau du livret, V ou F à entourer dans la dernière colonne.',
@@ -1582,7 +1565,7 @@ const ACTE_3: moteur.Acte = [
       dureeMinutes: 9,
       concepts: ['algorithme-de-seuil', 'somme-de-termes'],
       notes: moteur.puces(
-        'Temps : réflexion 2 min · travail 7 min',
+        moteur.tempsDeLExercice(2, 7),
         'Réflexion : écrire la condition de la boucle, puis la liste des années du cumul, sans rien calculer.',
         'Pièges : s’arrêter un terme trop tôt ; l’année à la place du nombre d’années ; le terme de 2030 pris pour le cumul ; 2025 compté en trop.',
         'Papier : exercice 6 du livret.',
@@ -1646,7 +1629,7 @@ const ACTE_3: moteur.Acte = [
     {
       minutes: 2,
       notes: [
-        'Corriger question par question, en commençant par la moins réussie.',
+        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE,
         'Conclure pour Hélène : 2032 avec l’hypothèse B, 2034 avec l’hypothèse A ; deux ans d’écart sur le second atelier.',
         'Transition : « Une IA a rédigé le même plan. »',
       ],
@@ -1679,7 +1662,7 @@ const ACTE_3: moteur.Acte = [
       dureeMinutes: 8,
       concepts: ['suite-geometrique', 'algorithme-de-seuil', 'somme-de-termes'],
       notes: moteur.puces(
-        'Temps : réflexion 2 min · travail 6 min',
+        moteur.tempsDeLExercice(2, 6),
         'Réflexion : relire les traces écrites des notions 2 et 3.',
         'Repérer qui trouve la puissance, la condition et le cumul ; faire trouver la piste fausse avant de révéler.',
         'Papier : exercice 7 du livret.',
@@ -1751,25 +1734,19 @@ const ACTE_3: moteur.Acte = [
       ],
     ],
   ),
-  {
-    screenId: 'B2-04-A3-09-JALON',
-    titre: 'Jalon 3 : seuils et cumuls',
-    diffusion: 'seance',
-    brique: 'fp-pulse',
-    dureeMinutes: 1,
-    concepts: ['algorithme-de-seuil', 'somme-de-termes'],
-    notes: moteur.puces(
-      '30 s de vote anonyme.',
-      'Pause de 15 minutes, hors durée programmée.',
-    ),
-    proprietes: {
-      sondage: {
-        id: 'b2-04-a3-jalon',
-        invite:
-          'Je sais dérouler une boucle « Tant que » pour trouver un seuil, et calculer un cumul sans me tromper de termes.',
-      },
+  moteur.pulsation(
+    {
+      screenId: 'B2-04-A3-09-JALON',
+      titre: 'Jalon 3 : seuils et cumuls',
+      concepts: ['algorithme-de-seuil', 'somme-de-termes'],
     },
-  },
+    {
+      id: 'b2-04-a3-jalon',
+      invite:
+        'Je sais dérouler une boucle « Tant que » pour trouver un seuil, et calculer un cumul sans me tromper de termes.',
+    },
+    moteur.PAUSE_HORS_DUREE,
+  ),
 ];
 
 const ACTE_4: moteur.Acte = [
@@ -1835,7 +1812,7 @@ const ACTE_4: moteur.Acte = [
       dureeMinutes: 14,
       concepts: ['tableur', 'suite-geometrique', 'somme-de-termes'],
       notes: moteur.puces(
-        'Temps : réflexion 3 min · travail 11 min',
+        moteur.tempsDeLExercice(3, 11),
         'Réflexion : chacun écrit sur papier la nature de la suite, sa raison, puis les trois formules à saisir.',
         'Erreurs à chercher : le taux seul à la place de 1 + taux ; F1 ou H1 sans $ ; « Oui » sans guillemets ; la plage du cumul décalée d’une ligne.',
         'Papier : formules écrites sur la copie, valeurs calculées à la calculatrice ; en CCF, la question se fait devant l’examinateur.',
@@ -1891,7 +1868,7 @@ const ACTE_4: moteur.Acte = [
       dureeMinutes: 12,
       concepts: ['suite-geometrique', 'algorithme-de-seuil', 'somme-de-termes'],
       notes: moteur.puces(
-        'Temps : réflexion 2 min · travail 10 min',
+        moteur.tempsDeLExercice(2, 10),
         'Réflexion : relire le dossier et noter, pour chaque question, s’il s’agit d’un terme, d’un rang ou d’une somme.',
         'Indices disponibles après 60 s. À 8 min, projeter l’énigme la moins résolue.',
         'Papier : quatre questions rédigées du livret, sans code de coffre.',

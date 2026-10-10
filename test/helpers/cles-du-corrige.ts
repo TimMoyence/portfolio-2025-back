@@ -1,3 +1,5 @@
+import { cueillirDansArbre } from '../../src/modules/formations/domain/cours/ArbreDeValeurs';
+
 const CLES_DU_CORRIGE: readonly string[] = [
   'solutions',
   'solution',
@@ -14,16 +16,10 @@ const CLES_DU_CORRIGE: readonly string[] = [
 ];
 
 export function clesImbriquees(valeur: unknown): string[] {
-  if (Array.isArray(valeur)) {
-    return valeur.flatMap((element: unknown) => clesImbriquees(element));
-  }
-  if (valeur !== null && typeof valeur === 'object') {
-    return Object.entries(valeur).flatMap(([cle, contenu]) => [
-      cle,
-      ...clesImbriquees(contenu),
-    ]);
-  }
-  return [];
+  return cueillirDansArbre(valeur, (cle, contenu) => [
+    cle,
+    ...clesImbriquees(contenu),
+  ]);
 }
 
 export function clesDuCorrigeDans(valeur: unknown): string[] {

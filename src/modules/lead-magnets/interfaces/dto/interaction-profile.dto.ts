@@ -7,16 +7,19 @@ import {
   IsString,
   MaxLength,
 } from 'class-validator';
+import {
+  AI_LEVELS,
+  BUDGET_TIERS,
+  type AiLevel,
+  type BudgetTier,
+} from '../../domain/InteractionProfile';
 
 export class InteractionProfileDto {
-  @ApiPropertyOptional({
-    example: 'debutant',
-    enum: ['debutant', 'intermediaire', 'avance'],
-  })
+  @ApiPropertyOptional({ example: 'debutant', enum: [...AI_LEVELS] })
   @IsOptional()
   @IsString()
-  @IsIn(['debutant', 'intermediaire', 'avance'])
-  aiLevel?: 'debutant' | 'intermediaire' | 'avance' | null;
+  @IsIn(AI_LEVELS)
+  aiLevel?: AiLevel | null;
 
   @ApiPropertyOptional({ example: ['chatgpt', 'canva-ai'] })
   @IsOptional()
@@ -26,11 +29,11 @@ export class InteractionProfileDto {
   @MaxLength(100, { each: true })
   toolsAlreadyUsed?: string[];
 
-  @ApiPropertyOptional({ example: '60', enum: ['0', '60', '120'] })
+  @ApiPropertyOptional({ example: '60', enum: [...BUDGET_TIERS] })
   @IsOptional()
   @IsString()
-  @IsIn(['0', '60', '120'])
-  budgetTier?: '0' | '60' | '120' | null;
+  @IsIn(BUDGET_TIERS)
+  budgetTier?: BudgetTier | null;
 
   @ApiPropertyOptional({ example: 'coaching' })
   @IsOptional()

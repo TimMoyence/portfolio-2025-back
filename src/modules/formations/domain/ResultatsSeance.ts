@@ -1,3 +1,4 @@
+import { moyenneOu } from '../../../common/domain/nombres/statistiques';
 import type { TypeQuestion } from './contrats/cours';
 import type {
   ConfusionComptee,
@@ -8,6 +9,7 @@ import type {
 import { libelleDeConfusion } from './cours/banque/confusions';
 import { NE_SAIT_PAS } from './GradingCore';
 import type { AnswerRecord } from './IAnswers.repository';
+import { estUneProduction, texteDeValeur } from './ValeurReponse';
 
 export type {
   ConfusionComptee,
@@ -63,12 +65,6 @@ function agregerQuestion(
   };
 }
 
-function estUneProduction(
-  valeur: AnswerRecord['valeur'],
-): valeur is Extract<AnswerRecord['valeur'], { readonly type: string }> {
-  return typeof valeur === 'object';
-}
-
 function estNeSaitPas(reponse: AnswerRecord): boolean {
   if (reponse.valeur === NE_SAIT_PAS) {
     return true;
@@ -83,24 +79,17 @@ function compterParOption(
   for (const reponse of reponses) {
     const cle = estNeSaitPas(reponse)
       ? CLE_NE_SAIT_PAS
-      : cleDeVote(reponse.valeur);
+      : texteDeValeur(reponse.valeur);
     parOption[cle] = (parOption[cle] ?? 0) + 1;
   }
   return parOption;
-}
-
-function cleDeVote(valeur: AnswerRecord['valeur']): string {
-  return estUneProduction(valeur) ? valeur.type : String(valeur);
 }
 
 function moyenneDesScores(reponses: readonly AnswerRecord[]): number | null {
   const scores = reponses
     .map((reponse) => reponse.score)
     .filter((score): score is number => score !== null);
-  if (scores.length === 0) {
-    return null;
-  }
-  return scores.reduce((somme, score) => somme + score, 0) / scores.length;
+  return moyenneOu(scores, null);
 }
 
 function compterParCle(

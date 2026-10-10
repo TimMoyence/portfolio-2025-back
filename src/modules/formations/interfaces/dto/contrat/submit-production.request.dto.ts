@@ -21,6 +21,7 @@ import type {
   ValidationArguments,
   ValidatorConstraintInterface,
 } from 'class-validator';
+import { estObjet } from '../../../../../common/domain/est-objet';
 import type { ValeurProduction } from '../../../domain/contrats/resultats';
 import { DureeDeReponse } from '../duree-de-reponse.decorator';
 import { entreesBornees } from '../objet-plat';
@@ -139,18 +140,18 @@ const CLASSE_PAR_TYPE: Readonly<Record<string, new () => object>> = {
 };
 
 function versProduction(valeur: unknown): unknown {
-  if (typeof valeur !== 'object' || valeur === null || Array.isArray(valeur)) {
+  if (!estObjet(valeur)) {
     return valeur;
   }
-  const brute = valeur as Record<string, unknown>;
-  if ('neSaitPas' in brute) {
-    return plainToInstance(ProductionNeSaitPasDto, brute);
+  if ('neSaitPas' in valeur) {
+    return plainToInstance(ProductionNeSaitPasDto, valeur);
   }
   const classe =
-    typeof brute.type === 'string' && Object.hasOwn(CLASSE_PAR_TYPE, brute.type)
-      ? CLASSE_PAR_TYPE[brute.type]
+    typeof valeur.type === 'string' &&
+    Object.hasOwn(CLASSE_PAR_TYPE, valeur.type)
+      ? CLASSE_PAR_TYPE[valeur.type]
       : undefined;
-  return classe === undefined ? valeur : plainToInstance(classe, brute);
+  return classe === undefined ? valeur : plainToInstance(classe, valeur);
 }
 
 @ApiExtraModels(...MODELES_DE_PRODUCTION)

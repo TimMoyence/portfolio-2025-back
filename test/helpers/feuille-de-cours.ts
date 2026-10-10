@@ -1,3 +1,4 @@
+import { estObjet } from '../../src/common/domain/est-objet';
 import type { CorrigeFeuille } from '../../src/modules/formations/domain/cours/Corrige';
 import { corrigerFeuille } from '../../src/modules/formations/domain/cours/CorrectionProduction';
 import type { ContenuDeCours } from '../../src/modules/formations/domain/cours/CoursStocke';
@@ -19,10 +20,6 @@ export function attendusDeColonne<T>(
       valeurs(element, index),
     ]),
   );
-}
-
-export function enFrancais(valeur: number, decimales: number): string {
-  return valeur.toFixed(decimales).replace('.', ',');
 }
 
 export function recopier(
@@ -86,7 +83,7 @@ export function proprietesV2(
     throw new Error(`l’écran ${screenId} n’a pas de présentation v2`);
   }
   const { props } = presentation;
-  if (typeof props !== 'object' || props === null) {
+  if (!estObjet(props)) {
     throw new Error(`l’écran ${screenId} n’a pas de propriétés v2`);
   }
   return { ...props };

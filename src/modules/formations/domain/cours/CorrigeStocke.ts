@@ -19,6 +19,7 @@ import {
   auMoinsUn,
   confusion,
   identifiantDeQuestion,
+  signalerDoublons,
   signaleurDe,
   texte,
   tolerance,
@@ -27,20 +28,6 @@ import {
 
 const piegeNumerique = z.object({ valeur: z.number(), confusion }).strict();
 const seuilReussite = z.number().gt(0).lte(1);
-
-function signalerDoublons(
-  valeurs: readonly string[],
-  chemin: readonly (string | number)[],
-  signaler: Signaleur,
-): void {
-  const vues = new Set<string>();
-  for (const valeur of valeurs) {
-    if (vues.has(valeur)) {
-      signaler(chemin, `« ${valeur} » apparaît deux fois`);
-    }
-    vues.add(valeur);
-  }
-}
 
 function signalerAmbiguite(
   valeur: number,

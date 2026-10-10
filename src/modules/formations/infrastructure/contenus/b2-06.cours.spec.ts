@@ -1,7 +1,8 @@
 import { buildCoursDuContenu } from '../../../../../test/factories/contenus-de-cours.factory';
 import * as fiche from '../../../../../test/helpers/fiche-de-cours';
 import * as feuille from '../../../../../test/helpers/feuille-de-cours';
-import { arrondi } from '../../../../../test/helpers/lecture-de-cours';
+import { arrondi } from '../../../../common/domain/nombres/arrondi';
+import { somme } from '../../../../common/domain/nombres/statistiques';
 import { colonnesVidesDeLaFeuille } from '../../../../../test/helpers/relecture-de-cours';
 import type { CorrigeTableau } from '../../domain/cours/Corrige';
 import {
@@ -57,10 +58,10 @@ function droiteDesMoindresCarres(
   ordonnees: readonly number[],
 ): Droite {
   const n = abscisses.length;
-  const sx = abscisses.reduce((total, x) => total + x, 0);
-  const sy = ordonnees.reduce((total, y) => total + y, 0);
-  const sxy = abscisses.reduce((total, x, i) => total + x * ordonnees[i], 0);
-  const sxx = abscisses.reduce((total, x) => total + x * x, 0);
+  const sx = somme(abscisses);
+  const sy = somme(ordonnees);
+  const sxy = somme(abscisses.map((x, i) => x * ordonnees[i]));
+  const sxx = somme(abscisses.map((x) => x * x));
   const pente = (n * sxy - sx * sy) / (n * sxx - sx * sx);
   return { pente, ordonnee: (sy - pente * sx) / n };
 }

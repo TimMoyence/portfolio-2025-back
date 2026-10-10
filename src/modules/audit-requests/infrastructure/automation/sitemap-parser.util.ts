@@ -1,5 +1,6 @@
 import { XMLParser } from 'fast-xml-parser';
 import { randomInt } from 'node:crypto';
+import { estObjet } from '../../../../common/domain/est-objet';
 
 export interface ParsedSitemap {
   urls: string[];
@@ -17,10 +18,8 @@ function asArray<T>(value: T | T[] | null | undefined): T[] {
 }
 
 function readLoc(value: unknown): string | null {
-  if (!value || typeof value !== 'object') return null;
-  const record = value as Record<string, unknown>;
-  const loc = record.loc;
-  return typeof loc === 'string' ? loc.trim() : null;
+  if (!estObjet(value)) return null;
+  return typeof value.loc === 'string' ? value.loc.trim() : null;
 }
 
 function collectLocs(
@@ -29,9 +28,9 @@ function collectLocs(
   maxUrls: number,
 ): Set<string> {
   const locs = new Set<string>();
-  if (!container || typeof container !== 'object') return locs;
+  if (!estObjet(container)) return locs;
 
-  const entries = asArray((container as Record<string, unknown>)[entryKey]);
+  const entries = asArray(container[entryKey]);
   for (const entry of entries) {
     const loc = readLoc(entry);
     if (loc) locs.add(loc);

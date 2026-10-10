@@ -32,10 +32,13 @@ import {
   TOTAL_REMBOURSE,
   TOUTE_LA_DUREE,
   VPM_NON_SIGNE,
-  auCentime,
 } from './b2-05.donnees';
 import * as moteur from './briques';
-import { auMillionieme, termes } from './feuilles';
+import {
+  auCentime,
+  auMillionieme,
+} from '../../../../common/domain/nombres/arrondi';
+import { termes } from './feuilles';
 
 const ACTE_1: moteur.Acte = [
   {
@@ -345,7 +348,7 @@ const ACTE_1: moteur.Acte = [
       dureeMinutes: 3,
       concepts: ['valeur-actuelle', 'evolution-reciproque', 'tableur'],
       notes: moteur.puces(
-        '3 min, enchaînées sur la page 1 : 6 min pour les deux pages.',
+        moteur.DEUXIEME_PAGE_DE_COURS,
         'Relier au vote de rappel : annuler une hausse, c’est diviser par son coefficient ; actualiser, c’est annuler n hausses.',
         'Faire taper la formule sans $ sur un poste volontaire, puis la recopier : la colonne se fige, l’erreur fixe la règle.',
       ),
@@ -393,10 +396,7 @@ const ACTE_1: moteur.Acte = [
       brique: 'fp-worked',
       dureeMinutes: 4,
       concepts: ['interets-composes', 'valeur-actuelle'],
-      notes: moteur.puces(
-        'Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.',
-        'Papier : réponses sous chaque étape du livret.',
-      ),
+      notes: moteur.puces(...moteur.NOTES_DE_L_EXEMPLE_ETAPE_PAR_ETAPE),
       proprietes: {
         modalite: 'solo',
         exemple: {
@@ -463,7 +463,7 @@ const ACTE_1: moteur.Acte = [
       dureeMinutes: 8,
       concepts: ['interets-composes', 'valeur-actuelle'],
       notes: moteur.puces(
-        'Temps : réflexion 2 min · travail 6 min',
+        moteur.tempsDeLExercice(2, 6),
         'Réflexion : écrire le capital, le taux décimal et la durée avant de calculer ; dire, pour chaque question, s’il faut capitaliser ou actualiser.',
         'Pièges : taux pris pour le coefficient ; intérêts simples ; une année de trop ; multiplier pour actualiser.',
         'Papier : exercice 1 du livret.',
@@ -527,7 +527,7 @@ const ACTE_1: moteur.Acte = [
     {
       minutes: 2,
       notes: [
-        'Corriger question par question, en commençant par la moins réussie (score sous chaque correction).',
+        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE_SOUS_SON_SCORE,
         'Transition : « Faisons calculer tout le placement par le tableur : exercice 2. »',
       ],
     },
@@ -559,7 +559,7 @@ const ACTE_1: moteur.Acte = [
       dureeMinutes: 6,
       concepts: ['tableur', 'interets-composes'],
       notes: moteur.puces(
-        'Temps : réflexion 1 min · travail 5 min',
+        moteur.tempsDeLExercice(1, 5),
         'Réflexion : écrire sur papier la formule de C3, puis ce qu’elle devient en C4 une fois recopiée.',
         'Erreurs à chercher : =C2*$G$1 (le taux seul) ; G1 sans $ : la colonne reste bloquée à 41 000 ; des intérêts toujours égaux à 1 000 €.',
         'Papier : formules écrites sur la copie, puis les valeurs à la calculatrice.',
@@ -601,26 +601,20 @@ const ACTE_1: moteur.Acte = [
       ],
     ],
   ),
-  {
-    screenId: 'B2-05-A1-12-JALON',
-    titre: 'Jalon 1 : intérêts composés',
-    diffusion: 'seance',
-    brique: 'fp-pulse',
-    dureeMinutes: 1,
-    concepts: ['interets-composes', 'valeur-actuelle'],
-    notes: moteur.puces(
-      '30 s de vote anonyme.',
-      'Si plus de 30 % « Perdu » : reprendre la trace écrite A1-08 sur le sens de l’actualisation après la pause.',
-      'Pause de 15 minutes, hors durée programmée.',
-    ),
-    proprietes: {
-      sondage: {
-        id: 'b2-05-a1-jalon',
-        invite:
-          'Je sais calculer une valeur acquise et une valeur actuelle, et les écrire au tableur.',
-      },
+  moteur.pulsation(
+    {
+      screenId: 'B2-05-A1-12-JALON',
+      titre: 'Jalon 1 : intérêts composés',
+      concepts: ['interets-composes', 'valeur-actuelle'],
     },
-  },
+    {
+      id: 'b2-05-a1-jalon',
+      invite:
+        'Je sais calculer une valeur acquise et une valeur actuelle, et les écrire au tableur.',
+    },
+    'Si plus de 30 % « Perdu » : reprendre la trace écrite A1-08 sur le sens de l’actualisation après la pause.',
+    moteur.PAUSE_HORS_DUREE,
+  ),
 ];
 
 const ACTE_2: moteur.Acte = [
@@ -717,7 +711,7 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 3,
       concepts: ['annuites', 'tableur', 'somme-de-termes'],
       notes: moteur.puces(
-        '3 min, enchaînées sur la page 1 : 6 min pour les deux pages.',
+        moteur.DEUXIEME_PAGE_DE_COURS,
         'Dire la formule en français avant de l’écrire : « l’épargne de l’an passé, plus ses intérêts, plus le versement ».',
         'Question : « Le total des intérêts, c’est la dernière ligne de la colonne ? » Non : une somme.',
       ),
@@ -765,10 +759,7 @@ const ACTE_2: moteur.Acte = [
       brique: 'fp-worked',
       dureeMinutes: 4,
       concepts: ['annuites'],
-      notes: moteur.puces(
-        'Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.',
-        'Papier : réponses sous chaque étape du livret.',
-      ),
+      notes: moteur.puces(...moteur.NOTES_DE_L_EXEMPLE_ETAPE_PAR_ETAPE),
       proprietes: {
         modalite: 'solo',
         exemple: {
@@ -835,7 +826,7 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 9,
       concepts: ['annuites'],
       notes: moteur.puces(
-        'Temps : réflexion 2 min · travail 7 min',
+        moteur.tempsDeLExercice(2, 7),
         'Réflexion : dessiner la frise des cinq versements et écrire sous chacun sa durée de placement.',
         'Pièges : chaque versement placé cinq ans ; versements additionnés sans intérêts ; intérêts simples.',
         'Papier : exercice 3 du livret.',
@@ -900,7 +891,7 @@ const ACTE_2: moteur.Acte = [
     {
       minutes: 2,
       notes: [
-        'Corriger question par question, en commençant par la moins réussie.',
+        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE,
         'Transition : « Faisons tenir l’épargne dans un tableau : exercice 4. »',
       ],
     },
@@ -932,7 +923,7 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 8,
       concepts: ['tableur', 'annuites'],
       notes: moteur.puces(
-        'Temps : réflexion 2 min · travail 6 min',
+        moteur.tempsDeLExercice(2, 6),
         'Réflexion : dire en français la formule de B3, puis l’écrire sur papier.',
         'Erreurs à chercher : =B2+$H$1 (pas d’intérêts) ; F1 ou H1 sans $ ; =C6 pour le total.',
         'Papier : formules écrites sur la copie, puis les valeurs à la calculatrice.',
@@ -978,25 +969,19 @@ const ACTE_2: moteur.Acte = [
       ],
     ],
   ),
-  {
-    screenId: 'B2-05-A2-07-JALON',
-    titre: 'Jalon 2 : suites d’annuités',
-    diffusion: 'seance',
-    brique: 'fp-pulse',
-    dureeMinutes: 1,
-    concepts: ['annuites'],
-    notes: moteur.puces(
-      '30 s de vote anonyme.',
-      'Si plus de 30 % « Perdu » : reprendre la frise des versements de la trace écrite A2-02.',
-    ),
-    proprietes: {
-      sondage: {
-        id: 'b2-05-a2-jalon',
-        invite:
-          'Je sais calculer la valeur acquise d’une suite de versements et la construire au tableur.',
-      },
+  moteur.pulsation(
+    {
+      screenId: 'B2-05-A2-07-JALON',
+      titre: 'Jalon 2 : suites d’annuités',
+      concepts: ['annuites'],
     },
-  },
+    {
+      id: 'b2-05-a2-jalon',
+      invite:
+        'Je sais calculer la valeur acquise d’une suite de versements et la construire au tableur.',
+    },
+    'Si plus de 30 % « Perdu » : reprendre la frise des versements de la trace écrite A2-02.',
+  ),
 ];
 
 const ACTE_3: moteur.Acte = [
@@ -1142,7 +1127,7 @@ const ACTE_3: moteur.Acte = [
       dureeMinutes: 3,
       concepts: ['cout-du-credit', 'tableur'],
       notes: moteur.puces(
-        '3 min, enchaînées sur la page 1 : 6 min pour les deux pages.',
+        moteur.DEUXIEME_PAGE_DE_COURS,
         'Faire taper VPM sans le signe moins sur un poste volontaire : l’annuité sort négative, l’erreur fixe la règle.',
         'Question : « Le coût du crédit, c’est ce que je rembourse ? » Non : ce que je rembourse en plus.',
       ),
@@ -1190,10 +1175,7 @@ const ACTE_3: moteur.Acte = [
       brique: 'fp-worked',
       dureeMinutes: 4,
       concepts: ['tableau-d-amortissement', 'cout-du-credit'],
-      notes: moteur.puces(
-        'Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.',
-        'Papier : réponses sous chaque étape du livret.',
-      ),
+      notes: moteur.puces(...moteur.NOTES_DE_L_EXEMPLE_ETAPE_PAR_ETAPE),
       proprietes: {
         modalite: 'solo',
         exemple: {
@@ -1259,7 +1241,7 @@ const ACTE_3: moteur.Acte = [
       dureeMinutes: 8,
       concepts: ['tableau-d-amortissement', 'cout-du-credit', 'tableur'],
       notes: moteur.puces(
-        'Temps : réflexion 2 min · travail 6 min',
+        moteur.tempsDeLExercice(2, 6),
         'Réflexion : écrire C, t et n, puis poser la formule de l’annuité sans l’effectuer.',
         'Pièges : 60 000 ÷ 5 ; intérêts toujours sur 60 000 € ; total remboursé pris pour le coût ; VPM sans signe moins.',
         'Papier : exercice 5 du livret.',
@@ -1329,7 +1311,7 @@ const ACTE_3: moteur.Acte = [
     {
       minutes: 2,
       notes: [
-        'Corriger question par question, en commençant par la moins réussie.',
+        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE,
         'Transition : « L’annuité est trouvée : remplissons le tableau d’amortissement, exercice 6. »',
       ],
     },
@@ -1361,7 +1343,7 @@ const ACTE_3: moteur.Acte = [
       dureeMinutes: 6,
       concepts: ['tableau-d-amortissement'],
       notes: moteur.puces(
-        'Temps : réflexion 1 min · travail 5 min',
+        moteur.tempsDeLExercice(1, 5),
         'Réflexion : dire en français comment passer d’une ligne à la suivante.',
         'Pièges : intérêts sur 60 000 € chaque année ; annuité écrite comme amortissement.',
         'Papier : tableau du livret, rempli à la main, calculs arrondis au centime.',
@@ -1453,7 +1435,7 @@ const ACTE_3: moteur.Acte = [
       dureeMinutes: 8,
       concepts: ['tableau-d-amortissement', 'cout-du-credit'],
       notes: moteur.puces(
-        'Temps : réflexion 2 min · travail 6 min',
+        moteur.tempsDeLExercice(2, 6),
         'Réflexion : relire les traces écrites de la notion 3.',
         'Repérer qui trouve la formule, la base des intérêts et le coût ; faire trouver la piste fausse avant de révéler.',
         'Papier : exercice 7 du livret.',
@@ -1525,25 +1507,19 @@ const ACTE_3: moteur.Acte = [
       ],
     ],
   ),
-  {
-    screenId: 'B2-05-A3-09-JALON',
-    titre: 'Jalon 3 : emprunts',
-    diffusion: 'seance',
-    brique: 'fp-pulse',
-    dureeMinutes: 1,
-    concepts: ['tableau-d-amortissement', 'cout-du-credit'],
-    notes: moteur.puces(
-      '30 s de vote anonyme.',
-      'Pause de 15 minutes, hors durée programmée.',
-    ),
-    proprietes: {
-      sondage: {
-        id: 'b2-05-a3-jalon',
-        invite:
-          'Je sais calculer une annuité, remplir un tableau d’amortissement et donner le coût d’un crédit.',
-      },
+  moteur.pulsation(
+    {
+      screenId: 'B2-05-A3-09-JALON',
+      titre: 'Jalon 3 : emprunts',
+      concepts: ['tableau-d-amortissement', 'cout-du-credit'],
     },
-  },
+    {
+      id: 'b2-05-a3-jalon',
+      invite:
+        'Je sais calculer une annuité, remplir un tableau d’amortissement et donner le coût d’un crédit.',
+    },
+    moteur.PAUSE_HORS_DUREE,
+  ),
 ];
 
 const REMEDIATIONS: ContenuDeCours['remediations'] = {

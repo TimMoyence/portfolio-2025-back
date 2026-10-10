@@ -3,7 +3,11 @@ import { DomainValidationError } from '../../../common/domain/errors/DomainValid
 import { gradeAnswer } from '../domain/AnswerGrading';
 import { estValeurConnue, findQuestion, solutionFor } from '../domain/Bareme';
 import { libelleLisible } from '../domain/cours/banque/confusions';
-import { assertEcranServi, rangDeLaQuestion } from '../domain/cours/EcranServi';
+import {
+  assertEcranServi,
+  ecranParId,
+  rangDeLaQuestion,
+} from '../domain/cours/EcranServi';
 import { assertQuestionNonCorrigee } from '../domain/cours/CorrectionSurPlace';
 import { assertPhaseOuverte } from '../domain/cours/PilotageEcrans';
 import { AnswerAlreadySubmittedError } from '../domain/errors/FormationErrors';
@@ -66,7 +70,7 @@ export class SubmitAnswerUseCase extends EnregistrementDeReponse {
     });
     assertQuestionNonCorrigee(
       session.pilotageEcrans,
-      cours.ecrans.find((ecran) => ecran.id === ecranId),
+      ecranParId(cours, ecranId),
       command.questionId,
     );
 

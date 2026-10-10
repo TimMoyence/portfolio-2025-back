@@ -20,7 +20,10 @@ import {
 } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import type { Request, Response } from 'express';
-import { resolveClientIpOrUnknown } from '../../../common/interfaces/security/client-ip.util';
+import {
+  lireEnTete,
+  resolveClientIpOrUnknown,
+} from '../../../common/interfaces/security/client-ip.util';
 import { EchangeCourant, type EchangeHttp } from './echange-http.decorator';
 import {
   limiteDeRafraichissement,
@@ -43,7 +46,7 @@ import { UpdateProfileUseCase } from '../application/UpdateProfile.useCase';
 import { GetCurrentUserUseCase } from '../application/GetCurrentUser.useCase';
 import { VerifyEmailUseCase } from '../application/VerifyEmail.useCase';
 import { ResendVerificationEmailUseCase } from '../application/ResendVerificationEmail.useCase';
-import { cheminDeLApi } from '../../../config/prefixe-api';
+import { attributsDuCookieDeRafraichissement } from './cookie-de-rafraichissement';
 import {
   REFRESH_TOKEN_TTL_MS,
   REFRESH_TOKEN_COOKIE_NAME,
@@ -62,6 +65,7 @@ import { UpdateProfileDto } from './dto/UpdateProfile.dto';
 import { UserResponseDto } from './dto/User.response.dto';
 import { VerifyEmailQueryDto } from './dto/VerifyEmail.query.dto';
 import { Public } from '../../../common/interfaces/auth/public.decorator';
+import { messageDErreur } from '../../../common/domain/errors/message-d-erreur';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -88,28 +92,21 @@ export class AuthController {
   }
 
   private extractUserAgent(req: Request): string {
-    return req.headers['user-agent'] ?? 'unknown';
+    return lireEnTete(req, 'user-agent') ?? 'unknown';
   }
 
   private setRefreshCookie(res: Response, refreshToken: string): void {
-    const isProd = process.env.NODE_ENV === 'production';
     res.cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken, {
-      httpOnly: true,
-      secure: isProd,
-      sameSite: 'strict',
-      path: cheminDeLApi('auth'),
+      ...attributsDuCookieDeRafraichissement(),
       maxAge: REFRESH_TOKEN_TTL_MS,
     });
   }
 
   private clearRefreshCookie(res: Response): void {
-    const isProd = process.env.NODE_ENV === 'production';
-    res.clearCookie(REFRESH_TOKEN_COOKIE_NAME, {
-      httpOnly: true,
-      secure: isProd,
-      sameSite: 'strict',
-      path: cheminDeLApi('auth'),
-    });
+    res.clearCookie(
+      REFRESH_TOKEN_COOKIE_NAME,
+      attributsDuCookieDeRafraichissement(),
+    );
   }
 
   @Public()
@@ -179,7 +176,7 @@ export class AuthController {
         ip,
         userAgent,
         timestamp: new Date(),
-        details: error instanceof Error ? error.message : String(error),
+        details: messageDErreur(error),
       });
       throw error;
     }

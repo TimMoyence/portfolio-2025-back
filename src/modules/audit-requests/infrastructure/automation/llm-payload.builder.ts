@@ -1,3 +1,5 @@
+import { compacterBlancs } from '../../../../common/domain/texte/compacter-blancs';
+import { tronquer } from '../../../../common/domain/texte/tronquer';
 import type { LangchainAuditInput } from './langchain-audit-report.service';
 import type { FanoutSectionName } from './schemas/audit-report.schemas';
 import { sanitizePromptInput } from './shared/prompt-sanitize.util';
@@ -318,9 +320,7 @@ function buildEvidenceBuckets(
 }
 
 export function compactText(value: string, maxChars: number): string {
-  const clean = value.replace(/\s+/g, ' ').trim();
-  if (clean.length <= maxChars) return clean;
-  return `${clean.slice(0, Math.max(0, maxChars - 3)).trimEnd()}...`;
+  return tronquer(compacterBlancs(value), maxChars);
 }
 
 export function payloadBytes(payload: Record<string, unknown>): number {

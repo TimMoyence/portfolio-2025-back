@@ -1,8 +1,10 @@
+import { estObjet } from '../../../../common/domain/est-objet';
+
 export function entreesBornees(
   valeur: unknown,
   entreesMax: number,
 ): [string, unknown][] | null {
-  if (typeof valeur !== 'object' || valeur === null || Array.isArray(valeur)) {
+  if (!estObjet(valeur)) {
     return null;
   }
   const entrees = Object.entries(valeur);

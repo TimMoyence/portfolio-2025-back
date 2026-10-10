@@ -1,4 +1,8 @@
 import type { z } from 'zod';
+import {
+  mapperAuMoinsUn,
+  type AuMoinsUnModifiable,
+} from '../../../../common/domain/au-moins-un';
 import type { ConceptId } from '../../domain/cours/banque/concepts';
 import type { ConfusionId } from '../../domain/cours/banque/confusions';
 import type { ContenuDeCours } from '../../domain/cours/CoursStocke';
@@ -24,9 +28,9 @@ type CorrectionDeTri = Omit<SocleDEcran, 'diffusion'> & {
 };
 type EcranDeRappel = Extract<EcranDuCours, { readonly brique: 'fp-spaced' }>;
 type EcranDExemple = Extract<EcranDuCours, { readonly brique: 'fp-worked' }>;
+type EcranDePulsation = Extract<EcranDuCours, { readonly brique: 'fp-pulse' }>;
 type VoteDuCours = z.input<typeof voteStocke>;
 type NumeriqueDuCours = z.input<typeof numeriqueStockee>;
-export type AuMoinsUn<T> = [T, ...T[]];
 export type Piege = readonly [string, ConfusionId];
 type EcranDeTableau = Extract<
   EcranDuCours,
@@ -42,15 +46,7 @@ export const TOLERANCE_RELATIVE = {
 export const TOLERANCE_NULLE = { type: 'absolue', valeur: 0 } as const;
 export const DEUX_DECIMALES = { type: 'decimales', valeur: 2 } as const;
 
-function mapper<T, U>(
-  liste: AuMoinsUn<T>,
-  transformer: (element: T) => U,
-): AuMoinsUn<U> {
-  const [premier, ...suite] = liste;
-  return [transformer(premier), ...suite.map(transformer)];
-}
-
-export function puces(...lignes: AuMoinsUn<string>): string {
+export function puces(...lignes: AuMoinsUnModifiable<string>): string {
   return lignes.map((ligne) => `• ${ligne}`).join('\n');
 }
 
@@ -67,6 +63,50 @@ export function notesDuVoteQuiOuvreLaNotion(notion: 1 | 2 | 3): string {
   );
 }
 
+export const PAUSE_HORS_DUREE = 'Pause de 15 minutes, hors durée programmée.';
+
+export const REPONSES_SOUS_CHAQUE_ETAPE =
+  'Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.';
+
+export const NOTES_DE_L_EXEMPLE_ETAPE_PAR_ETAPE = [
+  REPONSES_SOUS_CHAQUE_ETAPE,
+  'Papier : réponses sous chaque étape du livret.',
+] as const;
+
+export const DEUXIEME_PAGE_DE_COURS =
+  '3 min, enchaînées sur la page 1 : 6 min pour les deux pages.';
+
+export const CORRIGER_PAR_LA_MOINS_REUSSIE =
+  'Corriger question par question, en commençant par la moins réussie.';
+
+export const CORRIGER_PAR_LA_MOINS_REUSSIE_SOUS_SON_SCORE =
+  'Corriger question par question, en commençant par la moins réussie (score sous chaque correction).';
+
+export function tempsDeLExercice(reflexion: number, travail: number): string {
+  return `Temps : réflexion ${reflexion} min · travail ${travail} min`;
+}
+
+export function pulsation(
+  {
+    screenId,
+    titre,
+    concepts,
+  }: Pick<SocleDEcran, 'screenId' | 'titre' | 'concepts'>,
+  sondage: EcranDePulsation['proprietes']['sondage'],
+  ...notesDuJalon: string[]
+): EcranDePulsation {
+  return {
+    screenId,
+    titre,
+    diffusion: 'seance',
+    brique: 'fp-pulse',
+    dureeMinutes: 1,
+    concepts,
+    notes: puces('30 s de vote anonyme.', ...notesDuJalon),
+    proprietes: { sondage },
+  };
+}
+
 function option(libelle: string, confusion: ConfusionId | null) {
   return { id: slugOption(libelle), libelle, confusion };
 }
@@ -77,7 +117,7 @@ export function vote(
   noteCompte: boolean,
   enonce: string,
   bonne: string,
-  pieges: AuMoinsUn<Piege>,
+  pieges: AuMoinsUnModifiable<Piege>,
   segments: readonly string[] = [],
 ): VoteDuCours {
   const [premier, ...suite] = pieges;
@@ -104,7 +144,7 @@ export function numerique(
   solution: number,
   tolerance: NumeriqueDuCours['tolerance'],
   formePubliee: string,
-  pieges: AuMoinsUn<readonly [number, ConfusionId]>,
+  pieges: AuMoinsUnModifiable<readonly [number, ConfusionId]>,
 ): NumeriqueDuCours {
   return {
     type: 'numeric',
@@ -116,7 +156,10 @@ export function numerique(
     solution,
     tolerance,
     formePubliee,
-    pieges: mapper(pieges, ([valeur, confusion]) => ({ valeur, confusion })),
+    pieges: mapperAuMoinsUn(pieges, ([valeur, confusion]) => ({
+      valeur,
+      confusion,
+    })),
   };
 }
 
@@ -151,17 +194,20 @@ export function classement(
     readonly dureeJeuMs?: number;
   },
   concept: ConceptId,
-  categories: AuMoinsUn<readonly [string, string]>,
-  cartes: AuMoinsUn<Carte>,
+  categories: AuMoinsUnModifiable<readonly [string, string]>,
+  cartes: AuMoinsUnModifiable<Carte>,
 ): Pick<ProprietesDeClassement, 'plan' | 'questions'> {
   return {
     plan: {
       ...plan,
-      cartes: mapper(cartes, (carte) => ({
+      cartes: mapperAuMoinsUn(cartes, (carte) => ({
         id: carte.id,
         libelle: carte.libelle,
       })),
-      categories: mapper(categories, ([id, libelle]) => ({ id, libelle })),
+      categories: mapperAuMoinsUn(categories, ([id, libelle]) => ({
+        id,
+        libelle,
+      })),
     },
     questions: [
       {
@@ -171,7 +217,7 @@ export function classement(
         noteCompte: true,
         corrige: {
           type: 'classement',
-          attendus: mapper(cartes, (carte) => ({
+          attendus: mapperAuMoinsUn(cartes, (carte) => ({
             carteId: carte.id,
             categorieId: carte.categorie,
             confusionSiErreur: carte.confusion,
@@ -217,7 +263,7 @@ export function suiviDeSaCorrection(
 
 export interface TempsDeCorrection {
   readonly minutes: number;
-  readonly notes: AuMoinsUn<string>;
+  readonly notes: AuMoinsUnModifiable<string>;
 }
 
 function annoncerLaCorrection(notes: string, minutes: number): string {
@@ -241,7 +287,7 @@ export function corrigeEtapeParEtape(
 export function corrigeSurPlace<E extends EcranDuCours>(
   exercice: E,
   { minutes, notes }: TempsDeCorrection,
-  explications: AuMoinsUn<readonly [string, string]>,
+  explications: AuMoinsUnModifiable<readonly [string, string]>,
 ): E {
   return {
     ...exercice,
@@ -253,7 +299,7 @@ export function corrigeSurPlace<E extends EcranDuCours>(
     proprietes: {
       ...exercice.proprietes,
       correctionSurPlace: {
-        explications: mapper(explications, ([reference, texte]) => ({
+        explications: mapperAuMoinsUn(explications, ([reference, texte]) => ({
           reference,
           texte,
         })),
@@ -301,7 +347,7 @@ export function enigme(
   tolerance: number,
   formePubliee: string,
   fragment: string,
-  pieges: AuMoinsUn<readonly [number, ConfusionId]>,
+  pieges: AuMoinsUnModifiable<readonly [number, ConfusionId]>,
 ) {
   return {
     type: 'enigme' as const,
@@ -320,7 +366,7 @@ export function enigme(
         formePubliee,
       },
       fragment,
-      pieges: mapper(pieges, ([valeurDuPiege, confusion]) => ({
+      pieges: mapperAuMoinsUn(pieges, ([valeurDuPiege, confusion]) => ({
         valeur: valeurDuPiege,
         confusion,
       })),
@@ -333,7 +379,7 @@ export function rappel(
   concept: ConceptId,
   enonce: string,
   bonne: string,
-  pieges: AuMoinsUn<Piege>,
+  pieges: AuMoinsUnModifiable<Piege>,
 ): VoteDuCours {
   return vote(id, concept, false, enonce, bonne, pieges);
 }
@@ -452,20 +498,9 @@ export const REFERENTIEL_DU_BTS_CG = {
   external: true,
 } as const;
 
-const ESPACE_FINE_INSECABLE = String.fromCodePoint(0x20_2f);
-
-export function nombreFrancais(valeur: number, decimales: number): string {
-  return new Intl.NumberFormat('fr-FR', {
-    minimumFractionDigits: decimales,
-    maximumFractionDigits: decimales,
-  })
-    .format(valeur)
-    .replaceAll(ESPACE_FINE_INSECABLE, ' ');
-}
-
 function coursDuNiveau(niveau: string) {
   return (
-    actes: AuMoinsUn<Acte>,
+    actes: AuMoinsUnModifiable<Acte>,
     remediations: ContenuDeCours['remediations'],
     medias: ContenuDeCours['medias'],
     fiche: Pick<

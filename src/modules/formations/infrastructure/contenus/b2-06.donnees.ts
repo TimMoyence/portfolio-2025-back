@@ -1,7 +1,16 @@
+import {
+  arrondi,
+  auMillionieme,
+} from '../../../../common/domain/nombres/arrondi';
+import {
+  mapperAuMoinsUn,
+  type AuMoinsUn,
+  type AuMoinsUnModifiable,
+} from '../../../../common/domain/au-moins-un';
+import { moyenne } from '../../../../common/domain/nombres/statistiques';
 import type { ConceptId } from '../../domain/cours/banque/concepts';
 import * as moteur from './briques';
 import {
-  auMillionieme,
   avecVirgule,
   colonneDeValeurs,
   colonneRecopiee,
@@ -111,7 +120,7 @@ export const PLAN_DES_VENTES = {
   ],
 };
 
-export const ATTENDUS_DES_VENTES: moteur.AuMoinsUn<AttenduDeFeuille> = [
+export const ATTENDUS_DES_VENTES: AuMoinsUnModifiable<AttenduDeFeuille> = [
   ...colonneRecopiee(
     {
       colonne: 'B',
@@ -183,7 +192,7 @@ const piegesDuMoisExact = (rang: number) =>
     [auMillionieme(part(OBJECTIFS[rang]) / K_DES_VENTES), SEUIL_PAR_DIVISION],
   ] as const;
 
-export const ATTENDUS_DES_OBJECTIFS: moteur.AuMoinsUn<AttenduDeFeuille> = [
+export const ATTENDUS_DES_OBJECTIFS: AuMoinsUnModifiable<AttenduDeFeuille> = [
   ...colonneRecopiee(
     {
       colonne: 'B',
@@ -221,22 +230,20 @@ interface Droite {
 }
 
 function moindresCarres(
-  abscisses: readonly number[],
-  ordonnees: readonly number[],
+  abscisses: AuMoinsUn<number>,
+  ordonnees: AuMoinsUn<number>,
 ): Droite {
-  const moyenne = (valeurs: readonly number[]): number =>
-    valeurs.reduce((total, valeur) => total + valeur, 0) / valeurs.length;
   const mx = moyenne(abscisses);
   const my = moyenne(ordonnees);
   const covariance = moyenne(
-    abscisses.map((x, rang) => (x - mx) * (ordonnees[rang] - my)),
+    mapperAuMoinsUn(abscisses, (x, rang) => (x - mx) * (ordonnees[rang] - my)),
   );
-  const variance = moyenne(abscisses.map((x) => (x - mx) ** 2));
+  const variance = moyenne(mapperAuMoinsUn(abscisses, (x) => (x - mx) ** 2));
   const pente = covariance / variance;
   return { pente, ordonnee: my - pente * mx };
 }
 
-const LOGARITHMES_DES_KITS = DEMANDES_DES_KITS.map((demande) =>
+const LOGARITHMES_DES_KITS = mapperAuMoinsUn(DEMANDES_DES_KITS, (demande) =>
   Math.log(demande),
 );
 const DROITE_DES_KITS = moindresCarres(PRIX_DES_KITS, LOGARITHMES_DES_KITS);
@@ -246,8 +253,6 @@ const DROITE_INVERSEE_DES_KITS = moindresCarres(
   PRIX_DES_KITS,
 );
 const COEFFICIENT_DES_KITS = Math.exp(DROITE_DES_KITS.ordonnee);
-
-const enDecimal = (valeur: number): string => String(valeur).replace('.', ',');
 
 export const FORMULE_DU_LOGARITHME = '=LN(B2)';
 export const FORMULE_DE_LA_PENTE = '=PENTE(C2:C7;A2:A7)';
@@ -263,8 +268,14 @@ const CELLULES_DES_KITS = {
   E1: 'Ordonnée à l’origine β',
   F1: 'Coefficient a = e^β',
   G1: 'Demande prévue à 40 € (centaines)',
-  ...colonneDeValeurs('A', PRIX_DES_KITS.map(enDecimal)),
-  ...colonneDeValeurs('B', DEMANDES_DES_KITS.map(enDecimal)),
+  ...colonneDeValeurs(
+    'A',
+    PRIX_DES_KITS.map((prix) => avecVirgule(prix)),
+  ),
+  ...colonneDeValeurs(
+    'B',
+    DEMANDES_DES_KITS.map((demande) => avecVirgule(demande)),
+  ),
 };
 
 export const PLAN_DES_KITS = {
@@ -282,7 +293,7 @@ export const PLAN_DES_KITS = {
   ],
 };
 
-export const ATTENDUS_DES_KITS: moteur.AuMoinsUn<AttenduDeFeuille> = [
+export const ATTENDUS_DES_KITS: AuMoinsUnModifiable<AttenduDeFeuille> = [
   ...colonneRecopiee(
     {
       colonne: 'C',
@@ -353,7 +364,7 @@ export const ATTENDUS_DES_KITS: moteur.AuMoinsUn<AttenduDeFeuille> = [
 
 type AttenduDeTableau = Parameters<typeof moteur.questionDeTableau>[2][number];
 
-const auMillieme = (valeur: number): number => Number(valeur.toFixed(3));
+const auMillieme = (valeur: number): number => arrondi(valeur, 3);
 
 export const [PREMIER_LOGARITHME, ...AUTRES_LOGARITHMES] =
   DEMANDES.map<AttenduDeTableau>((demande, rang) => ({

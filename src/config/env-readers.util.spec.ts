@@ -1,12 +1,37 @@
 import {
   envBool,
   envBrut,
+  envEntierBorne,
   envFloat,
   envInt,
+  envPort,
   envPremier,
   envString,
   envUnVrai,
 } from './env-readers.util';
+
+describe('envPort', () => {
+  it('lit le premier alias renseigne et le rend numerique', () => {
+    expect(envPort(['A_PORT', 'B_PORT'], 'de test', { B_PORT: ' 5433 ' })).toBe(
+      5433,
+    );
+  });
+
+  it('ne rend rien quand aucun alias n est renseigne', () => {
+    expect(envPort(['A_PORT'], 'de test', { A_PORT: ' ' })).toBeUndefined();
+  });
+
+  it.each(['abc', '5433x', '-1', '54.3'])(
+    'refuse un port qui n est pas un entier positif en nommant le service et ses alias (%p)',
+    (port) => {
+      expect(() =>
+        envPort(['A_PORT', 'B_PORT'], 'de test', { A_PORT: port }),
+      ).toThrow(
+        `Le port de test « ${port} » n'est pas un entier positif (A_PORT, B_PORT).`,
+      );
+    },
+  );
+});
 
 describe('env-readers.util', () => {
   const KEY = 'ENV_READERS_TEST_KEY';
@@ -100,6 +125,27 @@ describe('env-readers.util', () => {
     it.each(['', '   ', 42])('ignore la valeur %j', (valeur) => {
       expect(envBrut(KEY, { [KEY]: valeur })).toBeUndefined();
     });
+  });
+
+  describe('envEntierBorne', () => {
+    const bornes = { defaut: 90, min: 0, max: 1440 };
+
+    it.each([
+      ['absente', undefined, 90],
+      ['vide', '  ', 90],
+      ['entière dans les bornes', ' 120 ', 120],
+      ['au plancher', '0', 0],
+      ['au plafond', '1440', 1440],
+      ['sous le plancher', '-1', 90],
+      ['au-dessus du plafond', '1441', 90],
+      ['décimale', '1.5', 90],
+      ['non numérique', '12abc', 90],
+    ])(
+      'rend le défaut ou la valeur quand elle est %s',
+      (_cas, brut, attendu) => {
+        expect(envEntierBorne(KEY, bornes, { [KEY]: brut })).toBe(attendu);
+      },
+    );
   });
 
   describe('envUnVrai', () => {

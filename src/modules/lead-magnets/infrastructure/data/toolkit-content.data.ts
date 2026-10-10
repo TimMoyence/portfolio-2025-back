@@ -1,11 +1,13 @@
-export interface CheatsheetDataEntry {
+import type {
+  CheatsheetEntry,
+  PromptEntry,
+  TemplateEntry,
+  WorkflowEntry,
+} from '../../domain/ToolkitContent';
+
+type CheatsheetDataEntry = Omit<CheatsheetEntry, 'tool' | 'alreadyUsed'> & {
   id: string;
-  category: string;
-  price: string;
-  url: string;
-  tip: string;
-  decision: string;
-}
+};
 
 export const CHEATSHEET_DATA: CheatsheetDataEntry[] = [
   {
@@ -167,18 +169,7 @@ export const CHEATSHEET_DATA: CheatsheetDataEntry[] = [
   },
 ];
 
-export interface PromptDataEntry {
-  category: string;
-  title: string;
-  level: 'debutant' | 'intermediaire' | 'avance';
-  prompt: string;
-  tool: string;
-  description: string;
-  example: string;
-  tip: string;
-}
-
-export const PROMPTS_DATA: PromptDataEntry[] = [
+export const PROMPTS_DATA: Required<PromptEntry>[] = [
   {
     category: 'Prospection',
     title: 'Message LinkedIn de premier contact',
@@ -677,23 +668,7 @@ Humain, authentique, jamais "client value automation". Chaque email doit donner 
   },
 ];
 
-interface WorkflowStepData {
-  step: number;
-  action: string;
-  tool: string;
-  detail: string;
-}
-
-export interface WorkflowDataEntry {
-  title: string;
-  description: string;
-  setupTime: string;
-  monthlyCost: number;
-  steps: WorkflowStepData[];
-  tools: string[];
-}
-
-export const WORKFLOWS_DATA: WorkflowDataEntry[] = [
+export const WORKFLOWS_DATA: WorkflowEntry[] = [
   {
     title: 'Prospection LinkedIn → CRM → sequence email auto',
     description:
@@ -859,15 +834,7 @@ export const WORKFLOWS_DATA: WorkflowDataEntry[] = [
   },
 ];
 
-export interface TemplateDataEntry {
-  name: string;
-  platform: string;
-  url: string;
-  description: string;
-  minBudget: number;
-}
-
-export const TEMPLATES_DATA: TemplateDataEntry[] = [
+export const TEMPLATES_DATA: TemplateEntry[] = [
   {
     name: 'CRM Solopreneur',
     platform: 'Notion',

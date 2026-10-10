@@ -1,5 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import type { ClientReportSynthesis } from '../../domain/AuditReportTiers';
+import { arrondi } from '../../../../common/domain/nombres/arrondi';
+import { borner } from '../../../../common/domain/nombres/borner';
+import { compacterBlancs } from '../../../../common/domain/texte/compacter-blancs';
+import type {
+  ClientReportSynthesis,
+  FindingImpact,
+  ReportSeverity,
+} from '../../domain/AuditReportTiers';
 import { AuditLocale } from '../../domain/audit-locale.util';
 import { hasLanguageMismatch } from './report-quality-gate/language-check.util';
 import {
@@ -7,16 +14,19 @@ import {
   validateExpertReport as runExpertTierValidation,
   type TierValidationResult,
 } from './report-quality-gate/tier-validators';
+import type {
+  ExpertReport,
+  TechFingerprint,
+} from './schemas/audit-report.schemas';
 import { priorityFromFinding } from './shared/finding-priority.util';
 import { localizedText } from './shared/locale-text.util';
+import { normalizeSeverity } from './shared/severity.util';
 import {
   ACTIONABLE_PILLARS,
   type ActionablePillarKey,
 } from './scoring.service';
 
 export type { TierValidationResult };
-
-type PrioritySeverity = 'high' | 'medium' | 'low';
 
 const PILLAR_DEGRADED_SCORE = 65;
 
@@ -114,103 +124,9 @@ const PILLAR_ACTION_TEMPLATES: Record<
   },
 };
 
-export interface ExpertPriority {
-  title: string;
-  severity: PrioritySeverity;
-  whyItMatters: string;
-  recommendedFix: string;
-  estimatedHours: number;
-}
+type ExpertPriority = ExpertReport['priorities'][number];
 
-export interface DiagnosticChaptersShape {
-  conversionAndClarity: string;
-  speedAndPerformance: string;
-  seoFoundations: string;
-  credibilityAndTrust: string;
-  techAndScalability: string;
-  scorecardAndBusinessOpportunities: string;
-}
-
-export interface TechFingerprintShape {
-  primaryStack: string;
-  confidence: number;
-  evidence: string[];
-  alternatives: string[];
-  unknowns: string[];
-}
-
-interface ClientEmailDraftShape {
-  subject: string;
-  body: string;
-}
-
-export interface ExpertReportShape {
-  executiveSummary: string;
-  reportExplanation: string;
-  strengths: string[];
-  diagnosticChapters: DiagnosticChaptersShape;
-  techFingerprint: TechFingerprintShape;
-  /**
-   * Laissé en `unknown[]` pour découpler la shape du gate du type Zod
-   * interne de `langchain-audit-report.service.ts`. Le gate valide les
-   * champs via `validateExpertReport`.
-   */
-  perPageAnalysis: unknown[];
-  clientEmailDraft: ClientEmailDraftShape;
-  internalNotes: string;
-  priorities: ExpertPriority[];
-  urlLevelImprovements: Array<{
-    url: string;
-    issue: string;
-    recommendation: string;
-    impact: 'high' | 'medium' | 'low';
-  }>;
-  implementationTodo: Array<{
-    phase: string;
-    objective: string;
-    deliverable: string;
-    estimatedHours: number;
-    dependencies: string[];
-  }>;
-  whatToFixThisWeek: Array<{
-    task: string;
-    goal: string;
-    estimatedHours: number;
-    risk: string;
-    dependencies: string[];
-  }>;
-  whatToFixThisMonth: Array<{
-    task: string;
-    goal: string;
-    estimatedHours: number;
-    risk: string;
-    dependencies: string[];
-  }>;
-  clientMessageTemplate: string;
-  clientLongEmail: string;
-  fastImplementationPlan: Array<{
-    task: string;
-    whyItMatters: string;
-    implementationSteps: string[];
-    estimatedHours: number;
-    expectedImpact: string;
-    priority: PrioritySeverity;
-  }>;
-  implementationBacklog: Array<{
-    task: string;
-    priority: PrioritySeverity;
-    details: string;
-    estimatedHours: number;
-    dependencies: string[];
-    acceptanceCriteria: string[];
-  }>;
-  invoiceScope: Array<{
-    item: string;
-    description: string;
-    estimatedHours: number;
-  }>;
-  [key: string]: unknown;
-}
+type DiagnosticChapters = ExpertReport['diagnosticChapters'];
 
 export interface ReportQualityGateContext {
   locale: AuditLocale;
@@ -222,14 +138,14 @@ export interface ReportQualityGateContext {
     title: string;
     description: string;
     recommendation: string;
-    severity: PrioritySeverity;
-    impact: 'traffic' | 'indexation' | 'conversion';
+    severity: ReportSeverity;
+    impact: FindingImpact;
   }>;
 }
 
 export interface ReportQualityGateResult {
   summaryText: string;
-  report: ExpertReportShape;
+  report: ExpertReport;
   valid: boolean;
   reasons: string[];
 }
@@ -241,7 +157,7 @@ export class ReportQualityGateService {
 
   apply(
     summaryText: string,
-    report: ExpertReportShape,
+    report: ExpertReport,
     context: ReportQualityGateContext,
   ): ReportQualityGateResult {
     const reasons: string[] = [];
@@ -259,7 +175,7 @@ export class ReportQualityGateService {
       reasons.push('missing_summary_text');
     }
 
-    const normalizedReport: ExpertReportShape = {
+    const normalizedReport: ExpertReport = {
       ...report,
       executiveSummary: this.requireText(
         report.executiveSummary,
@@ -586,7 +502,7 @@ export class ReportQualityGateService {
 
     return {
       title,
-      severity: this.normalizeSeverity(entry.severity),
+      severity: normalizeSeverity(entry.severity),
       whyItMatters,
       recommendedFix,
       estimatedHours: this.normalizeHours(entry.estimatedHours, 3),
@@ -594,9 +510,9 @@ export class ReportQualityGateService {
   }
 
   private normalizeDiagnosticChapters(
-    chapters: Partial<DiagnosticChaptersShape> | undefined,
+    chapters: Partial<DiagnosticChapters> | undefined,
     locale: AuditLocale,
-  ): DiagnosticChaptersShape {
+  ): DiagnosticChapters {
     return {
       conversionAndClarity:
         this.cleanText(chapters?.conversionAndClarity) ||
@@ -644,16 +560,16 @@ export class ReportQualityGateService {
   }
 
   private normalizeTechFingerprint(
-    value: Partial<TechFingerprintShape> | undefined,
+    value: Partial<TechFingerprint> | undefined,
     locale: AuditLocale,
-  ): TechFingerprintShape {
+  ): TechFingerprint {
     const confidence = Number(value?.confidence);
     return {
       primaryStack:
         this.cleanText(value?.primaryStack) ||
         localizedText(locale, 'Non verifiable', 'Not verifiable'),
       confidence: Number.isFinite(confidence)
-        ? Math.max(0, Math.min(1, Math.round(confidence * 100) / 100))
+        ? borner(arrondi(confidence, 2), 0, 1)
         : 0,
       evidence: this.normalizeStringArray(value?.evidence).slice(0, 8),
       alternatives: this.normalizeStringArray(value?.alternatives).slice(0, 4),
@@ -662,23 +578,23 @@ export class ReportQualityGateService {
   }
 
   private normalizeUrlLevelImprovements(
-    entries: ExpertReportShape['urlLevelImprovements'],
-  ): ExpertReportShape['urlLevelImprovements'] {
+    entries: ExpertReport['urlLevelImprovements'],
+  ): ExpertReport['urlLevelImprovements'] {
     return this.normaliserLesEntrees(
       entries,
       (entry) => ({
         url: this.cleanText(entry?.url),
         issue: this.cleanText(entry?.issue),
         recommendation: this.cleanText(entry?.recommendation),
-        impact: this.normalizeSeverity(entry?.impact),
+        impact: normalizeSeverity(entry?.impact),
       }),
       (entry) => entry.url && entry.issue && entry.recommendation,
     );
   }
 
   private normalizeImplementationTodo(
-    entries: ExpertReportShape['implementationTodo'],
-  ): ExpertReportShape['implementationTodo'] {
+    entries: ExpertReport['implementationTodo'],
+  ): ExpertReport['implementationTodo'] {
     return this.normaliserLesEntrees(
       entries,
       (entry, index) => ({
@@ -693,9 +609,9 @@ export class ReportQualityGateService {
   }
 
   private normalizePlan(
-    entries: ExpertReportShape['whatToFixThisWeek'],
+    entries: ExpertReport['whatToFixThisWeek'],
     locale: AuditLocale,
-  ): ExpertReportShape['whatToFixThisWeek'] {
+  ): ExpertReport['whatToFixThisWeek'] {
     return this.normaliserLesEntrees(
       entries,
       (entry) => ({
@@ -718,8 +634,8 @@ export class ReportQualityGateService {
   }
 
   private normalizeFastPlan(
-    entries: ExpertReportShape['fastImplementationPlan'],
-  ): ExpertReportShape['fastImplementationPlan'] {
+    entries: ExpertReport['fastImplementationPlan'],
+  ): ExpertReport['fastImplementationPlan'] {
     return this.normaliserLesEntrees(
       entries,
       (entry) => ({
@@ -730,20 +646,20 @@ export class ReportQualityGateService {
         ),
         estimatedHours: this.normalizeHours(entry?.estimatedHours, 3),
         expectedImpact: this.cleanText(entry?.expectedImpact),
-        priority: this.normalizeSeverity(entry?.priority),
+        priority: normalizeSeverity(entry?.priority),
       }),
       (entry) => entry.task && entry.whyItMatters && entry.expectedImpact,
     );
   }
 
   private normalizeBacklog(
-    entries: ExpertReportShape['implementationBacklog'],
-  ): ExpertReportShape['implementationBacklog'] {
+    entries: ExpertReport['implementationBacklog'],
+  ): ExpertReport['implementationBacklog'] {
     return this.normaliserLesEntrees(
       entries,
       (entry) => ({
         task: this.cleanText(entry?.task),
-        priority: this.normalizeSeverity(entry?.priority),
+        priority: normalizeSeverity(entry?.priority),
         details: this.cleanText(entry?.details),
         estimatedHours: this.normalizeHours(entry?.estimatedHours, 4),
         dependencies: this.normalizeStringArray(entry?.dependencies),
@@ -756,8 +672,8 @@ export class ReportQualityGateService {
   }
 
   private normalizeInvoiceScope(
-    entries: ExpertReportShape['invoiceScope'],
-  ): ExpertReportShape['invoiceScope'] {
+    entries: ExpertReport['invoiceScope'],
+  ): ExpertReport['invoiceScope'] {
     return this.normaliserLesEntrees(
       entries,
       (entry, index) => ({
@@ -800,22 +716,14 @@ export class ReportQualityGateService {
   }
 
   private cleanText(value: unknown): string {
-    if (typeof value !== 'string') return '';
-    return value.replace(/\s+/g, ' ').trim();
+    return typeof value === 'string' ? compacterBlancs(value) : '';
   }
 
   private normalizeHours(value: unknown, fallback: number): number {
     if (typeof value !== 'number' || !Number.isFinite(value) || value <= 0) {
       return fallback;
     }
-    return Math.round(value * 10) / 10;
-  }
-
-  private normalizeSeverity(value: unknown): PrioritySeverity {
-    const normalized = typeof value === 'string' ? value.toLowerCase() : '';
-    if (normalized === 'high') return 'high';
-    if (normalized === 'low') return 'low';
-    return 'medium';
+    return arrondi(value, 1);
   }
 
   validateClientReport(report: ClientReportSynthesis): TierValidationResult {

@@ -1,3 +1,5 @@
+import type { AuMoinsUn } from '../../../../common/domain/au-moins-un';
+import { auMillionieme } from '../../../../common/domain/nombres/arrondi';
 import { valeursAmbigues } from '../GradingCore';
 import type { AnswerValue, Solution } from '../GradingCore';
 import type { Cours, Ecran, Question } from '../contrats/cours';
@@ -20,7 +22,6 @@ import type { ConfusionId } from './banque/confusions';
 import { ecranCorrigePar, ecransCorrigeantDe } from './Corrections';
 import { estInteractif, estReservee } from './Cours';
 import type {
-  AuMoinsUn,
   PieceJointeServie,
   QuestionNumerique,
   QuestionVote,
@@ -269,7 +270,7 @@ function enregistrerNumerique(
   contexte.corriges.push([
     question.id,
     corrige(
-      question.formePubliee ?? String(Number(tiree.solution.toFixed(6))),
+      question.formePubliee ?? String(auMillionieme(tiree.solution)),
       tiree.pieges,
     ),
   ]);

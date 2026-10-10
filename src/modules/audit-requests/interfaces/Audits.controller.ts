@@ -6,7 +6,6 @@ import {
   MessageEvent,
   Param,
   ParseUUIDPipe,
-  Optional,
   Req,
   Sse,
 } from '@nestjs/common';
@@ -24,18 +23,14 @@ import type { Request } from 'express';
 import { provenanceDeLaRequete } from '../../../common/interfaces/security/client-ip.util';
 import { FormulairePublic } from '../../../common/interfaces/security/formulaire-public.decorator';
 import { CreateAuditRequestCommand } from '../application/dto/CreateAuditRequest.command';
-import {
-  AuditLocale,
-  localeFromUrlPath,
-  resolveAuditLocale,
-} from '../domain/audit-locale.util';
+import { LocaleCode } from '../../../common/domain/value-objects/LocaleCode';
+import { AuditLocale, localeFromUrlPath } from '../domain/audit-locale.util';
 import { CreateAuditRequestsUseCase } from '../application/CreateAuditRequests.useCase';
 import { GetAuditSummaryUseCase } from '../application/GetAuditSummary.useCase';
 import { StreamAuditEventsUseCase } from '../application/StreamAuditEvents.useCase';
 import { AuditRequestRequestDto } from './dto/audit-request.request.dto';
 import { AuditRequestResponseDto } from './dto/audit-request.response.dto';
 import { AuditSummaryResponseDto } from './dto/audit-summary.response.dto';
-import { PublicFormProtectionService } from '../../../common/interfaces/security/public-form-protection.service';
 
 @ApiTags('audits')
 @Controller('audits')
@@ -44,8 +39,6 @@ export class AuditsController {
     private readonly createUseCase: CreateAuditRequestsUseCase,
     private readonly summaryUseCase: GetAuditSummaryUseCase,
     private readonly streamUseCase: StreamAuditEventsUseCase,
-    @Optional()
-    private readonly formProtection = new PublicFormProtectionService(),
   ) {}
 
   @FormulairePublic(3)
@@ -58,10 +51,6 @@ export class AuditsController {
     @Body() dto: AuditRequestRequestDto,
     @Req() req: Request,
   ): Promise<AuditRequestResponseDto> {
-    this.formProtection.assertHuman({
-      honeypot: dto.website,
-      formStartedAt: dto.formStartedAt,
-    });
     const command: CreateAuditRequestCommand = {
       websiteName: dto.websiteName,
       contactMethod: dto.contactMethod,
@@ -114,9 +103,8 @@ export class AuditsController {
   }
 
   private resolveLocale(requestedLocale: unknown, req: Request): AuditLocale {
-    const explicit = resolveAuditLocale(requestedLocale, 'fr');
     if (requestedLocale) {
-      return explicit;
+      return LocaleCode.resolve(requestedLocale).value;
     }
 
     const referer = req.get('referer');
@@ -131,8 +119,6 @@ export class AuditsController {
       }
     }
 
-    const acceptLanguage = req.get('accept-language');
-
-    return resolveAuditLocale(acceptLanguage, 'fr');
+    return LocaleCode.resolve(req.get('accept-language')).value;
   }
 }

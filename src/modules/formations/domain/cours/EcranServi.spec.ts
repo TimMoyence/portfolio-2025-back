@@ -26,6 +26,7 @@ import {
   assertCorrectionNonProjetee,
   assertEcranServi,
   dernierEcranServi,
+  ecranParId,
   pieceJointeServieAuPoste,
   rangDeLaQuestion,
   rangDeLEcran,
@@ -107,6 +108,18 @@ describe('assertEcranServi', () => {
     expect(new EcranNonServiError('E-CONCEPT')).toBeInstanceOf(
       ResourceNotFoundError,
     );
+  });
+});
+
+describe('ecranParId', () => {
+  it('rend l ecran vise', () => {
+    const cours = buildCoursDeTest();
+
+    expect(ecranParId(cours, 'E-NUM')).toBe(cours.ecrans[2]);
+  });
+
+  it('ne rend rien pour un ecran inconnu', () => {
+    expect(ecranParId(buildCoursDeTest(), 'E-INCONNU')).toBeUndefined();
   });
 });
 

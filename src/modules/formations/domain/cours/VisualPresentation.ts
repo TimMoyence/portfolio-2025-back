@@ -1,8 +1,7 @@
 import { z } from 'zod';
-import { media, texte } from './SchemasCommuns';
+import { auMoinsUn, media, signaleurDe, texte } from './SchemasCommuns';
 
 const strict = <F extends z.ZodRawShape>(forme: F) => z.object(forme).strict();
-const auMoinsUn = <T extends z.ZodType>(element: T) => z.array(element).min(1);
 const rendu = <R extends string, P extends z.ZodType>(renderer: R, props: P) =>
   strict({ renderer: z.literal(renderer), props });
 
@@ -74,11 +73,10 @@ const boiteAMoustaches = strict({
 }).superRefine(({ axisRange: [debut, fin], series }, contexte) => {
   for (const [position, { min, max }] of series.entries()) {
     if (min < debut || max > fin) {
-      contexte.addIssue({
-        code: 'custom',
-        path: ['series', position],
-        message: `série hors de l’axe [${debut} ; ${fin}]`,
-      });
+      signaleurDe(contexte)(
+        ['series', position],
+        `série hors de l’axe [${debut} ; ${fin}]`,
+      );
     }
   }
 });
@@ -100,23 +98,16 @@ const nuageDePoints = strict({
   source: texte.optional(),
   description: texte,
 }).superRefine(({ xRange, yRange, points, meanPoint }, contexte) => {
+  const signaler = signaleurDe(contexte);
   const dansLesAxes = ({ x, y }: { x: number; y: number }): boolean =>
     x >= xRange[0] && x <= xRange[1] && y >= yRange[0] && y <= yRange[1];
   for (const [position, point] of points.entries()) {
     if (!dansLesAxes(point)) {
-      contexte.addIssue({
-        code: 'custom',
-        path: ['points', position],
-        message: 'point hors des axes',
-      });
+      signaler(['points', position], 'point hors des axes');
     }
   }
   if (meanPoint !== undefined && !dansLesAxes(meanPoint)) {
-    contexte.addIssue({
-      code: 'custom',
-      path: ['meanPoint'],
-      message: 'point moyen hors des axes',
-    });
+    signaler(['meanPoint'], 'point moyen hors des axes');
   }
 });
 const BLOCS_MAXIMUM_D_UNE_LECON = 4;
@@ -143,11 +134,10 @@ const correctionDeTri = strict({
   const connues = new Set(categories.map(({ id }) => id));
   for (const [position, carte] of cards.entries()) {
     if (!connues.has(carte.category)) {
-      contexte.addIssue({
-        code: 'custom',
-        path: ['cards', position, 'category'],
-        message: `catégorie ${carte.category} absente de la correction`,
-      });
+      signaleurDe(contexte)(
+        ['cards', position, 'category'],
+        `catégorie ${carte.category} absente de la correction`,
+      );
     }
   }
 });
@@ -215,7 +205,7 @@ export const presentationVisuelle = z.discriminatedUnion('renderer', [
     'lesson',
     strict({
       ...titled,
-      blocks: auMoinsUn(blocDeLecon).max(BLOCS_MAXIMUM_D_UNE_LECON),
+      blocks: z.array(blocDeLecon).min(1).max(BLOCS_MAXIMUM_D_UNE_LECON),
     }),
   ),
   rendu(

@@ -1,3 +1,5 @@
+import { arrondi } from '../../src/common/domain/nombres/arrondi';
+import { somme } from '../../src/common/domain/nombres/statistiques';
 import type {
   Cours,
   Ecran,
@@ -51,11 +53,13 @@ export function acteDe(ecran: Ecran): number {
   return Number(ecran.id.charAt(RANG_DU_NUMERO_D_ACTE));
 }
 
+function minutesDes(ecrans: readonly Ecran[]): number {
+  return somme(ecrans.map((ecran) => ecran.dureeMinutes));
+}
+
 export function minutesParActe(cours: Cours): number[] {
   return [1, 2, 3, 4, 5, 6].map((acte) =>
-    cours.ecrans
-      .filter((ecran) => acteDe(ecran) === acte)
-      .reduce((total, ecran) => total + ecran.dureeMinutes, 0),
+    minutesDes(cours.ecrans.filter((ecran) => acteDe(ecran) === acte)),
   );
 }
 
@@ -71,9 +75,9 @@ export function rythmeDuCours(cours: Cours): {
     expositionContinueMax = Math.max(expositionContinueMax, bloc);
   }
   const minutes = (interactif: boolean): number =>
-    cours.ecrans
-      .filter((ecran) => estInteractif(ecran) === interactif)
-      .reduce((total, ecran) => total + ecran.dureeMinutes, 0);
+    minutesDes(
+      cours.ecrans.filter((ecran) => estInteractif(ecran) === interactif),
+    );
   return {
     expositionContinueMax,
     interactives: minutes(true),
@@ -86,10 +90,6 @@ export function ateliersNotes(cours: Cours): string[] {
     .slice(1, -1)
     .filter((ecran) => questionsDe(ecran).some(estFermeeNotee))
     .map((ecran) => `${ecran.id.slice(6, 11)} (${ecran.dureeMinutes})`);
-}
-
-export function arrondi(valeur: number, decimales = 6): number {
-  return Number(valeur.toFixed(decimales));
 }
 
 function decimalesEcrites(valeur: number): number {

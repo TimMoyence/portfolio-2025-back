@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { load } from 'cheerio';
+import { compterMots } from '../../../../common/domain/texte/compter-mots';
 import type { CitationWorthinessScore } from '../../domain/AiIndexability';
+import { scoreSur100 } from '../../domain/score-sur-100';
 
 const TRUSTED_DOMAINS: ReadonlyArray<string> = [
   'nature.com',
@@ -33,9 +35,9 @@ export class CitationWorthinessService {
     const hasDates = $('time[datetime]').length > 0;
     const pageHost = this.safeHost(pageUrl);
     const hasSources = this.detectSources($, pageHost);
-    const bodyText = $('body').text().replace(/\s+/g, ' ').trim();
+    const bodyText = $('body').text();
     const hasFacts = FACT_PATTERN.test(bodyText);
-    const wordCount = bodyText.length === 0 ? 0 : bodyText.split(' ').length;
+    const wordCount = compterMots(bodyText);
     const contentDensity = this.densityBucket(wordCount);
     const hasStructuredHeadings = $('h1').length > 0 && $('h2').length > 0;
 
@@ -46,7 +48,7 @@ export class CitationWorthinessService {
     if (hasFacts) score += 15;
     if (contentDensity === 'high') score += 15;
     if (hasStructuredHeadings) score += 10;
-    score = Math.max(0, Math.min(100, score));
+    score = scoreSur100(score);
 
     return {
       score,

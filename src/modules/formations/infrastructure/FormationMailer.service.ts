@@ -17,6 +17,10 @@ import type {
 
 const BOM_UTF8 = '﻿';
 
+function noteSur20(note: number): string {
+  return `${note.toFixed(1)}/20`;
+}
+
 function verdictDe(reponse: RapportQuestion): string {
   if (reponse.correcte) {
     return "c'est juste";
@@ -73,7 +77,7 @@ export class FormationMailerService
           <h2>Bonjour ${escapeHtml(participant.prenom)},</h2>
           <p>Voici le détail de vos réponses pour la session ${escapeHtml(copie.code)}.</p>
           <p>
-            Note obtenue : <strong>${escapeHtml(participant.note.toFixed(1))}/20</strong>
+            Note obtenue : <strong>${escapeHtml(noteSur20(participant.note))}</strong>
             (complétion ${Math.round(participant.completion * 100)}%).
           </p>
           <ul>${this.copieReponsesHtml(participant.reponses)}</ul>
@@ -111,7 +115,7 @@ export class FormationMailerService
       lignes.push(
         `${participant.prenom} ${participant.nom} : complétion ` +
           `${Math.round(participant.completion * 100)}%, note ` +
-          `${participant.note.toFixed(1)}/20` +
+          noteSur20(participant.note) +
           `${participant.sousSeuil ? ' (sous le seuil)' : ''}.`,
       );
     }
@@ -129,7 +133,7 @@ export class FormationMailerService
       (participant) => safeHtml`<tr>
           <td style="padding:4px 8px;">${escapeHtml(participant.prenom)} ${escapeHtml(participant.nom)}</td>
           <td style="padding:4px 8px;">${Math.round(participant.completion * 100)}%</td>
-          <td style="padding:4px 8px;">${escapeHtml(participant.note.toFixed(1))}/20</td>
+          <td style="padding:4px 8px;">${escapeHtml(noteSur20(participant.note))}</td>
         </tr>`,
     );
     return safeHtml`
@@ -153,7 +157,7 @@ export class FormationMailerService
       `Bonjour ${participant.prenom},`,
       '',
       'Voici le détail de vos réponses pour cette session.',
-      `Note obtenue : ${participant.note.toFixed(1)}/20.`,
+      `Note obtenue : ${noteSur20(participant.note)}.`,
       '',
       ...participant.reponses.map(
         (reponse) =>

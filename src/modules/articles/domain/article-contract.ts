@@ -1,5 +1,5 @@
-import { createHash } from 'node:crypto';
 import { z } from 'zod';
+import { empreinteSha256 } from '../../../common/domain/crypto/empreintes';
 
 const dateTime = z
   .string()
@@ -78,10 +78,10 @@ const articleSchema = z
   })
   .strict()
   .superRefine((article, context) => {
-    const hash = createHash('sha256')
-      .update(article.content_markdown)
-      .digest('hex');
-    if (hash !== article.provenance.content_sha256) {
+    if (
+      empreinteSha256(article.content_markdown) !==
+      article.provenance.content_sha256
+    ) {
       context.addIssue({
         code: 'custom',
         path: ['provenance', 'content_sha256'],

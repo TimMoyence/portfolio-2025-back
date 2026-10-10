@@ -1,6 +1,6 @@
+import type { AuMoinsUn } from '../../../../common/domain/au-moins-un';
 import type { Tolerance } from '../GradingCore';
 import type { SheetPlanStocke } from '../contrats/cours';
-import type { AuMoinsUn } from './Cours';
 import type { ValeurFormule } from './Formule';
 import type { ConfusionId } from './banque/confusions';
 

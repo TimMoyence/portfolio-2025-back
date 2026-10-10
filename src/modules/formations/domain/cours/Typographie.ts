@@ -1,3 +1,5 @@
+import { estObjet } from '../../../../common/domain/est-objet';
+
 export const ESPACE_INSECABLE = String.fromCodePoint(0xa0);
 
 const MILLIERS = /(?<!\d)(\d{1,3}) (?=\d{3}(?!\d))/g;
@@ -54,7 +56,7 @@ export function typographierEnProfondeur<T>(valeur: T): T {
       typographierEnProfondeur(element),
     ) as T;
   }
-  if (valeur !== null && typeof valeur === 'object') {
+  if (estObjet(valeur)) {
     return Object.fromEntries(
       Object.entries(valeur).map(([cle, contenu]) => [
         cle,

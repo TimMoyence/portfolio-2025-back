@@ -5,41 +5,45 @@ import {
   attendreLesNumeriques,
   corrigeDe,
   decrireLaFicheDuCours,
-  pointsImprimes,
+  decrireLaMiniSituation,
   valeursEtPieges,
 } from '../../../../../test/helpers/fiche-de-cours';
+import {
+  exigerAuMoinsUn,
+  type AuMoinsUn,
+} from '../../../../common/domain/au-moins-un';
+import { nombreFrancais } from '../../../../common/domain/nombres/ecriture-francaise';
+import {
+  ecartTypePopulation,
+  mediane,
+  moyenne,
+  somme,
+} from '../../../../common/domain/nombres/statistiques';
 import { COURS_B2_02 } from './b2-02.cours';
 
 const COURS = buildCoursDuContenu(COURS_B2_02);
 
-const DELAIS = [
+const DELAIS: AuMoinsUn<number> = [
   42, 25, 58, 31, 146, 38, 47, 18, 62, 44, 35, 52, 28, 75, 40, 30, 55, 34, 50,
   45,
 ];
-const RANGS_RIVAGE = [1, 2, 3, 4, 5, 6];
-const CA_RIVAGE = [610, 652, 694, 736, 790, 826];
-const RANGS_FIBRE = [1, 2, 3, 4, 5];
-const FIBRE = [10.3, 14.5, 18.1, 21.4, 24.4];
+const RANGS_RIVAGE: AuMoinsUn<number> = [1, 2, 3, 4, 5, 6];
+const CA_RIVAGE: AuMoinsUn<number> = [610, 652, 694, 736, 790, 826];
+const RANGS_FIBRE: AuMoinsUn<number> = [1, 2, 3, 4, 5];
+const FIBRE: AuMoinsUn<number> = [10.3, 14.5, 18.1, 21.4, 24.4];
 const FIBRE_FIN_2025 = 27.1;
 const ANNEE_DU_RANG_1 = 2020;
 
-const somme = (valeurs: readonly number[]): number =>
-  valeurs.reduce((total, valeur) => total + valeur, 0);
-const moyenne = (valeurs: readonly number[]): number =>
-  somme(valeurs) / valeurs.length;
 const trie = (valeurs: readonly number[]): number[] =>
   [...valeurs].sort((a, b) => a - b);
 const milieu = (valeurs: readonly number[]): number =>
   (valeurs[valeurs.length / 2 - 1] + valeurs[valeurs.length / 2]) / 2;
-const mediane = (valeurs: readonly number[]): number => milieu(trie(valeurs));
-const variance = (valeurs: readonly number[], diviseur: number): number =>
+const variance = (valeurs: AuMoinsUn<number>, diviseur: number): number =>
   somme(valeurs.map((valeur) => (valeur - moyenne(valeurs)) ** 2)) / diviseur;
-const ecartType = (valeurs: readonly number[]): number =>
-  Math.sqrt(variance(valeurs, valeurs.length));
-const ecartTypeEchantillon = (valeurs: readonly number[]): number =>
+const ecartTypeEchantillon = (valeurs: AuMoinsUn<number>): number =>
   Math.sqrt(variance(valeurs, valeurs.length - 1));
 
-function ajustement(x: readonly number[], y: readonly number[]) {
+function ajustement(x: AuMoinsUn<number>, y: AuMoinsUn<number>) {
   const covariance =
     somme(x.map((xi, rang) => (xi - moyenne(x)) * (y[rang] - moyenne(y)))) /
     x.length;
@@ -103,9 +107,9 @@ decrireLaFicheDuCours('B2-02', COURS, {
   ],
 });
 
-const FACTURES_DE_SEPTEMBRE = [28, 41, 35, 90, 33, 39, 44, 30];
-const POINTS_DE_LA_QUESTION_TABLEUR = 3;
-const POINTS_DE_LA_MINI_SITUATION = 10;
+const FACTURES_DE_SEPTEMBRE: AuMoinsUn<number> = [
+  28, 41, 35, 90, 33, 39, 44, 30,
+];
 
 function texteDeLEcran(screenId: string): string {
   const ecran = COURS_B2_02.ecrans.find(
@@ -116,9 +120,6 @@ function texteDeLEcran(screenId: string): string {
   }
   return JSON.stringify(ecran);
 }
-
-const enFrancais = (valeur: number): string =>
-  valeur.toLocaleString('fr-FR', { maximumFractionDigits: 2 });
 
 const ILLUSTRATION_DE_CHAQUE_TRACE_ECRITE: Readonly<Record<string, string>> = {
   'B2-02-A1-06-COURS-RESUMER': 'cinq-factures.webp',
@@ -156,7 +157,7 @@ describe('B2-02 — textes relus contre les données et le programme', () => {
       moyenne(FACTURES_DE_SEPTEMBRE) - mediane(FACTURES_DE_SEPTEMBRE);
 
     expect(texteDeLEcran('B2-02-A1-07-EXEMPLE-RESUME')).toContain(
-      `${enFrancais(ecart)} jours au-dessus de la médiane`,
+      `${nombreFrancais(ecart, 1)} jours au-dessus de la médiane`,
     );
   });
 
@@ -180,20 +181,12 @@ describe('B2-02 — textes relus contre les données et le programme', () => {
       '"intituleDesLignes":"Année"',
     );
   });
+});
 
-  it('note chaque énigme de la mini-situation, tableur compris, sur dix points imprimés au sujet', () => {
-    const pointsDe = (screenId: string): number[] =>
-      pointsImprimes(texteDeLEcran(screenId));
-    const enigmes = pointsDe('B2-02-A4-03-COFFRE-FIBRE');
-
-    expect(enigmes).toHaveLength(4);
-    expect(new Set(pointsDe('B2-02-A4-02-TABLEUR-FIBRE'))).toEqual(
-      new Set([POINTS_DE_LA_QUESTION_TABLEUR]),
-    );
-    expect(somme(enigmes) + POINTS_DE_LA_QUESTION_TABLEUR).toBe(
-      POINTS_DE_LA_MINI_SITUATION,
-    );
-  });
+decrireLaMiniSituation('B2-02', COURS_B2_02, {
+  donneesFictives: ['B2-02-A1-04-FACTURES', 'B2-02-A2-01-NUAGE-RIVAGE'],
+  coffre: 'B2-02-A4-03-COFFRE-FIBRE',
+  tableur: 'B2-02-A4-02-TABLEUR-FIBRE',
 });
 
 describe('B2-02 — recalcul des corrigés depuis les données brutes', () => {
@@ -206,7 +199,10 @@ describe('B2-02 — recalcul des corrigés depuis les données brutes', () => {
   ): number => pente * x + ordonnee;
 
   it('recalcule les solutions et pièges des dix questions numériques', () => {
-    const sansLitige = DELAIS.filter((delai) => delai !== 146);
+    const sansLitige = exigerAuMoinsUn(
+      DELAIS.filter((delai) => delai !== 146),
+      'aucun délai sans litige',
+    );
     const seuilRivage = premierRangAtteignant(1000, rivage);
     attendreLesNumeriques(COURS, {
       'b2-02-a1-mediane': [
@@ -221,7 +217,7 @@ describe('B2-02 — recalcul des corrigés depuis les données brutes', () => {
         mediane(DELAIS),
       ],
       'b2-02-a1-ecart-type': [
-        ecartType(DELAIS),
+        ecartTypePopulation(DELAIS),
         ecartTypeEchantillon(DELAIS),
         variance(DELAIS, DELAIS.length),
       ],

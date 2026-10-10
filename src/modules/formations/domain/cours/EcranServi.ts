@@ -99,6 +99,10 @@ export function pieceJointeServieAuPoste(
   return pieceJointe;
 }
 
+export function ecranParId(cours: Cours, screenId: string): Ecran | undefined {
+  return cours.ecrans.find((ecran) => ecran.id === screenId);
+}
+
 export function rangDeLEcran(cours: Cours, screenId: string): number {
   return cours.ecrans.findIndex((ecran) => ecran.id === screenId);
 }
