@@ -4,6 +4,11 @@ export class HacheLesJetonsDeVerification1791624795249 implements MigrationInter
   name = 'HacheLesJetonsDeVerification1791624795249';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
+    const dejaHachee = !(await queryRunner.hasColumn(
+      'email_verification_tokens',
+      'token',
+    ));
+    if (dejaHachee) return;
     await queryRunner.query(
       `ALTER TABLE "email_verification_tokens" RENAME COLUMN "token" TO "token_hash"`,
     );
