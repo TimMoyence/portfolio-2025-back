@@ -10,7 +10,7 @@ import {
 } from '../../src/modules/formations/domain/cours/Cours';
 import type { ContenuDeCours } from '../../src/modules/formations/domain/cours/CoursStocke';
 import { projeterCatalogue } from '../../src/modules/formations/domain/cours/Diffusion';
-import type { ValeurFormule } from '../../src/modules/formations/domain/cours/Formule';
+import type { ValeurFormule } from 'portfolio-2025-partage/formule';
 import { tirer } from '../../src/modules/formations/domain/cours/Tirage';
 import { fuitesDeConfidentialite } from '../factories/structure.factory';
 import {

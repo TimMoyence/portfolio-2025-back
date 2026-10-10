@@ -21,13 +21,13 @@ import type {
   ValidationArguments,
   ValidatorConstraintInterface,
 } from 'class-validator';
+import { LONGUEUR_MAX_FORMULE } from 'portfolio-2025-partage/formule';
 import { estObjet } from '../../../../../common/domain/est-objet';
 import type { ValeurProduction } from '../../../domain/contrats/resultats';
 import { DureeDeReponse } from '../duree-de-reponse.decorator';
 import { entreesBornees } from '../objet-plat';
 
 const LONGUEUR_MAX_IDENTIFIANT = 60;
-const LONGUEUR_MAX_FORMULE = 200;
 const ENTREES_MAX = 400;
 const TYPES_DE_PRODUCTION = ['feuille', 'tableau', 'classement'] as const;
 
