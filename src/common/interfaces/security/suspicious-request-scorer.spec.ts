@@ -104,6 +104,20 @@ describe('scoreRequest', () => {
     );
   });
 
+  it.each([
+    ['une chaine de requete', '/api/v1/portfolio25/contacts?source=pied'],
+    ['une casse differente', '/API/V1/Portfolio25/Auth/login'],
+  ])(
+    'reconnait un endpoint sensible routé par Express malgré %s',
+    (_cas, path) => {
+      const result = scoreRequest(
+        ctx({ method: 'POST', path, statusCode: 400 }),
+        {},
+      );
+      expect(result.reasons).toContain('sensitive:write-4xx');
+    },
+  );
+
   it('ne confond pas un endpoint sensible avec un segment qui le prolonge', () => {
     const result = scoreRequest(
       ctx({

@@ -45,10 +45,15 @@ const SEGMENTS_D_ECRITURE_SENSIBLE: readonly string[] = [
   'lead-magnets',
 ];
 
+function cheminRoute(path: string): string {
+  return path.split(/[?#]/, 1)[0].toLowerCase();
+}
+
 function sousUnSegmentSensible(path: string, source: SourceDEnv): boolean {
+  const chemin = cheminRoute(path);
   return SEGMENTS_D_ECRITURE_SENSIBLE.some((segment) => {
-    const racine = cheminDeLApi(segment, source);
-    return path === racine || path.startsWith(`${racine}/`);
+    const racine = cheminRoute(cheminDeLApi(segment, source));
+    return chemin === racine || chemin.startsWith(`${racine}/`);
   });
 }
 
