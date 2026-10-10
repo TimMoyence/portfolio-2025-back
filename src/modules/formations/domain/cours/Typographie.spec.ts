@@ -28,6 +28,7 @@ describe('typographier', () => {
     'En 2025 120 clients ont commandé',
     'un rang de 3 heures',
     '=SI(B2>=1200 ; "oui" ; "non")',
+    '  =SI(B2>=1200 ; "oui" ; "non")',
     'suite-arithmetique',
     'b2-04-a2e-exercice',
     'ecran-2e-partie',
