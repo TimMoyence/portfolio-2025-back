@@ -1,7 +1,7 @@
 import { tronquer } from '../../../../common/domain/texte/tronquer';
 import type { Cours, Ecran, Question } from '../contrats/cours';
 import type { EcranPublic, TirageDuCours } from '../contrats/tirage';
-import { cueillirDansArbre, estObjet } from './ArbreDeValeurs';
+import { cueillirDansArbre, cueillirSous, estObjet } from './ArbreDeValeurs';
 import type { CorrigeProduction } from './Corrige';
 import { questionsDe } from './Cours';
 import { projeterCatalogue } from './Diffusion';
@@ -112,20 +112,28 @@ function chiffresSignificatifs(valeur: number): number {
   return fin - debut;
 }
 
+function sansLaQuestion(
+  objet: Readonly<Record<string, unknown>>,
+): Readonly<Record<string, unknown>> {
+  return Object.fromEntries(
+    Object.entries(objet).filter(([cle]) => !CLES_DE_LA_QUESTION.includes(cle)),
+  );
+}
+
 function chainesDe(valeur: unknown, exclue: string | null): string[] {
-  if (typeof valeur === 'string') {
-    return [valeur];
-  }
-  if (Array.isArray(valeur)) {
-    return valeur.flatMap((element: unknown) => chainesDe(element, exclue));
-  }
-  if (!estObjet(valeur)) {
-    return [];
-  }
-  const propre = exclue !== null && valeur.id === exclue;
-  return Object.entries(valeur)
-    .filter(([cle]) => !(propre && CLES_DE_LA_QUESTION.includes(cle)))
-    .flatMap(([, element]) => chainesDe(element, exclue));
+  const retenir = (
+    _cle: string,
+    element: unknown,
+  ): readonly string[] | null => {
+    if (typeof element === 'string') {
+      return [element];
+    }
+    if (exclue !== null && estObjet(element) && element.id === exclue) {
+      return cueillirDansArbre(sansLaQuestion(element), retenir);
+    }
+    return null;
+  };
+  return cueillirSous('donnees', valeur, retenir);
 }
 
 const CLES_DES_NOMBRES_DU_NUAGE: readonly string[] = [

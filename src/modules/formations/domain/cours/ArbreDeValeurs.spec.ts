@@ -1,4 +1,4 @@
-import { cueillirDansArbre, estObjet } from './ArbreDeValeurs';
+import { cueillirDansArbre, cueillirSous, estObjet } from './ArbreDeValeurs';
 
 describe('ArbreDeValeurs', () => {
   it('reconnaît un objet, jamais un tableau ni null', () => {
@@ -36,5 +36,28 @@ describe('ArbreDeValeurs', () => {
 
   it('rend une liste vide pour une feuille non retenue', () => {
     expect(cueillirDansArbre('seul', () => ['jamais'])).toEqual([]);
+  });
+
+  const chaineSousSaCle = (cle: string, element: unknown) =>
+    typeof element === 'string' ? [`${cle}:${element}`] : null;
+
+  it('présente chaque élément d un tableau sous la clé du tableau', () => {
+    const arbre = { paragraphes: ['a', 'b'], bloc: { liste: [['c'], 'd'] } };
+
+    expect(cueillirDansArbre(arbre, chaineSousSaCle)).toEqual([
+      'paragraphes:a',
+      'paragraphes:b',
+      'liste:c',
+      'liste:d',
+    ]);
+  });
+
+  it('cueille aussi la valeur rangée sous la clé donnée', () => {
+    expect(cueillirSous('racine', 'seul', chaineSousSaCle)).toEqual([
+      'racine:seul',
+    ]);
+    expect(cueillirSous('racine', { titre: 't' }, chaineSousSaCle)).toEqual([
+      'titre:t',
+    ]);
   });
 });

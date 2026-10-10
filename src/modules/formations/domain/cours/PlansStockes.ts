@@ -6,7 +6,13 @@ import type {
   SheetPlanStocke,
   TableBuildPlanStocke,
 } from '../contrats/cours';
-import { auMoinsUn, identifiantDeQuestion, texte } from './SchemasCommuns';
+import {
+  auMoinsUn,
+  identifiantDeQuestion,
+  signalerDoublons,
+  signaleurDe,
+  texte,
+} from './SchemasCommuns';
 
 const COLONNES_MAX = 26;
 const TENTATIVES_MAX = 10;
@@ -27,25 +33,6 @@ export function estDansLaGrille(grille: Grille, reference: string): boolean {
   return colonne <= grille.colonnes && ligne <= grille.lignes;
 }
 
-function doublonsDe(valeurs: readonly string[]): readonly string[] {
-  return valeurs.filter((valeur, rang) => valeurs.indexOf(valeur) !== rang);
-}
-
-function signalerDoublons(
-  contexte: z.RefinementCtx,
-  chemin: string,
-  valeurs: readonly string[],
-): void {
-  const doublons = doublonsDe(valeurs);
-  if (doublons.length > 0) {
-    contexte.addIssue({
-      code: 'custom',
-      path: [chemin],
-      message: `identifiants en double : ${doublons.join(', ')}`,
-    });
-  }
-}
-
 export const planFeuille = z
   .object({
     id: identifiantDeQuestion,
@@ -58,18 +45,18 @@ export const planFeuille = z
   })
   .strict()
   .superRefine((plan, contexte) => {
+    const signaler = signaleurDe(contexte);
     const horsGrille = [
       ...Object.keys(plan.cellules),
       ...plan.verrouillees,
     ].filter((reference) => !estDansLaGrille(plan, reference));
     if (horsGrille.length > 0) {
-      contexte.addIssue({
-        code: 'custom',
-        path: ['cellules'],
-        message: `cellules hors de la grille ${plan.lignes} × ${plan.colonnes} : ${horsGrille.join(', ')}`,
-      });
+      signaler(
+        ['cellules'],
+        `cellules hors de la grille ${plan.lignes} × ${plan.colonnes} : ${horsGrille.join(', ')}`,
+      );
     }
-    signalerDoublons(contexte, 'verrouillees', plan.verrouillees);
+    signalerDoublons(plan.verrouillees, ['verrouillees'], signaler);
   }) satisfies z.ZodType<SheetPlanStocke>;
 
 const optionDeClassement = z.object({ id: texte, libelle: texte }).strict();
@@ -84,15 +71,16 @@ export const planClassement = z
   })
   .strict()
   .superRefine((plan, contexte) => {
+    const signaler = signaleurDe(contexte);
     signalerDoublons(
-      contexte,
-      'cartes',
       plan.cartes.map((carte) => carte.id),
+      ['cartes'],
+      signaler,
     );
     signalerDoublons(
-      contexte,
-      'categories',
       plan.categories.map((categorie) => categorie.id),
+      ['categories'],
+      signaler,
     );
   }) satisfies z.ZodType<CardsortPlanStocke>;
 
@@ -178,26 +166,22 @@ export const planTableau = z
   })
   .strict()
   .superRefine((plan, contexte) => {
+    const signaler = signaleurDe(contexte);
     if (plan.libellesLignes.length !== plan.echeances) {
-      contexte.addIssue({
-        code: 'custom',
-        path: ['libellesLignes'],
-        message: `${plan.echeances} libellés de ligne sont attendus`,
-      });
+      signaler(
+        ['libellesLignes'],
+        `${plan.echeances} libellés de ligne sont attendus`,
+      );
     }
     signalerDoublons(
-      contexte,
-      'colonnes',
       plan.colonnes.map((colonne) => colonne.cle),
+      ['colonnes'],
+      signaler,
     );
     plan.colonnes.forEach((colonne, rang) => {
       const incoherence = incoherenceDeColonne(colonne, plan.echeances);
       if (incoherence !== null) {
-        contexte.addIssue({
-          code: 'custom',
-          path: ['colonnes', rang],
-          message: incoherence,
-        });
+        signaler(['colonnes', rang], incoherence);
       }
     });
   }) satisfies z.ZodType<TableBuildPlanStocke>;
@@ -223,9 +207,9 @@ export const parcoursEnigmes = z
   .strict()
   .superRefine((parcours, contexte) => {
     signalerDoublons(
-      contexte,
-      'enigmes',
       parcours.enigmes.map((enigme) => enigme.id),
+      ['enigmes'],
+      signaleurDe(contexte),
     );
   }) satisfies z.ZodType<EscapeParcoursStocke>;
 

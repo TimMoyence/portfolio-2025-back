@@ -26,7 +26,16 @@ import {
   type QuizNote,
 } from './ProprietesStockees';
 import { questionDeNumerique, questionDeVote } from './QuestionStockee';
-import { auMoinsUn, concepts, confusion, media, texte } from './SchemasCommuns';
+import {
+  auMoinsUn,
+  concepts,
+  confusion,
+  doublonsDe,
+  media,
+  signalerDoublons,
+  signaleurDe,
+  texte,
+} from './SchemasCommuns';
 
 const LONGUEUR_MAX_IDENTIFIANT_D_ECRAN = 120;
 const LONGUEUR_MAX_TITRE = 120;
@@ -115,11 +124,10 @@ const ecranStocke = z
       presentation !== undefined &&
       presentation.screenId !== ecran.screenId
     ) {
-      contexte.addIssue({
-        code: 'custom',
-        path: ['proprietes', 'presentation', 'screenId'],
-        message: `présentation rattachée à ${presentation.screenId} et non à ${ecran.screenId}`,
-      });
+      signaleurDe(contexte)(
+        ['proprietes', 'presentation', 'screenId'],
+        `présentation rattachée à ${presentation.screenId} et non à ${ecran.screenId}`,
+      );
     }
   });
 
@@ -154,13 +162,7 @@ function controlerChampsPublics(
   contexte: z.RefinementCtx,
 ): void {
   ecrans.forEach((ecran, rang) => {
-    const signaler = (chemin: readonly string[], message: string): void => {
-      contexte.addIssue({
-        code: 'custom',
-        path: ['ecrans', rang, ...chemin],
-        message,
-      });
-    };
+    const signaler = signaleurDe(contexte, ['ecrans', rang]);
     if (ecran.titre === undefined || ecran.titre === null) {
       signaler(['titre'], 'titre public obligatoire');
     }
@@ -174,14 +176,6 @@ function controlerChampsPublics(
       );
     }
   });
-}
-
-function doublonsDe(valeurs: readonly string[]): readonly string[] {
-  return [
-    ...new Set(
-      valeurs.filter((valeur, rang) => valeurs.indexOf(valeur) !== rang),
-    ),
-  ];
 }
 
 const coursStocke = z
@@ -198,14 +192,11 @@ const coursStocke = z
   })
   .strict()
   .superRefine((cours, contexte) => {
-    const doublons = doublonsDe(cours.ecrans.map((ecran) => ecran.screenId));
-    if (doublons.length > 0) {
-      contexte.addIssue({
-        code: 'custom',
-        path: ['ecrans'],
-        message: `écrans en double : ${doublons.join(', ')}`,
-      });
-    }
+    signalerDoublons(
+      cours.ecrans.map((ecran) => ecran.screenId),
+      ['ecrans'],
+      signaleurDe(contexte),
+    );
   });
 
 const coursAPublier = coursStocke.superRefine(controlerChampsPublics);

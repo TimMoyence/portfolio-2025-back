@@ -14,6 +14,8 @@ import {
   concept,
   confusion,
   identifiantDeQuestion,
+  signalerDoublons,
+  signaleurDe,
   texte,
   tolerance,
 } from './SchemasCommuns';
@@ -46,10 +48,6 @@ const optionStockee = z
   .object({ id: texte, libelle: texte, confusion: confusion.nullable() })
   .strict();
 
-function sontDistincts(valeurs: readonly string[]): boolean {
-  return new Set(valeurs).size === valeurs.length;
-}
-
 export const voteStocke = z
   .object({
     type: z.literal('vote'),
@@ -62,19 +60,24 @@ export const voteStocke = z
   })
   .strict()
   .superRefine((vote, contexte) => {
-    const signaler = (message: string): void => {
-      contexte.addIssue({ code: 'custom', path: ['options'], message });
-    };
+    const signaler = signaleurDe(contexte);
     const bonnes = vote.options.filter((option) => option.confusion === null);
     if (bonnes.length !== 1) {
-      signaler(`une seule bonne option est attendue, ${bonnes.length} lue(s)`);
+      signaler(
+        ['options'],
+        `une seule bonne option est attendue, ${bonnes.length} lue(s)`,
+      );
     }
-    if (!sontDistincts(vote.options.map((option) => option.id))) {
-      signaler('deux options portent le même identifiant');
-    }
-    if (!sontDistincts(vote.options.map((option) => option.libelle))) {
-      signaler('deux options portent le même libellé');
-    }
+    signalerDoublons(
+      vote.options.map((option) => option.id),
+      ['options'],
+      signaler,
+    );
+    signalerDoublons(
+      vote.options.map((option) => option.libelle),
+      ['options'],
+      signaler,
+    );
   });
 
 const piegeNumerique = z.object({ valeur: z.number(), confusion }).strict();

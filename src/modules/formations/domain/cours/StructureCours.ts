@@ -1,7 +1,8 @@
+import { listeEntreGuillemets } from '../../../../common/domain/texte/liste-entre-guillemets';
 import { sansDiacritiques } from '../../../../common/domain/texte/sans-diacritiques';
 import type { Cours, Ecran } from '../contrats/cours';
 import type { TirageDuCours } from '../contrats/tirage';
-import { cueillirDansArbre, estObjet } from './ArbreDeValeurs';
+import { cueillirDansArbre, cueillirSous } from './ArbreDeValeurs';
 import type { Gabarit } from './Cours';
 import {
   estInteractif,
@@ -113,7 +114,7 @@ function verdictDuBloc(
   if (cumul <= EXPOSITION_MAXIMALE_MINUTES) {
     return [];
   }
-  const nommes = bloc.map((nom) => `« ${nom} »`).join(', ');
+  const nommes = listeEntreGuillemets(bloc);
   return [
     {
       ecran: bloc[0],
@@ -305,21 +306,19 @@ function raisonIntrouvable(
   return `${sujet} « ${identifiant} » est un identifiant distinct de « ${voisin} » : la casse et les accents ne sont jamais rapprochés en silence.`;
 }
 
+function referenceDe(element: unknown): readonly string[] | null {
+  if (typeof element !== 'string') {
+    return null;
+  }
+  return element.startsWith(PREFIXE_REFERENCE)
+    ? [element.slice(PREFIXE_REFERENCE.length)]
+    : [];
+}
+
 function referencesDansValeur(valeur: unknown): readonly string[] {
-  if (typeof valeur === 'string') {
-    return valeur.startsWith(PREFIXE_REFERENCE)
-      ? [valeur.slice(PREFIXE_REFERENCE.length)]
-      : [];
-  }
-  if (Array.isArray(valeur)) {
-    return valeur.flatMap((element: unknown) => referencesDansValeur(element));
-  }
-  if (estObjet(valeur)) {
-    return Object.values(valeur).flatMap((element) =>
-      referencesDansValeur(element),
-    );
-  }
-  return [];
+  return cueillirSous('proprietes', valeur, (_cle, element) =>
+    referenceDe(element),
+  );
 }
 
 function proprietesDe(ecran: Ecran): unknown {
