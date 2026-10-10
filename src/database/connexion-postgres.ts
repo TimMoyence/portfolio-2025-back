@@ -1,4 +1,5 @@
 import {
+  envBrut,
   envPremier,
   envUnVrai,
   type SourceDEnv,
@@ -74,8 +75,8 @@ export function resoudreConnexionPostgres(
     url,
     host: envPremier(ALIAS_POSTGRES.host, source),
     port: portDe(source),
-    username: envPremier(ALIAS_POSTGRES.username, source),
-    password: envPremier(ALIAS_POSTGRES.password, source),
+    username: envPremier(ALIAS_POSTGRES.username, source, envBrut),
+    password: envPremier(ALIAS_POSTGRES.password, source, envBrut),
     database:
       envPremier(ALIAS_POSTGRES.database, source) ??
       (url === undefined ? undefined : nomDeBaseDeLUrl(url)),

@@ -1,21 +1,29 @@
 export type SourceDEnv = Readonly<Record<string, unknown>>;
 
-export function envString(
+type LecteurDEnv = (name: string, source: SourceDEnv) => string | undefined;
+
+export function envBrut(
   name: string,
   source: SourceDEnv = process.env,
 ): string | undefined {
   const brut = source[name];
-  if (typeof brut !== 'string') return undefined;
-  const value = brut.trim();
-  return value.length > 0 ? value : undefined;
+  return typeof brut === 'string' && brut.trim().length > 0 ? brut : undefined;
+}
+
+export function envString(
+  name: string,
+  source: SourceDEnv = process.env,
+): string | undefined {
+  return envBrut(name, source)?.trim();
 }
 
 export function envPremier(
   noms: readonly string[],
   source: SourceDEnv = process.env,
+  lire: LecteurDEnv = envString,
 ): string | undefined {
   for (const nom of noms) {
-    const value = envString(nom, source);
+    const value = lire(nom, source);
     if (value !== undefined) return value;
   }
   return undefined;

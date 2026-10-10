@@ -80,6 +80,16 @@ describe('resoudreConnexionPostgres', () => {
     expect(connexion.url).toBeUndefined();
   });
 
+  it('transmet l utilisateur et le mot de passe tels quels, blancs compris', () => {
+    const connexion = resoudreConnexionPostgres({
+      DB_USERNAME: ' admin',
+      DB_PASSWORD: 'secret ',
+    });
+
+    expect(connexion.username).toBe(' admin');
+    expect(connexion.password).toBe('secret ');
+  });
+
   it('ne leve pas sur une URL invalide et ne deduit alors aucune base', () => {
     expect(
       resoudreConnexionPostgres({ DATABASE_URL: 'pas une url' }).database,

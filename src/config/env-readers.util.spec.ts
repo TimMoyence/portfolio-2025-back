@@ -1,5 +1,6 @@
 import {
   envBool,
+  envBrut,
   envFloat,
   envInt,
   envPremier,
@@ -84,6 +85,20 @@ describe('env-readers.util', () => {
 
     it('rend undefined si aucun alias n est renseigne', () => {
       expect(envPremier(['A', 'B'], {})).toBeUndefined();
+    });
+
+    it('lit chaque alias avec le lecteur fourni', () => {
+      expect(envPremier(['A', 'B'], { A: '', B: ' b ' }, envBrut)).toBe(' b ');
+    });
+  });
+
+  describe('envBrut', () => {
+    it('rend la valeur sans couper ses blancs', () => {
+      expect(envBrut(KEY, { [KEY]: ' secret ' })).toBe(' secret ');
+    });
+
+    it.each(['', '   ', 42])('ignore la valeur %j', (valeur) => {
+      expect(envBrut(KEY, { [KEY]: valeur })).toBeUndefined();
     });
   });
 
