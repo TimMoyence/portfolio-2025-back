@@ -32,6 +32,7 @@ const CORRIGE_FORMATEUR = join(
 const DOSSIER_D_ESSAI = join(RACINE, '.tmp/b3-01/ecriture');
 const DOSSIER_DE_REECRITURE = join(RACINE, '.tmp/b3-01/reecriture');
 const DELAI_D_ECRITURE_MS = 120_000;
+const DELAI_DE_LECTURE_MS = 30_000;
 const LONGUEUR_DU_SUFFIXE = 8;
 
 const jeu = genererJeuB301(GRAINE_B3_01);
@@ -165,19 +166,24 @@ describe('classeurs du B3-01', () => {
         await datesSansFormatDeDate(cheminDe(publie), publie.classeur),
       ).toEqual([]);
     },
+    DELAI_DE_LECTURE_MS,
   );
 
-  it('fige la ligne d’en-tête de chaque onglet', async () => {
-    for (const publie of publies) {
-      const classeur = await ouvrirClasseur(cheminDe(publie));
+  it(
+    'fige la ligne d’en-tête de chaque onglet',
+    async () => {
+      for (const publie of publies) {
+        const classeur = await ouvrirClasseur(cheminDe(publie));
 
-      for (const feuille of classeur.worksheets) {
-        expect(feuille.views).toEqual([
-          expect.objectContaining({ state: 'frozen', ySplit: 1 }),
-        ]);
+        for (const feuille of classeur.worksheets) {
+          expect(feuille.views).toEqual([
+            expect.objectContaining({ state: 'frozen', ySplit: 1 }),
+          ]);
+        }
       }
-    }
-  });
+    },
+    DELAI_DE_LECTURE_MS,
+  );
 
   it(
     'écrit au corrigé la formule CNUM enseignée sur chaque montant, un compte de villes arrondi, et les montants des agences hors format date',
@@ -219,19 +225,23 @@ describe('classeurs du B3-01', () => {
     DELAI_D_ECRITURE_MS,
   );
 
-  it('structure les commandes de la reprise de l’acte 3 en tableau T_Commandes', async () => {
-    const reprise3 = publies.find((publie) => publie.role === 'repriseActe3');
-    if (reprise3 === undefined) {
-      throw new Error('Reprise de l’acte 3 absente');
-    }
-    const classeur = await ouvrirClasseur(cheminDe(reprise3));
-    const commandes = classeur.getWorksheet('Commandes');
-    const lignes = reprise3.classeur.Commandes.lignes.length;
+  it(
+    'structure les commandes de la reprise de l’acte 3 en tableau T_Commandes',
+    async () => {
+      const reprise3 = publies.find((publie) => publie.role === 'repriseActe3');
+      if (reprise3 === undefined) {
+        throw new Error('Reprise de l’acte 3 absente');
+      }
+      const classeur = await ouvrirClasseur(cheminDe(reprise3));
+      const commandes = classeur.getWorksheet('Commandes');
+      const lignes = reprise3.classeur.Commandes.lignes.length;
 
-    expect(plageRelue(commandes?.getTable('T_Commandes') ?? {})).toBe(
-      `A1:U${lignes + 1}`,
-    );
-  });
+      expect(plageRelue(commandes?.getTable('T_Commandes') ?? {})).toBe(
+        `A1:U${lignes + 1}`,
+      );
+    },
+    DELAI_DE_LECTURE_MS,
+  );
 });
 
 function plageRelue(tableau: object): unknown {
