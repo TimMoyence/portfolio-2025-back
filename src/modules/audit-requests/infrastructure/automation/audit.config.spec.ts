@@ -34,7 +34,6 @@ describe('loadAuditAutomationConfig', () => {
     process.env.AUDIT_PAGE_AI_CIRCUIT_BREAKER_FAILURE_RATIO = '8';
     process.env.AUDIT_RATE_HOURLY_MIN = '-5';
     process.env.AUDIT_RATE_HOURLY_MAX = '-1';
-    process.env.REDIS_PORT = '0';
 
     const config = loadAuditAutomationConfig();
 
@@ -44,7 +43,15 @@ describe('loadAuditAutomationConfig', () => {
     expect(config.pageAiCircuitBreakerFailureRatio).toBe(1);
     expect(config.rateHourlyMin).toBe(0);
     expect(config.rateHourlyMax).toBe(0);
-    expect(config.redisPort).toBe(1);
+  });
+
+  it('retient la connexion Redis resolue depuis l environnement', () => {
+    process.env.REDIS_HOST = 'cache';
+
+    expect(loadAuditAutomationConfig().redis).toEqual({
+      host: 'cache',
+      port: 6379,
+    });
   });
 
   it('supports sequential llm profile when explicitly requested', () => {

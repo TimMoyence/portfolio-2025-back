@@ -1,5 +1,10 @@
 import { Inject, Injectable, Logger, OnModuleDestroy } from '@nestjs/common';
 import { JobsOptions, Queue } from 'bullmq';
+import type { RedisOptions } from 'ioredis';
+import {
+  journalDErreursRedis,
+  optionsRedis,
+} from '../../../../common/infrastructure/redis/connexion-redis';
 import type { IAuditQueuePort } from '../../domain/IAuditQueue.port';
 import { AUDIT_AUTOMATION_CONFIG } from '../../domain/token';
 import type { AuditAutomationConfig } from './audit.config';
@@ -10,52 +15,43 @@ export interface AuditQueueJob {
   auditId: string;
 }
 
-export interface RedisConnectionOptions {
-  host: string;
-  port: number;
-  username?: string;
-  password?: string;
-  tls?: Record<string, never>;
-  maxRetriesPerRequest?: number | null;
-  retryStrategy?: (times: number) => number | null;
-}
-
 @Injectable()
 export class AuditQueueService implements OnModuleDestroy, IAuditQueuePort {
   private readonly logger = new Logger(AuditQueueService.name);
   private readonly queue?: Queue<AuditQueueJob>;
-  private redisErrors = 0;
   private queueDisabledAtRuntime = false;
-  private static readonly MAX_REDIS_ERRORS = 3;
-  private readonly redisConnection?: RedisConnectionOptions;
+  private readonly redisConnection?: RedisOptions;
 
   constructor(
     @Inject(AUDIT_AUTOMATION_CONFIG)
     private readonly config: AuditAutomationConfig,
     private readonly pipeline: AuditPipelineService,
   ) {
-    const connection = this.buildConnection();
-    if (!connection || !this.config.queueEnabled) {
+    if (!this.config.redis || !this.config.queueEnabled) {
       this.logger.warn('Audit queue disabled; using in-process fallback.');
       return;
     }
 
+    const connection = optionsRedis(this.config.redis, {
+      maxRetriesPerRequest: null,
+    });
     this.redisConnection = connection;
     this.queue = new Queue<AuditQueueJob>(this.config.queueName, {
       connection,
     });
-    this.queue.on('error', (error) => {
-      this.redisErrors++;
-      if (this.redisErrors <= AuditQueueService.MAX_REDIS_ERRORS) {
-        this.logger.warn(`Audit queue Redis error: ${String(error)}`);
-      }
-      if (this.redisErrors === AuditQueueService.MAX_REDIS_ERRORS) {
-        this.logger.warn(
-          'Redis unreachable — audit queue disabled, falling back to in-process execution.',
-        );
-        this.queueDisabledAtRuntime = true;
-      }
-    });
+    this.queue.on(
+      'error',
+      journalDErreursRedis({
+        libelle: 'Audit queue Redis error',
+        avertir: (message) => this.logger.warn(message),
+        auPlafond: () => {
+          this.logger.warn(
+            'Redis unreachable — audit queue disabled, falling back to in-process execution.',
+          );
+          this.queueDisabledAtRuntime = true;
+        },
+      }),
+    );
   }
 
   get queueName(): string {
@@ -121,44 +117,5 @@ export class AuditQueueService implements OnModuleDestroy, IAuditQueuePort {
       auditId,
       this.config.jobTimeoutMs,
     );
-  }
-
-  private buildConnection(): RedisConnectionOptions | undefined {
-    const ioredisDefaults: Pick<
-      RedisConnectionOptions,
-      'maxRetriesPerRequest' | 'retryStrategy'
-    > = {
-      maxRetriesPerRequest: null,
-      retryStrategy: (times: number) => {
-        if (times > AuditQueueService.MAX_REDIS_ERRORS) return null;
-        return Math.min(times * 500, 3000);
-      },
-    };
-
-    if (this.config.redisUrl) {
-      const url = new URL(this.config.redisUrl);
-      const username = decodeURIComponent(url.username || '');
-      const password = decodeURIComponent(url.password || '');
-      return {
-        ...ioredisDefaults,
-        host: url.hostname,
-        port: Number.parseInt(url.port || '6379', 10),
-        ...(username ? { username } : {}),
-        ...(password ? { password } : {}),
-        ...(url.protocol === 'rediss:' ? { tls: {} } : {}),
-      };
-    }
-
-    if (this.config.redisHost && this.config.redisPort) {
-      return {
-        ...ioredisDefaults,
-        host: this.config.redisHost,
-        port: this.config.redisPort,
-        username: this.config.redisUsername,
-        password: this.config.redisPassword,
-      };
-    }
-
-    return undefined;
   }
 }

@@ -29,6 +29,23 @@ export function envPremier(
   return undefined;
 }
 
+const ENTIER_POSITIF = /^\d+$/;
+
+export function envPort(
+  noms: readonly string[],
+  service: string,
+  source: SourceDEnv = process.env,
+): number | undefined {
+  const brut = envPremier(noms, source);
+  if (brut === undefined) return undefined;
+  if (!ENTIER_POSITIF.test(brut)) {
+    throw new Error(
+      `Le port ${service} « ${brut} » n'est pas un entier positif (${noms.join(', ')}).`,
+    );
+  }
+  return Number(brut);
+}
+
 export function envUnVrai(
   noms: readonly string[],
   source: SourceDEnv = process.env,

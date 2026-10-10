@@ -4,6 +4,10 @@ import {
   envInt,
   envString,
 } from '../../../../config/env-readers.util';
+import {
+  resoudreConnexionRedis,
+  type ConnexionRedis,
+} from '../../../../common/infrastructure/redis/connexion-redis';
 
 export type AuditLlmProfile =
   | 'stability_first_sequential'
@@ -16,11 +20,7 @@ export interface AuditAutomationConfig {
   queueAttempts: number;
   queueBackoffMs: number;
   jobTimeoutMs: number;
-  redisUrl?: string;
-  redisHost?: string;
-  redisPort?: number;
-  redisUsername?: string;
-  redisPassword?: string;
+  redis?: ConnexionRedis;
   fetchTimeoutMs: number;
   maxRedirects: number;
   htmlMaxBytes: number;
@@ -114,13 +114,7 @@ export function loadAuditAutomationConfig(): AuditAutomationConfig {
     queueAttempts: Math.max(1, envInt('AUDIT_QUEUE_ATTEMPTS', 3)),
     queueBackoffMs: Math.max(0, envInt('AUDIT_QUEUE_BACKOFF_MS', 2000)),
     jobTimeoutMs: Math.max(1000, envInt('AUDIT_JOB_TIMEOUT_MS', 180000)),
-    redisUrl: envString('REDIS_URL'),
-    redisHost: envString('REDIS_HOST'),
-    redisPort: envString('REDIS_PORT')
-      ? Math.max(1, envInt('REDIS_PORT', 6379))
-      : undefined,
-    redisUsername: envString('REDIS_USERNAME'),
-    redisPassword: envString('REDIS_PASSWORD'),
+    redis: resoudreConnexionRedis(),
     fetchTimeoutMs: Math.max(1000, envInt('AUDIT_FETCH_TIMEOUT_MS', 8000)),
     maxRedirects: Math.max(0, envInt('AUDIT_MAX_REDIRECTS', 5)),
     htmlMaxBytes: Math.max(1024, envInt('AUDIT_HTML_MAX_BYTES', 1_000_000)),

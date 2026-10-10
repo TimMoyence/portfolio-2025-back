@@ -3,10 +3,34 @@ import {
   envBrut,
   envFloat,
   envInt,
+  envPort,
   envPremier,
   envString,
   envUnVrai,
 } from './env-readers.util';
+
+describe('envPort', () => {
+  it('lit le premier alias renseigne et le rend numerique', () => {
+    expect(envPort(['A_PORT', 'B_PORT'], 'de test', { B_PORT: ' 5433 ' })).toBe(
+      5433,
+    );
+  });
+
+  it('ne rend rien quand aucun alias n est renseigne', () => {
+    expect(envPort(['A_PORT'], 'de test', { A_PORT: ' ' })).toBeUndefined();
+  });
+
+  it.each(['abc', '5433x', '-1', '54.3'])(
+    'refuse un port qui n est pas un entier positif en nommant le service et ses alias (%p)',
+    (port) => {
+      expect(() =>
+        envPort(['A_PORT', 'B_PORT'], 'de test', { A_PORT: port }),
+      ).toThrow(
+        `Le port de test « ${port} » n'est pas un entier positif (A_PORT, B_PORT).`,
+      );
+    },
+  );
+});
 
 describe('env-readers.util', () => {
   const KEY = 'ENV_READERS_TEST_KEY';
