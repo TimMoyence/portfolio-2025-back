@@ -1,21 +1,18 @@
-export type AuditLocale = 'fr' | 'en';
+import {
+  LocaleCode,
+  type SupportedLocale,
+} from '../../../common/domain/value-objects/LocaleCode';
 
-export function resolveAuditLocale(
-  value: unknown,
-  fallback: AuditLocale = 'fr',
+export type AuditLocale = SupportedLocale;
+
+export function localeDeRedaction(
+  demandee: unknown,
+  langueConfiguree: unknown,
 ): AuditLocale {
-  if (typeof value !== 'string') {
-    return fallback;
-  }
-
-  const normalized = value.trim().toLowerCase();
-  if (normalized === 'en' || normalized.startsWith('en-')) {
-    return 'en';
-  }
-  if (normalized === 'fr' || normalized.startsWith('fr-')) {
-    return 'fr';
-  }
-  return fallback;
+  return LocaleCode.resolve(
+    demandee,
+    LocaleCode.resolve(langueConfiguree).value,
+  ).value;
 }
 
 export function localeFromUrlPath(path: unknown): AuditLocale | null {
@@ -24,8 +21,5 @@ export function localeFromUrlPath(path: unknown): AuditLocale | null {
   }
 
   const match = /(?:^|\/)(fr|en)(?:\/|$)/.exec(path.toLowerCase());
-  if (!match) {
-    return null;
-  }
-  return resolveAuditLocale(match[1], 'fr');
+  return match ? LocaleCode.resolve(match[1]).value : null;
 }

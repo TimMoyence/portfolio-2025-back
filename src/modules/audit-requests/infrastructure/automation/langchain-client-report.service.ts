@@ -11,10 +11,7 @@ import type {
 import type { BusinessType } from '../../domain/BusinessType';
 import { businessTypePromptHint } from '../../domain/BusinessType';
 import type { EngineCoverage } from '../../domain/EngineCoverage';
-import {
-  AuditLocale,
-  resolveAuditLocale,
-} from '../../domain/audit-locale.util';
+import { AuditLocale, localeDeRedaction } from '../../domain/audit-locale.util';
 import { withHardTimeout } from './llm-execution.guardrails';
 import { LlmLimiteParLaConfig } from './llm-executor.port';
 import { reportSeveritySchema } from './schemas/audit-report.schemas';
@@ -123,10 +120,7 @@ export class LangchainClientReportService extends LlmLimiteParLaConfig {
   private readonly logger = new Logger(LangchainClientReportService.name);
 
   async generate(context: ClientReportContext): Promise<ClientReportSynthesis> {
-    const locale = resolveAuditLocale(
-      context.locale,
-      resolveAuditLocale(this.config.llmLanguage, 'fr'),
-    );
+    const locale = localeDeRedaction(context.locale, this.config.llmLanguage);
 
     if (!this.config.openAiApiKey) {
       this.logger.log(

@@ -44,6 +44,16 @@ export function buildArticleWrite(
   };
 }
 
+export function createMockArticlesService() {
+  return {
+    ingest: jest.fn(),
+    getDelivery: jest.fn(),
+    listPublished: jest.fn(),
+    getPublishedBySlug: jest.fn(),
+    feed: jest.fn(),
+  };
+}
+
 export function buildArticleRecord(
   overrides: Partial<ArticleRecord> = {},
 ): ArticleRecord {

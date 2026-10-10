@@ -23,11 +23,8 @@ import type { Request } from 'express';
 import { provenanceDeLaRequete } from '../../../common/interfaces/security/client-ip.util';
 import { FormulairePublic } from '../../../common/interfaces/security/formulaire-public.decorator';
 import { CreateAuditRequestCommand } from '../application/dto/CreateAuditRequest.command';
-import {
-  AuditLocale,
-  localeFromUrlPath,
-  resolveAuditLocale,
-} from '../domain/audit-locale.util';
+import { LocaleCode } from '../../../common/domain/value-objects/LocaleCode';
+import { AuditLocale, localeFromUrlPath } from '../domain/audit-locale.util';
 import { CreateAuditRequestsUseCase } from '../application/CreateAuditRequests.useCase';
 import { GetAuditSummaryUseCase } from '../application/GetAuditSummary.useCase';
 import { StreamAuditEventsUseCase } from '../application/StreamAuditEvents.useCase';
@@ -106,9 +103,8 @@ export class AuditsController {
   }
 
   private resolveLocale(requestedLocale: unknown, req: Request): AuditLocale {
-    const explicit = resolveAuditLocale(requestedLocale, 'fr');
     if (requestedLocale) {
-      return explicit;
+      return LocaleCode.resolve(requestedLocale).value;
     }
 
     const referer = req.get('referer');
@@ -123,8 +119,6 @@ export class AuditsController {
       }
     }
 
-    const acceptLanguage = req.get('accept-language');
-
-    return resolveAuditLocale(acceptLanguage, 'fr');
+    return LocaleCode.resolve(req.get('accept-language')).value;
   }
 }

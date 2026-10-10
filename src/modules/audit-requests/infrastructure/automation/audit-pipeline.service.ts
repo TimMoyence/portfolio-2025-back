@@ -1,11 +1,8 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { borner } from '../../../../common/domain/nombres/borner';
 import { tronquer } from '../../../../common/domain/texte/tronquer';
-import {
-  AuditLocale,
-  localeFromUrlPath,
-  resolveAuditLocale,
-} from '../../domain/audit-locale.util';
+import { LocaleCode } from '../../../../common/domain/value-objects/LocaleCode';
+import { AuditLocale, localeFromUrlPath } from '../../domain/audit-locale.util';
 import type { IAuditRequestsRepository } from '../../domain/IAuditRequests.repository';
 import {
   AUDIT_AUTOMATION_CONFIG,
@@ -69,7 +66,7 @@ export class AuditPipelineService {
     }
 
     try {
-      const locale = resolveAuditLocale(audit.locale);
+      const locale = LocaleCode.resolve(audit.locale).value;
       const t = this.copy(locale);
 
       await this.repo.updateState(auditId, {
@@ -296,7 +293,7 @@ export class AuditPipelineService {
         processingStatus: 'FAILED',
         progress: 100,
         step:
-          resolveAuditLocale(audit.locale) === 'en'
+          LocaleCode.resolve(audit.locale).value === 'en'
             ? 'Audit failed'
             : 'Audit en echec',
         done: false,

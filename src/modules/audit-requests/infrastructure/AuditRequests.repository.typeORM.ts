@@ -9,7 +9,7 @@ import {
 import { AuditRequest } from '../domain/AuditRequest';
 import { AuditRequestResponse } from '../domain/AuditRequestResponse';
 import type { IAuditRequestsRepository } from '../domain/IAuditRequests.repository';
-import { resolveAuditLocale } from '../domain/audit-locale.util';
+import { LocaleCode } from '../../../common/domain/value-objects/LocaleCode';
 import { AuditRequestEntity } from './entities/AuditRequest.entity';
 
 const UPDATABLE_STATE_KEYS = [
@@ -48,7 +48,7 @@ export class AuditRequestsRepositoryTypeORM
         processingStatus: 'PENDING',
         progress: 0,
         step: 'Queued',
-        locale: resolveAuditLocale(data.locale),
+        locale: LocaleCode.resolve(data.locale).value,
         redirectChain: [],
         keyChecks: {},
         quickWins: [],
@@ -123,7 +123,7 @@ export class AuditRequestsRepositoryTypeORM
       websiteName: entity.websiteName,
       contactMethod: entity.contactMethod as 'EMAIL' | 'PHONE',
       contactValue: entity.contactValue,
-      locale: resolveAuditLocale(entity.locale),
+      locale: LocaleCode.resolve(entity.locale).value,
       done: entity.done,
       processingStatus: entity.processingStatus ?? 'PENDING',
       progress: entity.progress ?? 0,
