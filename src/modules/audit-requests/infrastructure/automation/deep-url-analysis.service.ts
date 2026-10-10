@@ -6,13 +6,11 @@ import {
   CONTENT_DEPTH_THIN,
   CONTENT_DEPTH_VERY_THIN,
   INTERNAL_LINKS_STRONG_MIN,
-  META_LENGTH_MAX,
-  META_LENGTH_MIN,
+  LONGUEUR_DE_LA_META,
+  LONGUEUR_DU_TITLE,
   SEVERITY_RATIO_HIGH,
   SEVERITY_RATIO_MEDIUM,
   TEMPLATE_DUPLICATE_MIN,
-  TITLE_LENGTH_MAX,
-  TITLE_LENGTH_MIN,
 } from './audit-thresholds.config';
 import { HomepageAuditSnapshot } from './homepage-analyzer.service';
 import {
@@ -22,6 +20,10 @@ import {
 import { localizedText } from './shared/locale-text.util';
 import { severityRank } from './shared/severity.util';
 import { borner } from '../../../../common/domain/nombres/borner';
+import {
+  dansLesBornes,
+  type Bornes,
+} from '../../../../common/domain/nombres/dans-les-bornes';
 import { UrlIndexabilityResult } from './url-indexability.service';
 
 export type FindingSeverity = 'high' | 'medium' | 'low';
@@ -43,13 +45,31 @@ export interface DeepUrlAnalysisResult {
   metrics: Record<string, unknown>;
 }
 
+interface MesureDeBalise {
+  readonly urlsParTexte: Map<string, string[]>;
+  manquantes: number;
+  horsBornes: number;
+}
+
+function mesureDeBaliseVide(): MesureDeBalise {
+  return {
+    urlsParTexte: new Map<string, string[]>(),
+    manquantes: 0,
+    horsBornes: 0,
+  };
+}
+
+function texteDeBalise(valeur: string | null | undefined): string {
+  return (valeur ?? '').trim();
+}
+
+function longueurHorsBornes(texte: string, bornes: Bornes): boolean {
+  return texte.length > 0 && !dansLesBornes(texte.length, bornes);
+}
+
 interface UrlMetricsAccumulator {
-  titleMap: Map<string, string[]>;
-  metaMap: Map<string, string[]>;
-  missingTitle: number;
-  missingMeta: number;
-  badTitleLength: number;
-  badMetaLength: number;
+  title: MesureDeBalise;
+  meta: MesureDeBalise;
   badH1Count: number;
   missingLang: number;
   languageMismatch: number;
@@ -117,12 +137,8 @@ function compteursCommunsAZero(): Pick<
 
 function createMetricsCollector(): UrlMetricsCollector {
   return {
-    titleMap: new Map<string, string[]>(),
-    metaMap: new Map<string, string[]>(),
-    missingTitle: 0,
-    missingMeta: 0,
-    badTitleLength: 0,
-    badMetaLength: 0,
+    title: mesureDeBaliseVide(),
+    meta: mesureDeBaliseVide(),
     ...compteursCommunsAZero(),
     errorUrls: [],
     slowUrls: [],
@@ -190,8 +206,18 @@ export class DeepUrlAnalysisService {
     const acc = createMetricsCollector();
 
     for (const entry of urls) {
-      this.collectTitleMetrics(acc, entry);
-      this.collectMetaMetrics(acc, entry);
+      this.collecterBalise(
+        acc.title,
+        entry.title,
+        entry.url,
+        LONGUEUR_DU_TITLE,
+      );
+      this.collecterBalise(
+        acc.meta,
+        entry.metaDescription,
+        entry.url,
+        LONGUEUR_DE_LA_META,
+      );
       this.collectLanguageMetrics(acc, entry, locale);
       this.collectIndexabilityMetrics(acc, entry);
       this.collectContentMetrics(acc, entry);
@@ -209,42 +235,50 @@ export class DeepUrlAnalysisService {
 
     return {
       ...acc,
-      duplicateTitles: this.duplicates(acc.titleMap),
-      duplicateMetas: this.duplicates(acc.metaMap),
+      duplicateTitles: this.duplicates(acc.title.urlsParTexte),
+      duplicateMetas: this.duplicates(acc.meta.urlsParTexte),
       templateDuplicatePatterns,
     };
   }
 
-  private collectTitleMetrics(
-    acc: UrlMetricsCollector,
-    entry: UrlIndexabilityResult,
+  private collecterBalise(
+    mesure: MesureDeBalise,
+    valeur: string | null | undefined,
+    url: string,
+    bornes: Bornes,
   ): void {
-    const title = (entry.title ?? '').trim();
-    if (!title) {
-      acc.missingTitle += 1;
+    const texte = texteDeBalise(valeur);
+    if (!texte) {
+      mesure.manquantes += 1;
       return;
     }
 
-    acc.titleMap.set(title, [...(acc.titleMap.get(title) ?? []), entry.url]);
-    if (title.length < TITLE_LENGTH_MIN || title.length > TITLE_LENGTH_MAX) {
-      acc.badTitleLength += 1;
+    mesure.urlsParTexte.set(texte, [
+      ...(mesure.urlsParTexte.get(texte) ?? []),
+      url,
+    ]);
+    if (longueurHorsBornes(texte, bornes)) {
+      mesure.horsBornes += 1;
     }
   }
 
-  private collectMetaMetrics(
-    acc: UrlMetricsCollector,
-    entry: UrlIndexabilityResult,
-  ): void {
-    const meta = (entry.metaDescription ?? '').trim();
-    if (!meta) {
-      acc.missingMeta += 1;
-      return;
-    }
+  private urlsSansBalise(
+    urls: UrlIndexabilityResult[],
+    lire: (entry: UrlIndexabilityResult) => string | null | undefined,
+  ): string[] {
+    return urls
+      .filter((entry) => !texteDeBalise(lire(entry)))
+      .map((entry) => entry.url);
+  }
 
-    acc.metaMap.set(meta, [...(acc.metaMap.get(meta) ?? []), entry.url]);
-    if (meta.length < META_LENGTH_MIN || meta.length > META_LENGTH_MAX) {
-      acc.badMetaLength += 1;
-    }
+  private urlsHorsBornes(
+    urls: UrlIndexabilityResult[],
+    lire: (entry: UrlIndexabilityResult) => string | null | undefined,
+    bornes: Bornes,
+  ): string[] {
+    return urls
+      .filter((entry) => longueurHorsBornes(texteDeBalise(lire(entry)), bornes))
+      .map((entry) => entry.url);
   }
 
   private collectLanguageMetrics(
@@ -363,18 +397,18 @@ export class DeepUrlAnalysisService {
 
     this.pushIfNeeded(
       findings,
-      acc.missingTitle > 0,
+      acc.title.manquantes > 0,
       'missing_title',
       localizedText(locale, 'Balises title manquantes', 'Missing title tags'),
       localizedText(
         locale,
-        `${acc.missingTitle} URL(s) sans balise title.`,
-        `${acc.missingTitle} URL(s) are missing a title tag.`,
+        `${acc.title.manquantes} URL(s) sans balise title.`,
+        `${acc.title.manquantes} URL(s) are missing a title tag.`,
       ),
-      this.severityFromRatio(acc.missingTitle, urls.length),
+      this.severityFromRatio(acc.title.manquantes, urls.length),
       0.92,
       'traffic',
-      urls.filter((entry) => !entry.title).map((entry) => entry.url),
+      this.urlsSansBalise(urls, (entry) => entry.title),
       localizedText(
         locale,
         'Ajouter un title unique et orienté intention de recherche sur chaque page.',
@@ -384,7 +418,7 @@ export class DeepUrlAnalysisService {
 
     this.pushIfNeeded(
       findings,
-      acc.missingMeta > 0,
+      acc.meta.manquantes > 0,
       'missing_meta_description',
       localizedText(
         locale,
@@ -393,19 +427,17 @@ export class DeepUrlAnalysisService {
       ),
       localizedText(
         locale,
-        `${acc.missingMeta} URL(s) sans meta description.`,
-        `${acc.missingMeta} URL(s) are missing a meta description.`,
+        `${acc.meta.manquantes} URL(s) sans meta description.`,
+        `${acc.meta.manquantes} URL(s) are missing a meta description.`,
       ),
-      this.severityFromRatio(acc.missingMeta, urls.length),
+      this.severityFromRatio(acc.meta.manquantes, urls.length),
       0.9,
       'traffic',
-      urls
-        .filter((entry) => !(entry.metaDescription ?? '').trim())
-        .map((entry) => entry.url),
+      this.urlsSansBalise(urls, (entry) => entry.metaDescription),
       localizedText(
         locale,
-        'Rediger une meta description unique (80-170 caracteres) pour chaque page strategique.',
-        'Write a unique meta description (80-170 characters) for every strategic page.',
+        `Rediger une meta description unique (${LONGUEUR_DE_LA_META.min}-${LONGUEUR_DE_LA_META.max} caracteres) pour chaque page strategique.`,
+        `Write a unique meta description (${LONGUEUR_DE_LA_META.min}-${LONGUEUR_DE_LA_META.max} characters) for every strategic page.`,
       ),
     );
 
@@ -457,7 +489,7 @@ export class DeepUrlAnalysisService {
 
     this.pushIfNeeded(
       findings,
-      acc.badTitleLength > 0,
+      acc.title.horsBornes > 0,
       'title_length_quality',
       localizedText(
         locale,
@@ -466,28 +498,23 @@ export class DeepUrlAnalysisService {
       ),
       localizedText(
         locale,
-        `${acc.badTitleLength} URL(s) ont un title trop court ou trop long.`,
-        `${acc.badTitleLength} URL(s) have a title that is too short or too long.`,
+        `${acc.title.horsBornes} URL(s) ont un title trop court ou trop long.`,
+        `${acc.title.horsBornes} URL(s) have a title that is too short or too long.`,
       ),
-      this.severityFromRatio(acc.badTitleLength, urls.length),
+      this.severityFromRatio(acc.title.horsBornes, urls.length),
       0.78,
       'traffic',
-      urls
-        .filter((entry) => {
-          const len = (entry.title ?? '').trim().length;
-          return len > 0 && (len < TITLE_LENGTH_MIN || len > TITLE_LENGTH_MAX);
-        })
-        .map((entry) => entry.url),
+      this.urlsHorsBornes(urls, (entry) => entry.title, LONGUEUR_DU_TITLE),
       localizedText(
         locale,
-        'Ajuster les titles entre 20 et 65 caracteres avec mot-cle principal.',
-        'Adjust titles to 20-65 characters with the primary keyword.',
+        `Ajuster les titles entre ${LONGUEUR_DU_TITLE.min} et ${LONGUEUR_DU_TITLE.max} caracteres avec mot-cle principal.`,
+        `Adjust titles to ${LONGUEUR_DU_TITLE.min}-${LONGUEUR_DU_TITLE.max} characters with the primary keyword.`,
       ),
     );
 
     this.pushIfNeeded(
       findings,
-      acc.badMetaLength > 0,
+      acc.meta.horsBornes > 0,
       'meta_length_quality',
       localizedText(
         locale,
@@ -496,22 +523,21 @@ export class DeepUrlAnalysisService {
       ),
       localizedText(
         locale,
-        `${acc.badMetaLength} URL(s) ont une meta description hors plage recommandee.`,
-        `${acc.badMetaLength} URL(s) have a meta description outside the recommended range.`,
+        `${acc.meta.horsBornes} URL(s) ont une meta description hors plage recommandee.`,
+        `${acc.meta.horsBornes} URL(s) have a meta description outside the recommended range.`,
       ),
-      this.severityFromRatio(acc.badMetaLength, urls.length),
+      this.severityFromRatio(acc.meta.horsBornes, urls.length),
       0.74,
       'traffic',
-      urls
-        .filter((entry) => {
-          const len = (entry.metaDescription ?? '').trim().length;
-          return len > 0 && (len < META_LENGTH_MIN || len > META_LENGTH_MAX);
-        })
-        .map((entry) => entry.url),
+      this.urlsHorsBornes(
+        urls,
+        (entry) => entry.metaDescription,
+        LONGUEUR_DE_LA_META,
+      ),
       localizedText(
         locale,
-        'Ajuster les metas entre 80 et 170 caracteres avec une proposition de valeur claire.',
-        'Adjust meta descriptions to 80-170 characters with a clear value proposition.',
+        `Ajuster les metas entre ${LONGUEUR_DE_LA_META.min} et ${LONGUEUR_DE_LA_META.max} caracteres avec une proposition de valeur claire.`,
+        `Adjust meta descriptions to ${LONGUEUR_DE_LA_META.min}-${LONGUEUR_DE_LA_META.max} characters with a clear value proposition.`,
       ),
     );
 
@@ -858,10 +884,10 @@ export class DeepUrlAnalysisService {
       analyzedUrls: urlCount,
       duplicateTitles: acc.duplicateTitles.length,
       duplicateMetaDescriptions: acc.duplicateMetas.length,
-      missingTitle: acc.missingTitle,
-      missingMetaDescription: acc.missingMeta,
-      badTitleLength: acc.badTitleLength,
-      badMetaLength: acc.badMetaLength,
+      missingTitle: acc.title.manquantes,
+      missingMetaDescription: acc.meta.manquantes,
+      badTitleLength: acc.title.horsBornes,
+      badMetaLength: acc.meta.horsBornes,
       badH1Count: acc.badH1Count,
       missingLang: acc.missingLang,
       languageMismatch: acc.languageMismatch,

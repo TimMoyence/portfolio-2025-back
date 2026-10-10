@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { dansLesBornes } from '../../../../common/domain/nombres/dans-les-bornes';
 import { CHAMPS_EXTRAITS_DU_CAS } from '../contrats/cours';
 import type { CorrigeProduction, CorrigeTableau } from './Corrige';
 import {
@@ -453,7 +454,7 @@ function defautDeLEtape(
   if (curseur === undefined) {
     return `l’animation règle un paramètre absent ${support}`;
   }
-  if (valeur < curseur.min || valeur > curseur.max) {
+  if (!dansLesBornes(valeur, curseur)) {
     return `l’animation sort des bornes du curseur ${curseur.cle} : ${valeur}`;
   }
   if (!Number.isInteger((valeur - curseur.min) / curseur.pas)) {

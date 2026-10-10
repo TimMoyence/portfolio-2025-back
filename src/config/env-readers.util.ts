@@ -1,3 +1,8 @@
+import {
+  dansLesBornes,
+  type Bornes,
+} from '../common/domain/nombres/dans-les-bornes';
+
 export type SourceDEnv = Readonly<Record<string, unknown>>;
 
 type LecteurDEnv = (name: string, source: SourceDEnv) => string | undefined;
@@ -62,10 +67,8 @@ export function envInt(
   return Number.isFinite(parsed) ? parsed : fallback;
 }
 
-export interface BornesEntieres {
+export interface BornesEntieres extends Bornes {
   readonly defaut: number;
-  readonly min: number;
-  readonly max: number;
 }
 
 export function envEntierBorne(
@@ -74,9 +77,7 @@ export function envEntierBorne(
   source: SourceDEnv = process.env,
 ): number {
   const valeur = Number(envString(name, source));
-  return Number.isInteger(valeur) &&
-    valeur >= bornes.min &&
-    valeur <= bornes.max
+  return Number.isInteger(valeur) && dansLesBornes(valeur, bornes)
     ? valeur
     : bornes.defaut;
 }
