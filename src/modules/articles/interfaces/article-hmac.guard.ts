@@ -4,8 +4,11 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { createHmac, timingSafeEqual } from 'node:crypto';
 import type { Request } from 'express';
+import {
+  egalEnTempsConstant,
+  hmacSha256,
+} from '../../../common/domain/crypto/empreintes';
 
 interface ArticleRequest extends Request {
   rawBody?: Buffer;
@@ -61,15 +64,9 @@ export class ArticleHmacGuard implements CanActivate {
     }
 
     const input = `${request.method}\n${request.path}\n${timestamp}\n${nonce}\n`;
-    const expected = createHmac('sha256', secret)
-      .update(input)
-      .update(rawBody)
-      .digest();
+    const expected = hmacSha256(secret, input, rawBody);
     const provided = Buffer.from(signature, 'base64url');
-    if (
-      provided.length !== expected.length ||
-      !timingSafeEqual(provided, expected)
-    ) {
+    if (!egalEnTempsConstant(provided, expected)) {
       throw new UnauthorizedException('Invalid machine credentials');
     }
 

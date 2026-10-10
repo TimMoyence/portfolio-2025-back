@@ -1,10 +1,8 @@
-import { createHash } from 'node:crypto';
+import { empreinteSha256 } from '../../../../common/domain/crypto/empreintes';
 import { serialiserCanonique } from './VecteursFormule';
 
 export function empreinteCanonique(valeur: unknown): string {
   const telQueStocke: unknown =
     valeur === undefined ? null : JSON.parse(JSON.stringify(valeur));
-  return createHash('sha256')
-    .update(serialiserCanonique(telQueStocke), 'utf8')
-    .digest('hex');
+  return empreinteSha256(serialiserCanonique(telQueStocke));
 }

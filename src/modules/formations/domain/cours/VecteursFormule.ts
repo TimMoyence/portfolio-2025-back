@@ -1,4 +1,4 @@
-import { createHash } from 'node:crypto';
+import { empreinteSha256 } from '../../../../common/domain/crypto/empreintes';
 import type { Feuille, ResultatFormule } from './Formule';
 
 export type VecteurFormule =
@@ -70,7 +70,5 @@ export function serialiserCanonique(valeur: unknown): string {
 export function empreinteDesVecteurs(
   vecteurs: readonly VecteurFormule[],
 ): string {
-  return createHash('sha256')
-    .update(serialiserCanonique(vecteurs), 'utf8')
-    .digest('hex');
+  return empreinteSha256(serialiserCanonique(vecteurs));
 }

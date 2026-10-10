@@ -1,7 +1,8 @@
 import { Injectable, type OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { pbkdf2Sync, timingSafeEqual } from 'crypto';
+import { pbkdf2Sync } from 'crypto';
 import * as argon2 from 'argon2';
+import { egalEnTempsConstant } from '../../../../common/domain/crypto/empreintes';
 
 const TIMING_DECOY_INPUT = 'dummy-password-for-timing-safety';
 const TIMING_DECOY_HASH_FALLBACK =
@@ -71,11 +72,7 @@ export class PasswordService implements OnModuleInit {
       this.digest,
     );
 
-    if (derivedKey.length !== storedBuffer.length) {
-      return false;
-    }
-
-    return timingSafeEqual(derivedKey, storedBuffer);
+    return egalEnTempsConstant(derivedKey, storedBuffer);
   }
 
   private verifyLegacy(password: string, storedHash: string): boolean {
@@ -87,13 +84,9 @@ export class PasswordService implements OnModuleInit {
       this.digest,
     ).toString('hex');
 
-    const hashedBuffer = Buffer.from(hashed, 'hex');
-    const storedBuffer = Buffer.from(storedHash, 'hex');
-
-    if (hashedBuffer.length !== storedBuffer.length) {
-      return false;
-    }
-
-    return timingSafeEqual(hashedBuffer, storedBuffer);
+    return egalEnTempsConstant(
+      Buffer.from(hashed, 'hex'),
+      Buffer.from(storedHash, 'hex'),
+    );
   }
 }

@@ -1,5 +1,5 @@
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
-import { timingSafeEqual } from 'node:crypto';
+import { egalEnTempsConstant } from '../../../common/domain/crypto/empreintes';
 import { signer } from '../application/SignatureFormations';
 import type { IParticipantsRepository } from '../domain/IParticipants.repository';
 import { PARTICIPANTS_REPOSITORY } from '../domain/token';
@@ -40,15 +40,9 @@ export function identiteSignee(
     return null;
   }
   const attendue = empreinte(sessionId, lu.participantId, lu.generation);
-  return correspond(lu.empreinte, attendue)
+  return egalEnTempsConstant(lu.empreinte, attendue)
     ? { participantId: lu.participantId, generation: lu.generation }
     : null;
-}
-
-function correspond(presentee: string, attendue: string): boolean {
-  const a = Buffer.from(presentee, 'utf8');
-  const b = Buffer.from(attendue, 'utf8');
-  return a.length === b.length && timingSafeEqual(a, b);
 }
 
 function empreinte(

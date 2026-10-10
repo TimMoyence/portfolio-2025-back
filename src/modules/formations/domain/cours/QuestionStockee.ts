@@ -1,5 +1,5 @@
-import { createHash } from 'node:crypto';
 import { z } from 'zod';
+import { empreinteSha256 } from '../../../../common/domain/crypto/empreintes';
 import type { NumeriqueStockee, VoteStockee } from '../contrats/cours';
 import type { ConfusionId } from './banque/confusions';
 import {
@@ -46,10 +46,10 @@ export function slugOption(libelle: string): string {
   const tronque = sansTiretsAuxBords(
     sansTiretsAuxBords(lisible).slice(0, LONGUEUR_MAX_DU_SLUG),
   );
-  const empreinte = createHash('sha256')
-    .update(brut.normalize('NFC'), 'utf8')
-    .digest('hex')
-    .slice(0, LONGUEUR_DE_L_EMPREINTE);
+  const empreinte = empreinteSha256(brut.normalize('NFC')).slice(
+    0,
+    LONGUEUR_DE_L_EMPREINTE,
+  );
   return `${tronque}-${empreinte}`;
 }
 
