@@ -1,7 +1,6 @@
 import type { RedisOptions } from 'ioredis';
 import { sansIndefinis } from '../../domain/sans-indefinis';
 import {
-  envBrut,
   envPort,
   envString,
   type SourceDEnv,
@@ -48,7 +47,7 @@ export function resoudreConnexionRedis(
     host,
     port: envPort(['REDIS_PORT'], 'Redis', source) ?? PORT_REDIS_PAR_DEFAUT,
     username: envString('REDIS_USERNAME', source),
-    password: envBrut('REDIS_PASSWORD', source),
+    password: envString('REDIS_PASSWORD', source),
   });
 }
 

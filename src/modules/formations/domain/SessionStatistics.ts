@@ -41,7 +41,11 @@ export function calculerStatistiquesSeance(
     0,
   );
   return {
-    ...repartitionDesNotes(participants.map((participant) => participant.note)),
+    ...repartitionDesNotes(
+      participants
+        .map((participant) => participant.note)
+        .sort((gauche, droite) => gauche - droite),
+    ),
     tauxParticipation: estAuMoinsUn(participants)
       ? proportion(participants, (participant) => participant.completion > 0)
       : 0,

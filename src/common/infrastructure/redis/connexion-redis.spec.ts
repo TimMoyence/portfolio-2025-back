@@ -20,7 +20,7 @@ describe('resoudreConnexionRedis', () => {
     });
   });
 
-  it('lit l hote, le port et les identifiants declares', () => {
+  it('lit l hote, le port et les identifiants declares, sans leurs blancs', () => {
     expect(
       resoudreConnexionRedis({
         REDIS_HOST: 'cache',
@@ -32,7 +32,7 @@ describe('resoudreConnexionRedis', () => {
       host: 'cache',
       port: 6380,
       username: 'app',
-      password: 'secret ',
+      password: 'secret',
     });
   });
 
