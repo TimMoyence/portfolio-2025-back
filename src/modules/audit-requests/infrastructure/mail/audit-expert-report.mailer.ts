@@ -1,44 +1,28 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
-import {
-  destinataireDesRapportsDAudit,
-  expediteurDesCourriels,
-} from '../../../../config/adresses-de-courriel';
+import { Injectable } from '@nestjs/common';
+import { pieceJointePdf } from '../../../../common/infrastructure/mail/piece-jointe-pdf';
+import { destinataireDesRapportsDAudit } from '../../../../config/adresses-de-courriel';
 import type { ExpertReportMailInput } from '../../domain/IAuditNotifier.port';
 import { buildMailLayout } from './mail-layout.util';
+import { MailerDAudit } from './mailer-d-audit';
 import { escapeHtml, safeHtml, slugify } from './mail-rendering.util';
-import { SMTP_TRANSPORTER } from './smtp-transporter.provider';
-import type { SmtpTransporter } from './smtp-transporter.provider';
+import { lignesDeVisibilite, listeDeVisibilite } from './visibilite-google-ia';
 
 @Injectable()
-export class AuditExpertReportMailer {
-  private readonly logger = new Logger(AuditExpertReportMailer.name);
-
-  constructor(
-    @Inject(SMTP_TRANSPORTER)
-    private readonly transporter: SmtpTransporter,
-  ) {}
-
+export class AuditExpertReportMailer extends MailerDAudit {
   async sendExpertReport(input: ExpertReportMailInput): Promise<void> {
-    if (!this.transporter) return;
     const to = destinataireDesRapportsDAudit();
     if (!to) return;
 
-    const subject = `[Audit Expert] ${input.websiteName}`;
-    const html = this.buildExpertReportHtml(input);
-    const text = this.buildExpertReportText(input);
-
-    await this.transporter.sendMail({
-      from: expediteurDesCourriels(),
+    await this.envoyer({
       to,
-      subject,
-      text,
-      html,
+      subject: `[Audit Expert] ${input.websiteName}`,
+      text: this.buildExpertReportText(input),
+      html: this.buildExpertReportHtml(input),
       attachments: [
-        {
-          filename: `growth-audit-expert-${slugify(input.websiteName)}.pdf`,
-          content: input.pdfBuffer,
-          contentType: 'application/pdf',
-        },
+        pieceJointePdf(
+          `growth-audit-expert-${slugify(input.websiteName)}.pdf`,
+          input.pdfBuffer,
+        ),
       ],
     });
   }
@@ -69,12 +53,6 @@ export class AuditExpertReportMailer {
           </li>`,
     );
 
-    const clientMatrixHtml = safeHtml`
-      <ul style="padding-left:20px;color:#374151;">
-        <li>Google : ${client.googleVsAiMatrix.googleVisibility.score}/100 — ${escapeHtml(client.googleVsAiMatrix.googleVisibility.summary)}</li>
-        <li>IA : ${client.googleVsAiMatrix.aiVisibility.score}/100 — ${escapeHtml(client.googleVsAiMatrix.aiVisibility.summary)}</li>
-      </ul>`;
-
     const bodyHtml = safeHtml`
       <p style="margin:0 0 12px;"><strong>Audit ID :</strong> <code style="font-family:monospace;background:#f3f4f6;padding:2px 6px;border-radius:4px;">${escapeHtml(input.auditId)}</code></p>
       ${contactHtml}
@@ -83,7 +61,7 @@ export class AuditExpertReportMailer {
       <p style="white-space:pre-line;color:#374151;">${escapeHtml(expert.executiveSummary)}</p>
 
       <h2 style="margin:24px 0 8px 0;font-size:16px;">Synthese client (Google vs IA)</h2>
-      ${clientMatrixHtml}
+      ${listeDeVisibilite(client.googleVsAiMatrix)}
 
       <h2 style="margin:24px 0 8px 0;font-size:16px;">Draft mail client (a copier/coller)</h2>
       <div style="padding:16px;background:#f9fafb;border:1px dashed #cbd5e1;border-radius:8px;">
@@ -136,10 +114,9 @@ export class AuditExpertReportMailer {
     lines.push('');
     lines.push('Synthese client (Google vs IA) :');
     lines.push(
-      `- Google : ${client.googleVsAiMatrix.googleVisibility.score}/100 — ${client.googleVsAiMatrix.googleVisibility.summary}`,
-    );
-    lines.push(
-      `- IA : ${client.googleVsAiMatrix.aiVisibility.score}/100 — ${client.googleVsAiMatrix.aiVisibility.summary}`,
+      ...lignesDeVisibilite(client.googleVsAiMatrix).map(
+        (ligne) => `- ${ligne}`,
+      ),
     );
     lines.push('');
     lines.push('--- Draft mail client (a copier/coller) ---');

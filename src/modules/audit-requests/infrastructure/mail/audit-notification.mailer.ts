@@ -1,31 +1,19 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
-import {
-  destinataireDesNotifications,
-  expediteurDesCourriels,
-} from '../../../../config/adresses-de-courriel';
+import { Injectable } from '@nestjs/common';
+import { destinataireDesNotifications } from '../../../../config/adresses-de-courriel';
 import { AuditRequest } from '../../domain/AuditRequest';
 import { buildMailLayout } from './mail-layout.util';
+import { MailerDAudit } from './mailer-d-audit';
 import { escapeHtml, safeHtml } from './mail-rendering.util';
-import { SMTP_TRANSPORTER } from './smtp-transporter.provider';
-import type { SmtpTransporter } from './smtp-transporter.provider';
 
 @Injectable()
-export class AuditNotificationMailer {
-  private readonly logger = new Logger(AuditNotificationMailer.name);
-
-  constructor(
-    @Inject(SMTP_TRANSPORTER)
-    private readonly transporter: SmtpTransporter,
-  ) {}
-
+export class AuditNotificationMailer extends MailerDAudit {
   async sendAuditNotification(request: AuditRequest): Promise<void> {
     const to = destinataireDesNotifications();
-    if (!this.transporter || !to) return;
+    if (!to) return;
 
     const { websiteName, contactMethod, contactValue } = request;
 
-    await this.transporter.sendMail({
-      from: expediteurDesCourriels(),
+    await this.envoyer({
       to,
       subject: "🔍 Nouvelle demande d'audit SEO",
       text: `
