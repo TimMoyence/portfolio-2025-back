@@ -142,6 +142,16 @@ describe('AuditReportHtmlRendererService', () => {
     expect(html).toContain('llms.txt');
   });
 
+  it('date le rapport et traduit gravité, impact et effort', () => {
+    const html = rendre();
+
+    expect(html).toContain('15 avril 2026');
+    expect(html).toContain('<span class="severity-badge">Eleve</span>');
+    expect(html).toContain('<td class="backlog-impact">Eleve</td>');
+    expect(html).toContain('<td class="backlog-effort">Faible</td>');
+    expect(html).toContain('Effort : Faible');
+  });
+
   it('echappe les balises HTML injectees dans les chaines LLM', () => {
     const expert = buildExpertReport({
       executiveSummary: '<script>alert(1)</script>',

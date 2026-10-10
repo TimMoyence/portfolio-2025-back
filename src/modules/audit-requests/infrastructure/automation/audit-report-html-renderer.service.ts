@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { estObjet } from '../../../../common/domain/est-objet';
+import { dateLongue } from '../../../../common/domain/texte/date-longue';
 import type { AuditSnapshot } from '../../domain/AuditProcessing';
 import type {
   ClientReportSynthesis,
@@ -30,7 +31,7 @@ export class AuditReportHtmlRendererService {
     clientReport: ClientReportSynthesis,
     expertReport: ExpertReportSynthesis,
   ): string {
-    const date = this.formatDate(audit.createdAt);
+    const date = dateLongue(audit.createdAt);
     const cover = this.renderCover(audit, date);
     const client = this.renderClientSection(clientReport);
     const expert = this.renderExpertSection(expertReport);
@@ -157,7 +158,7 @@ export class AuditReportHtmlRendererService {
       (qw) => safeHtml`<article class="quickwin">
         <p class="quickwin-title">${escapeHtml(qw.title)}</p>
         <p class="quickwin-impact">${escapeHtml(qw.businessImpact)}</p>
-        <p class="quickwin-effort">Effort : ${this.effortLabel(qw.effort)}</p>
+        <p class="quickwin-effort">Effort : ${this.niveauLabel(qw.effort)}</p>
       </article>`,
     );
     return safeHtml`<div class="quickwins">
@@ -224,8 +225,8 @@ export class AuditReportHtmlRendererService {
       );
       return safeHtml`<tr class="backlog-row">
           <td class="backlog-title">${escapeHtml(item.title)}</td>
-          <td class="backlog-impact">${this.impactLabel(item.impact)}</td>
-          <td class="backlog-effort">${this.effortLabel(item.effort)}</td>
+          <td class="backlog-impact">${this.niveauLabel(item.impact)}</td>
+          <td class="backlog-effort">${this.niveauLabel(item.effort)}</td>
           <td class="backlog-ac"><ul>${ac}</ul></td>
         </tr>`;
     });
@@ -364,49 +365,19 @@ export class AuditReportHtmlRendererService {
   private severityLabel(
     severity: 'critical' | 'high' | 'medium' | 'low',
   ): EscapedHtml {
-    switch (severity) {
-      case 'critical':
-        return safeHtml`Critique`;
+    return severity === 'critical'
+      ? safeHtml`Critique`
+      : this.niveauLabel(severity);
+  }
+
+  private niveauLabel(niveau: 'high' | 'medium' | 'low'): EscapedHtml {
+    switch (niveau) {
       case 'high':
         return safeHtml`Eleve`;
       case 'medium':
         return safeHtml`Moyen`;
       case 'low':
         return safeHtml`Faible`;
-    }
-  }
-
-  private impactLabel(impact: 'high' | 'medium' | 'low'): EscapedHtml {
-    switch (impact) {
-      case 'high':
-        return safeHtml`Eleve`;
-      case 'medium':
-        return safeHtml`Moyen`;
-      case 'low':
-        return safeHtml`Faible`;
-    }
-  }
-
-  private effortLabel(effort: 'high' | 'medium' | 'low'): EscapedHtml {
-    switch (effort) {
-      case 'high':
-        return safeHtml`Eleve`;
-      case 'medium':
-        return safeHtml`Moyen`;
-      case 'low':
-        return safeHtml`Faible`;
-    }
-  }
-
-  private formatDate(date: Date): string {
-    try {
-      return date.toLocaleDateString('fr-FR', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      });
-    } catch {
-      return date.toISOString();
     }
   }
 
