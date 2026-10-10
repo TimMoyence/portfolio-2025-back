@@ -1,4 +1,5 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
+import { moyenneOu } from '../../../../common/domain/nombres/statistiques';
 import type { AuditSnapshot } from '../../domain/AuditProcessing';
 import type {
   ClientReportSynthesis,
@@ -281,8 +282,12 @@ export class AuditDeliveryOrchestrator {
     entries: ReadonlyArray<EngineScore>,
     engine: EngineScore['engine'],
   ): EngineScore {
-    const total = entries.reduce((sum, entry) => sum + entry.score, 0);
-    const avg = entries.length > 0 ? Math.round(total / entries.length) : 0;
+    const avg = Math.round(
+      moyenneOu(
+        entries.map((entry) => entry.score),
+        0,
+      ),
+    );
     const indexable = entries.some((entry) => entry.indexable);
     const strengths = this.flattenUnique(entries.map((e) => e.strengths));
     const blockers = this.flattenUnique(entries.map((e) => e.blockers));

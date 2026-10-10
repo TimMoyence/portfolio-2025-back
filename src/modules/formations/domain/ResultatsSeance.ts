@@ -1,3 +1,4 @@
+import { moyenneOu } from '../../../common/domain/nombres/statistiques';
 import type { TypeQuestion } from './contrats/cours';
 import type {
   ConfusionComptee,
@@ -88,10 +89,7 @@ function moyenneDesScores(reponses: readonly AnswerRecord[]): number | null {
   const scores = reponses
     .map((reponse) => reponse.score)
     .filter((score): score is number => score !== null);
-  if (scores.length === 0) {
-    return null;
-  }
-  return scores.reduce((somme, score) => somme + score, 0) / scores.length;
+  return moyenneOu(scores, null);
 }
 
 function compterParCle(

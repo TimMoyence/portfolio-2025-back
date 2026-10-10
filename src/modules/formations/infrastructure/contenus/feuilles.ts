@@ -1,3 +1,4 @@
+import type { AuMoinsUnModifiable } from '../../../../common/domain/au-moins-un';
 import type { ConfusionId } from '../../domain/cours/banque/confusions';
 import * as moteur from './briques';
 
@@ -12,7 +13,7 @@ export function termes<T>(
   suite: (rang: number) => T,
   premier: number,
   dernier: number,
-): moteur.AuMoinsUn<T> {
+): AuMoinsUnModifiable<T> {
   return [
     suite(premier),
     ...Array.from({ length: dernier - premier }, (_, ecart) =>
@@ -74,8 +75,8 @@ export function colonneRecopiee(
     confusionSiErreur,
     tolerance,
   }: Recopie,
-  [premiere, ...suivantes]: moteur.AuMoinsUn<number | string>,
-): moteur.AuMoinsUn<AttenduDeFeuille> {
+  [premiere, ...suivantes]: AuMoinsUnModifiable<number | string>,
+): AuMoinsUnModifiable<AttenduDeFeuille> {
   const modele = `${colonne}${premiereLigne}`;
   return [
     moteur.attendu(

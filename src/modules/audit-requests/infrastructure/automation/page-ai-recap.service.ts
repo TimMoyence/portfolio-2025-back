@@ -16,7 +16,7 @@ import {
   engineScoreSchema,
 } from './schemas/engine-coverage.schema';
 import { UrlIndexabilityResult } from './url-indexability.service';
-import { scoreSur100 } from '../../domain/score-sur-100';
+import { scoreMoyenSur100, scoreSur100 } from '../../domain/score-sur-100';
 
 const pageRecapSchema = z.object({
   summary: z.string().min(1),
@@ -816,20 +816,12 @@ export class PageAiRecapService extends LlmLimiteParLaConfig {
 
   private buildSummary(recaps: PageAiRecap[]): PageAiRecapSummary {
     const priorityCounts = { high: 0, medium: 0, low: 0 };
-    let wording = 0;
-    let trust = 0;
-    let cta = 0;
-    let seoCopy = 0;
     let llmRecaps = 0;
     let fallbackRecaps = 0;
     const issueCount = new Map<string, number>();
 
     for (const recap of recaps) {
       priorityCounts[recap.priority] += 1;
-      wording += recap.wordingScore;
-      trust += recap.trustScore;
-      cta += recap.ctaScore;
-      seoCopy += recap.seoCopyScore;
       if (recap.source === 'llm') {
         llmRecaps += 1;
       } else {
@@ -841,22 +833,23 @@ export class PageAiRecapService extends LlmLimiteParLaConfig {
       }
     }
 
-    const total = recaps.length;
     const topRecurringIssues = [...issueCount.entries()]
       .sort((a, b) => b[1] - a[1])
       .slice(0, 6)
       .map(([issue]) => issue);
+    const scoreMoyen = (lire: (recap: PageAiRecap) => number): number =>
+      scoreMoyenSur100(recaps.map(lire));
 
     return {
-      totalPages: total,
+      totalPages: recaps.length,
       llmRecaps,
       fallbackRecaps,
       priorityCounts,
       averageScores: {
-        wording: scoreSur100(Math.round(wording / Math.max(1, total))),
-        trust: scoreSur100(Math.round(trust / Math.max(1, total))),
-        cta: scoreSur100(Math.round(cta / Math.max(1, total))),
-        seoCopy: scoreSur100(Math.round(seoCopy / Math.max(1, total))),
+        wording: scoreMoyen((recap) => recap.wordingScore),
+        trust: scoreMoyen((recap) => recap.trustScore),
+        cta: scoreMoyen((recap) => recap.ctaScore),
+        seoCopy: scoreMoyen((recap) => recap.seoCopyScore),
       },
       topRecurringIssues,
     };

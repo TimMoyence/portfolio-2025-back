@@ -2,7 +2,7 @@ import type {
   Cours,
   Ecran,
 } from '../../src/modules/formations/domain/contrats/cours';
-import type { AuMoinsUn } from '../../src/modules/formations/domain/cours/Cours';
+import type { AuMoinsUn } from '../../src/common/domain/au-moins-un';
 import {
   lireCoursStocke,
   type EcranDeCoursBrut,

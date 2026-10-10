@@ -1,3 +1,4 @@
+import type { AuMoinsUnModifiable } from '../../../../common/domain/au-moins-un';
 import type { ConceptId } from '../../domain/cours/banque/concepts';
 import type { ConfusionId } from '../../domain/cours/banque/confusions';
 import {
@@ -45,7 +46,7 @@ export function questionChiffree(
   concept: ConceptId,
   question: string,
   unite: UniteDeSaisie,
-  confusions: moteur.AuMoinsUn<ConfusionId>,
+  confusions: AuMoinsUnModifiable<ConfusionId>,
 ) {
   const [premiere, ...suite] = confusions;
   return moteur.numerique(

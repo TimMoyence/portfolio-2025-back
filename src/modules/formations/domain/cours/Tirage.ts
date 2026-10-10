@@ -1,3 +1,4 @@
+import type { AuMoinsUn } from '../../../../common/domain/au-moins-un';
 import { auMillionieme } from '../../../../common/domain/nombres/arrondi';
 import { valeursAmbigues } from '../GradingCore';
 import type { AnswerValue, Solution } from '../GradingCore';
@@ -21,7 +22,6 @@ import type { ConfusionId } from './banque/confusions';
 import { ecranCorrigePar, ecransCorrigeantDe } from './Corrections';
 import { estInteractif, estReservee } from './Cours';
 import type {
-  AuMoinsUn,
   PieceJointeServie,
   QuestionNumerique,
   QuestionVote,

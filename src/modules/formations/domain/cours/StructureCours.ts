@@ -1,3 +1,4 @@
+import { somme } from '../../../../common/domain/nombres/statistiques';
 import { listeEntreGuillemets } from '../../../../common/domain/texte/liste-entre-guillemets';
 import { sansDiacritiques } from '../../../../common/domain/texte/sans-diacritiques';
 import type { Cours, Ecran } from '../contrats/cours';
@@ -170,12 +171,14 @@ function controlerRatio({ cours }: Analyse): readonly Manquement[] {
   if (questionsDuCours(cours).length === 0) {
     return [];
   }
-  const interaction = cours.ecrans
-    .filter((ecran) => estInteractif(ecran))
-    .reduce((total, ecran) => total + minutesDe(ecran), 0);
-  const exposition = cours.ecrans
-    .filter((ecran) => !estInteractif(ecran))
-    .reduce((total, ecran) => total + minutesDe(ecran), 0);
+  const minutesDesEcrans = (interactifs: boolean): number =>
+    somme(
+      cours.ecrans
+        .filter((ecran) => estInteractif(ecran) === interactifs)
+        .map(minutesDe),
+    );
+  const interaction = minutesDesEcrans(true);
+  const exposition = minutesDesEcrans(false);
   if (interaction + exposition === 0) {
     return [
       {
@@ -639,7 +642,7 @@ function tempsTropLong(temp: TempsNote): readonly Manquement[] {
 }
 
 function suiteTropCourte(suite: readonly TempsNote[]): readonly Manquement[] {
-  const minutes = suite.reduce((total, temp) => total + temp.minutes, 0);
+  const minutes = somme(suite.map((temp) => temp.minutes));
   if (minutes >= DUREE_MINIMALE_D_ATELIER) {
     return [];
   }

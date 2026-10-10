@@ -7,7 +7,9 @@ import type { StructuredDataQualityResult } from '../../domain/StructuredDataQua
 import { AuditLocale } from '../../domain/audit-locale.util';
 import { HomepageAuditSnapshot } from './homepage-analyzer.service';
 import { UrlIndexabilityResult } from './url-indexability.service';
-import { scoreSur100 } from '../../domain/score-sur-100';
+import { scoreMoyenSur100, scoreSur100 } from '../../domain/score-sur-100';
+import { estAuMoinsUn } from '../../../../common/domain/au-moins-un';
+import { proportion } from '../../../../common/domain/nombres/statistiques';
 
 export type PillarKey =
   | 'seo'
@@ -189,28 +191,26 @@ export class ScoringService {
       score += Math.min(15, input.llmsTxt.complianceScore * 0.15);
     }
 
-    if (input.aiBotsAccess.length > 0) {
-      const friendly = input.aiBotsAccess.filter(
-        (bots) =>
-          bots.gptBot !== 'disallowed' && bots.googleExtended !== 'disallowed',
-      ).length;
-      score += (friendly / input.aiBotsAccess.length) * 25;
+    if (estAuMoinsUn(input.aiBotsAccess)) {
+      score +=
+        proportion(
+          input.aiBotsAccess,
+          (bots) =>
+            bots.gptBot !== 'disallowed' &&
+            bots.googleExtended !== 'disallowed',
+        ) * 25;
     }
 
-    if (input.structuredDataQuality.length > 0) {
-      const aiFriendly = input.structuredDataQuality.filter(
-        (sd) => sd.aiFriendly,
-      ).length;
-      score += (aiFriendly / input.structuredDataQuality.length) * 20;
+    if (estAuMoinsUn(input.structuredDataQuality)) {
+      score +=
+        proportion(input.structuredDataQuality, (sd) => sd.aiFriendly) * 20;
     }
 
     return scoreSur100(score);
   }
 
   scoreCitationWorthiness(perPageScores: ReadonlyArray<number>): number {
-    if (perPageScores.length === 0) return 0;
-    const sum = perPageScores.reduce((acc, value) => acc + value, 0);
-    return scoreSur100(sum / perPageScores.length);
+    return scoreMoyenSur100(perPageScores);
   }
 
   private computeSampledCoverage(

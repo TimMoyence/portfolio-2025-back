@@ -2,6 +2,7 @@ import {
   lireConception,
   texteNormalise,
 } from '../../../../../test/helpers/conception-de-cours';
+import { somme } from '../../../../common/domain/nombres/statistiques';
 import {
   buildContenuDuCours,
   buildCoursDuContenu,
@@ -406,8 +407,6 @@ describe('B2-01 — recalcul des corrigés depuis les données brutes (AC-10)', 
   const ca2024 = [483000, 210000, 357000];
   const ca2025 = [397000, 230000, 523000];
   const taux = [0.36, 0.28, 0.16];
-  const somme = (valeurs: readonly number[]): number =>
-    valeurs.reduce((total, valeur) => total + valeur, 0);
   const marges2024 = ca2024.map((ca, rang) => ca * taux[rang]);
   const marges2025 = ca2025.map((ca, rang) => ca * taux[rang]);
   const inflation = [0.5, 1.6, 5.2, 4.9, 2.0, 0.9];

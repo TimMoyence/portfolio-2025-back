@@ -1,4 +1,4 @@
-import { scoreSur100 } from './score-sur-100';
+import { scoreMoyenSur100, scoreSur100 } from './score-sur-100';
 
 describe('scoreSur100', () => {
   it('arrondit un score à l entier', () => {
@@ -13,5 +13,15 @@ describe('scoreSur100', () => {
   it('ramène à 0 un score non fini', () => {
     expect(scoreSur100(Number.NaN)).toBe(0);
     expect(scoreSur100(Number.POSITIVE_INFINITY)).toBe(0);
+  });
+});
+
+describe('scoreMoyenSur100', () => {
+  it('vaut 0 sans aucun score', () => {
+    expect(scoreMoyenSur100([])).toBe(0);
+  });
+
+  it('arrondit la moyenne des scores', () => {
+    expect(scoreMoyenSur100([70, 75, 75])).toBe(73);
   });
 });

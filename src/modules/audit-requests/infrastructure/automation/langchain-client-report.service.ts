@@ -15,7 +15,7 @@ import { withHardTimeout } from './llm-execution.guardrails';
 import { LlmLimiteParLaConfig } from './llm-executor.port';
 import { impactLocalise } from './shared/finding-priority.util';
 import { localizedText } from './shared/locale-text.util';
-import { scoreSur100 } from '../../domain/score-sur-100';
+import { scoreMoyenSur100, scoreSur100 } from '../../domain/score-sur-100';
 
 const severitySchema = z.enum(['high', 'medium', 'low']);
 
@@ -628,8 +628,6 @@ export class LangchainClientReportService extends LlmLimiteParLaConfig {
       (value): value is number =>
         typeof value === 'number' && Number.isFinite(value),
     );
-    if (numeric.length === 0) return 0;
-    const avg = numeric.reduce((acc, value) => acc + value, 0) / numeric.length;
-    return scoreSur100(Math.round(avg));
+    return scoreMoyenSur100(numeric);
   }
 }

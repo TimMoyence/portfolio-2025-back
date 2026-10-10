@@ -1,4 +1,8 @@
 import type { z } from 'zod';
+import {
+  mapperAuMoinsUn,
+  type AuMoinsUnModifiable,
+} from '../../../../common/domain/au-moins-un';
 import type { ConceptId } from '../../domain/cours/banque/concepts';
 import type { ConfusionId } from '../../domain/cours/banque/confusions';
 import type { ContenuDeCours } from '../../domain/cours/CoursStocke';
@@ -26,7 +30,6 @@ type EcranDeRappel = Extract<EcranDuCours, { readonly brique: 'fp-spaced' }>;
 type EcranDExemple = Extract<EcranDuCours, { readonly brique: 'fp-worked' }>;
 type VoteDuCours = z.input<typeof voteStocke>;
 type NumeriqueDuCours = z.input<typeof numeriqueStockee>;
-export type AuMoinsUn<T> = [T, ...T[]];
 export type Piege = readonly [string, ConfusionId];
 type EcranDeTableau = Extract<
   EcranDuCours,
@@ -42,15 +45,7 @@ export const TOLERANCE_RELATIVE = {
 export const TOLERANCE_NULLE = { type: 'absolue', valeur: 0 } as const;
 export const DEUX_DECIMALES = { type: 'decimales', valeur: 2 } as const;
 
-function mapper<T, U>(
-  liste: AuMoinsUn<T>,
-  transformer: (element: T) => U,
-): AuMoinsUn<U> {
-  const [premier, ...suite] = liste;
-  return [transformer(premier), ...suite.map(transformer)];
-}
-
-export function puces(...lignes: AuMoinsUn<string>): string {
+export function puces(...lignes: AuMoinsUnModifiable<string>): string {
   return lignes.map((ligne) => `• ${ligne}`).join('\n');
 }
 
@@ -77,7 +72,7 @@ export function vote(
   noteCompte: boolean,
   enonce: string,
   bonne: string,
-  pieges: AuMoinsUn<Piege>,
+  pieges: AuMoinsUnModifiable<Piege>,
   segments: readonly string[] = [],
 ): VoteDuCours {
   const [premier, ...suite] = pieges;
@@ -104,7 +99,7 @@ export function numerique(
   solution: number,
   tolerance: NumeriqueDuCours['tolerance'],
   formePubliee: string,
-  pieges: AuMoinsUn<readonly [number, ConfusionId]>,
+  pieges: AuMoinsUnModifiable<readonly [number, ConfusionId]>,
 ): NumeriqueDuCours {
   return {
     type: 'numeric',
@@ -116,7 +111,10 @@ export function numerique(
     solution,
     tolerance,
     formePubliee,
-    pieges: mapper(pieges, ([valeur, confusion]) => ({ valeur, confusion })),
+    pieges: mapperAuMoinsUn(pieges, ([valeur, confusion]) => ({
+      valeur,
+      confusion,
+    })),
   };
 }
 
@@ -151,17 +149,20 @@ export function classement(
     readonly dureeJeuMs?: number;
   },
   concept: ConceptId,
-  categories: AuMoinsUn<readonly [string, string]>,
-  cartes: AuMoinsUn<Carte>,
+  categories: AuMoinsUnModifiable<readonly [string, string]>,
+  cartes: AuMoinsUnModifiable<Carte>,
 ): Pick<ProprietesDeClassement, 'plan' | 'questions'> {
   return {
     plan: {
       ...plan,
-      cartes: mapper(cartes, (carte) => ({
+      cartes: mapperAuMoinsUn(cartes, (carte) => ({
         id: carte.id,
         libelle: carte.libelle,
       })),
-      categories: mapper(categories, ([id, libelle]) => ({ id, libelle })),
+      categories: mapperAuMoinsUn(categories, ([id, libelle]) => ({
+        id,
+        libelle,
+      })),
     },
     questions: [
       {
@@ -171,7 +172,7 @@ export function classement(
         noteCompte: true,
         corrige: {
           type: 'classement',
-          attendus: mapper(cartes, (carte) => ({
+          attendus: mapperAuMoinsUn(cartes, (carte) => ({
             carteId: carte.id,
             categorieId: carte.categorie,
             confusionSiErreur: carte.confusion,
@@ -217,7 +218,7 @@ export function suiviDeSaCorrection(
 
 export interface TempsDeCorrection {
   readonly minutes: number;
-  readonly notes: AuMoinsUn<string>;
+  readonly notes: AuMoinsUnModifiable<string>;
 }
 
 function annoncerLaCorrection(notes: string, minutes: number): string {
@@ -241,7 +242,7 @@ export function corrigeEtapeParEtape(
 export function corrigeSurPlace<E extends EcranDuCours>(
   exercice: E,
   { minutes, notes }: TempsDeCorrection,
-  explications: AuMoinsUn<readonly [string, string]>,
+  explications: AuMoinsUnModifiable<readonly [string, string]>,
 ): E {
   return {
     ...exercice,
@@ -253,7 +254,7 @@ export function corrigeSurPlace<E extends EcranDuCours>(
     proprietes: {
       ...exercice.proprietes,
       correctionSurPlace: {
-        explications: mapper(explications, ([reference, texte]) => ({
+        explications: mapperAuMoinsUn(explications, ([reference, texte]) => ({
           reference,
           texte,
         })),
@@ -301,7 +302,7 @@ export function enigme(
   tolerance: number,
   formePubliee: string,
   fragment: string,
-  pieges: AuMoinsUn<readonly [number, ConfusionId]>,
+  pieges: AuMoinsUnModifiable<readonly [number, ConfusionId]>,
 ) {
   return {
     type: 'enigme' as const,
@@ -320,7 +321,7 @@ export function enigme(
         formePubliee,
       },
       fragment,
-      pieges: mapper(pieges, ([valeurDuPiege, confusion]) => ({
+      pieges: mapperAuMoinsUn(pieges, ([valeurDuPiege, confusion]) => ({
         valeur: valeurDuPiege,
         confusion,
       })),
@@ -333,7 +334,7 @@ export function rappel(
   concept: ConceptId,
   enonce: string,
   bonne: string,
-  pieges: AuMoinsUn<Piege>,
+  pieges: AuMoinsUnModifiable<Piege>,
 ): VoteDuCours {
   return vote(id, concept, false, enonce, bonne, pieges);
 }
@@ -465,7 +466,7 @@ export function nombreFrancais(valeur: number, decimales: number): string {
 
 function coursDuNiveau(niveau: string) {
   return (
-    actes: AuMoinsUn<Acte>,
+    actes: AuMoinsUnModifiable<Acte>,
     remediations: ContenuDeCours['remediations'],
     medias: ContenuDeCours['medias'],
     fiche: Pick<

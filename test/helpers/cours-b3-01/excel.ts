@@ -1,3 +1,10 @@
+import { estAuMoinsUn } from '../../../src/common/domain/au-moins-un';
+import {
+  mediane as medianeDesNombres,
+  moyenne as moyenneDesNombres,
+  somme as sommeDesNombres,
+} from '../../../src/common/domain/nombres/statistiques';
+
 export type Valeur = number | string | boolean | null;
 
 const ORIGINE_DES_DATES = Date.UTC(1899, 11, 30);
@@ -61,26 +68,23 @@ function nombres(valeurs: readonly Valeur[]): number[] {
 }
 
 export function somme(valeurs: readonly Valeur[]): number {
-  return nombres(valeurs).reduce((total, valeur) => total + valeur, 0);
+  return sommeDesNombres(nombres(valeurs));
 }
 
 export function moyenne(valeurs: readonly Valeur[]): number {
   const retenues = nombres(valeurs);
-  if (retenues.length === 0) {
+  if (!estAuMoinsUn(retenues)) {
     throw new RangeError('#DIV/0!');
   }
-  return somme(retenues) / retenues.length;
+  return moyenneDesNombres(retenues);
 }
 
 export function mediane(valeurs: readonly Valeur[]): number {
-  const triees = nombres(valeurs).sort((a, b) => a - b);
-  if (triees.length === 0) {
+  const retenues = nombres(valeurs);
+  if (!estAuMoinsUn(retenues)) {
     throw new RangeError('#NOMBRE!');
   }
-  const milieu = Math.floor(triees.length / 2);
-  return triees.length % 2 === 1
-    ? triees[milieu]
-    : (triees[milieu - 1] + triees[milieu]) / 2;
+  return medianeDesNombres(retenues);
 }
 
 type ValeurPleine = Exclude<Valeur, null>;

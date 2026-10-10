@@ -1,3 +1,7 @@
+import {
+  exigerAuMoinsUn,
+  type AuMoinsUnModifiable,
+} from '../../../../common/domain/au-moins-un';
 import type { ConceptId } from '../../domain/cours/banque/concepts';
 import type { ContenuDeCours } from '../../domain/cours/CoursStocke';
 import * as moteur from './briques';
@@ -101,12 +105,8 @@ function recopiee(modele: string, ligne: number): string {
   return modele.replaceAll(/([A-G])2\b/g, `$1${ligne}`);
 }
 
-function auMoinsUn<T>(liste: readonly T[]): moteur.AuMoinsUn<T> {
-  const [premier, ...suite] = liste;
-  if (premier === undefined) {
-    throw new Error('liste d’attendus vide dans le B2-03');
-  }
-  return [premier, ...suite];
+function auMoinsUn<T>(liste: readonly T[]): AuMoinsUnModifiable<T> {
+  return exigerAuMoinsUn(liste, 'liste d’attendus vide dans le B2-03');
 }
 
 function cellulesDesLignes(

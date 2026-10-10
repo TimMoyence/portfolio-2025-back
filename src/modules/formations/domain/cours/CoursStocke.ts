@@ -1,5 +1,9 @@
 import { z } from 'zod';
 import {
+  mapperAuMoinsUn,
+  type AuMoinsUn,
+} from '../../../../common/domain/au-moins-un';
+import {
   DIFFUSIONS,
   type CadrageDuRenvoi,
   type Cours,
@@ -14,7 +18,6 @@ import {
   GABARITS,
   questionsDe,
   questionVote,
-  type AuMoinsUn,
   type CorrectionSurPlace,
   type Modalite,
   type PieceJointe,
@@ -202,17 +205,6 @@ const coursStocke = z
 const coursAPublier = coursStocke.superRefine(controlerChampsPublics);
 
 export type ContenuDeCours = z.input<typeof coursStocke>;
-
-function mapperAuMoinsUn<T, U>(
-  liste: AuMoinsUn<T>,
-  transformer: (element: T, rang: number) => U,
-): AuMoinsUn<U> {
-  const [premier, ...suite] = liste;
-  return [
-    transformer(premier, 0),
-    ...suite.map((element, rang) => transformer(element, rang + 1)),
-  ];
-}
 
 function questionDuQuiz(quiz: QuizNote): QuestionVote {
   const rangsDesPieges = quiz.options

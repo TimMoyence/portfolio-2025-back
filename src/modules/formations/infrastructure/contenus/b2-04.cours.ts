@@ -2,6 +2,7 @@ import {
   arrondi,
   auMillionieme,
 } from '../../../../common/domain/nombres/arrondi';
+import type { AuMoinsUnModifiable } from '../../../../common/domain/au-moins-un';
 import type { ConceptId } from '../../domain/cours/banque/concepts';
 import type { ContenuDeCours } from '../../domain/cours/CoursStocke';
 import * as moteur from './briques';
@@ -156,7 +157,7 @@ const PLAN_DES_DEUX_HYPOTHESES = {
   ],
 };
 
-const ATTENDUS_DES_DEUX_HYPOTHESES: moteur.AuMoinsUn<AttenduDeFeuille> = [
+const ATTENDUS_DES_DEUX_HYPOTHESES: AuMoinsUnModifiable<AttenduDeFeuille> = [
   ...colonneRecopiee(
     {
       colonne: 'D',
@@ -236,7 +237,7 @@ const PLAN_DE_LA_BOUTIQUE = {
   ],
 };
 
-const ATTENDUS_DE_LA_BOUTIQUE: moteur.AuMoinsUn<AttenduDeFeuille> = [
+const ATTENDUS_DE_LA_BOUTIQUE: AuMoinsUnModifiable<AttenduDeFeuille> = [
   ...colonneRecopiee(
     {
       colonne: 'C',

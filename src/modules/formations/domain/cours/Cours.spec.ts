@@ -205,16 +205,17 @@ describe('contraintes portees par le type', () => {
       concept: 'proportion',
       pieges: [{ confusion: 'base-arrivee', valeur: () => 2 }],
     });
-    questionVote({
-      id: 'V',
-      noteCompte: false,
-      donnees: () => ({}),
-      enonce: () => 'e',
-      concept: 'proportion',
-      bonne: () => 'b',
-      // @ts-expect-error au moins un piege
-      pieges: [],
-    });
+    const voteSansPiege = (): unknown =>
+      questionVote({
+        id: 'V',
+        noteCompte: false,
+        donnees: () => ({}),
+        enonce: () => 'e',
+        concept: 'proportion',
+        bonne: () => 'b',
+        // @ts-expect-error au moins un piege
+        pieges: [],
+      });
     const classement: Ecran = {
       ...EN_CATALOGUE,
       id: 'E',
@@ -225,6 +226,6 @@ describe('contraintes portees par le type', () => {
       notes: '',
     };
     const cours: Cours = buildCoursDeTest();
-    expect([classement, cours]).toHaveLength(2);
+    expect([classement, cours, voteSansPiege]).toHaveLength(3);
   });
 });

@@ -1,3 +1,8 @@
+import {
+  mapperAuMoinsUn,
+  type AuMoinsUn,
+} from '../../../../common/domain/au-moins-un';
+import { proportion } from '../../../../common/domain/nombres/statistiques';
 import type { Tolerance } from '../GradingCore';
 import { matchesSolution } from '../GradingCore';
 import type { SheetPlanStocke } from '../contrats/cours';
@@ -165,11 +170,10 @@ function confusionDeLaCellule(
 }
 
 function bilan<V extends { readonly juste: boolean }>(
-  verdicts: readonly V[],
+  verdicts: AuMoinsUn<V>,
   seuilReussite: number,
 ): Correction<V> {
-  const score =
-    verdicts.filter((verdict) => verdict.juste).length / verdicts.length;
+  const score = proportion(verdicts, (verdict) => verdict.juste);
   return { verdicts, score, correcte: score >= seuilReussite };
 }
 
@@ -179,7 +183,7 @@ export function corrigerFeuille(
 ): CorrectionDeFeuille {
   const feuille = reconstruire(corrige.plan, envoi);
   const resultats = evaluerFeuille(feuille);
-  const verdicts = corrige.attendus.map((attendu) => {
+  const verdicts = mapperAuMoinsUn(corrige.attendus, (attendu) => {
     const confusion = confusionDeLaCellule(
       attendu,
       feuille,
@@ -198,7 +202,7 @@ export function corrigerClassement(
   corrige: CorrigeClassement,
   classement: Readonly<Record<string, string>>,
 ): CorrectionDeClassement {
-  const verdicts = corrige.attendus.map((attendu) => {
+  const verdicts = mapperAuMoinsUn(corrige.attendus, (attendu) => {
     const juste = classement[attendu.carteId] === attendu.categorieId;
     return {
       carteId: attendu.carteId,
@@ -213,7 +217,7 @@ export function corrigerTableau(
   corrige: CorrigeTableau,
   saisies: SaisiesDeTableau,
 ): CorrectionDeTableau {
-  const verdicts = corrige.attendus.map((attendu) => {
+  const verdicts = mapperAuMoinsUn(corrige.attendus, (attendu) => {
     const valeur = saisies[attendu.rang]?.[attendu.cle];
     const juste =
       valeur !== undefined &&
