@@ -1,5 +1,6 @@
 import { Inject, Injectable, MessageEvent } from '@nestjs/common';
 import { Observable } from 'rxjs';
+import { estObjet } from '../../../common/domain/est-objet';
 import type { IAuditRequestsRepository } from '../domain/IAuditRequests.repository';
 import type { AuditSnapshot } from '../domain/AuditProcessing';
 import { AUDIT_REQUESTS_REPOSITORY } from '../domain/token';
@@ -183,9 +184,6 @@ export class StreamAuditEventsUseCase {
     keyChecks: Record<string, unknown>,
   ): Record<string, unknown> | undefined {
     const value = keyChecks['progressDetails'];
-    if (!value || typeof value !== 'object' || Array.isArray(value)) {
-      return undefined;
-    }
-    return value as Record<string, unknown>;
+    return estObjet(value) ? value : undefined;
   }
 }

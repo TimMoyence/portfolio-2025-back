@@ -8,7 +8,7 @@ import {
 import { libelleDeConcept } from './cours/banque/concepts';
 import { libelleLisible } from './cours/banque/confusions';
 import type { Cours, TypeQuestion } from './contrats/cours';
-import type { DetailProduction, ValeurReponse } from './contrats/resultats';
+import type { DetailProduction, ValeurProduction } from './contrats/resultats';
 import { activitesLibres } from './cours/EcranServi';
 import { tirer } from './cours/Tirage';
 import type { LibellesDesOptions } from './cours/Tirage';
@@ -26,6 +26,7 @@ import type { IncidentRecord } from './IIncidents.repository';
 import type { ParticipantRecord } from './IParticipants.repository';
 import type { SessionRecord } from './ISessions.repository';
 import { REGLE_DE_NOTATION } from './RegleDeNotation';
+import { estUneProduction, texteDeValeur } from './ValeurReponse';
 
 const SEUIL_CONCEPT_FRAGILE = 0.7;
 const LIBELLE_NE_SAIT_PAS = 'Je ne sais pas';
@@ -210,16 +211,6 @@ function reponsesLibresDe(
     }));
 }
 
-function estProduction(
-  valeur: ValeurReponse,
-): valeur is Extract<ValeurReponse, { readonly type: string }> {
-  return typeof valeur === 'object';
-}
-
-function texteDeValeur(valeur: ValeurReponse): string {
-  return estProduction(valeur) ? valeur.type : String(valeur);
-}
-
 const LIBELLE_PAR_TYPE: Readonly<Record<string, string>> = {
   feuille: 'Feuille',
   tableau: 'Tableau',
@@ -233,7 +224,7 @@ const UNITE_PAR_TYPE: Readonly<Record<string, string>> = {
 };
 
 function productionLisible(
-  valeur: Extract<ValeurReponse, { readonly type: string }>,
+  valeur: ValeurProduction,
   details: readonly DetailProduction[] | null,
 ): string {
   const titre = LIBELLE_PAR_TYPE[valeur.type] ?? valeur.type;
@@ -248,7 +239,7 @@ function reponseLisible(
   reponse: AnswerRecord,
   libelles: LibellesDesOptions,
 ): string {
-  if (estProduction(reponse.valeur)) {
+  if (estUneProduction(reponse.valeur)) {
     return productionLisible(reponse.valeur, reponse.details);
   }
   if (reponse.valeur === NE_SAIT_PAS) {

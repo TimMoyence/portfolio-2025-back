@@ -1,7 +1,8 @@
 import { tronquer } from '../../../../common/domain/texte/tronquer';
 import type { Cours, Ecran, Question } from '../contrats/cours';
 import type { EcranPublic, TirageDuCours } from '../contrats/tirage';
-import { cueillirDansArbre, cueillirSous, estObjet } from './ArbreDeValeurs';
+import { estObjet } from '../../../../common/domain/est-objet';
+import { cueillirDansArbre, cueillirSous } from './ArbreDeValeurs';
 import type { CorrigeProduction } from './Corrige';
 import { questionsDe } from './Cours';
 import { projeterCatalogue } from './Diffusion';

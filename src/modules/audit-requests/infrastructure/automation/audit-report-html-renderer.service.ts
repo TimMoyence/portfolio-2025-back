@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { estObjet } from '../../../../common/domain/est-objet';
 import type { AuditSnapshot } from '../../domain/AuditProcessing';
 import type {
   ClientReportSynthesis,
@@ -334,15 +335,14 @@ export class AuditReportHtmlRendererService {
 
   private renderLlmsTxtAnnex(keyChecks: Record<string, unknown>): EscapedHtml {
     const llmsTxt = keyChecks?.llmsTxt;
-    if (!llmsTxt || typeof llmsTxt !== 'object') {
+    if (!estObjet(llmsTxt)) {
       return safeHtml`<div class="annex-block">
         <h3 class="subsection-title">llms.txt</h3>
         <p>Non analyse.</p>
       </div>`;
     }
-    const record = llmsTxt as Record<string, unknown>;
-    const present = record.present === true;
-    const url = typeof record.url === 'string' ? record.url : null;
+    const present = llmsTxt.present === true;
+    const url = typeof llmsTxt.url === 'string' ? llmsTxt.url : null;
     return safeHtml`<div class="annex-block">
       <h3 class="subsection-title">llms.txt</h3>
       <p>Statut : ${present ? safeHtml`Present` : safeHtml`Absent`}</p>

@@ -1,4 +1,5 @@
 import { empreinteSha256 } from '../../../../common/domain/crypto/empreintes';
+import { estObjet } from '../../../../common/domain/est-objet';
 import type { Feuille, ResultatFormule } from './Formule';
 
 export type VecteurFormule =
@@ -52,12 +53,11 @@ export function serialiserCanonique(valeur: unknown): string {
   if (Array.isArray(valeur)) {
     return `[${valeur.map(serialiserCanonique).join(',')}]`;
   }
-  if (typeof valeur === 'object' && valeur !== null) {
-    const objet = valeur as Readonly<Record<string, unknown>>;
-    const membres = Object.keys(objet)
+  if (estObjet(valeur)) {
+    const membres = Object.keys(valeur)
       .sort(comparerParUnitesDeCode)
       .map(
-        (cle) => `${JSON.stringify(cle)}:${serialiserCanonique(objet[cle])}`,
+        (cle) => `${JSON.stringify(cle)}:${serialiserCanonique(valeur[cle])}`,
       );
     return `{${membres.join(',')}}`;
   }

@@ -26,6 +26,7 @@ import type {
   JeuB301,
   Onglet,
 } from './modele';
+import { estUneFormule, resultatDeCellule } from './modele';
 
 export type RoleDuClasseur = 'brut' | 'repriseActe2' | 'repriseActe3';
 
@@ -93,7 +94,7 @@ function celluleCanonique(cellule: Cellule | undefined): Cellule {
   if (cellule === undefined || cellule === null) {
     return null;
   }
-  return typeof cellule === 'object'
+  return estUneFormule(cellule)
     ? { formule: cellule.formule, resultat: cellule.resultat }
     : cellule;
 }
@@ -138,7 +139,7 @@ export function classeursPublies(jeu: JeuB301): readonly ClasseurAPublier[] {
 
 function versExcel(cellule: Cellule | undefined): CellValue {
   const canonique = celluleCanonique(cellule);
-  return canonique !== null && typeof canonique === 'object'
+  return estUneFormule(canonique)
     ? { formula: canonique.formule, result: canonique.resultat }
     : canonique;
 }
@@ -347,9 +348,7 @@ export async function relireClasseur(
 const FORMATS_DE_DATE: ReadonlySet<FormatDeColonne> = new Set(['date', 'mois']);
 
 const estUneDateEcrite = (cellule: Cellule | undefined): boolean =>
-  typeof (typeof cellule === 'object' && cellule !== null
-    ? cellule.resultat
-    : cellule) === 'number';
+  cellule !== undefined && typeof resultatDeCellule(cellule) === 'number';
 
 const estUneDateRelue = (cellule: Cell, format: FormatDeColonne): boolean =>
   cellule.effectiveType === ValueType.Date &&

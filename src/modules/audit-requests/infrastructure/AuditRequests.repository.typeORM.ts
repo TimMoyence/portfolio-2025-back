@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { estObjet } from '../../../common/domain/est-objet';
 import { DepotDeRequetes } from '../../../common/infrastructure/typeorm/DepotDeRequetes';
 import {
   AuditSnapshot,
@@ -152,22 +153,16 @@ export class AuditRequestsRepositoryTypeORM
   }
 
   private safeObject(value: unknown): Record<string, unknown> {
-    if (!value || typeof value !== 'object' || Array.isArray(value)) return {};
-    return value as Record<string, unknown>;
+    return this.safeNullableObject(value) ?? {};
   }
 
   private safeNullableObject(value: unknown): Record<string, unknown> | null {
-    if (!value || typeof value !== 'object' || Array.isArray(value))
-      return null;
-    return value as Record<string, unknown>;
+    return estObjet(value) ? value : null;
   }
 
   private safeNumberObject(value: unknown): Record<string, number> {
-    if (!value || typeof value !== 'object' || Array.isArray(value)) return {};
     const output: Record<string, number> = {};
-    for (const [key, entry] of Object.entries(
-      value as Record<string, unknown>,
-    )) {
+    for (const [key, entry] of Object.entries(this.safeObject(value))) {
       if (typeof entry === 'number' && Number.isFinite(entry)) {
         output[key] = entry;
       }

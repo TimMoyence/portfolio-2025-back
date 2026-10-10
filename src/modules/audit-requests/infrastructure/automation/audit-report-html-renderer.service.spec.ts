@@ -156,6 +156,17 @@ describe('AuditReportHtmlRendererService', () => {
     expect(html).toContain('&lt;img src=x onerror=alert(1)&gt;');
   });
 
+  it('ne lit pas un llms.txt rangé dans un tableau comme une analyse', () => {
+    const html = service.render(
+      buildAudit({ keyChecks: { llmsTxt: [{ present: true }] } }),
+      buildClientReport(),
+      buildExpertReport(),
+    );
+
+    expect(html).toContain('Non analyse.');
+    expect(html).not.toContain('Statut : Absent');
+  });
+
   it('utilise des page-break-before CSS pour separer les sections', () => {
     const html = rendre();
 

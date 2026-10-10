@@ -8,6 +8,7 @@ import type {
 import { libelleDeConfusion } from './cours/banque/confusions';
 import { NE_SAIT_PAS } from './GradingCore';
 import type { AnswerRecord } from './IAnswers.repository';
+import { estUneProduction, texteDeValeur } from './ValeurReponse';
 
 export type {
   ConfusionComptee,
@@ -63,12 +64,6 @@ function agregerQuestion(
   };
 }
 
-function estUneProduction(
-  valeur: AnswerRecord['valeur'],
-): valeur is Extract<AnswerRecord['valeur'], { readonly type: string }> {
-  return typeof valeur === 'object';
-}
-
 function estNeSaitPas(reponse: AnswerRecord): boolean {
   if (reponse.valeur === NE_SAIT_PAS) {
     return true;
@@ -83,14 +78,10 @@ function compterParOption(
   for (const reponse of reponses) {
     const cle = estNeSaitPas(reponse)
       ? CLE_NE_SAIT_PAS
-      : cleDeVote(reponse.valeur);
+      : texteDeValeur(reponse.valeur);
     parOption[cle] = (parOption[cle] ?? 0) + 1;
   }
   return parOption;
-}
-
-function cleDeVote(valeur: AnswerRecord['valeur']): string {
-  return estUneProduction(valeur) ? valeur.type : String(valeur);
 }
 
 function moyenneDesScores(reponses: readonly AnswerRecord[]): number | null {

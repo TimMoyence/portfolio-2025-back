@@ -1,3 +1,4 @@
+import { estObjet } from '../../../../common/domain/est-objet';
 import type { AuditAutomationConfig, AuditLlmProfile } from './audit.config';
 import type {
   ExpertReportSynthesis,
@@ -21,10 +22,9 @@ export function toEffort(value: unknown): 'high' | 'medium' | 'low' {
 export function normalizeClientEmailDraft(
   raw: unknown,
 ): { subject: string; body: string } | null {
-  if (!raw || typeof raw !== 'object') return null;
-  const record = raw as Record<string, unknown>;
-  const subject = typeof record.subject === 'string' ? record.subject : '';
-  const body = typeof record.body === 'string' ? record.body : '';
+  if (!estObjet(raw)) return null;
+  const subject = typeof raw.subject === 'string' ? raw.subject : '';
+  const body = typeof raw.body === 'string' ? raw.body : '';
   if (!subject.trim() || !body.trim()) return null;
   return { subject: subject.trim(), body: body.trim() };
 }
@@ -50,33 +50,34 @@ export function buildFallbackNotes(input: LangchainAuditInput): string {
     : `Notes internes pour ${input.websiteName} : revue des priorites et preparation du pitch 30 minutes.`;
 }
 
+const TEXTES_PAR_RUBRIQUE_DE_PAGE = 6;
+
+function premiersTextes(valeur: unknown): string[] {
+  return Array.isArray(valeur)
+    ? valeur.map(String).slice(0, TEXTES_PAR_RUBRIQUE_DE_PAGE)
+    : [];
+}
+
 export function projectPerPageAnalysis(
   raw: unknown,
 ): ReadonlyArray<PerPageDetailedAnalysis> {
   if (!Array.isArray(raw)) return [];
   return raw
-    .map((entry): PerPageDetailedAnalysis | null => {
-      if (!entry || typeof entry !== 'object') return null;
-      const record = entry as Record<string, unknown>;
-      const url = typeof record.url === 'string' ? record.url : '';
+    .map((entry: unknown): PerPageDetailedAnalysis | null => {
+      if (!estObjet(entry)) return null;
+      const url = typeof entry.url === 'string' ? entry.url : '';
       if (!url) return null;
-      const engineScores = record.engineScores as
+      const engineScores = entry.engineScores as
         | PerPageDetailedAnalysis['engineScores']
         | undefined;
       if (!engineScores) return null;
       return {
         url,
-        title: typeof record.title === 'string' ? record.title : '',
+        title: typeof entry.title === 'string' ? entry.title : '',
         engineScores,
-        topIssues: Array.isArray(record.topIssues)
-          ? (record.topIssues as string[]).map(String).slice(0, 6)
-          : [],
-        recommendations: Array.isArray(record.recommendations)
-          ? (record.recommendations as string[]).map(String).slice(0, 6)
-          : [],
-        evidence: Array.isArray(record.evidence)
-          ? (record.evidence as string[]).map(String).slice(0, 6)
-          : [],
+        topIssues: premiersTextes(entry.topIssues),
+        recommendations: premiersTextes(entry.recommendations),
+        evidence: premiersTextes(entry.evidence),
       };
     })
     .filter((entry): entry is PerPageDetailedAnalysis => entry !== null);

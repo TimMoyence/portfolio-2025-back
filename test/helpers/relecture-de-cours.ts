@@ -2,6 +2,7 @@ import type {
   Cours,
   Ecran,
 } from '../../src/modules/formations/domain/contrats/cours';
+import { cueillirSous } from '../../src/modules/formations/domain/cours/ArbreDeValeurs';
 import { questionsDe } from '../../src/modules/formations/domain/cours/Cours';
 import type { ContenuDeCours } from '../../src/modules/formations/domain/cours/CoursStocke';
 import { projeterCatalogue } from '../../src/modules/formations/domain/cours/Diffusion';
@@ -93,13 +94,9 @@ const SIGNE_MOINS_TYPOGRAPHIQUE = /\u{2212}/gu;
 const CARACTERES_SPECIAUX = /[.*+?^${}()|[\]\\]/g;
 
 function textesDe(valeur: unknown): string[] {
-  if (typeof valeur === 'string') {
-    return [valeur];
-  }
-  if (typeof valeur !== 'object' || valeur === null) {
-    return [];
-  }
-  return Object.values(valeur).flatMap(textesDe);
+  return cueillirSous('', valeur, (_cle, element) =>
+    typeof element === 'string' ? [element] : null,
+  );
 }
 
 interface Lecture {

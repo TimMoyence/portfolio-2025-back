@@ -1,13 +1,6 @@
-import { cueillirDansArbre, cueillirSous, estObjet } from './ArbreDeValeurs';
+import { cueillirDansArbre, cueillirSous } from './ArbreDeValeurs';
 
 describe('ArbreDeValeurs', () => {
-  it('reconnaît un objet, jamais un tableau ni null', () => {
-    expect(estObjet({ a: 1 })).toBe(true);
-    expect(estObjet([1])).toBe(false);
-    expect(estObjet(null)).toBe(false);
-    expect(estObjet('texte')).toBe(false);
-  });
-
   it('cueille les valeurs retenues à toute profondeur, tableaux compris', () => {
     const arbre = {
       image: 'a.webp',

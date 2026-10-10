@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import type { Transporter } from 'nodemailer';
+import { estObjet } from '../../../common/domain/est-objet';
 import { tronquer } from '../../../common/domain/texte/tronquer';
 import { optionalMetadata } from '../../../common/domain/validation/domain-validators';
 import {
@@ -64,26 +65,24 @@ interface ContenuDuMessage {
 
 function emailSections(raw: unknown[]): EmailSection[] {
   return raw.flatMap((section): EmailSection[] => {
-    if (!section || typeof section !== 'object') return [];
-    const record = section as Record<string, unknown>;
-    const title = optionalMetadata(record.title);
+    if (!estObjet(section)) return [];
+    const title = optionalMetadata(section.title);
     if (!title) return [];
-    const items = Array.isArray(record.items) ? record.items : [];
+    const items = Array.isArray(section.items) ? section.items : [];
     return [
       {
         title,
         items: items
-          .flatMap((item): EmailItem[] => {
-            if (!item || typeof item !== 'object') return [];
-            const fields = item as Record<string, unknown>;
-            const itemText = optionalMetadata(fields.text);
-            const url = optionalMetadata(fields.url);
+          .flatMap((item: unknown): EmailItem[] => {
+            if (!estObjet(item)) return [];
+            const itemText = optionalMetadata(item.text);
+            const url = optionalMetadata(item.url);
             if (!itemText || !url) return [];
             return [
               {
-                entity: optionalMetadata(fields.entity) ?? '',
+                entity: optionalMetadata(item.entity) ?? '',
                 text: tronquer(itemText, MAX_ITEM_TEXT),
-                source: optionalMetadata(fields.source) ?? '',
+                source: optionalMetadata(item.source) ?? '',
                 url,
               },
             ];
