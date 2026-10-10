@@ -28,6 +28,7 @@ type CorrectionDeTri = Omit<SocleDEcran, 'diffusion'> & {
 };
 type EcranDeRappel = Extract<EcranDuCours, { readonly brique: 'fp-spaced' }>;
 type EcranDExemple = Extract<EcranDuCours, { readonly brique: 'fp-worked' }>;
+type EcranDePulsation = Extract<EcranDuCours, { readonly brique: 'fp-pulse' }>;
 type VoteDuCours = z.input<typeof voteStocke>;
 type NumeriqueDuCours = z.input<typeof numeriqueStockee>;
 export type Piege = readonly [string, ConfusionId];
@@ -60,6 +61,50 @@ export function notesDuVoteQuiOuvreLaNotion(notion: 1 | 2 | 3): string {
     `Temps « réfléchir » de la notion ${notion} : votes non notés.`,
     ...NOTES_DU_VOTE_A_DEUX_QUESTIONS,
   );
+}
+
+export const PAUSE_HORS_DUREE = 'Pause de 15 minutes, hors durée programmée.';
+
+export const REPONSES_SOUS_CHAQUE_ETAPE =
+  'Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.';
+
+export const NOTES_DE_L_EXEMPLE_ETAPE_PAR_ETAPE = [
+  REPONSES_SOUS_CHAQUE_ETAPE,
+  'Papier : réponses sous chaque étape du livret.',
+] as const;
+
+export const DEUXIEME_PAGE_DE_COURS =
+  '3 min, enchaînées sur la page 1 : 6 min pour les deux pages.';
+
+export const CORRIGER_PAR_LA_MOINS_REUSSIE =
+  'Corriger question par question, en commençant par la moins réussie.';
+
+export const CORRIGER_PAR_LA_MOINS_REUSSIE_SOUS_SON_SCORE =
+  'Corriger question par question, en commençant par la moins réussie (score sous chaque correction).';
+
+export function tempsDeLExercice(reflexion: number, travail: number): string {
+  return `Temps : réflexion ${reflexion} min · travail ${travail} min`;
+}
+
+export function pulsation(
+  {
+    screenId,
+    titre,
+    concepts,
+  }: Pick<SocleDEcran, 'screenId' | 'titre' | 'concepts'>,
+  sondage: EcranDePulsation['proprietes']['sondage'],
+  ...notesDuJalon: string[]
+): EcranDePulsation {
+  return {
+    screenId,
+    titre,
+    diffusion: 'seance',
+    brique: 'fp-pulse',
+    dureeMinutes: 1,
+    concepts,
+    notes: puces('30 s de vote anonyme.', ...notesDuJalon),
+    proprietes: { sondage },
+  };
 }
 
 function option(libelle: string, confusion: ConfusionId | null) {

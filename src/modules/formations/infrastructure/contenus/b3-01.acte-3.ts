@@ -143,7 +143,7 @@ export const ACTE_3: moteur.Acte = [
       dureeMinutes: 3,
       concepts: ['choix-du-graphique'],
       notes: moteur.puces(
-        'Temps : réflexion 1 min · travail 2 min',
+        moteur.tempsDeLExercice(1, 2),
         'Réflexion : faire dire, pour chaque question, si elle compare, suit le temps, décompose, répartit ou relie.',
         'Pièges : une évolution rangée en barres ; un histogramme confondu avec des barres ; un graphique choisi avant la question.',
       ),
@@ -254,7 +254,7 @@ export const ACTE_3: moteur.Acte = [
       dureeMinutes: 7,
       concepts: ['choix-du-graphique', 'tableau-de-bord'],
       notes: moteur.puces(
-        'Temps : réflexion 1 min · travail 6 min',
+        moteur.tempsDeLExercice(1, 6),
         'Réflexion : faire dire où vit l’objectif : dans une autre table que les ventes, d’où SOMME.SI.ENS et pas un TCD seul.',
         'Pièges : comparer neuf mois de ventes à l’objectif de toute la table ; oublier la période des deux côtés.',
       ),
@@ -449,7 +449,7 @@ export const ACTE_3: moteur.Acte = [
       dureeMinutes: 13,
       concepts: ['tableau-de-bord', 'indicateur-statistique'],
       notes: moteur.puces(
-        'Temps : réflexion 1 min · travail 12 min',
+        moteur.tempsDeLExercice(1, 12),
         'Réflexion : faire dire les quatre indicateurs et la comparaison de chacun avant de construire.',
         'Annoncer le palier défi aux plus rapides : il se corrige oralement, sans note.',
         'Pièges : neuf mois comparés à douze ; toute la table au lieu de 2026 ; moyenne des taux ; marge divisée par le coût d’achat ; ligne d’en-tête comptée parmi les lignes.',
@@ -532,7 +532,7 @@ export const ACTE_3: moteur.Acte = [
       dureeMinutes: 7,
       concepts: ['tableau-de-bord'],
       notes: moteur.puces(
-        'Temps : réflexion 1 min · travail 6 min',
+        moteur.tempsDeLExercice(1, 6),
         'Réflexion : faire relire le tableau de bord en cherchant ce qui sort de l’ordinaire : une agence, une catégorie, un délai.',
         'Rouen (91,9 %) : troisième agence sous l’objectif, en recul d’environ 2 % sur un an, de −3 % à 0 % selon la catégorie, sans cause qui ressorte du détail. À surveiller, pas une histoire : un constat sans cause ne fait pas une recommandation.',
       ),

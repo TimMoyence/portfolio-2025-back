@@ -276,7 +276,7 @@ export const ACTE_1: moteur.Acte = [
       dureeMinutes: 3,
       concepts: ['jeu-de-donnees', 'cle-et-relation'],
       notes: moteur.puces(
-        'Temps : réflexion 1 min · travail 2 min',
+        moteur.tempsDeLExercice(1, 2),
         'Réflexion : relire les en-têtes de l’onglet Commandes avant de trier.',
         'Pièges : n_commande pris pour une mesure, parce qu’il contient des chiffres ; ville prise pour un identifiant ; identifiant rangé parmi les catégories (agence_id, client_id, produit_id, commercial_id).',
       ),
@@ -433,7 +433,7 @@ export const ACTE_1: moteur.Acte = [
       dureeMinutes: 3,
       concepts: ['granularite'],
       notes: moteur.puces(
-        'Temps : réflexion 1 min · travail 2 min',
+        moteur.tempsDeLExercice(1, 2),
         'Réflexion : faire dire ce qu’on va compter, des lignes ou des commandes, avant de filtrer.',
         'Piège : compter une commande là où l’on demande des lignes.',
       ),
@@ -628,7 +628,7 @@ export const ACTE_1: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['nettoyage'],
       notes: moteur.puces(
-        'Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.',
+        moteur.REPONSES_SOUS_CHAQUE_ETAPE,
         'Le fichier sépare les milliers par une espace ordinaire. Les vrais exports utilisent souvent l’espace insécable, UNICAR(160) : SUBSTITUE(L2;UNICAR(160);"") la retire.',
       ),
       proprietes: {
@@ -683,7 +683,7 @@ export const ACTE_1: moteur.Acte = [
       dureeMinutes: 4,
       concepts: ['qualite-des-donnees'],
       notes: moteur.puces(
-        'Temps : réflexion 1 min · travail 3 min',
+        moteur.tempsDeLExercice(1, 3),
         'Réflexion : rappeler les deux questions de la grille avant de trier.',
         'Pièges : corriger seul une date douteuse ; renvoyer à un humain une erreur que le fichier corrige.',
       ),
@@ -819,7 +819,7 @@ export const ACTE_1: moteur.Acte = [
       dureeMinutes: 10,
       concepts: ['nettoyage', 'qualite-des-donnees'],
       notes: moteur.puces(
-        'Temps : réflexion 1 min · travail 9 min',
+        moteur.tempsDeLExercice(1, 9),
         'Réflexion : faire dire l’ordre du travail : copie, colonnes nettoyées, doublons, contrôle.',
         'Annoncer le palier défi aux plus rapides : il se corrige oralement, sans note.',
         'Pièges : dédoublonner sur n_commande seule ; compter l’en-tête parmi les lignes ; additionner avant de convertir ; compter les villes avant d’en retirer les espaces ; poser le contrôle sur les dates converties (45 par la formule du défi, 39 par DATEVAL sur toute date en texte).',

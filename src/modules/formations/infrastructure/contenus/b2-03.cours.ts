@@ -530,7 +530,7 @@ const ACTE_1: moteur.Acte = [
       dureeMinutes: 3,
       concepts: ['connecteur', 'proposition'],
       notes: moteur.puces(
-        '3 min, enchaînées sur la page 1 : 6 min pour les deux pages.',
+        moteur.DEUXIEME_PAGE_DE_COURS,
         'Question : « Chloé a une prime avec un an d’ancienneté. La règle est-elle violée ? » Non : la règle ne parle que des plus de trois ans.',
         'Faire tester les bornes à voix haute : 60 jours pile, 5 000 € pile.',
         'Relier au vote : « plus de trois ans » exclut trois ans pile.',
@@ -579,10 +579,7 @@ const ACTE_1: moteur.Acte = [
       brique: 'fp-worked',
       dureeMinutes: 4,
       concepts: ['connecteur', 'tableur'],
-      notes: moteur.puces(
-        'Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.',
-        'Papier : réponses sous chaque étape du livret.',
-      ),
+      notes: moteur.puces(...moteur.NOTES_DE_L_EXEMPLE_ETAPE_PAR_ETAPE),
       proprietes: {
         modalite: 'solo',
         exemple: {
@@ -650,7 +647,7 @@ const ACTE_1: moteur.Acte = [
       dureeMinutes: 6,
       concepts: ['connecteur'],
       notes: moteur.puces(
-        'Temps : réflexion 1 min · travail 5 min',
+        moteur.tempsDeLExercice(1, 5),
         'Réflexion : chacun écrit P et Q pour la première facture avant de remplir.',
         'Pièges : « ou » lu exclusif sur la ligne V, V ; implication lue comme une équivalence sur la ligne F, V.',
         'Papier : tableau du livret, V ou F à entourer dans chaque case.',
@@ -710,7 +707,7 @@ const ACTE_1: moteur.Acte = [
       dureeMinutes: 6,
       concepts: ['connecteur', 'proposition'],
       notes: moteur.puces(
-        'Temps : réflexion 1 min · travail 5 min',
+        moteur.tempsDeLExercice(1, 5),
         'Réflexion : écrire chaque règle avec ses lettres et ses symboles avant de compter.',
         'Pièges : « ou » exclusif ; additionner les deux conditions ; > au lieu de ≥ ; réciproque prise pour la règle.',
         'Papier : exercice 2 du livret.',
@@ -771,7 +768,7 @@ const ACTE_1: moteur.Acte = [
     {
       minutes: 2,
       notes: [
-        'Corriger question par question, en commençant par la moins réussie (score sous chaque correction).',
+        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE_SOUS_SON_SCORE,
         'Transition : « Écrivons la règle du visa au tableur : exercice 3. »',
       ],
     },
@@ -803,7 +800,7 @@ const ACTE_1: moteur.Acte = [
       dureeMinutes: 6,
       concepts: ['tableur', 'connecteur'],
       notes: moteur.puces(
-        'Temps : réflexion 1 min · travail 5 min',
+        moteur.tempsDeLExercice(1, 5),
         'Réflexion : écrire sur papier les deux conditions avec leurs symboles.',
         'Erreurs à chercher : "France" sans guillemets ; > au lieu de >= (F213) ; ET au lieu de OU.',
         'Papier : formule écrite sur la copie, puis appliquée aux cinq lignes.',
@@ -845,26 +842,20 @@ const ACTE_1: moteur.Acte = [
       ],
     ],
   ),
-  {
-    screenId: 'B2-03-A1-12-JALON',
-    titre: 'Jalon 1 : lire une règle',
-    diffusion: 'seance',
-    brique: 'fp-pulse',
-    dureeMinutes: 1,
-    concepts: ['connecteur'],
-    notes: moteur.puces(
-      '30 s de vote anonyme.',
-      'Si plus de 30 % « Perdu » : reprendre la trace écrite A1-06 après la pause.',
-      'Pause de 15 minutes, hors durée programmée.',
-    ),
-    proprietes: {
-      sondage: {
-        id: 'b2-03-a1-jalon',
-        invite:
-          'Je sais traduire une règle avec non, et, ou, si… alors, et placer la borne.',
-      },
+  moteur.pulsation(
+    {
+      screenId: 'B2-03-A1-12-JALON',
+      titre: 'Jalon 1 : lire une règle',
+      concepts: ['connecteur'],
     },
-  },
+    {
+      id: 'b2-03-a1-jalon',
+      invite:
+        'Je sais traduire une règle avec non, et, ou, si… alors, et placer la borne.',
+    },
+    'Si plus de 30 % « Perdu » : reprendre la trace écrite A1-06 après la pause.',
+    moteur.PAUSE_HORS_DUREE,
+  ),
 ];
 
 const ACTE_2: moteur.Acte = [
@@ -959,7 +950,7 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 3,
       concepts: ['negation', 'connecteur'],
       notes: moteur.puces(
-        '3 min, enchaînées sur la page 1 : 6 min pour les deux pages.',
+        moteur.DEUXIEME_PAGE_DE_COURS,
         'Faire vérifier sur le client à 1 300 € que la négation sans Morgan se trompe.',
         'Relier à la réflexion A2-01 : faire relire les réponses qui ont gardé « et ».',
       ),
@@ -1008,10 +999,7 @@ const ACTE_2: moteur.Acte = [
       brique: 'fp-worked',
       dureeMinutes: 4,
       concepts: ['negation', 'connecteur'],
-      notes: moteur.puces(
-        'Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.',
-        'Papier : réponses sous chaque étape du livret.',
-      ),
+      notes: moteur.puces(...moteur.NOTES_DE_L_EXEMPLE_ETAPE_PAR_ETAPE),
       proprietes: {
         modalite: 'solo',
         exemple: {
@@ -1077,7 +1065,7 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 9,
       concepts: ['negation', 'tableur'],
       notes: moteur.puces(
-        'Temps : réflexion 2 min · travail 7 min',
+        moteur.tempsDeLExercice(2, 7),
         'Réflexion : écrire chaque règle avec ses lettres, puis sa négation, sans rien compter.',
         'Pièges : nier sans échanger le connecteur ; > nié en < au lieu de ≤.',
         'Papier : exercice 4 du livret.',
@@ -1137,7 +1125,7 @@ const ACTE_2: moteur.Acte = [
     {
       minutes: 2,
       notes: [
-        'Corriger question par question, en commençant par la moins réussie.',
+        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE,
         'Transition : « Vérifions Morgan au tableur : exercice 5. »',
       ],
     },
@@ -1169,7 +1157,7 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 8,
       concepts: ['tableur', 'negation'],
       notes: moteur.puces(
-        'Temps : réflexion 2 min · travail 6 min',
+        moteur.tempsDeLExercice(2, 6),
         'Réflexion : écrire la règle d’anomalie avec ses lettres, puis sa forme avec NON et OU.',
         'Erreurs à chercher : textes sans guillemets ; les deux colonnes qui ne s’accordent pas (Morgan oublié).',
         'Papier : les deux formules écrites sur la copie, puis appliquées aux cinq lignes.',
@@ -1215,25 +1203,19 @@ const ACTE_2: moteur.Acte = [
       ],
     ],
   ),
-  {
-    screenId: 'B2-03-A2-07-JALON',
-    titre: 'Jalon 2 : nier une règle',
-    diffusion: 'seance',
-    brique: 'fp-pulse',
-    dureeMinutes: 1,
-    concepts: ['negation'],
-    notes: moteur.puces(
-      '30 s de vote anonyme.',
-      'Si plus de 30 % « Perdu » : reprendre la trace écrite A2-03 sur Morgan.',
-    ),
-    proprietes: {
-      sondage: {
-        id: 'b2-03-a2-jalon',
-        invite:
-          'Je sais nier une comparaison et une règle à deux conditions avec les lois de Morgan.',
-      },
+  moteur.pulsation(
+    {
+      screenId: 'B2-03-A2-07-JALON',
+      titre: 'Jalon 2 : nier une règle',
+      concepts: ['negation'],
     },
-  },
+    {
+      id: 'b2-03-a2-jalon',
+      invite:
+        'Je sais nier une comparaison et une règle à deux conditions avec les lois de Morgan.',
+    },
+    'Si plus de 30 % « Perdu » : reprendre la trace écrite A2-03 sur Morgan.',
+  ),
 ];
 
 const ACTE_3: moteur.Acte = [
@@ -1343,7 +1325,7 @@ const ACTE_3: moteur.Acte = [
       dureeMinutes: 3,
       concepts: ['quantificateur', 'tableur'],
       notes: moteur.puces(
-        '3 min, enchaînées sur la page 1 : 6 min pour les deux pages.',
+        moteur.DEUXIEME_PAGE_DE_COURS,
         'Faire taper NB.SI sans guillemets sur un poste volontaire : l’erreur fixe la règle.',
         'Question : « Chaque client a un commercial. Un même commercial suit-il tous les clients ? » Pas forcément.',
       ),
@@ -1391,10 +1373,7 @@ const ACTE_3: moteur.Acte = [
       brique: 'fp-worked',
       dureeMinutes: 4,
       concepts: ['quantificateur', 'tableur'],
-      notes: moteur.puces(
-        'Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.',
-        'Papier : réponses sous chaque étape du livret.',
-      ),
+      notes: moteur.puces(...moteur.NOTES_DE_L_EXEMPLE_ETAPE_PAR_ETAPE),
       proprietes: {
         modalite: 'solo',
         exemple: {
@@ -1460,7 +1439,7 @@ const ACTE_3: moteur.Acte = [
       dureeMinutes: 9,
       concepts: ['quantificateur', 'negation'],
       notes: moteur.puces(
-        'Temps : réflexion 2 min · travail 7 min',
+        moteur.tempsDeLExercice(2, 7),
         'Réflexion : écrire chaque affirmation avec ∀ ou ∃, puis sa négation.',
         'Pièges : « toutes » nié en « aucune » ; ≥ nié en ≤ ; l’ordre des quantificateurs ; « il existe » gardé en niant.',
         'Papier : exercice 6 du livret.',
@@ -1528,7 +1507,7 @@ const ACTE_3: moteur.Acte = [
     {
       minutes: 2,
       notes: [
-        'Corriger question par question, en commençant par la moins réussie.',
+        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE,
         'Transition : « Une IA a vérifié les mêmes affirmations. »',
       ],
     },
@@ -1560,7 +1539,7 @@ const ACTE_3: moteur.Acte = [
       dureeMinutes: 8,
       concepts: ['quantificateur', 'negation', 'connecteur'],
       notes: moteur.puces(
-        'Temps : réflexion 2 min · travail 6 min',
+        moteur.tempsDeLExercice(2, 6),
         'Réflexion : relire les deux pages de trace écrite de la notion 3.',
         'Repérer qui trouve la négation, le connecteur et l’ordre ; faire trouver la piste fausse avant de révéler.',
         'Papier : exercice 7 du livret.',
@@ -1633,25 +1612,19 @@ const ACTE_3: moteur.Acte = [
       ],
     ],
   ),
-  {
-    screenId: 'B2-03-A3-07-JALON',
-    titre: 'Jalon 3 : quantifier',
-    diffusion: 'seance',
-    brique: 'fp-pulse',
-    dureeMinutes: 1,
-    concepts: ['quantificateur'],
-    notes: moteur.puces(
-      '30 s de vote anonyme.',
-      'Pause de 15 minutes, hors durée programmée.',
-    ),
-    proprietes: {
-      sondage: {
-        id: 'b2-03-a3-jalon',
-        invite:
-          'Je sais nier une phrase avec « tous » ou « il existe » et la vérifier avec NB.SI.',
-      },
+  moteur.pulsation(
+    {
+      screenId: 'B2-03-A3-07-JALON',
+      titre: 'Jalon 3 : quantifier',
+      concepts: ['quantificateur'],
     },
-  },
+    {
+      id: 'b2-03-a3-jalon',
+      invite:
+        'Je sais nier une phrase avec « tous » ou « il existe » et la vérifier avec NB.SI.',
+    },
+    moteur.PAUSE_HORS_DUREE,
+  ),
 ];
 
 const LETTRES_DU_FICHIER = ['A', 'B', 'C', 'D', 'E', 'F', 'G'] as const;
@@ -1813,7 +1786,7 @@ const ACTE_4: moteur.Acte = [
       dureeMinutes: 15,
       concepts: ['tableur', 'connecteur'],
       notes: moteur.puces(
-        'Temps : réflexion 3 min · travail 12 min',
+        moteur.tempsDeLExercice(3, 12),
         'Réflexion : chacun écrit sur papier les deux règles avec leurs symboles, puis les fonctions à utiliser.',
         'Erreurs à chercher : textes sans guillemets ; >= au lieu de > pour la relance ; NB.SI additionnés pour le visa.',
         'Papier : formules écrites sur la copie, résultats comptés à la main ; en CCF, la question se fait devant l’examinateur.',
@@ -1868,7 +1841,7 @@ const ACTE_4: moteur.Acte = [
       dureeMinutes: 14,
       concepts: ['connecteur', 'negation'],
       notes: moteur.puces(
-        'Temps : réflexion 2 min · travail 12 min',
+        moteur.tempsDeLExercice(2, 12),
         'Réflexion : écrire la négation de la règle de relance avant d’ouvrir le coffre.',
         'Indices disponibles après 60 s. À 10 min, projeter l’énigme la moins résolue.',
         'Papier : quatre questions rédigées du livret, sans code de coffre.',
