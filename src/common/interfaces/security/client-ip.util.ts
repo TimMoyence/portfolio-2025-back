@@ -27,9 +27,15 @@ export function provenanceDeLaRequete(req: Request): {
 } {
   return {
     ip: resolveClientIp(req),
-    userAgent: req.headers['user-agent'] ?? null,
-    referer: req.headers['referer'] ?? null,
+    userAgent: lireEnTete(req, 'user-agent'),
+    referer: lireEnTete(req, 'referer'),
   };
+}
+
+export function lireEnTete(req: Request, nom: string): string | null {
+  const valeur = req.headers[nom];
+  if (Array.isArray(valeur)) return valeur.join(',');
+  return valeur ?? null;
 }
 
 export function resolveClientIpOrUnknown(req: Request): string {

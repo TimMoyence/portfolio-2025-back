@@ -20,7 +20,10 @@ import {
 } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import type { Request, Response } from 'express';
-import { resolveClientIpOrUnknown } from '../../../common/interfaces/security/client-ip.util';
+import {
+  lireEnTete,
+  resolveClientIpOrUnknown,
+} from '../../../common/interfaces/security/client-ip.util';
 import { EchangeCourant, type EchangeHttp } from './echange-http.decorator';
 import {
   limiteDeRafraichissement,
@@ -88,7 +91,7 @@ export class AuthController {
   }
 
   private extractUserAgent(req: Request): string {
-    return req.headers['user-agent'] ?? 'unknown';
+    return lireEnTete(req, 'user-agent') ?? 'unknown';
   }
 
   private setRefreshCookie(res: Response, refreshToken: string): void {

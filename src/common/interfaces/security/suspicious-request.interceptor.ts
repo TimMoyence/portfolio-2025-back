@@ -9,7 +9,7 @@ import {
 import type { Request, Response } from 'express';
 import { Observable, tap } from 'rxjs';
 import { tronquer } from '../../domain/texte/tronquer';
-import { resolveClientIpOrUnknown } from './client-ip.util';
+import { lireEnTete, resolveClientIpOrUnknown } from './client-ip.util';
 import type { ISecurityEventsStore } from './ISecurityEventsStore';
 import { SECURITY_EVENTS_STORE } from './ISecurityEventsStore';
 import type { SecurityConfig } from './security.config';
@@ -124,8 +124,6 @@ export class SuspiciousRequestInterceptor implements NestInterceptor {
   }
 
   private headerString(req: Request, name: string): string {
-    const value = req.headers[name];
-    if (Array.isArray(value)) return value.join(',');
-    return value ?? '';
+    return lireEnTete(req, name) ?? '';
   }
 }

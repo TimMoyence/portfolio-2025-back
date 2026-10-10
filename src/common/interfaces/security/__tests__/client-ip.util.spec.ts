@@ -1,5 +1,6 @@
 import type { Request } from 'express';
 import {
+  lireEnTete,
   provenanceDeLaRequete,
   resolveClientIp,
   resolveClientIpOrUnknown,
@@ -11,7 +12,7 @@ const FORGED_IP = '198.51.100.99';
 function buildRequest(overrides: {
   ip?: string;
   remoteAddress?: string;
-  headers?: Record<string, string>;
+  headers?: Record<string, string | string[]>;
 }): Request {
   return {
     ip: overrides.ip,
@@ -74,6 +75,24 @@ describe('resolveClientIp', () => {
     expect(resolveClientIpOrUnknown(buildRequest({ ip: EXPRESS_IP }))).toBe(
       EXPRESS_IP,
     );
+  });
+});
+
+describe('lireEnTete', () => {
+  it('rend la valeur de l en-tete demande', () => {
+    const req = buildRequest({ headers: { 'user-agent': 'Navigateur/1.0' } });
+
+    expect(lireEnTete(req, 'user-agent')).toBe('Navigateur/1.0');
+  });
+
+  it('rend null quand l en-tete est absent', () => {
+    expect(lireEnTete(buildRequest({}), 'accept-language')).toBeNull();
+  });
+
+  it('joint les valeurs d un en-tete repete', () => {
+    const req = buildRequest({ headers: { 'x-trace': ['a', 'b'] } });
+
+    expect(lireEnTete(req, 'x-trace')).toBe('a,b');
   });
 });
 
