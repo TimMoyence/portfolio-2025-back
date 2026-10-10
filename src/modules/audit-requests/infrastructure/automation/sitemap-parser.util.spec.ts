@@ -47,6 +47,10 @@ describe('parseSitemapXml', () => {
     expect(parsed.sitemapUrls).toEqual([]);
   });
 
+  it('laisse remonter un sitemap illisible à son appelant', () => {
+    expect(() => parseSitemapXml('<<<', 50000)).toThrow();
+  });
+
   it('clamps parsed URLs to maxUrls', () => {
     const xml = `
 <urlset>

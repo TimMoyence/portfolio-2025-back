@@ -25,7 +25,7 @@ describe('resoudreConnexionRedis', () => {
       resoudreConnexionRedis({
         REDIS_HOST: 'cache',
         REDIS_PORT: '6380',
-        REDIS_USERNAME: 'app',
+        REDIS_USERNAME: ' app ',
         REDIS_PASSWORD: 'secret ',
       }),
     ).toEqual({

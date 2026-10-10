@@ -3,6 +3,7 @@ import { questionsAAgreger, resumeDuBareme } from '../domain/Bareme';
 import type { ResultatsDeSeance } from '../domain/contrats/resultats';
 import { agregerEnigmes } from '../domain/cours/Enigmes';
 import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
+import type { ClasseurTelecharge } from '../domain/IClasseursDeCours.port';
 import type { IEscapeRepository } from '../domain/IEscape.repository';
 import type { IFreeResponsesRepository } from '../domain/IFreeResponses.repository';
 import type { IPulsesRepository } from '../domain/IPulses.repository';
@@ -16,6 +17,7 @@ import type {
   ISessionsRepository,
   SessionRecord,
 } from '../domain/ISessions.repository';
+import { rapportEnCsv } from '../domain/RapportCsv';
 import { REGLE_DE_NOTATION } from '../domain/RegleDeNotation';
 import { agregerResultats } from '../domain/ResultatsSeance';
 import { calculerStatistiquesSeance } from '../domain/SessionStatistics';
@@ -67,6 +69,13 @@ export class GetSessionResultsUseCase {
   ): Promise<ResultatsDeSeance> {
     const session = await seanceLisiblePar(this.sessions, sessionId, acteur);
     return (await this.bilanDe(session)).resultats;
+  }
+
+  async exporterEnCsv(
+    sessionId: string,
+    acteur: ActeurFormation,
+  ): Promise<ClasseurTelecharge> {
+    return rapportEnCsv(await this.execute(sessionId, acteur));
   }
 
   async bilanDe(

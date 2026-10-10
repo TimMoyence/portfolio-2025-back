@@ -2,6 +2,7 @@ import {
   arrondi,
   auMillionieme,
 } from '../../../../common/domain/nombres/arrondi';
+import { somme } from '../../../../common/domain/nombres/statistiques';
 import type { AuMoinsUnModifiable } from '../../../../common/domain/au-moins-un';
 import type { ConceptId } from '../../domain/cours/banque/concepts';
 import type { ContenuDeCours } from '../../domain/cours/CoursStocke';
@@ -70,12 +71,7 @@ const seuilDeLaBoutiqueAtteint = (rang: number): string =>
   boutique(rang) >= SEUIL_DE_LA_BOUTIQUE ? 'Oui' : 'Non';
 
 function cumulDeLaBoutique(premier: number, dernier: number): number {
-  return auMillionieme(
-    termes(boutique, premier, dernier).reduce(
-      (total, terme) => total + terme,
-      0,
-    ),
-  );
+  return auMillionieme(somme(termes(boutique, premier, dernier)));
 }
 
 const LIGNES_DE_L_HISTORIQUE = CA_OBSERVE.map((ca, rang) => {

@@ -262,10 +262,7 @@ function controlerDureeCours({ cours }: Analyse): readonly Manquement[] {
       },
     ];
   }
-  const declarees = cours.ecrans.reduce(
-    (total, ecran) => total + minutesDe(ecran),
-    0,
-  );
+  const declarees = somme(cours.ecrans.map((ecran) => minutesDe(ecran)));
   if (declarees === annoncee) {
     return [];
   }

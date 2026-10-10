@@ -18,12 +18,16 @@ import {
   decrireLaFicheDuCours,
   valeursEtPieges,
 } from '../../../../../test/helpers/fiche-de-cours';
-import { ecransCorrigesSurPlace } from '../../../../../test/helpers/lecture-de-cours';
+import {
+  clesDe,
+  ecransCorrigesSurPlace,
+} from '../../../../../test/helpers/lecture-de-cours';
 import {
   arrondi,
   auMillionieme,
 } from '../../../../common/domain/nombres/arrondi';
 import type { Ecran } from '../../domain/contrats/cours';
+import { cueillirDansArbre } from '../../domain/cours/ArbreDeValeurs';
 import type { CorrigeProduction } from '../../domain/cours/Corrige';
 import { estInteractif } from '../../domain/cours/Cours';
 import { lireCoursStocke } from '../../domain/cours/CoursStocke';
@@ -61,26 +65,11 @@ function coursDontLeTitre(screenId: string, titre: string): typeof COURS {
   });
 }
 
-function descendre(
-  valeur: unknown,
-  entree: (cle: string, element: unknown) => string[],
-): string[] {
-  if (Array.isArray(valeur)) {
-    return valeur.flatMap((element: unknown) => descendre(element, entree));
-  }
-  if (typeof valeur !== 'object' || valeur === null) {
-    return [];
-  }
-  return Object.entries(valeur).flatMap(([cle, element]) =>
-    entree(cle, element),
-  );
-}
-
 function chainesDe(valeur: unknown): string[] {
   if (typeof valeur === 'string') {
     return [valeur];
   }
-  return descendre(valeur, (cle, element) =>
+  return cueillirDansArbre(valeur, (cle, element) =>
     CLES_NON_TEXTUELLES.has(cle) ? [] : chainesDe(element),
   );
 }
@@ -112,10 +101,6 @@ function correctionDuTri(triId: string): string | null {
     );
   });
   return correction?.id ?? null;
-}
-
-function clesDe(valeur: unknown): string[] {
-  return descendre(valeur, (cle, element) => [cle, ...clesDe(element)]);
 }
 
 function vaut(valeur: number, cible: number): boolean {

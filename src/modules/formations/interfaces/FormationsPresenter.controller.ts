@@ -211,6 +211,16 @@ export class FormationsPresenterController {
     return this.getResults(id, request);
   }
 
+  @Get('sessions/:id/report.csv')
+  @LectureDeSeance()
+  @TelechargementDePieceJointe('Exporte les réponses de la séance en CSV')
+  exportCsv(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Req() request: Request,
+  ): Promise<ClasseurTelecharge> {
+    return this.results.exporterEnCsv(id, acteurDe(request));
+  }
+
   @Get('sessions/:id/deroule')
   @LectureDeSeance()
   @ApiOperation({

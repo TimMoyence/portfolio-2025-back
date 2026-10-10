@@ -1,4 +1,5 @@
-import { ConflictException, NotFoundException } from '@nestjs/common';
+import { ResourceConflictError } from '../../../common/domain/errors/ResourceConflictError';
+import { ResourceNotFoundError } from '../../../common/domain/errors/ResourceNotFoundError';
 import {
   buildArticleBroadcastRecord,
   buildArticleRecord,
@@ -278,10 +279,10 @@ describe('ArticleModerationService', () => {
 
     await expect(
       moderation.approveBroadcast(articleId, NOW),
-    ).rejects.toBeInstanceOf(ConflictException);
+    ).rejects.toBeInstanceOf(ResourceConflictError);
     await expect(
       moderation.cancelBroadcast(articleId, NOW),
-    ).rejects.toBeInstanceOf(ConflictException);
+    ).rejects.toBeInstanceOf(ResourceConflictError);
   });
 
   it('annule une diffusion en cours d envoi', async () => {
@@ -298,7 +299,7 @@ describe('ArticleModerationService', () => {
 
     await expect(
       moderation.withdraw('morning-brief-2020-01-01-fr', NOW),
-    ).rejects.toBeInstanceOf(NotFoundException);
+    ).rejects.toBeInstanceOf(ResourceNotFoundError);
   });
 
   it('liste les derniers articles avec l état de leur diffusion', async () => {

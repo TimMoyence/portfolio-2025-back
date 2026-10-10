@@ -66,7 +66,7 @@ interface CourrielEnvoye {
   to?: string;
   text?: string;
   html?: string;
-  attachments?: Array<{ filename?: string; content?: string }>;
+  attachments?: Array<{ filename?: string; content?: Buffer }>;
 }
 
 interface ReponseInscription {
@@ -240,7 +240,7 @@ function verifierSynthese(
   const synthese = courriels.filter((courriel) => courriel.to === SYNTHESE_A);
   expect(synthese).toHaveLength(1);
   const corps = `${synthese[0].text ?? ''}${synthese[0].html ?? ''}`;
-  const csv = synthese[0].attachments?.[0].content ?? '';
+  const csv = synthese[0].attachments?.[0].content?.toString('utf8') ?? '';
   const emailEtQuestionParLigne = csv
     .split('\r\n')
     .slice(1)

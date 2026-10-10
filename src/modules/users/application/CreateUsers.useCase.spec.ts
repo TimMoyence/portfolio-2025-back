@@ -86,6 +86,7 @@ describe('CreateUsersUseCase', () => {
       password: PLAIN_CREDENTIAL,
       firstName: 'John',
       lastName: 'Doe',
+      updatedOrCreatedBy: 'self-registration',
     };
 
     const savedUser = buildUser({
@@ -123,6 +124,7 @@ describe('CreateUsersUseCase', () => {
       password: PLAIN_CREDENTIAL,
       firstName: 'New',
       lastName: 'User',
+      updatedOrCreatedBy: 'self-registration',
     };
 
     const savedUser = buildUser({
@@ -156,16 +158,40 @@ describe('CreateUsersUseCase', () => {
     );
   });
 
-  it('devrait creer le compte sans roles pour les inscriptions publiques (roles attribues apres verification)', async () => {
+  it('devrait creer le compte actif et sans roles pour les inscriptions publiques (roles attribues apres verification)', async () => {
     const dto: CreateUserCommand = {
       email: 'attacker@example.com',
       password: ATTACKER_CREDENTIAL,
       firstName: 'Evil',
       lastName: 'User',
       roles: ['admin', 'teacher'],
+      isActive: false,
+      updatedOrCreatedBy: 'self-registration',
     };
 
     await creerEtAttendreLesRoles(dto, [], { emailVerified: false });
+    expect(repo.create).toHaveBeenCalledWith(
+      expect.objectContaining({ isActive: true }),
+    );
+  });
+
+  it("devrait respecter les choix d'un admin qui omet l'auteur, sans courriel de verification", async () => {
+    const dto: CreateUserCommand = {
+      email: 'inactif@example.com',
+      password: PLAIN_CREDENTIAL,
+      firstName: 'Compte',
+      lastName: 'Inactif',
+      roles: ['teacher'],
+      isActive: false,
+    };
+
+    await creerEtAttendreLesRoles(dto, ['teacher']);
+    expect(repo.create).toHaveBeenCalledWith(
+      expect.objectContaining({ isActive: false }),
+    );
+    expect(
+      emailVerificationNotifier.sendVerificationEmail,
+    ).not.toHaveBeenCalled();
   });
 
   it('devrait conserver les roles quand cree par un admin', async () => {

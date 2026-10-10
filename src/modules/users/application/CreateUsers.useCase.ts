@@ -22,13 +22,14 @@ export class CreateUsersUseCase {
 
   async execute(dto: CreateUserCommand): Promise<CreateUserResult> {
     const passwordHash = await this.passwordService.hash(dto.password);
-    const updatedOrCreatedBy = dto.updatedOrCreatedBy ?? 'self-registration';
-    const isSelfRegistration = updatedOrCreatedBy === 'self-registration';
+    const isSelfRegistration = dto.updatedOrCreatedBy === 'self-registration';
 
-    const roles = isSelfRegistration ? [] : (dto.roles ?? []);
+    const imposeALInscriptionPublique = isSelfRegistration
+      ? { roles: [], isActive: true }
+      : {};
 
     const user = UsersMapper.fromCreateCommand(
-      { ...dto, updatedOrCreatedBy, roles },
+      { ...dto, ...imposeALInscriptionPublique },
       passwordHash,
     );
     const created = await this.repo.create(user);

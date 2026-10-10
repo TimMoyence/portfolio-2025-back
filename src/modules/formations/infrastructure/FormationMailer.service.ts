@@ -14,8 +14,7 @@ import type {
   RapportQuestion,
   RapportSession,
 } from '../domain/IFormationMailer.port';
-
-const BOM_UTF8 = '﻿';
+import { rapportEnCsv } from '../domain/RapportCsv';
 
 function noteSur20(note: number): string {
   return `${note.toFixed(1)}/20`;
@@ -46,6 +45,7 @@ export class FormationMailerService
     if (!this.transporter) {
       return;
     }
+    const csv = rapportEnCsv(rapport);
     await this.transporter.sendMail({
       from: this.from,
       to: destinataire,
@@ -54,9 +54,9 @@ export class FormationMailerService
       html: this.syntheseHtml(rapport),
       attachments: [
         {
-          filename: `session-${rapport.code}.csv`,
-          content: this.toCsv(rapport),
-          contentType: 'text/csv; charset=utf-8',
+          filename: csv.nom,
+          content: Buffer.from(csv.contenu),
+          contentType: csv.type,
         },
       ],
     });
@@ -167,72 +167,4 @@ export class FormationMailerService
       `Reprendre mon entraînement : ${lienRevision}`,
     ].join('\n');
   }
-
-  private toCsv(rapport: RapportSession): string {
-    const entetes = [
-      'prénom',
-      'nom',
-      'email',
-      'question',
-      'concept',
-      'réponse',
-      'correcte',
-      'confusion',
-      'durée_ms',
-    ];
-    const lignes = rapport.participants.flatMap((participant) => {
-      const etudiant = [participant.prenom, participant.nom, participant.email];
-      return [
-        ...participant.reponses.map((reponse) => [
-          ...etudiant,
-          reponse.questionId,
-          reponse.concept,
-          reponse.reponse,
-          reponse.correcte ? 'oui' : 'non',
-          reponse.libelleConfusion ?? '',
-          String(reponse.dureeMs),
-        ]),
-        ...participant.reponsesLibres.map((libre) => [
-          ...etudiant,
-          libre.activityId,
-          CONCEPT_D_UNE_REPONSE_LIBRE,
-          libre.reponse,
-          '',
-          '',
-          '',
-        ]),
-      ].map(ligneCsv);
-    });
-    return `${BOM_UTF8}${[entetes.join(';'), ...lignes].join('\r\n')}`;
-  }
-}
-
-const CONCEPT_D_UNE_REPONSE_LIBRE = 'réponse libre';
-
-function ligneCsv(cellules: readonly string[]): string {
-  return cellules
-    .map((cellule) => `"${neutraliserCelluleCsv(cellule).replace(/"/g, '""')}"`)
-    .join(';');
-}
-
-const CARACTERES_FORMULE_RE = /^[=+@\t\r]/;
-const NOMBRE_NEGATIF_VALIDE_RE = /^-\d+([.,]\d+)?$/;
-
-/**
- * CWE-1236 : neutralise une cellule CSV qu'Excel interpreterait comme une
- * formule a l'ouverture (nom d'etudiant en `=HYPERLINK(...)`, reponse
- * libre en `+`/`@`...), en la prefixant d'une apostrophe. Le signe moins
- * est traite a part : les destinataires sont des comptables, `-1500` ou
- * `-12,5` sont des montants legitimes qui doivent rester sommables — seule
- * une cellule commencant par `-` sans etre un nombre valide (`-=1+1`,
- * `--cmd`) est neutralisee.
- */
-function neutraliserCelluleCsv(valeur: string): string {
-  if (CARACTERES_FORMULE_RE.test(valeur)) {
-    return `'${valeur}`;
-  }
-  if (valeur.startsWith('-') && !NOMBRE_NEGATIF_VALIDE_RE.test(valeur)) {
-    return `'${valeur}`;
-  }
-  return valeur;
 }
