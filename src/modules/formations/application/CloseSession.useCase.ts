@@ -1,4 +1,6 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
+import { lienAvecParametres } from '../../../common/domain/lien-avec-jeton';
+import { envString } from '../../../config/env-readers.util';
 import { SessionClosedError } from '../domain/errors/FormationErrors';
 import type {
   IFormationMailer,
@@ -151,19 +153,14 @@ export class CloseSessionUseCase {
     sessionId: string,
     participant: ParticipantRecord,
   ): string {
-    const base =
-      process.env.FORMATION_REVIEW_BASE_URL?.trim() ||
-      REVIEW_BASE_URL_PAR_DEFAUT;
-    const jeton = signer(`${sessionId}:${participant.id}`);
-    try {
-      const url = new URL(base);
-      url.searchParams.set('session', sessionId);
-      url.searchParams.set('participant', participant.id);
-      url.searchParams.set('token', jeton);
-      return url.toString();
-    } catch {
-      return `${base}?session=${sessionId}&participant=${participant.id}&token=${jeton}`;
-    }
+    return lienAvecParametres(
+      envString('FORMATION_REVIEW_BASE_URL') ?? REVIEW_BASE_URL_PAR_DEFAUT,
+      {
+        session: sessionId,
+        participant: participant.id,
+        token: signer(`${sessionId}:${participant.id}`),
+      },
+    );
   }
 }
 
