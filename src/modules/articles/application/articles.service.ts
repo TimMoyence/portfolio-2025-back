@@ -1,9 +1,7 @@
-import {
-  ConflictException,
-  Injectable,
-  NotFoundException,
-  UnprocessableEntityException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { InvalidInputError } from '../../../common/domain/errors/InvalidInputError';
+import { ResourceConflictError } from '../../../common/domain/errors/ResourceConflictError';
+import { ResourceNotFoundError } from '../../../common/domain/errors/ResourceNotFoundError';
 import {
   ArticleContract,
   type ArticleIngestEnvelope,
@@ -53,11 +51,8 @@ export class ArticlesService {
     nonce: string,
   ): Promise<ArticleIngestResult> {
     const parsed = ArticleContract.safeParse(payload);
-    if (!parsed.success) {
-      throw new UnprocessableEntityException('Invalid article payload');
-    }
-    if (!idempotencyKey || idempotencyKey.length > 160) {
-      throw new UnprocessableEntityException('Invalid article payload');
+    if (!parsed.success || !idempotencyKey || idempotencyKey.length > 160) {
+      throw new InvalidInputError('Invalid article payload');
     }
 
     const envelope = parsed.data;
@@ -75,7 +70,7 @@ export class ArticlesService {
         existingArticle.contentSha256 !==
           envelope.article.provenance.content_sha256
       ) {
-        throw new ConflictException('Idempotency key already used');
+        throw new ResourceConflictError('Idempotency key already used');
       }
       return {
         delivery_id: existing.deliveryId,
@@ -88,7 +83,7 @@ export class ArticlesService {
 
     const nonceAlreadyUsed = await this.articles.findDeliveryByNonce(nonce);
     if (nonceAlreadyUsed) {
-      throw new ConflictException('Delivery already processed');
+      throw new ResourceConflictError('Delivery already processed');
     }
 
     const receivedAt = new Date();
@@ -119,11 +114,11 @@ export class ArticlesService {
     deliveryId: string,
   ): Promise<ArticleDeliveryRecord & { articleId: string }> {
     const delivery = await this.articles.findDelivery(deliveryId);
-    if (!delivery) throw new NotFoundException('Delivery not found');
+    if (!delivery) throw new ResourceNotFoundError('Delivery not found');
     const article = await this.articles.findArticleByRecordId(
       delivery.articleRecordId,
     );
-    if (!article) throw new NotFoundException('Delivery not found');
+    if (!article) throw new ResourceNotFoundError('Delivery not found');
     return { ...delivery, articleId: article.articleId };
   }
 
@@ -151,7 +146,7 @@ export class ArticlesService {
     locale: 'fr' | 'en',
   ): Promise<ArticleRecord> {
     const article = await this.articles.findPublishedBySlug(slug, locale);
-    if (!article) throw new NotFoundException('Article not found');
+    if (!article) throw new ResourceNotFoundError('Article not found');
     return article;
   }
 
