@@ -269,6 +269,50 @@ describe('safeHtml — le contexte suit le HTML rendu, pas le texte des valeurs'
       () => safeHtml`${ouvrant}${escapeHtml('javascript:alert(1)')}">x</a>`,
     ).toThrow(/Interpolation refusée/);
   });
+
+  it('accepte dans un attribut descriptif un fragment qui y reste', () => {
+    const classe = safeHtml` pillar-${escapeHtml('ok')}`;
+
+    expect(safeHtml`<p class="card${classe}">x</p>`).toBe(
+      '<p class="card pillar-ok">x</p>',
+    );
+  });
+
+  refuseChaqueInterpolation([
+    [
+      'un attribut descriptif qu un fragment imbrique referme',
+      () => {
+        const libelle = safeHtml`Le "${escapeHtml('x onmouseover=alert(1)//')}"`;
+        return safeHtml`<a href="${escapeUrl('/x')}" title="${libelle}">lien</a>`;
+      },
+    ],
+    [
+      'un commentaire qu un fragment imbrique referme',
+      () => {
+        const charge = safeHtml`<i title="--><img src=x onerror=${escapeHtml('alert(1)//')} ">`;
+        return safeHtml`<!-- ${charge} -->`;
+      },
+    ],
+    [
+      'un element style qu une feuille referme',
+      () => {
+        const feuille = safeCss`a{}</style><b>`;
+        return safeHtml`<style>${feuille}</style>`;
+      },
+    ],
+  ]);
+
+  refuseChaqueInterpolation([
+    [
+      'un script que seul un blanc non HTML semble fermer',
+      () => safeHtml`<script></script\u00a0>${escapeHtml('alert(1)')}</script>`,
+    ],
+    [
+      'une balise dont un blanc non HTML prolonge le nom',
+      () =>
+        safeHtml`<p\u00a0title="${escapeHtml('x onclick=alert(1)//')}">x</p>`,
+    ],
+  ]);
 });
 
 describe('safeHtml — contextes ou l echappement HTML ne protege de rien', () => {

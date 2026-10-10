@@ -187,7 +187,13 @@ const ATTRIBUTS_COULEUR: ReadonlySet<string> = new Set([
   'bgcolor',
 ]);
 
-const BLANC = /\s/;
+const BLANC = /[\t\n\f\r ]/;
+
+const ETATS_SCELLES: ReadonlySet<Etat> = new Set([
+  'valeur',
+  'declaration',
+  'brut',
+]);
 
 const LETTRE = /[a-zA-Z]/;
 
@@ -217,6 +223,19 @@ class LecteurDeGabarit {
 
   lire(texte: string): void {
     for (const caractere of texte) this.#transitions[this.etat](caractere);
+  }
+
+  lireInterpolation(texte: string): void {
+    if (!ETATS_SCELLES.has(this.etat)) {
+      this.lire(texte);
+      return;
+    }
+    const scelle = this.etat;
+    for (const caractere of texte) {
+      this.#transitions[this.etat](caractere);
+      if (this.etat !== scelle)
+        refuser(`qui referme son contexte « ${scelle} »`);
+    }
   }
 
   private dansTexte(c: string): void {
@@ -392,7 +411,7 @@ export function safeHtml(
     const suite = strings[index + 1];
     verifierContexte(lecteur, value, suite);
     const texte = texteDuFragment(value);
-    lecteur.lire(texte);
+    lecteur.lireInterpolation(texte);
     lecteur.lire(suite);
     out += texte + suite;
   }
