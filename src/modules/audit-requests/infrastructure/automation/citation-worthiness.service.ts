@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { load } from 'cheerio';
 import { compterMots } from '../../../../common/domain/texte/compter-mots';
 import type { CitationWorthinessScore } from '../../domain/AiIndexability';
+import { scoreSur100 } from '../../domain/score-sur-100';
 
 const TRUSTED_DOMAINS: ReadonlyArray<string> = [
   'nature.com',
@@ -47,7 +48,7 @@ export class CitationWorthinessService {
     if (hasFacts) score += 15;
     if (contentDensity === 'high') score += 15;
     if (hasStructuredHeadings) score += 10;
-    score = Math.max(0, Math.min(100, score));
+    score = scoreSur100(score);
 
     return {
       score,

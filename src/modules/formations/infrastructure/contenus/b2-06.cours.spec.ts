@@ -1,7 +1,7 @@
 import { buildCoursDuContenu } from '../../../../../test/factories/contenus-de-cours.factory';
 import * as fiche from '../../../../../test/helpers/fiche-de-cours';
 import * as feuille from '../../../../../test/helpers/feuille-de-cours';
-import { arrondi } from '../../../../../test/helpers/lecture-de-cours';
+import { arrondi } from '../../../../common/domain/nombres/arrondi';
 import { colonnesVidesDeLaFeuille } from '../../../../../test/helpers/relecture-de-cours';
 import type { CorrigeTableau } from '../../domain/cours/Corrige';
 import {

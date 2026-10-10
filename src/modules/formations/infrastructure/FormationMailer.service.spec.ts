@@ -135,6 +135,17 @@ describe('FormationMailerService', () => {
       expect(mail.attachments?.[0].contentType).toBe('text/csv; charset=utf-8');
     });
 
+    it('écrit la note sur 20 au dixième dans le texte et le html', async () => {
+      const mail = await synthese(
+        buildRapport({
+          participants: [buildRapportParticipant({ note: 12.25 })],
+        }),
+      );
+
+      expect(mail.text).toContain('12.3/20');
+      expect(mail.html).toContain('12.3/20');
+    });
+
     it('produit un csv au format Excel francais : BOM, point-virgule, CRLF', async () => {
       const rapport = buildRapportAvecReponses([
         buildReponse({
@@ -305,6 +316,13 @@ describe('FormationMailerService', () => {
       expect(mail.text).toContain(attendue.lienRevision);
       expect(mail.html).toContain(attendue.lienRevision);
       expect(mail.subject).toContain(attendue.courseSlug);
+    });
+
+    it('écrit la note sur 20 au dixième dans la copie', async () => {
+      const mail = await copieAvec({ note: 12.25 });
+
+      expect(mail.text).toContain('Note obtenue : 12.3/20.');
+      expect(mail.html).toContain('<strong>12.3/20</strong>');
     });
 
     it('detaille chaque reponse avec son verdict, comme le promet le message', async () => {

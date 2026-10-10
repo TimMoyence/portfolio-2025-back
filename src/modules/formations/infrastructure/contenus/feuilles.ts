@@ -4,10 +4,6 @@ import * as moteur from './briques';
 type PiegeDeCellule = readonly [number, ConfusionId];
 export type AttenduDeFeuille = ReturnType<typeof moteur.attendu>;
 
-export function auMillionieme(valeur: number): number {
-  return Number(valeur.toFixed(6));
-}
-
 export function avecVirgule(valeur: number, decimales: number): string {
   return valeur.toFixed(decimales).replace('.', ',');
 }

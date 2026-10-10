@@ -1,3 +1,4 @@
+import { arrondi } from '../../src/common/domain/nombres/arrondi';
 import type {
   Cours,
   Ecran,
@@ -86,10 +87,6 @@ export function ateliersNotes(cours: Cours): string[] {
     .slice(1, -1)
     .filter((ecran) => questionsDe(ecran).some(estFermeeNotee))
     .map((ecran) => `${ecran.id.slice(6, 11)} (${ecran.dureeMinutes})`);
-}
-
-export function arrondi(valeur: number, decimales = 6): number {
-  return Number(valeur.toFixed(decimales));
 }
 
 function decimalesEcrites(valeur: number): number {

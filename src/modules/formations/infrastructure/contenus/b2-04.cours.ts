@@ -1,9 +1,12 @@
+import {
+  arrondi,
+  auMillionieme,
+} from '../../../../common/domain/nombres/arrondi';
 import type { ConceptId } from '../../domain/cours/banque/concepts';
 import type { ContenuDeCours } from '../../domain/cours/CoursStocke';
 import * as moteur from './briques';
 import {
   anneesEtRangs,
-  auMillionieme,
   avecVirgule,
   colonneDeValeurs,
   colonneRecopiee,
@@ -1260,7 +1263,7 @@ const ACTE_3: moteur.Acte = [
         {
           label: 'Hypothèse B : + 6 % par an',
           values: termes(
-            (rang) => Number(hypotheseB(rang).toFixed(2)),
+            (rang) => arrondi(hypotheseB(rang), 2),
             0,
             DERNIER_RANG_DU_PLAN,
           ),

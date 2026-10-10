@@ -15,6 +15,7 @@ import { withHardTimeout } from './llm-execution.guardrails';
 import { LlmLimiteParLaConfig } from './llm-executor.port';
 import { impactLocalise } from './shared/finding-priority.util';
 import { localizedText } from './shared/locale-text.util';
+import { scoreSur100 } from '../../domain/score-sur-100';
 
 const severitySchema = z.enum(['high', 'medium', 'low']);
 
@@ -262,8 +263,8 @@ export class LangchainClientReportService extends LlmLimiteParLaConfig {
     const pillarScorecard = this.ensureSevenPillars(
       result.pillarScorecard.map((entry) => ({
         pillar: entry.pillar,
-        score: this.clampScore(entry.score),
-        target: this.clampScore(entry.target),
+        score: scoreSur100(entry.score),
+        target: scoreSur100(entry.target),
         status: entry.status,
       })),
       context,
@@ -274,15 +275,13 @@ export class LangchainClientReportService extends LlmLimiteParLaConfig {
       topFindings,
       googleVsAiMatrix: {
         googleVisibility: {
-          score: this.clampScore(
-            result.googleVsAiMatrix.googleVisibility.score,
-          ),
+          score: scoreSur100(result.googleVsAiMatrix.googleVisibility.score),
           summary: compacterBlancs(
             result.googleVsAiMatrix.googleVisibility.summary,
           ),
         },
         aiVisibility: {
-          score: this.clampScore(result.googleVsAiMatrix.aiVisibility.score),
+          score: scoreSur100(result.googleVsAiMatrix.aiVisibility.score),
           summary: compacterBlancs(
             result.googleVsAiMatrix.aiVisibility.summary,
           ),
@@ -607,7 +606,7 @@ export class LangchainClientReportService extends LlmLimiteParLaConfig {
   ): number {
     const raw = pillarScores[pillar];
     if (typeof raw === 'number' && Number.isFinite(raw)) {
-      return this.clampScore(raw);
+      return scoreSur100(raw);
     }
     return 0;
   }
@@ -631,11 +630,6 @@ export class LangchainClientReportService extends LlmLimiteParLaConfig {
     );
     if (numeric.length === 0) return 0;
     const avg = numeric.reduce((acc, value) => acc + value, 0) / numeric.length;
-    return this.clampScore(Math.round(avg));
-  }
-
-  private clampScore(value: number): number {
-    if (!Number.isFinite(value)) return 0;
-    return Math.max(0, Math.min(100, Math.round(value)));
+    return scoreSur100(Math.round(avg));
   }
 }

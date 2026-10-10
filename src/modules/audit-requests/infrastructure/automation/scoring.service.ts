@@ -7,6 +7,7 @@ import type { StructuredDataQualityResult } from '../../domain/StructuredDataQua
 import { AuditLocale } from '../../domain/audit-locale.util';
 import { HomepageAuditSnapshot } from './homepage-analyzer.service';
 import { UrlIndexabilityResult } from './url-indexability.service';
+import { scoreSur100 } from '../../domain/score-sur-100';
 
 export type PillarKey =
   | 'seo'
@@ -119,11 +120,11 @@ export class ScoringService {
     const citationWorthiness = this.scoreCitationWorthiness(citationScores);
 
     const pillarScores: PillarScores = {
-      seo: this.clamp(seo),
-      performance: this.clamp(performance),
-      technical: this.clamp(technical),
-      trust: this.clamp(trust),
-      conversion: this.clamp(conversion),
+      seo: scoreSur100(seo),
+      performance: scoreSur100(performance),
+      technical: scoreSur100(technical),
+      trust: scoreSur100(trust),
+      conversion: scoreSur100(conversion),
       aiVisibility,
       citationWorthiness,
     };
@@ -203,17 +204,13 @@ export class ScoringService {
       score += (aiFriendly / input.structuredDataQuality.length) * 20;
     }
 
-    return this.clamp(score);
+    return scoreSur100(score);
   }
 
   scoreCitationWorthiness(perPageScores: ReadonlyArray<number>): number {
     if (perPageScores.length === 0) return 0;
     const sum = perPageScores.reduce((acc, value) => acc + value, 0);
-    return this.clamp(sum / perPageScores.length);
-  }
-
-  private clamp(value: number): number {
-    return Math.max(0, Math.min(100, Math.round(value)));
+    return scoreSur100(sum / perPageScores.length);
   }
 
   private computeSampledCoverage(

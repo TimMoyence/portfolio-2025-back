@@ -17,10 +17,11 @@ import {
   decrireLaFicheDuCours,
   valeursEtPieges,
 } from '../../../../../test/helpers/fiche-de-cours';
+import { ecransCorrigesSurPlace } from '../../../../../test/helpers/lecture-de-cours';
 import {
   arrondi,
-  ecransCorrigesSurPlace,
-} from '../../../../../test/helpers/lecture-de-cours';
+  auMillionieme,
+} from '../../../../common/domain/nombres/arrondi';
 import type { Ecran } from '../../domain/contrats/cours';
 import type { CorrigeProduction } from '../../domain/cours/Corrige';
 import { estInteractif } from '../../domain/cours/Cours';
@@ -535,7 +536,7 @@ describe('B2-01 — recalcul des corrigés depuis les données brutes (AC-10)', 
         (somme(marges2025) / somme(ca2025)) * 100,
         somme(taux) / 3,
       ],
-      B7: [vaut(arrondi(somme(parts.slice(0, 3))), 1) ? 1 : 0],
+      B7: [vaut(auMillionieme(somme(parts.slice(0, 3))), 1) ? 1 : 0],
       C7: [vaut(arrondi(somme(marges2025) - 291000, 0), 0) ? 1 : 0],
     };
 

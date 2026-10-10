@@ -1,3 +1,5 @@
+import { arrondi } from '../../../../common/domain/nombres/arrondi';
+import { borner } from '../../../../common/domain/nombres/borner';
 import { AuditLocale } from '../../domain/audit-locale.util';
 import { priorityFromFinding } from './shared/finding-priority.util';
 import { localizedText } from './shared/locale-text.util';
@@ -44,10 +46,7 @@ export function buildFallbackExpertReport(
     primaryStack:
       input.techFingerprint.primaryStack ||
       localizedText(input.locale, 'Non verifiable', 'Not verifiable'),
-    confidence: Math.max(
-      0,
-      Math.min(1, Number(input.techFingerprint.confidence || 0)),
-    ),
+    confidence: borner(Number(input.techFingerprint.confidence || 0), 0, 1),
     evidence: (input.techFingerprint.evidence ?? []).slice(0, 8),
     alternatives: (input.techFingerprint.alternatives ?? []).slice(0, 4),
     unknowns: (input.techFingerprint.unknowns ?? []).slice(0, 5),
@@ -514,7 +513,7 @@ function sumHours(values: number[]): number {
   const total = values.reduce<number>((acc, value) => {
     return Number.isFinite(value) ? acc + Math.max(0, value) : acc;
   }, 0);
-  return Math.round(total * 10) / 10;
+  return arrondi(total, 1);
 }
 
 function roundCurrency(value: number): number {

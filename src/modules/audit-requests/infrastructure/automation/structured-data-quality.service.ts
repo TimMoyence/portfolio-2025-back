@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { estObjet } from '../../../../common/domain/est-objet';
+import { scoreSur100 } from '../../domain/score-sur-100';
 import type { StructuredDataQualityResult } from '../../domain/StructuredDataQuality';
 
 const GOOGLE_RICH_RESULTS_TYPES: ReadonlySet<string> = new Set([
@@ -135,6 +136,6 @@ export class StructuredDataQualityService {
     if (params.total >= 2) score += 10;
     if (params.total >= 3) score += 5;
     score -= params.invalidCount * 15;
-    return Math.max(0, Math.min(100, score));
+    return scoreSur100(score);
   }
 }

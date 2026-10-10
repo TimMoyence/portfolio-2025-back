@@ -1,4 +1,6 @@
 import { Injectable } from '@nestjs/common';
+import { arrondi } from '../../../../common/domain/nombres/arrondi';
+import { borner } from '../../../../common/domain/nombres/borner';
 import { compacterBlancs } from '../../../../common/domain/texte/compacter-blancs';
 import type { ClientReportSynthesis } from '../../domain/AuditReportTiers';
 import { AuditLocale } from '../../domain/audit-locale.util';
@@ -654,7 +656,7 @@ export class ReportQualityGateService {
         this.cleanText(value?.primaryStack) ||
         localizedText(locale, 'Non verifiable', 'Not verifiable'),
       confidence: Number.isFinite(confidence)
-        ? Math.max(0, Math.min(1, Math.round(confidence * 100) / 100))
+        ? borner(arrondi(confidence, 2), 0, 1)
         : 0,
       evidence: this.normalizeStringArray(value?.evidence).slice(0, 8),
       alternatives: this.normalizeStringArray(value?.alternatives).slice(0, 4),
@@ -808,7 +810,7 @@ export class ReportQualityGateService {
     if (typeof value !== 'number' || !Number.isFinite(value) || value <= 0) {
       return fallback;
     }
-    return Math.round(value * 10) / 10;
+    return arrondi(value, 1);
   }
 
   private normalizeSeverity(value: unknown): PrioritySeverity {

@@ -21,7 +21,10 @@ import {
   recopier,
   texteDeLEcran as texteDe,
 } from '../../../../../test/helpers/feuille-de-cours';
-import { arrondi } from '../../../../../test/helpers/lecture-de-cours';
+import {
+  auCentime,
+  auMillionieme,
+} from '../../../../common/domain/nombres/arrondi';
 import { colonnesVidesDeLaFeuille } from '../../../../../test/helpers/relecture-de-cours';
 import {
   corrigerFeuille,
@@ -68,16 +71,14 @@ const EMPRUNT_TYPE = 100000;
 const TAUX_DE_L_EMPRUNT_TYPE = 0.05;
 const DUREE_DE_L_EMPRUNT_TYPE = 10;
 
-const auCentime = (valeur: number): number => arrondi(valeur, 2);
-
 const valeurAcquise = (capital: number, taux: number, duree: number): number =>
-  arrondi(capital * (1 + taux) ** duree);
+  auMillionieme(capital * (1 + taux) ** duree);
 const valeurActuelle = (capital: number, taux: number, duree: number): number =>
-  arrondi(capital / (1 + taux) ** duree);
+  auMillionieme(capital / (1 + taux) ** duree);
 const interetsSimples = (capital: number, taux: number, duree: number) =>
   capital * (1 + taux * duree);
 const suiteDAnnuites = (versement: number, taux: number, nombre: number) =>
-  arrondi((versement * ((1 + taux) ** nombre - 1)) / taux);
+  auMillionieme((versement * ((1 + taux) ** nombre - 1)) / taux);
 const placesToutLaDuree = (versement: number, taux: number, nombre: number) =>
   nombre * valeurAcquise(versement, taux, nombre);
 const annuite = (capital: number, taux: number, duree: number): number =>
@@ -89,7 +90,7 @@ const placement = (rang: number): number =>
 function epargne(rang: number): number {
   return rang === 1
     ? VERSEMENT
-    : arrondi(epargne(rang - 1) * (1 + TAUX_DE_L_EPARGNE) + VERSEMENT);
+    : auMillionieme(epargne(rang - 1) * (1 + TAUX_DE_L_EPARGNE) + VERSEMENT);
 }
 
 interface LigneDAmortissement {
@@ -182,7 +183,7 @@ describe('B2-05 — textes relus contre les données', () => {
       TAUX_DE_L_EMPRUNT_TYPE,
       annuite(EMPRUNT_TYPE, TAUX_DE_L_EMPRUNT_TYPE, DUREE_DE_L_EMPRUNT_TYPE),
       DUREE_DE_L_EMPRUNT_TYPE,
-      arrondi,
+      auMillionieme,
     );
 
     expect(labels).toEqual(
@@ -375,7 +376,7 @@ describe('B2-05 — les trois feuilles corrigées par le moteur de formules', ()
     const corrige = corrigeDeFeuille(COURS, 'b2-05-a2-tableur-epargne');
     const rangs = rangsDe(2, VERSEMENTS);
     const interets = (rang: number): number =>
-      arrondi(epargne(rang - 1) * TAUX_DE_L_EPARGNE);
+      auMillionieme(epargne(rang - 1) * TAUX_DE_L_EPARGNE);
 
     attendreLaFeuille(corrige, {
       ...attendusDeColonne('B', 3, rangs, (rang) =>
@@ -387,7 +388,7 @@ describe('B2-05 — les trois feuilles corrigées par le moteur de formules', ()
         rang === 2 ? [interets(rang)] : [interets(rang), 0, interets(2)],
       ),
       F3: [
-        arrondi(epargne(VERSEMENTS) - VERSEMENT * VERSEMENTS),
+        auMillionieme(epargne(VERSEMENTS) - VERSEMENT * VERSEMENTS),
         interets(VERSEMENTS),
       ],
     });
@@ -442,17 +443,17 @@ describe('B2-05 — les trois feuilles corrigées par le moteur de formules', ()
       ),
       ...attendusDeColonne('D', 2, lignes, (ligne, rang) =>
         rang === 0
-          ? [ligne.amortissement, arrondi(ANNUITE_DE_LA_CAMIONNETTE)]
+          ? [ligne.amortissement, auMillionieme(ANNUITE_DE_LA_CAMIONNETTE)]
           : [
               ligne.amortissement,
-              arrondi(ANNUITE_DE_LA_CAMIONNETTE),
-              -arrondi(
+              auMillionieme(ANNUITE_DE_LA_CAMIONNETTE),
+              -auMillionieme(
                 lignes[1].interets * (1 + TAUX_DE_LA_CAMIONNETTE) ** (rang - 1),
               ),
             ],
       ),
       ...attendusDeColonne('E', 2, lignes, (ligne) => [
-        arrondi(ligne.capital - ligne.amortissement),
+        auMillionieme(ligne.capital - ligne.amortissement),
       ]),
       I2: [
         cout,

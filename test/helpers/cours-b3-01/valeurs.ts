@@ -3,8 +3,8 @@ import type {
   PiegesB301,
   ValeursAttenduesB301,
 } from '../../../src/modules/formations/infrastructure/contenus/b3-01.donnees';
+import { arrondirMoitieLoinDeZero } from '../../../src/modules/formations/domain/cours/Formule';
 import {
-  arrondi,
   comparerCommeExcel,
   dateExcel,
   dateval,
@@ -70,8 +70,9 @@ export interface IndicateursDAgence {
   readonly delaiMedian2026: number;
 }
 
-const euros = (montant: number): number => arrondi(montant, 0);
-const pourcent = (part: number): number => arrondi(part * 100, 1);
+const euros = (montant: number): number => arrondirMoitieLoinDeZero(montant, 0);
+const pourcent = (part: number): number =>
+  arrondirMoitieLoinDeZero(part * 100, 1);
 
 function cleExcel(valeur: Valeur): string {
   return typeof valeur === 'string'
@@ -425,7 +426,7 @@ function valeursDesActes2Et3(jeu: JeuB301) {
         'jours-calendaires-pour-ouvres': mediane(
           delaisDeStrasbourg.map((vente) => vente.livraison - vente.date),
         ),
-        'valeur-extreme-ignoree': arrondi(
+        'valeur-extreme-ignoree': arrondirMoitieLoinDeZero(
           moyenne(delaisDeStrasbourg.map(delaiOuvre)),
           0,
         ),
@@ -546,8 +547,8 @@ function histoiresDe(jeu: JeuB301): Readonly<Record<HistoireB301, number>> {
   );
   const categoriesDeRouen = evolutionsParCategorie(ventes, ROUEN);
   return {
-    'ca-2025-rennes': arrondi(indicateurs[RENNES].ca2025, -2),
-    'ca-2025-nantes': arrondi(indicateurs[NANTES].ca2025, -2),
+    'ca-2025-rennes': arrondirMoitieLoinDeZero(indicateurs[RENNES].ca2025, -2),
+    'ca-2025-nantes': arrondirMoitieLoinDeZero(indicateurs[NANTES].ca2025, -2),
     'taux-de-marge-marseille-2025': pourcent(
       indicateurs[MARSEILLE].tauxDeMarque2025,
     ),

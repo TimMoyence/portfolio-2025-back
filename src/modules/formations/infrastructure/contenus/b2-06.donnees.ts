@@ -1,7 +1,10 @@
+import {
+  arrondi,
+  auMillionieme,
+} from '../../../../common/domain/nombres/arrondi';
 import type { ConceptId } from '../../domain/cours/banque/concepts';
 import * as moteur from './briques';
 import {
-  auMillionieme,
   avecVirgule,
   colonneDeValeurs,
   colonneRecopiee,
@@ -353,7 +356,7 @@ export const ATTENDUS_DES_KITS: moteur.AuMoinsUn<AttenduDeFeuille> = [
 
 type AttenduDeTableau = Parameters<typeof moteur.questionDeTableau>[2][number];
 
-const auMillieme = (valeur: number): number => Number(valeur.toFixed(3));
+const auMillieme = (valeur: number): number => arrondi(valeur, 3);
 
 export const [PREMIER_LOGARITHME, ...AUTRES_LOGARITHMES] =
   DEMANDES.map<AttenduDeTableau>((demande, rang) => ({

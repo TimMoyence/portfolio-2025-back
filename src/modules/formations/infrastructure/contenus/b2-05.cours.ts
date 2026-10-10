@@ -32,10 +32,13 @@ import {
   TOTAL_REMBOURSE,
   TOUTE_LA_DUREE,
   VPM_NON_SIGNE,
-  auCentime,
 } from './b2-05.donnees';
 import * as moteur from './briques';
-import { auMillionieme, termes } from './feuilles';
+import {
+  auCentime,
+  auMillionieme,
+} from '../../../../common/domain/nombres/arrondi';
+import { termes } from './feuilles';
 
 const ACTE_1: moteur.Acte = [
   {

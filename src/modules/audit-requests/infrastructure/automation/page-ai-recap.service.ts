@@ -16,6 +16,7 @@ import {
   engineScoreSchema,
 } from './schemas/engine-coverage.schema';
 import { UrlIndexabilityResult } from './url-indexability.service';
+import { scoreSur100 } from '../../domain/score-sur-100';
 
 const pageRecapSchema = z.object({
   summary: z.string().min(1),
@@ -262,10 +263,10 @@ export class PageAiRecapService extends LlmLimiteParLaConfig {
           finalUrl: page.finalUrl,
           priority: result.priority,
           language: result.language,
-          wordingScore: this.clampScore(result.wordingScore),
-          trustScore: this.clampScore(result.trustScore),
-          ctaScore: this.clampScore(result.ctaScore),
-          seoCopyScore: this.clampScore(result.seoCopyScore),
+          wordingScore: scoreSur100(result.wordingScore),
+          trustScore: scoreSur100(result.trustScore),
+          ctaScore: scoreSur100(result.ctaScore),
+          seoCopyScore: scoreSur100(result.seoCopyScore),
           summary: result.summary.trim(),
           topIssues: result.topIssues
             .map((entry) => entry.trim())
@@ -361,7 +362,7 @@ export class PageAiRecapService extends LlmLimiteParLaConfig {
     );
     const score = hasUnverifiableBlocker
       ? UNVERIFIABLE_ENGINE_SCORE
-      : this.clampScore(value.score);
+      : scoreSur100(value.score);
 
     return {
       engine: expected,
@@ -506,10 +507,10 @@ export class PageAiRecapService extends LlmLimiteParLaConfig {
       );
     }
 
-    wording = this.clampScore(wording);
-    trust = this.clampScore(trust);
-    cta = this.clampScore(cta);
-    seoCopy = this.clampScore(seoCopy);
+    wording = scoreSur100(wording);
+    trust = scoreSur100(trust);
+    cta = scoreSur100(cta);
+    seoCopy = scoreSur100(seoCopy);
 
     const minScore = Math.min(wording, trust, cta, seoCopy);
     const priority = priorityFromScore(minScore);
@@ -805,7 +806,7 @@ export class PageAiRecapService extends LlmLimiteParLaConfig {
   ): EngineScore {
     return {
       engine,
-      score: this.clampScore(score),
+      score: scoreSur100(score),
       indexable,
       strengths: Array.from(new Set(lists.strengths)).slice(0, 5),
       blockers: Array.from(new Set(lists.blockers)).slice(0, 5),
@@ -852,10 +853,10 @@ export class PageAiRecapService extends LlmLimiteParLaConfig {
       fallbackRecaps,
       priorityCounts,
       averageScores: {
-        wording: this.clampScore(Math.round(wording / Math.max(1, total))),
-        trust: this.clampScore(Math.round(trust / Math.max(1, total))),
-        cta: this.clampScore(Math.round(cta / Math.max(1, total))),
-        seoCopy: this.clampScore(Math.round(seoCopy / Math.max(1, total))),
+        wording: scoreSur100(Math.round(wording / Math.max(1, total))),
+        trust: scoreSur100(Math.round(trust / Math.max(1, total))),
+        cta: scoreSur100(Math.round(cta / Math.max(1, total))),
+        seoCopy: scoreSur100(Math.round(seoCopy / Math.max(1, total))),
       },
       topRecurringIssues,
     };
@@ -879,9 +880,5 @@ export class PageAiRecapService extends LlmLimiteParLaConfig {
     if (hasFrenchMarkers) return 'fr';
     if (hasEnglishMarkers) return 'en';
     return 'unknown';
-  }
-
-  private clampScore(value: number): number {
-    return Math.max(0, Math.min(100, Math.round(value)));
   }
 }

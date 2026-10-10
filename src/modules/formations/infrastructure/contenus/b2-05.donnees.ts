@@ -1,8 +1,11 @@
+import {
+  auCentime,
+  auMillionieme,
+} from '../../../../common/domain/nombres/arrondi';
 import type { ConceptId } from '../../domain/cours/banque/concepts';
 import * as moteur from './briques';
 import {
   anneesEtRangs,
-  auMillionieme,
   avecVirgule,
   colonneDeValeurs,
   colonneRecopiee,
@@ -73,8 +76,6 @@ export const DONNEES_FICTIVES =
 
 export const RENVOI_AU_DOSSIER = 'B2-05-A1-05-DOSSIER';
 export const RENVOI_A_LA_CAMIONNETTE = 'B2-05-A4-01-SITUATION-CAMIONNETTE';
-
-export const auCentime = (valeur: number): number => Number(valeur.toFixed(2));
 
 const annuiteConstante = (
   capital: number,

@@ -1,5 +1,5 @@
+import { arrondirMoitieLoinDeZero } from '../../domain/cours/Formule';
 import {
-  arrondi,
   dateExcel,
   dateval,
   estJourOuvre,
@@ -82,7 +82,11 @@ const DETECTEURS: Readonly<Record<string, (ligne: Ligne) => boolean>> = {
       return false;
     }
     const [quantite, prix, remise, ca] = nombres;
-    return Math.abs(ca - arrondi(quantite * prix * (1 - remise), 2)) > 1;
+    return (
+      Math.abs(
+        ca - arrondirMoitieLoinDeZero(quantite * prix * (1 - remise), 2),
+      ) > 1
+    );
   },
   F5: (ligne) =>
     /^\d{4}-\d{2}-\d{2}$/.test(String(valeurDe(ligne, 'date_commande'))),
@@ -99,7 +103,8 @@ const DETECTEURS: Readonly<Record<string, (ligne: Ligne) => boolean>> = {
     const prix = prixCatalogue.get(texteDe(ligne, 'produit_id'));
     return (
       prix !== undefined &&
-      valeurDe(ligne, 'prix_unitaire_ht') === arrondi(10 * prix, 2)
+      valeurDe(ligne, 'prix_unitaire_ht') ===
+        arrondirMoitieLoinDeZero(10 * prix, 2)
     );
   },
 };

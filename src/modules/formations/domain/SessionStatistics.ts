@@ -1,3 +1,4 @@
+import { arrondi } from '../../../common/domain/nombres/arrondi';
 import type { RapportParticipant } from './IFormationMailer.port';
 import { REGLE_DE_NOTATION } from './RegleDeNotation';
 import type { ResultatsSeance } from './ResultatsSeance';
@@ -7,7 +8,6 @@ const {
   decimalesStatistiques,
   statistiquesSurQuestionsNotees,
 } = REGLE_DE_NOTATION;
-const ECHELLE_D_ARRONDI = 10 ** decimalesStatistiques;
 
 export interface StatistiquesSeance {
   readonly moyenne: number;
@@ -75,5 +75,5 @@ function medianeDe(notes: readonly number[]): number {
 }
 
 function arrondir(valeur: number): number {
-  return Math.round(valeur * ECHELLE_D_ARRONDI) / ECHELLE_D_ARRONDI;
+  return arrondi(valeur, decimalesStatistiques);
 }

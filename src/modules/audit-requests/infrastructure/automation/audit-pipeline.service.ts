@@ -1,4 +1,5 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
+import { borner } from '../../../../common/domain/nombres/borner';
 import { tronquer } from '../../../../common/domain/texte/tronquer';
 import {
   AuditLocale,
@@ -750,7 +751,7 @@ export class AuditPipelineService {
     max: number,
   ): number {
     if (total <= 0) return min;
-    const ratio = Math.max(0, Math.min(1, done / total));
+    const ratio = borner(done / total, 0, 1);
     return Math.round(min + (max - min) * ratio);
   }
 

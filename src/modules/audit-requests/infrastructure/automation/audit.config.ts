@@ -1,3 +1,4 @@
+import { borner } from '../../../../common/domain/nombres/borner';
 import {
   envBool,
   envFloat,
@@ -102,9 +103,10 @@ export function loadAuditAutomationConfig(): AuditAutomationConfig {
     1,
     envInt('AUDIT_PAGE_AI_CIRCUIT_BREAKER_MIN_SAMPLES', 6),
   );
-  const pageAiCircuitBreakerFailureRatio = Math.max(
+  const pageAiCircuitBreakerFailureRatio = borner(
+    envFloat('AUDIT_PAGE_AI_CIRCUIT_BREAKER_FAILURE_RATIO', 0.5),
     0.1,
-    Math.min(1, envFloat('AUDIT_PAGE_AI_CIRCUIT_BREAKER_FAILURE_RATIO', 0.5)),
+    1,
   );
 
   return {

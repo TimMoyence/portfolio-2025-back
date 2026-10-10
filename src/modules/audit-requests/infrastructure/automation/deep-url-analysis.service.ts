@@ -21,6 +21,7 @@ import {
 } from './tech-fingerprint.util';
 import { localizedText } from './shared/locale-text.util';
 import { severityRank } from './shared/severity.util';
+import { borner } from '../../../../common/domain/nombres/borner';
 import { UrlIndexabilityResult } from './url-indexability.service';
 
 export type FindingSeverity = 'high' | 'medium' | 'low';
@@ -906,7 +907,7 @@ export class DeepUrlAnalysisService {
       title,
       description,
       severity,
-      confidence: Math.max(0, Math.min(1, confidence)),
+      confidence: borner(confidence, 0, 1),
       impact,
       affectedUrls: Array.from(new Set(affectedUrls)).slice(
         0,
