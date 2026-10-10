@@ -265,6 +265,24 @@ describe('ToolkitHtmlRendererService', () => {
       expect(html).toContain('</style>');
     });
 
+    it('teinte categories, prompts et templates par classe, jamais par un style interpole', () => {
+      const html = service.render(buildContent());
+
+      expect(html).toContain('class="category-title teinte-accent"');
+      expect(html).toContain('class="prompt-card teinte-rose"');
+      expect(html).toContain('class="template-card plateforme-notion"');
+      expect(html).toMatch(/\.prompt-card\.teinte-rose\s*\{[^}]*#ec4899/);
+      expect(html).toMatch(
+        /\.template-card\.plateforme-notion \.platform-badge\s*\{[^}]*#0f172a/,
+      );
+    });
+
+    it('force https sur le lien d un outil sans laisser passer un autre schema', () => {
+      const html = service.render(buildContent());
+
+      expect(html).toContain('href="https://chat.openai.com"');
+    });
+
     it("inclut l'accent Asili dans le CSS", () => {
       const html = service.render(buildContent());
       expect(html).toContain('#4fb3a2');

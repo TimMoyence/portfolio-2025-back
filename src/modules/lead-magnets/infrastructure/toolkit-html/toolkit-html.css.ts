@@ -1,4 +1,4 @@
-import { ACCENT } from './toolkit-palette';
+import { ACCENT, COULEURS_DES_PLATEFORMES, TEINTES } from './toolkit-palette';
 import {
   escapeHtml,
   safeHtml,
@@ -697,6 +697,24 @@ export function buildToolkitCss(): EscapedHtml {
         white-space: pre-wrap;
         word-wrap: break-word;
       }
-
+      ${cssDesTeintes()}
+      ${cssDesPlateformes()}
     `;
+}
+
+function cssDesTeintes(): EscapedHtml[] {
+  return Object.entries(TEINTES).map(
+    ([teinte, { bg, text, border }]) => safeHtml`
+      .category-title.teinte-${escapeHtml(teinte)} { color: ${escapeHtml(text)}; border-left-color: ${escapeHtml(border)}; }
+      .prompt-card.teinte-${escapeHtml(teinte)} { border-left-color: ${escapeHtml(border)}; }
+      .prompt-card.teinte-${escapeHtml(teinte)} .pill-categorie { background: ${escapeHtml(bg)}; color: ${escapeHtml(text)}; }`,
+  );
+}
+
+function cssDesPlateformes(): EscapedHtml[] {
+  return Object.entries(COULEURS_DES_PLATEFORMES).map(
+    ([plateforme, couleur]) => safeHtml`
+      .template-card.plateforme-${escapeHtml(plateforme)} { border-top: 4px solid ${escapeHtml(couleur)}; }
+      .template-card.plateforme-${escapeHtml(plateforme)} .platform-badge { background: ${escapeHtml(couleur)}; }`,
+  );
 }
