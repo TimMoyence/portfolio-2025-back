@@ -20,6 +20,7 @@ import {
   LangchainClientReportService,
 } from './langchain-client-report.service';
 import type { PageAiRecap } from './page-ai-recap.service';
+import { normalizeSeverity } from './shared/severity.util';
 
 export interface RunDeliveryInput {
   readonly auditId: string;
@@ -85,7 +86,7 @@ export class AuditDeliveryOrchestrator {
       (finding) => ({
         title: finding.title,
         description: finding.description,
-        severity: this.normalizeFindingSeverity(finding.severity),
+        severity: normalizeSeverity(finding.severity),
         impact: this.normalizeFindingImpact(finding.impact),
       }),
     );
@@ -110,15 +111,6 @@ export class AuditDeliveryOrchestrator {
         `Delivery phase failed for audit ${input.auditId}: ${String(error)}`,
       );
     }
-  }
-
-  private normalizeFindingSeverity(
-    severity: unknown,
-  ): 'high' | 'medium' | 'low' {
-    const value = typeof severity === 'string' ? severity.toLowerCase() : '';
-    if (value === 'high' || value === 'critical') return 'high';
-    if (value === 'low') return 'low';
-    return 'medium';
   }
 
   private normalizeFindingImpact(

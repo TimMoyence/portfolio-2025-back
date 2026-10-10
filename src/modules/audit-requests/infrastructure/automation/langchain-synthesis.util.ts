@@ -5,12 +5,7 @@ import type {
   LangchainAuditInput,
   PerPageDetailedAnalysis,
 } from './contracts/langchain-contracts';
-
-export function toImpact(value: unknown): 'high' | 'medium' | 'low' {
-  if (value === 'high') return 'high';
-  if (value === 'low') return 'low';
-  return 'medium';
-}
+import { normalizeSeverity } from './shared/severity.util';
 
 export function toEffort(value: unknown): 'high' | 'medium' | 'low' {
   if (typeof value !== 'number' || !Number.isFinite(value)) return 'medium';
@@ -109,7 +104,7 @@ export function buildExpertSynthesis(
         .slice(0, 12)
         .map((entry) => ({
           title: typeof entry.task === 'string' ? entry.task : '',
-          impact: toImpact(entry.priority),
+          impact: normalizeSeverity(entry.priority),
           effort: toEffort(entry.estimatedHours),
           acceptanceCriteria: Array.isArray(entry.acceptanceCriteria)
             ? (entry.acceptanceCriteria as string[]).map(String)

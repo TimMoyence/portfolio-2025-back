@@ -15,6 +15,7 @@ import { withHardTimeout } from './llm-execution.guardrails';
 import { LlmLimiteParLaConfig } from './llm-executor.port';
 import { impactLocalise } from './shared/finding-priority.util';
 import { localizedText } from './shared/locale-text.util';
+import { severityRank } from './shared/severity.util';
 import { scoreMoyenSur100, scoreSur100 } from '../../domain/score-sur-100';
 
 const severitySchema = z.enum(['high', 'medium', 'low']);
@@ -342,10 +343,7 @@ export class LangchainClientReportService extends LlmLimiteParLaConfig {
   ): ClientReportSynthesis {
     const sortedFindings = [...context.findings]
       .filter((entry) => entry.title.trim().length > 0)
-      .sort(
-        (a, b) =>
-          this.severityWeight(b.severity) - this.severityWeight(a.severity),
-      );
+      .sort((a, b) => severityRank(b.severity) - severityRank(a.severity));
 
     const topFindings = sortedFindings.slice(0, 5).map((finding) => ({
       title: finding.title,
@@ -615,12 +613,6 @@ export class LangchainClientReportService extends LlmLimiteParLaConfig {
     if (score >= 80) return 'ok';
     if (score >= 55) return 'warning';
     return 'critical';
-  }
-
-  private severityWeight(severity: 'high' | 'medium' | 'low'): number {
-    if (severity === 'high') return 3;
-    if (severity === 'medium') return 2;
-    return 1;
   }
 
   private averageScore(values: Array<number | undefined>): number {

@@ -13,13 +13,15 @@ import {
 import { priorityFromFinding } from './shared/finding-priority.util';
 import { localizedText } from './shared/locale-text.util';
 import {
+  normalizeSeverity,
+  type RankedSeverity as PrioritySeverity,
+} from './shared/severity.util';
+import {
   ACTIONABLE_PILLARS,
   type ActionablePillarKey,
 } from './scoring.service';
 
 export type { TierValidationResult };
-
-type PrioritySeverity = 'high' | 'medium' | 'low';
 
 const PILLAR_DEGRADED_SCORE = 65;
 
@@ -589,7 +591,7 @@ export class ReportQualityGateService {
 
     return {
       title,
-      severity: this.normalizeSeverity(entry.severity),
+      severity: normalizeSeverity(entry.severity),
       whyItMatters,
       recommendedFix,
       estimatedHours: this.normalizeHours(entry.estimatedHours, 3),
@@ -673,7 +675,7 @@ export class ReportQualityGateService {
         url: this.cleanText(entry?.url),
         issue: this.cleanText(entry?.issue),
         recommendation: this.cleanText(entry?.recommendation),
-        impact: this.normalizeSeverity(entry?.impact),
+        impact: normalizeSeverity(entry?.impact),
       }),
       (entry) => entry.url && entry.issue && entry.recommendation,
     );
@@ -733,7 +735,7 @@ export class ReportQualityGateService {
         ),
         estimatedHours: this.normalizeHours(entry?.estimatedHours, 3),
         expectedImpact: this.cleanText(entry?.expectedImpact),
-        priority: this.normalizeSeverity(entry?.priority),
+        priority: normalizeSeverity(entry?.priority),
       }),
       (entry) => entry.task && entry.whyItMatters && entry.expectedImpact,
     );
@@ -746,7 +748,7 @@ export class ReportQualityGateService {
       entries,
       (entry) => ({
         task: this.cleanText(entry?.task),
-        priority: this.normalizeSeverity(entry?.priority),
+        priority: normalizeSeverity(entry?.priority),
         details: this.cleanText(entry?.details),
         estimatedHours: this.normalizeHours(entry?.estimatedHours, 4),
         dependencies: this.normalizeStringArray(entry?.dependencies),
@@ -811,13 +813,6 @@ export class ReportQualityGateService {
       return fallback;
     }
     return arrondi(value, 1);
-  }
-
-  private normalizeSeverity(value: unknown): PrioritySeverity {
-    const normalized = typeof value === 'string' ? value.toLowerCase() : '';
-    if (normalized === 'high') return 'high';
-    if (normalized === 'low') return 'low';
-    return 'medium';
   }
 
   validateClientReport(report: ClientReportSynthesis): TierValidationResult {

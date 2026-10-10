@@ -117,6 +117,36 @@ describe('ReportQualityGateService', () => {
     expect(new Set(titles).size).toBe(titles.length);
   });
 
+  it('ranks the model severity into the three report levels', () => {
+    const report = baseReport();
+    const priority = report.priorities[0];
+    report.priorities = [
+      {
+        ...priority,
+        title: 'Critical canonical defect',
+        severity: 'CRITICAL' as never,
+      },
+      { ...priority, title: 'Low canonical defect', severity: 'Low' as never },
+      {
+        ...priority,
+        title: 'Unknown canonical defect',
+        severity: 'urgent' as never,
+      },
+    ];
+
+    const result = service.apply(
+      'English summary for business stakeholders.',
+      report,
+      baseContext(),
+    );
+
+    const severityOf = (title: string): string | undefined =>
+      result.report.priorities.find((entry) => entry.title === title)?.severity;
+    expect(severityOf('Critical canonical defect')).toBe('high');
+    expect(severityOf('Low canonical defect')).toBe('low');
+    expect(severityOf('Unknown canonical defect')).toBe('medium');
+  });
+
   const baseClientReport = (): ClientReportSynthesis => ({
     executiveSummary:
       'Audit complet finalise avec 3 leviers prioritaires et un plan de 30 jours.',
