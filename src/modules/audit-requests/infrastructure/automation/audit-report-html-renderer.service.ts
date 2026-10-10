@@ -17,6 +17,7 @@ import type {
   EscapedHtml,
   FeuilleDeStyle,
 } from '../../../../common/infrastructure/mail/html-escape.util';
+import { sectionHeader } from '../../../../common/infrastructure/mail/section-header';
 
 @Injectable()
 export class AuditReportHtmlRendererService {
@@ -83,7 +84,7 @@ export class AuditReportHtmlRendererService {
     const cta = this.renderCta(report.cta);
 
     return safeHtml`<section class="page section section-client">
-      ${this.sectionHeader('01', 'Synthese client', 'Votre audit en un coup d\u2019\u0153il')}
+      ${sectionHeader('01', 'Synthese client', 'Votre audit en un coup d\u2019\u0153il')}
       <div class="exec-summary">
         <p>${escapeHtml(report.executiveSummary)}</p>
       </div>
@@ -174,7 +175,7 @@ export class AuditReportHtmlRendererService {
 
   private renderExpertSection(report: ExpertReportSynthesis): EscapedHtml {
     return safeHtml`<section class="page section section-expert">
-      ${this.sectionHeader('02', 'Analyse expert', 'Constats transverses et backlog priorise')}
+      ${sectionHeader('02', 'Analyse expert', 'Constats transverses et backlog priorise')}
       <div class="exec-summary">
         <p>${escapeHtml(report.executiveSummary)}</p>
       </div>
@@ -256,13 +257,13 @@ export class AuditReportHtmlRendererService {
   ): EscapedHtml {
     if (!pages.length) {
       return safeHtml`<section class="page section section-pages">
-        ${this.sectionHeader('03', 'Fiches pages', 'Analyse detaillee par URL')}
+        ${sectionHeader('03', 'Fiches pages', 'Analyse detaillee par URL')}
         <p class="empty-state">Aucune page analysee.</p>
       </section>`;
     }
     const cards = pages.map((page) => this.renderPageCard(page));
     return safeHtml`<section class="page section section-pages">
-      ${this.sectionHeader('03', 'Fiches pages', 'Analyse detaillee par URL')}
+      ${sectionHeader('03', 'Fiches pages', 'Analyse detaillee par URL')}
       ${cards}
     </section>`;
   }
@@ -319,7 +320,7 @@ export class AuditReportHtmlRendererService {
   private renderAnnexes(audit: AuditSnapshot): EscapedHtml {
     const llmsTxt = this.renderLlmsTxtAnnex(audit.keyChecks);
     return safeHtml`<section class="page section section-annex">
-      ${this.sectionHeader('04', 'Annexes', 'Donnees techniques complementaires')}
+      ${sectionHeader('04', 'Annexes', 'Donnees techniques complementaires')}
       ${llmsTxt}
       <div class="annex-block">
         <h3 class="subsection-title">Liens utiles</h3>
@@ -347,20 +348,6 @@ export class AuditReportHtmlRendererService {
       <p>Statut : ${present ? safeHtml`Present` : safeHtml`Absent`}</p>
       ${url ? safeHtml`<p>URL : <a href="${escapeUrl(url)}">${escapeHtml(url)}</a></p>` : safeHtml``}
     </div>`;
-  }
-
-  private sectionHeader(
-    num: string,
-    title: string,
-    subtitle: string,
-  ): EscapedHtml {
-    return safeHtml`<header class="section-header">
-      <span class="section-number">${escapeHtml(num)}</span>
-      <div>
-        <h2 class="section-title">${escapeHtml(title)}</h2>
-        <p class="section-subtitle">${escapeHtml(subtitle)}</p>
-      </div>
-    </header>`;
   }
 
   private statusLabel(status: 'critical' | 'warning' | 'ok'): EscapedHtml {

@@ -1,32 +1,7 @@
 import { buildToolkitCss } from './toolkit-html.css';
-import {
-  escapeHtml,
-  pageFooter,
-  safeHtml,
-  sectionHeader,
-} from './toolkit-html.utils';
+import { escapeHtml, pageFooter, safeHtml } from './toolkit-html.utils';
 import type { EscapedHtml } from './toolkit-html.utils';
 import type { FeuilleDeStyle } from '../../../../common/infrastructure/mail/html-escape.util';
-
-describe('sectionHeader', () => {
-  it('echappe le numero, le titre et le sous-titre', () => {
-    const header = sectionHeader('<n>', '<t>', '<s>');
-
-    expect(header).toContain('&lt;n&gt;');
-    expect(header).toContain('&lt;t&gt;');
-    expect(header).toContain('&lt;s&gt;');
-    expect(header).not.toContain('<n>');
-    expect(header).not.toContain('<t>');
-  });
-
-  it('produit un fragment marque, interpolable sans re-echappement', () => {
-    const header: EscapedHtml = sectionHeader('01', 'Cheatsheet', 'Vos outils');
-
-    expect(safeHtml`<section>${header}</section>`).toContain(
-      '<header class="section-header">',
-    );
-  });
-});
 
 describe('pageFooter', () => {
   it('produit un fragment marque vide', () => {

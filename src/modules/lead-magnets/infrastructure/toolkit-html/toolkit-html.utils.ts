@@ -10,6 +10,7 @@ import {
   safeHtml,
 } from '../../../../common/infrastructure/mail/html-escape.util';
 import type { EscapedHtml } from '../../../../common/infrastructure/mail/html-escape.util';
+import { sectionHeader } from '../../../../common/infrastructure/mail/section-header';
 
 function normalizeKey(raw: string): string {
   return raw
@@ -45,22 +46,8 @@ export function levelLabel(level: string): string {
   }
 }
 
-export { escapeHtml, escapeUrl, safeHtml };
+export { escapeHtml, escapeUrl, safeHtml, sectionHeader };
 export type { EscapedHtml };
-
-export function sectionHeader(
-  num: string,
-  title: string,
-  subtitle: string,
-): EscapedHtml {
-  return safeHtml`<header class="section-header">
-      <span class="section-number">${escapeHtml(num)}</span>
-      <div>
-        <h2 class="section-title">${escapeHtml(title)}</h2>
-        <p class="section-subtitle">${escapeHtml(subtitle)}</p>
-      </div>
-    </header>`;
-}
 
 /**
  * Footer de page neutre. Retourne une chaine vide pour eviter

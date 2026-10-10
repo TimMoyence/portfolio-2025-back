@@ -2,6 +2,7 @@ import { readFileSync } from 'fs';
 import { join } from 'path';
 
 const RENDERERS = [
+  'src/common/infrastructure/mail/section-header.ts',
   'src/modules/audit-requests/infrastructure/automation/audit-report-html-renderer.service.ts',
   'src/modules/audit-requests/infrastructure/mail/audit-client-report.mailer.ts',
   'src/modules/audit-requests/infrastructure/mail/audit-expert-report.mailer.ts',
