@@ -14,6 +14,7 @@ import {
 import request from 'supertest';
 import type { Test } from 'supertest';
 import { AllExceptionsFilter } from '../../src/common/interfaces/filters/all-exceptions.filter';
+import { PREFIXE_API_PAR_DEFAUT } from '../../src/config/prefixe-api';
 import { DomainExceptionFilter } from '../../src/common/interfaces/filters/DomainExceptionFilter';
 import { CloseSessionUseCase } from '../../src/modules/formations/application/CloseSession.useCase';
 import { ControlSessionUseCase } from '../../src/modules/formations/application/ControlSession.useCase';
@@ -122,7 +123,7 @@ import {
 } from './nest-test-app';
 import { GLOBAL_VALIDATION_PIPE_OPTIONS } from './validation-pipe';
 
-export const PREFIXE_API = 'api/v1/portfolio25';
+export const PREFIXE_API = PREFIXE_API_PAR_DEFAUT;
 export { EN_TETE_IDENTITE };
 
 export const serveurHttpDe = (

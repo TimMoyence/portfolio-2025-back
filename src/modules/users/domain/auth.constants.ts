@@ -7,5 +7,3 @@ export const REFRESH_TOKEN_RATE_LIMIT = 60;
 export const REFRESH_SANS_JETON_PAR_ADRESSE = 600;
 
 export const REFRESH_TOKEN_COOKIE_NAME = 'refresh_token';
-
-export const REFRESH_TOKEN_COOKIE_PATH = '/api/v1/portfolio25/auth';

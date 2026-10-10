@@ -27,8 +27,7 @@ jest.mock('../src/common/infrastructure/mail/smtp-transporter.util', () => ({
 }));
 
 import { NewsletterMailerService } from '../src/modules/newsletter/infrastructure/NewsletterMailer.service';
-
-const API_PREFIX = 'api/v1/portfolio25';
+import { PREFIXE_API_PAR_DEFAUT as API_PREFIX } from '../src/config/prefixe-api';
 const VALID_TOKEN = '550e8400-e29b-41d4-a716-446655440000';
 
 @Injectable()

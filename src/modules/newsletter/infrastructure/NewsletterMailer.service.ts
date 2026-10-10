@@ -8,6 +8,7 @@ import {
   safeHtml,
 } from '../../../common/infrastructure/mail/html-escape.util';
 import type { EscapedHtml } from '../../../common/infrastructure/mail/html-escape.util';
+import { cheminDeLApi } from '../../../config/prefixe-api';
 import type { INewsletterMailer } from '../domain/INewsletterMailer';
 import type { NewsletterSubscriber } from '../domain/NewsletterSubscriber';
 import { DAILY_BRIEF_SOURCE } from '../domain/SupportedFormationSlugs';
@@ -16,14 +17,6 @@ type Greeting = {
   readonly text: string;
   readonly html: EscapedHtml;
 };
-
-function trimSlashes(value: string): string {
-  let start = 0;
-  let end = value.length;
-  while (start < end && value[start] === '/') start += 1;
-  while (end > start && value[end - 1] === '/') end -= 1;
-  return value.slice(start, end);
-}
 
 @Injectable()
 export class NewsletterMailerService implements INewsletterMailer {
@@ -204,15 +197,10 @@ Tim`,
   }
 
   private buildApiUrl(apiPath: string, params: Record<string, string>): string {
-    const apiPrefix = trimSlashes(
-      this.configService.get<string>('API_PREFIX') ?? 'api/v1/portfolio25',
-    );
-    // Un prefixe vide produirait `//newsletter/...`, que `new URL()`
-    // interprete comme une URL protocol-relative : le premier segment
-    // deviendrait l'hote (`https://newsletter/...`). On normalise donc
-    // les slashes doublons plutot que de dependre de la forme du prefixe.
     const url = new URL(
-      `/${apiPrefix}${apiPath}`.replace(/\/{2,}/g, '/'),
+      cheminDeLApi(apiPath, {
+        API_PREFIX: this.configService.get<string>('API_PREFIX'),
+      }),
       this.frontendUrl,
     );
     for (const [key, value] of Object.entries(params)) {

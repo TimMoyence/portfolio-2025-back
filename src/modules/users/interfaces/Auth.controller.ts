@@ -44,10 +44,10 @@ import { UpdateProfileUseCase } from '../application/UpdateProfile.useCase';
 import { GetCurrentUserUseCase } from '../application/GetCurrentUser.useCase';
 import { VerifyEmailUseCase } from '../application/VerifyEmail.useCase';
 import { ResendVerificationEmailUseCase } from '../application/ResendVerificationEmail.useCase';
+import { cheminDeLApi } from '../../../config/prefixe-api';
 import {
   REFRESH_TOKEN_TTL_MS,
   REFRESH_TOKEN_COOKIE_NAME,
-  REFRESH_TOKEN_COOKIE_PATH,
 } from '../domain/auth.constants';
 import { AuthMessageResponseDto } from './dto/AuthMessage.response.dto';
 import { ChangePasswordDto } from './dto/ChangePassword.dto';
@@ -97,7 +97,7 @@ export class AuthController {
       httpOnly: true,
       secure: isProd,
       sameSite: 'strict',
-      path: REFRESH_TOKEN_COOKIE_PATH,
+      path: cheminDeLApi('auth'),
       maxAge: REFRESH_TOKEN_TTL_MS,
     });
   }
@@ -108,7 +108,7 @@ export class AuthController {
       httpOnly: true,
       secure: isProd,
       sameSite: 'strict',
-      path: REFRESH_TOKEN_COOKIE_PATH,
+      path: cheminDeLApi('auth'),
     });
   }
 

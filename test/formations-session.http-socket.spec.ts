@@ -77,8 +77,7 @@ import {
   fermerApplication,
 } from './helpers/nest-test-app';
 import { GLOBAL_VALIDATION_PIPE_OPTIONS } from './helpers/validation-pipe';
-
-const API_PREFIX = 'api/v1/portfolio25';
+import { PREFIXE_API as API_PREFIX } from './helpers/formations-harness';
 const SECRET = 'secret-de-test-formations-assez-long-1234';
 const SYNTHESE_A = 'synthese-formateur@example.com';
 

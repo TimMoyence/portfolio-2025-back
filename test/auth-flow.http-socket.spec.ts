@@ -144,6 +144,25 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
     expect(res.body.user).toHaveProperty('roles');
   });
 
+  it('POST /api/auth/login pose le cookie de rafraichissement sous le prefixe de l API', async () => {
+    const prefixeAvant = process.env.API_PREFIX;
+    process.env.API_PREFIX = 'api';
+    authenticateUserUseCase.execute.mockResolvedValue(
+      await sessionSigneePour(buildUser(), 'opaque-refresh-token'),
+    );
+
+    try {
+      const res = await seConnecter();
+
+      expect(res.headers['set-cookie']).toEqual([
+        expect.stringContaining('; Path=/api/auth;'),
+      ]);
+    } finally {
+      if (prefixeAvant === undefined) delete process.env.API_PREFIX;
+      else process.env.API_PREFIX = prefixeAvant;
+    }
+  });
+
   it('GET /api/auth/me avec Bearer valide retourne le profil utilisateur', async () => {
     const user = buildUser({ roles: ['teacher'] });
     const signed = await signerPour(user);

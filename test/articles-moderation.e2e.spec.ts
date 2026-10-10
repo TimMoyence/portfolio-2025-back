@@ -3,6 +3,7 @@ import type { NextFunction, Request, Response } from 'express';
 import request from 'supertest';
 import { ArticleModerationService } from '../src/modules/articles/application/article-moderation.service';
 import { ArticleModerationController } from '../src/modules/articles/interfaces/article-moderation.controller';
+import { PREFIXE_API_PAR_DEFAUT } from '../src/config/prefixe-api';
 import {
   applicationDeLaSuite,
   httpServerOf,
@@ -34,7 +35,7 @@ describe('Modération des articles (admin)', () => {
         }
         next();
       });
-      application.setGlobalPrefix('api/v1/portfolio25');
+      application.setGlobalPrefix(PREFIXE_API_PAR_DEFAUT);
     });
   });
 
