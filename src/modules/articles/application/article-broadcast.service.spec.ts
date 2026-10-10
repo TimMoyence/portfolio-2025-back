@@ -1,5 +1,8 @@
 import { ConflictException, NotFoundException } from '@nestjs/common';
-import { buildArticleRecord } from '../../../../test/factories/article.factory';
+import {
+  buildArticleBroadcastRecord,
+  buildArticleRecord,
+} from '../../../../test/factories/article.factory';
 import type { ArticlesRepository } from './articles.repository';
 import { ArticleBroadcastService } from './article-broadcast.service';
 import { ArticleModerationService } from './article-moderation.service';
@@ -14,16 +17,12 @@ function setup(options: { sendAfter?: Date } = {}) {
   const store = new InMemoryArticleBroadcasts();
   const mailer = new RecordingBroadcastMailer();
   store.articles.set('record-1', buildArticleRecord());
-  store.broadcasts.set('broadcast-1', {
-    id: 'broadcast-1',
-    articleRecordId: 'record-1',
-    status: 'scheduled',
-    sendAfter: options.sendAfter ?? new Date(NOW.getTime() - 60_000),
-    lockedUntil: null,
-    sentCount: 0,
-    failedCount: 0,
-    completedAt: null,
-  });
+  store.broadcasts.set(
+    'broadcast-1',
+    buildArticleBroadcastRecord({
+      sendAfter: options.sendAfter ?? new Date(NOW.getTime() - 60_000),
+    }),
+  );
   const subscribe = (
     id: string,
     email: string,
