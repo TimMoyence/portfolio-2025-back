@@ -12,6 +12,7 @@ import {
   exigerAuMoinsUn,
   type AuMoinsUn,
 } from '../../../../common/domain/au-moins-un';
+import { nombreFrancais } from '../../../../common/domain/nombres/ecriture-francaise';
 import {
   ecartTypePopulation,
   mediane,
@@ -120,9 +121,6 @@ function texteDeLEcran(screenId: string): string {
   return JSON.stringify(ecran);
 }
 
-const enFrancais = (valeur: number): string =>
-  valeur.toLocaleString('fr-FR', { maximumFractionDigits: 2 });
-
 const ILLUSTRATION_DE_CHAQUE_TRACE_ECRITE: Readonly<Record<string, string>> = {
   'B2-02-A1-06-COURS-RESUMER': 'cinq-factures.webp',
   'B2-02-A1-06-COURS-ECART': 'deux-clients-meme-moyenne.webp',
@@ -159,7 +157,7 @@ describe('B2-02 — textes relus contre les données et le programme', () => {
       moyenne(FACTURES_DE_SEPTEMBRE) - mediane(FACTURES_DE_SEPTEMBRE);
 
     expect(texteDeLEcran('B2-02-A1-07-EXEMPLE-RESUME')).toContain(
-      `${enFrancais(ecart)} jours au-dessus de la médiane`,
+      `${nombreFrancais(ecart, 1)} jours au-dessus de la médiane`,
     );
   });
 

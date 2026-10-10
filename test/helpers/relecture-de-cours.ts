@@ -8,7 +8,7 @@ import type { ContenuDeCours } from '../../src/modules/formations/domain/cours/C
 import { projeterCatalogue } from '../../src/modules/formations/domain/cours/Diffusion';
 import { tirer } from '../../src/modules/formations/domain/cours/Tirage';
 import { typographier } from '../../src/modules/formations/domain/cours/Typographie';
-import { nombreFrancais } from '../../src/modules/formations/infrastructure/contenus/briques';
+import { nombreFrancais } from '../../src/common/domain/nombres/ecriture-francaise';
 import { corrigeDeFeuille, ecranDuContenu } from './fiche-de-cours';
 import { arrondi } from '../../src/common/domain/nombres/arrondi';
 

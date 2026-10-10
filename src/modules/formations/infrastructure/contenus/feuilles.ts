@@ -2,12 +2,10 @@ import type { AuMoinsUnModifiable } from '../../../../common/domain/au-moins-un'
 import type { ConfusionId } from '../../domain/cours/banque/confusions';
 import * as moteur from './briques';
 
+export { avecVirgule } from '../../../../common/domain/nombres/ecriture-francaise';
+
 type PiegeDeCellule = readonly [number, ConfusionId];
 export type AttenduDeFeuille = ReturnType<typeof moteur.attendu>;
-
-export function avecVirgule(valeur: number, decimales: number): string {
-  return valeur.toFixed(decimales).replace('.', ',');
-}
 
 export function termes<T>(
   suite: (rang: number) => T,

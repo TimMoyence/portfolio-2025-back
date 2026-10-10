@@ -1,4 +1,5 @@
 import type { AuMoinsUnModifiable } from '../../../../common/domain/au-moins-un';
+import { nombreFrancais } from '../../../../common/domain/nombres/ecriture-francaise';
 import type { ConceptId } from '../../domain/cours/banque/concepts';
 import type { ConfusionId } from '../../domain/cours/banque/confusions';
 import {
@@ -27,7 +28,7 @@ const CONSIGNES_DE_SAISIE: Readonly<Record<UniteDeSaisie, string>> = {
 };
 
 function formePubliee(valeur: number, unite: UniteDeSaisie): string {
-  return `${moteur.nombreFrancais(valeur, unite === '%' ? 1 : 0)} ${unite}`;
+  return `${nombreFrancais(valeur, unite === '%' ? 1 : 0)} ${unite}`;
 }
 
 function valeurDuPiege(

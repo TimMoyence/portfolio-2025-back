@@ -15,12 +15,12 @@ import {
   attendreUneRecopieNonFigee,
   attendusDeColonne,
   confusionsDe,
-  enFrancais,
   proprietesV2,
   rangsDe,
   recopier,
   texteDeLEcran as texteDe,
 } from '../../../../../test/helpers/feuille-de-cours';
+import { avecVirgule } from '../../../../common/domain/nombres/ecriture-francaise';
 import {
   auCentime,
   auMillionieme,
@@ -199,7 +199,7 @@ describe('B2-05 — textes relus contre les données', () => {
     const texte = texteDe(COURS_B2_05, 'B2-05-A3-06-ATELIER-EMPRUNT');
 
     expect(texte).toContain('a = C × t ÷ (1 − (1 + t)⁻ⁿ)');
-    expect(texte).toContain(`${enFrancais(TAUX_DE_L_EMPRUNT * 100, 0)} %`);
+    expect(texte).toContain(`${avecVirgule(TAUX_DE_L_EMPRUNT * 100, 0)} %`);
   });
 });
 

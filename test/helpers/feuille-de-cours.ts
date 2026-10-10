@@ -22,10 +22,6 @@ export function attendusDeColonne<T>(
   );
 }
 
-export function enFrancais(valeur: number, decimales: number): string {
-  return valeur.toFixed(decimales).replace('.', ',');
-}
-
 export function recopier(
   modele: string,
   colonne: string,

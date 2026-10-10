@@ -254,8 +254,6 @@ const DROITE_INVERSEE_DES_KITS = moindresCarres(
 );
 const COEFFICIENT_DES_KITS = Math.exp(DROITE_DES_KITS.ordonnee);
 
-const enDecimal = (valeur: number): string => String(valeur).replace('.', ',');
-
 export const FORMULE_DU_LOGARITHME = '=LN(B2)';
 export const FORMULE_DE_LA_PENTE = '=PENTE(C2:C7;A2:A7)';
 export const FORMULE_DE_L_ORDONNEE = '=ORDONNEE.ORIGINE(C2:C7;A2:A7)';
@@ -270,8 +268,14 @@ const CELLULES_DES_KITS = {
   E1: 'Ordonnée à l’origine β',
   F1: 'Coefficient a = e^β',
   G1: 'Demande prévue à 40 € (centaines)',
-  ...colonneDeValeurs('A', PRIX_DES_KITS.map(enDecimal)),
-  ...colonneDeValeurs('B', DEMANDES_DES_KITS.map(enDecimal)),
+  ...colonneDeValeurs(
+    'A',
+    PRIX_DES_KITS.map((prix) => avecVirgule(prix)),
+  ),
+  ...colonneDeValeurs(
+    'B',
+    DEMANDES_DES_KITS.map((demande) => avecVirgule(demande)),
+  ),
 };
 
 export const PLAN_DES_KITS = {

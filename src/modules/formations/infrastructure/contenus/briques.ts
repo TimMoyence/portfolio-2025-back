@@ -453,17 +453,6 @@ export const REFERENTIEL_DU_BTS_CG = {
   external: true,
 } as const;
 
-const ESPACE_FINE_INSECABLE = String.fromCodePoint(0x20_2f);
-
-export function nombreFrancais(valeur: number, decimales: number): string {
-  return new Intl.NumberFormat('fr-FR', {
-    minimumFractionDigits: decimales,
-    maximumFractionDigits: decimales,
-  })
-    .format(valeur)
-    .replaceAll(ESPACE_FINE_INSECABLE, ' ');
-}
-
 function coursDuNiveau(niveau: string) {
   return (
     actes: AuMoinsUnModifiable<Acte>,

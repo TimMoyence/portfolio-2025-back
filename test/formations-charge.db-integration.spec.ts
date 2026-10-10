@@ -1,5 +1,6 @@
 import { performance } from 'node:perf_hooks';
 import type { Test } from 'supertest';
+import { avecVirgule } from '../src/common/domain/nombres/ecriture-francaise';
 import type { ResultatsDeSeance } from '../src/modules/formations/domain/contrats/resultats';
 import { questionsDuCours } from '../src/modules/formations/domain/cours/Cours';
 import { tirer } from '../src/modules/formations/domain/cours/Tirage';
@@ -57,16 +58,12 @@ interface Classe {
 
 const mesures: string[] = [];
 
-function decimales(valeur: number): string {
-  return valeur.toFixed(2).replace('.', ',');
-}
-
 function secondes(ms: number): string {
-  return `${decimales(ms / MS_PAR_SECONDE)} s`;
+  return `${avecVirgule(ms / MS_PAR_SECONDE, 2)} s`;
 }
 
 function pourcentage(ratio: number): string {
-  return `${decimales(ratio * POUR_CENT)} %`;
+  return `${avecVirgule(ratio * POUR_CENT, 2)} %`;
 }
 
 function dansLeBudget(budget: string): string {

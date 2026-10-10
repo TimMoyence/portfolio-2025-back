@@ -1,3 +1,4 @@
+import { avecVirgule } from '../../../../common/domain/nombres/ecriture-francaise';
 import { somme } from '../../../../common/domain/nombres/statistiques';
 import { listeEntreGuillemets } from '../../../../common/domain/texte/liste-entre-guillemets';
 import { sansDiacritiques } from '../../../../common/domain/texte/sans-diacritiques';
@@ -104,10 +105,6 @@ function minutesDe(ecran: Ecran): number {
   return estDureeValide(ecran.dureeMinutes) ? ecran.dureeMinutes : 0;
 }
 
-function enFrancais(part: number): string {
-  return part.toFixed(2).replace('.', ',');
-}
-
 function verdictDuBloc(
   bloc: readonly string[],
   cumul: number,
@@ -196,7 +193,7 @@ function controlerRatio({ cours }: Analyse): readonly Manquement[] {
   return [
     {
       ecran: null,
-      raison: `${interaction} min d'écrans interactifs pour ${exposition} min d'exposition, soit un ratio de ${enFrancais(interaction / exposition)} : le plancher est de ${enFrancais(RATIO_INTERACTION_MINIMAL)}.`,
+      raison: `${interaction} min d'écrans interactifs pour ${exposition} min d'exposition, soit un ratio de ${avecVirgule(interaction / exposition, 2)} : le plancher est de ${avecVirgule(RATIO_INTERACTION_MINIMAL, 2)}.`,
     },
   ];
 }

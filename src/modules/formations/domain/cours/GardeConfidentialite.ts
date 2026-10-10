@@ -1,3 +1,4 @@
+import { nombreFrancais } from '../../../../common/domain/nombres/ecriture-francaise';
 import { tronquer } from '../../../../common/domain/texte/tronquer';
 import type { Cours, Ecran, Question } from '../contrats/cours';
 import type { EcranPublic, TirageDuCours } from '../contrats/tirage';
@@ -21,7 +22,6 @@ const DECIMALES_DES_ATTENDUS: readonly number[] = [2, 4, 6];
 const DECIMALES_D_UNE_FEUILLE: readonly number[] = [4, 6];
 const FACTEUR_DE_POURCENTAGE = 100;
 const CHIFFRES_SIGNIFICATIFS_MINIMUM = 3;
-const TAILLE_D_UN_GROUPE = 3;
 const LONGUEUR_D_EXTRAIT = 80;
 const ESPACE_INSECABLE = String.fromCodePoint(0x00a0);
 const ESPACE_FINE_INSECABLE = String.fromCodePoint(0x202f);
@@ -76,19 +76,6 @@ function contientSansCasse(texte: string, segment: string): boolean {
   return normaliser(texte)
     .toLowerCase()
     .includes(normaliser(segment).toLowerCase());
-}
-
-function enFrancais(valeur: number, decimales: number): string {
-  const [entier, fraction = ''] = Math.abs(valeur)
-    .toFixed(decimales)
-    .split('.');
-  const groupes: string[] = [];
-  for (let fin = entier.length; fin > 0; fin -= TAILLE_D_UN_GROUPE) {
-    groupes.unshift(entier.slice(Math.max(0, fin - TAILLE_D_UN_GROUPE), fin));
-  }
-  const signe = valeur < 0 ? '-' : '';
-  const decimal = fraction === '' ? '' : `,${fraction}`;
-  return `${signe}${groupes.join(' ')}${decimal}`;
 }
 
 function decimalesDe(forme: string): number {
@@ -181,7 +168,7 @@ function textesDeLEcran(
     decimales === undefined
       ? []
       : valeursDesGraphiques(ecran.donnees).map((valeur) =>
-          enFrancais(valeur, decimales),
+          nombreFrancais(valeur, decimales),
         );
   return [...titre, ...chainesDe(ecran.donnees, exclue), ...valeurs];
 }
@@ -308,8 +295,8 @@ function formesDesAttendus(corrige: CorrigeProduction): readonly string[] {
     ...new Set(
       valeurs.flatMap((valeur) =>
         decimales.flatMap((precision) => [
-          enFrancais(Math.abs(valeur), precision),
-          enFrancais(Math.abs(valeur) * FACTEUR_DE_POURCENTAGE, precision),
+          nombreFrancais(Math.abs(valeur), precision),
+          nombreFrancais(Math.abs(valeur) * FACTEUR_DE_POURCENTAGE, precision),
         ]),
       ),
     ),

@@ -14,6 +14,7 @@ import {
   valeursDevoileesAvantLeurEcran,
   valeursDevoileesParLesExplications,
 } from '../../../../../test/helpers/relecture-de-cours';
+import { avecVirgule } from '../../../../common/domain/nombres/ecriture-francaise';
 import { libelleDeConfusion } from '../../domain/cours/banque/confusions';
 import { estReservee, questionsDuCours } from '../../domain/cours/Cours';
 import { tirer } from '../../domain/cours/Tirage';
@@ -232,17 +233,14 @@ describe('B3-01 — valeurs servies face au jeu Norvane', () => {
     const textes = explicationsDe('B3-01-A3-10-RECOMMANDATIONS');
     const histoires = [
       [
-        feuille.enFrancais(VALEURS_B3_01['b3-01-a3-marge-marseille'], 1),
-        feuille.enFrancais(HISTOIRES_B3_01['taux-de-marge-marseille-2025'], 1),
+        avecVirgule(VALEURS_B3_01['b3-01-a3-marge-marseille'], 1),
+        avecVirgule(HISTOIRES_B3_01['taux-de-marge-marseille-2025'], 1),
       ],
       [
-        feuille.enFrancais(VALEURS_B3_01['b3-01-a3-atteinte-rennes'], 1),
-        feuille.enFrancais(
-          -HISTOIRES_B3_01['evolution-informatique-rennes'],
-          1,
-        ),
+        avecVirgule(VALEURS_B3_01['b3-01-a3-atteinte-rennes'], 1),
+        avecVirgule(-HISTOIRES_B3_01['evolution-informatique-rennes'], 1),
       ],
-      [feuille.enFrancais(HISTOIRES_B3_01['evolution-lille'], 1)],
+      [avecVirgule(HISTOIRES_B3_01['evolution-lille'], 1)],
       [
         `${VALEURS_B3_01['b3-01-a2-delai-strasbourg']} jours ouvrés`,
         `contre ${HISTOIRES_B3_01['delai-median-strasbourg-2025']}`,
@@ -950,7 +948,7 @@ describe('B3-01 — actes 2 et 3 : consignes et corrections exactes', () => {
     );
 
     expect(marseille).toContain(
-      `${feuille.enFrancais(HISTOIRES_B3_01['taux-de-marge-marseille-2025'], 1)} % de janvier à septembre 2025`,
+      `${avecVirgule(HISTOIRES_B3_01['taux-de-marge-marseille-2025'], 1)} % de janvier à septembre 2025`,
     );
     expect(rennes).toContain('par rapport à la même période de 2025');
     for (const histoire of [marseille, rennes, ...suite]) {
