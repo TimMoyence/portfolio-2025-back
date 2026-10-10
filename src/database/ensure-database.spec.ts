@@ -32,7 +32,6 @@ describe('garantirLaBaseCible', () => {
     expect(ClientSimule).toHaveBeenCalledWith({
       connectionString: 'postgres://u:p@h:5432/admin',
       ssl: undefined,
-      database: 'postgres',
     });
     expect(client.query).toHaveBeenLastCalledWith('CREATE DATABASE "cible"');
     expect(client.end).toHaveBeenCalled();

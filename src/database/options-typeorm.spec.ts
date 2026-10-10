@@ -45,6 +45,15 @@ describe('optionsTypeOrmDeLApi', () => {
     expect(enProd.synchronize).toBe(false);
   });
 
+  it('synchronise des qu un alias le demande, meme apres un alias a false', async () => {
+    const options = await optionsTypeOrmDeLApi('e', {
+      TYPEORM_SYNCHRONIZE: 'false',
+      DB_SYNCHRONIZE: 'true',
+    });
+
+    expect(options.synchronize).toBe(true);
+  });
+
   it('retombe sur les valeurs du pool quand la variable n est pas un nombre', async () => {
     const options = await optionsTypeOrmDeLApi('e', {
       DB_POOL_MAX: 'beaucoup',

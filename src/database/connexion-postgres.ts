@@ -1,4 +1,8 @@
-import { envPremier, type SourceDEnv } from '../config/env-readers.util';
+import {
+  envPremier,
+  envUnVrai,
+  type SourceDEnv,
+} from '../config/env-readers.util';
 
 interface SslPostgres {
   readonly rejectUnauthorized: boolean;
@@ -38,18 +42,21 @@ function nomDeBaseDeLUrl(url: string): string | undefined {
   return new URL(url).pathname.replace(/^\//, '') || undefined;
 }
 
+const PORT_ENTIER = /^\d+$/;
+
 function portDe(source: SourceDEnv): number | undefined {
-  const port = Number.parseInt(
-    envPremier(ALIAS_POSTGRES.port, source) ?? '',
-    10,
-  );
-  return Number.isFinite(port) ? port : undefined;
+  const brut = envPremier(ALIAS_POSTGRES.port, source);
+  if (brut === undefined) return undefined;
+  if (!PORT_ENTIER.test(brut)) {
+    throw new Error(
+      `Le port PostgreSQL « ${brut} » n'est pas un entier positif (${ALIAS_POSTGRES.port.join(', ')}).`,
+    );
+  }
+  return Number(brut);
 }
 
 function sslDe(source: SourceDEnv): SslPostgres | undefined {
-  if (envPremier(ALIAS_POSTGRES.ssl, source)?.toLowerCase() !== 'true') {
-    return undefined;
-  }
+  if (!envUnVrai(ALIAS_POSTGRES.ssl, source)) return undefined;
   return { rejectUnauthorized: source.NODE_ENV === 'production' };
 }
 

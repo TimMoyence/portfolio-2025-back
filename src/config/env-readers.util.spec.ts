@@ -4,6 +4,7 @@ import {
   envInt,
   envPremier,
   envString,
+  envUnVrai,
 } from './env-readers.util';
 
 describe('env-readers.util', () => {
@@ -83,6 +84,17 @@ describe('env-readers.util', () => {
 
     it('rend undefined si aucun alias n est renseigne', () => {
       expect(envPremier(['A', 'B'], {})).toBeUndefined();
+    });
+  });
+
+  describe('envUnVrai', () => {
+    it('est vrai des qu un alias vaut true, quelle que soit sa place et sa casse', () => {
+      expect(envUnVrai(['A', 'B'], { A: 'false', B: ' True ' })).toBe(true);
+    });
+
+    it('est faux quand aucun alias ne vaut true', () => {
+      expect(envUnVrai(['A', 'B'], { A: 'false', B: '1' })).toBe(false);
+      expect(envUnVrai(['A'], {})).toBe(false);
     });
   });
 

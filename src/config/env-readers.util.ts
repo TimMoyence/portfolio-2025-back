@@ -21,6 +21,13 @@ export function envPremier(
   return undefined;
 }
 
+export function envUnVrai(
+  noms: readonly string[],
+  source: SourceDEnv = process.env,
+): boolean {
+  return noms.some((nom) => envString(nom, source)?.toLowerCase() === 'true');
+}
+
 export function envInt(
   name: string,
   fallback: number,

@@ -2,6 +2,8 @@ import { Client, ClientConfig } from 'pg';
 import { logBootstrapStep } from '../runtime/log-bootstrap-step';
 import type { ConnexionPostgres } from './connexion-postgres';
 
+const BASE_D_ADMINISTRATION_SANS_URL = 'postgres';
+
 function accesAdministrateur({
   url,
   host,
@@ -17,7 +19,14 @@ function accesAdministrateur({
     return { connectionString: adminUrl.toString(), ssl };
   }
   if (!host || !username) return null;
-  return { host, port, user: username, password, ssl };
+  return {
+    host,
+    port,
+    user: username,
+    password,
+    ssl,
+    database: BASE_D_ADMINISTRATION_SANS_URL,
+  };
 }
 
 export async function garantirLaBaseCible(
@@ -29,7 +38,7 @@ export async function garantirLaBaseCible(
   if (acces === null) return;
 
   logBootstrapStep(`ensuring database ${database}`);
-  const client = new Client({ ...acces, database: 'postgres' });
+  const client = new Client(acces);
   await client.connect();
 
   try {

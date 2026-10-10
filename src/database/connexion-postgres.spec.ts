@@ -51,6 +51,21 @@ describe('resoudreConnexionPostgres', () => {
     ).toBe(5433);
   });
 
+  it.each(['abc', '5433x', '-1', '54.3'])(
+    'refuse au demarrage un port qui n est pas un entier positif (%p)',
+    (port) => {
+      expect(() => resoudreConnexionPostgres({ DB_PORT: port })).toThrow(
+        /port PostgreSQL/,
+      );
+    },
+  );
+
+  it('active SSL des qu un de ses alias vaut true, meme apres un alias a false', () => {
+    expect(
+      resoudreConnexionPostgres({ DB_SSL: 'false', DATABASE_SSL: 'true' }).ssl,
+    ).toEqual({ rejectUnauthorized: false });
+  });
+
   it('ignore une variable vide ou blanche et passe a l alias suivant', () => {
     const connexion = resoudreConnexionPostgres({
       DB_HOST: '  ',
