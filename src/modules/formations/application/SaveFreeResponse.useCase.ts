@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import {
   activitesLibres,
   assertEcranServi,
+  ecranParId,
   rangDeLEcran,
 } from '../domain/cours/EcranServi';
 import {
@@ -41,7 +42,7 @@ export class SaveFreeResponseUseCase {
     assertPhaseOuverte(session.pilotageEcrans, { ecranId: command.screenId });
     assertEtapeNonCorrigee(
       session.pilotageEcrans,
-      cours.ecrans.find((ecran) => ecran.id === command.screenId),
+      ecranParId(cours, command.screenId),
       command.activityId,
     );
     await this.freeResponses.save({ ...command, response });

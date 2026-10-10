@@ -1,10 +1,15 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
 import type { Cours } from '../domain/contrats/cours';
-import type { PilotageEcran } from '../domain/contrats/pilotage';
+import type {
+  ControlSessionChanges,
+  PilotageEcran,
+} from '../domain/contrats/pilotage';
 import { sourcesAReveler } from '../domain/cours/Corrections';
 import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
 import { demandeDeCorrection } from '../domain/cours/CorrectionSurPlace';
+import { ecranParId } from '../domain/cours/EcranServi';
+import { etatEnDirect } from '../domain/EtatEnDirect';
 import type { PilotageDemande } from '../domain/cours/PilotageEcrans';
 import {
   assertPilotageCompatible,
@@ -24,7 +29,7 @@ import {
   SessionNotOwnedError,
 } from '../domain/errors/FormationErrors';
 import { isFreeRangeValid } from '../domain/PacingMode';
-import type { FreeRange, PacingMode } from '../domain/PacingMode';
+import type { FreeRange } from '../domain/PacingMode';
 import { canTransition } from '../domain/SessionState';
 import {
   CATALOGUE_COURS,
@@ -34,13 +39,6 @@ import {
 import { coursDeLaSeance } from './CoursDeLaSeance';
 
 const TENTATIVES_SUR_REVISION_OBSOLETE = 5;
-
-export interface ControlSessionChanges {
-  ecran?: number;
-  mode?: PacingMode;
-  intervalle?: FreeRange | null;
-  pilotage?: PilotageDemande;
-}
 
 @Injectable()
 export class ControlSessionUseCase {
@@ -149,9 +147,7 @@ export class ControlSessionUseCase {
     session: SessionRecord,
     demande: PilotageDemande,
   ): Readonly<Record<string, PilotageEcran>> {
-    const ecran = cours.ecrans.find(
-      (candidat) => candidat.id === demande.screenId,
-    );
+    const ecran = ecranParId(cours, demande.screenId);
     if (ecran === undefined) {
       throw new DomainValidationError(
         `Écran ${demande.screenId} absent du cours de cette séance`,
@@ -208,16 +204,10 @@ export class ControlSessionUseCase {
 
   private publier(sessionId: string, session: SessionRecord): void {
     const enCache = this.cache.read(sessionId);
-    this.cache.publish(sessionId, {
-      etat: session.etat,
-      modeRythme: session.modeRythme,
-      ecranCourant: session.ecranCourant,
-      intervalleLibre: session.intervalleLibre,
-      participants: enCache?.participants ?? 0,
-      revision: session.revision,
-      pilotage: session.pilotageEcrans,
-      majLe: session.majLe,
-    });
+    this.cache.publish(
+      sessionId,
+      etatEnDirect(session, enCache?.participants ?? 0),
+    );
   }
 
   private async assertPilotable(
