@@ -1,4 +1,3 @@
-import { PublicFormProtectionService } from '../../src/common/interfaces/security/public-form-protection.service';
 import { FormationsParticipantsController } from '../../src/modules/formations/interfaces/FormationsParticipants.controller';
 import { FormationsStudentController } from '../../src/modules/formations/interfaces/FormationsStudent.controller';
 
@@ -69,6 +68,5 @@ export function buildFormationsStudentController(
     dependances.tokens as never,
     dependances.clesEtudiants as never,
     dependances.codeScan as never,
-    new PublicFormProtectionService(),
   );
 }

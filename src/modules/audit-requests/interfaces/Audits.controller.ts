@@ -6,7 +6,6 @@ import {
   MessageEvent,
   Param,
   ParseUUIDPipe,
-  Optional,
   Req,
   Sse,
 } from '@nestjs/common';
@@ -35,7 +34,6 @@ import { StreamAuditEventsUseCase } from '../application/StreamAuditEvents.useCa
 import { AuditRequestRequestDto } from './dto/audit-request.request.dto';
 import { AuditRequestResponseDto } from './dto/audit-request.response.dto';
 import { AuditSummaryResponseDto } from './dto/audit-summary.response.dto';
-import { PublicFormProtectionService } from '../../../common/interfaces/security/public-form-protection.service';
 
 @ApiTags('audits')
 @Controller('audits')
@@ -44,8 +42,6 @@ export class AuditsController {
     private readonly createUseCase: CreateAuditRequestsUseCase,
     private readonly summaryUseCase: GetAuditSummaryUseCase,
     private readonly streamUseCase: StreamAuditEventsUseCase,
-    @Optional()
-    private readonly formProtection = new PublicFormProtectionService(),
   ) {}
 
   @FormulairePublic(3)
@@ -58,10 +54,6 @@ export class AuditsController {
     @Body() dto: AuditRequestRequestDto,
     @Req() req: Request,
   ): Promise<AuditRequestResponseDto> {
-    this.formProtection.assertHuman({
-      honeypot: dto.website,
-      formStartedAt: dto.formStartedAt,
-    });
     const command: CreateAuditRequestCommand = {
       websiteName: dto.websiteName,
       contactMethod: dto.contactMethod,

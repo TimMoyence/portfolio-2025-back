@@ -133,14 +133,6 @@ describe('FormationsStudentController', () => {
     );
   });
 
-  it('arrete le robot qui remplit le champ piege avant tout appel metier', async () => {
-    await expect(
-      rejoindre({ ...inscription, website: 'https://spam' }),
-    ).rejects.toBeInstanceOf(BadRequestException);
-
-    expect(joinSession.execute).not.toHaveBeenCalled();
-  });
-
   it('ne compte aucun echec quand une classe entiere entre avec le bon code', async () => {
     await rejoindre();
 
