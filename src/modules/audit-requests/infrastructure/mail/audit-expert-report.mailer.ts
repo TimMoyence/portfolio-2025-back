@@ -1,4 +1,8 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
+import {
+  destinataireDesRapportsDAudit,
+  expediteurDesCourriels,
+} from '../../../../config/adresses-de-courriel';
 import type { ExpertReportMailInput } from '../../domain/IAuditNotifier.port';
 import { buildMailLayout } from './mail-layout.util';
 import { escapeHtml, safeHtml, slugify } from './mail-rendering.util';
@@ -16,8 +20,7 @@ export class AuditExpertReportMailer {
 
   async sendExpertReport(input: ExpertReportMailInput): Promise<void> {
     if (!this.transporter) return;
-    const to =
-      process.env.AUDIT_REPORT_TO ?? process.env.CONTACT_NOTIFICATION_TO;
+    const to = destinataireDesRapportsDAudit();
     if (!to) return;
 
     const subject = `[Audit Expert] ${input.websiteName}`;
@@ -25,7 +28,7 @@ export class AuditExpertReportMailer {
     const text = this.buildExpertReportText(input);
 
     await this.transporter.sendMail({
-      from: process.env.SMTP_FROM,
+      from: expediteurDesCourriels(),
       to,
       subject,
       text,

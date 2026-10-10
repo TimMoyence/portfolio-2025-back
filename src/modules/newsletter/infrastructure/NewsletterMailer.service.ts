@@ -10,6 +10,10 @@ import {
 import type { EscapedHtml } from '../../../common/infrastructure/mail/html-escape.util';
 import { entetesDeDesabonnement } from '../../../common/infrastructure/mail/entetes-de-desabonnement';
 import { lienAvecJeton } from '../../../common/domain/lien-avec-jeton';
+import {
+  adresseDeReponse,
+  expediteurDesCourriels,
+} from '../../../config/adresses-de-courriel';
 import type { SourceDEnv } from '../../../config/env-readers.util';
 import {
   lienDeDesabonnement,
@@ -32,10 +36,8 @@ export class NewsletterMailerService implements INewsletterMailer {
   private readonly replyTo: string;
 
   constructor(private readonly configService: ConfigService) {
-    this.from = this.configService.get<string>('SMTP_FROM');
-    this.replyTo =
-      this.configService.get<string>('SMTP_REPLY_TO') ??
-      'contact@asilidesign.fr';
+    this.from = expediteurDesCourriels(this.environnement());
+    this.replyTo = adresseDeReponse(this.environnement());
     this.transporter = createOptionalSmtpTransporter(
       this.logger,
       'Newsletter mailer',
@@ -153,6 +155,8 @@ Tim`,
     return {
       FRONTEND_URL: this.configService.get<string>('FRONTEND_URL'),
       API_PREFIX: this.configService.get<string>('API_PREFIX'),
+      SMTP_FROM: this.configService.get<string>('SMTP_FROM'),
+      SMTP_REPLY_TO: this.configService.get<string>('SMTP_REPLY_TO'),
     };
   }
 

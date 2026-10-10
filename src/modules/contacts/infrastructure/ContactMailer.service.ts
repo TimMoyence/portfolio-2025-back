@@ -1,26 +1,23 @@
-import { Injectable, Logger } from '@nestjs/common';
-import type { Transporter } from 'nodemailer';
-import { createOptionalSmtpTransporter } from '../../../common/infrastructure/mail/smtp-transporter.util';
+import { Injectable } from '@nestjs/common';
+import { ExpediteurSmtp } from '../../../common/infrastructure/mail/expediteur-smtp';
 import {
   escapeHtml,
   escapeUrl,
   safeHtml,
 } from '../../../common/infrastructure/mail/html-escape.util';
+import { destinataireDesNotifications } from '../../../config/adresses-de-courriel';
 import { Contacts } from '../domain/Contacts';
 import type { IContactNotifier } from '../domain/IContactNotifier';
 
 @Injectable()
-export class ContactMailerService implements IContactNotifier {
-  private readonly logger = new Logger(ContactMailerService.name);
-  private readonly transporter: Transporter | null;
-  private readonly to = process.env.CONTACT_NOTIFICATION_TO;
-  private readonly from = process.env.SMTP_FROM;
+export class ContactMailerService
+  extends ExpediteurSmtp
+  implements IContactNotifier
+{
+  private readonly to = destinataireDesNotifications();
 
   constructor() {
-    this.transporter = createOptionalSmtpTransporter(
-      this.logger,
-      'Contact mailer',
-    );
+    super(ContactMailerService.name, 'Contact mailer');
   }
 
   async sendContactNotification(contact: Contacts): Promise<void> {

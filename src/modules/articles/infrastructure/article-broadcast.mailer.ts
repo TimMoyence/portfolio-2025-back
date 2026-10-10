@@ -11,6 +11,10 @@ import {
 } from '../../../common/infrastructure/mail/html-escape.util';
 import { createOptionalSmtpTransporter } from '../../../common/infrastructure/mail/smtp-transporter.util';
 import { entetesDeDesabonnement } from '../../../common/infrastructure/mail/entetes-de-desabonnement';
+import {
+  adresseDeReponse,
+  expediteurDesCourriels,
+} from '../../../config/adresses-de-courriel';
 import { lienDeDesabonnement } from '../../../config/urls-publiques';
 import type {
   ArticleBroadcastMailer,
@@ -114,7 +118,7 @@ export class ArticleBroadcastMailerService implements ArticleBroadcastMailer {
     recipient: BroadcastRecipient,
   ): Promise<void> {
     if (!this.transporter) throw new Error('SMTP transport not configured');
-    const replyTo = process.env.SMTP_REPLY_TO ?? 'contact@asilidesign.fr';
+    const replyTo = adresseDeReponse();
     const unsubscribeUrl = lienDeDesabonnement(recipient.unsubscribeToken);
     const articleUrl = articlePageUrl(article.locale, article.slug);
     const copy = COPY[article.locale];
@@ -131,7 +135,7 @@ export class ArticleBroadcastMailerService implements ArticleBroadcastMailer {
     };
 
     await this.transporter.sendMail({
-      from: process.env.SMTP_FROM,
+      from: expediteurDesCourriels(),
       to: recipient.email,
       replyTo,
       subject: article.title,

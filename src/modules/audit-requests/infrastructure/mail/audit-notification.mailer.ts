@@ -1,4 +1,8 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
+import {
+  destinataireDesNotifications,
+  expediteurDesCourriels,
+} from '../../../../config/adresses-de-courriel';
 import { AuditRequest } from '../../domain/AuditRequest';
 import { buildMailLayout } from './mail-layout.util';
 import { escapeHtml, safeHtml } from './mail-rendering.util';
@@ -15,13 +19,13 @@ export class AuditNotificationMailer {
   ) {}
 
   async sendAuditNotification(request: AuditRequest): Promise<void> {
-    const to = process.env.CONTACT_NOTIFICATION_TO;
+    const to = destinataireDesNotifications();
     if (!this.transporter || !to) return;
 
     const { websiteName, contactMethod, contactValue } = request;
 
     await this.transporter.sendMail({
-      from: process.env.SMTP_FROM,
+      from: expediteurDesCourriels(),
       to,
       subject: "🔍 Nouvelle demande d'audit SEO",
       text: `

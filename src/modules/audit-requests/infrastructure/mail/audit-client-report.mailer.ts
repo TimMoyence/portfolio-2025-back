@@ -1,4 +1,8 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
+import {
+  destinataireDesRapportsDAudit,
+  expediteurDesCourriels,
+} from '../../../../config/adresses-de-courriel';
 import type { ClientReportMailInput } from '../../domain/IAuditNotifier.port';
 import { pillarLabel } from '../automation/shared/pillar-labels.util';
 import { buildMailLayout } from './mail-layout.util';
@@ -27,8 +31,7 @@ export class AuditClientReportMailer {
     const subject = `Votre audit Growth — ${input.websiteName}`;
     const html = this.buildClientReportHtml(input);
     const text = this.buildClientReportText(input);
-    const replyTo =
-      process.env.AUDIT_REPORT_TO ?? process.env.CONTACT_NOTIFICATION_TO;
+    const replyTo = destinataireDesRapportsDAudit();
 
     const attachments = input.pdfBuffer
       ? [
@@ -41,7 +44,7 @@ export class AuditClientReportMailer {
       : undefined;
 
     await this.transporter.sendMail({
-      from: process.env.SMTP_FROM,
+      from: expediteurDesCourriels(),
       to: input.to,
       replyTo,
       subject,

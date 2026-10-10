@@ -5,6 +5,7 @@ import {
   escapeUrl,
   safeHtml,
 } from '../../../common/infrastructure/mail/html-escape.util';
+import { adresseDeReponse } from '../../../config/adresses-de-courriel';
 import { urlDuSite } from '../../../config/urls-publiques';
 import type { ILeadMagnetNotifier } from '../domain/ILeadMagnetNotifier';
 import type { LeadMagnetRequest } from '../domain/LeadMagnetRequest';
@@ -14,8 +15,7 @@ export class LeadMagnetMailerService
   extends ExpediteurSmtp
   implements ILeadMagnetNotifier
 {
-  private readonly replyTo =
-    process.env.SMTP_REPLY_TO ?? 'contact@asilidesign.fr';
+  private readonly replyTo = adresseDeReponse();
   private readonly frontendUrl = urlDuSite();
 
   constructor() {

@@ -51,7 +51,6 @@ export interface AuditAutomationConfig {
   rateHourlyMin: number;
   rateHourlyMax: number;
   rateCurrency: string;
-  reportTo?: string;
   openAiApiKey?: string;
   anthropicApiKey?: string;
   anthropicModel: string;
@@ -152,8 +151,6 @@ export function loadAuditAutomationConfig(): AuditAutomationConfig {
     rateHourlyMin,
     rateHourlyMax,
     rateCurrency: envString('AUDIT_RATE_CURRENCY') ?? 'EUR',
-    reportTo:
-      envString('AUDIT_REPORT_TO') ?? envString('CONTACT_NOTIFICATION_TO'),
     openAiApiKey: envString('OPENAI_API_KEY'),
     anthropicApiKey: envString('AUDIT_ANTHROPIC_API_KEY'),
     anthropicModel: envString('AUDIT_ANTHROPIC_MODEL') ?? 'claude-sonnet-4-6',
