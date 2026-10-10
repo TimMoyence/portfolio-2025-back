@@ -8,7 +8,13 @@ import {
   safeHtml,
 } from '../../../common/infrastructure/mail/html-escape.util';
 import type { EscapedHtml } from '../../../common/infrastructure/mail/html-escape.util';
-import { cheminDeLApi } from '../../../config/prefixe-api';
+import { entetesDeDesabonnement } from '../../../common/infrastructure/mail/entetes-de-desabonnement';
+import { lienAvecJeton } from '../../../common/domain/lien-avec-jeton';
+import type { SourceDEnv } from '../../../config/env-readers.util';
+import {
+  lienDeDesabonnement,
+  urlPubliqueDeLApi,
+} from '../../../config/urls-publiques';
 import type { INewsletterMailer } from '../domain/INewsletterMailer';
 import type { NewsletterSubscriber } from '../domain/NewsletterSubscriber';
 import { DAILY_BRIEF_SOURCE } from '../domain/SupportedFormationSlugs';
@@ -24,16 +30,12 @@ export class NewsletterMailerService implements INewsletterMailer {
   private readonly transporter: Transporter | null;
   private readonly from: string | undefined;
   private readonly replyTo: string;
-  private readonly frontendUrl: string;
 
   constructor(private readonly configService: ConfigService) {
     this.from = this.configService.get<string>('SMTP_FROM');
     this.replyTo =
       this.configService.get<string>('SMTP_REPLY_TO') ??
       'contact@asilidesign.fr';
-    this.frontendUrl =
-      this.configService.get<string>('FRONTEND_URL') ??
-      'https://asilidesign.fr';
     this.transporter = createOptionalSmtpTransporter(
       this.logger,
       'Newsletter mailer',
@@ -41,10 +43,11 @@ export class NewsletterMailerService implements INewsletterMailer {
   }
 
   async sendConfirmation(subscriber: NewsletterSubscriber): Promise<void> {
-    const confirmUrl = this.buildApiUrl('/newsletter/confirm', {
-      token: subscriber.confirmToken,
-    });
-    const unsubscribeUrl = this.lienDeDesabonnement(subscriber);
+    const confirmUrl = lienAvecJeton(
+      urlPubliqueDeLApi('newsletter/confirm', this.environnement()),
+      subscriber.confirmToken,
+    );
+    const unsubscribeUrl = this.lienDeDesabonnementDe(subscriber);
     const greeting = this.buildGreeting(subscriber.firstName);
 
     await this.envoyer(subscriber, {
@@ -77,12 +80,13 @@ Tim — asilidesign.fr`,
   }
 
   async sendWelcome(subscriber: NewsletterSubscriber): Promise<void> {
-    const unsubscribeUrl = this.lienDeDesabonnement(subscriber);
+    const unsubscribeUrl = this.lienDeDesabonnementDe(subscriber);
+    const headers = entetesDeDesabonnement(this.replyTo, unsubscribeUrl);
     const greeting = this.buildGreeting(subscriber.firstName);
 
     if (subscriber.sourceFormationSlug === DAILY_BRIEF_SOURCE) {
       await this.envoyer(subscriber, {
-        headers: this.buildListUnsubscribeHeaders(unsubscribeUrl),
+        headers,
         subject: 'Bienvenue dans la veille IA',
         text: `${greeting.text},
 
@@ -97,7 +101,7 @@ Tim`,
     }
 
     await this.envoyer(subscriber, {
-      headers: this.buildListUnsubscribeHeaders(unsubscribeUrl),
+      headers,
       subject: 'Bienvenue — ce qui arrive dans votre boite mail',
       text: `${greeting.text},
 
@@ -145,45 +149,18 @@ Tim`,
     });
   }
 
-  private lienDeDesabonnement(subscriber: NewsletterSubscriber): string {
-    return this.buildApiUrl('/newsletter/unsubscribe', {
-      token: subscriber.unsubscribeToken,
-    });
-  }
-
-  /**
-   * En-tetes de desabonnement RFC 8058, exiges par Gmail des expediteurs
-   * en nombre depuis 2024. Leur absence degrade la delivrabilite.
-   *
-   * `List-Unsubscribe-Post` engage l'API a traiter un POST non
-   * authentifie sur l'URL fournie : l'endpoint
-   * `POST /newsletter/unsubscribe` existe pour cela. Annoncer l'en-tete
-   * sans cet endpoint ferait echouer le bouton natif du client mail.
-   *
-   * L'adresse mailto reprend le reply-to du mailer, garantissant une
-   * boite reellement relevee ; le sujet permet le tri automatique. Elle
-   * est reduite a l'adresse nue : un `SMTP_REPLY_TO` de la forme
-   * `Nom <adresse>` produirait un `mailto:` malforme.
-   *
-   * Ces en-tetes ne sont poses que sur les envois en nombre. La RFC 8058
-   * §4 impose en outre qu'ils soient couverts par la signature DKIM
-   * (tag `h=`) : la signature etant assuree par le relais SMTP et non
-   * par nodemailer ici, ce point reste a verifier cote relais.
-   */
-  private buildListUnsubscribeHeaders(
-    unsubscribeUrl: string,
-  ): Record<string, string> {
+  private environnement(): SourceDEnv {
     return {
-      'List-Unsubscribe': `<mailto:${this.bareReplyToAddress()}?subject=unsubscribe>, <${unsubscribeUrl}>`,
-      'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+      FRONTEND_URL: this.configService.get<string>('FRONTEND_URL'),
+      API_PREFIX: this.configService.get<string>('API_PREFIX'),
     };
   }
 
-  private bareReplyToAddress(): string {
-    const open = this.replyTo.indexOf('<');
-    const close = this.replyTo.indexOf('>', open + 1);
-    if (open < 0 || close < 0) return this.replyTo.trim();
-    return this.replyTo.slice(open + 1, close).trim();
+  private lienDeDesabonnementDe(subscriber: NewsletterSubscriber): string {
+    return lienDeDesabonnement(
+      subscriber.unsubscribeToken,
+      this.environnement(),
+    );
   }
 
   private buildGreeting(firstName: string | null): Greeting {
@@ -192,21 +169,8 @@ Tim`,
     }
     return {
       text: `Bonjour ${firstName}`,
-      html: safeHtml`Bonjour ${this.escapeHtml(firstName)}`,
+      html: safeHtml`Bonjour ${escapeHtml(firstName)}`,
     };
-  }
-
-  private buildApiUrl(apiPath: string, params: Record<string, string>): string {
-    const url = new URL(
-      cheminDeLApi(apiPath, {
-        API_PREFIX: this.configService.get<string>('API_PREFIX'),
-      }),
-      this.frontendUrl,
-    );
-    for (const [key, value] of Object.entries(params)) {
-      url.searchParams.set(key, value);
-    }
-    return url.toString();
   }
 
   private buildConfirmationHtml(options: {
@@ -218,7 +182,7 @@ Tim`,
     const promise =
       options.sourceFormationSlug === DAILY_BRIEF_SOURCE
         ? safeHtml`Vous recevrez la <strong>veille IA quotidienne</strong> : une edition sourcee chaque matin de semaine.`
-        : safeHtml`Vous recevrez des emails pratiques lies a la formation <strong>${this.escapeHtml(options.sourceFormationSlug)}</strong>. Zero teasing, chaque email livre sa valeur integralement.`;
+        : safeHtml`Vous recevrez des emails pratiques lies a la formation <strong>${escapeHtml(options.sourceFormationSlug)}</strong>. Zero teasing, chaque email livre sa valeur integralement.`;
     return safeHtml`<div style="font-family: Arial, Helvetica, sans-serif; background: #f7f7f7; padding: 24px;"><div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 8px; padding: 32px;"><h2 style="margin-top: 0; color: #4fb3a2;">Confirmez votre inscription</h2><p>${options.greeting},</p><p>Merci de vous etre inscrit. Confirmez votre email en cliquant ci-dessous :</p><p style="margin: 20px 0;"><a href="${escapeUrl(options.confirmUrl)}" style="display: inline-block; padding: 12px 24px; background-color: #4fb3a2; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: bold;">Confirmer mon email</a></p><p style="font-size: 13px; color: #555;">${promise}</p><hr style="margin: 24px 0; border: none; border-top: 1px solid #e5e7eb;" /><p style="font-size: 12px; color: #666;">Desabonnement instantane : <a href="${escapeUrl(options.unsubscribeUrl)}" style="color: #4fb3a2;">retirer mon consentement</a></p></div></div>`;
   }
 
@@ -233,9 +197,5 @@ Tim`,
     greeting: EscapedHtml;
   }): EscapedHtml {
     return safeHtml`<div style="font-family: Arial, Helvetica, sans-serif; background: #f7f7f7; padding: 24px;"><div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 8px; padding: 32px;"><h2 style="margin-top: 0; color: #4fb3a2;">Desabonnement confirme</h2><p>${options.greeting},</p><p>Votre desabonnement est effectif. Vous ne recevrez plus d'email de ma part.</p><p>Si c'etait une erreur, repondez simplement a cet email.</p></div></div>`;
-  }
-
-  private escapeHtml(input: string): EscapedHtml {
-    return escapeHtml(input);
   }
 }

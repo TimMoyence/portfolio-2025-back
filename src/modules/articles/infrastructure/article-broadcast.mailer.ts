@@ -7,11 +7,13 @@ import {
   type EscapedHtml,
 } from '../../../common/infrastructure/mail/html-escape.util';
 import { createOptionalSmtpTransporter } from '../../../common/infrastructure/mail/smtp-transporter.util';
+import { entetesDeDesabonnement } from '../../../common/infrastructure/mail/entetes-de-desabonnement';
+import { lienDeDesabonnement } from '../../../config/urls-publiques';
 import type {
   ArticleBroadcastMailer,
   BroadcastRecipient,
 } from '../application/article-broadcast.repository';
-import { articlePageUrl, publicApiUrl } from '../application/article-settings';
+import { articlePageUrl } from '../application/article-settings';
 import type { ArticleRecord } from '../application/articles.repository';
 
 const ITEMS_PER_SECTION = 3;
@@ -99,14 +101,6 @@ function emailSections(raw: unknown[]): EmailSection[] {
   });
 }
 
-function bareAddress(value: string): string {
-  const open = value.indexOf('<');
-  const close = value.indexOf('>', open + 1);
-  return open < 0 || close < 0
-    ? value.trim()
-    : value.slice(open + 1, close).trim();
-}
-
 @Injectable()
 export class ArticleBroadcastMailerService implements ArticleBroadcastMailer {
   private readonly logger = new Logger(ArticleBroadcastMailerService.name);
@@ -129,7 +123,7 @@ export class ArticleBroadcastMailerService implements ArticleBroadcastMailer {
   ): Promise<void> {
     if (!this.transporter) throw new Error('SMTP transport not configured');
     const replyTo = process.env.SMTP_REPLY_TO ?? 'contact@asilidesign.fr';
-    const unsubscribeUrl = `${publicApiUrl('newsletter/unsubscribe')}?token=${encodeURIComponent(recipient.unsubscribeToken)}`;
+    const unsubscribeUrl = lienDeDesabonnement(recipient.unsubscribeToken);
     const articleUrl = articlePageUrl(article.locale, article.slug);
     const copy = COPY[article.locale];
     const greeting = recipient.firstName
@@ -150,8 +144,7 @@ export class ArticleBroadcastMailerService implements ArticleBroadcastMailer {
       replyTo,
       subject: article.title,
       headers: {
-        'List-Unsubscribe': `<mailto:${bareAddress(replyTo)}?subject=unsubscribe>, <${unsubscribeUrl}>`,
-        'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+        ...entetesDeDesabonnement(replyTo, unsubscribeUrl),
         'List-Id': LIST_ID,
       },
       text: this.plainText(contenu),

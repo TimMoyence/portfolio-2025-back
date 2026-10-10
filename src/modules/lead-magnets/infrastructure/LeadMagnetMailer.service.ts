@@ -5,6 +5,7 @@ import {
   escapeUrl,
   safeHtml,
 } from '../../../common/infrastructure/mail/html-escape.util';
+import { urlDuSite } from '../../../config/urls-publiques';
 import type { ILeadMagnetNotifier } from '../domain/ILeadMagnetNotifier';
 import type { LeadMagnetRequest } from '../domain/LeadMagnetRequest';
 
@@ -15,8 +16,7 @@ export class LeadMagnetMailerService
 {
   private readonly replyTo =
     process.env.SMTP_REPLY_TO ?? 'contact@asilidesign.fr';
-  private readonly frontendUrl =
-    process.env.FRONTEND_URL ?? 'https://asilidesign.fr';
+  private readonly frontendUrl = urlDuSite();
 
   constructor() {
     super(LeadMagnetMailerService.name, 'Lead magnet mailer');
