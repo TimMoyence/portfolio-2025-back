@@ -5,6 +5,7 @@ import {
   mediane,
   moyenne,
   proportion,
+  somme,
 } from '../../../common/domain/nombres/statistiques';
 import type { RapportParticipant } from './IFormationMailer.port';
 import { REGLE_DE_NOTATION } from './RegleDeNotation';
@@ -32,13 +33,9 @@ export function calculerStatistiquesSeance(
   const questionsComptees = statistiquesSurQuestionsNotees
     ? resultats.questions.filter((question) => question.noteCompte)
     : resultats.questions;
-  const reponses = questionsComptees.reduce(
-    (total, question) => total + question.total,
-    0,
-  );
-  const correctes = questionsComptees.reduce(
-    (total, question) => total + question.correctes,
-    0,
+  const reponses = somme(questionsComptees.map((question) => question.total));
+  const correctes = somme(
+    questionsComptees.map((question) => question.correctes),
   );
   return {
     ...repartitionDesNotes(

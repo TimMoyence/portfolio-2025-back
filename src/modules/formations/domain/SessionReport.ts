@@ -1,3 +1,4 @@
+import { moyenneOu } from '../../../common/domain/nombres/statistiques';
 import type { QuestionDeBareme } from './Bareme';
 import {
   questionsAAgreger,
@@ -116,23 +117,19 @@ function completionDe(
   reponses: readonly AnswerRecord[],
   notees: readonly QuestionDeBareme[],
 ): number {
-  if (notees.length === 0) {
-    return 0;
-  }
-  const points = notees.reduce(
-    (total, question) =>
-      total +
-      (reponses.some(
+  return moyenneOu(
+    notees.map((question) =>
+      reponses.some(
         (reponse) =>
           reponse.participantId === participantId &&
           reponse.questionId === question.id &&
           compteCommeReponse(reponse),
       )
         ? POINT_PAR_QUESTION_REPONDUE
-        : REGLE_DE_NOTATION.pointsNonReponse),
+        : REGLE_DE_NOTATION.pointsNonReponse,
+    ),
     0,
   );
-  return points / notees.length;
 }
 
 function compteCommeReponse(reponse: AnswerRecord): boolean {

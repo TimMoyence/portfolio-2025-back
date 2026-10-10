@@ -3,6 +3,7 @@ import type {
   Ecran,
 } from '../../src/modules/formations/domain/contrats/cours';
 import type { AuMoinsUn } from '../../src/common/domain/au-moins-un';
+import { somme } from '../../src/common/domain/nombres/statistiques';
 import {
   lireCoursStocke,
   type EcranDeCoursBrut,
@@ -86,10 +87,7 @@ export function recomposer(cours: Cours, ecrans: AuMoinsUn<Ecran>): Cours {
   return {
     ...cours,
     ecrans,
-    dureeMinutes: ecrans.reduce(
-      (total, ecran) => total + ecran.dureeMinutes,
-      0,
-    ),
+    dureeMinutes: somme(ecrans.map((ecran) => ecran.dureeMinutes)),
   };
 }
 

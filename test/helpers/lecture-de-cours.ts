@@ -10,10 +10,15 @@ import {
   questionsDe,
   questionsDuCours,
 } from '../../src/modules/formations/domain/cours/Cours';
+import { cueillirDansArbre } from '../../src/modules/formations/domain/cours/ArbreDeValeurs';
 import { tirer } from '../../src/modules/formations/domain/cours/Tirage';
 import type { LigneDeVueDEnsemble } from './conception-de-cours';
 
 const RANG_DU_NUMERO_D_ACTE = 'B2-01-A'.length;
+
+export function clesDe(valeur: unknown): string[] {
+  return cueillirDansArbre(valeur, (cle, element) => [cle, ...clesDe(element)]);
+}
 
 export function renduDe(ecran: Ecran): string | null {
   if (ecran.brique !== 'fp-story') {

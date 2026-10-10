@@ -3,6 +3,8 @@ import {
   prefixeDuCours,
 } from '../../../../../test/factories/contenus-de-cours.factory';
 import { tireurSequentiel } from '../../../../../test/factories/cours.factory';
+import { clesDe } from '../../../../../test/helpers/lecture-de-cours';
+import { cueillirDansArbre } from '../../domain/cours/ArbreDeValeurs';
 import { CONFUSIONS } from '../../domain/cours/banque/confusions';
 import { matchesSolution } from '../../domain/GradingCore';
 import { questionsDuCours } from '../../domain/cours/Cours';
@@ -39,39 +41,14 @@ const CLES_SECRETES = [
   'valeurAttendue',
 ];
 
-function parcourir(
-  valeur: unknown,
-  visiter: (cle: string, element: unknown) => void,
-): void {
-  if (Array.isArray(valeur)) {
-    for (const element of valeur) {
-      parcourir(element, visiter);
-    }
-    return;
-  }
-  if (typeof valeur !== 'object' || valeur === null) {
-    return;
-  }
-  for (const [cle, element] of Object.entries(valeur)) {
-    visiter(cle, element);
-    parcourir(element, visiter);
-  }
-}
-
 function confusionsCiblees(contenu: ContenuDeCours): Set<string> {
-  const trouvees = new Set<string>();
-  parcourir(contenu.ecrans, (cle, element) => {
-    if (CLES_DE_CONFUSION.has(cle) && typeof element === 'string') {
-      trouvees.add(element);
-    }
-  });
-  return trouvees;
-}
-
-function clesDe(valeur: unknown): string[] {
-  const cles: string[] = [];
-  parcourir(valeur, (cle) => cles.push(cle));
-  return cles;
+  return new Set(
+    cueillirDansArbre(contenu.ecrans, (cle, element) =>
+      CLES_DE_CONFUSION.has(cle) && typeof element === 'string'
+        ? [element]
+        : null,
+    ),
+  );
 }
 
 describe.each(CONTENUS.map((contenu) => [contenu.slug, contenu] as const))(
