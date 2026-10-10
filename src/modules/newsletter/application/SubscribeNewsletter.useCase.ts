@@ -1,6 +1,7 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { randomInt } from 'crypto';
 import { ResourceConflictError } from '../../../common/domain/errors/ResourceConflictError';
+import { messageDErreur } from '../../../common/domain/errors/message-d-erreur';
 import type { INewsletterMailer } from '../domain/INewsletterMailer';
 import type { INewsletterSubscriberRepository } from '../domain/INewsletterSubscriberRepository';
 import { NewsletterSubscriber } from '../domain/NewsletterSubscriber';
@@ -133,9 +134,7 @@ export class SubscribeNewsletterUseCase {
       .sendConfirmation(subscriber)
       .catch((err: unknown) =>
         this.logger.warn(
-          `Newsletter confirmation email failed: ${
-            err instanceof Error ? err.message : String(err)
-          }`,
+          `Newsletter confirmation email failed: ${messageDErreur(err)}`,
         ),
       );
   }

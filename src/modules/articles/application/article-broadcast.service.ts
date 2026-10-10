@@ -1,4 +1,5 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
+import { messageDErreur } from '../../../common/domain/errors/message-d-erreur';
 import {
   ARTICLE_BROADCAST_MAILER,
   ARTICLE_BROADCAST_REPOSITORY,
@@ -58,7 +59,7 @@ function redactToken(token: string): string {
 }
 
 function redactedError(error: unknown): string {
-  const message = error instanceof Error ? error.message : String(error);
+  const message = messageDErreur(error);
   let redacted = '';
   let token = '';
   for (const char of message) {

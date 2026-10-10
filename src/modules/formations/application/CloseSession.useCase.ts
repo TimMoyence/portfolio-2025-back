@@ -17,6 +17,7 @@ import {
   SESSION_STATE_CACHE,
   SESSIONS_REPOSITORY,
 } from '../domain/token';
+import { messageDErreur } from '../../../common/domain/errors/message-d-erreur';
 import { GetSessionResultsUseCase } from './GetSessionResults.useCase';
 import type { BilanDeSeance } from './GetSessionResults.useCase';
 import { secretDeSignature, signer } from './SignatureFormations';
@@ -109,7 +110,7 @@ export class CloseSessionUseCase {
       .sendSyntheseFormateur(destinataire, rapport)
       .catch((error: unknown) => {
         this.logger.warn(
-          `Envoi de la synthese formateur echoue pour ${destinataire}: ${describe(error)}`,
+          `Envoi de la synthese formateur echoue pour ${destinataire}: ${messageDErreur(error)}`,
         );
       });
   }
@@ -123,7 +124,7 @@ export class CloseSessionUseCase {
       secretDeSignature();
     } catch (error) {
       this.logger.error(
-        `Envoi des copies etudiantes annule, aucun jeton ne peut etre produit: ${describe(error)}`,
+        `Envoi des copies etudiantes annule, aucun jeton ne peut etre produit: ${messageDErreur(error)}`,
       );
       return;
     }
@@ -143,7 +144,7 @@ export class CloseSessionUseCase {
         })
         .catch((error: unknown) => {
           this.logger.warn(
-            `Envoi de la copie echoue pour ${participant.email}: ${describe(error)}`,
+            `Envoi de la copie echoue pour ${participant.email}: ${messageDErreur(error)}`,
           );
         });
     });
@@ -162,8 +163,4 @@ export class CloseSessionUseCase {
       },
     );
   }
-}
-
-function describe(error: unknown): string {
-  return error instanceof Error ? error.message : String(error);
 }

@@ -65,6 +65,7 @@ import { UpdateProfileDto } from './dto/UpdateProfile.dto';
 import { UserResponseDto } from './dto/User.response.dto';
 import { VerifyEmailQueryDto } from './dto/VerifyEmail.query.dto';
 import { Public } from '../../../common/interfaces/auth/public.decorator';
+import { messageDErreur } from '../../../common/domain/errors/message-d-erreur';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -175,7 +176,7 @@ export class AuthController {
         ip,
         userAgent,
         timestamp: new Date(),
-        details: error instanceof Error ? error.message : String(error),
+        details: messageDErreur(error),
       });
       throw error;
     }

@@ -6,6 +6,7 @@ import {
   Optional,
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
+import { messageDErreur } from '../../../common/domain/errors/message-d-erreur';
 import { GetSessionResultsUseCase } from './GetSessionResults.useCase';
 import {
   PlafondDeFluxAtteintError,
@@ -222,7 +223,7 @@ export class StreamSessionUseCase {
         }
         liberation = this.capacity.release(aLiberer).catch((error: unknown) => {
           this.logger.warn(
-            `Bail de flux non libere pour la session ${sessionId}: ${messageDe(error)}`,
+            `Bail de flux non libere pour la session ${sessionId}: ${messageDErreur(error)}`,
           );
         });
       };
@@ -273,7 +274,7 @@ export class StreamSessionUseCase {
           });
         } catch (error) {
           this.logger.warn(
-            `Resultats definitifs de la session ${sessionId} non pousses, le flux se clot quand meme: ${messageDe(error)}`,
+            `Resultats definitifs de la session ${sessionId} non pousses, le flux se clot quand meme: ${messageDErreur(error)}`,
           );
         }
       };
@@ -318,7 +319,7 @@ export class StreamSessionUseCase {
           }
         } catch (error) {
           this.logger.warn(
-            `Passage du flux de la session ${sessionId} en echec, nouvel essai au passage suivant: ${messageDe(error)}`,
+            `Passage du flux de la session ${sessionId} en echec, nouvel essai au passage suivant: ${messageDErreur(error)}`,
           );
         } finally {
           occupe = false;
@@ -364,7 +365,7 @@ export class StreamSessionUseCase {
         } catch (error) {
           if (error instanceof PlafondDeFluxAtteintError) {
             this.logger.warn(
-              `Plafond de flux atteint pour la session ${sessionId}: ${messageDe(error)}`,
+              `Plafond de flux atteint pour la session ${sessionId}: ${messageDErreur(error)}`,
             );
             subscriber.error(new SessionStreamLimitError());
             arreter();
@@ -373,7 +374,7 @@ export class StreamSessionUseCase {
           bail = null;
           this.logger.error(
             `Plafond de flux partage indisponible pour la session ${sessionId}, ouverture en mode degrade borne par le processus`,
-            messageDe(error),
+            messageDErreur(error),
           );
         }
         installer();
@@ -441,7 +442,7 @@ export class StreamSessionUseCase {
   ): void {
     void this.capacity.refresh(bail).catch((error: unknown) => {
       this.logger.warn(
-        `Bail de flux non renouvele pour la session ${sessionId}: ${messageDe(error)}`,
+        `Bail de flux non renouvele pour la session ${sessionId}: ${messageDErreur(error)}`,
       );
     });
   }
@@ -461,10 +462,6 @@ export class StreamSessionUseCase {
     this.cache.publish(sessionId, etat);
     return etat;
   }
-}
-
-function messageDe(error: unknown): string {
-  return error instanceof Error ? error.message : String(error);
 }
 
 function occupantsDe(place: Place): readonly Fermeture[] {

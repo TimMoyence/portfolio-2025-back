@@ -6,6 +6,7 @@ import {
   HttpStatus,
   Logger,
 } from '@nestjs/common';
+import { messageDErreur } from '../../domain/errors/message-d-erreur';
 import {
   estDependanceInjoignable,
   MESSAGE_DEPENDANCE_INJOIGNABLE,
@@ -21,7 +22,7 @@ function internalErrorDetail(exception: unknown): string {
   if (process.env.NODE_ENV === 'production') {
     return 'Une erreur interne est survenue.';
   }
-  return exception instanceof Error ? exception.message : String(exception);
+  return messageDErreur(exception);
 }
 
 @Catch()
@@ -53,7 +54,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
     if (status >= 500) {
       this.logger.error(
-        exception instanceof Error ? exception.message : String(exception),
+        messageDErreur(exception),
         exception instanceof Error ? exception.stack : undefined,
       );
     }

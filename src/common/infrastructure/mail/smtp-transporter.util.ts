@@ -2,6 +2,7 @@ import { Logger } from '@nestjs/common';
 import { createPrivateKey } from 'node:crypto';
 import { createTransport, type Transporter } from 'nodemailer';
 import { envBool } from '../../../config/env-readers.util';
+import { messageDErreur } from '../../domain/errors/message-d-erreur';
 
 export function createOptionalSmtpTransporter(
   logger: Logger,
@@ -93,7 +94,7 @@ function buildDkimOptions(
   } catch (error) {
     logger.error(
       `${context}: DKIM signing disabled, SMTP_DKIM_PRIVATE_KEY is not a usable private key`,
-      error instanceof Error ? error.message : String(error),
+      messageDErreur(error),
     );
     return {};
   }
