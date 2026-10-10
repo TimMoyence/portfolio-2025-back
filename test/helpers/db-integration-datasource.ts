@@ -1,5 +1,6 @@
 import { join } from 'path';
 import { DataSource, type DataSourceOptions } from 'typeorm';
+import type { SourceDEnv } from '../../src/config/env-readers.util';
 import { resoudreConnexionPostgres } from '../../src/database/connexion-postgres';
 
 type PostgresEntities = Extract<
@@ -23,11 +24,24 @@ export function migrationsAnterieuresA(fichierDeMigration: string): string {
 export const describeDb =
   process.env.RUN_DB_INTEGRATION === 'true' ? describe : describe.skip;
 
+const BASE_DE_TEST_PAR_DEFAUT = 'portfolio_2025_ci';
+const NOM_DE_BASE_JETABLE = /_(ci|test)$/;
+
+function baseJetable(nom: string): string {
+  if (!NOM_DE_BASE_JETABLE.test(nom)) {
+    throw new Error(
+      `Base « ${nom} » refusée : chaque suite d'intégration vide son schéma, seule une base suffixée _ci ou _test est admise.`,
+    );
+  }
+  return nom;
+}
+
 export function buildDbIntegrationOptions(
   entities: PostgresEntities,
+  source: SourceDEnv = process.env,
 ): DataSourceOptions {
   const { host, port, username, password, database, ssl } =
-    resoudreConnexionPostgres();
+    resoudreConnexionPostgres({ ...source, DATABASE_URL: undefined });
 
   return {
     type: 'postgres',
@@ -35,7 +49,7 @@ export function buildDbIntegrationOptions(
     port: port ?? 5432,
     username: username ?? 'postgres',
     password: password ?? 'postgres',
-    database: database ?? 'portfolio_2025_ci',
+    database: baseJetable(database ?? BASE_DE_TEST_PAR_DEFAUT),
     entities,
     synchronize: true,
     dropSchema: true,
