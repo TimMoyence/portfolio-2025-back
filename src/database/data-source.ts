@@ -1,5 +1,10 @@
 import 'reflect-metadata';
-import { DataSource } from 'typeorm';
+import { DataSource, type DataSourceOptions } from 'typeorm';
+import type { SourceDEnv } from '../config/env-readers.util';
+import {
+  emplacementTypeOrm,
+  resoudreConnexionPostgres,
+} from './connexion-postgres';
 // dotenv 17.4 n'est charge qu'hors production : en production les variables
 // sont injectees par le bloc `environment:` du service api de compose.yaml.
 const nodeEnv = (process.env.NODE_ENV ?? '').trim();
@@ -8,22 +13,15 @@ if (nodeEnv !== 'production') {
   require('dotenv/config');
 }
 
-export default new DataSource({
-  type: 'postgres',
-  url: process.env.DATABASE_URL,
-  host: process.env.DB_HOST ?? process.env.PGHOST,
-  port: Number(process.env.DB_PORT ?? process.env.PGPORT ?? 5432),
-  username:
-    process.env.DB_USERNAME ?? process.env.DB_USER ?? process.env.POSTGRES_USER,
-  password:
-    process.env.DB_PASSWORD ??
-    process.env.DATABASE_PASSWORD ??
-    process.env.POSTGRES_PASSWORD,
-  database:
-    process.env.DB_NAME ??
-    process.env.POSTGRES_DB ??
-    process.env.DB_DATABASE ??
-    process.env.DATABASE_NAME,
-  entities: ['dist/**/*.entity.js'],
-  migrations: [__dirname + '/../migrations/!(*.spec).{js,ts}'],
-});
+export function optionsDesMigrations(
+  source: SourceDEnv = process.env,
+): DataSourceOptions {
+  return {
+    type: 'postgres',
+    ...emplacementTypeOrm(resoudreConnexionPostgres(source)),
+    entities: ['dist/**/*.entity.js'],
+    migrations: [__dirname + '/../migrations/!(*.spec).{js,ts}'],
+  };
+}
+
+export default new DataSource(optionsDesMigrations());

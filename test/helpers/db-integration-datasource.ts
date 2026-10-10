@@ -1,46 +1,46 @@
+import { join } from 'path';
 import { DataSource, type DataSourceOptions } from 'typeorm';
+import { resoudreConnexionPostgres } from '../../src/database/connexion-postgres';
 
 type PostgresEntities = Extract<
   DataSourceOptions,
   { type: 'postgres' }
 >['entities'];
 
+const DELAI_MIGRATIONS_MS = 120_000;
+const DOSSIER_DES_MIGRATIONS = join(__dirname, '../../src/migrations');
+
+export const TOUTES_LES_ENTITES = join(__dirname, '../../src/**/*.entity.ts');
+export const TOUTES_LES_MIGRATIONS = join(
+  DOSSIER_DES_MIGRATIONS,
+  '!(*.spec).ts',
+);
+
+export function migrationsAnterieuresA(fichierDeMigration: string): string {
+  return join(DOSSIER_DES_MIGRATIONS, `!(*.spec|${fichierDeMigration}).ts`);
+}
+
 export const describeDb =
   process.env.RUN_DB_INTEGRATION === 'true' ? describe : describe.skip;
-
-function parsePort(raw: string | undefined): number {
-  if (!raw) return 5432;
-  const parsed = Number(raw);
-  return Number.isFinite(parsed) ? parsed : 5432;
-}
 
 export function buildDbIntegrationOptions(
   entities: PostgresEntities,
 ): DataSourceOptions {
-  const sslEnabled =
-    process.env.DB_SSL === 'true' || process.env.DATABASE_SSL === 'true';
+  const { host, port, username, password, database, ssl } =
+    resoudreConnexionPostgres();
 
   return {
     type: 'postgres',
-    host: process.env.DB_HOST ?? process.env.DATABASE_HOST ?? '127.0.0.1',
-    port: parsePort(process.env.DB_PORT ?? process.env.DATABASE_PORT),
-    username:
-      process.env.DB_USERNAME ??
-      process.env.DB_USER ??
-      process.env.DATABASE_USER ??
-      'postgres',
-    password:
-      process.env.DB_PASSWORD ??
-      process.env.DB_PASS ??
-      process.env.DATABASE_PASSWORD ??
-      'postgres',
-    database:
-      process.env.DB_NAME ?? process.env.DATABASE_NAME ?? 'portfolio_2025_ci',
+    host: host ?? '127.0.0.1',
+    port: port ?? 5432,
+    username: username ?? 'postgres',
+    password: password ?? 'postgres',
+    database: database ?? 'portfolio_2025_ci',
     entities,
     synchronize: true,
     dropSchema: true,
     logging: false,
-    ...(sslEnabled ? { ssl: { rejectUnauthorized: false } } : {}),
+    ...(ssl ? { ssl } : {}),
   };
 }
 
@@ -67,6 +67,39 @@ export async function initBaseMigree(
   });
   await initialiserEtMigrer(dataSource);
   return dataSource;
+}
+
+export function baseMigreeDeLaSuite(
+  entities: PostgresEntities,
+  migrations: string[],
+): () => DataSource {
+  let dataSource: DataSource | undefined;
+
+  beforeAll(async () => {
+    dataSource = await initBaseMigree(entities, migrations);
+  }, DELAI_MIGRATIONS_MS);
+
+  afterAll(async () => {
+    await destroyDbIntegrationDataSource(dataSource);
+  });
+
+  return () => {
+    if (!dataSource) throw new Error('Base migree de test non initialisee');
+    return dataSource;
+  };
+}
+
+export async function inscrireUtilisateur(
+  dataSource: DataSource,
+  email: string,
+  roles = '',
+): Promise<string> {
+  const [{ id }]: { id: string }[] = await dataSource.query(
+    `INSERT INTO "users" ("email", "first_name", "last_name", "roles")
+     VALUES ($1, 'Test', 'Integration', $2) RETURNING "id"`,
+    [email, roles],
+  );
+  return id;
 }
 
 export async function initialiserEtMigrer(

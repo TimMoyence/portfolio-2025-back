@@ -1,53 +1,35 @@
 import { Client, ClientConfig } from 'pg';
+import { logBootstrapStep } from '../runtime/log-bootstrap-step';
+import type { ConnexionPostgres } from './connexion-postgres';
 
-export interface EnsureDatabaseOptions {
-  connectionString?: string;
-  host?: string;
-  port?: number;
-  username?: string;
-  password?: string;
-  database: string;
-  ssl?: NonNullable<ClientConfig['ssl']>;
-  adminDatabase?: string;
-}
-
-export async function ensureDatabaseExists({
-  connectionString,
+function accesAdministrateur({
+  url,
   host,
   port,
   username,
   password,
-  database,
   ssl,
-  adminDatabase = 'postgres',
-}: EnsureDatabaseOptions): Promise<void> {
-  if (!database) {
-    return;
+  baseAdmin,
+}: ConnexionPostgres): ClientConfig | null {
+  if (url !== undefined) {
+    const adminUrl = new URL(url);
+    adminUrl.pathname = `/${baseAdmin}`;
+    return { connectionString: adminUrl.toString(), ssl };
   }
+  if (!host || !username) return null;
+  return { host, port, user: username, password, ssl };
+}
 
-  const sanitizedDatabase = database.replace(/"/g, '""');
+export async function garantirLaBaseCible(
+  connexion: ConnexionPostgres,
+): Promise<void> {
+  const { database } = connexion;
+  if (!database) return;
+  const acces = accesAdministrateur(connexion);
+  if (acces === null) return;
 
-  const baseConfig: ClientConfig =
-    connectionString !== undefined
-      ? {
-          connectionString,
-          ssl,
-        }
-      : {
-          host,
-          port,
-          user: username,
-          password,
-          ssl,
-        };
-
-  const adminConfig: ClientConfig = {
-    ...baseConfig,
-    database: adminDatabase,
-  };
-
-  const client = new Client(adminConfig);
-
+  logBootstrapStep(`ensuring database ${database}`);
+  const client = new Client({ ...acces, database: 'postgres' });
   await client.connect();
 
   try {
@@ -57,7 +39,7 @@ export async function ensureDatabaseExists({
     );
 
     if (result.rowCount === 0) {
-      await client.query(`CREATE DATABASE "${sanitizedDatabase}"`);
+      await client.query(`CREATE DATABASE "${database.replace(/"/g, '""')}"`);
     }
   } finally {
     await client.end();
