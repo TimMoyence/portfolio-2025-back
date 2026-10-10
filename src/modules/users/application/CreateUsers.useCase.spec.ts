@@ -156,16 +156,20 @@ describe('CreateUsersUseCase', () => {
     );
   });
 
-  it('devrait creer le compte sans roles pour les inscriptions publiques (roles attribues apres verification)', async () => {
+  it('devrait creer le compte actif et sans roles pour les inscriptions publiques (roles attribues apres verification)', async () => {
     const dto: CreateUserCommand = {
       email: 'attacker@example.com',
       password: ATTACKER_CREDENTIAL,
       firstName: 'Evil',
       lastName: 'User',
       roles: ['admin', 'teacher'],
+      isActive: false,
     };
 
     await creerEtAttendreLesRoles(dto, [], { emailVerified: false });
+    expect(repo.create).toHaveBeenCalledWith(
+      expect.objectContaining({ isActive: true }),
+    );
   });
 
   it('devrait conserver les roles quand cree par un admin', async () => {

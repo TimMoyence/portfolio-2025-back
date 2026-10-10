@@ -25,10 +25,12 @@ export class CreateUsersUseCase {
     const updatedOrCreatedBy = dto.updatedOrCreatedBy ?? 'self-registration';
     const isSelfRegistration = updatedOrCreatedBy === 'self-registration';
 
-    const roles = isSelfRegistration ? [] : (dto.roles ?? []);
+    const imposeALInscriptionPublique = isSelfRegistration
+      ? { roles: [], isActive: true }
+      : {};
 
     const user = UsersMapper.fromCreateCommand(
-      { ...dto, updatedOrCreatedBy, roles },
+      { ...dto, updatedOrCreatedBy, ...imposeALInscriptionPublique },
       passwordHash,
     );
     const created = await this.repo.create(user);
