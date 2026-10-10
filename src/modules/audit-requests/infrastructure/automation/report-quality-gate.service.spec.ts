@@ -1,10 +1,10 @@
 import type { ClientReportSynthesis } from '../../domain/AuditReportTiers';
 import { attendreRapportAccepte } from '../../../../../test/helpers/validation-de-rapport';
 import {
-  ExpertReportShape,
   ReportQualityGateContext,
   ReportQualityGateService,
 } from './report-quality-gate.service';
+import type { ExpertReport } from './schemas/audit-report.schemas';
 
 describe('ReportQualityGateService', () => {
   let service: ReportQualityGateService;
@@ -13,7 +13,7 @@ describe('ReportQualityGateService', () => {
     service = new ReportQualityGateService();
   });
 
-  const baseReport = (): ExpertReportShape => ({
+  const baseReport = (): ExpertReport => ({
     executiveSummary: 'Executive summary.',
     reportExplanation: 'Report explanation.',
     strengths: ['Strong technical baseline'],

@@ -1,5 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { AuditLocale } from '../../domain/audit-locale.util';
+import type {
+  FindingImpact,
+  ReportSeverity,
+} from '../../domain/AuditReportTiers';
 import {
   AFFECTED_URLS_MAX,
   CONTENT_DEPTH_NORMAL,
@@ -13,10 +17,8 @@ import {
   TEMPLATE_DUPLICATE_MIN,
 } from './audit-thresholds.config';
 import { HomepageAuditSnapshot } from './homepage-analyzer.service';
-import {
-  inferTechFingerprint,
-  type TechFingerprint,
-} from './tech-fingerprint.util';
+import type { TechFingerprint } from './schemas/audit-report.schemas';
+import { inferTechFingerprint } from './tech-fingerprint.util';
 import { localizedText } from './shared/locale-text.util';
 import { severityRank } from './shared/severity.util';
 import { borner } from '../../../../common/domain/nombres/borner';
@@ -26,14 +28,11 @@ import {
 } from '../../../../common/domain/nombres/dans-les-bornes';
 import { UrlIndexabilityResult } from './url-indexability.service';
 
-export type FindingSeverity = 'high' | 'medium' | 'low';
-export type FindingImpact = 'traffic' | 'indexation' | 'conversion';
-
 export interface DeepUrlFinding {
   code: string;
   title: string;
   description: string;
-  severity: FindingSeverity;
+  severity: ReportSeverity;
   confidence: number;
   impact: FindingImpact;
   affectedUrls: string[];
@@ -921,7 +920,7 @@ export class DeepUrlAnalysisService {
     code: string,
     title: string,
     description: string,
-    severity: FindingSeverity,
+    severity: ReportSeverity,
     confidence: number,
     impact: FindingImpact,
     affectedUrls: string[],
@@ -955,7 +954,7 @@ export class DeepUrlAnalysisService {
     return duplicates;
   }
 
-  private severityFromRatio(affected: number, total: number): FindingSeverity {
+  private severityFromRatio(affected: number, total: number): ReportSeverity {
     const ratio = total > 0 ? affected / total : 0;
     if (ratio >= SEVERITY_RATIO_HIGH) return 'high';
     if (ratio >= SEVERITY_RATIO_MEDIUM) return 'medium';

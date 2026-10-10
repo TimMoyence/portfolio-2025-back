@@ -18,7 +18,7 @@ import {
   DeepUrlAnalysisService,
 } from './deep-url-analysis.service';
 import { HomepageAnalyzerService } from './homepage-analyzer.service';
-import type { TechFingerprint } from './tech-fingerprint.util';
+import type { TechFingerprint } from './schemas/audit-report.schemas';
 import {
   LangchainAuditReportService,
   LangchainAuditOutput,

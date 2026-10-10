@@ -4,8 +4,10 @@ import { dateLongue } from '../../../../common/domain/texte/date-longue';
 import type { AuditSnapshot } from '../../domain/AuditProcessing';
 import type {
   ClientReportSynthesis,
+  CrossPageSeverity,
   ExpertReportSynthesis,
   PerPageDetailedAnalysis,
+  ReportSeverity,
 } from '../../domain/AuditReportTiers';
 import type { EngineCoverage, EngineScore } from '../../domain/EngineCoverage';
 import { pillarLabel } from './shared/pillar-labels.util';
@@ -362,15 +364,13 @@ export class AuditReportHtmlRendererService {
     }
   }
 
-  private severityLabel(
-    severity: 'critical' | 'high' | 'medium' | 'low',
-  ): EscapedHtml {
+  private severityLabel(severity: CrossPageSeverity): EscapedHtml {
     return severity === 'critical'
       ? safeHtml`Critique`
       : this.niveauLabel(severity);
   }
 
-  private niveauLabel(niveau: 'high' | 'medium' | 'low'): EscapedHtml {
+  private niveauLabel(niveau: ReportSeverity): EscapedHtml {
     switch (niveau) {
       case 'high':
         return safeHtml`Eleve`;

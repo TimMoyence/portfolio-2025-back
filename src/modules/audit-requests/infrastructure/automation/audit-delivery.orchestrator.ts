@@ -4,6 +4,7 @@ import type { AuditSnapshot } from '../../domain/AuditProcessing';
 import type {
   ClientReportSynthesis,
   ExpertReportSynthesis,
+  FindingImpact,
 } from '../../domain/AuditReportTiers';
 import { detectBusinessType } from '../../domain/BusinessType';
 import type { EngineCoverage, EngineScore } from '../../domain/EngineCoverage';
@@ -113,9 +114,7 @@ export class AuditDeliveryOrchestrator {
     }
   }
 
-  private normalizeFindingImpact(
-    impact: unknown,
-  ): 'traffic' | 'indexation' | 'conversion' {
+  private normalizeFindingImpact(impact: unknown): FindingImpact {
     const value = typeof impact === 'string' ? impact.toLowerCase() : '';
     if (value === 'indexation') return 'indexation';
     if (value === 'conversion') return 'conversion';

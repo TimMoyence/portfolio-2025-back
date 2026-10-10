@@ -3,6 +3,7 @@ import { HomepageAuditSnapshot } from './homepage-analyzer.service';
 import { localizedText } from './shared/locale-text.util';
 import { arrondi } from '../../../../common/domain/nombres/arrondi';
 import { borner } from '../../../../common/domain/nombres/borner';
+import type { TechFingerprint } from './schemas/audit-report.schemas';
 import { UrlIndexabilityResult } from './url-indexability.service';
 
 interface TechSnapshot {
@@ -22,14 +23,6 @@ interface StackSignature {
 interface StackCandidate {
   score: number;
   evidence: string[];
-}
-
-export interface TechFingerprint {
-  primaryStack: string;
-  confidence: number;
-  evidence: string[];
-  alternatives: string[];
-  unknowns: string[];
 }
 
 const MIN_STACK_CONFIDENCE_SCORE = 3;

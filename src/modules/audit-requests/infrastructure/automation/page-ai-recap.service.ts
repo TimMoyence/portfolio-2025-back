@@ -1,6 +1,7 @@
 import { ChatOpenAI } from '@langchain/openai';
 import { Injectable, Logger } from '@nestjs/common';
 import { z } from 'zod';
+import type { ReportSeverity } from '../../domain/AuditReportTiers';
 import type { EngineCoverage, EngineScore } from '../../domain/EngineCoverage';
 import { AuditLocale } from '../../domain/audit-locale.util';
 import {
@@ -11,6 +12,7 @@ import { LlmLimiteParLaConfig } from './llm-executor.port';
 import { isTimeoutError } from './shared/error.util';
 import { localizedText } from './shared/locale-text.util';
 import { traiterEnParallele } from './shared/traitement-concurrent.util';
+import { reportSeveritySchema } from './schemas/audit-report.schemas';
 import {
   engineCoverageSchema,
   engineScoreSchema,
@@ -26,7 +28,7 @@ const pageRecapSchema = z.object({
   trustScore: z.number().min(0).max(100),
   ctaScore: z.number().min(0).max(100),
   seoCopyScore: z.number().min(0).max(100),
-  priority: z.enum(['high', 'medium', 'low']),
+  priority: reportSeveritySchema,
   language: z.enum(['fr', 'en', 'mixed', 'unknown']),
   engineScores: engineCoverageSchema,
 });
@@ -34,7 +36,7 @@ const pageRecapSchema = z.object({
 export interface PageAiRecap {
   url: string;
   finalUrl: string | null;
-  priority: 'high' | 'medium' | 'low';
+  priority: ReportSeverity;
   language: 'fr' | 'en' | 'mixed' | 'unknown';
   wordingScore: number;
   trustScore: number;
@@ -75,7 +77,7 @@ export interface AnalyzePageRecapsInput {
 const UNVERIFIABLE_BLOCKER_RE = /not verifiable|non verifiable/i;
 const UNVERIFIABLE_ENGINE_SCORE = 50;
 
-function priorityFromScore(score: number): 'high' | 'medium' | 'low' {
+function priorityFromScore(score: number): ReportSeverity {
   if (score < 45) return 'high';
   if (score < 65) return 'medium';
   return 'low';

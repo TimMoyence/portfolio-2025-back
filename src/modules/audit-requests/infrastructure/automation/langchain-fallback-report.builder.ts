@@ -1,6 +1,8 @@
 import { arrondi } from '../../../../common/domain/nombres/arrondi';
 import { borner } from '../../../../common/domain/nombres/borner';
 import { AuditLocale } from '../../domain/audit-locale.util';
+import type { ReportSeverity } from '../../domain/AuditReportTiers';
+import type { EngineScore } from '../../domain/EngineCoverage';
 import { priorityFromFinding } from './shared/finding-priority.util';
 import { localizedText } from './shared/locale-text.util';
 import { severityRank } from './shared/severity.util';
@@ -15,7 +17,7 @@ export interface DeterministicCostConfig {
   rateHourlyMax: number;
 }
 
-function priorityRankSeverity(index: number): 'high' | 'medium' | 'low' {
+function priorityRankSeverity(index: number): ReportSeverity {
   if (index < 2) return 'high';
   if (index < 5) return 'medium';
   return 'low';
@@ -265,7 +267,7 @@ function buildFallbackPerPageAnalysis(
 ): Array<Record<string, unknown>> {
   const locale = input.locale;
   const defaultEngineScore = (
-    engine: 'google' | 'bing_chatgpt' | 'perplexity' | 'gemini_overviews',
+    engine: EngineScore['engine'],
   ): Record<string, unknown> => ({
     engine,
     score: 50,

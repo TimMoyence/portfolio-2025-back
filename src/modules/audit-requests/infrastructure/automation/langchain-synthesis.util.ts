@@ -1,4 +1,5 @@
 import { estObjet } from '../../../../common/domain/est-objet';
+import type { ReportSeverity } from '../../domain/AuditReportTiers';
 import type { AuditAutomationConfig, AuditLlmProfile } from './audit.config';
 import type {
   ExpertReportSynthesis,
@@ -7,7 +8,7 @@ import type {
 } from './contracts/langchain-contracts';
 import { normalizeSeverity } from './shared/severity.util';
 
-export function toEffort(value: unknown): 'high' | 'medium' | 'low' {
+export function toEffort(value: unknown): ReportSeverity {
   if (typeof value !== 'number' || !Number.isFinite(value)) return 'medium';
   if (value >= 8) return 'high';
   if (value <= 3) return 'low';
@@ -93,7 +94,7 @@ export function buildExpertSynthesis(
 
   const crossPageFindings = input.deepFindings.map((finding) => ({
     title: finding.title,
-    severity: finding.severity as 'critical' | 'high' | 'medium' | 'low',
+    severity: finding.severity,
     affectedUrls: [...finding.affectedUrls],
     rootCause: finding.description,
     remediation: finding.recommendation,

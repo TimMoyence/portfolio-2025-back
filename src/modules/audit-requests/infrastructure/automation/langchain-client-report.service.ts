@@ -3,7 +3,11 @@ import { Injectable, Logger } from '@nestjs/common';
 import { z } from 'zod';
 import { compacterBlancs } from '../../../../common/domain/texte/compacter-blancs';
 import type { AiIndexabilitySignals } from '../../domain/AiIndexability';
-import type { ClientReportSynthesis } from '../../domain/AuditReportTiers';
+import type {
+  ClientReportSynthesis,
+  FindingImpact,
+  ReportSeverity,
+} from '../../domain/AuditReportTiers';
 import type { BusinessType } from '../../domain/BusinessType';
 import { businessTypePromptHint } from '../../domain/BusinessType';
 import type { EngineCoverage } from '../../domain/EngineCoverage';
@@ -13,27 +17,25 @@ import {
 } from '../../domain/audit-locale.util';
 import { withHardTimeout } from './llm-execution.guardrails';
 import { LlmLimiteParLaConfig } from './llm-executor.port';
+import { reportSeveritySchema } from './schemas/audit-report.schemas';
 import { impactLocalise } from './shared/finding-priority.util';
 import { localizedText } from './shared/locale-text.util';
 import { severityRank } from './shared/severity.util';
 import { scoreMoyenSur100, scoreSur100 } from '../../domain/score-sur-100';
 
-const severitySchema = z.enum(['high', 'medium', 'low']);
-
-const SEVERITY_LABELS_FR: Record<z.infer<typeof severitySchema>, string> = {
+const SEVERITY_LABELS_FR: Record<ReportSeverity, string> = {
   high: 'priorite haute',
   medium: 'priorite moyenne',
   low: 'priorite basse',
 };
 
-const SEVERITY_LABELS_EN: Record<z.infer<typeof severitySchema>, string> = {
+const SEVERITY_LABELS_EN: Record<ReportSeverity, string> = {
   high: 'high priority',
   medium: 'medium priority',
   low: 'low priority',
 };
 
 const pillarStatusSchema = z.enum(['critical', 'warning', 'ok']);
-const effortSchema = z.enum(['low', 'medium', 'high']);
 
 const clientReportSchema = z.object({
   executiveSummary: z.string().min(1),
@@ -42,7 +44,7 @@ const clientReportSchema = z.object({
       z.object({
         title: z.string().min(1),
         impact: z.string().min(1),
-        severity: severitySchema,
+        severity: reportSeveritySchema,
       }),
     )
     .min(1)
@@ -73,7 +75,7 @@ const clientReportSchema = z.object({
       z.object({
         title: z.string().min(1),
         businessImpact: z.string().min(1),
-        effort: effortSchema,
+        effort: reportSeveritySchema,
       }),
     )
     .min(3)
@@ -90,8 +92,8 @@ type ClientReportZodOutput = z.infer<typeof clientReportSchema>;
 export interface ClientReportFinding {
   readonly title: string;
   readonly description: string;
-  readonly severity: 'high' | 'medium' | 'low';
-  readonly impact: 'traffic' | 'indexation' | 'conversion';
+  readonly severity: ReportSeverity;
+  readonly impact: FindingImpact;
 }
 
 export interface ClientReportContext {
