@@ -2,6 +2,10 @@ import { createHash, randomBytes } from 'crypto';
 
 const OCTETS_D_UN_JETON = 32;
 
+export const FORME_D_UN_JETON_EMIS = new RegExp(
+  `^[0-9a-f]{${OCTETS_D_UN_JETON * 2}}$`,
+);
+
 export class TokenHash {
   private constructor(readonly value: string) {}
 

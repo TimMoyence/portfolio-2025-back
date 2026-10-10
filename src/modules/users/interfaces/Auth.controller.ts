@@ -15,7 +15,6 @@ import {
   ApiConflictResponse,
   ApiOkResponse,
   ApiOperation,
-  ApiQuery,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
@@ -61,6 +60,7 @@ import { SetPasswordDto } from './dto/SetPassword.dto';
 import { AuthResponseDto } from './dto/Auth.response.dto';
 import { UpdateProfileDto } from './dto/UpdateProfile.dto';
 import { UserResponseDto } from './dto/User.response.dto';
+import { VerifyEmailQueryDto } from './dto/VerifyEmail.query.dto';
 import { Public } from '../../../common/interfaces/auth/public.decorator';
 
 @ApiTags('auth')
@@ -353,10 +353,10 @@ export class AuthController {
   @Throttle({ default: { limit: 10, ttl: 3600000 } })
   @ApiOperation({ summary: "Verifie l'adresse email via le token envoye" })
   @ApiOkResponse({ type: AuthMessageResponseDto })
+  @ApiBadRequestResponse({ description: 'Jeton absent ou mal forme' })
   @ApiUnauthorizedResponse({ description: 'Token invalide ou expire' })
-  @ApiQuery({ name: 'token', required: true, type: String })
   async verifyEmail(
-    @Query('token') token: string,
+    @Query() { token }: VerifyEmailQueryDto,
   ): Promise<AuthMessageResponseDto> {
     return this.verifyEmailUseCase.execute(token);
   }
