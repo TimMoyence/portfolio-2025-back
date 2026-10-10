@@ -270,6 +270,13 @@ describe('safeHtml — le contexte suit le HTML rendu, pas le texte des valeurs'
     ).toThrow(/Interpolation refusée/);
   });
 
+  it('verifie chaque element d un tableau comme une interpolation a part', () => {
+    const ouvrant = safeHtml`<a href="`;
+    const elements = [ouvrant, escapeHtml('javascript:alert(1)')];
+
+    expect(() => safeHtml`${elements}">x</a>`).toThrow(/Interpolation refusée/);
+  });
+
   it('accepte dans un attribut descriptif un fragment qui y reste', () => {
     const classe = safeHtml` pillar-${escapeHtml('ok')}`;
 

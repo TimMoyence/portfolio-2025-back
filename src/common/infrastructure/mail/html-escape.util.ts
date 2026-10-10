@@ -382,8 +382,32 @@ function verifierContexte(
   }
 }
 
-function texteDuFragment(valeur: HtmlFragment): string {
-  return Array.isArray(valeur) ? valeur.join('') : String(valeur);
+function estUnTableau(valeur: HtmlFragment): valeur is readonly EscapedHtml[] {
+  return Array.isArray(valeur);
+}
+
+function interpolerUne(
+  lecteur: LecteurDeGabarit,
+  valeur: HtmlFragment,
+  suite: string,
+): string {
+  verifierContexte(lecteur, valeur, suite);
+  const texte = String(valeur);
+  lecteur.lireInterpolation(texte);
+  return texte;
+}
+
+function interpoler(
+  lecteur: LecteurDeGabarit,
+  valeur: HtmlFragment,
+  suite: string,
+): string {
+  if (!estUnTableau(valeur)) return interpolerUne(lecteur, valeur, suite);
+  return valeur
+    .map((element, rang) =>
+      interpolerUne(lecteur, element, valeur.slice(rang + 1).join('') + suite),
+    )
+    .join('');
 }
 
 /**
@@ -409,9 +433,7 @@ export function safeHtml(
   lecteur.lire(strings[0]);
   for (const [index, value] of values.entries()) {
     const suite = strings[index + 1];
-    verifierContexte(lecteur, value, suite);
-    const texte = texteDuFragment(value);
-    lecteur.lireInterpolation(texte);
+    const texte = interpoler(lecteur, value, suite);
     lecteur.lire(suite);
     out += texte + suite;
   }
