@@ -3,9 +3,9 @@ import type { Transporter } from 'nodemailer';
 import { createOptionalSmtpTransporter } from '../../../common/infrastructure/mail/smtp-transporter.util';
 import {
   escapeHtml,
+  escapeUrl,
   safeHtml,
 } from '../../../common/infrastructure/mail/html-escape.util';
-import type { EscapedHtml } from '../../../common/infrastructure/mail/html-escape.util';
 import { Contacts } from '../domain/Contacts';
 import type { IContactNotifier } from '../domain/IContactNotifier';
 
@@ -56,32 +56,32 @@ ${message}
             <table style="width:100%; border-collapse:collapse; margin-bottom:16px;">
               <tr>
                 <td style="padding:6px 0; font-weight:bold; width:120px;">Nom</td>
-                <td style="padding:6px 0;">${this.escapeHtml(fullName)}</td>
+                <td style="padding:6px 0;">${escapeHtml(fullName)}</td>
               </tr>
               <tr>
                 <td style="padding:6px 0; font-weight:bold;">Email</td>
                 <td style="padding:6px 0;">
-                  <a href="mailto:${this.escapeHtml(email)}">${this.escapeHtml(email)}</a>
+                  <a href="${escapeUrl(`mailto:${email}`)}">${escapeHtml(email)}</a>
                 </td>
               </tr>
               <tr>
                 <td style="padding:6px 0; font-weight:bold;">Téléphone</td>
-                <td style="padding:6px 0;">${this.escapeHtml(phone ?? 'Non renseigné')}</td>
+                <td style="padding:6px 0;">${escapeHtml(phone ?? 'Non renseigné')}</td>
               </tr>
               <tr>
                 <td style="padding:6px 0; font-weight:bold;">Rôle</td>
-                <td style="padding:6px 0;">${this.escapeHtml(role ?? 'Non renseigné')}</td>
+                <td style="padding:6px 0;">${escapeHtml(role ?? 'Non renseigné')}</td>
               </tr>
               <tr>
                 <td style="padding:6px 0; font-weight:bold;">Sujet</td>
-                <td style="padding:6px 0;">${this.escapeHtml(subject)}</td>
+                <td style="padding:6px 0;">${escapeHtml(subject)}</td>
               </tr>
             </table>
 
             <div style="margin-top:16px;">
               <p style="font-weight:bold; margin-bottom:8px;">Message :</p>
               <div style="white-space:pre-line; background:#fafafa; border-left:4px solid #4f46e5; padding:12px;">
-                ${this.escapeHtml(message)}
+                ${escapeHtml(message)}
               </div>
             </div>
 
@@ -94,9 +94,5 @@ ${message}
         </div>
       `,
     });
-  }
-
-  protected escapeHtml(input: string): EscapedHtml {
-    return escapeHtml(input);
   }
 }

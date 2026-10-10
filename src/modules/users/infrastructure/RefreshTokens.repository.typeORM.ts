@@ -4,7 +4,7 @@ import { LessThan, Repository } from 'typeorm';
 import type { IRefreshTokensRepository } from '../domain/IRefreshTokens.repository';
 import type { RefreshToken } from '../domain/RefreshToken';
 import { RefreshTokenEntity } from './entities/RefreshToken.entity';
-import { champsDuJeton } from './jetons.typeorm';
+import { champsDuJeton, enregistrerJeton } from './jetons.typeorm';
 
 @Injectable()
 export class RefreshTokensRepositoryTypeORM implements IRefreshTokensRepository {
@@ -13,15 +13,16 @@ export class RefreshTokensRepositoryTypeORM implements IRefreshTokensRepository 
     private readonly repo: Repository<RefreshTokenEntity>,
   ) {}
 
-  async create(token: RefreshToken): Promise<RefreshToken> {
-    const entity = this.repo.create({
-      ...champsDuJeton(token),
-      revoked: token.revoked,
-      rotationGraceUntil: token.rotationGraceUntil ?? null,
-    });
-
-    const saved = await this.repo.save(entity);
-    return this.toDomain(saved);
+  create(token: RefreshToken): Promise<RefreshToken> {
+    return enregistrerJeton(
+      this.repo,
+      {
+        ...champsDuJeton(token),
+        revoked: token.revoked,
+        rotationGraceUntil: token.rotationGraceUntil ?? null,
+      },
+      (entite) => this.toDomain(entite),
+    );
   }
 
   async findByTokenHash(tokenHash: string): Promise<RefreshToken | null> {

@@ -1,4 +1,12 @@
-import { escapeHtml, escapeUrl, safeHtml } from './html-escape.util';
+import { escapeHtml, escapeUrl, safeCss, safeHtml } from './html-escape.util';
+
+const refuseChaqueInterpolation = (
+  cas: readonly (readonly [string, () => unknown])[],
+): void => {
+  it.each(cas)('refuse une interpolation dans %s', (_nom, rendre) => {
+    expect(rendre).toThrow(/Interpolation refusée/);
+  });
+};
 
 describe('escapeHtml', () => {
   it('echappe tous les caracteres HTML sensibles', () => {
@@ -26,11 +34,13 @@ describe('escapeUrl — schemas admis', () => {
     'http://example.com/',
     'mailto:tim.moyence@outlook.fr',
   ])('laisse passer %s intacte', (url) => {
-    expect(escapeUrl(url)).toBe(url);
+    expect(String(escapeUrl(url))).toBe(url);
   });
 
   it("n'ajoute pas la barre finale que `new URL` insererait", () => {
-    expect(escapeUrl('https://asilidesign.fr')).toBe('https://asilidesign.fr');
+    expect(String(escapeUrl('https://asilidesign.fr'))).toBe(
+      'https://asilidesign.fr',
+    );
   });
 
   it.each([
@@ -39,13 +49,13 @@ describe('escapeUrl — schemas admis', () => {
     '#ancre',
     'page.html',
   ])('laisse passer la reference relative %s', (url) => {
-    expect(escapeUrl(url)).toBe(url);
+    expect(String(escapeUrl(url))).toBe(url);
   });
 
   it("echappe les metacaracteres d'une URL admise (pas de sortie d'attribut)", () => {
-    expect(escapeUrl('https://asilidesign.fr/?a="onmouseover="alert(1)')).toBe(
-      'https://asilidesign.fr/?a=&quot;onmouseover=&quot;alert(1)',
-    );
+    expect(
+      String(escapeUrl('https://asilidesign.fr/?a="onmouseover="alert(1)')),
+    ).toBe('https://asilidesign.fr/?a=&quot;onmouseover=&quot;alert(1)');
   });
 });
 
@@ -68,11 +78,11 @@ describe('escapeUrl — schemas refusees et contournements', () => {
     ['vbscript', 'vbscript:msgbox(1)'],
     ['file', 'file:///etc/passwd'],
   ])('neutralise %s', (_label, url) => {
-    expect(escapeUrl(url)).toBe('#');
+    expect(String(escapeUrl(url))).toBe('#');
   });
 
   it.each(['', '   ', '\t\n'])('neutralise la valeur vide %j', (url) => {
-    expect(escapeUrl(url)).toBe('#');
+    expect(String(escapeUrl(url))).toBe('#');
   });
 
   it("neutralise le schema encode en entite HTML par l'echappement du `&`", () => {
@@ -83,7 +93,7 @@ describe('escapeUrl — schemas refusees et contournements', () => {
   });
 
   it('neutralise le schema encode en entite hexadecimale', () => {
-    expect(escapeUrl('&#x6a;avascript:alert(1)')).toBe(
+    expect(String(escapeUrl('&#x6a;avascript:alert(1)'))).toBe(
       '&amp;#x6a;avascript:alert(1)',
     );
   });
@@ -96,20 +106,326 @@ describe('escapeUrl — etancheite du type', () => {
     ).toBe('<a href="https://asilidesign.fr/x">x</a>');
   });
 
-  it('refuse une URL brute non passee par escapeUrl', () => {
+  it('refuse une URL brute non passee par escapeUrl, a la compilation comme au rendu', () => {
     const url = 'javascript:alert(1)';
 
     // @ts-expect-error une string brute n'est pas un fragment sur
-    const rendered: string = safeHtml`<a href="${url}">x</a>`;
-
-    expect(rendered).toContain('javascript:');
+    expect(() => safeHtml`<a href="${url}">x</a>`).toThrow(
+      /Interpolation refusée/,
+    );
   });
 
   it('ne throw pas et coerce via String(), comme escapeHtml', () => {
     expect(() => escapeUrl(null)).not.toThrow();
-    expect(escapeUrl(null)).toBe('null');
-    expect(escapeUrl(undefined)).toBe('undefined');
-    expect(escapeUrl(42)).toBe('42');
+    expect(String(escapeUrl(null))).toBe('null');
+    expect(String(escapeUrl(undefined))).toBe('undefined');
+    expect(String(escapeUrl(42))).toBe('42');
+  });
+});
+
+describe('safeHtml en contexte sensible', () => {
+  const LIEN_PIEGE = 'javascript:alert(1)';
+
+  it('refuse une valeur seulement echappee dans un href', () => {
+    expect(
+      () => safeHtml`<a href="${escapeHtml(LIEN_PIEGE)}">lien</a>`,
+    ).toThrow(/href/);
+  });
+
+  refuseChaqueInterpolation([
+    [
+      'un mailto seulement echappe',
+      () => safeHtml`<a href="mailto:${escapeHtml('a@b.fr')}">x</a>`,
+    ],
+    [
+      'src entre apostrophes',
+      () => safeHtml`<img src='${escapeHtml(LIEN_PIEGE)}' alt="" />`,
+    ],
+    [
+      'href sans guillemets',
+      () => safeHtml`<a href=${escapeHtml(LIEN_PIEGE)}>lien</a>`,
+    ],
+    [
+      'style',
+      () => safeHtml`<span style="color: ${escapeHtml('red')}"></span>`,
+    ],
+    [
+      'gestionnaire onclick',
+      () => safeHtml`<button onclick="${escapeHtml('x')}"></button>`,
+    ],
+    [
+      'url dans un style',
+      () =>
+        safeHtml`<span style="background:${escapeUrl('https://a.fr')}"></span>`,
+    ],
+  ]);
+
+  it('accepte un nombre dans un attribut style, qui ne peut porter aucune charge', () => {
+    expect(safeHtml`<span style="width:${58}%"></span>`).toBe(
+      '<span style="width:58%"></span>',
+    );
+  });
+
+  it.each([
+    ['un texte', () => safeHtml`<p>${escapeHtml('a<b')}</p>`, '<p>a&lt;b</p>'],
+    [
+      'un attribut ordinaire',
+      () => safeHtml`<p class="${escapeHtml('a"b')}"></p>`,
+      '<p class="a&quot;b"></p>',
+    ],
+    [
+      'un attribut ferme avant l interpolation',
+      () => safeHtml`<a href="/x">${escapeHtml('lien')}</a>`,
+      '<a href="/x">lien</a>',
+    ],
+    [
+      'une feuille de style construite par safeCss',
+      () => {
+        const feuille = safeCss`a { color: ${'#fff'}; }`;
+        return safeHtml`<style>${feuille}</style>`;
+      },
+      '<style>a { color: #fff; }</style>',
+    ],
+    [
+      'un texte apres une feuille de style fermee',
+      () => safeHtml`<style>a{}</style><p>${escapeHtml('x')}</p>`,
+      '<style>a{}</style><p>x</p>',
+    ],
+    [
+      'un titre de document, dont le contenu reste du texte',
+      () => safeHtml`<title>${escapeHtml('a"b')}</title>`,
+      '<title>a&quot;b</title>',
+    ],
+    [
+      'une classe completee en cours de valeur',
+      () => safeHtml`<p class="carte ${escapeHtml('solo')}"></p>`,
+      '<p class="carte solo"></p>',
+    ],
+    [
+      'une URL entre apostrophes',
+      () => safeHtml`<a href='${escapeUrl('https://a.fr')}'>x</a>`,
+      "<a href='https://a.fr'>x</a>",
+    ],
+    [
+      'une couleur de presentation',
+      () => safeHtml`<circle fill="${escapeHtml('#4fb3a2')}"/>`,
+      '<circle fill="#4fb3a2"/>',
+    ],
+    [
+      'un lien dans un commentaire conditionnel Outlook',
+      () =>
+        safeHtml`<!--[if mso]><v:roundrect href="${escapeUrl('https://a.fr')}"></v:roundrect><![endif]-->`,
+      '<!--[if mso]><v:roundrect href="https://a.fr"></v:roundrect><![endif]-->',
+    ],
+  ])('accepte %s', (_nom, rendre, attendu) => {
+    expect(rendre()).toBe(attendu);
+  });
+});
+
+describe('safeHtml — le contexte suit le HTML rendu, pas le texte des valeurs', () => {
+  it('rend un prenom termine par un faux attribut, suivi du nom, comme la synthese de seance', () => {
+    expect(
+      safeHtml`<td style="padding:4px;">${escapeHtml('Theo onclick=')} ${escapeHtml('Martin')}</td>`,
+    ).toBe('<td style="padding:4px;">Theo onclick= Martin</td>');
+  });
+
+  it('reste dans le contenu brut quand </style n est pas suivi d un blanc, de / ou de >', () => {
+    expect(
+      () => safeHtml`<style></stylex>${escapeHtml('a{}')}</style>`,
+    ).toThrow(/Interpolation refusée/);
+  });
+
+  it('sort du contenu brut sur une fermeture suivie d un blanc', () => {
+    expect(safeHtml`<style></style >${escapeHtml('a')}`).toBe(
+      '<style></style >a',
+    );
+  });
+
+  it('rend un prenom qui ressemble a un attribut, suivi d un lien', () => {
+    const prenom = escapeHtml('Theo onclick=');
+
+    expect(
+      safeHtml`<p>Bonjour ${prenom}, <a href="${escapeUrl('https://a.fr')}">revoir</a></p>`,
+    ).toBe('<p>Bonjour Theo onclick=, <a href="https://a.fr">revoir</a></p>');
+  });
+
+  it.each([
+    ['href=', 'href='],
+    ['style="', 'style=&quot;'],
+    ['<a href=', '&lt;a href='],
+  ])(
+    'ne prend pas le texte %s d une valeur pour un attribut ouvert',
+    (brut, rendu) => {
+      expect(
+        safeHtml`<p>${escapeHtml(brut)}${escapeUrl('https://a.fr')}</p>`,
+      ).toBe(`<p>${rendu}https://a.fr</p>`);
+    },
+  );
+
+  it('suit un fragment qui ouvre lui-meme un attribut d URL', () => {
+    const ouvrant = safeHtml`<a href="`;
+
+    expect(
+      () => safeHtml`${ouvrant}${escapeHtml('javascript:alert(1)')}">x</a>`,
+    ).toThrow(/Interpolation refusée/);
+  });
+
+  it('verifie chaque element d un tableau comme une interpolation a part', () => {
+    const ouvrant = safeHtml`<a href="`;
+    const elements = [ouvrant, escapeHtml('javascript:alert(1)')];
+
+    expect(() => safeHtml`${elements}">x</a>`).toThrow(/Interpolation refusée/);
+  });
+
+  it('accepte dans un attribut descriptif un fragment qui y reste', () => {
+    const classe = safeHtml` pillar-${escapeHtml('ok')}`;
+
+    expect(safeHtml`<p class="card${classe}">x</p>`).toBe(
+      '<p class="card pillar-ok">x</p>',
+    );
+  });
+
+  refuseChaqueInterpolation([
+    [
+      'un attribut descriptif qu un fragment imbrique referme',
+      () => {
+        const libelle = safeHtml`Le "${escapeHtml('x onmouseover=alert(1)//')}"`;
+        return safeHtml`<a href="${escapeUrl('/x')}" title="${libelle}">lien</a>`;
+      },
+    ],
+    [
+      'un commentaire qu un fragment imbrique referme',
+      () => {
+        const charge = safeHtml`<i title="--><img src=x onerror=${escapeHtml('alert(1)//')} ">`;
+        return safeHtml`<!-- ${charge} -->`;
+      },
+    ],
+    [
+      'un element style qu une feuille referme',
+      () => {
+        const feuille = safeCss`a{}</style><b>`;
+        return safeHtml`<style>${feuille}</style>`;
+      },
+    ],
+  ]);
+
+  refuseChaqueInterpolation([
+    [
+      'un script que seul un blanc non HTML semble fermer',
+      () => safeHtml`<script></script\u00a0>${escapeHtml('alert(1)')}</script>`,
+    ],
+    [
+      'une balise dont un blanc non HTML prolonge le nom',
+      () =>
+        safeHtml`<p\u00a0title="${escapeHtml('x onclick=alert(1)//')}">x</p>`,
+    ],
+  ]);
+});
+
+describe('safeHtml — contextes ou l echappement HTML ne protege de rien', () => {
+  const PIEGE = 'javascript:alert(1)';
+
+  refuseChaqueInterpolation([
+    ['formaction', () => safeHtml`<button formaction="${escapeHtml(PIEGE)}">`],
+    ['action', () => safeHtml`<form action="${escapeUrl('https://a.fr')}">`],
+    ['xlink:href', () => safeHtml`<use xlink:href="${escapeHtml(PIEGE)}"/>`],
+    ['data d un objet', () => safeHtml`<object data="${escapeHtml(PIEGE)}">`],
+    [
+      'content d un meta refresh',
+      () =>
+        safeHtml`<meta http-equiv="refresh" content="${escapeHtml('0;url=' + PIEGE)}">`,
+    ],
+    [
+      'srcdoc, meme avec une URL admise',
+      () => safeHtml`<iframe srcdoc="${escapeUrl('https://a.fr')}">`,
+    ],
+    ['srcset', () => safeHtml`<img srcset="${escapeHtml(PIEGE)}">`],
+    ['poster', () => safeHtml`<video poster="${escapeHtml(PIEGE)}">`],
+    ['background', () => safeHtml`<td background="${escapeHtml(PIEGE)}">`],
+    [
+      'un attribut colle au precedent',
+      () => safeHtml`<a title="x"href="${escapeHtml(PIEGE)}">x</a>`,
+    ],
+    [
+      'un attribut ordinaire sans guillemets',
+      () => safeHtml`<img alt=${escapeHtml('x onerror=alert(1)')}>`,
+    ],
+    [
+      'la suite d une valeur sans guillemets',
+      () =>
+        safeHtml`<a href=https://a.fr/${escapeHtml('x onmouseover=alert(1)')}>x</a>`,
+    ],
+    [
+      'la position d un nom d attribut',
+      () => safeHtml`<div ${escapeHtml('onclick=alert(1)')}>`,
+    ],
+    ['un nom de balise', () => safeHtml`<${escapeHtml('script')}>`],
+    [
+      'une feuille de style',
+      () =>
+        safeHtml`<style>${escapeHtml('}body{background:url(https://x)}')}</style>`,
+    ],
+    ['un script', () => safeHtml`<script>var a = ${escapeHtml('1')}</script>`],
+    [
+      'une URL precedee d un debut de valeur',
+      () => safeHtml`<a href="https://a.fr/${escapeUrl('x')}">x</a>`,
+    ],
+    [
+      'une URL suivie d une fin de valeur',
+      () => safeHtml`<a href="${escapeUrl('https://a.fr')}/x">x</a>`,
+    ],
+    [
+      'une couleur qui charge une ressource',
+      () => safeHtml`<circle fill="${escapeHtml('url(https://x/a.svg#b)')}"/>`,
+    ],
+    [
+      'une feuille de style hors d un element style',
+      () => {
+        const feuille = safeCss`a{}`;
+        return safeHtml`<p>${feuille}</p>`;
+      },
+    ],
+  ]);
+
+  it('refuse une URL contrefaite qui n a pas ete emise par escapeUrl', () => {
+    const contrefaite = {
+      genre: 'url',
+      toString: () => PIEGE,
+    } as unknown as ReturnType<typeof escapeUrl>;
+
+    expect(() => safeHtml`<a href="${contrefaite}">x</a>`).toThrow(
+      /Interpolation refusée/,
+    );
+  });
+});
+
+describe('safeCss', () => {
+  it('assemble une feuille de style a partir de jetons et de nombres', () => {
+    expect(String(safeCss`a { color: ${'#fff'}; width: ${58}%; }`)).toBe(
+      'a { color: #fff; width: 58%; }',
+    );
+  });
+
+  it('concatene des feuilles imbriquees', () => {
+    const imbriquees = [safeCss`a{}`, safeCss`b{}`];
+
+    expect(String(safeCss`${imbriquees}c{}`)).toBe('a{}b{}c{}');
+  });
+
+  it.each(['red;}body{x:y', 'url(https://x)', 'a b', '</style>', ''])(
+    'refuse le jeton %p, qui sortirait de sa declaration',
+    (jeton) => {
+      expect(() => safeCss`a { color: ${jeton}; }`).toThrow(/Jeton CSS refusé/);
+    },
+  );
+
+  it('refuse une feuille contrefaite qui n a pas ete emise par safeCss', () => {
+    const contrefaite = {
+      genre: 'style',
+      toString: () => '}body{x:y}',
+    } as unknown as ReturnType<typeof safeCss>;
+
+    expect(() => safeCss`${contrefaite}`).toThrow(/Jeton CSS refusé/);
   });
 });
 

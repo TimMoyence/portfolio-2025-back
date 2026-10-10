@@ -15,7 +15,6 @@ import {
   ApiConflictResponse,
   ApiOkResponse,
   ApiOperation,
-  ApiQuery,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
@@ -44,10 +43,10 @@ import { UpdateProfileUseCase } from '../application/UpdateProfile.useCase';
 import { GetCurrentUserUseCase } from '../application/GetCurrentUser.useCase';
 import { VerifyEmailUseCase } from '../application/VerifyEmail.useCase';
 import { ResendVerificationEmailUseCase } from '../application/ResendVerificationEmail.useCase';
+import { cheminDeLApi } from '../../../config/prefixe-api';
 import {
   REFRESH_TOKEN_TTL_MS,
   REFRESH_TOKEN_COOKIE_NAME,
-  REFRESH_TOKEN_COOKIE_PATH,
 } from '../domain/auth.constants';
 import { AuthMessageResponseDto } from './dto/AuthMessage.response.dto';
 import { ChangePasswordDto } from './dto/ChangePassword.dto';
@@ -61,6 +60,7 @@ import { SetPasswordDto } from './dto/SetPassword.dto';
 import { AuthResponseDto } from './dto/Auth.response.dto';
 import { UpdateProfileDto } from './dto/UpdateProfile.dto';
 import { UserResponseDto } from './dto/User.response.dto';
+import { VerifyEmailQueryDto } from './dto/VerifyEmail.query.dto';
 import { Public } from '../../../common/interfaces/auth/public.decorator';
 
 @ApiTags('auth')
@@ -97,7 +97,7 @@ export class AuthController {
       httpOnly: true,
       secure: isProd,
       sameSite: 'strict',
-      path: REFRESH_TOKEN_COOKIE_PATH,
+      path: cheminDeLApi('auth'),
       maxAge: REFRESH_TOKEN_TTL_MS,
     });
   }
@@ -108,7 +108,7 @@ export class AuthController {
       httpOnly: true,
       secure: isProd,
       sameSite: 'strict',
-      path: REFRESH_TOKEN_COOKIE_PATH,
+      path: cheminDeLApi('auth'),
     });
   }
 
@@ -353,10 +353,10 @@ export class AuthController {
   @Throttle({ default: { limit: 10, ttl: 3600000 } })
   @ApiOperation({ summary: "Verifie l'adresse email via le token envoye" })
   @ApiOkResponse({ type: AuthMessageResponseDto })
+  @ApiBadRequestResponse({ description: 'Jeton absent ou mal forme' })
   @ApiUnauthorizedResponse({ description: 'Token invalide ou expire' })
-  @ApiQuery({ name: 'token', required: true, type: String })
   async verifyEmail(
-    @Query('token') token: string,
+    @Query() { token }: VerifyEmailQueryDto,
   ): Promise<AuthMessageResponseDto> {
     return this.verifyEmailUseCase.execute(token);
   }

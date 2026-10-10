@@ -1,17 +1,14 @@
-import { ACCENT } from './toolkit-palette';
-import {
-  escapeHtml,
-  safeHtml,
-} from '../../../../common/infrastructure/mail/html-escape.util';
-import type { EscapedHtml } from '../../../../common/infrastructure/mail/html-escape.util';
+import { ACCENT, COULEURS_DES_PLATEFORMES, TEINTES } from './toolkit-palette';
+import { safeCss } from '../../../../common/infrastructure/mail/html-escape.util';
+import type { FeuilleDeStyle } from '../../../../common/infrastructure/mail/html-escape.util';
 
-export function buildToolkitCss(): EscapedHtml {
-  return safeHtml`
+export function buildToolkitCss(): FeuilleDeStyle {
+  return safeCss`
       /* Pas de @page : les marges sont gerees par Puppeteer en options.
          Cela garantit que les marges sont appliquees sur TOUTES les pages
          physiques, y compris celles creees par overflow naturel. */
       :root {
-        --accent: ${escapeHtml(ACCENT)};
+        --accent: ${ACCENT};
         --accent-soft: #e7f6f3;
         --accent-dark: #2d8576;
         --ink: #0c0902;
@@ -336,6 +333,9 @@ export function buildToolkitCss(): EscapedHtml {
         display: flex;
         flex-direction: column;
         gap: 2.5mm;
+      }
+      .tool-card-solo {
+        grid-column: 1 / -1;
       }
       .tool-card-header {
         display: flex;
@@ -697,6 +697,24 @@ export function buildToolkitCss(): EscapedHtml {
         white-space: pre-wrap;
         word-wrap: break-word;
       }
-
+      ${cssDesTeintes()}
+      ${cssDesPlateformes()}
     `;
+}
+
+function cssDesTeintes(): FeuilleDeStyle[] {
+  return Object.entries(TEINTES).map(
+    ([teinte, { bg, text, border }]) => safeCss`
+      .category-title.teinte-${teinte} { color: ${text}; border-left-color: ${border}; }
+      .prompt-card.teinte-${teinte} { border-left-color: ${border}; }
+      .prompt-card.teinte-${teinte} .pill-categorie { background: ${bg}; color: ${text}; }`,
+  );
+}
+
+function cssDesPlateformes(): FeuilleDeStyle[] {
+  return Object.entries(COULEURS_DES_PLATEFORMES).map(
+    ([plateforme, couleur]) => safeCss`
+      .template-card.plateforme-${plateforme} { border-top: 4px solid ${couleur}; }
+      .template-card.plateforme-${plateforme} .platform-badge { background: ${couleur}; }`,
+  );
 }

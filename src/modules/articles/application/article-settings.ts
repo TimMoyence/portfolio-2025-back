@@ -1,7 +1,7 @@
 import { DAILY_BRIEF_SOURCE } from '../../../common/domain/newsletter-sources';
+import { cheminDeLApi } from '../../../config/prefixe-api';
 
 const DEFAULT_SITE_URL = 'https://asilidesign.fr';
-const DEFAULT_API_PREFIX = 'api/v1/portfolio25';
 const DEFAULT_BROADCAST_DELAY_MINUTES = 90;
 const MAX_BROADCAST_DELAY_MINUTES = 24 * 60;
 const DEFAULT_BROADCAST_BATCH_SIZE = 200;
@@ -27,22 +27,13 @@ function trimTrailingSlashes(value: string): string {
   return value.slice(0, end);
 }
 
-function trimSlashes(value: string): string {
-  const trimmed = trimTrailingSlashes(value);
-  let start = 0;
-  while (start < trimmed.length && trimmed[start] === '/') start += 1;
-  return trimmed.slice(start);
-}
-
 export function siteUrl(): string {
   const configured = process.env.FRONTEND_URL?.trim();
   return trimTrailingSlashes(configured || DEFAULT_SITE_URL);
 }
 
 export function publicApiUrl(path: string): string {
-  const prefix = trimSlashes(process.env.API_PREFIX ?? DEFAULT_API_PREFIX);
-  const segments = [prefix, trimSlashes(path)].filter(Boolean).join('/');
-  return `${siteUrl()}/${segments}`;
+  return `${siteUrl()}${cheminDeLApi(path)}`;
 }
 
 export function articlePageUrl(locale: 'fr' | 'en', slug: string): string {

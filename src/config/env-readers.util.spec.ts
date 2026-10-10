@@ -1,4 +1,12 @@
-import { envBool, envFloat, envInt, envString } from './env-readers.util';
+import {
+  envBool,
+  envBrut,
+  envFloat,
+  envInt,
+  envPremier,
+  envString,
+  envUnVrai,
+} from './env-readers.util';
 
 describe('env-readers.util', () => {
   const KEY = 'ENV_READERS_TEST_KEY';
@@ -52,6 +60,56 @@ describe('env-readers.util', () => {
 
     it('retourne undefined si absent', () => {
       expect(envString(KEY)).toBeUndefined();
+    });
+  });
+
+  describe('source explicite', () => {
+    it('lit la source fournie plutot que process.env', () => {
+      process.env[KEY] = 'process';
+      const source = { [KEY]: ' fournie ' };
+
+      expect(envString(KEY, source)).toBe('fournie');
+      expect(envInt(KEY, 1, { [KEY]: '7' })).toBe(7);
+      expect(envBool(KEY, false, { [KEY]: 'True' })).toBe(true);
+    });
+
+    it('ignore une valeur qui n est pas une chaine', () => {
+      expect(envString(KEY, { [KEY]: 42 })).toBeUndefined();
+    });
+  });
+
+  describe('envPremier', () => {
+    it('rend la premiere variable renseignee parmi les alias', () => {
+      expect(envPremier(['A', 'B', 'C'], { A: ' ', B: 'b', C: 'c' })).toBe('b');
+    });
+
+    it('rend undefined si aucun alias n est renseigne', () => {
+      expect(envPremier(['A', 'B'], {})).toBeUndefined();
+    });
+
+    it('lit chaque alias avec le lecteur fourni', () => {
+      expect(envPremier(['A', 'B'], { A: '', B: ' b ' }, envBrut)).toBe(' b ');
+    });
+  });
+
+  describe('envBrut', () => {
+    it('rend la valeur sans couper ses blancs', () => {
+      expect(envBrut(KEY, { [KEY]: ' secret ' })).toBe(' secret ');
+    });
+
+    it.each(['', '   ', 42])('ignore la valeur %j', (valeur) => {
+      expect(envBrut(KEY, { [KEY]: valeur })).toBeUndefined();
+    });
+  });
+
+  describe('envUnVrai', () => {
+    it('est vrai des qu un alias vaut true, quelle que soit sa place et sa casse', () => {
+      expect(envUnVrai(['A', 'B'], { A: 'false', B: ' True ' })).toBe(true);
+    });
+
+    it('est faux quand aucun alias ne vaut true', () => {
+      expect(envUnVrai(['A', 'B'], { A: 'false', B: '1' })).toBe(false);
+      expect(envUnVrai(['A'], {})).toBe(false);
     });
   });
 

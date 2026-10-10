@@ -89,6 +89,47 @@ describe('scoreRequest', () => {
     expect(result.reasons).toContain('sensitive:write-4xx');
   });
 
+  it('suit API_PREFIX pour reconnaitre les endpoints sensibles', () => {
+    const sousUnAutrePrefixe = ctx({
+      method: 'POST',
+      path: '/edge/api/auth/login',
+      statusCode: 401,
+    });
+
+    expect(
+      scoreRequest(sousUnAutrePrefixe, { API_PREFIX: '/edge/api/' }).reasons,
+    ).toContain('sensitive:write-4xx');
+    expect(scoreRequest(sousUnAutrePrefixe, {}).reasons).not.toContain(
+      'sensitive:write-4xx',
+    );
+  });
+
+  it.each([
+    ['une chaine de requete', '/api/v1/portfolio25/contacts?source=pied'],
+    ['une casse differente', '/API/V1/Portfolio25/Auth/login'],
+  ])(
+    'reconnait un endpoint sensible routé par Express malgré %s',
+    (_cas, path) => {
+      const result = scoreRequest(
+        ctx({ method: 'POST', path, statusCode: 400 }),
+        {},
+      );
+      expect(result.reasons).toContain('sensitive:write-4xx');
+    },
+  );
+
+  it('ne confond pas un endpoint sensible avec un segment qui le prolonge', () => {
+    const result = scoreRequest(
+      ctx({
+        method: 'POST',
+        path: '/api/v1/portfolio25/authors',
+        statusCode: 400,
+      }),
+      {},
+    );
+    expect(result.reasons).not.toContain('sensitive:write-4xx');
+  });
+
   it('ne flague pas un 4xx sur un endpoint de lecture', () => {
     const result = scoreRequest(
       ctx({

@@ -12,10 +12,10 @@ import {
   escapeUrl,
   levelLabel,
   pageFooter,
-  paletteFor,
-  platformColorFor,
+  plateformeDe,
   safeHtml,
   sectionHeader,
+  teinteDe,
 } from './toolkit-html/toolkit-html.utils';
 import type { EscapedHtml } from './toolkit-html/toolkit-html.utils';
 import { ACCENT } from './toolkit-html/toolkit-palette';
@@ -155,11 +155,10 @@ export class ToolkitHtmlRendererService {
     }
 
     const groups = Array.from(byCategory.entries()).map(([category, tools]) => {
-      const palette = paletteFor(category);
       const soloCard = tools.length === 1;
       const cards = tools.map((tool) => this.renderToolCard(tool, soloCard));
       return safeHtml`<div class="category">
-          <h3 class="category-title" style="color: ${escapeHtml(palette.text)}; border-left-color: ${escapeHtml(palette.border)};">${escapeHtml(category)}</h3>
+          <h3 class="category-title teinte-${escapeHtml(teinteDe(category))}">${escapeHtml(category)}</h3>
           <div class="tool-grid">${cards}</div>
         </div>`;
     });
@@ -179,10 +178,8 @@ export class ToolkitHtmlRendererService {
     const decision = tool.decision
       ? safeHtml`<p class="tool-decision">${escapeHtml(tool.decision)}</p>`
       : safeHtml``;
-    const soloStyle = soloCard
-      ? safeHtml`style="grid-column: 1 / -1;"`
-      : safeHtml``;
-    return safeHtml`<article class="tool-card" ${soloStyle}>
+    const classeSolo = soloCard ? safeHtml` tool-card-solo` : safeHtml``;
+    return safeHtml`<article class="tool-card${classeSolo}">
       <header class="tool-card-header">
         <h4 class="tool-name">${escapeHtml(tool.tool)}</h4>
         <span class="tool-price">${escapeHtml(tool.price)}</span>
@@ -190,7 +187,7 @@ export class ToolkitHtmlRendererService {
       <p class="tool-tip">💡 ${escapeHtml(tool.tip)}</p>
       ${decision}
       <footer class="tool-card-footer">
-        <a class="tool-link" href="https://${escapeHtml(url)}">${escapeHtml(url)}</a>
+        <a class="tool-link" href="${escapeUrl(`https://${url}`)}">${escapeHtml(url)}</a>
         ${used}
       </footer>
     </article>`;
@@ -200,7 +197,6 @@ export class ToolkitHtmlRendererService {
     if (!prompts.length) return safeHtml``;
 
     const cards = prompts.map((prompt) => {
-      const palette = paletteFor(prompt.category);
       const description = prompt.description
         ? safeHtml`<p class="prompt-description">${escapeHtml(prompt.description)}</p>`
         : safeHtml``;
@@ -210,10 +206,10 @@ export class ToolkitHtmlRendererService {
       const tip = prompt.tip
         ? safeHtml`<div class="prompt-tip"><span class="prompt-tip-label">💡 Astuce d'itération</span><p>${escapeHtml(prompt.tip)}</p></div>`
         : safeHtml``;
-      return safeHtml`<article class="prompt-card" style="border-left-color: ${escapeHtml(palette.border)};">
+      return safeHtml`<article class="prompt-card teinte-${escapeHtml(teinteDe(prompt.category))}">
         <header class="prompt-header">
           <div class="prompt-pills">
-            <span class="pill" style="background: ${escapeHtml(palette.bg)}; color: ${escapeHtml(palette.text)};">${escapeHtml(prompt.category)}</span>
+            <span class="pill pill-categorie">${escapeHtml(prompt.category)}</span>
             <span class="pill pill-level">${escapeHtml(levelLabel(prompt.level))}</span>
             <span class="pill pill-tool">${escapeHtml(prompt.tool)}</span>
           </div>
@@ -277,15 +273,14 @@ export class ToolkitHtmlRendererService {
     if (!templates.length) return safeHtml``;
 
     const cards = templates.map((tpl) => {
-      const color = platformColorFor(tpl.platform);
       const budget =
         tpl.minBudget > 0
           ? safeHtml`<span class="template-budget">À partir de ${tpl.minBudget} €/mois</span>`
           : safeHtml`<span class="template-budget template-budget-free">Gratuit</span>`;
-      return safeHtml`<article class="template-card" style="border-top: 4px solid ${escapeHtml(color)};">
+      return safeHtml`<article class="template-card plateforme-${escapeHtml(plateformeDe(tpl.platform))}">
           <header class="template-header">
             <h4 class="template-name">${escapeHtml(tpl.name)}</h4>
-            <span class="platform-badge" style="background: ${escapeHtml(color)};">${escapeHtml(tpl.platform)}</span>
+            <span class="platform-badge">${escapeHtml(tpl.platform)}</span>
           </header>
           <p class="template-description">${escapeHtml(tpl.description)}</p>
           <footer class="template-footer">

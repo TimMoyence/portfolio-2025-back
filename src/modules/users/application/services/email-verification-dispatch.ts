@@ -1,29 +1,18 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { randomBytes } from 'crypto';
 import type { IEmailVerificationNotifier } from '../../domain/IEmailVerificationNotifier';
 import type { IEmailVerificationTokensRepository } from '../../domain/IEmailVerificationTokens.repository';
 import {
   EMAIL_VERIFICATION_NOTIFIER,
   EMAIL_VERIFICATION_TOKENS_REPOSITORY,
 } from '../../domain/token';
+import { emettreJeton } from '../../domain/TokenHash';
 import type { User } from '../../domain/User';
+import { lienAvecJeton } from './lien-avec-jeton';
 
 const EMAIL_VERIFICATION_TTL_MS = 24 * 60 * 60 * 1000;
 
 const EMAIL_VERIFICATION_TTL_MINUTES = EMAIL_VERIFICATION_TTL_MS / 60_000;
-const VERIFICATION_TOKEN_BYTES = 32;
-
-function buildVerificationUrl(base: string, rawToken: string): string {
-  try {
-    const url = new URL(base);
-    url.searchParams.set('token', rawToken);
-    return url.toString();
-  } catch {
-    const separator = base.includes('?') ? '&' : '?';
-    return `${base}${separator}token=${encodeURIComponent(rawToken)}`;
-  }
-}
 
 @Injectable()
 export class EnvoiDeVerificationEmail {
@@ -48,11 +37,11 @@ export class EnvoiDeVerificationEmail {
     logger: Logger,
     failureLogPrefix: string,
   ): Promise<void> {
-    const rawToken = randomBytes(VERIFICATION_TOKEN_BYTES).toString('hex');
+    const jeton = emettreJeton();
 
     await this.tokensRepo.create({
       userId,
-      token: rawToken,
+      tokenHash: jeton.empreinte,
       expiresAt: new Date(Date.now() + EMAIL_VERIFICATION_TTL_MS),
     });
 
@@ -61,10 +50,7 @@ export class EnvoiDeVerificationEmail {
         email: user.email,
         firstName: user.firstName,
         lastName: user.lastName,
-        verificationUrl: buildVerificationUrl(
-          this.verificationUrlBase,
-          rawToken,
-        ),
+        verificationUrl: lienAvecJeton(this.verificationUrlBase, jeton.brut),
         expiresInMinutes: EMAIL_VERIFICATION_TTL_MINUTES,
       });
     } catch (error) {

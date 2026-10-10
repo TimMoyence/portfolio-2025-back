@@ -15,7 +15,7 @@ Le schema est defini par le code et les migrations. Les bases de staging ou prod
 ## 3. Regles d'environnement
 
 - Les bases locale, CI et production doivent rester isolees.
-- Le flux DB integration documente existe pour eviter les collisions avec la base locale principale.
+- Le flux DB integration documente existe pour eviter les collisions avec la base locale principale. Chaque suite d'integration vide son schema : `test/helpers/db-integration-datasource.ts` ignore `DATABASE_URL` et refuse toute base dont le nom ne finit pas par `_ci` ou `_test`.
 - Les parametres de connexion viennent uniquement de l'environnement. Aucun credential en dur.
 
 ## 4. Discipline requetes et indexes
@@ -28,6 +28,8 @@ Le schema est defini par le code et les migrations. Les bases de staging ou prod
 ## 5. Regles de fiabilite
 
 - Privilegier des migrations deterministes et des plans operationnels reversibles.
+- Une migration qui renomme ou retire une colonne lue par l'API en service ouvre une fenetre d'indisponibilite : la CI joue `migrate` avant `up -d --wait api` (jusqu'a 90 s), et l'ancienne API cherche encore l'ancienne colonne pendant ce temps. Le decoupage expand/contract la ferme, au prix de deux livraisons. Quand on l'ecarte, la limite est assumee ici.
+- `1791624795249-HacheLesJetonsDeVerification` assume cette fenetre : pendant le demarrage de la nouvelle API, l'inscription, la verification d'e-mail et son renvoi repondent 500 (un compte cree alors n'a pas de jeton et redemande un renvoi). Le decoupage aurait garde les jetons en clair jusqu'a la seconde livraison. La migration ne fait rien sur une base ou `token_hash` existe deja (base de dev synchronisee par `TYPEORM_SYNCHRONIZE`).
 - Eviter les mutations cachees au demarrage en dehors du bootstrap DB documente.
 - Rendre explicites timeouts, retries et transactions quand ils comptent.
 

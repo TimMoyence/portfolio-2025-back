@@ -3,6 +3,7 @@ import type { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
 import { ArticlesService } from '../src/modules/articles/application/articles.service';
+import { PREFIXE_API_PAR_DEFAUT } from '../src/config/prefixe-api';
 import { ArticleHmacGuard } from '../src/modules/articles/interfaces/article-hmac.guard';
 import { ArticlesController } from '../src/modules/articles/interfaces/articles.controller';
 import {
@@ -29,7 +30,7 @@ describe('Articles HTTP aliases', () => {
     }).compile();
 
     app = moduleRef.createNestApplication();
-    app.setGlobalPrefix('api/v1/portfolio25', {
+    app.setGlobalPrefix(PREFIXE_API_PAR_DEFAUT, {
       exclude: [
         { path: 'api/articles', method: RequestMethod.ALL },
         { path: 'api/articles/(.*)', method: RequestMethod.ALL },

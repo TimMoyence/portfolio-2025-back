@@ -28,3 +28,42 @@ describe('RefreshTokensRepositoryTypeORM.rotateById', () => {
     await expect(tournerAvec(0).rotation).resolves.toBe(false);
   });
 });
+
+describe('RefreshTokensRepositoryTypeORM.create', () => {
+  it('enregistre l empreinte, l etat de revocation et la grace, puis rend le jeton persiste', async () => {
+    const expiresAt = new Date('2026-10-17T12:00:00Z');
+    const createdAt = new Date('2026-10-10T12:00:00Z');
+    const create = jest.fn((champs: object) => champs);
+    const save = jest.fn((entite: object) =>
+      Promise.resolve({ ...entite, id: 'refresh-id', createdAt }),
+    );
+    const repository = new RefreshTokensRepositoryTypeORM({
+      create,
+      save,
+    } as unknown as Repository<RefreshTokenEntity>);
+
+    const enregistre = await repository.create({
+      userId: 'user-1',
+      tokenHash: 'empreinte',
+      expiresAt,
+      revoked: false,
+    });
+
+    expect(create).toHaveBeenCalledWith({
+      userId: 'user-1',
+      tokenHash: 'empreinte',
+      expiresAt,
+      revoked: false,
+      rotationGraceUntil: null,
+    });
+    expect(enregistre).toEqual({
+      id: 'refresh-id',
+      userId: 'user-1',
+      tokenHash: 'empreinte',
+      expiresAt,
+      revoked: false,
+      rotationGraceUntil: null,
+      createdAt,
+    });
+  });
+});

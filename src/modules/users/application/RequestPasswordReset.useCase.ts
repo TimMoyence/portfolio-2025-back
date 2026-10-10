@@ -1,7 +1,6 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { randomBytes } from 'crypto';
-import { TokenHash } from '../domain/TokenHash';
+import { emettreJeton } from '../domain/TokenHash';
 import type { IPasswordResetNotifier } from '../domain/IPasswordResetNotifier';
 import type { IPasswordResetTokensRepository } from '../domain/IPasswordResetTokens.repository';
 import type { IUsersRepository } from '../domain/IUsers.repository';
@@ -11,6 +10,7 @@ import {
   USERS_REPOSITORY,
 } from '../domain/token';
 import type { RequestPasswordResetCommand } from './dto/RequestPasswordReset.command';
+import { lienAvecJeton } from './services/lien-avec-jeton';
 
 export interface RequestPasswordResetResult {
   message: string;
@@ -47,14 +47,13 @@ export class RequestPasswordResetUseCase {
       return { message: this.genericMessage };
     }
 
-    const rawToken = randomBytes(32).toString('hex');
-    const tokenHash = TokenHash.fromRaw(rawToken).value;
+    const jeton = emettreJeton();
     const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
 
     await this.passwordResetTokensRepository.invalidateActiveByUserId(user.id);
     await this.passwordResetTokensRepository.create({
       userId: user.id,
-      tokenHash,
+      tokenHash: jeton.empreinte,
       expiresAt,
       usedAt: null,
     });
@@ -64,7 +63,7 @@ export class RequestPasswordResetUseCase {
         email: user.email,
         firstName: user.firstName,
         lastName: user.lastName,
-        resetUrl: this.buildResetUrl(rawToken),
+        resetUrl: lienAvecJeton(this.resetPasswordUrlBase, jeton.brut),
         expiresInMinutes: 60,
       });
     } catch (error) {
@@ -74,16 +73,5 @@ export class RequestPasswordResetUseCase {
     }
 
     return { message: this.genericMessage };
-  }
-
-  private buildResetUrl(rawToken: string): string {
-    try {
-      const url = new URL(this.resetPasswordUrlBase);
-      url.searchParams.set('token', rawToken);
-      return url.toString();
-    } catch {
-      const separator = this.resetPasswordUrlBase.includes('?') ? '&' : '?';
-      return `${this.resetPasswordUrlBase}${separator}token=${encodeURIComponent(rawToken)}`;
-    }
   }
 }

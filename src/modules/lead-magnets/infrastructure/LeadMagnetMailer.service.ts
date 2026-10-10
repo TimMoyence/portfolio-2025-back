@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ExpediteurSmtp } from '../../../common/infrastructure/mail/expediteur-smtp';
 import {
+  escapeHtml,
   escapeUrl,
   safeHtml,
 } from '../../../common/infrastructure/mail/html-escape.util';
@@ -26,7 +27,7 @@ export class LeadMagnetMailerService
     pdfBuffer: Buffer,
   ): Promise<void> {
     if (!this.transporter) return;
-    const firstName = this.escapeHtml(request.firstName);
+    const firstName = escapeHtml(request.firstName);
     const toolkitUrl = request.accessToken
       ? `${this.frontendUrl}/formations/ia-solopreneurs/toolkit/${request.accessToken}`
       : null;

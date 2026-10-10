@@ -1,4 +1,6 @@
 import { z } from 'zod';
+import { resoudreConnexionPostgres } from '../database/connexion-postgres';
+import { PREFIXE_API_PAR_DEFAUT } from './prefixe-api';
 
 const cryptographicSecretKeys = [
   'JWT_SECRET',
@@ -74,7 +76,7 @@ const envSchema = z
       .default('development'),
 
     PORT: z.coerce.number().int().positive().default(3000),
-    API_PREFIX: z.string().default('api/v1/portfolio25'),
+    API_PREFIX: z.string().default(PREFIXE_API_PAR_DEFAUT),
     SWAGGER_PATH: z.string().optional(),
     CORS_ORIGIN: z.string().optional(),
 
@@ -331,36 +333,8 @@ function isValidMailbox(value: string): boolean {
 }
 
 function resolveAliases(env: Record<string, unknown>): Record<string, unknown> {
-  const resolved = { ...env };
-
-  if (!resolved.DB_HOST) {
-    resolved.DB_HOST = resolved.DATABASE_HOST ?? resolved.PGHOST ?? undefined;
-  }
-
-  if (!resolved.DB_PORT) {
-    resolved.DB_PORT = resolved.DATABASE_PORT ?? resolved.PGPORT ?? undefined;
-  }
-
-  if (!resolved.DB_NAME) {
-    resolved.DB_NAME =
-      resolved.DATABASE_NAME ?? resolved.POSTGRES_DB ?? undefined;
-
-    if (
-      !resolved.DB_NAME &&
-      typeof resolved.DATABASE_URL === 'string' &&
-      resolved.DATABASE_URL.trim().length > 0
-    ) {
-      try {
-        resolved.DB_NAME = new URL(
-          resolved.DATABASE_URL.trim(),
-        ).pathname.replace(/^\//, '');
-      } catch {
-        // URL invalide — le schema la rejettera ensuite
-      }
-    }
-  }
-
-  return resolved;
+  const { host, port, database } = resoudreConnexionPostgres(env);
+  return { ...env, DB_HOST: host, DB_PORT: port, DB_NAME: database };
 }
 
 export function validateEnv(

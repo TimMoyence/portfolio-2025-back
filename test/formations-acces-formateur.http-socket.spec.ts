@@ -15,7 +15,7 @@ import {
   coursPublie,
   EN_TETE_IDENTITE,
   monterApplicationFormations,
-  PREFIXE_API,
+  routeFormations,
   serveurHttpDe,
   simulerSeance,
 } from './helpers/formations-harness';
@@ -72,7 +72,7 @@ describe('Acces formateur aux annotations, participants et reponses libres (e2e 
 
   const serveur = () => serveurHttpDe(app());
   const route = (suffixe: string): string =>
-    `/${PREFIXE_API}/formations/sessions/${SESSION_ID}/${suffixe}`;
+    routeFormations(`/sessions/${SESSION_ID}/${suffixe}`);
   const appel = (
     methode: 'get' | Methode,
     suffixe: string,
