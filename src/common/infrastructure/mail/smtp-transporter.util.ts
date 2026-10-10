@@ -1,6 +1,7 @@
 import { Logger } from '@nestjs/common';
 import { createPrivateKey } from 'node:crypto';
 import { createTransport, type Transporter } from 'nodemailer';
+import { envBool } from '../../../config/env-readers.util';
 
 export function createOptionalSmtpTransporter(
   logger: Logger,
@@ -19,7 +20,7 @@ export function createOptionalSmtpTransporter(
     return null;
   }
 
-  const secure = process.env.SMTP_SECURE === 'true' ? true : port === 465;
+  const secure = envBool('SMTP_SECURE', false) || port === 465;
 
   return createTransport({
     host,

@@ -43,6 +43,14 @@ describe('SmtpTransporterProvider', () => {
       'active secure quand le port vaut 465 sans SMTP_SECURE (non-regression)',
       { SMTP_PORT: '465', SMTP_SECURE: '' },
     ],
+    [
+      'lit SMTP_SECURE sans tenir compte de la casse ni des blancs',
+      { SMTP_PORT: '587', SMTP_SECURE: ' TRUE ' },
+    ],
+    [
+      'garde secure sur le port 465 meme avec SMTP_SECURE=false',
+      { SMTP_PORT: '465', SMTP_SECURE: 'false' },
+    ],
   ])('%s', (_titre, variables) => {
     cleanupEnv = setSmtpEnv(variables);
 

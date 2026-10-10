@@ -62,6 +62,25 @@ export function envInt(
   return Number.isFinite(parsed) ? parsed : fallback;
 }
 
+export interface BornesEntieres {
+  readonly defaut: number;
+  readonly min: number;
+  readonly max: number;
+}
+
+export function envEntierBorne(
+  name: string,
+  bornes: BornesEntieres,
+  source: SourceDEnv = process.env,
+): number {
+  const valeur = Number(envString(name, source));
+  return Number.isInteger(valeur) &&
+    valeur >= bornes.min &&
+    valeur <= bornes.max
+    ? valeur
+    : bornes.defaut;
+}
+
 export function envFloat(
   name: string,
   fallback: number,

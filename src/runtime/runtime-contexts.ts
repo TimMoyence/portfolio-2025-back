@@ -1,4 +1,5 @@
 import { Type } from '@nestjs/common';
+import { envBool } from '../config/env-readers.util';
 import { AuditRequestsModule } from '../modules/audit-requests/AuditRequests.module';
 import { ContactsModule } from '../modules/contacts/Contacts.module';
 import { CookieConsentsModule } from '../modules/cookie-consents/CookieConsents.module';
@@ -18,10 +19,6 @@ export interface RuntimeContextsSelection {
   readonly legacyModules: Array<Type<unknown>>;
   readonly runtimeModules: Array<Type<unknown>>;
   readonly legacyEnabled: boolean;
-}
-
-function parseBooleanFlag(raw: string | undefined): boolean {
-  return raw?.trim().toLowerCase() === 'true';
 }
 
 export function resolveRuntimeContexts(
@@ -46,7 +43,7 @@ export function resolveRuntimeContexts(
     RedirectsModule,
   ];
 
-  const legacyEnabled = parseBooleanFlag(env.ENABLE_LEGACY_CMS_CONTEXTS);
+  const legacyEnabled = envBool('ENABLE_LEGACY_CMS_CONTEXTS', false, env);
 
   return {
     coreModules,

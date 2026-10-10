@@ -1,6 +1,7 @@
 import {
   envBool,
   envBrut,
+  envEntierBorne,
   envFloat,
   envInt,
   envPort,
@@ -124,6 +125,27 @@ describe('env-readers.util', () => {
     it.each(['', '   ', 42])('ignore la valeur %j', (valeur) => {
       expect(envBrut(KEY, { [KEY]: valeur })).toBeUndefined();
     });
+  });
+
+  describe('envEntierBorne', () => {
+    const bornes = { defaut: 90, min: 0, max: 1440 };
+
+    it.each([
+      ['absente', undefined, 90],
+      ['vide', '  ', 90],
+      ['entière dans les bornes', ' 120 ', 120],
+      ['au plancher', '0', 0],
+      ['au plafond', '1440', 1440],
+      ['sous le plancher', '-1', 90],
+      ['au-dessus du plafond', '1441', 90],
+      ['décimale', '1.5', 90],
+      ['non numérique', '12abc', 90],
+    ])(
+      'rend le défaut ou la valeur quand elle est %s',
+      (_cas, brut, attendu) => {
+        expect(envEntierBorne(KEY, bornes, { [KEY]: brut })).toBe(attendu);
+      },
+    );
   });
 
   describe('envUnVrai', () => {
