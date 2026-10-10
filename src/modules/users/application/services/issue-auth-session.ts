@@ -1,14 +1,11 @@
-import { randomBytes } from 'crypto';
 import { InvalidCredentialsError } from '../../../../common/domain/errors/InvalidCredentialsError';
 import type { IRefreshTokensRepository } from '../../domain/IRefreshTokens.repository';
 import type { RefreshToken } from '../../domain/RefreshToken';
-import { TokenHash } from '../../domain/TokenHash';
+import { emettreJeton, TokenHash } from '../../domain/TokenHash';
 import { REFRESH_TOKEN_TTL_MS } from '../../domain/auth.constants';
 import type { User } from '../../domain/User';
 import type { AuthResult } from '../AuthenticateUser.useCase';
 import type { JwtTokenService } from './JwtTokenService';
-
-const REFRESH_TOKEN_BYTES = 32;
 
 export async function jetonDeRafraichissementConnu(
   refreshTokensRepo: IRefreshTokensRepository,
@@ -33,11 +30,11 @@ export async function issueAuthSession(
     roles: user.roles ?? [],
   });
 
-  const rawRefreshToken = randomBytes(REFRESH_TOKEN_BYTES).toString('hex');
+  const jeton = emettreJeton();
 
   await refreshTokensRepo.create({
     userId: user.id!,
-    tokenHash: TokenHash.fromRaw(rawRefreshToken).value,
+    tokenHash: jeton.empreinte,
     expiresAt: new Date(Date.now() + REFRESH_TOKEN_TTL_MS),
     revoked: false,
   });
@@ -45,7 +42,7 @@ export async function issueAuthSession(
   return {
     accessToken: token,
     expiresIn,
-    refreshToken: rawRefreshToken,
+    refreshToken: jeton.brut,
     user,
   };
 }

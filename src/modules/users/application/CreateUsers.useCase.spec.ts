@@ -13,7 +13,10 @@ import {
   createMockUsersRepo,
   createMockPasswordService,
 } from '../../../../test/factories/user.factory';
-import { createMockEmailVerificationTokensRepo } from '../../../../test/factories/email-verification-token.factory';
+import {
+  buildEmailVerificationToken,
+  createMockEmailVerificationTokensRepo,
+} from '../../../../test/factories/email-verification-token.factory';
 
 function createMockConfigService(): jest.Mocked<ConfigService> {
   return {
@@ -46,12 +49,9 @@ describe('CreateUsersUseCase', () => {
     passwordService = createMockPasswordService();
     configService = createMockConfigService();
     passwordService.hash.mockResolvedValue(DERIVED_HASH);
-    emailVerificationTokensRepo.create.mockResolvedValue({
-      id: 'evt-1',
-      userId: 'uuid',
-      token: 'token',
-      expiresAt: new Date(),
-    });
+    emailVerificationTokensRepo.create.mockResolvedValue(
+      buildEmailVerificationToken({ userId: 'uuid' }),
+    );
 
     useCase = new CreateUsersUseCase(
       repo,
@@ -139,7 +139,7 @@ describe('CreateUsersUseCase', () => {
     expect(emailVerificationTokensRepo.create).toHaveBeenCalledWith(
       expect.objectContaining({
         userId: 'uuid',
-        token: expect.any(String),
+        tokenHash: expect.stringMatching(/^[0-9a-f]{64}$/),
         expiresAt: expect.any(Date),
       }),
     );

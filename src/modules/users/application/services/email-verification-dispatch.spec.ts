@@ -4,6 +4,7 @@ import { Logger } from '@nestjs/common';
 import type { IEmailVerificationNotifier } from '../../domain/IEmailVerificationNotifier';
 import { buildUser } from '../../../../../test/factories/user.factory';
 import { createMockEmailVerificationTokensRepo } from '../../../../../test/factories/email-verification-token.factory';
+import { TokenHash } from '../../domain/TokenHash';
 import { EnvoiDeVerificationEmail } from './email-verification-dispatch';
 
 function construire(base = 'https://asilidesign.fr/verify-email') {
@@ -27,19 +28,25 @@ function construire(base = 'https://asilidesign.fr/verify-email') {
 describe('EnvoiDeVerificationEmail', () => {
   const user = buildUser({ id: 'user-7', email: 'eve@example.com' });
 
-  it('enregistre un jeton puis envoie le lien qui le porte', async () => {
+  it('n enregistre que l empreinte du jeton envoye dans le lien', async () => {
     const { tokensRepo, notifier, logger, envoi } = construire();
 
     await envoi.envoyer(user, 'user-7', logger, 'Echec');
 
-    const jeton = tokensRepo.create.mock.calls[0][0].token;
-    expect(tokensRepo.create).toHaveBeenCalledWith(
-      expect.objectContaining({ userId: 'user-7' }),
+    const lien = new URL(
+      notifier.sendVerificationEmail.mock.calls[0][0].verificationUrl,
     );
+    const jetonBrut = lien.searchParams.get('token') ?? '';
+    expect(jetonBrut).toMatch(/^[0-9a-f]{64}$/);
+    expect(tokensRepo.create).toHaveBeenCalledWith({
+      userId: 'user-7',
+      tokenHash: TokenHash.fromRaw(jetonBrut).value,
+      expiresAt: expect.any(Date) as Date,
+    });
     expect(notifier.sendVerificationEmail).toHaveBeenCalledWith(
       expect.objectContaining({
         email: 'eve@example.com',
-        verificationUrl: `https://asilidesign.fr/verify-email?token=${jeton}`,
+        verificationUrl: `https://asilidesign.fr/verify-email?token=${jetonBrut}`,
         expiresInMinutes: 1440,
       }),
     );
