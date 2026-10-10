@@ -1,5 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import type { Transporter } from 'nodemailer';
+import { tronquer } from '../../../common/domain/texte/tronquer';
+import { optionalMetadata } from '../../../common/domain/validation/domain-validators';
 import {
   escapeHtml,
   escapeUrl,
@@ -60,20 +62,11 @@ interface ContenuDuMessage {
   copy: (typeof COPY)[keyof typeof COPY];
 }
 
-function text(value: unknown): string | null {
-  return typeof value === 'string' && value.trim() ? value.trim() : null;
-}
-
-function truncate(value: string, max: number): string {
-  const chars = Array.from(value);
-  return chars.length <= max ? value : `${chars.slice(0, max - 1).join('')}…`;
-}
-
 function emailSections(raw: unknown[]): EmailSection[] {
   return raw.flatMap((section): EmailSection[] => {
     if (!section || typeof section !== 'object') return [];
     const record = section as Record<string, unknown>;
-    const title = text(record.title);
+    const title = optionalMetadata(record.title);
     if (!title) return [];
     const items = Array.isArray(record.items) ? record.items : [];
     return [
@@ -83,14 +76,14 @@ function emailSections(raw: unknown[]): EmailSection[] {
           .flatMap((item): EmailItem[] => {
             if (!item || typeof item !== 'object') return [];
             const fields = item as Record<string, unknown>;
-            const itemText = text(fields.text);
-            const url = text(fields.url);
+            const itemText = optionalMetadata(fields.text);
+            const url = optionalMetadata(fields.url);
             if (!itemText || !url) return [];
             return [
               {
-                entity: text(fields.entity) ?? '',
-                text: truncate(itemText, MAX_ITEM_TEXT),
-                source: text(fields.source) ?? '',
+                entity: optionalMetadata(fields.entity) ?? '',
+                text: tronquer(itemText, MAX_ITEM_TEXT),
+                source: optionalMetadata(fields.source) ?? '',
                 url,
               },
             ];

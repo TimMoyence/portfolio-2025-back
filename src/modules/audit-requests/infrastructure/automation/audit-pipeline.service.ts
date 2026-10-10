@@ -1,4 +1,5 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
+import { tronquer } from '../../../../common/domain/texte/tronquer';
 import {
   AuditLocale,
   localeFromUrlPath,
@@ -756,7 +757,7 @@ export class AuditPipelineService {
   private toSafeError(error: unknown): string {
     const message =
       error instanceof Error ? error.message : 'Unexpected audit error';
-    return message.length > 280 ? `${message.slice(0, 280)}...` : message;
+    return tronquer(message, 280);
   }
 
   private copy(locale: AuditLocale): {

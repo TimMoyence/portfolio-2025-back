@@ -1,3 +1,4 @@
+import { tronquer } from '../../../../common/domain/texte/tronquer';
 import type { Cours, Ecran, Question } from '../contrats/cours';
 import type { EcranPublic, TirageDuCours } from '../contrats/tirage';
 import { cueillirDansArbre, estObjet } from './ArbreDeValeurs';
@@ -201,12 +202,6 @@ function unParEcran(textes: readonly TextePublic[]): readonly TextePublic[] {
   return [...premiers.values()];
 }
 
-function extrait(texte: string): string {
-  return texte.length <= LONGUEUR_D_EXTRAIT
-    ? texte
-    : `${texte.slice(0, LONGUEUR_D_EXTRAIT)}…`;
-}
-
 function signaler(
   cible: QuestionPlacee,
   volet: string,
@@ -215,7 +210,7 @@ function signaler(
 ): readonly Manquement[] {
   return unParEcran(textes).map((texte) => ({
     ecran: texte.ecran,
-    raison: `volet ${volet} : ${indice}, réponse de la question « ${cible.question.id} » (écran « ${cible.ecran.id} »), paraît dans un texte public de l'écran « ${texte.ecran} » : « ${extrait(texte.texte)} ».`,
+    raison: `volet ${volet} : ${indice}, réponse de la question « ${cible.question.id} » (écran « ${cible.ecran.id} »), paraît dans un texte public de l'écran « ${texte.ecran} » : « ${tronquer(texte.texte, LONGUEUR_D_EXTRAIT)} ».`,
   }));
 }
 

@@ -1,6 +1,7 @@
 import { ChatOpenAI } from '@langchain/openai';
 import { Injectable, Logger } from '@nestjs/common';
 import { z } from 'zod';
+import { compacterBlancs } from '../../../../common/domain/texte/compacter-blancs';
 import type { AiIndexabilitySignals } from '../../domain/AiIndexability';
 import type { ClientReportSynthesis } from '../../domain/AuditReportTiers';
 import type { BusinessType } from '../../domain/BusinessType';
@@ -247,14 +248,14 @@ export class LangchainClientReportService extends LlmLimiteParLaConfig {
     context: ClientReportContext,
   ): ClientReportSynthesis {
     const topFindings = result.topFindings.slice(0, 5).map((finding) => ({
-      title: this.cleanText(finding.title),
-      impact: this.cleanText(finding.impact),
+      title: compacterBlancs(finding.title),
+      impact: compacterBlancs(finding.impact),
       severity: finding.severity,
     }));
 
     const quickWins = result.quickWins.slice(0, 5).map((entry) => ({
-      title: this.cleanText(entry.title),
-      businessImpact: this.cleanText(entry.businessImpact),
+      title: compacterBlancs(entry.title),
+      businessImpact: compacterBlancs(entry.businessImpact),
       effort: entry.effort,
     }));
 
@@ -269,28 +270,30 @@ export class LangchainClientReportService extends LlmLimiteParLaConfig {
     );
 
     return {
-      executiveSummary: this.cleanText(result.executiveSummary),
+      executiveSummary: compacterBlancs(result.executiveSummary),
       topFindings,
       googleVsAiMatrix: {
         googleVisibility: {
           score: this.clampScore(
             result.googleVsAiMatrix.googleVisibility.score,
           ),
-          summary: this.cleanText(
+          summary: compacterBlancs(
             result.googleVsAiMatrix.googleVisibility.summary,
           ),
         },
         aiVisibility: {
           score: this.clampScore(result.googleVsAiMatrix.aiVisibility.score),
-          summary: this.cleanText(result.googleVsAiMatrix.aiVisibility.summary),
+          summary: compacterBlancs(
+            result.googleVsAiMatrix.aiVisibility.summary,
+          ),
         },
       },
       pillarScorecard,
       quickWins,
       cta: {
-        title: this.cleanText(result.cta.title),
-        description: this.cleanText(result.cta.description),
-        actionLabel: this.cleanText(result.cta.actionLabel),
+        title: compacterBlancs(result.cta.title),
+        description: compacterBlancs(result.cta.description),
+        actionLabel: compacterBlancs(result.cta.actionLabel),
       },
     };
   }
@@ -634,9 +637,5 @@ export class LangchainClientReportService extends LlmLimiteParLaConfig {
   private clampScore(value: number): number {
     if (!Number.isFinite(value)) return 0;
     return Math.max(0, Math.min(100, Math.round(value)));
-  }
-
-  private cleanText(value: string): string {
-    return value.replace(/\s+/g, ' ').trim();
   }
 }

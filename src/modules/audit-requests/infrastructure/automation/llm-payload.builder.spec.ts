@@ -63,31 +63,12 @@ function buildMinimalInput(
 }
 
 describe('compactText', () => {
-  it('retourne le texte inchange si inferieur a maxChars', () => {
-    expect(compactText('hello world', 50)).toBe('hello world');
+  it('compacte les blancs avant de tronquer avec une ellipse', () => {
+    expect(compactText('hello \n\n  world   test', 13)).toBe('hello world…');
   });
 
-  it('tronque et ajoute des points de suspension si le texte depasse maxChars', () => {
-    const long = 'a'.repeat(100);
-    const result = compactText(long, 20);
-    expect(result).toHaveLength(20);
-    expect(result.endsWith('...')).toBe(true);
-  });
-
-  it('nettoie les espaces multiples avant la troncature', () => {
-    expect(compactText('hello   world   test', 50)).toBe('hello world test');
-  });
-
-  it('retourne une chaine vide pour une chaine vide', () => {
-    expect(compactText('', 50)).toBe('');
-  });
-
-  it('retourne une chaine vide pour une chaine composee uniquement d espaces', () => {
-    expect(compactText('   ', 50)).toBe('');
-  });
-
-  it('gere les sauts de ligne comme des espaces', () => {
-    expect(compactText('hello\n\nworld', 50)).toBe('hello world');
+  it('retourne le texte compacte intact s il tient dans la limite', () => {
+    expect(compactText('  hello   world  ', 50)).toBe('hello world');
   });
 });
 

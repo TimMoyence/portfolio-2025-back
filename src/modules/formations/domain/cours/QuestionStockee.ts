@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { empreinteSha256 } from '../../../../common/domain/crypto/empreintes';
+import { enSlug } from '../../../../common/domain/texte/en-slug';
 import type { NumeriqueStockee, VoteStockee } from '../contrats/cours';
 import type { ConfusionId } from './banque/confusions';
 import {
@@ -20,8 +21,6 @@ import { sansTypographie } from './Typographie';
 
 const LONGUEUR_MAX_DU_SLUG = 40;
 const LONGUEUR_DE_L_EMPREINTE = 8;
-const DIACRITIQUES = /\p{M}/gu;
-const HORS_ALPHANUMERIQUE = /[^a-z0-9]+/g;
 const SYMBOLES_NOMMES: readonly (readonly [RegExp, string])[] = [
   [/\+/g, ' plus '],
   [/−/g, ' moins '],
@@ -29,23 +28,13 @@ const SYMBOLES_NOMMES: readonly (readonly [RegExp, string])[] = [
   [/€/g, ' eur '],
 ];
 
-function sansTiretsAuxBords(slug: string): string {
-  let debut = 0;
-  let fin = slug.length;
-  while (debut < fin && slug[debut] === '-') debut += 1;
-  while (fin > debut && slug[fin - 1] === '-') fin -= 1;
-  return slug.slice(debut, fin);
-}
-
 export function slugOption(libelle: string): string {
   const brut = sansTypographie(libelle);
   const lisible = SYMBOLES_NOMMES.reduce(
     (courant, [symbole, mot]) => courant.replace(symbole, mot),
-    brut.normalize('NFD').replace(DIACRITIQUES, '').toLowerCase(),
-  ).replace(HORS_ALPHANUMERIQUE, '-');
-  const tronque = sansTiretsAuxBords(
-    sansTiretsAuxBords(lisible).slice(0, LONGUEUR_MAX_DU_SLUG),
+    brut,
   );
+  const tronque = enSlug(lisible, LONGUEUR_MAX_DU_SLUG);
   const empreinte = empreinteSha256(brut.normalize('NFC')).slice(
     0,
     LONGUEUR_DE_L_EMPREINTE,

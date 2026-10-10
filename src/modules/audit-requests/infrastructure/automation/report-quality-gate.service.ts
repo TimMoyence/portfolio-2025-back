@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { compacterBlancs } from '../../../../common/domain/texte/compacter-blancs';
 import type { ClientReportSynthesis } from '../../domain/AuditReportTiers';
 import { AuditLocale } from '../../domain/audit-locale.util';
 import { hasLanguageMismatch } from './report-quality-gate/language-check.util';
@@ -800,8 +801,7 @@ export class ReportQualityGateService {
   }
 
   private cleanText(value: unknown): string {
-    if (typeof value !== 'string') return '';
-    return value.replace(/\s+/g, ' ').trim();
+    return typeof value === 'string' ? compacterBlancs(value) : '';
   }
 
   private normalizeHours(value: unknown, fallback: number): number {

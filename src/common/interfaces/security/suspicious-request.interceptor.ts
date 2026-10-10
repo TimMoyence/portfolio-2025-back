@@ -8,6 +8,7 @@ import {
 } from '@nestjs/common';
 import type { Request, Response } from 'express';
 import { Observable, tap } from 'rxjs';
+import { tronquer } from '../../domain/texte/tronquer';
 import { resolveClientIpOrUnknown } from './client-ip.util';
 import type { ISecurityEventsStore } from './ISecurityEventsStore';
 import { SECURITY_EVENTS_STORE } from './ISecurityEventsStore';
@@ -96,7 +97,7 @@ export class SuspiciousRequestInterceptor implements NestInterceptor {
           });
 
         this.logger.warn(
-          `[SECURITY] suspicious ip=${ip} method=${req.method} path=${path} status=${res.statusCode} score=${score} reasons=${reasons.join(',')} ua="${this.truncate(userAgent, 200)}" rtMs=${responseTimeMs.toFixed(1)} aborted=${aborted}`,
+          `[SECURITY] suspicious ip=${ip} method=${req.method} path=${path} status=${res.statusCode} score=${score} reasons=${reasons.join(',')} ua="${tronquer(userAgent, 200)}" rtMs=${responseTimeMs.toFixed(1)} aborted=${aborted}`,
         );
       } catch (err) {
         this.logger.warn(
@@ -126,10 +127,5 @@ export class SuspiciousRequestInterceptor implements NestInterceptor {
     const value = req.headers[name];
     if (Array.isArray(value)) return value.join(',');
     return value ?? '';
-  }
-
-  private truncate(value: string, max: number): string {
-    if (value.length <= max) return value;
-    return `${value.slice(0, max)}…`;
   }
 }

@@ -1,3 +1,4 @@
+import { sansDiacritiques } from '../../../../common/domain/texte/sans-diacritiques';
 import type { Cours, Ecran } from '../contrats/cours';
 import type { TirageDuCours } from '../contrats/tirage';
 import { cueillirDansArbre, estObjet } from './ArbreDeValeurs';
@@ -73,7 +74,6 @@ const RATIO_INTERACTION_MINIMAL = 0.3;
 const BRIQUE_OUVERTURE = 'fp-recall';
 const BRIQUE_CLOTURE = 'fp-exit';
 const PREFIXE_REFERENCE = 'ref:';
-const DIACRITIQUES = /\p{M}/gu;
 const PUCE_DES_NOTES = /^\s*•/;
 const DUREE_MINIMALE_D_ATELIER = 8;
 const DUREE_MAXIMALE_D_ATELIER = 15;
@@ -277,7 +277,7 @@ function controlerDureeCours({ cours }: Analyse): readonly Manquement[] {
 }
 
 function normaliser(identifiant: string): string {
-  return identifiant.normalize('NFD').replace(DIACRITIQUES, '').toLowerCase();
+  return sansDiacritiques(identifiant).toLowerCase();
 }
 
 function voisinIndistinct(
