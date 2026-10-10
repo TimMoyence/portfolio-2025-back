@@ -41,6 +41,14 @@ describeDb('Hachage des jetons de verification sur une base migree', () => {
     return lignes.map(({ column_name }) => column_name);
   };
 
+  const hacherEtVerifier = async (): Promise<void> => {
+    await jouer('up');
+
+    expect(await empreintesStockees()).toEqual(
+      enOrdre(JETONS_EN_CLAIR.map(empreinte)),
+    );
+  };
+
   it('remplace chaque jeton en clair par son empreinte sha256', async () => {
     for (const [rang, jeton] of JETONS_EN_CLAIR.entries()) {
       const userId = await inscrireUtilisateur(
@@ -54,19 +62,11 @@ describeDb('Hachage des jetons de verification sur une base migree', () => {
       );
     }
 
-    await jouer('up');
-
-    expect(await empreintesStockees()).toEqual(
-      enOrdre(JETONS_EN_CLAIR.map(empreinte)),
-    );
+    await hacherEtVerifier();
   });
 
   it('ne rehache rien sur une base dont la colonne porte deja les empreintes', async () => {
-    await jouer('up');
-
-    expect(await empreintesStockees()).toEqual(
-      enOrdre(JETONS_EN_CLAIR.map(empreinte)),
-    );
+    await hacherEtVerifier();
   });
 
   it('retire au retour arriere les empreintes, inutilisables en clair, et rend la colonne token', async () => {

@@ -1,5 +1,13 @@
 import { escapeHtml, escapeUrl, safeCss, safeHtml } from './html-escape.util';
 
+const refuseChaqueInterpolation = (
+  cas: readonly (readonly [string, () => unknown])[],
+): void => {
+  it.each(cas)('refuse une interpolation dans %s', (_nom, rendre) => {
+    expect(rendre).toThrow(/Interpolation refusée/);
+  });
+};
+
 describe('escapeHtml', () => {
   it('echappe tous les caracteres HTML sensibles', () => {
     expect(escapeHtml('<a href="x">&\'')).toBe(
@@ -124,7 +132,7 @@ describe('safeHtml en contexte sensible', () => {
     ).toThrow(/href/);
   });
 
-  it.each([
+  refuseChaqueInterpolation([
     [
       'un mailto seulement echappe',
       () => safeHtml`<a href="mailto:${escapeHtml('a@b.fr')}">x</a>`,
@@ -150,9 +158,7 @@ describe('safeHtml en contexte sensible', () => {
       () =>
         safeHtml`<span style="background:${escapeUrl('https://a.fr')}"></span>`,
     ],
-  ])('refuse une interpolation dans %s', (_nom, rendre) => {
-    expect(rendre).toThrow(/Interpolation refusée/);
-  });
+  ]);
 
   it('accepte un nombre dans un attribut style, qui ne peut porter aucune charge', () => {
     expect(safeHtml`<span style="width:${58}%"></span>`).toBe(
@@ -268,7 +274,7 @@ describe('safeHtml — le contexte suit le HTML rendu, pas le texte des valeurs'
 describe('safeHtml — contextes ou l echappement HTML ne protege de rien', () => {
   const PIEGE = 'javascript:alert(1)';
 
-  it.each([
+  refuseChaqueInterpolation([
     ['formaction', () => safeHtml`<button formaction="${escapeHtml(PIEGE)}">`],
     ['action', () => safeHtml`<form action="${escapeUrl('https://a.fr')}">`],
     ['xlink:href', () => safeHtml`<use xlink:href="${escapeHtml(PIEGE)}"/>`],
@@ -328,9 +334,7 @@ describe('safeHtml — contextes ou l echappement HTML ne protege de rien', () =
         return safeHtml`<p>${feuille}</p>`;
       },
     ],
-  ])('refuse une interpolation dans %s', (_nom, rendre) => {
-    expect(rendre).toThrow(/Interpolation refusée/);
-  });
+  ]);
 
   it('refuse une URL contrefaite qui n a pas ete emise par escapeUrl', () => {
     const contrefaite = {
