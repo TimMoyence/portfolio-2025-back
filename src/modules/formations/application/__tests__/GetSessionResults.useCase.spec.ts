@@ -20,6 +20,7 @@ import {
   SessionNotFoundError,
   SessionNotOwnedError,
 } from '../../domain/errors/FormationErrors';
+import { rapportEnCsv } from '../../domain/RapportCsv';
 import { REGLE_DE_NOTATION } from '../../domain/RegleDeNotation';
 import type {
   ConfusionComptee,
@@ -141,6 +142,23 @@ describe('GetSessionResultsUseCase', () => {
     expect(depots.participants.listBySession).not.toHaveBeenCalled();
     expect(depots.answers.listBySession).not.toHaveBeenCalled();
     expect(depots.incidents.listBySession).not.toHaveBeenCalled();
+  });
+
+  it('exporte en csv le rapport de la seance pour son formateur', async () => {
+    const csv = await sut.exporterEnCsv('session-uuid', PROPRIETAIRE);
+
+    expect(csv).toEqual(
+      rapportEnCsv(await sut.execute('session-uuid', PROPRIETAIRE)),
+    );
+  });
+
+  it('refuse d exporter le csv sans etre le formateur de la seance', async () => {
+    await expect(
+      sut.exporterEnCsv(
+        'session-uuid',
+        buildActeurFormation({ id: AUTRE_TEACHER_ID }),
+      ),
+    ).rejects.toThrow(SessionNotOwnedError);
   });
 
   it('annonce la regle de notation appliquee aux notes du rapport', async () => {

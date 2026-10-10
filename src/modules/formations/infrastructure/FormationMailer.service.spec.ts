@@ -5,13 +5,18 @@ import {
   smtpSimule,
   type MailEnvoye,
 } from '../../../../test/factories/mailer.factory';
-import { buildRapportParticipant } from '../../../../test/factories/formation.factory';
+import {
+  buildRapportAvecReponses,
+  buildRapportParticipant,
+  buildRapportQuestion as buildReponse,
+  buildRapportSession as buildRapport,
+} from '../../../../test/factories/formation.factory';
 import type {
   CopieEtudiant,
   RapportParticipant,
-  RapportQuestion,
   RapportSession,
 } from '../domain/IFormationMailer.port';
+import { rapportEnCsv } from '../domain/RapportCsv';
 import { FormationMailerService } from './FormationMailer.service';
 
 jest.mock('nodemailer', () => nodemailerSimule());
@@ -19,19 +24,6 @@ jest.mock('nodemailer', () => nodemailerSimule());
 const LIBELLE_CONFUSION = 'Croire que la hausse et la baisse s annulent.';
 
 const mockedCreateTransport = creationDeTransportSimulee();
-
-function buildRapport(overrides: Partial<RapportSession> = {}): RapportSession {
-  return {
-    courseSlug: 'b1-09-interets-composes',
-    code: '4271',
-    ouverteLe: new Date('2026-09-11T08:00:00.000Z'),
-    fermeeLe: new Date('2026-09-11T11:30:00.000Z'),
-    participants: [buildRapportParticipant()],
-    conceptsFragiles: [],
-    libellesDesConcepts: {},
-    ...overrides,
-  };
-}
 
 function lignePortant(texte: string, marqueur: string): string {
   return texte.split('\n').find((ligne) => ligne.includes(marqueur)) ?? '';
@@ -47,24 +39,6 @@ function buildCopie(overrides: Partial<CopieEtudiant> = {}): CopieEtudiant {
   };
 }
 
-function buildReponse(
-  overrides: Partial<RapportQuestion> = {},
-): RapportQuestion {
-  return {
-    questionId: 'Q-1',
-    concept: 'capitalisation',
-    type: 'numeric',
-    score: null,
-    valeur: '10',
-    reponse: '10',
-    correcte: true,
-    misconception: null,
-    libelleConfusion: null,
-    dureeMs: 1000,
-    ...overrides,
-  };
-}
-
 const VOTE_CONFONDU = buildReponse({
   questionId: 'Q-VOTE',
   valeur: 'o3',
@@ -73,17 +47,6 @@ const VOTE_CONFONDU = buildReponse({
   misconception: 'hausse-baisse-symetriques',
   libelleConfusion: LIBELLE_CONFUSION,
 });
-
-function buildRapportAvecReponses(
-  reponses: readonly RapportQuestion[],
-  participantOverrides: Partial<RapportParticipant> = {},
-): RapportSession {
-  return buildRapport({
-    participants: [
-      buildRapportParticipant({ ...participantOverrides, reponses }),
-    ],
-  });
-}
 
 describe('FormationMailerService', () => {
   const smtp = smtpSimule(mockedCreateTransport);
@@ -115,13 +78,6 @@ describe('FormationMailerService', () => {
       return smtp.premierMail();
     }
 
-    async function envoyerEtObtenirCsv(
-      rapport: RapportSession,
-    ): Promise<string> {
-      const mail = await synthese(rapport);
-      return String(mail.attachments?.[0].content);
-    }
-
     it('envoie un mail au destinataire avec un texte et un csv joint', async () => {
       const mail = await synthese(buildRapport());
 
@@ -146,116 +102,15 @@ describe('FormationMailerService', () => {
       expect(mail.html).toContain('12.3/20');
     });
 
-    it('produit un csv au format Excel francais : BOM, point-virgule, CRLF', async () => {
-      const rapport = buildRapportAvecReponses([
-        buildReponse({
-          questionId: 'Q-CAP-03',
-          valeur: '1338.23',
-          reponse: '1338.23',
-          dureeMs: 42000,
-        }),
-      ]);
+    it('joint le csv de la séance tel que le domaine le produit', async () => {
+      const rapport = buildRapportAvecReponses([VOTE_CONFONDU]);
 
-      const csv = await envoyerEtObtenirCsv(rapport);
+      const mail = await synthese(rapport);
 
-      expect(csv.charCodeAt(0)).toBe(0xfeff);
-      const lignes = csv.slice(1).split('\r\n');
-      expect(lignes[0]).toBe(
-        'prénom;nom;email;question;concept;réponse;correcte;confusion;durée_ms',
+      expect(mail.attachments?.[0].content).toEqual(
+        Buffer.from(rapportEnCsv(rapport).contenu),
       );
-      expect(lignes[1]).toContain(';');
-      expect(lignes[1]).not.toContain(',');
     });
-
-    it('ecrit dans le csv le libelle de l option choisie et celui de la confusion, jamais leurs identifiants', async () => {
-      const csv = await envoyerEtObtenirCsv(
-        buildRapportAvecReponses([VOTE_CONFONDU]),
-      );
-      const cellules = csv.slice(1).split('\r\n')[1].split(';');
-
-      expect({ reponse: cellules[5], confusion: cellules[7] }).toEqual({
-        reponse: '"revenu au prix de départ"',
-        confusion: `"${LIBELLE_CONFUSION}"`,
-      });
-      expect(csv).not.toContain('"o3"');
-      expect(csv).not.toContain('hausse-baisse-symetriques');
-    });
-
-    it('V6 · ajoute au csv une ligne par réponse libre du participant, après ses réponses notées et sans verdict', async () => {
-      const rapport = buildRapportAvecReponses([buildReponse()], {
-        reponsesLibres: [
-          {
-            screenId: 'B3-01-A1-15-REGLES-ACTE-1',
-            activityId: 'b3-01-a1-regles:regle-comprendre',
-            reponse: '=SOMME seulement après la colonne "controle"',
-          },
-        ],
-      });
-
-      const lignes = (await envoyerEtObtenirCsv(rapport))
-        .slice(1)
-        .split('\r\n');
-
-      expect(lignes).toHaveLength(3);
-      expect(lignes[2].split(';')).toEqual([
-        '"Theo"',
-        '"Martin"',
-        '"theo.martin@example.com"',
-        '"b3-01-a1-regles:regle-comprendre"',
-        '"réponse libre"',
-        '"\'=SOMME seulement après la colonne ""controle"""',
-        '""',
-        '""',
-        '""',
-      ]);
-    });
-
-    it('neutralise un nom d etudiant commencant par un signe egal', async () => {
-      const rapport = buildRapportAvecReponses([buildReponse()], {
-        prenom: '=HYPERLINK("http://evil.example","Cliquez ici")',
-      });
-
-      const csv = await envoyerEtObtenirCsv(rapport);
-
-      expect(csv).toContain('"\'=HYPERLINK');
-    });
-
-    it('laisse un montant negatif intact et sommable dans le csv', async () => {
-      const rapport = buildRapportAvecReponses([
-        buildReponse({ valeur: '-1500', reponse: '-1500' }),
-      ]);
-
-      const csv = await envoyerEtObtenirCsv(rapport);
-
-      expect(csv).toContain('"-1500"');
-      expect(csv).not.toContain('"\'-1500"');
-    });
-
-    it.each([
-      ['un signe plus ou une arobase', '+1+1', '@SUM(A1)'],
-      ['un signe moins qui n est pas un nombre valide', '-=1+1', '--cmd'],
-    ])(
-      'neutralise une reponse commencant par %s',
-      async (_cas, premiere, seconde) => {
-        const rapport = buildRapportAvecReponses([
-          buildReponse({
-            questionId: 'Q-1',
-            reponse: premiere,
-            correcte: false,
-          }),
-          buildReponse({
-            questionId: 'Q-2',
-            reponse: seconde,
-            correcte: false,
-          }),
-        ]);
-
-        const csv = await envoyerEtObtenirCsv(rapport);
-
-        expect(csv).toContain(`"'${premiere}"`);
-        expect(csv).toContain(`"'${seconde}"`);
-      },
-    );
 
     it('echappe une apostrophe dans le nom de famille d un etudiant', async () => {
       const mail = await synthese(
