@@ -1,3 +1,6 @@
+import type { SourceDEnv } from '../../../config/env-readers.util';
+import { cheminDeLApi } from '../../../config/prefixe-api';
+
 export interface RequestScoringContext {
   method: string;
   path: string;
@@ -35,12 +38,19 @@ const AUTOMATION_UA_PATTERNS: readonly { pattern: RegExp; reason: string }[] = [
   { pattern: /scanner/i, reason: 'ua:scanner' },
 ];
 
-const SENSITIVE_WRITE_PATHS: readonly RegExp[] = [
-  /^\/api\/v\d+\/portfolio25\/auth\//,
-  /^\/api\/v\d+\/portfolio25\/users/,
-  /^\/api\/v\d+\/portfolio25\/contacts/,
-  /^\/api\/v\d+\/portfolio25\/lead-magnets/,
+const SEGMENTS_D_ECRITURE_SENSIBLE: readonly string[] = [
+  'auth',
+  'users',
+  'contacts',
+  'lead-magnets',
 ];
+
+function sousUnSegmentSensible(path: string, source: SourceDEnv): boolean {
+  return SEGMENTS_D_ECRITURE_SENSIBLE.some((segment) => {
+    const racine = cheminDeLApi(segment, source);
+    return path === racine || path.startsWith(`${racine}/`);
+  });
+}
 
 const SUSPICIOUS_PATH_PATTERNS: readonly { pattern: RegExp; reason: string }[] =
   [
@@ -106,12 +116,15 @@ function scoreUltraFastWrite(ctx: RequestScoringContext): RequestScore {
   return weigh(5, ultraFast && writeLike ? 'http:ultra-fast-write' : null);
 }
 
-function scoreSensitiveWrite(ctx: RequestScoringContext): RequestScore {
+function scoreSensitiveWrite(
+  ctx: RequestScoringContext,
+  source: SourceDEnv,
+): RequestScore {
   const clientError = ctx.statusCode >= 400 && ctx.statusCode < 500;
   const flagged =
     WRITE_METHODS.has(ctx.method) &&
     clientError &&
-    SENSITIVE_WRITE_PATHS.some((re) => re.test(ctx.path));
+    sousUnSegmentSensible(ctx.path, source);
   return weigh(15, flagged ? 'sensitive:write-4xx' : null);
 }
 
@@ -121,14 +134,17 @@ function scoreMissingAcceptLanguage(ctx: RequestScoringContext): RequestScore {
   return weigh(5, missing ? 'header:no-accept-language' : null);
 }
 
-export function scoreRequest(ctx: RequestScoringContext): RequestScore {
+export function scoreRequest(
+  ctx: RequestScoringContext,
+  source: SourceDEnv = process.env,
+): RequestScore {
   const signals = [
     scoreUserAgent(ctx.userAgent),
     scorePath(ctx.path),
     scoreRateLimit(ctx),
     scoreAbort(ctx),
     scoreUltraFastWrite(ctx),
-    scoreSensitiveWrite(ctx),
+    scoreSensitiveWrite(ctx, source),
     scoreMissingAcceptLanguage(ctx),
   ];
 

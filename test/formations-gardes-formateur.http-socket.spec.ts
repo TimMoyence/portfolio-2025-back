@@ -10,6 +10,7 @@ import { JwtAuthGuard } from '../src/common/interfaces/auth/jwt-auth.guard';
 import { ROLES_KEY } from '../src/common/interfaces/auth/roles.decorator';
 import { AllExceptionsFilter } from '../src/common/interfaces/filters/all-exceptions.filter';
 import { DomainExceptionFilter } from '../src/common/interfaces/filters/DomainExceptionFilter';
+import { PREFIXE_API_PAR_DEFAUT } from '../src/config/prefixe-api';
 import { JwtTokenService } from '../src/modules/users/application/services/JwtTokenService';
 import type { JwtPayload } from '../src/modules/users/application/services/JwtPayload';
 import { USERS_REPOSITORY } from '../src/modules/users/domain/token';
@@ -22,7 +23,7 @@ import { createMockDepotsFormations } from './factories/formation.factory';
 import {
   CONTROLEURS_FORMATIONS,
   fournisseursFormations,
-  PREFIXE_API,
+  routeFormations,
   serveurHttpDe,
 } from './helpers/formations-harness';
 import { fermerApplication } from './helpers/nest-test-app';
@@ -106,9 +107,7 @@ describe('Gardes reelles des routes formateur (e2e http socket)', () => {
   const serveur = () => serveurHttpDe(app);
 
   const appel = (route: RouteFormateur): RequeteTest =>
-    request(serveur())[route.methode](
-      `/${PREFIXE_API}/formations/${route.chemin}`,
-    );
+    request(serveur())[route.methode](routeFormations(`/${route.chemin}`));
 
   beforeAll(async () => {
     const jwt = {
@@ -144,7 +143,7 @@ describe('Gardes reelles des routes formateur (e2e http socket)', () => {
     }).compile();
 
     app = moduleRef.createNestApplication();
-    app.setGlobalPrefix(PREFIXE_API);
+    app.setGlobalPrefix(PREFIXE_API_PAR_DEFAUT);
     app.useGlobalFilters(
       new AllExceptionsFilter(),
       new DomainExceptionFilter(),
@@ -246,7 +245,7 @@ describe('Gardes reelles des routes formateur (e2e http socket)', () => {
 
   it('laisse les routes etudiantes publiques hors de la garde de jeton applicatif', async () => {
     const reponse = await request(serveur())
-      .post(`/${PREFIXE_API}/formations/sessions/${SESSION_ID}/answers`)
+      .post(routeFormations(`/sessions/${SESSION_ID}/answers`))
       .set(EN_TETE_JETON, 'jeton-de-participant-invalide')
       .send({ questionId: 'Q-TEST-NUM', valeur: 1, dureeMs: 10 });
 
@@ -258,7 +257,7 @@ describe('Gardes reelles des routes formateur (e2e http socket)', () => {
 
   it('ne laisse pas un participant emprunter une route formateur', async () => {
     const reponse = await request(serveur())
-      .get(`/${PREFIXE_API}/formations/sessions/${SESSION_ID}/results`)
+      .get(routeFormations(`/sessions/${SESSION_ID}/results`))
       .set(EN_TETE_JETON, `${PARTICIPANT_ID}.empreinte`);
 
     expect(reponse.status).toBe(NON_AUTORISE);

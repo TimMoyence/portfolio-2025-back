@@ -6,6 +6,7 @@ import request from 'supertest';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { DomainExceptionFilter } from '../src/common/interfaces/filters/DomainExceptionFilter';
 import { bornerLesCorpsDeRequete } from '../src/common/interfaces/http/corps-de-requete';
+import { PREFIXE_API_PAR_DEFAUT } from '../src/config/prefixe-api';
 import type {
   Cours,
   Ecran,
@@ -77,7 +78,6 @@ import {
   fermerApplication,
 } from './helpers/nest-test-app';
 import { GLOBAL_VALIDATION_PIPE_OPTIONS } from './helpers/validation-pipe';
-import { PREFIXE_API as API_PREFIX } from './helpers/formations-harness';
 const SECRET = 'secret-de-test-formations-assez-long-1234';
 const SYNTHESE_A = 'synthese-formateur@example.com';
 
@@ -445,7 +445,7 @@ async function creerHarnais(
   const app = moduleRef.createNestApplication<NestExpressApplication>();
   bornerLesCorpsDeRequete(app);
   signerLesIdentitesDeTest(app);
-  app.setGlobalPrefix(API_PREFIX);
+  app.setGlobalPrefix(PREFIXE_API_PAR_DEFAUT);
   app.useGlobalFilters(new DomainExceptionFilter());
   app.useGlobalPipes(new ValidationPipe(GLOBAL_VALIDATION_PIPE_OPTIONS));
   const port = await ecouterEnBoucleLocale(app);
