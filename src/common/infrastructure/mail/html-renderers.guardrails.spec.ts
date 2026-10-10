@@ -10,7 +10,6 @@ const RENDERERS = [
   'src/modules/contacts/infrastructure/ContactMailer.service.ts',
   'src/modules/lead-magnets/infrastructure/LeadMagnetMailer.service.ts',
   'src/modules/lead-magnets/infrastructure/ToolkitHtmlRenderer.service.ts',
-  'src/modules/lead-magnets/infrastructure/toolkit-html/toolkit-html.css.ts',
   'src/modules/lead-magnets/infrastructure/toolkit-html/toolkit-html.utils.ts',
   'src/modules/newsletter/infrastructure/NewsletterMailer.service.ts',
   'src/modules/users/infrastructure/MailerDeLienTemporaire.ts',
@@ -43,4 +42,22 @@ describe('Renderers HTML — garanties non observables par le compilateur', () =
     expect(content).not.toMatch(/replaceAll\(\s*'&'/);
     expect(content).not.toMatch(/replace\(\s*\/&\/g/);
   });
+});
+
+const FEUILLES_DE_STYLE = [
+  'src/modules/lead-magnets/infrastructure/toolkit-html/toolkit-html.css.ts',
+];
+
+describe('Feuilles de style — seul safeCss emet un contenu admis dans <style>', () => {
+  it.each(FEUILLES_DE_STYLE)(
+    '%s assemble sa feuille via le tag safeCss, sans gabarit nu',
+    (file) => {
+      const content = read(file);
+
+      expect(content).toMatch(/\bsafeCss`/);
+      expect(content).not.toMatch(/\bsafeHtml`/);
+      expect(content).not.toMatch(/return\s+`/);
+      expect(content).not.toMatch(/=>\s*`/);
+    },
+  );
 });

@@ -1,4 +1,4 @@
-import { escapeHtml, escapeUrl, safeHtml } from './html-escape.util';
+import { escapeHtml, escapeUrl, safeCss, safeHtml } from './html-escape.util';
 
 describe('escapeHtml', () => {
   it('echappe tous les caracteres HTML sensibles', () => {
@@ -173,12 +173,204 @@ describe('safeHtml en contexte sensible', () => {
       '<a href="/x">lien</a>',
     ],
     [
-      'une feuille de style',
-      () => safeHtml`<style>a { color: ${escapeHtml('#fff')}; }</style>`,
+      'une feuille de style construite par safeCss',
+      () => {
+        const feuille = safeCss`a { color: ${'#fff'}; }`;
+        return safeHtml`<style>${feuille}</style>`;
+      },
       '<style>a { color: #fff; }</style>',
+    ],
+    [
+      'un texte apres une feuille de style fermee',
+      () => safeHtml`<style>a{}</style><p>${escapeHtml('x')}</p>`,
+      '<style>a{}</style><p>x</p>',
+    ],
+    [
+      'un titre de document, dont le contenu reste du texte',
+      () => safeHtml`<title>${escapeHtml('a"b')}</title>`,
+      '<title>a&quot;b</title>',
+    ],
+    [
+      'une classe completee en cours de valeur',
+      () => safeHtml`<p class="carte ${escapeHtml('solo')}"></p>`,
+      '<p class="carte solo"></p>',
+    ],
+    [
+      'une URL entre apostrophes',
+      () => safeHtml`<a href='${escapeUrl('https://a.fr')}'>x</a>`,
+      "<a href='https://a.fr'>x</a>",
+    ],
+    [
+      'une couleur de presentation',
+      () => safeHtml`<circle fill="${escapeHtml('#4fb3a2')}"/>`,
+      '<circle fill="#4fb3a2"/>',
+    ],
+    [
+      'un lien dans un commentaire conditionnel Outlook',
+      () =>
+        safeHtml`<!--[if mso]><v:roundrect href="${escapeUrl('https://a.fr')}"></v:roundrect><![endif]-->`,
+      '<!--[if mso]><v:roundrect href="https://a.fr"></v:roundrect><![endif]-->',
     ],
   ])('accepte %s', (_nom, rendre, attendu) => {
     expect(rendre()).toBe(attendu);
+  });
+});
+
+describe('safeHtml — le contexte suit le HTML rendu, pas le texte des valeurs', () => {
+  it('rend un prenom termine par un faux attribut, suivi du nom, comme la synthese de seance', () => {
+    expect(
+      safeHtml`<td style="padding:4px;">${escapeHtml('Theo onclick=')} ${escapeHtml('Martin')}</td>`,
+    ).toBe('<td style="padding:4px;">Theo onclick= Martin</td>');
+  });
+
+  it('reste dans le contenu brut quand </style n est pas suivi d un blanc, de / ou de >', () => {
+    expect(
+      () => safeHtml`<style></stylex>${escapeHtml('a{}')}</style>`,
+    ).toThrow(/Interpolation refusée/);
+  });
+
+  it('sort du contenu brut sur une fermeture suivie d un blanc', () => {
+    expect(safeHtml`<style></style >${escapeHtml('a')}`).toBe(
+      '<style></style >a',
+    );
+  });
+
+  it('rend un prenom qui ressemble a un attribut, suivi d un lien', () => {
+    const prenom = escapeHtml('Theo onclick=');
+
+    expect(
+      safeHtml`<p>Bonjour ${prenom}, <a href="${escapeUrl('https://a.fr')}">revoir</a></p>`,
+    ).toBe('<p>Bonjour Theo onclick=, <a href="https://a.fr">revoir</a></p>');
+  });
+
+  it.each([
+    ['href=', 'href='],
+    ['style="', 'style=&quot;'],
+    ['<a href=', '&lt;a href='],
+  ])(
+    'ne prend pas le texte %s d une valeur pour un attribut ouvert',
+    (brut, rendu) => {
+      expect(
+        safeHtml`<p>${escapeHtml(brut)}${escapeUrl('https://a.fr')}</p>`,
+      ).toBe(`<p>${rendu}https://a.fr</p>`);
+    },
+  );
+
+  it('suit un fragment qui ouvre lui-meme un attribut d URL', () => {
+    const ouvrant = safeHtml`<a href="`;
+
+    expect(
+      () => safeHtml`${ouvrant}${escapeHtml('javascript:alert(1)')}">x</a>`,
+    ).toThrow(/Interpolation refusée/);
+  });
+});
+
+describe('safeHtml — contextes ou l echappement HTML ne protege de rien', () => {
+  const PIEGE = 'javascript:alert(1)';
+
+  it.each([
+    ['formaction', () => safeHtml`<button formaction="${escapeHtml(PIEGE)}">`],
+    ['action', () => safeHtml`<form action="${escapeUrl('https://a.fr')}">`],
+    ['xlink:href', () => safeHtml`<use xlink:href="${escapeHtml(PIEGE)}"/>`],
+    ['data d un objet', () => safeHtml`<object data="${escapeHtml(PIEGE)}">`],
+    [
+      'content d un meta refresh',
+      () =>
+        safeHtml`<meta http-equiv="refresh" content="${escapeHtml('0;url=' + PIEGE)}">`,
+    ],
+    [
+      'srcdoc, meme avec une URL admise',
+      () => safeHtml`<iframe srcdoc="${escapeUrl('https://a.fr')}">`,
+    ],
+    ['srcset', () => safeHtml`<img srcset="${escapeHtml(PIEGE)}">`],
+    ['poster', () => safeHtml`<video poster="${escapeHtml(PIEGE)}">`],
+    ['background', () => safeHtml`<td background="${escapeHtml(PIEGE)}">`],
+    [
+      'un attribut colle au precedent',
+      () => safeHtml`<a title="x"href="${escapeHtml(PIEGE)}">x</a>`,
+    ],
+    [
+      'un attribut ordinaire sans guillemets',
+      () => safeHtml`<img alt=${escapeHtml('x onerror=alert(1)')}>`,
+    ],
+    [
+      'la suite d une valeur sans guillemets',
+      () =>
+        safeHtml`<a href=https://a.fr/${escapeHtml('x onmouseover=alert(1)')}>x</a>`,
+    ],
+    [
+      'la position d un nom d attribut',
+      () => safeHtml`<div ${escapeHtml('onclick=alert(1)')}>`,
+    ],
+    ['un nom de balise', () => safeHtml`<${escapeHtml('script')}>`],
+    [
+      'une feuille de style',
+      () =>
+        safeHtml`<style>${escapeHtml('}body{background:url(https://x)}')}</style>`,
+    ],
+    ['un script', () => safeHtml`<script>var a = ${escapeHtml('1')}</script>`],
+    [
+      'une URL precedee d un debut de valeur',
+      () => safeHtml`<a href="https://a.fr/${escapeUrl('x')}">x</a>`,
+    ],
+    [
+      'une URL suivie d une fin de valeur',
+      () => safeHtml`<a href="${escapeUrl('https://a.fr')}/x">x</a>`,
+    ],
+    [
+      'une couleur qui charge une ressource',
+      () => safeHtml`<circle fill="${escapeHtml('url(https://x/a.svg#b)')}"/>`,
+    ],
+    [
+      'une feuille de style hors d un element style',
+      () => {
+        const feuille = safeCss`a{}`;
+        return safeHtml`<p>${feuille}</p>`;
+      },
+    ],
+  ])('refuse une interpolation dans %s', (_nom, rendre) => {
+    expect(rendre).toThrow(/Interpolation refusée/);
+  });
+
+  it('refuse une URL contrefaite qui n a pas ete emise par escapeUrl', () => {
+    const contrefaite = {
+      genre: 'url',
+      toString: () => PIEGE,
+    } as unknown as ReturnType<typeof escapeUrl>;
+
+    expect(() => safeHtml`<a href="${contrefaite}">x</a>`).toThrow(
+      /Interpolation refusée/,
+    );
+  });
+});
+
+describe('safeCss', () => {
+  it('assemble une feuille de style a partir de jetons et de nombres', () => {
+    expect(String(safeCss`a { color: ${'#fff'}; width: ${58}%; }`)).toBe(
+      'a { color: #fff; width: 58%; }',
+    );
+  });
+
+  it('concatene des feuilles imbriquees', () => {
+    const imbriquees = [safeCss`a{}`, safeCss`b{}`];
+
+    expect(String(safeCss`${imbriquees}c{}`)).toBe('a{}b{}c{}');
+  });
+
+  it.each(['red;}body{x:y', 'url(https://x)', 'a b', '</style>', ''])(
+    'refuse le jeton %p, qui sortirait de sa declaration',
+    (jeton) => {
+      expect(() => safeCss`a { color: ${jeton}; }`).toThrow(/Jeton CSS refusé/);
+    },
+  );
+
+  it('refuse une feuille contrefaite qui n a pas ete emise par safeCss', () => {
+    const contrefaite = {
+      genre: 'style',
+      toString: () => '}body{x:y}',
+    } as unknown as ReturnType<typeof safeCss>;
+
+    expect(() => safeCss`${contrefaite}`).toThrow(/Jeton CSS refusé/);
   });
 });
 

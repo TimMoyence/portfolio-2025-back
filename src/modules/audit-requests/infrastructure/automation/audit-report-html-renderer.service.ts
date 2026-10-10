@@ -10,9 +10,13 @@ import { pillarLabel } from './shared/pillar-labels.util';
 import {
   escapeHtml,
   escapeUrl,
+  safeCss,
   safeHtml,
 } from '../../../../common/infrastructure/mail/html-escape.util';
-import type { EscapedHtml } from '../../../../common/infrastructure/mail/html-escape.util';
+import type {
+  EscapedHtml,
+  FeuilleDeStyle,
+} from '../../../../common/infrastructure/mail/html-escape.util';
 
 @Injectable()
 export class AuditReportHtmlRendererService {
@@ -35,7 +39,7 @@ export class AuditReportHtmlRendererService {
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <title>Rapport Growth Audit — ${this.escapeHtml(audit.websiteName)}</title>
+    <title>Rapport Growth Audit — ${escapeHtml(audit.websiteName)}</title>
     <style>${this.css()}</style>
   </head>
   <body>
@@ -57,10 +61,10 @@ export class AuditReportHtmlRendererService {
       <div class="cover-content">
         <p class="cover-eyebrow">Asili Design — Growth Audit</p>
         <h1 class="cover-title">Rapport Growth Audit</h1>
-        <p class="cover-subtitle">${this.escapeHtml(audit.websiteName)}</p>
+        <p class="cover-subtitle">${escapeHtml(audit.websiteName)}</p>
         <div class="cover-meta">
-          <p class="cover-date">${this.escapeHtml(date)}</p>
-          ${audit.finalUrl ? safeHtml`<p class="cover-url">${this.escapeHtml(audit.finalUrl)}</p>` : safeHtml``}
+          <p class="cover-date">${escapeHtml(date)}</p>
+          ${audit.finalUrl ? safeHtml`<p class="cover-url">${escapeHtml(audit.finalUrl)}</p>` : safeHtml``}
         </div>
       </div>
       <footer class="cover-footer">
@@ -81,7 +85,7 @@ export class AuditReportHtmlRendererService {
     return safeHtml`<section class="page section section-client">
       ${this.sectionHeader('01', 'Synthese client', 'Votre audit en un coup d\u2019\u0153il')}
       <div class="exec-summary">
-        <p>${this.escapeHtml(report.executiveSummary)}</p>
+        <p>${escapeHtml(report.executiveSummary)}</p>
       </div>
       ${matrix}
       ${scorecard}
@@ -98,12 +102,12 @@ export class AuditReportHtmlRendererService {
       <article class="matrix-card">
         <h3 class="matrix-title">Visibilite Google</h3>
         <div class="matrix-score">${matrix.googleVisibility.score}<span class="matrix-score-unit">/100</span></div>
-        <p class="matrix-summary">${this.escapeHtml(matrix.googleVisibility.summary)}</p>
+        <p class="matrix-summary">${escapeHtml(matrix.googleVisibility.summary)}</p>
       </article>
       <article class="matrix-card">
         <h3 class="matrix-title">Visibilite IA</h3>
         <div class="matrix-score">${matrix.aiVisibility.score}<span class="matrix-score-unit">/100</span></div>
-        <p class="matrix-summary">${this.escapeHtml(matrix.aiVisibility.summary)}</p>
+        <p class="matrix-summary">${escapeHtml(matrix.aiVisibility.summary)}</p>
       </article>
     </div>`;
   }
@@ -113,9 +117,9 @@ export class AuditReportHtmlRendererService {
   ): EscapedHtml {
     if (!scorecard.length) return safeHtml``;
     const cards = scorecard.map((pillar) => {
-      const statusClass = safeHtml`pillar-${this.escapeHtml(pillar.status)}`;
+      const statusClass = safeHtml`pillar-${escapeHtml(pillar.status)}`;
       return safeHtml`<article class="pillar-card ${statusClass}">
-          <p class="pillar-name">${this.escapeHtml(pillarLabel(pillar.pillar))}</p>
+          <p class="pillar-name">${escapeHtml(pillarLabel(pillar.pillar))}</p>
           <p class="pillar-score">${pillar.score}<span class="pillar-target"> / ${pillar.target}</span></p>
           <p class="pillar-status">${this.statusLabel(pillar.status)}</p>
         </article>`;
@@ -131,10 +135,10 @@ export class AuditReportHtmlRendererService {
   ): EscapedHtml {
     if (!findings.length) return safeHtml``;
     const items = findings.map((f) => {
-      const severityClass = safeHtml`finding-${this.escapeHtml(f.severity)}`;
+      const severityClass = safeHtml`finding-${escapeHtml(f.severity)}`;
       return safeHtml`<li class="finding ${severityClass}">
-        <p class="finding-title">${this.escapeHtml(f.title)}</p>
-        <p class="finding-impact">${this.escapeHtml(f.impact)}</p>
+        <p class="finding-title">${escapeHtml(f.title)}</p>
+        <p class="finding-impact">${escapeHtml(f.impact)}</p>
       </li>`;
     });
     return safeHtml`<div class="findings">
@@ -149,8 +153,8 @@ export class AuditReportHtmlRendererService {
     if (!quickWins.length) return safeHtml``;
     const items = quickWins.map(
       (qw) => safeHtml`<article class="quickwin">
-        <p class="quickwin-title">${this.escapeHtml(qw.title)}</p>
-        <p class="quickwin-impact">${this.escapeHtml(qw.businessImpact)}</p>
+        <p class="quickwin-title">${escapeHtml(qw.title)}</p>
+        <p class="quickwin-impact">${escapeHtml(qw.businessImpact)}</p>
         <p class="quickwin-effort">Effort : ${this.effortLabel(qw.effort)}</p>
       </article>`,
     );
@@ -162,9 +166,9 @@ export class AuditReportHtmlRendererService {
 
   private renderCta(cta: ClientReportSynthesis['cta']): EscapedHtml {
     return safeHtml`<div class="cta-card">
-      <h3 class="cta-title">${this.escapeHtml(cta.title)}</h3>
-      <p class="cta-description">${this.escapeHtml(cta.description)}</p>
-      <p class="cta-action">${this.escapeHtml(cta.actionLabel)}</p>
+      <h3 class="cta-title">${escapeHtml(cta.title)}</h3>
+      <p class="cta-description">${escapeHtml(cta.description)}</p>
+      <p class="cta-action">${escapeHtml(cta.actionLabel)}</p>
     </div>`;
   }
 
@@ -172,7 +176,7 @@ export class AuditReportHtmlRendererService {
     return safeHtml`<section class="page section section-expert">
       ${this.sectionHeader('02', 'Analyse expert', 'Constats transverses et backlog priorise')}
       <div class="exec-summary">
-        <p>${this.escapeHtml(report.executiveSummary)}</p>
+        <p>${escapeHtml(report.executiveSummary)}</p>
       </div>
       ${this.renderCrossPageFindings(report.crossPageFindings)}
       ${this.renderPriorityBacklog(report.priorityBacklog)}
@@ -188,15 +192,15 @@ export class AuditReportHtmlRendererService {
     }
     const items = findings.map((f) => {
       const urls = f.affectedUrls.map(
-        (u) => safeHtml`<li class="affected-url">${this.escapeHtml(u)}</li>`,
+        (u) => safeHtml`<li class="affected-url">${escapeHtml(u)}</li>`,
       );
-      return safeHtml`<article class="cross-finding severity-${this.escapeHtml(f.severity)}">
+      return safeHtml`<article class="cross-finding severity-${escapeHtml(f.severity)}">
           <header class="cross-finding-header">
             <span class="severity-badge">${this.severityLabel(f.severity)}</span>
-            <h4 class="cross-finding-title">${this.escapeHtml(f.title)}</h4>
+            <h4 class="cross-finding-title">${escapeHtml(f.title)}</h4>
           </header>
-          <p class="cross-finding-cause"><strong>Cause racine :</strong> ${this.escapeHtml(f.rootCause)}</p>
-          <p class="cross-finding-remedy"><strong>Correction :</strong> ${this.escapeHtml(f.remediation)}</p>
+          <p class="cross-finding-cause"><strong>Cause racine :</strong> ${escapeHtml(f.rootCause)}</p>
+          <p class="cross-finding-remedy"><strong>Correction :</strong> ${escapeHtml(f.remediation)}</p>
           ${urls.length ? safeHtml`<ul class="affected-urls">${urls}</ul>` : safeHtml``}
         </article>`;
     });
@@ -214,10 +218,10 @@ export class AuditReportHtmlRendererService {
     }
     const rows = backlog.map((item) => {
       const ac = item.acceptanceCriteria.map(
-        (c) => safeHtml`<li>${this.escapeHtml(c)}</li>`,
+        (c) => safeHtml`<li>${escapeHtml(c)}</li>`,
       );
       return safeHtml`<tr class="backlog-row">
-          <td class="backlog-title">${this.escapeHtml(item.title)}</td>
+          <td class="backlog-title">${escapeHtml(item.title)}</td>
           <td class="backlog-impact">${this.impactLabel(item.impact)}</td>
           <td class="backlog-effort">${this.effortLabel(item.effort)}</td>
           <td class="backlog-ac"><ul>${ac}</ul></td>
@@ -243,7 +247,7 @@ export class AuditReportHtmlRendererService {
     if (!notes || notes.trim() === '') return safeHtml``;
     return safeHtml`<div class="internal-notes">
       <h3 class="subsection-title">Notes internes</h3>
-      <p>${this.escapeHtml(notes)}</p>
+      <p>${escapeHtml(notes)}</p>
     </div>`;
   }
 
@@ -268,25 +272,25 @@ export class AuditReportHtmlRendererService {
     const issues = page.topIssues.length
       ? safeHtml`<div class="page-block">
           <h5 class="page-block-title">Top issues</h5>
-          <ul>${page.topIssues.map((i) => safeHtml`<li>${this.escapeHtml(i)}</li>`)}</ul>
+          <ul>${page.topIssues.map((i) => safeHtml`<li>${escapeHtml(i)}</li>`)}</ul>
         </div>`
       : safeHtml``;
     const recos = page.recommendations.length
       ? safeHtml`<div class="page-block">
           <h5 class="page-block-title">Recommandations</h5>
-          <ul>${page.recommendations.map((r) => safeHtml`<li>${this.escapeHtml(r)}</li>`)}</ul>
+          <ul>${page.recommendations.map((r) => safeHtml`<li>${escapeHtml(r)}</li>`)}</ul>
         </div>`
       : safeHtml``;
     const evidence = page.evidence.length
       ? safeHtml`<div class="page-block">
           <h5 class="page-block-title">Evidence</h5>
-          <ul>${page.evidence.map((e) => safeHtml`<li>${this.escapeHtml(e)}</li>`)}</ul>
+          <ul>${page.evidence.map((e) => safeHtml`<li>${escapeHtml(e)}</li>`)}</ul>
         </div>`
       : safeHtml``;
-    const safeUrl = this.escapeHtml(page.url);
+    const safeUrl = escapeHtml(page.url);
     return safeHtml`<article class="page-card">
       <header class="page-card-header">
-        <h4 class="page-card-title">${this.escapeHtml(page.title)}</h4>
+        <h4 class="page-card-title">${escapeHtml(page.title)}</h4>
         <a class="page-card-url" href="${escapeUrl(page.url)}">${safeUrl}</a>
       </header>
       ${engines}
@@ -305,7 +309,7 @@ export class AuditReportHtmlRendererService {
     ];
     const cards = engines.map(
       (e) => safeHtml`<div class="engine-mini">
-          <p class="engine-mini-label">${this.escapeHtml(e.label)}</p>
+          <p class="engine-mini-label">${escapeHtml(e.label)}</p>
           <p class="engine-mini-score">${e.score.score}</p>
         </div>`,
     );
@@ -341,7 +345,7 @@ export class AuditReportHtmlRendererService {
     return safeHtml`<div class="annex-block">
       <h3 class="subsection-title">llms.txt</h3>
       <p>Statut : ${present ? safeHtml`Present` : safeHtml`Absent`}</p>
-      ${url ? safeHtml`<p>URL : <a href="${escapeUrl(url)}">${this.escapeHtml(url)}</a></p>` : safeHtml``}
+      ${url ? safeHtml`<p>URL : <a href="${escapeUrl(url)}">${escapeHtml(url)}</a></p>` : safeHtml``}
     </div>`;
   }
 
@@ -351,10 +355,10 @@ export class AuditReportHtmlRendererService {
     subtitle: string,
   ): EscapedHtml {
     return safeHtml`<header class="section-header">
-      <span class="section-number">${this.escapeHtml(num)}</span>
+      <span class="section-number">${escapeHtml(num)}</span>
       <div>
-        <h2 class="section-title">${this.escapeHtml(title)}</h2>
-        <p class="section-subtitle">${this.escapeHtml(subtitle)}</p>
+        <h2 class="section-title">${escapeHtml(title)}</h2>
+        <p class="section-subtitle">${escapeHtml(subtitle)}</p>
       </div>
     </header>`;
   }
@@ -419,16 +423,12 @@ export class AuditReportHtmlRendererService {
     }
   }
 
-  private escapeHtml(value: string): EscapedHtml {
-    return escapeHtml(value);
-  }
-
-  private css(): EscapedHtml {
-    return safeHtml`
+  private css(): FeuilleDeStyle {
+    return safeCss`
       :root {
-        --accent: ${this.escapeHtml(this.accentGold)};
+        --accent: ${this.accentGold};
         --accent-dark: #a7831a;
-        --bordeaux: ${this.escapeHtml(this.bordeaux)};
+        --bordeaux: ${this.bordeaux};
         --bordeaux-dark: #4a1219;
         --ink: #0c0902;
         --muted: #54524d;

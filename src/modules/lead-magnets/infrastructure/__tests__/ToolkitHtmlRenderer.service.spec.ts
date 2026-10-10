@@ -283,6 +283,34 @@ describe('ToolkitHtmlRendererService', () => {
       expect(html).toContain('href="https://chat.openai.com"');
     });
 
+    it('neutralise un outil dont l URL porte un schema hostile', () => {
+      const html = service.render(
+        buildContent({
+          cheatsheet: [
+            {
+              tool: 'Piege',
+              category: 'produire',
+              price: 'Gratuit',
+              url: 'javascript:alert(1)',
+              tip: 'x',
+              decision: 'x',
+              alreadyUsed: false,
+            },
+          ],
+        }),
+      );
+
+      expect(html).not.toMatch(/href="\s*javascript:/i);
+      expect(html).toContain('href="https://javascript:alert(1)"');
+    });
+
+    it('etale l outil seul de sa categorie par une classe, sans style interpole', () => {
+      const html = service.render(buildContent());
+
+      expect(html).toContain('class="tool-card tool-card-solo"');
+      expect(html).not.toContain('style="grid-column');
+    });
+
     it("inclut l'accent Asili dans le CSS", () => {
       const html = service.render(buildContent());
       expect(html).toContain('#4fb3a2');

@@ -178,10 +178,8 @@ export class ToolkitHtmlRendererService {
     const decision = tool.decision
       ? safeHtml`<p class="tool-decision">${escapeHtml(tool.decision)}</p>`
       : safeHtml``;
-    const soloStyle = soloCard
-      ? safeHtml`style="grid-column: 1 / -1;"`
-      : safeHtml``;
-    return safeHtml`<article class="tool-card" ${soloStyle}>
+    const classeSolo = soloCard ? safeHtml` tool-card-solo` : safeHtml``;
+    return safeHtml`<article class="tool-card${classeSolo}">
       <header class="tool-card-header">
         <h4 class="tool-name">${escapeHtml(tool.tool)}</h4>
         <span class="tool-price">${escapeHtml(tool.price)}</span>

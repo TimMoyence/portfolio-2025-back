@@ -6,6 +6,7 @@ import {
   sectionHeader,
 } from './toolkit-html.utils';
 import type { EscapedHtml } from './toolkit-html.utils';
+import type { FeuilleDeStyle } from '../../../../common/infrastructure/mail/html-escape.util';
 
 describe('sectionHeader', () => {
   it('echappe le numero, le titre et le sous-titre', () => {
@@ -36,10 +37,16 @@ describe('pageFooter', () => {
 });
 
 describe('buildToolkitCss', () => {
-  it('produit un fragment marque insere verbatim dans une balise style', () => {
-    const css: EscapedHtml = buildToolkitCss();
+  it('produit une feuille de style inseree verbatim dans une balise style', () => {
+    const css: FeuilleDeStyle = buildToolkitCss();
 
     expect(safeHtml`<style>${css}</style>`).toContain('--accent: #4fb3a2;');
+  });
+
+  it('pose la carte outil seule sur toute la largeur de la grille', () => {
+    expect(String(buildToolkitCss())).toMatch(
+      /\.tool-card-solo\s*\{\s*grid-column: 1 \/ -1;\s*\}/,
+    );
   });
 });
 
