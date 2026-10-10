@@ -43,7 +43,7 @@ import { UpdateProfileUseCase } from '../application/UpdateProfile.useCase';
 import { GetCurrentUserUseCase } from '../application/GetCurrentUser.useCase';
 import { VerifyEmailUseCase } from '../application/VerifyEmail.useCase';
 import { ResendVerificationEmailUseCase } from '../application/ResendVerificationEmail.useCase';
-import { cheminDeLApi } from '../../../config/prefixe-api';
+import { attributsDuCookieDeRafraichissement } from './cookie-de-rafraichissement';
 import {
   REFRESH_TOKEN_TTL_MS,
   REFRESH_TOKEN_COOKIE_NAME,
@@ -92,24 +92,17 @@ export class AuthController {
   }
 
   private setRefreshCookie(res: Response, refreshToken: string): void {
-    const isProd = process.env.NODE_ENV === 'production';
     res.cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken, {
-      httpOnly: true,
-      secure: isProd,
-      sameSite: 'strict',
-      path: cheminDeLApi('auth'),
+      ...attributsDuCookieDeRafraichissement(),
       maxAge: REFRESH_TOKEN_TTL_MS,
     });
   }
 
   private clearRefreshCookie(res: Response): void {
-    const isProd = process.env.NODE_ENV === 'production';
-    res.clearCookie(REFRESH_TOKEN_COOKIE_NAME, {
-      httpOnly: true,
-      secure: isProd,
-      sameSite: 'strict',
-      path: cheminDeLApi('auth'),
-    });
+    res.clearCookie(
+      REFRESH_TOKEN_COOKIE_NAME,
+      attributsDuCookieDeRafraichissement(),
+    );
   }
 
   @Public()
