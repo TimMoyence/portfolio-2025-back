@@ -1,6 +1,7 @@
 import { type INestApplication, ValidationPipe } from '@nestjs/common';
 import type { TestingModule } from '@nestjs/testing';
 import cookieParser from 'cookie-parser';
+import type { NextFunction, Request, Response } from 'express';
 import type { Server } from 'node:http';
 import type { AddressInfo } from 'node:net';
 import type request from 'supertest';
@@ -47,6 +48,16 @@ export function applicationDeLaSuite(
     if (!app) throw new Error('Application de test non montée');
     return app;
   };
+}
+
+export function preparerChaqueRequete(
+  app: INestApplication,
+  preparer: (req: Request) => void,
+): void {
+  app.use((req: Request, _res: Response, next: NextFunction) => {
+    preparer(req);
+    next();
+  });
 }
 
 export function bootstrapTestApp(

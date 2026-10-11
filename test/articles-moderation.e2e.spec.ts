@@ -1,5 +1,4 @@
 import { Test } from '@nestjs/testing';
-import type { NextFunction, Request, Response } from 'express';
 import request from 'supertest';
 import { ArticleModerationService } from '../src/modules/articles/application/article-moderation.service';
 import { ArticleModerationController } from '../src/modules/articles/interfaces/article-moderation.controller';
@@ -11,6 +10,7 @@ import {
   applicationDeLaSuite,
   httpServerOf,
   ouvrirApplication,
+  preparerChaqueRequete,
 } from './helpers/nest-test-app';
 
 const ARTICLE_ID = 'morning-brief-2026-09-23-fr';
@@ -31,12 +31,11 @@ describe('Modération des articles (admin)', () => {
     }).compile();
 
     return ouvrirApplication(moduleRef, (application) => {
-      application.use((req: Request, _res: Response, next: NextFunction) => {
+      preparerChaqueRequete(application, (req) => {
         const role = req.header('x-test-role');
         if (role) {
           (req as unknown as { user: unknown }).user = { roles: [role] };
         }
-        next();
       });
       application.useGlobalFilters(
         new AllExceptionsFilter(),

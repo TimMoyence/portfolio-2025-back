@@ -3,7 +3,6 @@ import { Body, Controller } from '@nestjs/common';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { Test } from '@nestjs/testing';
-import type { NextFunction, Request, Response } from 'express';
 import request from 'supertest';
 import { HttpMetricsInterceptor } from '../src/common/interfaces/metrics/http-metrics.interceptor';
 import { MetricsService } from '../src/common/interfaces/metrics/metrics.service';
@@ -18,6 +17,7 @@ import {
   applicationDeLaSuite,
   httpServerOf,
   ouvrirApplication,
+  preparerChaqueRequete,
 } from './helpers/nest-test-app';
 
 @Controller()
@@ -52,12 +52,11 @@ describe('Refus anti-robot d un formulaire public — intégration HTTP', () => 
     }).compile();
 
     return ouvrirApplication(moduleRef, (application) => {
-      application.use((req: Request, _res: Response, next: NextFunction) => {
+      preparerChaqueRequete(application, (req) => {
         Object.defineProperty(req.socket, 'remoteAddress', {
           value: IP_DISTANTE,
           configurable: true,
         });
-        next();
       });
     });
   });
