@@ -1,4 +1,5 @@
 import type {
+  DefiB301,
   HistoireB301,
   PiegesB301,
   ValeursAttenduesB301,
@@ -294,7 +295,6 @@ function valeursDeLActe1(jeu: JeuB301) {
   const uniques = lignesUniques(brutes);
   const colonne = (lignes: readonly Ligne[], nom: string): Valeur[] =>
     lignes.map((ligne) => valeurDe(ligne, nom));
-  const villes = colonne(uniques, 'ville');
   const lignesDeLaCommandeTemoin = brutes.filter(
     (ligne) => valeurDe(ligne, 'n_commande') === COMMANDE_TEMOIN,
   );
@@ -304,9 +304,6 @@ function valeursDeLActe1(jeu: JeuB301) {
       'b3-01-a1-lignes-uniques': uniques.length,
       'b3-01-a1-ca-total': euros(
         somme(colonne(uniques, 'ca_ht').map(montantDe)),
-      ),
-      'b3-01-a1-villes': distinctes(
-        villes.map((ville) => nomPropre(supprEspace(String(ville)))),
       ),
       'b3-01-a1-a-verifier': uniques.filter((ligne) =>
         estAVerifier(ligne, 'aucune'),
@@ -330,7 +327,6 @@ function valeursDeLActe1(jeu: JeuB301) {
       'b3-01-a1-ca-total': {
         'texte-pris-pour-nombre': euros(somme(colonne(uniques, 'ca_ht'))),
       },
-      'b3-01-a1-villes': { 'espaces-non-supprimes': distinctes(villes) },
       'b3-01-a1-a-verifier': {
         'suspect-corrige-sans-validation': uniques.filter((ligne) =>
           estAVerifier(ligne, 'toutes'),
@@ -369,18 +365,12 @@ function valeursDesActes2Et3(jeu: JeuB301) {
   return {
     attendues: {
       'b3-01-a2-ca-rennes-info': euros(caDe(informatiqueDeRennes2026)),
-      'b3-01-a2-remises-marseille': filtrer(
-        ventes,
-        deLAgence(MARSEILLE),
-        (vente) => vente.remise > SEUIL_DE_REMISE,
-      ).length,
       'b3-01-a2-ca-ouest': euros(caDe(filtrer(de2026, deLOuest))),
       'b3-01-a2-delai-strasbourg': mediane(delaisDeStrasbourg.map(delaiOuvre)),
       'b3-01-a2-retards': filtrer(
         de2026,
         (vente) => vente.livraison > serieJourOuvre(vente.date, DELAI_PROMIS),
       ).length,
-      'b3-01-a2-taux-marge': pourcent(tauxDeMarque(de2026)),
       'b3-01-a2-part-info-rennes': pourcent(
         caDe(informatiqueDeRennes2026) / caDe(deRennes2026),
       ),
@@ -408,13 +398,6 @@ function valeursDesActes2Et3(jeu: JeuB301) {
           ),
         ),
         'periode-mal-delimitee': euros(caDe(informatiqueDeRennes)),
-      },
-      'b3-01-a2-remises-marseille': {
-        'critere-mal-ecrit': filtrer(
-          ventes,
-          deLAgence(MARSEILLE),
-          (vente) => vente.remise > REMISE_ECRITE_EN_POINTS,
-        ).length,
       },
       'b3-01-a2-ca-ouest': {
         'plage-recherche-non-figee': euros(
@@ -450,11 +433,6 @@ function valeursDesActes2Et3(jeu: JeuB301) {
           de2026,
           (vente) => nbJoursOuvres(vente.date, vente.livraison) > DELAI_PROMIS,
         ).length,
-      },
-      'b3-01-a2-taux-marge': {
-        'moyenne-simple-des-taux': pourcent(moyenneDesTaux(de2026)),
-        'marque-confondue-avec-marge': pourcent(tauxDeMarge(de2026)),
-        'periode-mal-delimitee': pourcent(tauxDeMarque(ventes)),
       },
       'b3-01-a2-part-info-rennes': {
         'pourcentage-du-mauvais-total': pourcent(
@@ -578,10 +556,35 @@ function histoiresDe(jeu: JeuB301): Readonly<Record<HistoireB301, number>> {
   };
 }
 
+function defisDe(jeu: JeuB301): Readonly<Record<DefiB301, number>> {
+  const villes = lignesUniques(ongletDe(jeu.brut, 'Commandes').lignes).map(
+    (ligne) => String(valeurDe(ligne, 'ville')),
+  );
+  const ventes = ventesDe(jeu);
+  const de2026 = filtrer(ventes, en2026);
+  const remisesDeMarseilleAuDela = (seuil: number): number =>
+    filtrer(ventes, deLAgence(MARSEILLE), (vente) => vente.remise > seuil)
+      .length;
+  return {
+    'villes-distinctes': distinctes(
+      villes.map((ville) => nomPropre(supprEspace(ville))),
+    ),
+    'villes-sans-supprespace': distinctes(villes),
+    'remises-marseille': remisesDeMarseilleAuDela(SEUIL_DE_REMISE),
+    'remises-marseille-en-points': remisesDeMarseilleAuDela(
+      REMISE_ECRITE_EN_POINTS,
+    ),
+    'taux-de-marque-reseau': pourcent(tauxDeMarque(de2026)),
+    'moyenne-des-taux-reseau': pourcent(moyenneDesTaux(de2026)),
+    'taux-de-marge-reseau': pourcent(tauxDeMarge(de2026)),
+  };
+}
+
 export function calculerValeursB301(jeu: JeuB301): {
   readonly attendues: ValeursAttenduesB301;
   readonly pieges: PiegesB301;
   readonly histoires: Readonly<Record<HistoireB301, number>>;
+  readonly defis: Readonly<Record<DefiB301, number>>;
 } {
   const acte1 = valeursDeLActe1(jeu);
   const actes2Et3 = valeursDesActes2Et3(jeu);
@@ -589,5 +592,6 @@ export function calculerValeursB301(jeu: JeuB301): {
     attendues: { ...acte1.attendues, ...actes2Et3.attendues },
     pieges: { ...acte1.pieges, ...actes2Et3.pieges },
     histoires: histoiresDe(jeu),
+    defis: defisDe(jeu),
   };
 }

@@ -1679,7 +1679,7 @@ seanceComplete(COURS_B2_06, {
 });
 
 seanceComplete(COURS_B3_01, {
-  questionsNotees: 25,
+  questionsNotees: 22,
   cellulesDesFeuilles: [],
   exerciceEnAvance: 'B3-01-A1-12-EXEMPLE-NETTOYAGE',
   jalons: 0,

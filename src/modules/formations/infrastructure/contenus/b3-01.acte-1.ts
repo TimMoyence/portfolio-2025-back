@@ -43,7 +43,7 @@ export const ACTE_1: moteur.Acte = [
       notes: moteur.puces(
         'Lire le courriel à voix haute, puis faire télécharger le classeur depuis le poste.',
         'Vérifier qu’il s’ouvre sans réparation et que l’onglet Commandes est visible.',
-        'Annoncer la séance : six niveaux, deux pauses de 15 minutes, un tableau de bord pour le comité de jeudi.',
+        'Annoncer la séance : six niveaux, deux pauses de 10 minutes, un tableau de bord pour le comité de jeudi.',
       ),
     },
     'hero',
@@ -112,7 +112,7 @@ export const ACTE_1: moteur.Acte = [
         {
           title: 'Niveau 6 · Décider',
           description:
-            'Livrable : le tableau de bord et trois recommandations. Règle du cahier : comment écrire une recommandation.',
+            'Livrable : le tableau de bord et deux recommandations. Règle du cahier : comment écrire une recommandation.',
         },
       ],
     },
@@ -273,10 +273,10 @@ export const ACTE_1: moteur.Acte = [
       titre: 'Exercice 1 — Le dictionnaire des données',
       diffusion: 'seance',
       brique: 'fp-cardsort',
-      dureeMinutes: 3,
+      dureeMinutes: 4,
       concepts: ['jeu-de-donnees', 'cle-et-relation'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(1, 2),
+        moteur.tempsDeLExercice(1, 3),
         'Réflexion : relire les en-têtes de l’onglet Commandes avant de trier.',
         'Pièges : n_commande pris pour une mesure, parce qu’il contient des chiffres ; ville prise pour un identifiant ; identifiant rangé parmi les catégories (agence_id, client_id, produit_id, commercial_id).',
       ),
@@ -430,10 +430,10 @@ export const ACTE_1: moteur.Acte = [
       titre: 'Exercice 2 — Une ligne, c’est quoi ?',
       diffusion: 'seance',
       brique: 'questionnaire',
-      dureeMinutes: 3,
+      dureeMinutes: 4,
       concepts: ['granularite'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(1, 2),
+        moteur.tempsDeLExercice(1, 3),
         'Réflexion : faire dire ce qu’on va compter, des lignes ou des commandes, avant de filtrer.',
         'Piège : compter une commande là où l’on demande des lignes.',
       ),
@@ -708,10 +708,10 @@ export const ACTE_1: moteur.Acte = [
       titre: 'Exercice 3 — Classer les anomalies',
       diffusion: 'seance',
       brique: 'fp-cardsort',
-      dureeMinutes: 5,
+      dureeMinutes: 7,
       concepts: ['qualite-des-donnees'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(1, 4),
+        moteur.tempsDeLExercice(1, 6),
         'Réflexion : rappeler les deux questions de la grille avant de trier.',
         'Pièges : corriger seul une date douteuse ; renvoyer à un humain une erreur que le fichier corrige.',
       ),
@@ -850,13 +850,13 @@ export const ACTE_1: moteur.Acte = [
         moteur.tempsDeLExercice(1, 12),
         'Réflexion : faire dire l’ordre du travail : copie, colonnes nettoyées, doublons, contrôle.',
         'Annoncer le palier défi aux plus rapides : il se corrige oralement, sans note.',
-        'Pièges : dédoublonner sur n_commande seule ; compter l’en-tête parmi les lignes ; additionner avant de convertir ; compter les villes avant d’en retirer les espaces ; poser le contrôle sur les dates converties (45 par la formule du défi, 39 par DATEVAL sur toute date en texte).',
-        'Villes distinctes : copier la colonne N, en-tête compris, en valeurs à part, puis Supprimer les doublons, case « Mes données ont des en-têtes » cochée ; sous Excel 2021 ou 365, =NBVAL(UNIQUE(N2:N4099)).',
+        'Pièges : dédoublonner sur n_commande seule ; compter l’en-tête parmi les lignes ; additionner avant de convertir ; poser le contrôle sur les dates converties (45 par la formule de A1-11, 39 par DATEVAL sur toute date en texte).',
+        'Défi, villes distinctes : copier la colonne N, en-tête compris, en valeurs à part, puis Supprimer les doublons, case « Mes données ont des en-têtes » cochée ; sous Excel 2021 ou 365, =NBVAL(UNIQUE(N2:N4099)).',
       ),
       proprietes: {
         intitule: 'Exercice 4 — Nettoyer l’export',
         consigne:
-          'Essentiel : effacez d’abord le filtre de l’exercice 2, puis, sur une copie de l’onglet Commandes, nettoyez ville et ca_ht dans deux nouvelles colonnes, en N et O, sans insérer de colonne ; supprimez les doublons exacts, toutes les colonnes cochées ; ajoutez une colonne controle sur les dates brutes, =SI(OU(C2<B2;I2<=0;G2="");"À vérifier";"OK"), où C est date_livraison, B date_commande, I quantite et G commercial_id. Défi : convertissez les dates ISO par =SI(NBCAR(B2)=10;DATEVAL(B2);B2), recalculez ca_ht et signalez les écarts de plus d’un euro.',
+          'Essentiel : effacez d’abord le filtre de l’exercice 2, puis, sur une copie de l’onglet Commandes, nettoyez ville et ca_ht dans deux nouvelles colonnes, en N et O, sans insérer de colonne ; supprimez les doublons exacts, toutes les colonnes cochées ; ajoutez une colonne controle sur les dates brutes, =SI(OU(C2<B2;I2<=0;G2="");"À vérifier";"OK"), où C est date_livraison, B date_commande, I quantite et G commercial_id. Défi : combien de villes distinctes compte la colonne N ? Copiez-la en valeurs sur une feuille à part, puis Données › Supprimer les doublons.',
         regime: 'focus',
         ordre: 'fixe',
         questions: [
@@ -878,13 +878,6 @@ export const ACTE_1: moteur.Acte = [
             ['texte-pris-pour-nombre'],
           ),
           questionChiffree(
-            'b3-01-a1-villes',
-            'nettoyage',
-            'Combien de villes distinctes compte la colonne ville nettoyée ?',
-            'villes',
-            ['espaces-non-supprimes'],
-          ),
-          questionChiffree(
             'b3-01-a1-a-verifier',
             'qualite-des-donnees',
             'Combien de lignes la colonne controle marque-t-elle « À vérifier » ?',
@@ -899,9 +892,10 @@ export const ACTE_1: moteur.Acte = [
       notes: [
         'Corriger question par question, dans l’ordre où les explications se dévoilent ; s’attarder sur la moins réussie (score sous chaque correction).',
         'Révéler la part des lignes fausses ou douteuses : c’est la réponse à la première question du vote sur le fichier et Dupont, Bordeaux (A1-04).',
-        'Défi : la formule laisse en texte « 08/04/26 » (commande C-11481 : ligne 3785 du brut, 3741 de la copie dédoublonnée) ; DATEVAL la lirait 8 avril sur un poste réglé en français (jj/mm/aa), or elle est livrée le 7 août : la commande date sans doute du 4 août, et seul l’émetteur peut le dire.',
+        'Défi : 48 villes ; sans SUPPRESPACE, les espaces en trop en font compter 83 ; la casse ne change rien, Excel l’ignore.',
+        'Piège des dates : la formule de A1-11, =SI(NBCAR(B2)=10;DATEVAL(B2);B2), laisse en texte « 08/04/26 » (commande C-11481 : ligne 3785 du brut, 3741 de la copie dédoublonnée) ; DATEVAL la lirait 8 avril sur un poste réglé en français (jj/mm/aa), or elle est livrée le 7 août : la commande date sans doute du 4 août, et seul l’émetteur peut le dire.',
         'Avant la pause, dire les règles des niveaux 1 et 2 : « Je relie les tables par un identifiant, jamais par un libellé » ; « Je corrige seul ce qui est faux et certain ; je signale ce qui est douteux et je demande. »',
-        'Puis pause de 15 minutes ; reprise à 9 h 41 sur le classeur de reprise.',
+        'Puis pause de 10 minutes ; reprise à 9 h 40 sur le classeur de reprise.',
       ],
     },
     [
@@ -914,12 +908,8 @@ export const ACTE_1: moteur.Acte = [
         'Une fois les montants en texte convertis, le CA total HT vaut 1 340 208 €. SOMME sans conversion laisse de côté les montants en texte : 1 286 319 €, sans alerte.',
       ],
       [
-        'b3-01-a1-villes',
-        'NOMPROPRE(SUPPRESPACE(E2)) ramène chaque variante à une seule écriture : il reste 48 villes. Le comptage d’Excel ignore la casse : ce sont les espaces en trop qui font compter une même ville deux fois.',
-      ],
-      [
         'b3-01-a1-a-verifier',
-        'La colonne controle marque 85 lignes « À vérifier » : livraisons avant la commande, quantités négatives, commercial absent, dates en texte. Les formules N et O en corrigent 490 autres, le défi 24 ca_ht mal calculés, et 15 échappent au contrôle : produits inconnus, prix hors norme. En tout, 614 des 4 098 lignes uniques, environ 15 % : la réponse à la première question du vote sur le fichier et Dupont, Bordeaux. Recalculé sur les dates converties, le contrôle perd les 40 dates ISO : 45. DATEVAL sur toute date en texte lui ôte aussi 6 des 12 dates d’un autre système, lues jour d’abord : 39.',
+        'La colonne controle marque 85 lignes « À vérifier » : livraisons avant la commande, quantités négatives, commercial absent, dates en texte. Les formules N et O en corrigent 490 autres ; 24 ca_ht mal calculés, que le classeur de reprise recalcule, s’y ajoutent, et 15 échappent au contrôle : produits inconnus, prix hors norme. En tout, 614 des 4 098 lignes uniques, environ 15 % : la réponse à la première question du vote sur le fichier et Dupont, Bordeaux. Recalculé sur les dates converties, le contrôle perd les 40 dates ISO : 45. DATEVAL sur toute date en texte lui ôte aussi 6 des 12 dates d’un autre système, lues jour d’abord : 39.',
       ],
     ],
   ),
