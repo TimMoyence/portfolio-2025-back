@@ -6,7 +6,6 @@ import {
   HttpCode,
   HttpStatus,
   MessageEvent,
-  Optional,
   Param,
   ParseUUIDPipe,
   Post,
@@ -32,7 +31,7 @@ import type { Request } from 'express';
 import { Observable } from 'rxjs';
 import { Public } from '../../../common/interfaces/auth/public.decorator';
 import { resolveClientIpOrUnknown } from '../../../common/interfaces/security/client-ip.util';
-import { PublicFormProtectionService } from '../../../common/interfaces/security/public-form-protection.service';
+import { ProtegeContreLesRobots } from '../../../common/interfaces/security/formulaire-public.decorator';
 import type { DueQuestion } from '../application/DueQuestions.useCase';
 import { DueQuestionsUseCase } from '../application/DueQuestions.useCase';
 import { JoinSessionUseCase } from '../application/JoinSession.useCase';
@@ -118,8 +117,6 @@ export class FormationsStudentController {
     private readonly tokens: ParticipantTokenService,
     private readonly clesEtudiants: CleEtudiantService,
     private readonly codeScan: CodeScanProtectionService,
-    @Optional()
-    private readonly formProtection = new PublicFormProtectionService(),
   ) {}
 
   @Throttle({
@@ -130,6 +127,7 @@ export class FormationsStudentController {
     },
   })
   @Post('sessions/:code/join')
+  @ProtegeContreLesRobots()
   @ApiOperation({ summary: 'Rejoint une session avec le code dicte en classe' })
   @ApiCreatedResponse({ type: JoinSessionResponseDto })
   @ApiBadRequestResponse({ description: 'Code de session invalide' })
@@ -141,10 +139,6 @@ export class FormationsStudentController {
   ): Promise<JoinSessionResponseDto> {
     const adresse = resolveClientIpOrUnknown(request);
     this.codeScan.assertPasDeBalayage(adresse);
-    this.formProtection.assertHuman({
-      honeypot: dto.website,
-      formStartedAt: dto.formStartedAt,
-    });
     const result = await this.joinSession
       .execute({
         code,

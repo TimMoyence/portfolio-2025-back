@@ -1,7 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
 import type { Cours } from '../domain/contrats/cours';
 import { estReservee } from '../domain/cours/Cours';
-import { pieceJointeServieAuPoste } from '../domain/cours/EcranServi';
+import {
+  ecranParId,
+  pieceJointeServieAuPoste,
+} from '../domain/cours/EcranServi';
 import { PieceJointeIntrouvableError } from '../domain/errors/FormationErrors';
 import type {
   ClasseurTelecharge,
@@ -42,9 +45,7 @@ export class TelechargerPieceJointeUseCase {
 }
 
 function classeurReserveDe(cours: Cours, ecranId: string): string {
-  const pieceJointe = cours.ecrans.find(
-    (ecran) => ecran.id === ecranId,
-  )?.pieceJointe;
+  const pieceJointe = ecranParId(cours, ecranId)?.pieceJointe;
   if (pieceJointe === undefined || !estReservee(pieceJointe)) {
     throw new PieceJointeIntrouvableError(ecranId);
   }

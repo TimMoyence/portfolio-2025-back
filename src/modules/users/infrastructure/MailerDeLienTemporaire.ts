@@ -1,5 +1,6 @@
 import { ExpediteurSmtp } from '../../../common/infrastructure/mail/expediteur-smtp';
 import {
+  escapeHtml,
   escapeUrl,
   safeHtml,
   type EscapedHtml,
@@ -45,7 +46,7 @@ export abstract class MailerDeLienTemporaire extends ExpediteurSmtp {
         <div style="font-family:Arial,Helvetica,sans-serif; background:#f7f7f7; padding:24px;">
           <div style="max-width:600px; margin:0 auto; background:#ffffff; border-radius:8px; padding:24px;">
             <h2 style="margin-top:0; color:#111;">${contenu.titre}</h2>
-            <p>Bonjour ${this.escapeHtml(fullName)},</p>
+            <p>Bonjour ${escapeHtml(fullName)},</p>
             <p>
               ${contenu.introHtml}
               Ce lien est valide <strong>${contenu.expireEnMinutes} minutes</strong>.
@@ -55,7 +56,7 @@ export abstract class MailerDeLienTemporaire extends ExpediteurSmtp {
                 ${contenu.libelleBouton}
               </a>
             </p>
-            <p style="word-break:break-all; color:#334155;">${this.escapeHtml(lien)}</p>
+            <p style="word-break:break-all; color:#334155;">${escapeHtml(lien)}</p>
             <p style="font-size:12px; color:#64748b; margin-top:24px;">
               ${contenu.avertissementHtml}
             </p>

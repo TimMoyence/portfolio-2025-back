@@ -14,12 +14,12 @@ import {
   attendreUneRecopieNonFigee,
   attendusDeColonne,
   confusionsDe,
-  enFrancais,
   proprietesV2 as proprietesDe,
   rangsDe,
   recopier,
   texteDeLEcran as texteDe,
 } from '../../../../../test/helpers/feuille-de-cours';
+import { avecVirgule } from '../../../../common/domain/nombres/ecriture-francaise';
 import { corrigerFeuille } from '../../domain/cours/CorrectionProduction';
 import { COURS_B2_04 } from './b2-04.cours';
 
@@ -111,7 +111,7 @@ describe('B2-04 — textes relus contre les données', () => {
           taux:
             rang === 0
               ? '—'
-              : `+${enFrancais((ca / precedent - 1) * 100, 1)} %`,
+              : `+${avecVirgule((ca / precedent - 1) * 100, 1)} %`,
         };
       }),
     );
@@ -123,9 +123,9 @@ describe('B2-04 — textes relus contre les données', () => {
       ((CA_DE_DEPART / premier) ** (1 / (CA_OBSERVE.length - 1)) - 1) * 100;
 
     expect(texteDeLEcran('B2-04-A1-05-HISTORIQUE')).toContain(
-      `${enFrancais(tauxMoyen, 2)} %`,
+      `${avecVirgule(tauxMoyen, 2)} %`,
     );
-    expect(enFrancais(tauxMoyen, 0)).toBe(enFrancais(TAUX_B * 100, 0));
+    expect(avecVirgule(tauxMoyen, 0)).toBe(avecVirgule(TAUX_B * 100, 0));
   });
 
   it('trace les deux hypothèses de 2025 à 2030 sur le graphique', () => {

@@ -89,7 +89,7 @@ ${preheader}
     <div style="margin-top:24px;padding:0 16px;text-align:center;">
       <p class="text-muted" style="margin:0;font-size:12px;color:#6b7280;">
         ${escapeHtml(BRAND_FOOTER_ADDRESS)} &middot;
-        <a href="mailto:${escapeHtml(BRAND_FOOTER_CONTACT)}" style="color:#6b7280;text-decoration:underline;">${escapeHtml(BRAND_FOOTER_CONTACT)}</a>
+        <a href="${escapeUrl(`mailto:${BRAND_FOOTER_CONTACT}`)}" style="color:#6b7280;text-decoration:underline;">${escapeHtml(BRAND_FOOTER_CONTACT)}</a>
       </p>
       <p class="text-muted" style="margin:4px 0 0 0;font-size:12px;color:#6b7280;">
         <a href="https://asilidesign.fr/fr/privacy" style="color:#6b7280;text-decoration:underline;">Politique de confidentialité</a>

@@ -1,8 +1,8 @@
 import {
-  ACCENT,
-  CATEGORY_COLORS,
-  FALLBACK_CATEGORY_PALETTE,
-  PLATFORM_COLORS,
+  COULEURS_DES_PLATEFORMES,
+  TEINTE_DES_CATEGORIES,
+  type Plateforme,
+  type Teinte,
 } from './toolkit-palette';
 import {
   escapeHtml,
@@ -10,27 +10,24 @@ import {
   safeHtml,
 } from '../../../../common/infrastructure/mail/html-escape.util';
 import type { EscapedHtml } from '../../../../common/infrastructure/mail/html-escape.util';
+import { sectionHeader } from '../../../../common/infrastructure/mail/section-header';
+import { sansDiacritiques } from '../../../../common/domain/texte/sans-diacritiques';
 
 function normalizeKey(raw: string): string {
-  return raw
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .trim();
+  return sansDiacritiques(raw).toLowerCase().trim();
 }
 
-export function paletteFor(category: string): {
-  bg: string;
-  text: string;
-  border: string;
-} {
-  const key = normalizeKey(category);
-  return CATEGORY_COLORS[key] ?? FALLBACK_CATEGORY_PALETTE;
+function estUnePlateforme(cle: string): cle is Plateforme {
+  return Object.hasOwn(COULEURS_DES_PLATEFORMES, cle);
 }
 
-export function platformColorFor(platform: string): string {
+export function teinteDe(category: string): Teinte {
+  return TEINTE_DES_CATEGORIES.get(normalizeKey(category)) ?? 'accent';
+}
+
+export function plateformeDe(platform: string): Plateforme {
   const key = normalizeKey(platform);
-  return PLATFORM_COLORS[key] ?? ACCENT;
+  return estUnePlateforme(key) ? key : 'accent';
 }
 
 export function levelLabel(level: string): string {
@@ -46,22 +43,8 @@ export function levelLabel(level: string): string {
   }
 }
 
-export { escapeHtml, escapeUrl, safeHtml };
+export { escapeHtml, escapeUrl, safeHtml, sectionHeader };
 export type { EscapedHtml };
-
-export function sectionHeader(
-  num: string,
-  title: string,
-  subtitle: string,
-): EscapedHtml {
-  return safeHtml`<header class="section-header">
-      <span class="section-number">${escapeHtml(num)}</span>
-      <div>
-        <h2 class="section-title">${escapeHtml(title)}</h2>
-        <p class="section-subtitle">${escapeHtml(subtitle)}</p>
-      </div>
-    </header>`;
-}
 
 /**
  * Footer de page neutre. Retourne une chaine vide pour eviter

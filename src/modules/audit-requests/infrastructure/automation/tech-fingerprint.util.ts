@@ -1,6 +1,9 @@
 import { AuditLocale } from '../../domain/audit-locale.util';
 import { HomepageAuditSnapshot } from './homepage-analyzer.service';
 import { localizedText } from './shared/locale-text.util';
+import { arrondi } from '../../../../common/domain/nombres/arrondi';
+import { borner } from '../../../../common/domain/nombres/borner';
+import type { TechFingerprint } from './schemas/audit-report.schemas';
 import { UrlIndexabilityResult } from './url-indexability.service';
 
 interface TechSnapshot {
@@ -20,14 +23,6 @@ interface StackSignature {
 interface StackCandidate {
   score: number;
   evidence: string[];
-}
-
-export interface TechFingerprint {
-  primaryStack: string;
-  confidence: number;
-  evidence: string[];
-  alternatives: string[];
-  unknowns: string[];
 }
 
 const MIN_STACK_CONFIDENCE_SCORE = 3;
@@ -260,10 +255,10 @@ function rankTechFingerprint(
     };
   }
 
-  const confidence = Math.max(0.3, Math.min(0.95, best[1].score / 10));
+  const confidence = borner(best[1].score / 10, 0.3, 0.95);
   return {
     primaryStack: best[0],
-    confidence: Math.round(confidence * 100) / 100,
+    confidence: arrondi(confidence, 2),
     evidence: best[1].evidence.slice(0, 8),
     alternatives: ranked.slice(1, 4).map(([name]) => name),
     unknowns: Array.from(unknowns).slice(0, 5),

@@ -1,5 +1,6 @@
-import { createHash } from 'node:crypto';
 import { z } from 'zod';
+import { empreinteSha256 } from '../../../../common/domain/crypto/empreintes';
+import { enSlug } from '../../../../common/domain/texte/en-slug';
 import type { NumeriqueStockee, VoteStockee } from '../contrats/cours';
 import type { ConfusionId } from './banque/confusions';
 import {
@@ -13,6 +14,8 @@ import {
   concept,
   confusion,
   identifiantDeQuestion,
+  signalerDoublons,
+  signaleurDe,
   texte,
   tolerance,
 } from './SchemasCommuns';
@@ -20,8 +23,6 @@ import { sansTypographie } from './Typographie';
 
 const LONGUEUR_MAX_DU_SLUG = 40;
 const LONGUEUR_DE_L_EMPREINTE = 8;
-const DIACRITIQUES = /\p{M}/gu;
-const HORS_ALPHANUMERIQUE = /[^a-z0-9]+/g;
 const SYMBOLES_NOMMES: readonly (readonly [RegExp, string])[] = [
   [/\+/g, ' plus '],
   [/−/g, ' moins '],
@@ -29,37 +30,23 @@ const SYMBOLES_NOMMES: readonly (readonly [RegExp, string])[] = [
   [/€/g, ' eur '],
 ];
 
-function sansTiretsAuxBords(slug: string): string {
-  let debut = 0;
-  let fin = slug.length;
-  while (debut < fin && slug[debut] === '-') debut += 1;
-  while (fin > debut && slug[fin - 1] === '-') fin -= 1;
-  return slug.slice(debut, fin);
-}
-
 export function slugOption(libelle: string): string {
   const brut = sansTypographie(libelle);
   const lisible = SYMBOLES_NOMMES.reduce(
     (courant, [symbole, mot]) => courant.replace(symbole, mot),
-    brut.normalize('NFD').replace(DIACRITIQUES, '').toLowerCase(),
-  ).replace(HORS_ALPHANUMERIQUE, '-');
-  const tronque = sansTiretsAuxBords(
-    sansTiretsAuxBords(lisible).slice(0, LONGUEUR_MAX_DU_SLUG),
+    brut,
   );
-  const empreinte = createHash('sha256')
-    .update(brut.normalize('NFC'), 'utf8')
-    .digest('hex')
-    .slice(0, LONGUEUR_DE_L_EMPREINTE);
+  const tronque = enSlug(lisible, LONGUEUR_MAX_DU_SLUG);
+  const empreinte = empreinteSha256(brut.normalize('NFC')).slice(
+    0,
+    LONGUEUR_DE_L_EMPREINTE,
+  );
   return `${tronque}-${empreinte}`;
 }
 
 const optionStockee = z
   .object({ id: texte, libelle: texte, confusion: confusion.nullable() })
   .strict();
-
-function sontDistincts(valeurs: readonly string[]): boolean {
-  return new Set(valeurs).size === valeurs.length;
-}
 
 export const voteStocke = z
   .object({
@@ -73,19 +60,24 @@ export const voteStocke = z
   })
   .strict()
   .superRefine((vote, contexte) => {
-    const signaler = (message: string): void => {
-      contexte.addIssue({ code: 'custom', path: ['options'], message });
-    };
+    const signaler = signaleurDe(contexte);
     const bonnes = vote.options.filter((option) => option.confusion === null);
     if (bonnes.length !== 1) {
-      signaler(`une seule bonne option est attendue, ${bonnes.length} lue(s)`);
+      signaler(
+        ['options'],
+        `une seule bonne option est attendue, ${bonnes.length} lue(s)`,
+      );
     }
-    if (!sontDistincts(vote.options.map((option) => option.id))) {
-      signaler('deux options portent le même identifiant');
-    }
-    if (!sontDistincts(vote.options.map((option) => option.libelle))) {
-      signaler('deux options portent le même libellé');
-    }
+    signalerDoublons(
+      vote.options.map((option) => option.id),
+      ['options'],
+      signaler,
+    );
+    signalerDoublons(
+      vote.options.map((option) => option.libelle),
+      ['options'],
+      signaler,
+    );
   });
 
 const piegeNumerique = z.object({ valeur: z.number(), confusion }).strict();

@@ -1,52 +1,42 @@
-import { safeHtml } from '../../../common/infrastructure/mail/html-escape.util';
-import type { EscapedHtml } from '../../../common/infrastructure/mail/html-escape.util';
+import { buildContact } from '../../../../test/factories/contacts.factory';
+import {
+  attendreScriptEchappe,
+  envoiSmtpSimule,
+  mailSimule,
+  moduleSmtpSimule,
+} from '../../../../test/factories/mailer.factory';
+
+jest.mock('../../../common/infrastructure/mail/smtp-transporter.util', () =>
+  moduleSmtpSimule(),
+);
+
 import { ContactMailerService } from './ContactMailer.service';
 
-class TestableContactMailerService extends ContactMailerService {
-  public testEscapeHtml(input: string): EscapedHtml {
-    return this.escapeHtml(input);
-  }
-}
-
 describe('ContactMailerService', () => {
-  let service: TestableContactMailerService;
-
   beforeEach(() => {
-    service = new TestableContactMailerService();
+    envoiSmtpSimule.mockClear();
   });
 
-  describe('escapeHtml', () => {
-    it('devrait echapper correctement les caracteres HTML dangereux', () => {
-      const input = '<script>alert("xss")</script>';
-      const result = service.testEscapeHtml(input);
+  it('echappe chaque champ saisi dans le HTML de la notification', async () => {
+    await new ContactMailerService().sendContactNotification(
+      buildContact({
+        message: '<script>alert("xss")</script>',
+        subject: "Tom & Jerry's <adventure>",
+      }),
+    );
 
-      expect(result).toBe(
-        '&lt;script&gt;alert(&quot;xss&quot;)&lt;/script&gt;',
-      );
-      expect(result).not.toContain('<script>');
-      expect(result).not.toContain('</script>');
-    });
+    const { html } = mailSimule();
+    attendreScriptEchappe(html);
+    expect(html).toContain('Tom &amp; Jerry&#39;s &lt;adventure&gt;');
+  });
 
-    it('devrait echapper les esperluettes et les apostrophes', () => {
-      const input = "Tom & Jerry's <adventure>";
-      const result = service.testEscapeHtml(input);
+  it('lie l email du contact par un mailto passe par escapeUrl', async () => {
+    await new ContactMailerService().sendContactNotification(
+      buildContact({ email: 'jean@example.com' }),
+    );
 
-      expect(result).toBe('Tom &amp; Jerry&#39;s &lt;adventure&gt;');
-    });
-
-    it('devrait produire un fragment marque, interpolable sans re-echappement', () => {
-      const fragment: EscapedHtml = service.testEscapeHtml('<b>');
-
-      expect(safeHtml`<td>${fragment}</td>`).toBe('<td>&lt;b&gt;</td>');
-    });
-
-    it('devrait refuser a la compilation une chaine brute dans le gabarit', () => {
-      const raw = '<script>alert(1)</script>';
-
-      // @ts-expect-error une chaine brute n'est pas un fragment marque
-      const rendered: string = safeHtml`<td>${raw}</td>`;
-
-      expect(rendered).toContain('<script>');
-    });
+    expect(mailSimule().html).toContain(
+      '<a href="mailto:jean@example.com">jean@example.com</a>',
+    );
   });
 });

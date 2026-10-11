@@ -1,4 +1,15 @@
 import { z } from 'zod';
+import { resoudreConnexionPostgres } from '../database/connexion-postgres';
+import {
+  DELAI_DE_DIFFUSION_EN_MINUTES,
+  TAILLE_DU_LOT_DE_DIFFUSION,
+} from './diffusion-des-articles';
+import type { BornesEntieres } from './env-readers.util';
+import { PREFIXE_API_PAR_DEFAUT } from './prefixe-api';
+
+function entierDansLesBornes({ defaut, min, max }: BornesEntieres) {
+  return z.coerce.number().int().min(min).max(max).default(defaut);
+}
 
 const cryptographicSecretKeys = [
   'JWT_SECRET',
@@ -74,7 +85,7 @@ const envSchema = z
       .default('development'),
 
     PORT: z.coerce.number().int().positive().default(3000),
-    API_PREFIX: z.string().default('api/v1/portfolio25'),
+    API_PREFIX: z.string().default(PREFIXE_API_PAR_DEFAUT),
     SWAGGER_PATH: z.string().optional(),
     CORS_ORIGIN: z.string().optional(),
 
@@ -184,18 +195,12 @@ const envSchema = z
     MORNING_BRIEF_HMAC_KEY_ID: z.string().optional(),
     MORNING_BRIEF_HMAC_SECRET: z.string().optional(),
     ARTICLE_BROADCAST_ENABLED: z.enum(['true', 'false']).default('false'),
-    ARTICLE_BROADCAST_DELAY_MINUTES: z.coerce
-      .number()
-      .int()
-      .min(0)
-      .max(24 * 60)
-      .default(90),
-    ARTICLE_BROADCAST_BATCH_SIZE: z.coerce
-      .number()
-      .int()
-      .min(1)
-      .max(1000)
-      .default(200),
+    ARTICLE_BROADCAST_DELAY_MINUTES: entierDansLesBornes(
+      DELAI_DE_DIFFUSION_EN_MINUTES,
+    ),
+    ARTICLE_BROADCAST_BATCH_SIZE: entierDansLesBornes(
+      TAILLE_DU_LOT_DE_DIFFUSION,
+    ),
 
     PUPPETEER_EXECUTABLE_PATH: z.string().optional(),
     PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: z.string().optional(),
@@ -331,36 +336,8 @@ function isValidMailbox(value: string): boolean {
 }
 
 function resolveAliases(env: Record<string, unknown>): Record<string, unknown> {
-  const resolved = { ...env };
-
-  if (!resolved.DB_HOST) {
-    resolved.DB_HOST = resolved.DATABASE_HOST ?? resolved.PGHOST ?? undefined;
-  }
-
-  if (!resolved.DB_PORT) {
-    resolved.DB_PORT = resolved.DATABASE_PORT ?? resolved.PGPORT ?? undefined;
-  }
-
-  if (!resolved.DB_NAME) {
-    resolved.DB_NAME =
-      resolved.DATABASE_NAME ?? resolved.POSTGRES_DB ?? undefined;
-
-    if (
-      !resolved.DB_NAME &&
-      typeof resolved.DATABASE_URL === 'string' &&
-      resolved.DATABASE_URL.trim().length > 0
-    ) {
-      try {
-        resolved.DB_NAME = new URL(
-          resolved.DATABASE_URL.trim(),
-        ).pathname.replace(/^\//, '');
-      } catch {
-        // URL invalide — le schema la rejettera ensuite
-      }
-    }
-  }
-
-  return resolved;
+  const { host, port, database } = resoudreConnexionPostgres(env);
+  return { ...env, DB_HOST: host, DB_PORT: port, DB_NAME: database };
 }
 
 export function validateEnv(

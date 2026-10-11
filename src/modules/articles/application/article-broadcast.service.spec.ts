@@ -1,5 +1,9 @@
-import { ConflictException, NotFoundException } from '@nestjs/common';
-import { buildArticleRecord } from '../../../../test/factories/article.factory';
+import { ResourceConflictError } from '../../../common/domain/errors/ResourceConflictError';
+import { ResourceNotFoundError } from '../../../common/domain/errors/ResourceNotFoundError';
+import {
+  buildArticleBroadcastRecord,
+  buildArticleRecord,
+} from '../../../../test/factories/article.factory';
 import type { ArticlesRepository } from './articles.repository';
 import { ArticleBroadcastService } from './article-broadcast.service';
 import { ArticleModerationService } from './article-moderation.service';
@@ -14,16 +18,12 @@ function setup(options: { sendAfter?: Date } = {}) {
   const store = new InMemoryArticleBroadcasts();
   const mailer = new RecordingBroadcastMailer();
   store.articles.set('record-1', buildArticleRecord());
-  store.broadcasts.set('broadcast-1', {
-    id: 'broadcast-1',
-    articleRecordId: 'record-1',
-    status: 'scheduled',
-    sendAfter: options.sendAfter ?? new Date(NOW.getTime() - 60_000),
-    lockedUntil: null,
-    sentCount: 0,
-    failedCount: 0,
-    completedAt: null,
-  });
+  store.broadcasts.set(
+    'broadcast-1',
+    buildArticleBroadcastRecord({
+      sendAfter: options.sendAfter ?? new Date(NOW.getTime() - 60_000),
+    }),
+  );
   const subscribe = (
     id: string,
     email: string,
@@ -279,10 +279,10 @@ describe('ArticleModerationService', () => {
 
     await expect(
       moderation.approveBroadcast(articleId, NOW),
-    ).rejects.toBeInstanceOf(ConflictException);
+    ).rejects.toBeInstanceOf(ResourceConflictError);
     await expect(
       moderation.cancelBroadcast(articleId, NOW),
-    ).rejects.toBeInstanceOf(ConflictException);
+    ).rejects.toBeInstanceOf(ResourceConflictError);
   });
 
   it('annule une diffusion en cours d envoi', async () => {
@@ -299,7 +299,7 @@ describe('ArticleModerationService', () => {
 
     await expect(
       moderation.withdraw('morning-brief-2020-01-01-fr', NOW),
-    ).rejects.toBeInstanceOf(NotFoundException);
+    ).rejects.toBeInstanceOf(ResourceNotFoundError);
   });
 
   it('liste les derniers articles avec l état de leur diffusion', async () => {

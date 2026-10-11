@@ -19,6 +19,7 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import type { Response } from 'express';
+import { LocaleCode } from '../../../common/domain/value-objects/LocaleCode';
 import { Public } from '../../../common/interfaces/auth/public.decorator';
 import type { ArticleRecord } from '../application/articles.repository';
 import { ArticlesService } from '../application/articles.service';
@@ -61,11 +62,8 @@ export class ArticlesController {
   @Public()
   @Get('feed.xml')
   @ApiOperation({ summary: 'Flux RSS des articles publiés' })
-  async feed(
-    @Query('locale') locale: 'fr' | 'en' = 'fr',
-    @Res() response: Response,
-  ) {
-    const xml = await this.articles.feed(locale === 'en' ? 'en' : 'fr');
+  async feed(@Query('locale') locale: string, @Res() response: Response) {
+    const xml = await this.articles.feed(LocaleCode.resolve(locale).value);
     response.type('application/rss+xml').send(xml);
   }
 
@@ -92,12 +90,12 @@ export class ArticlesController {
   @ApiOkResponse({ description: 'Article publié normalisé' })
   async getBySlug(
     @Param('slug') slug: string,
-    @Query('locale') locale: 'fr' | 'en' = 'fr',
+    @Query('locale') locale: string,
   ) {
     return this.publicArticle(
       await this.articles.getPublishedBySlug(
         slug,
-        locale === 'en' ? 'en' : 'fr',
+        LocaleCode.resolve(locale).value,
       ),
     );
   }

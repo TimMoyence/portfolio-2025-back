@@ -15,13 +15,15 @@ import {
   ApiConflictResponse,
   ApiOkResponse,
   ApiOperation,
-  ApiQuery,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import type { Request, Response } from 'express';
-import { resolveClientIpOrUnknown } from '../../../common/interfaces/security/client-ip.util';
+import {
+  lireEnTete,
+  resolveClientIpOrUnknown,
+} from '../../../common/interfaces/security/client-ip.util';
 import { EchangeCourant, type EchangeHttp } from './echange-http.decorator';
 import {
   limiteDeRafraichissement,
@@ -44,10 +46,10 @@ import { UpdateProfileUseCase } from '../application/UpdateProfile.useCase';
 import { GetCurrentUserUseCase } from '../application/GetCurrentUser.useCase';
 import { VerifyEmailUseCase } from '../application/VerifyEmail.useCase';
 import { ResendVerificationEmailUseCase } from '../application/ResendVerificationEmail.useCase';
+import { attributsDuCookieDeRafraichissement } from './cookie-de-rafraichissement';
 import {
   REFRESH_TOKEN_TTL_MS,
   REFRESH_TOKEN_COOKIE_NAME,
-  REFRESH_TOKEN_COOKIE_PATH,
 } from '../domain/auth.constants';
 import { AuthMessageResponseDto } from './dto/AuthMessage.response.dto';
 import { ChangePasswordDto } from './dto/ChangePassword.dto';
@@ -61,7 +63,9 @@ import { SetPasswordDto } from './dto/SetPassword.dto';
 import { AuthResponseDto } from './dto/Auth.response.dto';
 import { UpdateProfileDto } from './dto/UpdateProfile.dto';
 import { UserResponseDto } from './dto/User.response.dto';
+import { VerifyEmailQueryDto } from './dto/VerifyEmail.query.dto';
 import { Public } from '../../../common/interfaces/auth/public.decorator';
+import { messageDErreur } from '../../../common/domain/errors/message-d-erreur';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -88,28 +92,21 @@ export class AuthController {
   }
 
   private extractUserAgent(req: Request): string {
-    return req.headers['user-agent'] ?? 'unknown';
+    return lireEnTete(req, 'user-agent') ?? 'unknown';
   }
 
   private setRefreshCookie(res: Response, refreshToken: string): void {
-    const isProd = process.env.NODE_ENV === 'production';
     res.cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken, {
-      httpOnly: true,
-      secure: isProd,
-      sameSite: 'strict',
-      path: REFRESH_TOKEN_COOKIE_PATH,
+      ...attributsDuCookieDeRafraichissement(),
       maxAge: REFRESH_TOKEN_TTL_MS,
     });
   }
 
   private clearRefreshCookie(res: Response): void {
-    const isProd = process.env.NODE_ENV === 'production';
-    res.clearCookie(REFRESH_TOKEN_COOKIE_NAME, {
-      httpOnly: true,
-      secure: isProd,
-      sameSite: 'strict',
-      path: REFRESH_TOKEN_COOKIE_PATH,
-    });
+    res.clearCookie(
+      REFRESH_TOKEN_COOKIE_NAME,
+      attributsDuCookieDeRafraichissement(),
+    );
   }
 
   @Public()
@@ -179,7 +176,7 @@ export class AuthController {
         ip,
         userAgent,
         timestamp: new Date(),
-        details: error instanceof Error ? error.message : String(error),
+        details: messageDErreur(error),
       });
       throw error;
     }
@@ -339,7 +336,6 @@ export class AuthController {
   async register(@Body() dto: CreateUserDto): Promise<AuthMessageResponseDto> {
     await this.createUsersUseCase.execute({
       ...dto,
-      roles: [],
       updatedOrCreatedBy: 'self-registration',
     });
     return {
@@ -353,10 +349,10 @@ export class AuthController {
   @Throttle({ default: { limit: 10, ttl: 3600000 } })
   @ApiOperation({ summary: "Verifie l'adresse email via le token envoye" })
   @ApiOkResponse({ type: AuthMessageResponseDto })
+  @ApiBadRequestResponse({ description: 'Jeton absent ou mal forme' })
   @ApiUnauthorizedResponse({ description: 'Token invalide ou expire' })
-  @ApiQuery({ name: 'token', required: true, type: String })
   async verifyEmail(
-    @Query('token') token: string,
+    @Query() { token }: VerifyEmailQueryDto,
   ): Promise<AuthMessageResponseDto> {
     return this.verifyEmailUseCase.execute(token);
   }

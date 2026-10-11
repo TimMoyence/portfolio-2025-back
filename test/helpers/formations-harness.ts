@@ -14,6 +14,7 @@ import {
 import request from 'supertest';
 import type { Test } from 'supertest';
 import { AllExceptionsFilter } from '../../src/common/interfaces/filters/all-exceptions.filter';
+import { PREFIXE_API_PAR_DEFAUT } from '../../src/config/prefixe-api';
 import { DomainExceptionFilter } from '../../src/common/interfaces/filters/DomainExceptionFilter';
 import { CloseSessionUseCase } from '../../src/modules/formations/application/CloseSession.useCase';
 import { ControlSessionUseCase } from '../../src/modules/formations/application/ControlSession.useCase';
@@ -122,7 +123,6 @@ import {
 } from './nest-test-app';
 import { GLOBAL_VALIDATION_PIPE_OPTIONS } from './validation-pipe';
 
-export const PREFIXE_API = 'api/v1/portfolio25';
 export { EN_TETE_IDENTITE };
 
 export const serveurHttpDe = (
@@ -131,7 +131,7 @@ export const serveurHttpDe = (
   app.getHttpServer() as Parameters<typeof request>[0];
 
 export const routeFormations = (chemin: string): string =>
-  `/${PREFIXE_API}/formations${chemin}`;
+  `/${PREFIXE_API_PAR_DEFAUT}/formations${chemin}`;
 
 const COURS_FORMATION_TEST = buildCoursDeTest({
   slug: 'b2-01-traitement-information-chiffree',
@@ -267,7 +267,7 @@ export async function monterApplicationFormations(
   const app = moduleRef.createNestApplication();
   configurer(app);
   signerLesIdentitesDeTest(app);
-  app.setGlobalPrefix(PREFIXE_API);
+  app.setGlobalPrefix(PREFIXE_API_PAR_DEFAUT);
   app.useGlobalFilters(new AllExceptionsFilter(), new DomainExceptionFilter());
   app.useGlobalPipes(new ValidationPipe(GLOBAL_VALIDATION_PIPE_OPTIONS));
   await app.init();

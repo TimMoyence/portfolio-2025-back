@@ -6,10 +6,8 @@ import request from 'supertest';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { DomainExceptionFilter } from '../src/common/interfaces/filters/DomainExceptionFilter';
 import { bornerLesCorpsDeRequete } from '../src/common/interfaces/http/corps-de-requete';
-import type {
-  Cours,
-  Ecran,
-} from '../src/modules/formations/domain/contrats/cours';
+import { PREFIXE_API_PAR_DEFAUT } from '../src/config/prefixe-api';
+import type { Cours } from '../src/modules/formations/domain/contrats/cours';
 import { libelleDeConfusion } from '../src/modules/formations/domain/cours/banque/confusions';
 import { questionNumerique } from '../src/modules/formations/domain/cours/Cours';
 import { lireCoursStocke } from '../src/modules/formations/domain/cours/CoursStocke';
@@ -46,7 +44,7 @@ import { LIMITE_SUJET_PAR_PARTICIPANT } from '../src/modules/formations/interfac
 import { EN_TETE_JETON } from '../src/modules/formations/interfaces/ParticipantToken.service';
 import {
   buildCoursDeClasse,
-  buildCoursDeTest,
+  buildCoursDeTestAvecNumerique,
   buildCoursSansTirageValide,
   creerCatalogueDeTest,
 } from './factories/cours.factory';
@@ -77,8 +75,6 @@ import {
   fermerApplication,
 } from './helpers/nest-test-app';
 import { GLOBAL_VALIDATION_PIPE_OPTIONS } from './helpers/validation-pipe';
-
-const API_PREFIX = 'api/v1/portfolio25';
 const SECRET = 'secret-de-test-formations-assez-long-1234';
 const SYNTHESE_A = 'synthese-formateur@example.com';
 
@@ -112,13 +108,7 @@ function construireCoursSentinelle(solution: number): Cours {
     tolerance: { type: 'relative', valeur: 0.005 },
     pieges: [{ confusion: TEMOIN.misconception, valeur: () => TEMOIN.piege }],
   });
-  const [premier, ...suite] = buildCoursDeTest().ecrans.map(
-    (ecran): Ecran =>
-      ecran.id === 'E-NUM' && ecran.brique === 'fp-numeric'
-        ? { ...ecran, question }
-        : ecran,
-  );
-  return buildCoursDeTest({ ecrans: [premier, ...suite] });
+  return buildCoursDeTestAvecNumerique(question);
 }
 
 const COURS_SENTINELLE = construireCoursSentinelle(TEMOIN.solution);
@@ -446,7 +436,7 @@ async function creerHarnais(
   const app = moduleRef.createNestApplication<NestExpressApplication>();
   bornerLesCorpsDeRequete(app);
   signerLesIdentitesDeTest(app);
-  app.setGlobalPrefix(API_PREFIX);
+  app.setGlobalPrefix(PREFIXE_API_PAR_DEFAUT);
   app.useGlobalFilters(new DomainExceptionFilter());
   app.useGlobalPipes(new ValidationPipe(GLOBAL_VALIDATION_PIPE_OPTIONS));
   const port = await ecouterEnBoucleLocale(app);
@@ -670,6 +660,25 @@ describe('Session de formation (e2e http socket)', () => {
       expect(exportBilan.headers['content-disposition']).toContain(
         'bilan-seance.json',
       );
+    });
+
+    it('sert au formateur le csv de la seance en piece jointe nommee par son code', async () => {
+      const { sessionId, code } = await http.ouvrirSession();
+
+      const csv = await http.lireEnFormateur(sessionId, 'report.csv');
+
+      expect({
+        statut: csv.status,
+        type: csv.headers['content-type'],
+        disposition: csv.headers['content-disposition'],
+        entete: csv.text.slice(1).split('\r\n')[0],
+      }).toEqual({
+        statut: 200,
+        type: 'text/csv; charset=utf-8',
+        disposition: `attachment; filename="session-${code}.csv"`,
+        entete:
+          'prénom;nom;email;question;concept;réponse;correcte;confusion;durée_ms',
+      });
     });
 
     it('documente le guide formateur que le deroule rend avec chaque ecran', async () => {
@@ -1235,7 +1244,7 @@ describe('Session de formation (e2e http socket)', () => {
     });
 
     it('ne persiste aucun score a la lecture des resultats ni du bilan', async () => {
-      for (const lecture of ['results', 'report']) {
+      for (const lecture of ['results', 'report', 'report.csv']) {
         await http.lireEnFormateur(sessionId, lecture).expect(200);
       }
 

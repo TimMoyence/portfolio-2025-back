@@ -1,3 +1,4 @@
+import { sansDiacritiques } from '../../../../common/domain/texte/sans-diacritiques';
 import { matchesSolution } from '../GradingCore';
 import type { Cours, Ecran, QuestionProduction } from '../contrats/cours';
 import type { ProgressionEnigme } from '../contrats/resultats';
@@ -89,11 +90,7 @@ export function enigmeOuverte(
 }
 
 function texteNormalise(valeur: string): string {
-  return valeur
-    .normalize('NFD')
-    .replace(/\p{Diacritic}/gu, '')
-    .trim()
-    .toLowerCase();
+  return sansDiacritiques(valeur).trim().toLowerCase();
 }
 
 export function corrigerEnigme(

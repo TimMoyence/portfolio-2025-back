@@ -30,7 +30,9 @@ describe('UrlIndexabilityService (Phase 3 — aiSignals)', () => {
     </html>
   `;
 
-  const buildSafeFetchStub = (): jest.Mocked<SafeFetchService> => {
+  const buildSafeFetchStub = (
+    body = buildHtml(),
+  ): jest.Mocked<SafeFetchService> => {
     return {
       fetchText: jest.fn().mockResolvedValue({
         requestedUrl: 'https://example.com/',
@@ -38,7 +40,7 @@ describe('UrlIndexabilityService (Phase 3 — aiSignals)', () => {
         redirectChain: [],
         statusCode: 200,
         headers: { 'x-robots-tag': 'index' },
-        body: buildHtml(),
+        body,
         ttfbMs: 120,
         totalMs: 400,
         contentLength: 500,
@@ -76,6 +78,17 @@ describe('UrlIndexabilityService (Phase 3 — aiSignals)', () => {
     expect(result.title).toBe('Accueil Example');
     expect(result.canonical).toBe('https://example.com/');
     expect(result.hasStructuredData).toBe(true);
+  });
+
+  it('separe les mots du corps sur tout blanc, tabulation et saut de ligne compris', async () => {
+    const safeFetch = buildSafeFetchStub(
+      '<html><body><p>un\tdeux\ntrois quatre</p></body></html>',
+    );
+    const [result] = await buildService({ safeFetch }).analyzeUrls([
+      'https://example.com/',
+    ]);
+
+    expect(result.wordCount).toBe(4);
   });
 
   it('enrichit chaque URL analysée avec un objet aiSignals complet', async () => {

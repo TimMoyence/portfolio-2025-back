@@ -183,6 +183,15 @@ describe('API coherence and connectivity (e2e http socket)', () => {
     expect(response.status).toBe(400);
   });
 
+  it('POST /api/auth/reset-password refuse en 400 un jeton qui n a pas la forme emise', async () => {
+    await request(getHttpServer())
+      .post('/api/auth/reset-password')
+      .send({ token: 'z'.repeat(64), newPassword: NEW_PASSWORD })
+      .expect(400);
+
+    expect(resetPasswordUseCase.execute).not.toHaveBeenCalled();
+  });
+
   it.each(CAS_LEGACY)(
     'GET /api/%s exposes paginated contract',
     async (route, contexte) => {

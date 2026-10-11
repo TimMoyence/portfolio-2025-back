@@ -3,7 +3,9 @@ import type { EmailVerificationToken } from './EmailVerificationToken';
 export interface IEmailVerificationTokensRepository {
   create(token: EmailVerificationToken): Promise<EmailVerificationToken>;
 
-  findActiveByToken(token: string): Promise<EmailVerificationToken | null>;
+  findActiveByTokenHash(
+    tokenHash: string,
+  ): Promise<EmailVerificationToken | null>;
 
   deleteByUserId(userId: string): Promise<void>;
 

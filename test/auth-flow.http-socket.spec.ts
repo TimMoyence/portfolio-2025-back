@@ -144,6 +144,25 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
     expect(res.body.user).toHaveProperty('roles');
   });
 
+  it('POST /api/auth/login pose le cookie de rafraichissement sous le prefixe de l API', async () => {
+    const prefixeAvant = process.env.API_PREFIX;
+    process.env.API_PREFIX = 'api';
+    authenticateUserUseCase.execute.mockResolvedValue(
+      await sessionSigneePour(buildUser(), 'opaque-refresh-token'),
+    );
+
+    try {
+      const res = await seConnecter();
+
+      expect(res.headers['set-cookie']).toEqual([
+        expect.stringContaining('; Path=/api/auth;'),
+      ]);
+    } finally {
+      if (prefixeAvant === undefined) delete process.env.API_PREFIX;
+      else process.env.API_PREFIX = prefixeAvant;
+    }
+  });
+
   it('GET /api/auth/me avec Bearer valide retourne le profil utilisateur', async () => {
     const user = buildUser({ roles: ['teacher'] });
     const signed = await signerPour(user);
@@ -247,5 +266,37 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
     await consulterMonProfil(seconde.accessToken).expect(200);
 
     await seDeconnecterAvec(seconde.refreshToken);
+  });
+
+  describe('GET /api/auth/verify-email', () => {
+    const JETON_EMIS = 'a'.repeat(64);
+
+    it('transmet au cas d usage un jeton de la forme emise', async () => {
+      authStubs.verifyEmailUseCase.execute.mockResolvedValue({
+        message: 'Adresse email verifiee avec succes.',
+      });
+
+      await request(getHttpServer())
+        .get(`/api/auth/verify-email?token=${JETON_EMIS}`)
+        .expect(200);
+
+      expect(authStubs.verifyEmailUseCase.execute).toHaveBeenCalledWith(
+        JETON_EMIS,
+      );
+    });
+
+    it.each([
+      ['sans jeton', ''],
+      ['avec un jeton vide', '?token='],
+      ['avec un jeton repete', `?token=${JETON_EMIS}&token=${JETON_EMIS}`],
+      ['avec un jeton hors hexadecimal', `?token=${'z'.repeat(64)}`],
+      ['avec un jeton tronque', `?token=${JETON_EMIS.slice(1)}`],
+    ])('refuse en 400 une requete %s', async (_cas, query) => {
+      await request(getHttpServer())
+        .get(`/api/auth/verify-email${query}`)
+        .expect(400);
+
+      expect(authStubs.verifyEmailUseCase.execute).not.toHaveBeenCalled();
+    });
   });
 });

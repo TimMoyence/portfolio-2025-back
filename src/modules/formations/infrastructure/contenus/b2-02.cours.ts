@@ -402,10 +402,7 @@ const ACTE_1: moteur.Acte = [
       brique: 'fp-worked',
       dureeMinutes: 6,
       concepts: ['moyenne', 'mediane', 'ecart-type'],
-      notes: moteur.puces(
-        'Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.',
-        'Papier : réponses sous chaque étape du livret.',
-      ),
+      notes: moteur.puces(...moteur.NOTES_DE_L_EXEMPLE_ETAPE_PAR_ETAPE),
       proprietes: {
         modalite: 'solo',
         exemple: {
@@ -479,7 +476,7 @@ const ACTE_1: moteur.Acte = [
       dureeMinutes: 10,
       concepts: ['mediane', 'moyenne', 'ecart-type', 'choix-du-resume'],
       notes: moteur.puces(
-        'Temps : réflexion 2 min · travail 8 min',
+        moteur.tempsDeLExercice(2, 8),
         'Réflexion : chacun relit la trace écrite et note la méthode de chaque question, sans calculer.',
         'Pièges : le milieu de la liste non triée ; une seule des deux valeurs centrales ; ECARTYPE au lieu de ECARTYPEP ; F105 retirée.',
         'Papier : exercice 1 du livret.',
@@ -554,7 +551,7 @@ const ACTE_1: moteur.Acte = [
     {
       minutes: 2,
       notes: [
-        'Corriger question par question, en commençant par la moins réussie (score sous chaque correction).',
+        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE_SOUS_SON_SCORE,
         'Transition : jalon 1, puis pause de 15 minutes.',
       ],
     },
@@ -577,26 +574,20 @@ const ACTE_1: moteur.Acte = [
       ],
     ],
   ),
-  {
-    screenId: 'B2-02-A1-09-JALON',
-    titre: 'Jalon 1 : résumer une série',
-    diffusion: 'seance',
-    brique: 'fp-pulse',
-    dureeMinutes: 1,
-    concepts: ['choix-du-resume'],
-    notes: moteur.puces(
-      '30 s de vote anonyme.',
-      'Si plus de 30 % « Perdu » : reprendre la trace écrite A1-06 après la pause.',
-      'Pause de 15 minutes, hors durée programmée.',
-    ),
-    proprietes: {
-      sondage: {
-        id: 'b2-02-a1-jalon',
-        invite:
-          'Je sais résumer une série par un centre et un écart, et choisir entre moyenne et médiane.',
-      },
+  moteur.pulsation(
+    {
+      screenId: 'B2-02-A1-09-JALON',
+      titre: 'Jalon 1 : résumer une série',
+      concepts: ['choix-du-resume'],
     },
-  },
+    {
+      id: 'b2-02-a1-jalon',
+      invite:
+        'Je sais résumer une série par un centre et un écart, et choisir entre moyenne et médiane.',
+    },
+    'Si plus de 30 % « Perdu » : reprendre la trace écrite A1-06 après la pause.',
+    moteur.PAUSE_HORS_DUREE,
+  ),
 ];
 
 const X_MOYEN_RIVAGE = 3.5;
@@ -847,10 +838,7 @@ const ACTE_2: moteur.Acte = [
       brique: 'fp-worked',
       dureeMinutes: 5,
       concepts: ['nuage-de-points', 'correlation'],
-      notes: moteur.puces(
-        'Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.',
-        'Papier : réponses sous chaque étape du livret.',
-      ),
+      notes: moteur.puces(...moteur.NOTES_DE_L_EXEMPLE_ETAPE_PAR_ETAPE),
       proprietes: {
         modalite: 'solo',
         exemple: {
@@ -915,7 +903,7 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 9,
       concepts: ['nuage-de-points', 'correlation'],
       notes: moteur.puces(
-        'Temps : réflexion 2 min · travail 7 min',
+        moteur.tempsDeLExercice(2, 7),
         'Réflexion : relire la trace écrite et repérer la touche de r sur la calculatrice.',
         'Pièges : les sommes au lieu des moyennes ; le point du milieu du tableau ; r lu comme la hausse annuelle.',
         'Papier : exercice 2 du livret.',
@@ -983,7 +971,7 @@ const ACTE_2: moteur.Acte = [
     {
       minutes: 2,
       notes: [
-        'Corriger question par question, en commençant par la moins réussie.',
+        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE,
         'Transition : « Vérifions G autrement : les écarts au point moyen. »',
       ],
     },
@@ -1015,7 +1003,7 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 10,
       concepts: ['nuage-de-points'],
       notes: moteur.puces(
-        'Temps : réflexion 2 min · travail 8 min',
+        moteur.tempsDeLExercice(2, 8),
         'Réflexion : prévoir le signe des écarts de la première et de la dernière année.',
         'Piège : l’écart au rang du milieu du tableau au lieu de x̄.',
         'Contrôle à faire dire : les écarts d’une colonne ont une somme nulle.',
@@ -1092,25 +1080,19 @@ const ACTE_2: moteur.Acte = [
       ],
     ],
   ),
-  {
-    screenId: 'B2-02-A2-07-JALON',
-    titre: 'Jalon 2 : relier deux variables',
-    diffusion: 'seance',
-    brique: 'fp-pulse',
-    dureeMinutes: 1,
-    concepts: ['correlation'],
-    notes: moteur.puces(
-      '30 s de vote anonyme.',
-      'Si plus de 30 % « Perdu » : reprendre la trace écrite A2-03 sur le point moyen.',
-    ),
-    proprietes: {
-      sondage: {
-        id: 'b2-02-a2-jalon',
-        invite:
-          'Je sais placer le point moyen, calculer r et dire ce qu’il ne prouve pas.',
-      },
+  moteur.pulsation(
+    {
+      screenId: 'B2-02-A2-07-JALON',
+      titre: 'Jalon 2 : relier deux variables',
+      concepts: ['correlation'],
     },
-  },
+    {
+      id: 'b2-02-a2-jalon',
+      invite:
+        'Je sais placer le point moyen, calculer r et dire ce qu’il ne prouve pas.',
+    },
+    'Si plus de 30 % « Perdu » : reprendre la trace écrite A2-03 sur le point moyen.',
+  ),
 ];
 
 const ACTE_3: moteur.Acte = [
@@ -1281,10 +1263,7 @@ const ACTE_3: moteur.Acte = [
       brique: 'fp-worked',
       dureeMinutes: 6,
       concepts: ['ajustement-affine', 'prevision'],
-      notes: moteur.puces(
-        'Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.',
-        'Papier : réponses sous chaque étape du livret.',
-      ),
+      notes: moteur.puces(...moteur.NOTES_DE_L_EXEMPLE_ETAPE_PAR_ETAPE),
       proprietes: {
         modalite: 'solo',
         exemple: {
@@ -1351,7 +1330,7 @@ const ACTE_3: moteur.Acte = [
       dureeMinutes: 9,
       concepts: ['ajustement-affine', 'prevision'],
       notes: moteur.puces(
-        'Temps : réflexion 2 min · travail 7 min',
+        moteur.tempsDeLExercice(2, 7),
         'Réflexion : écrire le rang de 2028 avant tout calcul.',
         'Pièges : séries inversées dans PENTE ; 2028 à la place du rang ; seuil arrondi à l’entier inférieur.',
         'Papier : exercice 4 du livret.',
@@ -1412,7 +1391,7 @@ const ACTE_3: moteur.Acte = [
     {
       minutes: 2,
       notes: [
-        'Corriger question par question, en commençant par la moins réussie.',
+        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE,
         'Transition : « Une IA a fait la même prévision, pour 2035. »',
       ],
     },
@@ -1444,7 +1423,7 @@ const ACTE_3: moteur.Acte = [
       dureeMinutes: 8,
       concepts: ['prevision', 'correlation'],
       notes: moteur.puces(
-        'Temps : réflexion 2 min · travail 6 min',
+        moteur.tempsDeLExercice(2, 6),
         'Réflexion : relire la trace écrite A3-02 et la règle du rang.',
         'Repérer qui trouve le rang, l’extrapolation et la causalité ; faire trouver la piste fausse avant de révéler.',
         'Papier : exercice 5 du livret.',
@@ -1517,25 +1496,19 @@ const ACTE_3: moteur.Acte = [
       ],
     ],
   ),
-  {
-    screenId: 'B2-02-A3-06-JALON',
-    titre: 'Jalon 3 : prévoir avec une droite',
-    diffusion: 'seance',
-    brique: 'fp-pulse',
-    dureeMinutes: 1,
-    concepts: ['prevision'],
-    notes: moteur.puces(
-      '30 s de vote anonyme.',
-      'Pause de 15 minutes, hors durée programmée.',
-    ),
-    proprietes: {
-      sondage: {
-        id: 'b2-02-a3-jalon',
-        invite:
-          'Je sais obtenir la droite des moindres carrés, prévoir avec le rang et trouver l’année d’un seuil.',
-      },
+  moteur.pulsation(
+    {
+      screenId: 'B2-02-A3-06-JALON',
+      titre: 'Jalon 3 : prévoir avec une droite',
+      concepts: ['prevision'],
     },
-  },
+    {
+      id: 'b2-02-a3-jalon',
+      invite:
+        'Je sais obtenir la droite des moindres carrés, prévoir avec le rang et trouver l’année d’un seuil.',
+    },
+    moteur.PAUSE_HORS_DUREE,
+  ),
 ];
 
 const PREMIERE_LIGNE_FIBRE = 2;
@@ -1642,7 +1615,7 @@ const ACTE_4: moteur.Acte = [
       dureeMinutes: 15,
       concepts: ['correlation', 'ajustement-affine'],
       notes: moteur.puces(
-        'Temps : réflexion 3 min · travail 12 min',
+        moteur.tempsDeLExercice(3, 12),
         'Réflexion : chacun écrit sur papier les fonctions à utiliser et l’ordre des plages.',
         'Erreurs à chercher : plages inversées dans PENTE ; valeurs tapées à la main au lieu de formules.',
         'Papier : même question à la calculatrice, formules écrites sur la copie ; en CCF, elle se fait devant l’examinateur.',
@@ -1732,7 +1705,7 @@ const ACTE_4: moteur.Acte = [
       dureeMinutes: 14,
       concepts: ['prevision'],
       notes: moteur.puces(
-        'Temps : réflexion 2 min · travail 12 min',
+        moteur.tempsDeLExercice(2, 12),
         'Réflexion : écrire les rangs de 2025 et de 2030 avant d’ouvrir le coffre.',
         'Indices disponibles après 60 s. À 10 min, projeter l’énigme la moins résolue.',
         'Papier : quatre questions rédigées du livret, sans code de coffre.',

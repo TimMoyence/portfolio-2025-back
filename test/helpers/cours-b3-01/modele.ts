@@ -40,10 +40,17 @@ export function valeurDe(ligne: Ligne, colonne: string): Valeur {
   if (!Object.hasOwn(ligne, colonne)) {
     throw new RangeError(`Colonne absente : ${colonne}`);
   }
-  const cellule = ligne[colonne];
-  return cellule !== null && typeof cellule === 'object'
-    ? cellule.resultat
-    : cellule;
+  return resultatDeCellule(ligne[colonne]);
+}
+
+export function estUneFormule(
+  cellule: Cellule | undefined,
+): cellule is Formule {
+  return typeof cellule === 'object' && cellule !== null;
+}
+
+export function resultatDeCellule(cellule: Cellule): Valeur {
+  return estUneFormule(cellule) ? cellule.resultat : cellule;
 }
 
 export function nombreDe(ligne: Ligne, colonne: string): number {

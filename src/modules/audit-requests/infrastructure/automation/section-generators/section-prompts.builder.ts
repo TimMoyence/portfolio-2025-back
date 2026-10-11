@@ -20,64 +20,46 @@ import {
   UNTRUSTED_DATA_DISCLAIMER_FR,
 } from '../shared/prompt-sanitize.util';
 
+type Prompt = (locale: AuditLocale) => string;
+
+const PROMPTS_DE_SECTION = {
+  executive: {
+    principal: executiveSystemMain,
+    reprise: executiveRetryConstraint,
+  },
+  priority: { principal: prioritySystemMain, reprise: priorityRetryConstraint },
+  execution: {
+    principal: executionSystemMain,
+    reprise: executionRetryConstraint,
+  },
+  client_comms: {
+    principal: clientCommsSystemMain,
+    reprise: clientCommsRetryConstraint,
+  },
+  user_summary: {
+    principal: userSummarySystemMain,
+    reprise: userSummaryRetryConstraint,
+  },
+} as const satisfies Record<string, { principal: Prompt; reprise: Prompt }>;
+
+export type SectionAPrompt = keyof typeof PROMPTS_DE_SECTION;
+
 function disclaimer(locale: AuditLocale): string {
   return locale === 'fr'
     ? UNTRUSTED_DATA_DISCLAIMER_FR
     : UNTRUSTED_DATA_DISCLAIMER_EN;
 }
 
-export function buildExecutiveSystemBlocks(
+export function buildSystemBlocks(
+  section: SectionAPrompt,
   locale: AuditLocale,
   retryMode: boolean,
 ): string[] {
+  const { principal, reprise } = PROMPTS_DE_SECTION[section];
   return [
     disclaimer(locale),
-    executiveSystemMain(locale),
-    ...(retryMode ? [executiveRetryConstraint(locale)] : []),
-  ];
-}
-
-export function buildPrioritySystemBlocks(
-  locale: AuditLocale,
-  retryMode: boolean,
-): string[] {
-  return [
-    disclaimer(locale),
-    prioritySystemMain(locale),
-    ...(retryMode ? [priorityRetryConstraint(locale)] : []),
-  ];
-}
-
-export function buildExecutionSystemBlocks(
-  locale: AuditLocale,
-  retryMode: boolean,
-): string[] {
-  return [
-    disclaimer(locale),
-    executionSystemMain(locale),
-    ...(retryMode ? [executionRetryConstraint(locale)] : []),
-  ];
-}
-
-export function buildClientCommsSystemBlocks(
-  locale: AuditLocale,
-  retryMode: boolean,
-): string[] {
-  return [
-    disclaimer(locale),
-    clientCommsSystemMain(locale),
-    ...(retryMode ? [clientCommsRetryConstraint(locale)] : []),
-  ];
-}
-
-export function buildUserSummarySystemBlocks(
-  locale: AuditLocale,
-  retryMode: boolean,
-): string[] {
-  return [
-    disclaimer(locale),
-    userSummarySystemMain(locale),
-    ...(retryMode ? [userSummaryRetryConstraint(locale)] : []),
+    principal(locale),
+    ...(retryMode ? [reprise(locale)] : []),
   ];
 }
 

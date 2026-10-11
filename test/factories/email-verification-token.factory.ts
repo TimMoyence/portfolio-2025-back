@@ -7,7 +7,8 @@ export function buildEmailVerificationToken(
   return {
     id: 'evt-1',
     userId: 'user-1',
-    token: 'a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2',
+    tokenHash:
+      'a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2',
     expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
     createdAt: new Date('2026-01-01'),
     ...overrides,
@@ -17,7 +18,7 @@ export function buildEmailVerificationToken(
 export function createMockEmailVerificationTokensRepo(): jest.Mocked<IEmailVerificationTokensRepository> {
   return {
     create: jest.fn(),
-    findActiveByToken: jest.fn(),
+    findActiveByTokenHash: jest.fn(),
     deleteByUserId: jest.fn(),
     countRecentByUserId: jest.fn(),
   };

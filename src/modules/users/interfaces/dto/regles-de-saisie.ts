@@ -1,5 +1,5 @@
 import { applyDecorators } from '@nestjs/common';
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsArray,
   IsIn,
@@ -10,6 +10,21 @@ import {
   MinLength,
 } from 'class-validator';
 import { VALID_ROLES } from '../../domain/roles';
+import { FORME_D_UN_JETON_EMIS } from '../../domain/TokenHash';
+
+export function JetonDeLien(): PropertyDecorator {
+  return applyDecorators(
+    ApiProperty({
+      example:
+        '4f7ab9f3f7b3d0eaa77a4b5b0dcaea31695f15de22f22e53f35b98b0aaf3112c',
+      pattern: FORME_D_UN_JETON_EMIS.source,
+    }),
+    IsString(),
+    Matches(FORME_D_UN_JETON_EMIS, {
+      message: 'Le jeton du lien est invalide.',
+    }),
+  );
+}
 
 export function MotDePasseRobuste(): PropertyDecorator {
   return applyDecorators(

@@ -1,4 +1,4 @@
-import { createHash } from 'node:crypto';
+import { empreinteSha256 } from '../../../common/domain/crypto/empreintes';
 import type { ArticleIngestEnvelope } from '../domain/article-contract';
 
 const contentMarkdown = '# Une veille IA utile\n\n' + 'x'.repeat(120);
@@ -44,9 +44,7 @@ export const validArticleIngestEnvelope: ArticleIngestEnvelope = {
       edition_date: '2026-09-09',
       item_count: 1,
       source_count: 1,
-      content_sha256: createHash('sha256')
-        .update(contentMarkdown)
-        .digest('hex'),
+      content_sha256: empreinteSha256(contentMarkdown),
     },
     seo: {
       description:

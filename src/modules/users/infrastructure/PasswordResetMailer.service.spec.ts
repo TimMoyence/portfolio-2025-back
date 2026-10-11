@@ -17,14 +17,6 @@ import { PasswordResetMailerService } from './PasswordResetMailer.service';
 
 const mockedCreateTransport = creationDeTransportSimulee();
 
-class TestablePasswordResetMailer extends PasswordResetMailerService {
-  public testEscapeHtml(input: string): string {
-    return (
-      this as unknown as { escapeHtml: (s: string) => string }
-    ).escapeHtml(input);
-  }
-}
-
 function buildPayload(
   overrides: Partial<PasswordResetNotificationPayload> = {},
 ): PasswordResetNotificationPayload {
@@ -44,11 +36,11 @@ describe('PasswordResetMailerService', () => {
 
   const monter = (
     env: Record<string, string> = {},
-  ): TestablePasswordResetMailer => {
+  ): PasswordResetMailerService => {
     transporter = createMockTransporter();
     mockedCreateTransport.mockReturnValue(transporter as never);
     cleanupEnv = setSmtpEnv(env);
-    return new TestablePasswordResetMailer();
+    return new PasswordResetMailerService();
   };
 
   const envoyer = async (
@@ -103,7 +95,7 @@ describe('PasswordResetMailerService', () => {
       cleanupEnv = retirerSmtpEnv();
       const warnSpy = jest.spyOn(Logger.prototype, 'warn').mockImplementation();
 
-      await new TestablePasswordResetMailer().sendPasswordResetEmail(
+      await new PasswordResetMailerService().sendPasswordResetEmail(
         buildPayload(),
       );
 
@@ -160,18 +152,6 @@ describe('PasswordResetMailerService', () => {
       );
 
       expect(text).toContain('Bonjour Solo,');
-    });
-  });
-
-  describe('escapeHtml', () => {
-    it.each([
-      [
-        '<script>alert("xss")</script>',
-        '&lt;script&gt;alert(&quot;xss&quot;)&lt;/script&gt;',
-      ],
-      ["Tom & Jerry's <adventure>", 'Tom &amp; Jerry&#39;s &lt;adventure&gt;'],
-    ])('devrait echapper %s', (entree, attendu) => {
-      expect(monter().testEscapeHtml(entree)).toBe(attendu);
     });
   });
 });

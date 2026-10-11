@@ -10,6 +10,7 @@ import { AllExceptionsFilter } from './common/interfaces/filters/all-exceptions.
 import { DomainExceptionFilter } from './common/interfaces/filters/DomainExceptionFilter';
 import { bornerLesCorpsDeRequete } from './common/interfaces/http/corps-de-requete';
 import { ouvrirAuxOrigines } from './common/interfaces/http/cors';
+import { prefixeApi } from './config/prefixe-api';
 import { logBootstrapStep } from './runtime/log-bootstrap-step';
 
 async function bootstrap() {
@@ -84,7 +85,7 @@ async function bootstrap() {
     }),
   );
 
-  app.setGlobalPrefix(process.env.API_PREFIX ?? 'api', {
+  app.setGlobalPrefix(prefixeApi(), {
     exclude: [
       { path: 'api/articles', method: RequestMethod.ALL },
       { path: 'api/articles/(.*)', method: RequestMethod.ALL },

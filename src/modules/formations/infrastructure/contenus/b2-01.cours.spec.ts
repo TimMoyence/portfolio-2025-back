@@ -2,6 +2,7 @@ import {
   lireConception,
   texteNormalise,
 } from '../../../../../test/helpers/conception-de-cours';
+import { somme } from '../../../../common/domain/nombres/statistiques';
 import {
   buildContenuDuCours,
   buildCoursDuContenu,
@@ -18,10 +19,15 @@ import {
   valeursEtPieges,
 } from '../../../../../test/helpers/fiche-de-cours';
 import {
-  arrondi,
+  clesDe,
   ecransCorrigesSurPlace,
 } from '../../../../../test/helpers/lecture-de-cours';
+import {
+  arrondi,
+  auMillionieme,
+} from '../../../../common/domain/nombres/arrondi';
 import type { Ecran } from '../../domain/contrats/cours';
+import { cueillirDansArbre } from '../../domain/cours/ArbreDeValeurs';
 import type { CorrigeProduction } from '../../domain/cours/Corrige';
 import { estInteractif } from '../../domain/cours/Cours';
 import { lireCoursStocke } from '../../domain/cours/CoursStocke';
@@ -59,26 +65,11 @@ function coursDontLeTitre(screenId: string, titre: string): typeof COURS {
   });
 }
 
-function descendre(
-  valeur: unknown,
-  entree: (cle: string, element: unknown) => string[],
-): string[] {
-  if (Array.isArray(valeur)) {
-    return valeur.flatMap((element: unknown) => descendre(element, entree));
-  }
-  if (typeof valeur !== 'object' || valeur === null) {
-    return [];
-  }
-  return Object.entries(valeur).flatMap(([cle, element]) =>
-    entree(cle, element),
-  );
-}
-
 function chainesDe(valeur: unknown): string[] {
   if (typeof valeur === 'string') {
     return [valeur];
   }
-  return descendre(valeur, (cle, element) =>
+  return cueillirDansArbre(valeur, (cle, element) =>
     CLES_NON_TEXTUELLES.has(cle) ? [] : chainesDe(element),
   );
 }
@@ -110,10 +101,6 @@ function correctionDuTri(triId: string): string | null {
     );
   });
   return correction?.id ?? null;
-}
-
-function clesDe(valeur: unknown): string[] {
-  return descendre(valeur, (cle, element) => [cle, ...clesDe(element)]);
 }
 
 function vaut(valeur: number, cible: number): boolean {
@@ -405,8 +392,6 @@ describe('B2-01 — recalcul des corrigés depuis les données brutes (AC-10)', 
   const ca2024 = [483000, 210000, 357000];
   const ca2025 = [397000, 230000, 523000];
   const taux = [0.36, 0.28, 0.16];
-  const somme = (valeurs: readonly number[]): number =>
-    valeurs.reduce((total, valeur) => total + valeur, 0);
   const marges2024 = ca2024.map((ca, rang) => ca * taux[rang]);
   const marges2025 = ca2025.map((ca, rang) => ca * taux[rang]);
   const inflation = [0.5, 1.6, 5.2, 4.9, 2.0, 0.9];
@@ -535,7 +520,7 @@ describe('B2-01 — recalcul des corrigés depuis les données brutes (AC-10)', 
         (somme(marges2025) / somme(ca2025)) * 100,
         somme(taux) / 3,
       ],
-      B7: [vaut(arrondi(somme(parts.slice(0, 3))), 1) ? 1 : 0],
+      B7: [vaut(auMillionieme(somme(parts.slice(0, 3))), 1) ? 1 : 0],
       C7: [vaut(arrondi(somme(marges2025) - 291000, 0), 0) ? 1 : 0],
     };
 

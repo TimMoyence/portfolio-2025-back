@@ -1,10 +1,10 @@
 import type { ClientReportSynthesis } from '../../domain/AuditReportTiers';
 import { attendreRapportAccepte } from '../../../../../test/helpers/validation-de-rapport';
 import {
-  ExpertReportShape,
   ReportQualityGateContext,
   ReportQualityGateService,
 } from './report-quality-gate.service';
+import type { ExpertReport } from './schemas/audit-report.schemas';
 
 describe('ReportQualityGateService', () => {
   let service: ReportQualityGateService;
@@ -13,7 +13,7 @@ describe('ReportQualityGateService', () => {
     service = new ReportQualityGateService();
   });
 
-  const baseReport = (): ExpertReportShape => ({
+  const baseReport = (): ExpertReport => ({
     executiveSummary: 'Executive summary.',
     reportExplanation: 'Report explanation.',
     strengths: ['Strong technical baseline'],
@@ -115,6 +115,36 @@ describe('ReportQualityGateService', () => {
     expect(result.report.priorities.length).toBeGreaterThanOrEqual(10);
     const titles = result.report.priorities.map((entry) => entry.title);
     expect(new Set(titles).size).toBe(titles.length);
+  });
+
+  it('ranks the model severity into the three report levels', () => {
+    const report = baseReport();
+    const priority = report.priorities[0];
+    report.priorities = [
+      {
+        ...priority,
+        title: 'Critical canonical defect',
+        severity: 'CRITICAL' as never,
+      },
+      { ...priority, title: 'Low canonical defect', severity: 'Low' as never },
+      {
+        ...priority,
+        title: 'Unknown canonical defect',
+        severity: 'urgent' as never,
+      },
+    ];
+
+    const result = service.apply(
+      'English summary for business stakeholders.',
+      report,
+      baseContext(),
+    );
+
+    const severityOf = (title: string): string | undefined =>
+      result.report.priorities.find((entry) => entry.title === title)?.severity;
+    expect(severityOf('Critical canonical defect')).toBe('high');
+    expect(severityOf('Low canonical defect')).toBe('low');
+    expect(severityOf('Unknown canonical defect')).toBe('medium');
   });
 
   const baseClientReport = (): ClientReportSynthesis => ({

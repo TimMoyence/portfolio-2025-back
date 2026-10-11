@@ -1,4 +1,3 @@
-import type { LiveSessionState as LiveSessionStateServi } from '../ISessionStateCache.port';
 import type { FreeRange, PacingMode } from '../PacingMode';
 import type { ValeurReponse } from './resultats';
 
@@ -31,10 +30,7 @@ export type PilotageDemande = { readonly screenId: string } & Omit<
   'etayageAtteint'
 >;
 
-export interface LiveSessionState extends LiveSessionStateServi {
-  revision: number;
-  pilotage: Readonly<Record<string, PilotageEcran>>;
-}
+export type { LiveSessionState } from '../ISessionStateCache.port';
 
 export interface ControlSessionChanges {
   ecran?: number;

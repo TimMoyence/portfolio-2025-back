@@ -7,10 +7,7 @@ import {
   type LlmInvocationContext,
   type LlmInvocationOptions,
 } from '../../../../common/infrastructure/llm/llm-usage-tracking.util';
-import {
-  AuditLocale,
-  resolveAuditLocale,
-} from '../../domain/audit-locale.util';
+import { AuditLocale, localeDeRedaction } from '../../domain/audit-locale.util';
 import { AUDIT_AUTOMATION_CONFIG } from '../../domain/token';
 import type { AuditAutomationConfig } from './audit.config';
 import {
@@ -122,10 +119,7 @@ export class LangchainAuditReportService {
     input: LangchainAuditInput,
     options: LangchainAuditGenerateOptions = {},
   ): Promise<LangchainAuditOutput> {
-    const locale = resolveAuditLocale(
-      input.locale,
-      resolveAuditLocale(this.config.llmLanguage, 'fr'),
-    );
+    const locale = localeDeRedaction(input.locale, this.config.llmLanguage);
     const normalizedInput: LangchainAuditInput = {
       ...input,
       locale,

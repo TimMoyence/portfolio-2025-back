@@ -1,4 +1,5 @@
 import type { Callbacks } from '@langchain/core/callbacks/manager';
+import { estObjet } from '../../domain/est-objet';
 import type { MetricsService } from '../../interfaces/metrics/metrics.service';
 
 export interface LlmInvocationContext {
@@ -40,7 +41,7 @@ function buildUsageCallback(
 }
 
 function extractUsage(output: unknown): LlmTokenUsage | null {
-  if (!output || typeof output !== 'object') return null;
+  if (!estObjet(output)) return null;
 
   const typed = output as {
     llmOutput?: {

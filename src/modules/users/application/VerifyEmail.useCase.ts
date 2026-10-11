@@ -3,6 +3,7 @@ import { InvalidCredentialsError } from '../../../common/domain/errors/InvalidCr
 import type { IEmailVerificationTokensRepository } from '../domain/IEmailVerificationTokens.repository';
 import type { IUsersRepository } from '../domain/IUsers.repository';
 import { DEFAULT_SELF_REGISTRATION_ROLES } from '../domain/roles';
+import { TokenHash } from '../domain/TokenHash';
 import {
   EMAIL_VERIFICATION_TOKENS_REPOSITORY,
   USERS_REPOSITORY,
@@ -22,8 +23,9 @@ export class VerifyEmailUseCase {
   ) {}
 
   async execute(token: string): Promise<VerifyEmailResult> {
-    const stored =
-      await this.emailVerificationTokensRepo.findActiveByToken(token);
+    const stored = await this.emailVerificationTokensRepo.findActiveByTokenHash(
+      TokenHash.fromRaw(token).value,
+    );
 
     if (!stored) {
       throw new InvalidCredentialsError(

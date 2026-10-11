@@ -11,7 +11,7 @@ import { ecranCorrigePar } from './Corrections';
 import { explicationsRevelees } from './CorrectionSurPlace';
 import { questionsDe } from './Cours';
 import { corrigeDeLEcran } from './DeroulePresentateur';
-import { etayageAtteint } from './EcranServi';
+import { ecranParId, etayageAtteint } from './EcranServi';
 import { tirer } from './Tirage';
 
 export const GRAINE_DU_CATALOGUE = 0;
@@ -66,8 +66,8 @@ export function correctionServie(
   tirage: TirageDuCours,
 ): CorrectionServie | null {
   const ecranId = ecranCorrigePar(ecran);
-  const source = cours.ecrans.find((candidat) => candidat.id === ecranId);
-  if (ecranId === null || source === undefined) {
+  const source = ecranId === null ? undefined : ecranParId(cours, ecranId);
+  if (source === undefined) {
     return null;
   }
   return correctionDe(source, tirage);

@@ -1,17 +1,21 @@
 import type { AuditLocale } from '../../../domain/audit-locale.util';
+import type {
+  FindingImpact,
+  ReportSeverity,
+} from '../../../domain/AuditReportTiers';
 import { localizedText } from './locale-text.util';
 
 interface FindingLike {
   title: string;
   description: string;
   recommendation: string;
-  severity: 'high' | 'medium' | 'low';
-  impact: 'traffic' | 'indexation' | 'conversion';
+  severity: ReportSeverity;
+  impact: FindingImpact;
 }
 
 interface PriorityFromFinding {
   title: string;
-  severity: 'high' | 'medium' | 'low';
+  severity: ReportSeverity;
   whyItMatters: string;
   recommendedFix: string;
   estimatedHours: number;

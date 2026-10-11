@@ -4,6 +4,7 @@ import {
   SwaggerModule,
   type OpenAPIObject,
 } from '@nestjs/swagger';
+import { estObjet } from '../../src/common/domain/est-objet';
 
 interface SchemaOpenApi {
   $ref?: string;
@@ -28,12 +29,6 @@ function resoudre(
     throw new Error(`Schema OpenAPI introuvable: ${schema.$ref}`);
   }
   return composant as SchemaOpenApi;
-}
-
-function estObjet(valeur: unknown): valeur is Record<string, unknown> {
-  return (
-    typeof valeur === 'object' && valeur !== null && !Array.isArray(valeur)
-  );
 }
 
 function ecartsDesProprietes(

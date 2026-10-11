@@ -4,7 +4,7 @@ import { IsNull, MoreThan, Repository } from 'typeorm';
 import type { IPasswordResetTokensRepository } from '../domain/IPasswordResetTokens.repository';
 import type { PasswordResetToken } from '../domain/PasswordResetToken';
 import { PasswordResetTokenEntity } from './entities/PasswordResetToken.entity';
-import { champsDuJeton, jetonNonExpire } from './jetons.typeorm';
+import { champsDuJeton, enregistrerJeton, jetonActif } from './jetons.typeorm';
 
 @Injectable()
 export class PasswordResetTokensRepositoryTypeORM implements IPasswordResetTokensRepository {
@@ -13,24 +13,20 @@ export class PasswordResetTokensRepositoryTypeORM implements IPasswordResetToken
     private readonly repo: Repository<PasswordResetTokenEntity>,
   ) {}
 
-  async create(token: PasswordResetToken): Promise<PasswordResetToken> {
-    const entity = this.repo.create({
-      ...champsDuJeton(token),
-      usedAt: token.usedAt,
-    });
-
-    const saved = await this.repo.save(entity);
-    return this.toDomain(saved);
+  create(token: PasswordResetToken): Promise<PasswordResetToken> {
+    return enregistrerJeton(
+      this.repo,
+      { ...champsDuJeton(token), usedAt: token.usedAt },
+      versLeDomaine,
+    );
   }
 
-  async findActiveByTokenHash(
-    tokenHash: string,
-  ): Promise<PasswordResetToken | null> {
-    const entity = await jetonNonExpire(this.repo, {
-      tokenHash,
-      usedAt: IsNull(),
-    });
-    return entity ? this.toDomain(entity) : null;
+  findActiveByTokenHash(tokenHash: string): Promise<PasswordResetToken | null> {
+    return jetonActif(
+      this.repo,
+      { tokenHash, usedAt: IsNull() },
+      versLeDomaine,
+    );
   }
 
   async invalidateActiveByUserId(userId: string): Promise<void> {
@@ -56,16 +52,16 @@ export class PasswordResetTokensRepositoryTypeORM implements IPasswordResetToken
       },
     );
   }
+}
 
-  private toDomain(entity: PasswordResetTokenEntity): PasswordResetToken {
-    return {
-      id: entity.id,
-      userId: entity.userId,
-      tokenHash: entity.tokenHash,
-      expiresAt: entity.expiresAt,
-      usedAt: entity.usedAt,
-      createdAt: entity.createdAt,
-      updatedAt: entity.updatedAt,
-    };
-  }
+function versLeDomaine(entity: PasswordResetTokenEntity): PasswordResetToken {
+  return {
+    id: entity.id,
+    userId: entity.userId,
+    tokenHash: entity.tokenHash,
+    expiresAt: entity.expiresAt,
+    usedAt: entity.usedAt,
+    createdAt: entity.createdAt,
+    updatedAt: entity.updatedAt,
+  };
 }

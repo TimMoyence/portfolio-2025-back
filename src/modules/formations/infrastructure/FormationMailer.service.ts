@@ -14,8 +14,11 @@ import type {
   RapportQuestion,
   RapportSession,
 } from '../domain/IFormationMailer.port';
+import { rapportEnCsv } from '../domain/RapportCsv';
 
-const BOM_UTF8 = '﻿';
+function noteSur20(note: number): string {
+  return `${note.toFixed(1)}/20`;
+}
 
 function verdictDe(reponse: RapportQuestion): string {
   if (reponse.correcte) {
@@ -42,6 +45,7 @@ export class FormationMailerService
     if (!this.transporter) {
       return;
     }
+    const csv = rapportEnCsv(rapport);
     await this.transporter.sendMail({
       from: this.from,
       to: destinataire,
@@ -50,9 +54,9 @@ export class FormationMailerService
       html: this.syntheseHtml(rapport),
       attachments: [
         {
-          filename: `session-${rapport.code}.csv`,
-          content: this.toCsv(rapport),
-          contentType: 'text/csv; charset=utf-8',
+          filename: csv.nom,
+          content: Buffer.from(csv.contenu),
+          contentType: csv.type,
         },
       ],
     });
@@ -73,7 +77,7 @@ export class FormationMailerService
           <h2>Bonjour ${escapeHtml(participant.prenom)},</h2>
           <p>Voici le détail de vos réponses pour la session ${escapeHtml(copie.code)}.</p>
           <p>
-            Note obtenue : <strong>${escapeHtml(participant.note.toFixed(1))}/20</strong>
+            Note obtenue : <strong>${escapeHtml(noteSur20(participant.note))}</strong>
             (complétion ${Math.round(participant.completion * 100)}%).
           </p>
           <ul>${this.copieReponsesHtml(participant.reponses)}</ul>
@@ -111,7 +115,7 @@ export class FormationMailerService
       lignes.push(
         `${participant.prenom} ${participant.nom} : complétion ` +
           `${Math.round(participant.completion * 100)}%, note ` +
-          `${participant.note.toFixed(1)}/20` +
+          noteSur20(participant.note) +
           `${participant.sousSeuil ? ' (sous le seuil)' : ''}.`,
       );
     }
@@ -129,7 +133,7 @@ export class FormationMailerService
       (participant) => safeHtml`<tr>
           <td style="padding:4px 8px;">${escapeHtml(participant.prenom)} ${escapeHtml(participant.nom)}</td>
           <td style="padding:4px 8px;">${Math.round(participant.completion * 100)}%</td>
-          <td style="padding:4px 8px;">${escapeHtml(participant.note.toFixed(1))}/20</td>
+          <td style="padding:4px 8px;">${escapeHtml(noteSur20(participant.note))}</td>
         </tr>`,
     );
     return safeHtml`
@@ -153,7 +157,7 @@ export class FormationMailerService
       `Bonjour ${participant.prenom},`,
       '',
       'Voici le détail de vos réponses pour cette session.',
-      `Note obtenue : ${participant.note.toFixed(1)}/20.`,
+      `Note obtenue : ${noteSur20(participant.note)}.`,
       '',
       ...participant.reponses.map(
         (reponse) =>
@@ -163,72 +167,4 @@ export class FormationMailerService
       `Reprendre mon entraînement : ${lienRevision}`,
     ].join('\n');
   }
-
-  private toCsv(rapport: RapportSession): string {
-    const entetes = [
-      'prénom',
-      'nom',
-      'email',
-      'question',
-      'concept',
-      'réponse',
-      'correcte',
-      'confusion',
-      'durée_ms',
-    ];
-    const lignes = rapport.participants.flatMap((participant) => {
-      const etudiant = [participant.prenom, participant.nom, participant.email];
-      return [
-        ...participant.reponses.map((reponse) => [
-          ...etudiant,
-          reponse.questionId,
-          reponse.concept,
-          reponse.reponse,
-          reponse.correcte ? 'oui' : 'non',
-          reponse.libelleConfusion ?? '',
-          String(reponse.dureeMs),
-        ]),
-        ...participant.reponsesLibres.map((libre) => [
-          ...etudiant,
-          libre.activityId,
-          CONCEPT_D_UNE_REPONSE_LIBRE,
-          libre.reponse,
-          '',
-          '',
-          '',
-        ]),
-      ].map(ligneCsv);
-    });
-    return `${BOM_UTF8}${[entetes.join(';'), ...lignes].join('\r\n')}`;
-  }
-}
-
-const CONCEPT_D_UNE_REPONSE_LIBRE = 'réponse libre';
-
-function ligneCsv(cellules: readonly string[]): string {
-  return cellules
-    .map((cellule) => `"${neutraliserCelluleCsv(cellule).replace(/"/g, '""')}"`)
-    .join(';');
-}
-
-const CARACTERES_FORMULE_RE = /^[=+@\t\r]/;
-const NOMBRE_NEGATIF_VALIDE_RE = /^-\d+([.,]\d+)?$/;
-
-/**
- * CWE-1236 : neutralise une cellule CSV qu'Excel interpreterait comme une
- * formule a l'ouverture (nom d'etudiant en `=HYPERLINK(...)`, reponse
- * libre en `+`/`@`...), en la prefixant d'une apostrophe. Le signe moins
- * est traite a part : les destinataires sont des comptables, `-1500` ou
- * `-12,5` sont des montants legitimes qui doivent rester sommables — seule
- * une cellule commencant par `-` sans etre un nombre valide (`-=1+1`,
- * `--cmd`) est neutralisee.
- */
-function neutraliserCelluleCsv(valeur: string): string {
-  if (CARACTERES_FORMULE_RE.test(valeur)) {
-    return `'${valeur}`;
-  }
-  if (valeur.startsWith('-') && !NOMBRE_NEGATIF_VALIDE_RE.test(valeur)) {
-    return `'${valeur}`;
-  }
-  return valeur;
 }

@@ -68,6 +68,15 @@ describe('AuditExpertReportMailer', () => {
     return (transporter.sendMail as jest.Mock).mock.calls[0][0];
   }
 
+  it('envoie au destinataire des notifications quand AUDIT_REPORT_TO est vide', async () => {
+    cleanupEnv();
+    cleanupEnv = setSmtpEnv({ ...DEFAULT_AUDIT_ENV, AUDIT_REPORT_TO: '' });
+
+    const call = await envoyer();
+
+    expect(call.to).toBe(DEFAULT_AUDIT_ENV.CONTACT_NOTIFICATION_TO);
+  });
+
   it('devrait envoyer le rapport expert avec PDF attache', async () => {
     const pdf = Buffer.from('%PDF-1.4 expert');
 

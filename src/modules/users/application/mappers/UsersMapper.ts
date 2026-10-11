@@ -22,11 +22,6 @@ export class UsersMapper {
     );
   }
 
-  /** @deprecated Utiliser fromCreateCommand a la place. */
-  static fromCreateDto(dto: CreateUserCommand, passwordHash: string): User {
-    return this.fromCreateCommand(dto, passwordHash);
-  }
-
   static fromUpdateCommand(
     command: UpdateUserCommand,
     passwordHash?: string,
@@ -43,14 +38,6 @@ export class UsersMapper {
         updatedOrCreatedBy: command.updatedOrCreatedBy,
       }),
     );
-  }
-
-  /** @deprecated Utiliser fromUpdateCommand a la place. */
-  static fromUpdateDto(
-    dto: UpdateUserCommand,
-    passwordHash?: string,
-  ): Partial<User> {
-    return this.fromUpdateCommand(dto, passwordHash);
   }
 
   static fromGoogleAuth(props: {

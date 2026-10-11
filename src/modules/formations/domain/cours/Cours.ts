@@ -1,3 +1,7 @@
+import {
+  mapperAuMoinsUn,
+  type AuMoinsUn,
+} from '../../../../common/domain/au-moins-un';
 import type { Tolerance } from '../GradingCore';
 import type {
   CadrageDuRenvoi,
@@ -9,8 +13,6 @@ import type { Tirage } from './Aleatoire';
 import type { ConceptId } from './banque/concepts';
 import type { ConfusionId } from './banque/confusions';
 import type { ProprietesRecit } from './ProprietesStockees';
-
-export type AuMoinsUn<T> = readonly [T, ...T[]];
 
 export type Modalite = 'solo' | 'binome' | 'groupe' | 'classe';
 export type RegimeVerrou = 'ouvert' | 'focus' | 'examen';
@@ -99,9 +101,7 @@ export interface QuestionVote extends QuestionCommune {
 function confusionsDe<P extends { readonly confusion: ConfusionId }>(
   pieges: AuMoinsUn<P>,
 ): AuMoinsUn<ConfusionId> {
-  return pieges.map(
-    (piege) => piege.confusion,
-  ) as unknown as AuMoinsUn<ConfusionId>;
+  return mapperAuMoinsUn(pieges, (piege) => piege.confusion);
 }
 
 function questionTiree<D, T>(

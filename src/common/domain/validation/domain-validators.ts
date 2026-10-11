@@ -1,4 +1,5 @@
 import { DomainValidationError } from '../errors/DomainValidationError';
+import { dansLesBornes } from '../nombres/dans-les-bornes';
 
 export function requireText(
   raw: unknown,
@@ -9,7 +10,7 @@ export function requireText(
   if (typeof raw !== 'string')
     throw new DomainValidationError(`Invalid ${field}`);
   const value = raw.trim();
-  if (value.length < min || value.length > max)
+  if (!dansLesBornes(value.length, { min, max }))
     throw new DomainValidationError(`Invalid ${field}`);
   return value;
 }

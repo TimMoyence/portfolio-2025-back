@@ -1,7 +1,7 @@
 export interface EmailVerificationToken {
   id?: string;
   userId: string;
-  token: string;
+  tokenHash: string;
   expiresAt: Date;
   createdAt?: Date;
 }

@@ -1,7 +1,9 @@
+import type { StatutScore } from 'portfolio-2025-partage/score';
 import type { EngineCoverage } from './EngineCoverage';
 
-type ReportSeverity = 'high' | 'medium' | 'low';
-type CrossPageSeverity = 'critical' | ReportSeverity;
+export type ReportSeverity = 'high' | 'medium' | 'low';
+export type CrossPageSeverity = 'critical' | ReportSeverity;
+export type FindingImpact = 'traffic' | 'indexation' | 'conversion';
 
 export interface ClientReportSynthesis {
   readonly executiveSummary: string;
@@ -24,7 +26,7 @@ export interface ClientReportSynthesis {
     readonly pillar: string;
     readonly score: number;
     readonly target: number;
-    readonly status: 'critical' | 'warning' | 'ok';
+    readonly status: StatutScore;
   }>;
   readonly quickWins: ReadonlyArray<{
     readonly title: string;

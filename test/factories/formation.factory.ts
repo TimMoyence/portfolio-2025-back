@@ -17,6 +17,8 @@ import type {
 import type {
   IFormationMailer,
   RapportParticipant,
+  RapportQuestion,
+  RapportSession,
 } from '../../src/modules/formations/domain/IFormationMailer.port';
 import type {
   FreeResponseRecord,
@@ -369,6 +371,50 @@ export function buildRapportParticipant(
     incidents: 0,
     ...overrides,
   };
+}
+
+export function buildRapportSession(
+  overrides: Partial<RapportSession> = {},
+): RapportSession {
+  return {
+    courseSlug: 'b1-09-interets-composes',
+    code: '4271',
+    ouverteLe: new Date('2026-09-11T08:00:00.000Z'),
+    fermeeLe: new Date('2026-09-11T11:30:00.000Z'),
+    participants: [buildRapportParticipant()],
+    conceptsFragiles: [],
+    libellesDesConcepts: {},
+    ...overrides,
+  };
+}
+
+export function buildRapportQuestion(
+  overrides: Partial<RapportQuestion> = {},
+): RapportQuestion {
+  return {
+    questionId: 'Q-1',
+    concept: 'capitalisation',
+    type: 'numeric',
+    score: null,
+    valeur: '10',
+    reponse: '10',
+    correcte: true,
+    misconception: null,
+    libelleConfusion: null,
+    dureeMs: 1000,
+    ...overrides,
+  };
+}
+
+export function buildRapportAvecReponses(
+  reponses: readonly RapportQuestion[],
+  participantOverrides: Partial<RapportParticipant> = {},
+): RapportSession {
+  return buildRapportSession({
+    participants: [
+      buildRapportParticipant({ ...participantOverrides, reponses }),
+    ],
+  });
 }
 
 export function buildIncidentInput(

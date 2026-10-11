@@ -1,16 +1,11 @@
-import { join } from 'path';
-import type { DataSource } from 'typeorm';
 import { RetireLAtelier1790800000000 } from '../src/migrations/1790800000000-RetireLAtelier';
 import {
+  baseMigreeDeLaSuite,
   describeDb,
-  destroyDbIntegrationDataSource,
-  initBaseMigree,
+  inscrireUtilisateur,
+  migrationsAnterieuresA,
 } from './helpers/db-integration-datasource';
 
-const MIGRATIONS_ANTERIEURES = join(
-  __dirname,
-  '../src/migrations/!(*.spec|1790800000000-RetireLAtelier).ts',
-);
 const TABLES_DE_L_ATELIER = [
   'sebastian_badges',
   'sebastian_entries',
@@ -19,13 +14,15 @@ const TABLES_DE_L_ATELIER = [
   'telegram_links',
   'weather_user_preferences',
 ];
-const DELAI_MIGRATIONS_MS = 120_000;
 
 describeDb('Retrait de l atelier sur une base migree', () => {
-  let dataSource: DataSource;
+  const base = baseMigreeDeLaSuite(
+    [],
+    [migrationsAnterieuresA('1790800000000-RetireLAtelier')],
+  );
 
   const tablesPresentes = async (): Promise<string[]> => {
-    const lignes: { table_name: string }[] = await dataSource.query(
+    const lignes: { table_name: string }[] = await base().query(
       `SELECT table_name FROM information_schema.tables
        WHERE table_schema = 'public' AND table_name = ANY($1)
        ORDER BY table_name`,
@@ -34,29 +31,16 @@ describeDb('Retrait de l atelier sur une base migree', () => {
     return lignes.map(({ table_name }) => table_name);
   };
 
-  const inscrire = async (email: string, roles: string): Promise<void> => {
-    await dataSource.query(
-      `INSERT INTO "users" ("email", "first_name", "last_name", "roles")
-       VALUES ($1, 'Test', 'Atelier', $2)`,
-      [email, roles],
-    );
-  };
+  const inscrire = (email: string, roles: string) =>
+    inscrireUtilisateur(base(), email, roles);
 
   const rolesDe = async (email: string): Promise<string> => {
-    const [ligne]: { roles: string }[] = await dataSource.query(
+    const [ligne]: { roles: string }[] = await base().query(
       `SELECT "roles" FROM "users" WHERE "email" = $1`,
       [email],
     );
     return ligne.roles;
   };
-
-  beforeAll(async () => {
-    dataSource = await initBaseMigree([], [MIGRATIONS_ANTERIEURES]);
-  }, DELAI_MIGRATIONS_MS);
-
-  afterAll(async () => {
-    await destroyDbIntegrationDataSource(dataSource);
-  });
 
   it('supprime les tables meteo, sebastian et telegram et retire leurs roles', async () => {
     expect(await tablesPresentes()).toEqual(TABLES_DE_L_ATELIER);
@@ -65,7 +49,7 @@ describeDb('Retrait de l atelier sur une base migree', () => {
     await inscrire('admin@example.com', 'admin');
     await inscrire('homonyme@example.com', 'weathers,teacher');
 
-    await dataSource.transaction((manager) =>
+    await base().transaction((manager) =>
       new RetireLAtelier1790800000000().up(manager.queryRunner!),
     );
 

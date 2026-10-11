@@ -1,8 +1,12 @@
+import {
+  auCentime,
+  auMillionieme,
+} from '../../../../common/domain/nombres/arrondi';
+import type { AuMoinsUnModifiable } from '../../../../common/domain/au-moins-un';
 import type { ConceptId } from '../../domain/cours/banque/concepts';
 import * as moteur from './briques';
 import {
   anneesEtRangs,
-  auMillionieme,
   avecVirgule,
   colonneDeValeurs,
   colonneRecopiee,
@@ -73,8 +77,6 @@ export const DONNEES_FICTIVES =
 
 export const RENVOI_AU_DOSSIER = 'B2-05-A1-05-DOSSIER';
 export const RENVOI_A_LA_CAMIONNETTE = 'B2-05-A4-01-SITUATION-CAMIONNETTE';
-
-export const auCentime = (valeur: number): number => Number(valeur.toFixed(2));
 
 const annuiteConstante = (
   capital: number,
@@ -208,7 +210,7 @@ export const PLAN_DU_PLACEMENT = {
   ],
 };
 
-export const ATTENDUS_DU_PLACEMENT: moteur.AuMoinsUn<AttenduDeFeuille> = [
+export const ATTENDUS_DU_PLACEMENT: AuMoinsUnModifiable<AttenduDeFeuille> = [
   ...colonneRecopiee(
     {
       colonne: 'C',
@@ -265,7 +267,7 @@ export const PLAN_DE_L_EPARGNE = {
   ],
 };
 
-export const ATTENDUS_DE_L_EPARGNE: moteur.AuMoinsUn<AttenduDeFeuille> = [
+export const ATTENDUS_DE_L_EPARGNE: AuMoinsUnModifiable<AttenduDeFeuille> = [
   ...colonneRecopiee(
     {
       colonne: 'B',
@@ -340,88 +342,97 @@ export const PLAN_DE_LA_CAMIONNETTE = {
   ],
 };
 
-export const ATTENDUS_DE_LA_CAMIONNETTE: moteur.AuMoinsUn<AttenduDeFeuille> = [
-  moteur.attendu(
-    'H2',
-    FORMULE_DE_L_ANNUITE,
-    ANNUITE_DE_LA_CAMIONNETTE,
-    'references',
-    [
-      [-ANNUITE_DE_LA_CAMIONNETTE, VPM_NON_SIGNE],
-      [CAMIONNETTE / DUREE_DE_LA_CAMIONNETTE, ANNUITE_POUR_AMORTISSEMENT],
-    ],
-  ),
-  ...colonneRecopiee(
-    {
-      colonne: 'B',
-      premiereLigne: 3,
-      formule: FORMULE_DU_REPORT,
-    },
-    termes(
-      (annee) => auMillionieme(LIGNES_DE_LA_CAMIONNETTE[annee].capital),
-      1,
-      DUREE_DE_LA_CAMIONNETTE - 1,
-    ),
-  ),
-  ...colonneRecopiee(
-    {
-      colonne: 'C',
-      premiereLigne: 2,
-      formule: FORMULE_DES_INTERETS,
-      piegesDeLaRecopie: [
-        [0, NON_FIGEE],
-        [CAMIONNETTE * TAUX_DE_LA_CAMIONNETTE, CAPITAL_INITIAL],
+export const ATTENDUS_DE_LA_CAMIONNETTE: AuMoinsUnModifiable<AttenduDeFeuille> =
+  [
+    moteur.attendu(
+      'H2',
+      FORMULE_DE_L_ANNUITE,
+      ANNUITE_DE_LA_CAMIONNETTE,
+      'references',
+      [
+        [-ANNUITE_DE_LA_CAMIONNETTE, VPM_NON_SIGNE],
+        [CAMIONNETTE / DUREE_DE_LA_CAMIONNETTE, ANNUITE_POUR_AMORTISSEMENT],
       ],
-    },
-    termes(
-      (annee) => auMillionieme(LIGNES_DE_LA_CAMIONNETTE[annee].interets),
-      0,
-      DUREE_DE_LA_CAMIONNETTE - 1,
     ),
-  ),
-  ...colonneRecopiee(
-    {
-      colonne: 'D',
-      premiereLigne: 2,
-      formule: FORMULE_DE_L_AMORTISSEMENT,
-      piegesDuModele: [[ANNUITE_DE_LA_CAMIONNETTE, ANNUITE_POUR_AMORTISSEMENT]],
-      piegesDeLaRecopie: [
-        [ANNUITE_DE_LA_CAMIONNETTE, ANNUITE_POUR_AMORTISSEMENT],
+    ...colonneRecopiee(
+      {
+        colonne: 'B',
+        premiereLigne: 3,
+        formule: FORMULE_DU_REPORT,
+      },
+      termes(
+        (annee) => auMillionieme(LIGNES_DE_LA_CAMIONNETTE[annee].capital),
+        1,
+        DUREE_DE_LA_CAMIONNETTE - 1,
+      ),
+    ),
+    ...colonneRecopiee(
+      {
+        colonne: 'C',
+        premiereLigne: 2,
+        formule: FORMULE_DES_INTERETS,
+        piegesDeLaRecopie: [
+          [0, NON_FIGEE],
+          [CAMIONNETTE * TAUX_DE_LA_CAMIONNETTE, CAPITAL_INITIAL],
+        ],
+      },
+      termes(
+        (annee) => auMillionieme(LIGNES_DE_LA_CAMIONNETTE[annee].interets),
+        0,
+        DUREE_DE_LA_CAMIONNETTE - 1,
+      ),
+    ),
+    ...colonneRecopiee(
+      {
+        colonne: 'D',
+        premiereLigne: 2,
+        formule: FORMULE_DE_L_AMORTISSEMENT,
+        piegesDuModele: [
+          [ANNUITE_DE_LA_CAMIONNETTE, ANNUITE_POUR_AMORTISSEMENT],
+        ],
+        piegesDeLaRecopie: [
+          [ANNUITE_DE_LA_CAMIONNETTE, ANNUITE_POUR_AMORTISSEMENT],
+        ],
+        piegesDuRang: (annee) => [
+          [-auMillionieme(interetsSansAmortir(annee)), NON_FIGEE],
+        ],
+      },
+      termes(
+        (annee) => auMillionieme(LIGNES_DE_LA_CAMIONNETTE[annee].amortissement),
+        0,
+        DUREE_DE_LA_CAMIONNETTE - 1,
+      ),
+    ),
+    ...colonneRecopiee(
+      {
+        colonne: 'E',
+        premiereLigne: 2,
+        formule: FORMULE_DU_CAPITAL_RESTANT,
+        tolerance: moteur.DEUX_DECIMALES,
+      },
+      termes(
+        (annee) =>
+          annee < DUREE_DE_LA_CAMIONNETTE - 1
+            ? auMillionieme(LIGNES_DE_LA_CAMIONNETTE[annee + 1].capital)
+            : 0,
+        0,
+        DUREE_DE_LA_CAMIONNETTE - 1,
+      ),
+    ),
+    moteur.attendu(
+      'I2',
+      FORMULE_DU_COUT,
+      COUT_DE_LA_CAMIONNETTE,
+      'references',
+      [
+        [COUT_DE_LA_CAMIONNETTE + CAMIONNETTE, TOTAL_REMBOURSE],
+        [
+          DUREE_DE_LA_CAMIONNETTE * CAMIONNETTE * TAUX_DE_LA_CAMIONNETTE,
+          CAPITAL_INITIAL,
+        ],
       ],
-      piegesDuRang: (annee) => [
-        [-auMillionieme(interetsSansAmortir(annee)), NON_FIGEE],
-      ],
-    },
-    termes(
-      (annee) => auMillionieme(LIGNES_DE_LA_CAMIONNETTE[annee].amortissement),
-      0,
-      DUREE_DE_LA_CAMIONNETTE - 1,
     ),
-  ),
-  ...colonneRecopiee(
-    {
-      colonne: 'E',
-      premiereLigne: 2,
-      formule: FORMULE_DU_CAPITAL_RESTANT,
-      tolerance: moteur.DEUX_DECIMALES,
-    },
-    termes(
-      (annee) =>
-        annee < DUREE_DE_LA_CAMIONNETTE - 1
-          ? auMillionieme(LIGNES_DE_LA_CAMIONNETTE[annee + 1].capital)
-          : 0,
-      0,
-      DUREE_DE_LA_CAMIONNETTE - 1,
-    ),
-  ),
-  moteur.attendu('I2', FORMULE_DU_COUT, COUT_DE_LA_CAMIONNETTE, 'references', [
-    [COUT_DE_LA_CAMIONNETTE + CAMIONNETTE, TOTAL_REMBOURSE],
-    [
-      DUREE_DE_LA_CAMIONNETTE * CAMIONNETTE * TAUX_DE_LA_CAMIONNETTE,
-      CAPITAL_INITIAL,
-    ],
-  ]),
-];
+  ];
 
 type AttenduDeTableau = Parameters<typeof moteur.questionDeTableau>[2][number];
 

@@ -6,21 +6,9 @@ import {
   normalizeClientEmailDraft,
   projectPerPageAnalysis,
   toEffort,
-  toImpact,
 } from './langchain-synthesis.util';
 
 describe('langchain-synthesis.util', () => {
-  describe('toImpact', () => {
-    it('maps known values and defaults unknowns to medium', () => {
-      expect(toImpact('high')).toBe('high');
-      expect(toImpact('low')).toBe('low');
-      expect(toImpact('medium')).toBe('medium');
-      expect(toImpact('unknown')).toBe('medium');
-      expect(toImpact(undefined)).toBe('medium');
-      expect(toImpact(42)).toBe('medium');
-    });
-  });
-
   describe('toEffort', () => {
     it('buckets hours into high/medium/low with safe defaults', () => {
       expect(toEffort(10)).toBe('high');
@@ -182,7 +170,7 @@ describe('langchain-synthesis.util', () => {
       expect(synthesis.internalNotes).toContain('acme.fr');
     });
 
-    it('maps implementationBacklog entries via toImpact/toEffort', () => {
+    it('maps implementationBacklog entries via normalizeSeverity/toEffort', () => {
       const input = buildLangchainAuditInput({
         locale: 'en',
         websiteName: 'acme.com',

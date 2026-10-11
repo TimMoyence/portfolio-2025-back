@@ -224,6 +224,18 @@ describe('validateEnv', () => {
       'pg_db',
     ],
     [
+      'devrait resoudre DB_DATABASE comme les migrations',
+      { DB_NAME: undefined, DB_DATABASE: 'base_des_migrations' },
+      'DB_NAME',
+      'base_des_migrations',
+    ],
+    [
+      'devrait ignorer un DB_HOST blanc comme la connexion',
+      { DB_HOST: '  ', PGHOST: 'pg.example.com' },
+      'DB_HOST',
+      'pg.example.com',
+    ],
+    [
       'devrait extraire DB_NAME depuis DATABASE_URL si aucun alias direct',
       {
         DB_NAME: undefined,

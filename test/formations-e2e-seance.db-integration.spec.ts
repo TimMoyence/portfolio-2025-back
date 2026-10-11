@@ -51,7 +51,7 @@ import {
   coursDuCatalogue,
   EN_TETE_IDENTITE,
   installerBancFormationsVierge,
-  PREFIXE_API,
+  routeFormations,
   serveurHttpDe,
   type BancFormations,
   type FluxEcoute,
@@ -212,8 +212,7 @@ function seanceComplete(
 
       const serveur = () => serveurHttpDe(banc.app);
 
-      const chemin = (suffixe: string): string =>
-        `/${PREFIXE_API}/formations${suffixe}`;
+      const chemin = routeFormations;
 
       const avecIdentite = (
         methode: Methode,

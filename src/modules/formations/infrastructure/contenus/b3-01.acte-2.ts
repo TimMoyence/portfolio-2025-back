@@ -202,7 +202,7 @@ export const ACTE_2: moteur.Acte = [
       dureeMinutes: 8,
       concepts: ['recherche-dans-une-table', 'agregation-conditionnelle'],
       notes: moteur.puces(
-        'Temps : réflexion 1 min · travail 7 min',
+        moteur.tempsDeLExercice(1, 7),
         'Réflexion : faire nommer la famille de chaque question avant d’écrire une formule.',
         'Pièges : critère de date tout entier entre guillemets ; 15 pour 15 % ; plage de recherche non figée ; période oubliée.',
       ),
@@ -357,7 +357,7 @@ export const ACTE_2: moteur.Acte = [
       dureeMinutes: 8,
       concepts: ['calcul-sur-dates', 'indicateur-statistique'],
       notes: moteur.puces(
-        'Temps : réflexion 1 min · travail 7 min',
+        moteur.tempsDeLExercice(1, 7),
         'Réflexion : faire dire en quelle unité le contrat compte les délais avant d’écrire la colonne.',
         'Pièges : soustraire les dates ; oublier le − 1 ; résumer par la moyenne ; prendre toute la table au lieu de 2026 ; oublier l’agence, ou prendre MEDIANE sous un filtre, qui compte les lignes masquées ; faire la moyenne des taux de ligne ; diviser la marge par le coût d’achat.',
       ),
@@ -571,7 +571,7 @@ export const ACTE_2: moteur.Acte = [
       dureeMinutes: 12,
       concepts: ['tableau-croise-dynamique'],
       notes: moteur.puces(
-        'Temps : réflexion 1 min · travail 11 min',
+        moteur.tempsDeLExercice(1, 11),
         'Réflexion : faire dire, avant de construire, ce que chaque TCD montre en lignes, en colonnes et en valeurs.',
         'Pièges : % du total général ou de la colonne au lieu du % de la ligne ; filtre annee oublié au premier TCD ; resté actif au second, recopié du premier ou de l’exemple ; trimestres groupés sans les années.',
       ),

@@ -1,8 +1,12 @@
 import type {
   ExpertReportSynthesis,
   PerPageDetailedAnalysis,
+  ReportSeverity,
 } from '../../../domain/AuditReportTiers';
 import type { AuditLocale } from '../../../domain/audit-locale.util';
+import type { EngineCoverage } from '../../../domain/EngineCoverage';
+import type { DeepUrlFinding } from '../deep-url-analysis.service';
+import type { TechFingerprint } from '../schemas/audit-report.schemas';
 import type { EnTetesTechniques } from '../shared/html-signals.util';
 
 type SynthesisSectionName =
@@ -32,16 +36,7 @@ export interface LangchainAuditInput {
   keyChecks: Record<string, unknown>;
   quickWins: string[];
   pillarScores: Record<string, number>;
-  deepFindings: Array<{
-    code: string;
-    title: string;
-    description: string;
-    severity: 'high' | 'medium' | 'low';
-    confidence: number;
-    impact: 'traffic' | 'indexation' | 'conversion';
-    affectedUrls: string[];
-    recommendation: string;
-  }>;
+  deepFindings: DeepUrlFinding[];
   sampledUrls: Array<
     EnTetesTechniques & {
       url: string;
@@ -59,7 +54,7 @@ export interface LangchainAuditInput {
   >;
   pageRecaps: Array<{
     url: string;
-    priority: 'high' | 'medium' | 'low';
+    priority: ReportSeverity;
     wordingScore: number;
     trustScore: number;
     ctaScore: number;
@@ -67,50 +62,11 @@ export interface LangchainAuditInput {
     topIssues: string[];
     recommendations: string[];
     source: 'llm' | 'fallback';
-    engineScores?: {
-      google: {
-        engine: 'google';
-        score: number;
-        indexable: boolean;
-        strengths: string[];
-        blockers: string[];
-        opportunities: string[];
-      };
-      bingChatGpt: {
-        engine: 'bing_chatgpt';
-        score: number;
-        indexable: boolean;
-        strengths: string[];
-        blockers: string[];
-        opportunities: string[];
-      };
-      perplexity: {
-        engine: 'perplexity';
-        score: number;
-        indexable: boolean;
-        strengths: string[];
-        blockers: string[];
-        opportunities: string[];
-      };
-      geminiOverviews: {
-        engine: 'gemini_overviews';
-        score: number;
-        indexable: boolean;
-        strengths: string[];
-        blockers: string[];
-        opportunities: string[];
-      };
-    };
+    engineScores?: EngineCoverage;
     title?: string | null;
   }>;
   pageSummary: Record<string, unknown>;
-  techFingerprint: {
-    primaryStack: string;
-    confidence: number;
-    evidence: string[];
-    alternatives: string[];
-    unknowns: string[];
-  };
+  techFingerprint: TechFingerprint;
 }
 
 export interface LangchainAuditOutput {

@@ -1,5 +1,5 @@
-import { createHash } from 'node:crypto';
 import type { ExecutionContext } from '@nestjs/common';
+import { empreinteSha256 } from '../../../common/domain/crypto/empreintes';
 import {
   REFRESH_SANS_JETON_PAR_ADRESSE,
   REFRESH_TOKEN_COOKIE_NAME,
@@ -11,7 +11,7 @@ export function suivreParJetonDeRafraichissement(
 ): string {
   const jeton = jetonPresente(req);
   if (jeton !== null) {
-    return `refresh:${createHash('sha256').update(jeton).digest('hex')}`;
+    return `refresh:${empreinteSha256(jeton)}`;
   }
   return typeof req.ip === 'string' ? `ip:${req.ip}` : 'ip:inconnue';
 }
