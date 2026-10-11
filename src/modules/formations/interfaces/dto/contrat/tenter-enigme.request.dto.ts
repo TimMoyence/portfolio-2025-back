@@ -11,7 +11,7 @@ export class TenterEnigmeRequestDto {
 
   @ApiProperty({
     description:
-      'Saisie brute, lue par lireNombreSaisi pour une solution chiffree',
+      'Saisie brute, lue par lireNombreSaisiAvecUnite pour une solution chiffree',
     example: '142 920',
   })
   @IsString()

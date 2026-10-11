@@ -1,3 +1,4 @@
+import { lireNombreSaisiAvecUnite } from 'portfolio-2025-partage/formule';
 import {
   buildCoursDuContenu,
   prefixeDuCours,
@@ -13,7 +14,6 @@ import { deroulePresentateur } from '../../domain/cours/DeroulePresentateur';
 import { projeterCatalogue } from '../../domain/cours/Diffusion';
 import { ouvrirTirages } from '../../domain/cours/OuvertureTirages';
 import { slugOption } from '../../domain/cours/QuestionStockee';
-import { lireNombreSaisi } from '../../domain/cours/SaisieNumerique';
 import { verifierStructure } from '../../domain/cours/StructureCours';
 import { tirer } from '../../domain/cours/Tirage';
 import { CONTENUS } from './index';
@@ -167,7 +167,7 @@ describe.each(CONTENUS.map((contenu) => [contenu.slug, contenu] as const))(
           return [];
         }
         const { formePubliee, valeur, tolerance } = question.corrige.solution;
-        const relue = lireNombreSaisi(formePubliee);
+        const relue = lireNombreSaisiAvecUnite(formePubliee);
         return relue !== null && Math.abs(relue - valeur) <= tolerance.valeur
           ? []
           : [`${question.id} : ${formePubliee}`];
@@ -186,7 +186,8 @@ describe.each(CONTENUS.map((contenu) => [contenu.slug, contenu] as const))(
           return [];
         }
         const nombre = NOMBRE_EN_TETE.exec(question.formePubliee)?.[0];
-        const relue = nombre === undefined ? null : lireNombreSaisi(nombre);
+        const relue =
+          nombre === undefined ? null : lireNombreSaisiAvecUnite(nombre);
         return relue !== null &&
           matchesSolution(
             relue,

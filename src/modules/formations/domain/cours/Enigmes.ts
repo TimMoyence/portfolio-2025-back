@@ -1,10 +1,10 @@
+import { lireNombreSaisiAvecUnite } from 'portfolio-2025-partage/formule';
 import { sansDiacritiques } from '../../../../common/domain/texte/sans-diacritiques';
 import { matchesSolution } from '../GradingCore';
 import type { Cours, Ecran, QuestionProduction } from '../contrats/cours';
 import type { ProgressionEnigme } from '../contrats/resultats';
 import type { ConfusionId } from './banque/confusions';
 import type { CorrigeEnigme } from './Corrige';
-import { lireNombreSaisi } from './SaisieNumerique';
 
 const TENTATIVES_MAX_PAR_ENIGME = 10;
 
@@ -105,7 +105,7 @@ export function corrigerEnigme(
       confusion: null,
     };
   }
-  const valeur = lireNombreSaisi(saisie);
+  const valeur = lireNombreSaisiAvecUnite(saisie);
   if (valeur === null) {
     return { correcte: false, valeurNormalisee: null, confusion: null };
   }

@@ -2199,7 +2199,7 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
         "type": "string",
       },
       "reponse": {
-        "description": "Saisie brute, lue par lireNombreSaisi pour une solution chiffree",
+        "description": "Saisie brute, lue par lireNombreSaisiAvecUnite pour une solution chiffree",
         "example": "142 920",
         "type": "string",
       },
