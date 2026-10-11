@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import { of, throwError, firstValueFrom } from 'rxjs';
+import { EventEmitter } from 'node:events';
+import { of, throwError, lastValueFrom } from 'rxjs';
 import { HttpMetricsInterceptor } from './http-metrics.interceptor';
 import { createMockMetricsService } from '../../../../test/factories/metrics.factory';
 import type { MetricsService } from './metrics.service';
@@ -11,7 +12,7 @@ describe('HttpMetricsInterceptor', () => {
   let mockContext: jest.Mocked<ExecutionContext>;
   let mockCallHandler: jest.Mocked<CallHandler>;
   let mockRequest: { method: string; path: string; route?: { path: string } };
-  let mockResponse: { statusCode: number };
+  let mockResponse: EventEmitter & { statusCode: number };
 
   beforeEach(() => {
     metricsService = createMockMetricsService();
@@ -22,7 +23,7 @@ describe('HttpMetricsInterceptor', () => {
       path: '/api/test',
       route: { path: '/api/test' },
     };
-    mockResponse = { statusCode: 200 };
+    mockResponse = Object.assign(new EventEmitter(), { statusCode: 200 });
 
     const mockHttpCtx = {
       getRequest: jest.fn().mockReturnValue(mockRequest),
@@ -44,8 +45,15 @@ describe('HttpMetricsInterceptor', () => {
     status_code: '200',
   };
 
-  const intercepter = () =>
-    firstValueFrom(interceptor.intercept(mockContext, mockCallHandler));
+  const intercepter = async () => {
+    try {
+      return await lastValueFrom(
+        interceptor.intercept(mockContext, mockCallHandler),
+      );
+    } finally {
+      mockResponse.emit('close');
+    }
+  };
 
   it('devrait incrementer le compteur http_requests_total apres une requete reussie', async () => {
     await intercepter();
@@ -72,6 +80,14 @@ describe('HttpMetricsInterceptor', () => {
     expect(metricsService.httpRequestsTotal.inc).toHaveBeenCalledWith(
       LIBELLES_DE_LA_REQUETE,
     );
+  });
+
+  it('mesure une seule fois une reponse qui emet plusieurs valeurs', async () => {
+    mockCallHandler.handle.mockReturnValue(of('a', 'b', 'c'));
+
+    await intercepter();
+
+    expect(metricsService.httpRequestsTotal.inc).toHaveBeenCalledTimes(1);
   });
 
   it.each([

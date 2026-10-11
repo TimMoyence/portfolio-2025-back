@@ -1,4 +1,5 @@
 import type { CallHandler, ExecutionContext } from '@nestjs/common';
+import { EventEmitter } from 'node:events';
 import { of, throwError } from 'rxjs';
 import { firstValueFrom, lastValueFrom } from 'rxjs';
 import { InMemorySecurityEventsStore } from './in-memory-security-events-store';
@@ -32,9 +33,16 @@ interface FakeRequest {
   destroyed?: boolean;
 }
 
-interface FakeResponse {
+type FakeResponse = EventEmitter & {
   statusCode: number;
-  writableEnded: boolean;
+  writableFinished: boolean;
+};
+
+function fausseReponse(
+  statusCode: number,
+  writableFinished = true,
+): FakeResponse {
+  return Object.assign(new EventEmitter(), { statusCode, writableFinished });
 }
 
 function buildContext(
@@ -70,14 +78,20 @@ describe('SuspiciousRequestInterceptor', () => {
     interceptor = new SuspiciousRequestInterceptor(buildConfig(), store);
   });
 
-  function intercept(
+  async function intercept(
     req: FakeRequest,
     statusCode: number,
     handler: CallHandler = { handle: () => of({}) },
     target: SuspiciousRequestInterceptor = interceptor,
   ): Promise<unknown> {
-    const res: FakeResponse = { statusCode, writableEnded: true };
-    return firstValueFrom(target.intercept(buildContext(req, res), handler));
+    const res = fausseReponse(statusCode);
+    try {
+      return await firstValueFrom(
+        target.intercept(buildContext(req, res), handler),
+      );
+    } finally {
+      res.emit('close');
+    }
   }
 
   function topIPs() {
@@ -174,19 +188,33 @@ describe('SuspiciousRequestInterceptor', () => {
       },
       ip: '198.51.100.7',
     };
-    const res: FakeResponse = { statusCode: 401, writableEnded: true };
     const handler: CallHandler = {
       handle: () => throwError(() => new Error('unauthorized')),
     };
 
-    await lastValueFrom(
-      interceptor.intercept(buildContext(req, res), handler),
-    ).catch(() => undefined);
+    await expect(intercept(req, 401, handler)).rejects.toThrow('unauthorized');
 
     const top = await topIPs();
     expect(top).toHaveLength(1);
     expect(top[0].ip).toBe('198.51.100.7');
-    expect(top[0].lastReasons).toContain('ua:python-requests');
+    expect(top[0].lastReasons).toEqual(
+      expect.arrayContaining(['ua:python-requests', 'sensitive:write-4xx']),
+    );
+  });
+
+  it('marque abandonnee une reponse fermee avant d etre terminee', async () => {
+    const res = fausseReponse(200, false);
+
+    await lastValueFrom(
+      interceptor.intercept(
+        buildContext(postHeadless({ ip: '203.0.113.12' }), res),
+        { handle: () => of({}) },
+      ),
+    );
+    res.emit('close');
+
+    const top = await topIPs();
+    expect(top[0].lastReasons).toContain('http:aborted');
   });
 
   it.each([LOOPBACK_IPV4, mappedIpv6(LOOPBACK_IPV4), '::1'])(
