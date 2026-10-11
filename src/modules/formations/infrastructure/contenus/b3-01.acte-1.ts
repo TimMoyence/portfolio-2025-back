@@ -856,7 +856,7 @@ export const ACTE_1: moteur.Acte = [
       proprietes: {
         intitule: 'Exercice 4 — Nettoyer l’export',
         consigne:
-          'Essentiel : effacez d’abord le filtre de l’exercice 2, puis, sur une copie de l’onglet Commandes, nettoyez ville et ca_ht dans deux nouvelles colonnes, en N et O, sans insérer de colonne ; supprimez les doublons exacts, toutes les colonnes cochées ; ajoutez une colonne controle sur les dates brutes, =SI(OU(C2<B2;I2<=0;G2="");"À vérifier";"OK"), où C est date_livraison, B date_commande, I quantite et G commercial_id. Défi : combien de villes distinctes compte la colonne N ? Copiez-la en valeurs sur une feuille à part, puis Données › Supprimer les doublons.',
+          'Essentiel : effacez d’abord le filtre de l’exercice 2, puis, sur une copie de l’onglet Commandes, nettoyez ville et ca_ht dans deux nouvelles colonnes, en N et O, sans insérer de colonne ; supprimez les doublons exacts, toutes les colonnes cochées ; ajoutez une colonne controle sur les dates brutes, =SI(OU(C2<B2;I2<=0;G2="");"À vérifier";"OK"), où C est date_livraison, B date_commande, I quantite et G commercial_id. Défi : combien de villes distinctes compte la colonne N ? Copiez-la en valeurs sur une feuille à part, puis Données › Supprimer les doublons, case « Mes données ont des en-têtes » cochée.',
         regime: 'focus',
         ordre: 'fixe',
         questions: [

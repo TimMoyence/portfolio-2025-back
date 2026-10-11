@@ -396,7 +396,7 @@ export const ACTE_3: moteur.Acte = [
       concepts: ['tableau-de-bord'],
       notes: moteur.puces(
         'Exemple lu, pas refait : chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.',
-        'Montrer chaque geste au pupitre dans Excel ; les plus rapides reprennent les barres de données au défi de l’exercice 10.',
+        'Montrer chaque geste au pupitre dans Excel ; les étudiants reprennent les barres de données à l’exercice 10, les plus rapides le segment au défi.',
       ),
       proprietes: {
         modalite: 'solo',
@@ -457,7 +457,7 @@ export const ACTE_3: moteur.Acte = [
       proprietes: {
         intitule: 'Exercice 10 — Le tableau de bord Direction',
         consigne:
-          'Essentiel, dans un onglet Dashboard : quatre indicateurs (CA cumulé 2026, évolution par rapport à la même période de 2025, taux de marque, lignes en quarantaine) et un TCD de la marge par agence. Défi : une mise en forme conditionnelle en barres de données sur la marge de ce TCD.',
+          'Essentiel, dans un onglet Dashboard : quatre indicateurs (CA cumulé 2026, évolution par rapport à la même période de 2025, taux de marque, lignes en quarantaine) et un TCD de la marge par agence, la marge en barres de données (Accueil › Mise en forme conditionnelle › Barres de données). Défi : un segment region relié à ce TCD.',
         regime: 'focus',
         ordre: 'fixe',
         questions: [
@@ -501,7 +501,7 @@ export const ACTE_3: moteur.Acte = [
       notes: [
         'Corriger question par question, dans l’ordre où les explications se dévoilent ; s’attarder sur la moins réussie (score sous chaque correction).',
         'Projeter un tableau de bord réussi : quatre indicateurs, chacun avec sa comparaison.',
-        'Défi : Accueil › Mise en forme conditionnelle › Barres de données, sur les cellules de marge du TCD, comme à la deuxième étape de A3-08.',
+        'Défi : clic dans le TCD › Insertion › Segment (sur Mac, Analyse du tableau croisé dynamique › Segment) › region.',
         'Transition : « Ce tableau de bord raconte quatre histoires : vos recommandations. »',
       ],
     },
@@ -534,13 +534,13 @@ export const ACTE_3: moteur.Acte = [
       concepts: ['tableau-de-bord'],
       notes: moteur.puces(
         moteur.tempsDeLExercice(1, 6),
-        'Réflexion : faire relire le tableau de bord en cherchant ce qui sort de l’ordinaire : une agence, une catégorie, un délai.',
+        'Réflexion : faire relire la synthèse de l’exercice 9 et le tableau de bord en cherchant ce qui sort de l’ordinaire : une agence, une catégorie, un délai.',
         'Rouen (91,9 %) : troisième agence sous l’objectif, en recul d’environ 2 % sur un an, de −3 % à 0 % selon la catégorie, sans cause qui ressorte du détail. À surveiller, pas une histoire : un constat sans cause ne fait pas une recommandation.',
       ),
       proprietes: {
         metier: 'Analyste data — Norvane Équipement (réseau de 12 agences)',
         situation:
-          'Jeudi, Nadia Ferrand présente le réseau au comité de direction. Elle vous demande deux recommandations, tirées de votre tableau de bord ; une troisième en défi.',
+          'Jeudi, Nadia Ferrand présente le réseau au comité de direction. Elle vous demande deux recommandations, tirées de vos analyses de la séance ; une troisième en défi.',
         geste:
           'Pour chacune : un constat chiffré, sa cause trouvée dans le détail, une action précise, datée, confiée à quelqu’un.',
         consequence:

@@ -30,7 +30,7 @@
   formateur dit celles des niveaux 1 à 4 avant chaque pause ; l'étudiant rédige celles des
   niveaux 5 et 6 en fin de séance (réponses libres), que le rapport de séance conserve. Elles
   deviennent les instructions de l'agent en séance 2. Les deux écrans de règles d'avant les
-  pauses sont retirés après la séance du 13/10 : sans suivi, leurs réponses ne servaient pas.
+  pauses sont retirés à la relecture du 11/10 : sans suivi, leurs réponses ne serviraient pas.
 - **Runtime `/cours` + vrai Excel.** Le moteur `fp-sheet` ne connaît ni `INDEX`, ni
   `SOMME.SI.ENS`, ni les TCD : les manipulations se font dans Excel, et chaque atelier se
   termine par la saisie de résultats chiffrés, corrigés contre le jeu de données.
@@ -66,17 +66,17 @@ consacrée à l'agent Data Analyst.
 Cahier des charges de l'évaluation : cas pratique d'1 heure à la dernière séance ; **tableur sur
 8 points sur 20**. Couverture des points évaluables du tableur :
 
-| Point évaluable du cahier des charges     | Écran noté                   | Ailleurs                 |
-| ----------------------------------------- | ---------------------------- | ------------------------ |
-| Créer un tableau, présenter les données   | A2-11 (tableau structuré)    | A2-09                    |
-| TCD, filtres, segments, regroupements     | A1-08 (filtre), A2-11, A3-09 | A2-10, A3-08, défi A2-11 |
-| Mise en forme conditionnelle              | —                            | A3-08, défi A3-09        |
-| Calculer par pourcentage                  | A2-11, A3-05, A3-09          | défi A2-07               |
-| Graphique : créer, légender, options      | A3-05                        | A3-03, A3-04             |
-| Fonctions de recherche                    | A2-04                        | A2-03                    |
-| `SOMMEPROD`, `NB.SI.ENS`, `SOMME.SI.ENS`  | A2-04, A2-07                 | A2-03, A2-06, défi A2-04 |
-| `SERIE.JOUR.OUVRE` (et `NB.JOURS.OUVRES`) | A2-07                        | A2-06                    |
-| `DATEDIF`, `JOURSEM`, `TEMPS`             | —                            | A2-06, fiche mémo A3-11  |
+| Point évaluable du cahier des charges     | Écran noté                   | Ailleurs                           |
+| ----------------------------------------- | ---------------------------- | ---------------------------------- |
+| Créer un tableau, présenter les données   | A2-11 (tableau structuré)    | A2-09                              |
+| TCD, filtres, segments, regroupements     | A1-08 (filtre), A2-11, A3-09 | A2-10, A3-08, défis A2-11 et A3-09 |
+| Mise en forme conditionnelle              | A3-09                        | A3-08                              |
+| Calculer par pourcentage                  | A2-11, A3-05, A3-09          | défi A2-07                         |
+| Graphique : créer, légender, options      | A3-05                        | A3-03, A3-04                       |
+| Fonctions de recherche                    | A2-04                        | A2-03                              |
+| `SOMMEPROD`, `NB.SI.ENS`, `SOMME.SI.ENS`  | A2-04, A2-07                 | A2-03, A2-06, défi A2-04           |
+| `SERIE.JOUR.OUVRE` (et `NB.JOURS.OUVRES`) | A2-07                        | A2-06                              |
+| `DATEDIF`, `JOURSEM`, `TEMPS`             | —                            | A2-06, fiche mémo A3-11            |
 
 ### 1.2 Objectifs du cours
 
@@ -95,8 +95,8 @@ Cahier des charges de l'évaluation : cas pratique d'1 heure à la dernière sé
    moyen et ratio de sommes ;
 6. modéliser : tableau structuré, colonnes calculées, TCD, regroupements, segments ;
 7. choisir un graphique d'après la décision qu'il doit permettre ;
-8. assembler un tableau de bord de direction (KPI en contexte, graphiques, segments, anomalies
-   en MFC) et formuler une recommandation chiffrée.
+8. assembler un tableau de bord de direction (KPI en contexte, TCD, anomalies en MFC ; segments
+   en défi) et formuler une recommandation chiffrée.
 
 ### 1.3 Lien avec la séance 2 : l'agent Data Analyst
 
@@ -145,20 +145,20 @@ Chaque atelier porte un palier **essentiel** (les questions notées) et un palie
 dans l'énoncé, non noté, corrigé dans la correction sur place. Le défi occupe les étudiants
 rapides sans retarder la correction collective.
 
-Après la séance du 13/10, le temps de travail se cale sur une fois et demie l'estimation de
+À la relecture du 11/10, le temps de travail se cale sur une fois et demie l'estimation de
 départ, et chaque défi tient en un geste court. Les exercices courts passent à une fois et demie
 leur travail : A1-07 et A1-08 de 2 à 3 minutes, A1-13 de 4 à 6, A3-04 de 2 à 3, A3-05 de 6 à 9.
 Les ateliers longs, bornés par les 15 minutes d'un exercice noté et par le budget du gabarit,
 gagnent ce temps en allégeant leur essentiel : une question ou une construction passe au défi.
 
-| Atelier | Passe au défi                                                                 | Question notée retirée       | Travail      |
-| ------- | ----------------------------------------------------------------------------- | ---------------------------- | ------------ |
-| A1-14   | les villes distinctes                                                         | `b3-01-a1-villes`            | 12 min       |
-| A2-04   | les remises de Marseille par `NB.SI.ENS`                                      | `b3-01-a2-remises-marseille` | de 8 à 9 min |
-| A2-07   | le taux de marque du réseau et ses colonnes `cout_unitaire` et `marge`        | `b3-01-a2-taux-marge`        | 9 min        |
-| A2-11   | le segment `categorie` ; le second TCD perd la région en lignes               | —                            | 12 min       |
-| A3-09   | la MFC en barres de données ; le graphique de A3-05 et les segments sont ôtés | —                            | 12 min       |
-| A3-10   | la troisième recommandation                                                   | —                            | 6 min        |
+| Atelier | Passe au défi                                                              | Question notée retirée       | Travail      |
+| ------- | -------------------------------------------------------------------------- | ---------------------------- | ------------ |
+| A1-14   | les villes distinctes                                                      | `b3-01-a1-villes`            | 12 min       |
+| A2-04   | les remises de Marseille par `NB.SI.ENS`                                   | `b3-01-a2-remises-marseille` | de 8 à 9 min |
+| A2-07   | le taux de marque du réseau et ses colonnes `cout_unitaire` et `marge`     | `b3-01-a2-taux-marge`        | 9 min        |
+| A2-11   | le segment `categorie` ; le second TCD perd la région en lignes            | —                            | 12 min       |
+| A3-09   | le segment `region` ; le graphique de A3-05 et le second segment sont ôtés | —                            | 12 min       |
+| A3-10   | la troisième recommandation                                                | —                            | 6 min        |
 
 Le cours passe ainsi de 25 à 22 questions notées. Les valeurs des défis, dites à la correction,
 sont recalculées comme les autres (§ 5.1).
@@ -191,7 +191,7 @@ vérifiable (« une ville n'est jamais une clé : on relie par `client_id` »). 
 donnent une règle modèle par niveau ; en A3-12, elle n'est montrée qu'après la saisie.
 
 Les écrans A1-15 et A2-12, qui faisaient écrire les règles des niveaux 1 à 4 avant chaque pause,
-sont retirés après la séance du 13/10 : leurs réponses n'avaient pas de suivi. Leurs 8 minutes
+sont retirés à la relecture du 11/10 : leurs réponses n'auraient pas de suivi. Leurs 8 minutes
 vont au travail des étudiants : A1-13 + 1, A1-14 + 3, A2-04 + 1, A2-07 + 2, A2-11 + 1.
 
 ### 2.6 Règles de structure
@@ -209,10 +209,10 @@ après la validation du brainstorming :
   A1-02 ;
 - une suite d'exercices notés consécutifs dure **au moins 8 minutes**, et un exercice noté
   **au plus 15 minutes**, correction comprise : A1-07 + A1-08 passent de 7 à 8 minutes, puis à
-  10 après la séance du 13/10 (§ 2.3) ;
+  10 à la relecture du 11/10 (§ 2.3) ;
 - pour tenir 40 écrans et 180 minutes, les deux votes d'ouverture (part douteuse, clé) n'en font
   plus qu'un, à deux questions (`questionJumelle`), la carte passe à 2 minutes et le billet de
-  sortie à 5. Après la séance du 13/10, ces 5 minutes se partagent entre ce qui reste flou
+  sortie à 5. À la relecture du 11/10, ces 5 minutes se partagent entre ce qui reste flou
   (A3-13, 2 minutes) et le billet (A3-14, 3 minutes).
 
 ### 2.7 Diffusion
@@ -463,9 +463,10 @@ Rythme : 151 minutes interactives, 38 d'exposition, exposition continue de 6 min
   Une date restée en texte est signalée elle aussi (Excel classe tout texte au-dessus de tout
   nombre) : c'est voulu, une date en texte est à vérifier. Défi : compter les villes distinctes
   de la colonne N, copiée en valeurs sur une feuille à part, par Données › Supprimer les
-  doublons ; sa correction donne 48 villes, et 83 sans `SUPPRESPACE` (le comptage d'Excel
-  ignore la casse : seules les espaces en trop séparent deux écritures d'une même ville). La
-  conversion des dates ISO et le recalcul de `ca_ht`, défi de la séance du 13/10, sont retirés :
+  doublons, case « Mes données ont des en-têtes » cochée ; sa correction donne 48 villes, et 83
+  sans `SUPPRESPACE` (le comptage d'Excel ignore la casse : seules les espaces en trop séparent
+  deux écritures d'une même ville). La conversion des dates ISO et le recalcul de `ca_ht`, défi
+  de la version du 8/10, sont retirés :
   le classeur de reprise les fait. Les notes formateur citent, au piège des dates, la commande
   C-11481, ligne 3785 du brut et 3741 de la copie dédoublonnée (44 des 46 doublons sont
   au-dessus) : la formule de A1-11 la laisse en texte ; `DATEVAL` lirait « 08/04/26 » comme le
@@ -585,15 +586,16 @@ Rythme : 151 minutes interactives, 38 d'exposition, exposition continue de 6 min
 
 #### A2-07 · `B3-01-A2-07-ATELIER-DELAIS-MARGE` — 12 min · `questionnaire` · séance
 
-- Titre public : « Exercice 6 — Délais et marge »
+- Titre public : « Exercice 6 — Délais de livraison »
 - Temps : réflexion 1 min · travail 9 min · correction 2 min.
 - Essentiel : colonnes `delai`, `=NB.JOURS.OUVRES(B2;C2)-1`, et `date_promise`,
   `=SERIE.JOUR.OUVRE(B2;5)`. Défi : le taux de marque du réseau de janvier à septembre 2026, avec
   `cout_unitaire` cherché dans `Produits` par `INDEX`/`EQUIV` et `marge` = `ca_ht` − `quantite` ×
   `cout_unitaire` ; sa correction donne 32,0 %, et nomme les deux lectures fautives : 35,4 % en
   moyenne des taux de ligne, 47,0 % en divisant par le coût, qui est le taux de marge. Le défi
-  `JOURSEM` et `DATEDIF` de la séance du 13/10 est retiré : la trace écrite A2-06 garde ces
-  fonctions.
+  `JOURSEM` et `DATEDIF` de la version du 8/10 est retiré : la trace écrite A2-06 garde ces
+  fonctions. Le titre et la transition de A2-06 n'annoncent plus que les délais ; l'identifiant
+  garde son nom d'origine.
 - `b3-01-a2-delai-strasbourg` : délai médian de livraison de Strasbourg en 2026, en jours
   ouvrés ; pièges `jours-calendaires-pour-ouvres`, `valeur-extreme-ignoree`,
   `bornes-comptees-dans-le-delai` (médiane de `NB.JOURS.OUVRES` sans le − 1 : 9),
@@ -772,8 +774,8 @@ Rythme : 151 minutes interactives, 38 d'exposition, exposition continue de 6 min
 - Titre public : « Exemple guidé : MFC et segments connectés »
 - Exemple lu, pas refait : l'énoncé décrit sa feuille (une agence par ligne dès la ligne 5, taux
   d'atteinte en E, deux TCD à côté), puisque la synthèse de A3-05 n'a ni mise en page imposée ni
-  TCD ; le formateur montre les gestes au pupitre, les plus rapides reprennent les barres de
-  données au défi de A3-09.
+  TCD ; le formateur montre les gestes au pupitre, les étudiants reprennent les barres de
+  données à l'essentiel de A3-09, les plus rapides le segment au défi.
 - L'énoncé demande de faire ressortir les agences sous 95 % de leur objectif.
 - Étapes : MFC par formule `=$E5<0,95` en rouge sur le taux d'atteinte (Nouvelle règle › Utiliser
   une formule pour déterminer pour quelles cellules le format sera appliqué ; sur Mac, Style
@@ -786,10 +788,12 @@ Rythme : 151 minutes interactives, 38 d'exposition, exposition continue de 6 min
 - Titre public : « Exercice 10 — Le tableau de bord Direction »
 - Temps : réflexion 1 min · travail 12 min · correction 2 min.
 - Essentiel : onglet `Dashboard` avec 4 KPI (CA cumulé 2026, évolution par rapport à 2025, taux
-  de marque, lignes en quarantaine) et un TCD de la marge par agence. Défi : une MFC en barres
-  de données sur la marge de ce TCD (Accueil › Mise en forme conditionnelle › Barres de
-  données), comme à la deuxième étape de A3-08. Le graphique de A3-05, les segments et la mise
-  en page A4 de la séance du 13/10 sont retirés.
+  de marque, lignes en quarantaine) et un TCD de la marge par agence, la marge en barres de
+  données (Accueil › Mise en forme conditionnelle › Barres de données), comme à la deuxième
+  étape de A3-08 : la seule MFC que l'essentiel fait pratiquer, point évalué du cahier des
+  charges. Défi : un segment `region` relié à ce TCD (Insertion › Segment ; sur Mac, Analyse du
+  tableau croisé dynamique › Segment). Le graphique de A3-05, le second segment et la mise en
+  page A4 de la version du 8/10 sont retirés.
 - `b3-01-a3-evolution` : évolution du CA par rapport à janvier-septembre 2025, en % ; piège
   `evolution-sur-annee-pleine`. Elle vient avant le CA cumulé, dont la correction donne le
   numérateur (575 046 €).
@@ -809,7 +813,9 @@ Rythme : 151 minutes interactives, 38 d'exposition, exposition continue de 6 min
 #### A3-10 · `B3-01-A3-10-RECOMMANDATIONS` — 9 min · `fp-pro` · séance
 
 - Titre public : « Vos recommandations au comité »
-- Nadia demande deux recommandations ; une troisième est le défi. Trois questions libres
+- Nadia demande deux recommandations, tirées des analyses de la séance (la synthèse par agence
+  de A3-05 porte les taux d'atteinte, que le tableau de bord ne reprend plus) ; une troisième
+  est le défi. Trois questions libres
   (`recommandation-1` à `recommandation-3`, la troisième intitulée « Défi — Recommandation 3 ») :
   constat chiffré → cause → action. Correction sur place, quatre explications révélées ensemble (hors questionnaire, la
   brique dévoile tout d'un geste) et commentées une à une : les quatre histoires du
@@ -1117,7 +1123,7 @@ pourcentage ; le critère sans guillemets est `critere-sans-guillemets`.
 ### 6.1 Gabarit `b3`
 
 `GABARITS` passe de `['v3']` à `['v3', 'b3']`. Le gabarit `b3` applique `controlerBudget`
-(40 écrans, 190 minutes depuis la séance du 13/10 ; le `v3` garde 180), `controlerCycle` et `controlerTempsDesExercices`, mais pas
+(40 écrans, 190 minutes depuis la relecture du 11/10 ; le `v3` garde 180), `controlerCycle` et `controlerTempsDesExercices`, mais pas
 `controlerMiniSituation`. La colonne `gabarit` est un `varchar(20)` : aucune migration. Tests
 rouges d'abord dans le spec de la structure : un cours `b3` sans `fp-escape` se publie, un cours
 `b3` de 41 écrans ne se publie pas, un cours `v3` sans `fp-escape` reste refusé.

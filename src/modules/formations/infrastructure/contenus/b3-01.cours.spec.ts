@@ -1368,7 +1368,7 @@ describe('B3-01 — actes 2 et 3 : consignes et corrections exactes', () => {
   );
 });
 
-describe('B3-01 — retours de la séance du 13/10', () => {
+describe('B3-01 — retours de la relecture du 11/10', () => {
   it('R-04 · A1-12 · rappelle au-dessus des étapes le rôle et la syntaxe de chaque formule, sans souffler la réponse', () => {
     const exemple = COURS.ecrans.find(
       (ecran) => ecran.id === 'B3-01-A1-12-EXEMPLE-NETTOYAGE',
@@ -1504,7 +1504,7 @@ describe('B3-01 — temps de travail multiplié par 1,5, défis réduits', () =>
   it.each([
     [
       'B3-01-A1-14-ATELIER-NETTOYAGE',
-      'combien de villes distinctes compte la colonne N ? Copiez-la en valeurs sur une feuille à part, puis Données › Supprimer les doublons.',
+      'combien de villes distinctes compte la colonne N ? Copiez-la en valeurs sur une feuille à part, puis Données › Supprimer les doublons, case « Mes données ont des en-têtes » cochée.',
     ],
     [
       'B3-01-A2-04-ATELIER-RECHERCHE',
@@ -1519,10 +1519,7 @@ describe('B3-01 — temps de travail multiplié par 1,5, défis réduits', () =>
       'B3-01-A3-05-ATELIER-GRAPHIQUES',
       'un graphique en courbes du CA mensuel, 2025 et 2026 superposées, tiré d’un TCD mois × années.',
     ],
-    [
-      'B3-01-A3-09-ATELIER-DASHBOARD',
-      'une mise en forme conditionnelle en barres de données sur la marge de ce TCD.',
-    ],
+    ['B3-01-A3-09-ATELIER-DASHBOARD', 'un segment region relié à ce TCD.'],
   ])(
     '%s · finit la consigne sur un seul défi, d’une tâche',
     (screenId, defi) => {
@@ -1589,22 +1586,43 @@ describe('B3-01 — temps de travail multiplié par 1,5, défis réduits', () =>
     );
   });
 
-  it('A3-08 et A3-09 · réservent au défi les barres de données que l’exemple guidé montre', () => {
+  it('A3-08 et A3-09 · font reprendre à l’essentiel les barres de données que l’exemple guidé montre, le segment au défi', () => {
     expect(texteDe('B3-01-A3-08-EXEMPLE-MFC-SEGMENTS')).toContain(
-      'les plus rapides reprennent les barres de données au défi de l’exercice 10',
+      'les étudiants reprennent les barres de données à l’exercice 10, les plus rapides le segment au défi',
     );
     expect(consigneDe('B3-01-A3-09-ATELIER-DASHBOARD')).toContain(
-      'Essentiel, dans un onglet Dashboard : quatre indicateurs (CA cumulé 2026, évolution par rapport à la même période de 2025, taux de marque, lignes en quarantaine) et un TCD de la marge par agence.',
+      'Essentiel, dans un onglet Dashboard : quatre indicateurs (CA cumulé 2026, évolution par rapport à la même période de 2025, taux de marque, lignes en quarantaine) et un TCD de la marge par agence, la marge en barres de données (Accueil › Mise en forme conditionnelle › Barres de données).',
+    );
+    expect(texteDe('B3-01-A3-09-ATELIER-DASHBOARD')).toContain(
+      'Défi : clic dans le TCD › Insertion › Segment (sur Mac, Analyse du tableau croisé dynamique › Segment) › region.',
     );
   });
 
-  it('A3-10 · demande deux recommandations, la troisième en défi', () => {
+  it('A2-07 · n’annonce plus la marge, passée au défi, dans son titre ni dans sa transition', () => {
+    const atelier = fiche.ecranDuContenu(
+      COURS_B3_01,
+      'B3-01-A2-07-ATELIER-DELAIS-MARGE',
+    );
+
+    expect(atelier.titre).toBe('Exercice 6 — Délais de livraison');
+    expect(atelier.proprietes).toMatchObject({
+      intitule: 'Exercice 6 — Délais de livraison',
+    });
+    expect(texteDe('B3-01-A2-06-COURS-TEMPS-STATS')).toContain(
+      'Transition : « Délais de livraison du réseau : exercice 6. »',
+    );
+  });
+
+  it('A3-10 · demande deux recommandations tirées des analyses de la séance, la troisième en défi', () => {
+    expect(texteDe('B3-01-A3-10-RECOMMANDATIONS')).toContain(
+      'Réflexion : faire relire la synthèse de l’exercice 9 et le tableau de bord',
+    );
     expect(
       fiche.ecranDuContenu(COURS_B3_01, 'B3-01-A3-10-RECOMMANDATIONS')
         .proprietes,
     ).toMatchObject({
       situation: expect.stringContaining(
-        'Elle vous demande deux recommandations, tirées de votre tableau de bord ; une troisième en défi.',
+        'Elle vous demande deux recommandations, tirées de vos analyses de la séance ; une troisième en défi.',
       ),
       questionsLibres: [
         { question: 'Recommandation 1 : constat chiffré → cause → action.' },

@@ -298,7 +298,7 @@ export const ACTE_2: moteur.Acte = [
         'Faire dire pourquoi la médiane résiste à une rupture de stock livrée deux mois plus tard.',
         'SERIE.JOUR.OUVRE renvoie un numéro de série : mettre la cellule au format Date. TEMPS repart de zéro au-delà de 23 h.',
         'Sur Mac, la formule matricielle se valide par Ctrl + Maj + Retour ou ⌘ + Maj + Retour.',
-        'Transition : « Délais et marge du réseau : exercice 6. »',
+        'Transition : « Délais de livraison du réseau : exercice 6. »',
       ),
     },
     'lesson',
@@ -342,7 +342,7 @@ export const ACTE_2: moteur.Acte = [
   moteur.corrigeSurPlace(
     {
       screenId: 'B3-01-A2-07-ATELIER-DELAIS-MARGE',
-      titre: 'Exercice 6 — Délais et marge',
+      titre: 'Exercice 6 — Délais de livraison',
       diffusion: 'seance',
       brique: 'questionnaire',
       dureeMinutes: 10,
@@ -353,7 +353,7 @@ export const ACTE_2: moteur.Acte = [
         'Pièges : soustraire les dates ; oublier le − 1 ; résumer par la moyenne ; prendre toute la table au lieu de 2026 ; oublier l’agence, ou prendre MEDIANE sous un filtre, qui compte les lignes masquées.',
       ),
       proprietes: {
-        intitule: 'Exercice 6 — Délais et marge',
+        intitule: 'Exercice 6 — Délais de livraison',
         consigne:
           'Essentiel, dans l’onglet Commandes du classeur de reprise : ajoutez les colonnes delai, =NB.JOURS.OUVRES(B2;C2)-1, et date_promise, =SERIE.JOUR.OUVRE(B2;5) ; puis répondez. Défi : le taux de marque du réseau de janvier à septembre 2026 : cout_unitaire cherché dans Produits par INDEX et EQUIV, marge = ca_ht − quantite × cout_unitaire, puis marge ÷ CA HT.',
         regime: 'focus',

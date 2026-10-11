@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "ec44b6bd7c29861ffcf14c8f11aa7969cdab672f89f0fc7e35b0316b8ff92967",
+  "empreinte": "af5544d5fd96c94b05368a4242e0adaecbb44e288b5cae6213ad5b34d16a6e5b",
   "sujet": {
     "id": "b3-01-donnee-brute-decision",
     "titre": "Expert Data : de la donnée brute à la décision",
@@ -754,7 +754,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 4 — Nettoyer l’export",
-          "consigne": "Essentiel : effacez d’abord le filtre de l’exercice 2, puis, sur une copie de l’onglet Commandes, nettoyez ville et ca_ht dans deux nouvelles colonnes, en N et O, sans insérer de colonne ; supprimez les doublons exacts, toutes les colonnes cochées ; ajoutez une colonne controle sur les dates brutes, =SI(OU(C2<B2;I2<=0;G2=\"\");\"À vérifier\";\"OK\"), où C est date_livraison, B date_commande, I quantite et G commercial_id. Défi : combien de villes distinctes compte la colonne N ? Copiez-la en valeurs sur une feuille à part, puis Données › Supprimer les doublons.",
+          "consigne": "Essentiel : effacez d’abord le filtre de l’exercice 2, puis, sur une copie de l’onglet Commandes, nettoyez ville et ca_ht dans deux nouvelles colonnes, en N et O, sans insérer de colonne ; supprimez les doublons exacts, toutes les colonnes cochées ; ajoutez une colonne controle sur les dates brutes, =SI(OU(C2<B2;I2<=0;G2=\"\");\"À vérifier\";\"OK\"), où C est date_livraison, B date_commande, I quantite et G commercial_id. Défi : combien de villes distinctes compte la colonne N ? Copiez-la en valeurs sur une feuille à part, puis Données › Supprimer les doublons, case « Mes données ont des en-têtes » cochée.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -1164,11 +1164,11 @@
       {
         "id": "B3-01-A2-07-ATELIER-DELAIS-MARGE",
         "type": "questionnaire",
-        "titre": "Exercice 6 — Délais et marge",
+        "titre": "Exercice 6 — Délais de livraison",
         "duree": 12,
         "interactif": true,
         "donnees": {
-          "intitule": "Exercice 6 — Délais et marge",
+          "intitule": "Exercice 6 — Délais de livraison",
           "consigne": "Essentiel, dans l’onglet Commandes du classeur de reprise : ajoutez les colonnes delai, =NB.JOURS.OUVRES(B2;C2)-1, et date_promise, =SERIE.JOUR.OUVRE(B2;5) ; puis répondez. Défi : le taux de marque du réseau de janvier à septembre 2026 : cout_unitaire cherché dans Produits par INDEX et EQUIV, marge = ca_ht − quantite × cout_unitaire, puis marge ÷ CA HT.",
           "regime": "focus",
           "ordre": "fixe",
@@ -1772,7 +1772,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 10 — Le tableau de bord Direction",
-          "consigne": "Essentiel, dans un onglet Dashboard : quatre indicateurs (CA cumulé 2026, évolution par rapport à la même période de 2025, taux de marque, lignes en quarantaine) et un TCD de la marge par agence. Défi : une mise en forme conditionnelle en barres de données sur la marge de ce TCD.",
+          "consigne": "Essentiel, dans un onglet Dashboard : quatre indicateurs (CA cumulé 2026, évolution par rapport à la même période de 2025, taux de marque, lignes en quarantaine) et un TCD de la marge par agence, la marge en barres de données (Accueil › Mise en forme conditionnelle › Barres de données). Défi : un segment region relié à ce TCD.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -1857,7 +1857,7 @@
           "cas": {
             "id": "B3-01-A3-10-RECOMMANDATIONS",
             "metier": "Analyste data — Norvane Équipement (réseau de 12 agences)",
-            "situation": "Jeudi, Nadia Ferrand présente le réseau au comité de direction. Elle vous demande deux recommandations, tirées de votre tableau de bord ; une troisième en défi.",
+            "situation": "Jeudi, Nadia Ferrand présente le réseau au comité de direction. Elle vous demande deux recommandations, tirées de vos analyses de la séance ; une troisième en défi.",
             "geste": "Pour chacune : un constat chiffré, sa cause trouvée dans le détail, une action précise, datée, confiée à quelqu’un.",
             "consequence": "Une recommandation sans chiffre ne convainc pas ; sans cause, elle traite le symptôme ; sans action, elle ne change rien.",
             "questionsLibres": [
@@ -3257,7 +3257,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 4 — Nettoyer l’export",
-          "consigne": "Essentiel : effacez d’abord le filtre de l’exercice 2, puis, sur une copie de l’onglet Commandes, nettoyez ville et ca_ht dans deux nouvelles colonnes, en N et O, sans insérer de colonne ; supprimez les doublons exacts, toutes les colonnes cochées ; ajoutez une colonne controle sur les dates brutes, =SI(OU(C2<B2;I2<=0;G2=\"\");\"À vérifier\";\"OK\"), où C est date_livraison, B date_commande, I quantite et G commercial_id. Défi : combien de villes distinctes compte la colonne N ? Copiez-la en valeurs sur une feuille à part, puis Données › Supprimer les doublons.",
+          "consigne": "Essentiel : effacez d’abord le filtre de l’exercice 2, puis, sur une copie de l’onglet Commandes, nettoyez ville et ca_ht dans deux nouvelles colonnes, en N et O, sans insérer de colonne ; supprimez les doublons exacts, toutes les colonnes cochées ; ajoutez une colonne controle sur les dates brutes, =SI(OU(C2<B2;I2<=0;G2=\"\");\"À vérifier\";\"OK\"), où C est date_livraison, B date_commande, I quantite et G commercial_id. Défi : combien de villes distinctes compte la colonne N ? Copiez-la en valeurs sur une feuille à part, puis Données › Supprimer les doublons, case « Mes données ont des en-têtes » cochée.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -3906,7 +3906,7 @@
             }
           }
         },
-        "notes": "• 3 min ; montrer qu’une date affichée au format nombre devient un entier.\n• Faire dire pourquoi la médiane résiste à une rupture de stock livrée deux mois plus tard.\n• SERIE.JOUR.OUVRE renvoie un numéro de série : mettre la cellule au format Date. TEMPS repart de zéro au-delà de 23 h.\n• Sur Mac, la formule matricielle se valide par Ctrl + Maj + Retour ou ⌘ + Maj + Retour.\n• Transition : « Délais et marge du réseau : exercice 6. »",
+        "notes": "• 3 min ; montrer qu’une date affichée au format nombre devient un entier.\n• Faire dire pourquoi la médiane résiste à une rupture de stock livrée deux mois plus tard.\n• SERIE.JOUR.OUVRE renvoie un numéro de série : mettre la cellule au format Date. TEMPS repart de zéro au-delà de 23 h.\n• Sur Mac, la formule matricielle se valide par Ctrl + Maj + Retour ou ⌘ + Maj + Retour.\n• Transition : « Délais de livraison du réseau : exercice 6. »",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -3916,11 +3916,11 @@
       {
         "id": "B3-01-A2-07-ATELIER-DELAIS-MARGE",
         "type": "questionnaire",
-        "titre": "Exercice 6 — Délais et marge",
+        "titre": "Exercice 6 — Délais de livraison",
         "duree": 12,
         "interactif": true,
         "donnees": {
-          "intitule": "Exercice 6 — Délais et marge",
+          "intitule": "Exercice 6 — Délais de livraison",
           "consigne": "Essentiel, dans l’onglet Commandes du classeur de reprise : ajoutez les colonnes delai, =NB.JOURS.OUVRES(B2;C2)-1, et date_promise, =SERIE.JOUR.OUVRE(B2;5) ; puis répondez. Défi : le taux de marque du réseau de janvier à septembre 2026 : cout_unitaire cherché dans Produits par INDEX et EQUIV, marge = ca_ht − quantite × cout_unitaire, puis marge ÷ CA HT.",
           "regime": "focus",
           "ordre": "fixe",
@@ -4955,7 +4955,7 @@
           },
           "etayage": 0
         },
-        "notes": "• Exemple lu, pas refait : chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.\n• Montrer chaque geste au pupitre dans Excel ; les plus rapides reprennent les barres de données au défi de l’exercice 10.\n• Montrer la règle appliquée à toute la plage, de A5 à la dernière agence.\n• Transition : « Le tableau de bord Direction : exercice 10. »",
+        "notes": "• Exemple lu, pas refait : chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.\n• Montrer chaque geste au pupitre dans Excel ; les étudiants reprennent les barres de données à l’exercice 10, les plus rapides le segment au défi.\n• Montrer la règle appliquée à toute la plage, de A5 à la dernière agence.\n• Transition : « Le tableau de bord Direction : exercice 10. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -4970,7 +4970,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 10 — Le tableau de bord Direction",
-          "consigne": "Essentiel, dans un onglet Dashboard : quatre indicateurs (CA cumulé 2026, évolution par rapport à la même période de 2025, taux de marque, lignes en quarantaine) et un TCD de la marge par agence. Défi : une mise en forme conditionnelle en barres de données sur la marge de ce TCD.",
+          "consigne": "Essentiel, dans un onglet Dashboard : quatre indicateurs (CA cumulé 2026, évolution par rapport à la même période de 2025, taux de marque, lignes en quarantaine) et un TCD de la marge par agence, la marge en barres de données (Accueil › Mise en forme conditionnelle › Barres de données). Défi : un segment region relié à ce TCD.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -5044,7 +5044,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 1 min · travail 12 min · correction 2 min\n• Réflexion : faire dire les quatre indicateurs et la comparaison de chacun avant de construire.\n• Annoncer le palier défi aux plus rapides : il se corrige oralement, sans note.\n• Pièges : neuf mois comparés à douze ; toute la table au lieu de 2026 ; moyenne des taux ; marge divisée par le coût d’achat ; ligne d’en-tête comptée parmi les lignes.\n• Corriger question par question, dans l’ordre où les explications se dévoilent ; s’attarder sur la moins réussie (score sous chaque correction).\n• Projeter un tableau de bord réussi : quatre indicateurs, chacun avec sa comparaison.\n• Défi : Accueil › Mise en forme conditionnelle › Barres de données, sur les cellules de marge du TCD, comme à la deuxième étape de A3-08.\n• Transition : « Ce tableau de bord raconte quatre histoires : vos recommandations. »",
+        "notes": "• Temps : réflexion 1 min · travail 12 min · correction 2 min\n• Réflexion : faire dire les quatre indicateurs et la comparaison de chacun avant de construire.\n• Annoncer le palier défi aux plus rapides : il se corrige oralement, sans note.\n• Pièges : neuf mois comparés à douze ; toute la table au lieu de 2026 ; moyenne des taux ; marge divisée par le coût d’achat ; ligne d’en-tête comptée parmi les lignes.\n• Corriger question par question, dans l’ordre où les explications se dévoilent ; s’attarder sur la moins réussie (score sous chaque correction).\n• Projeter un tableau de bord réussi : quatre indicateurs, chacun avec sa comparaison.\n• Défi : clic dans le TCD › Insertion › Segment (sur Mac, Analyse du tableau croisé dynamique › Segment) › region.\n• Transition : « Ce tableau de bord raconte quatre histoires : vos recommandations. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [
@@ -5149,7 +5149,7 @@
           "cas": {
             "id": "B3-01-A3-10-RECOMMANDATIONS",
             "metier": "Analyste data — Norvane Équipement (réseau de 12 agences)",
-            "situation": "Jeudi, Nadia Ferrand présente le réseau au comité de direction. Elle vous demande deux recommandations, tirées de votre tableau de bord ; une troisième en défi.",
+            "situation": "Jeudi, Nadia Ferrand présente le réseau au comité de direction. Elle vous demande deux recommandations, tirées de vos analyses de la séance ; une troisième en défi.",
             "geste": "Pour chacune : un constat chiffré, sa cause trouvée dans le détail, une action précise, datée, confiée à quelqu’un.",
             "consequence": "Une recommandation sans chiffre ne convainc pas ; sans cause, elle traite le symptôme ; sans action, elle ne change rien.",
             "questionsLibres": [
@@ -5178,7 +5178,7 @@
             }
           }
         },
-        "notes": "• Temps : réflexion 1 min · travail 6 min · correction 2 min\n• Réflexion : faire relire le tableau de bord en cherchant ce qui sort de l’ordinaire : une agence, une catégorie, un délai.\n• Rouen (91,9 %) : troisième agence sous l’objectif, en recul d’environ 2 % sur un an, de −3 % à 0 % selon la catégorie, sans cause qui ressorte du détail. À surveiller, pas une histoire : un constat sans cause ne fait pas une recommandation.\n• Révéler la correction : les quatre histoires s’affichent ensemble. Les commenter une à une, en demandant à main levée qui l’avait trouvée avant de passer à la suivante.\n• Transition : « Gardez la fiche mémo, puis écrivez les règles des niveaux 5 et 6. »",
+        "notes": "• Temps : réflexion 1 min · travail 6 min · correction 2 min\n• Réflexion : faire relire la synthèse de l’exercice 9 et le tableau de bord en cherchant ce qui sort de l’ordinaire : une agence, une catégorie, un délai.\n• Rouen (91,9 %) : troisième agence sous l’objectif, en recul d’environ 2 % sur un an, de −3 % à 0 % selon la catégorie, sans cause qui ressorte du détail. À surveiller, pas une histoire : un constat sans cause ne fait pas une recommandation.\n• Révéler la correction : les quatre histoires s’affichent ensemble. Les commenter une à une, en demandant à main levée qui l’avait trouvée avant de passer à la suivante.\n• Transition : « Gardez la fiche mémo, puis écrivez les règles des niveaux 5 et 6. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -6130,7 +6130,7 @@
       {
         "id": "B3-01-A2-07-ATELIER-DELAIS-MARGE",
         "type": "ecran-verrouille",
-        "titre": "Exercice 6 — Délais et marge",
+        "titre": "Exercice 6 — Délais de livraison",
         "duree": 12,
         "interactif": false,
         "donnees": {}
