@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "1dbbf89c64cdf42c27be53aaba77b4209d0e96e325ee8c931f4229cdc5b6293c",
+  "empreinte": "00520b5b065f326f1ca11c2cd99714b8dc61c8d75e3e0c087933746843f8d654",
   "sujet": {
     "id": "b3-01-donnee-brute-decision",
     "titre": "Expert Data : de la donnée brute à la décision",
@@ -2013,7 +2013,7 @@
           "cas": {
             "id": "B3-01-A3-12-CAHIER-DE-REGLES",
             "metier": "Analyste data — Norvane Équipement (réseau de 12 agences)",
-            "situation": "Dites avant les pauses : « Je relie les tables par un identifiant, jamais par un libellé » ; « Je corrige seul ce qui est faux et certain ; je signale ce qui est douteux et je demande » ; « Avant la fonction, je nomme la famille du problème » ; « Je travaille sur un tableau structuré, jamais sur une plage fixe ».",
+            "situation": "Règles dites avant les pauses : niveau 1 « Je relie les tables par un identifiant, jamais par un libellé » ; niveau 2 « Je corrige seul ce qui est faux et certain ; je signale ce qui est douteux et je demande » ; niveau 3 « Avant la fonction, je nomme la famille du problème » ; niveau 4 « Je travaille sur un tableau structuré, jamais sur une plage fixe ».",
             "geste": "Écrivez une règle pour le niveau 5 et une pour le niveau 6, puis choisissez parmi les six celle que l’agent de la séance 2 recevra en premier.",
             "consequence": "Une règle que l’agent n’a pas reçue, il ne l’appliquera pas.",
             "questionsLibres": [
@@ -5454,7 +5454,7 @@
           "cas": {
             "id": "B3-01-A3-12-CAHIER-DE-REGLES",
             "metier": "Analyste data — Norvane Équipement (réseau de 12 agences)",
-            "situation": "Dites avant les pauses : « Je relie les tables par un identifiant, jamais par un libellé » ; « Je corrige seul ce qui est faux et certain ; je signale ce qui est douteux et je demande » ; « Avant la fonction, je nomme la famille du problème » ; « Je travaille sur un tableau structuré, jamais sur une plage fixe ».",
+            "situation": "Règles dites avant les pauses : niveau 1 « Je relie les tables par un identifiant, jamais par un libellé » ; niveau 2 « Je corrige seul ce qui est faux et certain ; je signale ce qui est douteux et je demande » ; niveau 3 « Avant la fonction, je nomme la famille du problème » ; niveau 4 « Je travaille sur un tableau structuré, jamais sur une plage fixe ».",
             "geste": "Écrivez une règle pour le niveau 5 et une pour le niveau 6, puis choisissez parmi les six celle que l’agent de la séance 2 recevra en premier.",
             "consequence": "Une règle que l’agent n’a pas reçue, il ne l’appliquera pas.",
             "questionsLibres": [

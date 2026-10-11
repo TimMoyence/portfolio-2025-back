@@ -663,7 +663,7 @@ export const ACTE_3: moteur.Acte = [
     proprietes: {
       metier: 'Analyste data — Norvane Équipement (réseau de 12 agences)',
       situation:
-        'Dites avant les pauses : « Je relie les tables par un identifiant, jamais par un libellé » ; « Je corrige seul ce qui est faux et certain ; je signale ce qui est douteux et je demande » ; « Avant la fonction, je nomme la famille du problème » ; « Je travaille sur un tableau structuré, jamais sur une plage fixe ».',
+        'Règles dites avant les pauses : niveau 1 « Je relie les tables par un identifiant, jamais par un libellé » ; niveau 2 « Je corrige seul ce qui est faux et certain ; je signale ce qui est douteux et je demande » ; niveau 3 « Avant la fonction, je nomme la famille du problème » ; niveau 4 « Je travaille sur un tableau structuré, jamais sur une plage fixe ».',
       geste:
         'Écrivez une règle pour le niveau 5 et une pour le niveau 6, puis choisissez parmi les six celle que l’agent de la séance 2 recevra en premier.',
       consequence:

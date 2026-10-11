@@ -1409,33 +1409,48 @@ describe('B3-01 — retours de la séance du 13/10', () => {
 
   it.each([
     [
+      1,
       'B3-01-A1-14-ATELIER-NETTOYAGE',
       'Je relie les tables par un identifiant, jamais par un libellé',
     ],
     [
+      2,
       'B3-01-A1-14-ATELIER-NETTOYAGE',
       'Je corrige seul ce qui est faux et certain ; je signale ce qui est douteux et je demande',
     ],
     [
+      3,
       'B3-01-A2-11-ATELIER-TCD',
       'Avant la fonction, je nomme la famille du problème',
     ],
     [
+      4,
       'B3-01-A2-11-ATELIER-TCD',
       'Je travaille sur un tableau structuré, jamais sur une plage fixe',
     ],
   ])(
-    'R-05 · affiche au cahier la règle dite avant la pause de %s : « %s »',
-    (screenIdDeLaPause, regle) => {
+    'R-05 · montre à l’étudiant, au cahier, la règle du niveau %i dite avant la pause de %s',
+    (niveau, screenIdDeLaPause, regle) => {
+      const { proprietes } = fiche.ecranDuContenu(
+        COURS_B3_01,
+        'B3-01-A3-12-CAHIER-DE-REGLES',
+      );
+
       expect(texteDe(screenIdDeLaPause)).toContain(regle);
-      expect(texteDe('B3-01-A3-12-CAHIER-DE-REGLES')).toContain(regle);
+      expect(proprietes).toMatchObject({
+        situation: expect.stringContaining(`niveau ${niveau} « ${regle}`),
+      });
     },
   );
 
-  it('R-05 · ne reproche pas au cahier une règle que l’écran n’a jamais montrée', () => {
-    expect(texteDe('B3-01-A3-12-CAHIER-DE-REGLES')).not.toContain(
-      'L’agent n’a que vos règles',
-    );
+  it('R-05 · ne promet au cahier que ce qu’il garantit : l’agent applique les règles reçues', () => {
+    expect(
+      fiche.ecranDuContenu(COURS_B3_01, 'B3-01-A3-12-CAHIER-DE-REGLES')
+        .proprietes,
+    ).toMatchObject({
+      consequence:
+        'Une règle que l’agent n’a pas reçue, il ne l’appliquera pas.',
+    });
   });
 
   it('R-06 · pose sur sa propre diapo ce qui reste flou, avant le billet qui clôt la séance', () => {

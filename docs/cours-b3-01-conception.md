@@ -806,8 +806,8 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
 - Trois questions libres : `regle-visualiser`, `regle-decider`, `regle-la-plus-utile` (« parmi
   les six règles de la séance, laquelle confieriez-vous en premier à un agent, et pourquoi ? »).
   Les règles des niveaux 1 à 4, dites avant chaque pause (notes d'A1-14 et d'A2-11), sont
-  reprises mot pour mot dans la situation de l'écran : l'étudiant compare les six sans s'en
-  souvenir de mémoire. Annonce de la séance 2 : l'agent Data Analyst.
+  reprises mot pour mot dans la situation de l'écran : l'étudiant compare les six sans avoir à
+  s'en souvenir. Annonce de la séance 2 : l'agent Data Analyst.
 
 #### A3-13 · `B3-01-A3-13-CE-QUI-RESTE-FLOU` — 2 min · `fp-pro` · séance
 
