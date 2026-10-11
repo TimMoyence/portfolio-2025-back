@@ -3,6 +3,7 @@ import { join } from 'path';
 
 const RENDERERS = [
   'src/common/infrastructure/mail/section-header.ts',
+  'src/modules/articles/infrastructure/article-broadcast.mailer.ts',
   'src/modules/audit-requests/infrastructure/automation/audit-report-html-renderer.service.ts',
   'src/modules/audit-requests/infrastructure/mail/audit-client-report.mailer.ts',
   'src/modules/audit-requests/infrastructure/mail/audit-expert-report.mailer.ts',
@@ -10,6 +11,7 @@ const RENDERERS = [
   'src/modules/audit-requests/infrastructure/mail/mail-layout.util.ts',
   'src/modules/audit-requests/infrastructure/mail/visibilite-google-ia.ts',
   'src/modules/contacts/infrastructure/ContactMailer.service.ts',
+  'src/modules/formations/infrastructure/FormationMailer.service.ts',
   'src/modules/lead-magnets/infrastructure/LeadMagnetMailer.service.ts',
   'src/modules/lead-magnets/infrastructure/ToolkitHtmlRenderer.service.ts',
   'src/modules/lead-magnets/infrastructure/toolkit-html/toolkit-html.utils.ts',
