@@ -3,6 +3,7 @@ import {
   Body,
   type CanActivate,
   Controller,
+  type ExecutionContext,
   Get,
   type MessageEvent,
   Sse,
@@ -11,6 +12,8 @@ import {
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { Test } from '@nestjs/testing';
+import type { Response } from 'express';
+import { once } from 'node:events';
 import { request as requeteNode } from 'node:http';
 import { interval, map, type Observable } from 'rxjs';
 import request from 'supertest';
@@ -23,11 +26,7 @@ import { loadSecurityConfig } from '../src/common/interfaces/security/security.c
 import { SECURITY_CONFIG } from '../src/common/interfaces/security/security.tokens';
 import { SuspiciousRequestInterceptor } from '../src/common/interfaces/security/suspicious-request.interceptor';
 import { createMockMetricsService } from './factories/metrics.factory';
-import {
-  abonnerAuFlux,
-  attendreQue,
-  patienter,
-} from './helpers/formations-harness';
+import { abonnerAuFlux, attendreQue } from './helpers/formations-harness';
 import {
   ADRESSE_BOUCLE_LOCALE,
   applicationDeLaSuite,
@@ -37,13 +36,21 @@ import {
   preparerChaqueRequete,
 } from './helpers/nest-test-app';
 
-const DUREE_DE_LA_GARDE_MS = 100;
-const COUPURE_DU_CLIENT_MS = 20;
 const ATTENTE_MAX_MS = 2000;
 
-class GardeLente implements CanActivate {
-  async canActivate(): Promise<boolean> {
-    await patienter(DUREE_DE_LA_GARDE_MS);
+let signalerLArriveeALaGarde: () => void = () => undefined;
+
+function arriveeALaGarde(): Promise<void> {
+  return new Promise((resoudre) => {
+    signalerLArriveeALaGarde = resoudre;
+  });
+}
+
+class GardeQuiAttendLaCoupure implements CanActivate {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const reponse = context.switchToHttp().getResponse<Response>();
+    signalerLArriveeALaGarde();
+    if (!reponse.destroyed) await once(reponse, 'close');
     return true;
   }
 }
@@ -56,7 +63,7 @@ class FormulaireTemoinController {
   }
 
   @Get('lent')
-  @UseGuards(GardeLente)
+  @UseGuards(GardeQuiAttendLaCoupure)
   lent(): string {
     return 'ok';
   }
@@ -67,10 +74,11 @@ class FormulaireTemoinController {
   }
 }
 
-function couperLaRequete(
+function couperLaRequeteALaGarde(
   port: number,
   chemin: string,
 ): Promise<NodeJS.ErrnoException> {
+  const arrivee = arriveeALaGarde();
   return new Promise((resoudre) => {
     const requete = requeteNode({
       host: ADRESSE_BOUCLE_LOCALE,
@@ -79,7 +87,7 @@ function couperLaRequete(
     });
     requete.once('error', resoudre);
     requete.end();
-    setTimeout(() => requete.destroy(), COUPURE_DU_CLIENT_MS);
+    void arrivee.then(() => requete.destroy());
   });
 }
 
@@ -118,6 +126,13 @@ describe('Refus anti-robot d un formulaire public — intégration HTTP', () => 
 
   beforeEach(() => jest.clearAllMocks());
 
+  function verifierUneSeuleMesure(route: string, statut: string): void {
+    expect(metriques.httpRequestsTotal.inc).toHaveBeenCalledTimes(1);
+    expect(metriques.httpRequestsTotal.inc).toHaveBeenCalledWith(
+      expect.objectContaining({ route, status_code: statut }),
+    );
+  }
+
   it.each([
     ['un refus', { website: 'https://spam.test' }, 400],
     ['une soumission acceptée', {}, 201],
@@ -129,13 +144,7 @@ describe('Refus anti-robot d un formulaire public — intégration HTTP', () => 
         .send(corps)
         .expect(statut);
 
-      expect(metriques.httpRequestsTotal.inc).toHaveBeenCalledTimes(1);
-      expect(metriques.httpRequestsTotal.inc).toHaveBeenCalledWith(
-        expect.objectContaining({
-          route: '/temoin',
-          status_code: String(statut),
-        }),
-      );
+      verifierUneSeuleMesure('/temoin', String(statut));
       expect(enregistrement).toHaveBeenCalledTimes(1);
       expect(enregistrement).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -149,24 +158,25 @@ describe('Refus anti-robot d un formulaire public — intégration HTTP', () => 
 
   async function seuleMesureApresFermeture(
     chemin: string,
+    statut: string,
   ): Promise<{ abandonnee: boolean }> {
     await attendreQue(
       () => enregistrement.mock.calls.length > 0,
-      DUREE_DE_LA_GARDE_MS + ATTENTE_MAX_MS,
+      ATTENTE_MAX_MS,
     );
-    expect(metriques.httpRequestsTotal.inc).toHaveBeenCalledTimes(1);
+    verifierUneSeuleMesure(chemin, statut);
     expect(enregistrement).toHaveBeenCalledTimes(1);
     const [evenement] = enregistrement.mock.calls[0];
     expect(evenement.path).toBe(chemin);
     return { abandonnee: evenement.reasons.includes('http:aborted') };
   }
 
-  it('mesure et note abandonnée une requête coupée avant les intercepteurs', async () => {
+  it('mesure en 499 et note abandonnée une requête coupée avant les intercepteurs', async () => {
     await expect(
-      couperLaRequete(portDe(app()), '/lent'),
+      couperLaRequeteALaGarde(portDe(app()), '/lent'),
     ).resolves.toMatchObject({ code: 'ECONNRESET' });
 
-    expect(await seuleMesureApresFermeture('/lent')).toEqual({
+    expect(await seuleMesureApresFermeture('/lent', '499')).toEqual({
       abandonnee: true,
     });
   });
@@ -176,7 +186,7 @@ describe('Refus anti-robot d un formulaire public — intégration HTTP', () => 
     await attendreQue(() => flux.evenements.length > 0, ATTENTE_MAX_MS);
     flux.fermer();
 
-    expect(await seuleMesureApresFermeture('/flux')).toEqual({
+    expect(await seuleMesureApresFermeture('/flux', '200')).toEqual({
       abandonnee: false,
     });
   });

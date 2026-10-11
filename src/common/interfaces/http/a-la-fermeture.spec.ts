@@ -46,9 +46,9 @@ describe('aLaFermeture', () => {
       true,
     ],
     [
-      'une réponse déjà fermée, qui n émettra plus close',
+      'une réponse déjà détruite, même si close arrive ensuite',
       { destroyed: true, writableFinished: false },
-      0,
+      1,
       undefined,
       true,
     ],
