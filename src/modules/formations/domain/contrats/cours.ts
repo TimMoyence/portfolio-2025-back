@@ -1,3 +1,4 @@
+import type { Diffusion } from 'portfolio-2025-partage/contrats';
 import type { AuMoinsUn } from '../../../../common/domain/au-moins-un';
 import type { Tolerance } from '../GradingCore';
 import type { ConceptId } from '../cours/banque/concepts';
@@ -23,18 +24,13 @@ import type {
   WorkedExemple,
 } from './donnees-publiques';
 
-export const DIFFUSIONS = ['catalogue', 'seance'] as const;
-export type Diffusion = (typeof DIFFUSIONS)[number];
+export {
+  DIFFUSIONS,
+  TYPES_QUESTION,
+  type Diffusion,
+  type TypeQuestion,
+} from 'portfolio-2025-partage/contrats';
 export type OrdreQuestions = 'fixe' | 'melange';
-export const TYPES_QUESTION = [
-  'numeric',
-  'vote',
-  'feuille',
-  'tableau',
-  'classement',
-  'enigme',
-] as const;
-export type TypeQuestion = (typeof TYPES_QUESTION)[number];
 
 export type SheetPlanStocke = Omit<SheetPlanPublic, 'metadonnees'>;
 export type CardsortPlanStocke = Omit<CardsortPlanPublic, 'metadonnees'>;

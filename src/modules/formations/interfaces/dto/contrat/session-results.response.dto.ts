@@ -6,7 +6,7 @@ import {
 } from '@nestjs/swagger';
 import type { TypeQuestion } from '../../../domain/contrats/cours';
 import { TYPES_QUESTION } from '../../../domain/contrats/cours';
-import type { RegleDeNotation } from '../../../domain/contrats/notation';
+import type { RegleDeNotation } from '../../../domain/RegleDeNotation';
 import type {
   ComptesJalon,
   ProgressionEnigme,

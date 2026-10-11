@@ -1,11 +1,10 @@
-export const PACING_MODES = ['pilote', 'libre'] as const;
+import type { FreeRange } from 'portfolio-2025-partage/contrats';
 
-export type PacingMode = (typeof PACING_MODES)[number];
-
-export interface FreeRange {
-  premier: number;
-  dernier: number;
-}
+export {
+  PACING_MODES,
+  type FreeRange,
+  type PacingMode,
+} from 'portfolio-2025-partage/contrats';
 
 export function isFreeRangeValid(
   range: FreeRange,

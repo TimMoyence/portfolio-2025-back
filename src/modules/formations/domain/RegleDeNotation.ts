@@ -1,19 +1,6 @@
-import type { TypeQuestion } from './contrats/cours';
+import type { RegleDeNotation } from 'portfolio-2025-partage/contrats';
 
-export interface RegleDeNotation {
-  readonly typesNotables: readonly TypeQuestion[];
-  readonly productionCompteSi: 'au-moins-une-saisie';
-  readonly statistiquesSurQuestionsNotees: boolean;
-  readonly noteMax: number;
-  readonly base: 'participation-relative-cohorte';
-  readonly partCohorteReference: number;
-  readonly ratioSeuilValidation: number;
-  readonly neSaitPasCompteCommeReponse: boolean;
-  readonly pointsNonReponse: number;
-  readonly reponsesLibresNotees: boolean;
-  readonly seuilQuestionProbleme: number;
-  readonly decimalesStatistiques: number;
-}
+export type { RegleDeNotation } from 'portfolio-2025-partage/contrats';
 
 export const REGLE_DE_NOTATION: RegleDeNotation = Object.freeze({
   typesNotables: [

@@ -1,3 +1,4 @@
+import type { Modalite } from 'portfolio-2025-partage/contrats';
 import {
   mapperAuMoinsUn,
   type AuMoinsUn,
@@ -14,8 +15,7 @@ import type { ConceptId } from './banque/concepts';
 import type { ConfusionId } from './banque/confusions';
 import type { ProprietesRecit } from './ProprietesStockees';
 
-export type Modalite = 'solo' | 'binome' | 'groupe' | 'classe';
-export type RegimeVerrou = 'ouvert' | 'focus' | 'examen';
+export type { Modalite, RegimeVerrou } from 'portfolio-2025-partage/contrats';
 
 interface QuestionLibre {
   readonly id: string;
