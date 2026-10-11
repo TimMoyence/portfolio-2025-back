@@ -8,6 +8,7 @@ import {
   type ModeratedArticle,
 } from './article-broadcast.repository';
 import { clotureDeDiffusion, estAnnulable } from './cloture-de-diffusion';
+import { ArticleId } from '../domain/article-contract';
 
 const MODERATION_LIST_LIMIT = 30;
 
@@ -82,7 +83,9 @@ export class ArticleModerationService {
   }
 
   private async find(articleId: string): Promise<ModeratedArticle> {
-    const item = await this.broadcasts.findModerated(articleId);
+    const item = ArticleId.safeParse(articleId).success
+      ? await this.broadcasts.findModerated(articleId)
+      : null;
     if (!item) throw new ResourceNotFoundError('Article not found');
     return item;
   }

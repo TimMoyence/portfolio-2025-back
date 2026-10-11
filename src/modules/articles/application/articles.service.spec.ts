@@ -83,6 +83,16 @@ describe('ArticlesService', () => {
     ).rejects.toBeInstanceOf(ResourceNotFoundError);
   });
 
+  it('répond 404 sans interroger la base pour un slug hors contrat', async () => {
+    const repository = createMockArticlesRepository();
+    const service = new ArticlesService(repository);
+
+    await expect(
+      service.getPublishedBySlug(`${payload.article.slug}\u0000`, 'fr'),
+    ).rejects.toBeInstanceOf(ResourceNotFoundError);
+    expect(repository.findPublishedBySlug.mock.calls).toHaveLength(0);
+  });
+
   it('programme la diffusion abonnés dans la même écriture que l article', async () => {
     const previous = process.env.ARTICLE_BROADCAST_DELAY_MINUTES;
     process.env.ARTICLE_BROADCAST_DELAY_MINUTES = '45';

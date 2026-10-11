@@ -5,6 +5,7 @@ import { ResourceNotFoundError } from '../../../common/domain/errors/ResourceNot
 import {
   ArticleContract,
   type ArticleIngestEnvelope,
+  ArticleSlug,
 } from '../domain/article-contract';
 import {
   type ArticleDeliveryRecord,
@@ -145,7 +146,9 @@ export class ArticlesService {
     slug: string,
     locale: 'fr' | 'en',
   ): Promise<ArticleRecord> {
-    const article = await this.articles.findPublishedBySlug(slug, locale);
+    const article = ArticleSlug.safeParse(slug).success
+      ? await this.articles.findPublishedBySlug(slug, locale)
+      : null;
     if (!article) throw new ResourceNotFoundError('Article not found');
     return article;
   }

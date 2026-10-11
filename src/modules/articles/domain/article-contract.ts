@@ -42,10 +42,18 @@ const sourceSchema = z
   })
   .strict();
 
+export const ArticleId = z
+  .string()
+  .regex(/^morning-brief-\d{4}-\d{2}-\d{2}-(fr|en)$/);
+
+export const ArticleSlug = z
+  .string()
+  .regex(/^morning-brief-\d{4}-\d{2}-\d{2}$/);
+
 const articleSchema = z
   .object({
-    article_id: z.string().regex(/^morning-brief-\d{4}-\d{2}-\d{2}-(fr|en)$/),
-    slug: z.string().regex(/^morning-brief-\d{4}-\d{2}-\d{2}$/),
+    article_id: ArticleId,
+    slug: ArticleSlug,
     locale: z.enum(['fr', 'en']),
     status: z.literal('published'),
     title: z.string().min(1).max(180),
