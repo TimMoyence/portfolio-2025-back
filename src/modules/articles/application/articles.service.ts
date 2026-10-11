@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { escapeHtml } from 'portfolio-2025-partage/html';
 import { InvalidInputError } from '../../../common/domain/errors/InvalidInputError';
 import { ResourceConflictError } from '../../../common/domain/errors/ResourceConflictError';
 import { ResourceNotFoundError } from '../../../common/domain/errors/ResourceNotFoundError';
@@ -161,11 +162,11 @@ export class ArticlesService {
     const xml = items
       .map(
         (article) =>
-          `<item><title>${this.escapeXml(article.title)}</title>` +
-          `<link>${this.escapeXml(articlePageUrl(locale, article.slug))}</link>` +
-          `<guid isPermaLink="false">${this.escapeXml(article.articleId)}</guid>` +
+          `<item><title>${escapeHtml(article.title)}</title>` +
+          `<link>${escapeHtml(articlePageUrl(locale, article.slug))}</link>` +
+          `<guid isPermaLink="false">${escapeHtml(article.articleId)}</guid>` +
           `<pubDate>${article.publishedAt.toUTCString()}</pubDate>` +
-          `<description>${this.escapeXml(article.excerpt)}</description></item>`,
+          `<description>${escapeHtml(article.excerpt)}</description></item>`,
       )
       .join('');
     const lastBuild = items.reduce<Date | null>(
@@ -180,9 +181,9 @@ export class ArticlesService {
       '<?xml version="1.0" encoding="UTF-8"?>' +
       '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel>' +
       `<title>Asili Design — Articles</title>` +
-      `<link>${this.escapeXml(urlDuSite() + '/' + locale + '/articles')}</link>` +
-      `<description>${this.escapeXml(FEED_DESCRIPTION[locale])}</description>` +
-      `<atom:link href="${this.escapeXml(selfUrl)}" rel="self" type="application/rss+xml"/>` +
+      `<link>${escapeHtml(urlDuSite() + '/' + locale + '/articles')}</link>` +
+      `<description>${escapeHtml(FEED_DESCRIPTION[locale])}</description>` +
+      `<atom:link href="${escapeHtml(selfUrl)}" rel="self" type="application/rss+xml"/>` +
       `<language>${FEED_LANGUAGE[locale]}</language>` +
       `<lastBuildDate>${(lastBuild ?? new Date()).toUTCString()}</lastBuildDate>` +
       `${xml}</channel></rss>`
@@ -219,14 +220,5 @@ export class ArticlesService {
     if (!cursor) return 0;
     const value = Number(Buffer.from(cursor, 'base64url').toString('utf8'));
     return Number.isSafeInteger(value) && value >= 0 ? value : 0;
-  }
-
-  private escapeXml(value: string): string {
-    return value
-      .replaceAll('&', '&amp;')
-      .replaceAll('<', '&lt;')
-      .replaceAll('>', '&gt;')
-      .replaceAll('"', '&quot;')
-      .replaceAll("'", '&apos;');
   }
 }

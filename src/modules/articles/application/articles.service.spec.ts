@@ -173,6 +173,21 @@ describe('ArticlesService.feed', () => {
     expect(xml).toContain('<language>en</language>');
   });
 
+  it('échappe le titre et le résumé d un article comme le reste du HTML servi', async () => {
+    const xml = await feedOf('fr', [
+      {
+        ...articleRecord(),
+        title: `L'IA <vraie> & "fausse"`,
+        excerpt: `Qu'en dire ?`,
+      },
+    ]);
+
+    expect(xml).toContain(
+      '<title>L&#39;IA &lt;vraie&gt; &amp; &quot;fausse&quot;</title>',
+    );
+    expect(xml).toContain('<description>Qu&#39;en dire ?</description>');
+  });
+
   it('reste un flux valide sans article publié', async () => {
     const xml = await feedOf('fr', []);
 
