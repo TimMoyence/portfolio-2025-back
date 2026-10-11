@@ -75,23 +75,40 @@ describe('ArticlesService', () => {
     repository.findPublishedBySlug.mockResolvedValue(null);
     const service = new ArticlesService(repository);
 
-    await expect(service.getDelivery('inconnue')).rejects.toBeInstanceOf(
-      ResourceNotFoundError,
-    );
     await expect(
-      service.getPublishedBySlug('inconnu', 'fr'),
+      service.getDelivery(payload.delivery_id),
     ).rejects.toBeInstanceOf(ResourceNotFoundError);
+    await expect(
+      service.getPublishedBySlug(payload.article.slug, 'fr'),
+    ).rejects.toBeInstanceOf(ResourceNotFoundError);
+    expect(repository.findDelivery.mock.calls).toEqual([[payload.delivery_id]]);
+    expect(repository.findPublishedBySlug.mock.calls).toHaveLength(1);
   });
 
-  it('répond 404 sans interroger la base pour un slug hors contrat', async () => {
-    const repository = createMockArticlesRepository();
-    const service = new ArticlesService(repository);
+  it.each([
+    [
+      'un slug',
+      (service: ArticlesService) =>
+        service.getPublishedBySlug(`${payload.article.slug}\u0000`, 'fr'),
+      'findPublishedBySlug',
+    ],
+    [
+      'une livraison',
+      (service: ArticlesService) =>
+        service.getDelivery(`${payload.delivery_id}\u0000`),
+      'findDelivery',
+    ],
+  ] as const)(
+    'répond 404 sans interroger la base pour %s hors contrat',
+    async (_nom, lire, lecture) => {
+      const repository = createMockArticlesRepository();
 
-    await expect(
-      service.getPublishedBySlug(`${payload.article.slug}\u0000`, 'fr'),
-    ).rejects.toBeInstanceOf(ResourceNotFoundError);
-    expect(repository.findPublishedBySlug.mock.calls).toHaveLength(0);
-  });
+      await expect(
+        lire(new ArticlesService(repository)),
+      ).rejects.toBeInstanceOf(ResourceNotFoundError);
+      expect(repository[lecture].mock.calls).toHaveLength(0);
+    },
+  );
 
   it('programme la diffusion abonnés dans la même écriture que l article', async () => {
     const previous = process.env.ARTICLE_BROADCAST_DELAY_MINUTES;

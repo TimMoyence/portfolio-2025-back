@@ -6,6 +6,7 @@ import {
   ArticleContract,
   type ArticleIngestEnvelope,
   ArticleSlug,
+  DeliveryId,
 } from '../domain/article-contract';
 import {
   type ArticleDeliveryRecord,
@@ -114,7 +115,9 @@ export class ArticlesService {
   async getDelivery(
     deliveryId: string,
   ): Promise<ArticleDeliveryRecord & { articleId: string }> {
-    const delivery = await this.articles.findDelivery(deliveryId);
+    const delivery = DeliveryId.safeParse(deliveryId).success
+      ? await this.articles.findDelivery(deliveryId)
+      : null;
     if (!delivery) throw new ResourceNotFoundError('Delivery not found');
     const article = await this.articles.findArticleByRecordId(
       delivery.articleRecordId,
