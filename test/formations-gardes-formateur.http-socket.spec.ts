@@ -55,6 +55,7 @@ const ROUTES_FORMATEUR: readonly RouteFormateur[] = [
   { methode: 'get', chemin: `sessions/${SESSION_ID}/presenter-stream` },
   { methode: 'get', chemin: `sessions/${SESSION_ID}/results` },
   { methode: 'get', chemin: `sessions/${SESSION_ID}/report` },
+  { methode: 'get', chemin: `sessions/${SESSION_ID}/report.csv` },
   { methode: 'get', chemin: `sessions/${SESSION_ID}/deroule` },
   {
     methode: 'get',

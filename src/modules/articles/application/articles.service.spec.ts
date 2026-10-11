@@ -1,4 +1,6 @@
-import { ConflictException } from '@nestjs/common';
+import { InvalidInputError } from '../../../common/domain/errors/InvalidInputError';
+import { ResourceConflictError } from '../../../common/domain/errors/ResourceConflictError';
+import { ResourceNotFoundError } from '../../../common/domain/errors/ResourceNotFoundError';
 import {
   type ArticleDeliveryRecord,
   type ArticleRecord,
@@ -81,7 +83,32 @@ describe('ArticlesService', () => {
 
     await expect(
       service.ingest(otherPayload, 'idempotency-1', 'nonce-1'),
-    ).rejects.toBeInstanceOf(ConflictException);
+    ).rejects.toBeInstanceOf(ResourceConflictError);
+  });
+
+  it('refuse une livraison hors contrat ou sans clé d idempotence par une erreur de domaine', async () => {
+    const service = new ArticlesService({} as ArticlesRepository);
+
+    await expect(
+      service.ingest({ article: {} }, 'idempotency-1', 'nonce-1'),
+    ).rejects.toBeInstanceOf(InvalidInputError);
+    await expect(service.ingest(payload, '', 'nonce-1')).rejects.toBeInstanceOf(
+      InvalidInputError,
+    );
+  });
+
+  it('signale une livraison ou un article introuvable par une erreur de domaine', async () => {
+    const service = new ArticlesService({
+      findDelivery: jest.fn().mockResolvedValue(null),
+      findPublishedBySlug: jest.fn().mockResolvedValue(null),
+    } as unknown as ArticlesRepository);
+
+    await expect(service.getDelivery('inconnue')).rejects.toBeInstanceOf(
+      ResourceNotFoundError,
+    );
+    await expect(
+      service.getPublishedBySlug('inconnu', 'fr'),
+    ).rejects.toBeInstanceOf(ResourceNotFoundError);
   });
 
   it('programme la diffusion abonnés dans la même écriture que l article', async () => {

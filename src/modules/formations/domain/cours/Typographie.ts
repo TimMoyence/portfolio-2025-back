@@ -1,4 +1,5 @@
 import { estObjet } from '../../../../common/domain/est-objet';
+import { estUneFormule } from 'portfolio-2025-partage/formule';
 
 export const ESPACE_INSECABLE = String.fromCodePoint(0xa0);
 
@@ -21,10 +22,6 @@ function ordinal(
   return premier !== undefined && genre !== undefined
     ? `${premier}${EXPOSANTS_DU_PREMIER[genre]}`
     : `${rang}ᵉ`;
-}
-
-function estUneFormule(texte: string): boolean {
-  return texte.startsWith('=');
 }
 
 export function typographier(texte: string): string {

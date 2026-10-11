@@ -662,6 +662,25 @@ describe('Session de formation (e2e http socket)', () => {
       );
     });
 
+    it('sert au formateur le csv de la seance en piece jointe nommee par son code', async () => {
+      const { sessionId, code } = await http.ouvrirSession();
+
+      const csv = await http.lireEnFormateur(sessionId, 'report.csv');
+
+      expect({
+        statut: csv.status,
+        type: csv.headers['content-type'],
+        disposition: csv.headers['content-disposition'],
+        entete: csv.text.slice(1).split('\r\n')[0],
+      }).toEqual({
+        statut: 200,
+        type: 'text/csv; charset=utf-8',
+        disposition: `attachment; filename="session-${code}.csv"`,
+        entete:
+          'prénom;nom;email;question;concept;réponse;correcte;confusion;durée_ms',
+      });
+    });
+
     it('documente le guide formateur que le deroule rend avec chaque ecran', async () => {
       const { sessionId } = await http.ouvrirSession(COURS_GUIDE.slug);
 
@@ -1225,7 +1244,7 @@ describe('Session de formation (e2e http socket)', () => {
     });
 
     it('ne persiste aucun score a la lecture des resultats ni du bilan', async () => {
-      for (const lecture of ['results', 'report']) {
+      for (const lecture of ['results', 'report', 'report.csv']) {
         await http.lireEnFormateur(sessionId, lecture).expect(200);
       }
 

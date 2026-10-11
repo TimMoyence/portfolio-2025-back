@@ -129,6 +129,9 @@ importers:
       pino-http:
         specifier: ^11.0.0
         version: 11.0.0
+      portfolio-2025-partage:
+        specifier: https://github.com/TimMoyence/portfolio-2025-partage/releases/download/v1.0.0/portfolio-2025-partage-1.0.0.tgz
+        version: https://github.com/TimMoyence/portfolio-2025-partage/releases/download/v1.0.0/portfolio-2025-partage-1.0.0.tgz
       prom-client:
         specifier: ^15.1.3
         version: 15.1.3
@@ -4944,6 +4947,11 @@ packages:
   pluralize@8.0.0:
     resolution: {integrity: sha512-Nc3IT5yHzflTfbjgqWcCPpo7DaKy4FnpB0l/zCAW0Tc7jxAiuqSxHasntB3D7887LSrA93kDJ9IXovxJYxyLCA==}
     engines: {node: '>=4'}
+
+  portfolio-2025-partage@https://github.com/TimMoyence/portfolio-2025-partage/releases/download/v1.0.0/portfolio-2025-partage-1.0.0.tgz:
+    resolution: {integrity: sha512-/U0njYBG23Sk/onlNF6buq+Thvd2Y3crqxQLTPhvKuKK3CTGgwAZVnrOv8gHWticg3y4CXyokrA0xMWQn13eNA==, tarball: https://github.com/TimMoyence/portfolio-2025-partage/releases/download/v1.0.0/portfolio-2025-partage-1.0.0.tgz}
+    version: 1.0.0
+    engines: {node: '>=20'}
 
   possible-typed-array-names@1.1.0:
     resolution: {integrity: sha512-/+5VFTchJDoVj3bhoqi6UeymcD00DAwb1nJwamzPvHEszJ4FpF6SNNbUbOS8yI56qHzdV8eK0qEfOSiodkTdxg==}
@@ -11406,6 +11414,8 @@ snapshots:
       find-up: 4.1.0
 
   pluralize@8.0.0: {}
+
+  portfolio-2025-partage@https://github.com/TimMoyence/portfolio-2025-partage/releases/download/v1.0.0/portfolio-2025-partage-1.0.0.tgz: {}
 
   possible-typed-array-names@1.1.0: {}
 

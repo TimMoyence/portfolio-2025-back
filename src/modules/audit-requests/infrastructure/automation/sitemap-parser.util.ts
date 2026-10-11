@@ -43,18 +43,14 @@ export function parseSitemapXml(
   xmlContent: string,
   maxUrls: number,
 ): ParsedSitemap {
-  try {
-    const parsed = parser.parse(xmlContent) as Record<string, unknown>;
-    const urls = collectLocs(parsed.urlset, 'url', maxUrls);
-    const sitemapUrls = collectLocs(parsed.sitemapindex, 'sitemap', maxUrls);
+  const parsed = parser.parse(xmlContent) as Record<string, unknown>;
+  const urls = collectLocs(parsed.urlset, 'url', maxUrls);
+  const sitemapUrls = collectLocs(parsed.sitemapindex, 'sitemap', maxUrls);
 
-    return {
-      urls: Array.from(urls).slice(0, maxUrls),
-      sitemapUrls: Array.from(sitemapUrls).slice(0, maxUrls),
-    };
-  } catch {
-    return { urls: [], sitemapUrls: [] };
-  }
+  return {
+    urls: Array.from(urls).slice(0, maxUrls),
+    sitemapUrls: Array.from(sitemapUrls).slice(0, maxUrls),
+  };
 }
 
 export function pickUrlSample(

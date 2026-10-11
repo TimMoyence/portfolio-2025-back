@@ -1,3 +1,4 @@
+import type { StatutScore } from 'portfolio-2025-partage/score';
 import type { EngineCoverage } from './EngineCoverage';
 
 export type ReportSeverity = 'high' | 'medium' | 'low';
@@ -25,7 +26,7 @@ export interface ClientReportSynthesis {
     readonly pillar: string;
     readonly score: number;
     readonly target: number;
-    readonly status: 'critical' | 'warning' | 'ok';
+    readonly status: StatutScore;
   }>;
   readonly quickWins: ReadonlyArray<{
     readonly title: string;

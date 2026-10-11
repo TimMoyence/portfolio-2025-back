@@ -94,9 +94,10 @@ export function loadAuditAutomationConfig(): AuditAutomationConfig {
     envInt('AUDIT_LLM_SECTION_RETRY_MIN_REMAINING_MS', 8_000),
   );
   const llmInflightMax = Math.max(1, envInt('AUDIT_LLM_INFLIGHT_MAX', 8));
-  const llmProfileCanaryPercent = Math.max(
+  const llmProfileCanaryPercent = borner(
+    envInt('AUDIT_LLM_PROFILE_CANARY_PERCENT', 100),
     0,
-    Math.min(100, envInt('AUDIT_LLM_PROFILE_CANARY_PERCENT', 100)),
+    100,
   );
   const pageAiCircuitBreakerMinSamples = Math.max(
     1,

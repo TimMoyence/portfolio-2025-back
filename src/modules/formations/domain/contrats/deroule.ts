@@ -5,7 +5,7 @@ import type {
 } from '../cours/Cours';
 import type { FormeFormule } from '../cours/Corrige';
 import type { CorrigePresentateur } from '../cours/DeroulePresentateur';
-import type { ValeurFormule } from '../cours/Formule';
+import type { ValeurFormule } from 'portfolio-2025-partage/formule';
 import type { Diffusion } from './cours';
 import type { CoursPublic, EcranPublic } from './tirage';
 

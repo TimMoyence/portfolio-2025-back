@@ -336,7 +336,6 @@ export class AuthController {
   async register(@Body() dto: CreateUserDto): Promise<AuthMessageResponseDto> {
     await this.createUsersUseCase.execute({
       ...dto,
-      roles: [],
       updatedOrCreatedBy: 'self-registration',
     });
     return {
