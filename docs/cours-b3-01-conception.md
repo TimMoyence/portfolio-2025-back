@@ -41,7 +41,7 @@
   seulement : Excel pour Mac n'en a pas) ont chacun l'encadré qui nomme leurs versions.
 - **Fil rouge : Norvane Équipement**, réseau commercial fictif de 12 agences, 36 commerciaux,
   ≈ 4 000 lignes de commande de janvier 2025 à septembre 2026, avec des anomalies semées en
-  nombre connu et quatre « histoires cachées » que le tableau de bord doit révéler.
+  nombre connu et quatre « histoires cachées » que les analyses de la séance doivent révéler.
 - **Une grille 2 × 2 de la qualité des données** (faux / suspect × correction automatique / à
   demander à un humain), règle d'or : rien de douteux ne se corrige seul ; on ne supprime pas, on
   signale. C'est aussi la logique de l'agent de la séance 2.
@@ -93,10 +93,10 @@ Cahier des charges de l'évaluation : cas pratique d'1 heure à la dernière sé
    choisir la fonction qui le résout ;
 5. calculer sous conditions et sur des dates ouvrées, et distinguer moyenne et médiane, taux
    moyen et ratio de sommes ;
-6. modéliser : tableau structuré, colonnes calculées, TCD, regroupements, segments ;
+6. modéliser : tableau structuré, colonnes calculées, TCD, regroupements (segments en défi) ;
 7. choisir un graphique d'après la décision qu'il doit permettre ;
-8. assembler un tableau de bord de direction (KPI en contexte, TCD, anomalies en MFC ; segments
-   en défi) et formuler une recommandation chiffrée.
+8. assembler un tableau de bord de direction (KPI en contexte, TCD, la marge en barres de
+   données (MFC) ; segments en défi) et formuler une recommandation chiffrée.
 
 ### 1.3 Lien avec la séance 2 : l'agent Data Analyst
 
@@ -594,8 +594,8 @@ Rythme : 151 minutes interactives, 38 d'exposition, exposition continue de 6 min
   `cout_unitaire` ; sa correction donne 32,0 %, et nomme les deux lectures fautives : 35,4 % en
   moyenne des taux de ligne, 47,0 % en divisant par le coût, qui est le taux de marge. Le défi
   `JOURSEM` et `DATEDIF` de la version du 8/10 est retiré : la trace écrite A2-06 garde ces
-  fonctions. Le titre et la transition de A2-06 n'annoncent plus que les délais ; l'identifiant
-  garde son nom d'origine.
+  fonctions. Son titre, et la transition de A2-06, n'annoncent plus que les délais ;
+  l'identifiant garde son nom d'origine.
 - `b3-01-a2-delai-strasbourg` : délai médian de livraison de Strasbourg en 2026, en jours
   ouvrés ; pièges `jours-calendaires-pour-ouvres`, `valeur-extreme-ignoree`,
   `bornes-comptees-dans-le-delai` (médiane de `NB.JOURS.OUVRES` sans le − 1 : 9),
@@ -808,7 +808,9 @@ Rythme : 151 minutes interactives, 38 d'exposition, exposition continue de 6 min
   remédié vers A1-05. La correction explique l'écart avec A1-14 : 85 lignes « À vérifier », moins
   les 40 dates ISO (F5), plus 9 produits inconnus (H1) et 6 prix hors norme (S3) : 60.
 - Notes de correction : corriger dans l'ordre où les explications se dévoilent, s'attarder sur
-  la moins réussie.
+  la moins réussie ; projeter les quatre indicateurs et le TCD de la marge en barres de données,
+  posées sur les seules cellules des agences (le total général écraserait les autres barres).
+  Transition : vos analyses de la séance racontent quatre histoires.
 
 #### A3-10 · `B3-01-A3-10-RECOMMANDATIONS` — 9 min · `fp-pro` · séance
 
@@ -919,7 +921,7 @@ lignes. Le classeur de reprise recalcule F4 et met H1 et S3 en quarantaine.
 
 ### 4.4 Les quatre histoires cachées
 
-| Histoire                 | Paramètre semé                                                                                                                                                                                                                                                                             | Ce que le tableau de bord montre                                                           |
+| Histoire                 | Paramètre semé                                                                                                                                                                                                                                                                             | Ce que les analyses de la séance montrent                                                  |
 | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ |
 | Marseille, la marge fond | à partir de janvier 2026, le commercial C26 reçoit chaque commande de l'agence avec une probabilité de 45 % (avec la graine : 39 % des commandes, 41 % des lignes) et accorde des remises de 18 à 30 % (réseau : 0 à 10 %)                                                                 | CA au-dessus de l'objectif, taux de marque en chute                                        |
 | Rennes, sous l'objectif  | l'informatique de Rennes baisse de 40 % en 2026 par rapport à 2025, les autres catégories sans paramètre semé (avec la graine, de −4 % à +2 %)                                                                                                                                             | taux d'atteinte le plus bas du réseau                                                      |

@@ -500,9 +500,9 @@ export const ACTE_3: moteur.Acte = [
       minutes: 2,
       notes: [
         'Corriger question par question, dans l’ordre où les explications se dévoilent ; s’attarder sur la moins réussie (score sous chaque correction).',
-        'Projeter un tableau de bord réussi : quatre indicateurs, chacun avec sa comparaison.',
+        'Projeter un tableau de bord réussi : quatre indicateurs, chacun avec sa comparaison, et le TCD de la marge par agence en barres de données, posées sur les seules cellules des agences : le total général écraserait les autres barres.',
         'Défi : clic dans le TCD › Insertion › Segment (sur Mac, Analyse du tableau croisé dynamique › Segment) › region.',
-        'Transition : « Ce tableau de bord raconte quatre histoires : vos recommandations. »',
+        'Transition : « Vos analyses de la séance racontent quatre histoires : vos recommandations. »',
       ],
     },
     [

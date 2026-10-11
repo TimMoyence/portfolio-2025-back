@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "af5544d5fd96c94b05368a4242e0adaecbb44e288b5cae6213ad5b34d16a6e5b",
+  "empreinte": "f9133ac6e3217b894777292d9098a573c3dcca449481e861f3f0b226580fc2f5",
   "sujet": {
     "id": "b3-01-donnee-brute-decision",
     "titre": "Expert Data : de la donnée brute à la décision",
@@ -5044,7 +5044,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 1 min · travail 12 min · correction 2 min\n• Réflexion : faire dire les quatre indicateurs et la comparaison de chacun avant de construire.\n• Annoncer le palier défi aux plus rapides : il se corrige oralement, sans note.\n• Pièges : neuf mois comparés à douze ; toute la table au lieu de 2026 ; moyenne des taux ; marge divisée par le coût d’achat ; ligne d’en-tête comptée parmi les lignes.\n• Corriger question par question, dans l’ordre où les explications se dévoilent ; s’attarder sur la moins réussie (score sous chaque correction).\n• Projeter un tableau de bord réussi : quatre indicateurs, chacun avec sa comparaison.\n• Défi : clic dans le TCD › Insertion › Segment (sur Mac, Analyse du tableau croisé dynamique › Segment) › region.\n• Transition : « Ce tableau de bord raconte quatre histoires : vos recommandations. »",
+        "notes": "• Temps : réflexion 1 min · travail 12 min · correction 2 min\n• Réflexion : faire dire les quatre indicateurs et la comparaison de chacun avant de construire.\n• Annoncer le palier défi aux plus rapides : il se corrige oralement, sans note.\n• Pièges : neuf mois comparés à douze ; toute la table au lieu de 2026 ; moyenne des taux ; marge divisée par le coût d’achat ; ligne d’en-tête comptée parmi les lignes.\n• Corriger question par question, dans l’ordre où les explications se dévoilent ; s’attarder sur la moins réussie (score sous chaque correction).\n• Projeter un tableau de bord réussi : quatre indicateurs, chacun avec sa comparaison, et le TCD de la marge par agence en barres de données, posées sur les seules cellules des agences : le total général écraserait les autres barres.\n• Défi : clic dans le TCD › Insertion › Segment (sur Mac, Analyse du tableau croisé dynamique › Segment) › region.\n• Transition : « Vos analyses de la séance racontent quatre histoires : vos recommandations. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [

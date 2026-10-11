@@ -1598,6 +1598,18 @@ describe('B3-01 — temps de travail multiplié par 1,5, défis réduits', () =>
     );
   });
 
+  it('A3-09 · corrige les barres de données de l’essentiel, et ne fait pas raconter les histoires au seul tableau de bord', () => {
+    const texte = texteDe('B3-01-A3-09-ATELIER-DASHBOARD');
+
+    expect(texte).toContain(
+      'Projeter un tableau de bord réussi : quatre indicateurs, chacun avec sa comparaison, et le TCD de la marge par agence en barres de données, posées sur les seules cellules des agences : le total général écraserait les autres barres.',
+    );
+    expect(texte).toContain(
+      'Transition : « Vos analyses de la séance racontent quatre histoires : vos recommandations. »',
+    );
+    expect(texte).not.toContain('Ce tableau de bord raconte');
+  });
+
   it('A2-07 · n’annonce plus la marge, passée au défi, dans son titre ni dans sa transition', () => {
     const atelier = fiche.ecranDuContenu(
       COURS_B3_01,
