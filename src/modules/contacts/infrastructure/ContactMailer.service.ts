@@ -1,10 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ExpediteurSmtp } from '../../../common/infrastructure/mail/expediteur-smtp';
-import {
-  escapeHtml,
-  escapeUrl,
-  safeHtml,
-} from '../../../common/infrastructure/mail/html-escape.util';
+import { escapeHtml, escapeUrl, safeHtml } from 'portfolio-2025-partage/html';
 import { destinataireDesNotifications } from '../../../config/adresses-de-courriel';
 import { Contacts } from '../domain/Contacts';
 import type { IContactNotifier } from '../domain/IContactNotifier';

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { safeHtml } from '../../../common/infrastructure/mail/html-escape.util';
+import { safeHtml } from 'portfolio-2025-partage/html';
 import type {
   IEmailVerificationNotifier,
   EmailVerificationNotificationPayload,
