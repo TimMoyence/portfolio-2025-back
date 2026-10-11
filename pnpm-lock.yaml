@@ -130,8 +130,8 @@ importers:
         specifier: ^11.0.0
         version: 11.0.0
       portfolio-2025-partage:
-        specifier: https://github.com/TimMoyence/portfolio-2025-partage/releases/download/v1.0.0/portfolio-2025-partage-1.0.0.tgz
-        version: https://github.com/TimMoyence/portfolio-2025-partage/releases/download/v1.0.0/portfolio-2025-partage-1.0.0.tgz
+        specifier: https://github.com/TimMoyence/portfolio-2025-partage/releases/download/v1.1.0/portfolio-2025-partage-1.1.0.tgz
+        version: https://github.com/TimMoyence/portfolio-2025-partage/releases/download/v1.1.0/portfolio-2025-partage-1.1.0.tgz
       prom-client:
         specifier: ^15.1.3
         version: 15.1.3
@@ -4948,9 +4948,9 @@ packages:
     resolution: {integrity: sha512-Nc3IT5yHzflTfbjgqWcCPpo7DaKy4FnpB0l/zCAW0Tc7jxAiuqSxHasntB3D7887LSrA93kDJ9IXovxJYxyLCA==}
     engines: {node: '>=4'}
 
-  portfolio-2025-partage@https://github.com/TimMoyence/portfolio-2025-partage/releases/download/v1.0.0/portfolio-2025-partage-1.0.0.tgz:
-    resolution: {integrity: sha512-/U0njYBG23Sk/onlNF6buq+Thvd2Y3crqxQLTPhvKuKK3CTGgwAZVnrOv8gHWticg3y4CXyokrA0xMWQn13eNA==, tarball: https://github.com/TimMoyence/portfolio-2025-partage/releases/download/v1.0.0/portfolio-2025-partage-1.0.0.tgz}
-    version: 1.0.0
+  portfolio-2025-partage@https://github.com/TimMoyence/portfolio-2025-partage/releases/download/v1.1.0/portfolio-2025-partage-1.1.0.tgz:
+    resolution: {integrity: sha512-MSBTy2K7pnLeTJ5bCdnrhEuaLP/VF3Z5ywdr5HtJMIxp/x+qQRR5u2f8Lx+25X//Ltz5zeL1Kbw3og55Cjnz5A==, tarball: https://github.com/TimMoyence/portfolio-2025-partage/releases/download/v1.1.0/portfolio-2025-partage-1.1.0.tgz}
+    version: 1.1.0
     engines: {node: '>=20'}
 
   possible-typed-array-names@1.1.0:
@@ -11415,7 +11415,7 @@ snapshots:
 
   pluralize@8.0.0: {}
 
-  portfolio-2025-partage@https://github.com/TimMoyence/portfolio-2025-partage/releases/download/v1.0.0/portfolio-2025-partage-1.0.0.tgz: {}
+  portfolio-2025-partage@https://github.com/TimMoyence/portfolio-2025-partage/releases/download/v1.1.0/portfolio-2025-partage-1.1.0.tgz: {}
 
   possible-typed-array-names@1.1.0: {}
 
