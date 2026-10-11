@@ -351,7 +351,7 @@ const ACTE_1: moteur.Acte = [
         'tableur',
       ],
       notes: moteur.puces(
-        '3 min, enchaînées sur la page 1 : 6 min pour les deux pages.',
+        moteur.DEUXIEME_PAGE_DE_COURS,
         'Faire comparer k = 0,02 et le taux 2,02 % : proches, mais pas égaux ; l’écart grandit avec k.',
         'Faire taper la formule sans $ sur un poste volontaire, puis la recopier : la colonne devient fausse, l’erreur fixe la règle.',
       ),
@@ -400,10 +400,7 @@ const ACTE_1: moteur.Acte = [
       brique: 'fp-worked',
       dureeMinutes: 4,
       concepts: ['fonction-exponentielle'],
-      notes: moteur.puces(
-        'Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.',
-        'Papier : réponses sous chaque étape du livret.',
-      ),
+      notes: moteur.puces(...moteur.NOTES_DE_L_EXEMPLE_ETAPE_PAR_ETAPE),
       proprietes: {
         modalite: 'solo',
         exemple: {
@@ -471,7 +468,7 @@ const ACTE_1: moteur.Acte = [
       dureeMinutes: 8,
       concepts: ['fonction-exponentielle'],
       notes: moteur.puces(
-        'Temps : réflexion 2 min · travail 6 min',
+        moteur.tempsDeLExercice(2, 6),
         'Réflexion : écrire a et k du modèle, puis l’exposant à calculer, avant la calculatrice.',
         'Pièges : e × k × x ; 1,06⁵ au lieu de e^0,3 ; k pris pour le taux ; une exponentielle qui croîtrait toujours.',
         'Papier : exercice 1 du livret.',
@@ -540,7 +537,7 @@ const ACTE_1: moteur.Acte = [
     {
       minutes: 2,
       notes: [
-        'Corriger question par question, en commençant par la moins réussie (score sous chaque correction).',
+        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE_SOUS_SON_SCORE,
         'Transition : « Faisons calculer tous les mois par le tableur : exercice 2. »',
       ],
     },
@@ -572,7 +569,7 @@ const ACTE_1: moteur.Acte = [
       dureeMinutes: 6,
       concepts: ['tableur', 'fonction-exponentielle'],
       notes: moteur.puces(
-        'Temps : réflexion 1 min · travail 5 min',
+        moteur.tempsDeLExercice(1, 5),
         'Réflexion : écrire sur papier la formule de B2, puis ce qu’elle devient en B3 une fois recopiée.',
         'Erreurs à chercher : EXP(1)*k*x ; PUISSANCE(1+k;x) ; E1 sans $ : la colonne tombe à 0 ; G1 sans $ ou A2 figé à tort : elle reste à 400 ; =B3/B2 pour le taux.',
         'Papier : formules écrites sur la copie, puis les valeurs à la calculatrice.',
@@ -614,26 +611,20 @@ const ACTE_1: moteur.Acte = [
       ],
     ],
   ),
-  {
-    screenId: 'B2-06-A1-12-JALON',
-    titre: 'Jalon 1 : fonction exponentielle',
-    diffusion: 'seance',
-    brique: 'fp-pulse',
-    dureeMinutes: 1,
-    concepts: ['fonction-exponentielle'],
-    notes: moteur.puces(
-      '30 s de vote anonyme.',
-      'Si plus de 30 % « Perdu » : reprendre la trace écrite A1-08 sur le taux e^k − 1 après la pause.',
-      'Pause de 15 minutes, hors durée programmée.',
-    ),
-    proprietes: {
-      sondage: {
-        id: 'b2-06-a1-jalon',
-        invite:
-          'Je sais calculer une valeur de a e^(kx), en donner le taux par unité et l’écrire au tableur.',
-      },
+  moteur.pulsation(
+    {
+      screenId: 'B2-06-A1-12-JALON',
+      titre: 'Jalon 1 : fonction exponentielle',
+      concepts: ['fonction-exponentielle'],
     },
-  },
+    {
+      id: 'b2-06-a1-jalon',
+      invite:
+        'Je sais calculer une valeur de a e^(kx), en donner le taux par unité et l’écrire au tableur.',
+    },
+    'Si plus de 30 % « Perdu » : reprendre la trace écrite A1-08 sur le taux e^k − 1 après la pause.',
+    moteur.PAUSE_HORS_DUREE,
+  ),
 ];
 
 const ACTE_2: moteur.Acte = [
@@ -730,7 +721,7 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 3,
       concepts: ['resolution-par-logarithme', 'tableur'],
       notes: moteur.puces(
-        '3 min, enchaînées sur la page 1 : 6 min pour les deux pages.',
+        moteur.DEUXIEME_PAGE_DE_COURS,
         'Relier au B2-04 : le seuil se trouvait en tâtonnant ; ln le donne en une ligne.',
         'Question : « ln 0,8 est-il positif ? » Non : diviser par ln 0,8 change le sens.',
       ),
@@ -779,10 +770,7 @@ const ACTE_2: moteur.Acte = [
       brique: 'fp-worked',
       dureeMinutes: 4,
       concepts: ['resolution-par-logarithme', 'interets-composes'],
-      notes: moteur.puces(
-        'Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.',
-        'Papier : réponses sous chaque étape du livret.',
-      ),
+      notes: moteur.puces(...moteur.NOTES_DE_L_EXEMPLE_ETAPE_PAR_ETAPE),
       proprietes: {
         modalite: 'solo',
         exemple: {
@@ -847,7 +835,7 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 9,
       concepts: ['resolution-par-logarithme', 'logarithme-neperien'],
       notes: moteur.puces(
-        'Temps : réflexion 2 min · travail 7 min',
+        moteur.tempsDeLExercice(2, 7),
         'Réflexion : pour chaque question, écrire l’inéquation, puis le signe du nombre par lequel on divisera.',
         'Pièges : diviser au lieu de passer par ln ; garder le sens avec ln 0,8 ; arrondir le seuil en dessous.',
         'Papier : exercice 3 du livret.',
@@ -911,7 +899,7 @@ const ACTE_2: moteur.Acte = [
     {
       minutes: 2,
       notes: [
-        'Corriger question par question, en commençant par la moins réussie.',
+        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE,
         'Transition : « Et pour d’autres objectifs que 1 000 sacs ? Le tableur : exercice 4. »',
       ],
     },
@@ -943,7 +931,7 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 8,
       concepts: ['tableur', 'resolution-par-logarithme'],
       notes: moteur.puces(
-        'Temps : réflexion 2 min · travail 6 min',
+        moteur.tempsDeLExercice(2, 6),
         'Réflexion : écrire en français les deux étapes de la résolution de 400e^(0,06x) = s, puis les formules de B2 et C2.',
         'Erreurs à chercher : =A2/$E$1 sans LN ; =LN(A2)/LN($E$1) ; E1 ou G1 sans $ : la recopie affiche une erreur.',
         'Papier : formules écrites sur la copie, puis les valeurs à la calculatrice.',
@@ -985,25 +973,19 @@ const ACTE_2: moteur.Acte = [
       ],
     ],
   ),
-  {
-    screenId: 'B2-06-A2-07-JALON',
-    titre: 'Jalon 2 : logarithme et seuils',
-    diffusion: 'seance',
-    brique: 'fp-pulse',
-    dureeMinutes: 1,
-    concepts: ['logarithme-neperien', 'resolution-par-logarithme'],
-    notes: moteur.puces(
-      '30 s de vote anonyme.',
-      'Si plus de 30 % « Perdu » : reprendre l’exemple 1,5ⁿ ≥ 10 de la trace écrite A2-03.',
-    ),
-    proprietes: {
-      sondage: {
-        id: 'b2-06-a2-jalon',
-        invite:
-          'Je sais résoudre qⁿ ≥ s et a e^(kx) ≥ s avec ln, et donner le premier entier solution.',
-      },
+  moteur.pulsation(
+    {
+      screenId: 'B2-06-A2-07-JALON',
+      titre: 'Jalon 2 : logarithme et seuils',
+      concepts: ['logarithme-neperien', 'resolution-par-logarithme'],
     },
-  },
+    {
+      id: 'b2-06-a2-jalon',
+      invite:
+        'Je sais résoudre qⁿ ≥ s et a e^(kx) ≥ s avec ln, et donner le premier entier solution.',
+    },
+    'Si plus de 30 % « Perdu » : reprendre l’exemple 1,5ⁿ ≥ 10 de la trace écrite A2-03.',
+  ),
 ];
 
 const ACTE_3: moteur.Acte = [
@@ -1139,7 +1121,7 @@ const ACTE_3: moteur.Acte = [
       dureeMinutes: 3,
       concepts: ['ajustement-exponentiel', 'ajustement-affine', 'tableur'],
       notes: moteur.puces(
-        '3 min, enchaînées sur la page 1 : 6 min pour les deux pages.',
+        moteur.DEUXIEME_PAGE_DE_COURS,
         'Relier au B2-02 : la droite des moindres carrés est la même ; seules les ordonnées changent, z au lieu de y.',
         'Question : « β est-il le coefficient a ? » Non : a = e^β.',
       ),
@@ -1188,10 +1170,7 @@ const ACTE_3: moteur.Acte = [
       brique: 'fp-worked',
       dureeMinutes: 4,
       concepts: ['ajustement-exponentiel', 'prevision'],
-      notes: moteur.puces(
-        'Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.',
-        'Papier : réponses sous chaque étape du livret.',
-      ),
+      notes: moteur.puces(...moteur.NOTES_DE_L_EXEMPLE_ETAPE_PAR_ETAPE),
       proprietes: {
         modalite: 'solo',
         exemple: {
@@ -1255,7 +1234,7 @@ const ACTE_3: moteur.Acte = [
       dureeMinutes: 6,
       concepts: ['ajustement-exponentiel', 'logarithme-neperien'],
       notes: moteur.puces(
-        'Temps : réflexion 1 min · travail 5 min',
+        moteur.tempsDeLExercice(1, 5),
         'Réflexion : vérifier sur la calculatrice que ln 1 100 est un peu au-dessus de 7.',
         'Piège : la touche log, qui donne des valeurs autour de 3.',
         'Papier : tableau du livret, rempli à la main, au millième.',
@@ -1334,7 +1313,7 @@ const ACTE_3: moteur.Acte = [
       dureeMinutes: 8,
       concepts: ['ajustement-exponentiel', 'resolution-par-logarithme'],
       notes: moteur.puces(
-        'Temps : réflexion 2 min · travail 6 min',
+        moteur.tempsDeLExercice(2, 6),
         'Réflexion : écrire le retour de z à y, puis l’équation du prix, avant de calculer.',
         'Pièges : a = 8 ; a = −0,05 ; 0,95³⁸ ; le signe de k oublié ; diviser sans ln.',
         'Papier : exercice 6 du livret.',
@@ -1401,7 +1380,7 @@ const ACTE_3: moteur.Acte = [
     {
       minutes: 2,
       notes: [
-        'Corriger question par question, en commençant par la moins réussie.',
+        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE,
         'Transition : « Une IA a ajusté la même demande. »',
       ],
     },
@@ -1433,7 +1412,7 @@ const ACTE_3: moteur.Acte = [
       dureeMinutes: 8,
       concepts: ['ajustement-exponentiel', 'ajustement-affine', 'prevision'],
       notes: moteur.puces(
-        'Temps : réflexion 2 min · travail 6 min',
+        moteur.tempsDeLExercice(2, 6),
         'Réflexion : relire les traces écrites de la notion 3 et le graphique A3-01.',
         'Repérer qui calcule les rapports, qui compare les deux coefficients de corrélation, qui voit la demande négative ; faire trouver la piste fausse avant de révéler.',
         'Papier : exercice 7 du livret.',
@@ -1505,25 +1484,19 @@ const ACTE_3: moteur.Acte = [
       ],
     ],
   ),
-  {
-    screenId: 'B2-06-A3-09-JALON',
-    titre: 'Jalon 3 : modèles exponentiels',
-    diffusion: 'seance',
-    brique: 'fp-pulse',
-    dureeMinutes: 1,
-    concepts: ['ajustement-exponentiel'],
-    notes: moteur.puces(
-      '30 s de vote anonyme.',
-      'Pause de 15 minutes, hors durée programmée.',
-    ),
-    proprietes: {
-      sondage: {
-        id: 'b2-06-a3-jalon',
-        invite:
-          'Je sais reconnaître un modèle exponentiel, l’ajuster par z = ln y et m’en servir pour prévoir.',
-      },
+  moteur.pulsation(
+    {
+      screenId: 'B2-06-A3-09-JALON',
+      titre: 'Jalon 3 : modèles exponentiels',
+      concepts: ['ajustement-exponentiel'],
     },
-  },
+    {
+      id: 'b2-06-a3-jalon',
+      invite:
+        'Je sais reconnaître un modèle exponentiel, l’ajuster par z = ln y et m’en servir pour prévoir.',
+    },
+    moteur.PAUSE_HORS_DUREE,
+  ),
 ];
 
 const REMEDIATIONS: ContenuDeCours['remediations'] = {

@@ -6,6 +6,7 @@ import {
   Optional,
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
+import { messageDErreur } from '../../../common/domain/errors/message-d-erreur';
 import { GetSessionResultsUseCase } from './GetSessionResults.useCase';
 import {
   PlafondDeFluxAtteintError,
@@ -25,6 +26,7 @@ import type {
   SessionRecord,
 } from '../domain/ISessions.repository';
 import type { ResultatsEnDirect } from '../domain/contrats/resultats';
+import { etatEnDirect } from '../domain/EtatEnDirect';
 import { assertSessionOwnedBy } from '../domain/SessionOwnership';
 import {
   PARTICIPANTS_REPOSITORY,
@@ -74,6 +76,8 @@ interface PlacesDuFlux {
 }
 
 type RaisonDExclusion = 'evince' | 'revoque';
+
+type RaisonDeFin = RaisonDExclusion | 'cloturee' | 'introuvable' | 'expiree';
 
 interface PorteurEtudiant {
   readonly participantId: string;
@@ -219,7 +223,7 @@ export class StreamSessionUseCase {
         }
         liberation = this.capacity.release(aLiberer).catch((error: unknown) => {
           this.logger.warn(
-            `Bail de flux non libere pour la session ${sessionId}: ${messageDe(error)}`,
+            `Bail de flux non libere pour la session ${sessionId}: ${messageDErreur(error)}`,
           );
         });
       };
@@ -230,6 +234,12 @@ export class StreamSessionUseCase {
         if (battement !== undefined) clearInterval(battement);
         if (limite !== undefined) clearTimeout(limite);
         libererCapacite();
+      };
+
+      const terminer = (raison: RaisonDeFin): void => {
+        subscriber.next({ type: 'fin', data: { raison } });
+        subscriber.complete();
+        arreter();
       };
 
       const ceder = (): Promise<void> => {
@@ -264,16 +274,14 @@ export class StreamSessionUseCase {
           });
         } catch (error) {
           this.logger.warn(
-            `Resultats definitifs de la session ${sessionId} non pousses, le flux se clot quand meme: ${messageDe(error)}`,
+            `Resultats definitifs de la session ${sessionId} non pousses, le flux se clot quand meme: ${messageDErreur(error)}`,
           );
         }
       };
 
       const clore = async (): Promise<void> => {
         await pousserResultatsDefinitifs();
-        subscriber.next({ type: 'fin', data: { raison: 'cloturee' } });
-        subscriber.complete();
-        arreter();
+        terminer('cloturee');
       };
 
       const tick = async (): Promise<void> => {
@@ -288,17 +296,13 @@ export class StreamSessionUseCase {
               ? await this.exclusionDu(sessionId, porteurEtudiant)
               : null;
           if (exclusion !== null) {
-            subscriber.next({ type: 'fin', data: { raison: exclusion } });
-            subscriber.complete();
-            arreter();
+            terminer(exclusion);
             return;
           }
           passagesDepuisLeControle += 1;
           const etat = await this.resolveState(sessionId);
           if (!etat) {
-            subscriber.next({ type: 'fin', data: { raison: 'introuvable' } });
-            subscriber.complete();
-            arreter();
+            terminer('introuvable');
             return;
           }
           const empreinte = this.cache.fingerprint(etat);
@@ -315,7 +319,7 @@ export class StreamSessionUseCase {
           }
         } catch (error) {
           this.logger.warn(
-            `Passage du flux de la session ${sessionId} en echec, nouvel essai au passage suivant: ${messageDe(error)}`,
+            `Passage du flux de la session ${sessionId} en echec, nouvel essai au passage suivant: ${messageDErreur(error)}`,
           );
         } finally {
           occupe = false;
@@ -348,9 +352,7 @@ export class StreamSessionUseCase {
         }, this.cadences.battementMs);
 
         limite = setTimeout(() => {
-          subscriber.next({ type: 'fin', data: { raison: 'expiree' } });
-          subscriber.complete();
-          arreter();
+          terminer('expiree');
         }, this.cadences.dureeMaxMs);
 
         void tick();
@@ -363,7 +365,7 @@ export class StreamSessionUseCase {
         } catch (error) {
           if (error instanceof PlafondDeFluxAtteintError) {
             this.logger.warn(
-              `Plafond de flux atteint pour la session ${sessionId}: ${messageDe(error)}`,
+              `Plafond de flux atteint pour la session ${sessionId}: ${messageDErreur(error)}`,
             );
             subscriber.error(new SessionStreamLimitError());
             arreter();
@@ -372,7 +374,7 @@ export class StreamSessionUseCase {
           bail = null;
           this.logger.error(
             `Plafond de flux partage indisponible pour la session ${sessionId}, ouverture en mode degrade borne par le processus`,
-            messageDe(error),
+            messageDErreur(error),
           );
         }
         installer();
@@ -440,7 +442,7 @@ export class StreamSessionUseCase {
   ): void {
     void this.capacity.refresh(bail).catch((error: unknown) => {
       this.logger.warn(
-        `Bail de flux non renouvele pour la session ${sessionId}: ${messageDe(error)}`,
+        `Bail de flux non renouvele pour la session ${sessionId}: ${messageDErreur(error)}`,
       );
     });
   }
@@ -456,23 +458,10 @@ export class StreamSessionUseCase {
     if (!session) {
       return null;
     }
-    const etat: LiveSessionState = {
-      etat: session.etat,
-      modeRythme: session.modeRythme,
-      ecranCourant: session.ecranCourant,
-      intervalleLibre: session.intervalleLibre,
-      participants: 0,
-      revision: session.revision,
-      pilotage: session.pilotageEcrans,
-      majLe: session.majLe,
-    };
+    const etat = etatEnDirect(session, 0);
     this.cache.publish(sessionId, etat);
     return etat;
   }
-}
-
-function messageDe(error: unknown): string {
-  return error instanceof Error ? error.message : String(error);
 }
 
 function occupantsDe(place: Place): readonly Fermeture[] {

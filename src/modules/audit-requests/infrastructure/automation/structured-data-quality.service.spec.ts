@@ -108,6 +108,7 @@ describe('StructuredDataQualityService', () => {
     const result = service.analyze([
       null as unknown as Record<string, unknown>,
       'string' as unknown as Record<string, unknown>,
+      [FAQ] as unknown as Record<string, unknown>,
       ARTICLE_MINIMAL,
     ]);
     expect(result.total).toBe(1);

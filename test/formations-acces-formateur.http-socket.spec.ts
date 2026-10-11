@@ -42,6 +42,7 @@ const BAREME = ouvrirTirages(COURS);
 const LECTURES = [
   'results',
   'report',
+  'report.csv',
   'deroule',
   'free-responses',
   'annotations',

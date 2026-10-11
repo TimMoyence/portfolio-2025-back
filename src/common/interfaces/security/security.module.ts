@@ -5,7 +5,6 @@ import { SECURITY_EVENTS_STORE } from './ISecurityEventsStore';
 import { loadSecurityConfig } from './security.config';
 import { SECURITY_CONFIG } from './security.tokens';
 import { SuspiciousRequestInterceptor } from './suspicious-request.interceptor';
-import { PublicFormProtectionService } from './public-form-protection.service';
 
 @Global()
 @Module({
@@ -23,12 +22,7 @@ import { PublicFormProtectionService } from './public-form-protection.service';
       provide: APP_INTERCEPTOR,
       useClass: SuspiciousRequestInterceptor,
     },
-    PublicFormProtectionService,
   ],
-  exports: [
-    SECURITY_EVENTS_STORE,
-    SECURITY_CONFIG,
-    PublicFormProtectionService,
-  ],
+  exports: [SECURITY_EVENTS_STORE, SECURITY_CONFIG],
 })
 export class SecurityModule {}

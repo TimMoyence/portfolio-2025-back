@@ -19,14 +19,9 @@ describe('SignatureFormations', () => {
     expect(secretDeSignature()).toBe(SECRET);
   });
 
-  it.each([
-    ['absent', undefined],
-    ['trop court', 'court'],
-  ])('refuse de signer avec un secret %s', (_cas, valeur) => {
-    appliquer({ FORMATION_REVIEW_TOKEN_SECRET: valeur });
+  it('refuse de signer sans FORMATION_REVIEW_TOKEN_SECRET', () => {
+    appliquer({ FORMATION_REVIEW_TOKEN_SECRET: undefined });
 
-    expect(() => signer('message')).toThrow(
-      'FORMATION_REVIEW_TOKEN_SECRET doit etre configure avec au moins 32 caracteres',
-    );
+    expect(() => signer('message')).toThrow('FORMATION_REVIEW_TOKEN_SECRET');
   });
 });

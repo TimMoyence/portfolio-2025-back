@@ -62,6 +62,56 @@ describe('DeepUrlAnalysisService', () => {
     expect(codes).toContain('slow_pages');
   });
 
+  it('signale les title et meta hors bornes en citant ces bornes', () => {
+    const page = (chemin: string, title: string, metaDescription: string) =>
+      buildUrlIndexabilityResult({
+        url: `https://example.com/${chemin}`,
+        finalUrl: `https://example.com/${chemin}`,
+        title,
+        metaDescription,
+      });
+
+    const result = service.analyze([
+      page('court', 'Court', 'm'.repeat(100)),
+      page('meta', 't'.repeat(40), 'Trop courte'),
+      page('vide', '   ', ''),
+    ]);
+    const parCode = new Map(result.findings.map((f) => [f.code, f]));
+
+    expect(parCode.get('missing_title')?.affectedUrls).toEqual([
+      'https://example.com/vide',
+    ]);
+    expect(parCode.get('title_length_quality')).toMatchObject({
+      affectedUrls: ['https://example.com/court'],
+      recommendation: expect.stringContaining('entre 20 et 65'),
+    });
+    expect(parCode.get('meta_length_quality')).toMatchObject({
+      affectedUrls: ['https://example.com/meta'],
+      recommendation: expect.stringContaining('entre 80 et 170'),
+    });
+    expect(result.metrics).toMatchObject({
+      badTitleLength: 1,
+      badMetaLength: 1,
+      missingTitle: 1,
+      missingMetaDescription: 1,
+    });
+  });
+
+  it('cite les bornes en anglais', () => {
+    const result = service.analyze(
+      [buildUrlIndexabilityResult({ title: 'Court', metaDescription: 'x' })],
+      'en',
+    );
+    const recommandations = result.findings.map((f) => f.recommendation);
+
+    expect(recommandations).toContain(
+      'Adjust titles to 20-65 characters with the primary keyword.',
+    );
+    expect(recommandations).toContain(
+      'Adjust meta descriptions to 80-170 characters with a clear value proposition.',
+    );
+  });
+
   it('infers WordPress stack from deterministic CMS and cookie signatures', () => {
     const homepage = accueil({
       server: 'nginx',

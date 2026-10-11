@@ -8,7 +8,7 @@ import {
 } from '../../domain/token';
 import { emettreJeton } from '../../domain/TokenHash';
 import type { User } from '../../domain/User';
-import { lienAvecJeton } from './lien-avec-jeton';
+import { lienAvecJeton } from '../../../../common/domain/lien-avec-jeton';
 
 const EMAIL_VERIFICATION_TTL_MS = 24 * 60 * 60 * 1000;
 

@@ -45,6 +45,7 @@ export class CreateUserDto implements CreateUserCommand {
     example: ['teacher'],
     default: [],
     type: [String],
+    description: 'Liste des roles. Reserve aux administrateurs.',
   })
   @RolesValides()
   roles?: string[];

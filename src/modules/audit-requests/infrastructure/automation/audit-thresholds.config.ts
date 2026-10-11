@@ -1,8 +1,8 @@
-export const TITLE_LENGTH_MIN = 20;
-export const TITLE_LENGTH_MAX = 65;
+import type { Bornes } from '../../../../common/domain/nombres/dans-les-bornes';
 
-export const META_LENGTH_MIN = 80;
-export const META_LENGTH_MAX = 170;
+export const LONGUEUR_DU_TITLE: Bornes = { min: 20, max: 65 };
+
+export const LONGUEUR_DE_LA_META: Bornes = { min: 80, max: 170 };
 
 export const CONTENT_DEPTH_VERY_THIN = 120;
 export const CONTENT_DEPTH_THIN = 260;

@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { messageDErreur } from '../../../common/domain/errors/message-d-erreur';
 import { ArticleBroadcastService } from '../application/article-broadcast.service';
 
 @Injectable()
@@ -17,7 +18,7 @@ export class ArticleBroadcastScheduler {
       await this.broadcasts.runDue();
     } catch (error) {
       this.logger.error(
-        `Article broadcast run failed: ${error instanceof Error ? error.message : String(error)}`,
+        `Article broadcast run failed: ${messageDErreur(error)}`,
       );
     } finally {
       this.running = false;

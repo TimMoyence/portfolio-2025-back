@@ -1,5 +1,12 @@
 import { z } from 'zod';
+import type { ReportSeverity } from '../../../domain/AuditReportTiers';
 import { engineCoverageSchema } from './engine-coverage.schema';
+
+export const reportSeveritySchema = z.enum([
+  'high',
+  'medium',
+  'low',
+]) satisfies z.ZodType<ReportSeverity>;
 
 export const userSummarySchema = z.object({
   summaryText: z.string().min(1),
@@ -48,7 +55,7 @@ export const expertReportSchema = z.object({
   priorities: z.array(
     z.object({
       title: z.string(),
-      severity: z.enum(['high', 'medium', 'low']),
+      severity: reportSeveritySchema,
       whyItMatters: z.string(),
       recommendedFix: z.string(),
       estimatedHours: z.number().min(0).max(200),
@@ -59,7 +66,7 @@ export const expertReportSchema = z.object({
       url: z.string(),
       issue: z.string(),
       recommendation: z.string(),
-      impact: z.enum(['high', 'medium', 'low']),
+      impact: reportSeveritySchema,
     }),
   ),
   implementationTodo: z.array(
@@ -98,13 +105,13 @@ export const expertReportSchema = z.object({
       implementationSteps: z.array(z.string()),
       estimatedHours: z.number().min(0).max(200),
       expectedImpact: z.string(),
-      priority: z.enum(['high', 'medium', 'low']),
+      priority: reportSeveritySchema,
     }),
   ),
   implementationBacklog: z.array(
     z.object({
       task: z.string(),
-      priority: z.enum(['high', 'medium', 'low']),
+      priority: reportSeveritySchema,
       details: z.string(),
       estimatedHours: z.number().min(0).max(400),
       dependencies: z.array(z.string()),
@@ -156,6 +163,7 @@ export const clientCommsSectionSchema = z.object({
 });
 
 export type ExpertReport = z.infer<typeof expertReportSchema>;
+export type TechFingerprint = z.infer<typeof techFingerprintSchema>;
 export type ExecutiveSection = z.infer<typeof executiveSectionSchema>;
 export type PrioritySection = z.infer<typeof prioritySectionSchema>;
 export type ExecutionSection = z.infer<typeof executionSectionSchema>;

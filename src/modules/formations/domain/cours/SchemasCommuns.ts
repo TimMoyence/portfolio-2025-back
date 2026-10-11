@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { listeEntreGuillemets } from '../../../../common/domain/texte/liste-entre-guillemets';
 import { CONCEPTS } from './banque/concepts';
 import { CONFUSIONS, type ConfusionId } from './banque/confusions';
 
@@ -47,8 +48,34 @@ export type Signaleur = (
   message: string,
 ) => void;
 
-export function signaleurDe(contexte: z.RefinementCtx): Signaleur {
+export function signaleurDe(
+  contexte: z.RefinementCtx,
+  prefixe: readonly (string | number)[] = [],
+): Signaleur {
   return (chemin, message) => {
-    contexte.addIssue({ code: 'custom', path: [...chemin], message });
+    contexte.addIssue({
+      code: 'custom',
+      path: [...prefixe, ...chemin],
+      message,
+    });
   };
+}
+
+export function doublonsDe(valeurs: readonly string[]): readonly string[] {
+  return [
+    ...new Set(
+      valeurs.filter((valeur, rang) => valeurs.indexOf(valeur) !== rang),
+    ),
+  ];
+}
+
+export function signalerDoublons(
+  valeurs: readonly string[],
+  chemin: readonly (string | number)[],
+  signaler: Signaleur,
+): void {
+  const doublons = doublonsDe(valeurs);
+  if (doublons.length > 0) {
+    signaler(chemin, `en double : ${listeEntreGuillemets(doublons)}`);
+  }
 }

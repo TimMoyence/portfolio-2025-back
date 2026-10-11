@@ -1,41 +1,18 @@
-import { resolveAuditLocale, localeFromUrlPath } from './audit-locale.util';
+import { localeDeRedaction, localeFromUrlPath } from './audit-locale.util';
 
 describe('audit-locale.util', () => {
-  describe('resolveAuditLocale', () => {
-    it('devrait retourner fr pour une valeur non-string', () => {
-      expect(resolveAuditLocale(undefined)).toBe('fr');
-      expect(resolveAuditLocale(null)).toBe('fr');
-      expect(resolveAuditLocale(42)).toBe('fr');
+  describe('localeDeRedaction', () => {
+    it('retient la langue demandee pour l audit', () => {
+      expect(localeDeRedaction('en-US', 'fr')).toBe('en');
     });
 
-    it('devrait retourner le fallback personnalise pour une valeur non-string', () => {
-      expect(resolveAuditLocale(undefined, 'en')).toBe('en');
+    it('retombe sur la langue configuree quand la demande est inexploitable', () => {
+      expect(localeDeRedaction(undefined, 'en')).toBe('en');
+      expect(localeDeRedaction('de', 'EN-gb')).toBe('en');
     });
 
-    it('devrait retourner en pour "en"', () => {
-      expect(resolveAuditLocale('en')).toBe('en');
-    });
-
-    it('devrait retourner en pour "en-US"', () => {
-      expect(resolveAuditLocale('en-US')).toBe('en');
-    });
-
-    it('devrait retourner fr pour "fr"', () => {
-      expect(resolveAuditLocale('fr')).toBe('fr');
-    });
-
-    it('devrait retourner fr pour "fr-FR"', () => {
-      expect(resolveAuditLocale('fr-FR')).toBe('fr');
-    });
-
-    it('devrait retourner le fallback pour une locale inconnue', () => {
-      expect(resolveAuditLocale('de')).toBe('fr');
-      expect(resolveAuditLocale('de', 'en')).toBe('en');
-    });
-
-    it('devrait gerer les espaces et la casse', () => {
-      expect(resolveAuditLocale('  EN  ')).toBe('en');
-      expect(resolveAuditLocale('  FR  ')).toBe('fr');
+    it('redige en francais quand ni la demande ni la configuration ne sont exploitables', () => {
+      expect(localeDeRedaction('de', 'es')).toBe('fr');
     });
   });
 

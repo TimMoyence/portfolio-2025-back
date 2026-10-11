@@ -1,3 +1,4 @@
+import { somme } from '../../src/common/domain/nombres/statistiques';
 import type {
   ContenuAPublier,
   ContenuDeCoursBrut,
@@ -609,10 +610,7 @@ export function buildContenuPubliable(
     slug: 'b2-01-traitement-information-chiffree',
     titre: 'Traitement de l’information chiffrée',
     niveau: 'B2',
-    dureeMinutes: ecrans.reduce(
-      (total, ecran) => total + ecran.dureeMinutes,
-      0,
-    ),
+    dureeMinutes: somme(ecrans.map((ecran) => ecran.dureeMinutes)),
     concepts: ['proportion'],
     remediations: {},
     medias: [],

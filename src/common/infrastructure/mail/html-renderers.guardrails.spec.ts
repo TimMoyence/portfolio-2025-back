@@ -8,6 +8,7 @@ const RENDERERS = [
   'src/modules/audit-requests/infrastructure/mail/audit-expert-report.mailer.ts',
   'src/modules/audit-requests/infrastructure/mail/audit-notification.mailer.ts',
   'src/modules/audit-requests/infrastructure/mail/mail-layout.util.ts',
+  'src/modules/audit-requests/infrastructure/mail/visibilite-google-ia.ts',
   'src/modules/contacts/infrastructure/ContactMailer.service.ts',
   'src/modules/lead-magnets/infrastructure/LeadMagnetMailer.service.ts',
   'src/modules/lead-magnets/infrastructure/ToolkitHtmlRenderer.service.ts',

@@ -83,7 +83,7 @@ export const ACTE_4: moteur.Acte = [
       dureeMinutes: 14,
       concepts: ['tableur', 'tableau-d-amortissement', 'cout-du-credit'],
       notes: moteur.puces(
-        'Temps : réflexion 3 min · travail 11 min',
+        moteur.tempsDeLExercice(3, 11),
         'Réflexion : chacun nomme en français les colonnes C, D et E, puis écrit sur papier les formules de la ligne 2.',
         'Erreurs à chercher : VPM sans signe moins ; F2 ou H2 sans $ ; intérêts sur 32 000 € chaque ligne ; I2 = total remboursé.',
         'Papier : formules écrites sur la copie, valeurs calculées à la calculatrice ; en CCF, la question se fait devant l’examinateur.',
@@ -152,7 +152,7 @@ export const ACTE_4: moteur.Acte = [
         'cout-du-credit',
       ],
       notes: moteur.puces(
-        'Temps : réflexion 2 min · travail 10 min',
+        moteur.tempsDeLExercice(2, 10),
         'Réflexion : relire le dossier et noter, pour chaque question, s’il faut capitaliser, actualiser, additionner des versements ou lire le tableau.',
         'Indices disponibles après 60 s. À 8 min, projeter l’énigme la moins résolue.',
         'Papier : quatre questions rédigées du livret, sans code de coffre.',

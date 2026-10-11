@@ -1,5 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { load } from 'cheerio';
+import { compacterBlancs } from '../../../../common/domain/texte/compacter-blancs';
+import { compterMots } from '../../../../common/domain/texte/compter-mots';
 import type { AiIndexabilitySignals } from '../../domain/AiIndexability';
 import { AUDIT_AUTOMATION_CONFIG } from '../../domain/token';
 import { AiHeadersAnalyzerService } from './ai-headers-analyzer.service';
@@ -117,7 +119,7 @@ export class UrlIndexabilityService {
       const h1Count = $('h1').length;
       const h1Texts = $('h1')
         .toArray()
-        .map((node) => $(node).text().replace(/\s+/g, ' ').trim())
+        .map((node) => compacterBlancs($(node).text()))
         .filter(Boolean)
         .slice(0, 3);
       const htmlLang = $('html').attr('lang')?.trim() ?? null;
@@ -125,7 +127,7 @@ export class UrlIndexabilityService {
       const openGraphTags = extractOpenGraphProperties($);
       const openGraphTagCount = $('meta[property^="og:"]').length;
       const twitterTags = extractTwitterTagNames($);
-      const wordCount = this.computeWordCount($('body').text());
+      const wordCount = compterMots($('body').text());
       const internalLinks = extractInternalLinks($, response.finalUrl);
       const internalLinkCount = internalLinks.length;
       const xRobotsTag = response.headers['x-robots-tag'] ?? null;
@@ -249,16 +251,8 @@ export class UrlIndexabilityService {
     }
   }
 
-  private computeWordCount(text: string): number {
-    const normalized = text.replace(/\\s+/g, ' ').trim();
-    if (!normalized) return 0;
-    return normalized.split(' ').filter(Boolean).length;
-  }
-
   private extractTextExcerpt(text: string): string {
-    const normalized = text.replace(/\s+/g, ' ').trim();
-    if (!normalized) return '';
-    return normalized.slice(0, 420);
+    return compacterBlancs(text).slice(0, 420);
   }
 
   private extractJsonLdBlocks($: ReturnType<typeof load>): unknown[] {
@@ -293,7 +287,7 @@ export class UrlIndexabilityService {
         $(node).attr('value')?.trim() ||
         $(node).attr('aria-label')?.trim() ||
         '';
-      const cleaned = raw.replace(/\s+/g, ' ').trim();
+      const cleaned = compacterBlancs(raw);
       if (!cleaned) continue;
       if (cleaned.length > 48) continue;
       values.add(cleaned);

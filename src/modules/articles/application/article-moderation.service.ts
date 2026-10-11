@@ -1,14 +1,13 @@
-import {
-  ConflictException,
-  Inject,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
+import { ResourceConflictError } from '../../../common/domain/errors/ResourceConflictError';
+import { ResourceNotFoundError } from '../../../common/domain/errors/ResourceNotFoundError';
 import {
   ARTICLE_BROADCAST_REPOSITORY,
+  type ArticleBroadcastRecord,
   type ArticleBroadcastRepository,
   type ModeratedArticle,
 } from './article-broadcast.repository';
+import { clotureDeDiffusion, estAnnulable } from './cloture-de-diffusion';
 
 const MODERATION_LIST_LIMIT = 30;
 
@@ -43,16 +42,8 @@ export class ArticleModerationService {
   async withdraw(articleId: string, now: Date = new Date()) {
     const item = await this.find(articleId);
     await this.broadcasts.setArticleStatus(item.article.id, 'withdrawn');
-    if (
-      item.broadcast &&
-      (item.broadcast.status === 'scheduled' ||
-        item.broadcast.status === 'sending')
-    ) {
-      await this.broadcasts.updateBroadcast(item.broadcast.id, {
-        status: 'cancelled',
-        lockedUntil: null,
-        completedAt: now,
-      });
+    if (estAnnulable(item.broadcast)) {
+      await this.annuler(item.broadcast, now);
     }
     return this.view(await this.find(articleId));
   }
@@ -66,7 +57,7 @@ export class ArticleModerationService {
   async approveBroadcast(articleId: string, now: Date = new Date()) {
     const item = await this.find(articleId);
     if (item.broadcast?.status !== 'scheduled') {
-      throw new ConflictException('Broadcast is not awaiting moderation');
+      throw new ResourceConflictError('Broadcast is not awaiting moderation');
     }
     await this.broadcasts.updateBroadcast(item.broadcast.id, {
       sendAfter: now,
@@ -76,21 +67,23 @@ export class ArticleModerationService {
 
   async cancelBroadcast(articleId: string, now: Date = new Date()) {
     const item = await this.find(articleId);
-    const status = item.broadcast?.status;
-    if (!item.broadcast || (status !== 'scheduled' && status !== 'sending')) {
-      throw new ConflictException('Broadcast can no longer be cancelled');
+    if (!estAnnulable(item.broadcast)) {
+      throw new ResourceConflictError('Broadcast can no longer be cancelled');
     }
-    await this.broadcasts.updateBroadcast(item.broadcast.id, {
-      status: 'cancelled',
-      lockedUntil: null,
-      completedAt: now,
-    });
+    await this.annuler(item.broadcast, now);
     return this.view(await this.find(articleId));
+  }
+
+  private annuler(broadcast: ArticleBroadcastRecord, now: Date): Promise<void> {
+    return this.broadcasts.updateBroadcast(
+      broadcast.id,
+      clotureDeDiffusion('cancelled', now),
+    );
   }
 
   private async find(articleId: string): Promise<ModeratedArticle> {
     const item = await this.broadcasts.findModerated(articleId);
-    if (!item) throw new NotFoundException('Article not found');
+    if (!item) throw new ResourceNotFoundError('Article not found');
     return item;
   }
 

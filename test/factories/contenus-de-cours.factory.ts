@@ -1,3 +1,4 @@
+import { mapperAuMoinsUn } from '../../src/common/domain/au-moins-un';
 import type { Cours } from '../../src/modules/formations/domain/contrats/cours';
 import type { CorrectionSurPlace } from '../../src/modules/formations/domain/cours/Cours';
 import {
@@ -28,27 +29,26 @@ export function buildCoursAvecExplicationAllongee(
   ajout: string,
 ): Cours {
   let allongees = 0;
-  const [premier, ...autres] = cours.ecrans.map((ecran) => {
+  const ecrans = mapperAuMoinsUn(cours.ecrans, (ecran) => {
     const correction = ecran.correctionSurPlace;
     if (correction === undefined) {
       return ecran;
     }
-    const [premiere, ...suite] = correction.explications.map((explication) => {
-      if (explication.reference !== reference) {
-        return explication;
-      }
-      allongees += 1;
-      return { ...explication, texte: `${explication.texte} ${ajout}` };
-    });
     const correctionSurPlace: CorrectionSurPlace = {
-      explications: [premiere, ...suite],
+      explications: mapperAuMoinsUn(correction.explications, (explication) => {
+        if (explication.reference !== reference) {
+          return explication;
+        }
+        allongees += 1;
+        return { ...explication, texte: `${explication.texte} ${ajout}` };
+      }),
     };
     return { ...ecran, correctionSurPlace };
   });
   if (allongees !== 1) {
     throw new Error(`${reference} : ${allongees} explication(s) au lieu d’une`);
   }
-  return { ...cours, ecrans: [premier, ...autres] };
+  return { ...cours, ecrans };
 }
 
 export function prefixeDuCours(contenu: ContenuDeCours): string {

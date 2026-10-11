@@ -11,13 +11,10 @@ import {
 } from '../../../../common/infrastructure/mail/html-escape.util';
 import type { EscapedHtml } from '../../../../common/infrastructure/mail/html-escape.util';
 import { sectionHeader } from '../../../../common/infrastructure/mail/section-header';
+import { sansDiacritiques } from '../../../../common/domain/texte/sans-diacritiques';
 
 function normalizeKey(raw: string): string {
-  return raw
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .trim();
+  return sansDiacritiques(raw).toLowerCase().trim();
 }
 
 function estUnePlateforme(cle: string): cle is Plateforme {

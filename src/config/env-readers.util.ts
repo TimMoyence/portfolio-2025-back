@@ -1,3 +1,8 @@
+import {
+  dansLesBornes,
+  type Bornes,
+} from '../common/domain/nombres/dans-les-bornes';
+
 export type SourceDEnv = Readonly<Record<string, unknown>>;
 
 type LecteurDEnv = (name: string, source: SourceDEnv) => string | undefined;
@@ -29,6 +34,23 @@ export function envPremier(
   return undefined;
 }
 
+const ENTIER_POSITIF = /^\d+$/;
+
+export function envPort(
+  noms: readonly string[],
+  service: string,
+  source: SourceDEnv = process.env,
+): number | undefined {
+  const brut = envPremier(noms, source);
+  if (brut === undefined) return undefined;
+  if (!ENTIER_POSITIF.test(brut)) {
+    throw new Error(
+      `Le port ${service} « ${brut} » n'est pas un entier positif (${noms.join(', ')}).`,
+    );
+  }
+  return Number(brut);
+}
+
 export function envUnVrai(
   noms: readonly string[],
   source: SourceDEnv = process.env,
@@ -43,6 +65,21 @@ export function envInt(
 ): number {
   const parsed = Number.parseInt(envString(name, source) ?? '', 10);
   return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+export interface BornesEntieres extends Bornes {
+  readonly defaut: number;
+}
+
+export function envEntierBorne(
+  name: string,
+  bornes: BornesEntieres,
+  source: SourceDEnv = process.env,
+): number {
+  const valeur = Number(envString(name, source));
+  return Number.isInteger(valeur) && dansLesBornes(valeur, bornes)
+    ? valeur
+    : bornes.defaut;
 }
 
 export function envFloat(

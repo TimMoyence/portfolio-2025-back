@@ -1,4 +1,6 @@
 import { Injectable } from '@nestjs/common';
+import { estObjet } from '../../../../common/domain/est-objet';
+import { scoreSur100 } from '../../domain/score-sur-100';
 import type { StructuredDataQualityResult } from '../../domain/StructuredDataQuality';
 
 const GOOGLE_RICH_RESULTS_TYPES: ReadonlySet<string> = new Set([
@@ -39,14 +41,12 @@ const REQUIRED_FIELDS: Record<string, ReadonlyArray<string>> = {
 
 const STRUCTURED_DATA_PRESENCE_SCORE = 20;
 
-type JsonLdBlock = Record<string, unknown>;
+type JsonLdBlock = Readonly<Record<string, unknown>>;
 
 @Injectable()
 export class StructuredDataQualityService {
   analyze(blocks: ReadonlyArray<unknown>): StructuredDataQualityResult {
-    const validBlocks = blocks.filter(
-      (b): b is JsonLdBlock => typeof b === 'object' && b !== null,
-    );
+    const validBlocks = blocks.filter(estObjet);
 
     if (validBlocks.length === 0) {
       return {
@@ -136,6 +136,6 @@ export class StructuredDataQualityService {
     if (params.total >= 2) score += 10;
     if (params.total >= 3) score += 5;
     score -= params.invalidCount * 15;
-    return Math.max(0, Math.min(100, score));
+    return scoreSur100(score);
   }
 }

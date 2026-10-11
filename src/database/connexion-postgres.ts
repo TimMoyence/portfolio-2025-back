@@ -1,5 +1,7 @@
+import { sansIndefinis } from '../common/domain/sans-indefinis';
 import {
   envBrut,
+  envPort,
   envPremier,
   envUnVrai,
   type SourceDEnv,
@@ -43,28 +45,9 @@ function nomDeBaseDeLUrl(url: string): string | undefined {
   return new URL(url).pathname.replace(/^\//, '') || undefined;
 }
 
-const PORT_ENTIER = /^\d+$/;
-
-function portDe(source: SourceDEnv): number | undefined {
-  const brut = envPremier(ALIAS_POSTGRES.port, source);
-  if (brut === undefined) return undefined;
-  if (!PORT_ENTIER.test(brut)) {
-    throw new Error(
-      `Le port PostgreSQL « ${brut} » n'est pas un entier positif (${ALIAS_POSTGRES.port.join(', ')}).`,
-    );
-  }
-  return Number(brut);
-}
-
 function sslDe(source: SourceDEnv): SslPostgres | undefined {
   if (!envUnVrai(ALIAS_POSTGRES.ssl, source)) return undefined;
   return { rejectUnauthorized: source.NODE_ENV === 'production' };
-}
-
-function sansIndefinis<T extends object>(objet: T): T {
-  return Object.fromEntries(
-    Object.entries(objet).filter(([, valeur]) => valeur !== undefined),
-  ) as T;
 }
 
 export function resoudreConnexionPostgres(
@@ -74,7 +57,7 @@ export function resoudreConnexionPostgres(
   return sansIndefinis({
     url,
     host: envPremier(ALIAS_POSTGRES.host, source),
-    port: portDe(source),
+    port: envPort(ALIAS_POSTGRES.port, 'PostgreSQL', source),
     username: envPremier(ALIAS_POSTGRES.username, source, envBrut),
     password: envPremier(ALIAS_POSTGRES.password, source, envBrut),
     database:

@@ -10,7 +10,7 @@ import {
   USERS_REPOSITORY,
 } from '../domain/token';
 import type { RequestPasswordResetCommand } from './dto/RequestPasswordReset.command';
-import { lienAvecJeton } from './services/lien-avec-jeton';
+import { lienAvecJeton } from '../../../common/domain/lien-avec-jeton';
 
 export interface RequestPasswordResetResult {
   message: string;

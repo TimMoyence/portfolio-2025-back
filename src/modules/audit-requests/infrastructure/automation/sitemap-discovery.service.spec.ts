@@ -62,6 +62,18 @@ describe('SitemapDiscoveryService', () => {
     );
   });
 
+  it('poursuit la découverte quand un sitemap est illisible', async () => {
+    const result = await decouvrir({
+      'https://example.com/sitemap.xml': { status: 200, body: '<<<' },
+      'https://example.com/sitemap_index.xml': {
+        status: 200,
+        body: '<urlset><url><loc>https://example.com/a</loc></url></urlset>',
+      },
+    });
+
+    expect(result.urls).toEqual(['https://example.com/a']);
+  });
+
   it('discovers nested sitemaps from robots-declared sitemap index', async () => {
     const result = await decouvrir({
       'https://example.com/robots.txt': {

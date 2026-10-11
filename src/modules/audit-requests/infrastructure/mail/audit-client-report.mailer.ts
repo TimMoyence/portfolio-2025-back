@@ -1,53 +1,37 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { pieceJointePdf } from '../../../../common/infrastructure/mail/piece-jointe-pdf';
+import { destinataireDesRapportsDAudit } from '../../../../config/adresses-de-courriel';
 import type { ClientReportMailInput } from '../../domain/IAuditNotifier.port';
 import { pillarLabel } from '../automation/shared/pillar-labels.util';
 import { buildMailLayout } from './mail-layout.util';
+import { MailerDAudit } from './mailer-d-audit';
 import {
   escapeHtml,
   escapeUrl,
   safeHtml,
   slugify,
 } from './mail-rendering.util';
-import { SMTP_TRANSPORTER } from './smtp-transporter.provider';
-import type { SmtpTransporter } from './smtp-transporter.provider';
+import { lignesDeVisibilite, listeDeVisibilite } from './visibilite-google-ia';
 
 @Injectable()
-export class AuditClientReportMailer {
-  private readonly logger = new Logger(AuditClientReportMailer.name);
-
-  constructor(
-    @Inject(SMTP_TRANSPORTER)
-    private readonly transporter: SmtpTransporter,
-  ) {}
-
+export class AuditClientReportMailer extends MailerDAudit {
   async sendClientReport(input: ClientReportMailInput): Promise<void> {
-    if (!this.transporter) return;
     if (!input.to || input.to.trim().length === 0) return;
 
-    const subject = `Votre audit Growth — ${input.websiteName}`;
-    const html = this.buildClientReportHtml(input);
-    const text = this.buildClientReportText(input);
-    const replyTo =
-      process.env.AUDIT_REPORT_TO ?? process.env.CONTACT_NOTIFICATION_TO;
-
-    const attachments = input.pdfBuffer
-      ? [
-          {
-            filename: `growth-audit-${slugify(input.websiteName)}.pdf`,
-            content: input.pdfBuffer,
-            contentType: 'application/pdf',
-          },
-        ]
-      : undefined;
-
-    await this.transporter.sendMail({
-      from: process.env.SMTP_FROM,
+    await this.envoyer({
       to: input.to,
-      replyTo,
-      subject,
-      text,
-      html,
-      attachments,
+      replyTo: destinataireDesRapportsDAudit(),
+      subject: `Votre audit Growth — ${input.websiteName}`,
+      text: this.buildClientReportText(input),
+      html: this.buildClientReportHtml(input),
+      attachments: input.pdfBuffer
+        ? [
+            pieceJointePdf(
+              `growth-audit-${slugify(input.websiteName)}.pdf`,
+              input.pdfBuffer,
+            ),
+          ]
+        : undefined,
     });
   }
 
@@ -90,10 +74,7 @@ export class AuditClientReportMailer {
       <p style="white-space:pre-line;color:#374151;">${escapeHtml(report.executiveSummary)}</p>
 
       <h2 style="margin:24px 0 8px 0;font-size:16px;">Visibilité Google vs IA</h2>
-      <p style="color:#374151;">
-        <strong>Google :</strong> ${report.googleVsAiMatrix.googleVisibility.score}/100 — ${escapeHtml(report.googleVsAiMatrix.googleVisibility.summary)}<br/>
-        <strong>IA :</strong> ${report.googleVsAiMatrix.aiVisibility.score}/100 — ${escapeHtml(report.googleVsAiMatrix.aiVisibility.summary)}
-      </p>
+      ${listeDeVisibilite(report.googleVsAiMatrix)}
 
       <h2 style="margin:24px 0 8px 0;font-size:16px;">Top findings</h2>
       <ul style="padding-left:20px;color:#374151;">
@@ -165,12 +146,7 @@ export class AuditClientReportMailer {
     lines.push('Executive summary :');
     lines.push(report.executiveSummary);
     lines.push('');
-    lines.push(
-      `Google : ${report.googleVsAiMatrix.googleVisibility.score}/100 — ${report.googleVsAiMatrix.googleVisibility.summary}`,
-    );
-    lines.push(
-      `IA : ${report.googleVsAiMatrix.aiVisibility.score}/100 — ${report.googleVsAiMatrix.aiVisibility.summary}`,
-    );
+    lines.push(...lignesDeVisibilite(report.googleVsAiMatrix));
     lines.push('');
     lines.push('Top findings :');
     for (const finding of report.topFindings) {

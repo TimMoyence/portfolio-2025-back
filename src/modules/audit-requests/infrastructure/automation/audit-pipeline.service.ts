@@ -1,9 +1,8 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import {
-  AuditLocale,
-  localeFromUrlPath,
-  resolveAuditLocale,
-} from '../../domain/audit-locale.util';
+import { borner } from '../../../../common/domain/nombres/borner';
+import { tronquer } from '../../../../common/domain/texte/tronquer';
+import { LocaleCode } from '../../../../common/domain/value-objects/LocaleCode';
+import { AuditLocale, localeFromUrlPath } from '../../domain/audit-locale.util';
 import type { IAuditRequestsRepository } from '../../domain/IAuditRequests.repository';
 import {
   AUDIT_AUTOMATION_CONFIG,
@@ -16,7 +15,7 @@ import {
   DeepUrlAnalysisService,
 } from './deep-url-analysis.service';
 import { HomepageAnalyzerService } from './homepage-analyzer.service';
-import type { TechFingerprint } from './tech-fingerprint.util';
+import type { TechFingerprint } from './schemas/audit-report.schemas';
 import {
   LangchainAuditReportService,
   LangchainAuditOutput,
@@ -67,7 +66,7 @@ export class AuditPipelineService {
     }
 
     try {
-      const locale = resolveAuditLocale(audit.locale);
+      const locale = LocaleCode.resolve(audit.locale).value;
       const t = this.copy(locale);
 
       await this.repo.updateState(auditId, {
@@ -294,7 +293,7 @@ export class AuditPipelineService {
         processingStatus: 'FAILED',
         progress: 100,
         step:
-          resolveAuditLocale(audit.locale) === 'en'
+          LocaleCode.resolve(audit.locale).value === 'en'
             ? 'Audit failed'
             : 'Audit en echec',
         done: false,
@@ -749,14 +748,14 @@ export class AuditPipelineService {
     max: number,
   ): number {
     if (total <= 0) return min;
-    const ratio = Math.max(0, Math.min(1, done / total));
+    const ratio = borner(done / total, 0, 1);
     return Math.round(min + (max - min) * ratio);
   }
 
   private toSafeError(error: unknown): string {
     const message =
       error instanceof Error ? error.message : 'Unexpected audit error';
-    return message.length > 280 ? `${message.slice(0, 280)}...` : message;
+    return tronquer(message, 280);
   }
 
   private copy(locale: AuditLocale): {

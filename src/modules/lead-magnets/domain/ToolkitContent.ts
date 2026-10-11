@@ -1,3 +1,5 @@
+import type { AiLevel } from './InteractionProfile';
+
 export interface CheatsheetEntry {
   tool: string;
   category: string;
@@ -11,7 +13,7 @@ export interface CheatsheetEntry {
 export interface PromptEntry {
   category: string;
   title: string;
-  level: 'debutant' | 'intermediaire' | 'avance';
+  level: AiLevel;
   prompt: string;
   tool: string;
   description?: string;

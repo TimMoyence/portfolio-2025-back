@@ -1,6 +1,15 @@
 import { z } from 'zod';
 import { resoudreConnexionPostgres } from '../database/connexion-postgres';
+import {
+  DELAI_DE_DIFFUSION_EN_MINUTES,
+  TAILLE_DU_LOT_DE_DIFFUSION,
+} from './diffusion-des-articles';
+import type { BornesEntieres } from './env-readers.util';
 import { PREFIXE_API_PAR_DEFAUT } from './prefixe-api';
+
+function entierDansLesBornes({ defaut, min, max }: BornesEntieres) {
+  return z.coerce.number().int().min(min).max(max).default(defaut);
+}
 
 const cryptographicSecretKeys = [
   'JWT_SECRET',
@@ -186,18 +195,12 @@ const envSchema = z
     MORNING_BRIEF_HMAC_KEY_ID: z.string().optional(),
     MORNING_BRIEF_HMAC_SECRET: z.string().optional(),
     ARTICLE_BROADCAST_ENABLED: z.enum(['true', 'false']).default('false'),
-    ARTICLE_BROADCAST_DELAY_MINUTES: z.coerce
-      .number()
-      .int()
-      .min(0)
-      .max(24 * 60)
-      .default(90),
-    ARTICLE_BROADCAST_BATCH_SIZE: z.coerce
-      .number()
-      .int()
-      .min(1)
-      .max(1000)
-      .default(200),
+    ARTICLE_BROADCAST_DELAY_MINUTES: entierDansLesBornes(
+      DELAI_DE_DIFFUSION_EN_MINUTES,
+    ),
+    ARTICLE_BROADCAST_BATCH_SIZE: entierDansLesBornes(
+      TAILLE_DU_LOT_DE_DIFFUSION,
+    ),
 
     PUPPETEER_EXECUTABLE_PATH: z.string().optional(),
     PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: z.string().optional(),

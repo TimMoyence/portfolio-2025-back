@@ -6,10 +6,13 @@ import {
   questionNumerique,
   questionsDuCours,
   questionVote,
-  type AuMoinsUn,
   type QuestionNumerique,
   type QuestionVote,
 } from '../../src/modules/formations/domain/cours/Cours';
+import {
+  mapperAuMoinsUn,
+  type AuMoinsUn,
+} from '../../src/common/domain/au-moins-un';
 import type { Tolerance } from '../../src/modules/formations/domain/GradingCore';
 import type {
   CoursPublie,
@@ -153,17 +156,16 @@ export function buildQuestionNumeriqueFigee(
   pieges: AuMoinsUn<number>,
   tolerance: Tolerance,
 ): QuestionNumerique {
-  const [premier, ...suite] = pieges.map((valeur) => ({
-    confusion: 'base-arrivee' as const,
-    valeur: () => valeur,
-  }));
   return questionNumerique({
     ...SOCLE_DE_QUESTION_FIGEE,
     id: 'Q-FIGEE',
     concept: 'proportion',
     solution: () => solution,
     tolerance,
-    pieges: [premier, ...suite],
+    pieges: mapperAuMoinsUn(pieges, (valeur) => ({
+      confusion: 'base-arrivee' as const,
+      valeur: () => valeur,
+    })),
   });
 }
 
@@ -691,13 +693,19 @@ export function buildCoursAuTirageEnErreur(): Cours {
       },
     ],
   });
-  const [premier, ...suite] = buildCoursDeTest().ecrans.map(
-    (ecran): Ecran =>
-      ecran.brique === 'fp-numeric'
-        ? { ...ecran, question: bornesInversees }
-        : ecran,
-  );
-  return buildCoursDeTest({ ecrans: [premier, ...suite] });
+  return buildCoursDeTestAvecNumerique(bornesInversees);
+}
+
+export function buildCoursDeTestAvecNumerique(
+  question: QuestionNumerique,
+): Cours {
+  return buildCoursDeTest({
+    ecrans: mapperAuMoinsUn(
+      buildCoursDeTest().ecrans,
+      (ecran): Ecran =>
+        ecran.brique === 'fp-numeric' ? { ...ecran, question } : ecran,
+    ),
+  });
 }
 
 export function tireurSequentiel(depart = 0): (borne: number) => number {

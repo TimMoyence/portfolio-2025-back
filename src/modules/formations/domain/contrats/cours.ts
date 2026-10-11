@@ -1,8 +1,8 @@
+import type { AuMoinsUn } from '../../../../common/domain/au-moins-un';
 import type { Tolerance } from '../GradingCore';
 import type { ConceptId } from '../cours/banque/concepts';
 import type { ConfusionId } from '../cours/banque/confusions';
 import type {
-  AuMoinsUn,
   Cours as CoursActuel,
   Ecran as EcranActuel,
   QuestionNumerique,

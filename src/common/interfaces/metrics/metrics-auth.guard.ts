@@ -5,8 +5,8 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { createHash, timingSafeEqual } from 'crypto';
 import type { Request } from 'express';
+import { egalEnTempsConstant } from '../../domain/crypto/empreintes';
 
 @Injectable()
 export class MetricsAuthGuard implements CanActivate {
@@ -32,23 +32,10 @@ export class MetricsAuthGuard implements CanActivate {
 
     const token = authHeader.slice('Bearer '.length);
 
-    if (!this.tokensMatch(token, metricsToken)) {
+    if (!egalEnTempsConstant(token, metricsToken)) {
       throw new ForbiddenException('Invalid metrics token');
     }
 
     return true;
-  }
-
-  /**
-   * On compare les digests SHA-256 (longueur fixe de 32 octets) plutot que
-   * les chaines brutes : `crypto.timingSafeEqual` exige des buffers de meme
-   * longueur, et l'usage du digest evite de divulguer la longueur du secret
-   * via le temps de reponse. Coherent avec `PasswordService` qui s'appuie
-   * deja sur `timingSafeEqual`.
-   */
-  private tokensMatch(provided: string, expected: string): boolean {
-    const providedDigest = createHash('sha256').update(provided).digest();
-    const expectedDigest = createHash('sha256').update(expected).digest();
-    return timingSafeEqual(providedDigest, expectedDigest);
   }
 }

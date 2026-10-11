@@ -1,5 +1,6 @@
 import { Logger, OnModuleDestroy } from '@nestjs/common';
 import puppeteer, { Browser } from 'puppeteer';
+import { messageDErreur } from '../../domain/errors/message-d-erreur';
 
 // La cover du toolkit deborde ces marges par marges negatives, cf. la regle
 // `.cover.page` de lead-magnets/infrastructure/toolkit-html/toolkit-html.css.ts.
@@ -56,9 +57,7 @@ export abstract class ImprimeriePdf implements OnModuleDestroy {
         await browser.close();
       } catch (error) {
         this.logger.warn(
-          `Echec lors de la fermeture du navigateur Puppeteer: ${
-            error instanceof Error ? error.message : String(error)
-          }`,
+          `Echec lors de la fermeture du navigateur Puppeteer: ${messageDErreur(error)}`,
         );
       } finally {
         this.browserPromise = null;

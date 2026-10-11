@@ -1,3 +1,6 @@
+import { estObjet } from '../../../../common/domain/est-objet';
+import { estUneFormule } from 'portfolio-2025-partage/formule';
+
 export const ESPACE_INSECABLE = String.fromCodePoint(0xa0);
 
 const MILLIERS = /(?<!\d)(\d{1,3}) (?=\d{3}(?!\d))/g;
@@ -19,10 +22,6 @@ function ordinal(
   return premier !== undefined && genre !== undefined
     ? `${premier}${EXPOSANTS_DU_PREMIER[genre]}`
     : `${rang}ᵉ`;
-}
-
-function estUneFormule(texte: string): boolean {
-  return texte.startsWith('=');
 }
 
 export function typographier(texte: string): string {
@@ -54,7 +53,7 @@ export function typographierEnProfondeur<T>(valeur: T): T {
       typographierEnProfondeur(element),
     ) as T;
   }
-  if (valeur !== null && typeof valeur === 'object') {
+  if (estObjet(valeur)) {
     return Object.fromEntries(
       Object.entries(valeur).map(([cle, contenu]) => [
         cle,

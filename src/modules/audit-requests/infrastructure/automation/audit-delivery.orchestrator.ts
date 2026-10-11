@@ -1,8 +1,10 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
+import { moyenneOu } from '../../../../common/domain/nombres/statistiques';
 import type { AuditSnapshot } from '../../domain/AuditProcessing';
 import type {
   ClientReportSynthesis,
   ExpertReportSynthesis,
+  FindingImpact,
 } from '../../domain/AuditReportTiers';
 import { detectBusinessType } from '../../domain/BusinessType';
 import type { EngineCoverage, EngineScore } from '../../domain/EngineCoverage';
@@ -19,6 +21,7 @@ import {
   LangchainClientReportService,
 } from './langchain-client-report.service';
 import type { PageAiRecap } from './page-ai-recap.service';
+import { normalizeSeverity } from './shared/severity.util';
 
 export interface RunDeliveryInput {
   readonly auditId: string;
@@ -84,7 +87,7 @@ export class AuditDeliveryOrchestrator {
       (finding) => ({
         title: finding.title,
         description: finding.description,
-        severity: this.normalizeFindingSeverity(finding.severity),
+        severity: normalizeSeverity(finding.severity),
         impact: this.normalizeFindingImpact(finding.impact),
       }),
     );
@@ -111,18 +114,7 @@ export class AuditDeliveryOrchestrator {
     }
   }
 
-  private normalizeFindingSeverity(
-    severity: unknown,
-  ): 'high' | 'medium' | 'low' {
-    const value = typeof severity === 'string' ? severity.toLowerCase() : '';
-    if (value === 'high' || value === 'critical') return 'high';
-    if (value === 'low') return 'low';
-    return 'medium';
-  }
-
-  private normalizeFindingImpact(
-    impact: unknown,
-  ): 'traffic' | 'indexation' | 'conversion' {
+  private normalizeFindingImpact(impact: unknown): FindingImpact {
     const value = typeof impact === 'string' ? impact.toLowerCase() : '';
     if (value === 'indexation') return 'indexation';
     if (value === 'conversion') return 'conversion';
@@ -281,8 +273,12 @@ export class AuditDeliveryOrchestrator {
     entries: ReadonlyArray<EngineScore>,
     engine: EngineScore['engine'],
   ): EngineScore {
-    const total = entries.reduce((sum, entry) => sum + entry.score, 0);
-    const avg = entries.length > 0 ? Math.round(total / entries.length) : 0;
+    const avg = Math.round(
+      moyenneOu(
+        entries.map((entry) => entry.score),
+        0,
+      ),
+    );
     const indexable = entries.some((entry) => entry.indexable);
     const strengths = this.flattenUnique(entries.map((e) => e.strengths));
     const blockers = this.flattenUnique(entries.map((e) => e.blockers));

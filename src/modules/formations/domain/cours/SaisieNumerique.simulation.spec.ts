@@ -1,4 +1,5 @@
 import * as fc from 'fast-check';
+import { avecVirgule } from '../../../../common/domain/nombres/ecriture-francaise';
 import { lireNombreSaisi } from './SaisieNumerique';
 
 const ESPACES_SAISIS = [' ', ' ', ' ', ' '] as const;
@@ -38,7 +39,7 @@ function decimal(): fc.Arbitrary<number> {
 }
 
 function saisieDe(valeur: number, separateur: string): string {
-  return separateur === ',' ? String(valeur).replace('.', ',') : String(valeur);
+  return separateur === ',' ? avecVirgule(valeur) : String(valeur);
 }
 
 describe('lireNombreSaisi sur des saisies d etudiants', () => {
