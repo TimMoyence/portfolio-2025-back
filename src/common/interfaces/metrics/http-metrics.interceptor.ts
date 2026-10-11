@@ -11,6 +11,8 @@ import type { Observable } from 'rxjs';
 import { aLaFermeture } from '../http/a-la-fermeture';
 import { MetricsService } from './metrics.service';
 
+const STATUT_DU_CLIENT_PARTI = '499';
+
 @Injectable()
 export class HttpMetricsInterceptor implements NestInterceptor {
   private readonly logger = new Logger('HttpMetrics');
@@ -20,12 +22,18 @@ export class HttpMetricsInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
     if (context.getType() === 'http') {
       const start = process.hrtime.bigint();
-      aLaFermeture(context, () => this.record(context.switchToHttp(), start));
+      aLaFermeture(context, (abandonnee) =>
+        this.record(context.switchToHttp(), start, abandonnee),
+      );
     }
     return next.handle();
   }
 
-  private record(http: HttpArgumentsHost, start: bigint): void {
+  private record(
+    http: HttpArgumentsHost,
+    start: bigint,
+    abandonnee: boolean,
+  ): void {
     try {
       const durationSeconds =
         Number(process.hrtime.bigint() - start) / 1_000_000_000;
@@ -36,7 +44,9 @@ export class HttpMetricsInterceptor implements NestInterceptor {
         req.path ??
         'unknown';
       const method = req.method;
-      const statusCode = String(http.getResponse<Response>().statusCode);
+      const statusCode = abandonnee
+        ? STATUT_DU_CLIENT_PARTI
+        : String(http.getResponse<Response>().statusCode);
 
       const labels = { method, route, status_code: statusCode };
 

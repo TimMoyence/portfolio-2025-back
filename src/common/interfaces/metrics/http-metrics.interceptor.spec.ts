@@ -67,13 +67,17 @@ describe('HttpMetricsInterceptor', () => {
     expect(metricsService.httpRequestsTotal.inc).not.toHaveBeenCalled();
   });
 
-  it('mesure une reponse deja fermee avant l intercepteur', async () => {
+  it('mesure une reponse deja fermee avant l intercepteur, comme abandonnee par le client', async () => {
     mockResponse.destroyed = true;
     mockResponse.writableFinished = false;
 
     await intercepterSansFermer();
 
     expect(metricsService.httpRequestsTotal.inc).toHaveBeenCalledTimes(1);
+    expect(metricsService.httpRequestsTotal.inc).toHaveBeenCalledWith({
+      ...LIBELLES_DE_LA_REQUETE,
+      status_code: '499',
+    });
   });
 
   it('journalise sans lever quand l enregistrement de la mesure casse', async () => {
@@ -144,6 +148,13 @@ describe('HttpMetricsInterceptor', () => {
         mockResponse.statusCode = 404;
       },
       { status_code: '404' },
+    ],
+    [
+      'compte en 499 une reponse que le client ferme avant qu elle soit terminee',
+      () => {
+        mockResponse.writableFinished = false;
+      },
+      { status_code: '499' },
     ],
   ])('%s', async (_titre, preparer, libellesAttendus) => {
     preparer();
