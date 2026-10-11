@@ -2352,8 +2352,7 @@ Les formes exactes des données publiques sont au § 9.4, les corrigés au § 9.
   réversible en quelques millisecondes, et détient les fragments. Le poste ne reçoit plus que le
   contrat public.
 - **Correction serveur** : `POST …/escape/:parcoursId/tentatives` ; saisie lue par
-  `lireNombreSaisi` (espaces ordinaires, insécables et fines ; virgule ou point ; signe moins
-  typographique U+2212 ; suffixes « % », « € », « euro(s) », « pt », « point(s) », « facture(s) », « ligne(s) ») ; une saisie équivalente à une
+  `lireNombreSaisiAvecUnite` du paquet (`portfolio-2025-partage/formule`, § 9.2) ; une saisie équivalente à une
   tentative déjà faite ne consomme rien ; incrément atomique plafonné à 10 ; une énigme s’ouvre quand
   la précédente est résolue **ou** que ses 10 tentatives sont épuisées (sans fragment : le code final
   reste alors incomplet) ; énigme non ouverte → 409 `ENIGME_VERROUILLEE` ; plafond atteint → 409
@@ -3508,6 +3507,27 @@ autre échange. Les types sont normatifs (noms, champs, optionalité) ; les comm
 ne font que les expliquer. Toute évolution d’un contrat passe par une modification de ce document
 avant le code.
 
+Depuis la v1.1.0 du paquet `portfolio-2025-partage`, les contrats lus des deux côtés ne sont plus
+recopiés : l’entrée `portfolio-2025-partage/contrats` exporte les listes gelées (`TYPES_QUESTION`,
+`DIFFUSIONS`, `ETATS_PULSE`, `PHASES_DE_VOTE`, `PACING_MODES`, `MODALITES`, `REGIMES_DE_VERROU`) et
+leurs types, ainsi que `FreeRange`, `MetadonneesBrique`, `Tolerance`, `FormeFormule`,
+`ValeurProduction`, `ConfusionComptee`, `Decompte`, `DecomptesParCle`, `ResultatQuestion`,
+`ResultatsSeance`, `StatistiquesSeance`, `ComptesJalon`, `ProgressionEnigme`, `ResumeBareme`,
+`ResultatsEnDirect` et `RegleDeNotation`. Chaque dépôt les importe depuis le paquet là où il les
+emploie ; deux formes restent écrites en toutes lettres, sous la garde du compilateur : le décompte
+par clé que rend `ResultatsSeance.ts` côté back (`Readonly<Record<string, Decompte>>`, la forme de
+`DecomptesParCle`) et `LockRegime` du verrou d’écran côté front (la forme de `RegimeVerrou`). Les
+blocs de ce paragraphe restent la description normative, le paquet en est la seule implémentation.
+Écarts tranchés au passage :
+
+- `Tolerance` est entièrement en lecture seule (le back n’écrivait jamais dedans).
+- `ResultatsSeance` ne porte pas les statistiques : le front l’étend d’un champ `statistiques?`
+  optionnel pour la synthèse ; `ResultatsEnDirect` les rend obligatoires.
+- `JustesParCle` du back devient `Decompte` (même forme `{ total, justes }`) ; le schéma OpenAPI
+  garde son nom `JustesParCleResponseDto`.
+- Restent propres à chaque dépôt, faute de forme commune : `majLe`, `CommandePilotage`,
+  `CadrageDuRenvoi.champs`, `OrdreQuestions`, `REGLE_DE_NOTATION` (valeur) et `isFreeRangeValid`.
+
 ### 9.1 Conventions
 
 - Préfixe : `/api/v1/portfolio25` (variable `API_PREFIX`) ; toutes les routes ci-dessous commencent par
@@ -3559,9 +3579,15 @@ instance, code? }`. Les erreurs de validation des DTO restent celles de Nest (40
   `fp-recall` → `<questionId>:rappel` ; texte du billet → `<billetId>` ; étape rédigée de `fp-worked` →
   `<exempleId>:<etapeId>` et son explication → `<exempleId>:<etapeId>:pourquoi` ; défi → `<defiId>`.
   `activitesLibres(cours)` renvoie, par écran, la liste de ces identifiants.
-- **`lireNombreSaisi(texte): number | null`** : retire les espaces (U+0020, U+00A0, U+202F) ; accepte
-  la virgule ou le point décimal, `+`, `-` et `−` en tête ; accepte en fin « % », « € », « pt »,
-  « pts », « point », « points » (sans casse) ; refuse tout autre caractère (`null`).
+- **Lecture d’une saisie numérique** (paquet, entrée `portfolio-2025-partage/formule`, une seule
+  implémentation pour le back et le front) : `lireNombreSaisi(texte): number | null` retire tout
+  espace (ordinaire, insécable, fine), lit la virgule ou le point décimal, `+`, `-` et `−` (U+2212) en
+  tête, et refuse tout autre caractère (`null`), comme toute écriture qui ne donne pas un nombre fini ;
+  `-0` se lit `0`. C’est la lecture des cellules, des tables et du champ numérique du front.
+  `lireNombreSaisiAvecUnite(texte)` admet en plus une unité finale, sans casse (« % », « € », « k€ »,
+  « euro(s) », « pt(s) », « point(s) », « facture(s) », « ligne(s) », « passage(s) », « kit(s) ») ;
+  c’est la lecture des énigmes côté back. Les vecteurs de `test/saisie.spec.ts` du paquet figent les
+  deux.
 - **Clés de brouillon (front)** : `fp.<sessionId>.<participantId>.<brique>.<id>` (valeur JSON) ; purgées
   à l’événement `fin` et à tout nouveau rattachement ; aucune autre clé `fp.*` n’est écrite.
 

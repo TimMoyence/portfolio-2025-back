@@ -87,7 +87,7 @@
     "pg": "^8.20.0",
     "pino": "^10.3.1",
     "pino-http": "^11.0.0",
-    "portfolio-2025-partage": "https://github.com/TimMoyence/portfolio-2025-partage/releases/download/v1.0.0/portfolio-2025-partage-1.0.0.tgz",
+    "portfolio-2025-partage": "https://github.com/TimMoyence/portfolio-2025-partage/releases/download/v1.1.0/portfolio-2025-partage-1.1.0.tgz",
     "prom-client": "^15.1.3",
     "puppeteer": "^24.0.0",
     "reflect-metadata": "^0.2.2",

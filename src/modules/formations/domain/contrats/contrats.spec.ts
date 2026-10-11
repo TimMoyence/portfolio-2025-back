@@ -53,7 +53,7 @@ import type {
   VotePublic,
   WorkedExemple,
 } from './donnees-publiques';
-import type { RegleDeNotation } from './notation';
+import type { RegleDeNotation } from '../RegleDeNotation';
 import type {
   ControlSessionChanges,
   EtatParticipant,

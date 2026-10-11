@@ -11,7 +11,6 @@ import {
   enigmeVisee,
 } from './Enigmes';
 import type { EcranDEnigmes } from './Enigmes';
-import { lireNombreSaisi } from './SaisieNumerique';
 
 const COURS = buildCoursAvecEnigmes();
 
@@ -24,26 +23,6 @@ function cible(): EcranDEnigmes {
 }
 
 const CIBLE = cible();
-
-describe('lireNombreSaisi', () => {
-  it.each([
-    ['142 920', 142920],
-    ['142 920', 142920],
-    ['142 920,5', 142920.5],
-    ['23,4', 23.4],
-    ['−2,5', -2.5],
-    ['12 %', 12],
-    ['12 €', 12],
-    ['3 pts', 3],
-    ['3 points', 3],
-  ])('lit « %s » comme %p', (brut, attendu) => {
-    expect(lireNombreSaisi(brut)).toBe(attendu);
-  });
-
-  it.each(['', 'douze', '1,2,3', '12x'])('refuse la saisie « %s »', (brut) => {
-    expect(lireNombreSaisi(brut)).toBeNull();
-  });
-});
 
 describe('ecranDEnigmes', () => {
   it('rend l ecran, son rang et le plafond de tentatives', () => {

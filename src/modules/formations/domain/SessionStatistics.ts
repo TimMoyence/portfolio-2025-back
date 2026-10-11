@@ -1,3 +1,4 @@
+import type { StatistiquesSeance } from 'portfolio-2025-partage/contrats';
 import { estAuMoinsUn } from '../../../common/domain/au-moins-un';
 import { arrondi } from '../../../common/domain/nombres/arrondi';
 import {
@@ -17,14 +18,7 @@ const {
   statistiquesSurQuestionsNotees,
 } = REGLE_DE_NOTATION;
 
-export interface StatistiquesSeance {
-  readonly moyenne: number;
-  readonly mediane: number;
-  readonly dispersion: number;
-  readonly tauxParticipation: number;
-  readonly tauxReussite: number;
-  readonly questionsProblemes: readonly string[];
-}
+export type { StatistiquesSeance } from 'portfolio-2025-partage/contrats';
 
 export function calculerStatistiquesSeance(
   participants: readonly RapportParticipant[],

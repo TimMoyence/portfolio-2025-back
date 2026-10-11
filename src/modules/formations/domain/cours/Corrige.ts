@@ -1,15 +1,16 @@
 import type { AuMoinsUn } from '../../../../common/domain/au-moins-un';
 import type { Tolerance } from '../GradingCore';
 import type { SheetPlanStocke } from '../contrats/cours';
+import type { FormeFormule } from 'portfolio-2025-partage/contrats';
 import type { ValeurFormule } from 'portfolio-2025-partage/formule';
 import type { ConfusionId } from './banque/confusions';
+
+export type { FormeFormule } from 'portfolio-2025-partage/contrats';
 
 export interface PiegeNumerique {
   readonly valeur: number;
   readonly confusion: ConfusionId;
 }
-
-export type FormeFormule = 'references' | { readonly memeQue: string };
 
 export interface CorrigeFeuille {
   readonly type: 'feuille';

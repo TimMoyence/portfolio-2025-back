@@ -1,3 +1,4 @@
+import { MODALITES, REGIMES_DE_VERROU } from 'portfolio-2025-partage/contrats';
 import { z } from 'zod';
 import { dansLesBornes } from '../../../../common/domain/nombres/dans-les-bornes';
 import { CHAMPS_EXTRAITS_DU_CAS } from '../contrats/cours';
@@ -38,7 +39,7 @@ import { presentationVisuelle } from './VisualPresentation';
 
 const rang = z.number().int().nonnegative();
 const seuil = z.number().gt(0).lte(1);
-const modalite = z.enum(['solo', 'binome', 'groupe', 'classe']);
+const modalite = z.enum(MODALITES);
 
 const partFigeeDansLesVersionsPubliees = z.number().optional();
 
@@ -828,7 +829,7 @@ const proprietesQuestionnaire = z
   .object({
     intitule: texte,
     consigne: texte,
-    regime: z.enum(['ouvert', 'focus', 'examen']),
+    regime: z.enum(REGIMES_DE_VERROU),
     ordre: z.enum(['fixe', 'melange']),
     questions: auMoinsUn(z.union([voteStocke, numeriqueStockee])),
     ...communes,

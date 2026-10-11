@@ -1,18 +1,17 @@
-import type { FreeRange, PacingMode } from '../PacingMode';
+import type {
+  EtatPulse,
+  FreeRange,
+  PacingMode,
+  VotePhase,
+} from 'portfolio-2025-partage/contrats';
 import type { ValeurReponse } from './resultats';
 
-export const ETATS_PULSE = ['perdu', 'ca-va', 'clair'] as const;
-
-export type EtatPulse = (typeof ETATS_PULSE)[number];
-
-export const PHASES_DE_VOTE = [
-  'vote',
-  'discussion',
-  'revote',
-  'revele',
-] as const;
-
-export type VotePhase = (typeof PHASES_DE_VOTE)[number];
+export {
+  ETATS_PULSE,
+  PHASES_DE_VOTE,
+  type EtatPulse,
+  type VotePhase,
+} from 'portfolio-2025-partage/contrats';
 
 export interface PilotageEcran {
   readonly phase?: VotePhase;

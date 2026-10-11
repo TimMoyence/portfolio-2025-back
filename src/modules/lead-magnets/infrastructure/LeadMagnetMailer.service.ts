@@ -1,10 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ExpediteurSmtp } from '../../../common/infrastructure/mail/expediteur-smtp';
-import {
-  escapeHtml,
-  escapeUrl,
-  safeHtml,
-} from '../../../common/infrastructure/mail/html-escape.util';
+import { escapeHtml, escapeUrl, safeHtml } from 'portfolio-2025-partage/html';
 import { pieceJointePdf } from '../../../common/infrastructure/mail/piece-jointe-pdf';
 import { adresseDeReponse } from '../../../config/adresses-de-courriel';
 import { urlDuSite } from '../../../config/urls-publiques';

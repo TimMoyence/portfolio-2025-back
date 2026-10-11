@@ -1,13 +1,11 @@
-import type { CasProfessionnel, Modalite, RegimeVerrou } from '../cours/Cours';
+import type {
+  MetadonneesBrique,
+  RegimeVerrou,
+} from 'portfolio-2025-partage/contrats';
+import type { CasProfessionnel } from '../cours/Cours';
 import type { OrdreQuestions, ProprietesExposition } from './cours';
 
-export interface MetadonneesBrique {
-  readonly concepts: readonly string[];
-  readonly misconceptionsCiblees: readonly string[];
-  readonly dureeMinutes: number;
-  readonly modalite: Modalite;
-  readonly regime: RegimeVerrou;
-}
+export type { MetadonneesBrique } from 'portfolio-2025-partage/contrats';
 
 export interface OptionPublique {
   readonly id: string;

@@ -2,7 +2,7 @@ import { moyenneOu } from '../../../common/domain/nombres/statistiques';
 import type { TypeQuestion } from './contrats/cours';
 import type {
   ConfusionComptee,
-  JustesParCle,
+  Decompte,
   ResultatQuestion,
   ResultatsSeance,
 } from './contrats/resultats';
@@ -94,8 +94,8 @@ function moyenneDesScores(reponses: readonly AnswerRecord[]): number | null {
 
 function compterParCle(
   reponses: readonly AnswerRecord[],
-): Readonly<Record<string, JustesParCle>> | null {
-  const parCle: Record<string, JustesParCle> = {};
+): Readonly<Record<string, Decompte>> | null {
+  const parCle: Record<string, Decompte> = {};
   for (const reponse of reponses) {
     for (const detail of reponse.details ?? []) {
       const courant = parCle[detail.cle] ?? { total: 0, justes: 0 };

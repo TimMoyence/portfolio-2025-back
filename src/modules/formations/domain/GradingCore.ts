@@ -1,11 +1,8 @@
+import type { Tolerance } from 'portfolio-2025-partage/contrats';
+
+export type { Tolerance } from 'portfolio-2025-partage/contrats';
+
 export const NE_SAIT_PAS = '__je_ne_sais_pas__';
-
-type ToleranceType = 'relative' | 'absolue' | 'decimales';
-
-export interface Tolerance {
-  type: ToleranceType;
-  valeur: number;
-}
 
 export type AnswerValue = number | string;
 

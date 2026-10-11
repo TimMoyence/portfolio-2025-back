@@ -17,11 +17,8 @@ import {
   escapeUrl,
   safeCss,
   safeHtml,
-} from '../../../../common/infrastructure/mail/html-escape.util';
-import type {
-  EscapedHtml,
-  FeuilleDeStyle,
-} from '../../../../common/infrastructure/mail/html-escape.util';
+} from 'portfolio-2025-partage/html';
+import type { EscapedHtml, FeuilleDeStyle } from 'portfolio-2025-partage/html';
 import { sectionHeader } from '../../../../common/infrastructure/mail/section-header';
 
 @Injectable()
