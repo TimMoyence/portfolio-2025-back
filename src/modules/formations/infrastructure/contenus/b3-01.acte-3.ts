@@ -663,11 +663,11 @@ export const ACTE_3: moteur.Acte = [
     proprietes: {
       metier: 'Analyste data — Norvane Équipement (réseau de 12 agences)',
       situation:
-        'Les règles des niveaux 1 à 4 ont été dites avant chaque pause. Vous écrivez celles des niveaux 5 et 6, puis vous choisissez la règle que l’agent de la séance 2 recevra en premier.',
+        'Dites avant les pauses : « Je relie les tables par un identifiant, jamais par un libellé » ; « Je corrige seul ce qui est faux et certain ; je signale ce qui est douteux et je demande » ; « Avant la fonction, je nomme la famille du problème » ; « Je travaille sur un tableau structuré, jamais sur une plage fixe ».',
       geste:
-        'Écrivez une règle par niveau, puis justifiez votre choix en une phrase.',
+        'Écrivez une règle pour le niveau 5 et une pour le niveau 6, puis choisissez parmi les six celle que l’agent de la séance 2 recevra en premier.',
       consequence:
-        'L’agent n’a que vos règles : celle qui manque, il ne l’appliquera pas.',
+        'Une règle que l’agent n’a pas reçue, il ne l’appliquera pas.',
       questionsLibres: [
         {
           id: 'b3-01-a3-regles:regle-visualiser',

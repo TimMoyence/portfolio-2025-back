@@ -501,8 +501,8 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
   `TRIER`), transformer (`SUPPRESPACE`, `SUBSTITUE`, `CNUM`), filtrer (filtre automatique ;
   `FILTRE`), regrouper (TCD ; `UNIQUE`), manipuler le temps (`NB.JOURS.OUVRES`,
   `SERIE.JOUR.OUVRE`, `DATEDIF`), détecter une anomalie (MFC, `MEDIANE`, `ECARTYPE.STANDARD`).
-  Les noms sont ceux de la documentation Microsoft en français : `RANG` n'y est plus qu'une
-  fonction de compatibilité, et `ECARTYPE` n'existe pas.
+  Les noms sont ceux de la documentation Microsoft en français : `RANG` et `ECARTYPE` n'y sont
+  plus que des fonctions de compatibilité.
 
 #### A2-03 · `B3-01-A2-03-COURS-CHERCHER-AGREGER` — 3 min · v2 `lesson` · catalogue
 
@@ -805,8 +805,9 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
 - Titre public : « Cahier de règles : niveaux 5 et 6, puis relecture »
 - Trois questions libres : `regle-visualiser`, `regle-decider`, `regle-la-plus-utile` (« parmi
   les six règles de la séance, laquelle confieriez-vous en premier à un agent, et pourquoi ? »).
-  Les règles des niveaux 1 à 4 ont été dites avant chaque pause et figurent sur la carte A1-03.
-  Annonce de la séance 2 : l'agent Data Analyst.
+  Les règles des niveaux 1 à 4, dites avant chaque pause (notes d'A1-14 et d'A2-11), sont
+  reprises mot pour mot dans la situation de l'écran : l'étudiant compare les six sans s'en
+  souvenir de mémoire. Annonce de la séance 2 : l'agent Data Analyst.
 
 #### A3-13 · `B3-01-A3-13-CE-QUI-RESTE-FLOU` — 2 min · `fp-pro` · séance
 

@@ -1691,5 +1691,5 @@ seanceComplete(COURS_B3_01, {
   ],
   piecesJointesAuCatalogue: ['B3-01-A1-02-COURRIEL'],
   classeursReserves: ['B3-01-A2-01-VOTE-FAMILLE', 'B3-01-A3-02-VOTE-GRAPHIQUE'],
-  intervalleLibre: { premier: 1, dernier: 20 },
+  intervalleLibre: { premier: 35, dernier: 36 },
 });

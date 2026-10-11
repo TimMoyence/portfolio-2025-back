@@ -670,7 +670,7 @@ export const ACTE_1: moteur.Acte = [
               id: 'ville',
               intitule: 'La ville',
               raisonnement:
-                'Dans une nouvelle colonne, =NOMPROPRE(SUPPRESPACE(E2)) retire les espaces en trop, puis met une majuscule initiale. Recopiée, elle rend « Bordeaux » en ligne 783.',
+                'Dans une nouvelle colonne, =NOMPROPRE(SUPPRESPACE(E2)) retire les espaces en trop, puis met une majuscule au début de chaque mot. Recopiée, elle rend « Bordeaux » en ligne 783.',
               invite:
                 'Quelle formule, écrite en ligne 2 et recopiée, rend « Bordeaux » en ligne 783 ?',
             },

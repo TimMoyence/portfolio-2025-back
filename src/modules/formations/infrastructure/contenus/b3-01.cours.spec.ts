@@ -1407,6 +1407,37 @@ describe('B3-01 — retours de la séance du 13/10', () => {
     );
   });
 
+  it.each([
+    [
+      'B3-01-A1-14-ATELIER-NETTOYAGE',
+      'Je relie les tables par un identifiant, jamais par un libellé',
+    ],
+    [
+      'B3-01-A1-14-ATELIER-NETTOYAGE',
+      'Je corrige seul ce qui est faux et certain ; je signale ce qui est douteux et je demande',
+    ],
+    [
+      'B3-01-A2-11-ATELIER-TCD',
+      'Avant la fonction, je nomme la famille du problème',
+    ],
+    [
+      'B3-01-A2-11-ATELIER-TCD',
+      'Je travaille sur un tableau structuré, jamais sur une plage fixe',
+    ],
+  ])(
+    'R-05 · affiche au cahier la règle dite avant la pause de %s : « %s »',
+    (screenIdDeLaPause, regle) => {
+      expect(texteDe(screenIdDeLaPause)).toContain(regle);
+      expect(texteDe('B3-01-A3-12-CAHIER-DE-REGLES')).toContain(regle);
+    },
+  );
+
+  it('R-05 · ne reproche pas au cahier une règle que l’écran n’a jamais montrée', () => {
+    expect(texteDe('B3-01-A3-12-CAHIER-DE-REGLES')).not.toContain(
+      'L’agent n’a que vos règles',
+    );
+  });
+
   it('R-06 · pose sur sa propre diapo ce qui reste flou, avant le billet qui clôt la séance', () => {
     const [flou, billet] = COURS.ecrans.slice(-2);
 
@@ -1431,6 +1462,7 @@ describe('B3-01 — commandes vérifiées dans la documentation Microsoft', () =
     ['B3-01-A1-08-ATELIER-GRANULARITE', 'Accueil › Trier et filtrer › Effacer'],
     ['B3-01-A1-09-VOTE-CA-TEXTE', 'un petit triangle vert'],
     ['B3-01-A1-11-COURS-OUTILS', 'majuscule au début de chaque mot'],
+    ['B3-01-A1-12-EXEMPLE-NETTOYAGE', 'majuscule au début de chaque mot'],
     ['B3-01-A1-11-COURS-OUTILS', 'Données › À partir de Tableau/Plage'],
     ['B3-01-A1-11-COURS-OUTILS', 'Données › Obtenir des données'],
     ['B3-01-A1-14-ATELIER-NETTOYAGE', 'sur un poste réglé en français'],
@@ -1467,6 +1499,8 @@ describe('B3-01 — commandes vérifiées dans la documentation Microsoft', () =
   });
 
   it.each([
+    ['B3-01-A1-11-COURS-OUTILS', 'majuscule initiale'],
+    ['B3-01-A1-12-EXEMPLE-NETTOYAGE', 'majuscule initiale'],
     ['B3-01-A2-02-FAMILLES', '"RANG, '],
     ['B3-01-A2-02-FAMILLES', 'CNUM, TEXTE'],
     ['B3-01-A2-02-FAMILLES', 'ECARTYPE"'],
@@ -1475,7 +1509,7 @@ describe('B3-01 — commandes vérifiées dans la documentation Microsoft', () =
     ['B3-01-A3-03-COURS-GRAPHIQUES', 'fait des barres'],
     ['B3-01-A3-08-EXEMPLE-MFC-SEGMENTS', 'clic droit sur le segment'],
   ])(
-    '%s · n’écrit plus « %s », que la documentation dément',
+    '%s · n’écrit plus « %s », au profit de la forme que donne la documentation',
     (screenId, retire) => {
       expect(texteDe(screenId)).not.toContain(retire);
     },

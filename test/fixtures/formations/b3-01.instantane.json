@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "bff9157412c96f46e2a026e03e9fa708a5f4cbaca5bdf1e327ab37d108f5fee6",
+  "empreinte": "1dbbf89c64cdf42c27be53aaba77b4209d0e96e325ee8c931f4229cdc5b6293c",
   "sujet": {
     "id": "b3-01-donnee-brute-decision",
     "titre": "Expert Data : de la donnée brute à la décision",
@@ -639,7 +639,7 @@
               {
                 "id": "ville",
                 "intitule": "La ville",
-                "raisonnement": "Dans une nouvelle colonne, =NOMPROPRE(SUPPRESPACE(E2)) retire les espaces en trop, puis met une majuscule initiale. Recopiée, elle rend « Bordeaux » en ligne 783.",
+                "raisonnement": "Dans une nouvelle colonne, =NOMPROPRE(SUPPRESPACE(E2)) retire les espaces en trop, puis met une majuscule au début de chaque mot. Recopiée, elle rend « Bordeaux » en ligne 783.",
                 "invite": "Quelle formule, écrite en ligne 2 et recopiée, rend « Bordeaux » en ligne 783 ?"
               },
               {
@@ -2013,9 +2013,9 @@
           "cas": {
             "id": "B3-01-A3-12-CAHIER-DE-REGLES",
             "metier": "Analyste data — Norvane Équipement (réseau de 12 agences)",
-            "situation": "Les règles des niveaux 1 à 4 ont été dites avant chaque pause. Vous écrivez celles des niveaux 5 et 6, puis vous choisissez la règle que l’agent de la séance 2 recevra en premier.",
-            "geste": "Écrivez une règle par niveau, puis justifiez votre choix en une phrase.",
-            "consequence": "L’agent n’a que vos règles : celle qui manque, il ne l’appliquera pas.",
+            "situation": "Dites avant les pauses : « Je relie les tables par un identifiant, jamais par un libellé » ; « Je corrige seul ce qui est faux et certain ; je signale ce qui est douteux et je demande » ; « Avant la fonction, je nomme la famille du problème » ; « Je travaille sur un tableau structuré, jamais sur une plage fixe ».",
+            "geste": "Écrivez une règle pour le niveau 5 et une pour le niveau 6, puis choisissez parmi les six celle que l’agent de la séance 2 recevra en premier.",
+            "consequence": "Une règle que l’agent n’a pas reçue, il ne l’appliquera pas.",
             "questionsLibres": [
               {
                 "id": "b3-01-a3-regles:regle-visualiser",
@@ -3105,7 +3105,7 @@
               {
                 "id": "ville",
                 "intitule": "La ville",
-                "raisonnement": "Dans une nouvelle colonne, =NOMPROPRE(SUPPRESPACE(E2)) retire les espaces en trop, puis met une majuscule initiale. Recopiée, elle rend « Bordeaux » en ligne 783.",
+                "raisonnement": "Dans une nouvelle colonne, =NOMPROPRE(SUPPRESPACE(E2)) retire les espaces en trop, puis met une majuscule au début de chaque mot. Recopiée, elle rend « Bordeaux » en ligne 783.",
                 "invite": "Quelle formule, écrite en ligne 2 et recopiée, rend « Bordeaux » en ligne 783 ?"
               },
               {
@@ -5454,9 +5454,9 @@
           "cas": {
             "id": "B3-01-A3-12-CAHIER-DE-REGLES",
             "metier": "Analyste data — Norvane Équipement (réseau de 12 agences)",
-            "situation": "Les règles des niveaux 1 à 4 ont été dites avant chaque pause. Vous écrivez celles des niveaux 5 et 6, puis vous choisissez la règle que l’agent de la séance 2 recevra en premier.",
-            "geste": "Écrivez une règle par niveau, puis justifiez votre choix en une phrase.",
-            "consequence": "L’agent n’a que vos règles : celle qui manque, il ne l’appliquera pas.",
+            "situation": "Dites avant les pauses : « Je relie les tables par un identifiant, jamais par un libellé » ; « Je corrige seul ce qui est faux et certain ; je signale ce qui est douteux et je demande » ; « Avant la fonction, je nomme la famille du problème » ; « Je travaille sur un tableau structuré, jamais sur une plage fixe ».",
+            "geste": "Écrivez une règle pour le niveau 5 et une pour le niveau 6, puis choisissez parmi les six celle que l’agent de la séance 2 recevra en premier.",
+            "consequence": "Une règle que l’agent n’a pas reçue, il ne l’appliquera pas.",
             "questionsLibres": [
               {
                 "id": "b3-01-a3-regles:regle-visualiser",
