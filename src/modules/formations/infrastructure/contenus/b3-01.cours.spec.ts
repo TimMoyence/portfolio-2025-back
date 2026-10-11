@@ -118,18 +118,18 @@ function explicationsDe(screenId: string): string[] {
 
 fiche.decrireLaFicheDuCours('B3-01', COURS, {
   conception: 'cours-b3-01-conception.md',
-  ecrans: 40,
+  ecrans: 39,
   dureeMinutes: 180,
   minutesParActe: [56, 60, 64, 0, 0, 0],
   rythme: { expositionContinueMax: 6, interactives: 142, exposition: 38 },
   ateliersNotes: [
     'A1-07 (4)',
     'A1-08 (4)',
-    'A1-13 (5)',
-    'A1-14 (12)',
-    'A2-04 (10)',
-    'A2-07 (10)',
-    'A2-11 (14)',
+    'A1-13 (6)',
+    'A1-14 (15)',
+    'A2-04 (11)',
+    'A2-07 (12)',
+    'A2-11 (15)',
     'A3-04 (4)',
     'A3-05 (8)',
     'A3-09 (15)',
@@ -580,7 +580,7 @@ describe('B3-01 — acte 1 : consignes et corrections exactes', () => {
     expect(texte).not.toContain('NOMPROPRE(E2) écrit');
     expect(texte).not.toMatch(/NOMPROPRE\(E2\)[^.;]*BORDEAUX/u);
     expect(texte).toContain(
-      'NOMPROPRE met une majuscule initiale, « BORDEAUX » devient « Bordeaux »',
+      'NOMPROPRE met une majuscule au début de chaque mot, « BORDEAUX » devient « Bordeaux »',
     );
   });
 
@@ -707,7 +707,7 @@ describe('B3-01 — acte 1 : consignes et corrections exactes', () => {
     ).toBe(VALEURS_B3_01['b3-01-a2-delai-strasbourg'] + 1);
     expect(mediane).not.toContain('Sans le − 1');
     expect(retards).toContain(
-      'Une ligne est en retard quand date_livraison dépasse SERIE.JOUR.OUVRE(date_commande;5), soit quand son delai dépasse 5 : 99 lignes commandées en 2026.',
+      'Une ligne est en retard quand date_livraison dépasse SERIE.JOUR.OUVRE(date_commande;5), soit, pour une commande passée un jour ouvré comme toutes celles de la reprise, quand son delai dépasse 5 : 99 lignes commandées en 2026.',
     );
     expect(retards).toContain(
       'Sans le − 1, la colonne delai compte aussi le jour de la commande : au critère ">5", 284 lignes, livrées le jour promis comprises, et une médiane de Strasbourg de 9 jours.',
@@ -978,8 +978,9 @@ describe('B3-01 — actes 2 et 3 : consignes et corrections exactes', () => {
       'Le même glissement vide la colonne categorie : à la première question aussi, 0 €',
     );
     expect(ouest).toContain(
-      'Un critère de date écrit tout entier entre guillemets ne compare qu’à un texte : 0 €, ici comme à la première question',
+      'La fonction DATE écrite dans les guillemets, ">=DATE(2026;1;1)", n’est pas calculée : Excel compare au texte « DATE(2026;1;1) » et ne trouve rien : 0 €, ici comme à la première question',
     );
+    expect(ouest).not.toContain('tout entier entre guillemets');
     expect(ouest).toContain(
       'Avant la ligne 14, la seule ligne Ouest trouvée, la ligne 2, date de 2025',
     );
@@ -1077,7 +1078,10 @@ describe('B3-01 — actes 2 et 3 : consignes et corrections exactes', () => {
     const atelier = texteDe('B3-01-A3-05-ATELIER-GRAPHIQUES');
 
     expect(tcd).toContain(
-      'Création de tableau (Tableau sur Mac) › Nom du tableau',
+      'nommé T_Commandes dans Création de tableau › Nom du tableau',
+    );
+    expect(tcd).toContain(
+      'Création de tableau (Outils de tableau › Création sous Excel 2019 ; Tableau sur Mac)',
     );
     expect(tcd).toContain('Agences en tableau T_Agences');
     expect(atelier).toContain(
@@ -1092,8 +1096,10 @@ describe('B3-01 — actes 2 et 3 : consignes et corrections exactes', () => {
   it('A3-03 · distingue l’histogramme de répartition de l’« histogramme groupé » du ruban', () => {
     const graphiques = texteDe('B3-01-A3-03-COURS-GRAPHIQUES');
 
-    expect(graphiques).toContain('Insertion › Graphique statistique');
-    expect(graphiques).toContain('l’« histogramme groupé » d’Excel');
+    expect(graphiques).toContain(
+      'Insertion › Insérer un graphique statistique › Histogramme',
+    );
+    expect(graphiques).toContain('l’« Histogramme groupé » d’Excel');
   });
 
   it('A2-02 · ne donne de variante qu’aux familles qui en ont une, distincte du socle', () => {
@@ -1351,6 +1357,143 @@ describe('B3-01 — actes 2 et 3 : consignes et corrections exactes', () => {
     '%s · ouvre RECHERCHEX, UNIQUE et les formules matricielles dès Excel 2021',
     (_ecran, screenId) => {
       expect(texteDe(screenId)).not.toContain('Excel 365');
+    },
+  );
+});
+
+describe('B3-01 — retours de la séance du 13/10', () => {
+  it('R-04 · A1-12 · rappelle au-dessus des étapes le rôle et la syntaxe de chaque formule, sans souffler la réponse', () => {
+    const exemple = COURS.ecrans.find(
+      (ecran) => ecran.id === 'B3-01-A1-12-EXEMPLE-NETTOYAGE',
+    );
+    const rappel =
+      exemple?.brique === 'fp-worked'
+        ? (exemple.proprietes.exemple.rappel ?? [])
+        : [];
+
+    expect(rappel.map(({ libelle }) => libelle)).toEqual([
+      'SUPPRESPACE(texte)',
+      'NOMPROPRE(texte)',
+      'SUBSTITUE(texte;ancien;nouveau)',
+      'CNUM(texte)',
+      'ESTNUM(valeur)',
+    ]);
+    expect(JSON.stringify(rappel)).not.toMatch(/E2|L2|Bordeaux|1150/);
+  });
+
+  it('R-05 · ne garde aucun écran de règles avant les pauses, faute de suivi', () => {
+    expect(
+      COURS.ecrans.filter((ecran) => ecran.id.includes('REGLES-ACTE')),
+    ).toEqual([]);
+  });
+
+  it('R-05 · annonce chaque pause à la correction du dernier atelier de l’acte, règles du niveau dites au pupitre', () => {
+    const tcd = texteDe('B3-01-A2-11-ATELIER-TCD');
+
+    expect(texteDe('B3-01-A1-14-ATELIER-NETTOYAGE')).toContain(
+      'reprise à 9 h 41',
+    );
+    expect(tcd).toContain('reprise à 10 h 56');
+    expect(tcd).not.toContain('deux règles de plus');
+  });
+
+  it('R-05 · ne compte au cahier de fin de séance aucune règle qu’un écran retiré recueillait', () => {
+    expect(texteDe('B3-01-A3-12-CAHIER-DE-REGLES')).not.toContain(
+      'quatre règles',
+    );
+    expect(texteDe('B3-01-A1-03-CARTE')).not.toContain('trois écrans');
+    expect(texteDe('B3-01-A3-11-FICHE-MEMO')).not.toContain(
+      'écrite dans le cahier',
+    );
+  });
+
+  it('R-06 · pose sur sa propre diapo ce qui reste flou, avant le billet qui clôt la séance', () => {
+    const [flou, billet] = COURS.ecrans.slice(-2);
+
+    expect(flou).toMatchObject({
+      id: 'B3-01-A3-13-CE-QUI-RESTE-FLOU',
+      brique: 'fp-pro',
+      proprietes: {
+        questionsLibres: [
+          { question: expect.stringContaining('qu’est-ce qui reste flou') },
+        ],
+      },
+    });
+    expect(billet.id).toBe('B3-01-A3-14-BILLET-DE-SORTIE');
+    expect(billet.brique === 'fp-exit' ? billet.invite : '').not.toContain(
+      'flou',
+    );
+  });
+});
+
+describe('B3-01 — commandes vérifiées dans la documentation Microsoft', () => {
+  it.each([
+    ['B3-01-A1-08-ATELIER-GRANULARITE', 'Accueil › Trier et filtrer › Effacer'],
+    ['B3-01-A1-09-VOTE-CA-TEXTE', 'un petit triangle vert'],
+    ['B3-01-A1-11-COURS-OUTILS', 'majuscule au début de chaque mot'],
+    ['B3-01-A1-11-COURS-OUTILS', 'Données › À partir de Tableau/Plage'],
+    ['B3-01-A1-11-COURS-OUTILS', 'Données › Obtenir des données'],
+    ['B3-01-A1-14-ATELIER-NETTOYAGE', 'sur un poste réglé en français'],
+    ['B3-01-A2-02-FAMILLES', 'EQUATION.RANG, GRANDE.VALEUR'],
+    ['B3-01-A2-02-FAMILLES', 'SUPPRESPACE, SUBSTITUE, CNUM'],
+    ['B3-01-A2-02-FAMILLES', 'MFC, MEDIANE, ECARTYPE.STANDARD'],
+    [
+      'B3-01-A2-04-ATELIER-RECHERCHE',
+      'fonction DATE écrite dans les guillemets',
+    ],
+    ['B3-01-A2-06-COURS-TEMPS-STATS', 'TEMPS(27;0;0)'],
+    ['B3-01-A2-06-COURS-TEMPS-STATS', '⌘ + Maj + Retour'],
+    ['B3-01-A2-06-COURS-TEMPS-STATS', 'au format Date'],
+    ['B3-01-A2-07-ATELIER-DELAIS-MARGE', 'passée un jour ouvré'],
+    ['B3-01-A2-09-COURS-TCD', 'Ctrl + L ou Ctrl + T'],
+    ['B3-01-A2-09-COURS-TCD', 'Outils de tableau › Création'],
+    ['B3-01-A2-09-COURS-TCD', 'Paramètres de champ'],
+    ['B3-01-A2-09-COURS-TCD', 'Analyse du tableau croisé dynamique › Segment'],
+    ['B3-01-A2-10-EXEMPLE-TCD', 'Ctrl + L'],
+    ['B3-01-A3-03-COURS-GRAPHIQUES', 'Insérer un graphique statistique'],
+    ['B3-01-A3-03-COURS-GRAPHIQUES', '« Secteurs »'],
+    ['B3-01-A3-05-ATELIER-GRAPHIQUES', 'Histogramme groupé'],
+    [
+      'B3-01-A3-08-EXEMPLE-MFC-SEGMENTS',
+      'Utiliser une formule pour déterminer pour quelles cellules le format sera appliqué',
+    ],
+    ['B3-01-A3-08-EXEMPLE-MFC-SEGMENTS', 'Style Classique'],
+    [
+      'B3-01-A3-08-EXEMPLE-MFC-SEGMENTS',
+      'onglet Segment › Connexions de rapport',
+    ],
+  ])('%s · écrit « %s », comme la documentation', (screenId, attendu) => {
+    expect(texteDe(screenId)).toContain(attendu);
+  });
+
+  it.each([
+    ['B3-01-A2-02-FAMILLES', '"RANG, '],
+    ['B3-01-A2-02-FAMILLES', 'CNUM, TEXTE'],
+    ['B3-01-A2-02-FAMILLES', 'ECARTYPE"'],
+    ['B3-01-A2-04-ATELIER-RECHERCHE', 'tout entier entre guillemets'],
+    ['B3-01-A2-06-COURS-TEMPS-STATS', 'construit une durée'],
+    ['B3-01-A3-03-COURS-GRAPHIQUES', 'fait des barres'],
+    ['B3-01-A3-08-EXEMPLE-MFC-SEGMENTS', 'clic droit sur le segment'],
+  ])(
+    '%s · n’écrit plus « %s », que la documentation dément',
+    (screenId, retire) => {
+      expect(texteDe(screenId)).not.toContain(retire);
+    },
+  );
+
+  it.each([
+    ['B3-01-A2-06-COURS-TEMPS-STATS', String.raw`DATEDIF(début;fin;\"M\")`],
+    [
+      'B3-01-A2-07-ATELIER-DELAIS-MARGE',
+      String.raw`DATEDIF(E2;DATE(2026;9;30);\"M\")`,
+    ],
+  ])(
+    '%s · écrit l’unité de DATEDIF en capitale, seule forme que documente Google Sheets',
+    (screenId, formule) => {
+      const texte = texteDe(screenId);
+
+      expect(texte).toContain(formule);
+      expect(texte).not.toContain(String.raw`;\"m\")`);
     },
   );
 });

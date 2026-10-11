@@ -26,9 +26,11 @@
 - **Toute la chaîne en une séance.** Les six niveaux et le tableau de bord se font le 13/10. La
   séance 2 (17/11, matin) ne reprend pas le tableur : elle construit **l'agent Data Analyst**, à
   qui l'on confie ce que les étudiants ont fait à la main.
-- **Le cahier de règles de l'analyste** relie les deux séances : chaque niveau se conclut par une
-  règle rédigée par l'étudiant (réponse libre). Le rapport de séance les conserve ; elles
-  deviennent les instructions de l'agent en séance 2.
+- **Le cahier de règles de l'analyste** relie les deux séances : chaque niveau a sa règle. Le
+  formateur dit celles des niveaux 1 à 4 avant chaque pause ; l'étudiant rédige celles des
+  niveaux 5 et 6 en fin de séance (réponses libres), que le rapport de séance conserve. Elles
+  deviennent les instructions de l'agent en séance 2. Les deux écrans de règles d'avant les
+  pauses sont retirés après la séance du 13/10 : sans suivi, leurs réponses ne servaient pas.
 - **Runtime `/cours` + vrai Excel.** Le moteur `fp-sheet` ne connaît ni `INDEX`, ni
   `SOMME.SI.ENS`, ni les TCD : les manipulations se font dans Excel, et chaque atelier se
   termine par la saisie de résultats chiffrés, corrigés contre le jeu de données.
@@ -100,8 +102,9 @@ Cahier des charges de l'évaluation : cas pratique d'1 heure à la dernière sé
 
 Ce que la séance 1 fait à la main, la séance 2 le délègue : le dictionnaire des données (A1-07),
 la grille de qualité (A1-10, A1-13), les familles de problèmes (A2-02), le choix du graphique
-(A3-04) et les règles du cahier (A1-15, A2-12, A3-12). Le rapport de séance et l'export de la
-synthèse fournissent ces règles telles que les étudiants les ont écrites.
+(A3-04) et les règles du cahier (A3-12). Le rapport de séance et l'export de la synthèse
+fournissent ces règles telles que les étudiants les ont écrites, et ce qui leur reste flou
+(A3-13).
 
 ### 1.4 Public et conditions
 
@@ -163,15 +166,20 @@ phrase recevrait sinon une espace insécable, qu'Excel refuse au copier-coller.
 
 ### 2.5 Le cahier de règles
 
-Trois écrans `fp-pro` recueillent les règles : A1-15 (N1 et N2), A2-12 (N3 et N4), A3-12 (N5 et
-N6, puis relecture des six). Une règle est une phrase impérative et vérifiable (« une ville n'est
-jamais une clé : on relie par `client_id` »). Les notes formateur donnent une règle modèle par
-niveau, montrée seulement après la saisie.
+Un écran `fp-pro` recueille les règles : A3-12 (N5 et N6, puis relecture des six). Les règles
+des niveaux 1 à 4 se disent au pupitre, à la correction du dernier atelier de l'acte, avant la
+pause (A1-14, A2-11) ; la carte A1-03 les annonce toutes. Une règle est une phrase impérative et
+vérifiable (« une ville n'est jamais une clé : on relie par `client_id` »). Les notes formateur
+donnent une règle modèle par niveau ; en A3-12, elle n'est montrée qu'après la saisie.
+
+Les écrans A1-15 et A2-12, qui faisaient écrire les règles des niveaux 1 à 4 avant chaque pause,
+sont retirés après la séance du 13/10 : leurs réponses n'avaient pas de suivi. Leurs 8 minutes
+vont au travail des étudiants : A1-13 + 1, A1-14 + 3, A2-04 + 1, A2-07 + 2, A2-11 + 1.
 
 ### 2.6 Règles de structure
 
 Le cours déclare `gabarit: 'b3'` et passe les règles communes et les contrôles du gabarit
-(§ 6.1) : 40 écrans ≤ 40, 180 minutes ≤ 180, chaque trace écrite précédée d'une réflexion depuis
+(§ 6.1) : 39 écrans ≤ 40, 180 minutes ≤ 180, chaque trace écrite précédée d'une réflexion depuis
 le dernier exercice et suivie d'un exercice, chaque exercice avec ses trois temps. Exposition
 continue de 6 minutes au plus (`fp-worked` est interactif).
 
@@ -185,7 +193,8 @@ après la validation du brainstorming :
   **au plus 15 minutes**, correction comprise : A1-07 + A1-08 passent de 7 à 8 minutes ;
 - pour tenir 40 écrans et 180 minutes, les deux votes d'ouverture (part douteuse, clé) n'en font
   plus qu'un, à deux questions (`questionJumelle`), la carte passe à 2 minutes et le billet de
-  sortie à 5.
+  sortie à 5. Après la séance du 13/10, ces 5 minutes se partagent entre ce qui reste flou
+  (A3-13, 2 minutes) et le billet (A3-14, 3 minutes).
 
 ### 2.7 Diffusion
 
@@ -231,34 +240,33 @@ Identifiants : `B3-01-A{acte}-{rang}-{SLUG}`, conformes à `^B3-01-A[1-3]-\d{2}-
 |   10 | B3-01-A1-10-COURS-GRILLE           |   3 | `fp-story` · v2 `lesson` |     |   0 | catalogue |
 |   11 | B3-01-A1-11-COURS-OUTILS           |   3 | `fp-story` · v2 `lesson` |     |   0 | catalogue |
 |   12 | B3-01-A1-12-EXEMPLE-NETTOYAGE      |   3 | `fp-worked`              |  I  |   0 | seance    |
-|   13 | B3-01-A1-13-TRI-ANOMALIES          |   5 | `fp-cardsort`            |  I  |   1 | seance    |
-|   14 | B3-01-A1-14-ATELIER-NETTOYAGE      |  12 | `questionnaire`          |  I  |   4 | seance    |
-|   15 | B3-01-A1-15-REGLES-ACTE-1          |   4 | `fp-pro`                 |  I  |   0 | seance    |
-|   16 | B3-01-A2-01-VOTE-FAMILLE           |   3 | `fp-vote`                |  I  |   0 | seance    |
-|   17 | B3-01-A2-02-FAMILLES               |   3 | `fp-story` · v2 `table`  |     |   0 | catalogue |
-|   18 | B3-01-A2-03-COURS-CHERCHER-AGREGER |   3 | `fp-story` · v2 `lesson` |     |   0 | catalogue |
-|   19 | B3-01-A2-04-ATELIER-RECHERCHE      |  10 | `questionnaire`          |  I  |   3 | seance    |
-|   20 | B3-01-A2-05-VOTE-DELAI             |   2 | `fp-vote`                |  I  |   0 | seance    |
-|   21 | B3-01-A2-06-COURS-TEMPS-STATS      |   3 | `fp-story` · v2 `lesson` |     |   0 | catalogue |
-|   22 | B3-01-A2-07-ATELIER-DELAIS-MARGE   |  10 | `questionnaire`          |  I  |   3 | seance    |
-|   23 | B3-01-A2-08-VOTE-NOUVELLES-LIGNES  |   2 | `fp-vote`                |  I  |   0 | seance    |
-|   24 | B3-01-A2-09-COURS-TCD              |   3 | `fp-story` · v2 `lesson` |     |   0 | catalogue |
-|   25 | B3-01-A2-10-EXEMPLE-TCD            |   3 | `fp-worked`              |  I  |   0 | seance    |
-|   26 | B3-01-A2-11-ATELIER-TCD            |  14 | `questionnaire`          |  I  |   2 | seance    |
-|   27 | B3-01-A2-12-REGLES-ACTE-2          |   4 | `fp-pro`                 |  I  |   0 | seance    |
-|   28 | B3-01-A3-01-GRAPHIQUE-TROMPEUR     |   1 | `fp-story` · v2 `chart`  |     |   0 | catalogue |
-|   29 | B3-01-A3-02-VOTE-GRAPHIQUE         |   2 | `fp-vote`                |  I  |   0 | seance    |
-|   30 | B3-01-A3-03-COURS-GRAPHIQUES       |   3 | `fp-story` · v2 `lesson` |     |   0 | catalogue |
-|   31 | B3-01-A3-04-TRI-GRAPHIQUES         |   4 | `fp-cardsort`            |  I  |   1 | seance    |
-|   32 | B3-01-A3-05-ATELIER-GRAPHIQUES     |   8 | `questionnaire`          |  I  |   2 | seance    |
-|   33 | B3-01-A3-06-VOTE-TRENTE-SECONDES   |   3 | `fp-vote`                |  I  |   0 | seance    |
-|   34 | B3-01-A3-07-COURS-DASHBOARD        |   3 | `fp-story` · v2 `lesson` |     |   0 | catalogue |
-|   35 | B3-01-A3-08-EXEMPLE-MFC-SEGMENTS   |   3 | `fp-worked`              |  I  |   0 | seance    |
-|   36 | B3-01-A3-09-ATELIER-DASHBOARD      |  15 | `questionnaire`          |  I  |   4 | seance    |
-|   37 | B3-01-A3-10-RECOMMANDATIONS        |   9 | `fp-pro`                 |  I  |   0 | seance    |
-|   38 | B3-01-A3-11-FICHE-MEMO             |   3 | `fp-story` · v2 `grid`   |     |   0 | catalogue |
-|   39 | B3-01-A3-12-CAHIER-DE-REGLES       |   5 | `fp-pro`                 |  I  |   0 | seance    |
-|   40 | B3-01-A3-13-BILLET-DE-SORTIE       |   5 | `fp-exit`                |  I  |   1 | seance    |
+|   13 | B3-01-A1-13-TRI-ANOMALIES          |   6 | `fp-cardsort`            |  I  |   1 | seance    |
+|   14 | B3-01-A1-14-ATELIER-NETTOYAGE      |  15 | `questionnaire`          |  I  |   4 | seance    |
+|   15 | B3-01-A2-01-VOTE-FAMILLE           |   3 | `fp-vote`                |  I  |   0 | seance    |
+|   16 | B3-01-A2-02-FAMILLES               |   3 | `fp-story` · v2 `table`  |     |   0 | catalogue |
+|   17 | B3-01-A2-03-COURS-CHERCHER-AGREGER |   3 | `fp-story` · v2 `lesson` |     |   0 | catalogue |
+|   18 | B3-01-A2-04-ATELIER-RECHERCHE      |  11 | `questionnaire`          |  I  |   3 | seance    |
+|   19 | B3-01-A2-05-VOTE-DELAI             |   2 | `fp-vote`                |  I  |   0 | seance    |
+|   20 | B3-01-A2-06-COURS-TEMPS-STATS      |   3 | `fp-story` · v2 `lesson` |     |   0 | catalogue |
+|   21 | B3-01-A2-07-ATELIER-DELAIS-MARGE   |  12 | `questionnaire`          |  I  |   3 | seance    |
+|   22 | B3-01-A2-08-VOTE-NOUVELLES-LIGNES  |   2 | `fp-vote`                |  I  |   0 | seance    |
+|   23 | B3-01-A2-09-COURS-TCD              |   3 | `fp-story` · v2 `lesson` |     |   0 | catalogue |
+|   24 | B3-01-A2-10-EXEMPLE-TCD            |   3 | `fp-worked`              |  I  |   0 | seance    |
+|   25 | B3-01-A2-11-ATELIER-TCD            |  15 | `questionnaire`          |  I  |   2 | seance    |
+|   26 | B3-01-A3-01-GRAPHIQUE-TROMPEUR     |   1 | `fp-story` · v2 `chart`  |     |   0 | catalogue |
+|   27 | B3-01-A3-02-VOTE-GRAPHIQUE         |   2 | `fp-vote`                |  I  |   0 | seance    |
+|   28 | B3-01-A3-03-COURS-GRAPHIQUES       |   3 | `fp-story` · v2 `lesson` |     |   0 | catalogue |
+|   29 | B3-01-A3-04-TRI-GRAPHIQUES         |   4 | `fp-cardsort`            |  I  |   1 | seance    |
+|   30 | B3-01-A3-05-ATELIER-GRAPHIQUES     |   8 | `questionnaire`          |  I  |   2 | seance    |
+|   31 | B3-01-A3-06-VOTE-TRENTE-SECONDES   |   3 | `fp-vote`                |  I  |   0 | seance    |
+|   32 | B3-01-A3-07-COURS-DASHBOARD        |   3 | `fp-story` · v2 `lesson` |     |   0 | catalogue |
+|   33 | B3-01-A3-08-EXEMPLE-MFC-SEGMENTS   |   3 | `fp-worked`              |  I  |   0 | seance    |
+|   34 | B3-01-A3-09-ATELIER-DASHBOARD      |  15 | `questionnaire`          |  I  |   4 | seance    |
+|   35 | B3-01-A3-10-RECOMMANDATIONS        |   9 | `fp-pro`                 |  I  |   0 | seance    |
+|   36 | B3-01-A3-11-FICHE-MEMO             |   3 | `fp-story` · v2 `grid`   |     |   0 | catalogue |
+|   37 | B3-01-A3-12-CAHIER-DE-REGLES       |   5 | `fp-pro`                 |  I  |   0 | seance    |
+|   38 | B3-01-A3-13-CE-QUI-RESTE-FLOU      |   2 | `fp-pro`                 |  I  |   0 | seance    |
+|   39 | B3-01-A3-14-BILLET-DE-SORTIE       |   3 | `fp-exit`                |  I  |   1 | seance    |
 
 Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 minutes au plus
 (A1-05 + A1-06, A1-10 + A1-11, A2-02 + A2-03).
@@ -286,8 +294,7 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
 
 - Titre public : « La carte de la séance »
 - Six cases : comprendre, nettoyer, transformer, modéliser, visualiser, décider ; à chaque case,
-  le livrable du niveau et la règle qu'il ajoute au cahier. Bandeau : « Séance 2 : un agent
-  appliquera vos règles. »
+  le livrable du niveau et sa règle. Bandeau : « Séance 2 : un agent appliquera vos règles. »
 
 #### A1-04 · `B3-01-A1-04-VOTE-PART-ET-CLE` — 3 min · `fp-vote` à deux questions · séance
 
@@ -346,7 +353,8 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
   vient d'abord : sa correction, révélée la première, ne doit rien devoir à la suivante.
 - `b3-01-a1-lignes-commande` (numérique) : filtrez `n_commande` sur C-10234 ; combien de
   lignes ? (3, fixé par le générateur) ; piège `commandes-comptees-pour-lignes`. Sa correction,
-  révélée la dernière, fait effacer le filtre : sans cela, A1-09 à A1-12 citent des cellules
+  révélée la dernière, fait effacer le filtre (Données › Effacer, ou Accueil › Trier et filtrer ›
+  Effacer) : sans cela, A1-09 à A1-12 citent des cellules
   (E783, L2971, la ligne 2) que le filtre masque. La correction de la granularité parle au futur
   des doublons « que l'exercice 4 retirera ».
 
@@ -356,7 +364,8 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
 - Une cellule de `ca_ht` affiche « 1 150,00 € », alignée à gauche. Que fait `SOMME` de la
   colonne ? Elle l'ajoute ; elle l'ignore, sans aucun message ; elle affiche une erreur
   `#VALEUR!`. Les deux mauvaises réponses portent le piège `texte-pris-pour-nombre`.
-  Révélation : elle l'ignore sans prévenir — c'est le pire cas.
+  Révélation : elle l'ignore sans prévenir — c'est le pire cas ; tout au plus un petit triangle
+  vert sur la cellule, facile à manquer.
 
 #### A1-10 · `B3-01-A1-10-COURS-GRILLE` — 3 min · v2 `lesson` · catalogue
 
@@ -381,12 +390,16 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
   part, Collage spécial › Valeurs, puis le même outil, case « Mes données ont des en-têtes »
   cochée, annonce combien de valeurs uniques il reste, sans compter l'en-tête, qui donnerait 49 :
   copiée telle quelle, une colonne de
-  formules décale ses références), colonne `controle` avec `SI` et `OU`. `NOMPROPRE` s'illustre
-  sur « BORDEAUX », sans référence de cellule : E2 vaut « Vannes ». `property` : on nettoie dans une nouvelle
+  formules décale ses références), colonne `controle` avec `SI` et `OU`. `NOMPROPRE` met une
+  majuscule au début de chaque mot et le reste en minuscules (« SAINT-ÉTIENNE » devient
+  « Saint-Étienne ») ; il s'illustre sur « BORDEAUX », sans référence de cellule : E2 vaut
+  « Vannes ». `property` : on nettoie dans une nouvelle
   colonne, jamais sur la donnée brute, et on ne colle en valeurs par-dessus la donnée brute
   qu'une fois le contrôle lui-même figé en valeurs (formule, il se recalculerait sur les données
-  corrigées) ; encadré Power Query (Windows depuis Excel 2016, ou 365 sur
-  Mac) : il refait le nettoyage d'un clic au prochain export.
+  corrigées) ; encadré Power Query (Données › À partir de Tableau/Plage ; sur Mac avec 365,
+  Données › Obtenir des données) : il refait le nettoyage d'un clic au prochain export. Les notes
+  ajoutent que le libellé varie selon la version, la requête vide de source
+  `=Excel.CurrentWorkbook()` sur Mac, et « SAINT-ÉTIENNE » pour `NOMPROPRE`.
 
 #### A1-12 · `B3-01-A1-12-EXEMPLE-NETTOYAGE` — 3 min · `fp-worked` · séance
 
@@ -398,11 +411,15 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
   vérifier avec `ESTNUM`. Le fichier sépare les milliers par une espace ordinaire ; les notes
   formateur signalent que les vrais exports utilisent souvent l'espace insécable, `UNICAR(160)`
   (`CAR(160)` ne la désigne pas sous Excel pour Mac).
+- Rappel des formules, au-dessus des étapes et visible dès l'ouverture : `SUPPRESPACE(texte)`,
+  `NOMPROPRE(texte)`, `SUBSTITUE(texte;ancien;nouveau)`, `CNUM(texte)`, `ESTNUM(valeur)`, chacune
+  avec ce qu'elle fait. L'étudiant apprend à s'en servir, pas à les retenir par cœur : le rappel
+  donne le rôle et la syntaxe, jamais la cellule ni le résultat de l'exemple.
 
-#### A1-13 · `B3-01-A1-13-TRI-ANOMALIES` — 5 min · `fp-cardsort` · séance
+#### A1-13 · `B3-01-A1-13-TRI-ANOMALIES` — 6 min · `fp-cardsort` · séance
 
 - Titre public : « Exercice 3 — Classer les anomalies »
-- Temps : réflexion 1 min · travail 3 min · correction 1 min.
+- Temps : réflexion 1 min · travail 4 min · correction 1 min.
 - Dix cartes tirées du fichier, quatre catégories (la case « suspect · automatique » reste
   vide) : faux · automatique (ville en majuscules ou avec espaces ; CA en texte ; ligne exportée
   deux fois ; CA ≠ quantité × prix × (1 − remise)) ; faux · humain (`produit_id` absent du
@@ -414,10 +431,10 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
   `suppression-au-lieu-de-signalement` : le tri ne propose pas de supprimer, et les notes
   formateur n'annoncent pas ce piège.
 
-#### A1-14 · `B3-01-A1-14-ATELIER-NETTOYAGE` — 12 min · `questionnaire` · séance
+#### A1-14 · `B3-01-A1-14-ATELIER-NETTOYAGE` — 15 min · `questionnaire` · séance
 
 - Titre public : « Exercice 4 — Nettoyer l’export »
-- Temps : réflexion 1 min · travail 9 min · correction 2 min.
+- Temps : réflexion 1 min · travail 12 min · correction 2 min.
 - Essentiel : effacer d'abord le filtre de l'exercice 2 (sinon la copie ne garde que C-10234),
   puis copie de `Commandes`, colonnes nettoyées `ville` et `ca_ht` en N et O, en fin de
   tableau et sans insérer de colonne (la formule `controle` désigne les colonnes brutes par leur
@@ -429,7 +446,8 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
   `=SI(NBCAR(B2)=10;DATEVAL(B2);B2)`, recalculer `ca_ht` et signaler les écarts de plus d'un
   euro. Les notes formateur citent la commande C-11481, ligne 3785 du brut et 3741 de la copie
   dédoublonnée (44 des 46 doublons sont au-dessus) : la formule la laisse en texte ; `DATEVAL`
-  lirait « 08/04/26 » comme le 8 avril, la livraison est du 7 août, la commande date sans doute du
+  lirait « 08/04/26 » comme le 8 avril sur un poste réglé en français (jj/mm/aa), la livraison
+  est du 7 août, la commande date sans doute du
   4 août, et seul l'émetteur peut le dire.
 - `b3-01-a1-lignes-uniques` : nombre de lignes après suppression des doublons exacts ; pièges
   `doublons-supprimes-sur-une-colonne` et `en-tete-compte-comme-ligne` (numéro de la dernière
@@ -450,14 +468,10 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
   montants en texte), 24 `ca_ht` mal calculés (F4, le défi), et 15 hors contrôle (H1 produits
   inconnus, S3 prix hors norme) : 614.
 - Notes de correction : corriger question par question, dans l'ordre où les explications se
-  dévoilent (le moteur les dévoile dans l'ordre fixe), et s'attarder sur la moins réussie.
-
-#### A1-15 · `B3-01-A1-15-REGLES-ACTE-1` — 4 min · `fp-pro` · séance
-
-- Titre public : « Cahier de règles : niveaux 1 et 2 »
-- Deux questions libres : `regle-comprendre`, `regle-nettoyer`. Règles modèles dans les notes :
-  « Je relie les tables par un identifiant, jamais par un libellé » ; « Je corrige seul ce qui
-  est faux et certain ; je signale ce qui est douteux et je demande. »
+  dévoilent (le moteur les dévoile dans l'ordre fixe), et s'attarder sur la moins réussie. Avant
+  la pause, le formateur dit les règles des niveaux 1 et 2 : « Je relie les tables par un
+  identifiant, jamais par un libellé » ; « Je corrige seul ce qui est faux et certain ; je
+  signale ce qui est douteux et je demande. »
 - Puis pause de 15 minutes.
 
 ### 3.3 Acte 2 — Faire parler les données (60 min)
@@ -483,10 +497,12 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
   Power Query sous Windows dès Excel 2016, sur Mac avec 365. Chercher
   (`INDEX`/`EQUIV` ; `RECHERCHEX`), compter (`NB.SI.ENS`), additionner sous conditions
   (`SOMME.SI.ENS`, `SOMMEPROD`), comparer (`SI`, `ET`, `OU`, `SI.CONDITIONS`, présent depuis
-  Excel 2019), classer (`RANG`, `GRANDE.VALEUR` ;
-  `TRIER`), transformer (`SUPPRESPACE`, `CNUM`, `TEXTE`), filtrer (filtre automatique ;
+  Excel 2019), classer (`EQUATION.RANG`, `GRANDE.VALEUR` ;
+  `TRIER`), transformer (`SUPPRESPACE`, `SUBSTITUE`, `CNUM`), filtrer (filtre automatique ;
   `FILTRE`), regrouper (TCD ; `UNIQUE`), manipuler le temps (`NB.JOURS.OUVRES`,
-  `SERIE.JOUR.OUVRE`, `DATEDIF`), détecter une anomalie (MFC, `MEDIANE`, `ECARTYPE`).
+  `SERIE.JOUR.OUVRE`, `DATEDIF`), détecter une anomalie (MFC, `MEDIANE`, `ECARTYPE.STANDARD`).
+  Les noms sont ceux de la documentation Microsoft en français : `RANG` n'y est plus qu'une
+  fonction de compatibilité, et `ECARTYPE` n'existe pas.
 
 #### A2-03 · `B3-01-A2-03-COURS-CHERCHER-AGREGER` — 3 min · v2 `lesson` · catalogue
 
@@ -497,14 +513,15 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
   critères écrits `">0,15"` ou `">="&DATE(2026;1;1)` ; figer les plages avec `$` ; encadré 2021 ou
   365 : `RECHERCHEX`.
 
-#### A2-04 · `B3-01-A2-04-ATELIER-RECHERCHE` — 10 min · `questionnaire` · séance
+#### A2-04 · `B3-01-A2-04-ATELIER-RECHERCHE` — 11 min · `questionnaire` · séance
 
 - Titre public : « Exercice 5 — Relier et additionner »
-- Temps : réflexion 1 min · travail 7 min · correction 2 min.
+- Temps : réflexion 1 min · travail 8 min · correction 2 min.
 - Essentiel : colonnes `region` (depuis `Agences`) et `categorie` (depuis `Produits`) par
   `INDEX`/`EQUIV`. Défi : colonne `cout` (quantité × coût unitaire).
 - `b3-01-a2-ca-rennes-info` : CA HT de Rennes en informatique, janvier à septembre 2026 ; pièges
-  `critere-mal-ecrit` (critère de date `">=DATE(2026;1;1)"` sans `&` : aucune ligne) et
+  `critere-mal-ecrit` (fonction `DATE` écrite dans les guillemets, `">=DATE(2026;1;1)"` : Excel
+  compare au texte « DATE(2026;1;1) », aucune ligne) et
   `periode-mal-delimitee` (toutes dates).
 - `b3-01-a2-remises-marseille` : nombre de lignes de Marseille dont la remise dépasse 15 % ;
   piège `critere-mal-ecrit` (critère écrit 15 au lieu de 0,15).
@@ -512,8 +529,11 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
   `plage-recherche-non-figee` (colonne `region` recopiée sans figer `Agences` : avant la ligne
   14, la seule ligne Ouest trouvée, la ligne 2, date de 2025) et `periode-mal-delimitee`. La
   correction, révélée la dernière, donne les autres causes d'un total nul : le même glissement
-  vide la colonne `categorie` de la première question, et un critère de date tout entier entre
-  guillemets, qui donne 0 € ici comme à la première question : dite à la première, cette cause
+  vide la colonne `categorie` de la première question, et la fonction `DATE` écrite dans les
+  guillemets, qui donne 0 € ici comme à la première question (une date tapée en clair dans les
+  guillemets fonctionne mais dépend du format de date du poste, ce que `">="&DATE(2026;1;1)`
+  évite ; la correction ne l'écrit pas en chiffres, que le livret lirait comme une réponse de
+  A2-05 imprimée sur la même page) : dite à la première, cette cause
   soufflerait un total nul de la troisième. Elle seule parle du `$` : dite à la première question, cette cause soufflerait le
   piège de la troisième, encore ouverte. Elle seule donne aussi la période oubliée, pour la
   troisième question et pour la première (27 862 €) : ce piège est commun aux deux.
@@ -531,7 +551,11 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
 - Titre public : « Cours : le temps et les indicateurs »
 - `property` : une date est un nombre de jours ; `NB.JOURS.OUVRES(début;fin)` compte les jours
   ouvrés, `SERIE.JOUR.OUVRE(début;n)` donne la date n jours ouvrés plus tard, `JOURSEM`,
-  `DATEDIF(début;fin;"m")`, `TEMPS(h;m;s)` ; `method` : un délai long et rare tire la moyenne,
+  `DATEDIF(début;fin;"M")` (unité en capitale, seule forme que documente Google Sheets ; Excel
+  accepte les deux), `TEMPS(h;m;s)`, qui construit une heure de la journée (`TEMPS(27;0;0)`
+  donne 3:00 ; les notes disent qu'elle repart de zéro au-delà de 23 h, que le résultat de
+  `SERIE.JOUR.OUVRE` se met au format Date, et la validation matricielle sur Mac) ;
+  `method` : un délai long et rare tire la moyenne,
   pas la médiane ; `property` : taux de marque = `SOMME(marge) ÷ SOMME(CA HT)`, jamais la moyenne
   des taux de ligne ; le taux de marge, lui, divise la marge par le coût d'achat HT, d'où la
   consigne d'écrire toujours le dénominateur ;
@@ -540,10 +564,10 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
 - Jours fériés : non comptés dans ce cours (les fonctions acceptent une liste en dernier
   argument ; encadré).
 
-#### A2-07 · `B3-01-A2-07-ATELIER-DELAIS-MARGE` — 10 min · `questionnaire` · séance
+#### A2-07 · `B3-01-A2-07-ATELIER-DELAIS-MARGE` — 12 min · `questionnaire` · séance
 
 - Titre public : « Exercice 6 — Délais et marge »
-- Temps : réflexion 1 min · travail 7 min · correction 2 min.
+- Temps : réflexion 1 min · travail 9 min · correction 2 min.
 - Défi : `JOURSEM` pour la part des commandes passées le vendredi ; `DATEDIF` pour l'ancienneté
   des clients en mois.
 - `b3-01-a2-delai-strasbourg` : délai médian de livraison de Strasbourg en 2026, en jours
@@ -558,7 +582,8 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
   La médiane toutes années confondues se dit à la correction du taux de marque, la dernière
   question qui partage `periode-mal-delimitee`.
 - `b3-01-a2-retards` : nombre de lignes 2026 livrées après la promesse (commande + 5 jours
-  ouvrés, `SERIE.JOUR.OUVRE`, ou `delai` > 5) ; pièges `jours-calendaires-pour-ouvres` et
+  ouvrés, `SERIE.JOUR.OUVRE`, ou `delai` > 5, équivalence vraie pour une commande passée un jour
+  ouvré, comme toutes celles de la reprise) ; pièges `jours-calendaires-pour-ouvres` et
   `bornes-comptees-dans-le-delai` (`delai` sans le − 1 au critère `">5"` : 284 lignes, livrées
   le jour promis comprises). Sa correction, révélée après celle de la médiane, donne ces deux
   pièges pour les deux questions (481 lignes et 11 jours, 284 lignes et 9 jours). L'oubli de
@@ -580,8 +605,10 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
 #### A2-09 · `B3-01-A2-09-COURS-TCD` — 3 min · v2 `lesson` · catalogue
 
 - Titre public : « Cours : tableau structuré et tableau croisé dynamique »
-- `method` : Ctrl + T (⌘ + T), nom `T_Commandes` dans Création de tableau (Tableau sur Mac) ›
-  Nom du tableau, colonnes calculées et références
+- `method` : Ctrl + L ou Ctrl + T (⌘ + T sur Mac), nom `T_Commandes` dans Création de tableau ›
+  Nom du tableau ; les notes portent les autres chemins (Insertion › Tableau, Outils de tableau ›
+  Création sous Excel 2019, Tableau sur Mac, Paramètres des champs de valeurs, segment sur Mac)
+  pour que l'écran tienne sa toile ; colonnes calculées et références
   `T_Commandes[ca_ht]` ; `property` : un TCD place des champs en lignes, colonnes, valeurs et
   filtres ; `method` : regrouper les dates par mois ou trimestre, afficher en % du total, les
   années en filtre pour borner la période, segments, et un filtre reste actif tant qu'on ne l'a
@@ -599,10 +626,10 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
 - Étapes : insérer le TCD depuis `T_Commandes` ; `agence_id` en lignes, `date_commande` en
   colonnes groupée par mois ; `ca_ht` en valeurs, format monétaire ; filtre `annee` sur 2026.
 
-#### A2-11 · `B3-01-A2-11-ATELIER-TCD` — 14 min · `questionnaire` · séance
+#### A2-11 · `B3-01-A2-11-ATELIER-TCD` — 15 min · `questionnaire` · séance
 
 - Titre public : « Exercice 7 — Le TCD de la direction »
-- Temps : réflexion 1 min · travail 11 min · correction 2 min.
+- Temps : réflexion 1 min · travail 12 min · correction 2 min.
 - Essentiel : tableau structuré, TCD région × trimestre, regroupement par trimestre, % du total
   de ligne, segment « catégorie ». Défi : regroupement des remises en tranches de 5 points.
 - `b3-01-a2-part-info-rennes` : part de l'informatique dans le CA de Rennes de janvier à
@@ -618,13 +645,9 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
   `annee` = 2026 resté actif, recopié du premier TCD ou de l'exemple A2-10) et T2 2025
   (trimestres regroupés sans l'année, qui cumulent deux printemps). Le spec des données recalcule
   les deux lectures fautives et exige leur trimestre en tête.
-
-#### A2-12 · `B3-01-A2-12-REGLES-ACTE-2` — 4 min · `fp-pro` · séance
-
-- Titre public : « Cahier de règles : niveaux 3 et 4 »
-- Deux questions libres : `regle-transformer`, `regle-modeliser`. Règles modèles : « Avant la
-  fonction, je nomme la famille du problème » ; « Je travaille sur un tableau structuré, jamais
-  sur une plage fixe. »
+- Notes de correction : avant la pause, le formateur dit les règles des niveaux 3 et 4 :
+  « Avant la fonction, je nomme la famille du problème » ; « Je travaille sur un tableau
+  structuré, jamais sur une plage fixe. »
 - Puis pause de 15 minutes.
 
 ### 3.4 Acte 3 — Décider (64 min)
@@ -653,9 +676,11 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
 
 - Titre public : « Cours : un graphique répond à une question »
 - `method` : comparer → barres ; évolution → courbe ; composition → barres empilées (peu de
-  parts) ; distribution → histogramme, sous Insertion › Graphique statistique (l'« histogramme
-  groupé » du ruban est un graphique en barres) ; relation → nuage de points ; KPI → valeur et contexte ;
-  `property` : à éviter : 3D, camembert de plus de cinq parts, axe tronqué non signalé, double axe
+  parts) ; distribution → histogramme, sous Insertion › Insérer un graphique statistique ›
+  Histogramme (sur Mac, Insertion, icône Statistiques ; l'« Histogramme groupé » d'Excel trace des
+  colonnes qui comparent des catégories) ; relation → nuage de points ; KPI → valeur et contexte ;
+  `property` : à éviter : 3D, camembert (« Secteurs » dans Excel) de plus de cinq parts, axe
+  tronqué non signalé, double axe
   trompeur ; `example` hors dossier, dit tel à l'écran : un titre qui dit la conclusion (« Caen à
   87 % de son objectif ») ; Caen n'est pas une agence de Norvane, et 87 % ne coïncide avec aucun
   taux d'atteinte du jeu (Rouen 91,9 %, Strasbourg 94,3 %, Rennes 79,0 %).
@@ -675,8 +700,8 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
 - Titre public : « Exercice 9 — CA et objectif par agence »
 - Temps : réflexion 1 min · travail 6 min · correction 1 min.
 - Essentiel : tableau de synthèse par agence (CA cumulé par `SOMME.SI.ENS` sur `T_Commandes`,
-  objectif cumulé par `SOMME.SI.ENS` sur `Objectifs`, taux d'atteinte), puis graphique en barres
-  groupées CA et objectif, titre qui conclut, légende, axe depuis zéro. Un TCD seul ne suffit
+  objectif cumulé par `SOMME.SI.ENS` sur `Objectifs`, taux d'atteinte), puis graphique CA et
+  objectif en Histogramme groupé (colonnes) ou en Barres groupées (barres horizontales), titre qui conclut, légende, axe depuis zéro. Un TCD seul ne suffit
   pas : l'objectif vit dans une autre table (sur Mac, sans modèle de données, la synthèse par
   `SOMME.SI.ENS` suffit ; sous Windows, Excel 2019, 2021 ou 365 : mettre `Agences` et `Objectifs` sous
   forme de tableau, nommés `T_Agences` et `T_Objectifs`, seul `T_Commandes` en étant un dans la
@@ -726,8 +751,11 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
   d'atteinte en E, deux TCD à côté), puisque la synthèse de A3-05 n'a ni mise en page imposée ni
   TCD ; le formateur montre les gestes au pupitre, les étudiants les reprennent en A3-09.
 - L'énoncé demande de faire ressortir les agences sous 95 % de leur objectif.
-- Étapes : MFC par formule `=$E5<0,95` en rouge sur le taux d'atteinte ; barres de données sur
-  le CA ; segment « région » relié aux deux TCD (« Connexions de rapport »).
+- Étapes : MFC par formule `=$E5<0,95` en rouge sur le taux d'atteinte (Nouvelle règle › Utiliser
+  une formule pour déterminer pour quelles cellules le format sera appliqué ; sur Mac, Style
+  Classique d'abord) ; barres de données sur le CA ; segment « région » (Insertion › Segment ;
+  sur Mac, Analyse du tableau croisé dynamique › Segment) relié aux deux TCD par l'onglet
+  Segment › Connexions de rapport, le segment sélectionné.
 
 #### A3-09 · `B3-01-A3-09-ATELIER-DASHBOARD` — 15 min · `questionnaire` · séance
 
@@ -775,17 +803,27 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
 #### A3-12 · `B3-01-A3-12-CAHIER-DE-REGLES` — 5 min · `fp-pro` · séance
 
 - Titre public : « Cahier de règles : niveaux 5 et 6, puis relecture »
-- Trois questions libres : `regle-visualiser`, `regle-decider`, `regle-la-plus-utile` (« laquelle
-  de vos six règles confieriez-vous en premier à un agent, et pourquoi ? »). Annonce de la
-  séance 2 : l'agent Data Analyst.
+- Trois questions libres : `regle-visualiser`, `regle-decider`, `regle-la-plus-utile` (« parmi
+  les six règles de la séance, laquelle confieriez-vous en premier à un agent, et pourquoi ? »).
+  Les règles des niveaux 1 à 4 ont été dites avant chaque pause et figurent sur la carte A1-03.
+  Annonce de la séance 2 : l'agent Data Analyst.
 
-#### A3-13 · `B3-01-A3-13-BILLET-DE-SORTIE` — 5 min · `fp-exit` · séance
+#### A3-13 · `B3-01-A3-13-CE-QUI-RESTE-FLOU` — 2 min · `fp-pro` · séance
+
+- Titre public : « Ce qui reste flou »
+- Une question libre, `ce-qui-reste-flou` : « En une phrase : qu'est-ce qui reste flou pour vous
+  après cette séance ? ». Sur sa propre diapo, la question ne se perd plus sous le vote du billet.
+  Le rapport de séance garde les réponses ; le formateur les lit avant la séance 2, qu'elles
+  ouvrent.
+
+#### A3-14 · `B3-01-A3-14-BILLET-DE-SORTIE` — 3 min · `fp-exit` · séance
 
 - Titre public : « Billet de sortie »
 - Une question notée `b3-01-a3-billet` : la ligne « date_livraison antérieure à date_commande »
   se corrige-t-elle automatiquement ? Non : on la signale et on demande (faux · humain) ; pièges
   « oui : on échange les deux dates » `suspect-corrige-sans-validation` et « oui : on supprime
-  la ligne » `suppression-au-lieu-de-signalement`. Une question libre : ce qui reste flou.
+  la ligne » `suppression-au-lieu-de-signalement`. La réponse libre du billet justifie le vote
+  en une phrase.
 
 ## 4. Le jeu de données
 

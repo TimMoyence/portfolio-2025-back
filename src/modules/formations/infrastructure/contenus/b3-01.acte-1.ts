@@ -73,8 +73,8 @@ export const ACTE_1: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['jeu-de-donnees', 'nettoyage', 'tableau-de-bord'],
       notes: moteur.puces(
-        'Parcourir les six cases en une phrase chacune : ce qu’on livre, la règle qu’on écrit.',
-        'Annoncer le cahier de règles : trois écrans le recueillent, avant chaque pause et en fin de séance.',
+        'Parcourir les six cases en une phrase chacune : ce qu’on livre, la règle qu’on en tire.',
+        'Annoncer le cahier de règles : les règles des niveaux 1 à 4 se disent avant chaque pause, celles des niveaux 5 et 6 s’écrivent en fin de séance.',
         'Séance 2 : l’agent Data Analyst appliquera ces règles ; une règle floue le fera se tromper.',
       ),
     },
@@ -485,7 +485,7 @@ export const ACTE_1: moteur.Acte = [
       ],
       [
         'b3-01-a1-lignes-commande',
-        'Filtrée sur C-10234, la colonne n_commande montre trois lignes : trois produits d’une même commande. Compter les commandes distinctes donnerait 1. Effacez ensuite le filtre (Données › Effacer) : la suite lit tout l’onglet.',
+        'Filtrée sur C-10234, la colonne n_commande montre trois lignes : trois produits d’une même commande. Compter les commandes distinctes donnerait 1. Effacez ensuite le filtre (Données › Effacer, ou Accueil › Trier et filtrer › Effacer) : la suite lit tout l’onglet.',
       ],
     ],
   ),
@@ -519,7 +519,7 @@ export const ACTE_1: moteur.Acte = [
         type: 'revelation',
         titre: 'Le pire cas : un total faux, sans alerte',
         lignes: [
-          'SOMME ignore une cellule de texte sans prévenir : le total est faux et rien ne le signale.',
+          'SOMME ignore une cellule de texte sans erreur : le total est faux et la formule ne signale rien ; tout au plus un petit triangle vert sur la cellule, facile à manquer.',
           'Un montant aligné à gauche dans une colonne de nombres est un indice : c’est du texte.',
           'ESTNUM renvoie FAUX pour un nombre stocké en texte : on vérifie avant d’additionner.',
         ],
@@ -584,6 +584,8 @@ export const ACTE_1: moteur.Acte = [
       notes: moteur.puces(
         '3 min ; chaque outil répond à une case « faux · automatique » de la page précédente.',
         'Montrer dans le fichier une ville entourée d’espaces : SUPPRESPACE ne se voit qu’au résultat.',
+        'NOMPROPRE met le reste du mot en minuscules : « SAINT-ÉTIENNE » devient « Saint-Étienne ».',
+        'Power Query : le libellé « À partir de Tableau/Plage » varie selon la version ; sur Mac avec 365, partir d’une requête vide de source =Excel.CurrentWorkbook().',
         'Transition : « Voyons-les à l’œuvre sur deux cellules. »',
       ),
     },
@@ -598,7 +600,7 @@ export const ACTE_1: moteur.Acte = [
           text: 'Chaque anomalie « faux · automatique » a son outil.',
           steps: [
             'Espaces en trop : SUPPRESPACE(E2).',
-            'Casse : NOMPROPRE met une majuscule initiale, « BORDEAUX » devient « Bordeaux » ; MAJUSCULE et MINUSCULE existent aussi.',
+            'Casse : NOMPROPRE met une majuscule au début de chaque mot, « BORDEAUX » devient « Bordeaux » ; MAJUSCULE et MINUSCULE existent aussi.',
             'Nombre en texte : SUBSTITUE retire le symbole et les espaces, puis CNUM convertit le texte en nombre.',
             'Date ISO en texte « 2026-03-17 », seule à 10 caractères : =SI(NBCAR(B2)=10;DATEVAL(B2);B2) ; « 08/04/26 » reste à vérifier.',
             'Doublons exacts : Données › Supprimer les doublons, toutes les colonnes cochées, sur une copie. Valeurs distinctes : copiez la colonne nettoyée avec son en-tête, collez-la en valeurs à part (Collage spécial › Valeurs) ; le même outil, case « Mes données ont des en-têtes » cochée, compte les valeurs uniques.',
@@ -614,7 +616,7 @@ export const ACTE_1: moteur.Acte = [
           kind: 'example',
           title:
             'Sous Windows depuis Excel 2016, ou sur Mac avec 365 : Power Query',
-          text: 'Données › À partir d’un tableau ou d’une plage : Power Query enregistre chaque étape du nettoyage et la rejoue d’un clic au prochain export.',
+          text: 'Données › À partir de Tableau/Plage (sur Mac, Données › Obtenir des données) : Power Query enregistre chaque étape du nettoyage et la rejoue d’un clic au prochain export.',
         },
       ],
     },
@@ -637,6 +639,32 @@ export const ACTE_1: moteur.Acte = [
           id: 'b3-01-a1-exemple-nettoyage',
           enonce:
             'Deux cellules de l’onglet Commandes du classeur brut : en E783, la ville « Bordeaux », entourée d’espaces ; en L2971, le ca_ht saisi comme le texte « 1 150,00 € ». Chaque formule s’écrit en ligne 2, puis se recopie jusqu’en bas.',
+          rappel: [
+            {
+              libelle: 'SUPPRESPACE(texte)',
+              valeur:
+                'retire les espaces au début et à la fin du texte, et ne laisse qu’une espace entre deux mots.',
+            },
+            {
+              libelle: 'NOMPROPRE(texte)',
+              valeur:
+                'met une majuscule au début de chaque mot et le reste en minuscules : « SAINT-ÉTIENNE » devient « Saint-Étienne ».',
+            },
+            {
+              libelle: 'SUBSTITUE(texte;ancien;nouveau)',
+              valeur:
+                'remplace chaque « ancien » du texte par « nouveau » ; avec "" pour nouveau, il le retire.',
+            },
+            {
+              libelle: 'CNUM(texte)',
+              valeur:
+                'convertit en nombre un texte écrit comme un nombre ; renvoie #VALEUR! s’il reste un caractère étranger.',
+            },
+            {
+              libelle: 'ESTNUM(valeur)',
+              valeur: 'renvoie VRAI si la valeur est un nombre, FAUX sinon.',
+            },
+          ],
           etapes: [
             {
               id: 'ville',
@@ -680,10 +708,10 @@ export const ACTE_1: moteur.Acte = [
       titre: 'Exercice 3 — Classer les anomalies',
       diffusion: 'seance',
       brique: 'fp-cardsort',
-      dureeMinutes: 4,
+      dureeMinutes: 5,
       concepts: ['qualite-des-donnees'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(1, 3),
+        moteur.tempsDeLExercice(1, 4),
         'Réflexion : rappeler les deux questions de la grille avant de trier.',
         'Pièges : corriger seul une date douteuse ; renvoyer à un humain une erreur que le fichier corrige.',
       ),
@@ -816,10 +844,10 @@ export const ACTE_1: moteur.Acte = [
       titre: 'Exercice 4 — Nettoyer l’export',
       diffusion: 'seance',
       brique: 'questionnaire',
-      dureeMinutes: 10,
+      dureeMinutes: 13,
       concepts: ['nettoyage', 'qualite-des-donnees'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(1, 9),
+        moteur.tempsDeLExercice(1, 12),
         'Réflexion : faire dire l’ordre du travail : copie, colonnes nettoyées, doublons, contrôle.',
         'Annoncer le palier défi aux plus rapides : il se corrige oralement, sans note.',
         'Pièges : dédoublonner sur n_commande seule ; compter l’en-tête parmi les lignes ; additionner avant de convertir ; compter les villes avant d’en retirer les espaces ; poser le contrôle sur les dates converties (45 par la formule du défi, 39 par DATEVAL sur toute date en texte).',
@@ -871,7 +899,9 @@ export const ACTE_1: moteur.Acte = [
       notes: [
         'Corriger question par question, dans l’ordre où les explications se dévoilent ; s’attarder sur la moins réussie (score sous chaque correction).',
         'Révéler la part des lignes fausses ou douteuses : c’est la réponse à la première question du vote sur le fichier et Dupont, Bordeaux (A1-04).',
-        'Défi : la formule laisse en texte « 08/04/26 » (commande C-11481 : ligne 3785 du brut, 3741 de la copie dédoublonnée) ; DATEVAL la lirait 8 avril, or elle est livrée le 7 août : la commande date sans doute du 4 août, et seul l’émetteur peut le dire.',
+        'Défi : la formule laisse en texte « 08/04/26 » (commande C-11481 : ligne 3785 du brut, 3741 de la copie dédoublonnée) ; DATEVAL la lirait 8 avril sur un poste réglé en français (jj/mm/aa), or elle est livrée le 7 août : la commande date sans doute du 4 août, et seul l’émetteur peut le dire.',
+        'Avant la pause, dire les règles des niveaux 1 et 2 : « Je relie les tables par un identifiant, jamais par un libellé » ; « Je corrige seul ce qui est faux et certain ; je signale ce qui est douteux et je demande. »',
+        'Puis pause de 15 minutes ; reprise à 9 h 41 sur le classeur de reprise.',
       ],
     },
     [
@@ -893,40 +923,4 @@ export const ACTE_1: moteur.Acte = [
       ],
     ],
   ),
-  {
-    screenId: 'B3-01-A1-15-REGLES-ACTE-1',
-    titre: 'Cahier de règles : niveaux 1 et 2',
-    diffusion: 'seance',
-    brique: 'fp-pro',
-    dureeMinutes: 4,
-    concepts: ['cle-et-relation', 'qualite-des-donnees'],
-    notes: moteur.puces(
-      '3 min d’écriture individuelle, puis 1 min pour lire deux règles au pupitre.',
-      'Règles modèles, à montrer après la saisie : « Je relie les tables par un identifiant, jamais par un libellé » ; « Je corrige seul ce qui est faux et certain ; je signale ce qui est douteux et je demande. »',
-      'Puis pause de 15 minutes ; reprise à 9 h 41 sur le classeur de reprise.',
-    ),
-    proprietes: {
-      metier: 'Analyste data — Norvane Équipement (réseau de 12 agences)',
-      situation:
-        'Avant la pause, vous écrivez les deux premières règles de votre cahier d’analyste. En séance 2, un agent Data Analyst les appliquera à votre place.',
-      geste:
-        'Écrivez une règle par niveau : une phrase impérative et vérifiable.',
-      consequence:
-        'Une règle vague (« faire attention aux données ») ne guide ni un collègue ni un agent.',
-      questionsLibres: [
-        {
-          id: 'b3-01-a1-regles:regle-comprendre',
-          question:
-            'Niveau 1 · Comprendre : votre règle pour relier deux tables.',
-          placeholder: 'Je relie…',
-        },
-        {
-          id: 'b3-01-a1-regles:regle-nettoyer',
-          question:
-            'Niveau 2 · Nettoyer : votre règle pour une donnée fausse ou douteuse.',
-          placeholder: 'Je corrige seul… ; je signale…',
-        },
-      ],
-    },
-  },
 ];

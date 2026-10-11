@@ -116,7 +116,7 @@ export const ACTE_3: moteur.Acte = [
             'Comparer des agences ou des produits : barres.',
             'Suivre une évolution dans le temps : courbe.',
             'Montrer la composition d’un total, en peu de parts : barres empilées.',
-            'Voir comment se répartissent des valeurs : histogramme, sous Insertion › Graphique statistique ; l’« histogramme groupé » d’Excel, lui, fait des barres.',
+            'Voir comment se répartissent des valeurs : histogramme, sous Insertion › Insérer un graphique statistique › Histogramme (sur Mac, Insertion, icône Statistiques) ; l’« Histogramme groupé » d’Excel, lui, trace des colonnes qui comparent des catégories.',
             'Chercher un lien entre deux mesures : nuage de points.',
             'Suivre un indicateur clé : la valeur, avec son objectif ou l’an passé.',
           ],
@@ -124,7 +124,7 @@ export const ACTE_3: moteur.Acte = [
         {
           kind: 'property',
           title: 'À éviter',
-          text: 'La 3D, qui déforme les hauteurs ; le camembert de plus de cinq parts, illisible ; l’axe tronqué non signalé, qui grossit les écarts ; le double axe, qui fabrique des croisements.',
+          text: 'La 3D, qui déforme les hauteurs ; le camembert (« Secteurs » dans Excel) de plus de cinq parts, illisible ; l’axe tronqué non signalé, qui grossit les écarts ; le double axe, qui fabrique des croisements.',
         },
         {
           kind: 'example',
@@ -261,7 +261,7 @@ export const ACTE_3: moteur.Acte = [
       proprietes: {
         intitule: 'Exercice 9 — CA et objectif par agence',
         consigne:
-          'Essentiel, dans le classeur de reprise de l’acte 3 : une synthèse par agence, de janvier à septembre 2026 : le CA cumulé par SOMME.SI.ENS sur T_Commandes, l’objectif cumulé par SOMME.SI.ENS sur Objectifs, le taux d’atteinte. Puis un graphique en barres groupées CA et objectif, avec un titre qui conclut, une légende et un axe depuis zéro. Sous Windows (Excel 2019, 2021 ou 365), vous pouvez aussi mettre Agences et Objectifs sous forme de tableau, nommés T_Agences et T_Objectifs, puis relier T_Commandes et T_Objectifs à T_Agences par agence_id dans Données › Relations ; dans le TCD, créé avec « Ajouter ces données au modèle de données », agence_id de T_Agences en lignes, ca_ht de T_Commandes et objectif_ca_ht de T_Objectifs en valeurs, et deux filtres, car un filtre ne passe pas d’une table à l’autre : annee de T_Commandes sur 2026, mois de T_Objectifs de janvier à septembre 2026. Sur Mac, le modèle de données n’existe pas : la synthèse par SOMME.SI.ENS suffit. Défi : les courbes du CA mensuel 2025 et 2026, superposées.',
+          'Essentiel, dans le classeur de reprise de l’acte 3 : une synthèse par agence, de janvier à septembre 2026 : le CA cumulé par SOMME.SI.ENS sur T_Commandes, l’objectif cumulé par SOMME.SI.ENS sur Objectifs, le taux d’atteinte. Puis un graphique CA et objectif en Histogramme groupé (colonnes) ou en Barres groupées (barres horizontales), avec un titre qui conclut, une légende et un axe depuis zéro. Sous Windows (Excel 2019, 2021 ou 365), vous pouvez aussi mettre Agences et Objectifs sous forme de tableau, nommés T_Agences et T_Objectifs, puis relier T_Commandes et T_Objectifs à T_Agences par agence_id dans Données › Relations ; dans le TCD, créé avec « Ajouter ces données au modèle de données », agence_id de T_Agences en lignes, ca_ht de T_Commandes et objectif_ca_ht de T_Objectifs en valeurs, et deux filtres, car un filtre ne passe pas d’une table à l’autre : annee de T_Commandes sur 2026, mois de T_Objectifs de janvier à septembre 2026. Sur Mac, le modèle de données n’existe pas : la synthèse par SOMME.SI.ENS suffit. Défi : les courbes du CA mensuel 2025 et 2026, superposées.',
         regime: 'focus',
         ordre: 'fixe',
         questions: [
@@ -409,7 +409,7 @@ export const ACTE_3: moteur.Acte = [
               id: 'mfc',
               intitule: 'La règle de couleur',
               raisonnement:
-                'Accueil › Mise en forme conditionnelle › Nouvelle règle › Utiliser une formule : =$E5<0,95, remplissage rouge. Le $ fige la colonne E : toute la ligne de l’agence se colore.',
+                'Accueil › Mise en forme conditionnelle › Nouvelle règle › Utiliser une formule pour déterminer pour quelles cellules le format sera appliqué (sur Mac, Style Classique d’abord, puis Utiliser une formule pour déterminer les cellules à mettre en forme) : =$E5<0,95, remplissage rouge. Le $ fige la colonne E : toute la ligne de l’agence se colore.',
               invite:
                 'Quelle formule colore les agences sous 95 % de leur objectif ?',
             },
@@ -424,7 +424,7 @@ export const ACTE_3: moteur.Acte = [
               id: 'segment',
               intitule: 'Le segment connecté',
               raisonnement:
-                'Clic dans un TCD › Insertion › Segment › region ; puis clic droit sur le segment › Connexions de rapport : cocher les deux TCD. Un clic filtre les deux.',
+                'Clic dans un TCD › Insertion › Segment (sur Mac, Analyse du tableau croisé dynamique › Segment) › region ; puis, le segment sélectionné, onglet Segment › Connexions de rapport : cocher les deux TCD. Un clic filtre les deux.',
               invite: 'Comment un seul segment filtre-t-il deux TCD ?',
             },
           ],
@@ -567,7 +567,7 @@ export const ACTE_3: moteur.Acte = [
       minutes: 2,
       notes: [
         'Révéler la correction : les quatre histoires s’affichent ensemble. Les commenter une à une, en demandant à main levée qui l’avait trouvée avant de passer à la suivante.',
-        'Transition : « Gardez la fiche mémo, puis complétez votre cahier de règles. »',
+        'Transition : « Gardez la fiche mémo, puis écrivez les règles des niveaux 5 et 6. »',
       ],
     },
     [
@@ -605,7 +605,7 @@ export const ACTE_3: moteur.Acte = [
       ],
       notes: moteur.puces(
         '3 min de lecture ; la fiche s’imprime et se garde pour la séance 2.',
-        'Faire relier chaque case à la règle écrite dans le cahier.',
+        'Faire relier chaque case à la règle de son niveau : dite avant la pause pour les niveaux 1 à 4, écrite à l’écran suivant pour les niveaux 5 et 6.',
       ),
     },
     'grid',
@@ -658,12 +658,12 @@ export const ACTE_3: moteur.Acte = [
     notes: moteur.puces(
       '4 min d’écriture individuelle, puis 1 min pour lire deux réponses à la troisième question.',
       'Règles modèles, à montrer après la saisie : « Je pose la question avant de choisir le graphique » ; « Je recommande par un constat chiffré, sa cause et une action. »',
-      'Annoncer la séance 2 : l’agent Data Analyst appliquera ces six règles au prochain export de Nadia.',
+      'Annoncer la séance 2 : l’agent Data Analyst appliquera les six règles de la séance au prochain export de Nadia.',
     ),
     proprietes: {
       metier: 'Analyste data — Norvane Équipement (réseau de 12 agences)',
       situation:
-        'Votre cahier compte quatre règles. Vous écrivez les deux dernières, puis vous choisissez celle que l’agent de la séance 2 recevra en premier.',
+        'Les règles des niveaux 1 à 4 ont été dites avant chaque pause. Vous écrivez celles des niveaux 5 et 6, puis vous choisissez la règle que l’agent de la séance 2 recevra en premier.',
       geste:
         'Écrivez une règle par niveau, puis justifiez votre choix en une phrase.',
       consequence:
@@ -684,23 +684,49 @@ export const ACTE_3: moteur.Acte = [
         {
           id: 'b3-01-a3-regles:regle-la-plus-utile',
           question:
-            'Laquelle de vos six règles confieriez-vous en premier à un agent, et pourquoi ?',
-          placeholder: 'Ma règle n° … parce que…',
+            'Parmi les six règles de la séance, laquelle confieriez-vous en premier à un agent, et pourquoi ?',
+          placeholder: 'La règle du niveau … parce que…',
         },
       ],
     },
   },
   {
-    screenId: 'B3-01-A3-13-BILLET-DE-SORTIE',
+    screenId: 'B3-01-A3-13-CE-QUI-RESTE-FLOU',
+    titre: 'Ce qui reste flou',
+    diffusion: 'seance',
+    brique: 'fp-pro',
+    dureeMinutes: 2,
+    concepts: ['qualite-des-donnees'],
+    notes: moteur.puces(
+      '2 min d’écriture individuelle, sans lecture au pupitre : les réponses restent au rapport de séance.',
+      'Lire les réponses avant la séance 2 : ce qui reste flou ouvre la séance.',
+    ),
+    proprietes: {
+      metier: 'Analyste data — Norvane Équipement (réseau de 12 agences)',
+      situation:
+        'La séance se termine. Avant le billet de sortie, dites ce qui vous a échappé : la séance 2 commencera par là.',
+      geste: 'Écrivez une phrase, même courte.',
+      consequence: null,
+      questionsLibres: [
+        {
+          id: 'b3-01-a3-flou:ce-qui-reste-flou',
+          question:
+            'En une phrase : qu’est-ce qui reste flou pour vous après cette séance ?',
+          placeholder: 'Ce qui reste flou pour moi…',
+        },
+      ],
+    },
+  },
+  {
+    screenId: 'B3-01-A3-14-BILLET-DE-SORTIE',
     titre: 'Billet de sortie',
     diffusion: 'seance',
     brique: 'fp-exit',
-    dureeMinutes: 5,
+    dureeMinutes: 3,
     concepts: ['qualite-des-donnees'],
     notes: moteur.puces(
-      '5 min ; clore la séance quand le compteur de billets est complet.',
+      '3 min ; clore la séance quand le compteur de billets est complet.',
       'Pièges : échanger les deux dates ; supprimer la ligne.',
-      'Lire les réponses libres avant la séance 2 : ce qui reste flou ouvre la séance.',
     ),
     proprietes: {
       modalite: 'solo',
@@ -723,8 +749,7 @@ export const ACTE_3: moteur.Acte = [
           ],
         ),
       ],
-      invite:
-        'En une phrase : qu’est-ce qui reste flou pour vous après cette séance ?',
+      invite: 'En une phrase : pourquoi ce choix ?',
     },
   },
 ];

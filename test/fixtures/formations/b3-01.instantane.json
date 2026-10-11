@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "376922d059db49751eb5bdc6ea47690191a9b71a6b70e589394b2b86f499b627",
+  "empreinte": "bff9157412c96f46e2a026e03e9fa708a5f4cbaca5bdf1e327ab37d108f5fee6",
   "sujet": {
     "id": "b3-01-donnee-brute-decision",
     "titre": "Expert Data : de la donnée brute à la décision",
@@ -573,7 +573,7 @@
                     "text": "Chaque anomalie « faux · automatique » a son outil.",
                     "steps": [
                       "Espaces en trop : SUPPRESPACE(E2).",
-                      "Casse : NOMPROPRE met une majuscule initiale, « BORDEAUX » devient « Bordeaux » ; MAJUSCULE et MINUSCULE existent aussi.",
+                      "Casse : NOMPROPRE met une majuscule au début de chaque mot, « BORDEAUX » devient « Bordeaux » ; MAJUSCULE et MINUSCULE existent aussi.",
                       "Nombre en texte : SUBSTITUE retire le symbole et les espaces, puis CNUM convertit le texte en nombre.",
                       "Date ISO en texte « 2026-03-17 », seule à 10 caractères : =SI(NBCAR(B2)=10;DATEVAL(B2);B2) ; « 08/04/26 » reste à vérifier.",
                       "Doublons exacts : Données › Supprimer les doublons, toutes les colonnes cochées, sur une copie. Valeurs distinctes : copiez la colonne nettoyée avec son en-tête, collez-la en valeurs à part (Collage spécial › Valeurs) ; le même outil, case « Mes données ont des en-têtes » cochée, compte les valeurs uniques.",
@@ -588,7 +588,7 @@
                   {
                     "kind": "example",
                     "title": "Sous Windows depuis Excel 2016, ou sur Mac avec 365 : Power Query",
-                    "text": "Données › À partir d’un tableau ou d’une plage : Power Query enregistre chaque étape du nettoyage et la rejoue d’un clic au prochain export."
+                    "text": "Données › À partir de Tableau/Plage (sur Mac, Données › Obtenir des données) : Power Query enregistre chaque étape du nettoyage et la rejoue d’un clic au prochain export."
                   }
                 ]
               }
@@ -613,6 +613,28 @@
           "exemple": {
             "id": "b3-01-a1-exemple-nettoyage",
             "enonce": "Deux cellules de l’onglet Commandes du classeur brut : en E783, la ville « Bordeaux », entourée d’espaces ; en L2971, le ca_ht saisi comme le texte « 1 150,00 € ». Chaque formule s’écrit en ligne 2, puis se recopie jusqu’en bas.",
+            "rappel": [
+              {
+                "libelle": "SUPPRESPACE(texte)",
+                "valeur": "retire les espaces au début et à la fin du texte, et ne laisse qu’une espace entre deux mots."
+              },
+              {
+                "libelle": "NOMPROPRE(texte)",
+                "valeur": "met une majuscule au début de chaque mot et le reste en minuscules : « SAINT-ÉTIENNE » devient « Saint-Étienne »."
+              },
+              {
+                "libelle": "SUBSTITUE(texte;ancien;nouveau)",
+                "valeur": "remplace chaque « ancien » du texte par « nouveau » ; avec \"\" pour nouveau, il le retire."
+              },
+              {
+                "libelle": "CNUM(texte)",
+                "valeur": "convertit en nombre un texte écrit comme un nombre ; renvoie #VALEUR! s’il reste un caractère étranger."
+              },
+              {
+                "libelle": "ESTNUM(valeur)",
+                "valeur": "renvoie VRAI si la valeur est un nombre, FAUX sinon."
+              }
+            ],
             "etapes": [
               {
                 "id": "ville",
@@ -648,7 +670,7 @@
         "id": "B3-01-A1-13-TRI-ANOMALIES",
         "type": "fp-cardsort",
         "titre": "Exercice 3 — Classer les anomalies",
-        "duree": 5,
+        "duree": 6,
         "interactif": true,
         "donnees": {
           "plan": {
@@ -717,7 +739,7 @@
             "metadonnees": {
               "concepts": ["qualite-des-donnees"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 5,
+              "dureeMinutes": 6,
               "modalite": "binome",
               "regime": "ouvert"
             }
@@ -728,7 +750,7 @@
         "id": "B3-01-A1-14-ATELIER-NETTOYAGE",
         "type": "questionnaire",
         "titre": "Exercice 4 — Nettoyer l’export",
-        "duree": 12,
+        "duree": 15,
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 4 — Nettoyer l’export",
@@ -746,7 +768,7 @@
                   "metadonnees": {
                     "concepts": ["nettoyage", "qualite-des-donnees"],
                     "misconceptionsCiblees": [],
-                    "dureeMinutes": 12,
+                    "dureeMinutes": 15,
                     "modalite": "solo",
                     "regime": "focus"
                   }
@@ -763,7 +785,7 @@
                   "metadonnees": {
                     "concepts": ["nettoyage", "qualite-des-donnees"],
                     "misconceptionsCiblees": [],
-                    "dureeMinutes": 12,
+                    "dureeMinutes": 15,
                     "modalite": "solo",
                     "regime": "focus"
                   }
@@ -780,7 +802,7 @@
                   "metadonnees": {
                     "concepts": ["nettoyage", "qualite-des-donnees"],
                     "misconceptionsCiblees": [],
-                    "dureeMinutes": 12,
+                    "dureeMinutes": 15,
                     "modalite": "solo",
                     "regime": "focus"
                   }
@@ -797,7 +819,7 @@
                   "metadonnees": {
                     "concepts": ["nettoyage", "qualite-des-donnees"],
                     "misconceptionsCiblees": [],
-                    "dureeMinutes": 12,
+                    "dureeMinutes": 15,
                     "modalite": "solo",
                     "regime": "focus"
                   }
@@ -805,41 +827,6 @@
               }
             }
           ]
-        }
-      },
-      {
-        "id": "B3-01-A1-15-REGLES-ACTE-1",
-        "type": "fp-pro",
-        "titre": "Cahier de règles : niveaux 1 et 2",
-        "duree": 4,
-        "interactif": true,
-        "donnees": {
-          "cas": {
-            "id": "B3-01-A1-15-REGLES-ACTE-1",
-            "metier": "Analyste data — Norvane Équipement (réseau de 12 agences)",
-            "situation": "Avant la pause, vous écrivez les deux premières règles de votre cahier d’analyste. En séance 2, un agent Data Analyst les appliquera à votre place.",
-            "geste": "Écrivez une règle par niveau : une phrase impérative et vérifiable.",
-            "consequence": "Une règle vague (« faire attention aux données ») ne guide ni un collègue ni un agent.",
-            "questionsLibres": [
-              {
-                "id": "b3-01-a1-regles:regle-comprendre",
-                "question": "Niveau 1 · Comprendre : votre règle pour relier deux tables.",
-                "placeholder": "Je relie…"
-              },
-              {
-                "id": "b3-01-a1-regles:regle-nettoyer",
-                "question": "Niveau 2 · Nettoyer : votre règle pour une donnée fausse ou douteuse.",
-                "placeholder": "Je corrige seul… ; je signale…"
-              }
-            ],
-            "metadonnees": {
-              "concepts": ["cle-et-relation", "qualite-des-donnees"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 4,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
         }
       },
       {
@@ -940,13 +927,13 @@
                   {
                     "famille": "Classer",
                     "question": "Les meilleures agences ?",
-                    "socle": "RANG, GRANDE.VALEUR",
+                    "socle": "EQUATION.RANG, GRANDE.VALEUR",
                     "variante": "TRIER"
                   },
                   {
                     "famille": "Transformer",
                     "question": "Que vaut ce montant en texte ?",
-                    "socle": "SUPPRESPACE, CNUM, TEXTE",
+                    "socle": "SUPPRESPACE, SUBSTITUE, CNUM",
                     "variante": "Power Query"
                   },
                   {
@@ -970,7 +957,7 @@
                   {
                     "famille": "Détecter une anomalie",
                     "question": "Quel délai sort du lot ?",
-                    "socle": "MFC, MEDIANE, ECARTYPE",
+                    "socle": "MFC, MEDIANE, ECARTYPE.STANDARD",
                     "variante": "—"
                   }
                 ]
@@ -1053,7 +1040,7 @@
         "id": "B3-01-A2-04-ATELIER-RECHERCHE",
         "type": "questionnaire",
         "titre": "Exercice 5 — Relier et additionner",
-        "duree": 10,
+        "duree": 11,
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 5 — Relier et additionner",
@@ -1074,7 +1061,7 @@
                       "agregation-conditionnelle"
                     ],
                     "misconceptionsCiblees": [],
-                    "dureeMinutes": 10,
+                    "dureeMinutes": 11,
                     "modalite": "solo",
                     "regime": "focus"
                   }
@@ -1094,7 +1081,7 @@
                       "agregation-conditionnelle"
                     ],
                     "misconceptionsCiblees": [],
-                    "dureeMinutes": 10,
+                    "dureeMinutes": 11,
                     "modalite": "solo",
                     "regime": "focus"
                   }
@@ -1114,7 +1101,7 @@
                       "agregation-conditionnelle"
                     ],
                     "misconceptionsCiblees": [],
-                    "dureeMinutes": 10,
+                    "dureeMinutes": 11,
                     "modalite": "solo",
                     "regime": "focus"
                   }
@@ -1176,7 +1163,7 @@
                       "NB.JOURS.OUVRES(début;fin) compte les jours ouvrés, bornes comprises : on retire 1 pour obtenir un délai.",
                       "SERIE.JOUR.OUVRE(début;n) donne la date n jours ouvrés plus tard : la date promise.",
                       "JOURSEM(date;2) donne le jour de la semaine, de 1 pour lundi à 7 pour dimanche.",
-                      "DATEDIF(début;fin;\"m\") compte les mois entiers écoulés ; TEMPS(h;m;s) construit une durée."
+                      "DATEDIF(début;fin;\"M\") compte les mois entiers écoulés ; TEMPS(h;m;s) construit une heure de la journée : TEMPS(27;0;0) donne 3:00."
                     ]
                   },
                   {
@@ -1215,7 +1202,7 @@
         "id": "B3-01-A2-07-ATELIER-DELAIS-MARGE",
         "type": "questionnaire",
         "titre": "Exercice 6 — Délais et marge",
-        "duree": 10,
+        "duree": 12,
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 6 — Délais et marge",
@@ -1233,7 +1220,7 @@
                   "metadonnees": {
                     "concepts": ["calcul-sur-dates", "indicateur-statistique"],
                     "misconceptionsCiblees": [],
-                    "dureeMinutes": 10,
+                    "dureeMinutes": 12,
                     "modalite": "solo",
                     "regime": "focus"
                   }
@@ -1250,7 +1237,7 @@
                   "metadonnees": {
                     "concepts": ["calcul-sur-dates", "indicateur-statistique"],
                     "misconceptionsCiblees": [],
-                    "dureeMinutes": 10,
+                    "dureeMinutes": 12,
                     "modalite": "solo",
                     "regime": "focus"
                   }
@@ -1267,7 +1254,7 @@
                   "metadonnees": {
                     "concepts": ["calcul-sur-dates", "indicateur-statistique"],
                     "misconceptionsCiblees": [],
-                    "dureeMinutes": 10,
+                    "dureeMinutes": 12,
                     "modalite": "solo",
                     "regime": "focus"
                   }
@@ -1324,7 +1311,7 @@
                   {
                     "kind": "method",
                     "title": "Le tableau structuré",
-                    "text": "Ctrl + T (⌘ + T) transforme la plage en tableau structuré, nommé T_Commandes dans Création de tableau (Tableau sur Mac) › Nom du tableau. Il s’étend aux lignes ajoutées, recopie ses colonnes calculées et se lit : =SOMME(T_Commandes[ca_ht])."
+                    "text": "Ctrl + L ou Ctrl + T (⌘ + T sur Mac) transforme la plage en tableau structuré, nommé T_Commandes dans Création de tableau › Nom du tableau. Il s’étend aux lignes ajoutées, recopie ses colonnes calculées et se lit : =SOMME(T_Commandes[ca_ht])."
                   },
                   {
                     "kind": "property",
@@ -1337,7 +1324,7 @@
                     "text": "Trois réglages font un TCD de direction.",
                     "steps": [
                       "Clic droit sur une date › Grouper : mois ou trimestres, et années pour ne pas mêler deux printemps.",
-                      "Paramètres des champs de valeurs › Afficher les valeurs › % du total de la ligne : part de chaque catégorie dans l’agence.",
+                      "Clic droit sur une valeur › Afficher les valeurs › % du total de la ligne : part de chaque catégorie dans l’agence.",
                       "Années en filtre : la période est bornée ; Insertion › Segment filtre d’un clic ; un filtre reste actif tant qu’on ne l’a pas retiré."
                     ]
                   },
@@ -1373,7 +1360,7 @@
               {
                 "id": "source",
                 "intitule": "La source",
-                "raisonnement": "Ctrl + T sur Commandes, nommé T_Commandes ; on y ajoute la colonne calculée annee, =ANNEE([@date_commande]). Puis Insertion › Tableau croisé dynamique, sur une nouvelle feuille.",
+                "raisonnement": "Ctrl + L (ou Ctrl + T) sur Commandes, nommé T_Commandes ; on y ajoute la colonne calculée annee, =ANNEE([@date_commande]). Puis Insertion › Tableau croisé dynamique, sur une nouvelle feuille.",
                 "invite": "Sur quoi construire le TCD pour qu’il voie les lignes d’octobre ?"
               },
               {
@@ -1404,7 +1391,7 @@
         "id": "B3-01-A2-11-ATELIER-TCD",
         "type": "questionnaire",
         "titre": "Exercice 7 — Le TCD de la direction",
-        "duree": 14,
+        "duree": 15,
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 7 — Le TCD de la direction",
@@ -1422,7 +1409,7 @@
                   "metadonnees": {
                     "concepts": ["tableau-croise-dynamique"],
                     "misconceptionsCiblees": [],
-                    "dureeMinutes": 14,
+                    "dureeMinutes": 15,
                     "modalite": "solo",
                     "regime": "focus"
                   }
@@ -1453,44 +1440,6 @@
               }
             }
           ]
-        }
-      },
-      {
-        "id": "B3-01-A2-12-REGLES-ACTE-2",
-        "type": "fp-pro",
-        "titre": "Cahier de règles : niveaux 3 et 4",
-        "duree": 4,
-        "interactif": true,
-        "donnees": {
-          "cas": {
-            "id": "B3-01-A2-12-REGLES-ACTE-2",
-            "metier": "Analyste data — Norvane Équipement (réseau de 12 agences)",
-            "situation": "Avant la pause, vous ajoutez deux règles à votre cahier d’analyste : l’agent de la séance 2 devra transformer et modéliser comme vous.",
-            "geste": "Écrivez une règle par niveau : une phrase impérative et vérifiable.",
-            "consequence": "Un agent qui choisit la fonction avant de comprendre la question calcule vite, et faux.",
-            "questionsLibres": [
-              {
-                "id": "b3-01-a2-regles:regle-transformer",
-                "question": "Niveau 3 · Transformer : votre règle avant d’écrire une formule.",
-                "placeholder": "Avant la fonction, je…"
-              },
-              {
-                "id": "b3-01-a2-regles:regle-modeliser",
-                "question": "Niveau 4 · Modéliser : votre règle pour un calcul qui dure.",
-                "placeholder": "Je travaille sur…"
-              }
-            ],
-            "metadonnees": {
-              "concepts": [
-                "agregation-conditionnelle",
-                "tableau-croise-dynamique"
-              ],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 4,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
         }
       },
       {
@@ -1592,7 +1541,7 @@
                       "Comparer des agences ou des produits : barres.",
                       "Suivre une évolution dans le temps : courbe.",
                       "Montrer la composition d’un total, en peu de parts : barres empilées.",
-                      "Voir comment se répartissent des valeurs : histogramme, sous Insertion › Graphique statistique ; l’« histogramme groupé » d’Excel, lui, fait des barres.",
+                      "Voir comment se répartissent des valeurs : histogramme, sous Insertion › Insérer un graphique statistique › Histogramme (sur Mac, Insertion, icône Statistiques) ; l’« Histogramme groupé » d’Excel, lui, trace des colonnes qui comparent des catégories.",
                       "Chercher un lien entre deux mesures : nuage de points.",
                       "Suivre un indicateur clé : la valeur, avec son objectif ou l’an passé."
                     ]
@@ -1600,7 +1549,7 @@
                   {
                     "kind": "property",
                     "title": "À éviter",
-                    "text": "La 3D, qui déforme les hauteurs ; le camembert de plus de cinq parts, illisible ; l’axe tronqué non signalé, qui grossit les écarts ; le double axe, qui fabrique des croisements."
+                    "text": "La 3D, qui déforme les hauteurs ; le camembert (« Secteurs » dans Excel) de plus de cinq parts, illisible ; l’axe tronqué non signalé, qui grossit les écarts ; le double axe, qui fabrique des croisements."
                   },
                   {
                     "kind": "example",
@@ -1700,7 +1649,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 9 — CA et objectif par agence",
-          "consigne": "Essentiel, dans le classeur de reprise de l’acte 3 : une synthèse par agence, de janvier à septembre 2026 : le CA cumulé par SOMME.SI.ENS sur T_Commandes, l’objectif cumulé par SOMME.SI.ENS sur Objectifs, le taux d’atteinte. Puis un graphique en barres groupées CA et objectif, avec un titre qui conclut, une légende et un axe depuis zéro. Sous Windows (Excel 2019, 2021 ou 365), vous pouvez aussi mettre Agences et Objectifs sous forme de tableau, nommés T_Agences et T_Objectifs, puis relier T_Commandes et T_Objectifs à T_Agences par agence_id dans Données › Relations ; dans le TCD, créé avec « Ajouter ces données au modèle de données », agence_id de T_Agences en lignes, ca_ht de T_Commandes et objectif_ca_ht de T_Objectifs en valeurs, et deux filtres, car un filtre ne passe pas d’une table à l’autre : annee de T_Commandes sur 2026, mois de T_Objectifs de janvier à septembre 2026. Sur Mac, le modèle de données n’existe pas : la synthèse par SOMME.SI.ENS suffit. Défi : les courbes du CA mensuel 2025 et 2026, superposées.",
+          "consigne": "Essentiel, dans le classeur de reprise de l’acte 3 : une synthèse par agence, de janvier à septembre 2026 : le CA cumulé par SOMME.SI.ENS sur T_Commandes, l’objectif cumulé par SOMME.SI.ENS sur Objectifs, le taux d’atteinte. Puis un graphique CA et objectif en Histogramme groupé (colonnes) ou en Barres groupées (barres horizontales), avec un titre qui conclut, une légende et un axe depuis zéro. Sous Windows (Excel 2019, 2021 ou 365), vous pouvez aussi mettre Agences et Objectifs sous forme de tableau, nommés T_Agences et T_Objectifs, puis relier T_Commandes et T_Objectifs à T_Agences par agence_id dans Données › Relations ; dans le TCD, créé avec « Ajouter ces données au modèle de données », agence_id de T_Agences en lignes, ca_ht de T_Commandes et objectif_ca_ht de T_Objectifs en valeurs, et deux filtres, car un filtre ne passe pas d’une table à l’autre : annee de T_Commandes sur 2026, mois de T_Objectifs de janvier à septembre 2026. Sur Mac, le modèle de données n’existe pas : la synthèse par SOMME.SI.ENS suffit. Défi : les courbes du CA mensuel 2025 et 2026, superposées.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -1842,7 +1791,7 @@
               {
                 "id": "mfc",
                 "intitule": "La règle de couleur",
-                "raisonnement": "Accueil › Mise en forme conditionnelle › Nouvelle règle › Utiliser une formule : =$E5<0,95, remplissage rouge. Le $ fige la colonne E : toute la ligne de l’agence se colore.",
+                "raisonnement": "Accueil › Mise en forme conditionnelle › Nouvelle règle › Utiliser une formule pour déterminer pour quelles cellules le format sera appliqué (sur Mac, Style Classique d’abord, puis Utiliser une formule pour déterminer les cellules à mettre en forme) : =$E5<0,95, remplissage rouge. Le $ fige la colonne E : toute la ligne de l’agence se colore.",
                 "invite": "Quelle formule colore les agences sous 95 % de leur objectif ?"
               },
               {
@@ -1854,7 +1803,7 @@
               {
                 "id": "segment",
                 "intitule": "Le segment connecté",
-                "raisonnement": "Clic dans un TCD › Insertion › Segment › region ; puis clic droit sur le segment › Connexions de rapport : cocher les deux TCD. Un clic filtre les deux.",
+                "raisonnement": "Clic dans un TCD › Insertion › Segment (sur Mac, Analyse du tableau croisé dynamique › Segment) › region ; puis, le segment sélectionné, onglet Segment › Connexions de rapport : cocher les deux TCD. Un clic filtre les deux.",
                 "invite": "Comment un seul segment filtre-t-il deux TCD ?"
               }
             ],
@@ -2064,7 +2013,7 @@
           "cas": {
             "id": "B3-01-A3-12-CAHIER-DE-REGLES",
             "metier": "Analyste data — Norvane Équipement (réseau de 12 agences)",
-            "situation": "Votre cahier compte quatre règles. Vous écrivez les deux dernières, puis vous choisissez celle que l’agent de la séance 2 recevra en premier.",
+            "situation": "Les règles des niveaux 1 à 4 ont été dites avant chaque pause. Vous écrivez celles des niveaux 5 et 6, puis vous choisissez la règle que l’agent de la séance 2 recevra en premier.",
             "geste": "Écrivez une règle par niveau, puis justifiez votre choix en une phrase.",
             "consequence": "L’agent n’a que vos règles : celle qui manque, il ne l’appliquera pas.",
             "questionsLibres": [
@@ -2080,8 +2029,8 @@
               },
               {
                 "id": "b3-01-a3-regles:regle-la-plus-utile",
-                "question": "Laquelle de vos six règles confieriez-vous en premier à un agent, et pourquoi ?",
-                "placeholder": "Ma règle n° … parce que…"
+                "question": "Parmi les six règles de la séance, laquelle confieriez-vous en premier à un agent, et pourquoi ?",
+                "placeholder": "La règle du niveau … parce que…"
               }
             ],
             "metadonnees": {
@@ -2095,16 +2044,46 @@
         }
       },
       {
-        "id": "B3-01-A3-13-BILLET-DE-SORTIE",
+        "id": "B3-01-A3-13-CE-QUI-RESTE-FLOU",
+        "type": "fp-pro",
+        "titre": "Ce qui reste flou",
+        "duree": 2,
+        "interactif": true,
+        "donnees": {
+          "cas": {
+            "id": "B3-01-A3-13-CE-QUI-RESTE-FLOU",
+            "metier": "Analyste data — Norvane Équipement (réseau de 12 agences)",
+            "situation": "La séance se termine. Avant le billet de sortie, dites ce qui vous a échappé : la séance 2 commencera par là.",
+            "geste": "Écrivez une phrase, même courte.",
+            "consequence": null,
+            "questionsLibres": [
+              {
+                "id": "b3-01-a3-flou:ce-qui-reste-flou",
+                "question": "En une phrase : qu’est-ce qui reste flou pour vous après cette séance ?",
+                "placeholder": "Ce qui reste flou pour moi…"
+              }
+            ],
+            "metadonnees": {
+              "concepts": ["qualite-des-donnees"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 2,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B3-01-A3-14-BILLET-DE-SORTIE",
         "type": "fp-exit",
         "titre": "Billet de sortie",
-        "duree": 5,
+        "duree": 3,
         "interactif": true,
         "donnees": {
           "billet": {
             "id": "b3-01-a3-billet",
             "question": "Une ligne porte une date_livraison antérieure à sa date_commande. La corrige-t-on automatiquement ?",
-            "invite": "En une phrase : qu’est-ce qui reste flou pour vous après cette séance ?",
+            "invite": "En une phrase : pourquoi ce choix ?",
             "options": [
               {
                 "id": "non-on-la-signale-et-on-demande-faux-hum-c6b7abb5",
@@ -2122,7 +2101,7 @@
             "metadonnees": {
               "concepts": ["qualite-des-donnees"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 5,
+              "dureeMinutes": 3,
               "modalite": "solo",
               "regime": "ouvert"
             }
@@ -2320,7 +2299,7 @@
             }
           }
         },
-        "notes": "• Parcourir les six cases en une phrase chacune : ce qu’on livre, la règle qu’on écrit.\n• Annoncer le cahier de règles : trois écrans le recueillent, avant chaque pause et en fin de séance.\n• Séance 2 : l’agent Data Analyst appliquera ces règles ; une règle floue le fera se tromper.",
+        "notes": "• Parcourir les six cases en une phrase chacune : ce qu’on livre, la règle qu’on en tire.\n• Annoncer le cahier de règles : les règles des niveaux 1 à 4 se disent avant chaque pause, celles des niveaux 5 et 6 s’écrivent en fin de séance.\n• Séance 2 : l’agent Data Analyst appliquera ces règles ; une règle floue le fera se tromper.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -2894,7 +2873,7 @@
           },
           {
             "reference": "b3-01-a1-lignes-commande",
-            "texte": "Filtrée sur C-10234, la colonne n_commande montre trois lignes : trois produits d’une même commande. Compter les commandes distinctes donnerait 1. Effacez ensuite le filtre (Données › Effacer) : la suite lit tout l’onglet."
+            "texte": "Filtrée sur C-10234, la colonne n_commande montre trois lignes : trois produits d’une même commande. Compter les commandes distinctes donnerait 1. Effacez ensuite le filtre (Données › Effacer, ou Accueil › Trier et filtrer › Effacer) : la suite lit tout l’onglet."
           }
         ]
       },
@@ -2963,7 +2942,7 @@
           "type": "revelation",
           "titre": "Le pire cas : un total faux, sans alerte",
           "lignes": [
-            "SOMME ignore une cellule de texte sans prévenir : le total est faux et rien ne le signale.",
+            "SOMME ignore une cellule de texte sans erreur : le total est faux et la formule ne signale rien ; tout au plus un petit triangle vert sur la cellule, facile à manquer.",
             "Un montant aligné à gauche dans une colonne de nombres est un indice : c’est du texte.",
             "ESTNUM renvoie FAUX pour un nombre stocké en texte : on vérifie avant d’additionner."
           ]
@@ -3054,7 +3033,7 @@
                     "text": "Chaque anomalie « faux · automatique » a son outil.",
                     "steps": [
                       "Espaces en trop : SUPPRESPACE(E2).",
-                      "Casse : NOMPROPRE met une majuscule initiale, « BORDEAUX » devient « Bordeaux » ; MAJUSCULE et MINUSCULE existent aussi.",
+                      "Casse : NOMPROPRE met une majuscule au début de chaque mot, « BORDEAUX » devient « Bordeaux » ; MAJUSCULE et MINUSCULE existent aussi.",
                       "Nombre en texte : SUBSTITUE retire le symbole et les espaces, puis CNUM convertit le texte en nombre.",
                       "Date ISO en texte « 2026-03-17 », seule à 10 caractères : =SI(NBCAR(B2)=10;DATEVAL(B2);B2) ; « 08/04/26 » reste à vérifier.",
                       "Doublons exacts : Données › Supprimer les doublons, toutes les colonnes cochées, sur une copie. Valeurs distinctes : copiez la colonne nettoyée avec son en-tête, collez-la en valeurs à part (Collage spécial › Valeurs) ; le même outil, case « Mes données ont des en-têtes » cochée, compte les valeurs uniques.",
@@ -3069,7 +3048,7 @@
                   {
                     "kind": "example",
                     "title": "Sous Windows depuis Excel 2016, ou sur Mac avec 365 : Power Query",
-                    "text": "Données › À partir d’un tableau ou d’une plage : Power Query enregistre chaque étape du nettoyage et la rejoue d’un clic au prochain export."
+                    "text": "Données › À partir de Tableau/Plage (sur Mac, Données › Obtenir des données) : Power Query enregistre chaque étape du nettoyage et la rejoue d’un clic au prochain export."
                   }
                 ]
               }
@@ -3083,7 +3062,7 @@
             }
           }
         },
-        "notes": "• 3 min ; chaque outil répond à une case « faux · automatique » de la page précédente.\n• Montrer dans le fichier une ville entourée d’espaces : SUPPRESPACE ne se voit qu’au résultat.\n• Transition : « Voyons-les à l’œuvre sur deux cellules. »",
+        "notes": "• 3 min ; chaque outil répond à une case « faux · automatique » de la page précédente.\n• Montrer dans le fichier une ville entourée d’espaces : SUPPRESPACE ne se voit qu’au résultat.\n• NOMPROPRE met le reste du mot en minuscules : « SAINT-ÉTIENNE » devient « Saint-Étienne ».\n• Power Query : le libellé « À partir de Tableau/Plage » varie selon la version ; sur Mac avec 365, partir d’une requête vide de source =Excel.CurrentWorkbook().\n• Transition : « Voyons-les à l’œuvre sur deux cellules. »",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -3100,6 +3079,28 @@
           "exemple": {
             "id": "b3-01-a1-exemple-nettoyage",
             "enonce": "Deux cellules de l’onglet Commandes du classeur brut : en E783, la ville « Bordeaux », entourée d’espaces ; en L2971, le ca_ht saisi comme le texte « 1 150,00 € ». Chaque formule s’écrit en ligne 2, puis se recopie jusqu’en bas.",
+            "rappel": [
+              {
+                "libelle": "SUPPRESPACE(texte)",
+                "valeur": "retire les espaces au début et à la fin du texte, et ne laisse qu’une espace entre deux mots."
+              },
+              {
+                "libelle": "NOMPROPRE(texte)",
+                "valeur": "met une majuscule au début de chaque mot et le reste en minuscules : « SAINT-ÉTIENNE » devient « Saint-Étienne »."
+              },
+              {
+                "libelle": "SUBSTITUE(texte;ancien;nouveau)",
+                "valeur": "remplace chaque « ancien » du texte par « nouveau » ; avec \"\" pour nouveau, il le retire."
+              },
+              {
+                "libelle": "CNUM(texte)",
+                "valeur": "convertit en nombre un texte écrit comme un nombre ; renvoie #VALEUR! s’il reste un caractère étranger."
+              },
+              {
+                "libelle": "ESTNUM(valeur)",
+                "valeur": "renvoie VRAI si la valeur est un nombre, FAUX sinon."
+              }
+            ],
             "etapes": [
               {
                 "id": "ville",
@@ -3141,7 +3142,7 @@
         "id": "B3-01-A1-13-TRI-ANOMALIES",
         "type": "fp-cardsort",
         "titre": "Exercice 3 — Classer les anomalies",
-        "duree": 5,
+        "duree": 6,
         "interactif": true,
         "donnees": {
           "plan": {
@@ -3210,13 +3211,13 @@
             "metadonnees": {
               "concepts": ["qualite-des-donnees"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 5,
+              "dureeMinutes": 6,
               "modalite": "binome",
               "regime": "ouvert"
             }
           }
         },
-        "notes": "• Temps : réflexion 1 min · travail 3 min · correction 1 min\n• Réflexion : rappeler les deux questions de la grille avant de trier.\n• Pièges : corriger seul une date douteuse ; renvoyer à un humain une erreur que le fichier corrige.\n• Corriger case par case ; finir par la case vide.\n• Transition : « Au travail sur le vrai fichier : exercice 4. »",
+        "notes": "• Temps : réflexion 1 min · travail 4 min · correction 1 min\n• Réflexion : rappeler les deux questions de la grille avant de trier.\n• Pièges : corriger seul une date douteuse ; renvoyer à un humain une erreur que le fichier corrige.\n• Corriger case par case ; finir par la case vide.\n• Transition : « Au travail sur le vrai fichier : exercice 4. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -3306,7 +3307,7 @@
         "id": "B3-01-A1-14-ATELIER-NETTOYAGE",
         "type": "questionnaire",
         "titre": "Exercice 4 — Nettoyer l’export",
-        "duree": 12,
+        "duree": 15,
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 4 — Nettoyer l’export",
@@ -3324,7 +3325,7 @@
                   "metadonnees": {
                     "concepts": ["nettoyage", "qualite-des-donnees"],
                     "misconceptionsCiblees": [],
-                    "dureeMinutes": 12,
+                    "dureeMinutes": 15,
                     "modalite": "solo",
                     "regime": "focus"
                   }
@@ -3341,7 +3342,7 @@
                   "metadonnees": {
                     "concepts": ["nettoyage", "qualite-des-donnees"],
                     "misconceptionsCiblees": [],
-                    "dureeMinutes": 12,
+                    "dureeMinutes": 15,
                     "modalite": "solo",
                     "regime": "focus"
                   }
@@ -3358,7 +3359,7 @@
                   "metadonnees": {
                     "concepts": ["nettoyage", "qualite-des-donnees"],
                     "misconceptionsCiblees": [],
-                    "dureeMinutes": 12,
+                    "dureeMinutes": 15,
                     "modalite": "solo",
                     "regime": "focus"
                   }
@@ -3375,7 +3376,7 @@
                   "metadonnees": {
                     "concepts": ["nettoyage", "qualite-des-donnees"],
                     "misconceptionsCiblees": [],
-                    "dureeMinutes": 12,
+                    "dureeMinutes": 15,
                     "modalite": "solo",
                     "regime": "focus"
                   }
@@ -3384,7 +3385,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 1 min · travail 9 min · correction 2 min\n• Réflexion : faire dire l’ordre du travail : copie, colonnes nettoyées, doublons, contrôle.\n• Annoncer le palier défi aux plus rapides : il se corrige oralement, sans note.\n• Pièges : dédoublonner sur n_commande seule ; compter l’en-tête parmi les lignes ; additionner avant de convertir ; compter les villes avant d’en retirer les espaces ; poser le contrôle sur les dates converties (45 par la formule du défi, 39 par DATEVAL sur toute date en texte).\n• Villes distinctes : copier la colonne N, en-tête compris, en valeurs à part, puis Supprimer les doublons, case « Mes données ont des en-têtes » cochée ; sous Excel 2021 ou 365, =NBVAL(UNIQUE(N2:N4099)).\n• Corriger question par question, dans l’ordre où les explications se dévoilent ; s’attarder sur la moins réussie (score sous chaque correction).\n• Révéler la part des lignes fausses ou douteuses : c’est la réponse à la première question du vote sur le fichier et Dupont, Bordeaux (A1-04).\n• Défi : la formule laisse en texte « 08/04/26 » (commande C-11481 : ligne 3785 du brut, 3741 de la copie dédoublonnée) ; DATEVAL la lirait 8 avril, or elle est livrée le 7 août : la commande date sans doute du 4 août, et seul l’émetteur peut le dire.",
+        "notes": "• Temps : réflexion 1 min · travail 12 min · correction 2 min\n• Réflexion : faire dire l’ordre du travail : copie, colonnes nettoyées, doublons, contrôle.\n• Annoncer le palier défi aux plus rapides : il se corrige oralement, sans note.\n• Pièges : dédoublonner sur n_commande seule ; compter l’en-tête parmi les lignes ; additionner avant de convertir ; compter les villes avant d’en retirer les espaces ; poser le contrôle sur les dates converties (45 par la formule du défi, 39 par DATEVAL sur toute date en texte).\n• Villes distinctes : copier la colonne N, en-tête compris, en valeurs à part, puis Supprimer les doublons, case « Mes données ont des en-têtes » cochée ; sous Excel 2021 ou 365, =NBVAL(UNIQUE(N2:N4099)).\n• Corriger question par question, dans l’ordre où les explications se dévoilent ; s’attarder sur la moins réussie (score sous chaque correction).\n• Révéler la part des lignes fausses ou douteuses : c’est la réponse à la première question du vote sur le fichier et Dupont, Bordeaux (A1-04).\n• Défi : la formule laisse en texte « 08/04/26 » (commande C-11481 : ligne 3785 du brut, 3741 de la copie dédoublonnée) ; DATEVAL la lirait 8 avril sur un poste réglé en français (jj/mm/aa), or elle est livrée le 7 août : la commande date sans doute du 4 août, et seul l’émetteur peut le dire.\n• Avant la pause, dire les règles des niveaux 1 et 2 : « Je relie les tables par un identifiant, jamais par un libellé » ; « Je corrige seul ce qui est faux et certain ; je signale ce qui est douteux et je demande. »\n• Puis pause de 15 minutes ; reprise à 9 h 41 sur le classeur de reprise.",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [
@@ -3478,47 +3479,6 @@
             "texte": "La colonne controle marque 85 lignes « À vérifier » : livraisons avant la commande, quantités négatives, commercial absent, dates en texte. Les formules N et O en corrigent 490 autres, le défi 24 ca_ht mal calculés, et 15 échappent au contrôle : produits inconnus, prix hors norme. En tout, 614 des 4 098 lignes uniques, environ 15 % : la réponse à la première question du vote sur le fichier et Dupont, Bordeaux. Recalculé sur les dates converties, le contrôle perd les 40 dates ISO : 45. DATEVAL sur toute date en texte lui ôte aussi 6 des 12 dates d’un autre système, lues jour d’abord : 39."
           }
         ]
-      },
-      {
-        "id": "B3-01-A1-15-REGLES-ACTE-1",
-        "type": "fp-pro",
-        "titre": "Cahier de règles : niveaux 1 et 2",
-        "duree": 4,
-        "interactif": true,
-        "donnees": {
-          "cas": {
-            "id": "B3-01-A1-15-REGLES-ACTE-1",
-            "metier": "Analyste data — Norvane Équipement (réseau de 12 agences)",
-            "situation": "Avant la pause, vous écrivez les deux premières règles de votre cahier d’analyste. En séance 2, un agent Data Analyst les appliquera à votre place.",
-            "geste": "Écrivez une règle par niveau : une phrase impérative et vérifiable.",
-            "consequence": "Une règle vague (« faire attention aux données ») ne guide ni un collègue ni un agent.",
-            "questionsLibres": [
-              {
-                "id": "b3-01-a1-regles:regle-comprendre",
-                "question": "Niveau 1 · Comprendre : votre règle pour relier deux tables.",
-                "placeholder": "Je relie…"
-              },
-              {
-                "id": "b3-01-a1-regles:regle-nettoyer",
-                "question": "Niveau 2 · Nettoyer : votre règle pour une donnée fausse ou douteuse.",
-                "placeholder": "Je corrige seul… ; je signale…"
-              }
-            ],
-            "metadonnees": {
-              "concepts": ["cle-et-relation", "qualite-des-donnees"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 4,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
-        },
-        "notes": "• 3 min d’écriture individuelle, puis 1 min pour lire deux règles au pupitre.\n• Règles modèles, à montrer après la saisie : « Je relie les tables par un identifiant, jamais par un libellé » ; « Je corrige seul ce qui est faux et certain ; je signale ce qui est douteux et je demande. »\n• Puis pause de 15 minutes ; reprise à 9 h 41 sur le classeur de reprise.",
-        "diffusion": "seance",
-        "seuil": null,
-        "corriges": [],
-        "questions": [],
-        "corrigeEcran": null
       },
       {
         "id": "B3-01-A2-01-VOTE-FAMILLE",
@@ -3670,13 +3630,13 @@
                   {
                     "famille": "Classer",
                     "question": "Les meilleures agences ?",
-                    "socle": "RANG, GRANDE.VALEUR",
+                    "socle": "EQUATION.RANG, GRANDE.VALEUR",
                     "variante": "TRIER"
                   },
                   {
                     "famille": "Transformer",
                     "question": "Que vaut ce montant en texte ?",
-                    "socle": "SUPPRESPACE, CNUM, TEXTE",
+                    "socle": "SUPPRESPACE, SUBSTITUE, CNUM",
                     "variante": "Power Query"
                   },
                   {
@@ -3700,7 +3660,7 @@
                   {
                     "famille": "Détecter une anomalie",
                     "question": "Quel délai sort du lot ?",
-                    "socle": "MFC, MEDIANE, ECARTYPE",
+                    "socle": "MFC, MEDIANE, ECARTYPE.STANDARD",
                     "variante": "—"
                   }
                 ]
@@ -3795,7 +3755,7 @@
         "id": "B3-01-A2-04-ATELIER-RECHERCHE",
         "type": "questionnaire",
         "titre": "Exercice 5 — Relier et additionner",
-        "duree": 10,
+        "duree": 11,
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 5 — Relier et additionner",
@@ -3816,7 +3776,7 @@
                       "agregation-conditionnelle"
                     ],
                     "misconceptionsCiblees": [],
-                    "dureeMinutes": 10,
+                    "dureeMinutes": 11,
                     "modalite": "solo",
                     "regime": "focus"
                   }
@@ -3836,7 +3796,7 @@
                       "agregation-conditionnelle"
                     ],
                     "misconceptionsCiblees": [],
-                    "dureeMinutes": 10,
+                    "dureeMinutes": 11,
                     "modalite": "solo",
                     "regime": "focus"
                   }
@@ -3856,7 +3816,7 @@
                       "agregation-conditionnelle"
                     ],
                     "misconceptionsCiblees": [],
-                    "dureeMinutes": 10,
+                    "dureeMinutes": 11,
                     "modalite": "solo",
                     "regime": "focus"
                   }
@@ -3865,7 +3825,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 1 min · travail 7 min · correction 2 min\n• Réflexion : faire nommer la famille de chaque question avant d’écrire une formule.\n• Pièges : critère de date tout entier entre guillemets ; 15 pour 15 % ; plage de recherche non figée ; période oubliée.\n• Corriger question par question, dans l’ordre où les explications se dévoilent ; s’attarder sur la moins réussie (score sous chaque correction).\n• Défi : =I2*INDEX(Produits!$E$2:$E$41;EQUIV(H2;Produits!$A$2:$A$41;0)) donne le coût de la ligne.\n• Transition : « Passons au temps : un vote. »",
+        "notes": "• Temps : réflexion 1 min · travail 8 min · correction 2 min\n• Réflexion : faire nommer la famille de chaque question avant d’écrire une formule.\n• Pièges : fonction DATE écrite dans les guillemets (\">=DATE(2026;1;1)\") ; 15 pour 15 % ; plage de recherche non figée ; période oubliée.\n• Corriger question par question, dans l’ordre où les explications se dévoilent ; s’attarder sur la moins réussie (score sous chaque correction).\n• Défi : =I2*INDEX(Produits!$E$2:$E$41;EQUIV(H2;Produits!$A$2:$A$41;0)) donne le coût de la ligne.\n• Transition : « Passons au temps : un vote. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [
@@ -3937,7 +3897,7 @@
           },
           {
             "reference": "b3-01-a2-ca-ouest",
-            "texte": "La région Ouest réunit Nantes (AG05) et Rennes (AG06) : 77 850 € de janvier à septembre 2026. Recopiée sans $, la plage de recherche glisse d’une ligne à chaque ligne : dès la ligne 14, elle a quitté la table et plus aucune agence n’est trouvée. Avant la ligne 14, la seule ligne Ouest trouvée, la ligne 2, date de 2025 : sur 2026, le total tombe à 0 €. Le même glissement vide la colonne categorie : à la première question aussi, 0 €. Un critère de date écrit tout entier entre guillemets ne compare qu’à un texte : 0 €, ici comme à la première question. Sans critère de date, on additionne aussi 2025 : 188 908 €, et 27 862 € à la première question."
+            "texte": "La région Ouest réunit Nantes (AG05) et Rennes (AG06) : 77 850 € de janvier à septembre 2026. Recopiée sans $, la plage de recherche glisse d’une ligne à chaque ligne : dès la ligne 14, elle a quitté la table et plus aucune agence n’est trouvée. Avant la ligne 14, la seule ligne Ouest trouvée, la ligne 2, date de 2025 : sur 2026, le total tombe à 0 €. Le même glissement vide la colonne categorie : à la première question aussi, 0 €. La fonction DATE écrite dans les guillemets, \">=DATE(2026;1;1)\", n’est pas calculée : Excel compare au texte « DATE(2026;1;1) » et ne trouve rien : 0 €, ici comme à la première question. Une date tapée en clair dans les guillemets fonctionne, mais dépend du format de date du poste : \">=\"&DATE(2026;1;1) n’en dépend pas. Sans critère de date, on additionne aussi 2025 : 188 908 €, et 27 862 € à la première question."
           }
         ]
       },
@@ -4041,7 +4001,7 @@
                       "NB.JOURS.OUVRES(début;fin) compte les jours ouvrés, bornes comprises : on retire 1 pour obtenir un délai.",
                       "SERIE.JOUR.OUVRE(début;n) donne la date n jours ouvrés plus tard : la date promise.",
                       "JOURSEM(date;2) donne le jour de la semaine, de 1 pour lundi à 7 pour dimanche.",
-                      "DATEDIF(début;fin;\"m\") compte les mois entiers écoulés ; TEMPS(h;m;s) construit une durée."
+                      "DATEDIF(début;fin;\"M\") compte les mois entiers écoulés ; TEMPS(h;m;s) construit une heure de la journée : TEMPS(27;0;0) donne 3:00."
                     ]
                   },
                   {
@@ -4075,7 +4035,7 @@
             }
           }
         },
-        "notes": "• 3 min ; montrer qu’une date affichée au format nombre devient un entier.\n• Faire dire pourquoi la médiane résiste à une rupture de stock livrée deux mois plus tard.\n• Transition : « Délais et marge du réseau : exercice 6. »",
+        "notes": "• 3 min ; montrer qu’une date affichée au format nombre devient un entier.\n• Faire dire pourquoi la médiane résiste à une rupture de stock livrée deux mois plus tard.\n• SERIE.JOUR.OUVRE renvoie un numéro de série : mettre la cellule au format Date. TEMPS repart de zéro au-delà de 23 h.\n• Sur Mac, la formule matricielle se valide par Ctrl + Maj + Retour ou ⌘ + Maj + Retour.\n• Transition : « Délais et marge du réseau : exercice 6. »",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -4086,7 +4046,7 @@
         "id": "B3-01-A2-07-ATELIER-DELAIS-MARGE",
         "type": "questionnaire",
         "titre": "Exercice 6 — Délais et marge",
-        "duree": 10,
+        "duree": 12,
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 6 — Délais et marge",
@@ -4104,7 +4064,7 @@
                   "metadonnees": {
                     "concepts": ["calcul-sur-dates", "indicateur-statistique"],
                     "misconceptionsCiblees": [],
-                    "dureeMinutes": 10,
+                    "dureeMinutes": 12,
                     "modalite": "solo",
                     "regime": "focus"
                   }
@@ -4121,7 +4081,7 @@
                   "metadonnees": {
                     "concepts": ["calcul-sur-dates", "indicateur-statistique"],
                     "misconceptionsCiblees": [],
-                    "dureeMinutes": 10,
+                    "dureeMinutes": 12,
                     "modalite": "solo",
                     "regime": "focus"
                   }
@@ -4138,7 +4098,7 @@
                   "metadonnees": {
                     "concepts": ["calcul-sur-dates", "indicateur-statistique"],
                     "misconceptionsCiblees": [],
-                    "dureeMinutes": 10,
+                    "dureeMinutes": 12,
                     "modalite": "solo",
                     "regime": "focus"
                   }
@@ -4147,7 +4107,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 1 min · travail 7 min · correction 2 min\n• Réflexion : faire dire en quelle unité le contrat compte les délais avant d’écrire la colonne.\n• Pièges : soustraire les dates ; oublier le − 1 ; résumer par la moyenne ; prendre toute la table au lieu de 2026 ; oublier l’agence, ou prendre MEDIANE sous un filtre, qui compte les lignes masquées ; faire la moyenne des taux de ligne ; diviser la marge par le coût d’achat.\n• Corriger question par question ; sur la médiane, trier les délais de Strasbourg pour montrer les ruptures en bas de colonne.\n• Retards : 2025 n’a aucun retard, et toute la table donne le même compte que 2026 : faire montrer le critère 2026.\n• Défi : JOURSEM(B2;2)=5 repère un vendredi ; dans Clients, DATEDIF(E2;DATE(2026;9;30);\"m\") donne l’ancienneté en mois au 30 septembre 2026.\n• Transition : « Et si l’export d’octobre arrive ? Un vote. »",
+        "notes": "• Temps : réflexion 1 min · travail 9 min · correction 2 min\n• Réflexion : faire dire en quelle unité le contrat compte les délais avant d’écrire la colonne.\n• Pièges : soustraire les dates ; oublier le − 1 ; résumer par la moyenne ; prendre toute la table au lieu de 2026 ; oublier l’agence, ou prendre MEDIANE sous un filtre, qui compte les lignes masquées ; faire la moyenne des taux de ligne ; diviser la marge par le coût d’achat.\n• Corriger question par question ; sur la médiane, trier les délais de Strasbourg pour montrer les ruptures en bas de colonne.\n• Retards : 2025 n’a aucun retard, et toute la table donne le même compte que 2026 : faire montrer le critère 2026.\n• Défi : JOURSEM(B2;2)=5 repère un vendredi ; dans Clients, DATEDIF(E2;DATE(2026;9;30);\"M\") donne l’ancienneté en mois au 30 septembre 2026.\n• Transition : « Et si l’export d’octobre arrive ? Un vote. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [
@@ -4235,7 +4195,7 @@
           },
           {
             "reference": "b3-01-a2-retards",
-            "texte": "Une ligne est en retard quand date_livraison dépasse SERIE.JOUR.OUVRE(date_commande;5), soit quand son delai dépasse 5 : 99 lignes commandées en 2026. Avec date_commande + 5, en jours calendaires, la promesse tombe trop tôt et 481 lignes paraissent en retard ; la médiane de Strasbourg de la première question monterait à 11 jours. Sans le − 1, la colonne delai compte aussi le jour de la commande : au critère \">5\", 284 lignes, livrées le jour promis comprises, et une médiane de Strasbourg de 9 jours."
+            "texte": "Une ligne est en retard quand date_livraison dépasse SERIE.JOUR.OUVRE(date_commande;5), soit, pour une commande passée un jour ouvré comme toutes celles de la reprise, quand son delai dépasse 5 : 99 lignes commandées en 2026. Avec date_commande + 5, en jours calendaires, la promesse tombe trop tôt et 481 lignes paraissent en retard ; la médiane de Strasbourg de la première question monterait à 11 jours. Sans le − 1, la colonne delai compte aussi le jour de la commande : au critère \">5\", 284 lignes, livrées le jour promis comprises, et une médiane de Strasbourg de 9 jours."
           },
           {
             "reference": "b3-01-a2-taux-marge",
@@ -4334,7 +4294,7 @@
                   {
                     "kind": "method",
                     "title": "Le tableau structuré",
-                    "text": "Ctrl + T (⌘ + T) transforme la plage en tableau structuré, nommé T_Commandes dans Création de tableau (Tableau sur Mac) › Nom du tableau. Il s’étend aux lignes ajoutées, recopie ses colonnes calculées et se lit : =SOMME(T_Commandes[ca_ht])."
+                    "text": "Ctrl + L ou Ctrl + T (⌘ + T sur Mac) transforme la plage en tableau structuré, nommé T_Commandes dans Création de tableau › Nom du tableau. Il s’étend aux lignes ajoutées, recopie ses colonnes calculées et se lit : =SOMME(T_Commandes[ca_ht])."
                   },
                   {
                     "kind": "property",
@@ -4347,7 +4307,7 @@
                     "text": "Trois réglages font un TCD de direction.",
                     "steps": [
                       "Clic droit sur une date › Grouper : mois ou trimestres, et années pour ne pas mêler deux printemps.",
-                      "Paramètres des champs de valeurs › Afficher les valeurs › % du total de la ligne : part de chaque catégorie dans l’agence.",
+                      "Clic droit sur une valeur › Afficher les valeurs › % du total de la ligne : part de chaque catégorie dans l’agence.",
                       "Années en filtre : la période est bornée ; Insertion › Segment filtre d’un clic ; un filtre reste actif tant qu’on ne l’a pas retiré."
                     ]
                   },
@@ -4368,7 +4328,7 @@
             }
           }
         },
-        "notes": "• 3 min ; faire Ctrl + T en direct et montrer le nom T_Commandes dans l’onglet Création de tableau (Tableau sur Mac).\n• Insister sur le regroupement par années : sans lui, deux printemps se cumulent.\n• Transition : « Construisons-en un ensemble. »",
+        "notes": "• 3 min ; faire Ctrl + L (ou Ctrl + T) en direct et montrer le nom T_Commandes dans l’onglet Création de tableau (Outils de tableau › Création sous Excel 2019 ; Tableau sur Mac).\n• Insister sur le regroupement par années : sans lui, deux printemps se cumulent.\n• Autres chemins : Insertion › Tableau ; % du total par Paramètres des champs de valeurs (sur Mac, Paramètres de champ) ; segment sur Mac par Analyse du tableau croisé dynamique › Segment.\n• Transition : « Construisons-en un ensemble. »",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -4389,7 +4349,7 @@
               {
                 "id": "source",
                 "intitule": "La source",
-                "raisonnement": "Ctrl + T sur Commandes, nommé T_Commandes ; on y ajoute la colonne calculée annee, =ANNEE([@date_commande]). Puis Insertion › Tableau croisé dynamique, sur une nouvelle feuille.",
+                "raisonnement": "Ctrl + L (ou Ctrl + T) sur Commandes, nommé T_Commandes ; on y ajoute la colonne calculée annee, =ANNEE([@date_commande]). Puis Insertion › Tableau croisé dynamique, sur une nouvelle feuille.",
                 "invite": "Sur quoi construire le TCD pour qu’il voie les lignes d’octobre ?"
               },
               {
@@ -4426,7 +4386,7 @@
         "id": "B3-01-A2-11-ATELIER-TCD",
         "type": "questionnaire",
         "titre": "Exercice 7 — Le TCD de la direction",
-        "duree": 14,
+        "duree": 15,
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 7 — Le TCD de la direction",
@@ -4444,7 +4404,7 @@
                   "metadonnees": {
                     "concepts": ["tableau-croise-dynamique"],
                     "misconceptionsCiblees": [],
-                    "dureeMinutes": 14,
+                    "dureeMinutes": 15,
                     "modalite": "solo",
                     "regime": "focus"
                   }
@@ -4476,7 +4436,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 1 min · travail 11 min · correction 2 min\n• Réflexion : faire dire, avant de construire, ce que chaque TCD montre en lignes, en colonnes et en valeurs.\n• Pièges : % du total général ou de la colonne au lieu du % de la ligne ; filtre annee oublié au premier TCD ; resté actif au second, recopié du premier ou de l’exemple ; trimestres groupés sans les années.\n• Corriger les deux questions ; montrer le regroupement par années qui sépare les deux printemps.\n• Défi : clic droit sur remise › Grouper, de 0 à 0,30 par pas de 0,05.\n• Transition : « Avant la pause, deux règles de plus. »",
+        "notes": "• Temps : réflexion 1 min · travail 12 min · correction 2 min\n• Réflexion : faire dire, avant de construire, ce que chaque TCD montre en lignes, en colonnes et en valeurs.\n• Pièges : % du total général ou de la colonne au lieu du % de la ligne ; filtre annee oublié au premier TCD ; resté actif au second, recopié du premier ou de l’exemple ; trimestres groupés sans les années.\n• Corriger les deux questions ; montrer le regroupement par années qui sépare les deux printemps.\n• Défi : clic droit sur remise › Grouper, de 0 à 0,30 par pas de 0,05.\n• Avant la pause, dire les règles des niveaux 3 et 4 : « Avant la fonction, je nomme la famille du problème » ; « Je travaille sur un tableau structuré, jamais sur une plage fixe. »\n• Puis pause de 15 minutes ; reprise à 10 h 56 sur le classeur de reprise de l’acte 3.",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [
@@ -4545,50 +4505,6 @@
             "texte": "Groupé par trimestres et par années, le TCD place en tête le T4 2025 : d’octobre à décembre, la saison forte du réseau. Un filtre annee resté sur 2026 ne montre que les trimestres de 2026 et met le T2 2026 en tête ; des trimestres groupés sans les années cumulent deux printemps et font gagner le deuxième trimestre. Oublié au premier TCD, le filtre annee mêle à l’inverse 2025 et 2026 : l’informatique y pèse 33,9 % du CA de Rennes."
           }
         ]
-      },
-      {
-        "id": "B3-01-A2-12-REGLES-ACTE-2",
-        "type": "fp-pro",
-        "titre": "Cahier de règles : niveaux 3 et 4",
-        "duree": 4,
-        "interactif": true,
-        "donnees": {
-          "cas": {
-            "id": "B3-01-A2-12-REGLES-ACTE-2",
-            "metier": "Analyste data — Norvane Équipement (réseau de 12 agences)",
-            "situation": "Avant la pause, vous ajoutez deux règles à votre cahier d’analyste : l’agent de la séance 2 devra transformer et modéliser comme vous.",
-            "geste": "Écrivez une règle par niveau : une phrase impérative et vérifiable.",
-            "consequence": "Un agent qui choisit la fonction avant de comprendre la question calcule vite, et faux.",
-            "questionsLibres": [
-              {
-                "id": "b3-01-a2-regles:regle-transformer",
-                "question": "Niveau 3 · Transformer : votre règle avant d’écrire une formule.",
-                "placeholder": "Avant la fonction, je…"
-              },
-              {
-                "id": "b3-01-a2-regles:regle-modeliser",
-                "question": "Niveau 4 · Modéliser : votre règle pour un calcul qui dure.",
-                "placeholder": "Je travaille sur…"
-              }
-            ],
-            "metadonnees": {
-              "concepts": [
-                "agregation-conditionnelle",
-                "tableau-croise-dynamique"
-              ],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 4,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
-        },
-        "notes": "• 3 min d’écriture individuelle, puis 1 min pour lire deux règles au pupitre.\n• Règles modèles, à montrer après la saisie : « Avant la fonction, je nomme la famille du problème » ; « Je travaille sur un tableau structuré, jamais sur une plage fixe. »\n• Puis pause de 15 minutes ; reprise à 10 h 56 sur le classeur de reprise de l’acte 3.",
-        "diffusion": "seance",
-        "seuil": null,
-        "corriges": [],
-        "questions": [],
-        "corrigeEcran": null
       },
       {
         "id": "B3-01-A3-01-GRAPHIQUE-TROMPEUR",
@@ -4739,7 +4655,7 @@
                       "Comparer des agences ou des produits : barres.",
                       "Suivre une évolution dans le temps : courbe.",
                       "Montrer la composition d’un total, en peu de parts : barres empilées.",
-                      "Voir comment se répartissent des valeurs : histogramme, sous Insertion › Graphique statistique ; l’« histogramme groupé » d’Excel, lui, fait des barres.",
+                      "Voir comment se répartissent des valeurs : histogramme, sous Insertion › Insérer un graphique statistique › Histogramme (sur Mac, Insertion, icône Statistiques) ; l’« Histogramme groupé » d’Excel, lui, trace des colonnes qui comparent des catégories.",
                       "Chercher un lien entre deux mesures : nuage de points.",
                       "Suivre un indicateur clé : la valeur, avec son objectif ou l’an passé."
                     ]
@@ -4747,7 +4663,7 @@
                   {
                     "kind": "property",
                     "title": "À éviter",
-                    "text": "La 3D, qui déforme les hauteurs ; le camembert de plus de cinq parts, illisible ; l’axe tronqué non signalé, qui grossit les écarts ; le double axe, qui fabrique des croisements."
+                    "text": "La 3D, qui déforme les hauteurs ; le camembert (« Secteurs » dans Excel) de plus de cinq parts, illisible ; l’axe tronqué non signalé, qui grossit les écarts ; le double axe, qui fabrique des croisements."
                   },
                   {
                     "kind": "example",
@@ -4926,7 +4842,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 9 — CA et objectif par agence",
-          "consigne": "Essentiel, dans le classeur de reprise de l’acte 3 : une synthèse par agence, de janvier à septembre 2026 : le CA cumulé par SOMME.SI.ENS sur T_Commandes, l’objectif cumulé par SOMME.SI.ENS sur Objectifs, le taux d’atteinte. Puis un graphique en barres groupées CA et objectif, avec un titre qui conclut, une légende et un axe depuis zéro. Sous Windows (Excel 2019, 2021 ou 365), vous pouvez aussi mettre Agences et Objectifs sous forme de tableau, nommés T_Agences et T_Objectifs, puis relier T_Commandes et T_Objectifs à T_Agences par agence_id dans Données › Relations ; dans le TCD, créé avec « Ajouter ces données au modèle de données », agence_id de T_Agences en lignes, ca_ht de T_Commandes et objectif_ca_ht de T_Objectifs en valeurs, et deux filtres, car un filtre ne passe pas d’une table à l’autre : annee de T_Commandes sur 2026, mois de T_Objectifs de janvier à septembre 2026. Sur Mac, le modèle de données n’existe pas : la synthèse par SOMME.SI.ENS suffit. Défi : les courbes du CA mensuel 2025 et 2026, superposées.",
+          "consigne": "Essentiel, dans le classeur de reprise de l’acte 3 : une synthèse par agence, de janvier à septembre 2026 : le CA cumulé par SOMME.SI.ENS sur T_Commandes, l’objectif cumulé par SOMME.SI.ENS sur Objectifs, le taux d’atteinte. Puis un graphique CA et objectif en Histogramme groupé (colonnes) ou en Barres groupées (barres horizontales), avec un titre qui conclut, une légende et un axe depuis zéro. Sous Windows (Excel 2019, 2021 ou 365), vous pouvez aussi mettre Agences et Objectifs sous forme de tableau, nommés T_Agences et T_Objectifs, puis relier T_Commandes et T_Objectifs à T_Agences par agence_id dans Données › Relations ; dans le TCD, créé avec « Ajouter ces données au modèle de données », agence_id de T_Agences en lignes, ca_ht de T_Commandes et objectif_ca_ht de T_Objectifs en valeurs, et deux filtres, car un filtre ne passe pas d’une table à l’autre : annee de T_Commandes sur 2026, mois de T_Objectifs de janvier à septembre 2026. Sur Mac, le modèle de données n’existe pas : la synthèse par SOMME.SI.ENS suffit. Défi : les courbes du CA mensuel 2025 et 2026, superposées.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -5186,7 +5102,7 @@
               {
                 "id": "mfc",
                 "intitule": "La règle de couleur",
-                "raisonnement": "Accueil › Mise en forme conditionnelle › Nouvelle règle › Utiliser une formule : =$E5<0,95, remplissage rouge. Le $ fige la colonne E : toute la ligne de l’agence se colore.",
+                "raisonnement": "Accueil › Mise en forme conditionnelle › Nouvelle règle › Utiliser une formule pour déterminer pour quelles cellules le format sera appliqué (sur Mac, Style Classique d’abord, puis Utiliser une formule pour déterminer les cellules à mettre en forme) : =$E5<0,95, remplissage rouge. Le $ fige la colonne E : toute la ligne de l’agence se colore.",
                 "invite": "Quelle formule colore les agences sous 95 % de leur objectif ?"
               },
               {
@@ -5198,7 +5114,7 @@
               {
                 "id": "segment",
                 "intitule": "Le segment connecté",
-                "raisonnement": "Clic dans un TCD › Insertion › Segment › region ; puis clic droit sur le segment › Connexions de rapport : cocher les deux TCD. Un clic filtre les deux.",
+                "raisonnement": "Clic dans un TCD › Insertion › Segment (sur Mac, Analyse du tableau croisé dynamique › Segment) › region ; puis, le segment sélectionné, onglet Segment › Connexions de rapport : cocher les deux TCD. Un clic filtre les deux.",
                 "invite": "Comment un seul segment filtre-t-il deux TCD ?"
               }
             ],
@@ -5435,7 +5351,7 @@
             }
           }
         },
-        "notes": "• Temps : réflexion 1 min · travail 6 min · correction 2 min\n• Réflexion : faire relire le tableau de bord en cherchant ce qui sort de l’ordinaire : une agence, une catégorie, un délai.\n• Rouen (91,9 %) : troisième agence sous l’objectif, en recul d’environ 2 % sur un an, de −3 % à 0 % selon la catégorie, sans cause qui ressorte du détail. À surveiller, pas une histoire : un constat sans cause ne fait pas une recommandation.\n• Révéler la correction : les quatre histoires s’affichent ensemble. Les commenter une à une, en demandant à main levée qui l’avait trouvée avant de passer à la suivante.\n• Transition : « Gardez la fiche mémo, puis complétez votre cahier de règles. »",
+        "notes": "• Temps : réflexion 1 min · travail 6 min · correction 2 min\n• Réflexion : faire relire le tableau de bord en cherchant ce qui sort de l’ordinaire : une agence, une catégorie, un délai.\n• Rouen (91,9 %) : troisième agence sous l’objectif, en recul d’environ 2 % sur un an, de −3 % à 0 % selon la catégorie, sans cause qui ressorte du détail. À surveiller, pas une histoire : un constat sans cause ne fait pas une recommandation.\n• Révéler la correction : les quatre histoires s’affichent ensemble. Les commenter une à une, en demandant à main levée qui l’avait trouvée avant de passer à la suivante.\n• Transition : « Gardez la fiche mémo, puis écrivez les règles des niveaux 5 et 6. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -5521,7 +5437,7 @@
             }
           }
         },
-        "notes": "• 3 min de lecture ; la fiche s’imprime et se garde pour la séance 2.\n• Faire relier chaque case à la règle écrite dans le cahier.",
+        "notes": "• 3 min de lecture ; la fiche s’imprime et se garde pour la séance 2.\n• Faire relier chaque case à la règle de son niveau : dite avant la pause pour les niveaux 1 à 4, écrite à l’écran suivant pour les niveaux 5 et 6.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -5538,7 +5454,7 @@
           "cas": {
             "id": "B3-01-A3-12-CAHIER-DE-REGLES",
             "metier": "Analyste data — Norvane Équipement (réseau de 12 agences)",
-            "situation": "Votre cahier compte quatre règles. Vous écrivez les deux dernières, puis vous choisissez celle que l’agent de la séance 2 recevra en premier.",
+            "situation": "Les règles des niveaux 1 à 4 ont été dites avant chaque pause. Vous écrivez celles des niveaux 5 et 6, puis vous choisissez la règle que l’agent de la séance 2 recevra en premier.",
             "geste": "Écrivez une règle par niveau, puis justifiez votre choix en une phrase.",
             "consequence": "L’agent n’a que vos règles : celle qui manque, il ne l’appliquera pas.",
             "questionsLibres": [
@@ -5554,8 +5470,8 @@
               },
               {
                 "id": "b3-01-a3-regles:regle-la-plus-utile",
-                "question": "Laquelle de vos six règles confieriez-vous en premier à un agent, et pourquoi ?",
-                "placeholder": "Ma règle n° … parce que…"
+                "question": "Parmi les six règles de la séance, laquelle confieriez-vous en premier à un agent, et pourquoi ?",
+                "placeholder": "La règle du niveau … parce que…"
               }
             ],
             "metadonnees": {
@@ -5567,7 +5483,7 @@
             }
           }
         },
-        "notes": "• 4 min d’écriture individuelle, puis 1 min pour lire deux réponses à la troisième question.\n• Règles modèles, à montrer après la saisie : « Je pose la question avant de choisir le graphique » ; « Je recommande par un constat chiffré, sa cause et une action. »\n• Annoncer la séance 2 : l’agent Data Analyst appliquera ces six règles au prochain export de Nadia.",
+        "notes": "• 4 min d’écriture individuelle, puis 1 min pour lire deux réponses à la troisième question.\n• Règles modèles, à montrer après la saisie : « Je pose la question avant de choisir le graphique » ; « Je recommande par un constat chiffré, sa cause et une action. »\n• Annoncer la séance 2 : l’agent Data Analyst appliquera les six règles de la séance au prochain export de Nadia.",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -5575,16 +5491,52 @@
         "corrigeEcran": null
       },
       {
-        "id": "B3-01-A3-13-BILLET-DE-SORTIE",
+        "id": "B3-01-A3-13-CE-QUI-RESTE-FLOU",
+        "type": "fp-pro",
+        "titre": "Ce qui reste flou",
+        "duree": 2,
+        "interactif": true,
+        "donnees": {
+          "cas": {
+            "id": "B3-01-A3-13-CE-QUI-RESTE-FLOU",
+            "metier": "Analyste data — Norvane Équipement (réseau de 12 agences)",
+            "situation": "La séance se termine. Avant le billet de sortie, dites ce qui vous a échappé : la séance 2 commencera par là.",
+            "geste": "Écrivez une phrase, même courte.",
+            "consequence": null,
+            "questionsLibres": [
+              {
+                "id": "b3-01-a3-flou:ce-qui-reste-flou",
+                "question": "En une phrase : qu’est-ce qui reste flou pour vous après cette séance ?",
+                "placeholder": "Ce qui reste flou pour moi…"
+              }
+            ],
+            "metadonnees": {
+              "concepts": ["qualite-des-donnees"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 2,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 2 min d’écriture individuelle, sans lecture au pupitre : les réponses restent au rapport de séance.\n• Lire les réponses avant la séance 2 : ce qui reste flou ouvre la séance.",
+        "diffusion": "seance",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null
+      },
+      {
+        "id": "B3-01-A3-14-BILLET-DE-SORTIE",
         "type": "fp-exit",
         "titre": "Billet de sortie",
-        "duree": 5,
+        "duree": 3,
         "interactif": true,
         "donnees": {
           "billet": {
             "id": "b3-01-a3-billet",
             "question": "Une ligne porte une date_livraison antérieure à sa date_commande. La corrige-t-on automatiquement ?",
-            "invite": "En une phrase : qu’est-ce qui reste flou pour vous après cette séance ?",
+            "invite": "En une phrase : pourquoi ce choix ?",
             "options": [
               {
                 "id": "non-on-la-signale-et-on-demande-faux-hum-c6b7abb5",
@@ -5602,13 +5554,13 @@
             "metadonnees": {
               "concepts": ["qualite-des-donnees"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 5,
+              "dureeMinutes": 3,
               "modalite": "solo",
               "regime": "ouvert"
             }
           }
         },
-        "notes": "• 5 min ; clore la séance quand le compteur de billets est complet.\n• Pièges : échanger les deux dates ; supprimer la ligne.\n• Lire les réponses libres avant la séance 2 : ce qui reste flou ouvre la séance.",
+        "notes": "• 3 min ; clore la séance quand le compteur de billets est complet.\n• Pièges : échanger les deux dates ; supprimer la ligne.",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [
@@ -6040,7 +5992,7 @@
                     "text": "Chaque anomalie « faux · automatique » a son outil.",
                     "steps": [
                       "Espaces en trop : SUPPRESPACE(E2).",
-                      "Casse : NOMPROPRE met une majuscule initiale, « BORDEAUX » devient « Bordeaux » ; MAJUSCULE et MINUSCULE existent aussi.",
+                      "Casse : NOMPROPRE met une majuscule au début de chaque mot, « BORDEAUX » devient « Bordeaux » ; MAJUSCULE et MINUSCULE existent aussi.",
                       "Nombre en texte : SUBSTITUE retire le symbole et les espaces, puis CNUM convertit le texte en nombre.",
                       "Date ISO en texte « 2026-03-17 », seule à 10 caractères : =SI(NBCAR(B2)=10;DATEVAL(B2);B2) ; « 08/04/26 » reste à vérifier.",
                       "Doublons exacts : Données › Supprimer les doublons, toutes les colonnes cochées, sur une copie. Valeurs distinctes : copiez la colonne nettoyée avec son en-tête, collez-la en valeurs à part (Collage spécial › Valeurs) ; le même outil, case « Mes données ont des en-têtes » cochée, compte les valeurs uniques.",
@@ -6055,7 +6007,7 @@
                   {
                     "kind": "example",
                     "title": "Sous Windows depuis Excel 2016, ou sur Mac avec 365 : Power Query",
-                    "text": "Données › À partir d’un tableau ou d’une plage : Power Query enregistre chaque étape du nettoyage et la rejoue d’un clic au prochain export."
+                    "text": "Données › À partir de Tableau/Plage (sur Mac, Données › Obtenir des données) : Power Query enregistre chaque étape du nettoyage et la rejoue d’un clic au prochain export."
                   }
                 ]
               }
@@ -6082,7 +6034,7 @@
         "id": "B3-01-A1-13-TRI-ANOMALIES",
         "type": "ecran-verrouille",
         "titre": "Exercice 3 — Classer les anomalies",
-        "duree": 5,
+        "duree": 6,
         "interactif": false,
         "donnees": {}
       },
@@ -6090,15 +6042,7 @@
         "id": "B3-01-A1-14-ATELIER-NETTOYAGE",
         "type": "ecran-verrouille",
         "titre": "Exercice 4 — Nettoyer l’export",
-        "duree": 12,
-        "interactif": false,
-        "donnees": {}
-      },
-      {
-        "id": "B3-01-A1-15-REGLES-ACTE-1",
-        "type": "ecran-verrouille",
-        "titre": "Cahier de règles : niveaux 1 et 2",
-        "duree": 4,
+        "duree": 15,
         "interactif": false,
         "donnees": {}
       },
@@ -6173,13 +6117,13 @@
                   {
                     "famille": "Classer",
                     "question": "Les meilleures agences ?",
-                    "socle": "RANG, GRANDE.VALEUR",
+                    "socle": "EQUATION.RANG, GRANDE.VALEUR",
                     "variante": "TRIER"
                   },
                   {
                     "famille": "Transformer",
                     "question": "Que vaut ce montant en texte ?",
-                    "socle": "SUPPRESPACE, CNUM, TEXTE",
+                    "socle": "SUPPRESPACE, SUBSTITUE, CNUM",
                     "variante": "Power Query"
                   },
                   {
@@ -6203,7 +6147,7 @@
                   {
                     "famille": "Détecter une anomalie",
                     "question": "Quel délai sort du lot ?",
-                    "socle": "MFC, MEDIANE, ECARTYPE",
+                    "socle": "MFC, MEDIANE, ECARTYPE.STANDARD",
                     "variante": "—"
                   }
                 ]
@@ -6286,7 +6230,7 @@
         "id": "B3-01-A2-04-ATELIER-RECHERCHE",
         "type": "ecran-verrouille",
         "titre": "Exercice 5 — Relier et additionner",
-        "duree": 10,
+        "duree": 11,
         "interactif": false,
         "donnees": {}
       },
@@ -6323,7 +6267,7 @@
                       "NB.JOURS.OUVRES(début;fin) compte les jours ouvrés, bornes comprises : on retire 1 pour obtenir un délai.",
                       "SERIE.JOUR.OUVRE(début;n) donne la date n jours ouvrés plus tard : la date promise.",
                       "JOURSEM(date;2) donne le jour de la semaine, de 1 pour lundi à 7 pour dimanche.",
-                      "DATEDIF(début;fin;\"m\") compte les mois entiers écoulés ; TEMPS(h;m;s) construit une durée."
+                      "DATEDIF(début;fin;\"M\") compte les mois entiers écoulés ; TEMPS(h;m;s) construit une heure de la journée : TEMPS(27;0;0) donne 3:00."
                     ]
                   },
                   {
@@ -6362,7 +6306,7 @@
         "id": "B3-01-A2-07-ATELIER-DELAIS-MARGE",
         "type": "ecran-verrouille",
         "titre": "Exercice 6 — Délais et marge",
-        "duree": 10,
+        "duree": 12,
         "interactif": false,
         "donnees": {}
       },
@@ -6394,7 +6338,7 @@
                   {
                     "kind": "method",
                     "title": "Le tableau structuré",
-                    "text": "Ctrl + T (⌘ + T) transforme la plage en tableau structuré, nommé T_Commandes dans Création de tableau (Tableau sur Mac) › Nom du tableau. Il s’étend aux lignes ajoutées, recopie ses colonnes calculées et se lit : =SOMME(T_Commandes[ca_ht])."
+                    "text": "Ctrl + L ou Ctrl + T (⌘ + T sur Mac) transforme la plage en tableau structuré, nommé T_Commandes dans Création de tableau › Nom du tableau. Il s’étend aux lignes ajoutées, recopie ses colonnes calculées et se lit : =SOMME(T_Commandes[ca_ht])."
                   },
                   {
                     "kind": "property",
@@ -6407,7 +6351,7 @@
                     "text": "Trois réglages font un TCD de direction.",
                     "steps": [
                       "Clic droit sur une date › Grouper : mois ou trimestres, et années pour ne pas mêler deux printemps.",
-                      "Paramètres des champs de valeurs › Afficher les valeurs › % du total de la ligne : part de chaque catégorie dans l’agence.",
+                      "Clic droit sur une valeur › Afficher les valeurs › % du total de la ligne : part de chaque catégorie dans l’agence.",
                       "Années en filtre : la période est bornée ; Insertion › Segment filtre d’un clic ; un filtre reste actif tant qu’on ne l’a pas retiré."
                     ]
                   },
@@ -6441,15 +6385,7 @@
         "id": "B3-01-A2-11-ATELIER-TCD",
         "type": "ecran-verrouille",
         "titre": "Exercice 7 — Le TCD de la direction",
-        "duree": 14,
-        "interactif": false,
-        "donnees": {}
-      },
-      {
-        "id": "B3-01-A2-12-REGLES-ACTE-2",
-        "type": "ecran-verrouille",
-        "titre": "Cahier de règles : niveaux 3 et 4",
-        "duree": 4,
+        "duree": 15,
         "interactif": false,
         "donnees": {}
       },
@@ -6529,7 +6465,7 @@
                       "Comparer des agences ou des produits : barres.",
                       "Suivre une évolution dans le temps : courbe.",
                       "Montrer la composition d’un total, en peu de parts : barres empilées.",
-                      "Voir comment se répartissent des valeurs : histogramme, sous Insertion › Graphique statistique ; l’« histogramme groupé » d’Excel, lui, fait des barres.",
+                      "Voir comment se répartissent des valeurs : histogramme, sous Insertion › Insérer un graphique statistique › Histogramme (sur Mac, Insertion, icône Statistiques) ; l’« Histogramme groupé » d’Excel, lui, trace des colonnes qui comparent des catégories.",
                       "Chercher un lien entre deux mesures : nuage de points.",
                       "Suivre un indicateur clé : la valeur, avec son objectif ou l’an passé."
                     ]
@@ -6537,7 +6473,7 @@
                   {
                     "kind": "property",
                     "title": "À éviter",
-                    "text": "La 3D, qui déforme les hauteurs ; le camembert de plus de cinq parts, illisible ; l’axe tronqué non signalé, qui grossit les écarts ; le double axe, qui fabrique des croisements."
+                    "text": "La 3D, qui déforme les hauteurs ; le camembert (« Secteurs » dans Excel) de plus de cinq parts, illisible ; l’axe tronqué non signalé, qui grossit les écarts ; le double axe, qui fabrique des croisements."
                   },
                   {
                     "kind": "example",
@@ -6732,10 +6668,18 @@
         "donnees": {}
       },
       {
-        "id": "B3-01-A3-13-BILLET-DE-SORTIE",
+        "id": "B3-01-A3-13-CE-QUI-RESTE-FLOU",
+        "type": "ecran-verrouille",
+        "titre": "Ce qui reste flou",
+        "duree": 2,
+        "interactif": false,
+        "donnees": {}
+      },
+      {
+        "id": "B3-01-A3-14-BILLET-DE-SORTIE",
         "type": "ecran-verrouille",
         "titre": "Billet de sortie",
-        "duree": 5,
+        "duree": 3,
         "interactif": false,
         "donnees": {}
       }
