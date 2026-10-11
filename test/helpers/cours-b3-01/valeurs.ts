@@ -3,7 +3,7 @@ import type {
   PiegesB301,
   ValeursAttenduesB301,
 } from '../../../src/modules/formations/infrastructure/contenus/b3-01.donnees';
-import { arrondirMoitieLoinDeZero } from '../../../src/modules/formations/domain/cours/Formule';
+import { arrondirMoitieLoinDeZero } from 'portfolio-2025-partage/formule';
 import {
   comparerCommeExcel,
   dateExcel,

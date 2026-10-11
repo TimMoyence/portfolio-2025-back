@@ -5,7 +5,7 @@ import {
   type Rng,
   type Tirage,
 } from '../../../src/modules/formations/domain/cours/Aleatoire';
-import { arrondirMoitieLoinDeZero } from '../../../src/modules/formations/domain/cours/Formule';
+import { arrondirMoitieLoinDeZero } from 'portfolio-2025-partage/formule';
 import {
   dateExcel,
   estJourOuvre,

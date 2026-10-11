@@ -1,5 +1,5 @@
 import { estObjet } from '../../../../common/domain/est-objet';
-import { estUneFormule } from './Formule';
+import { estUneFormule } from 'portfolio-2025-partage/formule';
 
 export const ESPACE_INSECABLE = String.fromCodePoint(0xa0);
 

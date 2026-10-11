@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import type { StatutScore } from 'portfolio-2025-partage/score';
 import { estObjet } from '../../../../common/domain/est-objet';
 import { dateLongue } from '../../../../common/domain/texte/date-longue';
 import type { AuditSnapshot } from '../../domain/AuditProcessing';
@@ -353,7 +354,7 @@ export class AuditReportHtmlRendererService {
     </div>`;
   }
 
-  private statusLabel(status: 'critical' | 'warning' | 'ok'): EscapedHtml {
+  private statusLabel(status: StatutScore): EscapedHtml {
     switch (status) {
       case 'critical':
         return safeHtml`Critique`;

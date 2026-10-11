@@ -1,5 +1,6 @@
 import { ChatOpenAI } from '@langchain/openai';
 import { Injectable, Logger } from '@nestjs/common';
+import { statutDuScore, type StatutScore } from 'portfolio-2025-partage/score';
 import { z } from 'zod';
 import { compacterBlancs } from '../../../../common/domain/texte/compacter-blancs';
 import type { AiIndexabilitySignals } from '../../domain/AiIndexability';
@@ -299,7 +300,7 @@ export class LangchainClientReportService extends LlmLimiteParLaConfig {
       pillar: string;
       score: number;
       target: number;
-      status: 'critical' | 'warning' | 'ok';
+      status: StatutScore;
     }>,
     context: ClientReportContext,
   ): ClientReportSynthesis['pillarScorecard'] {
@@ -329,7 +330,7 @@ export class LangchainClientReportService extends LlmLimiteParLaConfig {
       pillar,
       score,
       target: 85,
-      status: this.statusFromScore(score),
+      status: statutDuScore(score),
     };
   }
 
@@ -603,12 +604,6 @@ export class LangchainClientReportService extends LlmLimiteParLaConfig {
       return scoreSur100(raw);
     }
     return 0;
-  }
-
-  private statusFromScore(score: number): 'critical' | 'warning' | 'ok' {
-    if (score >= 80) return 'ok';
-    if (score >= 55) return 'warning';
-    return 'critical';
   }
 
   private averageScore(values: Array<number | undefined>): number {
