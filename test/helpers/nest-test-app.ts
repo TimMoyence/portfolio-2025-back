@@ -13,6 +13,10 @@ export async function ecouterEnBoucleLocale(
   app: INestApplication,
 ): Promise<number> {
   await app.listen(0, ADRESSE_BOUCLE_LOCALE);
+  return portDe(app);
+}
+
+export function portDe(app: INestApplication): number {
   return (serveurHttpDe(app).address() as AddressInfo).port;
 }
 

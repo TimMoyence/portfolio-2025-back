@@ -1,7 +1,11 @@
-import type { CallHandler, ExecutionContext } from '@nestjs/common';
-import { EventEmitter } from 'node:events';
+import type { CallHandler } from '@nestjs/common';
 import { of, throwError } from 'rxjs';
 import { firstValueFrom, lastValueFrom } from 'rxjs';
+import {
+  createFakeHttpResponse,
+  createHttpExecutionContext,
+  createRpcExecutionContext,
+} from '../../../../test/factories/execution-context.factory';
 import { InMemorySecurityEventsStore } from './in-memory-security-events-store';
 import type { SecurityConfig } from './security.config';
 import { SuspiciousRequestInterceptor } from './suspicious-request.interceptor';
@@ -33,33 +37,6 @@ interface FakeRequest {
   destroyed?: boolean;
 }
 
-type FakeResponse = EventEmitter & {
-  statusCode: number;
-  writableFinished: boolean;
-};
-
-function fausseReponse(
-  statusCode: number,
-  writableFinished = true,
-): FakeResponse {
-  return Object.assign(new EventEmitter(), { statusCode, writableFinished });
-}
-
-function buildContext(
-  req: FakeRequest,
-  res: FakeResponse,
-  type: 'http' | 'rpc' = 'http',
-): ExecutionContext {
-  return {
-    getType: () => type,
-    switchToHttp: () => ({
-      getRequest: () => req,
-      getResponse: () => res,
-      getNext: () => ({}),
-    }),
-  } as unknown as ExecutionContext;
-}
-
 function buildConfig(overrides: Partial<SecurityConfig> = {}): SecurityConfig {
   return {
     suspiciousScoreThreshold: 25,
@@ -84,10 +61,10 @@ describe('SuspiciousRequestInterceptor', () => {
     handler: CallHandler = { handle: () => of({}) },
     target: SuspiciousRequestInterceptor = interceptor,
   ): Promise<unknown> {
-    const res = fausseReponse(statusCode);
+    const res = createFakeHttpResponse({ statusCode });
     try {
       return await firstValueFrom(
-        target.intercept(buildContext(req, res), handler),
+        target.intercept(createHttpExecutionContext(req, res), handler),
       );
     } finally {
       res.emit('close');
@@ -127,8 +104,9 @@ describe('SuspiciousRequestInterceptor', () => {
 
   it('ignore les contextes non-HTTP', async () => {
     const handler: CallHandler = { handle: () => of('rpc-result') };
-    const ctx = buildContext({} as FakeRequest, {} as FakeResponse, 'rpc');
-    const result = await firstValueFrom(interceptor.intercept(ctx, handler));
+    const result = await firstValueFrom(
+      interceptor.intercept(createRpcExecutionContext(), handler),
+    );
     expect(result).toBe('rpc-result');
     expect(await topIPs()).toHaveLength(0);
   });
@@ -203,15 +181,32 @@ describe('SuspiciousRequestInterceptor', () => {
   });
 
   it('marque abandonnee une reponse fermee avant d etre terminee', async () => {
-    const res = fausseReponse(200, false);
+    const res = createFakeHttpResponse({ writableFinished: false });
 
     await lastValueFrom(
       interceptor.intercept(
-        buildContext(postHeadless({ ip: '203.0.113.12' }), res),
+        createHttpExecutionContext(postHeadless({ ip: '203.0.113.12' }), res),
         { handle: () => of({}) },
       ),
     );
     res.emit('close');
+
+    const top = await topIPs();
+    expect(top[0].lastReasons).toContain('http:aborted');
+  });
+
+  it('note une reponse deja fermee avant l intercepteur, comme abandonnee', async () => {
+    const res = createFakeHttpResponse({
+      destroyed: true,
+      writableFinished: false,
+    });
+
+    await lastValueFrom(
+      interceptor.intercept(
+        createHttpExecutionContext(postHeadless({ ip: '203.0.113.13' }), res),
+        { handle: () => of({}) },
+      ),
+    );
 
     const top = await topIPs();
     expect(top[0].lastReasons).toContain('http:aborted');

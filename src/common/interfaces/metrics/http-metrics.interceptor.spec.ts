@@ -1,18 +1,23 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import { EventEmitter } from 'node:events';
+import { Logger } from '@nestjs/common';
 import { of, throwError, lastValueFrom } from 'rxjs';
 import { HttpMetricsInterceptor } from './http-metrics.interceptor';
 import { createMockMetricsService } from '../../../../test/factories/metrics.factory';
+import {
+  createFakeHttpResponse,
+  createHttpExecutionContext,
+  createRpcExecutionContext,
+  type FausseReponseHttp,
+} from '../../../../test/factories/execution-context.factory';
 import type { MetricsService } from './metrics.service';
-import type { ExecutionContext, CallHandler } from '@nestjs/common';
+import type { CallHandler } from '@nestjs/common';
 
 describe('HttpMetricsInterceptor', () => {
   let interceptor: HttpMetricsInterceptor;
   let metricsService: jest.Mocked<MetricsService>;
-  let mockContext: jest.Mocked<ExecutionContext>;
   let mockCallHandler: jest.Mocked<CallHandler>;
   let mockRequest: { method: string; path: string; route?: { path: string } };
-  let mockResponse: EventEmitter & { statusCode: number };
+  let mockResponse: FausseReponseHttp;
 
   beforeEach(() => {
     metricsService = createMockMetricsService();
@@ -23,16 +28,7 @@ describe('HttpMetricsInterceptor', () => {
       path: '/api/test',
       route: { path: '/api/test' },
     };
-    mockResponse = Object.assign(new EventEmitter(), { statusCode: 200 });
-
-    const mockHttpCtx = {
-      getRequest: jest.fn().mockReturnValue(mockRequest),
-      getResponse: jest.fn().mockReturnValue(mockResponse),
-    };
-
-    mockContext = {
-      switchToHttp: jest.fn().mockReturnValue(mockHttpCtx),
-    } as unknown as jest.Mocked<ExecutionContext>;
+    mockResponse = createFakeHttpResponse();
 
     mockCallHandler = {
       handle: jest.fn().mockReturnValue(of({ data: 'ok' })),
@@ -45,15 +41,58 @@ describe('HttpMetricsInterceptor', () => {
     status_code: '200',
   };
 
+  const intercepterSansFermer = () =>
+    lastValueFrom(
+      interceptor.intercept(
+        createHttpExecutionContext(mockRequest, mockResponse),
+        mockCallHandler,
+      ),
+    );
+
   const intercepter = async () => {
     try {
-      return await lastValueFrom(
-        interceptor.intercept(mockContext, mockCallHandler),
-      );
+      return await intercepterSansFermer();
     } finally {
       mockResponse.emit('close');
     }
   };
+
+  it('laisse passer un contexte non HTTP sans le mesurer', async () => {
+    await expect(
+      lastValueFrom(
+        interceptor.intercept(createRpcExecutionContext(), mockCallHandler),
+      ),
+    ).resolves.toEqual({ data: 'ok' });
+
+    expect(metricsService.httpRequestsTotal.inc).not.toHaveBeenCalled();
+  });
+
+  it('mesure une reponse deja fermee avant l intercepteur', async () => {
+    mockResponse.destroyed = true;
+    mockResponse.writableFinished = false;
+
+    await intercepterSansFermer();
+
+    expect(metricsService.httpRequestsTotal.inc).toHaveBeenCalledTimes(1);
+  });
+
+  it('journalise sans lever quand l enregistrement de la mesure casse', async () => {
+    const journal = jest
+      .spyOn(Logger.prototype, 'warn')
+      .mockImplementation(() => undefined);
+    jest.mocked(metricsService.httpRequestsTotal.inc).mockImplementation(() => {
+      throw new Error('libelles incoherents');
+    });
+
+    try {
+      await expect(intercepter()).resolves.toEqual({ data: 'ok' });
+      expect(journal).toHaveBeenCalledWith(
+        expect.stringContaining('libelles incoherents'),
+      );
+    } finally {
+      journal.mockRestore();
+    }
+  });
 
   it('devrait incrementer le compteur http_requests_total apres une requete reussie', async () => {
     await intercepter();

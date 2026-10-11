@@ -9,6 +9,7 @@ import {
 import type { Request, Response } from 'express';
 import type { Observable } from 'rxjs';
 import { tronquer } from '../../domain/texte/tronquer';
+import { aLaFermeture } from '../http/a-la-fermeture';
 import { lireEnTete, resolveClientIpOrUnknown } from './client-ip.util';
 import type { ISecurityEventsStore } from './ISecurityEventsStore';
 import { SECURITY_EVENTS_STORE } from './ISecurityEventsStore';
@@ -106,7 +107,7 @@ export class SuspiciousRequestInterceptor implements NestInterceptor {
       }
     };
 
-    res.once('close', () => evaluateAndLog(!res.writableFinished));
+    aLaFermeture(context, evaluateAndLog);
 
     return next.handle();
   }
