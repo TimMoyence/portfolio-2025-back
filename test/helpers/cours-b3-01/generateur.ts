@@ -5,6 +5,7 @@ import {
   type Rng,
   type Tirage,
 } from '../../../src/modules/formations/domain/cours/Aleatoire';
+import { somme } from '../../../src/common/domain/nombres/statistiques';
 import { arrondirMoitieLoinDeZero } from 'portfolio-2025-partage/formule';
 import {
   dateExcel,
@@ -155,7 +156,7 @@ function choixPondere<T>(
   { rng }: Hasard,
   options: readonly (readonly [T, number])[],
 ): T {
-  const total = options.reduce((somme, [, poids]) => somme + poids, 0);
+  const total = somme(options.map(([, poids]) => poids));
   let seuil = rng() * total;
   for (const [valeur, poids] of options) {
     seuil -= poids;

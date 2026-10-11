@@ -1,6 +1,11 @@
-import type { CallHandler, ExecutionContext } from '@nestjs/common';
+import type { CallHandler } from '@nestjs/common';
 import { of, throwError } from 'rxjs';
 import { firstValueFrom, lastValueFrom } from 'rxjs';
+import {
+  createFakeHttpResponse,
+  createHttpExecutionContext,
+  createRpcExecutionContext,
+} from '../../../../test/factories/execution-context.factory';
 import { InMemorySecurityEventsStore } from './in-memory-security-events-store';
 import type { SecurityConfig } from './security.config';
 import { SuspiciousRequestInterceptor } from './suspicious-request.interceptor';
@@ -32,26 +37,6 @@ interface FakeRequest {
   destroyed?: boolean;
 }
 
-interface FakeResponse {
-  statusCode: number;
-  writableEnded: boolean;
-}
-
-function buildContext(
-  req: FakeRequest,
-  res: FakeResponse,
-  type: 'http' | 'rpc' = 'http',
-): ExecutionContext {
-  return {
-    getType: () => type,
-    switchToHttp: () => ({
-      getRequest: () => req,
-      getResponse: () => res,
-      getNext: () => ({}),
-    }),
-  } as unknown as ExecutionContext;
-}
-
 function buildConfig(overrides: Partial<SecurityConfig> = {}): SecurityConfig {
   return {
     suspiciousScoreThreshold: 25,
@@ -70,14 +55,20 @@ describe('SuspiciousRequestInterceptor', () => {
     interceptor = new SuspiciousRequestInterceptor(buildConfig(), store);
   });
 
-  function intercept(
+  async function intercept(
     req: FakeRequest,
     statusCode: number,
     handler: CallHandler = { handle: () => of({}) },
     target: SuspiciousRequestInterceptor = interceptor,
   ): Promise<unknown> {
-    const res: FakeResponse = { statusCode, writableEnded: true };
-    return firstValueFrom(target.intercept(buildContext(req, res), handler));
+    const res = createFakeHttpResponse({ statusCode });
+    try {
+      return await firstValueFrom(
+        target.intercept(createHttpExecutionContext(req, res), handler),
+      );
+    } finally {
+      res.emit('close');
+    }
   }
 
   function topIPs() {
@@ -113,8 +104,9 @@ describe('SuspiciousRequestInterceptor', () => {
 
   it('ignore les contextes non-HTTP', async () => {
     const handler: CallHandler = { handle: () => of('rpc-result') };
-    const ctx = buildContext({} as FakeRequest, {} as FakeResponse, 'rpc');
-    const result = await firstValueFrom(interceptor.intercept(ctx, handler));
+    const result = await firstValueFrom(
+      interceptor.intercept(createRpcExecutionContext(), handler),
+    );
     expect(result).toBe('rpc-result');
     expect(await topIPs()).toHaveLength(0);
   });
@@ -174,19 +166,50 @@ describe('SuspiciousRequestInterceptor', () => {
       },
       ip: '198.51.100.7',
     };
-    const res: FakeResponse = { statusCode: 401, writableEnded: true };
     const handler: CallHandler = {
       handle: () => throwError(() => new Error('unauthorized')),
     };
 
-    await lastValueFrom(
-      interceptor.intercept(buildContext(req, res), handler),
-    ).catch(() => undefined);
+    await expect(intercept(req, 401, handler)).rejects.toThrow('unauthorized');
 
     const top = await topIPs();
     expect(top).toHaveLength(1);
     expect(top[0].ip).toBe('198.51.100.7');
-    expect(top[0].lastReasons).toContain('ua:python-requests');
+    expect(top[0].lastReasons).toEqual(
+      expect.arrayContaining(['ua:python-requests', 'sensitive:write-4xx']),
+    );
+  });
+
+  it('marque abandonnee une reponse fermee avant d etre terminee', async () => {
+    const res = createFakeHttpResponse({ writableFinished: false });
+
+    await lastValueFrom(
+      interceptor.intercept(
+        createHttpExecutionContext(postHeadless({ ip: '203.0.113.12' }), res),
+        { handle: () => of({}) },
+      ),
+    );
+    res.emit('close');
+
+    const top = await topIPs();
+    expect(top[0].lastReasons).toContain('http:aborted');
+  });
+
+  it('note une reponse deja fermee avant l intercepteur, comme abandonnee', async () => {
+    const res = createFakeHttpResponse({
+      destroyed: true,
+      writableFinished: false,
+    });
+
+    await lastValueFrom(
+      interceptor.intercept(
+        createHttpExecutionContext(postHeadless({ ip: '203.0.113.13' }), res),
+        { handle: () => of({}) },
+      ),
+    );
+
+    const top = await topIPs();
+    expect(top[0].lastReasons).toContain('http:aborted');
   });
 
   it.each([LOOPBACK_IPV4, mappedIpv6(LOOPBACK_IPV4), '::1'])(

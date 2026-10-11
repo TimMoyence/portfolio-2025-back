@@ -42,10 +42,20 @@ const sourceSchema = z
   })
   .strict();
 
+export const ArticleId = z
+  .string()
+  .regex(/^morning-brief-\d{4}-\d{2}-\d{2}-(fr|en)$/);
+
+export const ArticleSlug = z
+  .string()
+  .regex(/^morning-brief-\d{4}-\d{2}-\d{2}$/);
+
+export const DeliveryId = z.string().regex(/^mb-\d{4}-\d{2}-\d{2}-(fr|en)$/);
+
 const articleSchema = z
   .object({
-    article_id: z.string().regex(/^morning-brief-\d{4}-\d{2}-\d{2}-(fr|en)$/),
-    slug: z.string().regex(/^morning-brief-\d{4}-\d{2}-\d{2}$/),
+    article_id: ArticleId,
+    slug: ArticleSlug,
     locale: z.enum(['fr', 'en']),
     status: z.literal('published'),
     title: z.string().min(1).max(180),
@@ -93,7 +103,7 @@ const articleSchema = z
 export const ArticleContract = z
   .object({
     schema_version: z.literal('1.0'),
-    delivery_id: z.string().regex(/^mb-\d{4}-\d{2}-\d{2}-(fr|en)$/),
+    delivery_id: DeliveryId,
     producer: z
       .object({
         name: z.literal('morning-brief'),

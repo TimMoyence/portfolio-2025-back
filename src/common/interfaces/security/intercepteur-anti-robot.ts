@@ -1,9 +1,11 @@
 import {
   BadRequestException,
-  type CanActivate,
+  type CallHandler,
   type ExecutionContext,
   Injectable,
+  type NestInterceptor,
 } from '@nestjs/common';
+import type { Observable } from 'rxjs';
 import { estObjet } from '../../domain/est-objet';
 
 const DUREE_MIN_DE_SAISIE_MS = 1_200;
@@ -20,16 +22,16 @@ function saisieTropRapide(debut: unknown, maintenant: number): boolean {
 }
 
 @Injectable()
-export class GardeAntiRobot implements CanActivate {
-  canActivate(context: ExecutionContext): boolean {
+export class IntercepteurAntiRobot implements NestInterceptor {
+  intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
     const { body } = context.switchToHttp().getRequest<{ body?: unknown }>();
-    if (!estObjet(body)) return true;
     if (
-      piegeRempli(body.website) ||
-      saisieTropRapide(body.formStartedAt, Date.now())
+      estObjet(body) &&
+      (piegeRempli(body.website) ||
+        saisieTropRapide(body.formStartedAt, Date.now()))
     ) {
       throw new BadRequestException('Invalid request');
     }
-    return true;
+    return next.handle();
   }
 }

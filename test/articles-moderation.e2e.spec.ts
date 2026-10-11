@@ -1,13 +1,16 @@
 import { Test } from '@nestjs/testing';
-import type { NextFunction, Request, Response } from 'express';
 import request from 'supertest';
 import { ArticleModerationService } from '../src/modules/articles/application/article-moderation.service';
 import { ArticleModerationController } from '../src/modules/articles/interfaces/article-moderation.controller';
 import { PREFIXE_API_PAR_DEFAUT } from '../src/config/prefixe-api';
+import { ResourceNotFoundError } from '../src/common/domain/errors/ResourceNotFoundError';
+import { AllExceptionsFilter } from '../src/common/interfaces/filters/all-exceptions.filter';
+import { DomainExceptionFilter } from '../src/common/interfaces/filters/DomainExceptionFilter';
 import {
   applicationDeLaSuite,
   httpServerOf,
   ouvrirApplication,
+  preparerChaqueRequete,
 } from './helpers/nest-test-app';
 
 const ARTICLE_ID = 'morning-brief-2026-09-23-fr';
@@ -28,13 +31,16 @@ describe('Modération des articles (admin)', () => {
     }).compile();
 
     return ouvrirApplication(moduleRef, (application) => {
-      application.use((req: Request, _res: Response, next: NextFunction) => {
+      preparerChaqueRequete(application, (req) => {
         const role = req.header('x-test-role');
         if (role) {
           (req as unknown as { user: unknown }).user = { roles: [role] };
         }
-        next();
       });
+      application.useGlobalFilters(
+        new AllExceptionsFilter(),
+        new DomainExceptionFilter(),
+      );
       application.setGlobalPrefix(PREFIXE_API_PAR_DEFAUT);
     });
   });
@@ -77,12 +83,22 @@ describe('Modération des articles (admin)', () => {
     expect(moderation[method]).toHaveBeenCalledWith(ARTICLE_ID);
   });
 
-  it('répond 404 sans appeler le service pour un identifiant hors contrat', async () => {
-    await request(serveur())
-      .post('/api/v1/portfolio25/articles/admin/..%2Fetc/withdraw')
-      .set('x-test-role', 'admin')
-      .expect(404);
+  it.each([
+    ['..%2Fetc', '../etc'],
+    [`${ARTICLE_ID}%00`, `${ARTICLE_ID}\u0000`],
+  ])(
+    'laisse le service seul juge de l identifiant %s',
+    async (segment, identifiant) => {
+      moderation.withdraw.mockRejectedValueOnce(
+        new ResourceNotFoundError('Article not found'),
+      );
 
-    expect(moderation.withdraw).not.toHaveBeenCalled();
-  });
+      await request(serveur())
+        .post(`/api/v1/portfolio25/articles/admin/${segment}/withdraw`)
+        .set('x-test-role', 'admin')
+        .expect(404);
+
+      expect(moderation.withdraw).toHaveBeenCalledWith(identifiant);
+    },
+  );
 });

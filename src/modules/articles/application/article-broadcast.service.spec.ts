@@ -302,6 +302,16 @@ describe('ArticleModerationService', () => {
     ).rejects.toBeInstanceOf(ResourceNotFoundError);
   });
 
+  it('répond 404 sans interroger la base pour un identifiant hors contrat', async () => {
+    const { store, moderation } = setup();
+    const lecture = jest.spyOn(store, 'findModerated');
+
+    await expect(
+      moderation.withdraw(`${articleId}\u0000`, NOW),
+    ).rejects.toBeInstanceOf(ResourceNotFoundError);
+    expect(lecture).not.toHaveBeenCalled();
+  });
+
   it('liste les derniers articles avec l état de leur diffusion', async () => {
     const { moderation } = setup();
 

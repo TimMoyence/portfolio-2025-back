@@ -6,6 +6,7 @@ import { ArticlesService } from '../src/modules/articles/application/articles.se
 import { PREFIXE_API_PAR_DEFAUT } from '../src/config/prefixe-api';
 import { ArticleHmacGuard } from '../src/modules/articles/interfaces/article-hmac.guard';
 import { ArticlesController } from '../src/modules/articles/interfaces/articles.controller';
+import { createMockArticlesService } from './factories/article.factory';
 import {
   ecouterEnBoucleLocale,
   fermerApplication,
@@ -16,11 +17,8 @@ describe('Articles HTTP aliases', () => {
   let app: INestApplication;
 
   beforeAll(async () => {
-    const articles = {
-      listPublished: jest
-        .fn()
-        .mockResolvedValue({ items: [], nextCursor: null }),
-    };
+    const articles = createMockArticlesService();
+    articles.listPublished.mockResolvedValue({ items: [], nextCursor: null });
     const moduleRef = await Test.createTestingModule({
       controllers: [ArticlesController],
       providers: [

@@ -7,8 +7,9 @@ import {
   NestInterceptor,
 } from '@nestjs/common';
 import type { Request, Response } from 'express';
-import { Observable, tap } from 'rxjs';
+import type { Observable } from 'rxjs';
 import { tronquer } from '../../domain/texte/tronquer';
+import { aLaFermeture } from '../http/a-la-fermeture';
 import { lireEnTete, resolveClientIpOrUnknown } from './client-ip.util';
 import type { ISecurityEventsStore } from './ISecurityEventsStore';
 import { SECURITY_EVENTS_STORE } from './ISecurityEventsStore';
@@ -106,17 +107,9 @@ export class SuspiciousRequestInterceptor implements NestInterceptor {
       }
     };
 
-    return next.handle().pipe(
-      tap({
-        next: () => evaluateAndLog(false),
-        error: () => evaluateAndLog(false),
-        complete: () => {
-          if (req.destroyed || !res.writableEnded) {
-            evaluateAndLog(true);
-          }
-        },
-      }),
-    );
+    aLaFermeture(context, evaluateAndLog);
+
+    return next.handle();
   }
 
   private resolveIp(req: Request): string {

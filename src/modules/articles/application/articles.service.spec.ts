@@ -2,58 +2,32 @@ import { InvalidInputError } from '../../../common/domain/errors/InvalidInputErr
 import { ResourceConflictError } from '../../../common/domain/errors/ResourceConflictError';
 import { ResourceNotFoundError } from '../../../common/domain/errors/ResourceNotFoundError';
 import {
-  type ArticleDeliveryRecord,
-  type ArticleRecord,
-  type ArticlesRepository,
-} from './articles.repository';
+  buildArticleDeliveryRecord,
+  buildArticleRecord,
+  createMockArticlesRepository,
+} from '../../../../test/factories/article.factory';
+import type { ArticleRecord } from './articles.repository';
 import { ArticlesService } from './articles.service';
 import { validArticleIngestEnvelope as payload } from '../testing/article-ingest.fixture';
 
 const articleId = payload.article.article_id;
-const articleRecord = (): ArticleRecord => ({
-  id: 'record-1',
-  articleId,
-  slug: payload.article.slug,
-  locale: 'fr',
-  status: 'published',
-  title: payload.article.title,
-  excerpt: payload.article.excerpt,
-  contentMarkdown: payload.article.content_markdown,
-  readingTimeMinutes: null,
-  tags: [],
-  sections: payload.article.sections,
-  sources: payload.article.sources,
-  provenance: payload.article.provenance,
-  seo: payload.article.seo,
-  publishedAt: new Date(payload.article.published_at),
-  updatedAt: new Date(payload.article.updated_at),
-  contentSha256: payload.article.provenance.content_sha256,
-});
-
-const deliveryRecord = (): ArticleDeliveryRecord => ({
-  deliveryId: payload.delivery_id,
-  idempotencyKey: 'idempotency-1',
-  nonce: 'nonce-1',
-  articleRecordId: 'record-1',
-  status: 'accepted',
-  attempts: 1,
-  processedAt: new Date(payload.article.published_at),
-  receivedAt: new Date(payload.article.published_at),
-});
+const articleRecord = (): ArticleRecord =>
+  buildArticleRecord({
+    articleId,
+    slug: payload.article.slug,
+    contentSha256: payload.article.provenance.content_sha256,
+  });
+const deliveryRecord = () =>
+  buildArticleDeliveryRecord({ deliveryId: payload.delivery_id });
 
 describe('ArticlesService', () => {
   it('persiste une livraison valide puis rejoue le même input sans écriture', async () => {
-    const saveArticleAndDelivery = jest.fn().mockResolvedValue(undefined);
-    const repository = {
-      findDelivery: jest.fn(),
-      findDeliveryByDeliveryOrIdempotency: jest
-        .fn()
-        .mockResolvedValueOnce(null)
-        .mockResolvedValueOnce(deliveryRecord()),
-      findDeliveryByNonce: jest.fn().mockResolvedValue(null),
-      findArticleByRecordId: jest.fn().mockResolvedValue(articleRecord()),
-      saveArticleAndDelivery,
-    } as unknown as ArticlesRepository;
+    const repository = createMockArticlesRepository();
+    repository.findDeliveryByDeliveryOrIdempotency
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce(deliveryRecord());
+    repository.findDeliveryByNonce.mockResolvedValue(null);
+    repository.findArticleByRecordId.mockResolvedValue(articleRecord());
     const service = new ArticlesService(repository);
 
     const first = await service.ingest(payload, 'idempotency-1', 'nonce-1');
@@ -61,17 +35,15 @@ describe('ArticlesService', () => {
 
     expect(first).toMatchObject({ article_id: articleId, duplicate: false });
     expect(duplicate).toMatchObject({ article_id: articleId, duplicate: true });
-    expect(saveArticleAndDelivery).toHaveBeenCalledTimes(1);
+    expect(repository.saveArticleAndDelivery.mock.calls).toHaveLength(1);
   });
 
   it('refuse de réutiliser une clé d idempotence pour un autre article', async () => {
-    const repository = {
-      findDelivery: jest.fn(),
-      findDeliveryByDeliveryOrIdempotency: jest
-        .fn()
-        .mockResolvedValue(deliveryRecord()),
-      findArticleByRecordId: jest.fn().mockResolvedValue(articleRecord()),
-    } as unknown as ArticlesRepository;
+    const repository = createMockArticlesRepository();
+    repository.findDeliveryByDeliveryOrIdempotency.mockResolvedValue(
+      deliveryRecord(),
+    );
+    repository.findArticleByRecordId.mockResolvedValue(articleRecord());
     const service = new ArticlesService(repository);
     const otherPayload = {
       ...payload,
@@ -87,7 +59,7 @@ describe('ArticlesService', () => {
   });
 
   it('refuse une livraison hors contrat ou sans clé d idempotence par une erreur de domaine', async () => {
-    const service = new ArticlesService({} as ArticlesRepository);
+    const service = new ArticlesService(createMockArticlesRepository());
 
     await expect(
       service.ingest({ article: {} }, 'idempotency-1', 'nonce-1'),
@@ -98,37 +70,57 @@ describe('ArticlesService', () => {
   });
 
   it('signale une livraison ou un article introuvable par une erreur de domaine', async () => {
-    const service = new ArticlesService({
-      findDelivery: jest.fn().mockResolvedValue(null),
-      findPublishedBySlug: jest.fn().mockResolvedValue(null),
-    } as unknown as ArticlesRepository);
+    const repository = createMockArticlesRepository();
+    repository.findDelivery.mockResolvedValue(null);
+    repository.findPublishedBySlug.mockResolvedValue(null);
+    const service = new ArticlesService(repository);
 
-    await expect(service.getDelivery('inconnue')).rejects.toBeInstanceOf(
-      ResourceNotFoundError,
-    );
     await expect(
-      service.getPublishedBySlug('inconnu', 'fr'),
+      service.getDelivery(payload.delivery_id),
     ).rejects.toBeInstanceOf(ResourceNotFoundError);
+    await expect(
+      service.getPublishedBySlug(payload.article.slug, 'fr'),
+    ).rejects.toBeInstanceOf(ResourceNotFoundError);
+    expect(repository.findDelivery.mock.calls).toEqual([[payload.delivery_id]]);
+    expect(repository.findPublishedBySlug.mock.calls).toHaveLength(1);
   });
+
+  it.each([
+    [
+      'un slug',
+      (service: ArticlesService) =>
+        service.getPublishedBySlug(`${payload.article.slug}\u0000`, 'fr'),
+      'findPublishedBySlug',
+    ],
+    [
+      'une livraison',
+      (service: ArticlesService) =>
+        service.getDelivery(`${payload.delivery_id}\u0000`),
+      'findDelivery',
+    ],
+  ] as const)(
+    'répond 404 sans interroger la base pour %s hors contrat',
+    async (_nom, lire, lecture) => {
+      const repository = createMockArticlesRepository();
+
+      await expect(
+        lire(new ArticlesService(repository)),
+      ).rejects.toBeInstanceOf(ResourceNotFoundError);
+      expect(repository[lecture].mock.calls).toHaveLength(0);
+    },
+  );
 
   it('programme la diffusion abonnés dans la même écriture que l article', async () => {
     const previous = process.env.ARTICLE_BROADCAST_DELAY_MINUTES;
     process.env.ARTICLE_BROADCAST_DELAY_MINUTES = '45';
-    const saveArticleAndDelivery = jest.fn().mockResolvedValue(undefined);
-    const repository = {
-      findDeliveryByDeliveryOrIdempotency: jest.fn().mockResolvedValue(null),
-      findDeliveryByNonce: jest.fn().mockResolvedValue(null),
-      saveArticleAndDelivery,
-    } as unknown as ArticlesRepository;
+    const repository = createMockArticlesRepository();
+    repository.findDeliveryByDeliveryOrIdempotency.mockResolvedValue(null);
+    repository.findDeliveryByNonce.mockResolvedValue(null);
     const service = new ArticlesService(repository);
 
     try {
       const result = await service.ingest(payload, 'idempotency-1', 'nonce-1');
-      const [, , broadcast] = saveArticleAndDelivery.mock.calls[0] as [
-        unknown,
-        unknown,
-        { sendAfter: Date },
-      ];
+      const [, , broadcast] = repository.saveArticleAndDelivery.mock.calls[0];
 
       expect(broadcast.sendAfter.getTime()).toBe(
         Date.parse(result.received_at) + 45 * 60_000,
@@ -146,9 +138,8 @@ describe('ArticlesService.feed', () => {
     locale: 'fr' | 'en',
     records: ArticleRecord[],
   ): Promise<string> => {
-    const repository = {
-      listPublished: jest.fn().mockResolvedValue(records),
-    } as unknown as ArticlesRepository;
+    const repository = createMockArticlesRepository();
+    repository.listPublished.mockResolvedValue(records);
     return new ArticlesService(repository).feed(locale);
   };
 

@@ -1,6 +1,8 @@
 import type { ArticleBroadcastRecord } from '../../src/modules/articles/application/article-broadcast.repository';
 import type {
+  ArticleDeliveryRecord,
   ArticleRecord,
+  ArticlesRepository,
   ArticleWrite,
 } from '../../src/modules/articles/application/articles.repository';
 
@@ -58,4 +60,32 @@ export function buildArticleRecord(
   overrides: Partial<ArticleRecord> = {},
 ): ArticleRecord {
   return { id: 'record-1', ...buildArticleWrite(), ...overrides };
+}
+
+export function buildArticleDeliveryRecord(
+  overrides: Partial<ArticleDeliveryRecord> = {},
+): ArticleDeliveryRecord {
+  return {
+    deliveryId: 'delivery-1',
+    idempotencyKey: 'idempotency-1',
+    nonce: 'nonce-1',
+    articleRecordId: 'record-1',
+    status: 'accepted',
+    attempts: 1,
+    processedAt: new Date('2026-09-23T04:15:00.000Z'),
+    receivedAt: new Date('2026-09-23T04:15:00.000Z'),
+    ...overrides,
+  };
+}
+
+export function createMockArticlesRepository(): jest.Mocked<ArticlesRepository> {
+  return {
+    findDelivery: jest.fn(),
+    findDeliveryByDeliveryOrIdempotency: jest.fn(),
+    findDeliveryByNonce: jest.fn(),
+    findArticleByRecordId: jest.fn(),
+    saveArticleAndDelivery: jest.fn(),
+    listPublished: jest.fn(),
+    findPublishedBySlug: jest.fn(),
+  };
 }
