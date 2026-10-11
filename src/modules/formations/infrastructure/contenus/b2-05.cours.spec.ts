@@ -21,6 +21,7 @@ import {
   texteDeLEcran as texteDe,
 } from '../../../../../test/helpers/feuille-de-cours';
 import { avecVirgule } from '../../../../common/domain/nombres/ecriture-francaise';
+import { somme } from '../../../../common/domain/nombres/statistiques';
 import {
   auCentime,
   auMillionieme,
@@ -246,9 +247,8 @@ describe('B2-05 — recalcul des corrigés depuis les seuls paramètres', () => 
   });
 
   it('écarte de deux centimes le coût du crédit et la somme des intérêts, par l’arrondi de l’annuité', () => {
-    const sommeDesInterets = LIGNES_DE_L_EMPRUNT.reduce(
-      (total, ligne) => total + ligne.interets,
-      0,
+    const sommeDesInterets = somme(
+      LIGNES_DE_L_EMPRUNT.map((ligne) => ligne.interets),
     );
 
     expect(

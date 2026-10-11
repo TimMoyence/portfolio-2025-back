@@ -20,6 +20,7 @@ import {
   texteDeLEcran as texteDe,
 } from '../../../../../test/helpers/feuille-de-cours';
 import { avecVirgule } from '../../../../common/domain/nombres/ecriture-francaise';
+import { somme } from '../../../../common/domain/nombres/statistiques';
 import { corrigerFeuille } from '../../domain/cours/CorrectionProduction';
 import { COURS_B2_04 } from './b2-04.cours';
 
@@ -53,10 +54,7 @@ function cumul(
   premier: number,
   dernier: number,
 ): number {
-  return rangsDe(premier, dernier).reduce(
-    (total, rang) => total + suite(rang),
-    0,
-  );
+  return somme(rangsDe(premier, dernier).map(suite));
 }
 
 function rangDuSeuil(suite: (rang: number) => number, seuil: number): number {
