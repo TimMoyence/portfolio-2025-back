@@ -1,7 +1,7 @@
-import { applyDecorators, Post, UseGuards } from '@nestjs/common';
+import { applyDecorators, Post, UseInterceptors } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import { Public } from '../auth/public.decorator';
-import { GardeAntiRobot } from './garde-anti-robot';
+import { IntercepteurAntiRobot } from './intercepteur-anti-robot';
 
 const UNE_HEURE_MS = 3600000;
 const UNE_MINUTE_MS = 60000;
@@ -14,7 +14,7 @@ export function LienPublic() {
 }
 
 export function ProtegeContreLesRobots() {
-  return UseGuards(GardeAntiRobot);
+  return UseInterceptors(IntercepteurAntiRobot);
 }
 
 export function FormulairePublic(soumissionsParHeure: number, chemin?: string) {

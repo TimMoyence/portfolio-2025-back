@@ -1,5 +1,6 @@
 import { BadRequestException } from '@nestjs/common';
-import { GUARDS_METADATA } from '@nestjs/common/constants';
+import { INTERCEPTORS_METADATA } from '@nestjs/common/constants';
+import { of } from 'rxjs';
 import { createHttpExecutionContext } from '../../../../../test/factories/execution-context.factory';
 import { methodeDe } from '../../../../../test/helpers/metadonnees-de-route';
 import { AuditsController } from '../../../../modules/audit-requests/interfaces/Audits.controller';
@@ -7,25 +8,28 @@ import { ContactsController } from '../../../../modules/contacts/interfaces/Cont
 import { FormationsStudentController } from '../../../../modules/formations/interfaces/FormationsStudent.controller';
 import { LeadMagnetsController } from '../../../../modules/lead-magnets/interfaces/LeadMagnets.controller';
 import { NewsletterController } from '../../../../modules/newsletter/interfaces/Newsletter.controller';
-import { GardeAntiRobot } from '../garde-anti-robot';
+import { IntercepteurAntiRobot } from '../intercepteur-anti-robot';
 
-const garde = new GardeAntiRobot();
+const intercepteur = new IntercepteurAntiRobot();
+const SUITE = of('suite');
 
-const soumettre = (body: unknown): boolean =>
-  garde.canActivate(createHttpExecutionContext({ body }));
+const soumettre = (body: unknown) =>
+  intercepteur.intercept(createHttpExecutionContext({ body }), {
+    handle: () => SUITE,
+  });
 
 const REFUS = new BadRequestException('Invalid request');
 
-describe('GardeAntiRobot', () => {
+describe('IntercepteurAntiRobot', () => {
   it('laisse passer une saisie humaine après le délai minimal', () => {
     expect(soumettre({ website: '', formStartedAt: Date.now() - 2_000 })).toBe(
-      true,
+      SUITE,
     );
   });
 
   it('laisse passer les clients qui ignorent encore les champs anti-robot', () => {
-    expect(soumettre({})).toBe(true);
-    expect(soumettre(undefined)).toBe(true);
+    expect(soumettre({})).toBe(SUITE);
+    expect(soumettre(undefined)).toBe(SUITE);
   });
 
   it('refuse un piège rempli, avec une erreur générique', () => {
@@ -55,10 +59,10 @@ const FORMULAIRES_PUBLICS = [
 
 describe('Formulaires publics', () => {
   it.each(FORMULAIRES_PUBLICS)(
-    'la route %# passe par la garde anti-robot',
+    'la route %# passe par l intercepteur anti-robot',
     (handler) => {
-      expect(Reflect.getMetadata(GUARDS_METADATA, handler)).toContain(
-        GardeAntiRobot,
+      expect(Reflect.getMetadata(INTERCEPTORS_METADATA, handler)).toContain(
+        IntercepteurAntiRobot,
       );
     },
   );
