@@ -13,6 +13,7 @@ import {
   corrigeTableau,
 } from './CorrigeStocke';
 import {
+  dossierDeRappel,
   estUneValeurDeVerite,
   parcoursEnigmes,
   planClassement,
@@ -378,6 +379,7 @@ const proprietesExemple = z
       .object({
         id: identifiantDeQuestion,
         enonce: texte,
+        rappel: dossierDeRappel.optional(),
         etapes: auMoinsUn(
           z
             .object({

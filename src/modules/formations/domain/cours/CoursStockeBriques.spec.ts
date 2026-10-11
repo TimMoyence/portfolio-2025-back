@@ -413,6 +413,20 @@ describe('stockage multi-briques (B1)', () => {
         p.probleme.rappel = [{ libelle: 'Marge brute' }];
       },
     ],
+    [
+      'fp-worked',
+      'un rappel des formules vide',
+      (p) => {
+        p.exemple.rappel = [];
+      },
+    ],
+    [
+      'fp-worked',
+      'une ligne du rappel des formules sans valeur',
+      (p) => {
+        p.exemple.rappel = [{ libelle: 'SUPPRESPACE(texte)' }];
+      },
+    ],
   ])('refuse un écran %s avec %s', (brique, _cas, modifier) => {
     expect(() => lireEcran(avecProprietes(brique, modifier))).toThrow(
       ContenuDeCoursInvalideError,
@@ -824,6 +838,24 @@ describe('stockage multi-briques (B1)', () => {
         pilote: true,
         corrigeDe: 'B2-01-A2-06-POINTS',
       });
+    });
+
+    it('R-04 · porte le rappel des formules d un exemple guidé, au-dessus de ses étapes', () => {
+      const rappel = [
+        {
+          libelle: 'SUPPRESPACE(texte)',
+          valeur: 'retire les espaces en trop',
+        },
+      ];
+      const ecran = lireEcran(
+        avecProprietes('fp-worked', (proprietes) => {
+          (proprietes.exemple as Record<string, unknown>).rappel = rappel;
+        }),
+      );
+
+      expect(
+        ecran.brique === 'fp-worked' && ecran.proprietes.exemple.rappel,
+      ).toEqual(rappel);
     });
 
     it('F02 · porte la consigne du rappel d ouverture', () => {
