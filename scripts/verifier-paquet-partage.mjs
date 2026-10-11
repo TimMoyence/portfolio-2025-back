@@ -26,10 +26,7 @@ export function comparerLesSources(back, front) {
     return { bloquant: true, message: `le back ne depend pas de ${PAQUET}` };
   }
   if (deFront === undefined) {
-    return {
-      bloquant: false,
-      message: `le front ne depend pas encore de ${PAQUET}`,
-    };
+    return { bloquant: true, message: `le front ne depend pas de ${PAQUET}` };
   }
   if (deBack !== deFront) {
     return {

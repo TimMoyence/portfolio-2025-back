@@ -21,7 +21,10 @@ void test('deux archives differentes bloquent', () => {
   assert.equal(comparerLesSources(avec(ARCHIVE), avec(autre)).bloquant, true);
 });
 
-void test('un back sans le paquet bloque, un front pas encore branche ne bloque pas', () => {
+void test('un back sans le paquet bloque', () => {
   assert.equal(comparerLesSources({}, avec(ARCHIVE)).bloquant, true);
-  assert.equal(comparerLesSources(avec(ARCHIVE), {}).bloquant, false);
+});
+
+void test('un front sans le paquet bloque', () => {
+  assert.equal(comparerLesSources(avec(ARCHIVE), {}).bloquant, true);
 });
