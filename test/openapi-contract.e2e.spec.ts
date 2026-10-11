@@ -202,6 +202,15 @@ describe('OpenAPI core contract', () => {
     expect(pathsContaining('users')).toMatchSnapshot();
   });
 
+  it('n annonce au PATCH utilisateur aucune valeur par défaut de la création', () => {
+    const { properties } = document.components?.schemas?.UpdateUserDto as {
+      properties: Record<string, object>;
+    };
+
+    expect(properties.isActive).not.toHaveProperty('default');
+    expect(properties.roles).not.toHaveProperty('default');
+  });
+
   it('keeps Auth path contracts stable', () => {
     expect(pathsContaining('auth')).toMatchSnapshot();
   });

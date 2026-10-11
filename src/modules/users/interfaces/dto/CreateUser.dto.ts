@@ -36,14 +36,13 @@ export class CreateUserDto implements CreateUserCommand {
   @TelephoneOptionnel('+11234567890')
   phone?: string | null;
 
-  @ApiPropertyOptional({ example: true, default: true })
+  @ApiPropertyOptional({ example: true })
   @IsOptional()
   @IsBoolean()
   isActive?: boolean;
 
   @ApiPropertyOptional({
     example: ['teacher'],
-    default: [],
     type: [String],
     description: 'Liste des roles. Reserve aux administrateurs.',
   })
