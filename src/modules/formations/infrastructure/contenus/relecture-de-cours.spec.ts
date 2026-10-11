@@ -47,8 +47,8 @@ describe('Gardes de relecture, éprouvées par mutation du B3-01', () => {
     ],
     [
       'b3-01-a2-delai-strasbourg',
-      'Le taux de marque vaut 32,0 %.',
-      '32 de b3-01-a2-taux-marge',
+      'Le contrat donnerait 99 retards.',
+      '99 de b3-01-a2-retards',
     ],
     [
       'b3-01-a2-ca-ouest',
@@ -79,9 +79,9 @@ describe('Gardes de relecture, éprouvées par mutation du B3-01', () => {
       '(objectif-annuel-pour-cumul) de b3-01-a3-atteinte-rennes',
     ],
     [
-      'b3-01-a2-delai-strasbourg',
-      'Divisée par le coût d’achat, la marge donne 47,0 %.',
-      '(marque-confondue-avec-marge) de b3-01-a2-taux-marge',
+      'b3-01-a3-evolution',
+      'Divisée par le coût d’achat, la marge de Marseille donne 36,9 %.',
+      '(marque-confondue-avec-marge) de b3-01-a3-marge-marseille',
     ],
     [
       'b3-01-a3-evolution',

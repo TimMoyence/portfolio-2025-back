@@ -69,6 +69,21 @@ function remplacer(
   });
 }
 
+function enMinutesDeTravail(
+  minutes: number,
+  ecrans: readonly EcranDeCoursBrut[],
+): EcranDeCoursBrut[] {
+  const total = ecrans.reduce((somme, ecran) => somme + ecran.dureeMinutes, 0);
+  return remplacer(
+    IDS_V3.lecon,
+    (lecon) => ({
+      ...lecon,
+      dureeMinutes: lecon.dureeMinutes + minutes - total,
+    }),
+    ecrans,
+  );
+}
+
 describe('verifierStructure — gabarit v3', () => {
   it('accepte un cours v3 conforme, sans dérogation', () => {
     expect(verifierStructure(buildCoursV3())).toEqual([]);
@@ -90,12 +105,9 @@ describe('verifierStructure — gabarit v3', () => {
     });
 
     it('refuse plus de cent quatre-vingts minutes de travail', () => {
-      const long = remplacer(IDS_V3.lecon, (lecon) => ({
-        ...lecon,
-        dureeMinutes: 160,
-      }));
-
-      expect(violationsDuGabarit(long)).toContainEqual(BUDGET_DEPASSE);
+      expect(
+        violationsDuGabarit(enMinutesDeTravail(181, buildEcransV3Conformes())),
+      ).toContainEqual(BUDGET_DEPASSE);
     });
   });
 
@@ -265,15 +277,22 @@ describe('verifierStructure — gabarit b3', () => {
     );
   });
 
-  it('refuse plus de cent quatre-vingts minutes de travail', () => {
-    const long = remplacerEnB3(IDS_V3.lecon, (lecon) => ({
-      ...lecon,
-      dureeMinutes: 170,
-    }));
+  it('accepte cent quatre-vingt-dix minutes de travail : deux pauses de dix minutes dans une séance de 3 h 30', () => {
+    expect(
+      violationsDuGabarit(
+        enMinutesDeTravail(190, buildEcransSansMiniSituation()),
+        buildCoursB3,
+      ),
+    ).toEqual([]);
+  });
 
-    expect(violationsDuGabarit(long, buildCoursB3)).toContainEqual(
-      BUDGET_DEPASSE,
-    );
+  it('refuse plus de cent quatre-vingt-dix minutes de travail', () => {
+    expect(
+      violationsDuGabarit(
+        enMinutesDeTravail(191, buildEcransSansMiniSituation()),
+        buildCoursB3,
+      ),
+    ).toContainEqual(BUDGET_DEPASSE);
   });
 
   it('refuse une trace écrite sans temps de réflexion depuis le dernier exercice', () => {

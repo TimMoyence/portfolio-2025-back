@@ -199,17 +199,17 @@ export const ACTE_2: moteur.Acte = [
       titre: 'Exercice 5 — Relier et additionner',
       diffusion: 'seance',
       brique: 'questionnaire',
-      dureeMinutes: 9,
+      dureeMinutes: 10,
       concepts: ['recherche-dans-une-table', 'agregation-conditionnelle'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(1, 8),
+        moteur.tempsDeLExercice(1, 9),
         'Réflexion : faire nommer la famille de chaque question avant d’écrire une formule.',
-        'Pièges : fonction DATE écrite dans les guillemets (">=DATE(2026;1;1)") ; 15 pour 15 % ; plage de recherche non figée ; période oubliée.',
+        'Pièges : fonction DATE écrite dans les guillemets (">=DATE(2026;1;1)") ; plage de recherche non figée ; période oubliée.',
       ),
       proprietes: {
         intitule: 'Exercice 5 — Relier et additionner',
         consigne:
-          'Essentiel, dans l’onglet Commandes du classeur de reprise : ajoutez la colonne region, cherchée dans Agences sur agence_id par INDEX et EQUIV, et la colonne categorie, cherchée dans Produits sur produit_id ; figez les plages des référentiels avant de recopier. Répondez ensuite par SOMME.SI.ENS et NB.SI.ENS. Défi : une colonne cout, la quantité multipliée par le coût unitaire du produit.',
+          'Essentiel, dans l’onglet Commandes du classeur de reprise : ajoutez la colonne region, cherchée dans Agences sur agence_id par INDEX et EQUIV, et la colonne categorie, cherchée dans Produits sur produit_id ; figez les plages des référentiels avant de recopier. Répondez ensuite par SOMME.SI.ENS. Défi : avec NB.SI.ENS, combien de lignes de Marseille (AG09) portent une remise supérieure à 15 %, toutes dates confondues ?',
         regime: 'focus',
         ordre: 'fixe',
         questions: [
@@ -219,13 +219,6 @@ export const ACTE_2: moteur.Acte = [
             'Quel est le CA HT de Rennes (AG06) en informatique, de janvier à septembre 2026 ?',
             '€',
             ['critere-mal-ecrit', 'periode-mal-delimitee'],
-          ),
-          questionChiffree(
-            'b3-01-a2-remises-marseille',
-            'agregation-conditionnelle',
-            'Combien de lignes de Marseille (AG09) portent une remise supérieure à 15 %, toutes dates confondues ?',
-            'lignes',
-            ['critere-mal-ecrit'],
           ),
           questionChiffree(
             'b3-01-a2-ca-ouest',
@@ -241,7 +234,7 @@ export const ACTE_2: moteur.Acte = [
       minutes: 2,
       notes: [
         'Corriger question par question, dans l’ordre où les explications se dévoilent ; s’attarder sur la moins réussie (score sous chaque correction).',
-        'Défi : =I2*INDEX(Produits!$E$2:$E$41;EQUIV(H2;Produits!$A$2:$A$41;0)) donne le coût de la ligne.',
+        'Défi : 66 lignes avec le critère ">0,15" ; ">15" n’en trouve aucune : la remise est un taux.',
         'Transition : « Passons au temps : un vote. »',
       ],
     },
@@ -249,10 +242,6 @@ export const ACTE_2: moteur.Acte = [
       [
         'b3-01-a2-ca-rennes-info',
         'SOMME.SI.ENS sur ca_ht, avec trois critères : agence_id égal à AG06, categorie égale à Informatique, date_commande ">="&DATE(2026;1;1). Résultat : 8 342 €.',
-      ],
-      [
-        'b3-01-a2-remises-marseille',
-        'Avec le critère ">0,15" sur la remise, NB.SI.ENS compte 66 lignes de Marseille. La remise est un taux : le critère ">15" ne trouve aucune ligne.',
       ],
       [
         'b3-01-a2-ca-ouest',
@@ -309,7 +298,7 @@ export const ACTE_2: moteur.Acte = [
         'Faire dire pourquoi la médiane résiste à une rupture de stock livrée deux mois plus tard.',
         'SERIE.JOUR.OUVRE renvoie un numéro de série : mettre la cellule au format Date. TEMPS repart de zéro au-delà de 23 h.',
         'Sur Mac, la formule matricielle se valide par Ctrl + Maj + Retour ou ⌘ + Maj + Retour.',
-        'Transition : « Délais et marge du réseau : exercice 6. »',
+        'Transition : « Délais de livraison du réseau : exercice 6. »',
       ),
     },
     'lesson',
@@ -353,7 +342,7 @@ export const ACTE_2: moteur.Acte = [
   moteur.corrigeSurPlace(
     {
       screenId: 'B3-01-A2-07-ATELIER-DELAIS-MARGE',
-      titre: 'Exercice 6 — Délais et marge',
+      titre: 'Exercice 6 — Délais de livraison',
       diffusion: 'seance',
       brique: 'questionnaire',
       dureeMinutes: 10,
@@ -361,12 +350,12 @@ export const ACTE_2: moteur.Acte = [
       notes: moteur.puces(
         moteur.tempsDeLExercice(1, 9),
         'Réflexion : faire dire en quelle unité le contrat compte les délais avant d’écrire la colonne.',
-        'Pièges : soustraire les dates ; oublier le − 1 ; résumer par la moyenne ; prendre toute la table au lieu de 2026 ; oublier l’agence, ou prendre MEDIANE sous un filtre, qui compte les lignes masquées ; faire la moyenne des taux de ligne ; diviser la marge par le coût d’achat.',
+        'Pièges : soustraire les dates ; oublier le − 1 ; résumer par la moyenne ; prendre toute la table au lieu de 2026 ; oublier l’agence, ou prendre MEDIANE sous un filtre, qui compte les lignes masquées.',
       ),
       proprietes: {
-        intitule: 'Exercice 6 — Délais et marge',
+        intitule: 'Exercice 6 — Délais de livraison',
         consigne:
-          'Essentiel, dans l’onglet Commandes du classeur de reprise : ajoutez les colonnes delai, =NB.JOURS.OUVRES(B2;C2)-1, date_promise, =SERIE.JOUR.OUVRE(B2;5), cout_unitaire, cherché dans Produits par INDEX et EQUIV, et marge, ca_ht moins quantite × cout_unitaire ; puis répondez. Défi : avec JOURSEM, la part des commandes passées un vendredi ; avec DATEDIF, l’ancienneté des clients en mois.',
+          'Essentiel, dans l’onglet Commandes du classeur de reprise : ajoutez les colonnes delai, =NB.JOURS.OUVRES(B2;C2)-1, et date_promise, =SERIE.JOUR.OUVRE(B2;5) ; puis répondez. Défi : le taux de marque du réseau de janvier à septembre 2026 : cout_unitaire cherché dans Produits par INDEX et EQUIV, marge = ca_ht − quantite × cout_unitaire, puis marge ÷ CA HT.',
         regime: 'focus',
         ordre: 'fixe',
         questions: [
@@ -390,17 +379,6 @@ export const ACTE_2: moteur.Acte = [
             'lignes',
             ['jours-calendaires-pour-ouvres', 'bornes-comptees-dans-le-delai'],
           ),
-          questionChiffree(
-            'b3-01-a2-taux-marge',
-            'indicateur-statistique',
-            'Quel est le taux de marque du réseau (marge ÷ CA HT), de janvier à septembre 2026 ?',
-            '%',
-            [
-              'moyenne-simple-des-taux',
-              'marque-confondue-avec-marge',
-              'periode-mal-delimitee',
-            ],
-          ),
         ],
       },
     },
@@ -409,7 +387,7 @@ export const ACTE_2: moteur.Acte = [
       notes: [
         'Corriger question par question ; sur la médiane, trier les délais de Strasbourg pour montrer les ruptures en bas de colonne.',
         'Retards : 2025 n’a aucun retard, et toute la table donne le même compte que 2026 : faire montrer le critère 2026.',
-        'Défi : JOURSEM(B2;2)=5 repère un vendredi ; dans Clients, DATEDIF(E2;DATE(2026;9;30);"M") donne l’ancienneté en mois au 30 septembre 2026.',
+        'Défi : 32,0 % ; la moyenne des taux de ligne donne 35,4 % ; marge ÷ coût donne 47,0 % : c’est le taux de marge.',
         'Transition : « Et si l’export d’octobre arrive ? Un vote. »',
       ],
     },
@@ -420,11 +398,7 @@ export const ACTE_2: moteur.Acte = [
       ],
       [
         'b3-01-a2-retards',
-        'Une ligne est en retard quand date_livraison dépasse SERIE.JOUR.OUVRE(date_commande;5), soit, pour une commande passée un jour ouvré comme toutes celles de la reprise, quand son delai dépasse 5 : 99 lignes commandées en 2026. Avec date_commande + 5, en jours calendaires, la promesse tombe trop tôt et 481 lignes paraissent en retard ; la médiane de Strasbourg de la première question monterait à 11 jours. Sans le − 1, la colonne delai compte aussi le jour de la commande : au critère ">5", 284 lignes, livrées le jour promis comprises, et une médiane de Strasbourg de 9 jours.',
-      ],
-      [
-        'b3-01-a2-taux-marge',
-        'Marge de la période ÷ CA HT de la période : un taux de marque de 32,0 % de janvier à septembre 2026. Sur toute la table, 2025 compris, le même rapport donne 32,3 %. Toutes années confondues, la médiane de Strasbourg de la première question tombe à 4 jours. La moyenne des taux de chaque ligne donne 35,4 % : une petite ligne très margée y pèse autant qu’une grosse commande. Divisée par le coût d’achat, la même marge donne 47,0 % : c’est le taux de marge, un autre indicateur.',
+        'Une ligne est en retard quand date_livraison dépasse SERIE.JOUR.OUVRE(date_commande;5), soit, pour une commande passée un jour ouvré comme toutes celles de la reprise, quand son delai dépasse 5 : 99 lignes commandées en 2026. Avec date_commande + 5, en jours calendaires, la promesse tombe trop tôt et 481 lignes paraissent en retard ; la médiane de Strasbourg de la première question monterait à 11 jours. Sans le − 1, la colonne delai compte aussi le jour de la commande : au critère ">5", 284 lignes, livrées le jour promis comprises, et une médiane de Strasbourg de 9 jours. Toutes années confondues, la médiane de Strasbourg de la première question tombe à 4 jours.',
       ],
     ],
   ),
@@ -581,7 +555,7 @@ export const ACTE_2: moteur.Acte = [
       proprietes: {
         intitule: 'Exercice 7 — Le TCD de la direction',
         consigne:
-          'Essentiel, à partir de T_Commandes. Premier TCD : agence_id en lignes, categorie en colonnes, ca_ht en valeurs affiché en % du total de la ligne, annee en filtre sur 2026. Second TCD : region en lignes, date_commande en colonnes groupée par trimestres et par années, ca_ht en valeurs. Un segment categorie relié aux deux. Défi : regroupez les remises en tranches de 5 points.',
+          'Essentiel, à partir de T_Commandes. Premier TCD : agence_id en lignes, categorie en colonnes, ca_ht en valeurs affiché en % du total de la ligne, annee en filtre sur 2026. Second TCD : date_commande en lignes, groupée par trimestres et par années, ca_ht en valeurs. Défi : un segment categorie relié aux deux TCD.',
         regime: 'focus',
         ordre: 'fixe',
         questions: [
@@ -614,9 +588,9 @@ export const ACTE_2: moteur.Acte = [
       minutes: 2,
       notes: [
         'Corriger les deux questions ; montrer le regroupement par années qui sépare les deux printemps.',
-        'Défi : clic droit sur remise › Grouper, de 0 à 0,30 par pas de 0,05.',
+        'Défi : clic dans un TCD › Insertion › Segment (sur Mac, Analyse du tableau croisé dynamique › Segment) › categorie ; puis, le segment sélectionné, onglet Segment › Connexions de rapport : cocher les deux TCD.',
         'Avant la pause, dire les règles des niveaux 3 et 4 : « Avant la fonction, je nomme la famille du problème » ; « Je travaille sur un tableau structuré, jamais sur une plage fixe. »',
-        'Puis pause de 15 minutes ; reprise à 10 h 56 sur le classeur de reprise de l’acte 3.',
+        'Puis pause de 10 minutes ; reprise à 10 h 51 sur le classeur de reprise de l’acte 3.',
       ],
     },
     [

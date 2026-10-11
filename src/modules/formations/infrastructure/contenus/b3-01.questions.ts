@@ -10,19 +10,12 @@ import {
 } from './b3-01.donnees';
 import * as moteur from './briques';
 
-type UniteDeSaisie =
-  | '€'
-  | '%'
-  | 'lignes'
-  | 'villes'
-  | 'jours ouvrés'
-  | 'agences';
+type UniteDeSaisie = '€' | '%' | 'lignes' | 'jours ouvrés' | 'agences';
 
 const CONSIGNES_DE_SAISIE: Readonly<Record<UniteDeSaisie, string>> = {
   '€': 'En euros, sans le symbole, arrondi à l’euro.',
   '%': 'En %, sans le symbole, arrondi au dixième de point.',
   lignes: 'Saisissez un nombre entier.',
-  villes: 'Saisissez un nombre entier.',
   'jours ouvrés': 'Saisissez un nombre entier.',
   agences: 'Saisissez un nombre entier.',
 };

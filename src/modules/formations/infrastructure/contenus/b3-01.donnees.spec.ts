@@ -32,6 +32,7 @@ import {
   medianesDUneListeTropLarge,
 } from '../../../../../test/helpers/cours-b3-01/valeurs';
 import {
+  DEFIS_B3_01,
   HISTOIRES_B3_01,
   PIEGES_B3_01,
   QUESTIONS_CHIFFREES_B3_01,
@@ -289,7 +290,7 @@ describe('jeu Norvane du B3-01', () => {
         texteDe(ligne, 'ville'),
       ),
     );
-    expect(villes.size).toBe(VALEURS_B3_01['b3-01-a1-villes']);
+    expect(villes.size).toBe(DEFIS_B3_01['villes-distinctes']);
     for (const ville of villes) {
       expect(nomPropre(supprEspace(ville.toLocaleUpperCase('fr')))).toBe(ville);
     }
@@ -297,12 +298,12 @@ describe('jeu Norvane du B3-01', () => {
 
   it('ne doit l’écart des villes brutes qu’aux espaces, le comptage d’Excel ignorant la casse', () => {
     const villes = lignesUniques.map((ligne) => texteDe(ligne, 'ville'));
-    const piege = PIEGES_B3_01['b3-01-a1-villes']['espaces-non-supprimes'];
+    const piege = DEFIS_B3_01['villes-sans-supprespace'];
 
     expect(distinctesCommeExcel(villes)).toBe(piege);
     expect(distinctesCommeExcel(villes.map(nomPropre))).toBe(piege);
     expect(distinctesCommeExcel(villes.map(supprEspace))).toBe(
-      VALEURS_B3_01['b3-01-a1-villes'],
+      DEFIS_B3_01['villes-distinctes'],
     );
   });
 
@@ -511,11 +512,12 @@ describe('jeu Norvane du B3-01', () => {
     });
   });
 
-  it('recalcule les valeurs attendues, les pièges et les histoires à partir de la seule graine', () => {
+  it('recalcule les valeurs attendues, les pièges, les histoires et les défis à partir de la seule graine', () => {
     expect(calculerValeursB301(jeu)).toEqual({
       attendues: VALEURS_B3_01,
       pieges: PIEGES_B3_01,
       histoires: HISTOIRES_B3_01,
+      defis: DEFIS_B3_01,
     });
   });
 

@@ -1,10 +1,14 @@
 import type { Cours, Ecran } from '../contrats/cours';
+import type { Gabarit } from './Cours';
 import { estInteractif, questionsDe } from './Cours';
 import { correctionsDe } from './Corrections';
 import type { Manquement } from './GardeConfidentialite';
 
 const ECRANS_MAXIMUM_DU_GABARIT = 40;
-const MINUTES_MAXIMUM_DU_GABARIT = 180;
+const MINUTES_MAXIMUM_DU_GABARIT: Readonly<Record<Gabarit, number>> = {
+  v3: 180,
+  b3: 190,
+};
 const BRIQUES_HORS_CYCLE: readonly string[] = [
   'fp-recall',
   'fp-exit',
@@ -51,20 +55,22 @@ function tempsDe(ecran: Ecran): Temps | null {
 }
 
 export function controlerBudget(cours: Cours): readonly Manquement[] {
+  const gabarit = cours.gabarit ?? 'v3';
+  const minutesMaximum = MINUTES_MAXIMUM_DU_GABARIT[gabarit];
   const ecrans = cours.ecrans.length;
   const exces = [
     ...(ecrans > ECRANS_MAXIMUM_DU_GABARIT
       ? [`${ecrans} écrans pour ${ECRANS_MAXIMUM_DU_GABARIT} au plus`]
       : []),
-    ...(cours.dureeMinutes > MINUTES_MAXIMUM_DU_GABARIT
+    ...(cours.dureeMinutes > minutesMaximum
       ? [
-          `${cours.dureeMinutes} min de travail pour ${MINUTES_MAXIMUM_DU_GABARIT} au plus, pause non comprise`,
+          `${cours.dureeMinutes} min de travail pour ${minutesMaximum} au plus, pause non comprise`,
         ]
       : []),
   ];
   return exces.map((raison) => ({
     ecran: null,
-    raison: `le gabarit v3 tient une séance : ${raison}.`,
+    raison: `le gabarit ${gabarit} tient une séance : ${raison}.`,
   }));
 }
 

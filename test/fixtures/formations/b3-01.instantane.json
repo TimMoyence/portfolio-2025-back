@@ -1,11 +1,11 @@
 {
   "graine": 0,
-  "empreinte": "00520b5b065f326f1ca11c2cd99714b8dc61c8d75e3e0c087933746843f8d654",
+  "empreinte": "f9133ac6e3217b894777292d9098a573c3dcca449481e861f3f0b226580fc2f5",
   "sujet": {
     "id": "b3-01-donnee-brute-decision",
     "titre": "Expert Data : de la donnée brute à la décision",
     "niveau": "B3",
-    "duree": 180,
+    "duree": 189,
     "concepts": [
       "reference-de-cellule",
       "jeu-de-donnees",
@@ -134,7 +134,7 @@
                   },
                   {
                     "title": "Niveau 6 · Décider",
-                    "description": "Livrable : le tableau de bord et trois recommandations. Règle du cahier : comment écrire une recommandation."
+                    "description": "Livrable : le tableau de bord et deux recommandations. Règle du cahier : comment écrire une recommandation."
                   }
                 ]
               }
@@ -320,7 +320,7 @@
         "id": "B3-01-A1-07-TRI-COLONNES",
         "type": "fp-cardsort",
         "titre": "Exercice 1 — Le dictionnaire des données",
-        "duree": 4,
+        "duree": 5,
         "interactif": true,
         "donnees": {
           "plan": {
@@ -405,7 +405,7 @@
             "metadonnees": {
               "concepts": ["jeu-de-donnees", "cle-et-relation"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 4,
+              "dureeMinutes": 5,
               "modalite": "binome",
               "regime": "ouvert"
             }
@@ -416,7 +416,7 @@
         "id": "B3-01-A1-08-ATELIER-GRANULARITE",
         "type": "questionnaire",
         "titre": "Exercice 2 — Une ligne, c’est quoi ?",
-        "duree": 4,
+        "duree": 5,
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 2 — Une ligne, c’est quoi ?",
@@ -457,7 +457,7 @@
                   "metadonnees": {
                     "concepts": ["granularite"],
                     "misconceptionsCiblees": [],
-                    "dureeMinutes": 4,
+                    "dureeMinutes": 5,
                     "modalite": "solo",
                     "regime": "focus"
                   }
@@ -670,7 +670,7 @@
         "id": "B3-01-A1-13-TRI-ANOMALIES",
         "type": "fp-cardsort",
         "titre": "Exercice 3 — Classer les anomalies",
-        "duree": 6,
+        "duree": 8,
         "interactif": true,
         "donnees": {
           "plan": {
@@ -739,7 +739,7 @@
             "metadonnees": {
               "concepts": ["qualite-des-donnees"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 6,
+              "dureeMinutes": 8,
               "modalite": "binome",
               "regime": "ouvert"
             }
@@ -754,7 +754,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 4 — Nettoyer l’export",
-          "consigne": "Essentiel : effacez d’abord le filtre de l’exercice 2, puis, sur une copie de l’onglet Commandes, nettoyez ville et ca_ht dans deux nouvelles colonnes, en N et O, sans insérer de colonne ; supprimez les doublons exacts, toutes les colonnes cochées ; ajoutez une colonne controle sur les dates brutes, =SI(OU(C2<B2;I2<=0;G2=\"\");\"À vérifier\";\"OK\"), où C est date_livraison, B date_commande, I quantite et G commercial_id. Défi : convertissez les dates ISO par =SI(NBCAR(B2)=10;DATEVAL(B2);B2), recalculez ca_ht et signalez les écarts de plus d’un euro.",
+          "consigne": "Essentiel : effacez d’abord le filtre de l’exercice 2, puis, sur une copie de l’onglet Commandes, nettoyez ville et ca_ht dans deux nouvelles colonnes, en N et O, sans insérer de colonne ; supprimez les doublons exacts, toutes les colonnes cochées ; ajoutez une colonne controle sur les dates brutes, =SI(OU(C2<B2;I2<=0;G2=\"\");\"À vérifier\";\"OK\"), où C est date_livraison, B date_commande, I quantite et G commercial_id. Défi : combien de villes distinctes compte la colonne N ? Copiez-la en valeurs sur une feuille à part, puis Données › Supprimer les doublons, case « Mes données ont des en-têtes » cochée.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -782,23 +782,6 @@
                   "id": "b3-01-a1-ca-total",
                   "enonce": "Quel est le CA total HT des lignes restantes, une fois les montants en texte convertis ? En euros, sans le symbole, arrondi à l’euro.",
                   "unite": "€",
-                  "metadonnees": {
-                    "concepts": ["nettoyage", "qualite-des-donnees"],
-                    "misconceptionsCiblees": [],
-                    "dureeMinutes": 15,
-                    "modalite": "solo",
-                    "regime": "focus"
-                  }
-                }
-              }
-            },
-            {
-              "brique": "fp-numeric",
-              "donnees": {
-                "question": {
-                  "id": "b3-01-a1-villes",
-                  "enonce": "Combien de villes distinctes compte la colonne ville nettoyée ? Saisissez un nombre entier.",
-                  "unite": "villes",
                   "metadonnees": {
                     "concepts": ["nettoyage", "qualite-des-donnees"],
                     "misconceptionsCiblees": [],
@@ -1040,11 +1023,11 @@
         "id": "B3-01-A2-04-ATELIER-RECHERCHE",
         "type": "questionnaire",
         "titre": "Exercice 5 — Relier et additionner",
-        "duree": 11,
+        "duree": 12,
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 5 — Relier et additionner",
-          "consigne": "Essentiel, dans l’onglet Commandes du classeur de reprise : ajoutez la colonne region, cherchée dans Agences sur agence_id par INDEX et EQUIV, et la colonne categorie, cherchée dans Produits sur produit_id ; figez les plages des référentiels avant de recopier. Répondez ensuite par SOMME.SI.ENS et NB.SI.ENS. Défi : une colonne cout, la quantité multipliée par le coût unitaire du produit.",
+          "consigne": "Essentiel, dans l’onglet Commandes du classeur de reprise : ajoutez la colonne region, cherchée dans Agences sur agence_id par INDEX et EQUIV, et la colonne categorie, cherchée dans Produits sur produit_id ; figez les plages des référentiels avant de recopier. Répondez ensuite par SOMME.SI.ENS. Défi : avec NB.SI.ENS, combien de lignes de Marseille (AG09) portent une remise supérieure à 15 %, toutes dates confondues ?",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -1061,27 +1044,7 @@
                       "agregation-conditionnelle"
                     ],
                     "misconceptionsCiblees": [],
-                    "dureeMinutes": 11,
-                    "modalite": "solo",
-                    "regime": "focus"
-                  }
-                }
-              }
-            },
-            {
-              "brique": "fp-numeric",
-              "donnees": {
-                "question": {
-                  "id": "b3-01-a2-remises-marseille",
-                  "enonce": "Combien de lignes de Marseille (AG09) portent une remise supérieure à 15 %, toutes dates confondues ? Saisissez un nombre entier.",
-                  "unite": "lignes",
-                  "metadonnees": {
-                    "concepts": [
-                      "recherche-dans-une-table",
-                      "agregation-conditionnelle"
-                    ],
-                    "misconceptionsCiblees": [],
-                    "dureeMinutes": 11,
+                    "dureeMinutes": 12,
                     "modalite": "solo",
                     "regime": "focus"
                   }
@@ -1101,7 +1064,7 @@
                       "agregation-conditionnelle"
                     ],
                     "misconceptionsCiblees": [],
-                    "dureeMinutes": 11,
+                    "dureeMinutes": 12,
                     "modalite": "solo",
                     "regime": "focus"
                   }
@@ -1201,12 +1164,12 @@
       {
         "id": "B3-01-A2-07-ATELIER-DELAIS-MARGE",
         "type": "questionnaire",
-        "titre": "Exercice 6 — Délais et marge",
+        "titre": "Exercice 6 — Délais de livraison",
         "duree": 12,
         "interactif": true,
         "donnees": {
-          "intitule": "Exercice 6 — Délais et marge",
-          "consigne": "Essentiel, dans l’onglet Commandes du classeur de reprise : ajoutez les colonnes delai, =NB.JOURS.OUVRES(B2;C2)-1, date_promise, =SERIE.JOUR.OUVRE(B2;5), cout_unitaire, cherché dans Produits par INDEX et EQUIV, et marge, ca_ht moins quantite × cout_unitaire ; puis répondez. Défi : avec JOURSEM, la part des commandes passées un vendredi ; avec DATEDIF, l’ancienneté des clients en mois.",
+          "intitule": "Exercice 6 — Délais de livraison",
+          "consigne": "Essentiel, dans l’onglet Commandes du classeur de reprise : ajoutez les colonnes delai, =NB.JOURS.OUVRES(B2;C2)-1, et date_promise, =SERIE.JOUR.OUVRE(B2;5) ; puis répondez. Défi : le taux de marque du réseau de janvier à septembre 2026 : cout_unitaire cherché dans Produits par INDEX et EQUIV, marge = ca_ht − quantite × cout_unitaire, puis marge ÷ CA HT.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -1234,23 +1197,6 @@
                   "id": "b3-01-a2-retards",
                   "enonce": "Combien de lignes commandées en 2026 sont livrées après leur date promise, cinq jours ouvrés après la commande ? Saisissez un nombre entier.",
                   "unite": "lignes",
-                  "metadonnees": {
-                    "concepts": ["calcul-sur-dates", "indicateur-statistique"],
-                    "misconceptionsCiblees": [],
-                    "dureeMinutes": 12,
-                    "modalite": "solo",
-                    "regime": "focus"
-                  }
-                }
-              }
-            },
-            {
-              "brique": "fp-numeric",
-              "donnees": {
-                "question": {
-                  "id": "b3-01-a2-taux-marge",
-                  "enonce": "Quel est le taux de marque du réseau (marge ÷ CA HT), de janvier à septembre 2026 ? En %, sans le symbole, arrondi au dixième de point.",
-                  "unite": "%",
                   "metadonnees": {
                     "concepts": ["calcul-sur-dates", "indicateur-statistique"],
                     "misconceptionsCiblees": [],
@@ -1395,7 +1341,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 7 — Le TCD de la direction",
-          "consigne": "Essentiel, à partir de T_Commandes. Premier TCD : agence_id en lignes, categorie en colonnes, ca_ht en valeurs affiché en % du total de la ligne, annee en filtre sur 2026. Second TCD : region en lignes, date_commande en colonnes groupée par trimestres et par années, ca_ht en valeurs. Un segment categorie relié aux deux. Défi : regroupez les remises en tranches de 5 points.",
+          "consigne": "Essentiel, à partir de T_Commandes. Premier TCD : agence_id en lignes, categorie en colonnes, ca_ht en valeurs affiché en % du total de la ligne, annee en filtre sur 2026. Second TCD : date_commande en lignes, groupée par trimestres et par années, ca_ht en valeurs. Défi : un segment categorie relié aux deux TCD.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -1573,7 +1519,7 @@
         "id": "B3-01-A3-04-TRI-GRAPHIQUES",
         "type": "fp-cardsort",
         "titre": "Exercice 8 — À chaque question son graphique",
-        "duree": 4,
+        "duree": 5,
         "interactif": true,
         "donnees": {
           "plan": {
@@ -1634,7 +1580,7 @@
             "metadonnees": {
               "concepts": ["choix-du-graphique"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 4,
+              "dureeMinutes": 5,
               "modalite": "binome",
               "regime": "ouvert"
             }
@@ -1645,11 +1591,11 @@
         "id": "B3-01-A3-05-ATELIER-GRAPHIQUES",
         "type": "questionnaire",
         "titre": "Exercice 9 — CA et objectif par agence",
-        "duree": 8,
+        "duree": 11,
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 9 — CA et objectif par agence",
-          "consigne": "Essentiel, dans le classeur de reprise de l’acte 3 : une synthèse par agence, de janvier à septembre 2026 : le CA cumulé par SOMME.SI.ENS sur T_Commandes, l’objectif cumulé par SOMME.SI.ENS sur Objectifs, le taux d’atteinte. Puis un graphique CA et objectif en Histogramme groupé (colonnes) ou en Barres groupées (barres horizontales), avec un titre qui conclut, une légende et un axe depuis zéro. Sous Windows (Excel 2019, 2021 ou 365), vous pouvez aussi mettre Agences et Objectifs sous forme de tableau, nommés T_Agences et T_Objectifs, puis relier T_Commandes et T_Objectifs à T_Agences par agence_id dans Données › Relations ; dans le TCD, créé avec « Ajouter ces données au modèle de données », agence_id de T_Agences en lignes, ca_ht de T_Commandes et objectif_ca_ht de T_Objectifs en valeurs, et deux filtres, car un filtre ne passe pas d’une table à l’autre : annee de T_Commandes sur 2026, mois de T_Objectifs de janvier à septembre 2026. Sur Mac, le modèle de données n’existe pas : la synthèse par SOMME.SI.ENS suffit. Défi : les courbes du CA mensuel 2025 et 2026, superposées.",
+          "consigne": "Essentiel, dans le classeur de reprise de l’acte 3 : une synthèse par agence, de janvier à septembre 2026 : le CA cumulé par SOMME.SI.ENS sur T_Commandes, l’objectif cumulé par SOMME.SI.ENS sur Objectifs, le taux d’atteinte. Puis un graphique CA et objectif en Histogramme groupé (colonnes) ou en Barres groupées (barres horizontales), avec un titre qui conclut, une légende et un axe depuis zéro. Sous Windows (Excel 2019, 2021 ou 365), vous pouvez aussi mettre Agences et Objectifs sous forme de tableau, nommés T_Agences et T_Objectifs, puis relier T_Commandes et T_Objectifs à T_Agences par agence_id dans Données › Relations ; dans le TCD, créé avec « Ajouter ces données au modèle de données », agence_id de T_Agences en lignes, ca_ht de T_Commandes et objectif_ca_ht de T_Objectifs en valeurs, et deux filtres, car un filtre ne passe pas d’une table à l’autre : annee de T_Commandes sur 2026, mois de T_Objectifs de janvier à septembre 2026. Sur Mac, le modèle de données n’existe pas : la synthèse par SOMME.SI.ENS suffit. Défi : un graphique en courbes du CA mensuel, 2025 et 2026 superposées, tiré d’un TCD mois × années.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -1663,7 +1609,7 @@
                   "metadonnees": {
                     "concepts": ["choix-du-graphique", "tableau-de-bord"],
                     "misconceptionsCiblees": [],
-                    "dureeMinutes": 8,
+                    "dureeMinutes": 11,
                     "modalite": "solo",
                     "regime": "focus"
                   }
@@ -1680,7 +1626,7 @@
                   "metadonnees": {
                     "concepts": ["choix-du-graphique", "tableau-de-bord"],
                     "misconceptionsCiblees": [],
-                    "dureeMinutes": 8,
+                    "dureeMinutes": 11,
                     "modalite": "solo",
                     "regime": "focus"
                   }
@@ -1826,7 +1772,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 10 — Le tableau de bord Direction",
-          "consigne": "Essentiel, dans un onglet Dashboard : quatre indicateurs (CA cumulé 2026, évolution par rapport à la même période de 2025, taux de marque, lignes en quarantaine), le graphique de l’exercice 9, un TCD de la marge par agence avec une mise en forme conditionnelle, et deux segments connectés à ce TCD, region et categorie. Défi : une mise en page A4 paysage, prête à imprimer.",
+          "consigne": "Essentiel, dans un onglet Dashboard : quatre indicateurs (CA cumulé 2026, évolution par rapport à la même période de 2025, taux de marque, lignes en quarantaine) et un TCD de la marge par agence, la marge en barres de données (Accueil › Mise en forme conditionnelle › Barres de données). Défi : un segment region relié à ce TCD.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -1904,14 +1850,14 @@
       {
         "id": "B3-01-A3-10-RECOMMANDATIONS",
         "type": "fp-pro",
-        "titre": "Vos trois recommandations au comité",
+        "titre": "Vos recommandations au comité",
         "duree": 9,
         "interactif": true,
         "donnees": {
           "cas": {
             "id": "B3-01-A3-10-RECOMMANDATIONS",
             "metier": "Analyste data — Norvane Équipement (réseau de 12 agences)",
-            "situation": "Jeudi, Nadia Ferrand présente le réseau au comité de direction. Elle vous demande trois recommandations, tirées de votre tableau de bord.",
+            "situation": "Jeudi, Nadia Ferrand présente le réseau au comité de direction. Elle vous demande deux recommandations, tirées de vos analyses de la séance ; une troisième en défi.",
             "geste": "Pour chacune : un constat chiffré, sa cause trouvée dans le détail, une action précise, datée, confiée à quelqu’un.",
             "consequence": "Une recommandation sans chiffre ne convainc pas ; sans cause, elle traite le symptôme ; sans action, elle ne change rien.",
             "questionsLibres": [
@@ -1927,7 +1873,7 @@
               },
               {
                 "id": "b3-01-a3-recommandations:recommandation-3",
-                "question": "Recommandation 3 : constat chiffré → cause → action.",
+                "question": "Défi — Recommandation 3 : constat chiffré → cause → action.",
                 "placeholder": "Constat : … Cause : … Action : …"
               }
             ],
@@ -2114,7 +2060,7 @@
     "id": "b3-01-donnee-brute-decision",
     "titre": "Expert Data : de la donnée brute à la décision",
     "niveau": "B3",
-    "duree": 180,
+    "duree": 189,
     "concepts": [
       "reference-de-cellule",
       "jeu-de-donnees",
@@ -2239,7 +2185,7 @@
           "libelle": "Export des ventes Norvane (classeur Excel)",
           "fichier": "/assets/cours/b3-01/B3-01_export_ventes.d4f2ceab.xlsx"
         },
-        "notes": "• Lire le courriel à voix haute, puis faire télécharger le classeur depuis le poste.\n• Vérifier qu’il s’ouvre sans réparation et que l’onglet Commandes est visible.\n• Annoncer la séance : six niveaux, deux pauses de 15 minutes, un tableau de bord pour le comité de jeudi.",
+        "notes": "• Lire le courriel à voix haute, puis faire télécharger le classeur depuis le poste.\n• Vérifier qu’il s’ouvre sans réparation et que l’onglet Commandes est visible.\n• Annoncer la séance : six niveaux, deux pauses de 10 minutes, un tableau de bord pour le comité de jeudi.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -2285,7 +2231,7 @@
                   },
                   {
                     "title": "Niveau 6 · Décider",
-                    "description": "Livrable : le tableau de bord et trois recommandations. Règle du cahier : comment écrire une recommandation."
+                    "description": "Livrable : le tableau de bord et deux recommandations. Règle du cahier : comment écrire une recommandation."
                   }
                 ]
               }
@@ -2565,7 +2511,7 @@
         "id": "B3-01-A1-07-TRI-COLONNES",
         "type": "fp-cardsort",
         "titre": "Exercice 1 — Le dictionnaire des données",
-        "duree": 4,
+        "duree": 5,
         "interactif": true,
         "donnees": {
           "plan": {
@@ -2650,13 +2596,13 @@
             "metadonnees": {
               "concepts": ["jeu-de-donnees", "cle-et-relation"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 4,
+              "dureeMinutes": 5,
               "modalite": "binome",
               "regime": "ouvert"
             }
           }
         },
-        "notes": "• Temps : réflexion 1 min · travail 2 min · correction 1 min\n• Réflexion : relire les en-têtes de l’onglet Commandes avant de trier.\n• Pièges : n_commande pris pour une mesure, parce qu’il contient des chiffres ; ville prise pour un identifiant ; identifiant rangé parmi les catégories (agence_id, client_id, produit_id, commercial_id).\n• Corriger catégorie par catégorie, en commençant par la carte la plus ratée (taux d’erreur au pupitre).\n• Transition : « Une ligne, c’est quoi ? Exercice 2. »",
+        "notes": "• Temps : réflexion 1 min · travail 3 min · correction 1 min\n• Réflexion : relire les en-têtes de l’onglet Commandes avant de trier.\n• Pièges : n_commande pris pour une mesure, parce qu’il contient des chiffres ; ville prise pour un identifiant ; identifiant rangé parmi les catégories (agence_id, client_id, produit_id, commercial_id).\n• Corriger catégorie par catégorie, en commençant par la carte la plus ratée (taux d’erreur au pupitre).\n• Transition : « Une ligne, c’est quoi ? Exercice 2. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -2765,7 +2711,7 @@
         "id": "B3-01-A1-08-ATELIER-GRANULARITE",
         "type": "questionnaire",
         "titre": "Exercice 2 — Une ligne, c’est quoi ?",
-        "duree": 4,
+        "duree": 5,
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 2 — Une ligne, c’est quoi ?",
@@ -2806,7 +2752,7 @@
                   "metadonnees": {
                     "concepts": ["granularite"],
                     "misconceptionsCiblees": [],
-                    "dureeMinutes": 4,
+                    "dureeMinutes": 5,
                     "modalite": "solo",
                     "regime": "focus"
                   }
@@ -2815,7 +2761,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 1 min · travail 2 min · correction 1 min\n• Réflexion : faire dire ce qu’on va compter, des lignes ou des commandes, avant de filtrer.\n• Piège : compter une commande là où l’on demande des lignes.\n• Corriger les deux questions ensemble : une commande, plusieurs lignes.\n• Transition : « Le fichier a-t-il d’autres surprises ? Un vote. »",
+        "notes": "• Temps : réflexion 1 min · travail 3 min · correction 1 min\n• Réflexion : faire dire ce qu’on va compter, des lignes ou des commandes, avant de filtrer.\n• Piège : compter une commande là où l’on demande des lignes.\n• Corriger les deux questions ensemble : une commande, plusieurs lignes.\n• Transition : « Le fichier a-t-il d’autres surprises ? Un vote. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [
@@ -3142,7 +3088,7 @@
         "id": "B3-01-A1-13-TRI-ANOMALIES",
         "type": "fp-cardsort",
         "titre": "Exercice 3 — Classer les anomalies",
-        "duree": 6,
+        "duree": 8,
         "interactif": true,
         "donnees": {
           "plan": {
@@ -3211,13 +3157,13 @@
             "metadonnees": {
               "concepts": ["qualite-des-donnees"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 6,
+              "dureeMinutes": 8,
               "modalite": "binome",
               "regime": "ouvert"
             }
           }
         },
-        "notes": "• Temps : réflexion 1 min · travail 4 min · correction 1 min\n• Réflexion : rappeler les deux questions de la grille avant de trier.\n• Pièges : corriger seul une date douteuse ; renvoyer à un humain une erreur que le fichier corrige.\n• Corriger case par case ; finir par la case vide.\n• Transition : « Au travail sur le vrai fichier : exercice 4. »",
+        "notes": "• Temps : réflexion 1 min · travail 6 min · correction 1 min\n• Réflexion : rappeler les deux questions de la grille avant de trier.\n• Pièges : corriger seul une date douteuse ; renvoyer à un humain une erreur que le fichier corrige.\n• Corriger case par case ; finir par la case vide.\n• Transition : « Au travail sur le vrai fichier : exercice 4. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -3311,7 +3257,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 4 — Nettoyer l’export",
-          "consigne": "Essentiel : effacez d’abord le filtre de l’exercice 2, puis, sur une copie de l’onglet Commandes, nettoyez ville et ca_ht dans deux nouvelles colonnes, en N et O, sans insérer de colonne ; supprimez les doublons exacts, toutes les colonnes cochées ; ajoutez une colonne controle sur les dates brutes, =SI(OU(C2<B2;I2<=0;G2=\"\");\"À vérifier\";\"OK\"), où C est date_livraison, B date_commande, I quantite et G commercial_id. Défi : convertissez les dates ISO par =SI(NBCAR(B2)=10;DATEVAL(B2);B2), recalculez ca_ht et signalez les écarts de plus d’un euro.",
+          "consigne": "Essentiel : effacez d’abord le filtre de l’exercice 2, puis, sur une copie de l’onglet Commandes, nettoyez ville et ca_ht dans deux nouvelles colonnes, en N et O, sans insérer de colonne ; supprimez les doublons exacts, toutes les colonnes cochées ; ajoutez une colonne controle sur les dates brutes, =SI(OU(C2<B2;I2<=0;G2=\"\");\"À vérifier\";\"OK\"), où C est date_livraison, B date_commande, I quantite et G commercial_id. Défi : combien de villes distinctes compte la colonne N ? Copiez-la en valeurs sur une feuille à part, puis Données › Supprimer les doublons, case « Mes données ont des en-têtes » cochée.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -3353,23 +3299,6 @@
               "brique": "fp-numeric",
               "donnees": {
                 "question": {
-                  "id": "b3-01-a1-villes",
-                  "enonce": "Combien de villes distinctes compte la colonne ville nettoyée ? Saisissez un nombre entier.",
-                  "unite": "villes",
-                  "metadonnees": {
-                    "concepts": ["nettoyage", "qualite-des-donnees"],
-                    "misconceptionsCiblees": [],
-                    "dureeMinutes": 15,
-                    "modalite": "solo",
-                    "regime": "focus"
-                  }
-                }
-              }
-            },
-            {
-              "brique": "fp-numeric",
-              "donnees": {
-                "question": {
                   "id": "b3-01-a1-a-verifier",
                   "enonce": "Combien de lignes la colonne controle marque-t-elle « À vérifier » ? Saisissez un nombre entier.",
                   "unite": "lignes",
@@ -3385,7 +3314,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 1 min · travail 12 min · correction 2 min\n• Réflexion : faire dire l’ordre du travail : copie, colonnes nettoyées, doublons, contrôle.\n• Annoncer le palier défi aux plus rapides : il se corrige oralement, sans note.\n• Pièges : dédoublonner sur n_commande seule ; compter l’en-tête parmi les lignes ; additionner avant de convertir ; compter les villes avant d’en retirer les espaces ; poser le contrôle sur les dates converties (45 par la formule du défi, 39 par DATEVAL sur toute date en texte).\n• Villes distinctes : copier la colonne N, en-tête compris, en valeurs à part, puis Supprimer les doublons, case « Mes données ont des en-têtes » cochée ; sous Excel 2021 ou 365, =NBVAL(UNIQUE(N2:N4099)).\n• Corriger question par question, dans l’ordre où les explications se dévoilent ; s’attarder sur la moins réussie (score sous chaque correction).\n• Révéler la part des lignes fausses ou douteuses : c’est la réponse à la première question du vote sur le fichier et Dupont, Bordeaux (A1-04).\n• Défi : la formule laisse en texte « 08/04/26 » (commande C-11481 : ligne 3785 du brut, 3741 de la copie dédoublonnée) ; DATEVAL la lirait 8 avril sur un poste réglé en français (jj/mm/aa), or elle est livrée le 7 août : la commande date sans doute du 4 août, et seul l’émetteur peut le dire.\n• Avant la pause, dire les règles des niveaux 1 et 2 : « Je relie les tables par un identifiant, jamais par un libellé » ; « Je corrige seul ce qui est faux et certain ; je signale ce qui est douteux et je demande. »\n• Puis pause de 15 minutes ; reprise à 9 h 41 sur le classeur de reprise.",
+        "notes": "• Temps : réflexion 1 min · travail 12 min · correction 2 min\n• Réflexion : faire dire l’ordre du travail : copie, colonnes nettoyées, doublons, contrôle.\n• Annoncer le palier défi aux plus rapides : il se corrige oralement, sans note.\n• Pièges : dédoublonner sur n_commande seule ; compter l’en-tête parmi les lignes ; additionner avant de convertir ; poser le contrôle sur les dates converties (45 par la formule de A1-11, 39 par DATEVAL sur toute date en texte).\n• Défi, villes distinctes : copier la colonne N, en-tête compris, en valeurs à part, puis Supprimer les doublons, case « Mes données ont des en-têtes » cochée ; sous Excel 2021 ou 365, =NBVAL(UNIQUE(N2:N4099)).\n• Corriger question par question, dans l’ordre où les explications se dévoilent ; s’attarder sur la moins réussie (score sous chaque correction).\n• Révéler la part des lignes fausses ou douteuses : c’est la réponse à la première question du vote sur le fichier et Dupont, Bordeaux (A1-04).\n• Défi : 48 villes ; sans SUPPRESPACE, les espaces en trop en font compter 83 ; la casse ne change rien, Excel l’ignore.\n• Piège des dates : la formule de A1-11, =SI(NBCAR(B2)=10;DATEVAL(B2);B2), laisse en texte « 08/04/26 » (commande C-11481 : ligne 3785 du brut, 3741 de la copie dédoublonnée) ; DATEVAL la lirait 8 avril sur un poste réglé en français (jj/mm/aa), or elle est livrée le 7 août : la commande date sans doute du 4 août, et seul l’émetteur peut le dire.\n• Avant la pause, dire les règles des niveaux 1 et 2 : « Je relie les tables par un identifiant, jamais par un libellé » ; « Je corrige seul ce qui est faux et certain ; je signale ce qui est douteux et je demande. »\n• Puis pause de 10 minutes ; reprise à 9 h 40 sur le classeur de reprise.",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [
@@ -3410,16 +3339,6 @@
               {
                 "id": "texte-pris-pour-nombre",
                 "libelle": "Additionner une colonne dont certains nombres sont du texte : la somme les ignore sans prévenir."
-              }
-            ]
-          },
-          {
-            "questionId": "b3-01-a1-villes",
-            "bonneReponse": "48 villes",
-            "confusions": [
-              {
-                "id": "espaces-non-supprimes",
-                "libelle": "Compter « Bordeaux » et « Bordeaux » suivi d’une espace comme deux villes faute de SUPPRESPACE."
               }
             ]
           },
@@ -3450,11 +3369,6 @@
             "options": null
           },
           {
-            "id": "b3-01-a1-villes",
-            "enonce": "Combien de villes distinctes compte la colonne ville nettoyée ? Saisissez un nombre entier.",
-            "options": null
-          },
-          {
             "id": "b3-01-a1-a-verifier",
             "enonce": "Combien de lignes la colonne controle marque-t-elle « À vérifier » ? Saisissez un nombre entier.",
             "options": null
@@ -3471,12 +3385,8 @@
             "texte": "Une fois les montants en texte convertis, le CA total HT vaut 1 340 208 €. SOMME sans conversion laisse de côté les montants en texte : 1 286 319 €, sans alerte."
           },
           {
-            "reference": "b3-01-a1-villes",
-            "texte": "NOMPROPRE(SUPPRESPACE(E2)) ramène chaque variante à une seule écriture : il reste 48 villes. Le comptage d’Excel ignore la casse : ce sont les espaces en trop qui font compter une même ville deux fois."
-          },
-          {
             "reference": "b3-01-a1-a-verifier",
-            "texte": "La colonne controle marque 85 lignes « À vérifier » : livraisons avant la commande, quantités négatives, commercial absent, dates en texte. Les formules N et O en corrigent 490 autres, le défi 24 ca_ht mal calculés, et 15 échappent au contrôle : produits inconnus, prix hors norme. En tout, 614 des 4 098 lignes uniques, environ 15 % : la réponse à la première question du vote sur le fichier et Dupont, Bordeaux. Recalculé sur les dates converties, le contrôle perd les 40 dates ISO : 45. DATEVAL sur toute date en texte lui ôte aussi 6 des 12 dates d’un autre système, lues jour d’abord : 39."
+            "texte": "La colonne controle marque 85 lignes « À vérifier » : livraisons avant la commande, quantités négatives, commercial absent, dates en texte. Les formules N et O en corrigent 490 autres ; 24 ca_ht mal calculés, que le classeur de reprise recalcule, s’y ajoutent, et 15 échappent au contrôle : produits inconnus, prix hors norme. En tout, 614 des 4 098 lignes uniques, environ 15 % : la réponse à la première question du vote sur le fichier et Dupont, Bordeaux. Recalculé sur les dates converties, le contrôle perd les 40 dates ISO : 45. DATEVAL sur toute date en texte lui ôte aussi 6 des 12 dates d’un autre système, lues jour d’abord : 39."
           }
         ]
       },
@@ -3755,11 +3665,11 @@
         "id": "B3-01-A2-04-ATELIER-RECHERCHE",
         "type": "questionnaire",
         "titre": "Exercice 5 — Relier et additionner",
-        "duree": 11,
+        "duree": 12,
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 5 — Relier et additionner",
-          "consigne": "Essentiel, dans l’onglet Commandes du classeur de reprise : ajoutez la colonne region, cherchée dans Agences sur agence_id par INDEX et EQUIV, et la colonne categorie, cherchée dans Produits sur produit_id ; figez les plages des référentiels avant de recopier. Répondez ensuite par SOMME.SI.ENS et NB.SI.ENS. Défi : une colonne cout, la quantité multipliée par le coût unitaire du produit.",
+          "consigne": "Essentiel, dans l’onglet Commandes du classeur de reprise : ajoutez la colonne region, cherchée dans Agences sur agence_id par INDEX et EQUIV, et la colonne categorie, cherchée dans Produits sur produit_id ; figez les plages des référentiels avant de recopier. Répondez ensuite par SOMME.SI.ENS. Défi : avec NB.SI.ENS, combien de lignes de Marseille (AG09) portent une remise supérieure à 15 %, toutes dates confondues ?",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -3776,27 +3686,7 @@
                       "agregation-conditionnelle"
                     ],
                     "misconceptionsCiblees": [],
-                    "dureeMinutes": 11,
-                    "modalite": "solo",
-                    "regime": "focus"
-                  }
-                }
-              }
-            },
-            {
-              "brique": "fp-numeric",
-              "donnees": {
-                "question": {
-                  "id": "b3-01-a2-remises-marseille",
-                  "enonce": "Combien de lignes de Marseille (AG09) portent une remise supérieure à 15 %, toutes dates confondues ? Saisissez un nombre entier.",
-                  "unite": "lignes",
-                  "metadonnees": {
-                    "concepts": [
-                      "recherche-dans-une-table",
-                      "agregation-conditionnelle"
-                    ],
-                    "misconceptionsCiblees": [],
-                    "dureeMinutes": 11,
+                    "dureeMinutes": 12,
                     "modalite": "solo",
                     "regime": "focus"
                   }
@@ -3816,7 +3706,7 @@
                       "agregation-conditionnelle"
                     ],
                     "misconceptionsCiblees": [],
-                    "dureeMinutes": 11,
+                    "dureeMinutes": 12,
                     "modalite": "solo",
                     "regime": "focus"
                   }
@@ -3825,7 +3715,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 1 min · travail 8 min · correction 2 min\n• Réflexion : faire nommer la famille de chaque question avant d’écrire une formule.\n• Pièges : fonction DATE écrite dans les guillemets (\">=DATE(2026;1;1)\") ; 15 pour 15 % ; plage de recherche non figée ; période oubliée.\n• Corriger question par question, dans l’ordre où les explications se dévoilent ; s’attarder sur la moins réussie (score sous chaque correction).\n• Défi : =I2*INDEX(Produits!$E$2:$E$41;EQUIV(H2;Produits!$A$2:$A$41;0)) donne le coût de la ligne.\n• Transition : « Passons au temps : un vote. »",
+        "notes": "• Temps : réflexion 1 min · travail 9 min · correction 2 min\n• Réflexion : faire nommer la famille de chaque question avant d’écrire une formule.\n• Pièges : fonction DATE écrite dans les guillemets (\">=DATE(2026;1;1)\") ; plage de recherche non figée ; période oubliée.\n• Corriger question par question, dans l’ordre où les explications se dévoilent ; s’attarder sur la moins réussie (score sous chaque correction).\n• Défi : 66 lignes avec le critère \">0,15\" ; \">15\" n’en trouve aucune : la remise est un taux.\n• Transition : « Passons au temps : un vote. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [
@@ -3840,16 +3730,6 @@
               {
                 "id": "periode-mal-delimitee",
                 "libelle": "Agréger une autre période que celle de la question : la table entière au lieu des seuls mois demandés."
-              }
-            ]
-          },
-          {
-            "questionId": "b3-01-a2-remises-marseille",
-            "bonneReponse": "66 lignes",
-            "confusions": [
-              {
-                "id": "critere-mal-ecrit",
-                "libelle": "Écrire un critère de comparaison sans joindre l’opérateur à la cellule par & (\">=\"&H1), ou 15 au lieu de 15 %."
               }
             ]
           },
@@ -3875,11 +3755,6 @@
             "options": null
           },
           {
-            "id": "b3-01-a2-remises-marseille",
-            "enonce": "Combien de lignes de Marseille (AG09) portent une remise supérieure à 15 %, toutes dates confondues ? Saisissez un nombre entier.",
-            "options": null
-          },
-          {
             "id": "b3-01-a2-ca-ouest",
             "enonce": "Quel est le CA HT de la région Ouest, de janvier à septembre 2026 ? En euros, sans le symbole, arrondi à l’euro.",
             "options": null
@@ -3890,10 +3765,6 @@
           {
             "reference": "b3-01-a2-ca-rennes-info",
             "texte": "SOMME.SI.ENS sur ca_ht, avec trois critères : agence_id égal à AG06, categorie égale à Informatique, date_commande \">=\"&DATE(2026;1;1). Résultat : 8 342 €."
-          },
-          {
-            "reference": "b3-01-a2-remises-marseille",
-            "texte": "Avec le critère \">0,15\" sur la remise, NB.SI.ENS compte 66 lignes de Marseille. La remise est un taux : le critère \">15\" ne trouve aucune ligne."
           },
           {
             "reference": "b3-01-a2-ca-ouest",
@@ -4035,7 +3906,7 @@
             }
           }
         },
-        "notes": "• 3 min ; montrer qu’une date affichée au format nombre devient un entier.\n• Faire dire pourquoi la médiane résiste à une rupture de stock livrée deux mois plus tard.\n• SERIE.JOUR.OUVRE renvoie un numéro de série : mettre la cellule au format Date. TEMPS repart de zéro au-delà de 23 h.\n• Sur Mac, la formule matricielle se valide par Ctrl + Maj + Retour ou ⌘ + Maj + Retour.\n• Transition : « Délais et marge du réseau : exercice 6. »",
+        "notes": "• 3 min ; montrer qu’une date affichée au format nombre devient un entier.\n• Faire dire pourquoi la médiane résiste à une rupture de stock livrée deux mois plus tard.\n• SERIE.JOUR.OUVRE renvoie un numéro de série : mettre la cellule au format Date. TEMPS repart de zéro au-delà de 23 h.\n• Sur Mac, la formule matricielle se valide par Ctrl + Maj + Retour ou ⌘ + Maj + Retour.\n• Transition : « Délais de livraison du réseau : exercice 6. »",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -4045,12 +3916,12 @@
       {
         "id": "B3-01-A2-07-ATELIER-DELAIS-MARGE",
         "type": "questionnaire",
-        "titre": "Exercice 6 — Délais et marge",
+        "titre": "Exercice 6 — Délais de livraison",
         "duree": 12,
         "interactif": true,
         "donnees": {
-          "intitule": "Exercice 6 — Délais et marge",
-          "consigne": "Essentiel, dans l’onglet Commandes du classeur de reprise : ajoutez les colonnes delai, =NB.JOURS.OUVRES(B2;C2)-1, date_promise, =SERIE.JOUR.OUVRE(B2;5), cout_unitaire, cherché dans Produits par INDEX et EQUIV, et marge, ca_ht moins quantite × cout_unitaire ; puis répondez. Défi : avec JOURSEM, la part des commandes passées un vendredi ; avec DATEDIF, l’ancienneté des clients en mois.",
+          "intitule": "Exercice 6 — Délais de livraison",
+          "consigne": "Essentiel, dans l’onglet Commandes du classeur de reprise : ajoutez les colonnes delai, =NB.JOURS.OUVRES(B2;C2)-1, et date_promise, =SERIE.JOUR.OUVRE(B2;5) ; puis répondez. Défi : le taux de marque du réseau de janvier à septembre 2026 : cout_unitaire cherché dans Produits par INDEX et EQUIV, marge = ca_ht − quantite × cout_unitaire, puis marge ÷ CA HT.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -4087,27 +3958,10 @@
                   }
                 }
               }
-            },
-            {
-              "brique": "fp-numeric",
-              "donnees": {
-                "question": {
-                  "id": "b3-01-a2-taux-marge",
-                  "enonce": "Quel est le taux de marque du réseau (marge ÷ CA HT), de janvier à septembre 2026 ? En %, sans le symbole, arrondi au dixième de point.",
-                  "unite": "%",
-                  "metadonnees": {
-                    "concepts": ["calcul-sur-dates", "indicateur-statistique"],
-                    "misconceptionsCiblees": [],
-                    "dureeMinutes": 12,
-                    "modalite": "solo",
-                    "regime": "focus"
-                  }
-                }
-              }
             }
           ]
         },
-        "notes": "• Temps : réflexion 1 min · travail 9 min · correction 2 min\n• Réflexion : faire dire en quelle unité le contrat compte les délais avant d’écrire la colonne.\n• Pièges : soustraire les dates ; oublier le − 1 ; résumer par la moyenne ; prendre toute la table au lieu de 2026 ; oublier l’agence, ou prendre MEDIANE sous un filtre, qui compte les lignes masquées ; faire la moyenne des taux de ligne ; diviser la marge par le coût d’achat.\n• Corriger question par question ; sur la médiane, trier les délais de Strasbourg pour montrer les ruptures en bas de colonne.\n• Retards : 2025 n’a aucun retard, et toute la table donne le même compte que 2026 : faire montrer le critère 2026.\n• Défi : JOURSEM(B2;2)=5 repère un vendredi ; dans Clients, DATEDIF(E2;DATE(2026;9;30);\"M\") donne l’ancienneté en mois au 30 septembre 2026.\n• Transition : « Et si l’export d’octobre arrive ? Un vote. »",
+        "notes": "• Temps : réflexion 1 min · travail 9 min · correction 2 min\n• Réflexion : faire dire en quelle unité le contrat compte les délais avant d’écrire la colonne.\n• Pièges : soustraire les dates ; oublier le − 1 ; résumer par la moyenne ; prendre toute la table au lieu de 2026 ; oublier l’agence, ou prendre MEDIANE sous un filtre, qui compte les lignes masquées.\n• Corriger question par question ; sur la médiane, trier les délais de Strasbourg pour montrer les ruptures en bas de colonne.\n• Retards : 2025 n’a aucun retard, et toute la table donne le même compte que 2026 : faire montrer le critère 2026.\n• Défi : 32,0 % ; la moyenne des taux de ligne donne 35,4 % ; marge ÷ coût donne 47,0 % : c’est le taux de marge.\n• Transition : « Et si l’export d’octobre arrive ? Un vote. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [
@@ -4150,24 +4004,6 @@
                 "libelle": "Prendre NB.JOURS.OUVRES tel quel pour un délai : il compte le jour de départ et le jour d’arrivée, d’où le − 1."
               }
             ]
-          },
-          {
-            "questionId": "b3-01-a2-taux-marge",
-            "bonneReponse": "32,0 %",
-            "confusions": [
-              {
-                "id": "moyenne-simple-des-taux",
-                "libelle": "Faire la moyenne simple de taux au lieu de les pondérer par leurs bases."
-              },
-              {
-                "id": "marque-confondue-avec-marge",
-                "libelle": "Confondre le taux de marque (marge ÷ prix de vente HT) et le taux de marge (marge ÷ coût d’achat HT)."
-              },
-              {
-                "id": "periode-mal-delimitee",
-                "libelle": "Agréger une autre période que celle de la question : la table entière au lieu des seuls mois demandés."
-              }
-            ]
           }
         ],
         "questions": [
@@ -4180,11 +4016,6 @@
             "id": "b3-01-a2-retards",
             "enonce": "Combien de lignes commandées en 2026 sont livrées après leur date promise, cinq jours ouvrés après la commande ? Saisissez un nombre entier.",
             "options": null
-          },
-          {
-            "id": "b3-01-a2-taux-marge",
-            "enonce": "Quel est le taux de marque du réseau (marge ÷ CA HT), de janvier à septembre 2026 ? En %, sans le symbole, arrondi au dixième de point.",
-            "options": null
           }
         ],
         "corrigeEcran": null,
@@ -4195,11 +4026,7 @@
           },
           {
             "reference": "b3-01-a2-retards",
-            "texte": "Une ligne est en retard quand date_livraison dépasse SERIE.JOUR.OUVRE(date_commande;5), soit, pour une commande passée un jour ouvré comme toutes celles de la reprise, quand son delai dépasse 5 : 99 lignes commandées en 2026. Avec date_commande + 5, en jours calendaires, la promesse tombe trop tôt et 481 lignes paraissent en retard ; la médiane de Strasbourg de la première question monterait à 11 jours. Sans le − 1, la colonne delai compte aussi le jour de la commande : au critère \">5\", 284 lignes, livrées le jour promis comprises, et une médiane de Strasbourg de 9 jours."
-          },
-          {
-            "reference": "b3-01-a2-taux-marge",
-            "texte": "Marge de la période ÷ CA HT de la période : un taux de marque de 32,0 % de janvier à septembre 2026. Sur toute la table, 2025 compris, le même rapport donne 32,3 %. Toutes années confondues, la médiane de Strasbourg de la première question tombe à 4 jours. La moyenne des taux de chaque ligne donne 35,4 % : une petite ligne très margée y pèse autant qu’une grosse commande. Divisée par le coût d’achat, la même marge donne 47,0 % : c’est le taux de marge, un autre indicateur."
+            "texte": "Une ligne est en retard quand date_livraison dépasse SERIE.JOUR.OUVRE(date_commande;5), soit, pour une commande passée un jour ouvré comme toutes celles de la reprise, quand son delai dépasse 5 : 99 lignes commandées en 2026. Avec date_commande + 5, en jours calendaires, la promesse tombe trop tôt et 481 lignes paraissent en retard ; la médiane de Strasbourg de la première question monterait à 11 jours. Sans le − 1, la colonne delai compte aussi le jour de la commande : au critère \">5\", 284 lignes, livrées le jour promis comprises, et une médiane de Strasbourg de 9 jours. Toutes années confondues, la médiane de Strasbourg de la première question tombe à 4 jours."
           }
         ]
       },
@@ -4390,7 +4217,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 7 — Le TCD de la direction",
-          "consigne": "Essentiel, à partir de T_Commandes. Premier TCD : agence_id en lignes, categorie en colonnes, ca_ht en valeurs affiché en % du total de la ligne, annee en filtre sur 2026. Second TCD : region en lignes, date_commande en colonnes groupée par trimestres et par années, ca_ht en valeurs. Un segment categorie relié aux deux. Défi : regroupez les remises en tranches de 5 points.",
+          "consigne": "Essentiel, à partir de T_Commandes. Premier TCD : agence_id en lignes, categorie en colonnes, ca_ht en valeurs affiché en % du total de la ligne, annee en filtre sur 2026. Second TCD : date_commande en lignes, groupée par trimestres et par années, ca_ht en valeurs. Défi : un segment categorie relié aux deux TCD.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -4436,7 +4263,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 1 min · travail 12 min · correction 2 min\n• Réflexion : faire dire, avant de construire, ce que chaque TCD montre en lignes, en colonnes et en valeurs.\n• Pièges : % du total général ou de la colonne au lieu du % de la ligne ; filtre annee oublié au premier TCD ; resté actif au second, recopié du premier ou de l’exemple ; trimestres groupés sans les années.\n• Corriger les deux questions ; montrer le regroupement par années qui sépare les deux printemps.\n• Défi : clic droit sur remise › Grouper, de 0 à 0,30 par pas de 0,05.\n• Avant la pause, dire les règles des niveaux 3 et 4 : « Avant la fonction, je nomme la famille du problème » ; « Je travaille sur un tableau structuré, jamais sur une plage fixe. »\n• Puis pause de 15 minutes ; reprise à 10 h 56 sur le classeur de reprise de l’acte 3.",
+        "notes": "• Temps : réflexion 1 min · travail 12 min · correction 2 min\n• Réflexion : faire dire, avant de construire, ce que chaque TCD montre en lignes, en colonnes et en valeurs.\n• Pièges : % du total général ou de la colonne au lieu du % de la ligne ; filtre annee oublié au premier TCD ; resté actif au second, recopié du premier ou de l’exemple ; trimestres groupés sans les années.\n• Corriger les deux questions ; montrer le regroupement par années qui sépare les deux printemps.\n• Défi : clic dans un TCD › Insertion › Segment (sur Mac, Analyse du tableau croisé dynamique › Segment) › categorie ; puis, le segment sélectionné, onglet Segment › Connexions de rapport : cocher les deux TCD.\n• Avant la pause, dire les règles des niveaux 3 et 4 : « Avant la fonction, je nomme la famille du problème » ; « Je travaille sur un tableau structuré, jamais sur une plage fixe. »\n• Puis pause de 10 minutes ; reprise à 10 h 51 sur le classeur de reprise de l’acte 3.",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [
@@ -4693,7 +4520,7 @@
         "id": "B3-01-A3-04-TRI-GRAPHIQUES",
         "type": "fp-cardsort",
         "titre": "Exercice 8 — À chaque question son graphique",
-        "duree": 4,
+        "duree": 5,
         "interactif": true,
         "donnees": {
           "plan": {
@@ -4754,13 +4581,13 @@
             "metadonnees": {
               "concepts": ["choix-du-graphique"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 4,
+              "dureeMinutes": 5,
               "modalite": "binome",
               "regime": "ouvert"
             }
           }
         },
-        "notes": "• Temps : réflexion 1 min · travail 2 min · correction 1 min\n• Réflexion : faire dire, pour chaque question, si elle compare, suit le temps, décompose, répartit ou relie.\n• Pièges : une évolution rangée en barres ; un histogramme confondu avec des barres ; un graphique choisi avant la question.\n• Corriger en partant de la carte la plus ratée (taux d’erreur au pupitre).\n• Transition : « Le graphique de la direction : exercice 9. »",
+        "notes": "• Temps : réflexion 1 min · travail 3 min · correction 1 min\n• Réflexion : faire dire, pour chaque question, si elle compare, suit le temps, décompose, répartit ou relie.\n• Pièges : une évolution rangée en barres ; un histogramme confondu avec des barres ; un graphique choisi avant la question.\n• Corriger en partant de la carte la plus ratée (taux d’erreur au pupitre).\n• Transition : « Le graphique de la direction : exercice 9. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -4838,11 +4665,11 @@
         "id": "B3-01-A3-05-ATELIER-GRAPHIQUES",
         "type": "questionnaire",
         "titre": "Exercice 9 — CA et objectif par agence",
-        "duree": 8,
+        "duree": 11,
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 9 — CA et objectif par agence",
-          "consigne": "Essentiel, dans le classeur de reprise de l’acte 3 : une synthèse par agence, de janvier à septembre 2026 : le CA cumulé par SOMME.SI.ENS sur T_Commandes, l’objectif cumulé par SOMME.SI.ENS sur Objectifs, le taux d’atteinte. Puis un graphique CA et objectif en Histogramme groupé (colonnes) ou en Barres groupées (barres horizontales), avec un titre qui conclut, une légende et un axe depuis zéro. Sous Windows (Excel 2019, 2021 ou 365), vous pouvez aussi mettre Agences et Objectifs sous forme de tableau, nommés T_Agences et T_Objectifs, puis relier T_Commandes et T_Objectifs à T_Agences par agence_id dans Données › Relations ; dans le TCD, créé avec « Ajouter ces données au modèle de données », agence_id de T_Agences en lignes, ca_ht de T_Commandes et objectif_ca_ht de T_Objectifs en valeurs, et deux filtres, car un filtre ne passe pas d’une table à l’autre : annee de T_Commandes sur 2026, mois de T_Objectifs de janvier à septembre 2026. Sur Mac, le modèle de données n’existe pas : la synthèse par SOMME.SI.ENS suffit. Défi : les courbes du CA mensuel 2025 et 2026, superposées.",
+          "consigne": "Essentiel, dans le classeur de reprise de l’acte 3 : une synthèse par agence, de janvier à septembre 2026 : le CA cumulé par SOMME.SI.ENS sur T_Commandes, l’objectif cumulé par SOMME.SI.ENS sur Objectifs, le taux d’atteinte. Puis un graphique CA et objectif en Histogramme groupé (colonnes) ou en Barres groupées (barres horizontales), avec un titre qui conclut, une légende et un axe depuis zéro. Sous Windows (Excel 2019, 2021 ou 365), vous pouvez aussi mettre Agences et Objectifs sous forme de tableau, nommés T_Agences et T_Objectifs, puis relier T_Commandes et T_Objectifs à T_Agences par agence_id dans Données › Relations ; dans le TCD, créé avec « Ajouter ces données au modèle de données », agence_id de T_Agences en lignes, ca_ht de T_Commandes et objectif_ca_ht de T_Objectifs en valeurs, et deux filtres, car un filtre ne passe pas d’une table à l’autre : annee de T_Commandes sur 2026, mois de T_Objectifs de janvier à septembre 2026. Sur Mac, le modèle de données n’existe pas : la synthèse par SOMME.SI.ENS suffit. Défi : un graphique en courbes du CA mensuel, 2025 et 2026 superposées, tiré d’un TCD mois × années.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -4856,7 +4683,7 @@
                   "metadonnees": {
                     "concepts": ["choix-du-graphique", "tableau-de-bord"],
                     "misconceptionsCiblees": [],
-                    "dureeMinutes": 8,
+                    "dureeMinutes": 11,
                     "modalite": "solo",
                     "regime": "focus"
                   }
@@ -4873,7 +4700,7 @@
                   "metadonnees": {
                     "concepts": ["choix-du-graphique", "tableau-de-bord"],
                     "misconceptionsCiblees": [],
-                    "dureeMinutes": 8,
+                    "dureeMinutes": 11,
                     "modalite": "solo",
                     "regime": "focus"
                   }
@@ -4882,7 +4709,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 1 min · travail 6 min · correction 1 min\n• Réflexion : faire dire où vit l’objectif : dans une autre table que les ventes, d’où SOMME.SI.ENS et pas un TCD seul.\n• Pièges : comparer neuf mois de ventes à l’objectif de toute la table ; oublier la période des deux côtés.\n• Corriger les deux questions ; projeter un graphique réussi, titre compris.\n• Défi : un TCD mois en lignes, années en colonnes, puis un graphique en courbes.\n• Transition : « Nadia a trente secondes : un vote. »",
+        "notes": "• Temps : réflexion 1 min · travail 9 min · correction 1 min\n• Réflexion : faire dire où vit l’objectif : dans une autre table que les ventes, d’où SOMME.SI.ENS et pas un TCD seul.\n• Pièges : comparer neuf mois de ventes à l’objectif de toute la table ; oublier la période des deux côtés.\n• Corriger les deux questions ; projeter un graphique réussi, titre compris.\n• Défi : un TCD mois en lignes, années en colonnes, puis un graphique en courbes.\n• Transition : « Nadia a trente secondes : un vote. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [
@@ -5128,7 +4955,7 @@
           },
           "etayage": 0
         },
-        "notes": "• Exemple lu, pas refait : chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.\n• Montrer chaque geste au pupitre dans Excel ; les étudiants les reprennent à l’exercice 10.\n• Montrer la règle appliquée à toute la plage, de A5 à la dernière agence.\n• Transition : « Le tableau de bord Direction : exercice 10. »",
+        "notes": "• Exemple lu, pas refait : chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.\n• Montrer chaque geste au pupitre dans Excel ; les étudiants reprennent les barres de données à l’exercice 10, les plus rapides le segment au défi.\n• Montrer la règle appliquée à toute la plage, de A5 à la dernière agence.\n• Transition : « Le tableau de bord Direction : exercice 10. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -5143,7 +4970,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 10 — Le tableau de bord Direction",
-          "consigne": "Essentiel, dans un onglet Dashboard : quatre indicateurs (CA cumulé 2026, évolution par rapport à la même période de 2025, taux de marque, lignes en quarantaine), le graphique de l’exercice 9, un TCD de la marge par agence avec une mise en forme conditionnelle, et deux segments connectés à ce TCD, region et categorie. Défi : une mise en page A4 paysage, prête à imprimer.",
+          "consigne": "Essentiel, dans un onglet Dashboard : quatre indicateurs (CA cumulé 2026, évolution par rapport à la même période de 2025, taux de marque, lignes en quarantaine) et un TCD de la marge par agence, la marge en barres de données (Accueil › Mise en forme conditionnelle › Barres de données). Défi : un segment region relié à ce TCD.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -5217,7 +5044,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 1 min · travail 12 min · correction 2 min\n• Réflexion : faire dire les quatre indicateurs et la comparaison de chacun avant de construire.\n• Annoncer le palier défi aux plus rapides : il se corrige oralement, sans note.\n• Pièges : neuf mois comparés à douze ; toute la table au lieu de 2026 ; moyenne des taux ; marge divisée par le coût d’achat ; ligne d’en-tête comptée parmi les lignes.\n• Corriger question par question, dans l’ordre où les explications se dévoilent ; s’attarder sur la moins réussie (score sous chaque correction).\n• Projeter un tableau de bord réussi : quatre indicateurs, chacun avec sa comparaison.\n• Transition : « Ce tableau de bord raconte quatre histoires : vos recommandations. »",
+        "notes": "• Temps : réflexion 1 min · travail 12 min · correction 2 min\n• Réflexion : faire dire les quatre indicateurs et la comparaison de chacun avant de construire.\n• Annoncer le palier défi aux plus rapides : il se corrige oralement, sans note.\n• Pièges : neuf mois comparés à douze ; toute la table au lieu de 2026 ; moyenne des taux ; marge divisée par le coût d’achat ; ligne d’en-tête comptée parmi les lignes.\n• Corriger question par question, dans l’ordre où les explications se dévoilent ; s’attarder sur la moins réussie (score sous chaque correction).\n• Projeter un tableau de bord réussi : quatre indicateurs, chacun avec sa comparaison, et le TCD de la marge par agence en barres de données, posées sur les seules cellules des agences : le total général écraserait les autres barres.\n• Défi : clic dans le TCD › Insertion › Segment (sur Mac, Analyse du tableau croisé dynamique › Segment) › region.\n• Transition : « Vos analyses de la séance racontent quatre histoires : vos recommandations. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [
@@ -5315,14 +5142,14 @@
       {
         "id": "B3-01-A3-10-RECOMMANDATIONS",
         "type": "fp-pro",
-        "titre": "Vos trois recommandations au comité",
+        "titre": "Vos recommandations au comité",
         "duree": 9,
         "interactif": true,
         "donnees": {
           "cas": {
             "id": "B3-01-A3-10-RECOMMANDATIONS",
             "metier": "Analyste data — Norvane Équipement (réseau de 12 agences)",
-            "situation": "Jeudi, Nadia Ferrand présente le réseau au comité de direction. Elle vous demande trois recommandations, tirées de votre tableau de bord.",
+            "situation": "Jeudi, Nadia Ferrand présente le réseau au comité de direction. Elle vous demande deux recommandations, tirées de vos analyses de la séance ; une troisième en défi.",
             "geste": "Pour chacune : un constat chiffré, sa cause trouvée dans le détail, une action précise, datée, confiée à quelqu’un.",
             "consequence": "Une recommandation sans chiffre ne convainc pas ; sans cause, elle traite le symptôme ; sans action, elle ne change rien.",
             "questionsLibres": [
@@ -5338,7 +5165,7 @@
               },
               {
                 "id": "b3-01-a3-recommandations:recommandation-3",
-                "question": "Recommandation 3 : constat chiffré → cause → action.",
+                "question": "Défi — Recommandation 3 : constat chiffré → cause → action.",
                 "placeholder": "Constat : … Cause : … Action : …"
               }
             ],
@@ -5351,7 +5178,7 @@
             }
           }
         },
-        "notes": "• Temps : réflexion 1 min · travail 6 min · correction 2 min\n• Réflexion : faire relire le tableau de bord en cherchant ce qui sort de l’ordinaire : une agence, une catégorie, un délai.\n• Rouen (91,9 %) : troisième agence sous l’objectif, en recul d’environ 2 % sur un an, de −3 % à 0 % selon la catégorie, sans cause qui ressorte du détail. À surveiller, pas une histoire : un constat sans cause ne fait pas une recommandation.\n• Révéler la correction : les quatre histoires s’affichent ensemble. Les commenter une à une, en demandant à main levée qui l’avait trouvée avant de passer à la suivante.\n• Transition : « Gardez la fiche mémo, puis écrivez les règles des niveaux 5 et 6. »",
+        "notes": "• Temps : réflexion 1 min · travail 6 min · correction 2 min\n• Réflexion : faire relire la synthèse de l’exercice 9 et le tableau de bord en cherchant ce qui sort de l’ordinaire : une agence, une catégorie, un délai.\n• Rouen (91,9 %) : troisième agence sous l’objectif, en recul d’environ 2 % sur un an, de −3 % à 0 % selon la catégorie, sans cause qui ressorte du détail. À surveiller, pas une histoire : un constat sans cause ne fait pas une recommandation.\n• Révéler la correction : les quatre histoires s’affichent ensemble. Les commenter une à une, en demandant à main levée qui l’avait trouvée avant de passer à la suivante.\n• Transition : « Gardez la fiche mémo, puis écrivez les règles des niveaux 5 et 6. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -5616,8 +5443,6 @@
       "correction-certaine-renvoyee-a-un-humain": "B3-01-A1-10-COURS-GRILLE",
       "suppression-au-lieu-de-signalement": "B3-01-A1-10-COURS-GRILLE",
       "texte-pris-pour-nombre": "B3-01-A1-11-COURS-OUTILS",
-      "casse-non-normalisee": "B3-01-A1-11-COURS-OUTILS",
-      "espaces-non-supprimes": "B3-01-A1-11-COURS-OUTILS",
       "doublons-supprimes-sur-une-colonne": "B3-01-A1-11-COURS-OUTILS",
       "controle-apres-correction": "B3-01-A1-11-COURS-OUTILS",
       "famille-de-probleme-mal-nommee": "B3-01-A2-02-FAMILLES",
@@ -5646,7 +5471,7 @@
     "id": "b3-01-donnee-brute-decision",
     "titre": "Expert Data : de la donnée brute à la décision",
     "niveau": "B3",
-    "duree": 180,
+    "duree": 189,
     "concepts": [
       "reference-de-cellule",
       "jeu-de-donnees",
@@ -5748,7 +5573,7 @@
                   },
                   {
                     "title": "Niveau 6 · Décider",
-                    "description": "Livrable : le tableau de bord et trois recommandations. Règle du cahier : comment écrire une recommandation."
+                    "description": "Livrable : le tableau de bord et deux recommandations. Règle du cahier : comment écrire une recommandation."
                   }
                 ]
               }
@@ -5893,7 +5718,7 @@
         "id": "B3-01-A1-07-TRI-COLONNES",
         "type": "ecran-verrouille",
         "titre": "Exercice 1 — Le dictionnaire des données",
-        "duree": 4,
+        "duree": 5,
         "interactif": false,
         "donnees": {}
       },
@@ -5901,7 +5726,7 @@
         "id": "B3-01-A1-08-ATELIER-GRANULARITE",
         "type": "ecran-verrouille",
         "titre": "Exercice 2 — Une ligne, c’est quoi ?",
-        "duree": 4,
+        "duree": 5,
         "interactif": false,
         "donnees": {}
       },
@@ -6034,7 +5859,7 @@
         "id": "B3-01-A1-13-TRI-ANOMALIES",
         "type": "ecran-verrouille",
         "titre": "Exercice 3 — Classer les anomalies",
-        "duree": 6,
+        "duree": 8,
         "interactif": false,
         "donnees": {}
       },
@@ -6230,7 +6055,7 @@
         "id": "B3-01-A2-04-ATELIER-RECHERCHE",
         "type": "ecran-verrouille",
         "titre": "Exercice 5 — Relier et additionner",
-        "duree": 11,
+        "duree": 12,
         "interactif": false,
         "donnees": {}
       },
@@ -6305,7 +6130,7 @@
       {
         "id": "B3-01-A2-07-ATELIER-DELAIS-MARGE",
         "type": "ecran-verrouille",
-        "titre": "Exercice 6 — Délais et marge",
+        "titre": "Exercice 6 — Délais de livraison",
         "duree": 12,
         "interactif": false,
         "donnees": {}
@@ -6497,7 +6322,7 @@
         "id": "B3-01-A3-04-TRI-GRAPHIQUES",
         "type": "ecran-verrouille",
         "titre": "Exercice 8 — À chaque question son graphique",
-        "duree": 4,
+        "duree": 5,
         "interactif": false,
         "donnees": {}
       },
@@ -6505,7 +6330,7 @@
         "id": "B3-01-A3-05-ATELIER-GRAPHIQUES",
         "type": "ecran-verrouille",
         "titre": "Exercice 9 — CA et objectif par agence",
-        "duree": 8,
+        "duree": 11,
         "interactif": false,
         "donnees": {}
       },
@@ -6592,7 +6417,7 @@
       {
         "id": "B3-01-A3-10-RECOMMANDATIONS",
         "type": "ecran-verrouille",
-        "titre": "Vos trois recommandations au comité",
+        "titre": "Vos recommandations au comité",
         "duree": 9,
         "interactif": false,
         "donnees": {}

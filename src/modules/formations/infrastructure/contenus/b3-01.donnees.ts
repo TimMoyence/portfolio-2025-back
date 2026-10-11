@@ -4,14 +4,11 @@ export const QUESTIONS_CHIFFREES_B3_01 = [
   'b3-01-a1-lignes-commande',
   'b3-01-a1-lignes-uniques',
   'b3-01-a1-ca-total',
-  'b3-01-a1-villes',
   'b3-01-a1-a-verifier',
   'b3-01-a2-ca-rennes-info',
-  'b3-01-a2-remises-marseille',
   'b3-01-a2-ca-ouest',
   'b3-01-a2-delai-strasbourg',
   'b3-01-a2-retards',
-  'b3-01-a2-taux-marge',
   'b3-01-a2-part-info-rennes',
   'b3-01-a3-agences-sous-objectif',
   'b3-01-a3-atteinte-rennes',
@@ -47,6 +44,15 @@ export type HistoireB301 =
   | 'delai-median-strasbourg-2025'
   | 'delai-median-reseau-2026';
 
+export type DefiB301 =
+  | 'villes-distinctes'
+  | 'villes-sans-supprespace'
+  | 'remises-marseille'
+  | 'remises-marseille-en-points'
+  | 'taux-de-marque-reseau'
+  | 'moyenne-des-taux-reseau'
+  | 'taux-de-marge-reseau';
+
 const EXACT = 0;
 const A_L_EURO_PRES = 1;
 const AU_DIXIEME_DE_POINT = 0.1;
@@ -56,14 +62,11 @@ export const TOLERANCES_B3_01: Readonly<Record<QuestionChiffreeB301, number>> =
     'b3-01-a1-lignes-commande': EXACT,
     'b3-01-a1-lignes-uniques': EXACT,
     'b3-01-a1-ca-total': A_L_EURO_PRES,
-    'b3-01-a1-villes': EXACT,
     'b3-01-a1-a-verifier': EXACT,
     'b3-01-a2-ca-rennes-info': A_L_EURO_PRES,
-    'b3-01-a2-remises-marseille': EXACT,
     'b3-01-a2-ca-ouest': A_L_EURO_PRES,
     'b3-01-a2-delai-strasbourg': EXACT,
     'b3-01-a2-retards': EXACT,
-    'b3-01-a2-taux-marge': AU_DIXIEME_DE_POINT,
     'b3-01-a2-part-info-rennes': AU_DIXIEME_DE_POINT,
     'b3-01-a3-agences-sous-objectif': EXACT,
     'b3-01-a3-atteinte-rennes': AU_DIXIEME_DE_POINT,
@@ -77,14 +80,11 @@ export const VALEURS_B3_01: ValeursAttenduesB301 = {
   'b3-01-a1-lignes-commande': 3,
   'b3-01-a1-lignes-uniques': 4098,
   'b3-01-a1-ca-total': 1_340_208,
-  'b3-01-a1-villes': 48,
   'b3-01-a1-a-verifier': 85,
   'b3-01-a2-ca-rennes-info': 8342,
-  'b3-01-a2-remises-marseille': 66,
   'b3-01-a2-ca-ouest': 77_850,
   'b3-01-a2-delai-strasbourg': 8,
   'b3-01-a2-retards': 99,
-  'b3-01-a2-taux-marge': 32,
   'b3-01-a2-part-info-rennes': 27.2,
   'b3-01-a2-meilleur-trimestre': 'T4 2025',
   'b3-01-a3-agences-sous-objectif': 3,
@@ -102,7 +102,6 @@ export const PIEGES_B3_01: PiegesB301 = {
     'en-tete-compte-comme-ligne': 4099,
   },
   'b3-01-a1-ca-total': { 'texte-pris-pour-nombre': 1_286_319 },
-  'b3-01-a1-villes': { 'espaces-non-supprimes': 83 },
   'b3-01-a1-a-verifier': {
     'suspect-corrige-sans-validation': 39,
     'controle-apres-correction': 45,
@@ -111,7 +110,6 @@ export const PIEGES_B3_01: PiegesB301 = {
     'critere-mal-ecrit': 0,
     'periode-mal-delimitee': 27_862,
   },
-  'b3-01-a2-remises-marseille': { 'critere-mal-ecrit': 0 },
   'b3-01-a2-ca-ouest': {
     'plage-recherche-non-figee': 0,
     'periode-mal-delimitee': 188_908,
@@ -126,11 +124,6 @@ export const PIEGES_B3_01: PiegesB301 = {
   'b3-01-a2-retards': {
     'jours-calendaires-pour-ouvres': 481,
     'bornes-comptees-dans-le-delai': 284,
-  },
-  'b3-01-a2-taux-marge': {
-    'moyenne-simple-des-taux': 35.4,
-    'marque-confondue-avec-marge': 47,
-    'periode-mal-delimitee': 32.3,
   },
   'b3-01-a2-part-info-rennes': {
     'pourcentage-du-mauvais-total': 1.5,
@@ -174,4 +167,14 @@ export const HISTOIRES_B3_01: Readonly<Record<HistoireB301, number>> = {
   'evolution-lille': 23.1,
   'delai-median-strasbourg-2025': 2,
   'delai-median-reseau-2026': 3,
+};
+
+export const DEFIS_B3_01: Readonly<Record<DefiB301, number>> = {
+  'villes-distinctes': 48,
+  'villes-sans-supprespace': 83,
+  'remises-marseille': 66,
+  'remises-marseille-en-points': 0,
+  'taux-de-marque-reseau': 32,
+  'moyenne-des-taux-reseau': 35.4,
+  'taux-de-marge-reseau': 47,
 };

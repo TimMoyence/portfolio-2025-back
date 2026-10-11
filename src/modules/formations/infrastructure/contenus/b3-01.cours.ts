@@ -19,8 +19,6 @@ const REMEDIATIONS: ContenuDeCours['remediations'] = {
   'correction-certaine-renvoyee-a-un-humain': 'B3-01-A1-10-COURS-GRILLE',
   'suppression-au-lieu-de-signalement': 'B3-01-A1-10-COURS-GRILLE',
   'texte-pris-pour-nombre': 'B3-01-A1-11-COURS-OUTILS',
-  'casse-non-normalisee': 'B3-01-A1-11-COURS-OUTILS',
-  'espaces-non-supprimes': 'B3-01-A1-11-COURS-OUTILS',
   'doublons-supprimes-sur-une-colonne': 'B3-01-A1-11-COURS-OUTILS',
   'controle-apres-correction': 'B3-01-A1-11-COURS-OUTILS',
   'famille-de-probleme-mal-nommee': 'B3-01-A2-02-FAMILLES',
@@ -53,7 +51,7 @@ export const COURS_B3_01 = moteur.coursB3(
     slug: 'b3-01-donnee-brute-decision',
     titre: 'Expert Data : de la donnée brute à la décision',
     gabarit: 'b3',
-    dureeMinutes: 180,
+    dureeMinutes: 189,
     concepts: [...CONCEPTS_DU_B3_01],
   },
 );

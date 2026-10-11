@@ -186,7 +186,7 @@ describe('classeurs du B3-01', () => {
   );
 
   it(
-    'écrit au corrigé la formule CNUM enseignée sur chaque montant, un compte de villes arrondi, et les montants des agences hors format date',
+    'écrit au corrigé la formule CNUM enseignée sur chaque montant, la ville nettoyée par NOMPROPRE et SUPPRESPACE, et les montants des agences hors format date',
     async () => {
       const chemin = join(DOSSIER_D_ESSAI, 'B3-01_corrige_formateur.xlsx');
       await ecrireLeCorrigeFormateur(jeu, chemin);
@@ -196,20 +196,29 @@ describe('classeurs du B3-01', () => {
       const corrige = classeur.getWorksheet('Corrigé');
       const derniere = ongletDe(jeu.brut, 'Commandes').lignes.length + 1;
       const agences = ongletDe(jeu.reprise2, 'Agences').lignes.length;
-      const montantsSansLaFormuleEnseignee = Array.from(
+      const lignesDuBrut = Array.from(
         { length: derniere - 1 },
         (_, rang) => rang + 2,
-      ).filter(
-        (r) =>
-          brut?.getCell(`P${r}`).formula !==
-          `VALUE(SUBSTITUTE(SUBSTITUTE(L${r}," €","")," ",""))`,
       );
-      const villes = corrige?.getColumn(1).values.indexOf('b3-01-a1-villes');
+      const lignesSansLaFormuleEnseignee = (
+        colonne: string,
+        formuleEnseignee: (r: number) => string,
+      ) =>
+        lignesDuBrut.filter(
+          (r) =>
+            brut?.getCell(`${colonne}${r}`).formula !== formuleEnseignee(r),
+        );
 
-      expect(montantsSansLaFormuleEnseignee).toEqual([]);
-      expect(corrige?.getCell(`B${villes}`).formula).toMatch(
-        /^ROUND\(SUMPRODUCT\(.*\),0\)$/u,
-      );
+      expect(
+        lignesSansLaFormuleEnseignee(
+          'P',
+          (r) => `VALUE(SUBSTITUTE(SUBSTITUTE(L${r}," €","")," ",""))`,
+        ),
+      ).toEqual([]);
+      expect(
+        lignesSansLaFormuleEnseignee('Q', (r) => `PROPER(TRIM(E${r}))`),
+      ).toEqual([]);
+      expect(corrige?.getColumn(1).values).not.toContain('b3-01-a1-villes');
       for (const r of [2, 8]) {
         expect(calculs?.getCell(`B${r}`).numFmt).toBe('dd/mm/yyyy');
       }

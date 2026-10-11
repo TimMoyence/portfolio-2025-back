@@ -140,10 +140,10 @@ export const ACTE_3: moteur.Acte = [
       titre: 'Exercice 8 — À chaque question son graphique',
       diffusion: 'seance',
       brique: 'fp-cardsort',
-      dureeMinutes: 3,
+      dureeMinutes: 4,
       concepts: ['choix-du-graphique'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(1, 2),
+        moteur.tempsDeLExercice(1, 3),
         'Réflexion : faire dire, pour chaque question, si elle compare, suit le temps, décompose, répartit ou relie.',
         'Pièges : une évolution rangée en barres ; un histogramme confondu avec des barres ; un graphique choisi avant la question.',
       ),
@@ -251,17 +251,17 @@ export const ACTE_3: moteur.Acte = [
       titre: 'Exercice 9 — CA et objectif par agence',
       diffusion: 'seance',
       brique: 'questionnaire',
-      dureeMinutes: 7,
+      dureeMinutes: 10,
       concepts: ['choix-du-graphique', 'tableau-de-bord'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(1, 6),
+        moteur.tempsDeLExercice(1, 9),
         'Réflexion : faire dire où vit l’objectif : dans une autre table que les ventes, d’où SOMME.SI.ENS et pas un TCD seul.',
         'Pièges : comparer neuf mois de ventes à l’objectif de toute la table ; oublier la période des deux côtés.',
       ),
       proprietes: {
         intitule: 'Exercice 9 — CA et objectif par agence',
         consigne:
-          'Essentiel, dans le classeur de reprise de l’acte 3 : une synthèse par agence, de janvier à septembre 2026 : le CA cumulé par SOMME.SI.ENS sur T_Commandes, l’objectif cumulé par SOMME.SI.ENS sur Objectifs, le taux d’atteinte. Puis un graphique CA et objectif en Histogramme groupé (colonnes) ou en Barres groupées (barres horizontales), avec un titre qui conclut, une légende et un axe depuis zéro. Sous Windows (Excel 2019, 2021 ou 365), vous pouvez aussi mettre Agences et Objectifs sous forme de tableau, nommés T_Agences et T_Objectifs, puis relier T_Commandes et T_Objectifs à T_Agences par agence_id dans Données › Relations ; dans le TCD, créé avec « Ajouter ces données au modèle de données », agence_id de T_Agences en lignes, ca_ht de T_Commandes et objectif_ca_ht de T_Objectifs en valeurs, et deux filtres, car un filtre ne passe pas d’une table à l’autre : annee de T_Commandes sur 2026, mois de T_Objectifs de janvier à septembre 2026. Sur Mac, le modèle de données n’existe pas : la synthèse par SOMME.SI.ENS suffit. Défi : les courbes du CA mensuel 2025 et 2026, superposées.',
+          'Essentiel, dans le classeur de reprise de l’acte 3 : une synthèse par agence, de janvier à septembre 2026 : le CA cumulé par SOMME.SI.ENS sur T_Commandes, l’objectif cumulé par SOMME.SI.ENS sur Objectifs, le taux d’atteinte. Puis un graphique CA et objectif en Histogramme groupé (colonnes) ou en Barres groupées (barres horizontales), avec un titre qui conclut, une légende et un axe depuis zéro. Sous Windows (Excel 2019, 2021 ou 365), vous pouvez aussi mettre Agences et Objectifs sous forme de tableau, nommés T_Agences et T_Objectifs, puis relier T_Commandes et T_Objectifs à T_Agences par agence_id dans Données › Relations ; dans le TCD, créé avec « Ajouter ces données au modèle de données », agence_id de T_Agences en lignes, ca_ht de T_Commandes et objectif_ca_ht de T_Objectifs en valeurs, et deux filtres, car un filtre ne passe pas d’une table à l’autre : annee de T_Commandes sur 2026, mois de T_Objectifs de janvier à septembre 2026. Sur Mac, le modèle de données n’existe pas : la synthèse par SOMME.SI.ENS suffit. Défi : un graphique en courbes du CA mensuel, 2025 et 2026 superposées, tiré d’un TCD mois × années.',
         regime: 'focus',
         ordre: 'fixe',
         questions: [
@@ -396,7 +396,7 @@ export const ACTE_3: moteur.Acte = [
       concepts: ['tableau-de-bord'],
       notes: moteur.puces(
         'Exemple lu, pas refait : chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.',
-        'Montrer chaque geste au pupitre dans Excel ; les étudiants les reprennent à l’exercice 10.',
+        'Montrer chaque geste au pupitre dans Excel ; les étudiants reprennent les barres de données à l’exercice 10, les plus rapides le segment au défi.',
       ),
       proprietes: {
         modalite: 'solo',
@@ -457,7 +457,7 @@ export const ACTE_3: moteur.Acte = [
       proprietes: {
         intitule: 'Exercice 10 — Le tableau de bord Direction',
         consigne:
-          'Essentiel, dans un onglet Dashboard : quatre indicateurs (CA cumulé 2026, évolution par rapport à la même période de 2025, taux de marque, lignes en quarantaine), le graphique de l’exercice 9, un TCD de la marge par agence avec une mise en forme conditionnelle, et deux segments connectés à ce TCD, region et categorie. Défi : une mise en page A4 paysage, prête à imprimer.',
+          'Essentiel, dans un onglet Dashboard : quatre indicateurs (CA cumulé 2026, évolution par rapport à la même période de 2025, taux de marque, lignes en quarantaine) et un TCD de la marge par agence, la marge en barres de données (Accueil › Mise en forme conditionnelle › Barres de données). Défi : un segment region relié à ce TCD.',
         regime: 'focus',
         ordre: 'fixe',
         questions: [
@@ -500,8 +500,9 @@ export const ACTE_3: moteur.Acte = [
       minutes: 2,
       notes: [
         'Corriger question par question, dans l’ordre où les explications se dévoilent ; s’attarder sur la moins réussie (score sous chaque correction).',
-        'Projeter un tableau de bord réussi : quatre indicateurs, chacun avec sa comparaison.',
-        'Transition : « Ce tableau de bord raconte quatre histoires : vos recommandations. »',
+        'Projeter un tableau de bord réussi : quatre indicateurs, chacun avec sa comparaison, et le TCD de la marge par agence en barres de données, posées sur les seules cellules des agences : le total général écraserait les autres barres.',
+        'Défi : clic dans le TCD › Insertion › Segment (sur Mac, Analyse du tableau croisé dynamique › Segment) › region.',
+        'Transition : « Vos analyses de la séance racontent quatre histoires : vos recommandations. »',
       ],
     },
     [
@@ -526,20 +527,20 @@ export const ACTE_3: moteur.Acte = [
   moteur.corrigeSurPlace(
     {
       screenId: 'B3-01-A3-10-RECOMMANDATIONS',
-      titre: 'Vos trois recommandations au comité',
+      titre: 'Vos recommandations au comité',
       diffusion: 'seance',
       brique: 'fp-pro',
       dureeMinutes: 7,
       concepts: ['tableau-de-bord'],
       notes: moteur.puces(
         moteur.tempsDeLExercice(1, 6),
-        'Réflexion : faire relire le tableau de bord en cherchant ce qui sort de l’ordinaire : une agence, une catégorie, un délai.',
+        'Réflexion : faire relire la synthèse de l’exercice 9 et le tableau de bord en cherchant ce qui sort de l’ordinaire : une agence, une catégorie, un délai.',
         'Rouen (91,9 %) : troisième agence sous l’objectif, en recul d’environ 2 % sur un an, de −3 % à 0 % selon la catégorie, sans cause qui ressorte du détail. À surveiller, pas une histoire : un constat sans cause ne fait pas une recommandation.',
       ),
       proprietes: {
         metier: 'Analyste data — Norvane Équipement (réseau de 12 agences)',
         situation:
-          'Jeudi, Nadia Ferrand présente le réseau au comité de direction. Elle vous demande trois recommandations, tirées de votre tableau de bord.',
+          'Jeudi, Nadia Ferrand présente le réseau au comité de direction. Elle vous demande deux recommandations, tirées de vos analyses de la séance ; une troisième en défi.',
         geste:
           'Pour chacune : un constat chiffré, sa cause trouvée dans le détail, une action précise, datée, confiée à quelqu’un.',
         consequence:
@@ -557,7 +558,8 @@ export const ACTE_3: moteur.Acte = [
           },
           {
             id: 'b3-01-a3-recommandations:recommandation-3',
-            question: 'Recommandation 3 : constat chiffré → cause → action.',
+            question:
+              'Défi — Recommandation 3 : constat chiffré → cause → action.',
             placeholder: 'Constat : … Cause : … Action : …',
           },
         ],

@@ -21,6 +21,7 @@ import { tirer } from '../../domain/cours/Tirage';
 import { COURS_B3_01 } from './b3-01.cours';
 import {
   CLASSEURS_B3_01,
+  DEFIS_B3_01,
   HISTOIRES_B3_01,
   PIEGES_B3_01,
   QUESTIONS_CHIFFREES_B3_01,
@@ -73,6 +74,13 @@ function questionsDe(screenId: string) {
   return 'questions' in proprietes ? proprietes.questions : [];
 }
 
+function consigneDe(screenId: string): string {
+  const { proprietes } = fiche.ecranDuContenu(COURS_B3_01, screenId);
+  return (
+    'consigne' in proprietes ? (proprietes.consigne ?? '') : ''
+  ).replaceAll(ESPACES_TYPOGRAPHIQUES, ' ');
+}
+
 function libellesDuVote(id: string): string[] {
   return Object.values(tirer(COURS, 0).libellesOptions[id]);
 }
@@ -119,25 +127,25 @@ function explicationsDe(screenId: string): string[] {
 fiche.decrireLaFicheDuCours('B3-01', COURS, {
   conception: 'cours-b3-01-conception.md',
   ecrans: 39,
-  dureeMinutes: 180,
-  minutesParActe: [56, 60, 64, 0, 0, 0],
-  rythme: { expositionContinueMax: 6, interactives: 142, exposition: 38 },
+  dureeMinutes: 189,
+  minutesParActe: [60, 61, 68, 0, 0, 0],
+  rythme: { expositionContinueMax: 6, interactives: 151, exposition: 38 },
   ateliersNotes: [
-    'A1-07 (4)',
-    'A1-08 (4)',
-    'A1-13 (6)',
+    'A1-07 (5)',
+    'A1-08 (5)',
+    'A1-13 (8)',
     'A1-14 (15)',
-    'A2-04 (11)',
+    'A2-04 (12)',
     'A2-07 (12)',
     'A2-11 (15)',
-    'A3-04 (4)',
-    'A3-05 (8)',
+    'A3-04 (5)',
+    'A3-05 (11)',
     'A3-09 (15)',
   ],
-  noteesParType: [4, 18, 3, 0, 0],
+  noteesParType: [4, 15, 3, 0, 0],
   enigmes: 0,
   rappels: 0,
-  remediations: 37,
+  remediations: 35,
   options: 12,
   catalogue: [
     'A1-02',
@@ -172,7 +180,7 @@ fiche.decrireLaFicheDuCours('B3-01', COURS, {
 });
 
 describe('B3-01 — valeurs servies face au jeu Norvane', () => {
-  it('sert les dix-huit valeurs attendues et leurs pièges, dans l’ordre du § 5.1', () => {
+  it('sert les quinze valeurs attendues et leurs pièges, dans l’ordre du § 5.1', () => {
     fiche.attendreLesNumeriques(
       COURS,
       Object.fromEntries(
@@ -531,7 +539,7 @@ describe('B3-01 — acte 1 : consignes et corrections exactes', () => {
     ).toEqual(['b3-01-a1-granularite', 'b3-01-a1-lignes-commande']);
   });
 
-  it('A1-11 · enseigne le comptage des valeurs distinctes que l’exercice 4 demande', () => {
+  it('A1-11 · enseigne le comptage des valeurs distinctes que le défi de l’exercice 4 demande', () => {
     expect(texteDe('B3-01-A1-11-COURS-OUTILS')).toContain('Valeurs distinctes');
   });
 
@@ -546,7 +554,7 @@ describe('B3-01 — acte 1 : consignes et corrections exactes', () => {
     expect(texteDe('B3-01-A1-14-ATELIER-NETTOYAGE')).toContain(
       'en N et O, sans insérer de colonne',
     );
-    expect(explicationsDe('B3-01-A1-14-ATELIER-NETTOYAGE')[3]).toContain(
+    expect(explicationsDe('B3-01-A1-14-ATELIER-NETTOYAGE')[2]).toContain(
       'Les formules N et O en corrigent 490 autres',
     );
   });
@@ -596,7 +604,7 @@ describe('B3-01 — acte 1 : consignes et corrections exactes', () => {
     );
   });
 
-  it('A1-14 · recompose la part douteuse : contrôle, formules, défi et lignes hors contrôle', () => {
+  it('A1-14 · recompose la part douteuse : contrôle, formules, classeur de reprise et lignes hors contrôle', () => {
     const aVerifier = explicationsDe('B3-01-A1-14-ATELIER-NETTOYAGE').at(-1);
     const corrigeesParFormule = ANOMALIES_SEMEES.F1 + ANOMALIES_SEMEES.F2;
     const horsControle = ANOMALIES_SEMEES.H1 + ANOMALIES_SEMEES.S3;
@@ -608,7 +616,10 @@ describe('B3-01 — acte 1 : consignes et corrections exactes', () => {
         horsControle,
     ).toBe(614);
     expect(aVerifier).toContain(`en corrigent ${corrigeesParFormule} autres`);
-    expect(aVerifier).toContain(`${ANOMALIES_SEMEES.F4} ca_ht mal calculés`);
+    expect(aVerifier).toContain(
+      `${ANOMALIES_SEMEES.F4} ca_ht mal calculés, que le classeur de reprise recalcule`,
+    );
+    expect(aVerifier).not.toContain('le défi');
     expect(aVerifier).toContain(`${horsControle} échappent au contrôle`);
   });
 
@@ -634,19 +645,22 @@ describe('B3-01 — acte 1 : consignes et corrections exactes', () => {
     );
   });
 
-  it('A1-14 · diagnostique le contrôle posé sur les dates converties par la formule du défi, puis par DATEVAL sur toute date en texte', () => {
+  it('A1-14 · diagnostique le contrôle posé sur les dates converties par la formule de A1-11, puis par DATEVAL sur toute date en texte', () => {
     const aVerifier = explicationsDe('B3-01-A1-14-ATELIER-NETTOYAGE').at(-1);
     const pieges = PIEGES_B3_01['b3-01-a1-a-verifier'];
-    const apresLeDefi = pieges['controle-apres-correction'] ?? Number.NaN;
+    const apresLaFormule = pieges['controle-apres-correction'] ?? Number.NaN;
     const apresDatevalPartout =
       pieges['suspect-corrige-sans-validation'] ?? Number.NaN;
-    const datesMalLues = apresLeDefi - apresDatevalPartout;
+    const datesMalLues = apresLaFormule - apresDatevalPartout;
 
-    expect(apresLeDefi).toBe(
+    expect(apresLaFormule).toBe(
       VALEURS_B3_01['b3-01-a1-a-verifier'] - ANOMALIES_SEMEES.F5,
     );
+    expect(texteDe('B3-01-A1-14-ATELIER-NETTOYAGE')).toContain(
+      `poser le contrôle sur les dates converties (${apresLaFormule} par la formule de A1-11, ${apresDatevalPartout} par DATEVAL sur toute date en texte)`,
+    );
     expect(aVerifier).toContain(
-      `Recalculé sur les dates converties, le contrôle perd les ${ANOMALIES_SEMEES.F5} dates ISO : ${apresLeDefi}.`,
+      `Recalculé sur les dates converties, le contrôle perd les ${ANOMALIES_SEMEES.F5} dates ISO : ${apresLaFormule}.`,
     );
     expect(aVerifier).toContain(
       `DATEVAL sur toute date en texte lui ôte aussi ${datesMalLues} des ${ANOMALIES_SEMEES.S1} dates d’un autre système, lues jour d’abord : ${apresDatevalPartout}.`,
@@ -715,7 +729,7 @@ describe('B3-01 — acte 1 : consignes et corrections exactes', () => {
   });
 
   it('A2-07 · diagnostique la médiane de Strasbourg prise sur toute la table, ou sur une liste trop large, qu élargit l agence oubliée ou MEDIANE sous un filtre', () => {
-    const [mediane, , tauxDeMarque] = explicationsDe(
+    const [mediane, retards] = explicationsDe(
       'B3-01-A2-07-ATELIER-DELAIS-MARGE',
     );
 
@@ -731,8 +745,8 @@ describe('B3-01 — acte 1 : consignes et corrections exactes', () => {
     );
     expect(mediane).not.toContain('Toutes années confondues');
     expect(mediane).not.toMatch(/(?<!\d)[34] jours|\b(?:trois|quatre) jours/iu);
-    expect(tauxDeMarque).toContain(
-      'Toutes années confondues, la médiane de Strasbourg de la première question tombe à 4 jours.',
+    expect(retards).toMatch(
+      /Toutes années confondues, la médiane de Strasbourg de la première question tombe à 4 jours\.$/u,
     );
   });
 
@@ -748,21 +762,16 @@ describe('B3-01 — acte 1 : consignes et corrections exactes', () => {
     );
   });
 
-  it('A2-07 et A3-09 · diagnostiquent le taux de marque pris sur toute la table, et ne le disent qu’à la dernière correction qu’il fausse', () => {
+  it('A3-09 · diagnostique le taux de marque pris sur toute la table, et ne le dit qu’à la dernière correction qu’il fausse', () => {
     const [, ca2026, margeMarseille] = explicationsDe(
       'B3-01-A3-09-ATELIER-DASHBOARD',
     );
 
-    for (const id of ['b3-01-a2-taux-marge', 'b3-01-a3-marge-marseille']) {
-      expect(confusionsDeLaChiffree(id)).toEqual([
-        'moyenne-simple-des-taux',
-        'marque-confondue-avec-marge',
-        'periode-mal-delimitee',
-      ]);
-    }
-    expect(explicationsDe('B3-01-A2-07-ATELIER-DELAIS-MARGE')[2]).toContain(
-      'Sur toute la table, 2025 compris, le même rapport donne 32,3 %.',
-    );
+    expect(confusionsDeLaChiffree('b3-01-a3-marge-marseille')).toEqual([
+      'moyenne-simple-des-taux',
+      'marque-confondue-avec-marge',
+      'periode-mal-delimitee',
+    ]);
     expect(ca2026).not.toContain('Toute la table');
     expect(margeMarseille).toContain(
       'Toute la table, 2025 compris, mêle deux années : 1 313 125 € de CA à la deuxième question, 29,8 % de taux de marque ici.',
@@ -886,7 +895,7 @@ describe('B3-01 — actes 2 et 3 : consignes et corrections exactes', () => {
   });
 
   it('A2-04 · décrit la recherche non figée telle qu’elle glisse : la seule ligne Ouest trouvée date de 2025', () => {
-    const [, , ouest] = explicationsDe('B3-01-A2-04-ATELIER-RECHERCHE');
+    const [, ouest] = explicationsDe('B3-01-A2-04-ATELIER-RECHERCHE');
 
     expect(ouest).not.toContain('aucune ne porte Ouest');
     expect(ouest).toContain('date de 2025');
@@ -970,7 +979,7 @@ describe('B3-01 — actes 2 et 3 : consignes et corrections exactes', () => {
   });
 
   it('A2-04 · donne au total nul ses deux causes à la dernière question, sans souffler la recherche non figée à la première', () => {
-    const [rennes, , ouest] = explicationsDe('B3-01-A2-04-ATELIER-RECHERCHE');
+    const [rennes, ouest] = explicationsDe('B3-01-A2-04-ATELIER-RECHERCHE');
 
     expect(rennes).not.toContain('sans $');
     expect(rennes).not.toContain('guillemets');
@@ -1007,16 +1016,14 @@ describe('B3-01 — actes 2 et 3 : consignes et corrections exactes', () => {
     ]) {
       expect(texteDe(ecran)).toMatch(/[Tt]aux de marque/);
     }
-    for (const id of [
-      'b3-01-a2-taux-marge',
-      'b3-01-a3-marge-marseille',
-    ] as const) {
-      expect(enonceDe(id)).toContain('taux de marque');
-      expect(enonceDe(id)).toContain('marge ÷ CA HT');
-      expect(Object.keys(PIEGES_B3_01[id])).toContain(
-        'marque-confondue-avec-marge',
-      );
-    }
+    expect(enonceDe('b3-01-a3-marge-marseille')).toContain('taux de marque');
+    expect(enonceDe('b3-01-a3-marge-marseille')).toContain('marge ÷ CA HT');
+    expect(Object.keys(PIEGES_B3_01['b3-01-a3-marge-marseille'])).toContain(
+      'marque-confondue-avec-marge',
+    );
+    expect(texteDe('B3-01-A2-07-ATELIER-DELAIS-MARGE')).toContain(
+      'c’est le taux de marge',
+    );
     expect(remediationDe('marque-confondue-avec-marge')).toBe(
       'B3-01-A2-06-COURS-TEMPS-STATS',
     );
@@ -1361,7 +1368,7 @@ describe('B3-01 — actes 2 et 3 : consignes et corrections exactes', () => {
   );
 });
 
-describe('B3-01 — retours de la séance du 13/10', () => {
+describe('B3-01 — retours de la relecture du 11/10', () => {
   it('R-04 · A1-12 · rappelle au-dessus des étapes le rôle et la syntaxe de chaque formule, sans souffler la réponse', () => {
     const exemple = COURS.ecrans.find(
       (ecran) => ecran.id === 'B3-01-A1-12-EXEMPLE-NETTOYAGE',
@@ -1391,9 +1398,9 @@ describe('B3-01 — retours de la séance du 13/10', () => {
     const tcd = texteDe('B3-01-A2-11-ATELIER-TCD');
 
     expect(texteDe('B3-01-A1-14-ATELIER-NETTOYAGE')).toContain(
-      'reprise à 9 h 41',
+      'pause de 10 minutes ; reprise à 9 h 40',
     );
-    expect(tcd).toContain('reprise à 10 h 56');
+    expect(tcd).toContain('pause de 10 minutes ; reprise à 10 h 51');
     expect(tcd).not.toContain('deux règles de plus');
   });
 
@@ -1472,6 +1479,184 @@ describe('B3-01 — retours de la séance du 13/10', () => {
   });
 });
 
+describe('B3-01 — temps de travail multiplié par 1,5, défis réduits', () => {
+  it.each([
+    ['B3-01-A1-07-TRI-COLONNES', 3],
+    ['B3-01-A1-08-ATELIER-GRANULARITE', 3],
+    ['B3-01-A1-13-TRI-ANOMALIES', 6],
+    ['B3-01-A1-14-ATELIER-NETTOYAGE', 12],
+    ['B3-01-A2-04-ATELIER-RECHERCHE', 9],
+    ['B3-01-A2-07-ATELIER-DELAIS-MARGE', 9],
+    ['B3-01-A2-11-ATELIER-TCD', 12],
+    ['B3-01-A3-04-TRI-GRAPHIQUES', 3],
+    ['B3-01-A3-05-ATELIER-GRAPHIQUES', 9],
+    ['B3-01-A3-09-ATELIER-DASHBOARD', 12],
+    ['B3-01-A3-10-RECOMMANDATIONS', 6],
+  ])(
+    '%s · annonce %i min de travail après une minute de réflexion',
+    (screenId, travail) => {
+      expect(texteDe(screenId)).toContain(
+        `réflexion 1 min · travail ${travail} min`,
+      );
+    },
+  );
+
+  it.each([
+    [
+      'B3-01-A1-14-ATELIER-NETTOYAGE',
+      'combien de villes distinctes compte la colonne N ? Copiez-la en valeurs sur une feuille à part, puis Données › Supprimer les doublons, case « Mes données ont des en-têtes » cochée.',
+    ],
+    [
+      'B3-01-A2-04-ATELIER-RECHERCHE',
+      'avec NB.SI.ENS, combien de lignes de Marseille (AG09) portent une remise supérieure à 15 %, toutes dates confondues ?',
+    ],
+    [
+      'B3-01-A2-07-ATELIER-DELAIS-MARGE',
+      'le taux de marque du réseau de janvier à septembre 2026 : cout_unitaire cherché dans Produits par INDEX et EQUIV, marge = ca_ht − quantite × cout_unitaire, puis marge ÷ CA HT.',
+    ],
+    ['B3-01-A2-11-ATELIER-TCD', 'un segment categorie relié aux deux TCD.'],
+    [
+      'B3-01-A3-05-ATELIER-GRAPHIQUES',
+      'un graphique en courbes du CA mensuel, 2025 et 2026 superposées, tiré d’un TCD mois × années.',
+    ],
+    ['B3-01-A3-09-ATELIER-DASHBOARD', 'un segment region relié à ce TCD.'],
+  ])(
+    '%s · finit la consigne sur un seul défi, d’une tâche',
+    (screenId, defi) => {
+      expect(consigneDe(screenId).split('Défi : ')).toEqual([
+        expect.stringMatching(/^Essentiel/u),
+        defi,
+      ]);
+    },
+  );
+
+  it('A1-14 · passe les villes distinctes au défi, corrigé de vive voix', () => {
+    expect(
+      questionsDe('B3-01-A1-14-ATELIER-NETTOYAGE').map(({ id }) => id),
+    ).toEqual([
+      'b3-01-a1-lignes-uniques',
+      'b3-01-a1-ca-total',
+      'b3-01-a1-a-verifier',
+    ]);
+    expect(texteDe('B3-01-A1-14-ATELIER-NETTOYAGE')).toContain(
+      `Défi : ${DEFIS_B3_01['villes-distinctes']} villes ; sans SUPPRESPACE, les espaces en trop en font compter ${DEFIS_B3_01['villes-sans-supprespace']} ; la casse ne change rien, Excel l’ignore.`,
+    );
+  });
+
+  it('ne garde aucune remédiation dont aucune question ne porte la confusion', () => {
+    const proprietes = JSON.stringify(
+      COURS_B3_01.ecrans.map(({ proprietes: deLEcran }) => deLEcran),
+    );
+
+    expect(
+      Object.keys(COURS_B3_01.remediations ?? {}).filter(
+        (confusion) => !proprietes.includes(`"${confusion}"`),
+      ),
+    ).toEqual([]);
+  });
+
+  it('A1-14 · garde au pupitre le piège de la date d’un autre système, que la formule de A1-11 laisse en texte', () => {
+    expect(texteDe('B3-01-A1-14-ATELIER-NETTOYAGE')).toContain(
+      'Piège des dates : la formule de A1-11, =SI(NBCAR(B2)=10;DATEVAL(B2);B2), laisse en texte « 08/04/26 »',
+    );
+  });
+
+  it('A2-04 · passe le comptage des remises de Marseille au défi, corrigé de vive voix', () => {
+    expect(
+      questionsDe('B3-01-A2-04-ATELIER-RECHERCHE').map(({ id }) => id),
+    ).toEqual(['b3-01-a2-ca-rennes-info', 'b3-01-a2-ca-ouest']);
+    expect(DEFIS_B3_01['remises-marseille-en-points']).toBe(0);
+    expect(texteDe('B3-01-A2-04-ATELIER-RECHERCHE')).toContain(
+      `Défi : ${DEFIS_B3_01['remises-marseille']} lignes avec le critère \\">0,15\\" ; \\">15\\" n’en trouve aucune : la remise est un taux.`,
+    );
+  });
+
+  it('A2-07 · passe le taux de marque du réseau au défi, corrigé de vive voix avec ses deux pièges', () => {
+    expect(
+      questionsDe('B3-01-A2-07-ATELIER-DELAIS-MARGE').map(({ id }) => id),
+    ).toEqual(['b3-01-a2-delai-strasbourg', 'b3-01-a2-retards']);
+    expect(texteDe('B3-01-A2-07-ATELIER-DELAIS-MARGE')).toContain(
+      `Défi : ${avecVirgule(DEFIS_B3_01['taux-de-marque-reseau'], 1)} % ; la moyenne des taux de ligne donne ${avecVirgule(DEFIS_B3_01['moyenne-des-taux-reseau'], 1)} % ; marge ÷ coût donne ${avecVirgule(DEFIS_B3_01['taux-de-marge-reseau'], 1)} % : c’est le taux de marge.`,
+    );
+  });
+
+  it('A2-11 · retire region du second TCD, qui ne montre plus que les trimestres', () => {
+    expect(consigneDe('B3-01-A2-11-ATELIER-TCD')).toContain(
+      'Second TCD : date_commande en lignes, groupée par trimestres et par années, ca_ht en valeurs.',
+    );
+  });
+
+  it('A3-08 et A3-09 · font reprendre à l’essentiel les barres de données que l’exemple guidé montre, le segment au défi', () => {
+    expect(texteDe('B3-01-A3-08-EXEMPLE-MFC-SEGMENTS')).toContain(
+      'les étudiants reprennent les barres de données à l’exercice 10, les plus rapides le segment au défi',
+    );
+    expect(consigneDe('B3-01-A3-09-ATELIER-DASHBOARD')).toContain(
+      'Essentiel, dans un onglet Dashboard : quatre indicateurs (CA cumulé 2026, évolution par rapport à la même période de 2025, taux de marque, lignes en quarantaine) et un TCD de la marge par agence, la marge en barres de données (Accueil › Mise en forme conditionnelle › Barres de données).',
+    );
+    expect(texteDe('B3-01-A3-09-ATELIER-DASHBOARD')).toContain(
+      'Défi : clic dans le TCD › Insertion › Segment (sur Mac, Analyse du tableau croisé dynamique › Segment) › region.',
+    );
+  });
+
+  it('A3-09 · corrige les barres de données de l’essentiel, et ne fait pas raconter les histoires au seul tableau de bord', () => {
+    const texte = texteDe('B3-01-A3-09-ATELIER-DASHBOARD');
+
+    expect(texte).toContain(
+      'Projeter un tableau de bord réussi : quatre indicateurs, chacun avec sa comparaison, et le TCD de la marge par agence en barres de données, posées sur les seules cellules des agences : le total général écraserait les autres barres.',
+    );
+    expect(texte).toContain(
+      'Transition : « Vos analyses de la séance racontent quatre histoires : vos recommandations. »',
+    );
+    expect(texte).not.toContain('Ce tableau de bord raconte');
+  });
+
+  it('A2-07 · n’annonce plus la marge, passée au défi, dans son titre ni dans sa transition', () => {
+    const atelier = fiche.ecranDuContenu(
+      COURS_B3_01,
+      'B3-01-A2-07-ATELIER-DELAIS-MARGE',
+    );
+
+    expect(atelier.titre).toBe('Exercice 6 — Délais de livraison');
+    expect(atelier.proprietes).toMatchObject({
+      intitule: 'Exercice 6 — Délais de livraison',
+    });
+    expect(texteDe('B3-01-A2-06-COURS-TEMPS-STATS')).toContain(
+      'Transition : « Délais de livraison du réseau : exercice 6. »',
+    );
+  });
+
+  it('A3-10 · demande deux recommandations tirées des analyses de la séance, la troisième en défi', () => {
+    expect(texteDe('B3-01-A3-10-RECOMMANDATIONS')).toContain(
+      'Réflexion : faire relire la synthèse de l’exercice 9 et le tableau de bord',
+    );
+    expect(
+      fiche.ecranDuContenu(COURS_B3_01, 'B3-01-A3-10-RECOMMANDATIONS')
+        .proprietes,
+    ).toMatchObject({
+      situation: expect.stringContaining(
+        'Elle vous demande deux recommandations, tirées de vos analyses de la séance ; une troisième en défi.',
+      ),
+      questionsLibres: [
+        { question: 'Recommandation 1 : constat chiffré → cause → action.' },
+        { question: 'Recommandation 2 : constat chiffré → cause → action.' },
+        {
+          question:
+            'Défi — Recommandation 3 : constat chiffré → cause → action.',
+        },
+      ],
+    });
+  });
+
+  it('annonce des pauses de 10 minutes, et aucune de 15', () => {
+    const textes = COURS_B3_01.ecrans.map(({ screenId }) => texteDe(screenId));
+
+    expect(textes.join('\n')).not.toMatch(/pauses? de 15 minutes/u);
+    expect(texteDe('B3-01-A1-02-COURRIEL')).toContain(
+      'deux pauses de 10 minutes',
+    );
+  });
+});
+
 describe('B3-01 — commandes vérifiées dans la documentation Microsoft', () => {
   it.each([
     ['B3-01-A1-08-ATELIER-GRANULARITE', 'Accueil › Trier et filtrer › Effacer'],
@@ -1530,19 +1715,10 @@ describe('B3-01 — commandes vérifiées dans la documentation Microsoft', () =
     },
   );
 
-  it.each([
-    ['B3-01-A2-06-COURS-TEMPS-STATS', String.raw`DATEDIF(début;fin;\"M\")`],
-    [
-      'B3-01-A2-07-ATELIER-DELAIS-MARGE',
-      String.raw`DATEDIF(E2;DATE(2026;9;30);\"M\")`,
-    ],
-  ])(
-    '%s · écrit l’unité de DATEDIF en capitale, seule forme que documente Google Sheets',
-    (screenId, formule) => {
-      const texte = texteDe(screenId);
+  it('A2-06 · écrit l’unité de DATEDIF en capitale, seule forme que documente Google Sheets', () => {
+    const texte = texteDe('B3-01-A2-06-COURS-TEMPS-STATS');
 
-      expect(texte).toContain(formule);
-      expect(texte).not.toContain(String.raw`;\"m\")`);
-    },
-  );
+    expect(texte).toContain(String.raw`DATEDIF(début;fin;\"M\")`);
+    expect(texte).not.toContain(String.raw`;\"m\")`);
+  });
 });
