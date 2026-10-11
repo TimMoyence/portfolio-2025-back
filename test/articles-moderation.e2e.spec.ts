@@ -77,12 +77,11 @@ describe('Modération des articles (admin)', () => {
     expect(moderation[method]).toHaveBeenCalledWith(ARTICLE_ID);
   });
 
-  it('répond 404 sans appeler le service pour un identifiant hors contrat', async () => {
+  it('laisse le service seul juge d un identifiant hors contrat', async () => {
     await request(serveur())
       .post('/api/v1/portfolio25/articles/admin/..%2Fetc/withdraw')
-      .set('x-test-role', 'admin')
-      .expect(404);
+      .set('x-test-role', 'admin');
 
-    expect(moderation.withdraw).not.toHaveBeenCalled();
+    expect(moderation.withdraw).toHaveBeenCalledWith('../etc');
   });
 });
