@@ -37,7 +37,7 @@ export type CardsortPlanStocke = Omit<CardsortPlanPublic, 'metadonnees'>;
 export type TableBuildPlanStocke = Omit<TableBuildPlanPublic, 'metadonnees'>;
 export type EscapeParcoursStocke = Omit<EscapeParcoursPublic, 'metadonnees'>;
 
-interface LigneDuDossier {
+export interface LigneDuDossier {
   readonly libelle: string;
   readonly valeur: string;
 }

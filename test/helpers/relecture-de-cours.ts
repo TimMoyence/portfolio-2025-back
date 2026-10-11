@@ -86,7 +86,8 @@ export function colonnesVidesDeLaFeuille(
 }
 
 const SIGNE_EGAL_DE_FORMULE = /(?<=^|[\s«(])=(?=\S)/gu;
-const APPEL_DE_FONCTION = /(?<![\p{L}\d_.$])[A-Z][A-Z0-9]*(?:\.[A-Z0-9]+)*\(/gu;
+const APPEL_DE_FONCTION =
+  /(?<![\p{L}\d_.$])(?<!"[<>=]{0,2})[A-Z][A-Z0-9]*(?:\.[A-Z0-9]+)*\(/gu;
 const FORMULE_ALTEREE = /[\u{A0}\u{202F}]|\s[;:!]/u;
 const PONCTUATION_FINALE = '.,';
 const ESPACES_TYPOGRAPHIQUES = /[\u{A0}\u{202F}]/gu;

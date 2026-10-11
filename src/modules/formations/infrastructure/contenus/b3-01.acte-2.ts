@@ -106,13 +106,13 @@ export const ACTE_2: moteur.Acte = [
         {
           famille: 'Classer',
           question: 'Les meilleures agences ?',
-          socle: 'RANG, GRANDE.VALEUR',
+          socle: 'EQUATION.RANG, GRANDE.VALEUR',
           variante: 'TRIER',
         },
         {
           famille: 'Transformer',
           question: 'Que vaut ce montant en texte ?',
-          socle: 'SUPPRESPACE, CNUM, TEXTE',
+          socle: 'SUPPRESPACE, SUBSTITUE, CNUM',
           variante: 'Power Query',
         },
         {
@@ -136,7 +136,7 @@ export const ACTE_2: moteur.Acte = [
         {
           famille: 'Détecter une anomalie',
           question: 'Quel délai sort du lot ?',
-          socle: 'MFC, MEDIANE, ECARTYPE',
+          socle: 'MFC, MEDIANE, ECARTYPE.STANDARD',
           variante: '—',
         },
       ],
@@ -199,12 +199,12 @@ export const ACTE_2: moteur.Acte = [
       titre: 'Exercice 5 — Relier et additionner',
       diffusion: 'seance',
       brique: 'questionnaire',
-      dureeMinutes: 8,
+      dureeMinutes: 9,
       concepts: ['recherche-dans-une-table', 'agregation-conditionnelle'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(1, 7),
+        moteur.tempsDeLExercice(1, 8),
         'Réflexion : faire nommer la famille de chaque question avant d’écrire une formule.',
-        'Pièges : critère de date tout entier entre guillemets ; 15 pour 15 % ; plage de recherche non figée ; période oubliée.',
+        'Pièges : fonction DATE écrite dans les guillemets (">=DATE(2026;1;1)") ; 15 pour 15 % ; plage de recherche non figée ; période oubliée.',
       ),
       proprietes: {
         intitule: 'Exercice 5 — Relier et additionner',
@@ -256,7 +256,7 @@ export const ACTE_2: moteur.Acte = [
       ],
       [
         'b3-01-a2-ca-ouest',
-        'La région Ouest réunit Nantes (AG05) et Rennes (AG06) : 77 850 € de janvier à septembre 2026. Recopiée sans $, la plage de recherche glisse d’une ligne à chaque ligne : dès la ligne 14, elle a quitté la table et plus aucune agence n’est trouvée. Avant la ligne 14, la seule ligne Ouest trouvée, la ligne 2, date de 2025 : sur 2026, le total tombe à 0 €. Le même glissement vide la colonne categorie : à la première question aussi, 0 €. Un critère de date écrit tout entier entre guillemets ne compare qu’à un texte : 0 €, ici comme à la première question. Sans critère de date, on additionne aussi 2025 : 188 908 €, et 27 862 € à la première question.',
+        'La région Ouest réunit Nantes (AG05) et Rennes (AG06) : 77 850 € de janvier à septembre 2026. Recopiée sans $, la plage de recherche glisse d’une ligne à chaque ligne : dès la ligne 14, elle a quitté la table et plus aucune agence n’est trouvée. Avant la ligne 14, la seule ligne Ouest trouvée, la ligne 2, date de 2025 : sur 2026, le total tombe à 0 €. Le même glissement vide la colonne categorie : à la première question aussi, 0 €. La fonction DATE écrite dans les guillemets, ">=DATE(2026;1;1)", n’est pas calculée : Excel compare au texte « DATE(2026;1;1) » et ne trouve rien : 0 €, ici comme à la première question. Une date tapée en clair dans les guillemets fonctionne, mais dépend du format de date du poste : ">="&DATE(2026;1;1) n’en dépend pas. Sans critère de date, on additionne aussi 2025 : 188 908 €, et 27 862 € à la première question.',
       ],
     ],
   ),
@@ -307,6 +307,8 @@ export const ACTE_2: moteur.Acte = [
       notes: moteur.puces(
         '3 min ; montrer qu’une date affichée au format nombre devient un entier.',
         'Faire dire pourquoi la médiane résiste à une rupture de stock livrée deux mois plus tard.',
+        'SERIE.JOUR.OUVRE renvoie un numéro de série : mettre la cellule au format Date. TEMPS repart de zéro au-delà de 23 h.',
+        'Sur Mac, la formule matricielle se valide par Ctrl + Maj + Retour ou ⌘ + Maj + Retour.',
         'Transition : « Délais et marge du réseau : exercice 6. »',
       ),
     },
@@ -323,7 +325,7 @@ export const ACTE_2: moteur.Acte = [
             'NB.JOURS.OUVRES(début;fin) compte les jours ouvrés, bornes comprises : on retire 1 pour obtenir un délai.',
             'SERIE.JOUR.OUVRE(début;n) donne la date n jours ouvrés plus tard : la date promise.',
             'JOURSEM(date;2) donne le jour de la semaine, de 1 pour lundi à 7 pour dimanche.',
-            'DATEDIF(début;fin;"m") compte les mois entiers écoulés ; TEMPS(h;m;s) construit une durée.',
+            'DATEDIF(début;fin;"M") compte les mois entiers écoulés ; TEMPS(h;m;s) construit une heure de la journée : TEMPS(27;0;0) donne 3:00.',
           ],
         },
         {
@@ -354,10 +356,10 @@ export const ACTE_2: moteur.Acte = [
       titre: 'Exercice 6 — Délais et marge',
       diffusion: 'seance',
       brique: 'questionnaire',
-      dureeMinutes: 8,
+      dureeMinutes: 10,
       concepts: ['calcul-sur-dates', 'indicateur-statistique'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(1, 7),
+        moteur.tempsDeLExercice(1, 9),
         'Réflexion : faire dire en quelle unité le contrat compte les délais avant d’écrire la colonne.',
         'Pièges : soustraire les dates ; oublier le − 1 ; résumer par la moyenne ; prendre toute la table au lieu de 2026 ; oublier l’agence, ou prendre MEDIANE sous un filtre, qui compte les lignes masquées ; faire la moyenne des taux de ligne ; diviser la marge par le coût d’achat.',
       ),
@@ -407,7 +409,7 @@ export const ACTE_2: moteur.Acte = [
       notes: [
         'Corriger question par question ; sur la médiane, trier les délais de Strasbourg pour montrer les ruptures en bas de colonne.',
         'Retards : 2025 n’a aucun retard, et toute la table donne le même compte que 2026 : faire montrer le critère 2026.',
-        'Défi : JOURSEM(B2;2)=5 repère un vendredi ; dans Clients, DATEDIF(E2;DATE(2026;9;30);"m") donne l’ancienneté en mois au 30 septembre 2026.',
+        'Défi : JOURSEM(B2;2)=5 repère un vendredi ; dans Clients, DATEDIF(E2;DATE(2026;9;30);"M") donne l’ancienneté en mois au 30 septembre 2026.',
         'Transition : « Et si l’export d’octobre arrive ? Un vote. »',
       ],
     },
@@ -418,7 +420,7 @@ export const ACTE_2: moteur.Acte = [
       ],
       [
         'b3-01-a2-retards',
-        'Une ligne est en retard quand date_livraison dépasse SERIE.JOUR.OUVRE(date_commande;5), soit quand son delai dépasse 5 : 99 lignes commandées en 2026. Avec date_commande + 5, en jours calendaires, la promesse tombe trop tôt et 481 lignes paraissent en retard ; la médiane de Strasbourg de la première question monterait à 11 jours. Sans le − 1, la colonne delai compte aussi le jour de la commande : au critère ">5", 284 lignes, livrées le jour promis comprises, et une médiane de Strasbourg de 9 jours.',
+        'Une ligne est en retard quand date_livraison dépasse SERIE.JOUR.OUVRE(date_commande;5), soit, pour une commande passée un jour ouvré comme toutes celles de la reprise, quand son delai dépasse 5 : 99 lignes commandées en 2026. Avec date_commande + 5, en jours calendaires, la promesse tombe trop tôt et 481 lignes paraissent en retard ; la médiane de Strasbourg de la première question monterait à 11 jours. Sans le − 1, la colonne delai compte aussi le jour de la commande : au critère ">5", 284 lignes, livrées le jour promis comprises, et une médiane de Strasbourg de 9 jours.',
       ],
       [
         'b3-01-a2-taux-marge',
@@ -471,8 +473,9 @@ export const ACTE_2: moteur.Acte = [
       dureeMinutes: 3,
       concepts: ['tableau-croise-dynamique'],
       notes: moteur.puces(
-        '3 min ; faire Ctrl + T en direct et montrer le nom T_Commandes dans l’onglet Création de tableau (Tableau sur Mac).',
+        '3 min ; faire Ctrl + L (ou Ctrl + T) en direct et montrer le nom T_Commandes dans l’onglet Création de tableau (Outils de tableau › Création sous Excel 2019 ; Tableau sur Mac).',
         'Insister sur le regroupement par années : sans lui, deux printemps se cumulent.',
+        'Autres chemins : Insertion › Tableau ; % du total par Paramètres des champs de valeurs (sur Mac, Paramètres de champ) ; segment sur Mac par Analyse du tableau croisé dynamique › Segment.',
         'Transition : « Construisons-en un ensemble. »',
       ),
     },
@@ -484,7 +487,7 @@ export const ACTE_2: moteur.Acte = [
         {
           kind: 'method',
           title: 'Le tableau structuré',
-          text: 'Ctrl + T (⌘ + T) transforme la plage en tableau structuré, nommé T_Commandes dans Création de tableau (Tableau sur Mac) › Nom du tableau. Il s’étend aux lignes ajoutées, recopie ses colonnes calculées et se lit : =SOMME(T_Commandes[ca_ht]).',
+          text: 'Ctrl + L ou Ctrl + T (⌘ + T sur Mac) transforme la plage en tableau structuré, nommé T_Commandes dans Création de tableau › Nom du tableau. Il s’étend aux lignes ajoutées, recopie ses colonnes calculées et se lit : =SOMME(T_Commandes[ca_ht]).',
         },
         {
           kind: 'property',
@@ -497,7 +500,7 @@ export const ACTE_2: moteur.Acte = [
           text: 'Trois réglages font un TCD de direction.',
           steps: [
             'Clic droit sur une date › Grouper : mois ou trimestres, et années pour ne pas mêler deux printemps.',
-            'Paramètres des champs de valeurs › Afficher les valeurs › % du total de la ligne : part de chaque catégorie dans l’agence.',
+            'Clic droit sur une valeur › Afficher les valeurs › % du total de la ligne : part de chaque catégorie dans l’agence.',
             'Années en filtre : la période est bornée ; Insertion › Segment filtre d’un clic ; un filtre reste actif tant qu’on ne l’a pas retiré.',
           ],
         },
@@ -531,7 +534,7 @@ export const ACTE_2: moteur.Acte = [
               id: 'source',
               intitule: 'La source',
               raisonnement:
-                'Ctrl + T sur Commandes, nommé T_Commandes ; on y ajoute la colonne calculée annee, =ANNEE([@date_commande]). Puis Insertion › Tableau croisé dynamique, sur une nouvelle feuille.',
+                'Ctrl + L (ou Ctrl + T) sur Commandes, nommé T_Commandes ; on y ajoute la colonne calculée annee, =ANNEE([@date_commande]). Puis Insertion › Tableau croisé dynamique, sur une nouvelle feuille.',
               invite:
                 'Sur quoi construire le TCD pour qu’il voie les lignes d’octobre ?',
             },
@@ -568,10 +571,10 @@ export const ACTE_2: moteur.Acte = [
       titre: 'Exercice 7 — Le TCD de la direction',
       diffusion: 'seance',
       brique: 'questionnaire',
-      dureeMinutes: 12,
+      dureeMinutes: 13,
       concepts: ['tableau-croise-dynamique'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(1, 11),
+        moteur.tempsDeLExercice(1, 12),
         'Réflexion : faire dire, avant de construire, ce que chaque TCD montre en lignes, en colonnes et en valeurs.',
         'Pièges : % du total général ou de la colonne au lieu du % de la ligne ; filtre annee oublié au premier TCD ; resté actif au second, recopié du premier ou de l’exemple ; trimestres groupés sans les années.',
       ),
@@ -612,7 +615,8 @@ export const ACTE_2: moteur.Acte = [
       notes: [
         'Corriger les deux questions ; montrer le regroupement par années qui sépare les deux printemps.',
         'Défi : clic droit sur remise › Grouper, de 0 à 0,30 par pas de 0,05.',
-        'Transition : « Avant la pause, deux règles de plus. »',
+        'Avant la pause, dire les règles des niveaux 3 et 4 : « Avant la fonction, je nomme la famille du problème » ; « Je travaille sur un tableau structuré, jamais sur une plage fixe. »',
+        'Puis pause de 15 minutes ; reprise à 10 h 56 sur le classeur de reprise de l’acte 3.',
       ],
     },
     [
@@ -626,40 +630,4 @@ export const ACTE_2: moteur.Acte = [
       ],
     ],
   ),
-  {
-    screenId: 'B3-01-A2-12-REGLES-ACTE-2',
-    titre: 'Cahier de règles : niveaux 3 et 4',
-    diffusion: 'seance',
-    brique: 'fp-pro',
-    dureeMinutes: 4,
-    concepts: ['agregation-conditionnelle', 'tableau-croise-dynamique'],
-    notes: moteur.puces(
-      '3 min d’écriture individuelle, puis 1 min pour lire deux règles au pupitre.',
-      'Règles modèles, à montrer après la saisie : « Avant la fonction, je nomme la famille du problème » ; « Je travaille sur un tableau structuré, jamais sur une plage fixe. »',
-      'Puis pause de 15 minutes ; reprise à 10 h 56 sur le classeur de reprise de l’acte 3.',
-    ),
-    proprietes: {
-      metier: 'Analyste data — Norvane Équipement (réseau de 12 agences)',
-      situation:
-        'Avant la pause, vous ajoutez deux règles à votre cahier d’analyste : l’agent de la séance 2 devra transformer et modéliser comme vous.',
-      geste:
-        'Écrivez une règle par niveau : une phrase impérative et vérifiable.',
-      consequence:
-        'Un agent qui choisit la fonction avant de comprendre la question calcule vite, et faux.',
-      questionsLibres: [
-        {
-          id: 'b3-01-a2-regles:regle-transformer',
-          question:
-            'Niveau 3 · Transformer : votre règle avant d’écrire une formule.',
-          placeholder: 'Avant la fonction, je…',
-        },
-        {
-          id: 'b3-01-a2-regles:regle-modeliser',
-          question:
-            'Niveau 4 · Modéliser : votre règle pour un calcul qui dure.',
-          placeholder: 'Je travaille sur…',
-        },
-      ],
-    },
-  },
 ];

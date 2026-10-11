@@ -213,14 +213,16 @@ export const parcoursEnigmes = z
     );
   }) satisfies z.ZodType<EscapeParcoursStocke>;
 
+export const dossierDeRappel = auMoinsUn(
+  z.object({ libelle: texte, valeur: texte }).strict(),
+);
+
 export const probleme = z
   .object({
     id: identifiantDeQuestion,
     enonce: texte,
     invite: texte,
-    rappel: auMoinsUn(
-      z.object({ libelle: texte, valeur: texte }).strict(),
-    ).optional(),
+    rappel: dossierDeRappel.optional(),
   })
   .strict() satisfies z.ZodType<ProblemeStocke>;
 

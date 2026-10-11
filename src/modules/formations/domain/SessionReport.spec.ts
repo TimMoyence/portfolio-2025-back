@@ -442,9 +442,9 @@ describe('buildRapportSession', () => {
     });
   });
 
-  describe('V6 · règles du cahier rédigées en réponses libres', () => {
-    const REGLES_ACTE_1 = 'B3-01-A1-15-REGLES-ACTE-1';
-    const REGLES_ACTE_2 = 'B3-01-A2-12-REGLES-ACTE-2';
+  describe('V6 · règles du cahier et ce qui reste flou, rédigés en réponses libres', () => {
+    const CAHIER = 'B3-01-A3-12-CAHIER-DE-REGLES';
+    const FLOU = 'B3-01-A3-13-CE-QUI-RESTE-FLOU';
     const libre = (
       participantId: string,
       screenId: string,
@@ -471,10 +471,10 @@ describe('buildRapportSession', () => {
         cours: buildCoursDuContenu(COURS_B3_01),
         participants: deuxParticipants(),
         reponsesLibres: [
-          libre('p1', REGLES_ACTE_2, 'b3-01-a2-regles:regle-transformer'),
-          libre('p2', REGLES_ACTE_1, 'b3-01-a1-regles:regle-comprendre'),
-          libre('p1', REGLES_ACTE_1, 'b3-01-a1-regles:regle-nettoyer'),
-          libre('p1', REGLES_ACTE_1, 'b3-01-a1-regles:regle-comprendre'),
+          libre('p1', FLOU, 'b3-01-a3-flou:ce-qui-reste-flou'),
+          libre('p2', CAHIER, 'b3-01-a3-regles:regle-visualiser'),
+          libre('p1', CAHIER, 'b3-01-a3-regles:regle-decider'),
+          libre('p1', CAHIER, 'b3-01-a3-regles:regle-visualiser'),
         ],
       });
 
@@ -484,44 +484,44 @@ describe('buildRapportSession', () => {
         ),
       ).toEqual([
         [
-          'b3-01-a1-regles:regle-comprendre',
-          'b3-01-a1-regles:regle-nettoyer',
-          'b3-01-a2-regles:regle-transformer',
+          'b3-01-a3-regles:regle-visualiser',
+          'b3-01-a3-regles:regle-decider',
+          'b3-01-a3-flou:ce-qui-reste-flou',
         ],
-        ['b3-01-a1-regles:regle-comprendre'],
+        ['b3-01-a3-regles:regle-visualiser'],
       ]);
       expect(rapport.participants[1].reponsesLibres).toEqual([
         {
-          screenId: REGLES_ACTE_1,
-          activityId: 'b3-01-a1-regles:regle-comprendre',
-          reponse: 'Règle de p2 pour b3-01-a1-regles:regle-comprendre',
+          screenId: CAHIER,
+          activityId: 'b3-01-a3-regles:regle-visualiser',
+          reponse: 'Règle de p2 pour b3-01-a3-regles:regle-visualiser',
         },
       ]);
     });
 
     it('classe une écriture hors des activités libres, comme une tentative de défi, au rang de son écran', () => {
       const activites = activitesRenduesAP1(buildCoursDuContenu(COURS_B3_01), [
-        libre('p1', REGLES_ACTE_2, 'b3-01-a2-regles:regle-transformer'),
+        libre('p1', FLOU, 'b3-01-a3-flou:ce-qui-reste-flou'),
         libre('p1', 'B3-01-A2-01-VOTE-FAMILLE', 'defi-de-l-ecran'),
-        libre('p1', REGLES_ACTE_1, 'b3-01-a1-regles:regle-comprendre'),
+        libre('p1', CAHIER, 'b3-01-a3-regles:regle-visualiser'),
       ]);
 
       expect(activites).toEqual([
-        'b3-01-a1-regles:regle-comprendre',
         'defi-de-l-ecran',
-        'b3-01-a2-regles:regle-transformer',
+        'b3-01-a3-regles:regle-visualiser',
+        'b3-01-a3-flou:ce-qui-reste-flou',
       ]);
     });
 
     it('garde l’ordre de saisie quand le cours de la séance est introuvable', () => {
       const activites = activitesRenduesAP1(null, [
-        libre('p1', REGLES_ACTE_2, 'b3-01-a2-regles:regle-transformer'),
-        libre('p1', REGLES_ACTE_1, 'b3-01-a1-regles:regle-comprendre'),
+        libre('p1', FLOU, 'b3-01-a3-flou:ce-qui-reste-flou'),
+        libre('p1', CAHIER, 'b3-01-a3-regles:regle-visualiser'),
       ]);
 
       expect(activites).toEqual([
-        'b3-01-a2-regles:regle-transformer',
-        'b3-01-a1-regles:regle-comprendre',
+        'b3-01-a3-flou:ce-qui-reste-flou',
+        'b3-01-a3-regles:regle-visualiser',
       ]);
     });
   });

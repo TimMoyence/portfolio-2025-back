@@ -1390,7 +1390,7 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
   "RapportReponseLibreResponseDto": {
     "properties": {
       "activityId": {
-        "example": "b3-01-a1-regles:regle-comprendre",
+        "example": "b3-01-a3-regles:regle-visualiser",
         "type": "string",
       },
       "reponse": {
@@ -1398,7 +1398,7 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
         "type": "string",
       },
       "screenId": {
-        "example": "B3-01-A1-15-REGLES-ACTE-1",
+        "example": "B3-01-A3-12-CAHIER-DE-REGLES",
         "type": "string",
       },
     },

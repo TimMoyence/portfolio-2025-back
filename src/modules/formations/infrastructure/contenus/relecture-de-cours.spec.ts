@@ -300,4 +300,22 @@ describe('formulesAltereesALaPublication', () => {
       formulesAltereesALaPublication(avecTexte('=SOMME(L2:L4099) : total.')),
     ).toEqual([]);
   });
+
+  it('ne prend pas pour une formule la fonction écrite dans un critère entre guillemets', () => {
+    expect(
+      formulesAltereesALaPublication(
+        avecTexte(
+          'Piège : la fonction DATE écrite dans les guillemets (">=DATE(2026;1;1)") ; 15 pour 15 %.',
+        ),
+      ),
+    ).toEqual([]);
+  });
+
+  it('signale encore une formule altérée qui suit un critère joint par &', () => {
+    expect(
+      formulesAltereesALaPublication(
+        avecTexte('Critère ">="&DATE(2026 ;1;1) en date_commande.'),
+      ),
+    ).toEqual(['DATE(2026 ;1;1)']);
+  });
 });

@@ -2,8 +2,13 @@ import type {
   MetadonneesBrique,
   RegimeVerrou,
 } from 'portfolio-2025-partage/contrats';
+import type { AuMoinsUn } from '../../../../common/domain/au-moins-un';
 import type { CasProfessionnel } from '../cours/Cours';
-import type { OrdreQuestions, ProprietesExposition } from './cours';
+import type {
+  LigneDuDossier,
+  OrdreQuestions,
+  ProprietesExposition,
+} from './cours';
 
 export type { MetadonneesBrique } from 'portfolio-2025-partage/contrats';
 
@@ -36,6 +41,7 @@ export interface ExitBilletPublic {
 export interface WorkedExemple {
   readonly id: string;
   readonly enonce: string;
+  readonly rappel?: AuMoinsUn<LigneDuDossier>;
   readonly etapes: readonly {
     readonly id: string;
     readonly intitule: string;

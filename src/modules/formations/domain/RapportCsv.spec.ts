@@ -71,8 +71,8 @@ describe('rapportEnCsv', () => {
       buildRapportAvecReponses([buildRapportQuestion()], {
         reponsesLibres: [
           {
-            screenId: 'B3-01-A1-15-REGLES-ACTE-1',
-            activityId: 'b3-01-a1-regles:regle-comprendre',
+            screenId: 'B3-01-A3-12-CAHIER-DE-REGLES',
+            activityId: 'b3-01-a3-regles:regle-visualiser',
             reponse: '=SOMME seulement après la colonne "controle"',
           },
         ],
@@ -86,7 +86,7 @@ describe('rapportEnCsv', () => {
       '"Theo"',
       '"Martin"',
       '"theo.martin@example.com"',
-      '"b3-01-a1-regles:regle-comprendre"',
+      '"b3-01-a3-regles:regle-visualiser"',
       '"réponse libre"',
       '"\'=SOMME seulement après la colonne ""controle"""',
       '""',

@@ -7,6 +7,7 @@ import {
   buildEcranDeBrique,
   buildPieceJointe,
   buildPieceJointeReservee,
+  buildProprietesStockees,
 } from '../../../../../test/factories/ecrans-stockes.factory';
 import { lireCoursStocke } from './CoursStocke';
 import {
@@ -136,6 +137,26 @@ describe('exemple corrigé au rythme du pilotage', () => {
       pilote: true,
       etayage: 1,
       exemple: { etapes: [{ raisonnement: '25,30 − 27,60 = −2,30 points.' }] },
+    });
+  });
+
+  it('R-04 · sert le rappel des formules dès l ouverture, avant toute étape corrigée', () => {
+    const rappel = [
+      { libelle: 'CNUM(texte)', valeur: 'convertit un texte en nombre' },
+    ];
+    const proprietes = buildProprietesStockees('fp-worked');
+    const exemple = buildEcranDeBrique('fp-worked', {
+      proprietes: {
+        ...proprietes,
+        exemple: { ...(proprietes.exemple as object), rappel },
+      },
+    });
+    const [servi] = tirer(lireCoursStocke(buildCoursDeBriques([exemple])), 0)
+      .sujet.ecrans;
+
+    expect(exempleAuRythmeDuPilotage(servi, undefined).donnees).toMatchObject({
+      etayage: 0,
+      exemple: { rappel },
     });
   });
 

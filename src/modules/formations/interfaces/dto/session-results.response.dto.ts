@@ -39,10 +39,10 @@ export class RapportQuestionResponseDto {
 }
 
 export class RapportReponseLibreResponseDto {
-  @ApiProperty({ example: 'B3-01-A1-15-REGLES-ACTE-1' })
+  @ApiProperty({ example: 'B3-01-A3-12-CAHIER-DE-REGLES' })
   screenId: string;
 
-  @ApiProperty({ example: 'b3-01-a1-regles:regle-comprendre' })
+  @ApiProperty({ example: 'b3-01-a3-regles:regle-visualiser' })
   activityId: string;
 
   @ApiProperty({
