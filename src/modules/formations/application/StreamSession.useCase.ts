@@ -205,6 +205,7 @@ export class StreamSessionUseCase {
     return new Observable<MessageEvent>((subscriber) => {
       let derniereEmpreinte = '';
       let derniereActivite = AUCUNE_ACTIVITE_VUE;
+      let dernierePousse = Number.NEGATIVE_INFINITY;
       let actif = true;
       let occupe = false;
       let passagesDepuisLeControle = 0;
@@ -256,12 +257,25 @@ export class StreamSessionUseCase {
         if (activite === derniereActivite) {
           return;
         }
-        const bilan = this.bilanPartage(session, activite, options);
+        const bilan = this.bilanPartage(
+          session,
+          activite,
+          derniereActivite,
+          options,
+        );
         if (bilan === null) {
           return;
         }
-        subscriber.next({ type: 'resultats', data: await bilan });
-        derniereActivite = activite;
+        const resultats = await bilan.valeur;
+        if (!options.sansAttendre) {
+          await patienter(dernierePousse + DELAI_MIN_BILAN_MS - Date.now());
+        }
+        if (!actif) {
+          return;
+        }
+        subscriber.next({ type: 'resultats', data: resultats });
+        dernierePousse = Date.now();
+        derniereActivite = bilan.activite;
       };
 
       const pousserResultatsDefinitifs = async (): Promise<void> => {
@@ -397,11 +411,12 @@ export class StreamSessionUseCase {
   private bilanPartage(
     session: SessionRecord,
     activite: number,
+    dejaPousse: number,
     options: { readonly sansAttendre: boolean },
-  ): Promise<ResultatsEnDirect> | null {
+  ): BilanPartage | null {
     const partage = this.bilansPartages.get(session.id);
     if (partage !== undefined && partage.activite === activite) {
-      return partage.valeur;
+      return partage;
     }
     const maintenant = Date.now();
     if (
@@ -409,16 +424,13 @@ export class StreamSessionUseCase {
       !options.sansAttendre &&
       maintenant - partage.calculeLe < DELAI_MIN_BILAN_MS
     ) {
-      return null;
+      return partage.activite === dejaPousse ? null : partage;
     }
     const valeur = this.lireResultats(session);
-    this.bilansPartages.set(session.id, {
-      activite,
-      calculeLe: maintenant,
-      valeur,
-    });
+    const calcule: BilanPartage = { activite, calculeLe: maintenant, valeur };
+    this.bilansPartages.set(session.id, calcule);
     void valeur.catch(() => this.bilansPartages.delete(session.id));
-    return valeur;
+    return calcule;
   }
 
   private async lireResultats(
@@ -462,6 +474,12 @@ export class StreamSessionUseCase {
     this.cache.publish(sessionId, etat);
     return etat;
   }
+}
+
+function patienter(ms: number): Promise<void> {
+  return ms > 0
+    ? new Promise((reprendre) => setTimeout(reprendre, ms))
+    : Promise.resolve();
 }
 
 function occupantsDe(place: Place): readonly Fermeture[] {

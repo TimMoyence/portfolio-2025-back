@@ -713,6 +713,13 @@ describe('StreamSessionUseCase', () => {
         buildAnswerRecord(),
         REPONSE_FAUSSE,
       ]);
+    const activiteContinuePuisCalme = async (quarts: number): Promise<void> => {
+      for (let quart = 0; quart < quarts; quart += 1) {
+        cache.signalerActivite(SESSION);
+        await laisserPasser(INTERVALLE_MS_TEST / 4);
+      }
+      await laisserPasser(2 * DELAI_MIN_BILAN_MS);
+    };
 
     it('emet les jalons, les enigmes et le bareme avec chaque poussee de resultats', async () => {
       const ecoute = await formateurALEcoute();
@@ -809,6 +816,43 @@ describe('StreamSessionUseCase', () => {
       expect(second.resultats()[0]).toBe(premier.resultats()[0]);
       expect(answers.listBySession).toHaveBeenCalledTimes(1);
       fermer([premier, second]);
+    });
+
+    it('pousse a chacun des deux flux du formateur chaque bilan calcule pendant une activite continue', async () => {
+      const premier = await formateurALEcoute();
+      await laisserPasser(INTERVALLE_MS_TEST / 2);
+      const second = await ecouterFormateur();
+      await activiteContinuePuisCalme(48);
+
+      const calculs = answers.listBySession.mock.calls.length;
+      expect(calculs).toBeGreaterThan(2);
+      expect({
+        premier: premier.resultats().length,
+        second: second.resultats().length,
+      }).toEqual({ premier: calculs, second: calculs });
+      fermer([premier, second]);
+    });
+
+    it('espace d au moins une seconde deux resultats pousses sur un meme flux, meme quand un bilan tarde plus que le suivant', async () => {
+      answers.listBySession.mockReturnValueOnce(
+        new Promise<readonly AnswerRecord[]>((resoudre) => {
+          setTimeout(() => resoudre([]), 3 * INTERVALLE_MS_TEST);
+        }),
+      );
+      const instants: number[] = [];
+      const abonnement = (
+        await sut.executeForTeacher(SESSION, TEACHER_ID)
+      ).subscribe((evenement) => {
+        if (evenement.type === 'resultats') instants.push(Date.now());
+      });
+      await activiteContinuePuisCalme(24);
+      abonnement.unsubscribe();
+
+      const ecarts = instants
+        .slice(1)
+        .map((instant, rang) => instant - instants[rang]);
+      expect(ecarts.length).toBeGreaterThan(1);
+      expect(Math.min(...ecarts)).toBeGreaterThanOrEqual(DELAI_MIN_BILAN_MS);
     });
 
     it('ne recalcule pas le bilan plus d une fois par seconde malgre l activite', async () => {
