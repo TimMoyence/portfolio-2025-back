@@ -720,6 +720,13 @@ describe('StreamSessionUseCase', () => {
       }
       await laisserPasser(2 * DELAI_MIN_BILAN_MS);
     };
+    const premierBilanRetardeDe = (ms: number): void => {
+      answers.listBySession.mockReturnValueOnce(
+        new Promise<readonly AnswerRecord[]>((resoudre) => {
+          setTimeout(() => resoudre([]), ms);
+        }),
+      );
+    };
 
     it('emet les jalons, les enigmes et le bareme avec chaque poussee de resultats', async () => {
       const ecoute = await formateurALEcoute();
@@ -834,11 +841,7 @@ describe('StreamSessionUseCase', () => {
     });
 
     it('espace d au moins une seconde deux resultats pousses sur un meme flux, meme quand un bilan tarde plus que le suivant', async () => {
-      answers.listBySession.mockReturnValueOnce(
-        new Promise<readonly AnswerRecord[]>((resoudre) => {
-          setTimeout(() => resoudre([]), 3 * INTERVALLE_MS_TEST);
-        }),
-      );
+      premierBilanRetardeDe(3 * INTERVALLE_MS_TEST);
       const instants: number[] = [];
       const abonnement = (
         await sut.executeForTeacher(SESSION, TEACHER_ID)
@@ -853,6 +856,52 @@ describe('StreamSessionUseCase', () => {
         .map((instant, rang) => instant - instants[rang]);
       expect(ecarts.length).toBeGreaterThan(1);
       expect(Math.min(...ecarts)).toBeGreaterThanOrEqual(DELAI_MIN_BILAN_MS);
+    });
+
+    it.each([
+      ['tarde', 6 * INTERVALLE_MS_TEST, 0],
+      [
+        'attend sa seconde',
+        3 * INTERVALLE_MS_TEST + 100,
+        4 * INTERVALLE_MS_TEST,
+      ],
+    ])(
+      'pousse au formateur le changement d ecran au passage suivant pendant qu un bilan %s',
+      async (_cas, retardDuPremierBilanMs, changementApresMs) => {
+        premierBilanRetardeDe(retardDuPremierBilanMs);
+        const ecoute = await formateurALEcoute();
+        cache.signalerActivite(SESSION);
+        await laisserPasser(changementApresMs);
+
+        seanceLue({ ecranCourant: 9 });
+        cache.drop(SESSION);
+        await laisserPasser(INTERVALLE_MS_TEST + 40);
+
+        expect(
+          ecoute.evenements
+            .filter((evenement) => evenement.type === 'etat')
+            .map(
+              (evenement) =>
+                (evenement.data as Record<string, unknown>)['ecranCourant'],
+            ),
+        ).toContain(9);
+        fermer([ecoute]);
+      },
+    );
+
+    it('ne pousse qu une fois le bilan en cours de calcul quand la seance se termine', async () => {
+      premierBilanRetardeDe(2 * INTERVALLE_MS_TEST);
+      const ecoute = await formateurALEcoute();
+
+      seanceLue({ etat: 'terminee' });
+      cache.drop(SESSION);
+      await laisserPasser(4 * INTERVALLE_MS_TEST);
+
+      expect(ecoute.types().filter((type) => type !== 'etat')).toEqual([
+        'resultats',
+        'fin',
+      ]);
+      fermer([ecoute]);
     });
 
     it('ne recalcule pas le bilan plus d une fois par seconde malgre l activite', async () => {
@@ -942,11 +991,7 @@ describe('StreamSessionUseCase', () => {
     });
 
     it('ne superpose pas deux recalculs quand le depot tarde a repondre', async () => {
-      answers.listBySession.mockReturnValueOnce(
-        new Promise<readonly AnswerRecord[]>((resoudre) => {
-          setTimeout(() => resoudre([]), 10 * INTERVALLE_MS_TEST);
-        }),
-      );
+      premierBilanRetardeDe(10 * INTERVALLE_MS_TEST);
       const ecoute = await formateurALEcoute();
 
       cache.signalerActivite(SESSION);

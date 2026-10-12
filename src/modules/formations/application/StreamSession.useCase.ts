@@ -208,6 +208,7 @@ export class StreamSessionUseCase {
       let dernierePousse = Number.NEGATIVE_INFINITY;
       let actif = true;
       let occupe = false;
+      let resultatsEnCours = false;
       let passagesDepuisLeControle = 0;
       let bail: StreamCapacityLease | null = null;
       let boucle: ReturnType<typeof setInterval> | undefined;
@@ -270,12 +271,28 @@ export class StreamSessionUseCase {
         if (!options.sansAttendre) {
           await patienter(dernierePousse + DELAI_MIN_BILAN_MS - Date.now());
         }
-        if (!actif) {
+        if (!actif || bilan.activite === derniereActivite) {
           return;
         }
         subscriber.next({ type: 'resultats', data: resultats });
         dernierePousse = Date.now();
         derniereActivite = bilan.activite;
+      };
+
+      const pousserResultatsEnFond = (session: SessionRecord): void => {
+        if (resultatsEnCours) {
+          return;
+        }
+        resultatsEnCours = true;
+        void pousserResultatsSiActivite(session)
+          .catch((error: unknown) => {
+            this.logger.warn(
+              `Resultats de la session ${sessionId} non pousses, nouvel essai au passage suivant: ${messageDErreur(error)}`,
+            );
+          })
+          .finally(() => {
+            resultatsEnCours = false;
+          });
       };
 
       const pousserResultatsDefinitifs = async (): Promise<void> => {
@@ -329,7 +346,7 @@ export class StreamSessionUseCase {
             return;
           }
           if (sessionDuFormateur) {
-            await pousserResultatsSiActivite(sessionDuFormateur);
+            pousserResultatsEnFond(sessionDuFormateur);
           }
         } catch (error) {
           this.logger.warn(
