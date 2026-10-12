@@ -82,29 +82,41 @@ describe.each(CONTENUS.map((contenu) => [contenu.slug, contenu] as const))(
         const numero = /^Exercice\s(\d+)\s—/u.exec(titre ?? '');
         return numero === null ? null : Number(numero[1]);
       };
-      const numeros = cours.ecrans.flatMap((ecran) => {
+      const exercices = cours.ecrans.flatMap((ecran) => {
         const numero = numeroDe(ecran.titre);
-        return numero === null ? [] : [numero];
+        return numero === null ? [] : [{ ecran, numero }];
       });
+      const numeros = exercices.map(({ numero }) => numero);
       const renvois = cours.ecrans.flatMap((ecran) =>
         [...JSON.stringify(ecran).matchAll(/exercice\s(\d{1,2})(?!\d)/giu)]
           .map(([, numero]) => Number(numero))
           .filter((numero) => numero < 1 || numero > numeros.length)
           .map((numero) => `${ecran.id} : exercice ${numero}`),
       );
+      const livretsDecales = exercices.flatMap(({ ecran, numero }) =>
+        [
+          ...JSON.stringify(ecran).matchAll(
+            /Papier\s:\sexercice\s(\d+)\sdu\slivret/gu,
+          ),
+        ]
+          .filter(([, papier]) => Number(papier) !== numero)
+          .map(([renvoi]) => `${ecran.id} : ${renvoi}`),
+      );
       const transitions = cours.ecrans.flatMap((ecran, rang) => {
-        const annonce = /exercice\s(\d+)\.\s*»/iu.exec(ecran.notes);
         const suivant = cours.ecrans
           .slice(rang + 1)
           .find((candidat) => numeroDe(candidat.titre) !== null);
-        return annonce === null ||
-          numeroDe(suivant?.titre ?? null) === Number(annonce[1])
-          ? []
-          : [`${ecran.id} annonce l’exercice ${annonce[1]}`];
+        return [...ecran.notes.matchAll(/exercice\s(\d+)\.\s*»/giu)]
+          .filter(
+            ([, annonce]) =>
+              numeroDe(suivant?.titre ?? null) !== Number(annonce),
+          )
+          .map(([, annonce]) => `${ecran.id} annonce l’exercice ${annonce}`);
       });
 
       expect(numeros).toEqual(numeros.map((_, rang) => rang + 1));
       expect(renvois).toEqual([]);
+      expect(livretsDecales).toEqual([]);
       expect(transitions).toEqual([]);
     });
 
