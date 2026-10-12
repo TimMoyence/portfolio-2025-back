@@ -590,7 +590,7 @@ export const ACTE_2: moteur.Acte = [
         'Corriger les deux questions ; montrer le regroupement par années qui sépare les deux printemps.',
         'Défi : clic dans un TCD › Insertion › Segment (sur Mac, Analyse du tableau croisé dynamique › Segment) › categorie ; puis, le segment sélectionné, onglet Segment › Connexions de rapport : cocher les deux TCD.',
         'Avant la pause, dire les règles des niveaux 3 et 4 : « Avant la fonction, je nomme la famille du problème » ; « Je travaille sur un tableau structuré, jamais sur une plage fixe. »',
-        'Puis pause de 10 minutes ; reprise à 10 h 51 sur le classeur de reprise de l’acte 3.',
+        'Puis pause de 15 minutes ; reprise à 11 h 01 sur le classeur de reprise de l’acte 3.',
       ],
     },
     [

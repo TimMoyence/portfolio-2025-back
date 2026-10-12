@@ -126,10 +126,10 @@ function explicationsDe(screenId: string): string[] {
 
 fiche.decrireLaFicheDuCours('B3-01', COURS, {
   conception: 'cours-b3-01-conception.md',
-  ecrans: 39,
-  dureeMinutes: 189,
-  minutesParActe: [60, 61, 68, 0, 0, 0],
-  rythme: { expositionContinueMax: 6, interactives: 151, exposition: 38 },
+  ecrans: 38,
+  dureeMinutes: 180,
+  minutesParActe: [60, 61, 59, 0, 0, 0],
+  rythme: { expositionContinueMax: 6, interactives: 143, exposition: 37 },
   ateliersNotes: [
     'A1-07 (5)',
     'A1-08 (5)',
@@ -138,11 +138,10 @@ fiche.decrireLaFicheDuCours('B3-01', COURS, {
     'A2-04 (12)',
     'A2-07 (12)',
     'A2-11 (15)',
-    'A3-04 (5)',
     'A3-05 (11)',
     'A3-09 (15)',
   ],
-  noteesParType: [4, 15, 3, 0, 0],
+  noteesParType: [4, 15, 2, 0, 0],
   enigmes: 0,
   rappels: 0,
   remediations: 35,
@@ -172,7 +171,6 @@ fiche.decrireLaFicheDuCours('B3-01', COURS, {
     'B3-01-A2-04-ATELIER-RECHERCHE',
     'B3-01-A2-07-ATELIER-DELAIS-MARGE',
     'B3-01-A2-11-ATELIER-TCD',
-    'B3-01-A3-04-TRI-GRAPHIQUES',
     'B3-01-A3-05-ATELIER-GRAPHIQUES',
     'B3-01-A3-09-ATELIER-DASHBOARD',
     'B3-01-A3-10-RECOMMANDATIONS',
@@ -946,7 +944,7 @@ describe('B3-01 — actes 2 et 3 : consignes et corrections exactes', () => {
   it('A3-08 · démontre au pupitre sur une feuille décrite, sans supposer celle de l’étudiant', () => {
     const texte = texteDe('B3-01-A3-08-EXEMPLE-MFC-SEGMENTS');
 
-    expect(texte).not.toContain('de l’exercice 9');
+    expect(texte).not.toContain('de l’exercice 8');
     expect(texte).toContain('au pupitre');
     expect(texte).toContain('deux TCD');
   });
@@ -1060,15 +1058,20 @@ describe('B3-01 — actes 2 et 3 : consignes et corrections exactes', () => {
     );
   });
 
-  it('A3-04 · nomme l’histogramme par la répartition et ne diagnostique aucune carte par un camembert absent', () => {
-    expect(texteDe('B3-01-A3-04-TRI-GRAPHIQUES')).toContain(
-      'Histogramme (répartition par tranches)',
+  it('A3 · retire le tri des graphiques pour tenir 180 min : l’exercice du graphique de la direction devient l’exercice 8', () => {
+    expect(
+      COURS_B3_01.ecrans.filter(
+        ({ screenId }) =>
+          screenId === 'B3-01-A3-04-TRI-GRAPHIQUES' ||
+          texteDe(screenId).includes('b3-01-a3-graphiques'),
+      ),
+    ).toEqual([]);
+    expect(texteDe('B3-01-A3-03-COURS-GRAPHIQUES')).toContain(
+      'Transition : « Le graphique de la direction : exercice 8. »',
     );
     expect(
-      attendusDe('B3-01-A3-04-TRI-GRAPHIQUES').map(
-        ({ confusionSiErreur }) => confusionSiErreur,
-      ),
-    ).not.toContain('camembert-pour-evolution');
+      fiche.ecranDuContenu(COURS_B3_01, 'B3-01-A3-05-ATELIER-GRAPHIQUES').titre,
+    ).toBe('Exercice 8 — CA et objectif par agence');
   });
 
   it('A3-05 · relie T_Commandes et Objectifs à Agences, la seule table aux identifiants uniques', () => {
@@ -1150,7 +1153,7 @@ describe('B3-01 — actes 2 et 3 : consignes et corrections exactes', () => {
     );
   });
 
-  it('A3-07 · enseigne l’objectif cumulé sur les mêmes mois, que l’exercice 9 demande', () => {
+  it('A3-07 · enseigne l’objectif cumulé sur les mêmes mois, que l’exercice 8 demande', () => {
     expect(texteDe('B3-01-A3-07-COURS-DASHBOARD')).toContain(
       'l’objectif cumulé sur les mêmes mois',
     );
@@ -1398,9 +1401,9 @@ describe('B3-01 — retours de la relecture du 11/10', () => {
     const tcd = texteDe('B3-01-A2-11-ATELIER-TCD');
 
     expect(texteDe('B3-01-A1-14-ATELIER-NETTOYAGE')).toContain(
-      'pause de 10 minutes ; reprise à 9 h 40',
+      'pause de 15 minutes ; reprise à 9 h 45',
     );
-    expect(tcd).toContain('pause de 10 minutes ; reprise à 10 h 51');
+    expect(tcd).toContain('pause de 15 minutes ; reprise à 11 h 01');
     expect(tcd).not.toContain('deux règles de plus');
   });
 
@@ -1488,7 +1491,6 @@ describe('B3-01 — temps de travail multiplié par 1,5, défis réduits', () =>
     ['B3-01-A2-04-ATELIER-RECHERCHE', 9],
     ['B3-01-A2-07-ATELIER-DELAIS-MARGE', 9],
     ['B3-01-A2-11-ATELIER-TCD', 12],
-    ['B3-01-A3-04-TRI-GRAPHIQUES', 3],
     ['B3-01-A3-05-ATELIER-GRAPHIQUES', 9],
     ['B3-01-A3-09-ATELIER-DASHBOARD', 12],
     ['B3-01-A3-10-RECOMMANDATIONS', 6],
@@ -1588,7 +1590,7 @@ describe('B3-01 — temps de travail multiplié par 1,5, défis réduits', () =>
 
   it('A3-08 et A3-09 · font reprendre à l’essentiel les barres de données que l’exemple guidé montre, le segment au défi', () => {
     expect(texteDe('B3-01-A3-08-EXEMPLE-MFC-SEGMENTS')).toContain(
-      'les étudiants reprennent les barres de données à l’exercice 10, les plus rapides le segment au défi',
+      'les étudiants reprennent les barres de données à l’exercice 9, les plus rapides le segment au défi',
     );
     expect(consigneDe('B3-01-A3-09-ATELIER-DASHBOARD')).toContain(
       'Essentiel, dans un onglet Dashboard : quatre indicateurs (CA cumulé 2026, évolution par rapport à la même période de 2025, taux de marque, lignes en quarantaine) et un TCD de la marge par agence, la marge en barres de données (Accueil › Mise en forme conditionnelle › Barres de données).',
@@ -1627,7 +1629,7 @@ describe('B3-01 — temps de travail multiplié par 1,5, défis réduits', () =>
 
   it('A3-10 · demande deux recommandations tirées des analyses de la séance, la troisième en défi', () => {
     expect(texteDe('B3-01-A3-10-RECOMMANDATIONS')).toContain(
-      'Réflexion : faire relire la synthèse de l’exercice 9 et le tableau de bord',
+      'Réflexion : faire relire la synthèse de l’exercice 8 et le tableau de bord',
     );
     expect(
       fiche.ecranDuContenu(COURS_B3_01, 'B3-01-A3-10-RECOMMANDATIONS')
@@ -1647,12 +1649,12 @@ describe('B3-01 — temps de travail multiplié par 1,5, défis réduits', () =>
     });
   });
 
-  it('annonce des pauses de 10 minutes, et aucune de 15', () => {
+  it('annonce des pauses de 15 minutes, et aucune de 10', () => {
     const textes = COURS_B3_01.ecrans.map(({ screenId }) => texteDe(screenId));
 
-    expect(textes.join('\n')).not.toMatch(/pauses? de 15 minutes/u);
+    expect(textes.join('\n')).not.toMatch(/pauses? de 10 minutes/u);
     expect(texteDe('B3-01-A1-02-COURRIEL')).toContain(
-      'deux pauses de 10 minutes',
+      'deux pauses de 15 minutes',
     );
   });
 });

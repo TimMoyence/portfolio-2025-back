@@ -1,7 +1,7 @@
 # B3-01 · Expert Data : de la donnée brute à la décision — conception de référence (gabarit b3)
 
 > Cahier des charges du premier cours « Outils informatiques du manager » du Bachelor 3 (B3GSP) :
-> une séance de 3 h 30 dont 20 minutes de pause, qui conduit d'un export commercial sale à un
+> une séance de 3 h 30 dont 30 minutes de pause, qui conduit d'un export commercial sale à un
 > tableau de bord de direction en six niveaux (comprendre, nettoyer, transformer, modéliser,
 > visualiser, décider). Les étudiants travaillent dans Excel sur un classeur fourni ; le runtime
 > pose les questions, recueille les résultats et dévoile les corrections. Ce document ne contient
@@ -15,8 +15,8 @@
 | Gabarit     | `b3`, nouveau : les contrôles du v3 sans la mini-situation CCF ni l'équivalence papier (§ 6.1)                     |
 | Titre servi | « Expert Data : de la donnée brute à la décision »                                                                 |
 | Séance      | **Mardi 13 octobre 2026, 8 h 30 – 12 h**, B3GSP                                                                    |
-| Durée       | **189 minutes exactes** (somme des écrans), 3 actes de 60, 61 et 68 minutes, plus 2 pauses de 10 min hors durée    |
-| Écrans      | **39**, dont 14 écrans catalogue                                                                                   |
+| Durée       | **180 minutes exactes** (somme des écrans), 3 actes de 60, 61 et 59 minutes, plus 2 pauses de 15 min hors durée    |
+| Écrans      | **38**, dont 14 écrans catalogue                                                                                   |
 | Sources     | Programme B3 « Outils informatiques du manager » 2026-27 et son cahier des charges d'évaluation ; données fictives |
 
 ---
@@ -48,8 +48,10 @@
 - **Classeurs de reprise** au début des actes 2 et 3 : tout le monde repart de la même base, ce
   qui garantit des résultats saisis comparables et qu'un étudiant bloqué au nettoyage ne perd pas
   le tableau de bord.
-- **Gabarit `b3`** : 40 écrans au plus, 190 minutes au plus, cycle réfléchir → comprendre →
+- **Gabarit `b3`** : 40 écrans au plus, 180 minutes au plus, cycle réfléchir → comprendre →
   s'exercer, trois temps par exercice ; ni `fp-escape` obligatoire ni mode papier.
+- **180 minutes et deux pauses de 15 minutes** (Tim, 12/10, § 2.9) : l'exercice de tri des
+  graphiques est retiré et la clôture raccourcie ; les exercices sont numérotés de 1 à 9.
 - **Une seule fonctionnalité nouvelle du runtime : la pièce jointe d'écran** (le classeur
   téléchargeable depuis le poste étudiant), publique au catalogue, réservée à la séance sinon.
 
@@ -72,7 +74,7 @@ Cahier des charges de l'évaluation : cas pratique d'1 heure à la dernière sé
 | TCD, filtres, segments, regroupements     | A1-08 (filtre), A2-11, A3-09 | A2-10, A3-08, défis A2-11 et A3-09 |
 | Mise en forme conditionnelle              | A3-09                        | A3-08                              |
 | Calculer par pourcentage                  | A2-11, A3-05, A3-09          | défi A2-07                         |
-| Graphique : créer, légender, options      | A3-05                        | A3-03, A3-04                       |
+| Graphique : créer, légender, options      | A3-05                        | A3-03                              |
 | Fonctions de recherche                    | A2-04                        | A2-03                              |
 | `SOMMEPROD`, `NB.SI.ENS`, `SOMME.SI.ENS`  | A2-04, A2-07                 | A2-03, A2-06, défi A2-04           |
 | `SERIE.JOUR.OUVRE` (et `NB.JOURS.OUVRES`) | A2-07                        | A2-06                              |
@@ -102,7 +104,7 @@ Cahier des charges de l'évaluation : cas pratique d'1 heure à la dernière sé
 
 Ce que la séance 1 fait à la main, la séance 2 le délègue : le dictionnaire des données (A1-07),
 la grille de qualité (A1-10, A1-13), les familles de problèmes (A2-02), le choix du graphique
-(A3-04) et les règles du cahier (A3-12). Le rapport de séance et l'export de la synthèse
+(A3-03) et les règles du cahier (A3-12). Le rapport de séance et l'export de la synthèse
 fournissent ces règles telles que les étudiants les ont écrites, et ce qui leur reste flou
 (A3-13).
 
@@ -112,8 +114,8 @@ B3GSP, Bachelor 3e année, en contrat initial ou en alternance. Bases d'Excel ac
 d'une formule, recopie, `SOMME`, `MOYENNE`, tri, filtre) : pas de leçon sur les gestes de base,
 une seule question de rappel à l'ouverture (A1-01), qui sert aussi de diagnostic d'une classe
 que le formateur découvre. Un poste par étudiant avec Excel (Windows ou Mac, version 2019 ou plus
-récente, en français, séparateur `;`) ; pas de mode papier. Séance de 3 h 30 : 189 minutes de
-travail, pause de 10 minutes après l'acte 1 (9 h 30) et après l'acte 2 (10 h 41).
+récente, en français, séparateur `;`) ; pas de mode papier. Séance de 3 h 30 : 180 minutes de
+travail, pause de 15 minutes après l'acte 1 (9 h 30) et après l'acte 2 (10 h 46).
 
 ## 2. Architecture
 
@@ -123,10 +125,10 @@ travail, pause de 10 minutes après l'acte 1 (9 h 30) et après l'acte 2 (10 h 4
 | ---- | ------------------------- | ----------------- | ------: |
 | 1    | On vous confie le fichier | ouverture, N1, N2 |      60 |
 | 2    | Faire parler les données  | N3, N4            |      61 |
-| 3    | Décider                   | N5, N6, clôture   |      68 |
+| 3    | Décider                   | N5, N6, clôture   |      59 |
 
-Horaires indicatifs : acte 1 de 8 h 30 à 9 h 30, acte 2 de 9 h 40 à 10 h 41, acte 3 de 10 h 51 à
-11 h 59. Les pauses ne sont pas des écrans.
+Horaires indicatifs : acte 1 de 8 h 30 à 9 h 30, acte 2 de 9 h 45 à 10 h 46, acte 3 de 11 h 01 à
+12 h 00. Les pauses ne sont pas des écrans.
 
 ### 2.2 Le cycle d'un niveau
 
@@ -147,7 +149,7 @@ rapides sans retarder la correction collective.
 
 À la relecture du 11/10, le temps de travail se cale sur une fois et demie l'estimation de
 départ, et chaque défi tient en un geste court. Les exercices courts passent à une fois et demie
-leur travail : A1-07 et A1-08 de 2 à 3 minutes, A1-13 de 4 à 6, A3-04 de 2 à 3, A3-05 de 6 à 9.
+leur travail : A1-07 et A1-08 de 2 à 3 minutes, A1-13 de 4 à 6, A3-05 de 6 à 9.
 Les ateliers longs, bornés par les 15 minutes d'un exercice noté et par le budget du gabarit,
 gagnent ce temps en allégeant leur essentiel : une question ou une construction passe au défi.
 
@@ -197,7 +199,7 @@ vont au travail des étudiants : A1-13 + 1, A1-14 + 3, A2-04 + 1, A2-07 + 2, A2-
 ### 2.6 Règles de structure
 
 Le cours déclare `gabarit: 'b3'` et passe les règles communes et les contrôles du gabarit
-(§ 6.1) : 39 écrans ≤ 40, 189 minutes ≤ 190, chaque trace écrite précédée d'une réflexion depuis
+(§ 6.1) : 38 écrans ≤ 40, 180 minutes ≤ 180, chaque trace écrite précédée d'une réflexion depuis
 le dernier exercice et suivie d'un exercice, chaque exercice avec ses trois temps. Exposition
 continue de 6 minutes au plus (`fp-worked` est interactif).
 
@@ -213,7 +215,7 @@ après la validation du brainstorming :
 - pour tenir 40 écrans et 180 minutes, les deux votes d'ouverture (part douteuse, clé) n'en font
   plus qu'un, à deux questions (`questionJumelle`), la carte passe à 2 minutes et le billet de
   sortie à 5. À la relecture du 11/10, ces 5 minutes se partagent entre ce qui reste flou
-  (A3-13, 2 minutes) et le billet (A3-14, 3 minutes).
+  (A3-13) et le billet (A3-14, 3 minutes) ; le 12/10, ce qui reste flou passe à 1 minute (§ 2.9).
 
 ### 2.7 Diffusion
 
@@ -237,6 +239,22 @@ arrondis au dixième de point, tolérance de 0,1 point ; comptages exacts. L'ét
 nombre seul (`1250`, `18,4`) : l'unité est affichée à côté du champ, et le lecteur de saisie du
 poste refuse « 1 250 € » ou « 18,4 % ». Chaque énoncé le rappelle (« en euros, sans le
 symbole »).
+
+### 2.9 Séance ramenée à 180 minutes
+
+Tim, le 12/10 : 180 minutes de travail et deux pauses de 15 minutes dans la séance de 3 h 30.
+Les 9 minutes en trop se prennent à l'acte 3 :
+
+| Écran                                  | Avant | Après | Ce qui change                                                        |
+| -------------------------------------- | ----: | ----: | -------------------------------------------------------------------- |
+| A3-04, tri des graphiques (exercice 8) |     5 |     — | retiré : le choix du graphique s'enseigne en A3-03, se fait en A3-05 |
+| A3-06, vote « trente secondes »        |     3 |     2 | 1 minute de vote au lieu de 2                                        |
+| A3-11, fiche mémo                      |     3 |     2 | 2 minutes de lecture                                                 |
+| A3-12, cahier de règles                |     5 |     4 | 3 minutes d'écriture au lieu de 4                                    |
+| A3-13, ce qui reste flou               |     2 |     1 | 1 minute d'écriture                                                  |
+
+Les exercices 9 et 10 deviennent 8 et 9, et le cours passe de 22 à 21 questions notées. A3-02 reste : c'est la réflexion qui ouvre la trace
+écrite A3-03 (cycle du gabarit), et il sert le classeur de reprise de l'acte 3.
 
 ## 3. Déroulé écran par écran
 
@@ -275,19 +293,18 @@ Identifiants : `B3-01-A{acte}-{rang}-{SLUG}`, conformes à `^B3-01-A[1-3]-\d{2}-
 |   26 | B3-01-A3-01-GRAPHIQUE-TROMPEUR     |   1 | `fp-story` · v2 `chart`  |     |   0 | catalogue |
 |   27 | B3-01-A3-02-VOTE-GRAPHIQUE         |   2 | `fp-vote`                |  I  |   0 | seance    |
 |   28 | B3-01-A3-03-COURS-GRAPHIQUES       |   3 | `fp-story` · v2 `lesson` |     |   0 | catalogue |
-|   29 | B3-01-A3-04-TRI-GRAPHIQUES         |   5 | `fp-cardsort`            |  I  |   1 | seance    |
-|   30 | B3-01-A3-05-ATELIER-GRAPHIQUES     |  11 | `questionnaire`          |  I  |   2 | seance    |
-|   31 | B3-01-A3-06-VOTE-TRENTE-SECONDES   |   3 | `fp-vote`                |  I  |   0 | seance    |
-|   32 | B3-01-A3-07-COURS-DASHBOARD        |   3 | `fp-story` · v2 `lesson` |     |   0 | catalogue |
-|   33 | B3-01-A3-08-EXEMPLE-MFC-SEGMENTS   |   3 | `fp-worked`              |  I  |   0 | seance    |
-|   34 | B3-01-A3-09-ATELIER-DASHBOARD      |  15 | `questionnaire`          |  I  |   4 | seance    |
-|   35 | B3-01-A3-10-RECOMMANDATIONS        |   9 | `fp-pro`                 |  I  |   0 | seance    |
-|   36 | B3-01-A3-11-FICHE-MEMO             |   3 | `fp-story` · v2 `grid`   |     |   0 | catalogue |
-|   37 | B3-01-A3-12-CAHIER-DE-REGLES       |   5 | `fp-pro`                 |  I  |   0 | seance    |
-|   38 | B3-01-A3-13-CE-QUI-RESTE-FLOU      |   2 | `fp-pro`                 |  I  |   0 | seance    |
-|   39 | B3-01-A3-14-BILLET-DE-SORTIE       |   3 | `fp-exit`                |  I  |   1 | seance    |
+|   29 | B3-01-A3-05-ATELIER-GRAPHIQUES     |  11 | `questionnaire`          |  I  |   2 | seance    |
+|   30 | B3-01-A3-06-VOTE-TRENTE-SECONDES   |   2 | `fp-vote`                |  I  |   0 | seance    |
+|   31 | B3-01-A3-07-COURS-DASHBOARD        |   3 | `fp-story` · v2 `lesson` |     |   0 | catalogue |
+|   32 | B3-01-A3-08-EXEMPLE-MFC-SEGMENTS   |   3 | `fp-worked`              |  I  |   0 | seance    |
+|   33 | B3-01-A3-09-ATELIER-DASHBOARD      |  15 | `questionnaire`          |  I  |   4 | seance    |
+|   34 | B3-01-A3-10-RECOMMANDATIONS        |   9 | `fp-pro`                 |  I  |   0 | seance    |
+|   35 | B3-01-A3-11-FICHE-MEMO             |   2 | `fp-story` · v2 `grid`   |     |   0 | catalogue |
+|   36 | B3-01-A3-12-CAHIER-DE-REGLES       |   4 | `fp-pro`                 |  I  |   0 | seance    |
+|   37 | B3-01-A3-13-CE-QUI-RESTE-FLOU      |   1 | `fp-pro`                 |  I  |   0 | seance    |
+|   38 | B3-01-A3-14-BILLET-DE-SORTIE       |   3 | `fp-exit`                |  I  |   1 | seance    |
 
-Rythme : 151 minutes interactives, 38 d'exposition, exposition continue de 6 minutes au plus
+Rythme : 143 minutes interactives, 37 d'exposition, exposition continue de 6 minutes au plus
 (A1-05 + A1-06, A1-10 + A1-11, A2-02 + A2-03).
 
 ### 3.2 Acte 1 — On vous confie le fichier (60 min)
@@ -492,7 +509,7 @@ Rythme : 151 minutes interactives, 38 d'exposition, exposition continue de 6 min
   la pause, le formateur dit les règles des niveaux 1 et 2 : « Je relie les tables par un
   identifiant, jamais par un libellé » ; « Je corrige seul ce qui est faux et certain ; je
   signale ce qui est douteux et je demande. »
-- Puis pause de 10 minutes ; reprise à 9 h 40.
+- Puis pause de 15 minutes ; reprise à 9 h 45.
 
 ### 3.3 Acte 2 — Faire parler les données (61 min)
 
@@ -672,9 +689,9 @@ Rythme : 151 minutes interactives, 38 d'exposition, exposition continue de 6 min
 - Notes de correction : avant la pause, le formateur dit les règles des niveaux 3 et 4 :
   « Avant la fonction, je nomme la famille du problème » ; « Je travaille sur un tableau
   structuré, jamais sur une plage fixe. »
-- Puis pause de 10 minutes ; reprise à 10 h 51.
+- Puis pause de 15 minutes ; reprise à 11 h 01.
 
-### 3.4 Acte 3 — Décider (68 min)
+### 3.4 Acte 3 — Décider (59 min)
 
 #### A3-01 · `B3-01-A3-01-GRAPHIQUE-TROMPEUR` — 1 min · v2 `chart` · catalogue
 
@@ -709,19 +726,9 @@ Rythme : 151 minutes interactives, 38 d'exposition, exposition continue de 6 min
   87 % de son objectif ») ; Caen n'est pas une agence de Norvane, et 87 % ne coïncide avec aucun
   taux d'atteinte du jeu (Rouen 91,9 %, Strasbourg 94,3 %, Rennes 79,0 %).
 
-#### A3-04 · `B3-01-A3-04-TRI-GRAPHIQUES` — 5 min · `fp-cardsort` · séance
-
-- Titre public : « Exercice 8 — À chaque question son graphique »
-- Temps : réflexion 1 min · travail 3 min · correction 1 min.
-- Six questions de la direction, six catégories (barres, courbe, empilé, histogramme
-  « répartition par tranches », nuage, KPI) : quelle agence vend le plus ; comment évolue le CA
-  mois par mois ; de quoi est fait le CA de Rennes ; comment se répartissent les délais de
-  livraison ; la remise fait-elle baisser la marge ; où en est le CA cumulé face à l'objectif.
-  Piège `graphique-sans-question` sur chaque carte : aucune catégorie ne propose de camembert.
-
 #### A3-05 · `B3-01-A3-05-ATELIER-GRAPHIQUES` — 11 min · `questionnaire` · séance
 
-- Titre public : « Exercice 9 — CA et objectif par agence »
+- Titre public : « Exercice 8 — CA et objectif par agence »
 - Temps : réflexion 1 min · travail 9 min · correction 1 min.
 - Essentiel : tableau de synthèse par agence (CA cumulé par `SOMME.SI.ENS` sur `T_Commandes`,
   objectif cumulé par `SOMME.SI.ENS` sur `Objectifs`, taux d'atteinte), puis graphique CA et
@@ -747,9 +754,10 @@ Rythme : 151 minutes interactives, 38 d'exposition, exposition continue de 6 min
   pièges pour les deux questions (12 agences et 33,8 %, 7 agences et 90,8 %) : dits à la
   première, ils souffleraient les pièges de la seconde.
 
-#### A3-06 · `B3-01-A3-06-VOTE-TRENTE-SECONDES` — 3 min · `fp-vote` · séance
+#### A3-06 · `B3-01-A3-06-VOTE-TRENTE-SECONDES` — 2 min · `fp-vote` · séance
 
 - Titre public : « Vote : trente secondes »
+- 1 minute de vote, 1 minute de révélation.
 - Nadia a trente secondes avant le comité. Que voit-elle d'abord : quatre chiffres avec leur
   comparaison ; le tableau de toutes les lignes ; dix graphiques ; quatre chiffres sans
   comparaison ? Pièges : le tableau `detail-au-lieu-de-synthese`, les dix graphiques
@@ -785,7 +793,7 @@ Rythme : 151 minutes interactives, 38 d'exposition, exposition continue de 6 min
 
 #### A3-09 · `B3-01-A3-09-ATELIER-DASHBOARD` — 15 min · `questionnaire` · séance
 
-- Titre public : « Exercice 10 — Le tableau de bord Direction »
+- Titre public : « Exercice 9 — Le tableau de bord Direction »
 - Temps : réflexion 1 min · travail 12 min · correction 2 min.
 - Essentiel : onglet `Dashboard` avec 4 KPI (CA cumulé 2026, évolution par rapport à 2025, taux
   de marque, lignes en quarantaine) et un TCD de la marge par agence, la marge en barres de
@@ -830,12 +838,12 @@ Rythme : 151 minutes interactives, 38 d'exposition, exposition continue de 6 min
   correction de Rennes dit que ses autres catégories bougent peu, de −4 % à +2 % ; ces bornes
   sont recalculées depuis la graine (`HISTOIRES_B3_01`).
 
-#### A3-11 · `B3-01-A3-11-FICHE-MEMO` — 3 min · v2 `grid` · catalogue
+#### A3-11 · `B3-01-A3-11-FICHE-MEMO` — 2 min · v2 `grid` · catalogue
 
 - Titre public : « Fiche mémo : de la donnée brute à la décision »
 - Six cases, une par niveau : la question à se poser, les fonctions ou outils, le piège principal.
 
-#### A3-12 · `B3-01-A3-12-CAHIER-DE-REGLES` — 5 min · `fp-pro` · séance
+#### A3-12 · `B3-01-A3-12-CAHIER-DE-REGLES` — 4 min · `fp-pro` · séance
 
 - Titre public : « Cahier de règles : niveaux 5 et 6, puis relecture »
 - Trois questions libres : `regle-visualiser`, `regle-decider`, `regle-la-plus-utile` (« parmi
@@ -844,7 +852,7 @@ Rythme : 151 minutes interactives, 38 d'exposition, exposition continue de 6 min
   reprises mot pour mot dans la situation de l'écran : l'étudiant compare les six sans avoir à
   s'en souvenir. Annonce de la séance 2 : l'agent Data Analyst.
 
-#### A3-13 · `B3-01-A3-13-CE-QUI-RESTE-FLOU` — 2 min · `fp-pro` · séance
+#### A3-13 · `B3-01-A3-13-CE-QUI-RESTE-FLOU` — 1 min · `fp-pro` · séance
 
 - Titre public : « Ce qui reste flou »
 - Une question libre, `ce-qui-reste-flou` : « En une phrase : qu'est-ce qui reste flou pour vous
@@ -1125,7 +1133,7 @@ pourcentage ; le critère sans guillemets est `critere-sans-guillemets`.
 ### 6.1 Gabarit `b3`
 
 `GABARITS` passe de `['v3']` à `['v3', 'b3']`. Le gabarit `b3` applique `controlerBudget`
-(40 écrans, 190 minutes depuis la relecture du 11/10 ; le `v3` garde 180), `controlerCycle` et `controlerTempsDesExercices`, mais pas
+(40 écrans, 180 minutes comme le `v3` depuis le 12/10, § 2.9 ; 190 du 11/10 au 12/10), `controlerCycle` et `controlerTempsDesExercices`, mais pas
 `controlerMiniSituation`. La colonne `gabarit` est un `varchar(20)` : aucune migration. Tests
 rouges d'abord dans le spec de la structure : un cours `b3` sans `fp-escape` se publie, un cours
 `b3` de 41 écrans ne se publie pas, un cours `v3` sans `fp-escape` reste refusé.

@@ -51,7 +51,7 @@ export const COURS_B3_01 = moteur.coursB3(
     slug: 'b3-01-donnee-brute-decision',
     titre: 'Expert Data : de la donnée brute à la décision',
     gabarit: 'b3',
-    dureeMinutes: 189,
+    dureeMinutes: 180,
     concepts: [...CONCEPTS_DU_B3_01],
   },
 );

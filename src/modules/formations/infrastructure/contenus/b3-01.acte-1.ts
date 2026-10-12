@@ -43,7 +43,7 @@ export const ACTE_1: moteur.Acte = [
       notes: moteur.puces(
         'Lire le courriel à voix haute, puis faire télécharger le classeur depuis le poste.',
         'Vérifier qu’il s’ouvre sans réparation et que l’onglet Commandes est visible.',
-        'Annoncer la séance : six niveaux, deux pauses de 10 minutes, un tableau de bord pour le comité de jeudi.',
+        'Annoncer la séance : six niveaux, deux pauses de 15 minutes, un tableau de bord pour le comité de jeudi.',
       ),
     },
     'hero',
@@ -895,7 +895,7 @@ export const ACTE_1: moteur.Acte = [
         'Défi : 48 villes ; sans SUPPRESPACE, les espaces en trop en font compter 83 ; la casse ne change rien, Excel l’ignore.',
         'Piège des dates : la formule de A1-11, =SI(NBCAR(B2)=10;DATEVAL(B2);B2), laisse en texte « 08/04/26 » (commande C-11481 : ligne 3785 du brut, 3741 de la copie dédoublonnée) ; DATEVAL la lirait 8 avril sur un poste réglé en français (jj/mm/aa), or elle est livrée le 7 août : la commande date sans doute du 4 août, et seul l’émetteur peut le dire.',
         'Avant la pause, dire les règles des niveaux 1 et 2 : « Je relie les tables par un identifiant, jamais par un libellé » ; « Je corrige seul ce qui est faux et certain ; je signale ce qui est douteux et je demande. »',
-        'Puis pause de 10 minutes ; reprise à 9 h 40 sur le classeur de reprise.',
+        'Puis pause de 15 minutes ; reprise à 9 h 45 sur le classeur de reprise.',
       ],
     },
     [

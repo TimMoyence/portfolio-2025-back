@@ -1,11 +1,11 @@
 {
   "graine": 0,
-  "empreinte": "f9133ac6e3217b894777292d9098a573c3dcca449481e861f3f0b226580fc2f5",
+  "empreinte": "428b1f501f77f14125d2adc8a729c792c881df688be4330744dfd8c2d4ae018f",
   "sujet": {
     "id": "b3-01-donnee-brute-decision",
     "titre": "Expert Data : de la donnée brute à la décision",
     "niveau": "B3",
-    "duree": 189,
+    "duree": 180,
     "concepts": [
       "reference-de-cellule",
       "jeu-de-donnees",
@@ -1516,85 +1516,13 @@
         }
       },
       {
-        "id": "B3-01-A3-04-TRI-GRAPHIQUES",
-        "type": "fp-cardsort",
-        "titre": "Exercice 8 — À chaque question son graphique",
-        "duree": 5,
-        "interactif": true,
-        "donnees": {
-          "plan": {
-            "id": "b3-01-a3-graphiques",
-            "intitule": "Associez chaque question de la direction au graphique qui y répond.",
-            "cartes": [
-              {
-                "id": "composition-rennes",
-                "libelle": "De quoi est fait le CA de Rennes ?"
-              },
-              {
-                "id": "remise-et-marge",
-                "libelle": "La remise fait-elle baisser la marge ?"
-              },
-              {
-                "id": "agence-qui-vend-le-plus",
-                "libelle": "Quelle agence vend le plus ?"
-              },
-              {
-                "id": "repartition-delais",
-                "libelle": "Comment se répartissent les délais de livraison ?"
-              },
-              {
-                "id": "ca-mois-par-mois",
-                "libelle": "Comment évolue le CA, mois par mois ?"
-              },
-              {
-                "id": "cumul-face-objectif",
-                "libelle": "Où en est le CA cumulé face à l’objectif ?"
-              }
-            ],
-            "categories": [
-              {
-                "id": "barres",
-                "libelle": "Barres"
-              },
-              {
-                "id": "courbe",
-                "libelle": "Courbe"
-              },
-              {
-                "id": "empile",
-                "libelle": "Barres empilées"
-              },
-              {
-                "id": "histogramme",
-                "libelle": "Histogramme (répartition par tranches)"
-              },
-              {
-                "id": "nuage",
-                "libelle": "Nuage de points"
-              },
-              {
-                "id": "kpi",
-                "libelle": "Indicateur et son contexte"
-              }
-            ],
-            "metadonnees": {
-              "concepts": ["choix-du-graphique"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 5,
-              "modalite": "binome",
-              "regime": "ouvert"
-            }
-          }
-        }
-      },
-      {
         "id": "B3-01-A3-05-ATELIER-GRAPHIQUES",
         "type": "questionnaire",
-        "titre": "Exercice 9 — CA et objectif par agence",
+        "titre": "Exercice 8 — CA et objectif par agence",
         "duree": 11,
         "interactif": true,
         "donnees": {
-          "intitule": "Exercice 9 — CA et objectif par agence",
+          "intitule": "Exercice 8 — CA et objectif par agence",
           "consigne": "Essentiel, dans le classeur de reprise de l’acte 3 : une synthèse par agence, de janvier à septembre 2026 : le CA cumulé par SOMME.SI.ENS sur T_Commandes, l’objectif cumulé par SOMME.SI.ENS sur Objectifs, le taux d’atteinte. Puis un graphique CA et objectif en Histogramme groupé (colonnes) ou en Barres groupées (barres horizontales), avec un titre qui conclut, une légende et un axe depuis zéro. Sous Windows (Excel 2019, 2021 ou 365), vous pouvez aussi mettre Agences et Objectifs sous forme de tableau, nommés T_Agences et T_Objectifs, puis relier T_Commandes et T_Objectifs à T_Agences par agence_id dans Données › Relations ; dans le TCD, créé avec « Ajouter ces données au modèle de données », agence_id de T_Agences en lignes, ca_ht de T_Commandes et objectif_ca_ht de T_Objectifs en valeurs, et deux filtres, car un filtre ne passe pas d’une table à l’autre : annee de T_Commandes sur 2026, mois de T_Objectifs de janvier à septembre 2026. Sur Mac, le modèle de données n’existe pas : la synthèse par SOMME.SI.ENS suffit. Défi : un graphique en courbes du CA mensuel, 2025 et 2026 superposées, tiré d’un TCD mois × années.",
           "regime": "focus",
           "ordre": "fixe",
@@ -1640,7 +1568,7 @@
         "id": "B3-01-A3-06-VOTE-TRENTE-SECONDES",
         "type": "fp-vote",
         "titre": "Vote : trente secondes",
-        "duree": 3,
+        "duree": 2,
         "interactif": true,
         "donnees": {
           "question": {
@@ -1767,11 +1695,11 @@
       {
         "id": "B3-01-A3-09-ATELIER-DASHBOARD",
         "type": "questionnaire",
-        "titre": "Exercice 10 — Le tableau de bord Direction",
+        "titre": "Exercice 9 — Le tableau de bord Direction",
         "duree": 15,
         "interactif": true,
         "donnees": {
-          "intitule": "Exercice 10 — Le tableau de bord Direction",
+          "intitule": "Exercice 9 — Le tableau de bord Direction",
           "consigne": "Essentiel, dans un onglet Dashboard : quatre indicateurs (CA cumulé 2026, évolution par rapport à la même période de 2025, taux de marque, lignes en quarantaine) et un TCD de la marge par agence, la marge en barres de données (Accueil › Mise en forme conditionnelle › Barres de données). Défi : un segment region relié à ce TCD.",
           "regime": "focus",
           "ordre": "fixe",
@@ -1891,7 +1819,7 @@
         "id": "B3-01-A3-11-FICHE-MEMO",
         "type": "fp-story",
         "titre": "Fiche mémo : de la donnée brute à la décision",
-        "duree": 3,
+        "duree": 2,
         "interactif": false,
         "donnees": {
           "recit": {
@@ -1942,7 +1870,7 @@
                 "tableau-de-bord"
               ],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
+              "dureeMinutes": 2,
               "modalite": "solo",
               "regime": "ouvert"
             }
@@ -1953,7 +1881,7 @@
         "id": "B3-01-A3-12-CAHIER-DE-REGLES",
         "type": "fp-pro",
         "titre": "Cahier de règles : niveaux 5 et 6, puis relecture",
-        "duree": 5,
+        "duree": 4,
         "interactif": true,
         "donnees": {
           "cas": {
@@ -1982,7 +1910,7 @@
             "metadonnees": {
               "concepts": ["choix-du-graphique", "tableau-de-bord"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 5,
+              "dureeMinutes": 4,
               "modalite": "solo",
               "regime": "ouvert"
             }
@@ -1993,7 +1921,7 @@
         "id": "B3-01-A3-13-CE-QUI-RESTE-FLOU",
         "type": "fp-pro",
         "titre": "Ce qui reste flou",
-        "duree": 2,
+        "duree": 1,
         "interactif": true,
         "donnees": {
           "cas": {
@@ -2012,7 +1940,7 @@
             "metadonnees": {
               "concepts": ["qualite-des-donnees"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 2,
+              "dureeMinutes": 1,
               "modalite": "solo",
               "regime": "ouvert"
             }
@@ -2060,7 +1988,7 @@
     "id": "b3-01-donnee-brute-decision",
     "titre": "Expert Data : de la donnée brute à la décision",
     "niveau": "B3",
-    "duree": 189,
+    "duree": 180,
     "concepts": [
       "reference-de-cellule",
       "jeu-de-donnees",
@@ -2185,7 +2113,7 @@
           "libelle": "Export des ventes Norvane (classeur Excel)",
           "fichier": "/assets/cours/b3-01/B3-01_export_ventes.d4f2ceab.xlsx"
         },
-        "notes": "• Lire le courriel à voix haute, puis faire télécharger le classeur depuis le poste.\n• Vérifier qu’il s’ouvre sans réparation et que l’onglet Commandes est visible.\n• Annoncer la séance : six niveaux, deux pauses de 10 minutes, un tableau de bord pour le comité de jeudi.",
+        "notes": "• Lire le courriel à voix haute, puis faire télécharger le classeur depuis le poste.\n• Vérifier qu’il s’ouvre sans réparation et que l’onglet Commandes est visible.\n• Annoncer la séance : six niveaux, deux pauses de 15 minutes, un tableau de bord pour le comité de jeudi.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -3314,7 +3242,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 1 min · travail 12 min · correction 2 min\n• Réflexion : faire dire l’ordre du travail : copie, colonnes nettoyées, doublons, contrôle.\n• Annoncer le palier défi aux plus rapides : il se corrige oralement, sans note.\n• Pièges : dédoublonner sur n_commande seule ; compter l’en-tête parmi les lignes ; additionner avant de convertir ; poser le contrôle sur les dates converties (45 par la formule de A1-11, 39 par DATEVAL sur toute date en texte).\n• Défi, villes distinctes : copier la colonne N, en-tête compris, en valeurs à part, puis Supprimer les doublons, case « Mes données ont des en-têtes » cochée ; sous Excel 2021 ou 365, =NBVAL(UNIQUE(N2:N4099)).\n• Corriger question par question, dans l’ordre où les explications se dévoilent ; s’attarder sur la moins réussie (score sous chaque correction).\n• Révéler la part des lignes fausses ou douteuses : c’est la réponse à la première question du vote sur le fichier et Dupont, Bordeaux (A1-04).\n• Défi : 48 villes ; sans SUPPRESPACE, les espaces en trop en font compter 83 ; la casse ne change rien, Excel l’ignore.\n• Piège des dates : la formule de A1-11, =SI(NBCAR(B2)=10;DATEVAL(B2);B2), laisse en texte « 08/04/26 » (commande C-11481 : ligne 3785 du brut, 3741 de la copie dédoublonnée) ; DATEVAL la lirait 8 avril sur un poste réglé en français (jj/mm/aa), or elle est livrée le 7 août : la commande date sans doute du 4 août, et seul l’émetteur peut le dire.\n• Avant la pause, dire les règles des niveaux 1 et 2 : « Je relie les tables par un identifiant, jamais par un libellé » ; « Je corrige seul ce qui est faux et certain ; je signale ce qui est douteux et je demande. »\n• Puis pause de 10 minutes ; reprise à 9 h 40 sur le classeur de reprise.",
+        "notes": "• Temps : réflexion 1 min · travail 12 min · correction 2 min\n• Réflexion : faire dire l’ordre du travail : copie, colonnes nettoyées, doublons, contrôle.\n• Annoncer le palier défi aux plus rapides : il se corrige oralement, sans note.\n• Pièges : dédoublonner sur n_commande seule ; compter l’en-tête parmi les lignes ; additionner avant de convertir ; poser le contrôle sur les dates converties (45 par la formule de A1-11, 39 par DATEVAL sur toute date en texte).\n• Défi, villes distinctes : copier la colonne N, en-tête compris, en valeurs à part, puis Supprimer les doublons, case « Mes données ont des en-têtes » cochée ; sous Excel 2021 ou 365, =NBVAL(UNIQUE(N2:N4099)).\n• Corriger question par question, dans l’ordre où les explications se dévoilent ; s’attarder sur la moins réussie (score sous chaque correction).\n• Révéler la part des lignes fausses ou douteuses : c’est la réponse à la première question du vote sur le fichier et Dupont, Bordeaux (A1-04).\n• Défi : 48 villes ; sans SUPPRESPACE, les espaces en trop en font compter 83 ; la casse ne change rien, Excel l’ignore.\n• Piège des dates : la formule de A1-11, =SI(NBCAR(B2)=10;DATEVAL(B2);B2), laisse en texte « 08/04/26 » (commande C-11481 : ligne 3785 du brut, 3741 de la copie dédoublonnée) ; DATEVAL la lirait 8 avril sur un poste réglé en français (jj/mm/aa), or elle est livrée le 7 août : la commande date sans doute du 4 août, et seul l’émetteur peut le dire.\n• Avant la pause, dire les règles des niveaux 1 et 2 : « Je relie les tables par un identifiant, jamais par un libellé » ; « Je corrige seul ce qui est faux et certain ; je signale ce qui est douteux et je demande. »\n• Puis pause de 15 minutes ; reprise à 9 h 45 sur le classeur de reprise.",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [
@@ -4263,7 +4191,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 1 min · travail 12 min · correction 2 min\n• Réflexion : faire dire, avant de construire, ce que chaque TCD montre en lignes, en colonnes et en valeurs.\n• Pièges : % du total général ou de la colonne au lieu du % de la ligne ; filtre annee oublié au premier TCD ; resté actif au second, recopié du premier ou de l’exemple ; trimestres groupés sans les années.\n• Corriger les deux questions ; montrer le regroupement par années qui sépare les deux printemps.\n• Défi : clic dans un TCD › Insertion › Segment (sur Mac, Analyse du tableau croisé dynamique › Segment) › categorie ; puis, le segment sélectionné, onglet Segment › Connexions de rapport : cocher les deux TCD.\n• Avant la pause, dire les règles des niveaux 3 et 4 : « Avant la fonction, je nomme la famille du problème » ; « Je travaille sur un tableau structuré, jamais sur une plage fixe. »\n• Puis pause de 10 minutes ; reprise à 10 h 51 sur le classeur de reprise de l’acte 3.",
+        "notes": "• Temps : réflexion 1 min · travail 12 min · correction 2 min\n• Réflexion : faire dire, avant de construire, ce que chaque TCD montre en lignes, en colonnes et en valeurs.\n• Pièges : % du total général ou de la colonne au lieu du % de la ligne ; filtre annee oublié au premier TCD ; resté actif au second, recopié du premier ou de l’exemple ; trimestres groupés sans les années.\n• Corriger les deux questions ; montrer le regroupement par années qui sépare les deux printemps.\n• Défi : clic dans un TCD › Insertion › Segment (sur Mac, Analyse du tableau croisé dynamique › Segment) › categorie ; puis, le segment sélectionné, onglet Segment › Connexions de rapport : cocher les deux TCD.\n• Avant la pause, dire les règles des niveaux 3 et 4 : « Avant la fonction, je nomme la famille du problème » ; « Je travaille sur un tableau structuré, jamais sur une plage fixe. »\n• Puis pause de 15 minutes ; reprise à 11 h 01 sur le classeur de reprise de l’acte 3.",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [
@@ -4509,7 +4437,7 @@
             }
           }
         },
-        "notes": "• 3 min ; faire dire la question avant le type de graphique, à chaque ligne.\n• Montrer qu’un titre qui conclut se lit en deux secondes, un titre « CA par agence » non.\n• Transition : « À chaque question son graphique : exercice 8. »",
+        "notes": "• 3 min ; faire dire la question avant le type de graphique, à chaque ligne.\n• Montrer qu’un titre qui conclut se lit en deux secondes, un titre « CA par agence » non.\n• Transition : « Le graphique de la direction : exercice 8. »",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -4517,158 +4445,13 @@
         "corrigeEcran": null
       },
       {
-        "id": "B3-01-A3-04-TRI-GRAPHIQUES",
-        "type": "fp-cardsort",
-        "titre": "Exercice 8 — À chaque question son graphique",
-        "duree": 5,
-        "interactif": true,
-        "donnees": {
-          "plan": {
-            "id": "b3-01-a3-graphiques",
-            "intitule": "Associez chaque question de la direction au graphique qui y répond.",
-            "cartes": [
-              {
-                "id": "composition-rennes",
-                "libelle": "De quoi est fait le CA de Rennes ?"
-              },
-              {
-                "id": "remise-et-marge",
-                "libelle": "La remise fait-elle baisser la marge ?"
-              },
-              {
-                "id": "agence-qui-vend-le-plus",
-                "libelle": "Quelle agence vend le plus ?"
-              },
-              {
-                "id": "repartition-delais",
-                "libelle": "Comment se répartissent les délais de livraison ?"
-              },
-              {
-                "id": "ca-mois-par-mois",
-                "libelle": "Comment évolue le CA, mois par mois ?"
-              },
-              {
-                "id": "cumul-face-objectif",
-                "libelle": "Où en est le CA cumulé face à l’objectif ?"
-              }
-            ],
-            "categories": [
-              {
-                "id": "barres",
-                "libelle": "Barres"
-              },
-              {
-                "id": "courbe",
-                "libelle": "Courbe"
-              },
-              {
-                "id": "empile",
-                "libelle": "Barres empilées"
-              },
-              {
-                "id": "histogramme",
-                "libelle": "Histogramme (répartition par tranches)"
-              },
-              {
-                "id": "nuage",
-                "libelle": "Nuage de points"
-              },
-              {
-                "id": "kpi",
-                "libelle": "Indicateur et son contexte"
-              }
-            ],
-            "metadonnees": {
-              "concepts": ["choix-du-graphique"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 5,
-              "modalite": "binome",
-              "regime": "ouvert"
-            }
-          }
-        },
-        "notes": "• Temps : réflexion 1 min · travail 3 min · correction 1 min\n• Réflexion : faire dire, pour chaque question, si elle compare, suit le temps, décompose, répartit ou relie.\n• Pièges : une évolution rangée en barres ; un histogramme confondu avec des barres ; un graphique choisi avant la question.\n• Corriger en partant de la carte la plus ratée (taux d’erreur au pupitre).\n• Transition : « Le graphique de la direction : exercice 9. »",
-        "diffusion": "seance",
-        "seuil": null,
-        "corriges": [],
-        "questions": [
-          {
-            "id": "b3-01-a3-graphiques",
-            "enonce": "Associez chaque question de la direction au graphique qui y répond.",
-            "options": null
-          }
-        ],
-        "corrigeEcran": {
-          "type": "classement",
-          "attendus": [
-            {
-              "carteId": "agence-qui-vend-le-plus",
-              "categorieId": "barres",
-              "justification": "on compare des agences entre elles"
-            },
-            {
-              "carteId": "ca-mois-par-mois",
-              "categorieId": "courbe",
-              "justification": "on suit une mesure dans le temps"
-            },
-            {
-              "carteId": "composition-rennes",
-              "categorieId": "empile",
-              "justification": "on décompose un total en quatre catégories"
-            },
-            {
-              "carteId": "repartition-delais",
-              "categorieId": "histogramme",
-              "justification": "on regarde la distribution d’une mesure"
-            },
-            {
-              "carteId": "remise-et-marge",
-              "categorieId": "nuage",
-              "justification": "on cherche un lien entre deux mesures"
-            },
-            {
-              "carteId": "cumul-face-objectif",
-              "categorieId": "kpi",
-              "justification": "un chiffre clé, lu avec son objectif"
-            }
-          ],
-          "seuilReussite": 0.75
-        },
-        "explications": [
-          {
-            "reference": "barres",
-            "texte": "Comparer des agences : des barres, triées de la plus forte à la plus faible."
-          },
-          {
-            "reference": "courbe",
-            "texte": "Suivre le CA mois par mois : une courbe, qui relie les mois dans l’ordre. Des barres comparent, elles ne montrent pas une tendance."
-          },
-          {
-            "reference": "empile",
-            "texte": "Décomposer le CA de Rennes en quatre catégories : des barres empilées."
-          },
-          {
-            "reference": "histogramme",
-            "texte": "Répartir les délais de livraison : un histogramme, par tranches de jours."
-          },
-          {
-            "reference": "nuage",
-            "texte": "Relier la remise et la marge : un nuage de points, une ligne par point."
-          },
-          {
-            "reference": "kpi",
-            "texte": "Le CA cumulé face à l’objectif : un indicateur, avec son objectif à côté."
-          }
-        ]
-      },
-      {
         "id": "B3-01-A3-05-ATELIER-GRAPHIQUES",
         "type": "questionnaire",
-        "titre": "Exercice 9 — CA et objectif par agence",
+        "titre": "Exercice 8 — CA et objectif par agence",
         "duree": 11,
         "interactif": true,
         "donnees": {
-          "intitule": "Exercice 9 — CA et objectif par agence",
+          "intitule": "Exercice 8 — CA et objectif par agence",
           "consigne": "Essentiel, dans le classeur de reprise de l’acte 3 : une synthèse par agence, de janvier à septembre 2026 : le CA cumulé par SOMME.SI.ENS sur T_Commandes, l’objectif cumulé par SOMME.SI.ENS sur Objectifs, le taux d’atteinte. Puis un graphique CA et objectif en Histogramme groupé (colonnes) ou en Barres groupées (barres horizontales), avec un titre qui conclut, une légende et un axe depuis zéro. Sous Windows (Excel 2019, 2021 ou 365), vous pouvez aussi mettre Agences et Objectifs sous forme de tableau, nommés T_Agences et T_Objectifs, puis relier T_Commandes et T_Objectifs à T_Agences par agence_id dans Données › Relations ; dans le TCD, créé avec « Ajouter ces données au modèle de données », agence_id de T_Agences en lignes, ca_ht de T_Commandes et objectif_ca_ht de T_Objectifs en valeurs, et deux filtres, car un filtre ne passe pas d’une table à l’autre : annee de T_Commandes sur 2026, mois de T_Objectifs de janvier à septembre 2026. Sur Mac, le modèle de données n’existe pas : la synthèse par SOMME.SI.ENS suffit. Défi : un graphique en courbes du CA mensuel, 2025 et 2026 superposées, tiré d’un TCD mois × années.",
           "regime": "focus",
           "ordre": "fixe",
@@ -4770,7 +4553,7 @@
         "id": "B3-01-A3-06-VOTE-TRENTE-SECONDES",
         "type": "fp-vote",
         "titre": "Vote : trente secondes",
-        "duree": 3,
+        "duree": 2,
         "interactif": true,
         "donnees": {
           "question": {
@@ -4796,7 +4579,7 @@
             ]
           }
         },
-        "notes": "• Temps « réfléchir » du niveau 6 : vote non noté, 2 min de vote et 1 min de révélation.\n• Faire dire ce que Nadia fera de chaque option devant le comité.",
+        "notes": "• Temps « réfléchir » du niveau 6 : vote non noté, 1 min de vote et 1 min de révélation.\n• Faire dire ce que Nadia fera de chaque option devant le comité.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -4955,7 +4738,7 @@
           },
           "etayage": 0
         },
-        "notes": "• Exemple lu, pas refait : chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.\n• Montrer chaque geste au pupitre dans Excel ; les étudiants reprennent les barres de données à l’exercice 10, les plus rapides le segment au défi.\n• Montrer la règle appliquée à toute la plage, de A5 à la dernière agence.\n• Transition : « Le tableau de bord Direction : exercice 10. »",
+        "notes": "• Exemple lu, pas refait : chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.\n• Montrer chaque geste au pupitre dans Excel ; les étudiants reprennent les barres de données à l’exercice 9, les plus rapides le segment au défi.\n• Montrer la règle appliquée à toute la plage, de A5 à la dernière agence.\n• Transition : « Le tableau de bord Direction : exercice 9. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -4965,11 +4748,11 @@
       {
         "id": "B3-01-A3-09-ATELIER-DASHBOARD",
         "type": "questionnaire",
-        "titre": "Exercice 10 — Le tableau de bord Direction",
+        "titre": "Exercice 9 — Le tableau de bord Direction",
         "duree": 15,
         "interactif": true,
         "donnees": {
-          "intitule": "Exercice 10 — Le tableau de bord Direction",
+          "intitule": "Exercice 9 — Le tableau de bord Direction",
           "consigne": "Essentiel, dans un onglet Dashboard : quatre indicateurs (CA cumulé 2026, évolution par rapport à la même période de 2025, taux de marque, lignes en quarantaine) et un TCD de la marge par agence, la marge en barres de données (Accueil › Mise en forme conditionnelle › Barres de données). Défi : un segment region relié à ce TCD.",
           "regime": "focus",
           "ordre": "fixe",
@@ -5178,7 +4961,7 @@
             }
           }
         },
-        "notes": "• Temps : réflexion 1 min · travail 6 min · correction 2 min\n• Réflexion : faire relire la synthèse de l’exercice 9 et le tableau de bord en cherchant ce qui sort de l’ordinaire : une agence, une catégorie, un délai.\n• Rouen (91,9 %) : troisième agence sous l’objectif, en recul d’environ 2 % sur un an, de −3 % à 0 % selon la catégorie, sans cause qui ressorte du détail. À surveiller, pas une histoire : un constat sans cause ne fait pas une recommandation.\n• Révéler la correction : les quatre histoires s’affichent ensemble. Les commenter une à une, en demandant à main levée qui l’avait trouvée avant de passer à la suivante.\n• Transition : « Gardez la fiche mémo, puis écrivez les règles des niveaux 5 et 6. »",
+        "notes": "• Temps : réflexion 1 min · travail 6 min · correction 2 min\n• Réflexion : faire relire la synthèse de l’exercice 8 et le tableau de bord en cherchant ce qui sort de l’ordinaire : une agence, une catégorie, un délai.\n• Rouen (91,9 %) : troisième agence sous l’objectif, en recul d’environ 2 % sur un an, de −3 % à 0 % selon la catégorie, sans cause qui ressorte du détail. À surveiller, pas une histoire : un constat sans cause ne fait pas une recommandation.\n• Révéler la correction : les quatre histoires s’affichent ensemble. Les commenter une à une, en demandant à main levée qui l’avait trouvée avant de passer à la suivante.\n• Transition : « Gardez la fiche mémo, puis écrivez les règles des niveaux 5 et 6. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -5207,7 +4990,7 @@
         "id": "B3-01-A3-11-FICHE-MEMO",
         "type": "fp-story",
         "titre": "Fiche mémo : de la donnée brute à la décision",
-        "duree": 3,
+        "duree": 2,
         "interactif": false,
         "donnees": {
           "recit": {
@@ -5258,13 +5041,13 @@
                 "tableau-de-bord"
               ],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
+              "dureeMinutes": 2,
               "modalite": "solo",
               "regime": "ouvert"
             }
           }
         },
-        "notes": "• 3 min de lecture ; la fiche s’imprime et se garde pour la séance 2.\n• Faire relier chaque case à la règle de son niveau : dite avant la pause pour les niveaux 1 à 4, écrite à l’écran suivant pour les niveaux 5 et 6.",
+        "notes": "• 2 min de lecture ; la fiche s’imprime et se garde pour la séance 2.\n• Faire relier chaque case à la règle de son niveau : dite avant la pause pour les niveaux 1 à 4, écrite à l’écran suivant pour les niveaux 5 et 6.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -5275,7 +5058,7 @@
         "id": "B3-01-A3-12-CAHIER-DE-REGLES",
         "type": "fp-pro",
         "titre": "Cahier de règles : niveaux 5 et 6, puis relecture",
-        "duree": 5,
+        "duree": 4,
         "interactif": true,
         "donnees": {
           "cas": {
@@ -5304,13 +5087,13 @@
             "metadonnees": {
               "concepts": ["choix-du-graphique", "tableau-de-bord"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 5,
+              "dureeMinutes": 4,
               "modalite": "solo",
               "regime": "ouvert"
             }
           }
         },
-        "notes": "• 4 min d’écriture individuelle, puis 1 min pour lire deux réponses à la troisième question.\n• Règles modèles, à montrer après la saisie : « Je pose la question avant de choisir le graphique » ; « Je recommande par un constat chiffré, sa cause et une action. »\n• Annoncer la séance 2 : l’agent Data Analyst appliquera les six règles de la séance au prochain export de Nadia.",
+        "notes": "• 3 min d’écriture individuelle, puis 1 min pour lire deux réponses à la troisième question.\n• Règles modèles, à montrer après la saisie : « Je pose la question avant de choisir le graphique » ; « Je recommande par un constat chiffré, sa cause et une action. »\n• Annoncer la séance 2 : l’agent Data Analyst appliquera les six règles de la séance au prochain export de Nadia.",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -5321,7 +5104,7 @@
         "id": "B3-01-A3-13-CE-QUI-RESTE-FLOU",
         "type": "fp-pro",
         "titre": "Ce qui reste flou",
-        "duree": 2,
+        "duree": 1,
         "interactif": true,
         "donnees": {
           "cas": {
@@ -5340,13 +5123,13 @@
             "metadonnees": {
               "concepts": ["qualite-des-donnees"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 2,
+              "dureeMinutes": 1,
               "modalite": "solo",
               "regime": "ouvert"
             }
           }
         },
-        "notes": "• 2 min d’écriture individuelle, sans lecture au pupitre : les réponses restent au rapport de séance.\n• Lire les réponses avant la séance 2 : ce qui reste flou ouvre la séance.",
+        "notes": "• 1 min d’écriture individuelle, sans lecture au pupitre : les réponses restent au rapport de séance.\n• Lire les réponses avant la séance 2 : ce qui reste flou ouvre la séance.",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -5471,7 +5254,7 @@
     "id": "b3-01-donnee-brute-decision",
     "titre": "Expert Data : de la donnée brute à la décision",
     "niveau": "B3",
-    "duree": 189,
+    "duree": 180,
     "concepts": [
       "reference-de-cellule",
       "jeu-de-donnees",
@@ -6319,17 +6102,9 @@
         }
       },
       {
-        "id": "B3-01-A3-04-TRI-GRAPHIQUES",
-        "type": "ecran-verrouille",
-        "titre": "Exercice 8 — À chaque question son graphique",
-        "duree": 5,
-        "interactif": false,
-        "donnees": {}
-      },
-      {
         "id": "B3-01-A3-05-ATELIER-GRAPHIQUES",
         "type": "ecran-verrouille",
-        "titre": "Exercice 9 — CA et objectif par agence",
+        "titre": "Exercice 8 — CA et objectif par agence",
         "duree": 11,
         "interactif": false,
         "donnees": {}
@@ -6338,7 +6113,7 @@
         "id": "B3-01-A3-06-VOTE-TRENTE-SECONDES",
         "type": "ecran-verrouille",
         "titre": "Vote : trente secondes",
-        "duree": 3,
+        "duree": 2,
         "interactif": false,
         "donnees": {}
       },
@@ -6409,7 +6184,7 @@
       {
         "id": "B3-01-A3-09-ATELIER-DASHBOARD",
         "type": "ecran-verrouille",
-        "titre": "Exercice 10 — Le tableau de bord Direction",
+        "titre": "Exercice 9 — Le tableau de bord Direction",
         "duree": 15,
         "interactif": false,
         "donnees": {}
@@ -6426,7 +6201,7 @@
         "id": "B3-01-A3-11-FICHE-MEMO",
         "type": "fp-story",
         "titre": "Fiche mémo : de la donnée brute à la décision",
-        "duree": 3,
+        "duree": 2,
         "interactif": false,
         "donnees": {
           "recit": {
@@ -6477,7 +6252,7 @@
                 "tableau-de-bord"
               ],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
+              "dureeMinutes": 2,
               "modalite": "solo",
               "regime": "ouvert"
             }
@@ -6488,7 +6263,7 @@
         "id": "B3-01-A3-12-CAHIER-DE-REGLES",
         "type": "ecran-verrouille",
         "titre": "Cahier de règles : niveaux 5 et 6, puis relecture",
-        "duree": 5,
+        "duree": 4,
         "interactif": false,
         "donnees": {}
       },
@@ -6496,7 +6271,7 @@
         "id": "B3-01-A3-13-CE-QUI-RESTE-FLOU",
         "type": "ecran-verrouille",
         "titre": "Ce qui reste flou",
-        "duree": 2,
+        "duree": 1,
         "interactif": false,
         "donnees": {}
       },

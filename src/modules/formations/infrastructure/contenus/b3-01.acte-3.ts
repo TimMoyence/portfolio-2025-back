@@ -100,7 +100,7 @@ export const ACTE_3: moteur.Acte = [
       notes: moteur.puces(
         '3 min ; faire dire la question avant le type de graphique, à chaque ligne.',
         'Montrer qu’un titre qui conclut se lit en deux secondes, un titre « CA par agence » non.',
-        'Transition : « À chaque question son graphique : exercice 8. »',
+        'Transition : « Le graphique de la direction : exercice 8. »',
       ),
     },
     'lesson',
@@ -136,119 +136,8 @@ export const ACTE_3: moteur.Acte = [
   ),
   moteur.corrigeSurPlace(
     {
-      screenId: 'B3-01-A3-04-TRI-GRAPHIQUES',
-      titre: 'Exercice 8 — À chaque question son graphique',
-      diffusion: 'seance',
-      brique: 'fp-cardsort',
-      dureeMinutes: 4,
-      concepts: ['choix-du-graphique'],
-      notes: moteur.puces(
-        moteur.tempsDeLExercice(1, 3),
-        'Réflexion : faire dire, pour chaque question, si elle compare, suit le temps, décompose, répartit ou relie.',
-        'Pièges : une évolution rangée en barres ; un histogramme confondu avec des barres ; un graphique choisi avant la question.',
-      ),
-      proprietes: {
-        modalite: 'binome',
-        ...moteur.classement(
-          {
-            id: 'b3-01-a3-graphiques',
-            intitule:
-              'Associez chaque question de la direction au graphique qui y répond.',
-          },
-          'choix-du-graphique',
-          [
-            ['barres', 'Barres'],
-            ['courbe', 'Courbe'],
-            ['empile', 'Barres empilées'],
-            ['histogramme', 'Histogramme (répartition par tranches)'],
-            ['nuage', 'Nuage de points'],
-            ['kpi', 'Indicateur et son contexte'],
-          ],
-          [
-            {
-              id: 'agence-qui-vend-le-plus',
-              libelle: 'Quelle agence vend le plus ?',
-              categorie: 'barres',
-              confusion: 'graphique-sans-question',
-              justification: 'on compare des agences entre elles',
-            },
-            {
-              id: 'ca-mois-par-mois',
-              libelle: 'Comment évolue le CA, mois par mois ?',
-              categorie: 'courbe',
-              confusion: 'graphique-sans-question',
-              justification: 'on suit une mesure dans le temps',
-            },
-            {
-              id: 'composition-rennes',
-              libelle: 'De quoi est fait le CA de Rennes ?',
-              categorie: 'empile',
-              confusion: 'graphique-sans-question',
-              justification: 'on décompose un total en quatre catégories',
-            },
-            {
-              id: 'repartition-delais',
-              libelle: 'Comment se répartissent les délais de livraison ?',
-              categorie: 'histogramme',
-              confusion: 'graphique-sans-question',
-              justification: 'on regarde la distribution d’une mesure',
-            },
-            {
-              id: 'remise-et-marge',
-              libelle: 'La remise fait-elle baisser la marge ?',
-              categorie: 'nuage',
-              confusion: 'graphique-sans-question',
-              justification: 'on cherche un lien entre deux mesures',
-            },
-            {
-              id: 'cumul-face-objectif',
-              libelle: 'Où en est le CA cumulé face à l’objectif ?',
-              categorie: 'kpi',
-              confusion: 'graphique-sans-question',
-              justification: 'un chiffre clé, lu avec son objectif',
-            },
-          ],
-        ),
-      },
-    },
-    {
-      minutes: 1,
-      notes: [
-        'Corriger en partant de la carte la plus ratée (taux d’erreur au pupitre).',
-        'Transition : « Le graphique de la direction : exercice 9. »',
-      ],
-    },
-    [
-      [
-        'barres',
-        'Comparer des agences : des barres, triées de la plus forte à la plus faible.',
-      ],
-      [
-        'courbe',
-        'Suivre le CA mois par mois : une courbe, qui relie les mois dans l’ordre. Des barres comparent, elles ne montrent pas une tendance.',
-      ],
-      [
-        'empile',
-        'Décomposer le CA de Rennes en quatre catégories : des barres empilées.',
-      ],
-      [
-        'histogramme',
-        'Répartir les délais de livraison : un histogramme, par tranches de jours.',
-      ],
-      [
-        'nuage',
-        'Relier la remise et la marge : un nuage de points, une ligne par point.',
-      ],
-      [
-        'kpi',
-        'Le CA cumulé face à l’objectif : un indicateur, avec son objectif à côté.',
-      ],
-    ],
-  ),
-  moteur.corrigeSurPlace(
-    {
       screenId: 'B3-01-A3-05-ATELIER-GRAPHIQUES',
-      titre: 'Exercice 9 — CA et objectif par agence',
+      titre: 'Exercice 8 — CA et objectif par agence',
       diffusion: 'seance',
       brique: 'questionnaire',
       dureeMinutes: 10,
@@ -259,7 +148,7 @@ export const ACTE_3: moteur.Acte = [
         'Pièges : comparer neuf mois de ventes à l’objectif de toute la table ; oublier la période des deux côtés.',
       ),
       proprietes: {
-        intitule: 'Exercice 9 — CA et objectif par agence',
+        intitule: 'Exercice 8 — CA et objectif par agence',
         consigne:
           'Essentiel, dans le classeur de reprise de l’acte 3 : une synthèse par agence, de janvier à septembre 2026 : le CA cumulé par SOMME.SI.ENS sur T_Commandes, l’objectif cumulé par SOMME.SI.ENS sur Objectifs, le taux d’atteinte. Puis un graphique CA et objectif en Histogramme groupé (colonnes) ou en Barres groupées (barres horizontales), avec un titre qui conclut, une légende et un axe depuis zéro. Sous Windows (Excel 2019, 2021 ou 365), vous pouvez aussi mettre Agences et Objectifs sous forme de tableau, nommés T_Agences et T_Objectifs, puis relier T_Commandes et T_Objectifs à T_Agences par agence_id dans Données › Relations ; dans le TCD, créé avec « Ajouter ces données au modèle de données », agence_id de T_Agences en lignes, ca_ht de T_Commandes et objectif_ca_ht de T_Objectifs en valeurs, et deux filtres, car un filtre ne passe pas d’une table à l’autre : annee de T_Commandes sur 2026, mois de T_Objectifs de janvier à septembre 2026. Sur Mac, le modèle de données n’existe pas : la synthèse par SOMME.SI.ENS suffit. Défi : un graphique en courbes du CA mensuel, 2025 et 2026 superposées, tiré d’un TCD mois × années.',
         regime: 'focus',
@@ -306,10 +195,10 @@ export const ACTE_3: moteur.Acte = [
     titre: 'Vote : trente secondes',
     diffusion: 'seance',
     brique: 'fp-vote',
-    dureeMinutes: 3,
+    dureeMinutes: 2,
     concepts: ['tableau-de-bord'],
     notes: moteur.puces(
-      'Temps « réfléchir » du niveau 6 : vote non noté, 2 min de vote et 1 min de révélation.',
+      'Temps « réfléchir » du niveau 6 : vote non noté, 1 min de vote et 1 min de révélation.',
       'Faire dire ce que Nadia fera de chaque option devant le comité.',
     ),
     proprietes: {
@@ -396,7 +285,7 @@ export const ACTE_3: moteur.Acte = [
       concepts: ['tableau-de-bord'],
       notes: moteur.puces(
         'Exemple lu, pas refait : chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.',
-        'Montrer chaque geste au pupitre dans Excel ; les étudiants reprennent les barres de données à l’exercice 10, les plus rapides le segment au défi.',
+        'Montrer chaque geste au pupitre dans Excel ; les étudiants reprennent les barres de données à l’exercice 9, les plus rapides le segment au défi.',
       ),
       proprietes: {
         modalite: 'solo',
@@ -436,14 +325,14 @@ export const ACTE_3: moteur.Acte = [
       minutes: 1,
       notes: [
         'Montrer la règle appliquée à toute la plage, de A5 à la dernière agence.',
-        'Transition : « Le tableau de bord Direction : exercice 10. »',
+        'Transition : « Le tableau de bord Direction : exercice 9. »',
       ],
     },
   ),
   moteur.corrigeSurPlace(
     {
       screenId: 'B3-01-A3-09-ATELIER-DASHBOARD',
-      titre: 'Exercice 10 — Le tableau de bord Direction',
+      titre: 'Exercice 9 — Le tableau de bord Direction',
       diffusion: 'seance',
       brique: 'questionnaire',
       dureeMinutes: 13,
@@ -455,7 +344,7 @@ export const ACTE_3: moteur.Acte = [
         'Pièges : neuf mois comparés à douze ; toute la table au lieu de 2026 ; moyenne des taux ; marge divisée par le coût d’achat ; ligne d’en-tête comptée parmi les lignes.',
       ),
       proprietes: {
-        intitule: 'Exercice 10 — Le tableau de bord Direction',
+        intitule: 'Exercice 9 — Le tableau de bord Direction',
         consigne:
           'Essentiel, dans un onglet Dashboard : quatre indicateurs (CA cumulé 2026, évolution par rapport à la même période de 2025, taux de marque, lignes en quarantaine) et un TCD de la marge par agence, la marge en barres de données (Accueil › Mise en forme conditionnelle › Barres de données). Défi : un segment region relié à ce TCD.',
         regime: 'focus',
@@ -534,7 +423,7 @@ export const ACTE_3: moteur.Acte = [
       concepts: ['tableau-de-bord'],
       notes: moteur.puces(
         moteur.tempsDeLExercice(1, 6),
-        'Réflexion : faire relire la synthèse de l’exercice 9 et le tableau de bord en cherchant ce qui sort de l’ordinaire : une agence, une catégorie, un délai.',
+        'Réflexion : faire relire la synthèse de l’exercice 8 et le tableau de bord en cherchant ce qui sort de l’ordinaire : une agence, une catégorie, un délai.',
         'Rouen (91,9 %) : troisième agence sous l’objectif, en recul d’environ 2 % sur un an, de −3 % à 0 % selon la catégorie, sans cause qui ressorte du détail. À surveiller, pas une histoire : un constat sans cause ne fait pas une recommandation.',
       ),
       proprietes: {
@@ -596,7 +485,7 @@ export const ACTE_3: moteur.Acte = [
       screenId: 'B3-01-A3-11-FICHE-MEMO',
       titre: 'Fiche mémo : de la donnée brute à la décision',
       diffusion: 'catalogue',
-      dureeMinutes: 3,
+      dureeMinutes: 2,
       concepts: [
         'jeu-de-donnees',
         'nettoyage',
@@ -606,7 +495,7 @@ export const ACTE_3: moteur.Acte = [
         'tableau-de-bord',
       ],
       notes: moteur.puces(
-        '3 min de lecture ; la fiche s’imprime et se garde pour la séance 2.',
+        '2 min de lecture ; la fiche s’imprime et se garde pour la séance 2.',
         'Faire relier chaque case à la règle de son niveau : dite avant la pause pour les niveaux 1 à 4, écrite à l’écran suivant pour les niveaux 5 et 6.',
       ),
     },
@@ -655,10 +544,10 @@ export const ACTE_3: moteur.Acte = [
     titre: 'Cahier de règles : niveaux 5 et 6, puis relecture',
     diffusion: 'seance',
     brique: 'fp-pro',
-    dureeMinutes: 5,
+    dureeMinutes: 4,
     concepts: ['choix-du-graphique', 'tableau-de-bord'],
     notes: moteur.puces(
-      '4 min d’écriture individuelle, puis 1 min pour lire deux réponses à la troisième question.',
+      '3 min d’écriture individuelle, puis 1 min pour lire deux réponses à la troisième question.',
       'Règles modèles, à montrer après la saisie : « Je pose la question avant de choisir le graphique » ; « Je recommande par un constat chiffré, sa cause et une action. »',
       'Annoncer la séance 2 : l’agent Data Analyst appliquera les six règles de la séance au prochain export de Nadia.',
     ),
@@ -697,10 +586,10 @@ export const ACTE_3: moteur.Acte = [
     titre: 'Ce qui reste flou',
     diffusion: 'seance',
     brique: 'fp-pro',
-    dureeMinutes: 2,
+    dureeMinutes: 1,
     concepts: ['qualite-des-donnees'],
     notes: moteur.puces(
-      '2 min d’écriture individuelle, sans lecture au pupitre : les réponses restent au rapport de séance.',
+      '1 min d’écriture individuelle, sans lecture au pupitre : les réponses restent au rapport de séance.',
       'Lire les réponses avant la séance 2 : ce qui reste flou ouvre la séance.',
     ),
     proprietes: {
