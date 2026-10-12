@@ -17,12 +17,14 @@ Ce document distingue deux choses :
 
 ## 1. Budget d'une séance
 
-Une séance dure 3 h 30, dont 30 min de pause que le contenu ne compte pas.
+Une séance dure 3 h 30, dont 30 min de pause que le contenu ne compte pas. Le budget vaut pour
+les deux gabarits, `v3` et `b3` (§ 8) : `controlerBudget` lit le plafond de minutes du gabarit
+déclaré, 180 pour l'un comme pour l'autre.
 
 | Budget                            | Valeur                              | Vérifié                                         |
 | --------------------------------- | ----------------------------------- | ----------------------------------------------- |
 | Écrans                            | 30 à 40, jamais plus de 40          | plafond de 40 (`ECRANS_MAXIMUM_DU_GABARIT`)     |
-| Durée de travail (`dureeMinutes`) | 180 min au plus, pause non comprise | oui (`MINUTES_MAXIMUM_DU_GABARIT`)              |
+| Durée de travail (`dureeMinutes`) | 180 min au plus, pause non comprise | oui (`MINUTES_MAXIMUM_DU_GABARIT`, v3 et b3)    |
 | Notions nouvelles                 | 3 au plus                           | convention                                      |
 | Fonctions de tableur nouvelles    | 5 au plus                           | convention                                      |
 | Exposition continue               | 6 min au plus sans interaction      | fiche du cours (`rythme.expositionContinueMax`) |
@@ -51,16 +53,24 @@ Règles vérifiées (`controlerCycle`) :
 
 ## 3. Les trois temps d'un exercice
 
-Un exercice se découpe en réflexion, travail puis correction, chacun chronométré.
+Un exercice se découpe en réflexion, travail puis correction, chacun chronométré. Est un
+exercice tout `fp-escape`, tout `fp-challenge`, et tout autre écran qui porte une question notée
+(`noteCompte`), hors `fp-recall`, `fp-exit`, `fp-spaced` et `fp-worked`.
 
-- **Réflexion** et **travail** s'annoncent dans les notes formateur, sur une ligne exacte :
-  `• Temps : réflexion N min · travail M min`, et `N + M` vaut la `dureeMinutes` de l'écran.
-- **Correction** : un écran de correction suit l'exercice (`correctionsDe` le retrouve par sa
-  source) et porte sa propre durée.
+- **L'annonce** tient sur une ligne exacte des notes formateur :
+  `• Temps : réflexion N min · travail M min`, suivie de ` · correction K min` quand la
+  correction se fait sur l'écran de l'exercice. `N + M + K` (K vaut 0 sans correction annoncée)
+  vaut la `dureeMinutes` de l'écran.
+- **La correction** se fait de l'une de deux façons :
+  - **sur place** (`correctionSurPlace`) : sur l'écran même de l'exercice, dévoilée question par
+    question ; ses explications suivent les questions du questionnaire dans leur ordre, et le
+    questionnaire n'en mélange pas l'ordre (règle `correction-sur-place`) ;
+  - **sur un écran de correction** qui suit l'exercice (`correctionsDe` le retrouve par sa
+    source) et porte sa propre durée ; il reste verrouillé jusqu'à la révélation de sa source,
+    comme dans tout cours servi.
 
-Règle vérifiée (`controlerTempsDesExercices`) : chaque exercice porte l'annonce, sa somme
-tombe juste, et un écran de correction le suit. Les écrans de correction restent verrouillés
-jusqu'à la révélation de leur source, comme dans tout cours servi.
+Règle vérifiée (`controlerTempsDesExercices`) : chaque exercice porte l'annonce, sa somme tombe
+juste, et il est corrigé, sur place ou sur un écran qui le suit.
 
 ## 4. La trace écrite (rendu `lesson`)
 
@@ -131,7 +141,9 @@ papier, que la fiche de conception décrit écran par écran.
 
 ## 8. Gabarit b3 des cours Bachelor 3
 
-Un cours B3 déclare `gabarit: 'b3'`. `verifierStructure` lui applique le budget (§ 1), le cycle
+Un cours B3 déclare `gabarit: 'b3'`. `verifierStructure` lui applique le budget (§ 1 : 40 écrans
+et 180 minutes au plus, comme le v3, décision de Tim du 2026-10-12 : deux pauses de 15 minutes
+dans la séance de 3 h 30), le cycle
 (§ 2) et les trois temps de chaque exercice (§ 3), mais pas la mini-situation CCF (§ 5) : le
 Bachelor n'a pas d'épreuve CCF à préparer. L'équivalence papier (§ 6) ne le concerne pas non
 plus, les manipulations se faisant dans Excel. La valeur `b3` tient dans la colonne `gabarit`

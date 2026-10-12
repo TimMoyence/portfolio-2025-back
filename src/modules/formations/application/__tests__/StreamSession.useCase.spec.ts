@@ -713,6 +713,20 @@ describe('StreamSessionUseCase', () => {
         buildAnswerRecord(),
         REPONSE_FAUSSE,
       ]);
+    const activiteContinuePuisCalme = async (quarts: number): Promise<void> => {
+      for (let quart = 0; quart < quarts; quart += 1) {
+        cache.signalerActivite(SESSION);
+        await laisserPasser(INTERVALLE_MS_TEST / 4);
+      }
+      await laisserPasser(2 * DELAI_MIN_BILAN_MS);
+    };
+    const premierBilanRetardeDe = (ms: number): void => {
+      answers.listBySession.mockReturnValueOnce(
+        new Promise<readonly AnswerRecord[]>((resoudre) => {
+          setTimeout(() => resoudre([]), ms);
+        }),
+      );
+    };
 
     it('emet les jalons, les enigmes et le bareme avec chaque poussee de resultats', async () => {
       const ecoute = await formateurALEcoute();
@@ -811,6 +825,85 @@ describe('StreamSessionUseCase', () => {
       fermer([premier, second]);
     });
 
+    it('pousse a chacun des deux flux du formateur chaque bilan calcule pendant une activite continue', async () => {
+      const premier = await formateurALEcoute();
+      await laisserPasser(INTERVALLE_MS_TEST / 2);
+      const second = await ecouterFormateur();
+      await activiteContinuePuisCalme(48);
+
+      const calculs = answers.listBySession.mock.calls.length;
+      expect(calculs).toBeGreaterThan(2);
+      expect({
+        premier: premier.resultats().length,
+        second: second.resultats().length,
+      }).toEqual({ premier: calculs, second: calculs });
+      fermer([premier, second]);
+    });
+
+    it('espace d au moins une seconde deux resultats pousses sur un meme flux, meme quand un bilan tarde plus que le suivant', async () => {
+      premierBilanRetardeDe(3 * INTERVALLE_MS_TEST);
+      const instants: number[] = [];
+      const abonnement = (
+        await sut.executeForTeacher(SESSION, TEACHER_ID)
+      ).subscribe((evenement) => {
+        if (evenement.type === 'resultats') instants.push(Date.now());
+      });
+      await activiteContinuePuisCalme(24);
+      abonnement.unsubscribe();
+
+      const ecarts = instants
+        .slice(1)
+        .map((instant, rang) => instant - instants[rang]);
+      expect(ecarts.length).toBeGreaterThan(1);
+      expect(Math.min(...ecarts)).toBeGreaterThanOrEqual(DELAI_MIN_BILAN_MS);
+    });
+
+    it.each([
+      ['tarde', 6 * INTERVALLE_MS_TEST, 0],
+      [
+        'attend sa seconde',
+        3 * INTERVALLE_MS_TEST + 100,
+        4 * INTERVALLE_MS_TEST,
+      ],
+    ])(
+      'pousse au formateur le changement d ecran au passage suivant pendant qu un bilan %s',
+      async (_cas, retardDuPremierBilanMs, changementApresMs) => {
+        premierBilanRetardeDe(retardDuPremierBilanMs);
+        const ecoute = await formateurALEcoute();
+        cache.signalerActivite(SESSION);
+        await laisserPasser(changementApresMs);
+
+        seanceLue({ ecranCourant: 9 });
+        cache.drop(SESSION);
+        await laisserPasser(INTERVALLE_MS_TEST + 40);
+
+        expect(
+          ecoute.evenements
+            .filter((evenement) => evenement.type === 'etat')
+            .map(
+              (evenement) =>
+                (evenement.data as Record<string, unknown>)['ecranCourant'],
+            ),
+        ).toContain(9);
+        fermer([ecoute]);
+      },
+    );
+
+    it('ne pousse qu une fois le bilan en cours de calcul quand la seance se termine', async () => {
+      premierBilanRetardeDe(2 * INTERVALLE_MS_TEST);
+      const ecoute = await formateurALEcoute();
+
+      seanceLue({ etat: 'terminee' });
+      cache.drop(SESSION);
+      await laisserPasser(4 * INTERVALLE_MS_TEST);
+
+      expect(ecoute.types().filter((type) => type !== 'etat')).toEqual([
+        'resultats',
+        'fin',
+      ]);
+      fermer([ecoute]);
+    });
+
     it('ne recalcule pas le bilan plus d une fois par seconde malgre l activite', async () => {
       const ecoute = await formateurALEcoute();
 
@@ -898,11 +991,7 @@ describe('StreamSessionUseCase', () => {
     });
 
     it('ne superpose pas deux recalculs quand le depot tarde a repondre', async () => {
-      answers.listBySession.mockReturnValueOnce(
-        new Promise<readonly AnswerRecord[]>((resoudre) => {
-          setTimeout(() => resoudre([]), 10 * INTERVALLE_MS_TEST);
-        }),
-      );
+      premierBilanRetardeDe(10 * INTERVALLE_MS_TEST);
       const ecoute = await formateurALEcoute();
 
       cache.signalerActivite(SESSION);
@@ -925,6 +1014,66 @@ describe('StreamSessionUseCase', () => {
         'resultats',
         'fin',
       ]);
+    });
+
+    const participantsAuNombre = (nombre: number) =>
+      Array.from({ length: nombre }, (_, rang) =>
+        buildParticipantRecord({ id: `p-${rang}`, seed: 1000 + rang }),
+      );
+    const bilansAvantLaFin = (ecoute: Ecoute): string[] =>
+      ecoute.types().filter((type) => type === 'resultats' || type === 'fin');
+
+    it('finit le flux du formateur sur le bilan definitif, meme quand drop remet le compteur d activite a celui du dernier bilan pousse', async () => {
+      const ecoute = await ecouterFormateur();
+      await laisserPasser();
+      answers.listBySession.mockReturnValueOnce(
+        new Promise((resoudre) =>
+          setTimeout(() => resoudre([buildAnswerRecord()]), 1500),
+        ),
+      );
+      cache.signalerActivite(SESSION);
+      cache.signalerActivite(SESSION);
+      cache.signalerActivite(SESSION);
+      await laisserPasser(1100);
+      seanceLue({ etat: 'terminee' });
+      cache.drop(SESSION);
+      await laisserPasser(4000);
+
+      const bilans = bilansAvantLaFin(ecoute);
+      expect(bilans.slice(-2)).toEqual(['resultats', 'fin']);
+      expect(bilans.filter((type) => type === 'resultats')).toHaveLength(2);
+      fermer([ecoute]);
+    });
+
+    it('ne pousse aucun bilan en vol apres le bilan definitif', async () => {
+      cache.signalerActivite(SESSION);
+      cache.signalerActivite(SESSION);
+      const resolveurs: ((reponses: AnswerRecord[]) => void)[] = [];
+      const differe = new Promise<AnswerRecord[]>((resoudre) => {
+        resolveurs.push(resoudre);
+      });
+      participants.listBySession.mockResolvedValueOnce(participantsAuNombre(1));
+      const ecoute = await ecouterFormateur();
+      await laisserPasser();
+      answers.listBySession
+        .mockReturnValueOnce(differe)
+        .mockReturnValueOnce(differe);
+      participants.listBySession
+        .mockResolvedValueOnce(participantsAuNombre(2))
+        .mockResolvedValueOnce(participantsAuNombre(3));
+      cache.signalerActivite(SESSION);
+      await laisserPasser(1000);
+      seanceLue({ etat: 'terminee' });
+      cache.drop(SESSION);
+      await laisserPasser(600);
+      resolveurs.forEach((resoudre) => resoudre([buildAnswerRecord()]));
+      await laisserPasser(1500);
+
+      expect(ecoute.resultats().map((bilan) => bilan.participants)).toEqual([
+        1, 3,
+      ]);
+      expect(ecoute.types().slice(-1)).toEqual(['fin']);
+      fermer([ecoute]);
     });
   });
 
@@ -991,6 +1140,58 @@ describe('StreamSessionUseCase', () => {
       expect(ecoute.types()).toEqual(['etat', 'fin']);
       expectPanneJournalisee();
       fermer([ecoute]);
+    });
+
+    it('ne journalise qu un avertissement quand le bilan en vol echoue a la cloture, puis pousse le bilan definitif', async () => {
+      answers.listBySession.mockReturnValueOnce(
+        new Promise((_resoudre, rejeter) =>
+          setTimeout(() => rejeter(PANNE), 1000),
+        ),
+      );
+      const ecoute = await ecouterFormateur();
+      await laisserPasser();
+      seanceLue({ etat: 'terminee' });
+      cache.drop(SESSION);
+      await laisserPasser(4 * INTERVALLE_MS_TEST);
+
+      expectPanneJournalisee();
+      expect(
+        ecoute.types().filter((type) => type === 'resultats' || type === 'fin'),
+      ).toEqual(['resultats', 'fin']);
+      fermer([ecoute]);
+    });
+
+    it('un calcul rejete n efface pas le bilan plus recent qui l a remplace : un calcul par seconde au plus', async () => {
+      const departs: number[] = [];
+      participants.listBySession.mockImplementation(() => {
+        departs.push(Date.now());
+        return Promise.resolve([buildParticipantRecord()]);
+      });
+      const premier = await ecouterFormateur();
+      await laisserPasser();
+      answers.listBySession
+        .mockReturnValueOnce(
+          new Promise((_resoudre, rejeter) =>
+            setTimeout(() => rejeter(PANNE), 1200 + 990),
+          ),
+        )
+        .mockReturnValueOnce(
+          new Promise((resoudre) =>
+            setTimeout(() => resoudre([buildAnswerRecord()]), 2000 + 2090),
+          ),
+        );
+      cache.signalerActivite(SESSION);
+      await laisserPasser(1000);
+      cache.signalerActivite(SESSION);
+      await laisserPasser(1090);
+      const second = await ecouterFormateur();
+      await laisserPasser(1500);
+
+      const ecarts = departs
+        .slice(1)
+        .map((depart, rang) => depart - departs[rang]);
+      expect(Math.min(...ecarts)).toBeGreaterThanOrEqual(DELAI_MIN_BILAN_MS);
+      fermer([premier, second]);
     });
   });
 });
