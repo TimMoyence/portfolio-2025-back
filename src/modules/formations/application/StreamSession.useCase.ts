@@ -87,6 +87,7 @@ interface PorteurEtudiant {
 interface BilanPartage {
   readonly activite: number;
   readonly calculeLe: number;
+  readonly definitif: boolean;
   readonly valeur: Promise<ResultatsEnDirect>;
 }
 
@@ -209,6 +210,7 @@ export class StreamSessionUseCase {
       let actif = true;
       let occupe = false;
       let resultatsEnCours = false;
+      let cloture = false;
       let passagesDepuisLeControle = 0;
       let bail: StreamCapacityLease | null = null;
       let boucle: ReturnType<typeof setInterval> | undefined;
@@ -252,26 +254,18 @@ export class StreamSessionUseCase {
 
       const pousserResultatsSiActivite = async (
         session: SessionRecord,
-        options: { readonly sansAttendre: boolean } = { sansAttendre: false },
       ): Promise<void> => {
         const activite = this.cache.activite(sessionId);
         if (activite === derniereActivite) {
           return;
         }
-        const bilan = this.bilanPartage(
-          session,
-          activite,
-          derniereActivite,
-          options,
-        );
+        const bilan = this.bilanPartage(session, activite, derniereActivite);
         if (bilan === null) {
           return;
         }
         const resultats = await bilan.valeur;
-        if (!options.sansAttendre) {
-          await patienter(dernierePousse + DELAI_MIN_BILAN_MS - Date.now());
-        }
-        if (!actif || bilan.activite === derniereActivite) {
+        await patienter(dernierePousse + DELAI_MIN_BILAN_MS - Date.now());
+        if (!actif || cloture || bilan.activite === derniereActivite) {
           return;
         }
         subscriber.next({ type: 'resultats', data: resultats });
@@ -300,9 +294,11 @@ export class StreamSessionUseCase {
           return;
         }
         try {
-          await pousserResultatsSiActivite(sessionDuFormateur, {
-            sansAttendre: true,
-          });
+          const resultats =
+            await this.bilanDefinitif(sessionDuFormateur).valeur;
+          if (actif) {
+            subscriber.next({ type: 'resultats', data: resultats });
+          }
         } catch (error) {
           this.logger.warn(
             `Resultats definitifs de la session ${sessionId} non pousses, le flux se clot quand meme: ${messageDErreur(error)}`,
@@ -311,6 +307,7 @@ export class StreamSessionUseCase {
       };
 
       const clore = async (): Promise<void> => {
+        cloture = true;
         await pousserResultatsDefinitifs();
         terminer('cloturee');
       };
@@ -429,24 +426,46 @@ export class StreamSessionUseCase {
     session: SessionRecord,
     activite: number,
     dejaPousse: number,
-    options: { readonly sansAttendre: boolean },
   ): BilanPartage | null {
     const partage = this.bilansPartages.get(session.id);
     if (partage !== undefined && partage.activite === activite) {
       return partage;
     }
-    const maintenant = Date.now();
     if (
       partage !== undefined &&
-      !options.sansAttendre &&
-      maintenant - partage.calculeLe < DELAI_MIN_BILAN_MS
+      Date.now() - partage.calculeLe < DELAI_MIN_BILAN_MS
     ) {
       return partage.activite === dejaPousse ? null : partage;
     }
+    return this.calculerBilan(session, activite, false);
+  }
+
+  private bilanDefinitif(session: SessionRecord): BilanPartage {
+    const partage = this.bilansPartages.get(session.id);
+    if (partage?.definitif === true) {
+      return partage;
+    }
+    return this.calculerBilan(session, this.cache.activite(session.id), true);
+  }
+
+  private calculerBilan(
+    session: SessionRecord,
+    activite: number,
+    definitif: boolean,
+  ): BilanPartage {
     const valeur = this.lireResultats(session);
-    const calcule: BilanPartage = { activite, calculeLe: maintenant, valeur };
+    const calcule: BilanPartage = {
+      activite,
+      calculeLe: Date.now(),
+      definitif,
+      valeur,
+    };
     this.bilansPartages.set(session.id, calcule);
-    void valeur.catch(() => this.bilansPartages.delete(session.id));
+    void valeur.catch(() => {
+      if (this.bilansPartages.get(session.id) === calcule) {
+        this.bilansPartages.delete(session.id);
+      }
+    });
     return calcule;
   }
 

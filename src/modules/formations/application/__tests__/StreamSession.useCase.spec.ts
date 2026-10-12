@@ -1015,6 +1015,66 @@ describe('StreamSessionUseCase', () => {
         'fin',
       ]);
     });
+
+    const participantsAuNombre = (nombre: number) =>
+      Array.from({ length: nombre }, (_, rang) =>
+        buildParticipantRecord({ id: `p-${rang}`, seed: 1000 + rang }),
+      );
+    const bilansAvantLaFin = (ecoute: Ecoute): string[] =>
+      ecoute.types().filter((type) => type === 'resultats' || type === 'fin');
+
+    it('finit le flux du formateur sur le bilan definitif, meme quand drop remet le compteur d activite a celui du dernier bilan pousse', async () => {
+      const ecoute = await ecouterFormateur();
+      await laisserPasser();
+      answers.listBySession.mockReturnValueOnce(
+        new Promise((resoudre) =>
+          setTimeout(() => resoudre([buildAnswerRecord()]), 1500),
+        ),
+      );
+      cache.signalerActivite(SESSION);
+      cache.signalerActivite(SESSION);
+      cache.signalerActivite(SESSION);
+      await laisserPasser(1100);
+      seanceLue({ etat: 'terminee' });
+      cache.drop(SESSION);
+      await laisserPasser(4000);
+
+      const bilans = bilansAvantLaFin(ecoute);
+      expect(bilans.slice(-2)).toEqual(['resultats', 'fin']);
+      expect(bilans.filter((type) => type === 'resultats')).toHaveLength(2);
+      fermer([ecoute]);
+    });
+
+    it('ne pousse aucun bilan en vol apres le bilan definitif', async () => {
+      cache.signalerActivite(SESSION);
+      cache.signalerActivite(SESSION);
+      const resolveurs: ((reponses: AnswerRecord[]) => void)[] = [];
+      const differe = new Promise<AnswerRecord[]>((resoudre) => {
+        resolveurs.push(resoudre);
+      });
+      participants.listBySession.mockResolvedValueOnce(participantsAuNombre(1));
+      const ecoute = await ecouterFormateur();
+      await laisserPasser();
+      answers.listBySession
+        .mockReturnValueOnce(differe)
+        .mockReturnValueOnce(differe);
+      participants.listBySession
+        .mockResolvedValueOnce(participantsAuNombre(2))
+        .mockResolvedValueOnce(participantsAuNombre(3));
+      cache.signalerActivite(SESSION);
+      await laisserPasser(1000);
+      seanceLue({ etat: 'terminee' });
+      cache.drop(SESSION);
+      await laisserPasser(600);
+      resolveurs.forEach((resoudre) => resoudre([buildAnswerRecord()]));
+      await laisserPasser(1500);
+
+      expect(ecoute.resultats().map((bilan) => bilan.participants)).toEqual([
+        1, 3,
+      ]);
+      expect(ecoute.types().slice(-1)).toEqual(['fin']);
+      fermer([ecoute]);
+    });
   });
 
   describe('panne passagere de la base', () => {
@@ -1080,6 +1140,58 @@ describe('StreamSessionUseCase', () => {
       expect(ecoute.types()).toEqual(['etat', 'fin']);
       expectPanneJournalisee();
       fermer([ecoute]);
+    });
+
+    it('ne journalise qu un avertissement quand le bilan en vol echoue a la cloture, puis pousse le bilan definitif', async () => {
+      answers.listBySession.mockReturnValueOnce(
+        new Promise((_resoudre, rejeter) =>
+          setTimeout(() => rejeter(PANNE), 1000),
+        ),
+      );
+      const ecoute = await ecouterFormateur();
+      await laisserPasser();
+      seanceLue({ etat: 'terminee' });
+      cache.drop(SESSION);
+      await laisserPasser(4 * INTERVALLE_MS_TEST);
+
+      expectPanneJournalisee();
+      expect(
+        ecoute.types().filter((type) => type === 'resultats' || type === 'fin'),
+      ).toEqual(['resultats', 'fin']);
+      fermer([ecoute]);
+    });
+
+    it('un calcul rejete n efface pas le bilan plus recent qui l a remplace : un calcul par seconde au plus', async () => {
+      const departs: number[] = [];
+      participants.listBySession.mockImplementation(() => {
+        departs.push(Date.now());
+        return Promise.resolve([buildParticipantRecord()]);
+      });
+      const premier = await ecouterFormateur();
+      await laisserPasser();
+      answers.listBySession
+        .mockReturnValueOnce(
+          new Promise((_resoudre, rejeter) =>
+            setTimeout(() => rejeter(PANNE), 1200 + 990),
+          ),
+        )
+        .mockReturnValueOnce(
+          new Promise((resoudre) =>
+            setTimeout(() => resoudre([buildAnswerRecord()]), 2000 + 2090),
+          ),
+        );
+      cache.signalerActivite(SESSION);
+      await laisserPasser(1000);
+      cache.signalerActivite(SESSION);
+      await laisserPasser(1090);
+      const second = await ecouterFormateur();
+      await laisserPasser(1500);
+
+      const ecarts = departs
+        .slice(1)
+        .map((depart, rang) => depart - departs[rang]);
+      expect(Math.min(...ecarts)).toBeGreaterThanOrEqual(DELAI_MIN_BILAN_MS);
+      fermer([premier, second]);
     });
   });
 });
