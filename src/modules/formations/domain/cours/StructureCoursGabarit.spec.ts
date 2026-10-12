@@ -277,19 +277,19 @@ describe('verifierStructure — gabarit b3', () => {
     );
   });
 
-  it('accepte cent quatre-vingt-dix minutes de travail : deux pauses de dix minutes dans une séance de 3 h 30', () => {
+  it('accepte cent quatre-vingts minutes de travail : deux pauses de quinze minutes dans une séance de 3 h 30', () => {
     expect(
       violationsDuGabarit(
-        enMinutesDeTravail(190, buildEcransSansMiniSituation()),
+        enMinutesDeTravail(180, buildEcransSansMiniSituation()),
         buildCoursB3,
       ),
     ).toEqual([]);
   });
 
-  it('refuse plus de cent quatre-vingt-dix minutes de travail', () => {
+  it('refuse plus de cent quatre-vingts minutes de travail, comme le v3', () => {
     expect(
       violationsDuGabarit(
-        enMinutesDeTravail(191, buildEcransSansMiniSituation()),
+        enMinutesDeTravail(181, buildEcransSansMiniSituation()),
         buildCoursB3,
       ),
     ).toContainEqual(BUDGET_DEPASSE);

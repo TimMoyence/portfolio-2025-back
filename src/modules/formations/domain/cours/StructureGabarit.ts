@@ -7,7 +7,7 @@ import type { Manquement } from './GardeConfidentialite';
 const ECRANS_MAXIMUM_DU_GABARIT = 40;
 const MINUTES_MAXIMUM_DU_GABARIT: Readonly<Record<Gabarit, number>> = {
   v3: 180,
-  b3: 190,
+  b3: 180,
 };
 const BRIQUES_HORS_CYCLE: readonly string[] = [
   'fp-recall',
