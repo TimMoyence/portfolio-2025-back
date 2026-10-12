@@ -77,6 +77,37 @@ describe.each(CONTENUS.map((contenu) => [contenu.slug, contenu] as const))(
       ).toEqual([]);
     });
 
+    it('numérote ses exercices de 1 à n dans l’ordre servi, sans renvoi à un exercice absent ni transition vers un autre', () => {
+      const numeroDe = (titre: string | null): number | null => {
+        const numero = /^Exercice\s(\d+)\s—/u.exec(titre ?? '');
+        return numero === null ? null : Number(numero[1]);
+      };
+      const numeros = cours.ecrans.flatMap((ecran) => {
+        const numero = numeroDe(ecran.titre);
+        return numero === null ? [] : [numero];
+      });
+      const renvois = cours.ecrans.flatMap((ecran) =>
+        [...JSON.stringify(ecran).matchAll(/exercice\s(\d{1,2})(?!\d)/giu)]
+          .map(([, numero]) => Number(numero))
+          .filter((numero) => numero < 1 || numero > numeros.length)
+          .map((numero) => `${ecran.id} : exercice ${numero}`),
+      );
+      const transitions = cours.ecrans.flatMap((ecran, rang) => {
+        const annonce = /exercice\s(\d+)\.\s*»/iu.exec(ecran.notes);
+        const suivant = cours.ecrans
+          .slice(rang + 1)
+          .find((candidat) => numeroDe(candidat.titre) !== null);
+        return annonce === null ||
+          numeroDe(suivant?.titre ?? null) === Number(annonce[1])
+          ? []
+          : [`${ecran.id} annonce l’exercice ${annonce[1]}`];
+      });
+
+      expect(numeros).toEqual(numeros.map((_, rang) => rang + 1));
+      expect(renvois).toEqual([]);
+      expect(transitions).toEqual([]);
+    });
+
     it('rédige chaque note présente en puces « • » non vides', () => {
       const fautives = cours.ecrans
         .filter((ecran) => ecran.notes !== '')
