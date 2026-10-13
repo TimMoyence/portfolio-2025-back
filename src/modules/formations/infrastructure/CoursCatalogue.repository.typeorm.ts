@@ -44,25 +44,14 @@ export class CoursCatalogueRepositoryTypeORM implements ICatalogueCours {
     if (publication === null) {
       return null;
     }
-    const memorise = this.coursLus.lire(
-      cleDuCours(slug, publication.versionPubliee),
-    );
-    if (memorise !== undefined) {
-      return {
-        cours: memorise,
-        version: publication.versionPubliee,
-        publieLe: publication.publieeLe,
-      };
-    }
-    const entity = await this.findEntity(slug, publication.versionPubliee);
-    if (entity === null) {
-      return null;
-    }
-    return {
-      cours: this.toDomain(entity),
-      version: entity.version,
-      publieLe: publication.publieeLe,
-    };
+    const cours = await this.trouver(slug, publication.versionPubliee);
+    return cours === null
+      ? null
+      : {
+          cours,
+          version: publication.versionPubliee,
+          publieLe: publication.publieeLe,
+        };
   }
 
   private async findEntity(
