@@ -15,6 +15,7 @@ import {
   valeursDevoileesParLesExplications,
 } from '../../../../../test/helpers/relecture-de-cours';
 import { avecVirgule } from '../../../../common/domain/nombres/ecriture-francaise';
+import { sansEspacesTypographiques } from '../../../../common/domain/texte/sans-espaces-typographiques';
 import { libelleDeConfusion } from '../../domain/cours/banque/confusions';
 import { estReservee, questionsDuCours } from '../../domain/cours/Cours';
 import { tirer } from '../../domain/cours/Tirage';
@@ -36,7 +37,6 @@ const VALEURS: Readonly<Record<string, number | string>> = Object.fromEntries(
 );
 const SEUIL_D_UNE_VALEUR_RECONNAISSABLE = 10;
 const UNITES_ARRONDIES = new Set(['€', '%']);
-const ESPACES_TYPOGRAPHIQUES = /[\u{A0}\u{202F}]/gu;
 
 interface NumeriqueStockee {
   readonly id: string;
@@ -64,9 +64,9 @@ function valeursReconnaissables(): (number | string)[] {
 }
 
 function texteDe(screenId: string): string {
-  return feuille
-    .texteDeLEcran(COURS_B3_01, screenId)
-    .replaceAll(ESPACES_TYPOGRAPHIQUES, ' ');
+  return sansEspacesTypographiques(
+    feuille.texteDeLEcran(COURS_B3_01, screenId),
+  );
 }
 
 function questionsDe(screenId: string) {
@@ -76,9 +76,9 @@ function questionsDe(screenId: string) {
 
 function consigneDe(screenId: string): string {
   const { proprietes } = fiche.ecranDuContenu(COURS_B3_01, screenId);
-  return (
-    'consigne' in proprietes ? (proprietes.consigne ?? '') : ''
-  ).replaceAll(ESPACES_TYPOGRAPHIQUES, ' ');
+  return sansEspacesTypographiques(
+    'consigne' in proprietes ? (proprietes.consigne ?? '') : '',
+  );
 }
 
 function libellesDuVote(id: string): string[] {
@@ -106,9 +106,9 @@ function attendusDe(screenId: string) {
 }
 
 function enonceDe(id: string): string {
-  return (
-    numeriquesStockees().find((question) => question.id === id)?.enonce ?? ''
-  ).replaceAll(ESPACES_TYPOGRAPHIQUES, ' ');
+  return sansEspacesTypographiques(
+    numeriquesStockees().find((question) => question.id === id)?.enonce ?? '',
+  );
 }
 
 function remediationDe(confusion: string): string | undefined {
@@ -120,7 +120,7 @@ function remediationDe(confusion: string): string | undefined {
 function explicationsDe(screenId: string): string[] {
   const ecran = COURS.ecrans.find((candidat) => candidat.id === screenId);
   return (ecran?.correctionSurPlace?.explications ?? []).map((explication) =>
-    explication.texte.replaceAll(ESPACES_TYPOGRAPHIQUES, ' '),
+    sansEspacesTypographiques(explication.texte),
   );
 }
 

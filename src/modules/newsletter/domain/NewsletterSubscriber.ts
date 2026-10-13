@@ -1,10 +1,10 @@
 import { randomUUID } from 'node:crypto';
 import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
 import {
+  requireEmail,
   requireText,
   requireValidDate,
 } from '../../../common/domain/validation/domain-validators';
-import { EmailAddress } from '../../../common/domain/value-objects/EmailAddress';
 import type { SubscriptionStatus } from './SubscriptionStatus';
 
 export interface CreateNewsletterSubscriberProps {
@@ -38,10 +38,7 @@ export class NewsletterSubscriber {
   createdAt?: Date;
 
   static create(props: CreateNewsletterSubscriberProps): NewsletterSubscriber {
-    const email = EmailAddress.parse(props.email);
-    if (!email) {
-      throw new DomainValidationError('Invalid newsletter subscriber email');
-    }
+    const email = requireEmail(props.email, 'newsletter subscriber email');
     const locale = requireText(props.locale, 'locale', 1, 10);
     if (!/^[a-z]{2,3}(-[A-Z]{2})?$/.test(locale)) {
       throw new DomainValidationError(
@@ -62,7 +59,7 @@ export class NewsletterSubscriber {
         : null;
 
     const subscriber = new NewsletterSubscriber();
-    subscriber.email = email.value;
+    subscriber.email = email;
     subscriber.firstName = firstName;
     subscriber.locale = locale;
     subscriber.sourceFormationSlug = sourceFormationSlug;

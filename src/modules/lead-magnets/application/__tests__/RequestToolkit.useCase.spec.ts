@@ -5,6 +5,7 @@ import {
   createMockToolkitPdfGenerator,
   createMockToolkitContentAssembler,
 } from '../../../../../test/factories/lead-magnet-request.factory';
+import { BadRequestException } from '@nestjs/common';
 import { flushPromises } from '../../../../../test/helpers/flush-promises';
 import { RequestToolkitUseCase } from '../RequestToolkit.useCase';
 import type { RequestToolkitCommand } from '../dto/RequestToolkit.command';
@@ -77,7 +78,17 @@ describe('RequestToolkitUseCase', () => {
   it('should reject invalid email', async () => {
     await expect(
       useCase.execute({ ...validCommand, email: 'not-an-email' }),
-    ).rejects.toThrow();
+    ).rejects.toThrow(
+      new BadRequestException('Invalid lead magnet request email'),
+    );
+  });
+
+  it('enregistre l email normalise', async () => {
+    await useCase.execute({ ...validCommand, email: '  Marie@Example.COM ' });
+
+    expect(repo.create).toHaveBeenCalledWith(
+      expect.objectContaining({ email: 'marie@example.com' }),
+    );
   });
 
   it('should reject empty firstName', async () => {

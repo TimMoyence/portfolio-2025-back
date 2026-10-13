@@ -38,7 +38,7 @@ describe('Contacts aggregate', () => {
   it('throws for invalid email', () => {
     expect(() =>
       Contacts.create({ ...VALID_CONTACT_PROPS, email: 'invalid-email' }),
-    ).toThrow(DomainValidationError);
+    ).toThrow(new DomainValidationError('Invalid contact email'));
   });
 
   it('devrait accepter un phone null', () => {

@@ -129,7 +129,7 @@ export class GetSessionResultsUseCase {
         notation: REGLE_DE_NOTATION,
         bareme: resumeDuBareme(session.bareme),
         jalons,
-        enigmes: agregerEnigmes(progressions),
+        enigmes: agregerEnigmes(progressions, cours),
       },
     };
   }

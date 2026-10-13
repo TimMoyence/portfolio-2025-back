@@ -1,10 +1,13 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import {
+  buildCoursAvecEnigmes,
   buildCoursDeClasse,
   buildCoursDeTest,
+  buildProgressionEnigme,
   buildSeanceRepondueAuRappel,
   creerCatalogueAVersions,
   creerCatalogueDeTest,
+  ENIGMES_DE_TEST,
 } from '../../../../../test/factories/cours.factory';
 import {
   buildActeurFormation,
@@ -15,7 +18,9 @@ import {
   buildSessionRecord,
   createMockDepotsFormations,
 } from '../../../../../test/factories/formation.factory';
+import { TENTATIVES_MAX_PAR_ENIGME } from '../../domain/cours/Enigmes';
 import type { ICatalogueCours } from '../../domain/cours/ICatalogueCours.port';
+import type { ProgressionEnigmeRecord } from '../../domain/IEscape.repository';
 import {
   SessionNotFoundError,
   SessionNotOwnedError,
@@ -48,6 +53,15 @@ describe('GetSessionResultsUseCase', () => {
       depots.escape,
       depots.freeResponses,
     );
+
+  const enigmesDuRapport = async (
+    progressions: readonly ProgressionEnigmeRecord[],
+  ) => {
+    depots.escape.listerProgressionDeSeance.mockResolvedValue([
+      ...progressions,
+    ]);
+    return (await sut.execute('session-uuid', PROPRIETAIRE)).enigmes;
+  };
 
   beforeEach(() => {
     depots = createMockDepotsFormations();
@@ -171,6 +185,44 @@ describe('GetSessionResultsUseCase', () => {
     const rapport = await sut.execute('session-uuid', PROPRIETAIRE);
     expect(rapport.participants[0].completion).toBe(1);
   });
+
+  it('compte une enigme epuisee sur le plafond de son parcours', async () => {
+    const cours = buildCoursAvecEnigmes({}, 3);
+    depots.sessions.findById.mockResolvedValue(
+      buildSessionRecord({ courseSlug: cours.slug }),
+    );
+    sut = monter(creerCatalogueDeTest(cours));
+
+    const enigmes = await enigmesDuRapport([
+      buildProgressionEnigme({ tentatives: 3, resolueLe: null }),
+      buildProgressionEnigme({
+        participantId: 'autre-participant',
+        tentatives: 2,
+        resolueLe: null,
+      }),
+    ]);
+
+    expect(enigmes).toEqual([
+      expect.objectContaining({ enigmeId: ENIGMES_DE_TEST[0], epuisees: 1 }),
+    ]);
+  });
+
+  it.each([
+    [TENTATIVES_MAX_PAR_ENIGME, 1],
+    [TENTATIVES_MAX_PAR_ENIGME - 1, 0],
+  ])(
+    'sans cours publie, compte sur le plafond commun (%i tentatives)',
+    async (tentatives, epuisees) => {
+      depots.sessions.findById.mockResolvedValue(
+        buildSessionRecord({ courseSlug: 'cours-retire-du-catalogue' }),
+      );
+      const enigmes = await enigmesDuRapport([
+        buildProgressionEnigme({ tentatives, resolueLe: null }),
+      ]);
+
+      expect(enigmes).toEqual([expect.objectContaining({ epuisees })]);
+    },
+  );
 
   it('agrege les resultats par question du bareme dans le rapport', async () => {
     const rapport = await sut.execute('session-uuid', PROPRIETAIRE);

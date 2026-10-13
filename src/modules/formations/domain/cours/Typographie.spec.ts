@@ -1,8 +1,15 @@
+import { ESPACE_INSECABLE as INSECABLE } from '../../../../common/domain/texte/sans-espaces-typographiques';
 import {
-  ESPACE_INSECABLE as INSECABLE,
+  sansTypographie,
   typographier,
   typographierEnProfondeur,
 } from './Typographie';
+
+describe('sansTypographie', () => {
+  it('laisse le signe moins, dont dépend l identifiant d une option', () => {
+    expect(sansTypographie(`−5${INSECABLE}% au 2ᵉ`)).toBe('−5 % au 2e');
+  });
+});
 
 describe('typographier', () => {
   it.each([

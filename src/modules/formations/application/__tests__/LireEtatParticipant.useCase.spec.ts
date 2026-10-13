@@ -8,6 +8,7 @@ import {
   DEFI_DE_TEST,
   ENIGMES_DE_TEST,
   PARCOURS_DE_TEST,
+  TENTATIVES_MAX_DE_TEST,
   buildEcranDEnigmes,
 } from '../../../../../test/factories/cours.factory';
 import {
@@ -31,6 +32,7 @@ import {
 } from '../../../../../test/helpers/gardes-de-seance';
 import type { Cours } from '../../domain/contrats/cours';
 import { cleDeJalon } from '../../domain/cours/CleDeJalon';
+import { TENTATIVES_MAX_PAR_ENIGME } from '../../domain/cours/Enigmes';
 import { LireEtatParticipantUseCase } from '../LireEtatParticipant.useCase';
 
 const SOCLE = buildCoursAvecDefi();
@@ -38,7 +40,6 @@ const COURS = {
   ...SOCLE,
   ecrans: [...SOCLE.ecrans, buildEcranDEnigmes()] as typeof SOCLE.ecrans,
 };
-const TENTATIVES_MAX = 10;
 
 describe('LireEtatParticipantUseCase', () => {
   let sessions: ReturnType<typeof createMockSessionsRepo>;
@@ -169,9 +170,44 @@ describe('LireEtatParticipantUseCase', () => {
       {
         parcoursId: PARCOURS_DE_TEST,
         resolues: [{ enigmeId: ENIGMES_DE_TEST[0], fragment: 'F0' }],
-        tentativesRestantes: { [ENIGMES_DE_TEST[1]]: TENTATIVES_MAX - 3 },
+        tentativesRestantes: {
+          [ENIGMES_DE_TEST[1]]: TENTATIVES_MAX_DE_TEST - 3,
+        },
       },
     ]);
+  });
+
+  it.each([
+    [3, 2],
+    [25, TENTATIVES_MAX_PAR_ENIGME - 1],
+  ])(
+    'compte les tentatives restantes sur le plafond du parcours (%i autorisees), comme la tentative',
+    async (tentativesMax, restantes) => {
+      escape.listerProgressionDuParticipant.mockResolvedValue([
+        buildProgressionEnigme({ tentatives: 1, resolueLe: null }),
+      ]);
+      const etat = await monter({
+        ...SOCLE,
+        ecrans: [
+          ...SOCLE.ecrans,
+          buildEcranDEnigmes(tentativesMax),
+        ] as typeof SOCLE.ecrans,
+      }).execute(PARTICIPANT_DE_TEST);
+
+      expect(etat.enigmes[0].tentativesRestantes).toEqual({
+        [ENIGMES_DE_TEST[0]]: restantes,
+      });
+    },
+  );
+
+  it('ne rend pas la progression d un parcours absent du cours de la seance', async () => {
+    escape.listerProgressionDuParticipant.mockResolvedValue([
+      buildProgressionEnigme({ parcoursId: 'P-RETIRE', resolueLe: null }),
+    ]);
+
+    const etat = await sut.execute(PARTICIPANT_DE_TEST);
+
+    expect(etat.enigmes).toEqual([]);
   });
 
   it('rend les jalons declares par le participant', async () => {

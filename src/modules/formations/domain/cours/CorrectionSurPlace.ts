@@ -2,6 +2,7 @@ import type { Ecran } from '../contrats/cours';
 import type { PilotageDemande, PilotageEcran } from '../contrats/pilotage';
 import { PhaseFermeeError } from '../errors/FormationErrors';
 import type { ExplicationDeCorrection } from './Cours';
+import { ecranRevele } from './EcranServi';
 
 export function correctionsRevelables(ecran: Ecran): number | null {
   return ecran.correctionSurPlace?.explications.length ?? null;
@@ -12,7 +13,7 @@ export function explicationsRevelees(
   pilotage: PilotageEcran | undefined,
 ): readonly ExplicationDeCorrection[] {
   const explications = ecran.correctionSurPlace?.explications ?? [];
-  return pilotage?.revele === true
+  return ecranRevele(pilotage)
     ? explications
     : explications.slice(0, pilotage?.explicationsDevoilees ?? 0);
 }

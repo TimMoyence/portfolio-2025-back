@@ -8,7 +8,7 @@ import type {
 import { sourcesAReveler } from '../domain/cours/Corrections';
 import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
 import { demandeDeCorrection } from '../domain/cours/CorrectionSurPlace';
-import { ecranParId } from '../domain/cours/EcranServi';
+import { ecranParId, ecranRevele } from '../domain/cours/EcranServi';
 import { etatEnDirect } from '../domain/EtatEnDirect';
 import type { PilotageDemande } from '../domain/cours/PilotageEcrans';
 import {
@@ -136,7 +136,7 @@ export class ControlSessionUseCase {
     const aReveler = sourcesAReveler(
       cours,
       misAJour.ecranCourant ?? session.ecranCourant,
-    ).filter((source) => pilotage[source]?.revele !== true);
+    ).filter((source) => !ecranRevele(pilotage[source]));
     return aReveler.reduce(
       (courant, screenId) =>
         fusionnerPilotage(courant, { screenId, revele: true }),

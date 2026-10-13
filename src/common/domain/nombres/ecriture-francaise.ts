@@ -1,12 +1,12 @@
-const ESPACE_FINE_INSECABLE = String.fromCodePoint(0x20_2f);
+import { sansEspacesTypographiques } from '../texte/sans-espaces-typographiques';
 
 export function nombreFrancais(valeur: number, decimales: number): string {
-  return new Intl.NumberFormat('fr-FR', {
-    minimumFractionDigits: decimales,
-    maximumFractionDigits: decimales,
-  })
-    .format(valeur)
-    .replaceAll(ESPACE_FINE_INSECABLE, ' ');
+  return sansEspacesTypographiques(
+    new Intl.NumberFormat('fr-FR', {
+      minimumFractionDigits: decimales,
+      maximumFractionDigits: decimales,
+    }).format(valeur),
+  );
 }
 
 export function avecVirgule(valeur: number, decimales?: number): string {

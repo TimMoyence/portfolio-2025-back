@@ -91,7 +91,7 @@ decrireSurLeDernierEcran(
       );
     });
 
-    it('refuse la onzieme tentative en 409 TENTATIVES_EPUISEES', async () => {
+    it('refuse la tentative qui depasse le plafond du parcours en 409 TENTATIVES_EPUISEES', async () => {
       const seance = await ouvrirSeance('55555555-5555-4555-8555-000000000003');
       for (let rang = 0; rang < TENTATIVES_MAX_DE_TEST; rang += 1) {
         await tenter(seance, ENIGMES_DE_TEST[0], String(200 + rang)).expect(

@@ -1,9 +1,9 @@
 import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
 import {
+  requireEmail,
   requireText,
   requireValidDate,
 } from '../../../common/domain/validation/domain-validators';
-import { EmailAddress } from '../../../common/domain/value-objects/EmailAddress';
 import { LocaleCode } from '../../../common/domain/value-objects/LocaleCode';
 import { PhoneNumber } from '../../../common/domain/value-objects/PhoneNumber';
 
@@ -25,10 +25,7 @@ export class Contacts {
   termsMethod?: string;
 
   static create(props: CreateContactProps): Contacts {
-    const email = EmailAddress.parse(props.email);
-    if (!email) {
-      throw new DomainValidationError('Invalid contact email');
-    }
+    const email = requireEmail(props.email, 'contact email');
 
     const phoneInput =
       typeof props.phone === 'string' ? props.phone.trim() : props.phone;
@@ -60,7 +57,7 @@ export class Contacts {
     }
 
     const contact = new Contacts();
-    contact.email = email.value;
+    contact.email = email;
     contact.firstName = firstName;
     contact.lastName = lastName;
     contact.phone = phone?.value ?? null;

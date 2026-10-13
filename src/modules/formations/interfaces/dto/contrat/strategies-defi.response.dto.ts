@@ -8,7 +8,8 @@ export class StrategieDefiResponseDto {
   libelle: string;
 
   @ApiPropertyOptional({
-    description: 'Present seulement apres la revelation pilotee',
+    description:
+      'Present une fois le defi revele par le formateur ou la seance terminee',
     example: true,
   })
   fausse?: boolean;

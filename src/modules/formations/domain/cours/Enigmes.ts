@@ -6,12 +6,19 @@ import type { ProgressionEnigme } from '../contrats/resultats';
 import type { ConfusionId } from './banque/confusions';
 import type { CorrigeEnigme } from './Corrige';
 
-const TENTATIVES_MAX_PAR_ENIGME = 10;
+export const TENTATIVES_MAX_PAR_ENIGME = 10;
 
-export interface EcranDEnigmes {
+interface PlafondDeTentatives {
+  readonly tentativesMax: number;
+}
+
+const PLAFOND_COMMUN: PlafondDeTentatives = {
+  tentativesMax: TENTATIVES_MAX_PAR_ENIGME,
+};
+
+export interface EcranDEnigmes extends PlafondDeTentatives {
   readonly ecran: Extract<Ecran, { readonly brique: 'fp-escape' }>;
   readonly rang: number;
-  readonly tentativesMax: number;
 }
 
 export interface EnigmeVisee {
@@ -54,6 +61,17 @@ export function ecranDEnigmes(
   return null;
 }
 
+export function tentativesRestantes(
+  plafond: PlafondDeTentatives,
+  tentatives: number,
+): number {
+  return Math.max(0, plafond.tentativesMax - tentatives);
+}
+
+function epuisee(plafond: PlafondDeTentatives, tentatives: number): boolean {
+  return tentativesRestantes(plafond, tentatives) === 0;
+}
+
 export function enigmeVisee(
   cible: EcranDEnigmes,
   enigmeId: string,
@@ -86,7 +104,7 @@ export function enigmeOuverte(
   if (etat === undefined) {
     return false;
   }
-  return etat.resolue || etat.tentatives >= cible.tentativesMax;
+  return etat.resolue || epuisee(cible, etat.tentatives);
 }
 
 function texteNormalise(valeur: string): string {
@@ -137,8 +155,11 @@ export function agregerEnigmes(
     readonly tentatives: number;
     readonly resolueLe: Date | null;
   }[],
-  plafond: number = TENTATIVES_MAX_PAR_ENIGME,
+  cours: Cours | null,
 ): readonly ProgressionEnigme[] {
+  const plafondDe = (parcoursId: string): PlafondDeTentatives =>
+    (cours === null ? null : ecranDEnigmes(cours, parcoursId)) ??
+    PLAFOND_COMMUN;
   const cumuls = new Map<string, CumulDEnigme>();
   for (const ligne of progressions) {
     const cle = `${ligne.parcoursId}|${ligne.enigmeId}`;
@@ -154,7 +175,10 @@ export function agregerEnigmes(
       tentatives: cumul.tentatives + ligne.tentatives,
       epuisees:
         cumul.epuisees +
-        (ligne.resolueLe === null && ligne.tentatives >= plafond ? 1 : 0),
+        (ligne.resolueLe === null &&
+        epuisee(plafondDe(ligne.parcoursId), ligne.tentatives)
+          ? 1
+          : 0),
     });
   }
   return [...cumuls.entries()].map(([cle, cumul]) => {

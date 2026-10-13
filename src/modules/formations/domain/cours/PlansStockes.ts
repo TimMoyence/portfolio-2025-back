@@ -6,6 +6,7 @@ import type {
   SheetPlanStocke,
   TableBuildPlanStocke,
 } from '../contrats/cours';
+import { TENTATIVES_MAX_PAR_ENIGME } from './Enigmes';
 import {
   auMoinsUn,
   identifiantDeQuestion,
@@ -15,12 +16,17 @@ import {
 } from './SchemasCommuns';
 
 const COLONNES_MAX = 26;
-const TENTATIVES_MAX = 10;
 const CODE_DE_A = 'A'.codePointAt(0) ?? 0;
 const REFERENCE_DE_CELLULE = /^[A-Z][1-9]\d{0,2}$/;
-const NOM_DE_VARIABLE = /^[a-z][A-Za-z]*$/;
+export const NOM_DE_VARIABLE = /^[a-z][A-Za-z]*$/;
+
+export const nomDeVariable = z.string().regex(NOM_DE_VARIABLE);
 
 export const referenceDeCellule = z.string().regex(REFERENCE_DE_CELLULE);
+
+export function estReferenceDeCellule(nom: string): boolean {
+  return REFERENCE_DE_CELLULE.test(nom);
+}
 
 interface Grille {
   readonly lignes: number;
@@ -86,7 +92,7 @@ export const planClassement = z
 
 const colonneDeTableau = z
   .object({
-    cle: z.string().regex(NOM_DE_VARIABLE),
+    cle: nomDeVariable,
     intitule: texte,
     role: z.enum(['donnee', 'saisie', 'deduite']),
     format: z.enum(['nombre', 'booleen']).optional(),
@@ -151,7 +157,7 @@ export const planTableau = z
     echeances: z.number().int().positive(),
     intituleDesLignes: texte.optional(),
     libellesLignes: z.array(texte),
-    parametres: z.record(z.string().regex(NOM_DE_VARIABLE), z.number()),
+    parametres: z.record(nomDeVariable, z.number()),
     colonnes: auMoinsUn(colonneDeTableau),
     synthese: z.array(
       z
@@ -192,7 +198,7 @@ export const parcoursEnigmes = z
     intitule: texte,
     delaiIndiceMs: z.number().int().nonnegative(),
     budgetEnigmeMs: z.number().int().positive(),
-    tentativesMax: z.number().int().positive().max(TENTATIVES_MAX),
+    tentativesMax: z.number().int().positive().max(TENTATIVES_MAX_PAR_ENIGME),
     enigmes: auMoinsUn(
       z
         .object({

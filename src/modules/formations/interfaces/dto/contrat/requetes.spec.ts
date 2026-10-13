@@ -66,6 +66,21 @@ describe('DTO de requête du contrat V3 (§ 9.5, sans route active)', () => {
       ).rejects.toThrow(BadRequestException);
     });
 
+    it.each(['Prix', 'prix_ht', 'prix1', '1prix', 'prix ht', ''])(
+      'refuse une saisie de tableau dont la clé %j n est pas un nom de variable',
+      async (cle) => {
+        await expect(
+          validateBody(
+            production({
+              type: 'tableau',
+              saisies: [{ rang: 0, cle, valeur: 1 }],
+            }),
+            SubmitProductionRequestDto,
+          ),
+        ).rejects.toThrow(BadRequestException);
+      },
+    );
+
     it('refuse un identifiant de question de plus de 60 caractères', async () => {
       await expect(
         validateBody(

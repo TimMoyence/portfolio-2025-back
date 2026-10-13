@@ -1,9 +1,8 @@
-import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
 import {
+  requireEmail,
   requireText,
   requireValidDate,
 } from '../../../common/domain/validation/domain-validators';
-import { EmailAddress } from '../../../common/domain/value-objects/EmailAddress';
 import type { InteractionProfile } from './InteractionProfile';
 
 export interface CreateLeadMagnetRequestProps {
@@ -29,10 +28,7 @@ export class LeadMagnetRequest {
   createdAt?: Date;
 
   static create(props: CreateLeadMagnetRequestProps): LeadMagnetRequest {
-    const email = EmailAddress.parse(props.email);
-    if (!email) {
-      throw new DomainValidationError('Invalid lead magnet request email');
-    }
+    const email = requireEmail(props.email, 'lead magnet request email');
     const firstName = requireText(
       props.firstName,
       'lead magnet first name',
@@ -55,7 +51,7 @@ export class LeadMagnetRequest {
     requireValidDate(props.termsAcceptedAt, 'terms accepted');
     const request = new LeadMagnetRequest();
     request.firstName = firstName;
-    request.email = email.value;
+    request.email = email;
     request.formationSlug = formationSlug;
     request.termsVersion = termsVersion;
     request.termsLocale = termsLocale;

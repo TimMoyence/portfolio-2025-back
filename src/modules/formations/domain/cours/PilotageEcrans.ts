@@ -13,7 +13,7 @@ import {
 } from '../errors/FormationErrors';
 import { correctionsRevelables } from './CorrectionSurPlace';
 import { questionsDe } from './Cours';
-import { activitesDeLEcran, etayageAtteint } from './EcranServi';
+import { activitesDeLEcran, ecranRevele, etayageAtteint } from './EcranServi';
 
 export type { PilotageDemande } from '../contrats/pilotage';
 
@@ -53,13 +53,11 @@ function assertReglagesDeLaMachine(
   const parametres = parametresReglables(ecran);
   if (parametres === null) {
     refuser('seuls une machine et un tracé portent des réglages');
-    return;
   }
   for (const [cle, valeur] of Object.entries(reglages)) {
     const parametre = parametres.find((candidat) => candidat.cle === cle);
     if (parametre === undefined) {
       refuser(`paramètre ${cle} absent de l’écran`);
-      return;
     }
     if (!dansLesBornes(valeur, parametre)) {
       refuser(`réglage ${cle} hors de [${parametre.min} ; ${parametre.max}]`);
@@ -75,7 +73,6 @@ function assertCorrectionsRevelables(
   const revelables = correctionsRevelables(ecran);
   if (revelables === null) {
     refuser('seul un exercice corrigé sur place révèle ses corrections');
-    return;
   }
   if (demandees > revelables) {
     refuser(`${demandees} corrections au-delà des ${revelables} explications`);
@@ -162,7 +159,7 @@ export function fusionnerPilotage(
     throw new PhaseNonMonotoneError(screenId);
   }
   if (
-    (changements.revele === false && precedent.revele === true) ||
+    (changements.revele === false && ecranRevele(precedent)) ||
     (changements.optionsAffichees === false &&
       precedent.optionsAffichees === true) ||
     (changements.explicationsDevoilees ?? Infinity) <
@@ -185,7 +182,7 @@ export function assertPhaseOuverte(
   pilotage: Readonly<Record<string, PilotageEcran>>,
   question: QuestionPilotee,
 ): void {
-  if (pilotage[question.ecranId]?.revele === true) {
+  if (ecranRevele(pilotage[question.ecranId])) {
     throw new PhaseFermeeError(question.ecranId);
   }
   if (question.ouverture === undefined) {

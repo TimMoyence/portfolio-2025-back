@@ -100,6 +100,16 @@ describe('DefisUseCase', () => {
     expect(rendu.strategies).toEqual(STRATEGIES_REVELEES_DU_DEFI);
   });
 
+  it('ajoute la justesse une fois la seance terminee, comme le sujet et les pieces jointes', async () => {
+    depots.sessions.findById.mockResolvedValue(
+      buildSessionRecord({ courseSlug: COURS.slug, etat: 'terminee' }),
+    );
+
+    const rendu = await strategiesApresTentative();
+
+    expect(rendu.strategies).toEqual(STRATEGIES_REVELEES_DU_DEFI);
+  });
+
   it('refuse une tentative vide avant toute ecriture', async () => {
     await expect(sut.tenter({ ...commande, texte: '   ' })).rejects.toThrow(
       BlankFieldError,

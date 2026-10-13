@@ -7,6 +7,11 @@ import type { Cours } from '../domain/contrats/cours';
 import type { EtatParticipant } from '../domain/contrats/pilotage';
 import { cleDeJalon } from '../domain/cours/CleDeJalon';
 import { ecranDeDefi } from '../domain/cours/Defis';
+import {
+  ecranDEnigmes,
+  enigmeVisee,
+  tentativesRestantes,
+} from '../domain/cours/Enigmes';
 import type {
   AnswerRecord,
   IAnswersRepository,
@@ -27,8 +32,6 @@ import {
 } from '../domain/token';
 import { ParticipationEnSeance } from './ParticipationEnSeance';
 import type { CibleDuParticipant } from './ParticipationEnSeance';
-
-const TENTATIVES_MAX = 10;
 
 @Injectable()
 export class LireEtatParticipantUseCase {
@@ -113,37 +116,31 @@ export class LireEtatParticipantUseCase {
         ligne,
       ]);
     }
-    return [...parParcours.entries()].map(([parcoursId, lignes]) => ({
-      parcoursId,
-      resolues: lignes
-        .filter((ligne) => ligne.resolueLe !== null)
-        .map((ligne) => ({
-          enigmeId: ligne.enigmeId,
-          fragment: fragmentDe(cours, ligne.enigmeId),
-        })),
-      tentativesRestantes: Object.fromEntries(
-        lignes
-          .filter((ligne) => ligne.resolueLe === null)
-          .map((ligne) => [
-            ligne.enigmeId,
-            Math.max(0, TENTATIVES_MAX - ligne.tentatives),
-          ]),
-      ),
-    }));
+    return [...parParcours.entries()].flatMap(([parcoursId, lignes]) => {
+      const cible = ecranDEnigmes(cours, parcoursId);
+      if (cible === null) {
+        return [];
+      }
+      return [
+        {
+          parcoursId,
+          resolues: lignes
+            .filter((ligne) => ligne.resolueLe !== null)
+            .map((ligne) => ({
+              enigmeId: ligne.enigmeId,
+              fragment:
+                enigmeVisee(cible, ligne.enigmeId)?.corrige.fragment ?? '',
+            })),
+          tentativesRestantes: Object.fromEntries(
+            lignes
+              .filter((ligne) => ligne.resolueLe === null)
+              .map((ligne) => [
+                ligne.enigmeId,
+                tentativesRestantes(cible, ligne.tentatives),
+              ]),
+          ),
+        },
+      ];
+    });
   }
-}
-
-function fragmentDe(cours: Cours, enigmeId: string): string {
-  for (const ecran of cours.ecrans) {
-    if (ecran.brique !== 'fp-escape') {
-      continue;
-    }
-    const question = ecran.enigmes.find(
-      (candidate) => candidate.id === enigmeId,
-    );
-    if (question !== undefined && question.corrige.type === 'enigme') {
-      return question.corrige.fragment;
-    }
-  }
-  return '';
 }

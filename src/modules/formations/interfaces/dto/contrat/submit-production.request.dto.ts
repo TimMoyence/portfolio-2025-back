@@ -24,6 +24,7 @@ import type {
 import { LONGUEUR_MAX_FORMULE } from 'portfolio-2025-partage/formule';
 import { estObjet } from '../../../../../common/domain/est-objet';
 import type { ValeurProduction } from '../../../domain/contrats/resultats';
+import { NOM_DE_VARIABLE } from '../../../domain/cours/PlansStockes';
 import { DureeDeReponse } from '../duree-de-reponse.decorator';
 import { entreesBornees } from '../objet-plat';
 
@@ -75,7 +76,7 @@ class SaisieTableauDto {
 
   @ApiProperty({ example: 'prix' })
   @IsString()
-  @Matches(/^[a-z][A-Za-z]*$/)
+  @Matches(NOM_DE_VARIABLE)
   @MaxLength(LONGUEUR_MAX_IDENTIFIANT)
   cle: string;
 

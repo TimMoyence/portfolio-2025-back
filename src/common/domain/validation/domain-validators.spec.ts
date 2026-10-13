@@ -6,7 +6,31 @@ import {
   requireHttpUrl,
   requireValidDate,
   optionalHttpUrl,
+  requireEmail,
 } from './domain-validators';
+
+describe('requireEmail', () => {
+  it('rend l adresse sans espaces et en minuscules', () => {
+    expect(requireEmail('  Lea.Martin@Example.TEST ', 'contact email')).toBe(
+      'lea.martin@example.test',
+    );
+  });
+
+  it.each([
+    ['un non-string', 42],
+    ['une chaine vide', '   '],
+    ['une adresse sans domaine', 'lea.martin'],
+    ['une adresse a espace', '"lea martin"@example.test'],
+    [
+      'une adresse de plus de 320 caracteres',
+      `${'a'.repeat(310)}@example.test`,
+    ],
+  ])('rejette %s', (_cas, valeur) => {
+    expect(() => requireEmail(valeur, 'contact email')).toThrow(
+      new DomainValidationError('Invalid contact email'),
+    );
+  });
+});
 
 describe('requireHttpUrl', () => {
   it('rend l URL http ou https trimmee', () => {
