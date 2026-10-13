@@ -1,3 +1,4 @@
+import { TEST_FORMATION_REVIEW_TOKEN_SECRET } from '../factories/env.factory';
 import { installerVariables } from './environnement';
 
 export interface EnvFormations {
@@ -16,6 +17,12 @@ export function installerEnvFormations(env: EnvFormations): void {
     delete process.env.FORMATION_REVIEW_TOKEN_SECRET;
     delete process.env.FORMATIONS_PULSE_SECRET;
     delete process.env.FORMATION_TEACHER_NOTIFICATION_TO;
+  });
+}
+
+export function installerSecretDeSignature(): void {
+  installerVariables({
+    FORMATION_REVIEW_TOKEN_SECRET: TEST_FORMATION_REVIEW_TOKEN_SECRET,
   });
 }
 

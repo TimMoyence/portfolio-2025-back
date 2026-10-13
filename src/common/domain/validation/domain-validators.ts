@@ -1,5 +1,12 @@
 import { DomainValidationError } from '../errors/DomainValidationError';
 import { dansLesBornes } from '../nombres/dans-les-bornes';
+import { EmailAddress } from '../value-objects/EmailAddress';
+
+export function requireEmail(raw: unknown, field: string): string {
+  const email = EmailAddress.parse(raw);
+  if (email === null) throw new DomainValidationError(`Invalid ${field}`);
+  return email.value;
+}
 
 export function requireText(
   raw: unknown,

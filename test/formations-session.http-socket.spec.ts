@@ -748,6 +748,16 @@ describe('Session de formation (e2e http socket)', () => {
       expect(reponse.status).toBe(statut);
     });
 
+    it('refuse de rejoindre avec une adresse que @IsEmail laisse passer mais que l adresse email commune rejette', async () => {
+      const { code } = await http.ouvrirSession();
+
+      const reponse = await http
+        .post(`/sessions/${code}/join`)
+        .send({ ...inscription('theo'), email: '"theo martin"@example.com' });
+
+      expect(reponse.status).toBe(400);
+    });
+
     it('ne renvoie a l etudiant ni le bareme ni la graine de son tirage', async () => {
       const { code, sessionId } = await http.ouvrirSession();
 

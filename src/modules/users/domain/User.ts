@@ -1,6 +1,8 @@
 import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
-import { optionalMetadata } from '../../../common/domain/validation/domain-validators';
-import { EmailAddress } from '../../../common/domain/value-objects/EmailAddress';
+import {
+  optionalMetadata,
+  requireEmail,
+} from '../../../common/domain/validation/domain-validators';
 import { PhoneNumber } from '../../../common/domain/value-objects/PhoneNumber';
 
 export interface CreateUserProps {
@@ -34,7 +36,7 @@ export class User {
   updatedOrCreatedBy: string | null;
 
   static create(props: CreateUserProps): User {
-    const email = this.requireEmail(props.email);
+    const email = requireEmail(props.email, 'user email');
 
     if (!props.googleId) {
       this.requirePasswordHash(props.passwordHash);
@@ -65,7 +67,7 @@ export class User {
     const partial: Partial<User> = {};
 
     if (props.email !== undefined) {
-      partial.email = this.requireEmail(props.email);
+      partial.email = requireEmail(props.email, 'user email');
     }
 
     if (props.passwordHash !== undefined) {
@@ -109,14 +111,6 @@ export class User {
     partial.updatedAt = new Date();
 
     return partial;
-  }
-
-  private static requireEmail(raw: string): string {
-    const email = EmailAddress.parse(raw);
-    if (!email) {
-      throw new DomainValidationError('Invalid user email');
-    }
-    return email.value;
   }
 
   private static requirePasswordHash(raw: unknown): string {

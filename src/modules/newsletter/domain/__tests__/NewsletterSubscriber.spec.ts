@@ -37,7 +37,9 @@ describe('NewsletterSubscriber', () => {
     it('rejette un email invalide', () => {
       expect(() =>
         NewsletterSubscriber.create({ ...validProps, email: 'pas-un-email' }),
-      ).toThrow(DomainValidationError);
+      ).toThrow(
+        new DomainValidationError('Invalid newsletter subscriber email'),
+      );
     });
 
     it('rejette une locale non ISO', () => {

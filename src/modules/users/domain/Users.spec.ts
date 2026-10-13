@@ -72,6 +72,6 @@ describe('User aggregate', () => {
         firstName: 'John',
         lastName: 'Doe',
       }),
-    ).toThrow(DomainValidationError);
+    ).toThrow(new DomainValidationError('Invalid user email'));
   });
 });

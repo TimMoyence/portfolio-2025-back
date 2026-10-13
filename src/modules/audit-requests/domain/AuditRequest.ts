@@ -1,9 +1,9 @@
 import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
 import {
+  requireEmail,
   requireText,
   optionalMetadata,
 } from '../../../common/domain/validation/domain-validators';
-import { EmailAddress } from '../../../common/domain/value-objects/EmailAddress';
 import { LocaleCode } from '../../../common/domain/value-objects/LocaleCode';
 import { PhoneNumber } from '../../../common/domain/value-objects/PhoneNumber';
 import { AuditLocale } from './audit-locale.util';
@@ -51,11 +51,7 @@ export class AuditRequest {
     let contactValue = rawContact;
 
     if (props.contactMethod === 'EMAIL') {
-      const email = EmailAddress.parse(rawContact);
-      if (!email) {
-        throw new DomainValidationError('Invalid audit contact email');
-      }
-      contactValue = email.value;
+      contactValue = requireEmail(rawContact, 'audit contact email');
     }
 
     if (props.contactMethod === 'PHONE') {

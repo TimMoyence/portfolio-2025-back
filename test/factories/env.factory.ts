@@ -1,6 +1,6 @@
 export const TEST_JWT_SECRET = 'test-jwt-secret-at-least-32-characters-long'; // gitleaks:allow (ci.yml)
 const TEST_HASHING_KEY = 'test-hashing-key-at-least-32-characters-long'; // gitleaks:allow (ci.yml)
-const TEST_FORMATION_REVIEW_TOKEN_SECRET =
+export const TEST_FORMATION_REVIEW_TOKEN_SECRET =
   'test-formation-review-secret-at-least-32-chars'; // gitleaks:allow (ci.yml)
 const TEST_FORMATIONS_PULSE_SECRET =
   'test-formations-pulse-secret-at-least-32-chars'; // gitleaks:allow (ci.yml)

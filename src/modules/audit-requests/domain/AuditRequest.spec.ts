@@ -34,6 +34,6 @@ describe('AuditRequest aggregate', () => {
         contactValue: 'invalid',
         locale: 'fr',
       }),
-    ).toThrow(DomainValidationError);
+    ).toThrow(new DomainValidationError('Invalid audit contact email'));
   });
 });
