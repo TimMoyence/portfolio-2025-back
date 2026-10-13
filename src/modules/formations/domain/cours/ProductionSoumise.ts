@@ -12,9 +12,11 @@ import {
   corrigerTableau,
   type SaisiesDeTableau,
 } from './CorrectionProduction';
-import { estDansLaGrille, estUneValeurDeVerite } from './PlansStockes';
-
-const REFERENCE_DE_CELLULE = /^[A-Z][1-9]\d{0,2}$/;
+import {
+  estDansLaGrille,
+  estReferenceDeCellule,
+  estUneValeurDeVerite,
+} from './PlansStockes';
 
 export interface EcranDeProduction {
   readonly ecran: Extract<
@@ -64,7 +66,7 @@ function feuilleNettoyee(
   const retenues: Record<string, string> = {};
   for (const [reference, saisie] of Object.entries(cellules)) {
     const nom = reference.toUpperCase();
-    if (!REFERENCE_DE_CELLULE.test(nom) || !estDansLaGrille(plan, nom)) {
+    if (!estReferenceDeCellule(nom) || !estDansLaGrille(plan, nom)) {
       refuser(cible.question.id, `cellule hors de la grille : ${reference}`);
     }
     if (!verrouillees.has(nom) && saisie.trim().length > 0) {

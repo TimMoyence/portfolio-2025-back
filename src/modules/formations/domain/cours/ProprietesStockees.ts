@@ -15,6 +15,7 @@ import {
 import {
   dossierDeRappel,
   estUneValeurDeVerite,
+  nomDeVariable,
   parcoursEnigmes,
   planClassement,
   planFeuille,
@@ -329,7 +330,7 @@ const communes = {
 
 const parametreCurseur = z
   .object({
-    cle: z.string().regex(/^[a-z][A-Za-z]*$/),
+    cle: nomDeVariable,
     libelle: texte,
     min: z.number(),
     max: z.number(),

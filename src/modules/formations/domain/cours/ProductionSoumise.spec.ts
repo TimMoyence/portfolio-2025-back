@@ -88,6 +88,18 @@ describe('normaliserProduction', () => {
     }).toThrow(ProductionInvalideError);
   });
 
+  it.each(['A0', 'A01', 'AA1', 'D2 ', 'D1000', '__proto__'])(
+    'refuse un nom qui n est pas une reference de cellule : « %s »',
+    (nom) => {
+      expect(() => {
+        normaliserProduction(FEUILLE, {
+          type: 'feuille',
+          cellules: { [nom]: '=1' },
+        });
+      }).toThrow(ProductionInvalideError);
+    },
+  );
+
   it('refuse une feuille sans aucune saisie utile', () => {
     expect(() => {
       normaliserProduction(FEUILLE, {

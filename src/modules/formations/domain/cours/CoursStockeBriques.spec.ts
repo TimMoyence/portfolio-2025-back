@@ -175,6 +175,61 @@ describe('stockage multi-briques (B1)', () => {
     });
   });
 
+  describe('nom de variable (clé de colonne, paramètre, curseur)', () => {
+    const NOMS_REFUSES = ['Prix', 'prix_ht', 'prix1', '1prix', 'prix ht', ''];
+    const SITES: readonly (readonly [
+      string,
+      string,
+      (proprietes: any, nom: string) => void,
+      RegExp,
+    ])[] = [
+      [
+        'fp-table-build',
+        'une clé de colonne',
+        (p, nom) => {
+          p.plan.colonnes[0].cle = nom;
+        },
+        /plan\.colonnes\[0\]\.cle/,
+      ],
+      [
+        'fp-table-build',
+        'un paramètre du tableau',
+        (p, nom) => {
+          p.plan.parametres[nom] = 1;
+        },
+        /plan\.parametres/,
+      ],
+      [
+        'fp-concept4',
+        'un curseur de la machine',
+        (p, nom) => {
+          p.parametres[0].cle = nom;
+        },
+        /parametres\[0\]\.cle/,
+      ],
+      [
+        'fp-plot',
+        'un curseur du tracé',
+        (p, nom) => {
+          p.parametres[0].cle = nom;
+        },
+        /parametres\[0\]\.cle/,
+      ],
+    ];
+
+    it.each(
+      SITES.flatMap(([brique, site, modifier, chemin]) =>
+        NOMS_REFUSES.map(
+          (nom) => [brique, site, nom, modifier, chemin] as const,
+        ),
+      ),
+    )('%s refuse %s nommé %j', (brique, _site, nom, modifier, chemin) => {
+      expect(() =>
+        lireEcran(avecProprietes(brique, (p) => modifier(p, nom))),
+      ).toThrow(chemin);
+    });
+  });
+
   it.each<readonly [string, Chemin]>([
     ['fp-story', ['video']],
     ['fp-story', ['video', 'sousTitres']],
