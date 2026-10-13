@@ -123,7 +123,9 @@ export class FormationsStudentController {
   @ProtegeContreLesRobots()
   @ApiOperation({ summary: 'Rejoint une session avec le code dicte en classe' })
   @ApiCreatedResponse({ type: JoinSessionResponseDto })
-  @ApiBadRequestResponse({ description: 'Code de session invalide' })
+  @ApiBadRequestResponse({
+    description: 'Code de session invalide, ou email refuse',
+  })
   @ApiTooManyRequestsResponse({ description: 'Balayage de codes detecte' })
   async join(
     @Param('code') code: string,
@@ -342,7 +344,7 @@ export class FormationsStudentController {
   @Get('sessions/:id/defis/:defiId/strategies')
   @ApiOperation({
     summary:
-      'Resert les strategies du defi, avec leur justesse seulement apres la revelation',
+      'Resert les strategies du defi, avec leur justesse une fois le defi revele ou la seance terminee',
   })
   @ApiOkResponse({ type: StrategiesDefiResponseDto })
   @ApiNotFoundResponse({
