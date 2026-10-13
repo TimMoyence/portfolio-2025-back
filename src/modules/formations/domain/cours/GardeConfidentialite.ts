@@ -1,4 +1,5 @@
 import { nombreFrancais } from '../../../../common/domain/nombres/ecriture-francaise';
+import { sansEspacesNiMoinsTypographiques } from '../../../../common/domain/texte/sans-espaces-typographiques';
 import { tronquer } from '../../../../common/domain/texte/tronquer';
 import type { Cours, Ecran, Question } from '../contrats/cours';
 import type { EcranPublic, TirageDuCours } from '../contrats/tirage';
@@ -23,9 +24,6 @@ const DECIMALES_D_UNE_FEUILLE: readonly number[] = [4, 6];
 const FACTEUR_DE_POURCENTAGE = 100;
 const CHIFFRES_SIGNIFICATIFS_MINIMUM = 3;
 const LONGUEUR_D_EXTRAIT = 80;
-const ESPACE_INSECABLE = String.fromCodePoint(0x00a0);
-const ESPACE_FINE_INSECABLE = String.fromCodePoint(0x202f);
-const SIGNE_MOINS = String.fromCodePoint(0x2212);
 const CHIFFRE = /\d/;
 const TYPE_D_ECRAN_VERROUILLE = 'ecran-verrouille';
 
@@ -46,20 +44,13 @@ interface TextePublic {
   readonly texte: string;
 }
 
-function normaliser(texte: string): string {
-  return texte
-    .replaceAll(ESPACE_INSECABLE, ' ')
-    .replaceAll(ESPACE_FINE_INSECABLE, ' ')
-    .replaceAll(SIGNE_MOINS, '-');
-}
-
 function estChiffre(caractere: string): boolean {
   return caractere >= '0' && caractere <= '9';
 }
 
 function contientLaForme(texte: string, forme: string): boolean {
-  const source = normaliser(texte);
-  const cible = normaliser(forme);
+  const source = sansEspacesNiMoinsTypographiques(texte);
+  const cible = sansEspacesNiMoinsTypographiques(forme);
   let depart = source.indexOf(cible);
   while (depart !== -1) {
     const avant = source.charAt(depart - 1);
@@ -73,13 +64,13 @@ function contientLaForme(texte: string, forme: string): boolean {
 }
 
 function contientSansCasse(texte: string, segment: string): boolean {
-  return normaliser(texte)
+  return sansEspacesNiMoinsTypographiques(texte)
     .toLowerCase()
-    .includes(normaliser(segment).toLowerCase());
+    .includes(sansEspacesNiMoinsTypographiques(segment).toLowerCase());
 }
 
 function decimalesDe(forme: string): number {
-  const [, fraction = ''] = normaliser(forme).split(',');
+  const [, fraction = ''] = sansEspacesNiMoinsTypographiques(forme).split(',');
   let longueur = 0;
   while (estChiffre(fraction.charAt(longueur))) {
     longueur += 1;

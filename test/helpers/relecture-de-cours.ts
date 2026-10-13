@@ -9,6 +9,10 @@ import { projeterCatalogue } from '../../src/modules/formations/domain/cours/Dif
 import { tirer } from '../../src/modules/formations/domain/cours/Tirage';
 import { typographier } from '../../src/modules/formations/domain/cours/Typographie';
 import { nombreFrancais } from '../../src/common/domain/nombres/ecriture-francaise';
+import {
+  sansEspacesNiMoinsTypographiques,
+  sansEspacesTypographiques,
+} from '../../src/common/domain/texte/sans-espaces-typographiques';
 import { corrigeDeFeuille, ecranDuContenu } from './fiche-de-cours';
 import { arrondi } from '../../src/common/domain/nombres/arrondi';
 
@@ -88,10 +92,8 @@ export function colonnesVidesDeLaFeuille(
 const SIGNE_EGAL_DE_FORMULE = /(?<=^|[\s«(])=(?=\S)/gu;
 const APPEL_DE_FONCTION =
   /(?<![\p{L}\d_.$])(?<!"[<>=]{0,2})[A-Z][A-Z0-9]*(?:\.[A-Z0-9]+)*\(/gu;
-const FORMULE_ALTEREE = /[\u{A0}\u{202F}]|\s[;:!]/u;
+const ESPACE_AVANT_PONCTUATION_HAUTE = /\s[;:!]/u;
 const PONCTUATION_FINALE = '.,';
-const ESPACES_TYPOGRAPHIQUES = /[\u{A0}\u{202F}]/gu;
-const SIGNE_MOINS_TYPOGRAPHIQUE = /\u{2212}/gu;
 const CARACTERES_SPECIAUX = /[.*+?^${}()|[\]\\]/g;
 
 function textesDe(valeur: unknown): string[] {
@@ -167,7 +169,10 @@ export function formulesAltereesALaPublication(
   return textesDe(contenu).flatMap((texte) => {
     const publie = typographier(texte);
     return formulesDuTexte(texte).filter(
-      (formule) => FORMULE_ALTEREE.test(formule) || !publie.includes(formule),
+      (formule) =>
+        sansEspacesTypographiques(formule) !== formule ||
+        ESPACE_AVANT_PONCTUATION_HAUTE.test(formule) ||
+        !publie.includes(formule),
     );
   });
 }
@@ -180,12 +185,6 @@ export function formeFrancaise(valeur: number | string): string {
   return nombreFrancais(valeur, decimales);
 }
 
-function normaliser(texte: string): string {
-  return texte
-    .replaceAll(ESPACES_TYPOGRAPHIQUES, ' ')
-    .replaceAll(SIGNE_MOINS_TYPOGRAPHIQUE, '-');
-}
-
 function zerosDeFinPermis(valeur: number | string): string {
   if (typeof valeur === 'string') {
     return '';
@@ -196,7 +195,7 @@ function zerosDeFinPermis(valeur: number | string): string {
 const SEUIL_DES_MILLIERS = 1000;
 
 function formesEcrites(valeur: number | string): string[] {
-  const forme = normaliser(formeFrancaise(valeur));
+  const forme = sansEspacesNiMoinsTypographiques(formeFrancaise(valeur));
   if (typeof valeur === 'string') {
     return [forme];
   }
@@ -207,7 +206,7 @@ function formesEcrites(valeur: number | string): string[] {
 }
 
 function contientLaForme(texte: string, valeur: number | string): boolean {
-  const normalise = normaliser(texte);
+  const normalise = sansEspacesNiMoinsTypographiques(texte);
   return formesEcrites(valeur).some((forme) =>
     new RegExp(
       `(?<![\\d,])${forme.replaceAll(CARACTERES_SPECIAUX, '\\$&')}${zerosDeFinPermis(valeur)}(?!\\d|,\\d| \\d{3}(?!\\d))`,
