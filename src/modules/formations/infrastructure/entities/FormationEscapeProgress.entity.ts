@@ -1,10 +1,11 @@
 import { Check, Column, Entity, Index, PrimaryColumn } from 'typeorm';
+import { TENTATIVES_MAX_PAR_ENIGME } from '../../domain/cours/Enigmes';
 import { SuiviDuParticipant } from './ligne-de-participant';
 
 @Entity({ name: 'formation_escape_progress' })
 @Check(
   'CHK_formation_escape_progress_tentatives',
-  '"tentatives" BETWEEN 0 AND 10',
+  `"tentatives" BETWEEN 0 AND ${TENTATIVES_MAX_PAR_ENIGME}`,
 )
 @Index('idx_formation_escape_progress_session', ['sessionId', 'parcoursId'])
 export class FormationEscapeProgressEntity extends SuiviDuParticipant(

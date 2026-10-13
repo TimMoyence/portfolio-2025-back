@@ -4,6 +4,7 @@ import {
   ecranDEnigmes,
   enigmeOuverte,
   enigmeVisee,
+  tentativesRestantes,
 } from '../domain/cours/Enigmes';
 import type { ProgressionDEnigme } from '../domain/cours/Enigmes';
 import {
@@ -111,7 +112,7 @@ export class TenterEnigmeUseCase {
     return {
       correcte: verdict.correcte,
       fragment: verdict.correcte ? visee.corrige.fragment : null,
-      tentativesRestantes: Math.max(0, cible.tentativesMax - tentatives),
+      tentativesRestantes: tentativesRestantes(cible, tentatives),
     };
   }
 

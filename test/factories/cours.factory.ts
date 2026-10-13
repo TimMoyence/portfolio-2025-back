@@ -290,7 +290,9 @@ function enigmeDeTest(rang: number) {
   };
 }
 
-export function buildEcranDEnigmes(): Ecran {
+export function buildEcranDEnigmes(
+  tentativesMax: number = TENTATIVES_MAX_DE_TEST,
+): Ecran {
   return {
     ...EN_CATALOGUE,
     id: 'E-COFFRE',
@@ -304,7 +306,7 @@ export function buildEcranDEnigmes(): Ecran {
         intitule: 'Le coffre du comité',
         delaiIndiceMs: 60000,
         budgetEnigmeMs: 180000,
-        tentativesMax: TENTATIVES_MAX_DE_TEST,
+        tentativesMax,
         enigmes: ENIGMES_DE_TEST.map((id, rang) => ({
           id,
           intitule: `Énigme ${rang + 1}`,
@@ -370,8 +372,11 @@ export function buildCoursAvecJalon(overrides: Partial<Cours> = {}): Cours {
   return coursDeTestSuiviDe(overrides, buildEcranDeJalon());
 }
 
-export function buildCoursAvecEnigmes(overrides: Partial<Cours> = {}): Cours {
-  return coursDeTestSuiviDe(overrides, buildEcranDEnigmes());
+export function buildCoursAvecEnigmes(
+  overrides: Partial<Cours> = {},
+  tentativesMax: number = TENTATIVES_MAX_DE_TEST,
+): Cours {
+  return coursDeTestSuiviDe(overrides, buildEcranDEnigmes(tentativesMax));
 }
 
 export function buildCoursAvecProductions(
