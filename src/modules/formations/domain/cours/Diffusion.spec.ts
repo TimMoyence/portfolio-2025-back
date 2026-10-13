@@ -160,6 +160,12 @@ describe('exemple corrigé au rythme du pilotage', () => {
     });
   });
 
+  it('sert tout l exemple d un écran révélé, raisonnements compris', () => {
+    expect(exempleAuRythmeDuPilotage(corrige, { revele: true })).toEqual(
+      corrige,
+    );
+  });
+
   it('garde dévoilée une étape corrigée même quand le formateur la masque', () => {
     const servi = exempleAuRythmeDuPilotage(corrige, {
       etayage: 0,

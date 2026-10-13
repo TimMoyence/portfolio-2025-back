@@ -11,7 +11,7 @@ import { ecranCorrigePar } from './Corrections';
 import { explicationsRevelees } from './CorrectionSurPlace';
 import { questionsDe } from './Cours';
 import { corrigeDeLEcran } from './DeroulePresentateur';
-import { ecranParId, etayageAtteint } from './EcranServi';
+import { ecranParId, ecranRevele, etayageAtteint } from './EcranServi';
 import { tirer } from './Tirage';
 
 export const GRAINE_DU_CATALOGUE = 0;
@@ -34,7 +34,7 @@ export function exempleAuRythmeDuPilotage(
   ecran: EcranPublic,
   pilotage: PilotageEcran | undefined,
 ): EcranPublic {
-  if (ecran.type !== 'fp-worked') {
+  if (ecran.type !== 'fp-worked' || ecranRevele(pilotage)) {
     return ecran;
   }
   const donnees = ecran.donnees as DonneesParBrique['fp-worked'];
@@ -98,7 +98,7 @@ export function correctionSurPlaceServie(
   const references = new Set(
     explications.map((explication) => explication.reference),
   );
-  const toutes = pilotage?.revele === true;
+  const toutes = ecranRevele(pilotage);
   return {
     ...correction,
     questions: correction.questions.filter(

@@ -7,7 +7,12 @@ import {
   ecranVerrouille,
   exempleAuRythmeDuPilotage,
 } from '../domain/cours/Diffusion';
-import { dernierEcranServi } from '../domain/cours/EcranServi';
+import {
+  dernierEcranServi,
+  ecranRevele,
+  pilotageServi,
+  sourceRevelee,
+} from '../domain/cours/EcranServi';
 import type { Cours } from '../domain/contrats/cours';
 import type { PilotageEcran } from '../domain/contrats/pilotage';
 import type { CoursPublic, EcranPublic } from '../domain/contrats/tirage';
@@ -36,31 +41,24 @@ export class LireSujetUseCase {
     ) {
       throw new CoursModifieError();
     }
-    const terminee = session.etat === 'terminee';
     const dernier = dernierEcranServi(session, tirage.sujet.ecrans.length);
-    const sourceRevelee = (source: string): boolean =>
-      terminee || session.pilotageEcrans[source]?.revele === true;
     return {
       ...tirage.sujet,
       ecrans: tirage.sujet.ecrans.map((ecran, index) => {
-        if (terminee) {
-          return this.avecCorrection(cours, index, ecran, tirage, {
-            revele: true,
-          });
-        }
         if (
           index > dernier ||
           (ecran.ecranCorrige !== undefined &&
-            !sourceRevelee(ecran.ecranCorrige))
+            !sourceRevelee(session, ecran.ecranCorrige))
         ) {
           return ecranVerrouille(ecran);
         }
+        const pilotage = pilotageServi(session, ecran.id);
         return this.avecCorrection(
           cours,
           index,
-          exempleAuRythmeDuPilotage(ecran, session.pilotageEcrans[ecran.id]),
+          exempleAuRythmeDuPilotage(ecran, pilotage),
           tirage,
-          session.pilotageEcrans[ecran.id],
+          pilotage,
         );
       }),
     };
@@ -77,9 +75,7 @@ export class LireSujetUseCase {
     const correction =
       correctionServie(cours, source, tirage) ??
       correctionSurPlaceServie(source, tirage, pilotage) ??
-      (pilotage?.revele === true
-        ? correctionDeLEcranRevele(source, tirage)
-        : null);
+      (ecranRevele(pilotage) ? correctionDeLEcranRevele(source, tirage) : null);
     return correction === null ? ecran : { ...ecran, correction };
   }
 

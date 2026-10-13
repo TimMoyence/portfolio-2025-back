@@ -1,5 +1,4 @@
 import type { Cours, Ecran } from '../contrats/cours';
-import type { PilotageEcran } from '../contrats/pilotage';
 
 export interface EcranDeDefi {
   readonly ecran: Extract<Ecran, { readonly brique: 'fp-challenge' }>;
@@ -22,13 +21,6 @@ export function ecranDeDefi(cours: Cours, defiId: string): EcranDeDefi | null {
     }
   }
   return null;
-}
-
-export function estRevele(
-  pilotage: Readonly<Record<string, PilotageEcran>>,
-  screenId: string,
-): boolean {
-  return pilotage[screenId]?.revele === true;
 }
 
 export function strategiesPubliees(

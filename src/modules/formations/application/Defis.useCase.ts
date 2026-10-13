@@ -1,11 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import type { Cours } from '../domain/contrats/cours';
-import { assertEcranServi } from '../domain/cours/EcranServi';
-import {
-  ecranDeDefi,
-  estRevele,
-  strategiesPubliees,
-} from '../domain/cours/Defis';
+import { assertEcranServi, sourceRevelee } from '../domain/cours/EcranServi';
+import { ecranDeDefi, strategiesPubliees } from '../domain/cours/Defis';
 import type { EcranDeDefi, StrategiePubliee } from '../domain/cours/Defis';
 import { assertPhaseOuverte } from '../domain/cours/PilotageEcrans';
 import {
@@ -89,10 +85,7 @@ export class DefisUseCase {
     }
     return {
       strategies: [
-        ...strategiesPubliees(
-          cible,
-          estRevele(session.pilotageEcrans, cible.ecran.id),
-        ),
+        ...strategiesPubliees(cible, sourceRevelee(session, cible.ecran.id)),
       ],
     };
   }

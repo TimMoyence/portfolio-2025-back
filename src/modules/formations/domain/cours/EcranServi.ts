@@ -23,6 +23,25 @@ type SeancePilotee = DiffusionDeSeance & {
   readonly pilotageEcrans: Readonly<Record<string, PilotageEcran>>;
 };
 
+export function ecranRevele(pilotage: PilotageEcran | undefined): boolean {
+  return pilotage?.revele === true;
+}
+
+export function pilotageServi(
+  seance: Pick<SeancePilotee, 'etat' | 'pilotageEcrans'>,
+  screenId: string,
+): PilotageEcran | undefined {
+  const pilotage = seance.pilotageEcrans[screenId];
+  return seance.etat === 'terminee' ? { ...pilotage, revele: true } : pilotage;
+}
+
+export function sourceRevelee(
+  seance: Pick<SeancePilotee, 'etat' | 'pilotageEcrans'>,
+  source: string,
+): boolean {
+  return ecranRevele(pilotageServi(seance, source));
+}
+
 export function dernierEcranServi(
   seance: DiffusionDeSeance,
   total: number,
@@ -64,7 +83,7 @@ export function assertCorrectionNonProjetee(
   const pilotage = seance.pilotageEcrans[screenId];
   if (
     correctionAtteinte ||
-    pilotage?.revele === true ||
+    ecranRevele(pilotage) ||
     etayageAtteint(pilotage) > 0
   ) {
     throw new PhaseFermeeError(screenId);
@@ -81,9 +100,7 @@ export function pieceJointeServieAuPoste(
     throw new PieceJointeIntrouvableError(screenId);
   }
   const ecran = cours.ecrans[rang];
-  const revele = (source: string): boolean =>
-    seance.etat === 'terminee' ||
-    seance.pilotageEcrans[source]?.revele === true;
+  const revele = (source: string): boolean => sourceRevelee(seance, source);
   assertEcranServi(seance, rang, screenId, cours.ecrans.length);
   const source = ecranCorrigePar(ecran);
   if (source !== null && !revele(source)) {

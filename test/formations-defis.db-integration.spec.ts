@@ -70,7 +70,7 @@ decrireSurLeDernierEcran(
       expect(strategies.some((item) => 'fausse' in item)).toBe(false);
     });
 
-    it('ajoute la justesse seulement apres la revelation pilotee', async () => {
+    it('ajoute la justesse une fois le defi revele par le formateur', async () => {
       const seance = await ouvrirSeance('77777777-7777-4777-8777-000000000002');
       await tenter(seance, 'Je lis l’origine de l’axe.').expect(CREE);
 
