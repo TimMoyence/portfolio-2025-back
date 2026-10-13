@@ -4,6 +4,7 @@ import {
   baseMigreeDeLaSuite,
   describeDb,
   inscrireUtilisateur,
+  jouerLaMigration,
   migrationsAnterieuresA,
 } from './helpers/db-integration-datasource';
 
@@ -20,7 +21,7 @@ describeDb('Hachage des jetons de verification sur une base migree', () => {
   const migration = new HacheLesJetonsDeVerification1791624795249();
 
   const jouer = (sens: 'up' | 'down') =>
-    base().transaction((manager) => migration[sens](manager.queryRunner!));
+    jouerLaMigration(base(), migration, sens);
 
   const enOrdre = (valeurs: string[]): string[] =>
     [...valeurs].sort((a, b) => a.localeCompare(b));
