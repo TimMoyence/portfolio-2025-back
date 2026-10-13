@@ -1,7 +1,4 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { lienAvecParametres } from '../../../common/domain/lien-avec-jeton';
-import { envString } from '../../../config/env-readers.util';
-import { SessionClosedError } from '../domain/errors/FormationErrors';
 import type {
   IFormationMailer,
   RapportSession,
@@ -10,7 +7,6 @@ import type { ParticipantRecord } from '../domain/IParticipants.repository';
 import type { IScoresRepository } from '../domain/IScores.repository';
 import type { ISessionStateCache } from '../domain/ISessionStateCache.port';
 import type { ISessionsRepository } from '../domain/ISessions.repository';
-import { assertSessionOwnedBy } from '../domain/SessionOwnership';
 import {
   FORMATION_MAILER,
   SCORES_REPOSITORY,
@@ -20,9 +16,7 @@ import {
 import { messageDErreur } from '../../../common/domain/errors/message-d-erreur';
 import { GetSessionResultsUseCase } from './GetSessionResults.useCase';
 import type { BilanDeSeance } from './GetSessionResults.useCase';
-import { secretDeSignature, signer } from './SignatureFormations';
-
-const REVIEW_BASE_URL_PAR_DEFAUT = 'https://asilidesign.fr/cours/revision';
+import { seanceNonTermineePilotablePar } from './SessionAccess';
 
 @Injectable()
 export class CloseSessionUseCase {
@@ -45,14 +39,7 @@ export class CloseSessionUseCase {
     teacherId: string,
     destinataireFormateur?: string,
   ): Promise<void> {
-    const session = assertSessionOwnedBy(
-      await this.sessions.findById(sessionId),
-      sessionId,
-      teacherId,
-    );
-    if (session.etat === 'terminee') {
-      throw new SessionClosedError();
-    }
+    await seanceNonTermineePilotablePar(this.sessions, sessionId, teacherId);
 
     const misAJour = await this.sessions.update(sessionId, {
       etat: 'terminee',
@@ -68,7 +55,7 @@ export class CloseSessionUseCase {
       this.resolveDestinataireFormateur(destinataireFormateur),
       bilan.resultats,
     );
-    this.envoyerCopies(sessionId, bilan.participants, bilan.resultats);
+    this.envoyerCopies(bilan.participants, bilan.resultats);
   }
 
   private async enregistrerScores(
@@ -116,31 +103,19 @@ export class CloseSessionUseCase {
   }
 
   private envoyerCopies(
-    sessionId: string,
     participantsListe: readonly ParticipantRecord[],
     rapport: RapportSession,
   ): void {
-    try {
-      secretDeSignature();
-    } catch (error) {
-      this.logger.error(
-        `Envoi des copies etudiantes annule, aucun jeton ne peut etre produit: ${messageDErreur(error)}`,
-      );
-      return;
-    }
-
     participantsListe.forEach((participant, index) => {
       const rapportParticipant = rapport.participants[index];
       if (!rapportParticipant) {
         return;
       }
-      const lien = this.lienRevisionPour(sessionId, participant);
       this.mailer
         .sendCopieEtudiant({
           courseSlug: rapport.courseSlug,
           code: rapport.code,
           participant: rapportParticipant,
-          lienRevision: lien,
         })
         .catch((error: unknown) => {
           this.logger.warn(
@@ -148,19 +123,5 @@ export class CloseSessionUseCase {
           );
         });
     });
-  }
-
-  private lienRevisionPour(
-    sessionId: string,
-    participant: ParticipantRecord,
-  ): string {
-    return lienAvecParametres(
-      envString('FORMATION_REVIEW_BASE_URL') ?? REVIEW_BASE_URL_PAR_DEFAUT,
-      {
-        session: sessionId,
-        participant: participant.id,
-        token: signer(`${sessionId}:${participant.id}`),
-      },
-    );
   }
 }

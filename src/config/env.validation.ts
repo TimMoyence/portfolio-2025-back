@@ -134,7 +134,6 @@ const envSchema = z
     FORMATION_TEACHER_NOTIFICATION_TO: z
       .string()
       .min(1, 'FORMATION_TEACHER_NOTIFICATION_TO est requis'),
-    FORMATION_REVIEW_BASE_URL: z.string().optional(),
     FORMATION_REVIEW_TOKEN_SECRET: z
       .string()
       .min(

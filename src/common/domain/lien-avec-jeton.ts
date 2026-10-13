@@ -1,27 +1,22 @@
-function requeteEncodee(parametres: Readonly<Record<string, string>>): string {
-  return Object.entries(parametres)
-    .map(
-      ([nom, valeur]) =>
-        `${encodeURIComponent(nom)}=${encodeURIComponent(valeur)}`,
-    )
-    .join('&');
-}
+import { LienInvalideError } from './errors/LienInvalideError';
 
-export function lienAvecParametres(
-  base: string,
-  parametres: Readonly<Record<string, string>>,
-): string {
+export const PARAMETRE_DU_JETON = 'token';
+
+export const PAGE_PRIVEE_DU_TOOLKIT = '/formations/ia-solopreneurs/toolkit/';
+
+export function lienAvecJeton(base: string, jeton: string): string {
   if (!URL.canParse(base)) {
     const separateur = base.includes('?') ? '&' : '?';
-    return `${base}${separateur}${requeteEncodee(parametres)}`;
+    return `${base}${separateur}${PARAMETRE_DU_JETON}=${encodeURIComponent(jeton)}`;
   }
   const url = new URL(base);
-  for (const [nom, valeur] of Object.entries(parametres)) {
-    url.searchParams.set(nom, valeur);
-  }
+  url.searchParams.set(PARAMETRE_DU_JETON, jeton);
   return url.toString();
 }
 
-export function lienAvecJeton(base: string, jeton: string): string {
-  return lienAvecParametres(base, { token: jeton });
+export function jetonDeLien(valeur: unknown, forme: RegExp): string {
+  if (typeof valeur !== 'string' || !forme.test(valeur)) {
+    throw new LienInvalideError();
+  }
+  return valeur;
 }

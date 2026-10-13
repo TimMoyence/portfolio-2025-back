@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { LienInvalideError } from '../../../common/domain/errors/LienInvalideError';
 import type { NewsletterSubscriber } from '../domain/NewsletterSubscriber';
 import { ActionDAbonne } from './ActionDAbonne';
 
@@ -10,10 +11,9 @@ export interface ConfirmSubscriptionResult {
 @Injectable()
 export class ConfirmSubscriptionUseCase extends ActionDAbonne {
   async execute(confirmToken: string): Promise<ConfirmSubscriptionResult> {
-    const subscriber = await this.repo.findByConfirmToken(confirmToken);
-    if (!subscriber) {
-      throw this.jetonInvalide('confirm');
-    }
+    const subscriber = await this.abonneDuLien(
+      this.repo.findByConfirmToken(confirmToken),
+    );
 
     if (subscriber.status === 'confirmed') {
       return { status: 'confirmed', alreadyConfirmed: true };
@@ -22,7 +22,7 @@ export class ConfirmSubscriptionUseCase extends ActionDAbonne {
     // Meme erreur qu'un token inconnu : opposer 404 et 410 (RFC 9110)
     // revelerait qu'un token a existe pour cette souscription.
     if (subscriber.isConfirmTokenExpired()) {
-      throw this.jetonInvalide('confirm');
+      throw new LienInvalideError();
     }
 
     subscriber.confirm();

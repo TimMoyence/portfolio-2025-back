@@ -7,7 +7,7 @@ import {
   buildUser,
   createMockUsersRepo,
 } from '../../../../test/factories/user.factory';
-import { InvalidCredentialsError } from '../../../common/domain/errors/InvalidCredentialsError';
+import { LienInvalideError } from '../../../common/domain/errors/LienInvalideError';
 import { TokenHash } from '../domain/TokenHash';
 import { VerifyEmailUseCase } from './VerifyEmail.useCase';
 
@@ -43,12 +43,25 @@ describe('VerifyEmailUseCase', () => {
     expect(tokensRepo.deleteByUserId).toHaveBeenCalledWith('user-1');
   });
 
-  it('refuse un jeton inconnu ou expire', async () => {
+  it('refuse un jeton inconnu ou expire comme tout lien invalide', async () => {
     const { tokensRepo, useCase } = construire();
     tokensRepo.findActiveByTokenHash.mockResolvedValue(null);
 
     await expect(useCase.execute('inconnu')).rejects.toBeInstanceOf(
-      InvalidCredentialsError,
+      LienInvalideError,
     );
+  });
+
+  it('refuse un jeton dont le compte n existe plus comme tout lien invalide', async () => {
+    const { tokensRepo, usersRepo, useCase } = construire();
+    tokensRepo.findActiveByTokenHash.mockResolvedValue(
+      buildEmailVerificationToken({ userId: 'user-supprime' }),
+    );
+    usersRepo.findById.mockResolvedValue(null);
+
+    await expect(useCase.execute('jeton-brut')).rejects.toBeInstanceOf(
+      LienInvalideError,
+    );
+    expect(usersRepo.update).not.toHaveBeenCalled();
   });
 });

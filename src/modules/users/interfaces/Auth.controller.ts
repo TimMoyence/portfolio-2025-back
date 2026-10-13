@@ -5,7 +5,6 @@ import {
   HttpCode,
   Patch,
   Post,
-  Query,
   Req,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -15,6 +14,7 @@ import {
   ApiConflictResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiQuery,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
@@ -24,6 +24,11 @@ import {
   lireEnTete,
   resolveClientIpOrUnknown,
 } from '../../../common/interfaces/security/client-ip.util';
+import { PARAMETRE_DU_JETON } from '../../../common/domain/lien-avec-jeton';
+import {
+  JetonDuLienEnRequete,
+  RefusDeLienDocumente,
+} from '../../../common/interfaces/security/jeton-de-lien.pipe';
 import { EchangeCourant, type EchangeHttp } from './echange-http.decorator';
 import {
   limiteDeRafraichissement,
@@ -34,6 +39,7 @@ import type { AuthAuditEntry } from '../application/services/AuthAuditLogger';
 import { AuthenticateGoogleUserUseCase } from '../application/AuthenticateGoogleUser.useCase';
 import { AuthenticateUserUseCase } from '../application/AuthenticateUser.useCase';
 import type { AuthResult } from '../application/AuthenticateUser.useCase';
+import { FORME_D_UN_JETON_EMIS } from '../domain/TokenHash';
 import type { User } from '../domain/User';
 import { ChangePasswordUseCase } from '../application/ChangePassword.useCase';
 import { CreateUsersUseCase } from '../application/CreateUsers.useCase';
@@ -59,11 +65,11 @@ import { GoogleAuthDto } from './dto/GoogleAuth.dto';
 import { LoginDto } from './dto/Login.dto';
 import { ResendVerificationDto } from './dto/ResendVerification.dto';
 import { ResetPasswordDto } from './dto/ResetPassword.dto';
+import { DOCUMENTATION_D_UN_JETON_DE_LIEN } from './dto/regles-de-saisie';
 import { SetPasswordDto } from './dto/SetPassword.dto';
 import { AuthResponseDto } from './dto/Auth.response.dto';
 import { UpdateProfileDto } from './dto/UpdateProfile.dto';
 import { UserResponseDto } from './dto/User.response.dto';
-import { VerifyEmailQueryDto } from './dto/VerifyEmail.query.dto';
 import { Public } from '../../../common/interfaces/auth/public.decorator';
 import { messageDErreur } from '../../../common/domain/errors/message-d-erreur';
 
@@ -286,9 +292,8 @@ export class AuthController {
     summary: 'Reinitialise le mot de passe via un token de reset',
   })
   @ApiOkResponse({ type: AuthMessageResponseDto })
-  @ApiBadRequestResponse({
-    description: 'Validation failed or invalid/expired token',
-  })
+  @ApiBadRequestResponse({ description: 'Validation failed' })
+  @RefusDeLienDocumente()
   async resetPassword(
     @Body() dto: ResetPasswordDto,
   ): Promise<AuthMessageResponseDto> {
@@ -348,11 +353,11 @@ export class AuthController {
   @Get('verify-email')
   @Throttle({ default: { limit: 10, ttl: 3600000 } })
   @ApiOperation({ summary: "Verifie l'adresse email via le token envoye" })
+  @ApiQuery({ name: PARAMETRE_DU_JETON, ...DOCUMENTATION_D_UN_JETON_DE_LIEN })
   @ApiOkResponse({ type: AuthMessageResponseDto })
-  @ApiBadRequestResponse({ description: 'Jeton absent ou mal forme' })
-  @ApiUnauthorizedResponse({ description: 'Token invalide ou expire' })
+  @RefusDeLienDocumente()
   async verifyEmail(
-    @Query() { token }: VerifyEmailQueryDto,
+    @JetonDuLienEnRequete(FORME_D_UN_JETON_EMIS) token: string,
   ): Promise<AuthMessageResponseDto> {
     return this.verifyEmailUseCase.execute(token);
   }

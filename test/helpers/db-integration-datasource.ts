@@ -1,5 +1,9 @@
 import { join } from 'path';
-import { DataSource, type DataSourceOptions } from 'typeorm';
+import {
+  DataSource,
+  type DataSourceOptions,
+  type MigrationInterface,
+} from 'typeorm';
 import type { SourceDEnv } from '../../src/config/env-readers.util';
 import { resoudreConnexionPostgres } from '../../src/database/connexion-postgres';
 
@@ -103,6 +107,16 @@ export function baseMigreeDeLaSuite(
   };
 }
 
+export function jouerLaMigration(
+  dataSource: DataSource,
+  migration: MigrationInterface,
+  sens: 'up' | 'down',
+): Promise<void> {
+  return dataSource.transaction((manager) =>
+    migration[sens](manager.queryRunner!),
+  );
+}
+
 export async function inscrireUtilisateur(
   dataSource: DataSource,
   email: string,
@@ -123,6 +137,7 @@ export async function initialiserEtMigrer(
   for (const fonction of FONCTIONS_HORS_DU_DROP_SCHEMA) {
     await dataSource.query(`DROP FUNCTION IF EXISTS ${fonction} CASCADE`);
   }
+  await dataSource.query(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`);
   await dataSource.runMigrations({ transaction: 'all' });
 }
 

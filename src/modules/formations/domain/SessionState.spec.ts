@@ -4,6 +4,7 @@ import {
 } from './errors/FormationErrors';
 import {
   assertReponsesOuvertes,
+  assertSeanceNonTerminee,
   canTransition,
   SESSION_STATES,
 } from './SessionState';
@@ -32,6 +33,21 @@ describe('SessionState', () => {
 
   it('refuse un retour en arriere depuis en_cours', () => {
     expect(canTransition('en_cours', 'attente')).toBe(false);
+  });
+});
+
+describe('assertSeanceNonTerminee', () => {
+  it.each(['attente', 'en_cours'] as const)(
+    'laisse agir sur une seance %s',
+    (etat) => {
+      expect(() => assertSeanceNonTerminee(etat)).not.toThrow();
+    },
+  );
+
+  it('refuse d agir sur une seance terminee', () => {
+    expect(() => assertSeanceNonTerminee('terminee')).toThrow(
+      SessionClosedError,
+    );
   });
 });
 

@@ -11,6 +11,16 @@ export interface ActeurFormation {
   readonly roles: readonly string[];
 }
 
+export function assertSeanceTrouvee(
+  session: SessionRecord | null,
+  cle: string,
+): SessionRecord {
+  if (!session) {
+    throw new SessionNotFoundError(cle);
+  }
+  return session;
+}
+
 export function assertSessionOwnedBy(
   session: SessionRecord | null,
   sessionId: string,
@@ -42,11 +52,9 @@ function assertAccesAutorise(
   sessionId: string,
   estAutorise: (session: SessionRecord) => boolean,
 ): SessionRecord {
-  if (!session) {
-    throw new SessionNotFoundError(sessionId);
-  }
-  if (!estAutorise(session)) {
+  const trouvee = assertSeanceTrouvee(session, sessionId);
+  if (!estAutorise(trouvee)) {
     throw new SessionNotOwnedError(sessionId);
   }
-  return session;
+  return trouvee;
 }

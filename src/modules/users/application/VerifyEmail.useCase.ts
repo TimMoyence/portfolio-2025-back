@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { InvalidCredentialsError } from '../../../common/domain/errors/InvalidCredentialsError';
+import { LienInvalideError } from '../../../common/domain/errors/LienInvalideError';
 import type { IEmailVerificationTokensRepository } from '../domain/IEmailVerificationTokens.repository';
 import type { IUsersRepository } from '../domain/IUsers.repository';
 import { DEFAULT_SELF_REGISTRATION_ROLES } from '../domain/roles';
@@ -28,17 +28,13 @@ export class VerifyEmailUseCase {
     );
 
     if (!stored) {
-      throw new InvalidCredentialsError(
-        'Token de verification invalide ou expire',
-      );
+      throw new LienInvalideError();
     }
 
     const user = await this.usersRepo.findById(stored.userId);
 
     if (!user) {
-      throw new InvalidCredentialsError(
-        'Token de verification invalide ou expire',
-      );
+      throw new LienInvalideError();
     }
 
     if (user.emailVerified) {

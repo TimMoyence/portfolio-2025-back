@@ -52,7 +52,7 @@ describe('Rate-limiting (ThrottlerGuard) — integration HTTP', () => {
       .get('/test-throttle/default')
       .expect(429);
 
-    expect(response.body.message).toContain('ThrottlerException');
+    expect(response.body.detail).toContain('ThrottlerException');
   });
 
   it('devrait accepter les requetes en dessous de la limite specifique', async () => {
@@ -66,6 +66,6 @@ describe('Rate-limiting (ThrottlerGuard) — integration HTTP', () => {
       .post('/test-throttle/strict')
       .expect(429);
 
-    expect(response.body.message).toContain('ThrottlerException');
+    expect(response.body.detail).toContain('ThrottlerException');
   });
 });

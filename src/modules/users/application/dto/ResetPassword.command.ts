@@ -1,4 +1,4 @@
 export interface ResetPasswordCommand {
-  token: string;
+  token: unknown;
   newPassword: string;
 }

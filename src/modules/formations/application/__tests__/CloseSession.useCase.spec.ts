@@ -23,6 +23,7 @@ import {
   createMockSessionsRepo,
 } from '../../../../../test/factories/formation.factory';
 import { installerVariables } from '../../../../../test/helpers/environnement';
+import { verifierSeanceIntrouvable } from '../../../../../test/helpers/gardes-de-seance';
 import {
   SessionClosedError,
   SessionNotOwnedError,
@@ -34,7 +35,6 @@ import { GetSessionResultsUseCase } from '../GetSessionResults.useCase';
 const COURS = buildCoursDeTest();
 const TEACHER_ID = 'teacher-uuid';
 const AUTRE_TEACHER_ID = 'autre-teacher-uuid';
-const REVIEW_SECRET_VALIDE = 'a'.repeat(32);
 const TEACHER_NOTIFICATION_EMAIL = 'notifications-formateur@example.com';
 
 describe('CloseSessionUseCase', () => {
@@ -48,10 +48,7 @@ describe('CloseSessionUseCase', () => {
   let sut: CloseSessionUseCase;
 
   installerVariables(
-    {
-      FORMATION_REVIEW_TOKEN_SECRET: REVIEW_SECRET_VALIDE,
-      FORMATION_TEACHER_NOTIFICATION_TO: TEACHER_NOTIFICATION_EMAIL,
-    },
+    { FORMATION_TEACHER_NOTIFICATION_TO: TEACHER_NOTIFICATION_EMAIL },
     'chaque-test',
   );
 
@@ -136,18 +133,11 @@ describe('CloseSessionUseCase', () => {
     return mailer.sendCopieEtudiant.mock.calls[0][0];
   };
 
-  it('construit un lien de revision individualise pour chaque etudiant', async () => {
-    const copie = await copieDUnSeulEtudiant();
-    expect(copie.lienRevision).toContain('p1');
-    expect(copie.lienRevision).toContain('session-uuid');
-  });
-
   it('ne confie a la copie d un etudiant que ce que sa copie exige', async () => {
     const copie = await copieDUnSeulEtudiant();
     expect(Object.keys(copie).sort((a, b) => a.localeCompare(b))).toEqual([
       'code',
       'courseSlug',
-      'lienRevision',
       'participant',
     ]);
   });
@@ -262,21 +252,19 @@ describe('CloseSessionUseCase', () => {
     expect(mailer.sendCopieEtudiant).not.toHaveBeenCalled();
   });
 
+  verifierSeanceIntrouvable(() => ({
+    sessions,
+    executer: () => sut.execute('session-uuid', TEACHER_ID),
+    effetsInterdits: () => [
+      sessions.update,
+      cache.drop,
+      mailer.sendSyntheseFormateur,
+    ],
+  }));
+
   it('n interrompt pas la cloture si un mail echoue', async () => {
     mailer.sendCopieEtudiant.mockRejectedValue(new Error('smtp indisponible'));
     await cloturerMalgreLaPanne();
-  });
-
-  it('cloture tout de meme mais ne produit aucun jeton si le secret de revision est absent', async () => {
-    delete process.env.FORMATION_REVIEW_TOKEN_SECRET;
-    await cloturerMalgreLaPanne();
-    expect(mailer.sendCopieEtudiant).not.toHaveBeenCalled();
-  });
-
-  it('ne produit aucun jeton quand le secret de revision est trop court', async () => {
-    process.env.FORMATION_REVIEW_TOKEN_SECRET = 'trop-court';
-    await sut.execute('session-uuid', TEACHER_ID);
-    expect(mailer.sendCopieEtudiant).not.toHaveBeenCalled();
   });
 
   describe('libelles des copies', () => {

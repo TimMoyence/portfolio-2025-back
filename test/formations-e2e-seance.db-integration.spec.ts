@@ -1049,11 +1049,6 @@ function seanceComplete(
             `/sessions/${sessionId}/sujet`,
             postes[0].jeton,
           ).expect(OK);
-          const dues = await poste(
-            'get',
-            `/sessions/${sessionId}/due-questions`,
-            postes[0].jeton,
-          ).expect(OK);
           for (const unPoste of [postes[0], postes[1], postes[2], evince]) {
             await repondre(unPoste, questionsDe(rappel)[0]).expect(CREE);
           }
@@ -1101,7 +1096,7 @@ function seanceComplete(
           );
           const lectureDeLEvince = await poste(
             'get',
-            `/sessions/${sessionId}/due-questions`,
+            `/sessions/${sessionId}/moi`,
             evince.jeton,
           );
           const remplacant = await inscrire(postes[3]);
@@ -1125,9 +1120,6 @@ function seanceComplete(
               (sujet.body as { ecrans: EcranPublic[] }).ecrans,
             ),
             secretsDuSujet: clesSecretesDans(sujet.body),
-            questionsDues: Array.isArray(
-              (dues.body as { questions: unknown[] }).questions,
-            ),
           }).toEqual({
             jetonRevoque: INTROUVABLE,
             ecritureDeLEvince: INTROUVABLE,
@@ -1141,7 +1133,6 @@ function seanceComplete(
               attendu.piecesJointes.filter((id) => id === rappel.id),
             ),
             secretsDuSujet: [],
-            questionsDues: true,
           });
         },
         DELAI_TEST_MS,

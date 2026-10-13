@@ -1,14 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { pickFreeSeed } from '../domain/Bareme';
-import {
-  SessionClosedError,
-  SessionNotFoundError,
-} from '../domain/errors/FormationErrors';
 import type { IParticipantsRepository } from '../domain/IParticipants.repository';
 import type { ISessionStateCache } from '../domain/ISessionStateCache.port';
 import type { ISessionsRepository } from '../domain/ISessions.repository';
 import { SecretDeReprise } from '../domain/SecretDeReprise';
 import { SessionCode } from '../domain/SessionCode';
+import { assertSeanceTrouvee } from '../domain/SessionOwnership';
+import { assertSeanceNonTerminee } from '../domain/SessionState';
 import {
   PARTICIPANTS_REPOSITORY,
   SESSION_STATE_CACHE,
@@ -32,13 +30,11 @@ export class JoinSessionUseCase {
 
   async execute(command: JoinSessionCommand): Promise<JoinSessionResult> {
     const code = SessionCode.parse(command.code);
-    const session = await this.sessions.findActiveByCode(code);
-    if (!session) {
-      throw new SessionNotFoundError(code);
-    }
-    if (session.etat === 'terminee') {
-      throw new SessionClosedError();
-    }
+    const session = assertSeanceTrouvee(
+      await this.sessions.findActiveByCode(code),
+      code,
+    );
+    assertSeanceNonTerminee(session.etat);
 
     const secretDeReprise = SecretDeReprise.generer();
     const { participant, nouveau } = await this.participants.inscrire({

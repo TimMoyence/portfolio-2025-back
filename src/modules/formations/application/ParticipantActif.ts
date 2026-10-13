@@ -1,3 +1,4 @@
+import { appartenanceDuParticipant } from '../domain/AppartenanceDuParticipant';
 import type {
   IParticipantsRepository,
   ParticipantRecord,
@@ -9,13 +10,12 @@ export async function participantActif(
   sessionId: string,
   participantId: string,
 ): Promise<ParticipantRecord> {
-  const participant = await participants.findById(participantId);
-  if (
-    participant === null ||
-    participant.sessionId !== sessionId ||
-    participant.evinceLe !== null
-  ) {
+  const appartenance = appartenanceDuParticipant(
+    await participants.findById(participantId),
+    sessionId,
+  );
+  if (appartenance.exclusion !== null) {
     throw new ParticipantNotFoundError(participantId);
   }
-  return participant;
+  return appartenance.participant;
 }

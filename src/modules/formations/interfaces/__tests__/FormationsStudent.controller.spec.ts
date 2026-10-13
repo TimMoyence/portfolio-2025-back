@@ -1,4 +1,4 @@
-import { BadRequestException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException } from '@nestjs/common';
 import { GUARDS_METADATA } from '@nestjs/common/constants';
 import type { Request } from 'express';
 import { of } from 'rxjs';
@@ -6,6 +6,7 @@ import {
   buildFormationsStudentController,
   createMockFormationsStudentDependances,
 } from '../../../../../test/factories/formations-controllers.factory';
+import { routesDuControleur } from '../../../../../test/helpers/metadonnees-de-route';
 import {
   InvalidSessionCodeError,
   SeedPoolExhaustedError,
@@ -13,6 +14,7 @@ import {
 } from '../../domain/errors/FormationErrors';
 import { FormationsStudentController } from '../FormationsStudent.controller';
 import { ParticipantTokenGuard } from '../ParticipantToken.guard';
+import type { IdentiteSignee } from '../ParticipantToken.service';
 import type { JoinSessionRequestDto } from '../dto/join-session.request.dto';
 
 const SESSION_ID = '4d0f2a9e-0d7f-4d2f-9a3c-1f6b2a7c8d90';
@@ -21,14 +23,12 @@ const JETON = `${PARTICIPANT_ID}.empreinte`;
 const SECRET_DE_REPRISE = 'secret-remis-a-la-jonction';
 const IP_SALLE = 'sortie-nat-salle-b204';
 
-const requeteEtudiant = { ip: IP_SALLE, socket: {} } as unknown as Request;
+const IDENTITE: IdentiteSignee = {
+  participantId: PARTICIPANT_ID,
+  generation: 0,
+};
 
-function requeteVerifiee(
-  participantId: string,
-  generationDeJeton = 0,
-): Request {
-  return { ...requeteEtudiant, participantId, generationDeJeton } as Request;
-}
+const requeteEtudiant = { ip: IP_SALLE, socket: {} } as unknown as Request;
 
 const inscription: JoinSessionRequestDto = {
   prenom: 'Theo',
@@ -43,7 +43,6 @@ describe('FormationsStudentController', () => {
     submitAnswer,
     recordIncidents,
     streamSession,
-    dueQuestions,
     lireSujet,
     tokens,
     clesEtudiants,
@@ -68,19 +67,17 @@ describe('FormationsStudentController', () => {
       modeRythme: 'pilote',
     });
     tokens.sign.mockReturnValue(JETON);
-    tokens.verify.mockResolvedValue(PARTICIPANT_ID);
   });
 
   it('confie la réponse libre au cas d usage pour le participant porté par le jeton', async () => {
     await expect(
-      controller.freeResponse(SESSION_ID, JETON, {
+      controller.freeResponse(SESSION_ID, IDENTITE, {
         screenId: 'B2-01-S11-REFLECTION',
         activityId: 'b2-s11-c1',
         response: 'Je vérifie la période.',
         dureeMs: 1400,
       }),
     ).resolves.toEqual({ status: 'enregistre' });
-    expect(tokens.verify).toHaveBeenCalledWith(SESSION_ID, JETON);
     expect(saveFreeResponse.execute).toHaveBeenCalledWith({
       sessionId: SESSION_ID,
       participantId: PARTICIPANT_ID,
@@ -182,13 +179,12 @@ describe('FormationsStudentController', () => {
       solution: 1338,
     });
 
-    const reponse = await controller.answer(SESSION_ID, JETON, {
+    const reponse = await controller.answer(SESSION_ID, IDENTITE, {
       questionId: 'Q-CAP-03',
       valeur: 1300,
       dureeMs: 42000,
     });
 
-    expect(tokens.verify).toHaveBeenCalledWith(SESSION_ID, JETON);
     expect(submitAnswer.execute).toHaveBeenCalledWith({
       sessionId: SESSION_ID,
       participantId: PARTICIPANT_ID,
@@ -203,24 +199,10 @@ describe('FormationsStudentController', () => {
     });
   });
 
-  it('ne corrige rien quand le jeton est refuse', async () => {
-    tokens.verify.mockRejectedValue(new UnauthorizedException());
-
-    await expect(
-      controller.answer(SESSION_ID, undefined, {
-        questionId: 'Q-CAP-03',
-        valeur: 1300,
-        dureeMs: 42000,
-      }),
-    ).rejects.toBeInstanceOf(UnauthorizedException);
-
-    expect(submitAnswer.execute).not.toHaveBeenCalled();
-  });
-
   it('rattache les incidents a la session de l URL et au porteur du jeton', async () => {
     const horodatage = new Date('2026-09-11T10:00:00.000Z');
 
-    await controller.incidents(SESSION_ID, JETON, {
+    await controller.incidents(SESSION_ID, IDENTITE, {
       incidents: [
         { type: 'tab_hidden', horodatage },
         { type: 'copy_attempt', contexte: { cible: 'enonce' }, horodatage },
@@ -249,67 +231,26 @@ describe('FormationsStudentController', () => {
     );
   });
 
-  it('n enregistre aucun incident quand le jeton est refuse', async () => {
-    tokens.verify.mockRejectedValue(new UnauthorizedException());
-
-    await expect(
-      controller.incidents(SESSION_ID, 'jeton-force', { incidents: [] }),
-    ).rejects.toBeInstanceOf(UnauthorizedException);
-
-    expect(recordIncidents.execute).not.toHaveBeenCalled();
-  });
-
   it('branche le flux temps reel sur la session demandee, au nom du participant verifie par la garde', () => {
     const flux = of({ data: { etat: 'en_cours' } });
     streamSession.execute.mockReturnValue(flux);
 
-    expect(
-      controller.stream(SESSION_ID, requeteVerifiee(PARTICIPANT_ID, 3)),
-    ).toBe(flux);
+    expect(controller.stream(SESSION_ID, { ...IDENTITE, generation: 3 })).toBe(
+      flux,
+    );
     expect(streamSession.execute).toHaveBeenCalledWith(
       SESSION_ID,
       PARTICIPANT_ID,
       3,
     );
-    expect(tokens.verify).not.toHaveBeenCalled();
   });
 
-  it('demande les questions a revoir pour le porteur du jeton, jamais pour un autre', async () => {
-    const dues = [
-      { questionId: 'Q-CAP-03', concept: 'capitalisation', boite: 1 },
-    ];
-    dueQuestions.execute.mockResolvedValue(dues);
-
-    const reponse = await controller.questionsDues(SESSION_ID, JETON);
-
-    expect(tokens.verify).toHaveBeenCalledWith(SESSION_ID, JETON);
-    expect(dueQuestions.execute).toHaveBeenCalledWith({
-      sessionId: SESSION_ID,
-      participantId: PARTICIPANT_ID,
-    });
-    expect(reponse).toEqual({ questions: dues });
-  });
-
-  it('ne rend aucune question a revoir quand le jeton est refuse', async () => {
-    tokens.verify.mockRejectedValue(new UnauthorizedException());
-
-    await expect(
-      controller.questionsDues(SESSION_ID, 'jeton-force'),
-    ).rejects.toBeInstanceOf(UnauthorizedException);
-
-    expect(dueQuestions.execute).not.toHaveBeenCalled();
-  });
-
-  it('sert le sujet du tirage au participant verifie par la garde, sans reverifier son jeton', async () => {
+  it('sert le sujet du tirage au participant verifie par la garde', async () => {
     const sujet = { id: 'cours-de-test', ecrans: [] };
     lireSujet.execute.mockResolvedValue(sujet);
 
-    const reponse = await controller.sujet(
-      SESSION_ID,
-      requeteVerifiee(PARTICIPANT_ID),
-    );
+    const reponse = await controller.sujet(SESSION_ID, IDENTITE);
 
-    expect(tokens.verify).not.toHaveBeenCalled();
     expect(lireSujet.execute).toHaveBeenCalledWith({
       sessionId: SESSION_ID,
       participantId: PARTICIPANT_ID,
@@ -317,19 +258,17 @@ describe('FormationsStudentController', () => {
     expect(reponse).toBe(sujet);
   });
 
-  it.each([
-    ['seule a pouvoir refuser avant l ouverture du flux', 'stream'],
-    ['avant de servir le sujet', 'sujet'],
-  ] as const)('confie le controle du jeton a une garde, %s', (_cas, route) => {
-    const descripteur = Object.getOwnPropertyDescriptor(
-      FormationsStudentController.prototype,
-      route,
-    );
-    const gardes = Reflect.getMetadata(
-      GUARDS_METADATA,
-      descripteur?.value as object,
-    ) as unknown[];
+  it('confie le controle du jeton a la seule garde sur chaque route etudiant, la jonction exceptee', () => {
+    const routes = routesDuControleur(FormationsStudentController);
+    const sansGarde = routes
+      .filter(({ gestionnaire }) => {
+        const gardes = (Reflect.getMetadata(GUARDS_METADATA, gestionnaire) ??
+          []) as unknown[];
+        return !gardes.includes(ParticipantTokenGuard);
+      })
+      .map(({ action }) => action);
 
-    expect(gardes).toContain(ParticipantTokenGuard);
+    expect(routes.length).toBeGreaterThan(10);
+    expect(sansGarde).toEqual(['join']);
   });
 });

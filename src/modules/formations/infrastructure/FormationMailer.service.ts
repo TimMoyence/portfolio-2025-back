@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ExpediteurSmtp } from '../../../common/infrastructure/mail/expediteur-smtp';
-import { escapeHtml, escapeUrl, safeHtml } from 'portfolio-2025-partage/html';
+import { escapeHtml, safeHtml } from 'portfolio-2025-partage/html';
 import type { EscapedHtml } from 'portfolio-2025-partage/html';
 import { conceptsFragilesLisibles } from '../domain/IFormationMailer.port';
 import type {
@@ -62,12 +62,12 @@ export class FormationMailerService
     if (!this.transporter) {
       return;
     }
-    const { participant, lienRevision } = copie;
+    const { participant } = copie;
     await this.transporter.sendMail({
       from: this.from,
       to: participant.email,
       subject: `Votre copie — ${copie.courseSlug}`,
-      text: this.copieTexte(participant, lienRevision),
+      text: this.copieTexte(participant),
       html: safeHtml`
         <div style="font-family:Arial,Helvetica,sans-serif; padding:24px;">
           <h2>Bonjour ${escapeHtml(participant.prenom)},</h2>
@@ -77,9 +77,6 @@ export class FormationMailerService
             (complétion ${Math.round(participant.completion * 100)}%).
           </p>
           <ul>${this.copieReponsesHtml(participant.reponses)}</ul>
-          <p>
-            <a href="${escapeUrl(lienRevision)}">Reprendre mon entraînement</a>
-          </p>
         </div>
       `,
     });
@@ -145,10 +142,7 @@ export class FormationMailerService
     `;
   }
 
-  private copieTexte(
-    participant: RapportParticipant,
-    lienRevision: string,
-  ): string {
+  private copieTexte(participant: RapportParticipant): string {
     return [
       `Bonjour ${participant.prenom},`,
       '',
@@ -159,8 +153,6 @@ export class FormationMailerService
         (reponse) =>
           `${reponse.questionId} — ${reponse.concept} : vous avez répondu « ${reponse.reponse} », ${verdictDe(reponse)}.`,
       ),
-      '',
-      `Reprendre mon entraînement : ${lienRevision}`,
     ].join('\n');
   }
 }

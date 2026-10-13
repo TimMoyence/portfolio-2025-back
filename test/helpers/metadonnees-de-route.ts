@@ -1,3 +1,6 @@
+import { RequestMethod } from '@nestjs/common';
+import { METHOD_METADATA, PATH_METADATA } from '@nestjs/common/constants';
+
 export function methodeDe<T extends object>(
   classe: { prototype: T },
   nom: keyof T & string,
@@ -16,4 +19,65 @@ export function limiteDeThrottle(handler: object): {
     fenetre: Reflect.getMetadata('THROTTLER:TTLdefault', handler) as unknown,
     suivi: Reflect.getMetadata('THROTTLER:TRACKERdefault', handler) as unknown,
   };
+}
+
+type MethodeHttp = 'get' | 'post' | 'put' | 'patch' | 'delete';
+
+const METHODES_HTTP: Partial<Record<RequestMethod, MethodeHttp>> = {
+  [RequestMethod.GET]: 'get',
+  [RequestMethod.POST]: 'post',
+  [RequestMethod.PUT]: 'put',
+  [RequestMethod.PATCH]: 'patch',
+  [RequestMethod.DELETE]: 'delete',
+};
+
+export interface RouteDeclaree {
+  readonly action: string;
+  readonly methode: MethodeHttp;
+  readonly chemin: string;
+  readonly gestionnaire: object;
+}
+
+function methodeHttpDe(gestionnaire: object, action: string): MethodeHttp {
+  const declaree = Reflect.getMetadata(
+    METHOD_METADATA,
+    gestionnaire,
+  ) as RequestMethod;
+  const methode = METHODES_HTTP[declaree];
+  if (methode === undefined) {
+    throw new Error(
+      `Méthode HTTP ${RequestMethod[declaree]} de ${action} non prise en charge`,
+    );
+  }
+  return methode;
+}
+
+export function routesDuControleur(controleur: {
+  readonly prototype: object;
+}): RouteDeclaree[] {
+  const { prototype } = controleur;
+  return Object.getOwnPropertyNames(prototype)
+    .filter((action) => action !== 'constructor')
+    .flatMap((action) => {
+      const gestionnaire: unknown = Object.getOwnPropertyDescriptor(
+        prototype,
+        action,
+      )?.value;
+      if (typeof gestionnaire !== 'function') {
+        return [];
+      }
+      const chemin = Reflect.getMetadata(PATH_METADATA, gestionnaire) as
+        | string
+        | undefined;
+      return chemin === undefined
+        ? []
+        : [
+            {
+              action,
+              methode: methodeHttpDe(gestionnaire, action),
+              chemin,
+              gestionnaire,
+            },
+          ];
+    });
 }

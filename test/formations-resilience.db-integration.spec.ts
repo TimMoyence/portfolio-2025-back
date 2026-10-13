@@ -10,6 +10,7 @@ import type { Response, Test } from 'supertest';
 import { MESSAGE_DEPENDANCE_INJOIGNABLE } from '../src/common/interfaces/filters/dependency-outage';
 import { questionsDuCours } from '../src/modules/formations/domain/cours/Cours';
 import type { RapportSession } from '../src/modules/formations/domain/IFormationMailer.port';
+import { EN_TETE_JETON } from '../src/modules/formations/interfaces/ParticipantToken.service';
 import {
   buildCoursDeClasse,
   creerCatalogueDeTest,
@@ -37,7 +38,6 @@ const COURS_DE_CLASSE = buildCoursDeClasse(NB_QUESTIONS_DU_COURS);
 const FORMATEUR = 'd4444444-4444-4444-8444-444444444444';
 const SECRET = 'secret-de-test-formations-assez-long-1234';
 const SYNTHESE_A = 'resilience-formateur@example.test';
-const EN_TETE_JETON = 'x-participant-token';
 const PANNE_SMTP = 'smtp injoignable';
 const NUIT_ENTIERE = '14 hours';
 const ECRAN_APRES_COUPURE = 8;

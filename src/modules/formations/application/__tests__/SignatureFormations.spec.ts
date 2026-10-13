@@ -2,7 +2,7 @@ import {
   appliquer,
   installerVariables,
 } from '../../../../../test/helpers/environnement';
-import { secretDeSignature, signer } from '../SignatureFormations';
+import { signer } from '../SignatureFormations';
 
 const SECRET = 'secret-de-test-formations-assez-long-1234';
 
@@ -13,10 +13,6 @@ describe('SignatureFormations', () => {
     expect(signer('eleve:lea@example.test')).toBe(
       '5602b8e555d803e11aa2f32a126ecd9d59dfbfab8432f9fcb10d04b8e6344026',
     );
-  });
-
-  it('rend le secret configure quand il atteint la longueur minimale', () => {
-    expect(secretDeSignature()).toBe(SECRET);
   });
 
   it('refuse de signer sans FORMATION_REVIEW_TOKEN_SECRET', () => {

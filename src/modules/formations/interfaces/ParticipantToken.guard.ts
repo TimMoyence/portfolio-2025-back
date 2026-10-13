@@ -1,11 +1,17 @@
 import {
+  applyDecorators,
   type CanActivate,
+  createParamDecorator,
   type ExecutionContext,
   Injectable,
+  UnauthorizedException,
+  UseGuards,
 } from '@nestjs/common';
+import { ApiUnauthorizedResponse } from '@nestjs/swagger';
 import type { Request } from 'express';
 import {
-  EN_TETE_JETON,
+  type IdentiteSignee,
+  jetonDesEntetes,
   ParticipantTokenService,
 } from './ParticipantToken.service';
 
@@ -15,14 +21,31 @@ export class ParticipantTokenGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const requete = context.switchToHttp().getRequest<Request>();
-    const brut = requete.headers[EN_TETE_JETON];
-    const jeton = Array.isArray(brut) ? brut[0] : brut;
     const identite = await this.tokens.verifierIdentite(
       String(requete.params['id'] ?? ''),
-      jeton,
+      jetonDesEntetes(requete.headers),
     );
     requete.participantId = identite.participantId;
     requete.generationDeJeton = identite.generation;
     return true;
   }
 }
+
+export function RouteParticipant(): MethodDecorator {
+  return applyDecorators(
+    UseGuards(ParticipantTokenGuard),
+    ApiUnauthorizedResponse({ description: 'Jeton de participant invalide' }),
+  );
+}
+
+export const IdentiteDuJeton = createParamDecorator(
+  (_donnee: unknown, contexte: ExecutionContext): IdentiteSignee => {
+    const { participantId, generationDeJeton } = contexte
+      .switchToHttp()
+      .getRequest<Request>();
+    if (participantId === undefined || generationDeJeton === undefined) {
+      throw new UnauthorizedException('Jeton de participant non verifie');
+    }
+    return { participantId, generation: generationDeJeton };
+  },
+);

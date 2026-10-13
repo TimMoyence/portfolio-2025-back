@@ -1,8 +1,9 @@
 import { Inject, Logger } from '@nestjs/common';
-import { ResourceNotFoundError } from '../../../common/domain/errors/ResourceNotFoundError';
+import { LienInvalideError } from '../../../common/domain/errors/LienInvalideError';
 import type { IEmailDripScheduler } from '../domain/IEmailDripScheduler';
 import type { INewsletterMailer } from '../domain/INewsletterMailer';
 import type { INewsletterSubscriberRepository } from '../domain/INewsletterSubscriberRepository';
+import type { NewsletterSubscriber } from '../domain/NewsletterSubscriber';
 import {
   EMAIL_DRIP_SCHEDULER,
   NEWSLETTER_MAILER,
@@ -21,10 +22,14 @@ export abstract class ActionDAbonne {
     protected readonly scheduler: IEmailDripScheduler,
   ) {}
 
-  protected jetonInvalide(
-    nature: 'confirm' | 'unsubscribe',
-  ): ResourceNotFoundError {
-    return new ResourceNotFoundError(`Invalid or expired ${nature} token`);
+  protected async abonneDuLien(
+    lecture: Promise<NewsletterSubscriber | null>,
+  ): Promise<NewsletterSubscriber> {
+    const abonne = await lecture;
+    if (!abonne) {
+      throw new LienInvalideError();
+    }
+    return abonne;
   }
 
   protected enArrierePlan(tache: Promise<void>, echec: string): void {

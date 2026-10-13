@@ -1,8 +1,7 @@
-import { Body, Controller, Get, Param, ParseUUIDPipe } from '@nestjs/common';
+import { Body, Controller, Get } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiCreatedResponse,
-  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -19,6 +18,11 @@ import {
   FormulairePublic,
   LienPublic,
 } from '../../../common/interfaces/security/formulaire-public.decorator';
+import {
+  JetonDuLienEnChemin,
+  RefusDeLienDocumente,
+  SEGMENT_DU_JETON,
+} from '../../../common/interfaces/security/jeton-de-lien.pipe';
 
 @ApiTags('lead-magnets')
 @Controller('lead-magnets')
@@ -65,16 +69,16 @@ export class LeadMagnetsController {
   }
 
   @LienPublic()
-  @Get('toolkit/:token')
+  @Get(`toolkit/${SEGMENT_DU_JETON}`)
   @ApiOperation({
     summary:
       'Recuperer le contenu personnalise du guide par token (acces public, 10 req/min)',
   })
   @ApiOkResponse({ type: ToolkitPageResponseDto })
-  @ApiNotFoundResponse({ description: 'Token introuvable' })
+  @RefusDeLienDocumente()
   @ApiTooManyRequestsResponse({ description: 'Trop de requetes' })
   async getByToken(
-    @Param('token', ParseUUIDPipe) token: string,
+    @JetonDuLienEnChemin() token: string,
   ): Promise<ToolkitPageResponseDto> {
     const content = await this.getToolkitByToken.execute({
       accessToken: token,

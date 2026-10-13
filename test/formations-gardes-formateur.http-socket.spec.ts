@@ -1,6 +1,4 @@
 import type { INestApplication } from '@nestjs/common';
-import { RequestMethod, ValidationPipe } from '@nestjs/common';
-import { METHOD_METADATA, PATH_METADATA } from '@nestjs/common/constants';
 import { APP_GUARD } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
 import { ThrottlerModule } from '@nestjs/throttler';
@@ -8,8 +6,7 @@ import request from 'supertest';
 import type { Test as RequeteTest } from 'supertest';
 import { JwtAuthGuard } from '../src/common/interfaces/auth/jwt-auth.guard';
 import { ROLES_KEY } from '../src/common/interfaces/auth/roles.decorator';
-import { AllExceptionsFilter } from '../src/common/interfaces/filters/all-exceptions.filter';
-import { DomainExceptionFilter } from '../src/common/interfaces/filters/DomainExceptionFilter';
+import { appliquerLesTraitementsGlobaux } from '../src/common/interfaces/http/traitements-globaux';
 import { PREFIXE_API_PAR_DEFAUT } from '../src/config/prefixe-api';
 import { JwtTokenService } from '../src/modules/users/application/services/JwtTokenService';
 import type { JwtPayload } from '../src/modules/users/application/services/JwtPayload';
@@ -26,8 +23,8 @@ import {
   routeFormations,
   serveurHttpDe,
 } from './helpers/formations-harness';
+import { routesDuControleur } from './helpers/metadonnees-de-route';
 import { fermerApplication } from './helpers/nest-test-app';
-import { GLOBAL_VALIDATION_PIPE_OPTIONS } from './helpers/validation-pipe';
 
 const COURS = buildCoursDeTest({ slug: 'cours-gardes-formateur' });
 const SESSION_ID = 'c3333333-3333-4333-8333-333333333333';
@@ -145,11 +142,7 @@ describe('Gardes reelles des routes formateur (e2e http socket)', () => {
 
     app = moduleRef.createNestApplication();
     app.setGlobalPrefix(PREFIXE_API_PAR_DEFAUT);
-    app.useGlobalFilters(
-      new AllExceptionsFilter(),
-      new DomainExceptionFilter(),
-    );
-    app.useGlobalPipes(new ValidationPipe(GLOBAL_VALIDATION_PIPE_OPTIONS));
+    appliquerLesTraitementsGlobaux(app);
     await app.init();
   });
 
@@ -206,32 +199,16 @@ describe('Gardes reelles des routes formateur (e2e http socket)', () => {
   it('T1 · la matrice couvre chaque route des controleurs reserves au formateur', () => {
     const declarees = CONTROLEURS_FORMATIONS.filter(
       (controleur) => Reflect.getMetadata(ROLES_KEY, controleur) !== undefined,
-    ).flatMap((controleur) => {
-      const prototype: object = controleur.prototype;
-      return Object.getOwnPropertyNames(prototype)
-        .filter((nom) => nom !== 'constructor')
-        .map(
-          (nom): unknown =>
-            Object.getOwnPropertyDescriptor(prototype, nom)?.value,
-        )
-        .filter(
-          (handler): handler is object =>
-            typeof handler === 'function' &&
-            Reflect.getMetadata(PATH_METADATA, handler) !== undefined,
-        )
-        .map((handler) => {
-          const methode =
-            RequestMethod[
-              Reflect.getMetadata(METHOD_METADATA, handler) as RequestMethod
-            ].toLowerCase();
-          const chemin = (Reflect.getMetadata(PATH_METADATA, handler) as string)
-            .replace(':participantId', PARTICIPANT_ID)
-            .replace(':ecranId', ECRAN_ID)
-            .replace(':id', SESSION_ID)
-            .replace(':slug', COURS.slug);
-          return `${methode} ${chemin}`;
-        });
-    });
+    ).flatMap((controleur) =>
+      routesDuControleur(controleur).map(({ methode, chemin }) => {
+        const concret = chemin
+          .replace(':participantId', PARTICIPANT_ID)
+          .replace(':ecranId', ECRAN_ID)
+          .replace(':id', SESSION_ID)
+          .replace(':slug', COURS.slug);
+        return `${methode} ${concret}`;
+      }),
+    );
     const couvertes = ROUTES_FORMATEUR.map(
       (route) => `${route.methode} ${route.chemin}`,
     );

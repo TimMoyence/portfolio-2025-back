@@ -2379,7 +2379,8 @@ Les formes exactes des données publiques sont au § 9.4, les corrigés au § 9.
   fragiles selon le Leitner ; donner au formateur la carte de maîtrise réelle.
 - **Problème résolu** : `DueQuestionsUseCase` compte les séances en jours distincts (`isDue`,
   boîte 1 = 1 séance) : pendant la séance, aucun concept n’est « dû ». La nouvelle fonction de domaine
-  `choisirRappels` le remplace pour cette brique (`DueQuestions` reste pour B2-02 et suivants).
+  `choisirRappels` le remplace pour cette brique. `DueQuestions`, gardé pour une page de révision
+  jamais construite, est retiré le 2026-10-13 avec le lien de la copie qui y menait (décision de Tim).
 - **Règle de sélection** `choisirRappels(participant)`, déterministe :
   1. obligatoires : `b2-01-r-compensation` puis `b2-01-r-multiple-neuf` ;
   2. candidats : concepts ayant au moins une question de la banque non encore répondue, hors

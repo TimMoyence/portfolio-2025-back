@@ -1,12 +1,7 @@
 import { type Paramtype, ValidationPipe } from '@nestjs/common';
+import { OPTIONS_DE_VALIDATION_GLOBALE } from '../../src/common/interfaces/http/traitements-globaux';
 
-export const GLOBAL_VALIDATION_PIPE_OPTIONS = {
-  whitelist: true,
-  forbidNonWhitelisted: true,
-  transform: true,
-};
-
-const validationPipe = new ValidationPipe(GLOBAL_VALIDATION_PIPE_OPTIONS);
+const validationPipe = new ValidationPipe(OPTIONS_DE_VALIDATION_GLOBALE);
 
 function validerEn(type: Paramtype) {
   return async <T>(payload: unknown, metatype: new () => T): Promise<T> =>

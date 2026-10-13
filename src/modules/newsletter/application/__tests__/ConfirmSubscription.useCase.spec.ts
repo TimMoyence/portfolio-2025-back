@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import { ResourceNotFoundError } from '../../../../common/domain/errors/ResourceNotFoundError';
+import { LienInvalideError } from '../../../../common/domain/errors/LienInvalideError';
 import {
   createNewsletterDependances,
   type PreparationDAbonne,
@@ -50,7 +50,7 @@ describe('ConfirmSubscriptionUseCase', () => {
     attendreAucunEffet();
   });
 
-  it('leve ResourceNotFoundError pour un token inconnu', async () => {
+  it('refuse un token inconnu comme tout lien invalide', async () => {
     await attendreTokenInconnuRefuse(repo.findByConfirmToken, (token) =>
       useCase.execute(token),
     );
@@ -87,7 +87,7 @@ describe('ConfirmSubscriptionUseCase', () => {
           Date.now() - 24 * 60 * 60 * 1000,
         );
       }),
-    ).rejects.toBeInstanceOf(ResourceNotFoundError);
+    ).rejects.toBeInstanceOf(LienInvalideError);
     attendreAucunEffet();
   });
 });

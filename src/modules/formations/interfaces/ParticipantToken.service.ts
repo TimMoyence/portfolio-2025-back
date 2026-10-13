@@ -1,6 +1,7 @@
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { egalEnTempsConstant } from '../../../common/domain/crypto/empreintes';
 import { signer } from '../application/SignatureFormations';
+import { appartenanceDuParticipant } from '../domain/AppartenanceDuParticipant';
 import type { IParticipantsRepository } from '../domain/IParticipants.repository';
 import { PARTICIPANTS_REPOSITORY } from '../domain/token';
 
@@ -10,7 +11,14 @@ const GENERATION_LISIBLE = /^(0|[1-9]\d{0,8})$/;
 
 export const EN_TETE_JETON = 'x-participant-token';
 
-interface IdentiteSignee {
+export function jetonDesEntetes(
+  entetes: Readonly<Record<string, unknown>> | undefined,
+): string | undefined {
+  const brut = entetes?.[EN_TETE_JETON];
+  return typeof brut === 'string' ? brut : undefined;
+}
+
+export interface IdentiteSignee {
   readonly participantId: string;
   readonly generation: number;
 }
@@ -79,10 +87,6 @@ export class ParticipantTokenService {
     ].join(SEPARATEUR);
   }
 
-  async verify(sessionId: string, jeton: string | undefined): Promise<string> {
-    return (await this.verifierIdentite(sessionId, jeton)).participantId;
-  }
-
   async verifierIdentite(
     sessionId: string,
     jeton: string | undefined,
@@ -96,14 +100,12 @@ export class ParticipantTokenService {
     if (identite === null) {
       throw new UnauthorizedException('Jeton de participant invalide');
     }
-    const participant = await this.participants.findById(
-      identite.participantId,
+    const { exclusion } = appartenanceDuParticipant(
+      await this.participants.findById(identite.participantId),
+      sessionId,
+      identite.generation,
     );
-    if (
-      participant === null ||
-      participant.sessionId !== sessionId ||
-      participant.generationDeJeton !== identite.generation
-    ) {
+    if (exclusion === 'absent' || exclusion === 'revoque') {
       throw new UnauthorizedException('Jeton de participant revoque');
     }
     return identite;

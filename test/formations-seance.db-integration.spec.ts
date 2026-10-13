@@ -11,6 +11,7 @@ import { tirer } from '../src/modules/formations/domain/cours/Tirage';
 import type { Solution } from '../src/modules/formations/domain/GradingCore';
 import type { AnswerRecord } from '../src/modules/formations/domain/IAnswers.repository';
 import type { RapportSession } from '../src/modules/formations/domain/IFormationMailer.port';
+import { EN_TETE_JETON } from '../src/modules/formations/interfaces/ParticipantToken.service';
 import {
   buildCoursDeClasse,
   creerCatalogueDeTest,
@@ -54,7 +55,6 @@ const CONFUSION_PIEGE = 'raisonnement-additif';
 const FORMATEUR = 'a1111111-1111-4111-8111-111111111111';
 const SECRET = 'secret-de-test-formations-assez-long-1234';
 const SYNTHESE_A = 'synthese-formateur@example.test';
-const EN_TETE_JETON = 'x-participant-token';
 const PERIODE_PIEGE_ETUDIANT = 5;
 const PERIODE_PIEGE_QUESTION = 4;
 const RESTE_PIEGE_QUESTION = 3;

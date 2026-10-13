@@ -19,10 +19,14 @@ export function canTransition(from: SessionState, to: SessionState): boolean {
   return ALLOWED_TRANSITIONS[from].includes(to);
 }
 
-export function assertReponsesOuvertes(etat: SessionState): void {
+export function assertSeanceNonTerminee(etat: SessionState): void {
   if (etat === 'terminee') {
     throw new SessionClosedError();
   }
+}
+
+export function assertReponsesOuvertes(etat: SessionState): void {
+  assertSeanceNonTerminee(etat);
   if (etat !== 'en_cours') {
     throw new SessionNotStartedError();
   }

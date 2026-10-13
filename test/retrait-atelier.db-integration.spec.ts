@@ -3,6 +3,7 @@ import {
   baseMigreeDeLaSuite,
   describeDb,
   inscrireUtilisateur,
+  jouerLaMigration,
   migrationsAnterieuresA,
 } from './helpers/db-integration-datasource';
 
@@ -49,9 +50,7 @@ describeDb('Retrait de l atelier sur une base migree', () => {
     await inscrire('admin@example.com', 'admin');
     await inscrire('homonyme@example.com', 'weathers,teacher');
 
-    await base().transaction((manager) =>
-      new RetireLAtelier1790800000000().up(manager.queryRunner!),
-    );
+    await jouerLaMigration(base(), new RetireLAtelier1790800000000(), 'up');
 
     expect(await tablesPresentes()).toEqual([]);
     expect(await rolesDe('mixte@example.com')).toBe('teacher');

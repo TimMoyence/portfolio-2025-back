@@ -68,7 +68,6 @@ Routes publiques. Hors inscription, chaque appel présente le jeton rendu à l'i
 | `POST`  | `sessions/:id/answers`                 | Corps `{ questionId, valeur, dureeMs }` pour les questions notées ; `201` avec le verdict ; `409` avec un `code` (voir « Refus d'une réponse »).                                                                                                                                                                                                                                                                                      |
 | `POST`  | `sessions/:id/free-responses`          | Corps `{ screenId, activityId, response, dureeMs }` ; `201 { status: 'enregistre' }`, la dernière réponse d'une activité remplace la précédente ; `400` si la réponse est vide ; `409` hors séance en cours.                                                                                                                                                                                                                          |
 | `POST`  | `sessions/:id/incidents`               | Journal d'incidents du poste ; `204`.                                                                                                                                                                                                                                                                                                                                                                                                 |
-| `GET`   | `sessions/:id/due-questions`           | Questions à revoir selon les boîtes de Leitner.                                                                                                                                                                                                                                                                                                                                                                                       |
 | `GET`   | `sessions/:id/stream`                  | Flux SSE de l'étudiant : `etat`, `heartbeat`, `fin`.                                                                                                                                                                                                                                                                                                                                                                                  |
 
 ### Catalogue public
@@ -119,7 +118,7 @@ Les notes, complétions et statistiques ne sont écrites qu'**à la clôture** (
 - **Le plus récent gagne** : au-delà de ses deux flux (participant) ou de ses quatre places (formateur), une ouverture ferme le plus ancien flux du même porteur et le nouveau est accepté. Le flux fermé se termine sans événement `fin`, que le front lirait comme la fin de la séance : un poste encore vivant se reconnecte. Une socket à demi ouverte n'est détectée morte qu'après l'échec des battements, jusqu'à une quinzaine de minutes ; elle ne bloque donc jamais une reconnexion. Seul le plafond de séance refuse en `429`, et seulement quand l'ouverture ne remplace pas un flux du même participant. Un flux formateur abandonné pendant son ouverture ne prend aucune place.
 - **Limites de débit**, par fenêtre d'une minute (`src/modules/formations/interfaces/formations-throttling.ts`) :
   - `join` : 120 par code de séance ; les codes inconnus restent bornés par adresse (`src/modules/formations/interfaces/CodeScanProtection.service.ts`) ;
-  - par participant, clé tirée du jeton après vérification de sa signature : `answers` 60, `free-responses` 60, `incidents` 30, `due-questions` 30, `stream` 30 ouvertures, `sujet` 180 (le poste relit son sujet chaque fois qu'un écran verrouillé ou une correction s'ouvre, `relireLeSujet` dans `cours-etudiant.component.ts` côté front ; le banc `e2e/banc/salle-chargee.spec.ts` éprouve ce plafond) ;
+  - par participant, clé tirée du jeton après vérification de sa signature : `answers` 60, `free-responses` 60, `incidents` 30, `stream` 30 ouvertures, `sujet` 180 (le poste relit son sujet chaque fois qu'un écran verrouillé ou une correction s'ouvre, `relireLeSujet` dans `cours-etudiant.component.ts` côté front ; le banc `e2e/banc/salle-chargee.spec.ts` éprouve ce plafond) ;
   - `control` : 240 par adresse ;
   - lectures du formateur (`LectureDeSeance`, `src/modules/formations/interfaces/formations-acces.ts`) : 240 par adresse, pour que le pupitre et la scène relisent résultats, déroulé et participants à chaque changement d'écran sans tomber sur le throttler global ;
   - toute autre route : 30 par adresse (throttler global, `src/app.module.ts`).
@@ -136,9 +135,8 @@ Quatre risques relevés par la revue de sécurité du 2026-09-24 sont acceptés 
 
 ## Configuration
 
-- `FORMATION_REVIEW_TOKEN_SECRET` (au moins 32 caractères) : signe les jetons de participant et les liens de révision.
+- `FORMATION_REVIEW_TOKEN_SECRET` (au moins 32 caractères) : signe les jetons de participant et les clés d'étudiant.
 - `FORMATION_TEACHER_NOTIFICATION_TO` : destinataire de la synthèse de clôture.
-- `FORMATION_REVIEW_BASE_URL` : base des liens de révision envoyés aux étudiants.
 - `REDIS_URL`, `REDIS_HOST`, `REDIS_PORT` : plafonds de flux partagés (voir ci-dessus).
 
 Les exemples sont dans `deploy/backend.env.example` (production) et `.env.example` (local).

@@ -1,4 +1,4 @@
-import { RequestMethod, ValidationPipe } from '@nestjs/common';
+import { RequestMethod } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
@@ -6,10 +6,9 @@ import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import { Logger } from 'nestjs-pino';
 import { AppModule } from './app.module';
-import { AllExceptionsFilter } from './common/interfaces/filters/all-exceptions.filter';
-import { DomainExceptionFilter } from './common/interfaces/filters/DomainExceptionFilter';
 import { bornerLesCorpsDeRequete } from './common/interfaces/http/corps-de-requete';
 import { ouvrirAuxOrigines } from './common/interfaces/http/cors';
+import { appliquerLesTraitementsGlobaux } from './common/interfaces/http/traitements-globaux';
 import { prefixeApi } from './config/prefixe-api';
 import { logBootstrapStep } from './runtime/log-bootstrap-step';
 
@@ -75,15 +74,7 @@ async function bootstrap() {
     }),
   );
 
-  app.useGlobalFilters(new AllExceptionsFilter(), new DomainExceptionFilter());
-
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: true,
-      transform: true,
-    }),
-  );
+  appliquerLesTraitementsGlobaux(app);
 
   app.setGlobalPrefix(prefixeApi(), {
     exclude: [

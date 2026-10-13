@@ -25,15 +25,16 @@ import type {
   ISessionsRepository,
   SessionRecord,
 } from '../domain/ISessions.repository';
+import { appartenanceDuParticipant } from '../domain/AppartenanceDuParticipant';
 import type { ResultatsEnDirect } from '../domain/contrats/resultats';
 import { etatEnDirect } from '../domain/EtatEnDirect';
-import { assertSessionOwnedBy } from '../domain/SessionOwnership';
 import {
   PARTICIPANTS_REPOSITORY,
   SESSION_STATE_CACHE,
   SESSIONS_REPOSITORY,
   STREAM_CAPACITY,
 } from '../domain/token';
+import { seancePilotablePar } from './SessionAccess';
 
 const INTERVALLE_MS = 500;
 export const DELAI_MIN_BILAN_MS = 1000;
@@ -137,8 +138,8 @@ export class StreamSessionUseCase {
     sessionId: string,
     teacherId: string,
   ): Promise<Observable<MessageEvent>> {
-    const session = assertSessionOwnedBy(
-      await this.sessions.findById(sessionId),
+    const session = await seancePilotablePar(
+      this.sessions,
       sessionId,
       teacherId,
     );
@@ -186,14 +187,12 @@ export class StreamSessionUseCase {
     sessionId: string,
     porteur: PorteurEtudiant,
   ): Promise<RaisonDExclusion | null> {
-    const participant = await this.participants.findById(porteur.participantId);
-    if (participant === null || participant.sessionId !== sessionId) {
-      return 'evince';
-    }
-    if (participant.generationDeJeton !== porteur.generationDeJeton) {
-      return 'revoque';
-    }
-    return participant.evinceLe === null ? null : 'evince';
+    const { exclusion } = appartenanceDuParticipant(
+      await this.participants.findById(porteur.participantId),
+      sessionId,
+      porteur.generationDeJeton,
+    );
+    return exclusion === 'absent' ? 'evince' : exclusion;
   }
 
   private ouvrirFlux(
