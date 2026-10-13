@@ -2,7 +2,6 @@ import {
   Body,
   Controller,
   Get,
-  Headers,
   HttpCode,
   HttpStatus,
   MessageEvent,
@@ -12,7 +11,6 @@ import {
   Put,
   Req,
   Sse,
-  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
@@ -24,7 +22,6 @@ import {
   ApiOperation,
   ApiTags,
   ApiTooManyRequestsResponse,
-  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import type { Request } from 'express';
@@ -32,8 +29,6 @@ import { Observable } from 'rxjs';
 import { Public } from '../../../common/interfaces/auth/public.decorator';
 import { resolveClientIpOrUnknown } from '../../../common/interfaces/security/client-ip.util';
 import { ProtegeContreLesRobots } from '../../../common/interfaces/security/formulaire-public.decorator';
-import type { DueQuestion } from '../application/DueQuestions.useCase';
-import { DueQuestionsUseCase } from '../application/DueQuestions.useCase';
 import { JoinSessionUseCase } from '../application/JoinSession.useCase';
 import { LireSujetUseCase } from '../application/LireSujet.useCase';
 import { RecordIncidentsUseCase } from '../application/RecordIncidents.useCase';
@@ -55,7 +50,7 @@ import {
 } from '../domain/errors/FormationErrors';
 import { CleEtudiantService } from './CleEtudiant.service';
 import { CodeScanProtectionService } from './CodeScanProtection.service';
-import { ParticipantTokenGuard } from './ParticipantToken.guard';
+import { IdentiteDuJeton, RouteParticipant } from './ParticipantToken.guard';
 import { JoinSessionRequestDto } from './dto/join-session.request.dto';
 import { JoinSessionResponseDto } from './dto/join-session.response.dto';
 import { FreeResponseSavedResponseDto } from './dto/free-responses.response.dto';
@@ -83,14 +78,13 @@ import {
   LIMITE_PIECES_JOINTES_PAR_PARTICIPANT,
   LIMITE_RAPPELS_PAR_PARTICIPANT,
   LIMITE_REPONSES_PAR_PARTICIPANT,
-  LIMITE_REVISION_PAR_PARTICIPANT,
   LIMITE_SUJET_PAR_PARTICIPANT,
   LIMITE_TENTATIVES_PAR_PARTICIPANT,
   LimiteParParticipant,
   suivreParCodeDeSession,
 } from './formations-throttling';
 import {
-  EN_TETE_JETON,
+  type IdentiteSignee,
   ParticipantTokenService,
 } from './ParticipantToken.service';
 import { TelechargementDePieceJointe } from './piece-jointe-telechargee';
@@ -110,7 +104,6 @@ export class FormationsStudentController {
     private readonly lireRappels: LireRappelsUseCase,
     private readonly recordIncidents: RecordIncidentsUseCase,
     private readonly streamSession: StreamSessionUseCase,
-    private readonly dueQuestions: DueQuestionsUseCase,
     private readonly lireSujet: LireSujetUseCase,
     private readonly telechargerPieceJointe: TelechargerPieceJointeUseCase,
     private readonly saveFreeResponse: SaveFreeResponseUseCase,
@@ -180,13 +173,12 @@ export class FormationsStudentController {
     description:
       'Ecran non encore projete par le formateur : code ECRAN_NON_SERVI',
   })
-  @ApiUnauthorizedResponse({ description: 'Jeton de participant invalide' })
+  @RouteParticipant()
   async answer(
     @Param('id', ParseUUIDPipe) sessionId: string,
-    @Headers(EN_TETE_JETON) jeton: string | undefined,
+    @IdentiteDuJeton() { participantId }: IdentiteSignee,
     @Body() dto: SubmitAnswerRequestDto,
   ): Promise<SubmitAnswerResponseDto> {
-    const participantId = await this.tokens.verify(sessionId, jeton);
     const verdict = await this.submitAnswer.execute({
       sessionId,
       participantId,
@@ -220,13 +212,12 @@ export class FormationsStudentController {
     description:
       'Reponse refusee, cause dans le champ code du corps : SEANCE_NON_DEMARREE ou SEANCE_TERMINEE',
   })
-  @ApiUnauthorizedResponse({ description: 'Jeton de participant invalide' })
+  @RouteParticipant()
   async freeResponse(
     @Param('id', ParseUUIDPipe) sessionId: string,
-    @Headers(EN_TETE_JETON) jeton: string | undefined,
+    @IdentiteDuJeton() { participantId }: IdentiteSignee,
     @Body() dto: SaveFreeResponseRequestDto,
   ): Promise<FreeResponseSavedResponseDto> {
-    const participantId = await this.tokens.verify(sessionId, jeton);
     await this.saveFreeResponse.execute({
       sessionId,
       participantId,
@@ -252,13 +243,12 @@ export class FormationsStudentController {
     description:
       'Production refusee, cause dans le champ code du corps : SEANCE_NON_DEMARREE, SEANCE_TERMINEE, ECRAN_NON_SERVI, REPONSE_DEJA_ENREGISTREE ou REPRISES_EPUISEES',
   })
-  @ApiUnauthorizedResponse({ description: 'Jeton de participant invalide' })
+  @RouteParticipant()
   async production(
     @Param('id', ParseUUIDPipe) sessionId: string,
-    @Headers(EN_TETE_JETON) jeton: string | undefined,
+    @IdentiteDuJeton() { participantId }: IdentiteSignee,
     @Body() dto: SubmitProductionRequestDto,
   ): Promise<SubmitProductionResponseDto> {
-    const participantId = await this.tokens.verify(sessionId, jeton);
     return this.submitProduction.execute({
       sessionId,
       participantId,
@@ -279,14 +269,13 @@ export class FormationsStudentController {
     description:
       'Tentative refusee, cause dans le champ code du corps : ECRAN_NON_SERVI, ENIGME_VERROUILLEE, ENIGME_DEJA_RESOLUE ou TENTATIVES_EPUISEES',
   })
-  @ApiUnauthorizedResponse({ description: 'Jeton de participant invalide' })
+  @RouteParticipant()
   async tentativeEnigme(
     @Param('id', ParseUUIDPipe) sessionId: string,
     @Param('parcoursId') parcoursId: string,
-    @Headers(EN_TETE_JETON) jeton: string | undefined,
+    @IdentiteDuJeton() { participantId }: IdentiteSignee,
     @Body() dto: TenterEnigmeRequestDto,
   ): Promise<TentativeEnigmeResponseDto> {
-    const participantId = await this.tokens.verify(sessionId, jeton);
     return this.tenterEnigme.execute({
       sessionId,
       participantId,
@@ -309,14 +298,13 @@ export class FormationsStudentController {
     description:
       'Jalon refuse, cause dans le champ code du corps : SEANCE_NON_DEMARREE, SEANCE_TERMINEE ou ECRAN_NON_SERVI',
   })
-  @ApiUnauthorizedResponse({ description: 'Jeton de participant invalide' })
+  @RouteParticipant()
   async jalon(
     @Param('id', ParseUUIDPipe) sessionId: string,
     @Param('sondageId') sondageId: string,
-    @Headers(EN_TETE_JETON) jeton: string | undefined,
+    @IdentiteDuJeton() { participantId }: IdentiteSignee,
     @Body() dto: DeclarerJalonRequestDto,
   ): Promise<void> {
-    const participantId = await this.tokens.verify(sessionId, jeton);
     await this.declarerJalon.execute({
       sessionId,
       participantId,
@@ -334,14 +322,13 @@ export class FormationsStudentController {
   @ApiCreatedResponse({ type: StrategiesDefiResponseDto })
   @ApiNotFoundResponse({ description: 'Defi absent du cours' })
   @ApiBadRequestResponse({ description: 'Tentative vide' })
-  @ApiUnauthorizedResponse({ description: 'Jeton de participant invalide' })
+  @RouteParticipant()
   async tentativeDeDefi(
     @Param('id', ParseUUIDPipe) sessionId: string,
     @Param('defiId') defiId: string,
-    @Headers(EN_TETE_JETON) jeton: string | undefined,
+    @IdentiteDuJeton() { participantId }: IdentiteSignee,
     @Body() dto: SubmitDefiRequestDto,
   ): Promise<StrategiesDefiResponseDto> {
-    const participantId = await this.tokens.verify(sessionId, jeton);
     return this.defis.tenter({
       sessionId,
       participantId,
@@ -361,37 +348,34 @@ export class FormationsStudentController {
   @ApiNotFoundResponse({
     description: 'Defi inconnu, ou aucune tentative envoyee',
   })
-  @ApiUnauthorizedResponse({ description: 'Jeton de participant invalide' })
+  @RouteParticipant()
   async strategiesDuDefi(
     @Param('id', ParseUUIDPipe) sessionId: string,
     @Param('defiId') defiId: string,
-    @Headers(EN_TETE_JETON) jeton: string | undefined,
+    @IdentiteDuJeton() { participantId }: IdentiteSignee,
   ): Promise<StrategiesDefiResponseDto> {
-    const participantId = await this.tokens.verify(sessionId, jeton);
     return this.defis.strategies(sessionId, participantId, defiId);
   }
 
   @LimiteParParticipant(LIMITE_ETAT_PAR_PARTICIPANT)
-  @UseGuards(ParticipantTokenGuard)
   @Get('sessions/:id/moi')
   @ApiOperation({
     summary:
       'Rend l etat du seul participant porte par le jeton, pour reprendre apres un rechargement',
   })
   @ApiOkResponse({ type: EtatParticipantResponseDto })
-  @ApiUnauthorizedResponse({ description: 'Jeton de participant invalide' })
+  @RouteParticipant()
   async monEtat(
     @Param('id', ParseUUIDPipe) sessionId: string,
-    @Req() request: Request,
+    @IdentiteDuJeton() { participantId }: IdentiteSignee,
   ): Promise<EtatParticipantResponseDto> {
     return this.lireEtatParticipant.execute({
       sessionId,
-      participantId: request.participantId!,
+      participantId,
     }) as Promise<EtatParticipantResponseDto>;
   }
 
   @LimiteParParticipant(LIMITE_RAPPELS_PAR_PARTICIPANT)
-  @UseGuards(ParticipantTokenGuard)
   @Get('sessions/:id/rappels')
   @ApiOperation({
     summary:
@@ -403,14 +387,14 @@ export class FormationsStudentController {
     description:
       'Rappels refuses, cause dans le champ code du corps : ECRAN_NON_SERVI',
   })
-  @ApiUnauthorizedResponse({ description: 'Jeton de participant invalide' })
+  @RouteParticipant()
   async rappels(
     @Param('id', ParseUUIDPipe) sessionId: string,
-    @Req() request: Request,
+    @IdentiteDuJeton() { participantId }: IdentiteSignee,
   ): Promise<RappelsResponseDto> {
     return this.lireRappels.execute({
       sessionId,
-      participantId: request.participantId!,
+      participantId,
     }) as Promise<RappelsResponseDto>;
   }
 
@@ -419,16 +403,15 @@ export class FormationsStudentController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Remonte le journal d incidents du poste etudiant' })
   @ApiNoContentResponse({ description: 'Incidents enregistres' })
-  @ApiUnauthorizedResponse({ description: 'Jeton de participant invalide' })
+  @RouteParticipant()
   @ApiConflictResponse({
     description: 'SEANCE_TERMINEE : la seance est close',
   })
   async incidents(
     @Param('id', ParseUUIDPipe) sessionId: string,
-    @Headers(EN_TETE_JETON) jeton: string | undefined,
+    @IdentiteDuJeton() { participantId }: IdentiteSignee,
     @Body() dto: ReportIncidentsRequestDto,
   ): Promise<void> {
-    const participantId = await this.tokens.verify(sessionId, jeton);
     await this.recordIncidents.execute(
       sessionId,
       participantId,
@@ -442,27 +425,7 @@ export class FormationsStudentController {
     );
   }
 
-  @LimiteParParticipant(LIMITE_REVISION_PAR_PARTICIPANT)
-  @Get('sessions/:id/due-questions')
-  @ApiOperation({
-    summary: 'Liste les questions a revoir, de la premiere boite a la derniere',
-  })
-  @ApiOkResponse({
-    description: 'Questions dues, sans aucune valeur de bareme',
-  })
-  @ApiUnauthorizedResponse({ description: 'Jeton de participant invalide' })
-  async questionsDues(
-    @Param('id', ParseUUIDPipe) sessionId: string,
-    @Headers(EN_TETE_JETON) jeton: string | undefined,
-  ): Promise<{ questions: readonly DueQuestion[] }> {
-    const participantId = await this.tokens.verify(sessionId, jeton);
-    return {
-      questions: await this.dueQuestions.execute({ sessionId, participantId }),
-    };
-  }
-
   @LimiteParParticipant(LIMITE_SUJET_PAR_PARTICIPANT)
-  @UseGuards(ParticipantTokenGuard)
   @Get('sessions/:id/sujet')
   @ApiOperation({
     summary: 'Sert au participant le sujet de son propre tirage',
@@ -474,24 +437,20 @@ export class FormationsStudentController {
   @ApiConflictResponse({
     description: 'Le cours a change depuis l ouverture de la seance',
   })
-  @ApiUnauthorizedResponse({ description: 'Jeton de participant invalide' })
+  @RouteParticipant()
   async sujet(
     @Param('id', ParseUUIDPipe) sessionId: string,
-    @Req() request: Request,
+    @IdentiteDuJeton() { participantId }: IdentiteSignee,
   ): Promise<CoursPublic> {
-    return this.lireSujet.execute({
-      sessionId,
-      participantId: request.participantId!,
-    });
+    return this.lireSujet.execute({ sessionId, participantId });
   }
 
   @LimiteParParticipant(LIMITE_PIECES_JOINTES_PAR_PARTICIPANT)
-  @UseGuards(ParticipantTokenGuard)
   @Get('sessions/:id/pieces-jointes/:ecranId')
   @TelechargementDePieceJointe(
     'Sert au participant le classeur réservé d un écran déjà projeté',
   )
-  @ApiUnauthorizedResponse({ description: 'Jeton de participant invalide' })
+  @RouteParticipant()
   @ApiNotFoundResponse({
     description:
       'Écran pas encore projeté au poste, ou dont l’écran corrigé reste caché (ECRAN_NON_SERVI) ; écran sans classeur réservé (PIECE_JOINTE_INTROUVABLE)',
@@ -506,31 +465,30 @@ export class FormationsStudentController {
   pieceJointe(
     @Param('id', ParseUUIDPipe) sessionId: string,
     @Param('ecranId') ecranId: string,
-    @Req() request: Request,
+    @IdentiteDuJeton() { participantId }: IdentiteSignee,
   ): Promise<ClasseurTelecharge> {
     return this.telechargerPieceJointe.pourLeParticipant(
-      { sessionId, participantId: request.participantId! },
+      { sessionId, participantId },
       ecranId,
     );
   }
 
   @LimiteParParticipant(LIMITE_FLUX_PAR_PARTICIPANT)
-  @UseGuards(ParticipantTokenGuard)
   @Sse('sessions/:id/stream')
   @ApiOperation({ summary: 'Flux temps reel de l etat de la session' })
-  @ApiUnauthorizedResponse({ description: 'Jeton de participant invalide' })
+  @RouteParticipant()
   @ApiTooManyRequestsResponse({
     description:
       'Seance pleine (cent flux etudiants) ou trop d ouvertures par minute ; au-dela de deux flux, le plus ancien du participant est ferme',
   })
   stream(
     @Param('id', ParseUUIDPipe) id: string,
-    @Req() request: Request,
+    @IdentiteDuJeton() identite: IdentiteSignee,
   ): Observable<MessageEvent> {
     return this.streamSession.execute(
       id,
-      request.participantId!,
-      request.generationDeJeton!,
+      identite.participantId,
+      identite.generation,
     );
   }
 }

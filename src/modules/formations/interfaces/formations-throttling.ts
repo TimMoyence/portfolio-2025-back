@@ -1,5 +1,5 @@
 import { Throttle } from '@nestjs/throttler';
-import { EN_TETE_JETON, identiteSignee } from './ParticipantToken.service';
+import { identiteSignee, jetonDesEntetes } from './ParticipantToken.service';
 
 export const FENETRE_THROTTLE_MS = 60_000;
 export const LIMITE_CONTROLE_PAR_MINUTE = 240;
@@ -8,7 +8,6 @@ export const LIMITE_JOIN_PAR_CODE = 120;
 export const LIMITE_REPONSES_PAR_PARTICIPANT = 60;
 export const LIMITE_INCIDENTS_PAR_PARTICIPANT = 30;
 export const LIMITE_FLUX_PAR_PARTICIPANT = 30;
-export const LIMITE_REVISION_PAR_PARTICIPANT = 30;
 export const LIMITE_SUJET_PAR_PARTICIPANT = 180;
 export const LIMITE_PIECES_JOINTES_PAR_PARTICIPANT = 20;
 export const LIMITE_TENTATIVES_PAR_PARTICIPANT = 20;
@@ -42,14 +41,15 @@ export function suivreParCodeDeSession(req: Record<string, unknown>): string {
 }
 
 export function suivreParParticipant(req: Record<string, unknown>): string {
-  const entetes = req.headers as Record<string, unknown> | undefined;
-  const jeton = entetes?.[EN_TETE_JETON];
+  const jeton = jetonDesEntetes(
+    req.headers as Record<string, unknown> | undefined,
+  );
   const params = req.params as Record<string, unknown> | undefined;
   const sessionId = params?.id;
-  if (typeof jeton !== 'string' || typeof sessionId !== 'string') {
+  if (jeton === undefined || typeof sessionId !== 'string') {
     return parAdresse(req);
   }
-  const identite = identiteSigneeSansLever(sessionId, jeton);
+  const identite = identiteSignee(sessionId, jeton);
   return identite === null
     ? parAdresse(req)
     : `participant:${identite.participantId}:${identite.generation}`;
@@ -67,17 +67,6 @@ export function LimiteParParticipant(limit: number): MethodDecorator {
       getTracker: suivreParParticipant,
     },
   });
-}
-
-function identiteSigneeSansLever(
-  sessionId: string,
-  jeton: string,
-): ReturnType<typeof identiteSignee> {
-  try {
-    return identiteSignee(sessionId, jeton);
-  } catch {
-    return null;
-  }
 }
 
 function parAdresse(req: Record<string, unknown>): string {

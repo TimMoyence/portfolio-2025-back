@@ -1,4 +1,4 @@
-import type { CallHandler } from '@nestjs/common';
+import { type CallHandler, Logger } from '@nestjs/common';
 import { of, throwError } from 'rxjs';
 import { firstValueFrom, lastValueFrom } from 'rxjs';
 import {
@@ -6,11 +6,13 @@ import {
   createHttpExecutionContext,
   createRpcExecutionContext,
 } from '../../../../test/factories/execution-context.factory';
+import { CENSURE } from '../http/url-journalisable';
 import { InMemorySecurityEventsStore } from './in-memory-security-events-store';
 import type { SecurityConfig } from './security.config';
 import { SuspiciousRequestInterceptor } from './suspicious-request.interceptor';
 
 const LOOPBACK_IPV4 = '127.0.0.1';
+const JETON_DE_LIEN = '550e8400-e29b-41d4-a716-446655440000';
 
 const HEADLESS_CHROME_HEADERS = {
   'user-agent':
@@ -31,6 +33,7 @@ interface FakeRequest {
   method: string;
   url: string;
   originalUrl?: string;
+  params?: Record<string, string>;
   headers: Record<string, string | undefined>;
   ip?: string;
   socket?: { remoteAddress?: string };
@@ -316,4 +319,50 @@ describe('SuspiciousRequestInterceptor', () => {
       intercept(req, 404, undefined, brokenInterceptor),
     ).resolves.toEqual({});
   });
+
+  it.each([
+    [
+      'en requete',
+      `/api/v1/portfolio25/newsletter/confirm?token=${JETON_DE_LIEN}`,
+      {},
+      `/api/v1/portfolio25/newsletter/confirm?token=${CENSURE}`,
+    ],
+    [
+      'en chemin',
+      `/api/v1/portfolio25/lead-magnets/toolkit/${JETON_DE_LIEN}`,
+      { token: JETON_DE_LIEN },
+      `/api/v1/portfolio25/lead-magnets/toolkit/${CENSURE}`,
+    ],
+  ])(
+    'n enregistre ni n ecrit le jeton d un lien porte %s',
+    async (_cas, url, params, cheminCensure) => {
+      const avertissements = jest
+        .spyOn(Logger.prototype, 'warn')
+        .mockImplementation(() => undefined);
+
+      try {
+        await intercept(
+          {
+            method: 'GET',
+            url,
+            originalUrl: url,
+            params,
+            headers: HEADLESS_CHROME_HEADERS,
+            ip: '203.0.113.42',
+          },
+          404,
+        );
+
+        expect((await topIPs())[0]?.lastPath).toBe(cheminCensure);
+        expect(avertissements).toHaveBeenCalledWith(
+          expect.stringContaining(cheminCensure),
+        );
+        expect(JSON.stringify(avertissements.mock.calls)).not.toContain(
+          JETON_DE_LIEN,
+        );
+      } finally {
+        avertissements.mockRestore();
+      }
+    },
+  );
 });

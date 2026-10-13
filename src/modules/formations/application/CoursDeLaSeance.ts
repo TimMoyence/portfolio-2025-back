@@ -5,25 +5,19 @@ import {
 } from '../domain/cours/EcranServi';
 import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
 import { assertPhaseOuverte } from '../domain/cours/PilotageEcrans';
-import {
-  CoursInconnuError,
-  SessionNotFoundError,
-} from '../domain/errors/FormationErrors';
+import { CoursInconnuError } from '../domain/errors/FormationErrors';
 import type {
   ISessionsRepository,
   SessionRecord,
 } from '../domain/ISessions.repository';
+import { assertSeanceTrouvee } from '../domain/SessionOwnership';
 import { assertReponsesOuvertes } from '../domain/SessionState';
 
 export async function seanceExistante(
   sessions: ISessionsRepository,
   sessionId: string,
 ): Promise<SessionRecord> {
-  const session = await sessions.findById(sessionId);
-  if (!session) {
-    throw new SessionNotFoundError(sessionId);
-  }
-  return session;
+  return assertSeanceTrouvee(await sessions.findById(sessionId), sessionId);
 }
 
 export async function seanceOuverteAuxReponses(

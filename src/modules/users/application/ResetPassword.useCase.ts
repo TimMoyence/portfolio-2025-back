@@ -1,6 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { InvalidInputError } from '../../../common/domain/errors/InvalidInputError';
-import { TokenHash } from '../domain/TokenHash';
+import { LienInvalideError } from '../../../common/domain/errors/LienInvalideError';
+import { jetonDeLien } from '../../../common/domain/lien-avec-jeton';
+import { FORME_D_UN_JETON_EMIS, TokenHash } from '../domain/TokenHash';
 import type { IPasswordResetTokensRepository } from '../domain/IPasswordResetTokens.repository';
 import type { IUsersRepository } from '../domain/IUsers.repository';
 import {
@@ -16,9 +17,6 @@ export interface ResetPasswordResult {
 
 @Injectable()
 export class ResetPasswordUseCase {
-  private readonly invalidTokenMessage =
-    'Le lien de reinitialisation est invalide ou expire.';
-
   constructor(
     @Inject(PASSWORD_RESET_TOKENS_REPOSITORY)
     private readonly passwordResetTokensRepository: IPasswordResetTokensRepository,
@@ -28,18 +26,20 @@ export class ResetPasswordUseCase {
   ) {}
 
   async execute(dto: ResetPasswordCommand): Promise<ResetPasswordResult> {
-    const tokenHash = TokenHash.fromRaw(dto.token).value;
+    const tokenHash = TokenHash.fromRaw(
+      jetonDeLien(dto.token, FORME_D_UN_JETON_EMIS),
+    ).value;
     const token =
       await this.passwordResetTokensRepository.findActiveByTokenHash(tokenHash);
 
     if (!token || !token.id) {
-      throw new InvalidInputError(this.invalidTokenMessage);
+      throw new LienInvalideError();
     }
 
     const user = await this.usersRepository.findById(token.userId);
 
     if (!user || !user.isActive || !user.id) {
-      throw new InvalidInputError(this.invalidTokenMessage);
+      throw new LienInvalideError();
     }
 
     const passwordHash = await this.passwordService.hash(dto.newPassword);

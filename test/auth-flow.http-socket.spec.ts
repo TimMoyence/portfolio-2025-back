@@ -99,6 +99,15 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
       .get('/api/auth/me')
       .set('Authorization', `Bearer ${accessToken}`);
 
+  const attendreJetonDAccesRefuse = async (accessToken: string) => {
+    const res = await consulterMonProfil(accessToken).expect(401);
+
+    expect(res.body).toMatchObject({
+      status: 401,
+      detail: 'Invalid or expired token',
+    });
+  };
+
   function extractRefreshCookie(res: request.Response): string | undefined {
     const cookies = res.headers['set-cookie'] as unknown as
       | string[]
@@ -180,15 +189,14 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
   it('GET /api/auth/me sans header Authorization retourne 401', async () => {
     const res = await request(getHttpServer()).get('/api/auth/me').expect(401);
 
-    expect(res.body).toHaveProperty('message');
+    expect(res.body).toMatchObject({
+      status: 401,
+      detail: 'Missing or invalid authorization header',
+    });
   });
 
   it('GET /api/auth/me avec un token bidon retourne 401', async () => {
-    const res = await consulterMonProfil(
-      'token-bidon-totalement-invalide',
-    ).expect(401);
-
-    expect(res.body).toHaveProperty('message');
+    await attendreJetonDAccesRefuse('token-bidon-totalement-invalide');
   });
 
   it('GET /api/auth/me avec un Bearer signe par un autre secret retourne 401', async () => {
@@ -203,9 +211,7 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
       roles: [],
     });
 
-    const res = await consulterMonProfil(otherSigned.token).expect(401);
-
-    expect(res.body).toHaveProperty('message');
+    await attendreJetonDAccesRefuse(otherSigned.token);
   });
 
   it('POST /api/auth/refresh retourne un nouveau couple de tokens', async () => {
@@ -283,20 +289,6 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
       expect(authStubs.verifyEmailUseCase.execute).toHaveBeenCalledWith(
         JETON_EMIS,
       );
-    });
-
-    it.each([
-      ['sans jeton', ''],
-      ['avec un jeton vide', '?token='],
-      ['avec un jeton repete', `?token=${JETON_EMIS}&token=${JETON_EMIS}`],
-      ['avec un jeton hors hexadecimal', `?token=${'z'.repeat(64)}`],
-      ['avec un jeton tronque', `?token=${JETON_EMIS.slice(1)}`],
-    ])('refuse en 400 une requete %s', async (_cas, query) => {
-      await request(getHttpServer())
-        .get(`/api/auth/verify-email${query}`)
-        .expect(400);
-
-      expect(authStubs.verifyEmailUseCase.execute).not.toHaveBeenCalled();
     });
   });
 });

@@ -27,8 +27,10 @@ import {
   PhaseNonMonotoneError,
   PilotageIncompatibleError,
   RevisionDeSeanceObsoleteError,
+  SessionClosedError,
   SessionNotOwnedError,
 } from '../../domain/errors/FormationErrors';
+import { verifierSeanceIntrouvable } from '../../../../../test/helpers/gardes-de-seance';
 
 type Commande = Parameters<ControlSessionUseCase['apply']>[2];
 type ErreurAttendue = Parameters<ReturnType<typeof expect>['toThrow']>[0];
@@ -146,8 +148,14 @@ describe('ControlSessionUseCase', () => {
 
   it('refuse de piloter une session terminee', async () => {
     b.seanceLue({ etat: 'terminee' });
-    await expect(b.piloter({ ecran: 2 })).rejects.toThrow();
+    await b.refuseSansEffet(b.piloter({ ecran: 2 }), SessionClosedError);
   });
+
+  verifierSeanceIntrouvable(() => ({
+    sessions: b.sessions,
+    executer: () => b.piloter({ ecran: 2 }),
+    effetsInterdits: () => [b.sessions.update, b.cache.publish],
+  }));
 
   it('refuse de changer l ecran sans etre le formateur de la session', async () => {
     await b.refuseSansEffet(
@@ -410,6 +418,17 @@ describe('ControlSessionUseCase', () => {
     it('refuse de redemarrer une session deja en cours', async () => {
       await b.refuseSansEffet(demarrer(), InvalidStateTransitionError);
     });
+
+    it('refuse de demarrer une session terminee', async () => {
+      b.seanceLue({ etat: 'terminee' });
+      await b.refuseSansEffet(demarrer(), SessionClosedError);
+    });
+
+    verifierSeanceIntrouvable(() => ({
+      sessions: b.sessions,
+      executer: () => demarrer(),
+      effetsInterdits: () => [b.sessions.update, b.cache.publish],
+    }));
   });
 });
 

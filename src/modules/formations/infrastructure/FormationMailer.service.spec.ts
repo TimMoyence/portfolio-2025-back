@@ -34,7 +34,6 @@ function buildCopie(overrides: Partial<CopieEtudiant> = {}): CopieEtudiant {
     courseSlug: 'b1-09-interets-composes',
     code: '4271',
     participant: buildRapportParticipant(),
-    lienRevision: 'https://asilidesign.fr/cours/revision?token=abc123',
     ...overrides,
   };
 }
@@ -56,11 +55,7 @@ describe('FormationMailerService', () => {
 
     const service = new FormationMailerService();
     await service.sendSyntheseFormateur('prof@example.com', buildRapport());
-    await service.sendCopieEtudiant(
-      buildCopie({
-        lienRevision: 'https://asilidesign.fr/cours/revision?token=abc',
-      }),
-    );
+    await service.sendCopieEtudiant(buildCopie());
 
     expect(mockedCreateTransport).not.toHaveBeenCalled();
   });
@@ -161,16 +156,19 @@ describe('FormationMailerService', () => {
     const copieAvec = (participant: Partial<RapportParticipant>) =>
       copie({ participant: buildRapportParticipant(participant) });
 
-    it('envoie la copie au participant avec un lien de revision', async () => {
+    it('envoie sa copie au participant, sans lien vers une page de revision qui n existe pas', async () => {
       const attendue = buildCopie();
 
       const mail = await copie();
 
       expect(smtp.transporteur().sendMail).toHaveBeenCalledTimes(1);
       expect(mail.to).toBe(attendue.participant.email);
-      expect(mail.text).toContain(attendue.lienRevision);
-      expect(mail.html).toContain(attendue.lienRevision);
       expect(mail.subject).toContain(attendue.courseSlug);
+      for (const rendu of [mail.text, mail.html]) {
+        expect(rendu).not.toContain('Reprendre mon entraînement');
+        expect(rendu).not.toMatch(/https?:\/\//);
+      }
+      expect(mail.html).not.toContain('<a ');
     });
 
     it('écrit la note sur 20 au dixième dans la copie', async () => {
@@ -249,13 +247,6 @@ describe('FormationMailerService', () => {
       const mail = await copieAvec({ prenom: 'Bri<script>an' });
 
       attendreScriptEchappe(mail.html);
-    });
-
-    it('neutralise un lien de revision hors http/https', async () => {
-      const mail = await copie({ lienRevision: 'javascript:alert(1)' });
-
-      expect(mail.html).not.toContain('javascript:alert');
-      expect(mail.html).toContain('href="#"');
     });
   });
 });

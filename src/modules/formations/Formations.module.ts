@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CloseSessionUseCase } from './application/CloseSession.useCase';
 import { ControlSessionUseCase } from './application/ControlSession.useCase';
-import { DueQuestionsUseCase } from './application/DueQuestions.useCase';
 import { GetSessionResultsUseCase } from './application/GetSessionResults.useCase';
 import { JoinSessionUseCase } from './application/JoinSession.useCase';
 import { LireCoursPublicUseCase } from './application/LireCoursPublic.useCase';
@@ -150,7 +149,6 @@ import { ParticipantTokenService } from './interfaces/ParticipantToken.service';
       provide: STREAM_CAPACITY,
       useClass: StreamCapacityService,
     },
-    DueQuestionsUseCase,
     LireSujetUseCase,
     LireDerouleUseCase,
     TelechargerPieceJointeUseCase,

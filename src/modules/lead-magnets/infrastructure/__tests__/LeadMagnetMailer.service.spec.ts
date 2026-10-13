@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import { buildLeadMagnetRequest } from '../../../../../test/factories/lead-magnet-request.factory';
 import {
   mailSimule,
@@ -56,5 +57,18 @@ describe('LeadMagnetMailerService', () => {
     expect(mail.attachments?.map((piece) => piece.filename)).toEqual([
       'guide-ia-solopreneurs.pdf',
     ]);
+  });
+
+  it('envoie le lien de la page privee du toolkit, qui porte le jeton d acces en dernier segment', async () => {
+    const accessToken = randomUUID();
+
+    await new LeadMagnetMailerService().sendToolkitEmail(
+      buildLeadMagnetRequest({ accessToken }),
+      PDF,
+    );
+
+    expect(mailSimule().text).toContain(
+      `https://asilidesign.fr/formations/ia-solopreneurs/toolkit/${accessToken}\n`,
+    );
   });
 });

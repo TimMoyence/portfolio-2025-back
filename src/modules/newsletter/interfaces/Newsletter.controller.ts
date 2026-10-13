@@ -5,14 +5,11 @@ import {
   HttpCode,
   HttpStatus,
   Logger,
-  NotFoundException,
   Post,
-  Query,
 } from '@nestjs/common';
 import {
   ApiAcceptedResponse,
   ApiBadRequestResponse,
-  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -30,16 +27,10 @@ import {
   FormulairePublic,
   LienPublic,
 } from '../../../common/interfaces/security/formulaire-public.decorator';
-
-/**
- * Regex UUID v4 stricte (RFC 4122). Position 14 = `4` (version bit),
- * position 19 = `[89ab]` (variant bits). `ParseUUIDPipe` aurait repondu
- * 400 — ce qui constitue un oracle d'enumeration pour differencier
- * "token non conforme" d'un "token inconnu". On filtre ici et on
- * uniformise en 404 pour ne pas fuiter l'information aux bots.
- */
-const UUID_V4_REGEX =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+import {
+  JetonDuLienEnRequete,
+  RefusDeLienDocumente,
+} from '../../../common/interfaces/security/jeton-de-lien.pipe';
 
 @ApiTags('newsletter')
 @Controller('newsletter')
@@ -86,11 +77,10 @@ export class NewsletterController {
       'Confirme une inscription newsletter via magic link (acces public)',
   })
   @ApiOkResponse({ description: 'Inscription confirmee' })
-  @ApiNotFoundResponse({ description: 'Token invalide ou expire' })
+  @RefusDeLienDocumente()
   async confirmEndpoint(
-    @Query('token') token: string,
+    @JetonDuLienEnRequete() token: string,
   ): Promise<{ status: string }> {
-    this.assertValidToken(token);
     const result = await this.confirm.execute(token);
     return { status: result.status };
   }
@@ -101,9 +91,9 @@ export class NewsletterController {
     summary: 'Desabonne un utilisateur via son token (acces public)',
   })
   @ApiOkResponse({ description: 'Desabonnement confirme' })
-  @ApiNotFoundResponse({ description: 'Token invalide ou expire' })
+  @RefusDeLienDocumente()
   async unsubscribeEndpoint(
-    @Query('token') token: string,
+    @JetonDuLienEnRequete() token: string,
   ): Promise<{ status: string }> {
     return this.handleUnsubscribe(token, { sendAck: true });
   }
@@ -124,9 +114,9 @@ export class NewsletterController {
     summary: 'Desabonnement en un clic RFC 8058 (declenche par le client mail)',
   })
   @ApiOkResponse({ description: 'Desabonnement confirme' })
-  @ApiNotFoundResponse({ description: 'Token invalide ou expire' })
+  @RefusDeLienDocumente()
   async unsubscribeOneClickEndpoint(
-    @Query('token') token: string,
+    @JetonDuLienEnRequete() token: string,
   ): Promise<{ status: string }> {
     this.logger.log('Newsletter one-click unsubscribe received');
     return this.handleUnsubscribe(token, { sendAck: false });
@@ -136,14 +126,7 @@ export class NewsletterController {
     token: string,
     options: UnsubscribeNewsletterOptions,
   ): Promise<{ status: string }> {
-    this.assertValidToken(token);
     const result = await this.unsubscribe.execute(token, options);
     return { status: result.status };
-  }
-
-  private assertValidToken(token: string | undefined): void {
-    if (!token || !UUID_V4_REGEX.test(token)) {
-      throw new NotFoundException('Invalid or expired token');
-    }
   }
 }

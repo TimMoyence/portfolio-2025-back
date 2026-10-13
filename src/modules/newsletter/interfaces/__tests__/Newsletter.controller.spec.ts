@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import { NotFoundException } from '@nestjs/common';
 import {
   buildNewsletterSubscriber,
   buildSubscribeNewsletterCommand,
@@ -58,14 +57,6 @@ describe('NewsletterController', () => {
     );
   });
 
-  const attendreTokenRefuse = async (
-    reponse: Promise<unknown>,
-    useCase: { execute: unknown },
-  ) => {
-    await expect(reponse).rejects.toThrow(NotFoundException);
-    expect(useCase.execute).not.toHaveBeenCalled();
-  };
-
   const attendreDesabonnementAvecAccuse = async () => {
     const result = await controller.unsubscribeEndpoint(VALID_TOKEN);
 
@@ -104,16 +95,6 @@ describe('NewsletterController', () => {
       expect(mocks.confirmUC.execute).toHaveBeenCalledWith(VALID_TOKEN);
       expect(result.status).toBeDefined();
     });
-
-    it.each([
-      ['un token malformed', 'not-a-uuid'],
-      ['un token absent', undefined as unknown as string],
-    ])('leve NotFoundException (404) pour %s', async (_cas, token) => {
-      await attendreTokenRefuse(
-        controller.confirmEndpoint(token),
-        mocks.confirmUC,
-      );
-    });
   });
 
   describe('GET /newsletter/unsubscribe', () => {
@@ -121,16 +102,6 @@ describe('NewsletterController', () => {
       const result = await attendreDesabonnementAvecAccuse();
 
       expect(result.status).toBeDefined();
-    });
-
-    it.each([
-      ['un token malformed', 'invalid-token'],
-      ['une chaine vide', ''],
-    ])('leve NotFoundException (404) pour %s', async (_cas, token) => {
-      await attendreTokenRefuse(
-        controller.unsubscribeEndpoint(token),
-        mocks.unsubscribeUC,
-      );
     });
   });
 
@@ -154,13 +125,6 @@ describe('NewsletterController', () => {
 
     it('conserve l’accuse de reception sur le lien GET', async () => {
       await attendreDesabonnementAvecAccuse();
-    });
-
-    it('leve NotFoundException (404) pour un token malformed', async () => {
-      await attendreTokenRefuse(
-        controller.unsubscribeOneClickEndpoint('invalid-token'),
-        mocks.unsubscribeUC,
-      );
     });
   });
 });

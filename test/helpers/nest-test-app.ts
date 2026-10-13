@@ -1,11 +1,11 @@
-import { type INestApplication, ValidationPipe } from '@nestjs/common';
+import type { INestApplication } from '@nestjs/common';
 import type { TestingModule } from '@nestjs/testing';
 import cookieParser from 'cookie-parser';
 import type { NextFunction, Request, Response } from 'express';
 import type { Server } from 'node:http';
 import type { AddressInfo } from 'node:net';
 import type request from 'supertest';
-import { GLOBAL_VALIDATION_PIPE_OPTIONS } from './validation-pipe';
+import { appliquerLesTraitementsGlobaux } from '../../src/common/interfaces/http/traitements-globaux';
 
 export const ADRESSE_BOUCLE_LOCALE = '127.0.0.1';
 
@@ -30,6 +30,7 @@ export async function ouvrirApplication(
   configurer?: (app: INestApplication) => void,
 ): Promise<INestApplication> {
   const app = moduleRef.createNestApplication();
+  appliquerLesTraitementsGlobaux(app);
   configurer?.(app);
   await ecouterEnBoucleLocale(app);
   return app;
@@ -70,7 +71,6 @@ export function bootstrapTestApp(
 ): Promise<INestApplication> {
   return ouvrirApplication(moduleRef, (app) => {
     configure?.(app);
-    app.useGlobalPipes(new ValidationPipe(GLOBAL_VALIDATION_PIPE_OPTIONS));
     app.setGlobalPrefix('api');
   });
 }

@@ -35,16 +35,19 @@ describe('ParticipantTokenService', () => {
     participantALaGeneration(0);
   });
 
-  it('rend le participantId signe', async () => {
+  it('rend le participant signe et la generation de son jeton', async () => {
     const jeton = service.sign(SESSION, PARTICIPANT, 0);
 
-    await expect(service.verify(SESSION, jeton)).resolves.toBe(PARTICIPANT);
+    await expect(service.verifierIdentite(SESSION, jeton)).resolves.toEqual({
+      participantId: PARTICIPANT,
+      generation: 0,
+    });
   });
 
   it('refuse un jeton emis pour une autre session', async () => {
     const jeton = service.sign(AUTRE_SESSION, PARTICIPANT, 0);
 
-    await expect(service.verify(SESSION, jeton)).rejects.toThrow(
+    await expect(service.verifierIdentite(SESSION, jeton)).rejects.toThrow(
       UnauthorizedException,
     );
   });
@@ -55,7 +58,7 @@ describe('ParticipantTokenService', () => {
       .split('.');
 
     await expect(
-      service.verify(SESSION, `autre-id.${generation}.${empreinte}`),
+      service.verifierIdentite(SESSION, `autre-id.${generation}.${empreinte}`),
     ).rejects.toThrow(UnauthorizedException);
   });
 
@@ -63,7 +66,7 @@ describe('ParticipantTokenService', () => {
     const [id, , empreinte] = service.sign(SESSION, PARTICIPANT, 0).split('.');
 
     await expect(
-      service.verify(SESSION, `${id}.1.${empreinte}`),
+      service.verifierIdentite(SESSION, `${id}.1.${empreinte}`),
     ).rejects.toThrow(UnauthorizedException);
   });
 
@@ -71,7 +74,7 @@ describe('ParticipantTokenService', () => {
     const jeton = service.sign(SESSION, PARTICIPANT, 0);
     participantALaGeneration(1);
 
-    await expect(service.verify(SESSION, jeton)).rejects.toThrow(
+    await expect(service.verifierIdentite(SESSION, jeton)).rejects.toThrow(
       UnauthorizedException,
     );
   });
@@ -80,24 +83,24 @@ describe('ParticipantTokenService', () => {
     participantALaGeneration(1);
 
     await expect(
-      service.verify(SESSION, service.sign(SESSION, PARTICIPANT, 1)),
-    ).resolves.toBe(PARTICIPANT);
+      service.verifierIdentite(SESSION, service.sign(SESSION, PARTICIPANT, 1)),
+    ).resolves.toEqual({ participantId: PARTICIPANT, generation: 1 });
   });
 
   it('refuse le jeton d un participant absent de la seance', async () => {
     participants.findById.mockResolvedValue(null);
 
     await expect(
-      service.verify(SESSION, service.sign(SESSION, PARTICIPANT, 0)),
+      service.verifierIdentite(SESSION, service.sign(SESSION, PARTICIPANT, 0)),
     ).rejects.toThrow(UnauthorizedException);
   });
 
   it('ne consulte pas le depot pour un jeton dont la signature est fausse', async () => {
     const jeton = service.sign(SESSION, PARTICIPANT, 0);
 
-    await expect(service.verify(SESSION, jeton.slice(0, -4))).rejects.toThrow(
-      UnauthorizedException,
-    );
+    await expect(
+      service.verifierIdentite(SESSION, jeton.slice(0, -4)),
+    ).rejects.toThrow(UnauthorizedException);
     expect(participants.findById).not.toHaveBeenCalled();
   });
 
@@ -110,7 +113,7 @@ describe('ParticipantTokenService', () => {
     'id.-1.empreinte',
     'id.1e3.empreinte',
   ])('refuse le jeton illisible %p', async (jeton) => {
-    await expect(service.verify(SESSION, jeton)).rejects.toThrow(
+    await expect(service.verifierIdentite(SESSION, jeton)).rejects.toThrow(
       UnauthorizedException,
     );
   });
@@ -136,16 +139,5 @@ describe('ParticipantTokenService', () => {
     expect(() => service.sign(SESSION, PARTICIPANT, 0)).toThrow(
       'FORMATION_REVIEW_TOKEN_SECRET',
     );
-  });
-
-  it('ne produit pas la meme empreinte que le lien de revision', () => {
-    const jeton = service.sign(SESSION, PARTICIPANT, 0);
-    const { createHmac } =
-      jest.requireActual<typeof import('node:crypto')>('node:crypto');
-    const empreinteRevision = createHmac('sha256', SECRET)
-      .update(`${SESSION}:${PARTICIPANT}`)
-      .digest('hex');
-
-    expect(jeton.endsWith(empreinteRevision)).toBe(false);
   });
 });

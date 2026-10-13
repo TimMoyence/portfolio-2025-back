@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
 import { request as requeteNode } from 'node:http';
 import request from 'supertest';
 import type { NestExpressApplication } from '@nestjs/platform-express';
-import { DomainExceptionFilter } from '../src/common/interfaces/filters/DomainExceptionFilter';
 import { bornerLesCorpsDeRequete } from '../src/common/interfaces/http/corps-de-requete';
+import { appliquerLesTraitementsGlobaux } from '../src/common/interfaces/http/traitements-globaux';
 import { PREFIXE_API_PAR_DEFAUT } from '../src/config/prefixe-api';
 import type { Cours } from '../src/modules/formations/domain/contrats/cours';
 import { libelleDeConfusion } from '../src/modules/formations/domain/cours/banque/confusions';
@@ -42,6 +42,7 @@ import { MAX_INCIDENTS_PAR_ENVOI } from '../src/modules/formations/domain/Incide
 import { COURS_B2_01 } from './factories/contenus-publies';
 import { LIMITE_SUJET_PAR_PARTICIPANT } from '../src/modules/formations/interfaces/formations-throttling';
 import { EN_TETE_JETON } from '../src/modules/formations/interfaces/ParticipantToken.service';
+import { FormationsStudentController } from '../src/modules/formations/interfaces/FormationsStudent.controller';
 import {
   buildCoursDeClasse,
   buildCoursDeTestAvecNumerique,
@@ -65,6 +66,7 @@ import {
   EN_TETE_IDENTITE,
   signerLesIdentitesDeTest,
 } from './helpers/identite-reelle';
+import { routesDuControleur } from './helpers/metadonnees-de-route';
 import {
   documentOpenApiFormations,
   ecartsAuSchemaDeReponse,
@@ -74,7 +76,6 @@ import {
   ecouterEnBoucleLocale,
   fermerApplication,
 } from './helpers/nest-test-app';
-import { GLOBAL_VALIDATION_PIPE_OPTIONS } from './helpers/validation-pipe';
 const SECRET = 'secret-de-test-formations-assez-long-1234';
 const SYNTHESE_A = 'synthese-formateur@example.com';
 
@@ -437,8 +438,7 @@ async function creerHarnais(
   bornerLesCorpsDeRequete(app);
   signerLesIdentitesDeTest(app);
   app.setGlobalPrefix(PREFIXE_API_PAR_DEFAUT);
-  app.useGlobalFilters(new DomainExceptionFilter());
-  app.useGlobalPipes(new ValidationPipe(GLOBAL_VALIDATION_PIPE_OPTIONS));
+  appliquerLesTraitementsGlobaux(app);
   const port = await ecouterEnBoucleLocale(app);
   return { app, mailer, scores, port };
 }
@@ -729,7 +729,7 @@ describe('Session de formation (e2e http socket)', () => {
       });
 
       expect(reponse.status).toBe(400);
-      expect((reponse.body as { message: string[] }).message).toContain(
+      expect((reponse.body as { detail: string[] }).detail).toContain(
         'property bareme should not exist',
       );
     });
@@ -774,6 +774,18 @@ describe('Session de formation (e2e http socket)', () => {
         modeRythme: 'pilote',
       });
       attendreSansCorrige(reponse.text);
+    });
+
+    it('documente le jeton rendu par l en-tete que la garde lit', () => {
+      expect(documentOpenApiFormations(app).components?.schemas).toMatchObject({
+        JoinSessionResponseDto: {
+          properties: {
+            jeton: {
+              description: expect.stringContaining(EN_TETE_JETON) as unknown,
+            },
+          },
+        },
+      });
     });
   });
 
@@ -882,7 +894,7 @@ describe('Session de formation (e2e http socket)', () => {
       ).expect(400);
 
       expect(refus.body).toMatchObject({
-        message: 'Validation failed (uuid is expected)',
+        detail: 'Validation failed (uuid is expected)',
       });
     });
 
@@ -895,7 +907,7 @@ describe('Session de formation (e2e http socket)', () => {
       ).expect(404);
 
       expect(absent.body).not.toMatchObject({
-        message: 'Validation failed (uuid is expected)',
+        detail: 'Validation failed (uuid is expected)',
       });
     });
 
@@ -1432,6 +1444,11 @@ describe('sujet du participant (lecture par jeton)', () => {
     return { ...seance, ...(await http.inscrire(seance.code, studentKey)) };
   };
 
+  const attendreSujetRefuse = (reponse: { status: number; text: string }) => {
+    expect(reponse.status).toBe(401);
+    expect(reponse.text).not.toContain(COURS_SENTINELLE.titre);
+  };
+
   beforeAll(async () => {
     const mutable = creerCatalogueMutable(
       creerCatalogueDeTest(COURS_SENTINELLE, COURS_DE_CLASSE),
@@ -1449,7 +1466,27 @@ describe('sujet du participant (lecture par jeton)', () => {
 
     const reponse = await http.get(`/sessions/${sessionId}/sujet`);
 
-    expect(reponse.status).toBe(401);
+    attendreSujetRefuse(reponse);
+  });
+
+  it('refuse en 401 chaque route du poste etudiant appelee sans jeton, la jonction exceptee', async () => {
+    const { sessionId } = await http.ouvrirSession();
+    const routes = routesDuControleur(FormationsStudentController).filter(
+      ({ chemin }) => !chemin.includes(':code'),
+    );
+
+    const statuts = await Promise.all(
+      routes.map(async ({ methode, chemin }) => {
+        const url = routeFormations(
+          `/${chemin.replace(':id', sessionId).replaceAll(/:\w+/g, 'x')}`,
+        );
+        const reponse = await request(serveurHttpDe(app))[methode](url);
+        return [`${methode} ${chemin}`, reponse.status] as const;
+      }),
+    );
+
+    expect(routes.length).toBeGreaterThan(10);
+    expect(statuts.filter(([, statut]) => statut !== 401)).toEqual([]);
   });
 
   it('refuse le sujet d une seance au jeton emis pour une autre seance', async () => {
@@ -1460,8 +1497,20 @@ describe('sujet du participant (lecture par jeton)', () => {
 
     const reponse = await http.sujet(seanceB.sessionId, seanceA.jeton);
 
-    expect(reponse.status).toBe(401);
-    expect(reponse.text).not.toContain(COURS_SENTINELLE.titre);
+    attendreSujetRefuse(reponse);
+  });
+
+  it('refuse en 401 un jeton valide envoye dans deux en-tetes, que Node livre joints par une virgule', async () => {
+    const { sessionId, jeton } = await seanceAvecUnInscrit(
+      '33333333-3333-4333-8333-333333333338',
+    );
+    await http.sujet(sessionId, jeton).expect(200);
+
+    const reponse = await http
+      .get(`/sessions/${sessionId}/sujet`)
+      .set({ [EN_TETE_JETON]: [jeton, jeton] });
+
+    attendreSujetRefuse(reponse);
   });
 
   it('sert le sujet du tirage du participant sans jamais livrer le corrige', async () => {

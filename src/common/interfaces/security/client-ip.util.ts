@@ -1,4 +1,5 @@
 import type { Request } from 'express';
+import { referentJournalisable } from '../http/url-journalisable';
 
 /**
  * `req.ip` est calcule par Express en fonction de `trust proxy`
@@ -25,10 +26,11 @@ export function provenanceDeLaRequete(req: Request): {
   userAgent: string | null;
   referer: string | null;
 } {
+  const referer = lireEnTete(req, 'referer');
   return {
     ip: resolveClientIp(req),
     userAgent: lireEnTete(req, 'user-agent'),
-    referer: lireEnTete(req, 'referer'),
+    referer: referer === null ? null : referentJournalisable(referer),
   };
 }
 

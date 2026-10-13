@@ -1,4 +1,5 @@
 import type { Request } from 'express';
+import { JETON_DE_PAGE } from '../../../../../test/helpers/referents-des-pages-a-jeton';
 import {
   lireEnTete,
   provenanceDeLaRequete,
@@ -108,6 +109,18 @@ describe('provenanceDeLaRequete', () => {
       userAgent: 'Navigateur/1.0',
       referer: 'https://a.fr/',
     });
+  });
+
+  it('censure le jeton du referer envoye depuis une page ouverte par un lien a jeton', () => {
+    const req = buildRequest({
+      headers: {
+        referer: `https://asilidesign.fr/fr/formations/ia-solopreneurs/toolkit/${JETON_DE_PAGE}`,
+      },
+    });
+
+    expect(provenanceDeLaRequete(req).referer).toBe(
+      'https://asilidesign.fr/fr/formations/ia-solopreneurs/toolkit/[REDACTED]',
+    );
   });
 
   it('rend null pour chaque information absente', () => {

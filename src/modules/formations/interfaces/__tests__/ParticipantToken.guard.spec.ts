@@ -17,14 +17,14 @@ const SECRET_TEST = 'secret-de-test-assez-long-pour-hmac-sha256-0123456789';
 
 interface RequeteDeTest {
   params: { id: string | undefined };
-  headers: Record<string, string | readonly string[]>;
+  headers: Record<string, string>;
   participantId?: string;
   generationDeJeton?: number;
 }
 
 function requeteDe(
   sessionId: string | undefined,
-  jeton: string | readonly string[] | undefined,
+  jeton: string | undefined,
 ): RequeteDeTest {
   return {
     params: { id: sessionId },
@@ -40,7 +40,7 @@ function contexteDe(requete: RequeteDeTest): ExecutionContext {
 
 function contexte(
   sessionId: string | undefined,
-  jeton: string | readonly string[] | undefined,
+  jeton: string | undefined,
 ): ExecutionContext {
   return contexteDe(requeteDe(sessionId, jeton));
 }
@@ -114,14 +114,17 @@ describe('ParticipantTokenGuard', () => {
     ).rejects.toThrow(UnauthorizedException);
   });
 
-  it('retient le premier jeton quand l en-tete arrive en double', async () => {
-    await expect(
-      garde.canActivate(contexte(SESSION_ID, [signer(), 'forge.0.abcdef'])),
-    ).resolves.toBe(true);
-    await expect(
-      garde.canActivate(contexte(SESSION_ID, ['forge.0.abcdef', signer()])),
-    ).rejects.toThrow(UnauthorizedException);
-  });
+  it.each([
+    ['le meme jeton valide deux fois', () => `${signer()}, ${signer()}`],
+    ['un jeton valide suivi d un jeton forge', () => `${signer()}, forge.0.ab`],
+  ])(
+    'refuse un en-tete repete, que Node livre joint par une virgule : %s',
+    async (_cas, joint) => {
+      await expect(
+        garde.canActivate(contexte(SESSION_ID, joint())),
+      ).rejects.toThrow(UnauthorizedException);
+    },
+  );
 
   it('refuse une requete dont la route ne porte aucune seance', async () => {
     await expect(

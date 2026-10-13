@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ResourceNotFoundError } from '../../../../common/domain/errors/ResourceNotFoundError';
+import { LienInvalideError } from '../../../../common/domain/errors/LienInvalideError';
 import type { ILeadMagnetRequestRepository } from '../../domain/ILeadMagnetRequestRepository';
 import type { IToolkitContentAssembler } from '../../domain/IToolkitContentAssembler';
 import type { LeadMagnetRequest } from '../../domain/LeadMagnetRequest';
@@ -55,11 +55,11 @@ describe('GetToolkitByTokenUseCase', () => {
     expect(assembler.assemble).toHaveBeenCalledWith('Tim', null);
   });
 
-  it('devrait lever ResourceNotFoundError pour un token inconnu', async () => {
+  it('refuse un token inconnu comme tout lien invalide', async () => {
     repo.findByToken.mockResolvedValue(null);
 
     await expect(
       useCase.execute({ accessToken: 'inexistant' }),
-    ).rejects.toBeInstanceOf(ResourceNotFoundError);
+    ).rejects.toBeInstanceOf(LienInvalideError);
   });
 });

@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import type { PacingMode } from '../../domain/PacingMode';
+import { EN_TETE_JETON } from '../ParticipantToken.service';
 
 export class JoinSessionResponseDto {
   @ApiProperty({ example: '8f1c3b2a-5d4e-4f6a-9b8c-7d6e5f4a3b2c' })
@@ -15,8 +16,7 @@ export class JoinSessionResponseDto {
   modeRythme: PacingMode;
 
   @ApiProperty({
-    description:
-      'Jeton de participant a renvoyer dans l en-tete x-participant-token',
+    description: `Jeton de participant a renvoyer dans l en-tete ${EN_TETE_JETON}`,
   })
   jeton: string;
 

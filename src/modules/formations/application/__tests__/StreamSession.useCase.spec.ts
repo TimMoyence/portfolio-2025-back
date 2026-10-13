@@ -18,6 +18,7 @@ import {
   createMockParticipantsRepo,
   createMockSessionsRepo,
 } from '../../../../../test/factories/formation.factory';
+import { verifierSeanceIntrouvable } from '../../../../../test/helpers/gardes-de-seance';
 import {
   PlafondDeFluxAtteintError,
   SessionNotOwnedError,
@@ -673,6 +674,11 @@ describe('StreamSessionUseCase', () => {
       sut.executeForTeacher(SESSION, 'autre-teacher-uuid'),
     ).rejects.toThrow(SessionNotOwnedError);
   });
+
+  verifierSeanceIntrouvable(() => ({
+    sessions,
+    executer: () => sut.executeForTeacher(SESSION, TEACHER_ID),
+  }));
 
   it('tient le flux jusqu a sa duree maximale puis le termine avec la raison expiree', async () => {
     const dureeMaxMs = 60_000;

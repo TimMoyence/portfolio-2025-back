@@ -58,7 +58,6 @@ export interface CopieEtudiant {
   courseSlug: string;
   code: string;
   participant: RapportParticipant;
-  lienRevision: string;
 }
 
 export interface IFormationMailer {

@@ -24,9 +24,6 @@ import type {
 import {
   InvalidStateTransitionError,
   RevisionDeSeanceObsoleteError,
-  SessionClosedError,
-  SessionNotFoundError,
-  SessionNotOwnedError,
 } from '../domain/errors/FormationErrors';
 import { isFreeRangeValid } from '../domain/PacingMode';
 import type { FreeRange } from '../domain/PacingMode';
@@ -37,6 +34,7 @@ import {
   SESSIONS_REPOSITORY,
 } from '../domain/token';
 import { coursDeLaSeance } from './CoursDeLaSeance';
+import { seanceNonTermineePilotablePar } from './SessionAccess';
 
 const TENTATIVES_SUR_REVISION_OBSOLETE = 5;
 
@@ -62,7 +60,11 @@ export class ControlSessionUseCase {
       tentative += 1
     ) {
       const misAJour = this.validerEtProjeter(changements);
-      const session = await this.assertPilotable(sessionId, teacherId);
+      const session = await seanceNonTermineePilotablePar(
+        this.sessions,
+        sessionId,
+        teacherId,
+      );
       await this.assertDansLesBornesDuCours(session, misAJour, changements);
       try {
         const sessionMiseAJour = await this.sessions.update(
@@ -192,7 +194,11 @@ export class ControlSessionUseCase {
   }
 
   async start(sessionId: string, teacherId: string): Promise<void> {
-    const session = await this.assertPilotable(sessionId, teacherId);
+    const session = await seanceNonTermineePilotablePar(
+      this.sessions,
+      sessionId,
+      teacherId,
+    );
     if (!canTransition(session.etat, 'en_cours')) {
       throw new InvalidStateTransitionError(session.etat, 'en_cours');
     }
@@ -208,22 +214,5 @@ export class ControlSessionUseCase {
       sessionId,
       etatEnDirect(session, enCache?.participants ?? 0),
     );
-  }
-
-  private async assertPilotable(
-    sessionId: string,
-    teacherId: string,
-  ): Promise<SessionRecord> {
-    const session = await this.sessions.findById(sessionId);
-    if (!session) {
-      throw new SessionNotFoundError(sessionId);
-    }
-    if (session.teacherId !== teacherId) {
-      throw new SessionNotOwnedError(sessionId);
-    }
-    if (session.etat === 'terminee') {
-      throw new SessionClosedError();
-    }
-    return session;
   }
 }

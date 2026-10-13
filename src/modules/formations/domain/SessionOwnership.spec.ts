@@ -4,12 +4,27 @@ import {
   SessionNotOwnedError,
 } from './errors/FormationErrors';
 import {
+  assertSeanceTrouvee,
   assertSessionOwnedBy,
   assertSessionReadableBy,
 } from './SessionOwnership';
 
 const SESSION_ID = 'session-uuid';
 const PROPRIETAIRE = 'teacher-uuid';
+
+describe('assertSeanceTrouvee', () => {
+  it('rend la seance trouvee', () => {
+    const session = buildSessionRecord();
+
+    expect(assertSeanceTrouvee(session, SESSION_ID)).toBe(session);
+  });
+
+  it('signale la seance introuvable sous la cle cherchee', () => {
+    expect(() => assertSeanceTrouvee(null, '4271')).toThrow(
+      new SessionNotFoundError('4271'),
+    );
+  });
+});
 
 describe('assertSessionOwnedBy', () => {
   it('retourne la session quand elle existe et appartient a l appelant', () => {

@@ -2,6 +2,7 @@ import { BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import type { Request, Response } from 'express';
 import { firstValueFrom, toArray } from 'rxjs';
+import { LienInvalideError } from '../src/common/domain/errors/LienInvalideError';
 import { AuditsController } from '../src/modules/audit-requests/interfaces/Audits.controller';
 import { AuditRequestRequestDto } from '../src/modules/audit-requests/interfaces/dto/audit-request.request.dto';
 import { ContactsController } from '../src/modules/contacts/interfaces/Contacts.controller';
@@ -262,10 +263,8 @@ describe('API coherence and connectivity (e2e transportless)', () => {
     expect(requestPasswordResetUseCase.execute).toHaveBeenCalledWith(dto);
   });
 
-  it('returns bad request for invalid reset token', async () => {
-    resetPasswordUseCase.execute.mockRejectedValueOnce(
-      new BadRequestException('Invalid token'),
-    );
+  it('propage le refus d un lien de reinitialisation invalide ou expire', async () => {
+    resetPasswordUseCase.execute.mockRejectedValueOnce(new LienInvalideError());
     const dto = await validateBody(
       {
         token:
@@ -276,7 +275,7 @@ describe('API coherence and connectivity (e2e transportless)', () => {
     );
 
     await expect(authController.resetPassword(dto)).rejects.toBeInstanceOf(
-      BadRequestException,
+      LienInvalideError,
     );
   });
 

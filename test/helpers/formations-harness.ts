@@ -1,8 +1,4 @@
-import {
-  INestApplication,
-  ValidationPipe,
-  type Provider,
-} from '@nestjs/common';
+import { INestApplication, type Provider } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { Test as ModuleDeTest, type TestingModule } from '@nestjs/testing';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
@@ -13,12 +9,10 @@ import {
 } from 'node:http';
 import request from 'supertest';
 import type { Test } from 'supertest';
-import { AllExceptionsFilter } from '../../src/common/interfaces/filters/all-exceptions.filter';
+import { appliquerLesTraitementsGlobaux } from '../../src/common/interfaces/http/traitements-globaux';
 import { PREFIXE_API_PAR_DEFAUT } from '../../src/config/prefixe-api';
-import { DomainExceptionFilter } from '../../src/common/interfaces/filters/DomainExceptionFilter';
 import { CloseSessionUseCase } from '../../src/modules/formations/application/CloseSession.useCase';
 import { ControlSessionUseCase } from '../../src/modules/formations/application/ControlSession.useCase';
-import { DueQuestionsUseCase } from '../../src/modules/formations/application/DueQuestions.useCase';
 import { GetSessionResultsUseCase } from '../../src/modules/formations/application/GetSessionResults.useCase';
 import { JoinSessionUseCase } from '../../src/modules/formations/application/JoinSession.useCase';
 import { LireCoursPublicUseCase } from '../../src/modules/formations/application/LireCoursPublic.useCase';
@@ -121,7 +115,6 @@ import {
   ecouterEnBoucleLocale,
   fermerApplication,
 } from './nest-test-app';
-import { GLOBAL_VALIDATION_PIPE_OPTIONS } from './validation-pipe';
 
 export { EN_TETE_IDENTITE };
 
@@ -197,7 +190,6 @@ export function fournisseursFormations(
     SyntheseRappelsUseCase,
     RecordIncidentsUseCase,
     StreamSessionUseCase,
-    DueQuestionsUseCase,
     LireSujetUseCase,
     LireDerouleUseCase,
     TelechargerPieceJointeUseCase,
@@ -268,8 +260,7 @@ export async function monterApplicationFormations(
   configurer(app);
   signerLesIdentitesDeTest(app);
   app.setGlobalPrefix(PREFIXE_API_PAR_DEFAUT);
-  app.useGlobalFilters(new AllExceptionsFilter(), new DomainExceptionFilter());
-  app.useGlobalPipes(new ValidationPipe(GLOBAL_VALIDATION_PIPE_OPTIONS));
+  appliquerLesTraitementsGlobaux(app);
   await app.init();
   return app;
 }

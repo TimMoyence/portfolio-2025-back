@@ -4,8 +4,6 @@ import { ArticleModerationService } from '../src/modules/articles/application/ar
 import { ArticleModerationController } from '../src/modules/articles/interfaces/article-moderation.controller';
 import { PREFIXE_API_PAR_DEFAUT } from '../src/config/prefixe-api';
 import { ResourceNotFoundError } from '../src/common/domain/errors/ResourceNotFoundError';
-import { AllExceptionsFilter } from '../src/common/interfaces/filters/all-exceptions.filter';
-import { DomainExceptionFilter } from '../src/common/interfaces/filters/DomainExceptionFilter';
 import {
   applicationDeLaSuite,
   httpServerOf,
@@ -37,10 +35,6 @@ describe('Modération des articles (admin)', () => {
           (req as unknown as { user: unknown }).user = { roles: [role] };
         }
       });
-      application.useGlobalFilters(
-        new AllExceptionsFilter(),
-        new DomainExceptionFilter(),
-      );
       application.setGlobalPrefix(PREFIXE_API_PAR_DEFAUT);
     });
   });

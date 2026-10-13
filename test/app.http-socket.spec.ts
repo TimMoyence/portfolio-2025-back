@@ -1,4 +1,4 @@
-import { BadRequestException, UnauthorizedException } from '@nestjs/common';
+import { UnauthorizedException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
 import {
@@ -39,15 +39,13 @@ import {
 
 // eslint-disable-next-line sonarjs/no-hardcoded-passwords -- fixture de test, pas un secret reel
 const WRONG_PASSWORD = 'WrongPassword1!';
-// eslint-disable-next-line sonarjs/no-hardcoded-passwords -- fixture de test, pas un secret reel
-const NEW_PASSWORD = 'NewPassword123!';
 
 describe('API coherence and connectivity (e2e http socket)', () => {
   const coreStubs = createCoreUseCaseStubs();
   const authStubs = createAuthUseCaseStubs();
   const legacyStubs = createLegacyUseCaseStubs();
 
-  const { authenticateUserUseCase, resetPasswordUseCase } = authStubs;
+  const { authenticateUserUseCase } = authStubs;
 
   const app = applicationDeLaSuite(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -70,9 +68,7 @@ describe('API coherence and connectivity (e2e http socket)', () => {
   const getHttpServer = () => httpServerOf(app());
 
   function validationMessages(response: request.Response): string[] {
-    const detail = (response.body.message ?? response.body.detail) as
-      | string
-      | string[];
+    const detail = response.body.detail as string | string[];
     return Array.isArray(detail) ? detail : [String(detail)];
   }
 
@@ -164,32 +160,6 @@ describe('API coherence and connectivity (e2e http socket)', () => {
       .expect(200);
 
     expect(response.body).toEqual(PASSWORD_RESET_REQUESTED_RESULT);
-  });
-
-  it('POST /api/auth/reset-password returns 400 when token is invalid', async () => {
-    resetPasswordUseCase.execute.mockRejectedValueOnce(
-      new BadRequestException('Invalid token'),
-    );
-
-    const response = await request(getHttpServer())
-      .post('/api/auth/reset-password')
-      .send({
-        token:
-          '4f7ab9f3f7b3d0eaa77a4b5b0dcaea31695f15de22f22e53f35b98b0aaf3112c',
-        newPassword: NEW_PASSWORD,
-      })
-      .expect(400);
-
-    expect(response.status).toBe(400);
-  });
-
-  it('POST /api/auth/reset-password refuse en 400 un jeton qui n a pas la forme emise', async () => {
-    await request(getHttpServer())
-      .post('/api/auth/reset-password')
-      .send({ token: 'z'.repeat(64), newPassword: NEW_PASSWORD })
-      .expect(400);
-
-    expect(resetPasswordUseCase.execute).not.toHaveBeenCalled();
   });
 
   it.each(CAS_LEGACY)(

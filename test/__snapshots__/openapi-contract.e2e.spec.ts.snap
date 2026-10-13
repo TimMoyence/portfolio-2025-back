@@ -2699,7 +2699,10 @@ exports[`OpenAPI core contract keeps Auth path contracts stable 1`] = `
           "description": "",
         },
         "400": {
-          "description": "Validation failed or invalid/expired token",
+          "description": "Validation failed",
+        },
+        "404": {
+          "description": "Lien invalide ou expiré.",
         },
       },
       "summary": "Reinitialise le mot de passe via un token de reset",
@@ -2780,11 +2783,8 @@ exports[`OpenAPI core contract keeps Auth path contracts stable 1`] = `
           },
           "description": "",
         },
-        "400": {
-          "description": "Jeton absent ou mal forme",
-        },
-        "401": {
-          "description": "Token invalide ou expire",
+        "404": {
+          "description": "Lien invalide ou expiré.",
         },
       },
       "summary": "Verifie l'adresse email via le token envoye",

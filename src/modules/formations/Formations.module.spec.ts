@@ -2,7 +2,6 @@ import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { CloseSessionUseCase } from './application/CloseSession.useCase';
 import { ControlSessionUseCase } from './application/ControlSession.useCase';
-import { DueQuestionsUseCase } from './application/DueQuestions.useCase';
 import { GetSessionResultsUseCase } from './application/GetSessionResults.useCase';
 import { JoinSessionUseCase } from './application/JoinSession.useCase';
 import { LireCoursPublicUseCase } from './application/LireCoursPublic.useCase';
@@ -86,7 +85,6 @@ const SERVICES = [
   SyntheseRappelsUseCase,
   RecordIncidentsUseCase,
   StreamSessionUseCase,
-  DueQuestionsUseCase,
   LireSujetUseCase,
   LireDerouleUseCase,
   ManageTeacherAnnotationsUseCase,

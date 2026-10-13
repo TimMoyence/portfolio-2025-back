@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { PAGE_PRIVEE_DU_TOOLKIT } from '../../../common/domain/lien-avec-jeton';
 import { ExpediteurSmtp } from '../../../common/infrastructure/mail/expediteur-smtp';
 import { escapeHtml, escapeUrl, safeHtml } from 'portfolio-2025-partage/html';
 import { pieceJointePdf } from '../../../common/infrastructure/mail/piece-jointe-pdf';
@@ -26,7 +27,7 @@ export class LeadMagnetMailerService
     if (!this.transporter) return;
     const firstName = escapeHtml(request.firstName);
     const toolkitUrl = request.accessToken
-      ? `${this.frontendUrl}/formations/ia-solopreneurs/toolkit/${request.accessToken}`
+      ? `${this.frontendUrl}${PAGE_PRIVEE_DU_TOOLKIT}${request.accessToken}`
       : null;
 
     const toolkitLinkText = toolkitUrl

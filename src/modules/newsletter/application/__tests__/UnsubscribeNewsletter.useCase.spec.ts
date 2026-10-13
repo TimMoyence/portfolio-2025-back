@@ -85,7 +85,7 @@ describe('UnsubscribeNewsletterUseCase', () => {
     expect(result.status).toBe('unsubscribed');
   });
 
-  it('leve ResourceNotFoundError pour un token inconnu', async () => {
+  it('refuse un token inconnu comme tout lien invalide', async () => {
     await attendreTokenInconnuRefuse(repo.findByUnsubscribeToken, (token) =>
       useCase.execute(token),
     );

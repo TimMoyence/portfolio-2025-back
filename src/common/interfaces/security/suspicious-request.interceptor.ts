@@ -10,6 +10,7 @@ import type { Request, Response } from 'express';
 import type { Observable } from 'rxjs';
 import { tronquer } from '../../domain/texte/tronquer';
 import { aLaFermeture } from '../http/a-la-fermeture';
+import { urlJournalisable } from '../http/url-journalisable';
 import { lireEnTete, resolveClientIpOrUnknown } from './client-ip.util';
 import type { ISecurityEventsStore } from './ISecurityEventsStore';
 import { SECURITY_EVENTS_STORE } from './ISecurityEventsStore';
@@ -78,7 +79,7 @@ export class SuspiciousRequestInterceptor implements NestInterceptor {
         }
 
         const occurredAtMs = Date.now();
-        const path = req.originalUrl || req.url;
+        const path = urlJournalisable(req.originalUrl || req.url, req.params);
 
         void this.store
           .recordEvent({

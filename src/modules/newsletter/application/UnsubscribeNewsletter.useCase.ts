@@ -23,10 +23,9 @@ export class UnsubscribeNewsletterUseCase extends ActionDAbonne {
     unsubscribeToken: string,
     options: UnsubscribeNewsletterOptions = { sendAck: true },
   ): Promise<UnsubscribeNewsletterResult> {
-    const subscriber = await this.repo.findByUnsubscribeToken(unsubscribeToken);
-    if (!subscriber) {
-      throw this.jetonInvalide('unsubscribe');
-    }
+    const subscriber = await this.abonneDuLien(
+      this.repo.findByUnsubscribeToken(unsubscribeToken),
+    );
 
     if (subscriber.status === 'unsubscribed') {
       return { status: 'unsubscribed', alreadyUnsubscribed: true };

@@ -1,4 +1,4 @@
-import { ResourceNotFoundError } from '../../src/common/domain/errors/ResourceNotFoundError';
+import { LienInvalideError } from '../../src/common/domain/errors/LienInvalideError';
 import type { NewsletterSubscriber } from '../../src/modules/newsletter/domain/NewsletterSubscriber';
 import {
   buildAbonnePersiste,
@@ -19,7 +19,7 @@ export async function attendreTokenInconnuRefuse(
 ): Promise<void> {
   rechercheParToken.mockResolvedValueOnce(null);
   await expect(executer(TOKEN_INCONNU)).rejects.toBeInstanceOf(
-    ResourceNotFoundError,
+    LienInvalideError,
   );
 }
 

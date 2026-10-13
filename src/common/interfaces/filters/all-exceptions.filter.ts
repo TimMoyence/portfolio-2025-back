@@ -25,6 +25,27 @@ function internalErrorDetail(exception: unknown): string {
   return messageDErreur(exception);
 }
 
+function erreurClientExposee(
+  exception: unknown,
+): { status: number; message: string } | undefined {
+  if (!(exception instanceof Error)) {
+    return undefined;
+  }
+  const { expose, status } = exception as {
+    expose?: unknown;
+    status?: unknown;
+  };
+  if (
+    expose !== true ||
+    typeof status !== 'number' ||
+    status < 400 ||
+    status >= 500
+  ) {
+    return undefined;
+  }
+  return { status, message: exception.message };
+}
+
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
   private readonly logger = new Logger(AllExceptionsFilter.name);
@@ -34,6 +55,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
     let status: number;
     let detail: string | string[];
+    const exposee = erreurClientExposee(exception);
 
     if (exception instanceof HttpException) {
       status = exception.getStatus();
@@ -44,6 +66,9 @@ export class AllExceptionsFilter implements ExceptionFilter {
         const body = res as Record<string, unknown>;
         detail = (body.message as string | string[]) ?? exception.message;
       }
+    } else if (exposee) {
+      status = exposee.status;
+      detail = exposee.message;
     } else if (estDependanceInjoignable(exception)) {
       status = HttpStatus.SERVICE_UNAVAILABLE;
       detail = MESSAGE_DEPENDANCE_INJOIGNABLE;

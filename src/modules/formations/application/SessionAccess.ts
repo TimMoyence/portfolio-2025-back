@@ -8,6 +8,7 @@ import {
   assertSessionReadableBy,
 } from '../domain/SessionOwnership';
 import type { ActeurFormation } from '../domain/SessionOwnership';
+import { assertSeanceNonTerminee } from '../domain/SessionState';
 
 export async function seanceLisiblePar(
   sessions: ISessionsRepository,
@@ -31,6 +32,16 @@ export async function seancePilotablePar(
     sessionId,
     teacherId,
   );
+}
+
+export async function seanceNonTermineePilotablePar(
+  sessions: ISessionsRepository,
+  sessionId: string,
+  teacherId: string,
+): Promise<SessionRecord> {
+  const session = await seancePilotablePar(sessions, sessionId, teacherId);
+  assertSeanceNonTerminee(session.etat);
+  return session;
 }
 
 export async function agirSurUnParticipant(

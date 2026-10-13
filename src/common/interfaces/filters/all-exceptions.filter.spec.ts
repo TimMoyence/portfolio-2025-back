@@ -77,6 +77,51 @@ describe('AllExceptionsFilter', () => {
     loggerSpy.mockRestore();
   });
 
+  const erreurDuParseurDeCorps = (status: number, message: string) =>
+    Object.assign(new Error(message), {
+      status,
+      statusCode: status,
+      expose: status < 500,
+      type: 'entity.too.large',
+    });
+
+  it('rend son statut et son message a une erreur client que le parseur de corps declare exposable', async () => {
+    const loggerSpy = espionnerLeLogger();
+
+    await intercepterSous(
+      'production',
+      erreurDuParseurDeCorps(
+        HttpStatus.PAYLOAD_TOO_LARGE,
+        'request entity too large',
+      ),
+    );
+
+    attendreProbleme(hote, HttpStatus.PAYLOAD_TOO_LARGE, {
+      detail: 'request entity too large',
+    });
+    expect(loggerSpy).not.toHaveBeenCalled();
+    loggerSpy.mockRestore();
+  });
+
+  it.each([
+    [
+      'une erreur a statut client non declaree exposable',
+      Object.assign(new Error('Request failed with status code 404'), {
+        status: HttpStatus.NOT_FOUND,
+      }),
+    ],
+    [
+      'une erreur serveur declaree par le parseur',
+      erreurDuParseurDeCorps(HttpStatus.INTERNAL_SERVER_ERROR, 'stream error'),
+    ],
+  ])('garde 500 et le message generique pour %s', async (_cas, erreur) => {
+    await intercepterSous('production', erreur);
+
+    attendreProbleme(hote, HttpStatus.INTERNAL_SERVER_ERROR, {
+      detail: 'Une erreur interne est survenue.',
+    });
+  });
+
   it('devrait formater la reponse en RFC 7807 (type, title, status, detail, instance)', () => {
     intercepter(new HttpException('Interdit', HttpStatus.FORBIDDEN));
 

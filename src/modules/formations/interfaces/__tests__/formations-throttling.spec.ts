@@ -11,7 +11,10 @@ import {
   limiteDeThrottle,
   methodeDe,
 } from '../../../../../test/helpers/metadonnees-de-route';
-import { ParticipantTokenService } from '../ParticipantToken.service';
+import {
+  EN_TETE_JETON,
+  ParticipantTokenService,
+} from '../ParticipantToken.service';
 
 const IP_SALLE = 'sortie-nat-salle-b204';
 const IP_VOISINE = 'sortie-nat-salle-b205';
@@ -103,7 +106,7 @@ describe('suivreParParticipant', () => {
   ): Record<string, unknown> {
     return requete({
       params: { id: SESSION_ID },
-      headers: { 'x-participant-token': jeton },
+      headers: { [EN_TETE_JETON]: jeton },
       ...overrides,
     });
   }
@@ -177,5 +180,21 @@ describe('suivreParParticipant', () => {
     expect(suivreParParticipant({ params: {}, headers: {} })).toBe(
       'ip:inconnue',
     );
+  });
+
+  it('compte par adresse un en-tete repete, que Node livre joint et que la garde refuse', () => {
+    expect(suivreParParticipant(requeteDe(`${jetonTheo}, ${jetonTheo}`))).toBe(
+      `ip:${IP_SALLE}`,
+    );
+  });
+
+  describe('sans secret de signature', () => {
+    installerVariables({ FORMATION_REVIEW_TOKEN_SECRET: undefined });
+
+    it('signale la configuration cassee au lieu de compter par adresse', () => {
+      expect(() => suivreParParticipant(requeteDe(jetonTheo))).toThrow(
+        'FORMATION_REVIEW_TOKEN_SECRET',
+      );
+    });
   });
 });

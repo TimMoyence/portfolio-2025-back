@@ -10,15 +10,13 @@ import {
   envoiDansLaLimite,
   filtrerIncidentsConnus,
 } from '../domain/IncidentType';
-import {
-  SessionClosedError,
-  SessionNotFoundError,
-} from '../domain/errors/FormationErrors';
+import { assertSeanceNonTerminee } from '../domain/SessionState';
 import {
   INCIDENTS_REPOSITORY,
   PARTICIPANTS_REPOSITORY,
   SESSIONS_REPOSITORY,
 } from '../domain/token';
+import { seanceExistante } from './CoursDeLaSeance';
 import { participantActif } from './ParticipantActif';
 
 @Injectable()
@@ -40,13 +38,8 @@ export class RecordIncidentsUseCase {
     if (!envoiDansLaLimite(inputs.length)) {
       throw new DomainValidationError('Trop d incidents dans un seul envoi');
     }
-    const session = await this.sessions.findById(sessionId);
-    if (session === null) {
-      throw new SessionNotFoundError(sessionId);
-    }
-    if (session.etat === 'terminee') {
-      throw new SessionClosedError();
-    }
+    const session = await seanceExistante(this.sessions, sessionId);
+    assertSeanceNonTerminee(session.etat);
     await participantActif(this.participants, sessionId, participantId);
     const valides = filtrerIncidentsConnus(inputs);
     if (valides.length === 0) {

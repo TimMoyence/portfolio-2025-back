@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import { InvalidInputError } from '../../../common/domain/errors/InvalidInputError';
+import { LienInvalideError } from '../../../common/domain/errors/LienInvalideError';
+import { emettreJeton } from '../domain/TokenHash';
 import { ResetPasswordUseCase } from './ResetPassword.useCase';
 import {
   buildUser,
@@ -17,6 +18,7 @@ import {
 
 const CHOSEN_CREDENTIAL = 'NewPassword123!';
 const ANY_VALID_CREDENTIAL = 'StrongPass1!';
+const JETON_EMIS = emettreJeton().brut;
 
 describe('ResetPasswordUseCase', () => {
   let usersRepository: ReturnType<typeof createMockUsersRepo>;
@@ -39,7 +41,7 @@ describe('ResetPasswordUseCase', () => {
   const attendreReinitialisationRefusee = (token: string) =>
     expect(
       useCase.execute({ token, newPassword: ANY_VALID_CREDENTIAL }),
-    ).rejects.toBeInstanceOf(InvalidInputError);
+    ).rejects.toBeInstanceOf(LienInvalideError);
 
   it('reinitialise le mot de passe avec un token valide', async () => {
     tokensRepository.findActiveByTokenHash.mockResolvedValue(
@@ -50,7 +52,7 @@ describe('ResetPasswordUseCase', () => {
     });
 
     const result = await useCase.execute({
-      token: 'raw-token',
+      token: JETON_EMIS,
       newPassword: CHOSEN_CREDENTIAL,
     });
 
@@ -66,10 +68,17 @@ describe('ResetPasswordUseCase', () => {
   it('rejette un token inconnu, expire ou deja utilise', async () => {
     tokensRepository.findActiveByTokenHash.mockResolvedValue(null);
 
-    await attendreReinitialisationRefusee('invalid-token');
+    await attendreReinitialisationRefusee(JETON_EMIS);
 
     expect(usersRepository.update).not.toHaveBeenCalled();
     expect(tokensRepository.markUsed).not.toHaveBeenCalled();
+  });
+
+  it('refuse un jeton qui n a pas la forme emise sans chercher au depot', async () => {
+    await attendreReinitialisationRefusee('pas-un-jeton');
+
+    expect(tokensRepository.findActiveByTokenHash).not.toHaveBeenCalled();
+    expect(usersRepository.update).not.toHaveBeenCalled();
   });
 
   it('rejette quand le compte est introuvable ou inactif', async () => {
@@ -79,7 +88,7 @@ describe('ResetPasswordUseCase', () => {
 
     for (const compte of [null, buildUser({ id: 'user-1', isActive: false })]) {
       usersRepository.findById.mockResolvedValue(compte);
-      await attendreReinitialisationRefusee('valid-token');
+      await attendreReinitialisationRefusee(JETON_EMIS);
     }
   });
 });
