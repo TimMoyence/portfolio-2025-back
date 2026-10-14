@@ -12,6 +12,7 @@ import {
   avecVirgule,
   colonneDeValeurs,
   colonneRecopiee,
+  gesteDeRecopie,
   rangIdentique,
   termes,
   type AttenduDeFeuille,
@@ -105,7 +106,7 @@ const PLAN_DE_L_HYPOTHESE_A = {
   verrouillees: Object.keys(CELLULES_DE_L_EXERCICE_2),
   consignes: [
     'En C3, écrivez la formule qui calcule le chiffre d’affaires de 2026 à partir de celui de 2025 (C2) et de la raison (F1).',
-    'Recopiez la formule de C3 jusqu’en C7 : elle doit rester juste sur chaque ligne.',
+    `Recopiez la formule de C3 jusqu’en C7 : ${gesteDeRecopie(['C3'], 7)}. Elle doit rester juste sur chaque ligne.`,
     'La raison ne s’écrit pas dans la formule : utilisez la cellule F1.',
   ],
 };
@@ -147,8 +148,8 @@ const PLAN_DES_DEUX_HYPOTHESES = {
   cellules: CELLULES_DE_L_EXERCICE_4,
   verrouillees: Object.keys(CELLULES_DE_L_EXERCICE_4),
   consignes: [
-    'En D3, écrivez la formule qui calcule l’hypothèse B de 2026 à partir de D2 et du taux (G2). Recopiez-la jusqu’en D7.',
-    'En E3, écrivez l’écart entre l’hypothèse B et l’hypothèse A de la même année. Recopiez jusqu’en E7.',
+    `En D3, écrivez la formule qui calcule l’hypothèse B de 2026 à partir de D2 et du taux (G2). Recopiez-la jusqu’en D7 : ${gesteDeRecopie(['D3'], 7)}.`,
+    `En E3, écrivez l’écart entre l’hypothèse B et l’hypothèse A de la même année. Recopiez jusqu’en E7 : ${gesteDeRecopie(['E3'], 7)}.`,
     'Le taux ne s’écrit pas dans la formule : utilisez la cellule G2.',
   ],
 };
@@ -226,8 +227,8 @@ const PLAN_DE_LA_BOUTIQUE = {
   cellules: CELLULES_DE_LA_BOUTIQUE,
   verrouillees: Object.keys(CELLULES_DE_LA_BOUTIQUE),
   consignes: [
-    'En C3, écrivez la formule qui calcule le chiffre d’affaires de 2026 à partir de C2 et du taux (F1). Recopiez-la jusqu’en C9.',
-    'En D2, avec SI : « Oui » si le chiffre d’affaires de la ligne atteint le seuil (H1), « Non » sinon. Recopiez jusqu’en D9.',
+    `En C3, écrivez la formule qui calcule le chiffre d’affaires de 2026 à partir de C2 et du taux (F1). Recopiez-la jusqu’en C9 : ${gesteDeRecopie(['C3'], 9)}.`,
+    `En D2, avec SI : « Oui » si le chiffre d’affaires de la ligne atteint le seuil (H1), « Non » sinon. Recopiez jusqu’en D9 : ${gesteDeRecopie(['D2'], 9)}.`,
     'En F3, calculez le chiffre d’affaires cumulé de 2025 à 2030 inclus.',
     'Le taux et le seuil ne s’écrivent pas dans les formules : utilisez F1 et H1.',
   ],

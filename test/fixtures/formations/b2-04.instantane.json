@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "2c897761c4eb24ded9b7e27110d608081a95c9bfe49fd11f70601fab984090a8",
+  "empreinte": "675d15f7adebeb707da14333cce9ec97057ce55e4d0f3f224e33a66bd2f656c6",
   "sujet": {
     "id": "b2-04-suites",
     "titre": "Suites : modéliser une évolution régulière",
@@ -632,7 +632,7 @@
             ],
             "consignes": [
               "En C3, écrivez la formule qui calcule le chiffre d’affaires de 2026 à partir de celui de 2025 (C2) et de la raison (F1).",
-              "Recopiez la formule de C3 jusqu’en C7 : elle doit rester juste sur chaque ligne.",
+              "Recopiez la formule de C3 jusqu’en C7 : sélectionnez C3 et cliquez quatre fois sur « Recopier vers le bas », une ligne par clic. Elle doit rester juste sur chaque ligne.",
               "La raison ne s’écrit pas dans la formule : utilisez la cellule F1."
             ],
             "metadonnees": {
@@ -1035,8 +1035,8 @@
               "C7"
             ],
             "consignes": [
-              "En D3, écrivez la formule qui calcule l’hypothèse B de 2026 à partir de D2 et du taux (G2). Recopiez-la jusqu’en D7.",
-              "En E3, écrivez l’écart entre l’hypothèse B et l’hypothèse A de la même année. Recopiez jusqu’en E7.",
+              "En D3, écrivez la formule qui calcule l’hypothèse B de 2026 à partir de D2 et du taux (G2). Recopiez-la jusqu’en D7 : sélectionnez D3 et cliquez quatre fois sur « Recopier vers le bas », une ligne par clic.",
+              "En E3, écrivez l’écart entre l’hypothèse B et l’hypothèse A de la même année. Recopiez jusqu’en E7 : sélectionnez E3 et cliquez quatre fois sur « Recopier vers le bas », une ligne par clic.",
               "Le taux ne s’écrit pas dans la formule : utilisez la cellule G2."
             ],
             "metadonnees": {
@@ -1655,8 +1655,8 @@
               "B9"
             ],
             "consignes": [
-              "En C3, écrivez la formule qui calcule le chiffre d’affaires de 2026 à partir de C2 et du taux (F1). Recopiez-la jusqu’en C9.",
-              "En D2, avec SI : « Oui » si le chiffre d’affaires de la ligne atteint le seuil (H1), « Non » sinon. Recopiez jusqu’en D9.",
+              "En C3, écrivez la formule qui calcule le chiffre d’affaires de 2026 à partir de C2 et du taux (F1). Recopiez-la jusqu’en C9 : sélectionnez C3 et cliquez six fois sur « Recopier vers le bas », une ligne par clic.",
+              "En D2, avec SI : « Oui » si le chiffre d’affaires de la ligne atteint le seuil (H1), « Non » sinon. Recopiez jusqu’en D9 : sélectionnez D2 et cliquez sept fois sur « Recopier vers le bas », une ligne par clic.",
               "En F3, calculez le chiffre d’affaires cumulé de 2025 à 2030 inclus.",
               "Le taux et le seuil ne s’écrivent pas dans les formules : utilisez F1 et H1."
             ],
@@ -2769,7 +2769,7 @@
             ],
             "consignes": [
               "En C3, écrivez la formule qui calcule le chiffre d’affaires de 2026 à partir de celui de 2025 (C2) et de la raison (F1).",
-              "Recopiez la formule de C3 jusqu’en C7 : elle doit rester juste sur chaque ligne.",
+              "Recopiez la formule de C3 jusqu’en C7 : sélectionnez C3 et cliquez quatre fois sur « Recopier vers le bas », une ligne par clic. Elle doit rester juste sur chaque ligne.",
               "La raison ne s’écrit pas dans la formule : utilisez la cellule F1."
             ],
             "metadonnees": {
@@ -3407,8 +3407,8 @@
               "C7"
             ],
             "consignes": [
-              "En D3, écrivez la formule qui calcule l’hypothèse B de 2026 à partir de D2 et du taux (G2). Recopiez-la jusqu’en D7.",
-              "En E3, écrivez l’écart entre l’hypothèse B et l’hypothèse A de la même année. Recopiez jusqu’en E7.",
+              "En D3, écrivez la formule qui calcule l’hypothèse B de 2026 à partir de D2 et du taux (G2). Recopiez-la jusqu’en D7 : sélectionnez D3 et cliquez quatre fois sur « Recopier vers le bas », une ligne par clic.",
+              "En E3, écrivez l’écart entre l’hypothèse B et l’hypothèse A de la même année. Recopiez jusqu’en E7 : sélectionnez E3 et cliquez quatre fois sur « Recopier vers le bas », une ligne par clic.",
               "Le taux ne s’écrit pas dans la formule : utilisez la cellule G2."
             ],
             "metadonnees": {
@@ -4524,8 +4524,8 @@
               "B9"
             ],
             "consignes": [
-              "En C3, écrivez la formule qui calcule le chiffre d’affaires de 2026 à partir de C2 et du taux (F1). Recopiez-la jusqu’en C9.",
-              "En D2, avec SI : « Oui » si le chiffre d’affaires de la ligne atteint le seuil (H1), « Non » sinon. Recopiez jusqu’en D9.",
+              "En C3, écrivez la formule qui calcule le chiffre d’affaires de 2026 à partir de C2 et du taux (F1). Recopiez-la jusqu’en C9 : sélectionnez C3 et cliquez six fois sur « Recopier vers le bas », une ligne par clic.",
+              "En D2, avec SI : « Oui » si le chiffre d’affaires de la ligne atteint le seuil (H1), « Non » sinon. Recopiez jusqu’en D9 : sélectionnez D2 et cliquez sept fois sur « Recopier vers le bas », une ligne par clic.",
               "En F3, calculez le chiffre d’affaires cumulé de 2025 à 2030 inclus.",
               "Le taux et le seuil ne s’écrivent pas dans les formules : utilisez F1 et H1."
             ],

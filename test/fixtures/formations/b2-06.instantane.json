@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "9be1793aaeacba5eadbf56cad6b0de286e2d4860189630bd6cd993964af30507",
+  "empreinte": "4760426b8e2b6be05ef1eafa6457ea9048a349685672d6a59a42acce4325be4c",
   "sujet": {
     "id": "b2-06-exponentielle-logarithme",
     "titre": "Exponentielle et logarithme",
@@ -608,8 +608,8 @@
               "A8"
             ],
             "consignes": [
-              "En B2, écrivez la formule des ventes V(x) = a e^(kx) du mois de la ligne, avec EXP, a en E1 et k en G1. Recopiez-la jusqu’en B8.",
-              "En C3, écrivez le taux d’évolution des ventes entre le mois de la ligne 2 et celui de la ligne 3. Recopiez jusqu’en C8.",
+              "En B2, écrivez la formule des ventes V(x) = a e^(kx) du mois de la ligne, avec EXP, a en E1 et k en G1. Recopiez-la jusqu’en B8 : sélectionnez B2 et cliquez six fois sur « Recopier vers le bas », une ligne par clic.",
+              "En C3, écrivez le taux d’évolution des ventes entre le mois de la ligne 2 et celui de la ligne 3. Recopiez jusqu’en C8 : sélectionnez C3 et cliquez cinq fois sur « Recopier vers le bas », une ligne par clic.",
               "a et k ne s’écrivent pas dans la formule : utilisez E1 et G1, figés par des $."
             ],
             "metadonnees": {
@@ -986,8 +986,8 @@
             ],
             "consignes": [
               "Pour chaque objectif s de la colonne A, on résout 400e^(0,06x) = s.",
-              "En B2, calculez ln(s ÷ a) avec LN, a en E1. Recopiez jusqu’en B7.",
-              "En C2, calculez le mois exact x en divisant par k (G1). Recopiez jusqu’en C7.",
+              "En B2, calculez ln(s ÷ a) avec LN, a en E1. Recopiez jusqu’en B7 : sélectionnez B2 et cliquez cinq fois sur « Recopier vers le bas », une ligne par clic.",
+              "En C2, calculez le mois exact x en divisant par k (G1). Recopiez jusqu’en C7 : sélectionnez C2 et cliquez cinq fois sur « Recopier vers le bas », une ligne par clic.",
               "a et k ne s’écrivent pas dans les formules : utilisez E1 et G1, figés par des $."
             ],
             "metadonnees": {
@@ -1596,7 +1596,7 @@
               "B7"
             ],
             "consignes": [
-              "En C2, calculez z = ln y avec LN. Recopiez jusqu’en C7.",
+              "En C2, calculez z = ln y avec LN. Recopiez jusqu’en C7 : sélectionnez C2 et cliquez cinq fois sur « Recopier vers le bas », une ligne par clic.",
               "En D2 et E2, calculez la pente et l’ordonnée à l’origine de la droite d’ajustement de z en x, avec PENTE et ORDONNEE.ORIGINE.",
               "En F2, calculez le coefficient a du modèle y = a e^(αx).",
               "En G2, calculez la demande prévue au prix de 40 €, soit x = 4, à partir de F2 et D2."
@@ -2695,8 +2695,8 @@
               "A8"
             ],
             "consignes": [
-              "En B2, écrivez la formule des ventes V(x) = a e^(kx) du mois de la ligne, avec EXP, a en E1 et k en G1. Recopiez-la jusqu’en B8.",
-              "En C3, écrivez le taux d’évolution des ventes entre le mois de la ligne 2 et celui de la ligne 3. Recopiez jusqu’en C8.",
+              "En B2, écrivez la formule des ventes V(x) = a e^(kx) du mois de la ligne, avec EXP, a en E1 et k en G1. Recopiez-la jusqu’en B8 : sélectionnez B2 et cliquez six fois sur « Recopier vers le bas », une ligne par clic.",
+              "En C3, écrivez le taux d’évolution des ventes entre le mois de la ligne 2 et celui de la ligne 3. Recopiez jusqu’en C8 : sélectionnez C3 et cliquez cinq fois sur « Recopier vers le bas », une ligne par clic.",
               "a et k ne s’écrivent pas dans la formule : utilisez E1 et G1, figés par des $."
             ],
             "metadonnees": {
@@ -3406,8 +3406,8 @@
             ],
             "consignes": [
               "Pour chaque objectif s de la colonne A, on résout 400e^(0,06x) = s.",
-              "En B2, calculez ln(s ÷ a) avec LN, a en E1. Recopiez jusqu’en B7.",
-              "En C2, calculez le mois exact x en divisant par k (G1). Recopiez jusqu’en C7.",
+              "En B2, calculez ln(s ÷ a) avec LN, a en E1. Recopiez jusqu’en B7 : sélectionnez B2 et cliquez cinq fois sur « Recopier vers le bas », une ligne par clic.",
+              "En C2, calculez le mois exact x en divisant par k (G1). Recopiez jusqu’en C7 : sélectionnez C2 et cliquez cinq fois sur « Recopier vers le bas », une ligne par clic.",
               "a et k ne s’écrivent pas dans les formules : utilisez E1 et G1, figés par des $."
             ],
             "metadonnees": {
@@ -4531,7 +4531,7 @@
               "B7"
             ],
             "consignes": [
-              "En C2, calculez z = ln y avec LN. Recopiez jusqu’en C7.",
+              "En C2, calculez z = ln y avec LN. Recopiez jusqu’en C7 : sélectionnez C2 et cliquez cinq fois sur « Recopier vers le bas », une ligne par clic.",
               "En D2 et E2, calculez la pente et l’ordonnée à l’origine de la droite d’ajustement de z en x, avec PENTE et ORDONNEE.ORIGINE.",
               "En F2, calculez le coefficient a du modèle y = a e^(αx).",
               "En G2, calculez la demande prévue au prix de 40 €, soit x = 4, à partir de F2 et D2."

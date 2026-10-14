@@ -1,5 +1,9 @@
-import type { AuMoinsUnModifiable } from '../../../../common/domain/au-moins-un';
+import type {
+  AuMoinsUn,
+  AuMoinsUnModifiable,
+} from '../../../../common/domain/au-moins-un';
 import type { ConfusionId } from '../../domain/cours/banque/confusions';
+import { ligneDeLaReference } from '../../domain/cours/PlansStockes';
 import * as moteur from './briques';
 
 export { avecVirgule } from '../../../../common/domain/nombres/ecriture-francaise';
@@ -21,6 +25,47 @@ export function termes<T>(
 }
 
 export const rangIdentique = (rang: number): number => rang;
+
+const CLICS_EN_LETTRES = [
+  'une',
+  'deux',
+  'trois',
+  'quatre',
+  'cinq',
+  'six',
+  'sept',
+  'huit',
+  'neuf',
+  'dix',
+  'onze',
+  'douze',
+  'treize',
+  'quatorze',
+  'quinze',
+  'seize',
+  'dix-sept',
+  'dix-huit',
+  'dix-neuf',
+  'vingt',
+] as const;
+
+export function clicsDeRecopie(clics: number): string {
+  const enLettres = CLICS_EN_LETTRES.at(clics - 1);
+  if (!Number.isInteger(clics) || clics < 1 || enLettres === undefined) {
+    throw new RangeError(`une recopie compte de 1 à 20 clics, pas ${clics}`);
+  }
+  return `cliquez ${enLettres} fois sur « Recopier vers le bas »`;
+}
+
+export function gesteDeRecopie(
+  [premiere, ...autres]: AuMoinsUn<string>,
+  derniereLigne: number,
+): string {
+  const clics = derniereLigne - ligneDeLaReference(premiere);
+  const suite =
+    autres.length === 0 ? '' : `, puis de même depuis ${autres.join(' et ')}`;
+  return `sélectionnez ${premiere} et ${clicsDeRecopie(clics)}, une ligne par clic${suite}`;
+}
 
 export function anneesEtRangs(
   anneeDeDepart: number,

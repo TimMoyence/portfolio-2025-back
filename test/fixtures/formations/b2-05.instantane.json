@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "fca0eeb63e5a37c218b14788cef10de0d99e6932b51a8f9ad13a77c79da1dfd1",
+  "empreinte": "c49d4820fe32cd5d520aad0d75800d164260a2f5eef8e38601ac202b6181645c",
   "sujet": {
     "id": "b2-05-mathematiques-financieres",
     "titre": "Mathématiques financières : placer, emprunter",
@@ -620,8 +620,8 @@
               "B7"
             ],
             "consignes": [
-              "En C3, écrivez la formule qui calcule la valeur acquise au 1ᵉʳ janvier 2027 à partir de C2 et du taux (G1). Recopiez-la jusqu’en C7.",
-              "En D3, écrivez les intérêts gagnés pendant l’année écoulée. Recopiez jusqu’en D7.",
+              "En C3, écrivez la formule qui calcule la valeur acquise au 1ᵉʳ janvier 2027 à partir de C2 et du taux (G1). Recopiez-la jusqu’en C7 : sélectionnez C3 et cliquez quatre fois sur « Recopier vers le bas », une ligne par clic.",
+              "En D3, écrivez les intérêts gagnés pendant l’année écoulée. Recopiez jusqu’en D7 : sélectionnez D3 et cliquez quatre fois sur « Recopier vers le bas », une ligne par clic.",
               "Le taux ne s’écrit pas dans la formule : utilisez la cellule G1."
             ],
             "metadonnees": {
@@ -993,8 +993,8 @@
               "A6"
             ],
             "consignes": [
-              "B2 : le premier versement, fin 2026. En B3, écrivez l’épargne disponible fin 2027 : l’épargne de l’an passé, ses intérêts de l’année, puis le nouveau versement (H1). Recopiez jusqu’en B6.",
-              "En C3, écrivez les intérêts gagnés pendant l’année. Recopiez jusqu’en C6.",
+              "B2 : le premier versement, fin 2026. En B3, écrivez l’épargne disponible fin 2027 : l’épargne de l’an passé, ses intérêts de l’année, puis le nouveau versement (H1). Recopiez jusqu’en B6 : sélectionnez B3 et cliquez trois fois sur « Recopier vers le bas », une ligne par clic.",
+              "En C3, écrivez les intérêts gagnés pendant l’année. Recopiez jusqu’en C6 : sélectionnez C3 et cliquez trois fois sur « Recopier vers le bas », une ligne par clic.",
               "En F3, calculez le total des intérêts gagnés de 2027 à 2030.",
               "Le taux et le versement ne s’écrivent pas dans les formules : utilisez F1 et H1."
             ],
@@ -1630,8 +1630,8 @@
             ],
             "consignes": [
               "En H2, calculez l’annuité avec VPM, à partir du taux (F2), de la durée (G2) et du capital emprunté (B2) ; l’annuité doit s’afficher positive.",
-              "En C2, les intérêts de l’année 1 ; en D2, l’amortissement ; en E2, le capital dû en fin d’année. Recopiez les trois formules jusqu’à la ligne 5.",
-              "En B3, reportez le capital dû en fin d’année 1. Recopiez jusqu’en B5.",
+              "En C2, les intérêts de l’année 1 ; en D2, l’amortissement ; en E2, le capital dû en fin d’année. Recopiez les trois formules jusqu’à la ligne 5 : sélectionnez C2 et cliquez trois fois sur « Recopier vers le bas », une ligne par clic, puis de même depuis D2 et E2.",
+              "En B3, reportez le capital dû en fin d’année 1. Recopiez jusqu’en B5 : sélectionnez B3 et cliquez deux fois sur « Recopier vers le bas », une ligne par clic.",
               "En I2, calculez le coût du crédit.",
               "Le taux et l’annuité ne s’écrivent pas dans les formules : utilisez F2 et H2, figés par des $ là où la formule est recopiée."
             ],
@@ -2747,8 +2747,8 @@
               "B7"
             ],
             "consignes": [
-              "En C3, écrivez la formule qui calcule la valeur acquise au 1ᵉʳ janvier 2027 à partir de C2 et du taux (G1). Recopiez-la jusqu’en C7.",
-              "En D3, écrivez les intérêts gagnés pendant l’année écoulée. Recopiez jusqu’en D7.",
+              "En C3, écrivez la formule qui calcule la valeur acquise au 1ᵉʳ janvier 2027 à partir de C2 et du taux (G1). Recopiez-la jusqu’en C7 : sélectionnez C3 et cliquez quatre fois sur « Recopier vers le bas », une ligne par clic.",
+              "En D3, écrivez les intérêts gagnés pendant l’année écoulée. Recopiez jusqu’en D7 : sélectionnez D3 et cliquez quatre fois sur « Recopier vers le bas », une ligne par clic.",
               "Le taux ne s’écrit pas dans la formule : utilisez la cellule G1."
             ],
             "metadonnees": {
@@ -3421,8 +3421,8 @@
               "A6"
             ],
             "consignes": [
-              "B2 : le premier versement, fin 2026. En B3, écrivez l’épargne disponible fin 2027 : l’épargne de l’an passé, ses intérêts de l’année, puis le nouveau versement (H1). Recopiez jusqu’en B6.",
-              "En C3, écrivez les intérêts gagnés pendant l’année. Recopiez jusqu’en C6.",
+              "B2 : le premier versement, fin 2026. En B3, écrivez l’épargne disponible fin 2027 : l’épargne de l’an passé, ses intérêts de l’année, puis le nouveau versement (H1). Recopiez jusqu’en B6 : sélectionnez B3 et cliquez trois fois sur « Recopier vers le bas », une ligne par clic.",
+              "En C3, écrivez les intérêts gagnés pendant l’année. Recopiez jusqu’en C6 : sélectionnez C3 et cliquez trois fois sur « Recopier vers le bas », une ligne par clic.",
               "En F3, calculez le total des intérêts gagnés de 2027 à 2030.",
               "Le taux et le versement ne s’écrivent pas dans les formules : utilisez F1 et H1."
             ],
@@ -4551,8 +4551,8 @@
             ],
             "consignes": [
               "En H2, calculez l’annuité avec VPM, à partir du taux (F2), de la durée (G2) et du capital emprunté (B2) ; l’annuité doit s’afficher positive.",
-              "En C2, les intérêts de l’année 1 ; en D2, l’amortissement ; en E2, le capital dû en fin d’année. Recopiez les trois formules jusqu’à la ligne 5.",
-              "En B3, reportez le capital dû en fin d’année 1. Recopiez jusqu’en B5.",
+              "En C2, les intérêts de l’année 1 ; en D2, l’amortissement ; en E2, le capital dû en fin d’année. Recopiez les trois formules jusqu’à la ligne 5 : sélectionnez C2 et cliquez trois fois sur « Recopier vers le bas », une ligne par clic, puis de même depuis D2 et E2.",
+              "En B3, reportez le capital dû en fin d’année 1. Recopiez jusqu’en B5 : sélectionnez B3 et cliquez deux fois sur « Recopier vers le bas », une ligne par clic.",
               "En I2, calculez le coût du crédit.",
               "Le taux et l’annuité ne s’écrivent pas dans les formules : utilisez F2 et H2, figés par des $ là où la formule est recopiée."
             ],

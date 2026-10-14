@@ -2764,16 +2764,23 @@ Grille de 7 lignes × 7 colonnes. Contenu initial (`cellules`) :
 `consignes` :
 
 1. « En B5 et C5, calculez les totaux avec SOMME. »
-2. « En D2, écrivez le taux d’évolution du CA du sur-mesure, puis recopiez jusqu’en D5 avec le bouton
-   « Recopier vers le bas ». Écrivez les taux en décimal : 0,125 correspond à 12,5 %. »
+2. « En D2, écrivez le taux d’évolution du CA du sur-mesure, puis recopiez jusqu’en D5 : sélectionnez
+   D2 et cliquez trois fois sur « Recopier vers le bas », une ligne par clic. Écrivez les taux en
+   décimal : 0,125 correspond à 12,5 %. »
 3. « En E2, écrivez la part du sur-mesure dans le CA 2025 en figeant le total, puis recopiez jusqu’en
-   E5. »
-4. « En G2, calculez la marge brute 2025 du canal (CA 2025 × taux de marge brute), recopiez jusqu’en
-   G4, puis totalisez en G5 avec SOMME. »
+   E5 : sélectionnez E2 et cliquez trois fois sur « Recopier vers le bas », une ligne par clic. »
+4. « En G2, calculez la marge brute 2025 du canal (CA 2025 × taux de marge brute) et recopiez jusqu’en
+   G4 : sélectionnez G2 et cliquez deux fois sur « Recopier vers le bas », une ligne par clic.
+   Totalisez ensuite en G5 avec SOMME. »
 5. « En F5, calculez le taux de marge brute global : marge totale ÷ CA total. »
 6. « En B7, contrôlez vos formules : les parts doivent faire 100 % :
    =SI(ARRONDI(SOMME(E2:E4);6)=1;1;0). En C7, contrôlez vos données : votre marge (G5) doit égaler
    celle du compte de résultat (B6). »
+
+Chaque consigne de recopie, dans tous les ateliers tableur, s’écrit par `gesteDeRecopie`
+(`contenus/feuilles.ts`) : un clic sur « Recopier vers le bas » recopie la cellule sélectionnée dans
+celle du dessous (`FpSheet`), la consigne nomme donc la cellule à sélectionner et le nombre de clics,
+compté par la garde QA-11 de `contrat-des-cours.spec.ts` sur les attendus `memeQue` du corrigé.
 
 Corrigé (`corrige`, type `feuille`, `seuilReussite` 0,8 ; valeurs obtenues avec le moteur de formules
 sur les formules de référence ; tolérance relative 10⁻⁴ sauf mention) :

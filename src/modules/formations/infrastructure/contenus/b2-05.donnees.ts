@@ -10,6 +10,7 @@ import {
   avecVirgule,
   colonneDeValeurs,
   colonneRecopiee,
+  gesteDeRecopie,
   termes,
   type AttenduDeFeuille,
 } from './feuilles';
@@ -204,8 +205,8 @@ export const PLAN_DU_PLACEMENT = {
   cellules: CELLULES_DU_PLACEMENT,
   verrouillees: Object.keys(CELLULES_DU_PLACEMENT),
   consignes: [
-    'En C3, écrivez la formule qui calcule la valeur acquise au 1er janvier 2027 à partir de C2 et du taux (G1). Recopiez-la jusqu’en C7.',
-    'En D3, écrivez les intérêts gagnés pendant l’année écoulée. Recopiez jusqu’en D7.',
+    `En C3, écrivez la formule qui calcule la valeur acquise au 1er janvier 2027 à partir de C2 et du taux (G1). Recopiez-la jusqu’en C7 : ${gesteDeRecopie(['C3'], 7)}.`,
+    `En D3, écrivez les intérêts gagnés pendant l’année écoulée. Recopiez jusqu’en D7 : ${gesteDeRecopie(['D3'], 7)}.`,
     'Le taux ne s’écrit pas dans la formule : utilisez la cellule G1.',
   ],
 };
@@ -260,8 +261,8 @@ export const PLAN_DE_L_EPARGNE = {
   cellules: CELLULES_DE_L_EPARGNE,
   verrouillees: Object.keys(CELLULES_DE_L_EPARGNE),
   consignes: [
-    'B2 : le premier versement, fin 2026. En B3, écrivez l’épargne disponible fin 2027 : l’épargne de l’an passé, ses intérêts de l’année, puis le nouveau versement (H1). Recopiez jusqu’en B6.',
-    'En C3, écrivez les intérêts gagnés pendant l’année. Recopiez jusqu’en C6.',
+    `B2 : le premier versement, fin 2026. En B3, écrivez l’épargne disponible fin 2027 : l’épargne de l’an passé, ses intérêts de l’année, puis le nouveau versement (H1). Recopiez jusqu’en B6 : ${gesteDeRecopie(['B3'], 6)}.`,
+    `En C3, écrivez les intérêts gagnés pendant l’année. Recopiez jusqu’en C6 : ${gesteDeRecopie(['C3'], 6)}.`,
     'En F3, calculez le total des intérêts gagnés de 2027 à 2030.',
     'Le taux et le versement ne s’écrivent pas dans les formules : utilisez F1 et H1.',
   ],
@@ -335,8 +336,8 @@ export const PLAN_DE_LA_CAMIONNETTE = {
   verrouillees: Object.keys(CELLULES_DE_LA_CAMIONNETTE),
   consignes: [
     'En H2, calculez l’annuité avec VPM, à partir du taux (F2), de la durée (G2) et du capital emprunté (B2) ; l’annuité doit s’afficher positive.',
-    'En C2, les intérêts de l’année 1 ; en D2, l’amortissement ; en E2, le capital dû en fin d’année. Recopiez les trois formules jusqu’à la ligne 5.',
-    'En B3, reportez le capital dû en fin d’année 1. Recopiez jusqu’en B5.',
+    `En C2, les intérêts de l’année 1 ; en D2, l’amortissement ; en E2, le capital dû en fin d’année. Recopiez les trois formules jusqu’à la ligne 5 : ${gesteDeRecopie(['C2', 'D2', 'E2'], 5)}.`,
+    `En B3, reportez le capital dû en fin d’année 1. Recopiez jusqu’en B5 : ${gesteDeRecopie(['B3'], 5)}.`,
     'En I2, calculez le coût du crédit.',
     'Le taux et l’annuité ne s’écrivent pas dans les formules : utilisez F2 et H2, figés par des $ là où la formule est recopiée.',
   ],

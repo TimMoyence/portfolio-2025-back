@@ -5,6 +5,7 @@ import {
 import type { ConceptId } from '../../domain/cours/banque/concepts';
 import type { ContenuDeCours } from '../../domain/cours/CoursStocke';
 import * as moteur from './briques';
+import { gesteDeRecopie } from './feuilles';
 
 const CONCEPTS_DU_COURS = [
   'proposition',
@@ -153,7 +154,7 @@ const PLAN_DU_VISA = {
   verrouillees: Object.keys(CELLULES_DE_L_EXERCICE_3),
   consignes: [
     'En D2, écrivez avec SI et OU la règle du visa : « Visa » si le montant HT atteint 5 000 € ou si le pays n’est pas la France, « Non » sinon.',
-    'Recopiez la formule de D2 jusqu’en D6.',
+    `Recopiez la formule de D2 jusqu’en D6 : ${gesteDeRecopie(['D2'], 6)}.`,
     'Dans une formule, un texte s’écrit entre guillemets.',
   ],
 };
@@ -204,7 +205,7 @@ const PLAN_DE_LA_TVA = {
   consignes: [
     'En D2, avec SI, NON et OU : « Anomalie » s’il est faux que le client soit en France ou que son numéro de TVA soit renseigné, « OK » sinon.',
     'En E2, écrivez le même contrôle avec SI et ET, sans NON.',
-    'Recopiez D2 et E2 jusqu’à la ligne 6 : les deux colonnes doivent afficher la même chose.',
+    `Recopiez D2 et E2 jusqu’à la ligne 6 : ${gesteDeRecopie(['D2', 'E2'], 6)}. Les deux colonnes doivent afficher la même chose.`,
   ],
 };
 
@@ -1682,8 +1683,8 @@ const PLAN_DU_CONTROLE = {
   cellules: CELLULES_DU_FICHIER,
   verrouillees: Object.keys(CELLULES_DU_FICHIER),
   consignes: [
-    `En H2, avec SI et ET : « Relancer » si la facture est impayée et si son délai dépasse 60 jours, « Non » sinon. Recopiez jusqu’en H${DERNIERE_LIGNE_DU_FICHIER}.`,
-    `En I2, avec SI et OU : « Visa » si le montant HT atteint 5 000 € ou si le pays n’est pas la France, « Non » sinon. Recopiez jusqu’en I${DERNIERE_LIGNE_DU_FICHIER}.`,
+    `En H2, avec SI et ET : « Relancer » si la facture est impayée et si son délai dépasse 60 jours, « Non » sinon. Recopiez jusqu’en H${DERNIERE_LIGNE_DU_FICHIER} : ${gesteDeRecopie(['H2'], DERNIERE_LIGNE_DU_FICHIER)}.`,
+    `En I2, avec SI et OU : « Visa » si le montant HT atteint 5 000 € ou si le pays n’est pas la France, « Non » sinon. Recopiez jusqu’en I${DERNIERE_LIGNE_DU_FICHIER} : ${gesteDeRecopie(['I2'], DERNIERE_LIGNE_DU_FICHIER)}.`,
     'En K2 et K3, comptez avec NB.SI les factures à relancer et les factures à viser.',
   ],
 };

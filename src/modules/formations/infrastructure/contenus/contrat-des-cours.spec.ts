@@ -1,4 +1,5 @@
 import { lireNombreSaisiAvecUnite } from 'portfolio-2025-partage/formule';
+import { sansEspacesTypographiques } from '../../../../common/domain/texte/sans-espaces-typographiques';
 import {
   buildCoursDuContenu,
   prefixeDuCours,
@@ -13,9 +14,11 @@ import type { ContenuDeCours } from '../../domain/cours/CoursStocke';
 import { deroulePresentateur } from '../../domain/cours/DeroulePresentateur';
 import { projeterCatalogue } from '../../domain/cours/Diffusion';
 import { ouvrirTirages } from '../../domain/cours/OuvertureTirages';
+import { ligneDeLaReference } from '../../domain/cours/PlansStockes';
 import { slugOption } from '../../domain/cours/QuestionStockee';
 import { verifierStructure } from '../../domain/cours/StructureCours';
 import { tirer } from '../../domain/cours/Tirage';
+import { clicsDeRecopie } from './feuilles';
 import { CONTENUS } from './index';
 
 const TAILLE_MAX_DU_BAREME = 400 * 1024;
@@ -40,6 +43,62 @@ const CLES_SECRETES = [
   'misconception',
   'valeurAttendue',
 ];
+
+function recopiesDeLaFeuille(
+  ecran: ContenuDeCours['ecrans'][number],
+): Map<string, number> {
+  const dernieres = new Map<string, number>();
+  if (ecran.brique !== 'fp-sheet') {
+    return dernieres;
+  }
+  for (const { reference, forme } of ecran.proprietes.questions[0].corrige
+    .attendus) {
+    if (forme !== 'references') {
+      dernieres.set(
+        forme.memeQue,
+        Math.max(
+          dernieres.get(forme.memeQue) ?? 0,
+          ligneDeLaReference(reference),
+        ),
+      );
+    }
+  }
+  return dernieres;
+}
+
+function consignesDeRecopieFautives(contenu: ContenuDeCours): string[] {
+  return contenu.ecrans.flatMap((ecran) => {
+    if (ecran.brique !== 'fp-sheet') {
+      return [];
+    }
+    const consignes = ecran.proprietes.plan.consignes.map(
+      sansEspacesTypographiques,
+    );
+    const sansGeste = consignes
+      .filter(
+        (consigne) =>
+          /recopiez/iu.test(consigne) &&
+          !/cliquez \S+ fois sur « Recopier vers le bas »/u.test(consigne),
+      )
+      .map((consigne) => `${ecran.screenId} : ${consigne}`);
+    const malComptees = [...recopiesDeLaFeuille(ecran)]
+      .filter(
+        ([source, derniere]) =>
+          !consignes.some(
+            (consigne) =>
+              new RegExp(`(?<![$A-Z])${source}(?!\\d)`, 'u').test(consigne) &&
+              consigne.includes(
+                clicsDeRecopie(derniere - ligneDeLaReference(source)),
+              ),
+          ),
+      )
+      .map(
+        ([source, derniere]) =>
+          `${ecran.screenId} : ${source} recopiée jusqu’à la ligne ${derniere}`,
+      );
+    return [...sansGeste, ...malComptees];
+  });
+}
 
 function confusionsCiblees(contenu: ContenuDeCours): Set<string> {
   return new Set(
@@ -134,6 +193,10 @@ describe.each(CONTENUS.map((contenu) => [contenu.slug, contenu] as const))(
         );
 
       expect(fautives).toEqual([]);
+    });
+
+    it('QA-11 · dit, pour chaque colonne recopiée d’un atelier tableur, le geste « Recopier vers le bas » et son nombre de clics, une ligne par clic', () => {
+      expect(consignesDeRecopieFautives(contenu)).toEqual([]);
     });
 
     it('préfixe ses questions par le slug du cours, sans doublon', () => {
