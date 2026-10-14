@@ -25,6 +25,7 @@ const TAILLE_MAX_DU_BAREME = 400 * 1024;
 const TIRAGES_CONTROLES = 61;
 const LONGUEUR_MAX_D_UN_IDENTIFIANT = 60;
 const NOMBRE_EN_TETE = /^[−-]?\d[\d\s]*(?:,\d+)?/u;
+const DECIMAL_A_POINT = /\d\.\d/u;
 const CLES_DE_CONFUSION = new Set([
   'confusion',
   'confusionSiErreur',
@@ -263,7 +264,7 @@ describe.each(CONTENUS.map((contenu) => [contenu.slug, contenu] as const))(
       }
     });
 
-    it('publie pour chaque énigme une forme que la saisie relit comme la solution', () => {
+    it('publie pour chaque énigme une forme à la française que la saisie relit comme la solution', () => {
       const illisibles = questionsDuCours(cours).flatMap((question) => {
         if (
           !('corrige' in question) ||
@@ -274,7 +275,9 @@ describe.each(CONTENUS.map((contenu) => [contenu.slug, contenu] as const))(
         }
         const { formePubliee, valeur, tolerance } = question.corrige.solution;
         const relue = lireNombreSaisiAvecUnite(formePubliee);
-        return relue !== null && Math.abs(relue - valeur) <= tolerance.valeur
+        return !DECIMAL_A_POINT.test(formePubliee) &&
+          relue !== null &&
+          Math.abs(relue - valeur) <= tolerance.valeur
           ? []
           : [`${question.id} : ${formePubliee}`];
       });
@@ -282,7 +285,7 @@ describe.each(CONTENUS.map((contenu) => [contenu.slug, contenu] as const))(
       expect(illisibles).toEqual([]);
     });
 
-    it('ouvre la forme publiée de chaque numérique sur la valeur de sa solution', () => {
+    it('ouvre la forme publiée de chaque numérique, à la française, sur la valeur de sa solution', () => {
       const { solutions } = tirer(cours, 0);
       const illisibles = questionsDuCours(cours).flatMap((question) => {
         if (
@@ -294,7 +297,8 @@ describe.each(CONTENUS.map((contenu) => [contenu.slug, contenu] as const))(
         const nombre = NOMBRE_EN_TETE.exec(question.formePubliee)?.[0];
         const relue =
           nombre === undefined ? null : lireNombreSaisiAvecUnite(nombre);
-        return relue !== null &&
+        return !DECIMAL_A_POINT.test(question.formePubliee) &&
+          relue !== null &&
           matchesSolution(
             relue,
             Number(solutions[question.id].valeur),
@@ -314,6 +318,24 @@ describe.each(CONTENUS.map((contenu) => [contenu.slug, contenu] as const))(
       expect(
         Object.keys(tirage.banque).filter((id) => sujet.includes(id)),
       ).toEqual([]);
+    });
+
+    it('écrit à la française chaque bonne réponse et chaque option de vote servies', () => {
+      const servis = [
+        ...deroulePresentateur(cours, 0).ecrans.flatMap((ecran) =>
+          ecran.corriges.map(
+            ({ questionId, bonneReponse }) => `${questionId} : ${bonneReponse}`,
+          ),
+        ),
+        ...Object.entries(tirer(cours, 0).libellesOptions).flatMap(
+          ([questionId, libelles]) =>
+            Object.values(libelles).map(
+              (libelle) => `${questionId} : ${libelle}`,
+            ),
+        ),
+      ];
+
+      expect(servis.filter((texte) => DECIMAL_A_POINT.test(texte))).toEqual([]);
     });
 
     it('expose au déroulé toutes les questions du cours', () => {
