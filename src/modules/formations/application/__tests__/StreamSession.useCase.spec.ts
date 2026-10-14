@@ -3,7 +3,14 @@ import { Logger } from '@nestjs/common';
 import type { MessageEvent } from '@nestjs/common';
 import { firstValueFrom, take, toArray } from 'rxjs';
 import type { Observable, Subscription } from 'rxjs';
-import { creerCatalogueDeTest } from '../../../../../test/factories/cours.factory';
+import {
+  buildCoursDeTest,
+  creerCatalogueDeTest,
+} from '../../../../../test/factories/cours.factory';
+import {
+  CAS_DES_COURS_SERVIS,
+  pilotageDUnCoursServi,
+} from '../../../../../test/factories/votes-des-cours-servis.factory';
 import {
   buildAnswerRecord,
   buildBareme,
@@ -152,12 +159,16 @@ describe('StreamSessionUseCase', () => {
   let resultats: GetSessionResultsUseCase;
   let sut: StreamSessionUseCase;
 
+  const catalogue = creerCatalogueDeTest(
+    buildCoursDeTest({ slug: buildSessionRecord().courseSlug }),
+  );
   const instanceNeuve = (capacite?: IStreamCapacity): StreamSessionUseCase =>
     new StreamSessionUseCase(
       sessions,
       new SessionStateCacheService(),
       resultats,
       participants,
+      catalogue,
       undefined,
       capacite,
     );
@@ -199,7 +210,13 @@ describe('StreamSessionUseCase', () => {
       createMockEscapeRepo(),
       reponsesLibres,
     );
-    sut = new StreamSessionUseCase(sessions, cache, resultats, participants);
+    sut = new StreamSessionUseCase(
+      sessions,
+      cache,
+      resultats,
+      participants,
+      catalogue,
+    );
   });
 
   afterEach(() => {
@@ -212,6 +229,28 @@ describe('StreamSessionUseCase', () => {
     const message = await premier;
     expect(message.type).toBe('etat');
   });
+
+  it.each(CAS_DES_COURS_SERVIS)(
+    'QA-01 · %s : sert dans l état lu en base la phase « vote » de chaque vote jumelé encore non piloté',
+    async (_slug, cours) => {
+      const { pilotageEcrans, attendu } = pilotageDUnCoursServi(cours);
+      seanceLue({ courseSlug: cours.slug, pilotageEcrans });
+      const flux = new StreamSessionUseCase(
+        sessions,
+        new SessionStateCacheService(),
+        resultats,
+        participants,
+        creerCatalogueDeTest(cours),
+      );
+
+      const premier = firstValueFrom(fluxEtudiant(PARTICIPANT_ID, flux));
+      await laisserPasser();
+
+      expect((await premier).data).toEqual(
+        expect.objectContaining({ pilotage: attendu }),
+      );
+    },
+  );
 
   it.each([
     [
@@ -687,6 +726,7 @@ describe('StreamSessionUseCase', () => {
       cache,
       resultats,
       participants,
+      catalogue,
       { battementMs: HEARTBEAT_MS_TEST, dureeMaxMs },
     );
     const ecoute = ecouterEtudiant(PARTICIPANT_ID, brefs);

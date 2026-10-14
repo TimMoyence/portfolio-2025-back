@@ -45,7 +45,7 @@ export interface EtatParticipant {
   readonly reponses: readonly {
     readonly questionId: string;
     readonly valeur: ValeurReponse;
-    readonly correcte: boolean;
+    readonly correcte: boolean | null;
     readonly score: number | null;
     readonly details:
       | readonly {

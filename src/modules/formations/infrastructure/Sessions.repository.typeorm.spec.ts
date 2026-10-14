@@ -166,6 +166,8 @@ describe('SessionsRepositoryTypeORM', () => {
     const etat = await sut.lireEtat('session-uuid');
 
     expect(etat).toEqual({
+      courseSlug: buildSessionRecord().courseSlug,
+      courseVersion: buildSessionRecord().courseVersion,
       etat: 'en_cours',
       modeRythme: 'pilote',
       ecranCourant: 7,

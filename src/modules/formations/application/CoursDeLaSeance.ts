@@ -31,7 +31,7 @@ export async function seanceOuverteAuxReponses(
 
 export async function coursDeLaSeance(
   catalogue: ICatalogueCours,
-  session: SessionRecord,
+  session: Pick<SessionRecord, 'courseSlug' | 'courseVersion'>,
 ): Promise<Cours> {
   const cours = await catalogue.trouver(
     session.courseSlug,

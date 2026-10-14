@@ -1,12 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
-import {
-  detailsLisibles,
-  libelleLisible,
-} from '../domain/cours/banque/confusions';
+import { findQuestion } from '../domain/Bareme';
+import { detailsLisibles } from '../domain/cours/banque/confusions';
 import type { Cours } from '../domain/contrats/cours';
 import type { EtatParticipant } from '../domain/contrats/pilotage';
 import { cleDeJalon } from '../domain/cours/CleDeJalon';
 import { ecranDeDefi } from '../domain/cours/Defis';
+import { verdictServiDe } from '../domain/cours/EcranServi';
 import {
   ecranDEnigmes,
   enigmeVisee,
@@ -23,6 +22,7 @@ import type {
 import type { IFreeResponsesRepository } from '../domain/IFreeResponses.repository';
 import type { IPulsesRepository } from '../domain/IPulses.repository';
 import type { IRappelsServisRepository } from '../domain/IRappelsServis.repository';
+import type { SessionRecord } from '../domain/ISessions.repository';
 import {
   ANSWERS_REPOSITORY,
   ESCAPE_REPOSITORY,
@@ -70,7 +70,7 @@ export class LireEtatParticipantUseCase {
       sessionId,
       participantId,
       revision: session.revision,
-      reponses: reponses.map((reponse) => this.reponseLue(reponse)),
+      reponses: reponses.map((reponse) => this.reponseLue(session, reponse)),
       reponsesLibres: libres
         .filter((libre) => ecranDeDefi(cours, libre.activityId) === null)
         .map((libre) => ({
@@ -92,16 +92,22 @@ export class LireEtatParticipantUseCase {
   }
 
   private reponseLue(
+    session: SessionRecord,
     reponse: AnswerRecord,
   ): EtatParticipant['reponses'][number] {
+    const { correcte, libelleConfusion } = verdictServiDe(
+      session,
+      findQuestion(session.bareme, reponse.questionId),
+      reponse,
+    );
     return {
       questionId: reponse.questionId,
       valeur: reponse.valeur,
-      correcte: reponse.correcte,
+      correcte,
       score: reponse.score,
       details:
         reponse.details === null ? null : detailsLisibles(reponse.details),
-      libelleConfusion: libelleLisible(reponse.misconception),
+      libelleConfusion,
     };
   }
 

@@ -22,3 +22,5 @@ export const REGLE_DE_NOTATION: RegleDeNotation = Object.freeze({
   seuilQuestionProbleme: 0.7,
   decimalesStatistiques: 2,
 });
+
+export const DECIMALES_DE_LA_NOTE = 1;

@@ -7,6 +7,7 @@ import type { Cours, Ecran, Question } from '../contrats/cours';
 import type { Solution } from '../GradingCore';
 import type { CorrigeProduction } from './Corrige';
 import { questionsDe, questionsDuCours } from './Cours';
+import { estVoteJumele } from './PilotageEcrans';
 import { TirageAmbiguError, tirer } from './Tirage';
 
 export const NOMBRE_TIRAGES_DISTRIBUES = 60;
@@ -156,7 +157,7 @@ function particularitesDe(question: Question, ecran: Ecran): Particularites {
   if (ecran.brique === 'fp-spaced') {
     return { origine: 'banque' };
   }
-  if (ecran.brique === 'fp-vote' && ecran.questionJumelle !== undefined) {
+  if (estVoteJumele(ecran)) {
     return {
       ouverture: question.id === ecran.question.id ? 'principale' : 'jumelle',
     };

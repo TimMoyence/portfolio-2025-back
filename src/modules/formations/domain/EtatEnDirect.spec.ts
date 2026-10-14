@@ -1,4 +1,9 @@
+import { buildCoursDeTest } from '../../../../test/factories/cours.factory';
 import { buildSessionRecord } from '../../../../test/factories/formation.factory';
+import {
+  CAS_DES_COURS_SERVIS,
+  pilotageDUnCoursServi,
+} from '../../../../test/factories/votes-des-cours-servis.factory';
 import { etatEnDirect } from './EtatEnDirect';
 
 describe('etatEnDirect', () => {
@@ -14,7 +19,7 @@ describe('etatEnDirect', () => {
       majLe,
     });
 
-    expect(etatEnDirect(seance, 12)).toEqual({
+    expect(etatEnDirect(seance, 12, buildCoursDeTest())).toEqual({
       etat: 'en_cours',
       modeRythme: 'libre',
       ecranCourant: 3,
@@ -25,4 +30,15 @@ describe('etatEnDirect', () => {
       majLe,
     });
   });
+
+  it.each(CAS_DES_COURS_SERVIS)(
+    'QA-01 · %s : diffuse la phase « vote » de chaque vote jumelé encore non piloté',
+    (_slug, cours) => {
+      const { pilotageEcrans, attendu } = pilotageDUnCoursServi(cours);
+
+      expect(
+        etatEnDirect(buildSessionRecord({ pilotageEcrans }), 0, cours).pilotage,
+      ).toEqual(attendu);
+    },
+  );
 });

@@ -2,11 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
 import { gradeAnswer } from '../domain/AnswerGrading';
 import { estValeurConnue, findQuestion, solutionFor } from '../domain/Bareme';
-import { libelleLisible } from '../domain/cours/banque/confusions';
 import {
   assertEcranServi,
   ecranParId,
   rangDeLaQuestion,
+  verdictServiDe,
 } from '../domain/cours/EcranServi';
 import { assertQuestionNonCorrigee } from '../domain/cours/CorrectionSurPlace';
 import { assertPhaseOuverte } from '../domain/cours/PilotageEcrans';
@@ -116,9 +116,6 @@ export class SubmitAnswerUseCase extends EnregistrementDeReponse {
       vueLe: new Date(),
     });
 
-    return {
-      ...verdict,
-      libelleConfusion: libelleLisible(verdict.misconception),
-    };
+    return verdictServiDe(session, question, verdict);
   }
 }

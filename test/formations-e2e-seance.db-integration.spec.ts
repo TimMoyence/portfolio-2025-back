@@ -370,12 +370,37 @@ function seanceComplete(
 
       const voterSaufLeRetardataire = async (
         question: Question,
-      ): Promise<void> => {
+      ): Promise<Response[]> => {
+        const reponses: Response[] = [];
         for (const unPoste of postes.filter(
           (candidat) => candidat !== retardataire(),
         )) {
-          await repondre(unPoste, question).expect(CREE);
+          reponses.push(await repondre(unPoste, question).expect(CREE));
         }
+        return reponses;
+      };
+
+      const verdictServi = (reponse: Response): unknown[] => {
+        const corps = reponse.body as Record<string, unknown>;
+        return [corps.correcte, corps.misconception, corps.libelleConfusion];
+      };
+
+      const verdictsLusParLePoste = async (
+        unPoste: Poste,
+        questions: readonly Question[],
+      ): Promise<unknown[]> => {
+        const etat = await poste(
+          'get',
+          `/sessions/${sessionId}/moi`,
+          unPoste.jeton,
+        ).expect(OK);
+        const { reponses } = etat.body as {
+          reponses: { questionId: string; correcte: unknown }[];
+        };
+        const verdicts = new Map(
+          reponses.map(({ questionId, correcte }) => [questionId, correcte]),
+        );
+        return questions.map(({ id }) => verdicts.get(id));
       };
 
       const jouerVoteSimple = async (ecran: Ecran): Promise<void> => {
@@ -410,10 +435,11 @@ function seanceComplete(
           await jouerVoteSimple(ecran);
           return;
         }
+        const deuxTours = [ecran.question, ecran.questionJumelle];
         const jumelleFermee = noterConflit(
           await repondre(postes[0], ecran.questionJumelle),
         );
-        await voterSaufLeRetardataire(ecran.question);
+        const premierTour = await voterSaufLeRetardataire(ecran.question);
         await piloter({
           pilotage: { screenId: ecran.id, phase: 'discussion' },
         }).expect(SANS_CONTENU);
@@ -423,15 +449,27 @@ function seanceComplete(
         await piloter({
           pilotage: { screenId: ecran.id, phase: 'revote' },
         }).expect(SANS_CONTENU);
+        const revote: Response[] = [];
         for (const unPoste of postes) {
-          await repondre(unPoste, ecran.questionJumelle).expect(CREE);
+          revote.push(
+            await repondre(unPoste, ecran.questionJumelle).expect(CREE),
+          );
         }
+        const lusAvantRevelation = await verdictsLusParLePoste(
+          postes[0],
+          deuxTours,
+        );
         await piloter({
           pilotage: { screenId: ecran.id, phase: 'revele' },
         }).expect(SANS_CONTENU);
+        const lusApresRevelation = await verdictsLusParLePoste(
+          postes[0],
+          deuxTours,
+        );
         const retourEnArriere = noterConflit(
           await piloter({ pilotage: { screenId: ecran.id, phase: 'vote' } }),
         );
+        const retenu = [null, null, null];
 
         expect({
           jumelleAvantRevote: [jumelleFermee.status, codeDe(jumelleFermee)],
@@ -440,10 +478,18 @@ function seanceComplete(
             codeDe(principaleFermee),
           ],
           retourEnArriere: [retourEnArriere.status, codeDe(retourEnArriere)],
+          premierTour: premierTour.map(verdictServi),
+          revote: revote.map(verdictServi),
+          lusAvantRevelation,
+          lusApresRevelation,
         }).toEqual({
           jumelleAvantRevote: [CONFLIT, 'PHASE_FERMEE'],
           principaleEnDiscussion: [CONFLIT, 'PHASE_FERMEE'],
           retourEnArriere: [CONFLIT, 'PHASE_NON_MONOTONE'],
+          premierTour: premierTour.map(() => retenu),
+          revote: revote.map(() => retenu),
+          lusAvantRevelation: [null, null],
+          lusApresRevelation: [true, true],
         });
       };
 

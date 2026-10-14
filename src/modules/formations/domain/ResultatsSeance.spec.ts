@@ -5,8 +5,23 @@ import {
   detailsDeFeuilleAMoitieJuste,
   detailsDeFeuilleJuste,
 } from '../../../../test/factories/formation.factory';
+import { buildCoursAvecProductions } from '../../../../test/factories/cours.factory';
+import {
+  corrigerProduction,
+  ecranDeProduction,
+} from './cours/ProductionSoumise';
 import { NE_SAIT_PAS } from './GradingCore';
+import type { AnswerRecord } from './IAnswers.repository';
 import { agregerResultats } from './ResultatsSeance';
+
+function reponseDeFeuilleAMoitieJuste(questionId: string): AnswerRecord {
+  return buildAnswerRecord({
+    questionId,
+    valeur: { type: 'feuille', cellules: { D2: '=2' } },
+    score: 0.5,
+    details: detailsDeFeuilleAMoitieJuste(),
+  });
+}
 
 describe('agregerResultats', () => {
   it('compte par sens et non par valeur saisie', () => {
@@ -97,12 +112,7 @@ describe('agregerResultats', () => {
           score: 1,
           details: detailsDeFeuilleJuste(),
         }),
-        buildAnswerRecord({
-          questionId: 'Q-FEUILLE',
-          valeur: { type: 'feuille', cellules: { D2: '=2' } },
-          score: 0.5,
-          details: detailsDeFeuilleAMoitieJuste(),
-        }),
+        reponseDeFeuilleAMoitieJuste('Q-FEUILLE'),
       ],
     }).questions;
 
@@ -113,22 +123,43 @@ describe('agregerResultats', () => {
     });
   });
 
-  it('compte « je ne sais pas » d une production comme une reponse sans saisie', () => {
+  it('QA-06 · compte « je ne sais pas » d une production a zero et faux pour chaque cle', () => {
+    const feuille = ecranDeProduction(
+      buildCoursAvecProductions(),
+      'Q-TEST-FEUILLE',
+    );
+    if (feuille === null) {
+      throw new Error('feuille absente du cours de test');
+    }
+    const neSaitPas = { type: 'feuille', neSaitPas: true } as const;
+    const verdict = corrigerProduction(
+      feuille.question.corrige,
+      neSaitPas,
+      feuille,
+    );
     const [question] = agregerResultats({
-      questions: [buildQuestionAAgreger({ id: 'Q-FEUILLE', type: 'feuille' })],
-      participants: 1,
+      questions: [
+        buildQuestionAAgreger({ id: 'Q-TEST-FEUILLE', type: 'feuille' }),
+      ],
+      participants: 2,
       answers: [
+        reponseDeFeuilleAMoitieJuste('Q-TEST-FEUILLE'),
         buildAnswerRecord({
-          questionId: 'Q-FEUILLE',
-          valeur: { type: 'feuille', neSaitPas: true },
-          score: 0,
-          details: [],
+          questionId: 'Q-TEST-FEUILLE',
+          valeur: neSaitPas,
+          correcte: verdict.correcte,
+          score: verdict.score,
+          details: verdict.details,
         }),
       ],
     }).questions;
 
     expect(question.neSaitPas).toBe(1);
-    expect(question.parCle).toBeNull();
+    expect(question.scoreMoyen).toBe(0.25);
+    expect(question.parCle).toEqual({
+      D2: { total: 2, justes: 0 },
+      D3: { total: 2, justes: 1 },
+    });
   });
 
   it('departage deux confusions de meme frequence par leur identifiant', () => {

@@ -1,5 +1,7 @@
 import { CONTENUS } from '../../src/modules/formations/infrastructure/contenus';
 
+export { CONTENUS };
+
 export const [
   COURS_B2_01,
   COURS_B2_02,

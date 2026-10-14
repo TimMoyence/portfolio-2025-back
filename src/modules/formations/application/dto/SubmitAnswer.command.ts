@@ -1,4 +1,5 @@
 import type { AnswerValue } from '../../domain/AnswerGrading';
+import type { VerdictServi } from '../../domain/cours/EcranServi';
 
 export interface SubmitAnswerCommand {
   sessionId: string;
@@ -8,8 +9,4 @@ export interface SubmitAnswerCommand {
   dureeMs: number;
 }
 
-export interface SubmitAnswerResult {
-  correcte: boolean;
-  misconception: string | null;
-  libelleConfusion: string | null;
-}
+export type SubmitAnswerResult = VerdictServi;

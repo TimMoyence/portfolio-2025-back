@@ -1528,7 +1528,9 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
   "ReponseParticipantResponseDto": {
     "properties": {
       "correcte": {
+        "description": "Verdict de la reponse, null tant que l ecran d un vote a deux tours n est pas revele",
         "example": false,
+        "nullable": true,
         "type": "boolean",
       },
       "details": {

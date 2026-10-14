@@ -20,6 +20,8 @@ const CAPACITE_PAR_DEFAUT = 40;
 
 function etatDe(entity: FormationSessionEntity): EtatDeSeanceRecord {
   return {
+    courseSlug: entity.courseSlug,
+    courseVersion: entity.courseVersion,
     etat: entity.etat,
     modeRythme: entity.modeRythme,
     ecranCourant: entity.ecranCourant,
@@ -77,6 +79,8 @@ export class SessionsRepositoryTypeORM
     const entity = await this.repo.findOne({
       where: { id },
       select: {
+        courseSlug: true,
+        courseVersion: true,
         etat: true,
         modeRythme: true,
         ecranCourant: true,
@@ -127,8 +131,6 @@ export class SessionsRepositoryTypeORM
   protected toDomain(entity: FormationSessionEntity): SessionRecord {
     return {
       id: entity.id,
-      courseSlug: entity.courseSlug,
-      courseVersion: entity.courseVersion,
       teacherId: entity.teacherId,
       code: entity.code,
       ...etatDe(entity),

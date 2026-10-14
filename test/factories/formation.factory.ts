@@ -92,6 +92,17 @@ export function buildBareme(overrides: Partial<Bareme> = {}): Bareme {
   };
 }
 
+export function buildBaremeDeQuestions(questionIds: readonly string[]): Bareme {
+  return buildBareme({
+    questions: questionIds.map((id) => ({
+      id,
+      type: 'numeric',
+      concept: 'capitalisation',
+      noteCompte: true,
+    })),
+  });
+}
+
 export function buildBaremeV2(overrides: Partial<BaremeV2> = {}): BaremeV2 {
   return {
     version: 2,
@@ -316,6 +327,15 @@ export function detailsDeFeuilleJuste(): NonNullable<AnswerRecord['details']> {
   ];
 }
 
+export function detailsDeFeuilleSansReponse(): NonNullable<
+  AnswerRecord['details']
+> {
+  return [
+    { cle: 'D2', juste: false, confusion: null },
+    { cle: 'D3', juste: false, confusion: null },
+  ];
+}
+
 export function detailsDeFeuilleAMoitieJuste(): NonNullable<
   AnswerRecord['details']
 > {
@@ -432,6 +452,8 @@ export function buildIncidentInput(
 
 export function etatDeSeance(session: SessionRecord): EtatDeSeanceRecord {
   return {
+    courseSlug: session.courseSlug,
+    courseVersion: session.courseVersion,
     etat: session.etat,
     modeRythme: session.modeRythme,
     ecranCourant: session.ecranCourant,

@@ -193,13 +193,39 @@ export function normaliserProduction(
   return normalisee;
 }
 
+function productionVide(
+  type: 'feuille' | 'tableau' | 'classement',
+): ValeurProduction {
+  switch (type) {
+    case 'feuille':
+      return { type, cellules: {} };
+    case 'tableau':
+      return { type, saisies: [] };
+    case 'classement':
+      return { type, classement: {} };
+  }
+}
+
 export function corrigerProduction(
   corrige: CorrigeProduction,
   valeur: ValeurProduction,
   cible: EcranDeProduction,
 ): VerdictDeProduction {
   if ('neSaitPas' in valeur) {
-    return { correcte: false, score: 0, details: [] };
+    const vide = corrigerProduction(
+      corrige,
+      productionVide(valeur.type),
+      cible,
+    );
+    return {
+      correcte: false,
+      score: 0,
+      details: vide.details.map(({ cle }) => ({
+        cle,
+        juste: false,
+        confusion: null,
+      })),
+    };
   }
   if (valeur.type === 'feuille' && corrige.type === 'feuille') {
     const correction = corrigerFeuille(corrige, valeur.cellules);

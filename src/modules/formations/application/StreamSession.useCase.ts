@@ -27,13 +27,16 @@ import type {
 } from '../domain/ISessions.repository';
 import { appartenanceDuParticipant } from '../domain/AppartenanceDuParticipant';
 import type { ResultatsEnDirect } from '../domain/contrats/resultats';
+import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
 import { etatEnDirect } from '../domain/EtatEnDirect';
 import {
+  CATALOGUE_COURS,
   PARTICIPANTS_REPOSITORY,
   SESSION_STATE_CACHE,
   SESSIONS_REPOSITORY,
   STREAM_CAPACITY,
 } from '../domain/token';
+import { coursDeLaSeance } from './CoursDeLaSeance';
 import { seancePilotablePar } from './SessionAccess';
 
 const INTERVALLE_MS = 500;
@@ -127,6 +130,8 @@ export class StreamSessionUseCase {
     private readonly presenterResults: GetSessionResultsUseCase,
     @Inject(PARTICIPANTS_REPOSITORY)
     private readonly participants: IParticipantsRepository,
+    @Inject(CATALOGUE_COURS)
+    private readonly catalogue: ICatalogueCours,
     @Optional()
     private readonly cadences: CadencesFlux = CADENCES_PRODUCTION,
     @Optional()
@@ -505,7 +510,8 @@ export class StreamSessionUseCase {
     if (!session) {
       return null;
     }
-    const etat = etatEnDirect(session, 0);
+    const cours = await coursDeLaSeance(this.catalogue, session);
+    const etat = etatEnDirect(session, 0, cours);
     this.cache.publish(sessionId, etat);
     return etat;
   }

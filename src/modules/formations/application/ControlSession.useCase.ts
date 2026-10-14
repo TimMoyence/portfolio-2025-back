@@ -72,7 +72,7 @@ export class ControlSessionUseCase {
           misAJour,
           session.revision,
         );
-        this.publier(sessionId, sessionMiseAJour);
+        await this.publier(sessionId, sessionMiseAJour);
         return;
       } catch (error) {
         if (!(error instanceof RevisionDeSeanceObsoleteError)) {
@@ -205,14 +205,18 @@ export class ControlSessionUseCase {
     const misAJour = await this.sessions.update(sessionId, {
       etat: 'en_cours',
     });
-    this.publier(sessionId, misAJour);
+    await this.publier(sessionId, misAJour);
   }
 
-  private publier(sessionId: string, session: SessionRecord): void {
+  private async publier(
+    sessionId: string,
+    session: SessionRecord,
+  ): Promise<void> {
+    const cours = await coursDeLaSeance(this.catalogue, session);
     const enCache = this.cache.read(sessionId);
     this.cache.publish(
       sessionId,
-      etatEnDirect(session, enCache?.participants ?? 0),
+      etatEnDirect(session, enCache?.participants ?? 0, cours),
     );
   }
 }
