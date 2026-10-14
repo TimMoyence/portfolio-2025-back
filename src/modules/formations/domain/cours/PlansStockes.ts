@@ -33,10 +33,15 @@ interface Grille {
   readonly colonnes: number;
 }
 
+export function ligneDeLaReference(reference: string): number {
+  return Number(reference.slice(1));
+}
+
 export function estDansLaGrille(grille: Grille, reference: string): boolean {
   const colonne = (reference.codePointAt(0) ?? 0) - CODE_DE_A + 1;
-  const ligne = Number(reference.slice(1));
-  return colonne <= grille.colonnes && ligne <= grille.lignes;
+  return (
+    colonne <= grille.colonnes && ligneDeLaReference(reference) <= grille.lignes
+  );
 }
 
 export const planFeuille = z

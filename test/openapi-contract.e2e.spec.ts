@@ -51,6 +51,7 @@ import { SyntheseRappelsResponseDto } from '../src/modules/formations/interfaces
 import { TentativeEnigmeResponseDto } from '../src/modules/formations/interfaces/dto/contrat/tentative-enigme.response.dto';
 import { TenterEnigmeRequestDto } from '../src/modules/formations/interfaces/dto/contrat/tenter-enigme.request.dto';
 import { SubmitProductionResponseDto } from '../src/modules/formations/interfaces/dto/contrat/verdict-production.response.dto';
+import { SubmitAnswerResponseDto } from '../src/modules/formations/interfaces/dto/submit-answer.response.dto';
 import { createMockDepotsFormations } from './factories/formation.factory';
 import { monterApplicationFormations } from './helpers/formations-harness';
 import { fermerApplication } from './helpers/nest-test-app';
@@ -238,6 +239,29 @@ describe('OpenAPI contrat B2-01', () => {
 
     expect(document.paths).toEqual({});
     expect(document.components?.schemas).toMatchSnapshot();
+  });
+
+  it('QA-12 · documente nullable le verdict servi par la réponse et par l état du participant', async () => {
+    const document = await documenterLeModule(
+      {},
+      new DocumentBuilder().setTitle('Verdict servi').setVersion('1.0'),
+      { extraModels: [SubmitAnswerResponseDto, EtatParticipantResponseDto] },
+    );
+    const verdictDe = (dto: string): unknown => {
+      const schema = document.components?.schemas?.[dto];
+      return schema !== undefined && 'properties' in schema
+        ? schema.properties?.['correcte']
+        : undefined;
+    };
+    const verdictNullable = expect.objectContaining({
+      type: 'boolean',
+      nullable: true,
+    });
+
+    expect({
+      reponse: verdictDe('SubmitAnswerResponseDto'),
+      etat: verdictDe('ReponseParticipantResponseDto'),
+    }).toEqual({ reponse: verdictNullable, etat: verdictNullable });
   });
 
   it('branche les routes du § 9.5 deja livrees et aucune autre', async () => {

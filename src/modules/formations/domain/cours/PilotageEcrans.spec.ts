@@ -1,7 +1,9 @@
+import { buildCoursDuContenu } from '../../../../../test/factories/contenus-de-cours.factory';
 import {
   buildCoursAvecProductions,
   buildCoursDeTest,
 } from '../../../../../test/factories/cours.factory';
+import { CONTENUS } from '../../../../../test/factories/contenus-publies';
 import {
   buildCasAQuestionsLibres,
   buildCoursDeBriques,
@@ -185,11 +187,43 @@ describe('pilotage des écrans de la QA B2', () => {
     ]);
   });
 
-  it('F17 · étaye la construction de tableau en deux niveaux au plus', () => {
+  it('F17 · étaye la construction de tableau d une colonne non donnée par niveau', () => {
+    if (TABLEAU.brique !== 'fp-table-build') throw new Error('tableau attendu');
+    const colonnes = TABLEAU.proprietes.plan.colonnes.filter(
+      ({ role }) => role !== 'donnee',
+    ).length;
+
     expect([
-      accepte(TABLEAU, { screenId: TABLEAU.id, etayage: 2 }),
-      accepte(TABLEAU, { screenId: TABLEAU.id, etayage: 3 }),
+      accepte(TABLEAU, { screenId: TABLEAU.id, etayage: colonnes }),
+      accepte(TABLEAU, { screenId: TABLEAU.id, etayage: colonnes + 1 }),
     ]).toEqual([true, false]);
+  });
+
+  describe('F17 · sur chaque table des cours servis, une colonne non donnée par clic', () => {
+    const TABLES = CONTENUS.flatMap(
+      (contenu) => buildCoursDuContenu(contenu).ecrans,
+    ).filter(
+      (ecran): ecran is Extract<Ecran, { brique: 'fp-table-build' }> =>
+        ecran.brique === 'fp-table-build',
+    );
+
+    it('trouve les tables des cours servis', () => {
+      expect(TABLES.length).toBeGreaterThan(0);
+    });
+
+    it.each(TABLES.map((table) => [table.id, table] as const))(
+      '%s : accepte la correction de sa dernière colonne non donnée, refuse au-delà',
+      (_id, table) => {
+        const colonnes = table.proprietes.plan.colonnes.filter(
+          ({ role }) => role !== 'donnee',
+        ).length;
+
+        expect([
+          accepte(table, { screenId: table.id, etayage: colonnes }),
+          accepte(table, { screenId: table.id, etayage: colonnes + 1 }),
+        ]).toEqual([true, false]);
+      },
+    );
   });
 
   it('révèle un écran à réponses libres et refuse un écran sans réponse', () => {

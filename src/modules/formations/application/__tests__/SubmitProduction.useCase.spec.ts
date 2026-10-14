@@ -118,7 +118,7 @@ describe('SubmitProductionUseCase', () => {
     );
   });
 
-  it('compte « je ne sais pas » comme une reponse de score nul', async () => {
+  it('QA-06 · compte « je ne sais pas » a zero, chaque cellule attendue fausse', async () => {
     const verdict = await sut.execute({
       ...commande,
       valeur: { type: 'feuille', neSaitPas: true },
@@ -127,7 +127,10 @@ describe('SubmitProductionUseCase', () => {
     expect(verdict).toEqual({
       correcte: false,
       score: 0,
-      details: [],
+      details: [
+        { cle: 'D2', juste: false, libelleConfusion: null },
+        { cle: 'D3', juste: false, libelleConfusion: null },
+      ],
       libelleConfusion: null,
     });
     expect(deps.answers.create).toHaveBeenCalled();

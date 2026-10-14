@@ -1,8 +1,11 @@
+import type { QuestionDeBareme } from '../Bareme';
 import type { Cours, Ecran } from '../contrats/cours';
+import type { GradingResult } from '../GradingCore';
+import { libelleLisible } from './banque/confusions';
 import { correctionsDe, ecranCorrigePar } from './Corrections';
 import { estReservee, questionsDe } from './Cours';
 import type { PieceJointeReservee } from './Cours';
-import type { PilotageEcran } from '../contrats/pilotage';
+import type { PilotageEcran, VotePhase } from '../contrats/pilotage';
 import {
   EcranNonServiError,
   PhaseFermeeError,
@@ -40,6 +43,52 @@ export function sourceRevelee(
   source: string,
 ): boolean {
   return ecranRevele(pilotageServi(seance, source));
+}
+
+export function phaseDuVote(pilotage: PilotageEcran | undefined): VotePhase {
+  return pilotage?.phase ?? 'vote';
+}
+
+export interface VerdictServi {
+  readonly correcte: boolean | null;
+  readonly misconception: string | null;
+  readonly libelleConfusion: string | null;
+}
+
+const VERDICT_RETENU: VerdictServi = {
+  correcte: null,
+  misconception: null,
+  libelleConfusion: null,
+};
+
+function verdictRevele(
+  seance: Pick<SeancePilotee, 'etat' | 'pilotageEcrans'>,
+  question: QuestionDeBareme | null,
+): boolean {
+  if (
+    question === null ||
+    !('ouverture' in question) ||
+    question.ouverture === undefined
+  ) {
+    return true;
+  }
+  const pilotage = pilotageServi(seance, question.ecranId);
+  return ecranRevele(pilotage) || phaseDuVote(pilotage) === 'revele';
+}
+
+export function verdictServiDe(
+  seance: Pick<SeancePilotee, 'etat' | 'pilotageEcrans'>,
+  question: QuestionDeBareme | null,
+  verdict: GradingResult,
+): VerdictServi {
+  if (!verdictRevele(seance, question)) {
+    return VERDICT_RETENU;
+  }
+  return {
+    correcte: verdict.correcte,
+    misconception: verdict.misconception,
+    libelleConfusion: libelleLisible(verdict.misconception),
+  };
 }
 
 export function dernierEcranServi(

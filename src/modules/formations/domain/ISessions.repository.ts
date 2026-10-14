@@ -23,6 +23,8 @@ export interface SessionRecord {
 }
 
 export interface EtatDeSeanceRecord {
+  readonly courseSlug: string;
+  readonly courseVersion: number;
   readonly etat: SessionState;
   readonly modeRythme: PacingMode;
   readonly ecranCourant: number;

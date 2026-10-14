@@ -1,4 +1,5 @@
 import { lireNombreSaisiAvecUnite } from 'portfolio-2025-partage/formule';
+import { sansEspacesTypographiques } from '../../../../common/domain/texte/sans-espaces-typographiques';
 import {
   buildCoursDuContenu,
   prefixeDuCours,
@@ -13,15 +14,18 @@ import type { ContenuDeCours } from '../../domain/cours/CoursStocke';
 import { deroulePresentateur } from '../../domain/cours/DeroulePresentateur';
 import { projeterCatalogue } from '../../domain/cours/Diffusion';
 import { ouvrirTirages } from '../../domain/cours/OuvertureTirages';
+import { ligneDeLaReference } from '../../domain/cours/PlansStockes';
 import { slugOption } from '../../domain/cours/QuestionStockee';
 import { verifierStructure } from '../../domain/cours/StructureCours';
 import { tirer } from '../../domain/cours/Tirage';
+import { clicsDeRecopie } from './feuilles';
 import { CONTENUS } from './index';
 
 const TAILLE_MAX_DU_BAREME = 400 * 1024;
 const TIRAGES_CONTROLES = 61;
 const LONGUEUR_MAX_D_UN_IDENTIFIANT = 60;
 const NOMBRE_EN_TETE = /^[−-]?\d[\d\s]*(?:,\d+)?/u;
+const DECIMAL_A_POINT = /\d\.\d/u;
 const CLES_DE_CONFUSION = new Set([
   'confusion',
   'confusionSiErreur',
@@ -40,6 +44,62 @@ const CLES_SECRETES = [
   'misconception',
   'valeurAttendue',
 ];
+
+function recopiesDeLaFeuille(
+  ecran: ContenuDeCours['ecrans'][number],
+): Map<string, number> {
+  const dernieres = new Map<string, number>();
+  if (ecran.brique !== 'fp-sheet') {
+    return dernieres;
+  }
+  for (const { reference, forme } of ecran.proprietes.questions[0].corrige
+    .attendus) {
+    if (forme !== 'references') {
+      dernieres.set(
+        forme.memeQue,
+        Math.max(
+          dernieres.get(forme.memeQue) ?? 0,
+          ligneDeLaReference(reference),
+        ),
+      );
+    }
+  }
+  return dernieres;
+}
+
+function consignesDeRecopieFautives(contenu: ContenuDeCours): string[] {
+  return contenu.ecrans.flatMap((ecran) => {
+    if (ecran.brique !== 'fp-sheet') {
+      return [];
+    }
+    const consignes = ecran.proprietes.plan.consignes.map(
+      sansEspacesTypographiques,
+    );
+    const sansGeste = consignes
+      .filter(
+        (consigne) =>
+          /recopiez/iu.test(consigne) &&
+          !/cliquez \S+ fois sur « Recopier vers le bas »/u.test(consigne),
+      )
+      .map((consigne) => `${ecran.screenId} : ${consigne}`);
+    const malComptees = [...recopiesDeLaFeuille(ecran)]
+      .filter(
+        ([source, derniere]) =>
+          !consignes.some(
+            (consigne) =>
+              new RegExp(`(?<![$A-Z])${source}(?!\\d)`, 'u').test(consigne) &&
+              consigne.includes(
+                clicsDeRecopie(derniere - ligneDeLaReference(source)),
+              ),
+          ),
+      )
+      .map(
+        ([source, derniere]) =>
+          `${ecran.screenId} : ${source} recopiée jusqu’à la ligne ${derniere}`,
+      );
+    return [...sansGeste, ...malComptees];
+  });
+}
 
 function confusionsCiblees(contenu: ContenuDeCours): Set<string> {
   return new Set(
@@ -136,6 +196,10 @@ describe.each(CONTENUS.map((contenu) => [contenu.slug, contenu] as const))(
       expect(fautives).toEqual([]);
     });
 
+    it('QA-11 · dit, pour chaque colonne recopiée d’un atelier tableur, le geste « Recopier vers le bas » et son nombre de clics, une ligne par clic', () => {
+      expect(consignesDeRecopieFautives(contenu)).toEqual([]);
+    });
+
     it('préfixe ses questions par le slug du cours, sans doublon', () => {
       const identifiants = questionsDuCours(cours).map(
         (question) => question.id,
@@ -200,7 +264,7 @@ describe.each(CONTENUS.map((contenu) => [contenu.slug, contenu] as const))(
       }
     });
 
-    it('publie pour chaque énigme une forme que la saisie relit comme la solution', () => {
+    it('publie pour chaque énigme une forme à la française que la saisie relit comme la solution', () => {
       const illisibles = questionsDuCours(cours).flatMap((question) => {
         if (
           !('corrige' in question) ||
@@ -211,7 +275,9 @@ describe.each(CONTENUS.map((contenu) => [contenu.slug, contenu] as const))(
         }
         const { formePubliee, valeur, tolerance } = question.corrige.solution;
         const relue = lireNombreSaisiAvecUnite(formePubliee);
-        return relue !== null && Math.abs(relue - valeur) <= tolerance.valeur
+        return !DECIMAL_A_POINT.test(formePubliee) &&
+          relue !== null &&
+          Math.abs(relue - valeur) <= tolerance.valeur
           ? []
           : [`${question.id} : ${formePubliee}`];
       });
@@ -219,7 +285,7 @@ describe.each(CONTENUS.map((contenu) => [contenu.slug, contenu] as const))(
       expect(illisibles).toEqual([]);
     });
 
-    it('ouvre la forme publiée de chaque numérique sur la valeur de sa solution', () => {
+    it('ouvre la forme publiée de chaque numérique, à la française, sur la valeur de sa solution', () => {
       const { solutions } = tirer(cours, 0);
       const illisibles = questionsDuCours(cours).flatMap((question) => {
         if (
@@ -231,7 +297,8 @@ describe.each(CONTENUS.map((contenu) => [contenu.slug, contenu] as const))(
         const nombre = NOMBRE_EN_TETE.exec(question.formePubliee)?.[0];
         const relue =
           nombre === undefined ? null : lireNombreSaisiAvecUnite(nombre);
-        return relue !== null &&
+        return !DECIMAL_A_POINT.test(question.formePubliee) &&
+          relue !== null &&
           matchesSolution(
             relue,
             Number(solutions[question.id].valeur),
@@ -251,6 +318,24 @@ describe.each(CONTENUS.map((contenu) => [contenu.slug, contenu] as const))(
       expect(
         Object.keys(tirage.banque).filter((id) => sujet.includes(id)),
       ).toEqual([]);
+    });
+
+    it('écrit à la française chaque bonne réponse et chaque option de vote servies', () => {
+      const servis = [
+        ...deroulePresentateur(cours, 0).ecrans.flatMap((ecran) =>
+          ecran.corriges.map(
+            ({ questionId, bonneReponse }) => `${questionId} : ${bonneReponse}`,
+          ),
+        ),
+        ...Object.entries(tirer(cours, 0).libellesOptions).flatMap(
+          ([questionId, libelles]) =>
+            Object.values(libelles).map(
+              (libelle) => `${questionId} : ${libelle}`,
+            ),
+        ),
+      ];
+
+      expect(servis.filter((texte) => DECIMAL_A_POINT.test(texte))).toEqual([]);
     });
 
     it('expose au déroulé toutes les questions du cours', () => {

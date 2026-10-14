@@ -1,8 +1,11 @@
+import { buildCoursDuContenu } from '../../../../../test/factories/contenus-de-cours.factory';
+import { CONTENUS } from '../../../../../test/factories/contenus-publies';
 import {
   buildCoursAvecProductions,
   PLAN_DE_CLASSEMENT_TEST,
 } from '../../../../../test/factories/cours.factory';
 import { PLAN_TABLE_DE_VERITE } from '../../../../../test/factories/ecrans-stockes.factory';
+import { detailsDeFeuilleSansReponse } from '../../../../../test/factories/formation.factory';
 import {
   ProductionInvalideError,
   ProductionVideError,
@@ -13,6 +16,7 @@ import {
   ecranDeProduction,
   normaliserProduction,
 } from './ProductionSoumise';
+import type { CorrigeProduction } from './Corrige';
 import type { EcranDeProduction } from './ProductionSoumise';
 
 const COURS = buildCoursAvecProductions();
@@ -210,14 +214,18 @@ describe('corrigerProduction', () => {
     expect(verdict.score).toBeGreaterThan(0);
   });
 
-  it('rend un score nul et aucun detail pour « je ne sais pas »', () => {
+  it('QA-06 · corrige « je ne sais pas » a zero, chaque cellule attendue fausse et sans confusion', () => {
     expect(
       corrigerProduction(
         FEUILLE.question.corrige,
         { type: 'feuille', neSaitPas: true },
         FEUILLE,
       ),
-    ).toEqual({ correcte: false, score: 0, details: [] });
+    ).toEqual({
+      correcte: false,
+      score: 0,
+      details: detailsDeFeuilleSansReponse(),
+    });
   });
 
   it('corrige un classement carte par carte', () => {
@@ -264,6 +272,65 @@ describe('corrigerProduction', () => {
       },
     ]);
   });
+});
+
+describe('QA-06 · « je ne sais pas » sur chaque production des cours servis', () => {
+  const PRODUCTIONS = CONTENUS.flatMap((contenu) => {
+    const cours = buildCoursDuContenu(contenu);
+    return cours.ecrans.flatMap((ecran) => {
+      const trouvee =
+        'production' in ecran
+          ? ecranDeProduction(cours, ecran.production.id)
+          : null;
+      return trouvee === null ? [] : [trouvee];
+    });
+  });
+
+  function clesDuCorrige(corrige: CorrigeProduction): readonly string[] {
+    switch (corrige.type) {
+      case 'feuille':
+        return corrige.attendus.map(({ reference }) => reference);
+      case 'tableau':
+        return corrige.attendus.map(({ rang, cle }) => `${rang}:${cle}`);
+      case 'classement':
+        return corrige.attendus.map(({ carteId }) => carteId);
+      default:
+        return [];
+    }
+  }
+
+  it('trouve des feuilles, des tableaux et des classements', () => {
+    expect(
+      new Set(PRODUCTIONS.map(({ question }) => question.corrige.type)),
+    ).toEqual(new Set(['feuille', 'tableau', 'classement']));
+  });
+
+  it.each(PRODUCTIONS.map((cible) => [cible.question.id, cible] as const))(
+    '%s : vaut zero, chaque cle du corrige fausse et sans confusion',
+    (_, cible) => {
+      const corrige = cible.question.corrige;
+      if (corrige.type === 'enigme') {
+        throw new Error('une production ne porte pas un corrige d enigme');
+      }
+      const verdict = corrigerProduction(
+        corrige,
+        { type: corrige.type, neSaitPas: true },
+        cible,
+      );
+      const parCle = (
+        gauche: { readonly cle: string },
+        droite: { readonly cle: string },
+      ) => gauche.cle.localeCompare(droite.cle);
+
+      expect(verdict.correcte).toBe(false);
+      expect(verdict.score).toBe(0);
+      expect([...verdict.details].sort(parCle)).toEqual(
+        clesDuCorrige(corrige)
+          .map((cle) => ({ cle, juste: false, confusion: null }))
+          .sort(parCle),
+      );
+    },
+  );
 });
 
 describe('confusionDominante', () => {

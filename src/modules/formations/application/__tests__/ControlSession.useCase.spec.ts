@@ -18,6 +18,10 @@ import {
   buildEcranDeBrique,
   buildQuestionnaireCorrigeSurPlace,
 } from '../../../../../test/factories/ecrans-stockes.factory';
+import {
+  CAS_DES_COURS_SERVIS,
+  pilotageDUnCoursServi,
+} from '../../../../../test/factories/votes-des-cours-servis.factory';
 import type { ICatalogueCours } from '../../domain/cours/ICatalogueCours.port';
 import { lireCoursStocke } from '../../domain/cours/CoursStocke';
 import { ControlSessionUseCase } from '../ControlSession.useCase';
@@ -59,8 +63,13 @@ function banc(catalogue: ICatalogueCours) {
     sut: new ControlSessionUseCase(sessions, cache, catalogue),
     piloter: (commande: Commande, teacherId = TEACHER_ID) =>
       outils.sut.apply(SESSION, teacherId, commande),
-    seanceLue: (surcharges: Parameters<typeof buildSessionRecord>[0]) =>
-      sessions.findById.mockResolvedValue(buildSessionRecord(surcharges)),
+    seanceLue: (surcharges: Parameters<typeof buildSessionRecord>[0]) => {
+      const lue = buildSessionRecord(surcharges);
+      sessions.findById.mockResolvedValue(lue);
+      sessions.update.mockImplementation((_id, ecriture) =>
+        Promise.resolve({ ...lue, ...ecriture }),
+      );
+    },
     changerDeCatalogue: (autre: ICatalogueCours) => {
       outils.sut = new ControlSessionUseCase(sessions, cache, autre);
     },
@@ -488,4 +497,20 @@ describe('ControlSessionUseCase — révélation par l écran de correction (SEC
 
     await b.attendreEcranEcrit(2);
   });
+});
+
+describe('QA-01 · phase servie des votes jumelés des cours servis', () => {
+  it.each(CAS_DES_COURS_SERVIS)(
+    '%s : publie la phase « vote » de chaque vote jumelé encore non piloté, sans réécrire le pilotage',
+    async (_slug, cours) => {
+      const b = banc(creerCatalogueDeTest(cours));
+      const { pilotageEcrans, attendu } = pilotageDUnCoursServi(cours);
+      b.seanceLue({ courseSlug: cours.slug, pilotageEcrans });
+
+      await b.piloter({ ecran: 0 });
+
+      b.attendreEcriture({ ecranCourant: 0 });
+      b.attendrePublication({ pilotage: attendu });
+    },
+  );
 });

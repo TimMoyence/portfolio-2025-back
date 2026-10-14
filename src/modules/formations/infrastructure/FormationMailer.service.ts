@@ -11,9 +11,14 @@ import type {
   RapportSession,
 } from '../domain/IFormationMailer.port';
 import { rapportEnCsv } from '../domain/RapportCsv';
+import {
+  DECIMALES_DE_LA_NOTE,
+  REGLE_DE_NOTATION,
+} from '../domain/RegleDeNotation';
+import { nombreFrancais } from '../../../common/domain/nombres/ecriture-francaise';
 
 function noteSur20(note: number): string {
-  return `${note.toFixed(1)}/20`;
+  return `${nombreFrancais(note, DECIMALES_DE_LA_NOTE)}/${REGLE_DE_NOTATION.noteMax}`;
 }
 
 function verdictDe(reponse: RapportQuestion): string {

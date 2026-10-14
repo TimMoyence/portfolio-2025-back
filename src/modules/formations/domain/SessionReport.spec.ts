@@ -7,11 +7,12 @@ import {
 } from '../../../../test/factories/cours.factory';
 import {
   buildAnswerRecord,
-  buildBareme,
+  buildBaremeDeQuestions,
   buildFreeResponseRecord,
   buildIncidentInput,
   buildParticipantRecord,
   buildSessionRecord,
+  detailsDeFeuilleSansReponse,
 } from '../../../../test/factories/formation.factory';
 import { libelleDeConfusion } from './cours/banque/confusions';
 import { ouvrirTirages } from './cours/OuvertureTirages';
@@ -41,6 +42,21 @@ function rapportDe(overrides: Partial<SessionReportInput> = {}) {
   });
 }
 
+function completionDUnSeulParticipant(
+  questionIds: readonly string[],
+  reponses: readonly Partial<AnswerRecord>[],
+): number {
+  return rapportDe({
+    session: buildSessionRecord({
+      bareme: buildBaremeDeQuestions(questionIds),
+    }),
+    participants: [buildParticipantRecord({ id: 'p1' })],
+    answers: reponses.map((reponse) =>
+      buildAnswerRecord({ participantId: 'p1', ...reponse }),
+    ),
+  }).participants[0].completion;
+}
+
 function deuxParticipants() {
   return [
     buildParticipantRecord({ id: 'p1' }),
@@ -59,30 +75,32 @@ describe('buildRapportSession', () => {
   });
 
   it('compte je ne sais pas comme une reponse et une question sans reponse pour zero', () => {
-    const rapport = rapportDe({
-      session: buildSessionRecord({
-        bareme: buildBareme({
-          questions: ['Q-1', 'Q-2', 'Q-3', 'Q-4'].map((id) => ({
-            id,
-            type: 'numeric',
-            concept: 'capitalisation',
-            noteCompte: true,
-          })),
-        }),
-      }),
-      participants: [buildParticipantRecord({ id: 'p1' })],
-      answers: [
-        buildAnswerRecord({ participantId: 'p1', questionId: 'Q-1' }),
-        buildAnswerRecord({
-          participantId: 'p1',
-          questionId: 'Q-2',
-          valeur: NE_SAIT_PAS,
-          correcte: false,
-        }),
-      ],
-    });
+    expect(
+      completionDUnSeulParticipant(
+        ['Q-1', 'Q-2', 'Q-3', 'Q-4'],
+        [
+          { questionId: 'Q-1' },
+          { questionId: 'Q-2', valeur: NE_SAIT_PAS, correcte: false },
+        ],
+      ),
+    ).toBe(0.5);
+  });
 
-    expect(rapport.participants[0].completion).toBe(0.5);
+  it('QA-06 · compte un « je ne sais pas » a une production comme une reponse, a zero', () => {
+    expect(
+      completionDUnSeulParticipant(
+        ['Q-FEUILLE', 'Q-VOTE'],
+        [
+          {
+            questionId: 'Q-FEUILLE',
+            valeur: { type: 'feuille', neSaitPas: true },
+            correcte: false,
+            score: 0,
+            details: detailsDeFeuilleSansReponse(),
+          },
+        ],
+      ),
+    ).toBe(0.5);
   });
 
   it('exclut les questions non notees du denominateur de completion', () => {
@@ -188,6 +206,28 @@ describe('buildRapportSession', () => {
     expect(p1?.incidents).toBe(2);
   });
 
+  it('QA-09 · arrondit au dixieme la note sur 20 que montrent la synthese et le mail', () => {
+    const questions = Array.from({ length: 9 }, (_, rang) => `Q-${rang + 1}`);
+    const rapport = rapportDe({
+      session: buildSessionRecord({
+        bareme: buildBaremeDeQuestions(questions),
+      }),
+      participants: deuxParticipants(),
+      answers: [
+        ...questions.map((questionId) =>
+          buildAnswerRecord({ participantId: 'p1', questionId }),
+        ),
+        ...questions
+          .slice(1)
+          .map((questionId) =>
+            buildAnswerRecord({ participantId: 'p2', questionId }),
+          ),
+      ],
+    });
+
+    expect(rapport.participants.map(({ note }) => note)).toEqual([20, 17.8]);
+  });
+
   it('classe les participants sous le seuil via computeCohortScore', () => {
     const rapport = rapportDe({
       participants: deuxParticipants(),
@@ -203,14 +243,7 @@ describe('buildRapportSession', () => {
 
   it('range les reponses d un etudiant dans l ordre des questions du bareme, quel que soit leur ordre d ecriture', () => {
     const session = buildSessionRecord({
-      bareme: buildBareme({
-        questions: ['Q-1', 'Q-2', 'Q-3'].map((id) => ({
-          id,
-          type: 'numeric' as const,
-          concept: 'capitalisation',
-          noteCompte: true,
-        })),
-      }),
+      bareme: buildBaremeDeQuestions(['Q-1', 'Q-2', 'Q-3']),
     });
     const ecrite = (id: string, questionId: string) =>
       buildAnswerRecord({ id, participantId: 'p1', questionId });
@@ -345,7 +378,10 @@ describe('buildRapportSession', () => {
         questionId: 'Q-TEST-CLASSEMENT',
         valeur: { type: 'classement', neSaitPas: true },
         score: 0,
-        details: [],
+        details: [
+          { cle: 'carte-1', juste: false, confusion: null },
+          { cle: 'carte-2', juste: false, confusion: null },
+        ],
       });
 
       expect(lue.reponse).toBe('Classement : je ne sais pas');

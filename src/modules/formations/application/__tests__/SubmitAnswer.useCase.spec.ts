@@ -24,7 +24,20 @@ import {
   verifierContratDEnregistrement,
   type DependancesDEnregistrement,
 } from '../../../../../test/helpers/enregistrement-de-reponse';
-import { libelleDeConfusion } from '../../domain/cours/banque/confusions';
+import {
+  casDesVotes,
+  COURS_SERVIS_ET_BAREMES,
+  graineDuVote,
+  VOTES_JUMELES,
+  VOTES_SIMPLES,
+  type VoteDUnCoursServi,
+} from '../../../../../test/factories/votes-des-cours-servis.factory';
+import { solutionFor } from '../../domain/Bareme';
+import {
+  libelleDeConfusion,
+  libelleLisible,
+} from '../../domain/cours/banque/confusions';
+import type { PilotageEcran } from '../../domain/contrats/pilotage';
 import { NE_SAIT_PAS } from '../../domain/GradingCore';
 import {
   AnswerAlreadySubmittedError,
@@ -334,9 +347,11 @@ describe('SubmitAnswerUseCase', () => {
     it('accepte la principale avant toute phase pilotée', async () => {
       deps.sessions.findById.mockResolvedValue(seanceEnPhase());
 
-      const result = await repondreA('Q-PRINCIPALE', 'a');
+      await repondreA('Q-PRINCIPALE', 'a');
 
-      expect(result.correcte).toBe(true);
+      expect(deps.answers.create).toHaveBeenCalledWith(
+        expect.objectContaining({ questionId: 'Q-PRINCIPALE', correcte: true }),
+      );
     });
 
     it('refuse la jumelle avant le revote', async () => {
@@ -356,13 +371,105 @@ describe('SubmitAnswerUseCase', () => {
     it('ouvre la jumelle seule au revote', async () => {
       deps.sessions.findById.mockResolvedValue(seanceEnPhase('revote'));
 
-      const result = await repondreA('Q-JUMELLE', 'b');
+      await repondreA('Q-JUMELLE', 'b');
 
-      expect(result.correcte).toBe(true);
+      expect(deps.answers.create).toHaveBeenCalledWith(
+        expect.objectContaining({ questionId: 'Q-JUMELLE', correcte: true }),
+      );
       await expect(repondreA('Q-PRINCIPALE', 'a')).rejects.toThrow(
         PhaseFermeeError,
       );
     });
+  });
+
+  describe('QA-12 · verdict d un vote des cours servis', () => {
+    const CATALOGUE = creerCatalogueDeTest(
+      ...COURS_SERVIS_ET_BAREMES.map(({ cours }) => cours),
+    );
+    const VERDICT_RETENU = {
+      correcte: null,
+      misconception: null,
+      libelleConfusion: null,
+    };
+
+    const repondreAuVote = (
+      vote: VoteDUnCoursServi,
+      pilotage?: PilotageEcran,
+    ) => {
+      const seed = graineDuVote(vote);
+      deps.sessions.findById.mockResolvedValue(
+        buildSessionRecord({
+          ...EN_RYTHME_LIBRE,
+          courseSlug: vote.cours.slug,
+          bareme: vote.bareme,
+          pilotageEcrans:
+            pilotage === undefined ? {} : { [vote.question.ecranId]: pilotage },
+        }),
+      );
+      deps.participants.findById.mockResolvedValue(
+        buildParticipantRecord({ seed }),
+      );
+      const solution = solutionFor(vote.bareme, seed, vote.question.id);
+      const valeur = solution?.pieges[0]?.valeur ?? solution?.valeur ?? '';
+      return monterEnregistrement(SubmitAnswerUseCase, deps, CATALOGUE).execute(
+        { ...commande, questionId: vote.question.id, valeur },
+      );
+    };
+
+    const verdictEnregistre = () => {
+      const [[enregistre]] = deps.answers.create.mock.calls;
+      return {
+        correcte: enregistre.correcte,
+        misconception: enregistre.misconception,
+        libelleConfusion: libelleLisible(enregistre.misconception),
+      };
+    };
+
+    const PRINCIPALES = VOTES_JUMELES.filter(
+      ({ question }) => question.ouverture === 'principale',
+    );
+    const JUMELLES = VOTES_JUMELES.filter(
+      ({ question }) => question.ouverture === 'jumelle',
+    );
+
+    it('trouve la principale et la jumelle de chaque vote jumelé', () => {
+      expect(PRINCIPALES.length).toBeGreaterThan(0);
+      expect(JUMELLES).toHaveLength(PRINCIPALES.length);
+    });
+
+    it.each(casDesVotes(PRINCIPALES))(
+      '%s : au premier vote, enregistre le verdict sans le servir',
+      async (_id, vote) => {
+        const result = await repondreAuVote(vote);
+
+        expect(result).toEqual(VERDICT_RETENU);
+        expect(deps.answers.create).toHaveBeenCalledWith(
+          expect.objectContaining({ correcte: expect.any(Boolean) }),
+        );
+        expect(deps.mastery.enregistrerTentative).toHaveBeenCalledTimes(1);
+      },
+    );
+
+    it.each(casDesVotes(JUMELLES))(
+      '%s : retient le verdict du revote, le sert en phase de révélation',
+      async (_id, vote) => {
+        const auRevote = await repondreAuVote(vote, { phase: 'revote' });
+        deps.answers.create.mockClear();
+        const aLaRevelation = await repondreAuVote(vote, { phase: 'revele' });
+
+        expect(auRevote).toEqual(VERDICT_RETENU);
+        expect(aLaRevelation).toEqual(verdictEnregistre());
+      },
+    );
+
+    it.each(casDesVotes(VOTES_SIMPLES))(
+      '%s : sert le verdict d un vote simple dès la réponse',
+      async (_id, vote) => {
+        const result = await repondreAuVote(vote);
+
+        expect(result).toEqual(verdictEnregistre());
+      },
+    );
   });
 
   describe('exercice corrigé sur place', () => {

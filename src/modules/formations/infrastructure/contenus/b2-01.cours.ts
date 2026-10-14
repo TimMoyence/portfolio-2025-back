@@ -2,6 +2,7 @@ import { CONCEPTS_DU_B2_01 } from '../../domain/cours/banque/concepts';
 import type { ConfusionId } from '../../domain/cours/banque/confusions';
 import type { ContenuDeCours } from '../../domain/cours/CoursStocke';
 import * as moteur from './briques';
+import { gesteDeRecopie } from './feuilles';
 
 const ACTE_1: moteur.Acte = [
   {
@@ -1725,9 +1726,9 @@ const PLAN_FEUILLE = {
   ],
   consignes: [
     'En B5 et C5, calculez les totaux avec SOMME.',
-    'En D2, écrivez le taux d’évolution du CA du sur-mesure, puis recopiez jusqu’en D5 avec le bouton « Recopier vers le bas ». Écrivez les taux en décimal : 0,125 correspond à 12,5 %.',
-    'En E2, écrivez la part du sur-mesure dans le CA 2025 en figeant le total, puis recopiez jusqu’en E5.',
-    'En G2, calculez la marge brute 2025 du canal (CA 2025 × taux de marge brute), recopiez jusqu’en G4, puis totalisez en G5 avec SOMME.',
+    `En D2, écrivez le taux d’évolution du CA du sur-mesure, puis recopiez jusqu’en D5 : ${gesteDeRecopie(['D2'], 5)}. Écrivez les taux en décimal : 0,125 correspond à 12,5 %.`,
+    `En E2, écrivez la part du sur-mesure dans le CA 2025 en figeant le total, puis recopiez jusqu’en E5 : ${gesteDeRecopie(['E2'], 5)}.`,
+    `En G2, calculez la marge brute 2025 du canal (CA 2025 × taux de marge brute) et recopiez jusqu’en G4 : ${gesteDeRecopie(['G2'], 4)}. Totalisez ensuite en G5 avec SOMME.`,
     'En F5, calculez le taux de marge brute global : marge totale ÷ CA total.',
     'En B7, contrôlez vos formules : les parts doivent faire 100 % : =SI(ARRONDI(SOMME(E2:E4);6)=1;1;0). En C7, contrôlez vos données : votre marge (G5) doit égaler celle du compte de résultat (B6).',
   ],

@@ -1,8 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { VerdictDeReponse } from './verdict-de-reponse.decorator';
 
 export class SubmitAnswerResponseDto {
-  @ApiProperty({ example: false })
-  correcte: boolean;
+  @VerdictDeReponse()
+  correcte: boolean | null;
 
   @ApiProperty({
     description:

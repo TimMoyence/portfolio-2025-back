@@ -14,6 +14,7 @@ import {
   avecVirgule,
   colonneDeValeurs,
   colonneRecopiee,
+  gesteDeRecopie,
   rangIdentique,
   termes,
   type AttenduDeFeuille,
@@ -114,8 +115,8 @@ export const PLAN_DES_VENTES = {
   cellules: CELLULES_DES_VENTES,
   verrouillees: Object.keys(CELLULES_DES_VENTES),
   consignes: [
-    'En B2, écrivez la formule des ventes V(x) = a e^(kx) du mois de la ligne, avec EXP, a en E1 et k en G1. Recopiez-la jusqu’en B8.',
-    'En C3, écrivez le taux d’évolution des ventes entre le mois de la ligne 2 et celui de la ligne 3. Recopiez jusqu’en C8.',
+    `En B2, écrivez la formule des ventes V(x) = a e^(kx) du mois de la ligne, avec EXP, a en E1 et k en G1. Recopiez-la jusqu’en B8 : ${gesteDeRecopie(['B2'], 8)}.`,
+    `En C3, écrivez le taux d’évolution des ventes entre le mois de la ligne 2 et celui de la ligne 3. Recopiez jusqu’en C8 : ${gesteDeRecopie(['C3'], 8)}.`,
     'a et k ne s’écrivent pas dans la formule : utilisez E1 et G1, figés par des $.',
   ],
 };
@@ -174,8 +175,8 @@ export const PLAN_DES_OBJECTIFS = {
   verrouillees: Object.keys(CELLULES_DES_OBJECTIFS),
   consignes: [
     'Pour chaque objectif s de la colonne A, on résout 400e^(0,06x) = s.',
-    'En B2, calculez ln(s ÷ a) avec LN, a en E1. Recopiez jusqu’en B7.',
-    'En C2, calculez le mois exact x en divisant par k (G1). Recopiez jusqu’en C7.',
+    `En B2, calculez ln(s ÷ a) avec LN, a en E1. Recopiez jusqu’en B7 : ${gesteDeRecopie(['B2'], 7)}.`,
+    `En C2, calculez le mois exact x en divisant par k (G1). Recopiez jusqu’en C7 : ${gesteDeRecopie(['C2'], 7)}.`,
     'a et k ne s’écrivent pas dans les formules : utilisez E1 et G1, figés par des $.',
   ],
 };
@@ -286,7 +287,7 @@ export const PLAN_DES_KITS = {
   cellules: CELLULES_DES_KITS,
   verrouillees: Object.keys(CELLULES_DES_KITS),
   consignes: [
-    'En C2, calculez z = ln y avec LN. Recopiez jusqu’en C7.',
+    `En C2, calculez z = ln y avec LN. Recopiez jusqu’en C7 : ${gesteDeRecopie(['C2'], 7)}.`,
     'En D2 et E2, calculez la pente et l’ordonnée à l’origine de la droite d’ajustement de z en x, avec PENTE et ORDONNEE.ORIGINE.',
     'En F2, calculez le coefficient a du modèle y = a e^(αx).',
     'En G2, calculez la demande prévue au prix de 40 €, soit x = 4, à partir de F2 et D2.',

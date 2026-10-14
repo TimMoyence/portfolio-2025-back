@@ -25,13 +25,18 @@ import {
   detailsDeFeuilleAMoitieJuste,
   PARTICIPANT_DE_TEST,
 } from '../../../../../test/factories/formation.factory';
+import type { VoteDUnCoursServi } from '../../../../../test/factories/votes-des-cours-servis.factory';
+import { decrireLeVerdictDesVotesServis } from '../../../../../test/helpers/verdict-des-votes-servis';
 import { installerSecretDeJalons } from '../../../../../test/helpers/env-formations';
 import {
   verifierGardesDeParticipant,
   verifierSeanceIntrouvable,
 } from '../../../../../test/helpers/gardes-de-seance';
 import type { Cours } from '../../domain/contrats/cours';
+import type { PilotageEcran } from '../../domain/contrats/pilotage';
+import { libelleLisible } from '../../domain/cours/banque/confusions';
 import { cleDeJalon } from '../../domain/cours/CleDeJalon';
+import type { SessionState } from '../../domain/SessionState';
 import { TENTATIVES_MAX_PAR_ENIGME } from '../../domain/cours/Enigmes';
 import { LireEtatParticipantUseCase } from '../LireEtatParticipant.useCase';
 
@@ -270,5 +275,49 @@ describe('LireEtatParticipantUseCase', () => {
     expect(etat.enigmes).toEqual([]);
     expect(etat.defis).toEqual([]);
     expect(etat.rappels).toEqual({ questionIds: [] });
+  });
+
+  describe('QA-12 · verdict d un vote des cours servis', () => {
+    const CONFUSION = 'base-arrivee';
+    const RETENU = { correcte: null, libelleConfusion: null };
+    const SERVI = {
+      correcte: false,
+      libelleConfusion: libelleLisible(CONFUSION),
+    };
+
+    const verdictLu = async (
+      vote: VoteDUnCoursServi,
+      pilotage?: PilotageEcran,
+      etat: SessionState = 'en_cours',
+    ) => {
+      sessions.findById.mockResolvedValue(
+        buildSessionRecord({
+          courseSlug: vote.cours.slug,
+          bareme: vote.bareme,
+          etat,
+          pilotageEcrans:
+            pilotage === undefined ? {} : { [vote.question.ecranId]: pilotage },
+        }),
+      );
+      answers.listerDuParticipant.mockResolvedValue([
+        buildAnswerRecord({
+          questionId: vote.question.id,
+          correcte: false,
+          misconception: CONFUSION,
+        }),
+      ]);
+      const [reponse] = (await monter(vote.cours).execute(PARTICIPANT_DE_TEST))
+        .reponses;
+      return {
+        correcte: reponse.correcte,
+        libelleConfusion: reponse.libelleConfusion,
+      };
+    };
+
+    it('lit une confusion qui a un libellé', () => {
+      expect(SERVI.libelleConfusion).not.toBeNull();
+    });
+
+    decrireLeVerdictDesVotesServis(verdictLu, { retenu: RETENU, servi: SERVI });
   });
 });

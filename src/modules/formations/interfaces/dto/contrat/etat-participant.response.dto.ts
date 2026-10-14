@@ -10,6 +10,7 @@ import {
   SCHEMAS_DE_PRODUCTION,
 } from './submit-production.request.dto';
 import { ParticipantDeSeanceResponseDto } from '../participant-de-seance.response.dto';
+import { VerdictDeReponse } from '../verdict-de-reponse.decorator';
 import { DetailVerdictResponseDto } from './verdict-production.response.dto';
 
 @ApiExtraModels(...MODELES_DE_PRODUCTION)
@@ -24,8 +25,8 @@ export class ReponseParticipantResponseDto {
   })
   valeur: ValeurReponse;
 
-  @ApiProperty({ example: false })
-  correcte: boolean;
+  @VerdictDeReponse()
+  correcte: boolean | null;
 
   @ApiProperty({
     description: 'Score d une production, null pour une question fermee',

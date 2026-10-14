@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "2668e71f96291ab3f2eca01730942b338f33ad09837a5f15cf8452268d1e0234",
+  "empreinte": "5f0ef57f6882edd981b99b9fc8d4f045f059ca1f2ae34db1126567467c5cacef",
   "sujet": {
     "id": "b2-03-logique",
     "titre": "Logique : écrire et contrôler une règle",
@@ -757,7 +757,7 @@
             ],
             "consignes": [
               "En D2, écrivez avec SI et OU la règle du visa : « Visa » si le montant HT atteint 5 000 € ou si le pays n’est pas la France, « Non » sinon.",
-              "Recopiez la formule de D2 jusqu’en D6.",
+              "Recopiez la formule de D2 jusqu’en D6 : sélectionnez D2 et cliquez quatre fois sur « Recopier vers le bas », une ligne par clic.",
               "Dans une formule, un texte s’écrit entre guillemets."
             ],
             "metadonnees": {
@@ -1141,7 +1141,7 @@
             "consignes": [
               "En D2, avec SI, NON et OU : « Anomalie » s’il est faux que le client soit en France ou que son numéro de TVA soit renseigné, « OK » sinon.",
               "En E2, écrivez le même contrôle avec SI et ET, sans NON.",
-              "Recopiez D2 et E2 jusqu’à la ligne 6 : les deux colonnes doivent afficher la même chose."
+              "Recopiez D2 et E2 jusqu’à la ligne 6 : sélectionnez D2 et cliquez quatre fois sur « Recopier vers le bas », une ligne par clic, puis de même depuis E2. Les deux colonnes doivent afficher la même chose."
             ],
             "metadonnees": {
               "concepts": ["tableur", "negation"],
@@ -1983,8 +1983,8 @@
               "G17"
             ],
             "consignes": [
-              "En H2, avec SI et ET : « Relancer » si la facture est impayée et si son délai dépasse 60 jours, « Non » sinon. Recopiez jusqu’en H17.",
-              "En I2, avec SI et OU : « Visa » si le montant HT atteint 5 000 € ou si le pays n’est pas la France, « Non » sinon. Recopiez jusqu’en I17.",
+              "En H2, avec SI et ET : « Relancer » si la facture est impayée et si son délai dépasse 60 jours, « Non » sinon. Recopiez jusqu’en H17 : sélectionnez H2 et cliquez quinze fois sur « Recopier vers le bas », une ligne par clic.",
+              "En I2, avec SI et OU : « Visa » si le montant HT atteint 5 000 € ou si le pays n’est pas la France, « Non » sinon. Recopiez jusqu’en I17 : sélectionnez I2 et cliquez quinze fois sur « Recopier vers le bas », une ligne par clic.",
               "En K2 et K3, comptez avec NB.SI les factures à relancer et les factures à viser."
             ],
             "metadonnees": {
@@ -3317,7 +3317,7 @@
             ],
             "consignes": [
               "En D2, écrivez avec SI et OU la règle du visa : « Visa » si le montant HT atteint 5 000 € ou si le pays n’est pas la France, « Non » sinon.",
-              "Recopiez la formule de D2 jusqu’en D6.",
+              "Recopiez la formule de D2 jusqu’en D6 : sélectionnez D2 et cliquez quatre fois sur « Recopier vers le bas », une ligne par clic.",
               "Dans une formule, un texte s’écrit entre guillemets."
             ],
             "metadonnees": {
@@ -3937,7 +3937,7 @@
             "consignes": [
               "En D2, avec SI, NON et OU : « Anomalie » s’il est faux que le client soit en France ou que son numéro de TVA soit renseigné, « OK » sinon.",
               "En E2, écrivez le même contrôle avec SI et ET, sans NON.",
-              "Recopiez D2 et E2 jusqu’à la ligne 6 : les deux colonnes doivent afficher la même chose."
+              "Recopiez D2 et E2 jusqu’à la ligne 6 : sélectionnez D2 et cliquez quatre fois sur « Recopier vers le bas », une ligne par clic, puis de même depuis E2. Les deux colonnes doivent afficher la même chose."
             ],
             "metadonnees": {
               "concepts": ["tableur", "negation"],
@@ -5195,8 +5195,8 @@
               "G17"
             ],
             "consignes": [
-              "En H2, avec SI et ET : « Relancer » si la facture est impayée et si son délai dépasse 60 jours, « Non » sinon. Recopiez jusqu’en H17.",
-              "En I2, avec SI et OU : « Visa » si le montant HT atteint 5 000 € ou si le pays n’est pas la France, « Non » sinon. Recopiez jusqu’en I17.",
+              "En H2, avec SI et ET : « Relancer » si la facture est impayée et si son délai dépasse 60 jours, « Non » sinon. Recopiez jusqu’en H17 : sélectionnez H2 et cliquez quinze fois sur « Recopier vers le bas », une ligne par clic.",
+              "En I2, avec SI et OU : « Visa » si le montant HT atteint 5 000 € ou si le pays n’est pas la France, « Non » sinon. Recopiez jusqu’en I17 : sélectionnez I2 et cliquez quinze fois sur « Recopier vers le bas », une ligne par clic.",
               "En K2 et K3, comptez avec NB.SI les factures à relancer et les factures à viser."
             ],
             "metadonnees": {

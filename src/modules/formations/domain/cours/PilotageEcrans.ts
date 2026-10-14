@@ -1,10 +1,6 @@
 import { dansLesBornes } from '../../../../common/domain/nombres/dans-les-bornes';
-import type { Ecran } from '../contrats/cours';
-import type {
-  PilotageDemande,
-  PilotageEcran,
-  VotePhase,
-} from '../contrats/pilotage';
+import type { Cours, Ecran } from '../contrats/cours';
+import type { PilotageDemande, PilotageEcran } from '../contrats/pilotage';
 import { PHASES_DE_VOTE } from '../contrats/pilotage';
 import {
   PhaseFermeeError,
@@ -13,7 +9,12 @@ import {
 } from '../errors/FormationErrors';
 import { correctionsRevelables } from './CorrectionSurPlace';
 import { questionsDe } from './Cours';
-import { activitesDeLEcran, ecranRevele, etayageAtteint } from './EcranServi';
+import {
+  activitesDeLEcran,
+  ecranRevele,
+  etayageAtteint,
+  phaseDuVote,
+} from './EcranServi';
 
 export type { PilotageDemande } from '../contrats/pilotage';
 
@@ -22,13 +23,16 @@ export interface QuestionPilotee {
   readonly ouverture?: 'principale' | 'jumelle';
 }
 
-const NIVEAUX_DE_CORRECTION_D_UNE_PRODUCTION = ['formules', 'valeurs'] as const;
+const NIVEAUX_DE_CORRECTION_D_UNE_FEUILLE = ['formules', 'valeurs'] as const;
 
 function etapesDeLEcran(ecran: Ecran): number | null {
   switch (ecran.brique) {
     case 'fp-sheet':
+      return NIVEAUX_DE_CORRECTION_D_UNE_FEUILLE.length;
     case 'fp-table-build':
-      return NIVEAUX_DE_CORRECTION_D_UNE_PRODUCTION.length;
+      return ecran.proprietes.plan.colonnes.filter(
+        ({ role }) => role !== 'donnee',
+      ).length;
     case 'fp-worked':
       return ecran.proprietes.exemple.etapes.length;
     default:
@@ -86,15 +90,12 @@ export function assertPilotageCompatible(
   const refuser = (raison: string): never => {
     throw new PilotageIncompatibleError(demande.screenId, raison);
   };
-  if (demande.phase !== undefined && ecran.brique !== 'fp-vote') {
-    refuser('seul un vote à question jumelle porte des phases');
-  }
-  if (
-    demande.phase !== undefined &&
-    ecran.brique === 'fp-vote' &&
-    ecran.questionJumelle === undefined
-  ) {
-    refuser('ce vote n’a pas de question jumelle');
+  if (demande.phase !== undefined && !estVoteJumele(ecran)) {
+    refuser(
+      ecran.brique === 'fp-vote'
+        ? 'ce vote n’a pas de question jumelle'
+        : 'seul un vote à question jumelle porte des phases',
+    );
   }
   if (
     demande.revele !== undefined &&
@@ -141,10 +142,6 @@ function sansClesNonPilotables(
   );
 }
 
-function rangDePhase(phase: VotePhase | undefined): number {
-  return phase === undefined ? 0 : PHASES_DE_VOTE.indexOf(phase);
-}
-
 export function fusionnerPilotage(
   courant: Readonly<Record<string, PilotageEcran>>,
   demande: PilotageDemande,
@@ -154,7 +151,8 @@ export function fusionnerPilotage(
   const precedent: PilotageEcran = courant[screenId] ?? {};
   if (
     changements.phase !== undefined &&
-    rangDePhase(changements.phase) < rangDePhase(precedent.phase)
+    PHASES_DE_VOTE.indexOf(changements.phase) <
+      PHASES_DE_VOTE.indexOf(phaseDuVote(precedent))
   ) {
     throw new PhaseNonMonotoneError(screenId);
   }
@@ -188,7 +186,7 @@ export function assertPhaseOuverte(
   if (question.ouverture === undefined) {
     return;
   }
-  const phase = pilotage[question.ecranId]?.phase ?? 'vote';
+  const phase = phaseDuVote(pilotage[question.ecranId]);
   const ouverte =
     question.ouverture === 'principale'
       ? phase === 'vote'
@@ -196,6 +194,27 @@ export function assertPhaseOuverte(
   if (!ouverte) {
     throw new PhaseFermeeError(question.ecranId);
   }
+}
+
+type Vote = Extract<Ecran, { brique: 'fp-vote' }>;
+
+export function estVoteJumele(
+  ecran: Ecran,
+): ecran is Vote & Required<Pick<Vote, 'questionJumelle'>> {
+  return ecran.brique === 'fp-vote' && ecran.questionJumelle !== undefined;
+}
+
+export function pilotageEnDirect(
+  pilotage: Readonly<Record<string, PilotageEcran>>,
+  cours: Cours,
+): Readonly<Record<string, PilotageEcran>> {
+  return cours.ecrans.filter(estVoteJumele).reduce(
+    (servi, { id }) => ({
+      ...servi,
+      [id]: { ...pilotage[id], phase: phaseDuVote(pilotage[id]) },
+    }),
+    pilotage,
+  );
 }
 
 export function assertEtapeNonCorrigee(

@@ -30,8 +30,17 @@ import {
   pieceJointeServieAuPoste,
   rangDeLaQuestion,
   rangDeLEcran,
+  verdictServiDe,
 } from './EcranServi';
 import type { DiffusionDeSeance } from './EcranServi';
+import {
+  VOTES_JUMELES,
+  VOTES_SIMPLES,
+  type VoteDUnCoursServi,
+} from '../../../../../test/factories/votes-des-cours-servis.factory';
+import { decrireLeVerdictDesVotesServis } from '../../../../../test/helpers/verdict-des-votes-servis';
+import type { SessionState } from '../SessionState';
+import { libelleLisible } from './banque/confusions';
 
 const PILOTE: DiffusionDeSeance = {
   etat: 'en_cours',
@@ -374,5 +383,53 @@ describe('pieceJointeServieAuPoste', () => {
         ),
       ).toEqual(buildPieceJointeReservee());
     });
+  });
+});
+
+describe('QA-12 · verdict servi d un vote des cours servis', () => {
+  const CONFUSION = 'base-arrivee';
+  const RETENU = {
+    correcte: null,
+    misconception: null,
+    libelleConfusion: null,
+  };
+  const SERVI = {
+    correcte: false,
+    misconception: CONFUSION,
+    libelleConfusion: libelleLisible(CONFUSION),
+  };
+
+  const servi = (
+    question: VoteDUnCoursServi['question'] | null,
+    pilotage?: PilotageEcran,
+    etat: SessionState = 'en_cours',
+  ) =>
+    verdictServiDe(
+      {
+        etat,
+        pilotageEcrans:
+          pilotage === undefined || question === null
+            ? {}
+            : { [question.ecranId]: pilotage },
+      },
+      question,
+      { correcte: false, misconception: CONFUSION },
+    );
+
+  it('trouve des votes jumelés et des votes simples dans les cours servis', () => {
+    expect({
+      jumeles: VOTES_JUMELES.length > 0,
+      simples: VOTES_SIMPLES.length > 0,
+      libelle: SERVI.libelleConfusion !== null,
+    }).toEqual({ jumeles: true, simples: true, libelle: true });
+  });
+
+  decrireLeVerdictDesVotesServis(
+    ({ question }, pilotage, etat) => servi(question, pilotage, etat),
+    { retenu: RETENU, servi: SERVI },
+  );
+
+  it('sert le verdict d une question absente du barème, comme avant', () => {
+    expect(servi(null)).toEqual(SERVI);
   });
 });

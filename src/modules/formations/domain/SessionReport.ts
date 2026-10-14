@@ -1,3 +1,4 @@
+import { arrondi } from '../../../common/domain/nombres/arrondi';
 import { moyenneOu } from '../../../common/domain/nombres/statistiques';
 import type { QuestionDeBareme } from './Bareme';
 import {
@@ -26,7 +27,7 @@ import type { FreeResponseRecord } from './IFreeResponses.repository';
 import type { IncidentRecord } from './IIncidents.repository';
 import type { ParticipantRecord } from './IParticipants.repository';
 import type { SessionRecord } from './ISessions.repository';
-import { REGLE_DE_NOTATION } from './RegleDeNotation';
+import { DECIMALES_DE_LA_NOTE, REGLE_DE_NOTATION } from './RegleDeNotation';
 import { estUneProduction, texteDeValeur } from './ValeurReponse';
 
 const SEUIL_CONCEPT_FRAGILE = 0.7;
@@ -80,7 +81,7 @@ export function buildRapportSession(input: SessionReportInput): RapportSession {
         nom: participant.nom,
         email: participant.email,
         completion: score?.completion ?? 0,
-        note: score?.note ?? 0,
+        note: arrondi(score?.note ?? 0, DECIMALES_DE_LA_NOTE),
         sousSeuil: score?.sousSeuil ?? true,
         reponses: reponsesDe(
           participant.id,

@@ -86,15 +86,16 @@ describe('FormationMailerService', () => {
       expect(mail.attachments?.[0].contentType).toBe('text/csv; charset=utf-8');
     });
 
-    it('écrit la note sur 20 au dixième dans le texte et le html', async () => {
+    it('QA-09 · écrit la note sur 20 au dixième et à la française dans le texte et le html', async () => {
       const mail = await synthese(
         buildRapport({
           participants: [buildRapportParticipant({ note: 12.25 })],
         }),
       );
 
-      expect(mail.text).toContain('12.3/20');
-      expect(mail.html).toContain('12.3/20');
+      expect(mail.text).toContain('12,3/20');
+      expect(mail.html).toContain('12,3/20');
+      expect(`${mail.text}${mail.html}`).not.toContain('12.3/20');
     });
 
     it('joint le csv de la séance tel que le domaine le produit', async () => {
@@ -171,11 +172,11 @@ describe('FormationMailerService', () => {
       expect(mail.html).not.toContain('<a ');
     });
 
-    it('écrit la note sur 20 au dixième dans la copie', async () => {
+    it('QA-09 · écrit la note sur 20 au dixième et à la française dans la copie', async () => {
       const mail = await copieAvec({ note: 12.25 });
 
-      expect(mail.text).toContain('Note obtenue : 12.3/20.');
-      expect(mail.html).toContain('<strong>12.3/20</strong>');
+      expect(mail.text).toContain('Note obtenue : 12,3/20.');
+      expect(mail.html).toContain('<strong>12,3/20</strong>');
     });
 
     it('detaille chaque reponse avec son verdict, comme le promet le message', async () => {
