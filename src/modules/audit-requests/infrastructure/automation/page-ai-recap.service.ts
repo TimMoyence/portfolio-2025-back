@@ -1,4 +1,4 @@
-import { ChatOpenAI } from '@langchain/openai';
+import type { ChatOpenAI } from '@langchain/openai';
 import { Injectable, Logger } from '@nestjs/common';
 import { z } from 'zod';
 import type { ReportSeverity } from '../../domain/AuditReportTiers';
@@ -8,7 +8,9 @@ import {
   DeadlineExceededError,
   withHardTimeout,
 } from './llm-execution.guardrails';
-import { LlmLimiteParLaConfig } from './llm-executor.port';
+import { LlmSuiviParLaConfig } from './llm-executor.port';
+import { buildOpenAiMessages } from './section-generators/cacheable-section.generators';
+import { untrustedDataDisclaimer } from './section-generators/section-prompts.builder';
 import { isTimeoutError } from './shared/error.util';
 import { localizedText } from './shared/locale-text.util';
 import { traiterEnParallele } from './shared/traitement-concurrent.util';
@@ -100,7 +102,7 @@ function constatsVides(): {
 }
 
 @Injectable()
-export class PageAiRecapService extends LlmLimiteParLaConfig {
+export class PageAiRecapService extends LlmSuiviParLaConfig {
   private readonly logger = new Logger(PageAiRecapService.name);
 
   async analyzePages(
@@ -137,11 +139,7 @@ export class PageAiRecapService extends LlmLimiteParLaConfig {
     let breakerOpen = false;
 
     const llm = this.config.openAiApiKey
-      ? new ChatOpenAI({
-          apiKey: this.config.openAiApiKey,
-          model: this.config.llmModel,
-          timeout: this.config.pageAiTimeoutMs,
-          maxRetries: 0,
+      ? this.chatOpenAIFactory.create(this.config.pageAiTimeoutMs, {
           temperature: 0,
         })
       : null;
@@ -219,42 +217,12 @@ export class PageAiRecapService extends LlmLimiteParLaConfig {
           `page_ai_recap:${page.url}`,
           this.config.pageAiTimeoutMs,
           (signal) =>
-            chain.invoke(
-              [
-                {
-                  role: 'system',
-                  content:
-                    locale === 'fr'
-                      ? 'Tu realises un micro-audit de page complet (SEO + conversion + confiance + performance + hygiene technique). Reponds uniquement en francais. Tu dois evaluer: proposition de valeur, CTA et friction contact/mobile, fondations SEO (title/H1/meta/indexabilite/canonical), signaux de credibilite, hypotheses performance, et indices techniques (CMS/runtime visibles). Chaque topIssue et recommendation doit etre specifique et actionnable.'
-                      : 'You perform a full page micro-audit (SEO + conversion + trust + performance + technical hygiene). Respond only in English. Evaluate value proposition, CTA/contact/mobile friction, SEO foundations (title/H1/meta/indexability/canonical), trust signals, performance hypotheses, and visible CMS/runtime clues. Each topIssue and recommendation must be specific and actionable.',
-                },
-                {
-                  role: 'system',
-                  content:
-                    locale === 'fr'
-                      ? "Tu dois aussi evaluer la couverture de la page par 4 moteurs distincts, en te basant sur les signaux aiSignals du payload (aiBotsAccess, citationWorthiness, structuredDataQuality) et les meta/headers. Produis un objet engineScores avec 4 entrees: google (Rich Results eligibility, hints Core Web Vitals, EEAT), bingChatGpt (structured data, IndexNow, acces des bots bingbot/chatgpt-user), perplexity (contenu citable, llms.txt, sources/dates/auteur), geminiOverviews (FAQPage/HowTo/Article, densite de contenu). Chaque entree contient engine (identifiant), score 0-100, indexable (bool), strengths/blockers/opportunities (max 5 chacun, courtes phrases actionnables). Base-toi uniquement sur les donnees fournies, sinon 'Non verifiable'."
-                      : "You must also evaluate the page coverage by 4 distinct engines, based on the aiSignals payload (aiBotsAccess, citationWorthiness, structuredDataQuality) and meta/headers. Produce an engineScores object with 4 entries: google (Rich Results eligibility, Core Web Vitals hints, EEAT), bingChatGpt (structured data, IndexNow, bingbot/chatgpt-user access), perplexity (citable content, llms.txt, sources/dates/author), geminiOverviews (FAQPage/HowTo/Article schemas, content density). Each entry has engine (id), score 0-100, indexable (bool), strengths/blockers/opportunities (max 5 each, short actionable phrases). Only use provided data, otherwise write 'Not verifiable'.",
-                },
-                {
-                  role: 'system',
-                  content:
-                    locale === 'fr'
-                      ? "Contrainte stricte: aucune langue melangee, aucune speculation sans preuve. Si une donnee manque, ecris 'Non verifiable'."
-                      : "Strict rule: no mixed language and no unsupported speculation. If data is missing, write 'Not verifiable'.",
-                },
-                {
-                  role: 'system',
-                  content:
-                    locale === 'fr'
-                      ? "P1.4 anti-hallucination moteurs: chaque score engineScores.*.score doit citer au moins une evidence observable dans le payload. Si aucune evidence n'est disponible pour un moteur, le score doit etre exactement 50 et blockers doit contenir 'Non verifiable'. Ne jamais inventer un score optimiste sans preuve."
-                      : "P1.4 anti-hallucination for engines: each engineScores.*.score must cite at least one evidence observable in the payload. If no evidence is available for an engine, the score must be exactly 50 and blockers must contain 'Not verifiable'. Never invent an optimistic score without evidence.",
-                },
-                {
-                  role: 'user',
-                  content: JSON.stringify(payload),
-                },
-              ],
-              { signal },
+            this.invokeTracked(
+              chain,
+              buildOpenAiMessages(this.systemBlocks(locale), payload),
+              'page_recap',
+              locale,
+              signal,
             ),
         ),
       );
@@ -297,6 +265,24 @@ export class PageAiRecapService extends LlmLimiteParLaConfig {
             : `Page AI failure fallback for ${page.url}: ${reason}`,
       };
     }
+  }
+
+  private systemBlocks(locale: AuditLocale): string[] {
+    return [
+      untrustedDataDisclaimer(locale),
+      locale === 'fr'
+        ? 'Tu realises un micro-audit de page complet (SEO + conversion + confiance + performance + hygiene technique). Reponds uniquement en francais. Tu dois evaluer: proposition de valeur, CTA et friction contact/mobile, fondations SEO (title/H1/meta/indexabilite/canonical), signaux de credibilite, hypotheses performance, et indices techniques (CMS/runtime visibles). Chaque topIssue et recommendation doit etre specifique et actionnable.'
+        : 'You perform a full page micro-audit (SEO + conversion + trust + performance + technical hygiene). Respond only in English. Evaluate value proposition, CTA/contact/mobile friction, SEO foundations (title/H1/meta/indexability/canonical), trust signals, performance hypotheses, and visible CMS/runtime clues. Each topIssue and recommendation must be specific and actionable.',
+      locale === 'fr'
+        ? "Tu dois aussi evaluer la couverture de la page par 4 moteurs distincts, en te basant sur les signaux aiSignals du payload (aiBotsAccess, citationWorthiness, structuredDataQuality) et les meta/headers. Produis un objet engineScores avec 4 entrees: google (Rich Results eligibility, hints Core Web Vitals, EEAT), bingChatGpt (structured data, IndexNow, acces des bots bingbot/chatgpt-user), perplexity (contenu citable, llms.txt, sources/dates/auteur), geminiOverviews (FAQPage/HowTo/Article, densite de contenu). Chaque entree contient engine (identifiant), score 0-100, indexable (bool), strengths/blockers/opportunities (max 5 chacun, courtes phrases actionnables). Base-toi uniquement sur les donnees fournies, sinon 'Non verifiable'."
+        : "You must also evaluate the page coverage by 4 distinct engines, based on the aiSignals payload (aiBotsAccess, citationWorthiness, structuredDataQuality) and meta/headers. Produce an engineScores object with 4 entries: google (Rich Results eligibility, Core Web Vitals hints, EEAT), bingChatGpt (structured data, IndexNow, bingbot/chatgpt-user access), perplexity (citable content, llms.txt, sources/dates/author), geminiOverviews (FAQPage/HowTo/Article schemas, content density). Each entry has engine (id), score 0-100, indexable (bool), strengths/blockers/opportunities (max 5 each, short actionable phrases). Only use provided data, otherwise write 'Not verifiable'.",
+      locale === 'fr'
+        ? "Contrainte stricte: aucune langue melangee, aucune speculation sans preuve. Si une donnee manque, ecris 'Non verifiable'."
+        : "Strict rule: no mixed language and no unsupported speculation. If data is missing, write 'Not verifiable'.",
+      locale === 'fr'
+        ? "P1.4 anti-hallucination moteurs: chaque score engineScores.*.score doit citer au moins une evidence observable dans le payload. Si aucune evidence n'est disponible pour un moteur, le score doit etre exactement 50 et blockers doit contenir 'Non verifiable'. Ne jamais inventer un score optimiste sans preuve."
+        : "P1.4 anti-hallucination for engines: each engineScores.*.score must cite at least one evidence observable in the payload. If no evidence is available for an engine, the score must be exactly 50 and blockers must contain 'Not verifiable'. Never invent an optimistic score without evidence.",
+    ];
   }
 
   private buildPayload(page: UrlIndexabilityResult): Record<string, unknown> {

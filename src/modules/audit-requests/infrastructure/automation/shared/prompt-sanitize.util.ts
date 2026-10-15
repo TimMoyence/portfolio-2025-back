@@ -28,7 +28,8 @@ export function sanitizePromptInput(
 export function wrapUntrustedUserPayload(
   payload: Record<string, unknown>,
 ): string {
-  return `<user_data>\n${JSON.stringify(payload)}\n</user_data>`;
+  const json = JSON.stringify(payload).replace(/</g, '\\u003c');
+  return `<user_data>\n${json}\n</user_data>`;
 }
 
 export const UNTRUSTED_DATA_DISCLAIMER_FR =

@@ -1,10 +1,10 @@
 import type { Type } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import type { DeepPartial, Repository } from 'typeorm';
+import type { Provenance } from '../../domain/provenance';
 import {
   valeursDeProvenance,
   type ColonnesDeRequete,
-  type Provenance,
 } from './ColonnesDeProvenance';
 
 export abstract class ConsignationDeRequetes<E extends ColonnesDeRequete> {

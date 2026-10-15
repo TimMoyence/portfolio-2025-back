@@ -1,6 +1,6 @@
-import { Logger } from '@nestjs/common';
 import { buildAuditAutomationConfig } from '../../../../../test/factories/audit-config.factory';
 import { buildLangchainAuditInput } from '../../../../../test/factories/audit-requests.factory';
+import { silenceNestLogger } from '../../../../../test/helpers/silence-nest-logger';
 import type { AnthropicChatFactory } from './anthropic-chat.factory';
 import type { AuditAutomationConfig } from './audit.config';
 import { DefaultChatOpenAIFactory } from './chat-openai.factory';
@@ -71,22 +71,7 @@ interface LangchainServiceTestable {
 }
 
 describe('LangchainAuditReportService', () => {
-  let logSpy: jest.SpyInstance;
-  let warnSpy: jest.SpyInstance;
-
-  beforeAll(() => {
-    logSpy = jest.spyOn(Logger.prototype, 'log').mockImplementation(() => {
-      return undefined;
-    });
-    warnSpy = jest.spyOn(Logger.prototype, 'warn').mockImplementation(() => {
-      return undefined;
-    });
-  });
-
-  afterAll(() => {
-    logSpy.mockRestore();
-    warnSpy.mockRestore();
-  });
+  silenceNestLogger();
 
   const config: AuditAutomationConfig = buildAuditAutomationConfig({
     fetchTimeoutMs: 8_000,

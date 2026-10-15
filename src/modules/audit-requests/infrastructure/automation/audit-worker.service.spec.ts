@@ -26,7 +26,7 @@ describe('AuditWorkerService', () => {
   let queueService: jest.Mocked<
     Pick<
       AuditQueueService,
-      'isQueueEnabled' | 'connection' | 'queueName' | 'runWithTimeout'
+      'isQueueEnabled' | 'connection' | 'queueName' | 'runToCompletion'
     >
   >;
 
@@ -39,7 +39,7 @@ describe('AuditWorkerService', () => {
       isQueueEnabled: true,
       connection: { host: 'localhost', port: 6379 },
       queueName: 'audit_requests',
-      runWithTimeout: jest.fn().mockResolvedValue(undefined),
+      runToCompletion: jest.fn().mockResolvedValue(undefined),
       ...queueOverrides,
     };
     return new AuditWorkerService(
@@ -105,7 +105,7 @@ describe('AuditWorkerService', () => {
     expect(mockWorkerClose).not.toHaveBeenCalled();
   });
 
-  it('le processeur confie l audit du job a l execution bornee de la file', async () => {
+  it('le processeur confie l audit du job a l execution de la file', async () => {
     const service = createService();
     service.onModuleInit();
 
@@ -114,6 +114,6 @@ describe('AuditWorkerService', () => {
     }) => Promise<void>;
     await processorFn({ data: { auditId: 'audit-123' } });
 
-    expect(queueService.runWithTimeout).toHaveBeenCalledWith('audit-123');
+    expect(queueService.runToCompletion).toHaveBeenCalledWith('audit-123');
   });
 });

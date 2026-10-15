@@ -22,7 +22,7 @@ import { inferTechFingerprint } from './tech-fingerprint.util';
 import { localizedText } from './shared/locale-text.util';
 import { parGraviteDecroissante } from './shared/severity.util';
 import { borner } from '../../../../common/domain/nombres/borner';
-import { sansFin } from '../../../../common/domain/texte/sans-bords';
+import { cleDePage } from './shared/cle-de-page.util';
 import {
   dansLesBornes,
   type Bornes,
@@ -956,21 +956,10 @@ export class DeepUrlAnalysisService {
 
   private isSelfReferencingCanonical(entry: UrlIndexabilityResult): boolean {
     if (!entry.canonical || !entry.finalUrl) return false;
-    try {
-      const canonical = new URL(entry.canonical, entry.finalUrl);
-      const final = new URL(entry.finalUrl);
-      canonical.hash = '';
-      final.hash = '';
-      const canonicalPath = sansFin(canonical.pathname, '/') || '/';
-      const finalPath = sansFin(final.pathname, '/') || '/';
-      return (
-        canonical.origin === final.origin &&
-        canonicalPath === finalPath &&
-        canonical.search === final.search
-      );
-    } catch {
-      return false;
-    }
+    const finale = cleDePage(entry.finalUrl);
+    return (
+      finale !== null && cleDePage(entry.canonical, entry.finalUrl) === finale
+    );
   }
 
   private hasUrlPatternIssue(url: string): boolean {
