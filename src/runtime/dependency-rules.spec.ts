@@ -2,9 +2,18 @@ import { readdirSync, readFileSync, statSync } from 'fs';
 import { collectFiles } from '../../test/helpers/source-tree';
 import { join } from 'path';
 
+const MOTIF_DE_DEPENDANCE = /\b(import|export)\b([^'"`;]*)['"]([^'"]+)['"]/g;
+
+function designeUnModule(motCle: string, clause: string): boolean {
+  const avantLeModule = clause.trim();
+  if (/\bfrom$/.test(avantLeModule)) return true;
+  return motCle === 'import' && ['', '('].includes(avantLeModule);
+}
+
 function parseImports(content: string): string[] {
-  const importPattern = /\bimport\b[^'"\n]*\bfrom\s*['"]([^'"]+)['"]/g;
-  return [...content.matchAll(importPattern)].map((match) => match[1]);
+  return [...content.matchAll(MOTIF_DE_DEPENDANCE)]
+    .filter((match) => designeUnModule(match[1], match[2]))
+    .map((match) => match[3]);
 }
 
 function extractImports(filePath: string): string[] {
@@ -72,8 +81,29 @@ describe('parseImports', () => {
       `import a from 'x';\nimport b from 'y';`,
       ['x', 'y'],
     ],
-    ['import a effet de bord, non couvert', `import './polyfills';`, []],
-    ['import multiligne, non couvert', `import {\n  Foo,\n} from './foo';`, []],
+    ['import a effet de bord', `import './polyfills';`, ['./polyfills']],
+    [
+      'import multiligne',
+      `import {\n  Foo,\n  Bar,\n} from './foo';`,
+      ['./foo'],
+    ],
+    [
+      'import de type multiligne',
+      `import type {\n  Foo,\n} from '../infrastructure/foo';`,
+      ['../infrastructure/foo'],
+    ],
+    [
+      'reexport nomme',
+      `export { Foo } from '../infrastructure/foo';`,
+      ['../infrastructure/foo'],
+    ],
+    ['reexport de tout', `export * from './bar';`, ['./bar']],
+    ['import dynamique', `const m = await import('./baz');`, ['./baz']],
+    [
+      'declarations sans module',
+      `export const from = 'x';\nexport class A {}\nconst b = Array.from('cd');`,
+      [],
+    ],
   ];
 
   it.each(cases)('%s', (_label, source, expected) => {
@@ -92,12 +122,25 @@ describe('parseImports', () => {
 describe('Règles de dépendances inter-couches', () => {
   const modulesRoot = join(process.cwd(), 'src/modules');
 
-  const domainFiles = collectLayerFiles(modulesRoot, 'domain');
-  const applicationFiles = collectLayerFiles(modulesRoot, 'application');
+  const coucheCommune = (couche: string): string[] =>
+    eligibleTsFiles(collectFiles(join(process.cwd(), 'src/common', couche)));
 
-  const commonDomainFiles = eligibleTsFiles(
-    collectFiles(join(process.cwd(), 'src/common/domain')),
-  );
+  const domainFiles = [
+    ...collectLayerFiles(modulesRoot, 'domain'),
+    ...coucheCommune('domain'),
+  ];
+  const applicationFiles = [
+    ...collectLayerFiles(modulesRoot, 'application'),
+    ...coucheCommune('application'),
+  ];
+
+  it('couvre la couche commune comme celle des modules', () => {
+    expect(
+      [domainFiles, applicationFiles].map((fichiers) =>
+        fichiers.some((fichier) => fichier.includes('/src/common/')),
+      ),
+    ).toEqual([true, true]);
+  });
 
   it('les fichiers domain/ ne doivent pas importer depuis infrastructure/', () => {
     expect(
@@ -134,7 +177,7 @@ describe('Règles de dépendances inter-couches', () => {
       'google-auth-library',
     ];
     expect(
-      importViolations([...domainFiles, ...commonDomainFiles], (imp) =>
+      importViolations(domainFiles, (imp) =>
         forbiddenPackages.some(
           (pkg) => imp === pkg || imp.startsWith(`${pkg}/`),
         ),
