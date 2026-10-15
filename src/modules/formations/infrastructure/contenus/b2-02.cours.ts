@@ -69,30 +69,17 @@ const CA_RIVAGE = [610, 652, 694, 736, 790, 826] as const;
 const ANNEES_FIBRE = [2020, 2021, 2022, 2023, 2024] as const;
 const FIBRE_EN_MILLIONS = ['10,3', '14,5', '18,1', '21,4', '24,4'] as const;
 
+const DOSSIER_DES_ILLUSTRATIONS = '/assets/cours/b2-02/v2';
+
 function illustration(
-  {
-    screenId,
-    titre,
-    concepts,
-  }: Pick<moteur.SocleDEcran, 'screenId' | 'titre' | 'concepts'>,
-  { fichier, imageAlt }: { fichier: string; imageAlt: string },
+  socle: Pick<moteur.SocleDEcran, 'screenId' | 'titre' | 'concepts'>,
+  image: moteur.ImageDIllustration,
   relance: string,
 ): moteur.EcranDeRecit {
-  return moteur.ecranV2(
-    {
-      screenId,
-      titre,
-      diffusion: 'catalogue',
-      dureeMinutes: 1,
-      concepts,
-      notes: moteur.puces(
-        '1 min ; l’image reprend l’exemple pour débuter de la page qui précède : la projeter pendant qu’on le refait au tableau.',
-        relance,
-      ),
-    },
-    'illustration',
-    { image: `/assets/cours/b2-02/v2/${fichier}`, imageAlt },
-  );
+  return moteur.ecranDIllustration(socle, DOSSIER_DES_ILLUSTRATIONS, image, [
+    '1 min ; l’image reprend l’exemple pour débuter de la page qui précède : la projeter pendant qu’on le refait au tableau.',
+    relance,
+  ]);
 }
 
 const CONSIGNE_DES_DELAIS =
@@ -548,13 +535,7 @@ const ACTE_1: moteur.Acte = [
         ],
       },
     },
-    {
-      minutes: 2,
-      notes: [
-        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE_SOUS_SON_SCORE,
-        'Transition : jalon 1, puis pause de 15 minutes.',
-      ],
-    },
+    moteur.CORRECTION_AVANT_LA_PREMIERE_PAUSE,
     [
       [
         'b2-02-a1-mediane',
@@ -2110,22 +2091,10 @@ const ILLUSTRATIONS = [
   ],
 ] as const;
 
-const MEDIAS: ContenuDeCours['medias'] = ILLUSTRATIONS.map(
-  ([id, fichier, titre]) => ({
-    id,
-    chemins: [`/assets/cours/b2-02/v2/${fichier}`],
-    pageSource: null,
-    auteur: 'Asili Design',
-    date: '2026',
-    licence: 'CC BY-SA 4.0',
-    attribution: `${titre} · Asili Design, 2026 · CC BY-SA 4.0`,
-  }),
-);
-
 export const COURS_B2_02 = moteur.coursB2(
   [ACTE_1, ACTE_2, ACTE_3, ACTE_4],
   REMEDIATIONS,
-  MEDIAS,
+  moteur.mediasDesIllustrations(DOSSIER_DES_ILLUSTRATIONS, ILLUSTRATIONS),
   {
     slug: 'b2-02-series-statistiques',
     titre: 'Séries statistiques : résumer, relier, prévoir',

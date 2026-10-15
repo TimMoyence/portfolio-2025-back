@@ -772,6 +772,16 @@ describe('stockage multi-briques (B1)', () => {
       expect(ecran.modalite).toBe('solo');
     });
 
+    it('lit une mission sans geste, que ses seules questions mettent au travail', () => {
+      const ecran = lireEcran(
+        avecProprietes('fp-pro', (proprietes) => {
+          proprietes.geste = null;
+        }),
+      );
+
+      expect(ecran.brique === 'fp-pro' && ecran.proprietes.geste).toBeNull();
+    });
+
     it('porte le délai du rappel d ouverture et l invite du billet', () => {
       expect(ecranDeBrique('fp-recall').delaiMs).toBe(45000);
       expect(ecranDeBrique('fp-exit').invite).toBe(
@@ -792,6 +802,17 @@ describe('stockage multi-briques (B1)', () => {
         'vote',
         'numeric',
       ]);
+    });
+
+    it('lit un questionnaire sans consigne, que son intitulé suffit à présenter', () => {
+      const ecran = lireEcran(
+        avecProprietes('questionnaire', (proprietes) => {
+          delete proprietes.consigne;
+        }),
+      );
+
+      expect(ecran.brique).toBe('questionnaire');
+      expect(ecran).not.toHaveProperty('consigne');
     });
 
     it('porte la production d un classement avec les confusions de son corrigé', () => {

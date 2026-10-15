@@ -605,7 +605,7 @@ describe('B2-01 — retours de QA', () => {
     expect(
       (proprietes?.questionsLibres ?? []).filter(({ question }) =>
         proprietes?.geste
-          .toLowerCase()
+          ?.toLowerCase()
           .includes(question.slice(0, -2).toLowerCase()),
       ),
     ).toEqual([]);

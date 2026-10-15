@@ -172,7 +172,7 @@ interface EtapeDeMachine {
 export type CasProfessionnel = {
   readonly metier: string;
   readonly situation: string;
-  readonly geste: string;
+  readonly geste: string | null;
   readonly consequence: string | null;
   readonly questionsLibres?: AuMoinsUn<QuestionLibre>;
 };

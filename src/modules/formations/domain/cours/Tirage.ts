@@ -451,7 +451,7 @@ function tirerQuestionnaire(
       : melanger(ecran.questions, contexte.rng);
   return {
     intitule: ecran.intitule,
-    consigne: ecran.consigne,
+    ...(ecran.consigne === undefined ? {} : { consigne: ecran.consigne }),
     regime: ecran.regime,
     ordre: ecran.ordre,
     questions: questions.map((question) =>
