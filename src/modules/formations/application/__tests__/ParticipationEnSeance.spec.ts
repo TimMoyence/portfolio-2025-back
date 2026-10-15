@@ -9,7 +9,6 @@ import {
   createMockParticipantsRepo,
   createMockSessionStateCache,
   createMockSessionsRepo,
-  creerParticipationEnSeance,
   PARTICIPANT_DE_TEST,
 } from '../../../../../test/factories/formation.factory';
 import { verifierLectureDeSeanceEtCours } from '../../../../../test/helpers/gardes-de-seance';
@@ -32,12 +31,16 @@ describe('ParticipationEnSeance', () => {
     );
 
   beforeEach(() => {
-    ({
+    sessions = createMockSessionsRepo({ courseSlug: COURS.slug });
+    participants = createMockParticipantsRepo();
+    participants.findById.mockResolvedValue(buildParticipantRecord());
+    cache = createMockSessionStateCache();
+    sut = new ParticipationEnSeance(
       sessions,
       participants,
+      creerCatalogueDeTest(COURS),
       cache,
-      participation: sut,
-    } = creerParticipationEnSeance(COURS.slug, creerCatalogueDeTest(COURS)));
+    );
   });
 
   verifierLectureDeSeanceEtCours(

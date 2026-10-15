@@ -11,7 +11,7 @@ import { createMockArticlesService } from './factories/article.factory';
 import {
   ecouterEnBoucleLocale,
   fermerApplication,
-  httpServerOf,
+  serveurHttpDe,
 } from './helpers/nest-test-app';
 
 describe('Articles HTTP aliases', () => {
@@ -44,21 +44,21 @@ describe('Articles HTTP aliases', () => {
   });
 
   it('serves the contract path used by the Raspberry Pi', async () => {
-    await request(httpServerOf(app)).get('/api/articles').expect(200).expect({
+    await request(serveurHttpDe(app)).get('/api/articles').expect(200).expect({
       items: [],
       next_cursor: null,
     });
   });
 
   it('keeps the existing prefixed site API path', async () => {
-    await request(httpServerOf(app))
+    await request(serveurHttpDe(app))
       .get('/api/v1/portfolio25/articles')
       .expect(200)
       .expect({ items: [], next_cursor: null });
   });
 
   it('routes and protects the Raspberry Pi ingest endpoint', async () => {
-    const response = await request(httpServerOf(app))
+    const response = await request(serveurHttpDe(app))
       .post('/api/articles/ingest')
       .send({});
 

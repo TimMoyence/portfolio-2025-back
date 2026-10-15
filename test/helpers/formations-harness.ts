@@ -2,11 +2,7 @@ import { INestApplication, type Provider } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { Test as ModuleDeTest, type TestingModule } from '@nestjs/testing';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import {
-  request as requeteNode,
-  type IncomingMessage,
-  type Server,
-} from 'node:http';
+import { request as requeteNode, type IncomingMessage } from 'node:http';
 import request from 'supertest';
 import type { Test } from 'supertest';
 import { appliquerLesTraitementsGlobaux } from '../../src/common/interfaces/http/traitements-globaux';
@@ -117,14 +113,11 @@ import {
   ADRESSE_BOUCLE_LOCALE,
   ecouterEnBoucleLocale,
   fermerApplication,
+  portDe,
+  serveurHttpDe,
 } from './nest-test-app';
 
-export { EN_TETE_IDENTITE };
-
-export const serveurHttpDe = (
-  app: INestApplication,
-): Parameters<typeof request>[0] =>
-  app.getHttpServer() as Parameters<typeof request>[0];
+export { EN_TETE_IDENTITE, serveurHttpDe };
 
 export const routeFormations = (chemin: string): string =>
   `/${PREFIXE_API_PAR_DEFAUT}/formations${chemin}`;
@@ -267,7 +260,7 @@ export async function monterApplicationFormations(
   signerLesIdentitesDeTest(app);
   app.setGlobalPrefix(PREFIXE_API_PAR_DEFAUT);
   appliquerLesTraitementsGlobaux(app);
-  await app.init();
+  await ecouterEnBoucleLocale(app);
   return app;
 }
 
@@ -347,7 +340,7 @@ export function fermetureCoteServeur(
   app: INestApplication,
   chemin: string,
 ): Promise<void> {
-  const serveur = app.getHttpServer() as Server;
+  const serveur = serveurHttpDe(app);
   return new Promise((resoudre) => {
     const surRequete = (requete: IncomingMessage): void => {
       if (requete.url !== chemin) {
@@ -405,7 +398,7 @@ export async function monterBancFormations(
     { ...contexte, mailer },
     catalogueDeTest ?? contexte.catalogue,
   );
-  const port = await ecouterEnBoucleLocale(app);
+  const port = portDe(app);
   return {
     contexte,
     app,

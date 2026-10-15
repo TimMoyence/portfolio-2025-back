@@ -16,7 +16,7 @@ import { sousEnvironnement } from './helpers/environnement';
 import {
   applicationDeLaSuite,
   bootstrapTestAppAvecCookies,
-  httpServerOf,
+  serveurHttpDe,
 } from './helpers/nest-test-app';
 
 // eslint-disable-next-line sonarjs/no-hardcoded-passwords -- fixture de test, pas un secret reel
@@ -58,7 +58,7 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
     return bootstrapTestAppAvecCookies(moduleRef);
   });
 
-  const getHttpServer = () => httpServerOf(app());
+  const getHttpServer = () => serveurHttpDe(app());
 
   const signerPour = (user: User) =>
     jwtTokenService.sign({

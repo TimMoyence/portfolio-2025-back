@@ -15,7 +15,7 @@ import { buildAuthResult, buildUser } from './factories/user.factory';
 import {
   applicationDeLaSuite,
   bootstrapTestAppAvecCookies,
-  httpServerOf,
+  serveurHttpDe,
 } from './helpers/nest-test-app';
 
 const JETON_DU_FORMATEUR = 'jeton-de-rafraichissement-du-formateur';
@@ -38,7 +38,7 @@ describe('Rafraichissement de session — une salle derriere une seule adresse',
   });
 
   const rafraichir = (jeton?: string) => {
-    const appel = request(httpServerOf(app())).post('/api/auth/refresh');
+    const appel = request(serveurHttpDe(app())).post('/api/auth/refresh');
     return jeton === undefined
       ? appel
       : appel.set('Cookie', `refresh_token=${jeton}`);

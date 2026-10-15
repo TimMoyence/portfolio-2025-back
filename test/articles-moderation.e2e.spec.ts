@@ -6,7 +6,7 @@ import { PREFIXE_API_PAR_DEFAUT } from '../src/config/prefixe-api';
 import { ResourceNotFoundError } from '../src/common/domain/errors/ResourceNotFoundError';
 import {
   applicationDeLaSuite,
-  httpServerOf,
+  serveurHttpDe,
   ouvrirApplication,
   preparerChaqueRequete,
 } from './helpers/nest-test-app';
@@ -39,7 +39,7 @@ describe('Modération des articles (admin)', () => {
     });
   });
 
-  const serveur = () => httpServerOf(app());
+  const serveur = () => serveurHttpDe(app());
 
   beforeEach(() => jest.clearAllMocks());
 

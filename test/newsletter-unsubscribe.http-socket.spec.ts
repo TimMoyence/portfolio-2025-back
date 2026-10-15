@@ -16,7 +16,7 @@ import { NewsletterController } from '../src/modules/newsletter/interfaces/Newsl
 import { buildNewsletterSubscriber } from './factories/newsletter-subscriber.factory';
 import {
   applicationDeLaSuite,
-  httpServerOf,
+  serveurHttpDe,
   ouvrirApplication,
 } from './helpers/nest-test-app';
 
@@ -74,7 +74,7 @@ describe('Desabonnement newsletter (e2e http socket)', () => {
     );
   });
 
-  const getHttpServer = () => httpServerOf(app());
+  const getHttpServer = () => serveurHttpDe(app());
 
   const desabonner = (
     methode: 'get' | 'post' = 'post',
