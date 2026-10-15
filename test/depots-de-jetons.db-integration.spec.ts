@@ -7,8 +7,16 @@ import {
   type EntityTarget,
   type ObjectLiteral,
 } from 'typeorm';
+import { InvalidCredentialsError } from '../src/common/domain/errors/InvalidCredentialsError';
+import { TokenReuseDetectedError } from '../src/common/domain/errors/TokenReuseDetectedError';
+import { AuthenticateUserUseCase } from '../src/modules/users/application/AuthenticateUser.useCase';
+import { ChangePasswordUseCase } from '../src/modules/users/application/ChangePassword.useCase';
+import { RefreshTokensUseCase } from '../src/modules/users/application/RefreshTokens.useCase';
 import { RequestPasswordResetUseCase } from '../src/modules/users/application/RequestPasswordReset.useCase';
+import { ResetPasswordUseCase } from '../src/modules/users/application/ResetPassword.useCase';
+import { RevokeTokenUseCase } from '../src/modules/users/application/RevokeToken.useCase';
 import { EnvoiDeVerificationEmail } from '../src/modules/users/application/services/email-verification-dispatch';
+import { emettreJeton, TokenHash } from '../src/modules/users/domain/TokenHash';
 import { EmailVerificationTokensRepositoryTypeORM } from '../src/modules/users/infrastructure/EmailVerificationTokens.repository.typeORM';
 import { EmailVerificationTokenEntity } from '../src/modules/users/infrastructure/entities/EmailVerificationToken.entity';
 import { PasswordResetTokenEntity } from '../src/modules/users/infrastructure/entities/PasswordResetToken.entity';
@@ -24,7 +32,13 @@ import {
 } from './helpers/db-integration-datasource';
 import { installerVariables } from './helpers/environnement';
 import { createMockPasswordResetNotifier } from './factories/mailer.factory';
-import { buildUser, createMockUsersRepo } from './factories/user.factory';
+import {
+  buildSignedToken,
+  buildUser,
+  createMockJwtService,
+  createMockPasswordService,
+  createMockUsersRepo,
+} from './factories/user.factory';
 
 const UNE_HEURE_MS = 60 * 60 * 1000;
 const UN_JOUR_MS = 24 * UNE_HEURE_MS;
@@ -264,6 +278,128 @@ describeDb('Depots de jetons sur une base migree', () => {
         .getRepository(RefreshTokenEntity)
         .findBy({ userId: compte });
       expect(restants.map(({ id }) => id)).toEqual([recent]);
+    });
+  });
+
+  describe('un appareil reste ouvert pendant la revocation de toutes les sessions', () => {
+    const MOT_DE_PASSE = 'NouveauMotDePasse1!';
+    const ANCIEN_MOT_DE_PASSE = 'AncienMotDePasse1!';
+
+    const monter = async (email: string) => {
+      const utilisateur = buildUser({
+        id: await inscrireUtilisateur(base(), email),
+        email,
+        passwordHash: 'hash',
+      });
+      const comptes = createMockUsersRepo();
+      comptes.findByEmail.mockResolvedValue(utilisateur);
+      comptes.findById.mockResolvedValue(utilisateur);
+      comptes.update.mockResolvedValue(utilisateur);
+      const motsDePasse = createMockPasswordService();
+      motsDePasse.verify.mockResolvedValue(true);
+      motsDePasse.hash.mockResolvedValue('nouveau-hash');
+      motsDePasse.needsRehash.mockReturnValue(false);
+      const jwt = createMockJwtService();
+      jwt.sign.mockResolvedValue(buildSignedToken());
+      const sessions = new RefreshTokensRepositoryTypeORM(
+        base().getRepository(RefreshTokenEntity),
+      );
+      const connexion = new AuthenticateUserUseCase(
+        comptes,
+        sessions,
+        motsDePasse,
+        jwt,
+      );
+      return {
+        utilisateur,
+        comptes,
+        motsDePasse,
+        sessions,
+        rafraichir: new RefreshTokensUseCase(sessions, comptes, jwt),
+        seConnecter: async () =>
+          (await connexion.execute({ email, password: MOT_DE_PASSE }))
+            .refreshToken,
+      };
+    };
+    type Banc = Awaited<ReturnType<typeof monter>>;
+
+    const revocations: [
+      string,
+      (banc: Banc, appareil: string) => Promise<unknown>,
+    ][] = [
+      [
+        'un changement de mot de passe',
+        ({ utilisateur, comptes, motsDePasse, sessions }) =>
+          new ChangePasswordUseCase(comptes, motsDePasse, sessions).execute({
+            userId: utilisateur.id as string,
+            currentPassword: ANCIEN_MOT_DE_PASSE,
+            newPassword: MOT_DE_PASSE,
+          }),
+      ],
+      [
+        'une reinitialisation de mot de passe',
+        async ({ utilisateur, comptes, motsDePasse, sessions }) => {
+          const lien = emettreJeton();
+          await depotDeReinitialisation().remplacerLesJetonsActifs({
+            userId: utilisateur.id as string,
+            tokenHash: lien.empreinte,
+            expiresAt: dans(UNE_HEURE_MS),
+          });
+          return new ResetPasswordUseCase(
+            depotDeReinitialisation(),
+            comptes,
+            motsDePasse,
+            sessions,
+          ).execute({ token: lien.brut, newPassword: MOT_DE_PASSE });
+        },
+      ],
+      [
+        'une deconnexion',
+        ({ sessions }, appareil) =>
+          new RevokeTokenUseCase(sessions).execute(appareil),
+      ],
+    ];
+
+    it.each(revocations)(
+      'apres %s, l appareil reste ouvert ne ferme pas la session rouverte, qu il rafraichisse ou se deconnecte',
+      async (evenement, revoquer) => {
+        const banc = await monter(
+          `sessions-${evenement.replaceAll(' ', '-')}@example.com`,
+        );
+        const portable = await banc.seConnecter();
+        const telephone = await banc.seConnecter();
+
+        await revoquer(banc, portable);
+        const portableRouvert = await banc.seConnecter();
+
+        await expect(banc.rafraichir.execute(telephone)).rejects.toBeInstanceOf(
+          InvalidCredentialsError,
+        );
+        await new RevokeTokenUseCase(banc.sessions).execute(telephone);
+        await expect(
+          banc.rafraichir.execute(portableRouvert),
+        ).resolves.toMatchObject({ user: banc.utilisateur });
+      },
+    );
+
+    it('ferme toutes les sessions quand un jeton remplace par rotation est rejoue apres le delai de grace', async () => {
+      const banc = await monter('sessions-rejeu@example.com');
+      const vole = await banc.seConnecter();
+      const autre = await banc.seConnecter();
+      await banc.rafraichir.execute(vole);
+      await base()
+        .getRepository(RefreshTokenEntity)
+        .update(
+          { tokenHash: TokenHash.fromRaw(vole).value },
+          { rotationGraceUntil: dans(-UNE_HEURE_MS) },
+        );
+
+      await expect(banc.rafraichir.execute(vole)).rejects.toBeInstanceOf(
+        TokenReuseDetectedError,
+      );
+      await expect(banc.rafraichir.execute(autre)).rejects.toBeInstanceOf(
+        InvalidCredentialsError,
+      );
     });
   });
 });
