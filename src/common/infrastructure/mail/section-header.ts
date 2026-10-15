@@ -1,4 +1,8 @@
-import { escapeHtml, safeHtml, type EscapedHtml } from './html-escape.util';
+import {
+  escapeHtml,
+  safeHtml,
+  type EscapedHtml,
+} from '../../domain/texte/html-escape.util';
 
 export function sectionHeader(
   num: string,

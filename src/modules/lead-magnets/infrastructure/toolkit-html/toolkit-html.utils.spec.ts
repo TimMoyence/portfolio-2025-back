@@ -1,7 +1,7 @@
 import { buildToolkitCss } from './toolkit-html.css';
 import { escapeHtml, pageFooter, safeHtml } from './toolkit-html.utils';
 import type { EscapedHtml } from './toolkit-html.utils';
-import type { FeuilleDeStyle } from '../../../../common/infrastructure/mail/html-escape.util';
+import type { FeuilleDeStyle } from '../../../../common/domain/texte/html-escape.util';
 
 describe('pageFooter', () => {
   it('produit un fragment marque vide', () => {

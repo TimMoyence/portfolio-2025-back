@@ -4,7 +4,7 @@ import {
   escapeHtml,
   escapeUrl,
   safeHtml,
-} from '../../../common/infrastructure/mail/html-escape.util';
+} from '../../../common/domain/texte/html-escape.util';
 import { destinataireDesNotifications } from '../../../config/adresses-de-courriel';
 import { Contacts } from '../domain/Contacts';
 import type { IContactNotifier } from '../domain/IContactNotifier';

@@ -3,8 +3,8 @@ import { ExpediteurSmtp } from '../../../common/infrastructure/mail/expediteur-s
 import {
   escapeHtml,
   safeHtml,
-} from '../../../common/infrastructure/mail/html-escape.util';
-import type { EscapedHtml } from '../../../common/infrastructure/mail/html-escape.util';
+} from '../../../common/domain/texte/html-escape.util';
+import type { EscapedHtml } from '../../../common/domain/texte/html-escape.util';
 import { conceptsFragilesLisibles } from '../domain/IFormationMailer.port';
 import type {
   CopieEtudiant,

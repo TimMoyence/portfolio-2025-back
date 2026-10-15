@@ -3587,15 +3587,17 @@ instance, code? }`. Les erreurs de validation des DTO restent celles de Nest (40
   `fp-recall` → `<questionId>:rappel` ; texte du billet → `<billetId>` ; étape rédigée de `fp-worked` →
   `<exempleId>:<etapeId>` et son explication → `<exempleId>:<etapeId>:pourquoi` ; défi → `<defiId>`.
   `activitesLibres(cours)` renvoie, par écran, la liste de ces identifiants.
-- **Lecture d’une saisie numérique** (moteur de formules, `Formule.ts` du domaine, une seule
-  implémentation au back) : `lireNombreSaisi(texte): number | null` retire tout
-  espace (ordinaire, insécable, fine), lit la virgule ou le point décimal, `+`, `-` et `−` (U+2212) en
-  tête, et refuse tout autre caractère (`null`), comme toute écriture qui ne donne pas un nombre fini ;
-  `-0` se lit `0`. C’est la lecture des cellules, des tables et du champ numérique du front.
+- **Lecture d’une saisie numérique** (moteur de formules, `Formule.ts` du domaine) :
+  `lireNombreSaisi(texte): number | null` retire tout espace (ordinaire, insécable, fine), lit la
+  virgule ou le point décimal, `+`, `-` et `−` (U+2212) en tête, et refuse tout autre caractère
+  (`null`), comme toute écriture qui ne donne pas un nombre fini ; `-0` se lit `0`.
   `lireNombreSaisiAvecUnite(texte)` admet en plus une unité finale, sans casse (« % », « € », « k€ »,
   « euro(s) », « pt(s) », « point(s) », « facture(s) », « ligne(s) », « passage(s) », « kit(s) ») ;
-  c’est la lecture des énigmes côté back. Les vecteurs de `test/saisie.spec.ts` du paquet figent les
-  deux.
+  c’est la lecture des énigmes côté back. Une cellule de feuille se lit encore par `lireNombre`
+  (`Formule.ts`, appelée par `lireSaisie` et `versNombre`), qui retire les blancs des bords, lit la
+  première virgule comme un point et rend `NaN` pour toute autre écriture ; le front lit ses cellules,
+  ses tables et son champ numérique par sa propre copie du moteur. Les vecteurs de
+  `Formule.saisie.spec.ts` figent `lireNombreSaisi` et `lireNombreSaisiAvecUnite`.
 - **Clés de brouillon (front)** : `fp.<sessionId>.<participantId>.<brique>.<id>` (valeur JSON) ; purgées
   à l’événement `fin` et à tout nouveau rattachement ; aucune autre clé `fp.*` n’est écrite.
 

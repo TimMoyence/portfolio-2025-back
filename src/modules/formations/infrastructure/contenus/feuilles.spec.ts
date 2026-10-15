@@ -1,21 +1,38 @@
+import { recopier } from '../../../../../test/helpers/feuille-de-cours';
 import { clicsDeRecopie, colonneRecopiee, gesteDeRecopie } from './feuilles';
 
 describe('B-21 · une colonne recopiée vers le bas comme le tableur', () => {
-  it.each([
+  const RECOPIES: readonly [string, readonly string[]][] = [
     ['=B2*$C$1', ['=B3*$C$1', '=B4*$C$1']],
     ['=SOMME(B$2:B2)', ['=SOMME(B$2:B3)', '=SOMME(B$2:B4)']],
     ['=$B2*C$1', ['=$B3*C$1', '=$B4*C$1']],
     ['=I2+Z9', ['=I3+Z10', '=I4+Z11']],
     ['=AB2*2', ['=AB3*2', '=AB4*2']],
     ['=SI(A2="lot B2";1;0)', ['=SI(A3="lot B2";1;0)', '=SI(A4="lot B2";1;0)']],
-  ])('recopie %s de deux lignes vers le bas', (formule, recopies) => {
-    expect(
-      colonneRecopiee(
-        { colonne: 'C', premiereLigne: 2, formule },
-        [1, 2, 3],
-      ).map((attendu) => attendu.formuleReference),
-    ).toEqual([formule, ...recopies]);
-  });
+  ];
+
+  it.each(RECOPIES)(
+    'recopie %s de deux lignes vers le bas',
+    (formule, recopies) => {
+      expect(
+        colonneRecopiee(
+          { colonne: 'C', premiereLigne: 2, formule },
+          [1, 2, 3],
+        ).map((attendu) => attendu.formuleReference),
+      ).toEqual([formule, ...recopies]);
+    },
+  );
+
+  it.each(RECOPIES)(
+    'la feuille de test recopie %s comme le cours',
+    (formule, recopies) => {
+      expect(recopier(formule, 'C', 2, 4)).toEqual({
+        C2: formule,
+        C3: recopies[0],
+        C4: recopies[1],
+      });
+    },
+  );
 });
 
 describe('QA-11 · geste de recopie d’un atelier tableur, un clic par ligne', () => {

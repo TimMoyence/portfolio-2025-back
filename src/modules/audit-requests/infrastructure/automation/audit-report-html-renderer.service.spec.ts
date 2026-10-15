@@ -167,8 +167,8 @@ describe('AuditReportHtmlRendererService', () => {
     const html = rendre();
 
     expect(html).toContain('15 avril 2026');
-    expect(html).toContain('<span class="severity-badge">Eleve</span>');
-    expect(html).toContain('<td class="backlog-impact">Eleve</td>');
+    expect(html).toContain('<span class="severity-badge">Élevé</span>');
+    expect(html).toContain('<td class="backlog-impact">Élevé</td>');
     expect(html).toContain('<td class="backlog-effort">Faible</td>');
     expect(html).toContain('Effort : Faible');
   });

@@ -8,7 +8,7 @@ import {
   escapeUrl,
   safeHtml,
   type EscapedHtml,
-} from '../../../common/infrastructure/mail/html-escape.util';
+} from '../../../common/domain/texte/html-escape.util';
 import { createOptionalSmtpTransporter } from '../../../common/infrastructure/mail/smtp-transporter.util';
 import { entetesDeDesabonnement } from '../../../common/infrastructure/mail/entetes-de-desabonnement';
 import {
