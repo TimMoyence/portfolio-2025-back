@@ -1,12 +1,20 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 import { buildAuditAutomationConfig } from '../../../../../test/factories/audit-config.factory';
 import {
   buildAiBotsAccess,
   buildCitationWorthiness,
+  buildEngineCoverage,
   buildPageExploree,
   buildStructuredDataQuality,
 } from '../../../../../test/factories/audit-requests.factory';
+import {
+  createChatOpenAIFactoryStub,
+  createLlmSuiviStub,
+} from '../../../../../test/factories/section-generator.factory';
+import { attendreUnPayloadEmballe } from '../../../../../test/helpers/appels-llm';
 import type { AuditAutomationConfig } from './audit.config';
 import { PageAiRecapService } from './page-ai-recap.service';
+import { UNTRUSTED_DATA_DISCLAIMER_EN } from './shared/prompt-sanitize.util';
 import type { UrlIndexabilityResult } from './url-indexability.service';
 
 describe('PageAiRecapService', () => {
@@ -41,12 +49,79 @@ describe('PageAiRecapService', () => {
     locale: 'fr' | 'en',
     pages: UrlIndexabilityResult[],
   ) =>
-    new PageAiRecapService(config).analyzePages({
+    new PageAiRecapService(config, createChatOpenAIFactoryStub()).analyzePages({
       locale,
       websiteName: 'example.com',
       normalizedUrl: 'https://example.com',
       pages,
     });
+
+  describe('appel du LLM de recap', () => {
+    const RECAP_DU_LLM = {
+      summary: 'Page claire',
+      topIssues: ['Meta description absente'],
+      recommendations: ['Ajouter une meta description'],
+      wordingScore: 70,
+      trustScore: 70,
+      ctaScore: 70,
+      seoCopyScore: 70,
+      priority: 'medium',
+      language: 'en',
+      engineScores: buildEngineCoverage(),
+    };
+
+    function serviceAvecLlm() {
+      const invoke = jest.fn().mockResolvedValue(RECAP_DU_LLM);
+      const { fabrique, metrics } = createLlmSuiviStub(invoke);
+      const service = new PageAiRecapService(
+        { ...config, openAiApiKey: 'test-key' },
+        fabrique,
+        metrics,
+      );
+      const analyser = () =>
+        service.analyzePages({
+          locale: 'en',
+          websiteName: 'example.com',
+          normalizedUrl: 'https://example.com',
+          pages: [page],
+        });
+      return { invoke, fabrique, metrics, analyser };
+    }
+
+    it('construit son LLM par la fabrique, à température nulle', async () => {
+      const { fabrique, analyser } = serviceAvecLlm();
+
+      const result = await analyser();
+
+      expect(result.recaps[0].source).toBe('llm');
+      expect(fabrique.create).toHaveBeenCalledWith(config.pageAiTimeoutMs, {
+        temperature: 0,
+      });
+    });
+
+    it('emballe le contenu crawlé comme donnée non fiable', async () => {
+      const { invoke, analyser } = serviceAvecLlm();
+
+      await analyser();
+
+      expect(
+        attendreUnPayloadEmballe(invoke, UNTRUSTED_DATA_DISCLAIMER_EN),
+      ).toContain('We help businesses grow');
+    });
+
+    it('compte l appel dans les métriques LLM', async () => {
+      const { metrics, analyser } = serviceAvecLlm();
+
+      await analyser();
+
+      expect(metrics.llmCallsTotal.inc).toHaveBeenCalledWith({
+        model: config.llmModel,
+        section: 'page_recap',
+        locale: 'en',
+        status: 'success',
+      });
+    });
+  });
 
   it('returns deterministic fallback when llm is unavailable', async () => {
     const result = await analyserSansLlm('en', [page]);
@@ -131,13 +206,16 @@ describe('PageAiRecapService', () => {
   });
 
   it('opens circuit breaker and skips remaining llm page calls on repeated failures', async () => {
-    const service = new PageAiRecapService({
-      ...config,
-      openAiApiKey: 'test-key',
-      pageAiCircuitBreakerMinSamples: 2,
-      pageAiCircuitBreakerFailureRatio: 0.5,
-      pageAiConcurrency: 1,
-    });
+    const service = new PageAiRecapService(
+      {
+        ...config,
+        openAiApiKey: 'test-key',
+        pageAiCircuitBreakerMinSamples: 2,
+        pageAiCircuitBreakerFailureRatio: 0.5,
+        pageAiConcurrency: 1,
+      },
+      createChatOpenAIFactoryStub(),
+    );
     const pages = Array.from({ length: 5 }, (_, index) => ({
       ...page,
       url: `https://example.com/page-${index + 1}`,

@@ -513,6 +513,18 @@ describe('AuditPipelineService', () => {
     // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(llmsTxtAnalyzer.analyze).toHaveBeenCalledWith('https://example.com');
 
+    const [entreeDuRapport] = llmReport.generate.mock.calls[0];
+    expect(entreeDuRapport.pageRecaps[0]).toMatchObject({
+      url: 'https://example.com/',
+      title: 'Accueil Example',
+      engineScores: buildEngineCoverage({
+        google: 60,
+        bingChatGpt: 55,
+        perplexity: 50,
+        geminiOverviews: 55,
+      }),
+    });
+
     const analyzeUrlsCall = urlIndexability.analyzeUrls.mock.calls[0];
     expect(analyzeUrlsCall[1]).toBeDefined();
     expect((analyzeUrlsCall[1] as { robotsTxt?: string }).robotsTxt).toContain(

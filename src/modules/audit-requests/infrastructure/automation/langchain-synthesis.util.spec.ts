@@ -1,4 +1,7 @@
-import { buildLangchainAuditInput } from '../../../../../test/factories/audit-requests.factory';
+import {
+  buildEngineCoverage,
+  buildLangchainAuditInput,
+} from '../../../../../test/factories/audit-requests.factory';
 import { buildFallbackExpertReport } from './langchain-fallback-report.builder';
 import {
   buildExpertSynthesis,
@@ -236,6 +239,56 @@ describe('langchain-synthesis.util', () => {
         impact: 'low',
         effort: 'low',
       });
+    });
+
+    it('donne à chaque fiche page les scores moteurs calculés et le titre réel, en mode LLM', () => {
+      const scoresCalcules = buildEngineCoverage({
+        google: 61,
+        bingChatGpt: 42,
+        perplexity: 37,
+        geminiOverviews: 58,
+      });
+      const recapDeLaPage = buildLangchainAuditInput().pageRecaps[0];
+      const input = buildLangchainAuditInput({
+        pageRecaps: [
+          {
+            ...recapDeLaPage,
+            url: 'https://acme.fr/offre',
+            title: 'Notre offre',
+            engineScores: scoresCalcules,
+          },
+        ],
+      });
+      const adminReport: Record<string, unknown> = {
+        perPageAnalysis: [
+          {
+            url: 'https://acme.fr/offre',
+            title: 'Titre inventé',
+            engineScores: buildEngineCoverage({
+              google: 99,
+              bingChatGpt: 99,
+              perplexity: 99,
+              geminiOverviews: 99,
+            }),
+            topIssues: ['Constat'],
+            recommendations: ['Action'],
+            evidence: [],
+          },
+        ],
+      };
+
+      const synthesis = buildExpertSynthesis('ignored', adminReport, input);
+
+      expect(synthesis.perPageAnalysis).toEqual([
+        {
+          url: 'https://acme.fr/offre',
+          title: 'Notre offre',
+          engineScores: scoresCalcules,
+          topIssues: ['Constat'],
+          recommendations: ['Action'],
+          evidence: [],
+        },
+      ]);
     });
   });
 });

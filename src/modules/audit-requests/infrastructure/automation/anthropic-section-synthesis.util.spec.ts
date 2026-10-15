@@ -1,6 +1,10 @@
 import { Logger } from '@nestjs/common';
 import { z } from 'zod';
 import type Anthropic from '@anthropic-ai/sdk';
+import {
+  createMockLlmMetrics,
+  type MockLlmMetrics,
+} from '../../../../../test/factories/metrics.factory';
 import { invokeAnthropicStructuredSection } from './anthropic-section-synthesis.util';
 
 const section = z.object({
@@ -57,20 +61,12 @@ function buildClient(responseOverride?: Partial<Anthropic.Message> | Error): {
   };
 }
 
-function buildMetrics() {
-  return {
-    llmTokensTotal: { inc: jest.fn() },
-    llmLatencySeconds: { observe: jest.fn() },
-    llmCallsTotal: { inc: jest.fn() },
-  };
-}
-
 function invokeSection(
   client: Anthropic,
   overrides: {
     section?: string;
     systemBlocks?: string[];
-    metrics?: ReturnType<typeof buildMetrics>;
+    metrics?: MockLlmMetrics;
   } = {},
 ): Promise<Section> {
   const {
@@ -139,7 +135,7 @@ describe('invokeAnthropicStructuredSection', () => {
 
   it('records input/output/cache metrics on success', async () => {
     const { client } = buildClient();
-    const metrics = buildMetrics();
+    const metrics = createMockLlmMetrics();
 
     await invokeSection(client, { metrics });
 
@@ -179,7 +175,7 @@ describe('invokeAnthropicStructuredSection', () => {
       const { client } = buildClient({
         content: [bloc],
       } as Partial<Anthropic.Message>);
-      const metrics = buildMetrics();
+      const metrics = createMockLlmMetrics();
 
       await expect(invokeSection(client, { metrics })).rejects.toThrow(
         erreurAttendue,

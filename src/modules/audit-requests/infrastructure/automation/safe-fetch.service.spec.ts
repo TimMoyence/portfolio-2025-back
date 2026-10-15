@@ -190,4 +190,96 @@ describe('SafeFetchService', () => {
       /Response body exceeds max allowed size/,
     );
   });
+
+  describe('corps lent ou abandonné', () => {
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    function corpsQuiNeFinitJamais(signal: AbortSignal): Response {
+      return new Response(
+        new ReadableStream<Uint8Array>({
+          start(controller) {
+            controller.enqueue(new TextEncoder().encode('<html>'));
+            signal.addEventListener('abort', () =>
+              controller.error(signal.reason),
+            );
+          },
+        }),
+        { status: 200 },
+      );
+    }
+
+    it('abandonne une lecture de corps plus lente que fetchTimeoutMs', async () => {
+      jest.useFakeTimers();
+      fetchSpy.mockImplementationOnce((_url, init) =>
+        Promise.resolve(
+          corpsQuiNeFinitJamais((init as RequestInit).signal as AbortSignal),
+        ),
+      );
+      let issue = 'pendante';
+
+      service.fetchText('https://lent.example').then(
+        () => (issue = 'resolue'),
+        () => (issue = 'rejetee'),
+      );
+      await jest.advanceTimersByTimeAsync(config.fetchTimeoutMs + 1);
+
+      expect(issue).toBe('rejetee');
+    });
+
+    function reponseEspionnee(
+      status: number,
+      headers: Record<string, string>,
+      body: string,
+    ): { reponse: Response; annulation: jest.SpyInstance } {
+      const reponse = buildResponse(status, headers, body);
+      const annulation = jest.spyOn(
+        reponse.body as ReadableStream<Uint8Array>,
+        'cancel',
+      );
+      return { reponse, annulation };
+    }
+
+    it('annule le corps d une redirection', async () => {
+      const redirection = reponseEspionnee(
+        301,
+        { location: 'https://example.com/suite' },
+        'deplace',
+      );
+      fetchSpy
+        .mockResolvedValueOnce(redirection.reponse)
+        .mockResolvedValueOnce(buildResponse(200, {}, 'ok'));
+
+      await service.fetchText('https://example.com');
+
+      expect(redirection.annulation).toHaveBeenCalledTimes(1);
+    });
+
+    it('annule le corps d une lecture des seuls en-tetes', async () => {
+      const entetes = reponseEspionnee(200, {}, 'ignore');
+      fetchSpy.mockResolvedValueOnce(entetes.reponse);
+
+      await service.fetchHeaders('https://example.com');
+
+      expect(entetes.annulation).toHaveBeenCalledTimes(1);
+    });
+
+    it('annule le corps qui dépasse maxBytes', async () => {
+      const lecteur = streamFromChunks([
+        new TextEncoder().encode('x'.repeat(2048)),
+      ]).getReader();
+      const annulation = jest.spyOn(lecteur, 'cancel');
+      const reponse = buildResponse(200, {}, '');
+      jest
+        .spyOn(reponse.body as ReadableStream<Uint8Array>, 'getReader')
+        .mockReturnValue(lecteur);
+      fetchSpy.mockResolvedValueOnce(reponse);
+
+      await expect(service.fetchText('https://example.com')).rejects.toThrow(
+        /Response body exceeds max allowed size/,
+      );
+      expect(annulation).toHaveBeenCalledTimes(1);
+    });
+  });
 });

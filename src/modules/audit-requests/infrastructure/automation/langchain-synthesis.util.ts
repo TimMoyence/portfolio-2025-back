@@ -62,6 +62,22 @@ export function projectPerPageAnalysis(
     .filter((entry): entry is PerPageDetailedAnalysis => entry !== null);
 }
 
+function avecLesMesuresDesPages(
+  fiches: ReadonlyArray<PerPageDetailedAnalysis>,
+  recaps: LangchainAuditInput['pageRecaps'],
+): ReadonlyArray<PerPageDetailedAnalysis> {
+  const recapParUrl = new Map(recaps.map((recap) => [recap.url, recap]));
+  return fiches.map((fiche) => {
+    const recap = recapParUrl.get(fiche.url);
+    const titreReel = recap?.title?.trim();
+    return {
+      ...fiche,
+      title: titreReel ? titreReel : fiche.title,
+      engineScores: recap?.engineScores ?? fiche.engineScores,
+    };
+  });
+}
+
 export function buildExpertSynthesis(
   summaryText: string,
   adminReport: Record<string, unknown>,
@@ -73,7 +89,10 @@ export function buildExpertSynthesis(
       ? adminReport.executiveSummary
       : summaryText;
 
-  const perPageAnalysis = projectPerPageAnalysis(adminReport.perPageAnalysis);
+  const perPageAnalysis = avecLesMesuresDesPages(
+    projectPerPageAnalysis(adminReport.perPageAnalysis),
+    input.pageRecaps,
+  );
 
   const crossPageFindings = input.deepFindings.map((finding) => ({
     title: finding.title,

@@ -3,8 +3,17 @@ import { performance } from 'node:perf_hooks';
 import { AUDIT_AUTOMATION_CONFIG } from '../../domain/token';
 import { assertSafeHttpUrl } from './ssrf-guard.util';
 import type { AuditAutomationConfig } from './audit.config';
+import { withHardTimeout } from './llm-execution.guardrails';
 
 const REDIRECT_STATUS_CODES = new Set([301, 302, 303, 307, 308]);
+
+interface SautHttp {
+  statusCode: number;
+  headers: Record<string, string>;
+  ttfbMs: number;
+  location: string | null;
+  body: string | null;
+}
 
 export interface SafeFetchResult {
   requestedUrl: string;
@@ -48,33 +57,29 @@ export class SafeFetchService {
 
     for (let hop = 0; hop <= this.config.maxRedirects; hop += 1) {
       await assertSafeHttpUrl(currentUrl);
-      const hopStart = performance.now();
+      const url = currentUrl.toString();
+      const saut = await withHardTimeout(
+        `Fetch ${url}`,
+        this.config.fetchTimeoutMs,
+        (signal) => this.fetchOnce(url, readBody, maxBytes, signal),
+      );
 
-      const response = await this.fetchOnce(currentUrl.toString());
-      const ttfbMs = performance.now() - hopStart;
-      const headers = this.normalizeHeaders(response.headers);
-      const contentLength = this.parseContentLength(headers['content-length']);
-
-      if (REDIRECT_STATUS_CODES.has(response.status) && headers.location) {
-        redirectChain.push(currentUrl.toString());
-        currentUrl = new URL(headers.location, currentUrl);
+      if (saut.location !== null) {
+        redirectChain.push(url);
+        currentUrl = new URL(saut.location, currentUrl);
         continue;
       }
 
-      const body = readBody
-        ? await this.readBodyWithLimit(response, maxBytes)
-        : null;
-
       finalResponse = {
         requestedUrl: targetUrl,
-        finalUrl: currentUrl.toString(),
+        finalUrl: url,
         redirectChain,
-        statusCode: response.status,
-        headers,
-        body,
-        ttfbMs,
+        statusCode: saut.statusCode,
+        headers: saut.headers,
+        body: saut.body,
+        ttfbMs: saut.ttfbMs,
         totalMs: performance.now() - globalStart,
-        contentLength,
+        contentLength: this.parseContentLength(saut.headers['content-length']),
       };
       break;
     }
@@ -88,27 +93,40 @@ export class SafeFetchService {
     return finalResponse;
   }
 
-  private async fetchOnce(url: string): Promise<Response> {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => {
-      controller.abort();
-    }, this.config.fetchTimeoutMs);
+  private async fetchOnce(
+    url: string,
+    readBody: boolean,
+    maxBytes: number,
+    signal: AbortSignal,
+  ): Promise<SautHttp> {
+    const debut = performance.now();
+    const response = await fetch(url, {
+      method: 'GET',
+      redirect: 'manual',
+      signal,
+      headers: {
+        'user-agent':
+          'AsiliAuditBot/1.0 (+https://asilidesign.fr; contact=admin@asilidesign.fr)',
+        accept:
+          'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+      },
+    });
+    const ttfbMs = performance.now() - debut;
+    const headers = this.normalizeHeaders(response.headers);
+    const location =
+      REDIRECT_STATUS_CODES.has(response.status) && headers.location
+        ? headers.location
+        : null;
+    const saut = { statusCode: response.status, headers, ttfbMs, location };
 
-    try {
-      return await fetch(url, {
-        method: 'GET',
-        redirect: 'manual',
-        signal: controller.signal,
-        headers: {
-          'user-agent':
-            'AsiliAuditBot/1.0 (+https://asilidesign.fr; contact=admin@asilidesign.fr)',
-          accept:
-            'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-        },
-      });
-    } finally {
-      clearTimeout(timeoutId);
+    if (location !== null || !readBody) {
+      await response.body?.cancel();
+      return { ...saut, body: null };
     }
+    return {
+      ...saut,
+      body: await this.readBodyWithLimit(response, maxBytes),
+    };
   }
 
   private async readBodyWithLimit(
@@ -130,6 +148,7 @@ export class SafeFetchService {
       if (!value) continue;
       total += value.byteLength;
       if (total > maxBytes) {
+        await reader.cancel();
         throw new Error(`Response body exceeds max allowed size (${maxBytes})`);
       }
       chunks.push(decoder.decode(value, { stream: true }));
