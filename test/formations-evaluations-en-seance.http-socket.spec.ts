@@ -7,6 +7,8 @@ import type {
 } from '../src/modules/formations/domain/contrats/donnees-publiques';
 import type { SessionRecord } from '../src/modules/formations/domain/ISessions.repository';
 import { LONGUEUR_MAX_FORMULE } from '../src/modules/formations/domain/cours/Formule';
+import { ENTREES_MAX } from '../src/modules/formations/interfaces/dto/contrat/submit-production.request.dto';
+import { LIMITE_EVALUATIONS_PAR_PARTICIPANT } from '../src/modules/formations/interfaces/formations-throttling';
 import {
   EN_TETE_JETON,
   ParticipantTokenService,
@@ -144,6 +146,21 @@ describe('Évaluation de la feuille de l élève (e2e http socket)', () => {
     ['une recopie sans source', { cellules: {}, recopie: {} }],
   ])('refuse en 400, à la validation, %s', async (_cas, corps) => {
     await feuille(corps).expect(400);
+  });
+
+  it(`refuse en 400, à la validation, plus de ${ENTREES_MAX} cellules, avant toute évaluation`, async () => {
+    const cellules = Object.fromEntries(
+      Array.from({ length: ENTREES_MAX + 1 }, (_, rang) => [
+        `A${rang + 1}`,
+        '=1',
+      ]),
+    );
+
+    const reponse = await feuille({ cellules }).expect(400);
+
+    expect((reponse.body as { detail: unknown }).detail).toEqual([
+      expect.stringContaining(`au plus ${ENTREES_MAX} identifiants`),
+    ]);
   });
 
   it('ignore un prototype glissé dans les cellules, sans l évaluer ni polluer l objet', async () => {
@@ -284,13 +301,23 @@ describe('Évaluation de la machine de l élève (e2e http socket)', () => {
   );
 });
 
-describe.each([
+function rangDeLEcranQuiPorte(cours: Cours, id: string): number {
+  return cours.ecrans.findIndex(
+    (ecran) =>
+      ecran.id === id ||
+      ((ecran.brique === 'fp-sheet' || ecran.brique === 'fp-table-build') &&
+        ecran.proprietes.plan.id === id),
+  );
+}
+
+const EVALUATIONS = [
   [
     'la feuille',
     COURS_VISA,
     `feuilles/${PLAN_VISA}`,
     { cellules: { D2: VISA } },
     'Visa',
+    PLAN_VISA,
   ],
   [
     'le tableau',
@@ -298,6 +325,7 @@ describe.each([
     `tableaux/${PLAN_TOILE}`,
     { saisies: [{ rang: 0, cle: 'prix', saisie: '21,6' }] },
     '1,0800',
+    PLAN_TOILE,
   ],
   [
     'la machine',
@@ -305,11 +333,56 @@ describe.each([
     `machines/${MACHINE}`,
     { reglages: { tauxUn: 50 } },
     '135',
+    MACHINE,
   ],
-] as const)(
+] as const;
+
+describe.each(EVALUATIONS)(
+  'Plafond des évaluations de %s par poste (e2e http socket)',
+  (_nom, cours, chemin, corps) => {
+    const { evaluer } = evaluationsEnSeance(cours);
+
+    it(`rend 429 à la ${LIMITE_EVALUATIONS_PAR_PARTICIPANT + 1}e évaluation d un poste dans la minute`, async () => {
+      const statuts: number[] = [];
+      for (
+        let appel = 0;
+        appel <= LIMITE_EVALUATIONS_PAR_PARTICIPANT;
+        appel += 1
+      ) {
+        statuts.push((await evaluer(chemin, corps)).status);
+      }
+
+      expect({
+        avant: [...new Set(statuts.slice(0, -1))],
+        dernier: statuts.at(-1),
+      }).toEqual({ avant: [200], dernier: 429 });
+    });
+  },
+);
+
+describe.each(EVALUATIONS)(
   'Refus de l évaluation de %s hors d une séance ouverte au poste (e2e http socket)',
-  (_nom, cours, chemin, corps, calcul) => {
+  (_nom, cours, chemin, corps, calcul, porte) => {
     const { depots, seance, jeton, evaluer } = evaluationsEnSeance(cours);
+
+    it('refuse en 404 ECRAN_NON_SERVI l écran que le poste n a pas encore reçu, sans rien calculer', async () => {
+      const rang = rangDeLEcranQuiPorte(cours, porte);
+      depots.sessions.findById.mockResolvedValue({
+        ...seance(),
+        modeRythme: 'pilote',
+        intervalleLibre: null,
+        ecranCourant: rang - 1,
+      });
+
+      const reponse = await evaluer(chemin, corps);
+
+      expect(rang).toBeGreaterThan(0);
+      expect({ statut: reponse.status, code: codeDe(reponse) }).toEqual({
+        statut: 404,
+        code: 'ECRAN_NON_SERVI',
+      });
+      expect(JSON.stringify(reponse.body)).not.toContain(calcul);
+    });
 
     it('refuse en 409 SEANCE_NON_DEMARREE puis SEANCE_TERMINEE', async () => {
       depots.sessions.findById.mockResolvedValueOnce(seance('attente'));

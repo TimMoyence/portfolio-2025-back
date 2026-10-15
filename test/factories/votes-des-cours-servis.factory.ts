@@ -8,6 +8,7 @@ import type {
   PilotageServi,
 } from '../../src/modules/formations/domain/contrats/pilotage';
 import { ouvrirTirages } from '../../src/modules/formations/domain/cours/OuvertureTirages';
+import type { SessionRecord } from '../../src/modules/formations/domain/ISessions.repository';
 import { buildCoursDuContenu } from './contenus-de-cours.factory';
 import { CONTENUS } from './contenus-publies';
 import { tireurSequentiel } from './cours.factory';
@@ -74,7 +75,10 @@ export function questionsDuVoteJumele(
 }
 
 export function pilotageDUnCoursServi(cours: Cours): {
-  readonly pilotageEcrans: Readonly<Record<string, PilotageEcran>>;
+  readonly seance: Pick<
+    SessionRecord,
+    'modeRythme' | 'intervalleLibre' | 'pilotageEcrans'
+  >;
   readonly attendu: Readonly<Record<string, PilotageServi>>;
 } {
   const jumeles = ecransDesVotesJumeles(cours);
@@ -110,5 +114,8 @@ export function pilotageDUnCoursServi(cours: Cours): {
       questionOuverte: null,
     };
   }
-  return { pilotageEcrans, attendu };
+  return {
+    seance: { modeRythme: 'libre', intervalleLibre: null, pilotageEcrans },
+    attendu,
+  };
 }

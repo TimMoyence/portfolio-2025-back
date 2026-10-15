@@ -4,11 +4,13 @@ import { buildCoursDeTest } from '../../../../test/factories/cours.factory';
 import { buildSessionRecord } from '../../../../test/factories/formation.factory';
 import {
   CAS_DES_COURS_SERVIS,
+  ecransDesVotesJumeles,
   pilotageDUnCoursServi,
   questionsDuVoteJumele,
   VOTES_JUMELES,
 } from '../../../../test/factories/votes-des-cours-servis.factory';
 import type { PilotageEcran } from './contrats/pilotage';
+import { rangDeLEcran } from './cours/EcranServi';
 import { machineDuCours, sortiesDeLaMachine } from './cours/MachineServie';
 import { assertPhaseOuverte } from './cours/PilotageEcrans';
 import { etatEnDirect } from './EtatEnDirect';
@@ -75,7 +77,10 @@ describe('etatEnDirect', () => {
       '%s, sert la question affichée et celle qui reçoit les réponses',
       (_cas, pilotage, affichee, ouverte) => {
         const servi = etatEnDirect(
-          buildSessionRecord({ pilotageEcrans: { [ecranId]: pilotage } }),
+          buildSessionRecord({
+            ecranCourant: rangDeLEcran(vote.cours, ecranId),
+            pilotageEcrans: { [ecranId]: pilotage },
+          }),
           0,
           vote.cours,
         ).pilotage[ecranId];
@@ -96,13 +101,19 @@ describe('etatEnDirect', () => {
     const MACHINE = 'B2-01-A3-02-MACHINE-COEFFICIENTS';
     const cours = buildCoursDuContenu(COURS_B2_01);
     const reglages = { tauxUn: 50, tauxDeux: -50 };
-
-    it('diffuse les sorties calculées par le back pour les réglages du pupitre', () => {
-      const pilotage = etatEnDirect(
-        buildSessionRecord({ pilotageEcrans: { [MACHINE]: { reglages } } }),
+    const RANG = rangDeLEcran(cours, MACHINE);
+    const diffuse = (ecranCourant: number, pilotage: PilotageEcran) =>
+      etatEnDirect(
+        buildSessionRecord({
+          ecranCourant,
+          pilotageEcrans: { [MACHINE]: pilotage },
+        }),
         0,
         cours,
       ).pilotage[MACHINE];
+
+    it('diffuse les sorties calculées par le back pour les réglages du pupitre', () => {
+      const pilotage = diffuse(RANG, { reglages });
       const machine = machineDuCours(cours, MACHINE);
       if (machine === null) {
         throw new Error(`machine absente du B2-01 : ${MACHINE}`);
@@ -116,26 +127,44 @@ describe('etatEnDirect', () => {
     });
 
     it('ne diffuse aucune sortie tant que le pupitre n a rien réglé', () => {
-      expect(
-        etatEnDirect(
-          buildSessionRecord({
-            pilotageEcrans: { [MACHINE]: { revele: true } },
-          }),
-          0,
-          cours,
-        ).pilotage[MACHINE],
-      ).toEqual({ revele: true });
+      expect(diffuse(RANG, { revele: true })).toEqual({ revele: true });
+    });
+
+    it('D-05 · ne calcule aucune sortie tant que l écran de la machine n est pas servi', () => {
+      expect(diffuse(RANG - 1, { reglages })).toEqual({ reglages });
     });
   });
 
   it.each(CAS_DES_COURS_SERVIS)(
     'QA-01 · %s : diffuse la phase « vote » de chaque vote jumelé encore non piloté',
     (_slug, cours) => {
-      const { pilotageEcrans, attendu } = pilotageDUnCoursServi(cours);
+      const { seance, attendu } = pilotageDUnCoursServi(cours);
 
       expect(
-        etatEnDirect(buildSessionRecord({ pilotageEcrans }), 0, cours).pilotage,
+        etatEnDirect(buildSessionRecord(seance), 0, cours).pilotage,
       ).toEqual(attendu);
+    },
+  );
+
+  it.each(
+    CAS_DES_COURS_SERVIS.flatMap(([slug, cours]) =>
+      ecransDesVotesJumeles(cours).map(
+        (ecranId) => [slug, ecranId, cours] as const,
+      ),
+    ),
+  )(
+    'D-05 · %s, %s : ne diffuse ni phase ni question d un vote jumelé avant que son écran soit servi',
+    (_slug, ecranId, cours) => {
+      const rang = rangDeLEcran(cours, ecranId);
+      const diffuse = (ecranCourant: number) =>
+        etatEnDirect(buildSessionRecord({ ecranCourant }), 0, cours).pilotage[
+          ecranId
+        ];
+
+      expect([diffuse(rang - 1), diffuse(rang).questionOuverte]).toEqual([
+        undefined,
+        questionsDuVoteJumele(cours, ecranId).principale,
+      ]);
     },
   );
 });

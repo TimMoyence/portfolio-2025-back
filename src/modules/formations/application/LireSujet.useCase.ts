@@ -8,8 +8,8 @@ import {
   exempleAuRythmeDuPilotage,
 } from '../domain/cours/Diffusion';
 import {
-  dernierEcranServi,
   ecranRevele,
+  ecranServi,
   pilotageServi,
   sourceRevelee,
 } from '../domain/cours/EcranServi';
@@ -41,12 +41,11 @@ export class LireSujetUseCase {
     ) {
       throw new CoursModifieError();
     }
-    const dernier = dernierEcranServi(session, tirage.sujet.ecrans.length);
     return {
       ...tirage.sujet,
       ecrans: tirage.sujet.ecrans.map((ecran, index) => {
         if (
-          index > dernier ||
+          !ecranServi(session, index, tirage.sujet.ecrans.length) ||
           (ecran.ecranCorrige !== undefined &&
             !sourceRevelee(session, ecran.ecranCorrige))
         ) {

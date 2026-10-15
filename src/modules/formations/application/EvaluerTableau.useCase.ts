@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import type { TableauEvalue } from '../domain/contrats/donnees-publiques';
+import { cibleServie, rangDuPlan } from '../domain/cours/EcranServi';
 import {
   evaluerLeTableauDuPlan,
   planDeTableauDuCours,
 } from '../domain/cours/TableauEvalue';
 import type { SaisieBruteDeTableau } from '../domain/cours/TableauEvalue';
-import { TypeDeQuestionError } from '../domain/errors/FormationErrors';
 import { ParticipationEnSeance } from './ParticipationEnSeance';
 
 export interface EvaluerTableauCommand {
@@ -20,14 +20,13 @@ export class EvaluerTableauUseCase {
   constructor(private readonly participation: ParticipationEnSeance) {}
 
   async execute(command: EvaluerTableauCommand): Promise<TableauEvalue> {
-    const { cours } = await this.participation.ouverte(command);
-    const plan = planDeTableauDuCours(cours, command.planId);
-    if (plan === null) {
-      throw new TypeDeQuestionError(
-        command.planId,
-        'n’est pas un tableau de ce cours',
-      );
-    }
+    const { session, cours } = await this.participation.ouverte(command);
+    const plan = cibleServie(session, cours, {
+      valeur: planDeTableauDuCours(cours, command.planId),
+      nature: 'un tableau',
+      id: command.planId,
+      rang: rangDuPlan(cours, command.planId),
+    });
     return evaluerLeTableauDuPlan(plan, command.saisies);
   }
 }

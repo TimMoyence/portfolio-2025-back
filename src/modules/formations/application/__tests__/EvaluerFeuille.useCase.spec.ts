@@ -1,4 +1,4 @@
-import { creerCatalogueDeTest } from '../../../../../test/factories/cours.factory';
+import { monterParticipationSurLeDernierEcran } from '../../../../../test/factories/cours.factory';
 import { buildCoursDuContenu } from '../../../../../test/factories/contenus-de-cours.factory';
 import {
   COURS_B2_01,
@@ -13,7 +13,6 @@ import {
   buildSessionRecord,
   createMockParticipantsRepo,
   createMockSessionsRepo,
-  creerParticipationEnSeance,
   PARTICIPANT_DE_TEST,
 } from '../../../../../test/factories/formation.factory';
 import type { Cours } from '../../domain/contrats/cours';
@@ -39,7 +38,7 @@ interface Seance {
 }
 
 function seanceDu(cours: Cours): Seance {
-  return creerParticipationEnSeance(cours.slug, creerCatalogueDeTest(cours));
+  return monterParticipationSurLeDernierEcran(cours);
 }
 
 describe('EvaluerFeuilleUseCase', () => {

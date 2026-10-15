@@ -29,7 +29,7 @@ import { DureeDeReponse } from '../duree-de-reponse.decorator';
 import { entreesBornees } from '../objet-plat';
 
 const LONGUEUR_MAX_IDENTIFIANT = 60;
-const ENTREES_MAX = 400;
+export const ENTREES_MAX = 400;
 const TYPES_DE_PRODUCTION = ['feuille', 'tableau', 'classement'] as const;
 
 @ValidatorConstraint({ name: 'dictionnaireDeTextes', async: false })

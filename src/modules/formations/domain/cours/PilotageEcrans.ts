@@ -15,9 +15,11 @@ import { questionsDe } from './Cours';
 import {
   activitesDeLEcran,
   ecranRevele,
+  ecranServi,
   etayageAtteint,
   phaseDuVote,
 } from './EcranServi';
+import type { SeancePilotee } from './EcranServi';
 import { refusDuReglage, sortiesDeLaMachine } from './MachineServie';
 import { reglageServi } from './TraceServi';
 
@@ -248,11 +250,15 @@ function enDirectDe(
 }
 
 export function pilotageEnDirect(
-  pilotage: Readonly<Record<string, PilotageEcran>>,
+  seance: SeancePilotee,
   cours: Cours,
 ): Readonly<Record<string, PilotageServi>> {
+  const pilotage = seance.pilotageEcrans;
   return cours.ecrans.reduce<Readonly<Record<string, PilotageServi>>>(
-    (servi, ecran) => {
+    (servi, ecran, rang) => {
+      if (!ecranServi(seance, rang, cours.ecrans.length)) {
+        return servi;
+      }
       const enDirect = enDirectDe(ecran, pilotage[ecran.id]);
       return enDirect === undefined || enDirect === pilotage[ecran.id]
         ? servi

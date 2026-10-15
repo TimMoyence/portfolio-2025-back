@@ -5,7 +5,7 @@ import type { Cours } from '../domain/contrats/cours';
 import type { EtatParticipant } from '../domain/contrats/pilotage';
 import { cleDeJalon } from '../domain/cours/CleDeJalon';
 import { ecranDeDefi } from '../domain/cours/Defis';
-import { verdictServiDe } from '../domain/cours/EcranServi';
+import { ecranServi, verdictServiDe } from '../domain/cours/EcranServi';
 import {
   ecranDEnigmes,
   enigmeVisee,
@@ -80,7 +80,7 @@ export class LireEtatParticipantUseCase {
           response: libre.response,
         })),
       jalons: [...jalons],
-      enigmes: this.enigmesLues(cours, progressions),
+      enigmes: this.enigmesLues(session, cours, progressions),
       defis: libres
         .filter((libre) => ecranDeDefi(cours, libre.activityId) !== null)
         .map((libre) => ({
@@ -114,6 +114,7 @@ export class LireEtatParticipantUseCase {
   }
 
   private enigmesLues(
+    session: SessionRecord,
     cours: Cours,
     progressions: readonly ProgressionEnigmeRecord[],
   ): EtatParticipant['enigmes'] {
@@ -123,7 +124,10 @@ export class LireEtatParticipantUseCase {
       }
       const parcoursId = ecran.proprietes.parcours.id;
       const cible = ecranDEnigmes(cours, parcoursId);
-      if (cible === null) {
+      if (
+        cible === null ||
+        !ecranServi(session, cible.rang, cours.ecrans.length)
+      ) {
         return [];
       }
       const lignes = progressions.filter(

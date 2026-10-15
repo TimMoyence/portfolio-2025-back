@@ -115,6 +115,10 @@ function EvaluationEnSeance(
       description:
         'Evaluation refusee, cause dans le champ code du corps : TYPE_DE_QUESTION ou PRODUCTION_INVALIDE',
     }),
+    ApiNotFoundResponse({
+      description:
+        'Evaluation refusee, cause dans le champ code du corps : ECRAN_NON_SERVI ou PARTICIPANT_INTROUVABLE',
+    }),
     ApiConflictResponse({
       description:
         'Evaluation refusee, cause dans le champ code du corps : SEANCE_NON_DEMARREE ou SEANCE_TERMINEE',
@@ -278,9 +282,13 @@ export class FormationsStudentController {
     description:
       'Production refusee, cause dans le champ code du corps : TYPE_DE_QUESTION, PRODUCTION_VIDE ou PRODUCTION_INVALIDE',
   })
+  @ApiNotFoundResponse({
+    description:
+      'Production refusee, cause dans le champ code du corps : ECRAN_NON_SERVI',
+  })
   @ApiConflictResponse({
     description:
-      'Production refusee, cause dans le champ code du corps : SEANCE_NON_DEMARREE, SEANCE_TERMINEE, ECRAN_NON_SERVI, REPONSE_DEJA_ENREGISTREE ou REPRISES_EPUISEES',
+      'Production refusee, cause dans le champ code du corps : SEANCE_NON_DEMARREE, SEANCE_TERMINEE, REPONSE_DEJA_ENREGISTREE ou REPRISES_EPUISEES',
   })
   @RouteParticipant()
   async production(
@@ -361,10 +369,13 @@ export class FormationsStudentController {
     summary: 'Tente une enigme, corrigee et plafonnee cote serveur',
   })
   @ApiCreatedResponse({ type: TentativeEnigmeResponseDto })
-  @ApiNotFoundResponse({ description: 'Enigme absente du parcours' })
+  @ApiNotFoundResponse({
+    description:
+      'Enigme absente du parcours, ou ecran non encore projete : code ECRAN_NON_SERVI',
+  })
   @ApiConflictResponse({
     description:
-      'Tentative refusee, cause dans le champ code du corps : ECRAN_NON_SERVI, ENIGME_VERROUILLEE, ENIGME_DEJA_RESOLUE ou TENTATIVES_EPUISEES',
+      'Tentative refusee, cause dans le champ code du corps : ENIGME_VERROUILLEE, ENIGME_DEJA_RESOLUE ou TENTATIVES_EPUISEES',
   })
   @RouteParticipant()
   async tentativeEnigme(
@@ -391,9 +402,13 @@ export class FormationsStudentController {
   })
   @ApiNoContentResponse({ description: 'Jalon enregistre' })
   @ApiBadRequestResponse({ description: 'Sondage inconnu du cours' })
+  @ApiNotFoundResponse({
+    description:
+      'Jalon refuse, cause dans le champ code du corps : ECRAN_NON_SERVI',
+  })
   @ApiConflictResponse({
     description:
-      'Jalon refuse, cause dans le champ code du corps : SEANCE_NON_DEMARREE, SEANCE_TERMINEE ou ECRAN_NON_SERVI',
+      'Jalon refuse, cause dans le champ code du corps : SEANCE_NON_DEMARREE ou SEANCE_TERMINEE',
   })
   @RouteParticipant()
   async jalon(
@@ -417,7 +432,10 @@ export class FormationsStudentController {
       'Envoie la tentative du defi et rend les strategies de reference, sans leur justesse',
   })
   @ApiCreatedResponse({ type: StrategiesDefiResponseDto })
-  @ApiNotFoundResponse({ description: 'Defi absent du cours' })
+  @ApiNotFoundResponse({
+    description:
+      'Defi absent du cours, ou ecran non encore projete : code ECRAN_NON_SERVI',
+  })
   @ApiBadRequestResponse({ description: 'Tentative vide' })
   @RouteParticipant()
   async tentativeDeDefi(
@@ -443,7 +461,8 @@ export class FormationsStudentController {
   })
   @ApiOkResponse({ type: StrategiesDefiResponseDto })
   @ApiNotFoundResponse({
-    description: 'Defi inconnu, ou aucune tentative envoyee',
+    description:
+      'Defi inconnu, aucune tentative envoyee, ou ecran non encore projete : code ECRAN_NON_SERVI',
   })
   @RouteParticipant()
   async strategiesDuDefi(
@@ -479,10 +498,9 @@ export class FormationsStudentController {
       'Sert la liste figee des rappels espaces du participant, options melangees par sa graine',
   })
   @ApiOkResponse({ type: RappelsResponseDto })
-  @ApiNotFoundResponse({ description: 'Cours sans ecran de rappel espace' })
-  @ApiConflictResponse({
+  @ApiNotFoundResponse({
     description:
-      'Rappels refuses, cause dans le champ code du corps : ECRAN_NON_SERVI',
+      'Cours sans ecran de rappel espace, ou ecran non encore projete : code ECRAN_NON_SERVI',
   })
   @RouteParticipant()
   async rappels(

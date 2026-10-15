@@ -11,6 +11,7 @@ import {
   PhaseFermeeError,
   PieceJointeIntrouvableError,
   PieceJointeRetenueError,
+  TypeDeQuestionError,
 } from '../errors/FormationErrors';
 import type { FreeRange, PacingMode } from '../PacingMode';
 import type { SessionState } from '../SessionState';
@@ -22,7 +23,7 @@ export interface DiffusionDeSeance {
   readonly intervalleLibre: FreeRange | null;
 }
 
-type SeancePilotee = DiffusionDeSeance & {
+export type SeancePilotee = DiffusionDeSeance & {
   readonly pilotageEcrans: Readonly<Record<string, PilotageEcran>>;
 };
 
@@ -106,15 +107,43 @@ export function dernierEcranServi(
   return seance.ecranCourant;
 }
 
+export function ecranServi(
+  seance: DiffusionDeSeance,
+  rang: number,
+  total: number = Number.MAX_SAFE_INTEGER,
+): boolean {
+  return rang >= 0 && rang <= dernierEcranServi(seance, total);
+}
+
 export function assertEcranServi(
   seance: DiffusionDeSeance,
   rang: number,
   screenId: string,
   total: number = Number.MAX_SAFE_INTEGER,
 ): void {
-  if (rang < 0 || rang > dernierEcranServi(seance, total)) {
+  if (!ecranServi(seance, rang, total)) {
     throw new EcranNonServiError(screenId);
   }
+}
+
+export function cibleServie<T>(
+  seance: DiffusionDeSeance,
+  cours: Cours,
+  cible: {
+    readonly valeur: T | null;
+    readonly nature: string;
+    readonly id: string;
+    readonly rang: number;
+  },
+): T {
+  if (cible.valeur === null) {
+    throw new TypeDeQuestionError(
+      cible.id,
+      `n’est pas ${cible.nature} de ce cours`,
+    );
+  }
+  assertEcranServi(seance, cible.rang, cible.id, cours.ecrans.length);
+  return cible.valeur;
 }
 
 export function etayageAtteint(pilotage: PilotageEcran | undefined): number {
@@ -171,6 +200,14 @@ export function ecranParId(cours: Cours, screenId: string): Ecran | undefined {
 
 export function rangDeLEcran(cours: Cours, screenId: string): number {
   return cours.ecrans.findIndex((ecran) => ecran.id === screenId);
+}
+
+export function rangDuPlan(cours: Cours, planId: string): number {
+  return cours.ecrans.findIndex(
+    (ecran) =>
+      (ecran.brique === 'fp-sheet' || ecran.brique === 'fp-table-build') &&
+      ecran.proprietes.plan.id === planId,
+  );
 }
 
 export const SEUIL_PAR_DEFAUT = 0.7;

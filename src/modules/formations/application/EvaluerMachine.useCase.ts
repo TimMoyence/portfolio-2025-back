@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import type { SortiesMachine } from '../domain/contrats/donnees-publiques';
+import { cibleServie, rangDeLEcran } from '../domain/cours/EcranServi';
 import {
   evaluerLaMachine,
   machineDuCours,
 } from '../domain/cours/MachineServie';
-import { TypeDeQuestionError } from '../domain/errors/FormationErrors';
 import { ParticipationEnSeance } from './ParticipationEnSeance';
 
 export interface EvaluerMachineCommand {
@@ -19,14 +19,13 @@ export class EvaluerMachineUseCase {
   constructor(private readonly participation: ParticipationEnSeance) {}
 
   async execute(command: EvaluerMachineCommand): Promise<SortiesMachine> {
-    const { cours } = await this.participation.ouverte(command);
-    const machine = machineDuCours(cours, command.ecranId);
-    if (machine === null) {
-      throw new TypeDeQuestionError(
-        command.ecranId,
-        'n’est pas une machine de ce cours',
-      );
-    }
+    const { session, cours } = await this.participation.ouverte(command);
+    const machine = cibleServie(session, cours, {
+      valeur: machineDuCours(cours, command.ecranId),
+      nature: 'une machine',
+      id: command.ecranId,
+      rang: rangDeLEcran(cours, command.ecranId),
+    });
     return evaluerLaMachine(machine, command.ecranId, command.reglages);
   }
 }

@@ -26,7 +26,10 @@ import {
   detailsDeFeuilleAMoitieJuste,
   PARTICIPANT_DE_TEST,
 } from '../../../../../test/factories/formation.factory';
-import type { VoteDUnCoursServi } from '../../../../../test/factories/votes-des-cours-servis.factory';
+import {
+  CAS_DES_COURS_SERVIS,
+  type VoteDUnCoursServi,
+} from '../../../../../test/factories/votes-des-cours-servis.factory';
 import { decrireLeVerdictDesVotesServis } from '../../../../../test/helpers/verdict-des-votes-servis';
 import { installerSecretDeJalons } from '../../../../../test/helpers/env-formations';
 import {
@@ -62,7 +65,11 @@ describe('LireEtatParticipantUseCase', () => {
   beforeEach(() => {
     sessions = createMockSessionsRepo();
     sessions.findById.mockResolvedValue(
-      buildSessionRecord({ courseSlug: COURS.slug, revision: 7 }),
+      buildSessionRecord({
+        courseSlug: COURS.slug,
+        revision: 7,
+        ecranCourant: COURS.ecrans.length - 1,
+      }),
     );
     participants = createMockParticipantsRepo();
     answers = createMockAnswersRepo();
@@ -232,6 +239,41 @@ describe('LireEtatParticipantUseCase', () => {
       expect(etat.enigmes[0].tentativesRestantes).toEqual({
         [ENIGMES_DE_TEST[0]]: restantes,
       });
+    },
+  );
+
+  it.each(
+    CAS_DES_COURS_SERVIS.flatMap(([slug, cours]) =>
+      cours.ecrans.flatMap((ecran, rang) =>
+        ecran.brique === 'fp-escape'
+          ? [
+              [
+                slug,
+                ecran.proprietes.parcours.id,
+                ecran.proprietes.parcours.enigmes[0].id,
+                rang,
+                cours,
+              ] as const,
+            ]
+          : [],
+      ),
+    ),
+  )(
+    'D-05 · %s, %s : n ouvre aucune énigme d un coffre avant que son écran soit servi',
+    async (_slug, parcoursId, premiere, rang, cours) => {
+      const enigmeOuverteA = async (ecranCourant: number) => {
+        sessions.findById.mockResolvedValue(
+          buildSessionRecord({ courseSlug: cours.slug, ecranCourant }),
+        );
+        const { enigmes } = await monter(cours).execute(PARTICIPANT_DE_TEST);
+        return enigmes.find((parcours) => parcours.parcoursId === parcoursId)
+          ?.enigmeOuverte;
+      };
+
+      expect([
+        await enigmeOuverteA(rang - 1),
+        await enigmeOuverteA(rang),
+      ]).toEqual([undefined, premiere]);
     },
   );
 
