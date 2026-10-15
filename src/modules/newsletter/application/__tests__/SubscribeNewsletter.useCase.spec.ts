@@ -97,20 +97,46 @@ describe('SubscribeNewsletterUseCase', () => {
     await expect(souscrire()).resolves.toEqual(CREE_EN_ATTENTE);
   });
 
-  it('absorbe une race condition `ResourceConflictError`', async () => {
-    const raced = buildAbonnePersiste();
+  const perdreLaCourseFace = (raced: NewsletterSubscriber | null) => {
     repo.findByEmailAndSource
       .mockResolvedValueOnce(null)
       .mockResolvedValueOnce(raced);
     repo.create.mockRejectedValueOnce(
       new ResourceConflictError('already exists'),
     );
+  };
+
+  it('absorbe une race condition `ResourceConflictError`', async () => {
+    const raced = buildAbonnePersiste();
+    perdreLaCourseFace(raced);
 
     const result = await souscrire();
 
     expect(result).toEqual(DEJA_EN_ATTENTE);
     expect(repo.findByEmailAndSource).toHaveBeenCalledTimes(2);
     expect(mailer.sendConfirmation).toHaveBeenCalledWith(raced);
+  });
+
+  it('repond deja inscrit sans envoi quand la course rend un abonne confirme', async () => {
+    perdreLaCourseFace(
+      buildAbonnePersiste((abonne) =>
+        abonne.confirm(new Date('2026-04-10T11:00:00Z')),
+      ),
+    );
+
+    const result = await souscrire();
+
+    expect(result).toEqual({ ...DEJA_EN_ATTENTE, status: 'confirmed' });
+    expect(mailer.sendConfirmation).not.toHaveBeenCalled();
+  });
+
+  it('relance le conflit quand la relecture apres la course ne trouve personne', async () => {
+    perdreLaCourseFace(null);
+
+    await expect(useCase.execute(validCommand)).rejects.toBeInstanceOf(
+      ResourceConflictError,
+    );
+    expect(mailer.sendConfirmation).not.toHaveBeenCalled();
   });
 
   it('relance une erreur autre que `ResourceConflictError`', async () => {
