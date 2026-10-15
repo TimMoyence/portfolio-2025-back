@@ -392,7 +392,6 @@ const ACTE_1: moteur.Acte = [
         lignes: [
           '« Ou » est inclusif : la remise tient dès qu’une condition est vraie, et aussi quand les deux le sont.',
           '« Plus de trois ans » se traduit par > 3 : la valeur 3 est exclue. « Au moins trois ans » se traduit par ≥ 3.',
-          'La trace écrite donne la table de ces connecteurs.',
         ],
       },
     },

@@ -358,6 +358,25 @@ describe('B2-03 — retours de Tim du 15 octobre 2026', () => {
     });
   });
 
+  it('ne renvoie la trace écrite à aucune table que ses pages ne portent plus', () => {
+    const traceEcrite = JSON.stringify(
+      lecons.map((lecon) => presentationV2(lecon)?.props),
+    );
+    const renvois = COURS.ecrans.flatMap((ecran) =>
+      JSON.stringify(ecran)
+        .split('"')
+        .filter((texte) => /trace écrite donne/i.test(texte)),
+    );
+
+    expect(renvois.length).toBeGreaterThan(0);
+    expect(
+      renvois.filter(
+        (renvoi) =>
+          /\btables?\b/i.test(renvoi) && !/\btables?\b/i.test(traceEcrite),
+      ),
+    ).toEqual([]);
+  });
+
   it('pose la mission sans geste ni conséquence, avec ses deux questions', () => {
     const mission = ecranNomme('B2-03-A1-03-MISSION');
     const proprietes = mission.brique === 'fp-pro' ? mission.proprietes : null;
