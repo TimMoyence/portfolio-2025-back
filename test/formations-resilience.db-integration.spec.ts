@@ -5,7 +5,6 @@ import {
   type Server,
   type Socket,
 } from 'node:net';
-import { Logger } from '@nestjs/common';
 import type { Response, Test } from 'supertest';
 import { MESSAGE_DEPENDANCE_INJOIGNABLE } from '../src/common/interfaces/filters/dependency-outage';
 import { questionsDuCours } from '../src/modules/formations/domain/cours/Cours';
@@ -33,7 +32,10 @@ import {
   type EvenementFlux,
   type FluxEcoute,
 } from './helpers/formations-harness';
-import { silenceNestLogger } from './helpers/silence-nest-logger';
+import {
+  espionnerLeLogger,
+  silenceNestLogger,
+} from './helpers/silence-nest-logger';
 
 const NB_QUESTIONS_DU_COURS = 12;
 const COURS_DE_CLASSE = buildCoursDeClasse(NB_QUESTIONS_DU_COURS);
@@ -224,11 +226,9 @@ describeDb('Formations face aux pannes du cours (db integration)', () => {
     );
     contexte = banc.contexte;
     client = clientFormations(banc.app, FORMATEUR);
-    jest
-      .spyOn(Logger.prototype, 'warn')
-      .mockImplementation((message: unknown) => {
-        journal.push(String(message));
-      });
+    espionnerLeLogger('warn', (message) => {
+      journal.push(String(message));
+    });
   }, DELAI_OUVERTURE_CONTEXTE_MS);
 
   afterAll(async () => {

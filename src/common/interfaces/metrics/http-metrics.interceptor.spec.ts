@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import { Logger } from '@nestjs/common';
 import { of, throwError, lastValueFrom } from 'rxjs';
 import { HttpMetricsInterceptor } from './http-metrics.interceptor';
 import { createMockMetricsService } from '../../../../test/factories/metrics.factory';
 import { sousUneDureeDe } from '../../../../test/helpers/horloge';
+import { espionnerLeLogger } from '../../../../test/helpers/silence-nest-logger';
 import {
   createFakeHttpResponse,
   createHttpExecutionContext,
@@ -82,9 +82,7 @@ describe('HttpMetricsInterceptor', () => {
   });
 
   it('journalise sans lever quand l enregistrement de la mesure casse', async () => {
-    const journal = jest
-      .spyOn(Logger.prototype, 'warn')
-      .mockImplementation(() => undefined);
+    const journal = espionnerLeLogger('warn');
     jest.mocked(metricsService.httpRequestsTotal.inc).mockImplementation(() => {
       throw new Error('libelles incoherents');
     });

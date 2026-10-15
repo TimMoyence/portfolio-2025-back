@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import { Logger } from '@nestjs/common';
 import type { MessageEvent } from '@nestjs/common';
 import { firstValueFrom, take, toArray } from 'rxjs';
 import type { Observable, Subscription } from 'rxjs';
@@ -25,7 +24,9 @@ import {
   createMockParticipantsRepo,
   createMockSessionsRepo,
 } from '../../../../../test/factories/formation.factory';
+import { espionnerLesAvertissements } from '../../../../../test/helpers/avertissements';
 import { verifierSeanceIntrouvable } from '../../../../../test/helpers/gardes-de-seance';
+import { espionnerLeLogger } from '../../../../../test/helpers/silence-nest-logger';
 import {
   PlafondDeFluxAtteintError,
   SessionNotOwnedError,
@@ -383,9 +384,7 @@ describe('StreamSessionUseCase', () => {
     ])(
       'tient le plafond participant en mode $mode quand deux flux s ouvrent en meme temps',
       async ({ capacite }) => {
-        jest
-          .spyOn(Logger.prototype, 'error')
-          .mockImplementation(() => undefined);
+        espionnerLeLogger('error');
         const instance = instanceNeuve(capacite());
         const ouverts: Ecoute[] = [];
         for (let rang = 0; rang < MAX_FLUX_PAR_PARTICIPANT; rang += 1) {
@@ -408,9 +407,7 @@ describe('StreamSessionUseCase', () => {
     );
 
     it('refuse le flux en 429 et journalise un avertissement quand le plafond est atteint', async () => {
-      const avertir = jest
-        .spyOn(Logger.prototype, 'warn')
-        .mockImplementation(() => undefined);
+      const avertir = espionnerLeLogger('warn');
       const erreur = erreurDuFlux(
         fluxEtudiant(
           PARTICIPANT_ID,
@@ -431,9 +428,7 @@ describe('StreamSessionUseCase', () => {
     });
 
     it('ouvre le flux en mode degrade et journalise une erreur quand Redis tombe', async () => {
-      const signaler = jest
-        .spyOn(Logger.prototype, 'error')
-        .mockImplementation(() => undefined);
+      const signaler = espionnerLeLogger('error');
       const flux = ecouterEtudiant(
         PARTICIPANT_ID,
         instanceNeuve(capaciteEnPanne()),
@@ -450,7 +445,7 @@ describe('StreamSessionUseCase', () => {
 
     it('borne le mode degrade par les plafonds du processus', async () => {
       const degrade = instanceNeuve(capaciteEnPanne());
-      jest.spyOn(Logger.prototype, 'error').mockImplementation(() => undefined);
+      espionnerLeLogger('error');
       const ouverts = Array.from(
         { length: MAX_ABONNEMENTS_PAR_SESSION },
         (_, rang) => ecouterEtudiant(participantDeRang(rang), degrade),
@@ -1124,17 +1119,7 @@ describe('StreamSessionUseCase', () => {
 
   describe('panne passagere de la base', () => {
     const PANNE = new Error('connexion au serveur perdue');
-    let avertissement: jest.SpyInstance;
-
-    beforeEach(() => {
-      avertissement = jest
-        .spyOn(Logger.prototype, 'warn')
-        .mockImplementation(() => undefined);
-    });
-
-    afterEach(() => {
-      avertissement.mockRestore();
-    });
+    const avertissements = espionnerLesAvertissements();
 
     const apresDeuxPassages = async (
       ouvrir: () => Ecoute | Promise<Ecoute>,
@@ -1146,11 +1131,11 @@ describe('StreamSessionUseCase', () => {
     };
 
     const expectPanneJournalisee = (): void => {
-      expect(avertissement).toHaveBeenCalledTimes(1);
-      expect(avertissement).toHaveBeenCalledWith(
+      expect(avertissements()).toHaveBeenCalledTimes(1);
+      expect(avertissements()).toHaveBeenCalledWith(
         expect.stringContaining(SESSION),
       );
-      expect(avertissement).toHaveBeenCalledWith(
+      expect(avertissements()).toHaveBeenCalledWith(
         expect.stringContaining(PANNE.message),
       );
     };

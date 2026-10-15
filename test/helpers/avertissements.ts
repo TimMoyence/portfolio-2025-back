@@ -1,12 +1,10 @@
-import { Logger } from '@nestjs/common';
 import { flushPromises } from './flush-promises';
+import { espionnerLeLogger } from './silence-nest-logger';
 
 export function espionnerLesAvertissements(): () => jest.SpyInstance {
   let espion: jest.SpyInstance;
   beforeEach(() => {
-    espion = jest
-      .spyOn(Logger.prototype, 'warn')
-      .mockImplementation(() => undefined);
+    espion = espionnerLeLogger('warn');
   });
   afterEach(() => espion.mockRestore());
   return () => espion;
