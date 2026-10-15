@@ -1,4 +1,7 @@
-import { safeHtml, type EscapedHtml } from './html-escape.util';
+import {
+  safeHtml,
+  type EscapedHtml,
+} from '../../domain/texte/html-escape.util';
 import { sectionHeader } from './section-header';
 
 describe('sectionHeader', () => {

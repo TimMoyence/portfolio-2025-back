@@ -1,4 +1,4 @@
-import { estObjet } from '../../domain/est-objet';
+import { estObjet } from '../est-objet';
 
 declare const escapedHtmlBrand: unique symbol;
 

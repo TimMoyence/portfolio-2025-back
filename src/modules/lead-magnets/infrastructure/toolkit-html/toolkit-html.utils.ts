@@ -8,8 +8,8 @@ import {
   escapeHtml,
   escapeUrl,
   safeHtml,
-} from '../../../../common/infrastructure/mail/html-escape.util';
-import type { EscapedHtml } from '../../../../common/infrastructure/mail/html-escape.util';
+} from '../../../../common/domain/texte/html-escape.util';
+import type { EscapedHtml } from '../../../../common/domain/texte/html-escape.util';
 import { sectionHeader } from '../../../../common/infrastructure/mail/section-header';
 import { sansDiacritiques } from '../../../../common/domain/texte/sans-diacritiques';
 

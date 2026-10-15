@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { escapeHtml } from '../../../common/infrastructure/mail/html-escape.util';
+import { escapeHtml } from '../../../common/domain/texte/html-escape.util';
 import { estEntierPositif } from '../../../common/domain/nombres/est-entier-positif';
 import { InvalidInputError } from '../../../common/domain/errors/InvalidInputError';
 import { ResourceConflictError } from '../../../common/domain/errors/ResourceConflictError';

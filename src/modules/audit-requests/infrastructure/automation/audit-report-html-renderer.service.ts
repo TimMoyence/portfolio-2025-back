@@ -17,11 +17,11 @@ import {
   escapeUrl,
   safeCss,
   safeHtml,
-} from '../../../../common/infrastructure/mail/html-escape.util';
+} from '../../../../common/domain/texte/html-escape.util';
 import type {
   EscapedHtml,
   FeuilleDeStyle,
-} from '../../../../common/infrastructure/mail/html-escape.util';
+} from '../../../../common/domain/texte/html-escape.util';
 import { sectionHeader } from '../../../../common/infrastructure/mail/section-header';
 
 @Injectable()

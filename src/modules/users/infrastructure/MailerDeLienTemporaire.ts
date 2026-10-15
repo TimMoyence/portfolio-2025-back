@@ -4,7 +4,7 @@ import {
   escapeUrl,
   safeHtml,
   type EscapedHtml,
-} from '../../../common/infrastructure/mail/html-escape.util';
+} from '../../../common/domain/texte/html-escape.util';
 
 export interface LienTemporaire {
   destinataire: { email: string; firstName: string; lastName: string };

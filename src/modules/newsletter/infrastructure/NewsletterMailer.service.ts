@@ -6,8 +6,8 @@ import {
   escapeHtml,
   escapeUrl,
   safeHtml,
-} from '../../../common/infrastructure/mail/html-escape.util';
-import type { EscapedHtml } from '../../../common/infrastructure/mail/html-escape.util';
+} from '../../../common/domain/texte/html-escape.util';
+import type { EscapedHtml } from '../../../common/domain/texte/html-escape.util';
 import { entetesDeDesabonnement } from '../../../common/infrastructure/mail/entetes-de-desabonnement';
 import { lienAvecJeton } from '../../../common/domain/lien-avec-jeton';
 import {
