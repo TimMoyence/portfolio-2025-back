@@ -8,10 +8,12 @@ import {
   buildClientReportSynthesis,
   createMockAuditRequestsRepo,
 } from '../../../../test/factories/audit-requests.factory';
+import { espionnerLesAvertissements } from '../../../../test/helpers/avertissements';
 
 describe('StreamAuditEventsUseCase', () => {
   let useCase: StreamAuditEventsUseCase;
   let repo: jest.Mocked<IAuditRequestsRepository>;
+  const avertissements = espionnerLesAvertissements();
 
   beforeEach(() => {
     jest.useFakeTimers();
@@ -23,12 +25,22 @@ describe('StreamAuditEventsUseCase', () => {
     jest.useRealTimers();
   });
 
-  function collectEvents(audit: AuditSnapshot | null): Promise<MessageEvent[]> {
-    repo.findById.mockResolvedValue(audit);
+  function evenementsDuFlux(): Promise<MessageEvent[]> {
     const eventsPromise = firstValueFrom(
       useCase.execute('audit-1').pipe(toArray()),
     );
     return jest.advanceTimersByTimeAsync(0).then(() => eventsPromise);
+  }
+
+  function collectEvents(audit: AuditSnapshot | null): Promise<MessageEvent[]> {
+    repo.findById.mockResolvedValue(audit);
+    return evenementsDuFlux();
+  }
+
+  function attendreUnSeulEchecSansTexte(events: MessageEvent[]): void {
+    expect(events).toHaveLength(1);
+    expect(events[0].type).toBe('failed');
+    expect((events[0].data as Record<string, unknown>)['error']).toBeNull();
   }
 
   it('devrait emettre un snapshot initial', async () => {
@@ -54,8 +66,17 @@ describe('StreamAuditEventsUseCase', () => {
 
     const event = await resultPromise;
     expect(event.type).toBe('failed');
-    expect((event.data as Record<string, unknown>)['error']).toBe(
-      'Audit not found.',
+    expect((event.data as Record<string, unknown>)['error']).toBeNull();
+  });
+
+  it('ne sert pas le texte d une lecture en echec et en journalise la cause', async () => {
+    repo.findById.mockRejectedValue(
+      new Error('connect ECONNREFUSED 10.0.0.5:5432'),
+    );
+
+    attendreUnSeulEchecSansTexte(await evenementsDuFlux());
+    expect(avertissements()).toHaveBeenCalledWith(
+      'Lecture du flux de l audit audit-1 en echec: connect ECONNREFUSED 10.0.0.5:5432',
     );
   });
 
@@ -112,14 +133,9 @@ describe('StreamAuditEventsUseCase', () => {
     const audit = buildAuditSnapshot({
       processingStatus: 'FAILED',
       progress: 100,
-      error: 'Timeout',
+      error: 'Fetch https://example.com/ timed out after 8000ms',
     });
-    const events = await collectEvents(audit);
-    expect(events).toHaveLength(1);
-    expect(events[0].type).toBe('failed');
-    expect((events[0].data as Record<string, unknown>)['error']).toBe(
-      'Timeout',
-    );
+    attendreUnSeulEchecSansTexte(await collectEvents(audit));
   });
 
   it('devrait ne pas re-emettre si le fingerprint n a pas change', async () => {
@@ -141,6 +157,7 @@ describe('StreamAuditEventsUseCase', () => {
     expect((timeoutEvent!.data as Record<string, unknown>)['status']).toBe(
       'TIMEOUT',
     );
+    expect((timeoutEvent!.data as Record<string, unknown>)['error']).toBeNull();
     expect(suivi.completed).toBe(true);
 
     subscription.unsubscribe();
