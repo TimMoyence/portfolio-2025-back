@@ -19,12 +19,28 @@ export const DOCUMENTATION_D_UN_JETON_DE_LIEN = {
   pattern: FORME_D_UN_JETON_EMIS.source,
 };
 
+const LONGUEUR_MAX_D_UN_MOT_DE_PASSE = 256;
+
+const MotDePasseBorne = (): PropertyDecorator =>
+  MaxLength(LONGUEUR_MAX_D_UN_MOT_DE_PASSE, {
+    message: 'Le mot de passe est trop long.',
+  });
+
+export function MotDePasseSaisi(): PropertyDecorator {
+  return applyDecorators(
+    IsString(),
+    MinLength(1, { message: 'Le mot de passe est requis.' }),
+    MotDePasseBorne(),
+  );
+}
+
 export function MotDePasseRobuste(): PropertyDecorator {
   return applyDecorators(
     IsString(),
     MinLength(12, {
       message: 'Le mot de passe doit contenir au moins 12 caracteres.',
     }),
+    MotDePasseBorne(),
     Matches(/^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/, {
       message:
         'Le mot de passe doit contenir au moins 1 majuscule, 1 chiffre et 1 caractere special.',

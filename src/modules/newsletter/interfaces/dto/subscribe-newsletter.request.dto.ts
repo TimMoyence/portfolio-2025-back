@@ -1,8 +1,8 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import type { SupportedLocale } from '../../../../common/domain/value-objects/LocaleCode';
+import { AdresseEmail } from '../../../../common/interfaces/dto/adresse-email.decorator';
 import { LocaleSupportee } from '../../../../common/interfaces/dto/locale-supportee.decorator';
 import {
-  IsEmail,
   IsIn,
   IsOptional,
   IsString,
@@ -18,7 +18,7 @@ import { SUPPORTED_FORMATION_SLUGS } from '../../domain/SupportedFormationSlugs'
 
 export class SubscribeNewsletterRequestDto extends ChampsAntiRobotDto {
   @ApiProperty({ example: 'marie@example.com' })
-  @IsEmail()
+  @AdresseEmail()
   email: string;
 
   @ApiPropertyOptional({ example: 'Marie' })

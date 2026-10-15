@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { EmailAddress } from '../common/domain/value-objects/EmailAddress';
 import { resoudreConnexionPostgres } from '../database/connexion-postgres';
 import {
   DELAI_DE_DIFFUSION_EN_MINUTES,
@@ -323,15 +324,13 @@ function angledAddress(value: string): string | undefined {
  * Valide une boite aux lettres RFC 5322 sous ses deux formes usuelles :
  * l'adresse nue (`contact@exemple.fr`) et l'adresse avec nom d'affichage
  * (`'Mon Nom' <contact@exemple.fr>`), cette derniere etant celle
- * deployee en production. `z.email()` rejetterait la seconde et
- * empecherait l'API de demarrer.
+ * deployee en production. L'adresse suit la regle commune d'EmailAddress.
  */
 function isValidMailbox(value: string): boolean {
   if (allowsHeaderInjection(value)) return false;
   if (declaresSeveralMailboxes(value)) return false;
 
-  const address = (angledAddress(value) ?? value).trim();
-  return z.email().safeParse(address).success;
+  return EmailAddress.parse(angledAddress(value) ?? value) !== null;
 }
 
 function resolveAliases(env: Record<string, unknown>): Record<string, unknown> {

@@ -2,8 +2,12 @@ import {
   champsRefuses,
   messagesDeRefus,
 } from '../../../../../test/helpers/validation-pipe';
+import { ChangePasswordDto } from './ChangePassword.dto';
 import { CreateUserDto } from './CreateUser.dto';
+import { LoginDto } from './Login.dto';
 import { MotDePasseRobuste, RolesValides } from './regles-de-saisie';
+import { ResetPasswordDto } from './ResetPassword.dto';
+import { SetPasswordDto } from './SetPassword.dto';
 import { UpdateProfileDto } from './UpdateProfile.dto';
 import { UpdateUserDto } from './UpdateUser.dto';
 
@@ -74,6 +78,38 @@ describe('MotDePasseRobuste', () => {
       'Le mot de passe doit contenir au moins 1 majuscule, 1 chiffre et 1 caractere special.',
     );
   });
+
+  it('accepte 256 caracteres et refuse au-dela, comme la connexion', () => {
+    expect(messages({ motDePasse: `A1!${'a'.repeat(253)}` })).toEqual([]);
+    expect(messages({ motDePasse: `A1!${'a'.repeat(254)}` })).toEqual([
+      'Le mot de passe est trop long.',
+    ]);
+  });
+});
+
+describe('borne d un mot de passe saisi', () => {
+  it.each([
+    ['l inscription', CreateUserDto, 'password'],
+    ['la modification par l admin', UpdateUserDto, 'password'],
+    ['la reinitialisation', ResetPasswordDto, 'newPassword'],
+    ['la definition', SetPasswordDto, 'newPassword'],
+    ['le changement', ChangePasswordDto, 'newPassword'],
+    [
+      'le mot de passe actuel du changement',
+      ChangePasswordDto,
+      'currentPassword',
+    ],
+    ['la connexion', LoginDto, 'password'],
+  ])(
+    'borne a 256 caracteres le mot de passe de %s',
+    (_saisie, dto: new () => object, champ) => {
+      const refusesPour = (motDePasse: string) =>
+        champsRefuses(dto, { [champ]: motDePasse });
+
+      expect(refusesPour(`A1!${'a'.repeat(253)}`)).not.toContain(champ);
+      expect(refusesPour(`A1!${'a'.repeat(254)}`)).toContain(champ);
+    },
+  );
 });
 
 describe('RolesValides', () => {

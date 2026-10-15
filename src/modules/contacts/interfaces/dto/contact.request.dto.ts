@@ -3,13 +3,13 @@ import { Type } from 'class-transformer';
 import {
   IsBoolean,
   IsDate,
-  IsEmail,
   IsOptional,
   IsString,
   MaxLength,
   MinLength,
 } from 'class-validator';
 import type { SupportedLocale } from '../../../../common/domain/value-objects/LocaleCode';
+import { AdresseEmail } from '../../../../common/interfaces/dto/adresse-email.decorator';
 import { LocaleSupportee } from '../../../../common/interfaces/dto/locale-supportee.decorator';
 import { ChampsAntiRobotDto } from '../../../../common/interfaces/security/champs-anti-robot.dto';
 
@@ -27,7 +27,7 @@ export class ContactRequestDto extends ChampsAntiRobotDto {
   lastName: string;
 
   @ApiProperty({ example: 'john.doe@example.com' })
-  @IsEmail()
+  @AdresseEmail()
   email: string;
 
   @ApiProperty({ example: 'Hello, I would like to get in touch.' })

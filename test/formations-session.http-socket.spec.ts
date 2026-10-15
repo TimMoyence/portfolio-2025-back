@@ -761,7 +761,7 @@ describe('Session de formation (e2e http socket)', () => {
       expect(reponse.status).toBe(statut);
     });
 
-    it('refuse de rejoindre avec une adresse que @IsEmail laisse passer mais que l adresse email commune rejette', async () => {
+    it('refuse de rejoindre avec une adresse citee, que la regle commune des adresses rejette', async () => {
       const { code } = await http.ouvrirSession();
 
       const reponse = await http

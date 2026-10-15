@@ -83,9 +83,8 @@ describe('validateEnv', () => {
     });
 
     it('devrait accepter la forme « display name + adresse » de production', () => {
-      // Valeur reellement deployee. `z.email()` la rejetterait et
-      // empecherait l'API de demarrer : la validation doit accepter les
-      // deux formes RFC 5322.
+      // Valeur reellement deployee : la refuser empecherait l'API de
+      // demarrer, la validation doit accepter les deux formes RFC 5322.
       const env = buildValidEnv({
         ...SMTP_CONFIGURED,
         SMTP_FROM: "'Asili Design' <no-reply@asilidesign.fr>",
@@ -98,11 +97,25 @@ describe('validateEnv', () => {
       ['une valeur blanche', '   '],
       ['une valeur sans arobase', 'poubelle'],
       ['des chevrons sans adresse valide', 'Asili <pas-une-adresse>'],
+      ['une adresse que la regle commune refuse', 'contact@asilidesign-.fr'],
+      [
+        'des chevrons autour d une adresse que la regle commune refuse',
+        'Asili <contact@asilidesign-.fr>',
+      ],
     ])('devrait rejeter %s dans SMTP_FROM', (_label, value) => {
       const env = buildValidEnv({ ...SMTP_CONFIGURED, SMTP_FROM: value });
 
       expect(() => validateEnv(env)).toThrow('SMTP_FROM');
     });
+
+    it.each(['jean&co@asilidesign.fr', 'Asili <jean&co@asilidesign.fr>'])(
+      'devrait accepter %p dans SMTP_FROM, comme la regle commune',
+      (value) => {
+        const env = buildValidEnv({ ...SMTP_CONFIGURED, SMTP_FROM: value });
+
+        expect(() => validateEnv(env)).not.toThrow();
+      },
+    );
 
     it('devrait rejeter un SMTP_REPLY_TO malforme', () => {
       const env = buildValidEnv({

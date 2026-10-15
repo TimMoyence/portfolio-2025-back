@@ -1,3 +1,7 @@
+import { isEmail } from 'class-validator';
+
+export const REGLE_D_UNE_ADRESSE_EMAIL = { blacklisted_chars: '"' };
+
 export class EmailAddress {
   private constructor(private readonly normalizedValue: string) {}
 
@@ -5,10 +9,7 @@ export class EmailAddress {
     if (typeof raw !== 'string') return null;
 
     const value = raw.trim().toLowerCase();
-    if (value.length === 0 || value.length > 320) return null;
-
-    const basicEmailPattern = /^[^\s@]+@[^\s.@]+(?:\.[^\s.@]+)+$/;
-    if (!basicEmailPattern.test(value)) return null;
+    if (!isEmail(value, REGLE_D_UNE_ADRESSE_EMAIL)) return null;
 
     return new EmailAddress(value);
   }

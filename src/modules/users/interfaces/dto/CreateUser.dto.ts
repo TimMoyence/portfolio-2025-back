@@ -1,11 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import {
-  IsBoolean,
-  IsEmail,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsBoolean, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { AdresseEmail } from '../../../../common/interfaces/dto/adresse-email.decorator';
 import type { CreateUserCommand } from '../../application/dto/CreateUser.command';
 import {
   MotDePasseRobuste,
@@ -16,7 +11,7 @@ import {
 
 export class CreateUserDto implements CreateUserCommand {
   @ApiProperty({ example: 'john@example.com' })
-  @IsEmail()
+  @AdresseEmail()
   email: string;
 
   @ApiProperty({ example: 'StrongPassword123!' })

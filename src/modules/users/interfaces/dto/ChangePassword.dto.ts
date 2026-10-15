@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 import type { ChangePasswordCommand } from '../../application/dto/ChangePassword.command';
-import { MotDePasseRobuste } from './regles-de-saisie';
+import { MotDePasseRobuste, MotDePasseSaisi } from './regles-de-saisie';
 
 export class ChangePasswordDto implements ChangePasswordCommand {
   @ApiPropertyOptional({
@@ -13,8 +13,7 @@ export class ChangePasswordDto implements ChangePasswordCommand {
   userId: string;
 
   @ApiProperty({ example: 'CurrentPassword123' })
-  @IsString()
-  @IsNotEmpty()
+  @MotDePasseSaisi()
   currentPassword: string;
 
   @ApiProperty({ example: 'NewPassword456!' })

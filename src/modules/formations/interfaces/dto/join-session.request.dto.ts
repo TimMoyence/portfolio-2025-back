@@ -1,11 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import {
-  IsEmail,
-  IsOptional,
-  IsString,
-  MaxLength,
-  MinLength,
-} from 'class-validator';
+import { IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
+import { AdresseEmail } from '../../../../common/interfaces/dto/adresse-email.decorator';
 import { ChampsAntiRobotDto } from '../../../../common/interfaces/security/champs-anti-robot.dto';
 
 export class JoinSessionRequestDto extends ChampsAntiRobotDto {
@@ -22,7 +17,7 @@ export class JoinSessionRequestDto extends ChampsAntiRobotDto {
   nom: string;
 
   @ApiProperty({ example: 'theo.martin@example.com' })
-  @IsEmail()
+  @AdresseEmail()
   @MaxLength(180)
   email: string;
 

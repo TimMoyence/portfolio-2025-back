@@ -1,7 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
-  IsEmail,
   IsIn,
   IsOptional,
   IsString,
@@ -9,6 +8,7 @@ import {
   MinLength,
   ValidateNested,
 } from 'class-validator';
+import { AdresseEmail } from '../../../../common/interfaces/dto/adresse-email.decorator';
 import {
   AcceptationDesConditions,
   VersionDesConditions,
@@ -26,7 +26,7 @@ export class RequestToolkitRequestDto extends ChampsAntiRobotDto {
   firstName: string;
 
   @ApiProperty({ example: 'marie@example.com' })
-  @IsEmail()
+  @AdresseEmail()
   email: string;
 
   @ApiProperty({ example: 'ia-solopreneurs' })
