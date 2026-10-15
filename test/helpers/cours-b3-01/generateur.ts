@@ -6,7 +6,7 @@ import {
   type Tirage,
 } from '../../../src/modules/formations/domain/cours/Aleatoire';
 import { somme } from '../../../src/common/domain/nombres/statistiques';
-import { arrondirMoitieLoinDeZero } from 'portfolio-2025-partage/formule';
+import { arrondirMoitieLoinDeZero } from '../../../src/modules/formations/domain/cours/Formule';
 import {
   dateExcel,
   estJourOuvre,

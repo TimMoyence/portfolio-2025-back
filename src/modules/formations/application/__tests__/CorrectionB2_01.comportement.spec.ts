@@ -10,10 +10,7 @@ import {
   type SaisiesDeTableau,
 } from '../../domain/cours/CorrectionProduction';
 import { questionsDuCours } from '../../domain/cours/Cours';
-import {
-  evaluerExpression,
-  evaluerFeuille,
-} from 'portfolio-2025-partage/formule';
+import { evaluerExpression, evaluerFeuille } from '../../domain/cours/Formule';
 
 const COURS = buildCoursB2_01();
 const SANS_FORMULE = 'valeur-saisie-sans-formule';

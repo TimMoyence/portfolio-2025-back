@@ -1,6 +1,8 @@
 import { buildClientReportSynthesis } from '../../../../../../test/factories/audit-requests.factory';
 import {
+  codesBrutsDuCourriel,
   createMockTransporter,
+  premierMailEnvoye,
   setSmtpEnv,
   DEFAULT_AUDIT_ENV,
 } from '../../../../../../test/factories/mailer.factory';
@@ -65,7 +67,7 @@ describe('AuditExpertReportMailer', () => {
       transporter as unknown as SmtpTransporter,
     );
     await mailer.sendExpertReport(buildInput(overrides));
-    return (transporter.sendMail as jest.Mock).mock.calls[0][0];
+    return premierMailEnvoye(transporter);
   }
 
   it('envoie au destinataire des notifications quand AUDIT_REPORT_TO est vide', async () => {
@@ -85,7 +87,7 @@ describe('AuditExpertReportMailer', () => {
     expect(call.to).toBe(DEFAULT_AUDIT_ENV.AUDIT_REPORT_TO);
     expect(call.subject).toBe('[Audit Expert] mon-site.fr');
     expect(call.attachments).toHaveLength(1);
-    expect(call.attachments[0].content).toBe(pdf);
+    expect(call.attachments?.[0]?.content).toBe(pdf);
     expect(call.text).toContain('audit-42');
     expect(call.text).toContain('Synthese expert detaillee');
     expect(call.text).toContain(
@@ -95,6 +97,29 @@ describe('AuditExpertReportMailer', () => {
     expect(call.text).toContain('Canonicals inconsistantes');
     expect(call.text).toContain('Corriger canonicals');
     expect(call.text).toContain('refuse une refonte');
+  });
+
+  it('nomme la gravité, l impact et l effort par leur libellé, comme le PDF joint', async () => {
+    const call = await envoyer({
+      expertReport: {
+        ...buildExpertReport(),
+        crossPageFindings: [
+          { ...buildExpertReport().crossPageFindings[0], severity: 'critical' },
+        ],
+      },
+    });
+
+    expect(call.html).toContain('[Critique] Canonicals inconsistantes');
+    expect(call.html).toContain('impact Élevé / effort Moyen');
+    expect(call.text).toContain('- [Critique] Canonicals inconsistantes');
+    expect(call.text).toContain('(impact Élevé / effort Moyen)');
+    expect(
+      codesBrutsDuCourriel(call, [
+        '[CRITICAL]',
+        'impact high',
+        'effort medium',
+      ]),
+    ).toEqual([]);
   });
 
   it('devrait signaler un contact PHONE avec une alerte visuelle', async () => {

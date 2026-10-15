@@ -1,5 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
+import { estEntierPositif } from '../../../common/domain/nombres/est-entier-positif';
 import type { Cours } from '../domain/contrats/cours';
 import type {
   ControlSessionChanges,
@@ -170,7 +171,7 @@ export class ControlSessionUseCase {
   ): UpdateSessionInput {
     const misAJour: UpdateSessionInput = {};
     if (changements.ecran !== undefined) {
-      if (!Number.isInteger(changements.ecran) || changements.ecran < 0) {
+      if (!estEntierPositif(changements.ecran)) {
         throw new DomainValidationError(
           `Numero d ecran invalide: ${changements.ecran}`,
         );

@@ -1,4 +1,4 @@
-import { arrondirMoitieLoinDeZero } from 'portfolio-2025-partage/formule';
+import { arrondirMoitieLoinDeZero } from '../../domain/cours/Formule';
 import {
   comparerCommeExcel,
   dateExcel,

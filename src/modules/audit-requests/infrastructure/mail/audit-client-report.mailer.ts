@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { pieceJointePdf } from '../../../../common/infrastructure/mail/piece-jointe-pdf';
 import { destinataireDesRapportsDAudit } from '../../../../config/adresses-de-courriel';
+import { LIBELLES_DU_NIVEAU } from '../../domain/AuditReportTiers';
 import type { ClientReportMailInput } from '../../domain/IAuditNotifier.port';
+import { LIBELLES_DU_STATUT } from '../../domain/StatutScore';
 import { pillarLabel } from '../automation/shared/pillar-labels.util';
 import { buildMailLayout } from './mail-layout.util';
 import { MailerDAudit } from './mailer-d-audit';
@@ -44,7 +46,7 @@ export class AuditClientReportMailer extends MailerDAudit {
     const topFindingsHtml = report.topFindings.map(
       (finding) => safeHtml`
           <li style="margin-bottom:8px;">
-            <strong>[${escapeHtml(finding.severity.toUpperCase())}] ${escapeHtml(finding.title)}</strong><br/>
+            <strong>[${escapeHtml(LIBELLES_DU_NIVEAU[finding.severity])}] ${escapeHtml(finding.title)}</strong><br/>
             <span>${escapeHtml(finding.impact)}</span>
           </li>`,
     );
@@ -54,14 +56,14 @@ export class AuditClientReportMailer extends MailerDAudit {
           <tr>
             <td style="padding:6px 8px; border:1px solid #e5e7eb;">${escapeHtml(pillarLabel(pillar.pillar))}</td>
             <td style="padding:6px 8px; border:1px solid #e5e7eb; text-align:right;">${pillar.score}/${pillar.target}</td>
-            <td style="padding:6px 8px; border:1px solid #e5e7eb;">${escapeHtml(pillar.status)}</td>
+            <td style="padding:6px 8px; border:1px solid #e5e7eb;">${escapeHtml(LIBELLES_DU_STATUT[pillar.status])}</td>
           </tr>`,
     );
 
     const quickWinsHtml = report.quickWins.map(
       (qw) => safeHtml`
           <li style="margin-bottom:8px;">
-            <strong>${escapeHtml(qw.title)}</strong> — <em>${escapeHtml(qw.effort)}</em><br/>
+            <strong>${escapeHtml(qw.title)}</strong> — <em>Effort : ${escapeHtml(LIBELLES_DU_NIVEAU[qw.effort])}</em><br/>
             <span>${escapeHtml(qw.businessImpact)}</span>
           </li>`,
     );
@@ -151,20 +153,22 @@ export class AuditClientReportMailer extends MailerDAudit {
     lines.push('Top findings :');
     for (const finding of report.topFindings) {
       lines.push(
-        `- [${finding.severity.toUpperCase()}] ${finding.title} — ${finding.impact}`,
+        `- [${LIBELLES_DU_NIVEAU[finding.severity]}] ${finding.title} — ${finding.impact}`,
       );
     }
     lines.push('');
     lines.push('Scorecard 7 piliers :');
     for (const pillar of report.pillarScorecard) {
       lines.push(
-        `- ${pillarLabel(pillar.pillar)}: ${pillar.score}/${pillar.target} (${pillar.status})`,
+        `- ${pillarLabel(pillar.pillar)}: ${pillar.score}/${pillar.target} (${LIBELLES_DU_STATUT[pillar.status]})`,
       );
     }
     lines.push('');
     lines.push('Quick wins :');
     for (const qw of report.quickWins) {
-      lines.push(`- ${qw.title} (${qw.effort}) — ${qw.businessImpact}`);
+      lines.push(
+        `- ${qw.title} (Effort : ${LIBELLES_DU_NIVEAU[qw.effort]}) — ${qw.businessImpact}`,
+      );
     }
     lines.push('');
     lines.push(`${report.cta.title} — ${report.cta.description}`);

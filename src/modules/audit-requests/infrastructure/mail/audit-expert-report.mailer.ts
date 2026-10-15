@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { pieceJointePdf } from '../../../../common/infrastructure/mail/piece-jointe-pdf';
 import { destinataireDesRapportsDAudit } from '../../../../config/adresses-de-courriel';
+import {
+  LIBELLES_DE_LA_GRAVITE,
+  LIBELLES_DU_NIVEAU,
+} from '../../domain/AuditReportTiers';
 import type { ExpertReportMailInput } from '../../domain/IAuditNotifier.port';
 import { buildMailLayout } from './mail-layout.util';
 import { MailerDAudit } from './mailer-d-audit';
@@ -38,7 +42,7 @@ export class AuditExpertReportMailer extends MailerDAudit {
     const crossFindingsHtml = expert.crossPageFindings.slice(0, 5).map(
       (finding) => safeHtml`
           <li style="margin-bottom:10px;">
-            <strong>[${escapeHtml(finding.severity.toUpperCase())}] ${escapeHtml(finding.title)}</strong><br/>
+            <strong>[${escapeHtml(LIBELLES_DE_LA_GRAVITE[finding.severity])}] ${escapeHtml(finding.title)}</strong><br/>
             <span><em>Root cause :</em> ${escapeHtml(finding.rootCause)}</span><br/>
             <span><em>Remediation :</em> ${escapeHtml(finding.remediation)}</span><br/>
             <span><em>Affected URLs :</em> ${escapeHtml(finding.affectedUrls.join(', ') || '—')}</span>
@@ -48,7 +52,7 @@ export class AuditExpertReportMailer extends MailerDAudit {
     const backlogHtml = expert.priorityBacklog.map(
       (item) => safeHtml`
           <li style="margin-bottom:10px;">
-            <strong>${escapeHtml(item.title)}</strong> — impact ${escapeHtml(item.impact)} / effort ${escapeHtml(item.effort)}<br/>
+            <strong>${escapeHtml(item.title)}</strong> — impact ${escapeHtml(LIBELLES_DU_NIVEAU[item.impact])} / effort ${escapeHtml(LIBELLES_DU_NIVEAU[item.effort])}<br/>
             <em>Acceptance :</em> ${escapeHtml(item.acceptanceCriteria.join(' | ') || '—')}
           </li>`,
     );
@@ -131,14 +135,14 @@ export class AuditExpertReportMailer extends MailerDAudit {
     lines.push('Cross-page findings (top 5) :');
     for (const finding of expert.crossPageFindings.slice(0, 5)) {
       lines.push(
-        `- [${finding.severity.toUpperCase()}] ${finding.title} — root cause : ${finding.rootCause} — remediation : ${finding.remediation}`,
+        `- [${LIBELLES_DE_LA_GRAVITE[finding.severity]}] ${finding.title} — root cause : ${finding.rootCause} — remediation : ${finding.remediation}`,
       );
     }
     lines.push('');
     lines.push('Priority backlog :');
     for (const item of expert.priorityBacklog) {
       lines.push(
-        `- ${item.title} (impact ${item.impact} / effort ${item.effort})`,
+        `- ${item.title} (impact ${LIBELLES_DU_NIVEAU[item.impact]} / effort ${LIBELLES_DU_NIVEAU[item.effort]})`,
       );
     }
     lines.push('');

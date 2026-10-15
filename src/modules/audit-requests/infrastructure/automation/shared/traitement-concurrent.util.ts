@@ -1,3 +1,5 @@
+import { borner } from '../../../../../common/domain/nombres/borner';
+
 export async function traiterEnParallele<E, R>(
   elements: readonly E[],
   concurrence: number,
@@ -26,7 +28,7 @@ export async function traiterEnParallele<E, R>(
     }
   };
 
-  const ouvriers = Math.min(Math.max(1, concurrence), Math.max(1, total));
+  const ouvriers = borner(concurrence, 1, Math.max(1, total));
   await Promise.all(Array.from({ length: ouvriers }, () => ouvrier()));
   return resultats;
 }

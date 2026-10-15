@@ -4,6 +4,7 @@ import type {
 } from '../../../../common/domain/au-moins-un';
 import { estEntierStrictementPositif } from '../../../../common/domain/nombres/dans-les-bornes';
 import type { ConfusionId } from '../../domain/cours/banque/confusions';
+import { decalerFormule } from '../../domain/cours/Formule';
 import { ligneDeLaReference } from '../../domain/cours/PlansStockes';
 import * as moteur from './briques';
 
@@ -89,14 +90,6 @@ export function colonneDeValeurs(
   );
 }
 
-function recopiee(modele: string, decalage: number): string {
-  return modele.replaceAll(
-    /(?<![$A-Z])([A-H])(\d+)/g,
-    (_, colonne: string, ligne: string) =>
-      `${colonne}${Number(ligne) + decalage}`,
-  );
-}
-
 export interface Recopie {
   readonly colonne: string;
   readonly premiereLigne: number;
@@ -135,7 +128,7 @@ export function colonneRecopiee(
     ...suivantes.map((valeur, rang) =>
       moteur.attendu(
         `${colonne}${premiereLigne + rang + 1}`,
-        recopiee(formule, rang + 1),
+        decalerFormule(formule, rang + 1, 0),
         valeur,
         { memeQue: modele },
         [...piegesDeLaRecopie, ...piegesDuRang(rang + 1)],

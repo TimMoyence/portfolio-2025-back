@@ -1,10 +1,11 @@
-import type { FreeRange } from 'portfolio-2025-partage/contrats';
+import { estEntierPositif } from '../../../common/domain/nombres/est-entier-positif';
+import type { FreeRange } from './contrats/contrat-de-l-api';
 
 export {
   PACING_MODES,
   type FreeRange,
   type PacingMode,
-} from 'portfolio-2025-partage/contrats';
+} from './contrats/contrat-de-l-api';
 
 export function isFreeRangeValid(
   range: FreeRange,
@@ -13,9 +14,8 @@ export function isFreeRangeValid(
   const borneHauteValide =
     totalEcrans === undefined || range.dernier < totalEcrans;
   return (
-    Number.isInteger(range.premier) &&
-    Number.isInteger(range.dernier) &&
-    range.premier >= 0 &&
+    estEntierPositif(range.premier) &&
+    estEntierPositif(range.dernier) &&
     range.dernier >= range.premier &&
     borneHauteValide
   );

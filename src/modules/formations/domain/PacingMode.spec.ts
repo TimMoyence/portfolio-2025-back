@@ -28,4 +28,8 @@ describe('isFreeRangeValid', () => {
   it('accepte un intervalle sans verifier de borne haute quand totalEcrans est omis', () => {
     expect(isFreeRangeValid({ premier: 8, dernier: 10000 })).toBe(true);
   });
+
+  it('refuse une borne au-dela des entiers surs quand totalEcrans est omis', () => {
+    expect(isFreeRangeValid({ premier: 0, dernier: 2 ** 53 })).toBe(false);
+  });
 });

@@ -127,6 +127,12 @@ describe('ControlSessionUseCase', () => {
     await expect(b.piloter({ ecran: -1 })).rejects.toThrow();
   });
 
+  it('refuse un ecran au-dela des entiers surs comme un numero invalide', async () => {
+    await expect(b.piloter({ ecran: 2 ** 53 })).rejects.toThrow(
+      'Numero d ecran invalide',
+    );
+  });
+
   it('accepte l ecran de la derniere position du cours', async () => {
     await b.attendreEcranEcrit(NOMBRE_ECRANS - 1);
   });

@@ -1,3 +1,5 @@
+import { estObjet } from '../../domain/est-objet';
+
 const CODES_RESEAU = new Set([
   'ECONNREFUSED',
   'ECONNRESET',
@@ -61,11 +63,7 @@ export function estDependanceInjoignable(
   erreur: unknown,
   profondeur = 0,
 ): boolean {
-  if (
-    erreur === null ||
-    typeof erreur !== 'object' ||
-    profondeur >= PROFONDEUR_MAX
-  ) {
+  if (!estObjet(erreur) || profondeur >= PROFONDEUR_MAX) {
     return false;
   }
   if (estCodeDeCoupure(codeDe(erreur)) || estMessageDeCoupure(erreur)) {

@@ -1,4 +1,4 @@
-import { lireNombreSaisiAvecUnite } from 'portfolio-2025-partage/formule';
+import { lireNombreSaisiAvecUnite } from './Formule';
 import { sansDiacritiques } from '../../../../common/domain/texte/sans-diacritiques';
 import { matchesSolution } from '../GradingCore';
 import type { Cours, Ecran, QuestionProduction } from '../contrats/cours';

@@ -14,17 +14,13 @@ import type {
   PiegeNumerique,
 } from './Corrige';
 import type { ConfusionId } from './banque/confusions';
-import type {
-  Feuille,
-  ResultatFormule,
-  ValeurFormule,
-} from 'portfolio-2025-partage/formule';
+import type { Feuille, ResultatFormule, ValeurFormule } from './Formule';
 import {
   estUneFormule,
   evaluerFeuille,
   formeR1C1,
   surfaceDeFormule,
-} from 'portfolio-2025-partage/formule';
+} from './Formule';
 
 interface VerdictDeCellule {
   readonly reference: string;

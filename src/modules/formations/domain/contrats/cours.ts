@@ -1,4 +1,4 @@
-import type { Diffusion } from 'portfolio-2025-partage/contrats';
+import type { Diffusion } from './contrat-de-l-api';
 import type { AuMoinsUn } from '../../../../common/domain/au-moins-un';
 import type { Tolerance } from '../GradingCore';
 import type { ConceptId } from '../cours/banque/concepts';
@@ -29,7 +29,7 @@ export {
   TYPES_QUESTION,
   type Diffusion,
   type TypeQuestion,
-} from 'portfolio-2025-partage/contrats';
+} from './contrat-de-l-api';
 export type OrdreQuestions = 'fixe' | 'melange';
 
 export type SheetPlanStocke = Omit<SheetPlanPublic, 'metadonnees'>;

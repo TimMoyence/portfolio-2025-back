@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { escapeHtml } from 'portfolio-2025-partage/html';
+import { escapeHtml } from '../../../common/domain/texte/html-escape.util';
+import { estEntierPositif } from '../../../common/domain/nombres/est-entier-positif';
 import { InvalidInputError } from '../../../common/domain/errors/InvalidInputError';
 import { ResourceConflictError } from '../../../common/domain/errors/ResourceConflictError';
 import { ResourceNotFoundError } from '../../../common/domain/errors/ResourceNotFoundError';
@@ -220,6 +221,6 @@ export class ArticlesService {
   private decodeCursor(cursor: string | undefined): number {
     if (!cursor) return 0;
     const value = Number(Buffer.from(cursor, 'base64url').toString('utf8'));
-    return Number.isSafeInteger(value) && value >= 0 ? value : 0;
+    return estEntierPositif(value) ? value : 0;
   }
 }
