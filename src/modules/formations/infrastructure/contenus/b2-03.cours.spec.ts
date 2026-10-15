@@ -396,25 +396,38 @@ describe('B2-03 — retours de Tim du 15 octobre 2026', () => {
     expect(exercice).not.toHaveProperty('consigne');
   });
 
-  it('ne parle plus nulle part de l’ordre des quantificateurs ni du comptage de « A ou B »', () => {
-    const texte = JSON.stringify(COURS_B2_03);
+  function tracesDesNotionsRetirees(texte: string): readonly string[] {
+    return [
+      /ordre des quantificateurs/gi,
+      /ordre de ∀ et ∃/g,
+      /« A ou B »/gi,
+      /ou-compte-deux-fois|ordre-quantificateurs-inverse|compter-ou/g,
+      /b2-03-a1-visa/g,
+      /4 \+ 6/g,
+      /\b(?:\d+|deux|trois|quatre|cinq|six|sept|huit|neuf|dix|onze|douze|treize|quatorze|quinze|seize) (?:factures )?visées\b/gi,
+      /additionn\w*/gi,
+      /compt\w* deux fois/gi,
+      /NB\.SI\([^;)]*;\\?"Visa/gi,
+      /\bfactures à viser\b/gi,
+    ].flatMap((motif) => [...texte.matchAll(motif)].map(([trace]) => trace));
+  }
 
-    expect(
-      [
-        'ordre des quantificateurs',
-        'ordre de ∀ et ∃',
-        '« A ou B »',
-        'ou-compte-deux-fois',
-        'ordre-quantificateurs-inverse',
-        'b2-03-a1-visa',
-        '4 + 6',
-      ].filter((motif) => texte.includes(motif)),
-    ).toEqual([]);
-    expect(
-      texte.match(
-        /\b(?:\d+|deux|trois|quatre|cinq|six|sept|huit|neuf|dix|onze|douze|treize|quatorze|quinze|seize) (?:factures )?visées\b/gi,
-      ) ?? [],
-    ).toEqual([]);
+  it('ne parle plus nulle part de l’ordre des quantificateurs ni du comptage de « A ou B »', () => {
+    expect(tracesDesNotionsRetirees(JSON.stringify(COURS_B2_03))).toEqual([]);
+  });
+
+  it.each([
+    '• Pièges : « ou » exclusif ; additionner les deux conditions ; > au lieu de ≥ ; réciproque prise pour la règle.',
+    '• Erreurs à chercher : textes sans guillemets ; >= au lieu de > pour la relance ; NB.SI additionnés pour le visa.',
+    '=NB.SI(H2:H17;"Relancer") donne 5 et =NB.SI(I2:I17;"Visa") donne 8.',
+    'F205 et F210 compteraient deux fois.',
+    'En K2 et K3, comptez avec NB.SI les factures à relancer et les factures à viser.',
+    'Factures à viser',
+    'b2-03-r-compter-ou',
+    'Seize factures moins les huit visées : 8 factures.',
+    '4 + 6 − 2 = 8 factures.',
+  ])('reconnaît la trace retirée « %s »', (retiree) => {
+    expect(tracesDesNotionsRetirees(retiree)).not.toEqual([]);
   });
 
   it('ne fait plus compter les visas au tableur de la mini-situation', () => {
