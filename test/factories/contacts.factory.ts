@@ -18,7 +18,6 @@ export function buildContact(overrides?: Partial<Contacts>): Contacts {
 
 export function createMockContactsRepo(): jest.Mocked<IContactsRepository> {
   return {
-    findAll: jest.fn(),
     create: jest.fn(),
   };
 }

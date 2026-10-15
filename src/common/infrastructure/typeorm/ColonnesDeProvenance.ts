@@ -2,7 +2,7 @@ import { randomUUID } from 'crypto';
 import { Column, PrimaryGeneratedColumn } from 'typeorm';
 import { ColonnesDeTrace } from './ColonnesDeTrace';
 
-export abstract class ColonnesDeProvenance extends ColonnesDeTrace {
+export abstract class ColonnesDeRequete extends ColonnesDeTrace {
   @Column({ type: 'inet', nullable: true })
   ip?: string;
 
@@ -11,9 +11,7 @@ export abstract class ColonnesDeProvenance extends ColonnesDeTrace {
 
   @Column({ type: 'text', nullable: true })
   referer?: string;
-}
 
-export abstract class ColonnesDeRequete extends ColonnesDeProvenance {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 

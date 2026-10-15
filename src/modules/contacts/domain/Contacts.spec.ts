@@ -117,6 +117,31 @@ describe('Contacts aggregate', () => {
     expect(contact.termsMethod).toBe('checkbox');
   });
 
+  it('porte la provenance de la requête, nettoyée', () => {
+    const contact = Contacts.create({
+      ...VALID_CONTACT_PROPS,
+      ip: ' 203.0.113.7 ',
+      userAgent: 'agent-de-test',
+      referer: 'https://asilidesign.fr/fr/contact',
+    });
+
+    expect(contact.ip).toBe('203.0.113.7');
+    expect(contact.userAgent).toBe('agent-de-test');
+    expect(contact.referer).toBe('https://asilidesign.fr/fr/contact');
+  });
+
+  it('consigne une provenance absente comme nulle', () => {
+    const contact = Contacts.create({
+      ...VALID_CONTACT_PROPS,
+      ip: null,
+      userAgent: '   ',
+    });
+
+    expect(contact.ip).toBeNull();
+    expect(contact.userAgent).toBeNull();
+    expect(contact.referer).toBeNull();
+  });
+
   it('devrait refuser une termsVersion trop longue', () => {
     expect(() =>
       Contacts.create({
