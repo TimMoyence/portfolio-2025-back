@@ -1,5 +1,5 @@
-import type { StatutScore } from 'portfolio-2025-partage/score';
 import type { EngineCoverage } from './EngineCoverage';
+import type { StatutScore } from './StatutScore';
 
 export type ReportSeverity = 'high' | 'medium' | 'low';
 export type CrossPageSeverity = 'critical' | ReportSeverity;

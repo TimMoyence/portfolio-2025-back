@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { escapeHtml } from 'portfolio-2025-partage/html';
+import { escapeHtml } from '../../../common/infrastructure/mail/html-escape.util';
 import { InvalidInputError } from '../../../common/domain/errors/InvalidInputError';
 import { ResourceConflictError } from '../../../common/domain/errors/ResourceConflictError';
 import { ResourceNotFoundError } from '../../../common/domain/errors/ResourceNotFoundError';

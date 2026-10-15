@@ -4,8 +4,12 @@ import {
   type Plateforme,
   type Teinte,
 } from './toolkit-palette';
-import { escapeHtml, escapeUrl, safeHtml } from 'portfolio-2025-partage/html';
-import type { EscapedHtml } from 'portfolio-2025-partage/html';
+import {
+  escapeHtml,
+  escapeUrl,
+  safeHtml,
+} from '../../../../common/infrastructure/mail/html-escape.util';
+import type { EscapedHtml } from '../../../../common/infrastructure/mail/html-escape.util';
 import { sectionHeader } from '../../../../common/infrastructure/mail/section-header';
 import { sansDiacritiques } from '../../../../common/domain/texte/sans-diacritiques';
 

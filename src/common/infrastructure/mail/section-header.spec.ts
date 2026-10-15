@@ -1,4 +1,4 @@
-import { safeHtml, type EscapedHtml } from 'portfolio-2025-partage/html';
+import { safeHtml, type EscapedHtml } from './html-escape.util';
 import { sectionHeader } from './section-header';
 
 describe('sectionHeader', () => {

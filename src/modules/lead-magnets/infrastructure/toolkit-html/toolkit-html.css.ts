@@ -1,6 +1,6 @@
 import { ACCENT, COULEURS_DES_PLATEFORMES, TEINTES } from './toolkit-palette';
-import { safeCss } from 'portfolio-2025-partage/html';
-import type { FeuilleDeStyle } from 'portfolio-2025-partage/html';
+import { safeCss } from '../../../../common/infrastructure/mail/html-escape.util';
+import type { FeuilleDeStyle } from '../../../../common/infrastructure/mail/html-escape.util';
 
 export function buildToolkitCss(): FeuilleDeStyle {
   return safeCss`

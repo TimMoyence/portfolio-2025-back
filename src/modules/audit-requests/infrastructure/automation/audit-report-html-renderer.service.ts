@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import type { StatutScore } from 'portfolio-2025-partage/score';
 import { estObjet } from '../../../../common/domain/est-objet';
 import { dateLongue } from '../../../../common/domain/texte/date-longue';
 import type { AuditSnapshot } from '../../domain/AuditProcessing';
@@ -11,14 +10,18 @@ import type {
   ReportSeverity,
 } from '../../domain/AuditReportTiers';
 import type { EngineCoverage, EngineScore } from '../../domain/EngineCoverage';
+import { LIBELLES_DU_STATUT } from '../../domain/StatutScore';
 import { pillarLabel } from './shared/pillar-labels.util';
 import {
   escapeHtml,
   escapeUrl,
   safeCss,
   safeHtml,
-} from 'portfolio-2025-partage/html';
-import type { EscapedHtml, FeuilleDeStyle } from 'portfolio-2025-partage/html';
+} from '../../../../common/infrastructure/mail/html-escape.util';
+import type {
+  EscapedHtml,
+  FeuilleDeStyle,
+} from '../../../../common/infrastructure/mail/html-escape.util';
 import { sectionHeader } from '../../../../common/infrastructure/mail/section-header';
 
 @Injectable()
@@ -124,7 +127,7 @@ export class AuditReportHtmlRendererService {
       return safeHtml`<article class="pillar-card ${statusClass}">
           <p class="pillar-name">${escapeHtml(pillarLabel(pillar.pillar))}</p>
           <p class="pillar-score">${pillar.score}<span class="pillar-target"> / ${pillar.target}</span></p>
-          <p class="pillar-status">${this.statusLabel(pillar.status)}</p>
+          <p class="pillar-status">${escapeHtml(LIBELLES_DU_STATUT[pillar.status])}</p>
         </article>`;
     });
     return safeHtml`<div class="scorecard">
@@ -349,17 +352,6 @@ export class AuditReportHtmlRendererService {
       <p>Statut : ${present ? safeHtml`Present` : safeHtml`Absent`}</p>
       ${url ? safeHtml`<p>URL : <a href="${escapeUrl(url)}">${escapeHtml(url)}</a></p>` : safeHtml``}
     </div>`;
-  }
-
-  private statusLabel(status: StatutScore): EscapedHtml {
-    switch (status) {
-      case 'critical':
-        return safeHtml`Critique`;
-      case 'warning':
-        return safeHtml`A surveiller`;
-      case 'ok':
-        return safeHtml`OK`;
-    }
   }
 
   private severityLabel(severity: CrossPageSeverity): EscapedHtml {

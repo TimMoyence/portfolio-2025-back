@@ -1,8 +1,4 @@
-import {
-  escapeHtml,
-  safeHtml,
-  type EscapedHtml,
-} from 'portfolio-2025-partage/html';
+import { escapeHtml, safeHtml, type EscapedHtml } from './html-escape.util';
 
 export function sectionHeader(
   num: string,

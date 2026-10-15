@@ -1,6 +1,5 @@
 import { ChatOpenAI } from '@langchain/openai';
 import { Injectable, Logger } from '@nestjs/common';
-import { statutDuScore, type StatutScore } from 'portfolio-2025-partage/score';
 import { z } from 'zod';
 import { compacterBlancs } from '../../../../common/domain/texte/compacter-blancs';
 import type { AiIndexabilitySignals } from '../../domain/AiIndexability';
@@ -12,6 +11,11 @@ import type {
 import type { BusinessType } from '../../domain/BusinessType';
 import { businessTypePromptHint } from '../../domain/BusinessType';
 import type { EngineCoverage } from '../../domain/EngineCoverage';
+import {
+  STATUTS_SCORE,
+  statutDuScore,
+  type StatutScore,
+} from '../../domain/StatutScore';
 import { AuditLocale, localeDeRedaction } from '../../domain/audit-locale.util';
 import { withHardTimeout } from './llm-execution.guardrails';
 import { LlmLimiteParLaConfig } from './llm-executor.port';
@@ -33,7 +37,7 @@ const SEVERITY_LABELS_EN: Record<ReportSeverity, string> = {
   low: 'low priority',
 };
 
-const pillarStatusSchema = z.enum(['critical', 'warning', 'ok']);
+const pillarStatusSchema = z.enum(STATUTS_SCORE);
 
 const clientReportSchema = z.object({
   executiveSummary: z.string().min(1),

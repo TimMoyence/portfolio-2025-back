@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { ExpediteurSmtp } from '../../../common/infrastructure/mail/expediteur-smtp';
-import { escapeHtml, safeHtml } from 'portfolio-2025-partage/html';
-import type { EscapedHtml } from 'portfolio-2025-partage/html';
+import {
+  escapeHtml,
+  safeHtml,
+} from '../../../common/infrastructure/mail/html-escape.util';
+import type { EscapedHtml } from '../../../common/infrastructure/mail/html-escape.util';
 import { conceptsFragilesLisibles } from '../domain/IFormationMailer.port';
 import type {
   CopieEtudiant,
