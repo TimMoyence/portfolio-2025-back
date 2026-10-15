@@ -1,5 +1,5 @@
 import {
-  dansLesBornes,
+  estEntierDansLesBornes,
   type Bornes,
 } from '../common/domain/nombres/dans-les-bornes';
 
@@ -77,9 +77,7 @@ export function envEntierBorne(
   source: SourceDEnv = process.env,
 ): number {
   const valeur = Number(envString(name, source));
-  return Number.isInteger(valeur) && dansLesBornes(valeur, bornes)
-    ? valeur
-    : bornes.defaut;
+  return estEntierDansLesBornes(valeur, bornes) ? valeur : bornes.defaut;
 }
 
 export function envFloat(

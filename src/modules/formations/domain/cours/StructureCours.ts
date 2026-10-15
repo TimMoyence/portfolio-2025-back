@@ -1,3 +1,4 @@
+import { estEntierStrictementPositif } from '../../../../common/domain/nombres/dans-les-bornes';
 import { avecVirgule } from '../../../../common/domain/nombres/ecriture-francaise';
 import { somme } from '../../../../common/domain/nombres/statistiques';
 import { listeEntreGuillemets } from '../../../../common/domain/texte/liste-entre-guillemets';
@@ -98,7 +99,7 @@ function nomEcran(ecran: Ecran, rang: number): string {
 }
 
 function estDureeValide(minutes: number): boolean {
-  return Number.isInteger(minutes) && minutes > 0;
+  return estEntierStrictementPositif(minutes);
 }
 
 function minutesDe(ecran: Ecran): number {
