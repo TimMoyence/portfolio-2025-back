@@ -9,6 +9,11 @@ import {
 } from 'class-validator';
 import type { SupportedLocale } from '../../../../common/domain/value-objects/LocaleCode';
 import { LocaleSupportee } from '../../../../common/interfaces/dto/locale-supportee.decorator';
+import {
+  ACTIONS_DE_CONSENTEMENT,
+  SOURCES_DE_CONSENTEMENT,
+  type CreateCookieConsentProps,
+} from '../../domain/CookieConsent';
 
 class CookieConsentPreferencesRequestDto {
   @ApiProperty({ example: true })
@@ -42,16 +47,13 @@ export class CookieConsentRequestDto {
   @MaxLength(20)
   region: string;
 
-  @ApiProperty({ example: 'banner', enum: ['banner', 'settings'] })
-  @IsIn(['banner', 'settings'])
-  source: 'banner' | 'settings';
+  @ApiProperty({ example: 'banner', enum: SOURCES_DE_CONSENTEMENT })
+  @IsIn(SOURCES_DE_CONSENTEMENT)
+  source: CreateCookieConsentProps['source'];
 
-  @ApiProperty({
-    example: 'accept_all',
-    enum: ['accept_all', 'essential_only', 'save_preferences', 'withdraw'],
-  })
-  @IsIn(['accept_all', 'essential_only', 'save_preferences', 'withdraw'])
-  action: 'accept_all' | 'essential_only' | 'save_preferences' | 'withdraw';
+  @ApiProperty({ example: 'accept_all', enum: ACTIONS_DE_CONSENTEMENT })
+  @IsIn(ACTIONS_DE_CONSENTEMENT)
+  action: CreateCookieConsentProps['action'];
 
   @ApiProperty({ type: CookieConsentPreferencesRequestDto })
   @ValidateNested()
