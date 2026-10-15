@@ -35,26 +35,15 @@ describe('RefreshTokensRepositoryTypeORM revocation et purge', () => {
       ecritures as Repository<RefreshTokenEntity>,
     );
 
-  it.each([
-    [
-      'tous les jetons d un compte',
-      (depot: RefreshTokensRepositoryTypeORM) => depot.revokeByUserId('user-1'),
-      { userId: 'user-1' },
-    ],
-    [
-      'un seul jeton',
-      (depot: RefreshTokensRepositoryTypeORM) => depot.revokeById('refresh-id'),
-      { id: 'refresh-id' },
-    ],
-  ])('revoque %s et retire sa grace', async (_label, revoquer, critere) => {
+  it('revoque tous les jetons d un compte et retire leur grace', async () => {
     const update = jest.fn().mockResolvedValue({ affected: 1 });
 
-    await revoquer(depotSur({ update }));
+    await depotSur({ update }).revokeByUserId('user-1');
 
-    expect(update).toHaveBeenCalledWith(critere, {
-      revoked: true,
-      rotationGraceUntil: null,
-    });
+    expect(update).toHaveBeenCalledWith(
+      { userId: 'user-1' },
+      { revoked: true, rotationGraceUntil: null },
+    );
   });
 
   it('rend le nombre de jetons purges', async () => {

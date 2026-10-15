@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { LessThan, Repository, type FindOptionsWhere } from 'typeorm';
+import { LessThan, Repository } from 'typeorm';
 import { DepotEnDomaine } from '../../../common/infrastructure/typeorm/DepotEnDomaine';
 import { poseeIlYAPlusDe } from '../../../common/infrastructure/typeorm/horloge-de-la-base';
 import {
@@ -38,21 +38,11 @@ export class RefreshTokensRepositoryTypeORM
     return this.trouver({ tokenHash });
   }
 
-  revokeByUserId(userId: string): Promise<void> {
-    return this.revoquer({ userId });
-  }
-
-  revokeById(id: string): Promise<void> {
-    return this.revoquer({ id });
-  }
-
-  private async revoquer(
-    critere: FindOptionsWhere<RefreshTokenEntity>,
-  ): Promise<void> {
-    await this.repo.update(critere, {
-      revoked: true,
-      rotationGraceUntil: null,
-    });
+  async revokeByUserId(userId: string): Promise<void> {
+    await this.repo.update(
+      { userId },
+      { revoked: true, rotationGraceUntil: null },
+    );
   }
 
   async rotateById(id: string, graceUntil: Date): Promise<boolean> {

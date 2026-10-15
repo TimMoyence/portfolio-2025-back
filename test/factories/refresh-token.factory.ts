@@ -21,7 +21,6 @@ export function createMockRefreshTokensRepo(): jest.Mocked<IRefreshTokensReposit
     create: jest.fn(),
     findByTokenHash: jest.fn(),
     revokeByUserId: jest.fn(),
-    revokeById: jest.fn(),
     rotateById: jest.fn(),
     purgeExpired: jest.fn(),
   };
