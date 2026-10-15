@@ -11,7 +11,10 @@ import {
   createChatOpenAIFactoryStub,
   createLlmSuiviStub,
 } from '../../../../../test/factories/section-generator.factory';
-import { attendreUnPayloadEmballe } from '../../../../../test/helpers/appels-llm';
+import {
+  attendreUnPayloadEmballe,
+  BALISE_FERMANTE_INJECTEE,
+} from '../../../../../test/helpers/appels-llm';
 import type { AuditAutomationConfig } from './audit.config';
 import { PageAiRecapService } from './page-ai-recap.service';
 import { UNTRUSTED_DATA_DISCLAIMER_EN } from './shared/prompt-sanitize.util';
@@ -70,7 +73,7 @@ describe('PageAiRecapService', () => {
       engineScores: buildEngineCoverage(),
     };
 
-    function serviceAvecLlm() {
+    function serviceAvecLlm(pageAnalysee: UrlIndexabilityResult = page) {
       const invoke = jest.fn().mockResolvedValue(RECAP_DU_LLM);
       const { fabrique, metrics } = createLlmSuiviStub(invoke);
       const service = new PageAiRecapService(
@@ -83,7 +86,7 @@ describe('PageAiRecapService', () => {
           locale: 'en',
           websiteName: 'example.com',
           normalizedUrl: 'https://example.com',
-          pages: [page],
+          pages: [pageAnalysee],
         });
       return { invoke, fabrique, metrics, analyser };
     }
@@ -107,6 +110,19 @@ describe('PageAiRecapService', () => {
       expect(
         attendreUnPayloadEmballe(invoke, UNTRUSTED_DATA_DISCLAIMER_EN),
       ).toContain('We help businesses grow');
+    });
+
+    it("n'ouvre ni ne ferme le bloc depuis le contenu crawlé", async () => {
+      const { invoke, analyser } = serviceAvecLlm({
+        ...page,
+        title: BALISE_FERMANTE_INJECTEE,
+        h1Texts: [BALISE_FERMANTE_INJECTEE],
+        textExcerpt: BALISE_FERMANTE_INJECTEE,
+      });
+
+      await analyser();
+
+      attendreUnPayloadEmballe(invoke, UNTRUSTED_DATA_DISCLAIMER_EN);
     });
 
     it('compte l appel dans les métriques LLM', async () => {

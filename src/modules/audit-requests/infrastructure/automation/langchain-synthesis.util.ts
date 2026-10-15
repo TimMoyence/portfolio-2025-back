@@ -9,7 +9,9 @@ import type {
 import {
   buildFallbackClientEmailDraft,
   buildFallbackInternalNotes,
+  mesuresDeLaPage,
 } from './langchain-fallback-report.builder';
+import { cleDePage } from './shared/cle-de-page.util';
 import { normalizeSeverity } from './shared/severity.util';
 
 export function toEffort(value: unknown): ReportSeverity {
@@ -64,17 +66,18 @@ export function projectPerPageAnalysis(
 
 function avecLesMesuresDesPages(
   fiches: ReadonlyArray<PerPageDetailedAnalysis>,
-  recaps: LangchainAuditInput['pageRecaps'],
+  input: LangchainAuditInput,
 ): ReadonlyArray<PerPageDetailedAnalysis> {
-  const recapParUrl = new Map(recaps.map((recap) => [recap.url, recap]));
-  return fiches.map((fiche) => {
-    const recap = recapParUrl.get(fiche.url);
-    const titreReel = recap?.title?.trim();
-    return {
-      ...fiche,
-      title: titreReel ? titreReel : fiche.title,
-      engineScores: recap?.engineScores ?? fiche.engineScores,
-    };
+  const recapParCle = new Map(
+    input.pageRecaps.map((recap) => [cleDePage(recap.url), recap]),
+  );
+  const servies = new Set<string>();
+  return fiches.flatMap((fiche) => {
+    const cle = cleDePage(fiche.url);
+    const recap = cle === null ? undefined : recapParCle.get(cle);
+    if (cle === null || !recap || servies.has(cle)) return [];
+    servies.add(cle);
+    return [{ ...fiche, ...mesuresDeLaPage(recap, input.locale) }];
   });
 }
 
@@ -91,7 +94,7 @@ export function buildExpertSynthesis(
 
   const perPageAnalysis = avecLesMesuresDesPages(
     projectPerPageAnalysis(adminReport.perPageAnalysis),
-    input.pageRecaps,
+    input,
   );
 
   const crossPageFindings = input.deepFindings.map((finding) => ({
