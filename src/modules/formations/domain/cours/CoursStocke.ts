@@ -385,7 +385,9 @@ function versEcranDeQuestionnaire(
     ...socle,
     brique: ecran.brique,
     intitule: ecran.proprietes.intitule,
-    consigne: ecran.proprietes.consigne,
+    ...(ecran.proprietes.consigne === undefined
+      ? {}
+      : { consigne: ecran.proprietes.consigne }),
     regime: ecran.proprietes.regime,
     ordre: ecran.proprietes.ordre,
     questions: mapperAuMoinsUn(ecran.proprietes.questions, (question) =>

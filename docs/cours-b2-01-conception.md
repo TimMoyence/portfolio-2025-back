@@ -307,7 +307,7 @@ côté serveur :
 | ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------- | ------------------------------------------------------------------------------- |
 | `exposition-continue`                    | cumul des minutes d’écrans non interactifs consécutifs, jalons compris                                                                                                                                                                                                                   | ≤ 6 min                | **5 min** au plus (A1-11 → A2-02)                                               |
 | `ratio-interaction`                      | minutes interactives ÷ minutes d’exposition                                                                                                                                                                                                                                              | ≥ 0,30                 | 162 ÷ 49 = **3,31**                                                             |
-| `ouverture-cloture`                      | premier écran `fp-recall`, dernier écran `fp-exit`                                                                                                                                                                                                                                       | —                      | A1-01 `fp-recall`, A6-08 `fp-exit`                                              |
+| `cloture`                                | dernier écran `fp-exit` ; le rappel d’ouverture est facultatif                                                                                                                                                                                                                           | —                      | A6-08 `fp-exit`                                                                 |
 | `duree-ecran`                            | chaque durée est un entier strictement positif                                                                                                                                                                                                                                           | > 0                    | 59 écrans de 1 à 13 min                                                         |
 | `duree-cours`                            | somme des écrans **égale** à la durée annoncée (la tolérance de 5 % est supprimée)                                                                                                                                                                                                       | écart = 0              | 211 = 211                                                                       |
 | `reference-inconnue`                     | toute cible `ref:` (remédiations, renvois) existe                                                                                                                                                                                                                                        | —                      | 38 remédiations, toutes vers des écrans existants (§ 5.9)                       |
@@ -1068,7 +1068,7 @@ changent pas, puisqu’ils servent de clés en base.
   0,90 × 0,98 = 0,882 : le net est inférieur de 11,8 % au prix catalogue (3 528 € HT), pas de 12 %. »
 - **Interaction et correction** : phases pilotées et persistées (`pilotage.phase`) : `vote` (2 min,
   principale seule) → `discussion` (3 min, tout vote refusé) → `revote` (2 min, jumelle seule) →
-  `revele` (1 min, jumelle encore acceptée pour les retardataires). Deux réponses notées distinctes.
+  `revele` (1 min, correction révélée, les deux questions fermées). Deux réponses notées distinctes.
 - **Notes** :
   - Vote 1 individuel, sans calculatrice.
   - Entre 30 et 70 % de bonnes réponses : débat en binôme « convainquez votre voisin », puis revote ;
@@ -2472,7 +2472,7 @@ Les formes exactes des données publiques sont au § 9.4, les corrigés au § 9.
 - **Secret** : définitions stockées (`questions`) ; révélation (`corrige` de type `revelation`).
 - **Phases** : `vote` → `discussion` → `revote` → `revele`, persistées par écran, monotones (pas de
   retour en arrière), diffusées dans l’`etat` du flux ; en `vote`, seule la principale est acceptée ;
-  en `discussion`, aucune ; en `revote` et `revele`, seule la jumelle (409 `PHASE_FERMEE` sinon). En
+  en `discussion`, aucune ; en `revote`, seule la jumelle ; en `revele`, aucune (409 `PHASE_FERMEE`). En
   rythme libre, sans phase : principale seule. L’énoncé de la jumelle figure dans le sujet dès le
   départ (sans aucune réponse) ; la brique ne l’affiche qu’à partir de `revote` (choix acté).
 - **Notation** : 2 questions notées par écran à pairs ; les votes des ateliers sont notés.
@@ -4254,7 +4254,7 @@ export interface EtatParticipant {
 ```
 
 Règles de phase appliquées par `SubmitAnswer` : question `principale` acceptée si la phase de son écran
-est absente ou vaut `vote` ; question `jumelle` acceptée si la phase vaut `revote` ou `revele` ;
+est absente ou vaut `vote` ; question `jumelle` acceptée si la phase vaut `revote` ;
 sinon 409 `PHASE_FERMEE`. En rythme libre, sans commande du formateur, la phase est absente : seule la
 principale est ouverte.
 
@@ -4883,7 +4883,7 @@ strategies` renvoie `fausse` ; la projection ne signale la piste fausse qu’apr
 14. **Votes à pairs A3-01 et A5-02** : `vote` (jumelle → 409 `PHASE_FERMEE`) → `discussion` (principale
     → 409) → `revote` (jumelle seule) → `revele` (bonne option et révélation projetées, jamais avant) ;
     F tente de revenir à `vote` → 409 `PHASE_NON_MONOTONE` ; E4 rejoint en `revele` : principale
-    refusée, jumelle acceptée ; redémarrage de l’API → la phase revient avec le premier `etat`.
+    et jumelle refusées ; redémarrage de l’API → la phase revient avec le premier `etat`.
 15. **Capsule A4-01** : lecture ; sous-titres activés par défaut ; transcription dépliable ; variante
     480p sur les postes, 720p en projection ; aucun préchargement avant lecture.
 16. **Feuille A4-02** : E1 17/17 ; E2 recopie `=C2/C5` (E3, E4, E5 et B7 à revoir,
@@ -5591,7 +5591,7 @@ document** et contrôle :
    `^B2-01-A[1-6]-\d{2}-[A-Z0-9-]+$`, somme 211, minutes par acte 32, 34, 36, 38, 43, 28 ; accord de
    chaque ligne avec l’en-tête de sa fiche (identifiant, durée, diffusion) ;
 2. les règles de structure adaptées du § 2.6 : exposition continue ≤ 6 min (jalons comptés comme
-   exposition), ratio ≥ 0,30, ouverture `fp-recall` et clôture `fp-exit`, durées entières positives,
+   exposition), ratio ≥ 0,30, clôture `fp-exit`, durées entières positives,
    `atelier-questions-fermees` (temps noté ≤ 15 min, suite d’atelier ≥ 8 min, corrections comprises,
    hors ouverture et clôture), `correction-apres-source`, total des questions fermées notées (29)
    égal au décompte de la banque du § 5.10, `catalogue-sans-question` ;

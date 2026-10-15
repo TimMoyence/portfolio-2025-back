@@ -451,14 +451,14 @@ describe('SubmitAnswerUseCase', () => {
     );
 
     it.each(casDesVotes(JUMELLES))(
-      '%s : retient le verdict du revote, le sert en phase de révélation',
+      '%s : retient le verdict du revote, puis Q1 · ferme la jumelle à la révélation',
       async (_id, vote) => {
         const auRevote = await repondreAuVote(vote, { phase: 'revote' });
-        deps.answers.create.mockClear();
-        const aLaRevelation = await repondreAuVote(vote, { phase: 'revele' });
 
         expect(auRevote).toEqual(VERDICT_RETENU);
-        expect(aLaRevelation).toEqual(verdictEnregistre());
+        await expect(
+          repondreAuVote(vote, { phase: 'revele', revele: true }),
+        ).rejects.toThrow(PhaseFermeeError);
       },
     );
 

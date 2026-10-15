@@ -20,6 +20,7 @@ export type EcranDeRecit = Extract<
   { readonly brique: 'fp-story' }
 >;
 export type SocleDEcran = Omit<EcranDeRecit, 'brique' | 'proprietes'>;
+type SocleNomme = Pick<SocleDEcran, 'screenId' | 'titre' | 'concepts'>;
 type ReserveDuRecit = Omit<EcranDeRecit['proprietes'], 'presentation'>;
 type EcranDeTri = Extract<EcranDuCours, { readonly brique: 'fp-cardsort' }>;
 type ProprietesDeClassement = EcranDeTri['proprietes'];
@@ -88,11 +89,7 @@ export function tempsDeLExercice(reflexion: number, travail: number): string {
 }
 
 export function pulsation(
-  {
-    screenId,
-    titre,
-    concepts,
-  }: Pick<SocleDEcran, 'screenId' | 'titre' | 'concepts'>,
+  { screenId, titre, concepts }: SocleNomme,
   sondage: EcranDePulsation['proprietes']['sondage'],
   ...notesDuJalon: string[]
 ): EcranDePulsation {
@@ -279,6 +276,14 @@ export interface TempsDeCorrection {
   readonly notes: AuMoinsUnModifiable<string>;
 }
 
+export const CORRECTION_AVANT_LA_PREMIERE_PAUSE: TempsDeCorrection = {
+  minutes: 2,
+  notes: [
+    CORRIGER_PAR_LA_MOINS_REUSSIE_SOUS_SON_SCORE,
+    'Transition : jalon 1, puis pause de 15 minutes.',
+  ],
+};
+
 function annoncerLaCorrection(notes: string, minutes: number): string {
   return notes.replace(
     /^(• Temps : réflexion \d+ min · travail \d+ min)$/m,
@@ -424,11 +429,7 @@ export function ecranDeRappel(
 }
 
 export function ficheMemo(
-  {
-    screenId,
-    titre,
-    concepts,
-  }: Pick<SocleDEcran, 'screenId' | 'titre' | 'concepts'>,
+  { screenId, titre, concepts }: SocleNomme,
   items: readonly unknown[],
 ): EcranDeRecit {
   return ecranV2(
@@ -451,6 +452,46 @@ export function ficheMemo(
       items,
     },
   );
+}
+
+export interface ImageDIllustration {
+  readonly fichier: string;
+  readonly imageAlt: string;
+}
+
+export function ecranDIllustration(
+  { screenId, titre, concepts }: SocleNomme,
+  dossier: string,
+  { fichier, imageAlt }: ImageDIllustration,
+  notes: AuMoinsUnModifiable<string>,
+): EcranDeRecit {
+  return ecranV2(
+    {
+      screenId,
+      titre,
+      diffusion: 'catalogue',
+      dureeMinutes: 1,
+      concepts,
+      notes: puces(...notes),
+    },
+    'illustration',
+    { image: `${dossier}/${fichier}`, imageAlt },
+  );
+}
+
+export function mediasDesIllustrations(
+  dossier: string,
+  illustrations: readonly (readonly [string, string, string])[],
+): ContenuDeCours['medias'] {
+  return illustrations.map(([id, fichier, titre]) => ({
+    id,
+    chemins: [`${dossier}/${fichier}`],
+    pageSource: null,
+    auteur: 'Asili Design',
+    date: '2026',
+    licence: 'CC BY-SA 4.0',
+    attribution: `${titre} · Asili Design, 2026 · CC BY-SA 4.0`,
+  }));
 }
 
 export function controle(reference: string, formuleReference: string) {

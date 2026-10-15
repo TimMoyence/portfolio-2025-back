@@ -351,7 +351,7 @@ const proprietesCas = z
   .object({
     metier: texte,
     situation: texte,
-    geste: texte,
+    geste: texte.nullable(),
     consequence: texte.nullable(),
     questionsLibres: auMoinsUn(questionLibre).optional(),
     ...communes,
@@ -846,7 +846,7 @@ const proprietesBillet = z
 const proprietesQuestionnaire = z
   .object({
     intitule: texte,
-    consigne: texte,
+    consigne: texte.optional(),
     regime: z.enum(REGIMES_DE_VERROU),
     ordre: z.enum(['fixe', 'melange']),
     questions: auMoinsUn(z.union([voteStocke, numeriqueStockee])),

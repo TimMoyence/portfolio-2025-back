@@ -206,9 +206,9 @@ continue de 6 minutes au plus (`fp-worked` est interactif).
 Trois règles communes à tous les cours, vérifiées dans `StructureCours.ts`, ont ajusté l'acte 1
 après la validation du brainstorming :
 
-- un cours qui pose des questions **ouvre par un rappel `fp-recall`** et **se clôt par un
-  `fp-exit`** : A1-01 devient un rappel noté sur la recopie d'une formule, le courriel passe en
-  A1-02 ;
+- un cours qui pose des questions **se clôt par un `fp-exit`** ; il devait aussi, jusqu'au
+  15/10, **ouvrir par un rappel `fp-recall`** : A1-01 est devenu un rappel noté sur la recopie
+  d'une formule, le courriel est passé en A1-02 ;
 - une suite d'exercices notés consécutifs dure **au moins 8 minutes**, et un exercice noté
   **au plus 15 minutes**, correction comprise : A1-07 + A1-08 passent de 7 à 8 minutes, puis à
   10 à la relecture du 11/10 (§ 2.3) ;
