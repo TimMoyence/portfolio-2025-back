@@ -72,6 +72,7 @@ describe('AllExceptionsFilter', () => {
       detail: MESSAGE_DEPENDANCE_INJOIGNABLE,
     });
     expect(erreurs()).toHaveBeenCalled();
+    expect(erreurs().mock.contexts).toEqual([filter['logger']]);
   });
 
   const erreurDuParseurDeCorps = (status: number, message: string) =>

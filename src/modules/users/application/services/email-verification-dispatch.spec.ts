@@ -64,5 +64,6 @@ describe('EnvoiDeVerificationEmail', () => {
     expect(erreurs()).toHaveBeenCalledWith(
       'Echec du renvoi for eve@example.com: Error: smtp',
     );
+    expect(erreurs().mock.contexts).toEqual([logger]);
   });
 });

@@ -49,6 +49,7 @@ describe('RefreshTokenCleanupService', () => {
       expect(journaux()).toHaveBeenCalledWith(
         `Purgé ${purges} refresh token(s) expiré(s)`,
       );
+      expect(journaux().mock.contexts).toEqual([service['logger']]);
     });
 
     it('devrait propager l erreur si purgeExpired echoue', async () => {
