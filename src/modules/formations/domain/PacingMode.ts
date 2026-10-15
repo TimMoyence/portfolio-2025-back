@@ -1,10 +1,10 @@
-import type { FreeRange } from 'portfolio-2025-partage/contrats';
+import type { FreeRange } from './contrats/contrat-de-l-api';
 
 export {
   PACING_MODES,
   type FreeRange,
   type PacingMode,
-} from 'portfolio-2025-partage/contrats';
+} from './contrats/contrat-de-l-api';
 
 export function isFreeRangeValid(
   range: FreeRange,

@@ -1,6 +1,6 @@
-import type { Tolerance } from 'portfolio-2025-partage/contrats';
+import type { Tolerance } from './contrats/contrat-de-l-api';
 
-export type { Tolerance } from 'portfolio-2025-partage/contrats';
+export type { Tolerance } from './contrats/contrat-de-l-api';
 
 export const NE_SAIT_PAS = '__je_ne_sais_pas__';
 

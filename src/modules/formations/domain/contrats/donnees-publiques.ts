@@ -1,7 +1,4 @@
-import type {
-  MetadonneesBrique,
-  RegimeVerrou,
-} from 'portfolio-2025-partage/contrats';
+import type { MetadonneesBrique, RegimeVerrou } from './contrat-de-l-api';
 import type { AuMoinsUn } from '../../../../common/domain/au-moins-un';
 import type { CasProfessionnel } from '../cours/Cours';
 import type {
@@ -10,7 +7,7 @@ import type {
   ProprietesExposition,
 } from './cours';
 
-export type { MetadonneesBrique } from 'portfolio-2025-partage/contrats';
+export type { MetadonneesBrique } from './contrat-de-l-api';
 
 export interface OptionPublique {
   readonly id: string;

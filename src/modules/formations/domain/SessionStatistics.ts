@@ -1,4 +1,4 @@
-import type { StatistiquesSeance } from 'portfolio-2025-partage/contrats';
+import type { StatistiquesSeance } from './contrats/contrat-de-l-api';
 import { estAuMoinsUn } from '../../../common/domain/au-moins-un';
 import { arrondi } from '../../../common/domain/nombres/arrondi';
 import {
@@ -18,7 +18,7 @@ const {
   statistiquesSurQuestionsNotees,
 } = REGLE_DE_NOTATION;
 
-export type { StatistiquesSeance } from 'portfolio-2025-partage/contrats';
+export type { StatistiquesSeance } from './contrats/contrat-de-l-api';
 
 export function calculerStatistiquesSeance(
   participants: readonly RapportParticipant[],

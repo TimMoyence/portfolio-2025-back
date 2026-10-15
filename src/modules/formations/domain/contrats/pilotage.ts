@@ -3,7 +3,7 @@ import type {
   FreeRange,
   PacingMode,
   VotePhase,
-} from 'portfolio-2025-partage/contrats';
+} from './contrat-de-l-api';
 import type { ValeurReponse } from './resultats';
 
 export {
@@ -11,7 +11,7 @@ export {
   PHASES_DE_VOTE,
   type EtatPulse,
   type VotePhase,
-} from 'portfolio-2025-partage/contrats';
+} from './contrat-de-l-api';
 
 export interface PilotageEcran {
   readonly phase?: VotePhase;

@@ -7,7 +7,7 @@ import type {
   StatistiquesSeance,
   TypeQuestion,
   ValeurProduction,
-} from 'portfolio-2025-partage/contrats';
+} from './contrat-de-l-api';
 import type { AnswerValue } from '../GradingCore';
 import type { AnswerRecord as AnswerRecordServi } from '../IAnswers.repository';
 import type {
@@ -26,7 +26,7 @@ export type {
   ResultatsSeance,
   ResumeBareme,
   ValeurProduction,
-} from 'portfolio-2025-partage/contrats';
+} from './contrat-de-l-api';
 
 export type ValeurReponse = AnswerValue | ValeurProduction;
 
