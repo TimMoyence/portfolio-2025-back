@@ -2352,7 +2352,7 @@ Les formes exactes des données publiques sont au § 9.4, les corrigés au § 9.
   réversible en quelques millisecondes, et détient les fragments. Le poste ne reçoit plus que le
   contrat public.
 - **Correction serveur** : `POST …/escape/:parcoursId/tentatives` ; saisie lue par
-  `lireNombreSaisiAvecUnite` du paquet (`portfolio-2025-partage/formule`, § 9.2) ; une saisie équivalente à une
+  `lireNombreSaisiAvecUnite` du moteur de formules (`Formule.ts` du domaine, § 9.2) ; une saisie équivalente à une
   tentative déjà faite ne consomme rien ; incrément atomique plafonné à 10 ; une énigme s’ouvre quand
   la précédente est résolue **ou** que ses 10 tentatives sont épuisées (sans fragment : le code final
   reste alors incomplet) ; énigme non ouverte → 409 `ENIGME_VERROUILLEE` ; plafond atteint → 409
@@ -2517,7 +2517,7 @@ Les formes exactes des données publiques sont au § 9.4, les corrigés au § 9.
 | B3  | **Questions stockées**                                                                        | `VoteStockee` (options `{ id, libelle, confusion }`, `id = slugOption(libelle)`, une seule option à `confusion: null`) et `NumeriqueStockee`, converties par `questionVote` / `questionNumerique` avec des données constantes ; `Tirage` mélange l’ordre des options par graine mais garde leurs identifiants stables                                                                                                                                                                                                                                                                                                                                                                                 | `CoursStocke.ts`, `Cours.ts`, `Tirage.ts` (l. 364-388)                                                                                                     |
 | B4  | **Questions de production et barème v2**                                                      | `Question = QuestionNumerique \| QuestionVote \| QuestionProduction` ; `TypeQuestion` ; `Bareme = BaremeV1 \| BaremeV2` (v2 : `ecranId`, `rangEcran`, `ouverture`, `origine`, solutions communes, écarts par graine, corrigés de production) ; `enregistrerQuestionAttachee` en aiguillage exhaustif (`switch` + `never`, `Tirage.ts` l. 165-212, l. 193 aujourd’hui cassante) ; `corrigesDe` limité aux votes et numériques (`DeroulePresentateur.ts` l. 78-90) ; `SessionReport`, `ResultatsSeance`, `SubmitAnswer` adaptés ; banque de rappel projetée en privé par graine avec un générateur dérivé (`TirageDuCours.banque`, jamais dans `sujet`) ; `ordre: 'fixe'` respecté (`Tirage.ts` l. 272) | `Cours.ts`, `Bareme.ts`, `OuvertureTirages.ts`, `Tirage.ts`, `DeroulePresentateur.ts`, `SessionReport.ts`, `ResultatsSeance.ts`, `SubmitAnswer.useCase.ts` |
 | B5  | **Route des productions**                                                                     | `POST /formations/sessions/:id/productions` ; `ValeurProduction` (feuille, tableau, classement, ou « je ne sais pas ») validée contre le plan (noms de cellules dans la grille, cellules verrouillées ignorées, ≤ 200 caractères, valeurs finies, chaque carte classée une fois ; identifiant du plan = identifiant de la question) ; production sans aucune saisie → 400 `PRODUCTION_VIDE` ; une production par question                                                                                                                                                                                                                                                                             | nouveau `SubmitProduction.useCase.ts`, DTO, `FormationsStudent.controller.ts`                                                                              |
-| B6  | **Moteur de formules canonique**                                                              | paquet `portfolio-2025-partage` (TypeScript pur, partagé avec le front) : mémoïsation par cellule, AST en cache, budget de 20 000 nœuds (dépassement → `#VALEUR!`), formule ≤ 200 caractères, profondeur ≤ 64 ; `formeR1C1` ; compatibilité tableur (M13) ; `no-eval`, `no-new-func` ; vecteurs du paquet (R16)                                                                                                                                                                                                                                                                                                                                                                                       | `src/formule.ts` du paquet, ses specs et `test/vecteurs.json`                                                                                              |
+| B6  | **Moteur de formules canonique**                                                              | domaine `formations` du back (TypeScript pur, sans Nest ni TypeORM) : mémoïsation par cellule, AST en cache, budget de 20 000 nœuds (dépassement → `#VALEUR!`), formule ≤ 200 caractères, profondeur ≤ 64 ; `formeR1C1` ; compatibilité tableur (M13) ; `no-eval`, `no-new-func` ; vecteurs du moteur (R16)                                                                                                                                                                                                                                                                                                                                                                                           | `Formule.ts`, ses specs et `formule.vecteurs.json`                                                                                                         |
 | B7  | **Énigmes**                                                                                   | tables `formation_escape_progress` (compteur atomique plafonné) et `formation_escape_attempts` (journal) ; `POST …/escape/:parcoursId/tentatives` ; progression dans `GET …/moi` et dans le flux formateur                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | use cases, repositories, entités, migrations générées                                                                                                      |
 | B8  | **Jalons**                                                                                    | table `formation_pulses` (clé HMAC du participant, `CHECK etat`, cascade) ; `PUT …/pulses/:sondageId` ; agrégat au flux et au rapport                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | idem                                                                                                                                                       |
 | B9  | **Rappels**                                                                                   | `choisirRappels` ; table `formation_rappels_servis` ; `GET …/rappels` ; `GET …/rappels/synthese` ; banque au barème                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | nouveau `LireRappels.useCase.ts`, `SyntheseRappels.useCase.ts`                                                                                             |
@@ -3374,7 +3374,7 @@ document). Premières apparitions publiques des réponses numériques, toutes **
 | AC-08 | `ouvrirTirages(V3)` produit 61 graines non ambiguës ; barème v2 ≤ 400 Ko                                                                                                                                                                                                                  | test                                                                                                                                  |
 | AC-09 | chaque piège porte une confusion de la banque ; chacune des 38 confusions a une remédiation vers un écran existant ; chaque identifiant d’option vaut `slugOption(libelle)`                                                                                                               | règles `reference-inconnue`, `options-neutres`                                                                                        |
 | AC-10 | les valeurs du § 5.8 sont celles du fichier de données (un test recalcule les corrigés depuis les données brutes)                                                                                                                                                                         | test                                                                                                                                  |
-| AC-11 | la feuille A4-02 corrigée par le moteur du paquet partagé donne les 17 valeurs du § 5.6 ; le back et le front dépendent de la même archive du paquet, dont la CI exécute les vecteurs                                                                                                     | vecteurs du paquet ; `verifier-paquet-partage` (R16)                                                                                  |
+| AC-11 | la feuille A4-02 corrigée par le moteur de formules du back donne les 17 valeurs du § 5.6 ; jest du back exécute les vecteurs du moteur                                                                                                                                                   | `Formule.vecteurs.spec.ts` (R16)                                                                                                      |
 | AC-12 | les versions 1 et 2 du B2 restent lisibles et servies ; leurs solutions et libellés d’options sur 10 graines figées sont inchangés après chaque lot                                                                                                                                       | tests dorés (R17)                                                                                                                     |
 
 ### 7.2 Confidentialité et intégrité
@@ -3418,7 +3418,7 @@ document). Premières apparitions publiques des réponses numériques, toutes **
 | ----- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
 | AC-33 | rechargement pendant une production : brouillon restauré ; après envoi : verdict restauré, bouton désactivé, message « déjà répondu » ; deux séances successives sur le même navigateur : aucune reprise croisée | Playwright                                      |
 | AC-34 | budgets : 35 lectures simultanées du sujet < 1 s au 95e centile ; 35 productions simultanées < 3 s ; poussée de `resultats` < 200 ms, au plus une par seconde ; sujet V3 ≤ 150 Ko                                | `test/formations-charge.db-integration.spec.ts` |
-| AC-35 | moteur de formules : vecteurs adverses (chaîne de 26 doublements, 26 `SOMME` croisées, cycle de 26 maillons) < 50 ms sous Node, mesuré par la CI du paquet partagé                                               | tests unitaires                                 |
+| AC-35 | moteur de formules : vecteurs adverses (chaîne de 26 doublements, 26 `SOMME` croisées, cycle de 26 maillons) < 50 ms sous Node, mesuré par `Formule.budget.spec.ts`                                              | tests unitaires                                 |
 | AC-36 | synchronisation : une empreinte inchangée ne publie rien ; une empreinte changée publie le contenu corrigé ; les séances déjà ouvertes gardent le contenu de leur ouverture                                      | test base et E2E                                |
 | AC-37 | capacité : au-delà de la capacité de la séance → 409 `SEANCE_COMPLETE` ; un participant évincé perd son accès, sa place et sa graine sont libérées                                                               | tests HTTP                                      |
 | AC-38 | chaque libellé runtime a une traduction anglaise ; aucun texte de brique en dur hors `$localize`                                                                                                                 | test et extraction XLF                          |
@@ -3515,17 +3515,17 @@ autre échange. Les types sont normatifs (noms, champs, optionalité) ; les comm
 ne font que les expliquer. Toute évolution d’un contrat passe par une modification de ce document
 avant le code.
 
-Depuis la v1.1.0 du paquet `portfolio-2025-partage`, les contrats lus des deux côtés ne sont plus
-recopiés : l’entrée `portfolio-2025-partage/contrats` exporte les listes gelées (`TYPES_QUESTION`,
-`DIFFUSIONS`, `ETATS_PULSE`, `PHASES_DE_VOTE`, `PACING_MODES`, `MODALITES`, `REGIMES_DE_VERROU`) et
-leurs types, ainsi que `FreeRange`, `MetadonneesBrique`, `Tolerance`, `FormeFormule`,
-`ValeurProduction`, `ConfusionComptee`, `Decompte`, `DecomptesParCle`, `ResultatQuestion`,
-`ResultatsSeance`, `StatistiquesSeance`, `ComptesJalon`, `ProgressionEnigme`, `ResumeBareme`,
-`ResultatsEnDirect` et `RegleDeNotation`. Chaque dépôt les importe depuis le paquet là où il les
-emploie ; deux formes restent écrites en toutes lettres, sous la garde du compilateur : le décompte
-par clé que rend `ResultatsSeance.ts` côté back (`Readonly<Record<string, Decompte>>`, la forme de
-`DecomptesParCle`) et `LockRegime` du verrou d’écran côté front (la forme de `RegimeVerrou`). Les
-blocs de ce paragraphe restent la description normative, le paquet en est la seule implémentation.
+Le back porte ces contrats dans `src/modules/formations/domain/contrats/contrat-de-l-api.ts`, qui
+exporte les listes gelées (`TYPES_QUESTION`, `DIFFUSIONS`, `ETATS_PULSE`, `PHASES_DE_VOTE`,
+`PACING_MODES`, `MODALITES`, `REGIMES_DE_VERROU`) et leurs types, ainsi que `FreeRange`,
+`MetadonneesBrique`, `Tolerance`, `FormeFormule`, `ValeurProduction`, `ConfusionComptee`, `Decompte`,
+`DecomptesParCle`, `ResultatQuestion`, `ResultatsSeance`, `StatistiquesSeance`, `ComptesJalon`,
+`ProgressionEnigme`, `ResumeBareme`, `ResultatsEnDirect` et `RegleDeNotation`. Le domaine et les DTO
+du back les importent de ce fichier ; deux formes restent écrites en toutes lettres, sous la garde du
+compilateur : le décompte par clé que rend `ResultatsSeance.ts` côté back
+(`Readonly<Record<string, Decompte>>`, la forme de `DecomptesParCle`) et `LockRegime` du verrou
+d’écran côté front (la forme de `RegimeVerrou`). Les blocs de ce paragraphe restent la description
+normative, ce fichier en est l’implémentation au back.
 Écarts tranchés au passage :
 
 - `Tolerance` est entièrement en lecture seule (le back n’écrivait jamais dedans).
@@ -3587,8 +3587,8 @@ instance, code? }`. Les erreurs de validation des DTO restent celles de Nest (40
   `fp-recall` → `<questionId>:rappel` ; texte du billet → `<billetId>` ; étape rédigée de `fp-worked` →
   `<exempleId>:<etapeId>` et son explication → `<exempleId>:<etapeId>:pourquoi` ; défi → `<defiId>`.
   `activitesLibres(cours)` renvoie, par écran, la liste de ces identifiants.
-- **Lecture d’une saisie numérique** (paquet, entrée `portfolio-2025-partage/formule`, une seule
-  implémentation pour le back et le front) : `lireNombreSaisi(texte): number | null` retire tout
+- **Lecture d’une saisie numérique** (moteur de formules, `Formule.ts` du domaine, une seule
+  implémentation au back) : `lireNombreSaisi(texte): number | null` retire tout
   espace (ordinaire, insécable, fine), lit la virgule ou le point décimal, `+`, `-` et `−` (U+2212) en
   tête, et refuse tout autre caractère (`null`), comme toute écriture qui ne donne pas un nombre fini ;
   `-0` se lit `0`. C’est la lecture des cellules, des tables et du champ numérique du front.
@@ -4686,10 +4686,10 @@ exactement la forme des § 9.3 et § 9.6 ; la fabrique `createFormationsPortStub
 méthodes. Les gardes du flux (`estEtatSession`, `estResultatQuestion`) acceptent l’absence des
 nouveaux champs (déploiement du front avant le back).
 
-### 9.9 Moteur de formules et vecteurs partagés
+### 9.9 Moteur de formules et ses vecteurs
 
 ```ts
-// paquet portfolio-2025-partage, entrée « portfolio-2025-partage/formule » (back et front)
+// src/modules/formations/domain/cours/Formule.ts (moteur de formules du back)
 export type CodeErreur = '#REF!' | '#DIV/0!' | '#NOM?' | '#VALEUR!';
 export interface ResultatFormule {
   readonly valeur: number | null;
@@ -4735,12 +4735,11 @@ export function formeR1C1(formule: string, cellule: string): string | null; // n
   séparateur `;`. `evaluerExpression` arrondit son résultat au millionième.
 - **R1C1** : référence relative → `R[Δligne]C[Δcolonne]` (`R` ou `C` seul si le décalage est nul) ;
   absolue → `R<ligne>C<colonne>` ; mixte en conséquence ; noms de fonctions et séparateurs conservés.
-- **Un seul moteur** : le paquet `portfolio-2025-partage` (dépôt public, compilé en ESM et en CJS)
-  est publié en archive attachée à une release GitHub ; le back et le front dépendent de l’URL de
-  cette archive. `scripts/verifier-paquet-partage.mjs` (CI du back) échoue si les deux
-  `package.json` ne pointent pas la même archive : la parité tient par construction.
-- **Vecteurs** : `test/vecteurs.json` du paquet = `{ vecteurs: { id, type: 'feuille' | 'expression'
-| 'r1c1', entree, attendu }[] }`, exécutés par la CI du paquet avant chaque release. Couverture
+- **Un seul moteur** : `src/modules/formations/domain/cours/Formule.ts`, dans le domaine
+  `formations` du back (TypeScript pur, sans Nest ni TypeORM) ; il corrige les feuilles, les
+  tableaux et les énigmes.
+- **Vecteurs** : `formule.vecteurs.json`, à côté du moteur = `{ vecteurs: { id, type: 'feuille' |
+'expression' | 'r1c1', entree, attendu }[] }`, exécutés par jest (`Formule.vecteurs.spec.ts`). Couverture
   minimale : erreurs (`#REF!`, `#DIV/0!`, `#NOM?`, `#VALEUR!`), `$`, plages inversées et
   hors grille, cycles, budgets (chaîne de 26 doublements, 26 `SOMME` croisées, cycle de 26 maillons),
   décimales françaises, `ARRONDI` à mi-chemin, associativité de `^`, `SOMME` sur du texte, arrondi de
