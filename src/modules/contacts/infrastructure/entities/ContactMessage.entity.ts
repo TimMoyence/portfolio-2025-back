@@ -1,15 +1,9 @@
-import { ColonnesDeProvenance } from '../../../../common/infrastructure/typeorm/ColonnesDeProvenance';
-import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
+import { ColonnesDeRequete } from '../../../../common/infrastructure/typeorm/ColonnesDeProvenance';
+import { Column, Entity, Index } from 'typeorm';
 
 @Entity({ name: 'contacts' })
-export class ContactMessagesEntity extends ColonnesDeProvenance {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
-  @Index()
-  @Column({ type: 'uuid' })
-  requestId: string;
-
+@Index(['requestId'])
+export class ContactMessagesEntity extends ColonnesDeRequete {
   @Column('text')
   name: string;
 

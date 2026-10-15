@@ -1,4 +1,5 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
+import { enArrierePlan } from '../../../common/application/en-arriere-plan';
 import type { IAuditNotifierPort } from '../domain/IAuditNotifier.port';
 import type { IAuditQueuePort } from '../domain/IAuditQueue.port';
 import { AuditRequestResponse } from '../domain/AuditRequestResponse';
@@ -38,11 +39,11 @@ export class CreateAuditRequestsUseCase {
 
     await this.queueService.enqueue(response.auditId);
 
-    void this.notifier
-      .sendAuditNotification(request)
-      .catch((err: unknown) =>
-        this.logger.warn('Audit request notification failed', err),
-      );
+    enArrierePlan(
+      this.notifier.sendAuditNotification(request),
+      'Audit request notification failed',
+      this.logger,
+    );
 
     return response;
   }

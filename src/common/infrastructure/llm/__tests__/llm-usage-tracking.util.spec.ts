@@ -1,3 +1,7 @@
+import {
+  createMockLlmMetrics,
+  type MockLlmMetrics,
+} from '../../../../../test/factories/metrics.factory';
 import type { MetricsService } from '../../../interfaces/metrics/metrics.service';
 import {
   invokeWithLlmTracking,
@@ -16,14 +20,6 @@ const CONTEXT: LlmInvocationContext = {
   locale: 'fr',
   model: 'gpt-test',
 };
-
-function createMockMetrics() {
-  return {
-    llmCallsTotal: { inc: jest.fn() },
-    llmLatencySeconds: { observe: jest.fn() },
-    llmTokensTotal: { inc: jest.fn() },
-  };
-}
 
 function buildUsageMetadataOutput(overrides: Record<string, unknown> = {}) {
   return {
@@ -44,10 +40,7 @@ function buildUsageMetadataOutput(overrides: Record<string, unknown> = {}) {
   };
 }
 
-async function runTracked(
-  output: unknown,
-  metrics: ReturnType<typeof createMockMetrics> | null,
-) {
+async function runTracked(output: unknown, metrics: MockLlmMetrics | null) {
   const invoke = jest.fn(
     (_messages: unknown, options: LlmInvocationOptions): Promise<string> => {
       const [callback] = (options.callbacks ??
@@ -79,7 +72,7 @@ describe('invokeWithLlmTracking', () => {
   });
 
   it('retourne le resultat de l’invocation telle quelle', async () => {
-    const metrics = createMockMetrics();
+    const metrics = createMockLlmMetrics();
 
     const { result } = await runTracked(buildUsageMetadataOutput(), metrics);
 
@@ -87,7 +80,7 @@ describe('invokeWithLlmTracking', () => {
   });
 
   it('compte l’appel et observe la latence en succes', async () => {
-    const metrics = createMockMetrics();
+    const metrics = createMockLlmMetrics();
     figerLHorloge(1_000, 1_000, 3_500, 3_500);
 
     await runTracked(buildUsageMetadataOutput(), metrics);
@@ -105,7 +98,7 @@ describe('invokeWithLlmTracking', () => {
   });
 
   it('extrait les tokens du format usage_metadata (LangChain 2024+)', async () => {
-    const metrics = createMockMetrics();
+    const metrics = createMockLlmMetrics();
 
     await runTracked(buildUsageMetadataOutput(), metrics);
 
@@ -120,7 +113,7 @@ describe('invokeWithLlmTracking', () => {
   });
 
   it('extrait les tokens du format tokenUsage (OpenAI legacy)', async () => {
-    const metrics = createMockMetrics();
+    const metrics = createMockLlmMetrics();
 
     await runTracked(
       {
@@ -142,7 +135,7 @@ describe('invokeWithLlmTracking', () => {
   });
 
   it('compte les tokens lus en cache quand le detail est fourni', async () => {
-    const metrics = createMockMetrics();
+    const metrics = createMockLlmMetrics();
 
     await runTracked(
       buildUsageMetadataOutput({ input_token_details: { cache_read: 64 } }),
@@ -156,7 +149,7 @@ describe('invokeWithLlmTracking', () => {
   });
 
   it('n’emet aucune metrique de tokens sur un payload sans usage', async () => {
-    const metrics = createMockMetrics();
+    const metrics = createMockLlmMetrics();
 
     await runTracked({ generations: [[{ message: {} }]] }, metrics);
 
@@ -170,7 +163,7 @@ describe('invokeWithLlmTracking', () => {
     expect(result).toBe('resultat');
   });
 
-  const invoquerEnEchec = (metrics: ReturnType<typeof createMockMetrics>) =>
+  const invoquerEnEchec = (metrics: MockLlmMetrics) =>
     invokeWithLlmTracking(
       jest.fn().mockRejectedValue(new Error('LLM down')),
       ['message'],
@@ -179,13 +172,13 @@ describe('invokeWithLlmTracking', () => {
     );
 
   it('propage l’erreur d’invocation sans avaler l’exception', async () => {
-    await expect(invoquerEnEchec(createMockMetrics())).rejects.toThrow(
+    await expect(invoquerEnEchec(createMockLlmMetrics())).rejects.toThrow(
       'LLM down',
     );
   });
 
   it('compte l’appel et observe la latence en secondes en erreur', async () => {
-    const metrics = createMockMetrics();
+    const metrics = createMockLlmMetrics();
     figerLHorloge(1_000, 3_500);
 
     await expect(invoquerEnEchec(metrics)).rejects.toThrow('LLM down');

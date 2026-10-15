@@ -1,4 +1,5 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
+import { enArrierePlan } from '../../../common/application/en-arriere-plan';
 import type { ILeadMagnetNotifier } from '../domain/ILeadMagnetNotifier';
 import type { ILeadMagnetRequestRepository } from '../domain/ILeadMagnetRequestRepository';
 import type { IToolkitContentAssembler } from '../domain/IToolkitContentAssembler';
@@ -45,8 +46,10 @@ export class RequestToolkitUseCase {
     const savedRequest = await this.repo.create(domainRequest);
     response.accessToken = savedRequest.accessToken;
 
-    void this.generateAndSend(savedRequest).catch((err: unknown) =>
-      this.logger.warn('Lead magnet email failed', err),
+    enArrierePlan(
+      this.generateAndSend(savedRequest),
+      'Lead magnet email failed',
+      this.logger,
     );
 
     return response;

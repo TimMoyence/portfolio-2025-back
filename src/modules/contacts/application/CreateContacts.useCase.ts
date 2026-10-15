@@ -1,4 +1,5 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
+import { enArrierePlan } from '../../../common/application/en-arriere-plan';
 import type { IContactNotifier } from '../domain/IContactNotifier';
 import type { IContactsRepository } from '../domain/IContacts.repository';
 import { MessageContactResponse } from '../domain/MessageContactResponse';
@@ -21,11 +22,11 @@ export class CreateContactsUseCase {
     const contact = ContactMapper.fromCreateCommand(data);
     const response = await this.repo.create(contact);
 
-    void this.notifier
-      .sendContactNotification(contact)
-      .catch((err: unknown) =>
-        this.logger.warn('Contact notification failed', err),
-      );
+    enArrierePlan(
+      this.notifier.sendContactNotification(contact),
+      'Contact notification failed',
+      this.logger,
+    );
 
     return response;
   }

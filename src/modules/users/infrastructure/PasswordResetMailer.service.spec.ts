@@ -1,4 +1,4 @@
-import { Logger } from '@nestjs/common';
+import { espionnerLeLogger } from '../../../../test/helpers/silence-nest-logger';
 import type { PasswordResetNotificationPayload } from '../domain/IPasswordResetNotifier';
 import {
   attendreScriptEchappe,
@@ -93,7 +93,7 @@ describe('PasswordResetMailerService', () => {
 
     it('devrait logger un warn et ne rien envoyer sans config SMTP', async () => {
       cleanupEnv = retirerSmtpEnv();
-      const warnSpy = jest.spyOn(Logger.prototype, 'warn').mockImplementation();
+      const warnSpy = espionnerLeLogger('warn');
 
       await new PasswordResetMailerService().sendPasswordResetEmail(
         buildPayload(),

@@ -4,6 +4,10 @@ import {
   buildAbonnePersiste,
   type PreparationDAbonne,
 } from '../factories/newsletter-subscriber.factory';
+import {
+  attendreLAvertissement,
+  espionnerLesAvertissements,
+} from './avertissements';
 import { flushPromises } from './flush-promises';
 
 const TOKEN_INCONNU = '00000000-0000-0000-0000-000000000000';
@@ -33,4 +37,20 @@ export async function executerSurAbonneTrouve<R>(
   const resultat = await executer(abonne);
   await flushPromises();
   return resultat;
+}
+
+type EffetEnEchec = () => { mockRejectedValueOnce(erreur: Error): unknown };
+
+export function journaliseLaCauseDeChaqueEffet(
+  effets: Array<[echec: string, effet: EffetEnEchec]>,
+  executer: () => Promise<unknown>,
+): void {
+  const avertissements = espionnerLesAvertissements();
+  it.each(effets)('journalise « %s » avec sa cause', async (echec, effet) => {
+    effet().mockRejectedValueOnce(new Error('panne'));
+
+    await executer();
+
+    await attendreLAvertissement(avertissements, `${echec}: panne`);
+  });
 }

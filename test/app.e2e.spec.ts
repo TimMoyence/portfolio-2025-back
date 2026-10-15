@@ -127,10 +127,22 @@ describe('API coherence and connectivity (e2e transportless)', () => {
   it('creates a contact from a validated payload and returns HTTP contract shape', async () => {
     const dto = await validateBody(CONTACT_PAYLOAD, ContactRequestDto);
 
-    const response = await contactsController.create(dto);
+    const req = makeRequestMock(
+      { 'user-agent': 'e2e-test-agent', referer: 'https://example.com/fr' },
+      RESOLVED_CLIENT_IP,
+    );
+
+    const response = await contactsController.create(dto, req);
 
     expect(response).toEqual(CONTACT_CREATED_RESPONSE);
     expect(createContactsUseCase.execute).toHaveBeenCalledTimes(1);
+    expect(createContactsUseCase.execute).toHaveBeenCalledWith(
+      expect.objectContaining({
+        ip: RESOLVED_CLIENT_IP,
+        userAgent: 'e2e-test-agent',
+        referer: 'https://example.com/fr',
+      }),
+    );
   });
 
   it('rejects non-whitelisted fields with global validation policy', async () => {

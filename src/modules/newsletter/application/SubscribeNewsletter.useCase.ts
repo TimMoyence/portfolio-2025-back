@@ -1,7 +1,7 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { randomInt } from 'crypto';
+import { enArrierePlan } from '../../../common/application/en-arriere-plan';
 import { ResourceConflictError } from '../../../common/domain/errors/ResourceConflictError';
-import { messageDErreur } from '../../../common/domain/errors/message-d-erreur';
 import type { INewsletterMailer } from '../domain/INewsletterMailer';
 import type { INewsletterSubscriberRepository } from '../domain/INewsletterSubscriberRepository';
 import { NewsletterSubscriber } from '../domain/NewsletterSubscriber';
@@ -130,13 +130,11 @@ export class SubscribeNewsletterUseCase {
   }
 
   private sendConfirmationAsync(subscriber: NewsletterSubscriber): void {
-    void this.mailer
-      .sendConfirmation(subscriber)
-      .catch((err: unknown) =>
-        this.logger.warn(
-          `Newsletter confirmation email failed: ${messageDErreur(err)}`,
-        ),
-      );
+    enArrierePlan(
+      this.mailer.sendConfirmation(subscriber),
+      'Newsletter confirmation email failed',
+      this.logger,
+    );
   }
 
   private async padResponseTime(startMs: number): Promise<void> {

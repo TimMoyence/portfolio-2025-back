@@ -44,7 +44,7 @@ const PROMPTS_DE_SECTION = {
 
 export type SectionAPrompt = keyof typeof PROMPTS_DE_SECTION;
 
-function disclaimer(locale: AuditLocale): string {
+export function untrustedDataDisclaimer(locale: AuditLocale): string {
   return locale === 'fr'
     ? UNTRUSTED_DATA_DISCLAIMER_FR
     : UNTRUSTED_DATA_DISCLAIMER_EN;
@@ -57,7 +57,7 @@ export function buildSystemBlocks(
 ): string[] {
   const { principal, reprise } = PROMPTS_DE_SECTION[section];
   return [
-    disclaimer(locale),
+    untrustedDataDisclaimer(locale),
     principal(locale),
     ...(retryMode ? [reprise(locale)] : []),
   ];
@@ -69,7 +69,7 @@ export function buildExpertReportSystemBlocks(
   retryMode: boolean,
 ): string[] {
   return [
-    disclaimer(locale),
+    untrustedDataDisclaimer(locale),
     expertReportSystemMain(locale),
     expertReportStrictConstraint(locale),
     ...(compactMode ? [expertReportCompactConstraint(locale)] : []),

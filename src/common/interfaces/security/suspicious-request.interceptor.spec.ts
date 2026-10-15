@@ -1,4 +1,4 @@
-import { type CallHandler, Logger } from '@nestjs/common';
+import type { CallHandler } from '@nestjs/common';
 import { of, throwError } from 'rxjs';
 import { firstValueFrom, lastValueFrom } from 'rxjs';
 import {
@@ -6,6 +6,13 @@ import {
   createHttpExecutionContext,
   createRpcExecutionContext,
 } from '../../../../test/factories/execution-context.factory';
+import {
+  attendreLAvertissement,
+  espionnerLesAvertissements,
+} from '../../../../test/helpers/avertissements';
+import { sousUneDureeDe } from '../../../../test/helpers/horloge';
+import { espionnerLeLogger } from '../../../../test/helpers/silence-nest-logger';
+import { LONGUEUR_MAX_DU_NAVIGATEUR } from '../../domain/provenance';
 import { CENSURE } from '../http/url-journalisable';
 import { InMemorySecurityEventsStore } from './in-memory-security-events-store';
 import type { SecurityConfig } from './security.config';
@@ -23,6 +30,14 @@ const HEADLESS_CHROME_HEADERS = {
 const COOKIE_CONSENT_POST = {
   method: 'POST',
   url: '/api/v1/portfolio25/cookie-consents',
+};
+
+const NAVIGATEUR_DEMESURE = `HeadlessChrome/145 ${'B'.repeat(15_000)}`;
+
+const CONSENTEMENT_AU_NAVIGATEUR_DEMESURE: FakeRequest = {
+  ...COOKIE_CONSENT_POST,
+  headers: { ...HEADLESS_CHROME_HEADERS, 'user-agent': NAVIGATEUR_DEMESURE },
+  ip: '203.0.113.42',
 };
 
 function mappedIpv6(ipv4: string): string {
@@ -136,6 +151,18 @@ describe('SuspiciousRequestInterceptor', () => {
     expect(top).toHaveLength(1);
     expect(top[0].ip).toBe('203.0.113.41');
     expect(top[0].lastReasons).toContain('ua:headless-chrome');
+  });
+
+  it('garde un navigateur borne pour une requete suspecte', async () => {
+    const [trace] = await ipsTraceesApresCreation(
+      CONSENTEMENT_AU_NAVIGATEUR_DEMESURE,
+    );
+
+    expect(trace.lastReasons).toContain('ua:headless-chrome');
+    expect(trace.lastUserAgent).toHaveLength(LONGUEUR_MAX_DU_NAVIGATEUR);
+    expect(
+      NAVIGATEUR_DEMESURE.startsWith(trace.lastUserAgent.slice(0, -1)),
+    ).toBe(true);
   });
 
   it('ignore une chaine x-forwarded-for forgee au profit de req.ip', async () => {
@@ -336,9 +363,7 @@ describe('SuspiciousRequestInterceptor', () => {
   ])(
     'n enregistre ni n ecrit le jeton d un lien porte %s',
     async (_cas, url, params, cheminCensure) => {
-      const avertissements = jest
-        .spyOn(Logger.prototype, 'warn')
-        .mockImplementation(() => undefined);
+      const avertissements = espionnerLeLogger('warn');
 
       try {
         await intercept(
@@ -365,4 +390,49 @@ describe('SuspiciousRequestInterceptor', () => {
       }
     },
   );
+
+  describe('journal d une requete suspecte', () => {
+    const avertissements = espionnerLesAvertissements();
+    const requeteSuspecte = (): Promise<unknown> =>
+      intercept(
+        {
+          method: 'GET',
+          url: '/api/v1/portfolio25/inconnu',
+          headers: HEADLESS_CHROME_HEADERS,
+          ip: '203.0.113.42',
+        },
+        404,
+      );
+
+    it('journalise le navigateur borne que garde le magasin', async () => {
+      const [trace] = await ipsTraceesApresCreation(
+        CONSENTEMENT_AU_NAVIGATEUR_DEMESURE,
+      );
+
+      expect(avertissements()).toHaveBeenCalledWith(
+        expect.stringContaining(` ua="${trace.lastUserAgent}" `),
+      );
+    });
+
+    it('journalise la duree de la requete en millisecondes', async () => {
+      await sousUneDureeDe(2.5, requeteSuspecte);
+
+      expect(avertissements()).toHaveBeenCalledWith(
+        expect.stringContaining(' rtMs=2.5 '),
+      );
+    });
+
+    it('journalise la cause d un enregistrement rate', async () => {
+      jest
+        .spyOn(store, 'recordEvent')
+        .mockRejectedValueOnce(new Error('redis down'));
+
+      await requeteSuspecte();
+
+      await attendreLAvertissement(
+        avertissements,
+        '[SECURITY] store.recordEvent a echoue: redis down',
+      );
+    });
+  });
 });

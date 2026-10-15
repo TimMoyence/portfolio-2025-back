@@ -2,15 +2,32 @@ import { Logger } from '@nestjs/common';
 
 type LoggerMethod = 'log' | 'warn' | 'error' | 'debug' | 'verbose';
 
+export function espionnerLeLogger(
+  method: LoggerMethod,
+  remplacement: (message: unknown) => void = () => undefined,
+): jest.SpyInstance {
+  const espion: jest.SpyInstance = jest.spyOn(Logger.prototype, method);
+  return espion.mockImplementation(remplacement);
+}
+
+export function espionnerLeLoggerAChaqueTest(
+  method: LoggerMethod,
+): () => jest.SpyInstance {
+  let espion: jest.SpyInstance;
+  beforeEach(() => {
+    espion = espionnerLeLogger(method);
+  });
+  afterEach(() => espion.mockRestore());
+  return () => espion;
+}
+
 export function silenceNestLogger(
   methods: LoggerMethod[] = ['log', 'warn'],
 ): void {
   let spies: jest.SpyInstance[] = [];
 
   beforeAll(() => {
-    spies = methods.map((method) =>
-      jest.spyOn(Logger.prototype, method).mockImplementation(() => undefined),
-    );
+    spies = methods.map((method) => espionnerLeLogger(method));
   });
 
   afterAll(() => {

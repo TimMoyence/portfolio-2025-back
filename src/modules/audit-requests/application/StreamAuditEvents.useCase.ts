@@ -1,5 +1,6 @@
-import { Inject, Injectable, MessageEvent } from '@nestjs/common';
+import { Inject, Injectable, Logger, MessageEvent } from '@nestjs/common';
 import { Observable } from 'rxjs';
+import { messageDErreur } from '../../../common/domain/errors/message-d-erreur';
 import { estObjet } from '../../../common/domain/est-objet';
 import type { IAuditRequestsRepository } from '../domain/IAuditRequests.repository';
 import type { AuditSnapshot } from '../domain/AuditProcessing';
@@ -13,6 +14,8 @@ const HEARTBEAT_INTERVAL_MS = 15_000;
 
 @Injectable()
 export class StreamAuditEventsUseCase {
+  private readonly logger = new Logger(StreamAuditEventsUseCase.name);
+
   constructor(
     @Inject(AUDIT_REQUESTS_REPOSITORY)
     private readonly repo: IAuditRequestsRepository,
@@ -40,7 +43,7 @@ export class StreamAuditEventsUseCase {
         try {
           const audit = await this.repo.findById(auditId);
           if (!audit) {
-            subscriber.next(this.buildNotFoundEvent(auditId));
+            subscriber.next(this.buildFailedEvent(auditId));
             teardown();
             return;
           }
@@ -58,7 +61,10 @@ export class StreamAuditEventsUseCase {
             teardown();
           }
         } catch (error) {
-          subscriber.next(this.buildErrorEvent(auditId, String(error)));
+          this.logger.warn(
+            `Lecture du flux de l audit ${auditId} en echec: ${messageDErreur(error)}`,
+          );
+          subscriber.next(this.buildFailedEvent(auditId));
           teardown();
         } finally {
           busy = false;
@@ -130,7 +136,7 @@ export class StreamAuditEventsUseCase {
           status: audit.processingStatus,
           progress: audit.progress,
           done: audit.done,
-          error: audit.error,
+          error: null,
           updatedAt,
         },
       };
@@ -150,11 +156,7 @@ export class StreamAuditEventsUseCase {
     };
   }
 
-  private buildNotFoundEvent(auditId: string): MessageEvent {
-    return this.buildErrorEvent(auditId, 'Audit not found.');
-  }
-
-  private buildErrorEvent(auditId: string, error: string): MessageEvent {
+  private buildFailedEvent(auditId: string): MessageEvent {
     return {
       type: 'failed',
       data: {
@@ -162,7 +164,7 @@ export class StreamAuditEventsUseCase {
         status: 'FAILED',
         progress: 100,
         done: false,
-        error,
+        error: null,
         updatedAt: new Date().toISOString(),
       },
     };
@@ -174,7 +176,7 @@ export class StreamAuditEventsUseCase {
       data: {
         auditId,
         status: 'TIMEOUT',
-        error: `SSE stream closed after ${SSE_GLOBAL_TIMEOUT_MS}ms`,
+        error: null,
         updatedAt: new Date().toISOString(),
       },
     };

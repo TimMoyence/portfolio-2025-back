@@ -1,4 +1,4 @@
-import { Body, Controller, HttpStatus } from '@nestjs/common';
+import { Body, Controller, HttpStatus, Req } from '@nestjs/common';
 import { CreateContactsUseCase } from '../application/CreateContacts.useCase';
 import {
   ApiBadRequestResponse,
@@ -6,6 +6,8 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import type { Request } from 'express';
+import { provenanceDeLaRequete } from '../../../common/interfaces/security/client-ip.util';
 import { FormulairePublic } from '../../../common/interfaces/security/formulaire-public.decorator';
 import { CreateContactCommand } from '../application/dto/CreateContact.command';
 import { ContactResponseDto } from './dto/contact.response.dto';
@@ -20,7 +22,10 @@ export class ContactsController {
   @ApiOperation({ summary: 'Envoyer un message de contact (acces public)' })
   @ApiCreatedResponse({ type: ContactResponseDto })
   @ApiBadRequestResponse({ description: 'Validation echouee' })
-  async create(@Body() dto: ContactRequestDto): Promise<ContactResponseDto> {
+  async create(
+    @Body() dto: ContactRequestDto,
+    @Req() req: Request,
+  ): Promise<ContactResponseDto> {
     const command: CreateContactCommand = {
       email: dto.email,
       firstName: dto.firstName,
@@ -34,6 +39,7 @@ export class ContactsController {
       termsLocale: dto.termsLocale ?? undefined,
       termsAcceptedAt: dto.termsAcceptedAt ?? undefined,
       termsMethod: dto.termsMethod ?? undefined,
+      ...provenanceDeLaRequete(req),
     };
 
     const response = await this.createUseCase.execute(command);

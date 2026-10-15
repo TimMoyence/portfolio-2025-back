@@ -1,3 +1,7 @@
+import {
+  attendreUneProvenanceBornee,
+  PROVENANCE_DEMESUREE,
+} from '../../../../test/helpers/provenance';
 import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
 import { AuditRequest } from './AuditRequest';
 
@@ -35,5 +39,17 @@ describe('AuditRequest aggregate', () => {
         locale: 'fr',
       }),
     ).toThrow(new DomainValidationError('Invalid audit contact email'));
+  });
+
+  it('borne la provenance consignée', () => {
+    attendreUneProvenanceBornee(
+      AuditRequest.create({
+        websiteName: 'Example Studio',
+        contactMethod: 'EMAIL',
+        contactValue: 'hello@example.com',
+        locale: 'fr',
+        ...PROVENANCE_DEMESUREE,
+      }),
+    );
   });
 });
