@@ -3,7 +3,10 @@ import type {
   BaremeV2,
 } from '../../src/modules/formations/domain/contrats/bareme';
 import type { Cours } from '../../src/modules/formations/domain/contrats/cours';
-import type { PilotageEcran } from '../../src/modules/formations/domain/contrats/pilotage';
+import type {
+  PilotageEcran,
+  PilotageServi,
+} from '../../src/modules/formations/domain/contrats/pilotage';
 import { ouvrirTirages } from '../../src/modules/formations/domain/cours/OuvertureTirages';
 import { buildCoursDuContenu } from './contenus-de-cours.factory';
 import { CONTENUS } from './contenus-publies';
@@ -56,18 +59,36 @@ export function ecransDesVotesJumeles(cours: Cours): readonly string[] {
   ).map(({ question }) => question.ecranId);
 }
 
+export function questionsDuVoteJumele(
+  cours: Cours,
+  ecranId: string,
+): { readonly principale: string; readonly jumelle: string } {
+  const ecran = cours.ecrans.find(({ id }) => id === ecranId);
+  if (ecran?.brique !== 'fp-vote' || ecran.questionJumelle === undefined) {
+    throw new Error(`vote jumelé absent de ${cours.slug} : ${ecranId}`);
+  }
+  return {
+    principale: ecran.question.id,
+    jumelle: ecran.questionJumelle.id,
+  };
+}
+
 export function pilotageDUnCoursServi(cours: Cours): {
   readonly pilotageEcrans: Readonly<Record<string, PilotageEcran>>;
-  readonly attendu: Readonly<Record<string, PilotageEcran>>;
+  readonly attendu: Readonly<Record<string, PilotageServi>>;
 } {
   const jumeles = ecransDesVotesJumeles(cours);
   const sansPhase = jumeles.at(0);
   const enDiscussion = jumeles.at(1);
   const nonPilotes = jumeles.slice(2);
   const autre = cours.ecrans.find(({ id }) => !jumeles.includes(id));
+  const auVote = (ecranId: string) => {
+    const { principale } = questionsDuVoteJumele(cours, ecranId);
+    return { questionAffichee: principale, questionOuverte: principale };
+  };
   const pilotageEcrans: Record<string, PilotageEcran> = {};
-  const attendu: Record<string, PilotageEcran> = Object.fromEntries(
-    nonPilotes.map((id) => [id, { phase: 'vote' }]),
+  const attendu: Record<string, PilotageServi> = Object.fromEntries(
+    nonPilotes.map((id) => [id, { phase: 'vote', ...auVote(id) }]),
   );
   if (autre !== undefined) {
     pilotageEcrans[autre.id] = { revele: true };
@@ -75,11 +96,19 @@ export function pilotageDUnCoursServi(cours: Cours): {
   }
   if (sansPhase !== undefined) {
     pilotageEcrans[sansPhase] = { resultatsProjetes: true };
-    attendu[sansPhase] = { resultatsProjetes: true, phase: 'vote' };
+    attendu[sansPhase] = {
+      resultatsProjetes: true,
+      phase: 'vote',
+      ...auVote(sansPhase),
+    };
   }
   if (enDiscussion !== undefined) {
     pilotageEcrans[enDiscussion] = { phase: 'discussion' };
-    attendu[enDiscussion] = { phase: 'discussion' };
+    attendu[enDiscussion] = {
+      phase: 'discussion',
+      questionAffichee: questionsDuVoteJumele(cours, enDiscussion).principale,
+      questionOuverte: null,
+    };
   }
   return { pilotageEcrans, attendu };
 }

@@ -338,6 +338,13 @@ describe('stockage multi-briques (B1)', () => {
       },
     ],
     [
+      'fp-plot',
+      'une série qui lit deux curseurs fins, au-delà des points précalculés servis',
+      (p) => {
+        p.series[0].calcul = 'x + origine + maximum';
+      },
+    ],
+    [
       'fp-cardsort',
       'un corrigé qui classe une carte absente du plan',
       (p) => {

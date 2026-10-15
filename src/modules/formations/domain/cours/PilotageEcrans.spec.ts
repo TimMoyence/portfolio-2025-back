@@ -172,19 +172,33 @@ describe('pilotage des écrans de la QA B2', () => {
   const CAS = lireCoursStocke(buildCoursDeBriques([buildCasAQuestionsLibres()]))
     .ecrans[0];
 
-  it('F12 · accepte les réglages d un tracé dans les bornes de ses paramètres', () => {
+  function parametreDuTrace() {
     if (TRACE.brique !== 'fp-plot') throw new Error('tracé attendu');
-    const [parametre] = TRACE.proprietes.parametres;
-    const regler = (valeur: number) =>
-      accepte(TRACE, {
-        screenId: TRACE.id,
-        reglages: { [parametre.cle]: valeur },
-      });
+    return TRACE.proprietes.parametres[0];
+  }
+
+  const regler = (valeur: number) =>
+    accepte(TRACE, {
+      screenId: TRACE.id,
+      reglages: { [parametreDuTrace().cle]: valeur },
+    });
+
+  it('F12 · accepte les réglages d un tracé dans les bornes de ses paramètres', () => {
+    const parametre = parametreDuTrace();
 
     expect([regler(parametre.max), regler(parametre.max + 1)]).toEqual([
       true,
       false,
     ]);
+  });
+
+  it('F-37 · refuse sur un tracé un réglage entre deux crans, que la projection n a pas reçu', () => {
+    const parametre = parametreDuTrace();
+
+    expect([
+      regler(parametre.min + parametre.pas),
+      regler(parametre.min + parametre.pas / 2),
+    ]).toEqual([true, false]);
   });
 
   it('F17 · étaye la construction de tableau d une colonne non donnée par niveau', () => {

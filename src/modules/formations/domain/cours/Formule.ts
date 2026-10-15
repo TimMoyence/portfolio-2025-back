@@ -1293,6 +1293,32 @@ export function evaluerExpression(
   }
 }
 
+function variablesDu(noeud: Noeud): string[] {
+  switch (noeud.genre) {
+    case 'variable':
+      return [noeud.nom];
+    case 'unaire':
+      return variablesDu(noeud.operande);
+    case 'binaire':
+      return [...variablesDu(noeud.gauche), ...variablesDu(noeud.droite)];
+    case 'appel':
+      return noeud.arguments.flatMap(variablesDu);
+    default:
+      return [];
+  }
+}
+
+export function variablesDeLExpression(
+  expression: string,
+): readonly string[] | null {
+  try {
+    const source = sourceDeFormule(expression) ?? expression;
+    return [...new Set(variablesDu(analyser(source)))];
+  } catch {
+    return null;
+  }
+}
+
 function formeRelative(reference: Reference, origine: Reference): string {
   const ecart = (
     axe: 'R' | 'C',
