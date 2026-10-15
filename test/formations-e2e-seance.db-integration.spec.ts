@@ -71,7 +71,6 @@ const VERSION_DU_BAREME = 2;
 const TYPES_NOTABLES = 5;
 const CAPACITE = 4;
 const FORMATEUR = 'e1111111-1111-4111-8111-111111111111:teacher';
-const SECRET = 'secret-de-test-formations-assez-long-1234';
 const SYNTHESE_A = 'e2e-formateur@example.test';
 const DUREE_MS = 30_000;
 const DELAI_TEST_MS = 900_000;
@@ -995,16 +994,13 @@ function seanceComplete(
         }
       });
 
-      installerBancFormationsVierge(
-        { secret: SECRET, syntheseA: SYNTHESE_A },
-        (monte) => {
-          banc = monte;
-          bilanEspionne = jest.spyOn(
-            banc.app.get(GetSessionResultsUseCase),
-            'bilanDe',
-          );
-        },
-      );
+      installerBancFormationsVierge({ syntheseA: SYNTHESE_A }, (monte) => {
+        banc = monte;
+        bilanEspionne = jest.spyOn(
+          banc.app.get(GetSessionResultsUseCase),
+          'bilanDe',
+        );
+      });
 
       afterAll(() => {
         process.stdout.write(`\nMesures E2E-01\n${mesures.join('\n')}\n`);

@@ -1,17 +1,13 @@
-import {
-  appliquer,
-  installerVariables,
-} from '../../../../../test/helpers/environnement';
+import { installerSecretDeSignature } from '../../../../../test/helpers/env-formations';
+import { appliquer } from '../../../../../test/helpers/environnement';
 import { signer } from '../SignatureFormations';
 
-const SECRET = 'secret-de-test-formations-assez-long-1234';
-
 describe('SignatureFormations', () => {
-  installerVariables({ FORMATION_REVIEW_TOKEN_SECRET: SECRET }, 'chaque-test');
+  installerSecretDeSignature('chaque-test');
 
   it('signe le message en HMAC-SHA256 hexadecimal avec le secret configure', () => {
     expect(signer('eleve:lea@example.test')).toBe(
-      '5602b8e555d803e11aa2f32a126ecd9d59dfbfab8432f9fcb10d04b8e6344026',
+      '5dacb358b89c0fba70a287e01f4e06342d634d9ef5db2fa19b54f49646f85fbc',
     );
   });
 

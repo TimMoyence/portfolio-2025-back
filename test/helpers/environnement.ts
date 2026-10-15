@@ -10,10 +10,12 @@ export function appliquer(variables: Variables): void {
   }
 }
 
-function valeursActuelles(variables: Variables): Variables {
-  return Object.fromEntries(
+export function poserVariables(variables: Variables): () => void {
+  const precedentes: Variables = Object.fromEntries(
     Object.keys(variables).map((nom) => [nom, process.env[nom]]),
   );
+  appliquer(variables);
+  return () => appliquer(precedentes);
 }
 
 export function installerVariables(
@@ -22,15 +24,14 @@ export function installerVariables(
 ): void {
   const [avant, apres] =
     portee === 'chaque-test' ? [beforeEach, afterEach] : [beforeAll, afterAll];
-  let precedentes: Variables = {};
+  let restaurer = (): void => undefined;
 
   avant(() => {
-    precedentes = valeursActuelles(variables);
-    appliquer(variables);
+    restaurer = poserVariables(variables);
   });
 
   apres(() => {
-    appliquer(precedentes);
+    restaurer();
   });
 }
 
@@ -38,11 +39,10 @@ export async function sousEnvironnement<T>(
   variables: Variables,
   action: () => Promise<T>,
 ): Promise<T> {
-  const precedentes = valeursActuelles(variables);
-  appliquer(variables);
+  const restaurer = poserVariables(variables);
   try {
     return await action();
   } finally {
-    appliquer(precedentes);
+    restaurer();
   }
 }

@@ -32,7 +32,6 @@ const SLUG = 'b2-01-traitement-information-chiffree';
 const VERSION_COURS = VERSION_PUBLIEE_SUR_BASE_NEUVE;
 const TAILLE_CLASSE = 35;
 const ADMIN = 'c3333333-3333-4333-8333-333333333333';
-const SECRET = 'secret-de-test-formations-assez-long-1234';
 const SYNTHESE_A = 'classe-formateur@example.test';
 const OK = 200;
 const CREE = 201;
@@ -259,7 +258,7 @@ describeDb('Classe de trente sur le B2-01 (db integration)', () => {
   };
 
   installerBancDuCours(
-    { secret: SECRET, syntheseA: SYNTHESE_A },
+    { syntheseA: SYNTHESE_A },
     { formateurId: ADMIN, slug: SLUG, version: VERSION_COURS },
     (monte) => ({ banc, client, cours } = monte),
   );

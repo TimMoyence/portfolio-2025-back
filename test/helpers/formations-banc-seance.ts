@@ -8,6 +8,7 @@ import { EN_TETE_JETON } from '../../src/modules/formations/interfaces/Participa
 import { creerCatalogueDeTest } from '../factories/cours.factory';
 import { createMockFormationMailer } from '../factories/formation.factory';
 import { describeDb } from './db-integration-datasource';
+import { installerEnvFormations } from './env-formations';
 import {
   DELAI_OUVERTURE_CONTEXTE_MS,
   ouvrirContexteFormations,
@@ -37,7 +38,6 @@ export const CODE_HTTP = {
 export const FORMATEUR_DE_TEST = 'a1111111-1111-4111-8111-111111111111';
 export const AUTRE_FORMATEUR_DE_TEST = 'b2222222-2222-4222-8222-222222222222';
 export const ADMIN_DE_TEST = 'f6666666-6666-4666-8666-666666666666';
-export const SECRET_DE_TEST = 'secret-de-test-formations-assez-long-1234';
 
 export function codeDe(reponse: Response): string | undefined {
   return (reponse.body as { code?: string }).code;
@@ -142,7 +142,7 @@ export function installerBancDeSeance(options: {
   readonly catalogue?: ICatalogueCours;
   readonly slug: string;
   readonly ecran?: number;
-  readonly environnement?: Readonly<Record<string, string>>;
+  readonly syntheseA?: string;
 }): BancDeSeance {
   silenceNestLogger(['log', 'warn', 'error']);
 
@@ -262,18 +262,9 @@ export function installerBancDeSeance(options: {
     await monter();
   };
 
-  const environnement: Readonly<Record<string, string>> = {
-    FORMATION_REVIEW_TOKEN_SECRET: SECRET_DE_TEST,
-    FORMATIONS_PULSE_SECRET: SECRET_DE_TEST,
-    ...options.environnement,
-  };
-  const environnementAnterieur = new Map<string, string | undefined>();
+  installerEnvFormations({ syntheseA: options.syntheseA });
 
   beforeAll(async () => {
-    for (const [cle, valeur] of Object.entries(environnement)) {
-      environnementAnterieur.set(cle, process.env[cle]);
-      process.env[cle] = valeur;
-    }
     contexte = await ouvrirContexteFormations();
     await monter();
   }, DELAI_OUVERTURE_CONTEXTE_MS);
@@ -286,13 +277,6 @@ export function installerBancDeSeance(options: {
   afterAll(async () => {
     await fermerApplication(app);
     await contexte.fermer();
-    for (const [cle, valeur] of environnementAnterieur) {
-      if (valeur === undefined) {
-        delete process.env[cle];
-      } else {
-        process.env[cle] = valeur;
-      }
-    }
   });
 
   return {

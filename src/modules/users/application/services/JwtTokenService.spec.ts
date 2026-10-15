@@ -2,9 +2,9 @@ import { ConfigService } from '@nestjs/config';
 import { SignJWT, decodeProtectedHeader } from 'jose';
 import { JwtTokenService } from './JwtTokenService';
 import type { JwtPayload } from './JwtPayload';
+import { TEST_JWT_SECRET as JWT_SECRET } from '../../../../../test/factories/env.factory';
 
 describe('JwtTokenService', () => {
-  const JWT_SECRET = 'test-secret-key-for-unit-tests-32';
   const JWT_SECRET_PREVIOUS = 'old-secret-key-for-rotation-test!';
   const CONFIG_COURANTE = { JWT_SECRET, JWT_EXPIRES_IN: '3600s' };
   const CONFIG_EN_ROTATION = { ...CONFIG_COURANTE, JWT_SECRET_PREVIOUS };

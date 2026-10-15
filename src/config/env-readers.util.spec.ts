@@ -9,6 +9,10 @@ import {
   envString,
   envUnVrai,
 } from './env-readers.util';
+import {
+  appliquer,
+  installerVariables,
+} from '../../test/helpers/environnement';
 
 describe('envPort', () => {
   it('lit le premier alias renseigne et le rend numerique', () => {
@@ -35,10 +39,9 @@ describe('envPort', () => {
 
 describe('env-readers.util', () => {
   const KEY = 'ENV_READERS_TEST_KEY';
+  const poser = (valeur: string): void => appliquer({ [KEY]: valeur });
 
-  afterEach(() => {
-    delete process.env[KEY];
-  });
+  installerVariables({ [KEY]: undefined }, 'chaque-test');
 
   describe('envInt', () => {
     it('retourne le fallback si la variable est absente', () => {
@@ -46,12 +49,12 @@ describe('env-readers.util', () => {
     });
 
     it('parse un entier valide', () => {
-      process.env[KEY] = '12';
+      poser('12');
       expect(envInt(KEY, 5)).toBe(12);
     });
 
     it('retourne le fallback pour une valeur non numerique', () => {
-      process.env[KEY] = 'abc';
+      poser('abc');
       expect(envInt(KEY, 5)).toBe(5);
     });
   });
@@ -62,24 +65,24 @@ describe('env-readers.util', () => {
     });
 
     it('reconnait "false"', () => {
-      process.env[KEY] = 'false';
+      poser('false');
       expect(envBool(KEY, true)).toBe(false);
     });
 
     it('reconnait "true" (insensible a la casse)', () => {
-      process.env[KEY] = 'TRUE';
+      poser('TRUE');
       expect(envBool(KEY, false)).toBe(true);
     });
   });
 
   describe('envString', () => {
     it('trim la valeur', () => {
-      process.env[KEY] = '  hello  ';
+      poser('  hello  ');
       expect(envString(KEY)).toBe('hello');
     });
 
     it('retourne undefined pour une chaine vide ou blanche', () => {
-      process.env[KEY] = '   ';
+      poser('   ');
       expect(envString(KEY)).toBeUndefined();
     });
 
@@ -90,7 +93,7 @@ describe('env-readers.util', () => {
 
   describe('source explicite', () => {
     it('lit la source fournie plutot que process.env', () => {
-      process.env[KEY] = 'process';
+      poser('process');
       const source = { [KEY]: ' fournie ' };
 
       expect(envString(KEY, source)).toBe('fournie');
@@ -161,12 +164,12 @@ describe('env-readers.util', () => {
 
   describe('envFloat', () => {
     it('parse un decimal', () => {
-      process.env[KEY] = '0.5';
+      poser('0.5');
       expect(envFloat(KEY, 1)).toBe(0.5);
     });
 
     it('retourne le fallback pour une valeur non numerique', () => {
-      process.env[KEY] = 'NaN-like';
+      poser('NaN-like');
       expect(envFloat(KEY, 1.5)).toBe(1.5);
     });
   });

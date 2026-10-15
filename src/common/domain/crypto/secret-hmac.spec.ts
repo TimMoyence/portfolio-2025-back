@@ -1,3 +1,4 @@
+import { TEST_FORMATION_REVIEW_TOKEN_SECRET as SECRET } from '../../../../test/factories/env.factory';
 import {
   appliquer,
   installerVariables,
@@ -5,7 +6,6 @@ import {
 import { secretHmac, signerAvecLeSecret } from './secret-hmac';
 
 const NOM = 'SECRET_HMAC_DE_TEST';
-const SECRET = 'secret-de-test-formations-assez-long-1234';
 
 describe('secretHmac', () => {
   installerVariables({ [NOM]: SECRET }, 'chaque-test');
@@ -31,7 +31,7 @@ describe('signerAvecLeSecret', () => {
 
   it('signe le message en HMAC-SHA256 hexadecimal avec le secret de la variable', () => {
     expect(signerAvecLeSecret(NOM, 'eleve:lea@example.test')).toBe(
-      '5602b8e555d803e11aa2f32a126ecd9d59dfbfab8432f9fcb10d04b8e6344026',
+      '5dacb358b89c0fba70a287e01f4e06342d634d9ef5db2fa19b54f49646f85fbc',
     );
   });
 

@@ -25,9 +25,9 @@ import {
   simulerSeance,
 } from './helpers/formations-harness';
 import { octetsDuClasseur } from './helpers/classeurs-reserves';
+import { installerSecretDeSignature } from './helpers/env-formations';
 import { applicationDeLaSuite } from './helpers/nest-test-app';
 
-const SECRET = 'secret-de-test-formations-assez-long-1234';
 const PROPRIETAIRE_ID = 'a1111111-1111-4111-8111-111111111111';
 const SESSION_ID = 'c3333333-3333-4333-8333-333333333333';
 const AUTRE_SESSION_ID = 'd4444444-4444-4444-8444-444444444444';
@@ -58,14 +58,14 @@ function seance(overrides: Partial<SessionRecord> = {}): SessionRecord {
 
 describe('Pièces jointes réservées à la séance (e2e http socket)', () => {
   const depots = createMockDepotsFormations();
-  const app = applicationDeLaSuite(() => {
-    process.env.FORMATION_REVIEW_TOKEN_SECRET = SECRET;
-    return monterApplicationFormations(
+  installerSecretDeSignature();
+  const app = applicationDeLaSuite(() =>
+    monterApplicationFormations(
       depots,
       creerCatalogueDeTest(COURS),
       (application) => ouvrirAuxOrigines(application, [ORIGINE_DU_FRONT]),
-    );
-  });
+    ),
+  );
 
   const telecharger = (chemin: string): request.Test =>
     request(serveurHttpDe(app()))
