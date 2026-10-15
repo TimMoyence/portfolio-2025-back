@@ -188,9 +188,9 @@ describe('parseImports', () => {
       });
       return Math.min(...mesures);
     };
-    const courte = duree(2_500);
+    const courte = duree(1_250);
 
-    expect(duree(10_000)).toBeLessThan(8 * Math.max(courte, 5));
+    expect(duree(20_000)).toBeLessThan(32 * Math.max(courte, 5));
   });
 });
 
