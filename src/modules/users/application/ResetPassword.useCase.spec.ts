@@ -11,7 +11,9 @@ import {
   buildPasswordResetToken,
   createMockPasswordResetTokensRepo,
 } from '../../../../test/factories/password-reset-token.factory';
+import { createMockRefreshTokensRepo } from '../../../../test/factories/refresh-token.factory';
 import {
+  attendreAucunMotDePasseEnregistre,
   attendreNouveauMotDePasseEnregistre,
   preparerNouveauMotDePasse,
 } from '../../../../test/helpers/utilisateurs';
@@ -24,17 +26,20 @@ describe('ResetPasswordUseCase', () => {
   let usersRepository: ReturnType<typeof createMockUsersRepo>;
   let tokensRepository: ReturnType<typeof createMockPasswordResetTokensRepo>;
   let passwordService: ReturnType<typeof createMockPasswordService>;
+  let refreshTokensRepo: ReturnType<typeof createMockRefreshTokensRepo>;
   let useCase: ResetPasswordUseCase;
 
   beforeEach(() => {
     usersRepository = createMockUsersRepo();
     tokensRepository = createMockPasswordResetTokensRepo();
     passwordService = createMockPasswordService();
+    refreshTokensRepo = createMockRefreshTokensRepo();
 
     useCase = new ResetPasswordUseCase(
       tokensRepository,
       usersRepository,
       passwordService,
+      refreshTokensRepo,
     );
   });
 
@@ -62,7 +67,11 @@ describe('ResetPasswordUseCase', () => {
     });
 
     attendreNouveauMotDePasseEnregistre(
-      { hacher: passwordService.hash, mettreAJour: usersRepository.update },
+      {
+        hacher: passwordService.hash,
+        mettreAJour: usersRepository.update,
+        fermerLesSessions: refreshTokensRepo.revokeByUserId,
+      },
       CHOSEN_CREDENTIAL,
       'password-reset',
     );
@@ -79,7 +88,10 @@ describe('ResetPasswordUseCase', () => {
 
     expect(tokensRepository.markUsed).toHaveBeenCalledWith('token-1');
     expect(passwordService.hash).not.toHaveBeenCalled();
-    expect(usersRepository.update).not.toHaveBeenCalled();
+    attendreAucunMotDePasseEnregistre(
+      usersRepository.update,
+      refreshTokensRepo.revokeByUserId,
+    );
   });
 
   it('rejette un token inconnu, expire ou deja utilise', async () => {

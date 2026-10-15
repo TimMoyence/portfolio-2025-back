@@ -26,7 +26,7 @@ export class ChangePasswordUseCase extends CasDUsageMotDePasse {
       throw new InvalidCredentialsError('Current password is invalid');
     }
 
-    return this.enregistrerMotDePasse(
+    return this.remplacerMotDePasse(
       user,
       dto.newPassword,
       dto.updatedOrCreatedBy,

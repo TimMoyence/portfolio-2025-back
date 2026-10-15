@@ -195,7 +195,7 @@ describe('AuthController — IP tracee dans l’audit', () => {
     });
   });
 
-  it('journalise la reinitialisation aboutie avec le compte sans le jeton ni le renvoyer au client', async () => {
+  it('journalise la reinitialisation aboutie avec le compte sans le jeton ni le mot de passe, ni le compte renvoye au client', async () => {
     const entree = await entreeDAudit('reinitialisation', {
       resolves: { message: 'reinitialise', userId: 'u-9' },
     });
@@ -206,7 +206,9 @@ describe('AuthController — IP tracee dans l’audit', () => {
       ip: RESOLVED_BY_EXPRESS,
       userAgent: 'jest-agent',
     });
-    expect(JSON.stringify(journal)).not.toContain(JETON_DE_LIEN);
+    const journalSerialise = JSON.stringify(journal);
+    expect(journalSerialise).not.toContain(JETON_DE_LIEN);
+    expect(journalSerialise).not.toContain(CHOSEN_CREDENTIAL);
     expect(derniereReponse).toEqual({ message: 'reinitialise' });
   });
 

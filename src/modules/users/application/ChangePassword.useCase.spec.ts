@@ -11,7 +11,12 @@ import {
   createMockUsersRepo,
   createMockPasswordService,
 } from '../../../../test/factories/user.factory';
-import { attendreMiseAJourDeLUtilisateur } from '../../../../test/helpers/utilisateurs';
+import { createMockRefreshTokensRepo } from '../../../../test/factories/refresh-token.factory';
+import {
+  attendreAucunMotDePasseEnregistre,
+  attendreMiseAJourDeLUtilisateur,
+  attendreSessionsFermeesApres,
+} from '../../../../test/helpers/utilisateurs';
 
 const CURRENT_CREDENTIAL = 'OldPassword123';
 const NEXT_CREDENTIAL = 'NewPassword456';
@@ -19,6 +24,7 @@ const NEXT_CREDENTIAL = 'NewPassword456';
 describe('ChangePasswordUseCase', () => {
   let repo: jest.Mocked<IUsersRepository>;
   let passwordService: jest.Mocked<PasswordService>;
+  let refreshTokensRepo: ReturnType<typeof createMockRefreshTokensRepo>;
   let useCase: ChangePasswordUseCase;
 
   beforeEach(() => {
@@ -26,8 +32,13 @@ describe('ChangePasswordUseCase', () => {
     passwordService = createMockPasswordService();
     passwordService.hash.mockResolvedValue('new-hash');
     passwordService.verify.mockResolvedValue(true);
+    refreshTokensRepo = createMockRefreshTokensRepo();
 
-    useCase = new ChangePasswordUseCase(repo, passwordService);
+    useCase = new ChangePasswordUseCase(
+      repo,
+      passwordService,
+      refreshTokensRepo,
+    );
   });
 
   it('changes the password when current password matches', async () => {
@@ -60,6 +71,7 @@ describe('ChangePasswordUseCase', () => {
       passwordHash: 'new-hash',
       updatedOrCreatedBy: user.updatedOrCreatedBy,
     });
+    attendreSessionsFermeesApres(repo.update, refreshTokensRepo.revokeByUserId);
     expect(result).toBe(updatedUser);
   });
 
@@ -113,7 +125,10 @@ describe('ChangePasswordUseCase', () => {
         newPassword: 'new',
       }),
     ).rejects.toBeInstanceOf(InvalidCredentialsError);
-    expect(repo.update).not.toHaveBeenCalled();
+    attendreAucunMotDePasseEnregistre(
+      repo.update,
+      refreshTokensRepo.revokeByUserId,
+    );
   });
 
   it('rejects inactive users even if the password matches', async () => {

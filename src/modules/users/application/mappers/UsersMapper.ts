@@ -23,13 +23,11 @@ export class UsersMapper {
   }
 
   static fromUpdateCommand(
-    command: UpdateUserCommand,
-    passwordHash?: string,
+    command: Omit<UpdateUserCommand, 'password'>,
   ): Partial<User> {
     return mapDomainValidation(() =>
       User.update({
         email: command.email,
-        passwordHash,
         firstName: command.firstName,
         lastName: command.lastName,
         phone: command.phone,
