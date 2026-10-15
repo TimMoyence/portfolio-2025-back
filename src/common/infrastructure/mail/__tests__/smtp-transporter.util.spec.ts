@@ -183,6 +183,9 @@ describe('createOptionalSmtpTransporter', () => {
       // SANS en-tete DKIM : sans ce controle, le deploiement se croirait
       // conforme RFC 8058 sans que rien ne le signale.
       attendreSignatureRefusee(dkim);
+      expect(logger.error).toHaveBeenCalledWith(
+        expect.stringMatching(/is not a usable private key: \S/),
+      );
     });
 
     it('accepte une cle RSA au format PKCS#1', () => {

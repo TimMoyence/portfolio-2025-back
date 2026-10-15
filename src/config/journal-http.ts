@@ -1,7 +1,11 @@
 import { randomUUID } from 'crypto';
-import type { IncomingMessage } from 'http';
+import type { IncomingMessage, ServerResponse } from 'http';
 import type { SerializedRequest } from 'pino';
 import type { Options } from 'pino-http';
+import {
+  navigateurConsignable,
+  referentConsignable,
+} from '../common/domain/provenance';
 import {
   CENSURE,
   referentJournalisable,
@@ -16,17 +20,47 @@ const EN_TETES_SECRETS = [
   'res.headers["set-cookie"]',
 ];
 
+const EN_TETE_DE_CORRELATION = 'x-request-id';
+const IDENTIFIANT_RECEVABLE = /^[A-Za-z0-9._:-]{1,128}$/;
+
+function identifiantDeCorrelation(
+  req: IncomingMessage,
+  res: ServerResponse,
+): string {
+  const recu = req.headers[EN_TETE_DE_CORRELATION];
+  const identifiant =
+    typeof recu === 'string' && IDENTIFIANT_RECEVABLE.test(recu)
+      ? recu
+      : randomUUID();
+  res.setHeader(EN_TETE_DE_CORRELATION, identifiant);
+  return identifiant;
+}
+
 function estSondeDeSante(req: IncomingMessage): boolean {
   return req.url?.includes('/health') ?? false;
+}
+
+function enTeteConsignable(
+  nom: string,
+  valeur: string | null,
+): SerializedRequest['headers'] {
+  return valeur === null ? {} : { [nom]: valeur };
 }
 
 function enTetesJournalisables(
   enTetes: SerializedRequest['headers'],
 ): SerializedRequest['headers'] {
-  const { referer } = enTetes;
-  return typeof referer === 'string'
-    ? { ...enTetes, referer: referentJournalisable(referer) }
-    : enTetes;
+  const { referer, 'user-agent': navigateur, ...autres } = enTetes;
+  return {
+    ...autres,
+    ...enTeteConsignable(
+      'referer',
+      typeof referer === 'string'
+        ? referentConsignable(referentJournalisable(referer))
+        : null,
+    ),
+    ...enTeteConsignable('user-agent', navigateurConsignable(navigateur)),
+  };
 }
 
 function requeteJournalisee(req: SerializedRequest): Record<string, unknown> {
@@ -64,7 +98,7 @@ export function optionsJournalHttp(environnement: string | undefined): Options {
       _erreur,
       valeur: Record<string, unknown>,
     ) => ({ req, ...valeur }),
-    genReqId: (req) => (req.headers['x-request-id'] as string) ?? randomUUID(),
+    genReqId: identifiantDeCorrelation,
     customProps: (req) => ({
       correlationId: req.id,
     }),

@@ -1,4 +1,4 @@
-import { Logger } from '@nestjs/common';
+import { espionnerLeLogger } from '../../../../../test/helpers/silence-nest-logger';
 import { AuthAuditLogger, AuthAuditEntry } from './AuthAuditLogger';
 
 describe('AuthAuditLogger', () => {
@@ -7,7 +7,7 @@ describe('AuthAuditLogger', () => {
 
   beforeEach(() => {
     auditLogger = new AuthAuditLogger();
-    logSpy = jest.spyOn(Logger.prototype, 'log').mockImplementation();
+    logSpy = espionnerLeLogger('log');
   });
 
   afterEach(() => {

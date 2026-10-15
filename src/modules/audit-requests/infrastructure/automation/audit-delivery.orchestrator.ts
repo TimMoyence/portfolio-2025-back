@@ -1,4 +1,5 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
+import { enArrierePlan } from '../../../../common/application/en-arriere-plan';
 import { moyenneOu } from '../../../../common/domain/nombres/statistiques';
 import type { AuditSnapshot } from '../../domain/AuditProcessing';
 import type {
@@ -206,25 +207,23 @@ export class AuditDeliveryOrchestrator {
     const audit = context.auditSnapshot;
 
     if (context.contactMethod === 'EMAIL') {
-      void this.notifier
-        .sendClientReport({
+      enArrierePlan(
+        this.notifier.sendClientReport({
           to: context.contactValue,
           firstName: this.extractFirstName(context.contactValue),
           websiteName: context.websiteName,
           clientReport,
           pdfBuffer,
           bookingUrl: process.env.AUDIT_BOOKING_URL ?? null,
-        })
-        .catch((error) =>
-          this.logger.warn(
-            `Client report email failed for audit ${audit.id}: ${String(error)}`,
-          ),
-        );
+        }),
+        `Client report email failed for audit ${audit.id}`,
+        this.logger,
+      );
     }
 
     const expertPdf = pdfBuffer ?? Buffer.from('');
-    void this.notifier
-      .sendExpertReport({
+    enArrierePlan(
+      this.notifier.sendExpertReport({
         websiteName: context.websiteName,
         auditId: audit.id,
         clientContact: {
@@ -234,12 +233,10 @@ export class AuditDeliveryOrchestrator {
         clientReport,
         expertReport: context.expertReport,
         pdfBuffer: expertPdf,
-      })
-      .catch((error) =>
-        this.logger.warn(
-          `Expert report email failed for audit ${audit.id}: ${String(error)}`,
-        ),
-      );
+      }),
+      `Expert report email failed for audit ${audit.id}`,
+      this.logger,
+    );
   }
 
   private aggregateEngineCoverage(

@@ -1,10 +1,12 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import { Logger } from '@nestjs/common';
 import {
   buildContenuAPublierB2_01,
   createMockPublicationDesCours,
 } from '../../../../test/factories/cours-b2-01.factory';
-import { silenceNestLogger } from '../../../../test/helpers/silence-nest-logger';
+import {
+  espionnerLeLogger,
+  silenceNestLogger,
+} from '../../../../test/helpers/silence-nest-logger';
 import { SynchroniserCoursUseCase } from '../application/SynchroniserCours.useCase';
 import { empreinteCanonique } from '../domain/cours/EmpreinteCanonique';
 import { SynchronisationAuDemarrageService } from './SynchronisationAuDemarrage.service';
@@ -35,7 +37,7 @@ describe('SynchronisationAuDemarrageService', () => {
   it('journalise l échec de la publication sans empêcher le démarrage du reste de l API', async () => {
     const { publication, service } = monter();
     publication.publier.mockRejectedValue(new Error('base indisponible'));
-    const erreur = jest.spyOn(Logger.prototype, 'error');
+    const erreur = espionnerLeLogger('error');
 
     await expect(service.onApplicationBootstrap()).resolves.toBeUndefined();
 

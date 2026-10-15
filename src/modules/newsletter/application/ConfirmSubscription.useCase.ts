@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { enArrierePlan } from '../../../common/application/en-arriere-plan';
 import { LienInvalideError } from '../../../common/domain/errors/LienInvalideError';
 import type { NewsletterSubscriber } from '../domain/NewsletterSubscriber';
 import { ActionDAbonne } from './ActionDAbonne';
@@ -28,13 +29,15 @@ export class ConfirmSubscriptionUseCase extends ActionDAbonne {
     subscriber.confirm();
     const updated = await this.repo.update(subscriber);
 
-    this.enArrierePlan(
+    enArrierePlan(
       this.mailer.sendWelcome(updated),
       'Newsletter welcome email failed',
+      this.logger,
     );
-    this.enArrierePlan(
+    enArrierePlan(
       this.scheduler.schedule(updated),
       'Newsletter drip schedule failed',
+      this.logger,
     );
 
     return { status: updated.status, alreadyConfirmed: false };

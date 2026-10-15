@@ -6,6 +6,7 @@ import {
 import {
   attendreTokenInconnuRefuse,
   executerSurAbonneTrouve,
+  journaliseLaCauseDeChaqueEffet,
 } from '../../../../../test/helpers/token-newsletter';
 import { UnsubscribeNewsletterUseCase } from '../UnsubscribeNewsletter.useCase';
 
@@ -102,5 +103,16 @@ describe('UnsubscribeNewsletterUseCase', () => {
       await expect(desabonner(confirme)).resolves.toBeDefined();
       expect(effet()).toHaveBeenCalledTimes(1);
     },
+  );
+
+  journaliseLaCauseDeChaqueEffet(
+    [
+      ['Newsletter drip cancel failed', () => scheduler.cancel],
+      [
+        'Newsletter unsubscribe ack email failed',
+        () => mailer.sendUnsubscribeAck,
+      ],
+    ],
+    () => desabonner(confirme),
   );
 });

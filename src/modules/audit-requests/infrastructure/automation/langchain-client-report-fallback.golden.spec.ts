@@ -1,6 +1,7 @@
 import { silenceNestLogger } from '../../../../../test/helpers/silence-nest-logger';
 import { buildAuditAutomationConfig } from '../../../../../test/factories/audit-config.factory';
 import { buildClientReportContext } from '../../../../../test/factories/audit-requests.factory';
+import { createChatOpenAIFactoryStub } from '../../../../../test/factories/section-generator.factory';
 import type { ClientReportContext } from './langchain-client-report.service';
 import { LangchainClientReportService } from './langchain-client-report.service';
 
@@ -9,6 +10,7 @@ describe('LangchainClientReportService — fallback golden (P5.1)', () => {
 
   const service = new LangchainClientReportService(
     buildAuditAutomationConfig({ openAiApiKey: undefined }),
+    createChatOpenAIFactoryStub(),
   );
 
   const generer = (overrides: Partial<ClientReportContext> = {}) =>

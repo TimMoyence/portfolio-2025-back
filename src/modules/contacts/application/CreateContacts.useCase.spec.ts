@@ -8,12 +8,17 @@ import {
   createMockContactsRepo,
   createMockContactNotifier,
 } from '../../../../test/factories/contacts.factory';
+import {
+  attendreLAvertissement,
+  espionnerLesAvertissements,
+} from '../../../../test/helpers/avertissements';
 import { attendreResultatEtEffetsUniques } from '../../../../test/helpers/effets-uniques';
 
 describe('CreateContactsUseCase', () => {
   let useCase: CreateContactsUseCase;
   let repo: jest.Mocked<IContactsRepository>;
   let notifier: jest.Mocked<IContactNotifier>;
+  const avertissements = espionnerLesAvertissements();
 
   const validCommand: CreateContactCommand = {
     email: 'test@example.com',
@@ -57,4 +62,16 @@ describe('CreateContactsUseCase', () => {
       );
     },
   );
+
+  it('journalise la cause d un échec d envoi de la notification', async () => {
+    repo.create.mockResolvedValue({ message: 'Contact cree' });
+    notifier.sendContactNotification.mockRejectedValue(new Error('smtp down'));
+
+    await useCase.execute(validCommand);
+
+    await attendreLAvertissement(
+      avertissements,
+      'Contact notification failed: smtp down',
+    );
+  });
 });

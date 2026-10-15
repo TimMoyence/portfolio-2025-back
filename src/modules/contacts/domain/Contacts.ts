@@ -1,3 +1,4 @@
+import { provenanceConsignable } from '../../../common/domain/provenance';
 import {
   optionalPhone,
   optionalText,
@@ -24,6 +25,9 @@ export class Contacts {
   termsLocale?: string;
   termsAcceptedAt?: Date;
   termsMethod?: string;
+  ip?: string | null;
+  userAgent?: string | null;
+  referer?: string | null;
 
   static create(props: CreateContactProps): Contacts {
     const email = requireEmail(props.email, 'contact email');
@@ -73,6 +77,7 @@ export class Contacts {
       50,
     );
     contact.termsAcceptedAt = props.termsAcceptedAt;
+    Object.assign(contact, provenanceConsignable(props));
 
     return contact;
   }

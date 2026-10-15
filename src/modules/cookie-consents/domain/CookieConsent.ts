@@ -1,8 +1,11 @@
 import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
 import {
+  provenanceConsignable,
+  type Provenance,
+} from '../../../common/domain/provenance';
+import {
   requireLocale,
   requireText,
-  optionalMetadata,
 } from '../../../common/domain/validation/domain-validators';
 
 export interface CookieConsentPreferences {
@@ -19,16 +22,13 @@ type CookieConsentAction =
   | 'save_preferences'
   | 'withdraw';
 
-export interface CreateCookieConsentProps {
+export interface CreateCookieConsentProps extends Provenance {
   policyVersion: string;
   locale: string;
   region: string;
   source: CookieConsentSource;
   action: CookieConsentAction;
   preferences: CookieConsentPreferences;
-  ip?: string | null;
-  userAgent?: string | null;
-  referer?: string | null;
 }
 
 export class CookieConsent {
@@ -91,9 +91,7 @@ export class CookieConsent {
     consent.source = props.source;
     consent.action = props.action;
     consent.preferences = preferences;
-    consent.ip = optionalMetadata(props.ip);
-    consent.userAgent = optionalMetadata(props.userAgent);
-    consent.referer = optionalMetadata(props.referer);
+    Object.assign(consent, provenanceConsignable(props));
 
     return consent;
   }

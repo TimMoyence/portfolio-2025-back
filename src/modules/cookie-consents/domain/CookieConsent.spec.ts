@@ -1,5 +1,9 @@
 import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
 import { buildChoixDeConsentement } from '../../../../test/factories/cookie-consents.factory';
+import {
+  attendreUneProvenanceBornee,
+  PROVENANCE_DEMESUREE,
+} from '../../../../test/helpers/provenance';
 import { CookieConsent } from './CookieConsent';
 
 const VALID_PROPS = buildChoixDeConsentement();
@@ -107,6 +111,12 @@ describe('CookieConsent aggregate', () => {
     expect(consent.ip).toBeNull();
     expect(consent.userAgent).toBeNull();
     expect(consent.referer).toBeNull();
+  });
+
+  it('borne la provenance consignée', () => {
+    attendreUneProvenanceBornee(
+      CookieConsent.create({ ...VALID_PROPS, ...PROVENANCE_DEMESUREE }),
+    );
   });
 
   it.each([['xx-invalid'], ['de'], ['']])(

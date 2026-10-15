@@ -14,6 +14,10 @@ import {
   createMockAuditNotifier,
   createMockAuditQueue,
 } from '../../../../test/factories/audit-requests.factory';
+import {
+  attendreLAvertissement,
+  espionnerLesAvertissements,
+} from '../../../../test/helpers/avertissements';
 import { attendreResultatEtEffetsUniques } from '../../../../test/helpers/effets-uniques';
 
 describe('CreateAuditRequestsUseCase', () => {
@@ -22,6 +26,7 @@ describe('CreateAuditRequestsUseCase', () => {
   let queueService: jest.Mocked<IAuditQueuePort>;
   let notifier: jest.Mocked<IAuditNotifierPort>;
   let selfGuard: SelfAuditGuard;
+  const avertissements = espionnerLesAvertissements();
 
   const validCommand: CreateAuditRequestCommand = {
     websiteName: 'example.com',
@@ -78,6 +83,17 @@ describe('CreateAuditRequestsUseCase', () => {
       repo.create,
       queueService.enqueue,
       notifier.sendAuditNotification,
+    );
+  });
+
+  it('journalise la cause d un échec de notification', async () => {
+    notifier.sendAuditNotification.mockRejectedValue(new Error('smtp down'));
+
+    await useCase.execute(validCommand);
+
+    await attendreLAvertissement(
+      avertissements,
+      'Audit request notification failed: smtp down',
     );
   });
 

@@ -5,8 +5,12 @@ import type { AuditAutomationConfig } from './audit.config';
 
 export const CHAT_OPENAI_FACTORY = Symbol('CHAT_OPENAI_FACTORY');
 
+interface ChatOpenAIOptions {
+  temperature?: number;
+}
+
 export interface ChatOpenAIFactory {
-  create(timeoutMs: number): ChatOpenAI;
+  create(timeoutMs: number, options?: ChatOpenAIOptions): ChatOpenAI;
 }
 
 @Injectable()
@@ -16,13 +20,13 @@ export class DefaultChatOpenAIFactory implements ChatOpenAIFactory {
     private readonly config: AuditAutomationConfig,
   ) {}
 
-  create(timeoutMs: number): ChatOpenAI {
+  create(timeoutMs: number, options: ChatOpenAIOptions = {}): ChatOpenAI {
     return new ChatOpenAI({
       apiKey: this.config.openAiApiKey,
       model: this.config.llmModel,
       timeout: timeoutMs,
       maxRetries: 0,
-      temperature: 0.2,
+      temperature: options.temperature ?? 0.2,
     });
   }
 }

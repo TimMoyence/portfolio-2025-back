@@ -1,21 +1,21 @@
 import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
 import {
+  provenanceConsignable,
+  type Provenance,
+} from '../../../common/domain/provenance';
+import {
   requireEmail,
   requireLocale,
   requireText,
-  optionalMetadata,
 } from '../../../common/domain/validation/domain-validators';
 import { PhoneNumber } from '../../../common/domain/value-objects/PhoneNumber';
 import { AuditLocale } from './audit-locale.util';
 
-export interface CreateAuditRequestProps {
+export interface CreateAuditRequestProps extends Provenance {
   websiteName: string;
   contactMethod: 'EMAIL' | 'PHONE';
   contactValue: string;
   locale: AuditLocale;
-  ip?: string | null;
-  userAgent?: string | null;
-  referer?: string | null;
 }
 
 export class AuditRequest {
@@ -67,9 +67,7 @@ export class AuditRequest {
     request.contactMethod = props.contactMethod;
     request.contactValue = contactValue;
     request.locale = locale;
-    request.ip = optionalMetadata(props.ip);
-    request.userAgent = optionalMetadata(props.userAgent);
-    request.referer = optionalMetadata(props.referer);
+    Object.assign(request, provenanceConsignable(props));
 
     return request;
   }
