@@ -1,3 +1,7 @@
+import {
+  attendreUneProvenanceBornee,
+  PROVENANCE_DEMESUREE,
+} from '../../../../test/helpers/provenance';
 import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
 import { Contacts } from './Contacts';
 
@@ -140,6 +144,12 @@ describe('Contacts aggregate', () => {
     expect(contact.ip).toBeNull();
     expect(contact.userAgent).toBeNull();
     expect(contact.referer).toBeNull();
+  });
+
+  it('borne la provenance consignée', () => {
+    attendreUneProvenanceBornee(
+      Contacts.create({ ...VALID_CONTACT_PROPS, ...PROVENANCE_DEMESUREE }),
+    );
   });
 
   it('devrait refuser une termsVersion trop longue', () => {

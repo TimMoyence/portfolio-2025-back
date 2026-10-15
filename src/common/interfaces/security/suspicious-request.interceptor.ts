@@ -9,6 +9,7 @@ import {
 import type { Request, Response } from 'express';
 import type { Observable } from 'rxjs';
 import { enArrierePlan } from '../../application/en-arriere-plan';
+import { LONGUEUR_MAX_DU_NAVIGATEUR } from '../../domain/provenance';
 import { tronquer } from '../../domain/texte/tronquer';
 import { aLaFermeture } from '../http/a-la-fermeture';
 import { dureeEnMsDepuis, instantEnNs } from '../http/duree-de-requete';
@@ -87,7 +88,7 @@ export class SuspiciousRequestInterceptor implements NestInterceptor {
         enArrierePlan(
           this.store.recordEvent({
             ip,
-            userAgent,
+            userAgent: tronquer(userAgent, LONGUEUR_MAX_DU_NAVIGATEUR),
             method: req.method,
             path,
             statusCode: res.statusCode,

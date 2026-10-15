@@ -1,6 +1,6 @@
 import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
+import { provenanceConsignable } from '../../../common/domain/provenance';
 import {
-  optionalMetadata,
   requireEmail,
   requireText,
   requireValidDate,
@@ -73,9 +73,7 @@ export class Contacts {
     contact.termsLocale = termsLocale;
     contact.termsMethod = this.optionalText(props.termsMethod, 50);
     contact.termsAcceptedAt = props.termsAcceptedAt;
-    contact.ip = optionalMetadata(props.ip);
-    contact.userAgent = optionalMetadata(props.userAgent);
-    contact.referer = optionalMetadata(props.referer);
+    Object.assign(contact, provenanceConsignable(props));
 
     return contact;
   }

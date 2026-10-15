@@ -1,4 +1,4 @@
-import { type CallHandler, Logger } from '@nestjs/common';
+import type { CallHandler } from '@nestjs/common';
 import { of, throwError } from 'rxjs';
 import { firstValueFrom, lastValueFrom } from 'rxjs';
 import {
@@ -11,6 +11,8 @@ import {
   espionnerLesAvertissements,
 } from '../../../../test/helpers/avertissements';
 import { sousUneDureeDe } from '../../../../test/helpers/horloge';
+import { espionnerLeLogger } from '../../../../test/helpers/silence-nest-logger';
+import { LONGUEUR_MAX_DU_NAVIGATEUR } from '../../domain/provenance';
 import { CENSURE } from '../http/url-journalisable';
 import { InMemorySecurityEventsStore } from './in-memory-security-events-store';
 import type { SecurityConfig } from './security.config';
@@ -141,6 +143,20 @@ describe('SuspiciousRequestInterceptor', () => {
     expect(top).toHaveLength(1);
     expect(top[0].ip).toBe('203.0.113.41');
     expect(top[0].lastReasons).toContain('ua:headless-chrome');
+  });
+
+  it('garde un navigateur borne pour une requete suspecte', async () => {
+    const userAgent = `HeadlessChrome/145 ${'B'.repeat(15_000)}`;
+
+    const [trace] = await ipsTraceesApresCreation({
+      ...COOKIE_CONSENT_POST,
+      headers: { ...HEADLESS_CHROME_HEADERS, 'user-agent': userAgent },
+      ip: '203.0.113.42',
+    });
+
+    expect(trace.lastReasons).toContain('ua:headless-chrome');
+    expect(trace.lastUserAgent).toHaveLength(LONGUEUR_MAX_DU_NAVIGATEUR);
+    expect(userAgent.startsWith(trace.lastUserAgent.slice(0, -1))).toBe(true);
   });
 
   it('ignore une chaine x-forwarded-for forgee au profit de req.ip', async () => {
@@ -341,9 +357,7 @@ describe('SuspiciousRequestInterceptor', () => {
   ])(
     'n enregistre ni n ecrit le jeton d un lien porte %s',
     async (_cas, url, params, cheminCensure) => {
-      const avertissements = jest
-        .spyOn(Logger.prototype, 'warn')
-        .mockImplementation(() => undefined);
+      const avertissements = espionnerLeLogger('warn');
 
       try {
         await intercept(
