@@ -10,6 +10,17 @@ export function espionnerLeLogger(
   return espion.mockImplementation(remplacement);
 }
 
+export function espionnerLeLoggerAChaqueTest(
+  method: LoggerMethod,
+): () => jest.SpyInstance {
+  let espion: jest.SpyInstance;
+  beforeEach(() => {
+    espion = espionnerLeLogger(method);
+  });
+  afterEach(() => espion.mockRestore());
+  return () => espion;
+}
+
 export function silenceNestLogger(
   methods: LoggerMethod[] = ['log', 'warn'],
 ): void {

@@ -7,6 +7,7 @@ import {
 } from '../../../../test/factories/execution-context.factory';
 import { sousEnvironnement } from '../../../../test/helpers/environnement';
 import { attendreProbleme } from '../../../../test/helpers/reponse-probleme';
+import { espionnerLeLoggerAChaqueTest } from '../../../../test/helpers/silence-nest-logger';
 
 describe('AllExceptionsFilter', () => {
   let filter: AllExceptionsFilter;
@@ -27,8 +28,7 @@ describe('AllExceptionsFilter', () => {
       Promise.resolve(intercepter(exception)),
     );
 
-  const espionnerLeLogger = () =>
-    jest.spyOn(filter['logger'], 'error').mockImplementation();
+  const erreurs = espionnerLeLoggerAChaqueTest('error');
 
   it('devrait retourner le status et le message pour une HttpException', () => {
     intercepter(
@@ -62,8 +62,6 @@ describe('AllExceptionsFilter', () => {
   });
 
   it('devrait rendre 503 et une consigne quand la base est injoignable', () => {
-    const loggerSpy = espionnerLeLogger();
-
     intercepter(
       Object.assign(new Error('connect ECONNREFUSED 127.0.0.1:5432'), {
         code: 'ECONNREFUSED',
@@ -73,8 +71,7 @@ describe('AllExceptionsFilter', () => {
     attendreProbleme(hote, HttpStatus.SERVICE_UNAVAILABLE, {
       detail: MESSAGE_DEPENDANCE_INJOIGNABLE,
     });
-    expect(loggerSpy).toHaveBeenCalled();
-    loggerSpy.mockRestore();
+    expect(erreurs()).toHaveBeenCalled();
   });
 
   const erreurDuParseurDeCorps = (status: number, message: string) =>
@@ -86,8 +83,6 @@ describe('AllExceptionsFilter', () => {
     });
 
   it('rend son statut et son message a une erreur client que le parseur de corps declare exposable', async () => {
-    const loggerSpy = espionnerLeLogger();
-
     await intercepterSous(
       'production',
       erreurDuParseurDeCorps(
@@ -99,8 +94,7 @@ describe('AllExceptionsFilter', () => {
     attendreProbleme(hote, HttpStatus.PAYLOAD_TOO_LARGE, {
       detail: 'request entity too large',
     });
-    expect(loggerSpy).not.toHaveBeenCalled();
-    loggerSpy.mockRestore();
+    expect(erreurs()).not.toHaveBeenCalled();
   });
 
   it.each([
@@ -146,12 +140,9 @@ describe('AllExceptionsFilter', () => {
       false,
     ],
   ])('%s', (_titre, exception, journalise) => {
-    const loggerSpy = espionnerLeLogger();
-
     intercepter(exception);
 
-    expect(loggerSpy.mock.calls.length > 0).toBe(journalise);
-    loggerSpy.mockRestore();
+    expect(erreurs().mock.calls.length > 0).toBe(journalise);
   });
 
   it.each([

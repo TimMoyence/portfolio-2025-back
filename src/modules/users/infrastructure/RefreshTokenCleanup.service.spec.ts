@@ -3,6 +3,7 @@ import { Test } from '@nestjs/testing';
 import { RefreshTokenCleanupService } from './RefreshTokenCleanup.service';
 import { REFRESH_TOKENS_REPOSITORY } from '../domain/token';
 import { createMockRefreshTokensRepo } from '../../../../test/factories/refresh-token.factory';
+import { espionnerLeLoggerAChaqueTest } from '../../../../test/helpers/silence-nest-logger';
 import type { IRefreshTokensRepository } from '../domain/IRefreshTokens.repository';
 
 describe('RefreshTokenCleanupService', () => {
@@ -27,6 +28,8 @@ describe('RefreshTokenCleanupService', () => {
   });
 
   describe('purgeExpiredTokens', () => {
+    const journaux = espionnerLeLoggerAChaqueTest('log');
+
     it('devrait appeler purgeExpired sur le repository', async () => {
       repo.purgeExpired.mockResolvedValue(5);
 
@@ -40,14 +43,12 @@ describe('RefreshTokenCleanupService', () => {
       ['devrait logger zero quand aucun token n est purge', 0],
     ])('%s', async (_titre, purges) => {
       repo.purgeExpired.mockResolvedValue(purges);
-      const logSpy = jest.spyOn(service['logger'], 'log').mockImplementation();
 
       await service.purgeExpiredTokens();
 
-      expect(logSpy).toHaveBeenCalledWith(
+      expect(journaux()).toHaveBeenCalledWith(
         `Purgé ${purges} refresh token(s) expiré(s)`,
       );
-      logSpy.mockRestore();
     });
 
     it('devrait propager l erreur si purgeExpired echoue', async () => {

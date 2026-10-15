@@ -1,13 +1,8 @@
 import { flushPromises } from './flush-promises';
-import { espionnerLeLogger } from './silence-nest-logger';
+import { espionnerLeLoggerAChaqueTest } from './silence-nest-logger';
 
 export function espionnerLesAvertissements(): () => jest.SpyInstance {
-  let espion: jest.SpyInstance;
-  beforeEach(() => {
-    espion = espionnerLeLogger('warn');
-  });
-  afterEach(() => espion.mockRestore());
-  return () => espion;
+  return espionnerLeLoggerAChaqueTest('warn');
 }
 
 export async function attendreLAvertissement(
