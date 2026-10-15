@@ -1,4 +1,5 @@
 import type { Logger } from '@nestjs/common';
+import { enArrierePlan } from '../../../../common/application/en-arriere-plan';
 import { lienAvecJeton } from '../../../../common/domain/lien-avec-jeton';
 import { emettreJeton } from '../../domain/TokenHash';
 import type { User } from '../../domain/User';
@@ -41,17 +42,15 @@ export async function emettreUnLienTemporaire(
     expiresAt: new Date(Date.now() + canal.dureeDeValiditeMs),
   });
 
-  void canal
-    .envoyer({
+  enArrierePlan(
+    canal.envoyer({
       email: destinataire.email,
       firstName: destinataire.firstName,
       lastName: destinataire.lastName,
       url: lienAvecJeton(canal.adresseDeBase, jeton.brut),
       expiresInMinutes: canal.dureeDeValiditeMs / MINUTE_MS,
-    })
-    .catch((error: unknown) =>
-      logger.error(
-        `${canal.echecDEnvoi} for ${destinataire.email}: ${String(error)}`,
-      ),
-    );
+    }),
+    `${canal.echecDEnvoi} for ${destinataire.email}`,
+    logger,
+  );
 }

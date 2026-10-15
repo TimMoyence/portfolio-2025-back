@@ -27,7 +27,7 @@ function construire(base = 'https://asilidesign.fr/verify-email') {
 
 describe('EnvoiDeVerificationEmail', () => {
   const user = buildUser({ id: 'user-7', email: 'eve@example.com' });
-  const erreurs = espionnerLeLoggerAChaqueTest('error');
+  const avertissements = espionnerLeLoggerAChaqueTest('warn');
 
   it('n enregistre que l empreinte du jeton envoye dans le lien', async () => {
     const { tokensRepo, notifier, logger, envoi } = construire();
@@ -72,9 +72,9 @@ describe('EnvoiDeVerificationEmail', () => {
       envoi.envoyer(user, 'user-7', logger, 'Echec du renvoi'),
     ).resolves.toBeUndefined();
 
-    expect(erreurs()).toHaveBeenCalledWith(
-      'Echec du renvoi for eve@example.com: Error: smtp',
+    expect(avertissements()).toHaveBeenCalledWith(
+      'Echec du renvoi for eve@example.com: smtp',
     );
-    expect(erreurs().mock.contexts).toEqual([logger]);
+    expect(avertissements().mock.contexts).toEqual([logger]);
   });
 });
