@@ -621,8 +621,12 @@ L’axe réglable A2-02 n’a plus de renvoi : il part déjà de l’« Axe de S
     2024 » ; « Marge brute : « +1 200 » (colonne « Évolution affichée », dont les autres lignes sont en
     %) » ; « Inflation : « 4,9 » » ; « Prix de la toile : « +4 % » sur l’année ».
 - **Interaction et correction** : classement corrigé serveur carte par carte ; score = cartes bien
-  placées ÷ 8 ; réussite si ≥ 6/8 ; chaque carte mal placée enregistre sa confusion ; verdict carte par
-  carte renvoyé à l’étudiant (juste / à revoir) ; taux d’erreur par carte au pupitre.
+  placées ÷ 8 ; réussite si ≥ 6/8 ; chaque carte mal placée enregistre la confusion de la case
+  choisie : une carte ambiguë rangée ailleurs, `unite-manquante-ignoree` ; une carte lisible rangée en
+  « Ambigu », `chiffre-lisible-juge-ambigu` ; une valeur en € d’un côté, `valeur-confondue-avec-taux` ;
+  un écart en points d’un côté, `points-confondus-avec-pourcentage` ; sinon (proportion contre
+  évolution), `proportion-confondue-avec-evolution` ; verdict carte par carte renvoyé à l’étudiant
+  (juste / à revoir) ; taux d’erreur par carte au pupitre.
 - **Notes** :
   - Binômes, 5 min de tri ; annoncer « plus qu’une minute » à 4 min. Chacun envoie depuis son poste.
   - Cartes les plus ratées : « Taux de marge : −2,3 % » (des points) et « Inflation : 4,9 » (ambigu,
@@ -1002,7 +1006,12 @@ changent pas, puisqu’ils servent de clés en base.
     « Inflation : 4,9 » du tableau de bord » ; « CA du 1er semestre 2025 / CA annuel 2024 (le fichier
     2024 ne contient que le total annuel) ».
 - **Interaction et correction** : classement corrigé serveur ; score x/9 renvoyé et affiché ; réussite
-  si ≥ 7/9 ; le pupitre affiche le taux d’erreur par carte.
+  si ≥ 7/9 ; le pupitre affiche le taux d’erreur par carte. Une carte mal classée enregistre la
+  confusion de la case choisie : comparable rangée « après retraitement », `retraitement-superflu` ;
+  toute carte rangée « pas comparable », `comparaison-possible-refusee` ; carte à retraiter rangée
+  « directement », `bases-incompatibles` ; carte sans donnée rangée « après retraitement »,
+  `retraitement-sans-donnee` ; rangée « directement », `bases-incompatibles` pour le semestre,
+  `unite-manquante-ignoree` pour le secteur et l’inflation (définition ou période inconnues).
 - **Notes** :
   - Binômes, chrono de 5 min (annoncer la dernière minute), puis débriefing sur l’écran de correction.
   - Cartes à risque : « semestre / année » (activité saisonnière : doubler un semestre ne donne pas
@@ -1774,7 +1783,13 @@ changent pas, puisqu’ils servent de clés en base.
   `compensation` « Un total qui concorde peut cacher +100 € et −100 € : on contrôle ligne à ligne,
   pièce en main. »
 - **Interaction et correction** : classement corrigé serveur ; score x/9 ; réussite si ≥ 7/9 ; taux
-  d’erreur par carte au pupitre ; la correction est projetée à l’écran suivant.
+  d’erreur par carte au pupitre ; la correction est projetée à l’écran suivant. Une carte mal classée
+  enregistre la confusion de la case choisie : toute carte rangée en « preuve externe » quand le
+  document suffit, `preuve-externe-superflue` ; la compensation de février rangée en « recalculer »,
+  `total-concordant-vaut-preuve` ; sinon l’anomalie de la carte (`unite-manquante-ignoree` pour
+  l’inflation et la marge, `points-confondus-avec-pourcentage`, `taux-successifs-additionnes`,
+  `moyenne-simple-des-taux`, `axe-tronque-lu-comme-ecart`, `correlation-prise-pour-causalite`,
+  `controle-non-discriminant` pour les factures et la compensation).
 - **Notes** :
   - Binômes, 5 min de tri (annoncer la dernière minute), puis écran de correction.
   - Cartes à risque : « factures de mars » et « compensation de février » (preuve par la pièce, pas
@@ -2288,7 +2303,7 @@ notions évaluées le sont après leur enseignement. Aucune n’est partielle ni
    rendu Angular. Un écran d’exposition rendu en v2 reste stocké en `fp-story`. Le front choisit le
    rendu v2 si `presentation.version === 2`, sinon il monte la brique runtime. Les deux familles
    coexistent, y compris sur la page publique.
-2. **Secret côté serveur uniquement.** Les clefs réservées de `proprietes` sont `guide`, `correction`,
+2. **Secret côté serveur uniquement.** Les clefs réservées de `proprietes` sont `correction`,
    `interaction` (existantes), **`questions`** (définitions notées, bonne réponse comprise),
    **`corrige`** (corrigés de production, stratégies de défi, révélation d’un vote) et **`banque`**
    (banque de rappel). Le filtre porte sur tous les niveaux (schémas `strict` imbriqués, B1). Aucune
@@ -2782,7 +2797,7 @@ Chaque consigne de recopie, dans tous les ateliers tableur, s’écrit par `gest
 celle du dessous (`FpSheet`), la consigne nomme donc la cellule à sélectionner et le nombre de clics,
 compté par la garde QA-11 de `contrat-des-cours.spec.ts` sur les attendus `memeQue` du corrigé.
 
-Corrigé (`corrige`, type `feuille`, `seuilReussite` 0,8 ; valeurs obtenues avec le moteur de formules
+Corrigé (`corrige`, type `feuille`, juste seulement si toutes les cellules le sont ; valeurs obtenues avec le moteur de formules
 sur les formules de référence ; tolérance relative 10⁻⁴ sauf mention) :
 
 | Cellule | Formule de référence                 |        Valeur | Forme exigée | Erreur de formule → confusion  | Pièges reconnus                                                               |
@@ -2901,7 +2916,7 @@ précédente préfixées `avant` puis capitalisées (`avantPrix`) ; dans `synthe
 ligne préfixées `dernier` (`dernierEvolution`) et le total de chaque colonne `totalise` préfixé
 `total` (`totalTaux`).
 
-Corrigé (`corrige`, type `tableau`, tolérance absolue 0,01, `seuilReussite` 0,75) :
+Corrigé (`corrige`, type `tableau`, tolérance absolue 0,01, juste seulement si toutes les cases le sont) :
 
 | Rang | Prix attendu | Piège « taux additionnés » (prix) | Indice attendu | Pièges indice                                                          |
 | ---: | -----------: | --------------------------------: | -------------: | ---------------------------------------------------------------------- |
@@ -3030,54 +3045,61 @@ arrondies au millionième sauf mention.
 **ajoutés** `indice-base-100`, `point-de-pourcentage`, `moyenne-ponderee`, `lecture-graphique`,
 `controle-coherence`, `contrat-de-lecture`, `tableur`. Concepts du cours (`Cours.concepts`) : les 14.
 
-**Confusions** : les 8 existantes sont conservées ; 30 sont ajoutées. Chaque piège V3 porte une
+**Confusions** : les 8 existantes sont conservées ; 35 sont ajoutées. Chaque piège V3 porte une
 confusion qui le décrit réellement (le deck étiquetait par exemple « la couleur de la courbe » comme
 `taux-valeur-facteur-cent`). Chaque confusion a une remédiation vers l’écran qui enseigne la notion
 (identifiants complets `ref:B2-01-…`).
 
-| Identifiant                                  | Concept                    | Libellé                                                                                                                                | Remédiation                       |
-| -------------------------------------------- | -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------- |
-| `hausse-baisse-symetriques` (existante)      | evolutions-successives     | Croire qu’une hausse puis une baisse du même pourcentage ramènent à la valeur de départ.                                               | B2-01-A3-03-PRIX-SAC              |
-| `taux-successifs-additionnes` (existante)    | evolutions-successives     | Additionner des taux successifs au lieu de multiplier les coefficients.                                                                | B2-01-A3-04-FIL-TECHNIQUE         |
-| `reciproque-meme-taux` (existante)           | evolution-reciproque       | Croire que le même pourcentage en sens inverse suffit pour revenir au départ.                                                          | B2-01-A3-04-FIL-TECHNIQUE         |
-| `base-arrivee` (existante)                   | taux-evolution             | Diviser l’écart par la valeur d’arrivée au lieu de la valeur de départ.                                                                | B2-01-A3-02-MACHINE-COEFFICIENTS  |
-| `ecart-absolu-au-lieu-du-taux` (existante)   | taux-evolution             | Donner l’écart en valeur au lieu du taux en pourcentage.                                                                               | B2-01-A2-05-ECRITURES             |
-| `coefficient-confondu-avec-taux` (existante) | coefficient-multiplicateur | Confondre le taux d’évolution t et le coefficient multiplicateur 1 + t (pour + 15 % : 0,15 et 1,15).                                   | B2-01-A3-02-MACHINE-COEFFICIENTS  |
-| `taux-valeur-facteur-cent` (existante)       | pourcentage                | Confondre le taux 70 % et la valeur 0,7 : le résultat est décalé d’un facteur 100.                                                     | B2-01-A2-05-ECRITURES             |
-| `raisonnement-additif` (existante)           | proportion                 | Ajouter un écart constant là où la situation est proportionnelle.                                                                      | B2-01-A5-03-MOYENNE-PONDEREE      |
-| `proportion-confondue-avec-evolution`        | pourcentage                | Confondre un pourcentage de proportion (part d’un total) et un pourcentage d’évolution (variation par rapport à une valeur de départ). | B2-01-A2-05-ECRITURES             |
-| `points-confondus-avec-pourcentage`          | point-de-pourcentage       | Exprimer en % l’écart entre deux taux, qui se mesure en points.                                                                        | B2-01-A2-06-POINTS                |
-| `population-reference-ignoree`               | proportion                 | Comparer ou confondre deux proportions calculées sur des populations de référence différentes.                                         | B2-01-A1-06-FICHE-INDICATEUR      |
-| `base-inversee`                              | proportion                 | Diviser le total par la partie au lieu de la partie par le total.                                                                      | B2-01-A1-06-FICHE-INDICATEUR      |
-| `sens-de-variation`                          | taux-evolution             | Oublier le signe d’une variation : une baisse s’écrit avec un signe moins.                                                             | B2-01-A3-02-MACHINE-COEFFICIENTS  |
-| `coefficient-global-mal-interprete`          | evolutions-successives     | Mal traduire un coefficient global en taux (0,99 correspond à une baisse de 1 %).                                                      | B2-01-A3-02-MACHINE-COEFFICIENTS  |
-| `rythme-confondu-avec-niveau`                | indice-base-100            | Confondre désinflation (la hausse des prix ralentit) et déflation (les prix baissent).                                                 | B2-01-A3-08-INDICE-PRIX           |
-| `indice-lu-comme-taux`                       | indice-base-100            | Lire un indice comme un taux (112,68 au lieu de +12,68 %) ou l’inverse.                                                                | B2-01-A3-06-INDICE-ET-TAUX-MOYEN  |
-| `indice-lu-comme-valeur`                     | indice-base-100            | Lire un indice comme un prix ou un montant.                                                                                            | B2-01-A3-06-INDICE-ET-TAUX-MOYEN  |
-| `taux-moyen-arithmetique`                    | taux-moyen                 | Diviser un taux global par le nombre de périodes au lieu de prendre une racine n-ième.                                                 | B2-01-A3-06-INDICE-ET-TAUX-MOYEN  |
-| `moyenne-simple-des-taux`                    | moyenne-ponderee           | Faire la moyenne simple de taux au lieu de les pondérer par leurs bases.                                                               | B2-01-A5-03-MOYENNE-PONDEREE      |
-| `hausse-base-baisse-taux`                    | moyenne-ponderee           | Croire qu’une hausse du total fait mécaniquement baisser un taux.                                                                      | B2-01-A5-04-SIMULATEUR-MIX        |
-| `baisse-attribuee-aux-taux-locaux`           | moyenne-ponderee           | Attribuer la baisse d’un taux global à la baisse des taux de chaque composante, sans regarder les poids.                               | B2-01-A5-03-MOYENNE-PONDEREE      |
-| `axe-tronque-lu-comme-ecart`                 | lecture-graphique          | Juger une évolution à la hauteur des barres sans lire l’origine et l’amplitude de l’axe.                                               | B2-01-A2-02-ORIGINE-AXE           |
-| `correlation-prise-pour-causalite`           | lecture-graphique          | Conclure sur une cause, ou sur l’absence de cause, à partir de deux évolutions simultanées.                                            | B2-01-A5-08-RECOMMANDATION        |
-| `forme-inadaptee`                            | lecture-graphique          | Choisir une forme de graphique qui ne montre pas la relation demandée.                                                                 | B2-01-A4-04-CA-TRIMESTRIEL        |
-| `titre-interpretatif`                        | lecture-graphique          | Choisir un titre ou une phrase de lecture qui conclut au lieu de décrire la mesure.                                                    | B2-01-A4-04-CA-TRIMESTRIEL        |
-| `unite-manquante-ignoree`                    | contrat-de-lecture         | Accepter un chiffre sans unité, base ou période.                                                                                       | B2-01-A1-06-FICHE-INDICATEUR      |
-| `bases-incompatibles`                        | contrat-de-lecture         | Comparer des valeurs de périodes, de périmètres ou de bases (HT/TTC, unités) différents sans retraitement.                             | B2-01-A2-07-JEU-COMPARABLE        |
-| `valeur-confondue-avec-taux`                 | contrat-de-lecture         | Conclure sur une rentabilité (un taux) à partir d’un montant, ou lire un montant comme un taux.                                        | B2-01-A2-05-ECRITURES             |
-| `ca-confondu-avec-marge`                     | contrat-de-lecture         | Utiliser le chiffre d’affaires là où la question porte sur la marge.                                                                   | B2-01-A1-06-FICHE-INDICATEUR      |
-| `marque-confondue-avec-marge`                | pourcentage                | Confondre le taux de marque (marge ÷ prix de vente HT) et le taux de marge (marge ÷ coût d’achat HT).                                  | B2-01-A1-06-FICHE-INDICATEUR      |
-| `total-concordant-vaut-preuve`               | controle-coherence         | Croire qu’un total exact garantit l’exactitude de chaque ligne.                                                                        | B2-01-A6-01-PACIOLI               |
-| `indice-pris-pour-preuve`                    | controle-coherence         | Traiter un indice de recherche (écart multiple de 9) comme une preuve.                                                                 | B2-01-A6-01-PACIOLI               |
-| `controle-non-discriminant`                  | controle-coherence         | Choisir un contrôle qui ne permet ni de localiser ni de trancher l’anomalie.                                                           | B2-01-A5-07-CONTROLE-DISCRIMINANT |
-| `tva-base-non-corrigee`                      | controle-coherence         | Calculer la TVA sur une base erronée non corrigée.                                                                                     | B2-01-A3-04-FIL-TECHNIQUE         |
-| `tva-calculee-sur-ttc`                       | pourcentage                | Appliquer le taux de TVA comme si la base était un montant TTC.                                                                        | B2-01-A3-04-FIL-TECHNIQUE         |
-| `reference-relative-non-figee`               | tableur                    | Recopier une formule dont une référence fixe n’est pas figée ($) : elle glisse d’une ligne à chaque recopie.                           | B2-01-A4-01-CAPSULE               |
-| `valeur-saisie-sans-formule`                 | tableur                    | Taper un résultat calculé ailleurs au lieu d’une formule qui cite les cellules.                                                        | B2-01-A4-01-CAPSULE               |
-| `formule-non-recopiable`                     | tableur                    | Écrire une formule différente à chaque ligne au lieu d’une formule recopiable.                                                         | B2-01-A4-01-CAPSULE               |
+| Identifiant                                  | Concept                    | Libellé                                                                                                                                                                                                                                                 | Remédiation                       |
+| -------------------------------------------- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------- |
+| `hausse-baisse-symetriques` (existante)      | evolutions-successives     | Croire qu’une hausse puis une baisse du même pourcentage ramènent à la valeur de départ.                                                                                                                                                                | B2-01-A3-03-PRIX-SAC              |
+| `taux-successifs-additionnes` (existante)    | evolutions-successives     | Additionner des taux successifs au lieu de multiplier les coefficients.                                                                                                                                                                                 | B2-01-A3-04-FIL-TECHNIQUE         |
+| `reciproque-meme-taux` (existante)           | evolution-reciproque       | Croire que le même pourcentage en sens inverse ramène au départ, qu’il soit le taux d’une évolution ou la somme de taux successifs : on revient au départ en divisant par le coefficient multiplicateur.                                                | B2-01-A3-04-FIL-TECHNIQUE         |
+| `base-arrivee` (existante)                   | taux-evolution             | Diviser l’écart par la valeur d’arrivée au lieu de la valeur de départ.                                                                                                                                                                                 | B2-01-A3-02-MACHINE-COEFFICIENTS  |
+| `ecart-absolu-au-lieu-du-taux` (existante)   | taux-evolution             | Donner l’écart en valeur au lieu du taux en pourcentage.                                                                                                                                                                                                | B2-01-A2-05-ECRITURES             |
+| `coefficient-confondu-avec-taux` (existante) | coefficient-multiplicateur | Confondre le taux d’évolution t et le coefficient multiplicateur 1 + t (pour + 15 % : 0,15 et 1,15).                                                                                                                                                    | B2-01-A3-02-MACHINE-COEFFICIENTS  |
+| `taux-valeur-facteur-cent` (existante)       | pourcentage                | Confondre le taux 70 % et la valeur 0,7 : le résultat est décalé d’un facteur 100.                                                                                                                                                                      | B2-01-A2-05-ECRITURES             |
+| `raisonnement-additif` (existante)           | proportion                 | Raisonner par addition là où la situation est proportionnelle : ajouter un écart constant, ou additionner les taux de plusieurs composantes pour obtenir un taux global.                                                                                | B2-01-A5-03-MOYENNE-PONDEREE      |
+| `proportion-confondue-avec-evolution`        | pourcentage                | Confondre un pourcentage de proportion (part d’un total) et un pourcentage d’évolution (variation par rapport à une valeur de départ).                                                                                                                  | B2-01-A2-05-ECRITURES             |
+| `points-confondus-avec-pourcentage`          | point-de-pourcentage       | Confondre l’écart entre deux taux, qui se mesure en points, et un pourcentage, part d’un total ou évolution relative, qui se mesure en %.                                                                                                               | B2-01-A2-06-POINTS                |
+| `population-reference-ignoree`               | proportion                 | Comparer ou confondre deux proportions calculées sur des populations de référence différentes.                                                                                                                                                          | B2-01-A1-06-FICHE-INDICATEUR      |
+| `base-inversee`                              | proportion                 | Diviser le total par la partie au lieu de la partie par le total.                                                                                                                                                                                       | B2-01-A1-06-FICHE-INDICATEUR      |
+| `sens-de-variation`                          | taux-evolution             | Se tromper sur le sens d’une variation : oublier le signe moins d’une baisse, traduire une baisse par le coefficient 1 + t au lieu de 1 − t, ou juger croissante une suite géométrique de raison positive, qui ne croît que si sa raison dépasse 1.     | B2-01-A3-02-MACHINE-COEFFICIENTS  |
+| `coefficient-global-mal-interprete`          | evolutions-successives     | Mal traduire un coefficient global en taux (0,99 correspond à une baisse de 1 %).                                                                                                                                                                       | B2-01-A3-02-MACHINE-COEFFICIENTS  |
+| `rythme-confondu-avec-niveau`                | indice-base-100            | Confondre désinflation et des prix stables ou en baisse : quand la hausse des prix ralentit (désinflation), les prix continuent de monter ; ils ne baissent qu’en déflation.                                                                            | B2-01-A3-08-INDICE-PRIX           |
+| `indice-lu-comme-taux`                       | indice-base-100            | Lire un indice comme un taux (112,68 au lieu de +12,68 %) ou l’inverse.                                                                                                                                                                                 | B2-01-A3-06-INDICE-ET-TAUX-MOYEN  |
+| `indice-lu-comme-valeur`                     | indice-base-100            | Lire un indice comme un prix ou un montant.                                                                                                                                                                                                             | B2-01-A3-06-INDICE-ET-TAUX-MOYEN  |
+| `taux-moyen-arithmetique`                    | taux-moyen                 | Prendre pour taux moyen une moyenne arithmétique, le taux global divisé par le nombre de périodes ou la moyenne des taux de chaque période, au lieu de la racine n-ième du coefficient global.                                                          | B2-01-A3-06-INDICE-ET-TAUX-MOYEN  |
+| `moyenne-simple-des-taux`                    | moyenne-ponderee           | Faire la moyenne simple de taux au lieu de les pondérer par leurs bases.                                                                                                                                                                                | B2-01-A5-03-MOYENNE-PONDEREE      |
+| `hausse-base-baisse-taux`                    | moyenne-ponderee           | Croire qu’une hausse du total fait mécaniquement baisser un taux.                                                                                                                                                                                       | B2-01-A5-04-SIMULATEUR-MIX        |
+| `baisse-attribuee-aux-taux-locaux`           | moyenne-ponderee           | Attribuer la baisse d’un taux global à la baisse des taux de chaque composante, sans regarder les poids.                                                                                                                                                | B2-01-A5-03-MOYENNE-PONDEREE      |
+| `axe-tronque-lu-comme-ecart`                 | lecture-graphique          | Lire ou construire un graphique sans tenir compte de l’origine et de l’amplitude de l’axe : juger un écart à la hauteur des barres, tronquer l’axe ou supprimer ses graduations, ou renoncer à lire un écart que les graduations permettent de mesurer. | B2-01-A2-02-ORIGINE-AXE           |
+| `correlation-prise-pour-causalite`           | lecture-graphique          | Tirer de deux évolutions simultanées, ou d’un coefficient de corrélation proche de 1, une conclusion qu’ils ne prouvent pas : une cause, l’absence de cause ou la poursuite de la tendance.                                                             | B2-01-A5-08-RECOMMANDATION        |
+| `forme-inadaptee`                            | lecture-graphique          | Choisir une forme de graphique qui ne montre pas la relation demandée.                                                                                                                                                                                  | B2-01-A4-04-CA-TRIMESTRIEL        |
+| `titre-interpretatif`                        | lecture-graphique          | Choisir un titre ou une phrase de lecture qui conclut au lieu de décrire la mesure.                                                                                                                                                                     | B2-01-A4-04-CA-TRIMESTRIEL        |
+| `unite-manquante-ignoree`                    | contrat-de-lecture         | Accepter ou produire un chiffre, un titre ou une légende sans sa définition, son unité, sa base ou sa période.                                                                                                                                          | B2-01-A1-06-FICHE-INDICATEUR      |
+| `bases-incompatibles`                        | contrat-de-lecture         | Comparer directement des valeurs de périodes, de périmètres ou de bases (HT/TTC, unités) différents, sans les retraiter ni chercher la donnée comparable.                                                                                               | B2-01-A2-07-JEU-COMPARABLE        |
+| `valeur-confondue-avec-taux`                 | contrat-de-lecture         | Confondre un montant et un taux : conclure sur une rentabilité à partir d’un montant, lire un montant comme un pourcentage ou un écart en points, ou un pourcentage comme un montant.                                                                   | B2-01-A2-05-ECRITURES             |
+| `ca-confondu-avec-marge`                     | contrat-de-lecture         | Utiliser le chiffre d’affaires là où la question porte sur la marge.                                                                                                                                                                                    | B2-01-A1-06-FICHE-INDICATEUR      |
+| `marque-confondue-avec-marge`                | pourcentage                | Confondre le taux de marque (marge ÷ prix de vente HT) et le taux de marge (marge ÷ coût d’achat HT).                                                                                                                                                   | B2-01-A1-06-FICHE-INDICATEUR      |
+| `total-concordant-vaut-preuve`               | controle-coherence         | Juger les lignes sur les seuls totaux : croire qu’un total exact garantit chaque ligne, ou conclure à l’absence d’erreur malgré un écart entre deux totaux.                                                                                             | B2-01-A6-01-PACIOLI               |
+| `indice-pris-pour-preuve`                    | controle-coherence         | Traiter un indice de recherche (écart multiple de 9) comme une preuve.                                                                                                                                                                                  | B2-01-A6-01-PACIOLI               |
+| `controle-non-discriminant`                  | controle-coherence         | Se contenter d’un contrôle ou d’un calcul qui ne localise ni ne tranche l’anomalie, en jugeant un écart négligeable ou en ne calculant que l’effet de l’écart, au lieu de remonter à la pièce qui dit quelle valeur est fausse.                         | B2-01-A5-07-CONTROLE-DISCRIMINANT |
+| `tva-base-non-corrigee`                      | controle-coherence         | Calculer la TVA sur une base erronée non corrigée.                                                                                                                                                                                                      | B2-01-A3-04-FIL-TECHNIQUE         |
+| `tva-calculee-sur-ttc`                       | pourcentage                | Appliquer le taux de TVA comme si la base était un montant TTC.                                                                                                                                                                                         | B2-01-A3-04-FIL-TECHNIQUE         |
+| `reference-relative-non-figee`               | tableur                    | Recopier une formule dont une référence fixe n’est pas figée ($) : elle glisse d’une ligne à chaque recopie.                                                                                                                                            | B2-01-A4-01-CAPSULE               |
+| `valeur-saisie-sans-formule`                 | tableur                    | Taper un résultat calculé ailleurs au lieu d’une formule qui cite les cellules.                                                                                                                                                                         | B2-01-A4-01-CAPSULE               |
+| `formule-non-recopiable`                     | tableur                    | Écrire une formule différente à chaque ligne au lieu d’une formule recopiable.                                                                                                                                                                          | B2-01-A4-01-CAPSULE               |
+| `chiffre-lisible-juge-ambigu`                | contrat-de-lecture         | Juger ambigu un chiffre dont le libellé dit ce qu’il mesure, sa base et sa période : il se lit tel quel, et une unité mal écrite se corrige.                                                                                                            | B2-01-A1-06-FICHE-INDICATEUR      |
+| `retraitement-superflu`                      | contrat-de-lecture         | Vouloir retraiter deux valeurs qui ont déjà la même unité, le même périmètre et la même période : elles se comparent directement.                                                                                                                       | B2-01-A2-07-JEU-COMPARABLE        |
+| `comparaison-possible-refusee`               | contrat-de-lecture         | Renoncer à comparer deux valeurs alors qu’aucune donnée ne manque : elles se comparent directement, ou après un calcul sur les données disponibles (passer du TTC au HT, changer d’unité, retirer une partie du périmètre).                             | B2-01-A2-07-JEU-COMPARABLE        |
+| `retraitement-sans-donnee`                   | contrat-de-lecture         | Croire qu’un calcul remplace une donnée qui manque : sans la définition, la période ou le périmètre qui rendraient deux valeurs comparables, aucun retraitement ne suffit, il faut chercher la donnée.                                                  | B2-01-A2-07-JEU-COMPARABLE        |
+| `preuve-externe-superflue`                   | controle-coherence         | Chercher une pièce ou une donnée détaillée pour une anomalie que le document suffit à trancher : compléter l’unité, la période et la source, refaire le calcul ou refaire le graphique.                                                                 | B2-01-A5-07-CONTROLE-DISCRIMINANT |
 
-Soit 38 confusions et 38 remédiations, toutes vers des écrans existants (règle
-`reference-inconnue`).
+Soit 43 confusions et 43 remédiations, toutes vers des écrans existants (règle
+`reference-inconnue`). Les cinq dernières nomment, dans les tris de cartes, l’erreur propre à chaque
+mauvaise case : la confusion d’un piège de classement suit la case choisie (Tim, 14/10 : « Selon la
+case choisie »).
 
 ### 5.10 Banque des questions et des corrigés
 
@@ -3119,7 +3141,7 @@ statiques (mêmes données pour toute la classe).
 | `b2-01-a3-niveau-prix`      | vote · indice-base-100                   | « Plus élevé qu’en 2024 »                           | « Plus bas qu’en 2024 » ; « Identique à celui de 2024 » (les deux `rythme-confondu-avec-niveau`)            | « Plus élevé » ; « 2024 » |
 | `b2-01-a3-indice-2023`      | numérique · indice-base-100              | 112,681079 · décimales 2 · forme publiée « 112,68 » | 112,2 (`taux-successifs-additionnes`) ; 12,681079 (`indice-lu-comme-taux`)                                  | —                         |
 | `b2-01-a3-hausse-2019-2025` | numérique « % » · evolutions-successives | 15,969113 · décimales 2 · forme publiée « 15,97 »   | 15,1 (`taux-successifs-additionnes`) ; 115,969113 (`indice-lu-comme-taux`)                                  | —                         |
-| `b2-01-a3-taux-moyen`       | numérique « % » · taux-moyen             | 2,499966 · décimales 2 · forme publiée « 2,50 »     | 2,661519 (`taux-moyen-arithmetique`) ; 2,516667 (`taux-successifs-additionnes`)                             | —                         |
+| `b2-01-a3-taux-moyen`       | numérique « % » · taux-moyen             | 2,499966 · décimales 2 · forme publiée « 2,50 »     | 2,661519 (`taux-moyen-arithmetique`) ; 2,516667 (`taux-moyen-arithmetique`, moyenne des six taux annuels)   | —                         |
 | `b2-01-a3-reciproque`       | vote · evolution-reciproque              | « Une baisse de 20 % »                              | « Une baisse de 25 % » (`reciproque-meme-taux`) ; « Une baisse de 80 % » (`coefficient-confondu-avec-taux`) | —                         |
 
 **Atelier 3 — A4-03** (ordre fixe) :
@@ -3268,7 +3290,7 @@ fiches A3-01 et A5-02.
 7. **Écran servi.** Aucune écriture n’est acceptée sur un écran que le participant ne peut pas encore
    voir (409 `ECRAN_NON_SERVI`) : ni réponse, ni production, ni tentative, ni jalon, ni rappel, ni texte
    libre, ni défi.
-8. **Notes et corrigés jamais projetés.** `notes`, `guide` et `corrigeEcran` ne sont servis qu’au
+8. **Notes et corrigés jamais projetés.** `notes` et `corrigeEcran` ne sont servis qu’au
    déroulé formateur et rendus au pupitre (`board`) seulement ; la projection (`stage`) montre la bonne
    option d’un vote et la révélation **uniquement** en phase `revele` ; la vue étudiante ne les affiche
    jamais.
@@ -3386,7 +3408,7 @@ document). Premières apparitions publiques des réponses numériques, toutes **
 | AC-15 | un fragment n’est renvoyé qu’après une tentative juste ; 11e tentative → 409 `TENTATIVES_EPUISEES` ; 20 tentatives parallèles → exactement 10 comptées ; énigme non ouverte → 409 `ENIGME_VERROUILLEE` | tests HTTP et base                               |
 | AC-16 | les stratégies d’un défi ne sont servies qu’après l’envoi, sans `fausse` avant la révélation ; la première tentative reste figée au pupitre                                                            | tests HTTP                                       |
 | AC-17 | aucune route ne renvoie l’état individuel d’un autre participant (jalons, réponses, énigmes)                                                                                                           | tests HTTP (matrice d’accès)                     |
-| AC-18 | la projection et la vue étudiante n’affichent jamais `notes`, `guide` ni `corrigeEcran` ; la projection montre la bonne option et la révélation seulement en phase `revele`                            | test de bout en bout paramétré (`stage` × phase) |
+| AC-18 | la projection et la vue étudiante n’affichent jamais `notes` ni `corrigeEcran` ; la projection montre la bonne option et la révélation seulement en phase `revele`                                     | test de bout en bout paramétré (`stage` × phase) |
 | AC-19 | toute écriture visant un écran non servi → 409 `ECRAN_NON_SERVI` ; question jumelle hors phase → 409 `PHASE_FERMEE`                                                                                    | tests HTTP                                       |
 
 ### 7.3 Licences et médias
@@ -3626,7 +3648,6 @@ interface EcranCommun {
   readonly notes: string;
   readonly modalite?: Modalite;
   readonly question?: QuestionVote; // quiz v2 attaché (versions 1 et 2)
-  readonly guide?: GuideFormateur;
 }
 
 export type Ecran =
@@ -3796,7 +3817,6 @@ export interface CorrigeFeuille {
     readonly confusionSiErreurFormule: ConfusionId | null; // #DIV/0!, #REF!, #VALEUR!, #NOM?
     readonly pieges: readonly PiegeNumerique[];
   }>;
-  readonly seuilReussite: number; // 0,8
 }
 export interface CorrigeTableau {
   readonly type: 'tableau';
@@ -3807,17 +3827,19 @@ export interface CorrigeTableau {
     readonly pieges: readonly PiegeNumerique[];
   }>;
   readonly tolerance: Tolerance; // absolue 0,01
-  readonly seuilReussite: number; // 0,75
+}
+export interface PiegeDeClassement {
+  readonly categorieId: string; // une mauvaise case du tri
+  readonly confusion: ConfusionId; // l’erreur qu’elle révèle pour cette carte
 }
 export interface CorrigeClassement {
   readonly type: 'classement';
   readonly attendus: AuMoinsUn<{
     readonly carteId: string;
     readonly categorieId: string;
-    readonly confusionSiErreur: ConfusionId;
+    readonly pieges: readonly PiegeDeClassement[]; // une par mauvaise case, dans l’ordre du plan
     readonly justification: string;
   }>;
-  readonly seuilReussite: number; // 0,75
 }
 export interface CorrigeEnigme {
   readonly type: 'enigme';
@@ -3959,7 +3981,6 @@ export interface EcranDeroule extends EcranPublic {
       | null;
   }[];
   readonly corrigeEcran: CorrigeEcranPresentateur | null;
-  readonly guide?: GuideFormateur;
 }
 export type CorrigeEcranPresentateur =
   | {
@@ -3971,7 +3992,6 @@ export type CorrigeEcranPresentateur =
         readonly tolerance: Tolerance;
         readonly forme: FormeFormule;
       }[];
-      readonly seuilReussite: number;
     }
   | {
       readonly type: 'tableau';
@@ -3981,7 +4001,6 @@ export type CorrigeEcranPresentateur =
         readonly valeur: number;
       }[];
       readonly tolerance: Tolerance;
-      readonly seuilReussite: number;
     }
   | {
       readonly type: 'classement';
@@ -3990,7 +4009,6 @@ export type CorrigeEcranPresentateur =
         readonly categorieId: string;
         readonly justification: string;
       }[];
-      readonly seuilReussite: number;
     }
   | {
       readonly type: 'enigmes';

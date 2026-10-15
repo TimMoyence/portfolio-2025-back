@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "5f0ef57f6882edd981b99b9fc8d4f045f059ca1f2ae34db1126567467c5cacef",
+  "empreinte": "6361e51edf92d22859b788bbe586ae5f901841b469b832b51a4dded841cf9dd0",
   "sujet": {
     "id": "b2-03-logique",
     "titre": "Logique : écrire et contrôler une règle",
@@ -3040,8 +3040,7 @@
           "tolerance": {
             "type": "absolue",
             "valeur": 0.01
-          },
-          "seuilReussite": 0.75
+          }
         },
         "explications": [
           {
@@ -3401,8 +3400,7 @@
                 "memeQue": "D2"
               }
             }
-          ],
-          "seuilReussite": 0.8
+          ]
         },
         "explications": [
           {
@@ -3770,7 +3768,7 @@
             "confusions": [
               {
                 "id": "negation-comparaison",
-                "libelle": "Nier « x > a » en « x < a » au lieu de « x ≤ a » : la borne est oubliée."
+                "libelle": "Nier une comparaison sans faire changer la borne de camp : le contraire de « x > a » est « x ≤ a » et non « x < a », celui de « x ≥ a » est « x < a » et non « x ≤ a », celui de « x < a » est « x ≥ a » et non « x > a »."
               }
             ]
           },
@@ -3790,7 +3788,7 @@
             "confusions": [
               {
                 "id": "negation-comparaison",
-                "libelle": "Nier « x > a » en « x < a » au lieu de « x ≤ a » : la borne est oubliée."
+                "libelle": "Nier une comparaison sans faire changer la borne de camp : le contraire de « x > a » est « x ≤ a » et non « x < a », celui de « x ≥ a » est « x < a » et non « x ≤ a », celui de « x < a » est « x ≥ a » et non « x > a »."
               },
               {
                 "id": "negation-sans-morgan",
@@ -4078,8 +4076,7 @@
                 "memeQue": "E2"
               }
             }
-          ],
-          "seuilReussite": 0.8
+          ]
         },
         "explications": [
           {
@@ -4512,7 +4509,7 @@
               },
               {
                 "id": "negation-comparaison",
-                "libelle": "Nier « x > a » en « x < a » au lieu de « x ≤ a » : la borne est oubliée."
+                "libelle": "Nier une comparaison sans faire changer la borne de camp : le contraire de « x > a » est « x ≤ a » et non « x < a », celui de « x ≥ a » est « x < a » et non « x ≤ a », celui de « x < a » est « x ≥ a » et non « x > a »."
               }
             ]
           },
@@ -4522,7 +4519,7 @@
             "confusions": [
               {
                 "id": "negation-comparaison",
-                "libelle": "Nier « x > a » en « x < a » au lieu de « x ≤ a » : la borne est oubliée."
+                "libelle": "Nier une comparaison sans faire changer la borne de camp : le contraire de « x > a » est « x ≤ a » et non « x < a », celui de « x ≥ a » est « x < a » et non « x ≤ a », celui de « x < a » est « x ≥ a » et non « x > a »."
               }
             ]
           },
@@ -5622,8 +5619,7 @@
               },
               "forme": "references"
             }
-          ],
-          "seuilReussite": 0.8
+          ]
         },
         "explications": [
           {
@@ -5844,7 +5840,7 @@
             "confusions": [
               {
                 "id": "negation-comparaison",
-                "libelle": "Nier « x > a » en « x < a » au lieu de « x ≤ a » : la borne est oubliée."
+                "libelle": "Nier une comparaison sans faire changer la borne de camp : le contraire de « x > a » est « x ≤ a » et non « x < a », celui de « x ≥ a » est « x < a » et non « x ≤ a », celui de « x < a » est « x ≥ a » et non « x > a »."
               }
             ]
           },

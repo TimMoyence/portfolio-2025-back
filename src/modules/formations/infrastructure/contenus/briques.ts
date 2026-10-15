@@ -1,6 +1,7 @@
 import type { z } from 'zod';
 import {
   mapperAuMoinsUn,
+  type AuMoinsUn,
   type AuMoinsUnModifiable,
 } from '../../../../common/domain/au-moins-un';
 import type { ConceptId } from '../../domain/cours/banque/concepts';
@@ -179,28 +180,36 @@ export function ecranV2(
   };
 }
 
-interface Carte {
+interface CarteRangee {
   readonly id: string;
   readonly libelle: string;
   readonly categorie: string;
-  readonly confusion: ConfusionId;
+  readonly confusions: Readonly<Partial<Record<string, ConfusionId>>>;
   readonly justification: string;
 }
 
-export function classement(
+type Carte<C extends string> = {
+  readonly [K in C]: Omit<CarteRangee, 'categorie' | 'confusions'> & {
+    readonly categorie: K;
+    readonly confusions: Readonly<Record<Exclude<C, K>, ConfusionId>>;
+  };
+}[C];
+
+export function classement<C extends string>(
   plan: {
     readonly id: string;
     readonly intitule: string;
     readonly dureeJeuMs?: number;
   },
   concept: ConceptId,
-  categories: AuMoinsUnModifiable<readonly [string, string]>,
-  cartes: AuMoinsUnModifiable<Carte>,
+  categories: AuMoinsUnModifiable<readonly [C, string]>,
+  cartes: AuMoinsUnModifiable<NoInfer<Carte<C>>>,
 ): Pick<ProprietesDeClassement, 'plan' | 'questions'> {
+  const rangees: AuMoinsUn<CarteRangee> = cartes;
   return {
     plan: {
       ...plan,
-      cartes: mapperAuMoinsUn(cartes, (carte) => ({
+      cartes: mapperAuMoinsUn(rangees, (carte) => ({
         id: carte.id,
         libelle: carte.libelle,
       })),
@@ -217,13 +226,17 @@ export function classement(
         noteCompte: true,
         corrige: {
           type: 'classement',
-          attendus: mapperAuMoinsUn(cartes, (carte) => ({
+          attendus: mapperAuMoinsUn(rangees, (carte) => ({
             carteId: carte.id,
             categorieId: carte.categorie,
-            confusionSiErreur: carte.confusion,
+            pieges: categories.flatMap(([id]) => {
+              const confusion = carte.confusions[id];
+              return confusion === undefined
+                ? []
+                : [{ categorieId: id, confusion }];
+            }),
             justification: carte.justification,
           })),
-          seuilReussite: 0.75,
         },
       },
     ],
@@ -467,7 +480,6 @@ export function questionDeTableau(
       type: 'tableau',
       attendus,
       tolerance: { type: 'absolue', valeur: ecartToleree },
-      seuilReussite: 0.75,
     },
   };
 }

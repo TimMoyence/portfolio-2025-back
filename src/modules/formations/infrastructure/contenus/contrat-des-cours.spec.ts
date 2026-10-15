@@ -1,6 +1,7 @@
 import { lireNombreSaisiAvecUnite } from '../../domain/cours/Formule';
 import { sansEspacesTypographiques } from '../../../../common/domain/texte/sans-espaces-typographiques';
 import {
+  buildContenuDuCours,
   buildCoursDuContenu,
   prefixeDuCours,
 } from '../../../../../test/factories/contenus-de-cours.factory';
@@ -10,7 +11,12 @@ import { cueillirDansArbre } from '../../domain/cours/ArbreDeValeurs';
 import { CONFUSIONS } from '../../domain/cours/banque/confusions';
 import { matchesSolution } from '../../domain/GradingCore';
 import { questionsDuCours } from '../../domain/cours/Cours';
-import type { ContenuDeCours } from '../../domain/cours/CoursStocke';
+import type { PiegeDeClassement } from '../../domain/cours/Corrige';
+import {
+  lireCoursStocke,
+  type ContenuDeCours,
+  type ContenuDeCoursBrut,
+} from '../../domain/cours/CoursStocke';
 import { deroulePresentateur } from '../../domain/cours/DeroulePresentateur';
 import { projeterCatalogue } from '../../domain/cours/Diffusion';
 import { ouvrirTirages } from '../../domain/cours/OuvertureTirages';
@@ -26,11 +32,7 @@ const TIRAGES_CONTROLES = 61;
 const LONGUEUR_MAX_D_UN_IDENTIFIANT = 60;
 const NOMBRE_EN_TETE = /^[−-]?\d[\d\s]*(?:,\d+)?/u;
 const DECIMAL_A_POINT = /\d\.\d/u;
-const CLES_DE_CONFUSION = new Set([
-  'confusion',
-  'confusionSiErreur',
-  'confusionSiErreurFormule',
-]);
+const CLES_DE_CONFUSION = new Set(['confusion', 'confusionSiErreurFormule']);
 const CLES_SECRETES = [
   'guide',
   'correction',
@@ -111,6 +113,71 @@ function confusionsCiblees(contenu: ContenuDeCours): Set<string> {
   );
 }
 
+function trisDu(contenu: ContenuDeCours) {
+  return contenu.ecrans.flatMap((ecran) =>
+    ecran.brique === 'fp-cardsort' ? [ecran] : [],
+  );
+}
+
+function couplesSansConfusion(contenu: ContenuDeCours): string[] {
+  return trisDu(contenu).flatMap(({ screenId, proprietes }) =>
+    proprietes.questions[0].corrige.attendus.flatMap(
+      ({ carteId, categorieId, pieges }) => {
+        const expliquees = new Set([
+          categorieId,
+          ...pieges.map((piege) => piege.categorieId),
+        ]);
+        return proprietes.plan.categories
+          .filter(({ id }) => !expliquees.has(id))
+          .map(({ id }) => `${screenId} : ${carteId} rangée en ${id}`);
+      },
+    ),
+  );
+}
+
+function erreurDeLecture(contenu: ContenuDeCoursBrut): string {
+  try {
+    lireCoursStocke(contenu);
+    return '';
+  } catch (erreur) {
+    return erreur instanceof Error ? erreur.message : String(erreur);
+  }
+}
+
+function attendusDuTri(
+  contenu: ContenuDeCoursBrut,
+  screenId: string,
+): { carteId: string; pieges: PiegeDeClassement[] }[] {
+  const tri = contenu.ecrans.find((ecran) => ecran.screenId === screenId);
+  const [question] = tri?.proprietes.questions as {
+    corrige: {
+      attendus: { carteId: string; pieges: PiegeDeClassement[] }[];
+    };
+  }[];
+  return question.corrige.attendus;
+}
+
+function ecritParUneVersionPassee(
+  contenu: ContenuDeCoursBrut,
+  screenId: string,
+): void {
+  for (const attendu of attendusDuTri(contenu, screenId)) {
+    const { pieges } = attendu;
+    Object.assign(attendu, { confusionSiErreur: pieges[0].confusion });
+    Reflect.deleteProperty(attendu, 'pieges');
+  }
+}
+
+function sansLaDerniereConfusionDeChaqueCarte(
+  contenu: ContenuDeCoursBrut,
+  screenId: string,
+): string[] {
+  return attendusDuTri(contenu, screenId).map(
+    ({ carteId, pieges }) =>
+      `la carte ${carteId} rangée en ${String(pieges.pop()?.categorieId)} n'a pas de confusion`,
+  );
+}
+
 describe.each(CONTENUS.map((contenu) => [contenu.slug, contenu] as const))(
   'contrat commun des cours servis — %s',
   (_slug, contenu) => {
@@ -119,6 +186,44 @@ describe.each(CONTENUS.map((contenu) => [contenu.slug, contenu] as const))(
 
     it('ne lève aucune violation de structure, sans dérogation', () => {
       expect(verifierStructure(cours)).toEqual([]);
+    });
+
+    it('QP-15 · donne à chaque couple carte × mauvaise case de ses tris sa confusion, et ne publie pas un tri qui en perd une', () => {
+      expect(couplesSansConfusion(contenu)).toEqual([]);
+      for (const { screenId } of trisDu(contenu)) {
+        const ampute = buildContenuDuCours(contenu);
+        const retires = sansLaDerniereConfusionDeChaqueCarte(ampute, screenId);
+        const erreur = erreurDeLecture(ampute);
+
+        expect(retires.filter((couple) => !erreur.includes(couple))).toEqual(
+          [],
+        );
+      }
+    });
+
+    it('QP-15 · relit chacun de ses tris écrit par une version passée, sa confusion unique valant pour chaque mauvaise case', () => {
+      for (const { screenId, proprietes } of trisDu(contenu)) {
+        const ancienne = buildContenuDuCours(contenu);
+        ecritParUneVersionPassee(ancienne, screenId);
+        const relu = lireCoursStocke(ancienne).ecrans.find(
+          (ecran) => ecran.id === screenId,
+        );
+
+        expect(
+          relu?.brique === 'fp-cardsort' && relu.production.corrige,
+        ).toEqual({
+          ...proprietes.questions[0].corrige,
+          attendus: proprietes.questions[0].corrige.attendus.map((attendu) => ({
+            ...attendu,
+            pieges: proprietes.plan.categories
+              .filter(({ id }) => id !== attendu.categorieId)
+              .map(({ id }) => ({
+                categorieId: id,
+                confusion: attendu.pieges[0].confusion,
+              })),
+          })),
+        });
+      }
     });
 
     it('nomme chaque écran selon la convention du cours, avec un titre unique', () => {

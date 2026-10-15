@@ -1668,7 +1668,6 @@ const ACTE_4: moteur.Acte = [
                 ),
                 moteur.controle('E7', '=SI(ARRONDI(E3*E5+E4-E6;6)=0;1;0)'),
               ],
-              seuilReussite: 0.8,
             },
           },
         ],
