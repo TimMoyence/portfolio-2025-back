@@ -73,6 +73,7 @@ const PAIRES_DE_CLIENTS_EN_DOUBLE = 4;
 const COMMERCIAUX_PAR_AGENCE = 3;
 const PREMIER_NUMERO_DE_COMMANDE = 10_001;
 const COMMANDE_A_TROIS_LIGNES = 'C-10234';
+const COMMANDE_DATEE_DU_DERNIER_JOUR = 'C-11589';
 const LIGNES_DE_LA_COMMANDE_TEMOIN = 3;
 const FACTEUR_DU_PRIX_ABERRANT = 10;
 const TIRAGES_REFUSES_PAR_CASE = 40;
@@ -759,6 +760,13 @@ export function genererJeuB301(graine: number): JeuB301 {
     hasard,
     commandes[rangTemoin],
   );
+  const rangDuDernierJour =
+    Number(COMMANDE_DATEE_DU_DERNIER_JOUR.slice(2)) -
+    PREMIER_NUMERO_DE_COMMANDE;
+  commandes[rangDuDernierJour] = {
+    ...commandes[rangDuDernierJour],
+    date: DERNIER_JOUR,
+  };
   const lignes = lignesDe(commandes);
   const semees = choisirLesLignesSemees(hasard, lignes);
   const reference = ongletsDeReference(hasard, clients, lignes, couts);
@@ -773,9 +781,13 @@ export function genererJeuB301(graine: number): JeuB301 {
       quarantaine.push({ ...brute, motif: MOTIFS_DE_QUARANTAINE[code] });
     }
   });
-  const saines = lignes.filter(
-    (_, rang) => !estEnQuarantaine(semees.get(rang)),
-  );
+  const saines = lignes
+    .filter((_, rang) => !estEnQuarantaine(semees.get(rang)))
+    .sort(
+      (a, b) =>
+        b.date_commande - a.date_commande ||
+        a.agence_id.localeCompare(b.agence_id),
+    );
   const jumeaux = new Map(
     clients.flatMap((client) => {
       const original = clients.find(

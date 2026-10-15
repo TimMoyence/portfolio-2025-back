@@ -1,4 +1,7 @@
-import { buildLangchainAuditInput } from '../../../../../test/factories/audit-requests.factory';
+import {
+  buildEngineCoverage,
+  buildLangchainAuditInput,
+} from '../../../../../test/factories/audit-requests.factory';
 import { buildFallbackExpertReport } from './langchain-fallback-report.builder';
 import {
   buildExpertSynthesis,
@@ -261,6 +264,157 @@ describe('langchain-synthesis.util', () => {
         impact: 'low',
         effort: 'low',
       });
+    });
+
+    it('donne à chaque fiche page les scores moteurs calculés et le titre réel, en mode LLM', () => {
+      const scoresCalcules = buildEngineCoverage({
+        google: 61,
+        bingChatGpt: 42,
+        perplexity: 37,
+        geminiOverviews: 58,
+      });
+      const recapDeLaPage = buildLangchainAuditInput().pageRecaps[0];
+      const input = buildLangchainAuditInput({
+        pageRecaps: [
+          {
+            ...recapDeLaPage,
+            url: 'https://acme.fr/offre',
+            title: 'Notre offre',
+            engineScores: scoresCalcules,
+          },
+        ],
+      });
+      const adminReport: Record<string, unknown> = {
+        perPageAnalysis: [
+          {
+            url: 'https://acme.fr/offre',
+            title: 'Titre inventé',
+            engineScores: buildEngineCoverage({
+              google: 99,
+              bingChatGpt: 99,
+              perplexity: 99,
+              geminiOverviews: 99,
+            }),
+            topIssues: ['Constat'],
+            recommendations: ['Action'],
+            evidence: [],
+          },
+        ],
+      };
+
+      const synthesis = buildExpertSynthesis('ignored', adminReport, input);
+
+      expect(synthesis.perPageAnalysis).toEqual([
+        {
+          url: 'https://acme.fr/offre',
+          title: 'Notre offre',
+          engineScores: scoresCalcules,
+          topIssues: ['Constat'],
+          recommendations: ['Action'],
+          evidence: [],
+        },
+      ]);
+    });
+
+    const SCORES_MESURES = buildEngineCoverage({ google: 61 });
+
+    function fichesServies(
+      urlMesuree: string,
+      urlsDesFiches: string[],
+      mesures: { title?: string | null; engineScores?: undefined } = {
+        title: 'Page mesurée',
+      },
+    ) {
+      const recap = buildLangchainAuditInput().pageRecaps[0];
+      const input = buildLangchainAuditInput({
+        pageRecaps: [
+          {
+            ...recap,
+            url: urlMesuree,
+            engineScores: SCORES_MESURES,
+            ...mesures,
+          },
+        ],
+      });
+      const perPageAnalysis = urlsDesFiches.map((url) => ({
+        url,
+        title: 'Titre inventé',
+        engineScores: buildEngineCoverage({ google: 99 }),
+        topIssues: [url],
+        recommendations: [],
+        evidence: [],
+      }));
+      return {
+        servies: buildExpertSynthesis('ignored', { perPageAnalysis }, input)
+          .perPageAnalysis,
+        repli: buildFallbackExpertReport(input, 'repli').perPageAnalysis,
+      };
+    }
+
+    it('donne à la fiche d une page sans titre ni scores les mesures du repli', () => {
+      const { servies, repli } = fichesServies(
+        'https://acme.fr/offre',
+        ['https://acme.fr/offre'],
+        { title: '  ', engineScores: undefined },
+      );
+
+      expect(servies).toHaveLength(1);
+      expect(repli).toHaveLength(1);
+      const [fiche] = servies;
+      const [ficheDuRepli] = repli;
+      expect(fiche.title).toBe('Page sans titre');
+      expect(fiche.engineScores.google.score).toBe(50);
+      expect({
+        url: fiche.url,
+        title: fiche.title,
+        engineScores: fiche.engineScores,
+      }).toEqual({
+        url: ficheDuRepli.url,
+        title: ficheDuRepli.title,
+        engineScores: ficheDuRepli.engineScores,
+      });
+    });
+
+    it.each([
+      ['https://acme.fr/', 'https://acme.fr'],
+      ['https://acme.fr/offre/', 'https://acme.fr/offre'],
+      ['https://acme.fr/offre', 'https://acme.fr/offre/#tarifs'],
+    ])(
+      'apparie à la page mesurée %s la fiche du LLM %s',
+      (urlMesuree, urlDeLaFiche) => {
+        const [fiche, ...autres] = fichesServies(urlMesuree, [
+          urlDeLaFiche,
+        ]).servies;
+
+        expect(autres).toEqual([]);
+        expect(fiche).toMatchObject({
+          url: urlMesuree,
+          title: 'Page mesurée',
+          engineScores: SCORES_MESURES,
+          topIssues: [urlDeLaFiche],
+        });
+      },
+    );
+
+    it.each([
+      ['une page jamais mesurée', 'https://acme.fr/inventee'],
+      ['une autre requête', 'https://acme.fr/offre?plan=pro'],
+      ['une adresse illisible', 'offre'],
+    ])("ne sert pas la fiche d'%s", (_cas, urlDeLaFiche) => {
+      expect(
+        fichesServies('https://acme.fr/offre', [urlDeLaFiche]).servies,
+      ).toEqual([]);
+    });
+
+    it('ne sert qu une fiche par page mesurée, la première', () => {
+      const { servies } = fichesServies('https://acme.fr/offre', [
+        'https://acme.fr/offre',
+        'https://acme.fr/offre/',
+      ]);
+
+      expect(servies.map((fiche) => fiche.topIssues)).toEqual([
+        ['https://acme.fr/offre'],
+      ]);
     });
   });
 });

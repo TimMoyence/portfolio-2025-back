@@ -13,7 +13,7 @@ import {
   SESSION_STATE_CACHE,
   SESSIONS_REPOSITORY,
 } from '../domain/token';
-import { messageDErreur } from '../../../common/domain/errors/message-d-erreur';
+import { enArrierePlan } from '../../../common/application/en-arriere-plan';
 import { GetSessionResultsUseCase } from './GetSessionResults.useCase';
 import type { BilanDeSeance } from './GetSessionResults.useCase';
 import { seanceNonTermineePilotablePar } from './SessionAccess';
@@ -93,13 +93,11 @@ export class CloseSessionUseCase {
   }
 
   private envoyerSynthese(destinataire: string, rapport: RapportSession): void {
-    this.mailer
-      .sendSyntheseFormateur(destinataire, rapport)
-      .catch((error: unknown) => {
-        this.logger.warn(
-          `Envoi de la synthese formateur echoue pour ${destinataire}: ${messageDErreur(error)}`,
-        );
-      });
+    enArrierePlan(
+      this.mailer.sendSyntheseFormateur(destinataire, rapport),
+      `Envoi de la synthese formateur echoue pour ${destinataire}`,
+      this.logger,
+    );
   }
 
   private envoyerCopies(
@@ -111,17 +109,15 @@ export class CloseSessionUseCase {
       if (!rapportParticipant) {
         return;
       }
-      this.mailer
-        .sendCopieEtudiant({
+      enArrierePlan(
+        this.mailer.sendCopieEtudiant({
           courseSlug: rapport.courseSlug,
           code: rapport.code,
           participant: rapportParticipant,
-        })
-        .catch((error: unknown) => {
-          this.logger.warn(
-            `Envoi de la copie echoue pour ${participant.email}: ${messageDErreur(error)}`,
-          );
-        });
+        }),
+        `Envoi de la copie echoue pour ${participant.email}`,
+        this.logger,
+      );
     });
   }
 }

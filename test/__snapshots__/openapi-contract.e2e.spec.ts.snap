@@ -258,10 +258,6 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
         },
         "type": "array",
       },
-      "seuilReussite": {
-        "example": 0.75,
-        "type": "number",
-      },
       "type": {
         "enum": [
           "classement",
@@ -272,7 +268,6 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
     "required": [
       "type",
       "attendus",
-      "seuilReussite",
     ],
     "type": "object",
   },
@@ -331,10 +326,6 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
         },
         "type": "array",
       },
-      "seuilReussite": {
-        "example": 0.8,
-        "type": "number",
-      },
       "type": {
         "enum": [
           "feuille",
@@ -345,7 +336,6 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
     "required": [
       "type",
       "attendus",
-      "seuilReussite",
     ],
     "type": "object",
   },
@@ -432,10 +422,6 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
         },
         "type": "array",
       },
-      "seuilReussite": {
-        "example": 0.75,
-        "type": "number",
-      },
       "tableauCorrige": {
         "allOf": [
           {
@@ -459,7 +445,6 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
       "attendus",
       "tableauCorrige",
       "tolerance",
-      "seuilReussite",
     ],
     "type": "object",
   },
@@ -709,9 +694,6 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
           "$ref": "#/components/schemas/ExplicationDeCorrectionResponseDto",
         },
         "type": "array",
-      },
-      "guide": {
-        "$ref": "#/components/schemas/GuideFormateurResponseDto",
       },
       "id": {
         "example": "E-OUV-RAPPEL",
@@ -1242,35 +1224,6 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
       "premier": {
         "example": 3,
         "type": "number",
-      },
-    },
-    "type": "object",
-  },
-  "GuideFormateurResponseDto": {
-    "properties": {
-      "aDire": {
-        "example": "Avant de commenter la pente, vérifiez le repère.",
-        "type": "string",
-      },
-      "calcul": {
-        "example": "Poids d’un canal = CA du canal / CA total.",
-        "type": "string",
-      },
-      "question": {
-        "example": "Que faut-il contrôler avant de comparer les deux courbes ?",
-        "type": "string",
-      },
-      "relance": {
-        "example": "Les valeurs ont-elles changé ou seulement la représentation ?",
-        "type": "string",
-      },
-      "reponse": {
-        "example": "Les valeurs, l’unité, la période et l’échelle.",
-        "type": "string",
-      },
-      "transition": {
-        "example": "Le prochain écran montre comment une échelle modifie l’impression.",
-        "type": "string",
       },
     },
     "type": "object",

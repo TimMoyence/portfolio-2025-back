@@ -60,9 +60,6 @@ class CorrigeFeuillePresentateurResponseDto {
 
   @ApiProperty({ type: [AttenduFeuillePresentateurResponseDto] })
   attendus: AttenduFeuillePresentateurResponseDto[];
-
-  @ApiProperty({ example: 0.8 })
-  seuilReussite: number;
 }
 
 class AttenduTableauPresentateurResponseDto {
@@ -92,9 +89,6 @@ class CorrigeTableauPresentateurResponseDto {
 
   @ApiProperty({ type: ToleranceResponseDto })
   tolerance: ToleranceResponseDto;
-
-  @ApiProperty({ example: 0.75 })
-  seuilReussite: number;
 }
 
 class AttenduClassementPresentateurResponseDto {
@@ -114,9 +108,6 @@ class CorrigeClassementPresentateurResponseDto {
 
   @ApiProperty({ type: [AttenduClassementPresentateurResponseDto] })
   attendus: AttenduClassementPresentateurResponseDto[];
-
-  @ApiProperty({ example: 0.75 })
-  seuilReussite: number;
 }
 
 class EnigmePresentateurResponseDto {

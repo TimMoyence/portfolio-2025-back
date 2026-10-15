@@ -55,31 +55,31 @@ describe('EvaluerFeuilleUseCase', () => {
   });
 
   it('rend à l élève la valeur de sa formule, calculée sur les données imposées du B2-03', async () => {
-    const feuille = await evaluer({ D2: VISA });
+    const feuille = await evaluer({ I3: VISA });
 
-    expect(feuille.saisies).toEqual({ D2: VISA });
-    expect(feuille.formules).toEqual(['D2']);
-    expect([feuille.affichages.D2, feuille.affichages.A1]).toEqual([
+    expect(feuille.saisies).toEqual({ I3: VISA });
+    expect(feuille.formules).toEqual(['I3']);
+    expect([feuille.affichages.I3, feuille.affichages.A1]).toEqual([
       'Visa',
       'Facture',
     ]);
-    expect([feuille.natures.D2, feuille.natures.C2]).toEqual([
+    expect([feuille.natures.I3, feuille.natures.D3]).toEqual([
       'texte',
       'nombre',
     ]);
   });
 
   it('recopie la formule vers la cellule du dessous en décalant ses références', async () => {
-    const feuille = await evaluer({ D2: VISA }, PLAN_VISA, { de: 'D2' });
+    const feuille = await evaluer({ I3: VISA }, PLAN_VISA, { de: 'I3' });
 
-    expect(feuille.saisies.D3).toBe(
-      '=SI(OU(C3>=5000;B3<>"France");"Visa";"Non")',
+    expect(feuille.saisies.I4).toBe(
+      '=SI(OU(D4>=5000;C4<>"France");"Visa";"Non")',
     );
   });
 
   it('refuse en TYPE_DE_QUESTION un plan qui n est pas une feuille du cours de la séance', async () => {
     await expect(
-      evaluer({ D2: '=1' }, 'b2-01-a4-feuille-canaux'),
+      evaluer({ I3: '=1' }, 'b2-01-a4-feuille-canaux'),
     ).rejects.toBeInstanceOf(TypeDeQuestionError);
   });
 
@@ -164,7 +164,7 @@ describe.each([
       new EvaluerFeuilleUseCase(participation).execute({
         ...PARTICIPANT_DE_TEST,
         planId: PLAN_VISA,
-        cellules: { D2: VISA },
+        cellules: { I3: VISA },
       }),
   ],
   [

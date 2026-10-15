@@ -1,4 +1,5 @@
 import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
+import { provenanceConsignable } from '../../../common/domain/provenance';
 import {
   requireEmail,
   requireText,
@@ -23,6 +24,9 @@ export class Contacts {
   termsLocale?: string;
   termsAcceptedAt?: Date;
   termsMethod?: string;
+  ip?: string | null;
+  userAgent?: string | null;
+  referer?: string | null;
 
   static create(props: CreateContactProps): Contacts {
     const email = requireEmail(props.email, 'contact email');
@@ -69,6 +73,7 @@ export class Contacts {
     contact.termsLocale = termsLocale;
     contact.termsMethod = this.optionalText(props.termsMethod, 50);
     contact.termsAcceptedAt = props.termsAcceptedAt;
+    Object.assign(contact, provenanceConsignable(props));
 
     return contact;
   }

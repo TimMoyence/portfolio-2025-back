@@ -68,7 +68,6 @@ function versEcranDeroule(
     ),
     corrigeEcran,
     reflexion: reflexionDe(corrigeEcran),
-    guide: ecran.guide,
     explications: ecran.correctionSurPlace?.explications,
   };
 }
@@ -222,7 +221,6 @@ function corrigeDeProduction(
           tolerance: attendu.tolerance,
           forme: attendu.forme,
         })),
-        seuilReussite: corrige.seuilReussite,
       };
     case 'tableau':
       if (planDuTableau === null) {
@@ -237,7 +235,6 @@ function corrigeDeProduction(
         })),
         tableauCorrige: tableauDuCorrige(planDuTableau, corrige.attendus),
         tolerance: corrige.tolerance,
-        seuilReussite: corrige.seuilReussite,
       };
     case 'classement':
       return {
@@ -249,7 +246,6 @@ function corrigeDeProduction(
             justification,
           }),
         ),
-        seuilReussite: corrige.seuilReussite,
       };
     case 'enigme':
       return null;

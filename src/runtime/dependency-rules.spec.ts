@@ -179,18 +179,24 @@ describe('parseImports', () => {
   });
 
   it('reste lineaire sur une ligne `import` sans clause `from`', () => {
-    const duree = (jetons: number): number => {
-      const hostile = `import ${'a '.repeat(jetons)}`;
-      const mesures = [0, 1, 2].map(() => {
-        const startedAt = Date.now();
-        expect(parseImports(hostile)).toEqual([]);
-        return Date.now() - startedAt;
-      });
-      return Math.min(...mesures);
+    const courte = `import ${'a '.repeat(1_250)}`;
+    const longue = `import ${'a '.repeat(20_000)}`;
+    const modulesLus: string[] = [];
+    const duree = (hostile: string, fois: number): number => {
+      const startedAt = performance.now();
+      for (let rang = 0; rang < fois; rang += 1) {
+        modulesLus.push(...parseImports(hostile));
+      }
+      return performance.now() - startedAt;
     };
-    const courte = duree(2_500);
+    const rapports = [0, 1, 2].map(
+      () => duree(longue, 1) / Math.max(duree(courte, 16), 1),
+    );
 
-    expect(duree(10_000)).toBeLessThan(8 * Math.max(courte, 5));
+    rapports.sort((a, b) => a - b);
+
+    expect(modulesLus).toEqual([]);
+    expect(rapports[1]).toBeLessThan(2);
   });
 });
 

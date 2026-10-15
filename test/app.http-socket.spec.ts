@@ -100,6 +100,23 @@ describe('API coherence and connectivity (e2e http socket)', () => {
     expect(response.body).toEqual(CONTACT_CREATED_RESPONSE);
   });
 
+  it('POST /api/contacts consigne la provenance du message', async () => {
+    await request(getHttpServer())
+      .post('/api/contacts')
+      .set('user-agent', 'agent-de-test')
+      .set('referer', 'https://asilidesign.fr/fr/contact')
+      .send(CONTACT_PAYLOAD)
+      .expect(201);
+
+    expect(coreStubs.createContactsUseCase.execute).toHaveBeenCalledWith(
+      expect.objectContaining({
+        ip: expect.any(String) as string,
+        userAgent: 'agent-de-test',
+        referer: 'https://asilidesign.fr/fr/contact',
+      }),
+    );
+  });
+
   it('POST /api/contacts forbids non-whitelisted fields', async () => {
     const response = await request(getHttpServer())
       .post('/api/contacts')

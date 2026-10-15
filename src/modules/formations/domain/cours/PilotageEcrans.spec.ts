@@ -21,6 +21,8 @@ import {
   assertEtapeNonCorrigee,
   assertPhaseOuverte,
   assertPilotageCompatible,
+  demandeAppliquee,
+  estVoteJumele,
   fusionnerPilotage,
   type PilotageDemande,
   type QuestionPilotee,
@@ -320,6 +322,44 @@ describe('étayage atteint (SEC-2)', () => {
   });
 });
 
+describe('Q1 · un seul chemin de révélation d un vote des cours servis', () => {
+  const VOTES = CONTENUS.flatMap(
+    (contenu) => buildCoursDuContenu(contenu).ecrans,
+  ).filter((ecran) => ecran.brique === 'fp-vote');
+  const JUMELES = VOTES.filter(estVoteJumele);
+  const SIMPLES = VOTES.filter((vote) => !estVoteJumele(vote));
+
+  it('trouve des votes jumelés et des votes simples dans les cours servis', () => {
+    expect([JUMELES.length > 0, SIMPLES.length > 0]).toEqual([true, true]);
+  });
+
+  it.each(JUMELES.map((vote) => [vote.id, vote] as const))(
+    '%s : « Passer à : Révélation » et « Révéler la correction » posent le même pilotage',
+    (_id, vote) => {
+      const revelePar = (demande: Omit<PilotageDemande, 'screenId'>) =>
+        fusionnerPilotage(
+          { [vote.id]: { phase: 'revote' } },
+          demandeAppliquee(vote, { screenId: vote.id, ...demande }),
+        );
+      const revele = { [vote.id]: { phase: 'revele', revele: true } };
+
+      expect([
+        revelePar({ phase: 'revele' }),
+        revelePar({ revele: true }),
+      ]).toEqual([revele, revele]);
+    },
+  );
+
+  it.each(SIMPLES.map((vote) => [vote.id, vote] as const))(
+    '%s : révèle un vote simple sans lui donner de phase',
+    (_id, vote) => {
+      expect(
+        demandeAppliquee(vote, { screenId: vote.id, revele: true }),
+      ).toEqual({ screenId: vote.id, revele: true });
+    },
+  );
+});
+
 describe('fusionnerPilotage', () => {
   it('inscrit le pilotage d un ecran encore vierge', () => {
     expect(
@@ -428,10 +468,10 @@ describe('assertPhaseOuverte', () => {
     ],
     ['ouvre la jumelle seule au revote', { phase: 'revote' }, false, true],
     [
-      'ouvre la jumelle seule a la revelation',
+      'Q1 · ferme les deux questions dès la phase de révélation',
       { phase: 'revele' },
       false,
-      true,
+      false,
     ],
   ])('%s', (_titre, pilotageDuVote, principale, jumelle) => {
     const pilotage: Record<string, PilotageEcran> =

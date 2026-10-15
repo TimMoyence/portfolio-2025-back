@@ -2,6 +2,8 @@ import { buildCoursDuContenu } from '../../../../../test/factories/contenus-de-c
 import {
   CONTENUS,
   COURS_B2_03,
+  FORMULE_VISA_B2_03 as VISA,
+  PLAN_VISA_B2_03,
 } from '../../../../../test/factories/contenus-publies';
 import { formulesDuCorrige } from '../../../../../test/helpers/feuille-de-cours';
 import type { SheetPlanStocke } from '../contrats/cours';
@@ -15,8 +17,6 @@ import { LONGUEUR_MAX_FORMULE } from './Formule';
 import { ecranDeProduction } from './ProductionSoumise';
 import type { EcranDeProduction } from './ProductionSoumise';
 
-const VISA = '=SI(OU(C2>=5000;B2<>"France");"Visa";"Non")';
-
 function feuilleDuCours(
   contenu: (typeof CONTENUS)[number],
   planId: string,
@@ -28,10 +28,24 @@ function feuilleDuCours(
   return cible.ecran;
 }
 
-const PLAN_SI_OU: SheetPlanStocke = feuilleDuCours(
+const PLAN_CONTROLE: SheetPlanStocke = feuilleDuCours(
   COURS_B2_03,
-  'b2-03-a1-tableur-si-ou',
+  PLAN_VISA_B2_03,
 ).proprietes.plan;
+
+const LETTRES_DU_CONTROLE = [
+  'A',
+  'B',
+  'C',
+  'D',
+  'E',
+  'F',
+  'G',
+  'H',
+  'I',
+  'J',
+  'K',
+];
 
 const FEUILLES_DES_COURS = CONTENUS.flatMap((contenu) =>
   buildCoursDuContenu(contenu).ecrans.flatMap((ecran) =>
@@ -41,107 +55,107 @@ const FEUILLES_DES_COURS = CONTENUS.flatMap((contenu) =>
 
 describe('evaluerLaFeuilleDuPlan', () => {
   it('rend la valeur d une formule de l eleve, et la nature de chaque cellule du plan', () => {
-    const feuille = evaluerLaFeuilleDuPlan(PLAN_SI_OU, { D2: VISA });
+    const feuille = evaluerLaFeuilleDuPlan(PLAN_CONTROLE, { I3: VISA });
 
-    expect(feuille.saisies).toEqual({ D2: VISA });
-    expect(feuille.formules).toEqual(['D2']);
+    expect(feuille.saisies).toEqual({ I3: VISA });
+    expect(feuille.formules).toEqual(['I3']);
     expect([
-      feuille.affichages['D2'],
-      feuille.affichages['C2'],
+      feuille.affichages['I3'],
+      feuille.affichages['D3'],
       feuille.affichages['A1'],
     ]).toEqual(['Visa', '6400', 'Facture']);
     expect([
-      feuille.natures['D2'],
-      feuille.natures['C2'],
+      feuille.natures['I3'],
+      feuille.natures['D3'],
       feuille.natures['A1'],
     ]).toEqual(['texte', 'nombre', 'texte']);
-    expect(feuille.affichages['D3']).toBeUndefined();
+    expect(feuille.affichages['I4']).toBeUndefined();
   });
 
   it('impose les cellules verrouillees du plan a la saisie de l eleve', () => {
-    const feuille = evaluerLaFeuilleDuPlan(PLAN_SI_OU, {
-      C2: '9999',
-      D2: '=C2*2',
+    const feuille = evaluerLaFeuilleDuPlan(PLAN_CONTROLE, {
+      D3: '9999',
+      I3: '=D3*2',
     });
 
-    expect(feuille.saisies).toEqual({ D2: '=C2*2' });
-    expect(feuille.affichages['C2']).toBe('6400');
-    expect(feuille.affichages['D2']).toBe('12800');
+    expect(feuille.saisies).toEqual({ I3: '=D3*2' });
+    expect(feuille.affichages['D3']).toBe('6400');
+    expect(feuille.affichages['I3']).toBe('12800');
   });
 
   it('ecrit les nombres a la francaise, les valeurs de verite en VRAI ou FAUX, et chaque erreur par son code', () => {
-    const feuille = evaluerLaFeuilleDuPlan(PLAN_SI_OU, {
-      D2: '=C2/3',
-      D3: '=C3>1000',
-      D4: '=C4/0',
-      D5: '=B5*2',
-      D6: '=INCONNUE(C6)',
+    const feuille = evaluerLaFeuilleDuPlan(PLAN_CONTROLE, {
+      I3: '=D3/3',
+      I4: '=D4>1000',
+      I5: '=D5/0',
+      I6: '=B6*2',
+      I7: '=INCONNUE(D7)',
     });
 
     const rendus = Object.fromEntries(
-      ['D2', 'D3', 'D4', 'D5', 'D6'].map((nom) => [
+      ['I3', 'I4', 'I5', 'I6', 'I7'].map((nom) => [
         nom,
         [feuille.affichages[nom], feuille.natures[nom]],
       ]),
     );
     expect(rendus).toEqual({
-      D2: ['2133,333333', 'nombre'],
-      D3: ['VRAI', 'logique'],
-      D4: ['#DIV/0!', 'erreur'],
-      D5: ['#VALEUR!', 'erreur'],
-      D6: ['#NOM?', 'erreur'],
+      I3: ['2133,333333', 'nombre'],
+      I4: ['VRAI', 'logique'],
+      I5: ['#DIV/0!', 'erreur'],
+      I6: ['#VALEUR!', 'erreur'],
+      I7: ['#NOM?', 'erreur'],
     });
   });
 
   it('lit une saisie a la francaise comme un nombre, sans la prendre pour une formule', () => {
-    const feuille = evaluerLaFeuilleDuPlan(PLAN_SI_OU, { D2: '1 200,5' });
+    const feuille = evaluerLaFeuilleDuPlan(PLAN_CONTROLE, { I3: '1 200,5' });
 
-    expect(feuille.affichages['D2']).toBe('1 200,5');
-    expect(feuille.natures['D2']).toBe('nombre');
+    expect(feuille.affichages['I3']).toBe('1 200,5');
+    expect(feuille.natures['I3']).toBe('nombre');
     expect(feuille.formules).toEqual([]);
   });
 
   it('recopie une formule dans la cellule du dessous en decalant ses references', () => {
     const feuille = evaluerLaFeuilleDuPlan(
-      PLAN_SI_OU,
-      { D2: VISA },
-      { de: 'D2' },
+      PLAN_CONTROLE,
+      { I3: VISA },
+      { de: 'I3' },
     );
 
     expect(feuille.saisies).toEqual({
-      D2: VISA,
-      D3: '=SI(OU(C3>=5000;B3<>"France");"Visa";"Non")',
+      I3: VISA,
+      I4: '=SI(OU(D4>=5000;C4<>"France");"Visa";"Non")',
     });
-    expect(feuille.affichages['D3']).toBe('Visa');
-    expect(feuille.formules).toEqual(['D2', 'D3']);
+    expect(feuille.affichages['I4']).toBe('Visa');
+    expect(feuille.formules).toEqual(['I3', 'I4']);
   });
 
   it('refuse une recopie vers une cellule verrouillee, hors de la grille ou depuis une cellule inconnue', () => {
-    for (const de of ['C2', 'D6', 'Z99', 'D0']) {
+    for (const de of ['D2', 'I17', 'Z99', 'I0']) {
       expect(() =>
-        evaluerLaFeuilleDuPlan(PLAN_SI_OU, { D2: VISA }, { de }),
+        evaluerLaFeuilleDuPlan(PLAN_CONTROLE, { I3: VISA }, { de }),
       ).toThrow(ProductionInvalideError);
     }
   });
 
   it('refuse une cellule hors de la grille, et ignore une saisie vide', () => {
-    expect(() => evaluerLaFeuilleDuPlan(PLAN_SI_OU, { E1: '1' })).toThrow(
+    expect(() => evaluerLaFeuilleDuPlan(PLAN_CONTROLE, { L1: '1' })).toThrow(
       ProductionInvalideError,
     );
     expect(() =>
-      evaluerLaFeuilleDuPlan(PLAN_SI_OU, { 'A1;DROP': '1' }),
+      evaluerLaFeuilleDuPlan(PLAN_CONTROLE, { 'A1;DROP': '1' }),
     ).toThrow(ProductionInvalideError);
     expect(
-      evaluerLaFeuilleDuPlan(PLAN_SI_OU, { D2: '   ' }).affichages['D2'],
+      evaluerLaFeuilleDuPlan(PLAN_CONTROLE, { I3: '   ' }).affichages['I3'],
     ).toBeUndefined();
   });
 
   it('borne la saisie a la longueur maximale d une formule', () => {
     const longue = `=${'1+'.repeat(LONGUEUR_MAX_FORMULE)}1`;
 
-    const feuille = evaluerLaFeuilleDuPlan(PLAN_SI_OU, { D2: longue });
+    const feuille = evaluerLaFeuilleDuPlan(PLAN_CONTROLE, { I3: longue });
 
-    expect(feuille.saisies['D2']).toBe(longue.slice(0, LONGUEUR_MAX_FORMULE));
+    expect(feuille.saisies['I3']).toBe(longue.slice(0, LONGUEUR_MAX_FORMULE));
   });
 
   it('chaque feuille des cours rend sans erreur ses cellules de depart et les formules de son corrige', () => {
@@ -184,16 +198,20 @@ describe('evaluerLaFeuilleDuPlan', () => {
 
 describe('planDeFeuilleServi', () => {
   it('sert les noms de la grille, la longueur maximale d une saisie et les cellules de depart evaluees', () => {
-    const servi = planDeFeuilleServi(PLAN_SI_OU);
+    const servi = planDeFeuilleServi(PLAN_CONTROLE);
 
-    expect(servi.lettres).toEqual(['A', 'B', 'C', 'D']);
-    expect(servi.grille).toHaveLength(6);
-    expect(servi.grille[0]).toEqual(['A1', 'B1', 'C1', 'D1']);
-    expect(servi.grille[5]).toEqual(['A6', 'B6', 'C6', 'D6']);
+    expect(servi.lettres).toEqual(LETTRES_DU_CONTROLE);
+    expect(servi.grille).toHaveLength(17);
+    expect(servi.grille[0]).toEqual(
+      LETTRES_DU_CONTROLE.map((lettre) => `${lettre}1`),
+    );
+    expect(servi.grille[16]).toEqual(
+      LETTRES_DU_CONTROLE.map((lettre) => `${lettre}17`),
+    );
     expect(servi.longueurMaxSaisie).toBe(LONGUEUR_MAX_FORMULE);
-    expect(servi.initiale).toEqual(evaluerLaFeuilleDuPlan(PLAN_SI_OU, {}));
+    expect(servi.initiale).toEqual(evaluerLaFeuilleDuPlan(PLAN_CONTROLE, {}));
     expect(servi.initiale.saisies).toEqual({});
-    expect(servi.cellules).toEqual(PLAN_SI_OU.cellules);
+    expect(servi.cellules).toEqual(PLAN_CONTROLE.cellules);
   });
 });
 

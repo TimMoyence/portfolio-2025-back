@@ -1,4 +1,3 @@
-import { ChatOpenAI } from '@langchain/openai';
 import { Injectable, Logger } from '@nestjs/common';
 import { z } from 'zod';
 import { compacterBlancs } from '../../../../common/domain/texte/compacter-blancs';
@@ -13,8 +12,11 @@ import { businessTypePromptHint } from '../../domain/BusinessType';
 import type { EngineCoverage } from '../../domain/EngineCoverage';
 import { AuditLocale, localeDeRedaction } from '../../domain/audit-locale.util';
 import { withHardTimeout } from './llm-execution.guardrails';
-import { LlmLimiteParLaConfig } from './llm-executor.port';
+import { LlmSuiviParLaConfig } from './llm-executor.port';
 import { reportSeveritySchema } from './schemas/audit-report.schemas';
+import { buildOpenAiMessages } from './section-generators/cacheable-section.generators';
+import { untrustedDataDisclaimer } from './section-generators/section-prompts.builder';
+import { sanitizePromptInput } from './shared/prompt-sanitize.util';
 import { impactLocalise } from './shared/finding-priority.util';
 import { localizedText } from './shared/locale-text.util';
 import { parGraviteDecroissante } from './shared/severity.util';
@@ -113,7 +115,7 @@ const PILLAR_ORDER: ReadonlyArray<string> = [
 ];
 
 @Injectable()
-export class LangchainClientReportService extends LlmLimiteParLaConfig {
+export class LangchainClientReportService extends LlmSuiviParLaConfig {
   private readonly logger = new Logger(LangchainClientReportService.name);
 
   async generate(context: ClientReportContext): Promise<ClientReportSynthesis> {
@@ -127,31 +129,19 @@ export class LangchainClientReportService extends LlmLimiteParLaConfig {
     }
 
     try {
-      const llm = new ChatOpenAI({
-        apiKey: this.config.openAiApiKey,
-        model: this.config.llmModel,
-        timeout: this.config.llmSummaryTimeoutMs,
-        maxRetries: 0,
-        temperature: 0.2,
-      });
+      const llm = this.chatOpenAIFactory.create(
+        this.config.llmSummaryTimeoutMs,
+      );
       const chain = llm.withStructuredOutput(clientReportSchema);
       const payload = this.buildPayload(context);
 
-      const systemMessages = [
-        {
-          role: 'system' as const,
-          content: this.systemPrompt(locale),
-        },
-        {
-          role: 'system' as const,
-          content: this.antiHallucinationPrompt(locale),
-        },
+      const systemBlocks = [
+        untrustedDataDisclaimer(locale),
+        this.systemPrompt(locale),
+        this.antiHallucinationPrompt(locale),
       ];
       if (context.businessType && context.businessType !== 'unknown') {
-        systemMessages.push({
-          role: 'system' as const,
-          content: businessTypePromptHint(context.businessType, locale),
-        });
+        systemBlocks.push(businessTypePromptHint(context.businessType, locale));
       }
 
       const llmResult = await this.llmLimiter.run(() =>
@@ -159,12 +149,12 @@ export class LangchainClientReportService extends LlmLimiteParLaConfig {
           'langchain:client_report',
           this.config.llmSummaryTimeoutMs,
           (signal) =>
-            chain.invoke(
-              [
-                ...systemMessages,
-                { role: 'user', content: JSON.stringify(payload) },
-              ],
-              { signal },
+            this.invokeTracked(
+              chain,
+              buildOpenAiMessages(systemBlocks, payload),
+              'client_report',
+              locale,
+              signal,
             ),
         ),
       );
@@ -222,8 +212,8 @@ export class LangchainClientReportService extends LlmLimiteParLaConfig {
   private buildPayload(context: ClientReportContext): Record<string, unknown> {
     return {
       locale: context.locale,
-      website: context.websiteName,
-      normalizedUrl: context.normalizedUrl,
+      website: sanitizePromptInput(context.websiteName),
+      normalizedUrl: sanitizePromptInput(context.normalizedUrl),
       businessType: context.businessType ?? 'unknown',
       pillarScores: context.pillarScores,
       findings: context.findings.slice(0, 8).map((entry) => ({

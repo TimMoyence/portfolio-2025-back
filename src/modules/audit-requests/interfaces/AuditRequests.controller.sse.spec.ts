@@ -108,7 +108,7 @@ describe('AuditsController SSE', () => {
             status: 'FAILED',
             progress: 100,
             done: false,
-            error: 'timeout',
+            error: null,
             updatedAt: new Date().toISOString(),
           },
         },

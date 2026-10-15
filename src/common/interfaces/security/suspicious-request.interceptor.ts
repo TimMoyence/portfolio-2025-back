@@ -8,8 +8,10 @@ import {
 } from '@nestjs/common';
 import type { Request, Response } from 'express';
 import type { Observable } from 'rxjs';
-import { tronquer } from '../../domain/texte/tronquer';
+import { enArrierePlan } from '../../application/en-arriere-plan';
+import { navigateurConsignable } from '../../domain/provenance';
 import { aLaFermeture } from '../http/a-la-fermeture';
+import { dureeEnMsDepuis, instantEnNs } from '../http/duree-de-requete';
 import { urlJournalisable } from '../http/url-journalisable';
 import { lireEnTete, resolveClientIpOrUnknown } from './client-ip.util';
 import type { ISecurityEventsStore } from './ISecurityEventsStore';
@@ -52,11 +54,12 @@ export class SuspiciousRequestInterceptor implements NestInterceptor {
     }
 
     const res = httpCtx.getResponse<Response>();
-    const startNs = process.hrtime.bigint();
+    const startNs = instantEnNs();
 
     const evaluateAndLog = (aborted: boolean): void => {
       try {
-        const responseTimeMs = Number(process.hrtime.bigint() - startNs) / 1e6;
+        const responseTimeMs = dureeEnMsDepuis(startNs);
+        const urlBrute = req.originalUrl || req.url;
         const ip = this.resolveIp(req);
         const userAgent = this.headerString(req, 'user-agent');
         const acceptLanguage = this.headerString(req, 'accept-language');
@@ -64,7 +67,7 @@ export class SuspiciousRequestInterceptor implements NestInterceptor {
 
         const { score, reasons } = scoreRequest({
           method: req.method,
-          path: req.originalUrl || req.url,
+          path: urlBrute,
           statusCode: res.statusCode,
           userAgent,
           acceptLanguage,
@@ -79,27 +82,26 @@ export class SuspiciousRequestInterceptor implements NestInterceptor {
         }
 
         const occurredAtMs = Date.now();
-        const path = urlJournalisable(req.originalUrl || req.url, req.params);
+        const path = urlJournalisable(urlBrute, req.params);
+        const navigateur = navigateurConsignable(userAgent) ?? '';
 
-        void this.store
-          .recordEvent({
+        enArrierePlan(
+          this.store.recordEvent({
             ip,
-            userAgent,
+            userAgent: navigateur,
             method: req.method,
             path,
             statusCode: res.statusCode,
             score,
             reasons,
             occurredAtMs,
-          })
-          .catch((err: unknown) => {
-            this.logger.warn(
-              `[SECURITY] store.recordEvent a echoue: ${String(err)}`,
-            );
-          });
+          }),
+          '[SECURITY] store.recordEvent a echoue',
+          this.logger,
+        );
 
         this.logger.warn(
-          `[SECURITY] suspicious ip=${ip} method=${req.method} path=${path} status=${res.statusCode} score=${score} reasons=${reasons.join(',')} ua="${tronquer(userAgent, 200)}" rtMs=${responseTimeMs.toFixed(1)} aborted=${aborted}`,
+          `[SECURITY] suspicious ip=${ip} method=${req.method} path=${path} status=${res.statusCode} score=${score} reasons=${reasons.join(',')} ua="${navigateur}" rtMs=${responseTimeMs.toFixed(1)} aborted=${aborted}`,
         );
       } catch (err) {
         this.logger.warn(

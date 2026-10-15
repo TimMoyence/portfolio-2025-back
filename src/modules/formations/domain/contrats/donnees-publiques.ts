@@ -297,7 +297,7 @@ export interface DonneesParBrique {
   readonly 'fp-exit': { readonly billet: ExitBilletPublic };
   readonly questionnaire: {
     readonly intitule: string;
-    readonly consigne: string;
+    readonly consigne?: string;
     readonly regime: RegimeVerrou;
     readonly ordre: OrdreQuestions;
     readonly questions: readonly QuestionDeQuestionnaire[];

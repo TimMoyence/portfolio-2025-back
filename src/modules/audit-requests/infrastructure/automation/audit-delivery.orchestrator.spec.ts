@@ -21,6 +21,10 @@ import {
   type RunDeliveryInput,
 } from './audit-delivery.orchestrator';
 import type { LangchainClientReportService } from './langchain-client-report.service';
+import {
+  attendreLAvertissement,
+  espionnerLesAvertissements,
+} from '../../../../../test/helpers/avertissements';
 import { flushPromises } from '../../../../../test/helpers/flush-promises';
 
 function buildClientReport(): ClientReportSynthesis {
@@ -164,6 +168,25 @@ describe('AuditDeliveryOrchestrator', () => {
 
         const clientCall = notifier.sendClientReport.mock.calls[0][0];
         expect(clientCall.firstName).toBeNull();
+      });
+    });
+
+    describe('envoi des rapports en echec', () => {
+      const avertissements = espionnerLesAvertissements();
+
+      it.each([
+        ['Client report', () => notifier.sendClientReport],
+        ['Expert report', () => notifier.sendExpertReport],
+      ])('journalise la cause d un envoi %s rate', async (rapport, envoi) => {
+        repo.findById.mockResolvedValue(baseSnapshot);
+        envoi().mockRejectedValueOnce(new Error('smtp down'));
+
+        await runForAudit();
+
+        await attendreLAvertissement(
+          avertissements,
+          `${rapport} email failed for audit ${baseSnapshot.id}: smtp down`,
+        );
       });
     });
 

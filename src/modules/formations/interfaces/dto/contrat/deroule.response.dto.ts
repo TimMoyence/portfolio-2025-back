@@ -11,10 +11,7 @@ import type {
   DerouleCours,
   EcranDeroule,
 } from '../../../domain/contrats/deroule';
-import {
-  CorrigePresentateurResponseDto,
-  GuideFormateurResponseDto,
-} from '../deroule.response.dto';
+import { CorrigePresentateurResponseDto } from '../deroule.response.dto';
 import {
   CORRIGES_D_ECRAN,
   ExplicationDeCorrectionResponseDto,
@@ -74,9 +71,6 @@ export class EcranDerouleResponseDto
       'Reponse attendue d un recit a reflexion, la meme que celle revelee a l etudiant',
   })
   reflexion: ReflexionPresentateurResponseDto | null;
-
-  @ApiPropertyOptional({ type: GuideFormateurResponseDto })
-  guide?: GuideFormateurResponseDto;
 
   @ApiPropertyOptional({
     type: [ExplicationDeCorrectionResponseDto],

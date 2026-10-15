@@ -34,7 +34,6 @@ import type {
 export type { TirageDuCours } from '../contrats/tirage';
 
 const PROPRIETES_RESERVEES_AU_FORMATEUR: readonly string[] = [
-  'guide',
   'correction',
   'interaction',
   'questions',
@@ -477,7 +476,7 @@ function tirerQuestionnaire(
       : melanger(ecran.questions, contexte.rng);
   return {
     intitule: ecran.intitule,
-    consigne: ecran.consigne,
+    ...(ecran.consigne === undefined ? {} : { consigne: ecran.consigne }),
     regime: ecran.regime,
     ordre: ecran.ordre,
     questions: questions.map((question) =>

@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "fc2d01ddb6b94a08d98edd20046f16143148e8b47bed6772aa825f7b28e3028c",
+  "empreinte": "3b2c7c9a6053d06cd322fdc68699b6b929333d518d5a0f3b6abe148daf2ece82",
   "sujet": {
     "id": "b2-01-traitement-information-chiffree",
     "titre": "Lire, contrôler et décider avec l’information chiffrée",
@@ -7938,8 +7938,7 @@
               "categorieId": "evolution",
               "justification": "variation depuis le 1ᵉʳ janvier (calcul à vérifier à l’acte 4)"
             }
-          ],
-          "seuilReussite": 0.75
+          ]
         },
         "reflexion": null
       },
@@ -8556,7 +8555,7 @@
             "confusions": [
               {
                 "id": "axe-tronque-lu-comme-ecart",
-                "libelle": "Juger une évolution à la hauteur des barres sans lire l’origine et l’amplitude de l’axe."
+                "libelle": "Lire ou construire un graphique sans tenir compte de l’origine et de l’amplitude de l’axe : juger un écart à la hauteur des barres, tronquer l’axe ou supprimer ses graduations, ou renoncer à lire un écart que les graduations permettent de mesurer."
               },
               {
                 "id": "ecart-absolu-au-lieu-du-taux",
@@ -8752,7 +8751,7 @@
               },
               {
                 "id": "sens-de-variation",
-                "libelle": "Oublier le signe d’une variation : une baisse s’écrit avec un signe moins."
+                "libelle": "Se tromper sur le sens d’une variation : oublier le signe moins d’une baisse, traduire une baisse par le coefficient 1 + t au lieu de 1 − t, ou juger croissante une suite géométrique de raison positive, qui ne croît que si sa raison dépasse 1."
               }
             ]
           },
@@ -9095,8 +9094,7 @@
               "categorieId": "impossible",
               "justification": "activité saisonnière : doubler un semestre ne donne pas l’année ; il faut le 1ᵉʳ semestre 2024"
             }
-          ],
-          "seuilReussite": 0.75
+          ]
         },
         "reflexion": null
       },
@@ -13368,7 +13366,7 @@
             "confusions": [
               {
                 "id": "rythme-confondu-avec-niveau",
-                "libelle": "Confondre désinflation (la hausse des prix ralentit) et déflation (les prix baissent)."
+                "libelle": "Confondre désinflation et des prix stables ou en baisse : quand la hausse des prix ralentit (désinflation), les prix continuent de monter ; ils ne baissent qu’en déflation."
               }
             ]
           },
@@ -13513,11 +13511,7 @@
             "confusions": [
               {
                 "id": "taux-moyen-arithmetique",
-                "libelle": "Diviser un taux global par le nombre de périodes au lieu de prendre une racine n-ième."
-              },
-              {
-                "id": "taux-successifs-additionnes",
-                "libelle": "Additionner des taux successifs au lieu de multiplier les coefficients."
+                "libelle": "Prendre pour taux moyen une moyenne arithmétique, le taux global divisé par le nombre de périodes ou la moyenne des taux de chaque période, au lieu de la racine n-ième du coefficient global."
               }
             ]
           },
@@ -13527,7 +13521,7 @@
             "confusions": [
               {
                 "id": "reciproque-meme-taux",
-                "libelle": "Croire que le même pourcentage en sens inverse suffit pour revenir au départ."
+                "libelle": "Croire que le même pourcentage en sens inverse ramène au départ, qu’il soit le taux d’une évolution ou la somme de taux successifs : on revient au départ en divisant par le coefficient multiplicateur."
               },
               {
                 "id": "coefficient-confondu-avec-taux",
@@ -14123,8 +14117,7 @@
               },
               "forme": "references"
             }
-          ],
-          "seuilReussite": 0.8
+          ]
         },
         "reflexion": null
       },
@@ -14212,7 +14205,7 @@
               },
               {
                 "id": "unite-manquante-ignoree",
-                "libelle": "Accepter un chiffre sans unité, base ou période."
+                "libelle": "Accepter ou produire un chiffre, un titre ou une légende sans sa définition, son unité, sa base ou sa période."
               }
             ]
           }
@@ -14338,7 +14331,7 @@
             "confusions": [
               {
                 "id": "axe-tronque-lu-comme-ecart",
-                "libelle": "Juger une évolution à la hauteur des barres sans lire l’origine et l’amplitude de l’axe."
+                "libelle": "Lire ou construire un graphique sans tenir compte de l’origine et de l’amplitude de l’axe : juger un écart à la hauteur des barres, tronquer l’axe ou supprimer ses graduations, ou renoncer à lire un écart que les graduations permettent de mesurer."
               }
             ]
           },
@@ -14348,7 +14341,7 @@
             "confusions": [
               {
                 "id": "valeur-confondue-avec-taux",
-                "libelle": "Conclure sur une rentabilité (un taux) à partir d’un montant, ou lire un montant comme un taux."
+                "libelle": "Confondre un montant et un taux : conclure sur une rentabilité à partir d’un montant, lire un montant comme un pourcentage ou un écart en points, ou un pourcentage comme un montant."
               },
               {
                 "id": "titre-interpretatif",
@@ -14736,8 +14729,7 @@
           "tolerance": {
             "type": "absolue",
             "valeur": 0.01
-          },
-          "seuilReussite": 0.75
+          }
         },
         "reflexion": null,
         "explications": [
@@ -15668,7 +15660,7 @@
             "confusions": [
               {
                 "id": "sens-de-variation",
-                "libelle": "Oublier le signe d’une variation : une baisse s’écrit avec un signe moins."
+                "libelle": "Se tromper sur le sens d’une variation : oublier le signe moins d’une baisse, traduire une baisse par le coefficient 1 + t au lieu de 1 − t, ou juger croissante une suite géométrique de raison positive, qui ne croît que si sa raison dépasse 1."
               },
               {
                 "id": "ca-confondu-avec-marge",
@@ -15682,7 +15674,7 @@
             "confusions": [
               {
                 "id": "correlation-prise-pour-causalite",
-                "libelle": "Conclure sur une cause, ou sur l’absence de cause, à partir de deux évolutions simultanées."
+                "libelle": "Tirer de deux évolutions simultanées, ou d’un coefficient de corrélation proche de 1, une conclusion qu’ils ne prouvent pas : une cause, l’absence de cause ou la poursuite de la tendance."
               }
             ]
           }
@@ -15805,11 +15797,11 @@
             "confusions": [
               {
                 "id": "points-confondus-avec-pourcentage",
-                "libelle": "Exprimer en % l’écart entre deux taux, qui se mesure en points."
+                "libelle": "Confondre l’écart entre deux taux, qui se mesure en points, et un pourcentage, part d’un total ou évolution relative, qui se mesure en %."
               },
               {
                 "id": "valeur-confondue-avec-taux",
-                "libelle": "Conclure sur une rentabilité (un taux) à partir d’un montant, ou lire un montant comme un taux."
+                "libelle": "Confondre un montant et un taux : conclure sur une rentabilité à partir d’un montant, lire un montant comme un pourcentage ou un écart en points, ou un pourcentage comme un montant."
               }
             ]
           },
@@ -16010,8 +16002,7 @@
               "categorieId": "preuve",
               "justification": "Un total qui concorde peut cacher +100 € et −100 € : on contrôle ligne à ligne, pièce en main."
             }
-          ],
-          "seuilReussite": 0.75
+          ]
         },
         "reflexion": null
       },
@@ -16631,7 +16622,7 @@
             "confusions": [
               {
                 "id": "points-confondus-avec-pourcentage",
-                "libelle": "Exprimer en % l’écart entre deux taux, qui se mesure en points."
+                "libelle": "Confondre l’écart entre deux taux, qui se mesure en points, et un pourcentage, part d’un total ou évolution relative, qui se mesure en %."
               }
             ]
           },
@@ -16655,7 +16646,7 @@
             "confusions": [
               {
                 "id": "reciproque-meme-taux",
-                "libelle": "Croire que le même pourcentage en sens inverse suffit pour revenir au départ."
+                "libelle": "Croire que le même pourcentage en sens inverse ramène au départ, qu’il soit le taux d’une évolution ou la somme de taux successifs : on revient au départ en divisant par le coefficient multiplicateur."
               },
               {
                 "id": "coefficient-confondu-avec-taux",
@@ -16683,7 +16674,7 @@
             "confusions": [
               {
                 "id": "taux-moyen-arithmetique",
-                "libelle": "Diviser un taux global par le nombre de périodes au lieu de prendre une racine n-ième."
+                "libelle": "Prendre pour taux moyen une moyenne arithmétique, le taux global divisé par le nombre de périodes ou la moyenne des taux de chaque période, au lieu de la racine n-ième du coefficient global."
               },
               {
                 "id": "coefficient-confondu-avec-taux",
@@ -16701,7 +16692,7 @@
               },
               {
                 "id": "raisonnement-additif",
-                "libelle": "Ajouter un écart constant là où la situation est proportionnelle."
+                "libelle": "Raisonner par addition là où la situation est proportionnelle : ajouter un écart constant, ou additionner les taux de plusieurs composantes pour obtenir un taux global."
               }
             ]
           },
@@ -16721,7 +16712,7 @@
             "confusions": [
               {
                 "id": "axe-tronque-lu-comme-ecart",
-                "libelle": "Juger une évolution à la hauteur des barres sans lire l’origine et l’amplitude de l’axe."
+                "libelle": "Lire ou construire un graphique sans tenir compte de l’origine et de l’amplitude de l’axe : juger un écart à la hauteur des barres, tronquer l’axe ou supprimer ses graduations, ou renoncer à lire un écart que les graduations permettent de mesurer."
               }
             ]
           },
@@ -16731,11 +16722,11 @@
             "confusions": [
               {
                 "id": "total-concordant-vaut-preuve",
-                "libelle": "Croire qu’un total exact garantit l’exactitude de chaque ligne."
+                "libelle": "Juger les lignes sur les seuls totaux : croire qu’un total exact garantit chaque ligne, ou conclure à l’absence d’erreur malgré un écart entre deux totaux."
               },
               {
                 "id": "controle-non-discriminant",
-                "libelle": "Choisir un contrôle qui ne permet ni de localiser ni de trancher l’anomalie."
+                "libelle": "Se contenter d’un contrôle ou d’un calcul qui ne localise ni ne tranche l’anomalie, en jugeant un écart négligeable ou en ne calculant que l’effet de l’écart, au lieu de remonter à la pièce qui dit quelle valeur est fausse."
               }
             ]
           },
@@ -16749,7 +16740,7 @@
               },
               {
                 "id": "total-concordant-vaut-preuve",
-                "libelle": "Croire qu’un total exact garantit l’exactitude de chaque ligne."
+                "libelle": "Juger les lignes sur les seuls totaux : croire qu’un total exact garantit chaque ligne, ou conclure à l’absence d’erreur malgré un écart entre deux totaux."
               }
             ]
           },
@@ -16759,7 +16750,7 @@
             "confusions": [
               {
                 "id": "taux-moyen-arithmetique",
-                "libelle": "Diviser un taux global par le nombre de périodes au lieu de prendre une racine n-ième."
+                "libelle": "Prendre pour taux moyen une moyenne arithmétique, le taux global divisé par le nombre de périodes ou la moyenne des taux de chaque période, au lieu de la racine n-ième du coefficient global."
               },
               {
                 "id": "taux-successifs-additionnes",
@@ -16773,7 +16764,7 @@
             "confusions": [
               {
                 "id": "reciproque-meme-taux",
-                "libelle": "Croire que le même pourcentage en sens inverse suffit pour revenir au départ."
+                "libelle": "Croire que le même pourcentage en sens inverse ramène au départ, qu’il soit le taux d’une évolution ou la somme de taux successifs : on revient au départ en divisant par le coefficient multiplicateur."
               },
               {
                 "id": "coefficient-confondu-avec-taux",
@@ -17280,7 +17271,7 @@
             "confusions": [
               {
                 "id": "points-confondus-avec-pourcentage",
-                "libelle": "Exprimer en % l’écart entre deux taux, qui se mesure en points."
+                "libelle": "Confondre l’écart entre deux taux, qui se mesure en points, et un pourcentage, part d’un total ou évolution relative, qui se mesure en %."
               },
               {
                 "id": "baisse-attribuee-aux-taux-locaux",
@@ -17288,7 +17279,7 @@
               },
               {
                 "id": "valeur-confondue-avec-taux",
-                "libelle": "Conclure sur une rentabilité (un taux) à partir d’un montant, ou lire un montant comme un taux."
+                "libelle": "Confondre un montant et un taux : conclure sur une rentabilité à partir d’un montant, lire un montant comme un pourcentage ou un écart en points, ou un pourcentage comme un montant."
               }
             ]
           }
@@ -17359,7 +17350,12 @@
       "tva-calculee-sur-ttc": "B2-01-A3-04-FIL-TECHNIQUE",
       "reference-relative-non-figee": "B2-01-A4-01-CAPSULE",
       "valeur-saisie-sans-formule": "B2-01-A4-01-CAPSULE",
-      "formule-non-recopiable": "B2-01-A4-01-CAPSULE"
+      "formule-non-recopiable": "B2-01-A4-01-CAPSULE",
+      "chiffre-lisible-juge-ambigu": "B2-01-A1-06-FICHE-INDICATEUR",
+      "retraitement-superflu": "B2-01-A2-07-JEU-COMPARABLE",
+      "comparaison-possible-refusee": "B2-01-A2-07-JEU-COMPARABLE",
+      "retraitement-sans-donnee": "B2-01-A2-07-JEU-COMPARABLE",
+      "preuve-externe-superflue": "B2-01-A5-07-CONTROLE-DISCRIMINANT"
     }
   },
   "catalogue": {

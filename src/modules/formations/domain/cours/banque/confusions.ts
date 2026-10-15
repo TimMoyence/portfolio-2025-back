@@ -20,7 +20,7 @@ const DEFINITIONS = {
   'reciproque-meme-taux': {
     concept: 'evolution-reciproque',
     libelle:
-      'Croire que le même pourcentage en sens inverse suffit pour revenir au départ.',
+      'Croire que le même pourcentage en sens inverse ramène au départ, qu’il soit le taux d’une évolution ou la somme de taux successifs : on revient au départ en divisant par le coefficient multiplicateur.',
   },
   'base-arrivee': {
     concept: 'taux-evolution',
@@ -44,7 +44,7 @@ const DEFINITIONS = {
   'raisonnement-additif': {
     concept: 'proportion',
     libelle:
-      'Ajouter un écart constant là où la situation est proportionnelle.',
+      'Raisonner par addition là où la situation est proportionnelle : ajouter un écart constant, ou additionner les taux de plusieurs composantes pour obtenir un taux global.',
   },
   'proportion-confondue-avec-evolution': {
     concept: 'pourcentage',
@@ -53,7 +53,8 @@ const DEFINITIONS = {
   },
   'points-confondus-avec-pourcentage': {
     concept: 'point-de-pourcentage',
-    libelle: 'Exprimer en % l’écart entre deux taux, qui se mesure en points.',
+    libelle:
+      'Confondre l’écart entre deux taux, qui se mesure en points, et un pourcentage, part d’un total ou évolution relative, qui se mesure en %.',
   },
   'population-reference-ignoree': {
     concept: 'proportion',
@@ -68,7 +69,7 @@ const DEFINITIONS = {
   'sens-de-variation': {
     concept: 'taux-evolution',
     libelle:
-      'Oublier le signe d’une variation : une baisse s’écrit avec un signe moins.',
+      'Se tromper sur le sens d’une variation : oublier le signe moins d’une baisse, traduire une baisse par le coefficient 1 + t au lieu de 1 − t, ou juger croissante une suite géométrique de raison positive, qui ne croît que si sa raison dépasse 1.',
   },
   'coefficient-global-mal-interprete': {
     concept: 'evolutions-successives',
@@ -78,7 +79,7 @@ const DEFINITIONS = {
   'rythme-confondu-avec-niveau': {
     concept: 'indice-base-100',
     libelle:
-      'Confondre désinflation (la hausse des prix ralentit) et déflation (les prix baissent).',
+      'Confondre désinflation et des prix stables ou en baisse : quand la hausse des prix ralentit (désinflation), les prix continuent de monter ; ils ne baissent qu’en déflation.',
   },
   'indice-lu-comme-taux': {
     concept: 'indice-base-100',
@@ -92,7 +93,7 @@ const DEFINITIONS = {
   'taux-moyen-arithmetique': {
     concept: 'taux-moyen',
     libelle:
-      'Diviser un taux global par le nombre de périodes au lieu de prendre une racine n-ième.',
+      'Prendre pour taux moyen une moyenne arithmétique, le taux global divisé par le nombre de périodes ou la moyenne des taux de chaque période, au lieu de la racine n-ième du coefficient global.',
   },
   'moyenne-simple-des-taux': {
     concept: 'moyenne-ponderee',
@@ -112,12 +113,12 @@ const DEFINITIONS = {
   'axe-tronque-lu-comme-ecart': {
     concept: 'lecture-graphique',
     libelle:
-      'Juger une évolution à la hauteur des barres sans lire l’origine et l’amplitude de l’axe.',
+      'Lire ou construire un graphique sans tenir compte de l’origine et de l’amplitude de l’axe : juger un écart à la hauteur des barres, tronquer l’axe ou supprimer ses graduations, ou renoncer à lire un écart que les graduations permettent de mesurer.',
   },
   'correlation-prise-pour-causalite': {
     concept: 'lecture-graphique',
     libelle:
-      'Conclure sur une cause, ou sur l’absence de cause, à partir de deux évolutions simultanées.',
+      'Tirer de deux évolutions simultanées, ou d’un coefficient de corrélation proche de 1, une conclusion qu’ils ne prouvent pas : une cause, l’absence de cause ou la poursuite de la tendance.',
   },
   'forme-inadaptee': {
     concept: 'lecture-graphique',
@@ -131,17 +132,18 @@ const DEFINITIONS = {
   },
   'unite-manquante-ignoree': {
     concept: 'contrat-de-lecture',
-    libelle: 'Accepter un chiffre sans unité, base ou période.',
+    libelle:
+      'Accepter ou produire un chiffre, un titre ou une légende sans sa définition, son unité, sa base ou sa période.',
   },
   'bases-incompatibles': {
     concept: 'contrat-de-lecture',
     libelle:
-      'Comparer des valeurs de périodes, de périmètres ou de bases (HT/TTC, unités) différents sans retraitement.',
+      'Comparer directement des valeurs de périodes, de périmètres ou de bases (HT/TTC, unités) différents, sans les retraiter ni chercher la donnée comparable.',
   },
   'valeur-confondue-avec-taux': {
     concept: 'contrat-de-lecture',
     libelle:
-      'Conclure sur une rentabilité (un taux) à partir d’un montant, ou lire un montant comme un taux.',
+      'Confondre un montant et un taux : conclure sur une rentabilité à partir d’un montant, lire un montant comme un pourcentage ou un écart en points, ou un pourcentage comme un montant.',
   },
   'ca-confondu-avec-marge': {
     concept: 'contrat-de-lecture',
@@ -155,7 +157,8 @@ const DEFINITIONS = {
   },
   'total-concordant-vaut-preuve': {
     concept: 'controle-coherence',
-    libelle: 'Croire qu’un total exact garantit l’exactitude de chaque ligne.',
+    libelle:
+      'Juger les lignes sur les seuls totaux : croire qu’un total exact garantit chaque ligne, ou conclure à l’absence d’erreur malgré un écart entre deux totaux.',
   },
   'indice-pris-pour-preuve': {
     concept: 'controle-coherence',
@@ -165,7 +168,7 @@ const DEFINITIONS = {
   'controle-non-discriminant': {
     concept: 'controle-coherence',
     libelle:
-      'Choisir un contrôle qui ne permet ni de localiser ni de trancher l’anomalie.',
+      'Se contenter d’un contrôle ou d’un calcul qui ne localise ni ne tranche l’anomalie, en jugeant un écart négligeable ou en ne calculant que l’effet de l’écart, au lieu de remonter à la pièce qui dit quelle valeur est fausse.',
   },
   'tva-base-non-corrigee': {
     concept: 'controle-coherence',
@@ -248,7 +251,7 @@ const DEFINITIONS = {
   'variance-confondue-avec-ecart-type': {
     concept: 'ecart-type',
     libelle:
-      'Donner la variance, exprimée dans le carré de l’unité, comme écart-type.',
+      'Donner pour écart-type la variance, exprimée dans le carré de l’unité, ou un nombre tiré d’elle sans racine carrée, comme sa moitié : l’écart-type est la racine carrée de la variance.',
   },
   'etendue-prise-pour-dispersion': {
     concept: 'dispersion',
@@ -278,7 +281,7 @@ const DEFINITIONS = {
   'point-moyen-confondu': {
     concept: 'nuage-de-points',
     libelle:
-      'Prendre pour point moyen le point du milieu du tableau au lieu du point de coordonnées (x̄ ; ȳ).',
+      'Prendre pour point moyen le point du milieu du tableau, la somme des valeurs ou la moyenne de l’autre série, au lieu du point de coordonnées (x̄ ; ȳ), moyenne des x et moyenne des y.',
   },
   'correlation-lue-comme-pente': {
     concept: 'correlation',
@@ -293,22 +296,22 @@ const DEFINITIONS = {
   'pente-ordonnee-inversees': {
     concept: 'ajustement-affine',
     libelle:
-      'Inverser les deux séries dans PENTE ou ORDONNEE.ORIGINE, ou prendre la pente pour l’ordonnée à l’origine.',
+      'Inverser les deux séries dans PENTE ou ORDONNEE.ORIGINE, ou confondre le coefficient de x (la pente) et la valeur pour x = 0 (l’ordonnée à l’origine), dans un sens ou dans l’autre.',
   },
   'rang-pris-pour-annee': {
     concept: 'prevision',
     libelle:
-      'Remplacer x par l’année au lieu de son rang dans l’équation de la droite.',
+      'Remplacer x par l’année, ou par l’écart à l’année de départ, au lieu de son rang dans l’équation de la droite.',
   },
   'extrapolation-sans-reserve': {
     concept: 'prevision',
     libelle:
-      'Prolonger une tendance loin des données observées sans signaler la limite de la prévision.',
+      'Se fier à une tendance au-delà de ce que les données permettent : la prolonger loin des données sans signaler la limite de la prévision, ou ne pas mesurer l’écart entre ce que prévoit le modèle et ce qui est observé.',
   },
   'seuil-mal-arrondi': {
     concept: 'prevision',
     libelle:
-      'Arrondir à l’entier inférieur le rang solution d’une inéquation de seuil, au lieu du premier entier qui la vérifie.',
+      'Mal conclure une recherche de seuil, en gardant la solution non entière d’une inéquation, en l’arrondissant à l’entier inférieur ou en arrêtant une boucle un passage trop tôt, au lieu de retenir le premier rang entier qui atteint le seuil.',
   },
   'ou-lu-exclusif': {
     concept: 'connecteur',
@@ -333,7 +336,7 @@ const DEFINITIONS = {
   'negation-comparaison': {
     concept: 'negation',
     libelle:
-      'Nier « x > a » en « x < a » au lieu de « x ≤ a » : la borne est oubliée.',
+      'Nier une comparaison sans faire changer la borne de camp : le contraire de « x > a » est « x ≤ a » et non « x < a », celui de « x ≥ a » est « x < a » et non « x ≤ a », celui de « x < a » est « x ≥ a » et non « x > a ».',
   },
   'negation-pour-tout-en-aucun': {
     concept: 'quantificateur',
@@ -378,7 +381,7 @@ const DEFINITIONS = {
   'nature-de-suite-confondue': {
     concept: 'suite-geometrique',
     libelle:
-      'Confondre « ajouter toujours le même nombre » (suite arithmétique) et « multiplier toujours par le même nombre » (suite géométrique).',
+      'Confondre « ajouter toujours le même nombre » (suite arithmétique) et « multiplier toujours par le même nombre » (suite géométrique), dans un sens ou dans l’autre, ou ajouter un taux au lieu de multiplier par lui.',
   },
   'condition-tant-que-inversee': {
     concept: 'algorithme-de-seuil',
@@ -423,7 +426,7 @@ const DEFINITIONS = {
   'annuite-confondue-avec-amortissement': {
     concept: 'tableau-d-amortissement',
     libelle:
-      'Prendre l’annuité pour le capital remboursé : l’amortissement est l’annuité moins les intérêts de l’année.',
+      'Confondre l’annuité et le capital remboursé : prendre l’annuité pour l’amortissement, ou le capital emprunté divisé par la durée pour l’annuité, alors que l’amortissement est l’annuité moins les intérêts de l’année.',
   },
   'cout-credit-confondu-avec-total-rembourse': {
     concept: 'cout-du-credit',
@@ -443,12 +446,12 @@ const DEFINITIONS = {
   'signe-de-k-ignore': {
     concept: 'fonction-exponentielle',
     libelle:
-      'Croire qu’un modèle a e^(kx) croît toujours : il décroît quand k est négatif, en restant positif.',
+      'Ignorer le signe de k dans un modèle a e^(kx) : le croire toujours croissant, ou oublier le moins de k dans un calcul, alors qu’il décroît quand k est négatif, en restant positif.',
   },
   'k-confondu-avec-taux': {
     concept: 'fonction-exponentielle',
     libelle:
-      'Prendre k pour le taux d’évolution par unité : le coefficient est e^k et le taux e^k − 1.',
+      'Confondre k et le taux d’évolution par unité, en prenant k pour le taux ou le taux pour k : le coefficient est e^k, le taux e^k − 1 et k = ln(1 + taux).',
   },
   'ln-produit-en-produit': {
     concept: 'logarithme-neperien',
@@ -493,17 +496,17 @@ const DEFINITIONS = {
   'lignes-comptees-pour-commandes': {
     concept: 'granularite',
     libelle:
-      'Compter les lignes quand on cherche les commandes : une commande compte autant de lignes que de produits.',
+      'Compter les lignes quand on cherche les commandes, ou croire que le fichier compte autant de lignes que de commandes, voire moins : une commande compte autant de lignes que de produits.',
   },
   'libelle-pris-pour-cle': {
     concept: 'cle-et-relation',
     libelle:
-      'Relier deux tables par un nom ou une ville au lieu de leur identifiant commun.',
+      'Prendre un nom ou une ville pour un identifiant, jusqu’à relier deux tables par eux : un nom se répète et s’écrit de plusieurs façons, seul l’identifiant désigne une seule fiche.',
   },
   'suspect-corrige-sans-validation': {
     concept: 'qualite-des-donnees',
     libelle:
-      'Corriger seul une donnée douteuse au lieu de la signaler à qui peut la vérifier.',
+      'Corriger seul une donnée douteuse, ou une erreur certaine dont la bonne valeur n’est pas dans le fichier, au lieu de la signaler à qui peut la vérifier.',
   },
   'suppression-au-lieu-de-signalement': {
     concept: 'qualite-des-donnees',
@@ -572,7 +575,7 @@ const DEFINITIONS = {
   'periode-mal-delimitee': {
     concept: 'agregation-conditionnelle',
     libelle:
-      'Agréger une autre période que celle de la question : la table entière au lieu des seuls mois demandés.',
+      'Agréger plus large que la question en oubliant une de ses conditions : la table entière au lieu des seuls mois demandés, ou toutes les ventes d’une agence au lieu de celles de la catégorie et de la période demandées.',
   },
   'commandes-comptees-pour-lignes': {
     concept: 'granularite',
@@ -582,7 +585,7 @@ const DEFINITIONS = {
   'type-de-variable-confondu': {
     concept: 'jeu-de-donnees',
     libelle:
-      'Ranger une date, une mesure ou un booléen sous un autre type : le type dit le calcul permis.',
+      'Ranger une date, une mesure, un booléen ou une catégorie sous un autre type : le type dit le calcul permis.',
   },
   'espaces-non-supprimes': {
     concept: 'nettoyage',
@@ -592,7 +595,7 @@ const DEFINITIONS = {
   'part-douteuse-estimee-sans-mesure': {
     concept: 'qualite-des-donnees',
     libelle:
-      'Estimer à l’œil la part des lignes fausses ou douteuses au lieu de la mesurer, anomalie par anomalie.',
+      'Se tromper sur l’ordre de grandeur de la part des lignes fausses ou douteuses d’un export, faute de l’avoir mesurée anomalie par anomalie.',
   },
   'cle-prise-pour-categorie': {
     concept: 'cle-et-relation',
@@ -602,7 +605,7 @@ const DEFINITIONS = {
   'correction-certaine-renvoyee-a-un-humain': {
     concept: 'qualite-des-donnees',
     libelle:
-      'Renvoyer à un humain une erreur certaine dont la bonne valeur se déduit du fichier : une formule la corrige.',
+      'Renvoyer à un humain une erreur certaine dont la bonne valeur se déduit du fichier : une formule ou un outil du tableur la corrige.',
   },
   'famille-de-probleme-mal-nommee': {
     concept: 'agregation-conditionnelle',
@@ -643,6 +646,46 @@ const DEFINITIONS = {
     concept: 'indicateur-statistique',
     libelle:
       'Prendre la médiane d’une liste trop large : un critère oublié l’élargit, et sous un filtre MEDIANE compte aussi les lignes masquées, là où AGREGAT(12;5;plage) ne garde que les lignes visibles.',
+  },
+  'chiffre-lisible-juge-ambigu': {
+    concept: 'contrat-de-lecture',
+    libelle:
+      'Juger ambigu un chiffre dont le libellé dit ce qu’il mesure, sa base et sa période : il se lit tel quel, et une unité mal écrite se corrige.',
+  },
+  'retraitement-superflu': {
+    concept: 'contrat-de-lecture',
+    libelle:
+      'Vouloir retraiter deux valeurs qui ont déjà la même unité, le même périmètre et la même période : elles se comparent directement.',
+  },
+  'comparaison-possible-refusee': {
+    concept: 'contrat-de-lecture',
+    libelle:
+      'Renoncer à comparer deux valeurs alors qu’aucune donnée ne manque : elles se comparent directement, ou après un calcul sur les données disponibles (passer du TTC au HT, changer d’unité, retirer une partie du périmètre).',
+  },
+  'retraitement-sans-donnee': {
+    concept: 'contrat-de-lecture',
+    libelle:
+      'Croire qu’un calcul remplace une donnée qui manque : sans la définition, la période ou le périmètre qui rendraient deux valeurs comparables, aucun retraitement ne suffit, il faut chercher la donnée.',
+  },
+  'preuve-externe-superflue': {
+    concept: 'controle-coherence',
+    libelle:
+      'Chercher une pièce ou une donnée détaillée pour une anomalie que le document suffit à trancher : compléter l’unité, la période et la source, refaire le calcul ou refaire le graphique.',
+  },
+  'identifiant-range-sous-un-autre-type': {
+    concept: 'jeu-de-donnees',
+    libelle:
+      'Ranger un identifiant parmi les dates ou les booléens : c’est un code attribué par le système, qui désigne une seule fiche, et on ne fait que le compter ou relier les tables par lui.',
+  },
+  'erreur-certaine-jugee-douteuse': {
+    concept: 'qualite-des-donnees',
+    libelle:
+      'Juger seulement douteuse une donnée certainement fausse : une valeur qui viole une règle du fichier (format, doublon exact, calcul, référentiel, ordre des dates) est fausse, même quand sa bonne valeur reste à demander.',
+  },
+  'donnee-douteuse-jugee-fausse': {
+    concept: 'qualite-des-donnees',
+    libelle:
+      'Déclarer fausse une donnée seulement douteuse : une valeur inhabituelle mais possible peut être juste, et seul qui l’a saisie peut le dire.',
   },
 } as const satisfies Readonly<Record<string, DefinitionConfusion>>;
 

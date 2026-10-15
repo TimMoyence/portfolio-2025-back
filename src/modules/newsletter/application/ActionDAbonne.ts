@@ -11,7 +11,7 @@ import {
 } from '../domain/token';
 
 export abstract class ActionDAbonne {
-  private readonly logger = new Logger(this.constructor.name);
+  protected readonly logger = new Logger(this.constructor.name);
 
   constructor(
     @Inject(NEWSLETTER_SUBSCRIBER_REPOSITORY)
@@ -30,9 +30,5 @@ export abstract class ActionDAbonne {
       throw new LienInvalideError();
     }
     return abonne;
-  }
-
-  protected enArrierePlan(tache: Promise<void>, echec: string): void {
-    void tache.catch((err: unknown) => this.logger.warn(echec, err));
   }
 }

@@ -1,8 +1,9 @@
 import { randomUUID } from 'crypto';
 import { Column, PrimaryGeneratedColumn } from 'typeorm';
+import type { Provenance } from '../../domain/provenance';
 import { ColonnesDeTrace } from './ColonnesDeTrace';
 
-export abstract class ColonnesDeProvenance extends ColonnesDeTrace {
+export abstract class ColonnesDeRequete extends ColonnesDeTrace {
   @Column({ type: 'inet', nullable: true })
   ip?: string;
 
@@ -11,20 +12,12 @@ export abstract class ColonnesDeProvenance extends ColonnesDeTrace {
 
   @Column({ type: 'text', nullable: true })
   referer?: string;
-}
 
-export abstract class ColonnesDeRequete extends ColonnesDeProvenance {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column({ type: 'uuid' })
   requestId: string;
-}
-
-export interface Provenance {
-  ip?: string | null;
-  userAgent?: string | null;
-  referer?: string | null;
 }
 
 export function valeursDeProvenance(provenance: Provenance): {

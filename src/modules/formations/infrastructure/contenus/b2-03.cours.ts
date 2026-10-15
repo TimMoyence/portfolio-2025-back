@@ -101,6 +101,17 @@ const CONSIGNE_DES_REGLES =
 
 const RENVOI_AUX_FACTURES = 'B2-03-A1-04-FACTURES';
 
+const DOSSIER_DES_ILLUSTRATIONS = '/assets/cours/b2-03/v1';
+
+const AVANT_SA_PAGE =
+  '1 min ; l’image montre l’exemple pour débuter de la page qui suit : la commenter avant de lire la page.';
+
+const PREMIERE_PAGE_APRES_SON_ILLUSTRATION =
+  '2 min, après 1 min sur son illustration ; la trace écrite est imprimée dans le livret : on lit et on commente, on ne recopie pas.';
+
+const DEUXIEME_PAGE_APRES_SON_ILLUSTRATION =
+  '2 min, après 1 min sur son illustration, enchaînées sur la page 1 : 6 min pour les deux pages de la trace écrite et leurs illustrations.';
+
 type Colonne = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G';
 
 function auMoinsUn<T>(liste: readonly T[]): AuMoinsUnModifiable<T> {
@@ -123,69 +134,25 @@ function cellulesDesLignes(
 
 const lireNumero = (ligne: Facture): string => ligne.numero;
 const lirePays = (ligne: Facture): string => ligne.pays;
-const lireMontant = (ligne: Facture): string => String(ligne.ht);
 const lireTva = (ligne: Facture): string => ligne.tva;
-
-const FORMULE_DU_VISA = '=SI(OU(C2>=5000;B2<>"France");"Visa";"Non")';
-
-const FACTURES_DE_L_EXERCICE_3 = ['F202', 'F203', 'F209', 'F213', 'F201'];
-
-const CELLULES_DE_L_EXERCICE_3 = {
-  A1: 'Facture',
-  B1: 'Pays',
-  C1: 'Montant HT (€)',
-  D1: 'Visa',
-  ...cellulesDesLignes(FACTURES_DE_L_EXERCICE_3, [
-    ['A', lireNumero],
-    ['B', lirePays],
-    ['C', lireMontant],
-  ]),
-};
-
-const PLAN_DU_VISA = {
-  id: 'b2-03-a1-tableur-si-ou',
-  intitule: 'Exercice 3 — La formule du visa',
-  lignes: FACTURES_DE_L_EXERCICE_3.length + 1,
-  colonnes: 4,
-  cellules: CELLULES_DE_L_EXERCICE_3,
-  verrouillees: Object.keys(CELLULES_DE_L_EXERCICE_3),
-  consignes: [
-    'En D2, écrivez avec SI et OU la règle du visa : « Visa » si le montant HT atteint 5 000 € ou si le pays n’est pas la France, « Non » sinon.',
-    `Recopiez la formule de D2 jusqu’en D6 : ${gesteDeRecopie(['D2'], 6)}.`,
-    'Dans une formule, un texte s’écrit entre guillemets.',
-  ],
-};
 
 function visaDe(numero: string): string {
   const ligne = factureNumero(numero);
   return ligne.ht >= 5000 || ligne.pays !== 'France' ? 'Visa' : 'Non';
 }
 
-const ATTENDUS_DU_VISA = auMoinsUn(
-  FACTURES_DE_L_EXERCICE_3.map((numero, rang) =>
-    moteur.attendu(
-      `D${rang + 2}`,
-      decalerFormule(FORMULE_DU_VISA, rang, 0),
-      visaDe(numero),
-      rang === 0 ? 'references' : { memeQue: 'D2' },
-      [],
-      'critere-sans-guillemets',
-    ),
-  ),
-);
-
 const FORMULE_NON_OU = '=SI(NON(OU(B2="France";C2="Oui"));"Anomalie";"OK")';
 const FORMULE_ET = '=SI(ET(B2<>"France";C2="Non");"Anomalie";"OK")';
 
-const FACTURES_DE_L_EXERCICE_5 = ['F203', 'F205', 'F206', 'F212', 'F215'];
+const FACTURES_DE_L_EXERCICE_4 = ['F203', 'F205', 'F206', 'F212', 'F215'];
 
-const CELLULES_DE_L_EXERCICE_5 = {
+const CELLULES_DE_L_EXERCICE_4 = {
   A1: 'Facture',
   B1: 'Pays',
   C1: 'N° de TVA renseigné',
   D1: 'Contrôle avec NON et OU',
   E1: 'Contrôle avec ET',
-  ...cellulesDesLignes(FACTURES_DE_L_EXERCICE_5, [
+  ...cellulesDesLignes(FACTURES_DE_L_EXERCICE_4, [
     ['A', lireNumero],
     ['B', lirePays],
     ['C', lireTva],
@@ -194,11 +161,11 @@ const CELLULES_DE_L_EXERCICE_5 = {
 
 const PLAN_DE_LA_TVA = {
   id: 'b2-03-a2-tableur-non-ou',
-  intitule: 'Exercice 5 — Deux contrôles de la TVA',
-  lignes: FACTURES_DE_L_EXERCICE_5.length + 1,
+  intitule: 'Exercice 4 — Deux contrôles de la TVA',
+  lignes: FACTURES_DE_L_EXERCICE_4.length + 1,
   colonnes: 5,
-  cellules: CELLULES_DE_L_EXERCICE_5,
-  verrouillees: Object.keys(CELLULES_DE_L_EXERCICE_5),
+  cellules: CELLULES_DE_L_EXERCICE_4,
+  verrouillees: Object.keys(CELLULES_DE_L_EXERCICE_4),
   consignes: [
     'En D2, avec SI, NON et OU : « Anomalie » s’il est faux que le client soit en France ou que son numéro de TVA soit renseigné, « OK » sinon.',
     'En E2, écrivez le même contrôle avec SI et ET, sans NON.',
@@ -218,7 +185,7 @@ const ATTENDUS_DE_LA_TVA = auMoinsUn(
       ['E', FORMULE_ET],
     ] as const
   ).flatMap(([colonne, formule]) =>
-    FACTURES_DE_L_EXERCICE_5.map((numero, rang) =>
+    FACTURES_DE_L_EXERCICE_4.map((numero, rang) =>
       moteur.attendu(
         `${colonne}${rang + 2}`,
         decalerFormule(formule, rang, 0),
@@ -300,39 +267,6 @@ function colonneDeVerite(
 }
 
 const ACTE_1: moteur.Acte = [
-  {
-    screenId: 'B2-03-A1-01-DIAGNOSTIC',
-    titre: 'Diagnostic : la remise à 1 000 €',
-    diffusion: 'seance',
-    brique: 'fp-recall',
-    dureeMinutes: 4,
-    concepts: ['proposition'],
-    notes: moteur.puces(
-      'Avant de lancer : vérifier au pupitre que tous les postes ont rejoint la séance.',
-      'Annoncer « seule la participation compte ». Chacun répond sans calculatrice.',
-      'Piège : lire >= comme > et refuser la remise à 1 000 € pile.',
-      'Papier : la question est en tête du livret ; vote à main levée.',
-    ),
-    proprietes: {
-      modalite: 'solo',
-      questions: [
-        moteur.vote(
-          'b2-03-a1-diagnostic',
-          'proposition',
-          true,
-          'La cellule B2 contient 1000. Qu’affiche la formule =SI(B2>=1000;"Remise";"Plein tarif") ?',
-          'Remise : 1 000 est bien supérieur ou égal à 1 000',
-          [
-            [
-              'Plein tarif : 1 000 n’est pas supérieur à 1 000',
-              'borne-stricte-large',
-            ],
-          ],
-        ),
-      ],
-      delaiMs: 0,
-    },
-  },
   moteur.ecranV2(
     {
       screenId: 'B2-03-A1-02-ACCROCHE',
@@ -368,19 +302,16 @@ const ACTE_1: moteur.Acte = [
     notes: moteur.puces(
       'Lecture à voix haute du courriel (1 min), puis 3 min d’écriture individuelle et 1 min de mise en commun au pupitre.',
       'Question 1 : faire dire que la relance et la TVA demandent deux conditions ensemble, le visa une seule des deux.',
-      'Question 2 : faire trancher par le mot « dépasse » ; écrire au tableau « dépasse 60 : > 60 », repris en trace écrite.',
-      'Question 3 : faire émerger qu’une seule facture suffit à contredire « toutes » ; c’est l’acte 3.',
-      'Papier : trois lignes d’écriture dans le livret.',
+      'Question 2 : faire trancher par le mot « dépasse » ; écrire au tableau « dépasse 60 : > 60 ».',
+      'Papier : deux lignes d’écriture dans le livret.',
     ),
     proprietes: {
       metier:
         'Assistant·e comptable — Atelier Rivage (voilerie artisanale, 14 salariés, La Rochelle)',
       situation:
         'Mardi, 9 h. Marc Lefèvre, l’expert-comptable d’Atelier Rivage, prépare la révision des comptes clients. Il écrit : « Avant la clôture, contrôlez les seize factures du trimestre avec trois règles. Relance : une facture impayée dont le délai dépasse 60 jours, le maximum prévu par vos conditions générales de vente ; chaque relance réclame l’indemnité forfaitaire de 40 € due pour tout retard. TVA : une facture à un client professionnel d’un autre pays de l’Union européenne porte son numéro de TVA intracommunautaire. Visa : Hélène vise toute facture d’au moins 5 000 € HT ou adressée hors de France. » Hélène Garnier, la dirigeante, ajoute : « F213, de Chantier Duval, est impayée depuis exactement 60 jours. Et toutes nos factures hors de France portent un numéro de TVA. »',
-      geste:
-        'Sans rien calculer, répondez aux trois questions à partir du courriel.',
-      consequence:
-        'Une règle mal lue relance un bon client, oublie une indemnité due ou laisse passer une facture sans visa : l’expert-comptable le relèvera à la clôture.',
+      geste: null,
+      consequence: null,
       questionsLibres: [
         {
           id: 'b2-03-a1-mission:regles',
@@ -393,12 +324,6 @@ const ACTE_1: moteur.Acte = [
           question:
             'Faut-il relancer F213 aujourd’hui ? Quel mot de la règle permet de trancher ?',
           placeholder: 'Oui / Non, parce que le mot « … »',
-        },
-        {
-          id: 'b2-03-a1-mission:preuve',
-          question:
-            'Hélène affirme que toutes les factures hors de France portent un numéro de TVA. Que faudrait-il trouver dans le fichier pour prouver qu’elle se trompe ?',
-          placeholder: 'Il suffirait de trouver…',
         },
       ],
     },
@@ -464,22 +389,37 @@ const ACTE_1: moteur.Acte = [
         lignes: [
           '« Ou » est inclusif : la remise tient dès qu’une condition est vraie, et aussi quand les deux le sont.',
           '« Plus de trois ans » se traduit par > 3 : la valeur 3 est exclue. « Au moins trois ans » se traduit par ≥ 3.',
-          'La trace écrite donne la table de ces connecteurs.',
         ],
       },
     },
   },
+  moteur.ecranDIllustration(
+    {
+      screenId: 'B2-03-A1-06-ILLUSTRATION-CONNECTEURS',
+      titre: 'Illustration : la remise de la boutique',
+      concepts: ['proposition', 'connecteur'],
+    },
+    DOSSIER_DES_ILLUSTRATIONS,
+    {
+      fichier: 'remise-boutique-ou.webp',
+      imageAlt:
+        'Schéma de l’exemple de la remise de la boutique : remise si le client est fidèle (P) ou si la commande atteint 1 000 € (Q). Client fidèle à 1 500 € : P vraie, Q vraie, P ∨ Q vraie, remise. Client fidèle à 300 € : P vraie, Q fausse, remise. Nouveau client à 1 300 € : P fausse, Q vraie, remise. Nouveau client à 300 € : P et Q fausses, pas de remise, le seul cas où « ou » est faux. Au tableur, en ligne 2 : =SI(OU(B2="Fidèle";C2>=1000);"Remise";"") ; même logique pour ET (les deux conditions vraies) et pour NON (inverse une condition).',
+    },
+    [
+      AVANT_SA_PAGE,
+      'Demander : « Dans quel seul cas le client n’a-t-il pas la remise ? » Laisser venir « ni fidèle, ni 1 000 € ».',
+    ],
+  ),
   moteur.ecranV2(
     {
       screenId: 'B2-03-A1-06-COURS-CONNECTEURS',
       titre: 'Cours : propositions et connecteurs',
       diffusion: 'catalogue',
-      dureeMinutes: 3,
+      dureeMinutes: 2,
       concepts: ['proposition', 'connecteur', 'tableur'],
       notes: moteur.puces(
-        '3 min ; la trace écrite est imprimée dans le livret : on lit et on commente, on ne recopie pas.',
-        'Avant l’exemple, demander : « Dans quel seul cas le client n’a-t-il pas la remise ? » Laisser venir « ni fidèle, ni 1 000 € ».',
-        'Faire lire la ligne V, V de « ou » : c’est la réponse au vote précédent.',
+        PREMIERE_PAGE_APRES_SON_ILLUSTRATION,
+        'Faire lire le premier client de l’exemple (fidèle, 1 500 €) : c’est la réponse au vote précédent.',
         'Lien au dossier : « La règle du visa est-elle un “et” ou un “ou” ? » Un « ou ».',
       ),
     },
@@ -506,37 +446,42 @@ const ACTE_1: moteur.Acte = [
             'Au tableur : =SI(OU(B2="Fidèle";C2>=1000);"Remise";"") ; ET et NON s’écrivent de la même façon.',
           ],
         },
-        {
-          kind: 'method',
-          title: 'La table de vérité, et les pièges du « ou »',
-          text: 'Une table de vérité donne la valeur d’un connecteur dans chaque cas. Pièges : lire « ou » comme « l’un ou l’autre, mais pas les deux » ; compter « A ou B » en additionnant les A et les B, ce qui compte deux fois les lignes qui vérifient les deux. Réflexe CCF : nommer chaque condition par une lettre, puis remplir la table.',
-          steps: [
-            'P ∧ Q n’est vraie que sur la ligne V, V.',
-            'P ∨ Q n’est fausse que sur la ligne F, F.',
-            'Nombre de « A ou B » = nombre de A + nombre de B − nombre de « A et B ».',
-            'Au tableur, un texte s’écrit entre guillemets : "France", "Payée".',
-          ],
-        },
       ],
     },
+  ),
+  moteur.ecranDIllustration(
+    {
+      screenId: 'B2-03-A1-07-ILLUSTRATION-IMPLICATION',
+      titre: 'Illustration : la prime d’ancienneté',
+      concepts: ['connecteur', 'proposition'],
+    },
+    DOSSIER_DES_ILLUSTRATIONS,
+    {
+      fichier: 'prime-anciennete-implication.webp',
+      imageAlt:
+        'Schéma de l’exemple de la prime d’ancienneté, règle de paie « si un salarié a plus de trois ans d’ancienneté, il touche une prime ». Anna, cinq ans, prime : P vraie et Q vraie, la règle est respectée. Bruno, cinq ans, pas de prime : P vraie et Q fausse, c’est un contre-exemple, la règle est violée. Chloé, un an, prime pour une autre raison : P fausse, la règle n’interdit rien. Réciproque « s’il touche une prime, il a plus de trois ans d’ancienneté » : Chloé la rend fausse, alors que la règle reste respectée. Récapitulatif avec David, quatre ans, prime, règle respectée. À retenir : la règle est une implication P ⇒ Q ; un contre-exemple suffit pour la rendre fausse ; la réciproque n’est pas vraie ; si P est fausse, la règle n’interdit rien.',
+    },
+    [
+      AVANT_SA_PAGE,
+      'Question : « Chloé a une prime avec un an d’ancienneté. La règle est-elle violée ? » Non : la règle ne parle que des plus de trois ans.',
+    ],
   ),
   moteur.ecranV2(
     {
       screenId: 'B2-03-A1-07-COURS-IMPLICATION',
-      titre: 'Cours : implication, réciproque et bornes',
+      titre: 'Cours : implication et réciproque',
       diffusion: 'catalogue',
-      dureeMinutes: 3,
+      dureeMinutes: 2,
       concepts: ['connecteur', 'proposition'],
       notes: moteur.puces(
-        moteur.DEUXIEME_PAGE_DE_COURS,
-        'Question : « Chloé a une prime avec un an d’ancienneté. La règle est-elle violée ? » Non : la règle ne parle que des plus de trois ans.',
+        DEUXIEME_PAGE_APRES_SON_ILLUSTRATION,
         'Faire tester les bornes à voix haute : 60 jours pile, 5 000 € pile.',
         'Relier au vote : « plus de trois ans » exclut trois ans pile.',
       ),
     },
     'lesson',
     {
-      title: 'Implication, réciproque et bornes',
+      title: 'Implication et réciproque',
       subtitle: 'Trace écrite · notion 1 · page 2 sur 2',
       blocks: [
         {
@@ -556,83 +501,6 @@ const ACTE_1: moteur.Acte = [
             'Réciproque « s’il touche une prime, il a plus de trois ans » : Chloé la contredit, alors que la règle est respectée.',
           ],
         },
-        {
-          kind: 'exam',
-          title: 'Au CCF : bornes et contre-exemples',
-          text: 'Les mots de la règle fixent la borne : « plus de », « au-delà de », « dépasse » se traduisent par > ; « au moins », « à partir de », « atteint » par ≥ ; « moins de » par <, « au plus » par ≤. Piège : lire une implication comme une équivalence, et croire que Q vraie entraîne P vraie.',
-          steps: [
-            'Écrire chaque condition avec son symbole avant d’écrire la formule.',
-            'Tester la valeur de la borne : trois ans pile, 60 jours pile, 5 000 € pile.',
-            'Pour prouver qu’une implication est fausse, un seul contre-exemple suffit.',
-          ],
-        },
-      ],
-    },
-  ),
-  moteur.corrigeEtapeParEtape(
-    {
-      screenId: 'B2-03-A1-08-EXEMPLE-TABLE',
-      titre: 'Exemple guidé : la règle de relance',
-      diffusion: 'seance',
-      brique: 'fp-worked',
-      dureeMinutes: 4,
-      concepts: ['connecteur', 'tableur'],
-      notes: moteur.puces(...moteur.NOTES_DE_L_EXEMPLE_ETAPE_PAR_ETAPE),
-      proprietes: {
-        modalite: 'solo',
-        exemple: {
-          id: 'b2-03-a1-exemple-table',
-          enonce:
-            'Règle de relance : une facture est relancée si elle est impayée (P) et si son délai dépasse 60 jours (Q). On l’applique à quatre factures du fichier : F202, F206, F209 et F201.',
-          etapes: [
-            {
-              id: 'propositions',
-              intitule: 'Nommer les propositions',
-              raisonnement:
-                'P : « la facture est impayée ». Q : « le délai dépasse 60 jours », soit délai > 60. La relance est P ∧ Q.',
-              invite:
-                'Quelles sont les deux propositions de la règle, et quel connecteur les relie ?',
-            },
-            {
-              id: 'valeurs',
-              intitule: 'Les valeurs de vérité',
-              raisonnement:
-                'F202 : impayée, 72 jours, P et Q vraies. F206 : impayée, 58 jours, P vraie, Q fausse. F209 : payée, 61 jours, P fausse, Q vraie. F201 : payée, 35 jours, P et Q fausses.',
-              invite:
-                'Pour chaque facture, P et Q sont-elles vraies ou fausses ?',
-            },
-            {
-              id: 'relance',
-              intitule: 'Appliquer « et »',
-              raisonnement:
-                'Seule F202 a P et Q vraies : elle seule est relancée. F209 dépasse 60 jours, mais elle est payée.',
-              invite: 'Quelles factures relancer ?',
-            },
-            {
-              id: 'piege',
-              intitule: 'Le piège du « ou »',
-              raisonnement:
-                'Avec P ∨ Q, on relancerait F202, F206 et F209 : F209 est pourtant payée, et F206 n’est pas encore en retard. « Et » exige les deux conditions.',
-              invite: 'Que donnerait la règle écrite avec « ou » ?',
-            },
-            {
-              id: 'tableur',
-              intitule: 'La formule',
-              raisonnement:
-                'Statut en B2, délai en C2 : =SI(ET(B2="Impayée";C2>60);"Relancer";"Non"). Les textes sont entre guillemets ; > et non ≥, car « dépasse » exclut 60.',
-              invite:
-                'Écrivez la formule de la relance, avec le statut en B2 et le délai en C2.',
-            },
-          ],
-        },
-        etayage: 0,
-      },
-    },
-    {
-      minutes: 2,
-      notes: [
-        'S’arrêter sur F209 (étape 3) et sur le choix de > (étape 5).',
-        'Transition : « À vous, sur la règle du visa : exercice 1. »',
       ],
     },
   ),
@@ -706,8 +574,8 @@ const ACTE_1: moteur.Acte = [
       concepts: ['connecteur', 'proposition'],
       notes: moteur.puces(
         moteur.tempsDeLExercice(1, 5),
-        'Réflexion : écrire chaque règle avec ses lettres et ses symboles avant de compter.',
-        'Pièges : « ou » exclusif ; additionner les deux conditions ; > au lieu de ≥ ; réciproque prise pour la règle.',
+        'Réflexion : écrire chaque règle avec ses lettres et ses symboles.',
+        'Pièges : « ou » exclusif ; réciproque prise pour la règle.',
         'Papier : exercice 2 du livret.',
       ),
       proprietes: {
@@ -717,20 +585,6 @@ const ACTE_1: moteur.Acte = [
         regime: 'focus',
         ordre: 'fixe',
         questions: [
-          moteur.numerique(
-            'b2-03-a1-visa',
-            'connecteur',
-            'Combien des seize factures faut-il viser ?',
-            'factures',
-            8,
-            moteur.TOLERANCE_NULLE,
-            '8 factures',
-            [
-              [6, 'ou-lu-exclusif'],
-              [10, 'ou-compte-deux-fois'],
-              [7, 'borne-stricte-large'],
-            ],
-          ),
           moteur.vote(
             'b2-03-a1-implication',
             'connecteur',
@@ -745,14 +599,6 @@ const ACTE_1: moteur.Acte = [
             ],
           ),
           moteur.vote(
-            'b2-03-a1-f213',
-            'proposition',
-            true,
-            'F213 est impayée depuis 60 jours pile. Faut-il la relancer ?',
-            'Non : son délai atteint 60 jours sans les dépasser',
-            [['Oui : 60 jours, c’est le délai maximum', 'borne-stricte-large']],
-          ),
-          moteur.vote(
             'b2-03-a1-f205',
             'connecteur',
             true,
@@ -763,80 +609,15 @@ const ACTE_1: moteur.Acte = [
         ],
       },
     },
-    {
-      minutes: 2,
-      notes: [
-        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE_SOUS_SON_SCORE,
-        'Transition : « Écrivons la règle du visa au tableur : exercice 3. »',
-      ],
-    },
+    moteur.CORRECTION_AVANT_LA_PREMIERE_PAUSE,
     [
-      [
-        'b2-03-a1-visa',
-        'Quatre factures atteignent 5 000 € (F202, F205, F210, F213) et six partent hors de France ; F205 et F210 sont dans les deux listes. 4 + 6 − 2 = 8 factures. Additionner donne 10 ; exclure les deux donne 6 ; oublier F213 (> au lieu de ≥) donne 7.',
-      ],
       [
         'b2-03-a1-implication',
         'La règle dit « montant d’au moins 5 000 € ou hors de France ⇒ visa ». Samir prend la réciproque : F203, visée avec 3 100 €, la contredit.',
       ],
       [
-        'b2-03-a1-f213',
-        '« Dépasse 60 jours » se traduit par délai > 60 : F213, à 60 jours pile, n’est pas encore relancée.',
-      ],
-      [
         'b2-03-a1-f205',
         'Le « ou » est inclusif : F205 vérifie les deux conditions, elle est visée.',
-      ],
-    ],
-  ),
-  moteur.corrigeSurPlace(
-    {
-      screenId: 'B2-03-A1-11-TABLEUR-SI-OU',
-      titre: 'Exercice 3 — La formule du visa',
-      diffusion: 'seance',
-      brique: 'fp-sheet',
-      dureeMinutes: 6,
-      concepts: ['tableur', 'connecteur'],
-      notes: moteur.puces(
-        moteur.tempsDeLExercice(1, 5),
-        'Réflexion : écrire sur papier les deux conditions avec leurs symboles.',
-        'Erreurs à chercher : "France" sans guillemets ; > au lieu de >= (F213) ; ET au lieu de OU.',
-        'Papier : formule écrite sur la copie, puis appliquée aux cinq lignes.',
-      ),
-      proprietes: {
-        modalite: 'solo',
-        plan: PLAN_DU_VISA,
-        questions: [
-          {
-            type: 'feuille',
-            id: PLAN_DU_VISA.id,
-            concept: 'tableur',
-            noteCompte: true,
-            corrige: {
-              type: 'feuille',
-              plan: PLAN_DU_VISA,
-              attendus: ATTENDUS_DU_VISA,
-              seuilReussite: 0.8,
-            },
-          },
-        ],
-      },
-    },
-    {
-      minutes: 2,
-      notes: [
-        'Projeter la feuille d’un poste volontaire et relire la formule de D2.',
-        'Transition : jalon 1, puis pause de 15 minutes.',
-      ],
-    },
-    [
-      [
-        'D2',
-        `${FORMULE_DU_VISA} : OU pour « ou », >= pour « au moins », "France" entre guillemets.`,
-      ],
-      [
-        'D3 à D6',
-        'F203 est visée (hors de France), F209 ne l’est pas (4 950 € en France), F213 l’est (5 000 € pile), F201 ne l’est pas.',
       ],
     ],
   ),
@@ -892,16 +673,32 @@ const ACTE_2: moteur.Acte = [
       renvoi: RENVOI_AUX_FACTURES,
     },
   ),
+  moteur.ecranDIllustration(
+    {
+      screenId: 'B2-03-A2-02-ILLUSTRATION-NEGATION',
+      titre: 'Illustration : le cas de Léo',
+      concepts: ['negation'],
+    },
+    DOSSIER_DES_ILLUSTRATIONS,
+    {
+      fichier: 'prime-anciennete-negation.webp',
+      imageAlt:
+        'Schéma de l’exemple de la prime d’ancienneté : prime si ancienneté > 3 ans. Sur une droite graduée de 0 à 5, « sans prime » couvre ≤ 3 et « prime » couvre > 3. Léo a trois ans pile : 3 n’est pas > 3, il est dans le contraire, au plus trois ans, pas de prime. L’erreur à éviter : écrire « ancienneté < 3 » oublierait Léo, qui ne serait ni dans la règle, ni dans son contraire. Autre contraire : « le client est en France » devient « le client n’est pas en France », au tableur B2<>"France", qui renvoie VRAI si le client n’est pas en France. Exemple au tableur : Emma 1 an, Sam 3 ans, Léo 3 ans sans prime ; Mia 4 ans et Tom 6 ans avec prime, par la formule =SI(B2>3;"Prime";"").',
+    },
+    [
+      AVANT_SA_PAGE,
+      'Question : « Léo a trois ans pile. Est-il dans la règle ou dans son contraire ? » Dans le contraire.',
+    ],
+  ),
   moteur.ecranV2(
     {
       screenId: 'B2-03-A2-02-COURS-NEGATION',
       titre: 'Cours : la négation d’une condition',
       diffusion: 'catalogue',
-      dureeMinutes: 3,
+      dureeMinutes: 2,
       concepts: ['negation', 'tableur'],
       notes: moteur.puces(
-        '3 min ; garder la réflexion précédente sous les yeux.',
-        'Question : « Léo a trois ans pile. Est-il dans la règle ou dans son contraire ? » Dans le contraire.',
+        '2 min, après 1 min sur son illustration ; garder la réflexion précédente sous les yeux.',
         'Faire dire pourquoi « < 3 » oublie Léo : il ne serait nulle part.',
       ),
     },
@@ -927,29 +724,35 @@ const ACTE_2: moteur.Acte = [
             'Contraire de « le client est en France » : « le client n’est pas en France », au tableur B2<>"France".',
           ],
         },
-        {
-          kind: 'method',
-          title: 'Nier sans perdre la borne',
-          text: 'Piège : retourner le signe sans changer sa largeur. Chaque valeur tombe d’un seul côté : dans la règle ou dans son contraire. Réflexe : tester la borne dans les deux.',
-          steps: [
-            '> devient ≤ ; ≥ devient < ; = devient ≠ (<> au tableur).',
-            'Au tableur : NON(C2>60) donne le même résultat que C2<=60.',
-            'Contrôle : les lignes de la règle et celles de son contraire font toutes les lignes, sans doublon.',
-          ],
-        },
       ],
     },
+  ),
+  moteur.ecranDIllustration(
+    {
+      screenId: 'B2-03-A2-03-ILLUSTRATION-MORGAN',
+      titre: 'Illustration : le contraire de la remise',
+      concepts: ['negation', 'connecteur'],
+    },
+    DOSSIER_DES_ILLUSTRATIONS,
+    {
+      fichier: 'remise-boutique-morgan.webp',
+      imageAlt:
+        'Schéma de l’exemple de la remise de la boutique : remise si le client est fidèle OU si la commande atteint 1 000 €. Le contraire : pas de remise si le client n’est pas fidèle ET si sa commande reste sous 1 000 €, comme le nouveau client à 300 €. L’erreur sans Morgan : « non fidèle OU moins de 1 000 € » serait vrai pour le nouveau client à 1 300 €, alors qu’il a bien la remise. Au tableur, =NON(OU(B2="Fidèle";C2>=1000)) et =ET(B2<>"Fidèle";C2<1000) donnent le même résultat : vrai uniquement quand le client n’est pas fidèle ET commande moins de 1 000 €. Exemples : Alice, fidèle, 1 500 € ; Benoît, fidèle, 300 € ; Chloé, nouvelle, 1 300 € : remise. David, nouveau, 300 € : pas de remise. Cas clés à retenir : nouveau client à 300 €, pas de remise ; nouveau client à 1 300 €, remise.',
+    },
+    [
+      AVANT_SA_PAGE,
+      'Faire vérifier sur le client à 1 300 € que la négation sans Morgan se trompe.',
+    ],
   ),
   moteur.ecranV2(
     {
       screenId: 'B2-03-A2-03-COURS-MORGAN',
       titre: 'Cours : les lois de Morgan',
       diffusion: 'catalogue',
-      dureeMinutes: 3,
+      dureeMinutes: 2,
       concepts: ['negation', 'connecteur'],
       notes: moteur.puces(
-        moteur.DEUXIEME_PAGE_DE_COURS,
-        'Faire vérifier sur le client à 1 300 € que la négation sans Morgan se trompe.',
+        DEUXIEME_PAGE_APRES_SON_ILLUSTRATION,
         'Relier à la réflexion A2-01 : faire relire les réponses qui ont gardé « et ».',
       ),
     },
@@ -975,89 +778,13 @@ const ACTE_2: moteur.Acte = [
             'Au tableur : NON(OU(B2="Fidèle";C2>=1000)) donne le même résultat que ET(B2<>"Fidèle";C2<1000).',
           ],
         },
-        {
-          kind: 'exam',
-          title: 'Au CCF : nier une règle',
-          text: 'Pièges : nier chaque condition sans échanger le connecteur ; oublier la borne. Rédiger la négation en phrase, puis la vérifier sur une ligne où une seule condition est vraie.',
-          steps: [
-            'Écrire la règle avec ses lettres et ses symboles.',
-            'Nier chaque condition, borne comprise.',
-            'Échanger « et » et « ou ».',
-            'Contrôle : règle et contraire se partagent toutes les lignes du fichier.',
-          ],
-        },
-      ],
-    },
-  ),
-  moteur.corrigeEtapeParEtape(
-    {
-      screenId: 'B2-03-A2-04-EXEMPLE-MORGAN',
-      titre: 'Exemple guidé : les factures conformes à la TVA',
-      diffusion: 'seance',
-      brique: 'fp-worked',
-      dureeMinutes: 4,
-      concepts: ['negation', 'connecteur'],
-      notes: moteur.puces(...moteur.NOTES_DE_L_EXEMPLE_ETAPE_PAR_ETAPE),
-      proprietes: {
-        modalite: 'solo',
-        exemple: {
-          id: 'b2-03-a2-exemple-morgan',
-          enonce:
-            'Règle TVA : une facture est en anomalie si le client est hors de France (A) et si son numéro de TVA n’est pas renseigné (N). Marc veut la règle des factures conformes, puis leur nombre.',
-          etapes: [
-            {
-              id: 'regle',
-              intitule: 'Écrire la règle',
-              raisonnement:
-                'Anomalie : A ∧ N, avec A « le pays n’est pas la France » et N « le numéro de TVA n’est pas renseigné ».',
-              invite: 'Quelles propositions, et quel connecteur ?',
-            },
-            {
-              id: 'morgan',
-              intitule: 'Nier avec Morgan',
-              raisonnement:
-                'Conforme : ¬(A ∧ N), soit ¬A ∨ ¬N : le client est en France, ou son numéro est renseigné.',
-              invite: 'Quelle est la règle des factures conformes ?',
-            },
-            {
-              id: 'anomalies',
-              intitule: 'Repérer les anomalies',
-              raisonnement:
-                'Hors de France et sans numéro : F205, F207 et F212, trois factures.',
-              invite: 'Quelles factures sont en anomalie ?',
-            },
-            {
-              id: 'conformes',
-              intitule: 'Compter les conformes',
-              raisonnement:
-                'Seize factures moins trois anomalies : treize conformes. Contrôle par la règle : les dix factures françaises, plus F203, F210 et F215, étrangères avec un numéro.',
-              invite: 'Combien de factures sont conformes ?',
-            },
-            {
-              id: 'piege',
-              intitule: 'Le piège sans Morgan',
-              raisonnement:
-                '« En France et numéro renseigné » ne garde que les dix factures françaises : les trois factures étrangères en règle disparaîtraient.',
-              invite:
-                'Que donnerait la négation écrite sans échanger le connecteur ?',
-            },
-          ],
-        },
-        etayage: 0,
-      },
-    },
-    {
-      minutes: 2,
-      notes: [
-        'S’arrêter sur l’échange du connecteur (étape 2) et sur le contrôle par le total (étape 4).',
-        'Transition : « À vous, sur la relance et le visa : exercice 4. »',
       ],
     },
   ),
   moteur.corrigeSurPlace(
     {
       screenId: 'B2-03-A2-05-ATELIER-MORGAN',
-      titre: 'Exercice 4 — Nier la relance et le visa',
+      titre: 'Exercice 3 — Nier la relance et le visa',
       diffusion: 'seance',
       brique: 'questionnaire',
       dureeMinutes: 9,
@@ -1066,11 +793,11 @@ const ACTE_2: moteur.Acte = [
         moteur.tempsDeLExercice(2, 7),
         'Réflexion : écrire chaque règle avec ses lettres, puis sa négation, sans rien compter.',
         'Pièges : nier sans échanger le connecteur ; > nié en < au lieu de ≤.',
-        'Papier : exercice 4 du livret.',
+        'Papier : exercice 3 du livret.',
       ),
       proprietes: {
         renvoi: RENVOI_AUX_FACTURES,
-        intitule: 'Exercice 4 — Nier la relance et le visa',
+        intitule: 'Exercice 3 — Nier la relance et le visa',
         consigne: CONSIGNE_DES_REGLES,
         regime: 'focus',
         ordre: 'fixe',
@@ -1124,7 +851,7 @@ const ACTE_2: moteur.Acte = [
       minutes: 2,
       notes: [
         moteur.CORRIGER_PAR_LA_MOINS_REUSSIE,
-        'Transition : « Vérifions Morgan au tableur : exercice 5. »',
+        'Transition : « Vérifions Morgan au tableur : exercice 4. »',
       ],
     },
     [
@@ -1138,7 +865,7 @@ const ACTE_2: moteur.Acte = [
       ],
       [
         'b2-03-a2-sans-visa',
-        'Seize factures moins les huit visées : 8 factures. Contrôle : les huit factures françaises sous 5 000 €. Avec ≤ 5 000, on garderait F213 à tort (9) ; avec « ou », on en compterait 14.',
+        'Les huit factures françaises sous 5 000 €. Avec ≤ 5 000, on garderait F213 à tort (9) ; avec « ou », on en compterait 14.',
       ],
       [
         'b2-03-a2-formule',
@@ -1149,7 +876,7 @@ const ACTE_2: moteur.Acte = [
   moteur.corrigeSurPlace(
     {
       screenId: 'B2-03-A2-06-TABLEUR-NON-OU',
-      titre: 'Exercice 5 — Deux contrôles de la TVA',
+      titre: 'Exercice 4 — Deux contrôles de la TVA',
       diffusion: 'seance',
       brique: 'fp-sheet',
       dureeMinutes: 8,
@@ -1173,7 +900,6 @@ const ACTE_2: moteur.Acte = [
               type: 'feuille',
               plan: PLAN_DE_LA_TVA,
               attendus: ATTENDUS_DE_LA_TVA,
-              seuilReussite: 0.8,
             },
           },
         ],
@@ -1266,16 +992,32 @@ const ACTE_3: moteur.Acte = [
       },
     },
   },
+  moteur.ecranDIllustration(
+    {
+      screenId: 'B2-03-A3-02-ILLUSTRATION-PREDICATS',
+      titre: 'Illustration : l’équipe de vente',
+      concepts: ['quantificateur'],
+    },
+    DOSSIER_DES_ILLUSTRATIONS,
+    {
+      fichier: 'equipe-de-vente-quantificateurs.webp',
+      imageAlt:
+        'Schéma de l’exemple de l’équipe de vente : Léa a vendu 12 voiles, Karim 7, Sofia 15. Proposition P(x) : « x a vendu au moins 10 voiles » ; P(Léa) vraie, P(Karim) fausse, P(Sofia) vraie. ∃x, P(x), « il existe un commercial qui a vendu au moins 10 voiles » : vrai, Léa suffit. ∀x, P(x), « tous les commerciaux ont vendu au moins 10 voiles » : faux, Karim est un contre-exemple. Le contraire de ∀x, P(x) est ∃x, ¬P(x), « au moins un commercial a vendu moins de 10 voiles » : vrai, Karim le prouve. Le contraire de ∃x, P(x) est ∀x, ¬P(x), « aucun commercial n’a vendu au moins 10 voiles » : faux, Léa est un contre-exemple. Un résumé reprend les quatre propositions et leur valeur.',
+    },
+    [
+      AVANT_SA_PAGE,
+      'Question : « Faut-il vérifier les trois commerciaux pour dire que “tous ont vendu au moins 10 voiles” est faux ? » Non : Karim suffit.',
+    ],
+  ),
   moteur.ecranV2(
     {
       screenId: 'B2-03-A3-02-COURS-PREDICATS',
       titre: 'Cours : prédicats et quantificateurs',
       diffusion: 'catalogue',
-      dureeMinutes: 3,
+      dureeMinutes: 2,
       concepts: ['quantificateur'],
       notes: moteur.puces(
-        '3 min ; la trace écrite est imprimée dans le livret.',
-        'Question : « Faut-il vérifier les trois commerciaux pour dire que “tous ont vendu au moins 10 voiles” est faux ? » Non : Karim suffit.',
+        '2 min, après 1 min sur son illustration ; la trace écrite est imprimée dans le livret.',
         'Relier au vote : « aucune » n’est pas le contraire de « toutes ».',
       ),
     },
@@ -1315,22 +1057,35 @@ const ACTE_3: moteur.Acte = [
       ],
     },
   ),
+  moteur.ecranDIllustration(
+    {
+      screenId: 'B2-03-A3-03-ILLUSTRATION-QUANTIFICATEURS',
+      titre: 'Illustration : les voiles vendues',
+      concepts: ['quantificateur', 'tableur'],
+    },
+    DOSSIER_DES_ILLUSTRATIONS,
+    {
+      fichier: 'voiles-vendues-nb-si.webp',
+      imageAlt:
+        'Schéma de l’exemple des voiles vendues : en B2:B4, Léa 12, Karim 7, Sofia 15. =NB.SI(B2:B4;">=10") donne 2 : deux commerciaux ont vendu au moins 10 voiles, Léa et Sofia, il en existe donc au moins un. =NB.SI(B2:B4;"<10") donne 1 : un seul commercial a vendu moins de 10 voiles, Karim, donc « tous ont vendu au moins 10 voiles » est faux. L’erreur à éviter : =NB.SI(B2:B4;>=10), sans guillemets, affiché « #VALEUR ! » ; le critère doit être écrit entre guillemets. Un récapitulatif reprend les trois formules ; dans NB.SI, le critère (>=10, <10, etc.) doit toujours être écrit entre guillemets.',
+    },
+    [
+      AVANT_SA_PAGE,
+      'Faire taper NB.SI sans guillemets sur un poste volontaire : l’erreur fixe la règle.',
+    ],
+  ),
   moteur.ecranV2(
     {
       screenId: 'B2-03-A3-03-COURS-QUANTIFICATEURS',
-      titre: 'Cours : quantificateurs au tableur et ordre',
+      titre: 'Cours : quantificateurs au tableur',
       diffusion: 'catalogue',
-      dureeMinutes: 3,
+      dureeMinutes: 2,
       concepts: ['quantificateur', 'tableur'],
-      notes: moteur.puces(
-        moteur.DEUXIEME_PAGE_DE_COURS,
-        'Faire taper NB.SI sans guillemets sur un poste volontaire : l’erreur fixe la règle.',
-        'Question : « Chaque client a un commercial. Un même commercial suit-il tous les clients ? » Pas forcément.',
-      ),
+      notes: moteur.puces(DEUXIEME_PAGE_APRES_SON_ILLUSTRATION),
     },
     'lesson',
     {
-      title: 'Quantificateurs au tableur, et l’ordre des quantificateurs',
+      title: 'Quantificateurs au tableur',
       subtitle: 'Trace écrite · notion 3 · page 2 sur 2',
       blocks: [
         {
@@ -1350,88 +1105,13 @@ const ACTE_3: moteur.Acte = [
             '=NB.SI(B2:B4;>=10), sans guillemets, renvoie une erreur.',
           ],
         },
-        {
-          kind: 'exam',
-          title: 'Au CCF : l’ordre des quantificateurs',
-          text: '« Pour chaque client, il existe un commercial qui le suit » (∀ puis ∃) n’a pas le sens de « il existe un commercial qui suit tous les clients » (∃ puis ∀) : la seconde phrase est bien plus forte. Piège : échanger l’ordre en traduisant. Réflexe : lire la phrase de gauche à droite et placer les quantificateurs dans cet ordre.',
-          steps: [
-            '∀ client, ∃ commercial : chaque client a le sien, pas forcément le même.',
-            '∃ commercial, ∀ client : un même commercial pour tous.',
-            'La seconde entraîne la première, pas l’inverse.',
-          ],
-        },
-      ],
-    },
-  ),
-  moteur.corrigeEtapeParEtape(
-    {
-      screenId: 'B2-03-A3-04-EXEMPLE-QUANTIF',
-      titre: 'Exemple guidé : les commerciaux et leurs clients',
-      diffusion: 'seance',
-      brique: 'fp-worked',
-      dureeMinutes: 4,
-      concepts: ['quantificateur', 'tableur'],
-      notes: moteur.puces(...moteur.NOTES_DE_L_EXEMPLE_ETAPE_PAR_ETAPE),
-      proprietes: {
-        modalite: 'solo',
-        exemple: {
-          id: 'b2-03-a3-exemple-quantif',
-          enonce:
-            'Pour cet exemple, cinq clients et deux commerciaux : Léa suit Nautic Sud, Voiles Martin et Chantier Duval ; Karim suit Sailtech GmbH et Mar Azul SL. Hélène écrit : « il existe un commercial qui suit tous nos clients ». Marc répond : « chaque client est suivi par un commercial ».',
-          etapes: [
-            {
-              id: 'phrases',
-              intitule: 'Écrire les deux phrases',
-              raisonnement:
-                'Hélène : ∃ commercial, ∀ client, il le suit. Marc : ∀ client, ∃ commercial qui le suit.',
-              invite:
-                'Écrivez chaque phrase avec ∀ et ∃, dans l’ordre des mots.',
-            },
-            {
-              id: 'marc',
-              intitule: 'La phrase de Marc',
-              raisonnement:
-                'Chacun des cinq clients a un commercial, Léa ou Karim : la phrase de Marc est vraie.',
-              invite: 'La phrase de Marc est-elle vraie ?',
-            },
-            {
-              id: 'helene',
-              intitule: 'La phrase d’Hélène',
-              raisonnement:
-                'Léa ne suit pas Sailtech GmbH, Karim ne suit pas Nautic Sud : aucun commercial ne suit les cinq clients. La phrase d’Hélène est fausse.',
-              invite: 'La phrase d’Hélène est-elle vraie ?',
-            },
-            {
-              id: 'negation',
-              intitule: 'Nier la phrase d’Hélène',
-              raisonnement:
-                'Contraire : ∀ commercial, ∃ client qu’il ne suit pas. Chaque commercial a au moins un client qui n’est pas le sien.',
-              invite: 'Écrivez le contraire de la phrase d’Hélène.',
-            },
-            {
-              id: 'tableur',
-              intitule: 'Au tableur',
-              raisonnement:
-                'Liste client par client, commercial en B2:B6 : =NB.SI(B2:B6;"Léa") compte trois clients sur cinq, donc Léa ne les suit pas tous.',
-              invite: 'Quelle formule compte les clients de Léa ?',
-            },
-          ],
-        },
-        etayage: 0,
-      },
-    },
-    {
-      minutes: 2,
-      notes: [
-        'S’arrêter sur l’ordre des mots (étape 1) et sur la négation (étape 4).',
-        'Transition : « À vous, sur les seize factures : exercice 6. »',
       ],
     },
   ),
   moteur.corrigeSurPlace(
     {
       screenId: 'B2-03-A3-05-ATELIER-QUANTIF',
-      titre: 'Exercice 6 — Contredire une affirmation',
+      titre: 'Exercice 5 — Contredire une affirmation',
       diffusion: 'seance',
       brique: 'questionnaire',
       dureeMinutes: 9,
@@ -1439,13 +1119,12 @@ const ACTE_3: moteur.Acte = [
       notes: moteur.puces(
         moteur.tempsDeLExercice(2, 7),
         'Réflexion : écrire chaque affirmation avec ∀ ou ∃, puis sa négation.',
-        'Pièges : « toutes » nié en « aucune » ; ≥ nié en ≤ ; l’ordre des quantificateurs ; « il existe » gardé en niant.',
-        'Papier : exercice 6 du livret.',
+        'Pièges : « toutes » nié en « aucune » ; ≥ nié en ≤.',
+        'Papier : exercice 5 du livret.',
       ),
       proprietes: {
         renvoi: RENVOI_AUX_FACTURES,
-        intitule: 'Exercice 6 — Contredire une affirmation',
-        consigne: 'Un client peut avoir plusieurs factures.',
+        intitule: 'Exercice 5 — Contredire une affirmation',
         regime: 'focus',
         ordre: 'fixe',
         questions: [
@@ -1476,29 +1155,6 @@ const ACTE_3: moteur.Acte = [
             '2 factures',
             [[3, 'negation-comparaison']],
           ),
-          moteur.vote(
-            'b2-03-a3-ordre',
-            'quantificateur',
-            true,
-            'Quelle phrase traduit « ∀ client, ∃ facture payée de ce client » ?',
-            'Chaque client a au moins une facture payée',
-            [
-              [
-                'Il existe une facture payée par tous les clients',
-                'ordre-quantificateurs-inverse',
-              ],
-            ],
-          ),
-          moteur.numerique(
-            'b2-03-a3-clients',
-            'quantificateur',
-            'Combien de clients contredisent la phrase juste ci-dessus ?',
-            'clients',
-            3,
-            moteur.TOLERANCE_NULLE,
-            '3 clients',
-            [[7, 'negation-il-existe-gardee']],
-          ),
         ],
       },
     },
@@ -1506,7 +1162,7 @@ const ACTE_3: moteur.Acte = [
       minutes: 2,
       notes: [
         moteur.CORRIGER_PAR_LA_MOINS_REUSSIE,
-        'Transition : « Une IA a vérifié les mêmes affirmations. »',
+        'Transition : jalon 3, puis pause de 15 minutes.',
       ],
     },
     [
@@ -1517,96 +1173,6 @@ const ACTE_3: moteur.Acte = [
       [
         'b2-03-a3-impayees-recentes',
         'Impayées sous 60 jours : F206 (58 jours) et F212 (15 jours), soit 2 factures. F213, à 60 jours pile, respecte l’affirmation : avec ≤ 60, on la compterait à tort.',
-      ],
-      [
-        'b2-03-a3-ordre',
-        '∀ puis ∃ : chaque client a sa facture payée, pas une même facture pour tous.',
-      ],
-      [
-        'b2-03-a3-clients',
-        'Contraire : ∃ client, ∀ facture de ce client, impayée. Chantier Duval, Blue Sails BV et Vela Italia Srl n’ont aucune facture payée : 3 clients. Compter les clients qui ont au moins une facture impayée donne 7 : c’est garder « il existe » en niant.',
-      ],
-    ],
-  ),
-  moteur.corrigeSurPlace(
-    {
-      screenId: 'B2-03-A3-06-DEFI-IA',
-      titre: 'Exercice 7 — Corriger le contrôle d’une IA',
-      diffusion: 'seance',
-      brique: 'fp-challenge',
-      dureeMinutes: 8,
-      concepts: ['quantificateur', 'negation', 'connecteur'],
-      notes: moteur.puces(
-        moteur.tempsDeLExercice(2, 6),
-        'Réflexion : relire les deux pages de trace écrite de la notion 3.',
-        'Repérer qui trouve la négation, le connecteur et l’ordre ; faire trouver la piste fausse avant de révéler.',
-        'Papier : exercice 7 du livret.',
-      ),
-      proprietes: {
-        modalite: 'solo',
-        probleme: {
-          id: 'b2-03-a3-defi-ia',
-          enonce:
-            'Samir a demandé à un assistant IA de contrôler le fichier. Réponse : « 1. “Toutes les factures impayées de plus de 60 jours sont relancées” est fausse, donc aucune facture impayée de plus de 60 jours n’est relancée. 2. Factures à relancer : celles qui sont impayées ou dont le délai dépasse 60 jours, soit 9 factures. 3. “Chaque client a un commercial” signifie qu’un même commercial suit tous les clients. »',
-          invite:
-            'Trouvez les erreurs de l’IA, corrigez chacune et dites comment la vérifier dans le fichier.',
-        },
-        corrige: {
-          type: 'defi',
-          strategies: [
-            moteur.strategie(
-              'negation',
-              'Le contraire de « toutes… sont relancées » est « au moins une… n’est pas relancée », pas « aucune ».',
-            ),
-            moteur.strategie(
-              'et',
-              'La relance exige les deux conditions : impayée et délai de plus de 60 jours, soit 5 factures, pas 9.',
-            ),
-            moteur.strategie(
-              'ordre',
-              '« Chaque client a un commercial » (∀ puis ∃) n’entraîne pas qu’un même commercial les suive tous (∃ puis ∀).',
-            ),
-            moteur.strategie(
-              'controle',
-              'Vérifier sur une ligne : F209, payée à 61 jours, ne doit pas être relancée.',
-            ),
-            moteur.strategie(
-              'garder',
-              'Garder la réponse : l’IA a lu tout le fichier, elle ne peut pas se tromper.',
-              true,
-            ),
-          ],
-        },
-        renvoi: RENVOI_AUX_FACTURES,
-      },
-    },
-    {
-      minutes: 2,
-      notes: [
-        'Faire lire deux corrections écrites par la classe, puis dévoiler les pistes une à une.',
-        'Transition : jalon 3, puis pause de 15 minutes.',
-      ],
-    },
-    [
-      [
-        'negation',
-        'Nier « toutes » donne « au moins une ne… pas » : l’IA a confondu contraire et « aucune ».',
-      ],
-      [
-        'et',
-        'Avec « ou », F206 (impayée à 58 jours) et F209 (payée à 61 jours) seraient relancées : la règle est un « et », 5 factures.',
-      ],
-      [
-        'ordre',
-        'L’ordre ∀ puis ∃ laisse à chaque client son commercial ; ∃ puis ∀ en exigerait un seul pour tous.',
-      ],
-      [
-        'controle',
-        'Une ligne où une seule condition est vraie suffit à départager « et » et « ou ».',
-      ],
-      [
-        'garder',
-        'Piste fausse : une réponse d’IA se contrôle sur les données, ligne à ligne.',
       ],
     ],
   ),
@@ -1630,7 +1196,6 @@ const PREMIERE_LIGNE_DU_FICHIER = 2;
 const DERNIERE_LIGNE_DU_FICHIER =
   PREMIERE_LIGNE_DU_FICHIER + FACTURES.length - 1;
 const PLAGE_DES_RELANCES = `H${PREMIERE_LIGNE_DU_FICHIER}:H${DERNIERE_LIGNE_DU_FICHIER}`;
-const PLAGE_DES_VISAS = `I${PREMIERE_LIGNE_DU_FICHIER}:I${DERNIERE_LIGNE_DU_FICHIER}`;
 
 const FORMULE_DE_RELANCE = '=SI(ET(F2="Impayée";E2>60);"Relancer";"Non")';
 const FORMULE_DU_VISA_DU_FICHIER =
@@ -1649,7 +1214,6 @@ const ENTETES_DU_FICHIER = {
   J1: 'Indicateur',
   K1: 'Valeur',
   J2: 'Factures à relancer',
-  J3: 'Factures à viser',
 };
 
 const CELLULES_DU_FICHIER = {
@@ -1682,7 +1246,7 @@ const PLAN_DU_CONTROLE = {
   consignes: [
     `En H2, avec SI et ET : « Relancer » si la facture est impayée et si son délai dépasse 60 jours, « Non » sinon. Recopiez jusqu’en H${DERNIERE_LIGNE_DU_FICHIER} : ${gesteDeRecopie(['H2'], DERNIERE_LIGNE_DU_FICHIER)}.`,
     `En I2, avec SI et OU : « Visa » si le montant HT atteint 5 000 € ou si le pays n’est pas la France, « Non » sinon. Recopiez jusqu’en I${DERNIERE_LIGNE_DU_FICHIER} : ${gesteDeRecopie(['I2'], DERNIERE_LIGNE_DU_FICHIER)}.`,
-    'En K2 et K3, comptez avec NB.SI les factures à relancer et les factures à viser.',
+    'En K2, comptez avec NB.SI les factures à relancer.',
   ],
 };
 
@@ -1733,18 +1297,6 @@ const ATTENDUS_DU_CONTROLE = auMoinsUn([
     'critere-sans-guillemets',
     moteur.TOLERANCE_NULLE,
   ),
-  moteur.attendu(
-    'K3',
-    `=NB.SI(${PLAGE_DES_VISAS};"Visa")`,
-    8,
-    'references',
-    [
-      [10, 'ou-compte-deux-fois'],
-      [6, 'ou-lu-exclusif'],
-    ],
-    'critere-sans-guillemets',
-    moteur.TOLERANCE_NULLE,
-  ),
 ]);
 
 const PARCOURS_DU_COFFRE = 'b2-03-a4-coffre-controle';
@@ -1786,7 +1338,7 @@ const ACTE_4: moteur.Acte = [
       notes: moteur.puces(
         moteur.tempsDeLExercice(3, 12),
         'Réflexion : chacun écrit sur papier les deux règles avec leurs symboles, puis les fonctions à utiliser.',
-        'Erreurs à chercher : textes sans guillemets ; >= au lieu de > pour la relance ; NB.SI additionnés pour le visa.',
+        'Erreurs à chercher : textes sans guillemets ; >= au lieu de > pour la relance.',
         'Papier : formules écrites sur la copie, résultats comptés à la main ; en CCF, la question se fait devant l’examinateur.',
       ),
       proprietes: {
@@ -1802,7 +1354,6 @@ const ACTE_4: moteur.Acte = [
               type: 'feuille',
               plan: PLAN_DU_CONTROLE,
               attendus: ATTENDUS_DU_CONTROLE,
-              seuilReussite: 0.8,
             },
           },
         ],
@@ -1824,10 +1375,7 @@ const ACTE_4: moteur.Acte = [
         `I2 à I${DERNIERE_LIGNE_DU_FICHIER}`,
         `${FORMULE_DU_VISA_DU_FICHIER} : OU pour « ou », >= pour « au moins ». F213 est visée, F209 (4 950 €) ne l’est pas.`,
       ],
-      [
-        'K2 et K3',
-        `=NB.SI(${PLAGE_DES_RELANCES};"Relancer") donne 5 et =NB.SI(${PLAGE_DES_VISAS};"Visa") donne 8. Additionner deux NB.SI pour le visa donnerait 10 : F205 et F210 compteraient deux fois.`,
-      ],
+      ['K2', `=NB.SI(${PLAGE_DES_RELANCES};"Relancer") donne 5.`],
     ],
   ),
   moteur.corrigeSurPlace(
@@ -1988,13 +1536,6 @@ const ACTE_4: moteur.Acte = [
           [['P fausse et Q vraie', 'implication-lue-comme-equivalence']],
         ),
         moteur.rappel(
-          'b2-03-r-borne',
-          'proposition',
-          '« Au-delà de 30 jours », délai en B2 : quelle condition écrire au tableur ?',
-          'B2>30',
-          [['B2>=30', 'borne-stricte-large']],
-        ),
-        moteur.rappel(
           'b2-03-r-morgan-et',
           'negation',
           'Quel est le contraire de « payée et livrée » ?',
@@ -2035,30 +1576,11 @@ const ACTE_4: moteur.Acte = [
           ],
         ),
         moteur.rappel(
-          'b2-03-r-ordre',
-          'quantificateur',
-          '« Chaque salarié a un badge » veut-il dire « un même badge sert à tous les salariés » ?',
-          'Non : l’ordre des quantificateurs change le sens',
-          [
-            [
-              'Oui : les deux phrases disent la même chose',
-              'ordre-quantificateurs-inverse',
-            ],
-          ],
-        ),
-        moteur.rappel(
           'b2-03-r-guillemets',
           'tableur',
           'Quel critère NB.SI compte les montants d’au moins 1 000 ?',
           '">=1000", entre guillemets',
           [['>=1000, sans guillemets', 'critere-sans-guillemets']],
-        ),
-        moteur.rappel(
-          'b2-03-r-compter-ou',
-          'connecteur',
-          '12 lignes vérifient A, 9 vérifient B, 4 vérifient les deux. Combien vérifient « A ou B » ?',
-          '17, soit 12 + 9 − 4',
-          [['21, soit 12 + 9', 'ou-compte-deux-fois']],
         ),
         moteur.rappel(
           'b2-03-r-sql',
@@ -2086,7 +1608,7 @@ const ACTE_4: moteur.Acte = [
       {
         title: 'Et, ou',
         description: 'Deux conditions ?',
-        back: 'P ∧ Q : les deux. P ∨ Q : au moins une, les deux comprises. Compter « A ou B » : A + B − (A et B).',
+        back: 'P ∧ Q : les deux. P ∨ Q : au moins une, les deux comprises.',
       },
       {
         title: 'Si… alors',
@@ -2111,7 +1633,7 @@ const ACTE_4: moteur.Acte = [
       {
         title: 'Quantificateurs',
         description: 'Tous, ou au moins un ?',
-        back: '¬(∀x, P(x)) = ∃x, ¬P(x) ; ¬(∃x, P(x)) = ∀x, ¬P(x). L’ordre de ∀ et ∃ compte.',
+        back: '¬(∀x, P(x)) = ∃x, ¬P(x) ; ¬(∃x, P(x)) = ∀x, ¬P(x).',
       },
       {
         title: 'Tableur',
@@ -2170,27 +1692,38 @@ const ACTE_4: moteur.Acte = [
 
 const REMEDIATIONS: ContenuDeCours['remediations'] = {
   'ou-lu-exclusif': 'B2-03-A1-06-COURS-CONNECTEURS',
-  'ou-compte-deux-fois': 'B2-03-A1-06-COURS-CONNECTEURS',
   'implication-lue-comme-equivalence': 'B2-03-A1-07-COURS-IMPLICATION',
-  'borne-stricte-large': 'B2-03-A1-07-COURS-IMPLICATION',
-  'et-traduit-par-ou': 'B2-03-A1-08-EXEMPLE-TABLE',
+  'borne-stricte-large': 'B2-03-A2-02-COURS-NEGATION',
+  'et-traduit-par-ou': 'B2-03-A1-06-COURS-CONNECTEURS',
   'negation-comparaison': 'B2-03-A2-02-COURS-NEGATION',
   'negation-sans-morgan': 'B2-03-A2-03-COURS-MORGAN',
   'negation-pour-tout-en-aucun': 'B2-03-A3-02-COURS-PREDICATS',
   'negation-il-existe-gardee': 'B2-03-A3-02-COURS-PREDICATS',
   'critere-sans-guillemets': 'B2-03-A3-03-COURS-QUANTIFICATEURS',
-  'ordre-quantificateurs-inverse': 'B2-03-A3-04-EXEMPLE-QUANTIF',
 };
+
+const ILLUSTRATIONS = [
+  ['M1', 'remise-boutique-ou.webp', 'La remise de la boutique'],
+  ['M2', 'prime-anciennete-implication.webp', 'La prime d’ancienneté'],
+  [
+    'M3',
+    'prime-anciennete-negation.webp',
+    'La prime d’ancienneté, le cas de Léo',
+  ],
+  ['M4', 'remise-boutique-morgan.webp', 'Le contraire de la remise'],
+  ['M5', 'equipe-de-vente-quantificateurs.webp', 'L’équipe de vente'],
+  ['M6', 'voiles-vendues-nb-si.webp', 'Les voiles vendues'],
+] as const;
 
 export const COURS_B2_03 = moteur.coursB2(
   [ACTE_1, ACTE_2, ACTE_3, ACTE_4],
   REMEDIATIONS,
-  [],
+  moteur.mediasDesIllustrations(DOSSIER_DES_ILLUSTRATIONS, ILLUSTRATIONS),
   {
     slug: 'b2-03-logique',
     titre: 'Logique : écrire et contrôler une règle',
     gabarit: 'v3',
-    dureeMinutes: 180,
+    dureeMinutes: 140,
     concepts: [...CONCEPTS_DU_COURS],
   },
 );

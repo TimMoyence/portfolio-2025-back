@@ -175,8 +175,8 @@ describe('deroulePresentateur (affichage d une feuille corrigée, F-37)', () => 
 
     expect(servis['B2-06-A1-11-TABLEUR-VENTES B3']).toBe('424,73');
     expect(servis['B2-06-A1-11-TABLEUR-VENTES C3']).toBe('0,0618');
-    expect(servis['B2-03-A1-11-TABLEUR-SI-OU D2']).toBe('Visa');
-    expect(servis['B2-03-A1-11-TABLEUR-SI-OU D4']).toBe('Non');
+    expect(servis['B2-03-A4-02-TABLEUR-CONTROLE I3']).toBe('Visa');
+    expect(servis['B2-03-A4-02-TABLEUR-CONTROLE I2']).toBe('Non');
   });
 
   it('remplit au pupitre le tableau de la toile, coefficients et évolution réelle calculés par le serveur', () => {
@@ -289,7 +289,6 @@ describe('deroulePresentateur (corrigés au déroulé, B22)', () => {
           forme: { memeQue: 'D2' },
         },
       ],
-      seuilReussite: 0.8,
     });
     expect(ecran('fp-table-build').corrigeEcran).toEqual({
       type: 'tableau',
@@ -321,7 +320,6 @@ describe('deroulePresentateur (corrigés au déroulé, B22)', () => {
         soldeFinal: null,
       },
       tolerance: { type: 'absolue', valeur: 0.01 },
-      seuilReussite: 0.75,
     });
     expect(ecran('fp-cardsort').corrigeEcran).toMatchObject({
       type: 'classement',

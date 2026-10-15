@@ -9,7 +9,7 @@ import type {
   PieceJointeServie,
 } from '../cours/Cours';
 import type { CorrigeTire, LibellesDesOptions } from '../cours/Tirage';
-import type { CorrigeEcranPresentateur } from './deroule';
+import type { CorrigeEcranPresentateur, ReflexionServie } from './deroule';
 import type { VotePublic } from './donnees-publiques';
 
 export interface CorrectionServie {
@@ -20,10 +20,7 @@ export interface CorrectionServie {
     readonly optionId: string | null;
   }[];
   readonly corrige: CorrigeEcranPresentateur | null;
-  readonly reflexion: {
-    readonly attendu: string;
-    readonly suite: string | null;
-  } | null;
+  readonly reflexion: ReflexionServie | null;
   readonly explications?: readonly ExplicationDeCorrection[];
 }
 

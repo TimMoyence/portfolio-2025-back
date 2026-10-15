@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "d515868f8adae99e2db5521c8826a09f3af761aea4f1f6dd244c94451fb2cd8a",
+  "empreinte": "9de5d8581dfbc7f47d1370cf6b8a9d3a0a002dac7a1a18c1b345f6faadc095a9",
   "sujet": {
     "id": "b2-05-mathematiques-financieres",
     "titre": "Mathématiques financières : placer, emprunter",
@@ -2080,7 +2080,7 @@
               },
               {
                 "id": "nature-de-suite-confondue",
-                "libelle": "Confondre « ajouter toujours le même nombre » (suite arithmétique) et « multiplier toujours par le même nombre » (suite géométrique)."
+                "libelle": "Confondre « ajouter toujours le même nombre » (suite arithmétique) et « multiplier toujours par le même nombre » (suite géométrique), dans un sens ou dans l’autre, ou ajouter un taux au lieu de multiplier par lui."
               }
             ]
           }
@@ -2199,7 +2199,7 @@
             "confusions": [
               {
                 "id": "reciproque-meme-taux",
-                "libelle": "Croire que le même pourcentage en sens inverse suffit pour revenir au départ."
+                "libelle": "Croire que le même pourcentage en sens inverse ramène au départ, qu’il soit le taux d’une évolution ou la somme de taux successifs : on revient au départ en divisant par le coefficient multiplicateur."
               }
             ]
           },
@@ -3119,8 +3119,7 @@
                 "memeQue": "D3"
               }
             }
-          ],
-          "seuilReussite": 0.8
+          ]
         },
         "reflexion": null,
         "explications": [
@@ -3845,8 +3844,7 @@
               },
               "forme": "references"
             }
-          ],
-          "seuilReussite": 0.8
+          ]
         },
         "reflexion": null,
         "explications": [
@@ -4008,7 +4006,7 @@
             "confusions": [
               {
                 "id": "annuite-confondue-avec-amortissement",
-                "libelle": "Prendre l’annuité pour le capital remboursé : l’amortissement est l’annuité moins les intérêts de l’année."
+                "libelle": "Confondre l’annuité et le capital remboursé : prendre l’annuité pour l’amortissement, ou le capital emprunté divisé par la durée pour l’annuité, alors que l’amortissement est l’annuité moins les intérêts de l’année."
               }
             ]
           },
@@ -4362,7 +4360,7 @@
             "confusions": [
               {
                 "id": "annuite-confondue-avec-amortissement",
-                "libelle": "Prendre l’annuité pour le capital remboursé : l’amortissement est l’annuité moins les intérêts de l’année."
+                "libelle": "Confondre l’annuité et le capital remboursé : prendre l’annuité pour l’amortissement, ou le capital emprunté divisé par la durée pour l’annuité, alors que l’amortissement est l’annuité moins les intérêts de l’année."
               },
               {
                 "id": "interets-sur-capital-initial",
@@ -4404,7 +4402,7 @@
               },
               {
                 "id": "annuite-confondue-avec-amortissement",
-                "libelle": "Prendre l’annuité pour le capital remboursé : l’amortissement est l’annuité moins les intérêts de l’année."
+                "libelle": "Confondre l’annuité et le capital remboursé : prendre l’annuité pour l’amortissement, ou le capital emprunté divisé par la durée pour l’annuité, alors que l’amortissement est l’annuité moins les intérêts de l’année."
               }
             ]
           }
@@ -4741,8 +4739,7 @@
           "tolerance": {
             "type": "absolue",
             "valeur": 0.02
-          },
-          "seuilReussite": 0.75
+          }
         },
         "reflexion": null,
         "explications": [
@@ -5276,8 +5273,7 @@
               },
               "forme": "references"
             }
-          ],
-          "seuilReussite": 0.8
+          ]
         },
         "reflexion": null,
         "explications": [
@@ -5535,7 +5531,7 @@
             "confusions": [
               {
                 "id": "annuite-confondue-avec-amortissement",
-                "libelle": "Prendre l’annuité pour le capital remboursé : l’amortissement est l’annuité moins les intérêts de l’année."
+                "libelle": "Confondre l’annuité et le capital remboursé : prendre l’annuité pour l’amortissement, ou le capital emprunté divisé par la durée pour l’annuité, alors que l’amortissement est l’annuité moins les intérêts de l’année."
               }
             ]
           },
@@ -5901,7 +5897,7 @@
               },
               {
                 "id": "nature-de-suite-confondue",
-                "libelle": "Confondre « ajouter toujours le même nombre » (suite arithmétique) et « multiplier toujours par le même nombre » (suite géométrique)."
+                "libelle": "Confondre « ajouter toujours le même nombre » (suite arithmétique) et « multiplier toujours par le même nombre » (suite géométrique), dans un sens ou dans l’autre, ou ajouter un taux au lieu de multiplier par lui."
               },
               {
                 "id": "coefficient-confondu-avec-taux",

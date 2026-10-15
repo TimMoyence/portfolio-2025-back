@@ -32,10 +32,6 @@ function proprietesParDefaut(): Record<string, unknown> {
       props: { questionData: buildQuizAffiche() },
     },
     interaction: buildQuizNote(),
-    guide: {
-      aDire: 'Avant de commenter la pente, vérifiez le repère.',
-      reponse: 'Les valeurs, l’unité et l’échelle.',
-    },
     correction: {
       correctIndex: 0,
       explanation: 'Une forme ne suffit jamais.',

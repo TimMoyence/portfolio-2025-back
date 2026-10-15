@@ -1,14 +1,16 @@
 import type { Tolerance } from '../GradingCore';
-import type {
-  Ecran as EcranActuel,
-  ExplicationDeCorrection,
-} from '../cours/Cours';
+import type { ExplicationDeCorrection } from '../cours/Cours';
 import type { FormeFormule } from '../cours/Corrige';
 import type { CorrigePresentateur } from '../cours/DeroulePresentateur';
 import type { ValeurFormule } from '../cours/Formule';
 import type { Diffusion } from './cours';
 import type { TableauEvalue } from './donnees-publiques';
 import type { CoursPublic, EcranPublic } from './tirage';
+
+export interface ReflexionServie {
+  readonly attendu: string;
+  readonly suite: string | null;
+}
 
 export interface EcranDeroule extends EcranPublic {
   readonly notes: string;
@@ -23,11 +25,7 @@ export interface EcranDeroule extends EcranPublic {
       | null;
   }[];
   readonly corrigeEcran: CorrigeEcranPresentateur | null;
-  readonly reflexion: {
-    readonly attendu: string;
-    readonly suite: string | null;
-  } | null;
-  readonly guide?: NonNullable<EcranActuel['guide']>;
+  readonly reflexion: ReflexionServie | null;
   readonly explications?: readonly ExplicationDeCorrection[];
   readonly renvoi?: string;
 }
@@ -43,7 +41,6 @@ export type CorrigeEcranPresentateur =
         readonly tolerance: Tolerance;
         readonly forme: FormeFormule;
       }[];
-      readonly seuilReussite: number;
     }
   | {
       readonly type: 'tableau';
@@ -54,7 +51,6 @@ export type CorrigeEcranPresentateur =
       }[];
       readonly tableauCorrige: TableauEvalue;
       readonly tolerance: Tolerance;
-      readonly seuilReussite: number;
     }
   | {
       readonly type: 'classement';
@@ -63,7 +59,6 @@ export type CorrigeEcranPresentateur =
         readonly categorieId: string;
         readonly justification: string;
       }[];
-      readonly seuilReussite: number;
     }
   | {
       readonly type: 'enigmes';

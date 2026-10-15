@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "5ac27b237ea264c4e51bd9d3d0a0430c93a17fac20bf96b95739f196477607bb",
+  "empreinte": "1f2bc4181e4b39a8603ff9a7b540bdb2fad54b531d48a877f27f153fab2db3a4",
   "sujet": {
     "id": "b2-02-series-statistiques",
     "titre": "Séries statistiques : résumer, relier, prévoir",
@@ -2773,7 +2773,7 @@
               },
               {
                 "id": "variance-confondue-avec-ecart-type",
-                "libelle": "Donner la variance, exprimée dans le carré de l’unité, comme écart-type."
+                "libelle": "Donner pour écart-type la variance, exprimée dans le carré de l’unité, ou un nombre tiré d’elle sans racine carrée, comme sa moitié : l’écart-type est la racine carrée de la variance."
               }
             ]
           },
@@ -3003,7 +3003,7 @@
             "confusions": [
               {
                 "id": "correlation-prise-pour-causalite",
-                "libelle": "Conclure sur une cause, ou sur l’absence de cause, à partir de deux évolutions simultanées."
+                "libelle": "Tirer de deux évolutions simultanées, ou d’un coefficient de corrélation proche de 1, une conclusion qu’ils ne prouvent pas : une cause, l’absence de cause ou la poursuite de la tendance."
               }
             ]
           },
@@ -3013,7 +3013,7 @@
             "confusions": [
               {
                 "id": "correlation-prise-pour-causalite",
-                "libelle": "Conclure sur une cause, ou sur l’absence de cause, à partir de deux évolutions simultanées."
+                "libelle": "Tirer de deux évolutions simultanées, ou d’un coefficient de corrélation proche de 1, une conclusion qu’ils ne prouvent pas : une cause, l’absence de cause ou la poursuite de la tendance."
               }
             ]
           }
@@ -3423,7 +3423,7 @@
             "confusions": [
               {
                 "id": "point-moyen-confondu",
-                "libelle": "Prendre pour point moyen le point du milieu du tableau au lieu du point de coordonnées (x̄ ; ȳ)."
+                "libelle": "Prendre pour point moyen le point du milieu du tableau, la somme des valeurs ou la moyenne de l’autre série, au lieu du point de coordonnées (x̄ ; ȳ), moyenne des x et moyenne des y."
               }
             ]
           },
@@ -3433,7 +3433,7 @@
             "confusions": [
               {
                 "id": "point-moyen-confondu",
-                "libelle": "Prendre pour point moyen le point du milieu du tableau au lieu du point de coordonnées (x̄ ; ȳ)."
+                "libelle": "Prendre pour point moyen le point du milieu du tableau, la somme des valeurs ou la moyenne de l’autre série, au lieu du point de coordonnées (x̄ ; ȳ), moyenne des x et moyenne des y."
               }
             ]
           },
@@ -3453,7 +3453,7 @@
             "confusions": [
               {
                 "id": "correlation-prise-pour-causalite",
-                "libelle": "Conclure sur une cause, ou sur l’absence de cause, à partir de deux évolutions simultanées."
+                "libelle": "Tirer de deux évolutions simultanées, ou d’un coefficient de corrélation proche de 1, une conclusion qu’ils ne prouvent pas : une cause, l’absence de cause ou la poursuite de la tendance."
               },
               {
                 "id": "correlation-lue-comme-pente",
@@ -3790,8 +3790,7 @@
           "tolerance": {
             "type": "absolue",
             "valeur": 0.01
-          },
-          "seuilReussite": 0.75
+          }
         },
         "reflexion": null,
         "explications": [
@@ -4228,7 +4227,7 @@
             "confusions": [
               {
                 "id": "pente-ordonnee-inversees",
-                "libelle": "Inverser les deux séries dans PENTE ou ORDONNEE.ORIGINE, ou prendre la pente pour l’ordonnée à l’origine."
+                "libelle": "Inverser les deux séries dans PENTE ou ORDONNEE.ORIGINE, ou confondre le coefficient de x (la pente) et la valeur pour x = 0 (l’ordonnée à l’origine), dans un sens ou dans l’autre."
               }
             ]
           },
@@ -4238,7 +4237,7 @@
             "confusions": [
               {
                 "id": "pente-ordonnee-inversees",
-                "libelle": "Inverser les deux séries dans PENTE ou ORDONNEE.ORIGINE, ou prendre la pente pour l’ordonnée à l’origine."
+                "libelle": "Inverser les deux séries dans PENTE ou ORDONNEE.ORIGINE, ou confondre le coefficient de x (la pente) et la valeur pour x = 0 (l’ordonnée à l’origine), dans un sens ou dans l’autre."
               }
             ]
           },
@@ -4248,7 +4247,7 @@
             "confusions": [
               {
                 "id": "rang-pris-pour-annee",
-                "libelle": "Remplacer x par l’année au lieu de son rang dans l’équation de la droite."
+                "libelle": "Remplacer x par l’année, ou par l’écart à l’année de départ, au lieu de son rang dans l’équation de la droite."
               }
             ]
           },
@@ -4258,7 +4257,7 @@
             "confusions": [
               {
                 "id": "seuil-mal-arrondi",
-                "libelle": "Arrondir à l’entier inférieur le rang solution d’une inéquation de seuil, au lieu du premier entier qui la vérifie."
+                "libelle": "Mal conclure une recherche de seuil, en gardant la solution non entière d’une inéquation, en l’arrondissant à l’entier inférieur ou en arrêtant une boucle un passage trop tôt, au lieu de retenir le premier rang entier qui atteint le seuil."
               }
             ]
           }
@@ -4729,8 +4728,7 @@
               },
               "forme": "references"
             }
-          ],
-          "seuilReussite": 0.8
+          ]
         },
         "reflexion": null,
         "explications": [
@@ -4950,7 +4948,7 @@
             "confusions": [
               {
                 "id": "variance-confondue-avec-ecart-type",
-                "libelle": "Donner la variance, exprimée dans le carré de l’unité, comme écart-type."
+                "libelle": "Donner pour écart-type la variance, exprimée dans le carré de l’unité, ou un nombre tiré d’elle sans racine carrée, comme sa moitié : l’écart-type est la racine carrée de la variance."
               }
             ]
           },
@@ -4964,7 +4962,7 @@
               },
               {
                 "id": "variance-confondue-avec-ecart-type",
-                "libelle": "Donner la variance, exprimée dans le carré de l’unité, comme écart-type."
+                "libelle": "Donner pour écart-type la variance, exprimée dans le carré de l’unité, ou un nombre tiré d’elle sans racine carrée, comme sa moitié : l’écart-type est la racine carrée de la variance."
               }
             ]
           },
@@ -4984,7 +4982,7 @@
             "confusions": [
               {
                 "id": "point-moyen-confondu",
-                "libelle": "Prendre pour point moyen le point du milieu du tableau au lieu du point de coordonnées (x̄ ; ȳ)."
+                "libelle": "Prendre pour point moyen le point du milieu du tableau, la somme des valeurs ou la moyenne de l’autre série, au lieu du point de coordonnées (x̄ ; ȳ), moyenne des x et moyenne des y."
               }
             ]
           },
@@ -5012,7 +5010,7 @@
               },
               {
                 "id": "pente-ordonnee-inversees",
-                "libelle": "Inverser les deux séries dans PENTE ou ORDONNEE.ORIGINE, ou prendre la pente pour l’ordonnée à l’origine."
+                "libelle": "Inverser les deux séries dans PENTE ou ORDONNEE.ORIGINE, ou confondre le coefficient de x (la pente) et la valeur pour x = 0 (l’ordonnée à l’origine), dans un sens ou dans l’autre."
               }
             ]
           },
@@ -5022,7 +5020,7 @@
             "confusions": [
               {
                 "id": "correlation-prise-pour-causalite",
-                "libelle": "Conclure sur une cause, ou sur l’absence de cause, à partir de deux évolutions simultanées."
+                "libelle": "Tirer de deux évolutions simultanées, ou d’un coefficient de corrélation proche de 1, une conclusion qu’ils ne prouvent pas : une cause, l’absence de cause ou la poursuite de la tendance."
               }
             ]
           },
@@ -5032,7 +5030,7 @@
             "confusions": [
               {
                 "id": "rang-pris-pour-annee",
-                "libelle": "Remplacer x par l’année au lieu de son rang dans l’équation de la droite."
+                "libelle": "Remplacer x par l’année, ou par l’écart à l’année de départ, au lieu de son rang dans l’équation de la droite."
               }
             ]
           },
@@ -5042,7 +5040,7 @@
             "confusions": [
               {
                 "id": "seuil-mal-arrondi",
-                "libelle": "Arrondir à l’entier inférieur le rang solution d’une inéquation de seuil, au lieu du premier entier qui la vérifie."
+                "libelle": "Mal conclure une recherche de seuil, en gardant la solution non entière d’une inéquation, en l’arrondissant à l’entier inférieur ou en arrêtant une boucle un passage trop tôt, au lieu de retenir le premier rang entier qui atteint le seuil."
               }
             ]
           }
@@ -5416,7 +5414,7 @@
             "confusions": [
               {
                 "id": "extrapolation-sans-reserve",
-                "libelle": "Prolonger une tendance loin des données observées sans signaler la limite de la prévision."
+                "libelle": "Se fier à une tendance au-delà de ce que les données permettent : la prolonger loin des données sans signaler la limite de la prévision, ou ne pas mesurer l’écart entre ce que prévoit le modèle et ce qui est observé."
               },
               {
                 "id": "valeur-extreme-ignoree",
@@ -5424,7 +5422,7 @@
               },
               {
                 "id": "correlation-prise-pour-causalite",
-                "libelle": "Conclure sur une cause, ou sur l’absence de cause, à partir de deux évolutions simultanées."
+                "libelle": "Tirer de deux évolutions simultanées, ou d’un coefficient de corrélation proche de 1, une conclusion qu’ils ne prouvent pas : une cause, l’absence de cause ou la poursuite de la tendance."
               }
             ]
           }

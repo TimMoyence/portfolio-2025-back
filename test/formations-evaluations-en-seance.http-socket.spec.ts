@@ -94,25 +94,25 @@ describe('Évaluation de la feuille de l élève (e2e http socket)', () => {
     evaluer(`feuilles/${planId}`, corps);
 
   it('rend en 200 ce qu affiche chaque cellule, sans rien enregistrer', async () => {
-    const reponse = await feuille({ cellules: { D2: VISA } }).expect(200);
+    const reponse = await feuille({ cellules: { I3: VISA } }).expect(200);
 
     expect(reponse.body as FeuilleEvaluee).toMatchObject({
-      saisies: { D2: VISA },
-      formules: ['D2'],
-      affichages: { A1: 'Facture', C2: '6400', D2: 'Visa' },
-      natures: { A1: 'texte', C2: 'nombre', D2: 'texte' },
+      saisies: { I3: VISA },
+      formules: ['I3'],
+      affichages: { A1: 'Facture', D3: '6400', I3: 'Visa' },
+      natures: { A1: 'texte', D3: 'nombre', I3: 'texte' },
     });
     expect(depots.answers.create.mock.calls).toEqual([]);
   });
 
   it('applique la recopie vers le bas demandée par l élève', async () => {
     const reponse = await feuille({
-      cellules: { D2: VISA },
-      recopie: { de: 'D2' },
+      cellules: { I3: VISA },
+      recopie: { de: 'I3' },
     }).expect(200);
 
-    expect((reponse.body as FeuilleEvaluee).saisies.D3).toBe(
-      '=SI(OU(C3>=5000;B3<>"France");"Visa";"Non")',
+    expect((reponse.body as FeuilleEvaluee).saisies.I4).toBe(
+      '=SI(OU(D4>=5000;C4<>"France");"Visa";"Non")',
     );
   });
 
@@ -137,12 +137,12 @@ describe('Évaluation de la feuille de l élève (e2e http socket)', () => {
   });
 
   it.each([
-    ['une clé hors contrat', { cellules: { D2: '=1' }, note: 20 }],
+    ['une clé hors contrat', { cellules: { I3: '=1' }, note: 20 }],
     [
       'une formule trop longue',
-      { cellules: { D2: `=${'1+'.repeat(LONGUEUR_MAX_FORMULE)}1` } },
+      { cellules: { I3: `=${'1+'.repeat(LONGUEUR_MAX_FORMULE)}1` } },
     ],
-    ['une saisie qui n est pas un texte', { cellules: { D2: 12 } }],
+    ['une saisie qui n est pas un texte', { cellules: { I3: 12 } }],
     ['une recopie sans source', { cellules: {}, recopie: {} }],
   ])('refuse en 400, à la validation, %s', async (_cas, corps) => {
     await feuille(corps).expect(400);
@@ -165,11 +165,11 @@ describe('Évaluation de la feuille de l élève (e2e http socket)', () => {
 
   it('ignore un prototype glissé dans les cellules, sans l évaluer ni polluer l objet', async () => {
     const reponse = await feuille(
-      '{"cellules":{"__proto__":{"D2":"=1"}}}',
+      '{"cellules":{"__proto__":{"I3":"=1"}}}',
     ).expect(200);
 
-    expect((reponse.body as FeuilleEvaluee).affichages.D2).toBeUndefined();
-    expect(({} as Record<string, unknown>).D2).toBeUndefined();
+    expect((reponse.body as FeuilleEvaluee).affichages.I3).toBeUndefined();
+    expect(({} as Record<string, unknown>).I3).toBeUndefined();
   });
 });
 

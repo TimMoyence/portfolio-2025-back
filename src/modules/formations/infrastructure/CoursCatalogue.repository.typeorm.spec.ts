@@ -67,7 +67,6 @@ describe('CoursCatalogueRepositoryTypeORM', () => {
     expect(courant?.cours.ecrans[0]).toMatchObject({
       id: 'B2-01-S03-PREDICTION',
       question: { id: 'quiz-1', type: 'vote' },
-      guide: { aDire: 'Avant de commenter la pente, vérifiez le repère.' },
     });
   });
 
@@ -206,10 +205,6 @@ describe('CoursCatalogueRepositoryTypeORM', () => {
       coursAvecProprietes({
         interaction: buildQuizNote({ optionIds: undefined }),
       }),
-    ],
-    [
-      'un guide hors contrat',
-      coursAvecProprietes({ guide: { objective: 'Faire émerger' } }),
     ],
     ['un cours sans écran', buildCourseContentEntity({ ecrans: [] })],
     [

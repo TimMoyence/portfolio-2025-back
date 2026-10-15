@@ -65,7 +65,7 @@ describe('etatEnDirect', () => {
       ['au vote', {}, 'principale', principale],
       ['pendant la discussion', { phase: 'discussion' }, 'principale', null],
       ['au revote', { phase: 'revote' }, 'jumelle', jumelle],
-      ['à la phase révélée', { phase: 'revele' }, 'jumelle', jumelle],
+      ['à la phase révélée', { phase: 'revele' }, 'jumelle', null],
       [
         'une fois la correction révélée',
         { phase: 'revele', revele: true },

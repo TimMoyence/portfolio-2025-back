@@ -23,7 +23,7 @@ export class FormationsCatalogController {
   @ApiOkResponse({
     type: CoursPublicCatalogueResponseDto,
     description:
-      'Sujet public du tirage de référence, avec la version publiée et sa date de bascule : ni notes, ni guide, ni correction, ni quiz noté',
+      'Sujet public du tirage de référence, avec la version publiée et sa date de bascule : ni notes, ni correction, ni quiz noté',
   })
   @ApiNotFoundResponse({ description: 'Cours introuvable' })
   async get(@Param('slug') slug: string): Promise<CoursPublicCatalogue> {

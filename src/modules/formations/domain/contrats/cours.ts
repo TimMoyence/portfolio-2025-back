@@ -157,7 +157,7 @@ export type Ecran =
   | (EcranCommun & {
       readonly brique: 'questionnaire';
       readonly intitule: string;
-      readonly consigne: string;
+      readonly consigne?: string;
       readonly regime: RegimeVerrou;
       readonly ordre: OrdreQuestions;
       readonly questions: AuMoinsUn<QuestionVote | QuestionNumerique>;

@@ -349,23 +349,44 @@ describe('jeu Norvane du B3-01', () => {
     ).toBeGreaterThanOrEqual(ANOMALIES_SEMEES.S1);
   });
 
-  it('ne laisse trouver sans $ qu’une ligne de l’Ouest, commandée en 2025', () => {
+  it('ne laisse trouver sans $, en 2026, que la commande de Rennes du 30 septembre en tête de la reprise : lignes 4 à 6 dans l’Ouest, 4 et 5 en informatique', () => {
     const agences = ongletDe(jeu.reprise1, 'Agences').lignes;
-    const rangs = agences.map((agence) => texteDe(agence, 'agence_id'));
+    const rangsDe = (table: string, cle: string) =>
+      ongletDe(jeu.reprise1, table).lignes.map((ligne) => texteDe(ligne, cle));
+    const rangsDesAgences = rangsDe('Agences', 'agence_id');
+    const rangsDesProduits = rangsDe('Produits', 'produit_id');
     const ouest = new Set(
       agences
         .filter((agence) => texteDe(agence, 'region') === 'Ouest')
         .map((agence) => texteDe(agence, 'agence_id')),
     );
-    const trouveesDansLOuest = commandesSaines.filter(
-      (ligne, rang) =>
-        rangs.indexOf(texteDe(ligne, 'agence_id')) >= rang &&
-        ouest.has(texteDe(ligne, 'agence_id')),
-    );
+    const trouveesEn2026 = (retenir: (ligne: Ligne, rang: number) => boolean) =>
+      commandesSaines.flatMap((ligne, rang) =>
+        retenir(ligne, rang) && periodeDe(ligne).annee === 2026
+          ? [[rang + 2, texteDe(ligne, 'n_commande'), periodeDe(ligne)]]
+          : [],
+      );
+    const commandeDuDernierJour = (ligneExcel: number) => [
+      ligneExcel,
+      'C-11589',
+      { annee: 2026, mois: 9, jour: 30 },
+    ];
 
-    expect(trouveesDansLOuest.map((ligne) => periodeDe(ligne).annee)).toEqual([
-      2025,
-    ]);
+    expect(
+      trouveesEn2026(
+        (ligne, rang) =>
+          rangsDesAgences.indexOf(texteDe(ligne, 'agence_id')) >= rang &&
+          ouest.has(texteDe(ligne, 'agence_id')),
+      ),
+    ).toEqual([4, 5, 6].map(commandeDuDernierJour));
+    expect(
+      trouveesEn2026(
+        (ligne, rang) =>
+          rangsDesProduits.indexOf(texteDe(ligne, 'produit_id')) >= rang &&
+          texteDe(ligne, 'agence_id') === 'AG06' &&
+          categorieDe(ligne) === 'Informatique',
+      ),
+    ).toEqual([4, 5].map(commandeDuDernierJour));
   });
 
   describe('les quatre histoires du § 4.4', () => {

@@ -53,7 +53,7 @@ function attendreLaMemeValeur(
 const CELLULES_DE_LA_FEUILLE: Readonly<Partial<Record<string, number>>> = {
   'b2-01-traitement-information-chiffree': 17,
   'b2-02-series-statistiques': 6,
-  'b2-03-logique': 5,
+  'b2-03-logique': 10,
   'b2-04-suites': 5,
   'b2-05-mathematiques-financieres': 10,
   'b2-06-exponentielle-logarithme': 13,

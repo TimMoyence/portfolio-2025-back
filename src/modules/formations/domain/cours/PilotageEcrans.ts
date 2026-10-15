@@ -3,6 +3,7 @@ import type {
   PilotageDemande,
   PilotageEcran,
   PilotageServi,
+  VotePhase,
 } from '../contrats/pilotage';
 import { PHASES_DE_VOTE } from '../contrats/pilotage';
 import {
@@ -10,7 +11,10 @@ import {
   PhaseNonMonotoneError,
   PilotageIncompatibleError,
 } from '../errors/FormationErrors';
-import { correctionsRevelables } from './CorrectionSurPlace';
+import {
+  correctionsRevelables,
+  demandeDeCorrection,
+} from './CorrectionSurPlace';
 import { questionsDe } from './Cours';
 import {
   activitesDeLEcran,
@@ -152,6 +156,17 @@ function sansClesNonPilotables(
   );
 }
 
+export function demandeAppliquee(
+  ecran: Ecran,
+  demande: PilotageDemande,
+): PilotageDemande {
+  const complete = demandeDeCorrection(ecran, demande);
+  const revele = complete.revele === true || complete.phase === 'revele';
+  return estVoteJumele(ecran) && revele
+    ? { ...complete, phase: 'revele', revele: true }
+    : complete;
+}
+
 export function fusionnerPilotage(
   courant: Readonly<Record<string, PilotageEcran>>,
   demande: PilotageDemande,
@@ -193,8 +208,10 @@ function coteAffiche(pilotage: PilotageEcran | undefined): CoteDuVote {
   return phase === 'revote' || phase === 'revele' ? 'jumelle' : 'principale';
 }
 
+const PHASES_FERMEES: readonly VotePhase[] = ['discussion', 'revele'];
+
 function coteOuvert(pilotage: PilotageEcran | undefined): CoteDuVote | null {
-  if (ecranRevele(pilotage) || phaseDuVote(pilotage) === 'discussion') {
+  if (ecranRevele(pilotage) || PHASES_FERMEES.includes(phaseDuVote(pilotage))) {
     return null;
   }
   return coteAffiche(pilotage);

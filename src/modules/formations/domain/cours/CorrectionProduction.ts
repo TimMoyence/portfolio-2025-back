@@ -171,10 +171,13 @@ function confusionDeLaCellule(
 
 function bilan<V extends { readonly juste: boolean }>(
   verdicts: AuMoinsUn<V>,
-  seuilReussite: number,
 ): Correction<V> {
-  const score = proportion(verdicts, (verdict) => verdict.juste);
-  return { verdicts, score, correcte: score >= seuilReussite };
+  const juste = (verdict: V) => verdict.juste;
+  return {
+    verdicts,
+    score: proportion(verdicts, juste),
+    correcte: verdicts.every(juste),
+  };
 }
 
 export function corrigerFeuille(
@@ -195,7 +198,7 @@ export function corrigerFeuille(
       confusion: confusion ?? null,
     };
   });
-  return bilan(verdicts, corrige.seuilReussite);
+  return bilan(verdicts);
 }
 
 export function corrigerClassement(
@@ -203,14 +206,17 @@ export function corrigerClassement(
   classement: Readonly<Record<string, string>>,
 ): CorrectionDeClassement {
   const verdicts = mapperAuMoinsUn(corrige.attendus, (attendu) => {
-    const juste = classement[attendu.carteId] === attendu.categorieId;
+    const choisie = classement[attendu.carteId];
+    const piege = attendu.pieges.find(
+      ({ categorieId }) => categorieId === choisie,
+    );
     return {
       carteId: attendu.carteId,
-      juste,
-      confusion: juste ? null : attendu.confusionSiErreur,
+      juste: choisie === attendu.categorieId,
+      confusion: piege?.confusion ?? null,
     };
   });
-  return bilan(verdicts, corrige.seuilReussite);
+  return bilan(verdicts);
 }
 
 export function corrigerTableau(
@@ -228,5 +234,5 @@ export function corrigerTableau(
         : confusionDuPiege(valeur, attendu.pieges, corrige.tolerance);
     return { rang: attendu.rang, cle: attendu.cle, juste, confusion };
   });
-  return bilan(verdicts, corrige.seuilReussite);
+  return bilan(verdicts);
 }
