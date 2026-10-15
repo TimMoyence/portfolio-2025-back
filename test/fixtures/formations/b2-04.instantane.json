@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "675d15f7adebeb707da14333cce9ec97057ce55e4d0f3f224e33a66bd2f656c6",
+  "empreinte": "009696840c3133c232bbe25da938853a67cf346b43331b8f6d9a53367cfe20be",
   "sujet": {
     "id": "b2-04-suites",
     "titre": "Suites : modéliser une évolution régulière",
@@ -635,6 +635,61 @@
               "Recopiez la formule de C3 jusqu’en C7 : sélectionnez C3 et cliquez quatre fois sur « Recopier vers le bas », une ligne par clic. Elle doit rester juste sur chaque ligne.",
               "La raison ne s’écrit pas dans la formule : utilisez la cellule F1."
             ],
+            "lettres": ["A", "B", "C", "D", "E", "F"],
+            "grille": [
+              ["A1", "B1", "C1", "D1", "E1", "F1"],
+              ["A2", "B2", "C2", "D2", "E2", "F2"],
+              ["A3", "B3", "C3", "D3", "E3", "F3"],
+              ["A4", "B4", "C4", "D4", "E4", "F4"],
+              ["A5", "B5", "C5", "D5", "E5", "F5"],
+              ["A6", "B6", "C6", "D6", "E6", "F6"],
+              ["A7", "B7", "C7", "D7", "E7", "F7"]
+            ],
+            "longueurMaxSaisie": 200,
+            "initiale": {
+              "saisies": {},
+              "affichages": {
+                "A1": "Année",
+                "B1": "Rang n",
+                "C1": "CA hypothèse A (k€)",
+                "C2": "826",
+                "E1": "Raison r (k€)",
+                "F1": "44",
+                "A2": "2025",
+                "B2": "0",
+                "A3": "2026",
+                "B3": "1",
+                "A4": "2027",
+                "B4": "2",
+                "A5": "2028",
+                "B5": "3",
+                "A6": "2029",
+                "B6": "4",
+                "A7": "2030",
+                "B7": "5"
+              },
+              "natures": {
+                "A1": "texte",
+                "B1": "texte",
+                "C1": "texte",
+                "C2": "nombre",
+                "E1": "texte",
+                "F1": "nombre",
+                "A2": "nombre",
+                "B2": "nombre",
+                "A3": "nombre",
+                "B3": "nombre",
+                "A4": "nombre",
+                "B4": "nombre",
+                "A5": "nombre",
+                "B5": "nombre",
+                "A6": "nombre",
+                "B6": "nombre",
+                "A7": "nombre",
+                "B7": "nombre"
+              },
+              "formules": []
+            },
             "metadonnees": {
               "concepts": ["tableur", "suite-arithmetique"],
               "misconceptionsCiblees": [],
@@ -1039,6 +1094,83 @@
               "En E3, écrivez l’écart entre l’hypothèse B et l’hypothèse A de la même année. Recopiez jusqu’en E7 : sélectionnez E3 et cliquez quatre fois sur « Recopier vers le bas », une ligne par clic.",
               "Le taux ne s’écrit pas dans la formule : utilisez la cellule G2."
             ],
+            "lettres": ["A", "B", "C", "D", "E", "F", "G"],
+            "grille": [
+              ["A1", "B1", "C1", "D1", "E1", "F1", "G1"],
+              ["A2", "B2", "C2", "D2", "E2", "F2", "G2"],
+              ["A3", "B3", "C3", "D3", "E3", "F3", "G3"],
+              ["A4", "B4", "C4", "D4", "E4", "F4", "G4"],
+              ["A5", "B5", "C5", "D5", "E5", "F5", "G5"],
+              ["A6", "B6", "C6", "D6", "E6", "F6", "G6"],
+              ["A7", "B7", "C7", "D7", "E7", "F7", "G7"]
+            ],
+            "longueurMaxSaisie": 200,
+            "initiale": {
+              "saisies": {},
+              "affichages": {
+                "A1": "Année",
+                "B1": "Rang n",
+                "C1": "Hypothèse A (k€)",
+                "D1": "Hypothèse B (k€)",
+                "D2": "826",
+                "E1": "Écart B − A (k€)",
+                "E2": "0",
+                "F1": "Raison r (k€)",
+                "G1": "44",
+                "F2": "Taux annuel t",
+                "G2": "0,06",
+                "A2": "2025",
+                "B2": "0",
+                "A3": "2026",
+                "B3": "1",
+                "A4": "2027",
+                "B4": "2",
+                "A5": "2028",
+                "B5": "3",
+                "A6": "2029",
+                "B6": "4",
+                "A7": "2030",
+                "B7": "5",
+                "C2": "826",
+                "C3": "870",
+                "C4": "914",
+                "C5": "958",
+                "C6": "1002",
+                "C7": "1046"
+              },
+              "natures": {
+                "A1": "texte",
+                "B1": "texte",
+                "C1": "texte",
+                "D1": "texte",
+                "D2": "nombre",
+                "E1": "texte",
+                "E2": "nombre",
+                "F1": "texte",
+                "G1": "nombre",
+                "F2": "texte",
+                "G2": "nombre",
+                "A2": "nombre",
+                "B2": "nombre",
+                "A3": "nombre",
+                "B3": "nombre",
+                "A4": "nombre",
+                "B4": "nombre",
+                "A5": "nombre",
+                "B5": "nombre",
+                "A6": "nombre",
+                "B6": "nombre",
+                "A7": "nombre",
+                "B7": "nombre",
+                "C2": "nombre",
+                "C3": "nombre",
+                "C4": "nombre",
+                "C5": "nombre",
+                "C6": "nombre",
+                "C7": "nombre"
+              },
+              "formules": []
+            },
             "metadonnees": {
               "concepts": ["tableur", "suite-geometrique"],
               "misconceptionsCiblees": [],
@@ -1660,6 +1792,79 @@
               "En F3, calculez le chiffre d’affaires cumulé de 2025 à 2030 inclus.",
               "Le taux et le seuil ne s’écrivent pas dans les formules : utilisez F1 et H1."
             ],
+            "lettres": ["A", "B", "C", "D", "E", "F", "G", "H"],
+            "grille": [
+              ["A1", "B1", "C1", "D1", "E1", "F1", "G1", "H1"],
+              ["A2", "B2", "C2", "D2", "E2", "F2", "G2", "H2"],
+              ["A3", "B3", "C3", "D3", "E3", "F3", "G3", "H3"],
+              ["A4", "B4", "C4", "D4", "E4", "F4", "G4", "H4"],
+              ["A5", "B5", "C5", "D5", "E5", "F5", "G5", "H5"],
+              ["A6", "B6", "C6", "D6", "E6", "F6", "G6", "H6"],
+              ["A7", "B7", "C7", "D7", "E7", "F7", "G7", "H7"],
+              ["A8", "B8", "C8", "D8", "E8", "F8", "G8", "H8"],
+              ["A9", "B9", "C9", "D9", "E9", "F9", "G9", "H9"]
+            ],
+            "longueurMaxSaisie": 200,
+            "initiale": {
+              "saisies": {},
+              "affichages": {
+                "A1": "Année",
+                "B1": "Rang n",
+                "C1": "CA boutique (k€)",
+                "C2": "120",
+                "D1": "Seuil atteint ?",
+                "E1": "Taux annuel",
+                "F1": "0,16",
+                "G1": "Seuil (k€)",
+                "H1": "280",
+                "E3": "Cumul 2025-2030 (k€)",
+                "A2": "2025",
+                "B2": "0",
+                "A3": "2026",
+                "B3": "1",
+                "A4": "2027",
+                "B4": "2",
+                "A5": "2028",
+                "B5": "3",
+                "A6": "2029",
+                "B6": "4",
+                "A7": "2030",
+                "B7": "5",
+                "A8": "2031",
+                "B8": "6",
+                "A9": "2032",
+                "B9": "7"
+              },
+              "natures": {
+                "A1": "texte",
+                "B1": "texte",
+                "C1": "texte",
+                "C2": "nombre",
+                "D1": "texte",
+                "E1": "texte",
+                "F1": "nombre",
+                "G1": "texte",
+                "H1": "nombre",
+                "E3": "texte",
+                "A2": "nombre",
+                "B2": "nombre",
+                "A3": "nombre",
+                "B3": "nombre",
+                "A4": "nombre",
+                "B4": "nombre",
+                "A5": "nombre",
+                "B5": "nombre",
+                "A6": "nombre",
+                "B6": "nombre",
+                "A7": "nombre",
+                "B7": "nombre",
+                "A8": "nombre",
+                "B8": "nombre",
+                "A9": "nombre",
+                "B9": "nombre"
+              },
+              "formules": []
+            },
             "metadonnees": {
               "concepts": ["tableur", "suite-geometrique", "somme-de-termes"],
               "misconceptionsCiblees": [],
@@ -2772,6 +2977,61 @@
               "Recopiez la formule de C3 jusqu’en C7 : sélectionnez C3 et cliquez quatre fois sur « Recopier vers le bas », une ligne par clic. Elle doit rester juste sur chaque ligne.",
               "La raison ne s’écrit pas dans la formule : utilisez la cellule F1."
             ],
+            "lettres": ["A", "B", "C", "D", "E", "F"],
+            "grille": [
+              ["A1", "B1", "C1", "D1", "E1", "F1"],
+              ["A2", "B2", "C2", "D2", "E2", "F2"],
+              ["A3", "B3", "C3", "D3", "E3", "F3"],
+              ["A4", "B4", "C4", "D4", "E4", "F4"],
+              ["A5", "B5", "C5", "D5", "E5", "F5"],
+              ["A6", "B6", "C6", "D6", "E6", "F6"],
+              ["A7", "B7", "C7", "D7", "E7", "F7"]
+            ],
+            "longueurMaxSaisie": 200,
+            "initiale": {
+              "saisies": {},
+              "affichages": {
+                "A1": "Année",
+                "B1": "Rang n",
+                "C1": "CA hypothèse A (k€)",
+                "C2": "826",
+                "E1": "Raison r (k€)",
+                "F1": "44",
+                "A2": "2025",
+                "B2": "0",
+                "A3": "2026",
+                "B3": "1",
+                "A4": "2027",
+                "B4": "2",
+                "A5": "2028",
+                "B5": "3",
+                "A6": "2029",
+                "B6": "4",
+                "A7": "2030",
+                "B7": "5"
+              },
+              "natures": {
+                "A1": "texte",
+                "B1": "texte",
+                "C1": "texte",
+                "C2": "nombre",
+                "E1": "texte",
+                "F1": "nombre",
+                "A2": "nombre",
+                "B2": "nombre",
+                "A3": "nombre",
+                "B3": "nombre",
+                "A4": "nombre",
+                "B4": "nombre",
+                "A5": "nombre",
+                "B5": "nombre",
+                "A6": "nombre",
+                "B6": "nombre",
+                "A7": "nombre",
+                "B7": "nombre"
+              },
+              "formules": []
+            },
             "metadonnees": {
               "concepts": ["tableur", "suite-arithmetique"],
               "misconceptionsCiblees": [],
@@ -2799,6 +3059,7 @@
               "reference": "C3",
               "formuleReference": "=C2+$F$1",
               "valeur": 870,
+              "affichage": "870",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -2809,6 +3070,7 @@
               "reference": "C4",
               "formuleReference": "=C3+$F$1",
               "valeur": 914,
+              "affichage": "914",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -2821,6 +3083,7 @@
               "reference": "C5",
               "formuleReference": "=C4+$F$1",
               "valeur": 958,
+              "affichage": "958",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -2833,6 +3096,7 @@
               "reference": "C6",
               "formuleReference": "=C5+$F$1",
               "valeur": 1002,
+              "affichage": "1002",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -2845,6 +3109,7 @@
               "reference": "C7",
               "formuleReference": "=C6+$F$1",
               "valeur": 1046,
+              "affichage": "1046",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -3411,6 +3676,83 @@
               "En E3, écrivez l’écart entre l’hypothèse B et l’hypothèse A de la même année. Recopiez jusqu’en E7 : sélectionnez E3 et cliquez quatre fois sur « Recopier vers le bas », une ligne par clic.",
               "Le taux ne s’écrit pas dans la formule : utilisez la cellule G2."
             ],
+            "lettres": ["A", "B", "C", "D", "E", "F", "G"],
+            "grille": [
+              ["A1", "B1", "C1", "D1", "E1", "F1", "G1"],
+              ["A2", "B2", "C2", "D2", "E2", "F2", "G2"],
+              ["A3", "B3", "C3", "D3", "E3", "F3", "G3"],
+              ["A4", "B4", "C4", "D4", "E4", "F4", "G4"],
+              ["A5", "B5", "C5", "D5", "E5", "F5", "G5"],
+              ["A6", "B6", "C6", "D6", "E6", "F6", "G6"],
+              ["A7", "B7", "C7", "D7", "E7", "F7", "G7"]
+            ],
+            "longueurMaxSaisie": 200,
+            "initiale": {
+              "saisies": {},
+              "affichages": {
+                "A1": "Année",
+                "B1": "Rang n",
+                "C1": "Hypothèse A (k€)",
+                "D1": "Hypothèse B (k€)",
+                "D2": "826",
+                "E1": "Écart B − A (k€)",
+                "E2": "0",
+                "F1": "Raison r (k€)",
+                "G1": "44",
+                "F2": "Taux annuel t",
+                "G2": "0,06",
+                "A2": "2025",
+                "B2": "0",
+                "A3": "2026",
+                "B3": "1",
+                "A4": "2027",
+                "B4": "2",
+                "A5": "2028",
+                "B5": "3",
+                "A6": "2029",
+                "B6": "4",
+                "A7": "2030",
+                "B7": "5",
+                "C2": "826",
+                "C3": "870",
+                "C4": "914",
+                "C5": "958",
+                "C6": "1002",
+                "C7": "1046"
+              },
+              "natures": {
+                "A1": "texte",
+                "B1": "texte",
+                "C1": "texte",
+                "D1": "texte",
+                "D2": "nombre",
+                "E1": "texte",
+                "E2": "nombre",
+                "F1": "texte",
+                "G1": "nombre",
+                "F2": "texte",
+                "G2": "nombre",
+                "A2": "nombre",
+                "B2": "nombre",
+                "A3": "nombre",
+                "B3": "nombre",
+                "A4": "nombre",
+                "B4": "nombre",
+                "A5": "nombre",
+                "B5": "nombre",
+                "A6": "nombre",
+                "B6": "nombre",
+                "A7": "nombre",
+                "B7": "nombre",
+                "C2": "nombre",
+                "C3": "nombre",
+                "C4": "nombre",
+                "C5": "nombre",
+                "C6": "nombre",
+                "C7": "nombre"
+              },
+              "formules": []
+            },
             "metadonnees": {
               "concepts": ["tableur", "suite-geometrique"],
               "misconceptionsCiblees": [],
@@ -3438,6 +3780,7 @@
               "reference": "D3",
               "formuleReference": "=D2*(1+$G$2)",
               "valeur": 875.56,
+              "affichage": "875,56",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -3448,6 +3791,7 @@
               "reference": "D4",
               "formuleReference": "=D3*(1+$G$2)",
               "valeur": 928.0936,
+              "affichage": "928,09",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -3460,6 +3804,7 @@
               "reference": "D5",
               "formuleReference": "=D4*(1+$G$2)",
               "valeur": 983.779216,
+              "affichage": "983,78",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -3472,6 +3817,7 @@
               "reference": "D6",
               "formuleReference": "=D5*(1+$G$2)",
               "valeur": 1042.805969,
+              "affichage": "1042,81",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -3484,6 +3830,7 @@
               "reference": "D7",
               "formuleReference": "=D6*(1+$G$2)",
               "valeur": 1105.374327,
+              "affichage": "1105,37",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -3496,6 +3843,7 @@
               "reference": "E3",
               "formuleReference": "=D3-C3",
               "valeur": 5.56,
+              "affichage": "5,56",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -3506,6 +3854,7 @@
               "reference": "E4",
               "formuleReference": "=D4-C4",
               "valeur": 14.0936,
+              "affichage": "14,09",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -3518,6 +3867,7 @@
               "reference": "E5",
               "formuleReference": "=D5-C5",
               "valeur": 25.779216,
+              "affichage": "25,78",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -3530,6 +3880,7 @@
               "reference": "E6",
               "formuleReference": "=D6-C6",
               "valeur": 40.805969,
+              "affichage": "40,81",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -3542,6 +3893,7 @@
               "reference": "E7",
               "formuleReference": "=D7-C7",
               "valeur": 59.374327,
+              "affichage": "59,37",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -4529,6 +4881,79 @@
               "En F3, calculez le chiffre d’affaires cumulé de 2025 à 2030 inclus.",
               "Le taux et le seuil ne s’écrivent pas dans les formules : utilisez F1 et H1."
             ],
+            "lettres": ["A", "B", "C", "D", "E", "F", "G", "H"],
+            "grille": [
+              ["A1", "B1", "C1", "D1", "E1", "F1", "G1", "H1"],
+              ["A2", "B2", "C2", "D2", "E2", "F2", "G2", "H2"],
+              ["A3", "B3", "C3", "D3", "E3", "F3", "G3", "H3"],
+              ["A4", "B4", "C4", "D4", "E4", "F4", "G4", "H4"],
+              ["A5", "B5", "C5", "D5", "E5", "F5", "G5", "H5"],
+              ["A6", "B6", "C6", "D6", "E6", "F6", "G6", "H6"],
+              ["A7", "B7", "C7", "D7", "E7", "F7", "G7", "H7"],
+              ["A8", "B8", "C8", "D8", "E8", "F8", "G8", "H8"],
+              ["A9", "B9", "C9", "D9", "E9", "F9", "G9", "H9"]
+            ],
+            "longueurMaxSaisie": 200,
+            "initiale": {
+              "saisies": {},
+              "affichages": {
+                "A1": "Année",
+                "B1": "Rang n",
+                "C1": "CA boutique (k€)",
+                "C2": "120",
+                "D1": "Seuil atteint ?",
+                "E1": "Taux annuel",
+                "F1": "0,16",
+                "G1": "Seuil (k€)",
+                "H1": "280",
+                "E3": "Cumul 2025-2030 (k€)",
+                "A2": "2025",
+                "B2": "0",
+                "A3": "2026",
+                "B3": "1",
+                "A4": "2027",
+                "B4": "2",
+                "A5": "2028",
+                "B5": "3",
+                "A6": "2029",
+                "B6": "4",
+                "A7": "2030",
+                "B7": "5",
+                "A8": "2031",
+                "B8": "6",
+                "A9": "2032",
+                "B9": "7"
+              },
+              "natures": {
+                "A1": "texte",
+                "B1": "texte",
+                "C1": "texte",
+                "C2": "nombre",
+                "D1": "texte",
+                "E1": "texte",
+                "F1": "nombre",
+                "G1": "texte",
+                "H1": "nombre",
+                "E3": "texte",
+                "A2": "nombre",
+                "B2": "nombre",
+                "A3": "nombre",
+                "B3": "nombre",
+                "A4": "nombre",
+                "B4": "nombre",
+                "A5": "nombre",
+                "B5": "nombre",
+                "A6": "nombre",
+                "B6": "nombre",
+                "A7": "nombre",
+                "B7": "nombre",
+                "A8": "nombre",
+                "B8": "nombre",
+                "A9": "nombre",
+                "B9": "nombre"
+              },
+              "formules": []
+            },
             "metadonnees": {
               "concepts": ["tableur", "suite-geometrique", "somme-de-termes"],
               "misconceptionsCiblees": [],
@@ -4557,6 +4982,7 @@
               "reference": "C3",
               "formuleReference": "=C2*(1+$F$1)",
               "valeur": 139.2,
+              "affichage": "139,2",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -4567,6 +4993,7 @@
               "reference": "C4",
               "formuleReference": "=C3*(1+$F$1)",
               "valeur": 161.472,
+              "affichage": "161,47",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -4579,6 +5006,7 @@
               "reference": "C5",
               "formuleReference": "=C4*(1+$F$1)",
               "valeur": 187.30752,
+              "affichage": "187,31",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -4591,6 +5019,7 @@
               "reference": "C6",
               "formuleReference": "=C5*(1+$F$1)",
               "valeur": 217.276723,
+              "affichage": "217,28",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -4603,6 +5032,7 @@
               "reference": "C7",
               "formuleReference": "=C6*(1+$F$1)",
               "valeur": 252.040999,
+              "affichage": "252,04",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -4615,6 +5045,7 @@
               "reference": "C8",
               "formuleReference": "=C7*(1+$F$1)",
               "valeur": 292.367559,
+              "affichage": "292,37",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -4627,6 +5058,7 @@
               "reference": "C9",
               "formuleReference": "=C8*(1+$F$1)",
               "valeur": 339.146368,
+              "affichage": "339,15",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -4639,6 +5071,7 @@
               "reference": "D2",
               "formuleReference": "=SI(C2>=$H$1;\"Oui\";\"Non\")",
               "valeur": "Non",
+              "affichage": "Non",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -4649,6 +5082,7 @@
               "reference": "D3",
               "formuleReference": "=SI(C3>=$H$1;\"Oui\";\"Non\")",
               "valeur": "Non",
+              "affichage": "Non",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -4661,6 +5095,7 @@
               "reference": "D4",
               "formuleReference": "=SI(C4>=$H$1;\"Oui\";\"Non\")",
               "valeur": "Non",
+              "affichage": "Non",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -4673,6 +5108,7 @@
               "reference": "D5",
               "formuleReference": "=SI(C5>=$H$1;\"Oui\";\"Non\")",
               "valeur": "Non",
+              "affichage": "Non",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -4685,6 +5121,7 @@
               "reference": "D6",
               "formuleReference": "=SI(C6>=$H$1;\"Oui\";\"Non\")",
               "valeur": "Non",
+              "affichage": "Non",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -4697,6 +5134,7 @@
               "reference": "D7",
               "formuleReference": "=SI(C7>=$H$1;\"Oui\";\"Non\")",
               "valeur": "Non",
+              "affichage": "Non",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -4709,6 +5147,7 @@
               "reference": "D8",
               "formuleReference": "=SI(C8>=$H$1;\"Oui\";\"Non\")",
               "valeur": "Oui",
+              "affichage": "Oui",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -4721,6 +5160,7 @@
               "reference": "D9",
               "formuleReference": "=SI(C9>=$H$1;\"Oui\";\"Non\")",
               "valeur": "Oui",
+              "affichage": "Oui",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -4733,6 +5173,7 @@
               "reference": "F3",
               "formuleReference": "=SOMME(C2:C7)",
               "valeur": 1077.297242,
+              "affichage": "1077,3",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001

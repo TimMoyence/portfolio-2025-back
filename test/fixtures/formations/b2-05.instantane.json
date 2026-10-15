@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "c49d4820fe32cd5d520aad0d75800d164260a2f5eef8e38601ac202b6181645c",
+  "empreinte": "e02e28857b2612d996191ee6994259418d64b87e891aa3a0bf651616f294bd8f",
   "sujet": {
     "id": "b2-05-mathematiques-financieres",
     "titre": "Mathématiques financières : placer, emprunter",
@@ -624,6 +624,63 @@
               "En D3, écrivez les intérêts gagnés pendant l’année écoulée. Recopiez jusqu’en D7 : sélectionnez D3 et cliquez quatre fois sur « Recopier vers le bas », une ligne par clic.",
               "Le taux ne s’écrit pas dans la formule : utilisez la cellule G1."
             ],
+            "lettres": ["A", "B", "C", "D", "E", "F", "G"],
+            "grille": [
+              ["A1", "B1", "C1", "D1", "E1", "F1", "G1"],
+              ["A2", "B2", "C2", "D2", "E2", "F2", "G2"],
+              ["A3", "B3", "C3", "D3", "E3", "F3", "G3"],
+              ["A4", "B4", "C4", "D4", "E4", "F4", "G4"],
+              ["A5", "B5", "C5", "D5", "E5", "F5", "G5"],
+              ["A6", "B6", "C6", "D6", "E6", "F6", "G6"],
+              ["A7", "B7", "C7", "D7", "E7", "F7", "G7"]
+            ],
+            "longueurMaxSaisie": 200,
+            "initiale": {
+              "saisies": {},
+              "affichages": {
+                "A1": "Au 1ᵉʳ janvier",
+                "B1": "Années n",
+                "C1": "Valeur acquise (€)",
+                "C2": "40000",
+                "D1": "Intérêts de l’année (€)",
+                "F1": "Taux annuel",
+                "G1": "0,025",
+                "A2": "2026",
+                "B2": "0",
+                "A3": "2027",
+                "B3": "1",
+                "A4": "2028",
+                "B4": "2",
+                "A5": "2029",
+                "B5": "3",
+                "A6": "2030",
+                "B6": "4",
+                "A7": "2031",
+                "B7": "5"
+              },
+              "natures": {
+                "A1": "texte",
+                "B1": "texte",
+                "C1": "texte",
+                "C2": "nombre",
+                "D1": "texte",
+                "F1": "texte",
+                "G1": "nombre",
+                "A2": "nombre",
+                "B2": "nombre",
+                "A3": "nombre",
+                "B3": "nombre",
+                "A4": "nombre",
+                "B4": "nombre",
+                "A5": "nombre",
+                "B5": "nombre",
+                "A6": "nombre",
+                "B6": "nombre",
+                "A7": "nombre",
+                "B7": "nombre"
+              },
+              "formules": []
+            },
             "metadonnees": {
               "concepts": ["tableur", "interets-composes"],
               "misconceptionsCiblees": [],
@@ -998,6 +1055,52 @@
               "En F3, calculez le total des intérêts gagnés de 2027 à 2030.",
               "Le taux et le versement ne s’écrivent pas dans les formules : utilisez F1 et H1."
             ],
+            "lettres": ["A", "B", "C", "D", "E", "F", "G", "H"],
+            "grille": [
+              ["A1", "B1", "C1", "D1", "E1", "F1", "G1", "H1"],
+              ["A2", "B2", "C2", "D2", "E2", "F2", "G2", "H2"],
+              ["A3", "B3", "C3", "D3", "E3", "F3", "G3", "H3"],
+              ["A4", "B4", "C4", "D4", "E4", "F4", "G4", "H4"],
+              ["A5", "B5", "C5", "D5", "E5", "F5", "G5", "H5"],
+              ["A6", "B6", "C6", "D6", "E6", "F6", "G6", "H6"]
+            ],
+            "longueurMaxSaisie": 200,
+            "initiale": {
+              "saisies": {},
+              "affichages": {
+                "A1": "Fin d’année",
+                "B1": "Épargne disponible (€)",
+                "B2": "6000",
+                "C1": "Intérêts de l’année (€)",
+                "E1": "Taux annuel",
+                "F1": "0,03",
+                "G1": "Versement (€)",
+                "H1": "6000",
+                "E3": "Total des intérêts (€)",
+                "A2": "2026",
+                "A3": "2027",
+                "A4": "2028",
+                "A5": "2029",
+                "A6": "2030"
+              },
+              "natures": {
+                "A1": "texte",
+                "B1": "texte",
+                "B2": "nombre",
+                "C1": "texte",
+                "E1": "texte",
+                "F1": "nombre",
+                "G1": "texte",
+                "H1": "nombre",
+                "E3": "texte",
+                "A2": "nombre",
+                "A3": "nombre",
+                "A4": "nombre",
+                "A5": "nombre",
+                "A6": "nombre"
+              },
+              "formules": []
+            },
             "metadonnees": {
               "concepts": ["tableur", "annuites"],
               "misconceptionsCiblees": [],
@@ -1635,6 +1738,55 @@
               "En I2, calculez le coût du crédit.",
               "Le taux et l’annuité ne s’écrivent pas dans les formules : utilisez F2 et H2, figés par des $ là où la formule est recopiée."
             ],
+            "lettres": ["A", "B", "C", "D", "E", "F", "G", "H", "I"],
+            "grille": [
+              ["A1", "B1", "C1", "D1", "E1", "F1", "G1", "H1", "I1"],
+              ["A2", "B2", "C2", "D2", "E2", "F2", "G2", "H2", "I2"],
+              ["A3", "B3", "C3", "D3", "E3", "F3", "G3", "H3", "I3"],
+              ["A4", "B4", "C4", "D4", "E4", "F4", "G4", "H4", "I4"],
+              ["A5", "B5", "C5", "D5", "E5", "F5", "G5", "H5", "I5"]
+            ],
+            "longueurMaxSaisie": 200,
+            "initiale": {
+              "saisies": {},
+              "affichages": {
+                "A1": "Année",
+                "B1": "Capital dû en début d’année (€)",
+                "B2": "32000",
+                "C1": "Intérêts (€)",
+                "D1": "Amortissement (€)",
+                "E1": "Capital dû en fin d’année (€)",
+                "F1": "Taux annuel",
+                "F2": "0,035",
+                "G1": "Durée (années)",
+                "G2": "4",
+                "H1": "Annuité (€)",
+                "I1": "Coût du crédit (€)",
+                "A2": "1",
+                "A3": "2",
+                "A4": "3",
+                "A5": "4"
+              },
+              "natures": {
+                "A1": "texte",
+                "B1": "texte",
+                "B2": "nombre",
+                "C1": "texte",
+                "D1": "texte",
+                "E1": "texte",
+                "F1": "texte",
+                "F2": "nombre",
+                "G1": "texte",
+                "G2": "nombre",
+                "H1": "texte",
+                "I1": "texte",
+                "A2": "nombre",
+                "A3": "nombre",
+                "A4": "nombre",
+                "A5": "nombre"
+              },
+              "formules": []
+            },
             "metadonnees": {
               "concepts": [
                 "tableur",
@@ -2751,6 +2903,63 @@
               "En D3, écrivez les intérêts gagnés pendant l’année écoulée. Recopiez jusqu’en D7 : sélectionnez D3 et cliquez quatre fois sur « Recopier vers le bas », une ligne par clic.",
               "Le taux ne s’écrit pas dans la formule : utilisez la cellule G1."
             ],
+            "lettres": ["A", "B", "C", "D", "E", "F", "G"],
+            "grille": [
+              ["A1", "B1", "C1", "D1", "E1", "F1", "G1"],
+              ["A2", "B2", "C2", "D2", "E2", "F2", "G2"],
+              ["A3", "B3", "C3", "D3", "E3", "F3", "G3"],
+              ["A4", "B4", "C4", "D4", "E4", "F4", "G4"],
+              ["A5", "B5", "C5", "D5", "E5", "F5", "G5"],
+              ["A6", "B6", "C6", "D6", "E6", "F6", "G6"],
+              ["A7", "B7", "C7", "D7", "E7", "F7", "G7"]
+            ],
+            "longueurMaxSaisie": 200,
+            "initiale": {
+              "saisies": {},
+              "affichages": {
+                "A1": "Au 1ᵉʳ janvier",
+                "B1": "Années n",
+                "C1": "Valeur acquise (€)",
+                "C2": "40000",
+                "D1": "Intérêts de l’année (€)",
+                "F1": "Taux annuel",
+                "G1": "0,025",
+                "A2": "2026",
+                "B2": "0",
+                "A3": "2027",
+                "B3": "1",
+                "A4": "2028",
+                "B4": "2",
+                "A5": "2029",
+                "B5": "3",
+                "A6": "2030",
+                "B6": "4",
+                "A7": "2031",
+                "B7": "5"
+              },
+              "natures": {
+                "A1": "texte",
+                "B1": "texte",
+                "C1": "texte",
+                "C2": "nombre",
+                "D1": "texte",
+                "F1": "texte",
+                "G1": "nombre",
+                "A2": "nombre",
+                "B2": "nombre",
+                "A3": "nombre",
+                "B3": "nombre",
+                "A4": "nombre",
+                "B4": "nombre",
+                "A5": "nombre",
+                "B5": "nombre",
+                "A6": "nombre",
+                "B6": "nombre",
+                "A7": "nombre",
+                "B7": "nombre"
+              },
+              "formules": []
+            },
             "metadonnees": {
               "concepts": ["tableur", "interets-composes"],
               "misconceptionsCiblees": [],
@@ -2778,6 +2987,7 @@
               "reference": "C3",
               "formuleReference": "=C2*(1+$G$1)",
               "valeur": 41000,
+              "affichage": "41000",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -2788,6 +2998,7 @@
               "reference": "C4",
               "formuleReference": "=C3*(1+$G$1)",
               "valeur": 42025,
+              "affichage": "42025",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -2800,6 +3011,7 @@
               "reference": "C5",
               "formuleReference": "=C4*(1+$G$1)",
               "valeur": 43075.625,
+              "affichage": "43075,63",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -2812,6 +3024,7 @@
               "reference": "C6",
               "formuleReference": "=C5*(1+$G$1)",
               "valeur": 44152.515625,
+              "affichage": "44152,52",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -2824,6 +3037,7 @@
               "reference": "C7",
               "formuleReference": "=C6*(1+$G$1)",
               "valeur": 45256.328516,
+              "affichage": "45256,33",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -2836,6 +3050,7 @@
               "reference": "D3",
               "formuleReference": "=C3-C2",
               "valeur": 1000,
+              "affichage": "1000",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -2846,6 +3061,7 @@
               "reference": "D4",
               "formuleReference": "=C4-C3",
               "valeur": 1025,
+              "affichage": "1025",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -2858,6 +3074,7 @@
               "reference": "D5",
               "formuleReference": "=C5-C4",
               "valeur": 1050.625,
+              "affichage": "1050,63",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -2870,6 +3087,7 @@
               "reference": "D6",
               "formuleReference": "=C6-C5",
               "valeur": 1076.890625,
+              "affichage": "1076,89",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -2882,6 +3100,7 @@
               "reference": "D7",
               "formuleReference": "=C7-C6",
               "valeur": 1103.812891,
+              "affichage": "1103,81",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -3426,6 +3645,52 @@
               "En F3, calculez le total des intérêts gagnés de 2027 à 2030.",
               "Le taux et le versement ne s’écrivent pas dans les formules : utilisez F1 et H1."
             ],
+            "lettres": ["A", "B", "C", "D", "E", "F", "G", "H"],
+            "grille": [
+              ["A1", "B1", "C1", "D1", "E1", "F1", "G1", "H1"],
+              ["A2", "B2", "C2", "D2", "E2", "F2", "G2", "H2"],
+              ["A3", "B3", "C3", "D3", "E3", "F3", "G3", "H3"],
+              ["A4", "B4", "C4", "D4", "E4", "F4", "G4", "H4"],
+              ["A5", "B5", "C5", "D5", "E5", "F5", "G5", "H5"],
+              ["A6", "B6", "C6", "D6", "E6", "F6", "G6", "H6"]
+            ],
+            "longueurMaxSaisie": 200,
+            "initiale": {
+              "saisies": {},
+              "affichages": {
+                "A1": "Fin d’année",
+                "B1": "Épargne disponible (€)",
+                "B2": "6000",
+                "C1": "Intérêts de l’année (€)",
+                "E1": "Taux annuel",
+                "F1": "0,03",
+                "G1": "Versement (€)",
+                "H1": "6000",
+                "E3": "Total des intérêts (€)",
+                "A2": "2026",
+                "A3": "2027",
+                "A4": "2028",
+                "A5": "2029",
+                "A6": "2030"
+              },
+              "natures": {
+                "A1": "texte",
+                "B1": "texte",
+                "B2": "nombre",
+                "C1": "texte",
+                "E1": "texte",
+                "F1": "nombre",
+                "G1": "texte",
+                "H1": "nombre",
+                "E3": "texte",
+                "A2": "nombre",
+                "A3": "nombre",
+                "A4": "nombre",
+                "A5": "nombre",
+                "A6": "nombre"
+              },
+              "formules": []
+            },
             "metadonnees": {
               "concepts": ["tableur", "annuites"],
               "misconceptionsCiblees": [],
@@ -3453,6 +3718,7 @@
               "reference": "B3",
               "formuleReference": "=B2*(1+$F$1)+$H$1",
               "valeur": 12180,
+              "affichage": "12180",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -3463,6 +3729,7 @@
               "reference": "B4",
               "formuleReference": "=B3*(1+$F$1)+$H$1",
               "valeur": 18545.4,
+              "affichage": "18545,4",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -3475,6 +3742,7 @@
               "reference": "B5",
               "formuleReference": "=B4*(1+$F$1)+$H$1",
               "valeur": 25101.762,
+              "affichage": "25101,76",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -3487,6 +3755,7 @@
               "reference": "B6",
               "formuleReference": "=B5*(1+$F$1)+$H$1",
               "valeur": 31854.81486,
+              "affichage": "31854,81",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -3499,6 +3768,7 @@
               "reference": "C3",
               "formuleReference": "=B2*$F$1",
               "valeur": 180,
+              "affichage": "180",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -3509,6 +3779,7 @@
               "reference": "C4",
               "formuleReference": "=B3*$F$1",
               "valeur": 365.4,
+              "affichage": "365,4",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -3521,6 +3792,7 @@
               "reference": "C5",
               "formuleReference": "=B4*$F$1",
               "valeur": 556.362,
+              "affichage": "556,36",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -3533,6 +3805,7 @@
               "reference": "C6",
               "formuleReference": "=B5*$F$1",
               "valeur": 753.05286,
+              "affichage": "753,05",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -3545,6 +3818,7 @@
               "reference": "F3",
               "formuleReference": "=SOMME(C3:C6)",
               "valeur": 1854.81486,
+              "affichage": "1854,81",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -4556,6 +4830,55 @@
               "En I2, calculez le coût du crédit.",
               "Le taux et l’annuité ne s’écrivent pas dans les formules : utilisez F2 et H2, figés par des $ là où la formule est recopiée."
             ],
+            "lettres": ["A", "B", "C", "D", "E", "F", "G", "H", "I"],
+            "grille": [
+              ["A1", "B1", "C1", "D1", "E1", "F1", "G1", "H1", "I1"],
+              ["A2", "B2", "C2", "D2", "E2", "F2", "G2", "H2", "I2"],
+              ["A3", "B3", "C3", "D3", "E3", "F3", "G3", "H3", "I3"],
+              ["A4", "B4", "C4", "D4", "E4", "F4", "G4", "H4", "I4"],
+              ["A5", "B5", "C5", "D5", "E5", "F5", "G5", "H5", "I5"]
+            ],
+            "longueurMaxSaisie": 200,
+            "initiale": {
+              "saisies": {},
+              "affichages": {
+                "A1": "Année",
+                "B1": "Capital dû en début d’année (€)",
+                "B2": "32000",
+                "C1": "Intérêts (€)",
+                "D1": "Amortissement (€)",
+                "E1": "Capital dû en fin d’année (€)",
+                "F1": "Taux annuel",
+                "F2": "0,035",
+                "G1": "Durée (années)",
+                "G2": "4",
+                "H1": "Annuité (€)",
+                "I1": "Coût du crédit (€)",
+                "A2": "1",
+                "A3": "2",
+                "A4": "3",
+                "A5": "4"
+              },
+              "natures": {
+                "A1": "texte",
+                "B1": "texte",
+                "B2": "nombre",
+                "C1": "texte",
+                "D1": "texte",
+                "E1": "texte",
+                "F1": "texte",
+                "F2": "nombre",
+                "G1": "texte",
+                "G2": "nombre",
+                "H1": "texte",
+                "I1": "texte",
+                "A2": "nombre",
+                "A3": "nombre",
+                "A4": "nombre",
+                "A5": "nombre"
+              },
+              "formules": []
+            },
             "metadonnees": {
               "concepts": [
                 "tableur",
@@ -4588,6 +4911,7 @@
               "reference": "H2",
               "formuleReference": "=VPM(F2;G2;-B2)",
               "valeur": 8712.036464,
+              "affichage": "8712,04",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -4598,6 +4922,7 @@
               "reference": "B3",
               "formuleReference": "=E2",
               "valeur": 24407.963536,
+              "affichage": "24407,96",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -4608,6 +4933,7 @@
               "reference": "B4",
               "formuleReference": "=E3",
               "valeur": 16550.205796,
+              "affichage": "16550,21",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -4620,6 +4946,7 @@
               "reference": "B5",
               "formuleReference": "=E4",
               "valeur": 8417.426535,
+              "affichage": "8417,43",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -4632,6 +4959,7 @@
               "reference": "C2",
               "formuleReference": "=B2*$F$2",
               "valeur": 1120,
+              "affichage": "1120",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -4642,6 +4970,7 @@
               "reference": "C3",
               "formuleReference": "=B3*$F$2",
               "valeur": 854.278724,
+              "affichage": "854,28",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -4654,6 +4983,7 @@
               "reference": "C4",
               "formuleReference": "=B4*$F$2",
               "valeur": 579.257203,
+              "affichage": "579,26",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -4666,6 +4996,7 @@
               "reference": "C5",
               "formuleReference": "=B5*$F$2",
               "valeur": 294.609929,
+              "affichage": "294,61",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -4678,6 +5009,7 @@
               "reference": "D2",
               "formuleReference": "=$H$2-C2",
               "valeur": 7592.036464,
+              "affichage": "7592,04",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -4688,6 +5020,7 @@
               "reference": "D3",
               "formuleReference": "=$H$2-C3",
               "valeur": 7857.75774,
+              "affichage": "7857,76",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -4700,6 +5033,7 @@
               "reference": "D4",
               "formuleReference": "=$H$2-C4",
               "valeur": 8132.779261,
+              "affichage": "8132,78",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -4712,6 +5046,7 @@
               "reference": "D5",
               "formuleReference": "=$H$2-C5",
               "valeur": 8417.426535,
+              "affichage": "8417,43",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -4724,6 +5059,7 @@
               "reference": "E2",
               "formuleReference": "=B2-D2",
               "valeur": 24407.963536,
+              "affichage": "24407,96",
               "tolerance": {
                 "type": "decimales",
                 "valeur": 2
@@ -4734,6 +5070,7 @@
               "reference": "E3",
               "formuleReference": "=B3-D3",
               "valeur": 16550.205796,
+              "affichage": "16550,21",
               "tolerance": {
                 "type": "decimales",
                 "valeur": 2
@@ -4746,6 +5083,7 @@
               "reference": "E4",
               "formuleReference": "=B4-D4",
               "valeur": 8417.426535,
+              "affichage": "8417,43",
               "tolerance": {
                 "type": "decimales",
                 "valeur": 2
@@ -4758,6 +5096,7 @@
               "reference": "E5",
               "formuleReference": "=B5-D5",
               "valeur": 0,
+              "affichage": "0",
               "tolerance": {
                 "type": "decimales",
                 "valeur": 2
@@ -4770,6 +5109,7 @@
               "reference": "I2",
               "formuleReference": "=H2*G2-B2",
               "valeur": 2848.145855,
+              "affichage": "2848,15",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
