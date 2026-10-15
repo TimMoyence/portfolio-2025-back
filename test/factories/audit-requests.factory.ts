@@ -148,6 +148,7 @@ export function buildStructuredDataQuality(
     googleRichResultsEligible: true,
     aiFriendly: true,
     invalidBlocks: [],
+    malformedBlocks: 0,
     ...overrides,
   };
 }

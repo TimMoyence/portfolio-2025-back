@@ -6,6 +6,7 @@ import {
   buildArticleRecord,
   createMockArticlesRepository,
 } from '../../../../test/factories/article.factory';
+import { sousEnvironnement } from '../../../../test/helpers/environnement';
 import type { ArticleRecord } from './articles.repository';
 import { ArticlesService } from './articles.service';
 import { validArticleIngestEnvelope as payload } from '../testing/article-ingest.fixture';
@@ -111,25 +112,20 @@ describe('ArticlesService', () => {
   );
 
   it('programme la diffusion abonnés dans la même écriture que l article', async () => {
-    const previous = process.env.ARTICLE_BROADCAST_DELAY_MINUTES;
-    process.env.ARTICLE_BROADCAST_DELAY_MINUTES = '45';
     const repository = createMockArticlesRepository();
     repository.findDeliveryByDeliveryOrIdempotency.mockResolvedValue(null);
     repository.findDeliveryByNonce.mockResolvedValue(null);
     const service = new ArticlesService(repository);
 
-    try {
-      const result = await service.ingest(payload, 'idempotency-1', 'nonce-1');
-      const [, , broadcast] = repository.saveArticleAndDelivery.mock.calls[0];
+    const result = await sousEnvironnement(
+      { ARTICLE_BROADCAST_DELAY_MINUTES: '45' },
+      () => service.ingest(payload, 'idempotency-1', 'nonce-1'),
+    );
+    const [, , broadcast] = repository.saveArticleAndDelivery.mock.calls[0];
 
-      expect(broadcast.sendAfter.getTime()).toBe(
-        Date.parse(result.received_at) + 45 * 60_000,
-      );
-    } finally {
-      if (previous === undefined)
-        delete process.env.ARTICLE_BROADCAST_DELAY_MINUTES;
-      else process.env.ARTICLE_BROADCAST_DELAY_MINUTES = previous;
-    }
+    expect(broadcast.sendAfter.getTime()).toBe(
+      Date.parse(result.received_at) + 45 * 60_000,
+    );
   });
 });
 

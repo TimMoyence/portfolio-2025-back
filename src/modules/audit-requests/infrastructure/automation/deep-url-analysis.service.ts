@@ -20,8 +20,9 @@ import { HomepageAuditSnapshot } from './homepage-analyzer.service';
 import type { TechFingerprint } from './schemas/audit-report.schemas';
 import { inferTechFingerprint } from './tech-fingerprint.util';
 import { localizedText } from './shared/locale-text.util';
-import { severityRank } from './shared/severity.util';
+import { parGraviteDecroissante } from './shared/severity.util';
 import { borner } from '../../../../common/domain/nombres/borner';
+import { sansFin } from '../../../../common/domain/texte/sans-bords';
 import {
   dansLesBornes,
   type Bornes,
@@ -154,12 +155,6 @@ function createMetricsCollector(): UrlMetricsCollector {
   };
 }
 
-function stripTrailingSlashes(pathname: string): string {
-  let end = pathname.length;
-  while (end > 0 && pathname[end - 1] === '/') end -= 1;
-  return pathname.slice(0, end);
-}
-
 @Injectable()
 export class DeepUrlAnalysisService {
   analyze(
@@ -188,9 +183,7 @@ export class DeepUrlAnalysisService {
     const acc = this.collectUrlMetrics(urls, locale);
     const findings = this.emitFindings(acc, urls, locale);
 
-    findings.sort(
-      (a, b) => severityRank(b.severity) - severityRank(a.severity),
-    );
+    findings.sort(parGraviteDecroissante);
 
     return {
       findings,
@@ -968,8 +961,8 @@ export class DeepUrlAnalysisService {
       const final = new URL(entry.finalUrl);
       canonical.hash = '';
       final.hash = '';
-      const canonicalPath = stripTrailingSlashes(canonical.pathname) || '/';
-      const finalPath = stripTrailingSlashes(final.pathname) || '/';
+      const canonicalPath = sansFin(canonical.pathname, '/') || '/';
+      const finalPath = sansFin(final.pathname, '/') || '/';
       return (
         canonical.origin === final.origin &&
         canonicalPath === finalPath &&

@@ -1,7 +1,14 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { Logger } from '@nestjs/common';
 import { generateKeyPairSync } from 'node:crypto';
-import { setSmtpEnv } from '../../../../../test/factories/mailer.factory';
+import {
+  DEFAULT_SMTP_ENV,
+  SMTP_ET_DKIM_ABSENTS,
+} from '../../../../../test/factories/mailer.factory';
+import {
+  appliquer,
+  installerVariables,
+} from '../../../../../test/helpers/environnement';
 
 const mockCreateTransport = jest.fn().mockReturnValue({ sendMail: jest.fn() });
 
@@ -31,49 +38,26 @@ const VALID_KEY = generateKeyPairSync('rsa', {
 }).privateKey;
 
 function enableDkim(overrides: Record<string, string> = {}): void {
-  process.env.SMTP_DKIM_DOMAIN = 'asilidesign.fr';
-  process.env.SMTP_DKIM_SELECTOR = 'default';
-  process.env.SMTP_DKIM_PRIVATE_KEY = VALID_KEY;
-  for (const [key, value] of Object.entries(overrides)) {
-    process.env[key] = value;
-  }
+  appliquer({
+    SMTP_DKIM_DOMAIN: 'asilidesign.fr',
+    SMTP_DKIM_SELECTOR: 'default',
+    SMTP_DKIM_PRIVATE_KEY: VALID_KEY,
+    ...overrides,
+  });
 }
 
 describe('createOptionalSmtpTransporter', () => {
   let logger: Logger;
-  let cleanup: () => void;
+
+  installerVariables(SMTP_ET_DKIM_ABSENTS, 'chaque-test');
 
   beforeEach(() => {
     jest.clearAllMocks();
-    cleanup = setSmtpEnv();
-    clearEnvRestorableBySetSmtpEnv();
     logger = { warn: jest.fn(), error: jest.fn() } as unknown as Logger;
   });
 
-  afterEach(() => {
-    cleanup();
-  });
-
-  function clearEnvRestorableBySetSmtpEnv(): void {
-    const restorable = [
-      'SMTP_HOST',
-      'SMTP_PORT',
-      'SMTP_USER',
-      'SMTP_PASS',
-      'SMTP_SECURE',
-      'SMTP_FROM',
-      'SMTP_DKIM_DOMAIN',
-      'SMTP_DKIM_SELECTOR',
-      'SMTP_DKIM_PRIVATE_KEY',
-    ];
-    for (const key of restorable) delete process.env[key];
-  }
-
   function configureSmtp(): void {
-    process.env.SMTP_HOST = 'smtp.example.org';
-    process.env.SMTP_PORT = '587';
-    process.env.SMTP_USER = 'mailer';
-    process.env.SMTP_PASS = 'secret'; // gitleaks:allow — scan de secrets, ci.yml
+    appliquer({ ...DEFAULT_SMTP_ENV, SMTP_SECURE: undefined });
   }
 
   function lastOptions(): TransportOptions {
@@ -111,7 +95,7 @@ describe('createOptionalSmtpTransporter', () => {
       'retourne null si %s manque',
       (missing) => {
         configureSmtp();
-        delete process.env[missing];
+        appliquer({ [missing]: undefined });
 
         expect(createOptionalSmtpTransporter(logger, 'Test')).toBeNull();
       },
@@ -121,7 +105,7 @@ describe('createOptionalSmtpTransporter', () => {
   describe('mode secure', () => {
     it('active TLS implicite sur le port 465', () => {
       configureSmtp();
-      process.env.SMTP_PORT = '465';
+      appliquer({ SMTP_PORT: '465' });
 
       createOptionalSmtpTransporter(logger, 'Test');
 
@@ -138,7 +122,7 @@ describe('createOptionalSmtpTransporter', () => {
 
     it('force TLS quand SMTP_SECURE vaut true', () => {
       configureSmtp();
-      process.env.SMTP_SECURE = 'true';
+      appliquer({ SMTP_SECURE: 'true' });
 
       createOptionalSmtpTransporter(logger, 'Test');
 
@@ -253,7 +237,7 @@ describe('createOptionalSmtpTransporter', () => {
 
     it('ignore une configuration DKIM partielle et le signale', () => {
       configureSmtp();
-      process.env.SMTP_DKIM_DOMAIN = 'asilidesign.fr';
+      appliquer({ SMTP_DKIM_DOMAIN: 'asilidesign.fr' });
 
       createOptionalSmtpTransporter(logger, 'Test');
 

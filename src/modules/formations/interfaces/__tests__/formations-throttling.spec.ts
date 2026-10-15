@@ -6,6 +6,7 @@ import {
   suivreParParticipant,
 } from '../formations-throttling';
 import { createMockParticipantsRepo } from '../../../../../test/factories/formation.factory';
+import { installerSecretDeSignature } from '../../../../../test/helpers/env-formations';
 import { installerVariables } from '../../../../../test/helpers/environnement';
 import {
   limiteDeThrottle,
@@ -19,7 +20,6 @@ import {
 const IP_SALLE = 'sortie-nat-salle-b204';
 const IP_VOISINE = 'sortie-nat-salle-b205';
 const IP_DOMICILE = 'sortie-nat-domicile';
-const SECRET = 'secret-de-test-formations-assez-long-1234';
 const SESSION_ID = '3f1c3b2a-5d4e-4f6a-9b8c-7d6e5f4a3b2c';
 const AUTRE_SESSION = '4f1c3b2a-5d4e-4f6a-9b8c-7d6e5f4a3b2d';
 const THEO = '8f1c3b2a-5d4e-4f6a-9b8c-7d6e5f4a3b2c';
@@ -93,7 +93,7 @@ describe('suivreParParticipant', () => {
   let jetonTheo: string;
   let jetonLea: string;
 
-  installerVariables({ FORMATION_REVIEW_TOKEN_SECRET: SECRET });
+  installerSecretDeSignature();
 
   beforeAll(() => {
     jetonTheo = tokens.sign(SESSION_ID, THEO, 0);

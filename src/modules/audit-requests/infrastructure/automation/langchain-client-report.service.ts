@@ -18,7 +18,7 @@ import { LlmLimiteParLaConfig } from './llm-executor.port';
 import { reportSeveritySchema } from './schemas/audit-report.schemas';
 import { impactLocalise } from './shared/finding-priority.util';
 import { localizedText } from './shared/locale-text.util';
-import { severityRank } from './shared/severity.util';
+import { parGraviteDecroissante } from './shared/severity.util';
 import { scoreMoyenSur100, scoreSur100 } from '../../domain/score-sur-100';
 
 const SEVERITY_LABELS_FR: Record<ReportSeverity, string> = {
@@ -340,7 +340,7 @@ export class LangchainClientReportService extends LlmLimiteParLaConfig {
   ): ClientReportSynthesis {
     const sortedFindings = [...context.findings]
       .filter((entry) => entry.title.trim().length > 0)
-      .sort((a, b) => severityRank(b.severity) - severityRank(a.severity));
+      .sort(parGraviteDecroissante);
 
     const topFindings = sortedFindings.slice(0, 5).map((finding) => ({
       title: finding.title,

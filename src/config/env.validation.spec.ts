@@ -1,7 +1,9 @@
 import {
   buildValidEnv,
   TEST_JWT_SECRET,
+  TEST_MORNING_BRIEF_HMAC_KEYS,
 } from '../../test/factories/env.factory';
+import { DEFAULT_SMTP_ENV } from '../../test/factories/mailer.factory';
 import { validateEnv } from './env.validation';
 
 describe('validateEnv', () => {
@@ -50,18 +52,14 @@ describe('validateEnv', () => {
   it('devrait accepter un trousseau HMAC en production', () => {
     const env = buildValidEnv({
       NODE_ENV: 'production',
-      MORNING_BRIEF_HMAC_KEYS: 'morning-brief:key-from-secret-manager',
+      MORNING_BRIEF_HMAC_KEYS: TEST_MORNING_BRIEF_HMAC_KEYS,
     });
 
     expect(() => validateEnv(env)).not.toThrow();
   });
 
   describe('coherence SMTP', () => {
-    const SMTP_CONFIGURED = {
-      SMTP_HOST: 'smtp.example.org',
-      SMTP_USER: 'mailer',
-      SMTP_PASS: 'test-smtp-password', // gitleaks:allow (ci.yml)
-    };
+    const SMTP_CONFIGURED = { ...DEFAULT_SMTP_ENV, SMTP_FROM: undefined };
 
     it('devrait lancer une erreur si SMTP est configure sans SMTP_FROM', () => {
       const env = buildValidEnv(SMTP_CONFIGURED);
@@ -269,12 +267,7 @@ describe('validateEnv', () => {
   });
 
   describe('diffusion des articles aux abonnés', () => {
-    const smtp = {
-      SMTP_HOST: 'smtp.example.com',
-      SMTP_USER: 'user',
-      SMTP_PASS: 'pass',
-      SMTP_FROM: 'Veille <veille@example.com>',
-    };
+    const smtp = DEFAULT_SMTP_ENV;
 
     it.each([
       ['ARTICLE_BROADCAST_ENABLED', 'yes'],

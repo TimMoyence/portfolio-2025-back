@@ -63,6 +63,27 @@ describe('ChangePasswordUseCase', () => {
     expect(result).toBe(updatedUser);
   });
 
+  it.each(['', '   '])(
+    'garde l auteur précédent quand l auteur envoyé est blanc (%p)',
+    async (auteurBlanc) => {
+      repo.findById.mockResolvedValue(
+        buildUser({ passwordHash: 'old-hash', updatedOrCreatedBy: 'system' }),
+      );
+
+      await useCase.execute({
+        userId: 'user-1',
+        currentPassword: CURRENT_CREDENTIAL,
+        newPassword: NEXT_CREDENTIAL,
+        updatedOrCreatedBy: auteurBlanc,
+      });
+
+      attendreMiseAJourDeLUtilisateur(repo.update, {
+        passwordHash: 'new-hash',
+        updatedOrCreatedBy: 'system',
+      });
+    },
+  );
+
   it('throws when user is not found', async () => {
     repo.findById.mockResolvedValue(null);
 

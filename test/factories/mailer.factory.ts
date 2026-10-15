@@ -1,5 +1,6 @@
 import type { createTransport, Transporter } from 'nodemailer';
 import type { IPasswordResetNotifier } from '../../src/modules/users/domain/IPasswordResetNotifier';
+import { poserVariables } from '../helpers/environnement';
 
 export function createMockPasswordResetNotifier(): jest.Mocked<IPasswordResetNotifier> {
   return {
@@ -79,38 +80,37 @@ export const DEFAULT_AUDIT_ENV = {
   AUDIT_REPORT_TO: 'reports@test.local',
 } as const;
 
-export function setSmtpEnv(overrides: Record<string, string> = {}): () => void {
-  const vars = { ...DEFAULT_SMTP_ENV, ...overrides };
-  const original: Record<string, string | undefined> = {};
+const DKIM_ENV_KEYS = [
+  'SMTP_DKIM_DOMAIN',
+  'SMTP_DKIM_SELECTOR',
+  'SMTP_DKIM_PRIVATE_KEY',
+] as const;
 
-  for (const [key, value] of Object.entries(vars)) {
-    original[key] = process.env[key];
-    process.env[key] = value;
-  }
+export const SMTP_ET_DKIM_ABSENTS: Readonly<Record<string, undefined>> =
+  Object.fromEntries(
+    [...Object.keys(DEFAULT_SMTP_ENV), ...DKIM_ENV_KEYS].map((cle) => [
+      cle,
+      undefined,
+    ]),
+  );
 
-  for (const key of DKIM_ENV_KEYS) {
-    if (key in overrides) continue;
-    original[key] = process.env[key];
-    delete process.env[key];
-  }
-
-  return () => {
-    for (const key of [...Object.keys(vars), ...DKIM_ENV_KEYS]) {
-      if (original[key] === undefined) {
-        delete process.env[key];
-      } else {
-        process.env[key] = original[key];
-      }
-    }
-  };
+export function setSmtpEnv(
+  overrides: Readonly<Record<string, string | undefined>> = {},
+): () => void {
+  return poserVariables({
+    ...SMTP_ET_DKIM_ABSENTS,
+    ...DEFAULT_SMTP_ENV,
+    ...overrides,
+  });
 }
 
 export function retirerSmtpEnv(): () => void {
-  const restaurer = setSmtpEnv();
-  for (const cle of ['SMTP_HOST', 'SMTP_PORT', 'SMTP_USER', 'SMTP_PASS']) {
-    delete process.env[cle];
-  }
-  return restaurer;
+  return setSmtpEnv({
+    SMTP_HOST: undefined,
+    SMTP_PORT: undefined,
+    SMTP_USER: undefined,
+    SMTP_PASS: undefined,
+  });
 }
 
 interface CreationDeTransportSimulee {
@@ -144,9 +144,3 @@ export function smtpSimule(creerTransport?: CreationDeTransportSimulee) {
     premierMail: () => premierMailEnvoye(etat.transporteur),
   };
 }
-
-const DKIM_ENV_KEYS = [
-  'SMTP_DKIM_DOMAIN',
-  'SMTP_DKIM_SELECTOR',
-  'SMTP_DKIM_PRIVATE_KEY',
-] as const;

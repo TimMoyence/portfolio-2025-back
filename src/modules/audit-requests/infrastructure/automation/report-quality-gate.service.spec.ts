@@ -117,6 +117,50 @@ describe('ReportQualityGateService', () => {
     expect(new Set(titles).size).toBe(titles.length);
   });
 
+  it('complète les priorités par les constats les plus graves d abord', () => {
+    const report = baseReport();
+    report.priorities = [];
+    const context = baseContext();
+    context.deepFindings = [...context.deepFindings].reverse();
+
+    const result = service.apply(
+      'English summary for business stakeholders.',
+      report,
+      context,
+    );
+
+    expect(
+      result.report.priorities.slice(0, 2).map((entry) => entry.title),
+    ).toEqual(['Missing title tags', 'Duplicate meta descriptions']);
+  });
+
+  it.each([
+    ['vide', { subject: '', body: '' }],
+    ['blanc', { subject: '   ', body: 'Corps du message.' }],
+  ])('refuse un brouillon d email client %s', (_cas, clientEmailDraft) => {
+    const report = { ...baseReport(), clientEmailDraft };
+
+    const result = service.apply('English summary.', report, baseContext());
+
+    expect(result.reasons).toContain('missing_client_email_draft');
+    expect(result.report.clientEmailDraft).toEqual({ subject: '', body: '' });
+  });
+
+  it('garde un brouillon d email client trimé', () => {
+    const report = {
+      ...baseReport(),
+      clientEmailDraft: { subject: ' Objet ', body: ' Corps. ' },
+    };
+
+    const result = service.apply('English summary.', report, baseContext());
+
+    expect(result.reasons).not.toContain('missing_client_email_draft');
+    expect(result.report.clientEmailDraft).toEqual({
+      subject: 'Objet',
+      body: 'Corps.',
+    });
+  });
+
   it('ranks the model severity into the three report levels', () => {
     const report = baseReport();
     const priority = report.priorities[0];

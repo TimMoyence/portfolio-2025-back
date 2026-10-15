@@ -6,6 +6,7 @@ import {
   setSmtpEnv,
   DEFAULT_AUDIT_ENV,
 } from '../../../../../../test/factories/mailer.factory';
+import { appliquer } from '../../../../../../test/helpers/environnement';
 import { AuditNotificationMailer } from '../audit-notification.mailer';
 import { escapeHtml } from '../mail-rendering.util';
 import type { SmtpTransporter } from '../smtp-transporter.provider';
@@ -58,7 +59,7 @@ describe('AuditNotificationMailer', () => {
     });
 
     it('devrait ne rien faire si CONTACT_NOTIFICATION_TO est absent', async () => {
-      delete process.env.CONTACT_NOTIFICATION_TO;
+      appliquer({ CONTACT_NOTIFICATION_TO: undefined });
 
       await mailer.sendAuditNotification(buildAuditRequest());
 

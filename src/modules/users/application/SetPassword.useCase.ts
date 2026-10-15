@@ -18,12 +18,10 @@ export class SetPasswordUseCase extends CasDUsageMotDePasse {
       throw new ResourceConflictError('Password is already configured');
     }
 
-    const passwordHash = await this.passwordService.hash(dto.newPassword);
-
-    return this.repo.update(user.id as string, {
-      passwordHash,
-      updatedOrCreatedBy: dto.updatedOrCreatedBy ?? user.updatedOrCreatedBy,
-      updatedAt: new Date(),
-    });
+    return this.enregistrerMotDePasse(
+      user,
+      dto.newPassword,
+      dto.updatedOrCreatedBy,
+    );
   }
 }

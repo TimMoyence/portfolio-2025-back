@@ -3,6 +3,7 @@ import {
   PREFIXE_API_PAR_DEFAUT,
   prefixeApi,
 } from './prefixe-api';
+import { installerVariables } from '../../test/helpers/environnement';
 
 describe('prefixeApi', () => {
   it('rend le prefixe par defaut quand API_PREFIX est absent', () => {
@@ -37,14 +38,11 @@ describe('cheminDeLApi', () => {
     );
   });
 
-  it('lit process.env par defaut', () => {
-    const avant = process.env.API_PREFIX;
-    process.env.API_PREFIX = 'api';
-    try {
+  describe('sans source explicite', () => {
+    installerVariables({ API_PREFIX: 'api' }, 'chaque-test');
+
+    it('lit process.env par defaut', () => {
       expect(cheminDeLApi('auth')).toBe('/api/auth');
-    } finally {
-      if (avant === undefined) delete process.env.API_PREFIX;
-      else process.env.API_PREFIX = avant;
-    }
+    });
   });
 });

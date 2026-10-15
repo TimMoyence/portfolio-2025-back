@@ -8,6 +8,7 @@ import type {
   ReportSeverity,
 } from '../../domain/AuditReportTiers';
 import { AuditLocale } from '../../domain/audit-locale.util';
+import { normalizeClientEmailDraft } from './langchain-synthesis.util';
 import { hasLanguageMismatch } from './report-quality-gate/language-check.util';
 import {
   validateClientReport as runClientTierValidation,
@@ -20,7 +21,10 @@ import type {
 } from './schemas/audit-report.schemas';
 import { priorityFromFinding } from './shared/finding-priority.util';
 import { localizedText } from './shared/locale-text.util';
-import { normalizeSeverity } from './shared/severity.util';
+import {
+  normalizeSeverity,
+  parGraviteDecroissante,
+} from './shared/severity.util';
 import {
   ACTIONABLE_PILLARS,
   type ActionablePillarKey,
@@ -240,13 +244,10 @@ export class ReportQualityGateService {
       perPageAnalysis: Array.isArray(report.perPageAnalysis)
         ? report.perPageAnalysis
         : [],
-      clientEmailDraft:
-        report.clientEmailDraft &&
-        typeof report.clientEmailDraft === 'object' &&
-        typeof report.clientEmailDraft.subject === 'string' &&
-        typeof report.clientEmailDraft.body === 'string'
-          ? report.clientEmailDraft
-          : { subject: '', body: '' },
+      clientEmailDraft: this.requireEmailDraft(
+        report.clientEmailDraft,
+        reasons,
+      ),
       internalNotes:
         typeof report.internalNotes === 'string' ? report.internalNotes : '',
       priorities: [],
@@ -321,9 +322,11 @@ export class ReportQualityGateService {
     this.appendPriorities(
       priorities,
       unique,
-      context.deepFindings.map((finding) =>
-        this.normalizePriority(priorityFromFinding(finding, locale)),
-      ),
+      [...context.deepFindings]
+        .sort(parGraviteDecroissante)
+        .map((finding) =>
+          this.normalizePriority(priorityFromFinding(finding, locale)),
+        ),
       this.maxPriorities,
     );
 
@@ -713,6 +716,16 @@ export class ReportQualityGateService {
     if (normalized) return normalized;
     reasons.push(reasonCode);
     return fallback;
+  }
+
+  private requireEmailDraft(
+    value: unknown,
+    reasons: string[],
+  ): ExpertReport['clientEmailDraft'] {
+    const draft = normalizeClientEmailDraft(value);
+    if (draft) return draft;
+    reasons.push('missing_client_email_draft');
+    return { subject: '', body: '' };
   }
 
   private cleanText(value: unknown): string {

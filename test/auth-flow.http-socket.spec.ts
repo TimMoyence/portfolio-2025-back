@@ -10,7 +10,9 @@ import {
   authControllerProviders,
   createAuthUseCaseStubs,
 } from './factories/core-api.factory';
+import { TEST_JWT_SECRET } from './factories/env.factory';
 import { buildUser, buildAuthResult } from './factories/user.factory';
+import { sousEnvironnement } from './helpers/environnement';
 import {
   applicationDeLaSuite,
   bootstrapTestAppAvecCookies,
@@ -21,11 +23,10 @@ import {
 const LOGIN_PASSWORD = 'StrongPassword123!';
 
 describe('Auth flow complet — sans bypass de guard (e2e)', () => {
-  const JWT_SECRET = 'test-secret-for-e2e-auth-flow-32-chars!';
   const JWT_EXPIRES_IN = '900s';
 
   const jwtTokenService = new JwtTokenService(
-    new ConfigService({ JWT_SECRET, JWT_EXPIRES_IN }),
+    new ConfigService({ JWT_SECRET: TEST_JWT_SECRET, JWT_EXPIRES_IN }),
   );
 
   const authStubs = createAuthUseCaseStubs();
@@ -154,22 +155,17 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
   });
 
   it('POST /api/auth/login pose le cookie de rafraichissement sous le prefixe de l API', async () => {
-    const prefixeAvant = process.env.API_PREFIX;
-    process.env.API_PREFIX = 'api';
     authenticateUserUseCase.execute.mockResolvedValue(
       await sessionSigneePour(buildUser(), 'opaque-refresh-token'),
     );
 
-    try {
-      const res = await seConnecter();
+    const res = await sousEnvironnement({ API_PREFIX: 'api' }, async () =>
+      seConnecter(),
+    );
 
-      expect(res.headers['set-cookie']).toEqual([
-        expect.stringContaining('; Path=/api/auth;'),
-      ]);
-    } finally {
-      if (prefixeAvant === undefined) delete process.env.API_PREFIX;
-      else process.env.API_PREFIX = prefixeAvant;
-    }
+    expect(res.headers['set-cookie']).toEqual([
+      expect.stringContaining('; Path=/api/auth;'),
+    ]);
   });
 
   it('GET /api/auth/me avec Bearer valide retourne le profil utilisateur', async () => {
