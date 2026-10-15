@@ -27,6 +27,7 @@ import { LireRappelsUseCase } from './application/LireRappels.useCase';
 import { SyntheseRappelsUseCase } from './application/SyntheseRappels.useCase';
 import { LireEtatParticipantUseCase } from './application/LireEtatParticipant.useCase';
 import { SubmitProductionUseCase } from './application/SubmitProduction.useCase';
+import { EvaluerFeuilleUseCase } from './application/EvaluerFeuille.useCase';
 import { TenterEnigmeUseCase } from './application/TenterEnigme.useCase';
 import { SynchroniserCoursUseCase } from './application/SynchroniserCours.useCase';
 import { TelechargerPieceJointeUseCase } from './application/TelechargerPieceJointe.useCase';
@@ -132,6 +133,7 @@ import { ParticipantTokenService } from './interfaces/ParticipantToken.service';
     LireLivretUseCase,
     SubmitAnswerUseCase,
     SubmitProductionUseCase,
+    EvaluerFeuilleUseCase,
     TenterEnigmeUseCase,
     ParticipationEnSeance,
     LectureDeSeance,

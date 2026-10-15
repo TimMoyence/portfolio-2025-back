@@ -12,11 +12,8 @@ import {
   corrigerTableau,
   type SaisiesDeTableau,
 } from './CorrectionProduction';
-import {
-  estDansLaGrille,
-  estReferenceDeCellule,
-  estUneValeurDeVerite,
-} from './PlansStockes';
+import { saisiesRetenues } from './FeuilleEvaluee';
+import { estUneValeurDeVerite } from './PlansStockes';
 
 export interface EcranDeProduction {
   readonly ecran: Extract<
@@ -61,19 +58,7 @@ function feuilleNettoyee(
   if (cible.ecran.brique !== 'fp-sheet') {
     refuser(cible.question.id, 'cette question n’attend pas une feuille');
   }
-  const plan = cible.ecran.proprietes.plan;
-  const verrouillees = new Set(plan.verrouillees);
-  const retenues: Record<string, string> = {};
-  for (const [reference, saisie] of Object.entries(cellules)) {
-    const nom = reference.toUpperCase();
-    if (!estReferenceDeCellule(nom) || !estDansLaGrille(plan, nom)) {
-      refuser(cible.question.id, `cellule hors de la grille : ${reference}`);
-    }
-    if (!verrouillees.has(nom) && saisie.trim().length > 0) {
-      retenues[nom] = saisie;
-    }
-  }
-  return retenues;
+  return saisiesRetenues(cible.ecran.proprietes.plan, cellules);
 }
 
 function saisiesNettoyees(

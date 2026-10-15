@@ -38,6 +38,7 @@ import { LibererPosteUseCase } from '../../src/modules/formations/application/Li
 import { SyntheseRappelsUseCase } from '../../src/modules/formations/application/SyntheseRappels.useCase';
 import { LireEtatParticipantUseCase } from '../../src/modules/formations/application/LireEtatParticipant.useCase';
 import { SubmitProductionUseCase } from '../../src/modules/formations/application/SubmitProduction.useCase';
+import { EvaluerFeuilleUseCase } from '../../src/modules/formations/application/EvaluerFeuille.useCase';
 import { TelechargerPieceJointeUseCase } from '../../src/modules/formations/application/TelechargerPieceJointe.useCase';
 import { TenterEnigmeUseCase } from '../../src/modules/formations/application/TenterEnigme.useCase';
 import type { IAnswersRepository } from '../../src/modules/formations/domain/IAnswers.repository';
@@ -177,6 +178,7 @@ export function fournisseursFormations(
     JoinSessionUseCase,
     SubmitAnswerUseCase,
     SubmitProductionUseCase,
+    EvaluerFeuilleUseCase,
     TenterEnigmeUseCase,
     ParticipationEnSeance,
     LectureDeSeance,

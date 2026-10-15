@@ -85,6 +85,7 @@ import type {
 import { ATTENDU_PRIX_REVISE } from '../../../../../test/factories/corriges.factory';
 import { PLAN_TABLEAU } from '../../../../../test/factories/ecrans-stockes.factory';
 import { REGLE_DE_NOTATION } from '../RegleDeNotation';
+import { planDeFeuilleServi } from '../cours/FeuilleEvaluee';
 
 const METADONNEES = {
   concepts: ['evolutions-successives'],
@@ -780,6 +781,7 @@ describe('Contrats figés du cours B2-01 V3 (§ 9, lot 0)', () => {
               reference: 'E2',
               formuleReference: '=C2/$C$5',
               valeur: 0.345217,
+              affichage: '0,3452',
               tolerance: TOLERANCE_RELATIVE,
               forme: 'references',
             },
@@ -1139,7 +1141,12 @@ describe('Contrats figés du cours B2-01 V3 (§ 9, lot 0)', () => {
         'fp-cardsort': {
           plan: { ...PLAN_CARTES, metadonnees: METADONNEES },
         },
-        'fp-sheet': { plan: { ...PLAN_FEUILLE, metadonnees: METADONNEES } },
+        'fp-sheet': {
+          plan: {
+            ...planDeFeuilleServi(PLAN_FEUILLE),
+            metadonnees: METADONNEES,
+          },
+        },
         'fp-table-build': { plan },
         'fp-escape': { parcours: { ...PARCOURS, metadonnees: METADONNEES } },
         'fp-pulse': { sondage },

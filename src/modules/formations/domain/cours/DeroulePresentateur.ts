@@ -9,6 +9,7 @@ import type { ConfusionId } from './banque/confusions';
 import { libelleDeConfusion } from './banque/confusions';
 import type { CorrigeEnigme } from './Corrige';
 import { questionsDe } from './Cours';
+import { affichageDeLAttendu } from './FeuilleEvaluee';
 import { tirerEnDetail } from './Tirage';
 
 export type { DerouleCours, EcranDeroule } from '../contrats/deroule';
@@ -208,6 +209,7 @@ function corrigeDeProduction(
           reference: attendu.reference,
           formuleReference: attendu.formuleReference,
           valeur: attendu.valeur,
+          affichage: affichageDeLAttendu(attendu.valeur),
           tolerance: attendu.tolerance,
           forme: attendu.forme,
         })),

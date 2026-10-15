@@ -34,6 +34,7 @@ export type CorrigeEcranPresentateur =
         readonly reference: string;
         readonly formuleReference: string;
         readonly valeur: ValeurFormule;
+        readonly affichage: string;
         readonly tolerance: Tolerance;
         readonly forme: FormeFormule;
       }[];

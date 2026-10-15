@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "b8094ea53d4ecb0c338d7b8d09f4066d0359084bc8f6c63352ec146b67a2e895",
+  "empreinte": "15ca80c90ae810dd88a24d7c15eea0401225e5aab71e0aeb92e49f85ff26f20e",
   "sujet": {
     "id": "b2-02-series-statistiques",
     "titre": "Séries statistiques : résumer, relier, prévoir",
@@ -1691,6 +1691,77 @@
               "En E5 et E6, calculez les coordonnées du point moyen G avec MOYENNE.",
               "En E7, contrôlez : =SI(ARRONDI(E3*E5+E4-E6;6)=0;1;0) doit afficher 1."
             ],
+            "lettres": ["A", "B", "C", "D", "E"],
+            "grille": [
+              ["A1", "B1", "C1", "D1", "E1"],
+              ["A2", "B2", "C2", "D2", "E2"],
+              ["A3", "B3", "C3", "D3", "E3"],
+              ["A4", "B4", "C4", "D4", "E4"],
+              ["A5", "B5", "C5", "D5", "E5"],
+              ["A6", "B6", "C6", "D6", "E6"],
+              ["A7", "B7", "C7", "D7", "E7"]
+            ],
+            "longueurMaxSaisie": 200,
+            "initiale": {
+              "saisies": {},
+              "affichages": {
+                "A1": "Rang x",
+                "B1": "Abonnements y (millions)",
+                "C1": "Année",
+                "D1": "Indicateur",
+                "E1": "Valeur",
+                "A2": "1",
+                "B2": "10,3",
+                "C2": "2020",
+                "A3": "2",
+                "B3": "14,5",
+                "C3": "2021",
+                "A4": "3",
+                "B4": "18,1",
+                "C4": "2022",
+                "A5": "4",
+                "B5": "21,4",
+                "C5": "2023",
+                "A6": "5",
+                "B6": "24,4",
+                "C6": "2024",
+                "D2": "Coefficient de corrélation r",
+                "D3": "Coefficient directeur a",
+                "D4": "Ordonnée à l’origine b",
+                "D5": "x̄",
+                "D6": "ȳ",
+                "D7": "Contrôle : la droite passe par G"
+              },
+              "natures": {
+                "A1": "texte",
+                "B1": "texte",
+                "C1": "texte",
+                "D1": "texte",
+                "E1": "texte",
+                "A2": "nombre",
+                "B2": "nombre",
+                "C2": "nombre",
+                "A3": "nombre",
+                "B3": "nombre",
+                "C3": "nombre",
+                "A4": "nombre",
+                "B4": "nombre",
+                "C4": "nombre",
+                "A5": "nombre",
+                "B5": "nombre",
+                "C5": "nombre",
+                "A6": "nombre",
+                "B6": "nombre",
+                "C6": "nombre",
+                "D2": "texte",
+                "D3": "texte",
+                "D4": "texte",
+                "D5": "texte",
+                "D6": "texte",
+                "D7": "texte"
+              },
+              "formules": []
+            },
             "metadonnees": {
               "concepts": ["correlation", "ajustement-affine"],
               "misconceptionsCiblees": [],
@@ -4327,6 +4398,77 @@
               "En E5 et E6, calculez les coordonnées du point moyen G avec MOYENNE.",
               "En E7, contrôlez : =SI(ARRONDI(E3*E5+E4-E6;6)=0;1;0) doit afficher 1."
             ],
+            "lettres": ["A", "B", "C", "D", "E"],
+            "grille": [
+              ["A1", "B1", "C1", "D1", "E1"],
+              ["A2", "B2", "C2", "D2", "E2"],
+              ["A3", "B3", "C3", "D3", "E3"],
+              ["A4", "B4", "C4", "D4", "E4"],
+              ["A5", "B5", "C5", "D5", "E5"],
+              ["A6", "B6", "C6", "D6", "E6"],
+              ["A7", "B7", "C7", "D7", "E7"]
+            ],
+            "longueurMaxSaisie": 200,
+            "initiale": {
+              "saisies": {},
+              "affichages": {
+                "A1": "Rang x",
+                "B1": "Abonnements y (millions)",
+                "C1": "Année",
+                "D1": "Indicateur",
+                "E1": "Valeur",
+                "A2": "1",
+                "B2": "10,3",
+                "C2": "2020",
+                "A3": "2",
+                "B3": "14,5",
+                "C3": "2021",
+                "A4": "3",
+                "B4": "18,1",
+                "C4": "2022",
+                "A5": "4",
+                "B5": "21,4",
+                "C5": "2023",
+                "A6": "5",
+                "B6": "24,4",
+                "C6": "2024",
+                "D2": "Coefficient de corrélation r",
+                "D3": "Coefficient directeur a",
+                "D4": "Ordonnée à l’origine b",
+                "D5": "x̄",
+                "D6": "ȳ",
+                "D7": "Contrôle : la droite passe par G"
+              },
+              "natures": {
+                "A1": "texte",
+                "B1": "texte",
+                "C1": "texte",
+                "D1": "texte",
+                "E1": "texte",
+                "A2": "nombre",
+                "B2": "nombre",
+                "C2": "nombre",
+                "A3": "nombre",
+                "B3": "nombre",
+                "C3": "nombre",
+                "A4": "nombre",
+                "B4": "nombre",
+                "C4": "nombre",
+                "A5": "nombre",
+                "B5": "nombre",
+                "C5": "nombre",
+                "A6": "nombre",
+                "B6": "nombre",
+                "C6": "nombre",
+                "D2": "texte",
+                "D3": "texte",
+                "D4": "texte",
+                "D5": "texte",
+                "D6": "texte",
+                "D7": "texte"
+              },
+              "formules": []
+            },
             "metadonnees": {
               "concepts": ["correlation", "ajustement-affine"],
               "misconceptionsCiblees": [],
@@ -4354,6 +4496,7 @@
               "reference": "E2",
               "formuleReference": "=COEFFICIENT.CORRELATION(A2:A6;B2:B6)",
               "valeur": 0.997852,
+              "affichage": "0,9979",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -4364,6 +4507,7 @@
               "reference": "E3",
               "formuleReference": "=PENTE(B2:B6;A2:A6)",
               "valeur": 3.51,
+              "affichage": "3,51",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -4374,6 +4518,7 @@
               "reference": "E4",
               "formuleReference": "=ORDONNEE.ORIGINE(B2:B6;A2:A6)",
               "valeur": 7.21,
+              "affichage": "7,21",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -4384,6 +4529,7 @@
               "reference": "E5",
               "formuleReference": "=MOYENNE(A2:A6)",
               "valeur": 3,
+              "affichage": "3",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -4394,6 +4540,7 @@
               "reference": "E6",
               "formuleReference": "=MOYENNE(B2:B6)",
               "valeur": 17.74,
+              "affichage": "17,74",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -4404,6 +4551,7 @@
               "reference": "E7",
               "formuleReference": "=SI(ARRONDI(E3*E5+E4-E6;6)=0;1;0)",
               "valeur": 1,
+              "affichage": "1",
               "tolerance": {
                 "type": "absolue",
                 "valeur": 0

@@ -70,7 +70,7 @@ function confusionDuPiege(
   return trouve?.confusion ?? null;
 }
 
-function reconstruire(
+export function reconstruire(
   plan: SheetPlanStocke,
   envoi: Readonly<Record<string, string>>,
 ): Feuille {

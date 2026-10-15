@@ -13,6 +13,12 @@ import {
   buildQuestionnaireCorrigeSurPlace,
   EXPLICATIONS_SUR_PLACE,
 } from '../../../../../test/factories/ecrans-stockes.factory';
+import { buildCoursDuContenu } from '../../../../../test/factories/contenus-de-cours.factory';
+import {
+  CONTENUS,
+  COURS_B2_03,
+  COURS_B2_06,
+} from '../../../../../test/factories/contenus-publies';
 import { PRESENTATIONS_VISUELLES_VALIDES } from '../../../../../test/factories/presentation-visuelle.factory';
 import { CONFUSIONS } from './banque/confusions';
 import { lireCoursStocke } from './CoursStocke';
@@ -117,6 +123,47 @@ describe('deroulePresentateur', () => {
   });
 });
 
+describe('deroulePresentateur (affichage d une feuille corrigée, F-37)', () => {
+  const attendusServis = (contenu: (typeof CONTENUS)[number]) =>
+    deroulePresentateur(buildCoursDuContenu(contenu), 0).ecrans.flatMap(
+      (ecran) =>
+        ecran.corrigeEcran?.type === 'feuille'
+          ? ecran.corrigeEcran.attendus.map((attendu) => [
+              `${ecran.id} ${attendu.reference}`,
+              attendu.affichage,
+            ])
+          : [],
+    );
+
+  it('écrit chaque valeur attendue comme le tableau de l élève : un taux à quatre décimales, un montant à deux, un texte tel quel', () => {
+    const servis = Object.fromEntries([
+      ...attendusServis(COURS_B2_03),
+      ...attendusServis(COURS_B2_06),
+    ]);
+
+    expect(servis['B2-06-A1-11-TABLEUR-VENTES B3']).toBe('424,73');
+    expect(servis['B2-06-A1-11-TABLEUR-VENTES C3']).toBe('0,0618');
+    expect(servis['B2-03-A1-11-TABLEUR-SI-OU D2']).toBe('Visa');
+    expect(servis['B2-03-A1-11-TABLEUR-SI-OU D4']).toBe('Non');
+  });
+
+  it('sert un affichage à chaque attendu de chaque feuille des cours', () => {
+    const servis = CONTENUS.flatMap(attendusServis);
+
+    expect(servis.length).toBeGreaterThan(0);
+    for (const [cle, affichage] of servis) {
+      expect({ cle, affichage }).toEqual({
+        cle,
+        affichage: expect.stringMatching(/\S/),
+      });
+      expect({ cle, point: affichage?.includes('.') }).toEqual({
+        cle,
+        point: false,
+      });
+    }
+  });
+});
+
 describe('deroulePresentateur (corrigés au déroulé, B22)', () => {
   const cours = lireCoursStocke(
     buildCoursDeBriques(
@@ -143,6 +190,7 @@ describe('deroulePresentateur (corrigés au déroulé, B22)', () => {
           reference: 'D2',
           formuleReference: '=(C2-B2)/B2',
           valeur: -0.178054,
+          affichage: '-0,1781',
           tolerance: { type: 'relative', valeur: 0.0001 },
           forme: 'references',
         },
@@ -150,6 +198,7 @@ describe('deroulePresentateur (corrigés au déroulé, B22)', () => {
           reference: 'D3',
           formuleReference: '=(C3-B3)/B3',
           valeur: 0.095238,
+          affichage: '0,0952',
           tolerance: { type: 'relative', valeur: 0.0001 },
           forme: { memeQue: 'D2' },
         },

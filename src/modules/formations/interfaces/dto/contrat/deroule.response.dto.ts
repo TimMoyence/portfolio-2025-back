@@ -47,6 +47,13 @@ export class AttenduFeuillePresentateurResponseDto {
   @ApiProperty({ example: 0.345217 })
   valeur: number;
 
+  @ApiProperty({
+    description:
+      'Valeur attendue ecrite comme la feuille de l eleve : taux a quatre decimales, montant a deux',
+    example: '0,3452',
+  })
+  affichage: string;
+
   @ApiProperty({ type: ToleranceResponseDto })
   tolerance: ToleranceResponseDto;
 

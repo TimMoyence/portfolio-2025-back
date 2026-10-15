@@ -21,6 +21,7 @@ import type { Rng, Tirage } from './Aleatoire';
 import type { ConfusionId } from './banque/confusions';
 import { ecranCorrigePar, ecransCorrigeantDe } from './Corrections';
 import { estInteractif, estReservee } from './Cours';
+import { planDeFeuilleServi } from './FeuilleEvaluee';
 import type {
   PieceJointeServie,
   QuestionNumerique,
@@ -403,6 +404,12 @@ function donneesDeBrique(
         },
       };
     case 'fp-sheet':
+      return {
+        plan: {
+          ...planDeFeuilleServi(ecran.proprietes.plan),
+          metadonnees: communes,
+        },
+      };
     case 'fp-table-build':
       return { plan: { ...ecran.proprietes.plan, metadonnees: communes } };
     case 'fp-escape':

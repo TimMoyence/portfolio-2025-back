@@ -36,6 +36,7 @@ import { SaveFreeResponseUseCase } from '../application/SaveFreeResponse.useCase
 import { StreamSessionUseCase } from '../application/StreamSession.useCase';
 import { SubmitAnswerUseCase } from '../application/SubmitAnswer.useCase';
 import { SubmitProductionUseCase } from '../application/SubmitProduction.useCase';
+import { EvaluerFeuilleUseCase } from '../application/EvaluerFeuille.useCase';
 import { TelechargerPieceJointeUseCase } from '../application/TelechargerPieceJointe.useCase';
 import { TenterEnigmeUseCase } from '../application/TenterEnigme.useCase';
 import type { ClasseurTelecharge } from '../domain/IClasseursDeCours.port';
@@ -64,6 +65,8 @@ import { RappelsResponseDto } from './dto/contrat/rappels.response.dto';
 import { StrategiesDefiResponseDto } from './dto/contrat/strategies-defi.response.dto';
 import { SubmitDefiRequestDto } from './dto/contrat/submit-defi.request.dto';
 import { SubmitProductionRequestDto } from './dto/contrat/submit-production.request.dto';
+import { EvaluerFeuilleRequestDto } from './dto/contrat/evaluer-feuille.request.dto';
+import { FeuilleEvalueeResponseDto } from './dto/contrat/feuille-evaluee.response.dto';
 import { TentativeEnigmeResponseDto } from './dto/contrat/tentative-enigme.response.dto';
 import { TenterEnigmeRequestDto } from './dto/contrat/tenter-enigme.request.dto';
 import { SubmitProductionResponseDto } from './dto/contrat/verdict-production.response.dto';
@@ -72,6 +75,7 @@ import {
   FENETRE_THROTTLE_MS,
   LIMITE_FLUX_PAR_PARTICIPANT,
   LIMITE_ETAT_PAR_PARTICIPANT,
+  LIMITE_EVALUATIONS_PAR_PARTICIPANT,
   LIMITE_INCIDENTS_PAR_PARTICIPANT,
   LIMITE_JALONS_PAR_PARTICIPANT,
   LIMITE_JOIN_PAR_CODE,
@@ -97,6 +101,7 @@ export class FormationsStudentController {
     private readonly joinSession: JoinSessionUseCase,
     private readonly submitAnswer: SubmitAnswerUseCase,
     private readonly submitProduction: SubmitProductionUseCase,
+    private readonly evaluerFeuille: EvaluerFeuilleUseCase,
     private readonly tenterEnigme: TenterEnigmeUseCase,
     private readonly declarerJalon: DeclarerJalonUseCase,
     private readonly defis: DefisUseCase,
@@ -257,6 +262,38 @@ export class FormationsStudentController {
       questionId: dto.questionId,
       valeur: dto.valeur,
       dureeMs: dto.dureeMs,
+    });
+  }
+
+  @LimiteParParticipant(LIMITE_EVALUATIONS_PAR_PARTICIPANT)
+  @Post('sessions/:id/feuilles/:planId/evaluation')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary:
+      'Calcule la feuille de l eleve a la validation d une cellule, sans rien enregistrer',
+  })
+  @ApiOkResponse({ type: FeuilleEvalueeResponseDto })
+  @ApiBadRequestResponse({
+    description:
+      'Evaluation refusee, cause dans le champ code du corps : TYPE_DE_QUESTION ou PRODUCTION_INVALIDE',
+  })
+  @ApiConflictResponse({
+    description:
+      'Evaluation refusee, cause dans le champ code du corps : SEANCE_NON_DEMARREE ou SEANCE_TERMINEE',
+  })
+  @RouteParticipant()
+  async evaluationDeFeuille(
+    @Param('id', ParseUUIDPipe) sessionId: string,
+    @Param('planId') planId: string,
+    @IdentiteDuJeton() { participantId }: IdentiteSignee,
+    @Body() dto: EvaluerFeuilleRequestDto,
+  ): Promise<FeuilleEvalueeResponseDto> {
+    return this.evaluerFeuille.execute({
+      sessionId,
+      participantId,
+      planId,
+      cellules: dto.cellules,
+      recopie: dto.recopie,
     });
   }
 

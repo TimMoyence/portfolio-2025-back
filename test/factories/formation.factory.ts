@@ -1,5 +1,7 @@
+import { ParticipationEnSeance } from '../../src/modules/formations/application/ParticipationEnSeance';
 import type { Piege } from '../../src/modules/formations/domain/AnswerGrading';
 import type { Bareme } from '../../src/modules/formations/domain/Bareme';
+import type { ICatalogueCours } from '../../src/modules/formations/domain/cours/ICatalogueCours.port';
 import type {
   ClasseurTelecharge,
   IClasseursDeCours,
@@ -667,6 +669,27 @@ export function createMockSessionStateCache(): jest.Mocked<ISessionStateCache> {
     fingerprint: jest.fn().mockReturnValue(''),
     signalerActivite: jest.fn(),
     activite: jest.fn().mockReturnValue(0),
+  };
+}
+
+export function creerParticipationEnSeance(
+  courseSlug: string,
+  catalogue: ICatalogueCours,
+) {
+  const sessions = createMockSessionsRepo({ courseSlug });
+  const participants = createMockParticipantsRepo();
+  participants.findById.mockResolvedValue(buildParticipantRecord());
+  const cache = createMockSessionStateCache();
+  return {
+    sessions,
+    participants,
+    cache,
+    participation: new ParticipationEnSeance(
+      sessions,
+      participants,
+      catalogue,
+      cache,
+    ),
   };
 }
 

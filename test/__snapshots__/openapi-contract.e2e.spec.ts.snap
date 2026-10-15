@@ -26,6 +26,11 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
   },
   "AttenduFeuillePresentateurResponseDto": {
     "properties": {
+      "affichage": {
+        "description": "Valeur attendue ecrite comme la feuille de l eleve : taux a quatre decimales, montant a deux",
+        "example": "0,3452",
+        "type": "string",
+      },
       "forme": {
         "oneOf": [
           {
@@ -59,6 +64,7 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
       "reference",
       "formuleReference",
       "valeur",
+      "affichage",
       "tolerance",
       "forme",
     ],

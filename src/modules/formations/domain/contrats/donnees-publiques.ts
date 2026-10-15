@@ -61,6 +61,15 @@ export type PlotDefinition = DefinitionPublique<
   ProprietesExposition['fp-plot']
 >;
 
+export type NatureDeCellule = 'texte' | 'nombre' | 'logique' | 'erreur';
+
+export interface FeuilleEvaluee {
+  readonly saisies: Readonly<Record<string, string>>;
+  readonly affichages: Readonly<Record<string, string>>;
+  readonly natures: Readonly<Record<string, NatureDeCellule>>;
+  readonly formules: readonly string[];
+}
+
 export interface SheetPlanPublic {
   readonly id: string;
   readonly intitule: string;
@@ -69,6 +78,10 @@ export interface SheetPlanPublic {
   readonly cellules: Readonly<Record<string, string>>;
   readonly verrouillees: readonly string[];
   readonly consignes: readonly string[];
+  readonly lettres: readonly string[];
+  readonly grille: readonly (readonly string[])[];
+  readonly longueurMaxSaisie: number;
+  readonly initiale: FeuilleEvaluee;
   readonly metadonnees: MetadonneesBrique;
 }
 

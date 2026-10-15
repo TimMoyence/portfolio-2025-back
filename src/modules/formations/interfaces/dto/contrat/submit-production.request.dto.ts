@@ -33,7 +33,7 @@ const ENTREES_MAX = 400;
 const TYPES_DE_PRODUCTION = ['feuille', 'tableau', 'classement'] as const;
 
 @ValidatorConstraint({ name: 'dictionnaireDeTextes', async: false })
-class DictionnaireDeTextes implements ValidatorConstraintInterface {
+export class DictionnaireDeTextes implements ValidatorConstraintInterface {
   validate(valeur: unknown, args: ValidationArguments): boolean {
     const [longueurMax] = args.constraints as [number];
     return (

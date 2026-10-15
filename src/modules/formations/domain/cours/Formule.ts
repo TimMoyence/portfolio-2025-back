@@ -242,8 +242,7 @@ function ecrireReference(reference: Reference): string {
 }
 
 function lireNombre(brut: string): number {
-  const compact = brut.trim().replace(',', '.');
-  return MOTIF_NOMBRE_SAISI.test(compact) ? Number(compact) : Number.NaN;
+  return lireNombreSaisi(brut) ?? Number.NaN;
 }
 
 const ESPACES_SAISIS = /\s/g;
@@ -1381,6 +1380,27 @@ export function decalerFormule(
   } catch {
     return formule;
   }
+}
+
+function formaterValeur(valeur: ValeurFormule): string {
+  switch (typeof valeur) {
+    case 'number':
+      return String(Number(valeur.toFixed(DECIMALES_EXPRESSION))).replace(
+        '.',
+        ',',
+      );
+    case 'boolean':
+      return valeur ? 'VRAI' : 'FAUX';
+    default:
+      return valeur;
+  }
+}
+
+export function formaterResultat(resultat: ResultatFormule): string {
+  if (resultat.erreur !== null || resultat.valeur === null) {
+    return resultat.erreur ?? ERREUR_VALEUR;
+  }
+  return formaterValeur(resultat.valeur);
 }
 
 function decalerJeton(
