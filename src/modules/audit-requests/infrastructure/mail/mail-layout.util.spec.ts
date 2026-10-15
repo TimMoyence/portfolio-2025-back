@@ -1,3 +1,7 @@
+import {
+  appliquer,
+  installerVariables,
+} from '../../../../../test/helpers/environnement';
 import { buildMailLayout } from './mail-layout.util';
 import { safeHtml } from './mail-rendering.util';
 
@@ -6,6 +10,8 @@ describe('buildMailLayout (P2.7 / P6.6)', () => {
     heroTitle: 'Test title',
     bodyHtml: safeHtml`<p>body content</p>`,
   };
+
+  installerVariables({ AUDIT_UNSUBSCRIBE_URL: undefined }, 'chaque-test');
 
   describe('structure HTML', () => {
     it('produit un document HTML5 complet avec DOCTYPE et meta viewport', () => {
@@ -111,7 +117,6 @@ describe('buildMailLayout (P2.7 / P6.6)', () => {
     });
 
     it('fallback sur /fr/contact quand showUnsubscribe=true sans URL explicite', () => {
-      delete process.env.AUDIT_UNSUBSCRIBE_URL;
       const html = buildMailLayout({ ...baseInput, showUnsubscribe: true });
       expect(html).toContain('href="https://asilidesign.fr/fr/contact"');
     });
@@ -168,18 +173,13 @@ describe('buildMailLayout (P2.7 / P6.6)', () => {
 
   describe('env vars fallback', () => {
     it('utilise AUDIT_UNSUBSCRIBE_URL env quand showUnsubscribe=true sans URL explicite', () => {
-      const original = process.env.AUDIT_UNSUBSCRIBE_URL;
-      process.env.AUDIT_UNSUBSCRIBE_URL = 'https://preferences.asilidesign.fr';
-      try {
-        const html = buildMailLayout({ ...baseInput, showUnsubscribe: true });
-        expect(html).toContain('href="https://preferences.asilidesign.fr"');
-      } finally {
-        if (original !== undefined) {
-          process.env.AUDIT_UNSUBSCRIBE_URL = original;
-        } else {
-          delete process.env.AUDIT_UNSUBSCRIBE_URL;
-        }
-      }
+      appliquer({
+        AUDIT_UNSUBSCRIBE_URL: 'https://preferences.asilidesign.fr',
+      });
+
+      const html = buildMailLayout({ ...baseInput, showUnsubscribe: true });
+
+      expect(html).toContain('href="https://preferences.asilidesign.fr"');
     });
   });
 });

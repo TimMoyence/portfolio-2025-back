@@ -20,10 +20,10 @@ export function attendreMiseAJourDeLUtilisateur(
   update: IUsersRepository['update'],
   champs: Record<string, unknown>,
 ): void {
-  expect(update).toHaveBeenCalledWith(
-    'user-1',
-    expect.objectContaining({ ...champs, updatedAt: expect.any(Date) }),
-  );
+  expect(update).toHaveBeenCalledWith('user-1', {
+    ...champs,
+    updatedAt: expect.any(Date),
+  });
 }
 
 export function preparerNouveauMotDePasse(
@@ -49,13 +49,10 @@ export function attendreNouveauMotDePasseEnregistre(
   auteur: string,
 ): void {
   expect(effets.hacher).toHaveBeenCalledWith(motDePasse);
-  expect(effets.mettreAJour).toHaveBeenCalledWith(
-    'user-1',
-    expect.objectContaining({
-      passwordHash: 'new-hash',
-      updatedOrCreatedBy: auteur,
-    }),
-  );
+  attendreMiseAJourDeLUtilisateur(effets.mettreAJour, {
+    passwordHash: 'new-hash',
+    updatedOrCreatedBy: auteur,
+  });
 }
 
 export function itRefuseUnRefreshTokenInconnu(

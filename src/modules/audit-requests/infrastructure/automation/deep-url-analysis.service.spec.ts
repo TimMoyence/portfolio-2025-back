@@ -97,6 +97,26 @@ describe('DeepUrlAnalysisService', () => {
     });
   });
 
+  it('tient pour autoréférente une canonique qui ne diffère que par ses barres de fin', () => {
+    const page = (chemin: string, canonical: string) =>
+      buildUrlIndexabilityResult({
+        url: `https://example.com/${chemin}`,
+        finalUrl: `https://example.com/${chemin}`,
+        canonical,
+      });
+
+    const result = service.analyze([
+      page('about', 'https://example.com/about//'),
+      page('contact', 'https://example.com/ailleurs'),
+    ]);
+
+    expect(
+      result.findings.find(
+        (f) => f.code === 'canonical_self_reference_mismatch',
+      )?.affectedUrls,
+    ).toEqual(['https://example.com/contact']);
+  });
+
   it('cite les bornes en anglais', () => {
     const result = service.analyze(
       [buildUrlIndexabilityResult({ title: 'Court', metaDescription: 'x' })],

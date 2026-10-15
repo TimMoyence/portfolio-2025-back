@@ -1,4 +1,5 @@
 import type { CheerioAPI } from 'cheerio';
+import type { SafeFetchResult } from '../safe-fetch.service';
 
 export const CACHE_HEADER_KEYS = [
   'cache-control',
@@ -22,6 +23,31 @@ export const SECURITY_HEADER_KEYS = [
   'cross-origin-resource-policy',
   'cross-origin-embedder-policy',
 ] as const;
+
+const JSON_LD = 'script[type="application/ld+json"]';
+
+export const BALISES = {
+  description: 'meta[name="description" i]',
+  robots: 'meta[name="robots" i], meta[name="googlebot" i]',
+  auteur: 'meta[name="author" i]',
+  canonical: 'link[rel~="canonical" i]',
+  openGraph: 'meta[property^="og:"]',
+  twitter: 'meta[name^="twitter:" i]',
+} as const;
+
+const APERCU_D_IMAGE = /max-image-preview\s*:\s*[\w-]*/g;
+const SEPARATEURS_DE_DIRECTIVES = /[\s,;/]+/;
+const DIRECTIVE_QUI_INTERDIT_L_INDEXATION = /^(?:[\w-]+:)?(?:noindex|none)$/;
+
+export function interditLIndexation(
+  directives: string | null | undefined,
+): boolean {
+  return (directives ?? '')
+    .toLowerCase()
+    .replace(APERCU_D_IMAGE, '')
+    .split(SEPARATEURS_DE_DIRECTIVES)
+    .some((jeton) => DIRECTIVE_QUI_INTERDIT_L_INDEXATION.test(jeton));
+}
 
 export function detectCmsHints(html: string): string[] {
   const hints = new Set<string>();
@@ -49,10 +75,7 @@ export function detectCmsHints(html: string): string[] {
   return Array.from(hints);
 }
 
-export function extractInternalLinks(
-  $: CheerioAPI,
-  finalUrl: string,
-): string[] {
+function extractInternalLinks($: CheerioAPI, finalUrl: string): string[] {
   let origin: string;
   try {
     origin = new URL(finalUrl).origin;
@@ -80,29 +103,15 @@ export function extractInternalLinks(
   return Array.from(links).slice(0, 30);
 }
 
-export function extractCanonicalUrls($: CheerioAPI): string[] {
-  return $('link[rel="canonical"]')
+function attributsNonVides(
+  $: CheerioAPI,
+  selecteur: string,
+  attribut: string,
+): string[] {
+  return $(selecteur)
     .toArray()
-    .map((node) => $(node).attr('href')?.trim())
-    .filter((href): href is string => Boolean(href));
-}
-
-export function hasJsonLdStructuredData($: CheerioAPI): boolean {
-  return $('script[type="application/ld+json"]').length > 0;
-}
-
-export function extractOpenGraphProperties($: CheerioAPI): string[] {
-  return $('meta[property^="og:"]')
-    .toArray()
-    .map((node) => $(node).attr('property')?.trim())
-    .filter((value): value is string => Boolean(value));
-}
-
-export function extractTwitterTagNames($: CheerioAPI): string[] {
-  return $('meta[name^="twitter:"]')
-    .toArray()
-    .map((node) => $(node).attr('name')?.trim())
-    .filter((value): value is string => Boolean(value));
+    .map((node) => $(node).attr(attribut)?.trim())
+    .filter((valeur): valeur is string => Boolean(valeur));
 }
 
 export function pickHeaders(
@@ -142,7 +151,7 @@ export interface EnTetesTechniques {
   securityHeaders?: Record<string, string>;
 }
 
-export interface TraceursDetectes {
+interface TraceursDetectes {
   hasAnalytics: boolean;
   hasTagManager: boolean;
   hasPixel: boolean;
@@ -150,7 +159,7 @@ export interface TraceursDetectes {
   hasForms: boolean;
 }
 
-export function detecterLesTraceurs(
+function detecterLesTraceurs(
   lowerHtml: string,
   $: CheerioAPI,
 ): TraceursDetectes {
@@ -167,4 +176,94 @@ export function detecterLesTraceurs(
     ),
     hasForms: $('form').length > 0,
   };
+}
+
+export interface SignauxDePage extends TraceursDetectes {
+  title: string | null;
+  metaDescription: string | null;
+  robotsMeta: string | null;
+  canonicalUrls: string[];
+  h1Count: number;
+  htmlLang: string | null;
+  hasStructuredData: boolean;
+  openGraphTags: string[];
+  twitterTags: string[];
+  detectedCmsHints: string[];
+  internalLinks: string[];
+}
+
+const texteOuNull = (valeur: string | undefined): string | null =>
+  valeur?.trim() || null;
+
+export function lireSignauxDePage(
+  $: CheerioAPI,
+  html: string,
+  finalUrl: string,
+): SignauxDePage {
+  const lowerHtml = html.toLowerCase();
+  return {
+    title: texteOuNull($('title').first().text()),
+    metaDescription: texteOuNull($(BALISES.description).attr('content')),
+    robotsMeta:
+      attributsNonVides($, BALISES.robots, 'content').join(', ') || null,
+    canonicalUrls: attributsNonVides($, BALISES.canonical, 'href'),
+    h1Count: $('h1').length,
+    htmlLang: texteOuNull($('html').attr('lang')),
+    hasStructuredData: $(JSON_LD).length > 0,
+    openGraphTags: attributsNonVides($, BALISES.openGraph, 'property'),
+    twitterTags: attributsNonVides($, BALISES.twitter, 'name'),
+    detectedCmsHints: detectCmsHints(lowerHtml),
+    ...detecterLesTraceurs(lowerHtml, $),
+    internalLinks: extractInternalLinks($, finalUrl),
+  };
+}
+
+export interface ReponseTechnique extends Required<EnTetesTechniques> {
+  finalUrl: string;
+  statusCode: number;
+  https: boolean;
+  redirectChain: string[];
+  ttfbMs: number;
+  totalResponseMs: number;
+  contentLength: number | null;
+}
+
+export function lireReponseTechnique(
+  reponse: SafeFetchResult,
+): ReponseTechnique {
+  return {
+    finalUrl: reponse.finalUrl,
+    statusCode: reponse.statusCode,
+    https: reponse.finalUrl.startsWith('https://'),
+    redirectChain: reponse.redirectChain,
+    ttfbMs: Math.round(reponse.ttfbMs),
+    totalResponseMs: Math.round(reponse.totalMs),
+    contentLength: reponse.contentLength,
+    server: reponse.headers['server'] ?? null,
+    xPoweredBy: reponse.headers['x-powered-by'] ?? null,
+    setCookiePatterns: extractSetCookiePatterns(reponse.headers['set-cookie']),
+    cacheHeaders: pickHeaders(reponse.headers, CACHE_HEADER_KEYS),
+    securityHeaders: pickHeaders(reponse.headers, SECURITY_HEADER_KEYS),
+  };
+}
+
+interface JsonLdLu {
+  blocs: unknown[];
+  illisibles: number;
+}
+
+export function lireJsonLd($: CheerioAPI): JsonLdLu {
+  const lu: JsonLdLu = { blocs: [], illisibles: 0 };
+  for (const node of $(JSON_LD).toArray()) {
+    const brut = $(node).text().trim();
+    if (!brut) continue;
+    try {
+      const parse: unknown = JSON.parse(brut);
+      const valeurs: unknown[] = Array.isArray(parse) ? parse : [parse];
+      for (const valeur of valeurs) lu.blocs.push(valeur);
+    } catch {
+      lu.illisibles += 1;
+    }
+  }
+  return lu;
 }

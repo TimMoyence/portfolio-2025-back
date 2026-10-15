@@ -4,13 +4,13 @@ import {
   buildParticipantRecord,
   createMockParticipantsRepo,
 } from '../../../../../test/factories/formation.factory';
-import { installerVariables } from '../../../../../test/helpers/environnement';
+import { installerSecretDeSignature } from '../../../../../test/helpers/env-formations';
+import { appliquer } from '../../../../../test/helpers/environnement';
 import {
   identiteSignee,
   ParticipantTokenService,
 } from '../ParticipantToken.service';
 
-const SECRET = 'un-secret-de-test-suffisamment-long-1234';
 const SESSION = '4d0f2a9e-0d7f-4d2f-9a3c-1f6b2a7c8d90';
 const AUTRE_SESSION = '9c8b7a6d-5e4f-4a3b-8c2d-1e0f9a8b7c6d';
 const PARTICIPANT = '8f1c3b2a-5d4e-4f6a-9b8c-7d6e5f4a3b2c';
@@ -28,7 +28,7 @@ describe('ParticipantTokenService', () => {
       }),
     );
 
-  installerVariables({ FORMATION_REVIEW_TOKEN_SECRET: SECRET }, 'chaque-test');
+  installerSecretDeSignature('chaque-test');
 
   beforeEach(() => {
     participants.findById.mockReset();
@@ -126,7 +126,7 @@ describe('ParticipantTokenService', () => {
   });
 
   it('refuse de signer quand le secret est trop court', () => {
-    process.env.FORMATION_REVIEW_TOKEN_SECRET = 'trop-court';
+    appliquer({ FORMATION_REVIEW_TOKEN_SECRET: 'trop-court' });
 
     expect(() => service.sign(SESSION, PARTICIPANT, 0)).toThrow(
       'FORMATION_REVIEW_TOKEN_SECRET',
@@ -134,7 +134,7 @@ describe('ParticipantTokenService', () => {
   });
 
   it('refuse de signer quand le secret est absent', () => {
-    delete process.env.FORMATION_REVIEW_TOKEN_SECRET;
+    appliquer({ FORMATION_REVIEW_TOKEN_SECRET: undefined });
 
     expect(() => service.sign(SESSION, PARTICIPANT, 0)).toThrow(
       'FORMATION_REVIEW_TOKEN_SECRET',

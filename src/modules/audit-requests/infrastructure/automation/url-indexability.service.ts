@@ -10,18 +10,12 @@ import { CitationWorthinessService } from './citation-worthiness.service';
 import { SafeFetchService } from './safe-fetch.service';
 import { StructuredDataQualityService } from './structured-data-quality.service';
 import {
-  CACHE_HEADER_KEYS,
-  SECURITY_HEADER_KEYS,
-  detectCmsHints,
-  detecterLesTraceurs,
+  BALISES,
   type EnTetesTechniques,
-  extractCanonicalUrls,
-  extractInternalLinks,
-  extractOpenGraphProperties,
-  extractSetCookiePatterns,
-  extractTwitterTagNames,
-  hasJsonLdStructuredData,
-  pickHeaders,
+  interditLIndexation,
+  lireJsonLd,
+  lireReponseTechnique,
+  lireSignauxDePage,
 } from './shared/html-signals.util';
 import { traiterEnParallele } from './shared/traitement-concurrent.util';
 
@@ -109,47 +103,12 @@ export class UrlIndexabilityService {
       const response = await this.safeFetch.fetchText(url);
       const html = response.body ?? '';
       const $ = load(html);
-      const robotsMeta = $('meta[name="robots"]').attr('content') ?? null;
-      const canonicalUrls = extractCanonicalUrls($);
-      const canonical = canonicalUrls[0] ?? null;
-      const canonicalCount = $('link[rel="canonical"]').length;
-      const title = $('title').first().text().trim() || null;
-      const metaDescription =
-        $('meta[name="description"]').attr('content')?.trim() ?? null;
-      const h1Count = $('h1').length;
-      const h1Texts = $('h1')
-        .toArray()
-        .map((node) => compacterBlancs($(node).text()))
-        .filter(Boolean)
-        .slice(0, 3);
-      const htmlLang = $('html').attr('lang')?.trim() ?? null;
-      const hasStructuredData = hasJsonLdStructuredData($);
-      const openGraphTags = extractOpenGraphProperties($);
-      const openGraphTagCount = $('meta[property^="og:"]').length;
-      const twitterTags = extractTwitterTagNames($);
-      const wordCount = compterMots($('body').text());
-      const internalLinks = extractInternalLinks($, response.finalUrl);
-      const internalLinkCount = internalLinks.length;
+      const signaux = lireSignauxDePage($, html, response.finalUrl);
       const xRobotsTag = response.headers['x-robots-tag'] ?? null;
-      const server = response.headers['server'] ?? null;
-      const xPoweredBy = response.headers['x-powered-by'] ?? null;
-      const cacheHeaders = pickHeaders(response.headers, CACHE_HEADER_KEYS);
-      const securityHeaders = pickHeaders(
-        response.headers,
-        SECURITY_HEADER_KEYS,
+      const indexable = ![signaux.robotsMeta, xRobotsTag].some(
+        interditLIndexation,
       );
-      const setCookiePatterns = extractSetCookiePatterns(
-        response.headers['set-cookie'],
-      );
-      const loweredMeta = robotsMeta?.toLowerCase() ?? '';
-      const loweredHeader = xRobotsTag?.toLowerCase() ?? '';
-      const indexable =
-        !loweredMeta.includes('noindex') && !loweredHeader.includes('noindex');
-      const lowerHtml = html.toLowerCase();
-      const textExcerpt = this.extractTextExcerpt($('body').text());
-      const ctaHints = this.extractCtaHints($);
-
-      const jsonLdBlocks = this.extractJsonLdBlocks($);
+      const jsonLd = lireJsonLd($);
       const aiSignals: AiIndexabilitySignals = {
         llmsTxt: null,
         aiBotsAccess: this.aiHeadersAnalyzer.analyze(
@@ -160,47 +119,32 @@ export class UrlIndexabilityService {
           html,
           response.finalUrl || url,
         ),
-        structuredDataQuality: this.structuredDataQuality.analyze(jsonLdBlocks),
+        structuredDataQuality: this.structuredDataQuality.analyze(
+          jsonLd.blocs,
+          jsonLd.illisibles,
+        ),
       };
 
       return {
         aiSignals,
         url,
-        finalUrl: response.finalUrl,
-        statusCode: response.statusCode,
-        https: response.finalUrl.startsWith('https://'),
-        redirectChain: response.redirectChain,
-        ttfbMs: Math.round(response.ttfbMs),
-        totalResponseMs: Math.round(response.totalMs),
-        contentLength: response.contentLength,
-        server,
-        xPoweredBy,
-        setCookiePatterns,
-        cacheHeaders,
-        securityHeaders,
+        ...lireReponseTechnique(response),
+        ...signaux,
         indexable,
-        title,
-        metaDescription,
-        h1Count,
-        h1Texts,
-        htmlLang,
-        robotsMeta,
+        h1Texts: $('h1')
+          .toArray()
+          .map((node) => compacterBlancs($(node).text()))
+          .filter(Boolean)
+          .slice(0, 3),
         xRobotsTag,
-        canonical,
-        canonicalUrls,
-        canonicalCount,
+        canonical: signaux.canonicalUrls[0] ?? null,
+        canonicalCount: $(BALISES.canonical).length,
         responseTimeMs: response.totalMs,
-        wordCount,
-        hasStructuredData,
-        openGraphTags,
-        openGraphTagCount,
-        twitterTags,
-        detectedCmsHints: detectCmsHints(lowerHtml),
-        ...detecterLesTraceurs(lowerHtml, $),
-        ctaHints,
-        textExcerpt,
-        internalLinks,
-        internalLinkCount,
+        wordCount: compterMots($('body').text()),
+        openGraphTagCount: $(BALISES.openGraph).length,
+        ctaHints: this.extractCtaHints($),
+        textExcerpt: this.extractTextExcerpt($('body').text()),
+        internalLinkCount: signaux.internalLinks.length,
         error: null,
       };
     } catch (error) {
@@ -253,27 +197,6 @@ export class UrlIndexabilityService {
 
   private extractTextExcerpt(text: string): string {
     return compacterBlancs(text).slice(0, 420);
-  }
-
-  private extractJsonLdBlocks($: ReturnType<typeof load>): unknown[] {
-    const blocks: unknown[] = [];
-    $('script[type="application/ld+json"]')
-      .toArray()
-      .forEach((node) => {
-        const raw = $(node).text().trim();
-        if (!raw) return;
-        try {
-          const parsed: unknown = JSON.parse(raw);
-          if (Array.isArray(parsed)) {
-            for (const entry of parsed) blocks.push(entry);
-          } else {
-            blocks.push(parsed);
-          }
-        } catch {
-          // JSON-LD malformé : ignoré, le score restera bas
-        }
-      });
-    return blocks;
   }
 
   private extractCtaHints($: ReturnType<typeof load>): string[] {

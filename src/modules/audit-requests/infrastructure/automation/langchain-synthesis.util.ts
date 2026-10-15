@@ -6,6 +6,10 @@ import type {
   LangchainAuditInput,
   PerPageDetailedAnalysis,
 } from './contracts/langchain-contracts';
+import {
+  buildFallbackClientEmailDraft,
+  buildFallbackInternalNotes,
+} from './langchain-fallback-report.builder';
 import { normalizeSeverity } from './shared/severity.util';
 
 export function toEffort(value: unknown): ReportSeverity {
@@ -23,27 +27,6 @@ export function normalizeClientEmailDraft(
   const body = typeof raw.body === 'string' ? raw.body : '';
   if (!subject.trim() || !body.trim()) return null;
   return { subject: subject.trim(), body: body.trim() };
-}
-
-export function buildFallbackEmailDraft(input: LangchainAuditInput): {
-  subject: string;
-  body: string;
-} {
-  const subject =
-    input.locale === 'en'
-      ? `Audit findings for ${input.websiteName}`
-      : `Audit ${input.websiteName} : vos priorites`;
-  const body =
-    input.locale === 'en'
-      ? `Hello,\n\nThe audit of ${input.websiteName} is ready. I would love to walk you through it in 30 minutes.\n\nTim / Asili Design`
-      : `Bonjour,\n\nL'audit de ${input.websiteName} est pret. J'aimerais vous le presenter en 30 minutes.\n\nTim / Asili Design`;
-  return { subject, body };
-}
-
-export function buildFallbackNotes(input: LangchainAuditInput): string {
-  return input.locale === 'en'
-    ? `Internal notes for ${input.websiteName}: review the priorities and prepare the 30-minute pitch.`
-    : `Notes internes pour ${input.websiteName} : revue des priorites et preparation du pitch 30 minutes.`;
 }
 
 const TEXTES_PAR_RUBRIQUE_DE_PAGE = 6;
@@ -116,13 +99,13 @@ export function buildExpertSynthesis(
 
   const clientEmailDraft =
     normalizeClientEmailDraft(adminReport.clientEmailDraft) ??
-    buildFallbackEmailDraft(input);
+    buildFallbackClientEmailDraft(input);
 
   const internalNotes =
     typeof adminReport.internalNotes === 'string' &&
     adminReport.internalNotes.trim().length > 0
       ? adminReport.internalNotes.trim()
-      : buildFallbackNotes(input);
+      : buildFallbackInternalNotes(input);
 
   return {
     executiveSummary,

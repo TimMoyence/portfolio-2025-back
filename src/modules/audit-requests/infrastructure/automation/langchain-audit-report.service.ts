@@ -27,7 +27,6 @@ import {
 import {
   buildFallbackExpertReport,
   buildFallbackSummary,
-  ensurePriorityDepth,
   withDeterministicCost,
 } from './langchain-fallback-report.builder';
 import { DeadlineBudget, withHardTimeout } from './llm-execution.guardrails';
@@ -200,7 +199,7 @@ export class LangchainAuditReportService {
 
       let gate = this.runQualityGate(
         candidate.summaryText,
-        ensurePriorityDepth(candidate.report, normalizedInput, locale),
+        candidate.report,
         normalizedInput,
       );
       let retried = false;
@@ -229,7 +228,7 @@ export class LangchainAuditReportService {
           );
           const retryGate = this.runQualityGate(
             candidate.summaryText,
-            ensurePriorityDepth(fullExpert, normalizedInput, locale),
+            fullExpert,
             normalizedInput,
           );
           if (
@@ -335,14 +334,9 @@ export class LangchainAuditReportService {
     ]);
 
     const warnings = [...summaryResult.warnings, ...sectionResult.warnings];
-    const enrichedReport = ensurePriorityDepth(
-      sectionResult.report,
-      normalizedInput,
-      locale,
-    );
     const gate = this.runQualityGate(
       summaryResult.summaryText,
-      enrichedReport,
+      sectionResult.report,
       normalizedInput,
     );
     const adminReport = this.buildAdminReport(gate, locale, {
@@ -713,11 +707,7 @@ export class LangchainAuditReportService {
   ): LangchainAuditOutput {
     const gate = this.runQualityGate(
       buildFallbackSummary(input),
-      ensurePriorityDepth(
-        buildFallbackExpertReport(input, reason),
-        input,
-        input.locale,
-      ),
+      buildFallbackExpertReport(input, reason),
       input,
     );
 

@@ -3,9 +3,7 @@ import { borner } from '../../../../common/domain/nombres/borner';
 import { AuditLocale } from '../../domain/audit-locale.util';
 import type { ReportSeverity } from '../../domain/AuditReportTiers';
 import type { EngineScore } from '../../domain/EngineCoverage';
-import { priorityFromFinding } from './shared/finding-priority.util';
 import { localizedText } from './shared/locale-text.util';
-import { severityRank } from './shared/severity.util';
 import type {
   ExpertReport,
   LangchainAuditInput,
@@ -305,7 +303,7 @@ function buildFallbackPerPageAnalysis(
   }));
 }
 
-function buildFallbackClientEmailDraft(input: LangchainAuditInput): {
+export function buildFallbackClientEmailDraft(input: LangchainAuditInput): {
   subject: string;
   body: string;
 } {
@@ -361,7 +359,7 @@ Tim / Asili Design`;
   return { subject, body };
 }
 
-function buildFallbackInternalNotes(input: LangchainAuditInput): string {
+export function buildFallbackInternalNotes(input: LangchainAuditInput): string {
   const lowestPillar = Object.entries(input.pillarScores)
     .filter(([, score]) => Number.isFinite(score))
     .sort((a, b) => a[1] - b[1])[0];
@@ -391,61 +389,6 @@ function buildFallbackInternalNotes(input: LangchainAuditInput): string {
     "- Garder l'appel oriente resultat : s'aligner sur les 30 prochains jours.",
     '- Proposer le lot fast-track comme premier jalon commercial.',
   ].join('\n');
-}
-
-export function ensurePriorityDepth(
-  report: ExpertReport,
-  input: LangchainAuditInput,
-  locale: AuditLocale,
-): ExpertReport {
-  const minimumPriorities = 8;
-  const maximumPriorities = 12;
-
-  const unique = new Set<string>();
-  const priorities = [...report.priorities]
-    .filter((entry) => entry.title.trim().length > 0)
-    .slice(0, maximumPriorities);
-
-  for (const entry of priorities) {
-    unique.add(entry.title.trim().toLowerCase());
-  }
-
-  const sortedFindings = [...input.deepFindings].sort(
-    (a, b) => severityRank(b.severity) - severityRank(a.severity),
-  );
-
-  for (const finding of sortedFindings) {
-    if (priorities.length >= maximumPriorities) break;
-    const key = finding.title.trim().toLowerCase();
-    if (!key || unique.has(key)) continue;
-
-    priorities.push(priorityFromFinding(finding, locale));
-    unique.add(key);
-  }
-
-  for (const win of input.quickWins) {
-    if (priorities.length >= minimumPriorities) break;
-    const key = win.trim().toLowerCase();
-    if (!key || unique.has(key)) continue;
-
-    priorities.push({
-      title: win,
-      severity: 'medium',
-      whyItMatters: localizedText(
-        locale,
-        'Action rapide pour renforcer la base SEO technique et la conversion.',
-        'Fast action to strengthen technical SEO baseline and conversion.',
-      ),
-      recommendedFix: win,
-      estimatedHours: 3,
-    });
-    unique.add(key);
-  }
-
-  return {
-    ...report,
-    priorities: priorities.slice(0, maximumPriorities),
-  };
 }
 
 export interface DeterministicCostInput {

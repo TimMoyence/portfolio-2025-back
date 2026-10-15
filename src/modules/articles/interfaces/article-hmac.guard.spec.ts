@@ -1,5 +1,6 @@
 import { createHmac } from 'node:crypto';
 import { UnauthorizedException } from '@nestjs/common';
+import { installerVariables } from '../../../../test/helpers/environnement';
 import { ArticleHmacGuard } from './article-hmac.guard';
 
 function contextFor(headers: Record<string, string>, rawBody: Buffer) {
@@ -21,15 +22,13 @@ describe('ArticleHmacGuard', () => {
   const timestamp = String(Math.floor(Date.now() / 1000));
   const body = Buffer.from('{"schema_version":"1.0"}');
 
-  beforeEach(() => {
-    process.env.MORNING_BRIEF_HMAC_KEY_ID = 'test-key';
-    process.env.MORNING_BRIEF_HMAC_SECRET = secret;
-  });
-
-  afterEach(() => {
-    delete process.env.MORNING_BRIEF_HMAC_KEY_ID;
-    delete process.env.MORNING_BRIEF_HMAC_SECRET;
-  });
+  installerVariables(
+    {
+      MORNING_BRIEF_HMAC_KEY_ID: 'test-key',
+      MORNING_BRIEF_HMAC_SECRET: secret,
+    },
+    'chaque-test',
+  );
 
   it('accepts a valid signature over the exact raw body', () => {
     const signature = createHmac('sha256', secret)

@@ -1,33 +1,35 @@
-import { TEST_FORMATION_REVIEW_TOKEN_SECRET } from '../factories/env.factory';
+import {
+  TEST_FORMATION_REVIEW_TOKEN_SECRET,
+  TEST_FORMATIONS_PULSE_SECRET,
+} from '../factories/env.factory';
 import { installerVariables } from './environnement';
 
+type Portee = Parameters<typeof installerVariables>[1];
+
 export interface EnvFormations {
-  readonly secret: string;
-  readonly syntheseA: string;
+  readonly syntheseA?: string;
 }
 
 export function installerEnvFormations(env: EnvFormations): void {
-  beforeAll(() => {
-    process.env.FORMATION_REVIEW_TOKEN_SECRET = env.secret;
-    process.env.FORMATIONS_PULSE_SECRET = env.secret;
-    process.env.FORMATION_TEACHER_NOTIFICATION_TO = env.syntheseA;
-  });
-
-  afterAll(() => {
-    delete process.env.FORMATION_REVIEW_TOKEN_SECRET;
-    delete process.env.FORMATIONS_PULSE_SECRET;
-    delete process.env.FORMATION_TEACHER_NOTIFICATION_TO;
-  });
-}
-
-export function installerSecretDeSignature(): void {
   installerVariables({
     FORMATION_REVIEW_TOKEN_SECRET: TEST_FORMATION_REVIEW_TOKEN_SECRET,
+    FORMATIONS_PULSE_SECRET: TEST_FORMATIONS_PULSE_SECRET,
+    FORMATION_TEACHER_NOTIFICATION_TO: env.syntheseA,
   });
 }
 
-export function installerSecretDeJalons(
-  secret = 'secret-de-test-des-jalons-assez-long-1234',
+export function installerSecretDeSignature(
+  portee: Portee = 'tout-le-bloc',
 ): void {
-  installerVariables({ FORMATIONS_PULSE_SECRET: secret });
+  installerVariables(
+    { FORMATION_REVIEW_TOKEN_SECRET: TEST_FORMATION_REVIEW_TOKEN_SECRET },
+    portee,
+  );
+}
+
+export function installerSecretDeJalons(portee: Portee = 'tout-le-bloc'): void {
+  installerVariables(
+    { FORMATIONS_PULSE_SECRET: TEST_FORMATIONS_PULSE_SECRET },
+    portee,
+  );
 }

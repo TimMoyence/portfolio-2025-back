@@ -146,7 +146,7 @@ describeDb('Formations sous charge de classe (db integration)', () => {
   const banc = installerBancDeSeance({
     catalogue: creerCatalogueDeTest(COURS),
     slug: COURS.slug,
-    environnement: { FORMATION_TEACHER_NOTIFICATION_TO: SYNTHESE_A },
+    syntheseA: SYNTHESE_A,
   });
   const contexte = () => banc.contexte();
 

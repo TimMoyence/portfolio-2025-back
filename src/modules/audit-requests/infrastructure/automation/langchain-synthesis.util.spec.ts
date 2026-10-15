@@ -1,8 +1,7 @@
 import { buildLangchainAuditInput } from '../../../../../test/factories/audit-requests.factory';
+import { buildFallbackExpertReport } from './langchain-fallback-report.builder';
 import {
   buildExpertSynthesis,
-  buildFallbackEmailDraft,
-  buildFallbackNotes,
   normalizeClientEmailDraft,
   projectPerPageAnalysis,
   toEffort,
@@ -45,16 +44,33 @@ describe('langchain-synthesis.util', () => {
     });
   });
 
-  describe('buildFallbackEmailDraft', () => {
+  describe('brouillon et notes de repli de la synthèse', () => {
+    it('la synthèse complète un rapport sans brouillon ni notes par ceux du rapport de repli', () => {
+      const input = buildLangchainAuditInput({
+        locale: 'fr',
+        websiteName: 'acme.fr',
+      });
+      const repli = buildFallbackExpertReport(input, 'sans brouillon');
+
+      const synthesis = buildExpertSynthesis('Summary text.', {}, input);
+
+      expect(synthesis.clientEmailDraft).toEqual(repli.clientEmailDraft);
+      expect(synthesis.internalNotes).toBe(repli.internalNotes);
+    });
+
     it('produces a French fallback email by default', () => {
       const input = buildLangchainAuditInput({
         locale: 'fr',
         websiteName: 'acme.fr',
       });
-      const draft = buildFallbackEmailDraft(input);
+      const draft = buildExpertSynthesis(
+        'Summary text.',
+        {},
+        input,
+      ).clientEmailDraft;
       expect(draft.subject).toContain('acme.fr');
       expect(draft.subject).toContain('priorites');
-      expect(draft.body).toContain("L'audit de acme.fr est pret");
+      expect(draft.body).toContain("finaliser l'audit de acme.fr");
       expect(draft.body).toContain('Asili Design');
     });
 
@@ -63,20 +79,28 @@ describe('langchain-synthesis.util', () => {
         locale: 'en',
         websiteName: 'acme.com',
       });
-      const draft = buildFallbackEmailDraft(input);
-      expect(draft.subject).toBe('Audit findings for acme.com');
-      expect(draft.body).toContain('The audit of acme.com is ready');
+      const draft = buildExpertSynthesis(
+        'Summary text.',
+        {},
+        input,
+      ).clientEmailDraft;
+      expect(draft.subject).toBe(
+        'Audit findings for acme.com: quick wins inside',
+      );
+      expect(draft.body).toContain('After completing the audit of acme.com');
     });
-  });
 
-  describe('buildFallbackNotes', () => {
     it('localizes notes for fr and en', () => {
-      const fr = buildFallbackNotes(
+      const fr = buildExpertSynthesis(
+        'Summary text.',
+        {},
         buildLangchainAuditInput({ locale: 'fr', websiteName: 'acme.fr' }),
-      );
-      const en = buildFallbackNotes(
+      ).internalNotes;
+      const en = buildExpertSynthesis(
+        'Summary text.',
+        {},
         buildLangchainAuditInput({ locale: 'en', websiteName: 'acme.com' }),
-      );
+      ).internalNotes;
       expect(fr).toContain('Notes internes');
       expect(fr).toContain('acme.fr');
       expect(en).toContain('Internal notes');

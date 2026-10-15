@@ -4,6 +4,10 @@ import {
   mailSimule,
   moduleSmtpSimule,
 } from '../../../../../test/factories/mailer.factory';
+import {
+  appliquer,
+  installerVariables,
+} from '../../../../../test/helpers/environnement';
 
 jest.mock('../../../../common/infrastructure/mail/smtp-transporter.util', () =>
   moduleSmtpSimule(),
@@ -13,7 +17,6 @@ import { LeadMagnetMailerService } from '../LeadMagnetMailer.service';
 
 describe('LeadMagnetMailerService', () => {
   const PDF = Buffer.from('fake-pdf');
-  let originalReplyTo: string | undefined;
 
   const envoyerLeGuide = (email?: string) =>
     new LeadMagnetMailerService().sendToolkitEmail(
@@ -21,18 +24,10 @@ describe('LeadMagnetMailerService', () => {
       PDF,
     );
 
+  installerVariables({ SMTP_REPLY_TO: undefined }, 'chaque-test');
+
   beforeEach(() => {
     jest.clearAllMocks();
-    originalReplyTo = process.env.SMTP_REPLY_TO;
-    delete process.env.SMTP_REPLY_TO;
-  });
-
-  afterEach(() => {
-    if (originalReplyTo === undefined) {
-      delete process.env.SMTP_REPLY_TO;
-    } else {
-      process.env.SMTP_REPLY_TO = originalReplyTo;
-    }
   });
 
   it('utilise un reply-to @asilidesign.fr (jamais gmail) quand SMTP_REPLY_TO est absent', async () => {
@@ -42,7 +37,7 @@ describe('LeadMagnetMailerService', () => {
   });
 
   it('privilegie SMTP_REPLY_TO quand la variable est definie', async () => {
-    process.env.SMTP_REPLY_TO = 'override@example.org';
+    appliquer({ SMTP_REPLY_TO: 'override@example.org' });
 
     await envoyerLeGuide();
 

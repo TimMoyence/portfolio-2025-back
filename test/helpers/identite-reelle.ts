@@ -6,11 +6,11 @@ import { createHmac } from 'node:crypto';
 import { JwtAuthGuard } from '../../src/common/interfaces/auth/jwt-auth.guard';
 import { JwtTokenService } from '../../src/modules/users/application/services/JwtTokenService';
 import { USERS_REPOSITORY } from '../../src/modules/users/domain/token';
+import { TEST_JWT_SECRET } from '../factories/env.factory';
 import { buildUser, createMockUsersRepo } from '../factories/user.factory';
 
 export const EN_TETE_IDENTITE = 'x-test-identite';
 
-const SECRET_JWT_DE_TEST = 'secret-jwt-des-tests-formations-0123456789';
 const EMETTEUR = 'portfolio-2025';
 const AUDIENCE = 'portfolio-2025-api';
 const DUREE_DE_VIE_S = 900;
@@ -22,7 +22,7 @@ function base64url(valeur: object): string {
 export function jetonSigne(
   sub: string,
   roles: readonly string[],
-  secret: string = SECRET_JWT_DE_TEST,
+  secret: string = TEST_JWT_SECRET,
 ): string {
   const maintenant = Math.floor(Date.now() / 1000);
   const entete = base64url({ alg: 'HS256', typ: 'JWT', kid: 'v1' });
@@ -49,7 +49,7 @@ export function authentificationReelle(): Provider[] {
   return [
     {
       provide: ConfigService,
-      useValue: new ConfigService({ JWT_SECRET: SECRET_JWT_DE_TEST }),
+      useValue: new ConfigService({ JWT_SECRET: TEST_JWT_SECRET }),
     },
     JwtTokenService,
     { provide: USERS_REPOSITORY, useValue: utilisateurs },
