@@ -101,6 +101,21 @@ describe('CookieConsent aggregate', () => {
     ).toThrow(DomainValidationError);
   });
 
+  it.each(['essential', 'preferences', 'analytics', 'marketing'] as const)(
+    'refuse le choix %s transmis en texte en nommant les preferences',
+    (choix) => {
+      expect(() =>
+        CookieConsent.create({
+          ...VALID_PROPS,
+          preferences: {
+            ...VALID_PROPS.preferences,
+            [choix]: 'true' as unknown as boolean,
+          },
+        }),
+      ).toThrow('Invalid cookie consent preferences');
+    },
+  );
+
   it('devrait gerer les metadonnees null/undefined', () => {
     const consent = CookieConsent.create({
       ...VALID_PROPS,

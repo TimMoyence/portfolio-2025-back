@@ -5,6 +5,7 @@ import {
   type Provenance,
 } from '../../../common/domain/provenance';
 import {
+  requireBoolean,
   requireLocale,
   requireText,
 } from '../../../common/domain/validation/domain-validators';
@@ -71,15 +72,14 @@ export class CookieConsent {
     }
 
     const preferences = props.preferences;
-    if (
-      !estObjet(preferences) ||
-      typeof preferences.essential !== 'boolean' ||
-      typeof preferences.preferences !== 'boolean' ||
-      typeof preferences.analytics !== 'boolean' ||
-      typeof preferences.marketing !== 'boolean'
-    ) {
-      throw new DomainValidationError('Invalid cookie consent preferences');
+    const champDesPreferences = 'cookie consent preferences';
+    if (!estObjet(preferences)) {
+      throw new DomainValidationError(`Invalid ${champDesPreferences}`);
     }
+    requireBoolean(preferences.essential, champDesPreferences);
+    requireBoolean(preferences.preferences, champDesPreferences);
+    requireBoolean(preferences.analytics, champDesPreferences);
+    requireBoolean(preferences.marketing, champDesPreferences);
 
     if (preferences.essential !== true) {
       throw new DomainValidationError('Essential cookie flag must be true');

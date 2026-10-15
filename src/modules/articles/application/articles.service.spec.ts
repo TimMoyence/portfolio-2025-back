@@ -1,6 +1,7 @@
 import { InvalidInputError } from '../../../common/domain/errors/InvalidInputError';
 import { ResourceConflictError } from '../../../common/domain/errors/ResourceConflictError';
 import { ResourceNotFoundError } from '../../../common/domain/errors/ResourceNotFoundError';
+import type { SupportedLocale } from '../../../common/domain/value-objects/LocaleCode';
 import {
   buildArticleDeliveryRecord,
   buildArticleRecord,
@@ -155,7 +156,7 @@ describe('ArticlesService.listPublished', () => {
 
 describe('ArticlesService.feed', () => {
   const feedOf = async (
-    locale: 'fr' | 'en',
+    locale: SupportedLocale,
     records: ArticleRecord[],
   ): Promise<string> => {
     const repository = createMockArticlesRepository();
