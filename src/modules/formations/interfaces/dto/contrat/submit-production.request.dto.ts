@@ -21,7 +21,7 @@ import type {
   ValidationArguments,
   ValidatorConstraintInterface,
 } from 'class-validator';
-import { LONGUEUR_MAX_FORMULE } from 'portfolio-2025-partage/formule';
+import { LONGUEUR_MAX_FORMULE } from '../../../domain/cours/Formule';
 import { estObjet } from '../../../../../common/domain/est-objet';
 import type { ValeurProduction } from '../../../domain/contrats/resultats';
 import { NOM_DE_VARIABLE } from '../../../domain/cours/PlansStockes';

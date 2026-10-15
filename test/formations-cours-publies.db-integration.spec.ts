@@ -18,7 +18,7 @@ import { empreinteCanonique } from '../src/modules/formations/domain/cours/Empre
 import {
   evaluerFeuille,
   type ValeurFormule,
-} from 'portfolio-2025-partage/formule';
+} from '../src/modules/formations/domain/cours/Formule';
 import { ouvrirTirages } from '../src/modules/formations/domain/cours/OuvertureTirages';
 import { verifierStructure } from '../src/modules/formations/domain/cours/StructureCours';
 import { tirer } from '../src/modules/formations/domain/cours/Tirage';

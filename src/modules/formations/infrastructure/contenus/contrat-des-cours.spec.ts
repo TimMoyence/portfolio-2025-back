@@ -1,4 +1,4 @@
-import { lireNombreSaisiAvecUnite } from 'portfolio-2025-partage/formule';
+import { lireNombreSaisiAvecUnite } from '../../domain/cours/Formule';
 import { sansEspacesTypographiques } from '../../../../common/domain/texte/sans-espaces-typographiques';
 import {
   buildCoursDuContenu,
