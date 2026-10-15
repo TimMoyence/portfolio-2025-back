@@ -4,6 +4,7 @@ import {
 } from '../../../../common/domain/au-moins-un';
 import type { ConceptId } from '../../domain/cours/banque/concepts';
 import type { ContenuDeCours } from '../../domain/cours/CoursStocke';
+import { decalerFormule } from '../../domain/cours/Formule';
 import * as moteur from './briques';
 import { gesteDeRecopie } from './feuilles';
 
@@ -103,7 +104,7 @@ const RENVOI_AUX_FACTURES = 'B2-03-A1-04-FACTURES';
 type Colonne = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G';
 
 function recopiee(modele: string, ligne: number): string {
-  return modele.replaceAll(/([A-G])2\b/g, `$1${ligne}`);
+  return decalerFormule(modele, ligne - 2, 0);
 }
 
 function auMoinsUn<T>(liste: readonly T[]): AuMoinsUnModifiable<T> {

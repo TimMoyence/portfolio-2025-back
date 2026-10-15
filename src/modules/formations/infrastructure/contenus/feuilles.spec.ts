@@ -1,4 +1,22 @@
-import { clicsDeRecopie, gesteDeRecopie } from './feuilles';
+import { clicsDeRecopie, colonneRecopiee, gesteDeRecopie } from './feuilles';
+
+describe('B-21 · une colonne recopiée vers le bas comme le tableur', () => {
+  it.each([
+    ['=B2*$C$1', ['=B3*$C$1', '=B4*$C$1']],
+    ['=SOMME(B$2:B2)', ['=SOMME(B$2:B3)', '=SOMME(B$2:B4)']],
+    ['=$B2*C$1', ['=$B3*C$1', '=$B4*C$1']],
+    ['=I2+Z9', ['=I3+Z10', '=I4+Z11']],
+    ['=AB2*2', ['=AB3*2', '=AB4*2']],
+    ['=SI(A2="lot B2";1;0)', ['=SI(A3="lot B2";1;0)', '=SI(A4="lot B2";1;0)']],
+  ])('recopie %s de deux lignes vers le bas', (formule, recopies) => {
+    expect(
+      colonneRecopiee(
+        { colonne: 'C', premiereLigne: 2, formule },
+        [1, 2, 3],
+      ).map((attendu) => attendu.formuleReference),
+    ).toEqual([formule, ...recopies]);
+  });
+});
 
 describe('QA-11 · geste de recopie d’un atelier tableur, un clic par ligne', () => {
   it.each([

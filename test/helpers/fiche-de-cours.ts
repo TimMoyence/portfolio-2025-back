@@ -10,7 +10,10 @@ import {
 } from '../../src/modules/formations/domain/cours/Cours';
 import type { ContenuDeCours } from '../../src/modules/formations/domain/cours/CoursStocke';
 import { projeterCatalogue } from '../../src/modules/formations/domain/cours/Diffusion';
-import type { ValeurFormule } from 'portfolio-2025-partage/formule';
+import {
+  lireNombreSaisi,
+  type ValeurFormule,
+} from '../../src/modules/formations/domain/cours/Formule';
 import { tirer } from '../../src/modules/formations/domain/cours/Tirage';
 import { fuitesDeConfidentialite } from '../factories/structure.factory';
 import {
@@ -76,8 +79,8 @@ export const FICHE_DU_GABARIT_V3 = {
 } as const satisfies Partial<FicheAttendue>;
 
 export function pointsImprimes(texte: string): number[] {
-  return [...texte.matchAll(/\((\d+(?:,\d+)?) points?\)/g)].map(([, valeur]) =>
-    Number(valeur.replace(',', '.')),
+  return [...texte.matchAll(/\((\d+(?:,\d+)?) points?\)/g)].map(
+    ([, valeur]) => lireNombreSaisi(valeur) ?? Number.NaN,
   );
 }
 
