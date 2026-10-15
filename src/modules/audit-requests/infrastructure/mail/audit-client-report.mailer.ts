@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { pieceJointePdf } from '../../../../common/infrastructure/mail/piece-jointe-pdf';
 import { destinataireDesRapportsDAudit } from '../../../../config/adresses-de-courriel';
 import type { ClientReportMailInput } from '../../domain/IAuditNotifier.port';
+import { LIBELLES_DU_STATUT } from '../../domain/StatutScore';
 import { pillarLabel } from '../automation/shared/pillar-labels.util';
 import { buildMailLayout } from './mail-layout.util';
 import { MailerDAudit } from './mailer-d-audit';
@@ -54,7 +55,7 @@ export class AuditClientReportMailer extends MailerDAudit {
           <tr>
             <td style="padding:6px 8px; border:1px solid #e5e7eb;">${escapeHtml(pillarLabel(pillar.pillar))}</td>
             <td style="padding:6px 8px; border:1px solid #e5e7eb; text-align:right;">${pillar.score}/${pillar.target}</td>
-            <td style="padding:6px 8px; border:1px solid #e5e7eb;">${escapeHtml(pillar.status)}</td>
+            <td style="padding:6px 8px; border:1px solid #e5e7eb;">${escapeHtml(LIBELLES_DU_STATUT[pillar.status])}</td>
           </tr>`,
     );
 
@@ -158,7 +159,7 @@ export class AuditClientReportMailer extends MailerDAudit {
     lines.push('Scorecard 7 piliers :');
     for (const pillar of report.pillarScorecard) {
       lines.push(
-        `- ${pillarLabel(pillar.pillar)}: ${pillar.score}/${pillar.target} (${pillar.status})`,
+        `- ${pillarLabel(pillar.pillar)}: ${pillar.score}/${pillar.target} (${LIBELLES_DU_STATUT[pillar.status]})`,
       );
     }
     lines.push('');

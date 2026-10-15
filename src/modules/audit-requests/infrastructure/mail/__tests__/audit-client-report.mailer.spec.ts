@@ -153,6 +153,21 @@ describe('AuditClientReportMailer', () => {
     });
   });
 
+  it('nomme le statut de chaque pilier par son libellé, comme le PDF joint', async () => {
+    await envoyerRapport(buildMailer());
+
+    const call = sentMail();
+    for (const libelle of ['Critique', 'À améliorer', 'Objectif atteint']) {
+      expect(call.html).toContain(`>${libelle}</td>`);
+    }
+    expect(call.text).toContain('SEO: 70/80 (À améliorer)');
+    expect(call.text).toContain('Conversion: 55/80 (Critique)');
+    for (const code of ['warning', 'critical', '(ok)', '>ok<']) {
+      expect(call.html).not.toContain(code);
+      expect(call.text).not.toContain(code);
+    }
+  });
+
   it('devrait attacher le PDF quand pdfBuffer est fourni', async () => {
     const pdf = Buffer.from('%PDF-1.4 fake');
 
