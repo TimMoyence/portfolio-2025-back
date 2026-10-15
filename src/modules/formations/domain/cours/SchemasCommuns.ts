@@ -20,7 +20,10 @@ export const identifiantDeQuestion = texte.max(
 );
 export const concept = z.enum(CONCEPTS);
 export const concepts = z.tuple([concept], concept);
-export const confusion = z.enum(IDENTIFIANTS_DE_CONFUSION);
+export type EnumDesConfusions = { [K in ConfusionId]: K };
+export const confusion: z.ZodEnum<EnumDesConfusions> = z.enum(
+  IDENTIFIANTS_DE_CONFUSION,
+);
 export const media = z.union([
   EN_HTTPS,
   z

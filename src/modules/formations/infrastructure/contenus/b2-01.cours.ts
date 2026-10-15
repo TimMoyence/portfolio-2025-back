@@ -268,28 +268,48 @@ const ACTE_1: moteur.Acte = [
               id: 'ca-2025',
               libelle: 'CA HT 2025 : 1 150 000 €',
               categorie: 'valeur',
-              confusion: 'valeur-confondue-avec-taux',
+              confusions: {
+                proportion: 'valeur-confondue-avec-taux',
+                evolution: 'valeur-confondue-avec-taux',
+                points: 'valeur-confondue-avec-taux',
+                ambigu: 'chiffre-lisible-juge-ambigu',
+              },
               justification: 'montant en euros : « combien ? »',
             },
             {
               id: 'evolution-ca',
               libelle: 'CA : « +9,5 % » par rapport à 2024',
               categorie: 'evolution',
-              confusion: 'proportion-confondue-avec-evolution',
+              confusions: {
+                valeur: 'valeur-confondue-avec-taux',
+                proportion: 'proportion-confondue-avec-evolution',
+                points: 'points-confondus-avec-pourcentage',
+                ambigu: 'chiffre-lisible-juge-ambigu',
+              },
               justification: 'variation rapportée à la valeur de 2024',
             },
             {
               id: 'part-entretien',
               libelle: 'Entretien : 20 % du CA 2025',
               categorie: 'proportion',
-              confusion: 'proportion-confondue-avec-evolution',
+              confusions: {
+                valeur: 'valeur-confondue-avec-taux',
+                evolution: 'proportion-confondue-avec-evolution',
+                points: 'points-confondus-avec-pourcentage',
+                ambigu: 'chiffre-lisible-juge-ambigu',
+              },
               justification: '230 000 € rapportés à 1 150 000 €',
             },
             {
               id: 'taux-marge',
               libelle: 'Taux de marge 2025 : 25,3 %',
               categorie: 'proportion',
-              confusion: 'proportion-confondue-avec-evolution',
+              confusions: {
+                valeur: 'valeur-confondue-avec-taux',
+                evolution: 'proportion-confondue-avec-evolution',
+                points: 'points-confondus-avec-pourcentage',
+                ambigu: 'chiffre-lisible-juge-ambigu',
+              },
               justification:
                 'marge brute rapportée au CA HT de la même année : une part',
             },
@@ -297,7 +317,12 @@ const ACTE_1: moteur.Acte = [
               id: 'ecart-taux',
               libelle: 'Taux de marge : « −2,3 % » par rapport à 2024',
               categorie: 'points',
-              confusion: 'points-confondus-avec-pourcentage',
+              confusions: {
+                valeur: 'valeur-confondue-avec-taux',
+                proportion: 'points-confondus-avec-pourcentage',
+                evolution: 'points-confondus-avec-pourcentage',
+                ambigu: 'chiffre-lisible-juge-ambigu',
+              },
               justification:
                 'libellé imprécis (taux de marge brute) et unité fausse : −2,3 points',
             },
@@ -306,7 +331,12 @@ const ACTE_1: moteur.Acte = [
               libelle:
                 'Marge brute : « +1 200 » (colonne « Évolution affichée », dont les autres lignes sont en %)',
               categorie: 'ambigu',
-              confusion: 'unite-manquante-ignoree',
+              confusions: {
+                valeur: 'unite-manquante-ignoree',
+                proportion: 'unite-manquante-ignoree',
+                evolution: 'unite-manquante-ignoree',
+                points: 'unite-manquante-ignoree',
+              },
               justification:
                 'euros ou pourcentage ? Dans une colonne de %, un nombre sans unité est ambigu',
             },
@@ -314,14 +344,24 @@ const ACTE_1: moteur.Acte = [
               id: 'inflation',
               libelle: 'Inflation : « 4,9 »',
               categorie: 'ambigu',
-              confusion: 'unite-manquante-ignoree',
+              confusions: {
+                valeur: 'unite-manquante-ignoree',
+                proportion: 'unite-manquante-ignoree',
+                evolution: 'unite-manquante-ignoree',
+                points: 'unite-manquante-ignoree',
+              },
               justification: 'ni unité, ni période, ni source',
             },
             {
               id: 'toile',
               libelle: 'Prix de la toile : « +4 % » sur l’année',
               categorie: 'evolution',
-              confusion: 'proportion-confondue-avec-evolution',
+              confusions: {
+                valeur: 'valeur-confondue-avec-taux',
+                proportion: 'proportion-confondue-avec-evolution',
+                points: 'points-confondus-avec-pourcentage',
+                ambigu: 'chiffre-lisible-juge-ambigu',
+              },
               justification:
                 'variation depuis le 1er janvier (calcul à vérifier à l’acte 4)',
             },
@@ -972,7 +1012,10 @@ const ACTE_2: moteur.Acte = [
               id: 'mars',
               libelle: 'CA de mars 2025 / CA de mars 2024',
               categorie: 'directe',
-              confusion: 'bases-incompatibles',
+              confusions: {
+                retraitement: 'retraitement-superflu',
+                impossible: 'comparaison-possible-refusee',
+              },
               justification: 'même mois, même périmètre, même unité',
             },
             {
@@ -980,7 +1023,10 @@ const ACTE_2: moteur.Acte = [
               libelle:
                 'Taux de marge brute 2024 / 2025 d’Atelier Rivage (même définition)',
               categorie: 'directe',
-              confusion: 'bases-incompatibles',
+              confusions: {
+                retraitement: 'retraitement-superflu',
+                impossible: 'comparaison-possible-refusee',
+              },
               justification: 'écart en points',
             },
             {
@@ -988,14 +1034,20 @@ const ACTE_2: moteur.Acte = [
               libelle:
                 'CA par salarié 2025 (14 salariés) / CA par salarié 2024 (12 salariés)',
               categorie: 'directe',
-              confusion: 'bases-incompatibles',
+              confusions: {
+                retraitement: 'retraitement-superflu',
+                impossible: 'comparaison-possible-refusee',
+              },
               justification: 'ratios rapportés à la même base',
             },
             {
               id: 'ht-ttc',
               libelle: 'Marge brute HT 2025 / ventes TTC 2025',
               categorie: 'retraitement',
-              confusion: 'bases-incompatibles',
+              confusions: {
+                directe: 'bases-incompatibles',
+                impossible: 'comparaison-possible-refusee',
+              },
               justification: 'ramener les ventes en HT : TTC ÷ 1,2',
             },
             {
@@ -1003,7 +1055,10 @@ const ACTE_2: moteur.Acte = [
               libelle:
                 'Prix de la toile en € par m² / prix en € par rouleau de 50 m²',
               categorie: 'retraitement',
-              confusion: 'bases-incompatibles',
+              confusions: {
+                directe: 'bases-incompatibles',
+                impossible: 'comparaison-possible-refusee',
+              },
               justification: 'diviser le prix du rouleau par 50',
             },
             {
@@ -1011,7 +1066,10 @@ const ACTE_2: moteur.Acte = [
               libelle:
                 'CA 2025 d’Atelier Rivage (trois canaux) / CA 2024 de l’atelier seul, sans la marketplace',
               categorie: 'retraitement',
-              confusion: 'bases-incompatibles',
+              confusions: {
+                directe: 'bases-incompatibles',
+                impossible: 'comparaison-possible-refusee',
+              },
               justification: 'retirer la marketplace du CA 2025 (523 000 €)',
             },
             {
@@ -1019,7 +1077,10 @@ const ACTE_2: moteur.Acte = [
               libelle:
                 'Taux de marge brute d’Atelier Rivage / « taux de marge moyen des voileries » lu dans la presse',
               categorie: 'impossible',
-              confusion: 'bases-incompatibles',
+              confusions: {
+                directe: 'unite-manquante-ignoree',
+                retraitement: 'retraitement-sans-donnee',
+              },
               justification: 'définition, période et périmètre inconnus',
             },
             {
@@ -1027,7 +1088,10 @@ const ACTE_2: moteur.Acte = [
               libelle:
                 'Hausse des tarifs d’Atelier Rivage en 2025 / « Inflation : 4,9 » du tableau de bord',
               categorie: 'impossible',
-              confusion: 'bases-incompatibles',
+              confusions: {
+                directe: 'unite-manquante-ignoree',
+                retraitement: 'retraitement-sans-donnee',
+              },
               justification:
                 '« 4,9 » est l’inflation de 2023 : il faut celle de 2025, publiée par l’Insee',
             },
@@ -1036,7 +1100,10 @@ const ACTE_2: moteur.Acte = [
               libelle:
                 'CA du 1er semestre 2025 / CA annuel 2024 (le fichier 2024 ne contient que le total annuel)',
               categorie: 'impossible',
-              confusion: 'bases-incompatibles',
+              confusions: {
+                directe: 'bases-incompatibles',
+                retraitement: 'retraitement-sans-donnee',
+              },
               justification:
                 'activité saisonnière : doubler un semestre ne donne pas l’année ; il faut le 1er semestre 2024',
             },
@@ -1527,7 +1594,7 @@ const ACTE_3: moteur.Acte = [
             '2,50',
             [
               [2.661519, 'taux-moyen-arithmetique'],
-              [2.516667, 'taux-successifs-additionnes'],
+              [2.516667, 'taux-moyen-arithmetique'],
             ],
           ),
           moteur.vote(
@@ -1984,7 +2051,6 @@ const ACTE_4: moteur.Acte = [
               moteur.controle('B7', '=SI(ARRONDI(SOMME(E2:E4);6)=1;1;0)'),
               moteur.controle('C7', '=SI(ARRONDI(G5-B6;0)=0;1;0)'),
             ],
-            seuilReussite: 0.8,
           },
         },
       ],
@@ -2738,7 +2804,11 @@ const ACTE_5: moteur.Acte = [
               id: 'inflation',
               libelle: '« Inflation : 4,9 » dans le tableau de bord',
               categorie: 'metadonnees',
-              confusion: 'unite-manquante-ignoree',
+              confusions: {
+                recalcul: 'unite-manquante-ignoree',
+                representation: 'unite-manquante-ignoree',
+                preuve: 'preuve-externe-superflue',
+              },
               justification:
                 '« 4,9 » sans unité ni période : taux annuel, indice ou écart ? Compléter la fiche d’identité suffit à trancher.',
             },
@@ -2746,7 +2816,11 @@ const ACTE_5: moteur.Acte = [
               id: 'marge',
               libelle: '« Marge brute : +1 200 »',
               categorie: 'metadonnees',
-              confusion: 'unite-manquante-ignoree',
+              confusions: {
+                recalcul: 'unite-manquante-ignoree',
+                representation: 'unite-manquante-ignoree',
+                preuve: 'preuve-externe-superflue',
+              },
               justification:
                 '« +1 200 » : des euros, des unités, sur quelle période ? Sans unité ni base, le chiffre ne se lit pas.',
             },
@@ -2754,7 +2828,11 @@ const ACTE_5: moteur.Acte = [
               id: 'points',
               libelle: '« Taux de marge : −2,3 % »',
               categorie: 'recalcul',
-              confusion: 'points-confondus-avec-pourcentage',
+              confusions: {
+                metadonnees: 'points-confondus-avec-pourcentage',
+                representation: 'points-confondus-avec-pourcentage',
+                preuve: 'preuve-externe-superflue',
+              },
               justification:
                 'L’écart entre deux taux se recalcule en points : −2,3 points, soit −8,3 % en évolution relative.',
             },
@@ -2762,7 +2840,11 @@ const ACTE_5: moteur.Acte = [
               id: 'toile',
               libelle: '« Prix de la toile : +4 % » (8 − 5 + 4 − 3)',
               categorie: 'recalcul',
-              confusion: 'taux-successifs-additionnes',
+              confusions: {
+                metadonnees: 'taux-successifs-additionnes',
+                representation: 'taux-successifs-additionnes',
+                preuve: 'preuve-externe-superflue',
+              },
               justification:
                 'Des taux successifs se multiplient : 1,08 × 0,95 × 1,04 × 0,97 ≈ 1,035, soit +3,5 % et non +4 %.',
             },
@@ -2771,7 +2853,11 @@ const ACTE_5: moteur.Acte = [
               libelle:
                 'Note de Samir : « taux de marge moyen des canaux : 26,7 % »',
               categorie: 'recalcul',
-              confusion: 'moyenne-simple-des-taux',
+              confusions: {
+                metadonnees: 'moyenne-simple-des-taux',
+                representation: 'moyenne-simple-des-taux',
+                preuve: 'preuve-externe-superflue',
+              },
               justification:
                 'Une moyenne simple ignore le poids de chaque canal : on recalcule une moyenne pondérée par le CA.',
             },
@@ -2779,7 +2865,11 @@ const ACTE_5: moteur.Acte = [
               id: 'diapo',
               libelle: 'Diapositive « Marge brute : une croissance continue »',
               categorie: 'representation',
-              confusion: 'axe-tronque-lu-comme-ecart',
+              confusions: {
+                metadonnees: 'axe-tronque-lu-comme-ecart',
+                recalcul: 'axe-tronque-lu-comme-ecart',
+                preuve: 'preuve-externe-superflue',
+              },
               justification:
                 'L’axe tronqué grossit l’écart : on refait le graphique avec un axe à zéro avant de conclure.',
             },
@@ -2787,7 +2877,11 @@ const ACTE_5: moteur.Acte = [
               id: 'clients',
               libelle: '« La marketplace détourne nos clients du sur-mesure »',
               categorie: 'preuve',
-              confusion: 'correlation-prise-pour-causalite',
+              confusions: {
+                metadonnees: 'correlation-prise-pour-causalite',
+                recalcul: 'correlation-prise-pour-causalite',
+                representation: 'correlation-prise-pour-causalite',
+              },
               justification:
                 'Deux évolutions simultanées ne prouvent pas une cause : seule une donnée détaillée des clients par canal tranche.',
             },
@@ -2796,7 +2890,11 @@ const ACTE_5: moteur.Acte = [
               libelle:
                 'Courriel du cabinet comptable : grand livre des ventes de mars 48 795 € HT, pièces 48 705 € HT',
               categorie: 'preuve',
-              confusion: 'controle-non-discriminant',
+              confusions: {
+                metadonnees: 'controle-non-discriminant',
+                recalcul: 'controle-non-discriminant',
+                representation: 'controle-non-discriminant',
+              },
               justification:
                 '90 € d’écart entre le grand livre et les pièces : seule la pièce de mars dit laquelle des deux se trompe.',
             },
@@ -2805,7 +2903,11 @@ const ACTE_5: moteur.Acte = [
               libelle:
                 'Contrôle de février : total du grand livre égal au total des pièces, mais F002 à +100 € et F003 à −100 €',
               categorie: 'preuve',
-              confusion: 'total-concordant-vaut-preuve',
+              confusions: {
+                metadonnees: 'controle-non-discriminant',
+                recalcul: 'total-concordant-vaut-preuve',
+                representation: 'controle-non-discriminant',
+              },
               justification:
                 'Un total qui concorde peut cacher +100 € et −100 € : on contrôle ligne à ligne, pièce en main.',
             },
@@ -3661,6 +3763,11 @@ const REMEDIATIONS: ContenuDeCours['remediations'] = {
   'reference-relative-non-figee': 'B2-01-A4-01-CAPSULE',
   'valeur-saisie-sans-formule': 'B2-01-A4-01-CAPSULE',
   'formule-non-recopiable': 'B2-01-A4-01-CAPSULE',
+  'chiffre-lisible-juge-ambigu': 'B2-01-A1-06-FICHE-INDICATEUR',
+  'retraitement-superflu': 'B2-01-A2-07-JEU-COMPARABLE',
+  'comparaison-possible-refusee': 'B2-01-A2-07-JEU-COMPARABLE',
+  'retraitement-sans-donnee': 'B2-01-A2-07-JEU-COMPARABLE',
+  'preuve-externe-superflue': 'B2-01-A5-07-CONTROLE-DISCRIMINANT',
 };
 
 const MEDIAS: ContenuDeCours['medias'] = [

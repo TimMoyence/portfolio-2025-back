@@ -36,6 +36,7 @@ export const PLAN_CLASSEMENT = {
   categories: [
     { id: 'valeur', libelle: 'Valeur en euros' },
     { id: 'ambigu', libelle: 'Ambigu en l’état' },
+    { id: 'taux', libelle: 'Taux' },
   ],
 } as const;
 

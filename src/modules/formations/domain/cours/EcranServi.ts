@@ -72,8 +72,7 @@ function verdictRevele(
   ) {
     return true;
   }
-  const pilotage = pilotageServi(seance, question.ecranId);
-  return ecranRevele(pilotage) || phaseDuVote(pilotage) === 'revele';
+  return ecranRevele(pilotageServi(seance, question.ecranId));
 }
 
 export function verdictServiDe(

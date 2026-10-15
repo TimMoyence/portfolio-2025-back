@@ -218,14 +218,22 @@ export const ACTE_2: moteur.Acte = [
             'agregation-conditionnelle',
             'Quel est le CA HT de Rennes (AG06) en informatique, de janvier à septembre 2026 ?',
             '€',
-            ['critere-mal-ecrit', 'periode-mal-delimitee'],
+            [
+              'critere-mal-ecrit',
+              'plage-recherche-non-figee',
+              'periode-mal-delimitee',
+            ],
           ),
           questionChiffree(
             'b3-01-a2-ca-ouest',
             'recherche-dans-une-table',
             'Quel est le CA HT de la région Ouest, de janvier à septembre 2026 ?',
             '€',
-            ['plage-recherche-non-figee', 'periode-mal-delimitee'],
+            [
+              'critere-mal-ecrit',
+              'plage-recherche-non-figee',
+              'periode-mal-delimitee',
+            ],
           ),
         ],
       },
@@ -245,7 +253,7 @@ export const ACTE_2: moteur.Acte = [
       ],
       [
         'b3-01-a2-ca-ouest',
-        'La région Ouest réunit Nantes (AG05) et Rennes (AG06) : 77 850 € de janvier à septembre 2026. Recopiée sans $, la plage de recherche glisse d’une ligne à chaque ligne : dès la ligne 14, elle a quitté la table et plus aucune agence n’est trouvée. Avant la ligne 14, la seule ligne Ouest trouvée, la ligne 2, date de 2025 : sur 2026, le total tombe à 0 €. Le même glissement vide la colonne categorie : à la première question aussi, 0 €. La fonction DATE écrite dans les guillemets, ">=DATE(2026;1;1)", n’est pas calculée : Excel compare au texte « DATE(2026;1;1) » et ne trouve rien : 0 €, ici comme à la première question. Une date tapée en clair dans les guillemets fonctionne, mais dépend du format de date du poste : ">="&DATE(2026;1;1) n’en dépend pas. Sans critère de date, on additionne aussi 2025 : 188 908 €, et 27 862 € à la première question.',
+        'La région Ouest réunit Nantes (AG05) et Rennes (AG06) : 77 850 € de janvier à septembre 2026. Recopiée sans $, la plage de recherche glisse d’une ligne à chaque ligne : dès la ligne 14, elle a quitté la table et plus aucune agence n’est trouvée. Avant, les seules lignes de l’Ouest trouvées, les lignes 4 à 6, forment une commande de Rennes du 30 septembre : 874 €. Le même glissement vide la colonne categorie dès la ligne 42 : à la première question, seuls les deux produits informatiques de cette commande restent, 729 €. La fonction DATE écrite dans les guillemets, ">=DATE(2026;1;1)", n’est pas calculée : Excel compare au texte « DATE(2026;1;1) » et ne trouve rien : 0 €, ici comme à la première question. Une date tapée en clair dans les guillemets fonctionne, mais dépend du format de date du poste : ">="&DATE(2026;1;1) n’en dépend pas. Sans critère de date, on additionne aussi 2025 : 188 908 €, et 27 862 € à la première question.',
       ],
     ],
   ),

@@ -456,7 +456,7 @@ Chaque valeur est recalculée par `b2-04.cours.spec.ts` à partir des seuls para
 | Identifiant                      | Concept                    | Libellé                                                 | Remédiation                      |
 | -------------------------------- | -------------------------- | ------------------------------------------------------- | -------------------------------- |
 | `rang-decale`                    | suite-arithmetique         | Se décaler d'un rang.                                   | B2-04-A1-07-COURS-ARITHMETIQUE   |
-| `pente-ordonnee-inversees`       | ajustement-affine          | Prendre la pente pour l'ordonnée à l'origine.           | B2-04-A1-08-COURS-RAISON-TABLEUR |
+| `pente-ordonnee-inversees`       | ajustement-affine          | Confondre la pente et l'ordonnée à l'origine.           | B2-04-A1-08-COURS-RAISON-TABLEUR |
 | `reference-relative-non-figee`   | tableur                    | Recopier sans figer la cellule de la raison ou du taux. | B2-04-A1-08-COURS-RAISON-TABLEUR |
 | `coefficient-confondu-avec-taux` | coefficient-multiplicateur | Prendre le taux pour la raison.                         | B2-04-A2-02-COURS-GEOMETRIQUE    |
 | `nature-de-suite-confondue`      | suite-geometrique          | Confondre « ajouter » et « multiplier ».                | B2-04-A2-02-COURS-GEOMETRIQUE    |

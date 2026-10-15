@@ -24,7 +24,6 @@ export interface CorrigeFeuille {
     readonly confusionSiErreurFormule: ConfusionId | null;
     readonly pieges: readonly PiegeNumerique[];
   }>;
-  readonly seuilReussite: number;
 }
 
 export interface CorrigeTableau {
@@ -36,7 +35,11 @@ export interface CorrigeTableau {
     readonly pieges: readonly PiegeNumerique[];
   }>;
   readonly tolerance: Tolerance;
-  readonly seuilReussite: number;
+}
+
+export interface PiegeDeClassement {
+  readonly categorieId: string;
+  readonly confusion: ConfusionId;
 }
 
 export interface CorrigeClassement {
@@ -44,10 +47,9 @@ export interface CorrigeClassement {
   readonly attendus: AuMoinsUn<{
     readonly carteId: string;
     readonly categorieId: string;
-    readonly confusionSiErreur: ConfusionId;
+    readonly pieges: readonly PiegeDeClassement[];
     readonly justification: string;
   }>;
-  readonly seuilReussite: number;
 }
 
 export interface CorrigeEnigme {
