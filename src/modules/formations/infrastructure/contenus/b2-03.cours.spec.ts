@@ -398,17 +398,24 @@ describe('B2-03 — retours de Tim du 15 octobre 2026', () => {
 
   function tracesDesNotionsRetirees(texte: string): readonly string[] {
     return [
-      /ordre des quantificateurs/gi,
+      /ordre des|l’ordre|et ordre|-ordre-|"ordre"(?!:)/gi,
       /ordre de ∀ et ∃/g,
+      /[∀∃] puis [∀∃]/g,
+      /[∀∃] \p{L}+, [∀∃] \p{L}+/gu,
+      /il existe\s*…\s*pour tout/gi,
+      /même (?:commercial|facture)/gi,
+      /\bclients?\b[^.]{0,40}\bcommercia|\bcommercia\w*\b[^.]{0,40}\bclients?\b/gi,
+      /facture payée/gi,
       /« A ou B »/gi,
       /ou-compte-deux-fois|ordre-quantificateurs-inverse|compter-ou/g,
-      /b2-03-a1-visa/g,
+      /b2-03-(?:a1-visa|a3-ordre|a3-clients|r-ordre)\b/g,
       /4 \+ 6/g,
       /\b(?:\d+|deux|trois|quatre|cinq|six|sept|huit|neuf|dix|onze|douze|treize|quatorze|quinze|seize) (?:factures )?visées\b/gi,
       /additionn\w*/gi,
       /compt\w* deux fois/gi,
       /NB\.SI\([^;)]*;\\?"Visa/gi,
       /\bfactures à viser\b/gi,
+      /faut-il viser/gi,
     ].flatMap((motif) => [...texte.matchAll(motif)].map(([trace]) => trace));
   }
 
@@ -417,6 +424,18 @@ describe('B2-03 — retours de Tim du 15 octobre 2026', () => {
   });
 
   it.each([
+    'ordre',
+    'Cours : quantificateurs au tableur et ordre',
+    'Écrivez chaque phrase avec ∀ et ∃, dans l’ordre des mots.',
+    '« Chaque client a un commercial » (∀ puis ∃) n’entraîne pas qu’un même commercial les suive tous (∃ puis ∀).',
+    'Hélène : ∃ commercial, ∀ client, il le suit. Marc : ∀ client, ∃ commercial qui le suit.',
+    'Chacun des cinq clients a un commercial, Léa ou Karim : la phrase de Marc est vraie.',
+    'Échanger « pour tout … il existe » et « il existe … pour tout » : la phrase change de sens.',
+    'Chaque client a au moins une facture payée',
+    'Combien des seize factures faut-il viser ?',
+    'b2-03-a3-ordre',
+    'b2-03-a3-clients',
+    'b2-03-r-ordre',
     '• Pièges : « ou » exclusif ; additionner les deux conditions ; > au lieu de ≥ ; réciproque prise pour la règle.',
     '• Erreurs à chercher : textes sans guillemets ; >= au lieu de > pour la relance ; NB.SI additionnés pour le visa.',
     '=NB.SI(H2:H17;"Relancer") donne 5 et =NB.SI(I2:I17;"Visa") donne 8.',
@@ -427,7 +446,7 @@ describe('B2-03 — retours de Tim du 15 octobre 2026', () => {
     'Seize factures moins les huit visées : 8 factures.',
     '4 + 6 − 2 = 8 factures.',
   ])('reconnaît la trace retirée « %s »', (retiree) => {
-    expect(tracesDesNotionsRetirees(retiree)).not.toEqual([]);
+    expect(tracesDesNotionsRetirees(JSON.stringify(retiree))).not.toEqual([]);
   });
 
   it('ne fait plus compter les visas au tableur de la mini-situation', () => {
