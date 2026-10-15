@@ -406,7 +406,14 @@ describe('B2-03 — retours de Tim du 15 octobre 2026', () => {
         '« A ou B »',
         'ou-compte-deux-fois',
         'ordre-quantificateurs-inverse',
+        'b2-03-a1-visa',
+        '4 + 6',
       ].filter((motif) => texte.includes(motif)),
+    ).toEqual([]);
+    expect(
+      texte.match(
+        /\b(?:\d+|deux|trois|quatre|cinq|six|sept|huit|neuf|dix|onze|douze|treize|quatorze|quinze|seize) (?:factures )?visées\b/gi,
+      ) ?? [],
     ).toEqual([]);
   });
 

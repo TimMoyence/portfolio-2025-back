@@ -868,7 +868,7 @@ const ACTE_2: moteur.Acte = [
       ],
       [
         'b2-03-a2-sans-visa',
-        'Seize factures moins les huit visées : 8 factures. Contrôle : les huit factures françaises sous 5 000 €. Avec ≤ 5 000, on garderait F213 à tort (9) ; avec « ou », on en compterait 14.',
+        'Les huit factures françaises sous 5 000 €. Avec ≤ 5 000, on garderait F213 à tort (9) ; avec « ou », on en compterait 14.',
       ],
       [
         'b2-03-a2-formule',
