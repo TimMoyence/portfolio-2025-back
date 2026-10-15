@@ -26,12 +26,10 @@ export class ChangePasswordUseCase extends CasDUsageMotDePasse {
       throw new InvalidCredentialsError('Current password is invalid');
     }
 
-    const newPasswordHash = await this.passwordService.hash(dto.newPassword);
-
-    return this.repo.update(user.id as string, {
-      passwordHash: newPasswordHash,
-      updatedOrCreatedBy: dto.updatedOrCreatedBy ?? user.updatedOrCreatedBy,
-      updatedAt: new Date(),
-    });
+    return this.enregistrerMotDePasse(
+      user,
+      dto.newPassword,
+      dto.updatedOrCreatedBy,
+    );
   }
 }

@@ -1,8 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { UserNotFoundError } from '../../../common/domain/errors/UserNotFoundError';
+import { optionalMetadata } from '../../../common/domain/validation/domain-validators';
 import type { IUsersRepository } from '../domain/IUsers.repository';
 import { USERS_REPOSITORY } from '../domain/token';
-import type { User } from '../domain/User';
+import { User } from '../domain/User';
 import { PasswordService } from './services/PasswordService';
 
 @Injectable()
@@ -29,5 +30,20 @@ export abstract class CasDUsageMotDePasse extends CasDUsageUtilisateurs {
     protected readonly passwordService: PasswordService,
   ) {
     super(repo);
+  }
+
+  protected async enregistrerMotDePasse(
+    user: User,
+    motDePasse: string,
+    auteur: string | null | undefined,
+  ): Promise<User> {
+    const passwordHash = await this.passwordService.hash(motDePasse);
+    return this.repo.update(
+      user.id as string,
+      User.update({
+        passwordHash,
+        updatedOrCreatedBy: optionalMetadata(auteur) ?? user.updatedOrCreatedBy,
+      }),
+    );
   }
 }
