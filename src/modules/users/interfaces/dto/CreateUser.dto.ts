@@ -9,6 +9,7 @@ import {
 import type { CreateUserCommand } from '../../application/dto/CreateUser.command';
 import {
   MotDePasseRobuste,
+  NomDeCompte,
   RolesValides,
   TelephoneOptionnel,
 } from './regles-de-saisie';
@@ -23,14 +24,10 @@ export class CreateUserDto implements CreateUserCommand {
   @IsNotEmpty()
   password: string;
 
-  @ApiProperty({ example: 'John' })
-  @IsString()
-  @IsNotEmpty()
+  @NomDeCompte('Le prenom', 'John')
   firstName: string;
 
-  @ApiProperty({ example: 'Doe' })
-  @IsString()
-  @IsNotEmpty()
+  @NomDeCompte('Le nom', 'Doe')
   lastName: string;
 
   @TelephoneOptionnel('+11234567890')

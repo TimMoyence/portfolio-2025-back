@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
 import {
+  optionalText,
   requireEmail,
   requireText,
   requireValidDate,
@@ -53,10 +54,7 @@ export class NewsletterSubscriber {
     );
     const termsVersion = requireText(props.termsVersion, 'termsVersion', 1, 50);
     requireValidDate(props.termsAcceptedAt, 'termsAcceptedAt');
-    const firstName =
-      typeof props.firstName === 'string' && props.firstName.trim().length > 0
-        ? requireText(props.firstName, 'firstName', 1, 50)
-        : null;
+    const firstName = optionalText(props.firstName, 'firstName', 50) ?? null;
 
     const subscriber = new NewsletterSubscriber();
     subscriber.email = email;

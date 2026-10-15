@@ -1,6 +1,57 @@
 import { plainToInstance } from 'class-transformer';
 import { validateSync } from 'class-validator';
+import { CreateUserDto } from './CreateUser.dto';
 import { MotDePasseRobuste, RolesValides } from './regles-de-saisie';
+import { UpdateProfileDto } from './UpdateProfile.dto';
+import { UpdateUserDto } from './UpdateUser.dto';
+
+const champsEnErreur = (
+  dto: new () => object,
+  corps: Record<string, unknown>,
+): string[] =>
+  validateSync(plainToInstance(dto, corps)).map((erreur) => erreur.property);
+
+describe('prenom et nom d un compte', () => {
+  const secretRobuste = 'StrongPassword123!';
+  const inscription = {
+    email: 'lea@example.com',
+    password: secretRobuste,
+    firstName: 'Lea',
+    lastName: 'Martin',
+  };
+
+  it.each([
+    ['l inscription', CreateUserDto, inscription],
+    ['la modification par l admin', UpdateUserDto, {}],
+    ['le profil', UpdateProfileDto, {}],
+  ])(
+    'acceptent 1 a 50 caracteres et refusent un texte vide ou plus long a %s',
+    (_saisie, dto: new () => object, base) => {
+      const champsRefuses = (valeur: string) =>
+        champsEnErreur(dto, { ...base, firstName: valeur, lastName: valeur });
+
+      expect(['L', 'a'.repeat(50)].map(champsRefuses)).toEqual([[], []]);
+      expect(['', 'a'.repeat(51)].map(champsRefuses)).toEqual([
+        ['firstName', 'lastName'],
+        ['firstName', 'lastName'],
+      ]);
+    },
+  );
+
+  it('portent les memes messages a l inscription et au profil', () => {
+    const messagesDe = (dto: new () => object, base: object) =>
+      validateSync(
+        plainToInstance(dto, { ...base, firstName: 'a'.repeat(51) }),
+      ).flatMap((erreur) => Object.values(erreur.constraints ?? {}));
+
+    expect(messagesDe(CreateUserDto, inscription)).toEqual([
+      'Le prenom doit contenir au plus 50 caracteres.',
+    ]);
+    expect(messagesDe(UpdateProfileDto, {})).toEqual([
+      'Le prenom doit contenir au plus 50 caracteres.',
+    ]);
+  });
+});
 
 class Saisie {
   @MotDePasseRobuste()

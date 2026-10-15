@@ -86,6 +86,53 @@ describe('AuthenticateGoogleUserUseCase', () => {
     expect(result.refreshToken).toBeDefined();
   });
 
+  describe('inscription d un compte Google', () => {
+    const inscrireAvec = async (profil: Record<string, unknown>) => {
+      mockVerifyIdToken.mockResolvedValue({
+        getPayload: () => ({ ...GOOGLE_PAYLOAD, ...profil }),
+      });
+      repo.findByGoogleId.mockResolvedValue(null);
+      repo.findByEmail.mockResolvedValue(null);
+      repo.create.mockResolvedValue(buildUser({ id: 'new-user' }));
+      await useCase.execute('valid-id-token');
+      return repo.create.mock.calls[0][0];
+    };
+
+    it('reussit avec un nom vide quand Google n en donne pas', async () => {
+      await expect(
+        inscrireAvec({ family_name: undefined }),
+      ).resolves.toMatchObject({ firstName: 'John', lastName: '' });
+    });
+
+    it('prend la partie locale de l adresse quand Google ne donne pas de prenom', async () => {
+      for (const given_name of [undefined, '', '   ']) {
+        repo.create.mockClear();
+        await expect(inscrireAvec({ given_name })).resolves.toMatchObject({
+          firstName: 'john',
+          lastName: 'Doe',
+        });
+      }
+    });
+
+    it('coupe a 50 caracteres un prenom et un nom Google trop longs', async () => {
+      await expect(
+        inscrireAvec({
+          given_name: ` ${'A'.repeat(60)}`,
+          family_name: `${'B'.repeat(49)} C${'D'.repeat(10)}`,
+        }),
+      ).resolves.toMatchObject({
+        firstName: 'A'.repeat(50),
+        lastName: 'B'.repeat(49),
+      });
+    });
+
+    it('ne coupe pas un caractere en deux au plafond de 50', async () => {
+      await expect(
+        inscrireAvec({ given_name: `${'A'.repeat(49)}😀😀` }),
+      ).resolves.toMatchObject({ firstName: 'A'.repeat(49) });
+    });
+  });
+
   it('lance InvalidCredentialsError quand le token Google est invalide', async () => {
     mockVerifyIdToken.mockRejectedValue(new Error('Invalid token'));
 

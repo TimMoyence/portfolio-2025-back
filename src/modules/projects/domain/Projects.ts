@@ -3,6 +3,7 @@ import { PublishableStatus } from '../../../common/domain/types/publishable-stat
 import {
   optionalHttpUrl,
   optionalText,
+  requireText,
 } from '../../../common/domain/validation/domain-validators';
 import {
   resolvePublishableStatus,
@@ -74,18 +75,9 @@ export class Projects {
       throw new DomainValidationError(`Invalid ${field}`);
     }
 
-    const normalized = raw
-      .map((item) => {
-        if (typeof item !== 'string') {
-          throw new DomainValidationError(`Invalid ${field}`);
-        }
-        const value = item.trim();
-        if (value.length === 0 || value.length > maxItemLength) {
-          throw new DomainValidationError(`Invalid ${field}`);
-        }
-        return value;
-      })
-      .filter(Boolean);
+    const normalized = raw.map((item) =>
+      requireText(item, field, 1, maxItemLength),
+    );
 
     return Array.from(new Set(normalized));
   }

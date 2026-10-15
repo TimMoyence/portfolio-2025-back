@@ -1,11 +1,13 @@
 import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
 import {
+  optionalPhone,
+  optionalText,
+  requireBoolean,
   requireEmail,
   requireText,
   requireValidDate,
 } from '../../../common/domain/validation/domain-validators';
 import { LocaleCode } from '../../../common/domain/value-objects/LocaleCode';
-import { PhoneNumber } from '../../../common/domain/value-objects/PhoneNumber';
 
 export type CreateContactProps = Omit<Contacts, 'id'>;
 
@@ -27,12 +29,7 @@ export class Contacts {
   static create(props: CreateContactProps): Contacts {
     const email = requireEmail(props.email, 'contact email');
 
-    const phoneInput =
-      typeof props.phone === 'string' ? props.phone.trim() : props.phone;
-    const phone = PhoneNumber.parse(phoneInput);
-    if (typeof phoneInput === 'string' && phoneInput.length > 0 && !phone) {
-      throw new DomainValidationError('Invalid contact phone number');
-    }
+    const phone = optionalPhone(props.phone, 'contact phone number');
 
     const firstName = requireText(props.firstName, 'contact first name', 1, 50);
     const lastName = requireText(props.lastName, 'contact last name', 1, 50);
@@ -40,11 +37,13 @@ export class Contacts {
     const message = requireText(props.message, 'contact message', 10, 2000);
     const role = requireText(props.role, 'contact role', 2, 100);
 
-    if (typeof props.terms !== 'boolean') {
-      throw new DomainValidationError('Invalid terms flag');
-    }
+    const terms = requireBoolean(props.terms, 'terms flag');
 
-    const termsLocaleInput = this.optionalText(props.termsLocale, 10);
+    const termsLocaleInput = optionalText(
+      props.termsLocale,
+      'terms locale',
+      10,
+    );
     const termsLocale = termsLocaleInput
       ? LocaleCode.parse(termsLocaleInput)?.value
       : undefined;
@@ -60,27 +59,24 @@ export class Contacts {
     contact.email = email;
     contact.firstName = firstName;
     contact.lastName = lastName;
-    contact.phone = phone?.value ?? null;
+    contact.phone = phone;
     contact.subject = subject;
     contact.message = message;
     contact.role = role;
-    contact.terms = props.terms;
-    contact.termsVersion = this.optionalText(props.termsVersion, 50);
+    contact.terms = terms;
+    contact.termsVersion = optionalText(
+      props.termsVersion,
+      'contact terms version',
+      50,
+    );
     contact.termsLocale = termsLocale;
-    contact.termsMethod = this.optionalText(props.termsMethod, 50);
+    contact.termsMethod = optionalText(
+      props.termsMethod,
+      'contact terms method',
+      50,
+    );
     contact.termsAcceptedAt = props.termsAcceptedAt;
 
     return contact;
-  }
-
-  private static optionalText(raw: unknown, max: number): string | undefined {
-    if (raw === null || raw === undefined) return undefined;
-    if (typeof raw !== 'string') return undefined;
-    const trimmed = raw.trim();
-    if (trimmed.length === 0) return undefined;
-    if (trimmed.length > max) {
-      throw new DomainValidationError('Invalid contact metadata');
-    }
-    return trimmed;
   }
 }

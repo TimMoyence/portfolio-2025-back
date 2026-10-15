@@ -1,5 +1,7 @@
-import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
-import { requireHttpUrl } from '../../../common/domain/validation/domain-validators';
+import {
+  requireBoolean,
+  requireHttpUrl,
+} from '../../../common/domain/validation/domain-validators';
 import { resolveCompteurBorne } from '../../../common/domain/validation/status-order.utils';
 import { Slug } from '../../../common/domain/value-objects/Slug';
 
@@ -31,11 +33,7 @@ export class Redirects {
       return true;
     }
 
-    if (typeof raw !== 'boolean') {
-      throw new DomainValidationError('Invalid redirect enabled flag');
-    }
-
-    return raw;
+    return requireBoolean(raw, 'redirect enabled flag');
   }
 
   private static resolveClicks(raw: unknown): number {

@@ -125,4 +125,36 @@ describe('Contacts aggregate', () => {
       }),
     ).toThrow(DomainValidationError);
   });
+
+  it('normalise un telephone et nomme le champ d un telephone invalide', () => {
+    expect(
+      Contacts.create({ ...VALID_CONTACT_PROPS, phone: ' 06 12 34 56 78 ' })
+        .phone,
+    ).toBe('0612345678');
+    expect(() =>
+      Contacts.create({ ...VALID_CONTACT_PROPS, phone: 'abc' }),
+    ).toThrow(new DomainValidationError('Invalid contact phone number'));
+  });
+
+  it('nomme le drapeau des conditions quand il n est pas booleen', () => {
+    expect(() =>
+      Contacts.create({
+        ...VALID_CONTACT_PROPS,
+        terms: 'true' as unknown as boolean,
+      }),
+    ).toThrow(new DomainValidationError('Invalid terms flag'));
+  });
+
+  it.each([
+    ['termsVersion', 'Invalid contact terms version'],
+    ['termsMethod', 'Invalid contact terms method'],
+    ['termsLocale', 'Invalid terms locale'],
+  ])('refuse un %s non textuel', (champ, message) => {
+    expect(() =>
+      Contacts.create({
+        ...VALID_CONTACT_PROPS,
+        [champ]: 42 as unknown as string,
+      }),
+    ).toThrow(new DomainValidationError(message));
+  });
 });

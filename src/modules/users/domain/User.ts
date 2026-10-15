@@ -1,9 +1,14 @@
 import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
 import {
   optionalMetadata,
+  optionalPhone,
+  optionalText,
+  requireBoolean,
   requireEmail,
+  requireText,
 } from '../../../common/domain/validation/domain-validators';
-import { PhoneNumber } from '../../../common/domain/value-objects/PhoneNumber';
+
+export const LONGUEUR_MAX_D_UN_NOM = 50;
 
 export interface CreateUserProps {
   email: string;
@@ -42,9 +47,15 @@ export class User {
       this.requirePasswordHash(props.passwordHash);
     }
 
-    const firstName = this.requireName(props.firstName, 'first name');
-    const lastName = this.requireName(props.lastName, 'last name');
-    const phone = this.parsePhone(props.phone);
+    const firstName = this.requireName(props.firstName, 'user first name');
+    const lastName = props.googleId
+      ? (optionalText(
+          props.lastName,
+          'user last name',
+          LONGUEUR_MAX_D_UN_NOM,
+        ) ?? '')
+      : this.requireName(props.lastName, 'user last name');
+    const phone = optionalPhone(props.phone, 'user phone number');
 
     const user = new User();
     user.email = email;
@@ -75,22 +86,19 @@ export class User {
     }
 
     if (props.firstName !== undefined) {
-      partial.firstName = this.requireName(props.firstName, 'first name');
+      partial.firstName = this.requireName(props.firstName, 'user first name');
     }
 
     if (props.lastName !== undefined) {
-      partial.lastName = this.requireName(props.lastName, 'last name');
+      partial.lastName = this.requireName(props.lastName, 'user last name');
     }
 
     if (props.phone !== undefined) {
-      partial.phone = this.parsePhone(props.phone);
+      partial.phone = optionalPhone(props.phone, 'user phone number');
     }
 
     if (props.isActive !== undefined) {
-      partial.isActive = this.requireBoolean(
-        props.isActive,
-        'Invalid user active flag',
-      );
+      partial.isActive = requireBoolean(props.isActive, 'user active flag');
     }
 
     if (props.roles !== undefined) {
@@ -102,9 +110,9 @@ export class User {
     }
 
     if (props.emailVerified !== undefined) {
-      partial.emailVerified = this.requireBoolean(
+      partial.emailVerified = requireBoolean(
         props.emailVerified,
-        'Invalid email verified flag',
+        'email verified flag',
       );
     }
 
@@ -120,22 +128,6 @@ export class User {
     return raw;
   }
 
-  private static parsePhone(raw: string | null | undefined): string | null {
-    const phoneInput = typeof raw === 'string' ? raw.trim() : raw;
-    const phone = PhoneNumber.parse(phoneInput);
-    if (typeof phoneInput === 'string' && phoneInput.length > 0 && !phone) {
-      throw new DomainValidationError('Invalid user phone number');
-    }
-    return phone?.value ?? null;
-  }
-
-  private static requireBoolean(raw: unknown, message: string): boolean {
-    if (typeof raw !== 'boolean') {
-      throw new DomainValidationError(message);
-    }
-    return raw;
-  }
-
   private static requireRoles(raw: unknown): string[] {
     if (!Array.isArray(raw)) {
       throw new DomainValidationError('Invalid user roles');
@@ -144,13 +136,6 @@ export class User {
   }
 
   private static requireName(raw: unknown, field: string): string {
-    if (typeof raw !== 'string') {
-      throw new DomainValidationError(`Invalid user ${field}`);
-    }
-    const trimmed = raw.trim();
-    if (trimmed.length < 1) {
-      throw new DomainValidationError(`Invalid user ${field}`);
-    }
-    return trimmed;
+    return requireText(raw, field, 1, LONGUEUR_MAX_D_UN_NOM);
   }
 }
