@@ -179,11 +179,18 @@ describe('parseImports', () => {
   });
 
   it('reste lineaire sur une ligne `import` sans clause `from`', () => {
-    const hostile = `import ${'a '.repeat(20_000)}`;
-    const startedAt = Date.now();
+    const duree = (jetons: number): number => {
+      const hostile = `import ${'a '.repeat(jetons)}`;
+      const mesures = [0, 1, 2].map(() => {
+        const startedAt = Date.now();
+        expect(parseImports(hostile)).toEqual([]);
+        return Date.now() - startedAt;
+      });
+      return Math.min(...mesures);
+    };
+    const courte = duree(2_500);
 
-    expect(parseImports(hostile)).toEqual([]);
-    expect(Date.now() - startedAt).toBeLessThan(1000);
+    expect(duree(10_000)).toBeLessThan(8 * Math.max(courte, 5));
   });
 });
 
