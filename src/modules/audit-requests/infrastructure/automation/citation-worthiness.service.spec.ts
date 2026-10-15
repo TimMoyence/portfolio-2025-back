@@ -76,6 +76,18 @@ describe('CitationWorthinessService', () => {
       true,
     ],
     [
+      'détecte un auteur via un rel à plusieurs valeurs, quelle que soit sa casse',
+      '<a rel="Author nofollow" href="/team">Jane</a>',
+      'hasAuthor',
+      true,
+    ],
+    [
+      'détecte un auteur via une balise meta Author',
+      '<meta name="Author" content="Jane Doe">',
+      'hasAuthor',
+      true,
+    ],
+    [
       'détecte un auteur via itemprop="author"',
       '<span itemprop="author">Jane</span>',
       'hasAuthor',

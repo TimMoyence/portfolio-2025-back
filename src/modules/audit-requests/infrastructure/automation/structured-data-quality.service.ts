@@ -25,28 +25,51 @@ const AI_FRIENDLY_TYPES: ReadonlySet<string> = new Set([
   'Course',
 ]);
 
-const REQUIRED_FIELDS: Record<string, ReadonlyArray<string>> = {
-  Article: ['headline', 'author', 'datePublished'],
-  NewsArticle: ['headline', 'author', 'datePublished'],
-  BlogPosting: ['headline', 'author', 'datePublished'],
-  Product: ['name', 'offers'],
-  Recipe: ['name', 'recipeIngredient', 'recipeInstructions'],
-  FAQPage: ['mainEntity'],
-  HowTo: ['name', 'step'],
-  Event: ['name', 'startDate', 'location'],
-  LocalBusiness: ['name', 'address'],
-  BreadcrumbList: ['itemListElement'],
-  Course: ['name', 'description', 'provider'],
-};
+const REQUIRED_FIELDS: ReadonlyMap<string, ReadonlyArray<string>> = new Map([
+  ['Article', ['headline', 'author', 'datePublished']],
+  ['NewsArticle', ['headline', 'author', 'datePublished']],
+  ['BlogPosting', ['headline', 'author', 'datePublished']],
+  ['Product', ['name', 'offers']],
+  ['Recipe', ['name', 'recipeIngredient', 'recipeInstructions']],
+  ['FAQPage', ['mainEntity']],
+  ['HowTo', ['name', 'step']],
+  ['Event', ['name', 'startDate', 'location']],
+  ['LocalBusiness', ['name', 'address']],
+  ['BreadcrumbList', ['itemListElement']],
+  ['Course', ['name', 'description', 'provider']],
+]);
 
 const STRUCTURED_DATA_PRESENCE_SCORE = 20;
 
 type JsonLdBlock = Readonly<Record<string, unknown>>;
 
+const CLES_D_UN_SIMPLE_CONTENEUR: ReadonlySet<string> = new Set([
+  '@context',
+  '@id',
+  '@graph',
+]);
+
+const noeudsDuBloc = (bloc: unknown): unknown[] => {
+  if (!estObjet(bloc) || !Object.hasOwn(bloc, '@graph')) {
+    return [bloc];
+  }
+  const graphe: unknown = bloc['@graph'];
+  const noeuds = Array.isArray(graphe) ? Array.from<unknown>(graphe) : [graphe];
+  const estAussiUnNoeud = Object.keys(bloc).some(
+    (cle) => !CLES_D_UN_SIMPLE_CONTENEUR.has(cle),
+  );
+  return estAussiUnNoeud ? [bloc, ...noeuds] : noeuds;
+};
+
 @Injectable()
 export class StructuredDataQualityService {
-  analyze(blocks: ReadonlyArray<unknown>): StructuredDataQualityResult {
-    const validBlocks = blocks.filter(estObjet);
+  analyze(
+    blocks: ReadonlyArray<unknown>,
+    illisibles = 0,
+  ): StructuredDataQualityResult {
+    const noeuds = blocks.flatMap(noeudsDuBloc);
+    const validBlocks = noeuds.filter(estObjet);
+    const malformedBlocks = illisibles + noeuds.length - validBlocks.length;
 
     if (validBlocks.length === 0) {
       return {
@@ -56,6 +79,7 @@ export class StructuredDataQualityService {
         googleRichResultsEligible: false,
         aiFriendly: false,
         invalidBlocks: [],
+        malformedBlocks,
       };
     }
 
@@ -79,15 +103,8 @@ export class StructuredDataQualityService {
         }
       }
 
-      const primary = blockTypes.find((t) => REQUIRED_FIELDS[t]);
-      if (primary) {
-        const missing = REQUIRED_FIELDS[primary].filter(
-          (field) => !this.hasValue(block[field]),
-        );
-        if (missing.length > 0) {
-          invalidBlocks.push({ type: primary, missingFields: missing });
-        }
-      }
+      const invalide = this.blocInvalide(block, blockTypes);
+      if (invalide) invalidBlocks.push(invalide);
     }
 
     const score = this.computeScore({
@@ -104,7 +121,23 @@ export class StructuredDataQualityService {
       googleRichResultsEligible,
       aiFriendly,
       invalidBlocks,
+      malformedBlocks,
     };
+  }
+
+  private blocInvalide(
+    block: JsonLdBlock,
+    blockTypes: ReadonlyArray<string>,
+  ): { type: string; missingFields: string[] } | null {
+    for (const type of blockTypes) {
+      const requis = REQUIRED_FIELDS.get(type);
+      if (!requis) continue;
+      const missingFields = requis.filter(
+        (field) => !this.hasValue(block[field]),
+      );
+      return missingFields.length > 0 ? { type, missingFields } : null;
+    }
+    return null;
   }
 
   private extractTypes(block: JsonLdBlock): string[] {

@@ -147,6 +147,88 @@ describe('StructuredDataQualityService', () => {
     expect(result.types).toHaveLength(0);
   });
 
+  it.each(['constructor', '__proto__', 'toString', 'hasOwnProperty'])(
+    'lit un @type « %s » comme un type inconnu, sans planter',
+    (type) => {
+      expect(service.analyze([{ '@type': type }])).toMatchObject({
+        total: 1,
+        types: [type],
+        invalidBlocks: [],
+        googleRichResultsEligible: false,
+      });
+    },
+  );
+
+  it('lit chaque nœud d un @graph comme un bloc, à la manière de Yoast', () => {
+    const result = service.analyze([
+      {
+        '@context': 'https://schema.org',
+        '@graph': [
+          { '@type': 'WebPage', name: 'Accueil' },
+          ARTICLE_MINIMAL,
+          FIL_D_ARIANE,
+        ],
+      },
+    ]);
+
+    expect(result).toMatchObject({
+      total: 3,
+      types: ['WebPage', 'Article', 'BreadcrumbList'],
+      googleRichResultsEligible: true,
+      aiFriendly: true,
+      invalidBlocks: [],
+    });
+  });
+
+  it('lit un @graph qui vaut un seul nœud comme la forme tableau', () => {
+    const result = service.analyze([
+      { '@context': 'https://schema.org', '@graph': ARTICLE_MINIMAL },
+    ]);
+
+    expect(result).toMatchObject({
+      total: 1,
+      types: ['Article'],
+      score: 85,
+      malformedBlocks: 0,
+    });
+  });
+
+  it('compte comme un nœud le conteneur d un @graph qui porte ses propres propriétés', () => {
+    const result = service.analyze([
+      {
+        '@context': 'https://schema.org',
+        '@id': 'https://a.fr/#graphe',
+        '@graph': [ARTICLE_MINIMAL],
+      },
+      { '@type': 'WebSite', name: 'Site', '@graph': [FIL_D_ARIANE] },
+    ]);
+
+    expect(result).toMatchObject({
+      total: 3,
+      types: ['Article', 'WebSite', 'BreadcrumbList'],
+      malformedBlocks: 0,
+    });
+  });
+
+  it('compte comme illisible un @graph qui n est ni un nœud ni une liste', () => {
+    const result = service.analyze([{ '@graph': 'texte' }]);
+
+    expect(result).toMatchObject({ total: 0, malformedBlocks: 1 });
+  });
+
+  it('compte comme illisible une entrée qui n est pas un objet, nœud d un @graph compris', () => {
+    const result = service.analyze(
+      [null, 'texte', 42, { '@graph': [7, ARTICLE_MINIMAL] }],
+      1,
+    );
+
+    expect(result).toMatchObject({
+      total: 1,
+      types: ['Article'],
+      malformedBlocks: 5,
+    });
+  });
+
   it('valide un Event avec champs numériques via hasValue', () => {
     const result = service.analyze([
       {

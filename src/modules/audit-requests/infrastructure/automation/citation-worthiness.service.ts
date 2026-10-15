@@ -3,6 +3,7 @@ import { load } from 'cheerio';
 import { compterMots } from '../../../../common/domain/texte/compter-mots';
 import type { CitationWorthinessScore } from '../../domain/AiIndexability';
 import { scoreSur100 } from '../../domain/score-sur-100';
+import { BALISES } from './shared/html-signals.util';
 
 const TRUSTED_DOMAINS: ReadonlyArray<string> = [
   'nature.com',
@@ -61,8 +62,8 @@ export class CitationWorthinessService {
   }
 
   private detectAuthor($: ReturnType<typeof load>): boolean {
-    if ($('meta[name="author"]').attr('content')) return true;
-    if ($('[rel="author"]').length > 0) return true;
+    if ($(BALISES.auteur).attr('content')) return true;
+    if ($('[rel~="author" i]').length > 0) return true;
     if ($('[itemprop="author"]').length > 0) return true;
     return false;
   }
