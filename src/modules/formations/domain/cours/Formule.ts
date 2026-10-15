@@ -1,3 +1,4 @@
+import { avecVirgule } from '../../../../common/domain/nombres/ecriture-francaise';
 import { estEntierPositif } from '../../../../common/domain/nombres/est-entier-positif';
 import { sansEspacesNiMoinsTypographiques } from '../../../../common/domain/texte/sans-espaces-typographiques';
 
@@ -1411,10 +1412,7 @@ export function decalerFormule(
 function formaterValeur(valeur: ValeurFormule): string {
   switch (typeof valeur) {
     case 'number':
-      return String(Number(valeur.toFixed(DECIMALES_EXPRESSION))).replace(
-        '.',
-        ',',
-      );
+      return avecVirgule(Number(valeur.toFixed(DECIMALES_EXPRESSION)));
     case 'boolean':
       return valeur ? 'VRAI' : 'FAUX';
     default:

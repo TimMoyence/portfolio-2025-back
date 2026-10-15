@@ -1,5 +1,6 @@
 import { borner } from '../../../../common/domain/nombres/borner';
 import { dansLesBornes } from '../../../../common/domain/nombres/dans-les-bornes';
+import { nombreAffiche } from '../../../../common/domain/nombres/ecriture-francaise';
 import type { Cours } from '../contrats/cours';
 import type {
   LigneDeMachine,
@@ -17,6 +18,7 @@ import {
 } from './TraceServi';
 
 const INTERVALLES_DU_TABLEAU = 6;
+const DECIMALES_AFFICHEES = 2;
 const PRECISION_D_UN_CRAN = 1e9;
 const MOTIF_CLE_GABARIT = /\{([^{}]+)\}/g;
 
@@ -79,9 +81,7 @@ function valeurFinie(calcul: string, valeurs: Reglages): number | null {
 }
 
 function affichageDe(valeur: number | null): string {
-  return valeur === null
-    ? '—'
-    : String(Math.round(valeur * 100) / 100).replace('.', ',');
+  return nombreAffiche(valeur, DECIMALES_AFFICHEES);
 }
 
 function affichee(valeur: number | null): ValeurDeMachine {

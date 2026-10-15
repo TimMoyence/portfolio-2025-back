@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "32624618b2141a3ee77d3fe70713929331d4df5c3d987b09d59167ae5a13febd",
+  "empreinte": "82dbdcb5a4767c2f7b4eafd613f81d96f160ea85094a2406682a644d8ba762e1",
   "sujet": {
     "id": "b2-04-suites",
     "titre": "Suites : modéliser une évolution régulière",
@@ -3106,7 +3106,7 @@
               "reference": "C6",
               "formuleReference": "=C5+$F$1",
               "valeur": 1002,
-              "affichage": "1002",
+              "affichage": "1 002",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -3119,7 +3119,7 @@
               "reference": "C7",
               "formuleReference": "=C6+$F$1",
               "valeur": 1046,
-              "affichage": "1046",
+              "affichage": "1 046",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -3837,7 +3837,7 @@
               "reference": "D6",
               "formuleReference": "=D5*(1+$G$2)",
               "valeur": 1042.805969,
-              "affichage": "1042,81",
+              "affichage": "1 042,81",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -3850,7 +3850,7 @@
               "reference": "D7",
               "formuleReference": "=D6*(1+$G$2)",
               "valeur": 1105.374327,
-              "affichage": "1105,37",
+              "affichage": "1 105,37",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -4491,7 +4491,7 @@
                   },
                   "u": {
                     "valeur": 1002,
-                    "affichage": "1002"
+                    "affichage": "1 002"
                   },
                   "condition": {
                     "valeur": 0,
@@ -5280,7 +5280,7 @@
               "reference": "F3",
               "formuleReference": "=SOMME(C2:C7)",
               "valeur": 1077.297242,
-              "affichage": "1077,3",
+              "affichage": "1 077,3",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001

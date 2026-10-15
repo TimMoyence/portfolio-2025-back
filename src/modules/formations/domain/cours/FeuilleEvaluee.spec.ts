@@ -198,12 +198,12 @@ describe('planDeFeuilleServi', () => {
 });
 
 describe('affichageDeLAttendu', () => {
-  it('arrondit un taux a quatre decimales, un montant a deux, et ecrit a la francaise', () => {
+  it('arrondit un taux a quatre decimales, un montant a deux, et ecrit a la francaise, milliers separes par une espace fine insecable (F-11)', () => {
     expect(affichageDeLAttendu(0.45678)).toBe('0,4568');
     expect(affichageDeLAttendu(-0.5)).toBe('-0,5');
-    expect(affichageDeLAttendu(1234.567)).toBe('1234,57');
+    expect(affichageDeLAttendu(1234.567)).toBe('1 234,57');
     expect(affichageDeLAttendu(2.675)).toBe('2,68');
-    expect(affichageDeLAttendu(12800)).toBe('12800');
+    expect(affichageDeLAttendu(12800)).toBe('12 800');
     expect(affichageDeLAttendu('Visa')).toBe('Visa');
     expect(affichageDeLAttendu(true)).toBe('VRAI');
     expect(affichageDeLAttendu(false)).toBe('FAUX');

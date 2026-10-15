@@ -1,3 +1,4 @@
+import { nombreAffiche } from '../../../../common/domain/nombres/ecriture-francaise';
 import type { Cours, SheetPlanStocke } from '../contrats/cours';
 import type {
   FeuilleEvaluee,
@@ -161,8 +162,5 @@ export function affichageDeLAttendu(valeur: ValeurFormule): string {
   }
   const decimales =
     Math.abs(valeur) < 1 ? DECIMALES_D_UN_TAUX : DECIMALES_D_UN_MONTANT;
-  return formaterResultat({
-    valeur: arrondirMoitieLoinDeZero(valeur, decimales),
-    erreur: null,
-  });
+  return nombreAffiche(arrondirMoitieLoinDeZero(valeur, decimales), decimales);
 }

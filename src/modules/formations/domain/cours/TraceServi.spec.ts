@@ -124,4 +124,26 @@ describe('reglageServi', () => {
       reglageServi(trace, 'absent', 0),
     ]).toEqual([true, true, true, false, false]);
   });
+
+  it('G2 · admet chaque cran d un curseur à pas décimal tel que le curseur du navigateur l écrit, sans le croire entre deux crans', () => {
+    const aPasDecimal = (min: number, pas: number) => ({
+      abscisse: { min: 0, max: 2 },
+      parametres: [{ cle: 'k', libelle: 'k', min, max: 2, pas, defaut: min }],
+      series: [{ id: 'y', calcul: 'k*x' }],
+      forme: 'courbes' as const,
+    });
+    const ecritsParChromiumEtWebKit = {
+      dixieme: ['0.1', '0.2', '0.3', '0.4', '0.5', '0.6', '0.7', '0.8', '0.9'],
+      decale: ['0.4', '0.7', '1', '1.3', '1.6', '1.9'],
+    };
+
+    expect({
+      dixieme: ecritsParChromiumEtWebKit.dixieme.filter(
+        (ecrit) => !reglageServi(aPasDecimal(0, 0.1), 'k', Number(ecrit)),
+      ),
+      decale: ecritsParChromiumEtWebKit.decale.filter(
+        (ecrit) => !reglageServi(aPasDecimal(0.1, 0.3), 'k', Number(ecrit)),
+      ),
+    }).toEqual({ dixieme: [], decale: [] });
+  });
 });

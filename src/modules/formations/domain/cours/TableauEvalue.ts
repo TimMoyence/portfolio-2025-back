@@ -1,3 +1,4 @@
+import { nombreAffiche } from '../../../../common/domain/nombres/ecriture-francaise';
 import type { Cours, TableBuildPlanStocke } from '../contrats/cours';
 import type {
   TableauEvalue,
@@ -19,7 +20,6 @@ type Colonne = TableBuildPlanStocke['colonnes'][number];
 
 type Lecture = (rang: number, cle: string) => number | null;
 
-const TIRET = '—';
 const DECIMALES_MAX = 6;
 
 function refuser(plan: TableBuildPlanStocke, raison: string): never {
@@ -72,13 +72,8 @@ function valeurDuTableau(
   valeur: number | null,
   decimales: number,
 ): ValeurDuTableau {
-  return {
-    valeur,
-    affichage:
-      valeur === null
-        ? TIRET
-        : valeur.toFixed(Math.min(decimales, DECIMALES_MAX)).replace('.', ','),
-  };
+  const fixes = Math.min(decimales, DECIMALES_MAX);
+  return { valeur, affichage: nombreAffiche(valeur, fixes, fixes) };
 }
 
 function formuleDuRang(colonne: Colonne, rang: number): string | undefined {

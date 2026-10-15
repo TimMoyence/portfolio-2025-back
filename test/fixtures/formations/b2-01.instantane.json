@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "bd26668e56a6b7d060fc8a75b4375a00d4eefa327b7a24d8f3460a0b728ce4fe",
+  "empreinte": "fc2d01ddb6b94a08d98edd20046f16143148e8b47bed6772aa825f7b28e3028c",
   "sujet": {
     "id": "b2-01-traitement-information-chiffree",
     "titre": "Lire, contrôler et décider avec l’information chiffrée",
@@ -13924,7 +13924,7 @@
               "reference": "B5",
               "formuleReference": "=SOMME(B2:B4)",
               "valeur": 1050000,
-              "affichage": "1050000",
+              "affichage": "1 050 000",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -13935,7 +13935,7 @@
               "reference": "C5",
               "formuleReference": "=SOMME(C2:C4)",
               "valeur": 1150000,
-              "affichage": "1150000",
+              "affichage": "1 150 000",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -14046,7 +14046,7 @@
               "reference": "G2",
               "formuleReference": "=C2*F2",
               "valeur": 142920,
-              "affichage": "142920",
+              "affichage": "142 920",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -14057,7 +14057,7 @@
               "reference": "G3",
               "formuleReference": "=C3*F3",
               "valeur": 64400,
-              "affichage": "64400",
+              "affichage": "64 400",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -14070,7 +14070,7 @@
               "reference": "G4",
               "formuleReference": "=C4*F4",
               "valeur": 83680,
-              "affichage": "83680",
+              "affichage": "83 680",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -14083,7 +14083,7 @@
               "reference": "G5",
               "formuleReference": "=SOMME(G2:G4)",
               "valeur": 291000,
-              "affichage": "291000",
+              "affichage": "291 000",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001

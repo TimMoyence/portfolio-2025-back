@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "6f1974341b3677f682517876e3242002979a2328297b8fcfbcca9e5a419f04e1",
+  "empreinte": "d515868f8adae99e2db5521c8826a09f3af761aea4f1f6dd244c94451fb2cd8a",
   "sujet": {
     "id": "b2-05-mathematiques-financieres",
     "titre": "Mathématiques financières : placer, emprunter",
@@ -2997,7 +2997,7 @@
               "reference": "C3",
               "formuleReference": "=C2*(1+$G$1)",
               "valeur": 41000,
-              "affichage": "41000",
+              "affichage": "41 000",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -3008,7 +3008,7 @@
               "reference": "C4",
               "formuleReference": "=C3*(1+$G$1)",
               "valeur": 42025,
-              "affichage": "42025",
+              "affichage": "42 025",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -3021,7 +3021,7 @@
               "reference": "C5",
               "formuleReference": "=C4*(1+$G$1)",
               "valeur": 43075.625,
-              "affichage": "43075,63",
+              "affichage": "43 075,63",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -3034,7 +3034,7 @@
               "reference": "C6",
               "formuleReference": "=C5*(1+$G$1)",
               "valeur": 44152.515625,
-              "affichage": "44152,52",
+              "affichage": "44 152,52",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -3047,7 +3047,7 @@
               "reference": "C7",
               "formuleReference": "=C6*(1+$G$1)",
               "valeur": 45256.328516,
-              "affichage": "45256,33",
+              "affichage": "45 256,33",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -3060,7 +3060,7 @@
               "reference": "D3",
               "formuleReference": "=C3-C2",
               "valeur": 1000,
-              "affichage": "1000",
+              "affichage": "1 000",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -3071,7 +3071,7 @@
               "reference": "D4",
               "formuleReference": "=C4-C3",
               "valeur": 1025,
-              "affichage": "1025",
+              "affichage": "1 025",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -3084,7 +3084,7 @@
               "reference": "D5",
               "formuleReference": "=C5-C4",
               "valeur": 1050.625,
-              "affichage": "1050,63",
+              "affichage": "1 050,63",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -3097,7 +3097,7 @@
               "reference": "D6",
               "formuleReference": "=C6-C5",
               "valeur": 1076.890625,
-              "affichage": "1076,89",
+              "affichage": "1 076,89",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -3110,7 +3110,7 @@
               "reference": "D7",
               "formuleReference": "=C7-C6",
               "valeur": 1103.812891,
-              "affichage": "1103,81",
+              "affichage": "1 103,81",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -3738,7 +3738,7 @@
               "reference": "B3",
               "formuleReference": "=B2*(1+$F$1)+$H$1",
               "valeur": 12180,
-              "affichage": "12180",
+              "affichage": "12 180",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -3749,7 +3749,7 @@
               "reference": "B4",
               "formuleReference": "=B3*(1+$F$1)+$H$1",
               "valeur": 18545.4,
-              "affichage": "18545,4",
+              "affichage": "18 545,4",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -3762,7 +3762,7 @@
               "reference": "B5",
               "formuleReference": "=B4*(1+$F$1)+$H$1",
               "valeur": 25101.762,
-              "affichage": "25101,76",
+              "affichage": "25 101,76",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -3775,7 +3775,7 @@
               "reference": "B6",
               "formuleReference": "=B5*(1+$F$1)+$H$1",
               "valeur": 31854.81486,
-              "affichage": "31854,81",
+              "affichage": "31 854,81",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -3838,7 +3838,7 @@
               "reference": "F3",
               "formuleReference": "=SOMME(C3:C6)",
               "valeur": 1854.81486,
-              "affichage": "1854,81",
+              "affichage": "1 854,81",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -4617,19 +4617,19 @@
                 "valeurs": {
                   "capital": {
                     "valeur": 60000,
-                    "affichage": "60000,00"
+                    "affichage": "60 000,00"
                   },
                   "interets": {
                     "valeur": 2400,
-                    "affichage": "2400,00"
+                    "affichage": "2 400,00"
                   },
                   "amortissement": {
                     "valeur": 11077.63,
-                    "affichage": "11077,63"
+                    "affichage": "11 077,63"
                   },
                   "annuite": {
                     "valeur": 13477.63,
-                    "affichage": "13477,63"
+                    "affichage": "13 477,63"
                   }
                 }
               },
@@ -4638,19 +4638,19 @@
                 "valeurs": {
                   "capital": {
                     "valeur": 48922.37,
-                    "affichage": "48922,37"
+                    "affichage": "48 922,37"
                   },
                   "interets": {
                     "valeur": 1956.89,
-                    "affichage": "1956,89"
+                    "affichage": "1 956,89"
                   },
                   "amortissement": {
                     "valeur": 11520.74,
-                    "affichage": "11520,74"
+                    "affichage": "11 520,74"
                   },
                   "annuite": {
                     "valeur": 13477.63,
-                    "affichage": "13477,63"
+                    "affichage": "13 477,63"
                   }
                 }
               },
@@ -4659,19 +4659,19 @@
                 "valeurs": {
                   "capital": {
                     "valeur": 37401.63,
-                    "affichage": "37401,63"
+                    "affichage": "37 401,63"
                   },
                   "interets": {
                     "valeur": 1496.07,
-                    "affichage": "1496,07"
+                    "affichage": "1 496,07"
                   },
                   "amortissement": {
                     "valeur": 11981.56,
-                    "affichage": "11981,56"
+                    "affichage": "11 981,56"
                   },
                   "annuite": {
                     "valeur": 13477.63,
-                    "affichage": "13477,63"
+                    "affichage": "13 477,63"
                   }
                 }
               },
@@ -4680,19 +4680,19 @@
                 "valeurs": {
                   "capital": {
                     "valeur": 25420.07,
-                    "affichage": "25420,07"
+                    "affichage": "25 420,07"
                   },
                   "interets": {
                     "valeur": 1016.8,
-                    "affichage": "1016,80"
+                    "affichage": "1 016,80"
                   },
                   "amortissement": {
                     "valeur": 12460.83,
-                    "affichage": "12460,83"
+                    "affichage": "12 460,83"
                   },
                   "annuite": {
                     "valeur": 13477.63,
-                    "affichage": "13477,63"
+                    "affichage": "13 477,63"
                   }
                 }
               },
@@ -4701,7 +4701,7 @@
                 "valeurs": {
                   "capital": {
                     "valeur": 12959.24,
-                    "affichage": "12959,24"
+                    "affichage": "12 959,24"
                   },
                   "interets": {
                     "valeur": 518.37,
@@ -4709,11 +4709,11 @@
                   },
                   "amortissement": {
                     "valeur": 12959.26,
-                    "affichage": "12959,26"
+                    "affichage": "12 959,26"
                   },
                   "annuite": {
                     "valeur": 13477.63,
-                    "affichage": "13477,63"
+                    "affichage": "13 477,63"
                   }
                 }
               }
@@ -4721,15 +4721,15 @@
             "totaux": {
               "interets": {
                 "valeur": 7388.13,
-                "affichage": "7388,13"
+                "affichage": "7 388,13"
               },
               "amortissement": {
                 "valeur": 60000.020000000004,
-                "affichage": "60000,02"
+                "affichage": "60 000,02"
               },
               "annuite": {
                 "valeur": 67388.15,
-                "affichage": "67388,15"
+                "affichage": "67 388,15"
               }
             },
             "synthese": [],
@@ -5071,7 +5071,7 @@
               "reference": "H2",
               "formuleReference": "=VPM(F2;G2;-B2)",
               "valeur": 8712.036464,
-              "affichage": "8712,04",
+              "affichage": "8 712,04",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -5082,7 +5082,7 @@
               "reference": "B3",
               "formuleReference": "=E2",
               "valeur": 24407.963536,
-              "affichage": "24407,96",
+              "affichage": "24 407,96",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -5093,7 +5093,7 @@
               "reference": "B4",
               "formuleReference": "=E3",
               "valeur": 16550.205796,
-              "affichage": "16550,21",
+              "affichage": "16 550,21",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -5106,7 +5106,7 @@
               "reference": "B5",
               "formuleReference": "=E4",
               "valeur": 8417.426535,
-              "affichage": "8417,43",
+              "affichage": "8 417,43",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -5119,7 +5119,7 @@
               "reference": "C2",
               "formuleReference": "=B2*$F$2",
               "valeur": 1120,
-              "affichage": "1120",
+              "affichage": "1 120",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -5169,7 +5169,7 @@
               "reference": "D2",
               "formuleReference": "=$H$2-C2",
               "valeur": 7592.036464,
-              "affichage": "7592,04",
+              "affichage": "7 592,04",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -5180,7 +5180,7 @@
               "reference": "D3",
               "formuleReference": "=$H$2-C3",
               "valeur": 7857.75774,
-              "affichage": "7857,76",
+              "affichage": "7 857,76",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -5193,7 +5193,7 @@
               "reference": "D4",
               "formuleReference": "=$H$2-C4",
               "valeur": 8132.779261,
-              "affichage": "8132,78",
+              "affichage": "8 132,78",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -5206,7 +5206,7 @@
               "reference": "D5",
               "formuleReference": "=$H$2-C5",
               "valeur": 8417.426535,
-              "affichage": "8417,43",
+              "affichage": "8 417,43",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -5219,7 +5219,7 @@
               "reference": "E2",
               "formuleReference": "=B2-D2",
               "valeur": 24407.963536,
-              "affichage": "24407,96",
+              "affichage": "24 407,96",
               "tolerance": {
                 "type": "decimales",
                 "valeur": 2
@@ -5230,7 +5230,7 @@
               "reference": "E3",
               "formuleReference": "=B3-D3",
               "valeur": 16550.205796,
-              "affichage": "16550,21",
+              "affichage": "16 550,21",
               "tolerance": {
                 "type": "decimales",
                 "valeur": 2
@@ -5243,7 +5243,7 @@
               "reference": "E4",
               "formuleReference": "=B4-D4",
               "valeur": 8417.426535,
-              "affichage": "8417,43",
+              "affichage": "8 417,43",
               "tolerance": {
                 "type": "decimales",
                 "valeur": 2
@@ -5269,7 +5269,7 @@
               "reference": "I2",
               "formuleReference": "=H2*G2-B2",
               "valeur": 2848.145855,
-              "affichage": "2848,15",
+              "affichage": "2 848,15",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001

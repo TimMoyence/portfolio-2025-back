@@ -21,6 +21,10 @@ import {
   COURS_B2_06,
 } from '../../../../../test/factories/contenus-publies';
 import { PRESENTATIONS_VISUELLES_VALIDES } from '../../../../../test/factories/presentation-visuelle.factory';
+import {
+  ESPACE_FINE_INSECABLE,
+  ESPACE_INSECABLE,
+} from '../../../../common/domain/texte/sans-espaces-typographiques';
 import { CONFUSIONS } from './banque/confusions';
 import { lireCoursStocke } from './CoursStocke';
 import { deroulePresentateur } from './DeroulePresentateur';
@@ -192,6 +196,41 @@ describe('deroulePresentateur (affichage d une feuille corrigée, F-37)', () => 
       coef: ['1,0800', '0,9500', '1,0400', '0,9700'],
       synthese: ['4,00 %', '3,50 %'],
     });
+  });
+
+  it('F-11 · écrit chaque nombre servi au pupitre à la française, milliers séparés par une espace fine insécable : attendus, tableaux corrigés, sorties des machines', () => {
+    const affiches = (noeud: unknown): [number, string][] => {
+      if (Array.isArray(noeud)) {
+        return noeud.flatMap(affiches);
+      }
+      if (typeof noeud !== 'object' || noeud === null) {
+        return [];
+      }
+      const { valeur, affichage } = noeud as Record<string, unknown>;
+      const propre: [number, string][] =
+        typeof valeur === 'number' && typeof affichage === 'string'
+          ? [[valeur, affichage]]
+          : [];
+      return [...propre, ...Object.values(noeud).flatMap(affiches)];
+    };
+    const servis = CONTENUS.flatMap((contenu) =>
+      affiches(deroulePresentateur(buildCoursDuContenu(contenu), 0).ecrans),
+    );
+    const fine = ESPACE_FINE_INSECABLE;
+    const partieEntiere = (affichage: string): string =>
+      new RegExp(`^-?[\\d${fine}]+`, 'u').exec(affichage)?.[0] ?? affichage;
+
+    expect(servis.filter(([valeur]) => Math.abs(valeur) >= 1000)).not.toEqual(
+      [],
+    );
+    expect(
+      servis.filter(
+        ([, affichage]) =>
+          !new RegExp(`^-?\\d{1,3}(${fine}\\d{3})*$`, 'u').test(
+            partieEntiere(affichage),
+          ) || new RegExp(`\\d[ ${ESPACE_INSECABLE}]\\d`, 'u').test(affichage),
+      ),
+    ).toEqual([]);
   });
 
   it('sert un affichage à chaque attendu de chaque feuille des cours', () => {

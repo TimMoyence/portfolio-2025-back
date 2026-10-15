@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "a1ec4fb17a1a1e5ac1a20211a49f1b780ec448e85213af2e6396d676e7c283f1",
+  "empreinte": "750406f3ee96c09392695fcec2053c5ae3636e0fd0f7cd397325156ae770422e",
   "sujet": {
     "id": "b2-06-exponentielle-logarithme",
     "titre": "Exponentielle et logarithme",
@@ -4359,7 +4359,7 @@
                   },
                   "demande": {
                     "valeur": 1100,
-                    "affichage": "1100"
+                    "affichage": "1 100"
                   },
                   "z": {
                     "valeur": 7.003,
