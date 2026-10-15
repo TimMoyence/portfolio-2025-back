@@ -27,7 +27,7 @@ import {
 } from './SchemasCommuns';
 
 const piegeNumerique = z.object({ valeur: z.number(), confusion }).strict();
-const seuilReussite = z.number().gt(0).lte(1);
+const seuilReussiteDesVersionsPassees = z.number().gt(0).lte(1).optional();
 
 function signalerAmbiguite(
   valeur: number,
@@ -68,7 +68,7 @@ export const corrigeFeuille = z
     type: z.literal('feuille'),
     plan: planFeuille,
     attendus: auMoinsUn(attenduDeFeuille),
-    seuilReussite,
+    seuilReussite: seuilReussiteDesVersionsPassees,
   })
   .strict()
   .superRefine((corrige, contexte) => {
@@ -123,7 +123,7 @@ export const corrigeTableau = z
         .strict(),
     ),
     tolerance,
-    seuilReussite,
+    seuilReussite: seuilReussiteDesVersionsPassees,
   })
   .strict()
   .superRefine((corrige, contexte) => {
@@ -152,12 +152,12 @@ export const corrigeClassement = z
         .object({
           carteId: texte,
           categorieId: texte,
-          confusionSiErreur: confusion,
+          pieges: z.array(z.object({ categorieId: texte, confusion }).strict()),
           justification: texte,
         })
         .strict(),
     ),
-    seuilReussite,
+    seuilReussite: seuilReussiteDesVersionsPassees,
   })
   .strict()
   .superRefine((corrige, contexte) => {
@@ -166,7 +166,27 @@ export const corrigeClassement = z
       ['attendus'],
       signaleurDe(contexte),
     );
+    corrige.attendus.forEach((attendu, rang) => {
+      signalerLesPiegesDeLaCarte(
+        attendu,
+        signaleurDe(contexte, ['attendus', rang, 'pieges']),
+      );
+    });
   }) satisfies z.ZodType<CorrigeClassement>;
+
+function signalerLesPiegesDeLaCarte(
+  attendu: CorrigeClassement['attendus'][number],
+  signaler: Signaleur,
+): void {
+  const cases = attendu.pieges.map((piege) => piege.categorieId);
+  signalerDoublons(cases, [], signaler);
+  if (cases.includes(attendu.categorieId)) {
+    signaler(
+      [],
+      `la carte ${attendu.carteId} porte une confusion pour sa case attendue ${attendu.categorieId}`,
+    );
+  }
+}
 
 const solutionDEnigme = z.discriminatedUnion('type', [
   z
@@ -250,11 +270,10 @@ function confusionsDuCorrigeBrutes(
           : 'formule-non-recopiable',
       ]);
     case 'tableau':
+    case 'classement':
       return corrige.attendus.flatMap((attendu) =>
         attendu.pieges.map((piege) => piege.confusion),
       );
-    case 'classement':
-      return corrige.attendus.map((attendu) => attendu.confusionSiErreur);
     case 'enigme':
       return corrige.pieges.map((piege) => piege.confusion);
     default:

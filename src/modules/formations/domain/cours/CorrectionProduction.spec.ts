@@ -1,12 +1,17 @@
 import {
   ATTENDU_PRIX_INITIAL,
+  buildCorrigeClassement,
   buildCorrigeFeuille,
   buildCorrigeTableau,
   buildCorrigeTableDeVerite,
   buildPlanFeuille,
 } from '../../../../../test/factories/corriges.factory';
 import { attendreProductionReussie } from '../../../../../test/helpers/corrections';
-import { corrigerFeuille, corrigerTableau } from './CorrectionProduction';
+import {
+  corrigerClassement,
+  corrigerFeuille,
+  corrigerTableau,
+} from './CorrectionProduction';
 
 const PLAN = buildPlanFeuille({
   cellules: {
@@ -311,5 +316,37 @@ describe('corrigerTableau', () => {
       { rang: 1, cle: 'pOuQ', juste: false, confusion: 'ou-lu-exclusif' },
     ]);
     expect(correction.score).toBe(0.5);
+  });
+});
+
+describe('corrigerClassement', () => {
+  it.each([
+    ['ambigu', 'unite-manquante-ignoree'],
+    ['taux', 'valeur-confondue-avec-taux'],
+  ])(
+    'QP-15 · la confusion d une carte mal rangée suit la case choisie (%s)',
+    (case_, confusion) => {
+      const correction = corrigerClassement(buildCorrigeClassement(), {
+        'ca-2025': case_,
+        inflation: 'ambigu',
+      });
+
+      expect(correction.verdicts).toEqual([
+        { carteId: 'ca-2025', juste: false, confusion },
+        { carteId: 'inflation', juste: true, confusion: null },
+      ]);
+    },
+  );
+
+  it('QP-15 · ne prête aucune confusion à une carte laissée hors des cases', () => {
+    const correction = corrigerClassement(buildCorrigeClassement(), {
+      inflation: 'ambigu',
+    });
+
+    expect(correction.verdicts[0]).toEqual({
+      carteId: 'ca-2025',
+      juste: false,
+      confusion: null,
+    });
   });
 });

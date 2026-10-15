@@ -211,15 +211,6 @@ interface ProprietesDesExpositionsHistoriques {
   };
 }
 
-interface GuideFormateur {
-  readonly aDire?: string;
-  readonly question?: string;
-  readonly reponse?: string;
-  readonly calcul?: string;
-  readonly relance?: string;
-  readonly transition?: string;
-}
-
 export interface SocleHistorique {
   readonly id: string;
   readonly dureeMinutes: number;
@@ -227,7 +218,6 @@ export interface SocleHistorique {
   readonly notes: string;
   readonly modalite?: Modalite;
   readonly question?: QuestionVote;
-  readonly guide?: GuideFormateur;
   readonly renvoi?: string;
   readonly cadrageDuRenvoi?: CadrageDuRenvoi;
   readonly correctionSurPlace?: CorrectionSurPlace;

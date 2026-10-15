@@ -213,7 +213,6 @@ describe('tirer', () => {
           context: aDire,
           competency: 'taux-global',
         },
-        guide: { aDire },
       },
     } as unknown as Ecran;
 
