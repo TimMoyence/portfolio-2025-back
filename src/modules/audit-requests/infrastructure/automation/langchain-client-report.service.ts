@@ -11,11 +11,6 @@ import type {
 import type { BusinessType } from '../../domain/BusinessType';
 import { businessTypePromptHint } from '../../domain/BusinessType';
 import type { EngineCoverage } from '../../domain/EngineCoverage';
-import {
-  STATUTS_SCORE,
-  statutDuScore,
-  type StatutScore,
-} from '../../domain/StatutScore';
 import { AuditLocale, localeDeRedaction } from '../../domain/audit-locale.util';
 import { withHardTimeout } from './llm-execution.guardrails';
 import { LlmLimiteParLaConfig } from './llm-executor.port';
@@ -36,8 +31,6 @@ const SEVERITY_LABELS_EN: Record<ReportSeverity, string> = {
   medium: 'medium priority',
   low: 'low priority',
 };
-
-const pillarStatusSchema = z.enum(STATUTS_SCORE);
 
 const clientReportSchema = z.object({
   executiveSummary: z.string().min(1),
@@ -67,7 +60,6 @@ const clientReportSchema = z.object({
         pillar: z.string().min(1),
         score: z.number().min(0).max(100),
         target: z.number().min(0).max(100),
-        status: pillarStatusSchema,
       }),
     )
     .min(7)
@@ -267,7 +259,6 @@ export class LangchainClientReportService extends LlmLimiteParLaConfig {
         pillar: entry.pillar,
         score: scoreSur100(entry.score),
         target: scoreSur100(entry.target),
-        status: entry.status,
       })),
       context,
     );
@@ -300,12 +291,7 @@ export class LangchainClientReportService extends LlmLimiteParLaConfig {
   }
 
   private ensureSevenPillars(
-    llmPillars: Array<{
-      pillar: string;
-      score: number;
-      target: number;
-      status: StatutScore;
-    }>,
+    llmPillars: ClientReportSynthesis['pillarScorecard'],
     context: ClientReportContext,
   ): ClientReportSynthesis['pillarScorecard'] {
     const byKey = new Map(
@@ -318,7 +304,6 @@ export class LangchainClientReportService extends LlmLimiteParLaConfig {
           pillar,
           score: existing.score,
           target: existing.target || 85,
-          status: existing.status,
         };
       }
       return this.pilierMesure(context, pillar);
@@ -329,12 +314,10 @@ export class LangchainClientReportService extends LlmLimiteParLaConfig {
     context: ClientReportContext,
     pillar: string,
   ): ClientReportSynthesis['pillarScorecard'][number] {
-    const score = this.extractPillarScore(context.pillarScores, pillar);
     return {
       pillar,
-      score,
+      score: this.extractPillarScore(context.pillarScores, pillar),
       target: 85,
-      status: statutDuScore(score),
     };
   }
 

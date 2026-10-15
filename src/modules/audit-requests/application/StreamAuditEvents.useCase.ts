@@ -3,6 +3,7 @@ import { Observable } from 'rxjs';
 import { estObjet } from '../../../common/domain/est-objet';
 import type { IAuditRequestsRepository } from '../domain/IAuditRequests.repository';
 import type { AuditSnapshot } from '../domain/AuditProcessing';
+import { rapportClientServi } from '../domain/RapportClientServi';
 import { AUDIT_REQUESTS_REPOSITORY } from '../domain/token';
 
 const SSE_GLOBAL_TIMEOUT_MS = 30 * 60 * 1000;
@@ -116,7 +117,9 @@ export class StreamAuditEventsUseCase {
           keyChecks: audit.keyChecks,
           quickWins: audit.quickWins,
           pillarScores: audit.pillarScores,
-          clientReport: audit.clientReport ?? null,
+          clientReport: audit.clientReport
+            ? rapportClientServi(audit.clientReport, audit.locale)
+            : null,
           updatedAt,
         },
       };

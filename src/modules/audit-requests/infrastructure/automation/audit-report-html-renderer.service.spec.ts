@@ -54,8 +54,8 @@ describe('AuditReportHtmlRendererService', () => {
       aiVisibility: { score: 42, summary: 'Faible exposition IA' },
     },
     pillarScorecard: [
-      { pillar: 'Indexabilite', score: 80, target: 90, status: 'warning' },
-      { pillar: 'Citation', score: 35, target: 70, status: 'critical' },
+      { pillar: 'Indexabilite', score: 80, target: 90 },
+      { pillar: 'Citation', score: 35, target: 70 },
     ],
     quickWins: [
       {
@@ -142,15 +142,15 @@ describe('AuditReportHtmlRendererService', () => {
     expect(html).toContain('llms.txt');
   });
 
-  it('nomme le statut de chaque pilier Critique, À améliorer ou Objectif atteint', () => {
+  it('nomme le statut de chaque pilier Critique, À améliorer ou Objectif atteint, face à sa cible affichée', () => {
     const html = service.render(
       buildAudit(),
       {
         ...buildClientReport(),
         pillarScorecard: [
-          { pillar: 'Indexabilite', score: 40, target: 90, status: 'critical' },
-          { pillar: 'Citation', score: 60, target: 70, status: 'warning' },
-          { pillar: 'Structure', score: 85, target: 80, status: 'ok' },
+          { pillar: 'Indexabilite', score: 40, target: 90 },
+          { pillar: 'Citation', score: 60, target: 70 },
+          { pillar: 'Structure', score: 72, target: 70 },
         ],
       },
       buildExpertReport(),
