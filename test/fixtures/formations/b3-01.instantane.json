@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "428b1f501f77f14125d2adc8a729c792c881df688be4330744dfd8c2d4ae018f",
+  "empreinte": "ce7856e856f3464e7c85bc1926979e9163c31de0b47f046252e0182d9af25d6b",
   "sujet": {
     "id": "b3-01-donnee-brute-decision",
     "titre": "Expert Data : de la donnée brute à la décision",
@@ -92,7 +92,7 @@
         },
         "pieceJointe": {
           "libelle": "Export des ventes Norvane (classeur Excel)",
-          "fichier": "/assets/cours/b3-01/B3-01_export_ventes.d4f2ceab.xlsx"
+          "fichier": "/assets/cours/b3-01/B3-01_export_ventes.dfa709a7.xlsx"
         }
       },
       {
@@ -2111,7 +2111,7 @@
         },
         "pieceJointe": {
           "libelle": "Export des ventes Norvane (classeur Excel)",
-          "fichier": "/assets/cours/b3-01/B3-01_export_ventes.d4f2ceab.xlsx"
+          "fichier": "/assets/cours/b3-01/B3-01_export_ventes.dfa709a7.xlsx"
         },
         "notes": "• Lire le courriel à voix haute, puis faire télécharger le classeur depuis le poste.\n• Vérifier qu’il s’ouvre sans réparation et que l’onglet Commandes est visible.\n• Annoncer la séance : six niveaux, deux pauses de 15 minutes, un tableau de bord pour le comité de jeudi.",
         "diffusion": "catalogue",
@@ -2238,7 +2238,7 @@
             "confusions": [
               {
                 "id": "part-douteuse-estimee-sans-mesure",
-                "libelle": "Estimer à l’œil la part des lignes fausses ou douteuses au lieu de la mesurer, anomalie par anomalie."
+                "libelle": "Se tromper sur l’ordre de grandeur de la part des lignes fausses ou douteuses d’un export, faute de l’avoir mesurée anomalie par anomalie."
               }
             ]
           },
@@ -2248,7 +2248,7 @@
             "confusions": [
               {
                 "id": "libelle-pris-pour-cle",
-                "libelle": "Relier deux tables par un nom ou une ville au lieu de leur identifiant commun."
+                "libelle": "Prendre un nom ou une ville pour un identifiant, jusqu’à relier deux tables par eux : un nom se répète et s’écrit de plusieurs façons, seul l’identifiant désigne une seule fiche."
               }
             ]
           }
@@ -2609,8 +2609,7 @@
               "categorieId": "booleen",
               "justification": "VRAI ou FAUX : on compte les VRAI"
             }
-          ],
-          "seuilReussite": 0.75
+          ]
         },
         "explications": [
           {
@@ -2699,7 +2698,7 @@
             "confusions": [
               {
                 "id": "lignes-comptees-pour-commandes",
-                "libelle": "Compter les lignes quand on cherche les commandes : une commande compte autant de lignes que de produits."
+                "libelle": "Compter les lignes quand on cherche les commandes, ou croire que le fichier compte autant de lignes que de commandes, voire moins : une commande compte autant de lignes que de produits."
               }
             ]
           },
@@ -3155,8 +3154,7 @@
               "categorieId": "suspect-humain",
               "justification": "doublon ou deux établissements : on demande"
             }
-          ],
-          "seuilReussite": 0.75
+          ]
         },
         "explications": [
           {
@@ -3276,7 +3274,7 @@
             "confusions": [
               {
                 "id": "suspect-corrige-sans-validation",
-                "libelle": "Corriger seul une donnée douteuse au lieu de la signaler à qui peut la vérifier."
+                "libelle": "Corriger seul une donnée douteuse, ou une erreur certaine dont la bonne valeur n’est pas dans le fichier, au lieu de la signaler à qui peut la vérifier."
               },
               {
                 "id": "controle-apres-correction",
@@ -3366,7 +3364,7 @@
               },
               {
                 "id": "periode-mal-delimitee",
-                "libelle": "Agréger une autre période que celle de la question : la table entière au lieu des seuls mois demandés."
+                "libelle": "Agréger plus large que la question en oubliant une de ses conditions : la table entière au lieu des seuls mois demandés, ou toutes les ventes d’une agence au lieu de celles de la catégorie et de la période demandées."
               }
             ]
           }
@@ -3656,8 +3654,12 @@
                 "libelle": "Écrire un critère de comparaison sans joindre l’opérateur à la cellule par & (\">=\"&H1), ou 15 au lieu de 15 %."
               },
               {
+                "id": "plage-recherche-non-figee",
+                "libelle": "Recopier une recherche sans figer la table : la plage glisse et les dernières lignes ne sont plus trouvées."
+              },
+              {
                 "id": "periode-mal-delimitee",
-                "libelle": "Agréger une autre période que celle de la question : la table entière au lieu des seuls mois demandés."
+                "libelle": "Agréger plus large que la question en oubliant une de ses conditions : la table entière au lieu des seuls mois demandés, ou toutes les ventes d’une agence au lieu de celles de la catégorie et de la période demandées."
               }
             ]
           },
@@ -3666,12 +3668,16 @@
             "bonneReponse": "77 850 €",
             "confusions": [
               {
+                "id": "critere-mal-ecrit",
+                "libelle": "Écrire un critère de comparaison sans joindre l’opérateur à la cellule par & (\">=\"&H1), ou 15 au lieu de 15 %."
+              },
+              {
                 "id": "plage-recherche-non-figee",
                 "libelle": "Recopier une recherche sans figer la table : la plage glisse et les dernières lignes ne sont plus trouvées."
               },
               {
                 "id": "periode-mal-delimitee",
-                "libelle": "Agréger une autre période que celle de la question : la table entière au lieu des seuls mois demandés."
+                "libelle": "Agréger plus large que la question en oubliant une de ses conditions : la table entière au lieu des seuls mois demandés, ou toutes les ventes d’une agence au lieu de celles de la catégorie et de la période demandées."
               }
             ]
           }
@@ -3696,7 +3702,7 @@
           },
           {
             "reference": "b3-01-a2-ca-ouest",
-            "texte": "La région Ouest réunit Nantes (AG05) et Rennes (AG06) : 77 850 € de janvier à septembre 2026. Recopiée sans $, la plage de recherche glisse d’une ligne à chaque ligne : dès la ligne 14, elle a quitté la table et plus aucune agence n’est trouvée. Avant la ligne 14, la seule ligne Ouest trouvée, la ligne 2, date de 2025 : sur 2026, le total tombe à 0 €. Le même glissement vide la colonne categorie : à la première question aussi, 0 €. La fonction DATE écrite dans les guillemets, \">=DATE(2026;1;1)\", n’est pas calculée : Excel compare au texte « DATE(2026;1;1) » et ne trouve rien : 0 €, ici comme à la première question. Une date tapée en clair dans les guillemets fonctionne, mais dépend du format de date du poste : \">=\"&DATE(2026;1;1) n’en dépend pas. Sans critère de date, on additionne aussi 2025 : 188 908 €, et 27 862 € à la première question."
+            "texte": "La région Ouest réunit Nantes (AG05) et Rennes (AG06) : 77 850 € de janvier à septembre 2026. Recopiée sans $, la plage de recherche glisse d’une ligne à chaque ligne : dès la ligne 14, elle a quitté la table et plus aucune agence n’est trouvée. Avant, les seules lignes de l’Ouest trouvées, les lignes 4 à 6, forment une commande de Rennes du 30 septembre : 874 €. Le même glissement vide la colonne categorie dès la ligne 42 : à la première question, seuls les deux produits informatiques de cette commande restent, 729 €. La fonction DATE écrite dans les guillemets, \">=DATE(2026;1;1)\", n’est pas calculée : Excel compare au texte « DATE(2026;1;1) » et ne trouve rien : 0 €, ici comme à la première question. Une date tapée en clair dans les guillemets fonctionne, mais dépend du format de date du poste : \">=\"&DATE(2026;1;1) n’en dépend pas. Sans critère de date, on additionne aussi 2025 : 188 908 €, et 27 862 € à la première question."
           }
         ]
       },
@@ -3911,7 +3917,7 @@
               },
               {
                 "id": "periode-mal-delimitee",
-                "libelle": "Agréger une autre période que celle de la question : la table entière au lieu des seuls mois demandés."
+                "libelle": "Agréger plus large que la question en oubliant une de ses conditions : la table entière au lieu des seuls mois demandés, ou toutes les ventes d’une agence au lieu de celles de la catégorie et de la période demandées."
               },
               {
                 "id": "mediane-sur-liste-trop-large",
@@ -4350,7 +4356,7 @@
             "confusions": [
               {
                 "id": "axe-tronque-lu-comme-ecart",
-                "libelle": "Juger une évolution à la hauteur des barres sans lire l’origine et l’amplitude de l’axe."
+                "libelle": "Lire ou construire un graphique sans tenir compte de l’origine et de l’amplitude de l’axe : juger un écart à la hauteur des barres, tronquer l’axe ou supprimer ses graduations, ou renoncer à lire un écart que les graduations permettent de mesurer."
               }
             ]
           }
@@ -4506,7 +4512,7 @@
               },
               {
                 "id": "periode-mal-delimitee",
-                "libelle": "Agréger une autre période que celle de la question : la table entière au lieu des seuls mois demandés."
+                "libelle": "Agréger plus large que la question en oubliant une de ses conditions : la table entière au lieu des seuls mois demandés, ou toutes les ventes d’une agence au lieu de celles de la catégorie et de la période demandées."
               }
             ]
           },
@@ -4520,7 +4526,7 @@
               },
               {
                 "id": "periode-mal-delimitee",
-                "libelle": "Agréger une autre période que celle de la question : la table entière au lieu des seuls mois demandés."
+                "libelle": "Agréger plus large que la question en oubliant une de ses conditions : la table entière au lieu des seuls mois demandés, ou toutes les ventes d’une agence au lieu de celles de la catégorie et de la période demandées."
               }
             ]
           }
@@ -4847,7 +4853,7 @@
             "confusions": [
               {
                 "id": "periode-mal-delimitee",
-                "libelle": "Agréger une autre période que celle de la question : la table entière au lieu des seuls mois demandés."
+                "libelle": "Agréger plus large que la question en oubliant une de ses conditions : la table entière au lieu des seuls mois demandés, ou toutes les ventes d’une agence au lieu de celles de la catégorie et de la période demandées."
               }
             ]
           },
@@ -4865,7 +4871,7 @@
               },
               {
                 "id": "periode-mal-delimitee",
-                "libelle": "Agréger une autre période que celle de la question : la table entière au lieu des seuls mois demandés."
+                "libelle": "Agréger plus large que la question en oubliant une de ses conditions : la table entière au lieu des seuls mois demandés, ou toutes les ventes d’une agence au lieu de celles de la catégorie et de la période demandées."
               }
             ]
           },
@@ -5180,7 +5186,7 @@
             "confusions": [
               {
                 "id": "suspect-corrige-sans-validation",
-                "libelle": "Corriger seul une donnée douteuse au lieu de la signaler à qui peut la vérifier."
+                "libelle": "Corriger seul une donnée douteuse, ou une erreur certaine dont la bonne valeur n’est pas dans le fichier, au lieu de la signaler à qui peut la vérifier."
               },
               {
                 "id": "suppression-au-lieu-de-signalement",
@@ -5218,12 +5224,15 @@
       "lignes-comptees-pour-commandes": "B3-01-A1-05-COURS-DONNEE",
       "commandes-comptees-pour-lignes": "B3-01-A1-05-COURS-DONNEE",
       "type-de-variable-confondu": "B3-01-A1-05-COURS-DONNEE",
+      "identifiant-range-sous-un-autre-type": "B3-01-A1-05-COURS-DONNEE",
       "en-tete-compte-comme-ligne": "B3-01-A1-05-COURS-DONNEE",
       "libelle-pris-pour-cle": "B3-01-A1-06-COURS-RELATIONS",
       "cle-prise-pour-categorie": "B3-01-A1-06-COURS-RELATIONS",
       "part-douteuse-estimee-sans-mesure": "B3-01-A1-10-COURS-GRILLE",
       "suspect-corrige-sans-validation": "B3-01-A1-10-COURS-GRILLE",
       "correction-certaine-renvoyee-a-un-humain": "B3-01-A1-10-COURS-GRILLE",
+      "erreur-certaine-jugee-douteuse": "B3-01-A1-10-COURS-GRILLE",
+      "donnee-douteuse-jugee-fausse": "B3-01-A1-10-COURS-GRILLE",
       "suppression-au-lieu-de-signalement": "B3-01-A1-10-COURS-GRILLE",
       "texte-pris-pour-nombre": "B3-01-A1-11-COURS-OUTILS",
       "doublons-supprimes-sur-une-colonne": "B3-01-A1-11-COURS-OUTILS",
@@ -5314,7 +5323,7 @@
         },
         "pieceJointe": {
           "libelle": "Export des ventes Norvane (classeur Excel)",
-          "fichier": "/assets/cours/b3-01/B3-01_export_ventes.d4f2ceab.xlsx"
+          "fichier": "/assets/cours/b3-01/B3-01_export_ventes.dfa709a7.xlsx"
         }
       },
       {

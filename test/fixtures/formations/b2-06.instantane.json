@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "4760426b8e2b6be05ef1eafa6457ea9048a349685672d6a59a42acce4325be4c",
+  "empreinte": "1f5fa7da99170d76674a89abd95fb33c953a2de232a11ca7ae71ea44e4a622db",
   "sujet": {
     "id": "b2-06-exponentielle-logarithme",
     "titre": "Exponentielle et logarithme",
@@ -2005,7 +2005,7 @@
             "confusions": [
               {
                 "id": "nature-de-suite-confondue",
-                "libelle": "Confondre « ajouter toujours le même nombre » (suite arithmétique) et « multiplier toujours par le même nombre » (suite géométrique)."
+                "libelle": "Confondre « ajouter toujours le même nombre » (suite arithmétique) et « multiplier toujours par le même nombre » (suite géométrique), dans un sens ou dans l’autre, ou ajouter un taux au lieu de multiplier par lui."
               }
             ]
           },
@@ -2015,7 +2015,7 @@
             "confusions": [
               {
                 "id": "pente-ordonnee-inversees",
-                "libelle": "Inverser les deux séries dans PENTE ou ORDONNEE.ORIGINE, ou prendre la pente pour l’ordonnée à l’origine."
+                "libelle": "Inverser les deux séries dans PENTE ou ORDONNEE.ORIGINE, ou confondre le coefficient de x (la pente) et la valeur pour x = 0 (l’ordonnée à l’origine), dans un sens ou dans l’autre."
               }
             ]
           }
@@ -2543,7 +2543,7 @@
               },
               {
                 "id": "k-confondu-avec-taux",
-                "libelle": "Prendre k pour le taux d’évolution par unité : le coefficient est e^k et le taux e^k − 1."
+                "libelle": "Confondre k et le taux d’évolution par unité, en prenant k pour le taux ou le taux pour k : le coefficient est e^k, le taux e^k − 1 et k = ln(1 + taux)."
               }
             ]
           },
@@ -2553,7 +2553,7 @@
             "confusions": [
               {
                 "id": "k-confondu-avec-taux",
-                "libelle": "Prendre k pour le taux d’évolution par unité : le coefficient est e^k et le taux e^k − 1."
+                "libelle": "Confondre k et le taux d’évolution par unité, en prenant k pour le taux ou le taux pour k : le coefficient est e^k, le taux e^k − 1 et k = ln(1 + taux)."
               },
               {
                 "id": "exponentielle-lue-comme-produit",
@@ -2567,7 +2567,7 @@
             "confusions": [
               {
                 "id": "signe-de-k-ignore",
-                "libelle": "Croire qu’un modèle a e^(kx) croît toujours : il décroît quand k est négatif, en restant positif."
+                "libelle": "Ignorer le signe de k dans un modèle a e^(kx) : le croire toujours croissant, ou oublier le moins de k dans un calcul, alors qu’il décroît quand k est négatif, en restant positif."
               }
             ]
           },
@@ -2577,7 +2577,7 @@
             "confusions": [
               {
                 "id": "k-confondu-avec-taux",
-                "libelle": "Prendre k pour le taux d’évolution par unité : le coefficient est e^k et le taux e^k − 1."
+                "libelle": "Confondre k et le taux d’évolution par unité, en prenant k pour le taux ou le taux pour k : le coefficient est e^k, le taux e^k − 1 et k = ln(1 + taux)."
               },
               {
                 "id": "coefficient-confondu-avec-taux",
@@ -2874,8 +2874,7 @@
                 "memeQue": "C3"
               }
             }
-          ],
-          "seuilReussite": 0.8
+          ]
         },
         "explications": [
           {
@@ -3265,7 +3264,7 @@
             "confusions": [
               {
                 "id": "seuil-mal-arrondi",
-                "libelle": "Arrondir à l’entier inférieur le rang solution d’une inéquation de seuil, au lieu du premier entier qui la vérifie."
+                "libelle": "Mal conclure une recherche de seuil, en gardant la solution non entière d’une inéquation, en l’arrondissant à l’entier inférieur ou en arrêtant une boucle un passage trop tôt, au lieu de retenir le premier rang entier qui atteint le seuil."
               },
               {
                 "id": "seuil-par-division",
@@ -3289,7 +3288,7 @@
             "confusions": [
               {
                 "id": "seuil-mal-arrondi",
-                "libelle": "Arrondir à l’entier inférieur le rang solution d’une inéquation de seuil, au lieu du premier entier qui la vérifie."
+                "libelle": "Mal conclure une recherche de seuil, en gardant la solution non entière d’une inéquation, en l’arrondissant à l’entier inférieur ou en arrêtant une boucle un passage trop tôt, au lieu de retenir le premier rang entier qui atteint le seuil."
               },
               {
                 "id": "coefficient-confondu-avec-taux",
@@ -3573,8 +3572,7 @@
                 "memeQue": "C2"
               }
             }
-          ],
-          "seuilReussite": 0.8
+          ]
         },
         "explications": [
           {
@@ -4056,8 +4054,7 @@
           "tolerance": {
             "type": "absolue",
             "valeur": 0.001
-          },
-          "seuilReussite": 0.75
+          }
         },
         "explications": [
           {
@@ -4181,7 +4178,7 @@
               },
               {
                 "id": "pente-ordonnee-inversees",
-                "libelle": "Inverser les deux séries dans PENTE ou ORDONNEE.ORIGINE, ou prendre la pente pour l’ordonnée à l’origine."
+                "libelle": "Inverser les deux séries dans PENTE ou ORDONNEE.ORIGINE, ou confondre le coefficient de x (la pente) et la valeur pour x = 0 (l’ordonnée à l’origine), dans un sens ou dans l’autre."
               }
             ]
           },
@@ -4191,11 +4188,11 @@
             "confusions": [
               {
                 "id": "k-confondu-avec-taux",
-                "libelle": "Prendre k pour le taux d’évolution par unité : le coefficient est e^k et le taux e^k − 1."
+                "libelle": "Confondre k et le taux d’évolution par unité, en prenant k pour le taux ou le taux pour k : le coefficient est e^k, le taux e^k − 1 et k = ln(1 + taux)."
               },
               {
                 "id": "signe-de-k-ignore",
-                "libelle": "Croire qu’un modèle a e^(kx) croît toujours : il décroît quand k est négatif, en restant positif."
+                "libelle": "Ignorer le signe de k dans un modèle a e^(kx) : le croire toujours croissant, ou oublier le moins de k dans un calcul, alors qu’il décroît quand k est négatif, en restant positif."
               }
             ]
           },
@@ -4223,7 +4220,7 @@
               },
               {
                 "id": "signe-de-k-ignore",
-                "libelle": "Croire qu’un modèle a e^(kx) croît toujours : il décroît quand k est négatif, en restant positif."
+                "libelle": "Ignorer le signe de k dans un modèle a e^(kx) : le croire toujours croissant, ou oublier le moins de k dans un calcul, alors qu’il décroît quand k est négatif, en restant positif."
               }
             ]
           }
@@ -4670,8 +4667,7 @@
               },
               "forme": "references"
             }
-          ],
-          "seuilReussite": 0.8
+          ]
         },
         "explications": [
           {
@@ -4862,7 +4858,7 @@
             "confusions": [
               {
                 "id": "signe-de-k-ignore",
-                "libelle": "Croire qu’un modèle a e^(kx) croît toujours : il décroît quand k est négatif, en restant positif."
+                "libelle": "Ignorer le signe de k dans un modèle a e^(kx) : le croire toujours croissant, ou oublier le moins de k dans un calcul, alors qu’il décroît quand k est négatif, en restant positif."
               }
             ]
           },
@@ -4872,7 +4868,7 @@
             "confusions": [
               {
                 "id": "k-confondu-avec-taux",
-                "libelle": "Prendre k pour le taux d’évolution par unité : le coefficient est e^k et le taux e^k − 1."
+                "libelle": "Confondre k et le taux d’évolution par unité, en prenant k pour le taux ou le taux pour k : le coefficient est e^k, le taux e^k − 1 et k = ln(1 + taux)."
               }
             ]
           },
@@ -4942,7 +4938,7 @@
             "confusions": [
               {
                 "id": "seuil-mal-arrondi",
-                "libelle": "Arrondir à l’entier inférieur le rang solution d’une inéquation de seuil, au lieu du premier entier qui la vérifie."
+                "libelle": "Mal conclure une recherche de seuil, en gardant la solution non entière d’une inéquation, en l’arrondissant à l’entier inférieur ou en arrêtant une boucle un passage trop tôt, au lieu de retenir le premier rang entier qui atteint le seuil."
               }
             ]
           },
@@ -5289,7 +5285,7 @@
               },
               {
                 "id": "k-confondu-avec-taux",
-                "libelle": "Prendre k pour le taux d’évolution par unité : le coefficient est e^k et le taux e^k − 1."
+                "libelle": "Confondre k et le taux d’évolution par unité, en prenant k pour le taux ou le taux pour k : le coefficient est e^k, le taux e^k − 1 et k = ln(1 + taux)."
               }
             ]
           }
