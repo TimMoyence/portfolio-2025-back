@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { enArrierePlan } from '../../../common/application/en-arriere-plan';
 import type { NewsletterSubscriber } from '../domain/NewsletterSubscriber';
 import { ActionDAbonne } from './ActionDAbonne';
 
@@ -37,14 +38,16 @@ export class UnsubscribeNewsletterUseCase extends ActionDAbonne {
       return { status: 'unsubscribed', alreadyUnsubscribed: true };
     }
 
-    this.enArrierePlan(
+    enArrierePlan(
       this.scheduler.cancel(updated),
       'Newsletter drip cancel failed',
+      this.logger,
     );
     if (options.sendAck) {
-      this.enArrierePlan(
+      enArrierePlan(
         this.mailer.sendUnsubscribeAck(updated),
         'Newsletter unsubscribe ack email failed',
+        this.logger,
       );
     }
 

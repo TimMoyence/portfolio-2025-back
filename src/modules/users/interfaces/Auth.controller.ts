@@ -25,6 +25,7 @@ import {
   resolveClientIpOrUnknown,
 } from '../../../common/interfaces/security/client-ip.util';
 import { PARAMETRE_DU_JETON } from '../../../common/domain/lien-avec-jeton';
+import { navigateurConsignable } from '../../../common/domain/provenance';
 import {
   JetonDuLienEnRequete,
   RefusDeLienDocumente,
@@ -99,7 +100,7 @@ export class AuthController {
   }
 
   private extractUserAgent(req: Request): string {
-    return lireEnTete(req, 'user-agent') ?? 'unknown';
+    return navigateurConsignable(lireEnTete(req, 'user-agent')) ?? 'unknown';
   }
 
   private setRefreshCookie(res: Response, refreshToken: string): void {

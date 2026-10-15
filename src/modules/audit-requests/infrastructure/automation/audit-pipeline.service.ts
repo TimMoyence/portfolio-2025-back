@@ -528,6 +528,9 @@ export class AuditPipelineService {
       return writeQueue;
     };
 
+    const titreParUrl = new Map(
+      input.pageSnapshots.map((page) => [page.url, page.title ?? null]),
+    );
     const llmOutput = await this.llmReport.generate(
       {
         auditId: input.auditId,
@@ -566,6 +569,8 @@ export class AuditPipelineService {
           topIssues: recap.topIssues,
           recommendations: recap.recommendations,
           source: recap.source,
+          engineScores: recap.engineScores,
+          title: titreParUrl.get(recap.url) ?? null,
         })),
         pageSummary: input.pageSummary as unknown as Record<string, unknown>,
         techFingerprint: input.techFingerprint,

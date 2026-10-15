@@ -1,6 +1,7 @@
 import { Inject, Injectable, Logger, OnModuleDestroy } from '@nestjs/common';
 import { JobsOptions, Queue } from 'bullmq';
 import type { RedisOptions } from 'ioredis';
+import { enArrierePlan } from '../../../../common/application/en-arriere-plan';
 import {
   journalDErreursRedis,
   optionsRedis,
@@ -9,7 +10,6 @@ import type { IAuditQueuePort } from '../../domain/IAuditQueue.port';
 import { AUDIT_AUTOMATION_CONFIG } from '../../domain/token';
 import type { AuditAutomationConfig } from './audit.config';
 import { AuditPipelineService } from './audit-pipeline.service';
-import { runAuditPipelineWithTimeout } from './audit-pipeline-timeout.util';
 
 export interface AuditQueueJob {
   auditId: string;
@@ -103,19 +103,24 @@ export class AuditQueueService implements OnModuleDestroy, IAuditQueuePort {
 
   private runInline(auditId: string): void {
     setImmediate(() => {
-      void this.runWithTimeout(auditId).catch((error) => {
-        this.logger.warn(
-          `Inline audit execution failed for ${auditId}: ${String(error)}`,
-        );
-      });
+      enArrierePlan(
+        this.runToCompletion(auditId),
+        `Inline audit execution failed for ${auditId}`,
+        this.logger,
+      );
     });
   }
 
-  runWithTimeout(auditId: string): Promise<void> {
-    return runAuditPipelineWithTimeout(
-      this.pipeline,
-      auditId,
-      this.config.jobTimeoutMs,
-    );
+  async runToCompletion(auditId: string): Promise<void> {
+    const retard = setTimeout(() => {
+      this.logger.warn(
+        `Audit ${auditId} still running after ${this.config.jobTimeoutMs}ms, left to complete without retry`,
+      );
+    }, this.config.jobTimeoutMs);
+    try {
+      await this.pipeline.run(auditId);
+    } finally {
+      clearTimeout(retard);
+    }
   }
 }

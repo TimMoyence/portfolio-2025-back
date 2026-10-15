@@ -7,6 +7,7 @@ import {
 import {
   attendreTokenInconnuRefuse,
   executerSurAbonneTrouve,
+  journaliseLaCauseDeChaqueEffet,
 } from '../../../../../test/helpers/token-newsletter';
 import { ConfirmSubscriptionUseCase } from '../ConfirmSubscription.useCase';
 
@@ -73,6 +74,14 @@ describe('ConfirmSubscriptionUseCase', () => {
     await expect(confirmer()).resolves.toBeDefined();
     expect(etapeAtteinte()).toHaveBeenCalledTimes(1);
   });
+
+  journaliseLaCauseDeChaqueEffet(
+    [
+      ['Newsletter welcome email failed', () => mailer.sendWelcome],
+      ['Newsletter drip schedule failed', () => scheduler.schedule],
+    ],
+    () => confirmer(),
+  );
 
   it('leve DomainValidationError si le subscriber est unsubscribed', async () => {
     await expect(confirmer((abonne) => abonne.unsubscribe())).rejects.toThrow(

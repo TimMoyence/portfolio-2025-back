@@ -123,6 +123,19 @@ describeDb('Pilotage par ecran persiste (B21, db integration)', () => {
     });
   });
 
+  it('Q1 · révèle la correction d un vote jumelé passé en phase de révélation', async () => {
+    const sessionId = await ouvrirSeance();
+    await piloterSansErreur(
+      sessionId,
+      { screenId: ECRAN_DE_VOTE, phase: 'revote' },
+      { screenId: ECRAN_DE_VOTE, phase: 'revele' },
+    );
+
+    expect((await stocke(sessionId)).pilotage).toEqual({
+      [ECRAN_DE_VOTE]: { phase: 'revele', revele: true },
+    });
+  });
+
   it('refuse de ramener une phase en arriere', async () => {
     const sessionId = await ouvrirSeance();
     await piloterSansErreur(sessionId, {

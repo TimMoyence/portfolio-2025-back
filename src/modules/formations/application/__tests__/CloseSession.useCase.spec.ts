@@ -22,6 +22,10 @@ import {
   createMockSessionStateCache,
   createMockSessionsRepo,
 } from '../../../../../test/factories/formation.factory';
+import {
+  attendreLAvertissement,
+  espionnerLesAvertissements,
+} from '../../../../../test/helpers/avertissements';
 import { installerVariables } from '../../../../../test/helpers/environnement';
 import { verifierSeanceIntrouvable } from '../../../../../test/helpers/gardes-de-seance';
 import {
@@ -46,6 +50,7 @@ describe('CloseSessionUseCase', () => {
   let cache: ReturnType<typeof createMockSessionStateCache>;
   let scores: ReturnType<typeof createMockScoresRepo>;
   let sut: CloseSessionUseCase;
+  const avertissements = espionnerLesAvertissements();
 
   installerVariables(
     { FORMATION_TEACHER_NOTIFICATION_TO: TEACHER_NOTIFICATION_EMAIL },
@@ -265,6 +270,19 @@ describe('CloseSessionUseCase', () => {
   it('n interrompt pas la cloture si un mail echoue', async () => {
     mailer.sendCopieEtudiant.mockRejectedValue(new Error('smtp indisponible'));
     await cloturerMalgreLaPanne();
+  });
+
+  it('journalise la cause d un echec d envoi de la synthese', async () => {
+    mailer.sendSyntheseFormateur.mockRejectedValue(
+      new Error('smtp indisponible'),
+    );
+
+    await cloturerMalgreLaPanne();
+
+    await attendreLAvertissement(
+      avertissements,
+      `Envoi de la synthese formateur echoue pour ${TEACHER_NOTIFICATION_EMAIL}: smtp indisponible`,
+    );
   });
 
   describe('libelles des copies', () => {

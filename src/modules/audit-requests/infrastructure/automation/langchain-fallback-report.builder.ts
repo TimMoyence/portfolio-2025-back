@@ -260,13 +260,11 @@ export function buildFallbackExpertReport(
   } as unknown as ExpertReport;
 }
 
-function buildFallbackPerPageAnalysis(
-  input: LangchainAuditInput,
-): Array<Record<string, unknown>> {
-  const locale = input.locale;
-  const defaultEngineScore = (
-    engine: EngineScore['engine'],
-  ): Record<string, unknown> => ({
+function scoreMoteurSansDonnees(
+  engine: EngineScore['engine'],
+  locale: AuditLocale,
+): EngineScore {
+  return {
     engine,
     score: 50,
     indexable: true,
@@ -279,18 +277,33 @@ function buildFallbackPerPageAnalysis(
       ),
     ],
     opportunities: [],
-  });
+  };
+}
 
-  return input.pageRecaps.slice(0, 10).map((recap) => ({
+export function mesuresDeLaPage(
+  recap: LangchainAuditInput['pageRecaps'][number],
+  locale: AuditLocale,
+) {
+  return {
     url: recap.url,
     title:
-      recap.title ?? localizedText(locale, 'Page sans titre', 'Untitled page'),
+      recap.title?.trim() ||
+      localizedText(locale, 'Page sans titre', 'Untitled page'),
     engineScores: recap.engineScores ?? {
-      google: defaultEngineScore('google'),
-      bingChatGpt: defaultEngineScore('bing_chatgpt'),
-      perplexity: defaultEngineScore('perplexity'),
-      geminiOverviews: defaultEngineScore('gemini_overviews'),
+      google: scoreMoteurSansDonnees('google', locale),
+      bingChatGpt: scoreMoteurSansDonnees('bing_chatgpt', locale),
+      perplexity: scoreMoteurSansDonnees('perplexity', locale),
+      geminiOverviews: scoreMoteurSansDonnees('gemini_overviews', locale),
     },
+  };
+}
+
+function buildFallbackPerPageAnalysis(
+  input: LangchainAuditInput,
+): Array<Record<string, unknown>> {
+  const locale = input.locale;
+  return input.pageRecaps.slice(0, 10).map((recap) => ({
+    ...mesuresDeLaPage(recap, locale),
     topIssues: (recap.topIssues ?? []).slice(0, 6),
     recommendations: (recap.recommendations ?? []).slice(0, 6),
     evidence: [

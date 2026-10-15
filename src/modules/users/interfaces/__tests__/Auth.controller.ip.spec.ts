@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import type { Request, Response } from 'express';
+import { LONGUEUR_MAX_DU_NAVIGATEUR } from '../../../../common/domain/provenance';
 import {
   createMockAuthAuditLogger,
   createMockUseCase,
@@ -53,13 +54,16 @@ describe('AuthController — IP tracee dans l’audit', () => {
     },
   });
 
-  function buildRequest(ip: string | undefined): Request {
+  function buildRequest(
+    ip: string | undefined,
+    userAgent: string | undefined,
+  ): Request {
     return {
       ip,
       socket: { remoteAddress: SOCKET_REMOTE_ADDRESS },
       headers: {
         'x-forwarded-for': `${FORGED_BY_CLIENT}, 203.0.113.11`,
-        'user-agent': 'jest-agent',
+        'user-agent': userAgent,
       },
       cookies: { [REFRESH_TOKEN_COOKIE_NAME]: 'jeton-brut' },
     } as unknown as Request;
@@ -69,6 +73,7 @@ describe('AuthController — IP tracee dans l’audit', () => {
     flux: Flux,
     issue: Issue,
     ip: string | null = RESOLVED_BY_EXPRESS,
+    userAgent: string | null = 'jest-agent',
   ): Promise<Record<string, unknown>> {
     const auditLogger = createMockAuthAuditLogger();
     const unused = {} as never;
@@ -90,7 +95,10 @@ describe('AuthController — IP tracee dans l’audit', () => {
       unused,
       auditLogger,
     );
-    const echange = { req: buildRequest(ip ?? undefined), res };
+    const echange = {
+      req: buildRequest(ip ?? undefined, userAgent ?? undefined),
+      res,
+    };
     const appels: Record<Flux, () => Promise<unknown>> = {
       login: () => controller.login(loginDto, echange),
       google: () => controller.googleAuth(googleDto, echange),
@@ -140,6 +148,28 @@ describe('AuthController — IP tracee dans l’audit', () => {
     const entree = await entreeDAudit('login', ECHEC_LOGIN, null);
 
     expect(entree.ip).toBe(SOCKET_REMOTE_ADDRESS);
+  });
+
+  it('borne le navigateur journalise', async () => {
+    const entree = await entreeDAudit(
+      'login',
+      ECHEC_LOGIN,
+      RESOLVED_BY_EXPRESS,
+      'B'.repeat(15_000),
+    );
+
+    expect(entree.userAgent).toHaveLength(LONGUEUR_MAX_DU_NAVIGATEUR);
+  });
+
+  it('journalise un navigateur absent comme inconnu', async () => {
+    const entree = await entreeDAudit(
+      'login',
+      ECHEC_LOGIN,
+      RESOLVED_BY_EXPRESS,
+      null,
+    );
+
+    expect(entree.userAgent).toBe('unknown');
   });
 
   it('journalise l’email saisi sur un echec de connexion', async () => {

@@ -213,7 +213,6 @@ describe('tirer', () => {
           context: aDire,
           competency: 'taux-global',
         },
-        guide: { aDire },
       },
     } as unknown as Ecran;
 
@@ -511,6 +510,23 @@ describe('tirer (briques de la V3)', () => {
       corrigeDe: 'B2-01-A2-06-POINTS',
     });
     expect(reponses).toMatchObject({ ecranCorrige: 'B2-01-A2-06-POINTS' });
+  });
+
+  it('sert un questionnaire sans consigne sans ligne de consigne', () => {
+    const proprietes = buildProprietesStockees('questionnaire');
+    delete proprietes.consigne;
+    const cours = lireCoursStocke(
+      buildCoursDeBriques([
+        buildEcranDeBrique('questionnaire', { proprietes }),
+      ]),
+    );
+
+    const [questionnaire] = tirer(cours, 0).sujet.ecrans;
+
+    expect(questionnaire.donnees).toMatchObject({
+      intitule: 'Atelier 1 — Lire, rapporter, estimer',
+    });
+    expect(questionnaire.donnees).not.toHaveProperty('consigne');
   });
 
   it('ne tire ni solution ni corrigé pour une production', () => {

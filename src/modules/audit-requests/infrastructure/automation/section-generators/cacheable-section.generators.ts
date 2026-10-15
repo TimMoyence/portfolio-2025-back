@@ -2,7 +2,13 @@ import type { BaseLanguageModelInput } from '@langchain/core/language_models/bas
 import type { RunnableConfig } from '@langchain/core/runnables';
 import type { ChatOpenAI } from '@langchain/openai';
 import type { ZodType } from 'zod';
+import {
+  invokeWithLlmTracking,
+  type LlmInvocationOptions,
+} from '../../../../../common/infrastructure/llm/llm-usage-tracking.util';
+import type { MetricsService } from '../../../../../common/interfaces/metrics/metrics.service';
 import type { AuditLocale } from '../../../domain/audit-locale.util';
+import type { AuditAutomationConfig } from '../audit.config';
 import type {
   ClientCommsSection,
   ExecutiveSection,
@@ -36,6 +42,21 @@ export type InvokeTrackedFn = <T>(
   locale: AuditLocale,
   signal?: AbortSignal,
 ) => Promise<T>;
+
+export function suivreLesAppelsLlm(
+  config: Pick<AuditAutomationConfig, 'llmModel'>,
+  metrics: MetricsService | undefined,
+): InvokeTrackedFn {
+  return (chain, messages, section, locale, signal) =>
+    invokeWithLlmTracking(
+      (m: unknown, o: LlmInvocationOptions) =>
+        chain.invoke(m as BaseLanguageModelInput, o),
+      messages,
+      { section, locale, model: config.llmModel },
+      metrics ?? null,
+      signal,
+    );
+}
 
 interface CacheableSectionDeps {
   cachingRunner: CachingSectionRunner;

@@ -328,6 +328,12 @@ function seanceComplete(
         return trouve;
       };
 
+      const rangDOuverture = (): number =>
+        cours.ecrans.findIndex((ecran) => questionsDe(ecran).length > 0);
+
+      const questionDOuverture = (): Question =>
+        questionsDe(cours.ecrans[rangDOuverture()])[0];
+
       const piecesJointesDuCours = (
         ids: readonly string[],
       ): [string, unknown][] => piecesJointesAttendues(cours, ids);
@@ -1057,7 +1063,7 @@ function seanceComplete(
           }
           const complete = noterConflit(await inscrire(postes[3]));
           const avantDepart = noterConflit(
-            await repondre(postes[0], questionsDe(cours.ecrans[0])[0]),
+            await repondre(postes[0], questionDOuverture()),
           );
 
           expect({
@@ -1083,16 +1089,16 @@ function seanceComplete(
           await formateur('post', `/sessions/${sessionId}/start`).expect(
             SANS_CONTENU,
           );
-          await piloter({ ecran: 0 }).expect(SANS_CONTENU);
-          const rappel = cours.ecrans[0];
-          briquesJouees.add(rappel.brique);
+          await piloter({ ecran: rangDOuverture() }).expect(SANS_CONTENU);
+          const ouverture = cours.ecrans[rangDOuverture()];
+          briquesJouees.add(ouverture.brique);
           const sujet = await poste(
             'get',
             `/sessions/${sessionId}/sujet`,
             postes[0].jeton,
           ).expect(OK);
           for (const unPoste of [postes[0], postes[1], postes[2], evince]) {
-            await repondre(unPoste, questionsDe(rappel)[0]).expect(CREE);
+            await repondre(unPoste, questionDOuverture()).expect(CREE);
           }
 
           const exercice = cours.ecrans.find(
@@ -1134,7 +1140,7 @@ function seanceComplete(
           );
           const ecritureDeLEvince = await repondre(
             evince,
-            questionsDe(rappel)[0],
+            questionDOuverture(),
           );
           const lectureDeLEvince = await poste(
             'get',
@@ -1172,7 +1178,7 @@ function seanceComplete(
             reponsesDeLEvince: 1,
             ecransDuSujet: ECRANS_DU_COURS,
             piecesJointesDuSujet: piecesJointesDuCours(
-              attendu.piecesJointes.filter((id) => id === rappel.id),
+              attendu.piecesJointes.filter((id) => id === ouverture.id),
             ),
             secretsDuSujet: [],
           });
@@ -1202,7 +1208,7 @@ function seanceComplete(
           calculsDeBilan = bilanEspionne.mock.calls.length;
 
           for (const [rang, ecran] of cours.ecrans.entries()) {
-            if (rang === 0) {
+            if (rang === rangDOuverture()) {
               continue;
             }
             await jouerEcran(rang, ecran);
@@ -1336,7 +1342,7 @@ function seanceComplete(
 
           const premier = await etatDe(postes[0]);
           const ignorant = await etatDe(postes[2]);
-          const question = questionsDe(cours.ecrans[0])[0];
+          const question = questionDOuverture();
           const seconde = noterConflit(await repondre(postes[0], question));
 
           expect({
@@ -1685,9 +1691,9 @@ seanceComplete(COURS_B2_02, {
 
 seanceComplete(COURS_B2_03, {
   ...TRAME_DES_COURS_B2,
-  questionsNotees: 18,
-  cellulesDesFeuilles: [5, 10, 34],
-  exerciceEnAvance: 'B2-03-A2-04-EXEMPLE-MORGAN',
+  questionsNotees: 12,
+  cellulesDesFeuilles: [10, 33],
+  exerciceEnAvance: 'B2-03-A4-06-BILLET-DE-SORTIE',
 });
 
 seanceComplete(COURS_B2_04, {

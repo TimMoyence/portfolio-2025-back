@@ -449,24 +449,24 @@ se font à main levée, la feuille de calcul à la calculatrice.
 nouvelles (deux variables). Les concepts et confusions de la v1 non repris ici restent dans la banque :
 les versions clôturées du cours y renvoient encore.
 
-| Identifiant                          | Concept           | Libellé                                                         | Remédiation                   |
-| ------------------------------------ | ----------------- | --------------------------------------------------------------- | ----------------------------- |
-| `moyenne-lue-comme-mediane`          | mediane           | Croire que la moyenne partage la série en deux moitiés.         | B2-02-A1-07-EXEMPLE-RESUME    |
-| `mediane-sans-tri`                   | mediane           | Prendre la valeur du milieu de la liste sans trier.             | B2-02-A1-07-EXEMPLE-RESUME    |
-| `mediane-rang-pair`                  | mediane           | Retenir une seule des deux valeurs centrales.                   | B2-02-A1-07-EXEMPLE-RESUME    |
-| `valeur-extreme-ignoree`             | choix-du-resume   | Résumer par la moyenne une série tirée par une valeur extrême.  | B2-02-A1-06-COURS-ECART       |
-| `valeur-extreme-supprimee`           | choix-du-resume   | Retirer une valeur extrême gênante sans pièce.                  | B2-02-A1-06-COURS-ECART       |
-| `ecart-type-population-echantillon`  | ecart-type        | Confondre division par n et par n − 1.                          | B2-02-A1-06-COURS-ECART       |
-| `variance-confondue-avec-ecart-type` | ecart-type        | Donner la variance comme écart-type.                            | B2-02-A1-06-COURS-ECART       |
-| `etendue-prise-pour-dispersion`      | dispersion        | Juger la dispersion sur la seule étendue.                       | B2-02-A1-06-COURS-ECART       |
-| `correlation-prise-pour-causalite`   | lecture-graphique | Conclure sur une cause à partir de deux évolutions simultanées. | B2-02-A2-03-COURS-CORRELATION |
-| `point-moyen-confondu`               | nuage-de-points   | Prendre le point du milieu du tableau pour le point moyen.      | B2-02-A2-04-EXEMPLE-NUAGE     |
-| `correlation-lue-comme-pente`        | correlation       | Lire r comme la pente de la droite.                             | B2-02-A2-03-COURS-CORRELATION |
-| `correlation-jugee-au-signe`         | correlation       | Juger l'ajustement au signe de r.                               | B2-02-A2-03-COURS-CORRELATION |
-| `pente-ordonnee-inversees`           | ajustement-affine | Inverser les séries dans PENTE, ou la pente et l'ordonnée.      | B2-02-A3-03-EXEMPLE-DROITE    |
-| `rang-pris-pour-annee`               | prevision         | Remplacer x par l'année au lieu du rang.                        | B2-02-A3-03-EXEMPLE-DROITE    |
-| `seuil-mal-arrondi`                  | prevision         | Arrondir le rang d'un seuil à l'entier inférieur.               | B2-02-A3-03-EXEMPLE-DROITE    |
-| `extrapolation-sans-reserve`         | prevision         | Prolonger une tendance loin des données sans réserve.           | B2-02-A3-02-COURS-PREVOIR     |
+| Identifiant                          | Concept           | Libellé                                                                                                              | Remédiation                   |
+| ------------------------------------ | ----------------- | -------------------------------------------------------------------------------------------------------------------- | ----------------------------- |
+| `moyenne-lue-comme-mediane`          | mediane           | Croire que la moyenne partage la série en deux moitiés.                                                              | B2-02-A1-07-EXEMPLE-RESUME    |
+| `mediane-sans-tri`                   | mediane           | Prendre la valeur du milieu de la liste sans trier.                                                                  | B2-02-A1-07-EXEMPLE-RESUME    |
+| `mediane-rang-pair`                  | mediane           | Retenir une seule des deux valeurs centrales.                                                                        | B2-02-A1-07-EXEMPLE-RESUME    |
+| `valeur-extreme-ignoree`             | choix-du-resume   | Résumer par la moyenne une série tirée par une valeur extrême.                                                       | B2-02-A1-06-COURS-ECART       |
+| `valeur-extreme-supprimee`           | choix-du-resume   | Retirer une valeur extrême gênante sans pièce.                                                                       | B2-02-A1-06-COURS-ECART       |
+| `ecart-type-population-echantillon`  | ecart-type        | Confondre division par n et par n − 1.                                                                               | B2-02-A1-06-COURS-ECART       |
+| `variance-confondue-avec-ecart-type` | ecart-type        | Donner la variance, ou sa moitié, comme écart-type.                                                                  | B2-02-A1-06-COURS-ECART       |
+| `etendue-prise-pour-dispersion`      | dispersion        | Juger la dispersion sur la seule étendue.                                                                            | B2-02-A1-06-COURS-ECART       |
+| `correlation-prise-pour-causalite`   | lecture-graphique | Conclure sur une cause ou sur la suite de la tendance à partir de deux évolutions simultanées ou d'un r proche de 1. | B2-02-A2-03-COURS-CORRELATION |
+| `point-moyen-confondu`               | nuage-de-points   | Prendre pour point moyen le milieu du tableau, les sommes ou la moyenne de l'autre série.                            | B2-02-A2-04-EXEMPLE-NUAGE     |
+| `correlation-lue-comme-pente`        | correlation       | Lire r comme la pente de la droite.                                                                                  | B2-02-A2-03-COURS-CORRELATION |
+| `correlation-jugee-au-signe`         | correlation       | Juger l'ajustement au signe de r.                                                                                    | B2-02-A2-03-COURS-CORRELATION |
+| `pente-ordonnee-inversees`           | ajustement-affine | Inverser les séries dans PENTE, ou la pente et l'ordonnée.                                                           | B2-02-A3-03-EXEMPLE-DROITE    |
+| `rang-pris-pour-annee`               | prevision         | Remplacer x par l'année, ou par l'écart à l'année de départ, au lieu du rang.                                        | B2-02-A3-03-EXEMPLE-DROITE    |
+| `seuil-mal-arrondi`                  | prevision         | Arrondir le rang d'un seuil à l'entier inférieur, ou ne pas l'arrondir.                                              | B2-02-A3-03-EXEMPLE-DROITE    |
+| `extrapolation-sans-reserve`         | prevision         | Prolonger une tendance sans réserve, ou sans mesurer l'écart au réel.                                                | B2-02-A3-02-COURS-PREVOIR     |
 
 ### 5.10 Rappels espacés
 

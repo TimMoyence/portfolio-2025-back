@@ -30,7 +30,7 @@ export class AuditWorkerService implements OnModuleInit, OnModuleDestroy {
     this.worker = new Worker<AuditQueueJob>(
       this.queueService.queueName,
       async (job) => {
-        await this.queueService.runWithTimeout(job.data.auditId);
+        await this.queueService.runToCompletion(job.data.auditId);
       },
       {
         connection: this.queueService.connection,

@@ -1,12 +1,6 @@
-import type { BaseLanguageModelInput } from '@langchain/core/language_models/base';
 import { ChatOpenAI } from '@langchain/openai';
 import { Inject, Injectable, Logger, Optional } from '@nestjs/common';
 import { MetricsService } from '../../../../common/interfaces/metrics/metrics.service';
-import {
-  invokeWithLlmTracking,
-  type LlmInvocationContext,
-  type LlmInvocationOptions,
-} from '../../../../common/infrastructure/llm/llm-usage-tracking.util';
 import { AuditLocale, localeDeRedaction } from '../../domain/audit-locale.util';
 import { AUDIT_AUTOMATION_CONFIG } from '../../domain/token';
 import type { AuditAutomationConfig } from './audit.config';
@@ -33,6 +27,7 @@ import { DeadlineBudget, withHardTimeout } from './llm-execution.guardrails';
 import { PROMPT_VERSION } from './prompts/v1/audit-system-prompts';
 import {
   GENERATEURS_DE_SECTION,
+  suivreLesAppelsLlm,
   type InvokeTrackedFn,
 } from './section-generators/cacheable-section.generators';
 import {
@@ -88,31 +83,12 @@ export class LangchainAuditReportService {
     private readonly llmExecutor: LlmExecutor,
     private readonly cachingRunner: CachingSectionRunner,
     @Optional()
-    private readonly metricsService?: MetricsService,
-  ) {}
-
-  private buildLlmContext(
-    section: string,
-    locale: AuditLocale,
-  ): LlmInvocationContext {
-    return { section, locale, model: this.config.llmModel };
+    metricsService?: MetricsService,
+  ) {
+    this.invokeTracked = suivreLesAppelsLlm(config, metricsService);
   }
 
-  private readonly invokeTracked: InvokeTrackedFn = (
-    chain,
-    messages,
-    section,
-    locale,
-    signal,
-  ) =>
-    invokeWithLlmTracking(
-      (m: unknown, o: LlmInvocationOptions) =>
-        chain.invoke(m as BaseLanguageModelInput, o),
-      messages,
-      this.buildLlmContext(section, locale),
-      this.metricsService ?? null,
-      signal,
-    );
+  private readonly invokeTracked: InvokeTrackedFn;
 
   async generate(
     input: LangchainAuditInput,

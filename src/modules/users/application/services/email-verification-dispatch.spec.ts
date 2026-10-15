@@ -4,6 +4,7 @@ import { Logger } from '@nestjs/common';
 import type { IEmailVerificationNotifier } from '../../domain/IEmailVerificationNotifier';
 import { buildUser } from '../../../../../test/factories/user.factory';
 import { createMockEmailVerificationTokensRepo } from '../../../../../test/factories/email-verification-token.factory';
+import { espionnerLeLoggerAChaqueTest } from '../../../../../test/helpers/silence-nest-logger';
 import { TokenHash } from '../../domain/TokenHash';
 import { EnvoiDeVerificationEmail } from './email-verification-dispatch';
 
@@ -16,7 +17,6 @@ function construire(base = 'https://asilidesign.fr/verify-email') {
     get: jest.fn().mockReturnValue(base),
   } as unknown as ConfigService;
   const logger = new Logger('test');
-  jest.spyOn(logger, 'error').mockImplementation(() => undefined);
   return {
     tokensRepo,
     notifier,
@@ -27,6 +27,7 @@ function construire(base = 'https://asilidesign.fr/verify-email') {
 
 describe('EnvoiDeVerificationEmail', () => {
   const user = buildUser({ id: 'user-7', email: 'eve@example.com' });
+  const erreurs = espionnerLeLoggerAChaqueTest('error');
 
   it('n enregistre que l empreinte du jeton envoye dans le lien', async () => {
     const { tokensRepo, notifier, logger, envoi } = construire();
@@ -71,8 +72,9 @@ describe('EnvoiDeVerificationEmail', () => {
       envoi.envoyer(user, 'user-7', logger, 'Echec du renvoi'),
     ).resolves.toBeUndefined();
 
-    expect(logger.error).toHaveBeenCalledWith(
+    expect(erreurs()).toHaveBeenCalledWith(
       'Echec du renvoi for eve@example.com: Error: smtp',
     );
+    expect(erreurs().mock.contexts).toEqual([logger]);
   });
 });

@@ -6,6 +6,10 @@ import {
   createMockNewsletterMailer,
   createMockNewsletterSubscriberRepo,
 } from '../../../../../test/factories/newsletter-subscriber.factory';
+import {
+  attendreLAvertissement,
+  espionnerLesAvertissements,
+} from '../../../../../test/helpers/avertissements';
 import { flushPromises } from '../../../../../test/helpers/flush-promises';
 import type { NewsletterSubscriber } from '../../domain/NewsletterSubscriber';
 import { SubscribeNewsletterUseCase } from '../SubscribeNewsletter.useCase';
@@ -32,6 +36,7 @@ describe('SubscribeNewsletterUseCase', () => {
   let repo: ReturnType<typeof createMockNewsletterSubscriberRepo>;
   let mailer: ReturnType<typeof createMockNewsletterMailer>;
   let useCase: SubscribeNewsletterUseCase;
+  const avertissements = espionnerLesAvertissements();
 
   const souscrire = async () => {
     const result = await useCase.execute(validCommand);
@@ -95,6 +100,10 @@ describe('SubscribeNewsletterUseCase', () => {
     mailer.sendConfirmation.mockRejectedValueOnce(new Error('SMTP down'));
 
     await expect(souscrire()).resolves.toEqual(CREE_EN_ATTENTE);
+    await attendreLAvertissement(
+      avertissements,
+      'Newsletter confirmation email failed: SMTP down',
+    );
   });
 
   const perdreLaCourseFace = (raced: NewsletterSubscriber | null) => {

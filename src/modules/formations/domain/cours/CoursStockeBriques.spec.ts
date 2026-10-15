@@ -1,3 +1,4 @@
+import { buildCorrigeClassement } from '../../../../../test/factories/corriges.factory';
 import {
   buildCoursStocke,
   buildEcranStocke,
@@ -27,6 +28,11 @@ import {
 const TIRAGE = creerTirage(creerRng(5));
 
 type Chemin = readonly (string | number)[];
+
+interface PiegeDeTriStocke {
+  readonly categorieId: string;
+  readonly confusion: string;
+}
 
 function avecCleInconnue(
   proprietes: Record<string, unknown>,
@@ -573,6 +579,124 @@ describe('stockage multi-briques (B1)', () => {
       ).toThrow(/description/);
     });
 
+    it.each(['fp-sheet', 'fp-table-build', 'fp-cardsort'])(
+      'QP-05 · relit le seuil de réussite d une version passée (%s) et refuse de le publier',
+      (brique) => {
+        const ecran = avecProprietes(brique, (proprietes) => {
+          const [question] = proprietes.questions as {
+            corrige: Record<string, unknown>;
+          }[];
+          question.corrige.seuilReussite = 0.8;
+        });
+
+        expect(lireEcran(ecran).brique).toBe(brique);
+        expect(() =>
+          lireContenuAPublier(buildContenuPubliable([ecran])),
+        ).toThrow(/seuil de réussite/);
+      },
+    );
+
+    it.each(BRIQUES_STOCKEES)(
+      'QP-17 · ignore le guide formateur d une version passée (%s) et refuse de le publier, clé inconnue',
+      (brique) => {
+        const ecran = avecProprietes(brique, (proprietes) => {
+          proprietes.guide = { aDire: 'Relire le repère.', relance: 'Et ?' };
+        });
+
+        expect(Object.keys(lireEcran(ecran))).not.toContain('guide');
+        expect(() =>
+          lireContenuAPublier(buildContenuPubliable([ecran])),
+        ).toThrow(/Unrecognized key: "guide"/);
+      },
+    );
+
+    it.each<readonly [string, (pieges: PiegeDeTriStocke[]) => void, RegExp]>([
+      [
+        'un couple carte × mauvaise case sans confusion',
+        (pieges) => {
+          pieges.pop();
+        },
+        /la carte ca-2025 rangée en taux n'a pas de confusion/,
+      ],
+      [
+        'une confusion sur la case attendue',
+        (pieges) => {
+          pieges.push({
+            categorieId: 'valeur',
+            confusion: 'sens-de-variation',
+          });
+        },
+        /la carte ca-2025 porte une confusion pour sa case attendue valeur/,
+      ],
+      [
+        'une confusion pour une case absente du plan',
+        (pieges) => {
+          pieges.push({
+            categorieId: 'inconnue',
+            confusion: 'sens-de-variation',
+          });
+        },
+        /la carte ca-2025 porte une confusion pour la case inconnue, absente du plan/,
+      ],
+      [
+        'deux confusions pour la même case',
+        (pieges) => {
+          pieges.push({ ...pieges[0] });
+        },
+        /en double : « ambigu »/,
+      ],
+    ])('QP-15 · refuse un tri avec %s', (_cas, modifier, message) => {
+      const ecran = avecProprietes('fp-cardsort', (proprietes) => {
+        const [question] = proprietes.questions as {
+          corrige: { attendus: { pieges: PiegeDeTriStocke[] }[] };
+        }[];
+        modifier(question.corrige.attendus[0].pieges);
+      });
+
+      expect(() => lireEcran(ecran)).toThrow(message);
+    });
+
+    it('QP-15 · relit le tri d une version passée, sa confusion unique valant pour chaque mauvaise case, et refuse de le publier', () => {
+      const ecran = avecProprietes('fp-cardsort', (proprietes) => {
+        const [question] = proprietes.questions as {
+          corrige: { attendus: Record<string, unknown>[] };
+        }[];
+        question.corrige.attendus = question.corrige.attendus.map(
+          (attendu) => ({
+            ...Object.fromEntries(
+              Object.entries(attendu).filter(([cle]) => cle !== 'pieges'),
+            ),
+            confusionSiErreur: 'sens-de-variation',
+          }),
+        );
+      });
+      const confusionsParCase = (categorieIds: readonly string[]) =>
+        categorieIds.map((categorieId) => ({
+          categorieId,
+          confusion: 'sens-de-variation' as const,
+        }));
+
+      const tri = lireEcran(ecran);
+
+      expect(tri.brique === 'fp-cardsort' && tri.production.corrige).toEqual(
+        buildCorrigeClassement({
+          attendus: [
+            {
+              ...buildCorrigeClassement().attendus[0],
+              pieges: confusionsParCase(['ambigu', 'taux']),
+            },
+            {
+              ...buildCorrigeClassement().attendus[1],
+              pieges: confusionsParCase(['valeur', 'taux']),
+            },
+          ],
+        }),
+      );
+      expect(() => lireContenuAPublier(buildContenuPubliable([ecran]))).toThrow(
+        /confusionSiErreur/,
+      );
+    });
+
     it('refuse deux écrans de même identifiant et deux questions de même identifiant', () => {
       const vote = buildEcranDeBrique('fp-recall');
       const billet = buildEcranDeBrique('fp-exit', {
@@ -648,6 +772,16 @@ describe('stockage multi-briques (B1)', () => {
       expect(ecran.modalite).toBe('solo');
     });
 
+    it('lit une mission sans geste, que ses seules questions mettent au travail', () => {
+      const ecran = lireEcran(
+        avecProprietes('fp-pro', (proprietes) => {
+          proprietes.geste = null;
+        }),
+      );
+
+      expect(ecran.brique === 'fp-pro' && ecran.proprietes.geste).toBeNull();
+    });
+
     it('porte le délai du rappel d ouverture et l invite du billet', () => {
       expect(ecranDeBrique('fp-recall').delaiMs).toBe(45000);
       expect(ecranDeBrique('fp-exit').invite).toBe(
@@ -670,6 +804,17 @@ describe('stockage multi-briques (B1)', () => {
       ]);
     });
 
+    it('lit un questionnaire sans consigne, que son intitulé suffit à présenter', () => {
+      const ecran = lireEcran(
+        avecProprietes('questionnaire', (proprietes) => {
+          delete proprietes.consigne;
+        }),
+      );
+
+      expect(ecran.brique).toBe('questionnaire');
+      expect(ecran).not.toHaveProperty('consigne');
+    });
+
     it('porte la production d un classement avec les confusions de son corrigé', () => {
       const ecran = ecranDeBrique('fp-cardsort');
 
@@ -678,7 +823,7 @@ describe('stockage multi-briques (B1)', () => {
         type: 'classement',
         concept: 'contrat-de-lecture',
         noteCompte: true,
-        confusions: ['valeur-confondue-avec-taux', 'unite-manquante-ignoree'],
+        confusions: ['unite-manquante-ignoree', 'valeur-confondue-avec-taux'],
       });
       expect(ecran.proprietes.plan.id).toBe('b2-01-a1-anatomie');
       expect(ecran.modalite).toBe('binome');

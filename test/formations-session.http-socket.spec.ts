@@ -49,7 +49,10 @@ import {
   buildCoursSansTirageValide,
   creerCatalogueDeTest,
 } from './factories/cours.factory';
-import { buildCoursStocke } from './factories/cours-stocke.factory';
+import {
+  buildCoursStocke,
+  buildEcranStockeAvec,
+} from './factories/cours-stocke.factory';
 import {
   createMockDepotsFormations,
   etatDeSeance,
@@ -124,7 +127,14 @@ const QUESTIONS_DU_COURS_DE_CLASSE = 12;
 const COURS_DE_CLASSE = buildCoursDeClasse(QUESTIONS_DU_COURS_DE_CLASSE);
 const COURS_SANS_TIRAGE = buildCoursSansTirageValide();
 const COURS_GUIDE = lireCoursStocke(
-  buildCoursStocke({ slug: 'cours-stocke-avec-guide' }),
+  buildCoursStocke({
+    slug: 'cours-stocke-avec-guide',
+    ecrans: [
+      buildEcranStockeAvec({
+        guide: { aDire: 'Guide d une version passée : relire la légende.' },
+      }),
+    ],
+  }),
 );
 
 const BAREME_EN_CLAIR = [
@@ -681,7 +691,7 @@ describe('Session de formation (e2e http socket)', () => {
       });
     });
 
-    it('documente le guide formateur que le deroule rend avec chaque ecran', async () => {
+    it('QP-17 · ne rend aucun guide formateur dans le deroule, meme pour une version passee qui en portait', async () => {
       const { sessionId } = await http.ouvrirSession(COURS_GUIDE.slug);
 
       const deroule = await http
@@ -689,9 +699,12 @@ describe('Session de formation (e2e http socket)', () => {
         .expect(200);
       const document = documentOpenApiFormations(app);
 
-      expect((deroule.body as DerouleCours).ecrans[0].guide).toEqual(
-        COURS_GUIDE.ecrans[0].guide,
-      );
+      expect(
+        (deroule.body as DerouleCours).ecrans.filter(
+          (ecran) => 'guide' in ecran,
+        ),
+      ).toEqual([]);
+      expect(JSON.stringify(deroule.body)).not.toContain('relire la légende');
       expect(
         ecartsAuSchemaDeReponse(document, '/{id}/deroule', deroule.body),
       ).toEqual([]);

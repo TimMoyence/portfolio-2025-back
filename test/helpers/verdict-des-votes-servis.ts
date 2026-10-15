@@ -23,7 +23,11 @@ const MOMENTS_D_UN_VOTE_JUMELE: Readonly<Record<string, MomentDUnVoteJumele>> =
       pilotage: { phase: 'revote', resultatsProjetes: true },
       verdictServi: false,
     },
-    revele: { pilotage: { phase: 'revele' }, verdictServi: true },
+    revele: {
+      pilotage: { phase: 'revele', revele: true },
+      verdictServi: true,
+    },
+    phaseSansRevelation: { pilotage: { phase: 'revele' }, verdictServi: false },
     ecranRevele: { pilotage: { revele: true }, verdictServi: true },
     seanceTerminee: { etat: 'terminee', verdictServi: true },
   };

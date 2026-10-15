@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
@@ -11,7 +11,6 @@ import { AppService } from './app.service';
 import { HealthModule } from './common/interfaces/health/health.module';
 import { MetricsModule } from './common/interfaces/metrics/metrics.module';
 import { SecurityModule } from './common/interfaces/security/security.module';
-import { CorrelationIdMiddleware } from './common/interfaces/middleware/correlation-id.middleware';
 import { validateEnv } from './config/env.validation';
 import { optionsJournalHttp } from './config/journal-http';
 
@@ -58,8 +57,4 @@ const runtimeContexts = resolveRuntimeContexts();
     },
   ],
 })
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer): void {
-    consumer.apply(CorrelationIdMiddleware).forRoutes('*');
-  }
-}
+export class AppModule {}

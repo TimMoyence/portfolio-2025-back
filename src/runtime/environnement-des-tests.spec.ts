@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common';
 import {
   SMTP_ET_DKIM_ABSENTS,
   setSmtpEnv,
@@ -6,6 +7,7 @@ import {
   installerVariables,
   poserVariables,
 } from '../../test/helpers/environnement';
+import { espionnerLeLoggerAChaqueTest } from '../../test/helpers/silence-nest-logger';
 
 const PRESENTE = 'ENVIRONNEMENT_DES_TESTS_PRESENTE';
 const ABSENTE = 'ENVIRONNEMENT_DES_TESTS_ABSENTE';
@@ -49,5 +51,27 @@ describe('environnement des tests', () => {
       Object.values(DKIM_D_AVANT),
     );
     expect(lire(...cles)).toEqual(avant);
+  });
+});
+
+describe('espionnerLeLoggerAChaqueTest', () => {
+  describe('pendant les tests', () => {
+    const erreurs = espionnerLeLoggerAChaqueTest('error');
+
+    it('capte le journal de toute instance du logger Nest', () => {
+      new Logger('essai').error('premier');
+
+      expect(erreurs()).toHaveBeenCalledWith('premier');
+    });
+
+    it('rend un espion neuf au test suivant', () => {
+      expect(erreurs()).not.toHaveBeenCalled();
+    });
+  });
+
+  it('rend le logger d origine apres les tests', () => {
+    expect(jest.isMockFunction(Reflect.get(Logger.prototype, 'error'))).toBe(
+      false,
+    );
   });
 });

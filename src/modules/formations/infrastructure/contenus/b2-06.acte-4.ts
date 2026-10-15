@@ -101,7 +101,6 @@ export const ACTE_4: moteur.Acte = [
               type: 'feuille',
               plan: PLAN_DES_KITS,
               attendus: ATTENDUS_DES_KITS,
-              seuilReussite: 0.8,
             },
           },
         ],

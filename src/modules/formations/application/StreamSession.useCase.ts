@@ -6,6 +6,10 @@ import {
   Optional,
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
+import {
+  enArrierePlan,
+  journaliserLEchec,
+} from '../../../common/application/en-arriere-plan';
 import { messageDErreur } from '../../../common/domain/errors/message-d-erreur';
 import { GetSessionResultsUseCase } from './GetSessionResults.useCase';
 import {
@@ -229,11 +233,11 @@ export class StreamSessionUseCase {
         if (aLiberer === null) {
           return;
         }
-        liberation = this.capacity.release(aLiberer).catch((error: unknown) => {
-          this.logger.warn(
-            `Bail de flux non libere pour la session ${sessionId}: ${messageDErreur(error)}`,
-          );
-        });
+        liberation = journaliserLEchec(
+          this.capacity.release(aLiberer),
+          `Bail de flux non libere pour la session ${sessionId}`,
+          this.logger,
+        );
       };
 
       const arreter = (): void => {
@@ -282,15 +286,13 @@ export class StreamSessionUseCase {
           return;
         }
         resultatsEnCours = true;
-        void pousserResultatsSiActivite(session)
-          .catch((error: unknown) => {
-            this.logger.warn(
-              `Resultats de la session ${sessionId} non pousses, nouvel essai au passage suivant: ${messageDErreur(error)}`,
-            );
-          })
-          .finally(() => {
-            resultatsEnCours = false;
-          });
+        void journaliserLEchec(
+          pousserResultatsSiActivite(session),
+          `Resultats de la session ${sessionId} non pousses, nouvel essai au passage suivant`,
+          this.logger,
+        ).finally(() => {
+          resultatsEnCours = false;
+        });
       };
 
       const pousserResultatsDefinitifs = async (): Promise<void> => {
@@ -405,8 +407,7 @@ export class StreamSessionUseCase {
           }
           bail = null;
           this.logger.error(
-            `Plafond de flux partage indisponible pour la session ${sessionId}, ouverture en mode degrade borne par le processus`,
-            messageDErreur(error),
+            `Plafond de flux partage indisponible pour la session ${sessionId}, ouverture en mode degrade borne par le processus: ${messageDErreur(error)}`,
           );
         }
         installer();
@@ -492,11 +493,11 @@ export class StreamSessionUseCase {
     bail: StreamCapacityLease,
     sessionId: string,
   ): void {
-    void this.capacity.refresh(bail).catch((error: unknown) => {
-      this.logger.warn(
-        `Bail de flux non renouvele pour la session ${sessionId}: ${messageDErreur(error)}`,
-      );
-    });
+    enArrierePlan(
+      this.capacity.refresh(bail),
+      `Bail de flux non renouvele pour la session ${sessionId}`,
+      this.logger,
+    );
   }
 
   private async resolveState(

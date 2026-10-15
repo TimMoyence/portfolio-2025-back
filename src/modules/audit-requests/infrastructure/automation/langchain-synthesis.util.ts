@@ -9,7 +9,9 @@ import type {
 import {
   buildFallbackClientEmailDraft,
   buildFallbackInternalNotes,
+  mesuresDeLaPage,
 } from './langchain-fallback-report.builder';
+import { cleDePage } from './shared/cle-de-page.util';
 import { normalizeSeverity } from './shared/severity.util';
 
 export function toEffort(value: unknown): ReportSeverity {
@@ -62,6 +64,23 @@ export function projectPerPageAnalysis(
     .filter((entry): entry is PerPageDetailedAnalysis => entry !== null);
 }
 
+function avecLesMesuresDesPages(
+  fiches: ReadonlyArray<PerPageDetailedAnalysis>,
+  input: LangchainAuditInput,
+): ReadonlyArray<PerPageDetailedAnalysis> {
+  const recapParCle = new Map(
+    input.pageRecaps.map((recap) => [cleDePage(recap.url), recap]),
+  );
+  const servies = new Set<string>();
+  return fiches.flatMap((fiche) => {
+    const cle = cleDePage(fiche.url);
+    const recap = cle === null ? undefined : recapParCle.get(cle);
+    if (cle === null || !recap || servies.has(cle)) return [];
+    servies.add(cle);
+    return [{ ...fiche, ...mesuresDeLaPage(recap, input.locale) }];
+  });
+}
+
 export function buildExpertSynthesis(
   summaryText: string,
   adminReport: Record<string, unknown>,
@@ -73,7 +92,10 @@ export function buildExpertSynthesis(
       ? adminReport.executiveSummary
       : summaryText;
 
-  const perPageAnalysis = projectPerPageAnalysis(adminReport.perPageAnalysis);
+  const perPageAnalysis = avecLesMesuresDesPages(
+    projectPerPageAnalysis(adminReport.perPageAnalysis),
+    input,
+  );
 
   const crossPageFindings = input.deepFindings.map((finding) => ({
     title: finding.title,
