@@ -1,8 +1,5 @@
 import type { Tolerance } from '../GradingCore';
-import type {
-  Ecran as EcranActuel,
-  ExplicationDeCorrection,
-} from '../cours/Cours';
+import type { ExplicationDeCorrection } from '../cours/Cours';
 import type { FormeFormule } from '../cours/Corrige';
 import type { CorrigePresentateur } from '../cours/DeroulePresentateur';
 import type { ValeurFormule } from 'portfolio-2025-partage/formule';
@@ -22,7 +19,6 @@ export interface EcranDeroule extends EcranPublic {
       | null;
   }[];
   readonly corrigeEcran: CorrigeEcranPresentateur | null;
-  readonly guide?: NonNullable<EcranActuel['guide']>;
   readonly explications?: readonly ExplicationDeCorrection[];
   readonly renvoi?: string;
 }
@@ -37,7 +33,6 @@ export type CorrigeEcranPresentateur =
         readonly tolerance: Tolerance;
         readonly forme: FormeFormule;
       }[];
-      readonly seuilReussite: number;
     }
   | {
       readonly type: 'tableau';
@@ -47,7 +42,6 @@ export type CorrigeEcranPresentateur =
         readonly valeur: number;
       }[];
       readonly tolerance: Tolerance;
-      readonly seuilReussite: number;
     }
   | {
       readonly type: 'classement';
@@ -56,7 +50,6 @@ export type CorrigeEcranPresentateur =
         readonly categorieId: string;
         readonly justification: string;
       }[];
-      readonly seuilReussite: number;
     }
   | {
       readonly type: 'enigmes';

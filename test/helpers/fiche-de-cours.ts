@@ -239,6 +239,40 @@ export function ecranDuContenu(contenu: ContenuDeCours, screenId: string) {
   return ecran;
 }
 
+export interface CoupleDeTri {
+  readonly carte: string;
+  readonly attendue: string;
+  readonly choisie: string;
+}
+
+export function confusionsDuTri(
+  contenu: ContenuDeCours,
+  screenId: string,
+  regle?: (couple: CoupleDeTri) => string,
+): Readonly<Record<string, string | null>> {
+  const ecran = ecranDuContenu(contenu, screenId);
+  if (ecran.brique !== 'fp-cardsort') {
+    throw new Error(`${screenId} n’est pas un tri de cartes`);
+  }
+  const {
+    plan,
+    questions: [{ corrige }],
+  } = ecran.proprietes;
+  return Object.fromEntries(
+    corrige.attendus.flatMap(({ carteId, categorieId, pieges }) =>
+      plan.categories
+        .filter(({ id }) => id !== categorieId)
+        .map(({ id }) => [
+          `${carteId} → ${id}`,
+          regle === undefined
+            ? (pieges.find((piege) => piege.categorieId === id)?.confusion ??
+              null)
+            : regle({ carte: carteId, attendue: categorieId, choisie: id }),
+        ]),
+    ),
+  );
+}
+
 export interface MiniSituationAttendue {
   readonly donneesFictives: readonly string[];
   readonly coffre: string;

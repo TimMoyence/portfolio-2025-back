@@ -68,7 +68,10 @@ describe('schémas zod des corrigés (§ 9.3.3)', () => {
           plan: buildPlanFeuille({ cellules: { Z99: 'x' } }),
         }),
       ],
-      ['un seuil supérieur à 1', buildCorrigeFeuille({ seuilReussite: 1.2 })],
+      [
+        'un seuil supérieur à 1',
+        { ...buildCorrigeFeuille(), seuilReussite: 1.2 },
+      ],
       [
         'une clé inconnue dans un attendu',
         {

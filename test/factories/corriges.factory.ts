@@ -60,7 +60,6 @@ export function buildCorrigeFeuille(
         pieges: [],
       },
     ],
-    seuilReussite: 0.8,
     ...overrides,
   };
 }
@@ -86,7 +85,6 @@ export function buildCorrigeTableau(
     type: 'tableau',
     attendus: [ATTENDU_PRIX_INITIAL, ATTENDU_PRIX_REVISE],
     tolerance: { type: 'absolue', valeur: 0.01 },
-    seuilReussite: 0.75,
     ...overrides,
   };
 }
@@ -108,7 +106,6 @@ export function buildCorrigeTableDeVerite(
       },
     ],
     tolerance: { type: 'absolue', valeur: 0 },
-    seuilReussite: 0.75,
     ...overrides,
   };
 }
@@ -122,17 +119,22 @@ export function buildCorrigeClassement(
       {
         carteId: 'ca-2025',
         categorieId: 'valeur',
-        confusionSiErreur: 'valeur-confondue-avec-taux',
+        pieges: [
+          { categorieId: 'ambigu', confusion: 'unite-manquante-ignoree' },
+          { categorieId: 'taux', confusion: 'valeur-confondue-avec-taux' },
+        ],
         justification: 'montant en euros : « combien ? »',
       },
       {
         carteId: 'inflation',
         categorieId: 'ambigu',
-        confusionSiErreur: 'unite-manquante-ignoree',
+        pieges: [
+          { categorieId: 'valeur', confusion: 'unite-manquante-ignoree' },
+          { categorieId: 'taux', confusion: 'unite-manquante-ignoree' },
+        ],
         justification: 'ni unité, ni période, ni source',
       },
     ],
-    seuilReussite: 0.75,
     ...overrides,
   };
 }

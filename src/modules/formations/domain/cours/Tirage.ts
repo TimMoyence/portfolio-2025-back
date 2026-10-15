@@ -31,7 +31,6 @@ import type {
 export type { TirageDuCours } from '../contrats/tirage';
 
 const PROPRIETES_RESERVEES_AU_FORMATEUR: readonly string[] = [
-  'guide',
   'correction',
   'interaction',
   'questions',

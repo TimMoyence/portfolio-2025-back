@@ -60,7 +60,6 @@ function versEcranDeroule(
       questionDuDeroule(question, ecran, projection),
     ),
     corrigeEcran: corrigeDeLEcran(ecran),
-    guide: ecran.guide,
     explications: ecran.correctionSurPlace?.explications,
   };
 }
@@ -211,7 +210,6 @@ function corrigeDeProduction(
           tolerance: attendu.tolerance,
           forme: attendu.forme,
         })),
-        seuilReussite: corrige.seuilReussite,
       };
     case 'tableau':
       return {
@@ -222,7 +220,6 @@ function corrigeDeProduction(
           valeur,
         })),
         tolerance: corrige.tolerance,
-        seuilReussite: corrige.seuilReussite,
       };
     case 'classement':
       return {
@@ -234,7 +231,6 @@ function corrigeDeProduction(
             justification,
           }),
         ),
-        seuilReussite: corrige.seuilReussite,
       };
     case 'enigme':
       return null;

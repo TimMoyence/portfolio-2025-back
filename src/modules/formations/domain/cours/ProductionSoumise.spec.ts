@@ -16,6 +16,7 @@ import {
   ecranDeProduction,
   normaliserProduction,
 } from './ProductionSoumise';
+import type { ValeurProduction } from '../contrats/resultats';
 import type { CorrigeProduction } from './Corrige';
 import type { EcranDeProduction } from './ProductionSoumise';
 
@@ -274,44 +275,115 @@ describe('corrigerProduction', () => {
   });
 });
 
-describe('QA-06 · « je ne sais pas » sur chaque production des cours servis', () => {
-  const PRODUCTIONS = CONTENUS.flatMap((contenu) => {
-    const cours = buildCoursDuContenu(contenu);
-    return cours.ecrans.flatMap((ecran) => {
-      const trouvee =
-        'production' in ecran
-          ? ecranDeProduction(cours, ecran.production.id)
-          : null;
-      return trouvee === null ? [] : [trouvee];
-    });
+const PRODUCTIONS = CONTENUS.flatMap((contenu) => {
+  const cours = buildCoursDuContenu(contenu);
+  return cours.ecrans.flatMap((ecran) => {
+    const trouvee =
+      'production' in ecran
+        ? ecranDeProduction(cours, ecran.production.id)
+        : null;
+    return trouvee === null ? [] : [trouvee];
   });
+});
+const PRODUCTIONS_PAR_ID = PRODUCTIONS.map(
+  (cible) => [cible.question.id, cible] as const,
+);
 
-  function clesDuCorrige(corrige: CorrigeProduction): readonly string[] {
-    switch (corrige.type) {
-      case 'feuille':
-        return corrige.attendus.map(({ reference }) => reference);
-      case 'tableau':
-        return corrige.attendus.map(({ rang, cle }) => `${rang}:${cle}`);
-      case 'classement':
-        return corrige.attendus.map(({ carteId }) => carteId);
-      default:
-        return [];
-    }
+type CorrigeDeProduction = Exclude<CorrigeProduction, { type: 'enigme' }>;
+
+function corrigeDeLaProduction(cible: EcranDeProduction): CorrigeDeProduction {
+  const corrige = cible.question.corrige;
+  if (corrige.type === 'enigme') {
+    throw new Error('une production ne porte pas un corrige d enigme');
   }
+  return corrige;
+}
 
+function clesDuCorrige(corrige: CorrigeDeProduction): readonly string[] {
+  switch (corrige.type) {
+    case 'feuille':
+      return corrige.attendus.map(({ reference }) => reference);
+    case 'tableau':
+      return corrige.attendus.map(({ rang, cle }) => `${rang}:${cle}`);
+    case 'classement':
+      return corrige.attendus.map(({ carteId }) => carteId);
+  }
+}
+
+function envoiJusteSauf(
+  corrige: CorrigeDeProduction,
+  omise: string | null,
+): ValeurProduction {
+  switch (corrige.type) {
+    case 'feuille':
+      return {
+        type: 'feuille',
+        cellules: Object.fromEntries(
+          corrige.attendus
+            .filter(({ reference }) => reference !== omise)
+            .map(({ reference, formuleReference }) => [
+              reference,
+              formuleReference,
+            ]),
+        ),
+      };
+    case 'tableau':
+      return {
+        type: 'tableau',
+        saisies: corrige.attendus
+          .filter(({ rang, cle }) => `${rang}:${cle}` !== omise)
+          .map(({ rang, cle, valeur }) => ({ rang, cle, valeur })),
+      };
+    case 'classement':
+      return {
+        type: 'classement',
+        classement: Object.fromEntries(
+          corrige.attendus
+            .filter(({ carteId }) => carteId !== omise)
+            .map(({ carteId, categorieId }) => [carteId, categorieId]),
+        ),
+      };
+  }
+}
+
+describe('QP-05 · une production des cours servis n est « Juste » que toute juste', () => {
+  it.each(PRODUCTIONS_PAR_ID)(
+    '%s : juste entiere, a revoir des qu une seule cle manque',
+    (_, cible) => {
+      const corrige = corrigeDeLaProduction(cible);
+      const cles = clesDuCorrige(corrige);
+      const omise = cles[cles.length - 1];
+      const entiere = corrigerProduction(
+        corrige,
+        envoiJusteSauf(corrige, null),
+        cible,
+      );
+      const amputee = corrigerProduction(
+        corrige,
+        envoiJusteSauf(corrige, omise),
+        cible,
+      );
+
+      expect([entiere.correcte, entiere.score]).toEqual([true, 1]);
+      expect(
+        amputee.details.filter(({ juste }) => !juste).map(({ cle }) => cle),
+      ).toEqual([omise]);
+      expect(amputee.correcte).toBe(false);
+    },
+  );
+});
+
+describe('QA-06 · « je ne sais pas » sur chaque production des cours servis', () => {
   it('trouve des feuilles, des tableaux et des classements', () => {
     expect(
       new Set(PRODUCTIONS.map(({ question }) => question.corrige.type)),
     ).toEqual(new Set(['feuille', 'tableau', 'classement']));
   });
 
-  it.each(PRODUCTIONS.map((cible) => [cible.question.id, cible] as const))(
+  it.each(PRODUCTIONS_PAR_ID)(
     '%s : vaut zero, chaque cle du corrige fausse et sans confusion',
     (_, cible) => {
-      const corrige = cible.question.corrige;
-      if (corrige.type === 'enigme') {
-        throw new Error('une production ne porte pas un corrige d enigme');
-      }
+      const corrige = corrigeDeLaProduction(cible);
       const verdict = corrigerProduction(
         corrige,
         { type: corrige.type, neSaitPas: true },

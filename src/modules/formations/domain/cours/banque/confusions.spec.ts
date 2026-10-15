@@ -15,7 +15,104 @@ import {
   libelleDeConfusion,
   libelleLisible,
 } from './confusions';
-import { typographierEnProfondeur } from '../Typographie';
+import { sansTypographie, typographierEnProfondeur } from '../Typographie';
+
+const ERREURS_CITEES_PAR_LES_PIEGES = {
+  'negation-comparaison': [
+    'le contraire de « x > a » est « x ≤ a » et non « x < a »',
+    'celui de « x ≥ a » est « x < a » et non « x ≤ a »',
+    'celui de « x < a » est « x ≥ a » et non « x > a »',
+  ],
+  'point-moyen-confondu': [
+    'le point du milieu du tableau',
+    'la somme des valeurs',
+    'la moyenne de l’autre série',
+  ],
+  'pente-ordonnee-inversees': [
+    'Inverser les deux séries dans PENTE ou ORDONNEE.ORIGINE',
+    'confondre le coefficient de x (la pente) et la valeur pour x = 0 (l’ordonnée à l’origine), dans un sens ou dans l’autre',
+  ],
+  'rang-pris-pour-annee': ['par l’année, ou par l’écart à l’année de départ'],
+  'seuil-mal-arrondi': [
+    'en gardant la solution non entière d’une inéquation',
+    'en l’arrondissant à l’entier inférieur',
+    'en arrêtant une boucle un passage trop tôt',
+  ],
+  'variance-confondue-avec-ecart-type': [
+    'Donner pour écart-type la variance',
+    'ou un nombre tiré d’elle sans racine carrée, comme sa moitié',
+  ],
+  'extrapolation-sans-reserve': [
+    'sans signaler la limite de la prévision',
+    'l’écart entre ce que prévoit le modèle et ce qui est observé',
+  ],
+  'correlation-prise-pour-causalite': [
+    'deux évolutions simultanées',
+    'un coefficient de corrélation proche de 1',
+    'une cause, l’absence de cause ou la poursuite de la tendance',
+  ],
+  'controle-non-discriminant': [
+    'un contrôle ou d’un calcul qui ne localise ni ne tranche l’anomalie',
+    'en jugeant un écart négligeable',
+    'en ne calculant que l’effet de l’écart',
+  ],
+  'total-concordant-vaut-preuve': [
+    'croire qu’un total exact garantit chaque ligne',
+    'conclure à l’absence d’erreur malgré un écart entre deux totaux',
+  ],
+  'raisonnement-additif': [
+    'ajouter un écart constant',
+    'additionner les taux de plusieurs composantes pour obtenir un taux global',
+  ],
+  'axe-tronque-lu-comme-ecart': [
+    'juger un écart à la hauteur des barres',
+    'tronquer l’axe ou supprimer ses graduations',
+    'renoncer à lire un écart que les graduations permettent de mesurer',
+  ],
+  'rythme-confondu-avec-niveau': [
+    'des prix stables ou en baisse',
+    'les prix continuent de monter',
+  ],
+  'sens-de-variation': [
+    'oublier le signe moins d’une baisse',
+    'le coefficient 1 + t au lieu de 1 − t',
+    'juger croissante une suite géométrique de raison positive',
+  ],
+  'annuite-confondue-avec-amortissement': [
+    'prendre l’annuité pour l’amortissement',
+    'le capital emprunté divisé par la durée pour l’annuité',
+  ],
+  'signe-de-k-ignore': [
+    'le croire toujours croissant',
+    'oublier le moins de k dans un calcul',
+  ],
+  'k-confondu-avec-taux': [
+    'en prenant k pour le taux ou le taux pour k',
+    'k = ln(1 + taux)',
+  ],
+  'nature-de-suite-confondue': [
+    '(suite géométrique), dans un sens ou dans l’autre',
+    'ajouter un taux au lieu de multiplier par lui',
+  ],
+  'part-douteuse-estimee-sans-mesure': [
+    'Se tromper sur l’ordre de grandeur de la part des lignes fausses ou douteuses',
+  ],
+  'lignes-comptees-pour-commandes': [
+    'autant de lignes que de commandes, voire moins',
+  ],
+  'periode-mal-delimitee': [
+    'la table entière au lieu des seuls mois demandés',
+    'toutes les ventes d’une agence au lieu de celles de la catégorie et de la période demandées',
+  ],
+  'taux-moyen-arithmetique': [
+    'le taux global divisé par le nombre de périodes',
+    'la moyenne des taux de chaque période',
+  ],
+  'reciproque-meme-taux': [
+    'le même pourcentage en sens inverse',
+    'la somme de taux successifs',
+  ],
+} as const;
 
 const CONFUSIONS_AJOUTEES_PAR_LA_V3 = {
   'proportion-confondue-avec-evolution': {
@@ -25,7 +122,8 @@ const CONFUSIONS_AJOUTEES_PAR_LA_V3 = {
   },
   'points-confondus-avec-pourcentage': {
     concept: 'point-de-pourcentage',
-    libelle: 'Exprimer en % l’écart entre deux taux, qui se mesure en points.',
+    libelle:
+      'Confondre l’écart entre deux taux, qui se mesure en points, et un pourcentage, part d’un total ou évolution relative, qui se mesure en %.',
   },
   'population-reference-ignoree': {
     concept: 'proportion',
@@ -40,7 +138,7 @@ const CONFUSIONS_AJOUTEES_PAR_LA_V3 = {
   'sens-de-variation': {
     concept: 'taux-evolution',
     libelle:
-      'Oublier le signe d’une variation : une baisse s’écrit avec un signe moins.',
+      'Se tromper sur le sens d’une variation : oublier le signe moins d’une baisse, traduire une baisse par le coefficient 1 + t au lieu de 1 − t, ou juger croissante une suite géométrique de raison positive, qui ne croît que si sa raison dépasse 1.',
   },
   'coefficient-global-mal-interprete': {
     concept: 'evolutions-successives',
@@ -50,7 +148,7 @@ const CONFUSIONS_AJOUTEES_PAR_LA_V3 = {
   'rythme-confondu-avec-niveau': {
     concept: 'indice-base-100',
     libelle:
-      'Confondre désinflation (la hausse des prix ralentit) et déflation (les prix baissent).',
+      'Confondre désinflation et des prix stables ou en baisse : quand la hausse des prix ralentit (désinflation), les prix continuent de monter ; ils ne baissent qu’en déflation.',
   },
   'indice-lu-comme-taux': {
     concept: 'indice-base-100',
@@ -64,7 +162,7 @@ const CONFUSIONS_AJOUTEES_PAR_LA_V3 = {
   'taux-moyen-arithmetique': {
     concept: 'taux-moyen',
     libelle:
-      'Diviser un taux global par le nombre de périodes au lieu de prendre une racine n-ième.',
+      'Prendre pour taux moyen une moyenne arithmétique, le taux global divisé par le nombre de périodes ou la moyenne des taux de chaque période, au lieu de la racine n-ième du coefficient global.',
   },
   'moyenne-simple-des-taux': {
     concept: 'moyenne-ponderee',
@@ -84,12 +182,12 @@ const CONFUSIONS_AJOUTEES_PAR_LA_V3 = {
   'axe-tronque-lu-comme-ecart': {
     concept: 'lecture-graphique',
     libelle:
-      'Juger une évolution à la hauteur des barres sans lire l’origine et l’amplitude de l’axe.',
+      'Lire ou construire un graphique sans tenir compte de l’origine et de l’amplitude de l’axe : juger un écart à la hauteur des barres, tronquer l’axe ou supprimer ses graduations, ou renoncer à lire un écart que les graduations permettent de mesurer.',
   },
   'correlation-prise-pour-causalite': {
     concept: 'lecture-graphique',
     libelle:
-      'Conclure sur une cause, ou sur l’absence de cause, à partir de deux évolutions simultanées.',
+      'Tirer de deux évolutions simultanées, ou d’un coefficient de corrélation proche de 1, une conclusion qu’ils ne prouvent pas : une cause, l’absence de cause ou la poursuite de la tendance.',
   },
   'forme-inadaptee': {
     concept: 'lecture-graphique',
@@ -103,17 +201,18 @@ const CONFUSIONS_AJOUTEES_PAR_LA_V3 = {
   },
   'unite-manquante-ignoree': {
     concept: 'contrat-de-lecture',
-    libelle: 'Accepter un chiffre sans unité, base ou période.',
+    libelle:
+      'Accepter ou produire un chiffre, un titre ou une légende sans sa définition, son unité, sa base ou sa période.',
   },
   'bases-incompatibles': {
     concept: 'contrat-de-lecture',
     libelle:
-      'Comparer des valeurs de périodes, de périmètres ou de bases (HT/TTC, unités) différents sans retraitement.',
+      'Comparer directement des valeurs de périodes, de périmètres ou de bases (HT/TTC, unités) différents, sans les retraiter ni chercher la donnée comparable.',
   },
   'valeur-confondue-avec-taux': {
     concept: 'contrat-de-lecture',
     libelle:
-      'Conclure sur une rentabilité (un taux) à partir d’un montant, ou lire un montant comme un taux.',
+      'Confondre un montant et un taux : conclure sur une rentabilité à partir d’un montant, lire un montant comme un pourcentage ou un écart en points, ou un pourcentage comme un montant.',
   },
   'ca-confondu-avec-marge': {
     concept: 'contrat-de-lecture',
@@ -127,7 +226,8 @@ const CONFUSIONS_AJOUTEES_PAR_LA_V3 = {
   },
   'total-concordant-vaut-preuve': {
     concept: 'controle-coherence',
-    libelle: 'Croire qu’un total exact garantit l’exactitude de chaque ligne.',
+    libelle:
+      'Juger les lignes sur les seuls totaux : croire qu’un total exact garantit chaque ligne, ou conclure à l’absence d’erreur malgré un écart entre deux totaux.',
   },
   'indice-pris-pour-preuve': {
     concept: 'controle-coherence',
@@ -137,7 +237,7 @@ const CONFUSIONS_AJOUTEES_PAR_LA_V3 = {
   'controle-non-discriminant': {
     concept: 'controle-coherence',
     libelle:
-      'Choisir un contrôle qui ne permet ni de localiser ni de trancher l’anomalie.',
+      'Se contenter d’un contrôle ou d’un calcul qui ne localise ni ne tranche l’anomalie, en jugeant un écart négligeable ou en ne calculant que l’effet de l’écart, au lieu de remonter à la pièce qui dit quelle valeur est fausse.',
   },
   'tva-base-non-corrigee': {
     concept: 'controle-coherence',
@@ -223,7 +323,7 @@ const CONFUSIONS_DU_B2_02 = {
   'variance-confondue-avec-ecart-type': {
     concept: 'ecart-type',
     libelle:
-      'Donner la variance, exprimée dans le carré de l’unité, comme écart-type.',
+      'Donner pour écart-type la variance, exprimée dans le carré de l’unité, ou un nombre tiré d’elle sans racine carrée, comme sa moitié : l’écart-type est la racine carrée de la variance.',
   },
   'etendue-prise-pour-dispersion': {
     concept: 'dispersion',
@@ -346,6 +446,49 @@ const CONFUSIONS_DU_B3_01 = {
   'controle-apres-correction': { concept: 'qualite-des-donnees' },
   'pourcentage-du-total-de-colonne': { concept: 'tableau-croise-dynamique' },
   'mediane-sur-liste-trop-large': { concept: 'indicateur-statistique' },
+};
+
+const CONFUSIONS_DES_TRIS = {
+  'chiffre-lisible-juge-ambigu': {
+    concept: 'contrat-de-lecture',
+    libelle:
+      'Juger ambigu un chiffre dont le libellé dit ce qu’il mesure, sa base et sa période : il se lit tel quel, et une unité mal écrite se corrige.',
+  },
+  'retraitement-superflu': {
+    concept: 'contrat-de-lecture',
+    libelle:
+      'Vouloir retraiter deux valeurs qui ont déjà la même unité, le même périmètre et la même période : elles se comparent directement.',
+  },
+  'comparaison-possible-refusee': {
+    concept: 'contrat-de-lecture',
+    libelle:
+      'Renoncer à comparer deux valeurs alors qu’aucune donnée ne manque : elles se comparent directement, ou après un calcul sur les données disponibles (passer du TTC au HT, changer d’unité, retirer une partie du périmètre).',
+  },
+  'retraitement-sans-donnee': {
+    concept: 'contrat-de-lecture',
+    libelle:
+      'Croire qu’un calcul remplace une donnée qui manque : sans la définition, la période ou le périmètre qui rendraient deux valeurs comparables, aucun retraitement ne suffit, il faut chercher la donnée.',
+  },
+  'preuve-externe-superflue': {
+    concept: 'controle-coherence',
+    libelle:
+      'Chercher une pièce ou une donnée détaillée pour une anomalie que le document suffit à trancher : compléter l’unité, la période et la source, refaire le calcul ou refaire le graphique.',
+  },
+  'identifiant-range-sous-un-autre-type': {
+    concept: 'jeu-de-donnees',
+    libelle:
+      'Ranger un identifiant parmi les dates ou les booléens : c’est un code attribué par le système, qui désigne une seule fiche, et on ne fait que le compter ou relier les tables par lui.',
+  },
+  'erreur-certaine-jugee-douteuse': {
+    concept: 'qualite-des-donnees',
+    libelle:
+      'Juger seulement douteuse une donnée certainement fausse : une valeur qui viole une règle du fichier (format, doublon exact, calcul, référentiel, ordre des dates) est fausse, même quand sa bonne valeur reste à demander.',
+  },
+  'donnee-douteuse-jugee-fausse': {
+    concept: 'qualite-des-donnees',
+    libelle:
+      'Déclarer fausse une donnée seulement douteuse : une valeur inhabituelle mais possible peut être juste, et seul qui l’a saisie peut le dire.',
+  },
 };
 
 describe('libelleDeConcept', () => {
@@ -529,13 +672,46 @@ describe('CONFUSIONS', () => {
     attendreDansLaBanque(CONFUSIONS_DU_B2_06);
   });
 
-  it('ajoute en dernier les trente-trois confusions de données du B3-01', () => {
-    expect(Object.keys(CONFUSIONS)).toHaveLength(129);
-    expect(Object.keys(CONFUSIONS).slice(96)).toEqual(
+  it('ajoute à la suite les trente-trois confusions de données du B3-01', () => {
+    expect(Object.keys(CONFUSIONS).slice(96, 129)).toEqual(
       Object.keys(CONFUSIONS_DU_B3_01),
     );
     attendreDansLaBanque(CONFUSIONS_DU_B3_01);
   });
+
+  it('QP-15 · ajoute en dernier les huit confusions qui nomment une carte rangée dans une mauvaise case', () => {
+    expect(Object.keys(CONFUSIONS)).toHaveLength(137);
+    expect(Object.keys(CONFUSIONS).slice(129)).toEqual(
+      Object.keys(CONFUSIONS_DES_TRIS),
+    );
+    attendreDansLaBanque(CONFUSIONS_DES_TRIS);
+  });
+
+  it('QP-15 · nomme chacune des mauvaises cases d un tri du B3-01 qui cite une confusion existante', () => {
+    expect(libelleDeConfusion('type-de-variable-confondu')).toContain(
+      'un booléen ou une catégorie sous un autre type',
+    );
+    expect(libelleDeConfusion('libelle-pris-pour-cle')).toContain(
+      'Prendre un nom ou une ville pour un identifiant',
+    );
+    expect(libelleDeConfusion('suspect-corrige-sans-validation')).toContain(
+      'ou une erreur certaine dont la bonne valeur n’est pas dans le fichier',
+    );
+    expect(
+      libelleDeConfusion('correction-certaine-renvoyee-a-un-humain'),
+    ).toContain('une formule ou un outil du tableur la corrige');
+  });
+
+  it.each(Object.entries(ERREURS_CITEES_PAR_LES_PIEGES))(
+    'QP-10 · %s nomme chacune des erreurs qui la citent',
+    (id, erreurs) => {
+      const libelle = sansTypographie(libelleDeConfusion(id) ?? '');
+
+      for (const erreur of erreurs) {
+        expect(libelle).toContain(erreur);
+      }
+    },
+  );
 
   it('distingue la lecture du $ d une formule recopiée de l oubli du $', () => {
     expect(libelleDeConfusion('reference-absolue-ignoree')).not.toBe(
