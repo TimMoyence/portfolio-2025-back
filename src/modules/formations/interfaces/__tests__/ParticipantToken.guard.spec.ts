@@ -3,7 +3,7 @@ import {
   buildParticipantRecord,
   createMockParticipantsRepo,
 } from '../../../../../test/factories/formation.factory';
-import { installerVariables } from '../../../../../test/helpers/environnement';
+import { installerSecretDeSignature } from '../../../../../test/helpers/env-formations';
 import { ParticipantTokenGuard } from '../ParticipantToken.guard';
 import {
   EN_TETE_JETON,
@@ -13,7 +13,6 @@ import {
 const SESSION_ID = '11111111-1111-4111-8111-111111111111';
 const AUTRE_SESSION_ID = '22222222-2222-4222-8222-222222222222';
 const PARTICIPANT_ID = '33333333-3333-4333-8333-333333333333';
-const SECRET_TEST = 'secret-de-test-assez-long-pour-hmac-sha256-0123456789';
 
 interface RequeteDeTest {
   params: { id: string | undefined };
@@ -52,7 +51,7 @@ describe('ParticipantTokenGuard', () => {
   const signer = (sessionId = SESSION_ID, generation = 0) =>
     tokens.sign(sessionId, PARTICIPANT_ID, generation);
 
-  installerVariables({ FORMATION_REVIEW_TOKEN_SECRET: SECRET_TEST });
+  installerSecretDeSignature();
 
   beforeEach(() => {
     participants.findById

@@ -4,6 +4,7 @@ import {
   setSmtpEnv,
   DEFAULT_AUDIT_ENV,
 } from '../../../../../../test/factories/mailer.factory';
+import { sousEnvironnement } from '../../../../../../test/helpers/environnement';
 import { AuditClientReportMailer } from '../audit-client-report.mailer';
 import type { SmtpTransporter } from '../smtp-transporter.provider';
 
@@ -141,19 +142,14 @@ describe('AuditClientReportMailer', () => {
 
     it('fallback sur /fr/contact Asili quand aucune URL booking configuree', async () => {
       const mailer = buildMailer();
-      const originalBookingUrl = process.env.AUDIT_BOOKING_URL;
-      delete process.env.AUDIT_BOOKING_URL;
 
-      try {
-        await envoyerRapport(mailer);
+      await sousEnvironnement({ AUDIT_BOOKING_URL: undefined }, () =>
+        envoyerRapport(mailer),
+      );
 
-        const call = sentMail();
-        expect(call.html).toContain('href="https://asilidesign.fr/fr/contact"');
-      } finally {
-        if (originalBookingUrl !== undefined) {
-          process.env.AUDIT_BOOKING_URL = originalBookingUrl;
-        }
-      }
+      expect(sentMail().html).toContain(
+        'href="https://asilidesign.fr/fr/contact"',
+      );
     });
   });
 

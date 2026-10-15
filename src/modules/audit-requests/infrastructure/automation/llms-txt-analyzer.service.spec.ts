@@ -96,6 +96,17 @@ describe('LlmsTxtAnalyzerService', () => {
     expect(result.url).toBe('https://example.com/llms.txt');
   });
 
+  it('retire toutes les barres de fin de l origine, pas une seule', async () => {
+    const result = await analyser(
+      LLMS_MINIMAL,
+      LLMS_MINIMAL,
+      'https://example.com//',
+    );
+    expect(result.url).toBe('https://example.com/llms.txt');
+    expect(result.present).toBe(true);
+    expect(result.hasFullVariant).toBe(true);
+  });
+
   it('retourne absent quand le fetch échoue', async () => {
     const result = await analyser(new Error('network down'));
     expect(result.present).toBe(false);

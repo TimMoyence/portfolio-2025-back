@@ -17,3 +17,10 @@ export function severityRank(severity: ReportSeverity): number {
       return 1;
   }
 }
+
+export function parGraviteDecroissante(
+  a: { severity: ReportSeverity },
+  b: { severity: ReportSeverity },
+): number {
+  return severityRank(b.severity) - severityRank(a.severity);
+}

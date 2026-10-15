@@ -19,13 +19,13 @@ import {
   serveurHttpDe,
   simulerSeance,
 } from './helpers/formations-harness';
+import { installerSecretDeSignature } from './helpers/env-formations';
 import { applicationDeLaSuite } from './helpers/nest-test-app';
 import {
   documentOpenApiFormations,
   ecartsAuSchemaDeReponse,
 } from './helpers/schema-openapi';
 
-const SECRET = 'secret-de-test-formations-assez-long-1234';
 const PROPRIETAIRE_ID = 'a1111111-1111-4111-8111-111111111111';
 const SESSION_ID = 'c3333333-3333-4333-8333-333333333333';
 const PARTICIPANT_ID = 'e5555555-5555-4555-8555-555555555555';
@@ -66,10 +66,8 @@ function seance(etat: SessionState = 'en_cours') {
 
 describe('Acces formateur aux annotations, participants et reponses libres (e2e http socket)', () => {
   const depots = createMockDepotsFormations();
-  const app = applicationDeLaSuite(() => {
-    process.env.FORMATION_REVIEW_TOKEN_SECRET = SECRET;
-    return monterApplicationFormations(depots);
-  });
+  installerSecretDeSignature();
+  const app = applicationDeLaSuite(() => monterApplicationFormations(depots));
 
   const serveur = () => serveurHttpDe(app());
   const route = (suffixe: string): string =>

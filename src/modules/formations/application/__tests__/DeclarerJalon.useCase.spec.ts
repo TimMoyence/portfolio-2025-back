@@ -9,6 +9,7 @@ import {
 } from '../../../../../test/factories/cours.factory';
 import { createMockPulsesRepo } from '../../../../../test/factories/formation.factory';
 import { installerSecretDeJalons } from '../../../../../test/helpers/env-formations';
+import { appliquer } from '../../../../../test/helpers/environnement';
 import { verifierContratDeParticipation } from '../../../../../test/helpers/gardes-de-seance';
 import { cleDeJalon } from '../../domain/cours/CleDeJalon';
 import { CoursInconnuError } from '../../domain/errors/FormationErrors';
@@ -30,7 +31,7 @@ describe('DeclarerJalonUseCase', () => {
 
   const declarer = () => sut.execute(commande);
 
-  installerSecretDeJalons();
+  installerSecretDeJalons('chaque-test');
 
   beforeEach(() => {
     depots = monterParticipationSurLeDernierEcran(COURS);
@@ -89,13 +90,10 @@ describe('DeclarerJalonUseCase', () => {
   });
 
   it('refuse de signer sans secret de jalon configure', () => {
-    const secret = process.env.FORMATIONS_PULSE_SECRET;
-    process.env.FORMATIONS_PULSE_SECRET = 'trop-court';
+    appliquer({ FORMATIONS_PULSE_SECRET: 'trop-court' });
 
     expect(() => cleDeJalon('session-uuid', 'participant-uuid')).toThrow(
       /FORMATIONS_PULSE_SECRET/,
     );
-
-    process.env.FORMATIONS_PULSE_SECRET = secret;
   });
 });

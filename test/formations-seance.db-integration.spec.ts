@@ -22,6 +22,7 @@ import {
   setSmtpEnv,
 } from './factories/mailer.factory';
 import { describeDb } from './helpers/db-integration-datasource';
+import { installerEnvFormations } from './helpers/env-formations';
 import {
   cleEtudianteDe,
   DELAI_OUVERTURE_CONTEXTE_MS,
@@ -53,7 +54,6 @@ const QUESTIONS_NOTEES = questionsDuCours(COURS_DE_CLASSE).filter(
 );
 const CONFUSION_PIEGE = 'raisonnement-additif';
 const FORMATEUR = 'a1111111-1111-4111-8111-111111111111';
-const SECRET = 'secret-de-test-formations-assez-long-1234';
 const SYNTHESE_A = 'synthese-formateur@example.test';
 const PERIODE_PIEGE_ETUDIANT = 5;
 const PERIODE_PIEGE_QUESTION = 4;
@@ -349,9 +349,9 @@ describeDb(
       return reponse;
     };
 
+    installerEnvFormations({ syntheseA: SYNTHESE_A });
+
     beforeAll(async () => {
-      process.env.FORMATION_REVIEW_TOKEN_SECRET = SECRET;
-      process.env.FORMATION_TEACHER_NOTIFICATION_TO = SYNTHESE_A;
       restaurerSmtp = setSmtpEnv();
       createTransportMock.mockReturnValue({
         sendMail: (options: CourrielEnvoye) => {
@@ -376,8 +376,6 @@ describeDb(
       await fermerApplication(app);
       await contexte.fermer();
       restaurerSmtp();
-      delete process.env.FORMATION_REVIEW_TOKEN_SECRET;
-      delete process.env.FORMATION_TEACHER_NOTIFICATION_TO;
     });
 
     it('mene trente etudiants de l ouverture a la cloture sans fuiter le corrige', async () => {

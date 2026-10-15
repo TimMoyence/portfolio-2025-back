@@ -10,6 +10,7 @@ import {
   createMockPasswordService,
   createMockSessionDependances,
 } from '../../../../test/factories/user.factory';
+import { attendreMiseAJourDeLUtilisateur } from '../../../../test/helpers/utilisateurs';
 
 const WRONG_CREDENTIAL = 'bad-password';
 const LEGACY_PBKDF2_HASH = 'legacy-pbkdf2-hash';
@@ -129,7 +130,7 @@ describe('AuthenticateUserUseCase', () => {
   });
 
   describe('rehash transparent', () => {
-    it('re-hache le mot de passe si needsRehash retourne true', async () => {
+    it('re-hache le mot de passe si needsRehash retourne true, en consignant auteur et date comme tout mot de passe enregistre', async () => {
       const user = buildUser({
         email: 'legacy@example.com',
         passwordHash: LEGACY_PBKDF2_HASH,
@@ -148,8 +149,9 @@ describe('AuthenticateUserUseCase', () => {
         'legacy-pbkdf2-hash',
       );
       expect(passwordService.hash).toHaveBeenCalledWith('password');
-      expect(repo.update).toHaveBeenCalledWith('user-1', {
+      attendreMiseAJourDeLUtilisateur(repo.update, {
         passwordHash: REHASHED_ARGON2,
+        updatedOrCreatedBy: 'password-rehash',
       });
     });
 

@@ -1,9 +1,9 @@
 import { ConfigService } from '@nestjs/config';
 import { pbkdf2Sync } from 'crypto';
+import { TEST_HASHING_KEY as SECRET } from '../../../../../test/factories/env.factory';
 import { PasswordService } from './PasswordService';
 
 describe('PasswordService', () => {
-  const SECRET = 'test-secret-for-password-hashing';
   let configService: jest.Mocked<ConfigService>;
   let service: PasswordService;
 

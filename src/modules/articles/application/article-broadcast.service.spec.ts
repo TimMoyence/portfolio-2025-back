@@ -4,6 +4,7 @@ import {
   buildArticleBroadcastRecord,
   buildArticleRecord,
 } from '../../../../test/factories/article.factory';
+import { sousEnvironnement } from '../../../../test/helpers/environnement';
 import type { ArticlesRepository } from './articles.repository';
 import { ArticleBroadcastService } from './article-broadcast.service';
 import { ArticleModerationService } from './article-moderation.service';
@@ -48,27 +49,6 @@ function setup(options: { sendAfter?: Date } = {}) {
   return { store, mailer, subscribe, service, moderation };
 }
 
-const withEnv = async <T>(
-  values: Record<string, string | undefined>,
-  run: () => Promise<T>,
-): Promise<T> => {
-  const previous = Object.fromEntries(
-    Object.keys(values).map((key) => [key, process.env[key]]),
-  );
-  Object.assign(process.env, values);
-  for (const [key, value] of Object.entries(values)) {
-    if (value === undefined) delete process.env[key];
-  }
-  try {
-    return await run();
-  } finally {
-    for (const [key, value] of Object.entries(previous)) {
-      if (value === undefined) delete process.env[key];
-      else process.env[key] = value;
-    }
-  }
-};
-
 const DIFFUSION_ACTIVE = {
   ARTICLE_BROADCAST_ENABLED: 'true',
   ARTICLE_BROADCAST_BATCH_SIZE: '50',
@@ -77,7 +57,7 @@ const DIFFUSION_ACTIVE = {
 const executer = (
   service: ArticleBroadcastService,
   env: Record<string, string | undefined> = DIFFUSION_ACTIVE,
-) => withEnv(env, () => service.runDue(NOW));
+) => sousEnvironnement(env, () => service.runDue(NOW));
 
 describe('ArticleBroadcastService.runDue', () => {
   it('ne réclame rien tant que la diffusion n est pas activée', async () => {

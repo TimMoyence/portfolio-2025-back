@@ -79,8 +79,10 @@ import {
   ecouterEnBoucleLocale,
   fermerApplication,
 } from './helpers/nest-test-app';
-const SECRET = 'secret-de-test-formations-assez-long-1234';
+import { installerEnvFormations } from './helpers/env-formations';
 const SYNTHESE_A = 'synthese-formateur@example.com';
+
+installerEnvFormations({ syntheseA: SYNTHESE_A });
 
 const FORMATEUR_A = 'a1111111-1111-4111-8111-111111111111';
 const FORMATEUR_B = 'b2222222-2222-4222-8222-222222222222';
@@ -432,8 +434,6 @@ async function creerHarnais(
     COURS_GUIDE,
   ),
 ): Promise<HarnaisFormations> {
-  process.env.FORMATION_REVIEW_TOKEN_SECRET = SECRET;
-  process.env.FORMATION_TEACHER_NOTIFICATION_TO = SYNTHESE_A;
   const depots = {
     ...createMockDepotsFormations(),
     sessions: creerSessionsRepo(),

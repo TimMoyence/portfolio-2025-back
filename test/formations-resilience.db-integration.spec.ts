@@ -17,6 +17,8 @@ import {
   reponseDeClasse,
 } from './factories/cours.factory';
 import { describeDb } from './helpers/db-integration-datasource';
+import { installerEnvFormations } from './helpers/env-formations';
+import { sousEnvironnement } from './helpers/environnement';
 import {
   DELAI_OUVERTURE_CONTEXTE_MS,
   type ContexteFormations,
@@ -36,7 +38,6 @@ import { silenceNestLogger } from './helpers/silence-nest-logger';
 const NB_QUESTIONS_DU_COURS = 12;
 const COURS_DE_CLASSE = buildCoursDeClasse(NB_QUESTIONS_DU_COURS);
 const FORMATEUR = 'd4444444-4444-4444-8444-444444444444';
-const SECRET = 'secret-de-test-formations-assez-long-1234';
 const SYNTHESE_A = 'resilience-formateur@example.test';
 const PANNE_SMTP = 'smtp injoignable';
 const NUIT_ENTIERE = '14 hours';
@@ -213,14 +214,14 @@ describeDb('Formations face aux pannes du cours (db integration)', () => {
   const syntheseEnvoyee = (): RapportSession =>
     banc.mailer.sendSyntheseFormateur.mock.calls[0][1];
 
+  installerEnvFormations({ syntheseA: SYNTHESE_A });
+
   beforeAll(async () => {
-    process.env.FORMATION_REVIEW_TOKEN_SECRET = SECRET;
-    process.env.FORMATION_TEACHER_NOTIFICATION_TO = SYNTHESE_A;
     const portBase = Number(process.env.DB_PORT ?? 5432);
     relais = await ouvrirRelais(process.env.DB_HOST ?? '127.0.0.1', portBase);
-    process.env.DB_PORT = String(relais.port);
-    banc = await monterBancFormations(creerCatalogueDeTest(COURS_DE_CLASSE));
-    process.env.DB_PORT = String(portBase);
+    banc = await sousEnvironnement({ DB_PORT: String(relais.port) }, () =>
+      monterBancFormations(creerCatalogueDeTest(COURS_DE_CLASSE)),
+    );
     contexte = banc.contexte;
     client = clientFormations(banc.app, FORMATEUR);
     jest
@@ -233,8 +234,6 @@ describeDb('Formations face aux pannes du cours (db integration)', () => {
   afterAll(async () => {
     await banc.fermer();
     await relais.fermer();
-    delete process.env.FORMATION_REVIEW_TOKEN_SECRET;
-    delete process.env.FORMATION_TEACHER_NOTIFICATION_TO;
   });
 
   beforeEach(async () => {

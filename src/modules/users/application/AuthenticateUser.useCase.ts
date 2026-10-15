@@ -4,6 +4,7 @@ import type { IRefreshTokensRepository } from '../domain/IRefreshTokens.reposito
 import type { IUsersRepository } from '../domain/IUsers.repository';
 import { REFRESH_TOKENS_REPOSITORY, USERS_REPOSITORY } from '../domain/token';
 import { User } from '../domain/User';
+import { CasDUsageMotDePasse } from './CasDUsageUtilisateurs';
 import type { LoginCommand } from './dto/Login.command';
 import { issueAuthSession } from './services/issue-auth-session';
 import { JwtTokenService } from './services/JwtTokenService';
@@ -17,15 +18,17 @@ export interface AuthResult {
 }
 
 @Injectable()
-export class AuthenticateUserUseCase {
+export class AuthenticateUserUseCase extends CasDUsageMotDePasse {
   constructor(
     @Inject(USERS_REPOSITORY)
-    private readonly repo: IUsersRepository,
+    repo: IUsersRepository,
     @Inject(REFRESH_TOKENS_REPOSITORY)
     private readonly refreshTokensRepo: IRefreshTokensRepository,
-    private readonly passwordService: PasswordService,
+    passwordService: PasswordService,
     private readonly jwtTokenService: JwtTokenService,
-  ) {}
+  ) {
+    super(repo, passwordService);
+  }
 
   async execute(dto: LoginCommand): Promise<AuthResult> {
     const user = await this.repo.findByEmail(dto.email);
@@ -45,8 +48,7 @@ export class AuthenticateUserUseCase {
     }
 
     if (this.passwordService.needsRehash(user.passwordHash)) {
-      const newHash = await this.passwordService.hash(dto.password);
-      await this.repo.update(user.id!, { passwordHash: newHash });
+      await this.enregistrerMotDePasse(user, dto.password, 'password-rehash');
     }
 
     return issueAuthSession(user, this.jwtTokenService, this.refreshTokensRepo);

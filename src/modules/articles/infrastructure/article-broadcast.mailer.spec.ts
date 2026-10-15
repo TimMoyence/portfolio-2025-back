@@ -1,4 +1,5 @@
 import { buildArticleRecord } from '../../../../test/factories/article.factory';
+import { installerVariables } from '../../../../test/helpers/environnement';
 import type { ArticleRecord } from '../application/articles.repository';
 
 const mockSendMail = jest.fn().mockResolvedValue({ messageId: 'test-id' });
@@ -48,18 +49,18 @@ function article(overrides: Partial<ArticleRecord> = {}): ArticleRecord {
 }
 
 describe('ArticleBroadcastMailerService', () => {
-  const env = { ...process.env };
+  installerVariables(
+    {
+      SMTP_FROM: "'Asili Design' <veille@asilidesign.fr>",
+      SMTP_REPLY_TO: 'Tim <contact@asilidesign.fr>',
+      FRONTEND_URL: undefined,
+      API_PREFIX: undefined,
+    },
+    'chaque-test',
+  );
 
   beforeEach(() => {
     jest.clearAllMocks();
-    process.env.SMTP_FROM = "'Asili Design' <veille@asilidesign.fr>";
-    process.env.SMTP_REPLY_TO = 'Tim <contact@asilidesign.fr>';
-    delete process.env.FRONTEND_URL;
-    delete process.env.API_PREFIX;
-  });
-
-  afterAll(() => {
-    process.env = env;
   });
 
   it('se déclare inactif sans transport SMTP', () => {

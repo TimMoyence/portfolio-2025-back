@@ -17,7 +17,6 @@ import { silenceNestLogger } from './helpers/silence-nest-logger';
 
 const SLUG = 'b2-02-series-statistiques';
 const FORMATEUR = 'd4444444-4444-4444-8444-444444444444';
-const SECRET = 'secret-de-test-seance-papier-assez-long';
 const SYNTHESE_A = 'papier-formateur@example.test';
 const OK = 200;
 const CREE = 201;
@@ -63,7 +62,7 @@ describeDb('Seance du B2-02 en mode papier (db integration)', () => {
     client.formateur('patch', `/sessions/${sessionId}/control`).send(corps);
 
   installerBancDuCours(
-    { secret: SECRET, syntheseA: SYNTHESE_A },
+    { syntheseA: SYNTHESE_A },
     {
       formateurId: FORMATEUR,
       slug: SLUG,

@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { sansFin } from '../../../../common/domain/texte/sans-bords';
 import type { LlmsTxtAnalysis } from '../../domain/AiIndexability';
 import { scoreSur100 } from '../../domain/score-sur-100';
 import { SafeFetchService } from './safe-fetch.service';
@@ -14,7 +15,7 @@ export class LlmsTxtAnalyzerService {
   constructor(private readonly safeFetch: SafeFetchService) {}
 
   async analyze(origin: string): Promise<LlmsTxtAnalysis> {
-    const cleanOrigin = origin.replace(/\/$/, '');
+    const cleanOrigin = sansFin(origin, '/');
     const url = `${cleanOrigin}/llms.txt`;
 
     let body = '';

@@ -8,4 +8,5 @@ export interface StructuredDataQualityResult {
     readonly type: string;
     readonly missingFields: ReadonlyArray<string>;
   }>;
+  readonly malformedBlocks: number;
 }
