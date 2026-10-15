@@ -1,12 +1,52 @@
 import { readdirSync, readFileSync, statSync } from 'fs';
 import { collectFiles } from '../../test/helpers/source-tree';
 import { join } from 'path';
-import { preProcessFile } from 'typescript';
+import {
+  createSourceFile,
+  forEachChild,
+  isCallExpression,
+  isExportDeclaration,
+  isExternalModuleReference,
+  isIdentifier,
+  isImportDeclaration,
+  isImportEqualsDeclaration,
+  isImportTypeNode,
+  isLiteralTypeNode,
+  isStringLiteralLike,
+  type Node,
+  ScriptTarget,
+  SyntaxKind,
+} from 'typescript';
+
+function moduleNomme(noeud: Node): Node | undefined {
+  if (isImportDeclaration(noeud) || isExportDeclaration(noeud)) {
+    return noeud.moduleSpecifier;
+  }
+  if (
+    isImportEqualsDeclaration(noeud) &&
+    isExternalModuleReference(noeud.moduleReference)
+  ) {
+    return noeud.moduleReference.expression;
+  }
+  if (isImportTypeNode(noeud) && isLiteralTypeNode(noeud.argument)) {
+    return noeud.argument.literal;
+  }
+  const appelDeModule =
+    isCallExpression(noeud) &&
+    (noeud.expression.kind === SyntaxKind.ImportKeyword ||
+      (isIdentifier(noeud.expression) && noeud.expression.text === 'require'));
+  return appelDeModule ? noeud.arguments[0] : undefined;
+}
 
 function parseImports(content: string): string[] {
-  return preProcessFile(content, true, true).importedFiles.map(
-    (fichier) => fichier.fileName,
-  );
+  const modules: string[] = [];
+  const visiter = (noeud: Node): void => {
+    const nomme = moduleNomme(noeud);
+    if (nomme && isStringLiteralLike(nomme)) modules.push(nomme.text);
+    forEachChild(noeud, visiter);
+  };
+  visiter(createSourceFile('source.ts', content, ScriptTarget.Latest, true));
+  return modules;
 }
 
 function extractImports(filePath: string): string[] {
@@ -105,6 +145,16 @@ describe('parseImports', () => {
     [
       'import a effet de bord apres une classe exportee',
       `export class A {}\nimport '../infrastructure/x';`,
+      ['../infrastructure/x'],
+    ],
+    [
+      'reexport sous un espace de noms',
+      `export * as rendu from '../infrastructure/x';`,
+      ['../infrastructure/x'],
+    ],
+    [
+      'import dynamique apres une regex contenant un accent grave',
+      "const motif = /`/;\nconst m = import('../infrastructure/x');",
       ['../infrastructure/x'],
     ],
     [
