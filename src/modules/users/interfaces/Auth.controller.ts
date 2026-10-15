@@ -70,6 +70,7 @@ import { SetPasswordDto } from './dto/SetPassword.dto';
 import { AuthResponseDto } from './dto/Auth.response.dto';
 import { UpdateProfileDto } from './dto/UpdateProfile.dto';
 import { UserResponseDto } from './dto/User.response.dto';
+import { compteConnecte } from '../../../common/interfaces/auth/compte-connecte';
 import { Public } from '../../../common/interfaces/auth/public.decorator';
 import { messageDErreur } from '../../../common/domain/errors/message-d-erreur';
 
@@ -158,34 +159,38 @@ export class AuthController {
     },
     authentifier: () => Promise<AuthResult>,
   ): Promise<AuthResponseDto> {
-    const ip = this.extractIp(req);
-    const userAgent = this.extractUserAgent(req);
     const emailSaisi =
       journal.email === undefined ? {} : { email: journal.email };
 
     try {
       const result = await authentifier();
       this.setRefreshCookie(res, result.refreshToken);
-      this.auditLogger.log({
-        event: journal.succes,
+      this.journaliser(req, journal.succes, {
         email: journal.email ?? result.user.email,
         userId: result.user.id,
-        ip,
-        userAgent,
-        timestamp: new Date(),
       });
       return AuthResponseDto.fromAuthResult(result);
     } catch (error) {
-      this.auditLogger.log({
-        event: journal.echec,
+      this.journaliser(req, journal.echec, {
         ...emailSaisi,
-        ip,
-        userAgent,
-        timestamp: new Date(),
         details: messageDErreur(error),
       });
       throw error;
     }
+  }
+
+  private journaliser(
+    req: Request,
+    event: AuthAuditEntry['event'],
+    compte: Pick<AuthAuditEntry, 'email' | 'userId' | 'details'> = {},
+  ): void {
+    this.auditLogger.log({
+      event,
+      ...compte,
+      ip: this.extractIp(req),
+      userAgent: this.extractUserAgent(req),
+      timestamp: new Date(),
+    });
   }
 
   @Public()
@@ -234,8 +239,6 @@ export class AuthController {
   async logout(
     @EchangeCourant() { req, res }: EchangeHttp,
   ): Promise<AuthMessageResponseDto> {
-    const ip = this.extractIp(req);
-    const userAgent = this.extractUserAgent(req);
     const rawRefreshToken = this.jetonDuCookie(req);
 
     if (rawRefreshToken) {
@@ -243,12 +246,7 @@ export class AuthController {
     }
 
     this.clearRefreshCookie(res);
-    this.auditLogger.log({
-      event: 'LOGOUT',
-      ip,
-      userAgent,
-      timestamp: new Date(),
-    });
+    this.journaliser(req, 'LOGOUT');
     return { message: 'Deconnexion reussie.' };
   }
 
@@ -280,8 +278,11 @@ export class AuthController {
   @ApiBadRequestResponse({ description: 'Validation failed' })
   async forgotPassword(
     @Body() dto: ForgotPasswordDto,
+    @Req() req: Request,
   ): Promise<AuthMessageResponseDto> {
-    return this.requestPasswordResetUseCase.execute(dto);
+    const reponse = await this.requestPasswordResetUseCase.execute(dto);
+    this.journaliser(req, 'PASSWORD_RESET_REQUEST', { email: dto.email });
+    return reponse;
   }
 
   @Public()
@@ -296,8 +297,11 @@ export class AuthController {
   @RefusDeLienDocumente()
   async resetPassword(
     @Body() dto: ResetPasswordDto,
+    @Req() req: Request,
   ): Promise<AuthMessageResponseDto> {
-    return this.resetPasswordUseCase.execute(dto);
+    const { message, userId } = await this.resetPasswordUseCase.execute(dto);
+    this.journaliser(req, 'PASSWORD_RESET_COMPLETE', { userId });
+    return { message };
   }
 
   @Post('set-password')
@@ -326,7 +330,7 @@ export class AuthController {
     req: Request,
     modifier: (userId: string) => Promise<User>,
   ): Promise<UserResponseDto> {
-    return UserResponseDto.fromDomain(await modifier(req.user!.sub));
+    return UserResponseDto.fromDomain(await modifier(compteConnecte(req).id));
   }
 
   @Public()
@@ -370,7 +374,7 @@ export class AuthController {
     summary: "Renvoie l'email de verification (rate limited 3/h)",
   })
   @ApiOkResponse({ type: AuthMessageResponseDto })
-  @ApiBadRequestResponse({ description: 'Trop de demandes' })
+  @ApiBadRequestResponse({ description: 'Validation failed' })
   async resendVerification(
     @Body() dto: ResendVerificationDto,
   ): Promise<AuthMessageResponseDto> {
@@ -389,12 +393,9 @@ export class AuthController {
     @Body() dto: UpdateProfileDto,
     @Req() req: Request,
   ): Promise<UserResponseDto> {
-    const payload = req.user!;
-    const updatedUser = await this.updateProfileUseCase.execute(
-      payload.sub,
-      dto,
+    return this.pourLeCompteConnecte(req, (userId) =>
+      this.updateProfileUseCase.execute(userId, dto),
     );
-    return UserResponseDto.fromDomain(updatedUser);
   }
 
   @Get('me')
@@ -402,9 +403,9 @@ export class AuthController {
   @ApiOperation({ summary: "Recuperer le profil de l'utilisateur connecte" })
   @ApiOkResponse({ type: UserResponseDto })
   @ApiUnauthorizedResponse({ description: 'Token invalide ou expire' })
-  async me(@Req() req: Request): Promise<UserResponseDto> {
-    const payload = req.user!;
-    const user = await this.getCurrentUserUseCase.execute(payload.sub);
-    return UserResponseDto.fromDomain(user);
+  me(@Req() req: Request): Promise<UserResponseDto> {
+    return this.pourLeCompteConnecte(req, (userId) =>
+      this.getCurrentUserUseCase.execute(userId),
+    );
   }
 }

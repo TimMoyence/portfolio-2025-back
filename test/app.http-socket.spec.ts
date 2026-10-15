@@ -19,10 +19,12 @@ import {
   coreControllerProviders,
   createAuthUseCaseStubs,
   createCoreUseCaseStubs,
+  PASSWORD_RESET_DONE_RESULT,
   PASSWORD_RESET_REQUESTED_RESULT,
   primeCoreUseCaseStubs,
   primePasswordUseCaseStubs,
 } from './factories/core-api.factory';
+import { emettreJeton } from '../src/modules/users/domain/TokenHash';
 import {
   attendreCreationTransmise,
   attendreFiltreTransmis,
@@ -160,6 +162,18 @@ describe('API coherence and connectivity (e2e http socket)', () => {
       .expect(200);
 
     expect(response.body).toEqual(PASSWORD_RESET_REQUESTED_RESULT);
+  });
+
+  it('POST /api/auth/reset-password confirme sans livrer l identifiant du compte', async () => {
+    const chosenCredential = 'NouveauMotDePasse1!';
+    const response = await request(getHttpServer())
+      .post('/api/auth/reset-password')
+      .send({ token: emettreJeton().brut, newPassword: chosenCredential })
+      .expect(200);
+
+    expect(response.body).toEqual({
+      message: PASSWORD_RESET_DONE_RESULT.message,
+    });
   });
 
   it.each(CAS_LEGACY)(

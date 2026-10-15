@@ -5,11 +5,9 @@ import {
   ApiNotFoundResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import type { Request } from 'express';
 import { Roles } from '../../../common/interfaces/auth/roles.decorator';
 import { RolesGuard } from '../../../common/interfaces/auth/roles.guard';
 import { ROLE_ADMINISTRATEUR } from '../domain/SessionOwnership';
-import type { ActeurFormation } from '../domain/SessionOwnership';
 import {
   LIMITE_LECTURE_FORMATEUR_PAR_MINUTE,
   LimiteParMinute,
@@ -18,10 +16,6 @@ import {
 const ROLE_FORMATEUR = 'teacher';
 
 const SEANCE_INTROUVABLE = 'Séance introuvable';
-
-export function acteurDe(request: Request): ActeurFormation {
-  return { id: request.user!.sub, roles: request.user!.roles };
-}
 
 export function ControleurFormateur(): ClassDecorator {
   return applyDecorators(
