@@ -6,6 +6,6 @@ import { CasDUsageUtilisateurs } from './CasDUsageUtilisateurs';
 export class DeleteUsersUseCase extends CasDUsageUtilisateurs {
   async execute(id: string): Promise<User> {
     await this.utilisateurExistant(id);
-    return this.repo.deactivate(id);
+    return this.repo.update(id, User.update({ isActive: false }));
   }
 }

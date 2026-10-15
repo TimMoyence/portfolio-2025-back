@@ -7,5 +7,5 @@ export interface IPasswordResetTokensRepository {
 
   invalidateActiveByUserId(userId: string): Promise<void>;
 
-  markUsed(id: string): Promise<void>;
+  markUsed(id: string): Promise<boolean>;
 }

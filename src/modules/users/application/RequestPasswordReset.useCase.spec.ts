@@ -99,6 +99,24 @@ describe('RequestPasswordResetUseCase', () => {
     expect(expiresAtMs).toBeLessThanOrEqual(after + 60 * 60 * 1000 + 1000);
   });
 
+  it('annonce dans le courriel la duree de validite du jeton enregistre', async () => {
+    const user = compteExistant({ passwordHash: 'hash' });
+
+    const avant = Date.now();
+    await useCase.execute({ email: user.email });
+    const apres = Date.now();
+
+    const { expiresAt } = tokensRepository.create.mock.calls[0][0];
+    const { expiresInMinutes } =
+      notifier.sendPasswordResetEmail.mock.calls[0][0];
+    expect(expiresAt.getTime()).toBeGreaterThanOrEqual(
+      avant + expiresInMinutes * 60_000,
+    );
+    expect(expiresAt.getTime()).toBeLessThanOrEqual(
+      apres + expiresInMinutes * 60_000,
+    );
+  });
+
   it('ne casse pas le flow si le mailer echoue', async () => {
     const user = compteExistant({ passwordHash: 'hash' });
     notifier.sendPasswordResetEmail.mockRejectedValue(new Error('smtp down'));

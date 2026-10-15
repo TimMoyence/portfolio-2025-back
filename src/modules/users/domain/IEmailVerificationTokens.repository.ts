@@ -7,6 +7,8 @@ export interface IEmailVerificationTokensRepository {
     tokenHash: string,
   ): Promise<EmailVerificationToken | null>;
 
+  invalidateActiveByUserId(userId: string): Promise<void>;
+
   deleteByUserId(userId: string): Promise<void>;
 
   countRecentByUserId(userId: string, sinceMs: number): Promise<number>;

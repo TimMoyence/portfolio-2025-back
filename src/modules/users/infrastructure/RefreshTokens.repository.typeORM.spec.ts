@@ -29,6 +29,41 @@ describe('RefreshTokensRepositoryTypeORM.rotateById', () => {
   });
 });
 
+describe('RefreshTokensRepositoryTypeORM revocation et purge', () => {
+  const depotSur = (ecritures: Partial<Repository<RefreshTokenEntity>>) =>
+    new RefreshTokensRepositoryTypeORM(
+      ecritures as Repository<RefreshTokenEntity>,
+    );
+
+  it.each([
+    [
+      'tous les jetons d un compte',
+      (depot: RefreshTokensRepositoryTypeORM) => depot.revokeByUserId('user-1'),
+      { userId: 'user-1' },
+    ],
+    [
+      'un seul jeton',
+      (depot: RefreshTokensRepositoryTypeORM) => depot.revokeById('refresh-id'),
+      { id: 'refresh-id' },
+    ],
+  ])('revoque %s et retire sa grace', async (_label, revoquer, critere) => {
+    const update = jest.fn().mockResolvedValue({ affected: 1 });
+
+    await revoquer(depotSur({ update }));
+
+    expect(update).toHaveBeenCalledWith(critere, {
+      revoked: true,
+      rotationGraceUntil: null,
+    });
+  });
+
+  it('rend le nombre de jetons purges', async () => {
+    const remove = jest.fn().mockResolvedValue({ affected: 3, raw: [] });
+
+    await expect(depotSur({ delete: remove }).purgeExpired()).resolves.toBe(3);
+  });
+});
+
 describe('RefreshTokensRepositoryTypeORM.create', () => {
   it('enregistre l empreinte, l etat de revocation et la grace, puis rend le jeton persiste', async () => {
     const expiresAt = new Date('2026-10-17T12:00:00Z');

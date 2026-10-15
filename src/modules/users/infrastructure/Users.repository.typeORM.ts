@@ -39,15 +39,4 @@ export class UsersRepositoryTypeORM implements IUsersRepository {
 
     return updated;
   }
-
-  async deactivate(id: string): Promise<UsersEntity> {
-    await this.repo.update({ id }, { isActive: false });
-    const updated = await this.findById(id);
-
-    if (!updated) {
-      throw new Error(`User with id ${id} could not be deactivated`);
-    }
-
-    return updated;
-  }
 }

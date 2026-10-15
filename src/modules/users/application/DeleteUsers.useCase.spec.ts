@@ -5,7 +5,10 @@ import {
   createMockUsersRepo,
   buildUser,
 } from '../../../../test/factories/user.factory';
-import { attendreUtilisateurIntrouvable } from '../../../../test/helpers/utilisateurs';
+import {
+  attendreMiseAJourDeLUtilisateur,
+  attendreUtilisateurIntrouvable,
+} from '../../../../test/helpers/utilisateurs';
 
 describe('DeleteUsersUseCase', () => {
   let repo: jest.Mocked<IUsersRepository>;
@@ -16,16 +19,16 @@ describe('DeleteUsersUseCase', () => {
     useCase = new DeleteUsersUseCase(repo);
   });
 
-  it('devrait desactiver l utilisateur quand il existe', async () => {
+  it('desactive l utilisateur par la mise a jour datee du domaine', async () => {
     const user = buildUser({ id: 'user-1' });
     const deactivated = buildUser({ id: 'user-1', isActive: false });
     repo.findById.mockResolvedValue(user);
-    repo.deactivate.mockResolvedValue(deactivated);
+    repo.update.mockResolvedValue(deactivated);
 
     const result = await useCase.execute('user-1');
 
     expect(repo.findById).toHaveBeenCalledWith('user-1');
-    expect(repo.deactivate).toHaveBeenCalledWith('user-1');
+    attendreMiseAJourDeLUtilisateur(repo.update, { isActive: false });
     expect(result).toBe(deactivated);
   });
 
@@ -33,7 +36,7 @@ describe('DeleteUsersUseCase', () => {
     await attendreUtilisateurIntrouvable(
       repo,
       () => useCase.execute('missing'),
-      repo.deactivate,
+      repo.update,
     );
   });
 });

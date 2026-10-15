@@ -52,6 +52,15 @@ describe('EnvoiDeVerificationEmail', () => {
     );
   });
 
+  it('expire les liens encore actifs du compte sans les effacer avant d en emettre un neuf', async () => {
+    const { tokensRepo, logger, envoi } = construire();
+
+    await envoi.envoyer(user, 'user-7', logger, 'Echec');
+
+    expect(tokensRepo.invalidateActiveByUserId).toHaveBeenCalledWith('user-7');
+    expect(tokensRepo.deleteByUserId).not.toHaveBeenCalled();
+  });
+
   it('journalise l echec d envoi sans le propager', async () => {
     const { notifier, logger, envoi } = construire();
     notifier.sendVerificationEmail.mockRejectedValue(new Error('smtp'));

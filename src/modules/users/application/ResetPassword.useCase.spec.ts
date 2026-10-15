@@ -43,13 +43,18 @@ describe('ResetPasswordUseCase', () => {
       useCase.execute({ token, newPassword: ANY_VALID_CREDENTIAL }),
     ).rejects.toBeInstanceOf(LienInvalideError);
 
-  it('reinitialise le mot de passe avec un token valide', async () => {
+  const preparerUnLienValide = () => {
     tokensRepository.findActiveByTokenHash.mockResolvedValue(
       buildPasswordResetToken({ id: 'token-1', userId: 'user-1' }),
     );
     preparerNouveauMotDePasse(usersRepository, passwordService, {
       passwordHash: 'old-hash',
     });
+  };
+
+  it('reinitialise le mot de passe avec un token valide', async () => {
+    preparerUnLienValide();
+    tokensRepository.markUsed.mockResolvedValue(true);
 
     const result = await useCase.execute({
       token: JETON_EMIS,
@@ -63,6 +68,18 @@ describe('ResetPasswordUseCase', () => {
     );
     expect(tokensRepository.markUsed).toHaveBeenCalledWith('token-1');
     expect(result.message).toContain('reinitialise');
+    expect(result.userId).toBe('user-1');
+  });
+
+  it('refuse le lien qu un usage concurrent a deja consomme sans changer le mot de passe', async () => {
+    preparerUnLienValide();
+    tokensRepository.markUsed.mockResolvedValue(false);
+
+    await attendreReinitialisationRefusee(JETON_EMIS);
+
+    expect(tokensRepository.markUsed).toHaveBeenCalledWith('token-1');
+    expect(passwordService.hash).not.toHaveBeenCalled();
+    expect(usersRepository.update).not.toHaveBeenCalled();
   });
 
   it('rejette un token inconnu, expire ou deja utilise', async () => {

@@ -98,6 +98,7 @@ export const PASSWORD_RESET_REQUESTED_RESULT = {
 
 export const PASSWORD_RESET_DONE_RESULT = {
   message: 'Mot de passe reinitialise avec succes.',
+  userId: 'user-1',
 };
 
 export const SET_PASSWORD_RESULT = {
