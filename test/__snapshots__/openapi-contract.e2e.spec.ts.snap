@@ -27,7 +27,7 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
   "AttenduFeuillePresentateurResponseDto": {
     "properties": {
       "affichage": {
-        "description": "Valeur attendue ecrite comme la feuille de l eleve : taux a quatre decimales, montant a deux",
+        "description": "Valeur attendue ecrite a la francaise : taux a quatre decimales, montant a deux, milliers separes par une espace fine insecable",
         "example": "0,3452",
         "type": "string",
       },
@@ -90,6 +90,14 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
       "cle",
       "valeur",
     ],
+    "type": "object",
+  },
+  "CadrageDuRenvoiResponseDto": {
+    "properties": {
+      "extrait": {
+        "$ref": "#/components/schemas/ExtraitDuRenvoiResponseDto",
+      },
+    },
     "type": "object",
   },
   "ComptesJalonResponseDto": {
@@ -179,6 +187,67 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
         "$ref": "#/components/schemas/PilotageEcranRequestDto",
       },
     },
+    "type": "object",
+  },
+  "CorrectionServieResponseDto": {
+    "properties": {
+      "corrige": {
+        "nullable": true,
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/CorrigeFeuillePresentateurResponseDto",
+          },
+          {
+            "$ref": "#/components/schemas/CorrigeTableauPresentateurResponseDto",
+          },
+          {
+            "$ref": "#/components/schemas/CorrigeClassementPresentateurResponseDto",
+          },
+          {
+            "$ref": "#/components/schemas/CorrigeEnigmesPresentateurResponseDto",
+          },
+          {
+            "$ref": "#/components/schemas/CorrigeDefiPresentateurResponseDto",
+          },
+          {
+            "$ref": "#/components/schemas/CorrigeRevelationPresentateurResponseDto",
+          },
+          {
+            "$ref": "#/components/schemas/CorrigeReflexionPresentateurResponseDto",
+          },
+        ],
+      },
+      "ecranId": {
+        "example": "B2-01-A3-02-VOTE",
+        "type": "string",
+      },
+      "explications": {
+        "items": {
+          "$ref": "#/components/schemas/ExplicationDeCorrectionResponseDto",
+        },
+        "type": "array",
+      },
+      "questions": {
+        "items": {
+          "$ref": "#/components/schemas/QuestionCorrigeeResponseDto",
+        },
+        "type": "array",
+      },
+      "reflexion": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ReflexionPresentateurResponseDto",
+          },
+        ],
+        "nullable": true,
+      },
+    },
+    "required": [
+      "ecranId",
+      "questions",
+      "corrige",
+      "reflexion",
+    ],
     "type": "object",
   },
   "CorrigeClassementPresentateurResponseDto": {
@@ -568,6 +637,17 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
   },
   "EcranDerouleResponseDto": {
     "properties": {
+      "cadrageDuRenvoi": {
+        "$ref": "#/components/schemas/CadrageDuRenvoiResponseDto",
+      },
+      "correction": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/CorrectionServieResponseDto",
+          },
+        ],
+        "description": "Correction servie au poste une fois l ecran revele",
+      },
       "corrigeEcran": {
         "description": "Corrige de production, de defi, de revelation ou de reflexion ; servi au sujet seulement une fois l ecran revele, jamais au catalogue",
         "nullable": true,
@@ -618,6 +698,18 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
         "example": 4,
         "type": "number",
       },
+      "ecranCorrige": {
+        "description": "Ecran dont celui-ci porte la correction",
+        "example": "B3-01-A2-03-ATELIER",
+        "type": "string",
+      },
+      "explications": {
+        "description": "Explications d un exercice corrige sur place, devoilees une a une au pupitre",
+        "items": {
+          "$ref": "#/components/schemas/ExplicationDeCorrectionResponseDto",
+        },
+        "type": "array",
+      },
       "guide": {
         "$ref": "#/components/schemas/GuideFormateurResponseDto",
       },
@@ -633,6 +725,16 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
         "description": "Notes du formateur",
         "type": "string",
       },
+      "pieceJointe": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/PieceJointePubliqueResponseDto",
+          },
+          {
+            "$ref": "#/components/schemas/PieceJointeReserveeResponseDto",
+          },
+        ],
+      },
       "questions": {
         "items": {
           "$ref": "#/components/schemas/QuestionDerouleResponseDto",
@@ -647,6 +749,18 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
         ],
         "description": "Reponse attendue d un recit a reflexion, la meme que celle revelee a l etudiant",
         "nullable": true,
+      },
+      "renvoi": {
+        "description": "Ecran dont celui-ci reprend le contenu",
+        "example": "B3-01-A1-02-COURRIEL",
+        "type": "string",
+      },
+      "resoluPar": {
+        "description": "Ecrans qui corrigent celui-ci",
+        "items": {
+          "type": "string",
+        },
+        "type": "array",
       },
       "seuil": {
         "example": 0.7,
@@ -684,6 +798,17 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
   },
   "EcranPublicResponseDto": {
     "properties": {
+      "cadrageDuRenvoi": {
+        "$ref": "#/components/schemas/CadrageDuRenvoiResponseDto",
+      },
+      "correction": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/CorrectionServieResponseDto",
+          },
+        ],
+        "description": "Correction servie au poste une fois l ecran revele",
+      },
       "donnees": {
         "additionalProperties": true,
         "description": "Proprietes de la brique, rangees sous la propriete de la brique ; sans solution, piege, confusion ni notes",
@@ -694,6 +819,11 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
         "example": 4,
         "type": "number",
       },
+      "ecranCorrige": {
+        "description": "Ecran dont celui-ci porte la correction",
+        "example": "B3-01-A2-03-ATELIER",
+        "type": "string",
+      },
       "id": {
         "example": "E-OUV-RAPPEL",
         "type": "string",
@@ -701,6 +831,28 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
       "interactif": {
         "example": true,
         "type": "boolean",
+      },
+      "pieceJointe": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/PieceJointePubliqueResponseDto",
+          },
+          {
+            "$ref": "#/components/schemas/PieceJointeReserveeResponseDto",
+          },
+        ],
+      },
+      "renvoi": {
+        "description": "Ecran dont celui-ci reprend le contenu",
+        "example": "B3-01-A1-02-COURRIEL",
+        "type": "string",
+      },
+      "resoluPar": {
+        "description": "Ecrans qui corrigent celui-ci",
+        "items": {
+          "type": "string",
+        },
+        "type": "array",
       },
       "titre": {
         "description": "Titre de l ecran, obligatoire a partir de la version 3",
@@ -959,6 +1111,52 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
     "required": [
       "saisies",
     ],
+    "type": "object",
+  },
+  "ExplicationDeCorrectionResponseDto": {
+    "properties": {
+      "reference": {
+        "example": "identifiant",
+        "type": "string",
+      },
+      "texte": {
+        "example": "Cinq identifiants : on les compte, on ne les additionne jamais.",
+        "type": "string",
+      },
+    },
+    "required": [
+      "reference",
+      "texte",
+    ],
+    "type": "object",
+  },
+  "ExtraitDuRenvoiResponseDto": {
+    "properties": {
+      "champs": {
+        "description": "Champs du cas repris de l ecran renvoye",
+        "items": {
+          "enum": [
+            "metier",
+            "situation",
+            "geste",
+            "consequence",
+          ],
+          "type": "string",
+        },
+        "type": "array",
+      },
+      "lignes": {
+        "description": "Rangs des lignes reprises de l ecran renvoye",
+        "example": [
+          0,
+          2,
+        ],
+        "items": {
+          "type": "number",
+        },
+        "type": "array",
+      },
+    },
     "type": "object",
   },
   "FeuilleEvalueeResponseDto": {
@@ -1301,6 +1499,44 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
     ],
     "type": "object",
   },
+  "PieceJointePubliqueResponseDto": {
+    "properties": {
+      "fichier": {
+        "description": "Chemin public du fichier",
+        "example": "/assets/cours/b3-01/B3-01_export_ventes.d4f2ceab.xlsx",
+        "type": "string",
+      },
+      "libelle": {
+        "example": "Export des ventes Norvane (classeur Excel)",
+        "type": "string",
+      },
+    },
+    "required": [
+      "libelle",
+      "fichier",
+    ],
+    "type": "object",
+  },
+  "PieceJointeReserveeResponseDto": {
+    "properties": {
+      "libelle": {
+        "example": "Classeur de la séance",
+        "type": "string",
+      },
+      "reservee": {
+        "description": "Piece reservee a la seance, telechargee par la route liee au jeton",
+        "enum": [
+          true,
+        ],
+        "type": "number",
+      },
+    },
+    "required": [
+      "libelle",
+      "reservee",
+    ],
+    "type": "object",
+  },
   "PilotageEcranRequestDto": {
     "properties": {
       "etayage": {
@@ -1506,6 +1742,29 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
       "resolues",
       "tentativesMoyennes",
       "epuisees",
+    ],
+    "type": "object",
+  },
+  "QuestionCorrigeeResponseDto": {
+    "properties": {
+      "bonneReponse": {
+        "example": "plus bas qu’au départ",
+        "type": "string",
+      },
+      "optionId": {
+        "example": "b",
+        "nullable": true,
+        "type": "string",
+      },
+      "questionId": {
+        "example": "b2-01-a3-vote-hausse-baisse",
+        "type": "string",
+      },
+    },
+    "required": [
+      "questionId",
+      "bonneReponse",
+      "optionId",
     ],
     "type": "object",
   },

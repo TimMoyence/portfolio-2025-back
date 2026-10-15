@@ -2,7 +2,6 @@ import {
   ApiExtraModels,
   ApiProperty,
   ApiPropertyOptional,
-  getSchemaPath,
   OmitType,
 } from '@nestjs/swagger';
 import type { Diffusion } from '../../../domain/contrats/cours';
@@ -12,200 +11,18 @@ import type {
   DerouleCours,
   EcranDeroule,
 } from '../../../domain/contrats/deroule';
-import type { FormeFormule } from '../../../domain/cours/Corrige';
 import {
   CorrigePresentateurResponseDto,
   GuideFormateurResponseDto,
 } from '../deroule.response.dto';
+import {
+  CORRIGES_D_ECRAN,
+  ExplicationDeCorrectionResponseDto,
+  ReflexionPresentateurResponseDto,
+  UN_CORRIGE_D_ECRAN,
+} from './corrige-ecran.response.dto';
 import { OptionPubliqueResponseDto } from './rappels.response.dto';
 import { EcranPublicResponseDto, SujetResponseDto } from './sujet.response.dto';
-import { TableauEvalueResponseDto } from './tableau-evalue.response.dto';
-
-export class ToleranceResponseDto {
-  @ApiProperty({ enum: ['relative', 'absolue', 'decimales'] })
-  type: 'relative' | 'absolue' | 'decimales';
-
-  @ApiProperty({ example: 0.0001 })
-  valeur: number;
-}
-
-class FormeMemeQueResponseDto {
-  @ApiProperty({
-    description: 'Cellule dont la forme R1C1 doit etre reprise',
-    example: 'D2',
-  })
-  memeQue: string;
-}
-
-@ApiExtraModels(FormeMemeQueResponseDto)
-export class AttenduFeuillePresentateurResponseDto {
-  @ApiProperty({ example: 'E2' })
-  reference: string;
-
-  @ApiProperty({ example: '=C2/$C$5' })
-  formuleReference: string;
-
-  @ApiProperty({ example: 0.345217 })
-  valeur: number;
-
-  @ApiProperty({
-    description:
-      'Valeur attendue ecrite comme la feuille de l eleve : taux a quatre decimales, montant a deux',
-    example: '0,3452',
-  })
-  affichage: string;
-
-  @ApiProperty({ type: ToleranceResponseDto })
-  tolerance: ToleranceResponseDto;
-
-  @ApiProperty({
-    oneOf: [
-      { type: 'string', enum: ['references'] },
-      { $ref: getSchemaPath(FormeMemeQueResponseDto) },
-    ],
-  })
-  forme: FormeFormule;
-}
-
-class CorrigeFeuillePresentateurResponseDto {
-  @ApiProperty({ enum: ['feuille'] })
-  type: 'feuille';
-
-  @ApiProperty({ type: [AttenduFeuillePresentateurResponseDto] })
-  attendus: AttenduFeuillePresentateurResponseDto[];
-
-  @ApiProperty({ example: 0.8 })
-  seuilReussite: number;
-}
-
-export class AttenduTableauPresentateurResponseDto {
-  @ApiProperty({ example: 1 })
-  rang: number;
-
-  @ApiProperty({ example: 'prix' })
-  cle: string;
-
-  @ApiProperty({ example: 20.52 })
-  valeur: number;
-}
-
-class CorrigeTableauPresentateurResponseDto {
-  @ApiProperty({ enum: ['tableau'] })
-  type: 'tableau';
-
-  @ApiProperty({ type: [AttenduTableauPresentateurResponseDto] })
-  attendus: AttenduTableauPresentateurResponseDto[];
-
-  @ApiProperty({
-    type: TableauEvalueResponseDto,
-    description:
-      'Tableau rempli des valeurs attendues, colonnes deduites, totaux, synthese et solde calcules',
-  })
-  tableauCorrige: TableauEvalueResponseDto;
-
-  @ApiProperty({ type: ToleranceResponseDto })
-  tolerance: ToleranceResponseDto;
-
-  @ApiProperty({ example: 0.75 })
-  seuilReussite: number;
-}
-
-export class AttenduClassementPresentateurResponseDto {
-  @ApiProperty({ example: 'carte-ca-2024-2025' })
-  carteId: string;
-
-  @ApiProperty({ example: 'comparable' })
-  categorieId: string;
-
-  @ApiProperty({ example: 'Même périmètre, même unité, même durée.' })
-  justification: string;
-}
-
-class CorrigeClassementPresentateurResponseDto {
-  @ApiProperty({ enum: ['classement'] })
-  type: 'classement';
-
-  @ApiProperty({ type: [AttenduClassementPresentateurResponseDto] })
-  attendus: AttenduClassementPresentateurResponseDto[];
-
-  @ApiProperty({ example: 0.75 })
-  seuilReussite: number;
-}
-
-export class EnigmePresentateurResponseDto {
-  @ApiProperty({ example: 'enigme-1' })
-  enigmeId: string;
-
-  @ApiProperty({ example: '142 920' })
-  solution: string;
-
-  @ApiProperty({ example: '7' })
-  fragment: string;
-}
-
-class CorrigeEnigmesPresentateurResponseDto {
-  @ApiProperty({ enum: ['enigmes'] })
-  type: 'enigmes';
-
-  @ApiProperty({ type: [EnigmePresentateurResponseDto] })
-  enigmes: EnigmePresentateurResponseDto[];
-
-  @ApiProperty({ example: '7-3-1-9' })
-  codeFinal: string;
-}
-
-export class StrategiePresentateurResponseDto {
-  @ApiProperty({ example: 'somme-des-taux' })
-  id: string;
-
-  @ApiProperty({ example: 'Additionner les taux annoncés' })
-  libelle: string;
-
-  @ApiProperty({ example: true })
-  fausse: boolean;
-}
-
-class CorrigeDefiPresentateurResponseDto {
-  @ApiProperty({ enum: ['defi'] })
-  type: 'defi';
-
-  @ApiProperty({ type: [StrategiePresentateurResponseDto] })
-  strategies: StrategiePresentateurResponseDto[];
-}
-
-class CorrigeRevelationPresentateurResponseDto {
-  @ApiProperty({ enum: ['revelation'] })
-  type: 'revelation';
-
-  @ApiProperty({ example: 'Une hausse puis une baisse de 20 %' })
-  titre: string;
-
-  @ApiProperty({ type: [String] })
-  lignes: string[];
-}
-
-class CorrigeReflexionPresentateurResponseDto {
-  @ApiProperty({ enum: ['reflexion'] })
-  type: 'reflexion';
-
-  @ApiProperty({ example: 'Un montant et un taux, sur deux dates.' })
-  attendu: string;
-
-  @ApiProperty({ example: 'Nommez toujours le dénominateur.' })
-  suite: string;
-}
-
-export class ReflexionPresentateurResponseDto {
-  @ApiProperty({ example: 'Un montant et un taux, sur deux dates.' })
-  attendu: string;
-
-  @ApiProperty({
-    nullable: true,
-    type: String,
-    example: 'Nommez toujours le dénominateur.',
-  })
-  suite: string | null;
-}
 
 export class QuestionDerouleResponseDto {
   @ApiProperty({ example: 'b2-01-a3-vote-hausse-baisse' })
@@ -222,15 +39,7 @@ export class QuestionDerouleResponseDto {
   options: OptionPubliqueResponseDto[] | null;
 }
 
-@ApiExtraModels(
-  CorrigeFeuillePresentateurResponseDto,
-  CorrigeTableauPresentateurResponseDto,
-  CorrigeClassementPresentateurResponseDto,
-  CorrigeEnigmesPresentateurResponseDto,
-  CorrigeDefiPresentateurResponseDto,
-  CorrigeRevelationPresentateurResponseDto,
-  CorrigeReflexionPresentateurResponseDto,
-)
+@ApiExtraModels(...CORRIGES_D_ECRAN)
 export class EcranDerouleResponseDto
   extends EcranPublicResponseDto
   implements EcranDeroule
@@ -254,15 +63,7 @@ export class EcranDerouleResponseDto
     description:
       'Corrige de production, de defi, de revelation ou de reflexion ; servi au sujet seulement une fois l ecran revele, jamais au catalogue',
     nullable: true,
-    oneOf: [
-      { $ref: getSchemaPath(CorrigeFeuillePresentateurResponseDto) },
-      { $ref: getSchemaPath(CorrigeTableauPresentateurResponseDto) },
-      { $ref: getSchemaPath(CorrigeClassementPresentateurResponseDto) },
-      { $ref: getSchemaPath(CorrigeEnigmesPresentateurResponseDto) },
-      { $ref: getSchemaPath(CorrigeDefiPresentateurResponseDto) },
-      { $ref: getSchemaPath(CorrigeRevelationPresentateurResponseDto) },
-      { $ref: getSchemaPath(CorrigeReflexionPresentateurResponseDto) },
-    ],
+    oneOf: UN_CORRIGE_D_ECRAN,
   })
   corrigeEcran: CorrigeEcranPresentateur | null;
 
@@ -276,6 +77,13 @@ export class EcranDerouleResponseDto
 
   @ApiPropertyOptional({ type: GuideFormateurResponseDto })
   guide?: GuideFormateurResponseDto;
+
+  @ApiPropertyOptional({
+    type: [ExplicationDeCorrectionResponseDto],
+    description:
+      'Explications d un exercice corrige sur place, devoilees une a une au pupitre',
+  })
+  explications?: ExplicationDeCorrectionResponseDto[];
 }
 
 export class DerouleResponseDto
