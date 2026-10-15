@@ -1,4 +1,5 @@
 import {
+  codesBrutsDuCourriel,
   createMockTransporter,
   premierMailEnvoye,
   setSmtpEnv,
@@ -162,10 +163,32 @@ describe('AuditClientReportMailer', () => {
     }
     expect(call.text).toContain('SEO: 70/80 (À améliorer)');
     expect(call.text).toContain('Conversion: 55/80 (Critique)');
-    for (const code of ['warning', 'critical', '(ok)', '>ok<']) {
-      expect(call.html).not.toContain(code);
-      expect(call.text).not.toContain(code);
-    }
+    expect(
+      codesBrutsDuCourriel(call, ['warning', 'critical', '(ok)', '>ok<']),
+    ).toEqual([]);
+  });
+
+  it('nomme la gravité d un constat et l effort d un quick win par leur libellé, comme le PDF joint', async () => {
+    await envoyerRapport(buildMailer());
+
+    const call = sentMail();
+    expect(call.html).toContain('[Élevé] Meta descriptions manquantes');
+    expect(call.html).toContain('<em>Effort : Faible</em>');
+    expect(call.html).toContain('<em>Effort : Moyen</em>');
+    expect(call.text).toContain('- [Élevé] Meta descriptions manquantes');
+    expect(call.text).toContain(
+      '- Ajouter meta descriptions (Effort : Faible)',
+    );
+    expect(call.text).toContain('- Schema Organization (Effort : Moyen)');
+    expect(
+      codesBrutsDuCourriel(call, [
+        '[HIGH]',
+        '(low)',
+        '(medium)',
+        '>low<',
+        '>medium<',
+      ]),
+    ).toEqual([]);
   });
 
   it('devrait attacher le PDF quand pdfBuffer est fourni', async () => {

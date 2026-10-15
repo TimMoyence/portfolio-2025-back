@@ -103,6 +103,10 @@ describe('langchain-synthesis.util', () => {
       ).internalNotes;
       expect(fr).toContain('Notes internes');
       expect(fr).toContain('acme.fr');
+      expect(fr).toContain(
+        '- Mettre en avant Meta descriptions manquantes (Élevé).',
+      );
+      expect(fr).not.toContain('(high)');
       expect(en).toContain('Internal notes');
       expect(en).toContain('acme.com');
     });

@@ -1,7 +1,10 @@
 import { arrondi } from '../../../../common/domain/nombres/arrondi';
 import { borner } from '../../../../common/domain/nombres/borner';
 import { AuditLocale } from '../../domain/audit-locale.util';
-import type { ReportSeverity } from '../../domain/AuditReportTiers';
+import {
+  LIBELLES_DU_NIVEAU,
+  type ReportSeverity,
+} from '../../domain/AuditReportTiers';
 import type { EngineScore } from '../../domain/EngineCoverage';
 import { localizedText } from './shared/locale-text.util';
 import type {
@@ -384,7 +387,7 @@ export function buildFallbackInternalNotes(input: LangchainAuditInput): string {
     `Notes internes pour l'appel avec ${input.websiteName} :`,
     `- Pilier le plus faible : ${lowestPillarLabel || 'inconnu'}.`,
     topFinding
-      ? `- Mettre en avant ${topFinding.title} (${topFinding.severity}).`
+      ? `- Mettre en avant ${topFinding.title} (${LIBELLES_DU_NIVEAU[topFinding.severity]}).`
       : '- Aucun constat critique ; vendre la valeur du PDF.',
     "- Garder l'appel oriente resultat : s'aligner sur les 30 prochains jours.",
     '- Proposer le lot fast-track comme premier jalon commercial.',

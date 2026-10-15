@@ -2,12 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { estObjet } from '../../../../common/domain/est-objet';
 import { dateLongue } from '../../../../common/domain/texte/date-longue';
 import type { AuditSnapshot } from '../../domain/AuditProcessing';
-import type {
-  ClientReportSynthesis,
-  CrossPageSeverity,
-  ExpertReportSynthesis,
-  PerPageDetailedAnalysis,
-  ReportSeverity,
+import {
+  LIBELLES_DE_LA_GRAVITE,
+  LIBELLES_DU_NIVEAU,
+  type ClientReportSynthesis,
+  type ExpertReportSynthesis,
+  type PerPageDetailedAnalysis,
 } from '../../domain/AuditReportTiers';
 import type { EngineCoverage, EngineScore } from '../../domain/EngineCoverage';
 import { LIBELLES_DU_STATUT } from '../../domain/StatutScore';
@@ -161,7 +161,7 @@ export class AuditReportHtmlRendererService {
       (qw) => safeHtml`<article class="quickwin">
         <p class="quickwin-title">${escapeHtml(qw.title)}</p>
         <p class="quickwin-impact">${escapeHtml(qw.businessImpact)}</p>
-        <p class="quickwin-effort">Effort : ${this.niveauLabel(qw.effort)}</p>
+        <p class="quickwin-effort">Effort : ${escapeHtml(LIBELLES_DU_NIVEAU[qw.effort])}</p>
       </article>`,
     );
     return safeHtml`<div class="quickwins">
@@ -202,7 +202,7 @@ export class AuditReportHtmlRendererService {
       );
       return safeHtml`<article class="cross-finding severity-${escapeHtml(f.severity)}">
           <header class="cross-finding-header">
-            <span class="severity-badge">${this.severityLabel(f.severity)}</span>
+            <span class="severity-badge">${escapeHtml(LIBELLES_DE_LA_GRAVITE[f.severity])}</span>
             <h4 class="cross-finding-title">${escapeHtml(f.title)}</h4>
           </header>
           <p class="cross-finding-cause"><strong>Cause racine :</strong> ${escapeHtml(f.rootCause)}</p>
@@ -228,8 +228,8 @@ export class AuditReportHtmlRendererService {
       );
       return safeHtml`<tr class="backlog-row">
           <td class="backlog-title">${escapeHtml(item.title)}</td>
-          <td class="backlog-impact">${this.niveauLabel(item.impact)}</td>
-          <td class="backlog-effort">${this.niveauLabel(item.effort)}</td>
+          <td class="backlog-impact">${escapeHtml(LIBELLES_DU_NIVEAU[item.impact])}</td>
+          <td class="backlog-effort">${escapeHtml(LIBELLES_DU_NIVEAU[item.effort])}</td>
           <td class="backlog-ac"><ul>${ac}</ul></td>
         </tr>`;
     });
@@ -352,23 +352,6 @@ export class AuditReportHtmlRendererService {
       <p>Statut : ${present ? safeHtml`Present` : safeHtml`Absent`}</p>
       ${url ? safeHtml`<p>URL : <a href="${escapeUrl(url)}">${escapeHtml(url)}</a></p>` : safeHtml``}
     </div>`;
-  }
-
-  private severityLabel(severity: CrossPageSeverity): EscapedHtml {
-    return severity === 'critical'
-      ? safeHtml`Critique`
-      : this.niveauLabel(severity);
-  }
-
-  private niveauLabel(niveau: ReportSeverity): EscapedHtml {
-    switch (niveau) {
-      case 'high':
-        return safeHtml`Eleve`;
-      case 'medium':
-        return safeHtml`Moyen`;
-      case 'low':
-        return safeHtml`Faible`;
-    }
   }
 
   private css(): FeuilleDeStyle {

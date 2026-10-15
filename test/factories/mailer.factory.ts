@@ -37,6 +37,15 @@ export function premierMailEnvoye(
   return (transporter.sendMail as jest.Mock).mock.calls[0][0] as MailEnvoye;
 }
 
+export function codesBrutsDuCourriel(
+  courriel: Pick<MailEnvoye, 'html' | 'text'>,
+  codes: readonly string[],
+): string[] {
+  return codes.filter(
+    (code) => courriel.html.includes(code) || courriel.text.includes(code),
+  );
+}
+
 export const nodemailerSimule = () => ({ createTransport: jest.fn() });
 
 export function creationDeTransportSimulee(): jest.MockedFunction<
