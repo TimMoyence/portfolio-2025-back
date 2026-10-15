@@ -50,6 +50,7 @@ const REMISE_ECRITE_EN_POINTS = 15;
 
 interface Vente {
   readonly agence: string;
+  readonly produit: string;
   readonly region: string;
   readonly categorie: string;
   readonly date: number;
@@ -118,13 +119,15 @@ function ventesDe(jeu: JeuB301): Vente[] {
     ]),
   );
   return ongletDe(jeu.reprise1, 'Commandes').lignes.map((ligne) => {
-    const produit = produits.get(texteDe(ligne, 'produit_id'));
+    const produitId = texteDe(ligne, 'produit_id');
+    const produit = produits.get(produitId);
     const agence = texteDe(ligne, 'agence_id');
     if (produit === undefined || !regions.has(agence)) {
       throw new RangeError('Ligne saine hors des référentiels');
     }
     return {
       agence,
+      produit: produitId,
       region: regions.get(agence) ?? '',
       categorie: texteDe(produit, 'categorie'),
       date: nombreDe(ligne, 'date_commande'),
@@ -138,14 +141,22 @@ function ventesDe(jeu: JeuB301): Vente[] {
   });
 }
 
-function regionsTrouveesSansFigerLaTable(jeu: JeuB301): Vente[] {
-  const rangsDesAgences = ongletDe(jeu.reprise1, 'Agences').lignes.map(
-    (agence) => texteDe(agence, 'agence_id'),
+function trouveesSansFigerLaTable(
+  jeu: JeuB301,
+  table: 'Agences' | 'Produits',
+): Vente[] {
+  const cle = table === 'Agences' ? 'agence_id' : 'produit_id';
+  const rangs = ongletDe(jeu.reprise1, table).lignes.map((ligne) =>
+    texteDe(ligne, cle),
   );
   return ventesDe(jeu).filter(
-    (vente, rang) => rangsDesAgences.indexOf(vente.agence) >= rang,
+    (vente, rang) =>
+      rangs.indexOf(table === 'Agences' ? vente.agence : vente.produit) >= rang,
   );
 }
+
+const avecLaDateDansLesGuillemets = (vente: Vente): boolean =>
+  comparerCommeExcel(vente.date, CRITERE_DE_DATE_SANS_ESPERLUETTE) >= 0;
 
 const en2025 = (vente: Vente): boolean =>
   partiesDeDate(vente.date).annee === 2025;
@@ -386,22 +397,28 @@ function valeursDesActes2Et3(jeu: JeuB301) {
     pieges: {
       'b3-01-a2-ca-rennes-info': {
         'critere-mal-ecrit': euros(
+          caDe(filtrer(informatiqueDeRennes, avecLaDateDansLesGuillemets)),
+        ),
+        'plage-recherche-non-figee': euros(
           caDe(
             filtrer(
-              informatiqueDeRennes,
-              (vente) =>
-                comparerCommeExcel(
-                  vente.date,
-                  CRITERE_DE_DATE_SANS_ESPERLUETTE,
-                ) >= 0,
+              trouveesSansFigerLaTable(jeu, 'Produits'),
+              deLAgence(RENNES),
+              (vente) => vente.categorie === INFORMATIQUE,
+              en2026,
             ),
           ),
         ),
         'periode-mal-delimitee': euros(caDe(informatiqueDeRennes)),
       },
       'b3-01-a2-ca-ouest': {
+        'critere-mal-ecrit': euros(
+          caDe(filtrer(ventes, deLOuest, avecLaDateDansLesGuillemets)),
+        ),
         'plage-recherche-non-figee': euros(
-          caDe(filtrer(regionsTrouveesSansFigerLaTable(jeu), deLOuest, en2026)),
+          caDe(
+            filtrer(trouveesSansFigerLaTable(jeu, 'Agences'), deLOuest, en2026),
+          ),
         ),
         'periode-mal-delimitee': euros(caDe(filtrer(ventes, deLOuest))),
       },

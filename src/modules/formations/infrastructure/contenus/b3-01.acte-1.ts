@@ -2,6 +2,45 @@ import { CLASSEURS_B3_01 } from './b3-01.donnees';
 import { questionChiffree } from './b3-01.questions';
 import * as moteur from './briques';
 
+const CONFUSIONS_D_UN_IDENTIFIANT = {
+  date: 'identifiant-range-sous-un-autre-type',
+  categorie: 'cle-prise-pour-categorie',
+  numerique: 'identifiant-pris-pour-nombre',
+  booleen: 'identifiant-range-sous-un-autre-type',
+} as const;
+
+const CONFUSIONS_D_UNE_DATE = {
+  identifiant: 'type-de-variable-confondu',
+  categorie: 'type-de-variable-confondu',
+  numerique: 'type-de-variable-confondu',
+  booleen: 'type-de-variable-confondu',
+} as const;
+
+const CONFUSIONS_D_UNE_MESURE = {
+  identifiant: 'type-de-variable-confondu',
+  date: 'type-de-variable-confondu',
+  categorie: 'type-de-variable-confondu',
+  booleen: 'type-de-variable-confondu',
+} as const;
+
+const CONFUSIONS_D_UNE_ERREUR_QUE_LE_FICHIER_CORRIGE = {
+  'faux-humain': 'correction-certaine-renvoyee-a-un-humain',
+  'suspect-automatique': 'erreur-certaine-jugee-douteuse',
+  'suspect-humain': 'correction-certaine-renvoyee-a-un-humain',
+} as const;
+
+const CONFUSIONS_D_UNE_ERREUR_A_FAIRE_CORRIGER = {
+  'faux-automatique': 'suspect-corrige-sans-validation',
+  'suspect-automatique': 'suspect-corrige-sans-validation',
+  'suspect-humain': 'erreur-certaine-jugee-douteuse',
+} as const;
+
+const CONFUSIONS_D_UN_DOUTE = {
+  'faux-automatique': 'suspect-corrige-sans-validation',
+  'faux-humain': 'donnee-douteuse-jugee-fausse',
+  'suspect-automatique': 'suspect-corrige-sans-validation',
+} as const;
+
 export const ACTE_1: moteur.Acte = [
   {
     screenId: 'B3-01-A1-01-RAPPEL-RECOPIE',
@@ -301,7 +340,7 @@ export const ACTE_1: moteur.Acte = [
               id: 'n-commande',
               libelle: 'n_commande',
               categorie: 'identifiant',
-              confusion: 'identifiant-pris-pour-nombre',
+              confusions: CONFUSIONS_D_UN_IDENTIFIANT,
               justification:
                 'un code de commande : on le compte, on ne l’additionne pas',
             },
@@ -309,7 +348,7 @@ export const ACTE_1: moteur.Acte = [
               id: 'client-id',
               libelle: 'client_id',
               categorie: 'identifiant',
-              confusion: 'cle-prise-pour-categorie',
+              confusions: CONFUSIONS_D_UN_IDENTIFIANT,
               justification:
                 'la clé qui renvoie à un client de l’onglet Clients',
             },
@@ -317,21 +356,21 @@ export const ACTE_1: moteur.Acte = [
               id: 'commercial-id',
               libelle: 'commercial_id',
               categorie: 'identifiant',
-              confusion: 'cle-prise-pour-categorie',
+              confusions: CONFUSIONS_D_UN_IDENTIFIANT,
               justification: 'le code du commercial qui a pris la commande',
             },
             {
               id: 'produit-id',
               libelle: 'produit_id',
               categorie: 'identifiant',
-              confusion: 'cle-prise-pour-categorie',
+              confusions: CONFUSIONS_D_UN_IDENTIFIANT,
               justification: 'la clé qui renvoie à l’onglet Produits',
             },
             {
               id: 'agence-id',
               libelle: 'agence_id',
               categorie: 'identifiant',
-              confusion: 'cle-prise-pour-categorie',
+              confusions: CONFUSIONS_D_UN_IDENTIFIANT,
               justification:
                 'la clé qui renvoie à l’onglet Agences, pas le nom de la ville',
             },
@@ -339,14 +378,14 @@ export const ACTE_1: moteur.Acte = [
               id: 'date-commande',
               libelle: 'date_commande',
               categorie: 'date',
-              confusion: 'type-de-variable-confondu',
+              confusions: CONFUSIONS_D_UNE_DATE,
               justification: 'le jour de la commande',
             },
             {
               id: 'date-livraison',
               libelle: 'date_livraison',
               categorie: 'date',
-              confusion: 'type-de-variable-confondu',
+              confusions: CONFUSIONS_D_UNE_DATE,
               justification:
                 'le jour de la livraison : avec date_commande, il donne le délai',
             },
@@ -354,7 +393,12 @@ export const ACTE_1: moteur.Acte = [
               id: 'ville',
               libelle: 'ville',
               categorie: 'categorie',
-              confusion: 'libelle-pris-pour-cle',
+              confusions: {
+                identifiant: 'libelle-pris-pour-cle',
+                date: 'type-de-variable-confondu',
+                numerique: 'type-de-variable-confondu',
+                booleen: 'type-de-variable-confondu',
+              },
               justification:
                 'on regroupe par ville, mais une ville n’identifie pas un client',
             },
@@ -362,35 +406,40 @@ export const ACTE_1: moteur.Acte = [
               id: 'quantite',
               libelle: 'quantite',
               categorie: 'numerique',
-              confusion: 'type-de-variable-confondu',
+              confusions: CONFUSIONS_D_UNE_MESURE,
               justification: 'une mesure qu’on additionne',
             },
             {
               id: 'prix-unitaire',
               libelle: 'prix_unitaire_ht',
               categorie: 'numerique',
-              confusion: 'type-de-variable-confondu',
+              confusions: CONFUSIONS_D_UNE_MESURE,
               justification: 'un montant en euros',
             },
             {
               id: 'remise',
               libelle: 'remise',
               categorie: 'numerique',
-              confusion: 'type-de-variable-confondu',
+              confusions: CONFUSIONS_D_UNE_MESURE,
               justification: 'un taux : 0,15 vaut 15 %',
             },
             {
               id: 'ca-ht',
               libelle: 'ca_ht',
               categorie: 'numerique',
-              confusion: 'type-de-variable-confondu',
+              confusions: CONFUSIONS_D_UNE_MESURE,
               justification: 'le montant de la ligne, qu’on additionne',
             },
             {
               id: 'facturee',
               libelle: 'facturee',
               categorie: 'booleen',
-              confusion: 'type-de-variable-confondu',
+              confusions: {
+                identifiant: 'type-de-variable-confondu',
+                date: 'type-de-variable-confondu',
+                categorie: 'type-de-variable-confondu',
+                numerique: 'type-de-variable-confondu',
+              },
               justification: 'VRAI ou FAUX : on compte les VRAI',
             },
           ],
@@ -735,7 +784,7 @@ export const ACTE_1: moteur.Acte = [
               id: 'ville-mal-ecrite',
               libelle: 'Ville écrite « BORDEAUX » ou entourée d’espaces',
               categorie: 'faux-automatique',
-              confusion: 'correction-certaine-renvoyee-a-un-humain',
+              confusions: CONFUSIONS_D_UNE_ERREUR_QUE_LE_FICHIER_CORRIGE,
               justification:
                 'erreur certaine ; SUPPRESPACE et NOMPROPRE la corrigent',
             },
@@ -743,7 +792,7 @@ export const ACTE_1: moteur.Acte = [
               id: 'ca-en-texte',
               libelle: 'ca_ht stocké en texte : « 1 150,00 € »',
               categorie: 'faux-automatique',
-              confusion: 'correction-certaine-renvoyee-a-un-humain',
+              confusions: CONFUSIONS_D_UNE_ERREUR_QUE_LE_FICHIER_CORRIGE,
               justification:
                 'erreur certaine ; SUBSTITUE puis CNUM la corrigent',
             },
@@ -751,7 +800,7 @@ export const ACTE_1: moteur.Acte = [
               id: 'ligne-en-double',
               libelle: 'Ligne exportée deux fois, à l’identique',
               categorie: 'faux-automatique',
-              confusion: 'correction-certaine-renvoyee-a-un-humain',
+              confusions: CONFUSIONS_D_UNE_ERREUR_QUE_LE_FICHIER_CORRIGE,
               justification:
                 'doublon exact : Supprimer les doublons, toutes colonnes cochées',
             },
@@ -759,14 +808,14 @@ export const ACTE_1: moteur.Acte = [
               id: 'ca-mal-calcule',
               libelle: 'ca_ht saisi sans appliquer la remise de la ligne',
               categorie: 'faux-automatique',
-              confusion: 'correction-certaine-renvoyee-a-un-humain',
+              confusions: CONFUSIONS_D_UNE_ERREUR_QUE_LE_FICHIER_CORRIGE,
               justification: 'la bonne valeur se recalcule depuis la ligne',
             },
             {
               id: 'produit-inconnu',
               libelle: 'produit_id absent du référentiel Produits',
               categorie: 'faux-humain',
-              confusion: 'suspect-corrige-sans-validation',
+              confusions: CONFUSIONS_D_UNE_ERREUR_A_FAIRE_CORRIGER,
               justification:
                 'erreur certaine, mais le bon produit n’est pas dans le fichier',
             },
@@ -774,7 +823,7 @@ export const ACTE_1: moteur.Acte = [
               id: 'livraison-avant-commande',
               libelle: 'Livraison antérieure à la commande',
               categorie: 'faux-humain',
-              confusion: 'suspect-corrige-sans-validation',
+              confusions: CONFUSIONS_D_UNE_ERREUR_A_FAIRE_CORRIGER,
               justification:
                 'impossible, mais laquelle des deux dates est fausse ?',
             },
@@ -782,21 +831,21 @@ export const ACTE_1: moteur.Acte = [
               id: 'date-autre-systeme',
               libelle: 'Date « 08/04/26 » venue d’un autre système',
               categorie: 'suspect-humain',
-              confusion: 'suspect-corrige-sans-validation',
+              confusions: CONFUSIONS_D_UN_DOUTE,
               justification: '8 avril ou 4 août ? Seul l’émetteur le sait',
             },
             {
               id: 'quantite-negative',
               libelle: 'Quantité négative',
               categorie: 'suspect-humain',
-              confusion: 'suspect-corrige-sans-validation',
+              confusions: CONFUSIONS_D_UN_DOUTE,
               justification: 'erreur de saisie ou avoir : on demande',
             },
             {
               id: 'prix-dix-fois',
               libelle: 'Prix unitaire égal à dix fois le prix catalogue',
               categorie: 'suspect-humain',
-              confusion: 'suspect-corrige-sans-validation',
+              confusions: CONFUSIONS_D_UN_DOUTE,
               justification:
                 'faute de virgule ou produit sur mesure : on demande',
             },
@@ -805,7 +854,7 @@ export const ACTE_1: moteur.Acte = [
               libelle:
                 'Deux client_id pour la même raison sociale dans la même ville',
               categorie: 'suspect-humain',
-              confusion: 'suspect-corrige-sans-validation',
+              confusions: CONFUSIONS_D_UN_DOUTE,
               justification: 'doublon ou deux établissements : on demande',
             },
           ],
