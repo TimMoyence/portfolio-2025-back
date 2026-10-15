@@ -1,9 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common';
+import type { EtatDesEnigmes } from '../domain/contrats/pilotage';
 import {
   corrigerEnigme,
   ecranDEnigmes,
   enigmeOuverte,
   enigmeVisee,
+  etatDesEnigmes,
+  progressionDesLignes,
   tentativesRestantes,
 } from '../domain/cours/Enigmes';
 import type { ProgressionDEnigme } from '../domain/cours/Enigmes';
@@ -34,7 +37,7 @@ export interface TenterEnigmeCommand {
   readonly dureeMs: number;
 }
 
-export interface TenterEnigmeResult {
+export interface TenterEnigmeResult extends EtatDesEnigmes {
   correcte: boolean;
   fragment: string | null;
   tentativesRestantes: number;
@@ -109,10 +112,19 @@ export class TenterEnigmeUseCase {
     }
     this.participation.signalerActivite(command.sessionId);
 
+    const apres: ProgressionDEnigme = {
+      enigmeId: command.enigmeId,
+      tentatives,
+      resolue: verdict.correcte,
+    };
     return {
       correcte: verdict.correcte,
       fragment: verdict.correcte ? visee.corrige.fragment : null,
       tentativesRestantes: tentativesRestantes(cible, tentatives),
+      ...etatDesEnigmes(cible, [
+        ...progression.filter(({ enigmeId }) => enigmeId !== command.enigmeId),
+        apres,
+      ]),
     };
   }
 
@@ -136,15 +148,12 @@ export class TenterEnigmeUseCase {
   private async lireProgression(
     command: TenterEnigmeCommand,
   ): Promise<readonly ProgressionDEnigme[]> {
-    const lignes = await this.escape.listerProgression(
-      command.participantId,
-      command.parcoursId,
+    return progressionDesLignes(
+      await this.escape.listerProgression(
+        command.participantId,
+        command.parcoursId,
+      ),
     );
-    return lignes.map((ligne) => ({
-      enigmeId: ligne.enigmeId,
-      tentatives: ligne.tentatives,
-      resolue: ligne.resolueLe !== null,
-    }));
   }
 
   private async enregistrerPremiereTentative(

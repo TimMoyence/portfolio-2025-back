@@ -9,6 +9,8 @@ import { verdictServiDe } from '../domain/cours/EcranServi';
 import {
   ecranDEnigmes,
   enigmeVisee,
+  etatDesEnigmes,
+  progressionDesLignes,
   tentativesRestantes,
 } from '../domain/cours/Enigmes';
 import type {
@@ -115,21 +117,22 @@ export class LireEtatParticipantUseCase {
     cours: Cours,
     progressions: readonly ProgressionEnigmeRecord[],
   ): EtatParticipant['enigmes'] {
-    const parParcours = new Map<string, ProgressionEnigmeRecord[]>();
-    for (const ligne of progressions) {
-      parParcours.set(ligne.parcoursId, [
-        ...(parParcours.get(ligne.parcoursId) ?? []),
-        ligne,
-      ]);
-    }
-    return [...parParcours.entries()].flatMap(([parcoursId, lignes]) => {
+    return cours.ecrans.flatMap((ecran) => {
+      if (ecran.brique !== 'fp-escape') {
+        return [];
+      }
+      const parcoursId = ecran.proprietes.parcours.id;
       const cible = ecranDEnigmes(cours, parcoursId);
       if (cible === null) {
         return [];
       }
+      const lignes = progressions.filter(
+        (ligne) => ligne.parcoursId === parcoursId,
+      );
       return [
         {
           parcoursId,
+          ...etatDesEnigmes(cible, progressionDesLignes(lignes)),
           resolues: lignes
             .filter((ligne) => ligne.resolueLe !== null)
             .map((ligne) => ({

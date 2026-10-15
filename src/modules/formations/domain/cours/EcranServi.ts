@@ -173,6 +173,19 @@ export function rangDeLEcran(cours: Cours, screenId: string): number {
   return cours.ecrans.findIndex((ecran) => ecran.id === screenId);
 }
 
+export const SEUIL_PAR_DEFAUT = 0.7;
+
+export function seuilDe(ecran: Ecran): number | null {
+  if (
+    ecran.brique === 'fp-numeric' ||
+    ecran.brique === 'fp-vote' ||
+    ecran.brique === 'fp-recall'
+  ) {
+    return ecran.seuil ?? SEUIL_PAR_DEFAUT;
+  }
+  return null;
+}
+
 export function rangDeLaQuestion(cours: Cours, questionId: string): number {
   return cours.ecrans.findIndex((ecran) =>
     questionsDe(ecran).some((question) => question.id === questionId),

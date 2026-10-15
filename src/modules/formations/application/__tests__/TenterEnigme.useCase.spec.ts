@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import {
   buildCoursAvecEnigmes,
+  buildEtatsDesEnigmesDeTest,
   buildProgressionEnigme,
   ENIGMES_DE_TEST,
   monterParticipationSurLeDernierEcran,
@@ -62,11 +63,33 @@ describe('TenterEnigmeUseCase', () => {
       correcte: true,
       fragment: 'F0',
       tentativesRestantes: TENTATIVES_MAX_DE_TEST - 1,
+      etats: buildEtatsDesEnigmesDeTest([
+        ['resolue', 1],
+        ['ouverte', 0],
+        ['verrouillee', 0],
+      ]),
+      enigmeOuverte: ENIGMES_DE_TEST[1],
+      acheve: false,
     });
     expect(escape.marquerResolue).toHaveBeenCalledWith(
       'participant-uuid',
       ENIGMES_DE_TEST[0],
     );
+  });
+
+  it('B-70 · ouvre l énigme suivante quand la dernière tentative épuise l énigme', async () => {
+    escape.incrementerTentative.mockResolvedValue(TENTATIVES_MAX_DE_TEST);
+
+    const verdict = await sut.execute({ ...commande, reponse: '10' });
+
+    expect(verdict.etats[ENIGMES_DE_TEST[0]]).toEqual({
+      etat: 'epuisee',
+      tentativesRestantes: 0,
+    });
+    expect([verdict.enigmeOuverte, verdict.acheve]).toEqual([
+      ENIGMES_DE_TEST[1],
+      false,
+    ]);
   });
 
   it('ne rend jamais le fragment quand la reponse est fausse', async () => {

@@ -7,6 +7,7 @@ import type { FormeFormule } from '../cours/Corrige';
 import type { CorrigePresentateur } from '../cours/DeroulePresentateur';
 import type { ValeurFormule } from '../cours/Formule';
 import type { Diffusion } from './cours';
+import type { TableauEvalue } from './donnees-publiques';
 import type { CoursPublic, EcranPublic } from './tirage';
 
 export interface EcranDeroule extends EcranPublic {
@@ -22,6 +23,10 @@ export interface EcranDeroule extends EcranPublic {
       | null;
   }[];
   readonly corrigeEcran: CorrigeEcranPresentateur | null;
+  readonly reflexion: {
+    readonly attendu: string;
+    readonly suite: string | null;
+  } | null;
   readonly guide?: NonNullable<EcranActuel['guide']>;
   readonly explications?: readonly ExplicationDeCorrection[];
   readonly renvoi?: string;
@@ -47,6 +52,7 @@ export type CorrigeEcranPresentateur =
         readonly cle: string;
         readonly valeur: number;
       }[];
+      readonly tableauCorrige: TableauEvalue;
       readonly tolerance: Tolerance;
       readonly seuilReussite: number;
     }

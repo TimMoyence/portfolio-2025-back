@@ -7,6 +7,7 @@ import {
 } from '../../../../test/factories/formation.factory';
 import { buildCoursAvecProductions } from '../../../../test/factories/cours.factory';
 import {
+  confusionDominante,
   corrigerProduction,
   ecranDeProduction,
 } from './cours/ProductionSoumise';
@@ -67,6 +68,8 @@ describe('agregerResultats', () => {
             nombre: 2,
           },
         ],
+        confusionDominante: 'base-arrivee',
+        part: 0.25,
       }),
       buildResultatQuestion({ questionId: 'Q-2' }),
     ]);
@@ -202,6 +205,100 @@ describe('agregerResultats', () => {
 
     expect(question.confusions).toEqual([
       { id: 'interet-simple', libelle: 'interet-simple', nombre: 1 },
+    ]);
+  });
+});
+
+describe('B-70 · lecture du seuil de chaque question', () => {
+  const REMEDIATIONS = { 'base-arrivee': 'E-REMEDIATION' };
+  const reponse = (correcte: boolean, misconception: string | null = null) =>
+    buildAnswerRecord({ questionId: 'Q-1', correcte, misconception });
+  const lire = (
+    seuil: number | null,
+    answers: readonly AnswerRecord[],
+    remediations: Readonly<Record<string, string>> = REMEDIATIONS,
+  ) =>
+    agregerResultats({
+      questions: [buildQuestionAAgreger({ id: 'Q-1', seuil })],
+      participants: answers.length,
+      answers,
+      remediations,
+    }).questions[0];
+
+  it('sert l écran qui remédie la confusion dominante sous le seuil', () => {
+    expect(
+      lire(0.7, [
+        reponse(true),
+        reponse(false, 'taux-successifs-additionnes'),
+        reponse(false, 'base-arrivee'),
+        reponse(false, 'base-arrivee'),
+      ]),
+    ).toMatchObject({
+      confusionDominante: 'base-arrivee',
+      part: 0.25,
+      sousLeSeuil: true,
+      remediation: { confusionId: 'base-arrivee', ecranId: 'E-REMEDIATION' },
+    });
+  });
+
+  it('ne remédie rien quand la part atteint le seuil', () => {
+    expect(
+      lire(0.5, [reponse(true), reponse(false, 'base-arrivee')]),
+    ).toMatchObject({
+      confusionDominante: 'base-arrivee',
+      part: 0.5,
+      sousLeSeuil: false,
+      remediation: null,
+    });
+  });
+
+  it('ne lit aucun seuil sans réponse ni sur un écran qui n en porte pas', () => {
+    expect(
+      [lire(0.7, []), lire(null, [reponse(false, 'base-arrivee')])].map(
+        ({ part, sousLeSeuil, remediation }) => ({
+          part,
+          sousLeSeuil,
+          remediation,
+        }),
+      ),
+    ).toEqual([
+      { part: 0, sousLeSeuil: false, remediation: null },
+      { part: 0, sousLeSeuil: false, remediation: null },
+    ]);
+  });
+
+  it('ne remédie rien quand la confusion dominante n a pas d écran de remédiation', () => {
+    expect(lire(0.7, [reponse(false, 'raisonnement-additif')])).toMatchObject({
+      confusionDominante: 'raisonnement-additif',
+      sousLeSeuil: true,
+      remediation: null,
+    });
+  });
+
+  it('ne prend pas une clé héritée de l objet pour une remédiation', () => {
+    expect(
+      lire(0.7, [reponse(false, 'constructor')], {}).remediation,
+    ).toBeNull();
+  });
+
+  it('retient à égalité la même confusion dominante que la production d un élève', () => {
+    const ordre = ['taux-valeur-facteur-cent', 'base-arrivee'] as const;
+
+    const classe = lire(
+      0.7,
+      ordre.map((confusion) => reponse(false, confusion)),
+    );
+    const eleve = confusionDominante(
+      ordre.map((confusion, rang) => ({
+        cle: `D${rang + 2}`,
+        juste: false,
+        confusion,
+      })),
+    );
+
+    expect([classe.confusionDominante, eleve]).toEqual([
+      'base-arrivee',
+      'base-arrivee',
     ]);
   });
 });

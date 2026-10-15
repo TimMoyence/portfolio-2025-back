@@ -1,4 +1,9 @@
-import type { Cours, Ecran, Question } from '../contrats/cours';
+import type {
+  Cours,
+  Ecran,
+  Question,
+  TableBuildPlanStocke,
+} from '../contrats/cours';
 import type {
   CorrigeEcranPresentateur,
   DerouleCours,
@@ -9,12 +14,12 @@ import type { ConfusionId } from './banque/confusions';
 import { libelleDeConfusion } from './banque/confusions';
 import type { CorrigeEnigme } from './Corrige';
 import { questionsDe } from './Cours';
+import { seuilDe } from './EcranServi';
 import { affichageDeLAttendu } from './FeuilleEvaluee';
+import { tableauDuCorrige } from './TableauEvalue';
 import { tirerEnDetail } from './Tirage';
 
 export type { DerouleCours, EcranDeroule } from '../contrats/deroule';
-
-export const SEUIL_PAR_DEFAUT = 0.7;
 
 export interface CorrigePresentateur {
   readonly questionId: string;
@@ -51,6 +56,7 @@ function versEcranDeroule(
   ecran: Ecran,
   projection: Projection,
 ): EcranDeroule {
+  const corrigeEcran = corrigeDeLEcran(ecran);
   return {
     ...ecranPublic,
     notes: ecran.notes,
@@ -60,21 +66,11 @@ function versEcranDeroule(
     questions: questionsDe(ecran).map((question) =>
       questionDuDeroule(question, ecran, projection),
     ),
-    corrigeEcran: corrigeDeLEcran(ecran),
+    corrigeEcran,
+    reflexion: reflexionDe(corrigeEcran),
     guide: ecran.guide,
     explications: ecran.correctionSurPlace?.explications,
   };
-}
-
-function seuilDe(ecran: Ecran): number | null {
-  if (
-    ecran.brique === 'fp-numeric' ||
-    ecran.brique === 'fp-vote' ||
-    ecran.brique === 'fp-recall'
-  ) {
-    return ecran.seuil ?? SEUIL_PAR_DEFAUT;
-  }
-  return null;
 }
 
 function corrigesDe(
@@ -150,12 +146,24 @@ function solutionLisible(corrige: CorrigeEnigme): string {
     : corrige.solution.acceptees[0];
 }
 
+export function reflexionDe(
+  corrige: CorrigeEcranPresentateur | null,
+): EcranDeroule['reflexion'] {
+  return corrige?.type === 'reflexion'
+    ? { attendu: corrige.attendu, suite: corrige.suite }
+    : null;
+}
+
 export function corrigeDeLEcran(ecran: Ecran): CorrigeEcranPresentateur | null {
   switch (ecran.brique) {
     case 'fp-cardsort':
     case 'fp-sheet':
+      return corrigeDeProduction(ecran.production.corrige, null);
     case 'fp-table-build':
-      return corrigeDeProduction(ecran.production.corrige);
+      return corrigeDeProduction(
+        ecran.production.corrige,
+        ecran.proprietes.plan,
+      );
     case 'fp-escape': {
       const corriges = ecran.enigmes.flatMap((enigme) =>
         enigme.corrige.type === 'enigme' ? [enigme.corrige] : [],
@@ -200,6 +208,7 @@ function corrigeDeProduction(
     Ecran,
     { readonly brique: 'fp-sheet' }
   >['production']['corrige'],
+  planDuTableau: TableBuildPlanStocke | null,
 ): CorrigeEcranPresentateur | null {
   switch (corrige.type) {
     case 'feuille':
@@ -216,6 +225,9 @@ function corrigeDeProduction(
         seuilReussite: corrige.seuilReussite,
       };
     case 'tableau':
+      if (planDuTableau === null) {
+        return null;
+      }
       return {
         type: 'tableau',
         attendus: corrige.attendus.map(({ rang, cle, valeur }) => ({
@@ -223,6 +235,7 @@ function corrigeDeProduction(
           cle,
           valeur,
         })),
+        tableauCorrige: tableauDuCorrige(planDuTableau, corrige.attendus),
         tolerance: corrige.tolerance,
         seuilReussite: corrige.seuilReussite,
       };
@@ -252,7 +265,7 @@ function confusionPresentateur(id: ConfusionId): {
   return { id, libelle: libelleDeConfusion(id) ?? id };
 }
 
-function remediationsDe(cours: Cours): Readonly<Record<string, string>> {
+export function remediationsDe(cours: Cours): Readonly<Record<string, string>> {
   const entrees = Object.entries(cours.remediations).filter(
     (entree): entree is [string, string] => entree[1] !== undefined,
   );

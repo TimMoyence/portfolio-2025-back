@@ -12,6 +12,7 @@ import {
 import { ParticipantDeSeanceResponseDto } from '../participant-de-seance.response.dto';
 import { VerdictDeReponse } from '../verdict-de-reponse.decorator';
 import { DetailVerdictResponseDto } from './verdict-production.response.dto';
+import { EtatDesEnigmesResponseDto } from './tentative-enigme.response.dto';
 
 @ApiExtraModels(...MODELES_DE_PRODUCTION)
 export class ReponseParticipantResponseDto {
@@ -67,7 +68,7 @@ export class EnigmeResolueResponseDto {
   fragment: string;
 }
 
-export class EnigmesParticipantResponseDto {
+export class EnigmesParticipantResponseDto extends EtatDesEnigmesResponseDto {
   @ApiProperty({ example: 'b2-01-a6-coffre' })
   parcoursId: string;
 

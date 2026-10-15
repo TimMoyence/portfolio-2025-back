@@ -19,6 +19,7 @@ import {
 } from '../deroule.response.dto';
 import { OptionPubliqueResponseDto } from './rappels.response.dto';
 import { EcranPublicResponseDto, SujetResponseDto } from './sujet.response.dto';
+import { TableauEvalueResponseDto } from './tableau-evalue.response.dto';
 
 export class ToleranceResponseDto {
   @ApiProperty({ enum: ['relative', 'absolue', 'decimales'] })
@@ -94,6 +95,13 @@ class CorrigeTableauPresentateurResponseDto {
 
   @ApiProperty({ type: [AttenduTableauPresentateurResponseDto] })
   attendus: AttenduTableauPresentateurResponseDto[];
+
+  @ApiProperty({
+    type: TableauEvalueResponseDto,
+    description:
+      'Tableau rempli des valeurs attendues, colonnes deduites, totaux, synthese et solde calcules',
+  })
+  tableauCorrige: TableauEvalueResponseDto;
 
   @ApiProperty({ type: ToleranceResponseDto })
   tolerance: ToleranceResponseDto;
@@ -187,6 +195,18 @@ class CorrigeReflexionPresentateurResponseDto {
   suite: string;
 }
 
+export class ReflexionPresentateurResponseDto {
+  @ApiProperty({ example: 'Un montant et un taux, sur deux dates.' })
+  attendu: string;
+
+  @ApiProperty({
+    nullable: true,
+    type: String,
+    example: 'Nommez toujours le dénominateur.',
+  })
+  suite: string | null;
+}
+
 export class QuestionDerouleResponseDto {
   @ApiProperty({ example: 'b2-01-a3-vote-hausse-baisse' })
   id: string;
@@ -245,6 +265,14 @@ export class EcranDerouleResponseDto
     ],
   })
   corrigeEcran: CorrigeEcranPresentateur | null;
+
+  @ApiProperty({
+    type: ReflexionPresentateurResponseDto,
+    nullable: true,
+    description:
+      'Reponse attendue d un recit a reflexion, la meme que celle revelee a l etudiant',
+  })
+  reflexion: ReflexionPresentateurResponseDto | null;
 
   @ApiPropertyOptional({ type: GuideFormateurResponseDto })
   guide?: GuideFormateurResponseDto;

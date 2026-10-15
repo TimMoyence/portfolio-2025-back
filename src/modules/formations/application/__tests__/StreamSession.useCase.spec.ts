@@ -797,6 +797,7 @@ describe('StreamSessionUseCase', () => {
               ecranId: '',
               total: 1,
               correctes: 1,
+              part: 1,
             }),
           ],
           statistiques: {

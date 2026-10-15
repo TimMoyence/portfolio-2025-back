@@ -4,7 +4,7 @@ import {
   ProductionInvalideError,
   ProductionVideError,
 } from '../errors/FormationErrors';
-import type { ConfusionId } from './banque/confusions';
+import { confusionsParFrequence, type ConfusionId } from './banque/confusions';
 import type { CorrigeProduction } from './Corrige';
 import {
   corrigerClassement,
@@ -257,19 +257,8 @@ export function corrigerProduction(
 export function confusionDominante(
   details: readonly DetailProduction[],
 ): ConfusionId | null {
-  const comptes = new Map<ConfusionId, number>();
-  for (const detail of details) {
-    if (detail.confusion !== null) {
-      comptes.set(detail.confusion, (comptes.get(detail.confusion) ?? 0) + 1);
-    }
-  }
-  let dominante: ConfusionId | null = null;
-  let meilleur = 0;
-  for (const [confusion, compte] of comptes) {
-    if (compte > meilleur) {
-      dominante = confusion;
-      meilleur = compte;
-    }
-  }
-  return dominante;
+  const [dominante] = confusionsParFrequence(
+    details.map((detail) => detail.confusion),
+  );
+  return dominante?.[0] ?? null;
 }

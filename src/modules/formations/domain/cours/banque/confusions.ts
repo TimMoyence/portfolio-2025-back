@@ -650,6 +650,21 @@ export const CONFUSIONS = typographierEnProfondeur(DEFINITIONS);
 
 export type ConfusionId = keyof typeof CONFUSIONS;
 
+export function confusionsParFrequence<Id extends string>(
+  confusions: Iterable<Id | null>,
+): readonly (readonly [Id, number])[] {
+  const comptes = new Map<Id, number>();
+  for (const confusion of confusions) {
+    if (confusion !== null) {
+      comptes.set(confusion, (comptes.get(confusion) ?? 0) + 1);
+    }
+  }
+  return [...comptes.entries()].sort(
+    ([premiere, nombrePremiere], [seconde, nombreSeconde]) =>
+      nombreSeconde - nombrePremiere || premiere.localeCompare(seconde),
+  );
+}
+
 export function libelleDeConfusion(id: string): string | null {
   return Object.hasOwn(CONFUSIONS, id)
     ? CONFUSIONS[id as ConfusionId].libelle

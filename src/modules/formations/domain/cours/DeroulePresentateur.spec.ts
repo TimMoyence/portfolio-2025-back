@@ -16,13 +16,16 @@ import {
 import { buildCoursDuContenu } from '../../../../../test/factories/contenus-de-cours.factory';
 import {
   CONTENUS,
+  COURS_B2_01,
   COURS_B2_03,
   COURS_B2_06,
 } from '../../../../../test/factories/contenus-publies';
 import { PRESENTATIONS_VISUELLES_VALIDES } from '../../../../../test/factories/presentation-visuelle.factory';
 import { CONFUSIONS } from './banque/confusions';
 import { lireCoursStocke } from './CoursStocke';
-import { deroulePresentateur, SEUIL_PAR_DEFAUT } from './DeroulePresentateur';
+import { deroulePresentateur } from './DeroulePresentateur';
+import { correctionDeLEcranRevele } from './Diffusion';
+import { SEUIL_PAR_DEFAUT } from './EcranServi';
 import type { CorrigePresentateur, EcranDeroule } from './DeroulePresentateur';
 import { tirer } from './Tirage';
 
@@ -123,6 +126,31 @@ describe('deroulePresentateur', () => {
   });
 });
 
+describe('deroulePresentateur (réflexion attendue, B-70)', () => {
+  it('sert au pupitre, pour chaque récit à réflexion des cours, la réflexion révélée à l étudiant', () => {
+    const servies = CONTENUS.flatMap((contenu) => {
+      const cours = buildCoursDuContenu(contenu);
+      const tirage = tirer(cours, 0);
+      return deroulePresentateur(cours, 0).ecrans.map(
+        (ecran, rang) =>
+          [
+            ecran.id,
+            ecran.reflexion,
+            correctionDeLEcranRevele(cours.ecrans[rang], tirage)?.reflexion ??
+              null,
+          ] as const,
+      );
+    });
+
+    expect(
+      servies.filter(([, pupitre]) => pupitre !== null).length,
+    ).toBeGreaterThan(0);
+    expect(servies.map(([id, pupitre]) => [id, pupitre])).toEqual(
+      servies.map(([id, , etudiant]) => [id, etudiant]),
+    );
+  });
+});
+
 describe('deroulePresentateur (affichage d une feuille corrigée, F-37)', () => {
   const attendusServis = (contenu: (typeof CONTENUS)[number]) =>
     deroulePresentateur(buildCoursDuContenu(contenu), 0).ecrans.flatMap(
@@ -145,6 +173,25 @@ describe('deroulePresentateur (affichage d une feuille corrigée, F-37)', () => 
     expect(servis['B2-06-A1-11-TABLEUR-VENTES C3']).toBe('0,0618');
     expect(servis['B2-03-A1-11-TABLEUR-SI-OU D2']).toBe('Visa');
     expect(servis['B2-03-A1-11-TABLEUR-SI-OU D4']).toBe('Non');
+  });
+
+  it('remplit au pupitre le tableau de la toile, coefficients et évolution réelle calculés par le serveur', () => {
+    const toile = deroulePresentateur(
+      buildCoursDuContenu(COURS_B2_01),
+      0,
+    ).ecrans.find(({ id }) => id === 'B2-01-A4-05-INDICE-TOILE');
+    if (toile?.corrigeEcran?.type !== 'tableau') {
+      throw new Error('corrigé de tableau attendu sur l indice de la toile');
+    }
+    const { lignes, synthese } = toile.corrigeEcran.tableauCorrige;
+
+    expect({
+      coef: lignes.map(({ valeurs }) => valeurs.coef.affichage),
+      synthese: synthese.map(({ affichage }) => affichage),
+    }).toEqual({
+      coef: ['1,0800', '0,9500', '1,0400', '0,9700'],
+      synthese: ['4,00 %', '3,50 %'],
+    });
   });
 
   it('sert un affichage à chaque attendu de chaque feuille des cours', () => {
@@ -211,6 +258,29 @@ describe('deroulePresentateur (corrigés au déroulé, B22)', () => {
         { rang: 0, cle: 'prix', valeur: 21.6 },
         { rang: 1, cle: 'prix', valeur: 20.52 },
       ],
+      tableauCorrige: {
+        lignes: [
+          {
+            rang: 0,
+            valeurs: {
+              taux: { valeur: 8, affichage: '8' },
+              prix: { valeur: 21.6, affichage: '21,60' },
+              coef: { valeur: 1.08, affichage: '1,0800' },
+            },
+          },
+          {
+            rang: 1,
+            valeurs: {
+              taux: { valeur: -5, affichage: '-5' },
+              prix: { valeur: 20.52, affichage: '20,52' },
+              coef: { valeur: 0.95, affichage: '0,9500' },
+            },
+          },
+        ],
+        totaux: { taux: { valeur: 3, affichage: '3' } },
+        synthese: [{ valeur: 3, affichage: '3,00 %' }],
+        soldeFinal: null,
+      },
       tolerance: { type: 'absolue', valeur: 0.01 },
       seuilReussite: 0.75,
     });

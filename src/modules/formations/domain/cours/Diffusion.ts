@@ -10,7 +10,7 @@ import type {
 import { ecranCorrigePar } from './Corrections';
 import { explicationsRevelees } from './CorrectionSurPlace';
 import { questionsDe } from './Cours';
-import { corrigeDeLEcran } from './DeroulePresentateur';
+import { corrigeDeLEcran, reflexionDe } from './DeroulePresentateur';
 import { ecranParId, ecranRevele, etayageAtteint } from './EcranServi';
 import { tirer } from './Tirage';
 
@@ -50,14 +50,6 @@ export function exempleAuRythmeDuPilotage(
     etayage,
   };
   return { ...ecran, donnees: servi };
-}
-
-function reflexionDe(
-  corrige: CorrectionServie['corrige'],
-): CorrectionServie['reflexion'] {
-  return corrige?.type === 'reflexion'
-    ? { attendu: corrige.attendu, suite: corrige.suite }
-    : null;
 }
 
 export function correctionServie(

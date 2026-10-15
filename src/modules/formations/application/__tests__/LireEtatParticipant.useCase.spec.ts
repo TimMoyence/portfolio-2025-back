@@ -2,6 +2,7 @@
 import {
   buildCoursAvecDefi,
   buildCoursDeTest,
+  buildEtatsDesEnigmesDeTest,
   buildProgressionEnigme,
   creerCatalogueDeTest,
   creerParticipationEnSeance,
@@ -86,6 +87,13 @@ describe('LireEtatParticipantUseCase', () => {
       rappels,
     );
 
+  const enigmesServies = async (
+    progression: ReturnType<typeof buildProgressionEnigme>[],
+  ) => {
+    escape.listerProgressionDuParticipant.mockResolvedValue(progression);
+    return (await sut.execute(PARTICIPANT_DE_TEST)).enigmes;
+  };
+
   it('rend la revision courante de la seance pour la reprise', async () => {
     const etat = await sut.execute(PARTICIPANT_DE_TEST);
 
@@ -160,7 +168,7 @@ describe('LireEtatParticipantUseCase', () => {
   });
 
   it('rend le fragment des seules enigmes resolues et le reste des tentatives', async () => {
-    escape.listerProgressionDuParticipant.mockResolvedValue([
+    const enigmes = await enigmesServies([
       buildProgressionEnigme({ tentatives: 2 }),
       buildProgressionEnigme({
         enigmeId: ENIGMES_DE_TEST[1],
@@ -169,15 +177,37 @@ describe('LireEtatParticipantUseCase', () => {
       }),
     ]);
 
-    const etat = await sut.execute(PARTICIPANT_DE_TEST);
-
-    expect(etat.enigmes).toEqual([
+    expect(enigmes).toEqual([
       {
         parcoursId: PARCOURS_DE_TEST,
         resolues: [{ enigmeId: ENIGMES_DE_TEST[0], fragment: 'F0' }],
         tentativesRestantes: {
           [ENIGMES_DE_TEST[1]]: TENTATIVES_MAX_DE_TEST - 3,
         },
+        etats: buildEtatsDesEnigmesDeTest([
+          ['resolue', 2],
+          ['ouverte', 3],
+          ['verrouillee', 0],
+        ]),
+        enigmeOuverte: ENIGMES_DE_TEST[1],
+        acheve: false,
+      },
+    ]);
+  });
+
+  it('B-70 · sert l état de chaque parcours du cours avant toute tentative', async () => {
+    expect(await enigmesServies([])).toEqual([
+      {
+        parcoursId: PARCOURS_DE_TEST,
+        resolues: [],
+        tentativesRestantes: {},
+        etats: buildEtatsDesEnigmesDeTest([
+          ['ouverte', 0],
+          ['verrouillee', 0],
+          ['verrouillee', 0],
+        ]),
+        enigmeOuverte: ENIGMES_DE_TEST[0],
+        acheve: false,
       },
     ]);
   });
@@ -212,7 +242,14 @@ describe('LireEtatParticipantUseCase', () => {
 
     const etat = await sut.execute(PARTICIPANT_DE_TEST);
 
-    expect(etat.enigmes).toEqual([]);
+    expect(etat.enigmes.map(({ parcoursId }) => parcoursId)).toEqual([
+      PARCOURS_DE_TEST,
+    ]);
+    expect(etat.enigmes[0]).toMatchObject({
+      resolues: [],
+      tentativesRestantes: {},
+      enigmeOuverte: ENIGMES_DE_TEST[0],
+    });
   });
 
   it('rend les jalons declares par le participant', async () => {
