@@ -128,11 +128,13 @@ describe('AuditClientReportMailer', () => {
   });
 
   describe('P0.5 — CTA email cliquable', () => {
-    it('rend le CTA comme un <a href> pointant vers bookingUrl quand fourni', async () => {
-      await envoyerRapport(buildMailer(), {
-        firstName: 'Alice',
-        bookingUrl: 'https://cal.com/asili/audit-call',
-      });
+    it('rend le CTA comme un <a href> pointant vers AUDIT_BOOKING_URL', async () => {
+      const mailer = buildMailer();
+
+      await sousEnvironnement(
+        { AUDIT_BOOKING_URL: ' https://cal.com/asili/audit-call ' },
+        () => envoyerRapport(mailer, { firstName: 'Alice' }),
+      );
 
       const call = sentMail();
       expect(call.html).toContain('href="https://cal.com/asili/audit-call"');

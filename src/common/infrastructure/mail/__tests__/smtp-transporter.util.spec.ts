@@ -100,6 +100,15 @@ describe('createOptionalSmtpTransporter', () => {
         expect(createOptionalSmtpTransporter(logger, 'Test')).toBeNull();
       },
     );
+
+    it('refuse un SMTP_PORT qui n est pas un entier positif en le nommant', () => {
+      configureSmtp();
+      appliquer({ SMTP_PORT: '587x' });
+
+      expect(() => createOptionalSmtpTransporter(logger, 'Test')).toThrow(
+        "Le port SMTP « 587x » n'est pas un entier positif (SMTP_PORT).",
+      );
+    });
   });
 
   describe('mode secure', () => {

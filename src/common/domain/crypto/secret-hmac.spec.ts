@@ -5,7 +5,7 @@ import {
 } from '../../../../test/helpers/environnement';
 import { secretHmac, signerAvecLeSecret } from './secret-hmac';
 
-const NOM = 'SECRET_HMAC_DE_TEST';
+const NOM = 'FORMATION_REVIEW_TOKEN_SECRET';
 
 describe('secretHmac', () => {
   installerVariables({ [NOM]: SECRET }, 'chaque-test');
@@ -17,6 +17,7 @@ describe('secretHmac', () => {
   it.each([
     ['absent', undefined],
     ['trop court', 'court'],
+    ['fait de blancs', ' '.repeat(40)],
   ])('refuse un secret %s en nommant sa variable', (_cas, valeur) => {
     appliquer({ [NOM]: valeur });
 

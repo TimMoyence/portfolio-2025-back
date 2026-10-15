@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { SignJWT, jwtVerify, errors, type JWTPayload } from 'jose';
+import type { ValeursDeLEnv } from '../../../../config/env.validation';
 import type { JwtPayload } from './JwtPayload';
 
 interface SignedToken {
@@ -49,7 +50,7 @@ export class JwtTokenService {
   private static readonly ISSUER = 'portfolio-2025';
   private static readonly AUDIENCE = 'portfolio-2025-api';
 
-  constructor(private readonly configService: ConfigService) {}
+  constructor(private readonly configService: ConfigService<ValeursDeLEnv>) {}
 
   private static readonly MIN_SECRET_LENGTH = 32;
 

@@ -214,7 +214,6 @@ export class AuditDeliveryOrchestrator {
           websiteName: context.websiteName,
           clientReport,
           pdfBuffer,
-          bookingUrl: process.env.AUDIT_BOOKING_URL ?? null,
         }),
         `Client report email failed for audit ${audit.id}`,
         this.logger,

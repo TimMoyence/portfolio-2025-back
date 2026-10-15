@@ -1,3 +1,5 @@
+import { envBrut } from '../../../config/env-readers.util';
+import type { CryptographicSecretKey } from '../../../config/env.validation';
 import { hmacSha256 } from './empreintes';
 
 const LONGUEUR_MIN_DU_SECRET = 32;
@@ -9,8 +11,8 @@ const LONGUEUR_MIN_DU_SECRET = 32;
  * et de participant). Refuser de produire une signature est donc la seule
  * option sure.
  */
-export function secretHmac(nom: string): string {
-  const secret = process.env[nom];
+export function secretHmac(nom: CryptographicSecretKey): string {
+  const secret = envBrut(nom);
   if (!secret || secret.length < LONGUEUR_MIN_DU_SECRET) {
     throw new Error(
       `${nom} doit etre configure avec au moins ${LONGUEUR_MIN_DU_SECRET} caracteres`,
@@ -19,6 +21,9 @@ export function secretHmac(nom: string): string {
   return secret;
 }
 
-export function signerAvecLeSecret(nom: string, message: string): string {
+export function signerAvecLeSecret(
+  nom: CryptographicSecretKey,
+  message: string,
+): string {
   return hmacSha256(secretHmac(nom), message).toString('hex');
 }

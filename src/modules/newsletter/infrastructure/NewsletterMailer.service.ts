@@ -15,6 +15,7 @@ import {
   expediteurDesCourriels,
 } from '../../../config/adresses-de-courriel';
 import type { SourceDEnv } from '../../../config/env-readers.util';
+import type { ValeursDeLEnv } from '../../../config/env.validation';
 import {
   lienDeDesabonnement,
   urlPubliqueDeLApi,
@@ -35,7 +36,7 @@ export class NewsletterMailerService implements INewsletterMailer {
   private readonly from: string | undefined;
   private readonly replyTo: string;
 
-  constructor(private readonly configService: ConfigService) {
+  constructor(private readonly configService: ConfigService<ValeursDeLEnv>) {
     this.from = expediteurDesCourriels(this.environnement());
     this.replyTo = adresseDeReponse(this.environnement());
     this.transporter = createOptionalSmtpTransporter(

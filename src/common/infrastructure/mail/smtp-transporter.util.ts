@@ -1,18 +1,22 @@
 import { Logger } from '@nestjs/common';
 import { createPrivateKey } from 'node:crypto';
 import { createTransport, type Transporter } from 'nodemailer';
-import { envBool } from '../../../config/env-readers.util';
+import {
+  envBool,
+  envBrut,
+  envPort,
+  envString,
+} from '../../../config/env-readers.util';
 import { messageDErreur } from '../../domain/errors/message-d-erreur';
 
 export function createOptionalSmtpTransporter(
   logger: Logger,
   context: string,
 ): Transporter | null {
-  const host = process.env.SMTP_HOST;
-  const portRaw = process.env.SMTP_PORT;
-  const port = portRaw ? Number(portRaw) : undefined;
-  const user = process.env.SMTP_USER;
-  const pass = process.env.SMTP_PASS;
+  const host = envString('SMTP_HOST');
+  const port = envPort(['SMTP_PORT'], 'SMTP');
+  const user = envBrut('SMTP_USER');
+  const pass = envBrut('SMTP_PASS');
 
   if (!host || !port || !user || !pass) {
     logger.warn(
@@ -68,9 +72,9 @@ function buildDkimOptions(
   logger: Logger,
   context: string,
 ): Record<string, unknown> {
-  const domainName = process.env.SMTP_DKIM_DOMAIN;
-  const keySelector = process.env.SMTP_DKIM_SELECTOR;
-  const rawPrivateKey = process.env.SMTP_DKIM_PRIVATE_KEY;
+  const domainName = envString('SMTP_DKIM_DOMAIN');
+  const keySelector = envString('SMTP_DKIM_SELECTOR');
+  const rawPrivateKey = envBrut('SMTP_DKIM_PRIVATE_KEY');
 
   if (!domainName && !keySelector && !rawPrivateKey) return {};
 

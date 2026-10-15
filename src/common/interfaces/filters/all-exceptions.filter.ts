@@ -6,6 +6,7 @@ import {
   HttpStatus,
   Logger,
 } from '@nestjs/common';
+import { estEnProduction } from '../../../config/env-readers.util';
 import { messageDErreur } from '../../domain/errors/message-d-erreur';
 import {
   estDependanceInjoignable,
@@ -19,7 +20,7 @@ import { httpProblemTarget } from './http-problem-target';
  * @see https://www.rfc-editor.org/rfc/rfc7807
  */
 function internalErrorDetail(exception: unknown): string {
-  if (process.env.NODE_ENV === 'production') {
+  if (estEnProduction()) {
     return 'Une erreur interne est survenue.';
   }
   return messageDErreur(exception);

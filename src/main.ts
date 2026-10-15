@@ -9,6 +9,12 @@ import { AppModule } from './app.module';
 import { bornerLesCorpsDeRequete } from './common/interfaces/http/corps-de-requete';
 import { ouvrirAuxOrigines } from './common/interfaces/http/cors';
 import { appliquerLesTraitementsGlobaux } from './common/interfaces/http/traitements-globaux';
+import {
+  envListe,
+  envPort,
+  envString,
+  estEnProduction,
+} from './config/env-readers.util';
 import { prefixeApi } from './config/prefixe-api';
 import { logBootstrapStep } from './runtime/log-bootstrap-step';
 
@@ -21,11 +27,9 @@ async function bootstrap() {
   logBootstrapStep('nest application created');
   app.useLogger(app.get(Logger));
 
-  const isProd = process.env.NODE_ENV === 'production';
+  const isProd = estEnProduction();
 
-  const corsOrigins = process.env.CORS_ORIGIN
-    ? process.env.CORS_ORIGIN.split(',').map((origin) => origin.trim())
-    : [];
+  const corsOrigins = envListe('CORS_ORIGIN');
 
   // L'API n'est jamais exposee directement : elle est servie derriere un
   // reverse-proxy (deploy/compose.yaml, reseau `web` externe, aucun
@@ -90,7 +94,7 @@ async function bootstrap() {
       .setVersion('1.0')
       .build();
     const document = SwaggerModule.createDocument(app, swaggerConfig);
-    const swaggerPath = process.env.SWAGGER_PATH ?? 'docs';
+    const swaggerPath = envString('SWAGGER_PATH') ?? 'docs';
     SwaggerModule.setup(swaggerPath, app, document, {
       swaggerOptions: { persistAuthorization: true },
     });
@@ -99,7 +103,7 @@ async function bootstrap() {
   app.enableShutdownHooks();
 
   logBootstrapStep('starting listen');
-  await app.listen(process.env.PORT ? Number(process.env.PORT) : 3000);
+  await app.listen(envPort(['PORT'], 'HTTP') ?? 3000);
   logBootstrapStep('listen complete');
 }
 void bootstrap();

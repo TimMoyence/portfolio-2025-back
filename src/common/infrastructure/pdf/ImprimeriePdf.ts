@@ -1,5 +1,6 @@
 import { Logger, OnModuleDestroy } from '@nestjs/common';
 import puppeteer, { Browser } from 'puppeteer';
+import { envString } from '../../../config/env-readers.util';
 import { messageDErreur } from '../../domain/errors/message-d-erreur';
 
 // La cover du toolkit deborde ces marges par marges negatives, cf. la regle
@@ -43,7 +44,7 @@ export abstract class ImprimeriePdf implements OnModuleDestroy {
     if (!this.browserPromise) {
       this.browserPromise = puppeteer.launch({
         headless: true,
-        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
+        executablePath: envString('PUPPETEER_EXECUTABLE_PATH'),
         args: CONTAINER_SAFE_CHROMIUM_ARGS,
       });
     }

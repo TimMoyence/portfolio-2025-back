@@ -6,11 +6,12 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import type { Request } from 'express';
+import type { ValeursDeLEnv } from '../../../config/env.validation';
 import { egalEnTempsConstant } from '../../domain/crypto/empreintes';
 
 @Injectable()
 export class MetricsAuthGuard implements CanActivate {
-  constructor(private readonly configService: ConfigService) {}
+  constructor(private readonly configService: ConfigService<ValeursDeLEnv>) {}
 
   canActivate(context: ExecutionContext): boolean {
     const metricsToken = this.configService.get<string>('METRICS_TOKEN');

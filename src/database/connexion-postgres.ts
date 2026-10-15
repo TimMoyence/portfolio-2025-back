@@ -4,6 +4,7 @@ import {
   envPort,
   envPremier,
   envUnVrai,
+  estEnProduction,
   type SourceDEnv,
 } from '../config/env-readers.util';
 
@@ -25,7 +26,7 @@ export interface ConnexionPostgres extends EmplacementTypeOrm {
   readonly baseAdmin: string;
 }
 
-const ALIAS_POSTGRES = {
+export const ALIAS_POSTGRES = {
   host: ['DB_HOST', 'DATABASE_HOST', 'PGHOST'],
   port: ['DB_PORT', 'DATABASE_PORT', 'PGPORT'],
   username: ['DB_USERNAME', 'DB_USER', 'DATABASE_USER', 'POSTGRES_USER'],
@@ -38,6 +39,7 @@ const ALIAS_POSTGRES = {
   database: ['DB_NAME', 'DATABASE_NAME', 'POSTGRES_DB', 'DB_DATABASE'],
   ssl: ['DB_SSL', 'DATABASE_SSL'],
   baseAdmin: ['DB_ADMIN_DATABASE', 'DATABASE_ADMIN_NAME'],
+  synchronize: ['DB_SYNCHRONIZE', 'TYPEORM_SYNCHRONIZE'],
 } as const;
 
 function nomDeBaseDeLUrl(url: string): string | undefined {
@@ -47,7 +49,7 @@ function nomDeBaseDeLUrl(url: string): string | undefined {
 
 function sslDe(source: SourceDEnv): SslPostgres | undefined {
   if (!envUnVrai(ALIAS_POSTGRES.ssl, source)) return undefined;
-  return { rejectUnauthorized: source.NODE_ENV === 'production' };
+  return { rejectUnauthorized: estEnProduction(source) };
 }
 
 export function resoudreConnexionPostgres(

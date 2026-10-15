@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { pbkdf2Sync } from 'crypto';
 import * as argon2 from 'argon2';
 import { egalEnTempsConstant } from '../../../../common/domain/crypto/empreintes';
+import type { ValeursDeLEnv } from '../../../../config/env.validation';
 
 const TIMING_DECOY_INPUT = 'dummy-password-for-timing-safety';
 const TIMING_DECOY_HASH_FALLBACK =
@@ -16,7 +17,7 @@ export class PasswordService implements OnModuleInit {
   private readonly digest = 'sha512';
   private timingDecoyHash: Promise<string> | null = null;
 
-  constructor(private readonly configService: ConfigService) {
+  constructor(private readonly configService: ConfigService<ValeursDeLEnv>) {
     this.secret =
       this.configService.get<string>('SECURE_KEY_FOR_PASSWORD_HASHING') ?? '';
 

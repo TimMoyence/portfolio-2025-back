@@ -1,3 +1,4 @@
+import { envString } from '../../../../config/env-readers.util';
 import { escapeHtml, escapeUrl, safeHtml } from './mail-rendering.util';
 import type { EscapedHtml } from './mail-rendering.util';
 
@@ -10,18 +11,22 @@ export interface MailLayoutInput {
   readonly unsubscribeUrl?: string;
 }
 
-const LOGO_URL =
-  process.env.AUDIT_BRAND_LOGO_URL ??
-  'https://asilidesign.fr/assets/images/logo.webp';
 const LOGO_ALT = 'Asili Design — Tim Moyence';
 const BRAND_FOOTER_ADDRESS = 'Asili Design — Bordeaux, France';
 const BRAND_FOOTER_CONTACT = 'tim.moyence@outlook.fr';
 
+function logoDeLaMarque(): string {
+  return (
+    envString('AUDIT_BRAND_LOGO_URL') ??
+    'https://asilidesign.fr/assets/images/logo.webp'
+  );
+}
+
 function resolveUnsubscribeUrl(explicit?: string): string {
   if (explicit && explicit.trim().length > 0) return explicit.trim();
-  const fromEnv = process.env.AUDIT_UNSUBSCRIBE_URL?.trim();
-  if (fromEnv && fromEnv.length > 0) return fromEnv;
-  return 'https://asilidesign.fr/fr/contact';
+  return (
+    envString('AUDIT_UNSUBSCRIBE_URL') ?? 'https://asilidesign.fr/fr/contact'
+  );
 }
 
 export function buildMailLayout(input: MailLayoutInput): string {
@@ -70,7 +75,7 @@ ${preheader}
     <!-- Header logo -->
     <div style="padding:12px 24px 20px 24px;text-align:center;">
       <a href="https://asilidesign.fr" style="text-decoration:none;">
-        <img src="${escapeUrl(LOGO_URL)}" alt="${escapeHtml(LOGO_ALT)}" width="56" height="56" style="display:inline-block;width:56px;height:56px;border:0;" />
+        <img src="${escapeUrl(logoDeLaMarque())}" alt="${escapeHtml(LOGO_ALT)}" width="56" height="56" style="display:inline-block;width:56px;height:56px;border:0;" />
       </a>
     </div>
 

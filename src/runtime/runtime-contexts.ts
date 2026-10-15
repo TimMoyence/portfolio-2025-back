@@ -1,5 +1,5 @@
 import { Type } from '@nestjs/common';
-import { envBool } from '../config/env-readers.util';
+import { envBool, type SourceDEnv } from '../config/env-readers.util';
 import { AuditRequestsModule } from '../modules/audit-requests/AuditRequests.module';
 import { ContactsModule } from '../modules/contacts/Contacts.module';
 import { CookieConsentsModule } from '../modules/cookie-consents/CookieConsents.module';
@@ -22,7 +22,7 @@ export interface RuntimeContextsSelection {
 }
 
 export function resolveRuntimeContexts(
-  env: NodeJS.ProcessEnv = process.env,
+  env: SourceDEnv = process.env,
 ): RuntimeContextsSelection {
   const coreModules: Array<Type<unknown>> = [
     UsersModule,

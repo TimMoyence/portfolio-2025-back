@@ -9,24 +9,21 @@ import {
   egalEnTempsConstant,
   hmacSha256,
 } from '../../../common/domain/crypto/empreintes';
+import { envBrut, envListe, envString } from '../../../config/env-readers.util';
 
 interface ArticleRequest extends Request {
   rawBody?: Buffer;
 }
 
 function resolveSecret(keyId: string): string | undefined {
-  const pairs = (process.env.MORNING_BRIEF_HMAC_KEYS ?? '')
-    .split(',')
-    .map((entry) => entry.trim())
-    .filter(Boolean);
-  for (const pair of pairs) {
+  for (const pair of envListe('MORNING_BRIEF_HMAC_KEYS')) {
     const separator = pair.indexOf(':');
     if (separator > 0 && pair.slice(0, separator) === keyId) {
       return pair.slice(separator + 1);
     }
   }
-  if (keyId === (process.env.MORNING_BRIEF_HMAC_KEY_ID ?? 'morning-brief')) {
-    return process.env.MORNING_BRIEF_HMAC_SECRET;
+  if (keyId === (envString('MORNING_BRIEF_HMAC_KEY_ID') ?? 'morning-brief')) {
+    return envBrut('MORNING_BRIEF_HMAC_SECRET');
   }
   return undefined;
 }

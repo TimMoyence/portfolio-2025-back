@@ -10,7 +10,6 @@ export interface ClientReportMailInput {
   readonly websiteName: string;
   readonly clientReport: ClientReportSynthesis;
   readonly pdfBuffer: Buffer | null;
-  readonly bookingUrl?: string | null;
 }
 
 export interface ExpertReportMailInput {
