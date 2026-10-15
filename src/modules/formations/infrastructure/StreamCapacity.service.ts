@@ -125,9 +125,14 @@ export class StreamCapacityService implements IStreamCapacity, OnModuleDestroy {
   }
 
   async onModuleDestroy(): Promise<void> {
-    if (this.redis !== null) {
-      await this.redis.quit();
+    if (this.redis === null) {
+      return;
     }
+    if (this.redis.status === 'ready') {
+      await this.redis.quit();
+      return;
+    }
+    this.redis.disconnect();
   }
 
   private async client(): Promise<Redis> {
