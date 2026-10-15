@@ -442,8 +442,7 @@ describe('StreamSessionUseCase', () => {
 
       expect(flux.types()).toContain('etat');
       expect(signaler).toHaveBeenCalledWith(
-        expect.stringContaining('mode degrade'),
-        expect.stringContaining('Redis indisponible'),
+        expect.stringMatching(/mode degrade.*: Redis indisponible$/),
       );
       fermer([flux]);
       signaler.mockRestore();

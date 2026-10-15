@@ -6,6 +6,10 @@ import {
   createMockToolkitContentAssembler,
 } from '../../../../../test/factories/lead-magnet-request.factory';
 import { BadRequestException } from '@nestjs/common';
+import {
+  attendreLAvertissement,
+  espionnerLesAvertissements,
+} from '../../../../../test/helpers/avertissements';
 import { flushPromises } from '../../../../../test/helpers/flush-promises';
 import { RequestToolkitUseCase } from '../RequestToolkit.useCase';
 import type { RequestToolkitCommand } from '../dto/RequestToolkit.command';
@@ -16,6 +20,7 @@ describe('RequestToolkitUseCase', () => {
   let notifier: ReturnType<typeof createMockLeadMagnetNotifier>;
   let pdfGenerator: ReturnType<typeof createMockToolkitPdfGenerator>;
   let assembler: ReturnType<typeof createMockToolkitContentAssembler>;
+  const avertissements = espionnerLesAvertissements();
 
   const validCommand: RequestToolkitCommand = {
     firstName: 'Marie',
@@ -73,6 +78,17 @@ describe('RequestToolkitUseCase', () => {
     await demanderLeToolkit();
 
     expect(repo.create).toHaveBeenCalledTimes(1);
+  });
+
+  it('journalise la cause d un échec d envoi de la boîte à outils', async () => {
+    notifier.sendToolkitEmail.mockRejectedValue(new Error('smtp down'));
+
+    await demanderLeToolkit();
+
+    await attendreLAvertissement(
+      avertissements,
+      'Lead magnet email failed: smtp down',
+    );
   });
 
   it('should reject invalid email', async () => {

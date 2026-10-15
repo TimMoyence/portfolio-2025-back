@@ -93,8 +93,7 @@ function buildDkimOptions(
     }
   } catch (error) {
     logger.error(
-      `${context}: DKIM signing disabled, SMTP_DKIM_PRIVATE_KEY is not a usable private key`,
-      messageDErreur(error),
+      `${context}: DKIM signing disabled, SMTP_DKIM_PRIVATE_KEY is not a usable private key: ${messageDErreur(error)}`,
     );
     return {};
   }
