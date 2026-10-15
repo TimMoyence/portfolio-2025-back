@@ -197,7 +197,7 @@ describe('parseImports', () => {
 
     expect(modulesLus).toEqual([]);
     expect(rapports[1]).toBeLessThan(2);
-  }, 60_000);
+  });
 });
 
 describe('Règles de dépendances inter-couches', () => {
