@@ -7,6 +7,7 @@ import {
 } from '../../domain/AuditReportTiers';
 import type { EngineScore } from '../../domain/EngineCoverage';
 import { localizedText } from './shared/locale-text.util';
+import { pillarLabel } from './shared/pillar-labels.util';
 import type {
   ExpertReport,
   LangchainAuditInput,
@@ -367,7 +368,7 @@ export function buildFallbackInternalNotes(input: LangchainAuditInput): string {
     .filter(([, score]) => Number.isFinite(score))
     .sort((a, b) => a[1] - b[1])[0];
   const lowestPillarLabel = lowestPillar
-    ? `${lowestPillar[0]} (${lowestPillar[1]})`
+    ? `${pillarLabel(lowestPillar[0])} (${lowestPillar[1]})`
     : '';
   const topFinding = input.deepFindings[0];
 

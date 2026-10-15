@@ -1,19 +1,12 @@
 import { readdirSync, readFileSync, statSync } from 'fs';
 import { collectFiles } from '../../test/helpers/source-tree';
 import { join } from 'path';
-
-const MOTIF_DE_DEPENDANCE = /\b(import|export)\b([^'"`;]*)['"]([^'"]+)['"]/g;
-
-function designeUnModule(motCle: string, clause: string): boolean {
-  const avantLeModule = clause.trim();
-  if (/\bfrom$/.test(avantLeModule)) return true;
-  return motCle === 'import' && ['', '('].includes(avantLeModule);
-}
+import { preProcessFile } from 'typescript';
 
 function parseImports(content: string): string[] {
-  return [...content.matchAll(MOTIF_DE_DEPENDANCE)]
-    .filter((match) => designeUnModule(match[1], match[2]))
-    .map((match) => match[3]);
+  return preProcessFile(content, true, true).importedFiles.map(
+    (fichier) => fichier.fileName,
+  );
 }
 
 function extractImports(filePath: string): string[] {
@@ -99,6 +92,31 @@ describe('parseImports', () => {
     ],
     ['reexport de tout', `export * from './bar';`, ['./bar']],
     ['import dynamique', `const m = await import('./baz');`, ['./baz']],
+    [
+      'import dynamique dans une methode de classe exportee',
+      `export class A {\n  async charger() {\n    return import('../infrastructure/x');\n  }\n}`,
+      ['../infrastructure/x'],
+    ],
+    [
+      'import dynamique dans une fonction exportee',
+      `export function charger() {\n  return import('./y');\n}`,
+      ['./y'],
+    ],
+    [
+      'import a effet de bord apres une classe exportee',
+      `export class A {}\nimport '../infrastructure/x';`,
+      ['../infrastructure/x'],
+    ],
+    [
+      'import require',
+      `import x = require('../infrastructure/x');`,
+      ['../infrastructure/x'],
+    ],
+    [
+      'require',
+      `const { X } = require('../infrastructure/x') as { X: unknown };`,
+      ['../infrastructure/x'],
+    ],
     [
       'declarations sans module',
       `export const from = 'x';\nexport class A {}\nconst b = Array.from('cd');`,
