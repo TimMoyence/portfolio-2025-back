@@ -1,3 +1,5 @@
+import { estObjet } from '../../domain/est-objet';
+
 declare const escapedHtmlBrand: unique symbol;
 
 export type EscapedHtml = string & {
@@ -62,11 +64,7 @@ function estEmis<G extends Genre>(
   valeur: unknown,
   genre: G,
 ): valeur is FragmentEmis<G> {
-  return (
-    typeof valeur === 'object' &&
-    valeur !== null &&
-    fragmentsEmis.get(valeur)?.genre === genre
-  );
+  return estObjet(valeur) && fragmentsEmis.get(valeur)?.genre === genre;
 }
 
 function texteDe(valeur: unknown): string {

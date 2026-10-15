@@ -1,3 +1,4 @@
+import { estObjet } from '../../../src/common/domain/est-objet';
 import type { Valeur } from './excel';
 
 export interface Formule {
@@ -46,7 +47,7 @@ export function valeurDe(ligne: Ligne, colonne: string): Valeur {
 export function estUneFormule(
   cellule: Cellule | undefined,
 ): cellule is Formule {
-  return typeof cellule === 'object' && cellule !== null;
+  return estObjet(cellule);
 }
 
 export function resultatDeCellule(cellule: Cellule): Valeur {

@@ -1,3 +1,6 @@
+import { estEntierPositif } from '../../../../common/domain/nombres/est-entier-positif';
+import { sansEspacesNiMoinsTypographiques } from '../../../../common/domain/texte/sans-espaces-typographiques';
+
 export type CodeErreur = '#REF!' | '#DIV/0!' | '#NOM?' | '#VALEUR!';
 
 export type ValeurFormule = number | string | boolean;
@@ -244,7 +247,6 @@ function lireNombre(brut: string): number {
 }
 
 const ESPACES_SAISIS = /\s/g;
-const MOINS_TYPOGRAPHIQUE = /−/g;
 const UNITES_LUES = [
   '%',
   'k?€',
@@ -259,9 +261,8 @@ const UNITES_LUES = [
 const UNITE_FINALE = new RegExp(`(?:${UNITES_LUES.join('|')})$`, 'i');
 
 function compacterLaSaisie(brut: string): string {
-  return brut
+  return sansEspacesNiMoinsTypographiques(brut)
     .replace(ESPACES_SAISIS, '')
-    .replace(MOINS_TYPOGRAPHIQUE, '-')
     .replaceAll(',', '.');
 }
 
@@ -805,10 +806,6 @@ function echec(cause: unknown): Echec {
     valeur: null,
     erreur: cause instanceof ErreurFormule ? cause.code : ERREUR_VALEUR,
   };
-}
-
-function estEntierPositif(valeur: number): boolean {
-  return Number.isSafeInteger(valeur) && valeur >= 0;
 }
 
 function exigerFeuilleRecevable(feuille: Feuille): void {
