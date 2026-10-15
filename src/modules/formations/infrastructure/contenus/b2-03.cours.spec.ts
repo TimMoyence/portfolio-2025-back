@@ -13,6 +13,7 @@ import {
   rangsDe,
   recopier,
 } from '../../../../../test/helpers/feuille-de-cours';
+import type { Ecran } from '../../domain/contrats/cours';
 import type { CorrigeFeuille } from '../../domain/cours/Corrige';
 import { corrigerFeuille } from '../../domain/cours/CorrectionProduction';
 import { evaluerCellule } from 'portfolio-2025-partage/formule';
@@ -79,33 +80,32 @@ const aRelancer: Regle = (facture) => facture.impayee && enRetard(facture);
 const aViser: Regle = (facture) =>
   grosMontant(facture) || horsDeFrance(facture);
 
-function clientsOu(condition: (factures: readonly Facture[]) => boolean) {
-  const clients = [...new Set(FACTURES.map((facture) => facture.client))];
-  return clients.filter((client) =>
-    condition(FACTURES.filter((facture) => facture.client === client)),
-  ).length;
-}
-
 decrireLaFicheDuCours('B2-03', COURS, {
   conception: 'cours-b2-03-conception.md',
   ecrans: 32,
-  dureeMinutes: 180,
-  minutesParActe: [54, 39, 39, 48, 0, 0],
-  rythme: { expositionContinueMax: 6, interactives: 151, exposition: 29 },
+  dureeMinutes: 140,
+  minutesParActe: [36, 33, 23, 48, 0, 0],
+  rythme: { expositionContinueMax: 6, interactives: 111, exposition: 29 },
   ateliersNotes: ['A1-10 (8)', 'A2-05 (11)', 'A3-05 (11)'],
-  noteesParType: [10, 4, 0, 3, 1],
+  noteesParType: [7, 2, 0, 2, 1],
   enigmes: 4,
-  rappels: 12,
-  remediations: 11,
-  options: 14 + 12,
+  rappels: 9,
+  remediations: 9,
+  options: 11 + 9,
   catalogue: [
     'A1-02',
     'A1-04',
     'A1-06',
+    'A1-06',
+    'A1-07',
     'A1-07',
     'A2-02',
+    'A2-02',
+    'A2-03',
     'A2-03',
     'A3-02',
+    'A3-02',
+    'A3-03',
     'A3-03',
     'A4-01',
     'A4-05',
@@ -113,11 +113,9 @@ decrireLaFicheDuCours('B2-03', COURS, {
   corrigesSurPlace: [
     'B2-03-A1-09-TABLE-VERITE',
     'B2-03-A1-10-ATELIER-CONNECTEURS',
-    'B2-03-A1-11-TABLEUR-SI-OU',
     'B2-03-A2-05-ATELIER-MORGAN',
     'B2-03-A2-06-TABLEUR-NON-OU',
     'B2-03-A3-05-ATELIER-QUANTIF',
-    'B2-03-A3-06-DEFI-IA',
     'B2-03-A4-02-TABLEUR-CONTROLE',
     'B2-03-A4-03-COFFRE-CONTROLE',
   ],
@@ -132,16 +130,8 @@ decrireLaMiniSituation('B2-03', COURS_B2_03, {
 });
 
 describe('B2-03 — recalcul des corrigés depuis les seize factures', () => {
-  it('recalcule les solutions et pièges des quatre questions numériques', () => {
+  it('recalcule les solutions et pièges des deux questions numériques', () => {
     attendreLesNumeriques(COURS, {
-      'b2-03-a1-visa': [
-        compter(aViser),
-        compter((facture) => grosMontant(facture) !== horsDeFrance(facture)),
-        compter(grosMontant) + compter(horsDeFrance),
-        compter(
-          (facture) => facture.ht > SEUIL_DU_VISA || horsDeFrance(facture),
-        ),
-      ],
       'b2-03-a2-sans-visa': [
         compter((facture) => !aViser(facture)),
         compter(
@@ -152,10 +142,6 @@ describe('B2-03 — recalcul des corrigés depuis les seize factures', () => {
       'b2-03-a3-impayees-recentes': [
         compter((facture) => facture.impayee && facture.delai < DELAI_MAXIMUM),
         compter((facture) => facture.impayee && facture.delai <= DELAI_MAXIMUM),
-      ],
-      'b2-03-a3-clients': [
-        clientsOu((factures) => factures.every((facture) => facture.impayee)),
-        clientsOu((factures) => factures.some((facture) => facture.impayee)),
       ],
     });
   });
@@ -222,48 +208,13 @@ describe('B2-03 — recalcul des corrigés depuis les seize factures', () => {
   });
 });
 
-describe('B2-03 — les trois feuilles corrigées par le moteur de formules', () => {
-  it('reconnaît juste la règle du visa de l’exercice 3, recopiée jusqu’en D6', () => {
-    const corrige = feuilleDe('b2-03-a1-tableur-si-ou');
-    const envoi = recopier(
-      '=SI(OU(C2>=5000;B2<>"France");"Visa";"Non")',
-      'D',
-      2,
-      6,
-    );
-
-    attendreLaFeuille(corrige, {
-      D2: ['Visa'],
-      D3: ['Visa'],
-      D4: ['Non'],
-      D5: ['Visa'],
-      D6: ['Non'],
-    });
-    expect(corrigerFeuille(corrige, envoi).score).toBe(1);
-  });
-
-  it('nomme l’oubli des guillemets quand la formule tombe en erreur', () => {
-    const corrige = feuilleDe('b2-03-a1-tableur-si-ou');
-    const envoi = recopier(
-      '=SI(OU(C2>=5000;B2<>France);"Visa";"Non")',
-      'D',
-      2,
-      6,
-    );
-
-    expect(
-      corrigerFeuille(corrige, envoi).verdicts.map(
-        (verdict) => verdict.confusion,
-      ),
-    ).toEqual(Array.from({ length: 5 }, () => 'critere-sans-guillemets'));
-  });
-
+describe('B2-03 — les deux feuilles corrigées par le moteur de formules', () => {
   it('nomme l’oubli des guillemets autour d’un texte accentué ou d’un critère de NB.SI', () => {
     const corrige = feuilleDe('b2-03-a4-feuille-controle');
     const lignes = rangsDe(2, 17);
     const envoi = {
       ...recopier('=SI(ET(F2=Impayée;E2>60);"Relancer";"Non")', 'H', 2, 17),
-      K3: '=NB.SI(D2:D17;>=5000)',
+      K2: '=NB.SI(H2:H17;Relancer)',
     };
     const confusions = new Map(
       corrigerFeuille(corrige, envoi).verdicts.map((verdict) => [
@@ -275,7 +226,7 @@ describe('B2-03 — les trois feuilles corrigées par le moteur de formules', ()
     expect(lignes.map((ligne) => confusions.get(`H${ligne}`))).toEqual(
       lignes.map(() => 'critere-sans-guillemets'),
     );
-    expect(confusions.get('K3')).toBe('critere-sans-guillemets');
+    expect(confusions.get('K2')).toBe('critere-sans-guillemets');
   });
 
   it('compte au tableur les montants d’au moins 5 000 € HT et les clients hors de France', () => {
@@ -294,7 +245,7 @@ describe('B2-03 — les trois feuilles corrigées par le moteur de formules', ()
     expect(evaluerCellule(feuille, 'K5').valeur).toBe(compter(horsDeFrance));
   });
 
-  it('reconnaît justes les deux contrôles équivalents de l’exercice 5', () => {
+  it('reconnaît justes les deux contrôles équivalents de l’exercice 4', () => {
     const corrige = feuilleDe('b2-03-a2-tableur-non-ou');
     const envoi = {
       ...recopier(
@@ -318,13 +269,12 @@ describe('B2-03 — les trois feuilles corrigées par le moteur de formules', ()
     expect(corrigerFeuille(corrige, envoi).score).toBe(1);
   });
 
-  it('reconnaît juste la feuille de contrôle de la mini-situation et recompte ses totaux', () => {
+  it('reconnaît juste la feuille de contrôle de la mini-situation et recompte ses relances', () => {
     const corrige = feuilleDe('b2-03-a4-feuille-controle');
     const envoi = {
       ...recopier('=SI(ET(F2="Impayée";E2>60);"Relancer";"Non")', 'H', 2, 17),
       ...recopier('=SI(OU(D2>=5000;C2<>"France");"Visa";"Non")', 'I', 2, 17),
       K2: '=NB.SI(H2:H17;"Relancer")',
-      K3: '=NB.SI(I2:I17;"Visa")',
     };
     const relance = (numero: string) => [
       aRelancer(factureNumero(numero)) ? 'Relancer' : 'Non',
@@ -347,12 +297,130 @@ describe('B2-03 — les trois feuilles corrigées par le moteur de formules', ()
         compter(aRelancer),
         compter((facture) => facture.impayee && facture.delai >= DELAI_MAXIMUM),
       ],
-      K3: [
-        compter(aViser),
-        compter(grosMontant) + compter(horsDeFrance),
-        compter((facture) => grosMontant(facture) !== horsDeFrance(facture)),
-      ],
     });
     expect(corrigerFeuille(corrige, envoi).score).toBe(1);
+  });
+});
+
+describe('B2-03 — retours de Tim du 15 octobre 2026', () => {
+  function ecranNomme(screenId: string): Ecran {
+    const trouve = COURS.ecrans.find((candidat) => candidat.id === screenId);
+    if (trouve === undefined) {
+      throw new Error(`écran absent du B2-03 : ${screenId}`);
+    }
+    return trouve;
+  }
+
+  function presentationV2(ecran: Ecran) {
+    const presentation =
+      ecran.brique === 'fp-story' ? ecran.proprietes.presentation : undefined;
+    return presentation?.version === 2 ? presentation : null;
+  }
+
+  function blocsDe(ecran: Ecran): readonly string[] | null {
+    const presentation = presentationV2(ecran);
+    return presentation?.renderer === 'lesson'
+      ? presentation.props.blocks.map(({ kind }) => kind)
+      : null;
+  }
+
+  function imageDe(ecran: Ecran | undefined): string | null {
+    const presentation = ecran === undefined ? null : presentationV2(ecran);
+    return presentation?.renderer === 'illustration'
+      ? presentation.props.image
+      : null;
+  }
+
+  const lecons = COURS.ecrans.filter((ecran) => blocsDe(ecran) !== null);
+
+  it('précède chaque page de trace écrite d’une illustration cataloguée parmi ses médias', () => {
+    const images = new Set(COURS.medias.flatMap(({ chemins }) => chemins));
+
+    expect(
+      lecons.map((lecon) => {
+        const image = imageDe(COURS.ecrans[COURS.ecrans.indexOf(lecon) - 1]);
+        return image !== null && images.has(image);
+      }),
+    ).toEqual(lecons.map(() => true));
+    expect(lecons).toHaveLength(6);
+  });
+
+  it('ramène chaque page de trace écrite à sa définition et à son exemple', () => {
+    expect(
+      Object.fromEntries(lecons.map((lecon) => [lecon.id, blocsDe(lecon)])),
+    ).toEqual({
+      'B2-03-A1-06-COURS-CONNECTEURS': ['definition', 'example'],
+      'B2-03-A1-07-COURS-IMPLICATION': ['definition', 'example'],
+      'B2-03-A2-02-COURS-NEGATION': ['definition', 'example'],
+      'B2-03-A2-03-COURS-MORGAN': ['definition', 'example'],
+      'B2-03-A3-02-COURS-PREDICATS': ['definition', 'example', 'method'],
+      'B2-03-A3-03-COURS-QUANTIFICATEURS': ['method', 'example'],
+    });
+  });
+
+  it('pose la mission sans geste ni conséquence, avec ses deux questions', () => {
+    const mission = ecranNomme('B2-03-A1-03-MISSION');
+    const proprietes = mission.brique === 'fp-pro' ? mission.proprietes : null;
+
+    expect(proprietes?.geste).toBeNull();
+    expect(proprietes?.consequence).toBeNull();
+    expect(proprietes?.questionsLibres?.map(({ id }) => id)).toEqual([
+      'b2-03-a1-mission:regles',
+      'b2-03-a1-mission:f213',
+    ]);
+  });
+
+  it('n’affiche plus de consigne au-dessus des deux questions de l’exercice 5', () => {
+    const exercice = ecranNomme('B2-03-A3-05-ATELIER-QUANTIF');
+
+    expect(exercice.brique).toBe('questionnaire');
+    expect(exercice).not.toHaveProperty('consigne');
+  });
+
+  it('ne parle plus nulle part de l’ordre des quantificateurs ni du comptage de « A ou B »', () => {
+    const texte = JSON.stringify(COURS_B2_03);
+
+    expect(
+      [
+        'ordre des quantificateurs',
+        'ordre de ∀ et ∃',
+        '« A ou B »',
+        'ou-compte-deux-fois',
+        'ordre-quantificateurs-inverse',
+      ].filter((motif) => texte.includes(motif)),
+    ).toEqual([]);
+  });
+
+  it('ne fait plus compter les visas au tableur de la mini-situation', () => {
+    const { plan } = feuilleDe('b2-03-a4-feuille-controle');
+
+    expect(
+      Object.keys(plan.cellules).filter((cle) => /^[JK]3$/.test(cle)),
+    ).toEqual([]);
+    expect(plan.consignes.at(-1)).toBe(
+      'En K2, comptez avec NB.SI les factures à relancer.',
+    );
+  });
+
+  it('numérote les exercices de 1 à 5, chacun renvoyé au même exercice du livret', () => {
+    const exercices = COURS.ecrans.flatMap((ecran) => {
+      const numero = /^Exercice (\d+) —/.exec(ecran.titre ?? '')?.[1];
+      return numero === undefined
+        ? []
+        : [[numero, /exercice (\d+) du livret/.exec(ecran.notes)?.[1]]];
+    });
+
+    expect(exercices.map(([numero]) => numero)).toEqual([
+      '1',
+      '2',
+      '3',
+      '4',
+      '5',
+    ]);
+    expect(
+      exercices.filter(
+        ([numero, papier]) => papier !== undefined && papier !== numero,
+      ),
+    ).toEqual([]);
   });
 });
