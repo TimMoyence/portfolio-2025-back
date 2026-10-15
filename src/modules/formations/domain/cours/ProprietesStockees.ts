@@ -1,4 +1,4 @@
-import { MODALITES, REGIMES_DE_VERROU } from 'portfolio-2025-partage/contrats';
+import { MODALITES, REGIMES_DE_VERROU } from '../contrats/contrat-de-l-api';
 import { z } from 'zod';
 import { dansLesBornes } from '../../../../common/domain/nombres/dans-les-bornes';
 import { CHAMPS_EXTRAITS_DU_CAS } from '../contrats/cours';

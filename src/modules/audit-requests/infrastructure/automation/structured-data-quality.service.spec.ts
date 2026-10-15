@@ -87,6 +87,13 @@ describe('StructuredDataQualityService', () => {
     );
   });
 
+  it('compte comme manquant un champ requis qui vaut un objet vide', () => {
+    const result = service.analyze([{ ...ARTICLE_MINIMAL, author: {} }]);
+    expect(result.invalidBlocks).toEqual([
+      { type: 'Article', missingFields: ['author'] },
+    ]);
+  });
+
   it('gère un type inconnu (non éligible Rich Results)', () => {
     const result = service.analyze([{ '@type': 'RandomType', name: 'x' }]);
     expect(result.googleRichResultsEligible).toBe(false);

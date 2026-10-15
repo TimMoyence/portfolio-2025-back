@@ -2,8 +2,12 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import type { SendMailOptions, Transporter } from 'nodemailer';
 import { createOptionalSmtpTransporter } from '../../../common/infrastructure/mail/smtp-transporter.util';
-import { escapeHtml, escapeUrl, safeHtml } from 'portfolio-2025-partage/html';
-import type { EscapedHtml } from 'portfolio-2025-partage/html';
+import {
+  escapeHtml,
+  escapeUrl,
+  safeHtml,
+} from '../../../common/domain/texte/html-escape.util';
+import type { EscapedHtml } from '../../../common/domain/texte/html-escape.util';
 import { entetesDeDesabonnement } from '../../../common/infrastructure/mail/entetes-de-desabonnement';
 import { lienAvecJeton } from '../../../common/domain/lien-avec-jeton';
 import {

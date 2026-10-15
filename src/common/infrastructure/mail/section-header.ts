@@ -2,7 +2,7 @@ import {
   escapeHtml,
   safeHtml,
   type EscapedHtml,
-} from 'portfolio-2025-partage/html';
+} from '../../domain/texte/html-escape.util';
 
 export function sectionHeader(
   num: string,

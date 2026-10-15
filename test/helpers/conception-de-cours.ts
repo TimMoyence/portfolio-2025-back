@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { echapperPourRegex } from './echapper-pour-regex';
 
 const LIGNE_DE_TABLEAU = /^\|\s*\d+\s*\|/;
 const ENTETE_DE_FICHE = /^#### (A\d-\d{2}) · `(B\d-\d{2}-[^`]+)`/;
@@ -9,7 +10,6 @@ const RENDU_V2 = /v2 `([^`]+)`/;
 const TITRE_DES_REMEDIATIONS = 'Concepts, confusions et remédiations';
 const TITRE_DES_VALEURS = 'Les valeurs attendues';
 const EMPREINTE_DU_NOM = '<empreinte>';
-const CARACTERES_SPECIAUX = /[.*+?^${}()|[\]\\]/g;
 
 export interface LigneDeVueDEnsemble {
   readonly rang: number;
@@ -175,9 +175,7 @@ export function piecesJointesDuDocument(
 }
 
 function motifDuNomPublie(nom: string): RegExp {
-  const morceaux = nom
-    .split(EMPREINTE_DU_NOM)
-    .map((morceau) => morceau.replaceAll(CARACTERES_SPECIAUX, '\\$&'));
+  const morceaux = nom.split(EMPREINTE_DU_NOM).map(echapperPourRegex);
   return new RegExp(`^${morceaux.join('[0-9a-f]{8}')}$`, 'u');
 }
 

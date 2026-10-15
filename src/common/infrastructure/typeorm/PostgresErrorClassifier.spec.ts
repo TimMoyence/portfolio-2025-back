@@ -32,10 +32,23 @@ describe('PostgresErrorClassifier.enregistrerSansDoublon', () => {
     await expect(depot.inserer({ id: 'a' })).resolves.toEqual({ id: 'a' });
   });
 
-  it('traduit une violation d unicite en erreur metier', async () => {
-    const depot = depotQuiRepond(() => Promise.reject(violationDUnicite()));
+  it.each([
+    ['une violation d unicite', violationDUnicite()],
+    [
+      'une erreur du pilote rejetee seule',
+      { code: '23505' } as unknown as Error,
+    ],
+  ])('traduit %s en erreur metier', async (_nom, rejet) => {
+    const depot = depotQuiRepond(() => Promise.reject(rejet));
 
     await expect(depot.inserer({ id: 'a' })).rejects.toThrow('doublon');
+  });
+
+  it('laisse passer un rejet qui n est pas un objet', async () => {
+    const rejet = 'panne' as unknown as Error;
+    const depot = depotQuiRepond(() => Promise.reject(rejet));
+
+    await expect(depot.inserer({ id: 'a' })).rejects.toBe(rejet);
   });
 
   it('laisse passer toute autre erreur', async () => {

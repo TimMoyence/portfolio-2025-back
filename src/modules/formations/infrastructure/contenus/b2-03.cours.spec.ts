@@ -16,7 +16,7 @@ import {
 import type { Ecran } from '../../domain/contrats/cours';
 import type { CorrigeFeuille } from '../../domain/cours/Corrige';
 import { corrigerFeuille } from '../../domain/cours/CorrectionProduction';
-import { evaluerCellule } from 'portfolio-2025-partage/formule';
+import { evaluerCellule } from '../../domain/cours/Formule';
 import { COURS_B2_03 } from './b2-03.cours';
 
 const COURS = buildCoursDuContenu(COURS_B2_03);

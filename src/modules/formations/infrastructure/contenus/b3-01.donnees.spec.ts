@@ -1,4 +1,7 @@
-import { arrondirMoitieLoinDeZero } from 'portfolio-2025-partage/formule';
+import {
+  arrondirMoitieLoinDeZero,
+  lireNombreSaisi,
+} from '../../domain/cours/Formule';
 import {
   dateExcel,
   dateval,
@@ -142,12 +145,8 @@ const lignesDe = (agence: string, annee: number): Ligne[] =>
 const distinctesCommeExcel = (textes: readonly string[]): number =>
   new Set(textes.map((texte) => texte.toLocaleUpperCase('fr'))).size;
 const sansCode = (cellule: string): string => cellule.replaceAll('`', '');
-const valeurDuDocument = (cellule: string): number | string => {
-  const nombre = Number(
-    cellule.replaceAll(/\s/gu, '').replace(',', '.').replace('−', '-'),
-  );
-  return Number.isNaN(nombre) ? cellule : nombre;
-};
+const valeurDuDocument = (cellule: string): number | string =>
+  lireNombreSaisi(cellule) ?? cellule;
 
 describe('jeu Norvane du B3-01', () => {
   it('reproduit le même jeu à partir de la même graine', () => {

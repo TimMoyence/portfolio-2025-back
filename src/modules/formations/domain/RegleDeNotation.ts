@@ -1,6 +1,6 @@
-import type { RegleDeNotation } from 'portfolio-2025-partage/contrats';
+import type { RegleDeNotation } from './contrats/contrat-de-l-api';
 
-export type { RegleDeNotation } from 'portfolio-2025-partage/contrats';
+export type { RegleDeNotation } from './contrats/contrat-de-l-api';
 
 export const REGLE_DE_NOTATION: RegleDeNotation = Object.freeze({
   typesNotables: [

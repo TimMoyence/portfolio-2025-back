@@ -106,8 +106,33 @@ describe('langchain-synthesis.util', () => {
       ).internalNotes;
       expect(fr).toContain('Notes internes');
       expect(fr).toContain('acme.fr');
+      expect(fr).toContain(
+        '- Mettre en avant Meta descriptions manquantes (Élevé).',
+      );
+      expect(fr).not.toContain('(high)');
       expect(en).toContain('Internal notes');
       expect(en).toContain('acme.com');
+    });
+
+    it('nomme le pilier le plus faible par son libellé, comme le PDF et le courriel client', () => {
+      const pillarScores = {
+        seo: 80,
+        aiVisibility: 40,
+        citationWorthiness: 55,
+      };
+      const notes = (['fr', 'en'] as const).map(
+        (locale) =>
+          buildExpertSynthesis(
+            'Summary text.',
+            {},
+            buildLangchainAuditInput({ locale, pillarScores }),
+          ).internalNotes.split('\n')[1],
+      );
+
+      expect(notes).toEqual([
+        '- Pilier le plus faible : Visibilite IA (40).',
+        '- Weakest pillar: Visibilite IA (40).',
+      ]);
     });
   });
 

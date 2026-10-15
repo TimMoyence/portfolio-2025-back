@@ -1,4 +1,5 @@
 import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
+import { estObjet } from '../../../common/domain/est-objet';
 import {
   provenanceConsignable,
   type Provenance,
@@ -68,8 +69,7 @@ export class CookieConsent {
 
     const preferences = props.preferences;
     if (
-      !preferences ||
-      typeof preferences !== 'object' ||
+      !estObjet(preferences) ||
       typeof preferences.essential !== 'boolean' ||
       typeof preferences.preferences !== 'boolean' ||
       typeof preferences.analytics !== 'boolean' ||
