@@ -38,7 +38,7 @@ describe('EnvoiDeVerificationEmail', () => {
     );
     const jetonBrut = lien.searchParams.get('token') ?? '';
     expect(jetonBrut).toMatch(/^[0-9a-f]{64}$/);
-    expect(tokensRepo.create).toHaveBeenCalledWith({
+    expect(tokensRepo.remplacerLesJetonsActifs).toHaveBeenCalledWith({
       userId: 'user-7',
       tokenHash: TokenHash.fromRaw(jetonBrut).value,
       expiresAt: expect.any(Date) as Date,
@@ -57,7 +57,9 @@ describe('EnvoiDeVerificationEmail', () => {
 
     await envoi.envoyer(user, 'user-7', logger, 'Echec');
 
-    expect(tokensRepo.invalidateActiveByUserId).toHaveBeenCalledWith('user-7');
+    expect(tokensRepo.remplacerLesJetonsActifs).toHaveBeenCalledWith(
+      expect.objectContaining({ userId: 'user-7' }),
+    );
     expect(tokensRepo.deleteByUserId).not.toHaveBeenCalled();
   });
 

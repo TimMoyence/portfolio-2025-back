@@ -23,8 +23,7 @@ export interface CanalDeLienTemporaire {
   readonly dureeDeValiditeMs: number;
   readonly adresseDeBase: string;
   readonly echecDEnvoi: string;
-  invaliderLesLiensActifs(userId: string): Promise<void>;
-  enregistrer(jeton: JetonDeLienAEnregistrer): Promise<unknown>;
+  remplacerLesLiensActifs(jeton: JetonDeLienAEnregistrer): Promise<unknown>;
   envoyer(envoi: EnvoiDeLienTemporaire): Promise<void>;
 }
 
@@ -36,24 +35,23 @@ export async function emettreUnLienTemporaire(
 ): Promise<void> {
   const jeton = emettreJeton();
 
-  await canal.invaliderLesLiensActifs(userId);
-  await canal.enregistrer({
+  await canal.remplacerLesLiensActifs({
     userId,
     tokenHash: jeton.empreinte,
     expiresAt: new Date(Date.now() + canal.dureeDeValiditeMs),
   });
 
-  try {
-    await canal.envoyer({
+  void canal
+    .envoyer({
       email: destinataire.email,
       firstName: destinataire.firstName,
       lastName: destinataire.lastName,
       url: lienAvecJeton(canal.adresseDeBase, jeton.brut),
       expiresInMinutes: canal.dureeDeValiditeMs / MINUTE_MS,
-    });
-  } catch (error) {
-    logger.error(
-      `${canal.echecDEnvoi} for ${destinataire.email}: ${String(error)}`,
+    })
+    .catch((error: unknown) =>
+      logger.error(
+        `${canal.echecDEnvoi} for ${destinataire.email}: ${String(error)}`,
+      ),
     );
-  }
 }

@@ -4,6 +4,11 @@ import {
   buildUser,
   createMockUsersRepo,
 } from '../../../../test/factories/user.factory';
+import {
+  reglementAuPlancher,
+  RETENUE_JUSQU_AU_PLANCHER,
+  simulerLHorlogeAChaqueTest,
+} from '../../../../test/helpers/plancher-de-latence';
 import type { User } from '../domain/User';
 import { ResendVerificationEmailUseCase } from './ResendVerificationEmail.useCase';
 import type { EnvoiDeVerificationEmail } from './services/email-verification-dispatch';
@@ -76,4 +81,21 @@ describe('ResendVerificationEmailUseCase', () => {
       expect(envoi.envoyer).not.toHaveBeenCalled();
     },
   );
+
+  describe('temps de reponse', () => {
+    simulerLHorlogeAChaqueTest();
+
+    it.each([
+      ['un envoi', compteNonVerifie, 0],
+      ['la limite horaire atteinte', compteNonVerifie, 3],
+      ['un compte inconnu', null, 0],
+    ])(
+      'repond pour %s au meme plancher de latence',
+      async (_cas, compte, demandesRecentes) => {
+        expect(
+          await reglementAuPlancher(demanderAvec(compte, demandesRecentes)),
+        ).toEqual(RETENUE_JUSQU_AU_PLANCHER);
+      },
+    );
+  });
 });

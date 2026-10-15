@@ -61,6 +61,16 @@ describe('RefreshTokensRepositoryTypeORM revocation et purge', () => {
     const remove = jest.fn().mockResolvedValue({ affected: 3, raw: [] });
 
     await expect(depotSur({ delete: remove }).purgeExpired()).resolves.toBe(3);
+    expect(remove).toHaveBeenCalledWith([
+      {
+        revoked: true,
+        createdAt: expect.objectContaining({
+          type: 'raw',
+          objectLiteralParameters: { ancienneteEnSecondes: 7 * 24 * 60 * 60 },
+        }),
+      },
+      { expiresAt: expect.objectContaining({ type: 'lessThan' }) },
+    ]);
   });
 });
 

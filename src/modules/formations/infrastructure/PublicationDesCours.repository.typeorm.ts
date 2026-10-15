@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, Repository } from 'typeorm';
+import { verrouillerJusquALaFinDeLaTransaction } from '../../../common/infrastructure/typeorm/verrou-de-transaction';
 import {
   DIFFUSION_PAR_DEFAUT,
   type ContenuAPublier,
@@ -45,9 +46,7 @@ export class PublicationDesCoursRepositoryTypeORM implements IPublicationDesCour
 
   async publier(contenu: ContenuAPublier, empreinte: string): Promise<number> {
     return this.repo.manager.transaction(async (manager) => {
-      await manager.query('SELECT pg_advisory_xact_lock(hashtext($1))', [
-        contenu.slug,
-      ]);
+      await verrouillerJusquALaFinDeLaTransaction(manager, contenu.slug);
       const [{ derniere }]: LigneVersion[] = await manager.query(
         `SELECT MAX("version") AS "derniere" FROM "formation_course_contents" WHERE "slug" = $1`,
         [contenu.slug],

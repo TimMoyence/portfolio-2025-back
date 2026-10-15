@@ -11,6 +11,11 @@ import {
   createMockPasswordResetTokensRepo,
 } from '../../../../test/factories/password-reset-token.factory';
 import { createMockPasswordResetNotifier } from '../../../../test/factories/mailer.factory';
+import {
+  reglementAuPlancher,
+  RETENUE_JUSQU_AU_PLANCHER,
+  simulerLHorlogeAChaqueTest,
+} from '../../../../test/helpers/plancher-de-latence';
 
 const LEGACY_HASH = 'legacy-hash';
 
@@ -40,7 +45,9 @@ describe('RequestPasswordResetUseCase', () => {
   const compteExistant = (overrides: Partial<User>) => {
     const user = buildUser({ id: 'user-1', ...overrides });
     usersRepository.findByEmail.mockResolvedValue(user);
-    tokensRepository.create.mockResolvedValue(buildPasswordResetToken());
+    tokensRepository.remplacerLesJetonsActifs.mockResolvedValue(
+      buildPasswordResetToken(),
+    );
     notifier.sendPasswordResetEmail.mockResolvedValue();
     return user;
   };
@@ -56,14 +63,8 @@ describe('RequestPasswordResetUseCase', () => {
     const result = await useCase.execute({ email: user.email });
 
     expect(result.message).toContain('Si un compte existe');
-    expect(tokensRepository.invalidateActiveByUserId).toHaveBeenCalledWith(
-      user.id,
-    );
-    expect(tokensRepository.create).toHaveBeenCalledWith(
-      expect.objectContaining({
-        userId: user.id,
-        usedAt: null,
-      }),
+    expect(tokensRepository.remplacerLesJetonsActifs).toHaveBeenCalledWith(
+      expect.objectContaining({ userId: user.id }),
     );
 
     const payload = notifier.sendPasswordResetEmail.mock.calls[0][0];
@@ -80,8 +81,7 @@ describe('RequestPasswordResetUseCase', () => {
     const result = await useCase.execute({ email: 'unknown@example.com' });
 
     expect(result.message).toContain('Si un compte existe');
-    expect(tokensRepository.invalidateActiveByUserId).not.toHaveBeenCalled();
-    expect(tokensRepository.create).not.toHaveBeenCalled();
+    expect(tokensRepository.remplacerLesJetonsActifs).not.toHaveBeenCalled();
     expect(notifier.sendPasswordResetEmail).not.toHaveBeenCalled();
   });
 
@@ -92,7 +92,8 @@ describe('RequestPasswordResetUseCase', () => {
     await useCase.execute({ email: user.email });
     const after = Date.now();
 
-    const createdToken = tokensRepository.create.mock.calls[0][0];
+    const createdToken =
+      tokensRepository.remplacerLesJetonsActifs.mock.calls[0][0];
     const expiresAtMs = createdToken.expiresAt.getTime();
 
     expect(expiresAtMs).toBeGreaterThanOrEqual(before + 60 * 60 * 1000 - 1000);
@@ -106,7 +107,8 @@ describe('RequestPasswordResetUseCase', () => {
     await useCase.execute({ email: user.email });
     const apres = Date.now();
 
-    const { expiresAt } = tokensRepository.create.mock.calls[0][0];
+    const { expiresAt } =
+      tokensRepository.remplacerLesJetonsActifs.mock.calls[0][0];
     const { expiresInMinutes } =
       notifier.sendPasswordResetEmail.mock.calls[0][0];
     expect(expiresAt.getTime()).toBeGreaterThanOrEqual(
@@ -124,5 +126,39 @@ describe('RequestPasswordResetUseCase', () => {
     await expect(useCase.execute({ email: user.email })).resolves.toEqual(
       expect.objectContaining({ message: expect.any(String) }),
     );
+  });
+
+  describe('temps de reponse', () => {
+    simulerLHorlogeAChaqueTest();
+
+    it.each([
+      [
+        'un compte introuvable',
+        () => usersRepository.findByEmail.mockResolvedValue(null),
+      ],
+      ['un compte existant', () => compteExistant({ passwordHash: 'hash' })],
+    ])('repond pour %s au meme plancher de latence', async (_cas, preparer) => {
+      preparer();
+
+      expect(
+        await reglementAuPlancher(
+          useCase.execute({ email: 'john@example.com' }),
+        ),
+      ).toEqual(RETENUE_JUSQU_AU_PLANCHER);
+    });
+
+    it('repond sans attendre la fin de l envoi du courriel', async () => {
+      compteExistant({ passwordHash: 'hash' });
+      notifier.sendPasswordResetEmail.mockReturnValue(
+        new Promise<void>(() => undefined),
+      );
+
+      expect(
+        await reglementAuPlancher(
+          useCase.execute({ email: 'john@example.com' }),
+        ),
+      ).toEqual(RETENUE_JUSQU_AU_PLANCHER);
+      expect(notifier.sendPasswordResetEmail).toHaveBeenCalledTimes(1);
+    });
   });
 });
