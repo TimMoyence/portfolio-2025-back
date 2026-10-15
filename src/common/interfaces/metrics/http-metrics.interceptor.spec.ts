@@ -3,6 +3,7 @@ import { Logger } from '@nestjs/common';
 import { of, throwError, lastValueFrom } from 'rxjs';
 import { HttpMetricsInterceptor } from './http-metrics.interceptor';
 import { createMockMetricsService } from '../../../../test/factories/metrics.factory';
+import { sousUneDureeDe } from '../../../../test/helpers/horloge';
 import {
   createFakeHttpResponse,
   createHttpExecutionContext,
@@ -112,6 +113,15 @@ describe('HttpMetricsInterceptor', () => {
     expect(metricsService.httpRequestDuration.observe).toHaveBeenCalledWith(
       LIBELLES_DE_LA_REQUETE,
       expect.any(Number),
+    );
+  });
+
+  it('observe en secondes la duree ecoulee entre l entree et la fermeture', async () => {
+    await sousUneDureeDe(2.5, () => intercepter());
+
+    expect(metricsService.httpRequestDuration.observe).toHaveBeenCalledWith(
+      LIBELLES_DE_LA_REQUETE,
+      0.0025,
     );
   });
 

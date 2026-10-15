@@ -9,6 +9,7 @@ import type { HttpArgumentsHost } from '@nestjs/common/interfaces';
 import type { Request, Response } from 'express';
 import type { Observable } from 'rxjs';
 import { aLaFermeture } from '../http/a-la-fermeture';
+import { dureeEnMsDepuis, instantEnNs } from '../http/duree-de-requete';
 import { MetricsService } from './metrics.service';
 
 const STATUT_DU_CLIENT_PARTI = '499';
@@ -21,7 +22,7 @@ export class HttpMetricsInterceptor implements NestInterceptor {
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
     if (context.getType() === 'http') {
-      const start = process.hrtime.bigint();
+      const start = instantEnNs();
       aLaFermeture(context, (abandonnee) =>
         this.record(context.switchToHttp(), start, abandonnee),
       );
@@ -35,8 +36,7 @@ export class HttpMetricsInterceptor implements NestInterceptor {
     abandonnee: boolean,
   ): void {
     try {
-      const durationSeconds =
-        Number(process.hrtime.bigint() - start) / 1_000_000_000;
+      const durationSeconds = dureeEnMsDepuis(start) / 1000;
 
       const req = http.getRequest<Request>();
       const route =

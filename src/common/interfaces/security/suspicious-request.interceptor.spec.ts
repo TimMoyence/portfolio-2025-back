@@ -6,6 +6,11 @@ import {
   createHttpExecutionContext,
   createRpcExecutionContext,
 } from '../../../../test/factories/execution-context.factory';
+import {
+  attendreLAvertissement,
+  espionnerLesAvertissements,
+} from '../../../../test/helpers/avertissements';
+import { sousUneDureeDe } from '../../../../test/helpers/horloge';
 import { CENSURE } from '../http/url-journalisable';
 import { InMemorySecurityEventsStore } from './in-memory-security-events-store';
 import type { SecurityConfig } from './security.config';
@@ -365,4 +370,39 @@ describe('SuspiciousRequestInterceptor', () => {
       }
     },
   );
+
+  describe('journal d une requete suspecte', () => {
+    const avertissements = espionnerLesAvertissements();
+    const requeteSuspecte = (): Promise<unknown> =>
+      intercept(
+        {
+          method: 'GET',
+          url: '/api/v1/portfolio25/inconnu',
+          headers: HEADLESS_CHROME_HEADERS,
+          ip: '203.0.113.42',
+        },
+        404,
+      );
+
+    it('journalise la duree de la requete en millisecondes', async () => {
+      await sousUneDureeDe(2.5, requeteSuspecte);
+
+      expect(avertissements()).toHaveBeenCalledWith(
+        expect.stringContaining(' rtMs=2.5 '),
+      );
+    });
+
+    it('journalise la cause d un enregistrement rate', async () => {
+      jest
+        .spyOn(store, 'recordEvent')
+        .mockRejectedValueOnce(new Error('redis down'));
+
+      await requeteSuspecte();
+
+      await attendreLAvertissement(
+        avertissements,
+        '[SECURITY] store.recordEvent a echoue: redis down',
+      );
+    });
+  });
 });
