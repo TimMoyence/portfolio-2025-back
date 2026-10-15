@@ -1,12 +1,12 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsIn, IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
+import { IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
+import type { SupportedLocale } from '../../../../common/domain/value-objects/LocaleCode';
+import { LocaleSupportee } from '../../../../common/interfaces/dto/locale-supportee.decorator';
 
 export class ArticleListQueryDto {
-  @ApiPropertyOptional({ enum: ['fr', 'en'], default: 'fr' })
-  @IsOptional()
-  @IsIn(['fr', 'en'])
-  locale: 'fr' | 'en' = 'fr';
+  @LocaleSupportee({ facultative: true, parDefaut: 'fr' })
+  locale: SupportedLocale = 'fr';
 
   @ApiPropertyOptional()
   @IsOptional()

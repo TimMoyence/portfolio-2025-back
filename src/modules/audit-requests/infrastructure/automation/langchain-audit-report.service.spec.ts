@@ -1,6 +1,7 @@
 import { Logger } from '@nestjs/common';
 import { buildAuditAutomationConfig } from '../../../../../test/factories/audit-config.factory';
 import { buildLangchainAuditInput } from '../../../../../test/factories/audit-requests.factory';
+import type { AuditLocale } from '../../domain/audit-locale.util';
 import type { AnthropicChatFactory } from './anthropic-chat.factory';
 import type { AuditAutomationConfig } from './audit.config';
 import { DefaultChatOpenAIFactory } from './chat-openai.factory';
@@ -63,7 +64,7 @@ interface LangchainServiceTestable {
   generateFanoutSectionsWithDeadline: (
     llm: unknown,
     payloads: ChargesDeSection,
-    locale: 'fr' | 'en',
+    locale: AuditLocale,
     inputValue: LangchainAuditInput,
     budget: DeadlineBudget,
     options?: unknown,

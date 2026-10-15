@@ -1,12 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import type { AuditLocale } from '../../domain/audit-locale.util';
-import {
-  IsIn,
-  IsOptional,
-  IsString,
-  MaxLength,
-  MinLength,
-} from 'class-validator';
+import { IsIn, IsString, MaxLength, MinLength } from 'class-validator';
+import { LocaleSupportee } from '../../../../common/interfaces/dto/locale-supportee.decorator';
 import { ChampsAntiRobotDto } from '../../../../common/interfaces/security/champs-anti-robot.dto';
 
 export class AuditRequestRequestDto extends ChampsAntiRobotDto {
@@ -26,8 +21,6 @@ export class AuditRequestRequestDto extends ChampsAntiRobotDto {
   @MaxLength(200)
   contactValue: string;
 
-  @ApiProperty({ example: 'fr', required: false })
-  @IsOptional()
-  @IsIn(['fr', 'en'])
+  @LocaleSupportee({ facultative: true })
   locale?: AuditLocale;
 }

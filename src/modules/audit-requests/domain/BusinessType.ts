@@ -1,3 +1,5 @@
+import type { AuditLocale } from './audit-locale.util';
+
 export type BusinessType =
   | 'ecommerce'
   | 'saas'
@@ -64,7 +66,7 @@ export function detectBusinessType(primaryStack: string): BusinessType {
 
 export function businessTypePromptHint(
   type: BusinessType,
-  locale: 'fr' | 'en',
+  locale: AuditLocale,
 ): string {
   const fr: Record<BusinessType, string> = {
     ecommerce:

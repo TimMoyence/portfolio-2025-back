@@ -1,4 +1,6 @@
-export type SupportedLocale = 'fr' | 'en';
+export const LOCALES_SUPPORTEES = ['fr', 'en'] as const;
+
+export type SupportedLocale = (typeof LOCALES_SUPPORTEES)[number];
 
 export class LocaleCode {
   private constructor(private readonly normalizedValue: SupportedLocale) {}
@@ -7,14 +9,12 @@ export class LocaleCode {
     if (typeof raw !== 'string') return null;
 
     const normalized = raw.trim().toLowerCase();
-    if (normalized === 'fr' || normalized.startsWith('fr-')) {
-      return new LocaleCode('fr');
-    }
-    if (normalized === 'en' || normalized.startsWith('en-')) {
-      return new LocaleCode('en');
-    }
+    const locale = LOCALES_SUPPORTEES.find(
+      (supportee) =>
+        normalized === supportee || normalized.startsWith(`${supportee}-`),
+    );
 
-    return null;
+    return locale === undefined ? null : new LocaleCode(locale);
   }
 
   static resolve(raw: unknown, fallback: SupportedLocale = 'fr'): LocaleCode {

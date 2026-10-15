@@ -1,6 +1,7 @@
 import { silenceNestLogger } from '../../../../../test/helpers/silence-nest-logger';
 import { buildAuditAutomationConfig } from '../../../../../test/factories/audit-config.factory';
 import { buildClientReportContext } from '../../../../../test/factories/audit-requests.factory';
+import type { AuditLocale } from '../../domain/audit-locale.util';
 import type { AuditAutomationConfig } from './audit.config';
 import {
   ClientReportContext,
@@ -9,7 +10,7 @@ import {
 
 interface ClientReportTestable {
   generate: LangchainClientReportService['generate'];
-  buildFallback: (context: ClientReportContext, locale: 'fr' | 'en') => unknown;
+  buildFallback: (context: ClientReportContext, locale: AuditLocale) => unknown;
 }
 
 function asTestable(

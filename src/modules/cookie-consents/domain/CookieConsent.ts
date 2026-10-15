@@ -1,9 +1,9 @@
 import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
 import {
+  requireLocale,
   requireText,
   optionalMetadata,
 } from '../../../common/domain/validation/domain-validators';
-import { LocaleCode } from '../../../common/domain/value-objects/LocaleCode';
 
 export interface CookieConsentPreferences {
   essential: boolean;
@@ -50,7 +50,7 @@ export class CookieConsent {
       1,
       50,
     );
-    const locale = LocaleCode.resolve(props.locale, 'fr').value;
+    const locale = requireLocale(props.locale, 'cookie consent locale');
     const region = requireText(props.region, 'cookie consent region', 1, 20);
 
     if (!['banner', 'settings'].includes(props.source)) {

@@ -7,6 +7,8 @@ import {
   MaxLength,
   ValidateNested,
 } from 'class-validator';
+import type { SupportedLocale } from '../../../../common/domain/value-objects/LocaleCode';
+import { LocaleSupportee } from '../../../../common/interfaces/dto/locale-supportee.decorator';
 
 class CookieConsentPreferencesRequestDto {
   @ApiProperty({ example: true })
@@ -32,10 +34,8 @@ export class CookieConsentRequestDto {
   @MaxLength(50)
   policyVersion: string;
 
-  @ApiProperty({ example: 'fr' })
-  @IsString()
-  @MaxLength(10)
-  locale: string;
+  @LocaleSupportee()
+  locale: SupportedLocale;
 
   @ApiProperty({ example: 'EU_UK' })
   @IsString()

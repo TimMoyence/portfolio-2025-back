@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import type { DataSource } from 'typeorm';
+import type { SupportedLocale } from '../src/common/domain/value-objects/LocaleCode';
 import type { ArticleWrite } from '../src/modules/articles/application/articles.repository';
 import { TypeOrmArticleBroadcastRepository } from '../src/modules/articles/infrastructure/article-broadcast.repository';
 import { TypeOrmArticlesRepository } from '../src/modules/articles/infrastructure/articles.repository';
@@ -18,7 +19,7 @@ import {
 const NOW = new Date('2026-09-23T07:45:00.000Z');
 const DELAI_MS = 60_000;
 
-function article(date: string, locale: 'fr' | 'en' = 'fr'): ArticleWrite {
+function article(date: string, locale: SupportedLocale = 'fr'): ArticleWrite {
   const publication = new Date(`${date}T04:15:00.000Z`);
   return buildArticleWrite({
     articleId: `morning-brief-${date}-${locale}`,
@@ -62,7 +63,7 @@ describeDb('diffusion des articles aux abonnés (Postgres)', () => {
   async function publish(
     date: string,
     sendAfter: Date,
-    locale: 'fr' | 'en' = 'fr',
+    locale: SupportedLocale = 'fr',
   ): Promise<string> {
     await articles.saveArticleAndDelivery(
       article(date, locale),

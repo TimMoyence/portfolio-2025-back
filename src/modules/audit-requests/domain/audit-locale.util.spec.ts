@@ -1,3 +1,4 @@
+import { LOCALES_SUPPORTEES } from '../../../common/domain/value-objects/LocaleCode';
 import { localeDeRedaction, localeFromUrlPath } from './audit-locale.util';
 
 describe('audit-locale.util', () => {
@@ -41,5 +42,12 @@ describe('audit-locale.util', () => {
     it('devrait detecter la locale en debut de chemin', () => {
       expect(localeFromUrlPath('fr/page')).toBe('fr');
     });
+
+    it.each(LOCALES_SUPPORTEES)(
+      'detecte la locale supportee %s quelle que soit sa casse',
+      (locale) => {
+        expect(localeFromUrlPath(`/${locale.toUpperCase()}/page`)).toBe(locale);
+      },
+    );
   });
 });

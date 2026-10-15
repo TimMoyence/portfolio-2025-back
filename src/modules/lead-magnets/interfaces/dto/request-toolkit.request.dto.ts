@@ -13,6 +13,8 @@ import {
   AcceptationDesConditions,
   VersionDesConditions,
 } from '../../../../common/interfaces/dto/conditions-acceptees.decorator';
+import type { SupportedLocale } from '../../../../common/domain/value-objects/LocaleCode';
+import { LocaleSupportee } from '../../../../common/interfaces/dto/locale-supportee.decorator';
 import { ChampsAntiRobotDto } from '../../../../common/interfaces/security/champs-anti-robot.dto';
 import { InteractionProfileDto } from './interaction-profile.dto';
 
@@ -35,10 +37,8 @@ export class RequestToolkitRequestDto extends ChampsAntiRobotDto {
   @VersionDesConditions()
   termsVersion: string;
 
-  @ApiProperty({ example: 'fr' })
-  @IsString()
-  @MaxLength(10)
-  termsLocale: string;
+  @LocaleSupportee()
+  termsLocale: SupportedLocale;
 
   @AcceptationDesConditions()
   termsAcceptedAt: Date;

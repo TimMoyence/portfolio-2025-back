@@ -3,6 +3,7 @@ import { DomainValidationError } from '../../../common/domain/errors/DomainValid
 import {
   optionalText,
   requireEmail,
+  requireLocale,
   requireText,
   requireValidDate,
 } from '../../../common/domain/validation/domain-validators';
@@ -40,12 +41,7 @@ export class NewsletterSubscriber {
 
   static create(props: CreateNewsletterSubscriberProps): NewsletterSubscriber {
     const email = requireEmail(props.email, 'newsletter subscriber email');
-    const locale = requireText(props.locale, 'locale', 1, 10);
-    if (!/^[a-z]{2,3}(-[A-Z]{2})?$/.test(locale)) {
-      throw new DomainValidationError(
-        `Invalid locale "${locale}" — expected ISO-639 short code (e.g. fr, en, fr-FR)`,
-      );
-    }
+    const locale = requireLocale(props.locale, 'newsletter locale');
     const sourceFormationSlug = requireText(
       props.sourceFormationSlug,
       'sourceFormationSlug',

@@ -1,3 +1,4 @@
+import type { SupportedLocale } from '../../../common/domain/value-objects/LocaleCode';
 import type { ArticleRecord, ArticleStatus } from './articles.repository';
 
 export const ARTICLE_BROADCAST_REPOSITORY = Symbol(
@@ -42,7 +43,7 @@ export interface BroadcastRecipient {
 export interface RechercheDeDestinataires {
   broadcastId: string;
   source: string;
-  locale: 'fr' | 'en';
+  locale: SupportedLocale;
   limit: number;
 }
 

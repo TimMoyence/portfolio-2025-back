@@ -1,3 +1,5 @@
+import type { SupportedLocale } from '../../../common/domain/value-objects/LocaleCode';
+
 export const ARTICLES_REPOSITORY = Symbol('ARTICLES_REPOSITORY');
 
 export type ArticleStatus = 'published' | 'withdrawn';
@@ -6,7 +8,7 @@ export interface ArticleRecord {
   id: string;
   articleId: string;
   slug: string;
-  locale: 'fr' | 'en';
+  locale: SupportedLocale;
   status: ArticleStatus;
   title: string;
   excerpt: string;
@@ -54,7 +56,7 @@ export interface ArticleBroadcastSchedule {
 }
 
 export interface PagePubliee {
-  locale: 'fr' | 'en';
+  locale: SupportedLocale;
   tag?: string;
   offset: number;
   limit: number;
@@ -76,6 +78,6 @@ export interface ArticlesRepository {
   listPublished(params: PagePubliee): Promise<ArticleRecord[]>;
   findPublishedBySlug(
     slug: string,
-    locale: 'fr' | 'en',
+    locale: SupportedLocale,
   ): Promise<ArticleRecord | null>;
 }

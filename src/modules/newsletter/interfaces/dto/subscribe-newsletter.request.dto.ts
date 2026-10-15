@@ -1,10 +1,11 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import type { SupportedLocale } from '../../../../common/domain/value-objects/LocaleCode';
+import { LocaleSupportee } from '../../../../common/interfaces/dto/locale-supportee.decorator';
 import {
   IsEmail,
   IsIn,
   IsOptional,
   IsString,
-  Matches,
   MaxLength,
   MinLength,
 } from 'class-validator';
@@ -27,11 +28,8 @@ export class SubscribeNewsletterRequestDto extends ChampsAntiRobotDto {
   @MaxLength(50)
   firstName?: string;
 
-  @ApiProperty({ example: 'fr' })
-  @IsString()
-  @Matches(/^[a-z]{2,3}(-[A-Z]{2})?$/)
-  @MaxLength(10)
-  locale: string;
+  @LocaleSupportee()
+  locale: SupportedLocale;
 
   @ApiProperty({
     example: 'ia-solopreneurs',

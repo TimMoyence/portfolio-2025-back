@@ -5,6 +5,7 @@ import {
   buildPageExploree,
   buildStructuredDataQuality,
 } from '../../../../../test/factories/audit-requests.factory';
+import type { AuditLocale } from '../../domain/audit-locale.util';
 import type { AuditAutomationConfig } from './audit.config';
 import { PageAiRecapService } from './page-ai-recap.service';
 import type { UrlIndexabilityResult } from './url-indexability.service';
@@ -38,7 +39,7 @@ describe('PageAiRecapService', () => {
   });
 
   const analyserSansLlm = (
-    locale: 'fr' | 'en',
+    locale: AuditLocale,
     pages: UrlIndexabilityResult[],
   ) =>
     new PageAiRecapService(config).analyzePages({

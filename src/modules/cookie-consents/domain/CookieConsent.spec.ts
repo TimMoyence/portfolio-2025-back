@@ -109,11 +109,12 @@ describe('CookieConsent aggregate', () => {
     expect(consent.referer).toBeNull();
   });
 
-  it('devrait defaulter la locale a fr si invalide', () => {
-    const consent = CookieConsent.create({
-      ...VALID_PROPS,
-      locale: 'xx-invalid',
-    });
-    expect(consent.locale).toBe('fr');
-  });
+  it.each([['xx-invalid'], ['de'], ['']])(
+    'refuse la locale non supportee %p au lieu de la remplacer par fr',
+    (locale) => {
+      expect(() => CookieConsent.create({ ...VALID_PROPS, locale })).toThrow(
+        new DomainValidationError('Invalid cookie consent locale'),
+      );
+    },
+  );
 });

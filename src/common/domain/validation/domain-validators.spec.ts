@@ -9,7 +9,30 @@ import {
   requireEmail,
   optionalPhone,
   requireBoolean,
+  requireLocale,
 } from './domain-validators';
+
+describe('requireLocale', () => {
+  it.each([
+    ['fr', 'fr'],
+    [' EN ', 'en'],
+    ['fr-FR', 'fr'],
+    ['en-US', 'en'],
+  ])('rend %s sous la forme supportee %s', (saisie, attendue) => {
+    expect(requireLocale(saisie, 'newsletter locale')).toBe(attendue);
+  });
+
+  it.each([
+    ['une langue non supportee', 'de'],
+    ['une chaine vide', ''],
+    ['un nombre', 42],
+    ['undefined', undefined],
+  ])('refuse %s en nommant le champ', (_cas, valeur) => {
+    expect(() => requireLocale(valeur, 'newsletter locale')).toThrow(
+      new DomainValidationError('Invalid newsletter locale'),
+    );
+  });
+});
 
 describe('optionalPhone', () => {
   it('rend null quand le telephone est absent ou vide', () => {

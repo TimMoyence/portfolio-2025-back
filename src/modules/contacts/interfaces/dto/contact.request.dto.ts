@@ -9,6 +9,8 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
+import type { SupportedLocale } from '../../../../common/domain/value-objects/LocaleCode';
+import { LocaleSupportee } from '../../../../common/interfaces/dto/locale-supportee.decorator';
 import { ChampsAntiRobotDto } from '../../../../common/interfaces/security/champs-anti-robot.dto';
 
 export class ContactRequestDto extends ChampsAntiRobotDto {
@@ -61,11 +63,8 @@ export class ContactRequestDto extends ChampsAntiRobotDto {
   @MaxLength(50)
   termsVersion?: string;
 
-  @ApiProperty({ example: 'fr', required: false })
-  @IsOptional()
-  @IsString()
-  @MaxLength(10)
-  termsLocale?: string;
+  @LocaleSupportee({ facultative: true })
+  termsLocale?: SupportedLocale;
 
   @ApiProperty({ example: 'contact_form_checkbox', required: false })
   @IsOptional()

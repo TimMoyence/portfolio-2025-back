@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { empreinteSha256 } from '../../../common/domain/crypto/empreintes';
+import { LOCALES_SUPPORTEES } from '../../../common/domain/value-objects/LocaleCode';
 
 const dateTime = z
   .string()
@@ -56,7 +57,7 @@ const articleSchema = z
   .object({
     article_id: ArticleId,
     slug: ArticleSlug,
-    locale: z.enum(['fr', 'en']),
+    locale: z.enum(LOCALES_SUPPORTEES),
     status: z.literal('published'),
     title: z.string().min(1).max(180),
     excerpt: z.string().min(1).max(280),

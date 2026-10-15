@@ -1,13 +1,12 @@
-import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
 import {
   optionalPhone,
   optionalText,
   requireBoolean,
   requireEmail,
+  requireLocale,
   requireText,
   requireValidDate,
 } from '../../../common/domain/validation/domain-validators';
-import { LocaleCode } from '../../../common/domain/value-objects/LocaleCode';
 
 export type CreateContactProps = Omit<Contacts, 'id'>;
 
@@ -44,12 +43,10 @@ export class Contacts {
       'terms locale',
       10,
     );
-    const termsLocale = termsLocaleInput
-      ? LocaleCode.parse(termsLocaleInput)?.value
-      : undefined;
-    if (termsLocaleInput && !termsLocale) {
-      throw new DomainValidationError('Invalid terms locale');
-    }
+    const termsLocale =
+      termsLocaleInput === undefined
+        ? undefined
+        : requireLocale(termsLocaleInput, 'terms locale');
 
     if (props.termsAcceptedAt !== undefined) {
       requireValidDate(props.termsAcceptedAt, 'terms accepted');

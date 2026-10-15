@@ -1,3 +1,4 @@
+import { BadRequestException } from '@nestjs/common';
 import { buildChoixDeConsentement } from '../../../../../test/factories/cookie-consents.factory';
 import { CreateCookieConsentCommand } from '../dto/CreateCookieConsent.command';
 import { CookieConsentMapper } from './CookieConsent.mapper';
@@ -19,12 +20,12 @@ describe('CookieConsentMapper', () => {
     expect(mapped.locale).toBe('en');
   });
 
-  it('falls back to french locale for unsupported input', () => {
-    const mapped = CookieConsentMapper.fromCreateCommand({
-      ...baseCommand,
-      locale: 'es',
-    });
-
-    expect(mapped.locale).toBe('fr');
+  it('refuse par un 400 une locale non supportee au lieu de la remplacer par fr', () => {
+    expect(() =>
+      CookieConsentMapper.fromCreateCommand({
+        ...baseCommand,
+        locale: 'es',
+      }),
+    ).toThrow(new BadRequestException('Invalid cookie consent locale'));
   });
 });
