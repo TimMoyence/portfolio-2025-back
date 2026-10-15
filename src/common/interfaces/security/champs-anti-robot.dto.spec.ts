@@ -1,5 +1,4 @@
-import { plainToInstance } from 'class-transformer';
-import { validateSync } from 'class-validator';
+import { champsRefuses } from '../../../../test/helpers/validation-pipe';
 import { AuditRequestRequestDto } from '../../../modules/audit-requests/interfaces/dto/audit-request.request.dto';
 import { ContactRequestDto } from '../../../modules/contacts/interfaces/dto/contact.request.dto';
 import { JoinSessionRequestDto } from '../../../modules/formations/interfaces/dto/join-session.request.dto';
@@ -16,9 +15,7 @@ const FORMULAIRES_PUBLICS = [
 ];
 
 const proprietesEnErreur = (corps: Record<string, unknown>): string[] =>
-  validateSync(plainToInstance(ChampsAntiRobotDto, corps)).map(
-    (erreur) => erreur.property,
-  );
+  champsRefuses(ChampsAntiRobotDto, corps);
 
 describe('ChampsAntiRobotDto', () => {
   it('accepte un formulaire sans champ anti-robot', () => {

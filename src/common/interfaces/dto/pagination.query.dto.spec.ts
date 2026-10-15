@@ -1,5 +1,4 @@
-import { plainToInstance } from 'class-transformer';
-import { validateSync } from 'class-validator';
+import { champsRefuses } from '../../../../test/helpers/validation-pipe';
 import { ChoixOptionnel } from './pagination.query.dto';
 
 const COULEURS = ['rouge', 'vert'] as const;
@@ -10,9 +9,7 @@ class ChoixTemoin {
 }
 
 const erreursPour = (corps: Record<string, unknown>): string[] =>
-  validateSync(plainToInstance(ChoixTemoin, corps)).map(
-    (erreur) => erreur.property,
-  );
+  champsRefuses(ChoixTemoin, corps);
 
 describe('ChoixOptionnel', () => {
   it('accepte une valeur de la liste', () => {
