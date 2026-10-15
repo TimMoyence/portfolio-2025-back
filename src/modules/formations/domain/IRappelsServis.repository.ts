@@ -5,7 +5,9 @@ export interface RappelServiRecord {
 }
 
 export interface IRappelsServisRepository {
-  lister(participantId: string): Promise<readonly RappelServiRecord[]>;
+  listerDuParticipant(
+    participantId: string,
+  ): Promise<readonly RappelServiRecord[]>;
   figer(input: {
     readonly sessionId: string;
     readonly participantId: string;

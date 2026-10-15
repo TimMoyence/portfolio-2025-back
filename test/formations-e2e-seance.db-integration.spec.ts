@@ -735,7 +735,7 @@ function seanceComplete(
           expect(idsDesRappels(premier).length).toBeGreaterThanOrEqual(3);
           listes.set(unPoste.nom, idsDesRappels(premier));
         }
-        const servis = await banc.contexte.rappels.lister(
+        const servis = await banc.contexte.rappels.listerDuParticipant(
           postes[0].participantId,
         );
         expect(servis.map((servi) => servi.questionId)).toEqual(

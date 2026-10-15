@@ -7,6 +7,7 @@ import type {
   ProgressionEnigmeRecord,
   TentativeEnigmeInput,
 } from '../domain/IEscape.repository';
+import { DepotEnDomaine } from '../../../common/infrastructure/typeorm/DepotEnDomaine';
 import { FormationEscapeAttemptEntity } from './entities/FormationEscapeAttempt.entity';
 import { FormationEscapeProgressEntity } from './entities/FormationEscapeProgress.entity';
 
@@ -15,42 +16,42 @@ interface LigneDeTentative {
 }
 
 @Injectable()
-export class EscapeRepositoryTypeORM implements IEscapeRepository {
+export class EscapeRepositoryTypeORM
+  extends DepotEnDomaine<FormationEscapeProgressEntity, ProgressionEnigmeRecord>
+  implements IEscapeRepository
+{
   constructor(
     @InjectRepository(FormationEscapeProgressEntity)
-    private readonly progression: Repository<FormationEscapeProgressEntity>,
+    progression: Repository<FormationEscapeProgressEntity>,
     @InjectRepository(FormationEscapeAttemptEntity)
     private readonly tentatives: Repository<FormationEscapeAttemptEntity>,
-  ) {}
+  ) {
+    super(progression);
+  }
 
-  async listerProgression(
+  listerProgression(
     participantId: string,
     parcoursId: string,
   ): Promise<readonly ProgressionEnigmeRecord[]> {
-    const lignes = await this.progression.find({
-      where: { participantId, parcoursId },
-    });
-    return lignes.map((ligne) => this.toDomain(ligne));
+    return this.lister({ where: { participantId, parcoursId } });
   }
 
-  async listerProgressionDeSeance(
+  listerProgressionDeSeance(
     sessionId: string,
   ): Promise<readonly ProgressionEnigmeRecord[]> {
-    const lignes = await this.progression.find({ where: { sessionId } });
-    return lignes.map((ligne) => this.toDomain(ligne));
+    return this.lister({ where: { sessionId } });
   }
 
-  async listerProgressionDuParticipant(
+  listerProgressionDuParticipant(
     participantId: string,
   ): Promise<readonly ProgressionEnigmeRecord[]> {
-    const lignes = await this.progression.find({ where: { participantId } });
-    return lignes.map((ligne) => this.toDomain(ligne));
+    return this.lister({ where: { participantId } });
   }
 
   async incrementerTentative(
     input: IncrementDeTentative,
   ): Promise<number | null> {
-    const lignes: LigneDeTentative[] = await this.progression.query(
+    const lignes: LigneDeTentative[] = await this.repo.query(
       `INSERT INTO formation_escape_progress
          (participant_id, enigme_id, session_id, parcours_id, tentatives)
        VALUES ($1, $2, $3, $4, 1)
@@ -71,7 +72,7 @@ export class EscapeRepositoryTypeORM implements IEscapeRepository {
   }
 
   async marquerResolue(participantId: string, enigmeId: string): Promise<void> {
-    await this.progression.update(
+    await this.repo.update(
       { participantId, enigmeId },
       { resolueLe: new Date() },
     );
@@ -94,7 +95,7 @@ export class EscapeRepositoryTypeORM implements IEscapeRepository {
     return (await this.tentatives.count({ where: filtre })) > 0;
   }
 
-  private toDomain(
+  protected toDomain(
     ligne: FormationEscapeProgressEntity,
   ): ProgressionEnigmeRecord {
     return {
