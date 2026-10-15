@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "009696840c3133c232bbe25da938853a67cf346b43331b8f6d9a53367cfe20be",
+  "empreinte": "32624618b2141a3ee77d3fe70713929331d4df5c3d987b09d59167ae5a13febd",
   "sujet": {
     "id": "b2-04-suites",
     "titre": "Suites : modéliser une évolution régulière",
@@ -2170,7 +2170,8 @@
             ]
           }
         ],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-04-A1-02-ACCROCHE",
@@ -2210,7 +2211,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-04-A1-03-VOTE-ACQUIS",
@@ -2311,7 +2313,8 @@
             "Le contraire de « < » est « ≥ » : la borne passe de l’autre côté.",
             "L’écran suivant rassemble ce que les trois premiers cours apportent à celui-ci."
           ]
-        }
+        },
+        "reflexion": null
       },
       {
         "id": "B2-04-A1-04-ACQUIS",
@@ -2379,7 +2382,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-04-A1-05-HISTORIQUE",
@@ -2470,7 +2474,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-04-A1-06-MISSION",
@@ -2520,7 +2525,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-04-A1-07-COURS-ARITHMETIQUE",
@@ -2584,7 +2590,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-04-A1-08-COURS-RAISON-TABLEUR",
@@ -2651,7 +2658,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-04-A1-09-EXEMPLE-ARITHMETIQUE",
@@ -2710,7 +2718,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-04-A1-10-ATELIER-ARITHMETIQUE",
@@ -2901,6 +2910,7 @@
           }
         ],
         "corrigeEcran": null,
+        "reflexion": null,
         "explications": [
           {
             "reference": "b2-04-a1-nature",
@@ -3121,6 +3131,7 @@
           ],
           "seuilReussite": 0.8
         },
+        "reflexion": null,
         "explications": [
           {
             "reference": "C3",
@@ -3156,7 +3167,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-04-A2-01-REFLEXION-TAUX",
@@ -3198,6 +3210,10 @@
         "questions": [],
         "corrigeEcran": {
           "type": "reflexion",
+          "attendu": "Il a tort : chaque hausse de 6 % s’applique au chiffre d’affaires de l’année précédente, qui a déjà grossi. On multiplie cinq fois par 1,06 ; les taux successifs ne s’ajoutent pas (B2-01). Le résultat dépasse donc 1 073,8 k€.",
+          "suite": "Gardez votre réponse : la trace écrite donne le modèle de cette évolution."
+        },
+        "reflexion": {
           "attendu": "Il a tort : chaque hausse de 6 % s’applique au chiffre d’affaires de l’année précédente, qui a déjà grossi. On multiplie cinq fois par 1,06 ; les taux successifs ne s’ajoutent pas (B2-01). Le résultat dépasse donc 1 073,8 k€.",
           "suite": "Gardez votre réponse : la trace écrite donne le modèle de cette évolution."
         }
@@ -3265,7 +3281,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-04-A2-03-COURS-VARIATION",
@@ -3328,7 +3345,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-04-A2-04-EXEMPLE-GEOMETRIQUE",
@@ -3387,7 +3405,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-04-A2-05-ATELIER-GEOMETRIQUE",
@@ -3578,6 +3597,7 @@
           }
         ],
         "corrigeEcran": null,
+        "reflexion": null,
         "explications": [
           {
             "reference": "b2-04-a2-raison",
@@ -3905,6 +3925,7 @@
           ],
           "seuilReussite": 0.8
         },
+        "reflexion": null,
         "explications": [
           {
             "reference": "D3",
@@ -3944,7 +3965,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-04-A3-01-GRAPHIQUE",
@@ -3998,7 +4020,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-04-A3-02-VOTE-SEUIL",
@@ -4099,7 +4122,8 @@
             "Entre deux années incluses, on compte dernière − première + 1 termes : 2030 − 2026 + 1 = 5.",
             "La trace écrite donne l’algorithme de seuil et la somme de termes."
           ]
-        }
+        },
+        "reflexion": null
       },
       {
         "id": "B2-04-A3-03-COURS-SEUIL",
@@ -4164,7 +4188,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-04-A3-04-COURS-SOMME",
@@ -4227,7 +4252,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-04-A3-05-EXEMPLE-SEUIL",
@@ -4286,7 +4312,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-04-A3-06-TABLEAU-ALGORITHME",
@@ -4402,12 +4429,88 @@
               "valeur": 0
             }
           ],
+          "tableauCorrige": {
+            "lignes": [
+              {
+                "rang": 0,
+                "valeurs": {
+                  "n": {
+                    "valeur": 1,
+                    "affichage": "1"
+                  },
+                  "u": {
+                    "valeur": 870,
+                    "affichage": "870"
+                  },
+                  "condition": {
+                    "valeur": 1,
+                    "affichage": "1"
+                  }
+                }
+              },
+              {
+                "rang": 1,
+                "valeurs": {
+                  "n": {
+                    "valeur": 2,
+                    "affichage": "2"
+                  },
+                  "u": {
+                    "valeur": 914,
+                    "affichage": "914"
+                  },
+                  "condition": {
+                    "valeur": 1,
+                    "affichage": "1"
+                  }
+                }
+              },
+              {
+                "rang": 2,
+                "valeurs": {
+                  "n": {
+                    "valeur": 3,
+                    "affichage": "3"
+                  },
+                  "u": {
+                    "valeur": 958,
+                    "affichage": "958"
+                  },
+                  "condition": {
+                    "valeur": 1,
+                    "affichage": "1"
+                  }
+                }
+              },
+              {
+                "rang": 3,
+                "valeurs": {
+                  "n": {
+                    "valeur": 4,
+                    "affichage": "4"
+                  },
+                  "u": {
+                    "valeur": 1002,
+                    "affichage": "1002"
+                  },
+                  "condition": {
+                    "valeur": 0,
+                    "affichage": "0"
+                  }
+                }
+              }
+            ],
+            "totaux": {},
+            "synthese": [],
+            "soldeFinal": null
+          },
           "tolerance": {
             "type": "absolue",
             "valeur": 0.01
           },
           "seuilReussite": 0.75
         },
+        "reflexion": null,
         "explications": [
           {
             "reference": "b2-04-a3-tableau-algorithme",
@@ -4608,6 +4711,7 @@
           }
         ],
         "corrigeEcran": null,
+        "reflexion": null,
         "explications": [
           {
             "reference": "b2-04-a3-seuil-b",
@@ -4687,6 +4791,7 @@
             }
           ]
         },
+        "reflexion": null,
         "explications": [
           {
             "reference": "puissance",
@@ -4734,7 +4839,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-04-A4-01-SITUATION-BOUTIQUE",
@@ -4805,7 +4911,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-04-A4-02-TABLEUR-BOUTIQUE",
@@ -5183,6 +5290,7 @@
           ],
           "seuilReussite": 0.8
         },
+        "reflexion": null,
         "explications": [
           {
             "reference": "C3 à C9",
@@ -5303,6 +5411,7 @@
           ],
           "codeFinal": "R7S2G9Q5"
         },
+        "reflexion": null,
         "explications": [
           {
             "reference": "b2-04-a4-e1-cout",
@@ -5650,7 +5759,8 @@
             ]
           }
         ],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-04-A4-05-FICHE-MEMO",
@@ -5744,7 +5854,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-04-A4-06-BILLET-DE-SORTIE",
@@ -5831,7 +5942,8 @@
             ]
           }
         ],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       }
     ],
     "remediations": {

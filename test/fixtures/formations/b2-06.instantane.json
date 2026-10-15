@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "8d755bb967f892504f392a43f8813edcf9a555379ec48daf30423ce6af91aa3f",
+  "empreinte": "a1ec4fb17a1a1e5ac1a20211a49f1b780ec448e85213af2e6396d676e7c283f1",
   "sujet": {
     "id": "b2-06-exponentielle-logarithme",
     "titre": "Exponentielle et logarithme",
@@ -2063,7 +2063,8 @@
             ]
           }
         ],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-06-A1-02-ACCROCHE",
@@ -2107,7 +2108,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-06-A1-03-VOTE-ACQUIS",
@@ -2208,7 +2210,8 @@
             "PENTE prend d’abord les y, ensuite les x ; dans l’autre ordre, on obtient la droite de x en y.",
             "L’écran suivant dit ce que ces acquis deviennent aujourd’hui."
           ]
-        }
+        },
+        "reflexion": null
       },
       {
         "id": "B2-06-A1-04-ACQUIS",
@@ -2276,7 +2279,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-06-A1-05-DOSSIER",
@@ -2347,7 +2351,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-06-A1-06-MISSION",
@@ -2397,7 +2402,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-06-A1-07-COURS-EXPONENTIELLE",
@@ -2460,7 +2466,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-06-A1-08-COURS-MODELE-EXP",
@@ -2527,7 +2534,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-06-A1-09-EXEMPLE-ABONNES",
@@ -2586,7 +2594,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-06-A1-10-ATELIER-VENTES",
@@ -2781,6 +2790,7 @@
           }
         ],
         "corrigeEcran": null,
+        "reflexion": null,
         "explications": [
           {
             "reference": "b2-06-a1-calcul",
@@ -3088,6 +3098,7 @@
           ],
           "seuilReussite": 0.8
         },
+        "reflexion": null,
         "explications": [
           {
             "reference": "B2 à B8",
@@ -3123,7 +3134,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-06-A2-01-REFLEXION-RECIPROQUE",
@@ -3165,6 +3177,10 @@
         "questions": [],
         "corrigeEcran": {
           "type": "reflexion",
+          "attendu": "Il faut une fonction qui « remonte » de eˣ à x, comme la division remonte d’un produit : c’est le logarithme népérien, noté ln. On trouve x = ln 2,5 sans tâtonner ; pour les ventes, l’exposant est 0,06x, et la trace écrite montre comment en tirer le mois.",
+          "suite": "Gardez votre réponse : la trace écrite définit ln et ses propriétés."
+        },
+        "reflexion": {
           "attendu": "Il faut une fonction qui « remonte » de eˣ à x, comme la division remonte d’un produit : c’est le logarithme népérien, noté ln. On trouve x = ln 2,5 sans tâtonner ; pour les ventes, l’exposant est 0,06x, et la trace écrite montre comment en tirer le mois.",
           "suite": "Gardez votre réponse : la trace écrite définit ln et ses propriétés."
         }
@@ -3231,7 +3247,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-06-A2-03-COURS-SEUIL",
@@ -3294,7 +3311,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-06-A2-04-EXEMPLE-DOUBLEMENT",
@@ -3353,7 +3371,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-06-A2-05-ATELIER-SEUILS",
@@ -3554,6 +3573,7 @@
           }
         ],
         "corrigeEcran": null,
+        "reflexion": null,
         "explications": [
           {
             "reference": "b2-06-a2-equivalence",
@@ -3844,6 +3864,7 @@
           ],
           "seuilReussite": 0.8
         },
+        "reflexion": null,
         "explications": [
           {
             "reference": "B2 à B7",
@@ -3879,7 +3900,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-06-A3-01-GRAPHIQUE",
@@ -3927,7 +3949,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-06-A3-02-VOTE-MODELE",
@@ -4028,7 +4051,8 @@
             "ln change le produit a × e^(kx) en somme ln a + kx : en x, ln y suit une droite.",
             "La trace écrite en tire une méthode d’ajustement."
           ]
-        }
+        },
+        "reflexion": null
       },
       {
         "id": "B2-06-A3-03-COURS-MODELE",
@@ -4094,7 +4118,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-06-A3-04-COURS-AJUSTEMENT",
@@ -4161,7 +4186,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-06-A3-05-EXEMPLE-AJUSTEMENT",
@@ -4220,7 +4246,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-06-A3-06-TABLEAU-LOGARITHMES",
@@ -4321,12 +4348,122 @@
               "valeur": 5.753
             }
           ],
+          "tableauCorrige": {
+            "lignes": [
+              {
+                "rang": 0,
+                "valeurs": {
+                  "prix": {
+                    "valeur": 20,
+                    "affichage": "20"
+                  },
+                  "demande": {
+                    "valeur": 1100,
+                    "affichage": "1100"
+                  },
+                  "z": {
+                    "valeur": 7.003,
+                    "affichage": "7,003"
+                  }
+                }
+              },
+              {
+                "rang": 1,
+                "valeurs": {
+                  "prix": {
+                    "valeur": 25,
+                    "affichage": "25"
+                  },
+                  "demande": {
+                    "valeur": 860,
+                    "affichage": "860"
+                  },
+                  "z": {
+                    "valeur": 6.757,
+                    "affichage": "6,757"
+                  }
+                }
+              },
+              {
+                "rang": 2,
+                "valeurs": {
+                  "prix": {
+                    "valeur": 30,
+                    "affichage": "30"
+                  },
+                  "demande": {
+                    "valeur": 670,
+                    "affichage": "670"
+                  },
+                  "z": {
+                    "valeur": 6.507,
+                    "affichage": "6,507"
+                  }
+                }
+              },
+              {
+                "rang": 3,
+                "valeurs": {
+                  "prix": {
+                    "valeur": 35,
+                    "affichage": "35"
+                  },
+                  "demande": {
+                    "valeur": 520,
+                    "affichage": "520"
+                  },
+                  "z": {
+                    "valeur": 6.254,
+                    "affichage": "6,254"
+                  }
+                }
+              },
+              {
+                "rang": 4,
+                "valeurs": {
+                  "prix": {
+                    "valeur": 40,
+                    "affichage": "40"
+                  },
+                  "demande": {
+                    "valeur": 410,
+                    "affichage": "410"
+                  },
+                  "z": {
+                    "valeur": 6.016,
+                    "affichage": "6,016"
+                  }
+                }
+              },
+              {
+                "rang": 5,
+                "valeurs": {
+                  "prix": {
+                    "valeur": 45,
+                    "affichage": "45"
+                  },
+                  "demande": {
+                    "valeur": 315,
+                    "affichage": "315"
+                  },
+                  "z": {
+                    "valeur": 5.753,
+                    "affichage": "5,753"
+                  }
+                }
+              }
+            ],
+            "totaux": {},
+            "synthese": [],
+            "soldeFinal": null
+          },
           "tolerance": {
             "type": "absolue",
             "valeur": 0.001
           },
           "seuilReussite": 0.75
         },
+        "reflexion": null,
         "explications": [
           {
             "reference": "b2-06-a3-tableau-logarithmes",
@@ -4545,6 +4682,7 @@
           }
         ],
         "corrigeEcran": null,
+        "reflexion": null,
         "explications": [
           {
             "reference": "b2-06-a3-coefficient",
@@ -4624,6 +4762,7 @@
             }
           ]
         },
+        "reflexion": null,
         "explications": [
           {
             "reference": "rapports",
@@ -4671,7 +4810,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-06-A4-01-SITUATION-KITS",
@@ -4742,7 +4882,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-06-A4-02-TABLEUR-KITS",
@@ -5008,6 +5149,7 @@
           ],
           "seuilReussite": 0.8
         },
+        "reflexion": null,
         "explications": [
           {
             "reference": "C2 à C7",
@@ -5132,6 +5274,7 @@
           ],
           "codeFinal": "S5L7N2E9"
         },
+        "reflexion": null,
         "explications": [
           {
             "reference": "b2-06-a4-e1-demande",
@@ -5472,7 +5615,8 @@
             ]
           }
         ],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-06-A4-05-FICHE-MEMO",
@@ -5566,7 +5710,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-06-A4-06-BILLET-DE-SORTIE",
@@ -5653,7 +5798,8 @@
             ]
           }
         ],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       }
     ],
     "remediations": {

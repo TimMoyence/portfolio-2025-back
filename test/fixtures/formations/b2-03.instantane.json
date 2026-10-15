@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "ab1c03e01cfc3195d176dfd083a848ca7832a38ab4506b2b114af28881862394",
+  "empreinte": "b2e3e105757f8430ffd0597bff89392db9c47eba26e27c2f2be84f2e4942d59c",
   "sujet": {
     "id": "b2-03-logique",
     "titre": "Logique : écrire et contrôler une règle",
@@ -2872,7 +2872,8 @@
             ]
           }
         ],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-03-A1-02-ACCROCHE",
@@ -2911,7 +2912,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-03-A1-03-MISSION",
@@ -2957,7 +2959,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-03-A1-04-FACTURES",
@@ -3168,7 +3171,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-03-A1-05-VOTE-OU",
@@ -3269,7 +3273,8 @@
             "« Plus de trois ans » se traduit par > 3 : la valeur 3 est exclue. « Au moins trois ans » se traduit par ≥ 3.",
             "La trace écrite donne la table de ces connecteurs."
           ]
-        }
+        },
+        "reflexion": null
       },
       {
         "id": "B2-03-A1-06-COURS-CONNECTEURS",
@@ -3334,7 +3339,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-03-A1-07-COURS-IMPLICATION",
@@ -3397,7 +3403,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-03-A1-08-EXEMPLE-TABLE",
@@ -3456,7 +3463,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-03-A1-09-TABLE-VERITE",
@@ -3634,12 +3642,136 @@
               "valeur": 1
             }
           ],
+          "tableauCorrige": {
+            "lignes": [
+              {
+                "rang": 0,
+                "valeurs": {
+                  "p": {
+                    "valeur": 1,
+                    "affichage": "1"
+                  },
+                  "q": {
+                    "valeur": 1,
+                    "affichage": "1"
+                  },
+                  "nonP": {
+                    "valeur": 0,
+                    "affichage": "0"
+                  },
+                  "pEtQ": {
+                    "valeur": 1,
+                    "affichage": "1"
+                  },
+                  "pOuQ": {
+                    "valeur": 1,
+                    "affichage": "1"
+                  },
+                  "pImpQ": {
+                    "valeur": 1,
+                    "affichage": "1"
+                  }
+                }
+              },
+              {
+                "rang": 1,
+                "valeurs": {
+                  "p": {
+                    "valeur": 1,
+                    "affichage": "1"
+                  },
+                  "q": {
+                    "valeur": 0,
+                    "affichage": "0"
+                  },
+                  "nonP": {
+                    "valeur": 0,
+                    "affichage": "0"
+                  },
+                  "pEtQ": {
+                    "valeur": 0,
+                    "affichage": "0"
+                  },
+                  "pOuQ": {
+                    "valeur": 1,
+                    "affichage": "1"
+                  },
+                  "pImpQ": {
+                    "valeur": 0,
+                    "affichage": "0"
+                  }
+                }
+              },
+              {
+                "rang": 2,
+                "valeurs": {
+                  "p": {
+                    "valeur": 0,
+                    "affichage": "0"
+                  },
+                  "q": {
+                    "valeur": 1,
+                    "affichage": "1"
+                  },
+                  "nonP": {
+                    "valeur": 1,
+                    "affichage": "1"
+                  },
+                  "pEtQ": {
+                    "valeur": 0,
+                    "affichage": "0"
+                  },
+                  "pOuQ": {
+                    "valeur": 1,
+                    "affichage": "1"
+                  },
+                  "pImpQ": {
+                    "valeur": 1,
+                    "affichage": "1"
+                  }
+                }
+              },
+              {
+                "rang": 3,
+                "valeurs": {
+                  "p": {
+                    "valeur": 0,
+                    "affichage": "0"
+                  },
+                  "q": {
+                    "valeur": 0,
+                    "affichage": "0"
+                  },
+                  "nonP": {
+                    "valeur": 1,
+                    "affichage": "1"
+                  },
+                  "pEtQ": {
+                    "valeur": 0,
+                    "affichage": "0"
+                  },
+                  "pOuQ": {
+                    "valeur": 0,
+                    "affichage": "0"
+                  },
+                  "pImpQ": {
+                    "valeur": 1,
+                    "affichage": "1"
+                  }
+                }
+              }
+            ],
+            "totaux": {},
+            "synthese": [],
+            "soldeFinal": null
+          },
           "tolerance": {
             "type": "absolue",
             "valeur": 0.01
           },
           "seuilReussite": 0.75
         },
+        "reflexion": null,
         "explications": [
           {
             "reference": "b2-03-a1-table-verite",
@@ -3839,6 +3971,7 @@
           }
         ],
         "corrigeEcran": null,
+        "reflexion": null,
         "explications": [
           {
             "reference": "b2-03-a1-visa",
@@ -4062,6 +4195,7 @@
           ],
           "seuilReussite": 0.8
         },
+        "reflexion": null,
         "explications": [
           {
             "reference": "D2",
@@ -4097,7 +4231,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-03-A2-01-CONTRAIRE",
@@ -4139,6 +4274,10 @@
         "questions": [],
         "corrigeEcran": {
           "type": "reflexion",
+          "attendu": "Une facture n’est pas relancée si elle est payée, ou si son délai est d’au plus 60 jours : le contraire d’un « et » est un « ou », et le contraire de « plus de 60 » est « au plus 60 ».",
+          "suite": "Gardez votre réponse : la trace écrite donne la règle pour nier."
+        },
+        "reflexion": {
           "attendu": "Une facture n’est pas relancée si elle est payée, ou si son délai est d’au plus 60 jours : le contraire d’un « et » est un « ou », et le contraire de « plus de 60 » est « au plus 60 ».",
           "suite": "Gardez votre réponse : la trace écrite donne la règle pour nier."
         }
@@ -4204,7 +4343,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-03-A2-03-COURS-MORGAN",
@@ -4268,7 +4408,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-03-A2-04-EXEMPLE-MORGAN",
@@ -4327,7 +4468,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-03-A2-05-ATELIER-MORGAN",
@@ -4517,6 +4659,7 @@
           }
         ],
         "corrigeEcran": null,
+        "reflexion": null,
         "explications": [
           {
             "reference": "b2-03-a2-non-relance",
@@ -4807,6 +4950,7 @@
           ],
           "seuilReussite": 0.8
         },
+        "reflexion": null,
         "explications": [
           {
             "reference": "D2",
@@ -4846,7 +4990,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-03-A3-01-VOTE-TOUTES",
@@ -4947,7 +5092,8 @@
             "Le contraire de « il existe… » est « aucune… », c’est-à-dire « pour toutes…, non… ».",
             "La trace écrite donne ces deux règles et leur vérification au tableur."
           ]
-        }
+        },
+        "reflexion": null
       },
       {
         "id": "B2-03-A3-02-COURS-PREDICATS",
@@ -5010,7 +5156,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-03-A3-03-COURS-QUANTIFICATEURS",
@@ -5072,7 +5219,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-03-A3-04-EXEMPLE-QUANTIF",
@@ -5131,7 +5279,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-03-A3-05-ATELIER-QUANTIF",
@@ -5318,6 +5467,7 @@
           }
         ],
         "corrigeEcran": null,
+        "reflexion": null,
         "explications": [
           {
             "reference": "b2-03-a3-non-toutes",
@@ -5394,6 +5544,7 @@
             }
           ]
         },
+        "reflexion": null,
         "explications": [
           {
             "reference": "negation",
@@ -5441,7 +5592,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-03-A4-01-SITUATION-FACTURES",
@@ -5652,7 +5804,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-03-A4-02-TABLEUR-CONTROLE",
@@ -6868,6 +7021,7 @@
           ],
           "seuilReussite": 0.8
         },
+        "reflexion": null,
         "explications": [
           {
             "reference": "H2 à H17",
@@ -6983,6 +7137,7 @@
           ],
           "codeFinal": "V4F2R7A9"
         },
+        "reflexion": null,
         "explications": [
           {
             "reference": "b2-03-a4-e1-indemnites",
@@ -7322,7 +7477,8 @@
             ]
           }
         ],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-03-A4-05-FICHE-MEMO",
@@ -7416,7 +7572,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-03-A4-06-BILLET-DE-SORTIE",
@@ -7503,7 +7660,8 @@
             ]
           }
         ],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       }
     ],
     "remediations": {

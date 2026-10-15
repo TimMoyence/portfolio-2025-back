@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "e02e28857b2612d996191ee6994259418d64b87e891aa3a0bf651616f294bd8f",
+  "empreinte": "6f1974341b3677f682517876e3242002979a2328297b8fcfbcca9e5a419f04e1",
   "sujet": {
     "id": "b2-05-mathematiques-financieres",
     "titre": "Mathématiques financières : placer, emprunter",
@@ -2105,7 +2105,8 @@
             ]
           }
         ],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-05-A1-02-ACCROCHE",
@@ -2149,7 +2150,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-05-A1-03-VOTE-ACQUIS",
@@ -2250,7 +2252,8 @@
             "Du rang 0 au rang 4 inclus, on compte 4 − 0 + 1 = 5 termes.",
             "L’écran suivant dit ce que ces acquis deviennent aujourd’hui."
           ]
-        }
+        },
+        "reflexion": null
       },
       {
         "id": "B2-05-A1-04-ACQUIS",
@@ -2319,7 +2322,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-05-A1-05-DOSSIER",
@@ -2390,7 +2394,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-05-A1-06-MISSION",
@@ -2440,7 +2445,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-05-A1-07-COURS-INTERETS-COMPOSES",
@@ -2504,7 +2510,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-05-A1-08-COURS-VALEUR-ACTUELLE",
@@ -2571,7 +2578,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-05-A1-09-EXEMPLE-PLACEMENT",
@@ -2630,7 +2638,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-05-A1-10-ATELIER-PLACEMENT",
@@ -2825,6 +2834,7 @@
           }
         ],
         "corrigeEcran": null,
+        "reflexion": null,
         "explications": [
           {
             "reference": "b2-05-a1-coefficient",
@@ -3112,6 +3122,7 @@
           ],
           "seuilReussite": 0.8
         },
+        "reflexion": null,
         "explications": [
           {
             "reference": "C3 à C7",
@@ -3147,7 +3158,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-05-A2-01-REFLEXION-VERSEMENTS",
@@ -3189,6 +3201,10 @@
         "questions": [],
         "corrigeEcran": {
           "type": "reflexion",
+          "attendu": "Il a tort : le versement de fin 2026 rapporte quatre ans, celui de fin 2027 trois ans, et ainsi de suite ; celui de fin 2030 ne rapporte rien. Chaque versement a sa propre durée, et son calcul surestime l’épargne.",
+          "suite": "Gardez votre réponse : la trace écrite additionne les versements un par un."
+        },
+        "reflexion": {
           "attendu": "Il a tort : le versement de fin 2026 rapporte quatre ans, celui de fin 2027 trois ans, et ainsi de suite ; celui de fin 2030 ne rapporte rien. Chaque versement a sa propre durée, et son calcul surestime l’épargne.",
           "suite": "Gardez votre réponse : la trace écrite additionne les versements un par un."
         }
@@ -3255,7 +3271,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-05-A2-03-COURS-ANNUITES-TABLEUR",
@@ -3318,7 +3335,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-05-A2-04-EXEMPLE-ANNUITES",
@@ -3377,7 +3395,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-05-A2-05-ATELIER-ANNUITES",
@@ -3576,6 +3595,7 @@
           }
         ],
         "corrigeEcran": null,
+        "reflexion": null,
         "explications": [
           {
             "reference": "b2-05-a2-duree",
@@ -3828,6 +3848,7 @@
           ],
           "seuilReussite": 0.8
         },
+        "reflexion": null,
         "explications": [
           {
             "reference": "B3 à B6",
@@ -3867,7 +3888,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-05-A3-01-GRAPHIQUE",
@@ -3937,7 +3959,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-05-A3-02-VOTE-EMPRUNT",
@@ -4038,7 +4061,8 @@
             "Le coût du crédit est ce que l’on paie en plus du capital : 11 200 − 10 000 = 1 200 €.",
             "La trace écrite construit le tableau d’amortissement ligne par ligne."
           ]
-        }
+        },
+        "reflexion": null
       },
       {
         "id": "B2-05-A3-03-COURS-EMPRUNT",
@@ -4102,7 +4126,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-05-A3-04-COURS-COUT-TABLEUR",
@@ -4165,7 +4190,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-05-A3-05-EXEMPLE-EMPRUNT",
@@ -4224,7 +4250,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-05-A3-06-ATELIER-EMPRUNT",
@@ -4427,6 +4454,7 @@
           }
         ],
         "corrigeEcran": null,
+        "reflexion": null,
         "explications": [
           {
             "reference": "b2-05-a3-annuite",
@@ -4582,12 +4610,141 @@
               "valeur": 12959.26
             }
           ],
+          "tableauCorrige": {
+            "lignes": [
+              {
+                "rang": 0,
+                "valeurs": {
+                  "capital": {
+                    "valeur": 60000,
+                    "affichage": "60000,00"
+                  },
+                  "interets": {
+                    "valeur": 2400,
+                    "affichage": "2400,00"
+                  },
+                  "amortissement": {
+                    "valeur": 11077.63,
+                    "affichage": "11077,63"
+                  },
+                  "annuite": {
+                    "valeur": 13477.63,
+                    "affichage": "13477,63"
+                  }
+                }
+              },
+              {
+                "rang": 1,
+                "valeurs": {
+                  "capital": {
+                    "valeur": 48922.37,
+                    "affichage": "48922,37"
+                  },
+                  "interets": {
+                    "valeur": 1956.89,
+                    "affichage": "1956,89"
+                  },
+                  "amortissement": {
+                    "valeur": 11520.74,
+                    "affichage": "11520,74"
+                  },
+                  "annuite": {
+                    "valeur": 13477.63,
+                    "affichage": "13477,63"
+                  }
+                }
+              },
+              {
+                "rang": 2,
+                "valeurs": {
+                  "capital": {
+                    "valeur": 37401.63,
+                    "affichage": "37401,63"
+                  },
+                  "interets": {
+                    "valeur": 1496.07,
+                    "affichage": "1496,07"
+                  },
+                  "amortissement": {
+                    "valeur": 11981.56,
+                    "affichage": "11981,56"
+                  },
+                  "annuite": {
+                    "valeur": 13477.63,
+                    "affichage": "13477,63"
+                  }
+                }
+              },
+              {
+                "rang": 3,
+                "valeurs": {
+                  "capital": {
+                    "valeur": 25420.07,
+                    "affichage": "25420,07"
+                  },
+                  "interets": {
+                    "valeur": 1016.8,
+                    "affichage": "1016,80"
+                  },
+                  "amortissement": {
+                    "valeur": 12460.83,
+                    "affichage": "12460,83"
+                  },
+                  "annuite": {
+                    "valeur": 13477.63,
+                    "affichage": "13477,63"
+                  }
+                }
+              },
+              {
+                "rang": 4,
+                "valeurs": {
+                  "capital": {
+                    "valeur": 12959.24,
+                    "affichage": "12959,24"
+                  },
+                  "interets": {
+                    "valeur": 518.37,
+                    "affichage": "518,37"
+                  },
+                  "amortissement": {
+                    "valeur": 12959.26,
+                    "affichage": "12959,26"
+                  },
+                  "annuite": {
+                    "valeur": 13477.63,
+                    "affichage": "13477,63"
+                  }
+                }
+              }
+            ],
+            "totaux": {
+              "interets": {
+                "valeur": 7388.13,
+                "affichage": "7388,13"
+              },
+              "amortissement": {
+                "valeur": 60000.020000000004,
+                "affichage": "60000,02"
+              },
+              "annuite": {
+                "valeur": 67388.15,
+                "affichage": "67388,15"
+              }
+            },
+            "synthese": [],
+            "soldeFinal": {
+              "valeur": -0.020000000000436557,
+              "affichage": "-0,02"
+            }
+          },
           "tolerance": {
             "type": "absolue",
             "valeur": 0.02
           },
           "seuilReussite": 0.75
         },
+        "reflexion": null,
         "explications": [
           {
             "reference": "b2-05-a3-tableau-amortissement",
@@ -4651,6 +4808,7 @@
             }
           ]
         },
+        "reflexion": null,
         "explications": [
           {
             "reference": "formule",
@@ -4698,7 +4856,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-05-A4-01-SITUATION-CAMIONNETTE",
@@ -4773,7 +4932,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-05-A4-02-TABLEUR-CAMIONNETTE",
@@ -5119,6 +5279,7 @@
           ],
           "seuilReussite": 0.8
         },
+        "reflexion": null,
         "explications": [
           {
             "reference": "H2",
@@ -5248,6 +5409,7 @@
           ],
           "codeFinal": "K4V8M3T6"
         },
+        "reflexion": null,
         "explications": [
           {
             "reference": "b2-05-a4-e1-placement",
@@ -5588,7 +5750,8 @@
             ]
           }
         ],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-05-A4-05-FICHE-MEMO",
@@ -5683,7 +5846,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-05-A4-06-BILLET-DE-SORTIE",
@@ -5770,7 +5934,8 @@
             ]
           }
         ],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       }
     ],
     "remediations": {

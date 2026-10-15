@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "428b1f501f77f14125d2adc8a729c792c881df688be4330744dfd8c2d4ae018f",
+  "empreinte": "f818bdd3547a6e050b6fa5afc820c1d8b77a9460b1f0a9737a08dd7023248582",
   "sujet": {
     "id": "b3-01-donnee-brute-decision",
     "titre": "Expert Data : de la donnée brute à la décision",
@@ -2074,7 +2074,8 @@
             ]
           }
         ],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B3-01-A1-02-COURRIEL",
@@ -2118,7 +2119,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B3-01-A1-03-CARTE",
@@ -2178,7 +2180,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B3-01-A1-04-VOTE-PART-ET-CLE",
@@ -2303,7 +2306,8 @@
             "Il compte aussi des raisons sociales présentes deux fois dans la même ville, sous deux client_id : doublon ou deux établissements, seul le métier peut le dire. Le nom et la ville ne suffisent ni à distinguer deux clients, ni à les fusionner.",
             "La part des lignes fausses ou douteuses se révèle à la correction de l’exercice 4."
           ]
-        }
+        },
+        "reflexion": null
       },
       {
         "id": "B3-01-A1-05-COURS-DONNEE",
@@ -2371,7 +2375,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B3-01-A1-06-COURS-RELATIONS",
@@ -2433,7 +2438,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B3-01-A1-07-TRI-COLONNES",
@@ -2612,6 +2618,7 @@
           ],
           "seuilReussite": 0.75
         },
+        "reflexion": null,
         "explications": [
           {
             "reference": "identifiant",
@@ -2740,6 +2747,7 @@
           }
         ],
         "corrigeEcran": null,
+        "reflexion": null,
         "explications": [
           {
             "reference": "b3-01-a1-granularite",
@@ -2820,7 +2828,8 @@
             "Un montant aligné à gauche dans une colonne de nombres est un indice : c’est du texte.",
             "ESTNUM renvoie FAUX pour un nombre stocké en texte : on vérifie avant d’additionner."
           ]
-        }
+        },
+        "reflexion": null
       },
       {
         "id": "B3-01-A1-10-COURS-GRILLE",
@@ -2882,7 +2891,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B3-01-A1-11-COURS-OUTILS",
@@ -2941,7 +2951,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B3-01-A1-12-EXEMPLE-NETTOYAGE",
@@ -3010,7 +3021,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B3-01-A1-13-TRI-ANOMALIES",
@@ -3158,6 +3170,7 @@
           ],
           "seuilReussite": 0.75
         },
+        "reflexion": null,
         "explications": [
           {
             "reference": "faux-automatique",
@@ -3303,6 +3316,7 @@
           }
         ],
         "corrigeEcran": null,
+        "reflexion": null,
         "explications": [
           {
             "reference": "b3-01-a1-lignes-uniques",
@@ -3403,7 +3417,8 @@
             "Puis on additionne ca_ht sous trois conditions : l’agence de Rennes, la catégorie Informatique, une date en 2026.",
             "Nommer la famille avant de choisir la fonction : c’est la règle du niveau 3."
           ]
-        }
+        },
+        "reflexion": null
       },
       {
         "id": "B3-01-A2-02-FAMILLES",
@@ -3522,7 +3537,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B3-01-A2-03-COURS-CHERCHER-AGREGER",
@@ -3587,7 +3603,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B3-01-A2-04-ATELIER-RECHERCHE",
@@ -3689,6 +3706,7 @@
           }
         ],
         "corrigeEcran": null,
+        "reflexion": null,
         "explications": [
           {
             "reference": "b3-01-a2-ca-rennes-info",
@@ -3773,7 +3791,8 @@
             "Le contrat de livraison de Norvane promet 5 jours ouvrés : le délai se mesure en jours ouvrés.",
             "NB.JOURS.OUVRES compte les deux bornes : du vendredi au lundi, il renvoie 2, d’où le − 1 pour obtenir le délai."
           ]
-        }
+        },
+        "reflexion": null
       },
       {
         "id": "B3-01-A2-06-COURS-TEMPS-STATS",
@@ -3839,7 +3858,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B3-01-A2-07-ATELIER-DELAIS-MARGE",
@@ -3947,6 +3967,7 @@
           }
         ],
         "corrigeEcran": null,
+        "reflexion": null,
         "explications": [
           {
             "reference": "b3-01-a2-delai-strasbourg",
@@ -4027,7 +4048,8 @@
             "Un tableau structuré s’étend tout seul : chaque formule qui le cite voit les nouvelles lignes.",
             "C’est l’objet du cours suivant."
           ]
-        }
+        },
+        "reflexion": null
       },
       {
         "id": "B3-01-A2-09-COURS-TCD",
@@ -4088,7 +4110,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B3-01-A2-10-EXEMPLE-TCD",
@@ -4135,7 +4158,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B3-01-A2-11-ATELIER-TCD",
@@ -4250,6 +4274,7 @@
           }
         ],
         "corrigeEcran": null,
+        "reflexion": null,
         "explications": [
           {
             "reference": "b3-01-a2-part-info-rennes",
@@ -4308,7 +4333,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B3-01-A3-02-VOTE-GRAPHIQUE",
@@ -4383,7 +4409,8 @@
             "Rennes a vendu 51 600 €, Nantes 59 500 € : environ 13 % de moins, pas trois fois moins.",
             "Depuis zéro, les deux barres ont presque la même hauteur. Un axe tronqué se signale, ou ne se montre pas à un comité."
           ]
-        }
+        },
+        "reflexion": null
       },
       {
         "id": "B3-01-A3-03-COURS-GRAPHIQUES",
@@ -4442,7 +4469,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B3-01-A3-05-ATELIER-GRAPHIQUES",
@@ -4538,6 +4566,7 @@
           }
         ],
         "corrigeEcran": null,
+        "reflexion": null,
         "explications": [
           {
             "reference": "b3-01-a3-agences-sous-objectif",
@@ -4634,7 +4663,8 @@
             "Chaque chiffre porte sa comparaison : l’objectif, ou la même période de l’an passé. Seul, un chiffre ne dit ni bien ni mal.",
             "Le détail vient ensuite, sur demande : graphiques, TCD et segments."
           ]
-        }
+        },
+        "reflexion": null
       },
       {
         "id": "B3-01-A3-07-COURS-DASHBOARD",
@@ -4696,7 +4726,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B3-01-A3-08-EXEMPLE-MFC-SEGMENTS",
@@ -4743,7 +4774,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B3-01-A3-09-ATELIER-DASHBOARD",
@@ -4903,6 +4935,7 @@
           }
         ],
         "corrigeEcran": null,
+        "reflexion": null,
         "explications": [
           {
             "reference": "b3-01-a3-evolution",
@@ -4967,6 +5000,7 @@
         "corriges": [],
         "questions": [],
         "corrigeEcran": null,
+        "reflexion": null,
         "explications": [
           {
             "reference": "marseille",
@@ -5052,7 +5086,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B3-01-A3-12-CAHIER-DE-REGLES",
@@ -5098,7 +5133,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B3-01-A3-13-CE-QUI-RESTE-FLOU",
@@ -5134,7 +5170,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B3-01-A3-14-BILLET-DE-SORTIE",
@@ -5209,7 +5246,8 @@
             ]
           }
         ],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       }
     ],
     "remediations": {
