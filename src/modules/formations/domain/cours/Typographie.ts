@@ -1,6 +1,6 @@
 import { estObjet } from '../../../../common/domain/est-objet';
 import { ESPACE_INSECABLE } from '../../../../common/domain/texte/sans-espaces-typographiques';
-import { estUneFormule } from 'portfolio-2025-partage/formule';
+import { estUneFormule } from './Formule';
 
 const MILLIERS = /(?<!\d)(\d{1,3}) (?=\d{3}(?!\d))/g;
 const NOMBRE_PUIS_UNITE = /(\d) (?=(?:%|‰|[kM]?€|kWh|km|kg)(?!\p{L}))/gu;

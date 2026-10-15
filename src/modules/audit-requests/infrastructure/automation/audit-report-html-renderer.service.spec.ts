@@ -142,12 +142,33 @@ describe('AuditReportHtmlRendererService', () => {
     expect(html).toContain('llms.txt');
   });
 
+  it('nomme le statut de chaque pilier Critique, À améliorer ou Objectif atteint', () => {
+    const html = service.render(
+      buildAudit(),
+      {
+        ...buildClientReport(),
+        pillarScorecard: [
+          { pillar: 'Indexabilite', score: 40, target: 90, status: 'critical' },
+          { pillar: 'Citation', score: 60, target: 70, status: 'warning' },
+          { pillar: 'Structure', score: 85, target: 80, status: 'ok' },
+        ],
+      },
+      buildExpertReport(),
+    );
+
+    expect(
+      [...html.matchAll(/<p class="pillar-status">([^<]*)<\/p>/g)].map(
+        ([, libelle]) => libelle,
+      ),
+    ).toEqual(['Critique', 'À améliorer', 'Objectif atteint']);
+  });
+
   it('date le rapport et traduit gravité, impact et effort', () => {
     const html = rendre();
 
     expect(html).toContain('15 avril 2026');
-    expect(html).toContain('<span class="severity-badge">Eleve</span>');
-    expect(html).toContain('<td class="backlog-impact">Eleve</td>');
+    expect(html).toContain('<span class="severity-badge">Élevé</span>');
+    expect(html).toContain('<td class="backlog-impact">Élevé</td>');
     expect(html).toContain('<td class="backlog-effort">Faible</td>');
     expect(html).toContain('Effort : Faible');
   });

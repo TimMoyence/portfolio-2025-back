@@ -1,10 +1,52 @@
 import { readdirSync, readFileSync, statSync } from 'fs';
 import { collectFiles } from '../../test/helpers/source-tree';
 import { join } from 'path';
+import {
+  createSourceFile,
+  forEachChild,
+  isCallExpression,
+  isExportDeclaration,
+  isExternalModuleReference,
+  isIdentifier,
+  isImportDeclaration,
+  isImportEqualsDeclaration,
+  isImportTypeNode,
+  isLiteralTypeNode,
+  isStringLiteralLike,
+  type Node,
+  ScriptTarget,
+  SyntaxKind,
+} from 'typescript';
+
+function moduleNomme(noeud: Node): Node | undefined {
+  if (isImportDeclaration(noeud) || isExportDeclaration(noeud)) {
+    return noeud.moduleSpecifier;
+  }
+  if (
+    isImportEqualsDeclaration(noeud) &&
+    isExternalModuleReference(noeud.moduleReference)
+  ) {
+    return noeud.moduleReference.expression;
+  }
+  if (isImportTypeNode(noeud) && isLiteralTypeNode(noeud.argument)) {
+    return noeud.argument.literal;
+  }
+  const appelDeModule =
+    isCallExpression(noeud) &&
+    (noeud.expression.kind === SyntaxKind.ImportKeyword ||
+      (isIdentifier(noeud.expression) && noeud.expression.text === 'require'));
+  return appelDeModule ? noeud.arguments[0] : undefined;
+}
 
 function parseImports(content: string): string[] {
-  const importPattern = /\bimport\b[^'"\n]*\bfrom\s*['"]([^'"]+)['"]/g;
-  return [...content.matchAll(importPattern)].map((match) => match[1]);
+  const modules: string[] = [];
+  const visiter = (noeud: Node): void => {
+    const nomme = moduleNomme(noeud);
+    if (nomme && isStringLiteralLike(nomme)) modules.push(nomme.text);
+    forEachChild(noeud, visiter);
+  };
+  visiter(createSourceFile('source.ts', content, ScriptTarget.Latest, true));
+  return modules;
 }
 
 function extractImports(filePath: string): string[] {
@@ -72,8 +114,64 @@ describe('parseImports', () => {
       `import a from 'x';\nimport b from 'y';`,
       ['x', 'y'],
     ],
-    ['import a effet de bord, non couvert', `import './polyfills';`, []],
-    ['import multiligne, non couvert', `import {\n  Foo,\n} from './foo';`, []],
+    ['import a effet de bord', `import './polyfills';`, ['./polyfills']],
+    [
+      'import multiligne',
+      `import {\n  Foo,\n  Bar,\n} from './foo';`,
+      ['./foo'],
+    ],
+    [
+      'import de type multiligne',
+      `import type {\n  Foo,\n} from '../infrastructure/foo';`,
+      ['../infrastructure/foo'],
+    ],
+    [
+      'reexport nomme',
+      `export { Foo } from '../infrastructure/foo';`,
+      ['../infrastructure/foo'],
+    ],
+    ['reexport de tout', `export * from './bar';`, ['./bar']],
+    ['import dynamique', `const m = await import('./baz');`, ['./baz']],
+    [
+      'import dynamique dans une methode de classe exportee',
+      `export class A {\n  async charger() {\n    return import('../infrastructure/x');\n  }\n}`,
+      ['../infrastructure/x'],
+    ],
+    [
+      'import dynamique dans une fonction exportee',
+      `export function charger() {\n  return import('./y');\n}`,
+      ['./y'],
+    ],
+    [
+      'import a effet de bord apres une classe exportee',
+      `export class A {}\nimport '../infrastructure/x';`,
+      ['../infrastructure/x'],
+    ],
+    [
+      'reexport sous un espace de noms',
+      `export * as rendu from '../infrastructure/x';`,
+      ['../infrastructure/x'],
+    ],
+    [
+      'import dynamique apres une regex contenant un accent grave',
+      "const motif = /`/;\nconst m = import('../infrastructure/x');",
+      ['../infrastructure/x'],
+    ],
+    [
+      'import require',
+      `import x = require('../infrastructure/x');`,
+      ['../infrastructure/x'],
+    ],
+    [
+      'require',
+      `const { X } = require('../infrastructure/x') as { X: unknown };`,
+      ['../infrastructure/x'],
+    ],
+    [
+      'declarations sans module',
+      `export const from = 'x';\nexport class A {}\nconst b = Array.from('cd');`,
+      [],
+    ],
   ];
 
   it.each(cases)('%s', (_label, source, expected) => {
@@ -81,23 +179,49 @@ describe('parseImports', () => {
   });
 
   it('reste lineaire sur une ligne `import` sans clause `from`', () => {
-    const hostile = `import ${'a '.repeat(20_000)}`;
-    const startedAt = Date.now();
+    const courte = `import ${'a '.repeat(1_250)}`;
+    const longue = `import ${'a '.repeat(20_000)}`;
+    const modulesLus: string[] = [];
+    const duree = (hostile: string, fois: number): number => {
+      const startedAt = performance.now();
+      for (let rang = 0; rang < fois; rang += 1) {
+        modulesLus.push(...parseImports(hostile));
+      }
+      return performance.now() - startedAt;
+    };
+    const rapports = [0, 1, 2].map(
+      () => duree(longue, 1) / Math.max(duree(courte, 16), 1),
+    );
 
-    expect(parseImports(hostile)).toEqual([]);
-    expect(Date.now() - startedAt).toBeLessThan(1000);
+    rapports.sort((a, b) => a - b);
+
+    expect(modulesLus).toEqual([]);
+    expect(rapports[1]).toBeLessThan(2);
   });
 });
 
 describe('Règles de dépendances inter-couches', () => {
   const modulesRoot = join(process.cwd(), 'src/modules');
 
-  const domainFiles = collectLayerFiles(modulesRoot, 'domain');
-  const applicationFiles = collectLayerFiles(modulesRoot, 'application');
+  const coucheCommune = (couche: string): string[] =>
+    eligibleTsFiles(collectFiles(join(process.cwd(), 'src/common', couche)));
 
-  const commonDomainFiles = eligibleTsFiles(
-    collectFiles(join(process.cwd(), 'src/common/domain')),
-  );
+  const domainFiles = [
+    ...collectLayerFiles(modulesRoot, 'domain'),
+    ...coucheCommune('domain'),
+  ];
+  const applicationFiles = [
+    ...collectLayerFiles(modulesRoot, 'application'),
+    ...coucheCommune('application'),
+  ];
+
+  it('couvre la couche commune comme celle des modules', () => {
+    expect(
+      [domainFiles, applicationFiles].map((fichiers) =>
+        fichiers.some((fichier) => fichier.includes('/src/common/')),
+      ),
+    ).toEqual([true, true]);
+  });
 
   it('les fichiers domain/ ne doivent pas importer depuis infrastructure/', () => {
     expect(
@@ -134,7 +258,7 @@ describe('Règles de dépendances inter-couches', () => {
       'google-auth-library',
     ];
     expect(
-      importViolations([...domainFiles, ...commonDomainFiles], (imp) =>
+      importViolations(domainFiles, (imp) =>
         forbiddenPackages.some(
           (pkg) => imp === pkg || imp.startsWith(`${pkg}/`),
         ),

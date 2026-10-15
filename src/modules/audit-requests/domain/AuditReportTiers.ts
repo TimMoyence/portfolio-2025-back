@@ -1,8 +1,19 @@
-import type { StatutScore } from 'portfolio-2025-partage/score';
 import type { EngineCoverage } from './EngineCoverage';
+import type { StatutScore } from './StatutScore';
 
 export type ReportSeverity = 'high' | 'medium' | 'low';
 export type CrossPageSeverity = 'critical' | ReportSeverity;
+
+export const LIBELLES_DU_NIVEAU: Readonly<Record<ReportSeverity, string>> =
+  Object.freeze({
+    high: 'Élevé',
+    medium: 'Moyen',
+    low: 'Faible',
+  });
+
+export const LIBELLES_DE_LA_GRAVITE: Readonly<
+  Record<CrossPageSeverity, string>
+> = Object.freeze({ critical: 'Critique', ...LIBELLES_DU_NIVEAU });
 export type FindingImpact = 'traffic' | 'indexation' | 'conversion';
 
 export interface ClientReportSynthesis {

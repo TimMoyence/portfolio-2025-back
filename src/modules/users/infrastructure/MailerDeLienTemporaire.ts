@@ -4,7 +4,7 @@ import {
   escapeUrl,
   safeHtml,
   type EscapedHtml,
-} from 'portfolio-2025-partage/html';
+} from '../../../common/domain/texte/html-escape.util';
 
 export interface LienTemporaire {
   destinataire: { email: string; firstName: string; lastName: string };

@@ -13,6 +13,7 @@ import {
   sansEspacesNiMoinsTypographiques,
   sansEspacesTypographiques,
 } from '../../src/common/domain/texte/sans-espaces-typographiques';
+import { echapperPourRegex } from './echapper-pour-regex';
 import { corrigeDeFeuille, ecranDuContenu } from './fiche-de-cours';
 import { arrondi } from '../../src/common/domain/nombres/arrondi';
 
@@ -94,7 +95,6 @@ const APPEL_DE_FONCTION =
   /(?<![\p{L}\d_.$])(?<!"[<>=]{0,2})[A-Z][A-Z0-9]*(?:\.[A-Z0-9]+)*\(/gu;
 const ESPACE_AVANT_PONCTUATION_HAUTE = /\s[;:!]/u;
 const PONCTUATION_FINALE = '.,';
-const CARACTERES_SPECIAUX = /[.*+?^${}()|[\]\\]/g;
 
 function textesDe(valeur: unknown): string[] {
   return cueillirSous('', valeur, (_cle, element) =>
@@ -209,7 +209,7 @@ function contientLaForme(texte: string, valeur: number | string): boolean {
   const normalise = sansEspacesNiMoinsTypographiques(texte);
   return formesEcrites(valeur).some((forme) =>
     new RegExp(
-      `(?<![\\d,])${forme.replaceAll(CARACTERES_SPECIAUX, '\\$&')}${zerosDeFinPermis(valeur)}(?!\\d|,\\d| \\d{3}(?!\\d))`,
+      `(?<![\\d,])${echapperPourRegex(forme)}${zerosDeFinPermis(valeur)}(?!\\d|,\\d| \\d{3}(?!\\d))`,
       'u',
     ).test(normalise),
   );

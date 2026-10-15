@@ -1,4 +1,5 @@
 import { QueryFailedError, type ObjectLiteral, type Repository } from 'typeorm';
+import { estObjet } from '../../domain/est-objet';
 
 const POSTGRES_UNIQUE_VIOLATION = '23505';
 
@@ -36,7 +37,7 @@ export abstract class PostgresErrorClassifier {
     if (error instanceof QueryFailedError) {
       return error.driverError as PostgresDriverError;
     }
-    if (error !== null && typeof error === 'object' && 'code' in error) {
+    if (estObjet(error) && 'code' in error) {
       return error as PostgresDriverError;
     }
     return undefined;

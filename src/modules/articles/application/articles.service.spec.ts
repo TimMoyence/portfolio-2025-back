@@ -129,6 +129,30 @@ describe('ArticlesService', () => {
   });
 });
 
+describe('ArticlesService.listPublished', () => {
+  const decalageLuPour = async (decalage: string): Promise<unknown> => {
+    const repository = createMockArticlesRepository();
+    repository.listPublished.mockResolvedValue([]);
+    await new ArticlesService(repository).listPublished({
+      locale: 'fr',
+      limit: 10,
+      cursor: Buffer.from(decalage, 'utf8').toString('base64url'),
+    });
+    return repository.listPublished.mock.calls[0]?.[0].offset;
+  };
+
+  it('reprend au decalage porte par le curseur', async () => {
+    await expect(decalageLuPour('20')).resolves.toBe(20);
+  });
+
+  it.each(['-20', '2.5', '9007199254740992', 'abc'])(
+    'repart du premier article pour un curseur qui porte %s',
+    async (decalage) => {
+      await expect(decalageLuPour(decalage)).resolves.toBe(0);
+    },
+  );
+});
+
 describe('ArticlesService.feed', () => {
   const feedOf = async (
     locale: 'fr' | 'en',

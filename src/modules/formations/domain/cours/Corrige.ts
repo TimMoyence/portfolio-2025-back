@@ -1,11 +1,11 @@
 import type { AuMoinsUn } from '../../../../common/domain/au-moins-un';
 import type { Tolerance } from '../GradingCore';
 import type { SheetPlanStocke } from '../contrats/cours';
-import type { FormeFormule } from 'portfolio-2025-partage/contrats';
-import type { ValeurFormule } from 'portfolio-2025-partage/formule';
+import type { FormeFormule } from '../contrats/contrat-de-l-api';
+import type { ValeurFormule } from './Formule';
 import type { ConfusionId } from './banque/confusions';
 
-export type { FormeFormule } from 'portfolio-2025-partage/contrats';
+export type { FormeFormule } from '../contrats/contrat-de-l-api';
 
 export interface PiegeNumerique {
   readonly valeur: number;

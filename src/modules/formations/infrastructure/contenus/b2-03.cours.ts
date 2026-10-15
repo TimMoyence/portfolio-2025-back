@@ -4,6 +4,7 @@ import {
 } from '../../../../common/domain/au-moins-un';
 import type { ConceptId } from '../../domain/cours/banque/concepts';
 import type { ContenuDeCours } from '../../domain/cours/CoursStocke';
+import { decalerFormule } from '../../domain/cours/Formule';
 import * as moteur from './briques';
 import { gesteDeRecopie } from './feuilles';
 
@@ -113,10 +114,6 @@ const DEUXIEME_PAGE_APRES_SON_ILLUSTRATION =
 
 type Colonne = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G';
 
-function recopiee(modele: string, ligne: number): string {
-  return modele.replaceAll(/([A-G])2\b/g, `$1${ligne}`);
-}
-
 function auMoinsUn<T>(liste: readonly T[]): AuMoinsUnModifiable<T> {
   return exigerAuMoinsUn(liste, 'liste d’attendus vide dans le B2-03');
 }
@@ -191,7 +188,7 @@ const ATTENDUS_DE_LA_TVA = auMoinsUn(
     FACTURES_DE_L_EXERCICE_4.map((numero, rang) =>
       moteur.attendu(
         `${colonne}${rang + 2}`,
-        recopiee(formule, rang + 2),
+        decalerFormule(formule, rang, 0),
         controleTvaDe(numero),
         rang === 0 ? 'references' : { memeQue: `${colonne}2` },
         [],
@@ -1269,7 +1266,7 @@ function attenduDeColonne(
   const ligne = ligneDuFichier(numero);
   return moteur.attendu(
     `${colonne}${ligne}`,
-    recopiee(formule, ligne),
+    decalerFormule(formule, ligne - PREMIERE_LIGNE_DU_FICHIER, 0),
     valeur,
     ligne === PREMIERE_LIGNE_DU_FICHIER
       ? 'references'
