@@ -39,6 +39,8 @@ import { SyntheseRappelsUseCase } from '../../src/modules/formations/application
 import { LireEtatParticipantUseCase } from '../../src/modules/formations/application/LireEtatParticipant.useCase';
 import { SubmitProductionUseCase } from '../../src/modules/formations/application/SubmitProduction.useCase';
 import { EvaluerFeuilleUseCase } from '../../src/modules/formations/application/EvaluerFeuille.useCase';
+import { EvaluerTableauUseCase } from '../../src/modules/formations/application/EvaluerTableau.useCase';
+import { EvaluerMachineUseCase } from '../../src/modules/formations/application/EvaluerMachine.useCase';
 import { TelechargerPieceJointeUseCase } from '../../src/modules/formations/application/TelechargerPieceJointe.useCase';
 import { TenterEnigmeUseCase } from '../../src/modules/formations/application/TenterEnigme.useCase';
 import type { IAnswersRepository } from '../../src/modules/formations/domain/IAnswers.repository';
@@ -179,6 +181,8 @@ export function fournisseursFormations(
     SubmitAnswerUseCase,
     SubmitProductionUseCase,
     EvaluerFeuilleUseCase,
+    EvaluerTableauUseCase,
+    EvaluerMachineUseCase,
     TenterEnigmeUseCase,
     ParticipationEnSeance,
     LectureDeSeance,

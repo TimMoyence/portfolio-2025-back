@@ -20,7 +20,7 @@ import type {
 import { PHASES_DE_VOTE } from '../../../domain/contrats/pilotage';
 import { ControlSessionRequestDto as ControlSessionServieRequestDto } from '../control-session.request.dto';
 
-function EstReglageNumerique(): PropertyDecorator {
+export function EstReglageNumerique(): PropertyDecorator {
   return ValidateBy({
     name: 'estReglageNumerique',
     validator: {

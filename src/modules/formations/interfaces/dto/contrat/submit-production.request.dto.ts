@@ -68,7 +68,7 @@ class ProductionFeuilleDto {
   cellules: Record<string, string>;
 }
 
-class SaisieTableauDto {
+export class CelluleDeTableauDto {
   @ApiProperty({ example: 1 })
   @IsInt()
   @Min(0)
@@ -79,7 +79,9 @@ class SaisieTableauDto {
   @Matches(NOM_DE_VARIABLE)
   @MaxLength(LONGUEUR_MAX_IDENTIFIANT)
   cle: string;
+}
 
+class SaisieTableauDto extends CelluleDeTableauDto {
   @ApiProperty({ example: 20.52 })
   @IsNumber({ allowNaN: false, allowInfinity: false })
   valeur: number;

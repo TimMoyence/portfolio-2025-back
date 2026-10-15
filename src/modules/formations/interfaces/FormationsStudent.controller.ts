@@ -1,4 +1,5 @@
 import {
+  applyDecorators,
   Body,
   Controller,
   Get,
@@ -37,6 +38,8 @@ import { StreamSessionUseCase } from '../application/StreamSession.useCase';
 import { SubmitAnswerUseCase } from '../application/SubmitAnswer.useCase';
 import { SubmitProductionUseCase } from '../application/SubmitProduction.useCase';
 import { EvaluerFeuilleUseCase } from '../application/EvaluerFeuille.useCase';
+import { EvaluerTableauUseCase } from '../application/EvaluerTableau.useCase';
+import { EvaluerMachineUseCase } from '../application/EvaluerMachine.useCase';
 import { TelechargerPieceJointeUseCase } from '../application/TelechargerPieceJointe.useCase';
 import { TenterEnigmeUseCase } from '../application/TenterEnigme.useCase';
 import type { ClasseurTelecharge } from '../domain/IClasseursDeCours.port';
@@ -67,6 +70,10 @@ import { SubmitDefiRequestDto } from './dto/contrat/submit-defi.request.dto';
 import { SubmitProductionRequestDto } from './dto/contrat/submit-production.request.dto';
 import { EvaluerFeuilleRequestDto } from './dto/contrat/evaluer-feuille.request.dto';
 import { FeuilleEvalueeResponseDto } from './dto/contrat/feuille-evaluee.response.dto';
+import { EvaluerTableauRequestDto } from './dto/contrat/evaluer-tableau.request.dto';
+import { TableauEvalueResponseDto } from './dto/contrat/tableau-evalue.response.dto';
+import { EvaluerMachineRequestDto } from './dto/contrat/evaluer-machine.request.dto';
+import { MachineEvalueeResponseDto } from './dto/contrat/machine-evaluee.response.dto';
 import { TentativeEnigmeResponseDto } from './dto/contrat/tentative-enigme.response.dto';
 import { TenterEnigmeRequestDto } from './dto/contrat/tenter-enigme.request.dto';
 import { SubmitProductionResponseDto } from './dto/contrat/verdict-production.response.dto';
@@ -93,6 +100,29 @@ import {
 } from './ParticipantToken.service';
 import { TelechargementDePieceJointe } from './piece-jointe-telechargee';
 
+function EvaluationEnSeance(
+  chemin: string,
+  resume: string,
+  reponse: new () => unknown,
+): MethodDecorator {
+  return applyDecorators(
+    LimiteParParticipant(LIMITE_EVALUATIONS_PAR_PARTICIPANT),
+    Post(chemin),
+    HttpCode(HttpStatus.OK),
+    ApiOperation({ summary: resume }),
+    ApiOkResponse({ type: reponse }),
+    ApiBadRequestResponse({
+      description:
+        'Evaluation refusee, cause dans le champ code du corps : TYPE_DE_QUESTION ou PRODUCTION_INVALIDE',
+    }),
+    ApiConflictResponse({
+      description:
+        'Evaluation refusee, cause dans le champ code du corps : SEANCE_NON_DEMARREE ou SEANCE_TERMINEE',
+    }),
+    RouteParticipant(),
+  );
+}
+
 @ApiTags('formations')
 @Public()
 @Controller('formations')
@@ -102,6 +132,8 @@ export class FormationsStudentController {
     private readonly submitAnswer: SubmitAnswerUseCase,
     private readonly submitProduction: SubmitProductionUseCase,
     private readonly evaluerFeuille: EvaluerFeuilleUseCase,
+    private readonly evaluerTableau: EvaluerTableauUseCase,
+    private readonly evaluerMachine: EvaluerMachineUseCase,
     private readonly tenterEnigme: TenterEnigmeUseCase,
     private readonly declarerJalon: DeclarerJalonUseCase,
     private readonly defis: DefisUseCase,
@@ -265,23 +297,11 @@ export class FormationsStudentController {
     });
   }
 
-  @LimiteParParticipant(LIMITE_EVALUATIONS_PAR_PARTICIPANT)
-  @Post('sessions/:id/feuilles/:planId/evaluation')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({
-    summary:
-      'Calcule la feuille de l eleve a la validation d une cellule, sans rien enregistrer',
-  })
-  @ApiOkResponse({ type: FeuilleEvalueeResponseDto })
-  @ApiBadRequestResponse({
-    description:
-      'Evaluation refusee, cause dans le champ code du corps : TYPE_DE_QUESTION ou PRODUCTION_INVALIDE',
-  })
-  @ApiConflictResponse({
-    description:
-      'Evaluation refusee, cause dans le champ code du corps : SEANCE_NON_DEMARREE ou SEANCE_TERMINEE',
-  })
-  @RouteParticipant()
+  @EvaluationEnSeance(
+    'sessions/:id/feuilles/:planId/evaluation',
+    'Calcule la feuille de l eleve a la validation d une cellule, sans rien enregistrer',
+    FeuilleEvalueeResponseDto,
+  )
   async evaluationDeFeuille(
     @Param('id', ParseUUIDPipe) sessionId: string,
     @Param('planId') planId: string,
@@ -294,6 +314,44 @@ export class FormationsStudentController {
       planId,
       cellules: dto.cellules,
       recopie: dto.recopie,
+    });
+  }
+
+  @EvaluationEnSeance(
+    'sessions/:id/tableaux/:planId/evaluation',
+    'Calcule le tableau de l eleve a la validation d une cellule, sans rien enregistrer',
+    TableauEvalueResponseDto,
+  )
+  async evaluationDeTableau(
+    @Param('id', ParseUUIDPipe) sessionId: string,
+    @Param('planId') planId: string,
+    @IdentiteDuJeton() { participantId }: IdentiteSignee,
+    @Body() dto: EvaluerTableauRequestDto,
+  ): Promise<TableauEvalueResponseDto> {
+    return this.evaluerTableau.execute({
+      sessionId,
+      participantId,
+      planId,
+      saisies: dto.saisies,
+    });
+  }
+
+  @EvaluationEnSeance(
+    'sessions/:id/machines/:ecranId/evaluation',
+    'Calcule la machine de l eleve au relachement d un curseur, sans rien enregistrer',
+    MachineEvalueeResponseDto,
+  )
+  async evaluationDeMachine(
+    @Param('id', ParseUUIDPipe) sessionId: string,
+    @Param('ecranId') ecranId: string,
+    @IdentiteDuJeton() { participantId }: IdentiteSignee,
+    @Body() dto: EvaluerMachineRequestDto,
+  ): Promise<MachineEvalueeResponseDto> {
+    return this.evaluerMachine.execute({
+      sessionId,
+      participantId,
+      ecranId,
+      reglages: dto.reglages,
     });
   }
 

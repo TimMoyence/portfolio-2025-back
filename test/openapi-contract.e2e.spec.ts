@@ -37,6 +37,12 @@ import { ControlSessionRequestDto } from '../src/modules/formations/interfaces/d
 import { DeclarerJalonRequestDto } from '../src/modules/formations/interfaces/dto/contrat/declarer-jalon.request.dto';
 import { DerouleResponseDto } from '../src/modules/formations/interfaces/dto/contrat/deroule.response.dto';
 import { EtatParticipantResponseDto } from '../src/modules/formations/interfaces/dto/contrat/etat-participant.response.dto';
+import { EvaluerFeuilleRequestDto } from '../src/modules/formations/interfaces/dto/contrat/evaluer-feuille.request.dto';
+import { EvaluerMachineRequestDto } from '../src/modules/formations/interfaces/dto/contrat/evaluer-machine.request.dto';
+import { EvaluerTableauRequestDto } from '../src/modules/formations/interfaces/dto/contrat/evaluer-tableau.request.dto';
+import { FeuilleEvalueeResponseDto } from '../src/modules/formations/interfaces/dto/contrat/feuille-evaluee.response.dto';
+import { MachineEvalueeResponseDto } from '../src/modules/formations/interfaces/dto/contrat/machine-evaluee.response.dto';
+import { TableauEvalueResponseDto } from '../src/modules/formations/interfaces/dto/contrat/tableau-evalue.response.dto';
 import { OpenSessionRequestDto } from '../src/modules/formations/interfaces/dto/contrat/open-session.request.dto';
 import { RappelsResponseDto } from '../src/modules/formations/interfaces/dto/contrat/rappels.response.dto';
 import { SessionResultsResponseDto } from '../src/modules/formations/interfaces/dto/contrat/session-results.response.dto';
@@ -75,6 +81,12 @@ const DTO_DU_CONTRAT = [
   SessionResultsResponseDto,
   SyntheseRappelsResponseDto,
   CoursPublicCatalogueResponseDto,
+  EvaluerFeuilleRequestDto,
+  FeuilleEvalueeResponseDto,
+  EvaluerTableauRequestDto,
+  TableauEvalueResponseDto,
+  EvaluerMachineRequestDto,
+  MachineEvalueeResponseDto,
 ];
 
 const ROUTES_ACTIVES_DU_CONTRAT = [
@@ -87,6 +99,9 @@ const ROUTES_ACTIVES_DU_CONTRAT = [
   '/sessions/{id}/participants/{participantId}',
   '/sessions/{id}/rappels',
   '/sessions/{id}/rappels/synthese',
+  '/sessions/{id}/feuilles/{planId}/evaluation',
+  '/sessions/{id}/tableaux/{planId}/evaluation',
+  '/sessions/{id}/machines/{ecranId}/evaluation',
 ];
 
 const ROUTES_A_VENIR_DU_CONTRAT: readonly string[] = [];
