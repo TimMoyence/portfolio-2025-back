@@ -33,7 +33,6 @@ describe('lireCoursStocke', () => {
       diffusion: 'seance',
       brique: 'fp-story',
       notes: 'À dire : vérifier le repère avant la pente.',
-      guide: { aDire: 'Avant de commenter la pente, vérifiez le repère.' },
     });
     expect(ecran.question).toMatchObject({
       id: 'quiz-1',
@@ -85,7 +84,7 @@ describe('lireCoursStocke', () => {
     });
   });
 
-  it('lit un écran sans quiz ni guide sans lui en attribuer', () => {
+  it('lit un écran sans quiz sans lui en attribuer', () => {
     const cours = lireCoursStocke(
       coursAvecEcran(
         buildEcranStocke({
@@ -103,7 +102,6 @@ describe('lireCoursStocke', () => {
     );
 
     expect(cours.ecrans[0].question).toBeUndefined();
-    expect(cours.ecrans[0].guide).toBeUndefined();
   });
 
   it('lit un écran historique titré sans présentation, tel que la migration 1779600 le relit', () => {
@@ -188,10 +186,6 @@ describe('lireCoursStocke', () => {
           },
         },
       }),
-    ],
-    [
-      'une propriété de guide inconnue',
-      buildEcranStockeAvec({ guide: { objective: 'Faire émerger' } }),
     ],
     [
       'une propriété d écran inconnue',

@@ -102,7 +102,6 @@ export const ACTE_4: moteur.Acte = [
               type: 'feuille',
               plan: PLAN_DE_LA_CAMIONNETTE,
               attendus: ATTENDUS_DE_LA_CAMIONNETTE,
-              seuilReussite: 0.8,
             },
           },
         ],

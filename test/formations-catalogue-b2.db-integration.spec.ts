@@ -40,14 +40,6 @@ const NOMBRE_QUESTIONS = COURS_DE_REFERENCE.ecrans.filter(
 ).length;
 const RUBRIQUE_A_DIRE_DES_NOTES = /À dire : (.+?)(?= [A-ZÉ][\p{L}’' ]* : |$)/gu;
 
-function aDireDuGuide(guide: unknown): string[] {
-  if (typeof guide !== 'object' || guide === null) return [];
-  const aDire = (guide as Record<string, unknown>)['aDire'];
-  return typeof aDire === 'string' && aDire.trim().length > 0
-    ? [aDire.trim()]
-    : [];
-}
-
 function aDireDesNotes(notes: string): string[] {
   return [...notes.matchAll(RUBRIQUE_A_DIRE_DES_NOTES)].map(([, texte]) =>
     texte.trim(),
@@ -296,10 +288,9 @@ describeDb('catalogue B2 migré', () => {
     const ecrans = await contexte.dataSource
       .getRepository(FormationScreenContentEntity)
       .find();
-    const rubriquesADire = ecrans.flatMap((ecran) => [
-      ...aDireDuGuide(ecran.proprietes['guide']),
-      ...aDireDesNotes(ecran.notes),
-    ]);
+    const rubriquesADire = ecrans.flatMap((ecran) =>
+      aDireDesNotes(ecran.notes),
+    );
     const sujets = await Promise.all(
       [VERSION_PUBLIEE].map(
         async (version) => tirer(await coursDeLaVersion(version), 0).sujet,

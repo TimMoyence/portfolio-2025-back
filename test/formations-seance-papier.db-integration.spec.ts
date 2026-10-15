@@ -106,11 +106,7 @@ describeDb('Seance du B2-02 en mode papier (db integration)', () => {
       expect(refus).toEqual([]);
       expect(reveles.length).toBeGreaterThan(0);
       expect(
-        reveles.filter(
-          (screenId) =>
-            pilotageEnBase[screenId]?.revele !== true &&
-            pilotageEnBase[screenId]?.phase !== 'revele',
-        ),
+        reveles.filter((screenId) => pilotageEnBase[screenId]?.revele !== true),
       ).toEqual([]);
       expect(seance?.ecranCourant).toBe(cours.ecrans.length - 1);
     },

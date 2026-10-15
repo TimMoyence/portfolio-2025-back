@@ -30,7 +30,7 @@ import { tirer } from './Tirage';
 export const REGLES_STRUCTURE = [
   'exposition-continue',
   'ratio-interaction',
-  'ouverture-cloture',
+  'cloture',
   'duree-ecran',
   'duree-cours',
   'reference-inconnue',
@@ -199,20 +199,12 @@ function controlerRatio({ cours }: Analyse): readonly Manquement[] {
   ];
 }
 
-function controlerOuverture(premier: Ecran): readonly Manquement[] {
-  if (premier.brique === BRIQUE_OUVERTURE) {
+function controlerCloture({ cours }: Analyse): readonly Manquement[] {
+  if (questionsDuCours(cours).length === 0) {
     return [];
   }
-  const identifiant = nomEcran(premier, 0);
-  return [
-    {
-      ecran: identifiant,
-      raison: `le cours ouvre sur « ${identifiant} » de type « ${premier.brique} » : un cours ouvre par un rappel espacé (« ${BRIQUE_OUVERTURE} »), qui rouvre la mémoire avant d'y ajouter.`,
-    },
-  ];
-}
-
-function controlerCloture(dernier: Ecran, rang: number): readonly Manquement[] {
+  const rang = cours.ecrans.length - 1;
+  const dernier = cours.ecrans[rang];
   if (dernier.brique === BRIQUE_CLOTURE) {
     return [];
   }
@@ -222,19 +214,6 @@ function controlerCloture(dernier: Ecran, rang: number): readonly Manquement[] {
       ecran: identifiant,
       raison: `le cours se clôt sur « ${identifiant} » de type « ${dernier.brique} » : un cours clôt par un exit ticket (« ${BRIQUE_CLOTURE} »), sans quoi la séance finit sans rien mesurer.`,
     },
-  ];
-}
-
-function controlerOuvertureCloture({ cours }: Analyse): readonly Manquement[] {
-  if (questionsDuCours(cours).length === 0) {
-    return [];
-  }
-  const [premier] = cours.ecrans;
-  const rangDernier = cours.ecrans.length - 1;
-  const dernier = cours.ecrans[rangDernier];
-  return [
-    ...controlerOuverture(premier),
-    ...controlerCloture(dernier, rangDernier),
   ];
 }
 
@@ -846,7 +825,7 @@ const GABARITS_A_CYCLE: readonly Gabarit[] = ['v3', 'b3'];
 const REGLES: readonly Regle[] = [
   { id: 'exposition-continue', controler: controlerExposition },
   { id: 'ratio-interaction', controler: controlerRatio },
-  { id: 'ouverture-cloture', controler: controlerOuvertureCloture },
+  { id: 'cloture', controler: controlerCloture },
   { id: 'duree-ecran', controler: controlerDureeEcran },
   { id: 'duree-cours', controler: controlerDureeCours },
   { id: 'reference-inconnue', controler: controlerReferences },

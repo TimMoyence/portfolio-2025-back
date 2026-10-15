@@ -7,7 +7,10 @@ import {
   PhaseNonMonotoneError,
   PilotageIncompatibleError,
 } from '../errors/FormationErrors';
-import { correctionsRevelables } from './CorrectionSurPlace';
+import {
+  correctionsRevelables,
+  demandeDeCorrection,
+} from './CorrectionSurPlace';
 import { questionsDe } from './Cours';
 import {
   activitesDeLEcran,
@@ -142,6 +145,17 @@ function sansClesNonPilotables(
   );
 }
 
+export function demandeAppliquee(
+  ecran: Ecran,
+  demande: PilotageDemande,
+): PilotageDemande {
+  const complete = demandeDeCorrection(ecran, demande);
+  const revele = complete.revele === true || complete.phase === 'revele';
+  return estVoteJumele(ecran) && revele
+    ? { ...complete, phase: 'revele', revele: true }
+    : complete;
+}
+
 export function fusionnerPilotage(
   courant: Readonly<Record<string, PilotageEcran>>,
   demande: PilotageDemande,
@@ -188,9 +202,7 @@ export function assertPhaseOuverte(
   }
   const phase = phaseDuVote(pilotage[question.ecranId]);
   const ouverte =
-    question.ouverture === 'principale'
-      ? phase === 'vote'
-      : phase === 'revote' || phase === 'revele';
+    question.ouverture === 'principale' ? phase === 'vote' : phase === 'revote';
   if (!ouverte) {
     throw new PhaseFermeeError(question.ecranId);
   }

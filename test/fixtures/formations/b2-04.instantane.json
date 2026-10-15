@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "675d15f7adebeb707da14333cce9ec97057ce55e4d0f3f224e33a66bd2f656c6",
+  "empreinte": "7b3b11308928d4a538d79f2384bd153799bf999d5a90ea5a237ba2529501f6ff",
   "sujet": {
     "id": "b2-04-suites",
     "titre": "Suites : modéliser une évolution régulière",
@@ -2053,7 +2053,7 @@
             "confusions": [
               {
                 "id": "pente-ordonnee-inversees",
-                "libelle": "Inverser les deux séries dans PENTE ou ORDONNEE.ORIGINE, ou prendre la pente pour l’ordonnée à l’origine."
+                "libelle": "Inverser les deux séries dans PENTE ou ORDONNEE.ORIGINE, ou confondre le coefficient de x (la pente) et la valeur pour x = 0 (l’ordonnée à l’origine), dans un sens ou dans l’autre."
               }
             ]
           },
@@ -2063,7 +2063,7 @@
             "confusions": [
               {
                 "id": "negation-comparaison",
-                "libelle": "Nier « x > a » en « x < a » au lieu de « x ≤ a » : la borne est oubliée."
+                "libelle": "Nier une comparaison sans faire changer la borne de camp : le contraire de « x > a » est « x ≤ a » et non « x < a », celui de « x ≥ a » est « x < a » et non « x ≤ a », celui de « x < a » est « x ≥ a » et non « x > a »."
               }
             ]
           }
@@ -2608,7 +2608,7 @@
             "confusions": [
               {
                 "id": "nature-de-suite-confondue",
-                "libelle": "Confondre « ajouter toujours le même nombre » (suite arithmétique) et « multiplier toujours par le même nombre » (suite géométrique)."
+                "libelle": "Confondre « ajouter toujours le même nombre » (suite arithmétique) et « multiplier toujours par le même nombre » (suite géométrique), dans un sens ou dans l’autre, ou ajouter un taux au lieu de multiplier par lui."
               }
             ]
           },
@@ -2628,11 +2628,11 @@
             "confusions": [
               {
                 "id": "pente-ordonnee-inversees",
-                "libelle": "Inverser les deux séries dans PENTE ou ORDONNEE.ORIGINE, ou prendre la pente pour l’ordonnée à l’origine."
+                "libelle": "Inverser les deux séries dans PENTE ou ORDONNEE.ORIGINE, ou confondre le coefficient de x (la pente) et la valeur pour x = 0 (l’ordonnée à l’origine), dans un sens ou dans l’autre."
               },
               {
                 "id": "nature-de-suite-confondue",
-                "libelle": "Confondre « ajouter toujours le même nombre » (suite arithmétique) et « multiplier toujours par le même nombre » (suite géométrique)."
+                "libelle": "Confondre « ajouter toujours le même nombre » (suite arithmétique) et « multiplier toujours par le même nombre » (suite géométrique), dans un sens ou dans l’autre, ou ajouter un taux au lieu de multiplier par lui."
               }
             ]
           },
@@ -2853,8 +2853,7 @@
                 "memeQue": "C3"
               }
             }
-          ],
-          "seuilReussite": 0.8
+          ]
         },
         "explications": [
           {
@@ -3249,7 +3248,7 @@
             "confusions": [
               {
                 "id": "nature-de-suite-confondue",
-                "libelle": "Confondre « ajouter toujours le même nombre » (suite arithmétique) et « multiplier toujours par le même nombre » (suite géométrique)."
+                "libelle": "Confondre « ajouter toujours le même nombre » (suite arithmétique) et « multiplier toujours par le même nombre » (suite géométrique), dans un sens ou dans l’autre, ou ajouter un taux au lieu de multiplier par lui."
               },
               {
                 "id": "coefficient-confondu-avec-taux",
@@ -3550,8 +3549,7 @@
                 "memeQue": "E3"
               }
             }
-          ],
-          "seuilReussite": 0.8
+          ]
         },
         "explications": [
           {
@@ -3694,7 +3692,7 @@
             "confusions": [
               {
                 "id": "seuil-mal-arrondi",
-                "libelle": "Arrondir à l’entier inférieur le rang solution d’une inéquation de seuil, au lieu du premier entier qui la vérifie."
+                "libelle": "Mal conclure une recherche de seuil, en gardant la solution non entière d’une inéquation, en l’arrondissant à l’entier inférieur ou en arrêtant une boucle un passage trop tôt, au lieu de retenir le premier rang entier qui atteint le seuil."
               }
             ]
           },
@@ -4053,8 +4051,7 @@
           "tolerance": {
             "type": "absolue",
             "valeur": 0.01
-          },
-          "seuilReussite": 0.75
+          }
         },
         "explications": [
           {
@@ -4164,7 +4161,7 @@
             "confusions": [
               {
                 "id": "seuil-mal-arrondi",
-                "libelle": "Arrondir à l’entier inférieur le rang solution d’une inéquation de seuil, au lieu du premier entier qui la vérifie."
+                "libelle": "Mal conclure une recherche de seuil, en gardant la solution non entière d’une inéquation, en l’arrondissant à l’entier inférieur ou en arrêtant une boucle un passage trop tôt, au lieu de retenir le premier rang entier qui atteint le seuil."
               },
               {
                 "id": "rang-confondu-avec-annee",
@@ -4739,8 +4736,7 @@
               },
               "forme": "references"
             }
-          ],
-          "seuilReussite": 0.8
+          ]
         },
         "explications": [
           {
@@ -4916,7 +4912,7 @@
             "confusions": [
               {
                 "id": "nature-de-suite-confondue",
-                "libelle": "Confondre « ajouter toujours le même nombre » (suite arithmétique) et « multiplier toujours par le même nombre » (suite géométrique)."
+                "libelle": "Confondre « ajouter toujours le même nombre » (suite arithmétique) et « multiplier toujours par le même nombre » (suite géométrique), dans un sens ou dans l’autre, ou ajouter un taux au lieu de multiplier par lui."
               }
             ]
           },
@@ -4926,7 +4922,7 @@
             "confusions": [
               {
                 "id": "nature-de-suite-confondue",
-                "libelle": "Confondre « ajouter toujours le même nombre » (suite arithmétique) et « multiplier toujours par le même nombre » (suite géométrique)."
+                "libelle": "Confondre « ajouter toujours le même nombre » (suite arithmétique) et « multiplier toujours par le même nombre » (suite géométrique), dans un sens ou dans l’autre, ou ajouter un taux au lieu de multiplier par lui."
               }
             ]
           },
@@ -4940,7 +4936,7 @@
               },
               {
                 "id": "sens-de-variation",
-                "libelle": "Oublier le signe d’une variation : une baisse s’écrit avec un signe moins."
+                "libelle": "Se tromper sur le sens d’une variation : oublier le signe moins d’une baisse, traduire une baisse par le coefficient 1 + t au lieu de 1 − t, ou juger croissante une suite géométrique de raison positive, qui ne croît que si sa raison dépasse 1."
               }
             ]
           },
@@ -4990,7 +4986,7 @@
             "confusions": [
               {
                 "id": "seuil-mal-arrondi",
-                "libelle": "Arrondir à l’entier inférieur le rang solution d’une inéquation de seuil, au lieu du premier entier qui la vérifie."
+                "libelle": "Mal conclure une recherche de seuil, en gardant la solution non entière d’une inéquation, en l’arrondissant à l’entier inférieur ou en arrêtant une boucle un passage trop tôt, au lieu de retenir le premier rang entier qui atteint le seuil."
               }
             ]
           },
@@ -5030,7 +5026,7 @@
             "confusions": [
               {
                 "id": "sens-de-variation",
-                "libelle": "Oublier le signe d’une variation : une baisse s’écrit avec un signe moins."
+                "libelle": "Se tromper sur le sens d’une variation : oublier le signe moins d’une baisse, traduire une baisse par le coefficient 1 + t au lieu de 1 − t, ou juger croissante une suite géométrique de raison positive, qui ne croît que si sa raison dépasse 1."
               }
             ]
           }
@@ -5357,7 +5353,7 @@
               },
               {
                 "id": "nature-de-suite-confondue",
-                "libelle": "Confondre « ajouter toujours le même nombre » (suite arithmétique) et « multiplier toujours par le même nombre » (suite géométrique)."
+                "libelle": "Confondre « ajouter toujours le même nombre » (suite arithmétique) et « multiplier toujours par le même nombre » (suite géométrique), dans un sens ou dans l’autre, ou ajouter un taux au lieu de multiplier par lui."
               },
               {
                 "id": "coefficient-confondu-avec-taux",

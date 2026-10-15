@@ -154,7 +154,6 @@ describe('deroulePresentateur (corrigés au déroulé, B22)', () => {
           forme: { memeQue: 'D2' },
         },
       ],
-      seuilReussite: 0.8,
     });
     expect(ecran('fp-table-build').corrigeEcran).toEqual({
       type: 'tableau',
@@ -163,7 +162,6 @@ describe('deroulePresentateur (corrigés au déroulé, B22)', () => {
         { rang: 1, cle: 'prix', valeur: 20.52 },
       ],
       tolerance: { type: 'absolue', valeur: 0.01 },
-      seuilReussite: 0.75,
     });
     expect(ecran('fp-cardsort').corrigeEcran).toMatchObject({
       type: 'classement',

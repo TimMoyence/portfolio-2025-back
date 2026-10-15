@@ -52,7 +52,7 @@ describe('verifierStructure', () => {
     expect(REGLES_STRUCTURE).toEqual([
       'exposition-continue',
       'ratio-interaction',
-      'ouverture-cloture',
+      'cloture',
       'duree-ecran',
       'duree-cours',
       'reference-inconnue',
@@ -119,12 +119,12 @@ describe('verifierStructure', () => {
     expect(regles(cours)).toContain('exposition-continue');
   });
 
-  it('exige l ouverture par un rappel et la cloture par un exit ticket', () => {
-    const inverse = recomposer(base, [cloture, citation, atelier, ouverture]);
+  it('accepte un cours qui n ouvre pas par un rappel et exige la cloture par un exit ticket', () => {
+    const sansRappel = recomposer(base, [citation, atelier, cloture]);
+    const sansBillet = recomposer(base, [ouverture, citation, atelier]);
 
-    expect(
-      regles(inverse).filter((regle) => regle === 'ouverture-cloture'),
-    ).toHaveLength(2);
+    expect(regles(sansRappel)).toEqual([]);
+    expect(regles(sansBillet)).toEqual(['cloture']);
   });
 
   it('refuse une remediation vers un ecran absent et accepte un ecran du cours', () => {

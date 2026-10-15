@@ -1,7 +1,6 @@
 import {
   ApiExtraModels,
   ApiProperty,
-  ApiPropertyOptional,
   getSchemaPath,
   OmitType,
 } from '@nestjs/swagger';
@@ -13,10 +12,7 @@ import type {
   EcranDeroule,
 } from '../../../domain/contrats/deroule';
 import type { FormeFormule } from '../../../domain/cours/Corrige';
-import {
-  CorrigePresentateurResponseDto,
-  GuideFormateurResponseDto,
-} from '../deroule.response.dto';
+import { CorrigePresentateurResponseDto } from '../deroule.response.dto';
 import { OptionPubliqueResponseDto } from './rappels.response.dto';
 import { EcranPublicResponseDto, SujetResponseDto } from './sujet.response.dto';
 
@@ -65,9 +61,6 @@ class CorrigeFeuillePresentateurResponseDto {
 
   @ApiProperty({ type: [AttenduFeuillePresentateurResponseDto] })
   attendus: AttenduFeuillePresentateurResponseDto[];
-
-  @ApiProperty({ example: 0.8 })
-  seuilReussite: number;
 }
 
 export class AttenduTableauPresentateurResponseDto {
@@ -90,9 +83,6 @@ class CorrigeTableauPresentateurResponseDto {
 
   @ApiProperty({ type: ToleranceResponseDto })
   tolerance: ToleranceResponseDto;
-
-  @ApiProperty({ example: 0.75 })
-  seuilReussite: number;
 }
 
 export class AttenduClassementPresentateurResponseDto {
@@ -112,9 +102,6 @@ class CorrigeClassementPresentateurResponseDto {
 
   @ApiProperty({ type: [AttenduClassementPresentateurResponseDto] })
   attendus: AttenduClassementPresentateurResponseDto[];
-
-  @ApiProperty({ example: 0.75 })
-  seuilReussite: number;
 }
 
 export class EnigmePresentateurResponseDto {
@@ -238,9 +225,6 @@ export class EcranDerouleResponseDto
     ],
   })
   corrigeEcran: CorrigeEcranPresentateur | null;
-
-  @ApiPropertyOptional({ type: GuideFormateurResponseDto })
-  guide?: GuideFormateurResponseDto;
 }
 
 export class DerouleResponseDto

@@ -7,12 +7,12 @@ import type {
 } from '../domain/contrats/pilotage';
 import { sourcesAReveler } from '../domain/cours/Corrections';
 import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
-import { demandeDeCorrection } from '../domain/cours/CorrectionSurPlace';
 import { ecranParId, ecranRevele } from '../domain/cours/EcranServi';
 import { etatEnDirect } from '../domain/EtatEnDirect';
 import type { PilotageDemande } from '../domain/cours/PilotageEcrans';
 import {
   assertPilotageCompatible,
+  demandeAppliquee,
   fusionnerPilotage,
 } from '../domain/cours/PilotageEcrans';
 import type { ISessionStateCache } from '../domain/ISessionStateCache.port';
@@ -137,11 +137,14 @@ export class ControlSessionUseCase {
       cours,
       misAJour.ecranCourant ?? session.ecranCourant,
     ).filter((source) => !ecranRevele(pilotage[source]));
-    return aReveler.reduce(
-      (courant, screenId) =>
-        fusionnerPilotage(courant, { screenId, revele: true }),
-      pilotage,
-    );
+    return aReveler.reduce((courant, screenId) => {
+      const revelation: PilotageDemande = { screenId, revele: true };
+      const ecran = ecranParId(cours, screenId);
+      return fusionnerPilotage(
+        courant,
+        ecran === undefined ? revelation : demandeAppliquee(ecran, revelation),
+      );
+    }, pilotage);
   }
 
   private pilotageFusionne(
@@ -158,7 +161,7 @@ export class ControlSessionUseCase {
     assertPilotageCompatible(ecran, demande);
     return fusionnerPilotage(
       session.pilotageEcrans,
-      demandeDeCorrection(ecran, demande),
+      demandeAppliquee(ecran, demande),
     );
   }
 

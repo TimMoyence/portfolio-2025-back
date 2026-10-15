@@ -508,7 +508,7 @@ précédents : `suite-geometrique`, `somme-de-termes`, `coefficient-multiplicate
 | `nombre-de-termes-decale`                   | somme-de-termes            | Compter un terme de trop ou de moins.                       | B2-05-A2-02-COURS-ANNUITES          |
 | `terme-pris-pour-somme`                     | somme-de-termes            | Donner le dernier terme pour la somme.                      | B2-05-A2-03-COURS-ANNUITES-TABLEUR  |
 | `interets-sur-capital-initial`              | tableau-d-amortissement    | Calculer les intérêts sur le capital emprunté chaque année. | B2-05-A3-03-COURS-EMPRUNT           |
-| `annuite-confondue-avec-amortissement`      | tableau-d-amortissement    | Prendre l'annuité pour le capital remboursé.                | B2-05-A3-03-COURS-EMPRUNT           |
+| `annuite-confondue-avec-amortissement`      | tableau-d-amortissement    | Confondre l'annuité et le capital remboursé.                | B2-05-A3-03-COURS-EMPRUNT           |
 | `cout-credit-confondu-avec-total-rembourse` | cout-du-credit             | Donner le total remboursé pour le coût.                     | B2-05-A3-04-COURS-COUT-TABLEUR      |
 | `capital-de-vpm-non-signe`                  | tableur                    | Écrire le capital sans signe moins dans `VPM`.              | B2-05-A3-04-COURS-COUT-TABLEUR      |
 
