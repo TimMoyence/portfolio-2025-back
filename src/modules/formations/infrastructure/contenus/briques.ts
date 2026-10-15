@@ -1,6 +1,7 @@
 import type { z } from 'zod';
 import {
   mapperAuMoinsUn,
+  type AuMoinsUn,
   type AuMoinsUnModifiable,
 } from '../../../../common/domain/au-moins-un';
 import type { ConceptId } from '../../domain/cours/banque/concepts';
@@ -19,6 +20,7 @@ export type EcranDeRecit = Extract<
   { readonly brique: 'fp-story' }
 >;
 export type SocleDEcran = Omit<EcranDeRecit, 'brique' | 'proprietes'>;
+type SocleNomme = Pick<SocleDEcran, 'screenId' | 'titre' | 'concepts'>;
 type ReserveDuRecit = Omit<EcranDeRecit['proprietes'], 'presentation'>;
 type EcranDeTri = Extract<EcranDuCours, { readonly brique: 'fp-cardsort' }>;
 type ProprietesDeClassement = EcranDeTri['proprietes'];
@@ -87,11 +89,7 @@ export function tempsDeLExercice(reflexion: number, travail: number): string {
 }
 
 export function pulsation(
-  {
-    screenId,
-    titre,
-    concepts,
-  }: Pick<SocleDEcran, 'screenId' | 'titre' | 'concepts'>,
+  { screenId, titre, concepts }: SocleNomme,
   sondage: EcranDePulsation['proprietes']['sondage'],
   ...notesDuJalon: string[]
 ): EcranDePulsation {
@@ -179,28 +177,36 @@ export function ecranV2(
   };
 }
 
-interface Carte {
+interface CarteRangee {
   readonly id: string;
   readonly libelle: string;
   readonly categorie: string;
-  readonly confusion: ConfusionId;
+  readonly confusions: Readonly<Partial<Record<string, ConfusionId>>>;
   readonly justification: string;
 }
 
-export function classement(
+type Carte<C extends string> = {
+  readonly [K in C]: Omit<CarteRangee, 'categorie' | 'confusions'> & {
+    readonly categorie: K;
+    readonly confusions: Readonly<Record<Exclude<C, K>, ConfusionId>>;
+  };
+}[C];
+
+export function classement<C extends string>(
   plan: {
     readonly id: string;
     readonly intitule: string;
     readonly dureeJeuMs?: number;
   },
   concept: ConceptId,
-  categories: AuMoinsUnModifiable<readonly [string, string]>,
-  cartes: AuMoinsUnModifiable<Carte>,
+  categories: AuMoinsUnModifiable<readonly [C, string]>,
+  cartes: AuMoinsUnModifiable<NoInfer<Carte<C>>>,
 ): Pick<ProprietesDeClassement, 'plan' | 'questions'> {
+  const rangees: AuMoinsUn<CarteRangee> = cartes;
   return {
     plan: {
       ...plan,
-      cartes: mapperAuMoinsUn(cartes, (carte) => ({
+      cartes: mapperAuMoinsUn(rangees, (carte) => ({
         id: carte.id,
         libelle: carte.libelle,
       })),
@@ -217,13 +223,17 @@ export function classement(
         noteCompte: true,
         corrige: {
           type: 'classement',
-          attendus: mapperAuMoinsUn(cartes, (carte) => ({
+          attendus: mapperAuMoinsUn(rangees, (carte) => ({
             carteId: carte.id,
             categorieId: carte.categorie,
-            confusionSiErreur: carte.confusion,
+            pieges: categories.flatMap(([id]) => {
+              const confusion = carte.confusions[id];
+              return confusion === undefined
+                ? []
+                : [{ categorieId: id, confusion }];
+            }),
             justification: carte.justification,
           })),
-          seuilReussite: 0.75,
         },
       },
     ],
@@ -265,6 +275,14 @@ export interface TempsDeCorrection {
   readonly minutes: number;
   readonly notes: AuMoinsUnModifiable<string>;
 }
+
+export const CORRECTION_AVANT_LA_PREMIERE_PAUSE: TempsDeCorrection = {
+  minutes: 2,
+  notes: [
+    CORRIGER_PAR_LA_MOINS_REUSSIE_SOUS_SON_SCORE,
+    'Transition : jalon 1, puis pause de 15 minutes.',
+  ],
+};
 
 function annoncerLaCorrection(notes: string, minutes: number): string {
   return notes.replace(
@@ -411,11 +429,7 @@ export function ecranDeRappel(
 }
 
 export function ficheMemo(
-  {
-    screenId,
-    titre,
-    concepts,
-  }: Pick<SocleDEcran, 'screenId' | 'titre' | 'concepts'>,
+  { screenId, titre, concepts }: SocleNomme,
   items: readonly unknown[],
 ): EcranDeRecit {
   return ecranV2(
@@ -438,6 +452,46 @@ export function ficheMemo(
       items,
     },
   );
+}
+
+export interface ImageDIllustration {
+  readonly fichier: string;
+  readonly imageAlt: string;
+}
+
+export function ecranDIllustration(
+  { screenId, titre, concepts }: SocleNomme,
+  dossier: string,
+  { fichier, imageAlt }: ImageDIllustration,
+  notes: AuMoinsUnModifiable<string>,
+): EcranDeRecit {
+  return ecranV2(
+    {
+      screenId,
+      titre,
+      diffusion: 'catalogue',
+      dureeMinutes: 1,
+      concepts,
+      notes: puces(...notes),
+    },
+    'illustration',
+    { image: `${dossier}/${fichier}`, imageAlt },
+  );
+}
+
+export function mediasDesIllustrations(
+  dossier: string,
+  illustrations: readonly (readonly [string, string, string])[],
+): ContenuDeCours['medias'] {
+  return illustrations.map(([id, fichier, titre]) => ({
+    id,
+    chemins: [`${dossier}/${fichier}`],
+    pageSource: null,
+    auteur: 'Asili Design',
+    date: '2026',
+    licence: 'CC BY-SA 4.0',
+    attribution: `${titre} · Asili Design, 2026 · CC BY-SA 4.0`,
+  }));
 }
 
 export function controle(reference: string, formuleReference: string) {
@@ -467,7 +521,6 @@ export function questionDeTableau(
       type: 'tableau',
       attendus,
       tolerance: { type: 'absolue', valeur: ecartToleree },
-      seuilReussite: 0.75,
     },
   };
 }

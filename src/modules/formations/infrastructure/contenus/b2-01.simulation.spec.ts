@@ -216,7 +216,7 @@ describe('B2-01 — simulation du tirage et de l’ouverture', () => {
         expect(deroule.ecrans.flatMap((ecran) => ecran.questions)).toHaveLength(
           48,
         );
-        expect(Object.keys(deroule.remediations)).toHaveLength(38);
+        expect(Object.keys(deroule.remediations)).toHaveLength(43);
       }),
       { numRuns: 50 },
     );

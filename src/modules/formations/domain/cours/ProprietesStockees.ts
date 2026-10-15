@@ -2,7 +2,11 @@ import { MODALITES, REGIMES_DE_VERROU } from 'portfolio-2025-partage/contrats';
 import { z } from 'zod';
 import { dansLesBornes } from '../../../../common/domain/nombres/dans-les-bornes';
 import { CHAMPS_EXTRAITS_DU_CAS } from '../contrats/cours';
-import type { CorrigeProduction, CorrigeTableau } from './Corrige';
+import type {
+  CorrigeClassement,
+  CorrigeProduction,
+  CorrigeTableau,
+} from './Corrige';
 import {
   confusionsDuCorrige,
   corrigeClassement,
@@ -116,17 +120,6 @@ const quizNote = z
   });
 
 export type QuizNote = z.output<typeof quizNote>;
-
-const guideFormateur = z
-  .object({
-    aDire: texte.optional(),
-    question: texte.optional(),
-    reponse: texte.optional(),
-    calcul: texte.optional(),
-    relance: texte.optional(),
-    transition: texte.optional(),
-  })
-  .strict();
 
 const correctionDeQuiz = z
   .object({ correctIndex: rang, explanation: texte, nextAction: texte })
@@ -262,7 +255,6 @@ const proprietesRecitStockees = z
       .union([presentationInitiale, presentationDuDeck])
       .optional(),
     interaction: quizNote.optional(),
-    guide: guideFormateur.optional(),
     correction: correction.optional(),
     visuel: visuel.optional(),
     video: video.optional(),
@@ -320,7 +312,6 @@ const correctionSurPlace = z
   .strict();
 
 const communes = {
-  guide: guideFormateur.optional(),
   modalite: modalite.optional(),
   renvoi: texte.optional(),
   cadrageDuRenvoi: cadrageDuRenvoi.optional(),
@@ -360,7 +351,7 @@ const proprietesCas = z
   .object({
     metier: texte,
     situation: texte,
-    geste: texte,
+    geste: texte.nullable(),
     consequence: texte.nullable(),
     questionsLibres: auMoinsUn(questionLibre).optional(),
     ...communes,
@@ -639,6 +630,29 @@ function controleDeProduction<
   };
 }
 
+function signalerCasesSansConfusion(
+  attendu: CorrigeClassement['attendus'][number],
+  categories: readonly string[],
+  chemin: readonly (string | number)[],
+  signaler: Signaleur,
+): void {
+  const cases = attendu.pieges.map((piege) => piege.categorieId);
+  for (const categorie of cases.filter((id) => !categories.includes(id))) {
+    signaler(
+      chemin,
+      `la carte ${attendu.carteId} porte une confusion pour la case ${categorie}, absente du plan`,
+    );
+  }
+  for (const categorie of categories) {
+    if (categorie !== attendu.categorieId && !cases.includes(categorie)) {
+      signaler(
+        chemin,
+        `la carte ${attendu.carteId} rangée en ${categorie} n'a pas de confusion`,
+      );
+    }
+  }
+}
+
 const proprietesClassement = z
   .object({
     plan: planClassement,
@@ -664,6 +678,7 @@ const proprietesClassement = z
             `la catégorie ${attendu.categorieId} n'est pas au plan`,
           );
         }
+        signalerCasesSansConfusion(attendu, categories, chemin, signaler);
       }
       const sansAttendu = cartes.filter((carte) => !classees.includes(carte));
       if (sansAttendu.length > 0) {
@@ -831,7 +846,7 @@ const proprietesBillet = z
 const proprietesQuestionnaire = z
   .object({
     intitule: texte,
-    consigne: texte,
+    consigne: texte.optional(),
     regime: z.enum(REGIMES_DE_VERROU),
     ordre: z.enum(['fixe', 'melange']),
     questions: auMoinsUn(z.union([voteStocke, numeriqueStockee])),

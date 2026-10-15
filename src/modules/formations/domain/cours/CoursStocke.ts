@@ -160,6 +160,17 @@ function estGraphiqueSansDescription(ecran: EcranStocke): boolean {
   );
 }
 
+function porteUnSeuilDeReussite(ecran: EcranStocke): boolean {
+  switch (ecran.brique) {
+    case 'fp-cardsort':
+    case 'fp-sheet':
+    case 'fp-table-build':
+      return ecran.proprietes.questions[0].corrige.seuilReussite !== undefined;
+    default:
+      return false;
+  }
+}
+
 function controlerChampsPublics(
   { ecrans }: { readonly ecrans: readonly EcranStocke[] },
   contexte: z.RefinementCtx,
@@ -176,6 +187,12 @@ function controlerChampsPublics(
       signaler(
         ['proprietes', 'presentation', 'props', 'description'],
         'description textuelle obligatoire pour un graphique',
+      );
+    }
+    if (porteUnSeuilDeReussite(ecran)) {
+      signaler(
+        ['proprietes', 'questions', 0, 'corrige', 'seuilReussite'],
+        'seuil de réussite retiré : une production n’est juste que toute juste',
       );
     }
   });
@@ -248,10 +265,7 @@ interface SocleDEcran extends Communes {
   readonly notes: string;
 }
 
-type GuideFormateur = NonNullable<Ecran['guide']>;
-
 interface Communes {
-  readonly guide?: GuideFormateur;
   readonly modalite?: Modalite;
   readonly renvoi?: string;
   readonly cadrageDuRenvoi?: CadrageDuRenvoi;
@@ -260,7 +274,6 @@ interface Communes {
 }
 
 const CLES_COMMUNES: readonly string[] = [
-  'guide',
   'modalite',
   'renvoi',
   'cadrageDuRenvoi',
@@ -282,7 +295,6 @@ function socleDe(
   ecran: EcranStocke,
   {
     modalite,
-    guide,
     renvoi,
     cadrageDuRenvoi,
     correctionSurPlace,
@@ -297,7 +309,6 @@ function socleDe(
     concepts: ecran.concepts,
     notes: ecran.notes,
     ...(modalite === undefined ? {} : { modalite }),
-    ...(guide === undefined ? {} : { guide }),
     ...(renvoi === undefined ? {} : { renvoi }),
     ...(cadrageDuRenvoi === undefined ? {} : { cadrageDuRenvoi }),
     ...(correctionSurPlace === undefined ? {} : { correctionSurPlace }),
@@ -338,14 +349,13 @@ function versEcranDeRecit(
 ): Ecran {
   const { modalite, renvoi, cadrageDuRenvoi, pieceJointe, ...proprietes } =
     ecran.proprietes;
-  const { interaction, guide } = proprietes;
+  const { interaction } = proprietes;
   return {
     ...socleDe(ecran, { modalite, renvoi, cadrageDuRenvoi, pieceJointe }),
     brique: ecran.brique,
     proprietes,
     question:
       interaction === undefined ? undefined : questionDuQuiz(interaction),
-    guide,
   };
 }
 
@@ -375,7 +385,9 @@ function versEcranDeQuestionnaire(
     ...socle,
     brique: ecran.brique,
     intitule: ecran.proprietes.intitule,
-    consigne: ecran.proprietes.consigne,
+    ...(ecran.proprietes.consigne === undefined
+      ? {}
+      : { consigne: ecran.proprietes.consigne }),
     regime: ecran.proprietes.regime,
     ordre: ecran.proprietes.ordre,
     questions: mapperAuMoinsUn(ecran.proprietes.questions, (question) =>
@@ -506,11 +518,83 @@ function lire(
   return cours;
 }
 
+const triDUneVersionPassee = z.looseObject({
+  plan: z.looseObject({
+    categories: z.array(z.looseObject({ id: z.string() })),
+  }),
+  questions: z.tuple([
+    z.looseObject({
+      corrige: z.looseObject({
+        attendus: z.array(
+          z.looseObject({
+            categorieId: z.string(),
+            confusionSiErreur: z.string(),
+          }),
+        ),
+      }),
+    }),
+  ]),
+});
+
+function avecLesPiegesDUneVersionPassee(
+  ecran: EcranDeCoursBrut,
+): EcranDeCoursBrut {
+  const lecture =
+    ecran.brique === 'fp-cardsort'
+      ? triDUneVersionPassee.safeParse(ecran.proprietes)
+      : null;
+  if (lecture?.success !== true) {
+    return ecran;
+  }
+  const {
+    plan,
+    questions: [question],
+  } = lecture.data;
+  const attendus = question.corrige.attendus.map(
+    ({ confusionSiErreur, ...attendu }) => ({
+      ...attendu,
+      pieges: plan.categories
+        .filter(({ id }) => id !== attendu.categorieId)
+        .map(({ id }) => ({ categorieId: id, confusion: confusionSiErreur })),
+    }),
+  );
+  return {
+    ...ecran,
+    proprietes: {
+      ...lecture.data,
+      questions: [{ ...question, corrige: { ...question.corrige, attendus } }],
+    },
+  };
+}
+
+function sansLeGuideDUneVersionPassee(
+  ecran: EcranDeCoursBrut,
+): EcranDeCoursBrut {
+  if (!Object.hasOwn(ecran.proprietes, 'guide')) {
+    return ecran;
+  }
+  return {
+    ...ecran,
+    proprietes: Object.fromEntries(
+      Object.entries(ecran.proprietes).filter(([cle]) => cle !== 'guide'),
+    ),
+  };
+}
+
 export function lireCoursStocke({
   version,
   ...contenu
 }: ContenuDeCoursBrut): Cours {
-  return lire(coursStocke, contenu, `v${String(version)} en base`);
+  return lire(
+    coursStocke,
+    {
+      ...contenu,
+      ecrans: contenu.ecrans.map((ecran) =>
+        avecLesPiegesDUneVersionPassee(sansLeGuideDUneVersionPassee(ecran)),
+      ),
+    },
+    `v${String(version)} en base`,
+  );
 }
 
 export function lireContenuAPublier(contenu: ContenuAPublier): Cours {

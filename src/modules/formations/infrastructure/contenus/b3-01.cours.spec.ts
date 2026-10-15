@@ -144,7 +144,7 @@ fiche.decrireLaFicheDuCours('B3-01', COURS, {
   noteesParType: [4, 15, 2, 0, 0],
   enigmes: 0,
   rappels: 0,
-  remediations: 35,
+  remediations: 38,
   options: 12,
   catalogue: [
     'A1-02',
@@ -412,21 +412,26 @@ describe('B3-01 — acte 1 : consignes et corrections exactes', () => {
     );
   });
 
-  it('A1-07 · diagnostique un code en texte rangé parmi les catégories comme un identifiant pris pour une catégorie, et n_commande seul comme un nombre', () => {
-    const confusionDe = (carte: string) =>
-      attendusDe('B3-01-A1-07-TRI-COLONNES').find(
-        ({ carteId }) => carteId === carte,
-      )?.confusionSiErreur;
+  it('A1-07 · diagnostique un identifiant rangé parmi les catégories comme une clé prise pour une catégorie, et parmi les nombres comme un identifiant pris pour un nombre', () => {
+    const confusions = fiche.confusionsDuTri(
+      COURS_B3_01,
+      'B3-01-A1-07-TRI-COLONNES',
+    );
 
     for (const code of [
+      'n-commande',
       'agence-id',
       'client-id',
       'produit-id',
       'commercial-id',
     ]) {
-      expect(confusionDe(code)).toBe('cle-prise-pour-categorie');
+      expect(confusions[`${code} → categorie`]).toBe(
+        'cle-prise-pour-categorie',
+      );
+      expect(confusions[`${code} → numerique`]).toBe(
+        'identifiant-pris-pour-nombre',
+      );
     }
-    expect(confusionDe('n-commande')).toBe('identifiant-pris-pour-nombre');
     expect(libelleDeConfusion('cle-prise-pour-categorie')).toContain(
       'commercial_id',
     );
@@ -466,20 +471,30 @@ describe('B3-01 — acte 1 : consignes et corrections exactes', () => {
     expect(texte).not.toContain('1 250');
   });
 
-  it('A1-13 · diagnostique un mauvais classement par la confusion qui le décrit, jamais par une suppression', () => {
-    const attendus = attendusDe('B3-01-A1-13-TRI-ANOMALIES');
-    const confusionsDe = (categorie: string) =>
-      new Set(
-        attendus
-          .filter(({ categorieId }) => categorieId === categorie)
-          .map(({ confusionSiErreur }) => confusionSiErreur),
-      );
+  it('A1-13 · diagnostique un mauvais classement par la confusion qui le décrit selon la case choisie, jamais par une suppression', () => {
+    const CONFUSION_DE_LA_GRILLE: Readonly<Record<string, string>> = {
+      'faux-automatique → faux-humain':
+        'correction-certaine-renvoyee-a-un-humain',
+      'faux-automatique → suspect-automatique':
+        'erreur-certaine-jugee-douteuse',
+      'faux-automatique → suspect-humain':
+        'correction-certaine-renvoyee-a-un-humain',
+      'faux-humain → faux-automatique': 'suspect-corrige-sans-validation',
+      'faux-humain → suspect-automatique': 'suspect-corrige-sans-validation',
+      'faux-humain → suspect-humain': 'erreur-certaine-jugee-douteuse',
+      'suspect-humain → faux-automatique': 'suspect-corrige-sans-validation',
+      'suspect-humain → faux-humain': 'donnee-douteuse-jugee-fausse',
+      'suspect-humain → suspect-automatique': 'suspect-corrige-sans-validation',
+    };
+    const TRI = 'B3-01-A1-13-TRI-ANOMALIES';
 
-    expect(confusionsDe('faux-automatique')).toEqual(
-      new Set(['correction-certaine-renvoyee-a-un-humain']),
-    );
-    expect(confusionsDe('faux-humain')).toEqual(
-      new Set(['suspect-corrige-sans-validation']),
+    expect(fiche.confusionsDuTri(COURS_B3_01, TRI)).toEqual(
+      fiche.confusionsDuTri(
+        COURS_B3_01,
+        TRI,
+        ({ attendue, choisie }) =>
+          CONFUSION_DE_LA_GRILLE[`${attendue} → ${choisie}`],
+      ),
     );
     expect(remediationDe('correction-certaine-renvoyee-a-un-humain')).toBe(
       'B3-01-A1-10-COURS-GRILLE',
@@ -513,21 +528,44 @@ describe('B3-01 — acte 1 : consignes et corrections exactes', () => {
     expect(aVerifier).not.toContain('16 %');
   });
 
-  it('A1-07 · rattache les dates, les mesures et le booléen à la confusion de type, n_commande à ses chiffres', () => {
+  it('A1-07 · rattache les dates, les mesures et le booléen, dans chaque mauvaise case, à la confusion de type', () => {
     const attendus = attendusDe('B3-01-A1-07-TRI-COLONNES');
-    const horsIdentifiants = attendus.filter(
-      ({ categorieId }) => !['identifiant', 'categorie'].includes(categorieId),
-    );
+    const pieges = attendus
+      .filter(
+        ({ categorieId }) =>
+          !['identifiant', 'categorie'].includes(categorieId),
+      )
+      .flatMap((attendu) => attendu.pieges);
 
-    expect(horsIdentifiants).toHaveLength(7);
+    expect(pieges).toHaveLength(7 * 4);
     expect(
-      horsIdentifiants.filter(
-        ({ confusionSiErreur }) =>
-          confusionSiErreur !== 'type-de-variable-confondu',
+      pieges.filter(
+        ({ confusion }) => confusion !== 'type-de-variable-confondu',
       ),
     ).toEqual([]);
     expect(texteDe('B3-01-A1-07-TRI-COLONNES')).not.toMatch(
       /écri(?:t|vent) en chiffres/,
+    );
+  });
+
+  it('QP-15 · A1-07 nomme l erreur de chaque colonne selon le type où elle est rangée', () => {
+    const TRI = 'B3-01-A1-07-TRI-COLONNES';
+    const confusionDuType = ({ attendue, choisie }: fiche.CoupleDeTri) => {
+      if (attendue !== 'identifiant') {
+        return attendue === 'categorie' && choisie === 'identifiant'
+          ? 'libelle-pris-pour-cle'
+          : 'type-de-variable-confondu';
+      }
+      if (choisie === 'numerique') {
+        return 'identifiant-pris-pour-nombre';
+      }
+      return choisie === 'categorie'
+        ? 'cle-prise-pour-categorie'
+        : 'identifiant-range-sous-un-autre-type';
+    };
+
+    expect(fiche.confusionsDuTri(COURS_B3_01, TRI)).toEqual(
+      fiche.confusionsDuTri(COURS_B3_01, TRI, confusionDuType),
     );
   });
 
@@ -892,11 +930,14 @@ describe('B3-01 — actes 2 et 3 : consignes et corrections exactes', () => {
     expect(texte).not.toMatch(/Produits!\$?[A-Z]:/);
   });
 
-  it('A2-04 · décrit la recherche non figée telle qu’elle glisse : la seule ligne Ouest trouvée date de 2025', () => {
+  it('A2-04 · décrit la recherche non figée telle qu’elle glisse : seules les lignes de tête de la reprise trouvent leur agence', () => {
     const [, ouest] = explicationsDe('B3-01-A2-04-ATELIER-RECHERCHE');
 
     expect(ouest).not.toContain('aucune ne porte Ouest');
-    expect(ouest).toContain('date de 2025');
+    expect(ouest).not.toContain('date de 2025');
+    expect(ouest).toContain(
+      'dès la ligne 14, elle a quitté la table et plus aucune agence n’est trouvée',
+    );
   });
 
   it('A2-05 · pose le contrat en jours ouvrés dans le vote et des options dans la même unité', () => {
@@ -976,20 +1017,55 @@ describe('B3-01 — actes 2 et 3 : consignes et corrections exactes', () => {
     );
   });
 
-  it('A2-04 · donne au total nul ses deux causes à la dernière question, sans souffler la recherche non figée à la première', () => {
+  it('A2-04 · donne les causes de chaque montant à la dernière question, sans souffler la recherche non figée à la première', () => {
     const [rennes, ouest] = explicationsDe('B3-01-A2-04-ATELIER-RECHERCHE');
 
     expect(rennes).not.toContain('sans $');
     expect(rennes).not.toContain('guillemets');
     expect(ouest).toContain(
-      'Le même glissement vide la colonne categorie : à la première question aussi, 0 €',
-    );
-    expect(ouest).toContain(
       'La fonction DATE écrite dans les guillemets, ">=DATE(2026;1;1)", n’est pas calculée : Excel compare au texte « DATE(2026;1;1) » et ne trouve rien : 0 €, ici comme à la première question',
     );
     expect(ouest).not.toContain('tout entier entre guillemets');
+  });
+
+  it.each(['b3-01-a2-ca-rennes-info', 'b3-01-a2-ca-ouest'] as const)(
+    'QP-16 · %s : le critère de date dans les guillemets et la plage recopiée sans $ donnent deux montants distincts, chacun rattaché à sa confusion',
+    (id) => {
+      const pieges = new Map(
+        tirer(COURS, 0).solutions[id].pieges.map(
+          ({ valeur, misconception }) => [misconception, valeur],
+        ),
+      );
+      const critere = pieges.get('critere-mal-ecrit');
+      const plage = pieges.get('plage-recherche-non-figee');
+
+      expect(
+        [...pieges.keys()].sort((une, autre) => une.localeCompare(autre)),
+      ).toEqual([
+        'critere-mal-ecrit',
+        'periode-mal-delimitee',
+        'plage-recherche-non-figee',
+      ]);
+      expect(critere).toBe(0);
+      expect(plage).toBeGreaterThan(0);
+      expect(new Set(pieges.values()).size).toBe(pieges.size);
+      expect([...pieges.values()]).not.toContain(VALEURS_B3_01[id]);
+    },
+  );
+
+  it('QP-16 · dit à la dernière question les deux montants de chaque question, chacun avec son erreur', () => {
+    const [, ouest] = explicationsDe('B3-01-A2-04-ATELIER-RECHERCHE');
+    const plage = (id: 'b3-01-a2-ca-rennes-info' | 'b3-01-a2-ca-ouest') =>
+      PIEGES_B3_01[id]['plage-recherche-non-figee'];
+
     expect(ouest).toContain(
-      'Avant la ligne 14, la seule ligne Ouest trouvée, la ligne 2, date de 2025',
+      `Avant, les seules lignes de l’Ouest trouvées, les lignes 4 à 6, forment une commande de Rennes du 30 septembre : ${plage('b3-01-a2-ca-ouest')} €`,
+    );
+    expect(ouest).toContain(
+      `Le même glissement vide la colonne categorie dès la ligne 42 : à la première question, seuls les deux produits informatiques de cette commande restent, ${plage('b3-01-a2-ca-rennes-info')} €`,
+    );
+    expect(ouest).toContain(
+      'Excel compare au texte « DATE(2026;1;1) » et ne trouve rien : 0 €, ici comme à la première question',
     );
   });
 

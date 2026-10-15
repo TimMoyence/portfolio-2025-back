@@ -14,9 +14,11 @@ import {
   attendreLaFeuille,
   attendreLesEnigmes,
   attendreLesNumeriques,
+  confusionsDuTri,
   corrigeDe,
   decrireLaFicheDuCours,
   valeursEtPieges,
+  type CoupleDeTri,
 } from '../../../../../test/helpers/fiche-de-cours';
 import {
   clesDe,
@@ -131,7 +133,7 @@ decrireLaFicheDuCours('B2-01', COURS, {
   noteesParType: [19, 7, 3, 1, 1],
   enigmes: 4,
   rappels: 13,
-  remediations: 38,
+  remediations: 43,
   options: 19 + 13,
   catalogue: [
     'A1-02',
@@ -603,7 +605,7 @@ describe('B2-01 — retours de QA', () => {
     expect(
       (proprietes?.questionsLibres ?? []).filter(({ question }) =>
         proprietes?.geste
-          .toLowerCase()
+          ?.toLowerCase()
           .includes(question.slice(0, -2).toLowerCase()),
       ),
     ).toEqual([]);
@@ -1012,4 +1014,85 @@ describe('B2-01 — correction sur place', () => {
       ),
     ).toBe(true);
   });
+});
+
+describe('B2-01 — QP-15 : la confusion d une carte mal rangée suit la case choisie', () => {
+  const ANOMALIE_DE_LA_CARTE: Readonly<Record<string, string>> = {
+    inflation: 'unite-manquante-ignoree',
+    marge: 'unite-manquante-ignoree',
+    points: 'points-confondus-avec-pourcentage',
+    toile: 'taux-successifs-additionnes',
+    moyenne: 'moyenne-simple-des-taux',
+    diapo: 'axe-tronque-lu-comme-ecart',
+    clients: 'correlation-prise-pour-causalite',
+    factures: 'controle-non-discriminant',
+    compensation: 'controle-non-discriminant',
+  };
+
+  function confusionDeLAnatomie({ attendue, choisie }: CoupleDeTri): string {
+    if (attendue === 'ambigu') {
+      return 'unite-manquante-ignoree';
+    }
+    if (choisie === 'ambigu') {
+      return 'chiffre-lisible-juge-ambigu';
+    }
+    if (attendue === 'valeur' || choisie === 'valeur') {
+      return 'valeur-confondue-avec-taux';
+    }
+    return attendue === 'points' || choisie === 'points'
+      ? 'points-confondus-avec-pourcentage'
+      : 'proportion-confondue-avec-evolution';
+  }
+
+  function confusionDuJeuComparable({
+    carte,
+    attendue,
+    choisie,
+  }: CoupleDeTri): string {
+    if (choisie === 'impossible') {
+      return 'comparaison-possible-refusee';
+    }
+    if (attendue === 'directe') {
+      return 'retraitement-superflu';
+    }
+    if (choisie === 'retraitement') {
+      return 'retraitement-sans-donnee';
+    }
+    return attendue === 'retraitement' || carte === 'semestre'
+      ? 'bases-incompatibles'
+      : 'unite-manquante-ignoree';
+  }
+
+  function confusionDuControle({ carte, choisie }: CoupleDeTri): string {
+    if (choisie === 'preuve') {
+      return 'preuve-externe-superflue';
+    }
+    return carte === 'compensation' && choisie === 'recalcul'
+      ? 'total-concordant-vaut-preuve'
+      : ANOMALIE_DE_LA_CARTE[carte];
+  }
+
+  it('QP-10 · rattache la moyenne des taux annuels, 2,516667, au taux moyen arithmétique', () => {
+    const { pieges } = tirer(COURS, 0).solutions['b2-01-a3-taux-moyen'];
+
+    expect(
+      pieges.map(({ valeur, misconception }) => [valeur, misconception]),
+    ).toEqual([
+      [2.661519, 'taux-moyen-arithmetique'],
+      [2.516667, 'taux-moyen-arithmetique'],
+    ]);
+  });
+
+  it.each([
+    ['B2-01-A1-05-ANATOMIE', confusionDeLAnatomie],
+    ['B2-01-A2-07-JEU-COMPARABLE', confusionDuJeuComparable],
+    ['B2-01-A5-07-CONTROLE-DISCRIMINANT', confusionDuControle],
+  ])(
+    'QP-15 · %s nomme l erreur de chaque carte selon la case où elle est rangée',
+    (screenId, regle) => {
+      expect(confusionsDuTri(COURS_B2_01, screenId)).toEqual(
+        confusionsDuTri(COURS_B2_01, screenId, regle),
+      );
+    },
+  );
 });

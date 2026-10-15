@@ -144,7 +144,10 @@ const PLAN_CARTES = {
   id: 'b2-01-a2-jeu-comparable',
   intitule: 'Comparable ou pas ?',
   cartes: [{ id: 'carte-ca-2024-2025', libelle: 'CA 2024 et CA 2025' }],
-  categories: [{ id: 'comparable', libelle: 'Comparable' }],
+  categories: [
+    { id: 'comparable', libelle: 'Comparable' },
+    { id: 'retraitement', libelle: 'Après retraitement' },
+  ],
   dureeJeuMs: 240000,
 } satisfies CardsortPlanStocke;
 
@@ -187,14 +190,12 @@ const CORRIGE_FEUILLE = {
       pieges: [],
     },
   ],
-  seuilReussite: 0.8,
 } satisfies CorrigeFeuille;
 
 const CORRIGE_TABLEAU = {
   type: 'tableau',
   attendus: [ATTENDU_PRIX_REVISE],
   tolerance: TOLERANCE_ABSOLUE,
-  seuilReussite: 0.75,
 } satisfies CorrigeTableau;
 
 const CORRIGE_CLASSEMENT = {
@@ -203,11 +204,12 @@ const CORRIGE_CLASSEMENT = {
     {
       carteId: 'carte-ca-2024-2025',
       categorieId: 'comparable',
-      confusionSiErreur: 'raisonnement-additif',
+      pieges: [
+        { categorieId: 'retraitement', confusion: 'raisonnement-additif' },
+      ],
       justification: 'Même périmètre, même unité, même durée.',
     },
   ],
-  seuilReussite: 0.75,
 } satisfies CorrigeClassement;
 
 const CORRIGE_ENIGME = {
@@ -784,13 +786,11 @@ describe('Contrats figés du cours B2-01 V3 (§ 9, lot 0)', () => {
               forme: 'references',
             },
           ],
-          seuilReussite: 0.8,
         },
         {
           type: 'tableau',
           attendus: [{ rang: 0, cle: 'prix', valeur: 21.6 }],
           tolerance: TOLERANCE_ABSOLUE,
-          seuilReussite: 0.75,
         },
         {
           type: 'classement',
@@ -801,7 +801,6 @@ describe('Contrats figés du cours B2-01 V3 (§ 9, lot 0)', () => {
               justification: 'Même périmètre, même unité, même durée.',
             },
           ],
-          seuilReussite: 0.75,
         },
         {
           type: 'enigmes',
@@ -830,7 +829,6 @@ describe('Contrats figés du cours B2-01 V3 (§ 9, lot 0)', () => {
           { id: 'b2-01-a4-feuille-canaux', enonce: 'Feuille', options: null },
         ],
         corrigeEcran: corriges[0],
-        guide: { aDire: 'Rappelez le rôle du $.' },
       } satisfies EcranDeroule;
       const deroule = {
         ...COURS_PUBLIC,

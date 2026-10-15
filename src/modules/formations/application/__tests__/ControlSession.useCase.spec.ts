@@ -20,7 +20,9 @@ import {
 } from '../../../../../test/factories/ecrans-stockes.factory';
 import {
   CAS_DES_COURS_SERVIS,
+  casDesVotes,
   pilotageDUnCoursServi,
+  VOTES_JUMELES,
 } from '../../../../../test/factories/votes-des-cours-servis.factory';
 import type { ICatalogueCours } from '../../domain/cours/ICatalogueCours.port';
 import { lireCoursStocke } from '../../domain/cours/CoursStocke';
@@ -497,6 +499,34 @@ describe('ControlSessionUseCase — révélation par l écran de correction (SEC
 
     await b.attendreEcranEcrit(2);
   });
+
+  it('Q1 · révèle un vote jumelé corrigé par un écran projeté en un seul état, phase de révélation comprise', async () => {
+    const vote = buildEcranDeBrique('fp-vote', {
+      screenId: 'B2-01-A3-01-VOTE',
+    });
+    b.changerDeCatalogue(
+      creerCatalogueDeTest(
+        lireCoursStocke(
+          buildCoursDeBriques(
+            [
+              buildEcranDeBrique('fp-quote'),
+              vote,
+              buildCorrectionDeReponses(vote.screenId),
+            ],
+            { slug: COURS_SLUG },
+          ),
+        ),
+      ),
+    );
+    b.seanceLue({ pilotageEcrans: { [vote.screenId]: { phase: 'revote' } } });
+
+    await b.piloter({ ecran: 2 });
+
+    b.attendreEcriture({
+      ecranCourant: 2,
+      pilotageEcrans: { [vote.screenId]: { phase: 'revele', revele: true } },
+    });
+  });
 });
 
 describe('QA-01 · phase servie des votes jumelés des cours servis', () => {
@@ -511,6 +541,35 @@ describe('QA-01 · phase servie des votes jumelés des cours servis', () => {
 
       b.attendreEcriture({ ecranCourant: 0 });
       b.attendrePublication({ pilotage: attendu });
+    },
+  );
+});
+
+describe('Q1 · un seul chemin de révélation pour chaque vote jumelé des cours servis', () => {
+  const PRINCIPALES = VOTES_JUMELES.filter(
+    ({ question }) => question.ouverture === 'principale',
+  );
+
+  it.each(casDesVotes(PRINCIPALES))(
+    '%s : « Passer à : Révélation » et « Révéler la correction » écrivent le même pilotage',
+    async (_id, { cours, question }) => {
+      for (const demande of [{ phase: 'revele' }, { revele: true }] as const) {
+        const b = banc(creerCatalogueDeTest(cours));
+        b.seanceLue({
+          courseSlug: cours.slug,
+          pilotageEcrans: { [question.ecranId]: { phase: 'revote' } },
+        });
+
+        await b.piloter({
+          pilotage: { screenId: question.ecranId, ...demande },
+        });
+
+        b.attendreEcriture({
+          pilotageEcrans: {
+            [question.ecranId]: { phase: 'revele', revele: true },
+          },
+        });
+      }
     },
   );
 });

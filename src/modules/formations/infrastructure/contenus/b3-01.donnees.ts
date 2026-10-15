@@ -108,10 +108,12 @@ export const PIEGES_B3_01: PiegesB301 = {
   },
   'b3-01-a2-ca-rennes-info': {
     'critere-mal-ecrit': 0,
+    'plage-recherche-non-figee': 729,
     'periode-mal-delimitee': 27_862,
   },
   'b3-01-a2-ca-ouest': {
-    'plage-recherche-non-figee': 0,
+    'critere-mal-ecrit': 0,
+    'plage-recherche-non-figee': 874,
     'periode-mal-delimitee': 188_908,
   },
   'b3-01-a2-delai-strasbourg': {
@@ -149,9 +151,9 @@ export const PIEGES_B3_01: PiegesB301 = {
 };
 
 export const CLASSEURS_B3_01 = {
-  brut: '/assets/cours/b3-01/B3-01_export_ventes.d4f2ceab.xlsx',
-  repriseActe2: 'b3-01/B3-01_reprise_acte_2.67aba78a.xlsx',
-  repriseActe3: 'b3-01/B3-01_reprise_acte_3.88056d14.xlsx',
+  brut: '/assets/cours/b3-01/B3-01_export_ventes.dfa709a7.xlsx',
+  repriseActe2: 'b3-01/B3-01_reprise_acte_2.e6fc9b7d.xlsx',
+  repriseActe3: 'b3-01/B3-01_reprise_acte_3.72ace752.xlsx',
 } as const;
 
 export const HISTOIRES_B3_01: Readonly<Record<HistoireB301, number>> = {
