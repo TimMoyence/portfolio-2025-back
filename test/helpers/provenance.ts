@@ -12,6 +12,12 @@ export const PROVENANCE_DEMESUREE = {
 
 export function attendreUneProvenanceBornee(consignee: Provenance): void {
   expect(consignee.ip).toBe('203.0.113.7');
+  attendreUnNavigateurEtUnReferentBornes(consignee);
+}
+
+export function attendreUnNavigateurEtUnReferentBornes(
+  consignee: Provenance,
+): void {
   expect(consignee.userAgent).toHaveLength(LONGUEUR_MAX_DU_NAVIGATEUR);
   expect(consignee.userAgent?.startsWith('AAAA')).toBe(true);
   expect(consignee.referer).toHaveLength(LONGUEUR_MAX_DU_REFERENT);

@@ -19,10 +19,14 @@ export function navigateurConsignable(brut: unknown): string | null {
   return bornee(brut, LONGUEUR_MAX_DU_NAVIGATEUR);
 }
 
+export function referentConsignable(brut: unknown): string | null {
+  return bornee(brut, LONGUEUR_MAX_DU_REFERENT);
+}
+
 export function provenanceConsignable(brute: Provenance): Required<Provenance> {
   return {
     ip: optionalMetadata(brute.ip),
     userAgent: navigateurConsignable(brute.userAgent),
-    referer: bornee(brute.referer, LONGUEUR_MAX_DU_REFERENT),
+    referer: referentConsignable(brute.referer),
   };
 }

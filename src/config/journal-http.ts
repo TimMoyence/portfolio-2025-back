@@ -3,6 +3,10 @@ import type { IncomingMessage, ServerResponse } from 'http';
 import type { SerializedRequest } from 'pino';
 import type { Options } from 'pino-http';
 import {
+  navigateurConsignable,
+  referentConsignable,
+} from '../common/domain/provenance';
+import {
   CENSURE,
   referentJournalisable,
   urlJournalisable,
@@ -36,13 +40,27 @@ function estSondeDeSante(req: IncomingMessage): boolean {
   return req.url?.includes('/health') ?? false;
 }
 
+function enTeteConsignable(
+  nom: string,
+  valeur: string | null,
+): SerializedRequest['headers'] {
+  return valeur === null ? {} : { [nom]: valeur };
+}
+
 function enTetesJournalisables(
   enTetes: SerializedRequest['headers'],
 ): SerializedRequest['headers'] {
-  const { referer } = enTetes;
-  return typeof referer === 'string'
-    ? { ...enTetes, referer: referentJournalisable(referer) }
-    : enTetes;
+  const { referer, 'user-agent': navigateur, ...autres } = enTetes;
+  return {
+    ...autres,
+    ...enTeteConsignable(
+      'referer',
+      typeof referer === 'string'
+        ? referentConsignable(referentJournalisable(referer))
+        : null,
+    ),
+    ...enTeteConsignable('user-agent', navigateurConsignable(navigateur)),
+  };
 }
 
 function requeteJournalisee(req: SerializedRequest): Record<string, unknown> {

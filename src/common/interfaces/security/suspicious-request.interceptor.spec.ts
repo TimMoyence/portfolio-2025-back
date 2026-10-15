@@ -32,6 +32,14 @@ const COOKIE_CONSENT_POST = {
   url: '/api/v1/portfolio25/cookie-consents',
 };
 
+const NAVIGATEUR_DEMESURE = `HeadlessChrome/145 ${'B'.repeat(15_000)}`;
+
+const CONSENTEMENT_AU_NAVIGATEUR_DEMESURE: FakeRequest = {
+  ...COOKIE_CONSENT_POST,
+  headers: { ...HEADLESS_CHROME_HEADERS, 'user-agent': NAVIGATEUR_DEMESURE },
+  ip: '203.0.113.42',
+};
+
 function mappedIpv6(ipv4: string): string {
   return `::ffff:${ipv4}`;
 }
@@ -146,17 +154,15 @@ describe('SuspiciousRequestInterceptor', () => {
   });
 
   it('garde un navigateur borne pour une requete suspecte', async () => {
-    const userAgent = `HeadlessChrome/145 ${'B'.repeat(15_000)}`;
-
-    const [trace] = await ipsTraceesApresCreation({
-      ...COOKIE_CONSENT_POST,
-      headers: { ...HEADLESS_CHROME_HEADERS, 'user-agent': userAgent },
-      ip: '203.0.113.42',
-    });
+    const [trace] = await ipsTraceesApresCreation(
+      CONSENTEMENT_AU_NAVIGATEUR_DEMESURE,
+    );
 
     expect(trace.lastReasons).toContain('ua:headless-chrome');
     expect(trace.lastUserAgent).toHaveLength(LONGUEUR_MAX_DU_NAVIGATEUR);
-    expect(userAgent.startsWith(trace.lastUserAgent.slice(0, -1))).toBe(true);
+    expect(
+      NAVIGATEUR_DEMESURE.startsWith(trace.lastUserAgent.slice(0, -1)),
+    ).toBe(true);
   });
 
   it('ignore une chaine x-forwarded-for forgee au profit de req.ip', async () => {
@@ -397,6 +403,16 @@ describe('SuspiciousRequestInterceptor', () => {
         },
         404,
       );
+
+    it('journalise le navigateur borne que garde le magasin', async () => {
+      const [trace] = await ipsTraceesApresCreation(
+        CONSENTEMENT_AU_NAVIGATEUR_DEMESURE,
+      );
+
+      expect(avertissements()).toHaveBeenCalledWith(
+        expect.stringContaining(` ua="${trace.lastUserAgent}" `),
+      );
+    });
 
     it('journalise la duree de la requete en millisecondes', async () => {
       await sousUneDureeDe(2.5, requeteSuspecte);

@@ -14,6 +14,10 @@ import {
   fluxDeJournal,
   type LigneEcrite,
 } from '../../test/helpers/flux-de-journal';
+import {
+  attendreUnNavigateurEtUnReferentBornes,
+  PROVENANCE_DEMESUREE,
+} from '../../test/helpers/provenance';
 import { JETON_DE_PAGE } from '../../test/helpers/referents-des-pages-a-jeton';
 import { EN_TETE_JETON } from '../modules/formations/interfaces/ParticipantToken.service';
 import { optionsJournalHttp } from './journal-http';
@@ -83,7 +87,7 @@ describe('optionsJournalHttp', () => {
     const flux = fluxDeJournal();
     const ligne = once(flux, EVENEMENT_LIGNE);
     const journal = pinoHttp(optionsJournalHttp('production'), flux);
-    serveur = createServer((requete, reponse) => {
+    serveur = createServer({ maxHeaderSize: 64 * 1024 }, (requete, reponse) => {
       journal(requete, reponse);
       repondre(reponse);
     });
@@ -122,6 +126,24 @@ describe('optionsJournalHttp', () => {
     ]) {
       expect(brute).not.toContain(secret);
     }
+  });
+
+  it('borne le navigateur et le referent de la ligne request completed de production', async () => {
+    const ligne = servirEnProduction((reponse) => {
+      reponse.end('ok');
+    });
+
+    await appeler(await ecouter(serveur), {
+      'user-agent': PROVENANCE_DEMESUREE.userAgent,
+      referer: PROVENANCE_DEMESUREE.referer,
+    });
+    const [{ champs }] = (await ligne) as [LigneEcrite];
+    const { headers } = (champs as LigneDeJournal).req;
+
+    attendreUnNavigateurEtUnReferentBornes({
+      userAgent: headers['user-agent'] as string,
+      referer: headers['referer'] as string,
+    });
   });
 
   async function identifiantsDeLaRequete(

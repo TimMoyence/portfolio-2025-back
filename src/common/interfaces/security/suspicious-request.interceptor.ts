@@ -9,8 +9,7 @@ import {
 import type { Request, Response } from 'express';
 import type { Observable } from 'rxjs';
 import { enArrierePlan } from '../../application/en-arriere-plan';
-import { LONGUEUR_MAX_DU_NAVIGATEUR } from '../../domain/provenance';
-import { tronquer } from '../../domain/texte/tronquer';
+import { navigateurConsignable } from '../../domain/provenance';
 import { aLaFermeture } from '../http/a-la-fermeture';
 import { dureeEnMsDepuis, instantEnNs } from '../http/duree-de-requete';
 import { urlJournalisable } from '../http/url-journalisable';
@@ -84,11 +83,12 @@ export class SuspiciousRequestInterceptor implements NestInterceptor {
 
         const occurredAtMs = Date.now();
         const path = urlJournalisable(urlBrute, req.params);
+        const navigateur = navigateurConsignable(userAgent) ?? '';
 
         enArrierePlan(
           this.store.recordEvent({
             ip,
-            userAgent: tronquer(userAgent, LONGUEUR_MAX_DU_NAVIGATEUR),
+            userAgent: navigateur,
             method: req.method,
             path,
             statusCode: res.statusCode,
@@ -101,7 +101,7 @@ export class SuspiciousRequestInterceptor implements NestInterceptor {
         );
 
         this.logger.warn(
-          `[SECURITY] suspicious ip=${ip} method=${req.method} path=${path} status=${res.statusCode} score=${score} reasons=${reasons.join(',')} ua="${tronquer(userAgent, 200)}" rtMs=${responseTimeMs.toFixed(1)} aborted=${aborted}`,
+          `[SECURITY] suspicious ip=${ip} method=${req.method} path=${path} status=${res.statusCode} score=${score} reasons=${reasons.join(',')} ua="${navigateur}" rtMs=${responseTimeMs.toFixed(1)} aborted=${aborted}`,
         );
       } catch (err) {
         this.logger.warn(
