@@ -10,8 +10,8 @@ import {
   DeadlineExceededError,
   withHardTimeout,
 } from './llm-execution.guardrails';
-import { LlmSuiviParLaConfig } from './llm-executor.port';
-import { buildOpenAiMessages } from './section-generators/cacheable-section.generators';
+import { LlmOpenAiParLaConfig } from './llm-executor.port';
+import { invoquerOpenAi } from './section-generators/cacheable-section.generators';
 import { untrustedDataDisclaimer } from './section-generators/section-prompts.builder';
 import { isTimeoutError } from './shared/error.util';
 import { localizedText } from './shared/locale-text.util';
@@ -103,7 +103,7 @@ function constatsVides(): {
 }
 
 @Injectable()
-export class PageAiRecapService extends LlmSuiviParLaConfig {
+export class PageAiRecapService extends LlmOpenAiParLaConfig {
   private readonly logger = new Logger(PageAiRecapService.name);
 
   async analyzePages(
@@ -210,7 +210,6 @@ export class PageAiRecapService extends LlmSuiviParLaConfig {
     }
 
     const payload = this.buildPayload(page);
-    const chain = llm.withStructuredOutput(pageRecapSchema);
 
     try {
       const result = await this.llmLimiter.run(() =>
@@ -218,13 +217,11 @@ export class PageAiRecapService extends LlmSuiviParLaConfig {
           `page_ai_recap:${page.url}`,
           this.config.pageAiTimeoutMs,
           (signal) =>
-            this.invokeTracked(
-              chain,
-              buildOpenAiMessages(this.systemBlocks(locale), payload),
-              'page_recap',
-              locale,
+            invoquerOpenAi(llm, pageRecapSchema, {
+              systemBlocks: this.systemBlocks(locale),
+              payload,
               signal,
-            ),
+            }),
         ),
       );
 

@@ -8,8 +8,8 @@ import {
   buildStructuredDataQuality,
 } from '../../../../../test/factories/audit-requests.factory';
 import {
+  createChatOpenAIFactoryQuiInvoque,
   createChatOpenAIFactoryStub,
-  createLlmSuiviStub,
 } from '../../../../../test/factories/section-generator.factory';
 import {
   attendreUnPayloadEmballe,
@@ -80,11 +80,10 @@ describe('PageAiRecapService', () => {
       recapDuLlm: typeof RECAP_DU_LLM = RECAP_DU_LLM,
     ) {
       const invoke = jest.fn().mockResolvedValue(recapDuLlm);
-      const { fabrique, metrics } = createLlmSuiviStub(invoke);
+      const fabrique = createChatOpenAIFactoryQuiInvoque(invoke);
       const service = new PageAiRecapService(
         { ...config, openAiApiKey: 'test-key' },
         fabrique,
-        metrics,
       );
       const analyser = () =>
         service.analyzePages({
@@ -93,7 +92,7 @@ describe('PageAiRecapService', () => {
           normalizedUrl: 'https://example.com',
           pages: [pageAnalysee],
         });
-      return { invoke, fabrique, metrics, analyser };
+      return { invoke, fabrique, analyser };
     }
 
     it('construit son LLM par la fabrique, à température nulle', async () => {
@@ -189,19 +188,6 @@ describe('PageAiRecapService', () => {
         expect(recap.engineScores?.perplexity.score).toBe(90);
       },
     );
-
-    it('compte l appel dans les métriques LLM', async () => {
-      const { metrics, analyser } = serviceAvecLlm();
-
-      await analyser();
-
-      expect(metrics.llmCallsTotal.inc).toHaveBeenCalledWith({
-        model: config.llmModel,
-        section: 'page_recap',
-        locale: 'en',
-        status: 'success',
-      });
-    });
   });
 
   it('returns deterministic fallback when llm is unavailable', async () => {

@@ -36,12 +36,11 @@ describe('CachingSectionRunner', () => {
   ) {
     const openAiFallback =
       options.openAiFallback ?? jest.fn().mockResolvedValue({ ok: true });
-    const resultat = new CachingSectionRunner(config, undefined, factory).run({
+    const resultat = new CachingSectionRunner(config, factory).run({
       section: options.section ?? 'executive',
       schema,
       systemBlocks: ['main'],
       payload: options.payload ?? {},
-      locale: 'fr',
       signal: options.signal,
       openAiFallback,
     });

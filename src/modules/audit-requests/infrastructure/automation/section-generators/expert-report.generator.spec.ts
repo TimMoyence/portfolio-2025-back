@@ -2,42 +2,43 @@ import { generateExpertReport } from './expert-report.generator';
 import { buildExpertReport } from '../../../../../../test/factories/audit-requests.factory';
 import {
   buildSectionGeneratorArgs,
+  createStructuredOutputLlmStub,
   systemMessagesOf,
+  type SectionGeneratorArgs,
 } from '../../../../../../test/factories/section-generator.factory';
+import { expertReportSchema } from '../schemas/audit-report.schemas';
 
 describe('generateExpertReport', () => {
-  function stubInvokeTracked(): jest.Mock {
-    return jest.fn().mockResolvedValue(buildExpertReport());
+  function genererAvec(overrides: Partial<SectionGeneratorArgs> = {}) {
+    const rapport = buildExpertReport();
+    const invoke = jest.fn().mockResolvedValue(rapport);
+    const { llm, withStructuredOutput } = createStructuredOutputLlmStub(invoke);
+    const resultat = generateExpertReport(
+      buildSectionGeneratorArgs({ llm, ...overrides }),
+    );
+    return { rapport, invoke, withStructuredOutput, resultat };
   }
 
-  it('appelle invokeTracked avec la section expert_report', async () => {
-    const invokeTracked = stubInvokeTracked();
+  it('structure la reponse par expertReportSchema et la rend telle quelle', async () => {
+    const { rapport, withStructuredOutput, resultat } = genererAvec();
 
-    await generateExpertReport({ invokeTracked }, buildSectionGeneratorArgs());
-
-    const [, , section] = invokeTracked.mock.calls[0];
-    expect(section).toBe('expert_report');
+    await expect(resultat).resolves.toBe(rapport);
+    expect(withStructuredOutput).toHaveBeenCalledWith(expertReportSchema);
   });
 
   it('ajoute compact constraint en compactMode', async () => {
-    const invokeTracked = stubInvokeTracked();
+    const { invoke, resultat } = genererAvec({ compactMode: true });
 
-    await generateExpertReport(
-      { invokeTracked },
-      buildSectionGeneratorArgs({ compactMode: true }),
-    );
+    await resultat;
 
-    expect(systemMessagesOf(invokeTracked)).toHaveLength(4);
+    expect(systemMessagesOf(invoke)).toHaveLength(4);
   });
 
   it('ajoute retry constraint en retryMode', async () => {
-    const invokeTracked = stubInvokeTracked();
+    const { invoke, resultat } = genererAvec({ retryMode: true });
 
-    await generateExpertReport(
-      { invokeTracked },
-      buildSectionGeneratorArgs({ retryMode: true }),
-    );
+    await resultat;
 
-    expect(systemMessagesOf(invokeTracked)).toHaveLength(4);
+    expect(systemMessagesOf(invoke)).toHaveLength(4);
   });
 });

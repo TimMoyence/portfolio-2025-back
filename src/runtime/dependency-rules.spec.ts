@@ -248,7 +248,6 @@ describe('Règles de dépendances inter-couches', () => {
       'bullmq',
       'argon2',
       'jose',
-      'prom-client',
       'nestjs-pino',
       'pino',
       'nodemailer',

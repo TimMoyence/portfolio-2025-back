@@ -1,7 +1,5 @@
 import { Inject, Injectable, Logger, Optional } from '@nestjs/common';
 import type { ZodType } from 'zod';
-import { MetricsService } from '../../../../../common/interfaces/metrics/metrics.service';
-import type { AuditLocale } from '../../../domain/audit-locale.util';
 import { AUDIT_AUTOMATION_CONFIG } from '../../../domain/token';
 import {
   ANTHROPIC_CHAT_FACTORY,
@@ -16,7 +14,6 @@ export interface CachingSectionParams<T> {
   schema: ZodType<T>;
   systemBlocks: string[];
   payload: Record<string, unknown>;
-  locale: AuditLocale;
   signal?: AbortSignal;
   openAiFallback: () => Promise<T>;
 }
@@ -29,22 +26,13 @@ export class CachingSectionRunner {
     @Inject(AUDIT_AUTOMATION_CONFIG)
     private readonly config: AuditAutomationConfig,
     @Optional()
-    private readonly metricsService?: MetricsService,
-    @Optional()
     @Inject(ANTHROPIC_CHAT_FACTORY)
     private readonly anthropicChatFactory?: AnthropicChatFactory,
   ) {}
 
   async run<T>(params: CachingSectionParams<T>): Promise<T> {
-    const {
-      section,
-      schema,
-      systemBlocks,
-      payload,
-      locale,
-      signal,
-      openAiFallback,
-    } = params;
+    const { section, schema, systemBlocks, payload, signal, openAiFallback } =
+      params;
 
     if (!this.anthropicChatFactory?.isEnabled()) {
       return openAiFallback();
@@ -57,12 +45,10 @@ export class CachingSectionRunner {
         client,
         model: this.anthropicChatFactory.model(),
         section,
-        locale,
         schema,
         systemBlocks,
         userContent: wrapUntrustedUserPayload(payload),
         signal,
-        metrics: this.metricsService ?? null,
         logger: this.logger,
       });
     } catch (error) {

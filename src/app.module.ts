@@ -9,7 +9,6 @@ import { join } from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { HealthModule } from './common/interfaces/health/health.module';
-import { MetricsModule } from './common/interfaces/metrics/metrics.module';
 import { SecurityModule } from './common/interfaces/security/security.module';
 import { validateEnv } from './config/env.validation';
 import { optionsJournalHttp } from './config/journal-http';
@@ -46,7 +45,6 @@ const runtimeContexts = resolveRuntimeContexts();
     ...runtimeContexts.runtimeModules,
     HealthModule,
     SecurityModule,
-    MetricsModule,
   ],
   controllers: [AppController],
   providers: [

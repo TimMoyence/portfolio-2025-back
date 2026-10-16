@@ -14,10 +14,10 @@ import type { EngineCoverage } from '../../domain/EngineCoverage';
 import { AuditLocale, localeDeRedaction } from '../../domain/audit-locale.util';
 import { nonVerifiable } from '../../domain/non-verifiable';
 import { withHardTimeout } from './llm-execution.guardrails';
-import { LlmSuiviParLaConfig } from './llm-executor.port';
+import { LlmOpenAiParLaConfig } from './llm-executor.port';
 import { validateClientReport } from './report-quality-gate/tier-validators';
 import { reportSeveritySchema } from './schemas/audit-report.schemas';
-import { buildOpenAiMessages } from './section-generators/cacheable-section.generators';
+import { invoquerOpenAi } from './section-generators/cacheable-section.generators';
 import { untrustedDataDisclaimer } from './section-generators/section-prompts.builder';
 import { sanitizePromptInput } from './shared/prompt-sanitize.util';
 import { impactLocalise } from './shared/finding-priority.util';
@@ -118,7 +118,7 @@ const PILLAR_ORDER: ReadonlyArray<string> = [
 ];
 
 @Injectable()
-export class LangchainClientReportService extends LlmSuiviParLaConfig {
+export class LangchainClientReportService extends LlmOpenAiParLaConfig {
   private readonly logger = new Logger(LangchainClientReportService.name);
 
   async generate(context: ClientReportContext): Promise<ClientReportSynthesis> {
@@ -135,7 +135,6 @@ export class LangchainClientReportService extends LlmSuiviParLaConfig {
       const llm = this.chatOpenAIFactory.create(
         this.config.llmSummaryTimeoutMs,
       );
-      const chain = llm.withStructuredOutput(clientReportSchema);
       const payload = this.buildPayload(context);
 
       const systemBlocks = [
@@ -152,13 +151,11 @@ export class LangchainClientReportService extends LlmSuiviParLaConfig {
           'langchain:client_report',
           this.config.llmSummaryTimeoutMs,
           (signal) =>
-            this.invokeTracked(
-              chain,
-              buildOpenAiMessages(systemBlocks, payload),
-              'client_report',
-              locale,
+            invoquerOpenAi(llm, clientReportSchema, {
+              systemBlocks,
+              payload,
               signal,
-            ),
+            }),
         ),
       );
 

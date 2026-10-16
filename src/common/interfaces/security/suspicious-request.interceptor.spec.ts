@@ -6,15 +6,10 @@ import {
   createHttpExecutionContext,
   createRpcExecutionContext,
 } from '../../../../test/factories/execution-context.factory';
-import {
-  attendreLAvertissement,
-  espionnerLesAvertissements,
-} from '../../../../test/helpers/avertissements';
+import { espionnerLesAvertissements } from '../../../../test/helpers/avertissements';
 import { sousUneDureeDe } from '../../../../test/helpers/horloge';
-import { espionnerLeLogger } from '../../../../test/helpers/silence-nest-logger';
 import { LONGUEUR_MAX_DU_NAVIGATEUR } from '../../domain/provenance';
 import { CENSURE } from '../http/url-journalisable';
-import { InMemorySecurityEventsStore } from './in-memory-security-events-store';
 import type { SecurityConfig } from './security.config';
 import { SuspiciousRequestInterceptor } from './suspicious-request.interceptor';
 
@@ -40,6 +35,17 @@ const CONSENTEMENT_AU_NAVIGATEUR_DEMESURE: FakeRequest = {
   ip: '203.0.113.42',
 };
 
+const LIGNE_SUSPECTE =
+  /^\[SECURITY\] suspicious ip=(?<ip>\S+) method=\S+ path=(?<path>\S+) status=\d+ score=\d+ reasons=(?<reasons>\S*) ua="(?<ua>.*)" rtMs=\S+ aborted=(?<aborted>true|false)$/;
+
+interface TraceJournalisee {
+  ip: string;
+  path: string;
+  reasons: string[];
+  ua: string;
+  aborted: boolean;
+}
+
 function mappedIpv6(ipv4: string): string {
   return `::ffff:${ipv4}`;
 }
@@ -55,48 +61,47 @@ interface FakeRequest {
   destroyed?: boolean;
 }
 
-function buildConfig(overrides: Partial<SecurityConfig> = {}): SecurityConfig {
-  return {
-    suspiciousScoreThreshold: 25,
-    reportWindowMs: 60_000,
-    topEventsLimit: 10,
-    ...overrides,
-  };
-}
+const CONFIG: SecurityConfig = { suspiciousScoreThreshold: 25 };
 
 describe('SuspiciousRequestInterceptor', () => {
-  let store: InMemorySecurityEventsStore;
-  let interceptor: SuspiciousRequestInterceptor;
-
-  beforeEach(() => {
-    store = new InMemorySecurityEventsStore();
-    interceptor = new SuspiciousRequestInterceptor(buildConfig(), store);
-  });
+  const avertissements = espionnerLesAvertissements();
+  const interceptor = new SuspiciousRequestInterceptor(CONFIG);
 
   async function intercept(
     req: FakeRequest,
     statusCode: number,
     handler: CallHandler = { handle: () => of({}) },
-    target: SuspiciousRequestInterceptor = interceptor,
   ): Promise<unknown> {
     const res = createFakeHttpResponse({ statusCode });
     try {
       return await firstValueFrom(
-        target.intercept(createHttpExecutionContext(req, res), handler),
+        interceptor.intercept(createHttpExecutionContext(req, res), handler),
       );
     } finally {
       res.emit('close');
     }
   }
 
-  function topIPs() {
-    return store.getTopIPs(10, 60_000);
+  function tracesJournalisees(): TraceJournalisee[] {
+    return avertissements().mock.calls.flatMap(([message]) => {
+      const groupes = LIGNE_SUSPECTE.exec(String(message))?.groups;
+      if (groupes === undefined) return [];
+      return [
+        {
+          ip: groupes.ip,
+          path: groupes.path,
+          reasons: groupes.reasons.split(','),
+          ua: groupes.ua,
+          aborted: groupes.aborted === 'true',
+        },
+      ];
+    });
   }
 
-  async function attendreRienDePersiste(req: FakeRequest): Promise<void> {
+  async function attendreRienDeJournalise(req: FakeRequest): Promise<void> {
     await intercept(req, 200, { handle: () => of({ ok: true }) });
 
-    expect(await topIPs()).toHaveLength(0);
+    expect(tracesJournalisees()).toHaveLength(0);
   }
 
   function postHeadless(
@@ -115,9 +120,9 @@ describe('SuspiciousRequestInterceptor', () => {
     };
   }
 
-  async function ipsTraceesApresCreation(req: FakeRequest) {
+  async function tracesApresCreation(req: FakeRequest) {
     await intercept(req, 201);
-    return topIPs();
+    return tracesJournalisees();
   }
 
   it('ignore les contextes non-HTTP', async () => {
@@ -126,11 +131,11 @@ describe('SuspiciousRequestInterceptor', () => {
       interceptor.intercept(createRpcExecutionContext(), handler),
     );
     expect(result).toBe('rpc-result');
-    expect(await topIPs()).toHaveLength(0);
+    expect(tracesJournalisees()).toHaveLength(0);
   });
 
-  it('ne persiste rien pour une requete Safari legitime', async () => {
-    await attendreRienDePersiste({
+  it('ne journalise rien pour une requete Safari legitime', async () => {
+    await attendreRienDeJournalise({
       method: 'GET',
       url: '/api/v1/portfolio25/auth/me',
       headers: {
@@ -141,28 +146,26 @@ describe('SuspiciousRequestInterceptor', () => {
     });
   });
 
-  it('persiste une requete HeadlessChrome suspecte', async () => {
-    const top = await ipsTraceesApresCreation(
+  it('journalise une requete HeadlessChrome suspecte', async () => {
+    const traces = await tracesApresCreation(
       // Valeur qu'Express calcule sous `trust proxy` quand le
       // reverse-proxy renseigne `X-Forwarded-For`.
       postHeadless({ ip: '203.0.113.41' }, '203.0.113.41'),
     );
 
-    expect(top).toHaveLength(1);
-    expect(top[0].ip).toBe('203.0.113.41');
-    expect(top[0].lastReasons).toContain('ua:headless-chrome');
+    expect(traces).toHaveLength(1);
+    expect(traces[0].ip).toBe('203.0.113.41');
+    expect(traces[0].reasons).toContain('ua:headless-chrome');
   });
 
-  it('garde un navigateur borne pour une requete suspecte', async () => {
-    const [trace] = await ipsTraceesApresCreation(
+  it('journalise un navigateur borne pour une requete suspecte', async () => {
+    const [trace] = await tracesApresCreation(
       CONSENTEMENT_AU_NAVIGATEUR_DEMESURE,
     );
 
-    expect(trace.lastReasons).toContain('ua:headless-chrome');
-    expect(trace.lastUserAgent).toHaveLength(LONGUEUR_MAX_DU_NAVIGATEUR);
-    expect(
-      NAVIGATEUR_DEMESURE.startsWith(trace.lastUserAgent.slice(0, -1)),
-    ).toBe(true);
+    expect(trace.reasons).toContain('ua:headless-chrome');
+    expect(trace.ua).toHaveLength(LONGUEUR_MAX_DU_NAVIGATEUR);
+    expect(NAVIGATEUR_DEMESURE.startsWith(trace.ua.slice(0, -1))).toBe(true);
   });
 
   it('ignore une chaine x-forwarded-for forgee au profit de req.ip', async () => {
@@ -181,12 +184,12 @@ describe('SuspiciousRequestInterceptor', () => {
 
     await intercept(req, 404);
 
-    const top = await topIPs();
-    expect(top[0].ip).toBe('203.0.113.18');
-    expect(top[0].ip).not.toBe('198.51.100.99');
+    const [trace] = tracesJournalisees();
+    expect(trace.ip).toBe('203.0.113.18');
+    expect(trace.ip).not.toBe('198.51.100.99');
   });
 
-  it('enregistre aussi quand le handler emet une erreur', async () => {
+  it('journalise aussi quand le handler emet une erreur', async () => {
     const req: FakeRequest = {
       method: 'POST',
       url: '/api/v1/portfolio25/auth/login',
@@ -202,50 +205,47 @@ describe('SuspiciousRequestInterceptor', () => {
 
     await expect(intercept(req, 401, handler)).rejects.toThrow('unauthorized');
 
-    const top = await topIPs();
-    expect(top).toHaveLength(1);
-    expect(top[0].ip).toBe('198.51.100.7');
-    expect(top[0].lastReasons).toEqual(
+    const traces = tracesJournalisees();
+    expect(traces).toHaveLength(1);
+    expect(traces[0].ip).toBe('198.51.100.7');
+    expect(traces[0].reasons).toEqual(
       expect.arrayContaining(['ua:python-requests', 'sensitive:write-4xx']),
     );
   });
 
-  it('marque abandonnee une reponse fermee avant d etre terminee', async () => {
-    const res = createFakeHttpResponse({ writableFinished: false });
+  it.each([
+    {
+      cas: 'une reponse fermee avant d etre terminee',
+      etat: { writableFinished: false },
+      fermetures: ['close'],
+      ip: '203.0.113.12',
+    },
+    {
+      cas: 'une reponse deja fermee avant l intercepteur',
+      etat: { destroyed: true, writableFinished: false },
+      fermetures: [],
+      ip: '203.0.113.13',
+    },
+  ])('marque abandonnee $cas', async ({ etat, fermetures, ip }) => {
+    const res = createFakeHttpResponse(etat);
 
     await lastValueFrom(
       interceptor.intercept(
-        createHttpExecutionContext(postHeadless({ ip: '203.0.113.12' }), res),
+        createHttpExecutionContext(postHeadless({ ip }), res),
         { handle: () => of({}) },
       ),
     );
-    res.emit('close');
+    fermetures.forEach((evenement) => res.emit(evenement));
 
-    const top = await topIPs();
-    expect(top[0].lastReasons).toContain('http:aborted');
-  });
-
-  it('note une reponse deja fermee avant l intercepteur, comme abandonnee', async () => {
-    const res = createFakeHttpResponse({
-      destroyed: true,
-      writableFinished: false,
-    });
-
-    await lastValueFrom(
-      interceptor.intercept(
-        createHttpExecutionContext(postHeadless({ ip: '203.0.113.13' }), res),
-        { handle: () => of({}) },
-      ),
-    );
-
-    const top = await topIPs();
-    expect(top[0].lastReasons).toContain('http:aborted');
+    const [trace] = tracesJournalisees();
+    expect(trace.reasons).toContain('http:aborted');
+    expect(trace.aborted).toBe(true);
   });
 
   it.each([LOOPBACK_IPV4, mappedIpv6(LOOPBACK_IPV4), '::1'])(
     'bypass le scoring pour les IPs loopback via req.ip (%s)',
     async (loopbackIp) => {
-      await attendreRienDePersiste({
+      await attendreRienDeJournalise({
         method: 'GET',
         url: '/api/v1/portfolio25',
         headers: { 'user-agent': undefined, 'accept-language': undefined },
@@ -255,7 +255,7 @@ describe('SuspiciousRequestInterceptor', () => {
   );
 
   it('bypass le scoring via socket.remoteAddress si req.ip est absent', async () => {
-    await attendreRienDePersiste({
+    await attendreRienDeJournalise({
       method: 'GET',
       url: '/api/v1/portfolio25/health',
       headers: { 'user-agent': undefined, 'accept-language': undefined },
@@ -267,14 +267,14 @@ describe('SuspiciousRequestInterceptor', () => {
   it('ne bypasse pas le scoring sur un X-Forwarded-For loopback forge', async () => {
     // Sous `trust proxy`, le `req.ip` calcule par Express derive de
     // `X-Forwarded-For` : seule l'adresse du socket fait foi ici.
-    const top = await ipsTraceesApresCreation(
+    const traces = await tracesApresCreation(
       postHeadless(
         { ip: LOOPBACK_IPV4, socket: { remoteAddress: '203.0.113.41' } },
         LOOPBACK_IPV4,
       ),
     );
 
-    expect(top).toHaveLength(1);
+    expect(traces).toHaveLength(1);
   });
 
   it('attribue l’evenement a l’IP resolue par Express, pas au X-Forwarded-For brut', async () => {
@@ -282,7 +282,7 @@ describe('SuspiciousRequestInterceptor', () => {
     // `req.ip` en ne faisant confiance qu'au dernier bond. Reparser
     // `X-Forwarded-For` a la main contournerait ce calcul et laisserait
     // un attaquant choisir l'IP sous laquelle son activite est tracee.
-    const top = await ipsTraceesApresCreation(
+    const traces = await tracesApresCreation(
       postHeadless(
         {
           ip: '203.0.113.7',
@@ -292,59 +292,31 @@ describe('SuspiciousRequestInterceptor', () => {
       ),
     );
 
-    expect(top).toHaveLength(1);
-    expect(top[0].ip).toBe('203.0.113.7');
+    expect(traces).toHaveLength(1);
+    expect(traces[0].ip).toBe('203.0.113.7');
   });
 
   it('retombe sur l’adresse du socket quand req.ip est absent', async () => {
-    const top = await ipsTraceesApresCreation(
+    const [trace] = await tracesApresCreation(
       postHeadless(
         { ip: undefined, socket: { remoteAddress: '198.51.100.9' } },
         '192.0.2.4',
       ),
     );
 
-    expect(top[0].ip).toBe('198.51.100.9');
+    expect(trace.ip).toBe('198.51.100.9');
   });
 
-  it('normalise l’IP IPv4-mappee-IPv6 avant de l’enregistrer', async () => {
+  it('normalise l’IP IPv4-mappee-IPv6 avant de la journaliser', async () => {
     // Forme IPv4-mappee-IPv6 de la RFC 4291 section 2.5.5.2 : sans
     // normalisation, elle compte comme un client distinct dans les
     // agregats.
     const clientIp = '203.0.113.7';
-    const top = await ipsTraceesApresCreation(
+    const [trace] = await tracesApresCreation(
       postHeadless({ ip: mappedIpv6(clientIp) }),
     );
 
-    expect(top[0].ip).toBe(clientIp);
-  });
-
-  it('ne leve jamais meme si le store casse', async () => {
-    const broken: InMemorySecurityEventsStore = Object.assign(
-      new InMemorySecurityEventsStore(),
-      {
-        recordEvent: (): Promise<number> =>
-          Promise.reject(new Error('store down')),
-      },
-    );
-    const brokenInterceptor = new SuspiciousRequestInterceptor(
-      buildConfig(),
-      broken,
-    );
-
-    const req: FakeRequest = {
-      method: 'GET',
-      url: '/.env',
-      headers: {
-        'user-agent': 'curl/7',
-        'accept-language': '',
-      },
-      ip: '203.0.113.11',
-    };
-
-    await expect(
-      intercept(req, 404, undefined, brokenInterceptor),
-    ).resolves.toEqual({});
+    expect(trace.ip).toBe(clientIp);
   });
 
   it.each([
@@ -361,39 +333,29 @@ describe('SuspiciousRequestInterceptor', () => {
       `/api/v1/portfolio25/lead-magnets/toolkit/${CENSURE}`,
     ],
   ])(
-    'n enregistre ni n ecrit le jeton d un lien porte %s',
+    'n ecrit pas le jeton d un lien porte %s',
     async (_cas, url, params, cheminCensure) => {
-      const avertissements = espionnerLeLogger('warn');
+      await intercept(
+        {
+          method: 'GET',
+          url,
+          originalUrl: url,
+          params,
+          headers: HEADLESS_CHROME_HEADERS,
+          ip: '203.0.113.42',
+        },
+        404,
+      );
 
-      try {
-        await intercept(
-          {
-            method: 'GET',
-            url,
-            originalUrl: url,
-            params,
-            headers: HEADLESS_CHROME_HEADERS,
-            ip: '203.0.113.42',
-          },
-          404,
-        );
-
-        expect((await topIPs())[0]?.lastPath).toBe(cheminCensure);
-        expect(avertissements).toHaveBeenCalledWith(
-          expect.stringContaining(cheminCensure),
-        );
-        expect(JSON.stringify(avertissements.mock.calls)).not.toContain(
-          JETON_DE_LIEN,
-        );
-      } finally {
-        avertissements.mockRestore();
-      }
+      expect(tracesJournalisees()[0]?.path).toBe(cheminCensure);
+      expect(JSON.stringify(avertissements().mock.calls)).not.toContain(
+        JETON_DE_LIEN,
+      );
     },
   );
 
-  describe('journal d une requete suspecte', () => {
-    const avertissements = espionnerLesAvertissements();
-    const requeteSuspecte = (): Promise<unknown> =>
+  it('journalise la duree de la requete en millisecondes', async () => {
+    await sousUneDureeDe(2.5, () =>
       intercept(
         {
           method: 'GET',
@@ -402,37 +364,11 @@ describe('SuspiciousRequestInterceptor', () => {
           ip: '203.0.113.42',
         },
         404,
-      );
+      ),
+    );
 
-    it('journalise le navigateur borne que garde le magasin', async () => {
-      const [trace] = await ipsTraceesApresCreation(
-        CONSENTEMENT_AU_NAVIGATEUR_DEMESURE,
-      );
-
-      expect(avertissements()).toHaveBeenCalledWith(
-        expect.stringContaining(` ua="${trace.lastUserAgent}" `),
-      );
-    });
-
-    it('journalise la duree de la requete en millisecondes', async () => {
-      await sousUneDureeDe(2.5, requeteSuspecte);
-
-      expect(avertissements()).toHaveBeenCalledWith(
-        expect.stringContaining(' rtMs=2.5 '),
-      );
-    });
-
-    it('journalise la cause d un enregistrement rate', async () => {
-      jest
-        .spyOn(store, 'recordEvent')
-        .mockRejectedValueOnce(new Error('redis down'));
-
-      await requeteSuspecte();
-
-      await attendreLAvertissement(
-        avertissements,
-        '[SECURITY] store.recordEvent a echoue: redis down',
-      );
-    });
+    expect(avertissements()).toHaveBeenCalledWith(
+      expect.stringContaining(' rtMs=2.5 '),
+    );
   });
 });

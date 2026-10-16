@@ -10,8 +10,8 @@ import {
   buildClientReportContext,
 } from '../../../../../test/factories/audit-requests.factory';
 import {
+  createChatOpenAIFactoryQuiInvoque,
   createChatOpenAIFactoryStub,
-  createLlmSuiviStub,
 } from '../../../../../test/factories/section-generator.factory';
 import type { AuditLocale } from '../../domain/audit-locale.util';
 import type { AuditAutomationConfig } from './audit.config';
@@ -69,15 +69,14 @@ describe('LangchainClientReportService', () => {
       .fn()
       .mockResolvedValue(buildClientReportConforme()),
   ) {
-    const { fabrique, metrics } = createLlmSuiviStub(invoke);
+    const fabrique = createChatOpenAIFactoryQuiInvoque(invoke);
     const service = new LangchainClientReportService(
       { ...config, openAiApiKey: 'test-key' },
       fabrique,
-      metrics,
     );
     const generer = (contexte: Partial<ClientReportContext> = {}) =>
       service.generate({ ...baseContext(), ...contexte });
-    return { service, fabrique, metrics, invoke, generer };
+    return { service, fabrique, invoke, generer };
   }
 
   it('returns a deterministic fallback when the api key is missing', async () => {
@@ -224,19 +223,6 @@ describe('LangchainClientReportService', () => {
       await generer({ websiteName: BALISE_FERMANTE_INJECTEE });
 
       attendreUnPayloadEmballe(invoke, UNTRUSTED_DATA_DISCLAIMER_FR);
-    });
-
-    it('compte l appel dans les métriques LLM', async () => {
-      const { metrics, generer } = serviceAvecLlm();
-
-      await generer();
-
-      expect(metrics.llmCallsTotal.inc).toHaveBeenCalledWith({
-        model: config.llmModel,
-        section: 'client_report',
-        locale: 'fr',
-        status: 'success',
-      });
     });
   });
 });

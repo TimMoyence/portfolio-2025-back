@@ -382,12 +382,6 @@ describe('validateEnv', () => {
     ],
     ['devrait coercer DB_PORT en number', { DB_PORT: '5433' }, 'DB_PORT', 5433],
     ['devrait coercer PORT en number', { PORT: '8080' }, 'PORT', 8080],
-    [
-      'devrait accepter METRICS_TOKEN comme variable optionnelle',
-      { METRICS_TOKEN: 'my-prom-token' },
-      'METRICS_TOKEN',
-      'my-prom-token',
-    ],
   ] as const)('%s', (_titre, overrides, cle, attendu) => {
     expect(validateEnv(buildValidEnv(overrides))[cle]).toBe(attendu);
   });

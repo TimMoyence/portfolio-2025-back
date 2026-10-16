@@ -254,19 +254,11 @@ const formeDeLEnv = z.object({
 
   PUPPETEER_EXECUTABLE_PATH: z.string().optional(),
 
-  METRICS_TOKEN: z.string().optional(),
-
   SECURITY_SUSPICIOUS_SCORE_THRESHOLD: z.coerce
     .number()
     .int()
     .positive()
     .default(25),
-  SECURITY_REPORT_WINDOW_MS: z.coerce
-    .number()
-    .int()
-    .positive()
-    .default(24 * 60 * 60 * 1000),
-  SECURITY_TOP_EVENTS_LIMIT: z.coerce.number().int().positive().default(10),
 
   ENABLE_LEGACY_CMS_CONTEXTS: z.string().default('false'),
   BOOTSTRAP_DEBUG: z.string().optional(),

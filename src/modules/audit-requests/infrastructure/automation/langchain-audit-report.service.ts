@@ -1,6 +1,5 @@
 import { ChatOpenAI } from '@langchain/openai';
-import { Inject, Injectable, Logger, Optional } from '@nestjs/common';
-import { MetricsService } from '../../../../common/interfaces/metrics/metrics.service';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { AuditLocale, localeDeRedaction } from '../../domain/audit-locale.util';
 import { AUDIT_AUTOMATION_CONFIG } from '../../domain/token';
 import type { AuditAutomationConfig } from './audit.config';
@@ -25,11 +24,7 @@ import {
 } from './langchain-fallback-report.builder';
 import { DeadlineBudget, withHardTimeout } from './llm-execution.guardrails';
 import { PROMPT_VERSION } from './prompts/v1/audit-system-prompts';
-import {
-  GENERATEURS_DE_SECTION,
-  suivreLesAppelsLlm,
-  type InvokeTrackedFn,
-} from './section-generators/cacheable-section.generators';
+import { GENERATEURS_DE_SECTION } from './section-generators/cacheable-section.generators';
 import {
   CachingSectionRunner,
   generateExpertReport as runExpertReportGenerator,
@@ -89,13 +84,7 @@ export class LangchainAuditReportService {
     @Inject(LLM_EXECUTOR)
     private readonly llmExecutor: LlmExecutor,
     private readonly cachingRunner: CachingSectionRunner,
-    @Optional()
-    metricsService?: MetricsService,
-  ) {
-    this.invokeTracked = suivreLesAppelsLlm(config, metricsService);
-  }
-
-  private readonly invokeTracked: InvokeTrackedFn;
+  ) {}
 
   async generate(
     input: LangchainAuditInput,
@@ -577,10 +566,7 @@ export class LangchainAuditReportService {
         budget,
         (signal) =>
           generer(
-            {
-              cachingRunner: this.cachingRunner,
-              invokeTracked: this.invokeTracked,
-            },
+            { cachingRunner: this.cachingRunner },
             { llm, payload, locale, retryMode, signal },
           ),
       );
@@ -625,10 +611,13 @@ export class LangchainAuditReportService {
     retryMode = false,
     signal?: AbortSignal,
   ): Promise<string> {
-    return runUserSummaryGenerator(
-      { invokeTracked: this.invokeTracked },
-      { llm, payload, locale, retryMode, signal },
-    );
+    return runUserSummaryGenerator({
+      llm,
+      payload,
+      locale,
+      retryMode,
+      signal,
+    });
   }
 
   private generateExpertReport(
@@ -639,10 +628,14 @@ export class LangchainAuditReportService {
     compactMode = false,
     signal?: AbortSignal,
   ): Promise<ExpertReport> {
-    return runExpertReportGenerator(
-      { invokeTracked: this.invokeTracked },
-      { llm, payload, locale, retryMode, compactMode, signal },
-    );
+    return runExpertReportGenerator({
+      llm,
+      payload,
+      locale,
+      retryMode,
+      compactMode,
+      signal,
+    });
   }
 
   private fallback(

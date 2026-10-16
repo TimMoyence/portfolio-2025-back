@@ -1,10 +1,8 @@
-/* eslint-disable @typescript-eslint/unbound-method */
 import { buildAuditAutomationConfig } from '../../../../../test/factories/audit-config.factory';
 import { buildLangchainAuditInput } from '../../../../../test/factories/audit-requests.factory';
-import { createLlmSuiviStub } from '../../../../../test/factories/section-generator.factory';
+import { createChatOpenAIFactoryQuiInvoque } from '../../../../../test/factories/section-generator.factory';
 import type { AuditLocale } from '../../domain/audit-locale.util';
 import { silenceNestLogger } from '../../../../../test/helpers/silence-nest-logger';
-import type { MetricsService } from '../../../../common/interfaces/metrics/metrics.service';
 import type { AuditAutomationConfig } from './audit.config';
 import {
   type ChatOpenAIFactory,
@@ -23,15 +21,14 @@ import { CachingSectionRunner } from './section-generators';
 function createService(
   config: AuditAutomationConfig,
   qualityGate: ReportQualityGateService,
-  llm: { fabrique?: ChatOpenAIFactory; metrics?: MetricsService } = {},
+  fabrique: ChatOpenAIFactory = new DefaultChatOpenAIFactory(config),
 ): LangchainAuditReportService {
   return new LangchainAuditReportService(
     config,
     qualityGate,
-    llm.fabrique ?? new DefaultChatOpenAIFactory(config),
+    fabrique,
     new SharedLlmExecutor(config),
     new CachingSectionRunner(config),
-    llm.metrics,
   );
 }
 
@@ -283,11 +280,10 @@ describe('LangchainAuditReportService', () => {
 
   it('ne relance qu un passage expert complet, compté, quand le rapport compact enfreint le palier', async () => {
     const invoke = jest.fn();
-    const { fabrique, metrics } = createLlmSuiviStub(invoke);
     const service = createService(
       { ...config, openAiApiKey: 'test-key' },
       new ReportQualityGateService(),
-      { fabrique, metrics },
+      createChatOpenAIFactoryQuiInvoque(invoke),
     );
     const testable = asTestable(service);
     jest
@@ -300,13 +296,7 @@ describe('LangchainAuditReportService', () => {
 
     const result = await service.generate(input);
 
-    const appelExpert = expect.objectContaining({
-      section: 'expert_report',
-      status: 'success',
-    });
-    expect(metrics.llmCallsTotal.inc).toHaveBeenCalledTimes(2);
-    expect(metrics.llmCallsTotal.inc).toHaveBeenNthCalledWith(1, appelExpert);
-    expect(metrics.llmCallsTotal.inc).toHaveBeenNthCalledWith(2, appelExpert);
+    expect(invoke).toHaveBeenCalledTimes(2);
     expect(result.adminReport['qualityGate']).toEqual(
       expect.objectContaining({ retried: true, fallback: true }),
     );

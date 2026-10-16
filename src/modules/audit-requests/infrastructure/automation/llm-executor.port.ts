@@ -1,5 +1,4 @@
-import { Inject, Injectable, Optional } from '@nestjs/common';
-import { MetricsService } from '../../../../common/interfaces/metrics/metrics.service';
+import { Inject, Injectable } from '@nestjs/common';
 import { AUDIT_AUTOMATION_CONFIG } from '../../domain/token';
 import type { AuditAutomationConfig } from './audit.config';
 import {
@@ -10,10 +9,6 @@ import {
   getSharedLlmInFlightLimiter,
   type LlmInFlightLimiter,
 } from './llm-execution.guardrails';
-import {
-  suivreLesAppelsLlm,
-  type InvokeTrackedFn,
-} from './section-generators/cacheable-section.generators';
 
 export const LLM_EXECUTOR = Symbol('LLM_EXECUTOR');
 
@@ -32,19 +27,14 @@ abstract class LlmLimiteParLaConfig {
   }
 }
 
-export abstract class LlmSuiviParLaConfig extends LlmLimiteParLaConfig {
-  protected readonly invokeTracked: InvokeTrackedFn;
-
+export abstract class LlmOpenAiParLaConfig extends LlmLimiteParLaConfig {
   constructor(
     @Inject(AUDIT_AUTOMATION_CONFIG)
     config: AuditAutomationConfig,
     @Inject(CHAT_OPENAI_FACTORY)
     protected readonly chatOpenAIFactory: ChatOpenAIFactory,
-    @Optional()
-    metricsService?: MetricsService,
   ) {
     super(config);
-    this.invokeTracked = suivreLesAppelsLlm(config, metricsService);
   }
 }
 
