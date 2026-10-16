@@ -48,11 +48,7 @@ describe('SetPasswordUseCase', () => {
     });
 
     attendreNouveauMotDePasseEnregistre(
-      {
-        hacher: passwordService.hash,
-        mettreAJour: usersRepository.update,
-        fermerLesSessions: refreshTokensRepo.revokeByUserId,
-      },
+      { passwordService, usersRepository, refreshTokensRepo },
       CHOSEN_CREDENTIAL,
       'password-set',
     );

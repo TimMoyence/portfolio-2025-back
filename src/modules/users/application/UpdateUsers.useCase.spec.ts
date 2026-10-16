@@ -72,11 +72,7 @@ describe('UpdateUsersUseCase', () => {
       updatedOrCreatedBy: 'admin',
     });
     attendreNouveauMotDePasseEnregistre(
-      {
-        hacher: passwordService.hash,
-        mettreAJour: repo.update,
-        fermerLesSessions: refreshTokensRepo.revokeByUserId,
-      },
+      { passwordService, usersRepository: repo, refreshTokensRepo },
       CHOSEN_CREDENTIAL,
       'admin',
     );

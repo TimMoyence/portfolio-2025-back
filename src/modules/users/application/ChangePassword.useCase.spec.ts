@@ -17,8 +17,7 @@ import {
 import { createMockRefreshTokensRepo } from '../../../../test/factories/refresh-token.factory';
 import {
   attendreAucunMotDePasseEnregistre,
-  attendreMiseAJourDeLUtilisateur,
-  attendreSessionsFermeesApres,
+  attendreNouveauMotDePasseEnregistre,
 } from '../../../../test/helpers/utilisateurs';
 
 const CURRENT_CREDENTIAL = 'OldPassword123';
@@ -69,12 +68,11 @@ describe('ChangePasswordUseCase', () => {
       dto.currentPassword,
       user.passwordHash,
     );
-    expect(passwordService.hash).toHaveBeenCalledWith(dto.newPassword);
-    attendreMiseAJourDeLUtilisateur(repo.update, {
-      passwordHash: 'new-hash',
-      updatedOrCreatedBy: 'password-change',
-    });
-    attendreSessionsFermeesApres(repo.update, refreshTokensRepo.revokeByUserId);
+    attendreNouveauMotDePasseEnregistre(
+      { passwordService, usersRepository: repo, refreshTokensRepo },
+      dto.newPassword,
+      'password-change',
+    );
     expect(result).toBe(updatedUser);
   });
 
