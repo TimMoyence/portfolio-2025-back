@@ -44,11 +44,14 @@ describe('ChampsAntiRobotDto', () => {
     ]);
   });
 
-  it('refuse un horodatage negatif ou non entier', () => {
+  it('refuse un horodatage negatif, non entier ou qui n est pas un nombre', () => {
     expect(proprietesEnErreur({ formStartedAt: -1 })).toEqual([
       'formStartedAt',
     ]);
     expect(proprietesEnErreur({ formStartedAt: 1.5 })).toEqual([
+      'formStartedAt',
+    ]);
+    expect(proprietesEnErreur({ formStartedAt: 'hier' })).toEqual([
       'formStartedAt',
     ]);
   });
