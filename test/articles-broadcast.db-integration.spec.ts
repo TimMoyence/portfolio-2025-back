@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import type { DataSource } from 'typeorm';
+import { boiteDeLivraison } from '../src/common/domain/value-objects/boite-de-livraison';
 import type { ArticleWrite } from '../src/modules/articles/application/articles.repository';
 import { TypeOrmArticleBroadcastRepository } from '../src/modules/articles/infrastructure/article-broadcast.repository';
 import { TypeOrmArticlesRepository } from '../src/modules/articles/infrastructure/articles.repository';
@@ -90,6 +91,7 @@ describeDb('diffusion des articles aux abonnés (Postgres)', () => {
       .getRepository(NewsletterSubscriberEntity)
       .save({
         email,
+        boite: boiteDeLivraison(email),
         firstName: null,
         locale: 'fr',
         sourceFormationSlug: 'veille-ia',

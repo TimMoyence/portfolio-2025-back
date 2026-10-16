@@ -2220,6 +2220,9 @@ exports[`OpenAPI core contract keeps AuditRequests path contracts stable 1`] = `
         "400": {
           "description": "Validation echouee",
         },
+        "429": {
+          "description": "Trop de requetes",
+        },
       },
       "summary": "Soumettre une demande d'audit de site web (acces public)",
       "tags": [
@@ -2274,6 +2277,9 @@ exports[`OpenAPI core contract keeps AuditRequests path contracts stable 1`] = `
             },
           },
           "description": "",
+        },
+        "429": {
+          "description": "Trop de requetes",
         },
       },
       "summary": "Recuperer le resume d'un audit",
@@ -2358,6 +2364,9 @@ exports[`OpenAPI core contract keeps Auth path contracts stable 1`] = `
         "400": {
           "description": "Validation failed",
         },
+        "429": {
+          "description": "Trop de requetes",
+        },
       },
       "summary": "Envoie un email de reinitialisation de mot de passe",
       "tags": [
@@ -2392,6 +2401,9 @@ exports[`OpenAPI core contract keeps Auth path contracts stable 1`] = `
         },
         "401": {
           "description": "Invalid Google token",
+        },
+        "429": {
+          "description": "Trop de requetes",
         },
       },
       "summary": "Authentification via Google OAuth",
@@ -2428,6 +2440,9 @@ exports[`OpenAPI core contract keeps Auth path contracts stable 1`] = `
         "401": {
           "description": "Identifiants invalides",
         },
+        "429": {
+          "description": "Trop de requetes",
+        },
       },
       "summary": "Connexion par email et mot de passe",
       "tags": [
@@ -2452,6 +2467,9 @@ exports[`OpenAPI core contract keeps Auth path contracts stable 1`] = `
         },
         "401": {
           "description": "Invalid refresh token",
+        },
+        "429": {
+          "description": "Trop de requetes",
         },
       },
       "summary": "Revoque le refresh token (deconnexion)",
@@ -2551,6 +2569,9 @@ exports[`OpenAPI core contract keeps Auth path contracts stable 1`] = `
         "401": {
           "description": "Invalid or expired refresh token",
         },
+        "429": {
+          "description": "Trop de requetes",
+        },
       },
       "summary": "Rafraichit le couple access + refresh token (rotation)",
       "tags": [
@@ -2586,6 +2607,9 @@ exports[`OpenAPI core contract keeps Auth path contracts stable 1`] = `
         "400": {
           "description": "Inscription echouee",
         },
+        "429": {
+          "description": "Trop de requetes",
+        },
       },
       "summary": "Inscription d'un nouvel utilisateur. Un email de verification est envoye.",
       "tags": [
@@ -2620,6 +2644,9 @@ exports[`OpenAPI core contract keeps Auth path contracts stable 1`] = `
         },
         "400": {
           "description": "Validation failed",
+        },
+        "429": {
+          "description": "Trop de requetes",
         },
       },
       "summary": "Renvoie l'email de verification (rate limited 3/h)",
@@ -2658,6 +2685,9 @@ exports[`OpenAPI core contract keeps Auth path contracts stable 1`] = `
         },
         "404": {
           "description": "Lien invalide ou expiré.",
+        },
+        "429": {
+          "description": "Trop de requetes",
         },
       },
       "summary": "Reinitialise le mot de passe via un token de reset",
@@ -2741,6 +2771,9 @@ exports[`OpenAPI core contract keeps Auth path contracts stable 1`] = `
         "404": {
           "description": "Lien invalide ou expiré.",
         },
+        "429": {
+          "description": "Trop de requetes",
+        },
       },
       "summary": "Verifie l'adresse email via le token envoye",
       "tags": [
@@ -2781,6 +2814,9 @@ exports[`OpenAPI core contract keeps Contacts path contracts stable 1`] = `
         "400": {
           "description": "Validation echouee",
         },
+        "429": {
+          "description": "Trop de requetes",
+        },
       },
       "summary": "Envoyer un message de contact (acces public)",
       "tags": [
@@ -2820,6 +2856,9 @@ exports[`OpenAPI core contract keeps CookieConsents path contracts stable 1`] = 
         },
         "400": {
           "description": "Validation echouee",
+        },
+        "429": {
+          "description": "Trop de requetes",
         },
       },
       "summary": "Enregistrer un consentement cookie (acces public)",
@@ -3539,6 +3578,9 @@ exports[`OpenAPI legacy contract (phase 11) keeps legacy path contracts stable 1
           },
           "description": "",
         },
+        "429": {
+          "description": "Trop de requetes",
+        },
       },
       "summary": "Lister les formations (acces public, pagine)",
       "tags": [
@@ -3677,6 +3719,9 @@ exports[`OpenAPI legacy contract (phase 11) keeps legacy path contracts stable 1
           },
           "description": "",
         },
+        "429": {
+          "description": "Trop de requetes",
+        },
       },
       "summary": "Lister les projets (acces public, pagine)",
       "tags": [
@@ -3797,6 +3842,9 @@ exports[`OpenAPI legacy contract (phase 11) keeps legacy path contracts stable 1
             },
           },
           "description": "",
+        },
+        "429": {
+          "description": "Trop de requetes",
         },
       },
       "summary": "Lister les redirections (acces public, pagine)",
@@ -3923,6 +3971,9 @@ exports[`OpenAPI legacy contract (phase 11) keeps legacy path contracts stable 1
             },
           },
           "description": "",
+        },
+        "429": {
+          "description": "Trop de requetes",
         },
       },
       "summary": "Lister les services (acces public, pagine)",

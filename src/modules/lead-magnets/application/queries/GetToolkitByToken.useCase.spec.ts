@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { createMockLeadMagnetRequestRepo } from '../../../../../test/factories/lead-magnet-request.factory';
 import { LienInvalideError } from '../../../../common/domain/errors/LienInvalideError';
 import type { ILeadMagnetRequestRepository } from '../../domain/ILeadMagnetRequestRepository';
 import type { IToolkitContentAssembler } from '../../domain/IToolkitContentAssembler';
@@ -22,11 +23,7 @@ describe('GetToolkitByTokenUseCase', () => {
   } as unknown as LeadMagnetRequest;
 
   beforeEach(async () => {
-    repo = {
-      create: jest.fn(),
-      existsRecentByEmail: jest.fn(),
-      findByToken: jest.fn(),
-    };
+    repo = createMockLeadMagnetRequestRepo();
     assembler = {
       assemble: jest.fn(),
     };

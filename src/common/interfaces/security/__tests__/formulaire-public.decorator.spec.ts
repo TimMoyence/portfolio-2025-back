@@ -1,5 +1,6 @@
 import { PATH_METADATA, METHOD_METADATA } from '@nestjs/common/constants';
 import { RequestMethod } from '@nestjs/common';
+import { DECORATORS } from '@nestjs/swagger/dist/constants';
 import { IS_PUBLIC_KEY } from '../../auth/public.decorator';
 import { FormulairePublic, LienPublic } from '../formulaire-public.decorator';
 import {
@@ -17,11 +18,20 @@ class ControleurTemoin {
 
 const handler = methodeDe(ControleurTemoin, 'soumettre');
 
+const attendreLe429Documente = (gestionnaire: object) =>
+  expect(
+    Reflect.getMetadata(DECORATORS.API_RESPONSE, gestionnaire),
+  ).toMatchObject({ '429': { description: 'Trop de requetes' } });
+
 describe('LienPublic', () => {
   const lien = methodeDe(ControleurTemoin, 'suivreLeLien');
 
   it('ouvre la route sans authentification', () => {
     expect(Reflect.getMetadata(IS_PUBLIC_KEY, lien)).toBe(true);
+  });
+
+  it('documente le refus 429 de sa limite', () => {
+    attendreLe429Documente(lien);
   });
 
   it('limite les clics a dix par minute', () => {
@@ -42,6 +52,10 @@ describe('FormulairePublic', () => {
       limite: 4,
       fenetre: 3600000,
     });
+  });
+
+  it('documente le refus 429 de sa limite', () => {
+    attendreLe429Documente(handler);
   });
 
   it('expose la route en POST sur le chemin donne', () => {

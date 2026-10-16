@@ -5,18 +5,20 @@ export interface HoteDeReponseHttp {
   host: ArgumentsHost;
   jsonFn: jest.Mock;
   statusFn: jest.Mock;
+  setHeaderFn: jest.Mock;
 }
 
 export function createHttpResponseHost(url = '/test'): HoteDeReponseHttp {
   const jsonFn = jest.fn();
   const statusFn = jest.fn().mockReturnValue({ json: jsonFn });
+  const setHeaderFn = jest.fn();
   const host = {
     switchToHttp: () => ({
-      getResponse: () => ({ status: statusFn }),
+      getResponse: () => ({ status: statusFn, setHeader: setHeaderFn }),
       getRequest: () => ({ url }),
     }),
   } as unknown as ArgumentsHost;
-  return { host, jsonFn, statusFn };
+  return { host, jsonFn, statusFn, setHeaderFn };
 }
 
 export interface FausseReponseHttp extends EventEmitter {

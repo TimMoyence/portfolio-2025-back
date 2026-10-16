@@ -4,6 +4,7 @@ import type { ILeadMagnetNotifier } from '../../src/modules/lead-magnets/domain/
 import type { IToolkitPdfGenerator } from '../../src/modules/lead-magnets/domain/IToolkitPdfGenerator';
 import type { IToolkitContentAssembler } from '../../src/modules/lead-magnets/domain/IToolkitContentAssembler';
 import type { ToolkitContent } from '../../src/modules/lead-magnets/domain/ToolkitContent';
+import { sectionSurLeDepot } from './verrou-par-boite.factory';
 
 export function buildLeadMagnetRequest(
   overrides?: Partial<LeadMagnetRequest>,
@@ -51,11 +52,13 @@ export function createMockLeadMagnetRequestRepo(): jest.Mocked<ILeadMagnetReques
   defaultRequest.accessToken = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890';
   defaultRequest.createdAt = new Date();
 
-  return {
+  const repo: jest.Mocked<ILeadMagnetRequestRepository> = {
+    sousVerrouDeLaBoite: sectionSurLeDepot(() => repo),
     create: jest.fn().mockResolvedValue(defaultRequest),
-    existsRecentByEmail: jest.fn().mockResolvedValue(false),
+    existeUneDemandeRecenteVersLaBoiteDe: jest.fn().mockResolvedValue(false),
     findByToken: jest.fn().mockResolvedValue(defaultRequest),
   };
+  return repo;
 }
 
 export function createMockLeadMagnetNotifier(): jest.Mocked<ILeadMagnetNotifier> {

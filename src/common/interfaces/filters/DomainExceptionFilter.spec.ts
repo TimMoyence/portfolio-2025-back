@@ -11,6 +11,10 @@ import { TokenReuseDetectedError } from '../../domain/errors/TokenReuseDetectedE
 import { ResourceConflictError } from '../../domain/errors/ResourceConflictError';
 import { DomainValidationError } from '../../domain/errors/DomainValidationError';
 import { RateLimitExceededError } from '../../domain/errors/RateLimitExceededError';
+import {
+  PlafondDeFluxAtteintError,
+  SessionStreamLimitError,
+} from '../../../modules/formations/domain/errors/FormationErrors';
 import { createHttpResponseHost } from '../../../../test/factories/execution-context.factory';
 import { attendreProbleme } from '../../../../test/helpers/reponse-probleme';
 
@@ -107,6 +111,33 @@ describe('DomainExceptionFilter', () => {
     const body = hote.jsonFn.mock.calls[0][0] as Record<string, unknown>;
     expect(body).not.toHaveProperty('code');
   });
+
+  it('ecrit Retry-After en secondes quand le 429 connait l attente', () => {
+    const hote = intercepter(
+      new RateLimitExceededError('Trop de demandes', 121),
+      '/api/audits',
+    );
+
+    attendreProbleme(hote, HttpStatus.TOO_MANY_REQUESTS, {
+      detail: 'Trop de demandes',
+    });
+    expect(hote.setHeaderFn).toHaveBeenCalledTimes(1);
+    expect(hote.setHeaderFn).toHaveBeenCalledWith('Retry-After', '121');
+  });
+
+  it.each([
+    ['un 429 sans attente', new RateLimitExceededError('Quota depasse')],
+    ['le plafond de flux', new PlafondDeFluxAtteintError('seance:1')],
+    ['la limite de flux d une seance', new SessionStreamLimitError()],
+  ])(
+    'n ecrit aucun Retry-After pour %s, dont l attente est inconnue',
+    (_label, erreur) => {
+      const hote = intercepter(erreur);
+
+      attendreProbleme(hote, HttpStatus.TOO_MANY_REQUESTS);
+      expect(hote.setHeaderFn).not.toHaveBeenCalled();
+    },
+  );
 
   it('inclut le format RFC 7807 complet dans la reponse', () => {
     const { jsonFn } = intercepter(
