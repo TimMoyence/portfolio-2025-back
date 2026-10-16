@@ -16,6 +16,7 @@ import {
   creerCatalogueDeTest,
 } from './factories/cours.factory';
 import { createMockDepotsFormations } from './factories/formation.factory';
+import { buildUser, createMockUsersRepo } from './factories/user.factory';
 import {
   CONTROLEURS_FORMATIONS,
   fournisseursFormations,
@@ -30,6 +31,7 @@ const SESSION_ID = 'c3333333-3333-4333-8333-333333333333';
 const PARTICIPANT_ID = 'e5555555-5555-4555-8555-555555555555';
 const ECRAN_ID = COURS.ecrans[0].id;
 const FORMATEUR_ID = 'a1111111-1111-4111-8111-111111111111';
+const SANS_ROLE_ID = 'b2222222-2222-4222-8222-222222222222';
 const JETON_FORMATEUR = 'jeton-formateur';
 const JETON_ETUDIANT_SANS_ROLE = 'jeton-sans-role';
 const NON_AUTORISE = 401;
@@ -86,9 +88,9 @@ const EN_TETES_REFUSES = [
   },
 ] as const;
 
-function payload(roles: readonly string[]): JwtPayload {
+function payload(sub: string, roles: readonly string[]): JwtPayload {
   return {
-    sub: FORMATEUR_ID,
+    sub,
     email: 'formateur@example.test',
     iat: 0,
     exp: 0,
@@ -110,14 +112,20 @@ describe('Gardes reelles des routes formateur (e2e http socket)', () => {
     const jwt = {
       verify: jest.fn((jeton: string) => {
         if (jeton === JETON_FORMATEUR) {
-          return Promise.resolve(payload(['teacher']));
+          return Promise.resolve(payload(FORMATEUR_ID, ['teacher']));
         }
         if (jeton === JETON_ETUDIANT_SANS_ROLE) {
-          return Promise.resolve(payload([]));
+          return Promise.resolve(payload(SANS_ROLE_ID, []));
         }
         return Promise.reject(new Error('jeton inconnu'));
       }),
     };
+    const comptes = createMockUsersRepo();
+    comptes.findById.mockImplementation((id: string) =>
+      Promise.resolve(
+        buildUser({ id, roles: id === FORMATEUR_ID ? ['teacher'] : [] }),
+      ),
+    );
     const moduleRef = await Test.createTestingModule({
       imports: [ThrottlerModule.forRoot([{ ttl: 60000, limit: 1000 }])],
       controllers: CONTROLEURS_FORMATIONS,
@@ -127,14 +135,7 @@ describe('Gardes reelles des routes formateur (e2e http socket)', () => {
           creerCatalogueDeTest(COURS),
         ),
         { provide: JwtTokenService, useValue: jwt },
-        {
-          provide: USERS_REPOSITORY,
-          useValue: {
-            findById: jest
-              .fn()
-              .mockResolvedValue({ id: FORMATEUR_ID, emailVerified: true }),
-          },
-        },
+        { provide: USERS_REPOSITORY, useValue: comptes },
         { provide: APP_GUARD, useClass: JwtAuthGuard },
       ],
     }).compile();

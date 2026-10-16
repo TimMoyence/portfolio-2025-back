@@ -41,10 +41,14 @@ export function jetonSigne(
   return `${entete}.${charge}.${signature}`;
 }
 
+const rolesEnBase = new Map<string, string[]>();
+
 export function authentificationReelle(): Provider[] {
   const utilisateurs = createMockUsersRepo();
   utilisateurs.findById.mockImplementation((id: string) =>
-    Promise.resolve(buildUser({ id, emailVerified: true })),
+    Promise.resolve(
+      buildUser({ id, emailVerified: true, roles: rolesEnBase.get(id) ?? [] }),
+    ),
   );
   return [
     {
@@ -62,6 +66,7 @@ export function signerLesIdentitesDeTest(app: INestApplication): void {
     const identite = requete.headers[EN_TETE_IDENTITE];
     if (typeof identite === 'string') {
       const [sub, ...roles] = identite.split(':');
+      rolesEnBase.set(sub, roles);
       requete.headers.authorization = `Bearer ${jetonSigne(sub, roles)}`;
     }
     suite();

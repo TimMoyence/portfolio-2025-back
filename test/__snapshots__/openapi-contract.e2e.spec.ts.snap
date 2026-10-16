@@ -3090,10 +3090,13 @@ exports[`OpenAPI core contract keeps Auth path contracts stable 1`] = `
           "description": "",
         },
         "400": {
-          "description": "Validation echouee",
+          "description": "Validation echouee ou mot de passe actuel incorrect",
         },
         "401": {
-          "description": "Identifiants invalides ou utilisateur inactif",
+          "description": "Session absente, expiree ou compte desactive",
+        },
+        "409": {
+          "description": "No password set for this account",
         },
       },
       "security": [
