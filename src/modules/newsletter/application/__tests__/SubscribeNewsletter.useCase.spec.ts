@@ -13,8 +13,7 @@ import {
 } from '../../../../../test/helpers/avertissements';
 import { flushPromises } from '../../../../../test/helpers/flush-promises';
 import {
-  reglementAuPlancher,
-  RETENUE_JUSQU_AU_PLANCHER,
+  rendueAuPlancher,
   simulerLHorlogeAChaqueTest,
 } from '../../../../../test/helpers/plancher-de-latence';
 import type { NewsletterSubscriber } from '../../domain/NewsletterSubscriber';
@@ -322,9 +321,7 @@ describe('SubscribeNewsletterUseCase', () => {
     ])('repond pour %s au meme plancher de latence', async (_cas, preparer) => {
       preparer();
 
-      expect(await reglementAuPlancher(useCase.execute(validCommand))).toEqual(
-        RETENUE_JUSQU_AU_PLANCHER,
-      );
+      await rendueAuPlancher(useCase.execute(validCommand));
     });
   });
 });

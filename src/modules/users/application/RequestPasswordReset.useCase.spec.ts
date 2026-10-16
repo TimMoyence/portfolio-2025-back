@@ -15,8 +15,7 @@ import { buildConfigService } from '../../../../test/factories/env.factory';
 import { createMockPasswordResetNotifier } from '../../../../test/factories/mailer.factory';
 import {
   promesseSuspendue,
-  reglementAuPlancher,
-  RETENUE_JUSQU_AU_PLANCHER,
+  rendueAuPlancher,
   simulerLHorlogeAChaqueTest,
 } from '../../../../test/helpers/plancher-de-latence';
 
@@ -49,7 +48,6 @@ describe('RequestPasswordResetUseCase', () => {
     tokensRepository.remplacerLesJetonsActifs.mockResolvedValue(
       buildPasswordResetToken(),
     );
-    notifier.sendPasswordResetEmail.mockResolvedValue();
     return user;
   };
 
@@ -161,11 +159,7 @@ describe('RequestPasswordResetUseCase', () => {
     ])('repond pour %s au meme plancher de latence', async (_cas, preparer) => {
       preparer();
 
-      expect(
-        await reglementAuPlancher(
-          useCase.execute({ email: 'john@example.com' }),
-        ),
-      ).toEqual(RETENUE_JUSQU_AU_PLANCHER);
+      await rendueAuPlancher(useCase.execute({ email: 'john@example.com' }));
     });
 
     it('repond sans attendre la fin de l envoi du courriel', async () => {
@@ -174,11 +168,7 @@ describe('RequestPasswordResetUseCase', () => {
         new Promise<void>(() => undefined),
       );
 
-      expect(
-        await reglementAuPlancher(
-          useCase.execute({ email: 'john@example.com' }),
-        ),
-      ).toEqual(RETENUE_JUSQU_AU_PLANCHER);
+      await rendueAuPlancher(useCase.execute({ email: 'john@example.com' }));
       expect(notifier.sendPasswordResetEmail).toHaveBeenCalledTimes(1);
     });
 
@@ -188,12 +178,10 @@ describe('RequestPasswordResetUseCase', () => {
       tokensRepository.remplacerLesJetonsActifs.mockReturnValue(
         verrou.promesse,
       );
-      const reponse = useCase.execute({ email: 'john@example.com' });
 
-      expect(await reglementAuPlancher(reponse)).toEqual(
-        RETENUE_JUSQU_AU_PLANCHER,
-      );
-      await expect(reponse).resolves.toEqual({
+      await expect(
+        rendueAuPlancher(useCase.execute({ email: 'john@example.com' })),
+      ).resolves.toEqual({
         message:
           'Si un compte existe avec cet email, un lien de reinitialisation a ete envoye.',
       });

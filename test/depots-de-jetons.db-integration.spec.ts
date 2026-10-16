@@ -217,6 +217,19 @@ describeDb('Depots de jetons sur une base migree', () => {
 
   const configParDefaut = buildConfigService();
 
+  const demandeDeReinitialisation = (
+    comptes: ReturnType<typeof createMockUsersRepo>,
+  ) => {
+    const notifier = createMockPasswordResetNotifier();
+    const demande = new RequestPasswordResetUseCase(
+      comptes,
+      depotDeReinitialisation(),
+      notifier,
+      configParDefaut,
+    );
+    return { demande, notifier };
+  };
+
   describe('cinq demandes simultanees pour un meme compte', () => {
     const cinqFois = <T>(demande: () => Promise<T>) =>
       Promise.all([1, 2, 3, 4, 5].map(demande));
@@ -259,14 +272,7 @@ describeDb('Depots de jetons sur une base migree', () => {
     it('cinq demandes simultanees n emettent que trois liens de reinitialisation dans l heure', async () => {
       const email = 'plafond-reinitialisation@example.com';
       const { compte, comptes } = await monterLeCompte(email);
-      const notifier = createMockPasswordResetNotifier();
-      notifier.sendPasswordResetEmail.mockResolvedValue();
-      const demande = new RequestPasswordResetUseCase(
-        comptes,
-        depotDeReinitialisation(),
-        notifier,
-        configParDefaut,
-      );
+      const { demande, notifier } = demandeDeReinitialisation(comptes);
 
       const reponses = await cinqFois(() => demande.execute({ email }));
 
@@ -288,14 +294,7 @@ describeDb('Depots de jetons sur une base migree', () => {
       comptes.findByEmail.mockResolvedValue(
         buildUser({ id: compte, passwordHash: 'hash' }),
       );
-      const notifier = createMockPasswordResetNotifier();
-      notifier.sendPasswordResetEmail.mockResolvedValue();
-      const demande = new RequestPasswordResetUseCase(
-        comptes,
-        depotDeReinitialisation(),
-        notifier,
-        configParDefaut,
-      );
+      const { demande } = demandeDeReinitialisation(comptes);
 
       await Promise.all(
         [1, 2].map(() =>

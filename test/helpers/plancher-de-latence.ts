@@ -1,7 +1,7 @@
 const PLANCHER_MS = 300;
 const ALEA_MAX_MS = 50;
 
-export const RETENUE_JUSQU_AU_PLANCHER = {
+const RETENUE_JUSQU_AU_PLANCHER = {
   avantLePlancher: false,
   apresLePlancher: true,
 };
@@ -30,9 +30,7 @@ export function promesseSuspendue<T>(): {
   return { promesse, liberer, rompre };
 }
 
-export async function reglementAuPlancher(
-  promesse: Promise<unknown>,
-): Promise<typeof RETENUE_JUSQU_AU_PLANCHER> {
+export async function rendueAuPlancher<T>(promesse: Promise<T>): Promise<T> {
   let reglee = false;
   const marquer = () => {
     reglee = true;
@@ -41,5 +39,8 @@ export async function reglementAuPlancher(
   await jest.advanceTimersByTimeAsync(PLANCHER_MS - 1);
   const avantLePlancher = reglee;
   await jest.advanceTimersByTimeAsync(ALEA_MAX_MS + 1);
-  return { avantLePlancher, apresLePlancher: reglee };
+  expect({ avantLePlancher, apresLePlancher: reglee }).toEqual(
+    RETENUE_JUSQU_AU_PLANCHER,
+  );
+  return promesse;
 }

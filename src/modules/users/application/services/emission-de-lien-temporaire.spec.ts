@@ -29,10 +29,13 @@ function canalSimule(): CanalSimule {
 describe('emettreUnLienTemporaire', () => {
   const user = buildUser({ id: 'user-9', email: 'ada@example.com' });
 
+  const emettre = (canal: CanalSimule) =>
+    emettreUnLienTemporaire(user, 'user-9', canal, new Logger('test'));
+
   it('remplace les liens actifs du compte avant d envoyer le neuf', async () => {
     const canal = canalSimule();
 
-    await emettreUnLienTemporaire(user, 'user-9', canal, new Logger('test'));
+    await emettre(canal);
 
     expect(canal.remplacerLesLiensActifs).toHaveBeenCalledTimes(1);
     expect(canal.remplacerLesLiensActifs).toHaveBeenCalledWith(
@@ -55,7 +58,7 @@ describe('emettreUnLienTemporaire', () => {
     const canal = canalSimule();
     canal.remplacerLesLiensActifs.mockResolvedValue(null);
 
-    await emettreUnLienTemporaire(user, 'user-9', canal, new Logger('test'));
+    await emettre(canal);
 
     expect(canal.remplacerLesLiensActifs).toHaveBeenCalledTimes(1);
     expect(canal.envoyer).not.toHaveBeenCalled();
@@ -65,7 +68,7 @@ describe('emettreUnLienTemporaire', () => {
     const canal = canalSimule();
     const avant = Date.now();
 
-    await emettreUnLienTemporaire(user, 'user-9', canal, new Logger('test'));
+    await emettre(canal);
 
     const [lien] = canal.envoyer.mock.calls[0];
     const jetonBrut = new URL(lien.url).searchParams.get('token') ?? '';
@@ -92,12 +95,7 @@ describe('emettreUnLienTemporaire', () => {
     canal.envoyer.mockReturnValue(new Promise<void>(() => undefined));
     let rendue = false;
 
-    void emettreUnLienTemporaire(
-      user,
-      'user-9',
-      canal,
-      new Logger('test'),
-    ).then(() => {
+    void emettre(canal).then(() => {
       rendue = true;
     });
     await flushPromises();

@@ -11,8 +11,7 @@ import {
 } from '../../../../test/factories/user.factory';
 import {
   promesseSuspendue,
-  reglementAuPlancher,
-  RETENUE_JUSQU_AU_PLANCHER,
+  rendueAuPlancher,
   simulerLHorlogeAChaqueTest,
 } from '../../../../test/helpers/plancher-de-latence';
 import { espionnerLeLoggerAChaqueTest } from '../../../../test/helpers/silence-nest-logger';
@@ -124,9 +123,7 @@ describe('ResendVerificationEmailUseCase', () => {
     ])(
       'repond pour %s au meme plancher de latence',
       async (_cas, compte, plafondAtteint) => {
-        expect(
-          await reglementAuPlancher(demanderAvec(compte, plafondAtteint)),
-        ).toEqual(RETENUE_JUSQU_AU_PLANCHER);
+        await rendueAuPlancher(demanderAvec(compte, plafondAtteint));
       },
     );
 
@@ -134,12 +131,10 @@ describe('ResendVerificationEmailUseCase', () => {
       usersRepo.findByEmail.mockResolvedValue(compteNonVerifie);
       const verrou = promesseSuspendue<EmailVerificationToken | null>();
       tokensRepo.remplacerLesJetonsActifs.mockReturnValue(verrou.promesse);
-      const reponse = useCase.execute('marie@example.com');
 
-      expect(await reglementAuPlancher(reponse)).toEqual(
-        RETENUE_JUSQU_AU_PLANCHER,
-      );
-      await expect(reponse).resolves.toEqual({
+      await expect(
+        rendueAuPlancher(useCase.execute('marie@example.com')),
+      ).resolves.toEqual({
         message:
           'Si un compte non verifie existe avec cet email, un nouveau lien de verification a ete envoye.',
       });

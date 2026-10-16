@@ -1,34 +1,42 @@
 import {
   promesseSuspendue,
-  reglementAuPlancher,
-  RETENUE_JUSQU_AU_PLANCHER,
+  rendueAuPlancher,
   simulerLHorlogeAChaqueTest,
 } from '../../../test/helpers/plancher-de-latence';
 import { aHeureFixe, avecUnPlancherDeLatence } from './plancher-de-latence';
 
-describe('avecUnPlancherDeLatence', () => {
-  simulerLHorlogeAChaqueTest();
+simulerLHorlogeAChaqueTest();
 
-  it('retient le resultat d un travail immediat jusqu au plancher puis le rend', async () => {
-    const reponse = avecUnPlancherDeLatence(() => Promise.resolve('fait'));
+const journal = () => ({ warn: jest.fn<void, [string]>() });
 
-    expect(await reglementAuPlancher(reponse)).toEqual(
-      RETENUE_JUSQU_AU_PLANCHER,
-    );
-    await expect(reponse).resolves.toBe('fait');
+const repondreAHeureFixe = (
+  travail: () => Promise<string>,
+  echecs = journal(),
+): Promise<string> => aHeureFixe(travail, 'prevue', 'Echec tardif', echecs);
+
+describe.each([
+  [
+    'avecUnPlancherDeLatence',
+    (travail: () => Promise<string>) => avecUnPlancherDeLatence(travail),
+  ],
+  ['aHeureFixe', repondreAHeureFixe],
+])('%s', (_nom, repondre) => {
+  it('retient le resultat d un travail fini avant le plancher puis le rend', async () => {
+    await expect(
+      rendueAuPlancher(repondre(() => Promise.resolve('fait'))),
+    ).resolves.toBe('fait');
   });
 
-  it('retient aussi l echec jusqu au plancher puis le relance tel quel', async () => {
+  it('retient l echec d un travail fini avant le plancher puis le relance tel quel', async () => {
     const panne = new Error('panne');
-    const reponse = avecUnPlancherDeLatence(() => Promise.reject(panne));
-    const relance = expect(reponse).rejects.toBe(panne);
 
-    expect(await reglementAuPlancher(reponse)).toEqual(
-      RETENUE_JUSQU_AU_PLANCHER,
-    );
-    await relance;
+    await expect(
+      rendueAuPlancher(repondre(() => Promise.reject(panne))),
+    ).rejects.toBe(panne);
   });
+});
 
+describe('avecUnPlancherDeLatence', () => {
   it('ne rallonge pas un travail plus long que le plancher', async () => {
     const reponse = avecUnPlancherDeLatence(
       () =>
@@ -44,65 +52,18 @@ describe('avecUnPlancherDeLatence', () => {
 });
 
 describe('aHeureFixe', () => {
-  simulerLHorlogeAChaqueTest();
-
-  const journal = () => ({ warn: jest.fn<void, [string]>() });
-
   it('rend au plancher la reponse prevue quand le travail dure plus longtemps', async () => {
     const travail = promesseSuspendue<string>();
-    const reponse = aHeureFixe(
-      () => travail.promesse,
-      'prevue',
-      'Echec tardif',
-      journal(),
-    );
 
-    expect(await reglementAuPlancher(reponse)).toEqual(
-      RETENUE_JUSQU_AU_PLANCHER,
-    );
-    await expect(reponse).resolves.toBe('prevue');
-  });
-
-  it('retient le resultat d un travail fini avant le plancher puis le rend', async () => {
-    const reponse = aHeureFixe(
-      () => Promise.resolve('fait'),
-      'prevue',
-      'Echec tardif',
-      journal(),
-    );
-
-    expect(await reglementAuPlancher(reponse)).toEqual(
-      RETENUE_JUSQU_AU_PLANCHER,
-    );
-    await expect(reponse).resolves.toBe('fait');
-  });
-
-  it('retient l echec d un travail fini avant le plancher puis le relance tel quel', async () => {
-    const panne = new Error('panne');
-    const reponse = aHeureFixe(
-      () => Promise.reject(panne),
-      'prevue',
-      'Echec tardif',
-      journal(),
-    );
-    const relance = expect(reponse).rejects.toBe(panne);
-
-    expect(await reglementAuPlancher(reponse)).toEqual(
-      RETENUE_JUSQU_AU_PLANCHER,
-    );
-    await relance;
+    await expect(
+      rendueAuPlancher(repondreAHeureFixe(() => travail.promesse)),
+    ).resolves.toBe('prevue');
   });
 
   it('journalise l echec d un travail qui finit apres la reponse', async () => {
     const travail = promesseSuspendue<string>();
     const echecs = journal();
-    const reponse = aHeureFixe(
-      () => travail.promesse,
-      'prevue',
-      'Echec tardif',
-      echecs,
-    );
-    await reglementAuPlancher(reponse);
+    await rendueAuPlancher(repondreAHeureFixe(() => travail.promesse, echecs));
 
     travail.rompre(new Error('verrou perdu'));
     await jest.advanceTimersByTimeAsync(0);
