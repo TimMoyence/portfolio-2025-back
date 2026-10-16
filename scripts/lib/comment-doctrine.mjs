@@ -1,7 +1,7 @@
 const DIRECTIVE_RES = [
   /^(?:eslint-disable(?:-next-line|-line)?|eslint-enable|eslint-env)\b/,
   /^@(?:ts-(?:ignore|expect-error|nocheck|check))\b/,
-  /^(?:prettier-ignore|istanbul ignore|c8 ignore|v8 ignore|Stryker (?:disable|restore))\b/,
+  /^(?:prettier-ignore|istanbul ignore|c8 ignore|v8 ignore)\b/,
   /^gitleaks:allow\b/,
   /^@(?:jest|vitest)-environment(?:-options)?\b/,
   /^@deprecated\b/,

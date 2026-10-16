@@ -6,11 +6,11 @@ import type {
   BroadcastRecipient,
   ModeratedArticle,
   RechercheDeDestinataires,
-} from '../application/article-broadcast.repository';
+} from '../../src/modules/articles/application/article-broadcast.repository';
 import type {
   ArticleRecord,
   ArticleStatus,
-} from '../application/articles.repository';
+} from '../../src/modules/articles/application/articles.repository';
 
 interface Subscriber extends BroadcastRecipient {
   source: string;

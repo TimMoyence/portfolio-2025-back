@@ -4,14 +4,14 @@ import {
   buildArticleBroadcastRecord,
   buildArticleRecord,
 } from '../../../../test/factories/article.factory';
+import {
+  InMemoryArticleBroadcasts,
+  RecordingBroadcastMailer,
+} from '../../../../test/factories/article-broadcast.factory';
 import { sousEnvironnement } from '../../../../test/helpers/environnement';
 import type { ArticlesRepository } from './articles.repository';
 import { ArticleBroadcastService } from './article-broadcast.service';
 import { ArticleModerationService } from './article-moderation.service';
-import {
-  InMemoryArticleBroadcasts,
-  RecordingBroadcastMailer,
-} from '../testing/in-memory-article-broadcast';
 
 const NOW = new Date('2026-09-23T07:45:00.000Z');
 

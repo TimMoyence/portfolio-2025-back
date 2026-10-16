@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import Ajv2020 from 'ajv/dist/2020.js';
 import addFormats from 'ajv-formats';
-import { validArticleIngestEnvelope } from '../testing/article-ingest.fixture';
+import { validArticleIngestEnvelope } from '../../../../test/factories/article-ingest.factory';
 
 const schema = JSON.parse(
   readFileSync(
