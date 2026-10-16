@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "790a8e56424bea98f3537e2ce5e4d9330432bdd5faf80a0931bd8c9251ec0402",
+  "empreinte": "d68ef4c38282114df63bb30221241c545ca20c438f2f1b71adfa2bd04f46f975",
   "sujet": {
     "id": "b2-04-suites",
     "titre": "Suites : modéliser une évolution régulière",
@@ -109,15 +109,15 @@
           },
           "questionJumelle": {
             "id": "b2-04-a1-rappel-negation",
-            "enonce": "Rappel du B2-03. Quel est le contraire de « le chiffre d’affaires est inférieur à 1 200 k€ » ?",
+            "enonce": "Rappel du B2-03. Quel est le contraire de « le chiffre d’affaires est inférieur à 1 200 k€ » ?",
             "options": [
               {
                 "id": "le-chiffre-d-affaires-est-superieur-a-1-f16619a4",
-                "libelle": "Le chiffre d’affaires est supérieur à 1 200 k€"
+                "libelle": "Le chiffre d’affaires est supérieur à 1 200 k€"
               },
               {
                 "id": "le-chiffre-d-affaires-est-superieur-ou-e-b228738b",
-                "libelle": "Le chiffre d’affaires est supérieur ou égal à 1 200 k€"
+                "libelle": "Le chiffre d’affaires est supérieur ou égal à 1 200 k€"
               }
             ]
           }
@@ -280,7 +280,7 @@
           "cas": {
             "id": "B2-04-A1-06-MISSION",
             "metier": "Assistant·e de gestion — Atelier Rivage (voilerie artisanale, 14 salariés, La Rochelle)",
-            "situation": "Lundi, 9 h. Hélène Garnier, la dirigeante, prépare un plan à cinq ans, de 2026 à 2030, pour le dossier de prêt de la banque. Elle écrit : « Notre chiffre d’affaires 2025 est de 826 k€. Il me faut une prévision année par année, et l’année où nous atteindrons 1 200 k€ : à partir de ce seuil, la banque finance le second atelier. » Marc Lefèvre, l’expert-comptable, propose l’hypothèse A : « Prolongez la droite d’ajustement : + 44 k€ chaque année. » Samir, le responsable commercial, défend l’hypothèse B : « Notre croissance moyenne est d’environ 6 % par an : appliquez + 6 % chaque année. »",
+            "situation": "Lundi, 9 h. Hélène Garnier, la dirigeante, prépare un plan à cinq ans, de 2026 à 2030, pour le dossier de prêt de la banque. Elle écrit : « Notre chiffre d’affaires 2025 est de 826 k€. Il me faut une prévision année par année, et l’année où nous atteindrons 1 200 k€ : à partir de ce seuil, la banque finance le second atelier. » Marc Lefèvre, l’expert-comptable, propose l’hypothèse A : « Prolongez la droite d’ajustement : + 44 k€ chaque année. » Samir, le responsable commercial, défend l’hypothèse B : « Notre croissance moyenne est d’environ 6 % par an : appliquez + 6 % chaque année. »",
             "geste": "Sans calculatrice, répondez aux trois questions à partir des deux hypothèses.",
             "consequence": "Un plan trop optimiste, et la banque finance un atelier que les ventes ne rempliront pas ; trop prudent, et le prêt est refusé. Les deux hypothèses sont proches en 2026, beaucoup moins au bout de cinq ans.",
             "questionsLibres": [
@@ -296,7 +296,7 @@
               },
               {
                 "id": "b2-04-a1-mission:seuil",
-                "question": "Comment trouver l’année où le chiffre d’affaires atteint 1 200 k€, sans formule toute faite ?",
+                "question": "Comment trouver l’année où le chiffre d’affaires atteint 1 200 k€, sans formule toute faite ?",
                 "placeholder": "Je calcule… jusqu’à ce que…"
               }
             ],
@@ -344,7 +344,7 @@
                     "steps": [
                       "u₁ = 900 + 15 = 915 € : le loyer de 2026.",
                       "u₂ = 915 + 15 = 930 € : le loyer de 2027.",
-                      "Directement : u₁₀ = 900 + 10 × 15 = 1 050 €, le loyer de 2035, sans calculer les neuf loyers précédents.",
+                      "Directement : u₁₀ = 900 + 10 × 15 = 1 050 €, le loyer de 2035, sans calculer les neuf loyers précédents.",
                       "Le rang compte les années écoulées depuis 2025 : le rang 10 est l’année 2025 + 10."
                     ]
                   },
@@ -562,7 +562,7 @@
               "donnees": {
                 "question": {
                   "id": "b2-04-a1-rang",
-                  "enonce": "Combien d’années après 2025 le chiffre d’affaires atteint-il 1 090 k€ ?",
+                  "enonce": "Combien d’années après 2025 le chiffre d’affaires atteint-il 1 090 k€ ?",
                   "unite": "années",
                   "metadonnees": {
                     "concepts": ["suite-arithmetique"],
@@ -737,7 +737,7 @@
                 "promptData": {
                   "id": "b2-04-a2-reflexion-taux",
                   "type": "reflection",
-                  "question": "Un stagiaire résume l’hypothèse B : « + 6 % par an pendant cinq ans, cela fait + 30 % : 826 k€ deviendront 1 073,8 k€ en 2030. » Sans calculatrice, dites s’il a raison, et expliquez ce que fait vraiment une hausse de 6 % répétée cinq fois.",
+                  "question": "Un stagiaire résume l’hypothèse B : « + 6 % par an pendant cinq ans, cela fait + 30 % : 826 k€ deviendront 1 073,8 k€ en 2030. » Sans calculatrice, dites s’il a raison, et expliquez ce que fait vraiment une hausse de 6 % répétée cinq fois.",
                   "placeholder": "Il a raison / il a tort, parce que chaque année…",
                   "competency": "Modéliser · reconnaître une évolution à taux constant"
                 }
@@ -780,12 +780,12 @@
                   {
                     "kind": "example",
                     "title": "Pour débuter : le livret",
-                    "text": "Un livret contient 2 000 € en 2025 et rapporte 3 % par an, intérêts laissés sur le livret. u₀ = 2 000 et q = 1,03.",
+                    "text": "Un livret contient 2 000 € en 2025 et rapporte 3 % par an, intérêts laissés sur le livret. u₀ = 2 000 et q = 1,03.",
                     "steps": [
-                      "u₁ = 2 000 × 1,03 = 2 060 €.",
-                      "u₂ = 2 060 × 1,03 = 2 121,80 €.",
-                      "Directement : u₁₀ = 2 000 × 1,03¹⁰ ≈ 2 687,83 €.",
-                      "Erreur classique : 10 × 3 % = 30 %, soit 2 600 € ; il manque les intérêts des intérêts.",
+                      "u₁ = 2 000 × 1,03 = 2 060 €.",
+                      "u₂ = 2 060 × 1,03 = 2 121,80 €.",
+                      "Directement : u₁₀ = 2 000 × 1,03¹⁰ ≈ 2 687,83 €.",
+                      "Erreur classique : 10 × 3 % = 30 %, soit 2 600 € ; il manque les intérêts des intérêts.",
                       "À la calculatrice : 2000 × 1,03 ^ 10."
                     ]
                   },
@@ -879,36 +879,36 @@
         "donnees": {
           "exemple": {
             "id": "b2-04-a2-exemple-geometrique",
-            "enonce": "L’atelier a consommé 48 000 kWh d’électricité en 2025. Le plan de sobriété vise une baisse de 5 % par an. On note cₙ la consommation de l’année 2025 + n, en kWh.",
+            "enonce": "L’atelier a consommé 48 000 kWh d’électricité en 2025. Le plan de sobriété vise une baisse de 5 % par an. On note cₙ la consommation de l’année 2025 + n, en kWh.",
             "etapes": [
               {
                 "id": "raison",
                 "intitule": "La raison",
-                "raisonnement": "Baisser de 5 %, c’est multiplier par 1 − 0,05 = 0,95. La suite est géométrique, de premier terme c₀ = 48 000 et de raison q = 0,95. La raison n’est ni 0,05 ni −5.",
+                "raisonnement": "Baisser de 5 %, c’est multiplier par 1 − 0,05 = 0,95. La suite est géométrique, de premier terme c₀ = 48 000 et de raison q = 0,95. La raison n’est ni 0,05 ni −5.",
                 "invite": "Quelle est la nature de la suite ? Donnez sa raison."
               },
               {
                 "id": "premiers",
                 "intitule": "Les premiers termes",
-                "raisonnement": "c₁ = 48 000 × 0,95 = 45 600 kWh ; c₂ = 45 600 × 0,95 = 43 320 kWh.",
+                "raisonnement": "c₁ = 48 000 × 0,95 = 45 600 kWh ; c₂ = 45 600 × 0,95 = 43 320 kWh.",
                 "invite": "Calculez c₁ et c₂."
               },
               {
                 "id": "general",
                 "intitule": "Le terme de rang n",
-                "raisonnement": "cₙ = 48 000 × 0,95ⁿ. Pour 2029, n = 4 : c₄ = 48 000 × 0,95⁴ ≈ 39 096,30 kWh.",
+                "raisonnement": "cₙ = 48 000 × 0,95ⁿ. Pour 2029, n = 4 : c₄ = 48 000 × 0,95⁴ ≈ 39 096,30 kWh.",
                 "invite": "Écrivez cₙ en fonction de n, puis calculez la consommation de 2029."
               },
               {
                 "id": "sens",
                 "intitule": "Le sens de variation",
-                "raisonnement": "La raison est entre 0 et 1 : la suite est décroissante. Les baisses rétrécissent : 2 400 kWh la première année, 2 280 kWh la deuxième.",
+                "raisonnement": "La raison est entre 0 et 1 : la suite est décroissante. Les baisses rétrécissent : 2 400 kWh la première année, 2 280 kWh la deuxième.",
                 "invite": "La suite est-elle croissante ou décroissante ? Les baisses en kWh sont-elles égales ?"
               },
               {
                 "id": "piege",
                 "intitule": "Le piège des taux ajoutés",
-                "raisonnement": "Quatre baisses de 5 % ne font pas − 20 % : 48 000 × 0,80 = 38 400 kWh, alors que le modèle donne environ 39 096 kWh.",
+                "raisonnement": "Quatre baisses de 5 % ne font pas − 20 % : 48 000 × 0,80 = 38 400 kWh, alors que le modèle donne environ 39 096 kWh.",
                 "invite": "Que donnerait le calcul « 4 × 5 % = 20 % de baisse » pour 2029 ?"
               }
             ],
@@ -999,7 +999,7 @@
               "donnees": {
                 "question": {
                   "id": "b2-04-a2-ecart",
-                  "enonce": "En 2030, A prévoit 1 046 k€. De combien B la dépasse-t-elle, au centième ?",
+                  "enonce": "En 2030, A prévoit 1 046 k€. De combien B la dépasse-t-elle, au centième ?",
                   "unite": "k€",
                   "metadonnees": {
                     "concepts": ["suite-geometrique"],
@@ -1233,10 +1233,10 @@
                 "axisRanges": [[800, 1200]],
                 "unit": "k€",
                 "formula": "A : suite arithmétique, points alignés · B : suite géométrique, courbe qui se redresse",
-                "reading": "Les deux courbes partent du même point, puis s’écartent de plus en plus. En 2030, aucune n’atteint encore le seuil de 1 200 k€ : il faut prolonger les deux suites.",
+                "reading": "Les deux courbes partent du même point, puis s’écartent de plus en plus. En 2030, aucune n’atteint encore le seuil de 1 200 k€ : il faut prolonger les deux suites.",
                 "source": "Hypothèses du plan d’Atelier Rivage. Données fictives Atelier Rivage, créées pour ce cours. L’axe vertical est tronqué : il commence à 800 k€.",
                 "kind": "line",
-                "description": "Deux courbes de 2025 à 2030, partant de 826. L’hypothèse A est une droite qui monte jusqu’à 1 046. L’hypothèse B est une courbe au-dessus de la droite dès 2026, qui monte jusqu’à 1 105 environ."
+                "description": "Deux courbes de 2025 à 2030, partant de 826. L’hypothèse A est une droite qui monte jusqu’à 1 046. L’hypothèse B est une courbe au-dessus de la droite dès 2026, qui monte jusqu’à 1 105 environ."
               }
             },
             "metadonnees": {
@@ -1306,7 +1306,7 @@
                   {
                     "kind": "definition",
                     "title": "Le premier rang qui atteint le seuil",
-                    "text": "Chercher un seuil, c’est trouver le premier rang pour lequel un terme atteint ou dépasse une valeur donnée. On avance terme après terme tant que le seuil n’est pas atteint. Un algorithme l’écrit avec une boucle « Tant que » : la condition de la boucle est le contraire de l’objectif. Pour l’objectif « u ≥ 1 000 », on continue tant que u < 1 000 : c’est la négation d’une comparaison, vue au B2-03. Pour Hélène, c’est la question de la banque : en quelle année le chiffre d’affaires atteint-il le seuil ?",
+                    "text": "Chercher un seuil, c’est trouver le premier rang pour lequel un terme atteint ou dépasse une valeur donnée. On avance terme après terme tant que le seuil n’est pas atteint. Un algorithme l’écrit avec une boucle « Tant que » : la condition de la boucle est le contraire de l’objectif. Pour l’objectif « u ≥ 1 000 », on continue tant que u < 1 000 : c’est la négation d’une comparaison, vue au B2-03. Pour Hélène, c’est la question de la banque : en quelle année le chiffre d’affaires atteint-il le seuil ?",
                     "formula": "Tant que (objectif non atteint) : passer au terme suivant"
                   },
                   {
@@ -1371,11 +1371,11 @@
                   {
                     "kind": "example",
                     "title": "Pour débuter : les loyers d’un bail",
-                    "text": "Loyer annuel : 10 800 € en 2025, puis 180 € de plus chaque année (suite arithmétique). Quel est le total des loyers de 2026 à 2028 ?",
+                    "text": "Loyer annuel : 10 800 € en 2025, puis 180 € de plus chaque année (suite arithmétique). Quel est le total des loyers de 2026 à 2028 ?",
                     "steps": [
-                      "2026 : 10 980 € ; 2027 : 11 160 € ; 2028 : 11 340 €.",
+                      "2026 : 10 980 € ; 2027 : 11 160 € ; 2028 : 11 340 €.",
                       "Trois termes, de 2026 à 2028 inclus : 2028 − 2026 + 1 = 3.",
-                      "Somme : 10 980 + 11 160 + 11 340 = 33 480 €.",
+                      "Somme : 10 980 + 11 160 + 11 340 = 33 480 €.",
                       "Au tableur, loyers de 2025 à 2028 en B2:B5 : =SOMME(B3:B5). La plage commence en B3, car 2025 n’est pas demandé."
                     ]
                   },
@@ -1411,36 +1411,36 @@
         "donnees": {
           "exemple": {
             "id": "b2-04-a3-exemple-seuil",
-            "enonce": "Retour à la consommation d’électricité : 48 000 kWh en 2025, puis − 5 % par an, soit cₙ = 48 000 × 0,95ⁿ. Objectif du plan de sobriété : passer sous 40 000 kWh. En quelle année, et combien aura-t-on consommé de 2026 à 2028 ?",
+            "enonce": "Retour à la consommation d’électricité : 48 000 kWh en 2025, puis − 5 % par an, soit cₙ = 48 000 × 0,95ⁿ. Objectif du plan de sobriété : passer sous 40 000 kWh. En quelle année, et combien aura-t-on consommé de 2026 à 2028 ?",
             "etapes": [
               {
                 "id": "condition",
                 "intitule": "La condition de la boucle",
-                "raisonnement": "Objectif : c < 40 000. On continue tant que l’objectif n’est pas atteint : « Tant que c ≥ 40 000 ». Le contraire de < est ≥.",
+                "raisonnement": "Objectif : c < 40 000. On continue tant que l’objectif n’est pas atteint : « Tant que c ≥ 40 000 ». Le contraire de < est ≥.",
                 "invite": "Quelle condition écrire après « Tant que » ?"
               },
               {
                 "id": "derouler",
                 "intitule": "Dérouler la boucle",
-                "raisonnement": "n = 1 : 45 600 ; n = 2 : 43 320 ; n = 3 : 41 154 ; n = 4 : 39 096,30. À n = 4, la condition 39 096,30 ≥ 40 000 est fausse : la boucle s’arrête.",
+                "raisonnement": "n = 1 : 45 600 ; n = 2 : 43 320 ; n = 3 : 41 154 ; n = 4 : 39 096,30. À n = 4, la condition 39 096,30 ≥ 40 000 est fausse : la boucle s’arrête.",
                 "invite": "Calculez les termes jusqu’à l’arrêt de la boucle."
               },
               {
                 "id": "conclure",
                 "intitule": "Conclure",
-                "raisonnement": "L’algorithme affiche 4 : l’objectif est atteint au rang 4, soit en 2029. S’arrêter à n = 3, avec 41 154 kWh, serait un terme trop tôt.",
+                "raisonnement": "L’algorithme affiche 4 : l’objectif est atteint au rang 4, soit en 2029. S’arrêter à n = 3, avec 41 154 kWh, serait un terme trop tôt.",
                 "invite": "Qu’affiche l’algorithme ? En quelle année l’objectif est-il atteint ?"
               },
               {
                 "id": "cumul",
                 "intitule": "Le cumul de 2026 à 2028",
-                "raisonnement": "Trois termes : 45 600 + 43 320 + 41 154 = 130 074 kWh. La consommation de 2025 n’est pas demandée : l’ajouter compterait un terme de trop.",
+                "raisonnement": "Trois termes : 45 600 + 43 320 + 41 154 = 130 074 kWh. La consommation de 2025 n’est pas demandée : l’ajouter compterait un terme de trop.",
                 "invite": "Combien d’électricité l’atelier consomme-t-il de 2026 à 2028 inclus ?"
               },
               {
                 "id": "tableur",
                 "intitule": "Au tableur",
-                "raisonnement": "=SOMME(C3:C5) : la plage suit les années demandées, de 2026 (ligne 3) à 2028 (ligne 5).",
+                "raisonnement": "=SOMME(C3:C5) : la plage suit les années demandées, de 2026 (ligne 3) à 2028 (ligne 5).",
                 "invite": "Consommations de 2025 à 2029 en C2:C6 : quelle formule donne le cumul de 2026 à 2028 ?"
               }
             ],
@@ -1466,9 +1466,9 @@
             "id": "b2-04-a3-tableau-algorithme",
             "intitule": "Dérouler l’algorithme de seuil",
             "consignes": [
-              "Algorithme : n ← 0 ; u ← 826. Tant que u < 1 000 : n ← n + 1 ; u ← u + 44. Fin Tant que. Afficher n.",
+              "Algorithme : n ← 0 ; u ← 826. Tant que u < 1 000 : n ← n + 1 ; u ← u + 44. Fin Tant que. Afficher n.",
               "Chaque ligne est un passage dans la boucle : écrivez la valeur de u après le calcul.",
-              "Dernière colonne : après ce passage, la condition « u < 1 000 » est-elle vraie (V) ou fausse (F) ?"
+              "Dernière colonne : après ce passage, la condition « u < 1 000 » est-elle vraie (V) ou fausse (F) ?"
             ],
             "echeances": 4,
             "intituleDesLignes": "Passage",
@@ -1497,7 +1497,7 @@
               },
               {
                 "cle": "condition",
-                "intitule": "u < 1 000 ?",
+                "intitule": "u < 1 000 ?",
                 "role": "saisie",
                 "format": "booleen",
                 "decimales": 0,
@@ -1523,7 +1523,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 6 — Seuil et cumul des deux hypothèses",
-          "consigne": "A : 870, 914, 958, 1 002, 1 046 k€ de 2026 à 2030. B : v₀ = 826, puis + 6 % par an.",
+          "consigne": "A : 870, 914, 958, 1 002, 1 046 k€ de 2026 à 2030. B : v₀ = 826, puis + 6 % par an.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -1532,7 +1532,7 @@
               "donnees": {
                 "question": {
                   "id": "b2-04-a3-seuil-b",
-                  "enonce": "Hypothèse B : après combien d’années atteint-on 1 200 k€ ?",
+                  "enonce": "Hypothèse B : après combien d’années atteint-on 1 200 k€ ?",
                   "unite": "années",
                   "metadonnees": {
                     "concepts": ["algorithme-de-seuil", "somme-de-termes"],
@@ -1553,11 +1553,11 @@
                   "options": [
                     {
                       "id": "tant-que-v-1-200-68faa4fb",
-                      "libelle": "Tant que v < 1 200"
+                      "libelle": "Tant que v < 1 200"
                     },
                     {
                       "id": "tant-que-v-1-200-078af5b9",
-                      "libelle": "Tant que v ≥ 1 200"
+                      "libelle": "Tant que v ≥ 1 200"
                     }
                   ]
                 }
@@ -1616,7 +1616,7 @@
         "donnees": {
           "probleme": {
             "id": "b2-04-a3-defi-ia",
-            "enonce": "Hélène a demandé à un assistant IA de rédiger le plan avec l’hypothèse B. Réponse : « 1. Avec + 6 % par an, le chiffre d’affaires de 2030 sera de 826 × (1 + 5 × 0,06) = 1 073,8 k€. 2. Pour trouver l’année du seuil, j’utilise la boucle : Tant que v ≥ 1 200, passer à l’année suivante. Elle affiche 0 : le seuil est donc atteint dès 2025. 3. Le chiffre d’affaires cumulé de 2026 à 2030 est celui de 2030, soit 1 073,8 k€. »",
+            "enonce": "Hélène a demandé à un assistant IA de rédiger le plan avec l’hypothèse B. Réponse : « 1. Avec + 6 % par an, le chiffre d’affaires de 2030 sera de 826 × (1 + 5 × 0,06) = 1 073,8 k€. 2. Pour trouver l’année du seuil, j’utilise la boucle : Tant que v ≥ 1 200, passer à l’année suivante. Elle affiche 0 : le seuil est donc atteint dès 2025. 3. Le chiffre d’affaires cumulé de 2026 à 2030 est celui de 2030, soit 1 073,8 k€. »",
             "invite": "Trouvez les erreurs de l’IA, corrigez chacune et dites comment la contrôler.",
             "strategies": [],
             "metadonnees": {
@@ -2237,15 +2237,15 @@
           },
           "questionJumelle": {
             "id": "b2-04-a1-rappel-negation",
-            "enonce": "Rappel du B2-03. Quel est le contraire de « le chiffre d’affaires est inférieur à 1 200 k€ » ?",
+            "enonce": "Rappel du B2-03. Quel est le contraire de « le chiffre d’affaires est inférieur à 1 200 k€ » ?",
             "options": [
               {
                 "id": "le-chiffre-d-affaires-est-superieur-a-1-f16619a4",
-                "libelle": "Le chiffre d’affaires est supérieur à 1 200 k€"
+                "libelle": "Le chiffre d’affaires est supérieur à 1 200 k€"
               },
               {
                 "id": "le-chiffre-d-affaires-est-superieur-ou-e-b228738b",
-                "libelle": "Le chiffre d’affaires est supérieur ou égal à 1 200 k€"
+                "libelle": "Le chiffre d’affaires est supérieur ou égal à 1 200 k€"
               }
             ]
           }
@@ -2266,7 +2266,7 @@
           },
           {
             "questionId": "b2-04-a1-rappel-negation",
-            "bonneReponse": "Le chiffre d’affaires est supérieur ou égal à 1 200 k€",
+            "bonneReponse": "Le chiffre d’affaires est supérieur ou égal à 1 200 k€",
             "confusions": [
               {
                 "id": "negation-comparaison",
@@ -2292,15 +2292,15 @@
           },
           {
             "id": "b2-04-a1-rappel-negation",
-            "enonce": "Rappel du B2-03. Quel est le contraire de « le chiffre d’affaires est inférieur à 1 200 k€ » ?",
+            "enonce": "Rappel du B2-03. Quel est le contraire de « le chiffre d’affaires est inférieur à 1 200 k€ » ?",
             "options": [
               {
                 "id": "le-chiffre-d-affaires-est-superieur-a-1-f16619a4",
-                "libelle": "Le chiffre d’affaires est supérieur à 1 200 k€"
+                "libelle": "Le chiffre d’affaires est supérieur à 1 200 k€"
               },
               {
                 "id": "le-chiffre-d-affaires-est-superieur-ou-e-b228738b",
-                "libelle": "Le chiffre d’affaires est supérieur ou égal à 1 200 k€"
+                "libelle": "Le chiffre d’affaires est supérieur ou égal à 1 200 k€"
               }
             ]
           }
@@ -2487,7 +2487,7 @@
           "cas": {
             "id": "B2-04-A1-06-MISSION",
             "metier": "Assistant·e de gestion — Atelier Rivage (voilerie artisanale, 14 salariés, La Rochelle)",
-            "situation": "Lundi, 9 h. Hélène Garnier, la dirigeante, prépare un plan à cinq ans, de 2026 à 2030, pour le dossier de prêt de la banque. Elle écrit : « Notre chiffre d’affaires 2025 est de 826 k€. Il me faut une prévision année par année, et l’année où nous atteindrons 1 200 k€ : à partir de ce seuil, la banque finance le second atelier. » Marc Lefèvre, l’expert-comptable, propose l’hypothèse A : « Prolongez la droite d’ajustement : + 44 k€ chaque année. » Samir, le responsable commercial, défend l’hypothèse B : « Notre croissance moyenne est d’environ 6 % par an : appliquez + 6 % chaque année. »",
+            "situation": "Lundi, 9 h. Hélène Garnier, la dirigeante, prépare un plan à cinq ans, de 2026 à 2030, pour le dossier de prêt de la banque. Elle écrit : « Notre chiffre d’affaires 2025 est de 826 k€. Il me faut une prévision année par année, et l’année où nous atteindrons 1 200 k€ : à partir de ce seuil, la banque finance le second atelier. » Marc Lefèvre, l’expert-comptable, propose l’hypothèse A : « Prolongez la droite d’ajustement : + 44 k€ chaque année. » Samir, le responsable commercial, défend l’hypothèse B : « Notre croissance moyenne est d’environ 6 % par an : appliquez + 6 % chaque année. »",
             "geste": "Sans calculatrice, répondez aux trois questions à partir des deux hypothèses.",
             "consequence": "Un plan trop optimiste, et la banque finance un atelier que les ventes ne rempliront pas ; trop prudent, et le prêt est refusé. Les deux hypothèses sont proches en 2026, beaucoup moins au bout de cinq ans.",
             "questionsLibres": [
@@ -2503,7 +2503,7 @@
               },
               {
                 "id": "b2-04-a1-mission:seuil",
-                "question": "Comment trouver l’année où le chiffre d’affaires atteint 1 200 k€, sans formule toute faite ?",
+                "question": "Comment trouver l’année où le chiffre d’affaires atteint 1 200 k€, sans formule toute faite ?",
                 "placeholder": "Je calcule… jusqu’à ce que…"
               }
             ],
@@ -2558,7 +2558,7 @@
                     "steps": [
                       "u₁ = 900 + 15 = 915 € : le loyer de 2026.",
                       "u₂ = 915 + 15 = 930 € : le loyer de 2027.",
-                      "Directement : u₁₀ = 900 + 10 × 15 = 1 050 €, le loyer de 2035, sans calculer les neuf loyers précédents.",
+                      "Directement : u₁₀ = 900 + 10 × 15 = 1 050 €, le loyer de 2035, sans calculer les neuf loyers précédents.",
                       "Le rang compte les années écoulées depuis 2025 : le rang 10 est l’année 2025 + 10."
                     ]
                   },
@@ -2797,7 +2797,7 @@
               "donnees": {
                 "question": {
                   "id": "b2-04-a1-rang",
-                  "enonce": "Combien d’années après 2025 le chiffre d’affaires atteint-il 1 090 k€ ?",
+                  "enonce": "Combien d’années après 2025 le chiffre d’affaires atteint-il 1 090 k€ ?",
                   "unite": "années",
                   "metadonnees": {
                     "concepts": ["suite-arithmetique"],
@@ -2905,7 +2905,7 @@
           },
           {
             "id": "b2-04-a1-rang",
-            "enonce": "Combien d’années après 2025 le chiffre d’affaires atteint-il 1 090 k€ ?",
+            "enonce": "Combien d’années après 2025 le chiffre d’affaires atteint-il 1 090 k€ ?",
             "options": null
           }
         ],
@@ -2918,7 +2918,7 @@
           },
           {
             "reference": "b2-04-a1-u3",
-            "texte": "2028 est le rang 3 : u₃ = 826 + 3 × 44 = 958 k€. Répondre 1 002 k€, c’est compter un rang de trop."
+            "texte": "2028 est le rang 3 : u₃ = 826 + 3 × 44 = 958 k€. Répondre 1 002 k€, c’est compter un rang de trop."
           },
           {
             "reference": "b2-04-a1-terme-general",
@@ -2926,7 +2926,7 @@
           },
           {
             "reference": "b2-04-a1-rang",
-            "texte": "1 090 = 826 + 44n donne n = 264 ÷ 44 = 6 : six années après 2025, soit en 2031. La question demande le nombre d’années, pas l’année."
+            "texte": "1 090 = 826 + 44n donne n = 264 ÷ 44 = 6 : six années après 2025, soit en 2031. La question demande le nombre d’années, pas l’année."
           }
         ]
       },
@@ -3134,11 +3134,11 @@
         "explications": [
           {
             "reference": "C3",
-            "texte": "=C2+$F$1 : le terme du dessus, plus la raison figée par les $."
+            "texte": "=C2+$F$1 : le terme du dessus, plus la raison figée par les $."
           },
           {
             "reference": "C4 à C7",
-            "texte": "Recopiée, la formule devient =C3+$F$1, puis =C4+$F$1… La colonne affiche 914, 958, 1 002 et 1 046 k€. Sans les $, elle lirait F2, F3…, vides, et resterait bloquée à 870."
+            "texte": "Recopiée, la formule devient =C3+$F$1, puis =C4+$F$1… La colonne affiche 914, 958, 1 002 et 1 046 k€. Sans les $, elle lirait F2, F3…, vides, et resterait bloquée à 870."
           }
         ]
       },
@@ -3186,7 +3186,7 @@
                 "promptData": {
                   "id": "b2-04-a2-reflexion-taux",
                   "type": "reflection",
-                  "question": "Un stagiaire résume l’hypothèse B : « + 6 % par an pendant cinq ans, cela fait + 30 % : 826 k€ deviendront 1 073,8 k€ en 2030. » Sans calculatrice, dites s’il a raison, et expliquez ce que fait vraiment une hausse de 6 % répétée cinq fois.",
+                  "question": "Un stagiaire résume l’hypothèse B : « + 6 % par an pendant cinq ans, cela fait + 30 % : 826 k€ deviendront 1 073,8 k€ en 2030. » Sans calculatrice, dites s’il a raison, et expliquez ce que fait vraiment une hausse de 6 % répétée cinq fois.",
                   "placeholder": "Il a raison / il a tort, parce que chaque année…",
                   "competency": "Modéliser · reconnaître une évolution à taux constant"
                 }
@@ -3209,11 +3209,11 @@
         "questions": [],
         "corrigeEcran": {
           "type": "reflexion",
-          "attendu": "Il a tort : chaque hausse de 6 % s’applique au chiffre d’affaires de l’année précédente, qui a déjà grossi. On multiplie cinq fois par 1,06 ; les taux successifs ne s’ajoutent pas (B2-01). Le résultat dépasse donc 1 073,8 k€.",
+          "attendu": "Il a tort : chaque hausse de 6 % s’applique au chiffre d’affaires de l’année précédente, qui a déjà grossi. On multiplie cinq fois par 1,06 ; les taux successifs ne s’ajoutent pas (B2-01). Le résultat dépasse donc 1 073,8 k€.",
           "suite": "Gardez votre réponse : la trace écrite donne le modèle de cette évolution."
         },
         "reflexion": {
-          "attendu": "Il a tort : chaque hausse de 6 % s’applique au chiffre d’affaires de l’année précédente, qui a déjà grossi. On multiplie cinq fois par 1,06 ; les taux successifs ne s’ajoutent pas (B2-01). Le résultat dépasse donc 1 073,8 k€.",
+          "attendu": "Il a tort : chaque hausse de 6 % s’applique au chiffre d’affaires de l’année précédente, qui a déjà grossi. On multiplie cinq fois par 1,06 ; les taux successifs ne s’ajoutent pas (B2-01). Le résultat dépasse donc 1 073,8 k€.",
           "suite": "Gardez votre réponse : la trace écrite donne le modèle de cette évolution."
         }
       },
@@ -3243,12 +3243,12 @@
                   {
                     "kind": "example",
                     "title": "Pour débuter : le livret",
-                    "text": "Un livret contient 2 000 € en 2025 et rapporte 3 % par an, intérêts laissés sur le livret. u₀ = 2 000 et q = 1,03.",
+                    "text": "Un livret contient 2 000 € en 2025 et rapporte 3 % par an, intérêts laissés sur le livret. u₀ = 2 000 et q = 1,03.",
                     "steps": [
-                      "u₁ = 2 000 × 1,03 = 2 060 €.",
-                      "u₂ = 2 060 × 1,03 = 2 121,80 €.",
-                      "Directement : u₁₀ = 2 000 × 1,03¹⁰ ≈ 2 687,83 €.",
-                      "Erreur classique : 10 × 3 % = 30 %, soit 2 600 € ; il manque les intérêts des intérêts.",
+                      "u₁ = 2 000 × 1,03 = 2 060 €.",
+                      "u₂ = 2 060 × 1,03 = 2 121,80 €.",
+                      "Directement : u₁₀ = 2 000 × 1,03¹⁰ ≈ 2 687,83 €.",
+                      "Erreur classique : 10 × 3 % = 30 %, soit 2 600 € ; il manque les intérêts des intérêts.",
                       "À la calculatrice : 2000 × 1,03 ^ 10."
                     ]
                   },
@@ -3356,36 +3356,36 @@
         "donnees": {
           "exemple": {
             "id": "b2-04-a2-exemple-geometrique",
-            "enonce": "L’atelier a consommé 48 000 kWh d’électricité en 2025. Le plan de sobriété vise une baisse de 5 % par an. On note cₙ la consommation de l’année 2025 + n, en kWh.",
+            "enonce": "L’atelier a consommé 48 000 kWh d’électricité en 2025. Le plan de sobriété vise une baisse de 5 % par an. On note cₙ la consommation de l’année 2025 + n, en kWh.",
             "etapes": [
               {
                 "id": "raison",
                 "intitule": "La raison",
-                "raisonnement": "Baisser de 5 %, c’est multiplier par 1 − 0,05 = 0,95. La suite est géométrique, de premier terme c₀ = 48 000 et de raison q = 0,95. La raison n’est ni 0,05 ni −5.",
+                "raisonnement": "Baisser de 5 %, c’est multiplier par 1 − 0,05 = 0,95. La suite est géométrique, de premier terme c₀ = 48 000 et de raison q = 0,95. La raison n’est ni 0,05 ni −5.",
                 "invite": "Quelle est la nature de la suite ? Donnez sa raison."
               },
               {
                 "id": "premiers",
                 "intitule": "Les premiers termes",
-                "raisonnement": "c₁ = 48 000 × 0,95 = 45 600 kWh ; c₂ = 45 600 × 0,95 = 43 320 kWh.",
+                "raisonnement": "c₁ = 48 000 × 0,95 = 45 600 kWh ; c₂ = 45 600 × 0,95 = 43 320 kWh.",
                 "invite": "Calculez c₁ et c₂."
               },
               {
                 "id": "general",
                 "intitule": "Le terme de rang n",
-                "raisonnement": "cₙ = 48 000 × 0,95ⁿ. Pour 2029, n = 4 : c₄ = 48 000 × 0,95⁴ ≈ 39 096,30 kWh.",
+                "raisonnement": "cₙ = 48 000 × 0,95ⁿ. Pour 2029, n = 4 : c₄ = 48 000 × 0,95⁴ ≈ 39 096,30 kWh.",
                 "invite": "Écrivez cₙ en fonction de n, puis calculez la consommation de 2029."
               },
               {
                 "id": "sens",
                 "intitule": "Le sens de variation",
-                "raisonnement": "La raison est entre 0 et 1 : la suite est décroissante. Les baisses rétrécissent : 2 400 kWh la première année, 2 280 kWh la deuxième.",
+                "raisonnement": "La raison est entre 0 et 1 : la suite est décroissante. Les baisses rétrécissent : 2 400 kWh la première année, 2 280 kWh la deuxième.",
                 "invite": "La suite est-elle croissante ou décroissante ? Les baisses en kWh sont-elles égales ?"
               },
               {
                 "id": "piege",
                 "intitule": "Le piège des taux ajoutés",
-                "raisonnement": "Quatre baisses de 5 % ne font pas − 20 % : 48 000 × 0,80 = 38 400 kWh, alors que le modèle donne environ 39 096 kWh.",
+                "raisonnement": "Quatre baisses de 5 % ne font pas − 20 % : 48 000 × 0,80 = 38 400 kWh, alors que le modèle donne environ 39 096 kWh.",
                 "invite": "Que donnerait le calcul « 4 × 5 % = 20 % de baisse » pour 2029 ?"
               }
             ],
@@ -3483,7 +3483,7 @@
               "donnees": {
                 "question": {
                   "id": "b2-04-a2-ecart",
-                  "enonce": "En 2030, A prévoit 1 046 k€. De combien B la dépasse-t-elle, au centième ?",
+                  "enonce": "En 2030, A prévoit 1 046 k€. De combien B la dépasse-t-elle, au centième ?",
                   "unite": "k€",
                   "metadonnees": {
                     "concepts": ["suite-geometrique"],
@@ -3591,7 +3591,7 @@
           },
           {
             "id": "b2-04-a2-ecart",
-            "enonce": "En 2030, A prévoit 1 046 k€. De combien B la dépasse-t-elle, au centième ?",
+            "enonce": "En 2030, A prévoit 1 046 k€. De combien B la dépasse-t-elle, au centième ?",
             "options": null
           }
         ],
@@ -3604,7 +3604,7 @@
           },
           {
             "reference": "b2-04-a2-v3",
-            "texte": "v₃ = 826 × 1,06³ ≈ 983,78 k€. Avec 3 × 6 % = 18 %, on trouverait 974,68 k€ ; avec un rang de trop, 1 042,81 k€."
+            "texte": "v₃ = 826 × 1,06³ ≈ 983,78 k€. Avec 3 × 6 % = 18 %, on trouverait 974,68 k€ ; avec un rang de trop, 1 042,81 k€."
           },
           {
             "reference": "b2-04-a2-terme-general",
@@ -3612,7 +3612,7 @@
           },
           {
             "reference": "b2-04-a2-ecart",
-            "texte": "v₅ = 826 × 1,06⁵ ≈ 1 105,37 k€, et 1 105,37 − 1 046 = 59,37 k€. En ajoutant les taux (+ 30 %), l’écart tomberait à 27,80 k€."
+            "texte": "v₅ = 826 × 1,06⁵ ≈ 1 105,37 k€, et 1 105,37 − 1 046 = 59,37 k€. En ajoutant les taux (+ 30 %), l’écart tomberait à 27,80 k€."
           }
         ]
       },
@@ -3927,7 +3927,7 @@
         "explications": [
           {
             "reference": "D3",
-            "texte": "=D2*(1+$G$2) : le terme du dessus, multiplié par le coefficient 1 + t, taux figé par les $."
+            "texte": "=D2*(1+$G$2) : le terme du dessus, multiplié par le coefficient 1 + t, taux figé par les $."
           },
           {
             "reference": "D4 à D7",
@@ -3935,7 +3935,7 @@
           },
           {
             "reference": "E3 à E7",
-            "texte": "=D3-C3, recopiée : l’écart passe de 5,56 k€ en 2026 à 59,37 k€ en 2030. Il grossit chaque année."
+            "texte": "=D3-C3, recopiée : l’écart passe de 5,56 k€ en 2026 à 59,37 k€ en 2030. Il grossit chaque année."
           }
         ]
       },
@@ -3998,10 +3998,10 @@
                 "axisRanges": [[800, 1200]],
                 "unit": "k€",
                 "formula": "A : suite arithmétique, points alignés · B : suite géométrique, courbe qui se redresse",
-                "reading": "Les deux courbes partent du même point, puis s’écartent de plus en plus. En 2030, aucune n’atteint encore le seuil de 1 200 k€ : il faut prolonger les deux suites.",
+                "reading": "Les deux courbes partent du même point, puis s’écartent de plus en plus. En 2030, aucune n’atteint encore le seuil de 1 200 k€ : il faut prolonger les deux suites.",
                 "source": "Hypothèses du plan d’Atelier Rivage. Données fictives Atelier Rivage, créées pour ce cours. L’axe vertical est tronqué : il commence à 800 k€.",
                 "kind": "line",
-                "description": "Deux courbes de 2025 à 2030, partant de 826. L’hypothèse A est une droite qui monte jusqu’à 1 046. L’hypothèse B est une courbe au-dessus de la droite dès 2026, qui monte jusqu’à 1 105 environ."
+                "description": "Deux courbes de 2025 à 2030, partant de 826. L’hypothèse A est une droite qui monte jusqu’à 1 046. L’hypothèse B est une courbe au-dessus de la droite dès 2026, qui monte jusqu’à 1 105 environ."
               }
             },
             "metadonnees": {
@@ -4013,7 +4013,7 @@
             }
           }
         },
-        "notes": "• 2 min : faire décrire les deux courbes avant de lire la légende.\n• Question : « Laquelle est une droite ? Pourquoi ? » L’hypothèse A : on ajoute toujours le même montant.\n• Signaler l’axe tronqué (B2-01) : l’écart paraît plus grand qu’il ne l’est.\n• Transition : « Aucune n’atteint 1 200 k€ en 2030. Comment savoir quand ? »",
+        "notes": "• 2 min : faire décrire les deux courbes avant de lire la légende.\n• Question : « Laquelle est une droite ? Pourquoi ? » L’hypothèse A : on ajoute toujours le même montant.\n• Signaler l’axe tronqué (B2-01) : l’écart paraît plus grand qu’il ne l’est.\n• Transition : « Aucune n’atteint 1 200 k€ en 2030. Comment savoir quand ? »",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -4143,7 +4143,7 @@
                   {
                     "kind": "definition",
                     "title": "Le premier rang qui atteint le seuil",
-                    "text": "Chercher un seuil, c’est trouver le premier rang pour lequel un terme atteint ou dépasse une valeur donnée. On avance terme après terme tant que le seuil n’est pas atteint. Un algorithme l’écrit avec une boucle « Tant que » : la condition de la boucle est le contraire de l’objectif. Pour l’objectif « u ≥ 1 000 », on continue tant que u < 1 000 : c’est la négation d’une comparaison, vue au B2-03. Pour Hélène, c’est la question de la banque : en quelle année le chiffre d’affaires atteint-il le seuil ?",
+                    "text": "Chercher un seuil, c’est trouver le premier rang pour lequel un terme atteint ou dépasse une valeur donnée. On avance terme après terme tant que le seuil n’est pas atteint. Un algorithme l’écrit avec une boucle « Tant que » : la condition de la boucle est le contraire de l’objectif. Pour l’objectif « u ≥ 1 000 », on continue tant que u < 1 000 : c’est la négation d’une comparaison, vue au B2-03. Pour Hélène, c’est la question de la banque : en quelle année le chiffre d’affaires atteint-il le seuil ?",
                     "formula": "Tant que (objectif non atteint) : passer au terme suivant"
                   },
                   {
@@ -4215,11 +4215,11 @@
                   {
                     "kind": "example",
                     "title": "Pour débuter : les loyers d’un bail",
-                    "text": "Loyer annuel : 10 800 € en 2025, puis 180 € de plus chaque année (suite arithmétique). Quel est le total des loyers de 2026 à 2028 ?",
+                    "text": "Loyer annuel : 10 800 € en 2025, puis 180 € de plus chaque année (suite arithmétique). Quel est le total des loyers de 2026 à 2028 ?",
                     "steps": [
-                      "2026 : 10 980 € ; 2027 : 11 160 € ; 2028 : 11 340 €.",
+                      "2026 : 10 980 € ; 2027 : 11 160 € ; 2028 : 11 340 €.",
                       "Trois termes, de 2026 à 2028 inclus : 2028 − 2026 + 1 = 3.",
-                      "Somme : 10 980 + 11 160 + 11 340 = 33 480 €.",
+                      "Somme : 10 980 + 11 160 + 11 340 = 33 480 €.",
                       "Au tableur, loyers de 2025 à 2028 en B2:B5 : =SOMME(B3:B5). La plage commence en B3, car 2025 n’est pas demandé."
                     ]
                   },
@@ -4262,36 +4262,36 @@
         "donnees": {
           "exemple": {
             "id": "b2-04-a3-exemple-seuil",
-            "enonce": "Retour à la consommation d’électricité : 48 000 kWh en 2025, puis − 5 % par an, soit cₙ = 48 000 × 0,95ⁿ. Objectif du plan de sobriété : passer sous 40 000 kWh. En quelle année, et combien aura-t-on consommé de 2026 à 2028 ?",
+            "enonce": "Retour à la consommation d’électricité : 48 000 kWh en 2025, puis − 5 % par an, soit cₙ = 48 000 × 0,95ⁿ. Objectif du plan de sobriété : passer sous 40 000 kWh. En quelle année, et combien aura-t-on consommé de 2026 à 2028 ?",
             "etapes": [
               {
                 "id": "condition",
                 "intitule": "La condition de la boucle",
-                "raisonnement": "Objectif : c < 40 000. On continue tant que l’objectif n’est pas atteint : « Tant que c ≥ 40 000 ». Le contraire de < est ≥.",
+                "raisonnement": "Objectif : c < 40 000. On continue tant que l’objectif n’est pas atteint : « Tant que c ≥ 40 000 ». Le contraire de < est ≥.",
                 "invite": "Quelle condition écrire après « Tant que » ?"
               },
               {
                 "id": "derouler",
                 "intitule": "Dérouler la boucle",
-                "raisonnement": "n = 1 : 45 600 ; n = 2 : 43 320 ; n = 3 : 41 154 ; n = 4 : 39 096,30. À n = 4, la condition 39 096,30 ≥ 40 000 est fausse : la boucle s’arrête.",
+                "raisonnement": "n = 1 : 45 600 ; n = 2 : 43 320 ; n = 3 : 41 154 ; n = 4 : 39 096,30. À n = 4, la condition 39 096,30 ≥ 40 000 est fausse : la boucle s’arrête.",
                 "invite": "Calculez les termes jusqu’à l’arrêt de la boucle."
               },
               {
                 "id": "conclure",
                 "intitule": "Conclure",
-                "raisonnement": "L’algorithme affiche 4 : l’objectif est atteint au rang 4, soit en 2029. S’arrêter à n = 3, avec 41 154 kWh, serait un terme trop tôt.",
+                "raisonnement": "L’algorithme affiche 4 : l’objectif est atteint au rang 4, soit en 2029. S’arrêter à n = 3, avec 41 154 kWh, serait un terme trop tôt.",
                 "invite": "Qu’affiche l’algorithme ? En quelle année l’objectif est-il atteint ?"
               },
               {
                 "id": "cumul",
                 "intitule": "Le cumul de 2026 à 2028",
-                "raisonnement": "Trois termes : 45 600 + 43 320 + 41 154 = 130 074 kWh. La consommation de 2025 n’est pas demandée : l’ajouter compterait un terme de trop.",
+                "raisonnement": "Trois termes : 45 600 + 43 320 + 41 154 = 130 074 kWh. La consommation de 2025 n’est pas demandée : l’ajouter compterait un terme de trop.",
                 "invite": "Combien d’électricité l’atelier consomme-t-il de 2026 à 2028 inclus ?"
               },
               {
                 "id": "tableur",
                 "intitule": "Au tableur",
-                "raisonnement": "=SOMME(C3:C5) : la plage suit les années demandées, de 2026 (ligne 3) à 2028 (ligne 5).",
+                "raisonnement": "=SOMME(C3:C5) : la plage suit les années demandées, de 2026 (ligne 3) à 2028 (ligne 5).",
                 "invite": "Consommations de 2025 à 2029 en C2:C6 : quelle formule donne le cumul de 2026 à 2028 ?"
               }
             ],
@@ -4324,9 +4324,9 @@
             "id": "b2-04-a3-tableau-algorithme",
             "intitule": "Dérouler l’algorithme de seuil",
             "consignes": [
-              "Algorithme : n ← 0 ; u ← 826. Tant que u < 1 000 : n ← n + 1 ; u ← u + 44. Fin Tant que. Afficher n.",
+              "Algorithme : n ← 0 ; u ← 826. Tant que u < 1 000 : n ← n + 1 ; u ← u + 44. Fin Tant que. Afficher n.",
               "Chaque ligne est un passage dans la boucle : écrivez la valeur de u après le calcul.",
-              "Dernière colonne : après ce passage, la condition « u < 1 000 » est-elle vraie (V) ou fausse (F) ?"
+              "Dernière colonne : après ce passage, la condition « u < 1 000 » est-elle vraie (V) ou fausse (F) ?"
             ],
             "echeances": 4,
             "intituleDesLignes": "Passage",
@@ -4355,7 +4355,7 @@
               },
               {
                 "cle": "condition",
-                "intitule": "u < 1 000 ?",
+                "intitule": "u < 1 000 ?",
                 "role": "saisie",
                 "format": "booleen",
                 "decimales": 0,
@@ -4511,7 +4511,7 @@
         "explications": [
           {
             "reference": "b2-04-a3-tableau-algorithme",
-            "texte": "u vaut 870, 914, 958, puis 1 002. La condition u < 1 000 est vraie aux trois premiers passages, fausse au quatrième : la boucle s’arrête et l’algorithme affiche 4. L’hypothèse A atteint 1 000 k€ au rang 4, en 2029. Écrire le u d’avant le calcul décale toute la colonne d’un rang."
+            "texte": "u vaut 870, 914, 958, puis 1 002. La condition u < 1 000 est vraie aux trois premiers passages, fausse au quatrième : la boucle s’arrête et l’algorithme affiche 4. L’hypothèse A atteint 1 000 k€ au rang 4, en 2029. Écrire le u d’avant le calcul décale toute la colonne d’un rang."
           }
         ]
       },
@@ -4523,7 +4523,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 6 — Seuil et cumul des deux hypothèses",
-          "consigne": "A : 870, 914, 958, 1 002, 1 046 k€ de 2026 à 2030. B : v₀ = 826, puis + 6 % par an.",
+          "consigne": "A : 870, 914, 958, 1 002, 1 046 k€ de 2026 à 2030. B : v₀ = 826, puis + 6 % par an.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -4532,7 +4532,7 @@
               "donnees": {
                 "question": {
                   "id": "b2-04-a3-seuil-b",
-                  "enonce": "Hypothèse B : après combien d’années atteint-on 1 200 k€ ?",
+                  "enonce": "Hypothèse B : après combien d’années atteint-on 1 200 k€ ?",
                   "unite": "années",
                   "metadonnees": {
                     "concepts": ["algorithme-de-seuil", "somme-de-termes"],
@@ -4553,11 +4553,11 @@
                   "options": [
                     {
                       "id": "tant-que-v-1-200-68faa4fb",
-                      "libelle": "Tant que v < 1 200"
+                      "libelle": "Tant que v < 1 200"
                     },
                     {
                       "id": "tant-que-v-1-200-078af5b9",
-                      "libelle": "Tant que v ≥ 1 200"
+                      "libelle": "Tant que v ≥ 1 200"
                     }
                   ]
                 }
@@ -4626,7 +4626,7 @@
           },
           {
             "questionId": "b2-04-a3-condition",
-            "bonneReponse": "Tant que v < 1 200",
+            "bonneReponse": "Tant que v < 1 200",
             "confusions": [
               {
                 "id": "condition-tant-que-inversee",
@@ -4636,7 +4636,7 @@
           },
           {
             "questionId": "b2-04-a3-cumul-a",
-            "bonneReponse": "4 790 k€",
+            "bonneReponse": "4 790 k€",
             "confusions": [
               {
                 "id": "terme-pris-pour-somme",
@@ -4666,7 +4666,7 @@
         "questions": [
           {
             "id": "b2-04-a3-seuil-b",
-            "enonce": "Hypothèse B : après combien d’années atteint-on 1 200 k€ ?",
+            "enonce": "Hypothèse B : après combien d’années atteint-on 1 200 k€ ?",
             "options": null
           },
           {
@@ -4675,11 +4675,11 @@
             "options": [
               {
                 "id": "tant-que-v-1-200-68faa4fb",
-                "libelle": "Tant que v < 1 200"
+                "libelle": "Tant que v < 1 200"
               },
               {
                 "id": "tant-que-v-1-200-078af5b9",
-                "libelle": "Tant que v ≥ 1 200"
+                "libelle": "Tant que v ≥ 1 200"
               }
             ]
           },
@@ -4712,15 +4712,15 @@
         "explications": [
           {
             "reference": "b2-04-a3-seuil-b",
-            "texte": "826 × 1,06⁶ ≈ 1 171,70 k€, encore sous le seuil ; 826 × 1,06⁷ ≈ 1 242,00 k€ : le seuil est atteint au rang 7, soit sept années après 2025, en 2032. Répondre 6, c’est s’arrêter un terme trop tôt."
+            "texte": "826 × 1,06⁶ ≈ 1 171,70 k€, encore sous le seuil ; 826 × 1,06⁷ ≈ 1 242,00 k€ : le seuil est atteint au rang 7, soit sept années après 2025, en 2032. Répondre 6, c’est s’arrêter un terme trop tôt."
           },
           {
             "reference": "b2-04-a3-condition",
-            "texte": "L’objectif est v ≥ 1 200 ; la boucle continue tant qu’il n’est pas atteint, donc tant que v < 1 200. Avec ≥, la boucle ne démarrerait pas."
+            "texte": "L’objectif est v ≥ 1 200 ; la boucle continue tant qu’il n’est pas atteint, donc tant que v < 1 200. Avec ≥, la boucle ne démarrerait pas."
           },
           {
             "reference": "b2-04-a3-cumul-a",
-            "texte": "Cinq termes, de 2026 à 2030 : 870 + 914 + 958 + 1 002 + 1 046 = 4 790 k€. 1 046 k€ n’est que le terme de 2030 ; 5 616 k€ compte 2025 en trop."
+            "texte": "Cinq termes, de 2026 à 2030 : 870 + 914 + 958 + 1 002 + 1 046 = 4 790 k€. 1 046 k€ n’est que le terme de 2030 ; 5 616 k€ compte 2025 en trop."
           },
           {
             "reference": "b2-04-a3-somme",
@@ -4737,7 +4737,7 @@
         "donnees": {
           "probleme": {
             "id": "b2-04-a3-defi-ia",
-            "enonce": "Hélène a demandé à un assistant IA de rédiger le plan avec l’hypothèse B. Réponse : « 1. Avec + 6 % par an, le chiffre d’affaires de 2030 sera de 826 × (1 + 5 × 0,06) = 1 073,8 k€. 2. Pour trouver l’année du seuil, j’utilise la boucle : Tant que v ≥ 1 200, passer à l’année suivante. Elle affiche 0 : le seuil est donc atteint dès 2025. 3. Le chiffre d’affaires cumulé de 2026 à 2030 est celui de 2030, soit 1 073,8 k€. »",
+            "enonce": "Hélène a demandé à un assistant IA de rédiger le plan avec l’hypothèse B. Réponse : « 1. Avec + 6 % par an, le chiffre d’affaires de 2030 sera de 826 × (1 + 5 × 0,06) = 1 073,8 k€. 2. Pour trouver l’année du seuil, j’utilise la boucle : Tant que v ≥ 1 200, passer à l’année suivante. Elle affiche 0 : le seuil est donc atteint dès 2025. 3. Le chiffre d’affaires cumulé de 2026 à 2030 est celui de 2030, soit 1 073,8 k€. »",
             "invite": "Trouvez les erreurs de l’IA, corrigez chacune et dites comment la contrôler.",
             "strategies": [],
             "metadonnees": {
@@ -4768,7 +4768,7 @@
             },
             {
               "id": "condition",
-              "libelle": "La boucle continue tant que le seuil n’est pas atteint : « Tant que v < 1 200 », et non « ≥ ».",
+              "libelle": "La boucle continue tant que le seuil n’est pas atteint : « Tant que v < 1 200 », et non « ≥ ».",
               "fausse": false
             },
             {
@@ -4778,7 +4778,7 @@
             },
             {
               "id": "controle",
-              "libelle": "Contrôler sur une valeur connue : 826 k€ en 2025 est sous 1 200 k€, le seuil ne peut pas être atteint en 2025.",
+              "libelle": "Contrôler sur une valeur connue : 826 k€ en 2025 est sous 1 200 k€, le seuil ne peut pas être atteint en 2025.",
               "fausse": false
             },
             {
@@ -4792,11 +4792,11 @@
         "explications": [
           {
             "reference": "puissance",
-            "texte": "826 × 1,06⁵ ≈ 1 105,37 k€ : l’IA a additionné les taux (+ 30 %) au lieu de multiplier les coefficients."
+            "texte": "826 × 1,06⁵ ≈ 1 105,37 k€ : l’IA a additionné les taux (+ 30 %) au lieu de multiplier les coefficients."
           },
           {
             "reference": "condition",
-            "texte": "Avec « Tant que v ≥ 1 200 », la condition est fausse dès le départ : la boucle ne tourne pas et affiche 0. La bonne boucle affiche 7."
+            "texte": "Avec « Tant que v ≥ 1 200 », la condition est fausse dès le départ : la boucle ne tourne pas et affiche 0. La bonne boucle affiche 7."
           },
           {
             "reference": "cumul",
@@ -5290,15 +5290,15 @@
         "explications": [
           {
             "reference": "C3 à C9",
-            "texte": "=C2*(1+$F$1), recopiée : 139,20 k€ en 2026, jusqu’à environ 339,15 k€ en 2032. Sans les $, la recopie lit des cellules qui ne contiennent pas le taux."
+            "texte": "=C2*(1+$F$1), recopiée : 139,20 k€ en 2026, jusqu’à environ 339,15 k€ en 2032. Sans les $, la recopie lit des cellules qui ne contiennent pas le taux."
           },
           {
             "reference": "D2 à D9",
-            "texte": "=SI(C2>=$H$1;\"Oui\";\"Non\") : >= pour « atteint », textes entre guillemets, seuil figé. « Oui » apparaît pour la première fois sur la ligne de 2031."
+            "texte": "=SI(C2>=$H$1;\"Oui\";\"Non\") : >= pour « atteint », textes entre guillemets, seuil figé. « Oui » apparaît pour la première fois sur la ligne de 2031."
           },
           {
             "reference": "F3",
-            "texte": "=SOMME(C2:C7) : six termes, de 2025 à 2030, environ 1 077,30 k€. =SOMME(C3:C7) oublie 2025 ; =C7 ne donne que l’année 2030."
+            "texte": "=SOMME(C2:C7) : six termes, de 2025 à 2030, environ 1 077,30 k€. =SOMME(C3:C7) oublie 2025 ; =C7 ne donne que l’année 2030."
           }
         ]
       },
@@ -5419,7 +5419,7 @@
           },
           {
             "reference": "b2-04-a4-e3-cumul",
-            "texte": "Cinq termes, de 2026 à 2030 : 139,20 + 161,47 + 187,31 + 217,28 + 252,04 ≈ 957 k€. Avec 2025 en trop : 1 077 k€ ; le seul terme de 2030 : 252 k€."
+            "texte": "Cinq termes, de 2026 à 2030 : 139,20 + 161,47 + 187,31 + 217,28 + 252,04 ≈ 957 k€. Avec 2025 en trop : 1 077 k€ ; le seul terme de 2030 : 252 k€."
           },
           {
             "reference": "b2-04-a4-e4-hausse",
@@ -5492,7 +5492,7 @@
           },
           {
             "questionId": "b2-04-r-geometrique",
-            "bonneReponse": "1 040,40 €, soit 1 000 × 1,02 × 1,02",
+            "bonneReponse": "1 040,40 €, soit 1 000 × 1,02 × 1,02",
             "confusions": [
               {
                 "id": "taux-successifs-additionnes",
@@ -5630,15 +5630,15 @@
           },
           {
             "id": "b2-04-r-geometrique",
-            "enonce": "Un capital de 1 000 € est placé à 2 % par an. Que vaut-il après deux ans ?",
+            "enonce": "Un capital de 1 000 € est placé à 2 % par an. Que vaut-il après deux ans ?",
             "options": [
               {
                 "id": "1-040-eur-soit-1-000-plus-2-20-c6fb8134",
-                "libelle": "1 040 €, soit 1 000 + 2 × 20"
+                "libelle": "1 040 €, soit 1 000 + 2 × 20"
               },
               {
                 "id": "1-040-40-eur-soit-1-000-1-02-1-02-7128045c",
-                "libelle": "1 040,40 €, soit 1 000 × 1,02 × 1,02"
+                "libelle": "1 040,40 €, soit 1 000 × 1,02 × 1,02"
               }
             ]
           },
@@ -6210,7 +6210,7 @@
                     "steps": [
                       "u₁ = 900 + 15 = 915 € : le loyer de 2026.",
                       "u₂ = 915 + 15 = 930 € : le loyer de 2027.",
-                      "Directement : u₁₀ = 900 + 10 × 15 = 1 050 €, le loyer de 2035, sans calculer les neuf loyers précédents.",
+                      "Directement : u₁₀ = 900 + 10 × 15 = 1 050 €, le loyer de 2035, sans calculer les neuf loyers précédents.",
                       "Le rang compte les années écoulées depuis 2025 : le rang 10 est l’année 2025 + 10."
                     ]
                   },
@@ -6365,12 +6365,12 @@
                   {
                     "kind": "example",
                     "title": "Pour débuter : le livret",
-                    "text": "Un livret contient 2 000 € en 2025 et rapporte 3 % par an, intérêts laissés sur le livret. u₀ = 2 000 et q = 1,03.",
+                    "text": "Un livret contient 2 000 € en 2025 et rapporte 3 % par an, intérêts laissés sur le livret. u₀ = 2 000 et q = 1,03.",
                     "steps": [
-                      "u₁ = 2 000 × 1,03 = 2 060 €.",
-                      "u₂ = 2 060 × 1,03 = 2 121,80 €.",
-                      "Directement : u₁₀ = 2 000 × 1,03¹⁰ ≈ 2 687,83 €.",
-                      "Erreur classique : 10 × 3 % = 30 %, soit 2 600 € ; il manque les intérêts des intérêts.",
+                      "u₁ = 2 000 × 1,03 = 2 060 €.",
+                      "u₂ = 2 060 × 1,03 = 2 121,80 €.",
+                      "Directement : u₁₀ = 2 000 × 1,03¹⁰ ≈ 2 687,83 €.",
+                      "Erreur classique : 10 × 3 % = 30 %, soit 2 600 € ; il manque les intérêts des intérêts.",
                       "À la calculatrice : 2000 × 1,03 ^ 10."
                     ]
                   },
@@ -6519,10 +6519,10 @@
                 "axisRanges": [[800, 1200]],
                 "unit": "k€",
                 "formula": "A : suite arithmétique, points alignés · B : suite géométrique, courbe qui se redresse",
-                "reading": "Les deux courbes partent du même point, puis s’écartent de plus en plus. En 2030, aucune n’atteint encore le seuil de 1 200 k€ : il faut prolonger les deux suites.",
+                "reading": "Les deux courbes partent du même point, puis s’écartent de plus en plus. En 2030, aucune n’atteint encore le seuil de 1 200 k€ : il faut prolonger les deux suites.",
                 "source": "Hypothèses du plan d’Atelier Rivage. Données fictives Atelier Rivage, créées pour ce cours. L’axe vertical est tronqué : il commence à 800 k€.",
                 "kind": "line",
-                "description": "Deux courbes de 2025 à 2030, partant de 826. L’hypothèse A est une droite qui monte jusqu’à 1 046. L’hypothèse B est une courbe au-dessus de la droite dès 2026, qui monte jusqu’à 1 105 environ."
+                "description": "Deux courbes de 2025 à 2030, partant de 826. L’hypothèse A est une droite qui monte jusqu’à 1 046. L’hypothèse B est une courbe au-dessus de la droite dès 2026, qui monte jusqu’à 1 105 environ."
               }
             },
             "metadonnees": {
@@ -6563,7 +6563,7 @@
                   {
                     "kind": "definition",
                     "title": "Le premier rang qui atteint le seuil",
-                    "text": "Chercher un seuil, c’est trouver le premier rang pour lequel un terme atteint ou dépasse une valeur donnée. On avance terme après terme tant que le seuil n’est pas atteint. Un algorithme l’écrit avec une boucle « Tant que » : la condition de la boucle est le contraire de l’objectif. Pour l’objectif « u ≥ 1 000 », on continue tant que u < 1 000 : c’est la négation d’une comparaison, vue au B2-03. Pour Hélène, c’est la question de la banque : en quelle année le chiffre d’affaires atteint-il le seuil ?",
+                    "text": "Chercher un seuil, c’est trouver le premier rang pour lequel un terme atteint ou dépasse une valeur donnée. On avance terme après terme tant que le seuil n’est pas atteint. Un algorithme l’écrit avec une boucle « Tant que » : la condition de la boucle est le contraire de l’objectif. Pour l’objectif « u ≥ 1 000 », on continue tant que u < 1 000 : c’est la négation d’une comparaison, vue au B2-03. Pour Hélène, c’est la question de la banque : en quelle année le chiffre d’affaires atteint-il le seuil ?",
                     "formula": "Tant que (objectif non atteint) : passer au terme suivant"
                   },
                   {
@@ -6628,11 +6628,11 @@
                   {
                     "kind": "example",
                     "title": "Pour débuter : les loyers d’un bail",
-                    "text": "Loyer annuel : 10 800 € en 2025, puis 180 € de plus chaque année (suite arithmétique). Quel est le total des loyers de 2026 à 2028 ?",
+                    "text": "Loyer annuel : 10 800 € en 2025, puis 180 € de plus chaque année (suite arithmétique). Quel est le total des loyers de 2026 à 2028 ?",
                     "steps": [
-                      "2026 : 10 980 € ; 2027 : 11 160 € ; 2028 : 11 340 €.",
+                      "2026 : 10 980 € ; 2027 : 11 160 € ; 2028 : 11 340 €.",
                       "Trois termes, de 2026 à 2028 inclus : 2028 − 2026 + 1 = 3.",
-                      "Somme : 10 980 + 11 160 + 11 340 = 33 480 €.",
+                      "Somme : 10 980 + 11 160 + 11 340 = 33 480 €.",
                       "Au tableur, loyers de 2025 à 2028 en B2:B5 : =SOMME(B3:B5). La plage commence en B3, car 2025 n’est pas demandé."
                     ]
                   },

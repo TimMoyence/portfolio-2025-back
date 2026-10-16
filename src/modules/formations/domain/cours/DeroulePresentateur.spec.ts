@@ -194,7 +194,7 @@ describe('deroulePresentateur (affichage d une feuille corrigée, F-37)', () => 
       synthese: synthese.map(({ affichage }) => affichage),
     }).toEqual({
       coef: ['1,0800', '0,9500', '1,0400', '0,9700'],
-      synthese: ['4,00 %', '3,50 %'],
+      synthese: [`4,00${ESPACE_INSECABLE}%`, `3,50${ESPACE_INSECABLE}%`],
     });
   });
 
@@ -316,7 +316,7 @@ describe('deroulePresentateur (corrigés au déroulé, B22)', () => {
           },
         ],
         totaux: { taux: { valeur: 3, affichage: '3' } },
-        synthese: [{ valeur: 3, affichage: '3,00 %' }],
+        synthese: [{ valeur: 3, affichage: `3,00${ESPACE_INSECABLE}%` }],
         soldeFinal: null,
       },
       tolerance: { type: 'absolue', valeur: 0.01 },

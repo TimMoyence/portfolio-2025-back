@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "76722b64a6de0afb9dd8c0d02d106a1ac552f03be4a798a04abfc54de516b3a2",
+  "empreinte": "2c5eeb50f03261b9940e03a791e78fcf469c58e153d867319e5d1169b37289ee",
   "sujet": {
     "id": "b2-03-logique",
     "titre": "Logique : écrire et contrôler une règle",
@@ -57,7 +57,7 @@
           "cas": {
             "id": "B2-03-A1-03-MISSION",
             "metier": "Assistant·e comptable — Atelier Rivage (voilerie artisanale, 14 salariés, La Rochelle)",
-            "situation": "Mardi, 9 h. Marc Lefèvre, l’expert-comptable d’Atelier Rivage, prépare la révision des comptes clients. Il écrit : « Avant la clôture, contrôlez les seize factures du trimestre avec trois règles. Relance : une facture impayée dont le délai dépasse 60 jours, le maximum prévu par vos conditions générales de vente ; chaque relance réclame l’indemnité forfaitaire de 40 € due pour tout retard. TVA : une facture à un client professionnel d’un autre pays de l’Union européenne porte son numéro de TVA intracommunautaire. Visa : Hélène vise toute facture d’au moins 5 000 € HT ou adressée hors de France. » Hélène Garnier, la dirigeante, ajoute : « F213, de Chantier Duval, est impayée depuis exactement 60 jours. Et toutes nos factures hors de France portent un numéro de TVA. »",
+            "situation": "Mardi, 9 h. Marc Lefèvre, l’expert-comptable d’Atelier Rivage, prépare la révision des comptes clients. Il écrit : « Avant la clôture, contrôlez les seize factures du trimestre avec trois règles. Relance : une facture impayée dont le délai dépasse 60 jours, le maximum prévu par vos conditions générales de vente ; chaque relance réclame l’indemnité forfaitaire de 40 € due pour tout retard. TVA : une facture à un client professionnel d’un autre pays de l’Union européenne porte son numéro de TVA intracommunautaire. Visa : Hélène vise toute facture d’au moins 5 000 € HT ou adressée hors de France. » Hélène Garnier, la dirigeante, ajoute : « F213, de Chantier Duval, est impayée depuis exactement 60 jours. Et toutes nos factures hors de France portent un numéro de TVA. »",
             "geste": null,
             "consequence": null,
             "questionsLibres": [
@@ -134,7 +134,7 @@
                     "numero": "F201",
                     "client": "Voiles Martin",
                     "pays": "France",
-                    "ht": "1 250",
+                    "ht": "1 250",
                     "delai": "35",
                     "statut": "Payée",
                     "tva": "Oui"
@@ -143,7 +143,7 @@
                     "numero": "F202",
                     "client": "Nautic Sud",
                     "pays": "France",
-                    "ht": "6 400",
+                    "ht": "6 400",
                     "delai": "72",
                     "statut": "Impayée",
                     "tva": "Oui"
@@ -152,7 +152,7 @@
                     "numero": "F203",
                     "client": "Sailtech GmbH",
                     "pays": "Allemagne",
-                    "ht": "3 100",
+                    "ht": "3 100",
                     "delai": "48",
                     "statut": "Payée",
                     "tva": "Oui"
@@ -170,7 +170,7 @@
                     "numero": "F205",
                     "client": "Mar Azul SL",
                     "pays": "Espagne",
-                    "ht": "5 200",
+                    "ht": "5 200",
                     "delai": "30",
                     "statut": "Payée",
                     "tva": "Non"
@@ -179,7 +179,7 @@
                     "numero": "F206",
                     "client": "Chantier Duval",
                     "pays": "France",
-                    "ht": "2 300",
+                    "ht": "2 300",
                     "delai": "58",
                     "statut": "Impayée",
                     "tva": "Oui"
@@ -188,7 +188,7 @@
                     "numero": "F207",
                     "client": "Blue Sails BV",
                     "pays": "Pays-Bas",
-                    "ht": "1 800",
+                    "ht": "1 800",
                     "delai": "81",
                     "statut": "Impayée",
                     "tva": "Non"
@@ -206,7 +206,7 @@
                     "numero": "F209",
                     "client": "Nautic Sud",
                     "pays": "France",
-                    "ht": "4 950",
+                    "ht": "4 950",
                     "delai": "61",
                     "statut": "Payée",
                     "tva": "Oui"
@@ -215,7 +215,7 @@
                     "numero": "F210",
                     "client": "Sailtech GmbH",
                     "pays": "Allemagne",
-                    "ht": "7 300",
+                    "ht": "7 300",
                     "delai": "40",
                     "statut": "Payée",
                     "tva": "Oui"
@@ -224,7 +224,7 @@
                     "numero": "F211",
                     "client": "Voiles Martin",
                     "pays": "France",
-                    "ht": "1 600",
+                    "ht": "1 600",
                     "delai": "90",
                     "statut": "Impayée",
                     "tva": "Oui"
@@ -233,7 +233,7 @@
                     "numero": "F212",
                     "client": "Vela Italia Srl",
                     "pays": "Italie",
-                    "ht": "2 750",
+                    "ht": "2 750",
                     "delai": "15",
                     "statut": "Impayée",
                     "tva": "Non"
@@ -242,7 +242,7 @@
                     "numero": "F213",
                     "client": "Chantier Duval",
                     "pays": "France",
-                    "ht": "5 000",
+                    "ht": "5 000",
                     "delai": "60",
                     "statut": "Impayée",
                     "tva": "Oui"
@@ -260,7 +260,7 @@
                     "numero": "F215",
                     "client": "Mar Azul SL",
                     "pays": "Espagne",
-                    "ht": "3 900",
+                    "ht": "3 900",
                     "delai": "95",
                     "statut": "Impayée",
                     "tva": "Oui"
@@ -269,7 +269,7 @@
                     "numero": "F216",
                     "client": "Club nautique Oléron",
                     "pays": "France",
-                    "ht": "1 150",
+                    "ht": "1 150",
                     "delai": "45",
                     "statut": "Payée",
                     "tva": "Oui"
@@ -296,7 +296,7 @@
         "donnees": {
           "question": {
             "id": "b2-03-a1-ou-inclusif",
-            "enonce": "Règle d’une boutique : « remise si le client est fidèle ou si la commande atteint 1 000 € ». Un client fidèle commande pour 1 500 €. A-t-il la remise ?",
+            "enonce": "Règle d’une boutique : « remise si le client est fidèle ou si la commande atteint 1 000 € ». Un client fidèle commande pour 1 500 €. A-t-il la remise ?",
             "options": [
               {
                 "id": "non-il-remplit-les-deux-conditions-il-fa-8854e438",
@@ -339,7 +339,7 @@
               "renderer": "illustration",
               "props": {
                 "image": "/assets/cours/b2-03/v1/remise-boutique-ou.webp",
-                "imageAlt": "Schéma de l’exemple de la remise de la boutique : remise si le client est fidèle (P) ou si la commande atteint 1 000 € (Q). Client fidèle à 1 500 € : P vraie, Q vraie, P ∨ Q vraie, remise. Client fidèle à 300 € : P vraie, Q fausse, remise. Nouveau client à 1 300 € : P fausse, Q vraie, remise. Nouveau client à 300 € : P et Q fausses, pas de remise, le seul cas où « ou » est faux. Au tableur, en ligne 2 : =SI(OU(B2=\"Fidèle\";C2>=1000);\"Remise\";\"\") ; même logique pour ET (les deux conditions vraies) et pour NON (inverse une condition)."
+                "imageAlt": "Schéma de l’exemple de la remise de la boutique : remise si le client est fidèle (P) ou si la commande atteint 1 000 € (Q). Client fidèle à 1 500 € : P vraie, Q vraie, P ∨ Q vraie, remise. Client fidèle à 300 € : P vraie, Q fausse, remise. Nouveau client à 1 300 € : P fausse, Q vraie, remise. Nouveau client à 300 € : P et Q fausses, pas de remise, le seul cas où « ou » est faux. Au tableur, en ligne 2 : =SI(OU(B2=\"Fidèle\";C2>=1000);\"Remise\";\"\") ; même logique pour ET (les deux conditions vraies) et pour NON (inverse une condition)."
               }
             },
             "metadonnees": {
@@ -378,11 +378,11 @@
                   {
                     "kind": "example",
                     "title": "Pour débuter : la remise de la boutique",
-                    "text": "Règle : remise si le client est fidèle (P) ou si la commande atteint 1 000 € (Q). Quatre clients.",
+                    "text": "Règle : remise si le client est fidèle (P) ou si la commande atteint 1 000 € (Q). Quatre clients.",
                     "steps": [
-                      "Client fidèle, 1 500 € : P vraie et Q vraie, donc P ∨ Q vraie : remise.",
+                      "Client fidèle, 1 500 € : P vraie et Q vraie, donc P ∨ Q vraie : remise.",
                       "Client fidèle, 300 € : P vraie, Q fausse : remise.",
-                      "Nouveau client, 1 300 € : P fausse, Q vraie : remise.",
+                      "Nouveau client, 1 300 € : P fausse, Q vraie : remise.",
                       "Nouveau client, 300 € : P et Q fausses : pas de remise. C’est le seul cas où « ou » est faux.",
                       "Au tableur : =SI(OU(B2=\"Fidèle\";C2>=1000);\"Remise\";\"\") ; ET et NON s’écrivent de la même façon."
                     ]
@@ -486,9 +486,9 @@
             "id": "b2-03-a1-table-verite",
             "intitule": "La table de vérité du visa",
             "consignes": [
-              "P : « le client est hors de France ». Q : « le montant HT atteint 5 000 € ».",
+              "P : « le client est hors de France ». Q : « le montant HT atteint 5 000 € ».",
               "Pour chaque facture, choisissez V (vrai) ou F (faux) dans chaque case.",
-              "Dernière colonne : la phrase « si le client est hors de France, alors le montant atteint 5 000 € »."
+              "Dernière colonne : la phrase « si le client est hors de France, alors le montant atteint 5 000 € »."
             ],
             "echeances": 4,
             "intituleDesLignes": "Facture",
@@ -565,7 +565,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 2 — Appliquer les règles aux factures",
-          "consigne": "Relance : impayée depuis plus de 60 jours. Visa : au moins 5 000 € HT, ou hors de France.",
+          "consigne": "Relance : impayée depuis plus de 60 jours. Visa : au moins 5 000 € HT, ou hors de France.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -574,7 +574,7 @@
               "donnees": {
                 "question": {
                   "id": "b2-03-a1-implication",
-                  "enonce": "Samir conclut : « une facture visée fait toujours au moins 5 000 € ». Que lui répondre ?",
+                  "enonce": "Samir conclut : « une facture visée fait toujours au moins 5 000 € ». Que lui répondre ?",
                   "options": [
                     {
                       "id": "il-a-raison-c-est-la-regle-du-visa-48ce916d",
@@ -582,7 +582,7 @@
                     },
                     {
                       "id": "il-se-trompe-f203-hors-de-france-est-vis-f3aec408",
-                      "libelle": "Il se trompe : F203, hors de France, est visée avec 3 100 € HT"
+                      "libelle": "Il se trompe : F203, hors de France, est visée avec 3 100 € HT"
                     }
                   ]
                 }
@@ -593,7 +593,7 @@
               "donnees": {
                 "question": {
                   "id": "b2-03-a1-f205",
-                  "enonce": "F205 part en Espagne pour 5 200 € HT. Faut-il la viser ?",
+                  "enonce": "F205 part en Espagne pour 5 200 € HT. Faut-il la viser ?",
                   "options": [
                     {
                       "id": "non-deux-conditions-au-lieu-d-une-ee827256",
@@ -755,7 +755,7 @@
               "renderer": "illustration",
               "props": {
                 "image": "/assets/cours/b2-03/v1/remise-boutique-morgan.webp",
-                "imageAlt": "Schéma de l’exemple de la remise de la boutique : remise si le client est fidèle OU si la commande atteint 1 000 €. Le contraire : pas de remise si le client n’est pas fidèle ET si sa commande reste sous 1 000 €, comme le nouveau client à 300 €. L’erreur sans Morgan : « non fidèle OU moins de 1 000 € » serait vrai pour le nouveau client à 1 300 €, alors qu’il a bien la remise. Au tableur, =NON(OU(B2=\"Fidèle\";C2>=1000)) et =ET(B2<>\"Fidèle\";C2<1000) donnent le même résultat : vrai uniquement quand le client n’est pas fidèle ET commande moins de 1 000 €. Exemples : Alice, fidèle, 1 500 € ; Benoît, fidèle, 300 € ; Chloé, nouvelle, 1 300 € : remise. David, nouveau, 300 € : pas de remise. Cas clés à retenir : nouveau client à 300 €, pas de remise ; nouveau client à 1 300 €, remise."
+                "imageAlt": "Schéma de l’exemple de la remise de la boutique : remise si le client est fidèle OU si la commande atteint 1 000 €. Le contraire : pas de remise si le client n’est pas fidèle ET si sa commande reste sous 1 000 €, comme le nouveau client à 300 €. L’erreur sans Morgan : « non fidèle OU moins de 1 000 € » serait vrai pour le nouveau client à 1 300 €, alors qu’il a bien la remise. Au tableur, =NON(OU(B2=\"Fidèle\";C2>=1000)) et =ET(B2<>\"Fidèle\";C2<1000) donnent le même résultat : vrai uniquement quand le client n’est pas fidèle ET commande moins de 1 000 €. Exemples : Alice, fidèle, 1 500 € ; Benoît, fidèle, 300 € ; Chloé, nouvelle, 1 300 € : remise. David, nouveau, 300 € : pas de remise. Cas clés à retenir : nouveau client à 300 €, pas de remise ; nouveau client à 1 300 €, remise."
               }
             },
             "metadonnees": {
@@ -794,11 +794,11 @@
                   {
                     "kind": "example",
                     "title": "Pour débuter : la remise de la boutique",
-                    "text": "Règle : remise si le client est fidèle ou si la commande atteint 1 000 €.",
+                    "text": "Règle : remise si le client est fidèle ou si la commande atteint 1 000 €.",
                     "steps": [
-                      "Contraire : le client n’est pas fidèle et sa commande reste sous 1 000 €.",
+                      "Contraire : le client n’est pas fidèle et sa commande reste sous 1 000 €.",
                       "Nouveau client, 300 € : les deux conditions manquent, pas de remise.",
-                      "Nouveau client, 1 300 € : « non fidèle ou moins de 1 000 € » serait vrai, alors qu’il a la remise. C’est l’erreur sans Morgan.",
+                      "Nouveau client, 1 300 € : « non fidèle ou moins de 1 000 € » serait vrai, alors qu’il a la remise. C’est l’erreur sans Morgan.",
                       "Au tableur : NON(OU(B2=\"Fidèle\";C2>=1000)) donne le même résultat que ET(B2<>\"Fidèle\";C2<1000)."
                     ]
                   }
@@ -823,7 +823,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 3 — Nier la relance et le visa",
-          "consigne": "Relance : impayée depuis plus de 60 jours. Visa : au moins 5 000 € HT, ou hors de France.",
+          "consigne": "Relance : impayée depuis plus de 60 jours. Visa : au moins 5 000 € HT, ou hors de France.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -855,11 +855,11 @@
                   "options": [
                     {
                       "id": "moins-de-5-000-eur-ht-et-client-en-franc-c0d1fc00",
-                      "libelle": "Moins de 5 000 € HT, et client en France"
+                      "libelle": "Moins de 5 000 € HT, et client en France"
                     },
                     {
                       "id": "moins-de-5-000-eur-ht-ou-client-en-franc-dec5beae",
-                      "libelle": "Moins de 5 000 € HT, ou client en France"
+                      "libelle": "Moins de 5 000 € HT, ou client en France"
                     }
                   ]
                 }
@@ -1232,8 +1232,8 @@
                     "title": "Pour débuter : les voiles vendues",
                     "text": "Ventes de Léa, Karim et Sofia en B2:B4 : 12, 7 et 15 voiles.",
                     "steps": [
-                      "=NB.SI(B2:B4;\">=10\") compte deux commerciaux : il en existe au moins un à 10 voiles ou plus.",
-                      "=NB.SI(B2:B4;\"<10\") compte Karim : « tous ont vendu au moins 10 voiles » est faux.",
+                      "=NB.SI(B2:B4;\">=10\") compte deux commerciaux : il en existe au moins un à 10 voiles ou plus.",
+                      "=NB.SI(B2:B4;\"<10\") compte Karim : « tous ont vendu au moins 10 voiles » est faux.",
                       "=NB.SI(B2:B4;>=10), sans guillemets, renvoie une erreur."
                     ]
                   }
@@ -1341,7 +1341,7 @@
               "props": {
                 "title": "Mini-situation CCF : contrôler les comptes clients",
                 "subtitle": "Le fichier de Marc Lefèvre, colonnes A à G. Barème sur 10 : une question tableur, puis quatre énigmes.",
-                "note": "Relance : facture impayée dont le délai dépasse 60 jours ; indemnité forfaitaire de 40 €, due pour tout retard (Code de commerce), réclamée avec chaque relance. Visa (procédure interne fictive) : montant HT d’au moins 5 000 € ou client hors de France. Données fictives Atelier Rivage, créées pour ce cours.",
+                "note": "Relance : facture impayée dont le délai dépasse 60 jours ; indemnité forfaitaire de 40 €, due pour tout retard (Code de commerce), réclamée avec chaque relance. Visa (procédure interne fictive) : montant HT d’au moins 5 000 € ou client hors de France. Données fictives Atelier Rivage, créées pour ce cours.",
                 "columns": [
                   {
                     "key": "numero",
@@ -1377,7 +1377,7 @@
                     "numero": "F201",
                     "client": "Voiles Martin",
                     "pays": "France",
-                    "ht": "1 250",
+                    "ht": "1 250",
                     "delai": "35",
                     "statut": "Payée",
                     "tva": "Oui"
@@ -1386,7 +1386,7 @@
                     "numero": "F202",
                     "client": "Nautic Sud",
                     "pays": "France",
-                    "ht": "6 400",
+                    "ht": "6 400",
                     "delai": "72",
                     "statut": "Impayée",
                     "tva": "Oui"
@@ -1395,7 +1395,7 @@
                     "numero": "F203",
                     "client": "Sailtech GmbH",
                     "pays": "Allemagne",
-                    "ht": "3 100",
+                    "ht": "3 100",
                     "delai": "48",
                     "statut": "Payée",
                     "tva": "Oui"
@@ -1413,7 +1413,7 @@
                     "numero": "F205",
                     "client": "Mar Azul SL",
                     "pays": "Espagne",
-                    "ht": "5 200",
+                    "ht": "5 200",
                     "delai": "30",
                     "statut": "Payée",
                     "tva": "Non"
@@ -1422,7 +1422,7 @@
                     "numero": "F206",
                     "client": "Chantier Duval",
                     "pays": "France",
-                    "ht": "2 300",
+                    "ht": "2 300",
                     "delai": "58",
                     "statut": "Impayée",
                     "tva": "Oui"
@@ -1431,7 +1431,7 @@
                     "numero": "F207",
                     "client": "Blue Sails BV",
                     "pays": "Pays-Bas",
-                    "ht": "1 800",
+                    "ht": "1 800",
                     "delai": "81",
                     "statut": "Impayée",
                     "tva": "Non"
@@ -1449,7 +1449,7 @@
                     "numero": "F209",
                     "client": "Nautic Sud",
                     "pays": "France",
-                    "ht": "4 950",
+                    "ht": "4 950",
                     "delai": "61",
                     "statut": "Payée",
                     "tva": "Oui"
@@ -1458,7 +1458,7 @@
                     "numero": "F210",
                     "client": "Sailtech GmbH",
                     "pays": "Allemagne",
-                    "ht": "7 300",
+                    "ht": "7 300",
                     "delai": "40",
                     "statut": "Payée",
                     "tva": "Oui"
@@ -1467,7 +1467,7 @@
                     "numero": "F211",
                     "client": "Voiles Martin",
                     "pays": "France",
-                    "ht": "1 600",
+                    "ht": "1 600",
                     "delai": "90",
                     "statut": "Impayée",
                     "tva": "Oui"
@@ -1476,7 +1476,7 @@
                     "numero": "F212",
                     "client": "Vela Italia Srl",
                     "pays": "Italie",
-                    "ht": "2 750",
+                    "ht": "2 750",
                     "delai": "15",
                     "statut": "Impayée",
                     "tva": "Non"
@@ -1485,7 +1485,7 @@
                     "numero": "F213",
                     "client": "Chantier Duval",
                     "pays": "France",
-                    "ht": "5 000",
+                    "ht": "5 000",
                     "delai": "60",
                     "statut": "Impayée",
                     "tva": "Oui"
@@ -1503,7 +1503,7 @@
                     "numero": "F215",
                     "client": "Mar Azul SL",
                     "pays": "Espagne",
-                    "ht": "3 900",
+                    "ht": "3 900",
                     "delai": "95",
                     "statut": "Impayée",
                     "tva": "Oui"
@@ -1512,7 +1512,7 @@
                     "numero": "F216",
                     "client": "Club nautique Oléron",
                     "pays": "France",
-                    "ht": "1 150",
+                    "ht": "1 150",
                     "delai": "45",
                     "statut": "Payée",
                     "tva": "Oui"
@@ -1796,7 +1796,7 @@
             ],
             "consignes": [
               "En H2, avec SI et ET : « Relancer » si la facture est impayée et si son délai dépasse 60 jours, « Non » sinon. Recopiez jusqu’en H17 : sélectionnez H2 et cliquez quinze fois sur « Recopier vers le bas », une ligne par clic.",
-              "En I2, avec SI et OU : « Visa » si le montant HT atteint 5 000 € ou si le pays n’est pas la France, « Non » sinon. Recopiez jusqu’en I17 : sélectionnez I2 et cliquez quinze fois sur « Recopier vers le bas », une ligne par clic.",
+              "En I2, avec SI et OU : « Visa » si le montant HT atteint 5 000 € ou si le pays n’est pas la France, « Non » sinon. Recopiez jusqu’en I17 : sélectionnez I2 et cliquez quinze fois sur « Recopier vers le bas », une ligne par clic.",
               "En K2, comptez avec NB.SI les factures à relancer."
             ],
             "lettres": ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K"],
@@ -2319,7 +2319,7 @@
               {
                 "id": "b2-03-a4-e3-visa",
                 "intitule": "Visées sous le seuil (1,5 point)",
-                "enonce": "Samir pense que toute facture visée a un montant d’au moins 5 000 € HT. Combien de factures visées le contredisent ?",
+                "enonce": "Samir pense que toute facture visée a un montant d’au moins 5 000 € HT. Combien de factures visées le contredisent ?",
                 "indice": "Cherchez les contre-exemples : visées, mais sous le seuil du montant."
               },
               {
@@ -2557,7 +2557,7 @@
           "cas": {
             "id": "B2-03-A1-03-MISSION",
             "metier": "Assistant·e comptable — Atelier Rivage (voilerie artisanale, 14 salariés, La Rochelle)",
-            "situation": "Mardi, 9 h. Marc Lefèvre, l’expert-comptable d’Atelier Rivage, prépare la révision des comptes clients. Il écrit : « Avant la clôture, contrôlez les seize factures du trimestre avec trois règles. Relance : une facture impayée dont le délai dépasse 60 jours, le maximum prévu par vos conditions générales de vente ; chaque relance réclame l’indemnité forfaitaire de 40 € due pour tout retard. TVA : une facture à un client professionnel d’un autre pays de l’Union européenne porte son numéro de TVA intracommunautaire. Visa : Hélène vise toute facture d’au moins 5 000 € HT ou adressée hors de France. » Hélène Garnier, la dirigeante, ajoute : « F213, de Chantier Duval, est impayée depuis exactement 60 jours. Et toutes nos factures hors de France portent un numéro de TVA. »",
+            "situation": "Mardi, 9 h. Marc Lefèvre, l’expert-comptable d’Atelier Rivage, prépare la révision des comptes clients. Il écrit : « Avant la clôture, contrôlez les seize factures du trimestre avec trois règles. Relance : une facture impayée dont le délai dépasse 60 jours, le maximum prévu par vos conditions générales de vente ; chaque relance réclame l’indemnité forfaitaire de 40 € due pour tout retard. TVA : une facture à un client professionnel d’un autre pays de l’Union européenne porte son numéro de TVA intracommunautaire. Visa : Hélène vise toute facture d’au moins 5 000 € HT ou adressée hors de France. » Hélène Garnier, la dirigeante, ajoute : « F213, de Chantier Duval, est impayée depuis exactement 60 jours. Et toutes nos factures hors de France portent un numéro de TVA. »",
             "geste": null,
             "consequence": null,
             "questionsLibres": [
@@ -2641,7 +2641,7 @@
                     "numero": "F201",
                     "client": "Voiles Martin",
                     "pays": "France",
-                    "ht": "1 250",
+                    "ht": "1 250",
                     "delai": "35",
                     "statut": "Payée",
                     "tva": "Oui"
@@ -2650,7 +2650,7 @@
                     "numero": "F202",
                     "client": "Nautic Sud",
                     "pays": "France",
-                    "ht": "6 400",
+                    "ht": "6 400",
                     "delai": "72",
                     "statut": "Impayée",
                     "tva": "Oui"
@@ -2659,7 +2659,7 @@
                     "numero": "F203",
                     "client": "Sailtech GmbH",
                     "pays": "Allemagne",
-                    "ht": "3 100",
+                    "ht": "3 100",
                     "delai": "48",
                     "statut": "Payée",
                     "tva": "Oui"
@@ -2677,7 +2677,7 @@
                     "numero": "F205",
                     "client": "Mar Azul SL",
                     "pays": "Espagne",
-                    "ht": "5 200",
+                    "ht": "5 200",
                     "delai": "30",
                     "statut": "Payée",
                     "tva": "Non"
@@ -2686,7 +2686,7 @@
                     "numero": "F206",
                     "client": "Chantier Duval",
                     "pays": "France",
-                    "ht": "2 300",
+                    "ht": "2 300",
                     "delai": "58",
                     "statut": "Impayée",
                     "tva": "Oui"
@@ -2695,7 +2695,7 @@
                     "numero": "F207",
                     "client": "Blue Sails BV",
                     "pays": "Pays-Bas",
-                    "ht": "1 800",
+                    "ht": "1 800",
                     "delai": "81",
                     "statut": "Impayée",
                     "tva": "Non"
@@ -2713,7 +2713,7 @@
                     "numero": "F209",
                     "client": "Nautic Sud",
                     "pays": "France",
-                    "ht": "4 950",
+                    "ht": "4 950",
                     "delai": "61",
                     "statut": "Payée",
                     "tva": "Oui"
@@ -2722,7 +2722,7 @@
                     "numero": "F210",
                     "client": "Sailtech GmbH",
                     "pays": "Allemagne",
-                    "ht": "7 300",
+                    "ht": "7 300",
                     "delai": "40",
                     "statut": "Payée",
                     "tva": "Oui"
@@ -2731,7 +2731,7 @@
                     "numero": "F211",
                     "client": "Voiles Martin",
                     "pays": "France",
-                    "ht": "1 600",
+                    "ht": "1 600",
                     "delai": "90",
                     "statut": "Impayée",
                     "tva": "Oui"
@@ -2740,7 +2740,7 @@
                     "numero": "F212",
                     "client": "Vela Italia Srl",
                     "pays": "Italie",
-                    "ht": "2 750",
+                    "ht": "2 750",
                     "delai": "15",
                     "statut": "Impayée",
                     "tva": "Non"
@@ -2749,7 +2749,7 @@
                     "numero": "F213",
                     "client": "Chantier Duval",
                     "pays": "France",
-                    "ht": "5 000",
+                    "ht": "5 000",
                     "delai": "60",
                     "statut": "Impayée",
                     "tva": "Oui"
@@ -2767,7 +2767,7 @@
                     "numero": "F215",
                     "client": "Mar Azul SL",
                     "pays": "Espagne",
-                    "ht": "3 900",
+                    "ht": "3 900",
                     "delai": "95",
                     "statut": "Impayée",
                     "tva": "Oui"
@@ -2776,7 +2776,7 @@
                     "numero": "F216",
                     "client": "Club nautique Oléron",
                     "pays": "France",
-                    "ht": "1 150",
+                    "ht": "1 150",
                     "delai": "45",
                     "statut": "Payée",
                     "tva": "Oui"
@@ -2810,7 +2810,7 @@
         "donnees": {
           "question": {
             "id": "b2-03-a1-ou-inclusif",
-            "enonce": "Règle d’une boutique : « remise si le client est fidèle ou si la commande atteint 1 000 € ». Un client fidèle commande pour 1 500 €. A-t-il la remise ?",
+            "enonce": "Règle d’une boutique : « remise si le client est fidèle ou si la commande atteint 1 000 € ». Un client fidèle commande pour 1 500 €. A-t-il la remise ?",
             "options": [
               {
                 "id": "non-il-remplit-les-deux-conditions-il-fa-8854e438",
@@ -2865,7 +2865,7 @@
         "questions": [
           {
             "id": "b2-03-a1-ou-inclusif",
-            "enonce": "Règle d’une boutique : « remise si le client est fidèle ou si la commande atteint 1 000 € ». Un client fidèle commande pour 1 500 €. A-t-il la remise ?",
+            "enonce": "Règle d’une boutique : « remise si le client est fidèle ou si la commande atteint 1 000 € ». Un client fidèle commande pour 1 500 €. A-t-il la remise ?",
             "options": [
               {
                 "id": "non-il-remplit-les-deux-conditions-il-fa-8854e438",
@@ -2917,7 +2917,7 @@
               "renderer": "illustration",
               "props": {
                 "image": "/assets/cours/b2-03/v1/remise-boutique-ou.webp",
-                "imageAlt": "Schéma de l’exemple de la remise de la boutique : remise si le client est fidèle (P) ou si la commande atteint 1 000 € (Q). Client fidèle à 1 500 € : P vraie, Q vraie, P ∨ Q vraie, remise. Client fidèle à 300 € : P vraie, Q fausse, remise. Nouveau client à 1 300 € : P fausse, Q vraie, remise. Nouveau client à 300 € : P et Q fausses, pas de remise, le seul cas où « ou » est faux. Au tableur, en ligne 2 : =SI(OU(B2=\"Fidèle\";C2>=1000);\"Remise\";\"\") ; même logique pour ET (les deux conditions vraies) et pour NON (inverse une condition)."
+                "imageAlt": "Schéma de l’exemple de la remise de la boutique : remise si le client est fidèle (P) ou si la commande atteint 1 000 € (Q). Client fidèle à 1 500 € : P vraie, Q vraie, P ∨ Q vraie, remise. Client fidèle à 300 € : P vraie, Q fausse, remise. Nouveau client à 1 300 € : P fausse, Q vraie, remise. Nouveau client à 300 € : P et Q fausses, pas de remise, le seul cas où « ou » est faux. Au tableur, en ligne 2 : =SI(OU(B2=\"Fidèle\";C2>=1000);\"Remise\";\"\") ; même logique pour ET (les deux conditions vraies) et pour NON (inverse une condition)."
               }
             },
             "metadonnees": {
@@ -2929,7 +2929,7 @@
             }
           }
         },
-        "notes": "• 1 min ; l’image montre l’exemple pour débuter de la page qui suit : la commenter avant de lire la page.\n• Demander : « Dans quel seul cas le client n’a-t-il pas la remise ? » Laisser venir « ni fidèle, ni 1 000 € ».",
+        "notes": "• 1 min ; l’image montre l’exemple pour débuter de la page qui suit : la commenter avant de lire la page.\n• Demander : « Dans quel seul cas le client n’a-t-il pas la remise ? » Laisser venir « ni fidèle, ni 1 000 € ».",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -2963,11 +2963,11 @@
                   {
                     "kind": "example",
                     "title": "Pour débuter : la remise de la boutique",
-                    "text": "Règle : remise si le client est fidèle (P) ou si la commande atteint 1 000 € (Q). Quatre clients.",
+                    "text": "Règle : remise si le client est fidèle (P) ou si la commande atteint 1 000 € (Q). Quatre clients.",
                     "steps": [
-                      "Client fidèle, 1 500 € : P vraie et Q vraie, donc P ∨ Q vraie : remise.",
+                      "Client fidèle, 1 500 € : P vraie et Q vraie, donc P ∨ Q vraie : remise.",
                       "Client fidèle, 300 € : P vraie, Q fausse : remise.",
-                      "Nouveau client, 1 300 € : P fausse, Q vraie : remise.",
+                      "Nouveau client, 1 300 € : P fausse, Q vraie : remise.",
                       "Nouveau client, 300 € : P et Q fausses : pas de remise. C’est le seul cas où « ou » est faux.",
                       "Au tableur : =SI(OU(B2=\"Fidèle\";C2>=1000);\"Remise\";\"\") ; ET et NON s’écrivent de la même façon."
                     ]
@@ -2984,7 +2984,7 @@
             }
           }
         },
-        "notes": "• 2 min, après 1 min sur son illustration ; la trace écrite est imprimée dans le livret : on lit et on commente, on ne recopie pas.\n• Faire lire le premier client de l’exemple (fidèle, 1 500 €) : c’est la réponse au vote précédent.\n• Lien au dossier : « La règle du visa est-elle un “et” ou un “ou” ? » Un « ou ».",
+        "notes": "• 2 min, après 1 min sur son illustration ; la trace écrite est imprimée dans le livret : on lit et on commente, on ne recopie pas.\n• Faire lire le premier client de l’exemple (fidèle, 1 500 €) : c’est la réponse au vote précédent.\n• Lien au dossier : « La règle du visa est-elle un “et” ou un “ou” ? » Un « ou ».",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -3073,7 +3073,7 @@
             }
           }
         },
-        "notes": "• 2 min, après 1 min sur son illustration, enchaînées sur la page 1 : 6 min pour les deux pages de la trace écrite et leurs illustrations.\n• Faire tester les bornes à voix haute : 60 jours pile, 5 000 € pile.\n• Relier au vote : « plus de trois ans » exclut trois ans pile.",
+        "notes": "• 2 min, après 1 min sur son illustration, enchaînées sur la page 1 : 6 min pour les deux pages de la trace écrite et leurs illustrations.\n• Faire tester les bornes à voix haute : 60 jours pile, 5 000 € pile.\n• Relier au vote : « plus de trois ans » exclut trois ans pile.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -3092,9 +3092,9 @@
             "id": "b2-03-a1-table-verite",
             "intitule": "La table de vérité du visa",
             "consignes": [
-              "P : « le client est hors de France ». Q : « le montant HT atteint 5 000 € ».",
+              "P : « le client est hors de France ». Q : « le montant HT atteint 5 000 € ».",
               "Pour chaque facture, choisissez V (vrai) ou F (faux) dans chaque case.",
-              "Dernière colonne : la phrase « si le client est hors de France, alors le montant atteint 5 000 € »."
+              "Dernière colonne : la phrase « si le client est hors de France, alors le montant atteint 5 000 € »."
             ],
             "echeances": 4,
             "intituleDesLignes": "Facture",
@@ -3389,7 +3389,7 @@
         "explications": [
           {
             "reference": "b2-03-a1-table-verite",
-            "texte": "Non P inverse P. P et Q n’est vraie que pour F205. P ou Q n’est fausse que pour F201 : F205 vérifie les deux conditions, et « ou » l’accepte. Si P alors Q n’est fausse que pour F203, hors de France avec 3 100 € : c’est le contre-exemple. F202 ne la contredit pas, puisque P y est fausse."
+            "texte": "Non P inverse P. P et Q n’est vraie que pour F205. P ou Q n’est fausse que pour F201 : F205 vérifie les deux conditions, et « ou » l’accepte. Si P alors Q n’est fausse que pour F203, hors de France avec 3 100 € : c’est le contre-exemple. F202 ne la contredit pas, puisque P y est fausse."
           }
         ]
       },
@@ -3401,7 +3401,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 2 — Appliquer les règles aux factures",
-          "consigne": "Relance : impayée depuis plus de 60 jours. Visa : au moins 5 000 € HT, ou hors de France.",
+          "consigne": "Relance : impayée depuis plus de 60 jours. Visa : au moins 5 000 € HT, ou hors de France.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -3410,7 +3410,7 @@
               "donnees": {
                 "question": {
                   "id": "b2-03-a1-implication",
-                  "enonce": "Samir conclut : « une facture visée fait toujours au moins 5 000 € ». Que lui répondre ?",
+                  "enonce": "Samir conclut : « une facture visée fait toujours au moins 5 000 € ». Que lui répondre ?",
                   "options": [
                     {
                       "id": "il-a-raison-c-est-la-regle-du-visa-48ce916d",
@@ -3418,7 +3418,7 @@
                     },
                     {
                       "id": "il-se-trompe-f203-hors-de-france-est-vis-f3aec408",
-                      "libelle": "Il se trompe : F203, hors de France, est visée avec 3 100 € HT"
+                      "libelle": "Il se trompe : F203, hors de France, est visée avec 3 100 € HT"
                     }
                   ]
                 }
@@ -3429,7 +3429,7 @@
               "donnees": {
                 "question": {
                   "id": "b2-03-a1-f205",
-                  "enonce": "F205 part en Espagne pour 5 200 € HT. Faut-il la viser ?",
+                  "enonce": "F205 part en Espagne pour 5 200 € HT. Faut-il la viser ?",
                   "options": [
                     {
                       "id": "non-deux-conditions-au-lieu-d-une-ee827256",
@@ -3452,7 +3452,7 @@
         "corriges": [
           {
             "questionId": "b2-03-a1-implication",
-            "bonneReponse": "Il se trompe : F203, hors de France, est visée avec 3 100 € HT",
+            "bonneReponse": "Il se trompe : F203, hors de France, est visée avec 3 100 € HT",
             "confusions": [
               {
                 "id": "implication-lue-comme-equivalence",
@@ -3474,7 +3474,7 @@
         "questions": [
           {
             "id": "b2-03-a1-implication",
-            "enonce": "Samir conclut : « une facture visée fait toujours au moins 5 000 € ». Que lui répondre ?",
+            "enonce": "Samir conclut : « une facture visée fait toujours au moins 5 000 € ». Que lui répondre ?",
             "options": [
               {
                 "id": "il-a-raison-c-est-la-regle-du-visa-48ce916d",
@@ -3482,13 +3482,13 @@
               },
               {
                 "id": "il-se-trompe-f203-hors-de-france-est-vis-f3aec408",
-                "libelle": "Il se trompe : F203, hors de France, est visée avec 3 100 € HT"
+                "libelle": "Il se trompe : F203, hors de France, est visée avec 3 100 € HT"
               }
             ]
           },
           {
             "id": "b2-03-a1-f205",
-            "enonce": "F205 part en Espagne pour 5 200 € HT. Faut-il la viser ?",
+            "enonce": "F205 part en Espagne pour 5 200 € HT. Faut-il la viser ?",
             "options": [
               {
                 "id": "non-deux-conditions-au-lieu-d-une-ee827256",
@@ -3506,7 +3506,7 @@
         "explications": [
           {
             "reference": "b2-03-a1-implication",
-            "texte": "La règle dit « montant d’au moins 5 000 € ou hors de France ⇒ visa ». Samir prend la réciproque : F203, visée avec 3 100 €, la contredit."
+            "texte": "La règle dit « montant d’au moins 5 000 € ou hors de France ⇒ visa ». Samir prend la réciproque : F203, visée avec 3 100 €, la contredit."
           },
           {
             "reference": "b2-03-a1-f205",
@@ -3693,7 +3693,7 @@
               "renderer": "illustration",
               "props": {
                 "image": "/assets/cours/b2-03/v1/remise-boutique-morgan.webp",
-                "imageAlt": "Schéma de l’exemple de la remise de la boutique : remise si le client est fidèle OU si la commande atteint 1 000 €. Le contraire : pas de remise si le client n’est pas fidèle ET si sa commande reste sous 1 000 €, comme le nouveau client à 300 €. L’erreur sans Morgan : « non fidèle OU moins de 1 000 € » serait vrai pour le nouveau client à 1 300 €, alors qu’il a bien la remise. Au tableur, =NON(OU(B2=\"Fidèle\";C2>=1000)) et =ET(B2<>\"Fidèle\";C2<1000) donnent le même résultat : vrai uniquement quand le client n’est pas fidèle ET commande moins de 1 000 €. Exemples : Alice, fidèle, 1 500 € ; Benoît, fidèle, 300 € ; Chloé, nouvelle, 1 300 € : remise. David, nouveau, 300 € : pas de remise. Cas clés à retenir : nouveau client à 300 €, pas de remise ; nouveau client à 1 300 €, remise."
+                "imageAlt": "Schéma de l’exemple de la remise de la boutique : remise si le client est fidèle OU si la commande atteint 1 000 €. Le contraire : pas de remise si le client n’est pas fidèle ET si sa commande reste sous 1 000 €, comme le nouveau client à 300 €. L’erreur sans Morgan : « non fidèle OU moins de 1 000 € » serait vrai pour le nouveau client à 1 300 €, alors qu’il a bien la remise. Au tableur, =NON(OU(B2=\"Fidèle\";C2>=1000)) et =ET(B2<>\"Fidèle\";C2<1000) donnent le même résultat : vrai uniquement quand le client n’est pas fidèle ET commande moins de 1 000 €. Exemples : Alice, fidèle, 1 500 € ; Benoît, fidèle, 300 € ; Chloé, nouvelle, 1 300 € : remise. David, nouveau, 300 € : pas de remise. Cas clés à retenir : nouveau client à 300 €, pas de remise ; nouveau client à 1 300 €, remise."
               }
             },
             "metadonnees": {
@@ -3705,7 +3705,7 @@
             }
           }
         },
-        "notes": "• 1 min ; l’image montre l’exemple pour débuter de la page qui suit : la commenter avant de lire la page.\n• Faire vérifier sur le client à 1 300 € que la négation sans Morgan se trompe.",
+        "notes": "• 1 min ; l’image montre l’exemple pour débuter de la page qui suit : la commenter avant de lire la page.\n• Faire vérifier sur le client à 1 300 € que la négation sans Morgan se trompe.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -3739,11 +3739,11 @@
                   {
                     "kind": "example",
                     "title": "Pour débuter : la remise de la boutique",
-                    "text": "Règle : remise si le client est fidèle ou si la commande atteint 1 000 €.",
+                    "text": "Règle : remise si le client est fidèle ou si la commande atteint 1 000 €.",
                     "steps": [
-                      "Contraire : le client n’est pas fidèle et sa commande reste sous 1 000 €.",
+                      "Contraire : le client n’est pas fidèle et sa commande reste sous 1 000 €.",
                       "Nouveau client, 300 € : les deux conditions manquent, pas de remise.",
-                      "Nouveau client, 1 300 € : « non fidèle ou moins de 1 000 € » serait vrai, alors qu’il a la remise. C’est l’erreur sans Morgan.",
+                      "Nouveau client, 1 300 € : « non fidèle ou moins de 1 000 € » serait vrai, alors qu’il a la remise. C’est l’erreur sans Morgan.",
                       "Au tableur : NON(OU(B2=\"Fidèle\";C2>=1000)) donne le même résultat que ET(B2<>\"Fidèle\";C2<1000)."
                     ]
                   }
@@ -3775,7 +3775,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 3 — Nier la relance et le visa",
-          "consigne": "Relance : impayée depuis plus de 60 jours. Visa : au moins 5 000 € HT, ou hors de France.",
+          "consigne": "Relance : impayée depuis plus de 60 jours. Visa : au moins 5 000 € HT, ou hors de France.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -3807,11 +3807,11 @@
                   "options": [
                     {
                       "id": "moins-de-5-000-eur-ht-et-client-en-franc-c0d1fc00",
-                      "libelle": "Moins de 5 000 € HT, et client en France"
+                      "libelle": "Moins de 5 000 € HT, et client en France"
                     },
                     {
                       "id": "moins-de-5-000-eur-ht-ou-client-en-franc-dec5beae",
-                      "libelle": "Moins de 5 000 € HT, ou client en France"
+                      "libelle": "Moins de 5 000 € HT, ou client en France"
                     }
                   ]
                 }
@@ -3872,7 +3872,7 @@
           },
           {
             "questionId": "b2-03-a2-non-visa",
-            "bonneReponse": "Moins de 5 000 € HT, et client en France",
+            "bonneReponse": "Moins de 5 000 € HT, et client en France",
             "confusions": [
               {
                 "id": "negation-sans-morgan",
@@ -3926,11 +3926,11 @@
             "options": [
               {
                 "id": "moins-de-5-000-eur-ht-et-client-en-franc-c0d1fc00",
-                "libelle": "Moins de 5 000 € HT, et client en France"
+                "libelle": "Moins de 5 000 € HT, et client en France"
               },
               {
                 "id": "moins-de-5-000-eur-ht-ou-client-en-franc-dec5beae",
-                "libelle": "Moins de 5 000 € HT, ou client en France"
+                "libelle": "Moins de 5 000 € HT, ou client en France"
               }
             ]
           },
@@ -3963,11 +3963,11 @@
           },
           {
             "reference": "b2-03-a2-non-visa",
-            "texte": "Visa : montant ≥ 5 000 ∨ hors de France. Contraire : montant < 5 000 ∧ en France."
+            "texte": "Visa : montant ≥ 5 000 ∨ hors de France. Contraire : montant < 5 000 ∧ en France."
           },
           {
             "reference": "b2-03-a2-sans-visa",
-            "texte": "Les huit factures françaises sous 5 000 €. Avec ≤ 5 000, on garderait F213 à tort (9) ; avec « ou », on en compterait 14."
+            "texte": "Les huit factures françaises sous 5 000 €. Avec ≤ 5 000, on garderait F213 à tort (9) ; avec « ou », on en compterait 14."
           },
           {
             "reference": "b2-03-a2-formule",
@@ -4249,11 +4249,11 @@
         "explications": [
           {
             "reference": "D2",
-            "texte": "=SI(NON(OU(B2=\"France\";C2=\"Oui\"));\"Anomalie\";\"OK\") : l’anomalie est le contraire de la conformité."
+            "texte": "=SI(NON(OU(B2=\"France\";C2=\"Oui\"));\"Anomalie\";\"OK\") : l’anomalie est le contraire de la conformité."
           },
           {
             "reference": "E2",
-            "texte": "=SI(ET(B2<>\"France\";C2=\"Non\");\"Anomalie\";\"OK\") : même résultat par Morgan, ¬(France ∨ numéro) = hors de France ∧ sans numéro."
+            "texte": "=SI(ET(B2<>\"France\";C2=\"Non\");\"Anomalie\";\"OK\") : même résultat par Morgan, ¬(France ∨ numéro) = hors de France ∧ sans numéro."
           },
           {
             "reference": "D3 à E6",
@@ -4552,8 +4552,8 @@
                     "title": "Pour débuter : les voiles vendues",
                     "text": "Ventes de Léa, Karim et Sofia en B2:B4 : 12, 7 et 15 voiles.",
                     "steps": [
-                      "=NB.SI(B2:B4;\">=10\") compte deux commerciaux : il en existe au moins un à 10 voiles ou plus.",
-                      "=NB.SI(B2:B4;\"<10\") compte Karim : « tous ont vendu au moins 10 voiles » est faux.",
+                      "=NB.SI(B2:B4;\">=10\") compte deux commerciaux : il en existe au moins un à 10 voiles ou plus.",
+                      "=NB.SI(B2:B4;\"<10\") compte Karim : « tous ont vendu au moins 10 voiles » est faux.",
                       "=NB.SI(B2:B4;>=10), sans guillemets, renvoie une erreur."
                     ]
                   }
@@ -4741,7 +4741,7 @@
               "props": {
                 "title": "Mini-situation CCF : contrôler les comptes clients",
                 "subtitle": "Le fichier de Marc Lefèvre, colonnes A à G. Barème sur 10 : une question tableur, puis quatre énigmes.",
-                "note": "Relance : facture impayée dont le délai dépasse 60 jours ; indemnité forfaitaire de 40 €, due pour tout retard (Code de commerce), réclamée avec chaque relance. Visa (procédure interne fictive) : montant HT d’au moins 5 000 € ou client hors de France. Données fictives Atelier Rivage, créées pour ce cours.",
+                "note": "Relance : facture impayée dont le délai dépasse 60 jours ; indemnité forfaitaire de 40 €, due pour tout retard (Code de commerce), réclamée avec chaque relance. Visa (procédure interne fictive) : montant HT d’au moins 5 000 € ou client hors de France. Données fictives Atelier Rivage, créées pour ce cours.",
                 "columns": [
                   {
                     "key": "numero",
@@ -4777,7 +4777,7 @@
                     "numero": "F201",
                     "client": "Voiles Martin",
                     "pays": "France",
-                    "ht": "1 250",
+                    "ht": "1 250",
                     "delai": "35",
                     "statut": "Payée",
                     "tva": "Oui"
@@ -4786,7 +4786,7 @@
                     "numero": "F202",
                     "client": "Nautic Sud",
                     "pays": "France",
-                    "ht": "6 400",
+                    "ht": "6 400",
                     "delai": "72",
                     "statut": "Impayée",
                     "tva": "Oui"
@@ -4795,7 +4795,7 @@
                     "numero": "F203",
                     "client": "Sailtech GmbH",
                     "pays": "Allemagne",
-                    "ht": "3 100",
+                    "ht": "3 100",
                     "delai": "48",
                     "statut": "Payée",
                     "tva": "Oui"
@@ -4813,7 +4813,7 @@
                     "numero": "F205",
                     "client": "Mar Azul SL",
                     "pays": "Espagne",
-                    "ht": "5 200",
+                    "ht": "5 200",
                     "delai": "30",
                     "statut": "Payée",
                     "tva": "Non"
@@ -4822,7 +4822,7 @@
                     "numero": "F206",
                     "client": "Chantier Duval",
                     "pays": "France",
-                    "ht": "2 300",
+                    "ht": "2 300",
                     "delai": "58",
                     "statut": "Impayée",
                     "tva": "Oui"
@@ -4831,7 +4831,7 @@
                     "numero": "F207",
                     "client": "Blue Sails BV",
                     "pays": "Pays-Bas",
-                    "ht": "1 800",
+                    "ht": "1 800",
                     "delai": "81",
                     "statut": "Impayée",
                     "tva": "Non"
@@ -4849,7 +4849,7 @@
                     "numero": "F209",
                     "client": "Nautic Sud",
                     "pays": "France",
-                    "ht": "4 950",
+                    "ht": "4 950",
                     "delai": "61",
                     "statut": "Payée",
                     "tva": "Oui"
@@ -4858,7 +4858,7 @@
                     "numero": "F210",
                     "client": "Sailtech GmbH",
                     "pays": "Allemagne",
-                    "ht": "7 300",
+                    "ht": "7 300",
                     "delai": "40",
                     "statut": "Payée",
                     "tva": "Oui"
@@ -4867,7 +4867,7 @@
                     "numero": "F211",
                     "client": "Voiles Martin",
                     "pays": "France",
-                    "ht": "1 600",
+                    "ht": "1 600",
                     "delai": "90",
                     "statut": "Impayée",
                     "tva": "Oui"
@@ -4876,7 +4876,7 @@
                     "numero": "F212",
                     "client": "Vela Italia Srl",
                     "pays": "Italie",
-                    "ht": "2 750",
+                    "ht": "2 750",
                     "delai": "15",
                     "statut": "Impayée",
                     "tva": "Non"
@@ -4885,7 +4885,7 @@
                     "numero": "F213",
                     "client": "Chantier Duval",
                     "pays": "France",
-                    "ht": "5 000",
+                    "ht": "5 000",
                     "delai": "60",
                     "statut": "Impayée",
                     "tva": "Oui"
@@ -4903,7 +4903,7 @@
                     "numero": "F215",
                     "client": "Mar Azul SL",
                     "pays": "Espagne",
-                    "ht": "3 900",
+                    "ht": "3 900",
                     "delai": "95",
                     "statut": "Impayée",
                     "tva": "Oui"
@@ -4912,7 +4912,7 @@
                     "numero": "F216",
                     "client": "Club nautique Oléron",
                     "pays": "France",
-                    "ht": "1 150",
+                    "ht": "1 150",
                     "delai": "45",
                     "statut": "Payée",
                     "tva": "Oui"
@@ -5203,7 +5203,7 @@
             ],
             "consignes": [
               "En H2, avec SI et ET : « Relancer » si la facture est impayée et si son délai dépasse 60 jours, « Non » sinon. Recopiez jusqu’en H17 : sélectionnez H2 et cliquez quinze fois sur « Recopier vers le bas », une ligne par clic.",
-              "En I2, avec SI et OU : « Visa » si le montant HT atteint 5 000 € ou si le pays n’est pas la France, « Non » sinon. Recopiez jusqu’en I17 : sélectionnez I2 et cliquez quinze fois sur « Recopier vers le bas », une ligne par clic.",
+              "En I2, avec SI et OU : « Visa » si le montant HT atteint 5 000 € ou si le pays n’est pas la France, « Non » sinon. Recopiez jusqu’en I17 : sélectionnez I2 et cliquez quinze fois sur « Recopier vers le bas », une ligne par clic.",
               "En K2, comptez avec NB.SI les factures à relancer."
             ],
             "lettres": ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K"],
@@ -6139,11 +6139,11 @@
         "explications": [
           {
             "reference": "H2 à H17",
-            "texte": "=SI(ET(F2=\"Impayée\";E2>60);\"Relancer\";\"Non\") : ET pour « et », > pour « dépasse ». F213, à 60 jours pile, n’est pas relancée."
+            "texte": "=SI(ET(F2=\"Impayée\";E2>60);\"Relancer\";\"Non\") : ET pour « et », > pour « dépasse ». F213, à 60 jours pile, n’est pas relancée."
           },
           {
             "reference": "I2 à I17",
-            "texte": "=SI(OU(D2>=5000;C2<>\"France\");\"Visa\";\"Non\") : OU pour « ou », >= pour « au moins ». F213 est visée, F209 (4 950 €) ne l’est pas."
+            "texte": "=SI(OU(D2>=5000;C2<>\"France\");\"Visa\";\"Non\") : OU pour « ou », >= pour « au moins ». F213 est visée, F209 (4 950 €) ne l’est pas."
           },
           {
             "reference": "K2",
@@ -6180,7 +6180,7 @@
               {
                 "id": "b2-03-a4-e3-visa",
                 "intitule": "Visées sous le seuil (1,5 point)",
-                "enonce": "Samir pense que toute facture visée a un montant d’au moins 5 000 € HT. Combien de factures visées le contredisent ?",
+                "enonce": "Samir pense que toute facture visée a un montant d’au moins 5 000 € HT. Combien de factures visées le contredisent ?",
                 "indice": "Cherchez les contre-exemples : visées, mais sous le seuil du montant."
               },
               {
@@ -6216,7 +6216,7 @@
           },
           {
             "id": "b2-03-a4-e3-visa",
-            "enonce": "Samir pense que toute facture visée a un montant d’au moins 5 000 € HT. Combien de factures visées le contredisent ?",
+            "enonce": "Samir pense que toute facture visée a un montant d’au moins 5 000 € HT. Combien de factures visées le contredisent ?",
             "options": null
           },
           {
@@ -6263,7 +6263,7 @@
           },
           {
             "reference": "b2-03-a4-e3-visa",
-            "texte": "Visées sous 5 000 € : F203, F207, F212 et F215, toutes hors de France, soit 4 factures. Répondre 0, c’est lire la règle du visa comme une équivalence."
+            "texte": "Visées sous 5 000 € : F203, F207, F212 et F215, toutes hors de France, soit 4 factures. Répondre 0, c’est lire la règle du visa comme une équivalence."
           },
           {
             "reference": "b2-03-a4-e4-requete",
@@ -6492,7 +6492,7 @@
           },
           {
             "id": "b2-03-r-guillemets",
-            "enonce": "Quel critère NB.SI compte les montants d’au moins 1 000 ?",
+            "enonce": "Quel critère NB.SI compte les montants d’au moins 1 000 ?",
             "options": [
               {
                 "id": "1000-entre-guillemets-8a50c050",
@@ -6506,7 +6506,7 @@
           },
           {
             "id": "b2-03-r-sql",
-            "enonce": "Règle « client fidèle et commande d’au moins 1 000 € » : quelle clause WHERE écrire ?",
+            "enonce": "Règle « client fidèle et commande d’au moins 1 000 € » : quelle clause WHERE écrire ?",
             "options": [
               {
                 "id": "fidele-oui-and-montant-1000-3b18b03b",
@@ -6824,7 +6824,7 @@
                     "numero": "F201",
                     "client": "Voiles Martin",
                     "pays": "France",
-                    "ht": "1 250",
+                    "ht": "1 250",
                     "delai": "35",
                     "statut": "Payée",
                     "tva": "Oui"
@@ -6833,7 +6833,7 @@
                     "numero": "F202",
                     "client": "Nautic Sud",
                     "pays": "France",
-                    "ht": "6 400",
+                    "ht": "6 400",
                     "delai": "72",
                     "statut": "Impayée",
                     "tva": "Oui"
@@ -6842,7 +6842,7 @@
                     "numero": "F203",
                     "client": "Sailtech GmbH",
                     "pays": "Allemagne",
-                    "ht": "3 100",
+                    "ht": "3 100",
                     "delai": "48",
                     "statut": "Payée",
                     "tva": "Oui"
@@ -6860,7 +6860,7 @@
                     "numero": "F205",
                     "client": "Mar Azul SL",
                     "pays": "Espagne",
-                    "ht": "5 200",
+                    "ht": "5 200",
                     "delai": "30",
                     "statut": "Payée",
                     "tva": "Non"
@@ -6869,7 +6869,7 @@
                     "numero": "F206",
                     "client": "Chantier Duval",
                     "pays": "France",
-                    "ht": "2 300",
+                    "ht": "2 300",
                     "delai": "58",
                     "statut": "Impayée",
                     "tva": "Oui"
@@ -6878,7 +6878,7 @@
                     "numero": "F207",
                     "client": "Blue Sails BV",
                     "pays": "Pays-Bas",
-                    "ht": "1 800",
+                    "ht": "1 800",
                     "delai": "81",
                     "statut": "Impayée",
                     "tva": "Non"
@@ -6896,7 +6896,7 @@
                     "numero": "F209",
                     "client": "Nautic Sud",
                     "pays": "France",
-                    "ht": "4 950",
+                    "ht": "4 950",
                     "delai": "61",
                     "statut": "Payée",
                     "tva": "Oui"
@@ -6905,7 +6905,7 @@
                     "numero": "F210",
                     "client": "Sailtech GmbH",
                     "pays": "Allemagne",
-                    "ht": "7 300",
+                    "ht": "7 300",
                     "delai": "40",
                     "statut": "Payée",
                     "tva": "Oui"
@@ -6914,7 +6914,7 @@
                     "numero": "F211",
                     "client": "Voiles Martin",
                     "pays": "France",
-                    "ht": "1 600",
+                    "ht": "1 600",
                     "delai": "90",
                     "statut": "Impayée",
                     "tva": "Oui"
@@ -6923,7 +6923,7 @@
                     "numero": "F212",
                     "client": "Vela Italia Srl",
                     "pays": "Italie",
-                    "ht": "2 750",
+                    "ht": "2 750",
                     "delai": "15",
                     "statut": "Impayée",
                     "tva": "Non"
@@ -6932,7 +6932,7 @@
                     "numero": "F213",
                     "client": "Chantier Duval",
                     "pays": "France",
-                    "ht": "5 000",
+                    "ht": "5 000",
                     "delai": "60",
                     "statut": "Impayée",
                     "tva": "Oui"
@@ -6950,7 +6950,7 @@
                     "numero": "F215",
                     "client": "Mar Azul SL",
                     "pays": "Espagne",
-                    "ht": "3 900",
+                    "ht": "3 900",
                     "delai": "95",
                     "statut": "Impayée",
                     "tva": "Oui"
@@ -6959,7 +6959,7 @@
                     "numero": "F216",
                     "client": "Club nautique Oléron",
                     "pays": "France",
-                    "ht": "1 150",
+                    "ht": "1 150",
                     "delai": "45",
                     "statut": "Payée",
                     "tva": "Oui"
@@ -7000,7 +7000,7 @@
               "renderer": "illustration",
               "props": {
                 "image": "/assets/cours/b2-03/v1/remise-boutique-ou.webp",
-                "imageAlt": "Schéma de l’exemple de la remise de la boutique : remise si le client est fidèle (P) ou si la commande atteint 1 000 € (Q). Client fidèle à 1 500 € : P vraie, Q vraie, P ∨ Q vraie, remise. Client fidèle à 300 € : P vraie, Q fausse, remise. Nouveau client à 1 300 € : P fausse, Q vraie, remise. Nouveau client à 300 € : P et Q fausses, pas de remise, le seul cas où « ou » est faux. Au tableur, en ligne 2 : =SI(OU(B2=\"Fidèle\";C2>=1000);\"Remise\";\"\") ; même logique pour ET (les deux conditions vraies) et pour NON (inverse une condition)."
+                "imageAlt": "Schéma de l’exemple de la remise de la boutique : remise si le client est fidèle (P) ou si la commande atteint 1 000 € (Q). Client fidèle à 1 500 € : P vraie, Q vraie, P ∨ Q vraie, remise. Client fidèle à 300 € : P vraie, Q fausse, remise. Nouveau client à 1 300 € : P fausse, Q vraie, remise. Nouveau client à 300 € : P et Q fausses, pas de remise, le seul cas où « ou » est faux. Au tableur, en ligne 2 : =SI(OU(B2=\"Fidèle\";C2>=1000);\"Remise\";\"\") ; même logique pour ET (les deux conditions vraies) et pour NON (inverse une condition)."
               }
             },
             "metadonnees": {
@@ -7039,11 +7039,11 @@
                   {
                     "kind": "example",
                     "title": "Pour débuter : la remise de la boutique",
-                    "text": "Règle : remise si le client est fidèle (P) ou si la commande atteint 1 000 € (Q). Quatre clients.",
+                    "text": "Règle : remise si le client est fidèle (P) ou si la commande atteint 1 000 € (Q). Quatre clients.",
                     "steps": [
-                      "Client fidèle, 1 500 € : P vraie et Q vraie, donc P ∨ Q vraie : remise.",
+                      "Client fidèle, 1 500 € : P vraie et Q vraie, donc P ∨ Q vraie : remise.",
                       "Client fidèle, 300 € : P vraie, Q fausse : remise.",
-                      "Nouveau client, 1 300 € : P fausse, Q vraie : remise.",
+                      "Nouveau client, 1 300 € : P fausse, Q vraie : remise.",
                       "Nouveau client, 300 € : P et Q fausses : pas de remise. C’est le seul cas où « ou » est faux.",
                       "Au tableur : =SI(OU(B2=\"Fidèle\";C2>=1000);\"Remise\";\"\") ; ET et NON s’écrivent de la même façon."
                     ]
@@ -7258,7 +7258,7 @@
               "renderer": "illustration",
               "props": {
                 "image": "/assets/cours/b2-03/v1/remise-boutique-morgan.webp",
-                "imageAlt": "Schéma de l’exemple de la remise de la boutique : remise si le client est fidèle OU si la commande atteint 1 000 €. Le contraire : pas de remise si le client n’est pas fidèle ET si sa commande reste sous 1 000 €, comme le nouveau client à 300 €. L’erreur sans Morgan : « non fidèle OU moins de 1 000 € » serait vrai pour le nouveau client à 1 300 €, alors qu’il a bien la remise. Au tableur, =NON(OU(B2=\"Fidèle\";C2>=1000)) et =ET(B2<>\"Fidèle\";C2<1000) donnent le même résultat : vrai uniquement quand le client n’est pas fidèle ET commande moins de 1 000 €. Exemples : Alice, fidèle, 1 500 € ; Benoît, fidèle, 300 € ; Chloé, nouvelle, 1 300 € : remise. David, nouveau, 300 € : pas de remise. Cas clés à retenir : nouveau client à 300 €, pas de remise ; nouveau client à 1 300 €, remise."
+                "imageAlt": "Schéma de l’exemple de la remise de la boutique : remise si le client est fidèle OU si la commande atteint 1 000 €. Le contraire : pas de remise si le client n’est pas fidèle ET si sa commande reste sous 1 000 €, comme le nouveau client à 300 €. L’erreur sans Morgan : « non fidèle OU moins de 1 000 € » serait vrai pour le nouveau client à 1 300 €, alors qu’il a bien la remise. Au tableur, =NON(OU(B2=\"Fidèle\";C2>=1000)) et =ET(B2<>\"Fidèle\";C2<1000) donnent le même résultat : vrai uniquement quand le client n’est pas fidèle ET commande moins de 1 000 €. Exemples : Alice, fidèle, 1 500 € ; Benoît, fidèle, 300 € ; Chloé, nouvelle, 1 300 € : remise. David, nouveau, 300 € : pas de remise. Cas clés à retenir : nouveau client à 300 €, pas de remise ; nouveau client à 1 300 €, remise."
               }
             },
             "metadonnees": {
@@ -7297,11 +7297,11 @@
                   {
                     "kind": "example",
                     "title": "Pour débuter : la remise de la boutique",
-                    "text": "Règle : remise si le client est fidèle ou si la commande atteint 1 000 €.",
+                    "text": "Règle : remise si le client est fidèle ou si la commande atteint 1 000 €.",
                     "steps": [
-                      "Contraire : le client n’est pas fidèle et sa commande reste sous 1 000 €.",
+                      "Contraire : le client n’est pas fidèle et sa commande reste sous 1 000 €.",
                       "Nouveau client, 300 € : les deux conditions manquent, pas de remise.",
-                      "Nouveau client, 1 300 € : « non fidèle ou moins de 1 000 € » serait vrai, alors qu’il a la remise. C’est l’erreur sans Morgan.",
+                      "Nouveau client, 1 300 € : « non fidèle ou moins de 1 000 € » serait vrai, alors qu’il a la remise. C’est l’erreur sans Morgan.",
                       "Au tableur : NON(OU(B2=\"Fidèle\";C2>=1000)) donne le même résultat que ET(B2<>\"Fidèle\";C2<1000)."
                     ]
                   }
@@ -7491,8 +7491,8 @@
                     "title": "Pour débuter : les voiles vendues",
                     "text": "Ventes de Léa, Karim et Sofia en B2:B4 : 12, 7 et 15 voiles.",
                     "steps": [
-                      "=NB.SI(B2:B4;\">=10\") compte deux commerciaux : il en existe au moins un à 10 voiles ou plus.",
-                      "=NB.SI(B2:B4;\"<10\") compte Karim : « tous ont vendu au moins 10 voiles » est faux.",
+                      "=NB.SI(B2:B4;\">=10\") compte deux commerciaux : il en existe au moins un à 10 voiles ou plus.",
+                      "=NB.SI(B2:B4;\"<10\") compte Karim : « tous ont vendu au moins 10 voiles » est faux.",
                       "=NB.SI(B2:B4;>=10), sans guillemets, renvoie une erreur."
                     ]
                   }
@@ -7541,7 +7541,7 @@
               "props": {
                 "title": "Mini-situation CCF : contrôler les comptes clients",
                 "subtitle": "Le fichier de Marc Lefèvre, colonnes A à G. Barème sur 10 : une question tableur, puis quatre énigmes.",
-                "note": "Relance : facture impayée dont le délai dépasse 60 jours ; indemnité forfaitaire de 40 €, due pour tout retard (Code de commerce), réclamée avec chaque relance. Visa (procédure interne fictive) : montant HT d’au moins 5 000 € ou client hors de France. Données fictives Atelier Rivage, créées pour ce cours.",
+                "note": "Relance : facture impayée dont le délai dépasse 60 jours ; indemnité forfaitaire de 40 €, due pour tout retard (Code de commerce), réclamée avec chaque relance. Visa (procédure interne fictive) : montant HT d’au moins 5 000 € ou client hors de France. Données fictives Atelier Rivage, créées pour ce cours.",
                 "columns": [
                   {
                     "key": "numero",
@@ -7577,7 +7577,7 @@
                     "numero": "F201",
                     "client": "Voiles Martin",
                     "pays": "France",
-                    "ht": "1 250",
+                    "ht": "1 250",
                     "delai": "35",
                     "statut": "Payée",
                     "tva": "Oui"
@@ -7586,7 +7586,7 @@
                     "numero": "F202",
                     "client": "Nautic Sud",
                     "pays": "France",
-                    "ht": "6 400",
+                    "ht": "6 400",
                     "delai": "72",
                     "statut": "Impayée",
                     "tva": "Oui"
@@ -7595,7 +7595,7 @@
                     "numero": "F203",
                     "client": "Sailtech GmbH",
                     "pays": "Allemagne",
-                    "ht": "3 100",
+                    "ht": "3 100",
                     "delai": "48",
                     "statut": "Payée",
                     "tva": "Oui"
@@ -7613,7 +7613,7 @@
                     "numero": "F205",
                     "client": "Mar Azul SL",
                     "pays": "Espagne",
-                    "ht": "5 200",
+                    "ht": "5 200",
                     "delai": "30",
                     "statut": "Payée",
                     "tva": "Non"
@@ -7622,7 +7622,7 @@
                     "numero": "F206",
                     "client": "Chantier Duval",
                     "pays": "France",
-                    "ht": "2 300",
+                    "ht": "2 300",
                     "delai": "58",
                     "statut": "Impayée",
                     "tva": "Oui"
@@ -7631,7 +7631,7 @@
                     "numero": "F207",
                     "client": "Blue Sails BV",
                     "pays": "Pays-Bas",
-                    "ht": "1 800",
+                    "ht": "1 800",
                     "delai": "81",
                     "statut": "Impayée",
                     "tva": "Non"
@@ -7649,7 +7649,7 @@
                     "numero": "F209",
                     "client": "Nautic Sud",
                     "pays": "France",
-                    "ht": "4 950",
+                    "ht": "4 950",
                     "delai": "61",
                     "statut": "Payée",
                     "tva": "Oui"
@@ -7658,7 +7658,7 @@
                     "numero": "F210",
                     "client": "Sailtech GmbH",
                     "pays": "Allemagne",
-                    "ht": "7 300",
+                    "ht": "7 300",
                     "delai": "40",
                     "statut": "Payée",
                     "tva": "Oui"
@@ -7667,7 +7667,7 @@
                     "numero": "F211",
                     "client": "Voiles Martin",
                     "pays": "France",
-                    "ht": "1 600",
+                    "ht": "1 600",
                     "delai": "90",
                     "statut": "Impayée",
                     "tva": "Oui"
@@ -7676,7 +7676,7 @@
                     "numero": "F212",
                     "client": "Vela Italia Srl",
                     "pays": "Italie",
-                    "ht": "2 750",
+                    "ht": "2 750",
                     "delai": "15",
                     "statut": "Impayée",
                     "tva": "Non"
@@ -7685,7 +7685,7 @@
                     "numero": "F213",
                     "client": "Chantier Duval",
                     "pays": "France",
-                    "ht": "5 000",
+                    "ht": "5 000",
                     "delai": "60",
                     "statut": "Impayée",
                     "tva": "Oui"
@@ -7703,7 +7703,7 @@
                     "numero": "F215",
                     "client": "Mar Azul SL",
                     "pays": "Espagne",
-                    "ht": "3 900",
+                    "ht": "3 900",
                     "delai": "95",
                     "statut": "Impayée",
                     "tva": "Oui"
@@ -7712,7 +7712,7 @@
                     "numero": "F216",
                     "client": "Club nautique Oléron",
                     "pays": "France",
-                    "ht": "1 150",
+                    "ht": "1 150",
                     "delai": "45",
                     "statut": "Payée",
                     "tva": "Oui"

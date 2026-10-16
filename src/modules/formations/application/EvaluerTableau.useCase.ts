@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import type { TableauEvalue } from '../domain/contrats/donnees-publiques';
-import { cibleServie, rangDuPlan } from '../domain/cours/EcranServi';
 import {
   evaluerLeTableauDuPlan,
   planDeTableauDuCours,
@@ -20,13 +19,11 @@ export class EvaluerTableauUseCase {
   constructor(private readonly participation: ParticipationEnSeance) {}
 
   async execute(command: EvaluerTableauCommand): Promise<TableauEvalue> {
-    const { session, cours } = await this.participation.ouverte(command);
-    const plan = cibleServie(session, cours, {
-      valeur: planDeTableauDuCours(cours, command.planId),
-      nature: 'un tableau',
-      id: command.planId,
-      rang: rangDuPlan(cours, command.planId),
-    });
+    const plan = await this.participation.planDeLaSeance(
+      command,
+      planDeTableauDuCours,
+      'un tableau',
+    );
     return evaluerLeTableauDuPlan(plan, command.saisies);
   }
 }

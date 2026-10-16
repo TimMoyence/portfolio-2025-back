@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import type { FeuilleEvaluee } from '../domain/contrats/donnees-publiques';
-import { cibleServie, rangDuPlan } from '../domain/cours/EcranServi';
 import {
   evaluerLaFeuilleDuPlan,
   planDeFeuilleDuCours,
@@ -21,13 +20,11 @@ export class EvaluerFeuilleUseCase {
   constructor(private readonly participation: ParticipationEnSeance) {}
 
   async execute(command: EvaluerFeuilleCommand): Promise<FeuilleEvaluee> {
-    const { session, cours } = await this.participation.ouverte(command);
-    const plan = cibleServie(session, cours, {
-      valeur: planDeFeuilleDuCours(cours, command.planId),
-      nature: 'une feuille',
-      id: command.planId,
-      rang: rangDuPlan(cours, command.planId),
-    });
+    const plan = await this.participation.planDeLaSeance(
+      command,
+      planDeFeuilleDuCours,
+      'une feuille',
+    );
     return evaluerLaFeuilleDuPlan(plan, command.cellules, command.recopie);
   }
 }

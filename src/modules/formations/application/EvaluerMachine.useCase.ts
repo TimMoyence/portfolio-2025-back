@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import type { SortiesMachine } from '../domain/contrats/donnees-publiques';
-import { cibleServie, rangDeLEcran } from '../domain/cours/EcranServi';
+import {
+  absenteDuCours,
+  cibleServie,
+  rangDeLEcran,
+} from '../domain/cours/EcranServi';
 import {
   evaluerLaMachine,
   machineDuCours,
@@ -20,12 +24,16 @@ export class EvaluerMachineUseCase {
 
   async execute(command: EvaluerMachineCommand): Promise<SortiesMachine> {
     const { session, cours } = await this.participation.ouverte(command);
-    const machine = cibleServie(session, cours, {
-      valeur: machineDuCours(cours, command.ecranId),
-      nature: 'une machine',
-      id: command.ecranId,
-      rang: rangDeLEcran(cours, command.ecranId),
-    });
+    const machine = cibleServie(
+      session,
+      cours,
+      {
+        valeur: machineDuCours(cours, command.ecranId),
+        id: command.ecranId,
+        rang: () => rangDeLEcran(cours, command.ecranId),
+      },
+      absenteDuCours('une machine'),
+    );
     return evaluerLaMachine(machine, command.ecranId, command.reglages);
   }
 }

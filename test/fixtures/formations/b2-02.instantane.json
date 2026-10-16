@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "1f2bc4181e4b39a8603ff9a7b540bdb2fad54b531d48a877f27f153fab2db3a4",
+  "empreinte": "b61c6c680b85549ff1046edd9e789d561f20e05abcd2ee0b904ac3f2c309ecfa",
   "sujet": {
     "id": "b2-02-series-statistiques",
     "titre": "Séries statistiques : résumer, relier, prévoir",
@@ -507,7 +507,7 @@
               {
                 "id": "ecart-type",
                 "intitule": "L’écart-type",
-                "raisonnement": "Carrés des écarts à 42,5 : 210,25 ; 2,25 ; 56,25 ; 2 256,25 ; 90,25 ; 12,25 ; 2,25 ; 156,25, de somme 2 786. Variance = 2 786 ÷ 8 = 348,25 jours² ; écart-type = √348,25 ≈ 18,66 jours.",
+                "raisonnement": "Carrés des écarts à 42,5 : 210,25 ; 2,25 ; 56,25 ; 2 256,25 ; 90,25 ; 12,25 ; 2,25 ; 156,25, de somme 2 786. Variance = 2 786 ÷ 8 = 348,25 jours² ; écart-type = √348,25 ≈ 18,66 jours.",
                 "invite": "Quel est l’écart-type des huit délais ?"
               },
               {
@@ -1307,7 +1307,7 @@
                     "text": "Droite y = 2,5x + 1, en milliers d’euros, avec le rang 1 pour 2022.",
                     "steps": [
                       "Rang de 2026 : 2026 − 2022 + 1 = 5.",
-                      "Prévision : 2,5 × 5 + 1 = 13,5 milliers d’euros, si la tendance se poursuit. Avec x = 2026, on trouverait 5 066 : absurde.",
+                      "Prévision : 2,5 × 5 + 1 = 13,5 milliers d’euros, si la tendance se poursuit. Avec x = 2026, on trouverait 5 066 : absurde.",
                       "Seuil de 18 : 2,5x + 1 ≥ 18 donne x ≥ 17 ÷ 2,5 = 6,8.",
                       "Premier rang entier : 7, soit 2022 + 7 − 1 = 2028. Le rang 6 ne suffit pas : 2,5 × 6 + 1 = 16."
                     ]
@@ -1350,7 +1350,7 @@
               "renderer": "illustration",
               "props": {
                 "image": "/assets/cours/b2-02/v2/boutique-prevision-seuil.webp",
-                "imageAlt": "Schéma de la prévision de la boutique avec y = 2,5x + 1. L’année 2026 a le rang 5 : 2,5 × 5 + 1 = 13,5 milliers d’euros. Remplacer x par 2026 donnerait 5 066, un résultat absurde : x est le rang, jamais l’année. Seuil de 18 milliers d’euros : 2,5x + 1 ≥ 18 donne x ≥ 6,8 ; le rang 6 donne 16, sous le seuil, donc le seuil est atteint au rang 7, soit en 2028."
+                "imageAlt": "Schéma de la prévision de la boutique avec y = 2,5x + 1. L’année 2026 a le rang 5 : 2,5 × 5 + 1 = 13,5 milliers d’euros. Remplacer x par 2026 donnerait 5 066, un résultat absurde : x est le rang, jamais l’année. Seuil de 18 milliers d’euros : 2,5x + 1 ≥ 18 donne x ≥ 6,8 ; le rang 6 donne 16, sous le seuil, donc le seuil est atteint au rang 7, soit en 2028."
               }
             },
             "metadonnees": {
@@ -1395,13 +1395,13 @@
               {
                 "id": "prevision",
                 "intitule": "Prévoir",
-                "raisonnement": "Pour 1 000 € de publicité, x = 10 : y = 1,9 × 10 + 7,5 = 26,5, soit environ 26 à 27 commandes. x = 10 est hors des données observées : c’est une extrapolation.",
-                "invite": "Combien de commandes prévoir pour 1 000 € de publicité ?"
+                "raisonnement": "Pour 1 000 € de publicité, x = 10 : y = 1,9 × 10 + 7,5 = 26,5, soit environ 26 à 27 commandes. x = 10 est hors des données observées : c’est une extrapolation.",
+                "invite": "Combien de commandes prévoir pour 1 000 € de publicité ?"
               },
               {
                 "id": "seuil",
                 "intitule": "Le seuil de 30 commandes",
-                "raisonnement": "1,9x + 7,5 ≥ 30 donne x ≥ 22,5 ÷ 1,9 ≈ 11,84. Premier entier : 12, soit 1 200 € de publicité. Arrondir à 11 ne suffirait pas.",
+                "raisonnement": "1,9x + 7,5 ≥ 30 donne x ≥ 22,5 ÷ 1,9 ≈ 11,84. Premier entier : 12, soit 1 200 € de publicité. Arrondir à 11 ne suffirait pas.",
                 "invite": "À partir de quel budget la droite prévoit-elle 30 commandes ?"
               }
             ],
@@ -1484,7 +1484,7 @@
               "donnees": {
                 "question": {
                   "id": "b2-02-a3-seuil",
-                  "enonce": "Selon ce modèle, en quelle année le chiffre d’affaires dépasserait-il 1 000 k€ pour la première fois ?",
+                  "enonce": "Selon ce modèle, en quelle année le chiffre d’affaires dépasserait-il 1 000 k€ pour la première fois ?",
                   "unite": null,
                   "metadonnees": {
                     "concepts": ["ajustement-affine", "prevision"],
@@ -1509,7 +1509,7 @@
         "donnees": {
           "probleme": {
             "id": "b2-02-a3-defi-ia",
-            "enonce": "Samir a demandé une prévision pour 2035 à un assistant IA. Réponse : « Droite : y = 43,89x + 564,4. En 2035, y = 43,89 × 2035 + 564,4 ≈ 89 881 k€. Comme r est proche de 1, ce sont nos hausses de tarifs qui causent la croissance. »",
+            "enonce": "Samir a demandé une prévision pour 2035 à un assistant IA. Réponse : « Droite : y = 43,89x + 564,4. En 2035, y = 43,89 × 2035 + 564,4 ≈ 89 881 k€. Comme r est proche de 1, ce sont nos hausses de tarifs qui causent la croissance. »",
             "invite": "Trouvez les erreurs de l’IA, corrigez la prévision et écrivez la réserve à ajouter.",
             "strategies": [],
             "metadonnees": {
@@ -2596,7 +2596,7 @@
               {
                 "id": "ecart-type",
                 "intitule": "L’écart-type",
-                "raisonnement": "Carrés des écarts à 42,5 : 210,25 ; 2,25 ; 56,25 ; 2 256,25 ; 90,25 ; 12,25 ; 2,25 ; 156,25, de somme 2 786. Variance = 2 786 ÷ 8 = 348,25 jours² ; écart-type = √348,25 ≈ 18,66 jours.",
+                "raisonnement": "Carrés des écarts à 42,5 : 210,25 ; 2,25 ; 56,25 ; 2 256,25 ; 90,25 ; 12,25 ; 2,25 ; 156,25, de somme 2 786. Variance = 2 786 ÷ 8 = 348,25 jours² ; écart-type = √348,25 ≈ 18,66 jours.",
                 "invite": "Quel est l’écart-type des huit délais ?"
               },
               {
@@ -3506,7 +3506,7 @@
           },
           {
             "reference": "b2-02-a2-y-moyen",
-            "texte": "ȳ = 4 308 ÷ 6 = 718 k€. La demi-somme des deux valeurs du milieu, 715, n’est pas la moyenne."
+            "texte": "ȳ = 4 308 ÷ 6 = 718 k€. La demi-somme des deux valeurs du milieu, 715, n’est pas la moyenne."
           },
           {
             "reference": "b2-02-a2-r",
@@ -4004,7 +4004,7 @@
                     "text": "Droite y = 2,5x + 1, en milliers d’euros, avec le rang 1 pour 2022.",
                     "steps": [
                       "Rang de 2026 : 2026 − 2022 + 1 = 5.",
-                      "Prévision : 2,5 × 5 + 1 = 13,5 milliers d’euros, si la tendance se poursuit. Avec x = 2026, on trouverait 5 066 : absurde.",
+                      "Prévision : 2,5 × 5 + 1 = 13,5 milliers d’euros, si la tendance se poursuit. Avec x = 2026, on trouverait 5 066 : absurde.",
                       "Seuil de 18 : 2,5x + 1 ≥ 18 donne x ≥ 17 ÷ 2,5 = 6,8.",
                       "Premier rang entier : 7, soit 2022 + 7 − 1 = 2028. Le rang 6 ne suffit pas : 2,5 × 6 + 1 = 16."
                     ]
@@ -4031,7 +4031,7 @@
             }
           }
         },
-        "notes": "• 2 min, puis 1 min sur son illustration, enchaînées sur la page 1 : 6 min pour les deux pages et leurs illustrations.\n• Faire calculer à main levée 2,5 × 2026 + 1 : l’absurdité de 5 066 fixe la règle du rang.\n• Question : « À 6,8, on prend le rang 6 ou le rang 7 ? » Faire vérifier que le rang 6 donne 16, sous le seuil.\n• Relance : « Jusqu’à quelle année feriez-vous confiance à cette droite ? » Renvoyer aux réponses de la réflexion A3-01.\n• Insister : x est le rang de l’année, jamais l’année.",
+        "notes": "• 2 min, puis 1 min sur son illustration, enchaînées sur la page 1 : 6 min pour les deux pages et leurs illustrations.\n• Faire calculer à main levée 2,5 × 2026 + 1 : l’absurdité de 5 066 fixe la règle du rang.\n• Question : « À 6,8, on prend le rang 6 ou le rang 7 ? » Faire vérifier que le rang 6 donne 16, sous le seuil.\n• Relance : « Jusqu’à quelle année feriez-vous confiance à cette droite ? » Renvoyer aux réponses de la réflexion A3-01.\n• Insister : x est le rang de l’année, jamais l’année.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -4054,7 +4054,7 @@
               "renderer": "illustration",
               "props": {
                 "image": "/assets/cours/b2-02/v2/boutique-prevision-seuil.webp",
-                "imageAlt": "Schéma de la prévision de la boutique avec y = 2,5x + 1. L’année 2026 a le rang 5 : 2,5 × 5 + 1 = 13,5 milliers d’euros. Remplacer x par 2026 donnerait 5 066, un résultat absurde : x est le rang, jamais l’année. Seuil de 18 milliers d’euros : 2,5x + 1 ≥ 18 donne x ≥ 6,8 ; le rang 6 donne 16, sous le seuil, donc le seuil est atteint au rang 7, soit en 2028."
+                "imageAlt": "Schéma de la prévision de la boutique avec y = 2,5x + 1. L’année 2026 a le rang 5 : 2,5 × 5 + 1 = 13,5 milliers d’euros. Remplacer x par 2026 donnerait 5 066, un résultat absurde : x est le rang, jamais l’année. Seuil de 18 milliers d’euros : 2,5x + 1 ≥ 18 donne x ≥ 6,8 ; le rang 6 donne 16, sous le seuil, donc le seuil est atteint au rang 7, soit en 2028."
               }
             },
             "metadonnees": {
@@ -4106,13 +4106,13 @@
               {
                 "id": "prevision",
                 "intitule": "Prévoir",
-                "raisonnement": "Pour 1 000 € de publicité, x = 10 : y = 1,9 × 10 + 7,5 = 26,5, soit environ 26 à 27 commandes. x = 10 est hors des données observées : c’est une extrapolation.",
-                "invite": "Combien de commandes prévoir pour 1 000 € de publicité ?"
+                "raisonnement": "Pour 1 000 € de publicité, x = 10 : y = 1,9 × 10 + 7,5 = 26,5, soit environ 26 à 27 commandes. x = 10 est hors des données observées : c’est une extrapolation.",
+                "invite": "Combien de commandes prévoir pour 1 000 € de publicité ?"
               },
               {
                 "id": "seuil",
                 "intitule": "Le seuil de 30 commandes",
-                "raisonnement": "1,9x + 7,5 ≥ 30 donne x ≥ 22,5 ÷ 1,9 ≈ 11,84. Premier entier : 12, soit 1 200 € de publicité. Arrondir à 11 ne suffirait pas.",
+                "raisonnement": "1,9x + 7,5 ≥ 30 donne x ≥ 22,5 ÷ 1,9 ≈ 11,84. Premier entier : 12, soit 1 200 € de publicité. Arrondir à 11 ne suffirait pas.",
                 "invite": "À partir de quel budget la droite prévoit-elle 30 commandes ?"
               }
             ],
@@ -4202,7 +4202,7 @@
               "donnees": {
                 "question": {
                   "id": "b2-02-a3-seuil",
-                  "enonce": "Selon ce modèle, en quelle année le chiffre d’affaires dépasserait-il 1 000 k€ pour la première fois ?",
+                  "enonce": "Selon ce modèle, en quelle année le chiffre d’affaires dépasserait-il 1 000 k€ pour la première fois ?",
                   "unite": null,
                   "metadonnees": {
                     "concepts": ["ajustement-affine", "prevision"],
@@ -4280,7 +4280,7 @@
           },
           {
             "id": "b2-02-a3-seuil",
-            "enonce": "Selon ce modèle, en quelle année le chiffre d’affaires dépasserait-il 1 000 k€ pour la première fois ?",
+            "enonce": "Selon ce modèle, en quelle année le chiffre d’affaires dépasserait-il 1 000 k€ pour la première fois ?",
             "options": null
           }
         ],
@@ -4289,7 +4289,7 @@
         "explications": [
           {
             "reference": "b2-02-a3-pente",
-            "texte": "=PENTE(plage des y;plage des x) ≈ 43,89 : le chiffre d’affaires augmente d’environ 43,89 k€ par an. Inverser les deux plages donne 0,02, sans signification ici."
+            "texte": "=PENTE(plage des y;plage des x) ≈ 43,89 : le chiffre d’affaires augmente d’environ 43,89 k€ par an. Inverser les deux plages donne 0,02, sans signification ici."
           },
           {
             "reference": "b2-02-a3-ordonnee",
@@ -4297,11 +4297,11 @@
           },
           {
             "reference": "b2-02-a3-prevision",
-            "texte": "2028 a le rang 9 : y ≈ 43,885714 × 9 + 564,4 ≈ 959 k€, si la tendance se poursuit. Avec x = 2028, on obtient 89 565 k€, absurde."
+            "texte": "2028 a le rang 9 : y ≈ 43,885714 × 9 + 564,4 ≈ 959 k€, si la tendance se poursuit. Avec x = 2028, on obtient 89 565 k€, absurde."
           },
           {
             "reference": "b2-02-a3-seuil",
-            "texte": "43,885714x + 564,4 ≥ 1 000 donne x ≥ 9,93. Premier rang entier : 10, soit 2029. Le rang 9 (2028) donne 959 k€, sous le seuil."
+            "texte": "43,885714x + 564,4 ≥ 1 000 donne x ≥ 9,93. Premier rang entier : 10, soit 2029. Le rang 9 (2028) donne 959 k€, sous le seuil."
           }
         ]
       },
@@ -4314,7 +4314,7 @@
         "donnees": {
           "probleme": {
             "id": "b2-02-a3-defi-ia",
-            "enonce": "Samir a demandé une prévision pour 2035 à un assistant IA. Réponse : « Droite : y = 43,89x + 564,4. En 2035, y = 43,89 × 2035 + 564,4 ≈ 89 881 k€. Comme r est proche de 1, ce sont nos hausses de tarifs qui causent la croissance. »",
+            "enonce": "Samir a demandé une prévision pour 2035 à un assistant IA. Réponse : « Droite : y = 43,89x + 564,4. En 2035, y = 43,89 × 2035 + 564,4 ≈ 89 881 k€. Comme r est proche de 1, ce sont nos hausses de tarifs qui causent la croissance. »",
             "invite": "Trouvez les erreurs de l’IA, corrigez la prévision et écrivez la réserve à ajouter.",
             "strategies": [],
             "metadonnees": {
@@ -4337,7 +4337,7 @@
           "strategies": [
             {
               "id": "rang",
-              "libelle": "Remplacer x par le rang de 2035, 16, et non par 2035 : y ≈ 43,89 × 16 + 564,4 ≈ 1 267 k€.",
+              "libelle": "Remplacer x par le rang de 2035, 16, et non par 2035 : y ≈ 43,89 × 16 + 564,4 ≈ 1 267 k€.",
               "fausse": false
             },
             {
@@ -4366,7 +4366,7 @@
         "explications": [
           {
             "reference": "rang",
-            "texte": "L’IA a remplacé x par l’année : avec le rang 16, on prévoit environ 1 267 k€, pas 89 881."
+            "texte": "L’IA a remplacé x par l’année : avec le rang 16, on prévoit environ 1 267 k€, pas 89 881."
           },
           {
             "reference": "loin",
@@ -4734,11 +4734,11 @@
         "explications": [
           {
             "reference": "E2",
-            "texte": "=COEFFICIENT.CORRELATION(A2:A6;B2:B6) ≈ 0,998 : les points sont presque alignés, un ajustement affine est justifié."
+            "texte": "=COEFFICIENT.CORRELATION(A2:A6;B2:B6) ≈ 0,998 : les points sont presque alignés, un ajustement affine est justifié."
           },
           {
             "reference": "E3 et E4",
-            "texte": "=PENTE(B2:B6;A2:A6) = 3,51 et =ORDONNEE.ORIGINE(B2:B6;A2:A6) = 7,21 : y = 3,51x + 7,21. Plages inversées : 0,28, la pente de x en y."
+            "texte": "=PENTE(B2:B6;A2:A6) = 3,51 et =ORDONNEE.ORIGINE(B2:B6;A2:A6) = 7,21 : y = 3,51x + 7,21. Plages inversées : 0,28, la pente de x en y."
           },
           {
             "reference": "E5 à E7",
@@ -4850,7 +4850,7 @@
         "explications": [
           {
             "reference": "b2-02-a4-e1-prevision",
-            "texte": "Fin 2025 a le rang 6 : 3,51 × 6 + 7,21 = 28,27 millions. Avec x = 2025, on trouve 7 114,96 millions, absurde."
+            "texte": "Fin 2025 a le rang 6 : 3,51 × 6 + 7,21 = 28,27 millions. Avec x = 2025, on trouve 7 114,96 millions, absurde."
           },
           {
             "reference": "b2-02-a4-e2-seuil",
@@ -6281,7 +6281,7 @@
                     "text": "Droite y = 2,5x + 1, en milliers d’euros, avec le rang 1 pour 2022.",
                     "steps": [
                       "Rang de 2026 : 2026 − 2022 + 1 = 5.",
-                      "Prévision : 2,5 × 5 + 1 = 13,5 milliers d’euros, si la tendance se poursuit. Avec x = 2026, on trouverait 5 066 : absurde.",
+                      "Prévision : 2,5 × 5 + 1 = 13,5 milliers d’euros, si la tendance se poursuit. Avec x = 2026, on trouverait 5 066 : absurde.",
                       "Seuil de 18 : 2,5x + 1 ≥ 18 donne x ≥ 17 ÷ 2,5 = 6,8.",
                       "Premier rang entier : 7, soit 2022 + 7 − 1 = 2028. Le rang 6 ne suffit pas : 2,5 × 6 + 1 = 16."
                     ]
@@ -6324,7 +6324,7 @@
               "renderer": "illustration",
               "props": {
                 "image": "/assets/cours/b2-02/v2/boutique-prevision-seuil.webp",
-                "imageAlt": "Schéma de la prévision de la boutique avec y = 2,5x + 1. L’année 2026 a le rang 5 : 2,5 × 5 + 1 = 13,5 milliers d’euros. Remplacer x par 2026 donnerait 5 066, un résultat absurde : x est le rang, jamais l’année. Seuil de 18 milliers d’euros : 2,5x + 1 ≥ 18 donne x ≥ 6,8 ; le rang 6 donne 16, sous le seuil, donc le seuil est atteint au rang 7, soit en 2028."
+                "imageAlt": "Schéma de la prévision de la boutique avec y = 2,5x + 1. L’année 2026 a le rang 5 : 2,5 × 5 + 1 = 13,5 milliers d’euros. Remplacer x par 2026 donnerait 5 066, un résultat absurde : x est le rang, jamais l’année. Seuil de 18 milliers d’euros : 2,5x + 1 ≥ 18 donne x ≥ 6,8 ; le rang 6 donne 16, sous le seuil, donc le seuil est atteint au rang 7, soit en 2028."
               }
             },
             "metadonnees": {

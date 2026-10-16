@@ -4,6 +4,7 @@ import {
   COURS_B2_01,
   COURS_B2_03,
 } from '../../../../../test/factories/contenus-publies';
+import { ESPACE_INSECABLE as INSECABLE } from '../../../../common/domain/texte/sans-espaces-typographiques';
 import type { Ecran } from '../contrats/cours';
 import type { TableauEvalue } from '../contrats/donnees-publiques';
 import { ProductionInvalideError } from '../errors/FormationErrors';
@@ -68,7 +69,7 @@ describe('tableauDuCorrige', () => {
       coef: ['1,0800', '0,9500', '1,0400', '0,9700'],
       evolution: ['8,00', '2,60', '6,70', '3,50'],
       totaux: { taux: { valeur: 4, affichage: '4' } },
-      synthese: ['4,00 %', '3,50 %'],
+      synthese: [`4,00${INSECABLE}%`, `3,50${INSECABLE}%`],
       soldeFinal: null,
     });
   });

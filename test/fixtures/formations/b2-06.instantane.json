@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "218816621ba3af72510a5f856147903c725039f92393e8e2bd207b151be8bad3",
+  "empreinte": "c16fa9f316e660b76fa19e233f4f22c21ed8b06ed7dc64bb40bc858d185fcde2",
   "sujet": {
     "id": "b2-06-exponentielle-logarithme",
     "titre": "Exponentielle et logarithme",
@@ -28,19 +28,19 @@
         "donnees": {
           "question": {
             "id": "b2-06-a1-rappel-placement",
-            "enonce": "Rappel du B2-05. 1 000 € sont placés à 3 % par an, à intérêts composés. Que valent-ils au bout de n années ?",
+            "enonce": "Rappel du B2-05. 1 000 € sont placés à 3 % par an, à intérêts composés. Que valent-ils au bout de n années ?",
             "options": [
               {
                 "id": "1-000-0-03-05286569",
-                "libelle": "1 000 × 0,03ⁿ"
+                "libelle": "1 000 × 0,03ⁿ"
               },
               {
                 "id": "1-000-1-plus-0-03-n-d25d8f56",
-                "libelle": "1 000 × (1 + 0,03 × n)"
+                "libelle": "1 000 × (1 + 0,03 × n)"
               },
               {
                 "id": "1-000-1-03-d7fba9c1",
-                "libelle": "1 000 × 1,03ⁿ"
+                "libelle": "1 000 × 1,03ⁿ"
               }
             ],
             "metadonnees": {
@@ -229,7 +229,7 @@
                   },
                   {
                     "rubrique": "La capacité de l’atelier",
-                    "contenu": "Avec l’équipe actuelle, l’atelier coud au plus 1 000 sacs par mois."
+                    "contenu": "Avec l’équipe actuelle, l’atelier coud au plus 1 000 sacs par mois."
                   },
                   {
                     "rubrique": "L’étude de prix",
@@ -266,7 +266,7 @@
           "cas": {
             "id": "B2-06-A1-06-MISSION",
             "metier": "Assistant·e de gestion — Atelier Rivage (voilerie artisanale, 14 salariés, La Rochelle)",
-            "situation": "Lundi, 9 h. Hélène Garnier écrit : « La gamme Sillage démarre bien : 400 sacs vendus en ligne en janvier, et l’expert-comptable modélise nos ventes par 400e^(0,06x). Pouvez-vous me dire à quel rythme elles croissent, quand elles dépasseront les 1 000 sacs que l’atelier sait coudre par mois, et quel prix de gros proposer aux boutiques ? » Marc Lefèvre, l’expert-comptable, ajoute : « Attention : 0,06 n’est pas le taux mensuel, et vérifiez le modèle de la demande des boutiques. »",
+            "situation": "Lundi, 9 h. Hélène Garnier écrit : « La gamme Sillage démarre bien : 400 sacs vendus en ligne en janvier, et l’expert-comptable modélise nos ventes par 400e^(0,06x). Pouvez-vous me dire à quel rythme elles croissent, quand elles dépasseront les 1 000 sacs que l’atelier sait coudre par mois, et quel prix de gros proposer aux boutiques ? » Marc Lefèvre, l’expert-comptable, ajoute : « Attention : 0,06 n’est pas le taux mensuel, et vérifiez le modèle de la demande des boutiques. »",
             "geste": "Sans calculatrice, répondez aux trois questions à partir du dossier.",
             "consequence": "Un seuil mal calculé, et l’atelier sature avant d’avoir recruté ; un prix mal choisi, et les boutiques n’achètent pas.",
             "questionsLibres": [
@@ -277,7 +277,7 @@
               },
               {
                 "id": "b2-06-a1-mission:seuil",
-                "question": "Comment trouver le mois des 1 000 sacs sans essayer les mois un par un ?",
+                "question": "Comment trouver le mois des 1 000 sacs sans essayer les mois un par un ?",
                 "placeholder": "Il faudrait une opération qui…"
               },
               {
@@ -382,12 +382,12 @@
                   },
                   {
                     "kind": "example",
-                    "title": "Pour débuter : f(x) = 1 000e^(0,02x)",
-                    "text": "a = 1 000 et k = 0,02.",
+                    "title": "Pour débuter : f(x) = 1 000e^(0,02x)",
+                    "text": "a = 1 000 et k = 0,02.",
                     "steps": [
-                      "f(0) = 1 000 × e⁰ = 1 000.",
+                      "f(0) = 1 000 × e⁰ = 1 000.",
                       "Coefficient : e^0,02 ≈ 1,0202 ; taux ≈ 2,02 % par unité, pas 2 %.",
-                      "g(x) = 1 000e^(−0,02x) décroît : coefficient e^(−0,02) ≈ 0,9802, soit −1,98 % par unité."
+                      "g(x) = 1 000e^(−0,02x) décroît : coefficient e^(−0,02) ≈ 0,9802, soit −1,98 % par unité."
                     ]
                   },
                   {
@@ -693,7 +693,7 @@
       {
         "id": "B2-06-A2-01-REFLEXION-RECIPROQUE",
         "type": "fp-story",
-        "titre": "Réfléchir : remonter de 1 000 sacs au mois",
+        "titre": "Réfléchir : remonter de 1 000 sacs au mois",
         "duree": 5,
         "interactif": true,
         "donnees": {
@@ -707,7 +707,7 @@
                 "promptData": {
                   "id": "b2-06-a2-reflexion-reciproque",
                   "type": "reflection",
-                  "question": "Un stagiaire cherche quand les ventes en ligne atteindront 1 000 sacs : il calcule V(1), V(2), V(3)… jusqu’à dépasser 1 000. Pour retrouver x dans 5 × x = 20, on divise. Sans calculatrice : quelle opération faudrait-il pour retrouver x dans eˣ = 2,5 ?",
+                  "question": "Un stagiaire cherche quand les ventes en ligne atteindront 1 000 sacs : il calcule V(1), V(2), V(3)… jusqu’à dépasser 1 000. Pour retrouver x dans 5 × x = 20, on divise. Sans calculatrice : quelle opération faudrait-il pour retrouver x dans eˣ = 2,5 ?",
                   "placeholder": "Il faudrait une opération qui…",
                   "competency": "Raisonner · défaire une fonction"
                 }
@@ -744,7 +744,7 @@
                   {
                     "kind": "definition",
                     "title": "ln remonte de l’exponentielle à l’exposant",
-                    "text": "Pour un nombre y strictement positif, ln y est le nombre x tel que eˣ = y. ln défait l’exponentielle, comme la division défait la multiplication : ln(eˣ) = x et e^(ln y) = y. C’est lui qui donnera le mois où les ventes de la gamme Sillage atteindront 1 000 sacs.",
+                    "text": "Pour un nombre y strictement positif, ln y est le nombre x tel que eˣ = y. ln défait l’exponentielle, comme la division défait la multiplication : ln(eˣ) = x et e^(ln y) = y. C’est lui qui donnera le mois où les ventes de la gamme Sillage atteindront 1 000 sacs.",
                     "formula": "eˣ = y ⇔ x = ln y, pour y > 0 · ln 1 = 0 · ln e = 1 · ln(a × b) = ln a + ln b · ln(a ÷ b) = ln a − ln b · ln(aⁿ) = n × ln a"
                   },
                   {
@@ -848,7 +848,7 @@
         "donnees": {
           "exemple": {
             "id": "b2-06-a2-exemple-doublement",
-            "enonce": "Hélène relit le B2-05 : la trésorerie est placée à 2,5 % par an. En combien d’années aura-t-elle doublé ? Puis : une surjeteuse de 6 000 € perd 20 % de sa valeur chaque année ; quand vaudra-t-elle moins de la moitié de son prix ?",
+            "enonce": "Hélène relit le B2-05 : la trésorerie est placée à 2,5 % par an. En combien d’années aura-t-elle doublé ? Puis : une surjeteuse de 6 000 € perd 20 % de sa valeur chaque année ; quand vaudra-t-elle moins de la moitié de son prix ?",
             "etapes": [
               {
                 "id": "inequation",
@@ -900,7 +900,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 3 — La capacité de l’atelier",
-          "consigne": "V(x) = 400e^(0,06x) sacs par mois, x en mois depuis janvier 2026 ; capacité : 1 000 sacs par mois. Machine à coudre de 18 000 €, −20 % par an.",
+          "consigne": "V(x) = 400e^(0,06x) sacs par mois, x en mois depuis janvier 2026 ; capacité : 1 000 sacs par mois. Machine à coudre de 18 000 €, −20 % par an.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -1142,7 +1142,7 @@
                 "reading": "La demande baisse quand le prix monte : 240 sacs perdus entre 20 € et 25 €, 95 entre 40 € et 45 €.",
                 "source": "Étude de prix de la gamme Sillage. Données fictives Atelier Rivage, créées pour ce cours.",
                 "kind": "line",
-                "description": "Six points reliés : 1 100 sacs à 20 €, 860 à 25 €, 670 à 30 €, 520 à 35 €, 410 à 40 € et 315 à 45 €."
+                "description": "Six points reliés : 1 100 sacs à 20 €, 860 à 25 €, 670 à 30 €, 520 à 35 €, 410 à 40 € et 315 à 45 €."
               }
             },
             "metadonnees": {
@@ -1446,7 +1446,7 @@
                     },
                     {
                       "id": "a-e-soit-environ-2-981-3292dad8",
-                      "libelle": "a = e⁸, soit environ 2 981"
+                      "libelle": "a = e⁸, soit environ 2 981"
                     },
                     {
                       "id": "a-moins-0-05-3ddc6dc3",
@@ -1532,7 +1532,7 @@
         "donnees": {
           "probleme": {
             "id": "b2-06-a3-defi-ia",
-            "enonce": "Hélène a donné les six relevés de demande à un assistant IA. Réponse : « 1. J’ajuste la demande par la droite y = −31x + 1 653, avec un coefficient de corrélation r ≈ −0,985 : l’ajustement est excellent. 2. Au prix de 55 €, la demande sera de −52 sacs. 3. Un modèle exponentiel est inutile : une droite suffit. »",
+            "enonce": "Hélène a donné les six relevés de demande à un assistant IA. Réponse : « 1. J’ajuste la demande par la droite y = −31x + 1 653, avec un coefficient de corrélation r ≈ −0,985 : l’ajustement est excellent. 2. Au prix de 55 €, la demande sera de −52 sacs. 3. Un modèle exponentiel est inutile : une droite suffit. »",
             "invite": "Trouvez les erreurs de l’IA, corrigez chacune et dites comment la contrôler.",
             "strategies": [],
             "metadonnees": {
@@ -1999,19 +1999,19 @@
         "donnees": {
           "question": {
             "id": "b2-06-a1-rappel-placement",
-            "enonce": "Rappel du B2-05. 1 000 € sont placés à 3 % par an, à intérêts composés. Que valent-ils au bout de n années ?",
+            "enonce": "Rappel du B2-05. 1 000 € sont placés à 3 % par an, à intérêts composés. Que valent-ils au bout de n années ?",
             "options": [
               {
                 "id": "1-000-0-03-05286569",
-                "libelle": "1 000 × 0,03ⁿ"
+                "libelle": "1 000 × 0,03ⁿ"
               },
               {
                 "id": "1-000-1-plus-0-03-n-d25d8f56",
-                "libelle": "1 000 × (1 + 0,03 × n)"
+                "libelle": "1 000 × (1 + 0,03 × n)"
               },
               {
                 "id": "1-000-1-03-d7fba9c1",
-                "libelle": "1 000 × 1,03ⁿ"
+                "libelle": "1 000 × 1,03ⁿ"
               }
             ],
             "metadonnees": {
@@ -2030,7 +2030,7 @@
         "corriges": [
           {
             "questionId": "b2-06-a1-rappel-placement",
-            "bonneReponse": "1 000 × 1,03ⁿ",
+            "bonneReponse": "1 000 × 1,03ⁿ",
             "confusions": [
               {
                 "id": "coefficient-confondu-avec-taux",
@@ -2046,19 +2046,19 @@
         "questions": [
           {
             "id": "b2-06-a1-rappel-placement",
-            "enonce": "Rappel du B2-05. 1 000 € sont placés à 3 % par an, à intérêts composés. Que valent-ils au bout de n années ?",
+            "enonce": "Rappel du B2-05. 1 000 € sont placés à 3 % par an, à intérêts composés. Que valent-ils au bout de n années ?",
             "options": [
               {
                 "id": "1-000-0-03-05286569",
-                "libelle": "1 000 × 0,03ⁿ"
+                "libelle": "1 000 × 0,03ⁿ"
               },
               {
                 "id": "1-000-1-plus-0-03-n-d25d8f56",
-                "libelle": "1 000 × (1 + 0,03 × n)"
+                "libelle": "1 000 × (1 + 0,03 × n)"
               },
               {
                 "id": "1-000-1-03-d7fba9c1",
-                "libelle": "1 000 × 1,03ⁿ"
+                "libelle": "1 000 × 1,03ⁿ"
               }
             ]
           }
@@ -2320,7 +2320,7 @@
                   },
                   {
                     "rubrique": "La capacité de l’atelier",
-                    "contenu": "Avec l’équipe actuelle, l’atelier coud au plus 1 000 sacs par mois."
+                    "contenu": "Avec l’équipe actuelle, l’atelier coud au plus 1 000 sacs par mois."
                   },
                   {
                     "rubrique": "L’étude de prix",
@@ -2364,7 +2364,7 @@
           "cas": {
             "id": "B2-06-A1-06-MISSION",
             "metier": "Assistant·e de gestion — Atelier Rivage (voilerie artisanale, 14 salariés, La Rochelle)",
-            "situation": "Lundi, 9 h. Hélène Garnier écrit : « La gamme Sillage démarre bien : 400 sacs vendus en ligne en janvier, et l’expert-comptable modélise nos ventes par 400e^(0,06x). Pouvez-vous me dire à quel rythme elles croissent, quand elles dépasseront les 1 000 sacs que l’atelier sait coudre par mois, et quel prix de gros proposer aux boutiques ? » Marc Lefèvre, l’expert-comptable, ajoute : « Attention : 0,06 n’est pas le taux mensuel, et vérifiez le modèle de la demande des boutiques. »",
+            "situation": "Lundi, 9 h. Hélène Garnier écrit : « La gamme Sillage démarre bien : 400 sacs vendus en ligne en janvier, et l’expert-comptable modélise nos ventes par 400e^(0,06x). Pouvez-vous me dire à quel rythme elles croissent, quand elles dépasseront les 1 000 sacs que l’atelier sait coudre par mois, et quel prix de gros proposer aux boutiques ? » Marc Lefèvre, l’expert-comptable, ajoute : « Attention : 0,06 n’est pas le taux mensuel, et vérifiez le modèle de la demande des boutiques. »",
             "geste": "Sans calculatrice, répondez aux trois questions à partir du dossier.",
             "consequence": "Un seuil mal calculé, et l’atelier sature avant d’avoir recruté ; un prix mal choisi, et les boutiques n’achètent pas.",
             "questionsLibres": [
@@ -2375,7 +2375,7 @@
               },
               {
                 "id": "b2-06-a1-mission:seuil",
-                "question": "Comment trouver le mois des 1 000 sacs sans essayer les mois un par un ?",
+                "question": "Comment trouver le mois des 1 000 sacs sans essayer les mois un par un ?",
                 "placeholder": "Il faudrait une opération qui…"
               },
               {
@@ -2494,12 +2494,12 @@
                   },
                   {
                     "kind": "example",
-                    "title": "Pour débuter : f(x) = 1 000e^(0,02x)",
-                    "text": "a = 1 000 et k = 0,02.",
+                    "title": "Pour débuter : f(x) = 1 000e^(0,02x)",
+                    "text": "a = 1 000 et k = 0,02.",
                     "steps": [
-                      "f(0) = 1 000 × e⁰ = 1 000.",
+                      "f(0) = 1 000 × e⁰ = 1 000.",
                       "Coefficient : e^0,02 ≈ 1,0202 ; taux ≈ 2,02 % par unité, pas 2 %.",
-                      "g(x) = 1 000e^(−0,02x) décroît : coefficient e^(−0,02) ≈ 0,9802, soit −1,98 % par unité."
+                      "g(x) = 1 000e^(−0,02x) décroît : coefficient e^(−0,02) ≈ 0,9802, soit −1,98 % par unité."
                     ]
                   },
                   {
@@ -3101,11 +3101,11 @@
         "explications": [
           {
             "reference": "B2 à B8",
-            "texte": "=$E$1*EXP($G$1*A2), recopiée : 400 sacs en janvier, puis 424,73 ; 451,00 ; 478,89 ; 508,50 ; 539,94 et 573,33. Sans $ sur E1, la recopie lit E2, vide, et affiche 0 ; sans $ sur G1, ou avec A2 figé à tort, elle reste à 400."
+            "texte": "=$E$1*EXP($G$1*A2), recopiée : 400 sacs en janvier, puis 424,73 ; 451,00 ; 478,89 ; 508,50 ; 539,94 et 573,33. Sans $ sur E1, la recopie lit E2, vide, et affiche 0 ; sans $ sur G1, ou avec A2 figé à tort, elle reste à 400."
           },
           {
             "reference": "C3 à C8",
-            "texte": "=B3/B2-1, recopiée : environ 6,18 % chaque mois, le même taux sur toute la colonne. =B3/B2 donne le coefficient, environ 1,0618, pas le taux."
+            "texte": "=B3/B2-1, recopiée : environ 6,18 % chaque mois, le même taux sur toute la colonne. =B3/B2 donne le coefficient, environ 1,0618, pas le taux."
           }
         ]
       },
@@ -3139,7 +3139,7 @@
       {
         "id": "B2-06-A2-01-REFLEXION-RECIPROQUE",
         "type": "fp-story",
-        "titre": "Réfléchir : remonter de 1 000 sacs au mois",
+        "titre": "Réfléchir : remonter de 1 000 sacs au mois",
         "duree": 5,
         "interactif": true,
         "donnees": {
@@ -3153,7 +3153,7 @@
                 "promptData": {
                   "id": "b2-06-a2-reflexion-reciproque",
                   "type": "reflection",
-                  "question": "Un stagiaire cherche quand les ventes en ligne atteindront 1 000 sacs : il calcule V(1), V(2), V(3)… jusqu’à dépasser 1 000. Pour retrouver x dans 5 × x = 20, on divise. Sans calculatrice : quelle opération faudrait-il pour retrouver x dans eˣ = 2,5 ?",
+                  "question": "Un stagiaire cherche quand les ventes en ligne atteindront 1 000 sacs : il calcule V(1), V(2), V(3)… jusqu’à dépasser 1 000. Pour retrouver x dans 5 × x = 20, on divise. Sans calculatrice : quelle opération faudrait-il pour retrouver x dans eˣ = 2,5 ?",
                   "placeholder": "Il faudrait une opération qui…",
                   "competency": "Raisonner · défaire une fonction"
                 }
@@ -3204,7 +3204,7 @@
                   {
                     "kind": "definition",
                     "title": "ln remonte de l’exponentielle à l’exposant",
-                    "text": "Pour un nombre y strictement positif, ln y est le nombre x tel que eˣ = y. ln défait l’exponentielle, comme la division défait la multiplication : ln(eˣ) = x et e^(ln y) = y. C’est lui qui donnera le mois où les ventes de la gamme Sillage atteindront 1 000 sacs.",
+                    "text": "Pour un nombre y strictement positif, ln y est le nombre x tel que eˣ = y. ln défait l’exponentielle, comme la division défait la multiplication : ln(eˣ) = x et e^(ln y) = y. C’est lui qui donnera le mois où les ventes de la gamme Sillage atteindront 1 000 sacs.",
                     "formula": "eˣ = y ⇔ x = ln y, pour y > 0 · ln 1 = 0 · ln e = 1 · ln(a × b) = ln a + ln b · ln(a ÷ b) = ln a − ln b · ln(aⁿ) = n × ln a"
                   },
                   {
@@ -3322,7 +3322,7 @@
         "donnees": {
           "exemple": {
             "id": "b2-06-a2-exemple-doublement",
-            "enonce": "Hélène relit le B2-05 : la trésorerie est placée à 2,5 % par an. En combien d’années aura-t-elle doublé ? Puis : une surjeteuse de 6 000 € perd 20 % de sa valeur chaque année ; quand vaudra-t-elle moins de la moitié de son prix ?",
+            "enonce": "Hélène relit le B2-05 : la trésorerie est placée à 2,5 % par an. En combien d’années aura-t-elle doublé ? Puis : une surjeteuse de 6 000 € perd 20 % de sa valeur chaque année ; quand vaudra-t-elle moins de la moitié de son prix ?",
             "etapes": [
               {
                 "id": "inequation",
@@ -3381,7 +3381,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 3 — La capacité de l’atelier",
-          "consigne": "V(x) = 400e^(0,06x) sacs par mois, x en mois depuis janvier 2026 ; capacité : 1 000 sacs par mois. Machine à coudre de 18 000 €, −20 % par an.",
+          "consigne": "V(x) = 400e^(0,06x) sacs par mois, x en mois depuis janvier 2026 ; capacité : 1 000 sacs par mois. Machine à coudre de 18 000 €, −20 % par an.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -3470,7 +3470,7 @@
           ]
         },
         "renvoi": "B2-06-A1-05-DOSSIER",
-        "notes": "• Temps : réflexion 2 min · travail 7 min · correction 2 min\n• Réflexion : pour chaque question, écrire l’inéquation, puis le signe du nombre par lequel on divisera.\n• Pièges : diviser au lieu de passer par ln ; garder le sens avec ln 0,8 ; arrondir le seuil en dessous.\n• Papier : exercice 3 du livret.\n• Corriger question par question, en commençant par la moins réussie.\n• Transition : « Et pour d’autres objectifs que 1 000 sacs ? Le tableur : exercice 4. »",
+        "notes": "• Temps : réflexion 2 min · travail 7 min · correction 2 min\n• Réflexion : pour chaque question, écrire l’inéquation, puis le signe du nombre par lequel on divisera.\n• Pièges : diviser au lieu de passer par ln ; garder le sens avec ln 0,8 ; arrondir le seuil en dessous.\n• Papier : exercice 3 du livret.\n• Corriger question par question, en commençant par la moins réussie.\n• Transition : « Et pour d’autres objectifs que 1 000 sacs ? Le tableur : exercice 4. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [
@@ -3580,7 +3580,7 @@
           },
           {
             "reference": "b2-06-a2-capacite",
-            "texte": "400e^(0,06x) ≥ 1 000 ⇔ e^(0,06x) ≥ 2,5 ⇔ x ≥ ln 2,5 ÷ 0,06 ≈ 15,27. Premier mois entier : 16, soit mai 2027. 15 arrondit en dessous ; 42 vient de 2,5 ÷ 0,06, sans ln."
+            "texte": "400e^(0,06x) ≥ 1 000 ⇔ e^(0,06x) ≥ 2,5 ⇔ x ≥ ln 2,5 ÷ 0,06 ≈ 15,27. Premier mois entier : 16, soit mai 2027. 15 arrondit en dessous ; 42 vient de 2,5 ÷ 0,06, sans ln."
           },
           {
             "reference": "b2-06-a2-sens",
@@ -3694,7 +3694,7 @@
             }
           }
         },
-        "notes": "• Temps : réflexion 2 min · travail 6 min · correction 2 min\n• Réflexion : écrire en français les deux étapes de la résolution de 400e^(0,06x) = s, puis les formules de B2 et C2.\n• Erreurs à chercher : =A2/$E$1 sans LN ; =LN(A2)/LN($E$1) ; E1 ou G1 sans $ : la recopie affiche une erreur.\n• Papier : formules écrites sur la copie, puis les valeurs à la calculatrice.\n• Projeter la feuille d’un poste volontaire ; comparer la ligne des 1 000 sacs à la réponse de l’exercice 3.\n• Transition : jalon 2.",
+        "notes": "• Temps : réflexion 2 min · travail 6 min · correction 2 min\n• Réflexion : écrire en français les deux étapes de la résolution de 400e^(0,06x) = s, puis les formules de B2 et C2.\n• Erreurs à chercher : =A2/$E$1 sans LN ; =LN(A2)/LN($E$1) ; E1 ou G1 sans $ : la recopie affiche une erreur.\n• Papier : formules écrites sur la copie, puis les valeurs à la calculatrice.\n• Projeter la feuille d’un poste volontaire ; comparer la ligne des 1 000 sacs à la réponse de l’exercice 3.\n• Transition : jalon 2.",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -3866,11 +3866,11 @@
         "explications": [
           {
             "reference": "B2 à B7",
-            "texte": "=LN(A2/$E$1), recopiée : ln(500 ÷ 400) ≈ 0,223 pour 500 sacs. =A2/$E$1 oublie ln ; sans les $, la recopie divise par E2, vide, et la cellule affiche une erreur."
+            "texte": "=LN(A2/$E$1), recopiée : ln(500 ÷ 400) ≈ 0,223 pour 500 sacs. =A2/$E$1 oublie ln ; sans les $, la recopie divise par E2, vide, et la cellule affiche une erreur."
           },
           {
             "reference": "C2 à C7",
-            "texte": "=B2/$G$1, recopiée : environ 3,72 mois pour 500 sacs, 15,27 pour 1 000 sacs, la valeur de l’exercice 3 avant l’arrondi, et 22,03 pour 1 500 sacs. Sans les $, la recopie divise par G2, vide."
+            "texte": "=B2/$G$1, recopiée : environ 3,72 mois pour 500 sacs, 15,27 pour 1 000 sacs, la valeur de l’exercice 3 avant l’arrondi, et 22,03 pour 1 500 sacs. Sans les $, la recopie divise par G2, vide."
           }
         ]
       },
@@ -3930,7 +3930,7 @@
                 "reading": "La demande baisse quand le prix monte : 240 sacs perdus entre 20 € et 25 €, 95 entre 40 € et 45 €.",
                 "source": "Étude de prix de la gamme Sillage. Données fictives Atelier Rivage, créées pour ce cours.",
                 "kind": "line",
-                "description": "Six points reliés : 1 100 sacs à 20 €, 860 à 25 €, 670 à 30 €, 520 à 35 €, 410 à 40 € et 315 à 45 €."
+                "description": "Six points reliés : 1 100 sacs à 20 €, 860 à 25 €, 670 à 30 €, 520 à 35 €, 410 à 40 € et 315 à 45 €."
               }
             },
             "metadonnees": {
@@ -4111,7 +4111,7 @@
             }
           }
         },
-        "notes": "• 3 min ; la trace écrite est imprimée dans le livret.\n• Faire calculer au tableau deux rapports successifs du graphique : 860 ÷ 1 100 et 670 ÷ 860.\n• Lien au dossier : « La demande des boutiques : modèle affine ou exponentiel ? »",
+        "notes": "• 3 min ; la trace écrite est imprimée dans le livret.\n• Faire calculer au tableau deux rapports successifs du graphique : 860 ÷ 1 100 et 670 ÷ 860.\n• Lien au dossier : « La demande des boutiques : modèle affine ou exponentiel ? »",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -4301,7 +4301,7 @@
             }
           }
         },
-        "notes": "• Temps : réflexion 1 min · travail 5 min · correction 2 min\n• Réflexion : vérifier sur la calculatrice que ln 1 100 est un peu au-dessus de 7.\n• Piège : la touche log, qui donne des valeurs autour de 3.\n• Papier : tableau du livret, rempli à la main, au millième.\n• Projeter le tableau juste ; faire remarquer que z baisse d’environ 0,25 à chaque hausse de 5 €.\n• Transition : « Une droite pour z : exercice 6. »",
+        "notes": "• Temps : réflexion 1 min · travail 5 min · correction 2 min\n• Réflexion : vérifier sur la calculatrice que ln 1 100 est un peu au-dessus de 7.\n• Piège : la touche log, qui donne des valeurs autour de 3.\n• Papier : tableau du livret, rempli à la main, au millième.\n• Projeter le tableau juste ; faire remarquer que z baisse d’environ 0,25 à chaque hausse de 5 €.\n• Transition : « Une droite pour z : exercice 6. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -4493,7 +4493,7 @@
                     },
                     {
                       "id": "a-e-soit-environ-2-981-3292dad8",
-                      "libelle": "a = e⁸, soit environ 2 981"
+                      "libelle": "a = e⁸, soit environ 2 981"
                     },
                     {
                       "id": "a-moins-0-05-3ddc6dc3",
@@ -4575,7 +4575,7 @@
         "corriges": [
           {
             "questionId": "b2-06-a3-coefficient",
-            "bonneReponse": "a = e⁸, soit environ 2 981",
+            "bonneReponse": "a = e⁸, soit environ 2 981",
             "confusions": [
               {
                 "id": "ordonnee-non-exponentiee",
@@ -4641,7 +4641,7 @@
               },
               {
                 "id": "a-e-soit-environ-2-981-3292dad8",
-                "libelle": "a = e⁸, soit environ 2 981"
+                "libelle": "a = e⁸, soit environ 2 981"
               },
               {
                 "id": "a-moins-0-05-3ddc6dc3",
@@ -4683,19 +4683,19 @@
         "explications": [
           {
             "reference": "b2-06-a3-coefficient",
-            "texte": "ln y = −0,05x + 8, donc y = e⁸ × e^(−0,05x) : a = e⁸ ≈ 2 981. a = 8 oublie d’exponentier l’ordonnée à l’origine ; a = −0,05 confond la pente et l’ordonnée."
+            "texte": "ln y = −0,05x + 8, donc y = e⁸ × e^(−0,05x) : a = e⁸ ≈ 2 981. a = 8 oublie d’exponentier l’ordonnée à l’origine ; a = −0,05 confond la pente et l’ordonnée."
           },
           {
             "reference": "b2-06-a3-demande",
-            "texte": "2 981 × e^(−0,05 × 38) = 2 981 × e^(−1,9) ≈ 445,86, soit environ 446 sacs. 2 981 × 0,95³⁸ ≈ 424 prend k pour le taux ; e^(+1,9) donnerait 19 931 sacs, absurde."
+            "texte": "2 981 × e^(−0,05 × 38) = 2 981 × e^(−1,9) ≈ 445,86, soit environ 446 sacs. 2 981 × 0,95³⁸ ≈ 424 prend k pour le taux ; e^(+1,9) donnerait 19 931 sacs, absurde."
           },
           {
             "reference": "b2-06-a3-methode",
-            "texte": "2 981e^(−0,05x) = 600 ⇔ e^(−0,05x) = 600 ÷ 2 981 ⇔ −0,05x = ln(600 ÷ 2 981), puis on divise par −0,05. ln(600 ÷ 2 981) n’est pas ln 600 ÷ ln 2 981."
+            "texte": "2 981e^(−0,05x) = 600 ⇔ e^(−0,05x) = 600 ÷ 2 981 ⇔ −0,05x = ln(600 ÷ 2 981), puis on divise par −0,05. ln(600 ÷ 2 981) n’est pas ln 600 ÷ ln 2 981."
           },
           {
             "reference": "b2-06-a3-prix",
-            "texte": "x = ln(600 ÷ 2 981) ÷ (−0,05) ≈ 32,06 €. Sans ln, on trouve −4,03 ; en oubliant le signe de k, −32,06 : un prix négatif trahit l’erreur."
+            "texte": "x = ln(600 ÷ 2 981) ÷ (−0,05) ≈ 32,06 €. Sans ln, on trouve −4,03 ; en oubliant le signe de k, −32,06 : un prix négatif trahit l’erreur."
           }
         ]
       },
@@ -4708,7 +4708,7 @@
         "donnees": {
           "probleme": {
             "id": "b2-06-a3-defi-ia",
-            "enonce": "Hélène a donné les six relevés de demande à un assistant IA. Réponse : « 1. J’ajuste la demande par la droite y = −31x + 1 653, avec un coefficient de corrélation r ≈ −0,985 : l’ajustement est excellent. 2. Au prix de 55 €, la demande sera de −52 sacs. 3. Un modèle exponentiel est inutile : une droite suffit. »",
+            "enonce": "Hélène a donné les six relevés de demande à un assistant IA. Réponse : « 1. J’ajuste la demande par la droite y = −31x + 1 653, avec un coefficient de corrélation r ≈ −0,985 : l’ajustement est excellent. 2. Au prix de 55 €, la demande sera de −52 sacs. 3. Un modèle exponentiel est inutile : une droite suffit. »",
             "invite": "Trouvez les erreurs de l’IA, corrigez chacune et dites comment la contrôler.",
             "strategies": [],
             "metadonnees": {
@@ -4749,7 +4749,7 @@
             },
             {
               "id": "prevision",
-              "libelle": "Prévoir avec le modèle exponentiel y = 2 981e^(−0,05x), qui reste positif et ralentit comme les relevés.",
+              "libelle": "Prévoir avec le modèle exponentiel y = 2 981e^(−0,05x), qui reste positif et ralentit comme les relevés.",
               "fausse": false
             },
             {
@@ -4763,7 +4763,7 @@
         "explications": [
           {
             "reference": "rapports",
-            "texte": "860 ÷ 1 100 ≈ 0,78 ; 670 ÷ 860 ≈ 0,78 ; 520 ÷ 670 ≈ 0,78 ; 410 ÷ 520 ≈ 0,79 ; 315 ÷ 410 ≈ 0,77 : la demande perd environ 22 % à chaque hausse de 5 €."
+            "texte": "860 ÷ 1 100 ≈ 0,78 ; 670 ÷ 860 ≈ 0,78 ; 520 ÷ 670 ≈ 0,78 ; 410 ÷ 520 ≈ 0,79 ; 315 ÷ 410 ≈ 0,77 : la demande perd environ 22 % à chaque hausse de 5 €."
           },
           {
             "reference": "logarithme",
@@ -4771,11 +4771,11 @@
           },
           {
             "reference": "negative",
-            "texte": "−31x + 1 653 s’annule vers 53,3 € : au-delà, la droite annonce des ventes négatives, impossibles ; à 55 €, −52 sacs."
+            "texte": "−31x + 1 653 s’annule vers 53,3 € : au-delà, la droite annonce des ventes négatives, impossibles ; à 55 €, −52 sacs."
           },
           {
             "reference": "prevision",
-            "texte": "À 55 € : 2 981 × e^(−2,75) ≈ 191 sacs, positif et cohérent avec une baisse qui ralentit."
+            "texte": "À 55 € : 2 981 × e^(−2,75) ≈ 191 sacs, positif et cohérent avec une baisse qui ralentit."
           },
           {
             "reference": "garder",
@@ -5149,19 +5149,19 @@
         "explications": [
           {
             "reference": "C2 à C7",
-            "texte": "=LN(B2), recopiée : ln 9,9 ≈ 2,293, puis 1,946 ; 1,589 ; 1,253 ; 0,875 et 0,531."
+            "texte": "=LN(B2), recopiée : ln 9,9 ≈ 2,293, puis 1,946 ; 1,589 ; 1,253 ; 0,875 et 0,531."
           },
           {
             "reference": "D2 et E2",
-            "texte": "=PENTE(C2:C7;A2:A7) ≈ −0,706 et =ORDONNEE.ORIGINE(C2:C7;A2:A7) ≈ 3,003 : les z d’abord, les x ensuite. Sur la colonne B, on ajuste y par une droite, pente −3,21."
+            "texte": "=PENTE(C2:C7;A2:A7) ≈ −0,706 et =ORDONNEE.ORIGINE(C2:C7;A2:A7) ≈ 3,003 : les z d’abord, les x ensuite. Sur la colonne B, on ajuste y par une droite, pente −3,21."
           },
           {
             "reference": "F2",
-            "texte": "=EXP(E2) ≈ 20,15 : a = e^β. =E2 garde β, l’ordonnée non exponentiée."
+            "texte": "=EXP(E2) ≈ 20,15 : a = e^β. =E2 garde β, l’ordonnée non exponentiée."
           },
           {
             "reference": "G2",
-            "texte": "=F2*EXP(D2*4) ≈ 1,20 centaine, soit environ 120 kits à 40 €. =F2*EXP(1)*D2*4 lit l’exponentielle comme un produit et donne une demande négative."
+            "texte": "=F2*EXP(D2*4) ≈ 1,20 centaine, soit environ 120 kits à 40 €. =F2*EXP(1)*D2*4 lit l’exponentielle comme un produit et donne une demande négative."
           }
         ]
       },
@@ -5274,7 +5274,7 @@
         "explications": [
           {
             "reference": "b2-06-a4-e1-demande",
-            "texte": "25 € donne x = 2,5 : f(2,5) = 20e^(−1,75) ≈ 3,4755 centaines, soit environ 348 kits. 20 × 0,3^2,5 ≈ 99 kits prend k pour le taux ; e^(+1,75) donnerait 11 509 kits, absurde."
+            "texte": "25 € donne x = 2,5 : f(2,5) = 20e^(−1,75) ≈ 3,4755 centaines, soit environ 348 kits. 20 × 0,3^2,5 ≈ 99 kits prend k pour le taux ; e^(+1,75) donnerait 11 509 kits, absurde."
           },
           {
             "reference": "b2-06-a4-e2-prix",
@@ -5988,7 +5988,7 @@
                   },
                   {
                     "rubrique": "La capacité de l’atelier",
-                    "contenu": "Avec l’équipe actuelle, l’atelier coud au plus 1 000 sacs par mois."
+                    "contenu": "Avec l’équipe actuelle, l’atelier coud au plus 1 000 sacs par mois."
                   },
                   {
                     "rubrique": "L’étude de prix",
@@ -6105,12 +6105,12 @@
                   },
                   {
                     "kind": "example",
-                    "title": "Pour débuter : f(x) = 1 000e^(0,02x)",
-                    "text": "a = 1 000 et k = 0,02.",
+                    "title": "Pour débuter : f(x) = 1 000e^(0,02x)",
+                    "text": "a = 1 000 et k = 0,02.",
                     "steps": [
-                      "f(0) = 1 000 × e⁰ = 1 000.",
+                      "f(0) = 1 000 × e⁰ = 1 000.",
                       "Coefficient : e^0,02 ≈ 1,0202 ; taux ≈ 2,02 % par unité, pas 2 %.",
-                      "g(x) = 1 000e^(−0,02x) décroît : coefficient e^(−0,02) ≈ 0,9802, soit −1,98 % par unité."
+                      "g(x) = 1 000e^(−0,02x) décroît : coefficient e^(−0,02) ≈ 0,9802, soit −1,98 % par unité."
                     ]
                   },
                   {
@@ -6176,7 +6176,7 @@
       {
         "id": "B2-06-A2-01-REFLEXION-RECIPROQUE",
         "type": "ecran-verrouille",
-        "titre": "Réfléchir : remonter de 1 000 sacs au mois",
+        "titre": "Réfléchir : remonter de 1 000 sacs au mois",
         "duree": 5,
         "interactif": false,
         "donnees": {}
@@ -6201,7 +6201,7 @@
                   {
                     "kind": "definition",
                     "title": "ln remonte de l’exponentielle à l’exposant",
-                    "text": "Pour un nombre y strictement positif, ln y est le nombre x tel que eˣ = y. ln défait l’exponentielle, comme la division défait la multiplication : ln(eˣ) = x et e^(ln y) = y. C’est lui qui donnera le mois où les ventes de la gamme Sillage atteindront 1 000 sacs.",
+                    "text": "Pour un nombre y strictement positif, ln y est le nombre x tel que eˣ = y. ln défait l’exponentielle, comme la division défait la multiplication : ln(eˣ) = x et e^(ln y) = y. C’est lui qui donnera le mois où les ventes de la gamme Sillage atteindront 1 000 sacs.",
                     "formula": "eˣ = y ⇔ x = ln y, pour y > 0 · ln 1 = 0 · ln e = 1 · ln(a × b) = ln a + ln b · ln(a ÷ b) = ln a − ln b · ln(aⁿ) = n × ln a"
                   },
                   {
@@ -6357,7 +6357,7 @@
                 "reading": "La demande baisse quand le prix monte : 240 sacs perdus entre 20 € et 25 €, 95 entre 40 € et 45 €.",
                 "source": "Étude de prix de la gamme Sillage. Données fictives Atelier Rivage, créées pour ce cours.",
                 "kind": "line",
-                "description": "Six points reliés : 1 100 sacs à 20 €, 860 à 25 €, 670 à 30 €, 520 à 35 €, 410 à 40 € et 315 à 45 €."
+                "description": "Six points reliés : 1 100 sacs à 20 €, 860 à 25 €, 670 à 30 €, 520 à 35 €, 410 à 40 € et 315 à 45 €."
               }
             },
             "metadonnees": {

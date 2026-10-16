@@ -1,4 +1,5 @@
 import { nombreAffiche } from '../../../../common/domain/nombres/ecriture-francaise';
+import { ESPACE_INSECABLE } from '../../../../common/domain/texte/sans-espaces-typographiques';
 import type { Cours, TableBuildPlanStocke } from '../contrats/cours';
 import type {
   TableauEvalue,
@@ -188,7 +189,10 @@ function tableauBati(plan: TableBuildPlanStocke, lire: Lecture): TableauEvalue {
       );
       return resultat.valeur === null || element.unite === null
         ? resultat
-        : { ...resultat, affichage: `${resultat.affichage} ${element.unite}` };
+        : {
+            ...resultat,
+            affichage: `${resultat.affichage}${ESPACE_INSECABLE}${element.unite}`,
+          };
     }),
     soldeFinal: soldeFinalDe(plan, derniere),
   };

@@ -125,24 +125,50 @@ export function assertEcranServi(
   }
 }
 
+export interface CibleDuCours<T> {
+  readonly valeur: T | null;
+  readonly id: string;
+  readonly rang: (valeur: T) => number;
+}
+
+export function absenteDuCours(
+  nature: string,
+): (id: string) => TypeDeQuestionError {
+  return (id) => new TypeDeQuestionError(id, `n’est pas ${nature} de ce cours`);
+}
+
 export function cibleServie<T>(
   seance: DiffusionDeSeance,
   cours: Cours,
-  cible: {
-    readonly valeur: T | null;
-    readonly nature: string;
-    readonly id: string;
-    readonly rang: number;
-  },
+  cible: CibleDuCours<T>,
+  absente: (id: string) => Error,
 ): T {
   if (cible.valeur === null) {
-    throw new TypeDeQuestionError(
-      cible.id,
-      `n’est pas ${cible.nature} de ce cours`,
-    );
+    throw absente(cible.id);
   }
-  assertEcranServi(seance, cible.rang, cible.id, cours.ecrans.length);
+  const rang = cible.rang(cible.valeur);
+  assertEcranServi(
+    seance,
+    rang,
+    cours.ecrans[rang]?.id ?? cible.id,
+    cours.ecrans.length,
+  );
   return cible.valeur;
+}
+
+export function planServi<P>(
+  seance: DiffusionDeSeance,
+  cours: Cours,
+  planId: string,
+  plan: P | null,
+  nature: string,
+): P {
+  return cibleServie(
+    seance,
+    cours,
+    { valeur: plan, id: planId, rang: () => rangDuPlan(cours, planId) },
+    absenteDuCours(nature),
+  );
 }
 
 export function etayageAtteint(pilotage: PilotageEcran | undefined): number {
@@ -201,7 +227,7 @@ export function rangDeLEcran(cours: Cours, screenId: string): number {
   return cours.ecrans.findIndex((ecran) => ecran.id === screenId);
 }
 
-export function rangDuPlan(cours: Cours, planId: string): number {
+function rangDuPlan(cours: Cours, planId: string): number {
   return cours.ecrans.findIndex(
     (ecran) =>
       (ecran.brique === 'fp-sheet' || ecran.brique === 'fp-table-build') &&
