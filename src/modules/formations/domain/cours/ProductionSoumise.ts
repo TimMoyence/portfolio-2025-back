@@ -4,7 +4,7 @@ import {
   ProductionInvalideError,
   ProductionVideError,
 } from '../errors/FormationErrors';
-import type { ConfusionId } from './banque/confusions';
+import { confusionsParFrequence, type ConfusionId } from './banque/confusions';
 import type { CorrigeProduction } from './Corrige';
 import {
   corrigerClassement,
@@ -12,11 +12,8 @@ import {
   corrigerTableau,
   type SaisiesDeTableau,
 } from './CorrectionProduction';
-import {
-  estDansLaGrille,
-  estReferenceDeCellule,
-  estUneValeurDeVerite,
-} from './PlansStockes';
+import { saisiesRetenues } from './FeuilleEvaluee';
+import { estUneValeurDeVerite } from './PlansStockes';
 
 export interface EcranDeProduction {
   readonly ecran: Extract<
@@ -61,19 +58,7 @@ function feuilleNettoyee(
   if (cible.ecran.brique !== 'fp-sheet') {
     refuser(cible.question.id, 'cette question n’attend pas une feuille');
   }
-  const plan = cible.ecran.proprietes.plan;
-  const verrouillees = new Set(plan.verrouillees);
-  const retenues: Record<string, string> = {};
-  for (const [reference, saisie] of Object.entries(cellules)) {
-    const nom = reference.toUpperCase();
-    if (!estReferenceDeCellule(nom) || !estDansLaGrille(plan, nom)) {
-      refuser(cible.question.id, `cellule hors de la grille : ${reference}`);
-    }
-    if (!verrouillees.has(nom) && saisie.trim().length > 0) {
-      retenues[nom] = saisie;
-    }
-  }
-  return retenues;
+  return saisiesRetenues(cible.ecran.proprietes.plan, cellules);
 }
 
 function saisiesNettoyees(
@@ -272,19 +257,8 @@ export function corrigerProduction(
 export function confusionDominante(
   details: readonly DetailProduction[],
 ): ConfusionId | null {
-  const comptes = new Map<ConfusionId, number>();
-  for (const detail of details) {
-    if (detail.confusion !== null) {
-      comptes.set(detail.confusion, (comptes.get(detail.confusion) ?? 0) + 1);
-    }
-  }
-  let dominante: ConfusionId | null = null;
-  let meilleur = 0;
-  for (const [confusion, compte] of comptes) {
-    if (compte > meilleur) {
-      dominante = confusion;
-      meilleur = compte;
-    }
-  }
-  return dominante;
+  const [dominante] = confusionsParFrequence(
+    details.map((detail) => detail.confusion),
+  );
+  return dominante?.[0] ?? null;
 }

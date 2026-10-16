@@ -11,6 +11,7 @@ import {
   PhaseFermeeError,
   PieceJointeIntrouvableError,
   PieceJointeRetenueError,
+  TypeDeQuestionError,
 } from '../errors/FormationErrors';
 import type { FreeRange, PacingMode } from '../PacingMode';
 import type { SessionState } from '../SessionState';
@@ -22,7 +23,7 @@ export interface DiffusionDeSeance {
   readonly intervalleLibre: FreeRange | null;
 }
 
-type SeancePilotee = DiffusionDeSeance & {
+export type SeancePilotee = DiffusionDeSeance & {
   readonly pilotageEcrans: Readonly<Record<string, PilotageEcran>>;
 };
 
@@ -105,15 +106,69 @@ export function dernierEcranServi(
   return seance.ecranCourant;
 }
 
+export function ecranServi(
+  seance: DiffusionDeSeance,
+  rang: number,
+  total: number = Number.MAX_SAFE_INTEGER,
+): boolean {
+  return rang >= 0 && rang <= dernierEcranServi(seance, total);
+}
+
 export function assertEcranServi(
   seance: DiffusionDeSeance,
   rang: number,
   screenId: string,
   total: number = Number.MAX_SAFE_INTEGER,
 ): void {
-  if (rang < 0 || rang > dernierEcranServi(seance, total)) {
+  if (!ecranServi(seance, rang, total)) {
     throw new EcranNonServiError(screenId);
   }
+}
+
+export interface CibleDuCours<T> {
+  readonly valeur: T | null;
+  readonly id: string;
+  readonly rang: (valeur: T) => number;
+}
+
+export function absenteDuCours(
+  nature: string,
+): (id: string) => TypeDeQuestionError {
+  return (id) => new TypeDeQuestionError(id, `n’est pas ${nature} de ce cours`);
+}
+
+export function cibleServie<T>(
+  seance: DiffusionDeSeance,
+  cours: Cours,
+  cible: CibleDuCours<T>,
+  absente: (id: string) => Error,
+): T {
+  if (cible.valeur === null) {
+    throw absente(cible.id);
+  }
+  const rang = cible.rang(cible.valeur);
+  assertEcranServi(
+    seance,
+    rang,
+    cours.ecrans[rang]?.id ?? cible.id,
+    cours.ecrans.length,
+  );
+  return cible.valeur;
+}
+
+export function planServi<P>(
+  seance: DiffusionDeSeance,
+  cours: Cours,
+  planId: string,
+  plan: P | null,
+  nature: string,
+): P {
+  return cibleServie(
+    seance,
+    cours,
+    { valeur: plan, id: planId, rang: () => rangDuPlan(cours, planId) },
+    absenteDuCours(nature),
+  );
 }
 
 export function etayageAtteint(pilotage: PilotageEcran | undefined): number {
@@ -170,6 +225,27 @@ export function ecranParId(cours: Cours, screenId: string): Ecran | undefined {
 
 export function rangDeLEcran(cours: Cours, screenId: string): number {
   return cours.ecrans.findIndex((ecran) => ecran.id === screenId);
+}
+
+function rangDuPlan(cours: Cours, planId: string): number {
+  return cours.ecrans.findIndex(
+    (ecran) =>
+      (ecran.brique === 'fp-sheet' || ecran.brique === 'fp-table-build') &&
+      ecran.proprietes.plan.id === planId,
+  );
+}
+
+export const SEUIL_PAR_DEFAUT = 0.7;
+
+export function seuilDe(ecran: Ecran): number | null {
+  if (
+    ecran.brique === 'fp-numeric' ||
+    ecran.brique === 'fp-vote' ||
+    ecran.brique === 'fp-recall'
+  ) {
+    return ecran.seuil ?? SEUIL_PAR_DEFAUT;
+  }
+  return null;
 }
 
 export function rangDeLaQuestion(cours: Cours, questionId: string): number {

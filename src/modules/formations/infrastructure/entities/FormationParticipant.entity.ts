@@ -1,5 +1,9 @@
 import { LigneDeSeance } from './ligne-de-seance';
 import { Column, CreateDateColumn, Entity, Index } from 'typeorm';
+import {
+  LONGUEUR_MAX_D_UN_NOM_DE_PARTICIPANT,
+  LONGUEUR_MAX_D_UNE_ADRESSE_DE_PARTICIPANT,
+} from '../../domain/IParticipants.repository';
 
 @Entity({ name: 'formation_participants' })
 @Index('uq_formation_participants_session_key', ['sessionId', 'studentKey'], {
@@ -17,13 +21,16 @@ export class FormationParticipantEntity extends LigneDeSeance(
   @Column({ name: 'student_key', type: 'varchar', length: 64 })
   studentKey: string;
 
-  @Column({ type: 'varchar', length: 80 })
+  @Column({ type: 'varchar', length: LONGUEUR_MAX_D_UN_NOM_DE_PARTICIPANT })
   prenom: string;
 
-  @Column({ type: 'varchar', length: 80 })
+  @Column({ type: 'varchar', length: LONGUEUR_MAX_D_UN_NOM_DE_PARTICIPANT })
   nom: string;
 
-  @Column({ type: 'varchar', length: 180 })
+  @Column({
+    type: 'varchar',
+    length: LONGUEUR_MAX_D_UNE_ADRESSE_DE_PARTICIPANT,
+  })
   email: string;
 
   @Column({ type: 'int' })

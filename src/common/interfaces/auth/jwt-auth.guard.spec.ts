@@ -42,7 +42,10 @@ describe('JwtAuthGuard', () => {
     headers: Record<string, string | undefined> = {},
     path = '/api/v1/portfolio25/test',
   ): ExecutionContext {
-    return createHttpExecutionContext({ headers, path });
+    return createHttpExecutionContext(
+      { headers, path },
+      { setHeader: jest.fn() },
+    );
   }
 
   const BEARER_VALID = { authorization: 'Bearer valid-token' };

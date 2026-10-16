@@ -43,7 +43,7 @@ describe('RefreshTokensUseCase', () => {
   const rafraichir = async (stored: RefreshToken, token: string) => {
     const user = buildUser();
     refreshTokensRepo.findByTokenHash.mockResolvedValue(stored);
-    refreshTokensRepo.create.mockResolvedValue(
+    refreshTokensRepo.createSuccessor.mockResolvedValue(
       buildRefreshToken({ id: 'rt-2' }),
     );
     usersRepo.findById.mockResolvedValue(user);
@@ -51,7 +51,11 @@ describe('RefreshTokensUseCase', () => {
     const result = await useCase.execute(token);
 
     expect(result.user).toBe(user);
-    expect(refreshTokensRepo.create).toHaveBeenCalled();
+    expect(refreshTokensRepo.createSuccessor).toHaveBeenCalledWith(
+      stored.id,
+      expect.objectContaining({ userId: user.id, revoked: false }),
+    );
+    expect(refreshTokensRepo.create).not.toHaveBeenCalled();
     return result;
   };
 
@@ -80,6 +84,32 @@ describe('RefreshTokensUseCase', () => {
     expect(usersRepo.findById).not.toHaveBeenCalled();
     expect(refreshTokensRepo.create).not.toHaveBeenCalled();
   });
+
+  it.each([
+    ['apres la rotation', () => buildRefreshToken(), true],
+    [
+      'pendant le delai de grace',
+      () =>
+        buildRefreshToken({
+          revoked: true,
+          rotationGraceUntil: new Date(Date.now() + 30_000),
+        }),
+      false,
+    ],
+  ])(
+    'refuse la session quand une deconnexion a revoque le jeton %s, avant l emission du suivant',
+    async (_moment, stored, rotation) => {
+      refreshTokensRepo.findByTokenHash.mockResolvedValue(stored());
+      refreshTokensRepo.rotateById.mockResolvedValue(rotation);
+      usersRepo.findById.mockResolvedValue(buildUser());
+      refreshTokensRepo.createSuccessor.mockResolvedValue(null);
+
+      await expect(useCase.execute('jeton-deconnecte')).rejects.toBeInstanceOf(
+        InvalidCredentialsError,
+      );
+      expect(refreshTokensRepo.create).not.toHaveBeenCalled();
+    },
+  );
 
   itRefuseUnRefreshTokenInconnu(() => ({ refreshTokensRepo, useCase }));
 

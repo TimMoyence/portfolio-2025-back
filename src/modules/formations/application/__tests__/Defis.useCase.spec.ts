@@ -18,6 +18,7 @@ import {
   BlankFieldError,
   DefiInconnuError,
   DefiSansTentativeError,
+  EcranNonServiError,
   PhaseFermeeError,
 } from '../../domain/errors/FormationErrors';
 import { DefisUseCase } from '../Defis.useCase';
@@ -121,6 +122,16 @@ describe('DefisUseCase', () => {
     await expect(
       sut.tenter({ ...commande, defiId: 'defi-invente' }),
     ).rejects.toThrow(DefiInconnuError);
+  });
+
+  it('refuse les strategies d un defi dont l ecran n est pas encore projete', async () => {
+    depots.sessions.findById.mockResolvedValue(
+      buildSessionRecord({ courseSlug: COURS.slug, ecranCourant: 0 }),
+    );
+
+    await expect(strategiesApresTentative()).rejects.toThrow(
+      EcranNonServiError,
+    );
   });
 
   verifierContratDeParticipation(() => ({

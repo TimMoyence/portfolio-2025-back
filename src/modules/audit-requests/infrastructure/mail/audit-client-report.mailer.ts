@@ -4,7 +4,7 @@ import { destinataireDesRapportsDAudit } from '../../../../config/adresses-de-co
 import { envString } from '../../../../config/env-readers.util';
 import { LIBELLES_DU_NIVEAU } from '../../domain/AuditReportTiers';
 import type { ClientReportMailInput } from '../../domain/IAuditNotifier.port';
-import { LIBELLES_DU_STATUT } from '../../domain/StatutScore';
+import { rapportClientServi } from '../../domain/RapportClientServi';
 import { pillarLabel } from '../automation/shared/pillar-labels.util';
 import { buildMailLayout } from './mail-layout.util';
 import { MailerDAudit } from './mailer-d-audit';
@@ -52,12 +52,12 @@ export class AuditClientReportMailer extends MailerDAudit {
           </li>`,
     );
 
-    const pillarsHtml = report.pillarScorecard.map(
+    const pillarsHtml = rapportClientServi(report, 'fr').pillarScorecard.map(
       (pillar) => safeHtml`
           <tr>
             <td style="padding:6px 8px; border:1px solid #e5e7eb;">${escapeHtml(pillarLabel(pillar.pillar))}</td>
             <td style="padding:6px 8px; border:1px solid #e5e7eb; text-align:right;">${pillar.score}/${pillar.target}</td>
-            <td style="padding:6px 8px; border:1px solid #e5e7eb;">${escapeHtml(LIBELLES_DU_STATUT[pillar.status])}</td>
+            <td style="padding:6px 8px; border:1px solid #e5e7eb;">${escapeHtml(pillar.statusLabel)}</td>
           </tr>`,
     );
 
@@ -157,9 +157,9 @@ export class AuditClientReportMailer extends MailerDAudit {
     }
     lines.push('');
     lines.push('Scorecard 7 piliers :');
-    for (const pillar of report.pillarScorecard) {
+    for (const pillar of rapportClientServi(report, 'fr').pillarScorecard) {
       lines.push(
-        `- ${pillarLabel(pillar.pillar)}: ${pillar.score}/${pillar.target} (${LIBELLES_DU_STATUT[pillar.status]})`,
+        `- ${pillarLabel(pillar.pillar)}: ${pillar.score}/${pillar.target} (${pillar.statusLabel})`,
       );
     }
     lines.push('');

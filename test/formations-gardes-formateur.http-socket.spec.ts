@@ -6,7 +6,6 @@ import request from 'supertest';
 import type { Test as RequeteTest } from 'supertest';
 import { JwtAuthGuard } from '../src/common/interfaces/auth/jwt-auth.guard';
 import { ROLES_KEY } from '../src/common/interfaces/auth/roles.decorator';
-import { appliquerLesTraitementsGlobaux } from '../src/common/interfaces/http/traitements-globaux';
 import { PREFIXE_API_PAR_DEFAUT } from '../src/config/prefixe-api';
 import { JwtTokenService } from '../src/modules/users/application/services/JwtTokenService';
 import type { JwtPayload } from '../src/modules/users/application/services/JwtPayload';
@@ -24,7 +23,7 @@ import {
   serveurHttpDe,
 } from './helpers/formations-harness';
 import { routesDuControleur } from './helpers/metadonnees-de-route';
-import { fermerApplication } from './helpers/nest-test-app';
+import { fermerApplication, ouvrirApplication } from './helpers/nest-test-app';
 
 const COURS = buildCoursDeTest({ slug: 'cours-gardes-formateur' });
 const SESSION_ID = 'c3333333-3333-4333-8333-333333333333';
@@ -140,10 +139,9 @@ describe('Gardes reelles des routes formateur (e2e http socket)', () => {
       ],
     }).compile();
 
-    app = moduleRef.createNestApplication();
-    app.setGlobalPrefix(PREFIXE_API_PAR_DEFAUT);
-    appliquerLesTraitementsGlobaux(app);
-    await app.init();
+    app = await ouvrirApplication(moduleRef, (application) => {
+      application.setGlobalPrefix(PREFIXE_API_PAR_DEFAUT);
+    });
   });
 
   afterAll(async () => {

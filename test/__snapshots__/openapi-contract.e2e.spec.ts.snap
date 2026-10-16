@@ -26,6 +26,11 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
   },
   "AttenduFeuillePresentateurResponseDto": {
     "properties": {
+      "affichage": {
+        "description": "Valeur attendue ecrite a la francaise : taux a quatre decimales, montant a deux, milliers separes par une espace fine insecable",
+        "example": "0,3452",
+        "type": "string",
+      },
       "forme": {
         "oneOf": [
           {
@@ -59,6 +64,7 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
       "reference",
       "formuleReference",
       "valeur",
+      "affichage",
       "tolerance",
       "forme",
     ],
@@ -84,6 +90,14 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
       "cle",
       "valeur",
     ],
+    "type": "object",
+  },
+  "CadrageDuRenvoiResponseDto": {
+    "properties": {
+      "extrait": {
+        "$ref": "#/components/schemas/ExtraitDuRenvoiResponseDto",
+      },
+    },
     "type": "object",
   },
   "ComptesJalonResponseDto": {
@@ -173,6 +187,67 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
         "$ref": "#/components/schemas/PilotageEcranRequestDto",
       },
     },
+    "type": "object",
+  },
+  "CorrectionServieResponseDto": {
+    "properties": {
+      "corrige": {
+        "nullable": true,
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/CorrigeFeuillePresentateurResponseDto",
+          },
+          {
+            "$ref": "#/components/schemas/CorrigeTableauPresentateurResponseDto",
+          },
+          {
+            "$ref": "#/components/schemas/CorrigeClassementPresentateurResponseDto",
+          },
+          {
+            "$ref": "#/components/schemas/CorrigeEnigmesPresentateurResponseDto",
+          },
+          {
+            "$ref": "#/components/schemas/CorrigeDefiPresentateurResponseDto",
+          },
+          {
+            "$ref": "#/components/schemas/CorrigeRevelationPresentateurResponseDto",
+          },
+          {
+            "$ref": "#/components/schemas/CorrigeReflexionPresentateurResponseDto",
+          },
+        ],
+      },
+      "ecranId": {
+        "example": "B2-01-A3-02-VOTE",
+        "type": "string",
+      },
+      "explications": {
+        "items": {
+          "$ref": "#/components/schemas/ExplicationDeCorrectionResponseDto",
+        },
+        "type": "array",
+      },
+      "questions": {
+        "items": {
+          "$ref": "#/components/schemas/QuestionCorrigeeResponseDto",
+        },
+        "type": "array",
+      },
+      "reflexion": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ReflexionPresentateurResponseDto",
+          },
+        ],
+        "nullable": true,
+      },
+    },
+    "required": [
+      "ecranId",
+      "questions",
+      "corrige",
+      "reflexion",
+    ],
     "type": "object",
   },
   "CorrigeClassementPresentateurResponseDto": {
@@ -347,6 +422,14 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
         },
         "type": "array",
       },
+      "tableauCorrige": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/TableauEvalueResponseDto",
+          },
+        ],
+        "description": "Tableau rempli des valeurs attendues, colonnes deduites, totaux, synthese et solde calcules",
+      },
       "tolerance": {
         "$ref": "#/components/schemas/ToleranceResponseDto",
       },
@@ -360,6 +443,7 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
     "required": [
       "type",
       "attendus",
+      "tableauCorrige",
       "tolerance",
     ],
     "type": "object",
@@ -538,6 +622,17 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
   },
   "EcranDerouleResponseDto": {
     "properties": {
+      "cadrageDuRenvoi": {
+        "$ref": "#/components/schemas/CadrageDuRenvoiResponseDto",
+      },
+      "correction": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/CorrectionServieResponseDto",
+          },
+        ],
+        "description": "Correction servie au poste une fois l ecran revele",
+      },
       "corrigeEcran": {
         "description": "Corrige de production, de defi, de revelation ou de reflexion ; servi au sujet seulement une fois l ecran revele, jamais au catalogue",
         "nullable": true,
@@ -588,6 +683,18 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
         "example": 4,
         "type": "number",
       },
+      "ecranCorrige": {
+        "description": "Ecran dont celui-ci porte la correction",
+        "example": "B3-01-A2-03-ATELIER",
+        "type": "string",
+      },
+      "explications": {
+        "description": "Explications d un exercice corrige sur place, devoilees une a une au pupitre",
+        "items": {
+          "$ref": "#/components/schemas/ExplicationDeCorrectionResponseDto",
+        },
+        "type": "array",
+      },
       "id": {
         "example": "E-OUV-RAPPEL",
         "type": "string",
@@ -600,9 +707,40 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
         "description": "Notes du formateur",
         "type": "string",
       },
+      "pieceJointe": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/PieceJointePubliqueResponseDto",
+          },
+          {
+            "$ref": "#/components/schemas/PieceJointeReserveeResponseDto",
+          },
+        ],
+      },
       "questions": {
         "items": {
           "$ref": "#/components/schemas/QuestionDerouleResponseDto",
+        },
+        "type": "array",
+      },
+      "reflexion": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ReflexionPresentateurResponseDto",
+          },
+        ],
+        "description": "Reponse attendue d un recit a reflexion, la meme que celle revelee a l etudiant",
+        "nullable": true,
+      },
+      "renvoi": {
+        "description": "Ecran dont celui-ci reprend le contenu",
+        "example": "B3-01-A1-02-COURRIEL",
+        "type": "string",
+      },
+      "resoluPar": {
+        "description": "Ecrans qui corrigent celui-ci",
+        "items": {
+          "type": "string",
         },
         "type": "array",
       },
@@ -636,11 +774,23 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
       "corriges",
       "questions",
       "corrigeEcran",
+      "reflexion",
     ],
     "type": "object",
   },
   "EcranPublicResponseDto": {
     "properties": {
+      "cadrageDuRenvoi": {
+        "$ref": "#/components/schemas/CadrageDuRenvoiResponseDto",
+      },
+      "correction": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/CorrectionServieResponseDto",
+          },
+        ],
+        "description": "Correction servie au poste une fois l ecran revele",
+      },
       "donnees": {
         "additionalProperties": true,
         "description": "Proprietes de la brique, rangees sous la propriete de la brique ; sans solution, piege, confusion ni notes",
@@ -651,6 +801,11 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
         "example": 4,
         "type": "number",
       },
+      "ecranCorrige": {
+        "description": "Ecran dont celui-ci porte la correction",
+        "example": "B3-01-A2-03-ATELIER",
+        "type": "string",
+      },
       "id": {
         "example": "E-OUV-RAPPEL",
         "type": "string",
@@ -658,6 +813,28 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
       "interactif": {
         "example": true,
         "type": "boolean",
+      },
+      "pieceJointe": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/PieceJointePubliqueResponseDto",
+          },
+          {
+            "$ref": "#/components/schemas/PieceJointeReserveeResponseDto",
+          },
+        ],
+      },
+      "renvoi": {
+        "description": "Ecran dont celui-ci reprend le contenu",
+        "example": "B3-01-A1-02-COURRIEL",
+        "type": "string",
+      },
+      "resoluPar": {
+        "description": "Ecrans qui corrigent celui-ci",
+        "items": {
+          "type": "string",
+        },
+        "type": "array",
       },
       "titre": {
         "description": "Titre de l ecran, obligatoire a partir de la version 3",
@@ -722,6 +899,30 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
   },
   "EnigmesParticipantResponseDto": {
     "properties": {
+      "acheve": {
+        "description": "Parcours fini : plus aucune enigme ouverte",
+        "example": false,
+        "type": "boolean",
+      },
+      "enigmeOuverte": {
+        "description": "Enigme qui recoit la prochaine tentative, null si aucune",
+        "example": "enigme-1",
+        "nullable": true,
+        "type": "string",
+      },
+      "etats": {
+        "additionalProperties": {
+          "$ref": "#/components/schemas/EtatDEnigmeResponseDto",
+        },
+        "description": "Etat et tentatives restantes de chaque enigme du parcours, par identifiant",
+        "example": {
+          "enigme-1": {
+            "etat": "ouverte",
+            "tentativesRestantes": 10,
+          },
+        },
+        "type": "object",
+      },
       "parcoursId": {
         "example": "b2-01-a6-coffre",
         "type": "string",
@@ -744,8 +945,36 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
       },
     },
     "required": [
+      "etats",
+      "enigmeOuverte",
+      "acheve",
       "parcoursId",
       "resolues",
+      "tentativesRestantes",
+    ],
+    "type": "object",
+  },
+  "EtatDEnigmeResponseDto": {
+    "properties": {
+      "etat": {
+        "enum": [
+          "resolue",
+          "epuisee",
+          "ouverte",
+          "verrouillee",
+        ],
+        "example": "ouverte",
+        "type": "string",
+      },
+      "tentativesRestantes": {
+        "example": 9,
+        "maximum": 10,
+        "minimum": 0,
+        "type": "number",
+      },
+    },
+    "required": [
+      "etat",
       "tentativesRestantes",
     ],
     "type": "object",
@@ -811,6 +1040,168 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
     ],
     "type": "object",
   },
+  "EvaluerFeuilleRequestDto": {
+    "properties": {
+      "cellules": {
+        "additionalProperties": {
+          "maxLength": 200,
+          "type": "string",
+        },
+        "description": "Saisie brute de chaque cellule de l eleve, formule ou valeur",
+        "example": {
+          "D2": "=C2*2",
+        },
+        "type": "object",
+      },
+      "recopie": {
+        "$ref": "#/components/schemas/RecopieDeCelluleDto",
+      },
+    },
+    "required": [
+      "cellules",
+    ],
+    "type": "object",
+  },
+  "EvaluerMachineRequestDto": {
+    "properties": {
+      "reglages": {
+        "additionalProperties": {
+          "type": "number",
+        },
+        "description": "Reglages des curseurs de l eleve, par cle de parametre ; les autres gardent leur defaut",
+        "example": {
+          "tauxDeux": -50,
+          "tauxUn": 50,
+        },
+        "type": "object",
+      },
+    },
+    "required": [
+      "reglages",
+    ],
+    "type": "object",
+  },
+  "EvaluerTableauRequestDto": {
+    "properties": {
+      "saisies": {
+        "items": {
+          "$ref": "#/components/schemas/SaisieBruteDeTableauDto",
+        },
+        "type": "array",
+      },
+    },
+    "required": [
+      "saisies",
+    ],
+    "type": "object",
+  },
+  "ExplicationDeCorrectionResponseDto": {
+    "properties": {
+      "reference": {
+        "example": "identifiant",
+        "type": "string",
+      },
+      "texte": {
+        "example": "Cinq identifiants : on les compte, on ne les additionne jamais.",
+        "type": "string",
+      },
+    },
+    "required": [
+      "reference",
+      "texte",
+    ],
+    "type": "object",
+  },
+  "ExtraitDuRenvoiResponseDto": {
+    "properties": {
+      "champs": {
+        "description": "Champs du cas repris de l ecran renvoye",
+        "items": {
+          "enum": [
+            "metier",
+            "situation",
+            "geste",
+            "consequence",
+          ],
+          "type": "string",
+        },
+        "type": "array",
+      },
+      "lignes": {
+        "description": "Rangs des lignes reprises de l ecran renvoye",
+        "example": [
+          0,
+          2,
+        ],
+        "items": {
+          "type": "number",
+        },
+        "type": "array",
+      },
+    },
+    "type": "object",
+  },
+  "FeuilleEvalueeResponseDto": {
+    "properties": {
+      "affichages": {
+        "additionalProperties": {
+          "type": "string",
+        },
+        "description": "Ce qu affiche chaque cellule non vide : resultat de la formule, code d erreur ou saisie",
+        "example": {
+          "C2": "6400",
+          "D2": "12800",
+        },
+        "type": "object",
+      },
+      "formules": {
+        "description": "Cellules dont la saisie est une formule",
+        "example": [
+          "D2",
+          "D3",
+        ],
+        "items": {
+          "type": "string",
+        },
+        "type": "array",
+      },
+      "natures": {
+        "additionalProperties": {
+          "enum": [
+            "texte",
+            "nombre",
+            "logique",
+            "erreur",
+          ],
+          "type": "string",
+        },
+        "description": "Nature de la valeur affichee par chaque cellule non vide",
+        "example": {
+          "C2": "nombre",
+          "D2": "nombre",
+        },
+        "type": "object",
+      },
+      "saisies": {
+        "additionalProperties": {
+          "type": "string",
+        },
+        "description": "Saisie retenue de chaque cellule de l eleve, recopie comprise, imposees exclues",
+        "example": {
+          "D2": "=C2*2",
+          "D3": "=C3*2",
+        },
+        "type": "object",
+      },
+    },
+    "required": [
+      "saisies",
+      "affichages",
+      "natures",
+      "formules",
+    ],
+    "type": "object",
+  },
   "FormeMemeQueResponseDto": {
     "properties": {
       "memeQue": {
@@ -873,6 +1264,106 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
     "required": [
       "total",
       "justes",
+    ],
+    "type": "object",
+  },
+  "LigneDeMachineResponseDto": {
+    "properties": {
+      "courante": {
+        "description": "Ligne du reglage courant du curseur",
+        "type": "boolean",
+      },
+      "resultat": {
+        "$ref": "#/components/schemas/ValeurDeMachineResponseDto",
+      },
+      "valeur": {
+        "$ref": "#/components/schemas/ValeurDeMachineResponseDto",
+      },
+    },
+    "required": [
+      "valeur",
+      "resultat",
+      "courante",
+    ],
+    "type": "object",
+  },
+  "LigneDuTableauResponseDto": {
+    "properties": {
+      "rang": {
+        "example": 0,
+        "type": "number",
+      },
+      "valeurs": {
+        "additionalProperties": {
+          "$ref": "#/components/schemas/ValeurDuTableauResponseDto",
+        },
+        "description": "Valeur de chaque colonne de la ligne, par cle de colonne",
+        "type": "object",
+      },
+    },
+    "required": [
+      "rang",
+      "valeurs",
+    ],
+    "type": "object",
+  },
+  "MachineEvalueeResponseDto": {
+    "properties": {
+      "courbes": {
+        "additionalProperties": {
+          "items": {
+            "$ref": "#/components/schemas/PointDeCourbeResponseDto",
+          },
+          "type": "array",
+        },
+        "description": "Resultat le long de chaque curseur, les autres a leur reglage, par cle",
+        "type": "object",
+      },
+      "etapes": {
+        "description": "Valeur a la sortie de chaque etape, dans son ordre",
+        "items": {
+          "$ref": "#/components/schemas/ValeurDeMachineResponseDto",
+        },
+        "type": "array",
+      },
+      "lignes": {
+        "additionalProperties": {
+          "items": {
+            "$ref": "#/components/schemas/LigneDeMachineResponseDto",
+          },
+          "type": "array",
+        },
+        "description": "Table de valeurs de chaque curseur, par cle",
+        "type": "object",
+      },
+      "phrase": {
+        "description": "Phrase de la machine, resultat ecrit a sa place",
+        "example": "Le prix final vaut 99 €.",
+        "type": "string",
+      },
+      "resultat": {
+        "$ref": "#/components/schemas/ValeurDeMachineResponseDto",
+      },
+      "valeurs": {
+        "additionalProperties": {
+          "type": "number",
+        },
+        "description": "Reglage de chaque curseur, defauts compris, par cle",
+        "example": {
+          "depart": 100,
+          "tauxDeux": -10,
+          "tauxUn": 10,
+        },
+        "type": "object",
+      },
+    },
+    "required": [
+      "valeurs",
+      "resultat",
+      "etapes",
+      "courbes",
+      "lignes",
+      "phrase",
     ],
     "type": "object",
   },
@@ -961,6 +1452,44 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
     ],
     "type": "object",
   },
+  "PieceJointePubliqueResponseDto": {
+    "properties": {
+      "fichier": {
+        "description": "Chemin public du fichier",
+        "example": "/assets/cours/b3-01/B3-01_export_ventes.d4f2ceab.xlsx",
+        "type": "string",
+      },
+      "libelle": {
+        "example": "Export des ventes Norvane (classeur Excel)",
+        "type": "string",
+      },
+    },
+    "required": [
+      "libelle",
+      "fichier",
+    ],
+    "type": "object",
+  },
+  "PieceJointeReserveeResponseDto": {
+    "properties": {
+      "libelle": {
+        "example": "Classeur de la séance",
+        "type": "string",
+      },
+      "reservee": {
+        "description": "Piece reservee a la seance, telechargee par la route liee au jeton",
+        "enum": [
+          true,
+        ],
+        "type": "number",
+      },
+    },
+    "required": [
+      "libelle",
+      "reservee",
+    ],
+    "type": "object",
+  },
   "PilotageEcranRequestDto": {
     "properties": {
       "etayage": {
@@ -1015,6 +1544,24 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
     },
     "required": [
       "screenId",
+    ],
+    "type": "object",
+  },
+  "PointDeCourbeResponseDto": {
+    "properties": {
+      "x": {
+        "example": 10,
+        "type": "number",
+      },
+      "y": {
+        "example": 99,
+        "nullable": true,
+        "type": "number",
+      },
+    },
+    "required": [
+      "x",
+      "y",
     ],
     "type": "object",
   },
@@ -1148,6 +1695,29 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
       "resolues",
       "tentativesMoyennes",
       "epuisees",
+    ],
+    "type": "object",
+  },
+  "QuestionCorrigeeResponseDto": {
+    "properties": {
+      "bonneReponse": {
+        "example": "plus bas qu’au départ",
+        "type": "string",
+      },
+      "optionId": {
+        "example": "b",
+        "nullable": true,
+        "type": "string",
+      },
+      "questionId": {
+        "example": "b2-01-a3-vote-hausse-baisse",
+        "type": "string",
+      },
+    },
+    "required": [
+      "questionId",
+      "bonneReponse",
+      "optionId",
     ],
     "type": "object",
   },
@@ -1362,6 +1932,37 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
     ],
     "type": "object",
   },
+  "RecopieDeCelluleDto": {
+    "properties": {
+      "de": {
+        "description": "Cellule recopiee vers la cellule du dessous",
+        "example": "D2",
+        "type": "string",
+      },
+    },
+    "required": [
+      "de",
+    ],
+    "type": "object",
+  },
+  "ReflexionPresentateurResponseDto": {
+    "properties": {
+      "attendu": {
+        "example": "Un montant et un taux, sur deux dates.",
+        "type": "string",
+      },
+      "suite": {
+        "example": "Nommez toujours le dénominateur.",
+        "nullable": true,
+        "type": "string",
+      },
+    },
+    "required": [
+      "attendu",
+      "suite",
+    ],
+    "type": "object",
+  },
   "RegleDeNotationResponseDto": {
     "properties": {
       "base": {
@@ -1461,6 +2062,23 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
     ],
     "type": "object",
   },
+  "RemediationResponseDto": {
+    "properties": {
+      "confusionId": {
+        "example": "hausse-baisse-symetriques",
+        "type": "string",
+      },
+      "ecranId": {
+        "example": "B2-01-A2-04-REMEDIATION",
+        "type": "string",
+      },
+    },
+    "required": [
+      "confusionId",
+      "ecranId",
+    ],
+    "type": "object",
+  },
   "ReponseLibreParticipantResponseDto": {
     "properties": {
       "activityId": {
@@ -1543,6 +2161,12 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
   },
   "ResultatQuestionResponseDto": {
     "properties": {
+      "confusionDominante": {
+        "description": "Confusion la plus frequente, a egalite la premiere par identifiant",
+        "example": "hausse-baisse-symetriques",
+        "nullable": true,
+        "type": "string",
+      },
       "confusions": {
         "description": "Confusions triees par frequence",
         "items": {
@@ -1586,15 +2210,34 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
         "nullable": true,
         "type": "object",
       },
+      "part": {
+        "description": "Part des reponses correctes, 0 sans reponse",
+        "example": 0.7,
+        "type": "number",
+      },
       "questionId": {
         "example": "Q-M2-PIVOT",
         "type": "string",
+      },
+      "remediation": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RemediationResponseDto",
+          },
+        ],
+        "description": "Ecran de remediation de la confusion dominante, sous le seuil seulement",
+        "nullable": true,
       },
       "scoreMoyen": {
         "description": "Productions : score moyen",
         "example": 0.71,
         "nullable": true,
         "type": "number",
+      },
+      "sousLeSeuil": {
+        "description": "Part sous le seuil de l ecran, avec au moins une reponse",
+        "example": true,
+        "type": "boolean",
       },
       "total": {
         "example": 30,
@@ -1625,6 +2268,10 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
       "parOption",
       "scoreMoyen",
       "parCle",
+      "confusionDominante",
+      "part",
+      "sousLeSeuil",
+      "remediation",
     ],
     "type": "object",
   },
@@ -1661,6 +2308,29 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
     "required": [
       "questionsNotees",
       "parType",
+    ],
+    "type": "object",
+  },
+  "SaisieBruteDeTableauDto": {
+    "properties": {
+      "cle": {
+        "example": "prix",
+        "type": "string",
+      },
+      "rang": {
+        "example": 1,
+        "type": "number",
+      },
+      "saisie": {
+        "description": "Saisie brute de l eleve, lue par le back a la francaise",
+        "example": "21,6",
+        "type": "string",
+      },
+    },
+    "required": [
+      "rang",
+      "cle",
+      "saisie",
     ],
     "type": "object",
   },
@@ -2117,11 +2787,75 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
     ],
     "type": "object",
   },
+  "TableauEvalueResponseDto": {
+    "properties": {
+      "lignes": {
+        "items": {
+          "$ref": "#/components/schemas/LigneDuTableauResponseDto",
+        },
+        "type": "array",
+      },
+      "soldeFinal": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ValeurDuTableauResponseDto",
+          },
+        ],
+        "description": "Reste a verser apres la derniere ligne, null sans colonne soldee",
+        "nullable": true,
+      },
+      "synthese": {
+        "description": "Resultat de chaque element de synthese du plan, dans son ordre, unite comprise",
+        "items": {
+          "$ref": "#/components/schemas/ValeurDuTableauResponseDto",
+        },
+        "type": "array",
+      },
+      "totaux": {
+        "additionalProperties": {
+          "$ref": "#/components/schemas/ValeurDuTableauResponseDto",
+        },
+        "description": "Total de chaque colonne totalisee, par cle de colonne",
+        "type": "object",
+      },
+    },
+    "required": [
+      "lignes",
+      "totaux",
+      "synthese",
+      "soldeFinal",
+    ],
+    "type": "object",
+  },
   "TentativeEnigmeResponseDto": {
     "properties": {
+      "acheve": {
+        "description": "Parcours fini : plus aucune enigme ouverte",
+        "example": false,
+        "type": "boolean",
+      },
       "correcte": {
         "example": true,
         "type": "boolean",
+      },
+      "enigmeOuverte": {
+        "description": "Enigme qui recoit la prochaine tentative, null si aucune",
+        "example": "enigme-1",
+        "nullable": true,
+        "type": "string",
+      },
+      "etats": {
+        "additionalProperties": {
+          "$ref": "#/components/schemas/EtatDEnigmeResponseDto",
+        },
+        "description": "Etat et tentatives restantes de chaque enigme du parcours, par identifiant",
+        "example": {
+          "enigme-1": {
+            "etat": "ouverte",
+            "tentativesRestantes": 10,
+          },
+        },
+        "type": "object",
       },
       "fragment": {
         "description": "Fragment du code, livre seulement a la resolution",
@@ -2137,6 +2871,9 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
       },
     },
     "required": [
+      "etats",
+      "enigmeOuverte",
+      "acheve",
       "correcte",
       "fragment",
       "tentativesRestantes",
@@ -2184,6 +2921,46 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
     "required": [
       "type",
       "valeur",
+    ],
+    "type": "object",
+  },
+  "ValeurDeMachineResponseDto": {
+    "properties": {
+      "affichage": {
+        "description": "Valeur arrondie au centieme, virgule decimale, tiret si elle ne se calcule pas",
+        "example": "99",
+        "type": "string",
+      },
+      "valeur": {
+        "description": "Valeur calculee, null si la machine ne la calcule pas",
+        "example": 99,
+        "nullable": true,
+        "type": "number",
+      },
+    },
+    "required": [
+      "valeur",
+      "affichage",
+    ],
+    "type": "object",
+  },
+  "ValeurDuTableauResponseDto": {
+    "properties": {
+      "affichage": {
+        "description": "Valeur ecrite au nombre de decimales de sa colonne, virgule decimale, tiret si elle ne se calcule pas",
+        "example": "21,60",
+        "type": "string",
+      },
+      "valeur": {
+        "description": "Valeur de la cellule, null si elle ne se calcule pas",
+        "example": 21.6,
+        "nullable": true,
+        "type": "number",
+      },
+    },
+    "required": [
+      "valeur",
+      "affichage",
     ],
     "type": "object",
   },

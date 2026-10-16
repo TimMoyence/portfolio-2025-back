@@ -10,7 +10,10 @@ import {
   type PerPageDetailedAnalysis,
 } from '../../domain/AuditReportTiers';
 import type { EngineCoverage, EngineScore } from '../../domain/EngineCoverage';
-import { LIBELLES_DU_STATUT } from '../../domain/StatutScore';
+import {
+  rapportClientServi,
+  type RapportClientServi,
+} from '../../domain/RapportClientServi';
 import { pillarLabel } from './shared/pillar-labels.util';
 import {
   escapeHtml,
@@ -83,7 +86,9 @@ export class AuditReportHtmlRendererService {
 
   private renderClientSection(report: ClientReportSynthesis): EscapedHtml {
     const matrix = this.renderGoogleAiMatrix(report.googleVsAiMatrix);
-    const scorecard = this.renderPillarScorecard(report.pillarScorecard);
+    const scorecard = this.renderPillarScorecard(
+      rapportClientServi(report, 'fr').pillarScorecard,
+    );
     const quickWins = this.renderQuickWins(report.quickWins);
     const findings = this.renderTopFindings(report.topFindings);
     const cta = this.renderCta(report.cta);
@@ -119,7 +124,7 @@ export class AuditReportHtmlRendererService {
   }
 
   private renderPillarScorecard(
-    scorecard: ClientReportSynthesis['pillarScorecard'],
+    scorecard: RapportClientServi['pillarScorecard'],
   ): EscapedHtml {
     if (!scorecard.length) return safeHtml``;
     const cards = scorecard.map((pillar) => {
@@ -127,7 +132,7 @@ export class AuditReportHtmlRendererService {
       return safeHtml`<article class="pillar-card ${statusClass}">
           <p class="pillar-name">${escapeHtml(pillarLabel(pillar.pillar))}</p>
           <p class="pillar-score">${pillar.score}<span class="pillar-target"> / ${pillar.target}</span></p>
-          <p class="pillar-status">${escapeHtml(LIBELLES_DU_STATUT[pillar.status])}</p>
+          <p class="pillar-status">${escapeHtml(pillar.statusLabel)}</p>
         </article>`;
     });
     return safeHtml`<div class="scorecard">

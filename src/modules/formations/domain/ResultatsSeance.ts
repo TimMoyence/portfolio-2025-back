@@ -6,7 +6,10 @@ import type {
   ResultatQuestion,
   ResultatsSeance,
 } from './contrats/resultats';
-import { libelleDeConfusion } from './cours/banque/confusions';
+import {
+  confusionsParFrequence,
+  libelleDeConfusion,
+} from './cours/banque/confusions';
 import { NE_SAIT_PAS } from './GradingCore';
 import type { AnswerRecord } from './IAnswers.repository';
 import { estUneProduction, texteDeValeur } from './ValeurReponse';
@@ -24,12 +27,14 @@ export interface QuestionAAgreger {
   readonly type: TypeQuestion;
   readonly noteCompte: boolean;
   readonly ecranId: string;
+  readonly seuil: number | null;
 }
 
 export interface AgregerResultatsInput {
   readonly questions: readonly QuestionAAgreger[];
   readonly answers: readonly AnswerRecord[];
   readonly participants: number;
+  readonly remediations?: Readonly<Record<string, string>>;
 }
 
 export function agregerResultats(
@@ -38,7 +43,7 @@ export function agregerResultats(
   return {
     participants: entree.participants,
     questions: entree.questions.map((question) =>
-      agregerQuestion(question, entree.answers),
+      agregerQuestion(question, entree.answers, entree.remediations ?? {}),
     ),
   };
 }
@@ -46,22 +51,27 @@ export function agregerResultats(
 function agregerQuestion(
   question: QuestionAAgreger,
   answers: readonly AnswerRecord[],
+  remediations: Readonly<Record<string, string>>,
 ): ResultatQuestion {
   const reponses = answers.filter(
     (reponse) => reponse.questionId === question.id,
   );
+  const decompte = {
+    total: reponses.length,
+    correctes: reponses.filter((reponse) => reponse.correcte).length,
+    confusions: compterConfusions(reponses),
+  };
   return {
     questionId: question.id,
     ecranId: question.ecranId,
     type: question.type,
     noteCompte: question.noteCompte,
-    total: reponses.length,
-    correctes: reponses.filter((reponse) => reponse.correcte).length,
+    ...decompte,
     neSaitPas: reponses.filter((reponse) => estNeSaitPas(reponse)).length,
-    confusions: compterConfusions(reponses),
     parOption: question.type === 'vote' ? compterParOption(reponses) : null,
     scoreMoyen: moyenneDesScores(reponses),
     parCle: compterParCle(reponses),
+    ...lectureDuSeuil(question, decompte, remediations),
   };
 }
 
@@ -111,25 +121,42 @@ function compterParCle(
 function compterConfusions(
   reponses: readonly AnswerRecord[],
 ): readonly ConfusionComptee[] {
-  const nombresParId = new Map<string, number>();
-  for (const reponse of reponses) {
-    if (reponse.misconception === null) {
-      continue;
-    }
-    nombresParId.set(
-      reponse.misconception,
-      (nombresParId.get(reponse.misconception) ?? 0) + 1,
-    );
-  }
-  return [...nombresParId.entries()]
-    .map(([id, nombre]) => ({
-      id,
-      libelle: libelleDeConfusion(id) ?? id,
-      nombre,
-    }))
-    .sort((premiere, seconde) =>
-      premiere.nombre !== seconde.nombre
-        ? seconde.nombre - premiere.nombre
-        : premiere.id.localeCompare(seconde.id),
-    );
+  return confusionsParFrequence(
+    reponses.map((reponse) => reponse.misconception),
+  ).map(([id, nombre]) => ({
+    id,
+    libelle: libelleDeConfusion(id) ?? id,
+    nombre,
+  }));
+}
+
+function lectureDuSeuil(
+  question: QuestionAAgreger,
+  {
+    total,
+    correctes,
+    confusions,
+  }: Pick<ResultatQuestion, 'total' | 'correctes' | 'confusions'>,
+  remediations: Readonly<Record<string, string>>,
+): Pick<
+  ResultatQuestion,
+  'confusionDominante' | 'part' | 'sousLeSeuil' | 'remediation'
+> {
+  const part = total > 0 ? correctes / total : 0;
+  const sousLeSeuil =
+    question.seuil !== null && total > 0 && part < question.seuil;
+  const dominante = confusions.at(0)?.id ?? null;
+  const ecranId =
+    dominante !== null && Object.hasOwn(remediations, dominante)
+      ? remediations[dominante]
+      : null;
+  return {
+    confusionDominante: dominante,
+    part,
+    sousLeSeuil,
+    remediation:
+      sousLeSeuil && dominante !== null && ecranId !== null
+        ? { confusionId: dominante, ecranId }
+        : null,
+  };
 }

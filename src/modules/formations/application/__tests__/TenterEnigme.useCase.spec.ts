@@ -6,6 +6,7 @@ import {
   monterParticipationSurLeDernierEcran,
   PARCOURS_DE_TEST,
   TENTATIVES_MAX_DE_TEST,
+  VERDICT_DE_LA_PREMIERE_ENIGME_RESOLUE,
 } from '../../../../../test/factories/cours.factory';
 import { verifierContratDeParticipation } from '../../../../../test/helpers/gardes-de-seance';
 import {
@@ -58,15 +59,26 @@ describe('TenterEnigmeUseCase', () => {
   it('rend le fragment quand la reponse est juste', async () => {
     const verdict = await sut.execute(commande);
 
-    expect(verdict).toEqual({
-      correcte: true,
-      fragment: 'F0',
-      tentativesRestantes: TENTATIVES_MAX_DE_TEST - 1,
-    });
+    expect(verdict).toEqual(VERDICT_DE_LA_PREMIERE_ENIGME_RESOLUE);
     expect(escape.marquerResolue).toHaveBeenCalledWith(
       'participant-uuid',
       ENIGMES_DE_TEST[0],
     );
+  });
+
+  it('B-70 · ouvre l énigme suivante quand la dernière tentative épuise l énigme', async () => {
+    escape.incrementerTentative.mockResolvedValue(TENTATIVES_MAX_DE_TEST);
+
+    const verdict = await sut.execute({ ...commande, reponse: '10' });
+
+    expect(verdict.etats[ENIGMES_DE_TEST[0]]).toEqual({
+      etat: 'epuisee',
+      tentativesRestantes: 0,
+    });
+    expect([verdict.enigmeOuverte, verdict.acheve]).toEqual([
+      ENIGMES_DE_TEST[1],
+      false,
+    ]);
   });
 
   it('ne rend jamais le fragment quand la reponse est fausse', async () => {

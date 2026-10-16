@@ -30,7 +30,7 @@ import { abonnerAuFlux, attendreQue } from './helpers/formations-harness';
 import {
   ADRESSE_BOUCLE_LOCALE,
   applicationDeLaSuite,
-  httpServerOf,
+  serveurHttpDe,
   ouvrirApplication,
   portDe,
   preparerChaqueRequete,
@@ -139,7 +139,7 @@ describe('Refus anti-robot d un formulaire public — intégration HTTP', () => 
   ])(
     'mesure %s une seule fois, avec le statut renvoyé au client',
     async (_cas, corps, statut) => {
-      await request(httpServerOf(app()))
+      await request(serveurHttpDe(app()))
         .post('/temoin')
         .send(corps)
         .expect(statut);

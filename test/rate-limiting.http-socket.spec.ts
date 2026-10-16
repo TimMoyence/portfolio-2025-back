@@ -5,7 +5,7 @@ import { Test } from '@nestjs/testing';
 import request from 'supertest';
 import {
   applicationDeLaSuite,
-  httpServerOf,
+  serveurHttpDe,
   ouvrirApplication,
 } from './helpers/nest-test-app';
 
@@ -39,7 +39,7 @@ describe('Rate-limiting (ThrottlerGuard) — integration HTTP', () => {
     return ouvrirApplication(moduleRef);
   });
 
-  const getHttpServer = () => httpServerOf(app());
+  const getHttpServer = () => serveurHttpDe(app());
 
   it('devrait accepter les requetes en dessous de la limite globale', async () => {
     for (let i = 0; i < 3; i++) {

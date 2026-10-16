@@ -29,6 +29,7 @@ import {
   sondage,
 } from './PlansStockes';
 import { numeriqueStockee, voteStocke } from './QuestionStockee';
+import { POINTS_MAX_D_UN_TRACE, pointsDuTrace } from './TraceServi';
 import {
   auMoinsUn,
   concept,
@@ -549,6 +550,15 @@ const proprietesTrace = z
       signaleurDe(contexte)(
         ['reference'],
         `la référence ne nomme aucun préréglage du tracé : ${trace.reference}`,
+      );
+    }
+  })
+  .superRefine((trace, contexte) => {
+    const points = pointsDuTrace(trace);
+    if (points > POINTS_MAX_D_UN_TRACE) {
+      signaleurDe(contexte)(
+        ['parametres'],
+        `le tracé servirait ${points} points précalculés, au-delà de ${POINTS_MAX_D_UN_TRACE}`,
       );
     }
   });

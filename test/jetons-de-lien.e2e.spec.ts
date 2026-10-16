@@ -18,7 +18,7 @@ import { AuthController } from '../src/modules/users/interfaces/Auth.controller'
 import {
   applicationDeLaSuite,
   bootstrapTestApp,
-  httpServerOf,
+  serveurHttpDe,
 } from './helpers/nest-test-app';
 import {
   EVENEMENT_LIGNE,
@@ -27,7 +27,7 @@ import {
 } from './helpers/flux-de-journal';
 import { documentOpenApiFormations } from './helpers/schema-openapi';
 
-type Serveur = ReturnType<typeof httpServerOf>;
+type Serveur = ReturnType<typeof serveurHttpDe>;
 type Jeton = string | readonly string[] | undefined;
 type Requete = (serveur: Serveur) => request.Test;
 
@@ -226,7 +226,7 @@ describe('Liens a jeton envoyes par courriel — un jeton refuse ne se distingue
       .compile();
     return bootstrapTestApp(moduleRef);
   });
-  const serveur = () => httpServerOf(app());
+  const serveur = () => serveurHttpDe(app());
 
   beforeEach(() => {
     for (const lecture of Object.values(depot)) {

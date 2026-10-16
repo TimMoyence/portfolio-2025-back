@@ -1,9 +1,11 @@
 import type { Test } from 'supertest';
+import type { EtatDesEnigmes } from '../src/modules/formations/domain/contrats/pilotage';
 import {
   buildCoursAvecEnigmes,
   ENIGMES_DE_TEST,
   PARCOURS_DE_TEST,
   TENTATIVES_MAX_DE_TEST,
+  VERDICT_DE_LA_PREMIERE_ENIGME_RESOLUE,
 } from './factories/cours.factory';
 import {
   attendreJetonEtrangerRefuse,
@@ -19,7 +21,7 @@ const FAUSSE = '99';
 const { CREE, INTROUVABLE, CONFLIT } = CODE_HTTP;
 const TENTATIVES_SIMULTANEES = 20;
 
-interface VerdictTentative {
+interface VerdictTentative extends EtatDesEnigmes {
   correcte: boolean;
   fragment: string | null;
   tentativesRestantes: number;
@@ -54,11 +56,9 @@ decrireSurLeDernierEcran(
         CREE,
       );
 
-      expect(reponse.body as VerdictTentative).toEqual({
-        correcte: true,
-        fragment: 'F0',
-        tentativesRestantes: TENTATIVES_MAX_DE_TEST - 1,
-      });
+      expect(reponse.body as VerdictTentative).toEqual(
+        VERDICT_DE_LA_PREMIERE_ENIGME_RESOLUE,
+      );
       const progression = await contexte().escape.listerProgression(
         seance.participantId,
         PARCOURS_DE_TEST,

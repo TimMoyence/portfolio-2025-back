@@ -8,7 +8,7 @@ import {
   installerApplicationSurCatalogue,
 } from './helpers/application-sur-catalogue';
 import { clesDuCorrigeDans, clesImbriquees } from './helpers/cles-du-corrige';
-import { routeFormations } from './helpers/formations-harness';
+import { routeFormations, serveurHttpDe } from './helpers/formations-harness';
 import { attendreVersionServie } from './helpers/schema-openapi';
 
 const COURS = lireCoursStocke(buildCoursStocke());
@@ -25,9 +25,7 @@ describe('Catalogue public des formations (e2e http socket)', () => {
   const app = installerApplicationSurCatalogue(COURS);
 
   const lire = (slug: string) =>
-    request(app().getHttpServer() as Parameters<typeof request>[0]).get(
-      routeFormations(`/catalogue/${slug}`),
-    );
+    request(serveurHttpDe(app())).get(routeFormations(`/catalogue/${slug}`));
 
   it('sert sans authentification le sujet public du cours publie', async () => {
     const reponse = await lire(COURS.slug).expect(200);

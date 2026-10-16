@@ -37,33 +37,13 @@ describe('AuditClientReportMailer', () => {
       aiVisibility: { score: 42, summary: 'Peu cite par les LLMs' },
     },
     pillarScorecard: [
-      { pillar: 'seo', score: 70, target: 80, status: 'warning' as const },
-      {
-        pillar: 'performance',
-        score: 65,
-        target: 80,
-        status: 'warning' as const,
-      },
-      { pillar: 'technical', score: 85, target: 80, status: 'ok' as const },
-      { pillar: 'trust', score: 60, target: 80, status: 'warning' as const },
-      {
-        pillar: 'conversion',
-        score: 55,
-        target: 80,
-        status: 'critical' as const,
-      },
-      {
-        pillar: 'aiVisibility',
-        score: 40,
-        target: 80,
-        status: 'critical' as const,
-      },
-      {
-        pillar: 'citationWorthiness',
-        score: 50,
-        target: 80,
-        status: 'warning' as const,
-      },
+      { pillar: 'seo', score: 70, target: 80 },
+      { pillar: 'performance', score: 65, target: 80 },
+      { pillar: 'technical', score: 85, target: 80 },
+      { pillar: 'trust', score: 60, target: 80 },
+      { pillar: 'conversion', score: 55, target: 80 },
+      { pillar: 'aiVisibility', score: 40, target: 80 },
+      { pillar: 'citationWorthiness', score: 50, target: 80 },
     ],
     quickWins: [
       {
@@ -164,7 +144,8 @@ describe('AuditClientReportMailer', () => {
       expect(call.html).toContain(`>${libelle}</td>`);
     }
     expect(call.text).toContain('SEO: 70/80 (À améliorer)');
-    expect(call.text).toContain('Conversion: 55/80 (Critique)');
+    expect(call.text).toContain('Conversion: 55/80 (À améliorer)');
+    expect(call.text).toContain('Citabilite IA: 50/80 (Critique)');
     expect(
       codesBrutsDuCourriel(call, ['warning', 'critical', '(ok)', '>ok<']),
     ).toEqual([]);

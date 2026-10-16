@@ -56,6 +56,14 @@ export class JustesParCleResponseDto {
   justes: number;
 }
 
+export class RemediationResponseDto {
+  @ApiProperty({ example: 'hausse-baisse-symetriques' })
+  confusionId: string;
+
+  @ApiProperty({ example: 'B2-01-A2-04-REMEDIATION' })
+  ecranId: string;
+}
+
 @ApiExtraModels(JustesParCleResponseDto)
 export class ResultatQuestionResponseDto
   extends ResultatQuestionServiResponseDto
@@ -95,6 +103,35 @@ export class ResultatQuestionResponseDto
     description: 'Productions : justesse par cellule, carte ou ligne',
   })
   parCle: Record<string, JustesParCleResponseDto> | null;
+
+  @ApiProperty({
+    nullable: true,
+    type: String,
+    description:
+      'Confusion la plus frequente, a egalite la premiere par identifiant',
+    example: 'hausse-baisse-symetriques',
+  })
+  confusionDominante: string | null;
+
+  @ApiProperty({
+    description: 'Part des reponses correctes, 0 sans reponse',
+    example: 0.7,
+  })
+  part: number;
+
+  @ApiProperty({
+    description: 'Part sous le seuil de l ecran, avec au moins une reponse',
+    example: true,
+  })
+  sousLeSeuil: boolean;
+
+  @ApiProperty({
+    type: RemediationResponseDto,
+    nullable: true,
+    description:
+      'Ecran de remediation de la confusion dominante, sous le seuil seulement',
+  })
+  remediation: RemediationResponseDto | null;
 }
 
 export class ResultatsSeanceResponseDto implements ResultatsSeance {

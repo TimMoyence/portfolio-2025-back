@@ -1,6 +1,7 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { questionsAAgreger, resumeDuBareme } from '../domain/Bareme';
 import type { ResultatsDeSeance } from '../domain/contrats/resultats';
+import { remediationsDe } from '../domain/cours/DeroulePresentateur';
 import { agregerEnigmes } from '../domain/cours/Enigmes';
 import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
 import type { ClasseurTelecharge } from '../domain/IClasseursDeCours.port';
@@ -116,6 +117,7 @@ export class GetSessionResultsUseCase {
       questions: questionsAAgreger(session.bareme, cours),
       answers: reponses,
       participants: participantsListe.length,
+      remediations: cours === null ? {} : remediationsDe(cours),
     });
     return {
       participants: participantsListe,

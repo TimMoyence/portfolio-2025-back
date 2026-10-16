@@ -1,0 +1,125 @@
+import { ConfigService } from '@nestjs/config';
+import { RefreshTokensUseCase } from '../src/modules/users/application/RefreshTokens.useCase';
+import { RevokeTokenUseCase } from '../src/modules/users/application/RevokeToken.useCase';
+import { issueAuthSession } from '../src/modules/users/application/services/issue-auth-session';
+import { JwtTokenService } from '../src/modules/users/application/services/JwtTokenService';
+import { RefreshTokenEntity } from '../src/modules/users/infrastructure/entities/RefreshToken.entity';
+import { UsersEntity } from '../src/modules/users/infrastructure/entities/Users.entity';
+import { RefreshTokensRepositoryTypeORM } from '../src/modules/users/infrastructure/RefreshTokens.repository.typeORM';
+import { UsersRepositoryTypeORM } from '../src/modules/users/infrastructure/Users.repository.typeORM';
+import { TEST_JWT_SECRET } from './factories/env.factory';
+import {
+  baseMigreeDeLaSuite,
+  describeDb,
+  inscrireUtilisateur,
+  TOUTES_LES_ENTITES,
+  TOUTES_LES_MIGRATIONS,
+} from './helpers/db-integration-datasource';
+
+describeDb(
+  'Deconnexion pendant un rafraichissement, sur une base migree',
+  () => {
+    const base = baseMigreeDeLaSuite(
+      [TOUTES_LES_ENTITES],
+      [TOUTES_LES_MIGRATIONS],
+    );
+    const jwtTokenService = new JwtTokenService(
+      new ConfigService({
+        JWT_SECRET: TEST_JWT_SECRET,
+        JWT_EXPIRES_IN: '900s',
+      }),
+    );
+
+    function monter() {
+      const jetons = new RefreshTokensRepositoryTypeORM(
+        base().getRepository(RefreshTokenEntity),
+      );
+      const comptes = new UsersRepositoryTypeORM(
+        base().getRepository(UsersEntity),
+      );
+      return {
+        jetons,
+        comptes,
+        rafraichir: new RefreshTokensUseCase(jetons, comptes, jwtTokenService),
+        deconnecter: new RevokeTokenUseCase(jetons),
+      };
+    }
+
+    async function ouvrirUneSession(
+      montage: ReturnType<typeof monter>,
+      userId: string,
+    ): Promise<string> {
+      const compte = await montage.comptes.findById(userId);
+      const { refreshToken } = await issueAuthSession(
+        compte!,
+        jwtTokenService,
+        montage.jetons,
+      );
+      return refreshToken;
+    }
+
+    function suspendreApresLaRotation(montage: ReturnType<typeof monter>) {
+      const lireLeCompte = montage.comptes.findById.bind(montage.comptes);
+      let atteint: () => void = () => undefined;
+      let liberer: () => void = () => undefined;
+      const rotationFaite = new Promise<void>((resolve) => (atteint = resolve));
+      const reprise = new Promise<void>((resolve) => (liberer = resolve));
+      jest
+        .spyOn(montage.comptes, 'findById')
+        .mockImplementationOnce(async (id) => {
+          atteint();
+          await reprise;
+          return lireLeCompte(id);
+        });
+      return { rotationFaite, liberer };
+    }
+
+    async function jetonsActifs(userId: string): Promise<number> {
+      const [{ actifs }]: { actifs: number }[] = await base().query(
+        `SELECT count(*)::int AS "actifs" FROM "refresh_tokens"
+       WHERE "user_id" = $1 AND "revoked" = false`,
+        [userId],
+      );
+      return actifs;
+    }
+
+    async function deconnecterPendantLeRafraichissement(
+      email: string,
+      jetonDeconnecte: (jetonRafraichi: string, autre: string) => string,
+    ) {
+      const userId = await inscrireUtilisateur(base(), email);
+      const montage = monter();
+      const jetonRafraichi = await ouvrirUneSession(montage, userId);
+      const autre = await ouvrirUneSession(montage, userId);
+      const { rotationFaite, liberer } = suspendreApresLaRotation(montage);
+
+      const issue = montage.rafraichir.execute(jetonRafraichi).then(
+        () => 'session emise',
+        (erreur: Error) => erreur.name,
+      );
+      await rotationFaite;
+      await montage.deconnecter.execute(jetonDeconnecte(jetonRafraichi, autre));
+      liberer();
+
+      return { issue: await issue, actifs: await jetonsActifs(userId) };
+    }
+
+    it('n emet aucune session quand la deconnexion du meme poste tombe entre la rotation et l emission', async () => {
+      expect(
+        await deconnecterPendantLeRafraichissement(
+          'meme-poste@example.com',
+          (jetonRafraichi) => jetonRafraichi,
+        ),
+      ).toEqual({ issue: 'InvalidCredentialsError', actifs: 0 });
+    });
+
+    it('n emet aucune session quand la deconnexion d un autre poste du compte tombe entre la rotation et l emission', async () => {
+      expect(
+        await deconnecterPendantLeRafraichissement(
+          'autre-poste@example.com',
+          (_jetonRafraichi, autre) => autre,
+        ),
+      ).toEqual({ issue: 'InvalidCredentialsError', actifs: 0 });
+    });
+  },
+);

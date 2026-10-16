@@ -429,4 +429,13 @@ describe('confusionDominante', () => {
       ]),
     ).toBe('taux-valeur-facteur-cent');
   });
+
+  it('B-70 · départage deux confusions de même fréquence par leur identifiant', () => {
+    expect(
+      confusionDominante([
+        { cle: 'D2', juste: false, confusion: 'taux-valeur-facteur-cent' },
+        { cle: 'D3', juste: false, confusion: 'base-arrivee' },
+      ]),
+    ).toBe('base-arrivee');
+  });
 });

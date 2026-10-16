@@ -1,4 +1,32 @@
-import { avecVirgule, nombreFrancais } from './ecriture-francaise';
+import {
+  avecVirgule,
+  nombreAffiche,
+  nombreFrancais,
+  VALEUR_ABSENTE,
+} from './ecriture-francaise';
+
+const FINE = ' ';
+
+describe('nombreAffiche', () => {
+  it.each([
+    [12500.5, 2, 2, `12${FINE}500,50`],
+    [6400, 2, 0, `6${FINE}400`],
+    [1234567.891, 2, 2, `1${FINE}234${FINE}567,89`],
+    [-12345.6, 1, 1, `-12${FINE}345,6`],
+    [0.45678, 4, 0, '0,4568'],
+    [1.005, 2, 2, '1,01'],
+    [-0.001, 2, 0, '0'],
+  ])(
+    'F-11 · écrit %p avec au plus %p et au moins %p décimales en %p',
+    (valeur, decimales, decimalesMin, attendue) => {
+      expect(nombreAffiche(valeur, decimales, decimalesMin)).toBe(attendue);
+    },
+  );
+
+  it('écrit un tiret pour une valeur absente', () => {
+    expect(nombreAffiche(null, 2)).toBe(VALEUR_ABSENTE);
+  });
+});
 
 describe('nombreFrancais', () => {
   it.each([

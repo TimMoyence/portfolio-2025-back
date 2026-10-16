@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "ce7856e856f3464e7c85bc1926979e9163c31de0b47f046252e0182d9af25d6b",
+  "empreinte": "bfdbb6ecfdffab8adb5566523f53b2813305a4fbd78d460b5dd274035576d24d",
   "sujet": {
     "id": "b3-01-donnee-brute-decision",
     "titre": "Expert Data : de la donnée brute à la décision",
@@ -158,7 +158,7 @@
         "donnees": {
           "question": {
             "id": "b3-01-a1-part-douteuse",
-            "enonce": "Dans un export commercial d’environ 4 000 lignes, quelle part des lignes est fausse ou douteuse, à votre avis ?",
+            "enonce": "Dans un export commercial d’environ 4 000 lignes, quelle part des lignes est fausse ou douteuse, à votre avis ?",
             "options": [
               {
                 "id": "moins-de-1-pct-des-lignes-05d3d383",
@@ -476,7 +476,7 @@
         "donnees": {
           "question": {
             "id": "b3-01-a1-ca-texte",
-            "enonce": "Dans la colonne ca_ht, une cellule affiche « 1 150,00 € », alignée à gauche. Que fait =SOMME(L:L) de cette cellule ?",
+            "enonce": "Dans la colonne ca_ht, une cellule affiche « 1 150,00 € », alignée à gauche. Que fait =SOMME(L:L) de cette cellule ?",
             "options": [
               {
                 "id": "elle-affiche-une-erreur-valeur-09701c18",
@@ -612,7 +612,7 @@
         "donnees": {
           "exemple": {
             "id": "b3-01-a1-exemple-nettoyage",
-            "enonce": "Deux cellules de l’onglet Commandes du classeur brut : en E783, la ville « Bordeaux », entourée d’espaces ; en L2971, le ca_ht saisi comme le texte « 1 150,00 € ». Chaque formule s’écrit en ligne 2, puis se recopie jusqu’en bas.",
+            "enonce": "Deux cellules de l’onglet Commandes du classeur brut : en E783, la ville « Bordeaux », entourée d’espaces ; en L2971, le ca_ht saisi comme le texte « 1 150,00 € ». Chaque formule s’écrit en ligne 2, puis se recopie jusqu’en bas.",
             "rappel": [
               {
                 "libelle": "SUPPRESPACE(texte)",
@@ -646,7 +646,7 @@
                 "id": "montant",
                 "intitule": "Le montant",
                 "raisonnement": "SUBSTITUE retire d’abord « € », puis l’espace des milliers ; CNUM convertit le texte qui reste. =CNUM(SUBSTITUE(SUBSTITUE(L2;\" €\";\"\");\" \";\"\")), recopiée, rend le nombre 1150 en ligne 2971, et laisse intacts les montants déjà en nombre.",
-                "invite": "Quelle formule convertit « 1 150,00 € » en nombre ?"
+                "invite": "Quelle formule convertit « 1 150,00 € » en nombre ?"
               },
               {
                 "id": "verifier",
@@ -715,7 +715,7 @@
               },
               {
                 "id": "ca-en-texte",
-                "libelle": "ca_ht stocké en texte : « 1 150,00 € »"
+                "libelle": "ca_ht stocké en texte : « 1 150,00 € »"
               }
             ],
             "categories": [
@@ -1414,11 +1414,11 @@
                   }
                 ],
                 "axisRanges": [[47500, 60000]],
-                "axisLabels": ["47 500 à 60 000 €"],
+                "axisLabels": ["47 500 à 60 000 €"],
                 "unit": "€",
                 "source": "Export des ventes de Norvane Équipement, CA arrondi à la centaine d’euros (données fictives).",
                 "kind": "bars",
-                "description": "Diagramme en barres : CA HT 2025 de Rennes et de Nantes, axe vertical de 47 500 € à 60 000 € ; barres de 51 600 € et 59 500 €."
+                "description": "Diagramme en barres : CA HT 2025 de Rennes et de Nantes, axe vertical de 47 500 € à 60 000 € ; barres de 51 600 € et 59 500 €."
               }
             },
             "metadonnees": {
@@ -2074,7 +2074,8 @@
             ]
           }
         ],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B3-01-A1-02-COURRIEL",
@@ -2118,7 +2119,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B3-01-A1-03-CARTE",
@@ -2178,7 +2180,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B3-01-A1-04-VOTE-PART-ET-CLE",
@@ -2189,7 +2192,7 @@
         "donnees": {
           "question": {
             "id": "b3-01-a1-part-douteuse",
-            "enonce": "Dans un export commercial d’environ 4 000 lignes, quelle part des lignes est fausse ou douteuse, à votre avis ?",
+            "enonce": "Dans un export commercial d’environ 4 000 lignes, quelle part des lignes est fausse ou douteuse, à votre avis ?",
             "options": [
               {
                 "id": "moins-de-1-pct-des-lignes-05d3d383",
@@ -2256,7 +2259,7 @@
         "questions": [
           {
             "id": "b3-01-a1-part-douteuse",
-            "enonce": "Dans un export commercial d’environ 4 000 lignes, quelle part des lignes est fausse ou douteuse, à votre avis ?",
+            "enonce": "Dans un export commercial d’environ 4 000 lignes, quelle part des lignes est fausse ou douteuse, à votre avis ?",
             "options": [
               {
                 "id": "moins-de-1-pct-des-lignes-05d3d383",
@@ -2303,7 +2306,8 @@
             "Il compte aussi des raisons sociales présentes deux fois dans la même ville, sous deux client_id : doublon ou deux établissements, seul le métier peut le dire. Le nom et la ville ne suffisent ni à distinguer deux clients, ni à les fusionner.",
             "La part des lignes fausses ou douteuses se révèle à la correction de l’exercice 4."
           ]
-        }
+        },
+        "reflexion": null
       },
       {
         "id": "B3-01-A1-05-COURS-DONNEE",
@@ -2371,7 +2375,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B3-01-A1-06-COURS-RELATIONS",
@@ -2433,7 +2438,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B3-01-A1-07-TRI-COLONNES",
@@ -2611,6 +2617,7 @@
             }
           ]
         },
+        "reflexion": null,
         "explications": [
           {
             "reference": "identifiant",
@@ -2739,6 +2746,7 @@
           }
         ],
         "corrigeEcran": null,
+        "reflexion": null,
         "explications": [
           {
             "reference": "b3-01-a1-granularite",
@@ -2759,7 +2767,7 @@
         "donnees": {
           "question": {
             "id": "b3-01-a1-ca-texte",
-            "enonce": "Dans la colonne ca_ht, une cellule affiche « 1 150,00 € », alignée à gauche. Que fait =SOMME(L:L) de cette cellule ?",
+            "enonce": "Dans la colonne ca_ht, une cellule affiche « 1 150,00 € », alignée à gauche. Que fait =SOMME(L:L) de cette cellule ?",
             "options": [
               {
                 "id": "elle-affiche-une-erreur-valeur-09701c18",
@@ -2794,7 +2802,7 @@
         "questions": [
           {
             "id": "b3-01-a1-ca-texte",
-            "enonce": "Dans la colonne ca_ht, une cellule affiche « 1 150,00 € », alignée à gauche. Que fait =SOMME(L:L) de cette cellule ?",
+            "enonce": "Dans la colonne ca_ht, une cellule affiche « 1 150,00 € », alignée à gauche. Que fait =SOMME(L:L) de cette cellule ?",
             "options": [
               {
                 "id": "elle-affiche-une-erreur-valeur-09701c18",
@@ -2819,7 +2827,8 @@
             "Un montant aligné à gauche dans une colonne de nombres est un indice : c’est du texte.",
             "ESTNUM renvoie FAUX pour un nombre stocké en texte : on vérifie avant d’additionner."
           ]
-        }
+        },
+        "reflexion": null
       },
       {
         "id": "B3-01-A1-10-COURS-GRILLE",
@@ -2881,7 +2890,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B3-01-A1-11-COURS-OUTILS",
@@ -2940,7 +2950,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B3-01-A1-12-EXEMPLE-NETTOYAGE",
@@ -2951,7 +2962,7 @@
         "donnees": {
           "exemple": {
             "id": "b3-01-a1-exemple-nettoyage",
-            "enonce": "Deux cellules de l’onglet Commandes du classeur brut : en E783, la ville « Bordeaux », entourée d’espaces ; en L2971, le ca_ht saisi comme le texte « 1 150,00 € ». Chaque formule s’écrit en ligne 2, puis se recopie jusqu’en bas.",
+            "enonce": "Deux cellules de l’onglet Commandes du classeur brut : en E783, la ville « Bordeaux », entourée d’espaces ; en L2971, le ca_ht saisi comme le texte « 1 150,00 € ». Chaque formule s’écrit en ligne 2, puis se recopie jusqu’en bas.",
             "rappel": [
               {
                 "libelle": "SUPPRESPACE(texte)",
@@ -2985,7 +2996,7 @@
                 "id": "montant",
                 "intitule": "Le montant",
                 "raisonnement": "SUBSTITUE retire d’abord « € », puis l’espace des milliers ; CNUM convertit le texte qui reste. =CNUM(SUBSTITUE(SUBSTITUE(L2;\" €\";\"\");\" \";\"\")), recopiée, rend le nombre 1150 en ligne 2971, et laisse intacts les montants déjà en nombre.",
-                "invite": "Quelle formule convertit « 1 150,00 € » en nombre ?"
+                "invite": "Quelle formule convertit « 1 150,00 € » en nombre ?"
               },
               {
                 "id": "verifier",
@@ -3009,7 +3020,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B3-01-A1-13-TRI-ANOMALIES",
@@ -3060,7 +3072,7 @@
               },
               {
                 "id": "ca-en-texte",
-                "libelle": "ca_ht stocké en texte : « 1 150,00 € »"
+                "libelle": "ca_ht stocké en texte : « 1 150,00 € »"
               }
             ],
             "categories": [
@@ -3156,6 +3168,7 @@
             }
           ]
         },
+        "reflexion": null,
         "explications": [
           {
             "reference": "faux-automatique",
@@ -3246,7 +3259,7 @@
         "corriges": [
           {
             "questionId": "b3-01-a1-lignes-uniques",
-            "bonneReponse": "4 098 lignes",
+            "bonneReponse": "4 098 lignes",
             "confusions": [
               {
                 "id": "doublons-supprimes-sur-une-colonne",
@@ -3260,7 +3273,7 @@
           },
           {
             "questionId": "b3-01-a1-ca-total",
-            "bonneReponse": "1 340 208 €",
+            "bonneReponse": "1 340 208 €",
             "confusions": [
               {
                 "id": "texte-pris-pour-nombre",
@@ -3301,18 +3314,19 @@
           }
         ],
         "corrigeEcran": null,
+        "reflexion": null,
         "explications": [
           {
             "reference": "b3-01-a1-lignes-uniques",
-            "texte": "L’export compte 4 144 lignes, dont 46 exportées deux fois : il en reste 4 098. Dédoublonner sur n_commande seule ne garderait qu’une ligne par commande : 1 618 lignes, et des produits perdus. Lire le numéro de la dernière ligne compte aussi l’en-tête : 4 099."
+            "texte": "L’export compte 4 144 lignes, dont 46 exportées deux fois : il en reste 4 098. Dédoublonner sur n_commande seule ne garderait qu’une ligne par commande : 1 618 lignes, et des produits perdus. Lire le numéro de la dernière ligne compte aussi l’en-tête : 4 099."
           },
           {
             "reference": "b3-01-a1-ca-total",
-            "texte": "Une fois les montants en texte convertis, le CA total HT vaut 1 340 208 €. SOMME sans conversion laisse de côté les montants en texte : 1 286 319 €, sans alerte."
+            "texte": "Une fois les montants en texte convertis, le CA total HT vaut 1 340 208 €. SOMME sans conversion laisse de côté les montants en texte : 1 286 319 €, sans alerte."
           },
           {
             "reference": "b3-01-a1-a-verifier",
-            "texte": "La colonne controle marque 85 lignes « À vérifier » : livraisons avant la commande, quantités négatives, commercial absent, dates en texte. Les formules N et O en corrigent 490 autres ; 24 ca_ht mal calculés, que le classeur de reprise recalcule, s’y ajoutent, et 15 échappent au contrôle : produits inconnus, prix hors norme. En tout, 614 des 4 098 lignes uniques, environ 15 % : la réponse à la première question du vote sur le fichier et Dupont, Bordeaux. Recalculé sur les dates converties, le contrôle perd les 40 dates ISO : 45. DATEVAL sur toute date en texte lui ôte aussi 6 des 12 dates d’un autre système, lues jour d’abord : 39."
+            "texte": "La colonne controle marque 85 lignes « À vérifier » : livraisons avant la commande, quantités négatives, commercial absent, dates en texte. Les formules N et O en corrigent 490 autres ; 24 ca_ht mal calculés, que le classeur de reprise recalcule, s’y ajoutent, et 15 échappent au contrôle : produits inconnus, prix hors norme. En tout, 614 des 4 098 lignes uniques, environ 15 % : la réponse à la première question du vote sur le fichier et Dupont, Bordeaux. Recalculé sur les dates converties, le contrôle perd les 40 dates ISO : 45. DATEVAL sur toute date en texte lui ôte aussi 6 des 12 dates d’un autre système, lues jour d’abord : 39."
           }
         ]
       },
@@ -3401,7 +3415,8 @@
             "Puis on additionne ca_ht sous trois conditions : l’agence de Rennes, la catégorie Informatique, une date en 2026.",
             "Nommer la famille avant de choisir la fonction : c’est la règle du niveau 3."
           ]
-        }
+        },
+        "reflexion": null
       },
       {
         "id": "B3-01-A2-02-FAMILLES",
@@ -3520,7 +3535,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B3-01-A2-03-COURS-CHERCHER-AGREGER",
@@ -3585,7 +3601,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B3-01-A2-04-ATELIER-RECHERCHE",
@@ -3647,7 +3664,7 @@
         "corriges": [
           {
             "questionId": "b3-01-a2-ca-rennes-info",
-            "bonneReponse": "8 342 €",
+            "bonneReponse": "8 342 €",
             "confusions": [
               {
                 "id": "critere-mal-ecrit",
@@ -3665,7 +3682,7 @@
           },
           {
             "questionId": "b3-01-a2-ca-ouest",
-            "bonneReponse": "77 850 €",
+            "bonneReponse": "77 850 €",
             "confusions": [
               {
                 "id": "critere-mal-ecrit",
@@ -3695,14 +3712,15 @@
           }
         ],
         "corrigeEcran": null,
+        "reflexion": null,
         "explications": [
           {
             "reference": "b3-01-a2-ca-rennes-info",
-            "texte": "SOMME.SI.ENS sur ca_ht, avec trois critères : agence_id égal à AG06, categorie égale à Informatique, date_commande \">=\"&DATE(2026;1;1). Résultat : 8 342 €."
+            "texte": "SOMME.SI.ENS sur ca_ht, avec trois critères : agence_id égal à AG06, categorie égale à Informatique, date_commande \">=\"&DATE(2026;1;1). Résultat : 8 342 €."
           },
           {
             "reference": "b3-01-a2-ca-ouest",
-            "texte": "La région Ouest réunit Nantes (AG05) et Rennes (AG06) : 77 850 € de janvier à septembre 2026. Recopiée sans $, la plage de recherche glisse d’une ligne à chaque ligne : dès la ligne 14, elle a quitté la table et plus aucune agence n’est trouvée. Avant, les seules lignes de l’Ouest trouvées, les lignes 4 à 6, forment une commande de Rennes du 30 septembre : 874 €. Le même glissement vide la colonne categorie dès la ligne 42 : à la première question, seuls les deux produits informatiques de cette commande restent, 729 €. La fonction DATE écrite dans les guillemets, \">=DATE(2026;1;1)\", n’est pas calculée : Excel compare au texte « DATE(2026;1;1) » et ne trouve rien : 0 €, ici comme à la première question. Une date tapée en clair dans les guillemets fonctionne, mais dépend du format de date du poste : \">=\"&DATE(2026;1;1) n’en dépend pas. Sans critère de date, on additionne aussi 2025 : 188 908 €, et 27 862 € à la première question."
+            "texte": "La région Ouest réunit Nantes (AG05) et Rennes (AG06) : 77 850 € de janvier à septembre 2026. Recopiée sans $, la plage de recherche glisse d’une ligne à chaque ligne : dès la ligne 14, elle a quitté la table et plus aucune agence n’est trouvée. Avant, les seules lignes de l’Ouest trouvées, les lignes 4 à 6, forment une commande de Rennes du 30 septembre : 874 €. Le même glissement vide la colonne categorie dès la ligne 42 : à la première question, seuls les deux produits informatiques de cette commande restent, 729 €. La fonction DATE écrite dans les guillemets, \">=DATE(2026;1;1)\", n’est pas calculée : Excel compare au texte « DATE(2026;1;1) » et ne trouve rien : 0 €, ici comme à la première question. Une date tapée en clair dans les guillemets fonctionne, mais dépend du format de date du poste : \">=\"&DATE(2026;1;1) n’en dépend pas. Sans critère de date, on additionne aussi 2025 : 188 908 €, et 27 862 € à la première question."
           }
         ]
       },
@@ -3779,7 +3797,8 @@
             "Le contrat de livraison de Norvane promet 5 jours ouvrés : le délai se mesure en jours ouvrés.",
             "NB.JOURS.OUVRES compte les deux bornes : du vendredi au lundi, il renvoie 2, d’où le − 1 pour obtenir le délai."
           ]
-        }
+        },
+        "reflexion": null
       },
       {
         "id": "B3-01-A2-06-COURS-TEMPS-STATS",
@@ -3845,7 +3864,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B3-01-A2-07-ATELIER-DELAIS-MARGE",
@@ -3953,6 +3973,7 @@
           }
         ],
         "corrigeEcran": null,
+        "reflexion": null,
         "explications": [
           {
             "reference": "b3-01-a2-delai-strasbourg",
@@ -4033,7 +4054,8 @@
             "Un tableau structuré s’étend tout seul : chaque formule qui le cite voit les nouvelles lignes.",
             "C’est l’objet du cours suivant."
           ]
-        }
+        },
+        "reflexion": null
       },
       {
         "id": "B3-01-A2-09-COURS-TCD",
@@ -4094,7 +4116,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B3-01-A2-10-EXEMPLE-TCD",
@@ -4141,7 +4164,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B3-01-A2-11-ATELIER-TCD",
@@ -4256,6 +4280,7 @@
           }
         ],
         "corrigeEcran": null,
+        "reflexion": null,
         "explications": [
           {
             "reference": "b3-01-a2-part-info-rennes",
@@ -4293,11 +4318,11 @@
                   }
                 ],
                 "axisRanges": [[47500, 60000]],
-                "axisLabels": ["47 500 à 60 000 €"],
+                "axisLabels": ["47 500 à 60 000 €"],
                 "unit": "€",
                 "source": "Export des ventes de Norvane Équipement, CA arrondi à la centaine d’euros (données fictives).",
                 "kind": "bars",
-                "description": "Diagramme en barres : CA HT 2025 de Rennes et de Nantes, axe vertical de 47 500 € à 60 000 € ; barres de 51 600 € et 59 500 €."
+                "description": "Diagramme en barres : CA HT 2025 de Rennes et de Nantes, axe vertical de 47 500 € à 60 000 € ; barres de 51 600 € et 59 500 €."
               }
             },
             "metadonnees": {
@@ -4314,7 +4339,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B3-01-A3-02-VOTE-GRAPHIQUE",
@@ -4385,11 +4411,12 @@
           "type": "revelation",
           "titre": "Un axe tronqué grossit l’écart",
           "lignes": [
-            "L’axe part de 47 500 € : les barres ne montrent que ce qui dépasse ce seuil.",
-            "Rennes a vendu 51 600 €, Nantes 59 500 € : environ 13 % de moins, pas trois fois moins.",
+            "L’axe part de 47 500 € : les barres ne montrent que ce qui dépasse ce seuil.",
+            "Rennes a vendu 51 600 €, Nantes 59 500 € : environ 13 % de moins, pas trois fois moins.",
             "Depuis zéro, les deux barres ont presque la même hauteur. Un axe tronqué se signale, ou ne se montre pas à un comité."
           ]
-        }
+        },
+        "reflexion": null
       },
       {
         "id": "B3-01-A3-03-COURS-GRAPHIQUES",
@@ -4448,7 +4475,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B3-01-A3-05-ATELIER-GRAPHIQUES",
@@ -4544,6 +4572,7 @@
           }
         ],
         "corrigeEcran": null,
+        "reflexion": null,
         "explications": [
           {
             "reference": "b3-01-a3-agences-sous-objectif",
@@ -4640,7 +4669,8 @@
             "Chaque chiffre porte sa comparaison : l’objectif, ou la même période de l’an passé. Seul, un chiffre ne dit ni bien ni mal.",
             "Le détail vient ensuite, sur demande : graphiques, TCD et segments."
           ]
-        }
+        },
+        "reflexion": null
       },
       {
         "id": "B3-01-A3-07-COURS-DASHBOARD",
@@ -4702,7 +4732,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B3-01-A3-08-EXEMPLE-MFC-SEGMENTS",
@@ -4749,7 +4780,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B3-01-A3-09-ATELIER-DASHBOARD",
@@ -4849,7 +4881,7 @@
           },
           {
             "questionId": "b3-01-a3-ca-2026",
-            "bonneReponse": "575 046 €",
+            "bonneReponse": "575 046 €",
             "confusions": [
               {
                 "id": "periode-mal-delimitee",
@@ -4909,6 +4941,7 @@
           }
         ],
         "corrigeEcran": null,
+        "reflexion": null,
         "explications": [
           {
             "reference": "b3-01-a3-evolution",
@@ -4916,11 +4949,11 @@
           },
           {
             "reference": "b3-01-a3-ca-2026",
-            "texte": "SOMME.SI.ENS sur ca_ht, date_commande de janvier à septembre 2026 : 575 046 €."
+            "texte": "SOMME.SI.ENS sur ca_ht, date_commande de janvier à septembre 2026 : 575 046 €."
           },
           {
             "reference": "b3-01-a3-marge-marseille",
-            "texte": "Marge de Marseille ÷ CA HT de Marseille, de janvier à septembre 2026 : un taux de marque de 26,9 %. Toute la table, 2025 compris, mêle deux années : 1 313 125 € de CA à la deuxième question, 29,8 % de taux de marque ici. La moyenne des taux de chaque ligne donne 28,7 % : les petites lignes y pèsent autant que les grosses. Divisée par le coût d’achat, la même marge donne 36,9 % : c’est le taux de marge, un autre indicateur."
+            "texte": "Marge de Marseille ÷ CA HT de Marseille, de janvier à septembre 2026 : un taux de marque de 26,9 %. Toute la table, 2025 compris, mêle deux années : 1 313 125 € de CA à la deuxième question, 29,8 % de taux de marque ici. La moyenne des taux de chaque ligne donne 28,7 % : les petites lignes y pèsent autant que les grosses. Divisée par le coût d’achat, la même marge donne 36,9 % : c’est le taux de marge, un autre indicateur."
           },
           {
             "reference": "b3-01-a3-quarantaine",
@@ -4973,6 +5006,7 @@
         "corriges": [],
         "questions": [],
         "corrigeEcran": null,
+        "reflexion": null,
         "explications": [
           {
             "reference": "marseille",
@@ -5058,7 +5092,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B3-01-A3-12-CAHIER-DE-REGLES",
@@ -5104,7 +5139,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B3-01-A3-13-CE-QUI-RESTE-FLOU",
@@ -5140,7 +5176,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B3-01-A3-14-BILLET-DE-SORTIE",
@@ -5215,7 +5252,8 @@
             ]
           }
         ],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       }
     ],
     "remediations": {
@@ -6032,11 +6070,11 @@
                   }
                 ],
                 "axisRanges": [[47500, 60000]],
-                "axisLabels": ["47 500 à 60 000 €"],
+                "axisLabels": ["47 500 à 60 000 €"],
                 "unit": "€",
                 "source": "Export des ventes de Norvane Équipement, CA arrondi à la centaine d’euros (données fictives).",
                 "kind": "bars",
-                "description": "Diagramme en barres : CA HT 2025 de Rennes et de Nantes, axe vertical de 47 500 € à 60 000 € ; barres de 51 600 € et 59 500 €."
+                "description": "Diagramme en barres : CA HT 2025 de Rennes et de Nantes, axe vertical de 47 500 € à 60 000 € ; barres de 51 600 € et 59 500 €."
               }
             },
             "metadonnees": {

@@ -29,11 +29,11 @@ import { DureeDeReponse } from '../duree-de-reponse.decorator';
 import { entreesBornees } from '../objet-plat';
 
 const LONGUEUR_MAX_IDENTIFIANT = 60;
-const ENTREES_MAX = 400;
+export const ENTREES_MAX = 400;
 const TYPES_DE_PRODUCTION = ['feuille', 'tableau', 'classement'] as const;
 
 @ValidatorConstraint({ name: 'dictionnaireDeTextes', async: false })
-class DictionnaireDeTextes implements ValidatorConstraintInterface {
+export class DictionnaireDeTextes implements ValidatorConstraintInterface {
   validate(valeur: unknown, args: ValidationArguments): boolean {
     const [longueurMax] = args.constraints as [number];
     return (
@@ -68,7 +68,7 @@ class ProductionFeuilleDto {
   cellules: Record<string, string>;
 }
 
-class SaisieTableauDto {
+export class CelluleDeTableauDto {
   @ApiProperty({ example: 1 })
   @IsInt()
   @Min(0)
@@ -79,7 +79,9 @@ class SaisieTableauDto {
   @Matches(NOM_DE_VARIABLE)
   @MaxLength(LONGUEUR_MAX_IDENTIFIANT)
   cle: string;
+}
 
+class SaisieTableauDto extends CelluleDeTableauDto {
   @ApiProperty({ example: 20.52 })
   @IsNumber({ allowNaN: false, allowInfinity: false })
   valeur: number;

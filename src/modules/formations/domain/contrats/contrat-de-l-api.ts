@@ -107,6 +107,13 @@ export interface ResultatQuestion {
   readonly parOption: Readonly<Record<string, number>> | null;
   readonly scoreMoyen: number | null;
   readonly parCle: DecomptesParCle | null;
+  readonly confusionDominante: string | null;
+  readonly part: number;
+  readonly sousLeSeuil: boolean;
+  readonly remediation: {
+    readonly confusionId: string;
+    readonly ecranId: string;
+  } | null;
 }
 
 export interface ResultatsSeance {

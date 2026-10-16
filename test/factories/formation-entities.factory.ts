@@ -39,6 +39,17 @@ export function mockTypeOrmManager(
   return gestionnaire;
 }
 
+export function attendreLeVerrouDeTransaction(
+  manager: GestionnaireSimule,
+  cle: string,
+): void {
+  expect(manager.transaction).toHaveBeenCalledTimes(1);
+  expect(manager.query).toHaveBeenCalledWith(
+    'SELECT pg_advisory_xact_lock(hashtext($1))',
+    [cle],
+  );
+}
+
 export function mockTypeOrmRepositoryAvecManager<E extends ObjectLiteral>(
   methodes: MethodesSimulees,
   manager: GestionnaireSimule,
