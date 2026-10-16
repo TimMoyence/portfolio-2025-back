@@ -145,6 +145,6 @@ Les details de securisation contre le prompt injection et les contenus non fiabl
 
 - Image locale : `docker build -t ghcr.io/<owner>/portfolio-2025-back:dev .`
 - Run local containerise : copier `deploy/backend.env.example` vers `deploy/backend.env` et renseigner ses secrets (le gabarit brut est refuse par la validation d'environnement), puis `docker run --rm -p 3000:3000 --env-file deploy/backend.env ghcr.io/<owner>/portfolio-2025-back:dev`
-- Stack de production : copier `deploy/backend.env.example` vers `deploy/backend.env` et renseigner ses secrets, puis lancer, comme le deploiement de la CI, `BACK_IMAGE=<image back> FRONT_IMAGE=<image front> docker compose -f deploy/compose.yaml --env-file deploy/backend.env up -d` : ce seul fichier sert aux conteneurs et a l'interpolation de `compose.yaml`
+- Stack de production : copier `deploy/backend.env.example` vers `deploy/backend.env` et renseigner ses secrets, puis lancer, comme le deploiement de la CI, `BACK_IMAGE=<image back> FRONT_IMAGE=<image front> docker compose -p portfolio25 -f deploy/compose.yaml --env-file deploy/backend.env up -d` : ce seul fichier sert aux conteneurs et a l'interpolation de `compose.yaml`
 
 Le workflow [`.github/workflows/ci.yml`](./.github/workflows/ci.yml) construit l'image, publie sur GHCR et peut relancer le service `api` via SSH quand la branche `master` est mise a jour.
