@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { sansFin } from '../../../../common/domain/texte/sans-bords';
-import type { LlmsTxtAnalysis } from '../../domain/AiIndexability';
+import { llmsTxtAbsent, LlmsTxtAnalysis } from '../../domain/AiIndexability';
 import { scoreSur100 } from '../../domain/score-sur-100';
 import { SafeFetchService } from './safe-fetch.service';
 
@@ -107,14 +107,6 @@ export class LlmsTxtAnalyzerService {
   }
 
   private absent(url: string): LlmsTxtAnalysis {
-    return {
-      present: false,
-      url,
-      sizeBytes: 0,
-      sections: [],
-      hasFullVariant: false,
-      complianceScore: 0,
-      issues: ['Fichier llms.txt absent'],
-    };
+    return llmsTxtAbsent(url, 'Fichier llms.txt absent');
   }
 }

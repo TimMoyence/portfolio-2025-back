@@ -1,3 +1,5 @@
+import { arrondi } from '../../../../common/domain/nombres/arrondi';
+
 export type Rng = () => number;
 
 export interface Tirage {
@@ -8,7 +10,7 @@ export interface Tirage {
 
 const INCREMENT = 0x6d2b79f5;
 const ECHELLE = 4294967296;
-const PRECISION = 1e10;
+const DECIMALES_DU_TIRAGE = 10;
 
 export function creerRng(graine: number): Rng {
   let etat = graine | 0;
@@ -48,9 +50,7 @@ export function creerTirage(rng: Rng): Tirage {
         );
       }
       const rangMax = Math.floor((max - min) / pas + 1e-9);
-      return (
-        Math.round((min + pas * entier(0, rangMax)) * PRECISION) / PRECISION
-      );
+      return arrondi(min + pas * entier(0, rangMax), DECIMALES_DU_TIRAGE);
     },
     choix(valeurs) {
       return valeurs[entier(0, valeurs.length - 1)];

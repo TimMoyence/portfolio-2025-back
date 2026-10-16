@@ -1,4 +1,3 @@
-import { arrondirMoitieLoinDeZero } from '../../domain/cours/Formule';
 import {
   comparerCommeExcel,
   dateExcel,
@@ -64,14 +63,6 @@ describe('fonctions de classeur à la façon d’Excel', () => {
     expect(comparerCommeExcel(null, 0)).toBe(0);
     expect(comparerCommeExcel('LILLE', 'lille')).toBe(0);
     expect(comparerCommeExcel(true, 'zzz')).toBeGreaterThan(0);
-  });
-
-  it('arrondit à mi-chemin loin de zéro, comme ARRONDI', () => {
-    expect(arrondirMoitieLoinDeZero(2.675, 2)).toBeCloseTo(2.68, 10);
-    expect(arrondirMoitieLoinDeZero(1.005, 2)).toBeCloseTo(1.01, 10);
-    expect(arrondirMoitieLoinDeZero(-2.5, 0)).toBe(-3);
-    expect(arrondirMoitieLoinDeZero(12_345, -2)).toBe(12_300);
-    expect(Object.is(arrondirMoitieLoinDeZero(-0.004, 2), 0)).toBe(true);
   });
 
   it('normalise une ville comme NOMPROPRE(SUPPRESPACE(…))', () => {

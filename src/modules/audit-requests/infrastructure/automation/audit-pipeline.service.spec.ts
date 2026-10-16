@@ -7,6 +7,7 @@ import {
   buildPageExploree,
   createMockAuditRequestsRepo,
 } from '../../../../../test/factories/audit-requests.factory';
+import { llmsTxtAbsent } from '../../domain/AiIndexability';
 import { AuditSnapshot } from '../../domain/AuditProcessing';
 import type { IAuditRequestsRepository } from '../../domain/IAuditRequests.repository';
 import type { AuditDeliveryOrchestrator } from './audit-delivery.orchestrator';
@@ -26,7 +27,7 @@ import type {
 } from './page-ai-recap.service';
 import type { SafeFetchService } from './safe-fetch.service';
 import type { ScoringService } from './scoring.service';
-import type { SitemapDiscoveryService } from './sitemap-discovery.service';
+import { SitemapDiscoveryService } from './sitemap-discovery.service';
 import type {
   UrlIndexabilityResult,
   UrlIndexabilityService,
@@ -74,15 +75,14 @@ function buildStubDeps(
       generate: jest.fn(),
     } as unknown as jest.Mocked<LangchainAuditReportService>,
     llmsTxtAnalyzer: {
-      analyze: jest.fn().mockResolvedValue({
-        present: false,
-        url: 'https://example.com/llms.txt',
-        sizeBytes: 0,
-        sections: [],
-        hasFullVariant: false,
-        complianceScore: 0,
-        issues: ['Fichier llms.txt absent'],
-      }),
+      analyze: jest
+        .fn()
+        .mockResolvedValue(
+          llmsTxtAbsent(
+            'https://example.com/llms.txt',
+            'Fichier llms.txt absent',
+          ),
+        ),
     } as unknown as jest.Mocked<LlmsTxtAnalyzerService>,
     deliveryOrchestrator: {
       runForAudit: jest.fn().mockResolvedValue(undefined),
@@ -212,7 +212,9 @@ describe('AuditPipelineService', () => {
     jest.resetAllMocks();
   });
 
-  it('updates progress through the happy path and completes the audit', async () => {
+  const monterUnAuditQuiAboutit = (
+    decouverte?: (safeFetch: SafeFetchService) => SitemapDiscoveryService,
+  ) => {
     (normalizeAuditUrl as jest.Mock).mockResolvedValue({
       normalizedUrl: 'https://example.com/',
       hostname: 'example.com',
@@ -232,7 +234,7 @@ describe('AuditPipelineService', () => {
             redirectChain: [],
             statusCode: 200,
             headers: {},
-            body: 'User-agent: *\nAllow: /\n',
+            body: 'User-agent: *\nAllow: /\nSitemap: https://example.com/declare.xml\n',
             ttfbMs: 50,
             totalMs: 100,
             contentLength: 30,
@@ -430,7 +432,7 @@ describe('AuditPipelineService', () => {
       safeFetch,
       homepageAnalyzer,
       deepUrlAnalysis,
-      sitemapDiscovery,
+      decouverte?.(safeFetch) ?? sitemapDiscovery,
       urlIndexability,
       pageAiRecap,
       scoring,
@@ -438,6 +440,26 @@ describe('AuditPipelineService', () => {
       llmsTxtAnalyzer,
       deliveryOrchestrator,
     );
+    return {
+      service,
+      repo,
+      safeFetch,
+      urlIndexability,
+      llmReport,
+      llmsTxtAnalyzer,
+      deliveryOrchestrator,
+    };
+  };
+
+  it('updates progress through the happy path and completes the audit', async () => {
+    const {
+      service,
+      repo,
+      urlIndexability,
+      llmReport,
+      llmsTxtAnalyzer,
+      deliveryOrchestrator,
+    } = monterUnAuditQuiAboutit();
 
     await service.run('audit-1');
 
@@ -545,6 +567,38 @@ describe('AuditPipelineService', () => {
     }
   });
 
+  it('ne télécharge robots.txt qu une fois par audit et en sert le corps à la découverte des sitemaps', async () => {
+    const { service, repo, safeFetch } = monterUnAuditQuiAboutit(
+      (safeFetch) => new SitemapDiscoveryService(config, safeFetch),
+    );
+
+    await service.run('audit-1');
+
+    const urlsDemandees = safeFetch.fetchText.mock.calls.map(([url]) => url);
+    expect(
+      urlsDemandees.filter((url) => url.endsWith('/robots.txt')),
+    ).toHaveLength(1);
+    expect(urlsDemandees).toContain('https://example.com/declare.xml');
+    expect(
+      repo.updateState.mock.calls.map(([, etat]) => etat.processingStatus),
+    ).toContain('COMPLETED');
+  });
+
+  it('consigne un llms.txt absent quand l origine est invalide ou que l analyse échoue', async () => {
+    const deps = buildStubDeps();
+    deps.llmsTxtAnalyzer.analyze.mockRejectedValue(new Error('panne'));
+    const service = buildPipelineService(deps, config);
+
+    await expect(service['runLlmsTxtAnalysis'](null)).resolves.toEqual(
+      llmsTxtAbsent('', 'Origine invalide'),
+    );
+    await expect(
+      service['runLlmsTxtAnalysis']('https://example.com'),
+    ).resolves.toEqual(
+      llmsTxtAbsent('https://example.com/llms.txt', 'Analyse llms.txt échouée'),
+    );
+  });
+
   it('marks the audit as failed when an exception occurs', async () => {
     (normalizeAuditUrl as jest.Mock).mockRejectedValue(
       new Error('Normalization failed'),
@@ -599,5 +653,23 @@ describe('AuditPipelineService', () => {
     expect(selected[0]).toContain('/fr/');
     expect(lastFrenchIndex).toBeGreaterThanOrEqual(0);
     expect(firstEnglishIndex).toBeGreaterThan(lastFrenchIndex);
+  });
+
+  it('compte la langue d une page par son html[lang], bords et casse compris', () => {
+    const service = buildPipelineService(buildStubDeps(), config);
+
+    const couverture = service['buildLocaleCoverage']('fr', [
+      buildPageExploree('/a', { htmlLang: ' fr-FR' }),
+      buildPageExploree('/b', { htmlLang: 'EN_gb ' }),
+      buildPageExploree('/c', { htmlLang: 'de' }),
+    ]);
+
+    expect(couverture).toEqual(
+      expect.objectContaining({
+        matchingLang: 1,
+        mismatchedLang: 1,
+        unknownLang: 1,
+      }),
+    );
   });
 });

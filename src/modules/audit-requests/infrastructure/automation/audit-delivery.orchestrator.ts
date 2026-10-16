@@ -1,6 +1,7 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { enArrierePlan } from '../../../../common/application/en-arriere-plan';
 import { moyenneOu } from '../../../../common/domain/nombres/statistiques';
+import { textesUniquesBornes } from '../../../../common/domain/texte/textes-uniques-bornes';
 import type { AuditSnapshot } from '../../domain/AuditProcessing';
 import type {
   ClientReportSynthesis,
@@ -23,6 +24,8 @@ import {
 } from './langchain-client-report.service';
 import type { PageAiRecap } from './page-ai-recap.service';
 import { normalizeSeverity } from './shared/severity.util';
+
+const TEXTES_PAR_MOTEUR_AGREGE = 8;
 
 export interface RunDeliveryInput {
   readonly auditId: string;
@@ -276,32 +279,19 @@ export class AuditDeliveryOrchestrator {
       ),
     );
     const indexable = entries.some((entry) => entry.indexable);
-    const strengths = this.flattenUnique(entries.map((e) => e.strengths));
-    const blockers = this.flattenUnique(entries.map((e) => e.blockers));
-    const opportunities = this.flattenUnique(
-      entries.map((e) => e.opportunities),
-    );
+    const agreges = (liste: 'strengths' | 'blockers' | 'opportunities') =>
+      textesUniquesBornes(
+        entries.flatMap((entry) => entry[liste]),
+        TEXTES_PAR_MOTEUR_AGREGE,
+      );
     return {
       engine,
       score: avg,
       indexable,
-      strengths,
-      blockers,
-      opportunities,
+      strengths: agreges('strengths'),
+      blockers: agreges('blockers'),
+      opportunities: agreges('opportunities'),
     };
-  }
-
-  private flattenUnique(
-    entries: ReadonlyArray<ReadonlyArray<string>>,
-  ): string[] {
-    const set = new Set<string>();
-    for (const sublist of entries) {
-      for (const entry of sublist) {
-        const trimmed = entry.trim();
-        if (trimmed.length > 0) set.add(trimmed);
-      }
-    }
-    return [...set].slice(0, 8);
   }
 
   private buildEmptyCoverage(): EngineCoverage {

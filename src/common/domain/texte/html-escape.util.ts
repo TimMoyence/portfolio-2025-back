@@ -1,28 +1,15 @@
 import { estObjet } from '../est-objet';
 
-declare const escapedHtmlBrand: unique symbol;
-
-export type EscapedHtml = string & {
-  readonly [escapedHtmlBrand]: 'EscapedHtml';
-};
-
-type Genre = 'url' | 'style';
+type Genre = 'html' | 'url' | 'style';
 
 class FragmentEmis<G extends Genre> {
-  readonly #texte: string;
+  declare private readonly emis: G;
 
-  constructor(
-    readonly genre: G,
-    texte: string,
-  ) {
-    this.#texte = texte;
-  }
-
-  toString(): string {
-    return this.#texte;
-  }
+  constructor(readonly genre: G) {}
 }
 Object.freeze(FragmentEmis.prototype);
+
+export type EscapedHtml = FragmentEmis<'html'>;
 
 export type UrlEchappee = FragmentEmis<'url'>;
 
@@ -34,7 +21,7 @@ const fragmentsEmis = new WeakMap<
 >();
 
 function emettre<G extends Genre>(genre: G, texte: string): FragmentEmis<G> {
-  const fragment = new FragmentEmis(genre, texte);
+  const fragment = new FragmentEmis(genre);
   Object.freeze(fragment);
   fragmentsEmis.set(fragment, { genre, texte });
   return fragment;
@@ -67,17 +54,31 @@ function estEmis<G extends Genre>(
   return estObjet(valeur) && fragmentsEmis.get(valeur)?.genre === genre;
 }
 
-function texteDe(valeur: unknown): string {
-  if (
+type Primitif = string | number | bigint | boolean | symbol | null | undefined;
+
+function estPrimitif(valeur: unknown): valeur is Primitif {
+  return (
     (typeof valeur !== 'object' || valeur === null) &&
     typeof valeur !== 'function'
-  ) {
-    return String(valeur);
+  );
+}
+
+function texteBrut(valeur: Primitif): string {
+  if (!estPrimitif(valeur)) {
+    throw new Error(
+      'Échappement refusé : un objet n’a pas de texte à échapper, String() en ferait « [object Object] ». Passez sa valeur, ou interpolez le fragment dans safeHtml.',
+    );
   }
+  return String(valeur);
+}
+
+function texteDe(valeur: unknown): string {
+  if (typeof valeur === 'number') return String(valeur);
+  if (estPrimitif(valeur)) return echapper(valeur);
   const emis = fragmentsEmis.get(valeur);
   if (emis === undefined) {
     throw new Error(
-      'Interpolation refusée : cet objet n’a été émis ni par escapeUrl ni par safeCss, son texte ne dit rien de son contexte.',
+      'Interpolation refusée : cet objet n’a été émis ni par escapeHtml, safeHtml, escapeUrl ou safeCss, son texte ne dit rien de son contexte.',
     );
   }
   return emis.texte;
@@ -96,13 +97,17 @@ type HtmlFragment =
   | UrlEchappee
   | FeuilleDeStyle;
 
-export function escapeHtml(value: unknown): EscapedHtml {
-  return String(value)
+function echapper(value: Primitif): string {
+  return texteBrut(value)
     .replaceAll('&', '&amp;')
     .replaceAll('<', '&lt;')
     .replaceAll('>', '&gt;')
     .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#39;') as EscapedHtml;
+    .replaceAll("'", '&#39;');
+}
+
+export function escapeHtml(value: Primitif): EscapedHtml {
+  return emettre('html', echapper(value));
 }
 
 const ALLOWED_URL_SCHEMES: ReadonlySet<string> = new Set([
@@ -133,14 +138,14 @@ function absoluteScheme(raw: string): string | null {
  * reference vide designe le document courant, donc `href=""` reste un lien
  * actif.
  */
-export function escapeUrl(value: unknown): UrlEchappee {
-  const raw = String(value);
+export function escapeUrl(value: Primitif): UrlEchappee {
+  const raw = texteBrut(value);
   if (!raw.trim()) return emettre('url', INERT_URL);
   const scheme = absoluteScheme(raw);
-  if (scheme === null) return emettre('url', escapeHtml(raw));
+  if (scheme === null) return emettre('url', echapper(raw));
   return emettre(
     'url',
-    ALLOWED_URL_SCHEMES.has(scheme) ? escapeHtml(raw) : INERT_URL,
+    ALLOWED_URL_SCHEMES.has(scheme) ? echapper(raw) : INERT_URL,
   );
 }
 
@@ -485,12 +490,15 @@ function interpoler(
 /**
  * Assemble un gabarit HTML dont chaque interpolation est deja sure : le
  * compilateur rejette toute `string` qui n'est pas passee par `escapeHtml`
- * ou par un autre `safeHtml`. Les nombres sont acceptes tels quels, les
- * tableaux de fragments sont concatenes.
+ * ou par un autre `safeHtml`, et l'execution echappe toute valeur qui n'est
+ * pas un fragment emis ici, quel que soit le type qui l'a fait passer. Les
+ * nombres sont acceptes tels quels, les tableaux de fragments sont concatenes.
  *
  * Sans interpolation, le gabarit est un litteral ecrit par nous : c'est la
- * seule facon de produire du HTML brut, et elle ne peut pas transporter de
- * donnee externe. Il n'existe donc aucune echappatoire a marquer.
+ * seule facon de produire du HTML brut. L'execution ne distingue pas le
+ * tableau gele par le moteur d'un tableau gele a la main : la garde
+ * html-renderers.guardrails.spec.ts n'admet safeHtml et safeCss, hors de ce
+ * fichier, que comme etiquette d'un gabarit litteral.
  *
  * Le tag ne s'appelle pas `html` a dessein : Prettier reformaterait alors
  * le contenu du gabarit, ce qui modifierait le rendu des blocs ou les
@@ -510,5 +518,14 @@ export function safeHtml(
     lecteur.lire(suite);
     out += texte + suite;
   }
-  return out as EscapedHtml;
+  return emettre('html', out);
+}
+
+export function htmlEmis(fragment: EscapedHtml): string {
+  if (!estEmis(fragment, 'html')) {
+    throw new Error(
+      'Fragment HTML refusé : seul un fragment émis par escapeHtml ou safeHtml sort en HTML, une valeur typée comme lui ne porte aucune garantie.',
+    );
+  }
+  return texteDe(fragment);
 }

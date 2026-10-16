@@ -1,61 +1,18 @@
-import type { ClientReportSynthesis } from '../../domain/AuditReportTiers';
-import { attendreRapportAccepte } from '../../../../../test/helpers/validation-de-rapport';
 import {
   ReportQualityGateContext,
   ReportQualityGateService,
 } from './report-quality-gate.service';
 import type { ExpertReport } from './schemas/audit-report.schemas';
+import {
+  buildExpertReport,
+  buildPageAnalysee,
+} from '../../../../../test/factories/audit-requests.factory';
 
 describe('ReportQualityGateService', () => {
   let service: ReportQualityGateService;
 
   beforeEach(() => {
     service = new ReportQualityGateService();
-  });
-
-  const baseReport = (): ExpertReport => ({
-    executiveSummary: 'Executive summary.',
-    reportExplanation: 'Report explanation.',
-    strengths: ['Strong technical baseline'],
-    diagnosticChapters: {
-      conversionAndClarity: 'Conversion issues detected on key templates.',
-      speedAndPerformance: 'Performance bottlenecks affect mobile rendering.',
-      seoFoundations: 'Metadata and heading structure need standardization.',
-      credibilityAndTrust: 'Trust signals are inconsistent across core pages.',
-      techAndScalability:
-        'Stack hygiene requires stronger maintenance controls.',
-      scorecardAndBusinessOpportunities:
-        'Prioritized quick wins can improve leads in 30 days.',
-    },
-    techFingerprint: {
-      primaryStack: 'WordPress',
-      confidence: 0.78,
-      evidence: ['WordPress hint detected'],
-      alternatives: ['PHP runtime'],
-      unknowns: [],
-    },
-    priorities: [
-      {
-        title: 'Fix canonical consistency',
-        severity: 'high',
-        whyItMatters: 'Canonical defects split ranking signals.',
-        recommendedFix:
-          'Set one self-referencing canonical per indexable page.',
-        estimatedHours: 5,
-      },
-    ],
-    urlLevelImprovements: [],
-    implementationTodo: [],
-    whatToFixThisWeek: [],
-    whatToFixThisMonth: [],
-    clientMessageTemplate: 'Hello, here are top priorities.',
-    clientLongEmail: 'Detailed client email.',
-    fastImplementationPlan: [],
-    implementationBacklog: [],
-    invoiceScope: [],
-    perPageAnalysis: [],
-    clientEmailDraft: { subject: '', body: '' },
-    internalNotes: '',
   });
 
   const baseContext = (): ReportQualityGateContext => ({
@@ -92,8 +49,51 @@ describe('ReportQualityGateService', () => {
     ],
   });
 
+  it('nettoie et dedoublonne chaque liste de textes du rapport, bornes de l empreinte comprises', () => {
+    const indices = Array.from({ length: 9 }, (_, i) => `Hint ${i + 1}`);
+    const report = buildExpertReport();
+    report.strengths = [' Strong baseline ', 'Strong baseline', ''];
+    report.techFingerprint = {
+      ...report.techFingerprint,
+      evidence: ['wp-content path', ' wp-content path', ...indices],
+      alternatives: ['PHP runtime', 'PHP runtime ', '  '],
+      unknowns: ['CDN vendor', 'CDN vendor'],
+    };
+    report.implementationBacklog = [
+      {
+        task: 'Unify canonicals',
+        priority: 'high',
+        details: 'One self-referencing canonical per page.',
+        estimatedHours: 4,
+        dependencies: ['CMS access', 'CMS access '],
+        acceptanceCriteria: ['Single canonical', 'Single canonical'],
+      },
+    ];
+
+    const { report: normalise } = service.apply(
+      'Summary text.',
+      report,
+      baseContext(),
+    );
+
+    expect(normalise.strengths).toEqual(['Strong baseline']);
+    expect(normalise.techFingerprint).toEqual(
+      expect.objectContaining({
+        evidence: ['wp-content path', ...indices.slice(0, 7)],
+        alternatives: ['PHP runtime'],
+        unknowns: ['CDN vendor'],
+      }),
+    );
+    expect(normalise.implementationBacklog[0]).toEqual(
+      expect.objectContaining({
+        dependencies: ['CMS access'],
+        acceptanceCriteria: ['Single canonical'],
+      }),
+    );
+  });
+
   it('enriches and deduplicates priorities up to the minimum threshold', () => {
-    const report = baseReport();
+    const report = buildExpertReport();
     report.priorities = [
       report.priorities[0],
       { ...report.priorities[0] },
@@ -118,7 +118,7 @@ describe('ReportQualityGateService', () => {
   });
 
   it('complète les priorités par les constats les plus graves d abord', () => {
-    const report = baseReport();
+    const report = buildExpertReport();
     report.priorities = [];
     const context = baseContext();
     context.deepFindings = [...context.deepFindings].reverse();
@@ -138,7 +138,7 @@ describe('ReportQualityGateService', () => {
     ['vide', { subject: '', body: '' }],
     ['blanc', { subject: '   ', body: 'Corps du message.' }],
   ])('refuse un brouillon d email client %s', (_cas, clientEmailDraft) => {
-    const report = { ...baseReport(), clientEmailDraft };
+    const report = { ...buildExpertReport(), clientEmailDraft };
 
     const result = service.apply('English summary.', report, baseContext());
 
@@ -146,9 +146,65 @@ describe('ReportQualityGateService', () => {
     expect(result.report.clientEmailDraft).toEqual({ subject: '', body: '' });
   });
 
+  it.each([
+    [
+      'fr',
+      'Non verifiable',
+      {
+        conversionAndClarity: 'Conversion et clarte: Non verifiable.',
+        speedAndPerformance: 'Vitesse et performance: Non verifiable.',
+        seoFoundations: 'Fondations SEO: Non verifiable.',
+        credibilityAndTrust: 'Credibilite et confiance: Non verifiable.',
+        techAndScalability: 'Tech et scalabilite: Non verifiable.',
+        scorecardAndBusinessOpportunities:
+          'Scorecard et opportunites business: Non verifiable.',
+      },
+    ],
+    [
+      'en',
+      'Not verifiable',
+      {
+        conversionAndClarity: 'Conversion and clarity: Not verifiable.',
+        speedAndPerformance: 'Speed and performance: Not verifiable.',
+        seoFoundations: 'SEO foundations: Not verifiable.',
+        credibilityAndTrust: 'Credibility and trust: Not verifiable.',
+        techAndScalability: 'Tech and scalability: Not verifiable.',
+        scorecardAndBusinessOpportunities:
+          'Scorecard and business opportunities: Not verifiable.',
+      },
+    ],
+  ] as const)(
+    'marque non verifiable en %s les chapitres et la stack que le LLM laisse vides',
+    (locale, marqueur, chapitres) => {
+      const report: ExpertReport = {
+        ...buildExpertReport(),
+        diagnosticChapters: {
+          conversionAndClarity: '',
+          speedAndPerformance: ' ',
+          seoFoundations: '',
+          credibilityAndTrust: '',
+          techAndScalability: '',
+          scorecardAndBusinessOpportunities: '',
+        },
+        techFingerprint: {
+          ...buildExpertReport().techFingerprint,
+          primaryStack: '',
+        },
+      };
+
+      const result = service.apply('Summary.', report, {
+        ...baseContext(),
+        locale,
+      });
+
+      expect(result.report.diagnosticChapters).toEqual(chapitres);
+      expect(result.report.techFingerprint.primaryStack).toBe(marqueur);
+    },
+  );
+
   it('garde un brouillon d email client trimé', () => {
     const report = {
-      ...baseReport(),
+      ...buildExpertReport(),
       clientEmailDraft: { subject: ' Objet ', body: ' Corps. ' },
     };
 
@@ -162,7 +218,7 @@ describe('ReportQualityGateService', () => {
   });
 
   it('ranks the model severity into the three report levels', () => {
-    const report = baseReport();
+    const report = buildExpertReport();
     const priority = report.priorities[0];
     report.priorities = [
       {
@@ -191,162 +247,66 @@ describe('ReportQualityGateService', () => {
     expect(severityOf('Unknown canonical defect')).toBe('medium');
   });
 
-  const baseClientReport = (): ClientReportSynthesis => ({
-    executiveSummary:
-      'Audit complet finalise avec 3 leviers prioritaires et un plan de 30 jours.',
-    topFindings: [
-      {
-        title: 'Meta descriptions manquantes',
-        impact: 'Reduction du CTR organique sur les pages commerciales.',
-        severity: 'high',
+  describe('validateurs du palier expert', () => {
+    const rapportExpertComplet = (): ExpertReport => ({
+      ...buildExpertReport(),
+      perPageAnalysis: [buildPageAnalysee({ url: 'https://example.com/' })],
+      clientEmailDraft: {
+        subject: 'Audit example.com: quick wins',
+        body: 'Hello,\n\n'.repeat(50),
       },
-      {
-        title: 'CTA peu visible',
-        impact: 'Baisse du taux de conversion sur les pages de landing.',
-        severity: 'medium',
-      },
-    ],
-    googleVsAiMatrix: {
-      googleVisibility: { score: 65, summary: 'Bon potentiel Google.' },
-      aiVisibility: { score: 50, summary: 'Couverture IA a renforcer.' },
-    },
-    pillarScorecard: [
-      { pillar: 'seo', score: 62, target: 85 },
-      { pillar: 'performance', score: 55, target: 85 },
-      { pillar: 'technical', score: 70, target: 85 },
-      { pillar: 'trust', score: 68, target: 85 },
-      { pillar: 'conversion', score: 60, target: 85 },
-      { pillar: 'aiVisibility', score: 48, target: 85 },
-      { pillar: 'citationWorthiness', score: 52, target: 85 },
-    ],
-    quickWins: [
-      {
-        title: 'Ajouter les meta descriptions',
-        businessImpact: 'Augmente le CTR organique rapidement.',
-        effort: 'low',
-      },
-      {
-        title: 'Repositionner le CTA principal',
-        businessImpact: 'Ameliore la conversion mobile.',
-        effort: 'low',
-      },
-      {
-        title: 'Publier un fichier llms.txt',
-        businessImpact: 'Ouvre la visibilite aux moteurs IA.',
-        effort: 'medium',
-      },
-    ],
-    cta: {
-      title: 'Planifier un appel de 30 minutes',
-      description: 'Nous prioriserons ensemble les premieres actions.',
-      actionLabel: 'Reserver',
-    },
-  });
-
-  describe('validateClientReport', () => {
-    it('accepts a valid client synthesis with 7 pillars and 3 quick wins', () => {
-      attendreRapportAccepte(service.validateClientReport(baseClientReport()));
+      internalNotes: 'Internal notes ready for the call.',
     });
 
-    const signaleLeMotif = (issues: readonly string[], motif: string) =>
-      issues.some((issue) => issue.includes(motif));
+    const appliquer = (report: ExpertReport) =>
+      service.apply('English summary.', report, baseContext());
 
-    it('flags a scorecard that is not exactly 7 entries', () => {
-      const bad = baseClientReport();
-      const result = service.validateClientReport({
-        ...bad,
-        pillarScorecard: bad.pillarScorecard.slice(0, 5),
-      });
-      expect(result.valid).toBe(false);
-      expect(signaleLeMotif(result.issues, 'pillar_scorecard')).toBe(true);
-      expect(result.shouldFallback).toBe(true);
+    const motifsDuPalier = (reasons: readonly string[]) =>
+      reasons.filter((reason) => reason.startsWith('expert_report_'));
+
+    it('garde un rapport expert avec fiches pages, brouillon et notes internes', () => {
+      const result = appliquer(rapportExpertComplet());
+
+      expect(motifsDuPalier(result.reasons)).toEqual([]);
+      expect(result.repli).toBe(false);
     });
 
-    it.each([
-      [
-        'flags quickWins when too few or too many',
-        (report: ClientReportSynthesis) => ({
-          quickWins: report.quickWins.slice(0, 1),
-        }),
-        'quick_wins',
-      ],
-      [
-        'flags an incomplete CTA',
-        (report: ClientReportSynthesis) => ({
-          cta: { ...report.cta, actionLabel: '' },
-        }),
-        'cta_incomplete',
-      ],
-      [
-        'flags markdown leakage in executive summary',
-        () => ({
-          executiveSummary: '**Executive summary** with markdown bold.',
-        }),
-        'markdown',
-      ],
-    ])('%s', (_titre, alteration, motif) => {
-      const report = baseClientReport();
-      const result = service.validateClientReport({
-        ...report,
-        ...alteration(report),
-      });
-      expect(result.valid).toBe(false);
-      expect(signaleLeMotif(result.issues, motif)).toBe(true);
-    });
-  });
-
-  describe('validateExpertReport', () => {
-    it('accepts a valid expert report with perPageAnalysis, draft and notes', () => {
-      attendreRapportAccepte(
-        service.validateExpertReport({
-          perPageAnalysis: [{ url: 'https://example.com/' }],
-          clientEmailDraft: {
-            subject: 'Audit example.com: quick wins',
-            body: 'Hello,\n\n'.repeat(50),
-          },
-          internalNotes: 'Internal notes ready for the call.',
-        }),
-      );
-    });
-
-    it('flags empty perPageAnalysis and short body', () => {
-      const result = service.validateExpertReport({
+    it('demande le repli sans fiche page, sans notes internes et avec un corps court', () => {
+      const result = appliquer({
+        ...rapportExpertComplet(),
         perPageAnalysis: [],
         clientEmailDraft: { subject: 'Short', body: 'Too short.' },
         internalNotes: '',
       });
+
       expect(result.valid).toBe(false);
-      expect(
-        result.issues.some((issue) => issue.includes('per_page_analysis')),
-      ).toBe(true);
-      expect(
-        result.issues.some((issue) => issue.includes('body_too_short')),
-      ).toBe(true);
-      expect(
-        result.issues.some((issue) => issue.includes('internal_notes')),
-      ).toBe(true);
-      expect(result.shouldFallback).toBe(true);
+      expect(motifsDuPalier(result.reasons)).toEqual([
+        'expert_report_per_page_analysis_missing',
+        'expert_report_client_email_body_too_short',
+        'expert_report_internal_notes_missing',
+      ]);
+      expect(result.repli).toBe(true);
     });
 
-    it('flags an overly long subject', () => {
-      const longSubject = 'A'.repeat(120);
-      const result = service.validateExpertReport({
-        perPageAnalysis: [{ url: 'https://example.com/' }],
+    it('demande le repli pour un objet de courriel trop long', () => {
+      const result = appliquer({
+        ...rapportExpertComplet(),
         clientEmailDraft: {
-          subject: longSubject,
+          subject: 'A'.repeat(120),
           body: 'Hello,\n\n'.repeat(50),
         },
-        internalNotes: 'ok',
       });
+
       expect(result.valid).toBe(false);
-      expect(
-        result.issues.some((issue) => issue.includes('subject_too_long')),
-      ).toBe(true);
+      expect(motifsDuPalier(result.reasons)).toEqual([
+        'expert_report_client_email_subject_too_long',
+      ]);
+      expect(result.repli).toBe(true);
     });
   });
 
   it('flags mixed-language output as invalid', () => {
-    const report = baseReport();
+    const report = buildExpertReport();
     report.executiveSummary =
       'The audit is ready et la priorite est la conversion.';
 

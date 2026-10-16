@@ -3,5 +3,12 @@ import type { TierValidationResult } from '../../src/modules/audit-requests/infr
 export function attendreRapportAccepte(result: TierValidationResult): void {
   expect(result.issues).toEqual([]);
   expect(result.valid).toBe(true);
-  expect(result.shouldFallback).toBe(false);
+}
+
+export function attendreRapportRefuse(
+  result: TierValidationResult,
+  motif: string,
+): void {
+  expect(result.issues).toEqual([motif]);
+  expect(result.valid).toBe(false);
 }

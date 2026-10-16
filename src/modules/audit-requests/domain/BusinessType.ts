@@ -1,4 +1,5 @@
 import type { AuditLocale } from './audit-locale.util';
+import { estNonVerifiable } from './non-verifiable';
 
 export type BusinessType =
   | 'ecommerce'
@@ -50,8 +51,7 @@ const SERVICE_HINTS = [
 
 export function detectBusinessType(primaryStack: string): BusinessType {
   const normalized = primaryStack.trim().toLowerCase();
-  if (!normalized || normalized.includes('not verifiable')) return 'unknown';
-  if (normalized.includes('non verifiable')) return 'unknown';
+  if (!normalized || estNonVerifiable(normalized)) return 'unknown';
 
   const containsAny = (hints: ReadonlyArray<string>): boolean =>
     hints.some((hint) => normalized.includes(hint));

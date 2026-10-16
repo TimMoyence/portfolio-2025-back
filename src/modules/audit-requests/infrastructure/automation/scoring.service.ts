@@ -10,6 +10,7 @@ import { UrlIndexabilityResult } from './url-indexability.service';
 import { scoreMoyenSur100, scoreSur100 } from '../../domain/score-sur-100';
 import { estAuMoinsUn } from '../../../../common/domain/au-moins-un';
 import { proportion } from '../../../../common/domain/nombres/statistiques';
+import { textesUniquesBornes } from '../../../../common/domain/texte/textes-uniques-bornes';
 
 export type PillarKey =
   | 'seo'
@@ -133,7 +134,7 @@ export class ScoringService {
 
     return {
       pillarScores,
-      quickWins: Array.from(new Set(quickWins)).slice(0, 10),
+      quickWins: textesUniquesBornes(quickWins, 10),
       keyChecks: {
         accessibility: {
           statusCode: homepage.statusCode,

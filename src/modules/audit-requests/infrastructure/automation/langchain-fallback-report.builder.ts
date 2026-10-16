@@ -1,11 +1,13 @@
-import { arrondi } from '../../../../common/domain/nombres/arrondi';
+import { arrondi, auCentime } from '../../../../common/domain/nombres/arrondi';
 import { borner } from '../../../../common/domain/nombres/borner';
+import { somme } from '../../../../common/domain/nombres/statistiques';
 import { AuditLocale } from '../../domain/audit-locale.util';
 import {
   LIBELLES_DU_NIVEAU,
   type ReportSeverity,
 } from '../../domain/AuditReportTiers';
 import type { EngineScore } from '../../domain/EngineCoverage';
+import { nonVerifiable } from '../../domain/non-verifiable';
 import { localizedText } from './shared/locale-text.util';
 import { pillarLabel } from './shared/pillar-labels.util';
 import type {
@@ -48,8 +50,7 @@ export function buildFallbackExpertReport(
   const topQuickWins = input.quickWins.slice(0, 8);
   const fallbackTechFingerprint = {
     primaryStack:
-      input.techFingerprint.primaryStack ||
-      localizedText(input.locale, 'Non verifiable', 'Not verifiable'),
+      input.techFingerprint.primaryStack || nonVerifiable(input.locale),
     confidence: borner(Number(input.techFingerprint.confidence || 0), 0, 1),
     evidence: (input.techFingerprint.evidence ?? []).slice(0, 8),
     alternatives: (input.techFingerprint.alternatives ?? []).slice(0, 4),
@@ -472,12 +473,16 @@ export function withDeterministicCost(
 }
 
 function sumHours(values: number[]): number {
-  const total = values.reduce<number>((acc, value) => {
-    return Number.isFinite(value) ? acc + Math.max(0, value) : acc;
-  }, 0);
-  return arrondi(total, 1);
+  return arrondi(
+    somme(
+      values
+        .filter((value) => Number.isFinite(value))
+        .map((value) => Math.max(0, value)),
+    ),
+    1,
+  );
 }
 
 function roundCurrency(value: number): number {
-  return Math.round(Math.max(0, value) * 100) / 100;
+  return auCentime(Math.max(0, value));
 }

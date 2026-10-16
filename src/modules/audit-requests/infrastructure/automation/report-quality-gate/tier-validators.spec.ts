@@ -1,204 +1,174 @@
 import { validateClientReport, validateExpertReport } from './tier-validators';
-import type { ClientReportSynthesis } from '../../../domain/AuditReportTiers';
-import { attendreRapportAccepte } from '../../../../../../test/helpers/validation-de-rapport';
+import type {
+  ClientReportSynthesis,
+  ExpertReportSynthesis,
+} from '../../../domain/AuditReportTiers';
+import {
+  attendreRapportAccepte,
+  attendreRapportRefuse,
+} from '../../../../../../test/helpers/validation-de-rapport';
+import {
+  buildClientReportConforme,
+  buildExpertReportConforme,
+} from '../../../../../../test/factories/audit-requests.factory';
 
-function buildClientReport(
-  overrides?: Partial<ClientReportSynthesis>,
-): ClientReportSynthesis {
-  return {
-    executiveSummary: 'Synthese operationnelle du rapport client.',
-    pillarScorecard: [
-      { pillar: 'seo', score: 70, label: 'SEO', color: 'green' },
-      { pillar: 'performance', score: 65, label: 'Perf', color: 'orange' },
-      { pillar: 'technical', score: 70, label: 'Tech', color: 'green' },
-      { pillar: 'trust', score: 60, label: 'Trust', color: 'orange' },
-      { pillar: 'conversion', score: 70, label: 'Conv', color: 'green' },
-      {
-        pillar: 'aiVisibility',
-        score: 50,
-        label: 'AI visibility',
-        color: 'orange',
-      },
-      {
-        pillar: 'citationWorthiness',
-        score: 55,
-        label: 'Citation',
-        color: 'orange',
-      },
-    ],
-    quickWins: [
-      { title: 'Quick win A', businessImpact: 'Gain', details: '' },
-      { title: 'Quick win B', businessImpact: 'Gain', details: '' },
-      { title: 'Quick win C', businessImpact: 'Gain', details: '' },
-    ],
-    topFindings: [
-      { title: 'Top finding A', description: 'Desc', severity: 'high' },
-    ],
-    cta: {
-      title: 'Parler du projet',
-      description: 'Contactez-nous pour avancer',
-      actionLabel: 'Prendre RDV',
-    },
-    ...overrides,
-  } as unknown as ClientReportSynthesis;
-}
+type RapportExpertLu = Parameters<typeof validateExpertReport>[0];
 
 describe('validateClientReport', () => {
-  it('valide un rapport client correctement forme', () => {
-    attendreRapportAccepte(validateClientReport(buildClientReport()));
+  it('accepte le rapport client conforme, ses 7 piliers et ses 3 quick wins', () => {
+    attendreRapportAccepte(validateClientReport(buildClientReportConforme()));
   });
 
-  it('rejette quand executiveSummary est vide', () => {
-    const result = validateClientReport(
-      buildClientReport({ executiveSummary: '' }),
-    );
-    expect(result.valid).toBe(false);
-    expect(result.issues).toContain('client_report_missing_executive_summary');
-    expect(result.shouldFallback).toBe(true);
-  });
-
-  it('rejette quand executiveSummary contient du markdown interdit', () => {
-    const result = validateClientReport(
-      buildClientReport({
-        executiveSummary: '## Titre markdown interdit ici',
-      }),
-    );
-    expect(result.issues).toContain(
+  it.each<
+    [
+      string,
+      (conforme: ClientReportSynthesis) => Partial<ClientReportSynthesis>,
+      string,
+    ]
+  >([
+    [
+      'un résumé vide',
+      () => ({ executiveSummary: '' }),
+      'client_report_missing_executive_summary',
+    ],
+    [
+      'du Markdown dans le résumé',
+      () => ({ executiveSummary: '## Titre markdown interdit ici' }),
       'client_report_markdown_in_executive_summary',
-    );
-    expect(result.shouldFallback).toBe(true);
-  });
-
-  it('rejette pillarScorecard de mauvaise longueur', () => {
-    const report = buildClientReport();
-    (report as { pillarScorecard: unknown }).pillarScorecard = [];
-    const result = validateClientReport(report);
-    expect(result.issues).toContain(
+    ],
+    [
+      '5 piliers au lieu de 7',
+      (conforme) => ({ pillarScorecard: conforme.pillarScorecard.slice(0, 5) }),
       'client_report_pillar_scorecard_must_have_exactly_7_entries',
-    );
-    expect(result.shouldFallback).toBe(true);
-  });
-
-  it('rejette quickWins hors plage 3-5', () => {
-    const result = validateClientReport(buildClientReport({ quickWins: [] }));
-    expect(result.issues).toContain(
-      'client_report_quick_wins_must_be_between_3_and_5',
-    );
-  });
-
-  it('rejette quand un quickWin a un champ obligatoire vide', () => {
-    const result = validateClientReport(
-      buildClientReport({
-        quickWins: [
-          { title: '', businessImpact: 'Gain', details: '' },
-          { title: 'A', businessImpact: 'B', details: '' },
-          { title: 'C', businessImpact: 'D', details: '' },
+    ],
+    [
+      '7 piliers sans le SEO',
+      (conforme) => ({
+        pillarScorecard: [
+          ...conforme.pillarScorecard.slice(1),
+          conforme.pillarScorecard[1],
         ],
-      } as unknown as Partial<ClientReportSynthesis>),
-    );
-    expect(result.issues).toContain('client_report_quick_win_missing_fields');
-  });
-
-  it('rejette quand CTA est incomplet', () => {
-    const result = validateClientReport(
-      buildClientReport({
-        cta: { title: '', description: '', actionLabel: '' },
-      } as unknown as Partial<ClientReportSynthesis>),
-    );
-    expect(result.issues).toContain('client_report_cta_incomplete');
-    expect(result.shouldFallback).toBe(true);
-  });
-
-  it('rejette topFindings trop longs (> 5) sans fallback fort', () => {
-    const result = validateClientReport(
-      buildClientReport({
-        topFindings: Array.from({ length: 6 }, (_, i) => ({
-          title: `Finding ${i}`,
-          description: 'Desc',
-          severity: 'medium',
-        })),
-      } as unknown as Partial<ClientReportSynthesis>),
-    );
-    expect(result.issues).toContain(
+      }),
+      'client_report_missing_pillar_seo',
+    ],
+    [
+      '2 quick wins',
+      (conforme) => ({ quickWins: conforme.quickWins.slice(0, 2) }),
+      'client_report_quick_wins_must_be_between_3_and_5',
+    ],
+    [
+      '6 quick wins',
+      (conforme) => ({
+        quickWins: [...conforme.quickWins, ...conforme.quickWins],
+      }),
+      'client_report_quick_wins_must_be_between_3_and_5',
+    ],
+    [
+      'un quick win sans titre',
+      (conforme) => ({
+        quickWins: conforme.quickWins.map((quickWin, rang) =>
+          rang === 0 ? { ...quickWin, title: ' ' } : quickWin,
+        ),
+      }),
+      'client_report_quick_win_missing_fields',
+    ],
+    [
+      'un CTA sans libellé d action',
+      (conforme) => ({ cta: { ...conforme.cta, actionLabel: '' } }),
+      'client_report_cta_incomplete',
+    ],
+    [
+      'aucun constat',
+      () => ({ topFindings: [] }),
+      'client_report_missing_top_findings',
+    ],
+    [
+      '6 constats',
+      (conforme) => ({
+        topFindings: Array.from({ length: 6 }, () => conforme.topFindings[0]),
+      }),
       'client_report_top_findings_exceeds_maximum',
+    ],
+    [
+      'du Markdown dans le titre d un constat',
+      (conforme) => ({
+        topFindings: [{ ...conforme.topFindings[0], title: '## Constat' }],
+      }),
+      'client_report_markdown_in_finding_title',
+    ],
+  ])('rejette un rapport client avec %s', (_cas, alteration, motif) => {
+    const conforme = buildClientReportConforme();
+
+    attendreRapportRefuse(
+      validateClientReport({ ...conforme, ...alteration(conforme) }),
+      motif,
     );
   });
 });
 
 describe('validateExpertReport', () => {
-  function buildExpertReport(
-    overrides?: Partial<{
-      perPageAnalysis: unknown[];
-      clientEmailDraft: { subject: string; body: string } | null;
-      internalNotes: string;
-    }>,
-  ) {
-    return {
-      perPageAnalysis: [{ url: '/a' }],
-      clientEmailDraft: {
-        subject: 'Sujet',
-        body: 'Body '.repeat(50),
-      },
-      internalNotes: 'Notes internes detaillees',
-      ...overrides,
-    };
-  }
-
-  it('valide un rapport expert correctement forme', () => {
-    const result = validateExpertReport(buildExpertReport());
-    expect(result.valid).toBe(true);
-    expect(result.issues).toEqual([]);
+  it('accepte le rapport expert conforme', () => {
+    attendreRapportAccepte(validateExpertReport(buildExpertReportConforme()));
   });
 
-  it('rejette perPageAnalysis vide', () => {
-    const result = validateExpertReport(
-      buildExpertReport({ perPageAnalysis: [] }),
-    );
-    expect(result.issues).toContain('expert_report_per_page_analysis_missing');
-    expect(result.shouldFallback).toBe(true);
-  });
-
-  it('rejette clientEmailDraft manquant', () => {
-    const result = validateExpertReport(
-      buildExpertReport({ clientEmailDraft: null }),
-    );
-    expect(result.issues).toContain('expert_report_client_email_draft_missing');
-    expect(result.shouldFallback).toBe(true);
-  });
-
-  it('rejette subject email trop long', () => {
-    const result = validateExpertReport(
-      buildExpertReport({
+  it.each<
+    [string, (conforme: ExpertReportSynthesis) => RapportExpertLu, string]
+  >([
+    [
+      'aucune fiche page',
+      () => ({ perPageAnalysis: [] }),
+      'expert_report_per_page_analysis_missing',
+    ],
+    [
+      'aucun brouillon de courriel',
+      () => ({ clientEmailDraft: null }),
+      'expert_report_client_email_draft_missing',
+    ],
+    [
+      'un objet de courriel vide',
+      (conforme) => ({
+        clientEmailDraft: { ...conforme.clientEmailDraft, subject: ' ' },
+      }),
+      'expert_report_client_email_subject_empty',
+    ],
+    [
+      'un objet de courriel de 100 caractères',
+      (conforme) => ({
         clientEmailDraft: {
-          subject: 'x'.repeat(120),
-          body: 'Body '.repeat(50),
+          ...conforme.clientEmailDraft,
+          subject: 'x'.repeat(100),
         },
       }),
-    );
-    expect(result.issues).toContain(
       'expert_report_client_email_subject_too_long',
-    );
-  });
-
-  it('rejette body trop court (<= 200)', () => {
-    const result = validateExpertReport(
-      buildExpertReport({
+    ],
+    [
+      'un corps de courriel vide',
+      (conforme) => ({
+        clientEmailDraft: { ...conforme.clientEmailDraft, body: '' },
+      }),
+      'expert_report_client_email_body_empty',
+    ],
+    [
+      'un corps de courriel de 200 caractères',
+      (conforme) => ({
         clientEmailDraft: {
-          subject: 'Sujet',
-          body: 'Court',
+          ...conforme.clientEmailDraft,
+          body: 'x'.repeat(200),
         },
       }),
-    );
-    expect(result.issues).toContain(
       'expert_report_client_email_body_too_short',
-    );
-  });
+    ],
+    [
+      'des notes internes vides',
+      () => ({ internalNotes: ' ' }),
+      'expert_report_internal_notes_missing',
+    ],
+  ])('rejette un rapport expert avec %s', (_cas, alteration, motif) => {
+    const conforme = buildExpertReportConforme();
 
-  it('rejette internalNotes vide', () => {
-    const result = validateExpertReport(
-      buildExpertReport({ internalNotes: '' }),
+    attendreRapportRefuse(
+      validateExpertReport({ ...conforme, ...alteration(conforme) }),
+      motif,
     );
-    expect(result.issues).toContain('expert_report_internal_notes_missing');
-    expect(result.shouldFallback).toBe(true);
   });
 });

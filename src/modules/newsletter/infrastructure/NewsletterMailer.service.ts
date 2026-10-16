@@ -1,7 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import type { SendMailOptions, Transporter } from 'nodemailer';
-import { createOptionalSmtpTransporter } from '../../../common/infrastructure/mail/smtp-transporter.util';
+import {
+  expediteurDeCourriels,
+  type CourrielHtml,
+  type ExpediteurDeCourriels,
+} from '../../../common/infrastructure/mail/expediteur-smtp';
 import {
   escapeHtml,
   escapeUrl,
@@ -32,17 +35,14 @@ type Greeting = {
 @Injectable()
 export class NewsletterMailerService implements INewsletterMailer {
   private readonly logger = new Logger(NewsletterMailerService.name);
-  private readonly transporter: Transporter | null;
+  private readonly expediteur: ExpediteurDeCourriels;
   private readonly from: string | undefined;
   private readonly replyTo: string;
 
   constructor(private readonly configService: ConfigService<ValeursDeLEnv>) {
     this.from = expediteurDesCourriels(this.environnement());
     this.replyTo = adresseDeReponse(this.environnement());
-    this.transporter = createOptionalSmtpTransporter(
-      this.logger,
-      'Newsletter mailer',
-    );
+    this.expediteur = expediteurDeCourriels(this.logger, 'Newsletter mailer');
   }
 
   async sendConfirmation(subscriber: NewsletterSubscriber): Promise<void> {
@@ -139,12 +139,11 @@ Tim`,
     });
   }
 
-  private async envoyer(
+  private envoyer(
     subscriber: NewsletterSubscriber,
-    message: Omit<SendMailOptions, 'from' | 'to' | 'replyTo'>,
+    message: Omit<CourrielHtml, 'from' | 'to' | 'replyTo'>,
   ): Promise<void> {
-    if (!this.transporter) return;
-    await this.transporter.sendMail({
+    return this.expediteur.envoyer({
       from: this.from,
       to: subscriber.email,
       replyTo: this.replyTo,

@@ -1,5 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { escapeHtml } from '../../../common/domain/texte/html-escape.util';
+import {
+  escapeHtml,
+  htmlEmis,
+} from '../../../common/domain/texte/html-escape.util';
 import { estEntierPositif } from '../../../common/domain/nombres/est-entier-positif';
 import { InvalidInputError } from '../../../common/domain/errors/InvalidInputError';
 import { ResourceConflictError } from '../../../common/domain/errors/ResourceConflictError';
@@ -27,6 +30,10 @@ const FEED_DESCRIPTION = {
   fr: 'Veille IA quotidienne, sourcée et vérifiable, par Asili Design.',
   en: 'Daily sourced AI briefing by Asili Design.',
 } as const;
+
+function texteXml(valeur: string): string {
+  return htmlEmis(escapeHtml(valeur));
+}
 
 export interface ArticleListQuery {
   locale: SupportedLocale;
@@ -164,11 +171,11 @@ export class ArticlesService {
     const xml = items
       .map(
         (article) =>
-          `<item><title>${escapeHtml(article.title)}</title>` +
-          `<link>${escapeHtml(articlePageUrl(locale, article.slug))}</link>` +
-          `<guid isPermaLink="false">${escapeHtml(article.articleId)}</guid>` +
+          `<item><title>${texteXml(article.title)}</title>` +
+          `<link>${texteXml(articlePageUrl(locale, article.slug))}</link>` +
+          `<guid isPermaLink="false">${texteXml(article.articleId)}</guid>` +
           `<pubDate>${article.publishedAt.toUTCString()}</pubDate>` +
-          `<description>${escapeHtml(article.excerpt)}</description></item>`,
+          `<description>${texteXml(article.excerpt)}</description></item>`,
       )
       .join('');
     const lastBuild = items.reduce<Date | null>(
@@ -183,9 +190,9 @@ export class ArticlesService {
       '<?xml version="1.0" encoding="UTF-8"?>' +
       '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel>' +
       `<title>Asili Design — Articles</title>` +
-      `<link>${escapeHtml(urlDuSite() + '/' + locale + '/articles')}</link>` +
-      `<description>${escapeHtml(FEED_DESCRIPTION[locale])}</description>` +
-      `<atom:link href="${escapeHtml(selfUrl)}" rel="self" type="application/rss+xml"/>` +
+      `<link>${texteXml(urlDuSite() + '/' + locale + '/articles')}</link>` +
+      `<description>${texteXml(FEED_DESCRIPTION[locale])}</description>` +
+      `<atom:link href="${texteXml(selfUrl)}" rel="self" type="application/rss+xml"/>` +
       `<language>${FEED_LANGUAGE[locale]}</language>` +
       `<lastBuildDate>${(lastBuild ?? new Date()).toUTCString()}</lastBuildDate>` +
       `${xml}</channel></rss>`

@@ -1,10 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { createMockLeadMagnetRequestRepo } from '../../../../../test/factories/lead-magnet-request.factory';
+import {
+  buildLeadMagnetRequest,
+  buildToolkitContent,
+  createMockLeadMagnetRequestRepo,
+  createMockToolkitContentAssembler,
+} from '../../../../../test/factories/lead-magnet-request.factory';
 import { LienInvalideError } from '../../../../common/domain/errors/LienInvalideError';
-import type { ILeadMagnetRequestRepository } from '../../domain/ILeadMagnetRequestRepository';
-import type { IToolkitContentAssembler } from '../../domain/IToolkitContentAssembler';
-import type { LeadMagnetRequest } from '../../domain/LeadMagnetRequest';
-import type { ToolkitContent } from '../../domain/ToolkitContent';
 import {
   LEAD_MAGNET_REQUEST_REPOSITORY,
   TOOLKIT_CONTENT_ASSEMBLER,
@@ -13,20 +14,15 @@ import { GetToolkitByTokenUseCase } from './GetToolkitByToken.useCase';
 
 describe('GetToolkitByTokenUseCase', () => {
   let useCase: GetToolkitByTokenUseCase;
-  let repo: jest.Mocked<ILeadMagnetRequestRepository>;
-  let assembler: jest.Mocked<IToolkitContentAssembler>;
+  let repo: ReturnType<typeof createMockLeadMagnetRequestRepo>;
+  let assembler: ReturnType<typeof createMockToolkitContentAssembler>;
 
-  const mockContent = { title: 'Guide IA' } as unknown as ToolkitContent;
-  const mockRequest = {
-    firstName: 'Tim',
-    profile: null,
-  } as unknown as LeadMagnetRequest;
+  const mockContent = buildToolkitContent();
+  const mockRequest = buildLeadMagnetRequest({ firstName: 'Tim' });
 
   beforeEach(async () => {
     repo = createMockLeadMagnetRequestRepo();
-    assembler = {
-      assemble: jest.fn(),
-    };
+    assembler = createMockToolkitContentAssembler();
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [

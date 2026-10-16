@@ -1,3 +1,4 @@
+import { arrondi } from '../../../../common/domain/nombres/arrondi';
 import { nombreAffiche } from '../../../../common/domain/nombres/ecriture-francaise';
 import type { Cours, SheetPlanStocke } from '../contrats/cours';
 import type {
@@ -9,7 +10,6 @@ import { reconstruire } from './CorrectionProduction';
 import type { ResultatFormule, ValeurFormule } from './Formule';
 import {
   LONGUEUR_MAX_FORMULE,
-  arrondirMoitieLoinDeZero,
   decalerFormule,
   estUneFormule,
   evaluerFeuille,
@@ -162,5 +162,5 @@ export function affichageDeLAttendu(valeur: ValeurFormule): string {
   }
   const decimales =
     Math.abs(valeur) < 1 ? DECIMALES_D_UN_TAUX : DECIMALES_D_UN_MONTANT;
-  return nombreAffiche(arrondirMoitieLoinDeZero(valeur, decimales), decimales);
+  return nombreAffiche(arrondi(valeur, decimales), decimales);
 }

@@ -1,20 +1,13 @@
 import { generateExpertReport } from './expert-report.generator';
-import type { ExpertReport } from '../schemas/audit-report.schemas';
+import { buildExpertReport } from '../../../../../../test/factories/audit-requests.factory';
 import {
   buildSectionGeneratorArgs,
   systemMessagesOf,
 } from '../../../../../../test/factories/section-generator.factory';
 
 describe('generateExpertReport', () => {
-  function buildStubReport(): ExpertReport {
-    return {
-      priorities: [],
-      urlLevelImprovements: [],
-    } as unknown as ExpertReport;
-  }
-
   function stubInvokeTracked(): jest.Mock {
-    return jest.fn().mockResolvedValue(buildStubReport());
+    return jest.fn().mockResolvedValue(buildExpertReport());
   }
 
   it('appelle invokeTracked avec la section expert_report', async () => {

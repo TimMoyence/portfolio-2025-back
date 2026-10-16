@@ -21,16 +21,11 @@ export interface LienTemporaire {
 
 export abstract class MailerDeLienTemporaire extends ExpediteurSmtp {
   protected async envoyerLien(contenu: LienTemporaire): Promise<void> {
-    if (!this.transporter) {
-      return;
-    }
-
     const { destinataire, lien } = contenu;
     const fullName =
       `${destinataire.firstName} ${destinataire.lastName}`.trim();
 
-    await this.transporter.sendMail({
-      from: this.from,
+    await this.envoyer({
       to: destinataire.email,
       subject: contenu.sujet,
       text: [

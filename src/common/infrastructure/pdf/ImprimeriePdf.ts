@@ -2,6 +2,10 @@ import { Logger, OnModuleDestroy } from '@nestjs/common';
 import puppeteer, { Browser } from 'puppeteer';
 import { envString } from '../../../config/env-readers.util';
 import { messageDErreur } from '../../domain/errors/message-d-erreur';
+import {
+  htmlEmis,
+  type EscapedHtml,
+} from '../../domain/texte/html-escape.util';
 
 // La cover du toolkit deborde ces marges par marges negatives, cf. la regle
 // `.cover.page` de lead-magnets/infrastructure/toolkit-html/toolkit-html.css.ts.
@@ -21,13 +25,14 @@ const CONTAINER_SAFE_CHROMIUM_ARGS = [
 
 export abstract class ImprimeriePdf implements OnModuleDestroy {
   private readonly logger = new Logger(this.constructor.name);
-  private browserPromise: Promise<Browser> | null = null;
+  #browserPromise: Promise<Browser> | null = null;
 
-  protected async imprimer(html: string): Promise<Buffer> {
-    const browser = await this.getBrowser();
+  protected async imprimer(html: EscapedHtml): Promise<Buffer> {
+    const document = htmlEmis(html);
+    const browser = await this.#getBrowser();
     const page = await browser.newPage();
     try {
-      await page.setContent(html, { waitUntil: 'networkidle0' });
+      await page.setContent(document, { waitUntil: 'networkidle0' });
       const pdf = await page.pdf({
         format: 'A4',
         printBackground: true,
@@ -40,28 +45,28 @@ export abstract class ImprimeriePdf implements OnModuleDestroy {
     }
   }
 
-  private async getBrowser(): Promise<Browser> {
-    if (!this.browserPromise) {
-      this.browserPromise = puppeteer.launch({
+  async #getBrowser(): Promise<Browser> {
+    if (!this.#browserPromise) {
+      this.#browserPromise = puppeteer.launch({
         headless: true,
         executablePath: envString('PUPPETEER_EXECUTABLE_PATH'),
         args: CONTAINER_SAFE_CHROMIUM_ARGS,
       });
     }
-    return this.browserPromise;
+    return this.#browserPromise;
   }
 
   async onModuleDestroy(): Promise<void> {
-    if (this.browserPromise) {
+    if (this.#browserPromise) {
       try {
-        const browser = await this.browserPromise;
+        const browser = await this.#browserPromise;
         await browser.close();
       } catch (error) {
         this.logger.warn(
           `Echec lors de la fermeture du navigateur Puppeteer: ${messageDErreur(error)}`,
         );
       } finally {
-        this.browserPromise = null;
+        this.#browserPromise = null;
       }
     }
   }

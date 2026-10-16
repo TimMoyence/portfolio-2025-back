@@ -18,7 +18,7 @@ import { AuditClientReportMailer } from './infrastructure/mail/audit-client-repo
 import { AuditExpertReportMailer } from './infrastructure/mail/audit-expert-report.mailer';
 import { AuditNotificationMailer } from './infrastructure/mail/audit-notification.mailer';
 import { AuditNotifierFacade } from './infrastructure/mail/audit-notifier.facade';
-import { SmtpTransporterProvider } from './infrastructure/mail/smtp-transporter.provider';
+import { ExpediteurDAuditProvider } from './infrastructure/mail/expediteur-d-audit.provider';
 import { AiHeadersAnalyzerService } from './infrastructure/automation/ai-headers-analyzer.service';
 import { AuditDeliveryOrchestrator } from './infrastructure/automation/audit-delivery.orchestrator';
 import { AuditPdfGeneratorService } from './infrastructure/automation/audit-pdf-generator.service';
@@ -124,7 +124,7 @@ const AUDIT_PDF_SERVICES = [
     ...AUDIT_LLM_ABSTRACTIONS,
     ...AUDIT_ORCHESTRATION_SERVICES,
     ...AUDIT_PDF_SERVICES,
-    SmtpTransporterProvider,
+    ExpediteurDAuditProvider,
     AuditNotificationMailer,
     AuditClientReportMailer,
     AuditExpertReportMailer,

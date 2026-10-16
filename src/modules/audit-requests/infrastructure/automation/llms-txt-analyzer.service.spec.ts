@@ -1,3 +1,4 @@
+import { llmsTxtAbsent } from '../../domain/AiIndexability';
 import { LlmsTxtAnalyzerService } from './llms-txt-analyzer.service';
 import type { SafeFetchResult, SafeFetchService } from './safe-fetch.service';
 
@@ -59,6 +60,9 @@ describe('LlmsTxtAnalyzerService', () => {
     expect(result.present).toBe(false);
     expect(result.complianceScore).toBe(0);
     expect(result.issues).toContain('Fichier llms.txt absent');
+    expect(result).toEqual(
+      llmsTxtAbsent('https://example.com/llms.txt', 'Fichier llms.txt absent'),
+    );
   });
 
   it('parse un llms.txt minimal valide et score > 0', async () => {

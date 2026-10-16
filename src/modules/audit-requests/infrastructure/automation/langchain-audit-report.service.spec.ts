@@ -1,10 +1,15 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 import { buildAuditAutomationConfig } from '../../../../../test/factories/audit-config.factory';
 import { buildLangchainAuditInput } from '../../../../../test/factories/audit-requests.factory';
+import { createLlmSuiviStub } from '../../../../../test/factories/section-generator.factory';
 import type { AuditLocale } from '../../domain/audit-locale.util';
 import { silenceNestLogger } from '../../../../../test/helpers/silence-nest-logger';
-import type { AnthropicChatFactory } from './anthropic-chat.factory';
+import type { MetricsService } from '../../../../common/interfaces/metrics/metrics.service';
 import type { AuditAutomationConfig } from './audit.config';
-import { DefaultChatOpenAIFactory } from './chat-openai.factory';
+import {
+  type ChatOpenAIFactory,
+  DefaultChatOpenAIFactory,
+} from './chat-openai.factory';
 import {
   type ExpertReport,
   LangchainAuditInput,
@@ -18,20 +23,15 @@ import { CachingSectionRunner } from './section-generators';
 function createService(
   config: AuditAutomationConfig,
   qualityGate: ReportQualityGateService,
-  anthropicChatFactory?: AnthropicChatFactory,
+  llm: { fabrique?: ChatOpenAIFactory; metrics?: MetricsService } = {},
 ): LangchainAuditReportService {
-  const cachingRunner = new CachingSectionRunner(
-    config,
-    undefined,
-    anthropicChatFactory,
-  );
   return new LangchainAuditReportService(
     config,
     qualityGate,
-    new DefaultChatOpenAIFactory(config),
+    llm.fabrique ?? new DefaultChatOpenAIFactory(config),
     new SharedLlmExecutor(config),
-    cachingRunner,
-    undefined,
+    new CachingSectionRunner(config),
+    llm.metrics,
   );
 }
 
@@ -47,6 +47,10 @@ interface LangchainServiceTestable {
   generate: LangchainAuditReportService['generate'];
   generateUserSummary: (...args: unknown[]) => Promise<string>;
   generateExpertReport: (...args: unknown[]) => Promise<ExpertReport>;
+  generateSummaryWithDeadline: (...args: unknown[]) => Promise<{
+    summaryText: string;
+    warnings: Array<{ type: 'summary' | 'expert'; message: string }>;
+  }>;
   buildFallbackExpertReport: (
     inputValue: LangchainAuditInput,
     reason: string,
@@ -143,6 +147,171 @@ describe('LangchainAuditReportService', () => {
     expect((admin['internalNotes'] as string).length).toBeGreaterThan(10);
   });
 
+  function gateToujoursInvalide(): ReportQualityGateService {
+    const gate = new ReportQualityGateService();
+    const appliquer = gate.apply.bind(gate);
+    jest.spyOn(gate, 'apply').mockImplementation((...args) => ({
+      ...appliquer(...args),
+      valid: false,
+      reasons: ['language_mismatch_detected'],
+    }));
+    return gate;
+  }
+
+  const AVERTISSEMENT_DE_GATE =
+    'Sortie normalisee apres echec du quality gate.';
+
+  it('signale la gate invalide aussi en repli', async () => {
+    const result = await createService(config, gateToujoursInvalide()).generate(
+      input,
+    );
+
+    expect(result.adminReport['qualityWarning']).toBe(AVERTISSEMENT_DE_GATE);
+    expect(
+      (result.adminReport['qualityGate'] as Record<string, unknown>)[
+        'fallback'
+      ],
+    ).toBe(true);
+  });
+
+  const PROFILS_SIMULES = [
+    [
+      'stability_first_sequential',
+      (testable: LangchainServiceTestable, rapport: ExpertReport) => {
+        jest
+          .spyOn(testable, 'generateUserSummary')
+          .mockResolvedValue('Summary generated.');
+        jest.spyOn(testable, 'generateExpertReport').mockResolvedValue(rapport);
+      },
+    ],
+    [
+      'parallel_sections_v1',
+      (testable: LangchainServiceTestable, rapport: ExpertReport) => {
+        jest.spyOn(testable, 'generateSummaryWithDeadline').mockResolvedValue({
+          summaryText: 'Summary generated.',
+          warnings: [],
+        });
+        jest
+          .spyOn(testable, 'generateFanoutSectionsWithDeadline')
+          .mockResolvedValue({
+            report: rapport,
+            failedSections: [],
+            retryCount: 0,
+            usedFallback: false,
+            warnings: [],
+          });
+      },
+    ],
+  ] as const;
+
+  type ProfilSimule = (typeof PROFILS_SIMULES)[number];
+
+  async function genererAvecLeLlm(
+    [profil, simulerLeLlm]: ProfilSimule,
+    qualityGate: ReportQualityGateService,
+    alterer: (rapport: ExpertReport) => ExpertReport = (rapport) => rapport,
+  ) {
+    const service = createService(
+      { ...config, openAiApiKey: 'test-key', llmProfile: profil },
+      qualityGate,
+    );
+    const testable = asTestable(service);
+    simulerLeLlm(
+      testable,
+      alterer(testable.buildFallbackExpertReport(input, 'llm')),
+    );
+    return service.generate(input);
+  }
+
+  it.each(PROFILS_SIMULES)(
+    'signale la gate invalide et décrit le profil %s',
+    async (...profil) => {
+      const result = await genererAvecLeLlm(profil, gateToujoursInvalide());
+
+      expect(result.adminReport['qualityWarning']).toBe(AVERTISSEMENT_DE_GATE);
+      expect(result.adminReport['llmMeta']).toEqual(
+        expect.objectContaining({ profile: profil[0] }),
+      );
+    },
+  );
+
+  const SYNTHESE_DU_LLM = 'Synthese redigee par le LLM.';
+
+  const genererSousLaVraieGate = (
+    profil: ProfilSimule,
+    alterations: Partial<ExpertReport> = {},
+  ) =>
+    genererAvecLeLlm(profil, new ReportQualityGateService(), (rapport) => ({
+      ...rapport,
+      executiveSummary: SYNTHESE_DU_LLM,
+      ...alterations,
+    }));
+
+  it.each(PROFILS_SIMULES)(
+    'garde le rapport expert du profil %s qui respecte les validateurs de palier',
+    async (...profil) => {
+      const result = await genererSousLaVraieGate(profil);
+
+      expect(result.adminReport['executiveSummary']).toBe(SYNTHESE_DU_LLM);
+      expect(result.adminReport['qualityGate']).toEqual(
+        expect.objectContaining({ fallback: false }),
+      );
+    },
+  );
+
+  it.each(PROFILS_SIMULES)(
+    'bascule sur le repli quand le rapport expert du profil %s enfreint les validateurs de palier',
+    async (...profil) => {
+      const result = await genererSousLaVraieGate(profil, {
+        perPageAnalysis: [],
+        internalNotes: '',
+      });
+      const admin = result.adminReport;
+
+      expect(result.summaryText).toBe('Summary generated.');
+      expect(admin['executiveSummary']).not.toBe(SYNTHESE_DU_LLM);
+      expect((admin['perPageAnalysis'] as unknown[]).length).toBeGreaterThan(0);
+      expect(admin['internalNotes']).not.toBe('');
+      expect(admin['reason']).toEqual(
+        expect.stringContaining('expert_report_per_page_analysis_missing'),
+      );
+      expect(admin['qualityGate']).toEqual(
+        expect.objectContaining({ fallback: true }),
+      );
+    },
+  );
+
+  it('ne relance qu un passage expert complet, compté, quand le rapport compact enfreint le palier', async () => {
+    const invoke = jest.fn();
+    const { fabrique, metrics } = createLlmSuiviStub(invoke);
+    const service = createService(
+      { ...config, openAiApiKey: 'test-key' },
+      new ReportQualityGateService(),
+      { fabrique, metrics },
+    );
+    const testable = asTestable(service);
+    jest
+      .spyOn(testable, 'generateUserSummary')
+      .mockResolvedValue('Summary generated.');
+    invoke.mockResolvedValue({
+      ...testable.buildFallbackExpertReport(input, 'llm'),
+      perPageAnalysis: [],
+    });
+
+    const result = await service.generate(input);
+
+    const appelExpert = expect.objectContaining({
+      section: 'expert_report',
+      status: 'success',
+    });
+    expect(metrics.llmCallsTotal.inc).toHaveBeenCalledTimes(2);
+    expect(metrics.llmCallsTotal.inc).toHaveBeenNthCalledWith(1, appelExpert);
+    expect(metrics.llmCallsTotal.inc).toHaveBeenNthCalledWith(2, appelExpert);
+    expect(result.adminReport['qualityGate']).toEqual(
+      expect.objectContaining({ retried: true, fallback: true }),
+    );
+  });
+
   it('keeps client summary and uses expert fallback when compact expert times out', async () => {
     const service = createService(
       { ...config, openAiApiKey: 'test-key' },
@@ -180,12 +349,14 @@ describe('LangchainAuditReportService', () => {
         report,
         valid: false,
         reasons: ['language_mismatch_detected'],
+        repli: false,
       }))
       .mockImplementationOnce((summaryText, report) => ({
         summaryText,
         report,
         valid: true,
         reasons: [],
+        repli: false,
       }));
 
     const qualityGate = {

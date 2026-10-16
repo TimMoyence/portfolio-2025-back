@@ -7,21 +7,19 @@ import {
 
 jest.mock('nodemailer', () => nodemailerSimule());
 
-import {
-  SmtpTransporterProvider,
-  type SmtpTransporter,
-} from './smtp-transporter.provider';
+import type { ExpediteurDeCourriels } from '../../../../common/infrastructure/mail/expediteur-smtp';
+import { ExpediteurDAuditProvider } from './expediteur-d-audit.provider';
 
 const mockedCreateTransport = creationDeTransportSimulee();
 
-function resolveProvider(): SmtpTransporter {
+function resolveProvider(): ExpediteurDeCourriels {
   const factory = (
-    SmtpTransporterProvider as { useFactory: () => SmtpTransporter }
+    ExpediteurDAuditProvider as { useFactory: () => ExpediteurDeCourriels }
   ).useFactory;
   return factory();
 }
 
-describe('SmtpTransporterProvider', () => {
+describe('ExpediteurDAuditProvider', () => {
   let cleanupEnv: () => void;
 
   beforeEach(() => {
@@ -54,19 +52,18 @@ describe('SmtpTransporterProvider', () => {
   ])('%s', (_titre, variables) => {
     cleanupEnv = setSmtpEnv(variables);
 
-    resolveProvider();
-
+    expect(resolveProvider().actif).toBe(true);
     expect(mockedCreateTransport).toHaveBeenCalledWith(
       expect.objectContaining({ secure: true }),
     );
   });
 
-  it('retourne null et ne cree pas de transporter quand la config est incomplete', () => {
+  it('rend un expediteur inactif et ne cree pas de transporter quand la config est incomplete', () => {
     cleanupEnv = setSmtpEnv({ SMTP_HOST: '' });
 
     const resolved = resolveProvider();
 
-    expect(resolved).toBeNull();
+    expect(resolved.actif).toBe(false);
     expect(mockedCreateTransport).not.toHaveBeenCalled();
   });
 });

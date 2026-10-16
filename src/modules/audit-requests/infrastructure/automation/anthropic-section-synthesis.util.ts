@@ -1,6 +1,10 @@
 import type Anthropic from '@anthropic-ai/sdk';
 import { Logger } from '@nestjs/common';
 import { z, type ZodType } from 'zod';
+import {
+  compterLAppel,
+  compterLesJetons,
+} from '../../../../common/infrastructure/llm/llm-usage-tracking.util';
 import type { MetricsService } from '../../../../common/interfaces/metrics/metrics.service';
 
 /**
@@ -76,41 +80,19 @@ function emitUsageMetrics(
     'metrics' | 'model' | 'section' | 'locale' | 'logger'
   >,
   status: 'success' | 'error',
-  latencyMs: number,
+  debut: number,
 ): void {
   const { metrics, model, section, locale, logger } = params;
   if (metrics) {
-    metrics.llmCallsTotal.inc({
-      model,
-      section,
-      locale,
-      status,
-    });
-    metrics.llmLatencySeconds.observe(
-      { model, section, locale, status },
-      latencyMs / 1000,
-    );
+    const contexte = { model, section, locale };
+    compterLAppel(metrics, contexte, status, debut);
     if (status === 'success') {
-      metrics.llmTokensTotal.inc(
-        { model, section, locale, type: 'input' },
-        usage.inputTokens,
-      );
-      metrics.llmTokensTotal.inc(
-        { model, section, locale, type: 'output' },
-        usage.outputTokens,
-      );
-      if (usage.cacheReadInputTokens > 0) {
-        metrics.llmTokensTotal.inc(
-          { model, section, locale, type: 'cached' },
-          usage.cacheReadInputTokens,
-        );
-      }
-      if (usage.cacheCreationInputTokens > 0) {
-        metrics.llmTokensTotal.inc(
-          { model, section, locale, type: 'cache_write' },
-          usage.cacheCreationInputTokens,
-        );
-      }
+      compterLesJetons(metrics, contexte, {
+        input: usage.inputTokens,
+        output: usage.outputTokens,
+        cached: usage.cacheReadInputTokens,
+        cacheWrite: usage.cacheCreationInputTokens,
+      });
     }
   }
   if (status === 'success') {
@@ -197,7 +179,7 @@ export async function invokeAnthropicStructuredSection<T>(
     };
 
     status = 'success';
-    emitUsageMetrics(usage, params, status, Date.now() - start);
+    emitUsageMetrics(usage, params, status, start);
 
     return parsed;
   } catch (error) {
@@ -210,7 +192,7 @@ export async function invokeAnthropicStructuredSection<T>(
       },
       params,
       status,
-      Date.now() - start,
+      start,
     );
     throw error;
   }

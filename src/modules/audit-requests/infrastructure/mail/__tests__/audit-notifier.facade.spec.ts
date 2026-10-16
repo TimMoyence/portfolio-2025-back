@@ -2,6 +2,7 @@
 import {
   buildAuditRequest,
   buildClientReportSynthesis,
+  buildExpertReportSynthesis,
 } from '../../../../../../test/factories/audit-requests.factory';
 import type { AuditClientReportMailer } from '../audit-client-report.mailer';
 import type { AuditExpertReportMailer } from '../audit-expert-report.mailer';
@@ -50,10 +51,7 @@ describe('AuditNotifierFacade', () => {
       to: 'client@example.com',
       firstName: null,
       websiteName: 'mon-site.fr',
-      clientReport: {
-        ...buildClientReportSynthesis(),
-        executiveSummary: 's',
-      },
+      clientReport: buildClientReportSynthesis(),
       pdfBuffer: null,
     };
 
@@ -70,18 +68,8 @@ describe('AuditNotifierFacade', () => {
       websiteName: 'mon-site.fr',
       auditId: 'audit-42',
       clientContact: { method: 'EMAIL' as const, value: 'client@example.com' },
-      clientReport: {
-        ...buildClientReportSynthesis(),
-        executiveSummary: 's',
-      },
-      expertReport: {
-        executiveSummary: 'e',
-        perPageAnalysis: [],
-        crossPageFindings: [],
-        priorityBacklog: [],
-        clientEmailDraft: { subject: '', body: '' },
-        internalNotes: '',
-      },
+      clientReport: buildClientReportSynthesis(),
+      expertReport: buildExpertReportSynthesis(),
       pdfBuffer: Buffer.from('pdf'),
     };
 

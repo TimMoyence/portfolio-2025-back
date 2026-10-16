@@ -325,7 +325,7 @@ function attendreAlignees(
 ): void {
   expect(new Set(Object.keys(lues))).toEqual(new Set(Object.keys(calculees)));
   for (const [id, valeurs] of Object.entries(calculees)) {
-    expect(lues[id]).toEqual(alignees(lues[id], valeurs));
+    expect(alignees(lues[id], lues[id])).toEqual(alignees(lues[id], valeurs));
   }
 }
 

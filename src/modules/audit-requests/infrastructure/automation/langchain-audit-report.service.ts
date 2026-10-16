@@ -69,6 +69,13 @@ import type {
 
 export type { ExpertReport } from './schemas/audit-report.schemas';
 
+interface SortieDuRapport {
+  retried: boolean;
+  fallback: boolean;
+  warnings: Array<{ type: 'summary' | 'expert'; message: string }>;
+  llmMeta?: Record<string, unknown>;
+}
+
 @Injectable()
 export class LangchainAuditReportService {
   private readonly logger = new Logger(LangchainAuditReportService.name);
@@ -230,39 +237,20 @@ export class LangchainAuditReportService {
         }
       }
 
-      const adminReport = this.buildAdminReport(gate, locale, {
+      return this.finaliserSortie(gate, normalizedInput, {
         retried,
         fallback: candidate.usedExpertFallback,
-      });
-
-      this.applyWarningsToReport(adminReport, candidate.warnings, locale);
-
-      if (!gate.valid) {
-        adminReport.qualityWarning = localizedText(
-          locale,
-          'Sortie normalisee apres echec du quality gate.',
-          'Output normalized after quality gate failure.',
-        );
-      }
-      adminReport.llmMeta = {
-        profile: 'stability_first_sequential',
-        promptVersion: PROMPT_VERSION,
-        payloadBytes: {
-          summary: summaryPayloadBytes,
-          expert: expertPayloadBytes,
-          expertCompact: expertCompactPayloadBytes,
+        warnings: candidate.warnings,
+        llmMeta: {
+          profile: 'stability_first_sequential',
+          promptVersion: PROMPT_VERSION,
+          payloadBytes: {
+            summary: summaryPayloadBytes,
+            expert: expertPayloadBytes,
+            expertCompact: expertCompactPayloadBytes,
+          },
         },
-      };
-
-      return {
-        summaryText: gate.summaryText,
-        adminReport,
-        expertSynthesis: buildExpertSynthesis(
-          gate.summaryText,
-          adminReport,
-          normalizedInput,
-        ),
-      };
+      });
     } catch (error) {
       this.logger.warn(`LLM generation failed: ${String(error)}`);
       return this.fallback(normalizedInput, String(error));
@@ -309,45 +297,25 @@ export class LangchainAuditReportService {
       ),
     ]);
 
-    const warnings = [...summaryResult.warnings, ...sectionResult.warnings];
     const gate = this.runQualityGate(
       summaryResult.summaryText,
       sectionResult.report,
       normalizedInput,
     );
-    const adminReport = this.buildAdminReport(gate, locale, {
+    return this.finaliserSortie(gate, normalizedInput, {
       retried: sectionResult.retryCount > 0,
       fallback: sectionResult.usedFallback,
+      warnings: [...summaryResult.warnings, ...sectionResult.warnings],
+      llmMeta: {
+        profile: 'parallel_sections_v1',
+        promptVersion: PROMPT_VERSION,
+        deadlineMs: this.config.llmGlobalTimeoutMs,
+        elapsedMs: budget.elapsedMs(),
+        retryCount: sectionResult.retryCount,
+        failedSections: sectionResult.failedSections,
+        sectionPayloadBytes,
+      },
     });
-    adminReport.llmMeta = {
-      profile: 'parallel_sections_v1',
-      promptVersion: PROMPT_VERSION,
-      deadlineMs: this.config.llmGlobalTimeoutMs,
-      elapsedMs: budget.elapsedMs(),
-      retryCount: sectionResult.retryCount,
-      failedSections: sectionResult.failedSections,
-      sectionPayloadBytes,
-    };
-
-    this.applyWarningsToReport(adminReport, warnings, locale);
-
-    if (!gate.valid) {
-      adminReport.qualityWarning = localizedText(
-        locale,
-        'Sortie normalisee apres echec du quality gate.',
-        'Output normalized after quality gate failure.',
-      );
-    }
-
-    return {
-      summaryText: gate.summaryText,
-      adminReport,
-      expertSynthesis: buildExpertSynthesis(
-        gate.summaryText,
-        adminReport,
-        normalizedInput,
-      ),
-    };
   }
 
   private async generateSummaryWithDeadline(
@@ -686,12 +654,48 @@ export class LangchainAuditReportService {
       buildFallbackExpertReport(input, reason),
       input,
     );
-
-    const adminReport = this.buildAdminReport(gate, input.locale, {
+    return this.sortieDuRapport(gate, input, {
       retried: false,
       fallback: true,
+      warnings: [],
     });
+  }
 
+  private finaliserSortie(
+    gate: ReportQualityGateResult,
+    input: LangchainAuditInput,
+    sortie: SortieDuRapport,
+  ): LangchainAuditOutput {
+    if (!gate.repli) {
+      return this.sortieDuRapport(gate, input, sortie);
+    }
+    const motifs = gate.reasons.join(', ');
+    this.logger.warn(`Expert report fails tier validation: ${motifs}`);
+    const repli = this.runQualityGate(
+      gate.summaryText,
+      buildFallbackExpertReport(input, `quality gate: ${motifs}`),
+      input,
+    );
+    return this.sortieDuRapport(repli, input, { ...sortie, fallback: true });
+  }
+
+  private sortieDuRapport(
+    gate: ReportQualityGateResult,
+    input: LangchainAuditInput,
+    sortie: SortieDuRapport,
+  ): LangchainAuditOutput {
+    const adminReport = this.buildAdminReport(gate, input.locale, sortie);
+    this.applyWarningsToReport(adminReport, sortie.warnings, input.locale);
+    if (!gate.valid) {
+      adminReport.qualityWarning = localizedText(
+        input.locale,
+        'Sortie normalisee apres echec du quality gate.',
+        'Output normalized after quality gate failure.',
+      );
+    }
+    if (sortie.llmMeta) {
+      adminReport.llmMeta = sortie.llmMeta;
+    }
     return {
       summaryText: gate.summaryText,
       adminReport,

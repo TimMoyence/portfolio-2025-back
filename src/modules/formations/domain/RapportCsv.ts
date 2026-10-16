@@ -1,4 +1,5 @@
 import { nombreSommable } from '../../../common/domain/nombres/ecriture-francaise';
+import { TYPES_DE_FICHIER } from '../../../common/domain/types/types-de-fichier';
 import type { ClasseurTelecharge } from './IClasseursDeCours.port';
 import type { RapportQuestion, RapportSession } from './IFormationMailer.port';
 
@@ -45,7 +46,7 @@ export function rapportEnCsv(rapport: RapportSession): ClasseurTelecharge {
   const texte = `${BOM_UTF8}${[ENTETES.join(';'), ...lignes].join('\r\n')}`;
   return {
     nom: `session-${rapport.code}.csv`,
-    type: 'text/csv; charset=utf-8',
+    type: TYPES_DE_FICHIER.csv,
     contenu: new TextEncoder().encode(texte),
   };
 }

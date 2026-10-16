@@ -1,8 +1,13 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { borner } from '../../../../common/domain/nombres/borner';
+import { textesUniquesBornes } from '../../../../common/domain/texte/textes-uniques-bornes';
 import { tronquer } from '../../../../common/domain/texte/tronquer';
 import { LocaleCode } from '../../../../common/domain/value-objects/LocaleCode';
-import { AuditLocale, localeFromUrlPath } from '../../domain/audit-locale.util';
+import {
+  AuditLocale,
+  localeDeHtmlLang,
+  localeFromUrlPath,
+} from '../../domain/audit-locale.util';
 import type { IAuditRequestsRepository } from '../../domain/IAuditRequests.repository';
 import {
   AUDIT_AUTOMATION_CONFIG,
@@ -27,9 +32,10 @@ import {
   PageAiRecapService,
   PageAiRecapSummary,
 } from './page-ai-recap.service';
-import type { LlmsTxtAnalysis } from '../../domain/AiIndexability';
+import { llmsTxtAbsent, LlmsTxtAnalysis } from '../../domain/AiIndexability';
 import { ScoringService } from './scoring.service';
 import { SafeFetchService } from './safe-fetch.service';
+import { origineSure, urlCandidateMemeOrigine } from './shared/url.util';
 import { SitemapDiscoveryService } from './sitemap-discovery.service';
 import { normalizeAuditUrl } from './url-normalizer.util';
 import {
@@ -97,7 +103,7 @@ export class AuditPipelineService {
         },
       };
 
-      const homepageOrigin = this.safeOrigin(homepage.finalUrl);
+      const homepageOrigin = origineSure(homepage.finalUrl);
       const llmsTxtAnalysis = await this.runLlmsTxtAnalysis(homepageOrigin);
       const robotsTxt = await this.fetchRobotsTxt(homepageOrigin);
       const technicalKeyChecksWithAi = {
@@ -121,6 +127,7 @@ export class AuditPipelineService {
 
       const sitemapResult = await this.sitemapDiscovery.discover(
         homepage.finalUrl,
+        robotsTxt,
       );
       const candidateUrls = Array.from(
         new Set([
@@ -183,7 +190,7 @@ export class AuditPipelineService {
         stepForProgress: t.steps.pageAiAnalysis,
       });
 
-      const fullQuickWins = this.mergeQuickWins(
+      const fullQuickWins = textesUniquesBornes(
         [
           ...scoring.quickWins,
           ...deepUrlAnalysis.findings.map((finding) => finding.recommendation),
@@ -373,32 +380,14 @@ export class AuditPipelineService {
   private async runLlmsTxtAnalysis(
     origin: string | null,
   ): Promise<LlmsTxtAnalysis> {
-    if (!origin) {
-      return {
-        present: false,
-        url: '',
-        sizeBytes: 0,
-        sections: [],
-        hasFullVariant: false,
-        complianceScore: 0,
-        issues: ['Origine invalide'],
-      };
-    }
+    if (!origin) return llmsTxtAbsent('', 'Origine invalide');
     try {
       return await this.llmsTxtAnalyzer.analyze(origin);
     } catch (error) {
       this.logger.warn(
         `llms.txt analysis failed for ${origin}: ${String(error)}`,
       );
-      return {
-        present: false,
-        url: `${origin}/llms.txt`,
-        sizeBytes: 0,
-        sections: [],
-        hasFullVariant: false,
-        complianceScore: 0,
-        issues: ['Analyse llms.txt échouée'],
-      };
+      return llmsTxtAbsent(`${origin}/llms.txt`, 'Analyse llms.txt échouée');
     }
   }
 
@@ -414,14 +403,6 @@ export class AuditPipelineService {
     } catch (error) {
       this.logger.warn(`robots.txt fetch failed for ${url}: ${String(error)}`);
       return '';
-    }
-  }
-
-  private safeOrigin(url: string): string | null {
-    try {
-      return new URL(url).origin;
-    } catch {
-      return null;
     }
   }
 
@@ -590,7 +571,8 @@ export class AuditPipelineService {
     locale: AuditLocale,
     limit: number,
   ): string[] {
-    const origin = new URL(homepageUrl).origin;
+    const origin = origineSure(homepageUrl);
+    if (!origin) return [];
     const localized: string[] = [];
     const neutral: string[] = [];
     const alternate: string[] = [];
@@ -604,13 +586,13 @@ export class AuditPipelineService {
       bucket.push(url);
     };
 
-    const normalizedHomepage = this.normalizeCandidateUrl(homepageUrl, origin);
+    const normalizedHomepage = urlCandidateMemeOrigine(homepageUrl, origin);
     if (normalizedHomepage) {
       pushUnique(localized, normalizedHomepage);
     }
 
     for (const raw of candidateUrls) {
-      const normalized = this.normalizeCandidateUrl(raw, origin);
+      const normalized = urlCandidateMemeOrigine(raw, origin);
       if (!normalized) continue;
       const urlLocale = localeFromUrlPath(new URL(normalized).pathname);
 
@@ -627,24 +609,6 @@ export class AuditPipelineService {
       0,
       Math.max(1, limit),
     );
-  }
-
-  private normalizeCandidateUrl(value: string, origin: string): string | null {
-    try {
-      const url = new URL(value, origin);
-      if (!['http:', 'https:'].includes(url.protocol)) return null;
-      if (url.origin !== origin) return null;
-      url.hash = '';
-      return url.toString();
-    } catch {
-      return null;
-    }
-  }
-
-  private mergeQuickWins(values: string[], limit: number): string[] {
-    return Array.from(
-      new Set(values.map((entry) => entry.trim()).filter(Boolean)),
-    ).slice(0, limit);
   }
 
   private buildLocaleCoverage(
@@ -665,10 +629,10 @@ export class AuditPipelineService {
       else if (pageLocale === null) neutralPath += 1;
       else alternatePath += 1;
 
-      const htmlLang = (page.htmlLang ?? '').toLowerCase();
-      if (htmlLang.startsWith(expected)) {
+      const langue = localeDeHtmlLang(page.htmlLang);
+      if (langue === expected) {
         matchingLang += 1;
-      } else if (htmlLang.startsWith('fr') || htmlLang.startsWith('en')) {
+      } else if (langue) {
         mismatchedLang += 1;
       } else {
         unknownLang += 1;

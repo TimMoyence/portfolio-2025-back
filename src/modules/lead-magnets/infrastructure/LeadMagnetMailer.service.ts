@@ -6,7 +6,7 @@ import {
   escapeUrl,
   safeHtml,
 } from '../../../common/domain/texte/html-escape.util';
-import { pieceJointePdf } from '../../../common/infrastructure/mail/piece-jointe-pdf';
+import { pieceJointePdf } from '../../../common/infrastructure/mail/piece-jointe';
 import { adresseDeReponse } from '../../../config/adresses-de-courriel';
 import { urlDuSite } from '../../../config/urls-publiques';
 import type { ILeadMagnetNotifier } from '../domain/ILeadMagnetNotifier';
@@ -28,7 +28,6 @@ export class LeadMagnetMailerService
     request: LeadMagnetRequest,
     pdfBuffer: Buffer,
   ): Promise<void> {
-    if (!this.transporter) return;
     const firstName = escapeHtml(request.firstName);
     const toolkitUrl = request.accessToken
       ? `${this.frontendUrl}${PAGE_PRIVEE_DU_TOOLKIT}${request.accessToken}`
@@ -41,8 +40,7 @@ export class LeadMagnetMailerService
       ? safeHtml`<p style="margin: 20px 0;"><a href="${escapeUrl(toolkitUrl)}" style="display: inline-block; padding: 12px 24px; background-color: #4fb3a2; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: bold;">Voir mon guide personnalise en ligne</a></p>`
       : safeHtml``;
 
-    await this.transporter.sendMail({
-      from: this.from,
+    await this.envoyer({
       to: request.email,
       replyTo: this.replyTo,
       subject: `Votre guide IA personnalise, ${request.firstName}`,

@@ -1,3 +1,4 @@
+import { htmlEmis } from '../../../../../common/domain/texte/html-escape.util';
 import { lignesDeVisibilite, listeDeVisibilite } from '../visibilite-google-ia';
 
 const MATRICE = {
@@ -14,7 +15,7 @@ describe('visibilité Google vs IA', () => {
   });
 
   it('rend une liste HTML dont les résumés sont échappés', () => {
-    const html = listeDeVisibilite(MATRICE);
+    const html = htmlEmis(listeDeVisibilite(MATRICE));
 
     expect(html).toContain(
       '<li><strong>Google :</strong> 55/100 — Bien indexé</li>',

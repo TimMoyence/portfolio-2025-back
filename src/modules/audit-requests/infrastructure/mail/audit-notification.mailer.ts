@@ -3,7 +3,7 @@ import { destinataireDesNotifications } from '../../../../config/adresses-de-cou
 import { AuditRequest } from '../../domain/AuditRequest';
 import { buildMailLayout } from './mail-layout.util';
 import { MailerDAudit } from './mailer-d-audit';
-import { escapeHtml, safeHtml } from './mail-rendering.util';
+import { escapeHtml, safeHtml, type EscapedHtml } from './mail-rendering.util';
 
 @Injectable()
 export class AuditNotificationMailer extends MailerDAudit {
@@ -35,7 +35,7 @@ Contact        : ${contactMethod} — ${contactValue}
     websiteName: string,
     contactMethod: string,
     contactValue: string,
-  ): string {
+  ): EscapedHtml {
     const bodyHtml = safeHtml`
       <table style="width:100%;border-collapse:collapse;margin:0 0 20px;">
         <tr>

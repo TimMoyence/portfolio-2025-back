@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { dateLongue } from '../../../common/domain/texte/date-longue';
+import { couvertureDePdf } from '../../../common/infrastructure/pdf/couverture-de-pdf';
 import type {
   CheatsheetEntry,
   PromptEntry,
@@ -12,7 +13,6 @@ import {
   escapeHtml,
   escapeUrl,
   levelLabel,
-  pageFooter,
   plateformeDe,
   safeHtml,
   sectionHeader,
@@ -23,7 +23,7 @@ import { ACCENT } from './toolkit-html/toolkit-palette';
 
 @Injectable()
 export class ToolkitHtmlRendererService {
-  render(content: ToolkitContent): string {
+  render(content: ToolkitContent): EscapedHtml {
     const date = dateLongue(new Date());
 
     const cover = this.renderCover(content, date);
@@ -74,34 +74,18 @@ export class ToolkitHtmlRendererService {
         safeHtml`<span class="badge"><span class="badge-label">Budget</span><span class="badge-value">${escapeHtml(recap.budgetTier)} €/mois</span></span>`,
       );
     }
-    const badgesHtml = badges.length
-      ? safeHtml`<div class="badges">${badges}</div>`
-      : safeHtml``;
-
-    return safeHtml`<section class="page cover">
-      <div class="cover-gradient">
-        <div class="cover-shape cover-shape-1"></div>
-        <div class="cover-shape cover-shape-2"></div>
-        <div class="cover-shape cover-shape-3"></div>
-      </div>
-      <div class="cover-content">
-        <p class="cover-eyebrow">🚀 Asili Design — Guide personnalisé</p>
-        <h1 class="cover-title">L'IA au service<br/>des solopreneurs</h1>
-        <p class="cover-subtitle">Votre boîte à outils sur mesure pour transformer votre activité avec l'IA en 2026.</p>
-        <div class="cover-meta">
-          <p class="cover-prepared">Préparé pour <strong>${firstName}</strong></p>
-          <p class="cover-date">${escapeHtml(date)}</p>
-        </div>
-        ${badgesHtml}
-      </div>
-      <footer class="cover-footer">
-        <span>asilidesign.fr</span>
-        <span>•</span>
-        <span>Guide généré sur mesure</span>
-        <span>•</span>
-        <span>Édition 2026</span>
-      </footer>
-    </section>`;
+    return couvertureDePdf({
+      formes: 3,
+      surtitre: '🚀 Asili Design — Guide personnalisé',
+      titre: safeHtml`L'IA au service<br/>des solopreneurs`,
+      sousTitre: safeHtml`Votre boîte à outils sur mesure pour transformer votre activité avec l'IA en 2026.`,
+      meta: [
+        safeHtml`<p class="cover-prepared">Préparé pour <strong>${firstName}</strong></p>`,
+        safeHtml`<p class="cover-date">${escapeHtml(date)}</p>`,
+      ],
+      badges,
+      pied: ['Guide généré sur mesure', 'Édition 2026'],
+    });
   }
 
   private renderStatsPage(): EscapedHtml {
@@ -137,7 +121,6 @@ export class ToolkitHtmlRendererService {
           <li><strong>8 templates</strong> Notion, Zapier et Make à installer en 5 minutes</li>
         </ul>
       </div>
-      ${pageFooter()}
     </section>`;
   }
 
@@ -163,7 +146,6 @@ export class ToolkitHtmlRendererService {
     return safeHtml`<section class="page section">
       ${sectionHeader('01', '🧰 Cheatsheet', 'Vos outils IA sélectionnés')}
       ${groups}
-      ${pageFooter()}
     </section>`;
   }
 
@@ -222,7 +204,6 @@ export class ToolkitHtmlRendererService {
     return safeHtml`<section class="page section">
       ${sectionHeader('02', '✍️ Prompts', 'Personnalisés selon votre niveau')}
       <div class="prompt-list">${cards}</div>
-      ${pageFooter()}
     </section>`;
   }
 
@@ -262,7 +243,6 @@ export class ToolkitHtmlRendererService {
     return safeHtml`<section class="page section">
       ${sectionHeader('03', '⚡ Workflows', 'Automatisations clés en main')}
       <div class="workflow-list">${cards}</div>
-      ${pageFooter()}
     </section>`;
   }
 
@@ -290,7 +270,6 @@ export class ToolkitHtmlRendererService {
     return safeHtml`<section class="page section section-templates">
       ${sectionHeader('04', '📋 Templates', "Prêts à l'emploi")}
       <div class="template-grid">${cards}</div>
-      ${pageFooter()}
     </section>`;
   }
 
@@ -300,7 +279,6 @@ export class ToolkitHtmlRendererService {
       <div class="generated-box">
         <pre class="generated-text">${escapeHtml(generatedPrompt)}</pre>
       </div>
-      ${pageFooter()}
     </section>`;
   }
 }

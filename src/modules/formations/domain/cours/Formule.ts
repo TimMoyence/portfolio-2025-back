@@ -2,6 +2,10 @@ import { avecVirgule } from '../../../../common/domain/nombres/ecriture-francais
 import { estEntierPositif } from '../../../../common/domain/nombres/est-entier-positif';
 import { longueurDeTexte } from '../../../../common/domain/texte/longueur-de-texte';
 import { sansEspacesNiMoinsTypographiques } from '../../../../common/domain/texte/sans-espaces-typographiques';
+import {
+  arrondi,
+  sansZeroNegatif,
+} from '../../../../common/domain/nombres/arrondi';
 
 export type CodeErreur = '#REF!' | '#DIV/0!' | '#NOM?' | '#VALEUR!';
 
@@ -181,7 +185,6 @@ const ARGUMENTS_MAX_VERSEMENT = 5;
 const RANG_MAX_QUARTILE = 4;
 const ALPHABET = 26;
 const CODE_A = 'A'.charCodeAt(0);
-const PRECISION_DECIMALE = 15;
 const DECIMALES_EXPRESSION = 6;
 const ERREUR_VALEUR: CodeErreur = '#VALEUR!';
 const ERREUR_REFERENCE: CodeErreur = '#REF!';
@@ -644,22 +647,6 @@ function satisfait(critere: Critere, valeur: ValeurFormule): boolean {
     return false;
   }
   return selonOrdre(critere.operateur, ordre(valeur, critere.valeur));
-}
-
-function sansZeroNegatif(valeur: number): number {
-  return valeur === 0 ? 0 : valeur;
-}
-
-export function arrondirMoitieLoinDeZero(
-  valeur: number,
-  decimales: number,
-): number {
-  const facteur = 10 ** Math.trunc(decimales);
-  const decale = Number(
-    (Math.abs(valeur) * facteur).toPrecision(PRECISION_DECIMALE),
-  );
-  const arrondi = (Math.sign(valeur) * Math.round(decale)) / facteur;
-  return sansZeroNegatif(Number(arrondi.toPrecision(PRECISION_DECIMALE)));
 }
 
 function appliquer(operateur: string, gauche: number, droite: number): number {
@@ -1134,9 +1121,7 @@ class Evaluation {
     const [premier, second] = parametres.map((argument) =>
       this.nombre(argument),
     );
-    return nom === 'ARRONDI'
-      ? arrondirMoitieLoinDeZero(premier, second)
-      : premier ** second;
+    return nom === 'ARRONDI' ? arrondi(premier, second) : premier ** second;
   }
 
   private appeler(noeud: Extract<Noeud, { genre: 'appel' }>): ValeurFormule {

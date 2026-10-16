@@ -15,24 +15,15 @@ interface LlmTokenUsage {
   cachedInputTokens?: number;
 }
 
-function buildUsageCallback(
-  onEnd: (usage: LlmTokenUsage | null, latencyMs: number) => void,
-): {
+function buildUsageCallback(onEnd: (usage: LlmTokenUsage | null) => void): {
   name: 'llm-usage-tracker';
-  handleLLMStart(): void;
   handleLLMEnd(output: unknown): void;
   handleLLMError(): void;
 } {
-  let startedAt = 0;
   return {
     name: 'llm-usage-tracker',
-    handleLLMStart(): void {
-      startedAt = Date.now();
-    },
     handleLLMEnd(output: unknown): void {
-      const latencyMs = Date.now() - startedAt;
-      const usage = extractUsage(output);
-      onEnd(usage, latencyMs);
+      onEnd(extractUsage(output));
     },
     handleLLMError(): void {
       // Latence et usage geres par l'appelant (status=error)
@@ -120,35 +111,11 @@ export async function invokeWithLlmTracking<TResult>(
       compterLAppel(metrics, context, 'success', startedAt);
       if (usage) {
         const typedUsage = usage as LlmTokenUsage;
-        metrics.llmTokensTotal.inc(
-          {
-            model: context.model,
-            section: context.section,
-            locale: context.locale,
-            type: 'input',
-          },
-          typedUsage.inputTokens,
-        );
-        metrics.llmTokensTotal.inc(
-          {
-            model: context.model,
-            section: context.section,
-            locale: context.locale,
-            type: 'output',
-          },
-          typedUsage.outputTokens,
-        );
-        if (typedUsage.cachedInputTokens !== undefined) {
-          metrics.llmTokensTotal.inc(
-            {
-              model: context.model,
-              section: context.section,
-              locale: context.locale,
-              type: 'cached',
-            },
-            typedUsage.cachedInputTokens,
-          );
-        }
+        compterLesJetons(metrics, context, {
+          input: typedUsage.inputTokens,
+          output: typedUsage.outputTokens,
+          cached: typedUsage.cachedInputTokens,
+        });
       }
     }
 
@@ -161,7 +128,38 @@ export async function invokeWithLlmTracking<TResult>(
   }
 }
 
-function compterLAppel(
+interface JetonsConsommes {
+  input: number;
+  output: number;
+  cached?: number;
+  cacheWrite?: number;
+}
+
+export function compterLesJetons(
+  metrics: MetricsService,
+  context: LlmInvocationContext,
+  jetons: JetonsConsommes,
+): void {
+  const compter = (type: string, valeur: number): void => {
+    metrics.llmTokensTotal.inc(
+      {
+        model: context.model,
+        section: context.section,
+        locale: context.locale,
+        type,
+      },
+      valeur,
+    );
+  };
+  compter('input', jetons.input);
+  compter('output', jetons.output);
+  if (jetons.cached && jetons.cached > 0) compter('cached', jetons.cached);
+  if (jetons.cacheWrite && jetons.cacheWrite > 0) {
+    compter('cache_write', jetons.cacheWrite);
+  }
+}
+
+export function compterLAppel(
   metrics: MetricsService,
   context: LlmInvocationContext,
   status: 'success' | 'error',

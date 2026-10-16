@@ -1,3 +1,4 @@
+import { buildClientReportConforme } from '../../../../../../test/factories/audit-requests.factory';
 import {
   codesBrutsDuCourriel,
   createMockTransporter,
@@ -7,7 +8,7 @@ import {
 } from '../../../../../../test/factories/mailer.factory';
 import { sousEnvironnement } from '../../../../../../test/helpers/environnement';
 import { AuditClientReportMailer } from '../audit-client-report.mailer';
-import type { SmtpTransporter } from '../smtp-transporter.provider';
+import { ExpediteurDeCourriels } from '../../../../../common/infrastructure/mail/expediteur-smtp';
 
 type RapportClientEnvoye = Parameters<
   AuditClientReportMailer['sendClientReport']
@@ -22,58 +23,14 @@ describe('AuditClientReportMailer', () => {
     jest.restoreAllMocks();
   });
 
-  const buildClientReport = () => ({
-    executiveSummary:
-      'Votre site a un potentiel enorme mais quelques blocages.',
-    topFindings: [
-      {
-        title: 'Meta descriptions manquantes',
-        impact: 'Perte de CTR estimee a 15%',
-        severity: 'high' as const,
-      },
-    ],
-    googleVsAiMatrix: {
-      googleVisibility: { score: 78, summary: 'Bonne indexation Google' },
-      aiVisibility: { score: 42, summary: 'Peu cite par les LLMs' },
-    },
-    pillarScorecard: [
-      { pillar: 'seo', score: 70, target: 80 },
-      { pillar: 'performance', score: 65, target: 80 },
-      { pillar: 'technical', score: 85, target: 80 },
-      { pillar: 'trust', score: 60, target: 80 },
-      { pillar: 'conversion', score: 55, target: 80 },
-      { pillar: 'aiVisibility', score: 40, target: 80 },
-      { pillar: 'citationWorthiness', score: 50, target: 80 },
-    ],
-    quickWins: [
-      {
-        title: 'Ajouter meta descriptions',
-        businessImpact: '+15% CTR',
-        effort: 'low' as const,
-      },
-      {
-        title: 'Optimiser images',
-        businessImpact: 'Chargement plus rapide',
-        effort: 'low' as const,
-      },
-      {
-        title: 'Schema Organization',
-        businessImpact: 'Rich results',
-        effort: 'medium' as const,
-      },
-    ],
-    cta: {
-      title: 'Prenons 30 minutes',
-      description: 'Pour prioriser les actions ensemble',
-      actionLabel: 'Reserver un creneau',
-    },
-  });
+  const CLIENT = buildClientReportConforme();
+  const [PREMIER_QUICK_WIN, , DERNIER_QUICK_WIN] = CLIENT.quickWins;
 
   function buildMailer(): AuditClientReportMailer {
     mockTransporter = createMockTransporter();
     cleanupEnv = setSmtpEnv(DEFAULT_AUDIT_ENV);
     return new AuditClientReportMailer(
-      mockTransporter as unknown as SmtpTransporter,
+      new ExpediteurDeCourriels(mockTransporter),
     );
   }
 
@@ -87,7 +44,7 @@ describe('AuditClientReportMailer', () => {
       to: 'client@example.com',
       firstName: null,
       websiteName: 'mon-site.fr',
-      clientReport: buildClientReport(),
+      clientReport: buildClientReportConforme(),
       pdfBuffer: null,
       ...parametres,
     });
@@ -101,9 +58,9 @@ describe('AuditClientReportMailer', () => {
     expect(call.subject).toBe('Votre audit Growth — mon-site.fr');
     expect(call.attachments).toBeUndefined();
     expect(call.text).toContain('Alice');
-    expect(call.text).toContain('Meta descriptions manquantes');
-    expect(call.text).toContain('+15% CTR');
-    expect(call.html).toContain('Reserver un creneau');
+    expect(call.text).toContain(CLIENT.topFindings[0].title);
+    expect(call.text).toContain(PREMIER_QUICK_WIN.businessImpact);
+    expect(call.html).toContain(CLIENT.cta.actionLabel);
     expect(call.replyTo).toBe(DEFAULT_AUDIT_ENV.AUDIT_REPORT_TO);
   });
 
@@ -137,15 +94,24 @@ describe('AuditClientReportMailer', () => {
   });
 
   it('nomme le statut de chaque pilier par son libellé, comme le PDF joint', async () => {
-    await envoyerRapport(buildMailer());
+    await envoyerRapport(buildMailer(), {
+      clientReport: {
+        ...CLIENT,
+        pillarScorecard: CLIENT.pillarScorecard.map((pilier) =>
+          pilier.pillar === 'technical' ? { ...pilier, score: 90 } : pilier,
+        ),
+      },
+    });
 
     const call = sentMail();
     for (const libelle of ['Critique', 'À améliorer', 'Objectif atteint']) {
       expect(call.html).toContain(`>${libelle}</td>`);
     }
-    expect(call.text).toContain('SEO: 70/80 (À améliorer)');
-    expect(call.text).toContain('Conversion: 55/80 (À améliorer)');
-    expect(call.text).toContain('Citabilite IA: 50/80 (Critique)');
+    expect(call.text).toContain('SEO: 62/85 (À améliorer)');
+    expect(call.text).toContain('Conversion: 60/85 (À améliorer)');
+    expect(call.text).toContain('Citabilite IA: 52/85 (Critique)');
+    expect(call.text).toContain('Visibilite IA: 48/85 (Critique)');
+    expect(call.text).toContain('Tech & scalabilite: 90/85 (Objectif atteint)');
     expect(
       codesBrutsDuCourriel(call, ['warning', 'critical', '(ok)', '>ok<']),
     ).toEqual([]);
@@ -160,9 +126,11 @@ describe('AuditClientReportMailer', () => {
     expect(call.html).toContain('<em>Effort : Moyen</em>');
     expect(call.text).toContain('- [Élevé] Meta descriptions manquantes');
     expect(call.text).toContain(
-      '- Ajouter meta descriptions (Effort : Faible)',
+      `- ${PREMIER_QUICK_WIN.title} (Effort : Faible)`,
     );
-    expect(call.text).toContain('- Schema Organization (Effort : Moyen)');
+    expect(call.text).toContain(
+      `- ${DERNIER_QUICK_WIN.title} (Effort : Moyen)`,
+    );
     expect(
       codesBrutsDuCourriel(call, [
         '[HIGH]',
@@ -191,7 +159,7 @@ describe('AuditClientReportMailer', () => {
   it('devrait escape les champs LLM contenant du HTML', async () => {
     await envoyerRapport(buildMailer(), {
       clientReport: {
-        ...buildClientReport(),
+        ...CLIENT,
         executiveSummary: '<script>alert(1)</script>',
       },
     });
@@ -204,7 +172,9 @@ describe('AuditClientReportMailer', () => {
   it('devrait ne rien faire si le transporter est absent', async () => {
     cleanupEnv = setSmtpEnv(DEFAULT_AUDIT_ENV);
     await expect(
-      envoyerRapport(new AuditClientReportMailer(null)),
+      envoyerRapport(
+        new AuditClientReportMailer(new ExpediteurDeCourriels(null)),
+      ),
     ).resolves.toBeUndefined();
   });
 

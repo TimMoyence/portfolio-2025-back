@@ -1,3 +1,4 @@
+import { arrondi } from '../../src/common/domain/nombres/arrondi';
 import type {
   Question,
   QuestionProduction,
@@ -91,8 +92,8 @@ export function dansLaTolerance(valeur: number, tolerance: Tolerance): number {
     case 'relative':
       return valeur * (1 + tolerance.valeur / DEMI);
     case 'decimales': {
-      const facteur = 10 ** tolerance.valeur;
-      return (Math.round(valeur * facteur) + FRACTION_DANS_L_ARRONDI) / facteur;
+      const ecart = FRACTION_DANS_L_ARRONDI / 10 ** tolerance.valeur;
+      return arrondi(valeur, tolerance.valeur) + (valeur < 0 ? -ecart : ecart);
     }
   }
 }

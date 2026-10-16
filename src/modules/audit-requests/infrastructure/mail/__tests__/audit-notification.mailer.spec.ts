@@ -8,8 +8,9 @@ import {
 } from '../../../../../../test/factories/mailer.factory';
 import { appliquer } from '../../../../../../test/helpers/environnement';
 import { AuditNotificationMailer } from '../audit-notification.mailer';
+import { htmlEmis } from '../../../../../common/domain/texte/html-escape.util';
 import { escapeHtml } from '../mail-rendering.util';
-import type { SmtpTransporter } from '../smtp-transporter.provider';
+import { ExpediteurDeCourriels } from '../../../../../common/infrastructure/mail/expediteur-smtp';
 
 describe('AuditNotificationMailer', () => {
   let cleanupEnv: () => void;
@@ -20,7 +21,7 @@ describe('AuditNotificationMailer', () => {
     mockTransporter = createMockTransporter();
     cleanupEnv = setSmtpEnv(DEFAULT_AUDIT_ENV);
     mailer = new AuditNotificationMailer(
-      mockTransporter as unknown as SmtpTransporter,
+      new ExpediteurDeCourriels(mockTransporter),
     );
   });
 
@@ -52,9 +53,9 @@ describe('AuditNotificationMailer', () => {
 
     it('devrait ne rien faire sans transporter', async () => {
       await expect(
-        new AuditNotificationMailer(null).sendAuditNotification(
-          buildAuditRequest(),
-        ),
+        new AuditNotificationMailer(
+          new ExpediteurDeCourriels(null),
+        ).sendAuditNotification(buildAuditRequest()),
       ).resolves.toBeUndefined();
     });
 
@@ -90,13 +91,13 @@ describe('AuditNotificationMailer', () => {
 
   describe('escapeHtml (util pure)', () => {
     it('devrait echapper tous les caracteres HTML dangereux', () => {
-      expect(escapeHtml('<script>alert("xss")</script>')).toBe(
+      expect(htmlEmis(escapeHtml('<script>alert("xss")</script>'))).toBe(
         '&lt;script&gt;alert(&quot;xss&quot;)&lt;/script&gt;',
       );
     });
 
     it('devrait echapper les esperluettes et les apostrophes', () => {
-      expect(escapeHtml("Tom & Jerry's <adventure>")).toBe(
+      expect(htmlEmis(escapeHtml("Tom & Jerry's <adventure>"))).toBe(
         'Tom &amp; Jerry&#39;s &lt;adventure&gt;',
       );
     });

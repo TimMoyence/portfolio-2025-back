@@ -88,6 +88,10 @@ function invokeSection(
 }
 
 describe('invokeAnthropicStructuredSection', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it('applies cache_control ephemeral on the last system block', async () => {
     const { client, calls } = buildClient();
 
@@ -146,6 +150,69 @@ describe('invokeAnthropicStructuredSection', () => {
     );
     expect(metrics.llmCallsTotal.inc).toHaveBeenCalledWith(
       expect.objectContaining({ status: 'success', section: 'executive' }),
+    );
+  });
+
+  it.each([
+    [
+      { cache_read_input_tokens: 0, cache_creation_input_tokens: 0 },
+      [
+        ['input', 10],
+        ['output', 5],
+      ],
+    ],
+    [
+      { cache_read_input_tokens: 20, cache_creation_input_tokens: 30 },
+      [
+        ['input', 10],
+        ['output', 5],
+        ['cached', 20],
+        ['cache_write', 30],
+      ],
+    ],
+  ])(
+    'ne compte que les jetons de cache présents (%o)',
+    async (cache, attendus) => {
+      const { client } = buildClient({
+        usage: {
+          input_tokens: 10,
+          output_tokens: 5,
+          server_tool_use: null,
+          service_tier: null,
+          ...cache,
+        } as Anthropic.Usage,
+      });
+      const metrics = createMockLlmMetrics();
+
+      await invokeSection(client, { metrics });
+
+      expect(
+        metrics.llmTokensTotal.inc.mock.calls.map(([labels, valeur]) => [
+          (labels as { type: string }).type,
+          valeur,
+        ]),
+      ).toEqual(attendus);
+    },
+  );
+
+  it('observe la latence de l appel en secondes', async () => {
+    const { client } = buildClient();
+    const metrics = createMockLlmMetrics();
+    jest
+      .spyOn(Date, 'now')
+      .mockReturnValueOnce(1_000)
+      .mockReturnValueOnce(3_500);
+
+    await invokeSection(client, { metrics });
+
+    expect(metrics.llmLatencySeconds.observe).toHaveBeenCalledWith(
+      {
+        model: 'claude-sonnet-4-6',
+        section: 'executive',
+        locale: 'fr',
+        status: 'success',
+      },
+      2.5,
     );
   });
 
