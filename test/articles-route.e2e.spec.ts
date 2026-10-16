@@ -2,6 +2,7 @@ import { RequestMethod } from '@nestjs/common';
 import type { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
+import { MESSAGE_D_OCTET_NUL } from '../src/common/interfaces/http/refus-de-l-octet-nul.pipe';
 import { appliquerLesTraitementsGlobaux } from '../src/common/interfaces/http/traitements-globaux';
 import { ArticlesService } from '../src/modules/articles/application/articles.service';
 import { PREFIXE_API_PAR_DEFAUT } from '../src/config/prefixe-api';
@@ -16,9 +17,9 @@ import {
 
 describe('Articles HTTP aliases', () => {
   let app: INestApplication;
+  const articles = createMockArticlesService();
 
   beforeAll(async () => {
-    const articles = createMockArticlesService();
     articles.listPublished.mockResolvedValue({ items: [], nextCursor: null });
     const moduleRef = await Test.createTestingModule({
       controllers: [ArticlesController],
@@ -55,6 +56,20 @@ describe('Articles HTTP aliases', () => {
       .get('/api/v1/portfolio25/articles')
       .expect(200)
       .expect({ items: [], next_cursor: null });
+  });
+
+  it('refuse en 400 un octet nul dans la requete, sans interroger les articles', async () => {
+    articles.listPublished.mockClear();
+
+    const reponse = await request(serveurHttpDe(app)).get(
+      '/api/articles?tag=finance%00x',
+    );
+
+    expect([
+      reponse.status,
+      (reponse.body as { detail: unknown }).detail,
+    ]).toEqual([400, MESSAGE_D_OCTET_NUL]);
+    expect(articles.listPublished).not.toHaveBeenCalled();
   });
 
   it('routes and protects the Raspberry Pi ingest endpoint', async () => {

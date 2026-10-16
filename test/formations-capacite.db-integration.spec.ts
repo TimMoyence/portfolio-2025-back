@@ -185,24 +185,40 @@ describeDb('Capacite et eviction (B28, db integration)', () => {
     attendreRefus(await inscrire(seance, CAPACITE), CONFLIT, 'SEANCE_COMPLETE');
   });
 
-  it('refuse en 400, sans erreur serveur ni inscription, le prenom, le nom ou l adresse que sa colonne ne tient pas', async () => {
-    const seance = await ouvrirSeance(CAPACITE);
-    const coeurs = String.fromCodePoint(0x2764, 0xfe0f).repeat(41);
-    const adresse = `${'a'.repeat(64)}@${String.fromCodePoint(0x62, 0xfe0f).repeat(10)}${'b'.repeat(40)}.${'c'.repeat(53)}.fr`;
+  const coeurs = String.fromCodePoint(0x2764, 0xfe0f).repeat(41);
+  const adresseTropLongue = `${'a'.repeat(64)}@${String.fromCodePoint(0x62, 0xfe0f).repeat(10)}${'b'.repeat(40)}.${'c'.repeat(53)}.fr`;
 
-    const refus = [
-      await inscrire(seance, 0, { prenom: coeurs }),
-      await inscrire(seance, 1, { nom: coeurs }),
-      await inscrire(seance, 2, { email: adresse }),
-    ];
+  it.each([
+    [
+      'le prenom, le nom ou l adresse que sa colonne ne tient pas',
+      [{ prenom: coeurs }, { nom: coeurs }, { email: adresseTropLongue }],
+    ],
+    [
+      'un octet nul dans le prenom, le nom ou l adresse',
+      [
+        { prenom: 'Th\u0000eo' },
+        { nom: 'Mar\u0000tin' },
+        { email: `${cle(2)}\u0000@example.test` },
+      ],
+    ],
+  ])(
+    'refuse en 400, sans erreur serveur ni inscription, %s',
+    async (_cas, identites) => {
+      const seance = await ouvrirSeance(CAPACITE);
 
-    expect(refus.map((reponse) => reponse.status)).toEqual([
-      INVALIDE,
-      INVALIDE,
-      INVALIDE,
-    ]);
-    await attendreAucunInscrit(seance);
-  });
+      const refus = [];
+      for (const [rang, identite] of identites.entries()) {
+        refus.push(await inscrire(seance, rang, identite));
+      }
+
+      expect(refus.map((reponse) => reponse.status)).toEqual([
+        INVALIDE,
+        INVALIDE,
+        INVALIDE,
+      ]);
+      await attendreAucunInscrit(seance);
+    },
+  );
 
   it('enregistre le prenom et le nom rognes', async () => {
     const seance = await ouvrirSeance(CAPACITE);

@@ -5,6 +5,7 @@ import { request as requeteNode } from 'node:http';
 import request from 'supertest';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { bornerLesCorpsDeRequete } from '../src/common/interfaces/http/corps-de-requete';
+import { MESSAGE_D_OCTET_NUL } from '../src/common/interfaces/http/refus-de-l-octet-nul.pipe';
 import { appliquerLesTraitementsGlobaux } from '../src/common/interfaces/http/traitements-globaux';
 import { PREFIXE_API_PAR_DEFAUT } from '../src/config/prefixe-api';
 import type { Cours } from '../src/modules/formations/domain/contrats/cours';
@@ -759,6 +760,34 @@ describe('Session de formation (e2e http socket)', () => {
       );
 
       expect(reponse.status).toBe(statut);
+    });
+
+    it('refuse en 400 un octet nul dans le corps ou le chemin, avant tout cas d usage', async () => {
+      const seance = await http.ouvrirSession();
+      const poste = await http.inscrire(
+        seance.code,
+        '11111111-1111-4111-8111-111111111114',
+      );
+
+      const refus = [
+        await http
+          .post(`/sessions/${seance.code}/join`)
+          .send({ ...inscription('martin'), prenom: 'Th\u0000eo' }),
+        await http
+          .post(`/sessions/${seance.sessionId}/machines/ecran%00x/evaluation`)
+          .set(EN_TETE_JETON, poste.jeton)
+          .send({}),
+      ];
+
+      expect(
+        refus.map((reponse) => [
+          reponse.status,
+          (reponse.body as { detail: unknown }).detail,
+        ]),
+      ).toEqual([
+        [400, MESSAGE_D_OCTET_NUL],
+        [400, MESSAGE_D_OCTET_NUL],
+      ]);
     });
 
     it('refuse de rejoindre avec une adresse que @IsEmail laisse passer mais que l adresse email commune rejette', async () => {
