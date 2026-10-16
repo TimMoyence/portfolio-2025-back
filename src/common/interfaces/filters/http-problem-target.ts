@@ -2,6 +2,7 @@ import type { ArgumentsHost } from '@nestjs/common';
 
 interface JsonResponse {
   status(code: number): { json(body: unknown): void };
+  setHeader(name: string, value: string): void;
 }
 
 export function httpProblemTarget(host: ArgumentsHost): {

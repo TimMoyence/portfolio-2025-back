@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Not, Repository } from 'typeorm';
+import { IsNull, Not, Repository } from 'typeorm';
 import { ResourceConflictError } from '../../../common/domain/errors/ResourceConflictError';
+import { boiteDeLivraison } from '../../../common/domain/value-objects/boite-de-livraison';
 import { DepotEnDomaine } from '../../../common/infrastructure/typeorm/DepotEnDomaine';
 import { aAffecte } from '../../../common/infrastructure/typeorm/lignes-affectees';
+import { enTransactionSurLaCle } from '../../../common/infrastructure/typeorm/verrou-de-transaction';
 import { isSubscriptionStatus } from '../domain/SubscriptionStatus';
 import type { INewsletterSubscriberRepository } from '../domain/INewsletterSubscriberRepository';
 import { NewsletterSubscriber } from '../domain/NewsletterSubscriber';
@@ -25,6 +27,7 @@ export class NewsletterSubscriberRepositoryTypeORM
     return this.enregistrer(
       {
         email: subscriber.email,
+        boite: boiteDeLivraison(subscriber.email),
         firstName: subscriber.firstName,
         locale: subscriber.locale,
         sourceFormationSlug: subscriber.sourceFormationSlug,
@@ -50,6 +53,35 @@ export class NewsletterSubscriberRepositoryTypeORM
     sourceFormationSlug: string,
   ): Promise<NewsletterSubscriber | null> {
     return this.trouver({ email, sourceFormationSlug });
+  }
+
+  sousVerrouDeLaBoite<T>(
+    email: string,
+    travail: (depot: INewsletterSubscriberRepository) => Promise<T>,
+  ): Promise<T> {
+    return enTransactionSurLaCle(this.repo, boiteDeLivraison(email), (repo) =>
+      travail(new NewsletterSubscriberRepositoryTypeORM(repo)),
+    );
+  }
+
+  async derniereConfirmationVersLaBoiteDe(
+    email: string,
+  ): Promise<NewsletterSubscriber | null> {
+    const [derniere] = await this.lister({
+      where: {
+        boite: boiteDeLivraison(email),
+        lastConfirmationSentAt: Not(IsNull()),
+      },
+      order: { lastConfirmationSentAt: 'DESC' },
+      take: 1,
+    });
+    return derniere ?? null;
+  }
+
+  boiteInscriteA(email: string, sourceFormationSlug: string): Promise<boolean> {
+    return this.repo.exists({
+      where: { boite: boiteDeLivraison(email), sourceFormationSlug },
+    });
   }
 
   findByConfirmToken(token: string): Promise<NewsletterSubscriber | null> {

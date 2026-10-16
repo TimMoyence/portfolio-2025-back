@@ -72,7 +72,7 @@ import { AuthResponseDto } from './dto/Auth.response.dto';
 import { UpdateProfileDto } from './dto/UpdateProfile.dto';
 import { UserResponseDto } from './dto/User.response.dto';
 import { compteConnecte } from '../../../common/interfaces/auth/compte-connecte';
-import { Public } from '../../../common/interfaces/auth/public.decorator';
+import { RoutePublique } from '../../../common/interfaces/security/formulaire-public.decorator';
 import { messageDErreur } from '../../../common/domain/errors/message-d-erreur';
 
 @ApiTags('auth')
@@ -117,7 +117,7 @@ export class AuthController {
     );
   }
 
-  @Public()
+  @RoutePublique()
   @Post('login')
   @Throttle({ default: { limit: 10, ttl: 3600000 } })
   @ApiOperation({ summary: 'Connexion par email et mot de passe' })
@@ -134,7 +134,7 @@ export class AuthController {
     );
   }
 
-  @Public()
+  @RoutePublique()
   @Throttle({ default: { limit: 10, ttl: 3600000 } })
   @Post('google')
   @ApiOperation({ summary: 'Authentification via Google OAuth' })
@@ -194,7 +194,7 @@ export class AuthController {
     });
   }
 
-  @Public()
+  @RoutePublique()
   @Post('refresh')
   @HttpCode(200)
   @Throttle({
@@ -230,7 +230,7 @@ export class AuthController {
     ];
   }
 
-  @Public()
+  @RoutePublique()
   @Post('logout')
   @HttpCode(200)
   @Throttle({ default: { limit: 10, ttl: 3600000 } })
@@ -268,7 +268,7 @@ export class AuthController {
     );
   }
 
-  @Public()
+  @RoutePublique()
   @Post('forgot-password')
   @HttpCode(200)
   @Throttle({ default: { limit: 3, ttl: 3600000 } })
@@ -286,7 +286,7 @@ export class AuthController {
     return reponse;
   }
 
-  @Public()
+  @RoutePublique()
   @Post('reset-password')
   @HttpCode(200)
   @Throttle({ default: { limit: 10, ttl: 3600000 } })
@@ -334,7 +334,7 @@ export class AuthController {
     return UserResponseDto.fromDomain(await modifier(compteConnecte(req).id));
   }
 
-  @Public()
+  @RoutePublique()
   @Post('register')
   @Throttle({ default: { limit: 5, ttl: 3600000 } })
   @ApiOperation({
@@ -354,7 +354,7 @@ export class AuthController {
     };
   }
 
-  @Public()
+  @RoutePublique()
   @Get('verify-email')
   @Throttle({ default: { limit: 10, ttl: 3600000 } })
   @ApiOperation({ summary: "Verifie l'adresse email via le token envoye" })
@@ -367,7 +367,7 @@ export class AuthController {
     return this.verifyEmailUseCase.execute(token);
   }
 
-  @Public()
+  @RoutePublique()
   @Post('resend-verification')
   @HttpCode(200)
   @Throttle({ default: { limit: 3, ttl: 3600000 } })

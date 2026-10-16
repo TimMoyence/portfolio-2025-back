@@ -1,6 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { estObjet } from '../../../common/domain/est-objet';
+import { boiteDeLivraison } from '../../../common/domain/value-objects/boite-de-livraison';
 import { DepotDeRequetes } from '../../../common/infrastructure/typeorm/DepotDeRequetes';
+import {
+  poseeDepuisMoinsDe,
+  secondesAvantDeSortirDeLaFenetre,
+} from '../../../common/infrastructure/typeorm/horloge-de-la-base';
+import { enTransactionSurLaCle } from '../../../common/infrastructure/typeorm/verrou-de-transaction';
 import {
   AuditSnapshot,
   AuditSummarySnapshot,
@@ -44,6 +50,7 @@ export class AuditRequestsRepositoryTypeORM
         websiteName: data.websiteName,
         contactMethod: data.contactMethod,
         contactValue: data.contactValue,
+        boite: boiteDeLivraison(data.contactValue),
         done: false,
         processingStatus: 'PENDING',
         progress: 0,
@@ -62,6 +69,38 @@ export class AuditRequestsRepositoryTypeORM
       auditId: entity.id,
       status: entity.processingStatus,
     };
+  }
+
+  sousVerrouDeLaBoite<T>(
+    contactValue: string,
+    travail: (depot: IAuditRequestsRepository) => Promise<T>,
+  ): Promise<T> {
+    return enTransactionSurLaCle(
+      this.repo,
+      boiteDeLivraison(contactValue),
+      (repo) => travail(new AuditRequestsRepositoryTypeORM(repo)),
+    );
+  }
+
+  async secondesAvantLaSortieDesDemandesVers(
+    contactValue: string,
+    fenetreMs: number,
+  ): Promise<readonly number[]> {
+    const { selection, parametres } = secondesAvantDeSortirDeLaFenetre(
+      'demande.createdAt',
+      fenetreMs,
+    );
+    const lignes = await this.repo
+      .createQueryBuilder('demande')
+      .select(selection, 'secondes')
+      .where({
+        boite: boiteDeLivraison(contactValue),
+        createdAt: poseeDepuisMoinsDe(fenetreMs),
+      })
+      .setParameters(parametres)
+      .orderBy('demande.createdAt', 'ASC')
+      .getRawMany<{ secondes: string }>();
+    return lignes.map(({ secondes }) => Number(secondes));
   }
 
   async findById(id: string): Promise<AuditSnapshot | null> {

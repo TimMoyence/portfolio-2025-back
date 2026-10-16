@@ -13,7 +13,6 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiTags,
-  ApiTooManyRequestsResponse,
 } from '@nestjs/swagger';
 import { ConfirmSubscriptionUseCase } from '../application/ConfirmSubscription.useCase';
 import { SubscribeNewsletterUseCase } from '../application/SubscribeNewsletter.useCase';
@@ -51,7 +50,6 @@ export class NewsletterController {
   })
   @ApiAcceptedResponse({ type: SubscribeNewsletterResponseDto })
   @ApiBadRequestResponse({ description: 'Validation echouee' })
-  @ApiTooManyRequestsResponse({ description: 'Trop de requetes' })
   async subscribeEndpoint(
     @Body() dto: SubscribeNewsletterRequestDto,
   ): Promise<SubscribeNewsletterResponseDto> {

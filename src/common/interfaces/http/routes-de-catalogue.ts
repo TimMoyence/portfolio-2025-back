@@ -18,10 +18,10 @@ import {
 } from '@nestjs/swagger';
 import type { ApiQueryOptions } from '@nestjs/swagger';
 import type { PaginatedResult, SortOrder } from '../../domain/pagination.types';
-import { Public } from '../auth/public.decorator';
 import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/roles.guard';
 import type { PaginationMetaResponseDto } from '../dto/pagination-meta.response.dto';
+import { RoutePublique } from '../security/formulaire-public.decorator';
 
 export const FILTRE_STATUT_DE_PUBLICATION: ApiQueryOptions = {
   name: 'status',
@@ -61,7 +61,7 @@ export function ListePubliquePaginee(
   options: ListePubliquePagineeOptions,
 ): MethodDecorator {
   return applyDecorators(
-    Public(),
+    RoutePublique(),
     Get(),
     ApiOperation({ summary: options.resume }),
     ApiQuery({ name: 'page', required: false, example: 1, type: Number }),

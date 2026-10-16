@@ -16,6 +16,7 @@ import type { EngineCoverage } from '../../domain/EngineCoverage';
 @Index('idx_audit_requests_ip_created_at', ['ip', 'createdAt'], {
   where: '"ip" IS NOT NULL',
 })
+@Index('idx_audit_requests_boite_created_at', ['boite', 'createdAt'])
 export class AuditRequestEntity extends ColonnesDeRequete {
   @Column({ type: 'text' })
   websiteName: string;
@@ -25,6 +26,9 @@ export class AuditRequestEntity extends ColonnesDeRequete {
 
   @Column({ type: 'text' })
   contactValue: string;
+
+  @Column({ type: 'text' })
+  boite: string;
 
   @Column({ type: 'boolean', default: false })
   done: boolean;

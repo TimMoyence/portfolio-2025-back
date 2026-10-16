@@ -5,7 +5,6 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiTags,
-  ApiTooManyRequestsResponse,
 } from '@nestjs/swagger';
 import { RequestToolkitUseCase } from '../application/RequestToolkit.useCase';
 import type { RequestToolkitCommand } from '../application/dto/RequestToolkit.command';
@@ -38,7 +37,6 @@ export class LeadMagnetsController {
   })
   @ApiCreatedResponse({ type: LeadMagnetResponseDto })
   @ApiBadRequestResponse({ description: 'Validation echouee' })
-  @ApiTooManyRequestsResponse({ description: 'Trop de requetes' })
   async create(
     @Body() dto: RequestToolkitRequestDto,
   ): Promise<LeadMagnetResponseDto> {
@@ -76,7 +74,6 @@ export class LeadMagnetsController {
   })
   @ApiOkResponse({ type: ToolkitPageResponseDto })
   @RefusDeLienDocumente()
-  @ApiTooManyRequestsResponse({ description: 'Trop de requetes' })
   async getByToken(
     @JetonDuLienEnChemin() token: string,
   ): Promise<ToolkitPageResponseDto> {

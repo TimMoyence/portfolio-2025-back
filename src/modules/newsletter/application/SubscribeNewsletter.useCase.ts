@@ -17,6 +17,11 @@ export interface SubscribeNewsletterResult {
   readonly status: NewsletterSubscriber['status'];
 }
 
+interface IssueDeLInscription {
+  readonly resultat: SubscribeNewsletterResult;
+  readonly aConfirmer: NewsletterSubscriber | null;
+}
+
 @Injectable()
 export class SubscribeNewsletterUseCase {
   private readonly logger = new Logger(SubscribeNewsletterUseCase.name);
@@ -46,71 +51,116 @@ export class SubscribeNewsletterUseCase {
       termsAcceptedAt: command.termsAcceptedAt,
     });
 
-    const existing = await this.repo.findByEmailAndSource(
-      candidate.email,
-      candidate.sourceFormationSlug,
-    );
-
-    if (existing) {
-      return this.dejaInscrit(existing);
-    }
-
     try {
-      const persisted = await this.repo.create(candidate);
-      await this.trackAndSendConfirmation(persisted);
-      return {
-        created: true,
-        alreadySubscribed: false,
-        status: persisted.status,
-      };
+      return this.conclure(
+        await this.repo.sousVerrouDeLaBoite(candidate.email, (depot) =>
+          this.inscrire(depot, candidate),
+        ),
+      );
     } catch (error) {
       if (error instanceof ResourceConflictError) {
-        const raced = await this.repo.findByEmailAndSource(
+        const issue = await this.repo.sousVerrouDeLaBoite(
           candidate.email,
-          candidate.sourceFormationSlug,
+          async (depot) => {
+            const raced = await depot.findByEmailAndSource(
+              candidate.email,
+              candidate.sourceFormationSlug,
+            );
+            return raced ? this.dejaInscrit(depot, raced) : null;
+          },
         );
-        if (raced) {
-          return this.dejaInscrit(raced);
+        if (issue) {
+          return this.conclure(issue);
         }
       }
       throw error;
     }
   }
 
-  private async dejaInscrit(
-    abonne: NewsletterSubscriber,
-  ): Promise<SubscribeNewsletterResult> {
-    if (abonne.status === 'pending') {
-      await this.resendConfirmationIfAllowed(abonne);
+  private async inscrire(
+    depot: INewsletterSubscriberRepository,
+    candidate: NewsletterSubscriber,
+  ): Promise<IssueDeLInscription> {
+    const existing = await depot.findByEmailAndSource(
+      candidate.email,
+      candidate.sourceFormationSlug,
+    );
+    if (existing) {
+      return this.dejaInscrit(depot, existing);
     }
+
+    const sourceNeuvePourLaBoite = !(await depot.boiteInscriteA(
+      candidate.email,
+      candidate.sourceFormationSlug,
+    ));
+    const persisted = await depot.create(candidate);
+    const confirmable =
+      sourceNeuvePourLaBoite ||
+      (await this.laBoitePeutRecevoir(depot, persisted));
     return {
-      created: false,
-      alreadySubscribed: true,
-      status: abonne.status,
+      resultat: {
+        created: true,
+        alreadySubscribed: false,
+        status: persisted.status,
+      },
+      aConfirmer: confirmable
+        ? await this.marquerLaConfirmation(depot, persisted)
+        : null,
     };
   }
 
-  private async resendConfirmationIfAllowed(
-    subscriber: NewsletterSubscriber,
-  ): Promise<void> {
-    if (!subscriber.canResendConfirmation()) {
-      return;
+  private async dejaInscrit(
+    depot: INewsletterSubscriberRepository,
+    abonne: NewsletterSubscriber,
+  ): Promise<IssueDeLInscription> {
+    const confirmable =
+      abonne.status === 'pending' &&
+      abonne.canResendConfirmation() &&
+      (await this.laBoitePeutRecevoir(depot, abonne));
+    if (confirmable && abonne.isConfirmTokenExpired()) {
+      abonne.rotateConfirmToken();
     }
-    if (subscriber.isConfirmTokenExpired()) {
-      subscriber.rotateConfirmToken();
-      await this.repo.update(subscriber);
-    }
-    await this.trackAndSendConfirmation(subscriber);
+    return {
+      resultat: {
+        created: false,
+        alreadySubscribed: true,
+        status: abonne.status,
+      },
+      aConfirmer: confirmable
+        ? await this.marquerLaConfirmation(depot, abonne)
+        : null,
+    };
   }
 
-  private async trackAndSendConfirmation(
-    subscriber: NewsletterSubscriber,
-  ): Promise<void> {
-    subscriber.markConfirmationSent();
-    if (subscriber.id) {
-      await this.repo.update(subscriber);
+  private async laBoitePeutRecevoir(
+    depot: INewsletterSubscriberRepository,
+    abonne: NewsletterSubscriber,
+  ): Promise<boolean> {
+    const derniere = await depot.derniereConfirmationVersLaBoiteDe(
+      abonne.email,
+    );
+    return !derniere || derniere.canResendConfirmation();
+  }
+
+  private async marquerLaConfirmation(
+    depot: INewsletterSubscriberRepository,
+    abonne: NewsletterSubscriber,
+  ): Promise<NewsletterSubscriber> {
+    abonne.markConfirmationSent();
+    if (abonne.id) {
+      await depot.update(abonne);
     }
-    this.sendConfirmationAsync(subscriber);
+    return abonne;
+  }
+
+  private conclure({
+    resultat,
+    aConfirmer,
+  }: IssueDeLInscription): SubscribeNewsletterResult {
+    if (aConfirmer) {
+      this.sendConfirmationAsync(aConfirmer);
+    }
+    return resultat;
   }
 
   private sendConfirmationAsync(subscriber: NewsletterSubscriber): void {
