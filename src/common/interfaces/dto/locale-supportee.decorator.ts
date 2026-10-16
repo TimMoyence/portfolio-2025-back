@@ -1,7 +1,8 @@
 import { applyDecorators } from '@nestjs/common';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsIn, IsOptional } from 'class-validator';
+import { buildMessage, IsOptional, ValidateBy } from 'class-validator';
 import {
+  estUneLocaleSupportee,
   LOCALES_SUPPORTEES,
   type SupportedLocale,
 } from '../../domain/value-objects/LocaleCode';
@@ -23,5 +24,18 @@ export function LocaleSupportee({
   const presence = facultative
     ? [ApiPropertyOptional(documentation), IsOptional()]
     : [ApiProperty(documentation)];
-  return applyDecorators(...presence, IsIn(LOCALES_SUPPORTEES));
+  return applyDecorators(
+    ...presence,
+    ValidateBy({
+      name: 'isIn',
+      constraints: [LOCALES_SUPPORTEES],
+      validator: {
+        validate: estUneLocaleSupportee,
+        defaultMessage: buildMessage(
+          (prefixe) =>
+            `${prefixe}$property must be one of the following values: $constraint1`,
+        ),
+      },
+    }),
+  );
 }

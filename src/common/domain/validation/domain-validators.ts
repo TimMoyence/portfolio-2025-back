@@ -2,7 +2,10 @@ import { DomainValidationError } from '../errors/DomainValidationError';
 import { dansLesBornes } from '../nombres/dans-les-bornes';
 import { longueurDeTexte } from '../texte/longueur-de-texte';
 import { EmailAddress } from '../value-objects/EmailAddress';
-import { LocaleCode, type SupportedLocale } from '../value-objects/LocaleCode';
+import {
+  estUneLocaleSupportee,
+  type SupportedLocale,
+} from '../value-objects/LocaleCode';
 import { PhoneNumber } from '../value-objects/PhoneNumber';
 
 export function requireEmail(raw: unknown, field: string): string {
@@ -20,9 +23,10 @@ export function optionalPhone(raw: unknown, field: string): string | null {
 }
 
 export function requireLocale(raw: unknown, field: string): SupportedLocale {
-  const locale = LocaleCode.parse(raw);
-  if (locale === null) throw new DomainValidationError(`Invalid ${field}`);
-  return locale.value;
+  if (!estUneLocaleSupportee(raw)) {
+    throw new DomainValidationError(`Invalid ${field}`);
+  }
+  return raw;
 }
 
 export function requireBoolean(raw: unknown, field: string): boolean {

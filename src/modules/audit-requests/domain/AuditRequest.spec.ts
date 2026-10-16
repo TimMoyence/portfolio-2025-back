@@ -41,7 +41,7 @@ describe('AuditRequest aggregate', () => {
     ).toThrow(new DomainValidationError('Invalid audit contact email'));
   });
 
-  it.each([['de'], ['xx-invalid']])(
+  it.each([['de'], ['xx-invalid'], ['fr-FR']])(
     'refuse la locale non supportee %p au lieu de la remplacer par fr',
     (locale) => {
       expect(() =>

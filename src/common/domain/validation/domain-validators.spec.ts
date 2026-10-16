@@ -13,17 +13,15 @@ import {
 } from './domain-validators';
 
 describe('requireLocale', () => {
-  it.each([
-    ['fr', 'fr'],
-    [' EN ', 'en'],
-    ['fr-FR', 'fr'],
-    ['en-US', 'en'],
-  ])('rend %s sous la forme supportee %s', (saisie, attendue) => {
-    expect(requireLocale(saisie, 'newsletter locale')).toBe(attendue);
+  it.each([['fr'], ['en']])('rend la locale supportee %s', (saisie) => {
+    expect(requireLocale(saisie, 'newsletter locale')).toBe(saisie);
   });
 
   it.each([
     ['une langue non supportee', 'de'],
+    ['une variante regionale', 'fr-FR'],
+    ['une casse differente', 'EN'],
+    ['des blancs autour', ' en '],
     ['une chaine vide', ''],
     ['un nombre', 42],
     ['undefined', undefined],

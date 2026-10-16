@@ -27,7 +27,7 @@ describe('Contacts aggregate', () => {
       message: ' I need support for a new enterprise feature rollout. ',
       role: ' CTO ',
       terms: true,
-      termsLocale: 'fr-FR',
+      termsLocale: 'fr',
     });
 
     expect(contact.email).toBe('john.doe@example.com');
@@ -75,14 +75,17 @@ describe('Contacts aggregate', () => {
     expect(contact.termsLocale).toBeUndefined();
   });
 
-  it('devrait refuser une termsLocale invalide', () => {
-    expect(() =>
-      Contacts.create({
-        ...VALID_CONTACT_PROPS,
-        termsLocale: 'xx-INVALID-TOO-LONG',
-      }),
-    ).toThrow(DomainValidationError);
-  });
+  it.each([['xx-INVALID-TOO-LONG'], ['fr-FR']])(
+    'devrait refuser la termsLocale %p',
+    (termsLocale) => {
+      expect(() =>
+        Contacts.create({
+          ...VALID_CONTACT_PROPS,
+          termsLocale,
+        }),
+      ).toThrow(new DomainValidationError('Invalid terms locale'));
+    },
+  );
 
   it('devrait accepter termsAcceptedAt valide', () => {
     const now = new Date();

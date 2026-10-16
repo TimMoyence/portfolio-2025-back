@@ -77,7 +77,7 @@ describe('NewsletterSubscriber', () => {
       ).toThrow(DomainValidationError);
     });
 
-    it.each([['de'], ['es-ES']])(
+    it.each([['de'], ['es-ES'], ['fr-FR'], [' fr ']])(
       'rejette la locale non supportee %p',
       (locale) => {
         expect(() =>
@@ -85,12 +85,6 @@ describe('NewsletterSubscriber', () => {
         ).toThrow(new DomainValidationError('Invalid newsletter locale'));
       },
     );
-
-    it('enregistre une variante regionale sous sa locale supportee', () => {
-      expect(
-        NewsletterSubscriber.create({ ...validProps, locale: 'fr-FR' }).locale,
-      ).toBe('fr');
-    });
 
     it('rejette un slug vide', () => {
       expect(() =>

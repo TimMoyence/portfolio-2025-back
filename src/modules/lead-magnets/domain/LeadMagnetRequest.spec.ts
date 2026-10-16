@@ -2,13 +2,13 @@ import { DomainValidationError } from '../../../common/domain/errors/DomainValid
 import { buildLeadMagnetRequest } from '../../../../test/factories/lead-magnet-request.factory';
 
 describe('LeadMagnetRequest', () => {
-  it('enregistre la locale des conditions sous sa forme supportee', () => {
-    expect(buildLeadMagnetRequest({ termsLocale: ' EN ' }).termsLocale).toBe(
+  it('enregistre la locale supportee des conditions', () => {
+    expect(buildLeadMagnetRequest({ termsLocale: 'en' }).termsLocale).toBe(
       'en',
     );
   });
 
-  it.each([['de'], ['xx']])(
+  it.each([['de'], ['xx'], [' EN '], ['en-GB']])(
     'refuse la locale des conditions non supportee %p',
     (termsLocale) => {
       expect(() => buildLeadMagnetRequest({ termsLocale })).toThrow(

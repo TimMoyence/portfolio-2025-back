@@ -9,10 +9,10 @@ import { CookieConsent } from './CookieConsent';
 const VALID_PROPS = buildChoixDeConsentement();
 
 describe('CookieConsent aggregate', () => {
-  it('creates consent with normalized locale', () => {
+  it('creates consent with its locale and trimmed request metadata', () => {
     const consent = CookieConsent.create({
       ...VALID_PROPS,
-      locale: 'EN-us',
+      locale: 'en',
       ip: ' 203.0.113.10 ',
       userAgent: ' test-agent ',
       referer: ' https://example.com ',
@@ -134,7 +134,7 @@ describe('CookieConsent aggregate', () => {
     );
   });
 
-  it.each([['xx-invalid'], ['de'], ['']])(
+  it.each([['xx-invalid'], ['de'], [''], ['EN-us']])(
     'refuse la locale non supportee %p au lieu de la remplacer par fr',
     (locale) => {
       expect(() => CookieConsent.create({ ...VALID_PROPS, locale })).toThrow(

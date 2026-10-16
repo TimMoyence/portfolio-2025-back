@@ -11,21 +11,24 @@ describe('CookieConsentMapper', () => {
     referer: null,
   };
 
-  it('normalizes locale variant to supported locale', () => {
+  it('garde la locale supportee du consentement', () => {
     const mapped = CookieConsentMapper.fromCreateCommand({
       ...baseCommand,
-      locale: 'EN-us',
+      locale: 'en',
     });
 
     expect(mapped.locale).toBe('en');
   });
 
-  it('refuse par un 400 une locale non supportee au lieu de la remplacer par fr', () => {
-    expect(() =>
-      CookieConsentMapper.fromCreateCommand({
-        ...baseCommand,
-        locale: 'es',
-      }),
-    ).toThrow(new BadRequestException('Invalid cookie consent locale'));
-  });
+  it.each([['es'], ['EN-us']])(
+    'refuse par un 400 la locale %p au lieu de la remplacer par fr',
+    (locale) => {
+      expect(() =>
+        CookieConsentMapper.fromCreateCommand({
+          ...baseCommand,
+          locale,
+        }),
+      ).toThrow(new BadRequestException('Invalid cookie consent locale'));
+    },
+  );
 });
