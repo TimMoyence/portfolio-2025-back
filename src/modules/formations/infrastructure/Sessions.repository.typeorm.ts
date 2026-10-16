@@ -13,6 +13,7 @@ import type {
   UpdateSessionInput,
 } from '../domain/ISessions.repository';
 import { DepotEnDomaine } from '../../../common/infrastructure/typeorm/DepotEnDomaine';
+import { aAffecte } from '../../../common/infrastructure/typeorm/lignes-affectees';
 import { FormationSessionEntity } from './entities/FormationSession.entity';
 
 const CODE_ACTIF_CONSTRAINT = 'uq_formation_sessions_code_active';
@@ -45,24 +46,23 @@ export class SessionsRepositoryTypeORM
   }
 
   async create(input: CreateSessionInput): Promise<SessionRecord> {
-    const entity = this.repo.create({
-      courseSlug: input.courseSlug,
-      courseVersion: input.courseVersion,
-      teacherId: input.teacherId,
-      code: input.code,
-      bareme: input.bareme,
-      etat: 'attente',
-      modeRythme: 'pilote',
-      ecranCourant: 0,
-      intervalleLibre: null,
-      pilotageEcrans: {},
-      revision: 0,
-      capacite: input.capacite ?? CAPACITE_PAR_DEFAUT,
-      fermeeLe: null,
-      majLe: new Date(),
-    });
     try {
-      return this.toDomain(await this.repo.save(entity));
+      return await this.enregistrer({
+        courseSlug: input.courseSlug,
+        courseVersion: input.courseVersion,
+        teacherId: input.teacherId,
+        code: input.code,
+        bareme: input.bareme,
+        etat: 'attente',
+        modeRythme: 'pilote',
+        ecranCourant: 0,
+        intervalleLibre: null,
+        pilotageEcrans: {},
+        revision: 0,
+        capacite: input.capacite ?? CAPACITE_PAR_DEFAUT,
+        fermeeLe: null,
+        majLe: new Date(),
+      });
     } catch (error) {
       if (this.uniqueViolationConstraint(error) === CODE_ACTIF_CONSTRAINT) {
         throw new SessionCodeAlreadyActiveError(input.code);
@@ -118,14 +118,10 @@ export class SessionsRepositoryTypeORM
       ecriture.andWhere('revision = :revisionAttendue', { revisionAttendue });
     }
     const resultat = await ecriture.execute();
-    if (revisionAttendue !== undefined && (resultat.affected ?? 0) === 0) {
+    if (revisionAttendue !== undefined && !aAffecte(resultat)) {
       throw new RevisionDeSeanceObsoleteError(id);
     }
-    const entity = await this.repo.findOne({ where: { id } });
-    if (!entity) {
-      throw new Error(`Session introuvable apres mise a jour: ${id}`);
-    }
-    return this.toDomain(entity);
+    return this.relire({ id });
   }
 
   protected toDomain(entity: FormationSessionEntity): SessionRecord {

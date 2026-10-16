@@ -18,6 +18,7 @@ import {
   ApiParam,
 } from '@nestjs/swagger';
 import type { Request } from 'express';
+import { compteConnecte } from '../../../common/interfaces/auth/compte-connecte';
 import { EvincerParticipantUseCase } from '../application/EvincerParticipant.useCase';
 import { LibererPosteUseCase } from '../application/LibererPoste.useCase';
 import { ListSessionParticipantsUseCase } from '../application/ListSessionParticipants.useCase';
@@ -27,7 +28,6 @@ import { CibleParticipantPipe } from './dto/cible-participant.params';
 import type { CibleParticipant } from './dto/cible-participant.params';
 import { SessionParticipantsResponseDto } from './dto/session-participants.response.dto';
 import {
-  acteurDe,
   ControleurFormateur,
   LectureDeSeance,
   PilotageDeSeance,
@@ -64,7 +64,10 @@ export class FormationsParticipantsController {
     @Req() request: Request,
   ): Promise<{ participants: readonly ParticipantDeSeance[] }> {
     return {
-      participants: await this.participants.execute(id, acteurDe(request)),
+      participants: await this.participants.execute(
+        id,
+        compteConnecte(request),
+      ),
     };
   }
 
@@ -84,7 +87,7 @@ export class FormationsParticipantsController {
   ): Promise<void> {
     await this.evincerParticipant.execute(
       cible.id,
-      request.user!.sub,
+      compteConnecte(request).id,
       cible.participantId,
     );
   }
@@ -110,7 +113,7 @@ export class FormationsParticipantsController {
   ): Promise<void> {
     await this.readmettreParticipant.execute(
       cible.id,
-      request.user!.sub,
+      compteConnecte(request).id,
       cible.participantId,
     );
   }
@@ -131,7 +134,7 @@ export class FormationsParticipantsController {
   ): Promise<void> {
     await this.liberer.execute(
       cible.id,
-      request.user!.sub,
+      compteConnecte(request).id,
       cible.participantId,
     );
   }

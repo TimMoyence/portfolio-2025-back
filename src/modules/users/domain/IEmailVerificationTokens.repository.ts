@@ -1,7 +1,9 @@
 import type { EmailVerificationToken } from './EmailVerificationToken';
 
 export interface IEmailVerificationTokensRepository {
-  create(token: EmailVerificationToken): Promise<EmailVerificationToken>;
+  remplacerLesJetonsActifs(
+    jeton: Pick<EmailVerificationToken, 'userId' | 'tokenHash' | 'expiresAt'>,
+  ): Promise<EmailVerificationToken>;
 
   findActiveByTokenHash(
     tokenHash: string,

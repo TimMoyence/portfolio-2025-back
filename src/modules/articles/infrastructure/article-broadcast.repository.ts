@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
+import { DepotEnDomaine } from '../../../common/infrastructure/typeorm/DepotEnDomaine';
 import type {
   ArticleBroadcastPatch,
   ArticleBroadcastRecord,
@@ -13,22 +14,14 @@ import { ArticleBroadcastRecipientEntity } from './entities/article-broadcast-re
 import { ArticleBroadcastEntity } from './entities/article-broadcast.entity';
 import { ArticleEntity } from './entities/article.entity';
 
-function toRecord(entity: ArticleBroadcastEntity): ArticleBroadcastRecord {
-  return {
-    id: entity.id,
-    articleRecordId: entity.articleRecordId,
-    status: entity.status,
-    sendAfter: entity.sendAfter,
-    lockedUntil: entity.lockedUntil,
-    sentCount: entity.sentCount,
-    failedCount: entity.failedCount,
-    completedAt: entity.completedAt,
-  };
-}
-
 @Injectable()
-export class TypeOrmArticleBroadcastRepository implements ArticleBroadcastRepository {
-  constructor(private readonly dataSource: DataSource) {}
+export class TypeOrmArticleBroadcastRepository
+  extends DepotEnDomaine<ArticleBroadcastEntity, ArticleBroadcastRecord>
+  implements ArticleBroadcastRepository
+{
+  constructor(private readonly dataSource: DataSource) {
+    super(dataSource.getRepository(ArticleBroadcastEntity));
+  }
 
   async claimDue(
     now: Date,
@@ -49,10 +42,7 @@ export class TypeOrmArticleBroadcastRepository implements ArticleBroadcastReposi
     );
     const claimed = rows[0];
     if (!claimed) return null;
-    const entity = await this.dataSource
-      .getRepository(ArticleBroadcastEntity)
-      .findOneByOrFail({ id: claimed.id });
-    return toRecord(entity);
+    return this.relire({ id: claimed.id });
   }
 
   findPendingRecipients({
@@ -112,9 +102,7 @@ export class TypeOrmArticleBroadcastRepository implements ArticleBroadcastReposi
     id: string,
     patch: ArticleBroadcastPatch,
   ): Promise<void> {
-    await this.dataSource
-      .getRepository(ArticleBroadcastEntity)
-      .update({ id }, patch);
+    await this.repo.update({ id }, patch);
   }
 
   async findModerated(articleId: string): Promise<ModeratedArticle | null> {
@@ -122,10 +110,10 @@ export class TypeOrmArticleBroadcastRepository implements ArticleBroadcastReposi
       .getRepository(ArticleEntity)
       .findOne({ where: { articleId } });
     if (!article) return null;
-    const broadcast = await this.dataSource
-      .getRepository(ArticleBroadcastEntity)
-      .findOne({ where: { articleRecordId: article.id } });
-    return { article, broadcast: broadcast ? toRecord(broadcast) : null };
+    return {
+      article,
+      broadcast: await this.trouver({ articleRecordId: article.id }),
+    };
   }
 
   async listModerated(limit: number): Promise<ModeratedArticle[]> {
@@ -134,8 +122,7 @@ export class TypeOrmArticleBroadcastRepository implements ArticleBroadcastReposi
       take: limit,
     });
     if (items.length === 0) return [];
-    const broadcasts = await this.dataSource
-      .getRepository(ArticleBroadcastEntity)
+    const broadcasts = await this.repo
       .createQueryBuilder('broadcast')
       .where('broadcast.articleRecordId IN (:...ids)', {
         ids: items.map((item) => item.id),
@@ -146,7 +133,10 @@ export class TypeOrmArticleBroadcastRepository implements ArticleBroadcastReposi
     );
     return items.map((article) => {
       const broadcast = byArticle.get(article.id);
-      return { article, broadcast: broadcast ? toRecord(broadcast) : null };
+      return {
+        article,
+        broadcast: broadcast ? this.toDomain(broadcast) : null,
+      };
     });
   }
 
@@ -157,5 +147,18 @@ export class TypeOrmArticleBroadcastRepository implements ArticleBroadcastReposi
     await this.dataSource
       .getRepository(ArticleEntity)
       .update({ id: articleRecordId }, { status });
+  }
+
+  protected toDomain(entity: ArticleBroadcastEntity): ArticleBroadcastRecord {
+    return {
+      id: entity.id,
+      articleRecordId: entity.articleRecordId,
+      status: entity.status,
+      sendAfter: entity.sendAfter,
+      lockedUntil: entity.lockedUntil,
+      sentCount: entity.sentCount,
+      failedCount: entity.failedCount,
+      completedAt: entity.completedAt,
+    };
   }
 }

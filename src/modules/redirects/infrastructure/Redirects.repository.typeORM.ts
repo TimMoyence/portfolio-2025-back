@@ -24,16 +24,13 @@ export class RedirectsRepositoryTypeORM
     });
   }
 
-  async create(data: Redirects): Promise<Redirects> {
-    const saved = await this.repo.save(
-      this.repo.create({
-        slug: data.slug,
-        targetUrl: data.targetUrl,
-        enabled: data.enabled,
-        clicks: data.clicks,
-      }),
-    );
-    return this.toDomain(saved);
+  create(data: Redirects): Promise<Redirects> {
+    return this.enregistrer({
+      slug: data.slug,
+      targetUrl: data.targetUrl,
+      enabled: data.enabled,
+      clicks: data.clicks,
+    });
   }
 
   protected toDomain(entity: RedirectsEntity): Redirects {

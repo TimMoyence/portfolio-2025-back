@@ -39,12 +39,10 @@ export class TeacherAnnotationsRepositoryTypeORM
       },
       CLE_ANNOTATION,
     );
-    return this.toDomain(
-      await this.repo.findOneByOrFail({
-        sessionId: input.sessionId,
-        screenId: input.screenId,
-      }),
-    );
+    return this.relire({
+      sessionId: input.sessionId,
+      screenId: input.screenId,
+    });
   }
 
   listBySession(

@@ -269,7 +269,10 @@ describe('API coherence and connectivity (e2e transportless)', () => {
       ForgotPasswordDto,
     );
 
-    const response = await authController.forgotPassword(dto);
+    const response = await authController.forgotPassword(
+      dto,
+      makeRequestMock({ 'user-agent': 'test-agent' }),
+    );
 
     expect(response).toEqual(PASSWORD_RESET_REQUESTED_RESULT);
     expect(requestPasswordResetUseCase.execute).toHaveBeenCalledWith(dto);
@@ -286,9 +289,12 @@ describe('API coherence and connectivity (e2e transportless)', () => {
       ResetPasswordDto,
     );
 
-    await expect(authController.resetPassword(dto)).rejects.toBeInstanceOf(
-      LienInvalideError,
-    );
+    await expect(
+      authController.resetPassword(
+        dto,
+        makeRequestMock({ 'user-agent': 'test-agent' }),
+      ),
+    ).rejects.toBeInstanceOf(LienInvalideError);
   });
 
   it('injects user id from JWT payload when setting password', async () => {

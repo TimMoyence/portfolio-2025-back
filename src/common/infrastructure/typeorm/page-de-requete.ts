@@ -4,6 +4,7 @@ import {
   type PaginatedResult,
   type SortOrder,
 } from '../../domain/pagination.types';
+import { DepotEnDomaine } from './DepotEnDomaine';
 
 export interface DemandeDePage {
   readonly page: number;
@@ -56,11 +57,13 @@ export abstract class DepotPagine<
   E extends ObjectLiteral,
   D,
   Q extends RequeteDePageTriee,
-> {
+> extends DepotEnDomaine<E, D> {
   protected constructor(
-    protected readonly repo: Repository<E>,
+    repo: Repository<E>,
     private readonly regles: ReglesDePagination<Q>,
-  ) {}
+  ) {
+    super(repo);
+  }
 
   findAll(requete: Q): Promise<PaginatedResult<D>> {
     const { alias, colonnes, parDefaut, filtres } = this.regles;
@@ -77,6 +80,4 @@ export abstract class DepotPagine<
       (entite) => this.toDomain(entite),
     );
   }
-
-  protected abstract toDomain(entite: E): D;
 }

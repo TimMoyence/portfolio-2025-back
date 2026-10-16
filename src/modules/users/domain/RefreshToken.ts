@@ -7,3 +7,7 @@ export interface RefreshToken {
   rotationGraceUntil?: Date | null;
   createdAt?: Date;
 }
+
+export function estRevoqueHorsRotation(jeton: RefreshToken): boolean {
+  return jeton.revoked && !jeton.rotationGraceUntil;
+}

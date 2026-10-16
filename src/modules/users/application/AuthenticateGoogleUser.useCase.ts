@@ -90,7 +90,7 @@ export class AuthenticateGoogleUserUseCase {
           'Local account email not verified — refusing Google link',
         );
       }
-      await this.repo.update(byEmail.id!, { googleId } as Partial<User>);
+      await this.repo.update(byEmail.id!, User.update({ googleId }));
       byEmail.googleId = googleId;
       return byEmail;
     }

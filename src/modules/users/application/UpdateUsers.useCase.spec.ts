@@ -9,21 +9,27 @@ import {
   createMockPasswordService,
   buildUser,
 } from '../../../../test/factories/user.factory';
+import { createMockRefreshTokensRepo } from '../../../../test/factories/refresh-token.factory';
 import {
   attendreMiseAJourDeLUtilisateur,
+  attendreNouveauMotDePasseEnregistre,
   attendreUtilisateurIntrouvable,
 } from '../../../../test/helpers/utilisateurs';
+
+const CHOSEN_CREDENTIAL = 'NewPassword123!';
 
 describe('UpdateUsersUseCase', () => {
   let repo: jest.Mocked<IUsersRepository>;
   let passwordService: jest.Mocked<PasswordService>;
+  let refreshTokensRepo: ReturnType<typeof createMockRefreshTokensRepo>;
   let useCase: UpdateUsersUseCase;
 
   beforeEach(() => {
     repo = createMockUsersRepo();
     passwordService = createMockPasswordService();
     passwordService.hash.mockResolvedValue('new-hash');
-    useCase = new UpdateUsersUseCase(repo, passwordService);
+    refreshTokensRepo = createMockRefreshTokensRepo();
+    useCase = new UpdateUsersUseCase(repo, passwordService, refreshTokensRepo);
   });
 
   const mettreAJour = async (
@@ -48,6 +54,32 @@ describe('UpdateUsersUseCase', () => {
 
     expect(repo.findById).toHaveBeenCalledWith('user-1');
     expect(result).toBe(updatedUser);
+    expect(refreshTokensRepo.revokeByUserId).not.toHaveBeenCalled();
+  });
+
+  it('ferme toutes les sessions du compte quand l admin change son mot de passe', async () => {
+    repo.findById.mockResolvedValue(buildUser({ id: 'user-1' }));
+    repo.update.mockResolvedValue(buildUser({ id: 'user-1' }));
+
+    await useCase.execute('user-1', {
+      firstName: 'Johnny',
+      password: CHOSEN_CREDENTIAL,
+      updatedOrCreatedBy: 'admin',
+    });
+
+    attendreMiseAJourDeLUtilisateur(repo.update, {
+      firstName: 'Johnny',
+      updatedOrCreatedBy: 'admin',
+    });
+    attendreNouveauMotDePasseEnregistre(
+      {
+        hacher: passwordService.hash,
+        mettreAJour: repo.update,
+        fermerLesSessions: refreshTokensRepo.revokeByUserId,
+      },
+      CHOSEN_CREDENTIAL,
+      'admin',
+    );
   });
 
   it('devrait mettre a jour les roles de l utilisateur', async () => {

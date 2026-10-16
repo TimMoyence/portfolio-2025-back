@@ -40,10 +40,31 @@ export function preparerNouveauMotDePasse(
   return updatedUser;
 }
 
+export function attendreSessionsFermeesApres(
+  mettreAJour: IUsersRepository['update'],
+  fermerLesSessions: IRefreshTokensRepository['revokeByUserId'],
+): void {
+  expect(fermerLesSessions).toHaveBeenCalledWith('user-1');
+  expect(
+    jest.mocked(fermerLesSessions).mock.invocationCallOrder[0],
+  ).toBeGreaterThan(
+    Math.max(...jest.mocked(mettreAJour).mock.invocationCallOrder),
+  );
+}
+
+export function attendreAucunMotDePasseEnregistre(
+  mettreAJour: IUsersRepository['update'],
+  fermerLesSessions: IRefreshTokensRepository['revokeByUserId'],
+): void {
+  expect(mettreAJour).not.toHaveBeenCalled();
+  expect(fermerLesSessions).not.toHaveBeenCalled();
+}
+
 export function attendreNouveauMotDePasseEnregistre(
   effets: {
     hacher: PasswordService['hash'];
     mettreAJour: IUsersRepository['update'];
+    fermerLesSessions: IRefreshTokensRepository['revokeByUserId'];
   },
   motDePasse: string,
   auteur: string,
@@ -53,6 +74,7 @@ export function attendreNouveauMotDePasseEnregistre(
     passwordHash: 'new-hash',
     updatedOrCreatedBy: auteur,
   });
+  attendreSessionsFermeesApres(effets.mettreAJour, effets.fermerLesSessions);
 }
 
 export function itRefuseUnRefreshTokenInconnu(

@@ -7,7 +7,9 @@ import {
   buildUser,
   createMockUsersRepo,
 } from '../../../../test/factories/user.factory';
+import { attendreMiseAJourDeLUtilisateur } from '../../../../test/helpers/utilisateurs';
 import { LienInvalideError } from '../../../common/domain/errors/LienInvalideError';
+import { DEFAULT_SELF_REGISTRATION_ROLES } from '../domain/roles';
 import { TokenHash } from '../domain/TokenHash';
 import { VerifyEmailUseCase } from './VerifyEmail.useCase';
 
@@ -36,10 +38,10 @@ describe('VerifyEmailUseCase', () => {
     expect(tokensRepo.findActiveByTokenHash).toHaveBeenCalledWith(
       TokenHash.fromRaw('jeton-brut').value,
     );
-    expect(usersRepo.update).toHaveBeenCalledWith(
-      'user-1',
-      expect.objectContaining({ emailVerified: true }),
-    );
+    attendreMiseAJourDeLUtilisateur(usersRepo.update, {
+      emailVerified: true,
+      roles: [...DEFAULT_SELF_REGISTRATION_ROLES],
+    });
     expect(tokensRepo.deleteByUserId).toHaveBeenCalledWith('user-1');
   });
 

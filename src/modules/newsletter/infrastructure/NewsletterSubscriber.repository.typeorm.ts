@@ -2,7 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Not, Repository } from 'typeorm';
 import { ResourceConflictError } from '../../../common/domain/errors/ResourceConflictError';
-import { PostgresErrorClassifier } from '../../../common/infrastructure/typeorm/PostgresErrorClassifier';
+import { DepotEnDomaine } from '../../../common/infrastructure/typeorm/DepotEnDomaine';
+import { aAffecte } from '../../../common/infrastructure/typeorm/lignes-affectees';
 import { isSubscriptionStatus } from '../domain/SubscriptionStatus';
 import type { INewsletterSubscriberRepository } from '../domain/INewsletterSubscriberRepository';
 import { NewsletterSubscriber } from '../domain/NewsletterSubscriber';
@@ -10,69 +11,53 @@ import { NewsletterSubscriberEntity } from './entities/NewsletterSubscriber.enti
 
 @Injectable()
 export class NewsletterSubscriberRepositoryTypeORM
-  extends PostgresErrorClassifier
+  extends DepotEnDomaine<NewsletterSubscriberEntity, NewsletterSubscriber>
   implements INewsletterSubscriberRepository
 {
   constructor(
     @InjectRepository(NewsletterSubscriberEntity)
-    private readonly repo: Repository<NewsletterSubscriberEntity>,
+    repo: Repository<NewsletterSubscriberEntity>,
   ) {
-    super();
+    super(repo);
   }
 
-  async create(
-    subscriber: NewsletterSubscriber,
-  ): Promise<NewsletterSubscriber> {
-    const entity = this.repo.create({
-      email: subscriber.email,
-      firstName: subscriber.firstName,
-      locale: subscriber.locale,
-      sourceFormationSlug: subscriber.sourceFormationSlug,
-      status: subscriber.status,
-      confirmToken: subscriber.confirmToken,
-      unsubscribeToken: subscriber.unsubscribeToken,
-      termsVersion: subscriber.termsVersion,
-      termsAcceptedAt: subscriber.termsAcceptedAt,
-      confirmTokenExpiresAt: subscriber.confirmTokenExpiresAt,
-      lastConfirmationSentAt: subscriber.lastConfirmationSentAt,
-      confirmedAt: subscriber.confirmedAt,
-      unsubscribedAt: subscriber.unsubscribedAt,
-    });
-    const saved = await this.enregistrerSansDoublon(
-      this.repo,
-      entity,
+  create(subscriber: NewsletterSubscriber): Promise<NewsletterSubscriber> {
+    return this.enregistrer(
+      {
+        email: subscriber.email,
+        firstName: subscriber.firstName,
+        locale: subscriber.locale,
+        sourceFormationSlug: subscriber.sourceFormationSlug,
+        status: subscriber.status,
+        confirmToken: subscriber.confirmToken,
+        unsubscribeToken: subscriber.unsubscribeToken,
+        termsVersion: subscriber.termsVersion,
+        termsAcceptedAt: subscriber.termsAcceptedAt,
+        confirmTokenExpiresAt: subscriber.confirmTokenExpiresAt,
+        lastConfirmationSentAt: subscriber.lastConfirmationSentAt,
+        confirmedAt: subscriber.confirmedAt,
+        unsubscribedAt: subscriber.unsubscribedAt,
+      },
       () =>
         new ResourceConflictError(
           'Newsletter subscription already exists for this email and source',
         ),
     );
-    return this.toDomain(saved);
   }
 
-  async findByEmailAndSource(
+  findByEmailAndSource(
     email: string,
     sourceFormationSlug: string,
   ): Promise<NewsletterSubscriber | null> {
-    const entity = await this.repo.findOne({
-      where: { email, sourceFormationSlug },
-    });
-    return entity ? this.toDomain(entity) : null;
+    return this.trouver({ email, sourceFormationSlug });
   }
 
-  async findByConfirmToken(
-    token: string,
-  ): Promise<NewsletterSubscriber | null> {
-    const entity = await this.repo.findOne({ where: { confirmToken: token } });
-    return entity ? this.toDomain(entity) : null;
+  findByConfirmToken(token: string): Promise<NewsletterSubscriber | null> {
+    return this.trouver({ confirmToken: token });
   }
 
-  async findByUnsubscribeToken(
-    token: string,
-  ): Promise<NewsletterSubscriber | null> {
-    const entity = await this.repo.findOne({
-      where: { unsubscribeToken: token },
-    });
-    return entity ? this.toDomain(entity) : null;
+  findByUnsubscribeToken(token: string): Promise<NewsletterSubscriber | null> {
+    return this.trouver({ unsubscribeToken: token });
   }
 
   async update(
@@ -90,7 +75,7 @@ export class NewsletterSubscriberRepositoryTypeORM
         unsubscribedAt: subscriber.unsubscribedAt,
       },
     );
-    return this.recharger(id);
+    return this.relire({ id });
   }
 
   async markUnsubscribed(
@@ -104,9 +89,9 @@ export class NewsletterSubscriberRepositoryTypeORM
         unsubscribedAt: subscriber.unsubscribedAt,
       },
     );
-    if (result.affected === 0) return null;
+    if (!aAffecte(result)) return null;
 
-    return this.recharger(id);
+    return this.relire({ id });
   }
 
   private idPersiste(subscriber: NewsletterSubscriber): string {
@@ -116,11 +101,7 @@ export class NewsletterSubscriberRepositoryTypeORM
     return subscriber.id;
   }
 
-  private async recharger(id: string): Promise<NewsletterSubscriber> {
-    return this.toDomain(await this.repo.findOneOrFail({ where: { id } }));
-  }
-
-  private toDomain(entity: NewsletterSubscriberEntity): NewsletterSubscriber {
+  protected toDomain(entity: NewsletterSubscriberEntity): NewsletterSubscriber {
     const subscriber = new NewsletterSubscriber();
     subscriber.id = entity.id;
     subscriber.email = entity.email;

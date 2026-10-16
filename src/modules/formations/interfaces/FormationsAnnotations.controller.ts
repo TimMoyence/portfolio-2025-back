@@ -6,6 +6,7 @@ import {
   ApiOperation,
 } from '@nestjs/swagger';
 import type { Request } from 'express';
+import { compteConnecte } from '../../../common/interfaces/auth/compte-connecte';
 import { ManageTeacherAnnotationsUseCase } from '../application/ManageTeacherAnnotations.useCase';
 import type { TeacherAnnotationRecord } from '../domain/ITeacherAnnotations.repository';
 import { SaveTeacherAnnotationRequestDto } from './dto/save-teacher-annotation.request.dto';
@@ -14,7 +15,6 @@ import {
   TeacherAnnotationsResponseDto,
 } from './dto/teacher-annotations.response.dto';
 import {
-  acteurDe,
   ControleurFormateur,
   LectureDeSeance,
   PilotageDeSeance,
@@ -35,7 +35,7 @@ export class FormationsAnnotationsController {
     @Req() request: Request,
   ): Promise<{ annotations: readonly TeacherAnnotationRecord[] }> {
     return {
-      annotations: await this.annotations.list(id, acteurDe(request)),
+      annotations: await this.annotations.list(id, compteConnecte(request)),
     };
   }
 
@@ -55,7 +55,7 @@ export class FormationsAnnotationsController {
     @Body() dto: SaveTeacherAnnotationRequestDto,
     @Req() request: Request,
   ): Promise<TeacherAnnotationRecord> {
-    return this.annotations.save(id, request.user!.sub, {
+    return this.annotations.save(id, compteConnecte(request).id, {
       screenId: dto.screenId,
       note: dto.note,
     });

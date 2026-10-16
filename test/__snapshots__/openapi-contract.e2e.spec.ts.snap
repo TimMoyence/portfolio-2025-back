@@ -2619,7 +2619,7 @@ exports[`OpenAPI core contract keeps Auth path contracts stable 1`] = `
           "description": "",
         },
         "400": {
-          "description": "Trop de demandes",
+          "description": "Validation failed",
         },
       },
       "summary": "Renvoie l'email de verification (rate limited 3/h)",

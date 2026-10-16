@@ -1,36 +1,41 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LessThan, Repository } from 'typeorm';
+import { DepotEnDomaine } from '../../../common/infrastructure/typeorm/DepotEnDomaine';
+import { poseeIlYAPlusDe } from '../../../common/infrastructure/typeorm/horloge-de-la-base';
+import {
+  aAffecte,
+  lignesAffectees,
+} from '../../../common/infrastructure/typeorm/lignes-affectees';
 import type { IRefreshTokensRepository } from '../domain/IRefreshTokens.repository';
 import type { RefreshToken } from '../domain/RefreshToken';
 import { RefreshTokenEntity } from './entities/RefreshToken.entity';
-import { champsDuJeton, enregistrerJeton } from './jetons.typeorm';
+import { champsDuJeton } from './jetons.typeorm';
+
+const SEPT_JOURS_MS = 7 * 24 * 60 * 60 * 1000;
 
 @Injectable()
-export class RefreshTokensRepositoryTypeORM implements IRefreshTokensRepository {
+export class RefreshTokensRepositoryTypeORM
+  extends DepotEnDomaine<RefreshTokenEntity, RefreshToken>
+  implements IRefreshTokensRepository
+{
   constructor(
     @InjectRepository(RefreshTokenEntity)
-    private readonly repo: Repository<RefreshTokenEntity>,
-  ) {}
-
-  create(token: RefreshToken): Promise<RefreshToken> {
-    return enregistrerJeton(
-      this.repo,
-      {
-        ...champsDuJeton(token),
-        revoked: token.revoked,
-        rotationGraceUntil: token.rotationGraceUntil ?? null,
-      },
-      (entite) => this.toDomain(entite),
-    );
+    repo: Repository<RefreshTokenEntity>,
+  ) {
+    super(repo);
   }
 
-  async findByTokenHash(tokenHash: string): Promise<RefreshToken | null> {
-    const entity = await this.repo.findOne({
-      where: { tokenHash },
+  create(token: RefreshToken): Promise<RefreshToken> {
+    return this.enregistrer({
+      ...champsDuJeton(token),
+      revoked: token.revoked,
+      rotationGraceUntil: token.rotationGraceUntil ?? null,
     });
+  }
 
-    return entity ? this.toDomain(entity) : null;
+  findByTokenHash(tokenHash: string): Promise<RefreshToken | null> {
+    return this.trouver({ tokenHash });
   }
 
   async revokeByUserId(userId: string): Promise<void> {
@@ -40,29 +45,25 @@ export class RefreshTokensRepositoryTypeORM implements IRefreshTokensRepository 
     );
   }
 
-  async revokeById(id: string): Promise<void> {
-    await this.repo.update({ id }, { revoked: true, rotationGraceUntil: null });
-  }
-
   async rotateById(id: string, graceUntil: Date): Promise<boolean> {
-    const result = await this.repo.update(
-      { id, revoked: false },
-      { revoked: true, rotationGraceUntil: graceUntil },
+    return aAffecte(
+      await this.repo.update(
+        { id, revoked: false },
+        { revoked: true, rotationGraceUntil: graceUntil },
+      ),
     );
-
-    return result.affected === 1;
   }
 
   async purgeExpired(): Promise<number> {
-    const cutoff = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-    const result = await this.repo.delete([
-      { revoked: true, createdAt: LessThan(cutoff) },
-      { expiresAt: LessThan(new Date()) },
-    ]);
-    return typeof result.affected === 'number' ? result.affected : 0;
+    return lignesAffectees(
+      await this.repo.delete([
+        { revoked: true, createdAt: poseeIlYAPlusDe(SEPT_JOURS_MS) },
+        { expiresAt: LessThan(new Date()) },
+      ]),
+    );
   }
 
-  private toDomain(entity: RefreshTokenEntity): RefreshToken {
+  protected toDomain(entity: RefreshTokenEntity): RefreshToken {
     return {
       id: entity.id,
       userId: entity.userId,

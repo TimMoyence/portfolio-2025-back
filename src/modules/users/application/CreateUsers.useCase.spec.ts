@@ -49,7 +49,7 @@ describe('CreateUsersUseCase', () => {
     passwordService = createMockPasswordService();
     configService = createMockConfigService();
     passwordService.hash.mockResolvedValue(DERIVED_HASH);
-    emailVerificationTokensRepo.create.mockResolvedValue(
+    emailVerificationTokensRepo.remplacerLesJetonsActifs.mockResolvedValue(
       buildEmailVerificationToken({ userId: 'uuid' }),
     );
 
@@ -138,7 +138,9 @@ describe('CreateUsersUseCase', () => {
 
     await useCase.execute(dto);
 
-    expect(emailVerificationTokensRepo.create).toHaveBeenCalledWith(
+    expect(
+      emailVerificationTokensRepo.remplacerLesJetonsActifs,
+    ).toHaveBeenCalledWith(
       expect.objectContaining({
         userId: 'uuid',
         tokenHash: expect.stringMatching(/^[0-9a-f]{64}$/),

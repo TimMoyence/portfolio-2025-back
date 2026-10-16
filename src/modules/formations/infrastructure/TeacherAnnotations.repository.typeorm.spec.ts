@@ -14,12 +14,12 @@ const ANNOTATION = {
 
 describe('TeacherAnnotationsRepositoryTypeORM', () => {
   const upsert = jest.fn();
-  const findOneByOrFail = jest.fn();
+  const findOneOrFail = jest.fn();
   const find = jest.fn();
   const sut = new TeacherAnnotationsRepositoryTypeORM(
     mockTypeOrmRepository<FormationTeacherAnnotationEntity>({
       upsert,
-      findOneByOrFail,
+      findOneOrFail,
       find,
     }),
   );
@@ -27,7 +27,7 @@ describe('TeacherAnnotationsRepositoryTypeORM', () => {
   beforeEach(() => {
     const ligne = buildTeacherAnnotationEntity({ note: 'Relancer' });
     upsert.mockReset().mockResolvedValue(undefined);
-    findOneByOrFail.mockReset().mockResolvedValue(ligne);
+    findOneOrFail.mockReset().mockResolvedValue(ligne);
     find.mockReset().mockResolvedValue([ligne]);
   });
 
@@ -47,9 +47,11 @@ describe('TeacherAnnotationsRepositoryTypeORM', () => {
       },
       ['sessionId', 'screenId'],
     );
-    expect(findOneByOrFail).toHaveBeenCalledWith({
-      sessionId: ANNOTATION.sessionId,
-      screenId: ANNOTATION.screenId,
+    expect(findOneOrFail).toHaveBeenCalledWith({
+      where: {
+        sessionId: ANNOTATION.sessionId,
+        screenId: ANNOTATION.screenId,
+      },
     });
   });
 
