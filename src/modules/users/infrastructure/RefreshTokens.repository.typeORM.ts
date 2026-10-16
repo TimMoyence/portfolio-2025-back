@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { LessThan, Repository } from 'typeorm';
+import { type EntityManager, IsNull, LessThan, Not, Repository } from 'typeorm';
 import type { IRefreshTokensRepository } from '../domain/IRefreshTokens.repository';
 import type { RefreshToken } from '../domain/RefreshToken';
 import { RefreshTokenEntity } from './entities/RefreshToken.entity';
@@ -14,15 +14,27 @@ export class RefreshTokensRepositoryTypeORM implements IRefreshTokensRepository 
   ) {}
 
   create(token: RefreshToken): Promise<RefreshToken> {
-    return enregistrerJeton(
-      this.repo,
-      {
-        ...champsDuJeton(token),
-        revoked: token.revoked,
-        rotationGraceUntil: token.rotationGraceUntil ?? null,
-      },
-      (entite) => this.toDomain(entite),
-    );
+    return this.enregistrer(this.repo, token);
+  }
+
+  createSuccessor(
+    previousId: string,
+    token: RefreshToken,
+  ): Promise<RefreshToken | null> {
+    return this.repo.manager.transaction(async (manager) => {
+      await this.verrouillerLeCompte(manager, token.userId);
+      const precedentEnGrace = await manager.findOne(RefreshTokenEntity, {
+        where: {
+          id: previousId,
+          userId: token.userId,
+          rotationGraceUntil: Not(IsNull()),
+        },
+      });
+      if (precedentEnGrace === null) {
+        return null;
+      }
+      return this.enregistrer(manager.getRepository(RefreshTokenEntity), token);
+    });
   }
 
   async findByTokenHash(tokenHash: string): Promise<RefreshToken | null> {
@@ -33,15 +45,15 @@ export class RefreshTokensRepositoryTypeORM implements IRefreshTokensRepository 
     return entity ? this.toDomain(entity) : null;
   }
 
-  async revokeByUserId(userId: string): Promise<void> {
-    await this.repo.update(
-      { userId },
-      { revoked: true, rotationGraceUntil: null },
-    );
-  }
-
-  async revokeById(id: string): Promise<void> {
-    await this.repo.update({ id }, { revoked: true, rotationGraceUntil: null });
+  revokeByUserId(userId: string): Promise<void> {
+    return this.repo.manager.transaction(async (manager) => {
+      await this.verrouillerLeCompte(manager, userId);
+      await manager.update(
+        RefreshTokenEntity,
+        { userId },
+        { revoked: true, rotationGraceUntil: null },
+      );
+    });
   }
 
   async rotateById(id: string, graceUntil: Date): Promise<boolean> {
@@ -60,6 +72,31 @@ export class RefreshTokensRepositoryTypeORM implements IRefreshTokensRepository 
       { expiresAt: LessThan(new Date()) },
     ]);
     return typeof result.affected === 'number' ? result.affected : 0;
+  }
+
+  private async verrouillerLeCompte(
+    manager: EntityManager,
+    userId: string,
+  ): Promise<void> {
+    await manager.query(
+      `SELECT 1 FROM "users" WHERE "id" = $1 FOR NO KEY UPDATE`,
+      [userId],
+    );
+  }
+
+  private enregistrer(
+    repo: Repository<RefreshTokenEntity>,
+    token: RefreshToken,
+  ): Promise<RefreshToken> {
+    return enregistrerJeton(
+      repo,
+      {
+        ...champsDuJeton(token),
+        revoked: token.revoked,
+        rotationGraceUntil: token.rotationGraceUntil ?? null,
+      },
+      (entite) => this.toDomain(entite),
+    );
   }
 
   private toDomain(entity: RefreshTokenEntity): RefreshToken {

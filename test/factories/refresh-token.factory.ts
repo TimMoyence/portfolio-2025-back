@@ -19,9 +19,9 @@ export function buildRefreshToken(
 export function createMockRefreshTokensRepo(): jest.Mocked<IRefreshTokensRepository> {
   return {
     create: jest.fn(),
+    createSuccessor: jest.fn(),
     findByTokenHash: jest.fn(),
     revokeByUserId: jest.fn(),
-    revokeById: jest.fn(),
     rotateById: jest.fn(),
     purgeExpired: jest.fn(),
   };
