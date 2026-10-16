@@ -19,13 +19,38 @@ const soumettre = (body: unknown) =>
   });
 
 const REFUS = new BadRequestException('Invalid request');
+const INSTANT_DE_SOUMISSION = Date.UTC(2026, 9, 16, 15, 0, 0);
 
 describe('IntercepteurAntiRobot', () => {
-  it('laisse passer une saisie humaine après le délai minimal', () => {
-    expect(soumettre({ website: '', formStartedAt: Date.now() - 2_000 })).toBe(
-      SUITE,
-    );
+  beforeEach(() => {
+    jest.spyOn(Date, 'now').mockReturnValue(INSTANT_DE_SOUMISSION);
   });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('laisse passer une saisie humaine après le délai minimal', () => {
+    expect(
+      soumettre({
+        website: '',
+        formFillDurationMs: 2_000,
+      }),
+    ).toBe(SUITE);
+  });
+
+  it.each([
+    ['en avance d une heure', INSTANT_DE_SOUMISSION + 3_600_000],
+    ['en avance de 30 s pour 20 s de saisie', INSTANT_DE_SOUMISSION + 10_000],
+  ])(
+    'ne refuse pas un poste dont l horloge est %s sur celle du serveur',
+    (_cas, formStartedAt) => {
+      expect(soumettre({ formStartedAt, formFillDurationMs: 20_000 })).toBe(
+        SUITE,
+      );
+      expect(soumettre({ formStartedAt })).toBe(SUITE);
+    },
+  );
 
   it('laisse passer les clients qui ignorent encore les champs anti-robot', () => {
     expect(soumettre({})).toBe(SUITE);
@@ -41,11 +66,13 @@ describe('IntercepteurAntiRobot', () => {
   });
 
   it('refuse une soumission plus rapide qu une saisie humaine', () => {
-    expect(() => soumettre({ formStartedAt: Date.now() })).toThrow(REFUS);
+    expect(() => soumettre({ formFillDurationMs: 0 })).toThrow(REFUS);
+    expect(() => soumettre({ formFillDurationMs: 1_199 })).toThrow(REFUS);
+    expect(() => soumettre({ formFillDurationMs: -5_000 })).toThrow(REFUS);
   });
 
-  it('refuse un horodatage qui n est pas un nombre fini', () => {
-    expect(() => soumettre({ formStartedAt: 'hier' })).toThrow(REFUS);
+  it('refuse une durée de saisie qui n est pas un nombre fini', () => {
+    expect(() => soumettre({ formFillDurationMs: 'longtemps' })).toThrow(REFUS);
   });
 });
 

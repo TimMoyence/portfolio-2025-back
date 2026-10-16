@@ -15,10 +15,10 @@ function piegeRempli(piege: unknown): boolean {
   return typeof piege !== 'string' || piege.trim().length > 0;
 }
 
-function saisieTropRapide(debut: unknown, maintenant: number): boolean {
-  if (debut === undefined || debut === null) return false;
-  if (typeof debut !== 'number' || !Number.isFinite(debut)) return true;
-  return maintenant - debut < DUREE_MIN_DE_SAISIE_MS;
+function saisieTropRapide(duree: unknown): boolean {
+  if (duree === undefined || duree === null) return false;
+  if (typeof duree !== 'number' || !Number.isFinite(duree)) return true;
+  return duree < DUREE_MIN_DE_SAISIE_MS;
 }
 
 @Injectable()
@@ -27,8 +27,7 @@ export class IntercepteurAntiRobot implements NestInterceptor {
     const { body } = context.switchToHttp().getRequest<{ body?: unknown }>();
     if (
       estObjet(body) &&
-      (piegeRempli(body.website) ||
-        saisieTropRapide(body.formStartedAt, Date.now()))
+      (piegeRempli(body.website) || saisieTropRapide(body.formFillDurationMs))
     ) {
       throw new BadRequestException('Invalid request');
     }
