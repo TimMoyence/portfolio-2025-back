@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import { ConfigService } from '@nestjs/config';
+import type { PasswordResetToken } from '../domain/PasswordResetToken';
+import { TROIS_ENVOIS_PAR_HEURE } from '../domain/PlafondDEnvois';
 import type { User } from '../domain/User';
 import { RequestPasswordResetUseCase } from './RequestPasswordReset.useCase';
 import {
@@ -10,8 +11,10 @@ import {
   buildPasswordResetToken,
   createMockPasswordResetTokensRepo,
 } from '../../../../test/factories/password-reset-token.factory';
+import { buildConfigService } from '../../../../test/factories/env.factory';
 import { createMockPasswordResetNotifier } from '../../../../test/factories/mailer.factory';
 import {
+  promesseSuspendue,
   reglementAuPlancher,
   RETENUE_JUSQU_AU_PLANCHER,
   simulerLHorlogeAChaqueTest,
@@ -23,22 +26,20 @@ describe('RequestPasswordResetUseCase', () => {
   let usersRepository: ReturnType<typeof createMockUsersRepo>;
   let tokensRepository: ReturnType<typeof createMockPasswordResetTokensRepo>;
   let notifier: ReturnType<typeof createMockPasswordResetNotifier>;
-  let configService: jest.Mocked<ConfigService>;
   let useCase: RequestPasswordResetUseCase;
 
   beforeEach(() => {
     usersRepository = createMockUsersRepo();
     tokensRepository = createMockPasswordResetTokensRepo();
     notifier = createMockPasswordResetNotifier();
-    configService = {
-      get: jest.fn().mockReturnValue('https://example.com/reset-password'),
-    } as unknown as jest.Mocked<ConfigService>;
 
     useCase = new RequestPasswordResetUseCase(
       usersRepository,
       tokensRepository,
       notifier,
-      configService,
+      buildConfigService({
+        PASSWORD_RESET_URL_BASE: 'https://example.com/reset-password',
+      }),
     );
   });
 
@@ -65,6 +66,7 @@ describe('RequestPasswordResetUseCase', () => {
     expect(result.message).toContain('Si un compte existe');
     expect(tokensRepository.remplacerLesJetonsActifs).toHaveBeenCalledWith(
       expect.objectContaining({ userId: user.id }),
+      TROIS_ENVOIS_PAR_HEURE,
     );
 
     const payload = notifier.sendPasswordResetEmail.mock.calls[0][0];
@@ -73,6 +75,18 @@ describe('RequestPasswordResetUseCase', () => {
     expect(payload.lastName).toBe(user.lastName);
     expect(payload.expiresInMinutes).toBe(60);
     expect(payload.resetUrl).toMatch(/token=[0-9a-f]{64}/);
+  });
+
+  it('repond comme le succes sans rien envoyer quand le plafond horaire du compte est atteint', async () => {
+    const user = compteExistant({ passwordHash: 'hash' });
+    const succes = await useCase.execute({ email: user.email });
+    notifier.sendPasswordResetEmail.mockClear();
+    tokensRepository.remplacerLesJetonsActifs.mockResolvedValue(null);
+
+    await expect(useCase.execute({ email: user.email })).resolves.toEqual(
+      succes,
+    );
+    expect(notifier.sendPasswordResetEmail).not.toHaveBeenCalled();
   });
 
   it('retourne un message generique quand le compte est introuvable', async () => {
@@ -137,6 +151,13 @@ describe('RequestPasswordResetUseCase', () => {
         () => usersRepository.findByEmail.mockResolvedValue(null),
       ],
       ['un compte existant', () => compteExistant({ passwordHash: 'hash' })],
+      [
+        'le plafond horaire du compte atteint',
+        () => {
+          compteExistant({ passwordHash: 'hash' });
+          tokensRepository.remplacerLesJetonsActifs.mockResolvedValue(null);
+        },
+      ],
     ])('repond pour %s au meme plancher de latence', async (_cas, preparer) => {
       preparer();
 
@@ -158,6 +179,27 @@ describe('RequestPasswordResetUseCase', () => {
           useCase.execute({ email: 'john@example.com' }),
         ),
       ).toEqual(RETENUE_JUSQU_AU_PLANCHER);
+      expect(notifier.sendPasswordResetEmail).toHaveBeenCalledTimes(1);
+    });
+
+    it('repond au plancher quand le lien attend encore le verrou du compte, puis l envoie', async () => {
+      compteExistant({ passwordHash: 'hash' });
+      const verrou = promesseSuspendue<PasswordResetToken | null>();
+      tokensRepository.remplacerLesJetonsActifs.mockReturnValue(
+        verrou.promesse,
+      );
+      const reponse = useCase.execute({ email: 'john@example.com' });
+
+      expect(await reglementAuPlancher(reponse)).toEqual(
+        RETENUE_JUSQU_AU_PLANCHER,
+      );
+      await expect(reponse).resolves.toEqual({
+        message:
+          'Si un compte existe avec cet email, un lien de reinitialisation a ete envoye.',
+      });
+      verrou.liberer(buildPasswordResetToken());
+      await jest.advanceTimersByTimeAsync(0);
+
       expect(notifier.sendPasswordResetEmail).toHaveBeenCalledTimes(1);
     });
   });

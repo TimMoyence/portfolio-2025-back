@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { DepotEnDomaine } from '../../../common/infrastructure/typeorm/DepotEnDomaine';
-import { poseeDepuisMoinsDe } from '../../../common/infrastructure/typeorm/horloge-de-la-base';
 import type { IEmailVerificationTokensRepository } from '../domain/IEmailVerificationTokens.repository';
 import type { EmailVerificationToken } from '../domain/EmailVerificationToken';
+import type { PlafondDEnvois } from '../domain/PlafondDEnvois';
 import { EmailVerificationTokenEntity } from './entities/EmailVerificationToken.entity';
 import {
   champsDuJeton,
@@ -26,14 +26,18 @@ export class EmailVerificationTokensRepositoryTypeORM
 
   async remplacerLesJetonsActifs(
     jeton: Pick<EmailVerificationToken, 'userId' | 'tokenHash' | 'expiresAt'>,
-  ): Promise<EmailVerificationToken> {
-    return this.toDomain(
-      await remplacerSousVerrou(this.repo, champsDuJeton(jeton), (depot) =>
+    plafond: PlafondDEnvois,
+  ): Promise<EmailVerificationToken | null> {
+    const enregistre = await remplacerSousVerrou(
+      this.repo,
+      champsDuJeton(jeton),
+      plafond,
+      (depot) =>
         depot.update(nonExpire({ userId: jeton.userId }), {
           expiresAt: new Date(),
         }),
-      ),
     );
+    return enregistre && this.toDomain(enregistre);
   }
 
   findActiveByTokenHash(
@@ -44,12 +48,6 @@ export class EmailVerificationTokensRepositoryTypeORM
 
   async deleteByUserId(userId: string): Promise<void> {
     await this.repo.delete({ userId });
-  }
-
-  countRecentByUserId(userId: string, sinceMs: number): Promise<number> {
-    return this.repo.count({
-      where: { userId, createdAt: poseeDepuisMoinsDe(sinceMs) },
-    });
   }
 
   protected toDomain(

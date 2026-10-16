@@ -3,6 +3,7 @@ import {
   mockTypeOrmManager,
   mockTypeOrmRepositoryAvecManager,
 } from '../../../../test/factories/formation-entities.factory';
+import { TROIS_ENVOIS_PAR_HEURE } from '../domain/PlafondDEnvois';
 import { PasswordResetTokenEntity } from './entities/PasswordResetToken.entity';
 import { PasswordResetTokensRepositoryTypeORM } from './PasswordResetTokens.repository.typeORM';
 
@@ -34,8 +35,9 @@ describe('PasswordResetTokensRepositoryTypeORM marquage d usage', () => {
     );
   });
 
-  it('marque utilises les jetons encore actifs d un compte puis enregistre le neuf, sous le verrou du compte et dans une seule transaction', async () => {
+  const depotSousVerrou = (envoisRecents: number) => {
     const query = jest.fn().mockResolvedValue([]);
+    const countBy = jest.fn().mockResolvedValue(envoisRecents);
     const update = jest.fn().mockResolvedValue({ affected: 2 });
     const create = jest.fn((champs: object) => champs);
     const save = jest.fn((entite: object) =>
@@ -43,7 +45,9 @@ describe('PasswordResetTokensRepositoryTypeORM marquage d usage', () => {
     );
     const manager = mockTypeOrmManager({
       query,
-      withRepository: jest.fn().mockReturnValue({ update, create, save }),
+      withRepository: jest
+        .fn()
+        .mockReturnValue({ countBy, update, create, save }),
     });
     const depot = new PasswordResetTokensRepositoryTypeORM(
       mockTypeOrmRepositoryAvecManager<PasswordResetTokenEntity>(
@@ -52,18 +56,44 @@ describe('PasswordResetTokensRepositoryTypeORM marquage d usage', () => {
         'password_reset_tokens',
       ),
     );
-    const expiresAt = new Date('2026-10-16T12:00:00.000Z');
+    return { query, countBy, update, create, save, manager, depot };
+  };
+  const expiresAt = new Date('2026-10-16T12:00:00.000Z');
+  const remplacer = (depot: PasswordResetTokensRepositoryTypeORM) =>
+    depot.remplacerLesJetonsActifs(
+      { userId: 'user-1', tokenHash: 'empreinte', expiresAt },
+      TROIS_ENVOIS_PAR_HEURE,
+    );
 
-    const remplace = await depot.remplacerLesJetonsActifs({
+  it('n invalide ni n enregistre rien quand le compte a deja recu trois liens dans l heure', async () => {
+    const { query, countBy, update, save, depot } = depotSousVerrou(3);
+
+    await expect(remplacer(depot)).resolves.toBeNull();
+
+    expect(countBy).toHaveBeenCalledWith({
       userId: 'user-1',
-      tokenHash: 'empreinte',
-      expiresAt,
+      createdAt: expect.objectContaining({ type: 'raw' }),
     });
+    expect(query.mock.invocationCallOrder[0]).toBeLessThan(
+      countBy.mock.invocationCallOrder[0],
+    );
+    expect(update).not.toHaveBeenCalled();
+    expect(save).not.toHaveBeenCalled();
+  });
+
+  it('marque utilises les jetons encore actifs d un compte puis enregistre le neuf, sous le verrou du compte et dans une seule transaction', async () => {
+    const { query, countBy, update, create, save, manager, depot } =
+      depotSousVerrou(2);
+
+    const remplace = await remplacer(depot);
 
     expect(manager.transaction).toHaveBeenCalledTimes(1);
     expect(query).toHaveBeenCalledWith(
       'SELECT pg_advisory_xact_lock(hashtext($1))',
       ['password_reset_tokens:user-1'],
+    );
+    expect(countBy.mock.invocationCallOrder[0]).toBeLessThan(
+      update.mock.invocationCallOrder[0],
     );
     expect(update).toHaveBeenCalledWith(
       {

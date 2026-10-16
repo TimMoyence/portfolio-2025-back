@@ -1,5 +1,4 @@
 import { Logger } from '@nestjs/common';
-import type { ConfigService } from '@nestjs/config';
 import {
   IsNull,
   MoreThan,
@@ -13,9 +12,11 @@ import { AuthenticateUserUseCase } from '../src/modules/users/application/Authen
 import { ChangePasswordUseCase } from '../src/modules/users/application/ChangePassword.useCase';
 import { RefreshTokensUseCase } from '../src/modules/users/application/RefreshTokens.useCase';
 import { RequestPasswordResetUseCase } from '../src/modules/users/application/RequestPasswordReset.useCase';
+import { ResendVerificationEmailUseCase } from '../src/modules/users/application/ResendVerificationEmail.useCase';
 import { ResetPasswordUseCase } from '../src/modules/users/application/ResetPassword.useCase';
 import { RevokeTokenUseCase } from '../src/modules/users/application/RevokeToken.useCase';
 import { EnvoiDeVerificationEmail } from '../src/modules/users/application/services/email-verification-dispatch';
+import { TROIS_ENVOIS_PAR_HEURE } from '../src/modules/users/domain/PlafondDEnvois';
 import { emettreJeton, TokenHash } from '../src/modules/users/domain/TokenHash';
 import { EmailVerificationTokensRepositoryTypeORM } from '../src/modules/users/infrastructure/EmailVerificationTokens.repository.typeORM';
 import { EmailVerificationTokenEntity } from '../src/modules/users/infrastructure/entities/EmailVerificationToken.entity';
@@ -31,7 +32,11 @@ import {
   TOUTES_LES_MIGRATIONS,
 } from './helpers/db-integration-datasource';
 import { installerVariables } from './helpers/environnement';
-import { createMockPasswordResetNotifier } from './factories/mailer.factory';
+import { buildConfigService } from './factories/env.factory';
+import {
+  createMockEmailVerificationNotifier,
+  createMockPasswordResetNotifier,
+} from './factories/mailer.factory';
 import {
   buildSignedToken,
   buildUser,
@@ -40,7 +45,8 @@ import {
   createMockUsersRepo,
 } from './factories/user.factory';
 
-const UNE_HEURE_MS = 60 * 60 * 1000;
+const UNE_MINUTE_MS = 60 * 1000;
+const UNE_HEURE_MS = 60 * UNE_MINUTE_MS;
 const UN_JOUR_MS = 24 * UNE_HEURE_MS;
 
 describeDb('Depots de jetons sur une base migree', () => {
@@ -67,6 +73,26 @@ describeDb('Depots de jetons sur une base migree', () => {
     new PasswordResetTokensRepositoryTypeORM(
       base().getRepository(PasswordResetTokenEntity),
     );
+  const remplacerSousLePlafond =
+    (
+      depot: ReturnType<
+        typeof depotDeVerification | typeof depotDeReinitialisation
+      >,
+      compte: string,
+    ) =>
+    (rang: number) =>
+      depot.remplacerLesJetonsActifs(
+        {
+          userId: compte,
+          tokenHash: empreinte(rang),
+          expiresAt: dans(UNE_HEURE_MS),
+        },
+        TROIS_ENVOIS_PAR_HEURE,
+      );
+  const liensDuCompte = (
+    entite: EntityTarget<{ userId: string }>,
+    compte: string,
+  ) => base().getRepository(entite).countBy({ userId: compte });
 
   beforeAll(async () => {
     userId = await inscrireUtilisateur(base(), 'depots@example.com');
@@ -75,55 +101,81 @@ describeDb('Depots de jetons sur une base migree', () => {
   it('retrouve un jeton de verification par son empreinte tant qu il n a pas expire', async () => {
     const depot = depotDeVerification();
 
-    await depot.remplacerLesJetonsActifs({
-      userId,
-      tokenHash: empreinte(2),
-      expiresAt: dans(-UNE_HEURE_MS),
-    });
+    await depot.remplacerLesJetonsActifs(
+      {
+        userId,
+        tokenHash: empreinte(2),
+        expiresAt: dans(-UNE_HEURE_MS),
+      },
+      TROIS_ENVOIS_PAR_HEURE,
+    );
     const expiresAt = dans(UNE_HEURE_MS);
-    const cree = await depot.remplacerLesJetonsActifs({
-      userId,
-      tokenHash: empreinte(1),
-      expiresAt,
-    });
+    const cree = await depot.remplacerLesJetonsActifs(
+      {
+        userId,
+        tokenHash: empreinte(1),
+        expiresAt,
+      },
+      TROIS_ENVOIS_PAR_HEURE,
+    );
 
     expect(cree).toMatchObject({ userId, tokenHash: empreinte(1), expiresAt });
-    expect(cree.id).toEqual(expect.any(String));
+    expect(cree?.id).toEqual(expect.any(String));
     await expect(depot.findActiveByTokenHash(empreinte(1))).resolves.toEqual(
       cree,
     );
     await expect(depot.findActiveByTokenHash(empreinte(2))).resolves.toBeNull();
   });
 
-  it('expire les jetons de verification actifs d un compte sans les retirer du compte des demandes recentes', async () => {
+  it('expire les jetons de verification actifs d un compte en les comptant dans le plafond horaire', async () => {
     const depot = depotDeVerification();
     const compte = await inscrireUtilisateur(base(), 'renvois@example.com');
-    const remplacer = (rang: number) =>
-      depot.remplacerLesJetonsActifs({
-        userId: compte,
-        tokenHash: empreinte(rang),
-        expiresAt: dans(UNE_HEURE_MS),
-      });
+    const remplacer = remplacerSousLePlafond(depot, compte);
     await remplacer(7);
-    const dernier = await remplacer(8);
+    await remplacer(8);
+    const dernier = await remplacer(12);
 
+    await expect(remplacer(13)).resolves.toBeNull();
     await expect(depot.findActiveByTokenHash(empreinte(7))).resolves.toBeNull();
-    await expect(depot.findActiveByTokenHash(empreinte(8))).resolves.toEqual(
+    await expect(depot.findActiveByTokenHash(empreinte(8))).resolves.toBeNull();
+    await expect(depot.findActiveByTokenHash(empreinte(12))).resolves.toEqual(
       dernier,
     );
-    await expect(depot.countRecentByUserId(compte, UNE_HEURE_MS)).resolves.toBe(
-      2,
+    await expect(
+      depot.findActiveByTokenHash(empreinte(13)),
+    ).resolves.toBeNull();
+  });
+
+  it('compte les liens de reinitialisation utilises ou invalides dans le plafond du compte', async () => {
+    const depot = depotDeReinitialisation();
+    const compte = await inscrireUtilisateur(base(), 'oublis@example.com');
+    const remplacer = remplacerSousLePlafond(depot, compte);
+    const premier = await remplacer(21);
+    await remplacer(22);
+    const dernier = await remplacer(23);
+    await depot.markUsed(dernier?.id ?? '');
+
+    await expect(remplacer(24)).resolves.toBeNull();
+    expect(premier).not.toBeNull();
+    await expect(
+      depot.findActiveByTokenHash(empreinte(24)),
+    ).resolves.toBeNull();
+    await expect(liensDuCompte(PasswordResetTokenEntity, compte)).resolves.toBe(
+      3,
     );
   });
 
   it('ecarte un jeton de reinitialisation deja utilise ou expire', async () => {
     const depot = depotDeReinitialisation();
 
-    const actif = await depot.remplacerLesJetonsActifs({
-      userId,
-      tokenHash: empreinte(3),
-      expiresAt: dans(UNE_HEURE_MS),
-    });
+    const actif = await depot.remplacerLesJetonsActifs(
+      {
+        userId,
+        tokenHash: empreinte(3),
+        expiresAt: dans(UNE_HEURE_MS),
+      },
+      TROIS_ENVOIS_PAR_HEURE,
+    );
     await semer(PasswordResetTokenEntity, {
       userId,
       tokenHash: empreinte(4),
@@ -137,7 +189,7 @@ describeDb('Depots de jetons sur une base migree', () => {
       usedAt: null,
     });
 
-    expect(actif.usedAt).toBeNull();
+    expect(actif?.usedAt).toBeNull();
     await expect(depot.findActiveByTokenHash(empreinte(3))).resolves.toEqual(
       actif,
     );
@@ -163,11 +215,70 @@ describeDb('Depots de jetons sur une base migree', () => {
     await expect(depot.findActiveByTokenHash(empreinte(6))).resolves.toBeNull();
   });
 
-  describe('deux emissions simultanees pour un meme compte', () => {
-    const configParDefaut = {
-      get: (_cle: string, parDefaut: string) => parDefaut,
-    } as unknown as ConfigService;
+  const configParDefaut = buildConfigService();
 
+  describe('cinq demandes simultanees pour un meme compte', () => {
+    const cinqFois = <T>(demande: () => Promise<T>) =>
+      Promise.all([1, 2, 3, 4, 5].map(demande));
+    const monterLeCompte = async (email: string) => {
+      const compte = await inscrireUtilisateur(base(), email);
+      const comptes = createMockUsersRepo();
+      comptes.findByEmail.mockResolvedValue(
+        buildUser({
+          id: compte,
+          email,
+          passwordHash: 'hash',
+          emailVerified: false,
+        }),
+      );
+      return { compte, comptes };
+    };
+
+    it('cinq renvois simultanes n emettent que trois liens de verification dans l heure', async () => {
+      const email = 'plafond-verification@example.com';
+      const { compte, comptes } = await monterLeCompte(email);
+      const notifier = createMockEmailVerificationNotifier();
+      const renvoi = new ResendVerificationEmailUseCase(
+        comptes,
+        new EnvoiDeVerificationEmail(
+          depotDeVerification(),
+          notifier,
+          configParDefaut,
+        ),
+      );
+
+      const reponses = await cinqFois(() => renvoi.execute(email));
+
+      expect(new Set(reponses.map(({ message }) => message)).size).toBe(1);
+      expect(notifier.sendVerificationEmail.mock.calls).toHaveLength(3);
+      await expect(
+        liensDuCompte(EmailVerificationTokenEntity, compte),
+      ).resolves.toBe(3);
+    });
+
+    it('cinq demandes simultanees n emettent que trois liens de reinitialisation dans l heure', async () => {
+      const email = 'plafond-reinitialisation@example.com';
+      const { compte, comptes } = await monterLeCompte(email);
+      const notifier = createMockPasswordResetNotifier();
+      notifier.sendPasswordResetEmail.mockResolvedValue();
+      const demande = new RequestPasswordResetUseCase(
+        comptes,
+        depotDeReinitialisation(),
+        notifier,
+        configParDefaut,
+      );
+
+      const reponses = await cinqFois(() => demande.execute({ email }));
+
+      expect(new Set(reponses.map(({ message }) => message)).size).toBe(1);
+      expect(notifier.sendPasswordResetEmail.mock.calls).toHaveLength(3);
+      await expect(
+        liensDuCompte(PasswordResetTokenEntity, compte),
+      ).resolves.toBe(3);
+    });
+  });
+
+  describe('deux emissions simultanees pour un meme compte', () => {
     it('ne laissent qu un lien de reinitialisation actif', async () => {
       const compte = await inscrireUtilisateur(
         base(),
@@ -210,7 +321,7 @@ describeDb('Depots de jetons sur une base migree', () => {
       );
       const envoi = new EnvoiDeVerificationEmail(
         depotDeVerification(),
-        { sendVerificationEmail: jest.fn().mockResolvedValue(undefined) },
+        createMockEmailVerificationNotifier(),
         configParDefaut,
       );
       const destinataire = buildUser({ id: compte });
@@ -232,22 +343,56 @@ describeDb('Depots de jetons sur une base migree', () => {
   describe('quel que soit le fuseau horaire du processus', () => {
     installerVariables({ TZ: 'Pacific/Kiritimati' });
 
-    it('compte une demande de verification faite a l instant parmi les demandes recentes', async () => {
+    it('compte les demandes de verification faites a l instant dans le plafond horaire', async () => {
       const depot = depotDeVerification();
       const compte = await inscrireUtilisateur(
         base(),
         'fuseau-renvois@example.com',
       );
-      await depot.remplacerLesJetonsActifs({
-        userId: compte,
-        tokenHash: empreinte(9),
-        expiresAt: dans(UNE_HEURE_MS),
-      });
+      const remplacer = remplacerSousLePlafond(depot, compte);
+      await remplacer(9);
+      await remplacer(14);
+      await remplacer(15);
 
-      await expect(
-        depot.countRecentByUserId(compte, UNE_HEURE_MS),
-      ).resolves.toBe(1);
+      await expect(remplacer(16)).resolves.toBeNull();
     });
+
+    it.each([
+      ['de verification', 'email_verification_tokens', depotDeVerification, 40],
+      [
+        'de reinitialisation',
+        'password_reset_tokens',
+        depotDeReinitialisation,
+        50,
+      ],
+    ] as const)(
+      'rend au compte ses trois liens %s une heure apres leur emission, pas avant',
+      async (_canal, table, depot, rang) => {
+        const compte = await inscrireUtilisateur(
+          base(),
+          `fenetre-${rang}@example.com`,
+        );
+        const remplacer = remplacerSousLePlafond(depot(), compte);
+        const vieillirDe = (ancienneteMs: number) =>
+          base().query(
+            `UPDATE "${table}" SET "created_at" = LOCALTIMESTAMP - make_interval(secs => $1) WHERE "user_id" = $2`,
+            [ancienneteMs / 1000, compte],
+          );
+        await remplacer(rang);
+        await remplacer(rang + 1);
+        await remplacer(rang + 2);
+
+        await vieillirDe(UNE_HEURE_MS - UNE_MINUTE_MS);
+        const avantLHeure = await remplacer(rang + 3);
+        await vieillirDe(UNE_HEURE_MS + UNE_MINUTE_MS);
+        const apresLHeure = await remplacer(rang + 4);
+
+        expect([avantLHeure, apresLHeure?.tokenHash]).toEqual([
+          null,
+          empreinte(rang + 4),
+        ]);
+      },
+    );
 
     it('ne purge un refresh token revoque qu au bout de sept jours', async () => {
       const compte = await inscrireUtilisateur(
@@ -340,11 +485,14 @@ describeDb('Depots de jetons sur une base migree', () => {
         'une reinitialisation de mot de passe',
         async ({ utilisateur, comptes, motsDePasse, sessions }) => {
           const lien = emettreJeton();
-          await depotDeReinitialisation().remplacerLesJetonsActifs({
-            userId: utilisateur.id as string,
-            tokenHash: lien.empreinte,
-            expiresAt: dans(UNE_HEURE_MS),
-          });
+          await depotDeReinitialisation().remplacerLesJetonsActifs(
+            {
+              userId: utilisateur.id as string,
+              tokenHash: lien.empreinte,
+              expiresAt: dans(UNE_HEURE_MS),
+            },
+            TROIS_ENVOIS_PAR_HEURE,
+          );
           return new ResetPasswordUseCase(
             depotDeReinitialisation(),
             comptes,

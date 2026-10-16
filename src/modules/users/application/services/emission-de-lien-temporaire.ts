@@ -1,6 +1,10 @@
 import type { Logger } from '@nestjs/common';
 import { enArrierePlan } from '../../../../common/application/en-arriere-plan';
 import { lienAvecJeton } from '../../../../common/domain/lien-avec-jeton';
+import {
+  TROIS_ENVOIS_PAR_HEURE,
+  type PlafondDEnvois,
+} from '../../domain/PlafondDEnvois';
 import { emettreJeton } from '../../domain/TokenHash';
 import type { User } from '../../domain/User';
 
@@ -24,7 +28,10 @@ export interface CanalDeLienTemporaire {
   readonly dureeDeValiditeMs: number;
   readonly adresseDeBase: string;
   readonly echecDEnvoi: string;
-  remplacerLesLiensActifs(jeton: JetonDeLienAEnregistrer): Promise<unknown>;
+  remplacerLesLiensActifs(
+    jeton: JetonDeLienAEnregistrer,
+    plafond: PlafondDEnvois,
+  ): Promise<object | null>;
   envoyer(envoi: EnvoiDeLienTemporaire): Promise<void>;
 }
 
@@ -36,11 +43,17 @@ export async function emettreUnLienTemporaire(
 ): Promise<void> {
   const jeton = emettreJeton();
 
-  await canal.remplacerLesLiensActifs({
-    userId,
-    tokenHash: jeton.empreinte,
-    expiresAt: new Date(Date.now() + canal.dureeDeValiditeMs),
-  });
+  const enregistre = await canal.remplacerLesLiensActifs(
+    {
+      userId,
+      tokenHash: jeton.empreinte,
+      expiresAt: new Date(Date.now() + canal.dureeDeValiditeMs),
+    },
+    TROIS_ENVOIS_PAR_HEURE,
+  );
+  if (enregistre === null) {
+    return;
+  }
 
   enArrierePlan(
     canal.envoyer({

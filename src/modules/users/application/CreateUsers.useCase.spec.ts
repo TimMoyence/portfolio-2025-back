@@ -1,8 +1,10 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import type { ConfigService } from '@nestjs/config';
+import { buildConfigService } from '../../../../test/factories/env.factory';
+import { createMockEmailVerificationNotifier } from '../../../../test/factories/mailer.factory';
 import type { IEmailVerificationNotifier } from '../domain/IEmailVerificationNotifier';
 import type { IEmailVerificationTokensRepository } from '../domain/IEmailVerificationTokens.repository';
 import type { IUsersRepository } from '../domain/IUsers.repository';
+import { TROIS_ENVOIS_PAR_HEURE } from '../domain/PlafondDEnvois';
 import type { User } from '../domain/User';
 import { CreateUsersUseCase } from './CreateUsers.useCase';
 import type { CreateUserCommand } from './dto/CreateUser.command';
@@ -18,18 +20,6 @@ import {
   createMockEmailVerificationTokensRepo,
 } from '../../../../test/factories/email-verification-token.factory';
 
-function createMockConfigService(): jest.Mocked<ConfigService> {
-  return {
-    get: jest.fn().mockReturnValue('https://asilidesign.fr/verify-email'),
-  } as unknown as jest.Mocked<ConfigService>;
-}
-
-function createMockEmailVerificationNotifier(): jest.Mocked<IEmailVerificationNotifier> {
-  return {
-    sendVerificationEmail: jest.fn().mockResolvedValue(undefined),
-  };
-}
-
 const PLAIN_CREDENTIAL = 'SecurePassword123!';
 const ATTACKER_CREDENTIAL = 'Hack123!';
 const DERIVED_HASH = 'hashed-password';
@@ -39,7 +29,6 @@ describe('CreateUsersUseCase', () => {
   let emailVerificationTokensRepo: jest.Mocked<IEmailVerificationTokensRepository>;
   let emailVerificationNotifier: jest.Mocked<IEmailVerificationNotifier>;
   let passwordService: jest.Mocked<PasswordService>;
-  let configService: jest.Mocked<ConfigService>;
   let useCase: CreateUsersUseCase;
 
   beforeEach(() => {
@@ -47,7 +36,6 @@ describe('CreateUsersUseCase', () => {
     emailVerificationTokensRepo = createMockEmailVerificationTokensRepo();
     emailVerificationNotifier = createMockEmailVerificationNotifier();
     passwordService = createMockPasswordService();
-    configService = createMockConfigService();
     passwordService.hash.mockResolvedValue(DERIVED_HASH);
     emailVerificationTokensRepo.remplacerLesJetonsActifs.mockResolvedValue(
       buildEmailVerificationToken({ userId: 'uuid' }),
@@ -58,7 +46,9 @@ describe('CreateUsersUseCase', () => {
       new EnvoiDeVerificationEmail(
         emailVerificationTokensRepo,
         emailVerificationNotifier,
-        configService,
+        buildConfigService({
+          EMAIL_VERIFICATION_URL_BASE: 'https://asilidesign.fr/verify-email',
+        }),
       ),
       passwordService,
     );
@@ -146,6 +136,7 @@ describe('CreateUsersUseCase', () => {
         tokenHash: expect.stringMatching(/^[0-9a-f]{64}$/),
         expiresAt: expect.any(Date),
       }),
+      TROIS_ENVOIS_PAR_HEURE,
     );
     expect(
       emailVerificationNotifier.sendVerificationEmail,

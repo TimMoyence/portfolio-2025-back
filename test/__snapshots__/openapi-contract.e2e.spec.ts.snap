@@ -4798,6 +4798,9 @@ exports[`OpenAPI core contract keeps Users path contracts stable 1`] = `
         "400": {
           "description": "Validation echouee",
         },
+        "409": {
+          "description": "Adresse ou compte Google deja utilise par un autre compte",
+        },
       },
       "security": [
         {
@@ -4923,6 +4926,9 @@ exports[`OpenAPI core contract keeps Users path contracts stable 1`] = `
         },
         "404": {
           "description": "Utilisateur non trouve",
+        },
+        "409": {
+          "description": "Adresse ou compte Google deja utilise par un autre compte",
         },
       },
       "security": [

@@ -1,21 +1,18 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import type { ConfigService } from '@nestjs/config';
 import { Logger } from '@nestjs/common';
-import type { IEmailVerificationNotifier } from '../../domain/IEmailVerificationNotifier';
+import { buildConfigService } from '../../../../../test/factories/env.factory';
 import { buildUser } from '../../../../../test/factories/user.factory';
 import { createMockEmailVerificationTokensRepo } from '../../../../../test/factories/email-verification-token.factory';
+import { createMockEmailVerificationNotifier } from '../../../../../test/factories/mailer.factory';
 import { espionnerLeLoggerAChaqueTest } from '../../../../../test/helpers/silence-nest-logger';
+import { TROIS_ENVOIS_PAR_HEURE } from '../../domain/PlafondDEnvois';
 import { TokenHash } from '../../domain/TokenHash';
 import { EnvoiDeVerificationEmail } from './email-verification-dispatch';
 
 function construire(base = 'https://asilidesign.fr/verify-email') {
   const tokensRepo = createMockEmailVerificationTokensRepo();
-  const notifier: jest.Mocked<IEmailVerificationNotifier> = {
-    sendVerificationEmail: jest.fn().mockResolvedValue(undefined),
-  };
-  const config = {
-    get: jest.fn().mockReturnValue(base),
-  } as unknown as ConfigService;
+  const notifier = createMockEmailVerificationNotifier();
+  const config = buildConfigService({ EMAIL_VERIFICATION_URL_BASE: base });
   const logger = new Logger('test');
   return {
     tokensRepo,
@@ -39,11 +36,14 @@ describe('EnvoiDeVerificationEmail', () => {
     );
     const jetonBrut = lien.searchParams.get('token') ?? '';
     expect(jetonBrut).toMatch(/^[0-9a-f]{64}$/);
-    expect(tokensRepo.remplacerLesJetonsActifs).toHaveBeenCalledWith({
-      userId: 'user-7',
-      tokenHash: TokenHash.fromRaw(jetonBrut).value,
-      expiresAt: expect.any(Date) as Date,
-    });
+    expect(tokensRepo.remplacerLesJetonsActifs).toHaveBeenCalledWith(
+      {
+        userId: 'user-7',
+        tokenHash: TokenHash.fromRaw(jetonBrut).value,
+        expiresAt: expect.any(Date) as Date,
+      },
+      TROIS_ENVOIS_PAR_HEURE,
+    );
     expect(notifier.sendVerificationEmail).toHaveBeenCalledWith(
       expect.objectContaining({
         email: 'eve@example.com',
@@ -60,6 +60,7 @@ describe('EnvoiDeVerificationEmail', () => {
 
     expect(tokensRepo.remplacerLesJetonsActifs).toHaveBeenCalledWith(
       expect.objectContaining({ userId: 'user-7' }),
+      TROIS_ENVOIS_PAR_HEURE,
     );
     expect(tokensRepo.deleteByUserId).not.toHaveBeenCalled();
   });

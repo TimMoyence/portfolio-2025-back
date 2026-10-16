@@ -5,7 +5,8 @@ import {
   type ObjectLiteral,
   type Repository,
 } from 'typeorm';
-import { enTransactionSurLaCle } from '../../../common/infrastructure/typeorm/verrou-de-transaction';
+import type { PlafondDEnvois } from '../domain/PlafondDEnvois';
+import { sousLePlafondDuCompte } from './plafond-par-compte.typeorm';
 
 type EntiteDeJeton = ObjectLiteral & { expiresAt: Date };
 
@@ -29,12 +30,15 @@ export function champsDuJeton(jeton: ChampsDuJeton): ChampsDuJeton {
   };
 }
 
-export function remplacerSousVerrou<E extends EntiteDeJeton>(
+export function remplacerSousVerrou<
+  E extends EntiteDeJeton & { userId: string; createdAt: Date },
+>(
   repo: Repository<E>,
   nouveau: DeepPartial<E> & ChampsDuJeton,
+  plafond: PlafondDEnvois,
   invaliderLesActifs: (depot: Repository<E>) => Promise<unknown>,
-): Promise<E> {
-  return enTransactionSurLaCle(repo, nouveau.userId, async (depot) => {
+): Promise<E | null> {
+  return sousLePlafondDuCompte(repo, nouveau.userId, plafond, async (depot) => {
     await invaliderLesActifs(depot);
     return depot.save(depot.create(nouveau));
   });

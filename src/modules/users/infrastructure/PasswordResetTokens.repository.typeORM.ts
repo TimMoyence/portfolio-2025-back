@@ -10,6 +10,7 @@ import { DepotEnDomaine } from '../../../common/infrastructure/typeorm/DepotEnDo
 import { aAffecte } from '../../../common/infrastructure/typeorm/lignes-affectees';
 import type { IPasswordResetTokensRepository } from '../domain/IPasswordResetTokens.repository';
 import type { PasswordResetToken } from '../domain/PasswordResetToken';
+import type { PlafondDEnvois } from '../domain/PlafondDEnvois';
 import { PasswordResetTokenEntity } from './entities/PasswordResetToken.entity';
 import {
   champsDuJeton,
@@ -39,18 +40,19 @@ export class PasswordResetTokensRepositoryTypeORM
 
   async remplacerLesJetonsActifs(
     jeton: Pick<PasswordResetToken, 'userId' | 'tokenHash' | 'expiresAt'>,
-  ): Promise<PasswordResetToken> {
-    return this.toDomain(
-      await remplacerSousVerrou(
-        this.repo,
-        { ...champsDuJeton(jeton), usedAt: null },
-        (depot) =>
-          marquerUtilises(
-            depot,
-            nonExpire({ userId: jeton.userId, usedAt: IsNull() }),
-          ),
-      ),
+    plafond: PlafondDEnvois,
+  ): Promise<PasswordResetToken | null> {
+    const enregistre = await remplacerSousVerrou(
+      this.repo,
+      { ...champsDuJeton(jeton), usedAt: null },
+      plafond,
+      (depot) =>
+        marquerUtilises(
+          depot,
+          nonExpire({ userId: jeton.userId, usedAt: IsNull() }),
+        ),
     );
+    return enregistre && this.toDomain(enregistre);
   }
 
   findActiveByTokenHash(tokenHash: string): Promise<PasswordResetToken | null> {

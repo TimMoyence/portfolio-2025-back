@@ -1,6 +1,7 @@
 import { Logger } from '@nestjs/common';
 import { buildUser } from '../../../../../test/factories/user.factory';
 import { flushPromises } from '../../../../../test/helpers/flush-promises';
+import { TROIS_ENVOIS_PAR_HEURE } from '../../domain/PlafondDEnvois';
 import { TokenHash } from '../../domain/TokenHash';
 import {
   emettreUnLienTemporaire,
@@ -20,7 +21,7 @@ function canalSimule(): CanalSimule {
     dureeDeValiditeMs: QUATRE_VINGT_DIX_MINUTES_MS,
     adresseDeBase: 'https://asilidesign.fr/lien',
     echecDEnvoi: 'Echec du lien',
-    remplacerLesLiensActifs: jest.fn().mockResolvedValue(undefined),
+    remplacerLesLiensActifs: jest.fn().mockResolvedValue({ id: 'lien-1' }),
     envoyer: jest.fn().mockResolvedValue(undefined),
   };
 }
@@ -36,10 +37,28 @@ describe('emettreUnLienTemporaire', () => {
     expect(canal.remplacerLesLiensActifs).toHaveBeenCalledTimes(1);
     expect(canal.remplacerLesLiensActifs).toHaveBeenCalledWith(
       expect.objectContaining({ userId: 'user-9' }),
+      TROIS_ENVOIS_PAR_HEURE,
     );
     expect(
       canal.remplacerLesLiensActifs.mock.invocationCallOrder[0],
     ).toBeLessThan(canal.envoyer.mock.invocationCallOrder[0]);
+  });
+
+  it('plafonne les liens a trois par heure et par compte', () => {
+    expect(TROIS_ENVOIS_PAR_HEURE).toEqual({
+      maximum: 3,
+      fenetreMs: 60 * 60 * 1000,
+    });
+  });
+
+  it('n envoie rien quand le plafond du compte est atteint', async () => {
+    const canal = canalSimule();
+    canal.remplacerLesLiensActifs.mockResolvedValue(null);
+
+    await emettreUnLienTemporaire(user, 'user-9', canal, new Logger('test'));
+
+    expect(canal.remplacerLesLiensActifs).toHaveBeenCalledTimes(1);
+    expect(canal.envoyer).not.toHaveBeenCalled();
   });
 
   it('enregistre l empreinte du jeton envoye et annonce la duree de validite enregistree', async () => {
