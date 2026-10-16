@@ -1,5 +1,6 @@
 import { readdirSync, readFileSync, statSync } from 'fs';
 import { collectFiles } from '../../test/helpers/source-tree';
+import { RACINE } from '../../test/helpers/racine';
 import { join } from 'path';
 import {
   createSourceFile,
@@ -201,10 +202,10 @@ describe('parseImports', () => {
 });
 
 describe('Règles de dépendances inter-couches', () => {
-  const modulesRoot = join(process.cwd(), 'src/modules');
+  const modulesRoot = join(RACINE, 'src/modules');
 
   const coucheCommune = (couche: string): string[] =>
-    eligibleTsFiles(collectFiles(join(process.cwd(), 'src/common', couche)));
+    eligibleTsFiles(collectFiles(join(RACINE, 'src/common', couche)));
 
   const domainFiles = [
     ...collectLayerFiles(modulesRoot, 'domain'),
@@ -218,9 +219,14 @@ describe('Règles de dépendances inter-couches', () => {
   it('couvre la couche commune comme celle des modules', () => {
     expect(
       [domainFiles, applicationFiles].map((fichiers) =>
-        fichiers.some((fichier) => fichier.includes('/src/common/')),
+        ['/src/common/', '/src/modules/'].map((dossier) =>
+          fichiers.some((fichier) => fichier.includes(dossier)),
+        ),
       ),
-    ).toEqual([true, true]);
+    ).toEqual([
+      [true, true],
+      [true, true],
+    ]);
   });
 
   it('les fichiers domain/ ne doivent pas importer depuis infrastructure/', () => {

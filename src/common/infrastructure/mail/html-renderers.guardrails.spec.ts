@@ -1,5 +1,6 @@
 import { readFileSync } from 'fs';
 import { join } from 'path';
+import { RACINE } from '../../../../test/helpers/racine';
 
 const RENDERERS = [
   'src/common/infrastructure/mail/section-header.ts',
@@ -22,7 +23,7 @@ const RENDERERS = [
 ];
 
 const read = (relativePath: string): string =>
-  readFileSync(join(process.cwd(), relativePath), 'utf8');
+  readFileSync(join(RACINE, relativePath), 'utf8');
 
 describe('Renderers HTML — garanties non observables par le compilateur', () => {
   it.each(RENDERERS)('%s assemble son HTML via le tag safeHtml', (file) => {

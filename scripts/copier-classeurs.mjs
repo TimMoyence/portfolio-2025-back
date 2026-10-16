@@ -2,8 +2,7 @@ import { cpSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { CLASSEURS_DANS_DIST, FICHIER_SERVI } from './lib/classeurs-servis.mjs';
-
-const root = new URL('..', import.meta.url).pathname;
+import { RACINE as root } from './lib/racine.mjs';
 
 cpSync(
   join(root, 'src', CLASSEURS_DANS_DIST),

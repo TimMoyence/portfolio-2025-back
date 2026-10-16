@@ -1,10 +1,10 @@
 import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { join } from 'node:path';
 import { test } from 'node:test';
 
-const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
+import { RACINE as ROOT } from './lib/racine.mjs';
+
 const TEST_DIR = join(ROOT, 'test');
 const WORKFLOW_PATH = join(ROOT, '.github/workflows/ci.yml');
 const SUFFIXE_DB_INTEGRATION = '.db-integration.spec.ts';

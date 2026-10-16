@@ -1,10 +1,15 @@
 import { readFileSync } from 'fs';
 import { collectFiles } from '../../test/helpers/source-tree';
+import { RACINE } from '../../test/helpers/racine';
 import { join } from 'path';
 
 describe('Cross-context naming coherence', () => {
-  const modulesRoot = join(process.cwd(), 'src/modules');
+  const modulesRoot = join(RACINE, 'src/modules');
   const files = collectFiles(modulesRoot);
+
+  it('lit les fichiers des modules depuis la racine du depot', () => {
+    expect(files).toContain(join(modulesRoot, 'users/domain/User.ts'));
+  });
 
   it('uses `token.ts` consistently (no `Token.ts` remain)', () => {
     const offending = files.filter((file) => file.endsWith('/Token.ts'));

@@ -1,9 +1,10 @@
 import { readFileSync } from 'fs';
 import { join } from 'path';
+import { RACINE } from '../../../../../test/helpers/racine';
 
 describe('Automation folder guardrails', () => {
   const automationRoot = join(
-    process.cwd(),
+    RACINE,
     'src/modules/audit-requests/infrastructure/automation',
   );
 
