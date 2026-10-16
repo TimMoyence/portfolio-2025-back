@@ -1,18 +1,21 @@
+import { applyDecorators } from '@nestjs/common';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
-  ArrayMaxSize,
   IsArray,
   IsDate,
   IsOptional,
-  IsString,
-  MaxLength,
-  MinLength,
   Validate,
   ValidateNested,
   ValidatorConstraint,
 } from 'class-validator';
 import type { ValidatorConstraintInterface } from 'class-validator';
+import { longueurDeTexte } from '../../../../common/domain/texte/longueur-de-texte';
+import {
+  AuPlusElements,
+  DictionnaireBorne,
+} from '../../../../common/interfaces/dto/bornes-annoncees.decorator';
+import { TexteBorne } from '../../../../common/interfaces/dto/longueur-de-texte.decorator';
 import { MAX_INCIDENTS_PAR_ENVOI } from '../../domain/IncidentType';
 import { entreesBornees } from './objet-plat';
 
@@ -22,7 +25,7 @@ const LONGUEUR_MAX_TEXTE_DU_CONTEXTE = 200;
 
 function valeurScalaireBornee(valeur: unknown): boolean {
   if (typeof valeur === 'string') {
-    return valeur.length <= LONGUEUR_MAX_TEXTE_DU_CONTEXTE;
+    return longueurDeTexte(valeur) <= LONGUEUR_MAX_TEXTE_DU_CONTEXTE;
   }
   return (
     typeof valeur === 'boolean' ||
@@ -37,7 +40,7 @@ class ContexteDIncidentBorne implements ValidatorConstraintInterface {
       entreesBornees(valeur, ENTREES_MAX_DU_CONTEXTE)?.every(
         ([cle, contenu]) =>
           cle.length > 0 &&
-          cle.length <= LONGUEUR_MAX_CLE_DU_CONTEXTE &&
+          longueurDeTexte(cle) <= LONGUEUR_MAX_CLE_DU_CONTEXTE &&
           valeurScalaireBornee(contenu),
       ) ?? false
     );
@@ -48,16 +51,26 @@ class ContexteDIncidentBorne implements ValidatorConstraintInterface {
   }
 }
 
+const ContexteDIncident = (): PropertyDecorator =>
+  applyDecorators(
+    DictionnaireBorne(ENTREES_MAX_DU_CONTEXTE, LONGUEUR_MAX_CLE_DU_CONTEXTE, {
+      oneOf: [
+        { type: 'string', maxLength: LONGUEUR_MAX_TEXTE_DU_CONTEXTE },
+        { type: 'number' },
+        { type: 'boolean' },
+      ],
+    }),
+    Validate(ContexteDIncidentBorne),
+  );
+
 export class IncidentEntryDto {
   @ApiProperty({ example: 'tab_hidden' })
-  @IsString()
-  @MinLength(1)
-  @MaxLength(60)
+  @TexteBorne(1, 60)
   type: string;
 
   @ApiPropertyOptional({ example: { duree: 1200 } })
   @IsOptional()
-  @Validate(ContexteDIncidentBorne)
+  @ContexteDIncident()
   contexte?: Record<string, unknown>;
 
   @ApiProperty({ example: '2026-09-11T10:00:00.000Z' })
@@ -69,7 +82,7 @@ export class IncidentEntryDto {
 export class ReportIncidentsRequestDto {
   @ApiProperty({ type: [IncidentEntryDto] })
   @IsArray()
-  @ArrayMaxSize(MAX_INCIDENTS_PAR_ENVOI)
+  @AuPlusElements(MAX_INCIDENTS_PAR_ENVOI)
   @ValidateNested({ each: true })
   @Type(() => IncidentEntryDto)
   incidents: IncidentEntryDto[];

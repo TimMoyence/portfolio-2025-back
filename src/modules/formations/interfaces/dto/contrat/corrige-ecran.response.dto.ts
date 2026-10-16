@@ -4,6 +4,7 @@ import {
   ApiPropertyOptional,
   getSchemaPath,
 } from '@nestjs/swagger';
+import { ReferenceOuNul } from '../../../../../common/interfaces/dto/reference-ou-nul.decorator';
 import type { CorrigeEcranPresentateur } from '../../../domain/contrats/deroule';
 import type { FormeFormule } from '../../../domain/cours/Corrige';
 import { TableauEvalueResponseDto } from './tableau-evalue.response.dto';
@@ -195,10 +196,6 @@ export const CORRIGES_D_ECRAN = [
   CorrigeReflexionPresentateurResponseDto,
 ];
 
-export const UN_CORRIGE_D_ECRAN = CORRIGES_D_ECRAN.map((corrige) => ({
-  $ref: getSchemaPath(corrige),
-}));
-
 export class ExplicationDeCorrectionResponseDto {
   @ApiProperty({ example: 'identifiant' })
   reference: string;
@@ -220,7 +217,7 @@ class QuestionCorrigeeResponseDto {
   optionId: string | null;
 }
 
-@ApiExtraModels(...CORRIGES_D_ECRAN)
+@ApiExtraModels(...CORRIGES_D_ECRAN, ReflexionPresentateurResponseDto)
 export class CorrectionServieResponseDto {
   @ApiProperty({ example: 'B2-01-A3-02-VOTE' })
   ecranId: string;
@@ -228,10 +225,10 @@ export class CorrectionServieResponseDto {
   @ApiProperty({ type: [QuestionCorrigeeResponseDto] })
   questions: QuestionCorrigeeResponseDto[];
 
-  @ApiProperty({ nullable: true, oneOf: UN_CORRIGE_D_ECRAN })
+  @ReferenceOuNul(CORRIGES_D_ECRAN)
   corrige: CorrigeEcranPresentateur | null;
 
-  @ApiProperty({ type: ReflexionPresentateurResponseDto, nullable: true })
+  @ReferenceOuNul([ReflexionPresentateurResponseDto])
   reflexion: ReflexionPresentateurResponseDto | null;
 
   @ApiPropertyOptional({ type: [ExplicationDeCorrectionResponseDto] })

@@ -158,6 +158,16 @@ describe('evaluerLaFeuilleDuPlan', () => {
     expect(feuille.saisies['I3']).toBe(longue.slice(0, LONGUEUR_MAX_FORMULE));
   });
 
+  it('borne la saisie en points de code, sans couper un caractere hors du plan de base', () => {
+    const sourire = String.fromCodePoint(0x1f600);
+
+    const feuille = evaluerLaFeuilleDuPlan(PLAN_CONTROLE, {
+      I3: sourire.repeat(LONGUEUR_MAX_FORMULE + 1),
+    });
+
+    expect(feuille.saisies['I3']).toBe(sourire.repeat(LONGUEUR_MAX_FORMULE));
+  });
+
   it('chaque feuille des cours rend sans erreur ses cellules de depart et les formules de son corrige', () => {
     expect(FEUILLES_DES_COURS.length).toBeGreaterThan(0);
     for (const ecran of FEUILLES_DES_COURS) {

@@ -12,23 +12,14 @@ import {
   ApiCreatedResponse,
   ApiOkResponse,
   ApiOperation,
-  ApiQuery,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import type { ApiQueryOptions } from '@nestjs/swagger';
 import type { PaginatedResult, SortOrder } from '../../domain/pagination.types';
 import { Public } from '../auth/public.decorator';
 import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/roles.guard';
 import type { PaginationMetaResponseDto } from '../dto/pagination-meta.response.dto';
-
-export const FILTRE_STATUT_DE_PUBLICATION: ApiQueryOptions = {
-  name: 'status',
-  required: false,
-  enum: ['DRAFT', 'PUBLISHED', 'ARCHIVED'],
-  example: 'PUBLISHED',
-};
 
 export function ControleurDeCatalogue(chemin: string): ClassDecorator {
   return applyDecorators(ApiTags(chemin), Controller(chemin));
@@ -48,38 +39,15 @@ interface RequeteDePage {
   readonly order: SortOrder;
 }
 
-export interface ListePubliquePagineeOptions {
-  readonly resume: string;
-  readonly reponse: Type<unknown>;
-  readonly ordreParDefaut: SortOrder;
-  readonly triables: readonly string[];
-  readonly triParDefaut: string;
-  readonly filtres?: readonly ApiQueryOptions[];
-}
-
 export function ListePubliquePaginee(
-  options: ListePubliquePagineeOptions,
+  resume: string,
+  reponse: Type<unknown>,
 ): MethodDecorator {
   return applyDecorators(
     Public(),
     Get(),
-    ApiOperation({ summary: options.resume }),
-    ApiQuery({ name: 'page', required: false, example: 1, type: Number }),
-    ApiQuery({ name: 'limit', required: false, example: 20, type: Number }),
-    ApiQuery({
-      name: 'order',
-      required: false,
-      enum: ['ASC', 'DESC'],
-      example: options.ordreParDefaut,
-    }),
-    ApiQuery({
-      name: 'sortBy',
-      required: false,
-      enum: [...options.triables],
-      example: options.triParDefaut,
-    }),
-    ...(options.filtres ?? []).map((filtre) => ApiQuery(filtre)),
-    ApiOkResponse({ type: options.reponse }),
+    ApiOperation({ summary: resume }),
+    ApiOkResponse({ type: reponse }),
   );
 }
 

@@ -1,7 +1,8 @@
 import { applyDecorators } from '@nestjs/common';
 import { Type } from 'class-transformer';
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsIn, IsInt, IsOptional, Max, Min } from 'class-validator';
+import { IsIn, IsOptional } from 'class-validator';
+import { EntierBorne } from './bornes-annoncees.decorator';
 
 export const SORT_DIRECTIONS = ['ASC', 'DESC'] as const;
 
@@ -23,19 +24,16 @@ export function ChoixOptionnel<T extends string>(
 }
 
 export class PaginationQueryDto {
-  @ApiPropertyOptional({ example: 1, default: 1, minimum: 1 })
+  @ApiPropertyOptional({ example: 1, default: 1 })
   @IsOptional()
   @Type(() => Number)
-  @IsInt()
-  @Min(1)
+  @EntierBorne(1)
   page = 1;
 
-  @ApiPropertyOptional({ example: 20, default: 20, minimum: 1, maximum: 100 })
+  @ApiPropertyOptional({ example: 20, default: 20 })
   @IsOptional()
   @Type(() => Number)
-  @IsInt()
-  @Min(1)
-  @Max(100)
+  @EntierBorne(1, 100)
   limit = 20;
 
   @ChoixOptionnel(SORT_DIRECTIONS, { exemple: 'DESC', parDefaut: 'DESC' })

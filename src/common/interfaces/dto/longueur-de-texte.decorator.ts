@@ -1,4 +1,5 @@
 import { applyDecorators } from '@nestjs/common';
+import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import {
   buildMessage,
@@ -15,20 +16,25 @@ const borneDeLongueur = (
   message: string,
   options?: ValidationOptions,
 ): PropertyDecorator =>
-  ValidateBy(
-    {
-      name: nom,
-      constraints: [borne],
-      validator: {
-        validate: (valeur: unknown) =>
-          typeof valeur === 'string' && accepte(longueurDeTexte(valeur)),
-        defaultMessage: buildMessage(
-          (prefixe) => `${prefixe}$property ${message}`,
-          options,
-        ),
+  applyDecorators(
+    ApiProperty(
+      nom === 'minLength' ? { minLength: borne } : { maxLength: borne },
+    ),
+    ValidateBy(
+      {
+        name: nom,
+        constraints: [borne],
+        validator: {
+          validate: (valeur: unknown) =>
+            typeof valeur === 'string' && accepte(longueurDeTexte(valeur)),
+          defaultMessage: buildMessage(
+            (prefixe) => `${prefixe}$property ${message}`,
+            options,
+          ),
+        },
       },
-    },
-    options,
+      options,
+    ),
   );
 
 export const AuMoinsCaracteres = (
@@ -64,15 +70,27 @@ const rogne = (valeur: unknown): unknown => {
 export const Rogne = (): PropertyDecorator =>
   Transform(({ value }: { value: unknown }) => rogne(value));
 
-export function TexteSaisi(
+interface MessagesDeBornes {
+  readonly min?: string;
+  readonly max?: string;
+}
+
+export function TexteBorne(
   min: number,
   max: number,
-  messages: { readonly min?: string; readonly max?: string } = {},
+  messages: MessagesDeBornes = {},
 ): PropertyDecorator {
   return applyDecorators(
-    Rogne(),
     IsString(),
     AuMoinsCaracteres(min, { message: messages.min }),
     AuPlusCaracteres(max, { message: messages.max }),
   );
+}
+
+export function TexteSaisi(
+  min: number,
+  max: number,
+  messages: MessagesDeBornes = {},
+): PropertyDecorator {
+  return applyDecorators(Rogne(), TexteBorne(min, max, messages));
 }

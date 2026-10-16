@@ -1,13 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, MaxLength, MinLength, ValidateIf } from 'class-validator';
+import { IsString, ValidateIf } from 'class-validator';
+import {
+  AuPlusCaracteres,
+  TexteBorne,
+} from '../../../../common/interfaces/dto/longueur-de-texte.decorator';
 import type { AnswerValue } from '../../domain/AnswerGrading';
 import { DureeDeReponse } from './duree-de-reponse.decorator';
 
 export class SubmitAnswerRequestDto {
   @ApiProperty({ example: 'Q-CAP-03' })
-  @IsString()
-  @MinLength(1)
-  @MaxLength(60)
+  @TexteBorne(1, 60)
   questionId: string;
 
   @ApiProperty({
@@ -17,7 +19,7 @@ export class SubmitAnswerRequestDto {
   })
   @ValidateIf((dto: SubmitAnswerRequestDto) => typeof dto.valeur !== 'number')
   @IsString()
-  @MaxLength(200)
+  @AuPlusCaracteres(200)
   valeur: AnswerValue;
 
   @DureeDeReponse(42000)

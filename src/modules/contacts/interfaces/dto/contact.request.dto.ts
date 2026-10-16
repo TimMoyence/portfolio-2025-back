@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsBoolean, IsDate, IsOptional, IsString } from 'class-validator';
 import type { SupportedLocale } from '../../../../common/domain/value-objects/LocaleCode';
@@ -28,7 +28,11 @@ export class ContactRequestDto extends ChampsAntiRobotDto {
   @TexteSaisi(10, 2000)
   message: string;
 
-  @ApiProperty({ example: '+11234567890', nullable: true })
+  @ApiPropertyOptional({
+    type: String,
+    example: '+11234567890',
+    nullable: true,
+  })
   @IsOptional()
   @IsString()
   phone?: string | null;

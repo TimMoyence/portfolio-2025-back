@@ -45,10 +45,9 @@ async function bootstrap() {
 
   ouvrirAuxOrigines(app, corsOrigins);
 
-  // Limite globale du body parser : 600 KB couvre les imports CSV
-  // (max 500 KB cote DTO @MaxLength) avec une marge pour l'overhead
-  // JSON. Au-dela, body-parser repond 413 avant que le DTO ne soit
-  // construit, evitant un DoS event-loop (HIGH-2 audit 2026-05-09).
+  // Limite globale du body parser : 600 KB. Au-dela, body-parser repond
+  // 413 avant que le DTO ne soit construit, evitant un DoS event-loop
+  // (HIGH-2 audit 2026-05-09).
   // API native NestExpressApplication : pas besoin d'importer express
   // directement (NestExpressBodyParserOptions.limit, pnpm 9 isolated).
   bornerLesCorpsDeRequete(app);

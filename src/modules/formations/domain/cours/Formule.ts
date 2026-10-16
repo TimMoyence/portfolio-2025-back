@@ -1,5 +1,6 @@
 import { avecVirgule } from '../../../../common/domain/nombres/ecriture-francaise';
 import { estEntierPositif } from '../../../../common/domain/nombres/est-entier-positif';
+import { longueurDeTexte } from '../../../../common/domain/texte/longueur-de-texte';
 import { sansEspacesNiMoinsTypographiques } from '../../../../common/domain/texte/sans-espaces-typographiques';
 
 export type CodeErreur = '#REF!' | '#DIV/0!' | '#NOM?' | '#VALEUR!';
@@ -332,7 +333,7 @@ function jetonSuivant(reste: string): Jeton {
 }
 
 function decouper(source: string): Jeton[] {
-  if (source.length > LONGUEUR_MAX_FORMULE) {
+  if (longueurDeTexte(source) > LONGUEUR_MAX_FORMULE) {
     refuser(ERREUR_VALEUR);
   }
   const jetons: Jeton[] = [];

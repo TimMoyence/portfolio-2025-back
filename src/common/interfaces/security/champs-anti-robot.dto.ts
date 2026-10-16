@@ -1,5 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsInt, IsOptional, IsString, Min } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
+import { EntierBorne } from '../dto/bornes-annoncees.decorator';
 import { AuPlusCaracteres } from '../dto/longueur-de-texte.decorator';
 
 export class ChampsAntiRobotDto {
@@ -15,7 +16,6 @@ export class ChampsAntiRobotDto {
     description: "Timestamp ms d'ouverture du formulaire",
   })
   @IsOptional()
-  @IsInt()
-  @Min(0)
+  @EntierBorne(0)
   formStartedAt?: number;
 }

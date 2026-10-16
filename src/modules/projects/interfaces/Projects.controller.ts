@@ -2,7 +2,6 @@ import { Body, Query } from '@nestjs/common';
 import {
   ControleurDeCatalogue,
   CreationAdmin,
-  FILTRE_STATUT_DE_PUBLICATION,
   ListePubliquePaginee,
   pageDemandee,
   reponsePaginee,
@@ -22,22 +21,10 @@ export class ProjectsController {
     private readonly createUseCase: CreateProjectsUseCase,
   ) {}
 
-  @ListePubliquePaginee({
-    resume: 'Lister les projets (acces public, pagine)',
-    reponse: ProjectListResponseDto,
-    ordreParDefaut: 'ASC',
-    triables: ['order', 'slug', 'type', 'createdAt'],
-    triParDefaut: 'order',
-    filtres: [
-      {
-        name: 'type',
-        required: false,
-        enum: ['CLIENT', 'SIDE'],
-        example: 'SIDE',
-      },
-      FILTRE_STATUT_DE_PUBLICATION,
-    ],
-  })
+  @ListePubliquePaginee(
+    'Lister les projets (acces public, pagine)',
+    ProjectListResponseDto,
+  )
   async findAll(
     @Query() query: ProjectListQueryDto,
   ): Promise<ProjectListResponseDto> {

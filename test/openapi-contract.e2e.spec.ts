@@ -23,6 +23,10 @@ import { AuthController } from '../src/modules/users/interfaces/Auth.controller'
 import { ContactsController } from '../src/modules/contacts/interfaces/Contacts.controller';
 import { CookieConsentsController } from '../src/modules/cookie-consents/interfaces/CookieConsents.controller';
 import { AuditsController } from '../src/modules/audit-requests/interfaces/Audits.controller';
+import { RequestToolkitRequestDto } from '../src/modules/lead-magnets/interfaces/dto/request-toolkit.request.dto';
+import { SubscribeNewsletterRequestDto } from '../src/modules/newsletter/interfaces/dto/subscribe-newsletter.request.dto';
+import { ArticleListQueryDto } from '../src/modules/articles/interfaces/dto/article-list.query.dto';
+import { JoinSessionRequestDto } from '../src/modules/formations/interfaces/dto/join-session.request.dto';
 
 import {
   authControllerProviders,
@@ -70,7 +74,11 @@ import { CONTENUS } from './factories/contenus-publies';
 import { createMockDepotsFormations } from './factories/formation.factory';
 import { monterApplicationFormations } from './helpers/formations-harness';
 import { fermerApplication } from './helpers/nest-test-app';
-import { documentOpenApiFormations } from './helpers/schema-openapi';
+import {
+  documentOpenApiFormations,
+  estSansForme,
+  type SchemaOpenApi,
+} from './helpers/schema-openapi';
 
 const stub = () => ({ execute: jest.fn() });
 
@@ -141,6 +149,64 @@ async function documenterLeModule(
   }
 }
 
+interface SchemaDeChamp {
+  readonly type?: string;
+  readonly default?: unknown;
+  readonly example?: unknown;
+  readonly minimum?: number;
+  readonly maximum?: number;
+  readonly properties?: Record<string, SchemaDeChamp>;
+  readonly oneOf?: readonly SchemaDeChamp[];
+  readonly anyOf?: readonly SchemaDeChamp[];
+}
+
+const porteUnNombre = (schema: SchemaDeChamp): boolean =>
+  typeof schema.default === 'number' ||
+  typeof schema.example === 'number' ||
+  schema.minimum !== undefined ||
+  schema.maximum !== undefined;
+
+const admetUnNombre = (schema: SchemaDeChamp): boolean =>
+  schema.type === 'integer' ||
+  schema.type === 'number' ||
+  [...(schema.oneOf ?? []), ...(schema.anyOf ?? [])].some(admetUnNombre);
+
+function champsDuDocument(
+  document: DocumentOpenApi,
+): (readonly [string, SchemaDeChamp])[] {
+  const proprietes = Object.entries(document.components?.schemas ?? {}).flatMap(
+    ([nom, schema]) =>
+      Object.entries((schema as SchemaDeChamp).properties ?? {}).map(
+        ([champ, propriete]) => [`${nom}.${champ}`, propriete] as const,
+      ),
+  );
+  const parametres = Object.entries(document.paths).flatMap(
+    ([chemin, operations]) =>
+      Object.values(operations as object).flatMap(
+        (operation: {
+          parameters?: { name: string; schema?: SchemaDeChamp }[];
+        }) =>
+          (operation.parameters ?? []).map(
+            (parametre) =>
+              [`${chemin} ${parametre.name}`, parametre.schema ?? {}] as const,
+          ),
+      ),
+  );
+  return [...proprietes, ...parametres];
+}
+
+const champsNumeriquesSansTypeNumerique = (
+  document: DocumentOpenApi,
+): string[] =>
+  champsDuDocument(document)
+    .filter(([, schema]) => porteUnNombre(schema) && !admetUnNombre(schema))
+    .map(([nom]) => nom);
+
+const champsSansForme = (document: DocumentOpenApi): string[] =>
+  champsDuDocument(document)
+    .filter(([, schema]) => estSansForme(schema as SchemaOpenApi))
+    .map(([nom]) => nom);
+
 describe('OpenAPI legacy contract (phase 11)', () => {
   let document: DocumentOpenApi;
 
@@ -171,6 +237,14 @@ describe('OpenAPI legacy contract (phase 11)', () => {
       courses: pathBySuffix('/courses'),
       redirects: pathBySuffix('/redirects'),
     }).toMatchSnapshot();
+  });
+
+  it('documente par un type numerique chaque champ legacy qui porte un defaut, un exemple ou une borne numerique', () => {
+    expect(champsNumeriquesSansTypeNumerique(document)).toEqual([]);
+  });
+
+  it('donne a chaque champ legacy un type, et a chaque objet sa forme', () => {
+    expect(champsSansForme(document)).toEqual([]);
   });
 
   it('keeps legacy DTO schemas stable', () => {
@@ -223,7 +297,27 @@ describe('OpenAPI core contract', () => {
         .setTitle('Core Contract Test')
         .setVersion('1.0')
         .addBearerAuth(),
+      {
+        extraModels: [
+          RequestToolkitRequestDto,
+          SubscribeNewsletterRequestDto,
+          ArticleListQueryDto,
+          JoinSessionRequestDto,
+        ],
+      },
     );
+  });
+
+  it('fige les schemas des DTO de saisie : comptes, contact, cookies, audit, boite a outils, newsletter, articles et entree en seance', () => {
+    expect(document.components?.schemas).toMatchSnapshot();
+  });
+
+  it('documente par un type numerique chaque champ qui porte un defaut, un exemple ou une borne numerique', () => {
+    expect(champsNumeriquesSansTypeNumerique(document)).toEqual([]);
+  });
+
+  it('donne a chaque champ un type, et a chaque objet sa forme', () => {
+    expect(champsSansForme(document)).toEqual([]);
   });
 
   const pathsContaining = (segment: string) =>
@@ -371,6 +465,14 @@ describe('OpenAPI des écrans servis', () => {
     document = await documentDesFormations();
   });
 
+  it('documente par un type numerique chaque champ des formations qui porte un defaut, un exemple ou une borne numerique', () => {
+    expect(champsNumeriquesSansTypeNumerique(document)).toEqual([]);
+  });
+
+  it('donne a chaque champ des formations un type, et a chaque objet sa forme', () => {
+    expect(champsSansForme(document)).toEqual([]);
+  });
+
   interface SchemaOpenApi {
     readonly $ref?: string;
     readonly type?: string;
@@ -378,6 +480,7 @@ describe('OpenAPI des écrans servis', () => {
     readonly allOf?: readonly SchemaOpenApi[];
     readonly oneOf?: readonly SchemaOpenApi[];
     readonly items?: SchemaOpenApi;
+    readonly enum?: readonly unknown[];
   }
 
   const schemaNomme = (ref: string): SchemaOpenApi => {
@@ -412,12 +515,18 @@ describe('OpenAPI des écrans servis', () => {
     if (schema.oneOf !== undefined) {
       return (
         schema.oneOf
+          .filter(
+            (variante) =>
+              variante.enum === undefined || variante.enum.includes(valeur),
+          )
           .map((variante) => nonDeclares(valeur, variante, chemin))
-          .reduce<
-            string[] | null
-          >((retenue, essai) => (retenue === null || essai.length < retenue.length ? essai : retenue), null) ?? [
-          `${chemin} (oneOf vide)`,
-        ]
+          .reduce<string[] | null>(
+            (retenue, essai) =>
+              retenue === null || essai.length < retenue.length
+                ? essai
+                : retenue,
+            null,
+          ) ?? [`${chemin} (oneOf vide)`]
       );
     }
     if (

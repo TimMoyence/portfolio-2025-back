@@ -20,9 +20,18 @@ describe('POST sessions/:id/incidents — S6 · contexte borne', () => {
     expect(dto.incidents).toHaveLength(1);
   });
 
-  it('accepte un contexte plat de valeurs scalaires courtes', async () => {
-    const contexte = { duree: 1200, touche: 'F12', repetee: false };
+  const SOURIRE = String.fromCodePoint(0x1f600);
 
+  it.each([
+    [
+      'un contexte plat de valeurs scalaires courtes',
+      { duree: 1200, touche: 'F12', repetee: false },
+    ],
+    [
+      'un texte et une cle de contexte mesures en points de code',
+      { [SOURIRE.repeat(40)]: SOURIRE.repeat(200) },
+    ],
+  ])('accepte %s', async (_cas, contexte) => {
     const dto = await validateBody(lot(contexte), ReportIncidentsRequestDto);
 
     expect(dto.incidents[0].contexte).toEqual(contexte);

@@ -3,16 +3,13 @@ import { Type } from 'class-transformer';
 import {
   IsBoolean,
   IsIn,
-  IsInt,
   isObject,
   IsOptional,
-  IsString,
-  MaxLength,
-  Min,
-  MinLength,
   ValidateBy,
   ValidateNested,
 } from 'class-validator';
+import { EntierBorne } from '../../../../../common/interfaces/dto/bornes-annoncees.decorator';
+import { TexteBorne } from '../../../../../common/interfaces/dto/longueur-de-texte.decorator';
 import type {
   PilotageEcran,
   VotePhase,
@@ -37,9 +34,7 @@ export function EstReglageNumerique(): PropertyDecorator {
 
 export class PilotageEcranRequestDto implements PilotageEcran {
   @ApiProperty({ example: 'B2-01-A3-01-VOTE-HAUSSE-BAISSE' })
-  @IsString()
-  @MinLength(1)
-  @MaxLength(120)
+  @TexteBorne(1, 120)
   screenId: string;
 
   @ApiPropertyOptional({
@@ -60,23 +55,19 @@ export class PilotageEcranRequestDto implements PilotageEcran {
 
   @ApiPropertyOptional({
     description: 'Etapes montrees d un exemple travaille',
-    minimum: 0,
     example: 2,
   })
   @IsOptional()
-  @IsInt()
-  @Min(0)
+  @EntierBorne(0)
   etayage?: number;
 
   @ApiPropertyOptional({
     description:
       'Explications devoilees sur l ecran d un exercice corrige sur place, dans leur ordre, jamais retirees',
-    minimum: 0,
     example: 1,
   })
   @IsOptional()
-  @IsInt()
-  @Min(0)
+  @EntierBorne(0)
   explicationsDevoilees?: number;
 
   @ApiPropertyOptional({

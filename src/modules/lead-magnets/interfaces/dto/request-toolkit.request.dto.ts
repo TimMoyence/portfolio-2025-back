@@ -15,6 +15,8 @@ import { LocaleSupportee } from '../../../../common/interfaces/dto/locale-suppor
 import { ChampsAntiRobotDto } from '../../../../common/interfaces/security/champs-anti-robot.dto';
 import { InteractionProfileDto } from './interaction-profile.dto';
 
+const FORMATIONS_DE_LA_BOITE = ['ia-solopreneurs'];
+
 export class RequestToolkitRequestDto extends ChampsAntiRobotDto {
   @ApiProperty({ example: 'Marie' })
   @TexteSaisi(1, 50)
@@ -24,10 +26,10 @@ export class RequestToolkitRequestDto extends ChampsAntiRobotDto {
   @AdresseEmail()
   email: string;
 
-  @ApiProperty({ example: 'ia-solopreneurs' })
+  @ApiProperty({ example: 'ia-solopreneurs', enum: FORMATIONS_DE_LA_BOITE })
   @Rogne()
   @IsString()
-  @IsIn(['ia-solopreneurs'])
+  @IsIn(FORMATIONS_DE_LA_BOITE)
   formationSlug: string;
 
   @VersionDesConditions()

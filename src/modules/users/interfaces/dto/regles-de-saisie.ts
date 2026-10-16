@@ -1,6 +1,7 @@
 import { applyDecorators } from '@nestjs/common';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsArray, IsIn, IsOptional, IsString, Matches } from 'class-validator';
+import { IsArray, IsIn, IsOptional, IsString } from 'class-validator';
+import { Motif } from '../../../../common/interfaces/dto/bornes-annoncees.decorator';
 import {
   AuMoinsCaracteres,
   AuPlusCaracteres,
@@ -39,7 +40,7 @@ export function MotDePasseRobuste(): PropertyDecorator {
       message: 'Le mot de passe doit contenir au moins 12 caracteres.',
     }),
     MotDePasseBorne(),
-    Matches(/^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/, {
+    Motif(/^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/, {
       message:
         'Le mot de passe doit contenir au moins 1 majuscule, 1 chiffre et 1 caractere special.',
     }),
@@ -69,7 +70,12 @@ export function NomDeCompte(
 
 export function TelephoneOptionnel(exemple: string): PropertyDecorator {
   return applyDecorators(
-    ApiPropertyOptional({ example: exemple, nullable: true, maxLength: 30 }),
+    ApiPropertyOptional({
+      type: String,
+      example: exemple,
+      nullable: true,
+      maxLength: 30,
+    }),
     IsOptional(),
     Rogne(),
     IsString(),
@@ -79,6 +85,12 @@ export function TelephoneOptionnel(exemple: string): PropertyDecorator {
 
 export function RolesValides(): PropertyDecorator {
   return applyDecorators(
+    ApiPropertyOptional({
+      example: ['teacher'],
+      isArray: true,
+      enum: [...VALID_ROLES],
+      description: 'Liste des roles. Reserve aux administrateurs.',
+    }),
     IsOptional(),
     IsArray(),
     IsString({ each: true }),

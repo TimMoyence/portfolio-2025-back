@@ -1,12 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import {
-  ArrayMaxSize,
-  IsArray,
-  IsString,
-  MaxLength,
-  ValidateNested,
-} from 'class-validator';
+import { IsArray, IsString, ValidateNested } from 'class-validator';
+import { AuPlusElements } from '../../../../../common/interfaces/dto/bornes-annoncees.decorator';
+import { AuPlusCaracteres } from '../../../../../common/interfaces/dto/longueur-de-texte.decorator';
 import { LONGUEUR_MAX_FORMULE } from '../../../domain/cours/Formule';
 import { CelluleDeTableauDto } from './submit-production.request.dto';
 
@@ -18,14 +14,14 @@ class SaisieBruteDeTableauDto extends CelluleDeTableauDto {
     example: '21,6',
   })
   @IsString()
-  @MaxLength(LONGUEUR_MAX_FORMULE)
+  @AuPlusCaracteres(LONGUEUR_MAX_FORMULE)
   saisie: string;
 }
 
 export class EvaluerTableauRequestDto {
   @ApiProperty({ type: [SaisieBruteDeTableauDto] })
   @IsArray()
-  @ArrayMaxSize(SAISIES_MAX)
+  @AuPlusElements(SAISIES_MAX)
   @ValidateNested({ each: true })
   @Type(() => SaisieBruteDeTableauDto)
   saisies: SaisieBruteDeTableauDto[];

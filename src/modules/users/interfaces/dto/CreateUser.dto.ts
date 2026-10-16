@@ -33,11 +33,6 @@ export class CreateUserDto implements CreateUserCommand {
   @IsBoolean()
   isActive?: boolean;
 
-  @ApiPropertyOptional({
-    example: ['teacher'],
-    type: [String],
-    description: 'Liste des roles. Reserve aux administrateurs.',
-  })
   @RolesValides()
   roles?: string[];
 }

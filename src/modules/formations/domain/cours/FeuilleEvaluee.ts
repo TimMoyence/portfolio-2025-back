@@ -62,7 +62,7 @@ export function saisiesRetenues(
       refuser(plan, `cellule hors de la grille : ${reference}`);
     }
     if (!verrouillees.has(nom) && saisie.trim().length > 0) {
-      retenues[nom] = saisie.slice(0, LONGUEUR_MAX_FORMULE);
+      retenues[nom] = [...saisie].slice(0, LONGUEUR_MAX_FORMULE).join('');
     }
   }
   return retenues;

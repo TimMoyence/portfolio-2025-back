@@ -1,4 +1,5 @@
 import { ApiExtraModels, ApiProperty, getSchemaPath } from '@nestjs/swagger';
+import { ReferenceOuNul } from '../../../../../common/interfaces/dto/reference-ou-nul.decorator';
 
 export class ValeurDuTableauResponseDto {
   @ApiProperty({
@@ -49,11 +50,9 @@ export class TableauEvalueResponseDto {
   })
   synthese: readonly ValeurDuTableauResponseDto[];
 
-  @ApiProperty({
-    type: ValeurDuTableauResponseDto,
-    nullable: true,
-    description:
-      'Reste a verser apres la derniere ligne, null sans colonne soldee',
-  })
+  @ReferenceOuNul(
+    [ValeurDuTableauResponseDto],
+    'Reste a verser apres la derniere ligne, null sans colonne soldee',
+  )
   soldeFinal: ValeurDuTableauResponseDto | null;
 }

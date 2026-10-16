@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import type { PacingMode } from '../../domain/PacingMode';
+import { PACING_MODES, type PacingMode } from '../../domain/PacingMode';
 import { EN_TETE_JETON } from '../ParticipantToken.service';
 
 export class JoinSessionResponseDto {
@@ -12,7 +12,7 @@ export class JoinSessionResponseDto {
   @ApiProperty({ example: 0 })
   ecranCourant: number;
 
-  @ApiProperty({ example: 'pilote' })
+  @ApiProperty({ enum: PACING_MODES, example: 'pilote' })
   modeRythme: PacingMode;
 
   @ApiProperty({

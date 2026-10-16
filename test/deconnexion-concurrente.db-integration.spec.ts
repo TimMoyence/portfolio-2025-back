@@ -1,4 +1,5 @@
 import { ConfigService } from '@nestjs/config';
+import type { EntitySubscriberInterface } from 'typeorm';
 import { RefreshTokensUseCase } from '../src/modules/users/application/RefreshTokens.useCase';
 import { RevokeTokenUseCase } from '../src/modules/users/application/RevokeToken.useCase';
 import { issueAuthSession } from '../src/modules/users/application/services/issue-auth-session';
@@ -58,20 +59,63 @@ describeDb(
       return refreshToken;
     }
 
+    function pointDArret() {
+      let signaler: () => void = () => undefined;
+      let liberer: () => void = () => undefined;
+      const atteint = new Promise<void>((resolve) => (signaler = resolve));
+      const reprise = new Promise<void>((resolve) => (liberer = resolve));
+      return {
+        atteint,
+        liberer: () => liberer(),
+        marquer: async () => {
+          signaler();
+          await reprise;
+        },
+      };
+    }
+
     function suspendreApresLaRotation(montage: ReturnType<typeof monter>) {
       const lireLeCompte = montage.comptes.findById.bind(montage.comptes);
-      let atteint: () => void = () => undefined;
-      let liberer: () => void = () => undefined;
-      const rotationFaite = new Promise<void>((resolve) => (atteint = resolve));
-      const reprise = new Promise<void>((resolve) => (liberer = resolve));
+      const arret = pointDArret();
       jest
         .spyOn(montage.comptes, 'findById')
         .mockImplementationOnce(async (id) => {
-          atteint();
-          await reprise;
+          await arret.marquer();
           return lireLeCompte(id);
         });
-      return { rotationFaite, liberer };
+      return arret;
+    }
+
+    function suspendreAvantLEnregistrementDuSuivant() {
+      const arret = pointDArret();
+      let suspendu = false;
+      const abonne: EntitySubscriberInterface<RefreshTokenEntity> = {
+        listenTo: () => RefreshTokenEntity,
+        beforeInsert: async () => {
+          if (suspendu) return;
+          suspendu = true;
+          await arret.marquer();
+        },
+      };
+      base().subscribers.push(abonne);
+      return {
+        ...arret,
+        retirer: () => {
+          base().subscribers.splice(base().subscribers.indexOf(abonne), 1);
+        },
+      };
+    }
+
+    async function uneAttenteDeVerrou(): Promise<void> {
+      for (let tour = 0; tour < 250; tour += 1) {
+        const [{ enAttente }]: { enAttente: number }[] = await base().query(
+          `SELECT count(*)::int AS "enAttente" FROM pg_stat_activity
+         WHERE "datname" = current_database() AND "wait_event_type" = 'Lock'
+           AND "pid" <> pg_backend_pid()`,
+        );
+        if (enAttente > 0) return;
+        await new Promise((resolve) => setTimeout(resolve, 20));
+      }
     }
 
     async function jetonsActifs(userId: string): Promise<number> {
@@ -91,15 +135,15 @@ describeDb(
       const montage = monter();
       const jetonRafraichi = await ouvrirUneSession(montage, userId);
       const autre = await ouvrirUneSession(montage, userId);
-      const { rotationFaite, liberer } = suspendreApresLaRotation(montage);
+      const rotation = suspendreApresLaRotation(montage);
 
       const issue = montage.rafraichir.execute(jetonRafraichi).then(
         () => 'session emise',
         (erreur: Error) => erreur.name,
       );
-      await rotationFaite;
+      await rotation.atteint;
       await montage.deconnecter.execute(jetonDeconnecte(jetonRafraichi, autre));
-      liberer();
+      rotation.liberer();
 
       return { issue: await issue, actifs: await jetonsActifs(userId) };
     }
@@ -120,6 +164,26 @@ describeDb(
           (_jetonRafraichi, autre) => autre,
         ),
       ).toEqual({ issue: 'InvalidCredentialsError', actifs: 0 });
+    });
+
+    it('ne laisse aucun jeton actif quand la deconnexion tombe entre la verification du precedent et l enregistrement du suivant', async () => {
+      const userId = await inscrireUtilisateur(
+        base(),
+        'pendant-l-enregistrement@example.com',
+      );
+      const montage = monter();
+      const jeton = await ouvrirUneSession(montage, userId);
+      const enregistrement = suspendreAvantLEnregistrementDuSuivant();
+
+      const rafraichissement = montage.rafraichir.execute(jeton);
+      await enregistrement.atteint;
+      const deconnexion = montage.deconnecter.execute(jeton);
+      await Promise.race([deconnexion, uneAttenteDeVerrou()]);
+      enregistrement.liberer();
+      await Promise.allSettled([rafraichissement, deconnexion]);
+      enregistrement.retirer();
+
+      expect(await jetonsActifs(userId)).toBe(0);
     });
   },
 );

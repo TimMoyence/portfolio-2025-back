@@ -4,6 +4,7 @@ import {
   ApiPropertyOptional,
   OmitType,
 } from '@nestjs/swagger';
+import { ReferenceOuNul } from '../../../../../common/interfaces/dto/reference-ou-nul.decorator';
 import type { Diffusion } from '../../../domain/contrats/cours';
 import { DIFFUSIONS } from '../../../domain/contrats/cours';
 import type {
@@ -16,7 +17,6 @@ import {
   CORRIGES_D_ECRAN,
   ExplicationDeCorrectionResponseDto,
   ReflexionPresentateurResponseDto,
-  UN_CORRIGE_D_ECRAN,
 } from './corrige-ecran.response.dto';
 import { OptionPubliqueResponseDto } from './rappels.response.dto';
 import { EcranPublicResponseDto, SujetResponseDto } from './sujet.response.dto';
@@ -36,7 +36,7 @@ export class QuestionDerouleResponseDto {
   options: OptionPubliqueResponseDto[] | null;
 }
 
-@ApiExtraModels(...CORRIGES_D_ECRAN)
+@ApiExtraModels(...CORRIGES_D_ECRAN, ReflexionPresentateurResponseDto)
 export class EcranDerouleResponseDto
   extends EcranPublicResponseDto
   implements EcranDeroule
@@ -56,20 +56,16 @@ export class EcranDerouleResponseDto
   @ApiProperty({ type: [QuestionDerouleResponseDto] })
   questions: QuestionDerouleResponseDto[];
 
-  @ApiProperty({
-    description:
-      'Corrige de production, de defi, de revelation ou de reflexion ; servi au sujet seulement une fois l ecran revele, jamais au catalogue',
-    nullable: true,
-    oneOf: UN_CORRIGE_D_ECRAN,
-  })
+  @ReferenceOuNul(
+    CORRIGES_D_ECRAN,
+    'Corrige de production, de defi, de revelation ou de reflexion ; servi au sujet seulement une fois l ecran revele, jamais au catalogue',
+  )
   corrigeEcran: CorrigeEcranPresentateur | null;
 
-  @ApiProperty({
-    type: ReflexionPresentateurResponseDto,
-    nullable: true,
-    description:
-      'Reponse attendue d un recit a reflexion, la meme que celle revelee a l etudiant',
-  })
+  @ReferenceOuNul(
+    [ReflexionPresentateurResponseDto],
+    'Reponse attendue d un recit a reflexion, la meme que celle revelee a l etudiant',
+  )
   reflexion: ReflexionPresentateurResponseDto | null;
 
   @ApiPropertyOptional({

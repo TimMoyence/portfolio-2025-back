@@ -6,6 +6,7 @@ export class ResendVerificationDto {
   @ApiProperty({
     description: 'Adresse email du compte a verifier',
     example: 'john@example.com',
+    minLength: 1,
   })
   @AdresseEmail()
   @IsNotEmpty()

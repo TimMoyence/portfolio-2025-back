@@ -4,6 +4,7 @@ import {
   getSchemaPath,
   OmitType,
 } from '@nestjs/swagger';
+import { ReferenceOuNul } from '../../../../../common/interfaces/dto/reference-ou-nul.decorator';
 import type { TypeQuestion } from '../../../domain/contrats/cours';
 import { TYPES_QUESTION } from '../../../domain/contrats/cours';
 import type { RegleDeNotation } from '../../../domain/RegleDeNotation';
@@ -64,7 +65,7 @@ export class RemediationResponseDto {
   ecranId: string;
 }
 
-@ApiExtraModels(JustesParCleResponseDto)
+@ApiExtraModels(JustesParCleResponseDto, RemediationResponseDto)
 export class ResultatQuestionResponseDto
   extends ResultatQuestionServiResponseDto
   implements ResultatQuestion
@@ -125,12 +126,10 @@ export class ResultatQuestionResponseDto
   })
   sousLeSeuil: boolean;
 
-  @ApiProperty({
-    type: RemediationResponseDto,
-    nullable: true,
-    description:
-      'Ecran de remediation de la confusion dominante, sous le seuil seulement',
-  })
+  @ReferenceOuNul(
+    [RemediationResponseDto],
+    'Ecran de remediation de la confusion dominante, sous le seuil seulement',
+  )
   remediation: RemediationResponseDto | null;
 }
 

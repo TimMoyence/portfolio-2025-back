@@ -167,6 +167,21 @@ describe('evaluerFeuille', () => {
     expect(valeurs(evaluerFeuille(feuille({ A1: trop }))).A1).toBe(VALEUR);
   });
 
+  it('mesure la borne en points de code, comme la saisie que le contrat admet', () => {
+    const texteDe = (points: number): string =>
+      `="${String.fromCodePoint(0x1f600).repeat(points - 2)}"`;
+
+    expect(
+      valeurs(evaluerFeuille(feuille({ A1: texteDe(LONGUEUR_MAX_FORMULE) })))
+        .A1,
+    ).not.toBe(VALEUR);
+    expect(
+      valeurs(
+        evaluerFeuille(feuille({ A1: texteDe(LONGUEUR_MAX_FORMULE + 1) })),
+      ).A1,
+    ).toBe(VALEUR);
+  });
+
   it('arrête le calcul au budget de nœuds et renvoie #VALEUR!', () => {
     const resultats = evaluerFeuille(feuille({ A1: '=SOMME(A2:A12)' }), {
       budgetNoeuds: 3,
