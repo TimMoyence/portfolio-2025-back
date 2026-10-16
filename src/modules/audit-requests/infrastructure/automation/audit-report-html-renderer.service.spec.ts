@@ -1,112 +1,35 @@
 import type { AuditSnapshot } from '../../domain/AuditProcessing';
-import type {
-  ClientReportSynthesis,
-  ExpertReportSynthesis,
-} from '../../domain/AuditReportTiers';
-import { buildEngineCoverage } from '../../../../../test/factories/audit-requests.factory';
+import type { ExpertReportSynthesis } from '../../domain/AuditReportTiers';
+import {
+  buildAuditSnapshot,
+  buildClientReportConforme,
+  buildEngineCoverage,
+  buildExpertReportConforme,
+  buildPageAnalysee,
+} from '../../../../../test/factories/audit-requests.factory';
+import { couvertureRendue } from '../../../../../test/helpers/couverture-de-pdf';
+import { htmlEmis } from '../../../../common/domain/texte/html-escape.util';
 import { AuditReportHtmlRendererService } from './audit-report-html-renderer.service';
 
 describe('AuditReportHtmlRendererService', () => {
   let service: AuditReportHtmlRendererService;
 
   const buildAudit = (overrides: Partial<AuditSnapshot> = {}): AuditSnapshot =>
-    ({
-      id: 'audit-1',
-      requestId: 'req-1',
+    buildAuditSnapshot({
       websiteName: 'Acme Corp',
-      contactMethod: 'EMAIL',
-      contactValue: 'contact@acme.com',
-      locale: 'fr' as AuditSnapshot['locale'],
-      done: true,
-      processingStatus: 'COMPLETED',
-      progress: 100,
-      step: null,
-      error: null,
-      normalizedUrl: 'https://acme.com',
       finalUrl: 'https://acme.com',
-      redirectChain: [],
       keyChecks: {
         llmsTxt: { present: true, url: 'https://acme.com/llms.txt' },
       },
-      quickWins: [],
-      pillarScores: {},
-      summaryText: null,
-      fullReport: null,
       engineCoverage: buildEngineCoverage(),
       createdAt: new Date('2026-04-15T10:00:00Z'),
-      updatedAt: new Date('2026-04-15T10:00:00Z'),
-      startedAt: new Date('2026-04-15T10:00:00Z'),
-      finishedAt: new Date('2026-04-15T10:10:00Z'),
       ...overrides,
-    }) as AuditSnapshot;
-
-  const buildClientReport = (): ClientReportSynthesis => ({
-    executiveSummary: 'Votre site est indexable mais peu cite par les IA.',
-    topFindings: [
-      {
-        title: 'Pas de llms.txt',
-        impact: 'Perte de visibilite sur ChatGPT',
-        severity: 'high',
-      },
-    ],
-    googleVsAiMatrix: {
-      googleVisibility: { score: 78, summary: 'Bonne base Google' },
-      aiVisibility: { score: 42, summary: 'Faible exposition IA' },
-    },
-    pillarScorecard: [
-      { pillar: 'Indexabilite', score: 80, target: 90, status: 'warning' },
-      { pillar: 'Citation', score: 35, target: 70, status: 'critical' },
-    ],
-    quickWins: [
-      {
-        title: 'Ajouter un llms.txt',
-        businessImpact: '+15% visibilite IA',
-        effort: 'low',
-      },
-    ],
-    cta: {
-      title: 'Planifier un appel',
-      description: 'Discutons des prochaines etapes',
-      actionLabel: 'Reserver un creneau',
-    },
-  });
+    });
 
   const buildExpertReport = (
     overrides: Partial<ExpertReportSynthesis> = {},
   ): ExpertReportSynthesis => ({
-    executiveSummary: 'Analyse expert: 2 pages auditees, 4 blockers critiques.',
-    perPageAnalysis: [
-      {
-        url: 'https://acme.com/pricing',
-        title: 'Pricing page',
-        engineScores: buildEngineCoverage(),
-        topIssues: ['Pas de FAQ schema', 'H1 manquant'],
-        recommendations: ['Ajouter FAQPage JSON-LD', 'Ajouter un H1 clair'],
-        evidence: ['DOM ne contient pas <h1>'],
-      },
-    ],
-    crossPageFindings: [
-      {
-        title: 'Meta descriptions dupliquees',
-        severity: 'high',
-        affectedUrls: ['https://acme.com/a', 'https://acme.com/b'],
-        rootCause: 'Template CMS utilise le meme modele',
-        remediation: 'Generer des meta descriptions dynamiques',
-      },
-    ],
-    priorityBacklog: [
-      {
-        title: 'Deployer llms.txt',
-        impact: 'high',
-        effort: 'low',
-        acceptanceCriteria: ['Fichier accessible en HTTP 200'],
-      },
-    ],
-    clientEmailDraft: {
-      subject: 'Votre audit Growth Audit',
-      body: 'Bonjour,\n\nVoici les resultats.',
-    },
-    internalNotes: 'Client reactif, CMS WordPress standard',
+    ...buildExpertReportConforme(),
     ...overrides,
   });
 
@@ -114,8 +37,12 @@ describe('AuditReportHtmlRendererService', () => {
     service = new AuditReportHtmlRendererService();
   });
 
+  const rendu = (
+    ...rapport: Parameters<AuditReportHtmlRendererService['render']>
+  ): string => htmlEmis(service.render(...rapport));
+
   const rendre = (expert: ExpertReportSynthesis = buildExpertReport()) =>
-    service.render(buildAudit(), buildClientReport(), expert);
+    rendu(buildAudit(), buildClientReportConforme(), expert);
 
   it('produit un document HTML complet avec toutes les sections principales', () => {
     const html = rendre();
@@ -127,10 +54,10 @@ describe('AuditReportHtmlRendererService', () => {
     expect(html).toContain('Acme Corp');
     expect(html).toContain('Asili Design');
     expect(html).toContain(
-      'Votre site est indexable mais peu cite par les IA.',
+      'Audit complet finalise avec 3 leviers prioritaires et un plan de 30 jours.',
     );
-    expect(html).toContain('Planifier un appel');
-    expect(html).toContain('Indexabilite');
+    expect(html).toContain('Planifier un appel de 30 minutes');
+    expect(html).toContain('Citabilite IA');
     expect(html).toContain('Analyse expert');
     expect(html).toContain('Meta descriptions dupliquees');
     expect(html).toContain('Deployer llms.txt');
@@ -142,11 +69,38 @@ describe('AuditReportHtmlRendererService', () => {
     expect(html).toContain('llms.txt');
   });
 
+  it.each([
+    [
+      'avec son URL finale',
+      'https://acme.com',
+      '<p class="cover-date">15 avril 2026</p><p class="cover-url">https://acme.com</p>',
+    ],
+    ['sans URL finale', null, '<p class="cover-date">15 avril 2026</p>'],
+  ])('rend la couverture du rapport %s', (_cas, finalUrl, meta) => {
+    const html = rendu(
+      buildAudit({ websiteName: 'Acme & Co', finalUrl }),
+      buildClientReportConforme(),
+      buildExpertReport(),
+    );
+
+    expect(couvertureRendue(html)).toBe(
+      '<section class="page cover"><div class="cover-gradient">' +
+        '<div class="cover-shape cover-shape-1"></div><div class="cover-shape cover-shape-2"></div>' +
+        '</div><div class="cover-content">' +
+        '<p class="cover-eyebrow">Asili Design — Growth Audit</p>' +
+        '<h1 class="cover-title">Rapport Growth Audit</h1>' +
+        '<p class="cover-subtitle">Acme &amp; Co</p>' +
+        `<div class="cover-meta">${meta}</div></div>` +
+        '<footer class="cover-footer"><span>asilidesign.fr</span><span>•</span>' +
+        '<span>Rapport genere automatiquement</span></footer></section>',
+    );
+  });
+
   it('nomme le statut de chaque pilier Critique, À améliorer ou Objectif atteint', () => {
-    const html = service.render(
+    const html = rendu(
       buildAudit(),
       {
-        ...buildClientReport(),
+        ...buildClientReportConforme(),
         pillarScorecard: [
           { pillar: 'Indexabilite', score: 40, target: 90, status: 'critical' },
           { pillar: 'Citation', score: 60, target: 70, status: 'warning' },
@@ -188,9 +142,9 @@ describe('AuditReportHtmlRendererService', () => {
   });
 
   it('ne lit pas un llms.txt rangé dans un tableau comme une analyse', () => {
-    const html = service.render(
+    const html = rendu(
       buildAudit({ keyChecks: { llmsTxt: [{ present: true }] } }),
-      buildClientReport(),
+      buildClientReportConforme(),
       buildExpertReport(),
     );
 
@@ -223,14 +177,7 @@ describe('AuditReportHtmlRendererService', () => {
   it('echappe les URLs dans les href (& -> &amp;)', () => {
     const expert = buildExpertReport({
       perPageAnalysis: [
-        {
-          url: 'https://acme.com/search?q=a&lang=fr',
-          title: 'Search page',
-          engineScores: buildEngineCoverage(),
-          topIssues: [],
-          recommendations: [],
-          evidence: [],
-        },
+        buildPageAnalysee({ url: 'https://acme.com/search?q=a&lang=fr' }),
       ],
     });
 

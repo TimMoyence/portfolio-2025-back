@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { z } from 'zod';
 import { compacterBlancs } from '../../../../common/domain/texte/compacter-blancs';
+import { textesUniquesBornes } from '../../../../common/domain/texte/textes-uniques-bornes';
 import type { AiIndexabilitySignals } from '../../domain/AiIndexability';
 import type {
   ClientReportSynthesis,
@@ -16,8 +17,10 @@ import {
   type StatutScore,
 } from '../../domain/StatutScore';
 import { AuditLocale, localeDeRedaction } from '../../domain/audit-locale.util';
+import { nonVerifiable } from '../../domain/non-verifiable';
 import { withHardTimeout } from './llm-execution.guardrails';
 import { LlmSuiviParLaConfig } from './llm-executor.port';
+import { validateClientReport } from './report-quality-gate/tier-validators';
 import { reportSeveritySchema } from './schemas/audit-report.schemas';
 import { buildOpenAiMessages } from './section-generators/cacheable-section.generators';
 import { untrustedDataDisclaimer } from './section-generators/section-prompts.builder';
@@ -167,7 +170,15 @@ export class LangchainClientReportService extends LlmSuiviParLaConfig {
         ),
       );
 
-      return this.normalizeLlmResult(llmResult, context);
+      const rapport = this.normalizeLlmResult(llmResult, context);
+      const palier = validateClientReport(rapport);
+      if (!palier.valid) {
+        this.logger.warn(
+          `Client report: quality gate: ${palier.issues.join(', ')}; using deterministic fallback.`,
+        );
+        return this.buildFallback(context, locale);
+      }
+      return rapport;
     } catch (error) {
       this.logger.warn(`Client report LLM failed: ${String(error)}`);
       return this.buildFallback(context, locale);
@@ -182,7 +193,7 @@ export class LangchainClientReportService extends LlmSuiviParLaConfig {
         'Contraintes strictes :',
         '- Francais uniquement',
         '- Pas de markdown, pas de HTML',
-        "- Pas de speculation (si une donnee manque, ecris 'Non verifiable')",
+        `- Pas de speculation (si une donnee manque, ecris '${nonVerifiable(locale)}')`,
         '- Executive summary en 3 phrases max, oriente impact business',
         "- Top findings : 3-5 max, avec severity high/medium/low (doit refleter fidelement la severity source — jamais d'inflation)",
         '- Google vs AI matrix : 2 scores 0-100 + 1 phrase chacun',
@@ -199,7 +210,7 @@ export class LangchainClientReportService extends LlmSuiviParLaConfig {
       'Strict rules:',
       '- English only',
       '- No markdown, no HTML',
-      "- No speculation (if data is missing, write 'Not verifiable')",
+      `- No speculation (if data is missing, write '${nonVerifiable(locale)}')`,
       '- Executive summary: max 3 sentences, business-impact oriented',
       '- Top findings: 3-5 max, severity high/medium/low (must mirror source severity — never inflate)',
       '- Google vs AI matrix: 2 scores 0-100 + 1 sentence each',
@@ -213,8 +224,8 @@ export class LangchainClientReportService extends LlmSuiviParLaConfig {
 
   private antiHallucinationPrompt(locale: AuditLocale): string {
     return locale === 'fr'
-      ? "Rappel: chaque affirmation doit etre verifiable depuis le payload (pillarScores, findings, quickWins, engineCoverage, aggregateAiSignals). Si la donnee n'existe pas, ecris 'Non verifiable'. Aucune invention."
-      : "Reminder: every claim must be verifiable from the payload (pillarScores, findings, quickWins, engineCoverage, aggregateAiSignals). If the data is missing, write 'Not verifiable'. No invention.";
+      ? `Rappel: chaque affirmation doit etre verifiable depuis le payload (pillarScores, findings, quickWins, engineCoverage, aggregateAiSignals). Si la donnee n'existe pas, ecris '${nonVerifiable(locale)}'. Aucune invention.`
+      : `Reminder: every claim must be verifiable from the payload (pillarScores, findings, quickWins, engineCoverage, aggregateAiSignals). If the data is missing, write '${nonVerifiable(locale)}'. No invention.`;
   }
 
   private buildPayload(context: ClientReportContext): Record<string, unknown> {
@@ -523,18 +534,18 @@ export class LangchainClientReportService extends LlmSuiviParLaConfig {
       businessImpact: string;
       effort: 'low' | 'medium' | 'high';
     };
-    const base: MutableQuickWin[] = context.quickWins
-      .filter((entry) => entry.trim().length > 0)
-      .slice(0, 5)
-      .map((title) => ({
-        title,
-        businessImpact: localizedText(
-          locale,
-          'Gain rapide sur la visibilite ou la conversion.',
-          'Quick gain on visibility or conversion.',
-        ),
-        effort: 'low' as const,
-      }));
+    const base: MutableQuickWin[] = textesUniquesBornes(
+      context.quickWins,
+      5,
+    ).map((title) => ({
+      title,
+      businessImpact: localizedText(
+        locale,
+        'Gain rapide sur la visibilite ou la conversion.',
+        'Quick gain on visibility or conversion.',
+      ),
+      effort: 'low' as const,
+    }));
 
     if (base.length >= 3) return base;
 

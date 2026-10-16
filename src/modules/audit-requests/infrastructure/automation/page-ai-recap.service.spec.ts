@@ -15,6 +15,7 @@ import {
   attendreUnPayloadEmballe,
   BALISE_FERMANTE_INJECTEE,
 } from '../../../../../test/helpers/appels-llm';
+import { nonVerifiable } from '../../domain/non-verifiable';
 import type { AuditAutomationConfig } from './audit.config';
 import { PageAiRecapService } from './page-ai-recap.service';
 import { UNTRUSTED_DATA_DISCLAIMER_EN } from './shared/prompt-sanitize.util';
@@ -73,8 +74,11 @@ describe('PageAiRecapService', () => {
       engineScores: buildEngineCoverage(),
     };
 
-    function serviceAvecLlm(pageAnalysee: UrlIndexabilityResult = page) {
-      const invoke = jest.fn().mockResolvedValue(RECAP_DU_LLM);
+    function serviceAvecLlm(
+      pageAnalysee: UrlIndexabilityResult = page,
+      recapDuLlm: typeof RECAP_DU_LLM = RECAP_DU_LLM,
+    ) {
+      const invoke = jest.fn().mockResolvedValue(recapDuLlm);
       const { fabrique, metrics } = createLlmSuiviStub(invoke);
       const service = new PageAiRecapService(
         { ...config, openAiApiKey: 'test-key' },
@@ -125,6 +129,66 @@ describe('PageAiRecapService', () => {
       attendreUnPayloadEmballe(invoke, UNTRUSTED_DATA_DISCLAIMER_EN);
     });
 
+    it('nettoie, dédoublonne et borne les listes rendues par le LLM', async () => {
+      const couverture = buildEngineCoverage();
+      const { analyser } = serviceAvecLlm(page, {
+        ...RECAP_DU_LLM,
+        topIssues: ['A', ' A ', '', 'B'],
+        recommendations: [' C', 'C', 'D '],
+        engineScores: {
+          ...couverture,
+          bingChatGpt: {
+            ...couverture.bingChatGpt,
+            strengths: ['F', 'F ', ' '],
+            blockers: ['G', ' G'],
+            opportunities: ['H', '', 'H'],
+          },
+        },
+      });
+
+      const {
+        recaps: [recap],
+      } = await analyser();
+
+      expect(recap.topIssues).toEqual(['A', 'B']);
+      expect(recap.recommendations).toEqual(['C', 'D']);
+      expect(recap.engineScores?.bingChatGpt).toEqual(
+        expect.objectContaining({
+          strengths: ['F'],
+          blockers: ['G'],
+          opportunities: ['H'],
+        }),
+      );
+    });
+
+    it.each(['fr', 'en'] as const)(
+      'ramene a 50 le score d un moteur dont un blocage porte le marqueur non verifiable en %s',
+      async (locale) => {
+        const couverture = buildEngineCoverage({ google: 90, perplexity: 90 });
+        const { analyser } = serviceAvecLlm(page, {
+          ...RECAP_DU_LLM,
+          engineScores: {
+            ...couverture,
+            google: {
+              ...couverture.google,
+              blockers: [`Donnees Core Web Vitals : ${nonVerifiable(locale)}`],
+            },
+            perplexity: {
+              ...couverture.perplexity,
+              blockers: ['Pas de llms.txt'],
+            },
+          },
+        });
+
+        const {
+          recaps: [recap],
+        } = await analyser();
+
+        expect(recap.engineScores?.google.score).toBe(50);
+        expect(recap.engineScores?.perplexity.score).toBe(90);
+      },
+    );
+
     it('compte l appel dans les métriques LLM', async () => {
       const { metrics, analyser } = serviceAvecLlm();
 
@@ -147,6 +211,14 @@ describe('PageAiRecapService', () => {
     expect(result.summary.totalPages).toBe(1);
     expect(result.summary.fallbackRecaps).toBe(1);
     expect(result.summary.llmRecaps).toBe(0);
+  });
+
+  it('lit la langue du recap dans le html[lang], bords et casse compris', async () => {
+    const result = await analyserSansLlm('en', [
+      { ...page, htmlLang: ' FR-fr' },
+    ]);
+
+    expect(result.recaps[0].language).toBe('fr');
   });
 
   it('produces a deterministic engineScores coverage in fallback mode', async () => {

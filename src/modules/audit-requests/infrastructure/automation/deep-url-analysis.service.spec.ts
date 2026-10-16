@@ -182,4 +182,20 @@ describe('DeepUrlAnalysisService', () => {
     expect(fingerprint.primaryStack).toBe('Not verifiable');
     expect(fingerprint.confidence).toBeLessThanOrEqual(0.3);
   });
+
+  it('relève une page dont le html[lang] contredit la locale, bords et casse compris', () => {
+    const result = service.analyze(
+      [
+        buildUrlIndexabilityResult({ htmlLang: ' EN-us ' }),
+        buildUrlIndexabilityResult({
+          url: 'https://example.com/b',
+          finalUrl: 'https://example.com/b',
+          htmlLang: 'fr_FR',
+        }),
+      ],
+      'fr',
+    );
+
+    expect(result.metrics.languageMismatch).toBe(1);
+  });
 });

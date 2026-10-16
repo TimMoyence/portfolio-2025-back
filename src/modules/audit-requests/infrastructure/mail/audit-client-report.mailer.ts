@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { pieceJointePdf } from '../../../../common/infrastructure/mail/piece-jointe-pdf';
+import { pieceJointePdf } from '../../../../common/infrastructure/mail/piece-jointe';
 import { destinataireDesRapportsDAudit } from '../../../../config/adresses-de-courriel';
 import { LIBELLES_DU_NIVEAU } from '../../domain/AuditReportTiers';
 import type { ClientReportMailInput } from '../../domain/IAuditNotifier.port';
@@ -12,6 +12,7 @@ import {
   escapeUrl,
   safeHtml,
   slugify,
+  type EscapedHtml,
 } from './mail-rendering.util';
 import { lignesDeVisibilite, listeDeVisibilite } from './visibilite-google-ia';
 
@@ -37,7 +38,7 @@ export class AuditClientReportMailer extends MailerDAudit {
     });
   }
 
-  private buildClientReportHtml(input: ClientReportMailInput): string {
+  private buildClientReportHtml(input: ClientReportMailInput): EscapedHtml {
     const report = input.clientReport;
     const greeting = input.firstName
       ? safeHtml`Bonjour ${escapeHtml(input.firstName)},`

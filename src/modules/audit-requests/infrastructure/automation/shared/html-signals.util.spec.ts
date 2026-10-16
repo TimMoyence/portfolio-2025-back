@@ -1,12 +1,57 @@
+import { load } from 'cheerio';
 import {
   detectCmsHints,
   pickHeaders,
   extractSetCookiePatterns,
   CACHE_HEADER_KEYS,
   SECURITY_HEADER_KEYS,
+  lireSignauxDePage,
 } from './html-signals.util';
 
+const liensInternes = (liens: string[], urlDeLaPage: string): string[] => {
+  const html = liens.map((href) => `<a href="${href}">lien</a>`).join('');
+  return lireSignauxDePage(load(html), html, urlDeLaPage).internalLinks;
+};
+
 describe('html-signals.util', () => {
+  describe('liens internes', () => {
+    it('résout chaque lien sur la page, sans fragment, et écarte ce qui n est pas une page du site', () => {
+      expect(
+        liensInternes(
+          [
+            'contact#formulaire',
+            '/a-propos',
+            '  /services  ',
+            'https://example.com/a-propos',
+            'https://autre.example.com/page',
+            '#haut',
+            'mailto:contact@example.com',
+            'tel:+33100000000',
+            'javascript:void(0)',
+            '',
+          ],
+          'https://example.com/fr/accueil',
+        ),
+      ).toEqual([
+        'https://example.com/fr/contact',
+        'https://example.com/a-propos',
+        'https://example.com/services',
+      ]);
+    });
+
+    it('garde les 30 premiers liens', () => {
+      const liens = Array.from({ length: 35 }, (_, rang) => `/page-${rang}`);
+
+      expect(liensInternes(liens, 'https://example.com/')).toEqual(
+        liens.slice(0, 30).map((chemin) => `https://example.com${chemin}`),
+      );
+    });
+
+    it('ne rend aucun lien quand l adresse de la page est illisible', () => {
+      expect(liensInternes(['/contact'], 'pas une url')).toEqual([]);
+    });
+  });
+
   describe('detectCmsHints', () => {
     it('devrait detecter WordPress', () => {
       expect(

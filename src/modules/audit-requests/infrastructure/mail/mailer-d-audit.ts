@@ -1,20 +1,19 @@
 import { Inject } from '@nestjs/common';
-import type { SendMailOptions } from 'nodemailer';
+import type {
+  CourrielHtml,
+  ExpediteurDeCourriels,
+} from '../../../../common/infrastructure/mail/expediteur-smtp';
 import { expediteurDesCourriels } from '../../../../config/adresses-de-courriel';
-import { SMTP_TRANSPORTER } from './smtp-transporter.provider';
-import type { SmtpTransporter } from './smtp-transporter.provider';
+import { EXPEDITEUR_D_AUDIT } from './expediteur-d-audit.provider';
 
 export abstract class MailerDAudit {
   constructor(
-    @Inject(SMTP_TRANSPORTER)
-    private readonly transporter: SmtpTransporter,
+    @Inject(EXPEDITEUR_D_AUDIT)
+    private readonly expediteur: ExpediteurDeCourriels,
   ) {}
 
-  protected async envoyer(
-    message: Omit<SendMailOptions, 'from'>,
-  ): Promise<void> {
-    if (!this.transporter) return;
-    await this.transporter.sendMail({
+  protected envoyer(message: Omit<CourrielHtml, 'from'>): Promise<void> {
+    return this.expediteur.envoyer({
       from: expediteurDesCourriels(),
       ...message,
     });

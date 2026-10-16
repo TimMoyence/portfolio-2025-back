@@ -1,4 +1,5 @@
 import { AuditLocale } from '../../domain/audit-locale.util';
+import { nonVerifiable } from '../../domain/non-verifiable';
 import { HomepageAuditSnapshot } from './homepage-analyzer.service';
 import { localizedText } from './shared/locale-text.util';
 import { arrondi } from '../../../../common/domain/nombres/arrondi';
@@ -247,7 +248,7 @@ function rankTechFingerprint(
 
   if (!best || best[1].score < MIN_STACK_CONFIDENCE_SCORE) {
     return {
-      primaryStack: localizedText(locale, 'Non verifiable', 'Not verifiable'),
+      primaryStack: nonVerifiable(locale),
       confidence: 0.2,
       evidence: [],
       alternatives: [],

@@ -23,6 +23,7 @@ import type {
   FeuilleDeStyle,
 } from '../../../../common/domain/texte/html-escape.util';
 import { sectionHeader } from '../../../../common/infrastructure/mail/section-header';
+import { couvertureDePdf } from '../../../../common/infrastructure/pdf/couverture-de-pdf';
 
 @Injectable()
 export class AuditReportHtmlRendererService {
@@ -33,7 +34,7 @@ export class AuditReportHtmlRendererService {
     audit: AuditSnapshot,
     clientReport: ClientReportSynthesis,
     expertReport: ExpertReportSynthesis,
-  ): string {
+  ): EscapedHtml {
     const date = dateLongue(audit.createdAt);
     const cover = this.renderCover(audit, date);
     const client = this.renderClientSection(clientReport);
@@ -59,26 +60,20 @@ export class AuditReportHtmlRendererService {
   }
 
   private renderCover(audit: AuditSnapshot, date: string): EscapedHtml {
-    return safeHtml`<section class="page cover">
-      <div class="cover-gradient">
-        <div class="cover-shape cover-shape-1"></div>
-        <div class="cover-shape cover-shape-2"></div>
-      </div>
-      <div class="cover-content">
-        <p class="cover-eyebrow">Asili Design — Growth Audit</p>
-        <h1 class="cover-title">Rapport Growth Audit</h1>
-        <p class="cover-subtitle">${escapeHtml(audit.websiteName)}</p>
-        <div class="cover-meta">
-          <p class="cover-date">${escapeHtml(date)}</p>
-          ${audit.finalUrl ? safeHtml`<p class="cover-url">${escapeHtml(audit.finalUrl)}</p>` : safeHtml``}
-        </div>
-      </div>
-      <footer class="cover-footer">
-        <span>asilidesign.fr</span>
-        <span>•</span>
-        <span>Rapport genere automatiquement</span>
-      </footer>
-    </section>`;
+    const meta = [safeHtml`<p class="cover-date">${escapeHtml(date)}</p>`];
+    if (audit.finalUrl) {
+      meta.push(
+        safeHtml`<p class="cover-url">${escapeHtml(audit.finalUrl)}</p>`,
+      );
+    }
+    return couvertureDePdf({
+      formes: 2,
+      surtitre: 'Asili Design — Growth Audit',
+      titre: safeHtml`Rapport Growth Audit`,
+      sousTitre: escapeHtml(audit.websiteName),
+      meta,
+      pied: ['Rapport genere automatiquement'],
+    });
   }
 
   private renderClientSection(report: ClientReportSynthesis): EscapedHtml {

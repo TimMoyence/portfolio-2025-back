@@ -4,6 +4,7 @@ import type { AuditAutomationConfig } from './audit.config';
 import { extractSitemapUrlsFromRobots } from './robots-sitemap-discovery.util';
 import { parseSitemapXml } from './sitemap-parser.util';
 import { SafeFetchService } from './safe-fetch.service';
+import { origineSure } from './shared/url.util';
 
 export interface SitemapDiscoveryResult {
   sitemapUrls: string[];
@@ -30,10 +31,14 @@ export class SitemapDiscoveryService {
     private readonly safeFetch: SafeFetchService,
   ) {}
 
-  async discover(baseUrl: string): Promise<SitemapDiscoveryResult> {
-    const origin = new URL(baseUrl).origin;
+  async discover(
+    baseUrl: string,
+    robotsTxt: string,
+  ): Promise<SitemapDiscoveryResult> {
+    const origin = origineSure(baseUrl);
+    if (!origin) return { sitemapUrls: [], urls: [] };
 
-    const candidates = await this.collectSitemapCandidates(origin);
+    const candidates = this.collectSitemapCandidates(origin, robotsTxt);
     const discoveredSitemaps = new Set<string>();
     const discoveredUrls = new Set<string>();
     const queue = Array.from(candidates);
@@ -58,23 +63,18 @@ export class SitemapDiscoveryService {
     };
   }
 
-  private async collectSitemapCandidates(origin: string): Promise<Set<string>> {
+  private collectSitemapCandidates(
+    origin: string,
+    robotsTxt: string,
+  ): Set<string> {
     const candidates = new Set<string>();
 
-    try {
-      const robotsResponse = await this.safeFetch.fetchText(
-        `${origin}/robots.txt`,
-        this.config.textMaxBytes,
-      );
-      if (robotsResponse.statusCode < 400 && robotsResponse.body) {
-        for (const raw of extractSitemapUrlsFromRobots(robotsResponse.body)) {
-          candidates.add(new URL(raw, origin).toString());
-        }
+    for (const raw of extractSitemapUrlsFromRobots(robotsTxt)) {
+      try {
+        candidates.add(new URL(raw, origin).toString());
+      } catch {
+        continue;
       }
-    } catch (error) {
-      this.logger.warn(
-        `robots.txt discovery failed for ${origin}: ${String(error)}`,
-      );
     }
 
     for (const path of COMMON_SITEMAP_PATHS) {

@@ -1,6 +1,27 @@
-import { localeDeRedaction, localeFromUrlPath } from './audit-locale.util';
+import {
+  localeDeHtmlLang,
+  localeDeRedaction,
+  localeFromUrlPath,
+} from './audit-locale.util';
 
 describe('audit-locale.util', () => {
+  describe('localeDeHtmlLang', () => {
+    it.each([
+      ['fr', 'fr'],
+      [' fr-FR ', 'fr'],
+      ['FR_ca', 'fr'],
+      ['en', 'en'],
+      ['EN-gb', 'en'],
+      ['fry', null],
+      ['de-DE', null],
+      ['', null],
+      [null, null],
+      [undefined, null],
+    ])('lit %p comme %p', (htmlLang, attendu) => {
+      expect(localeDeHtmlLang(htmlLang)).toBe(attendu);
+    });
+  });
+
   describe('localeDeRedaction', () => {
     it('retient la langue demandee pour l audit', () => {
       expect(localeDeRedaction('en-US', 'fr')).toBe('en');

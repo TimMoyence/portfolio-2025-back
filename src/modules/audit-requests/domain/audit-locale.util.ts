@@ -15,6 +15,12 @@ export function localeDeRedaction(
   ).value;
 }
 
+export function localeDeHtmlLang(
+  htmlLang: string | null | undefined,
+): AuditLocale | null {
+  return LocaleCode.parse(htmlLang?.replace('_', '-'))?.value ?? null;
+}
+
 export function localeFromUrlPath(path: unknown): AuditLocale | null {
   if (typeof path !== 'string') {
     return null;

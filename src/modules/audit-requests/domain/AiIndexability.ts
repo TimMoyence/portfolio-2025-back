@@ -11,6 +11,18 @@ export interface LlmsTxtAnalysis {
   readonly issues: ReadonlyArray<string>;
 }
 
+export function llmsTxtAbsent(url: string, issue: string): LlmsTxtAnalysis {
+  return {
+    present: false,
+    url,
+    sizeBytes: 0,
+    sections: [],
+    hasFullVariant: false,
+    complianceScore: 0,
+    issues: [issue],
+  };
+}
+
 export type AiBotAccessState = 'allowed' | 'disallowed' | 'unknown';
 
 export interface AiBotsAccess {

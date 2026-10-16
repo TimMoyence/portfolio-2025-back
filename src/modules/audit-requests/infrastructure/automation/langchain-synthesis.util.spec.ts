@@ -202,6 +202,27 @@ describe('langchain-synthesis.util', () => {
       expect(result[0].recommendations).toEqual(['r1', 'r2']);
       expect(result[0].evidence).toEqual(['e1']);
     });
+
+    it('nettoie et dedoublonne les listes de chaque fiche page', () => {
+      const [fiche] = projectPerPageAnalysis([
+        {
+          url: 'https://valid.com',
+          title: 'Valid',
+          engineScores: buildEngineCoverage(),
+          topIssues: [' Pas de H1 ', 'Pas de H1', '', '   '],
+          recommendations: ['Ajouter un H1', 'Ajouter un H1'],
+          evidence: [''],
+        },
+      ]);
+
+      expect(fiche).toEqual(
+        expect.objectContaining({
+          topIssues: ['Pas de H1'],
+          recommendations: ['Ajouter un H1'],
+          evidence: [],
+        }),
+      );
+    });
   });
 
   describe('buildExpertSynthesis', () => {

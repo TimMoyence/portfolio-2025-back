@@ -2,8 +2,12 @@ import {
   appliquer,
   installerVariables,
 } from '../../../../../test/helpers/environnement';
+import { htmlEmis } from '../../../../common/domain/texte/html-escape.util';
 import { buildMailLayout } from './mail-layout.util';
 import { safeHtml } from './mail-rendering.util';
+
+const gabaritRendu = (...gabarit: Parameters<typeof buildMailLayout>): string =>
+  htmlEmis(buildMailLayout(...gabarit));
 
 describe('buildMailLayout (P2.7 / P6.6)', () => {
   const baseInput = {
@@ -15,7 +19,7 @@ describe('buildMailLayout (P2.7 / P6.6)', () => {
 
   describe('structure HTML', () => {
     it('produit un document HTML5 complet avec DOCTYPE et meta viewport', () => {
-      const html = buildMailLayout(baseInput);
+      const html = gabaritRendu(baseInput);
       expect(html).toContain('<!DOCTYPE html>');
       expect(html).toContain('<html lang="fr">');
       expect(html).toContain('<meta charset="UTF-8" />');
@@ -24,7 +28,7 @@ describe('buildMailLayout (P2.7 / P6.6)', () => {
     });
 
     it('declare le color-scheme light/dark pour compatibilite dark mode', () => {
-      const html = buildMailLayout(baseInput);
+      const html = gabaritRendu(baseInput);
       expect(html).toContain('<meta name="color-scheme" content="light dark"');
       expect(html).toContain(
         '<meta name="supported-color-schemes" content="light dark"',
@@ -32,12 +36,12 @@ describe('buildMailLayout (P2.7 / P6.6)', () => {
     });
 
     it('contient des media queries responsive < 600px', () => {
-      const html = buildMailLayout(baseInput);
+      const html = gabaritRendu(baseInput);
       expect(html).toContain('@media (max-width: 600px)');
     });
 
     it('applique un max-width 640px sur le conteneur principal', () => {
-      const html = buildMailLayout(baseInput);
+      const html = gabaritRendu(baseInput);
       expect(html).toContain('max-width:640px');
     });
   });
@@ -51,13 +55,13 @@ describe('buildMailLayout (P2.7 / P6.6)', () => {
       'href="https://asilidesign.fr/fr/privacy"',
       'href="https://asilidesign.fr/fr/terms"',
     ])('inclut %s', (fragment) => {
-      expect(buildMailLayout(baseInput)).toContain(fragment);
+      expect(gabaritRendu(baseInput)).toContain(fragment);
     });
   });
 
   describe('hero title et subtitle', () => {
     it('rend heroTitle dans un h1 dans le bloc hero noir', () => {
-      const html = buildMailLayout({
+      const html = gabaritRendu({
         ...baseInput,
         heroTitle: 'Mon audit pour example.com',
       });
@@ -66,7 +70,7 @@ describe('buildMailLayout (P2.7 / P6.6)', () => {
     });
 
     it('rend heroSubtitle quand fourni', () => {
-      const html = buildMailLayout({
+      const html = gabaritRendu({
         ...baseInput,
         heroSubtitle: 'Synthèse stratégique 7 piliers',
       });
@@ -74,14 +78,14 @@ describe('buildMailLayout (P2.7 / P6.6)', () => {
     });
 
     it('omet le subtitle quand absent', () => {
-      const html = buildMailLayout(baseInput);
+      const html = gabaritRendu(baseInput);
       expect(html).not.toContain('class="hero-subtitle"');
     });
   });
 
   describe('preheader inbox preview', () => {
     it('inclut le preheader en element cache quand fourni', () => {
-      const html = buildMailLayout({
+      const html = gabaritRendu({
         ...baseInput,
         preheader: 'Apercu du mail dans la boite de reception',
       });
@@ -91,24 +95,24 @@ describe('buildMailLayout (P2.7 / P6.6)', () => {
     });
 
     it('omet le preheader quand absent', () => {
-      const html = buildMailLayout(baseInput);
+      const html = gabaritRendu(baseInput);
       expect(html).not.toContain('display:none;max-height:0');
     });
   });
 
   describe('unsubscribe RGPD', () => {
     it('affiche le lien unsubscribe quand showUnsubscribe=true', () => {
-      const html = buildMailLayout({ ...baseInput, showUnsubscribe: true });
+      const html = gabaritRendu({ ...baseInput, showUnsubscribe: true });
       expect(html).toContain("Ne plus recevoir ce type d'email");
     });
 
     it('omet le lien unsubscribe par defaut (mails internes)', () => {
-      const html = buildMailLayout(baseInput);
+      const html = gabaritRendu(baseInput);
       expect(html).not.toContain("Ne plus recevoir ce type d'email");
     });
 
     it('utilise unsubscribeUrl explicite quand fourni', () => {
-      const html = buildMailLayout({
+      const html = gabaritRendu({
         ...baseInput,
         showUnsubscribe: true,
         unsubscribeUrl: 'https://cal.com/asili/unsub?token=xyz',
@@ -117,14 +121,14 @@ describe('buildMailLayout (P2.7 / P6.6)', () => {
     });
 
     it('fallback sur /fr/contact quand showUnsubscribe=true sans URL explicite', () => {
-      const html = buildMailLayout({ ...baseInput, showUnsubscribe: true });
+      const html = gabaritRendu({ ...baseInput, showUnsubscribe: true });
       expect(html).toContain('href="https://asilidesign.fr/fr/contact"');
     });
   });
 
   describe('securite XSS', () => {
     it('echappe les tags HTML dans le heroTitle', () => {
-      const html = buildMailLayout({
+      const html = gabaritRendu({
         ...baseInput,
         heroTitle: '<script>alert(1)</script>',
       });
@@ -133,7 +137,7 @@ describe('buildMailLayout (P2.7 / P6.6)', () => {
     });
 
     it('echappe les tags HTML dans le heroSubtitle', () => {
-      const html = buildMailLayout({
+      const html = gabaritRendu({
         ...baseInput,
         heroSubtitle: '<img src=x onerror=alert(1) />',
       });
@@ -142,7 +146,7 @@ describe('buildMailLayout (P2.7 / P6.6)', () => {
     });
 
     it('echappe les tags HTML dans le preheader', () => {
-      const html = buildMailLayout({
+      const html = gabaritRendu({
         ...baseInput,
         preheader: '<script>evil()</script>',
       });
@@ -151,23 +155,24 @@ describe('buildMailLayout (P2.7 / P6.6)', () => {
     });
 
     it('insere bodyHtml sans le re-echapper', () => {
-      const html = buildMailLayout({
+      const html = gabaritRendu({
         ...baseInput,
         bodyHtml: safeHtml`<p><strong>ok</strong></p>`,
       });
       expect(html).toContain('<strong>ok</strong>');
     });
 
-    it('refuse a la compilation une chaine brute comme bodyHtml', () => {
+    it('refuse a la compilation une chaine brute comme bodyHtml, et l echappe au rendu', () => {
       const userInput = '<script>alert(1)</script>';
 
-      const html = buildMailLayout({
+      const html = gabaritRendu({
         heroTitle: 'Test title',
         // @ts-expect-error bodyHtml n'accepte que le retour de escapeHtml ou safeHtml
         bodyHtml: userInput,
       });
 
-      expect(html).toContain('<script>alert(1)</script>');
+      expect(html).toContain('&lt;script&gt;alert(1)&lt;/script&gt;');
+      expect(html).not.toContain('<script>alert(1)</script>');
     });
   });
 
@@ -177,7 +182,7 @@ describe('buildMailLayout (P2.7 / P6.6)', () => {
         AUDIT_UNSUBSCRIBE_URL: 'https://preferences.asilidesign.fr',
       });
 
-      const html = buildMailLayout({ ...baseInput, showUnsubscribe: true });
+      const html = gabaritRendu({ ...baseInput, showUnsubscribe: true });
 
       expect(html).toContain('href="https://preferences.asilidesign.fr"');
     });

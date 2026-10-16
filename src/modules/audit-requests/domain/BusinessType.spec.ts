@@ -3,6 +3,7 @@ import {
   businessTypePromptHint,
   detectBusinessType,
 } from './BusinessType';
+import { nonVerifiable } from './non-verifiable';
 
 describe('BusinessType — detectBusinessType', () => {
   const cases: ReadonlyArray<{
@@ -63,6 +64,16 @@ describe('BusinessType — detectBusinessType', () => {
       expect(detectBusinessType(input)).toBe(expected);
     });
   }
+
+  it.each(['fr', 'en'] as const)(
+    'classe en unknown une pile marquee non verifiable en %s, meme avec un indice de stack',
+    (locale) => {
+      expect(detectBusinessType(nonVerifiable(locale))).toBe('unknown');
+      expect(detectBusinessType(`${nonVerifiable(locale)} WordPress`)).toBe(
+        'unknown',
+      );
+    },
+  );
 
   it('priorise ecommerce sur saas quand les deux hints sont presents', () => {
     expect(detectBusinessType('Next.js + Shopify storefront')).toBe(

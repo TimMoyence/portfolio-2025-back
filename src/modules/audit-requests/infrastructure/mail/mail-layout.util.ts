@@ -24,7 +24,7 @@ function resolveUnsubscribeUrl(explicit?: string): string {
   return 'https://asilidesign.fr/fr/contact';
 }
 
-export function buildMailLayout(input: MailLayoutInput): string {
+export function buildMailLayout(input: MailLayoutInput): EscapedHtml {
   const preheader = input.preheader
     ? safeHtml`<div style="display:none;max-height:0;overflow:hidden;font-size:1px;line-height:1px;color:#fff;opacity:0;">${escapeHtml(input.preheader)}</div>`
     : safeHtml``;
