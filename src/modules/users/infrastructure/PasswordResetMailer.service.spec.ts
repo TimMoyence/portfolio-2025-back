@@ -1,4 +1,5 @@
 import { espionnerLeLogger } from '../../../../test/helpers/silence-nest-logger';
+import { safeHtml } from '../../../common/domain/texte/html-escape.util';
 import type { PasswordResetNotificationPayload } from '../domain/IPasswordResetNotifier';
 import {
   attendreScriptEchappe,
@@ -36,18 +37,20 @@ describe('PasswordResetMailerService', () => {
 
   const monter = (
     env: Record<string, string> = {},
+    Mailer = PasswordResetMailerService,
   ): PasswordResetMailerService => {
     transporter = createMockTransporter();
     mockedCreateTransport.mockReturnValue(transporter as never);
     cleanupEnv = setSmtpEnv(env);
-    return new PasswordResetMailerService();
+    return new Mailer();
   };
 
   const envoyer = async (
     payload = buildPayload(),
     env: Record<string, string> = {},
+    Mailer = PasswordResetMailerService,
   ) => {
-    await monter(env).sendPasswordResetEmail(payload);
+    await monter(env, Mailer).sendPasswordResetEmail(payload);
     return premierMailEnvoye(transporter);
   };
 
@@ -144,6 +147,36 @@ describe('PasswordResetMailerService', () => {
       attendreScriptEchappe(html);
       expect(html).toContain('&quot;xss&quot;');
       expect(html).not.toContain('<img onerror');
+    });
+
+    it('echappe un introHtml que le type fait passer pour un fragment emis', async () => {
+      class MailerQuiForge extends PasswordResetMailerService {
+        override sendPasswordResetEmail(
+          payload: PasswordResetNotificationPayload,
+        ): Promise<void> {
+          return this.envoyerLien({
+            destinataire: payload,
+            sujet: 'Reinitialisation de votre mot de passe',
+            titre: safeHtml`Reinitialisation du mot de passe`,
+            introTexte: `Demande de ${payload.firstName}.`,
+            introHtml: `Demande de ${payload.firstName}.` as never,
+            lien: payload.resetUrl,
+            expireEnMinutes: payload.expiresInMinutes,
+            libelleBouton: safeHtml`Reinitialiser mon mot de passe`,
+            avertissementTexte: '',
+            avertissementHtml: safeHtml``,
+          });
+        }
+      }
+
+      const { html } = await envoyer(
+        buildPayload({ firstName: '<img src=x onerror=alert(1)>' }),
+        {},
+        MailerQuiForge,
+      );
+
+      expect(html).toContain('Demande de &lt;img src=x onerror=alert(1)&gt;.');
+      expect(html).not.toContain('<img src=x');
     });
 
     it('devrait gerer un fullName avec espaces autour (trim)', async () => {

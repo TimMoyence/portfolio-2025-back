@@ -45,13 +45,3 @@ export function levelLabel(level: string): string {
 
 export { escapeHtml, escapeUrl, safeHtml, sectionHeader };
 export type { EscapedHtml };
-
-/**
- * Footer de page neutre. Retourne une chaine vide pour eviter
- * les problemes de positionnement absolu apres suppression du
- * min-height: 297mm sur .page. Le footer est rendu via la marge
- * @page de Puppeteer si necessaire.
- */
-export function pageFooter(): EscapedHtml {
-  return safeHtml``;
-}

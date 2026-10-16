@@ -737,6 +737,13 @@ describe('evaluerExpression', () => {
     });
   });
 
+  it('coupe au millionième comme le moteur que le front exécute, toFixed(6) sur le flottant', () => {
+    expect(evaluerExpression('p*t', { p: 0.15, t: 0.00055 })).toEqual({
+      valeur: 0.000082,
+      erreur: null,
+    });
+  });
+
   it('accepte le signe égal de tête', () => {
     expect(evaluerExpression('=2+3', {})).toEqual({ valeur: 5, erreur: null });
   });

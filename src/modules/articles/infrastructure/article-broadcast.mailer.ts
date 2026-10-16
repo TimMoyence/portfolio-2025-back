@@ -1,5 +1,4 @@
 import { Injectable, Logger } from '@nestjs/common';
-import type { Transporter } from 'nodemailer';
 import { estObjet } from '../../../common/domain/est-objet';
 import { tronquer } from '../../../common/domain/texte/tronquer';
 import { optionalMetadata } from '../../../common/domain/validation/domain-validators';
@@ -9,7 +8,7 @@ import {
   safeHtml,
   type EscapedHtml,
 } from '../../../common/domain/texte/html-escape.util';
-import { createOptionalSmtpTransporter } from '../../../common/infrastructure/mail/smtp-transporter.util';
+import { expediteurDeCourriels } from '../../../common/infrastructure/mail/expediteur-smtp';
 import { entetesDeDesabonnement } from '../../../common/infrastructure/mail/entetes-de-desabonnement';
 import {
   adresseDeReponse,
@@ -100,24 +99,22 @@ function emailSections(raw: unknown[]): EmailSection[] {
 @Injectable()
 export class ArticleBroadcastMailerService implements ArticleBroadcastMailer {
   private readonly logger = new Logger(ArticleBroadcastMailerService.name);
-  private readonly transporter: Transporter | null;
-
-  constructor() {
-    this.transporter = createOptionalSmtpTransporter(
-      this.logger,
-      'Article broadcast mailer',
-    );
-  }
+  private readonly expediteur = expediteurDeCourriels(
+    this.logger,
+    'Article broadcast mailer',
+  );
 
   isEnabled(): boolean {
-    return this.transporter !== null;
+    return this.expediteur.actif;
   }
 
   async send(
     article: ArticleRecord,
     recipient: BroadcastRecipient,
   ): Promise<void> {
-    if (!this.transporter) throw new Error('SMTP transport not configured');
+    if (!this.expediteur.actif) {
+      throw new Error('SMTP transport not configured');
+    }
     const replyTo = adresseDeReponse();
     const unsubscribeUrl = lienDeDesabonnement(recipient.unsubscribeToken);
     const articleUrl = articlePageUrl(article.locale, article.slug);
@@ -134,7 +131,7 @@ export class ArticleBroadcastMailerService implements ArticleBroadcastMailer {
       copy,
     };
 
-    await this.transporter.sendMail({
+    await this.expediteur.envoyer({
       from: expediteurDesCourriels(),
       to: recipient.email,
       replyTo,

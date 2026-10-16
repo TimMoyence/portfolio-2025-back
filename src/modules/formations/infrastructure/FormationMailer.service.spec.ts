@@ -74,7 +74,8 @@ describe('FormationMailerService', () => {
     }
 
     it('envoie un mail au destinataire avec un texte et un csv joint', async () => {
-      const mail = await synthese(buildRapport());
+      const rapport = buildRapport();
+      const mail = await synthese(rapport);
 
       expect(smtp.transporteur().sendMail).toHaveBeenCalledTimes(1);
       expect(mail.to).toBe('prof@example.com');
@@ -84,6 +85,9 @@ describe('FormationMailerService', () => {
       expect(mail.attachments).toHaveLength(1);
       expect(mail.attachments?.[0].filename).toBe('session-4271.csv');
       expect(mail.attachments?.[0].contentType).toBe('text/csv; charset=utf-8');
+      expect(mail.attachments?.[0].contentType).toBe(
+        rapportEnCsv(rapport).type,
+      );
     });
 
     it('QA-09 · écrit la note sur 20 au dixième et à la française dans le texte et le html', async () => {

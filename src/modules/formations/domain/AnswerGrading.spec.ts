@@ -1,4 +1,7 @@
+import * as fc from 'fast-check';
+import { dansLaTolerance } from '../../../../test/helpers/reponses-de-cours';
 import { gradeAnswer, matchesSolution } from './AnswerGrading';
+import type { Tolerance } from './GradingCore';
 
 describe('matchesSolution', () => {
   it('accepte une valeur exacte sans tolerance', () => {
@@ -43,6 +46,58 @@ describe('matchesSolution', () => {
     expect(
       matchesSolution(1338.24, 1338.23, { type: 'decimales', valeur: 2 }),
     ).toBe(false);
+  });
+
+  it.each([
+    [1.005, 1.01, 2, true],
+    [2.675, 2.68, 2, true],
+    [-2.5, -3, 0, true],
+    [-2.5, -2, 0, false],
+  ])(
+    'arrondit %p et %p a %p decimales comme ARRONDI, la moitie loin de zero',
+    (valeur, solution, decimales, attendu) => {
+      expect(
+        matchesSolution(valeur, solution, {
+          type: 'decimales',
+          valeur: decimales,
+        }),
+      ).toBe(attendu);
+    },
+  );
+
+  it('accepte la bonne valeur que jouent les tests de seance, moities negatives comprises', () => {
+    const tolerances: fc.Arbitrary<Tolerance> = fc.oneof(
+      fc
+        .integer({ min: 0, max: 3 })
+        .map((valeur) => ({ type: 'decimales', valeur }) as const),
+      fc
+        .constantFrom(0.01, 0.05, 0.5)
+        .map((valeur) => ({ type: 'absolue', valeur }) as const),
+      fc
+        .constantFrom(0.005, 0.01)
+        .map((valeur) => ({ type: 'relative', valeur }) as const),
+    );
+
+    fc.assert(
+      fc.property(
+        fc.integer({ min: -1_000_000, max: 1_000_000 }),
+        tolerances,
+        (dixiemesDeLaDecimale, tolerance) => {
+          const decimales =
+            tolerance.type === 'decimales' ? tolerance.valeur : 2;
+          const solution = dixiemesDeLaDecimale / 10 ** (decimales + 1);
+
+          expect(
+            matchesSolution(
+              dansLaTolerance(solution, tolerance),
+              solution,
+              tolerance,
+            ),
+          ).toBe(true);
+        },
+      ),
+      { examples: [[-25, { type: 'decimales', valeur: 0 }]] },
+    );
   });
 
   it('gere une solution nulle en tolerance relative', () => {

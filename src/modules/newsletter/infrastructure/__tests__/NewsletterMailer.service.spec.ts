@@ -11,6 +11,7 @@ jest.mock('../../../../common/infrastructure/mail/smtp-transporter.util', () =>
   moduleSmtpSimule(),
 );
 
+import { createOptionalSmtpTransporter } from '../../../../common/infrastructure/mail/smtp-transporter.util';
 import { NewsletterMailerService } from '../NewsletterMailer.service';
 
 function mailerAvec(
@@ -250,12 +251,15 @@ describe('NewsletterMailerService', () => {
 
   it('ne leve pas d’erreur sans transporter (SMTP non configure)', async () => {
     const subscriber = buildNewsletterSubscriber();
-    (mailer as unknown as Record<string, unknown>)['transporter'] = null;
+    jest.mocked(createOptionalSmtpTransporter).mockReturnValueOnce(null);
+    const sansSmtp = mailerAvec();
 
-    await expect(mailer.sendConfirmation(subscriber)).resolves.toBeUndefined();
-    await expect(mailer.sendWelcome(subscriber)).resolves.toBeUndefined();
     await expect(
-      mailer.sendUnsubscribeAck(subscriber),
+      sansSmtp.sendConfirmation(subscriber),
+    ).resolves.toBeUndefined();
+    await expect(sansSmtp.sendWelcome(subscriber)).resolves.toBeUndefined();
+    await expect(
+      sansSmtp.sendUnsubscribeAck(subscriber),
     ).resolves.toBeUndefined();
     expect(envoiSmtpSimule).not.toHaveBeenCalled();
   });

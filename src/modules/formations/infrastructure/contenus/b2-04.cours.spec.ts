@@ -19,6 +19,7 @@ import {
   recopier,
   texteDeLEcran as texteDe,
 } from '../../../../../test/helpers/feuille-de-cours';
+import { arrondi } from '../../../../common/domain/nombres/arrondi';
 import { avecVirgule } from '../../../../common/domain/nombres/ecriture-francaise';
 import { somme } from '../../../../common/domain/nombres/statistiques';
 import { corrigerFeuille } from '../../domain/cours/CorrectionProduction';
@@ -133,7 +134,7 @@ describe('B2-04 — textes relus contre les données', () => {
     expect(labels).toEqual(rangs.map((rang) => String(ANNEE_DE_DEPART + rang)));
     expect(series).toMatchObject([
       { values: rangs.map(hypotheseA) },
-      { values: rangs.map((rang) => Number(hypotheseB(rang).toFixed(2))) },
+      { values: rangs.map((rang) => arrondi(hypotheseB(rang), 2)) },
     ]);
   });
 });

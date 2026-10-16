@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ExpediteurSmtp } from '../../../common/infrastructure/mail/expediteur-smtp';
+import { pieceJointeCsv } from '../../../common/infrastructure/mail/piece-jointe';
 import {
   escapeHtml,
   safeHtml,
@@ -46,33 +47,19 @@ export class FormationMailerService
     destinataire: string,
     rapport: RapportSession,
   ): Promise<void> {
-    if (!this.transporter) {
-      return;
-    }
     const csv = rapportEnCsv(rapport);
-    await this.transporter.sendMail({
-      from: this.from,
+    await this.envoyer({
       to: destinataire,
       subject: `Cours ${rapport.courseSlug} — session ${rapport.code}`,
       text: this.syntheseTexte(rapport),
       html: this.syntheseHtml(rapport),
-      attachments: [
-        {
-          filename: csv.nom,
-          content: Buffer.from(csv.contenu),
-          contentType: csv.type,
-        },
-      ],
+      attachments: [pieceJointeCsv(csv.nom, csv.contenu)],
     });
   }
 
   async sendCopieEtudiant(copie: CopieEtudiant): Promise<void> {
-    if (!this.transporter) {
-      return;
-    }
     const { participant } = copie;
-    await this.transporter.sendMail({
-      from: this.from,
+    await this.envoyer({
       to: participant.email,
       subject: `Votre copie — ${copie.courseSlug}`,
       text: this.copieTexte(participant),
