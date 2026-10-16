@@ -28,6 +28,7 @@ import {
 } from './factories/lead-magnet-request.factory';
 import {
   buildNewsletterSubscriber,
+  buildSubscribeNewsletterCommand,
   createMockNewsletterMailer,
 } from './factories/newsletter-subscriber.factory';
 import { ADRESSE_A_BOITE_PLUS_LONGUE_QUE_255 } from './factories/verrou-par-boite.factory';
@@ -263,11 +264,10 @@ describeDb('Plafonds par destinataire sur une base migree', () => {
     };
 
     const commande = (email: string, sourceFormationSlug: string) => ({
+      ...buildSubscribeNewsletterCommand(),
       email,
       firstName: 'Lea',
-      locale: 'fr',
       sourceFormationSlug,
-      termsVersion: '2026-04-10',
       termsAcceptedAt: new Date(),
     });
 
