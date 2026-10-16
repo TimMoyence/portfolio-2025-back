@@ -84,6 +84,7 @@ import {
   REFUS_DE_L_OCTET_NUL,
   statutEtDetail,
 } from './helpers/reponse-probleme';
+import { enregistrerLesReponsesServies } from './helpers/reponses-servies';
 const SYNTHESE_A = 'synthese-formateur@example.com';
 
 installerEnvFormations({ syntheseA: SYNTHESE_A });
@@ -449,6 +450,7 @@ async function creerHarnais(
   const moduleRef = await compilerModuleFormations(depots, catalogueHttp);
 
   const app = moduleRef.createNestApplication<NestExpressApplication>();
+  enregistrerLesReponsesServies(app);
   bornerLesCorpsDeRequete(app);
   signerLesIdentitesDeTest(app);
   app.setGlobalPrefix(PREFIXE_API_PAR_DEFAUT);

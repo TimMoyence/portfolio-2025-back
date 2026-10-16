@@ -17,6 +17,7 @@ import {
   REFUS_DE_L_OCTET_NUL,
   statutEtDetail,
 } from './helpers/reponse-probleme';
+import { enregistrerLesReponsesServies } from './helpers/reponses-servies';
 
 describe('Articles HTTP aliases', () => {
   let app: INestApplication;
@@ -33,6 +34,7 @@ describe('Articles HTTP aliases', () => {
     }).compile();
 
     app = moduleRef.createNestApplication();
+    enregistrerLesReponsesServies(app);
     appliquerLesTraitementsGlobaux(app);
     app.setGlobalPrefix(PREFIXE_API_PAR_DEFAUT, {
       exclude: [

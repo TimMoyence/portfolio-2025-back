@@ -398,4 +398,103 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
       );
     });
   });
+
+  describe('routes du compte lues par le front', () => {
+    const titulaire = buildUser({
+      roles: ['teacher'],
+      phone: '0601020304',
+      updatedOrCreatedBy: 'self-service',
+    });
+    const enTantQueTitulaire = async () =>
+      `Bearer ${(await signerPour(titulaire)).token}`;
+
+    it('POST /api/auth/register annonce le courriel de verification', async () => {
+      authStubs.createUsersUseCase.execute.mockResolvedValue(titulaire);
+
+      const res = await request(getHttpServer())
+        .post('/api/auth/register')
+        .send({
+          email: titulaire.email,
+          password: LOGIN_PASSWORD,
+          firstName: titulaire.firstName,
+          lastName: titulaire.lastName,
+        })
+        .expect(201);
+
+      expect(res.body).toHaveProperty('message');
+    });
+
+    it('POST /api/auth/google ouvre une session', async () => {
+      authStubs.authenticateGoogleUserUseCase.execute.mockResolvedValue(
+        await sessionSigneePour(titulaire, 'google-refresh-token'),
+      );
+
+      const res = await request(getHttpServer())
+        .post('/api/auth/google')
+        .send({ idToken: 'jeton-google' })
+        .expect(201);
+
+      attendreSessionEmise(res, 'google-refresh-token');
+    });
+
+    it('POST /api/auth/reset-password confirme la reinitialisation', async () => {
+      authStubs.resetPasswordUseCase.execute.mockResolvedValue({
+        message: 'Mot de passe reinitialise avec succes.',
+      });
+
+      const res = await request(getHttpServer())
+        .post('/api/auth/reset-password')
+        .send({ token: 'b'.repeat(64), newPassword: NOUVEAU_MOT_DE_PASSE })
+        .expect(200);
+
+      expect(res.body).toHaveProperty('message');
+    });
+
+    it('POST /api/auth/resend-verification repond sans dire si le compte existe', async () => {
+      authStubs.resendVerificationEmailUseCase.execute.mockResolvedValue({
+        message: 'Si un compte existe, un email a ete envoye.',
+      });
+
+      const res = await request(getHttpServer())
+        .post('/api/auth/resend-verification')
+        .send({ email: titulaire.email })
+        .expect(200);
+
+      expect(res.body).toHaveProperty('message');
+    });
+
+    it.each([
+      [
+        'post',
+        '/api/auth/set-password',
+        { newPassword: NOUVEAU_MOT_DE_PASSE },
+        authStubs.setPasswordUseCase,
+      ],
+      [
+        'patch',
+        '/api/auth/change-password',
+        { currentPassword: LOGIN_PASSWORD, newPassword: NOUVEAU_MOT_DE_PASSE },
+        authStubs.changePasswordUseCase,
+      ],
+      [
+        'patch',
+        '/api/auth/profile',
+        { firstName: 'Jeanne', phone: '0601020304' },
+        authStubs.updateProfileUseCase,
+      ],
+    ] as const)(
+      '%s %s rend le compte modifie',
+      async (methode, chemin, corps, casDUsage) => {
+        casDUsage.execute.mockResolvedValue(titulaire);
+
+        const res = await request(getHttpServer())
+          [methode](chemin)
+          .set('Authorization', await enTantQueTitulaire())
+          .send(corps)
+          .expect(200);
+
+        expect(res.body).toHaveProperty('id', titulaire.id);
+      },
+    );
+  });
 });
