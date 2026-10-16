@@ -1,11 +1,11 @@
 import { arrondi } from '../../../../common/domain/nombres/arrondi';
 import { nombreAffiche } from '../../../../common/domain/nombres/ecriture-francaise';
-import type { Cours, SheetPlanStocke } from '../contrats/cours';
+import type { Ecran, SheetPlanStocke } from '../contrats/cours';
 import type {
   FeuilleEvaluee,
   NatureDeCellule,
 } from '../contrats/donnees-publiques';
-import { ProductionInvalideError } from '../errors/FormationErrors';
+import { refuserLaProduction } from '../errors/FormationErrors';
 import { reconstruire } from './CorrectionProduction';
 import type { ResultatFormule, ValeurFormule } from './Formule';
 import {
@@ -34,10 +34,6 @@ export interface SheetPlanServi extends SheetPlanStocke {
 const DECIMALES_D_UN_TAUX = 4;
 const DECIMALES_D_UN_MONTANT = 2;
 
-function refuser(plan: SheetPlanStocke, raison: string): never {
-  throw new ProductionInvalideError(plan.id, raison);
-}
-
 function grilleDu(plan: SheetPlanStocke): string[][] {
   return Array.from({ length: plan.lignes }, (_, ligne) =>
     Array.from({ length: plan.colonnes }, (__, colonne) =>
@@ -59,7 +55,7 @@ export function saisiesRetenues(
   for (const [reference, saisie] of Object.entries(cellules)) {
     const nom = reference.toUpperCase();
     if (!estReferenceDeCellule(nom) || !estDansLaGrille(plan, nom)) {
-      refuser(plan, `cellule hors de la grille : ${reference}`);
+      refuserLaProduction(plan.id, `cellule hors de la grille : ${reference}`);
     }
     if (!verrouillees.has(nom) && saisie.trim().length > 0) {
       retenues[nom] = [...saisie].slice(0, LONGUEUR_MAX_FORMULE).join('');
@@ -79,7 +75,7 @@ function avecLaRecopie(
   const dessous = ligne < 0 ? undefined : grille.at(ligne + 1);
   const vers = dessous?.at(grille[ligne].indexOf(source));
   if (vers === undefined || verrouilleesDu(plan).has(vers)) {
-    refuser(plan, `recopie impossible depuis ${recopie.de}`);
+    refuserLaProduction(plan.id, `recopie impossible depuis ${recopie.de}`);
   }
   const contenu = saisies[source] ?? plan.cellules[source] ?? '';
   return { ...saisies, [vers]: decalerFormule(contenu, 1, 0) };
@@ -132,16 +128,8 @@ export function evaluerLaFeuilleDuPlan(
   return { saisies, affichages, natures, formules };
 }
 
-export function planDeFeuilleDuCours(
-  cours: Cours,
-  planId: string,
-): SheetPlanStocke | null {
-  for (const ecran of cours.ecrans) {
-    if (ecran.brique === 'fp-sheet' && ecran.proprietes.plan.id === planId) {
-      return ecran.proprietes.plan;
-    }
-  }
-  return null;
+export function planDeLaFeuille(ecran: Ecran): SheetPlanStocke | null {
+  return ecran.brique === 'fp-sheet' ? ecran.proprietes.plan : null;
 }
 
 export function planDeFeuilleServi(plan: SheetPlanStocke): SheetPlanServi {

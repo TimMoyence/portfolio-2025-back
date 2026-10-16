@@ -56,12 +56,11 @@ export class ParticipationEnSeance {
 
   async planDeLaSeance<P>(
     cible: CibleDuParticipant & { readonly planId: string },
-    trouver: (cours: Cours, planId: string) => P | null,
+    planDe: (ecran: Ecran) => P | null,
     nature: string,
   ): Promise<P> {
     const { session, cours } = await this.ouverte(cible);
-    const plan = trouver(cours, cible.planId);
-    return planServi(session, cours, cible.planId, plan, nature);
+    return planServi(session, cours, cible.planId, planDe, nature);
   }
 
   async cibleOuverteAuxProductions<

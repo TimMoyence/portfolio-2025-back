@@ -196,6 +196,10 @@ export class ProductionInvalideError extends DomainValidationError {
   }
 }
 
+export function refuserLaProduction(questionId: string, raison: string): never {
+  throw new ProductionInvalideError(questionId, raison);
+}
+
 export class PilotageIncompatibleError extends DomainValidationError {
   constructor(screenId: string, raison: string) {
     super(`Pilotage impossible sur l’écran ${screenId} : ${raison}.`);

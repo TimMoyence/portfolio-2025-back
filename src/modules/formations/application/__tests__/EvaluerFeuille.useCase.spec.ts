@@ -3,10 +3,13 @@ import { buildCoursDuContenu } from '../../../../../test/factories/contenus-de-c
 import {
   COURS_B2_01,
   COURS_B2_03,
+  ECRAN_TOILE_B2_01,
+  ECRAN_VISA_B2_03,
   FORMULE_VISA_B2_03 as VISA,
   MACHINE_B2_01 as MACHINE,
   PLAN_TOILE_B2_01 as PLAN_TOILE,
   PLAN_VISA_B2_03 as PLAN_VISA,
+  TRI_ANATOMIE_B2_01 as TRI_ANATOMIE,
 } from '../../../../../test/factories/contenus-publies';
 import {
   buildParticipantRecord,
@@ -16,7 +19,9 @@ import {
   PARTICIPANT_DE_TEST,
 } from '../../../../../test/factories/formation.factory';
 import type { Cours } from '../../domain/contrats/cours';
+import { rangDeLEcran } from '../../domain/cours/EcranServi';
 import {
+  EcranNonServiError,
   ParticipantNotFoundError,
   ProductionInvalideError,
   SessionClosedError,
@@ -113,11 +118,17 @@ describe('EvaluerTableauUseCase', () => {
     });
   });
 
-  it('refuse en TYPE_DE_QUESTION une feuille du cours de la séance', async () => {
-    await expect(
-      evaluer('b2-01-a4-feuille-canaux', '1'),
-    ).rejects.toBeInstanceOf(TypeDeQuestionError);
-  });
+  it.each([
+    ['une feuille', 'b2-01-a4-feuille-canaux'],
+    ['un tri de cartes', TRI_ANATOMIE],
+  ])(
+    'refuse en TYPE_DE_QUESTION %s du cours de la séance',
+    async (_cas, planId) => {
+      await expect(evaluer(planId, '1')).rejects.toBeInstanceOf(
+        TypeDeQuestionError,
+      );
+    },
+  );
 
   it('refuse en PRODUCTION_INVALIDE une saisie dans une colonne déduite', async () => {
     await expect(evaluer(PLAN_TOILE, '1', 'coef')).rejects.toBeInstanceOf(
@@ -160,6 +171,7 @@ describe.each([
   [
     'la feuille',
     COURS,
+    ECRAN_VISA_B2_03,
     (participation: ParticipationEnSeance) =>
       new EvaluerFeuilleUseCase(participation).execute({
         ...PARTICIPANT_DE_TEST,
@@ -170,6 +182,7 @@ describe.each([
   [
     'le tableau',
     COURS_TOILE,
+    ECRAN_TOILE_B2_01,
     (participation: ParticipationEnSeance) =>
       new EvaluerTableauUseCase(participation).execute({
         ...PARTICIPANT_DE_TEST,
@@ -180,6 +193,7 @@ describe.each([
   [
     'la machine',
     COURS_TOILE,
+    MACHINE,
     (participation: ParticipationEnSeance) =>
       new EvaluerMachineUseCase(participation).execute({
         ...PARTICIPANT_DE_TEST,
@@ -187,11 +201,27 @@ describe.each([
         reglages: { tauxUn: 50 },
       }),
   ],
-] as const)('évaluation de %s en séance', (_nom, cours, evaluer) => {
+] as const)('évaluation de %s en séance', (_nom, cours, ecran, evaluer) => {
   let seance: Seance;
 
   beforeEach(() => {
     seance = seanceDu(cours);
+  });
+
+  it('sert l évaluation dès l écran qui la porte, et la refuse en ECRAN_NON_SERVI à l écran d avant', async () => {
+    const rang = rangDeLEcran(cours, ecran);
+    const projeter = (ecranCourant: number) =>
+      seance.sessions.findById.mockResolvedValue(
+        buildSessionRecord({ courseSlug: cours.slug, ecranCourant }),
+      );
+
+    projeter(rang - 1);
+    await expect(evaluer(seance.participation)).rejects.toThrow(
+      new EcranNonServiError(ecran),
+    );
+    projeter(rang);
+    await expect(evaluer(seance.participation)).resolves.toBeDefined();
+    expect(rang).toBeGreaterThan(0);
   });
 
   it.each([

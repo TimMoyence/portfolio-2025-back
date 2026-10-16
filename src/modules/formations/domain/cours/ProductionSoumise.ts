@@ -1,8 +1,8 @@
 import type { Cours, Ecran, QuestionProduction } from '../contrats/cours';
 import type { DetailProduction, ValeurProduction } from '../contrats/resultats';
 import {
-  ProductionInvalideError,
   ProductionVideError,
+  refuserLaProduction,
 } from '../errors/FormationErrors';
 import { confusionsParFrequence, type ConfusionId } from './banque/confusions';
 import type { CorrigeProduction } from './Corrige';
@@ -47,16 +47,15 @@ export function ecranDeProduction(
   return null;
 }
 
-function refuser(questionId: string, raison: string): never {
-  throw new ProductionInvalideError(questionId, raison);
-}
-
 function feuilleNettoyee(
   cible: EcranDeProduction,
   cellules: Readonly<Record<string, string>>,
 ): Readonly<Record<string, string>> {
   if (cible.ecran.brique !== 'fp-sheet') {
-    refuser(cible.question.id, 'cette question n’attend pas une feuille');
+    refuserLaProduction(
+      cible.question.id,
+      'cette question n’attend pas une feuille',
+    );
   }
   return saisiesRetenues(cible.ecran.proprietes.plan, cellules);
 }
@@ -66,7 +65,10 @@ function saisiesNettoyees(
   saisies: readonly { rang: number; cle: string; valeur: number }[],
 ): SaisiesDeTableau {
   if (cible.ecran.brique !== 'fp-table-build') {
-    refuser(cible.question.id, 'cette question n’attend pas un tableau');
+    refuserLaProduction(
+      cible.question.id,
+      'cette question n’attend pas un tableau',
+    );
   }
   const plan = cible.ecran.proprietes.plan;
   const aSaisir = plan.colonnes.filter((colonne) => colonne.role === 'saisie');
@@ -82,19 +84,19 @@ function saisiesNettoyees(
   );
   for (const saisie of saisies) {
     if (saisie.rang >= plan.echeances || !colonnes.has(saisie.cle)) {
-      refuser(
+      refuserLaProduction(
         cible.question.id,
         `saisie hors du plan : ${saisie.rang}:${saisie.cle}`,
       );
     }
     if (booleennes.has(saisie.cle) && !estUneValeurDeVerite(saisie.valeur)) {
-      refuser(
+      refuserLaProduction(
         cible.question.id,
         `valeur de vérité attendue : ${saisie.rang}:${saisie.cle}`,
       );
     }
     if (lignes[saisie.rang][saisie.cle] !== undefined) {
-      refuser(
+      refuserLaProduction(
         cible.question.id,
         `saisie en double : ${saisie.rang}:${saisie.cle}`,
       );
@@ -109,17 +111,26 @@ function classementNettoye(
   classement: Readonly<Record<string, string>>,
 ): Readonly<Record<string, string>> {
   if (cible.ecran.brique !== 'fp-cardsort') {
-    refuser(cible.question.id, 'cette question n’attend pas un classement');
+    refuserLaProduction(
+      cible.question.id,
+      'cette question n’attend pas un classement',
+    );
   }
   const plan = cible.ecran.proprietes.plan;
   const cartes = new Set(plan.cartes.map((carte) => carte.id));
   const categories = new Set(plan.categories.map((categorie) => categorie.id));
   for (const [carteId, categorieId] of Object.entries(classement)) {
     if (!cartes.has(carteId)) {
-      refuser(cible.question.id, `carte absente du plan : ${carteId}`);
+      refuserLaProduction(
+        cible.question.id,
+        `carte absente du plan : ${carteId}`,
+      );
     }
     if (!categories.has(categorieId)) {
-      refuser(cible.question.id, `catégorie absente du plan : ${categorieId}`);
+      refuserLaProduction(
+        cible.question.id,
+        `catégorie absente du plan : ${categorieId}`,
+      );
     }
   }
   return classement;
@@ -163,7 +174,7 @@ export function normaliserProduction(
   valeur: ValeurProduction,
 ): ValeurProduction {
   if (valeur.type !== cible.question.type) {
-    refuser(
+    refuserLaProduction(
       cible.question.id,
       `production de type ${valeur.type} pour une question ${cible.question.type}`,
     );
@@ -251,7 +262,10 @@ export function corrigerProduction(
       })),
     };
   }
-  return refuser(cible.question.id, 'corrigé absent pour cette production');
+  return refuserLaProduction(
+    cible.question.id,
+    'corrigé absent pour cette production',
+  );
 }
 
 export function confusionDominante(

@@ -6,6 +6,7 @@ import type {
   TableauEvalue,
 } from '../src/modules/formations/domain/contrats/donnees-publiques';
 import type { SessionRecord } from '../src/modules/formations/domain/ISessions.repository';
+import { rangDeLEcran } from '../src/modules/formations/domain/cours/EcranServi';
 import { LONGUEUR_MAX_FORMULE } from '../src/modules/formations/domain/cours/Formule';
 import { ENTREES_MAX } from '../src/modules/formations/interfaces/dto/contrat/submit-production.request.dto';
 import { LIMITE_EVALUATIONS_PAR_PARTICIPANT } from '../src/modules/formations/interfaces/formations-throttling';
@@ -17,6 +18,8 @@ import { buildCoursDuContenu } from './factories/contenus-de-cours.factory';
 import {
   COURS_B2_01,
   COURS_B2_03,
+  ECRAN_TOILE_B2_01 as ECRAN_TOILE,
+  ECRAN_VISA_B2_03 as ECRAN_VISA,
   FORMULE_VISA_B2_03 as VISA,
   MACHINE_B2_01 as MACHINE,
   PLAN_TOILE_B2_01 as PLAN_TOILE,
@@ -301,15 +304,6 @@ describe('Évaluation de la machine de l élève (e2e http socket)', () => {
   );
 });
 
-function rangDeLEcranQuiPorte(cours: Cours, id: string): number {
-  return cours.ecrans.findIndex(
-    (ecran) =>
-      ecran.id === id ||
-      ((ecran.brique === 'fp-sheet' || ecran.brique === 'fp-table-build') &&
-        ecran.proprietes.plan.id === id),
-  );
-}
-
 const EVALUATIONS = [
   [
     'la feuille',
@@ -317,7 +311,7 @@ const EVALUATIONS = [
     `feuilles/${PLAN_VISA}`,
     { cellules: { D2: VISA } },
     'Visa',
-    PLAN_VISA,
+    ECRAN_VISA,
   ],
   [
     'le tableau',
@@ -325,7 +319,7 @@ const EVALUATIONS = [
     `tableaux/${PLAN_TOILE}`,
     { saisies: [{ rang: 0, cle: 'prix', saisie: '21,6' }] },
     '1,0800',
-    PLAN_TOILE,
+    ECRAN_TOILE,
   ],
   [
     'la machine',
@@ -366,7 +360,7 @@ describe.each(EVALUATIONS)(
     const { depots, seance, jeton, evaluer } = evaluationsEnSeance(cours);
 
     it('refuse en 404 ECRAN_NON_SERVI l écran que le poste n a pas encore reçu, sans rien calculer', async () => {
-      const rang = rangDeLEcranQuiPorte(cours, porte);
+      const rang = rangDeLEcran(cours, porte);
       depots.sessions.findById.mockResolvedValue({
         ...seance(),
         modeRythme: 'pilote',

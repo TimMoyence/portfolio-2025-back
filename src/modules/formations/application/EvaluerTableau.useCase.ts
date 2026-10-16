@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import type { TableauEvalue } from '../domain/contrats/donnees-publiques';
 import {
   evaluerLeTableauDuPlan,
-  planDeTableauDuCours,
+  planDuTableau,
 } from '../domain/cours/TableauEvalue';
 import type { SaisieBruteDeTableau } from '../domain/cours/TableauEvalue';
 import { ParticipationEnSeance } from './ParticipationEnSeance';
@@ -21,7 +21,7 @@ export class EvaluerTableauUseCase {
   async execute(command: EvaluerTableauCommand): Promise<TableauEvalue> {
     const plan = await this.participation.planDeLaSeance(
       command,
-      planDeTableauDuCours,
+      planDuTableau,
       'un tableau',
     );
     return evaluerLeTableauDuPlan(plan, command.saisies);

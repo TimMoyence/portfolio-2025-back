@@ -9,9 +9,10 @@ import { ESPACE_INSECABLE as INSECABLE } from '../../../../common/domain/texte/s
 import type { Ecran } from '../contrats/cours';
 import type { TableauEvalue } from '../contrats/donnees-publiques';
 import { ProductionInvalideError } from '../errors/FormationErrors';
+import { ecranDeProduction } from './ProductionSoumise';
 import {
   evaluerLeTableauDuPlan,
-  planDeTableauDuCours,
+  planDuTableau,
   tableauDuCorrige,
 } from './TableauEvalue';
 import { tirer } from './Tirage';
@@ -29,15 +30,11 @@ function tableauDu(
   contenu: (typeof CONTENUS)[number],
   planId: string,
 ): EcranDeTableau {
-  const ecran = buildCoursDuContenu(contenu).ecrans.find(
-    (candidat) =>
-      candidat.brique === 'fp-table-build' &&
-      candidat.proprietes.plan.id === planId,
-  );
-  if (ecran?.brique !== 'fp-table-build') {
+  const cible = ecranDeProduction(buildCoursDuContenu(contenu), planId);
+  if (cible?.ecran.brique !== 'fp-table-build') {
     throw new Error(`tableau absent du cours : ${planId}`);
   }
-  return ecran;
+  return cible.ecran;
 }
 
 function attendusDu(ecran: EcranDeTableau) {
@@ -230,13 +227,13 @@ describe('le plan de tableau servi au sujet', () => {
   });
 });
 
-describe('planDeTableauDuCours', () => {
-  it('trouve le tableau du cours par son plan, et rien pour une feuille', () => {
-    const cours = buildCoursDuContenu(COURS_B2_01);
+describe('planDuTableau', () => {
+  it('rend le plan du seul écran de tableau du B2-01, et rien pour ses feuilles ni ses tris', () => {
+    const plans = buildCoursDuContenu(COURS_B2_01).ecrans.flatMap((ecran) => {
+      const plan = planDuTableau(ecran);
+      return plan === null ? [] : [plan.id];
+    });
 
-    expect([
-      planDeTableauDuCours(cours, 'b2-01-a4-indice-toile')?.id,
-      planDeTableauDuCours(cours, 'b2-01-a4-feuille-canaux'),
-    ]).toEqual(['b2-01-a4-indice-toile', null]);
+    expect(plans).toEqual(['b2-01-a4-indice-toile']);
   });
 });

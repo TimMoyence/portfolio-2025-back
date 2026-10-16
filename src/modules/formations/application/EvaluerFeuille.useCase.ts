@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import type { FeuilleEvaluee } from '../domain/contrats/donnees-publiques';
 import {
   evaluerLaFeuilleDuPlan,
-  planDeFeuilleDuCours,
+  planDeLaFeuille,
 } from '../domain/cours/FeuilleEvaluee';
 import type { RecopieDeCellule } from '../domain/cours/FeuilleEvaluee';
 import { ParticipationEnSeance } from './ParticipationEnSeance';
@@ -22,7 +22,7 @@ export class EvaluerFeuilleUseCase {
   async execute(command: EvaluerFeuilleCommand): Promise<FeuilleEvaluee> {
     const plan = await this.participation.planDeLaSeance(
       command,
-      planDeFeuilleDuCours,
+      planDeLaFeuille,
       'une feuille',
     );
     return evaluerLaFeuilleDuPlan(plan, command.cellules, command.recopie);

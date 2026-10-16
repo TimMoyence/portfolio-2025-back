@@ -1,11 +1,11 @@
 import { nombreAffiche } from '../../../../common/domain/nombres/ecriture-francaise';
 import { ESPACE_INSECABLE } from '../../../../common/domain/texte/sans-espaces-typographiques';
-import type { Cours, TableBuildPlanStocke } from '../contrats/cours';
+import type { Ecran, TableBuildPlanStocke } from '../contrats/cours';
 import type {
   TableauEvalue,
   ValeurDuTableau,
 } from '../contrats/donnees-publiques';
-import { ProductionInvalideError } from '../errors/FormationErrors';
+import { refuserLaProduction } from '../errors/FormationErrors';
 import { evaluerExpression, lireNombreSaisi } from './Formule';
 import { estUneValeurDeVerite } from './PlansStockes';
 
@@ -26,10 +26,6 @@ type Colonne = TableBuildPlanStocke['colonnes'][number];
 type Lecture = (rang: number, cle: string) => number | null;
 
 const DECIMALES_MAX = 6;
-
-function refuser(plan: TableBuildPlanStocke, raison: string): never {
-  throw new ProductionInvalideError(plan.id, raison);
-}
 
 function lu(valeurs: Readonly<ValeursDeLigne>, cle: string): number | null {
   return Object.hasOwn(valeurs, cle) ? valeurs[cle] : null;
@@ -230,10 +226,10 @@ export function evaluerLeTableauDuPlan(
   for (const { rang, cle, saisie } of saisies) {
     const colonne = plan.colonnes.find((candidate) => candidate.cle === cle);
     if (colonne?.role !== 'saisie') {
-      refuser(plan, `la colonne ${cle} ne se saisit pas`);
+      refuserLaProduction(plan.id, `la colonne ${cle} ne se saisit pas`);
     }
     if (!Number.isInteger(rang) || rang < 0 || rang >= plan.echeances) {
-      refuser(plan, `ligne hors du tableau : ${rang}`);
+      refuserLaProduction(plan.id, `ligne hors du tableau : ${rang}`);
     }
     lues.set(cleDeCellule(rang, cle), nombreDeLaSaisie(colonne, saisie));
   }
@@ -260,17 +256,6 @@ export function tableauDuCorrige(
   );
 }
 
-export function planDeTableauDuCours(
-  cours: Cours,
-  planId: string,
-): TableBuildPlanStocke | null {
-  for (const ecran of cours.ecrans) {
-    if (
-      ecran.brique === 'fp-table-build' &&
-      ecran.proprietes.plan.id === planId
-    ) {
-      return ecran.proprietes.plan;
-    }
-  }
-  return null;
+export function planDuTableau(ecran: Ecran): TableBuildPlanStocke | null {
+  return ecran.brique === 'fp-table-build' ? ecran.proprietes.plan : null;
 }
