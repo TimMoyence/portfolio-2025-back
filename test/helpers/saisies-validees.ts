@@ -10,6 +10,7 @@ import { Test } from '@nestjs/testing';
 import { getMetadataStorage, type MetadataStorage } from 'class-validator';
 import { readdirSync } from 'fs';
 import { join } from 'path';
+import { RACINE } from './racine';
 import type { SchemaOpenApi } from './schema-openapi';
 import { collectFiles } from './source-tree';
 
@@ -18,7 +19,7 @@ export type Contrainte = Parameters<
 >[0];
 export type Modele = NonNullable<SwaggerDocumentOptions['extraModels']>[number];
 
-export const SOURCES = join(__dirname, '../../src');
+export const SOURCES = join(RACINE, 'src');
 export const MODULES = join(SOURCES, 'modules');
 
 export const SAISIES = [
