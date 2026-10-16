@@ -1,7 +1,14 @@
 import { randomInt } from 'node:crypto';
+import type { JournalDesEchecs } from './en-arriere-plan';
+import { enArrierePlan } from './en-arriere-plan';
 
 const PLANCHER_MS = 300;
 const ALEA_MAX_MS = 50;
+
+const cibleDeLatence = (): number => PLANCHER_MS + randomInt(ALEA_MAX_MS);
+
+const attendre = (ms: number): Promise<void> =>
+  new Promise<void>((resolve) => setTimeout(resolve, ms));
 
 /**
  * Plancher de latence d'une réponse publique dont le travail dépend de
@@ -15,10 +22,30 @@ export async function avecUnPlancherDeLatence<T>(
   try {
     return await travail();
   } finally {
-    const cible = PLANCHER_MS + randomInt(ALEA_MAX_MS);
+    const cible = cibleDeLatence();
     const ecoule = Date.now() - debut;
     if (ecoule < cible) {
-      await new Promise<void>((resolve) => setTimeout(resolve, cible - ecoule));
+      await attendre(cible - ecoule);
     }
   }
+}
+
+export async function aHeureFixe<T>(
+  travail: () => Promise<T>,
+  reponsePrevue: T,
+  echec: string,
+  journal: JournalDesEchecs,
+): Promise<T> {
+  let reglee = false;
+  const marquer = () => {
+    reglee = true;
+  };
+  const tache = travail();
+  void tache.then(marquer, marquer);
+  await attendre(cibleDeLatence());
+  if (reglee) {
+    return tache;
+  }
+  enArrierePlan(tache, echec, journal);
+  return reponsePrevue;
 }

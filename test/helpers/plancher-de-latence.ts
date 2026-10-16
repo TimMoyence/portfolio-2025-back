@@ -16,6 +16,20 @@ export function simulerLHorlogeAChaqueTest(): void {
   });
 }
 
+export function promesseSuspendue<T>(): {
+  readonly promesse: Promise<T>;
+  readonly liberer: (valeur: T) => void;
+  readonly rompre: (erreur: Error) => void;
+} {
+  let liberer: (valeur: T) => void = () => undefined;
+  let rompre: (erreur: Error) => void = () => undefined;
+  const promesse = new Promise<T>((resolve, reject) => {
+    liberer = resolve;
+    rompre = reject;
+  });
+  return { promesse, liberer, rompre };
+}
+
 export async function reglementAuPlancher(
   promesse: Promise<unknown>,
 ): Promise<typeof RETENUE_JUSQU_AU_PLANCHER> {
