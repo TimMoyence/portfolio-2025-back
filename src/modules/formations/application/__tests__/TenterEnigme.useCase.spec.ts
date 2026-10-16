@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import {
   buildCoursAvecEnigmes,
-  buildEtatsDesEnigmesDeTest,
   buildProgressionEnigme,
   ENIGMES_DE_TEST,
   monterParticipationSurLeDernierEcran,
   PARCOURS_DE_TEST,
   TENTATIVES_MAX_DE_TEST,
+  VERDICT_DE_LA_PREMIERE_ENIGME_RESOLUE,
 } from '../../../../../test/factories/cours.factory';
 import { verifierContratDeParticipation } from '../../../../../test/helpers/gardes-de-seance';
 import {
@@ -59,18 +59,7 @@ describe('TenterEnigmeUseCase', () => {
   it('rend le fragment quand la reponse est juste', async () => {
     const verdict = await sut.execute(commande);
 
-    expect(verdict).toEqual({
-      correcte: true,
-      fragment: 'F0',
-      tentativesRestantes: TENTATIVES_MAX_DE_TEST - 1,
-      etats: buildEtatsDesEnigmesDeTest([
-        ['resolue', 1],
-        ['ouverte', 0],
-        ['verrouillee', 0],
-      ]),
-      enigmeOuverte: ENIGMES_DE_TEST[1],
-      acheve: false,
-    });
+    expect(verdict).toEqual(VERDICT_DE_LA_PREMIERE_ENIGME_RESOLUE);
     expect(escape.marquerResolue).toHaveBeenCalledWith(
       'participant-uuid',
       ENIGMES_DE_TEST[0],

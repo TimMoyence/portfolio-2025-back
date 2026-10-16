@@ -282,6 +282,32 @@ export function buildEtatsDesEnigmesDeTest(
   );
 }
 
+export const PARCOURS_AVANT_TOUTE_TENTATIVE = {
+  parcoursId: PARCOURS_DE_TEST,
+  resolues: [],
+  tentativesRestantes: {},
+  etats: buildEtatsDesEnigmesDeTest([
+    ['ouverte', 0],
+    ['verrouillee', 0],
+    ['verrouillee', 0],
+  ]),
+  enigmeOuverte: ENIGMES_DE_TEST[0],
+  acheve: false,
+};
+
+export const VERDICT_DE_LA_PREMIERE_ENIGME_RESOLUE = {
+  correcte: true,
+  fragment: 'F0',
+  tentativesRestantes: TENTATIVES_MAX_DE_TEST - 1,
+  etats: buildEtatsDesEnigmesDeTest([
+    ['resolue', 1],
+    ['ouverte', 0],
+    ['verrouillee', 0],
+  ]),
+  enigmeOuverte: ENIGMES_DE_TEST[1],
+  acheve: false,
+};
+
 function enigmeDeTest(rang: number) {
   const id = ENIGMES_DE_TEST[rang];
   return {

@@ -8,6 +8,7 @@ import {
   creerParticipationEnSeance,
   DEFI_DE_TEST,
   ENIGMES_DE_TEST,
+  PARCOURS_AVANT_TOUTE_TENTATIVE,
   PARCOURS_DE_TEST,
   TENTATIVES_MAX_DE_TEST,
   buildEcranDEnigmes,
@@ -203,20 +204,7 @@ describe('LireEtatParticipantUseCase', () => {
   });
 
   it('B-70 · sert l état de chaque parcours du cours avant toute tentative', async () => {
-    expect(await enigmesServies([])).toEqual([
-      {
-        parcoursId: PARCOURS_DE_TEST,
-        resolues: [],
-        tentativesRestantes: {},
-        etats: buildEtatsDesEnigmesDeTest([
-          ['ouverte', 0],
-          ['verrouillee', 0],
-          ['verrouillee', 0],
-        ]),
-        enigmeOuverte: ENIGMES_DE_TEST[0],
-        acheve: false,
-      },
-    ]);
+    expect(await enigmesServies([])).toEqual([PARCOURS_AVANT_TOUTE_TENTATIVE]);
   });
 
   it.each([
