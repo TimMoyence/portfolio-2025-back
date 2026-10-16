@@ -21,6 +21,11 @@ const jugements = (adresse: string): [boolean, boolean] => [
   EmailAddress.parse(adresse) !== null,
 ];
 
+const INVISIBLES = [
+  0x00a0, 0x2000, 0x200a, 0x200b, 0x2028, 0x2029, 0x202e, 0x202f, 0x3000,
+  0xfeff, 0xe000,
+].map((point) => String.fromCodePoint(point));
+
 describe('AdresseEmail', () => {
   it.each([
     'jean@exemple.fr',
@@ -46,7 +51,11 @@ describe('AdresseEmail', () => {
     '"jean dupont"@exemple.fr',
     '"jean\r\nBcc: autre@exemple.fr"@exemple.fr',
     '"jean\u0001"@exemple.fr',
-  ])('refuse %p a la saisie comme dans le domaine', (adresse) => {
+    ...INVISIBLES.flatMap((invisible) => [
+      `jean${invisible}dupont@exemple.fr`,
+      `jean@exe${invisible}mple.fr`,
+    ]),
+  ])('refuse %j a la saisie comme dans le domaine', (adresse) => {
     expect(jugements(adresse)).toEqual([false, false]);
   });
 

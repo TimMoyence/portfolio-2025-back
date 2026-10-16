@@ -102,6 +102,10 @@ describe('validateEnv', () => {
         'des chevrons autour d une adresse que la regle commune refuse',
         'Asili <contact@asilidesign-.fr>',
       ],
+      [
+        'une adresse coupee par une espace ideographique',
+        `Asili <contact${String.fromCodePoint(0x3000)}tim@asilidesign.fr>`,
+      ],
     ])('devrait rejeter %s dans SMTP_FROM', (_label, value) => {
       const env = buildValidEnv({ ...SMTP_CONFIGURED, SMTP_FROM: value });
 
