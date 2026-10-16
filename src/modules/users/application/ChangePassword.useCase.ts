@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InvalidCredentialsError } from '../../../common/domain/errors/InvalidCredentialsError';
+import { ResourceConflictError } from '../../../common/domain/errors/ResourceConflictError';
+import { MotDePasseActuelIncorrectError } from '../domain/MotDePasseActuelIncorrectError';
 import { User } from '../domain/User';
 import { CasDUsageMotDePasse } from './CasDUsageUtilisateurs';
 import type { ChangePasswordCommand } from './dto/ChangePassword.command';
@@ -14,7 +16,7 @@ export class ChangePasswordUseCase extends CasDUsageMotDePasse {
     }
 
     if (!user.passwordHash) {
-      throw new InvalidCredentialsError('No password set for this account');
+      throw new ResourceConflictError('No password set for this account');
     }
 
     const validCurrentPassword = await this.passwordService.verify(
@@ -23,13 +25,9 @@ export class ChangePasswordUseCase extends CasDUsageMotDePasse {
     );
 
     if (!validCurrentPassword) {
-      throw new InvalidCredentialsError('Current password is invalid');
+      throw new MotDePasseActuelIncorrectError();
     }
 
-    return this.enregistrerMotDePasse(
-      user,
-      dto.newPassword,
-      dto.updatedOrCreatedBy,
-    );
+    return this.enregistrerMotDePasse(user, dto.newPassword, 'password-change');
   }
 }

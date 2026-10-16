@@ -1,17 +1,11 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsString } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 import type { ChangePasswordCommand } from '../../application/dto/ChangePassword.command';
 import { MotDePasseRobuste, MotDePasseSaisi } from './regles-de-saisie';
 
-export class ChangePasswordDto implements ChangePasswordCommand {
-  @ApiPropertyOptional({
-    example: 'user-uuid',
-    description: 'Ignore dans le body — extrait automatiquement du JWT.',
-  })
-  @IsOptional()
-  @IsString()
-  userId: string;
-
+export class ChangePasswordDto implements Omit<
+  ChangePasswordCommand,
+  'userId'
+> {
   @ApiProperty({ example: 'CurrentPassword123' })
   @MotDePasseSaisi()
   currentPassword: string;
@@ -19,9 +13,4 @@ export class ChangePasswordDto implements ChangePasswordCommand {
   @ApiProperty({ example: 'NewPassword456!' })
   @MotDePasseRobuste()
   newPassword: string;
-
-  @ApiPropertyOptional({ example: 'user-admin' })
-  @IsOptional()
-  @IsString()
-  updatedOrCreatedBy?: string | null;
 }

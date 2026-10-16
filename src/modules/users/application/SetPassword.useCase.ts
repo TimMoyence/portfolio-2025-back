@@ -18,10 +18,6 @@ export class SetPasswordUseCase extends CasDUsageMotDePasse {
       throw new ResourceConflictError('Password is already configured');
     }
 
-    return this.enregistrerMotDePasse(
-      user,
-      dto.newPassword,
-      dto.updatedOrCreatedBy,
-    );
+    return this.enregistrerMotDePasse(user, dto.newPassword, 'password-set');
   }
 }

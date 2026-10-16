@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsBoolean, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsNotEmpty, IsOptional } from 'class-validator';
 import { AdresseEmail } from '../../../../common/interfaces/dto/adresse-email.decorator';
 import type { CreateUserCommand } from '../../application/dto/CreateUser.command';
 import {
@@ -40,9 +40,4 @@ export class CreateUserDto implements CreateUserCommand {
   })
   @RolesValides()
   roles?: string[];
-
-  @ApiPropertyOptional({ example: 'system', nullable: true })
-  @IsOptional()
-  @IsString()
-  updatedOrCreatedBy?: string | null;
 }
