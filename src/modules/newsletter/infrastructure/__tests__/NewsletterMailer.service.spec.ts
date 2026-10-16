@@ -1,4 +1,4 @@
-import { ConfigService } from '@nestjs/config';
+import { buildConfigService } from '../../../../../test/factories/env.factory';
 import {
   envoiSmtpSimule,
   mailSimule,
@@ -17,9 +17,7 @@ import { NewsletterMailerService } from '../NewsletterMailer.service';
 function mailerAvec(
   variables: Readonly<Record<string, string>> = {},
 ): NewsletterMailerService {
-  return new NewsletterMailerService({
-    get: jest.fn((key: string) => variables[key]),
-  } as unknown as ConfigService);
+  return new NewsletterMailerService(buildConfigService(variables));
 }
 
 const HOSTILE_FIRST_NAME = "Anne & <Marie> d'Arc";

@@ -1,4 +1,3 @@
-import { ConfigService } from '@nestjs/config';
 import { readFileSync } from 'fs';
 import { join, relative } from 'path';
 import {
@@ -78,6 +77,7 @@ import {
   sourcesQuiEcrivent,
 } from '../../../../test/helpers/source-tree';
 import { RACINE } from '../../../../test/helpers/racine';
+import { buildConfigService } from '../../../../test/factories/env.factory';
 
 const read = (relativePath: string): string =>
   readFileSync(join(RACINE, relativePath), 'utf8');
@@ -144,7 +144,7 @@ describe('Une contrefacon d EscapedHtml est echappee au rendu', () => {
   const ECHAPPE = '<p>&lt;img src=x onerror=alert(1)&gt;</p>';
 
   it('echappe une valeur de configuration lue comme un fragment emis', () => {
-    const config = new ConfigService({ SIGNATURE_HTML: ARBITRAIRE });
+    const config = buildConfigService({ SIGNATURE_HTML: ARBITRAIRE });
     const signature = config.get<EscapedHtml>('SIGNATURE_HTML', escapeHtml(''));
 
     expect(htmlEmis(safeHtml`<p>${signature}</p>`)).toBe(ECHAPPE);
