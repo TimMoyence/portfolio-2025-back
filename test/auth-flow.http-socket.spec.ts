@@ -238,7 +238,7 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
         new InvalidCredentialsError('Invalid credentials'),
       );
       authStubs.changePasswordUseCase.execute.mockRejectedValue(
-        new InvalidCredentialsError('Current password is invalid'),
+        new InvalidCredentialsError('Inactive user cannot change password'),
       );
       const { token } = await signerPour(buildUser());
 

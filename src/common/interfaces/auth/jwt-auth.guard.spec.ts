@@ -149,6 +149,30 @@ describe('JwtAuthGuard', () => {
     ).rejects.toThrow(new UnauthorizedException('Invalid or expired token'));
   });
 
+  const defiPosePour = async (compte: User | null) => {
+    givenAccount(compte);
+    const context = createMockContext(BEARER_VALID);
+    await guard.canActivate(context).catch(() => undefined);
+    return context.switchToHttp().getResponse<{ setHeader: jest.Mock }>()
+      .setHeader.mock.calls;
+  };
+
+  it.each([
+    ['le compte du JWT n existe plus', null],
+    [
+      'le compte est desactive',
+      buildUser({ emailVerified: true, isActive: false }),
+    ],
+  ])('marque du defi Bearer le 401 quand %s', async (_cas, compte) => {
+    expect(await defiPosePour(compte)).toEqual([
+      ['WWW-Authenticate', 'Bearer error="invalid_token"'],
+    ]);
+  });
+
+  it('ne pose aucun defi sur le 403 d un email non verifie', async () => {
+    expect(await defiPosePour(buildUser({ emailVerified: false }))).toEqual([]);
+  });
+
   it('presente aux gardes suivantes les roles du compte en base, pas ceux du jeton', async () => {
     const payload = buildJwtPayload({ roles: ['admin', 'teacher'] });
     jwtTokenService.verify.mockResolvedValue(payload);
