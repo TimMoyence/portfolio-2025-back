@@ -71,8 +71,8 @@ describe('resoudreConnexionRedis', () => {
     expect(lire).not.toThrow(/motdepasse/);
   });
 
-  it.each(['abc', '63 79', '-1'])(
-    'refuse au demarrage un REDIS_PORT qui n est pas un entier positif (%p)',
+  it.each(['abc', '63 79', '-1', '0', '65536', '0x18EB'])(
+    'refuse au demarrage un REDIS_PORT qui n est pas un entier de 1 a 65535 (%p)',
     (port) => {
       expect(() =>
         resoudreConnexionRedis({ REDIS_HOST: 'cache', REDIS_PORT: port }),

@@ -1,15 +1,55 @@
 import { z } from 'zod';
+import {
+  estUnSecretValable,
+  LONGUEUR_MIN_DU_SECRET,
+} from '../common/domain/crypto/secret-hmac';
 import { EmailAddress } from '../common/domain/value-objects/EmailAddress';
 import { resoudreConnexionPostgres } from '../database/connexion-postgres';
 import {
   DELAI_DE_DIFFUSION_EN_MINUTES,
   TAILLE_DU_LOT_DE_DIFFUSION,
 } from './diffusion-des-articles';
-import type { BornesEntieres } from './env-readers.util';
+import {
+  estEnProduction,
+  lirePort,
+  PORT_ATTENDU,
+  type BornesEntieres,
+} from './env-readers.util';
 import { PREFIXE_API_PAR_DEFAUT } from './prefixe-api';
+import { trousseauHmac } from './trousseau-hmac';
 
 function entierDansLesBornes({ defaut, min, max }: BornesEntieres) {
   return z.coerce.number().int().min(min).max(max).default(defaut);
+}
+
+function portTcp(defaut: number) {
+  return z
+    .union([z.string(), z.number()])
+    .optional()
+    .transform((valeur, ctx) => {
+      const texte = valeur === undefined ? '' : String(valeur).trim();
+      if (!texte) return defaut;
+      const port = lirePort(texte);
+      if (port !== undefined) return port;
+      ctx.addIssue({ code: 'custom', message: `doit etre ${PORT_ATTENDU}` });
+      return z.NEVER;
+    });
+}
+
+const SECRET_TROP_COURT = `doit faire au moins ${LONGUEUR_MIN_DU_SECRET} caracteres hors blancs`;
+
+function secretRequis(nom: string) {
+  return z.string().refine(estUnSecretValable, `${nom} ${SECRET_TROP_COURT}`);
+}
+
+function secretFacultatif(nom: string) {
+  return z
+    .string()
+    .optional()
+    .refine(
+      (secret) => !secret?.trim() || estUnSecretValable(secret),
+      `${nom} ${SECRET_TROP_COURT}`,
+    );
 }
 
 const cryptographicSecretKeys = [
@@ -85,13 +125,13 @@ const formeDeLEnv = z.object({
     .enum(['development', 'production', 'test'])
     .default('development'),
 
-  PORT: z.coerce.number().int().positive().default(3000),
+  PORT: portTcp(3000),
   API_PREFIX: z.string().default(PREFIXE_API_PAR_DEFAUT),
   SWAGGER_PATH: z.string().optional(),
   CORS_ORIGIN: z.string().optional(),
 
   DB_HOST: z.string().min(1, 'DB_HOST (ou DATABASE_HOST / PGHOST) est requis'),
-  DB_PORT: z.coerce.number().int().positive().default(5432),
+  DB_PORT: portTcp(5432),
   DB_NAME: z
     .string()
     .min(1, 'DB_NAME (ou DATABASE_NAME / POSTGRES_DB) est requis'),
@@ -121,17 +161,12 @@ const formeDeLEnv = z.object({
   POSTGRES_PASSWORD: z.string().optional(),
   TYPEORM_SYNCHRONIZE: z.string().optional(),
 
-  JWT_SECRET: z
-    .string()
-    .min(32, 'JWT_SECRET doit faire au moins 32 caracteres'),
+  JWT_SECRET: secretRequis('JWT_SECRET'),
   JWT_EXPIRES_IN: z.string().default('900s'),
-  JWT_SECRET_PREVIOUS: z.string().optional(),
-  SECURE_KEY_FOR_PASSWORD_HASHING: z
-    .string()
-    .min(
-      32,
-      'SECURE_KEY_FOR_PASSWORD_HASHING doit faire au moins 32 caracteres',
-    ),
+  JWT_SECRET_PREVIOUS: secretFacultatif('JWT_SECRET_PREVIOUS'),
+  SECURE_KEY_FOR_PASSWORD_HASHING: secretRequis(
+    'SECURE_KEY_FOR_PASSWORD_HASHING',
+  ),
   GOOGLE_CLIENT_ID: z.string().min(1, 'GOOGLE_CLIENT_ID est requis'),
   PASSWORD_RESET_URL_BASE: z.string().optional(),
   EMAIL_VERIFICATION_URL_BASE: z.string().optional(),
@@ -139,15 +174,11 @@ const formeDeLEnv = z.object({
   FORMATION_TEACHER_NOTIFICATION_TO: z
     .string()
     .min(1, 'FORMATION_TEACHER_NOTIFICATION_TO est requis'),
-  FORMATION_REVIEW_TOKEN_SECRET: z
-    .string()
-    .min(32, 'FORMATION_REVIEW_TOKEN_SECRET doit faire au moins 32 caracteres'),
-  FORMATIONS_PULSE_SECRET: z
-    .string()
-    .min(32, 'FORMATIONS_PULSE_SECRET doit faire au moins 32 caracteres'),
+  FORMATION_REVIEW_TOKEN_SECRET: secretRequis('FORMATION_REVIEW_TOKEN_SECRET'),
+  FORMATIONS_PULSE_SECRET: secretRequis('FORMATIONS_PULSE_SECRET'),
 
   REDIS_HOST: z.string().optional(),
-  REDIS_PORT: z.coerce.number().int().positive().default(6379),
+  REDIS_PORT: portTcp(6379),
   REDIS_URL: z.string().optional(),
   REDIS_USERNAME: z.string().optional(),
   REDIS_PASSWORD: z.string().optional(),
@@ -195,7 +226,7 @@ const formeDeLEnv = z.object({
   AUDIT_RATE_CURRENCY: z.string().optional(),
 
   SMTP_HOST: z.string().optional(),
-  SMTP_PORT: z.coerce.number().int().positive().default(587),
+  SMTP_PORT: portTcp(587),
   SMTP_USER: z.string().optional(),
   SMTP_PASS: z.string().optional(),
   SMTP_SECURE: z.string().default('false'),
@@ -214,7 +245,7 @@ const formeDeLEnv = z.object({
   FRONTEND_URL: z.string().optional(),
   MORNING_BRIEF_HMAC_KEYS: z.string().optional(),
   MORNING_BRIEF_HMAC_KEY_ID: z.string().optional(),
-  MORNING_BRIEF_HMAC_SECRET: z.string().optional(),
+  MORNING_BRIEF_HMAC_SECRET: secretFacultatif('MORNING_BRIEF_HMAC_SECRET'),
   ARTICLE_BROADCAST_ENABLED: z.enum(['true', 'false']).default('false'),
   ARTICLE_BROADCAST_DELAY_MINUTES: entierDansLesBornes(
     DELAI_DE_DIFFUSION_EN_MINUTES,
@@ -272,17 +303,24 @@ const envSchema = formeDeLEnv.superRefine((env, ctx) => {
   const hmacSecretConfigured = Boolean(env.MORNING_BRIEF_HMAC_SECRET?.trim());
   const hmacPairConfigured = hmacKeyIdConfigured && hmacSecretConfigured;
   const hmacPartialPair = hmacKeyIdConfigured !== hmacSecretConfigured;
-  if (
-    env.NODE_ENV === 'production' &&
-    !hmacRingConfigured &&
-    !hmacPairConfigured
-  ) {
+  if (estEnProduction(env) && !hmacRingConfigured && !hmacPairConfigured) {
     ctx.addIssue({
       code: 'custom',
       path: ['MORNING_BRIEF_HMAC_KEYS'],
       message:
         'MORNING_BRIEF_HMAC_KEYS ou le couple MORNING_BRIEF_HMAC_KEY_ID / ' +
         'MORNING_BRIEF_HMAC_SECRET est requis en production',
+    });
+  }
+  if (
+    trousseauHmac(env).some(
+      ({ id, secret }) => !id || !estUnSecretValable(secret),
+    )
+  ) {
+    ctx.addIssue({
+      code: 'custom',
+      path: ['MORNING_BRIEF_HMAC_KEYS'],
+      message: `chaque cle s'ecrit identifiant:secret, et son secret ${SECRET_TROP_COURT}`,
     });
   }
   if (!hmacRingConfigured && hmacPartialPair) {

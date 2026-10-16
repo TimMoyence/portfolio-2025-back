@@ -1,6 +1,10 @@
 import { createHmac } from 'node:crypto';
 import { UnauthorizedException } from '@nestjs/common';
-import { installerVariables } from '../../../../test/helpers/environnement';
+import { TEST_MORNING_BRIEF_HMAC_SECRET as SECRET } from '../../../../test/factories/env.factory';
+import {
+  appliquer,
+  installerVariables,
+} from '../../../../test/helpers/environnement';
 import { ArticleHmacGuard } from './article-hmac.guard';
 
 function contextFor(headers: Record<string, string>, rawBody: Buffer) {
@@ -16,56 +20,47 @@ function contextFor(headers: Record<string, string>, rawBody: Buffer) {
 }
 
 describe('ArticleHmacGuard', () => {
-  const secret = Buffer.from([
-    97, 114, 116, 105, 99, 108, 101, 45, 116, 101, 115, 116, 45, 107, 101, 121,
-  ]).toString('utf8');
   const timestamp = String(Math.floor(Date.now() / 1000));
   const body = Buffer.from('{"schema_version":"1.0"}');
+
+  function entetesSignes(
+    cle: string,
+    secret: string,
+    nonce: string,
+  ): Record<string, string> {
+    return {
+      'x-morning-brief-key-id': cle,
+      'x-morning-brief-timestamp': timestamp,
+      'x-morning-brief-nonce': nonce,
+      'x-morning-brief-signature': createHmac('sha256', secret)
+        .update(`POST\n/api/articles/ingest\n${timestamp}\n${nonce}\n`)
+        .update(body)
+        .digest('base64url'),
+      'idempotency-key': 'mb-2026-09-09-fr',
+    };
+  }
 
   installerVariables(
     {
       MORNING_BRIEF_HMAC_KEY_ID: 'test-key',
-      MORNING_BRIEF_HMAC_SECRET: secret,
+      MORNING_BRIEF_HMAC_SECRET: SECRET,
     },
     'chaque-test',
   );
 
   it('accepts a valid signature over the exact raw body', () => {
-    const signature = createHmac('sha256', secret)
-      .update(`POST\n/api/articles/ingest\n${timestamp}\nnonce-1\n`)
-      .update(body)
-      .digest('base64url');
     const guard = new ArticleHmacGuard();
 
     expect(
       guard.canActivate(
-        contextFor(
-          {
-            'x-morning-brief-key-id': 'test-key',
-            'x-morning-brief-timestamp': timestamp,
-            'x-morning-brief-nonce': 'nonce-1',
-            'x-morning-brief-signature': signature,
-            'idempotency-key': 'mb-2026-09-09-fr',
-          },
-          body,
-        ),
+        contextFor(entetesSignes('test-key', SECRET, 'nonce-1'), body),
       ),
     ).toBe(true);
   });
 
   it('rejects a modified body and an expired timestamp', () => {
-    const signature = createHmac('sha256', secret)
-      .update(`POST\n/api/articles/ingest\n${timestamp}\nnonce-2\n`)
-      .update(body)
-      .digest('base64url');
     const guard = new ArticleHmacGuard();
-    const headers = {
-      'x-morning-brief-key-id': 'test-key',
-      'x-morning-brief-timestamp': timestamp,
-      'x-morning-brief-nonce': 'nonce-2',
-      'x-morning-brief-signature': signature,
-      'idempotency-key': 'mb-2026-09-09-fr',
-    };
+    const headers = entetesSignes('test-key', SECRET, 'nonce-2');
 
     expect(() =>
       guard.canActivate(contextFor(headers, Buffer.from('{"tampered":true}'))),
@@ -76,4 +71,25 @@ describe('ArticleHmacGuard', () => {
       ),
     ).toThrow(UnauthorizedException);
   });
+
+  const COURT = 'c'.repeat(31);
+
+  it.each([
+    ['du trousseau', { MORNING_BRIEF_HMAC_KEYS: `courte:${COURT}` }],
+    [
+      'du couple identifiant et secret',
+      { MORNING_BRIEF_HMAC_KEY_ID: 'courte', MORNING_BRIEF_HMAC_SECRET: COURT },
+    ],
+  ])(
+    'refuse une signature exacte par un secret %s de moins de 32 caracteres',
+    (_cas, variables) => {
+      appliquer(variables);
+
+      expect(() =>
+        new ArticleHmacGuard().canActivate(
+          contextFor(entetesSignes('courte', COURT, 'nonce-3'), body),
+        ),
+      ).toThrow(UnauthorizedException);
+    },
+  );
 });

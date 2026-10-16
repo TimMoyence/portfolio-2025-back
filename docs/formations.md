@@ -136,7 +136,11 @@ Quatre risques relevés par la revue de sécurité du 2026-09-24 sont acceptés 
 
 ## Configuration
 
-- `FORMATION_REVIEW_TOKEN_SECRET` (au moins 32 caractères) : signe les jetons de participant et les clés d'étudiant.
+- `FORMATION_REVIEW_TOKEN_SECRET` : signe les jetons de participant et les clés d'étudiant.
+- `FORMATIONS_PULSE_SECRET` : signe la clé de participant des jalons déclarés (`CleDeJalon.ts`).
+
+Chacun compte au moins 32 caractères, blancs de début et de fin non comptés (`estUnSecretValable`), sinon le démarrage échoue.
+
 - `FORMATION_TEACHER_NOTIFICATION_TO` : destinataire de la synthèse de clôture.
 - `REDIS_URL`, `REDIS_HOST`, `REDIS_PORT` : plafonds de flux partagés (voir ci-dessus).
 

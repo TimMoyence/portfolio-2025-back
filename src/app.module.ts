@@ -11,7 +11,6 @@ import { AppService } from './app.service';
 import { HealthModule } from './common/interfaces/health/health.module';
 import { MetricsModule } from './common/interfaces/metrics/metrics.module';
 import { SecurityModule } from './common/interfaces/security/security.module';
-import { envString } from './config/env-readers.util';
 import { validateEnv } from './config/env.validation';
 import { optionsJournalHttp } from './config/journal-http';
 
@@ -25,7 +24,7 @@ const runtimeContexts = resolveRuntimeContexts();
   imports: [
     ConfigModule.forRoot({ isGlobal: true, validate: validateEnv }),
     LoggerModule.forRoot({
-      pinoHttp: optionsJournalHttp(envString('NODE_ENV')),
+      pinoHttp: optionsJournalHttp(),
     }),
     ThrottlerModule.forRoot([
       {

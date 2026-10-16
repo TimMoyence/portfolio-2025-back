@@ -52,14 +52,32 @@ describe('envPort', () => {
     expect(envPort(['DB_PORT'], 'de test', { DB_PORT: ' ' })).toBeUndefined();
   });
 
-  it.each(['abc', '5433x', '-1', '54.3'])(
-    'refuse un port qui n est pas un entier positif en nommant le service et ses alias (%p)',
+  it.each([
+    'abc',
+    '5433x',
+    '-1',
+    '54.3',
+    '3000.0',
+    '+3000',
+    '5.87e2',
+    '0x18EB',
+    '0',
+    '65536',
+  ])(
+    'refuse un port qui n est pas un entier de 1 a 65535 en chiffres seuls en nommant le service et ses alias (%p)',
     (port) => {
       expect(() => envPort(ALIAS, 'de test', { DB_PORT: port })).toThrow(
-        `Le port de test « ${port} » n'est pas un entier positif (DB_PORT, DATABASE_PORT).`,
+        `Le port de test « ${port} » n'est pas un entier de 1 a 65535 en chiffres seuls (DB_PORT, DATABASE_PORT).`,
       );
     },
   );
+
+  it.each([
+    ['1', 1],
+    ['65535', 65535],
+  ])('accepte la borne %p', (port, attendu) => {
+    expect(envPort(ALIAS, 'de test', { DB_PORT: port })).toBe(attendu);
+  });
 });
 
 describe('env-readers.util', () => {

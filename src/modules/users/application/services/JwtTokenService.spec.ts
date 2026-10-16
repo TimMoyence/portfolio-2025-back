@@ -6,6 +6,7 @@ import { TEST_JWT_SECRET as JWT_SECRET } from '../../../../../test/factories/env
 
 describe('JwtTokenService', () => {
   const JWT_SECRET_PREVIOUS = 'old-secret-key-for-rotation-test!';
+  const SECRET_DE_31_ENTOURE = `  ${'p'.repeat(31)}  `;
   const CONFIG_COURANTE = { JWT_SECRET, JWT_EXPIRES_IN: '3600s' };
   const CONFIG_EN_ROTATION = { ...CONFIG_COURANTE, JWT_SECRET_PREVIOUS };
   let configService: jest.Mocked<ConfigService>;
@@ -55,8 +56,11 @@ describe('JwtTokenService', () => {
       expect(result.expiresIn).toBe(3600);
     });
 
-    it('devrait rejeter un secret trop court', async () => {
-      configurer({ JWT_SECRET: 'short' });
+    it.each([
+      ['trop court', 'short'],
+      ['de 31 caracteres entoure de blancs', SECRET_DE_31_ENTOURE],
+    ])('devrait rejeter un secret %s', async (_cas, secret) => {
+      configurer({ JWT_SECRET: secret });
 
       await expect(signer()).rejects.toThrow(
         'JWT_SECRET must be at least 32 characters',
@@ -127,6 +131,14 @@ describe('JwtTokenService', () => {
       expect(header.alg).toBe('HS256');
     });
 
+    it('devrait inclure kid v1 quand le secret precedent n est fait que de blancs', async () => {
+      configurer({ ...CONFIG_COURANTE, JWT_SECRET_PREVIOUS: ' '.repeat(40) });
+
+      const header = decodeProtectedHeader((await signer()).token);
+
+      expect(header.kid).toBe('v1');
+    });
+
     it('devrait inclure kid v2 dans le header JWT avec secret precedent', async () => {
       configurer(CONFIG_EN_ROTATION);
 
@@ -145,6 +157,18 @@ describe('JwtTokenService', () => {
 
       expect(payload.sub).toBe('user-1');
       expect(payload.email).toBe('a@b.com');
+    });
+
+    it('devrait refuser la cle precedente quand elle fait moins de 32 caracteres hors blancs', async () => {
+      const token = await signRawToken(encodeSecret(SECRET_DE_31_ENTOURE), {
+        kid: 'v1',
+      });
+      configurer({
+        ...CONFIG_COURANTE,
+        JWT_SECRET_PREVIOUS: SECRET_DE_31_ENTOURE,
+      });
+
+      await expect(service.verify(token)).rejects.toThrow('Invalid signature');
     });
 
     it('devrait rejeter un token signe avec une cle inconnue', async () => {

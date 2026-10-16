@@ -51,8 +51,8 @@ describe('resoudreConnexionPostgres', () => {
     ).toBe(5433);
   });
 
-  it.each(['abc', '5433x', '-1', '54.3'])(
-    'refuse au demarrage un port qui n est pas un entier positif (%p)',
+  it.each(['abc', '5433x', '-1', '54.3', '0', '65536'])(
+    'refuse au demarrage un port qui n est pas un entier de 1 a 65535 (%p)',
     (port) => {
       expect(() => resoudreConnexionPostgres({ DB_PORT: port })).toThrow(
         /port PostgreSQL/,

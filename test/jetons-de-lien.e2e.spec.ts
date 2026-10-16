@@ -206,7 +206,7 @@ describe('Liens a jeton envoyes par courriel — un jeton refuse ne se distingue
     const moduleRef = await Test.createTestingModule({
       imports: [
         LoggerModule.forRoot({
-          pinoHttp: [optionsJournalHttp('production'), journal],
+          pinoHttp: [optionsJournalHttp({ NODE_ENV: 'production' }), journal],
         }),
       ],
       controllers: [

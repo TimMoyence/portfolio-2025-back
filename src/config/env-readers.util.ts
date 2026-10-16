@@ -52,7 +52,18 @@ export function envPremier(
   return undefined;
 }
 
-const ENTIER_POSITIF = /^\d+$/;
+const CHIFFRES_SEULS = /^\d+$/;
+const PORTS_TCP: Bornes = { min: 1, max: 65535 };
+
+export const PORT_ATTENDU = `un entier de ${PORTS_TCP.min} a ${PORTS_TCP.max} en chiffres seuls`;
+
+export function lirePort(brut: string): number | undefined {
+  const texte = brut.trim();
+  const port = Number(texte);
+  return CHIFFRES_SEULS.test(texte) && estEntierDansLesBornes(port, PORTS_TCP)
+    ? port
+    : undefined;
+}
 
 export function envPort(
   noms: readonly VariableDEnv[],
@@ -61,12 +72,13 @@ export function envPort(
 ): number | undefined {
   const brut = envPremier(noms, source);
   if (brut === undefined) return undefined;
-  if (!ENTIER_POSITIF.test(brut)) {
+  const port = lirePort(brut);
+  if (port === undefined) {
     throw new Error(
-      `Le port ${service} « ${brut} » n'est pas un entier positif (${noms.join(', ')}).`,
+      `Le port ${service} « ${brut} » n'est pas ${PORT_ATTENDU} (${noms.join(', ')}).`,
     );
   }
-  return Number(brut);
+  return port;
 }
 
 export function envUnVrai(
