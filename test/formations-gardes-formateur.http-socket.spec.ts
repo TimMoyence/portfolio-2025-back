@@ -25,6 +25,7 @@ import {
 } from './helpers/formations-harness';
 import { routesDuControleur } from './helpers/metadonnees-de-route';
 import { fermerApplication } from './helpers/nest-test-app';
+import { enregistrerLesReponsesServies } from './helpers/reponses-servies';
 
 const COURS = buildCoursDeTest({ slug: 'cours-gardes-formateur' });
 const SESSION_ID = 'c3333333-3333-4333-8333-333333333333';
@@ -141,6 +142,7 @@ describe('Gardes reelles des routes formateur (e2e http socket)', () => {
     }).compile();
 
     app = moduleRef.createNestApplication();
+    enregistrerLesReponsesServies(app);
     app.setGlobalPrefix(PREFIXE_API_PAR_DEFAUT);
     appliquerLesTraitementsGlobaux(app);
     await app.init();

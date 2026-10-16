@@ -13,6 +13,7 @@ import {
   fermerApplication,
   httpServerOf,
 } from './helpers/nest-test-app';
+import { enregistrerLesReponsesServies } from './helpers/reponses-servies';
 
 describe('Articles HTTP aliases', () => {
   let app: INestApplication;
@@ -29,6 +30,7 @@ describe('Articles HTTP aliases', () => {
     }).compile();
 
     app = moduleRef.createNestApplication();
+    enregistrerLesReponsesServies(app);
     appliquerLesTraitementsGlobaux(app);
     app.setGlobalPrefix(PREFIXE_API_PAR_DEFAUT, {
       exclude: [

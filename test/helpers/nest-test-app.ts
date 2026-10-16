@@ -6,6 +6,7 @@ import type { Server } from 'node:http';
 import type { AddressInfo } from 'node:net';
 import type request from 'supertest';
 import { appliquerLesTraitementsGlobaux } from '../../src/common/interfaces/http/traitements-globaux';
+import { enregistrerLesReponsesServies } from './reponses-servies';
 
 export const ADRESSE_BOUCLE_LOCALE = '127.0.0.1';
 
@@ -30,6 +31,7 @@ export async function ouvrirApplication(
   configurer?: (app: INestApplication) => void,
 ): Promise<INestApplication> {
   const app = moduleRef.createNestApplication();
+  enregistrerLesReponsesServies(app);
   appliquerLesTraitementsGlobaux(app);
   configurer?.(app);
   await ecouterEnBoucleLocale(app);

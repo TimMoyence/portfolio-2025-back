@@ -29,9 +29,9 @@ import {
   patienter,
   type BancFormations,
   type ClientFormations,
-  type EvenementFlux,
   type FluxEcoute,
 } from './helpers/formations-harness';
+import type { EvenementFlux } from './helpers/trames-sse';
 import {
   espionnerLeLogger,
   silenceNestLogger,
