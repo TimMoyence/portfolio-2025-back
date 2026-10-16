@@ -4,6 +4,7 @@ import { Test } from '@nestjs/testing';
 import request from 'supertest';
 import { AuthController } from '../src/modules/users/interfaces/Auth.controller';
 import { JwtTokenService } from '../src/modules/users/application/services/JwtTokenService';
+import { InvalidCredentialsError } from '../src/common/domain/errors/InvalidCredentialsError';
 import { JwtAuthGuard } from '../src/common/interfaces/auth/jwt-auth.guard';
 import type { User } from '../src/modules/users/domain/User';
 import {
@@ -208,6 +209,55 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
     });
 
     await attendreJetonDAccesRefuse(otherSigned.token);
+  });
+
+  describe('defi Bearer du jeton de session (RFC 6750)', () => {
+    it('marque du defi Bearer chaque 401 de la garde, seul refus que le front renouvelle', async () => {
+      const sansJeton = await request(getHttpServer())
+        .get('/api/auth/me')
+        .expect(401);
+      const jetonRefuse = await consulterMonProfil('token-bidon').expect(401);
+
+      expect([
+        sansJeton.headers['www-authenticate'],
+        jetonRefuse.headers['www-authenticate'],
+      ]).toEqual(['Bearer', 'Bearer error="invalid_token"']);
+    });
+
+    it('laisse sans defi un 401 qui juge des identifiants et non le jeton', async () => {
+      authenticateUserUseCase.execute.mockRejectedValue(
+        new InvalidCredentialsError('Invalid credentials'),
+      );
+      authStubs.changePasswordUseCase.execute.mockRejectedValue(
+        new InvalidCredentialsError('Current password is invalid'),
+      );
+      const { token } = await signerPour(buildUser());
+
+      const reponses = await Promise.all([
+        request(getHttpServer())
+          .post('/api/auth/login')
+          .send({ email: 'test@example.com', password: LOGIN_PASSWORD }),
+        request(getHttpServer())
+          .patch('/api/auth/change-password')
+          .set('Authorization', `Bearer ${token}`)
+          .send({
+            currentPassword: LOGIN_PASSWORD.toLowerCase(),
+            newPassword: LOGIN_PASSWORD,
+          }),
+        request(getHttpServer()).post('/api/auth/refresh'),
+      ]);
+
+      expect(
+        reponses.map((reponse) => [
+          reponse.status,
+          reponse.headers['www-authenticate'],
+        ]),
+      ).toEqual([
+        [401, undefined],
+        [401, undefined],
+        [401, undefined],
+      ]);
+    });
   });
 
   it('POST /api/auth/refresh retourne un nouveau couple de tokens', async () => {
