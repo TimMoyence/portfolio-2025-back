@@ -1,6 +1,7 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { avecUnPlancherDeLatence } from '../../../common/application/plancher-de-latence';
+import type { ValeursDeLEnv } from '../../../config/env.validation';
 import type { IPasswordResetNotifier } from '../domain/IPasswordResetNotifier';
 import type { IPasswordResetTokensRepository } from '../domain/IPasswordResetTokens.repository';
 import type { IUsersRepository } from '../domain/IUsers.repository';
@@ -32,7 +33,7 @@ export class RequestPasswordResetUseCase {
     private readonly passwordResetTokensRepository: IPasswordResetTokensRepository,
     @Inject(PASSWORD_RESET_NOTIFIER)
     private readonly passwordResetNotifier: IPasswordResetNotifier,
-    private readonly configService: ConfigService,
+    private readonly configService: ConfigService<ValeursDeLEnv>,
   ) {
     this.resetPasswordUrlBase = this.configService.get<string>(
       'PASSWORD_RESET_URL_BASE',
