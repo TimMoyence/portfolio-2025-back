@@ -63,8 +63,9 @@ export function resoudreConnexionPostgres(
     username: envPremier(ALIAS_POSTGRES.username, source, envBrut),
     password: envPremier(ALIAS_POSTGRES.password, source, envBrut),
     database:
-      envPremier(ALIAS_POSTGRES.database, source) ??
-      (url === undefined ? undefined : nomDeBaseDeLUrl(url)),
+      url === undefined
+        ? envPremier(ALIAS_POSTGRES.database, source)
+        : nomDeBaseDeLUrl(url),
     ssl: sslDe(source),
     baseAdmin: envPremier(ALIAS_POSTGRES.baseAdmin, source) ?? 'postgres',
   });

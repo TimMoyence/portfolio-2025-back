@@ -359,6 +359,16 @@ describe('validateEnv', () => {
       'my_database',
     ],
     [
+      'devrait nommer DB_NAME la base de DATABASE_URL, celle que pg ouvre, meme si POSTGRES_DB en nomme une autre',
+      {
+        DB_NAME: undefined,
+        POSTGRES_DB: 'portfolio_2025_dev',
+        DATABASE_URL: 'postgresql://user:pass@host:5432/my_database',
+      },
+      'DB_NAME',
+      'my_database',
+    ],
+    [
       'devrait resoudre DATABASE_PORT comme alias de DB_PORT',
       { DB_PORT: undefined, DATABASE_PORT: '5433' },
       'DB_PORT',

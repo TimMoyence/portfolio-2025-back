@@ -90,6 +90,16 @@ describe('resoudreConnexionPostgres', () => {
     expect(connexion.password).toBe('secret ');
   });
 
+  it('retient la base de DATABASE_URL, celle que pg ouvre, avant tout alias', () => {
+    expect(
+      resoudreConnexionPostgres({
+        DATABASE_URL: 'postgres://u:p@h:5432/depuis_url',
+        DB_NAME: 'a',
+        POSTGRES_DB: 'c',
+      }).database,
+    ).toBe('depuis_url');
+  });
+
   it('ne leve pas sur une URL invalide et ne deduit alors aucune base', () => {
     expect(
       resoudreConnexionPostgres({ DATABASE_URL: 'pas une url' }).database,
@@ -118,7 +128,7 @@ describe('resoudreConnexionPostgres', () => {
 });
 
 describe('emplacementTypeOrm', () => {
-  it('prefere l URL aux identifiants et garde la base et SSL', () => {
+  it('prefere l URL aux identifiants, a sa base comprise, et garde SSL', () => {
     const emplacement = emplacementTypeOrm(
       resoudreConnexionPostgres({
         DATABASE_URL: 'postgres://u:p@h:5432/x',
@@ -130,7 +140,7 @@ describe('emplacementTypeOrm', () => {
 
     expect(emplacement).toEqual({
       url: 'postgres://u:p@h:5432/x',
-      database: 'cible',
+      database: 'x',
       ssl: { rejectUnauthorized: false },
     });
   });
