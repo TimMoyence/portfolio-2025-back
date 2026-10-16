@@ -3,6 +3,7 @@ import type { PasswordResetToken } from '../domain/PasswordResetToken';
 import { TROIS_ENVOIS_PAR_HEURE } from '../domain/PlafondDEnvois';
 import type { User } from '../domain/User';
 import { RequestPasswordResetUseCase } from './RequestPasswordReset.useCase';
+import { EnvoiDeReinitialisation } from './services/password-reset-dispatch';
 import {
   buildUser,
   createMockUsersRepo,
@@ -34,11 +35,13 @@ describe('RequestPasswordResetUseCase', () => {
 
     useCase = new RequestPasswordResetUseCase(
       usersRepository,
-      tokensRepository,
-      notifier,
-      buildConfigService({
-        PASSWORD_RESET_URL_BASE: 'https://example.com/reset-password',
-      }),
+      new EnvoiDeReinitialisation(
+        tokensRepository,
+        notifier,
+        buildConfigService({
+          PASSWORD_RESET_URL_BASE: 'https://example.com/reset-password',
+        }),
+      ),
     );
   });
 

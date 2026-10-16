@@ -10,4 +10,7 @@ export interface IPasswordResetNotifier {
   sendPasswordResetEmail(
     payload: PasswordResetNotificationPayload,
   ): Promise<void>;
+  sendRegistrationAttemptEmail(
+    payload: PasswordResetNotificationPayload,
+  ): Promise<void>;
 }

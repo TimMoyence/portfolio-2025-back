@@ -347,15 +347,8 @@ export class AuthController {
   })
   @ApiOkResponse({ type: AuthMessageResponseDto })
   @ApiBadRequestResponse({ description: 'Inscription echouee' })
-  async register(@Body() dto: CreateUserDto): Promise<AuthMessageResponseDto> {
-    await this.createUsersUseCase.execute({
-      ...dto,
-      updatedOrCreatedBy: 'self-registration',
-    });
-    return {
-      message:
-        'Inscription reussie. Un email de verification a ete envoye a votre adresse.',
-    };
+  register(@Body() dto: CreateUserDto): Promise<AuthMessageResponseDto> {
+    return this.createUsersUseCase.inscrire(dto);
   }
 
   @RoutePublique()

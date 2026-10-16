@@ -407,20 +407,25 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
     const enTantQueTitulaire = async () =>
       `Bearer ${(await signerPour(titulaire)).token}`;
 
-    it('POST /api/auth/register annonce le courriel de verification', async () => {
-      authStubs.createUsersUseCase.execute.mockResolvedValue(titulaire);
+    it('POST /api/auth/register relaie la reponse unique de l inscription', async () => {
+      const reponse = { message: 'Inscription reussie.' };
+      authStubs.createUsersUseCase.inscrire.mockResolvedValue(reponse);
+      const candidat = {
+        email: titulaire.email,
+        password: LOGIN_PASSWORD,
+        firstName: titulaire.firstName,
+        lastName: titulaire.lastName,
+      };
 
       const res = await request(getHttpServer())
         .post('/api/auth/register')
-        .send({
-          email: titulaire.email,
-          password: LOGIN_PASSWORD,
-          firstName: titulaire.firstName,
-          lastName: titulaire.lastName,
-        })
+        .send(candidat)
         .expect(201);
 
-      expect(res.body).toHaveProperty('message');
+      expect(res.body).toEqual(reponse);
+      expect(authStubs.createUsersUseCase.inscrire).toHaveBeenCalledWith(
+        candidat,
+      );
     });
 
     it('POST /api/auth/google ouvre une session', async () => {

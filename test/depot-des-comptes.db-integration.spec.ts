@@ -1,6 +1,21 @@
+import { CreateUsersUseCase } from '../src/modules/users/application/CreateUsers.useCase';
+import { EnvoiDeVerificationEmail } from '../src/modules/users/application/services/email-verification-dispatch';
+import { EnvoiDeReinitialisation } from '../src/modules/users/application/services/password-reset-dispatch';
 import { CompteDejaInscritError } from '../src/modules/users/domain/CompteDejaInscritError';
+import { EmailVerificationTokensRepositoryTypeORM } from '../src/modules/users/infrastructure/EmailVerificationTokens.repository.typeORM';
+import { EmailVerificationTokenEntity } from '../src/modules/users/infrastructure/entities/EmailVerificationToken.entity';
+import { PasswordResetTokenEntity } from '../src/modules/users/infrastructure/entities/PasswordResetToken.entity';
 import { UsersEntity } from '../src/modules/users/infrastructure/entities/Users.entity';
+import { PasswordResetTokensRepositoryTypeORM } from '../src/modules/users/infrastructure/PasswordResetTokens.repository.typeORM';
 import { UsersRepositoryTypeORM } from '../src/modules/users/infrastructure/Users.repository.typeORM';
+import { buildConfigService } from './factories/env.factory';
+import {
+  createMockEmailVerificationNotifier,
+  createMockPasswordResetNotifier,
+} from './factories/mailer.factory';
+import { createMockPasswordService } from './factories/user.factory';
+
+const SAISIE_DU_CANDIDAT = 'MotDePasse123!';
 import {
   baseMigreeDeLaSuite,
   describeDb,
@@ -77,6 +92,60 @@ describeDb('Depot des comptes sur une base migree', () => {
       await expect(
         depot().update(intrus, { googleId: 'google-pris' }),
       ).rejects.toBeInstanceOf(CompteDejaInscritError);
+    });
+  });
+
+  describe('une adresse deja inscrite qui s inscrit de nouveau', () => {
+    it('recoit la meme reponse, et son titulaire un seul lien de reinitialisation', async () => {
+      const comptes = new UsersRepositoryTypeORM(
+        base().getRepository(UsersEntity),
+      );
+      const verification = createMockEmailVerificationNotifier();
+      const reinitialisation = createMockPasswordResetNotifier();
+      const motsDePasse = createMockPasswordService();
+      motsDePasse.hash.mockResolvedValue('hash-derive');
+      const inscription = new CreateUsersUseCase(
+        comptes,
+        new EnvoiDeVerificationEmail(
+          new EmailVerificationTokensRepositoryTypeORM(
+            base().getRepository(EmailVerificationTokenEntity),
+          ),
+          verification,
+          buildConfigService(),
+        ),
+        motsDePasse,
+        new EnvoiDeReinitialisation(
+          new PasswordResetTokensRepositoryTypeORM(
+            base().getRepository(PasswordResetTokenEntity),
+          ),
+          reinitialisation,
+          buildConfigService(),
+        ),
+      );
+      const candidat = {
+        email: 'doublon@example.com',
+        password: SAISIE_DU_CANDIDAT,
+        firstName: 'Lea',
+        lastName: 'Martin',
+      };
+
+      const premiere = await inscription.inscrire(candidat);
+      const seconde = await inscription.inscrire({
+        ...candidat,
+        email: 'Doublon@Example.COM',
+      });
+
+      expect(seconde).toEqual(premiere);
+      expect(verification.sendVerificationEmail.mock.calls).toHaveLength(1);
+      expect(reinitialisation.sendRegistrationAttemptEmail.mock.calls).toEqual([
+        [expect.objectContaining({ email: 'doublon@example.com' })],
+      ]);
+      const titulaire = await comptes.findByEmail(candidat.email);
+      await expect(
+        base()
+          .getRepository(PasswordResetTokenEntity)
+          .countBy({ userId: titulaire?.id }),
+      ).resolves.toBe(1);
     });
   });
 });

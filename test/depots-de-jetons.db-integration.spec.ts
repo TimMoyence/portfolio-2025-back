@@ -16,6 +16,7 @@ import { ResendVerificationEmailUseCase } from '../src/modules/users/application
 import { ResetPasswordUseCase } from '../src/modules/users/application/ResetPassword.useCase';
 import { RevokeTokenUseCase } from '../src/modules/users/application/RevokeToken.useCase';
 import { EnvoiDeVerificationEmail } from '../src/modules/users/application/services/email-verification-dispatch';
+import { EnvoiDeReinitialisation } from '../src/modules/users/application/services/password-reset-dispatch';
 import { TROIS_ENVOIS_PAR_HEURE } from '../src/modules/users/domain/PlafondDEnvois';
 import { emettreJeton, TokenHash } from '../src/modules/users/domain/TokenHash';
 import { EmailVerificationTokensRepositoryTypeORM } from '../src/modules/users/infrastructure/EmailVerificationTokens.repository.typeORM';
@@ -223,9 +224,11 @@ describeDb('Depots de jetons sur une base migree', () => {
     const notifier = createMockPasswordResetNotifier();
     const demande = new RequestPasswordResetUseCase(
       comptes,
-      depotDeReinitialisation(),
-      notifier,
-      configParDefaut,
+      new EnvoiDeReinitialisation(
+        depotDeReinitialisation(),
+        notifier,
+        configParDefaut,
+      ),
     );
     return { demande, notifier };
   };

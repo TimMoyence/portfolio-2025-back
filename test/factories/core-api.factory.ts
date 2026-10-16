@@ -141,7 +141,7 @@ export interface CoreUseCaseStubs {
 export interface AuthUseCaseStubs {
   authenticateUserUseCase: { execute: jest.Mock };
   authenticateGoogleUserUseCase: { execute: jest.Mock };
-  createUsersUseCase: { execute: jest.Mock };
+  createUsersUseCase: { inscrire: jest.Mock };
   changePasswordUseCase: { execute: jest.Mock };
   refreshTokensUseCase: { execute: jest.Mock };
   revokeTokenUseCase: { execute: jest.Mock };
@@ -168,7 +168,7 @@ export function createAuthUseCaseStubs(): AuthUseCaseStubs {
   return {
     authenticateUserUseCase: { execute: jest.fn() },
     authenticateGoogleUserUseCase: { execute: jest.fn() },
-    createUsersUseCase: { execute: jest.fn() },
+    createUsersUseCase: { inscrire: jest.fn() },
     changePasswordUseCase: { execute: jest.fn() },
     refreshTokensUseCase: { execute: jest.fn() },
     revokeTokenUseCase: { execute: jest.fn() },

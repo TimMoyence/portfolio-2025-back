@@ -6,6 +6,7 @@ import { poserVariables } from '../helpers/environnement';
 export function createMockPasswordResetNotifier(): jest.Mocked<IPasswordResetNotifier> {
   return {
     sendPasswordResetEmail: jest.fn().mockResolvedValue(undefined),
+    sendRegistrationAttemptEmail: jest.fn().mockResolvedValue(undefined),
   };
 }
 
