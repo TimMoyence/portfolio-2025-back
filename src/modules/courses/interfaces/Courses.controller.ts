@@ -21,13 +21,10 @@ export class CoursesController {
     private readonly createUseCase: CreateCoursesUseCase,
   ) {}
 
-  @ListePubliquePaginee({
-    resume: 'Lister les formations (acces public, pagine)',
-    reponse: CourseListResponseDto,
-    ordreParDefaut: 'DESC',
-    triables: ['slug', 'title', 'createdAt'],
-    triParDefaut: 'createdAt',
-  })
+  @ListePubliquePaginee(
+    'Lister les formations (acces public, pagine)',
+    CourseListResponseDto,
+  )
   async findAll(
     @Query() query: CourseListQueryDto,
   ): Promise<CourseListResponseDto> {

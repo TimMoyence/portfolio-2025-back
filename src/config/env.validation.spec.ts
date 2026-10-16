@@ -29,6 +29,40 @@ describe('validateEnv', () => {
     expect(result.SMTP_PORT).toBe(587);
   });
 
+  describe('ports, juges par la regle de envPort', () => {
+    const PORTS_REFUSES = ['3000.0', '+3000', '5.87e2', '0x18EB', '0', '65536'];
+
+    it.each(
+      ['PORT', 'DB_PORT', 'REDIS_PORT', 'SMTP_PORT'].flatMap((variable) =>
+        PORTS_REFUSES.map((port) => [variable, port]),
+      ),
+    )('refuse %s = %p', (variable, port) => {
+      expect(() => validateEnv(buildValidEnv({ [variable]: port }))).toThrow(
+        new RegExp(String.raw`\b${variable}\b`),
+      );
+    });
+
+    it('lit un port entoure de blancs et rend ses bornes', () => {
+      const result = validateEnv(
+        buildValidEnv({ PORT: ' 8080 ', REDIS_PORT: '1', SMTP_PORT: '65535' }),
+      );
+
+      expect([result.PORT, result.REDIS_PORT, result.SMTP_PORT]).toEqual([
+        8080, 1, 65535,
+      ]);
+    });
+
+    it('prend un port blanc pour absent et lui donne sa valeur par defaut', () => {
+      const result = validateEnv(
+        buildValidEnv({ PORT: ' ', REDIS_PORT: '', SMTP_PORT: '  ' }),
+      );
+
+      expect([result.PORT, result.REDIS_PORT, result.SMTP_PORT]).toEqual([
+        3000, 6379, 587,
+      ]);
+    });
+  });
+
   it('ne reintroduit aucun hote Redis quand REDIS_URL et REDIS_HOST sont absents', () => {
     const result = validateEnv(buildValidEnv());
 
@@ -83,9 +117,8 @@ describe('validateEnv', () => {
     });
 
     it('devrait accepter la forme « display name + adresse » de production', () => {
-      // Valeur reellement deployee. `z.email()` la rejetterait et
-      // empecherait l'API de demarrer : la validation doit accepter les
-      // deux formes RFC 5322.
+      // Valeur reellement deployee : la refuser empecherait l'API de
+      // demarrer, la validation doit accepter les deux formes RFC 5322.
       const env = buildValidEnv({
         ...SMTP_CONFIGURED,
         SMTP_FROM: "'Asili Design' <no-reply@asilidesign.fr>",
@@ -98,11 +131,29 @@ describe('validateEnv', () => {
       ['une valeur blanche', '   '],
       ['une valeur sans arobase', 'poubelle'],
       ['des chevrons sans adresse valide', 'Asili <pas-une-adresse>'],
+      ['une adresse que la regle commune refuse', 'contact@asilidesign-.fr'],
+      [
+        'des chevrons autour d une adresse que la regle commune refuse',
+        'Asili <contact@asilidesign-.fr>',
+      ],
+      [
+        'une adresse coupee par une espace ideographique',
+        `Asili <contact${String.fromCodePoint(0x3000)}tim@asilidesign.fr>`,
+      ],
     ])('devrait rejeter %s dans SMTP_FROM', (_label, value) => {
       const env = buildValidEnv({ ...SMTP_CONFIGURED, SMTP_FROM: value });
 
       expect(() => validateEnv(env)).toThrow('SMTP_FROM');
     });
+
+    it.each(['jean&co@asilidesign.fr', 'Asili <jean&co@asilidesign.fr>'])(
+      'devrait accepter %p dans SMTP_FROM, comme la regle commune',
+      (value) => {
+        const env = buildValidEnv({ ...SMTP_CONFIGURED, SMTP_FROM: value });
+
+        expect(() => validateEnv(env)).not.toThrow();
+      },
+    );
 
     it('devrait rejeter un SMTP_REPLY_TO malforme', () => {
       const env = buildValidEnv({
@@ -147,6 +198,71 @@ describe('validateEnv', () => {
 
     expect(() => validateEnv(env)).toThrow('SECURE_KEY_FOR_PASSWORD_HASHING');
     expect(() => validateEnv(env)).toThrow('32');
+  });
+
+  describe('longueur des secrets, jugee hors blancs comme a la signature', () => {
+    const ENTOURE_DE_BLANCS = `${' '.repeat(8)}${'s'.repeat(31)}${' '.repeat(8)}`;
+    const SECRET_DE_32 = 's'.repeat(32);
+    const AUTRE_SECRET_DE_32 = 't'.repeat(32);
+
+    it.each<[string, Record<string, unknown>]>([
+      ['JWT_SECRET', { JWT_SECRET: ENTOURE_DE_BLANCS }],
+      [
+        'SECURE_KEY_FOR_PASSWORD_HASHING',
+        { SECURE_KEY_FOR_PASSWORD_HASHING: ENTOURE_DE_BLANCS },
+      ],
+      [
+        'FORMATION_REVIEW_TOKEN_SECRET',
+        { FORMATION_REVIEW_TOKEN_SECRET: ENTOURE_DE_BLANCS },
+      ],
+      [
+        'FORMATIONS_PULSE_SECRET',
+        { FORMATIONS_PULSE_SECRET: ENTOURE_DE_BLANCS },
+      ],
+      ['JWT_SECRET_PREVIOUS', { JWT_SECRET_PREVIOUS: ENTOURE_DE_BLANCS }],
+      [
+        'MORNING_BRIEF_HMAC_SECRET',
+        {
+          MORNING_BRIEF_HMAC_KEY_ID: 'morning-brief',
+          MORNING_BRIEF_HMAC_SECRET: ENTOURE_DE_BLANCS,
+        },
+      ],
+      [
+        'MORNING_BRIEF_HMAC_KEYS',
+        {
+          MORNING_BRIEF_HMAC_KEYS: `ancienne:${SECRET_DE_32},courte:${ENTOURE_DE_BLANCS}`,
+        },
+      ],
+    ])(
+      'refuse %s de 31 caracteres entoure de blancs',
+      (variable, surcharge) => {
+        expect(() => validateEnv(buildValidEnv(surcharge))).toThrow(
+          `${variable}: `,
+        );
+      },
+    );
+
+    it('accepte des secrets facultatifs de 32 caracteres', () => {
+      expect(() =>
+        validateEnv(
+          buildValidEnv({
+            JWT_SECRET_PREVIOUS: SECRET_DE_32,
+            MORNING_BRIEF_HMAC_KEYS: `ancienne:${AUTRE_SECRET_DE_32}`,
+          }),
+        ),
+      ).not.toThrow();
+    });
+
+    it('accepte un secret facultatif laisse vide, comme dans .env.example', () => {
+      expect(() =>
+        validateEnv(
+          buildValidEnv({
+            JWT_SECRET_PREVIOUS: '',
+            MORNING_BRIEF_HMAC_KEYS: '',
+          }),
+        ),
+      ).not.toThrow();
+    });
   });
 
   it('devrait rejeter la reutilisation d’un secret cryptographique entre usages', () => {

@@ -109,4 +109,14 @@ describe('PasswordService', () => {
       'SECURE_KEY_FOR_PASSWORD_HASHING is not defined',
     );
   });
+
+  it('devrait lever une erreur si SECURE_KEY_FOR_PASSWORD_HASHING fait moins de 32 caracteres hors blancs', () => {
+    const courtConfigService = {
+      get: jest.fn().mockReturnValue(`  ${'k'.repeat(31)}  `),
+    } as unknown as jest.Mocked<ConfigService>;
+
+    expect(() => new PasswordService(courtConfigService)).toThrow(
+      'SECURE_KEY_FOR_PASSWORD_HASHING must be at least 32 characters',
+    );
+  });
 });

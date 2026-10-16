@@ -16,6 +16,12 @@ export class BlankFieldError extends DomainValidationError {
   }
 }
 
+export class FieldTooLongError extends DomainValidationError {
+  constructor(champ: string, longueurMax: number) {
+    super(`${champ} ne peut pas dépasser ${longueurMax} caractères.`);
+  }
+}
+
 export class SessionNotFoundError extends ResourceNotFoundError {
   readonly code = 'SEANCE_INTROUVABLE';
 

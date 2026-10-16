@@ -131,7 +131,28 @@ describe('Projects aggregate', () => {
         slug: 'test-project',
         gallery: ['a'.repeat(501)],
       }),
-    ).toThrow(DomainValidationError);
+    ).toThrow(new DomainValidationError('Invalid project gallery'));
+  });
+
+  it('devrait garder les elements du stack sans leurs bords', () => {
+    const project = Projects.create({
+      slug: 'test-project',
+      stack: ['  angular ', 'a'.repeat(50)],
+    });
+    expect(project.stack).toEqual(['angular', 'a'.repeat(50)]);
+  });
+
+  it.each([
+    ['blanc', '   '],
+    ['non textuel', 7],
+    ['trop long', 'a'.repeat(51)],
+  ])('devrait refuser un element %s dans le stack', (_cas, element) => {
+    expect(() =>
+      Projects.create({
+        slug: 'test-project',
+        stack: [element as string],
+      }),
+    ).toThrow(new DomainValidationError('Invalid project stack'));
   });
 
   it('devrait dedupliquer les elements du stack', () => {

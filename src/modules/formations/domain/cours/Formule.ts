@@ -1,4 +1,6 @@
+import { avecVirgule } from '../../../../common/domain/nombres/ecriture-francaise';
 import { estEntierPositif } from '../../../../common/domain/nombres/est-entier-positif';
+import { longueurDeTexte } from '../../../../common/domain/texte/longueur-de-texte';
 import { sansEspacesNiMoinsTypographiques } from '../../../../common/domain/texte/sans-espaces-typographiques';
 
 export type CodeErreur = '#REF!' | '#DIV/0!' | '#NOM?' | '#VALEUR!';
@@ -242,8 +244,7 @@ function ecrireReference(reference: Reference): string {
 }
 
 function lireNombre(brut: string): number {
-  const compact = brut.trim().replace(',', '.');
-  return MOTIF_NOMBRE_SAISI.test(compact) ? Number(compact) : Number.NaN;
+  return lireNombreSaisi(brut) ?? Number.NaN;
 }
 
 const ESPACES_SAISIS = /\s/g;
@@ -332,7 +333,7 @@ function jetonSuivant(reste: string): Jeton {
 }
 
 function decouper(source: string): Jeton[] {
-  if (source.length > LONGUEUR_MAX_FORMULE) {
+  if (longueurDeTexte(source) > LONGUEUR_MAX_FORMULE) {
     refuser(ERREUR_VALEUR);
   }
   const jetons: Jeton[] = [];
@@ -1294,6 +1295,32 @@ export function evaluerExpression(
   }
 }
 
+function variablesDu(noeud: Noeud): string[] {
+  switch (noeud.genre) {
+    case 'variable':
+      return [noeud.nom];
+    case 'unaire':
+      return variablesDu(noeud.operande);
+    case 'binaire':
+      return [...variablesDu(noeud.gauche), ...variablesDu(noeud.droite)];
+    case 'appel':
+      return noeud.arguments.flatMap(variablesDu);
+    default:
+      return [];
+  }
+}
+
+export function variablesDeLExpression(
+  expression: string,
+): readonly string[] | null {
+  try {
+    const source = sourceDeFormule(expression) ?? expression;
+    return [...new Set(variablesDu(analyser(source)))];
+  } catch {
+    return null;
+  }
+}
+
 function formeRelative(reference: Reference, origine: Reference): string {
   const ecart = (
     axe: 'R' | 'C',
@@ -1381,6 +1408,24 @@ export function decalerFormule(
   } catch {
     return formule;
   }
+}
+
+function formaterValeur(valeur: ValeurFormule): string {
+  switch (typeof valeur) {
+    case 'number':
+      return avecVirgule(Number(valeur.toFixed(DECIMALES_EXPRESSION)));
+    case 'boolean':
+      return valeur ? 'VRAI' : 'FAUX';
+    default:
+      return valeur;
+  }
+}
+
+export function formaterResultat(resultat: ResultatFormule): string {
+  if (resultat.erreur !== null || resultat.valeur === null) {
+    return resultat.erreur ?? ERREUR_VALEUR;
+  }
+  return formaterValeur(resultat.valeur);
 }
 
 function decalerJeton(

@@ -3,9 +3,16 @@ import {
   attendreNullPourChaqueValeur,
   nonStringArbitrary,
 } from '../../../../test/helpers/fast-check-arbitraries';
-import { LocaleCode } from './LocaleCode';
+import { LocaleCode, LOCALES_SUPPORTEES } from './LocaleCode';
 
 describe('LocaleCode', () => {
+  it('reconnait chaque locale supportee et elle seule', () => {
+    expect(LOCALES_SUPPORTEES).toEqual(['fr', 'en']);
+    expect(
+      LOCALES_SUPPORTEES.map((locale) => LocaleCode.parse(locale)?.value),
+    ).toEqual([...LOCALES_SUPPORTEES]);
+  });
+
   it('parses locale variants to supported language code', () => {
     expect(LocaleCode.parse('fr')?.value).toBe('fr');
     expect(LocaleCode.parse('fr-FR')?.value).toBe('fr');

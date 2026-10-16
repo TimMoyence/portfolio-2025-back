@@ -21,16 +21,10 @@ export class RedirectsController {
     private readonly createUseCase: CreateRedirectsUseCase,
   ) {}
 
-  @ListePubliquePaginee({
-    resume: 'Lister les redirections (acces public, pagine)',
-    reponse: RedirectListResponseDto,
-    ordreParDefaut: 'DESC',
-    triables: ['slug', 'clicks', 'createdAt'],
-    triParDefaut: 'createdAt',
-    filtres: [
-      { name: 'enabled', required: false, type: Boolean, example: true },
-    ],
-  })
+  @ListePubliquePaginee(
+    'Lister les redirections (acces public, pagine)',
+    RedirectListResponseDto,
+  )
   async findAll(
     @Query() query: RedirectListQueryDto,
   ): Promise<RedirectListResponseDto> {

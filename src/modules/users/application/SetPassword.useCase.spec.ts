@@ -45,17 +45,12 @@ describe('SetPasswordUseCase', () => {
     const result = await useCase.execute({
       userId: 'user-1',
       newPassword: CHOSEN_CREDENTIAL,
-      updatedOrCreatedBy: 'self-service',
     });
 
     attendreNouveauMotDePasseEnregistre(
-      {
-        hacher: passwordService.hash,
-        mettreAJour: usersRepository.update,
-        fermerLesSessions: refreshTokensRepo.revokeByUserId,
-      },
+      { passwordService, usersRepository, refreshTokensRepo },
       CHOSEN_CREDENTIAL,
-      'self-service',
+      'password-set',
     );
     expect(result).toEqual(updatedUser);
   });

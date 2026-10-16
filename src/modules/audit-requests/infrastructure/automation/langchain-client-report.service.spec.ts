@@ -13,6 +13,7 @@ import {
   createChatOpenAIFactoryStub,
   createLlmSuiviStub,
 } from '../../../../../test/factories/section-generator.factory';
+import type { AuditLocale } from '../../domain/audit-locale.util';
 import type { AuditAutomationConfig } from './audit.config';
 import {
   ClientReportContext,
@@ -22,7 +23,7 @@ import { UNTRUSTED_DATA_DISCLAIMER_FR } from './shared/prompt-sanitize.util';
 
 interface ClientReportTestable {
   generate: LangchainClientReportService['generate'];
-  buildFallback: (context: ClientReportContext, locale: 'fr' | 'en') => unknown;
+  buildFallback: (context: ClientReportContext, locale: AuditLocale) => unknown;
 }
 
 function asTestable(

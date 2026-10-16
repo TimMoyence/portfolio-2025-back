@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { envListe } from '../../config/env-readers.util';
 import { CreateAuditRequestsUseCase } from './application/CreateAuditRequests.useCase';
 import { GetAuditSummaryUseCase } from './application/GetAuditSummary.useCase';
 import { StreamAuditEventsUseCase } from './application/StreamAuditEvents.useCase';
@@ -151,14 +152,10 @@ const AUDIT_PDF_SERVICES = [
     {
       provide: AUDIT_SELF_GUARD,
       useFactory: (): SelfAuditGuard => {
-        const raw = process.env.AUDIT_SELF_DOMAINS?.trim();
-        const domains = raw
-          ? raw
-              .split(',')
-              .map((entry) => entry.trim())
-              .filter((entry) => entry.length > 0)
-          : ['asilidesign.fr'];
-        return new SelfAuditGuard(domains);
+        const domains = envListe('AUDIT_SELF_DOMAINS');
+        return new SelfAuditGuard(
+          domains.length > 0 ? domains : ['asilidesign.fr'],
+        );
       },
     },
   ],

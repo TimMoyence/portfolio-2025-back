@@ -2,6 +2,7 @@ import { lireNombreSaisiAvecUnite } from './Formule';
 import { sansDiacritiques } from '../../../../common/domain/texte/sans-diacritiques';
 import { matchesSolution } from '../GradingCore';
 import type { Cours, Ecran, QuestionProduction } from '../contrats/cours';
+import type { EtatDesEnigmes, EtatEnigme } from '../contrats/pilotage';
 import type { ProgressionEnigme } from '../contrats/resultats';
 import type { ConfusionId } from './banque/confusions';
 import type { CorrigeEnigme } from './Corrige';
@@ -105,6 +106,60 @@ export function enigmeOuverte(
     return false;
   }
   return etat.resolue || epuisee(cible, etat.tentatives);
+}
+
+export function progressionDesLignes(
+  lignes: readonly {
+    readonly enigmeId: string;
+    readonly tentatives: number;
+    readonly resolueLe: Date | null;
+  }[],
+): ProgressionDEnigme[] {
+  return lignes.map((ligne) => ({
+    enigmeId: ligne.enigmeId,
+    tentatives: ligne.tentatives,
+    resolue: ligne.resolueLe !== null,
+  }));
+}
+
+function etatDeLEnigme(
+  cible: EcranDEnigmes,
+  progression: readonly ProgressionDEnigme[],
+  rang: number,
+  suivie: ProgressionDEnigme | undefined,
+  restantes: number,
+): EtatEnigme {
+  if (suivie?.resolue === true) {
+    return 'resolue';
+  }
+  if (restantes === 0) {
+    return 'epuisee';
+  }
+  return enigmeOuverte(cible, progression, rang) ? 'ouverte' : 'verrouillee';
+}
+
+export function etatDesEnigmes(
+  cible: EcranDEnigmes,
+  progression: readonly ProgressionDEnigme[],
+): EtatDesEnigmes {
+  const enigmes = cible.ecran.proprietes.parcours.enigmes;
+  const etats = enigmes.map(({ id }, rang) => {
+    const suivie = progression.find(({ enigmeId }) => enigmeId === id);
+    const restantes = tentativesRestantes(cible, suivie?.tentatives ?? 0);
+    return [
+      id,
+      {
+        etat: etatDeLEnigme(cible, progression, rang, suivie, restantes),
+        tentativesRestantes: restantes,
+      },
+    ] as const;
+  });
+  const ouverte = etats.find(([, { etat }]) => etat === 'ouverte');
+  return {
+    etats: Object.fromEntries(etats),
+    enigmeOuverte: ouverte?.[0] ?? null,
+    acheve: enigmes.length > 0 && ouverte === undefined,
+  };
 }
 
 function texteNormalise(valeur: string): string {

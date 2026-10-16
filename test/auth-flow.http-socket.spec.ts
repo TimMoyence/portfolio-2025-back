@@ -3,7 +3,10 @@ import { ConfigService } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
 import { AuthController } from '../src/modules/users/interfaces/Auth.controller';
+import { ChangePasswordUseCase } from '../src/modules/users/application/ChangePassword.useCase';
+import type { ChangePasswordCommand } from '../src/modules/users/application/dto/ChangePassword.command';
 import { JwtTokenService } from '../src/modules/users/application/services/JwtTokenService';
+import { InvalidCredentialsError } from '../src/common/domain/errors/InvalidCredentialsError';
 import { JwtAuthGuard } from '../src/common/interfaces/auth/jwt-auth.guard';
 import type { User } from '../src/modules/users/domain/User';
 import {
@@ -11,16 +14,23 @@ import {
   createAuthUseCaseStubs,
 } from './factories/core-api.factory';
 import { TEST_JWT_SECRET } from './factories/env.factory';
-import { buildUser, buildAuthResult } from './factories/user.factory';
+import { createMockRefreshTokensRepo } from './factories/refresh-token.factory';
+import {
+  buildUser,
+  buildAuthResult,
+  createMockPasswordService,
+  createMockUsersRepo,
+} from './factories/user.factory';
 import { sousEnvironnement } from './helpers/environnement';
 import {
   applicationDeLaSuite,
   bootstrapTestAppAvecCookies,
-  httpServerOf,
+  serveurHttpDe,
 } from './helpers/nest-test-app';
 
 // eslint-disable-next-line sonarjs/no-hardcoded-passwords -- fixture de test, pas un secret reel
 const LOGIN_PASSWORD = 'StrongPassword123!';
+const NOUVEAU_MOT_DE_PASSE = 'NouveauMotDePasse456!';
 
 describe('Auth flow complet — sans bypass de guard (e2e)', () => {
   const JWT_EXPIRES_IN = '900s';
@@ -58,7 +68,7 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
     return bootstrapTestAppAvecCookies(moduleRef);
   });
 
-  const getHttpServer = () => httpServerOf(app());
+  const getHttpServer = () => serveurHttpDe(app());
 
   const signerPour = (user: User) =>
     jwtTokenService.sign({
@@ -210,6 +220,55 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
     await attendreJetonDAccesRefuse(otherSigned.token);
   });
 
+  describe('defi Bearer du jeton de session (RFC 6750)', () => {
+    it('marque du defi Bearer chaque 401 de la garde, seul refus que le front renouvelle', async () => {
+      const sansJeton = await request(getHttpServer())
+        .get('/api/auth/me')
+        .expect(401);
+      const jetonRefuse = await consulterMonProfil('token-bidon').expect(401);
+
+      expect([
+        sansJeton.headers['www-authenticate'],
+        jetonRefuse.headers['www-authenticate'],
+      ]).toEqual(['Bearer', 'Bearer error="invalid_token"']);
+    });
+
+    it('laisse sans defi un 401 qui juge des identifiants et non le jeton', async () => {
+      authenticateUserUseCase.execute.mockRejectedValue(
+        new InvalidCredentialsError('Invalid credentials'),
+      );
+      authStubs.changePasswordUseCase.execute.mockRejectedValue(
+        new InvalidCredentialsError('Inactive user cannot change password'),
+      );
+      const { token } = await signerPour(buildUser());
+
+      const reponses = await Promise.all([
+        request(getHttpServer())
+          .post('/api/auth/login')
+          .send({ email: 'test@example.com', password: LOGIN_PASSWORD }),
+        request(getHttpServer())
+          .patch('/api/auth/change-password')
+          .set('Authorization', `Bearer ${token}`)
+          .send({
+            currentPassword: LOGIN_PASSWORD.toLowerCase(),
+            newPassword: LOGIN_PASSWORD,
+          }),
+        request(getHttpServer()).post('/api/auth/refresh'),
+      ]);
+
+      expect(
+        reponses.map((reponse) => [
+          reponse.status,
+          reponse.headers['www-authenticate'],
+        ]),
+      ).toEqual([
+        [401, undefined],
+        [401, undefined],
+        [401, undefined],
+      ]);
+    });
+  });
+
   it('POST /api/auth/refresh retourne un nouveau couple de tokens', async () => {
     refreshTokensUseCase.execute.mockResolvedValue(
       await sessionSigneePour(
@@ -268,6 +327,58 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
     await consulterMonProfil(seconde.accessToken).expect(200);
 
     await seDeconnecterAvec(seconde.refreshToken);
+  });
+
+  describe('PATCH /api/auth/change-password', () => {
+    const changerLeMotDePasse = async (
+      compte: User,
+      motDePasseActuelReconnu: boolean,
+    ) => {
+      const comptes = createMockUsersRepo();
+      comptes.findById.mockResolvedValue(compte);
+      const motsDePasse = createMockPasswordService();
+      motsDePasse.verify.mockResolvedValue(motDePasseActuelReconnu);
+      const casDUsage = new ChangePasswordUseCase(
+        comptes,
+        motsDePasse,
+        createMockRefreshTokensRepo(),
+      );
+      authStubs.changePasswordUseCase.execute.mockImplementation(
+        (commande: ChangePasswordCommand) => casDUsage.execute(commande),
+      );
+      const { token } = await signerPour(compte);
+
+      return request(getHttpServer())
+        .patch('/api/auth/change-password')
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          currentPassword: LOGIN_PASSWORD,
+          newPassword: NOUVEAU_MOT_DE_PASSE,
+        });
+    };
+
+    it('rend 400, et non le 401 qui ferme la session, a un mot de passe actuel faux', async () => {
+      const res = await changerLeMotDePasse(
+        buildUser({ passwordHash: 'empreinte' }),
+        false,
+      );
+
+      expect(res.status).toBe(400);
+      expect(res.body).toMatchObject({
+        status: 400,
+        detail: 'Current password is invalid',
+      });
+    });
+
+    it('rend 409, et non 401, a un compte qui n a pas encore de mot de passe', async () => {
+      const res = await changerLeMotDePasse(
+        buildUser({ passwordHash: null }),
+        true,
+      );
+
+      expect(res.status).toBe(409);
+      expect(res.body).toMatchObject({ status: 409 });
+    });
   });
 
   describe('GET /api/auth/verify-email', () => {

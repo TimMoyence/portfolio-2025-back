@@ -15,6 +15,7 @@ import {
   attendreUnPayloadEmballe,
   BALISE_FERMANTE_INJECTEE,
 } from '../../../../../test/helpers/appels-llm';
+import type { AuditLocale } from '../../domain/audit-locale.util';
 import type { AuditAutomationConfig } from './audit.config';
 import { PageAiRecapService } from './page-ai-recap.service';
 import { UNTRUSTED_DATA_DISCLAIMER_EN } from './shared/prompt-sanitize.util';
@@ -49,7 +50,7 @@ describe('PageAiRecapService', () => {
   });
 
   const analyserSansLlm = (
-    locale: 'fr' | 'en',
+    locale: AuditLocale,
     pages: UrlIndexabilityResult[],
   ) =>
     new PageAiRecapService(config, createChatOpenAIFactoryStub()).analyzePages({

@@ -1,29 +1,28 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsOptional, IsString } from 'class-validator';
+import { AdresseEmail } from '../../../../common/interfaces/dto/adresse-email.decorator';
 import {
-  IsEmail,
-  IsOptional,
-  IsString,
-  MaxLength,
-  MinLength,
-} from 'class-validator';
+  AuPlusCaracteres,
+  TexteBorne,
+} from '../../../../common/interfaces/dto/longueur-de-texte.decorator';
 import { ChampsAntiRobotDto } from '../../../../common/interfaces/security/champs-anti-robot.dto';
+import {
+  LONGUEUR_MAX_D_UN_NOM_DE_PARTICIPANT,
+  LONGUEUR_MAX_D_UNE_ADRESSE_DE_PARTICIPANT,
+} from '../../domain/IParticipants.repository';
 
 export class JoinSessionRequestDto extends ChampsAntiRobotDto {
   @ApiProperty({ example: 'Theo' })
-  @IsString()
-  @MinLength(1)
-  @MaxLength(80)
+  @TexteBorne(1, LONGUEUR_MAX_D_UN_NOM_DE_PARTICIPANT)
   prenom: string;
 
   @ApiProperty({ example: 'Martin' })
-  @IsString()
-  @MinLength(1)
-  @MaxLength(80)
+  @TexteBorne(1, LONGUEUR_MAX_D_UN_NOM_DE_PARTICIPANT)
   nom: string;
 
   @ApiProperty({ example: 'theo.martin@example.com' })
-  @IsEmail()
-  @MaxLength(180)
+  @AdresseEmail()
+  @AuPlusCaracteres(LONGUEUR_MAX_D_UNE_ADRESSE_DE_PARTICIPANT)
   email: string;
 
   @ApiPropertyOptional({
@@ -32,6 +31,6 @@ export class JoinSessionRequestDto extends ChampsAntiRobotDto {
   })
   @IsOptional()
   @IsString()
-  @MaxLength(128)
+  @AuPlusCaracteres(128)
   secretDeReprise?: string;
 }

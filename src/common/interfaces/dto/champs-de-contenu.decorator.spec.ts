@@ -1,6 +1,5 @@
 import { DECORATORS } from '@nestjs/swagger/dist/constants';
-import { plainToInstance } from 'class-transformer';
-import { validateSync } from 'class-validator';
+import { champsRefuses } from '../../../../test/helpers/validation-pipe';
 import {
   RangDAffichage,
   SlugDeContenu,
@@ -20,9 +19,7 @@ class ContenuTemoin {
 }
 
 const erreursPour = (corps: Record<string, unknown>): string[] =>
-  validateSync(plainToInstance(ContenuTemoin, corps)).map(
-    (erreur) => erreur.property,
-  );
+  champsRefuses(ContenuTemoin, corps);
 
 describe('StatutPublie', () => {
   class ReponseTemoin {

@@ -1,5 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import type { Cours } from '../domain/contrats/cours';
+import { planServi } from '../domain/cours/EcranServi';
 import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
 import type {
   IParticipantsRepository,
@@ -50,6 +51,16 @@ export class ParticipationEnSeance {
     );
     await this.participantActif(cible);
     return { session, cours: await coursDeLaSeance(this.catalogue, session) };
+  }
+
+  async planDeLaSeance<P>(
+    cible: CibleDuParticipant & { readonly planId: string },
+    trouver: (cours: Cours, planId: string) => P | null,
+    nature: string,
+  ): Promise<P> {
+    const { session, cours } = await this.ouverte(cible);
+    const plan = trouver(cours, cible.planId);
+    return planServi(session, cours, cible.planId, plan, nature);
   }
 
   async seanceEtCours(

@@ -30,7 +30,7 @@ describe('AuthController — inscription publique', () => {
       unused,
       createMockAuthAuditLogger(),
     );
-    const corps: CreateUserDto = {
+    const corps = {
       email: 'intrus@example.com',
       password: INTRUDER_CREDENTIAL,
       firstName: 'In',
@@ -40,7 +40,7 @@ describe('AuthController — inscription publique', () => {
       updatedOrCreatedBy: 'admin-forge',
     };
 
-    await controller.register(corps);
+    await controller.register(corps as CreateUserDto);
 
     expect(creation.execute.mock.calls).toEqual([
       [{ ...corps, updatedOrCreatedBy: 'self-registration' }],

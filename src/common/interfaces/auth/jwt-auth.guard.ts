@@ -7,7 +7,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import type { Request } from 'express';
+import type { Request, Response } from 'express';
 import { JwtTokenService } from '../../../modules/users/application/services/JwtTokenService';
 import type { JwtPayload } from '../../../modules/users/application/services/JwtPayload';
 import type { IUsersRepository } from '../../../modules/users/domain/IUsers.repository';
@@ -22,6 +22,21 @@ const EMAIL_VERIFICATION_EXEMPT_PATHS = [
 
 interface AuthenticatedRequest extends Request {
   user?: JwtPayload;
+}
+
+const DEFI_SANS_JETON = 'Bearer';
+const DEFI_DU_JETON_INVALIDE = 'Bearer error="invalid_token"';
+
+function refuserLeJeton(
+  context: ExecutionContext,
+  defi: string,
+  message: string,
+): UnauthorizedException {
+  context
+    .switchToHttp()
+    .getResponse<Response>()
+    .setHeader('WWW-Authenticate', defi);
+  return new UnauthorizedException(message);
 }
 
 @Injectable()
@@ -47,7 +62,9 @@ export class JwtAuthGuard implements CanActivate {
     const authHeader = request.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      throw new UnauthorizedException(
+      throw refuserLeJeton(
+        context,
+        DEFI_SANS_JETON,
         'Missing or invalid authorization header',
       );
     }
@@ -56,28 +73,23 @@ export class JwtAuthGuard implements CanActivate {
 
     try {
       const payload = await this.jwtTokenService.verify(token);
-      request.user = payload;
-
-      if (!this.isEmailVerificationExempt(request)) {
-        await this.ensureAccountExistsAndEmailVerified(payload.sub);
+      const user = await this.usersRepo.findById(payload.sub);
+      if (!user?.isActive) {
+        throw new UnauthorizedException('Utilisateur introuvable ou desactive');
       }
+      if (!user.emailVerified && !this.isEmailVerificationExempt(request)) {
+        throw new ForbiddenException('Email non verifie');
+      }
+      request.user = { ...payload, roles: user.roles };
 
       return true;
     } catch (error) {
       if (error instanceof ForbiddenException) throw error;
-      throw new UnauthorizedException('Invalid or expired token');
-    }
-  }
-
-  private async ensureAccountExistsAndEmailVerified(
-    userId: string,
-  ): Promise<void> {
-    const user = await this.usersRepo.findById(userId);
-    if (!user) {
-      throw new UnauthorizedException('Utilisateur introuvable');
-    }
-    if (!user.emailVerified) {
-      throw new ForbiddenException('Email non verifie');
+      throw refuserLeJeton(
+        context,
+        DEFI_DU_JETON_INVALIDE,
+        'Invalid or expired token',
+      );
     }
   }
 

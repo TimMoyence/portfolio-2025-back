@@ -26,6 +26,11 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
   },
   "AttenduFeuillePresentateurResponseDto": {
     "properties": {
+      "affichage": {
+        "description": "Valeur attendue ecrite a la francaise : taux a quatre decimales, montant a deux, milliers separes par une espace fine insecable",
+        "example": "0,3452",
+        "type": "string",
+      },
       "forme": {
         "oneOf": [
           {
@@ -59,6 +64,7 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
       "reference",
       "formuleReference",
       "valeur",
+      "affichage",
       "tolerance",
       "forme",
     ],
@@ -84,6 +90,14 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
       "cle",
       "valeur",
     ],
+    "type": "object",
+  },
+  "CadrageDuRenvoiResponseDto": {
+    "properties": {
+      "extrait": {
+        "$ref": "#/components/schemas/ExtraitDuRenvoiResponseDto",
+      },
+    },
     "type": "object",
   },
   "ComptesJalonResponseDto": {
@@ -156,7 +170,8 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
     "properties": {
       "ecran": {
         "example": 4,
-        "type": "number",
+        "minimum": 0,
+        "type": "integer",
       },
       "intervalle": {
         "$ref": "#/components/schemas/FreeRangeDto",
@@ -173,6 +188,79 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
         "$ref": "#/components/schemas/PilotageEcranRequestDto",
       },
     },
+    "type": "object",
+  },
+  "CorrectionServieResponseDto": {
+    "properties": {
+      "corrige": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/CorrigeFeuillePresentateurResponseDto",
+          },
+          {
+            "$ref": "#/components/schemas/CorrigeTableauPresentateurResponseDto",
+          },
+          {
+            "$ref": "#/components/schemas/CorrigeClassementPresentateurResponseDto",
+          },
+          {
+            "$ref": "#/components/schemas/CorrigeEnigmesPresentateurResponseDto",
+          },
+          {
+            "$ref": "#/components/schemas/CorrigeDefiPresentateurResponseDto",
+          },
+          {
+            "$ref": "#/components/schemas/CorrigeRevelationPresentateurResponseDto",
+          },
+          {
+            "$ref": "#/components/schemas/CorrigeReflexionPresentateurResponseDto",
+          },
+          {
+            "enum": [
+              null,
+            ],
+            "nullable": true,
+            "type": "object",
+          },
+        ],
+      },
+      "ecranId": {
+        "example": "B2-01-A3-02-VOTE",
+        "type": "string",
+      },
+      "explications": {
+        "items": {
+          "$ref": "#/components/schemas/ExplicationDeCorrectionResponseDto",
+        },
+        "type": "array",
+      },
+      "questions": {
+        "items": {
+          "$ref": "#/components/schemas/QuestionCorrigeeResponseDto",
+        },
+        "type": "array",
+      },
+      "reflexion": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/ReflexionPresentateurResponseDto",
+          },
+          {
+            "enum": [
+              null,
+            ],
+            "nullable": true,
+            "type": "object",
+          },
+        ],
+      },
+    },
+    "required": [
+      "ecranId",
+      "questions",
+      "corrige",
+      "reflexion",
+    ],
     "type": "object",
   },
   "CorrigeClassementPresentateurResponseDto": {
@@ -347,6 +435,14 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
         },
         "type": "array",
       },
+      "tableauCorrige": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/TableauEvalueResponseDto",
+          },
+        ],
+        "description": "Tableau rempli des valeurs attendues, colonnes deduites, totaux, synthese et solde calcules",
+      },
       "tolerance": {
         "$ref": "#/components/schemas/ToleranceResponseDto",
       },
@@ -360,6 +456,7 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
     "required": [
       "type",
       "attendus",
+      "tableauCorrige",
       "tolerance",
     ],
     "type": "object",
@@ -538,9 +635,19 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
   },
   "EcranDerouleResponseDto": {
     "properties": {
+      "cadrageDuRenvoi": {
+        "$ref": "#/components/schemas/CadrageDuRenvoiResponseDto",
+      },
+      "correction": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/CorrectionServieResponseDto",
+          },
+        ],
+        "description": "Correction servie au poste une fois l ecran revele",
+      },
       "corrigeEcran": {
         "description": "Corrige de production, de defi, de revelation ou de reflexion ; servi au sujet seulement une fois l ecran revele, jamais au catalogue",
-        "nullable": true,
         "oneOf": [
           {
             "$ref": "#/components/schemas/CorrigeFeuillePresentateurResponseDto",
@@ -562,6 +669,13 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
           },
           {
             "$ref": "#/components/schemas/CorrigeReflexionPresentateurResponseDto",
+          },
+          {
+            "enum": [
+              null,
+            ],
+            "nullable": true,
+            "type": "object",
           },
         ],
       },
@@ -588,6 +702,18 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
         "example": 4,
         "type": "number",
       },
+      "ecranCorrige": {
+        "description": "Ecran dont celui-ci porte la correction",
+        "example": "B3-01-A2-03-ATELIER",
+        "type": "string",
+      },
+      "explications": {
+        "description": "Explications d un exercice corrige sur place, devoilees une a une au pupitre",
+        "items": {
+          "$ref": "#/components/schemas/ExplicationDeCorrectionResponseDto",
+        },
+        "type": "array",
+      },
       "id": {
         "example": "E-OUV-RAPPEL",
         "type": "string",
@@ -600,9 +726,46 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
         "description": "Notes du formateur",
         "type": "string",
       },
+      "pieceJointe": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/PieceJointePubliqueResponseDto",
+          },
+          {
+            "$ref": "#/components/schemas/PieceJointeReserveeResponseDto",
+          },
+        ],
+      },
       "questions": {
         "items": {
           "$ref": "#/components/schemas/QuestionDerouleResponseDto",
+        },
+        "type": "array",
+      },
+      "reflexion": {
+        "description": "Reponse attendue d un recit a reflexion, la meme que celle revelee a l etudiant",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/ReflexionPresentateurResponseDto",
+          },
+          {
+            "enum": [
+              null,
+            ],
+            "nullable": true,
+            "type": "object",
+          },
+        ],
+      },
+      "renvoi": {
+        "description": "Ecran dont celui-ci reprend le contenu",
+        "example": "B3-01-A1-02-COURRIEL",
+        "type": "string",
+      },
+      "resoluPar": {
+        "description": "Ecrans qui corrigent celui-ci",
+        "items": {
+          "type": "string",
         },
         "type": "array",
       },
@@ -636,11 +799,23 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
       "corriges",
       "questions",
       "corrigeEcran",
+      "reflexion",
     ],
     "type": "object",
   },
   "EcranPublicResponseDto": {
     "properties": {
+      "cadrageDuRenvoi": {
+        "$ref": "#/components/schemas/CadrageDuRenvoiResponseDto",
+      },
+      "correction": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/CorrectionServieResponseDto",
+          },
+        ],
+        "description": "Correction servie au poste une fois l ecran revele",
+      },
       "donnees": {
         "additionalProperties": true,
         "description": "Proprietes de la brique, rangees sous la propriete de la brique ; sans solution, piege, confusion ni notes",
@@ -651,6 +826,11 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
         "example": 4,
         "type": "number",
       },
+      "ecranCorrige": {
+        "description": "Ecran dont celui-ci porte la correction",
+        "example": "B3-01-A2-03-ATELIER",
+        "type": "string",
+      },
       "id": {
         "example": "E-OUV-RAPPEL",
         "type": "string",
@@ -658,6 +838,28 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
       "interactif": {
         "example": true,
         "type": "boolean",
+      },
+      "pieceJointe": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/PieceJointePubliqueResponseDto",
+          },
+          {
+            "$ref": "#/components/schemas/PieceJointeReserveeResponseDto",
+          },
+        ],
+      },
+      "renvoi": {
+        "description": "Ecran dont celui-ci reprend le contenu",
+        "example": "B3-01-A1-02-COURRIEL",
+        "type": "string",
+      },
+      "resoluPar": {
+        "description": "Ecrans qui corrigent celui-ci",
+        "items": {
+          "type": "string",
+        },
+        "type": "array",
       },
       "titre": {
         "description": "Titre de l ecran, obligatoire a partir de la version 3",
@@ -722,6 +924,30 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
   },
   "EnigmesParticipantResponseDto": {
     "properties": {
+      "acheve": {
+        "description": "Parcours fini : plus aucune enigme ouverte",
+        "example": false,
+        "type": "boolean",
+      },
+      "enigmeOuverte": {
+        "description": "Enigme qui recoit la prochaine tentative, null si aucune",
+        "example": "enigme-1",
+        "nullable": true,
+        "type": "string",
+      },
+      "etats": {
+        "additionalProperties": {
+          "$ref": "#/components/schemas/EtatDEnigmeResponseDto",
+        },
+        "description": "Etat et tentatives restantes de chaque enigme du parcours, par identifiant",
+        "example": {
+          "enigme-1": {
+            "etat": "ouverte",
+            "tentativesRestantes": 10,
+          },
+        },
+        "type": "object",
+      },
       "parcoursId": {
         "example": "b2-01-a6-coffre",
         "type": "string",
@@ -744,8 +970,36 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
       },
     },
     "required": [
+      "etats",
+      "enigmeOuverte",
+      "acheve",
       "parcoursId",
       "resolues",
+      "tentativesRestantes",
+    ],
+    "type": "object",
+  },
+  "EtatDEnigmeResponseDto": {
+    "properties": {
+      "etat": {
+        "enum": [
+          "resolue",
+          "epuisee",
+          "ouverte",
+          "verrouillee",
+        ],
+        "example": "ouverte",
+        "type": "string",
+      },
+      "tentativesRestantes": {
+        "example": 9,
+        "maximum": 10,
+        "minimum": 0,
+        "type": "number",
+      },
+    },
+    "required": [
+      "etat",
       "tentativesRestantes",
     ],
     "type": "object",
@@ -811,6 +1065,175 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
     ],
     "type": "object",
   },
+  "EvaluerFeuilleRequestDto": {
+    "properties": {
+      "cellules": {
+        "additionalProperties": {
+          "maxLength": 200,
+          "type": "string",
+        },
+        "description": "Saisie brute de chaque cellule de l eleve, formule ou valeur",
+        "example": {
+          "D2": "=C2*2",
+        },
+        "maxProperties": 400,
+        "type": "object",
+        "x-propertyNames": {
+          "maxLength": 60,
+          "minLength": 1,
+          "type": "string",
+        },
+      },
+      "recopie": {
+        "$ref": "#/components/schemas/RecopieDeCelluleDto",
+      },
+    },
+    "required": [
+      "cellules",
+    ],
+    "type": "object",
+  },
+  "EvaluerMachineRequestDto": {
+    "properties": {
+      "reglages": {
+        "additionalProperties": {
+          "type": "number",
+        },
+        "description": "Reglages des curseurs de l eleve, par cle de parametre ; les autres gardent leur defaut",
+        "example": {
+          "tauxDeux": -50,
+          "tauxUn": 50,
+        },
+        "type": "object",
+      },
+    },
+    "required": [
+      "reglages",
+    ],
+    "type": "object",
+  },
+  "EvaluerTableauRequestDto": {
+    "properties": {
+      "saisies": {
+        "items": {
+          "$ref": "#/components/schemas/SaisieBruteDeTableauDto",
+        },
+        "maxItems": 400,
+        "type": "array",
+      },
+    },
+    "required": [
+      "saisies",
+    ],
+    "type": "object",
+  },
+  "ExplicationDeCorrectionResponseDto": {
+    "properties": {
+      "reference": {
+        "example": "identifiant",
+        "type": "string",
+      },
+      "texte": {
+        "example": "Cinq identifiants : on les compte, on ne les additionne jamais.",
+        "type": "string",
+      },
+    },
+    "required": [
+      "reference",
+      "texte",
+    ],
+    "type": "object",
+  },
+  "ExtraitDuRenvoiResponseDto": {
+    "properties": {
+      "champs": {
+        "description": "Champs du cas repris de l ecran renvoye",
+        "items": {
+          "enum": [
+            "metier",
+            "situation",
+            "geste",
+            "consequence",
+          ],
+          "type": "string",
+        },
+        "type": "array",
+      },
+      "lignes": {
+        "description": "Rangs des lignes reprises de l ecran renvoye",
+        "example": [
+          0,
+          2,
+        ],
+        "items": {
+          "type": "number",
+        },
+        "type": "array",
+      },
+    },
+    "type": "object",
+  },
+  "FeuilleEvalueeResponseDto": {
+    "properties": {
+      "affichages": {
+        "additionalProperties": {
+          "type": "string",
+        },
+        "description": "Ce qu affiche chaque cellule non vide : resultat de la formule, code d erreur ou saisie",
+        "example": {
+          "C2": "6400",
+          "D2": "12800",
+        },
+        "type": "object",
+      },
+      "formules": {
+        "description": "Cellules dont la saisie est une formule",
+        "example": [
+          "D2",
+          "D3",
+        ],
+        "items": {
+          "type": "string",
+        },
+        "type": "array",
+      },
+      "natures": {
+        "additionalProperties": {
+          "enum": [
+            "texte",
+            "nombre",
+            "logique",
+            "erreur",
+          ],
+          "type": "string",
+        },
+        "description": "Nature de la valeur affichee par chaque cellule non vide",
+        "example": {
+          "C2": "nombre",
+          "D2": "nombre",
+        },
+        "type": "object",
+      },
+      "saisies": {
+        "additionalProperties": {
+          "type": "string",
+        },
+        "description": "Saisie retenue de chaque cellule de l eleve, recopie comprise, imposees exclues",
+        "example": {
+          "D2": "=C2*2",
+          "D3": "=C3*2",
+        },
+        "type": "object",
+      },
+    },
+    "required": [
+      "saisies",
+      "affichages",
+      "natures",
+      "formules",
+    ],
+    "type": "object",
+  },
   "FormeMemeQueResponseDto": {
     "properties": {
       "memeQue": {
@@ -828,13 +1251,19 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
     "properties": {
       "dernier": {
         "example": 9,
-        "type": "number",
+        "minimum": 0,
+        "type": "integer",
       },
       "premier": {
         "example": 3,
-        "type": "number",
+        "minimum": 0,
+        "type": "integer",
       },
     },
+    "required": [
+      "premier",
+      "dernier",
+    ],
     "type": "object",
   },
   "JalonParticipantResponseDto": {
@@ -876,6 +1305,106 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
     ],
     "type": "object",
   },
+  "LigneDeMachineResponseDto": {
+    "properties": {
+      "courante": {
+        "description": "Ligne du reglage courant du curseur",
+        "type": "boolean",
+      },
+      "resultat": {
+        "$ref": "#/components/schemas/ValeurDeMachineResponseDto",
+      },
+      "valeur": {
+        "$ref": "#/components/schemas/ValeurDeMachineResponseDto",
+      },
+    },
+    "required": [
+      "valeur",
+      "resultat",
+      "courante",
+    ],
+    "type": "object",
+  },
+  "LigneDuTableauResponseDto": {
+    "properties": {
+      "rang": {
+        "example": 0,
+        "type": "number",
+      },
+      "valeurs": {
+        "additionalProperties": {
+          "$ref": "#/components/schemas/ValeurDuTableauResponseDto",
+        },
+        "description": "Valeur de chaque colonne de la ligne, par cle de colonne",
+        "type": "object",
+      },
+    },
+    "required": [
+      "rang",
+      "valeurs",
+    ],
+    "type": "object",
+  },
+  "MachineEvalueeResponseDto": {
+    "properties": {
+      "courbes": {
+        "additionalProperties": {
+          "items": {
+            "$ref": "#/components/schemas/PointDeCourbeResponseDto",
+          },
+          "type": "array",
+        },
+        "description": "Resultat le long de chaque curseur, les autres a leur reglage, par cle",
+        "type": "object",
+      },
+      "etapes": {
+        "description": "Valeur a la sortie de chaque etape, dans son ordre",
+        "items": {
+          "$ref": "#/components/schemas/ValeurDeMachineResponseDto",
+        },
+        "type": "array",
+      },
+      "lignes": {
+        "additionalProperties": {
+          "items": {
+            "$ref": "#/components/schemas/LigneDeMachineResponseDto",
+          },
+          "type": "array",
+        },
+        "description": "Table de valeurs de chaque curseur, par cle",
+        "type": "object",
+      },
+      "phrase": {
+        "description": "Phrase de la machine, resultat ecrit a sa place",
+        "example": "Le prix final vaut 99 €.",
+        "type": "string",
+      },
+      "resultat": {
+        "$ref": "#/components/schemas/ValeurDeMachineResponseDto",
+      },
+      "valeurs": {
+        "additionalProperties": {
+          "type": "number",
+        },
+        "description": "Reglage de chaque curseur, defauts compris, par cle",
+        "example": {
+          "depart": 100,
+          "tauxDeux": -10,
+          "tauxUn": 10,
+        },
+        "type": "object",
+      },
+    },
+    "required": [
+      "valeurs",
+      "resultat",
+      "etapes",
+      "courbes",
+      "lignes",
+      "phrase",
+    ],
+    "type": "object",
+  },
   "NotationParTypeResponseDto": {
     "properties": {
       "nonNotees": {
@@ -900,10 +1429,13 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
         "example": 40,
         "maximum": 60,
         "minimum": 1,
-        "type": "number",
+        "type": "integer",
       },
       "courseSlug": {
         "example": "b2-01-traitement-information-chiffree",
+        "maxLength": 120,
+        "minLength": 1,
+        "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
         "type": "string",
       },
     },
@@ -961,19 +1493,57 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
     ],
     "type": "object",
   },
+  "PieceJointePubliqueResponseDto": {
+    "properties": {
+      "fichier": {
+        "description": "Chemin public du fichier",
+        "example": "/assets/cours/b3-01/B3-01_export_ventes.d4f2ceab.xlsx",
+        "type": "string",
+      },
+      "libelle": {
+        "example": "Export des ventes Norvane (classeur Excel)",
+        "type": "string",
+      },
+    },
+    "required": [
+      "libelle",
+      "fichier",
+    ],
+    "type": "object",
+  },
+  "PieceJointeReserveeResponseDto": {
+    "properties": {
+      "libelle": {
+        "example": "Classeur de la séance",
+        "type": "string",
+      },
+      "reservee": {
+        "description": "Piece reservee a la seance, telechargee par la route liee au jeton",
+        "enum": [
+          true,
+        ],
+        "type": "number",
+      },
+    },
+    "required": [
+      "libelle",
+      "reservee",
+    ],
+    "type": "object",
+  },
   "PilotageEcranRequestDto": {
     "properties": {
       "etayage": {
         "description": "Etapes montrees d un exemple travaille",
         "example": 2,
         "minimum": 0,
-        "type": "number",
+        "type": "integer",
       },
       "explicationsDevoilees": {
         "description": "Explications devoilees sur l ecran d un exercice corrige sur place, dans leur ordre, jamais retirees",
         "example": 1,
         "minimum": 0,
-        "type": "number",
+        "type": "integer",
       },
       "optionsAffichees": {
         "description": "Affichage immediat des options d un rappel, sans attendre la fin du decompte, jamais retire",
@@ -1010,6 +1580,8 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
       },
       "screenId": {
         "example": "B2-01-A3-01-VOTE-HAUSSE-BAISSE",
+        "maxLength": 120,
+        "minLength": 1,
         "type": "string",
       },
     },
@@ -1018,17 +1590,42 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
     ],
     "type": "object",
   },
+  "PointDeCourbeResponseDto": {
+    "properties": {
+      "x": {
+        "example": 10,
+        "type": "number",
+      },
+      "y": {
+        "example": 99,
+        "nullable": true,
+        "type": "number",
+      },
+    },
+    "required": [
+      "x",
+      "y",
+    ],
+    "type": "object",
+  },
   "ProductionClassementDto": {
     "properties": {
       "classement": {
         "additionalProperties": {
+          "maxLength": 60,
           "type": "string",
         },
         "description": "Categorie choisie pour chaque carte",
         "example": {
           "carte-ca-2024-2025": "comparable",
         },
+        "maxProperties": 400,
         "type": "object",
+        "x-propertyNames": {
+          "maxLength": 60,
+          "minLength": 1,
+          "type": "string",
+        },
       },
       "type": {
         "enum": [
@@ -1055,7 +1652,13 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
           "B5": "=SOMME(B2:B4)",
           "E2": "=C2/$C$5",
         },
+        "maxProperties": 400,
         "type": "object",
+        "x-propertyNames": {
+          "maxLength": 60,
+          "minLength": 1,
+          "type": "string",
+        },
       },
       "type": {
         "enum": [
@@ -1073,10 +1676,14 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
   "ProductionNeSaitPasDto": {
     "properties": {
       "neSaitPas": {
-        "enum": [
-          true,
+        "oneOf": [
+          {
+            "enum": [
+              true,
+            ],
+            "type": "boolean",
+          },
         ],
-        "type": "number",
       },
       "type": {
         "enum": [
@@ -1099,6 +1706,7 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
         "items": {
           "$ref": "#/components/schemas/SaisieTableauDto",
         },
+        "maxItems": 400,
         "type": "array",
       },
       "type": {
@@ -1148,6 +1756,29 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
       "resolues",
       "tentativesMoyennes",
       "epuisees",
+    ],
+    "type": "object",
+  },
+  "QuestionCorrigeeResponseDto": {
+    "properties": {
+      "bonneReponse": {
+        "example": "plus bas qu’au départ",
+        "type": "string",
+      },
+      "optionId": {
+        "example": "b",
+        "nullable": true,
+        "type": "string",
+      },
+      "questionId": {
+        "example": "b2-01-a3-vote-hausse-baisse",
+        "type": "string",
+      },
+    },
+    "required": [
+      "questionId",
+      "bonneReponse",
+      "optionId",
     ],
     "type": "object",
   },
@@ -1362,6 +1993,39 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
     ],
     "type": "object",
   },
+  "RecopieDeCelluleDto": {
+    "properties": {
+      "de": {
+        "description": "Cellule recopiee vers la cellule du dessous",
+        "example": "D2",
+        "maxLength": 12,
+        "minLength": 2,
+        "type": "string",
+      },
+    },
+    "required": [
+      "de",
+    ],
+    "type": "object",
+  },
+  "ReflexionPresentateurResponseDto": {
+    "properties": {
+      "attendu": {
+        "example": "Un montant et un taux, sur deux dates.",
+        "type": "string",
+      },
+      "suite": {
+        "example": "Nommez toujours le dénominateur.",
+        "nullable": true,
+        "type": "string",
+      },
+    },
+    "required": [
+      "attendu",
+      "suite",
+    ],
+    "type": "object",
+  },
   "RegleDeNotationResponseDto": {
     "properties": {
       "base": {
@@ -1461,6 +2125,23 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
     ],
     "type": "object",
   },
+  "RemediationResponseDto": {
+    "properties": {
+      "confusionId": {
+        "example": "hausse-baisse-symetriques",
+        "type": "string",
+      },
+      "ecranId": {
+        "example": "B2-01-A2-04-REMEDIATION",
+        "type": "string",
+      },
+    },
+    "required": [
+      "confusionId",
+      "ecranId",
+    ],
+    "type": "object",
+  },
   "ReponseLibreParticipantResponseDto": {
     "properties": {
       "activityId": {
@@ -1543,6 +2224,12 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
   },
   "ResultatQuestionResponseDto": {
     "properties": {
+      "confusionDominante": {
+        "description": "Confusion la plus frequente, a egalite la premiere par identifiant",
+        "example": "hausse-baisse-symetriques",
+        "nullable": true,
+        "type": "string",
+      },
       "confusions": {
         "description": "Confusions triees par frequence",
         "items": {
@@ -1586,15 +2273,40 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
         "nullable": true,
         "type": "object",
       },
+      "part": {
+        "description": "Part des reponses correctes, 0 sans reponse",
+        "example": 0.7,
+        "type": "number",
+      },
       "questionId": {
         "example": "Q-M2-PIVOT",
         "type": "string",
+      },
+      "remediation": {
+        "description": "Ecran de remediation de la confusion dominante, sous le seuil seulement",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/RemediationResponseDto",
+          },
+          {
+            "enum": [
+              null,
+            ],
+            "nullable": true,
+            "type": "object",
+          },
+        ],
       },
       "scoreMoyen": {
         "description": "Productions : score moyen",
         "example": 0.71,
         "nullable": true,
         "type": "number",
+      },
+      "sousLeSeuil": {
+        "description": "Part sous le seuil de l ecran, avec au moins une reponse",
+        "example": true,
+        "type": "boolean",
       },
       "total": {
         "example": 30,
@@ -1625,6 +2337,10 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
       "parOption",
       "scoreMoyen",
       "parCle",
+      "confusionDominante",
+      "part",
+      "sousLeSeuil",
+      "remediation",
     ],
     "type": "object",
   },
@@ -1664,15 +2380,45 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
     ],
     "type": "object",
   },
-  "SaisieTableauDto": {
+  "SaisieBruteDeTableauDto": {
     "properties": {
       "cle": {
         "example": "prix",
+        "maxLength": 60,
+        "pattern": "^[a-z][A-Za-z]*$",
         "type": "string",
       },
       "rang": {
         "example": 1,
-        "type": "number",
+        "minimum": 0,
+        "type": "integer",
+      },
+      "saisie": {
+        "description": "Saisie brute de l eleve, lue par le back a la francaise",
+        "example": "21,6",
+        "maxLength": 200,
+        "type": "string",
+      },
+    },
+    "required": [
+      "rang",
+      "cle",
+      "saisie",
+    ],
+    "type": "object",
+  },
+  "SaisieTableauDto": {
+    "properties": {
+      "cle": {
+        "example": "prix",
+        "maxLength": 60,
+        "pattern": "^[a-z][A-Za-z]*$",
+        "type": "string",
+      },
+      "rang": {
+        "example": 1,
+        "minimum": 0,
+        "type": "integer",
       },
       "valeur": {
         "example": 20.52,
@@ -1939,11 +2685,15 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
     "properties": {
       "dureeMs": {
         "example": 180000,
-        "type": "number",
+        "maximum": 18000000,
+        "minimum": 0,
+        "type": "integer",
       },
       "texte": {
         "description": "Tentative du participant, la premiere envoyee est figee",
         "example": "Multiplier les coefficients de chaque revision.",
+        "maxLength": 2000,
+        "minLength": 1,
         "type": "string",
       },
     },
@@ -1957,11 +2707,15 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
     "properties": {
       "dureeMs": {
         "example": 600000,
-        "type": "number",
+        "maximum": 18000000,
+        "minimum": 0,
+        "type": "integer",
       },
       "questionId": {
         "description": "Identifiant de la question de production, egal a celui du plan",
         "example": "b2-01-a4-feuille-canaux",
+        "maxLength": 60,
+        "minLength": 1,
         "type": "string",
       },
       "valeur": {
@@ -2117,11 +2871,81 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
     ],
     "type": "object",
   },
+  "TableauEvalueResponseDto": {
+    "properties": {
+      "lignes": {
+        "items": {
+          "$ref": "#/components/schemas/LigneDuTableauResponseDto",
+        },
+        "type": "array",
+      },
+      "soldeFinal": {
+        "description": "Reste a verser apres la derniere ligne, null sans colonne soldee",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/ValeurDuTableauResponseDto",
+          },
+          {
+            "enum": [
+              null,
+            ],
+            "nullable": true,
+            "type": "object",
+          },
+        ],
+      },
+      "synthese": {
+        "description": "Resultat de chaque element de synthese du plan, dans son ordre, unite comprise",
+        "items": {
+          "$ref": "#/components/schemas/ValeurDuTableauResponseDto",
+        },
+        "type": "array",
+      },
+      "totaux": {
+        "additionalProperties": {
+          "$ref": "#/components/schemas/ValeurDuTableauResponseDto",
+        },
+        "description": "Total de chaque colonne totalisee, par cle de colonne",
+        "type": "object",
+      },
+    },
+    "required": [
+      "lignes",
+      "totaux",
+      "synthese",
+      "soldeFinal",
+    ],
+    "type": "object",
+  },
   "TentativeEnigmeResponseDto": {
     "properties": {
+      "acheve": {
+        "description": "Parcours fini : plus aucune enigme ouverte",
+        "example": false,
+        "type": "boolean",
+      },
       "correcte": {
         "example": true,
         "type": "boolean",
+      },
+      "enigmeOuverte": {
+        "description": "Enigme qui recoit la prochaine tentative, null si aucune",
+        "example": "enigme-1",
+        "nullable": true,
+        "type": "string",
+      },
+      "etats": {
+        "additionalProperties": {
+          "$ref": "#/components/schemas/EtatDEnigmeResponseDto",
+        },
+        "description": "Etat et tentatives restantes de chaque enigme du parcours, par identifiant",
+        "example": {
+          "enigme-1": {
+            "etat": "ouverte",
+            "tentativesRestantes": 10,
+          },
+        },
+        "type": "object",
       },
       "fragment": {
         "description": "Fragment du code, livre seulement a la resolution",
@@ -2137,6 +2961,9 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
       },
     },
     "required": [
+      "etats",
+      "enigmeOuverte",
+      "acheve",
       "correcte",
       "fragment",
       "tentativesRestantes",
@@ -2147,15 +2974,21 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
     "properties": {
       "dureeMs": {
         "example": 42000,
-        "type": "number",
+        "maximum": 18000000,
+        "minimum": 0,
+        "type": "integer",
       },
       "enigmeId": {
         "example": "enigme-1",
+        "maxLength": 60,
+        "minLength": 1,
         "type": "string",
       },
       "reponse": {
         "description": "Saisie brute, lue par lireNombreSaisiAvecUnite pour une solution chiffree",
         "example": "142 920",
+        "maxLength": 40,
+        "minLength": 1,
         "type": "string",
       },
     },
@@ -2184,6 +3017,1007 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
     "required": [
       "type",
       "valeur",
+    ],
+    "type": "object",
+  },
+  "ValeurDeMachineResponseDto": {
+    "properties": {
+      "affichage": {
+        "description": "Valeur arrondie au centieme, virgule decimale, tiret si elle ne se calcule pas",
+        "example": "99",
+        "type": "string",
+      },
+      "valeur": {
+        "description": "Valeur calculee, null si la machine ne la calcule pas",
+        "example": 99,
+        "nullable": true,
+        "type": "number",
+      },
+    },
+    "required": [
+      "valeur",
+      "affichage",
+    ],
+    "type": "object",
+  },
+  "ValeurDuTableauResponseDto": {
+    "properties": {
+      "affichage": {
+        "description": "Valeur ecrite au nombre de decimales de sa colonne, virgule decimale, tiret si elle ne se calcule pas",
+        "example": "21,60",
+        "type": "string",
+      },
+      "valeur": {
+        "description": "Valeur de la cellule, null si elle ne se calcule pas",
+        "example": 21.6,
+        "nullable": true,
+        "type": "number",
+      },
+    },
+    "required": [
+      "valeur",
+      "affichage",
+    ],
+    "type": "object",
+  },
+}
+`;
+
+exports[`OpenAPI core contract fige les schemas des DTO de saisie : comptes, contact, cookies, audit, boite a outils, newsletter, articles et entree en seance 1`] = `
+{
+  "ArticleListQueryDto": {
+    "properties": {
+      "cursor": {
+        "description": "Curseur opaque",
+        "type": "string",
+      },
+      "limit": {
+        "default": 12,
+        "maximum": 24,
+        "minimum": 1,
+        "type": "integer",
+      },
+      "locale": {
+        "default": "fr",
+        "enum": [
+          "fr",
+          "en",
+        ],
+        "example": "fr",
+        "type": "string",
+      },
+      "tag": {
+        "type": "string",
+      },
+    },
+    "type": "object",
+  },
+  "AuditRequestRequestDto": {
+    "properties": {
+      "contactMethod": {
+        "enum": [
+          "EMAIL",
+          "PHONE",
+        ],
+        "example": "EMAIL",
+        "type": "string",
+      },
+      "contactValue": {
+        "example": "hello@example.com",
+        "maxLength": 200,
+        "minLength": 6,
+        "type": "string",
+      },
+      "formStartedAt": {
+        "description": "Timestamp ms d'ouverture du formulaire",
+        "minimum": 0,
+        "type": "integer",
+      },
+      "locale": {
+        "enum": [
+          "fr",
+          "en",
+        ],
+        "example": "fr",
+        "type": "string",
+      },
+      "website": {
+        "description": "Champ piège anti-robot, doit rester vide",
+        "maxLength": 200,
+        "type": "string",
+      },
+      "websiteName": {
+        "example": "Example Studio",
+        "maxLength": 200,
+        "minLength": 2,
+        "type": "string",
+      },
+    },
+    "required": [
+      "websiteName",
+      "contactMethod",
+      "contactValue",
+    ],
+    "type": "object",
+  },
+  "AuditRequestResponseDto": {
+    "properties": {
+      "auditId": {
+        "example": "f8dd820d-fc38-4f6a-83be-a833aa6be16f",
+        "type": "string",
+      },
+      "httpCode": {
+        "example": 201,
+        "type": "number",
+      },
+      "message": {
+        "example": "Audit request created successfully.",
+        "type": "string",
+      },
+      "status": {
+        "enum": [
+          "PENDING",
+          "RUNNING",
+          "COMPLETED",
+          "FAILED",
+        ],
+        "example": "PENDING",
+        "type": "string",
+      },
+    },
+    "required": [
+      "message",
+      "httpCode",
+      "auditId",
+      "status",
+    ],
+    "type": "object",
+  },
+  "AuditSummaryResponseDto": {
+    "properties": {
+      "auditId": {
+        "example": "f8dd820d-fc38-4f6a-83be-a833aa6be16f",
+        "type": "string",
+      },
+      "keyChecks": {
+        "additionalProperties": true,
+        "example": {
+          "accessibility": {
+            "https": true,
+            "statusCode": 200,
+          },
+        },
+        "type": "object",
+      },
+      "pillarScores": {
+        "additionalProperties": {
+          "type": "number",
+        },
+        "example": {
+          "conversion": 66,
+          "performance": 64,
+          "seo": 72,
+          "technical": 78,
+          "trust": 60,
+        },
+        "type": "object",
+      },
+      "progress": {
+        "example": 100,
+        "type": "number",
+      },
+      "quickWins": {
+        "example": [
+          "Ajouter une meta description sur la page d’accueil.",
+          "Déclarer un sitemap.xml dans robots.txt.",
+        ],
+        "items": {
+          "type": "string",
+        },
+        "type": "array",
+      },
+      "ready": {
+        "example": true,
+        "type": "boolean",
+      },
+      "status": {
+        "enum": [
+          "PENDING",
+          "RUNNING",
+          "COMPLETED",
+          "FAILED",
+        ],
+        "example": "COMPLETED",
+        "type": "string",
+      },
+      "summaryText": {
+        "example": "Votre site est accessible et indexable, mais la meta description manque sur plusieurs pages importantes.",
+        "nullable": true,
+        "type": "string",
+      },
+    },
+    "required": [
+      "auditId",
+      "ready",
+      "status",
+      "progress",
+      "summaryText",
+      "keyChecks",
+      "quickWins",
+      "pillarScores",
+    ],
+    "type": "object",
+  },
+  "AuthMessageResponseDto": {
+    "properties": {
+      "message": {
+        "example": "Si un compte existe avec cet email, un lien de reinitialisation a ete envoye.",
+        "type": "string",
+      },
+    },
+    "required": [
+      "message",
+    ],
+    "type": "object",
+  },
+  "AuthResponseDto": {
+    "properties": {
+      "accessToken": {
+        "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+        "type": "string",
+      },
+      "expiresIn": {
+        "example": 900,
+        "type": "number",
+      },
+      "user": {
+        "$ref": "#/components/schemas/UserResponseDto",
+      },
+    },
+    "required": [
+      "accessToken",
+      "expiresIn",
+      "user",
+    ],
+    "type": "object",
+  },
+  "ChangePasswordDto": {
+    "properties": {
+      "currentPassword": {
+        "example": "CurrentPassword123",
+        "maxLength": 256,
+        "minLength": 1,
+        "type": "string",
+      },
+      "newPassword": {
+        "example": "NewPassword456!",
+        "maxLength": 256,
+        "minLength": 12,
+        "pattern": "^(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z0-9]).+$",
+        "type": "string",
+      },
+    },
+    "required": [
+      "currentPassword",
+      "newPassword",
+    ],
+    "type": "object",
+  },
+  "ContactRequestDto": {
+    "properties": {
+      "email": {
+        "example": "john.doe@example.com",
+        "format": "email",
+        "type": "string",
+      },
+      "firstName": {
+        "example": "John",
+        "maxLength": 50,
+        "minLength": 1,
+        "type": "string",
+      },
+      "formStartedAt": {
+        "description": "Timestamp ms d'ouverture du formulaire",
+        "minimum": 0,
+        "type": "integer",
+      },
+      "lastName": {
+        "example": "Doe",
+        "maxLength": 50,
+        "minLength": 1,
+        "type": "string",
+      },
+      "message": {
+        "example": "Hello, I would like to get in touch.",
+        "maxLength": 2000,
+        "minLength": 10,
+        "type": "string",
+      },
+      "phone": {
+        "example": "+11234567890",
+        "nullable": true,
+        "type": "string",
+      },
+      "role": {
+        "example": "Manager",
+        "maxLength": 100,
+        "minLength": 2,
+        "type": "string",
+      },
+      "subject": {
+        "example": "Devis Asking",
+        "maxLength": 100,
+        "minLength": 2,
+        "type": "string",
+      },
+      "terms": {
+        "default": false,
+        "example": true,
+        "type": "boolean",
+      },
+      "termsAcceptedAt": {
+        "example": "2026-02-11T10:45:00.000Z",
+        "format": "date-time",
+        "type": "string",
+      },
+      "termsLocale": {
+        "enum": [
+          "fr",
+          "en",
+        ],
+        "example": "fr",
+        "type": "string",
+      },
+      "termsMethod": {
+        "example": "contact_form_checkbox",
+        "maxLength": 50,
+        "type": "string",
+      },
+      "termsVersion": {
+        "example": "2026-02-11",
+        "maxLength": 50,
+        "type": "string",
+      },
+      "website": {
+        "description": "Champ piège anti-robot, doit rester vide",
+        "maxLength": 200,
+        "type": "string",
+      },
+    },
+    "required": [
+      "firstName",
+      "lastName",
+      "email",
+      "message",
+      "subject",
+      "role",
+      "terms",
+    ],
+    "type": "object",
+  },
+  "ContactResponseDto": {
+    "properties": {},
+    "type": "object",
+  },
+  "CookieConsentPreferencesRequestDto": {
+    "properties": {
+      "analytics": {
+        "example": false,
+        "type": "boolean",
+      },
+      "essential": {
+        "example": true,
+        "type": "boolean",
+      },
+      "marketing": {
+        "example": false,
+        "type": "boolean",
+      },
+      "preferences": {
+        "example": false,
+        "type": "boolean",
+      },
+    },
+    "required": [
+      "essential",
+      "preferences",
+      "analytics",
+      "marketing",
+    ],
+    "type": "object",
+  },
+  "CookieConsentRequestDto": {
+    "properties": {
+      "action": {
+        "enum": [
+          "accept_all",
+          "essential_only",
+          "save_preferences",
+          "withdraw",
+        ],
+        "example": "accept_all",
+        "type": "string",
+      },
+      "locale": {
+        "enum": [
+          "fr",
+          "en",
+        ],
+        "example": "fr",
+        "type": "string",
+      },
+      "policyVersion": {
+        "example": "2026-02-11",
+        "maxLength": 50,
+        "minLength": 1,
+        "type": "string",
+      },
+      "preferences": {
+        "$ref": "#/components/schemas/CookieConsentPreferencesRequestDto",
+      },
+      "region": {
+        "example": "EU_UK",
+        "maxLength": 20,
+        "minLength": 1,
+        "type": "string",
+      },
+      "source": {
+        "enum": [
+          "banner",
+          "settings",
+        ],
+        "example": "banner",
+        "type": "string",
+      },
+    },
+    "required": [
+      "policyVersion",
+      "locale",
+      "region",
+      "source",
+      "action",
+      "preferences",
+    ],
+    "type": "object",
+  },
+  "CookieConsentResponseDto": {
+    "properties": {
+      "httpCode": {
+        "example": 201,
+        "type": "number",
+      },
+      "message": {
+        "example": "Cookie consent recorded successfully.",
+        "type": "string",
+      },
+    },
+    "required": [
+      "message",
+      "httpCode",
+    ],
+    "type": "object",
+  },
+  "CreateUserDto": {
+    "properties": {
+      "email": {
+        "example": "john@example.com",
+        "format": "email",
+        "type": "string",
+      },
+      "firstName": {
+        "example": "John",
+        "maxLength": 50,
+        "minLength": 1,
+        "type": "string",
+      },
+      "isActive": {
+        "example": true,
+        "type": "boolean",
+      },
+      "lastName": {
+        "example": "Doe",
+        "maxLength": 50,
+        "minLength": 1,
+        "type": "string",
+      },
+      "password": {
+        "example": "StrongPassword123!",
+        "maxLength": 256,
+        "minLength": 12,
+        "pattern": "^(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z0-9]).+$",
+        "type": "string",
+      },
+      "phone": {
+        "example": "+11234567890",
+        "maxLength": 30,
+        "nullable": true,
+        "type": "string",
+      },
+      "roles": {
+        "description": "Liste des roles. Reserve aux administrateurs.",
+        "example": [
+          "teacher",
+        ],
+        "items": {
+          "enum": [
+            "admin",
+            "teacher",
+          ],
+          "type": "string",
+        },
+        "type": "array",
+      },
+    },
+    "required": [
+      "email",
+      "password",
+      "firstName",
+      "lastName",
+    ],
+    "type": "object",
+  },
+  "ForgotPasswordDto": {
+    "properties": {
+      "email": {
+        "example": "john@example.com",
+        "format": "email",
+        "type": "string",
+      },
+    },
+    "required": [
+      "email",
+    ],
+    "type": "object",
+  },
+  "GoogleAuthDto": {
+    "properties": {
+      "idToken": {
+        "description": "Google ID token reçu du client GIS",
+        "minLength": 1,
+        "type": "string",
+      },
+    },
+    "required": [
+      "idToken",
+    ],
+    "type": "object",
+  },
+  "InteractionProfileDto": {
+    "properties": {
+      "aiLevel": {
+        "enum": [
+          "debutant",
+          "intermediaire",
+          "avance",
+          null,
+        ],
+        "example": "debutant",
+        "nullable": true,
+        "type": "string",
+      },
+      "budgetTier": {
+        "enum": [
+          "0",
+          "60",
+          "120",
+          null,
+        ],
+        "example": "60",
+        "nullable": true,
+        "type": "string",
+      },
+      "generatedPrompt": {
+        "example": "Genere-moi un plan marketing pour...",
+        "maxLength": 2000,
+        "nullable": true,
+        "type": "string",
+      },
+      "sector": {
+        "example": "coaching",
+        "maxLength": 100,
+        "nullable": true,
+        "type": "string",
+      },
+      "toolsAlreadyUsed": {
+        "example": [
+          "chatgpt",
+          "canva-ai",
+        ],
+        "items": {
+          "maxLength": 100,
+          "type": "string",
+        },
+        "maxItems": 50,
+        "type": "array",
+      },
+    },
+    "type": "object",
+  },
+  "JoinSessionRequestDto": {
+    "properties": {
+      "email": {
+        "example": "theo.martin@example.com",
+        "format": "email",
+        "maxLength": 180,
+        "type": "string",
+      },
+      "formStartedAt": {
+        "description": "Timestamp ms d'ouverture du formulaire",
+        "minimum": 0,
+        "type": "integer",
+      },
+      "nom": {
+        "example": "Martin",
+        "maxLength": 80,
+        "minLength": 1,
+        "type": "string",
+      },
+      "prenom": {
+        "example": "Theo",
+        "maxLength": 80,
+        "minLength": 1,
+        "type": "string",
+      },
+      "secretDeReprise": {
+        "description": "Secret remis par la jonction precedente de ce poste ; exige pour reprendre une place deja prise",
+        "maxLength": 128,
+        "type": "string",
+      },
+      "website": {
+        "description": "Champ piège anti-robot, doit rester vide",
+        "maxLength": 200,
+        "type": "string",
+      },
+    },
+    "required": [
+      "prenom",
+      "nom",
+      "email",
+    ],
+    "type": "object",
+  },
+  "LoginDto": {
+    "properties": {
+      "email": {
+        "example": "john@example.com",
+        "format": "email",
+        "type": "string",
+      },
+      "password": {
+        "example": "StrongPassword123!",
+        "maxLength": 256,
+        "minLength": 1,
+        "type": "string",
+      },
+    },
+    "required": [
+      "email",
+      "password",
+    ],
+    "type": "object",
+  },
+  "RequestToolkitRequestDto": {
+    "properties": {
+      "email": {
+        "example": "marie@example.com",
+        "format": "email",
+        "type": "string",
+      },
+      "firstName": {
+        "example": "Marie",
+        "maxLength": 50,
+        "minLength": 1,
+        "type": "string",
+      },
+      "formStartedAt": {
+        "description": "Timestamp ms d'ouverture du formulaire",
+        "minimum": 0,
+        "type": "integer",
+      },
+      "formationSlug": {
+        "enum": [
+          "ia-solopreneurs",
+        ],
+        "example": "ia-solopreneurs",
+        "type": "string",
+      },
+      "profile": {
+        "$ref": "#/components/schemas/InteractionProfileDto",
+      },
+      "termsAcceptedAt": {
+        "example": "2026-04-10T10:00:00.000Z",
+        "format": "date-time",
+        "type": "string",
+      },
+      "termsLocale": {
+        "enum": [
+          "fr",
+          "en",
+        ],
+        "example": "fr",
+        "type": "string",
+      },
+      "termsVersion": {
+        "example": "2026-04-10",
+        "maxLength": 50,
+        "minLength": 1,
+        "type": "string",
+      },
+      "website": {
+        "description": "Champ piège anti-robot, doit rester vide",
+        "maxLength": 200,
+        "type": "string",
+      },
+    },
+    "required": [
+      "firstName",
+      "email",
+      "formationSlug",
+      "termsVersion",
+      "termsLocale",
+      "termsAcceptedAt",
+    ],
+    "type": "object",
+  },
+  "ResendVerificationDto": {
+    "properties": {
+      "email": {
+        "description": "Adresse email du compte a verifier",
+        "example": "john@example.com",
+        "format": "email",
+        "minLength": 1,
+        "type": "string",
+      },
+    },
+    "required": [
+      "email",
+    ],
+    "type": "object",
+  },
+  "ResetPasswordDto": {
+    "properties": {
+      "newPassword": {
+        "example": "NewPassword456!",
+        "maxLength": 256,
+        "minLength": 12,
+        "pattern": "^(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z0-9]).+$",
+        "type": "string",
+      },
+      "token": {
+        "example": "4f7ab9f3f7b3d0eaa77a4b5b0dcaea31695f15de22f22e53f35b98b0aaf3112c",
+        "pattern": "^[0-9a-f]{64}$",
+        "type": "string",
+      },
+    },
+    "required": [
+      "token",
+      "newPassword",
+    ],
+    "type": "object",
+  },
+  "SetPasswordDto": {
+    "properties": {
+      "newPassword": {
+        "example": "NewPassword456!",
+        "maxLength": 256,
+        "minLength": 12,
+        "pattern": "^(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z0-9]).+$",
+        "type": "string",
+      },
+    },
+    "required": [
+      "newPassword",
+    ],
+    "type": "object",
+  },
+  "SubscribeNewsletterRequestDto": {
+    "properties": {
+      "email": {
+        "example": "marie@example.com",
+        "format": "email",
+        "type": "string",
+      },
+      "firstName": {
+        "example": "Marie",
+        "maxLength": 50,
+        "type": "string",
+      },
+      "formStartedAt": {
+        "description": "Timestamp ms d'ouverture du formulaire",
+        "minimum": 0,
+        "type": "integer",
+      },
+      "locale": {
+        "enum": [
+          "fr",
+          "en",
+        ],
+        "example": "fr",
+        "type": "string",
+      },
+      "sourceFormationSlug": {
+        "enum": [
+          "ia-solopreneurs",
+          "automatiser-avec-ia",
+          "veille-ia",
+        ],
+        "example": "ia-solopreneurs",
+        "maxLength": 100,
+        "minLength": 1,
+        "type": "string",
+      },
+      "termsAcceptedAt": {
+        "example": "2026-04-10T10:00:00.000Z",
+        "format": "date-time",
+        "type": "string",
+      },
+      "termsVersion": {
+        "example": "2026-04-10",
+        "maxLength": 50,
+        "minLength": 1,
+        "type": "string",
+      },
+      "website": {
+        "description": "Champ piège anti-robot, doit rester vide",
+        "maxLength": 200,
+        "type": "string",
+      },
+    },
+    "required": [
+      "email",
+      "locale",
+      "sourceFormationSlug",
+      "termsVersion",
+      "termsAcceptedAt",
+    ],
+    "type": "object",
+  },
+  "UpdateProfileDto": {
+    "properties": {
+      "firstName": {
+        "example": "Jean",
+        "maxLength": 50,
+        "minLength": 1,
+        "type": "string",
+      },
+      "lastName": {
+        "example": "Dupont",
+        "maxLength": 50,
+        "minLength": 1,
+        "type": "string",
+      },
+      "phone": {
+        "example": "+33612345678",
+        "maxLength": 30,
+        "nullable": true,
+        "type": "string",
+      },
+    },
+    "type": "object",
+  },
+  "UpdateUserDto": {
+    "properties": {
+      "email": {
+        "example": "john@example.com",
+        "format": "email",
+        "type": "string",
+      },
+      "firstName": {
+        "example": "John",
+        "maxLength": 50,
+        "minLength": 1,
+        "type": "string",
+      },
+      "isActive": {
+        "example": true,
+        "type": "boolean",
+      },
+      "lastName": {
+        "example": "Doe",
+        "maxLength": 50,
+        "minLength": 1,
+        "type": "string",
+      },
+      "password": {
+        "example": "StrongPassword123!",
+        "maxLength": 256,
+        "minLength": 12,
+        "pattern": "^(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z0-9]).+$",
+        "type": "string",
+      },
+      "phone": {
+        "example": "+11234567890",
+        "maxLength": 30,
+        "nullable": true,
+        "type": "string",
+      },
+      "roles": {
+        "description": "Liste des roles. Reserve aux administrateurs.",
+        "example": [
+          "teacher",
+        ],
+        "items": {
+          "enum": [
+            "admin",
+            "teacher",
+          ],
+          "type": "string",
+        },
+        "type": "array",
+      },
+    },
+    "type": "object",
+  },
+  "UserResponseDto": {
+    "properties": {
+      "createdAt": {
+        "example": "2025-01-01T00:00:00.000Z",
+        "type": "string",
+      },
+      "email": {
+        "example": "john@example.com",
+        "type": "string",
+      },
+      "emailVerified": {
+        "description": "Indique si l'adresse email a ete verifiee.",
+        "example": true,
+        "type": "boolean",
+      },
+      "firstName": {
+        "example": "John",
+        "type": "string",
+      },
+      "hasPassword": {
+        "description": "Indique si le compte a un mot de passe defini.",
+        "example": true,
+        "type": "boolean",
+      },
+      "id": {
+        "example": "08bcd3fe-0d1d-4db6-9ee4-5a6a65c13c45",
+        "type": "string",
+      },
+      "isActive": {
+        "example": true,
+        "type": "boolean",
+      },
+      "lastName": {
+        "example": "Doe",
+        "type": "string",
+      },
+      "phone": {
+        "example": "+11234567890",
+        "nullable": true,
+        "type": "string",
+      },
+      "roles": {
+        "example": [
+          "teacher",
+        ],
+        "items": {
+          "type": "string",
+        },
+        "type": "array",
+      },
+      "updatedAt": {
+        "example": "2025-01-02T00:00:00.000Z",
+        "type": "string",
+      },
+      "updatedOrCreatedBy": {
+        "example": "system",
+        "nullable": true,
+        "type": "string",
+      },
+    },
+    "required": [
+      "id",
+      "email",
+      "firstName",
+      "lastName",
+      "isActive",
+      "roles",
+      "createdAt",
+      "hasPassword",
+      "emailVerified",
     ],
     "type": "object",
   },
@@ -2313,10 +4147,13 @@ exports[`OpenAPI core contract keeps Auth path contracts stable 1`] = `
           "description": "",
         },
         "400": {
-          "description": "Validation echouee",
+          "description": "Validation echouee ou mot de passe actuel incorrect",
         },
         "401": {
-          "description": "Identifiants invalides ou utilisateur inactif",
+          "description": "Session absente, expiree ou compte desactive",
+        },
+        "409": {
+          "description": "No password set for this account",
         },
       },
       "security": [
@@ -3057,18 +4894,26 @@ exports[`OpenAPI legacy contract (phase 11) keeps legacy DTO schemas stable 1`] 
     "properties": {
       "coverImage": {
         "example": "/images/ai-course.webp",
+        "maxLength": 500,
         "type": "string",
       },
       "slug": {
         "example": "ai-course",
+        "maxLength": 120,
+        "minLength": 2,
+        "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
         "type": "string",
       },
       "summary": {
         "example": "A premium course for practical AI delivery.",
+        "maxLength": 2000,
+        "minLength": 10,
         "type": "string",
       },
       "title": {
         "example": "AI Course",
+        "maxLength": 160,
+        "minLength": 2,
         "type": "string",
       },
     },
@@ -3159,6 +5004,7 @@ exports[`OpenAPI legacy contract (phase 11) keeps legacy DTO schemas stable 1`] 
     "properties": {
       "coverImage": {
         "example": "/images/portfolio.webp",
+        "maxLength": 500,
         "type": "string",
       },
       "gallery": {
@@ -3167,26 +5013,34 @@ exports[`OpenAPI legacy contract (phase 11) keeps legacy DTO schemas stable 1`] 
           "/images/portfolio-2.webp",
         ],
         "items": {
+          "maxLength": 500,
+          "minLength": 1,
           "type": "string",
         },
+        "maxItems": 20,
         "type": "array",
       },
       "liveUrl": {
         "example": "https://example.com",
+        "format": "uri",
         "type": "string",
       },
       "order": {
         "example": 0,
         "maximum": 10000,
         "minimum": 0,
-        "type": "number",
+        "type": "integer",
       },
       "repoUrl": {
         "example": "https://github.com/acme/portfolio",
+        "format": "uri",
         "type": "string",
       },
       "slug": {
         "example": "portfolio-site",
+        "maxLength": 120,
+        "minLength": 2,
+        "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
         "type": "string",
       },
       "stack": {
@@ -3195,8 +5049,11 @@ exports[`OpenAPI legacy contract (phase 11) keeps legacy DTO schemas stable 1`] 
           "postgres",
         ],
         "items": {
+          "maxLength": 50,
+          "minLength": 1,
           "type": "string",
         },
+        "maxItems": 30,
         "type": "array",
       },
       "status": {
@@ -3321,7 +5178,7 @@ exports[`OpenAPI legacy contract (phase 11) keeps legacy DTO schemas stable 1`] 
         "example": 0,
         "maximum": 1000000000,
         "minimum": 0,
-        "type": "number",
+        "type": "integer",
       },
       "enabled": {
         "default": true,
@@ -3330,10 +5187,14 @@ exports[`OpenAPI legacy contract (phase 11) keeps legacy DTO schemas stable 1`] 
       },
       "slug": {
         "example": "promo-offer",
+        "maxLength": 120,
+        "minLength": 2,
+        "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
         "type": "string",
       },
       "targetUrl": {
         "example": "https://example.com/promo",
+        "format": "uri",
         "type": "string",
       },
     },
@@ -3397,20 +5258,26 @@ exports[`OpenAPI legacy contract (phase 11) keeps legacy DTO schemas stable 1`] 
     "properties": {
       "icon": {
         "example": "/icons/seo.svg",
+        "maxLength": 500,
         "type": "string",
       },
       "name": {
         "example": "Technical SEO",
+        "maxLength": 120,
+        "minLength": 2,
         "type": "string",
       },
       "order": {
         "example": 0,
         "maximum": 10000,
         "minimum": 0,
-        "type": "number",
+        "type": "integer",
       },
       "slug": {
         "example": "technical-seo",
+        "maxLength": 120,
+        "minLength": 2,
+        "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
         "type": "string",
       },
       "status": {
@@ -3487,7 +5354,7 @@ exports[`OpenAPI legacy contract (phase 11) keeps legacy path contracts stable 1
             "default": 1,
             "example": 1,
             "minimum": 1,
-            "type": "number",
+            "type": "integer",
           },
         },
         {
@@ -3499,7 +5366,7 @@ exports[`OpenAPI legacy contract (phase 11) keeps legacy path contracts stable 1
             "example": 20,
             "maximum": 100,
             "minimum": 1,
-            "type": "number",
+            "type": "integer",
           },
         },
         {
@@ -3507,10 +5374,12 @@ exports[`OpenAPI legacy contract (phase 11) keeps legacy path contracts stable 1
           "name": "order",
           "required": false,
           "schema": {
+            "default": "DESC",
             "enum": [
               "ASC",
               "DESC",
             ],
+            "example": "DESC",
             "type": "string",
           },
         },
@@ -3519,11 +5388,13 @@ exports[`OpenAPI legacy contract (phase 11) keeps legacy path contracts stable 1
           "name": "sortBy",
           "required": false,
           "schema": {
+            "default": "createdAt",
             "enum": [
               "slug",
               "title",
               "createdAt",
             ],
+            "example": "createdAt",
             "type": "string",
           },
         },
@@ -3599,7 +5470,7 @@ exports[`OpenAPI legacy contract (phase 11) keeps legacy path contracts stable 1
             "default": 1,
             "example": 1,
             "minimum": 1,
-            "type": "number",
+            "type": "integer",
           },
         },
         {
@@ -3611,7 +5482,7 @@ exports[`OpenAPI legacy contract (phase 11) keeps legacy path contracts stable 1
             "example": 20,
             "maximum": 100,
             "minimum": 1,
-            "type": "number",
+            "type": "integer",
           },
         },
         {
@@ -3619,10 +5490,12 @@ exports[`OpenAPI legacy contract (phase 11) keeps legacy path contracts stable 1
           "name": "order",
           "required": false,
           "schema": {
+            "default": "ASC",
             "enum": [
               "ASC",
               "DESC",
             ],
+            "example": "ASC",
             "type": "string",
           },
         },
@@ -3631,12 +5504,14 @@ exports[`OpenAPI legacy contract (phase 11) keeps legacy path contracts stable 1
           "name": "sortBy",
           "required": false,
           "schema": {
+            "default": "order",
             "enum": [
               "order",
               "slug",
               "type",
               "createdAt",
             ],
+            "example": "order",
             "type": "string",
           },
         },
@@ -3649,6 +5524,7 @@ exports[`OpenAPI legacy contract (phase 11) keeps legacy path contracts stable 1
               "CLIENT",
               "SIDE",
             ],
+            "example": "SIDE",
             "type": "string",
           },
         },
@@ -3662,6 +5538,7 @@ exports[`OpenAPI legacy contract (phase 11) keeps legacy path contracts stable 1
               "PUBLISHED",
               "ARCHIVED",
             ],
+            "example": "PUBLISHED",
             "type": "string",
           },
         },
@@ -3737,7 +5614,7 @@ exports[`OpenAPI legacy contract (phase 11) keeps legacy path contracts stable 1
             "default": 1,
             "example": 1,
             "minimum": 1,
-            "type": "number",
+            "type": "integer",
           },
         },
         {
@@ -3749,7 +5626,7 @@ exports[`OpenAPI legacy contract (phase 11) keeps legacy path contracts stable 1
             "example": 20,
             "maximum": 100,
             "minimum": 1,
-            "type": "number",
+            "type": "integer",
           },
         },
         {
@@ -3757,10 +5634,12 @@ exports[`OpenAPI legacy contract (phase 11) keeps legacy path contracts stable 1
           "name": "order",
           "required": false,
           "schema": {
+            "default": "DESC",
             "enum": [
               "ASC",
               "DESC",
             ],
+            "example": "DESC",
             "type": "string",
           },
         },
@@ -3769,11 +5648,13 @@ exports[`OpenAPI legacy contract (phase 11) keeps legacy path contracts stable 1
           "name": "sortBy",
           "required": false,
           "schema": {
+            "default": "createdAt",
             "enum": [
               "slug",
               "clicks",
               "createdAt",
             ],
+            "example": "createdAt",
             "type": "string",
           },
         },
@@ -3858,7 +5739,7 @@ exports[`OpenAPI legacy contract (phase 11) keeps legacy path contracts stable 1
             "default": 1,
             "example": 1,
             "minimum": 1,
-            "type": "number",
+            "type": "integer",
           },
         },
         {
@@ -3870,7 +5751,7 @@ exports[`OpenAPI legacy contract (phase 11) keeps legacy path contracts stable 1
             "example": 20,
             "maximum": 100,
             "minimum": 1,
-            "type": "number",
+            "type": "integer",
           },
         },
         {
@@ -3878,10 +5759,12 @@ exports[`OpenAPI legacy contract (phase 11) keeps legacy path contracts stable 1
           "name": "order",
           "required": false,
           "schema": {
+            "default": "ASC",
             "enum": [
               "ASC",
               "DESC",
             ],
+            "example": "ASC",
             "type": "string",
           },
         },
@@ -3890,12 +5773,14 @@ exports[`OpenAPI legacy contract (phase 11) keeps legacy path contracts stable 1
           "name": "sortBy",
           "required": false,
           "schema": {
+            "default": "order",
             "enum": [
               "order",
               "slug",
               "name",
               "createdAt",
             ],
+            "example": "order",
             "type": "string",
           },
         },
@@ -3909,6 +5794,7 @@ exports[`OpenAPI legacy contract (phase 11) keeps legacy path contracts stable 1
               "PUBLISHED",
               "ARCHIVED",
             ],
+            "example": "PUBLISHED",
             "type": "string",
           },
         },

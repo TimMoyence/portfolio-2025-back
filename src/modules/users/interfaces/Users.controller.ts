@@ -30,6 +30,8 @@ import { CreateUserDto } from './dto/CreateUser.dto';
 import { UpdateUserDto } from './dto/UpdateUser.dto';
 import { UserResponseDto } from './dto/User.response.dto';
 
+const AUTEUR_ADMINISTRATEUR = 'admin';
+
 @ApiTags('users')
 @ApiBearerAuth()
 @Controller('users')
@@ -69,7 +71,10 @@ export class UsersController {
   @ApiCreatedResponse({ type: UserResponseDto })
   @ApiBadRequestResponse({ description: 'Validation echouee' })
   async create(@Body() dto: CreateUserDto): Promise<UserResponseDto> {
-    const result = await this.createUseCase.execute(dto);
+    const result = await this.createUseCase.execute({
+      ...dto,
+      updatedOrCreatedBy: AUTEUR_ADMINISTRATEUR,
+    });
     return UserResponseDto.fromDomain(result.user);
   }
 
@@ -82,7 +87,10 @@ export class UsersController {
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: UpdateUserDto,
   ): Promise<UserResponseDto> {
-    const user = await this.updateUseCase.execute(id, dto);
+    const user = await this.updateUseCase.execute(id, {
+      ...dto,
+      updatedOrCreatedBy: AUTEUR_ADMINISTRATEUR,
+    });
     return UserResponseDto.fromDomain(user);
   }
 

@@ -1,5 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsInt, IsOptional, IsUrl, Max, Min } from 'class-validator';
+import { IsBoolean, IsOptional } from 'class-validator';
+import {
+  EntierBorne,
+  UrlAbsolue,
+} from '../../../../common/interfaces/dto/bornes-annoncees.decorator';
 import { SlugDeContenu } from '../../../../common/interfaces/dto/champs-de-contenu.decorator';
 
 export class RedirectRequestDto {
@@ -7,7 +11,7 @@ export class RedirectRequestDto {
   slug: string;
 
   @ApiProperty({ example: 'https://example.com/promo' })
-  @IsUrl({ require_protocol: true })
+  @UrlAbsolue()
   targetUrl: string;
 
   @ApiProperty({ example: true, required: false, default: true })
@@ -15,10 +19,8 @@ export class RedirectRequestDto {
   @IsBoolean()
   enabled?: boolean;
 
-  @ApiProperty({ example: 0, required: false, minimum: 0, maximum: 1000000000 })
+  @ApiProperty({ example: 0, required: false })
   @IsOptional()
-  @IsInt()
-  @Min(0)
-  @Max(1000000000)
+  @EntierBorne(0, 1000000000)
   clicks?: number;
 }

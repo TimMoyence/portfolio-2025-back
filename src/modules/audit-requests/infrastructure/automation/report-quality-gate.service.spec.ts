@@ -211,18 +211,13 @@ describe('ReportQualityGateService', () => {
       aiVisibility: { score: 50, summary: 'Couverture IA a renforcer.' },
     },
     pillarScorecard: [
-      { pillar: 'seo', score: 62, target: 85, status: 'warning' },
-      { pillar: 'performance', score: 55, target: 85, status: 'warning' },
-      { pillar: 'technical', score: 70, target: 85, status: 'warning' },
-      { pillar: 'trust', score: 68, target: 85, status: 'warning' },
-      { pillar: 'conversion', score: 60, target: 85, status: 'warning' },
-      { pillar: 'aiVisibility', score: 48, target: 85, status: 'critical' },
-      {
-        pillar: 'citationWorthiness',
-        score: 52,
-        target: 85,
-        status: 'critical',
-      },
+      { pillar: 'seo', score: 62, target: 85 },
+      { pillar: 'performance', score: 55, target: 85 },
+      { pillar: 'technical', score: 70, target: 85 },
+      { pillar: 'trust', score: 68, target: 85 },
+      { pillar: 'conversion', score: 60, target: 85 },
+      { pillar: 'aiVisibility', score: 48, target: 85 },
+      { pillar: 'citationWorthiness', score: 52, target: 85 },
     ],
     quickWins: [
       {

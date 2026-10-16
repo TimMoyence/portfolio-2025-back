@@ -252,13 +252,17 @@ export class AuthController {
   }
 
   @Patch('change-password')
+  @Throttle({ default: { limit: 5, ttl: 3600000 } })
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Changer le mot de passe (utilisateur connecte)' })
   @ApiOkResponse({ type: UserResponseDto })
-  @ApiBadRequestResponse({ description: 'Validation echouee' })
-  @ApiUnauthorizedResponse({
-    description: 'Identifiants invalides ou utilisateur inactif',
+  @ApiBadRequestResponse({
+    description: 'Validation echouee ou mot de passe actuel incorrect',
   })
+  @ApiUnauthorizedResponse({
+    description: 'Session absente, expiree ou compte desactive',
+  })
+  @ApiConflictResponse({ description: 'No password set for this account' })
   async changePassword(
     @Body() dto: ChangePasswordDto,
     @Req() req: Request,

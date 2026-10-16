@@ -6,6 +6,7 @@ export class SubmitAnswerResponseDto {
   correcte: boolean | null;
 
   @ApiProperty({
+    type: String,
     description:
       'Etiquette de la confusion detectee, jamais la reponse attendue',
     example: 'interet-simple',
@@ -14,6 +15,7 @@ export class SubmitAnswerResponseDto {
   misconception: string | null;
 
   @ApiProperty({
+    type: String,
     description: 'Libelle humain de la confusion detectee',
     example: 'Confondre le taux et la valeur en pourcentage',
     nullable: true,

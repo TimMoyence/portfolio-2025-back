@@ -2,7 +2,6 @@ import { Body, Query } from '@nestjs/common';
 import {
   ControleurDeCatalogue,
   CreationAdmin,
-  FILTRE_STATUT_DE_PUBLICATION,
   ListePubliquePaginee,
   pageDemandee,
   reponsePaginee,
@@ -22,14 +21,10 @@ export class ServicesController {
     private readonly createUseCase: CreateServicesUseCase,
   ) {}
 
-  @ListePubliquePaginee({
-    resume: 'Lister les services (acces public, pagine)',
-    reponse: ServiceListResponseDto,
-    ordreParDefaut: 'ASC',
-    triables: ['order', 'slug', 'name', 'createdAt'],
-    triParDefaut: 'order',
-    filtres: [FILTRE_STATUT_DE_PUBLICATION],
-  })
+  @ListePubliquePaginee(
+    'Lister les services (acces public, pagine)',
+    ServiceListResponseDto,
+  )
   async findAll(
     @Query() query: ServiceListQueryDto,
   ): Promise<ServiceListResponseDto> {

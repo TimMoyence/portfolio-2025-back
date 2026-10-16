@@ -14,7 +14,11 @@ export class UserResponseDto {
   @ApiProperty({ example: 'Doe' })
   lastName: string;
 
-  @ApiPropertyOptional({ example: '+11234567890', nullable: true })
+  @ApiPropertyOptional({
+    type: String,
+    example: '+11234567890',
+    nullable: true,
+  })
   phone: string | null;
 
   @ApiProperty({ example: true })
@@ -29,7 +33,7 @@ export class UserResponseDto {
   @ApiPropertyOptional({ type: String, example: '2025-01-02T00:00:00.000Z' })
   updatedAt?: Date;
 
-  @ApiPropertyOptional({ example: 'system', nullable: true })
+  @ApiPropertyOptional({ type: String, example: 'system', nullable: true })
   updatedOrCreatedBy: string | null;
 
   @ApiProperty({

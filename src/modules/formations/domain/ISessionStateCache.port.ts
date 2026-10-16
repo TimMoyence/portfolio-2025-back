@@ -1,4 +1,4 @@
-import type { PilotageEcran } from './contrats/pilotage';
+import type { PilotageServi } from './contrats/pilotage';
 import type { FreeRange, PacingMode } from './PacingMode';
 import type { SessionState } from './SessionState';
 
@@ -9,7 +9,7 @@ export interface LiveSessionState {
   intervalleLibre: FreeRange | null;
   participants: number;
   revision: number;
-  pilotage: Readonly<Record<string, PilotageEcran>>;
+  pilotage: Readonly<Record<string, PilotageServi>>;
   majLe: Date;
 }
 

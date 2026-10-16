@@ -12,6 +12,11 @@ import {
   urlJournalisable,
 } from '../common/interfaces/http/url-journalisable';
 import { EN_TETE_JETON } from '../modules/formations/interfaces/ParticipantToken.service';
+import {
+  envString,
+  estEnProduction,
+  type SourceDEnv,
+} from './env-readers.util';
 
 const EN_TETES_SECRETS = [
   'req.headers.authorization',
@@ -74,15 +79,14 @@ function requeteJournalisee(req: SerializedRequest): Record<string, unknown> {
   };
 }
 
-export function optionsJournalHttp(environnement: string | undefined): Options {
+export function optionsJournalHttp(source: SourceDEnv = process.env): Options {
   return {
-    transport:
-      environnement !== 'production'
-        ? {
-            target: 'pino-pretty',
-            options: { colorize: true, singleLine: true },
-          }
-        : undefined,
+    transport: estEnProduction(source)
+      ? undefined
+      : {
+          target: 'pino-pretty',
+          options: { colorize: true, singleLine: true },
+        },
     redact: { paths: EN_TETES_SECRETS, censor: CENSURE },
     serializers: { req: requeteJournalisee },
     autoLogging: { ignore: estSondeDeSante },
@@ -102,6 +106,6 @@ export function optionsJournalHttp(environnement: string | undefined): Options {
     customProps: (req) => ({
       correlationId: req.id,
     }),
-    ...(environnement === 'test' ? { level: 'silent' } : {}),
+    ...(envString('NODE_ENV', source) === 'test' ? { level: 'silent' } : {}),
   };
 }

@@ -4,6 +4,7 @@ import { estEntierPositif } from '../../../common/domain/nombres/est-entier-posi
 import { InvalidInputError } from '../../../common/domain/errors/InvalidInputError';
 import { ResourceConflictError } from '../../../common/domain/errors/ResourceConflictError';
 import { ResourceNotFoundError } from '../../../common/domain/errors/ResourceNotFoundError';
+import type { SupportedLocale } from '../../../common/domain/value-objects/LocaleCode';
 import {
   ArticleContract,
   type ArticleIngestEnvelope,
@@ -28,7 +29,7 @@ const FEED_DESCRIPTION = {
 } as const;
 
 export interface ArticleListQuery {
-  locale: 'fr' | 'en';
+  locale: SupportedLocale;
   tag?: string;
   cursor?: string;
   limit: number;
@@ -149,7 +150,7 @@ export class ArticlesService {
 
   async getPublishedBySlug(
     slug: string,
-    locale: 'fr' | 'en',
+    locale: SupportedLocale,
   ): Promise<ArticleRecord> {
     const article = ArticleSlug.safeParse(slug).success
       ? await this.articles.findPublishedBySlug(slug, locale)
@@ -158,7 +159,7 @@ export class ArticlesService {
     return article;
   }
 
-  async feed(locale: 'fr' | 'en'): Promise<string> {
+  async feed(locale: SupportedLocale): Promise<string> {
     const { items } = await this.listPublished({ locale, limit: 24 });
     const xml = items
       .map(

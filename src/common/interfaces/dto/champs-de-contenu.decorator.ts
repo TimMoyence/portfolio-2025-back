@@ -1,25 +1,20 @@
 import { applyDecorators } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsIn,
-  IsInt,
-  IsOptional,
-  IsString,
-  Matches,
-  Max,
-  MaxLength,
-  Min,
-  MinLength,
-} from 'class-validator';
+import { IsIn, IsOptional, IsString } from 'class-validator';
 import { PUBLISHABLE_STATUSES } from '../../domain/types/publishable-status';
+import { EntierBorne, Motif } from './bornes-annoncees.decorator';
+import {
+  AuMoinsCaracteres,
+  AuPlusCaracteres,
+} from './longueur-de-texte.decorator';
 
 export function SlugDeContenu(exemple: string): PropertyDecorator {
   return applyDecorators(
     ApiProperty({ example: exemple }),
     IsString(),
-    MinLength(2),
-    MaxLength(120),
-    Matches(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
+    AuMoinsCaracteres(2),
+    AuPlusCaracteres(120),
+    Motif(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
   );
 }
 
@@ -45,10 +40,8 @@ export function StatutPublie(): PropertyDecorator {
 
 export function RangDAffichage(): PropertyDecorator {
   return applyDecorators(
-    ApiProperty({ example: 0, required: false, minimum: 0, maximum: 10000 }),
+    ApiProperty({ example: 0, required: false }),
     IsOptional(),
-    IsInt(),
-    Min(0),
-    Max(10000),
+    EntierBorne(0, 10000),
   );
 }

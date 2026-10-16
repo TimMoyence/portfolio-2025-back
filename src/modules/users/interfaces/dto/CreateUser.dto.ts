@@ -1,21 +1,17 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import {
-  IsBoolean,
-  IsEmail,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsBoolean, IsNotEmpty, IsOptional } from 'class-validator';
+import { AdresseEmail } from '../../../../common/interfaces/dto/adresse-email.decorator';
 import type { CreateUserCommand } from '../../application/dto/CreateUser.command';
 import {
   MotDePasseRobuste,
+  NomDeCompte,
   RolesValides,
   TelephoneOptionnel,
 } from './regles-de-saisie';
 
 export class CreateUserDto implements CreateUserCommand {
   @ApiProperty({ example: 'john@example.com' })
-  @IsEmail()
+  @AdresseEmail()
   email: string;
 
   @ApiProperty({ example: 'StrongPassword123!' })
@@ -23,14 +19,10 @@ export class CreateUserDto implements CreateUserCommand {
   @IsNotEmpty()
   password: string;
 
-  @ApiProperty({ example: 'John' })
-  @IsString()
-  @IsNotEmpty()
+  @NomDeCompte('Le prenom', 'John')
   firstName: string;
 
-  @ApiProperty({ example: 'Doe' })
-  @IsString()
-  @IsNotEmpty()
+  @NomDeCompte('Le nom', 'Doe')
   lastName: string;
 
   @TelephoneOptionnel('+11234567890')
@@ -41,16 +33,6 @@ export class CreateUserDto implements CreateUserCommand {
   @IsBoolean()
   isActive?: boolean;
 
-  @ApiPropertyOptional({
-    example: ['teacher'],
-    type: [String],
-    description: 'Liste des roles. Reserve aux administrateurs.',
-  })
   @RolesValides()
   roles?: string[];
-
-  @ApiPropertyOptional({ example: 'system', nullable: true })
-  @IsOptional()
-  @IsString()
-  updatedOrCreatedBy?: string | null;
 }

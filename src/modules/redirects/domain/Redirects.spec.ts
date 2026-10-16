@@ -85,7 +85,16 @@ describe('Redirects aggregate', () => {
         targetUrl: 'https://example.com',
         enabled: 'oui' as unknown as boolean,
       }),
-    ).toThrow(DomainValidationError);
+    ).toThrow(new DomainValidationError('Invalid redirect enabled flag'));
+  });
+
+  it('devrait defaulter enabled a true quand il est null', () => {
+    const redirect = Redirects.create({
+      slug: 'test',
+      targetUrl: 'https://example.com',
+      enabled: null as unknown as boolean,
+    });
+    expect(redirect.enabled).toBe(true);
   });
 
   it('devrait defaulter clicks a 0', () => {

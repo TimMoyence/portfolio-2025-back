@@ -1,5 +1,5 @@
 import { plainToInstance } from 'class-transformer';
-import { validateSync } from 'class-validator';
+import { champsRefuses } from '../../../../test/helpers/validation-pipe';
 import {
   AcceptationDesConditions,
   VersionDesConditions,
@@ -13,13 +13,10 @@ class ConsentementTemoin {
   termsAcceptedAt: Date;
 }
 
-const valider = (corps: Record<string, unknown>) => {
-  const instance = plainToInstance(ConsentementTemoin, corps);
-  return {
-    instance,
-    erreurs: validateSync(instance).map((erreur) => erreur.property),
-  };
-};
+const valider = (corps: Record<string, unknown>) => ({
+  instance: plainToInstance(ConsentementTemoin, corps),
+  erreurs: champsRefuses(ConsentementTemoin, corps),
+});
 
 describe('conditions acceptees', () => {
   it('accepte une version et une date d acceptation valides', () => {

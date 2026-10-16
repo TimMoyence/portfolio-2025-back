@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
+import type { SupportedLocale } from '../../../common/domain/value-objects/LocaleCode';
 import {
   type ArticleBroadcastSchedule,
   type ArticleDeliveryRecord,
@@ -89,7 +90,7 @@ export class TypeOrmArticlesRepository implements ArticlesRepository {
 
   findPublishedBySlug(
     slug: string,
-    locale: 'fr' | 'en',
+    locale: SupportedLocale,
   ): Promise<ArticleRecord | null> {
     return this.articles.findOne({
       where: { slug, locale, status: 'published' },

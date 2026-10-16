@@ -4,41 +4,84 @@ import {
   envEntierBorne,
   envFloat,
   envInt,
+  envListe,
   envPort,
   envPremier,
   envString,
   envUnVrai,
+  estEnProduction,
 } from './env-readers.util';
 import {
   appliquer,
   installerVariables,
 } from '../../test/helpers/environnement';
 
+describe('estEnProduction', () => {
+  it.each([
+    ['production', true],
+    [' production ', true],
+    ['development', false],
+    ['test', false],
+    [undefined, false],
+  ])('juge %p', (valeur, attendu) => {
+    expect(estEnProduction({ NODE_ENV: valeur })).toBe(attendu);
+  });
+});
+
+describe('envListe', () => {
+  it('decoupe sur les virgules, nettoie chaque entree et retire les vides', () => {
+    expect(envListe('CORS_ORIGIN', { CORS_ORIGIN: ' a, ,b,' })).toEqual([
+      'a',
+      'b',
+    ]);
+  });
+
+  it.each([undefined, '', ' , '])('rend une liste vide pour %p', (valeur) => {
+    expect(envListe('CORS_ORIGIN', { CORS_ORIGIN: valeur })).toEqual([]);
+  });
+});
+
 describe('envPort', () => {
+  const ALIAS = ['DB_PORT', 'DATABASE_PORT'] as const;
+
   it('lit le premier alias renseigne et le rend numerique', () => {
-    expect(envPort(['A_PORT', 'B_PORT'], 'de test', { B_PORT: ' 5433 ' })).toBe(
-      5433,
-    );
+    expect(envPort(ALIAS, 'de test', { DATABASE_PORT: ' 5433 ' })).toBe(5433);
   });
 
   it('ne rend rien quand aucun alias n est renseigne', () => {
-    expect(envPort(['A_PORT'], 'de test', { A_PORT: ' ' })).toBeUndefined();
+    expect(envPort(['DB_PORT'], 'de test', { DB_PORT: ' ' })).toBeUndefined();
   });
 
-  it.each(['abc', '5433x', '-1', '54.3'])(
-    'refuse un port qui n est pas un entier positif en nommant le service et ses alias (%p)',
+  it.each([
+    'abc',
+    '5433x',
+    '-1',
+    '54.3',
+    '3000.0',
+    '+3000',
+    '5.87e2',
+    '0x18EB',
+    '0',
+    '65536',
+  ])(
+    'refuse un port qui n est pas un entier de 1 a 65535 en chiffres seuls en nommant le service et ses alias (%p)',
     (port) => {
-      expect(() =>
-        envPort(['A_PORT', 'B_PORT'], 'de test', { A_PORT: port }),
-      ).toThrow(
-        `Le port de test « ${port} » n'est pas un entier positif (A_PORT, B_PORT).`,
+      expect(() => envPort(ALIAS, 'de test', { DB_PORT: port })).toThrow(
+        `Le port de test « ${port} » n'est pas un entier de 1 a 65535 en chiffres seuls (DB_PORT, DATABASE_PORT).`,
       );
     },
   );
+
+  it.each([
+    ['1', 1],
+    ['65535', 65535],
+  ])('accepte la borne %p', (port, attendu) => {
+    expect(envPort(ALIAS, 'de test', { DB_PORT: port })).toBe(attendu);
+  });
 });
 
 describe('env-readers.util', () => {
-  const KEY = 'ENV_READERS_TEST_KEY';
+  const KEY = 'BOOTSTRAP_DEBUG';
   const poser = (valeur: string): void => appliquer({ [KEY]: valeur });
 
   installerVariables({ [KEY]: undefined }, 'chaque-test');
@@ -107,16 +150,22 @@ describe('env-readers.util', () => {
   });
 
   describe('envPremier', () => {
+    const HOTES = ['DB_HOST', 'DATABASE_HOST', 'PGHOST'] as const;
+
     it('rend la premiere variable renseignee parmi les alias', () => {
-      expect(envPremier(['A', 'B', 'C'], { A: ' ', B: 'b', C: 'c' })).toBe('b');
+      expect(
+        envPremier(HOTES, { DB_HOST: ' ', DATABASE_HOST: 'b', PGHOST: 'c' }),
+      ).toBe('b');
     });
 
     it('rend undefined si aucun alias n est renseigne', () => {
-      expect(envPremier(['A', 'B'], {})).toBeUndefined();
+      expect(envPremier(HOTES, {})).toBeUndefined();
     });
 
     it('lit chaque alias avec le lecteur fourni', () => {
-      expect(envPremier(['A', 'B'], { A: '', B: ' b ' }, envBrut)).toBe(' b ');
+      expect(
+        envPremier(HOTES, { DB_HOST: '', DATABASE_HOST: ' b ' }, envBrut),
+      ).toBe(' b ');
     });
   });
 
@@ -153,12 +202,22 @@ describe('env-readers.util', () => {
 
   describe('envUnVrai', () => {
     it('est vrai des qu un alias vaut true, quelle que soit sa place et sa casse', () => {
-      expect(envUnVrai(['A', 'B'], { A: 'false', B: ' True ' })).toBe(true);
+      expect(
+        envUnVrai(['DB_SSL', 'DATABASE_SSL'], {
+          DB_SSL: 'false',
+          DATABASE_SSL: ' True ',
+        }),
+      ).toBe(true);
     });
 
     it('est faux quand aucun alias ne vaut true', () => {
-      expect(envUnVrai(['A', 'B'], { A: 'false', B: '1' })).toBe(false);
-      expect(envUnVrai(['A'], {})).toBe(false);
+      expect(
+        envUnVrai(['DB_SSL', 'DATABASE_SSL'], {
+          DB_SSL: 'false',
+          DATABASE_SSL: '1',
+        }),
+      ).toBe(false);
+      expect(envUnVrai(['DB_SSL'], {})).toBe(false);
     });
   });
 

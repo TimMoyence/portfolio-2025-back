@@ -20,7 +20,7 @@ import {
   routeFormations,
   serveurHttpDe,
 } from './formations-harness';
-import { ecouterEnBoucleLocale, fermerApplication } from './nest-test-app';
+import { fermerApplication, portDe } from './nest-test-app';
 import { silenceNestLogger } from './silence-nest-logger';
 
 export const CODE_HTTP = {
@@ -254,7 +254,7 @@ export function installerBancDeSeance(options: {
       { ...contexte, mailer },
       options.catalogue ?? contexte.catalogue,
     );
-    port = await ecouterEnBoucleLocale(app);
+    port = portDe(app);
   };
 
   const remonter = async (): Promise<void> => {

@@ -353,6 +353,7 @@ export function buildQuestionAAgreger(
     type: 'numeric',
     noteCompte: true,
     ecranId: 'E-NUM',
+    seuil: null,
     ...overrides,
   };
 }
@@ -372,6 +373,10 @@ export function buildResultatQuestion(
     parOption: null,
     scoreMoyen: null,
     parCle: null,
+    confusionDominante: null,
+    part: 0,
+    sousLeSeuil: false,
+    remediation: null,
     ...overrides,
   };
 }

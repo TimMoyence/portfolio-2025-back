@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { EmailAddress } from '../../../common/domain/value-objects/EmailAddress';
 import { IUsersRepository } from '../domain/IUsers.repository';
 import { UsersEntity } from './entities/Users.entity';
 @Injectable()
@@ -22,7 +23,9 @@ export class UsersRepositoryTypeORM implements IUsersRepository {
   }
 
   async findByEmail(email: string): Promise<UsersEntity | null> {
-    return this.repo.findOne({ where: { email } });
+    const adresse = EmailAddress.parse(email);
+    if (adresse === null) return null;
+    return this.repo.findOne({ where: { email: adresse.value } });
   }
 
   async findByGoogleId(googleId: string): Promise<UsersEntity | null> {

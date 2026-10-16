@@ -35,10 +35,7 @@ import {
   routeFormations,
   serveurHttpDe,
 } from './helpers/formations-harness';
-import {
-  ecouterEnBoucleLocale,
-  fermerApplication,
-} from './helpers/nest-test-app';
+import { fermerApplication } from './helpers/nest-test-app';
 
 jest.mock('nodemailer', () => nodemailerSimule());
 
@@ -369,7 +366,6 @@ describeDb(
         },
         creerCatalogueDeTest(COURS_DE_CLASSE),
       );
-      await ecouterEnBoucleLocale(app);
     }, DELAI_OUVERTURE_CONTEXTE_MS);
 
     afterAll(async () => {

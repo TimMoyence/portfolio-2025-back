@@ -81,4 +81,99 @@ describe('User aggregate', () => {
       }),
     ).toThrow(new DomainValidationError('Invalid user email'));
   });
+
+  const COMPTE_A_MOT_DE_PASSE = {
+    email: 'lea@example.com',
+    passwordHash: 'hash',
+    firstName: 'Lea',
+    lastName: 'Martin',
+  };
+
+  it('accepte un prenom et un nom de 1 a 50 caracteres', () => {
+    const court = User.create({
+      ...COMPTE_A_MOT_DE_PASSE,
+      firstName: ' L ',
+      lastName: 'M',
+    });
+    const long = User.create({
+      ...COMPTE_A_MOT_DE_PASSE,
+      firstName: 'a'.repeat(50),
+      lastName: 'b'.repeat(50),
+    });
+
+    expect([court.firstName, court.lastName]).toEqual(['L', 'M']);
+    expect([long.firstName, long.lastName]).toEqual([
+      'a'.repeat(50),
+      'b'.repeat(50),
+    ]);
+    expect(User.update({ firstName: 'J', lastName: 'D' })).toMatchObject({
+      firstName: 'J',
+      lastName: 'D',
+    });
+  });
+
+  it.each([
+    ['firstName', 'Invalid user first name'],
+    ['lastName', 'Invalid user last name'],
+  ])(
+    'refuse un %s vide ou de plus de 50 caracteres, a la creation comme a la mise a jour',
+    (champ, message) => {
+      for (const valeur of ['  ', 'a'.repeat(51), 42]) {
+        expect(() =>
+          User.create({ ...COMPTE_A_MOT_DE_PASSE, [champ]: valeur }),
+        ).toThrow(new DomainValidationError(message));
+        expect(() => User.update({ [champ]: valeur })).toThrow(
+          new DomainValidationError(message),
+        );
+      }
+    },
+  );
+
+  it('cree un compte Google sans nom quand Google n en donne pas', () => {
+    const sansNom = User.create({
+      email: 'google@example.com',
+      firstName: 'Google',
+      lastName: '',
+      googleId: 'google-sub-123',
+    });
+    const nomAbsent = User.create({
+      email: 'google@example.com',
+      firstName: 'Google',
+      lastName: undefined as unknown as string,
+      googleId: 'google-sub-123',
+    });
+
+    expect(sansNom.lastName).toBe('');
+    expect(nomAbsent.lastName).toBe('');
+    expect(() =>
+      User.create({
+        email: 'google@example.com',
+        firstName: 'Google',
+        lastName: 'b'.repeat(51),
+        googleId: 'google-sub-123',
+      }),
+    ).toThrow(new DomainValidationError('Invalid user last name'));
+  });
+
+  it('normalise le telephone et nomme le champ d un telephone invalide', () => {
+    expect(
+      User.create({ ...COMPTE_A_MOT_DE_PASSE, phone: ' 06 12 34 56 78 ' })
+        .phone,
+    ).toBe('0612345678');
+    expect(() =>
+      User.create({ ...COMPTE_A_MOT_DE_PASSE, phone: 'abc' }),
+    ).toThrow(new DomainValidationError('Invalid user phone number'));
+    expect(() => User.update({ phone: 'abc' })).toThrow(
+      new DomainValidationError('Invalid user phone number'),
+    );
+  });
+
+  it('nomme le drapeau qui n est pas booleen a la mise a jour', () => {
+    expect(() =>
+      User.update({ isActive: 'true' as unknown as boolean }),
+    ).toThrow(new DomainValidationError('Invalid user active flag'));
+    expect(() =>
+      User.update({ emailVerified: 'true' as unknown as boolean }),
+    ).toThrow(new DomainValidationError('Invalid email verified flag'));
+  });
 });

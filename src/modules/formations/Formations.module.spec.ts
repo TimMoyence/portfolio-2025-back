@@ -22,6 +22,9 @@ import { LireRappelsUseCase } from './application/LireRappels.useCase';
 import { SyntheseRappelsUseCase } from './application/SyntheseRappels.useCase';
 import { LireEtatParticipantUseCase } from './application/LireEtatParticipant.useCase';
 import { SubmitProductionUseCase } from './application/SubmitProduction.useCase';
+import { EvaluerFeuilleUseCase } from './application/EvaluerFeuille.useCase';
+import { EvaluerTableauUseCase } from './application/EvaluerTableau.useCase';
+import { EvaluerMachineUseCase } from './application/EvaluerMachine.useCase';
 import { TenterEnigmeUseCase } from './application/TenterEnigme.useCase';
 import {
   CATALOGUE_COURS,
@@ -76,6 +79,9 @@ const SERVICES = [
   LireCoursPublicUseCase,
   SubmitAnswerUseCase,
   SubmitProductionUseCase,
+  EvaluerFeuilleUseCase,
+  EvaluerTableauUseCase,
+  EvaluerMachineUseCase,
   TenterEnigmeUseCase,
   DeclarerJalonUseCase,
   DefisUseCase,

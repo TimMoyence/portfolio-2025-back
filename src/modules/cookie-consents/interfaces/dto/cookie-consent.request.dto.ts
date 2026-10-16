@@ -1,12 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
+import { IsBoolean, IsIn, ValidateNested } from 'class-validator';
+import type { SupportedLocale } from '../../../../common/domain/value-objects/LocaleCode';
+import { LocaleSupportee } from '../../../../common/interfaces/dto/locale-supportee.decorator';
+import { TexteSaisi } from '../../../../common/interfaces/dto/longueur-de-texte.decorator';
 import {
-  IsBoolean,
-  IsIn,
-  IsString,
-  MaxLength,
-  ValidateNested,
-} from 'class-validator';
+  ACTIONS_DE_CONSENTEMENT,
+  SOURCES_DE_CONSENTEMENT,
+  type CreateCookieConsentProps,
+} from '../../domain/CookieConsent';
 
 class CookieConsentPreferencesRequestDto {
   @ApiProperty({ example: true })
@@ -28,30 +30,23 @@ class CookieConsentPreferencesRequestDto {
 
 export class CookieConsentRequestDto {
   @ApiProperty({ example: '2026-02-11' })
-  @IsString()
-  @MaxLength(50)
+  @TexteSaisi(1, 50)
   policyVersion: string;
 
-  @ApiProperty({ example: 'fr' })
-  @IsString()
-  @MaxLength(10)
-  locale: string;
+  @LocaleSupportee()
+  locale: SupportedLocale;
 
   @ApiProperty({ example: 'EU_UK' })
-  @IsString()
-  @MaxLength(20)
+  @TexteSaisi(1, 20)
   region: string;
 
-  @ApiProperty({ example: 'banner', enum: ['banner', 'settings'] })
-  @IsIn(['banner', 'settings'])
-  source: 'banner' | 'settings';
+  @ApiProperty({ example: 'banner', enum: SOURCES_DE_CONSENTEMENT })
+  @IsIn(SOURCES_DE_CONSENTEMENT)
+  source: CreateCookieConsentProps['source'];
 
-  @ApiProperty({
-    example: 'accept_all',
-    enum: ['accept_all', 'essential_only', 'save_preferences', 'withdraw'],
-  })
-  @IsIn(['accept_all', 'essential_only', 'save_preferences', 'withdraw'])
-  action: 'accept_all' | 'essential_only' | 'save_preferences' | 'withdraw';
+  @ApiProperty({ example: 'accept_all', enum: ACTIONS_DE_CONSENTEMENT })
+  @IsIn(ACTIONS_DE_CONSENTEMENT)
+  action: CreateCookieConsentProps['action'];
 
   @ApiProperty({ type: CookieConsentPreferencesRequestDto })
   @ValidateNested()

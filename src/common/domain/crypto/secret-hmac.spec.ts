@@ -3,9 +3,25 @@ import {
   appliquer,
   installerVariables,
 } from '../../../../test/helpers/environnement';
-import { secretHmac, signerAvecLeSecret } from './secret-hmac';
+import {
+  estUnSecretValable,
+  secretHmac,
+  signerAvecLeSecret,
+} from './secret-hmac';
 
-const NOM = 'SECRET_HMAC_DE_TEST';
+const NOM = 'FORMATION_REVIEW_TOKEN_SECRET';
+
+describe('estUnSecretValable', () => {
+  it.each<[string, string | undefined, boolean]>([
+    ['absent', undefined, false],
+    ['de 31 caracteres', 's'.repeat(31), false],
+    ['de 31 caracteres entoure de blancs', `  ${'s'.repeat(31)}  `, false],
+    ['de 32 caracteres', 's'.repeat(32), true],
+    ['de 32 caracteres entoure de blancs', `  ${'s'.repeat(32)}  `, true],
+  ])('juge un secret %s hors blancs', (_cas, secret, valable) => {
+    expect(estUnSecretValable(secret)).toBe(valable);
+  });
+});
 
 describe('secretHmac', () => {
   installerVariables({ [NOM]: SECRET }, 'chaque-test');
@@ -17,6 +33,8 @@ describe('secretHmac', () => {
   it.each([
     ['absent', undefined],
     ['trop court', 'court'],
+    ['fait de blancs', ' '.repeat(40)],
+    ['de 31 caracteres entoure de blancs', ` ${'s'.repeat(31)} `],
   ])('refuse un secret %s en nommant sa variable', (_cas, valeur) => {
     appliquer({ [NOM]: valeur });
 

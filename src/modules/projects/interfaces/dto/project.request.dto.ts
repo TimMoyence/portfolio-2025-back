@@ -1,19 +1,20 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  ArrayMaxSize,
-  IsArray,
-  IsIn,
-  IsOptional,
-  IsString,
-  IsUrl,
-  MaxLength,
-} from 'class-validator';
+import { IsArray, IsIn, IsOptional, IsString } from 'class-validator';
 import type { PublishableStatus } from '../../../../common/domain/types/publishable-status';
+import {
+  AuPlusElements,
+  UrlAbsolue,
+} from '../../../../common/interfaces/dto/bornes-annoncees.decorator';
 import {
   RangDAffichage,
   SlugDeContenu,
   StatutDePublication,
 } from '../../../../common/interfaces/dto/champs-de-contenu.decorator';
+import {
+  AuMoinsCaracteres,
+  AuPlusCaracteres,
+  Rogne,
+} from '../../../../common/interfaces/dto/longueur-de-texte.decorator';
 
 const PROJECT_TYPES = ['CLIENT', 'SIDE'] as const;
 type ProjectTypeValue = (typeof PROJECT_TYPES)[number];
@@ -33,37 +34,47 @@ export class ProjectRequestDto {
     required: false,
   })
   @IsOptional()
-  @IsUrl({ require_protocol: true })
+  @UrlAbsolue()
   repoUrl?: string;
 
   @ApiProperty({ example: 'https://example.com', required: false })
   @IsOptional()
-  @IsUrl({ require_protocol: true })
+  @UrlAbsolue()
   liveUrl?: string;
 
   @ApiProperty({ example: '/images/portfolio.webp', required: false })
   @IsOptional()
+  @Rogne()
   @IsString()
-  @MaxLength(500)
+  @AuPlusCaracteres(500)
   coverImage?: string;
 
   @ApiProperty({
     example: ['/images/portfolio-1.webp', '/images/portfolio-2.webp'],
     required: false,
+    type: [String],
   })
   @IsOptional()
   @IsArray()
-  @ArrayMaxSize(20)
+  @AuPlusElements(20)
+  @Rogne()
   @IsString({ each: true })
-  @MaxLength(500, { each: true })
+  @AuMoinsCaracteres(1, { each: true })
+  @AuPlusCaracteres(500, { each: true })
   gallery?: string[];
 
-  @ApiProperty({ example: ['nestjs', 'postgres'], required: false })
+  @ApiProperty({
+    example: ['nestjs', 'postgres'],
+    required: false,
+    type: [String],
+  })
   @IsOptional()
   @IsArray()
-  @ArrayMaxSize(30)
+  @AuPlusElements(30)
+  @Rogne()
   @IsString({ each: true })
-  @MaxLength(50, { each: true })
+  @AuMoinsCaracteres(1, { each: true })
+  @AuPlusCaracteres(50, { each: true })
   stack?: string[];
 
   @StatutDePublication()

@@ -13,10 +13,23 @@ import {
   buildQuestionnaireCorrigeSurPlace,
   EXPLICATIONS_SUR_PLACE,
 } from '../../../../../test/factories/ecrans-stockes.factory';
+import { buildCoursDuContenu } from '../../../../../test/factories/contenus-de-cours.factory';
+import {
+  CONTENUS,
+  COURS_B2_01,
+  COURS_B2_03,
+  COURS_B2_06,
+} from '../../../../../test/factories/contenus-publies';
 import { PRESENTATIONS_VISUELLES_VALIDES } from '../../../../../test/factories/presentation-visuelle.factory';
+import {
+  ESPACE_FINE_INSECABLE,
+  ESPACE_INSECABLE,
+} from '../../../../common/domain/texte/sans-espaces-typographiques';
 import { CONFUSIONS } from './banque/confusions';
 import { lireCoursStocke } from './CoursStocke';
-import { deroulePresentateur, SEUIL_PAR_DEFAUT } from './DeroulePresentateur';
+import { deroulePresentateur } from './DeroulePresentateur';
+import { correctionDeLEcranRevele } from './Diffusion';
+import { SEUIL_PAR_DEFAUT } from './EcranServi';
 import type { CorrigePresentateur, EcranDeroule } from './DeroulePresentateur';
 import { tirer } from './Tirage';
 
@@ -117,6 +130,126 @@ describe('deroulePresentateur', () => {
   });
 });
 
+describe('deroulePresentateur (réflexion attendue, B-70)', () => {
+  it('sert au pupitre, pour chaque récit à réflexion des cours, la réflexion révélée à l étudiant', () => {
+    const servies = CONTENUS.flatMap((contenu) => {
+      const cours = buildCoursDuContenu(contenu);
+      const tirage = tirer(cours, 0);
+      return deroulePresentateur(cours, 0).ecrans.map(
+        (ecran, rang) =>
+          [
+            ecran.id,
+            ecran.reflexion,
+            correctionDeLEcranRevele(cours.ecrans[rang], tirage)?.reflexion ??
+              null,
+          ] as const,
+      );
+    });
+
+    expect(
+      servies.filter(([, pupitre]) => pupitre !== null).length,
+    ).toBeGreaterThan(0);
+    expect(servies.map(([id, pupitre]) => [id, pupitre])).toEqual(
+      servies.map(([id, , etudiant]) => [id, etudiant]),
+    );
+  });
+});
+
+describe('deroulePresentateur (affichage d une feuille corrigée, F-37)', () => {
+  const attendusServis = (contenu: (typeof CONTENUS)[number]) =>
+    deroulePresentateur(buildCoursDuContenu(contenu), 0).ecrans.flatMap(
+      (ecran) =>
+        ecran.corrigeEcran?.type === 'feuille'
+          ? ecran.corrigeEcran.attendus.map((attendu) => [
+              `${ecran.id} ${attendu.reference}`,
+              attendu.affichage,
+            ])
+          : [],
+    );
+
+  it('écrit chaque valeur attendue comme le tableau de l élève : un taux à quatre décimales, un montant à deux, un texte tel quel', () => {
+    const servis = Object.fromEntries([
+      ...attendusServis(COURS_B2_03),
+      ...attendusServis(COURS_B2_06),
+    ]);
+
+    expect(servis['B2-06-A1-11-TABLEUR-VENTES B3']).toBe('424,73');
+    expect(servis['B2-06-A1-11-TABLEUR-VENTES C3']).toBe('0,0618');
+    expect(servis['B2-03-A4-02-TABLEUR-CONTROLE I3']).toBe('Visa');
+    expect(servis['B2-03-A4-02-TABLEUR-CONTROLE I2']).toBe('Non');
+  });
+
+  it('remplit au pupitre le tableau de la toile, coefficients et évolution réelle calculés par le serveur', () => {
+    const toile = deroulePresentateur(
+      buildCoursDuContenu(COURS_B2_01),
+      0,
+    ).ecrans.find(({ id }) => id === 'B2-01-A4-05-INDICE-TOILE');
+    if (toile?.corrigeEcran?.type !== 'tableau') {
+      throw new Error('corrigé de tableau attendu sur l indice de la toile');
+    }
+    const { lignes, synthese } = toile.corrigeEcran.tableauCorrige;
+
+    expect({
+      coef: lignes.map(({ valeurs }) => valeurs.coef.affichage),
+      synthese: synthese.map(({ affichage }) => affichage),
+    }).toEqual({
+      coef: ['1,0800', '0,9500', '1,0400', '0,9700'],
+      synthese: [`4,00${ESPACE_INSECABLE}%`, `3,50${ESPACE_INSECABLE}%`],
+    });
+  });
+
+  it('F-11 · écrit chaque nombre servi au pupitre à la française, milliers séparés par une espace fine insécable : attendus, tableaux corrigés, sorties des machines', () => {
+    const affiches = (noeud: unknown): [number, string][] => {
+      if (Array.isArray(noeud)) {
+        return noeud.flatMap(affiches);
+      }
+      if (typeof noeud !== 'object' || noeud === null) {
+        return [];
+      }
+      const { valeur, affichage } = noeud as Record<string, unknown>;
+      const propre: [number, string][] =
+        typeof valeur === 'number' && typeof affichage === 'string'
+          ? [[valeur, affichage]]
+          : [];
+      return [...propre, ...Object.values(noeud).flatMap(affiches)];
+    };
+    const servis = CONTENUS.flatMap((contenu) =>
+      affiches(deroulePresentateur(buildCoursDuContenu(contenu), 0).ecrans),
+    );
+    const fine = ESPACE_FINE_INSECABLE;
+    const partieEntiere = (affichage: string): string =>
+      new RegExp(`^-?[\\d${fine}]+`, 'u').exec(affichage)?.[0] ?? affichage;
+
+    expect(servis.filter(([valeur]) => Math.abs(valeur) >= 1000)).not.toEqual(
+      [],
+    );
+    expect(
+      servis.filter(
+        ([, affichage]) =>
+          !new RegExp(`^-?\\d{1,3}(${fine}\\d{3})*$`, 'u').test(
+            partieEntiere(affichage),
+          ) || new RegExp(`\\d[ ${ESPACE_INSECABLE}]\\d`, 'u').test(affichage),
+      ),
+    ).toEqual([]);
+  });
+
+  it('sert un affichage à chaque attendu de chaque feuille des cours', () => {
+    const servis = CONTENUS.flatMap(attendusServis);
+
+    expect(servis.length).toBeGreaterThan(0);
+    for (const [cle, affichage] of servis) {
+      expect({ cle, affichage }).toEqual({
+        cle,
+        affichage: expect.stringMatching(/\S/),
+      });
+      expect({ cle, point: affichage?.includes('.') }).toEqual({
+        cle,
+        point: false,
+      });
+    }
+  });
+});
+
 describe('deroulePresentateur (corrigés au déroulé, B22)', () => {
   const cours = lireCoursStocke(
     buildCoursDeBriques(
@@ -143,6 +276,7 @@ describe('deroulePresentateur (corrigés au déroulé, B22)', () => {
           reference: 'D2',
           formuleReference: '=(C2-B2)/B2',
           valeur: -0.178054,
+          affichage: '-0,1781',
           tolerance: { type: 'relative', valeur: 0.0001 },
           forme: 'references',
         },
@@ -150,6 +284,7 @@ describe('deroulePresentateur (corrigés au déroulé, B22)', () => {
           reference: 'D3',
           formuleReference: '=(C3-B3)/B3',
           valeur: 0.095238,
+          affichage: '0,0952',
           tolerance: { type: 'relative', valeur: 0.0001 },
           forme: { memeQue: 'D2' },
         },
@@ -161,6 +296,29 @@ describe('deroulePresentateur (corrigés au déroulé, B22)', () => {
         { rang: 0, cle: 'prix', valeur: 21.6 },
         { rang: 1, cle: 'prix', valeur: 20.52 },
       ],
+      tableauCorrige: {
+        lignes: [
+          {
+            rang: 0,
+            valeurs: {
+              taux: { valeur: 8, affichage: '8' },
+              prix: { valeur: 21.6, affichage: '21,60' },
+              coef: { valeur: 1.08, affichage: '1,0800' },
+            },
+          },
+          {
+            rang: 1,
+            valeurs: {
+              taux: { valeur: -5, affichage: '-5' },
+              prix: { valeur: 20.52, affichage: '20,52' },
+              coef: { valeur: 0.95, affichage: '0,9500' },
+            },
+          },
+        ],
+        totaux: { taux: { valeur: 3, affichage: '3' } },
+        synthese: [{ valeur: 3, affichage: `3,00${ESPACE_INSECABLE}%` }],
+        soldeFinal: null,
+      },
       tolerance: { type: 'absolue', valeur: 0.01 },
     });
     expect(ecran('fp-cardsort').corrigeEcran).toMatchObject({

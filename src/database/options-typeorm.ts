@@ -1,6 +1,12 @@
 import type { TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { envInt, envUnVrai, type SourceDEnv } from '../config/env-readers.util';
 import {
+  envInt,
+  envUnVrai,
+  estEnProduction,
+  type SourceDEnv,
+} from '../config/env-readers.util';
+import {
+  ALIAS_POSTGRES,
   emplacementTypeOrm,
   resoudreConnexionPostgres,
 } from './connexion-postgres';
@@ -8,8 +14,7 @@ import { garantirLaBaseCible } from './ensure-database';
 
 function synchroniserLeSchema(source: SourceDEnv): boolean {
   return (
-    source.NODE_ENV !== 'production' &&
-    envUnVrai(['TYPEORM_SYNCHRONIZE', 'DB_SYNCHRONIZE'], source)
+    !estEnProduction(source) && envUnVrai(ALIAS_POSTGRES.synchronize, source)
   );
 }
 

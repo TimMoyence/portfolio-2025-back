@@ -4,6 +4,7 @@ import type {
   PacingMode,
   VotePhase,
 } from './contrat-de-l-api';
+import type { SortiesMachine } from './donnees-publiques';
 import type { ValeurReponse } from './resultats';
 
 export {
@@ -24,6 +25,12 @@ export interface PilotageEcran {
   readonly optionsAffichees?: boolean;
 }
 
+export interface PilotageServi extends PilotageEcran {
+  readonly sortiesProjetees?: SortiesMachine;
+  readonly questionAffichee?: string;
+  readonly questionOuverte?: string | null;
+}
+
 export type PilotageDemande = { readonly screenId: string } & Omit<
   PilotageEcran,
   'etayageAtteint'
@@ -36,6 +43,25 @@ export interface ControlSessionChanges {
   mode?: PacingMode;
   intervalle?: FreeRange | null;
   pilotage?: PilotageDemande;
+}
+
+export const ETATS_D_ENIGME = Object.freeze([
+  'resolue',
+  'epuisee',
+  'ouverte',
+  'verrouillee',
+] as const);
+export type EtatEnigme = (typeof ETATS_D_ENIGME)[number];
+
+export interface EtatDesEnigmes {
+  readonly etats: Readonly<
+    Record<
+      string,
+      { readonly etat: EtatEnigme; readonly tentativesRestantes: number }
+    >
+  >;
+  readonly enigmeOuverte: string | null;
+  readonly acheve: boolean;
 }
 
 export interface EtatParticipant {
@@ -64,14 +90,14 @@ export interface EtatParticipant {
     readonly sondageId: string;
     readonly etat: EtatPulse;
   }[];
-  readonly enigmes: readonly {
+  readonly enigmes: readonly (EtatDesEnigmes & {
     readonly parcoursId: string;
     readonly resolues: readonly {
       readonly enigmeId: string;
       readonly fragment: string;
     }[];
     readonly tentativesRestantes: Readonly<Record<string, number>>;
-  }[];
+  })[];
   readonly defis: readonly {
     readonly defiId: string;
     readonly premiereTentative: string;

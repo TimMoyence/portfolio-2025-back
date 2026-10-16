@@ -2,11 +2,7 @@ import { INestApplication, type Provider } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { Test as ModuleDeTest, type TestingModule } from '@nestjs/testing';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import {
-  request as requeteNode,
-  type IncomingMessage,
-  type Server,
-} from 'node:http';
+import { request as requeteNode, type IncomingMessage } from 'node:http';
 import request from 'supertest';
 import type { Test } from 'supertest';
 import { appliquerLesTraitementsGlobaux } from '../../src/common/interfaces/http/traitements-globaux';
@@ -38,6 +34,9 @@ import { LibererPosteUseCase } from '../../src/modules/formations/application/Li
 import { SyntheseRappelsUseCase } from '../../src/modules/formations/application/SyntheseRappels.useCase';
 import { LireEtatParticipantUseCase } from '../../src/modules/formations/application/LireEtatParticipant.useCase';
 import { SubmitProductionUseCase } from '../../src/modules/formations/application/SubmitProduction.useCase';
+import { EvaluerFeuilleUseCase } from '../../src/modules/formations/application/EvaluerFeuille.useCase';
+import { EvaluerTableauUseCase } from '../../src/modules/formations/application/EvaluerTableau.useCase';
+import { EvaluerMachineUseCase } from '../../src/modules/formations/application/EvaluerMachine.useCase';
 import { TelechargerPieceJointeUseCase } from '../../src/modules/formations/application/TelechargerPieceJointe.useCase';
 import { TenterEnigmeUseCase } from '../../src/modules/formations/application/TenterEnigme.useCase';
 import type { IAnswersRepository } from '../../src/modules/formations/domain/IAnswers.repository';
@@ -114,14 +113,11 @@ import {
   ADRESSE_BOUCLE_LOCALE,
   ecouterEnBoucleLocale,
   fermerApplication,
+  portDe,
+  serveurHttpDe,
 } from './nest-test-app';
 
-export { EN_TETE_IDENTITE };
-
-export const serveurHttpDe = (
-  app: INestApplication,
-): Parameters<typeof request>[0] =>
-  app.getHttpServer() as Parameters<typeof request>[0];
+export { EN_TETE_IDENTITE, serveurHttpDe };
 
 export const routeFormations = (chemin: string): string =>
   `/${PREFIXE_API_PAR_DEFAUT}/formations${chemin}`;
@@ -177,6 +173,9 @@ export function fournisseursFormations(
     JoinSessionUseCase,
     SubmitAnswerUseCase,
     SubmitProductionUseCase,
+    EvaluerFeuilleUseCase,
+    EvaluerTableauUseCase,
+    EvaluerMachineUseCase,
     TenterEnigmeUseCase,
     ParticipationEnSeance,
     LectureDeSeance,
@@ -261,7 +260,7 @@ export async function monterApplicationFormations(
   signerLesIdentitesDeTest(app);
   app.setGlobalPrefix(PREFIXE_API_PAR_DEFAUT);
   appliquerLesTraitementsGlobaux(app);
-  await app.init();
+  await ecouterEnBoucleLocale(app);
   return app;
 }
 
@@ -341,7 +340,7 @@ export function fermetureCoteServeur(
   app: INestApplication,
   chemin: string,
 ): Promise<void> {
-  const serveur = app.getHttpServer() as Server;
+  const serveur = serveurHttpDe(app);
   return new Promise((resoudre) => {
     const surRequete = (requete: IncomingMessage): void => {
       if (requete.url !== chemin) {
@@ -399,7 +398,7 @@ export async function monterBancFormations(
     { ...contexte, mailer },
     catalogueDeTest ?? contexte.catalogue,
   );
-  const port = await ecouterEnBoucleLocale(app);
+  const port = portDe(app);
   return {
     contexte,
     app,

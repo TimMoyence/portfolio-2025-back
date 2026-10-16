@@ -2,11 +2,13 @@
 import {
   buildCoursAvecDefi,
   buildCoursDeTest,
+  buildEtatsDesEnigmesDeTest,
   buildProgressionEnigme,
   creerCatalogueDeTest,
   creerParticipationEnSeance,
   DEFI_DE_TEST,
   ENIGMES_DE_TEST,
+  PARCOURS_AVANT_TOUTE_TENTATIVE,
   PARCOURS_DE_TEST,
   TENTATIVES_MAX_DE_TEST,
   buildEcranDEnigmes,
@@ -25,7 +27,10 @@ import {
   detailsDeFeuilleAMoitieJuste,
   PARTICIPANT_DE_TEST,
 } from '../../../../../test/factories/formation.factory';
-import type { VoteDUnCoursServi } from '../../../../../test/factories/votes-des-cours-servis.factory';
+import {
+  CAS_DES_COURS_SERVIS,
+  type VoteDUnCoursServi,
+} from '../../../../../test/factories/votes-des-cours-servis.factory';
 import { decrireLeVerdictDesVotesServis } from '../../../../../test/helpers/verdict-des-votes-servis';
 import { installerSecretDeJalons } from '../../../../../test/helpers/env-formations';
 import {
@@ -61,7 +66,11 @@ describe('LireEtatParticipantUseCase', () => {
   beforeEach(() => {
     sessions = createMockSessionsRepo();
     sessions.findById.mockResolvedValue(
-      buildSessionRecord({ courseSlug: COURS.slug, revision: 7 }),
+      buildSessionRecord({
+        courseSlug: COURS.slug,
+        revision: 7,
+        ecranCourant: COURS.ecrans.length - 1,
+      }),
     );
     participants = createMockParticipantsRepo();
     answers = createMockAnswersRepo();
@@ -85,6 +94,13 @@ describe('LireEtatParticipantUseCase', () => {
       escape,
       rappels,
     );
+
+  const enigmesServies = async (
+    progression: ReturnType<typeof buildProgressionEnigme>[],
+  ) => {
+    escape.listerProgressionDuParticipant.mockResolvedValue(progression);
+    return (await sut.execute(PARTICIPANT_DE_TEST)).enigmes;
+  };
 
   it('rend la revision courante de la seance pour la reprise', async () => {
     const etat = await sut.execute(PARTICIPANT_DE_TEST);
@@ -160,7 +176,7 @@ describe('LireEtatParticipantUseCase', () => {
   });
 
   it('rend le fragment des seules enigmes resolues et le reste des tentatives', async () => {
-    escape.listerProgressionDuParticipant.mockResolvedValue([
+    const enigmes = await enigmesServies([
       buildProgressionEnigme({ tentatives: 2 }),
       buildProgressionEnigme({
         enigmeId: ENIGMES_DE_TEST[1],
@@ -169,17 +185,26 @@ describe('LireEtatParticipantUseCase', () => {
       }),
     ]);
 
-    const etat = await sut.execute(PARTICIPANT_DE_TEST);
-
-    expect(etat.enigmes).toEqual([
+    expect(enigmes).toEqual([
       {
         parcoursId: PARCOURS_DE_TEST,
         resolues: [{ enigmeId: ENIGMES_DE_TEST[0], fragment: 'F0' }],
         tentativesRestantes: {
           [ENIGMES_DE_TEST[1]]: TENTATIVES_MAX_DE_TEST - 3,
         },
+        etats: buildEtatsDesEnigmesDeTest([
+          ['resolue', 2],
+          ['ouverte', 3],
+          ['verrouillee', 0],
+        ]),
+        enigmeOuverte: ENIGMES_DE_TEST[1],
+        acheve: false,
       },
     ]);
+  });
+
+  it('B-70 · sert l état de chaque parcours du cours avant toute tentative', async () => {
+    expect(await enigmesServies([])).toEqual([PARCOURS_AVANT_TOUTE_TENTATIVE]);
   });
 
   it.each([
@@ -205,6 +230,41 @@ describe('LireEtatParticipantUseCase', () => {
     },
   );
 
+  it.each(
+    CAS_DES_COURS_SERVIS.flatMap(([slug, cours]) =>
+      cours.ecrans.flatMap((ecran, rang) =>
+        ecran.brique === 'fp-escape'
+          ? [
+              [
+                slug,
+                ecran.proprietes.parcours.id,
+                ecran.proprietes.parcours.enigmes[0].id,
+                rang,
+                cours,
+              ] as const,
+            ]
+          : [],
+      ),
+    ),
+  )(
+    'D-05 · %s, %s : n ouvre aucune énigme d un coffre avant que son écran soit servi',
+    async (_slug, parcoursId, premiere, rang, cours) => {
+      const enigmeOuverteA = async (ecranCourant: number) => {
+        sessions.findById.mockResolvedValue(
+          buildSessionRecord({ courseSlug: cours.slug, ecranCourant }),
+        );
+        const { enigmes } = await monter(cours).execute(PARTICIPANT_DE_TEST);
+        return enigmes.find((parcours) => parcours.parcoursId === parcoursId)
+          ?.enigmeOuverte;
+      };
+
+      expect([
+        await enigmeOuverteA(rang - 1),
+        await enigmeOuverteA(rang),
+      ]).toEqual([undefined, premiere]);
+    },
+  );
+
   it('ne rend pas la progression d un parcours absent du cours de la seance', async () => {
     escape.listerProgressionDuParticipant.mockResolvedValue([
       buildProgressionEnigme({ parcoursId: 'P-RETIRE', resolueLe: null }),
@@ -212,7 +272,14 @@ describe('LireEtatParticipantUseCase', () => {
 
     const etat = await sut.execute(PARTICIPANT_DE_TEST);
 
-    expect(etat.enigmes).toEqual([]);
+    expect(etat.enigmes.map(({ parcoursId }) => parcoursId)).toEqual([
+      PARCOURS_DE_TEST,
+    ]);
+    expect(etat.enigmes[0]).toMatchObject({
+      resolues: [],
+      tentativesRestantes: {},
+      enigmeOuverte: ENIGMES_DE_TEST[0],
+    });
   });
 
   it('rend les jalons declares par le participant', async () => {

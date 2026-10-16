@@ -7,7 +7,76 @@ import {
   requireValidDate,
   optionalHttpUrl,
   requireEmail,
+  optionalPhone,
+  requireBoolean,
+  requireLocale,
 } from './domain-validators';
+
+describe('requireLocale', () => {
+  it.each([['fr'], ['en']])('rend la locale supportee %s', (saisie) => {
+    expect(requireLocale(saisie, 'newsletter locale')).toBe(saisie);
+  });
+
+  it.each([
+    ['une langue non supportee', 'de'],
+    ['une variante regionale', 'fr-FR'],
+    ['une casse differente', 'EN'],
+    ['des blancs autour', ' en '],
+    ['une chaine vide', ''],
+    ['un nombre', 42],
+    ['undefined', undefined],
+  ])('refuse %s en nommant le champ', (_cas, valeur) => {
+    expect(() => requireLocale(valeur, 'newsletter locale')).toThrow(
+      new DomainValidationError('Invalid newsletter locale'),
+    );
+  });
+});
+
+describe('optionalPhone', () => {
+  it('rend null quand le telephone est absent ou vide', () => {
+    expect(optionalPhone(undefined, 'contact phone number')).toBeNull();
+    expect(optionalPhone(null, 'contact phone number')).toBeNull();
+    expect(optionalPhone('   ', 'contact phone number')).toBeNull();
+  });
+
+  it('rend le numero normalise', () => {
+    expect(optionalPhone(' 06 12 34 56 78 ', 'contact phone number')).toBe(
+      '0612345678',
+    );
+    expect(optionalPhone('00 33 6 12 34 56 78', 'contact phone number')).toBe(
+      '+33612345678',
+    );
+  });
+
+  it.each([
+    ['des lettres', 'abc'],
+    ['moins de six chiffres', '12345'],
+    ['un nombre', 612345678],
+    ['un booleen', true],
+  ])('refuse %s en nommant le champ', (_cas, valeur) => {
+    expect(() => optionalPhone(valeur, 'contact phone number')).toThrow(
+      new DomainValidationError('Invalid contact phone number'),
+    );
+  });
+});
+
+describe('requireBoolean', () => {
+  it('rend le booleen tel quel', () => {
+    expect(requireBoolean(true, 'terms flag')).toBe(true);
+    expect(requireBoolean(false, 'terms flag')).toBe(false);
+  });
+
+  it.each([
+    ['une chaine', 'true'],
+    ['un nombre', 1],
+    ['undefined', undefined],
+    ['null', null],
+  ])('refuse %s en nommant le champ', (_cas, valeur) => {
+    expect(() => requireBoolean(valeur, 'terms flag')).toThrow(
+      new DomainValidationError('Invalid terms flag'),
+    );
+  });
+});
 
 describe('requireEmail', () => {
   it('rend l adresse sans espaces et en minuscules', () => {
@@ -98,6 +167,15 @@ describe('requireText', () => {
       DomainValidationError,
     );
   });
+
+  it('compte un emoji pour un caractere, comme une colonne varchar', () => {
+    const emoji = String.fromCodePoint(0x1f600);
+
+    expect(requireText(emoji.repeat(50), 'test', 2, 50)).toBe(emoji.repeat(50));
+    expect(() => requireText(emoji.repeat(51), 'test', 2, 50)).toThrow(
+      DomainValidationError,
+    );
+  });
 });
 
 describe('optionalText', () => {
@@ -113,6 +191,12 @@ describe('optionalText', () => {
 
   it('devrait retourner le texte trimme', () => {
     expect(optionalText('  hello  ', 'test', 50)).toBe('hello');
+  });
+
+  it('compte un emoji pour un caractere, comme une colonne varchar', () => {
+    const emoji = String.fromCodePoint(0x1f600);
+
+    expect(optionalText(emoji.repeat(50), 'test', 50)).toBe(emoji.repeat(50));
   });
 
   it('devrait rejeter un texte trop long', () => {

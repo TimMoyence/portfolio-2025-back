@@ -9,26 +9,26 @@ import {
   egalEnTempsConstant,
   hmacSha256,
 } from '../../../common/domain/crypto/empreintes';
+import { estUnSecretValable } from '../../../common/domain/crypto/secret-hmac';
+import { envBrut, envString } from '../../../config/env-readers.util';
+import { trousseauHmac } from '../../../config/trousseau-hmac';
 
 interface ArticleRequest extends Request {
   rawBody?: Buffer;
 }
 
-function resolveSecret(keyId: string): string | undefined {
-  const pairs = (process.env.MORNING_BRIEF_HMAC_KEYS ?? '')
-    .split(',')
-    .map((entry) => entry.trim())
-    .filter(Boolean);
-  for (const pair of pairs) {
-    const separator = pair.indexOf(':');
-    if (separator > 0 && pair.slice(0, separator) === keyId) {
-      return pair.slice(separator + 1);
-    }
-  }
-  if (keyId === (process.env.MORNING_BRIEF_HMAC_KEY_ID ?? 'morning-brief')) {
-    return process.env.MORNING_BRIEF_HMAC_SECRET;
+function secretDeLaCle(keyId: string): string | undefined {
+  const cle = trousseauHmac().find(({ id }) => id === keyId);
+  if (cle) return cle.secret;
+  if (keyId === (envString('MORNING_BRIEF_HMAC_KEY_ID') ?? 'morning-brief')) {
+    return envBrut('MORNING_BRIEF_HMAC_SECRET');
   }
   return undefined;
+}
+
+function resolveSecret(keyId: string): string | undefined {
+  const secret = secretDeLaCle(keyId);
+  return estUnSecretValable(secret) ? secret : undefined;
 }
 
 @Injectable()

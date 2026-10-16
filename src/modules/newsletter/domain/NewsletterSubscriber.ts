@@ -1,7 +1,9 @@
 import { randomUUID } from 'node:crypto';
 import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
 import {
+  optionalText,
   requireEmail,
+  requireLocale,
   requireText,
   requireValidDate,
 } from '../../../common/domain/validation/domain-validators';
@@ -39,12 +41,7 @@ export class NewsletterSubscriber {
 
   static create(props: CreateNewsletterSubscriberProps): NewsletterSubscriber {
     const email = requireEmail(props.email, 'newsletter subscriber email');
-    const locale = requireText(props.locale, 'locale', 1, 10);
-    if (!/^[a-z]{2,3}(-[A-Z]{2})?$/.test(locale)) {
-      throw new DomainValidationError(
-        `Invalid locale "${locale}" — expected ISO-639 short code (e.g. fr, en, fr-FR)`,
-      );
-    }
+    const locale = requireLocale(props.locale, 'newsletter locale');
     const sourceFormationSlug = requireText(
       props.sourceFormationSlug,
       'sourceFormationSlug',
@@ -53,10 +50,7 @@ export class NewsletterSubscriber {
     );
     const termsVersion = requireText(props.termsVersion, 'termsVersion', 1, 50);
     requireValidDate(props.termsAcceptedAt, 'termsAcceptedAt');
-    const firstName =
-      typeof props.firstName === 'string' && props.firstName.trim().length > 0
-        ? requireText(props.firstName, 'firstName', 1, 50)
-        : null;
+    const firstName = optionalText(props.firstName, 'firstName', 50) ?? null;
 
     const subscriber = new NewsletterSubscriber();
     subscriber.email = email;

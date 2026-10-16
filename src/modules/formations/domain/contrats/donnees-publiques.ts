@@ -53,13 +53,60 @@ type DefinitionPublique<P> = P & {
   readonly metadonnees: MetadonneesBrique;
 };
 
+export interface ValeurDeMachine {
+  readonly valeur: number | null;
+  readonly affichage: string;
+}
+
+export interface LigneDeMachine {
+  readonly valeur: ValeurDeMachine;
+  readonly resultat: ValeurDeMachine;
+  readonly courante: boolean;
+}
+
+export interface SortiesMachine {
+  readonly valeurs: Readonly<Record<string, number>>;
+  readonly resultat: ValeurDeMachine;
+  readonly etapes: readonly ValeurDeMachine[];
+  readonly courbes: Readonly<
+    Record<string, readonly { readonly x: number; readonly y: number | null }[]>
+  >;
+  readonly lignes: Readonly<Record<string, readonly LigneDeMachine[]>>;
+  readonly phrase: string;
+}
+
+export interface MachineCalculee {
+  readonly sorties: readonly SortiesMachine[];
+}
+
 export type Concept4Definition = DefinitionPublique<
   ProprietesExposition['fp-concept4']
->;
+> &
+  MachineCalculee;
+
+interface PositionDuTrace {
+  readonly valeurs: Readonly<Record<string, number>>;
+  readonly ordonnees: Readonly<Record<string, readonly (number | null)[]>>;
+}
+
+export interface TraceCalcule {
+  readonly abscisses: readonly number[];
+  readonly positions: readonly PositionDuTrace[];
+}
 
 export type PlotDefinition = DefinitionPublique<
   ProprietesExposition['fp-plot']
->;
+> &
+  TraceCalcule;
+
+export type NatureDeCellule = 'texte' | 'nombre' | 'logique' | 'erreur';
+
+export interface FeuilleEvaluee {
+  readonly saisies: Readonly<Record<string, string>>;
+  readonly affichages: Readonly<Record<string, string>>;
+  readonly natures: Readonly<Record<string, NatureDeCellule>>;
+  readonly formules: readonly string[];
+}
 
 export interface SheetPlanPublic {
   readonly id: string;
@@ -69,6 +116,10 @@ export interface SheetPlanPublic {
   readonly cellules: Readonly<Record<string, string>>;
   readonly verrouillees: readonly string[];
   readonly consignes: readonly string[];
+  readonly lettres: readonly string[];
+  readonly grille: readonly (readonly string[])[];
+  readonly longueurMaxSaisie: number;
+  readonly initiale: FeuilleEvaluee;
   readonly metadonnees: MetadonneesBrique;
 }
 
@@ -92,6 +143,21 @@ export interface TableColonneServie {
   readonly formuleInitiale?: string;
   readonly soldeDe?: string;
   readonly totalise: boolean;
+}
+
+export interface ValeurDuTableau {
+  readonly valeur: number | null;
+  readonly affichage: string;
+}
+
+export interface TableauEvalue {
+  readonly lignes: readonly {
+    readonly rang: number;
+    readonly valeurs: Readonly<Record<string, ValeurDuTableau>>;
+  }[];
+  readonly totaux: Readonly<Record<string, ValeurDuTableau>>;
+  readonly synthese: readonly ValeurDuTableau[];
+  readonly soldeFinal: ValeurDuTableau | null;
 }
 
 export interface TableBuildPlanPublic {

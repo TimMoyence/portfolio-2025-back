@@ -5,9 +5,9 @@ import {
 } from '../../../common/domain/provenance';
 import {
   requireEmail,
+  requireLocale,
   requireText,
 } from '../../../common/domain/validation/domain-validators';
-import { LocaleCode } from '../../../common/domain/value-objects/LocaleCode';
 import { PhoneNumber } from '../../../common/domain/value-objects/PhoneNumber';
 import { AuditLocale } from './audit-locale.util';
 
@@ -36,7 +36,7 @@ export class AuditRequest {
       2,
       200,
     );
-    const locale = LocaleCode.resolve(props.locale, 'fr').value;
+    const locale = requireLocale(props.locale, 'audit locale');
 
     if (props.contactMethod !== 'EMAIL' && props.contactMethod !== 'PHONE') {
       throw new DomainValidationError('Invalid audit contact method');

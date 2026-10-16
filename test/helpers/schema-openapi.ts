@@ -6,12 +6,38 @@ import {
 } from '@nestjs/swagger';
 import { estObjet } from '../../src/common/domain/est-objet';
 
-interface SchemaOpenApi {
+export interface SchemaOpenApi {
   $ref?: string;
   type?: string;
   properties?: Record<string, SchemaOpenApi>;
   required?: string[];
   items?: SchemaOpenApi;
+  additionalProperties?: SchemaOpenApi | boolean;
+  allOf?: SchemaOpenApi[];
+  oneOf?: SchemaOpenApi[];
+  anyOf?: SchemaOpenApi[];
+  [motCle: string]: unknown;
+}
+
+export const variantesDe = (schema: SchemaOpenApi): SchemaOpenApi[] => [
+  ...(schema.allOf ?? []),
+  ...(schema.oneOf ?? []),
+  ...(schema.anyOf ?? []),
+];
+
+export function estSansForme(schema: SchemaOpenApi): boolean {
+  if (schema.$ref !== undefined || variantesDe(schema).length > 0) {
+    return false;
+  }
+  if (schema.type === 'array') {
+    return schema.items === undefined || estSansForme(schema.items);
+  }
+  return (
+    schema.type === undefined ||
+    (schema.type === 'object' &&
+      schema.properties === undefined &&
+      schema.additionalProperties === undefined)
+  );
 }
 
 const PREFIXE_COMPOSANT = '#/components/schemas/';

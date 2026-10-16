@@ -137,7 +137,7 @@ describe('Pièces jointes réservées à la séance (e2e http socket)', () => {
       expect(codeDe(reponse)).toBe('PIECE_JOINTE_RETENUE');
     });
 
-    it('expose au front d une autre origine le nom du classeur servi', async () => {
+    it('expose au front d une autre origine le nom du classeur servi et le defi du jeton', async () => {
       const reponse = await auPoste(REPRISE)
         .set('Origin', ORIGINE_DU_FRONT)
         .expect(200);
@@ -147,7 +147,7 @@ describe('Pièces jointes réservées à la séance (e2e http socket)', () => {
         exposes: reponse.headers['access-control-expose-headers'],
       }).toEqual({
         origine: ORIGINE_DU_FRONT,
-        exposes: 'Content-Disposition',
+        exposes: 'Content-Disposition,WWW-Authenticate',
       });
     });
 

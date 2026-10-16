@@ -1,6 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ResourceConflictError } from '../../../common/domain/errors/ResourceConflictError';
 import { ResourceNotFoundError } from '../../../common/domain/errors/ResourceNotFoundError';
+import type { SupportedLocale } from '../../../common/domain/value-objects/LocaleCode';
 import {
   ARTICLE_BROADCAST_REPOSITORY,
   type ArticleBroadcastRecord,
@@ -15,7 +16,7 @@ const MODERATION_LIST_LIMIT = 30;
 export interface ModerationView {
   article_id: string;
   slug: string;
-  locale: 'fr' | 'en';
+  locale: SupportedLocale;
   title: string;
   status: string;
   published_at: string;

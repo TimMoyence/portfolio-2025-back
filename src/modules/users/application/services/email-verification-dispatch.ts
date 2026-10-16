@@ -1,5 +1,6 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import type { ValeursDeLEnv } from '../../../../config/env.validation';
 import type { IEmailVerificationNotifier } from '../../domain/IEmailVerificationNotifier';
 import type { IEmailVerificationTokensRepository } from '../../domain/IEmailVerificationTokens.repository';
 import {
@@ -20,7 +21,7 @@ export class EnvoiDeVerificationEmail {
     private readonly tokensRepo: IEmailVerificationTokensRepository,
     @Inject(EMAIL_VERIFICATION_NOTIFIER)
     private readonly notifier: IEmailVerificationNotifier,
-    configService: ConfigService,
+    configService: ConfigService<ValeursDeLEnv>,
   ) {
     this.verificationUrlBase = configService.get<string>(
       'EMAIL_VERIFICATION_URL_BASE',

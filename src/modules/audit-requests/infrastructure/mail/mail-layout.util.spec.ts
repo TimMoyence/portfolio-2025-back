@@ -11,7 +11,10 @@ describe('buildMailLayout (P2.7 / P6.6)', () => {
     bodyHtml: safeHtml`<p>body content</p>`,
   };
 
-  installerVariables({ AUDIT_UNSUBSCRIBE_URL: undefined }, 'chaque-test');
+  installerVariables(
+    { AUDIT_UNSUBSCRIBE_URL: undefined, AUDIT_BRAND_LOGO_URL: undefined },
+    'chaque-test',
+  );
 
   describe('structure HTML', () => {
     it('produit un document HTML5 complet avec DOCTYPE et meta viewport', () => {
@@ -180,6 +183,24 @@ describe('buildMailLayout (P2.7 / P6.6)', () => {
       const html = buildMailLayout({ ...baseInput, showUnsubscribe: true });
 
       expect(html).toContain('href="https://preferences.asilidesign.fr"');
+    });
+
+    it('utilise le logo de AUDIT_BRAND_LOGO_URL', () => {
+      appliquer({
+        AUDIT_BRAND_LOGO_URL: 'https://cdn.asilidesign.fr/logo.png',
+      });
+
+      expect(buildMailLayout(baseInput)).toContain(
+        'src="https://cdn.asilidesign.fr/logo.png"',
+      );
+    });
+
+    it('garde le logo du site quand AUDIT_BRAND_LOGO_URL est vide', () => {
+      appliquer({ AUDIT_BRAND_LOGO_URL: '  ' });
+
+      expect(buildMailLayout(baseInput)).toContain(
+        'src="https://asilidesign.fr/assets/images/logo.webp"',
+      );
     });
   });
 });

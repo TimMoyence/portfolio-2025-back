@@ -1,24 +1,9 @@
-import { plainToInstance } from 'class-transformer';
-import { validateSync } from 'class-validator';
-import { AuditRequestRequestDto } from '../../../modules/audit-requests/interfaces/dto/audit-request.request.dto';
-import { ContactRequestDto } from '../../../modules/contacts/interfaces/dto/contact.request.dto';
-import { JoinSessionRequestDto } from '../../../modules/formations/interfaces/dto/join-session.request.dto';
-import { RequestToolkitRequestDto } from '../../../modules/lead-magnets/interfaces/dto/request-toolkit.request.dto';
-import { SubscribeNewsletterRequestDto } from '../../../modules/newsletter/interfaces/dto/subscribe-newsletter.request.dto';
+import { FORMULAIRES_PUBLICS } from '../../../../test/helpers/formulaires-publics';
+import { champsRefuses } from '../../../../test/helpers/validation-pipe';
 import { ChampsAntiRobotDto } from './champs-anti-robot.dto';
 
-const FORMULAIRES_PUBLICS = [
-  AuditRequestRequestDto,
-  ContactRequestDto,
-  JoinSessionRequestDto,
-  RequestToolkitRequestDto,
-  SubscribeNewsletterRequestDto,
-];
-
 const proprietesEnErreur = (corps: Record<string, unknown>): string[] =>
-  validateSync(plainToInstance(ChampsAntiRobotDto, corps)).map(
-    (erreur) => erreur.property,
-  );
+  champsRefuses(ChampsAntiRobotDto, corps);
 
 describe('ChampsAntiRobotDto', () => {
   it('accepte un formulaire sans champ anti-robot', () => {
@@ -41,8 +26,8 @@ describe('ChampsAntiRobotDto', () => {
   });
 
   it.each(FORMULAIRES_PUBLICS)(
-    '%p herite des champs anti-robot',
-    (Formulaire) => {
+    'le formulaire de %s herite des champs anti-robot',
+    (_saisie, Formulaire) => {
       expect(Formulaire.prototype).toBeInstanceOf(ChampsAntiRobotDto);
     },
   );

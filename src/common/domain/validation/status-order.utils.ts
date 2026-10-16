@@ -1,4 +1,5 @@
 import { DomainValidationError } from '../errors/DomainValidationError';
+import { estEntierDansLesBornes } from '../nombres/dans-les-bornes';
 import type { PublishableStatus } from '../types/publishable-status';
 
 const VALID_STATUSES: readonly PublishableStatus[] = [
@@ -36,16 +37,11 @@ export function resolveCompteurBorne(
     return 0;
   }
 
-  if (!Number.isInteger(raw)) {
+  if (!estEntierDansLesBornes(raw, { min: 0, max: maximum })) {
     throw new DomainValidationError(`Invalid ${field}`);
   }
 
-  const value = Number(raw);
-  if (value < 0 || value > maximum) {
-    throw new DomainValidationError(`Invalid ${field}`);
-  }
-
-  return value;
+  return raw;
 }
 
 export function resolveOrder(raw: unknown, field: string): number {

@@ -6,10 +6,14 @@ import { PREFIXE_API_PAR_DEFAUT } from '../src/config/prefixe-api';
 import { ResourceNotFoundError } from '../src/common/domain/errors/ResourceNotFoundError';
 import {
   applicationDeLaSuite,
-  httpServerOf,
+  serveurHttpDe,
   ouvrirApplication,
   preparerChaqueRequete,
 } from './helpers/nest-test-app';
+import {
+  REFUS_DE_L_OCTET_NUL,
+  statutEtDetail,
+} from './helpers/reponse-probleme';
 
 const ARTICLE_ID = 'morning-brief-2026-09-23-fr';
 
@@ -39,7 +43,7 @@ describe('Modération des articles (admin)', () => {
     });
   });
 
-  const serveur = () => httpServerOf(app());
+  const serveur = () => serveurHttpDe(app());
 
   beforeEach(() => jest.clearAllMocks());
 
@@ -77,22 +81,25 @@ describe('Modération des articles (admin)', () => {
     expect(moderation[method]).toHaveBeenCalledWith(ARTICLE_ID);
   });
 
-  it.each([
-    ['..%2Fetc', '../etc'],
-    [`${ARTICLE_ID}%00`, `${ARTICLE_ID}\u0000`],
-  ])(
-    'laisse le service seul juge de l identifiant %s',
-    async (segment, identifiant) => {
-      moderation.withdraw.mockRejectedValueOnce(
-        new ResourceNotFoundError('Article not found'),
-      );
+  it('laisse le service seul juge de l identifiant ..%2Fetc', async () => {
+    moderation.withdraw.mockRejectedValueOnce(
+      new ResourceNotFoundError('Article not found'),
+    );
 
-      await request(serveur())
-        .post(`/api/v1/portfolio25/articles/admin/${segment}/withdraw`)
-        .set('x-test-role', 'admin')
-        .expect(404);
+    await request(serveur())
+      .post('/api/v1/portfolio25/articles/admin/..%2Fetc/withdraw')
+      .set('x-test-role', 'admin')
+      .expect(404);
 
-      expect(moderation.withdraw).toHaveBeenCalledWith(identifiant);
-    },
-  );
+    expect(moderation.withdraw).toHaveBeenCalledWith('../etc');
+  });
+
+  it('refuse en 400 un identifiant qui porte un octet nul, sans interroger le service', async () => {
+    const reponse = await request(serveur())
+      .post(`/api/v1/portfolio25/articles/admin/${ARTICLE_ID}%00/withdraw`)
+      .set('x-test-role', 'admin');
+
+    expect(statutEtDetail(reponse)).toEqual(REFUS_DE_L_OCTET_NUL);
+    expect(moderation.withdraw).not.toHaveBeenCalled();
+  });
 });

@@ -103,6 +103,16 @@ describe('references', () => {
     expect(erreurDe({ A1: '=B1+1', B1: 'trois' })).toBe('#VALEUR!');
   });
 
+  it('lit « 1 200 » et « −5 » saisis dans une cellule comme des nombres, comme une saisie d eleve', () => {
+    expect(
+      valeurDe({ A1: '=B1+B2+B3', B1: '1 200', B2: '−5', B3: '2 000,5' }),
+    ).toBe(3195.5);
+    expect(resultatDe({ A1: '1 200' })).toBe(1200);
+    expect(resultatDe({ A1: '−5' })).toBe(-5);
+    expect(valeurDe({ A1: '=B1*2', B1: '="1 200"' })).toBe(2400);
+    expect(erreurDe({ A1: '=B1+1', B1: '1 2 trois' })).toBe('#VALEUR!');
+  });
+
   it('propage l erreur de la cellule visee au lieu de la masquer', () => {
     expect(erreurDe({ A1: '=B1+1', B1: '=1/0' })).toBe('#DIV/0!');
   });

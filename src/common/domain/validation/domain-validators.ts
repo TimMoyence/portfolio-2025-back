@@ -1,11 +1,39 @@
 import { DomainValidationError } from '../errors/DomainValidationError';
 import { dansLesBornes } from '../nombres/dans-les-bornes';
+import { longueurDeTexte } from '../texte/longueur-de-texte';
 import { EmailAddress } from '../value-objects/EmailAddress';
+import {
+  estUneLocaleSupportee,
+  type SupportedLocale,
+} from '../value-objects/LocaleCode';
+import { PhoneNumber } from '../value-objects/PhoneNumber';
 
 export function requireEmail(raw: unknown, field: string): string {
   const email = EmailAddress.parse(raw);
   if (email === null) throw new DomainValidationError(`Invalid ${field}`);
   return email.value;
+}
+
+export function optionalPhone(raw: unknown, field: string): string | null {
+  const saisie = optionalText(raw, field, Infinity);
+  if (saisie === undefined) return null;
+  const telephone = PhoneNumber.parse(saisie);
+  if (telephone === null) throw new DomainValidationError(`Invalid ${field}`);
+  return telephone.value;
+}
+
+export function requireLocale(raw: unknown, field: string): SupportedLocale {
+  if (!estUneLocaleSupportee(raw)) {
+    throw new DomainValidationError(`Invalid ${field}`);
+  }
+  return raw;
+}
+
+export function requireBoolean(raw: unknown, field: string): boolean {
+  if (typeof raw !== 'boolean') {
+    throw new DomainValidationError(`Invalid ${field}`);
+  }
+  return raw;
 }
 
 export function requireText(
@@ -17,7 +45,7 @@ export function requireText(
   if (typeof raw !== 'string')
     throw new DomainValidationError(`Invalid ${field}`);
   const value = raw.trim();
-  if (!dansLesBornes(value.length, { min, max }))
+  if (!dansLesBornes(longueurDeTexte(value), { min, max }))
     throw new DomainValidationError(`Invalid ${field}`);
   return value;
 }
@@ -32,7 +60,8 @@ export function optionalText(
     throw new DomainValidationError(`Invalid ${field}`);
   const value = raw.trim();
   if (value.length === 0) return undefined;
-  if (value.length > max) throw new DomainValidationError(`Invalid ${field}`);
+  if (longueurDeTexte(value) > max)
+    throw new DomainValidationError(`Invalid ${field}`);
   return value;
 }
 

@@ -15,8 +15,16 @@ const COURS = buildCoursDeClasse(4);
 const CATALOGUE = creerCatalogueDeTest(COURS);
 const AUTRE_FORMATEUR = AUTRE_FORMATEUR_DE_TEST;
 const CAPACITE = 2;
-const { CREE, OK, SANS_CONTENU, NON_AUTORISE, INTERDIT, INTROUVABLE, CONFLIT } =
-  CODE_HTTP;
+const {
+  CREE,
+  OK,
+  SANS_CONTENU,
+  INVALIDE,
+  NON_AUTORISE,
+  INTERDIT,
+  INTROUVABLE,
+  CONFLIT,
+} = CODE_HTTP;
 
 interface ReponseOuverture {
   sessionId: string;
@@ -44,11 +52,20 @@ describeDb('Capacite et eviction (B28, db integration)', () => {
   const cle = (rang: number): string =>
     `99999999-9999-4999-8999-${String(rang).padStart(12, '0')}`;
 
-  const inscrire = (seance: ReponseOuverture, rang: number): Test =>
+  const inscrire = (
+    seance: ReponseOuverture,
+    rang: number,
+    identite: {
+      readonly prenom?: string;
+      readonly nom?: string;
+      readonly email?: string;
+    } = {},
+  ): Test =>
     banc.anonyme('post', `/sessions/${seance.code}/join`).send({
       prenom: 'Theo',
       nom: 'Martin',
       email: `${cle(rang)}@example.test`,
+      ...identite,
     });
 
   const inscrit = async (
@@ -154,6 +171,11 @@ describeDb('Capacite et eviction (B28, db integration)', () => {
     return { seance, premier };
   };
 
+  const attendreAucunInscrit = (seance: { sessionId: string }) =>
+    expect(
+      contexte().participants.countBySession(seance.sessionId),
+    ).resolves.toBe(0);
+
   it('refuse en 409 SEANCE_COMPLETE au-dela de la capacite demandee', async () => {
     const seance = await ouvrirSeance(CAPACITE);
     for (let rang = 0; rang < CAPACITE; rang += 1) {
@@ -161,6 +183,54 @@ describeDb('Capacite et eviction (B28, db integration)', () => {
     }
 
     attendreRefus(await inscrire(seance, CAPACITE), CONFLIT, 'SEANCE_COMPLETE');
+  });
+
+  const coeurs = String.fromCodePoint(0x2764, 0xfe0f).repeat(41);
+  const adresseTropLongue = `${'a'.repeat(64)}@${String.fromCodePoint(0x62, 0xfe0f).repeat(10)}${'b'.repeat(40)}.${'c'.repeat(53)}.fr`;
+
+  it.each([
+    [
+      'le prenom, le nom ou l adresse que sa colonne ne tient pas',
+      [{ prenom: coeurs }, { nom: coeurs }, { email: adresseTropLongue }],
+    ],
+    [
+      'un octet nul dans le prenom, le nom ou l adresse',
+      [
+        { prenom: 'Th\u0000eo' },
+        { nom: 'Mar\u0000tin' },
+        { email: `${cle(2)}\u0000@example.test` },
+      ],
+    ],
+  ])(
+    'refuse en 400, sans erreur serveur ni inscription, %s',
+    async (_cas, identites) => {
+      const seance = await ouvrirSeance(CAPACITE);
+
+      const refus = [];
+      for (const [rang, identite] of identites.entries()) {
+        refus.push(await inscrire(seance, rang, identite));
+      }
+
+      expect(refus.map((reponse) => reponse.status)).toEqual([
+        INVALIDE,
+        INVALIDE,
+        INVALIDE,
+      ]);
+      await attendreAucunInscrit(seance);
+    },
+  );
+
+  it('enregistre le prenom et le nom rognes', async () => {
+    const seance = await ouvrirSeance(CAPACITE);
+
+    await inscrire(seance, 0, { prenom: '  Theo ', nom: ' Martin  ' }).expect(
+      CREE,
+    );
+
+    const [participant] = await contexte().participants.listBySession(
+      seance.sessionId,
+    );
+    expect([participant.prenom, participant.nom]).toEqual(['Theo', 'Martin']);
   });
 
   it('applique la capacite par defaut de quarante quand elle n est pas demandee', async () => {
@@ -192,9 +262,7 @@ describeDb('Capacite et eviction (B28, db integration)', () => {
     await evincer(seance, await inscrit(seance, 0)).expect(SANS_CONTENU);
 
     attendreRefus(await inscrire(seance, 0), INTERDIT, 'PARTICIPANT_EVINCE');
-    await expect(
-      contexte().participants.countBySession(seance.sessionId),
-    ).resolves.toBe(0);
+    await attendreAucunInscrit(seance);
   });
 
   it('S2 · readmet sans erreur serveur quand la graine de l evince a ete reprise : 409 GRAINE_REPRISE', async () => {

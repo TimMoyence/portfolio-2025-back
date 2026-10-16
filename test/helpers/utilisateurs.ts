@@ -40,7 +40,7 @@ export function preparerNouveauMotDePasse(
   return updatedUser;
 }
 
-export function attendreSessionsFermeesApres(
+function attendreSessionsFermeesApres(
   mettreAJour: IUsersRepository['update'],
   fermerLesSessions: IRefreshTokensRepository['revokeByUserId'],
 ): void {
@@ -61,20 +61,29 @@ export function attendreAucunMotDePasseEnregistre(
 }
 
 export function attendreNouveauMotDePasseEnregistre(
-  effets: {
-    hacher: PasswordService['hash'];
-    mettreAJour: IUsersRepository['update'];
-    fermerLesSessions: IRefreshTokensRepository['revokeByUserId'];
+  {
+    passwordService,
+    usersRepository,
+    refreshTokensRepo,
+  }: {
+    readonly passwordService: { readonly hash: PasswordService['hash'] };
+    readonly usersRepository: { readonly update: IUsersRepository['update'] };
+    readonly refreshTokensRepo: {
+      readonly revokeByUserId: IRefreshTokensRepository['revokeByUserId'];
+    };
   },
   motDePasse: string,
   auteur: string,
 ): void {
-  expect(effets.hacher).toHaveBeenCalledWith(motDePasse);
-  attendreMiseAJourDeLUtilisateur(effets.mettreAJour, {
+  expect(passwordService.hash).toHaveBeenCalledWith(motDePasse);
+  attendreMiseAJourDeLUtilisateur(usersRepository.update, {
     passwordHash: 'new-hash',
     updatedOrCreatedBy: auteur,
   });
-  attendreSessionsFermeesApres(effets.mettreAJour, effets.fermerLesSessions);
+  attendreSessionsFermeesApres(
+    usersRepository.update,
+    refreshTokensRepo.revokeByUserId,
+  );
 }
 
 export function itRefuseUnRefreshTokenInconnu(

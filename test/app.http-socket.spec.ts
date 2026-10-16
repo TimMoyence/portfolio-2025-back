@@ -4,7 +4,7 @@ import request from 'supertest';
 import {
   applicationDeLaSuite,
   bootstrapTestApp,
-  httpServerOf,
+  serveurHttpDe,
 } from './helpers/nest-test-app';
 import { RolesGuard } from '../src/common/interfaces/auth/roles.guard';
 import { JwtAuthGuard } from '../src/common/interfaces/auth/jwt-auth.guard';
@@ -67,7 +67,7 @@ describe('API coherence and connectivity (e2e http socket)', () => {
     return bootstrapTestApp(moduleRef);
   });
 
-  const getHttpServer = () => httpServerOf(app());
+  const getHttpServer = () => serveurHttpDe(app());
 
   function validationMessages(response: request.Response): string[] {
     const detail = response.body.detail as string | string[];

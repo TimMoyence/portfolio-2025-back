@@ -1,14 +1,55 @@
 import { z } from 'zod';
+import {
+  estUnSecretValable,
+  LONGUEUR_MIN_DU_SECRET,
+} from '../common/domain/crypto/secret-hmac';
+import { EmailAddress } from '../common/domain/value-objects/EmailAddress';
 import { resoudreConnexionPostgres } from '../database/connexion-postgres';
 import {
   DELAI_DE_DIFFUSION_EN_MINUTES,
   TAILLE_DU_LOT_DE_DIFFUSION,
 } from './diffusion-des-articles';
-import type { BornesEntieres } from './env-readers.util';
+import {
+  estEnProduction,
+  lirePort,
+  PORT_ATTENDU,
+  type BornesEntieres,
+} from './env-readers.util';
 import { PREFIXE_API_PAR_DEFAUT } from './prefixe-api';
+import { trousseauHmac } from './trousseau-hmac';
 
 function entierDansLesBornes({ defaut, min, max }: BornesEntieres) {
   return z.coerce.number().int().min(min).max(max).default(defaut);
+}
+
+function portTcp(defaut: number) {
+  return z
+    .union([z.string(), z.number()])
+    .optional()
+    .transform((valeur, ctx) => {
+      const texte = valeur === undefined ? '' : String(valeur).trim();
+      if (!texte) return defaut;
+      const port = lirePort(texte);
+      if (port !== undefined) return port;
+      ctx.addIssue({ code: 'custom', message: `doit etre ${PORT_ATTENDU}` });
+      return z.NEVER;
+    });
+}
+
+const SECRET_TROP_COURT = `doit faire au moins ${LONGUEUR_MIN_DU_SECRET} caracteres hors blancs`;
+
+function secretRequis(nom: string) {
+  return z.string().refine(estUnSecretValable, `${nom} ${SECRET_TROP_COURT}`);
+}
+
+function secretFacultatif(nom: string) {
+  return z
+    .string()
+    .optional()
+    .refine(
+      (secret) => !secret?.trim() || estUnSecretValable(secret),
+      `${nom} ${SECRET_TROP_COURT}`,
+    );
 }
 
 const cryptographicSecretKeys = [
@@ -19,7 +60,7 @@ const cryptographicSecretKeys = [
   'MORNING_BRIEF_HMAC_SECRET',
 ] as const;
 
-type CryptographicSecretKey = (typeof cryptographicSecretKeys)[number];
+export type CryptographicSecretKey = (typeof cryptographicSecretKeys)[number];
 
 function findDuplicateCryptographicSecret(
   values: Readonly<Record<CryptographicSecretKey, string | undefined>>,
@@ -47,8 +88,9 @@ function addSmtpIssues(
   },
   ctx: z.RefinementCtx,
 ): void {
-  // Un transporter SMTP n'est cree que si HOST/USER/PASS sont renseignes
-  // (cf. `createOptionalSmtpTransporter`). Dans ce cas, les mailers
+  // Un transporter SMTP n'est cree que si HOST/PORT/USER/PASS sont
+  // renseignes (cf. `createOptionalSmtpTransporter`), le port valant 587
+  // par defaut une fois l'environnement valide. Dans ce cas, les mailers
   // enverront reellement — et sans expediteur, nodemailer recoit
   // `from: undefined` et echoue a l'envoi, en production, bien apres le
   // demarrage. On refuse donc de demarrer plutot que de laisser passer
@@ -78,230 +120,255 @@ function addSmtpIssues(
   }
 }
 
-const envSchema = z
-  .object({
-    NODE_ENV: z
-      .enum(['development', 'production', 'test'])
-      .default('development'),
+const formeDeLEnv = z.object({
+  NODE_ENV: z
+    .enum(['development', 'production', 'test'])
+    .default('development'),
 
-    PORT: z.coerce.number().int().positive().default(3000),
-    API_PREFIX: z.string().default(PREFIXE_API_PAR_DEFAUT),
-    SWAGGER_PATH: z.string().optional(),
-    CORS_ORIGIN: z.string().optional(),
+  PORT: portTcp(3000),
+  API_PREFIX: z.string().default(PREFIXE_API_PAR_DEFAUT),
+  SWAGGER_PATH: z.string().optional(),
+  CORS_ORIGIN: z.string().optional(),
 
-    DB_HOST: z
-      .string()
-      .min(1, 'DB_HOST (ou DATABASE_HOST / PGHOST) est requis'),
-    DB_PORT: z.coerce.number().int().positive().default(5432),
-    DB_NAME: z
-      .string()
-      .min(1, 'DB_NAME (ou DATABASE_NAME / POSTGRES_DB) est requis'),
-    DB_USERNAME: z.string().optional(),
-    DB_USER: z.string().optional(),
-    DB_PASSWORD: z.string().optional(),
-    DB_PASS: z.string().optional(),
-    DB_SSL: z.string().optional(),
-    DB_SYNCHRONIZE: z.string().optional(),
-    DB_ADMIN_DATABASE: z.string().optional(),
-    DATABASE_URL: z.string().optional(),
-    DATABASE_HOST: z.string().optional(),
-    DATABASE_PORT: z.string().optional(),
-    DATABASE_NAME: z.string().optional(),
-    DATABASE_USER: z.string().optional(),
-    DATABASE_PASSWORD: z.string().optional(),
-    DATABASE_SSL: z.string().optional(),
-    DATABASE_ADMIN_NAME: z.string().optional(),
-    PGHOST: z.string().optional(),
-    PGPORT: z.string().optional(),
-    POSTGRES_DB: z.string().optional(),
-    POSTGRES_USER: z.string().optional(),
-    POSTGRES_PASSWORD: z.string().optional(),
-    TYPEORM_SYNCHRONIZE: z.string().optional(),
+  DB_HOST: z.string().min(1, 'DB_HOST (ou DATABASE_HOST / PGHOST) est requis'),
+  DB_PORT: portTcp(5432),
+  DB_NAME: z
+    .string()
+    .min(1, 'DB_NAME (ou DATABASE_NAME / POSTGRES_DB) est requis'),
+  DB_USERNAME: z.string().optional(),
+  DB_USER: z.string().optional(),
+  DB_PASSWORD: z.string().optional(),
+  DB_PASS: z.string().optional(),
+  DB_SSL: z.string().optional(),
+  DB_SYNCHRONIZE: z.string().optional(),
+  DB_ADMIN_DATABASE: z.string().optional(),
+  DB_DATABASE: z.string().optional(),
+  DB_POOL_MAX: z.string().optional(),
+  DB_POOL_IDLE_TIMEOUT_MS: z.string().optional(),
+  DB_POOL_CONNECT_TIMEOUT_MS: z.string().optional(),
+  DATABASE_URL: z.string().optional(),
+  DATABASE_HOST: z.string().optional(),
+  DATABASE_PORT: z.string().optional(),
+  DATABASE_NAME: z.string().optional(),
+  DATABASE_USER: z.string().optional(),
+  DATABASE_PASSWORD: z.string().optional(),
+  DATABASE_SSL: z.string().optional(),
+  DATABASE_ADMIN_NAME: z.string().optional(),
+  PGHOST: z.string().optional(),
+  PGPORT: z.string().optional(),
+  POSTGRES_DB: z.string().optional(),
+  POSTGRES_USER: z.string().optional(),
+  POSTGRES_PASSWORD: z.string().optional(),
+  TYPEORM_SYNCHRONIZE: z.string().optional(),
 
-    JWT_SECRET: z
-      .string()
-      .min(32, 'JWT_SECRET doit faire au moins 32 caracteres'),
-    JWT_EXPIRES_IN: z.string().default('900s'),
-    SECURE_KEY_FOR_PASSWORD_HASHING: z
-      .string()
-      .min(
-        32,
-        'SECURE_KEY_FOR_PASSWORD_HASHING doit faire au moins 32 caracteres',
-      ),
-    GOOGLE_CLIENT_ID: z.string().min(1, 'GOOGLE_CLIENT_ID est requis'),
-    PASSWORD_RESET_URL_BASE: z.string().optional(),
+  JWT_SECRET: secretRequis('JWT_SECRET'),
+  JWT_EXPIRES_IN: z.string().default('900s'),
+  JWT_SECRET_PREVIOUS: secretFacultatif('JWT_SECRET_PREVIOUS'),
+  SECURE_KEY_FOR_PASSWORD_HASHING: secretRequis(
+    'SECURE_KEY_FOR_PASSWORD_HASHING',
+  ),
+  GOOGLE_CLIENT_ID: z.string().min(1, 'GOOGLE_CLIENT_ID est requis'),
+  PASSWORD_RESET_URL_BASE: z.string().optional(),
+  EMAIL_VERIFICATION_URL_BASE: z.string().optional(),
 
-    FORMATION_TEACHER_NOTIFICATION_TO: z
-      .string()
-      .min(1, 'FORMATION_TEACHER_NOTIFICATION_TO est requis'),
-    FORMATION_REVIEW_TOKEN_SECRET: z
-      .string()
-      .min(
-        32,
-        'FORMATION_REVIEW_TOKEN_SECRET doit faire au moins 32 caracteres',
-      ),
-    FORMATIONS_PULSE_SECRET: z
-      .string()
-      .min(32, 'FORMATIONS_PULSE_SECRET doit faire au moins 32 caracteres'),
+  FORMATION_TEACHER_NOTIFICATION_TO: z
+    .string()
+    .min(1, 'FORMATION_TEACHER_NOTIFICATION_TO est requis'),
+  FORMATION_REVIEW_TOKEN_SECRET: secretRequis('FORMATION_REVIEW_TOKEN_SECRET'),
+  FORMATIONS_PULSE_SECRET: secretRequis('FORMATIONS_PULSE_SECRET'),
 
-    REDIS_HOST: z.string().optional(),
-    REDIS_PORT: z.coerce.number().int().positive().default(6379),
-    REDIS_URL: z.string().optional(),
+  REDIS_HOST: z.string().optional(),
+  REDIS_PORT: portTcp(6379),
+  REDIS_URL: z.string().optional(),
+  REDIS_USERNAME: z.string().optional(),
+  REDIS_PASSWORD: z.string().optional(),
 
-    AUDIT_QUEUE_ENABLED: z.string().default('true'),
-    AUDIT_QUEUE_NAME: z.string().default('audit_requests'),
-    AUDIT_QUEUE_CONCURRENCY: z.coerce.number().int().positive().default(1),
-    AUDIT_QUEUE_ATTEMPTS: z.coerce.number().int().positive().default(3),
-    AUDIT_QUEUE_BACKOFF_MS: z.coerce.number().int().positive().default(2000),
-    AUDIT_JOB_TIMEOUT_MS: z.coerce.number().int().positive().default(180000),
+  AUDIT_QUEUE_ENABLED: z.string().default('true'),
+  AUDIT_QUEUE_NAME: z.string().default('audit_requests'),
+  AUDIT_QUEUE_CONCURRENCY: z.coerce.number().int().positive().default(1),
+  AUDIT_QUEUE_ATTEMPTS: z.coerce.number().int().positive().default(3),
+  AUDIT_QUEUE_BACKOFF_MS: z.coerce.number().int().positive().default(2000),
+  AUDIT_JOB_TIMEOUT_MS: z.coerce.number().int().positive().default(180000),
 
-    AUDIT_FETCH_TIMEOUT_MS: z.coerce.number().int().positive().optional(),
-    AUDIT_MAX_REDIRECTS: z.coerce.number().int().nonnegative().optional(),
-    AUDIT_HTML_MAX_BYTES: z.coerce.number().int().positive().optional(),
-    AUDIT_TEXT_MAX_BYTES: z.coerce.number().int().positive().optional(),
-    AUDIT_SITEMAP_SAMPLE_SIZE: z.coerce.number().int().positive().optional(),
-    AUDIT_SITEMAP_MAX_URLS: z.coerce.number().int().positive().optional(),
-    AUDIT_SITEMAP_ANALYZE_LIMIT: z.coerce.number().int().positive().optional(),
-    AUDIT_URL_ANALYZE_CONCURRENCY: z.coerce
-      .number()
-      .int()
-      .positive()
-      .optional(),
-    AUDIT_PAGE_ANALYZE_LIMIT: z.coerce.number().int().positive().optional(),
-    AUDIT_PAGE_AI_CONCURRENCY: z.coerce.number().int().positive().optional(),
-    AUDIT_PAGE_AI_TIMEOUT_MS: z.coerce.number().int().positive().optional(),
+  AUDIT_FETCH_TIMEOUT_MS: z.coerce.number().int().positive().optional(),
+  AUDIT_MAX_REDIRECTS: z.coerce.number().int().nonnegative().optional(),
+  AUDIT_HTML_MAX_BYTES: z.coerce.number().int().positive().optional(),
+  AUDIT_TEXT_MAX_BYTES: z.coerce.number().int().positive().optional(),
+  AUDIT_SITEMAP_SAMPLE_SIZE: z.coerce.number().int().positive().optional(),
+  AUDIT_SITEMAP_MAX_URLS: z.coerce.number().int().positive().optional(),
+  AUDIT_SITEMAP_ANALYZE_LIMIT: z.coerce.number().int().positive().optional(),
+  AUDIT_URL_ANALYZE_CONCURRENCY: z.coerce.number().int().positive().optional(),
+  AUDIT_PAGE_ANALYZE_LIMIT: z.coerce.number().int().positive().optional(),
+  AUDIT_PAGE_AI_CONCURRENCY: z.coerce.number().int().positive().optional(),
+  AUDIT_PAGE_AI_TIMEOUT_MS: z.coerce.number().int().positive().optional(),
+  AUDIT_PAGE_AI_CIRCUIT_BREAKER_MIN_SAMPLES: z.string().optional(),
+  AUDIT_PAGE_AI_CIRCUIT_BREAKER_FAILURE_RATIO: z.string().optional(),
 
-    OPENAI_API_KEY: z.string().optional(),
-    AUDIT_LLM_MODEL: z.string().default('gpt-4o-mini'),
-    AUDIT_LLM_PROFILE: z.string().optional(),
-    AUDIT_LLM_LANGUAGE: z.string().default('fr'),
+  OPENAI_API_KEY: z.string().optional(),
+  AUDIT_LLM_MODEL: z.string().default('gpt-4o-mini'),
+  AUDIT_LLM_PROFILE: z.string().optional(),
+  AUDIT_LLM_LANGUAGE: z.string().default('fr'),
+  AUDIT_LLM_PROFILE_CANARY_PERCENT: z.string().optional(),
+  AUDIT_LLM_TIMEOUT_MS: z.string().optional(),
+  AUDIT_LLM_SUMMARY_TIMEOUT_MS: z.string().optional(),
+  AUDIT_LLM_EXPERT_TIMEOUT_MS: z.string().optional(),
+  AUDIT_LLM_GLOBAL_TIMEOUT_MS: z.string().optional(),
+  AUDIT_LLM_SECTION_TIMEOUT_MS: z.string().optional(),
+  AUDIT_LLM_SECTION_RETRY_MAX: z.string().optional(),
+  AUDIT_LLM_SECTION_RETRY_MIN_REMAINING_MS: z.string().optional(),
+  AUDIT_LLM_INFLIGHT_MAX: z.string().optional(),
+  AUDIT_LLM_RETRIES: z.string().optional(),
+  AUDIT_ANTHROPIC_API_KEY: z.string().optional(),
+  AUDIT_ANTHROPIC_MODEL: z.string().optional(),
+  AUDIT_ENABLE_ANTHROPIC_CACHING: z.string().optional(),
+  AUDIT_RATE_HOURLY_MIN: z.string().optional(),
+  AUDIT_RATE_HOURLY_MAX: z.string().optional(),
+  AUDIT_RATE_CURRENCY: z.string().optional(),
 
-    SMTP_HOST: z.string().optional(),
-    SMTP_PORT: z.coerce.number().int().positive().default(587),
-    SMTP_USER: z.string().optional(),
-    SMTP_PASS: z.string().optional(),
-    SMTP_SECURE: z.string().default('false'),
-    SMTP_FROM: z.string().optional(),
-    SMTP_REPLY_TO: z.string().optional(),
-    SMTP_DKIM_DOMAIN: z.string().optional(),
-    SMTP_DKIM_SELECTOR: z.string().optional(),
-    SMTP_DKIM_PRIVATE_KEY: z.string().optional(),
-    CONTACT_NOTIFICATION_TO: z.string().optional(),
-    AUDIT_REPORT_TO: z.string().optional(),
+  SMTP_HOST: z.string().optional(),
+  SMTP_PORT: portTcp(587),
+  SMTP_USER: z.string().optional(),
+  SMTP_PASS: z.string().optional(),
+  SMTP_SECURE: z.string().default('false'),
+  SMTP_FROM: z.string().optional(),
+  SMTP_REPLY_TO: z.string().optional(),
+  SMTP_DKIM_DOMAIN: z.string().optional(),
+  SMTP_DKIM_SELECTOR: z.string().optional(),
+  SMTP_DKIM_PRIVATE_KEY: z.string().optional(),
+  CONTACT_NOTIFICATION_TO: z.string().optional(),
+  AUDIT_REPORT_TO: z.string().optional(),
+  AUDIT_SELF_DOMAINS: z.string().optional(),
+  AUDIT_BOOKING_URL: z.string().optional(),
+  AUDIT_BRAND_LOGO_URL: z.string().optional(),
+  AUDIT_UNSUBSCRIBE_URL: z.string().optional(),
 
-    FRONTEND_URL: z.string().optional(),
-    MORNING_BRIEF_HMAC_KEYS: z.string().optional(),
-    MORNING_BRIEF_HMAC_KEY_ID: z.string().optional(),
-    MORNING_BRIEF_HMAC_SECRET: z.string().optional(),
-    ARTICLE_BROADCAST_ENABLED: z.enum(['true', 'false']).default('false'),
-    ARTICLE_BROADCAST_DELAY_MINUTES: entierDansLesBornes(
-      DELAI_DE_DIFFUSION_EN_MINUTES,
-    ),
-    ARTICLE_BROADCAST_BATCH_SIZE: entierDansLesBornes(
-      TAILLE_DU_LOT_DE_DIFFUSION,
-    ),
+  FRONTEND_URL: z.string().optional(),
+  MORNING_BRIEF_HMAC_KEYS: z.string().optional(),
+  MORNING_BRIEF_HMAC_KEY_ID: z.string().optional(),
+  MORNING_BRIEF_HMAC_SECRET: secretFacultatif('MORNING_BRIEF_HMAC_SECRET'),
+  ARTICLE_BROADCAST_ENABLED: z.enum(['true', 'false']).default('false'),
+  ARTICLE_BROADCAST_DELAY_MINUTES: entierDansLesBornes(
+    DELAI_DE_DIFFUSION_EN_MINUTES,
+  ),
+  ARTICLE_BROADCAST_BATCH_SIZE: entierDansLesBornes(TAILLE_DU_LOT_DE_DIFFUSION),
 
-    PUPPETEER_EXECUTABLE_PATH: z.string().optional(),
-    PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: z.string().optional(),
+  PUPPETEER_EXECUTABLE_PATH: z.string().optional(),
 
-    METRICS_TOKEN: z.string().optional(),
+  METRICS_TOKEN: z.string().optional(),
 
-    SECURITY_SUSPICIOUS_SCORE_THRESHOLD: z.coerce
-      .number()
-      .int()
-      .positive()
-      .default(25),
-    SECURITY_REPORT_WINDOW_MS: z.coerce
-      .number()
-      .int()
-      .positive()
-      .default(24 * 60 * 60 * 1000),
-    SECURITY_TOP_EVENTS_LIMIT: z.coerce.number().int().positive().default(10),
+  SECURITY_SUSPICIOUS_SCORE_THRESHOLD: z.coerce
+    .number()
+    .int()
+    .positive()
+    .default(25),
+  SECURITY_REPORT_WINDOW_MS: z.coerce
+    .number()
+    .int()
+    .positive()
+    .default(24 * 60 * 60 * 1000),
+  SECURITY_TOP_EVENTS_LIMIT: z.coerce.number().int().positive().default(10),
 
-    ENABLE_LEGACY_CMS_CONTEXTS: z.string().default('false'),
-  })
-  .superRefine((env, ctx) => {
-    const duplicateSecret = findDuplicateCryptographicSecret({
-      JWT_SECRET: env.JWT_SECRET,
-      SECURE_KEY_FOR_PASSWORD_HASHING: env.SECURE_KEY_FOR_PASSWORD_HASHING,
-      FORMATION_REVIEW_TOKEN_SECRET: env.FORMATION_REVIEW_TOKEN_SECRET,
-      FORMATIONS_PULSE_SECRET: env.FORMATIONS_PULSE_SECRET,
-      MORNING_BRIEF_HMAC_SECRET: env.MORNING_BRIEF_HMAC_SECRET,
-    });
-    if (duplicateSecret) {
-      ctx.addIssue({
-        code: 'custom',
-        path: [duplicateSecret.key],
-        message: `doit etre distinct de ${duplicateSecret.previousKey}`,
-      });
-    }
+  ENABLE_LEGACY_CMS_CONTEXTS: z.string().default('false'),
+  BOOTSTRAP_DEBUG: z.string().optional(),
+});
 
-    addSmtpIssues(env, ctx);
+export type VariableDEnv = keyof typeof formeDeLEnv.shape;
 
-    const hmacRingConfigured = Boolean(env.MORNING_BRIEF_HMAC_KEYS?.trim());
-    const hmacKeyIdConfigured = Boolean(env.MORNING_BRIEF_HMAC_KEY_ID?.trim());
-    const hmacSecretConfigured = Boolean(env.MORNING_BRIEF_HMAC_SECRET?.trim());
-    const hmacPairConfigured = hmacKeyIdConfigured && hmacSecretConfigured;
-    const hmacPartialPair = hmacKeyIdConfigured !== hmacSecretConfigured;
-    if (
-      env.NODE_ENV === 'production' &&
-      !hmacRingConfigured &&
-      !hmacPairConfigured
-    ) {
-      ctx.addIssue({
-        code: 'custom',
-        path: ['MORNING_BRIEF_HMAC_KEYS'],
-        message:
-          'MORNING_BRIEF_HMAC_KEYS ou le couple MORNING_BRIEF_HMAC_KEY_ID / ' +
-          'MORNING_BRIEF_HMAC_SECRET est requis en production',
-      });
-    }
-    if (!hmacRingConfigured && hmacPartialPair) {
-      ctx.addIssue({
-        code: 'custom',
-        path: ['MORNING_BRIEF_HMAC_SECRET'],
-        message:
-          'MORNING_BRIEF_HMAC_KEY_ID et MORNING_BRIEF_HMAC_SECRET doivent être ' +
-          'renseignés ensemble',
-      });
-    }
+export type ValeursDeLEnv = Record<VariableDEnv, unknown>;
 
-    // Une valeur presente mais malformee franchirait le demarrage pour
-    // echouer a l'envoi en production — exactement ce que la garde
-    // ci-dessus cherche a eviter. Les deux formes RFC 5322 sont
-    // acceptees, la production utilisant `Nom <adresse>`.
-    //
-    // Contrairement a la garde de presence, ce controle s'applique meme
-    // sans SMTP configure : une valeur renseignee mais invalide est une
-    // erreur de configuration dans tous les environnements. Ne pas
-    // renseigner la variable du tout reste libre.
-    for (const key of ['SMTP_FROM', 'SMTP_REPLY_TO'] as const) {
-      const value = env[key];
-      if (value?.trim() && !isValidMailbox(value)) {
-        ctx.addIssue({
-          code: 'custom',
-          path: [key],
-          message:
-            'doit etre une adresse email valide, seule ou sous la forme ' +
-            '`Nom <adresse@domaine>`',
-        });
-      }
-    }
+export const VARIABLES_DE_L_ENV = Object.keys(
+  formeDeLEnv.shape,
+) as readonly VariableDEnv[];
 
-    // FORMATION_TEACHER_NOTIFICATION_TO est obligatoire (contrairement a
-    // SMTP_FROM/SMTP_REPLY_TO ci-dessus) : sans elle, CloseSession.useCase.ts
-    // n'a aucun destinataire de repli pour la synthese formateur.
-    if (
-      env.FORMATION_TEACHER_NOTIFICATION_TO?.trim() &&
-      !isValidMailbox(env.FORMATION_TEACHER_NOTIFICATION_TO)
-    ) {
-      ctx.addIssue({
-        code: 'custom',
-        path: ['FORMATION_TEACHER_NOTIFICATION_TO'],
-        message: 'doit etre une adresse email valide',
-      });
-    }
+const envSchema = formeDeLEnv.superRefine((env, ctx) => {
+  const duplicateSecret = findDuplicateCryptographicSecret({
+    JWT_SECRET: env.JWT_SECRET,
+    SECURE_KEY_FOR_PASSWORD_HASHING: env.SECURE_KEY_FOR_PASSWORD_HASHING,
+    FORMATION_REVIEW_TOKEN_SECRET: env.FORMATION_REVIEW_TOKEN_SECRET,
+    FORMATIONS_PULSE_SECRET: env.FORMATIONS_PULSE_SECRET,
+    MORNING_BRIEF_HMAC_SECRET: env.MORNING_BRIEF_HMAC_SECRET,
   });
+  if (duplicateSecret) {
+    ctx.addIssue({
+      code: 'custom',
+      path: [duplicateSecret.key],
+      message: `doit etre distinct de ${duplicateSecret.previousKey}`,
+    });
+  }
+
+  addSmtpIssues(env, ctx);
+
+  const hmacRingConfigured = Boolean(env.MORNING_BRIEF_HMAC_KEYS?.trim());
+  const hmacKeyIdConfigured = Boolean(env.MORNING_BRIEF_HMAC_KEY_ID?.trim());
+  const hmacSecretConfigured = Boolean(env.MORNING_BRIEF_HMAC_SECRET?.trim());
+  const hmacPairConfigured = hmacKeyIdConfigured && hmacSecretConfigured;
+  const hmacPartialPair = hmacKeyIdConfigured !== hmacSecretConfigured;
+  if (estEnProduction(env) && !hmacRingConfigured && !hmacPairConfigured) {
+    ctx.addIssue({
+      code: 'custom',
+      path: ['MORNING_BRIEF_HMAC_KEYS'],
+      message:
+        'MORNING_BRIEF_HMAC_KEYS ou le couple MORNING_BRIEF_HMAC_KEY_ID / ' +
+        'MORNING_BRIEF_HMAC_SECRET est requis en production',
+    });
+  }
+  if (
+    trousseauHmac(env).some(
+      ({ id, secret }) => !id || !estUnSecretValable(secret),
+    )
+  ) {
+    ctx.addIssue({
+      code: 'custom',
+      path: ['MORNING_BRIEF_HMAC_KEYS'],
+      message: `chaque cle s'ecrit identifiant:secret, et son secret ${SECRET_TROP_COURT}`,
+    });
+  }
+  if (!hmacRingConfigured && hmacPartialPair) {
+    ctx.addIssue({
+      code: 'custom',
+      path: ['MORNING_BRIEF_HMAC_SECRET'],
+      message:
+        'MORNING_BRIEF_HMAC_KEY_ID et MORNING_BRIEF_HMAC_SECRET doivent être ' +
+        'renseignés ensemble',
+    });
+  }
+
+  // Une valeur presente mais malformee franchirait le demarrage pour
+  // echouer a l'envoi en production — exactement ce que la garde
+  // ci-dessus cherche a eviter. Les deux formes RFC 5322 sont
+  // acceptees, la production utilisant `Nom <adresse>`.
+  //
+  // Contrairement a la garde de presence, ce controle s'applique meme
+  // sans SMTP configure : une valeur renseignee mais invalide est une
+  // erreur de configuration dans tous les environnements. Ne pas
+  // renseigner la variable du tout reste libre.
+  for (const key of ['SMTP_FROM', 'SMTP_REPLY_TO'] as const) {
+    const value = env[key];
+    if (value?.trim() && !isValidMailbox(value)) {
+      ctx.addIssue({
+        code: 'custom',
+        path: [key],
+        message:
+          'doit etre une adresse email valide, seule ou sous la forme ' +
+          '`Nom <adresse@domaine>`',
+      });
+    }
+  }
+
+  // FORMATION_TEACHER_NOTIFICATION_TO est obligatoire (contrairement a
+  // SMTP_FROM/SMTP_REPLY_TO ci-dessus) : sans elle, CloseSession.useCase.ts
+  // n'a aucun destinataire de repli pour la synthese formateur.
+  if (
+    env.FORMATION_TEACHER_NOTIFICATION_TO?.trim() &&
+    !isValidMailbox(env.FORMATION_TEACHER_NOTIFICATION_TO)
+  ) {
+    ctx.addIssue({
+      code: 'custom',
+      path: ['FORMATION_TEACHER_NOTIFICATION_TO'],
+      message: 'doit etre une adresse email valide',
+    });
+  }
+});
 
 function allowsHeaderInjection(value: string): boolean {
   return /[\r\n]/.test(value);
@@ -323,15 +390,13 @@ function angledAddress(value: string): string | undefined {
  * Valide une boite aux lettres RFC 5322 sous ses deux formes usuelles :
  * l'adresse nue (`contact@exemple.fr`) et l'adresse avec nom d'affichage
  * (`'Mon Nom' <contact@exemple.fr>`), cette derniere etant celle
- * deployee en production. `z.email()` rejetterait la seconde et
- * empecherait l'API de demarrer.
+ * deployee en production. L'adresse suit la regle commune d'EmailAddress.
  */
 function isValidMailbox(value: string): boolean {
   if (allowsHeaderInjection(value)) return false;
   if (declaresSeveralMailboxes(value)) return false;
 
-  const address = (angledAddress(value) ?? value).trim();
-  return z.email().safeParse(address).success;
+  return EmailAddress.parse(angledAddress(value) ?? value) !== null;
 }
 
 function resolveAliases(env: Record<string, unknown>): Record<string, unknown> {

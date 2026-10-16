@@ -1,7 +1,8 @@
 export const TEST_JWT_SECRET = 'test-jwt-secret-at-least-32-characters-long'; // gitleaks:allow (ci.yml)
 export const TEST_HASHING_KEY = 'test-hashing-key-at-least-32-characters-long'; // gitleaks:allow (ci.yml)
-export const TEST_MORNING_BRIEF_HMAC_KEYS =
-  'morning-brief:key-from-secret-manager';
+export const TEST_MORNING_BRIEF_HMAC_SECRET =
+  'test-morning-brief-hmac-secret-at-least-32-chars'; // gitleaks:allow
+export const TEST_MORNING_BRIEF_HMAC_KEYS = `morning-brief:${TEST_MORNING_BRIEF_HMAC_SECRET}`;
 export const TEST_FORMATION_REVIEW_TOKEN_SECRET =
   'test-formation-review-secret-at-least-32-chars'; // gitleaks:allow (ci.yml)
 export const TEST_FORMATIONS_PULSE_SECRET =

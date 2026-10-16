@@ -34,6 +34,35 @@ describe('NewsletterSubscriber', () => {
       expect(subscriber.firstName).toBeNull();
     });
 
+    it('rend un firstName blanc nul et un firstName rempli sans ses bords', () => {
+      expect(
+        NewsletterSubscriber.create({ ...validProps, firstName: '   ' })
+          .firstName,
+      ).toBeNull();
+      expect(
+        NewsletterSubscriber.create({ ...validProps, firstName: ' Jean ' })
+          .firstName,
+      ).toBe('Jean');
+    });
+
+    it('rejette un firstName non textuel', () => {
+      expect(() =>
+        NewsletterSubscriber.create({
+          ...validProps,
+          firstName: 42 as unknown as string,
+        }),
+      ).toThrow(new DomainValidationError('Invalid firstName'));
+    });
+
+    it('rejette un firstName de plus de 50 caracteres', () => {
+      expect(() =>
+        NewsletterSubscriber.create({
+          ...validProps,
+          firstName: 'a'.repeat(51),
+        }),
+      ).toThrow(new DomainValidationError('Invalid firstName'));
+    });
+
     it('rejette un email invalide', () => {
       expect(() =>
         NewsletterSubscriber.create({ ...validProps, email: 'pas-un-email' }),
@@ -47,6 +76,15 @@ describe('NewsletterSubscriber', () => {
         NewsletterSubscriber.create({ ...validProps, locale: 'francais' }),
       ).toThrow(DomainValidationError);
     });
+
+    it.each([['de'], ['es-ES'], ['fr-FR'], [' fr ']])(
+      'rejette la locale non supportee %p',
+      (locale) => {
+        expect(() =>
+          NewsletterSubscriber.create({ ...validProps, locale }),
+        ).toThrow(new DomainValidationError('Invalid newsletter locale'));
+      },
+    );
 
     it('rejette un slug vide', () => {
       expect(() =>

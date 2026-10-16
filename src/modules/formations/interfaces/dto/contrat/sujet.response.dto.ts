@@ -1,4 +1,12 @@
-import { ApiProperty, OmitType } from '@nestjs/swagger';
+import {
+  ApiExtraModels,
+  ApiProperty,
+  ApiPropertyOptional,
+  getSchemaPath,
+  OmitType,
+} from '@nestjs/swagger';
+import { CHAMPS_EXTRAITS_DU_CAS } from '../../../domain/contrats/cours';
+import type { PieceJointeServie } from '../../../domain/cours/Cours';
 import type {
   CoursPublic,
   CoursPublicCatalogue,
@@ -8,7 +16,53 @@ import {
   EcranPublicResponseDto as EcranPublicServiResponseDto,
   SujetResponseDto as SujetServiResponseDto,
 } from '../sujet.response.dto';
+import { CorrectionServieResponseDto } from './corrige-ecran.response.dto';
 
+class ExtraitDuRenvoiResponseDto {
+  @ApiPropertyOptional({
+    type: [Number],
+    description: 'Rangs des lignes reprises de l ecran renvoye',
+    example: [0, 2],
+  })
+  lignes?: number[];
+
+  @ApiPropertyOptional({
+    enum: CHAMPS_EXTRAITS_DU_CAS,
+    isArray: true,
+    description: 'Champs du cas repris de l ecran renvoye',
+  })
+  champs?: (typeof CHAMPS_EXTRAITS_DU_CAS)[number][];
+}
+
+class CadrageDuRenvoiResponseDto {
+  @ApiPropertyOptional({ type: ExtraitDuRenvoiResponseDto })
+  extrait?: ExtraitDuRenvoiResponseDto;
+}
+
+class PieceJointePubliqueResponseDto {
+  @ApiProperty({ example: 'Export des ventes Norvane (classeur Excel)' })
+  libelle: string;
+
+  @ApiProperty({
+    description: 'Chemin public du fichier',
+    example: '/assets/cours/b3-01/B3-01_export_ventes.d4f2ceab.xlsx',
+  })
+  fichier: string;
+}
+
+class PieceJointeReserveeResponseDto {
+  @ApiProperty({ example: 'Classeur de la séance' })
+  libelle: string;
+
+  @ApiProperty({
+    enum: [true],
+    description:
+      'Piece reservee a la seance, telechargee par la route liee au jeton',
+  })
+  reservee: true;
+}
+
+@ApiExtraModels(PieceJointePubliqueResponseDto, PieceJointeReserveeResponseDto)
 export class EcranPublicResponseDto
   extends EcranPublicServiResponseDto
   implements EcranPublic
@@ -20,6 +74,41 @@ export class EcranPublicResponseDto
     example: 'Le tableau de bord par canal',
   })
   titre: string | null;
+
+  @ApiPropertyOptional({
+    description: 'Ecran dont celui-ci reprend le contenu',
+    example: 'B3-01-A1-02-COURRIEL',
+  })
+  renvoi?: string;
+
+  @ApiPropertyOptional({ type: CadrageDuRenvoiResponseDto })
+  cadrageDuRenvoi?: CadrageDuRenvoiResponseDto;
+
+  @ApiPropertyOptional({
+    oneOf: [
+      { $ref: getSchemaPath(PieceJointePubliqueResponseDto) },
+      { $ref: getSchemaPath(PieceJointeReserveeResponseDto) },
+    ],
+  })
+  pieceJointe?: PieceJointeServie;
+
+  @ApiPropertyOptional({
+    description: 'Ecran dont celui-ci porte la correction',
+    example: 'B3-01-A2-03-ATELIER',
+  })
+  ecranCorrige?: string;
+
+  @ApiPropertyOptional({
+    type: [String],
+    description: 'Ecrans qui corrigent celui-ci',
+  })
+  resoluPar?: string[];
+
+  @ApiPropertyOptional({
+    type: CorrectionServieResponseDto,
+    description: 'Correction servie au poste une fois l ecran revele',
+  })
+  correction?: CorrectionServieResponseDto;
 }
 
 export class SujetResponseDto

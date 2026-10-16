@@ -1,5 +1,4 @@
 import type { EngineCoverage } from './EngineCoverage';
-import type { StatutScore } from './StatutScore';
 
 export type ReportSeverity = 'high' | 'medium' | 'low';
 export type CrossPageSeverity = 'critical' | ReportSeverity;
@@ -37,7 +36,6 @@ export interface ClientReportSynthesis {
     readonly pillar: string;
     readonly score: number;
     readonly target: number;
-    readonly status: StatutScore;
   }>;
   readonly quickWins: ReadonlyArray<{
     readonly title: string;

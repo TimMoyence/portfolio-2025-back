@@ -100,6 +100,18 @@ describe('createOptionalSmtpTransporter', () => {
         expect(createOptionalSmtpTransporter(logger, 'Test')).toBeNull();
       },
     );
+
+    it.each(['587x', '0', '65536'])(
+      'refuse un SMTP_PORT %p qui n est pas un entier de 1 a 65535 en le nommant',
+      (port) => {
+        configureSmtp();
+        appliquer({ SMTP_PORT: port });
+
+        expect(() => createOptionalSmtpTransporter(logger, 'Test')).toThrow(
+          `Le port SMTP « ${port} » n'est pas un entier de 1 a 65535 en chiffres seuls (SMTP_PORT).`,
+        );
+      },
+    );
   });
 
   describe('mode secure', () => {

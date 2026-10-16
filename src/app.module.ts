@@ -24,7 +24,7 @@ const runtimeContexts = resolveRuntimeContexts();
   imports: [
     ConfigModule.forRoot({ isGlobal: true, validate: validateEnv }),
     LoggerModule.forRoot({
-      pinoHttp: optionsJournalHttp(process.env.NODE_ENV),
+      pinoHttp: optionsJournalHttp(),
     }),
     ThrottlerModule.forRoot([
       {

@@ -18,6 +18,11 @@ import {
   buildSessionRecord,
   createMockDepotsFormations,
 } from '../../../../../test/factories/formation.factory';
+import {
+  buildCoursB2_01,
+  ouvrirLeBaremeV2DuB2_01,
+} from '../../../../../test/factories/cours-b2-01.factory';
+import { seuilDe } from '../../domain/cours/EcranServi';
 import { TENTATIVES_MAX_PAR_ENIGME } from '../../domain/cours/Enigmes';
 import type { ICatalogueCours } from '../../domain/cours/ICatalogueCours.port';
 import type { ProgressionEnigmeRecord } from '../../domain/IEscape.repository';
@@ -234,6 +239,7 @@ describe('GetSessionResultsUseCase', () => {
         total: 1,
         correctes: 1,
         confusions: confusionsAttendues,
+        part: 1,
       }),
     ];
     const resultatsAttendus: ResultatsSeance = {
@@ -241,5 +247,45 @@ describe('GetSessionResultsUseCase', () => {
       questions: questionsAttendues,
     };
     expect(rapport.resultats).toEqual(resultatsAttendus);
+  });
+
+  it('B-70 · sert la confusion dominante et l écran qui la remédie sous le seuil, sur le B2-01 servi', async () => {
+    const cours = buildCoursB2_01();
+    const bareme = ouvrirLeBaremeV2DuB2_01(cours);
+    const [{ question, seuil }] = bareme.questions.flatMap((candidate) => {
+      const seuilDeLEcran = seuilDe(cours.ecrans[candidate.rangEcran]);
+      return seuilDeLEcran === null
+        ? []
+        : [{ question: candidate, seuil: seuilDeLEcran }];
+    });
+    const reponse = (correcte: boolean, misconception: string | null) =>
+      buildAnswerRecord({ questionId: question.id, correcte, misconception });
+    depots.sessions.findById.mockResolvedValue(
+      buildSessionRecord({ courseSlug: cours.slug, bareme }),
+    );
+    depots.answers.listBySession.mockResolvedValue([
+      reponse(true, null),
+      reponse(false, 'hausse-baisse-symetriques'),
+      reponse(false, 'base-arrivee'),
+      reponse(false, 'base-arrivee'),
+    ]);
+    sut = monter(creerCatalogueDeTest(cours));
+
+    const rapport = await sut.execute('session-uuid', PROPRIETAIRE);
+
+    expect(seuil).toBeGreaterThan(0.25);
+    expect(
+      rapport.resultats.questions.find(
+        ({ questionId }) => questionId === question.id,
+      ),
+    ).toMatchObject({
+      confusionDominante: 'base-arrivee',
+      part: 0.25,
+      sousLeSeuil: true,
+      remediation: {
+        confusionId: 'base-arrivee',
+        ecranId: cours.remediations['base-arrivee'],
+      },
+    });
   });
 });
