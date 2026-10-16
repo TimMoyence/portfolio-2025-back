@@ -90,7 +90,7 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
     request(getHttpServer())
       .post('/api/auth/login')
       .send({ email: 'test@example.com', password: LOGIN_PASSWORD })
-      .expect(201);
+      .expect(200);
 
   const rafraichirAvec = (refreshToken: string) =>
     request(getHttpServer())
@@ -420,7 +420,7 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
       const res = await request(getHttpServer())
         .post('/api/auth/register')
         .send(candidat)
-        .expect(201);
+        .expect(200);
 
       expect(res.body).toEqual(reponse);
       expect(authStubs.createUsersUseCase.inscrire).toHaveBeenCalledWith(
@@ -436,7 +436,7 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
       const res = await request(getHttpServer())
         .post('/api/auth/google')
         .send({ idToken: 'jeton-google' })
-        .expect(201);
+        .expect(200);
 
       attendreSessionEmise(res, 'google-refresh-token');
     });

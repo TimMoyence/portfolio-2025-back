@@ -119,6 +119,7 @@ export class AuthController {
 
   @RoutePublique()
   @Post('login')
+  @HttpCode(200)
   @Throttle({ default: { limit: 10, ttl: 3600000 } })
   @ApiOperation({ summary: 'Connexion par email et mot de passe' })
   @ApiOkResponse({ type: AuthResponseDto })
@@ -137,6 +138,7 @@ export class AuthController {
   @RoutePublique()
   @Throttle({ default: { limit: 10, ttl: 3600000 } })
   @Post('google')
+  @HttpCode(200)
   @ApiOperation({ summary: 'Authentification via Google OAuth' })
   @ApiOkResponse({ type: AuthResponseDto })
   @ApiUnauthorizedResponse({ description: 'Invalid Google token' })
@@ -340,6 +342,7 @@ export class AuthController {
 
   @RoutePublique()
   @Post('register')
+  @HttpCode(200)
   @Throttle({ default: { limit: 5, ttl: 3600000 } })
   @ApiOperation({
     summary:
