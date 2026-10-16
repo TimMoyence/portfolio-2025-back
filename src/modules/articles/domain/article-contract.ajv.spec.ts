@@ -2,8 +2,8 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import Ajv2020 from 'ajv/dist/2020.js';
 import addFormats from 'ajv-formats';
+import { validArticleIngestEnvelope } from '../../../../test/factories/article-ingest.factory';
 import { RACINE } from '../../../../test/helpers/racine';
-import { validArticleIngestEnvelope } from '../testing/article-ingest.fixture';
 
 const schema = JSON.parse(
   readFileSync(

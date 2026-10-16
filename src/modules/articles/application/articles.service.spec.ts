@@ -7,10 +7,10 @@ import {
   buildArticleRecord,
   createMockArticlesRepository,
 } from '../../../../test/factories/article.factory';
+import { validArticleIngestEnvelope as payload } from '../../../../test/factories/article-ingest.factory';
 import { sousEnvironnement } from '../../../../test/helpers/environnement';
 import type { ArticleRecord } from './articles.repository';
 import { ArticlesService } from './articles.service';
-import { validArticleIngestEnvelope as payload } from '../testing/article-ingest.fixture';
 
 const articleId = payload.article.article_id;
 const articleRecord = (): ArticleRecord =>

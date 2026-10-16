@@ -14,7 +14,6 @@ import { ArticlesService } from '../src/modules/articles/application/articles.se
 import type { ArticleIngestEnvelope } from '../src/modules/articles/domain/article-contract';
 import { ArticleHmacGuard } from '../src/modules/articles/interfaces/article-hmac.guard';
 import { ArticlesController } from '../src/modules/articles/interfaces/articles.controller';
-import { validArticleIngestEnvelope } from '../src/modules/articles/testing/article-ingest.fixture';
 import { CookieConsentsController } from '../src/modules/cookie-consents/interfaces/CookieConsents.controller';
 import { RequestToolkitUseCase } from '../src/modules/lead-magnets/application/RequestToolkit.useCase';
 import { GetToolkitByTokenUseCase } from '../src/modules/lead-magnets/application/queries/GetToolkitByToken.useCase';
@@ -35,6 +34,7 @@ import {
   buildArticleRecord,
   createMockArticlesRepository,
 } from './factories/article.factory';
+import { validArticleIngestEnvelope } from './factories/article-ingest.factory';
 import { buildAuditAutomationConfig } from './factories/audit-config.factory';
 import {
   buildAuditSnapshot,
