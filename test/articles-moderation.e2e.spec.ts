@@ -1,6 +1,5 @@
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
-import { MESSAGE_D_OCTET_NUL } from '../src/common/interfaces/http/refus-de-l-octet-nul.pipe';
 import { ArticleModerationService } from '../src/modules/articles/application/article-moderation.service';
 import { ArticleModerationController } from '../src/modules/articles/interfaces/article-moderation.controller';
 import { PREFIXE_API_PAR_DEFAUT } from '../src/config/prefixe-api';
@@ -11,6 +10,10 @@ import {
   ouvrirApplication,
   preparerChaqueRequete,
 } from './helpers/nest-test-app';
+import {
+  REFUS_DE_L_OCTET_NUL,
+  statutEtDetail,
+} from './helpers/reponse-probleme';
 
 const ARTICLE_ID = 'morning-brief-2026-09-23-fr';
 
@@ -96,10 +99,7 @@ describe('Modération des articles (admin)', () => {
       .post(`/api/v1/portfolio25/articles/admin/${ARTICLE_ID}%00/withdraw`)
       .set('x-test-role', 'admin');
 
-    expect([
-      reponse.status,
-      (reponse.body as { detail: unknown }).detail,
-    ]).toEqual([400, MESSAGE_D_OCTET_NUL]);
+    expect(statutEtDetail(reponse)).toEqual(REFUS_DE_L_OCTET_NUL);
     expect(moderation.withdraw).not.toHaveBeenCalled();
   });
 });

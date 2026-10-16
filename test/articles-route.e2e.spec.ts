@@ -2,7 +2,6 @@ import { RequestMethod } from '@nestjs/common';
 import type { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
-import { MESSAGE_D_OCTET_NUL } from '../src/common/interfaces/http/refus-de-l-octet-nul.pipe';
 import { appliquerLesTraitementsGlobaux } from '../src/common/interfaces/http/traitements-globaux';
 import { ArticlesService } from '../src/modules/articles/application/articles.service';
 import { PREFIXE_API_PAR_DEFAUT } from '../src/config/prefixe-api';
@@ -14,6 +13,10 @@ import {
   fermerApplication,
   serveurHttpDe,
 } from './helpers/nest-test-app';
+import {
+  REFUS_DE_L_OCTET_NUL,
+  statutEtDetail,
+} from './helpers/reponse-probleme';
 
 describe('Articles HTTP aliases', () => {
   let app: INestApplication;
@@ -65,10 +68,7 @@ describe('Articles HTTP aliases', () => {
       '/api/articles?tag=finance%00x',
     );
 
-    expect([
-      reponse.status,
-      (reponse.body as { detail: unknown }).detail,
-    ]).toEqual([400, MESSAGE_D_OCTET_NUL]);
+    expect(statutEtDetail(reponse)).toEqual(REFUS_DE_L_OCTET_NUL);
     expect(articles.listPublished).not.toHaveBeenCalled();
   });
 

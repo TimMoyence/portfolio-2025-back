@@ -5,7 +5,6 @@ import { request as requeteNode } from 'node:http';
 import request from 'supertest';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { bornerLesCorpsDeRequete } from '../src/common/interfaces/http/corps-de-requete';
-import { MESSAGE_D_OCTET_NUL } from '../src/common/interfaces/http/refus-de-l-octet-nul.pipe';
 import { appliquerLesTraitementsGlobaux } from '../src/common/interfaces/http/traitements-globaux';
 import { PREFIXE_API_PAR_DEFAUT } from '../src/config/prefixe-api';
 import type { Cours } from '../src/modules/formations/domain/contrats/cours';
@@ -81,6 +80,10 @@ import {
   fermerApplication,
 } from './helpers/nest-test-app';
 import { installerEnvFormations } from './helpers/env-formations';
+import {
+  REFUS_DE_L_OCTET_NUL,
+  statutEtDetail,
+} from './helpers/reponse-probleme';
 const SYNTHESE_A = 'synthese-formateur@example.com';
 
 installerEnvFormations({ syntheseA: SYNTHESE_A });
@@ -779,14 +782,9 @@ describe('Session de formation (e2e http socket)', () => {
           .send({}),
       ];
 
-      expect(
-        refus.map((reponse) => [
-          reponse.status,
-          (reponse.body as { detail: unknown }).detail,
-        ]),
-      ).toEqual([
-        [400, MESSAGE_D_OCTET_NUL],
-        [400, MESSAGE_D_OCTET_NUL],
+      expect(refus.map(statutEtDetail)).toEqual([
+        REFUS_DE_L_OCTET_NUL,
+        REFUS_DE_L_OCTET_NUL,
       ]);
     });
 
