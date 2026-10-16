@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, Repository } from 'typeorm';
-import { verrouillerJusquALaFinDeLaTransaction } from '../../../common/infrastructure/typeorm/verrou-de-transaction';
+import { enTransactionSousVerrou } from '../../../common/infrastructure/typeorm/verrou-de-transaction';
 import {
   DIFFUSION_PAR_DEFAUT,
   type ContenuAPublier,
@@ -45,58 +45,61 @@ export class PublicationDesCoursRepositoryTypeORM implements IPublicationDesCour
   }
 
   async publier(contenu: ContenuAPublier, empreinte: string): Promise<number> {
-    return this.repo.manager.transaction(async (manager) => {
-      await verrouillerJusquALaFinDeLaTransaction(manager, contenu.slug);
-      const [{ derniere }]: LigneVersion[] = await manager.query(
-        `SELECT MAX("version") AS "derniere" FROM "formation_course_contents" WHERE "slug" = $1`,
-        [contenu.slug],
-      );
-      if ((await lireEmpreintePubliee(manager, contenu.slug)) === empreinte) {
-        return await this.versionPubliee(manager, contenu.slug);
-      }
-      const version = (derniere ?? 0) + 1;
-      const cours = await manager.save(
-        manager.create(FormationCourseContentEntity, {
-          slug: contenu.slug,
-          version,
-          titre: contenu.titre,
-          niveau: contenu.niveau,
-          gabarit: contenu.gabarit ?? null,
-          dureeMinutes: contenu.dureeMinutes,
-          concepts: contenu.concepts,
-          remediations: contenu.remediations ?? {},
-          medias: contenu.medias ?? [],
-          empreinte,
-        }),
-      );
-      await manager.save(
-        contenu.ecrans.map((ecran, position) =>
-          manager.create(FormationScreenContentEntity, {
-            courseId: cours.id,
-            position,
-            screenId: ecran.screenId,
-            titre: ecran.titre ?? null,
-            diffusion: ecran.diffusion ?? DIFFUSION_PAR_DEFAUT,
-            brique: ecran.brique,
-            dureeMinutes: ecran.dureeMinutes,
-            concepts: ecran.concepts,
-            notes: ecran.notes,
-            proprietes: ecran.proprietes,
+    return enTransactionSousVerrou(
+      this.repo.manager,
+      contenu.slug,
+      async (manager) => {
+        const [{ derniere }]: LigneVersion[] = await manager.query(
+          `SELECT MAX("version") AS "derniere" FROM "formation_course_contents" WHERE "slug" = $1`,
+          [contenu.slug],
+        );
+        if ((await lireEmpreintePubliee(manager, contenu.slug)) === empreinte) {
+          return await this.versionPubliee(manager, contenu.slug);
+        }
+        const version = (derniere ?? 0) + 1;
+        const cours = await manager.save(
+          manager.create(FormationCourseContentEntity, {
+            slug: contenu.slug,
+            version,
+            titre: contenu.titre,
+            niveau: contenu.niveau,
+            gabarit: contenu.gabarit ?? null,
+            dureeMinutes: contenu.dureeMinutes,
+            concepts: contenu.concepts,
+            remediations: contenu.remediations ?? {},
+            medias: contenu.medias ?? [],
+            empreinte,
           }),
-        ),
-      );
-      await manager.upsert(
-        FormationCoursePublicationEntity,
-        {
-          slug: contenu.slug,
-          versionPubliee: version,
-          publieeLe: new Date(),
-          publieePar: null,
-        },
-        ['slug'],
-      );
-      return version;
-    });
+        );
+        await manager.save(
+          contenu.ecrans.map((ecran, position) =>
+            manager.create(FormationScreenContentEntity, {
+              courseId: cours.id,
+              position,
+              screenId: ecran.screenId,
+              titre: ecran.titre ?? null,
+              diffusion: ecran.diffusion ?? DIFFUSION_PAR_DEFAUT,
+              brique: ecran.brique,
+              dureeMinutes: ecran.dureeMinutes,
+              concepts: ecran.concepts,
+              notes: ecran.notes,
+              proprietes: ecran.proprietes,
+            }),
+          ),
+        );
+        await manager.upsert(
+          FormationCoursePublicationEntity,
+          {
+            slug: contenu.slug,
+            versionPubliee: version,
+            publieeLe: new Date(),
+            publieePar: null,
+          },
+          ['slug'],
+        );
+        return version;
+      },
+    );
   }
 
   private async versionPubliee(

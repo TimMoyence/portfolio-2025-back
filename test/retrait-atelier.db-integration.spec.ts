@@ -19,7 +19,7 @@ const TABLES_DE_L_ATELIER = [
 describeDb('Retrait de l atelier sur une base migree', () => {
   const base = baseMigreeDeLaSuite(
     [],
-    [migrationsAnterieuresA('1790800000000-RetireLAtelier')],
+    migrationsAnterieuresA('1790800000000-RetireLAtelier'),
   );
 
   const tablesPresentes = async (): Promise<string[]> => {

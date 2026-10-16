@@ -6,6 +6,7 @@ import {
   bootstrapTestApp,
   serveurHttpDe,
 } from './helpers/nest-test-app';
+import { RateLimitExceededError } from '../src/common/domain/errors/RateLimitExceededError';
 import { RolesGuard } from '../src/common/interfaces/auth/roles.guard';
 import { JwtAuthGuard } from '../src/common/interfaces/auth/jwt-auth.guard';
 import {
@@ -136,6 +137,26 @@ describe('API coherence and connectivity (e2e http socket)', () => {
       .expect(201);
 
     expect(response.body).toEqual(AUDIT_CREATED_RESPONSE);
+  });
+
+  it('POST /api/audits refuse en 429 avec Retry-After quand la boite a atteint son plafond', async () => {
+    coreStubs.createAuditRequestsUseCase.execute.mockRejectedValueOnce(
+      new RateLimitExceededError(
+        'Trop de demandes d audit vers cette adresse.',
+        121,
+      ),
+    );
+
+    const response = await request(getHttpServer())
+      .post('/api/audits')
+      .send(AUDIT_REQUEST_PAYLOAD)
+      .expect(429);
+
+    expect(response.headers['retry-after']).toBe('121');
+    expect(response.body).toMatchObject({
+      status: 429,
+      detail: 'Trop de demandes d audit vers cette adresse.',
+    });
   });
 
   it('GET /api/audits/:id/summary returns summary snapshot', async () => {

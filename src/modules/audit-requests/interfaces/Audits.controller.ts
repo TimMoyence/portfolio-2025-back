@@ -21,7 +21,10 @@ import { Public } from '../../../common/interfaces/auth/public.decorator';
 import { Observable } from 'rxjs';
 import type { Request } from 'express';
 import { provenanceDeLaRequete } from '../../../common/interfaces/security/client-ip.util';
-import { FormulairePublic } from '../../../common/interfaces/security/formulaire-public.decorator';
+import {
+  FormulairePublic,
+  RoutePublique,
+} from '../../../common/interfaces/security/formulaire-public.decorator';
 import { CreateAuditRequestCommand } from '../application/dto/CreateAuditRequest.command';
 import { LocaleCode } from '../../../common/domain/value-objects/LocaleCode';
 import { AuditLocale, localeFromUrlPath } from '../domain/audit-locale.util';
@@ -69,7 +72,7 @@ export class AuditsController {
     return responseDto;
   }
 
-  @Public()
+  @RoutePublique()
   @Get(':id/summary')
   @ApiOperation({ summary: "Recuperer le resume d'un audit" })
   @ApiOkResponse({ type: AuditSummaryResponseDto })

@@ -16,10 +16,10 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import type { PaginatedResult, SortOrder } from '../../domain/pagination.types';
-import { Public } from '../auth/public.decorator';
 import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/roles.guard';
 import type { PaginationMetaResponseDto } from '../dto/pagination-meta.response.dto';
+import { RoutePublique } from '../security/formulaire-public.decorator';
 
 export function ControleurDeCatalogue(chemin: string): ClassDecorator {
   return applyDecorators(ApiTags(chemin), Controller(chemin));
@@ -44,7 +44,7 @@ export function ListePubliquePaginee(
   reponse: Type<unknown>,
 ): MethodDecorator {
   return applyDecorators(
-    Public(),
+    RoutePublique(),
     Get(),
     ApiOperation({ summary: resume }),
     ApiOkResponse({ type: reponse }),

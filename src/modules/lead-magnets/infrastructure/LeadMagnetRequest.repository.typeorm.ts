@@ -1,10 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { MoreThan, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
+import { boiteDeLivraison } from '../../../common/domain/value-objects/boite-de-livraison';
 import { DepotEnDomaine } from '../../../common/infrastructure/typeorm/DepotEnDomaine';
+import { poseeDepuisMoinsDe } from '../../../common/infrastructure/typeorm/horloge-de-la-base';
+import { enTransactionSurLaCle } from '../../../common/infrastructure/typeorm/verrou-de-transaction';
 import type { ILeadMagnetRequestRepository } from '../domain/ILeadMagnetRequestRepository';
 import { LeadMagnetRequest } from '../domain/LeadMagnetRequest';
 import { LeadMagnetRequestEntity } from './entities/LeadMagnetRequest.entity';
+
+const VINGT_QUATRE_HEURES_MS = 24 * 60 * 60 * 1000;
 
 @Injectable()
 export class LeadMagnetRequestRepositoryTypeORM
@@ -22,6 +27,7 @@ export class LeadMagnetRequestRepositoryTypeORM
     return this.enregistrer({
       firstName: data.firstName,
       email: data.email,
+      boite: boiteDeLivraison(data.email),
       formationSlug: data.formationSlug,
       termsVersion: data.termsVersion,
       termsLocale: data.termsLocale,
@@ -30,19 +36,26 @@ export class LeadMagnetRequestRepositoryTypeORM
     });
   }
 
-  async existsRecentByEmail(
+  sousVerrouDeLaBoite<T>(
+    email: string,
+    travail: (depot: ILeadMagnetRequestRepository) => Promise<T>,
+  ): Promise<T> {
+    return enTransactionSurLaCle(this.repo, boiteDeLivraison(email), (repo) =>
+      travail(new LeadMagnetRequestRepositoryTypeORM(repo)),
+    );
+  }
+
+  existeUneDemandeRecenteVersLaBoiteDe(
     email: string,
     formationSlug: string,
   ): Promise<boolean> {
-    const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
-    const count = await this.repo.count({
+    return this.repo.exists({
       where: {
-        email,
+        boite: boiteDeLivraison(email),
         formationSlug,
-        createdAt: MoreThan(twentyFourHoursAgo),
+        createdAt: poseeDepuisMoinsDe(VINGT_QUATRE_HEURES_MS),
       },
     });
-    return count > 0;
   }
 
   findByToken(accessToken: string): Promise<LeadMagnetRequest | null> {

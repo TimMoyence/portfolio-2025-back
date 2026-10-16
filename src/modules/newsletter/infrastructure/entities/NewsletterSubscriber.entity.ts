@@ -14,6 +14,10 @@ export class NewsletterSubscriberEntity {
   @Column({ type: 'varchar', length: 255 })
   email: string;
 
+  @Index('idx_newsletter_boite')
+  @Column({ type: 'text' })
+  boite: string;
+
   @Column({ name: 'first_name', type: 'varchar', length: 50, nullable: true })
   firstName: string | null;
 

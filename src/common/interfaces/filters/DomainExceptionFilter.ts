@@ -40,6 +40,16 @@ export class DomainExceptionFilter implements ExceptionFilter {
       body.code = code;
     }
 
+    if (
+      exception instanceof RateLimitExceededError &&
+      exception.secondesAvantDeReessayer !== undefined
+    ) {
+      response.setHeader(
+        'Retry-After',
+        String(exception.secondesAvantDeReessayer),
+      );
+    }
+
     response.status(status).json(body);
   }
 

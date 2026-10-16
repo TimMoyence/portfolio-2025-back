@@ -53,7 +53,11 @@ describe('LeadMagnetRequestRepositoryTypeORM', () => {
     const enregistree = await sut.create(demande);
 
     expect(demande.profile).toBeUndefined();
-    expect(create).toHaveBeenCalledWith({ ...saisie, profile: {} });
+    expect(create).toHaveBeenCalledWith({
+      ...saisie,
+      boite: 'marie@example.com',
+      profile: {},
+    });
     expect(save).toHaveBeenCalledWith(create.mock.results[0].value);
     expect({ ...enregistree }).toEqual({
       ...saisie,
@@ -62,6 +66,19 @@ describe('LeadMagnetRequestRepositoryTypeORM', () => {
       profile: {},
       createdAt: CREEE_LE,
     });
+  });
+
+  it('persiste la boite de livraison de l adresse, sans sous-adresse ni points Gmail', async () => {
+    await sut.create(
+      buildLeadMagnetRequest({ email: 'ma.rie+outils@gmail.com' }),
+    );
+
+    expect(create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        email: 'ma.rie+outils@gmail.com',
+        boite: 'marie@gmail.com',
+      }),
+    );
   });
 
   it('retrouve une demande par son jeton d acces et la traduit', async () => {

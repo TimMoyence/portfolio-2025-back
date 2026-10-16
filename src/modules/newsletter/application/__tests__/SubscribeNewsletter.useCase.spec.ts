@@ -6,11 +6,17 @@ import {
   createMockNewsletterMailer,
   createMockNewsletterSubscriberRepo,
 } from '../../../../../test/factories/newsletter-subscriber.factory';
+import { sectionSurLeDepot } from '../../../../../test/factories/verrou-par-boite.factory';
 import {
   attendreLAvertissement,
   espionnerLesAvertissements,
 } from '../../../../../test/helpers/avertissements';
 import { flushPromises } from '../../../../../test/helpers/flush-promises';
+import {
+  reglementAuPlancher,
+  RETENUE_JUSQU_AU_PLANCHER,
+  simulerLHorlogeAChaqueTest,
+} from '../../../../../test/helpers/plancher-de-latence';
 import type { NewsletterSubscriber } from '../../domain/NewsletterSubscriber';
 import { SubscribeNewsletterUseCase } from '../SubscribeNewsletter.useCase';
 import type { SubscribeNewsletterCommand } from '../dto/SubscribeNewsletter.command';
@@ -123,6 +129,7 @@ describe('SubscribeNewsletterUseCase', () => {
 
     expect(result).toEqual(DEJA_EN_ATTENTE);
     expect(repo.findByEmailAndSource).toHaveBeenCalledTimes(2);
+    expect(repo.sousVerrouDeLaBoite).toHaveBeenCalledTimes(2);
     expect(mailer.sendConfirmation).toHaveBeenCalledWith(raced);
   });
 
@@ -168,6 +175,115 @@ describe('SubscribeNewsletterUseCase', () => {
     },
   );
 
+  describe('delai entre deux confirmations, par boite de livraison et toutes sources confondues', () => {
+    const notifieeIlYA = (minutes: number) =>
+      buildAbonnePersiste((abonne) => {
+        abonne.sourceFormationSlug = 'automatiser-avec-ia';
+        abonne.markConfirmationSent(new Date(Date.now() - minutes * MINUTE_MS));
+      });
+
+    it.each([
+      ['ne renvoie pas', 2, 0],
+      ['renvoie', 15, 1],
+    ])(
+      '%s la confirmation d une source quand l adresse en a recu une pour une autre source il y a %i min',
+      async (_label, minutes, envois) => {
+        repo.derniereConfirmationVersLaBoiteDe.mockResolvedValueOnce(
+          notifieeIlYA(minutes),
+        );
+
+        const { result } = await souscrireSurUnAbonne((abonne) =>
+          abonne.markConfirmationSent(new Date(Date.now() - 30 * MINUTE_MS)),
+        );
+
+        expect(result).toEqual(DEJA_EN_ATTENTE);
+        expect(repo.derniereConfirmationVersLaBoiteDe).toHaveBeenCalledWith(
+          validCommand.email,
+        );
+        expect(mailer.sendConfirmation).toHaveBeenCalledTimes(envois);
+      },
+    );
+
+    it('envoie toujours la premiere confirmation d une source neuve, meme juste apres celle d une autre source', async () => {
+      repo.derniereConfirmationVersLaBoiteDe.mockResolvedValue(notifieeIlYA(1));
+
+      await expect(souscrire()).resolves.toEqual(CREE_EN_ATTENTE);
+      expect(mailer.sendConfirmation).toHaveBeenCalledTimes(1);
+    });
+
+    it.each([
+      ['ne confirme pas', 1, 0],
+      ['confirme', 15, 1],
+    ])(
+      '%s une adresse neuve d une boite deja inscrite a la source quand la boite a recu une confirmation il y a %i min',
+      async (_label, minutes, envois) => {
+        repo.boiteInscriteA.mockResolvedValueOnce(true);
+        repo.derniereConfirmationVersLaBoiteDe.mockResolvedValueOnce(
+          notifieeIlYA(minutes),
+        );
+
+        await expect(souscrire()).resolves.toEqual(CREE_EN_ATTENTE);
+
+        expect(repo.boiteInscriteA).toHaveBeenCalledWith(
+          validCommand.email,
+          validCommand.sourceFormationSlug,
+        );
+        expect(repo.create).toHaveBeenCalledTimes(1);
+        expect(repo.update).toHaveBeenCalledTimes(envois);
+        expect(mailer.sendConfirmation).toHaveBeenCalledTimes(envois);
+      },
+    );
+  });
+
+  describe('section verrouillee de la boite', () => {
+    let depotDeLaSection: ReturnType<typeof createMockNewsletterSubscriberRepo>;
+
+    beforeEach(() => {
+      depotDeLaSection = createMockNewsletterSubscriberRepo();
+      repo.sousVerrouDeLaBoite = sectionSurLeDepot(
+        () => depotDeLaSection,
+        () => expect(mailer.sendConfirmation).not.toHaveBeenCalled(),
+      );
+    });
+
+    const attendreRienHorsDeLaSection = () => {
+      expect(repo.sousVerrouDeLaBoite).toHaveBeenCalledWith(
+        validCommand.email,
+        expect.any(Function),
+      );
+      expect(repo.findByEmailAndSource).not.toHaveBeenCalled();
+      expect(repo.derniereConfirmationVersLaBoiteDe).not.toHaveBeenCalled();
+      expect(repo.boiteInscriteA).not.toHaveBeenCalled();
+      expect(repo.create).not.toHaveBeenCalled();
+      expect(repo.update).not.toHaveBeenCalled();
+    };
+
+    it('lit, decide et marque le renvoi dans la section, puis envoie apres sa fin', async () => {
+      const existing = buildAbonnePersiste();
+      depotDeLaSection.findByEmailAndSource.mockResolvedValueOnce(existing);
+
+      await expect(souscrire()).resolves.toEqual(DEJA_EN_ATTENTE);
+
+      attendreRienHorsDeLaSection();
+      expect(
+        depotDeLaSection.derniereConfirmationVersLaBoiteDe,
+      ).toHaveBeenCalledWith(validCommand.email);
+      expect(existing.lastConfirmationSentAt).not.toBeNull();
+      expect(depotDeLaSection.update).toHaveBeenCalledWith(existing);
+      expect(mailer.sendConfirmation).toHaveBeenCalledWith(existing);
+    });
+
+    it('cree et marque la premiere confirmation dans la section, puis envoie apres sa fin', async () => {
+      await expect(souscrire()).resolves.toEqual(CREE_EN_ATTENTE);
+
+      attendreRienHorsDeLaSection();
+      expect(depotDeLaSection.boiteInscriteA).toHaveBeenCalledTimes(1);
+      expect(depotDeLaSection.create).toHaveBeenCalledTimes(1);
+      expect(depotDeLaSection.update).toHaveBeenCalledTimes(1);
+      expect(mailer.sendConfirmation).toHaveBeenCalledTimes(1);
+    });
+  });
+
   it('fait tourner le confirmToken quand il est expire avant de renvoyer', async () => {
     let previousToken = '';
     const { existing } = await souscrireSurUnAbonne((abonne) => {
@@ -191,16 +307,24 @@ describe('SubscribeNewsletterUseCase', () => {
     expect(repo.update).toHaveBeenCalledWith(existing);
   });
 
-  it('respecte le padding de reponse minimum (anti timing-attack)', async () => {
-    const MIN_RESPONSE_MS = 300;
-    const CLOCK_ROUNDING_TOLERANCE_MS = 5;
+  describe('temps de reponse', () => {
+    simulerLHorlogeAChaqueTest();
 
-    const start = Date.now();
-    await useCase.execute(validCommand);
-    const elapsed = Date.now() - start;
+    it.each([
+      ['un email nouveau', () => undefined],
+      [
+        'un abonne deja en attente',
+        () =>
+          repo.findByEmailAndSource.mockResolvedValueOnce(
+            buildAbonnePersiste(),
+          ),
+      ],
+    ])('repond pour %s au meme plancher de latence', async (_cas, preparer) => {
+      preparer();
 
-    expect(elapsed).toBeGreaterThanOrEqual(
-      MIN_RESPONSE_MS - CLOCK_ROUNDING_TOLERANCE_MS,
-    );
+      expect(await reglementAuPlancher(useCase.execute(validCommand))).toEqual(
+        RETENUE_JUSQU_AU_PLANCHER,
+      );
+    });
   });
 });

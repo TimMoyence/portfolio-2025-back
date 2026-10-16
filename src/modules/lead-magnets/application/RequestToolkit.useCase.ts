@@ -37,13 +37,17 @@ export class RequestToolkitUseCase {
     const response = new MessageLeadMagnetResponse();
     response.message = `Votre boite a outils a ete envoyee a ${domainRequest.email}`;
 
-    const recentExists = await this.repo.existsRecentByEmail(
+    const savedRequest = await this.repo.sousVerrouDeLaBoite(
       domainRequest.email,
-      domainRequest.formationSlug,
+      async (depot) =>
+        (await depot.existeUneDemandeRecenteVersLaBoiteDe(
+          domainRequest.email,
+          domainRequest.formationSlug,
+        ))
+          ? null
+          : depot.create(domainRequest),
     );
-    if (recentExists) return response;
-
-    const savedRequest = await this.repo.create(domainRequest);
+    if (!savedRequest) return response;
     response.accessToken = savedRequest.accessToken;
 
     enArrierePlan(

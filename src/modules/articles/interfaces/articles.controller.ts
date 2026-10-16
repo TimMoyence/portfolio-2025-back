@@ -20,7 +20,7 @@ import {
 } from '@nestjs/swagger';
 import type { Response } from 'express';
 import { LocaleCode } from '../../../common/domain/value-objects/LocaleCode';
-import { Public } from '../../../common/interfaces/auth/public.decorator';
+import { RoutePublique } from '../../../common/interfaces/security/formulaire-public.decorator';
 import type { ArticleRecord } from '../application/articles.repository';
 import { ArticlesService } from '../application/articles.service';
 import { ArticleHmacGuard } from './article-hmac.guard';
@@ -31,7 +31,7 @@ import { ArticleListQueryDto } from './dto/article-list.query.dto';
 export class ArticlesController {
   constructor(private readonly articles: ArticlesService) {}
 
-  @Public()
+  @RoutePublique()
   @Post('ingest')
   @UseGuards(ArticleHmacGuard)
   @HttpCode(HttpStatus.ACCEPTED)
@@ -59,7 +59,7 @@ export class ArticlesController {
     };
   }
 
-  @Public()
+  @RoutePublique()
   @Get('feed.xml')
   @ApiOperation({ summary: 'Flux RSS des articles publiés' })
   async feed(@Query('locale') locale: string, @Res() response: Response) {
@@ -67,7 +67,7 @@ export class ArticlesController {
     response.type('application/rss+xml').send(xml);
   }
 
-  @Public()
+  @RoutePublique()
   @Get()
   @ApiOperation({ summary: 'Lister les articles publiés' })
   @ApiOkResponse({ description: 'Liste paginée des articles' })
@@ -84,7 +84,7 @@ export class ArticlesController {
     };
   }
 
-  @Public()
+  @RoutePublique()
   @Get(':slug')
   @ApiOperation({ summary: 'Lire un article publié' })
   @ApiOkResponse({ description: 'Article publié normalisé' })

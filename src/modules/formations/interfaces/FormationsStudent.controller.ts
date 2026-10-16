@@ -27,9 +27,11 @@ import {
 import { Throttle } from '@nestjs/throttler';
 import type { Request } from 'express';
 import { Observable } from 'rxjs';
-import { Public } from '../../../common/interfaces/auth/public.decorator';
 import { resolveClientIpOrUnknown } from '../../../common/interfaces/security/client-ip.util';
-import { ProtegeContreLesRobots } from '../../../common/interfaces/security/formulaire-public.decorator';
+import {
+  ProtegeContreLesRobots,
+  RoutePublique,
+} from '../../../common/interfaces/security/formulaire-public.decorator';
 import { JoinSessionUseCase } from '../application/JoinSession.useCase';
 import { LireSujetUseCase } from '../application/LireSujet.useCase';
 import { RecordIncidentsUseCase } from '../application/RecordIncidents.useCase';
@@ -128,7 +130,7 @@ function EvaluationEnSeance(
 }
 
 @ApiTags('formations')
-@Public()
+@RoutePublique()
 @Controller('formations')
 export class FormationsStudentController {
   constructor(

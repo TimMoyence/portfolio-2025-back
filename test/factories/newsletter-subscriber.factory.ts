@@ -3,6 +3,7 @@ import type { IEmailDripScheduler } from '../../src/modules/newsletter/domain/IE
 import type { INewsletterMailer } from '../../src/modules/newsletter/domain/INewsletterMailer';
 import type { INewsletterSubscriberRepository } from '../../src/modules/newsletter/domain/INewsletterSubscriberRepository';
 import type { SubscribeNewsletterCommand } from '../../src/modules/newsletter/application/dto/SubscribeNewsletter.command';
+import { sectionSurLeDepot } from './verrou-par-boite.factory';
 
 export function buildSubscribeNewsletterCommand(): SubscribeNewsletterCommand {
   return {
@@ -43,9 +44,12 @@ export function buildAbonnePersiste(
 export function createMockNewsletterSubscriberRepo(): jest.Mocked<INewsletterSubscriberRepository> {
   const persisted = buildNewsletterSubscriber();
   persisted.id = 'subscriber-uuid';
-  return {
+  const repo: jest.Mocked<INewsletterSubscriberRepository> = {
+    sousVerrouDeLaBoite: sectionSurLeDepot(() => repo),
     create: jest.fn().mockResolvedValue(persisted),
     findByEmailAndSource: jest.fn().mockResolvedValue(null),
+    derniereConfirmationVersLaBoiteDe: jest.fn().mockResolvedValue(null),
+    boiteInscriteA: jest.fn().mockResolvedValue(false),
     findByConfirmToken: jest.fn().mockResolvedValue(persisted),
     findByUnsubscribeToken: jest.fn().mockResolvedValue(persisted),
     update: jest
@@ -55,6 +59,7 @@ export function createMockNewsletterSubscriberRepo(): jest.Mocked<INewsletterSub
       .fn()
       .mockImplementation((s: NewsletterSubscriber) => Promise.resolve(s)),
   };
+  return repo;
 }
 
 export function createMockNewsletterMailer(): jest.Mocked<INewsletterMailer> {

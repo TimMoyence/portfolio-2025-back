@@ -1,3 +1,4 @@
+import { readdirSync } from 'fs';
 import { join } from 'path';
 import {
   DataSource,
@@ -22,8 +23,24 @@ export const TOUTES_LES_MIGRATIONS = join(
   '!(*.spec).ts',
 );
 
-export function migrationsAnterieuresA(fichierDeMigration: string): string {
-  return join(DOSSIER_DES_MIGRATIONS, `!(*.spec|${fichierDeMigration}).ts`);
+const MIGRATION_HORODATEE = /^(\d+)-.+(?<!\.spec)\.ts$/;
+
+function horodatageDe(fichierDeMigration: string): number {
+  const horodatage = MIGRATION_HORODATEE.exec(`${fichierDeMigration}.ts`);
+  if (!horodatage) {
+    throw new Error(`Migration « ${fichierDeMigration} » sans horodatage.`);
+  }
+  return Number(horodatage[1]);
+}
+
+export function migrationsAnterieuresA(fichierDeMigration: string): string[] {
+  const limite = horodatageDe(fichierDeMigration);
+  return readdirSync(DOSSIER_DES_MIGRATIONS)
+    .filter((fichier) => {
+      const horodatage = MIGRATION_HORODATEE.exec(fichier);
+      return horodatage !== null && Number(horodatage[1]) < limite;
+    })
+    .map((fichier) => join(DOSSIER_DES_MIGRATIONS, fichier));
 }
 
 export const describeDb =
@@ -78,11 +95,15 @@ const FONCTIONS_HORS_DU_DROP_SCHEMA = [
 export async function initBaseMigree(
   entities: PostgresEntities,
   migrations: string[],
+  fuseauDeLaSession?: string,
 ): Promise<DataSource> {
   const dataSource = new DataSource({
     ...buildDbIntegrationOptions(entities),
     synchronize: false,
     migrations,
+    ...(fuseauDeLaSession === undefined
+      ? {}
+      : { extra: { options: `-c TimeZone=${fuseauDeLaSession}` } }),
   });
   await initialiserEtMigrer(dataSource);
   return dataSource;
@@ -91,11 +112,12 @@ export async function initBaseMigree(
 export function baseMigreeDeLaSuite(
   entities: PostgresEntities,
   migrations: string[],
+  fuseauDeLaSession?: string,
 ): () => DataSource {
   let dataSource: DataSource | undefined;
 
   beforeAll(async () => {
-    dataSource = await initBaseMigree(entities, migrations);
+    dataSource = await initBaseMigree(entities, migrations, fuseauDeLaSession);
   }, DELAI_MIGRATIONS_MS);
 
   afterAll(async () => {

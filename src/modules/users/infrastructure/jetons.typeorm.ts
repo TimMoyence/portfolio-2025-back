@@ -5,7 +5,7 @@ import {
   type ObjectLiteral,
   type Repository,
 } from 'typeorm';
-import { verrouillerJusquALaFinDeLaTransaction } from '../../../common/infrastructure/typeorm/verrou-de-transaction';
+import { enTransactionSurLaCle } from '../../../common/infrastructure/typeorm/verrou-de-transaction';
 
 type EntiteDeJeton = ObjectLiteral & { expiresAt: Date };
 
@@ -34,12 +34,7 @@ export function remplacerSousVerrou<E extends EntiteDeJeton>(
   nouveau: DeepPartial<E> & ChampsDuJeton,
   invaliderLesActifs: (depot: Repository<E>) => Promise<unknown>,
 ): Promise<E> {
-  return repo.manager.transaction(async (manager) => {
-    await verrouillerJusquALaFinDeLaTransaction(
-      manager,
-      `${repo.metadata.tableName}:${nouveau.userId}`,
-    );
-    const depot = manager.withRepository(repo);
+  return enTransactionSurLaCle(repo, nouveau.userId, async (depot) => {
     await invaliderLesActifs(depot);
     return depot.save(depot.create(nouveau));
   });

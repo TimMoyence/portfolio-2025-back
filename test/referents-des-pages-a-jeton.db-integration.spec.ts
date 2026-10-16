@@ -28,11 +28,7 @@ describeDb(
   () => {
     const base = baseMigreeDeLaSuite(
       [],
-      [
-        migrationsAnterieuresA(
-          '1791909333000-EffaceLesReferentsDesPagesAJeton',
-        ),
-      ],
+      migrationsAnterieuresA('1791909333000-EffaceLesReferentsDesPagesAJeton'),
     );
     const migration = new EffaceLesReferentsDesPagesAJeton1791909333000();
 

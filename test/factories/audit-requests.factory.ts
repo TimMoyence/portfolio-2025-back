@@ -18,6 +18,7 @@ import type { LangchainAuditInput } from '../../src/modules/audit-requests/infra
 import type { ClientReportContext } from '../../src/modules/audit-requests/infrastructure/automation/langchain-client-report.service';
 import type { PageAiRecap } from '../../src/modules/audit-requests/infrastructure/automation/page-ai-recap.service';
 import type { UrlIndexabilityResult } from '../../src/modules/audit-requests/infrastructure/automation/url-indexability.service';
+import { sectionSurLeDepot } from './verrou-par-boite.factory';
 
 export function buildAuditRequest(
   overrides?: Partial<AuditRequest>,
@@ -193,12 +194,15 @@ export function buildPageExploree(
 }
 
 export function createMockAuditRequestsRepo(): jest.Mocked<IAuditRequestsRepository> {
-  return {
+  const repo: jest.Mocked<IAuditRequestsRepository> = {
+    sousVerrouDeLaBoite: sectionSurLeDepot(() => repo),
     create: jest.fn(),
+    secondesAvantLaSortieDesDemandesVers: jest.fn().mockResolvedValue([]),
     findById: jest.fn(),
     findSummaryById: jest.fn(),
     updateState: jest.fn(),
   };
+  return repo;
 }
 
 export function createMockAuditNotifier(): jest.Mocked<IAuditNotifierPort> {
