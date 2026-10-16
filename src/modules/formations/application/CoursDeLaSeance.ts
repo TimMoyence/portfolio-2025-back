@@ -1,7 +1,7 @@
 import type { Cours, Ecran } from '../domain/contrats/cours';
 import {
   assertCorrectionNonProjetee,
-  assertEcranServi,
+  cibleServie,
 } from '../domain/cours/EcranServi';
 import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
 import { assertPhaseOuverte } from '../domain/cours/PilotageEcrans';
@@ -43,12 +43,21 @@ export async function coursDeLaSeance(
   return cours;
 }
 
-export function assertEcranOuvertAuxProductions(
+export function ecranOuvertAuxProductions<
+  T extends { readonly rang: number; readonly ecran: Ecran },
+>(
   session: SessionRecord,
   cours: Cours,
-  cible: { readonly rang: number; readonly ecran: Ecran },
-): void {
-  assertEcranServi(session, cible.rang, cible.ecran.id, cours.ecrans.length);
-  assertPhaseOuverte(session.pilotageEcrans, { ecranId: cible.ecran.id });
-  assertCorrectionNonProjetee(session, cours, cible.ecran.id);
+  cible: { readonly valeur: T | null; readonly id: string },
+  absente: (id: string) => Error,
+): T {
+  const servie = cibleServie(
+    session,
+    cours,
+    { ...cible, rang: (trouvee) => trouvee.rang },
+    absente,
+  );
+  assertPhaseOuverte(session.pilotageEcrans, { ecranId: servie.ecran.id });
+  assertCorrectionNonProjetee(session, cours, servie.ecran.id);
+  return servie;
 }

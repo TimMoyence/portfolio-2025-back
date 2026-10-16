@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "c16fa9f316e660b76fa19e233f4f22c21ed8b06ed7dc64bb40bc858d185fcde2",
+  "empreinte": "2ff5c01c4e2fdcf2a8b79696ba67ca5af0c197a6bae2186b67e9058d73362fa8",
   "sujet": {
     "id": "b2-06-exponentielle-logarithme",
     "titre": "Exponentielle et logarithme",
@@ -1411,6 +1411,115 @@
               }
             ],
             "synthese": [],
+            "tableauInitial": {
+              "lignes": [
+                {
+                  "rang": 0,
+                  "valeurs": {
+                    "prix": {
+                      "valeur": 20,
+                      "affichage": "20"
+                    },
+                    "demande": {
+                      "valeur": 1100,
+                      "affichage": "1 100"
+                    },
+                    "z": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                },
+                {
+                  "rang": 1,
+                  "valeurs": {
+                    "prix": {
+                      "valeur": 25,
+                      "affichage": "25"
+                    },
+                    "demande": {
+                      "valeur": 860,
+                      "affichage": "860"
+                    },
+                    "z": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                },
+                {
+                  "rang": 2,
+                  "valeurs": {
+                    "prix": {
+                      "valeur": 30,
+                      "affichage": "30"
+                    },
+                    "demande": {
+                      "valeur": 670,
+                      "affichage": "670"
+                    },
+                    "z": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                },
+                {
+                  "rang": 3,
+                  "valeurs": {
+                    "prix": {
+                      "valeur": 35,
+                      "affichage": "35"
+                    },
+                    "demande": {
+                      "valeur": 520,
+                      "affichage": "520"
+                    },
+                    "z": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                },
+                {
+                  "rang": 4,
+                  "valeurs": {
+                    "prix": {
+                      "valeur": 40,
+                      "affichage": "40"
+                    },
+                    "demande": {
+                      "valeur": 410,
+                      "affichage": "410"
+                    },
+                    "z": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                },
+                {
+                  "rang": 5,
+                  "valeurs": {
+                    "prix": {
+                      "valeur": 45,
+                      "affichage": "45"
+                    },
+                    "demande": {
+                      "valeur": 315,
+                      "affichage": "315"
+                    },
+                    "z": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                }
+              ],
+              "totaux": {},
+              "synthese": [],
+              "soldeFinal": null
+            },
             "metadonnees": {
               "concepts": ["ajustement-exponentiel", "logarithme-neperien"],
               "misconceptionsCiblees": [],
@@ -4292,6 +4401,115 @@
               }
             ],
             "synthese": [],
+            "tableauInitial": {
+              "lignes": [
+                {
+                  "rang": 0,
+                  "valeurs": {
+                    "prix": {
+                      "valeur": 20,
+                      "affichage": "20"
+                    },
+                    "demande": {
+                      "valeur": 1100,
+                      "affichage": "1 100"
+                    },
+                    "z": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                },
+                {
+                  "rang": 1,
+                  "valeurs": {
+                    "prix": {
+                      "valeur": 25,
+                      "affichage": "25"
+                    },
+                    "demande": {
+                      "valeur": 860,
+                      "affichage": "860"
+                    },
+                    "z": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                },
+                {
+                  "rang": 2,
+                  "valeurs": {
+                    "prix": {
+                      "valeur": 30,
+                      "affichage": "30"
+                    },
+                    "demande": {
+                      "valeur": 670,
+                      "affichage": "670"
+                    },
+                    "z": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                },
+                {
+                  "rang": 3,
+                  "valeurs": {
+                    "prix": {
+                      "valeur": 35,
+                      "affichage": "35"
+                    },
+                    "demande": {
+                      "valeur": 520,
+                      "affichage": "520"
+                    },
+                    "z": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                },
+                {
+                  "rang": 4,
+                  "valeurs": {
+                    "prix": {
+                      "valeur": 40,
+                      "affichage": "40"
+                    },
+                    "demande": {
+                      "valeur": 410,
+                      "affichage": "410"
+                    },
+                    "z": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                },
+                {
+                  "rang": 5,
+                  "valeurs": {
+                    "prix": {
+                      "valeur": 45,
+                      "affichage": "45"
+                    },
+                    "demande": {
+                      "valeur": 315,
+                      "affichage": "315"
+                    },
+                    "z": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                }
+              ],
+              "totaux": {},
+              "synthese": [],
+              "soldeFinal": null
+            },
             "metadonnees": {
               "concepts": ["ajustement-exponentiel", "logarithme-neperien"],
               "misconceptionsCiblees": [],

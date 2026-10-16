@@ -9,6 +9,10 @@ import { ProductionInvalideError } from '../errors/FormationErrors';
 import { evaluerExpression, lireNombreSaisi } from './Formule';
 import { estUneValeurDeVerite } from './PlansStockes';
 
+export interface TableBuildPlanServi extends TableBuildPlanStocke {
+  readonly tableauInitial: TableauEvalue;
+}
+
 export interface SaisieBruteDeTableau {
   readonly rang: number;
   readonly cle: string;
@@ -210,6 +214,12 @@ function nombreDeLaSaisie(colonne: Colonne, saisie: string): number | null {
   return colonne.format === 'booleen' && !estUneValeurDeVerite(nombre)
     ? null
     : nombre;
+}
+
+export function planDeTableauServi(
+  plan: TableBuildPlanStocke,
+): TableBuildPlanServi {
+  return { ...plan, tableauInitial: tableauBati(plan, () => null) };
 }
 
 export function evaluerLeTableauDuPlan(

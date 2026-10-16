@@ -1,15 +1,17 @@
 import { Inject, Injectable } from '@nestjs/common';
 import {
   activitesLibres,
-  assertEcranServi,
+  cibleServie,
   ecranParId,
-  rangDeLEcran,
 } from '../domain/cours/EcranServi';
 import {
   assertEtapeNonCorrigee,
   assertPhaseOuverte,
 } from '../domain/cours/PilotageEcrans';
-import { ActiviteInconnueError } from '../domain/errors/FormationErrors';
+import {
+  ActiviteInconnueError,
+  EcranNonServiError,
+} from '../domain/errors/FormationErrors';
 import type {
   IFreeResponsesRepository,
   SaveFreeResponseInput,
@@ -29,22 +31,22 @@ export class SaveFreeResponseUseCase {
   async execute(command: SaveFreeResponseInput): Promise<void> {
     const response = texteRenseigne(command.response, 'La réponse');
     const { session, cours } = await this.participation.ouverte(command);
-    assertEcranServi(
+    const ecran = cibleServie(
       session,
-      rangDeLEcran(cours, command.screenId),
-      command.screenId,
-      cours.ecrans.length,
+      cours,
+      {
+        valeur: ecranParId(cours, command.screenId) ?? null,
+        id: command.screenId,
+        rang: (servi) => cours.ecrans.indexOf(servi),
+      },
+      (screenId) => new EcranNonServiError(screenId),
     );
     const admises = activitesLibres(cours).get(command.screenId) ?? [];
     if (!admises.includes(command.activityId)) {
       throw new ActiviteInconnueError(command.screenId, command.activityId);
     }
     assertPhaseOuverte(session.pilotageEcrans, { ecranId: command.screenId });
-    assertEtapeNonCorrigee(
-      session.pilotageEcrans,
-      ecranParId(cours, command.screenId),
-      command.activityId,
-    );
+    assertEtapeNonCorrigee(session.pilotageEcrans, ecran, command.activityId);
     await this.freeResponses.save({ ...command, response });
     this.participation.signalerActivite(command.sessionId);
   }

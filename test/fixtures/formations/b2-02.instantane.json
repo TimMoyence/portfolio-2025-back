@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "b61c6c680b85549ff1046edd9e789d561f20e05abcd2ee0b904ac3f2c309ecfa",
+  "empreinte": "5442e30bde656860447020df0380148ced9baf31242066f3ee396dfa354fe3ba",
   "sujet": {
     "id": "b2-02-series-statistiques",
     "titre": "Séries statistiques : résumer, relier, prévoir",
@@ -1128,6 +1128,139 @@
               }
             ],
             "synthese": [],
+            "tableauInitial": {
+              "lignes": [
+                {
+                  "rang": 0,
+                  "valeurs": {
+                    "rang": {
+                      "valeur": 1,
+                      "affichage": "1"
+                    },
+                    "ca": {
+                      "valeur": 610,
+                      "affichage": "610"
+                    },
+                    "ecartX": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "ecartY": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                },
+                {
+                  "rang": 1,
+                  "valeurs": {
+                    "rang": {
+                      "valeur": 2,
+                      "affichage": "2"
+                    },
+                    "ca": {
+                      "valeur": 652,
+                      "affichage": "652"
+                    },
+                    "ecartX": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "ecartY": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                },
+                {
+                  "rang": 2,
+                  "valeurs": {
+                    "rang": {
+                      "valeur": 3,
+                      "affichage": "3"
+                    },
+                    "ca": {
+                      "valeur": 694,
+                      "affichage": "694"
+                    },
+                    "ecartX": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "ecartY": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                },
+                {
+                  "rang": 3,
+                  "valeurs": {
+                    "rang": {
+                      "valeur": 4,
+                      "affichage": "4"
+                    },
+                    "ca": {
+                      "valeur": 736,
+                      "affichage": "736"
+                    },
+                    "ecartX": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "ecartY": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                },
+                {
+                  "rang": 4,
+                  "valeurs": {
+                    "rang": {
+                      "valeur": 5,
+                      "affichage": "5"
+                    },
+                    "ca": {
+                      "valeur": 790,
+                      "affichage": "790"
+                    },
+                    "ecartX": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "ecartY": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                },
+                {
+                  "rang": 5,
+                  "valeurs": {
+                    "rang": {
+                      "valeur": 6,
+                      "affichage": "6"
+                    },
+                    "ca": {
+                      "valeur": 826,
+                      "affichage": "826"
+                    },
+                    "ecartX": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "ecartY": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                }
+              ],
+              "totaux": {},
+              "synthese": [],
+              "soldeFinal": null
+            },
             "metadonnees": {
               "concepts": ["nuage-de-points"],
               "misconceptionsCiblees": [],
@@ -3570,6 +3703,139 @@
               }
             ],
             "synthese": [],
+            "tableauInitial": {
+              "lignes": [
+                {
+                  "rang": 0,
+                  "valeurs": {
+                    "rang": {
+                      "valeur": 1,
+                      "affichage": "1"
+                    },
+                    "ca": {
+                      "valeur": 610,
+                      "affichage": "610"
+                    },
+                    "ecartX": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "ecartY": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                },
+                {
+                  "rang": 1,
+                  "valeurs": {
+                    "rang": {
+                      "valeur": 2,
+                      "affichage": "2"
+                    },
+                    "ca": {
+                      "valeur": 652,
+                      "affichage": "652"
+                    },
+                    "ecartX": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "ecartY": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                },
+                {
+                  "rang": 2,
+                  "valeurs": {
+                    "rang": {
+                      "valeur": 3,
+                      "affichage": "3"
+                    },
+                    "ca": {
+                      "valeur": 694,
+                      "affichage": "694"
+                    },
+                    "ecartX": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "ecartY": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                },
+                {
+                  "rang": 3,
+                  "valeurs": {
+                    "rang": {
+                      "valeur": 4,
+                      "affichage": "4"
+                    },
+                    "ca": {
+                      "valeur": 736,
+                      "affichage": "736"
+                    },
+                    "ecartX": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "ecartY": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                },
+                {
+                  "rang": 4,
+                  "valeurs": {
+                    "rang": {
+                      "valeur": 5,
+                      "affichage": "5"
+                    },
+                    "ca": {
+                      "valeur": 790,
+                      "affichage": "790"
+                    },
+                    "ecartX": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "ecartY": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                },
+                {
+                  "rang": 5,
+                  "valeurs": {
+                    "rang": {
+                      "valeur": 6,
+                      "affichage": "6"
+                    },
+                    "ca": {
+                      "valeur": 826,
+                      "affichage": "826"
+                    },
+                    "ecartX": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "ecartY": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                }
+              ],
+              "totaux": {},
+              "synthese": [],
+              "soldeFinal": null
+            },
             "metadonnees": {
               "concepts": ["nuage-de-points"],
               "misconceptionsCiblees": [],

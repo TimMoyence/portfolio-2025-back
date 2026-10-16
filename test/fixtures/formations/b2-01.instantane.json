@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "bf7935c15d3a3c5398989eaf903e87bbfef113a6963215bf61400297caed22a3",
+  "empreinte": "60c26b8714d621863cb9df31af830269cd3a9eb14085f2e50045ac8d34f935ea",
   "sujet": {
     "id": "b2-01-traitement-information-chiffree",
     "titre": "Lire, contrôler et décider avec l’information chiffrée",
@@ -5859,6 +5859,127 @@
                 "decimales": 2
               }
             ],
+            "tableauInitial": {
+              "lignes": [
+                {
+                  "rang": 0,
+                  "valeurs": {
+                    "taux": {
+                      "valeur": 8,
+                      "affichage": "8"
+                    },
+                    "prix": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "coef": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "indice": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "evolution": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                },
+                {
+                  "rang": 1,
+                  "valeurs": {
+                    "taux": {
+                      "valeur": -5,
+                      "affichage": "-5"
+                    },
+                    "prix": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "coef": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "indice": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "evolution": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                },
+                {
+                  "rang": 2,
+                  "valeurs": {
+                    "taux": {
+                      "valeur": 4,
+                      "affichage": "4"
+                    },
+                    "prix": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "coef": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "indice": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "evolution": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                },
+                {
+                  "rang": 3,
+                  "valeurs": {
+                    "taux": {
+                      "valeur": -3,
+                      "affichage": "-3"
+                    },
+                    "prix": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "coef": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "indice": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "evolution": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                }
+              ],
+              "totaux": {
+                "taux": {
+                  "valeur": 4,
+                  "affichage": "4"
+                }
+              },
+              "synthese": [
+                {
+                  "valeur": 4,
+                  "affichage": "4,00 %"
+                },
+                {
+                  "valeur": null,
+                  "affichage": "—"
+                }
+              ],
+              "soldeFinal": null
+            },
             "metadonnees": {
               "concepts": ["evolutions-successives"],
               "misconceptionsCiblees": [],
@@ -14541,6 +14662,127 @@
                 "decimales": 2
               }
             ],
+            "tableauInitial": {
+              "lignes": [
+                {
+                  "rang": 0,
+                  "valeurs": {
+                    "taux": {
+                      "valeur": 8,
+                      "affichage": "8"
+                    },
+                    "prix": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "coef": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "indice": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "evolution": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                },
+                {
+                  "rang": 1,
+                  "valeurs": {
+                    "taux": {
+                      "valeur": -5,
+                      "affichage": "-5"
+                    },
+                    "prix": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "coef": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "indice": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "evolution": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                },
+                {
+                  "rang": 2,
+                  "valeurs": {
+                    "taux": {
+                      "valeur": 4,
+                      "affichage": "4"
+                    },
+                    "prix": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "coef": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "indice": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "evolution": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                },
+                {
+                  "rang": 3,
+                  "valeurs": {
+                    "taux": {
+                      "valeur": -3,
+                      "affichage": "-3"
+                    },
+                    "prix": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "coef": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "indice": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "evolution": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                }
+              ],
+              "totaux": {
+                "taux": {
+                  "valeur": 4,
+                  "affichage": "4"
+                }
+              },
+              "synthese": [
+                {
+                  "valeur": 4,
+                  "affichage": "4,00 %"
+                },
+                {
+                  "valeur": null,
+                  "affichage": "—"
+                }
+              ],
+              "soldeFinal": null
+            },
             "metadonnees": {
               "concepts": ["evolutions-successives"],
               "misconceptionsCiblees": [],

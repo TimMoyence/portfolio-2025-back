@@ -1,5 +1,6 @@
+import { nombreSommable } from '../../../common/domain/nombres/ecriture-francaise';
 import type { ClasseurTelecharge } from './IClasseursDeCours.port';
-import type { RapportSession } from './IFormationMailer.port';
+import type { RapportQuestion, RapportSession } from './IFormationMailer.port';
 
 const BOM_UTF8 = '﻿';
 
@@ -25,7 +26,7 @@ export function rapportEnCsv(rapport: RapportSession): ClasseurTelecharge {
         ...etudiant,
         reponse.questionId,
         reponse.concept,
-        reponse.reponse,
+        reponseDansLeCsv(reponse),
         reponse.correcte ? 'oui' : 'non',
         reponse.libelleConfusion ?? '',
         String(reponse.dureeMs),
@@ -47,6 +48,14 @@ export function rapportEnCsv(rapport: RapportSession): ClasseurTelecharge {
     type: 'text/csv; charset=utf-8',
     contenu: new TextEncoder().encode(texte),
   };
+}
+
+const NOMBRE_SAISI_RE = /^-?\d+(\.\d+)?(e[+-]?\d+)?$/i;
+
+function reponseDansLeCsv(reponse: RapportQuestion): string {
+  return reponse.type === 'numeric' && NOMBRE_SAISI_RE.test(reponse.valeur)
+    ? nombreSommable(Number(reponse.valeur))
+    : reponse.reponse;
 }
 
 function ligneCsv(cellules: readonly string[]): string {

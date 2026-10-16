@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "d68ef4c38282114df63bb30221241c545ca20c438f2f1b71adfa2bd04f46f975",
+  "empreinte": "1d8b0b9ac06f4aec610ee860e8b1d0eeedad56e98e9ead3192c1c6c9e72f0676",
   "sujet": {
     "id": "b2-04-suites",
     "titre": "Suites : modéliser une évolution régulière",
@@ -1505,6 +1505,81 @@
               }
             ],
             "synthese": [],
+            "tableauInitial": {
+              "lignes": [
+                {
+                  "rang": 0,
+                  "valeurs": {
+                    "n": {
+                      "valeur": 1,
+                      "affichage": "1"
+                    },
+                    "u": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "condition": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                },
+                {
+                  "rang": 1,
+                  "valeurs": {
+                    "n": {
+                      "valeur": 2,
+                      "affichage": "2"
+                    },
+                    "u": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "condition": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                },
+                {
+                  "rang": 2,
+                  "valeurs": {
+                    "n": {
+                      "valeur": 3,
+                      "affichage": "3"
+                    },
+                    "u": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "condition": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                },
+                {
+                  "rang": 3,
+                  "valeurs": {
+                    "n": {
+                      "valeur": 4,
+                      "affichage": "4"
+                    },
+                    "u": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "condition": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                }
+              ],
+              "totaux": {},
+              "synthese": [],
+              "soldeFinal": null
+            },
             "metadonnees": {
               "concepts": ["algorithme-de-seuil"],
               "misconceptionsCiblees": [],
@@ -4363,6 +4438,81 @@
               }
             ],
             "synthese": [],
+            "tableauInitial": {
+              "lignes": [
+                {
+                  "rang": 0,
+                  "valeurs": {
+                    "n": {
+                      "valeur": 1,
+                      "affichage": "1"
+                    },
+                    "u": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "condition": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                },
+                {
+                  "rang": 1,
+                  "valeurs": {
+                    "n": {
+                      "valeur": 2,
+                      "affichage": "2"
+                    },
+                    "u": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "condition": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                },
+                {
+                  "rang": 2,
+                  "valeurs": {
+                    "n": {
+                      "valeur": 3,
+                      "affichage": "3"
+                    },
+                    "u": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "condition": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                },
+                {
+                  "rang": 3,
+                  "valeurs": {
+                    "n": {
+                      "valeur": 4,
+                      "affichage": "4"
+                    },
+                    "u": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "condition": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                }
+              ],
+              "totaux": {},
+              "synthese": [],
+              "soldeFinal": null
+            },
             "metadonnees": {
               "concepts": ["algorithme-de-seuil"],
               "misconceptionsCiblees": [],

@@ -749,17 +749,38 @@ describe('safeHtml — seul un gabarit litteral transporte du HTML brut', () => 
 });
 
 describe('safeHtml — un tableau interpole coute un temps lineaire', () => {
-  it('assemble vingt mille lignes en moins d une seconde', () => {
-    const lignes = Array.from(
-      { length: 20_000 },
+  const lignesDe = (nombre: number): EscapedHtml[] =>
+    Array.from(
+      { length: nombre },
       (_, rang) =>
         safeHtml`<tr><td>${rang}</td><td>${escapeHtml('cellule de démonstration')}</td></tr>`,
     );
+  const dureeDAssembler = (
+    lignes: readonly EscapedHtml[],
+    fois: number,
+  ): number => {
     const debut = performance.now();
+    const tableaux = Array.from(
+      { length: fois },
+      () => safeHtml`<table>${lignes}</table>`,
+    );
+    expect(tableaux).toHaveLength(fois);
+    return performance.now() - debut;
+  };
 
-    const tableau = safeHtml`<table>${lignes}</table>`;
+  it('assemble seize fois plus de lignes dans le temps de seize petits tableaux, quelle que soit la charge du poste', () => {
+    const courtes = lignesDe(125);
+    const longues = lignesDe(2_000);
+    dureeDAssembler(longues, 1);
+    const rapports = [0, 1, 2]
+      .map(
+        () =>
+          dureeDAssembler(longues, 1) /
+          Math.max(dureeDAssembler(courtes, 16), 1),
+      )
+      .sort((a, b) => a - b);
 
-    expect(performance.now() - debut).toBeLessThan(1000);
-    expect(tableau).toContain('<tr><td>19999</td>');
+    expect(rapports[1]).toBeLessThan(2);
+    expect(safeHtml`<table>${longues}</table>`).toContain('<tr><td>1999</td>');
   });
 });

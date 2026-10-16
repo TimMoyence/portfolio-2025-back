@@ -37,7 +37,10 @@ export type SheetPlanStocke = Omit<
   'metadonnees' | 'lettres' | 'grille' | 'longueurMaxSaisie' | 'initiale'
 >;
 export type CardsortPlanStocke = Omit<CardsortPlanPublic, 'metadonnees'>;
-export type TableBuildPlanStocke = Omit<TableBuildPlanPublic, 'metadonnees'>;
+export type TableBuildPlanStocke = Omit<
+  TableBuildPlanPublic,
+  'metadonnees' | 'tableauInitial'
+>;
 export type EscapeParcoursStocke = Omit<EscapeParcoursPublic, 'metadonnees'>;
 
 export interface LigneDuDossier {

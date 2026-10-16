@@ -175,6 +175,7 @@ export interface TableBuildPlanPublic {
     readonly unite: string | null;
     readonly decimales: number;
   }[];
+  readonly tableauInitial: TableauEvalue;
   readonly metadonnees: MetadonneesBrique;
 }
 

@@ -1,7 +1,10 @@
+import { ESPACE_INSECABLE as INSECABLE } from '../texte/sans-espaces-typographiques';
 import {
   avecVirgule,
   nombreAffiche,
   nombreFrancais,
+  nombreSommable,
+  pourcentageAffiche,
   VALEUR_ABSENTE,
 } from './ecriture-francaise';
 
@@ -38,6 +41,35 @@ describe('nombreFrancais', () => {
   ])('écrit %p avec %p décimales en %p', (valeur, decimales, attendue) => {
     expect(nombreFrancais(valeur, decimales)).toBe(attendue);
   });
+});
+
+describe('pourcentageAffiche', () => {
+  it.each([
+    [0.85, '85'],
+    [1, '100'],
+    [0.004, '0'],
+    [0.125, '13'],
+  ])(
+    'D-04 · écrit la part %p en %p pour cent, liés par une insécable',
+    (part, attendu) => {
+      expect(pourcentageAffiche(part)).toBe(`${attendu}${INSECABLE}%`);
+    },
+  );
+});
+
+describe('nombreSommable', () => {
+  it.each([
+    [12500.5, '12500,5'],
+    [-12.5, '-12,5'],
+    [1e-7, '0,0000001'],
+    [1338.23, '1338,23'],
+    [0, '0'],
+  ])(
+    'D-04 · écrit %p en %p, que l Excel français lit en nombre',
+    (valeur, attendue) => {
+      expect(nombreSommable(valeur)).toBe(attendue);
+    },
+  );
 });
 
 describe('avecVirgule', () => {

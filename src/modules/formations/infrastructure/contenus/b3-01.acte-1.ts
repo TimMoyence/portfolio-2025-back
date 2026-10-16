@@ -1,4 +1,4 @@
-import { CLASSEURS_B3_01 } from './b3-01.donnees';
+import { CA_HT_SAISI_EN_TEXTE, CLASSEURS_B3_01 } from './b3-01.donnees';
 import { questionChiffree } from './b3-01.questions';
 import * as moteur from './briques';
 
@@ -556,7 +556,7 @@ export const ACTE_1: moteur.Acte = [
           'b3-01-a1-ca-texte',
           'nettoyage',
           false,
-          'Dans la colonne ca_ht, une cellule affiche « 1 150,00 € », alignée à gauche. Que fait =SOMME(L:L) de cette cellule ?',
+          `Dans la colonne ca_ht, une cellule affiche « ${CA_HT_SAISI_EN_TEXTE} », alignée à gauche. Que fait =SOMME(L:L) de cette cellule ?`,
           'Elle l’ignore, sans aucun message',
           [
             ['Elle l’ajoute au total', 'texte-pris-pour-nombre'],
@@ -686,8 +686,7 @@ export const ACTE_1: moteur.Acte = [
         modalite: 'solo',
         exemple: {
           id: 'b3-01-a1-exemple-nettoyage',
-          enonce:
-            'Deux cellules de l’onglet Commandes du classeur brut : en E783, la ville « Bordeaux », entourée d’espaces ; en L2971, le ca_ht saisi comme le texte « 1 150,00 € ». Chaque formule s’écrit en ligne 2, puis se recopie jusqu’en bas.',
+          enonce: `Deux cellules de l’onglet Commandes du classeur brut : en E783, la ville « Bordeaux », entourée d’espaces ; en L2971, le ca_ht saisi comme le texte « ${CA_HT_SAISI_EN_TEXTE} ». Chaque formule s’écrit en ligne 2, puis se recopie jusqu’en bas.`,
           rappel: [
             {
               libelle: 'SUPPRESPACE(texte)',
@@ -728,7 +727,7 @@ export const ACTE_1: moteur.Acte = [
               intitule: 'Le montant',
               raisonnement:
                 'SUBSTITUE retire d’abord « € », puis l’espace des milliers ; CNUM convertit le texte qui reste. =CNUM(SUBSTITUE(SUBSTITUE(L2;" €";"");" ";"")), recopiée, rend le nombre 1150 en ligne 2971, et laisse intacts les montants déjà en nombre.',
-              invite: 'Quelle formule convertit « 1 150,00 € » en nombre ?',
+              invite: `Quelle formule convertit « ${CA_HT_SAISI_EN_TEXTE} » en nombre ?`,
             },
             {
               id: 'verifier',
@@ -790,7 +789,7 @@ export const ACTE_1: moteur.Acte = [
             },
             {
               id: 'ca-en-texte',
-              libelle: 'ca_ht stocké en texte : « 1 150,00 € »',
+              libelle: `ca_ht stocké en texte : « ${CA_HT_SAISI_EN_TEXTE} »`,
               categorie: 'faux-automatique',
               confusions: CONFUSIONS_D_UNE_ERREUR_QUE_LE_FICHIER_CORRIGE,
               justification:

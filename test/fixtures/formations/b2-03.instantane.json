@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "2c5eeb50f03261b9940e03a791e78fcf469c58e153d867319e5d1169b37289ee",
+  "empreinte": "7b0106a8f5cbcb2d04055d86061e3687db48f570cb202998248afe0013acbc36",
   "sujet": {
     "id": "b2-03-logique",
     "titre": "Logique : écrire et contrôler une règle",
@@ -547,6 +547,129 @@
               }
             ],
             "synthese": [],
+            "tableauInitial": {
+              "lignes": [
+                {
+                  "rang": 0,
+                  "valeurs": {
+                    "p": {
+                      "valeur": 1,
+                      "affichage": "1"
+                    },
+                    "q": {
+                      "valeur": 1,
+                      "affichage": "1"
+                    },
+                    "nonP": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "pEtQ": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "pOuQ": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "pImpQ": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                },
+                {
+                  "rang": 1,
+                  "valeurs": {
+                    "p": {
+                      "valeur": 1,
+                      "affichage": "1"
+                    },
+                    "q": {
+                      "valeur": 0,
+                      "affichage": "0"
+                    },
+                    "nonP": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "pEtQ": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "pOuQ": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "pImpQ": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                },
+                {
+                  "rang": 2,
+                  "valeurs": {
+                    "p": {
+                      "valeur": 0,
+                      "affichage": "0"
+                    },
+                    "q": {
+                      "valeur": 1,
+                      "affichage": "1"
+                    },
+                    "nonP": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "pEtQ": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "pOuQ": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "pImpQ": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                },
+                {
+                  "rang": 3,
+                  "valeurs": {
+                    "p": {
+                      "valeur": 0,
+                      "affichage": "0"
+                    },
+                    "q": {
+                      "valeur": 0,
+                      "affichage": "0"
+                    },
+                    "nonP": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "pEtQ": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "pOuQ": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "pImpQ": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                }
+              ],
+              "totaux": {},
+              "synthese": [],
+              "soldeFinal": null
+            },
             "metadonnees": {
               "concepts": ["connecteur"],
               "misconceptionsCiblees": [],
@@ -3153,6 +3276,129 @@
               }
             ],
             "synthese": [],
+            "tableauInitial": {
+              "lignes": [
+                {
+                  "rang": 0,
+                  "valeurs": {
+                    "p": {
+                      "valeur": 1,
+                      "affichage": "1"
+                    },
+                    "q": {
+                      "valeur": 1,
+                      "affichage": "1"
+                    },
+                    "nonP": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "pEtQ": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "pOuQ": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "pImpQ": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                },
+                {
+                  "rang": 1,
+                  "valeurs": {
+                    "p": {
+                      "valeur": 1,
+                      "affichage": "1"
+                    },
+                    "q": {
+                      "valeur": 0,
+                      "affichage": "0"
+                    },
+                    "nonP": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "pEtQ": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "pOuQ": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "pImpQ": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                },
+                {
+                  "rang": 2,
+                  "valeurs": {
+                    "p": {
+                      "valeur": 0,
+                      "affichage": "0"
+                    },
+                    "q": {
+                      "valeur": 1,
+                      "affichage": "1"
+                    },
+                    "nonP": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "pEtQ": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "pOuQ": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "pImpQ": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                },
+                {
+                  "rang": 3,
+                  "valeurs": {
+                    "p": {
+                      "valeur": 0,
+                      "affichage": "0"
+                    },
+                    "q": {
+                      "valeur": 0,
+                      "affichage": "0"
+                    },
+                    "nonP": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "pEtQ": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "pOuQ": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "pImpQ": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                }
+              ],
+              "totaux": {},
+              "synthese": [],
+              "soldeFinal": null
+            },
             "metadonnees": {
               "concepts": ["connecteur"],
               "misconceptionsCiblees": [],

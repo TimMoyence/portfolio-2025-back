@@ -61,12 +61,30 @@ function lier(prose: string): string {
     .replace(ORDINAL, ordinal);
 }
 
-export function typographier(texte: string): string {
+function lierHorsDesCitations(
+  prose: string,
+  citations: readonly string[],
+): string {
+  const citation = citations.find(
+    (candidate) => candidate !== '' && prose.includes(candidate),
+  );
+  return citation === undefined
+    ? lier(prose)
+    : prose
+        .split(citation)
+        .map((morceau) => lierHorsDesCitations(morceau, citations))
+        .join(citation);
+}
+
+export function typographier(
+  texte: string,
+  citations: readonly string[] = [],
+): string {
   if (!estUneFormule(texte)) {
-    return lier(texte);
+    return lierHorsDesCitations(texte, citations);
   }
   const fin = finDeLaFormule(texte);
-  return `${texte.slice(0, fin)}${lier(texte.slice(fin))}`;
+  return `${texte.slice(0, fin)}${lierHorsDesCitations(texte.slice(fin), citations)}`;
 }
 
 export function sansTypographie(texte: string): string {
@@ -76,20 +94,23 @@ export function sansTypographie(texte: string): string {
     .replaceAll('ᵉ', 'e');
 }
 
-export function typographierEnProfondeur<T>(valeur: T): T {
+export function typographierEnProfondeur<T>(
+  valeur: T,
+  citations: readonly string[] = [],
+): T {
   if (typeof valeur === 'string') {
-    return typographier(valeur) as T;
+    return typographier(valeur, citations) as T;
   }
   if (Array.isArray(valeur)) {
     return valeur.map((element: unknown) =>
-      typographierEnProfondeur(element),
+      typographierEnProfondeur(element, citations),
     ) as T;
   }
   if (estObjet(valeur)) {
     return Object.fromEntries(
       Object.entries(valeur).map(([cle, contenu]) => [
         cle,
-        typographierEnProfondeur(contenu),
+        typographierEnProfondeur(contenu, citations),
       ]),
     ) as T;
   }

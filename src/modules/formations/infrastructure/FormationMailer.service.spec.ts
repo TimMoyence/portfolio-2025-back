@@ -16,6 +16,7 @@ import type {
   RapportParticipant,
   RapportSession,
 } from '../domain/IFormationMailer.port';
+import { ESPACE_INSECABLE } from '../../../common/domain/texte/sans-espaces-typographiques';
 import { rapportEnCsv } from '../domain/RapportCsv';
 import { FormationMailerService } from './FormationMailer.service';
 
@@ -98,6 +99,18 @@ describe('FormationMailerService', () => {
       expect(`${mail.text}${mail.html}`).not.toContain('12.3/20');
     });
 
+    it('D-04 · écrit la complétion en pour cent à la française, liée au signe par une insécable', async () => {
+      const mail = await synthese(
+        buildRapport({
+          participants: [buildRapportParticipant({ completion: 0.85 })],
+        }),
+      );
+
+      expect(mail.text).toContain(`complétion 85${ESPACE_INSECABLE}%`);
+      expect(mail.html).toContain(`85${ESPACE_INSECABLE}%`);
+      expect(`${mail.text}${mail.html}`).not.toMatch(/85 ?%/);
+    });
+
     it('joint le csv de la séance tel que le domaine le produit', async () => {
       const rapport = buildRapportAvecReponses([VOTE_CONFONDU]);
 
@@ -177,6 +190,13 @@ describe('FormationMailerService', () => {
 
       expect(mail.text).toContain('Note obtenue : 12,3/20.');
       expect(mail.html).toContain('<strong>12,3/20</strong>');
+    });
+
+    it('D-04 · écrit la complétion de la copie en pour cent à la française', async () => {
+      const mail = await copieAvec({ completion: 0.85 });
+
+      expect(mail.html).toContain(`(complétion 85${ESPACE_INSECABLE}%)`);
+      expect(mail.html).not.toMatch(/85 ?%/);
     });
 
     it('detaille chaque reponse avec son verdict, comme le promet le message', async () => {
