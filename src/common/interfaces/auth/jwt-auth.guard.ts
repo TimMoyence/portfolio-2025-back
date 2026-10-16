@@ -56,28 +56,19 @@ export class JwtAuthGuard implements CanActivate {
 
     try {
       const payload = await this.jwtTokenService.verify(token);
-      request.user = payload;
-
-      if (!this.isEmailVerificationExempt(request)) {
-        await this.ensureAccountExistsAndEmailVerified(payload.sub);
+      const user = await this.usersRepo.findById(payload.sub);
+      if (!user?.isActive) {
+        throw new UnauthorizedException('Utilisateur introuvable ou desactive');
       }
+      if (!user.emailVerified && !this.isEmailVerificationExempt(request)) {
+        throw new ForbiddenException('Email non verifie');
+      }
+      request.user = { ...payload, roles: user.roles };
 
       return true;
     } catch (error) {
       if (error instanceof ForbiddenException) throw error;
       throw new UnauthorizedException('Invalid or expired token');
-    }
-  }
-
-  private async ensureAccountExistsAndEmailVerified(
-    userId: string,
-  ): Promise<void> {
-    const user = await this.usersRepo.findById(userId);
-    if (!user) {
-      throw new UnauthorizedException('Utilisateur introuvable');
-    }
-    if (!user.emailVerified) {
-      throw new ForbiddenException('Email non verifie');
     }
   }
 
