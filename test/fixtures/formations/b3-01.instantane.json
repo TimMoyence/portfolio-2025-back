@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "bfdbb6ecfdffab8adb5566523f53b2813305a4fbd78d460b5dd274035576d24d",
+  "empreinte": "3844a98831048444e37bfbf78dc17ffd53dfb1a70462b81704631c7855807b85",
   "sujet": {
     "id": "b3-01-donnee-brute-decision",
     "titre": "Expert Data : de la donnée brute à la décision",
@@ -476,7 +476,7 @@
         "donnees": {
           "question": {
             "id": "b3-01-a1-ca-texte",
-            "enonce": "Dans la colonne ca_ht, une cellule affiche « 1 150,00 € », alignée à gauche. Que fait =SOMME(L:L) de cette cellule ?",
+            "enonce": "Dans la colonne ca_ht, une cellule affiche « 1 150,00 € », alignée à gauche. Que fait =SOMME(L:L) de cette cellule ?",
             "options": [
               {
                 "id": "elle-affiche-une-erreur-valeur-09701c18",
@@ -612,7 +612,7 @@
         "donnees": {
           "exemple": {
             "id": "b3-01-a1-exemple-nettoyage",
-            "enonce": "Deux cellules de l’onglet Commandes du classeur brut : en E783, la ville « Bordeaux », entourée d’espaces ; en L2971, le ca_ht saisi comme le texte « 1 150,00 € ». Chaque formule s’écrit en ligne 2, puis se recopie jusqu’en bas.",
+            "enonce": "Deux cellules de l’onglet Commandes du classeur brut : en E783, la ville « Bordeaux », entourée d’espaces ; en L2971, le ca_ht saisi comme le texte « 1 150,00 € ». Chaque formule s’écrit en ligne 2, puis se recopie jusqu’en bas.",
             "rappel": [
               {
                 "libelle": "SUPPRESPACE(texte)",
@@ -646,7 +646,7 @@
                 "id": "montant",
                 "intitule": "Le montant",
                 "raisonnement": "SUBSTITUE retire d’abord « € », puis l’espace des milliers ; CNUM convertit le texte qui reste. =CNUM(SUBSTITUE(SUBSTITUE(L2;\" €\";\"\");\" \";\"\")), recopiée, rend le nombre 1150 en ligne 2971, et laisse intacts les montants déjà en nombre.",
-                "invite": "Quelle formule convertit « 1 150,00 € » en nombre ?"
+                "invite": "Quelle formule convertit « 1 150,00 € » en nombre ?"
               },
               {
                 "id": "verifier",
@@ -715,7 +715,7 @@
               },
               {
                 "id": "ca-en-texte",
-                "libelle": "ca_ht stocké en texte : « 1 150,00 € »"
+                "libelle": "ca_ht stocké en texte : « 1 150,00 € »"
               }
             ],
             "categories": [
@@ -2767,7 +2767,7 @@
         "donnees": {
           "question": {
             "id": "b3-01-a1-ca-texte",
-            "enonce": "Dans la colonne ca_ht, une cellule affiche « 1 150,00 € », alignée à gauche. Que fait =SOMME(L:L) de cette cellule ?",
+            "enonce": "Dans la colonne ca_ht, une cellule affiche « 1 150,00 € », alignée à gauche. Que fait =SOMME(L:L) de cette cellule ?",
             "options": [
               {
                 "id": "elle-affiche-une-erreur-valeur-09701c18",
@@ -2802,7 +2802,7 @@
         "questions": [
           {
             "id": "b3-01-a1-ca-texte",
-            "enonce": "Dans la colonne ca_ht, une cellule affiche « 1 150,00 € », alignée à gauche. Que fait =SOMME(L:L) de cette cellule ?",
+            "enonce": "Dans la colonne ca_ht, une cellule affiche « 1 150,00 € », alignée à gauche. Que fait =SOMME(L:L) de cette cellule ?",
             "options": [
               {
                 "id": "elle-affiche-une-erreur-valeur-09701c18",
@@ -2962,7 +2962,7 @@
         "donnees": {
           "exemple": {
             "id": "b3-01-a1-exemple-nettoyage",
-            "enonce": "Deux cellules de l’onglet Commandes du classeur brut : en E783, la ville « Bordeaux », entourée d’espaces ; en L2971, le ca_ht saisi comme le texte « 1 150,00 € ». Chaque formule s’écrit en ligne 2, puis se recopie jusqu’en bas.",
+            "enonce": "Deux cellules de l’onglet Commandes du classeur brut : en E783, la ville « Bordeaux », entourée d’espaces ; en L2971, le ca_ht saisi comme le texte « 1 150,00 € ». Chaque formule s’écrit en ligne 2, puis se recopie jusqu’en bas.",
             "rappel": [
               {
                 "libelle": "SUPPRESPACE(texte)",
@@ -2996,7 +2996,7 @@
                 "id": "montant",
                 "intitule": "Le montant",
                 "raisonnement": "SUBSTITUE retire d’abord « € », puis l’espace des milliers ; CNUM convertit le texte qui reste. =CNUM(SUBSTITUE(SUBSTITUE(L2;\" €\";\"\");\" \";\"\")), recopiée, rend le nombre 1150 en ligne 2971, et laisse intacts les montants déjà en nombre.",
-                "invite": "Quelle formule convertit « 1 150,00 € » en nombre ?"
+                "invite": "Quelle formule convertit « 1 150,00 € » en nombre ?"
               },
               {
                 "id": "verifier",
@@ -3072,7 +3072,7 @@
               },
               {
                 "id": "ca-en-texte",
-                "libelle": "ca_ht stocké en texte : « 1 150,00 € »"
+                "libelle": "ca_ht stocké en texte : « 1 150,00 € »"
               }
             ],
             "categories": [

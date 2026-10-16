@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "60bf874ec7e9ca5ca5450192e3cb912d8b8687e5670f7993f4d15b4cd5b6822c",
+  "empreinte": "6370f27445c91d8e1f80f703b27c838edac7ea4263e77fc5ad2daa766f72d272",
   "sujet": {
     "id": "b2-05-mathematiques-financieres",
     "titre": "Mathématiques financières : placer, emprunter",
@@ -1562,6 +1562,134 @@
               }
             ],
             "synthese": [],
+            "tableauInitial": {
+              "lignes": [
+                {
+                  "rang": 0,
+                  "valeurs": {
+                    "capital": {
+                      "valeur": 60000,
+                      "affichage": "60 000,00"
+                    },
+                    "interets": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "amortissement": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "annuite": {
+                      "valeur": 13477.63,
+                      "affichage": "13 477,63"
+                    }
+                  }
+                },
+                {
+                  "rang": 1,
+                  "valeurs": {
+                    "capital": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "interets": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "amortissement": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "annuite": {
+                      "valeur": 13477.63,
+                      "affichage": "13 477,63"
+                    }
+                  }
+                },
+                {
+                  "rang": 2,
+                  "valeurs": {
+                    "capital": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "interets": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "amortissement": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "annuite": {
+                      "valeur": 13477.63,
+                      "affichage": "13 477,63"
+                    }
+                  }
+                },
+                {
+                  "rang": 3,
+                  "valeurs": {
+                    "capital": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "interets": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "amortissement": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "annuite": {
+                      "valeur": 13477.63,
+                      "affichage": "13 477,63"
+                    }
+                  }
+                },
+                {
+                  "rang": 4,
+                  "valeurs": {
+                    "capital": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "interets": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "amortissement": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "annuite": {
+                      "valeur": 13477.63,
+                      "affichage": "13 477,63"
+                    }
+                  }
+                }
+              ],
+              "totaux": {
+                "interets": {
+                  "valeur": null,
+                  "affichage": "—"
+                },
+                "amortissement": {
+                  "valeur": null,
+                  "affichage": "—"
+                },
+                "annuite": {
+                  "valeur": 67388.15,
+                  "affichage": "67 388,15"
+                }
+              },
+              "synthese": [],
+              "soldeFinal": {
+                "valeur": null,
+                "affichage": "—"
+              }
+            },
             "metadonnees": {
               "concepts": ["tableau-d-amortissement"],
               "misconceptionsCiblees": [],
@@ -4534,6 +4662,134 @@
               }
             ],
             "synthese": [],
+            "tableauInitial": {
+              "lignes": [
+                {
+                  "rang": 0,
+                  "valeurs": {
+                    "capital": {
+                      "valeur": 60000,
+                      "affichage": "60 000,00"
+                    },
+                    "interets": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "amortissement": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "annuite": {
+                      "valeur": 13477.63,
+                      "affichage": "13 477,63"
+                    }
+                  }
+                },
+                {
+                  "rang": 1,
+                  "valeurs": {
+                    "capital": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "interets": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "amortissement": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "annuite": {
+                      "valeur": 13477.63,
+                      "affichage": "13 477,63"
+                    }
+                  }
+                },
+                {
+                  "rang": 2,
+                  "valeurs": {
+                    "capital": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "interets": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "amortissement": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "annuite": {
+                      "valeur": 13477.63,
+                      "affichage": "13 477,63"
+                    }
+                  }
+                },
+                {
+                  "rang": 3,
+                  "valeurs": {
+                    "capital": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "interets": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "amortissement": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "annuite": {
+                      "valeur": 13477.63,
+                      "affichage": "13 477,63"
+                    }
+                  }
+                },
+                {
+                  "rang": 4,
+                  "valeurs": {
+                    "capital": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "interets": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "amortissement": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "annuite": {
+                      "valeur": 13477.63,
+                      "affichage": "13 477,63"
+                    }
+                  }
+                }
+              ],
+              "totaux": {
+                "interets": {
+                  "valeur": null,
+                  "affichage": "—"
+                },
+                "amortissement": {
+                  "valeur": null,
+                  "affichage": "—"
+                },
+                "annuite": {
+                  "valeur": 67388.15,
+                  "affichage": "67 388,15"
+                }
+              },
+              "synthese": [],
+              "soldeFinal": {
+                "valeur": null,
+                "affichage": "—"
+              }
+            },
             "metadonnees": {
               "concepts": ["tableau-d-amortissement"],
               "misconceptionsCiblees": [],
