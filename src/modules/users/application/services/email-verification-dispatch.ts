@@ -41,9 +41,8 @@ export class EnvoiDeVerificationEmail {
         dureeDeValiditeMs: EMAIL_VERIFICATION_TTL_MS,
         adresseDeBase: this.verificationUrlBase,
         echecDEnvoi: failureLogPrefix,
-        invaliderLesLiensActifs: (id) =>
-          this.tokensRepo.invalidateActiveByUserId(id),
-        enregistrer: (jeton) => this.tokensRepo.create(jeton),
+        remplacerLesLiensActifs: (jeton) =>
+          this.tokensRepo.remplacerLesJetonsActifs(jeton),
         envoyer: ({ url, ...envoi }) =>
           this.notifier.sendVerificationEmail({
             ...envoi,

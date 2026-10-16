@@ -14,7 +14,12 @@ import {
   createMockUsersRepo,
   createMockPasswordService,
 } from '../../../../test/factories/user.factory';
-import { attendreMiseAJourDeLUtilisateur } from '../../../../test/helpers/utilisateurs';
+import { createMockRefreshTokensRepo } from '../../../../test/factories/refresh-token.factory';
+import {
+  attendreAucunMotDePasseEnregistre,
+  attendreMiseAJourDeLUtilisateur,
+  attendreSessionsFermeesApres,
+} from '../../../../test/helpers/utilisateurs';
 
 const CURRENT_CREDENTIAL = 'OldPassword123';
 const NEXT_CREDENTIAL = 'NewPassword456';
@@ -22,6 +27,7 @@ const NEXT_CREDENTIAL = 'NewPassword456';
 describe('ChangePasswordUseCase', () => {
   let repo: jest.Mocked<IUsersRepository>;
   let passwordService: jest.Mocked<PasswordService>;
+  let refreshTokensRepo: ReturnType<typeof createMockRefreshTokensRepo>;
   let useCase: ChangePasswordUseCase;
 
   beforeEach(() => {
@@ -29,8 +35,13 @@ describe('ChangePasswordUseCase', () => {
     passwordService = createMockPasswordService();
     passwordService.hash.mockResolvedValue('new-hash');
     passwordService.verify.mockResolvedValue(true);
+    refreshTokensRepo = createMockRefreshTokensRepo();
 
-    useCase = new ChangePasswordUseCase(repo, passwordService);
+    useCase = new ChangePasswordUseCase(
+      repo,
+      passwordService,
+      refreshTokensRepo,
+    );
   });
 
   it('changes the password when current password matches', async () => {
@@ -63,6 +74,7 @@ describe('ChangePasswordUseCase', () => {
       passwordHash: 'new-hash',
       updatedOrCreatedBy: 'password-change',
     });
+    attendreSessionsFermeesApres(repo.update, refreshTokensRepo.revokeByUserId);
     expect(result).toBe(updatedUser);
   });
 
@@ -96,7 +108,10 @@ describe('ChangePasswordUseCase', () => {
 
     await expect(refus).rejects.toBeInstanceOf(MotDePasseActuelIncorrectError);
     await expect(refus).rejects.toBeInstanceOf(InvalidInputError);
-    expect(repo.update).not.toHaveBeenCalled();
+    attendreAucunMotDePasseEnregistre(
+      repo.update,
+      refreshTokensRepo.revokeByUserId,
+    );
   });
 
   const attendreUnRefusAvantLaVerification = async (
@@ -113,7 +128,10 @@ describe('ChangePasswordUseCase', () => {
       }),
     ).rejects.toBeInstanceOf(erreur);
     expect(passwordService.verify).not.toHaveBeenCalled();
-    expect(repo.update).not.toHaveBeenCalled();
+    attendreAucunMotDePasseEnregistre(
+      repo.update,
+      refreshTokensRepo.revokeByUserId,
+    );
   };
 
   it('refuse par un conflit, et non comme une session perdue, un compte qui n a pas de mot de passe', async () => {

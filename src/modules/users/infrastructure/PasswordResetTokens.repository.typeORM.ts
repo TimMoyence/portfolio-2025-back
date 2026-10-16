@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   IsNull,
-  MoreThan,
   Repository,
   type FindOptionsWhere,
   type UpdateResult,
@@ -12,7 +11,19 @@ import { aAffecte } from '../../../common/infrastructure/typeorm/lignes-affectee
 import type { IPasswordResetTokensRepository } from '../domain/IPasswordResetTokens.repository';
 import type { PasswordResetToken } from '../domain/PasswordResetToken';
 import { PasswordResetTokenEntity } from './entities/PasswordResetToken.entity';
-import { champsDuJeton, nonExpire } from './jetons.typeorm';
+import {
+  champsDuJeton,
+  nonExpire,
+  remplacerSousVerrou,
+} from './jetons.typeorm';
+
+function marquerUtilises(
+  depot: Repository<PasswordResetTokenEntity>,
+  critere: FindOptionsWhere<PasswordResetTokenEntity>,
+): Promise<UpdateResult> {
+  const maintenant = new Date();
+  return depot.update(critere, { usedAt: maintenant, updatedAt: maintenant });
+}
 
 @Injectable()
 export class PasswordResetTokensRepositoryTypeORM
@@ -26,34 +37,28 @@ export class PasswordResetTokensRepositoryTypeORM
     super(repo);
   }
 
-  create(token: PasswordResetToken): Promise<PasswordResetToken> {
-    return this.enregistrer({ ...champsDuJeton(token), usedAt: token.usedAt });
+  async remplacerLesJetonsActifs(
+    jeton: Pick<PasswordResetToken, 'userId' | 'tokenHash' | 'expiresAt'>,
+  ): Promise<PasswordResetToken> {
+    return this.toDomain(
+      await remplacerSousVerrou(
+        this.repo,
+        { ...champsDuJeton(jeton), usedAt: null },
+        (depot) =>
+          marquerUtilises(
+            depot,
+            nonExpire({ userId: jeton.userId, usedAt: IsNull() }),
+          ),
+      ),
+    );
   }
 
   findActiveByTokenHash(tokenHash: string): Promise<PasswordResetToken | null> {
     return this.trouver(nonExpire({ tokenHash, usedAt: IsNull() }));
   }
 
-  async invalidateActiveByUserId(userId: string): Promise<void> {
-    await this.marquerUtilises({
-      userId,
-      usedAt: IsNull(),
-      expiresAt: MoreThan(new Date()),
-    });
-  }
-
   async markUsed(id: string): Promise<boolean> {
-    return aAffecte(await this.marquerUtilises({ id, usedAt: IsNull() }));
-  }
-
-  private marquerUtilises(
-    critere: FindOptionsWhere<PasswordResetTokenEntity>,
-  ): Promise<UpdateResult> {
-    const maintenant = new Date();
-    return this.repo.update(critere, {
-      usedAt: maintenant,
-      updatedAt: maintenant,
-    });
+    return aAffecte(await marquerUtilises(this.repo, { id, usedAt: IsNull() }));
   }
 
   protected toDomain(entity: PasswordResetTokenEntity): PasswordResetToken {

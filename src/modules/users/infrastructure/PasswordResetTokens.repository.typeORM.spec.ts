@@ -1,4 +1,8 @@
 import { IsNull, type Repository } from 'typeorm';
+import {
+  mockTypeOrmManager,
+  mockTypeOrmRepositoryAvecManager,
+} from '../../../../test/factories/formation-entities.factory';
 import { PasswordResetTokenEntity } from './entities/PasswordResetToken.entity';
 import { PasswordResetTokensRepositoryTypeORM } from './PasswordResetTokens.repository.typeORM';
 
@@ -30,11 +34,37 @@ describe('PasswordResetTokensRepositoryTypeORM marquage d usage', () => {
     );
   });
 
-  it('marque utilises les jetons encore actifs d un compte', async () => {
-    const { update, depot } = depotRendant(2);
+  it('marque utilises les jetons encore actifs d un compte puis enregistre le neuf, sous le verrou du compte et dans une seule transaction', async () => {
+    const query = jest.fn().mockResolvedValue([]);
+    const update = jest.fn().mockResolvedValue({ affected: 2 });
+    const create = jest.fn((champs: object) => champs);
+    const save = jest.fn((entite: object) =>
+      Promise.resolve({ ...entite, id: 'reset-token-2' }),
+    );
+    const manager = mockTypeOrmManager({
+      query,
+      withRepository: jest.fn().mockReturnValue({ update, create, save }),
+    });
+    const depot = new PasswordResetTokensRepositoryTypeORM(
+      mockTypeOrmRepositoryAvecManager<PasswordResetTokenEntity>(
+        {},
+        manager,
+        'password_reset_tokens',
+      ),
+    );
+    const expiresAt = new Date('2026-10-16T12:00:00.000Z');
 
-    await depot.invalidateActiveByUserId('user-1');
+    const remplace = await depot.remplacerLesJetonsActifs({
+      userId: 'user-1',
+      tokenHash: 'empreinte',
+      expiresAt,
+    });
 
+    expect(manager.transaction).toHaveBeenCalledTimes(1);
+    expect(query).toHaveBeenCalledWith(
+      'SELECT pg_advisory_xact_lock(hashtext($1))',
+      ['password_reset_tokens:user-1'],
+    );
     expect(update).toHaveBeenCalledWith(
       {
         userId: 'user-1',
@@ -43,5 +73,24 @@ describe('PasswordResetTokensRepositoryTypeORM marquage d usage', () => {
       },
       MARQUAGE,
     );
+    expect(create).toHaveBeenCalledWith({
+      userId: 'user-1',
+      tokenHash: 'empreinte',
+      expiresAt,
+      usedAt: null,
+    });
+    expect(query.mock.invocationCallOrder[0]).toBeLessThan(
+      update.mock.invocationCallOrder[0],
+    );
+    expect(update.mock.invocationCallOrder[0]).toBeLessThan(
+      save.mock.invocationCallOrder[0],
+    );
+    expect(remplace).toMatchObject({
+      id: 'reset-token-2',
+      userId: 'user-1',
+      tokenHash: 'empreinte',
+      expiresAt,
+      usedAt: null,
+    });
   });
 });

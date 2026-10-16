@@ -116,6 +116,10 @@ export class User {
       );
     }
 
+    if (props.googleId !== undefined) {
+      partial.googleId = props.googleId;
+    }
+
     partial.updatedAt = new Date();
 
     return partial;

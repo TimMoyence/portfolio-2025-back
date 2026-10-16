@@ -28,6 +28,6 @@ export class ChangePasswordUseCase extends CasDUsageMotDePasse {
       throw new MotDePasseActuelIncorrectError();
     }
 
-    return this.enregistrerMotDePasse(user, dto.newPassword, 'password-change');
+    return this.remplacerMotDePasse(user, dto.newPassword, 'password-change');
   }
 }

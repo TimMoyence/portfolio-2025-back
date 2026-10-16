@@ -1,5 +1,6 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { avecUnPlancherDeLatence } from '../../../common/application/plancher-de-latence';
 import type { IPasswordResetNotifier } from '../domain/IPasswordResetNotifier';
 import type { IPasswordResetTokensRepository } from '../domain/IPasswordResetTokens.repository';
 import type { IUsersRepository } from '../domain/IUsers.repository';
@@ -39,7 +40,13 @@ export class RequestPasswordResetUseCase {
     );
   }
 
-  async execute(
+  execute(
+    dto: RequestPasswordResetCommand,
+  ): Promise<RequestPasswordResetResult> {
+    return avecUnPlancherDeLatence(() => this.demander(dto));
+  }
+
+  private async demander(
     dto: RequestPasswordResetCommand,
   ): Promise<RequestPasswordResetResult> {
     const user = await this.usersRepository.findByEmail(dto.email);
@@ -55,13 +62,8 @@ export class RequestPasswordResetUseCase {
         dureeDeValiditeMs: PASSWORD_RESET_TTL_MS,
         adresseDeBase: this.resetPasswordUrlBase,
         echecDEnvoi: 'Password reset email failed',
-        invaliderLesLiensActifs: (id) =>
-          this.passwordResetTokensRepository.invalidateActiveByUserId(id),
-        enregistrer: (jeton) =>
-          this.passwordResetTokensRepository.create({
-            ...jeton,
-            usedAt: null,
-          }),
+        remplacerLesLiensActifs: (jeton) =>
+          this.passwordResetTokensRepository.remplacerLesJetonsActifs(jeton),
         envoyer: ({ url, ...envoi }) =>
           this.passwordResetNotifier.sendPasswordResetEmail({
             ...envoi,

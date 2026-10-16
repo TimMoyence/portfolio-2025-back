@@ -4,6 +4,7 @@ import { TokenExpiredError } from '../../../common/domain/errors/TokenExpiredErr
 import { TokenReuseDetectedError } from '../../../common/domain/errors/TokenReuseDetectedError';
 import type { IRefreshTokensRepository } from '../domain/IRefreshTokens.repository';
 import type { IUsersRepository } from '../domain/IUsers.repository';
+import { estRevoqueHorsRotation } from '../domain/RefreshToken';
 import { REFRESH_TOKENS_REPOSITORY, USERS_REPOSITORY } from '../domain/token';
 import { REFRESH_TOKEN_ROTATION_GRACE_MS } from '../domain/auth.constants';
 import type { AuthResult } from './AuthenticateUser.useCase';
@@ -28,6 +29,10 @@ export class RefreshTokensUseCase {
       this.refreshTokensRepo,
       rawRefreshToken,
     );
+
+    if (estRevoqueHorsRotation(stored)) {
+      throw new InvalidCredentialsError('Refresh token revoked');
+    }
 
     const maintenant = Date.now();
     if (

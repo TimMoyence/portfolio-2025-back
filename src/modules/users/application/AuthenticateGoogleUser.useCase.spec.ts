@@ -6,6 +6,7 @@ import {
   buildUser,
   createMockSessionDependances,
 } from '../../../../test/factories/user.factory';
+import { attendreMiseAJourDeLUtilisateur } from '../../../../test/helpers/utilisateurs';
 
 const mockVerifyIdToken = jest.fn();
 jest.mock('google-auth-library', () => ({
@@ -66,7 +67,7 @@ describe('AuthenticateGoogleUserUseCase', () => {
     const result = await useCase.execute('valid-id-token');
 
     expect(repo.findByEmail).toHaveBeenCalledWith('john@gmail.com');
-    expect(repo.update).toHaveBeenCalledWith('user-1', {
+    attendreMiseAJourDeLUtilisateur(repo.update, {
       googleId: 'google-sub-123',
     });
     expect(result.accessToken).toBe('jwt-token');

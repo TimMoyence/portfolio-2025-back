@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { LessThan, Repository, type FindOptionsWhere } from 'typeorm';
+import { LessThan, Repository } from 'typeorm';
 import { DepotEnDomaine } from '../../../common/infrastructure/typeorm/DepotEnDomaine';
+import { poseeIlYAPlusDe } from '../../../common/infrastructure/typeorm/horloge-de-la-base';
 import {
   aAffecte,
   lignesAffectees,
@@ -10,6 +11,8 @@ import type { IRefreshTokensRepository } from '../domain/IRefreshTokens.reposito
 import type { RefreshToken } from '../domain/RefreshToken';
 import { RefreshTokenEntity } from './entities/RefreshToken.entity';
 import { champsDuJeton } from './jetons.typeorm';
+
+const SEPT_JOURS_MS = 7 * 24 * 60 * 60 * 1000;
 
 @Injectable()
 export class RefreshTokensRepositoryTypeORM
@@ -35,21 +38,11 @@ export class RefreshTokensRepositoryTypeORM
     return this.trouver({ tokenHash });
   }
 
-  revokeByUserId(userId: string): Promise<void> {
-    return this.revoquer({ userId });
-  }
-
-  revokeById(id: string): Promise<void> {
-    return this.revoquer({ id });
-  }
-
-  private async revoquer(
-    critere: FindOptionsWhere<RefreshTokenEntity>,
-  ): Promise<void> {
-    await this.repo.update(critere, {
-      revoked: true,
-      rotationGraceUntil: null,
-    });
+  async revokeByUserId(userId: string): Promise<void> {
+    await this.repo.update(
+      { userId },
+      { revoked: true, rotationGraceUntil: null },
+    );
   }
 
   async rotateById(id: string, graceUntil: Date): Promise<boolean> {
@@ -62,10 +55,9 @@ export class RefreshTokensRepositoryTypeORM
   }
 
   async purgeExpired(): Promise<number> {
-    const cutoff = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
     return lignesAffectees(
       await this.repo.delete([
-        { revoked: true, createdAt: LessThan(cutoff) },
+        { revoked: true, createdAt: poseeIlYAPlusDe(SEPT_JOURS_MS) },
         { expiresAt: LessThan(new Date()) },
       ]),
     );

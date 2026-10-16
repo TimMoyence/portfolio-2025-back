@@ -1,6 +1,6 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { randomInt } from 'crypto';
 import { enArrierePlan } from '../../../common/application/en-arriere-plan';
+import { avecUnPlancherDeLatence } from '../../../common/application/plancher-de-latence';
 import { ResourceConflictError } from '../../../common/domain/errors/ResourceConflictError';
 import type { INewsletterMailer } from '../domain/INewsletterMailer';
 import type { INewsletterSubscriberRepository } from '../domain/INewsletterSubscriberRepository';
@@ -19,16 +19,6 @@ export interface SubscribeNewsletterResult {
 
 @Injectable()
 export class SubscribeNewsletterUseCase {
-  /**
-   * Plancher de latence commun aux deux branches de `executeInternal`.
-   * Sans lui, le temps de reponse trahit si l'adresse etait deja connue,
-   * puisque seule une adresse nouvelle declenche une insertion : c'est
-   * un oracle d'enumeration (CWE-208).
-   */
-  private static readonly MIN_RESPONSE_MS = 300;
-
-  private static readonly MAX_JITTER_MS = 50;
-
   private readonly logger = new Logger(SubscribeNewsletterUseCase.name);
 
   constructor(
@@ -38,15 +28,10 @@ export class SubscribeNewsletterUseCase {
     private readonly mailer: INewsletterMailer,
   ) {}
 
-  async execute(
+  execute(
     command: SubscribeNewsletterCommand,
   ): Promise<SubscribeNewsletterResult> {
-    const startMs = Date.now();
-    try {
-      return await this.executeInternal(command);
-    } finally {
-      await this.padResponseTime(startMs);
-    }
+    return avecUnPlancherDeLatence(() => this.executeInternal(command));
   }
 
   private async executeInternal(
@@ -134,16 +119,5 @@ export class SubscribeNewsletterUseCase {
       'Newsletter confirmation email failed',
       this.logger,
     );
-  }
-
-  private async padResponseTime(startMs: number): Promise<void> {
-    const elapsed = Date.now() - startMs;
-    const jitter = randomInt(SubscribeNewsletterUseCase.MAX_JITTER_MS);
-    const target = SubscribeNewsletterUseCase.MIN_RESPONSE_MS + jitter;
-    if (elapsed < target) {
-      await new Promise<void>((resolve) =>
-        setTimeout(resolve, target - elapsed),
-      );
-    }
   }
 }

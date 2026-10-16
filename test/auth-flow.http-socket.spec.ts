@@ -13,6 +13,7 @@ import {
   createAuthUseCaseStubs,
 } from './factories/core-api.factory';
 import { TEST_JWT_SECRET } from './factories/env.factory';
+import { createMockRefreshTokensRepo } from './factories/refresh-token.factory';
 import {
   buildUser,
   buildAuthResult,
@@ -287,7 +288,11 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
       comptes.findById.mockResolvedValue(compte);
       const motsDePasse = createMockPasswordService();
       motsDePasse.verify.mockResolvedValue(motDePasseActuelReconnu);
-      const casDUsage = new ChangePasswordUseCase(comptes, motsDePasse);
+      const casDUsage = new ChangePasswordUseCase(
+        comptes,
+        motsDePasse,
+        createMockRefreshTokensRepo(),
+      );
       authStubs.changePasswordUseCase.execute.mockImplementation(
         (commande: ChangePasswordCommand) => casDUsage.execute(commande),
       );

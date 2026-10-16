@@ -3,7 +3,7 @@ import { InvalidCredentialsError } from '../../../common/domain/errors/InvalidCr
 import type { IRefreshTokensRepository } from '../domain/IRefreshTokens.repository';
 import type { IUsersRepository } from '../domain/IUsers.repository';
 import { REFRESH_TOKENS_REPOSITORY, USERS_REPOSITORY } from '../domain/token';
-import { User } from '../domain/User';
+import type { User } from '../domain/User';
 import { CasDUsageMotDePasse } from './CasDUsageUtilisateurs';
 import type { LoginCommand } from './dto/Login.command';
 import { issueAuthSession } from './services/issue-auth-session';
@@ -23,11 +23,11 @@ export class AuthenticateUserUseCase extends CasDUsageMotDePasse {
     @Inject(USERS_REPOSITORY)
     repo: IUsersRepository,
     @Inject(REFRESH_TOKENS_REPOSITORY)
-    private readonly refreshTokensRepo: IRefreshTokensRepository,
+    refreshTokensRepo: IRefreshTokensRepository,
     passwordService: PasswordService,
     private readonly jwtTokenService: JwtTokenService,
   ) {
-    super(repo, passwordService);
+    super(repo, passwordService, refreshTokensRepo);
   }
 
   async execute(dto: LoginCommand): Promise<AuthResult> {

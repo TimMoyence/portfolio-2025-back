@@ -38,6 +38,13 @@ describe('User aggregate', () => {
     expect(partial.updatedAt).toBeInstanceOf(Date);
   });
 
+  it('date la liaison d un compte Google', () => {
+    expect(User.update({ googleId: 'google-sub-123' })).toEqual({
+      googleId: 'google-sub-123',
+      updatedAt: expect.any(Date) as Date,
+    });
+  });
+
   it('creates user with googleId and without passwordHash', () => {
     const user = User.create({
       email: 'google@example.com',

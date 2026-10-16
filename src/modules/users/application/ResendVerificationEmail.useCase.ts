@@ -1,4 +1,5 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
+import { avecUnPlancherDeLatence } from '../../../common/application/plancher-de-latence';
 import type { IEmailVerificationTokensRepository } from '../domain/IEmailVerificationTokens.repository';
 import type { IUsersRepository } from '../domain/IUsers.repository';
 import {
@@ -28,7 +29,11 @@ export class ResendVerificationEmailUseCase {
     private readonly envoiDeVerification: EnvoiDeVerificationEmail,
   ) {}
 
-  async execute(email: string): Promise<ResendVerificationResult> {
+  execute(email: string): Promise<ResendVerificationResult> {
+    return avecUnPlancherDeLatence(() => this.renvoyer(email));
+  }
+
+  private async renvoyer(email: string): Promise<ResendVerificationResult> {
     const user = await this.usersRepo.findByEmail(email);
 
     if (!user || !user.id || !user.isActive) {
