@@ -1,3 +1,4 @@
+import { AuthenticateGoogleUserUseCase } from '../src/modules/users/application/AuthenticateGoogleUser.useCase';
 import { CreateUsersUseCase } from '../src/modules/users/application/CreateUsers.useCase';
 import { EnvoiDeVerificationEmail } from '../src/modules/users/application/services/email-verification-dispatch';
 import { EnvoiDeReinitialisation } from '../src/modules/users/application/services/password-reset-dispatch';
@@ -13,9 +14,10 @@ import {
   createMockEmailVerificationNotifier,
   createMockPasswordResetNotifier,
 } from './factories/mailer.factory';
-import { createMockPasswordService } from './factories/user.factory';
-
-const SAISIE_DU_CANDIDAT = 'MotDePasse123!';
+import {
+  createMockPasswordService,
+  createMockSessionDependances,
+} from './factories/user.factory';
 import {
   baseMigreeDeLaSuite,
   describeDb,
@@ -23,6 +25,22 @@ import {
   TOUTES_LES_ENTITES,
   TOUTES_LES_MIGRATIONS,
 } from './helpers/db-integration-datasource';
+
+jest.mock('google-auth-library', () => ({
+  OAuth2Client: jest.fn().mockImplementation(() => ({
+    verifyIdToken: () =>
+      Promise.resolve({
+        getPayload: () => ({
+          sub: 'google-simultane',
+          email: 'simultane@gmail.com',
+          email_verified: true,
+          given_name: 'Sim',
+        }),
+      }),
+  })),
+}));
+
+const SAISIE_DU_CANDIDAT = 'MotDePasse123!';
 
 describeDb('Depot des comptes sur une base migree', () => {
   const base = baseMigreeDeLaSuite(
@@ -147,5 +165,30 @@ describeDb('Depot des comptes sur une base migree', () => {
           .countBy({ userId: titulaire?.id }),
       ).resolves.toBe(1);
     });
+  });
+
+  it('ouvre deux premieres connexions Google simultanees sur un seul compte', async () => {
+    const { refreshTokensRepo, jwtTokenService } =
+      createMockSessionDependances();
+    const connexion = new AuthenticateGoogleUserUseCase(
+      new UsersRepositoryTypeORM(base().getRepository(UsersEntity)),
+      refreshTokensRepo,
+      jwtTokenService,
+      'client-id',
+    );
+
+    const sessions = await Promise.all([
+      connexion.execute('jeton-google'),
+      connexion.execute('jeton-google'),
+    ]);
+
+    const comptes = await base()
+      .getRepository(UsersEntity)
+      .findBy({ googleId: 'google-simultane' });
+    expect(comptes).toHaveLength(1);
+    expect(sessions.map(({ user }) => user.id)).toEqual([
+      comptes[0].id,
+      comptes[0].id,
+    ]);
   });
 });

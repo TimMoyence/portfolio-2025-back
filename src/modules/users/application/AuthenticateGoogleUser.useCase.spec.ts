@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { InvalidCredentialsError } from '../../../common/domain/errors/InvalidCredentialsError';
+import { CompteDejaInscritError } from '../domain/CompteDejaInscritError';
+import type { User } from '../domain/User';
 import { AuthenticateGoogleUserUseCase } from './AuthenticateGoogleUser.useCase';
 import {
   attendreSessionOuverte,
@@ -152,14 +154,19 @@ describe('AuthenticateGoogleUserUseCase', () => {
     );
   });
 
-  it('lance InvalidCredentialsError quand le user trouve par googleId est inactif', async () => {
-    const inactiveUser = buildUser({ isActive: false });
-    repo.findByGoogleId.mockResolvedValue(inactiveUser);
-
+  const attendreUnRefusSansSession = async () => {
     await expect(useCase.execute('valid-id-token')).rejects.toBeInstanceOf(
       InvalidCredentialsError,
     );
     expect(jwtTokenService.sign).not.toHaveBeenCalled();
+    expect(refreshTokensRepo.create).not.toHaveBeenCalled();
+  };
+
+  it('lance InvalidCredentialsError quand le user trouve par googleId est inactif', async () => {
+    const inactiveUser = buildUser({ isActive: false });
+    repo.findByGoogleId.mockResolvedValue(inactiveUser);
+
+    await attendreUnRefusSansSession();
   });
 
   it('refuse de lier googleId quand byEmail.emailVerified est false (anti-takeover)', async () => {
@@ -170,12 +177,43 @@ describe('AuthenticateGoogleUserUseCase', () => {
     repo.findByGoogleId.mockResolvedValue(null);
     repo.findByEmail.mockResolvedValue(unverifiedUser);
 
-    await expect(useCase.execute('valid-id-token')).rejects.toBeInstanceOf(
-      InvalidCredentialsError,
-    );
-
+    await attendreUnRefusSansSession();
     expect(repo.update).not.toHaveBeenCalled();
-    expect(jwtTokenService.sign).not.toHaveBeenCalled();
-    expect(refreshTokensRepo.create).not.toHaveBeenCalled();
+  });
+
+  describe('premiere connexion Google simultanee', () => {
+    const creationDejaFaite = (gagnant: User | null) => {
+      repo.findByGoogleId
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce(gagnant);
+      repo.findByEmail.mockResolvedValue(null);
+      repo.create.mockRejectedValue(new CompteDejaInscritError());
+    };
+
+    it('rejoint le compte cree par la connexion concurrente', async () => {
+      const gagnant = buildUser({ id: 'gagnant', googleId: 'google-sub-123' });
+      creationDejaFaite(gagnant);
+
+      const result = await useCase.execute('valid-id-token');
+
+      attendreSessionOuverte(result, gagnant, {
+        signer: jwtTokenService.sign,
+        creerRefreshToken: refreshTokensRepo.create,
+      });
+    });
+
+    it('refuse le compte concurrent desactive entre-temps', async () => {
+      creationDejaFaite(buildUser({ id: 'gagnant', isActive: false }));
+
+      await attendreUnRefusSansSession();
+    });
+
+    it('laisse remonter le conflit quand aucun compte ne se retrouve', async () => {
+      creationDejaFaite(null);
+
+      await expect(useCase.execute('valid-id-token')).rejects.toBeInstanceOf(
+        CompteDejaInscritError,
+      );
+    });
   });
 });

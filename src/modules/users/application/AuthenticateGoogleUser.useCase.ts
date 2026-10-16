@@ -1,5 +1,6 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { InvalidCredentialsError } from '../../../common/domain/errors/InvalidCredentialsError';
+import { CompteDejaInscritError } from '../domain/CompteDejaInscritError';
 import type { IRefreshTokensRepository } from '../domain/IRefreshTokens.repository';
 import type { IUsersRepository } from '../domain/IUsers.repository';
 import { LONGUEUR_MAX_D_UN_NOM, User } from '../domain/User';
@@ -77,6 +78,39 @@ export class AuthenticateGoogleUserUseCase {
     email: string,
     payload: GoogleTokenPayload,
   ): Promise<User> {
+    const existant = await this.resolveExistingUser(googleId, email);
+    if (existant) {
+      return existant;
+    }
+
+    const newUser = UsersMapper.fromGoogleAuth({
+      email,
+      firstName: auPlafondDUnNom(
+        payload.given_name?.trim() || email.split('@')[0],
+      ),
+      lastName: auPlafondDUnNom(payload.family_name ?? ''),
+      googleId,
+      roles: DEFAULT_SELF_REGISTRATION_ROLES,
+      emailVerified: true,
+    });
+    try {
+      return await this.repo.create(newUser);
+    } catch (erreur) {
+      if (!(erreur instanceof CompteDejaInscritError)) {
+        throw erreur;
+      }
+      const creeEntreTemps = await this.resolveExistingUser(googleId, email);
+      if (!creeEntreTemps) {
+        throw erreur;
+      }
+      return creeEntreTemps;
+    }
+  }
+
+  private async resolveExistingUser(
+    googleId: string,
+    email: string,
+  ): Promise<User | null> {
     const byGoogleId = await this.repo.findByGoogleId(googleId);
     if (byGoogleId) {
       this.ensureActive(byGoogleId);
@@ -103,17 +137,7 @@ export class AuthenticateGoogleUserUseCase {
       return byEmail;
     }
 
-    const newUser = UsersMapper.fromGoogleAuth({
-      email,
-      firstName: auPlafondDUnNom(
-        payload.given_name?.trim() || email.split('@')[0],
-      ),
-      lastName: auPlafondDUnNom(payload.family_name ?? ''),
-      googleId,
-      roles: DEFAULT_SELF_REGISTRATION_ROLES,
-      emailVerified: true,
-    });
-    return this.repo.create(newUser);
+    return null;
   }
 
   private async verifyGoogleToken(idToken: string) {
