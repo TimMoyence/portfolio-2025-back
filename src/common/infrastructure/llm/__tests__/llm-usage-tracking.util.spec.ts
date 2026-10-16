@@ -10,7 +10,6 @@ import {
 } from '../llm-usage-tracking.util';
 
 interface UsageCallback {
-  handleLLMStart(): void;
   handleLLMEnd(output: unknown): void;
   handleLLMError(): void;
 }
@@ -45,7 +44,6 @@ async function runTracked(output: unknown, metrics: MockLlmMetrics | null) {
     (_messages: unknown, options: LlmInvocationOptions): Promise<string> => {
       const [callback] = (options.callbacks ??
         []) as unknown as UsageCallback[];
-      callback.handleLLMStart();
       if (output !== undefined) callback.handleLLMEnd(output);
       return Promise.resolve('resultat');
     },
@@ -81,7 +79,7 @@ describe('invokeWithLlmTracking', () => {
 
   it('compte l’appel et observe la latence en succes', async () => {
     const metrics = createMockLlmMetrics();
-    figerLHorloge(1_000, 1_000, 3_500, 3_500);
+    figerLHorloge(1_000, 3_500);
 
     await runTracked(buildUsageMetadataOutput(), metrics);
 
@@ -146,6 +144,21 @@ describe('invokeWithLlmTracking', () => {
       expect.objectContaining({ type: 'cached' }),
       64,
     );
+  });
+
+  it('ne crée pas de série cached sans jeton lu en cache', async () => {
+    const metrics = createMockLlmMetrics();
+
+    await runTracked(
+      buildUsageMetadataOutput({ input_token_details: { cache_read: 0 } }),
+      metrics,
+    );
+
+    expect(
+      metrics.llmTokensTotal.inc.mock.calls.map(
+        ([labels]) => (labels as { type: string }).type,
+      ),
+    ).toEqual(['input', 'output']);
   });
 
   it('n’emet aucune metrique de tokens sur un payload sans usage', async () => {

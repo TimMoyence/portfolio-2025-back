@@ -1,10 +1,12 @@
 import {
   escapeHtml,
   escapeUrl,
+  htmlEmis,
   safeCss,
   safeHtml,
   type EscapedHtml,
   type FeuilleDeStyle,
+  type UrlEchappee,
 } from './html-escape.util';
 
 const refuseChaqueInterpolation = (
@@ -17,30 +19,63 @@ const refuseChaqueInterpolation = (
 
 const rendChaqueCasAttendu = (
   intitule: string,
-  cas: readonly (readonly [string, () => unknown, string])[],
+  cas: readonly (readonly [string, () => EscapedHtml, string])[],
 ): void => {
   it.each(cas)(intitule, (_nom, rendre, attendu) => {
-    expect(rendre()).toBe(attendu);
+    expect(htmlEmis(rendre())).toBe(attendu);
   });
 };
 
+const lienEmis = (url: UrlEchappee): string =>
+  htmlEmis(safeHtml`<a href="${url}">x</a>`);
+
+const lienVers = (url: Parameters<typeof escapeUrl>[0]): string =>
+  lienEmis(escapeUrl(url));
+
+const ancre = (href: string): string => `<a href="${href}">x</a>`;
+
+const styleDe = (feuille: FeuilleDeStyle): string =>
+  htmlEmis(safeHtml`<style>${feuille}</style>`);
+
 describe('escapeHtml', () => {
   it('echappe tous les caracteres HTML sensibles', () => {
-    expect(escapeHtml('<a href="x">&\'')).toBe(
+    expect(htmlEmis(escapeHtml('<a href="x">&\''))).toBe(
       '&lt;a href=&quot;x&quot;&gt;&amp;&#39;',
     );
   });
 
   it('echappe `&` en premier (pas de double echappement des entites)', () => {
-    expect(escapeHtml('<')).toBe('&lt;');
-    expect(escapeHtml('&lt;')).toBe('&amp;lt;');
+    expect(htmlEmis(escapeHtml('<'))).toBe('&lt;');
+    expect(htmlEmis(escapeHtml('&lt;'))).toBe('&amp;lt;');
   });
 
   it('ne throw pas sur null et coerce via String()', () => {
     expect(() => escapeHtml(null)).not.toThrow();
-    expect(escapeHtml(null)).toBe('null');
-    expect(escapeHtml(undefined)).toBe('undefined');
-    expect(escapeHtml(42)).toBe('42');
+    expect(htmlEmis(escapeHtml(null))).toBe('null');
+    expect(htmlEmis(escapeHtml(undefined))).toBe('undefined');
+    expect(htmlEmis(escapeHtml(42))).toBe('42');
+  });
+});
+
+describe('escapeHtml et escapeUrl — un objet n a pas de texte a echapper', () => {
+  const titre = safeHtml`<b>Titre</b>`;
+  const objetQuiSeDit = { toString: () => '<b>Titre</b>' };
+
+  it.each([
+    ['escapeHtml d un fragment emis', () => escapeHtml(titre as never)],
+    ['escapeUrl d un fragment emis', () => escapeUrl(titre as never)],
+    ['escapeHtml d un objet', () => escapeHtml(objetQuiSeDit as never)],
+    ['escapeUrl d un objet', () => escapeUrl(objetQuiSeDit as never)],
+    ['escapeHtml d une fonction', () => escapeHtml((() => '<b>') as never)],
+  ])('refuse %s au lieu de rendre [object Object]', (_nom, echapper) => {
+    expect(echapper).toThrow(/Échappement refusé/);
+  });
+
+  it('refuse un objet a la compilation', () => {
+    // @ts-expect-error un fragment emis n'est pas un texte a echapper
+    expect(() => escapeHtml(titre)).toThrow(/Échappement refusé/);
+    // @ts-expect-error un fragment emis n'est pas une URL a echapper
+    expect(() => escapeUrl(titre)).toThrow(/Échappement refusé/);
   });
 });
 
@@ -50,12 +85,12 @@ describe('escapeUrl — schemas admis', () => {
     'http://example.com/',
     'mailto:tim.moyence@outlook.fr',
   ])('laisse passer %s intacte', (url) => {
-    expect(String(escapeUrl(url))).toBe(url);
+    expect(lienVers(url)).toBe(ancre(url));
   });
 
   it("n'ajoute pas la barre finale que `new URL` insererait", () => {
-    expect(String(escapeUrl('https://asilidesign.fr'))).toBe(
-      'https://asilidesign.fr',
+    expect(lienVers('https://asilidesign.fr')).toBe(
+      ancre('https://asilidesign.fr'),
     );
   });
 
@@ -65,13 +100,13 @@ describe('escapeUrl — schemas admis', () => {
     '#ancre',
     'page.html',
   ])('laisse passer la reference relative %s', (url) => {
-    expect(String(escapeUrl(url))).toBe(url);
+    expect(lienVers(url)).toBe(ancre(url));
   });
 
   it("echappe les metacaracteres d'une URL admise (pas de sortie d'attribut)", () => {
-    expect(
-      String(escapeUrl('https://asilidesign.fr/?a="onmouseover="alert(1)')),
-    ).toBe('https://asilidesign.fr/?a=&quot;onmouseover=&quot;alert(1)');
+    expect(lienVers('https://asilidesign.fr/?a="onmouseover="alert(1)')).toBe(
+      ancre('https://asilidesign.fr/?a=&quot;onmouseover=&quot;alert(1)'),
+    );
   });
 });
 
@@ -94,23 +129,23 @@ describe('escapeUrl — schemas refusees et contournements', () => {
     ['vbscript', 'vbscript:msgbox(1)'],
     ['file', 'file:///etc/passwd'],
   ])('neutralise %s', (_label, url) => {
-    expect(String(escapeUrl(url))).toBe('#');
+    expect(lienVers(url)).toBe(ancre('#'));
   });
 
   it.each(['', '   ', '\t\n'])('neutralise la valeur vide %j', (url) => {
-    expect(String(escapeUrl(url))).toBe('#');
+    expect(lienVers(url)).toBe(ancre('#'));
   });
 
   it("neutralise le schema encode en entite HTML par l'echappement du `&`", () => {
-    const rendered = safeHtml`<a href="${escapeUrl('&#106;avascript:alert(1)')}">x</a>`;
+    const rendered = lienVers('&#106;avascript:alert(1)');
 
     expect(rendered).toBe('<a href="&amp;#106;avascript:alert(1)">x</a>');
     expect(rendered).not.toContain('&#106;a');
   });
 
   it('neutralise le schema encode en entite hexadecimale', () => {
-    expect(String(escapeUrl('&#x6a;avascript:alert(1)'))).toBe(
-      '&amp;#x6a;avascript:alert(1)',
+    expect(lienVers('&#x6a;avascript:alert(1)')).toBe(
+      ancre('&amp;#x6a;avascript:alert(1)'),
     );
   });
 });
@@ -118,7 +153,9 @@ describe('escapeUrl — schemas refusees et contournements', () => {
 describe('escapeUrl — etancheite du type', () => {
   it('produit un fragment interpolable dans safeHtml', () => {
     expect(
-      safeHtml`<a href="${escapeUrl('https://asilidesign.fr/x')}">x</a>`,
+      htmlEmis(
+        safeHtml`<a href="${escapeUrl('https://asilidesign.fr/x')}">x</a>`,
+      ),
     ).toBe('<a href="https://asilidesign.fr/x">x</a>');
   });
 
@@ -133,9 +170,9 @@ describe('escapeUrl — etancheite du type', () => {
 
   it('ne throw pas et coerce via String(), comme escapeHtml', () => {
     expect(() => escapeUrl(null)).not.toThrow();
-    expect(String(escapeUrl(null))).toBe('null');
-    expect(String(escapeUrl(undefined))).toBe('undefined');
-    expect(String(escapeUrl(42))).toBe('42');
+    expect(lienVers(null)).toBe(ancre('null'));
+    expect(lienVers(undefined)).toBe(ancre('undefined'));
+    expect(lienVers(42)).toBe(ancre('42'));
   });
 });
 
@@ -177,7 +214,7 @@ describe('safeHtml en contexte sensible', () => {
   ]);
 
   it('accepte un nombre dans un attribut style, qui ne peut porter aucune charge', () => {
-    expect(safeHtml`<span style="width:${58}%"></span>`).toBe(
+    expect(htmlEmis(safeHtml`<span style="width:${58}%"></span>`)).toBe(
       '<span style="width:58%"></span>',
     );
   });
@@ -239,7 +276,9 @@ describe('safeHtml en contexte sensible', () => {
 describe('safeHtml — le contexte suit le HTML rendu, pas le texte des valeurs', () => {
   it('rend un prenom termine par un faux attribut, suivi du nom, comme la synthese de seance', () => {
     expect(
-      safeHtml`<td style="padding:4px;">${escapeHtml('Theo onclick=')} ${escapeHtml('Martin')}</td>`,
+      htmlEmis(
+        safeHtml`<td style="padding:4px;">${escapeHtml('Theo onclick=')} ${escapeHtml('Martin')}</td>`,
+      ),
     ).toBe('<td style="padding:4px;">Theo onclick= Martin</td>');
   });
 
@@ -250,7 +289,7 @@ describe('safeHtml — le contexte suit le HTML rendu, pas le texte des valeurs'
   });
 
   it('sort du contenu brut sur une fermeture suivie d un blanc', () => {
-    expect(safeHtml`<style></style >${escapeHtml('a')}`).toBe(
+    expect(htmlEmis(safeHtml`<style></style >${escapeHtml('a')}`)).toBe(
       '<style></style >a',
     );
   });
@@ -259,7 +298,9 @@ describe('safeHtml — le contexte suit le HTML rendu, pas le texte des valeurs'
     const prenom = escapeHtml('Theo onclick=');
 
     expect(
-      safeHtml`<p>Bonjour ${prenom}, <a href="${escapeUrl('https://a.fr')}">revoir</a></p>`,
+      htmlEmis(
+        safeHtml`<p>Bonjour ${prenom}, <a href="${escapeUrl('https://a.fr')}">revoir</a></p>`,
+      ),
     ).toBe('<p>Bonjour Theo onclick=, <a href="https://a.fr">revoir</a></p>');
   });
 
@@ -271,7 +312,9 @@ describe('safeHtml — le contexte suit le HTML rendu, pas le texte des valeurs'
     'ne prend pas le texte %s d une valeur pour un attribut ouvert',
     (brut, rendu) => {
       expect(
-        safeHtml`<p>${escapeHtml(brut)}${escapeUrl('https://a.fr')}</p>`,
+        htmlEmis(
+          safeHtml`<p>${escapeHtml(brut)}${escapeUrl('https://a.fr')}</p>`,
+        ),
       ).toBe(`<p>${rendu}https://a.fr</p>`);
     },
   );
@@ -294,7 +337,7 @@ describe('safeHtml — le contexte suit le HTML rendu, pas le texte des valeurs'
   it('accepte dans un attribut descriptif un fragment qui y reste', () => {
     const classe = safeHtml` pillar-${escapeHtml('ok')}`;
 
-    expect(safeHtml`<p class="card${classe}">x</p>`).toBe(
+    expect(htmlEmis(safeHtml`<p class="card${classe}">x</p>`)).toBe(
       '<p class="card pillar-ok">x</p>',
     );
   });
@@ -415,15 +458,15 @@ describe('safeHtml — contextes ou l echappement HTML ne protege de rien', () =
 
 describe('safeCss', () => {
   it('assemble une feuille de style a partir de jetons et de nombres', () => {
-    expect(String(safeCss`a { color: ${'#fff'}; width: ${58}%; }`)).toBe(
-      'a { color: #fff; width: 58%; }',
+    expect(styleDe(safeCss`a { color: ${'#fff'}; width: ${58}%; }`)).toBe(
+      '<style>a { color: #fff; width: 58%; }</style>',
     );
   });
 
   it('concatene des feuilles imbriquees', () => {
     const imbriquees = [safeCss`a{}`, safeCss`b{}`];
 
-    expect(String(safeCss`${imbriquees}c{}`)).toBe('a{}b{}c{}');
+    expect(styleDe(safeCss`${imbriquees}c{}`)).toBe('<style>a{}b{}c{}</style>');
   });
 
   it.each(['red;}body{x:y', 'url(https://x)', 'a b', '</style>', ''])(
@@ -446,24 +489,26 @@ describe('safeCss', () => {
 describe('safeHtml', () => {
   it('concatene comme un template litteral ordinaire', () => {
     const name = escapeHtml('Asili');
-    expect(safeHtml`<p>Bonjour ${name}, ${42} points</p>`).toBe(
+    expect(htmlEmis(safeHtml`<p>Bonjour ${name}, ${42} points</p>`)).toBe(
       `<p>Bonjour Asili, 42 points</p>`,
     );
   });
 
   it('concatene les tableaux de fragments sans separateur', () => {
     const items = ['a', 'b'].map((v) => safeHtml`<li>${escapeHtml(v)}</li>`);
-    expect(safeHtml`<ul>${items}</ul>`).toBe('<ul><li>a</li><li>b</li></ul>');
+    expect(htmlEmis(safeHtml`<ul>${items}</ul>`)).toBe(
+      '<ul><li>a</li><li>b</li></ul>',
+    );
   });
 
   it('ne re-echappe pas un fragment deja echappe', () => {
     const escaped = escapeHtml('<b>');
-    expect(safeHtml`<p>${escaped}</p>`).toBe('<p>&lt;b&gt;</p>');
+    expect(htmlEmis(safeHtml`<p>${escaped}</p>`)).toBe('<p>&lt;b&gt;</p>');
   });
 
   it('rend le tableau vide comme une chaine vide', () => {
     const items: ReturnType<typeof escapeHtml>[] = [];
-    expect(safeHtml`<ul>${items}</ul>`).toBe('<ul></ul>');
+    expect(htmlEmis(safeHtml`<ul>${items}</ul>`)).toBe('<ul></ul>');
   });
 
   it('rend les trous d un tableau creux comme des chaines vides', () => {
@@ -472,44 +517,46 @@ describe('safeHtml', () => {
     const feuilles = new Array<FeuilleDeStyle>(2);
     feuilles[1] = safeCss`b{}`;
 
-    expect(safeHtml`<tr>${cellules}</tr>`).toBe('<tr><td>c</td></tr>');
-    expect(safeCss`${feuilles}`.toString()).toBe('b{}');
+    expect(htmlEmis(safeHtml`<tr>${cellules}</tr>`)).toBe(
+      '<tr><td>c</td></tr>',
+    );
+    expect(styleDe(safeCss`${feuilles}`)).toBe('<style>b{}</style>');
   });
 
-  it("n'echappe rien au runtime : la garantie est portee par le type", () => {
+  it('echappe au rendu une chaine brute, que le compilateur refuse deja', () => {
     const raw = '<script>alert(1)</script>';
 
     // @ts-expect-error une chaine brute n'est pas un fragment sur
-    const rendered: string = safeHtml`<p>${raw}</p>`;
+    const rendered = htmlEmis(safeHtml`<p>${raw}</p>`);
 
-    expect(rendered).toBe('<p><script>alert(1)</script></p>');
+    expect(rendered).toBe('<p>&lt;script&gt;alert(1)&lt;/script&gt;</p>');
   });
 });
 
 describe('safeHtml sans interpolation — le HTML statique legitime', () => {
   it("rend le litteral verbatim, sans l'echapper", () => {
-    expect(safeHtml`<li>Aucun.</li>`).toBe('<li>Aucun.</li>');
+    expect(htmlEmis(safeHtml`<li>Aucun.</li>`)).toBe('<li>Aucun.</li>');
   });
 
   it('rend le gabarit vide comme une chaine vide', () => {
-    expect(safeHtml``).toBe('');
+    expect(htmlEmis(safeHtml``)).toBe('');
   });
 
   it('produit un fragment interpolable par un autre safeHtml', () => {
     const item = safeHtml`<li>x</li>`;
 
-    expect(safeHtml`<ul>${item}</ul>`).toBe('<ul><li>x</li></ul>');
+    expect(htmlEmis(safeHtml`<ul>${item}</ul>`)).toBe('<ul><li>x</li></ul>');
   });
 });
 
 describe('etancheite du type : ce que le compilateur doit refuser', () => {
-  it('refuse un tableau de chaines brutes', () => {
+  it('refuse un tableau de chaines brutes, et l echappe au rendu', () => {
     const items = ['<script>alert(1)</script>'];
 
     // @ts-expect-error un `string[]` n'est pas un `readonly EscapedHtml[]`
-    const rendered: string = safeHtml`<ul>${items}</ul>`;
+    const rendered = htmlEmis(safeHtml`<ul>${items}</ul>`);
 
-    expect(rendered).toContain('<script>');
+    expect(rendered).toBe('<ul>&lt;script&gt;alert(1)&lt;/script&gt;</ul>');
   });
 
   it('refuse une valeur arbitraire non marquee, a la compilation comme au rendu', () => {
@@ -553,11 +600,13 @@ describe('etancheite a l execution : ce que le compilateur laisse passer', () =>
     );
     const lignes = pieger<EscapedHtml>([escapeHtml('a')], ARBITRAIRE);
 
-    expect(safeHtml`<a href="${liens}">x</a>`).toBe(
+    expect(htmlEmis(safeHtml`<a href="${liens}">x</a>`)).toBe(
       '<a href="https://ok.example">x</a>',
     );
-    expect(safeHtml`<style>${feuilles}</style>`).toBe('<style>b{}</style>');
-    expect(safeHtml`<p>${lignes}</p>`).toBe('<p>a</p>');
+    expect(htmlEmis(safeHtml`<style>${feuilles}</style>`)).toBe(
+      '<style>b{}</style>',
+    );
+    expect(htmlEmis(safeHtml`<p>${lignes}</p>`)).toBe('<p>a</p>');
   });
 
   it('refuse un tableau vide ou creux dans un href, qui laisserait un lien actif', () => {
@@ -578,7 +627,7 @@ describe('etancheite a l execution : ce que le compilateur laisse passer', () =>
       'body{background:url(https://evil.example)}',
     );
 
-    expect(safeCss`a{}${piege}`.toString()).toBe('a{}b{}');
+    expect(styleDe(safeCss`a{}${piege}`)).toBe('<style>a{}b{}</style>');
   });
 
   it('refuse un objet type comme une URL emise sans l avoir ete', () => {
@@ -600,6 +649,46 @@ describe('etancheite a l execution : ce que le compilateur laisse passer', () =>
 
     expect(() => safeHtml`<p>${contrefaite}</p>`).toThrow(
       /Interpolation refusée/,
+    );
+  });
+
+  it.each([
+    [
+      'le texte',
+      (forge: EscapedHtml) => safeHtml`<p>${forge}</p>`,
+      '<p>&lt;img src=x onerror=alert(1)&gt;</p>',
+    ],
+    [
+      'un attribut descriptif',
+      (forge: EscapedHtml) => safeHtml`<img alt="${forge}">`,
+      '<img alt="&lt;img src=x onerror=alert(1)&gt;">',
+    ],
+    [
+      'un element de tableau',
+      (forge: EscapedHtml) => safeHtml`<ul>${[escapeHtml('a'), forge]}</ul>`,
+      '<ul>a&lt;img src=x onerror=alert(1)&gt;</ul>',
+    ],
+  ])(
+    'echappe dans %s une chaine que le type fait passer pour un fragment emis',
+    (_contexte, rendre, attendu) => {
+      expect(htmlEmis(rendre(ARBITRAIRE as never))).toBe(attendu);
+    },
+  );
+
+  it('echappe une valeur primitive qui n est ni un nombre ni un fragment emis', () => {
+    expect(htmlEmis(safeHtml`<p>${Symbol(ARBITRAIRE) as never}</p>`)).toBe(
+      '<p>Symbol(&lt;img src=x onerror=alert(1)&gt;)</p>',
+    );
+  });
+
+  it('ne rend le texte que d un fragment emis par escapeHtml ou safeHtml', () => {
+    expect(htmlEmis(safeHtml`<p>${escapeHtml('<')}</p>`)).toBe('<p>&lt;</p>');
+    expect(() => htmlEmis(ARBITRAIRE as never)).toThrow(/Fragment HTML refusé/);
+    expect(() => htmlEmis(escapeUrl('https://ok.example') as never)).toThrow(
+      /Fragment HTML refusé/,
+    );
+    expect(() => htmlEmis({ toString: () => ARBITRAIRE } as never)).toThrow(
+      /Fragment HTML refusé/,
     );
   });
 
@@ -676,9 +765,7 @@ describe('safeHtml — un fragment emis ne change plus de texte', () => {
     expect(() =>
       Object.assign(url, { toString: () => 'javascript:alert(1)' }),
     ).toThrow(TypeError);
-    expect(safeHtml`<a href="${url}">x</a>`).toBe(
-      '<a href="https://a.fr">x</a>',
-    );
+    expect(lienEmis(url)).toBe(ancre('https://a.fr'));
   });
 
   it('garde le texte d une feuille de style dont on tente de remplacer toString', () => {
@@ -696,9 +783,7 @@ describe('safeHtml — un fragment emis ne change plus de texte', () => {
     expect(() => {
       prototype.toString = () => 'javascript:alert(1)';
     }).toThrow(TypeError);
-    expect(safeHtml`<a href="${url}">x</a>`).toBe(
-      '<a href="https://a.fr">x</a>',
-    );
+    expect(lienEmis(url)).toBe(ancre('https://a.fr'));
   });
 
   it('ignore une conversion en primitive ajoutee a Object.prototype', () => {
@@ -709,10 +794,8 @@ describe('safeHtml — un fragment emis ne change plus de texte', () => {
       configurable: true,
     });
     try {
-      expect(safeHtml`<a href="${url}">x</a>`).toBe(
-        '<a href="https://a.fr">x</a>',
-      );
-      expect(safeHtml`<style>${feuille}</style>`).toBe('<style>a{}</style>');
+      expect(lienEmis(url)).toBe(ancre('https://a.fr'));
+      expect(styleDe(feuille)).toBe('<style>a{}</style>');
     } finally {
       Reflect.deleteProperty(Object.prototype, Symbol.toPrimitive);
     }
@@ -760,6 +843,6 @@ describe('safeHtml — un tableau interpole coute un temps lineaire', () => {
     const tableau = safeHtml`<table>${lignes}</table>`;
 
     expect(performance.now() - debut).toBeLessThan(1000);
-    expect(tableau).toContain('<tr><td>19999</td>');
+    expect(htmlEmis(tableau)).toContain('<tr><td>19999</td>');
   });
 });

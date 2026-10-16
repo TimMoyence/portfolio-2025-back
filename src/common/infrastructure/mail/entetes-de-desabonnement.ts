@@ -24,7 +24,7 @@ export function adresseNue(adresse: string): string {
 export function entetesDeDesabonnement(
   replyTo: string,
   lienDeDesabonnement: string,
-): Record<string, string> {
+): Readonly<Record<'List-Unsubscribe' | 'List-Unsubscribe-Post', string>> {
   return {
     'List-Unsubscribe': `<mailto:${adresseNue(replyTo)}?subject=unsubscribe>, <${lienDeDesabonnement}>`,
     'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',

@@ -6,7 +6,7 @@ import {
   type Tirage,
 } from '../../../src/modules/formations/domain/cours/Aleatoire';
 import { somme } from '../../../src/common/domain/nombres/statistiques';
-import { arrondirMoitieLoinDeZero } from '../../../src/modules/formations/domain/cours/Formule';
+import { arrondi } from '../../../src/common/domain/nombres/arrondi';
 import {
   dateExcel,
   estJourOuvre,
@@ -453,7 +453,7 @@ function lignesDe(commandes: readonly Commande[]): LigneDeCommande[] {
       quantite: article.quantite,
       prix_unitaire_ht: article.produit.prix,
       remise: article.remise,
-      ca_ht: arrondirMoitieLoinDeZero(
+      ca_ht: arrondi(
         article.quantite * article.produit.prix * (1 - article.remise),
         2,
       ),
@@ -471,9 +471,7 @@ const ELIGIBILITES: Readonly<
 > = {
   F4: (ligne) =>
     ligne.remise > 0 &&
-    arrondirMoitieLoinDeZero(ligne.quantite * ligne.prix_unitaire_ht, 2) -
-      ligne.ca_ht >
-      1,
+    arrondi(ligne.quantite * ligne.prix_unitaire_ht, 2) - ligne.ca_ht > 1,
   S1: (ligne) => {
     const { jour, mois } = partiesDeDate(ligne.date_commande);
     return jour <= 12 && jour !== mois;
@@ -522,7 +520,7 @@ function semer(
   const brute: Record<string, Valeur> = { ...ligne };
   const { annee, mois, jour } = partiesDeDate(ligne.date_commande);
   const caAvec = (quantite: number, prix: number) =>
-    arrondirMoitieLoinDeZero(quantite * prix * (1 - ligne.remise), 2);
+    arrondi(quantite * prix * (1 - ligne.remise), 2);
   switch (code) {
     case 'F1':
       brute.ville = auHasard(hasard, [
@@ -535,10 +533,7 @@ function semer(
       brute.ca_ht = montantEnTexte(ligne.ca_ht);
       break;
     case 'F4':
-      brute.ca_ht = arrondirMoitieLoinDeZero(
-        ligne.quantite * ligne.prix_unitaire_ht,
-        2,
-      );
+      brute.ca_ht = arrondi(ligne.quantite * ligne.prix_unitaire_ht, 2);
       break;
     case 'F5':
       brute.date_commande = `${annee}-${deuxChiffres(mois)}-${deuxChiffres(jour)}`;
@@ -563,7 +558,7 @@ function semer(
       brute.ca_ht = caAvec(brute.quantite, ligne.prix_unitaire_ht);
       break;
     case 'S3':
-      brute.prix_unitaire_ht = arrondirMoitieLoinDeZero(
+      brute.prix_unitaire_ht = arrondi(
         ligne.prix_unitaire_ht * FACTEUR_DU_PRIX_ABERRANT,
         2,
       );
@@ -683,7 +678,7 @@ function ongletsDeReference(
       moisDeLaPeriode().map(({ annee, mois }) => ({
         agence_id: agence.id,
         mois: dateExcel(annee, mois, 1),
-        objectif_ca_ht: arrondirMoitieLoinDeZero(
+        objectif_ca_ht: arrondi(
           (realise2025.get(`${agence.id}|${mois}`) ?? 0) *
             (annee === 2026
               ? OBJECTIF_DE_CROISSANCE_2026
@@ -746,10 +741,7 @@ export function genererJeuB301(graine: number): JeuB301 {
       const marge =
         (CATEGORIES.find((c) => c.categorie === produit.categorie)
           ?.tauxDeMarque ?? 0) + hasard.tirage.decimal(-0.05, 0.05, 0.01);
-      return [
-        produit.id,
-        arrondirMoitieLoinDeZero(produit.prix * (1 - marge), 2),
-      ] as const;
+      return [produit.id, arrondi(produit.prix * (1 - marge), 2)] as const;
     }),
   );
   const clients = genererClients(hasard);
