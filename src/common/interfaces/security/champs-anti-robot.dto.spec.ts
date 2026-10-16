@@ -16,11 +16,27 @@ describe('ChampsAntiRobotDto', () => {
     ]);
   });
 
-  it('refuse un horodatage negatif ou non entier', () => {
+  it('accepte une duree de saisie entiere et positive', () => {
+    expect(proprietesEnErreur({ formFillDurationMs: 20_000 })).toEqual([]);
+  });
+
+  it('refuse une duree de saisie negative ou non entiere', () => {
+    expect(proprietesEnErreur({ formFillDurationMs: -1 })).toEqual([
+      'formFillDurationMs',
+    ]);
+    expect(proprietesEnErreur({ formFillDurationMs: 1.5 })).toEqual([
+      'formFillDurationMs',
+    ]);
+  });
+
+  it('refuse un horodatage negatif, non entier ou qui n est pas un nombre', () => {
     expect(proprietesEnErreur({ formStartedAt: -1 })).toEqual([
       'formStartedAt',
     ]);
     expect(proprietesEnErreur({ formStartedAt: 1.5 })).toEqual([
+      'formStartedAt',
+    ]);
+    expect(proprietesEnErreur({ formStartedAt: 'hier' })).toEqual([
       'formStartedAt',
     ]);
   });

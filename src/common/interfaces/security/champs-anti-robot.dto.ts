@@ -13,9 +13,19 @@ export class ChampsAntiRobotDto {
   website?: string;
 
   @ApiPropertyOptional({
-    description: "Timestamp ms d'ouverture du formulaire",
+    description:
+      "Timestamp ms d'ouverture du formulaire, pris sur l'horloge du poste : accepté, jamais comparé",
+    deprecated: true,
   })
   @IsOptional()
   @EntierBorne(0)
   formStartedAt?: number;
+
+  @ApiPropertyOptional({
+    description:
+      'Durée de saisie en ms, mesurée par le poste sur une horloge monotone',
+  })
+  @IsOptional()
+  @EntierBorne(0)
+  formFillDurationMs?: number;
 }
