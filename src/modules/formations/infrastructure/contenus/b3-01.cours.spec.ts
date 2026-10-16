@@ -21,6 +21,7 @@ import { estReservee, questionsDuCours } from '../../domain/cours/Cours';
 import { tirer } from '../../domain/cours/Tirage';
 import { COURS_B3_01 } from './b3-01.cours';
 import {
+  CA_HT_SAISI_EN_TEXTE,
   CLASSEURS_B3_01,
   DEFIS_B3_01,
   HISTOIRES_B3_01,
@@ -29,6 +30,7 @@ import {
   TOLERANCES_B3_01,
   VALEURS_B3_01,
 } from './b3-01.donnees';
+import { CONTENUS } from './index';
 
 const COURS = buildCoursDuContenu(COURS_B3_01);
 const DOCUMENT = lireConception('cours-b3-01-conception.md');
@@ -469,6 +471,17 @@ describe('B3-01 — acte 1 : consignes et corrections exactes', () => {
     );
     expect(texte).not.toContain('« bordeaux »');
     expect(texte).not.toContain('1 250');
+  });
+
+  it('D-03 · sert la cellule L2971 citée avec les caractères du classeur : quatre citations, aucune typographiée', () => {
+    const servi = JSON.stringify(
+      CONTENUS.find(({ slug }) => slug === COURS_B3_01.slug),
+    );
+
+    expect(servi.split(CA_HT_SAISI_EN_TEXTE)).toHaveLength(5);
+    expect(
+      sansEspacesTypographiques(servi).split(CA_HT_SAISI_EN_TEXTE),
+    ).toHaveLength(5);
   });
 
   it('A1-13 · diagnostique un mauvais classement par la confusion qui le décrit selon la case choisie, jamais par une suppression', () => {

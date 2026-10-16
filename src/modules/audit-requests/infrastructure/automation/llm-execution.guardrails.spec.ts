@@ -8,11 +8,11 @@ import {
 
 describe('llm-execution.guardrails', () => {
   it('enforces hard timeout before long-running work completes', async () => {
-    const budget = DeadlineBudget.fromNow(500);
-    const start = Date.now();
-
-    await expect(
-      withHardTimeout(
+    jest.useFakeTimers();
+    try {
+      const budget = DeadlineBudget.fromNow(500);
+      let issue: unknown = 'en cours';
+      void withHardTimeout(
         'test-call',
         20,
         async () =>
@@ -20,10 +20,22 @@ describe('llm-execution.guardrails', () => {
             setTimeout(() => resolve('done'), 150);
           }),
         budget,
-      ),
-    ).rejects.toBeInstanceOf(DeadlineExceededError);
+      ).then(
+        (valeur) => {
+          issue = valeur;
+        },
+        (erreur: unknown) => {
+          issue = erreur;
+        },
+      );
 
-    expect(Date.now() - start).toBeLessThan(120);
+      await jest.advanceTimersByTimeAsync(20);
+
+      expect(issue).toBeInstanceOf(DeadlineExceededError);
+      await jest.runAllTimersAsync();
+    } finally {
+      jest.useRealTimers();
+    }
   });
 
   it('caps concurrency with in-flight limiter', async () => {
@@ -73,15 +85,17 @@ describe('llm-execution.guardrails', () => {
     });
 
     it('fromNow cree un budget a partir de maintenant', () => {
-      const before = Date.now();
-      const budget = DeadlineBudget.fromNow(500);
-      const after = Date.now();
+      jest.useFakeTimers({ now: 10_000 });
+      try {
+        const budget = DeadlineBudget.fromNow(500);
+        jest.advanceTimersByTime(120);
 
-      expect(budget.totalMs).toBe(500);
-      expect(budget.remainingMs()).toBeGreaterThan(0);
-      expect(budget.remainingMs()).toBeLessThanOrEqual(500);
-      expect(budget.elapsedMs()).toBeGreaterThanOrEqual(0);
-      expect(budget.elapsedMs()).toBeLessThanOrEqual(after - before + 50);
+        expect(budget.totalMs).toBe(500);
+        expect(budget.remainingMs()).toBe(380);
+        expect(budget.elapsedMs()).toBe(120);
+      } finally {
+        jest.useRealTimers();
+      }
     });
   });
 

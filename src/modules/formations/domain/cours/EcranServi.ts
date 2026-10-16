@@ -150,10 +150,18 @@ export function cibleServie<T>(
   assertEcranServi(
     seance,
     rang,
-    cours.ecrans[rang]?.id ?? cible.id,
+    idDeLEcranAuRang(cours, rang, cible.id),
     cours.ecrans.length,
   );
   return cible.valeur;
+}
+
+export function idDeLEcranAuRang(
+  cours: Cours,
+  rang: number,
+  repli: string,
+): string {
+  return cours.ecrans[rang]?.id ?? repli;
 }
 
 export function planServi<P>(
@@ -198,13 +206,17 @@ export function pieceJointeServieAuPoste(
   cours: Cours,
   screenId: string,
 ): PieceJointeReservee {
-  const rang = rangDeLEcran(cours, screenId);
-  if (rang < 0) {
-    throw new PieceJointeIntrouvableError(screenId);
-  }
-  const ecran = cours.ecrans[rang];
+  const ecran = cibleServie(
+    seance,
+    cours,
+    {
+      valeur: ecranParId(cours, screenId) ?? null,
+      id: screenId,
+      rang: (servi) => cours.ecrans.indexOf(servi),
+    },
+    (id) => new PieceJointeIntrouvableError(id),
+  );
   const revele = (source: string): boolean => sourceRevelee(seance, source);
-  assertEcranServi(seance, rang, screenId, cours.ecrans.length);
   const source = ecranCorrigePar(ecran);
   if (source !== null && !revele(source)) {
     throw new EcranNonServiError(screenId);

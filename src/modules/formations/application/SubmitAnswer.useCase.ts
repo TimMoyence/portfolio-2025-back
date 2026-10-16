@@ -3,8 +3,10 @@ import { DomainValidationError } from '../../../common/domain/errors/DomainValid
 import { gradeAnswer } from '../domain/AnswerGrading';
 import { estValeurConnue, findQuestion, solutionFor } from '../domain/Bareme';
 import {
-  assertEcranServi,
+  absenteDuCours,
+  cibleServie,
   ecranParId,
+  idDeLEcranAuRang,
   rangDeLaQuestion,
   verdictServiDe,
 } from '../domain/cours/EcranServi';
@@ -62,8 +64,13 @@ export class SubmitAnswerUseCase extends EnregistrementDeReponse {
     const ecranId =
       'ecranId' in question
         ? question.ecranId
-        : (cours.ecrans[rangEcran]?.id ?? command.questionId);
-    assertEcranServi(session, rangEcran, ecranId, cours.ecrans.length);
+        : idDeLEcranAuRang(cours, rangEcran, command.questionId);
+    cibleServie(
+      session,
+      cours,
+      { valeur: question, id: ecranId, rang: () => rangEcran },
+      absenteDuCours('une question'),
+    );
     assertPhaseOuverte(session.pilotageEcrans, {
       ...question,
       ecranId,

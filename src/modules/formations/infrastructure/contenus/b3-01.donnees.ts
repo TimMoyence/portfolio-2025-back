@@ -150,6 +150,8 @@ export const PIEGES_B3_01: PiegesB301 = {
   'b3-01-a3-quarantaine': { 'en-tete-compte-comme-ligne': 61 },
 };
 
+export const CA_HT_SAISI_EN_TEXTE = '1 150,00 €';
+
 export const CLASSEURS_B3_01 = {
   brut: '/assets/cours/b3-01/B3-01_export_ventes.dfa709a7.xlsx',
   repriseActe2: 'b3-01/B3-01_reprise_acte_2.e6fc9b7d.xlsx',

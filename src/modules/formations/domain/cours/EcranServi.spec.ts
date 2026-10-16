@@ -1,7 +1,10 @@
+import { readFileSync } from 'fs';
+import { join, relative } from 'path';
 import {
   buildCoursDeTest,
   EN_CATALOGUE,
 } from '../../../../../test/factories/cours.factory';
+import { collectFiles } from '../../../../../test/helpers/source-tree';
 import {
   buildCasAQuestionsLibres,
   buildCorrectionDeReponses,
@@ -153,6 +156,32 @@ describe('cibleServie', () => {
       new TypeDeQuestionError('PLAN-X', 'n’est pas une feuille de ce cours'),
     );
     expect(rang).not.toHaveBeenCalled();
+  });
+
+  it('est la seule source des formations à vérifier qu un écran est servi', () => {
+    const racine = join(__dirname, '..', '..');
+    const appels = collectFiles(racine)
+      .filter(
+        (fichier) =>
+          fichier.endsWith('.ts') &&
+          !fichier.endsWith('.spec.ts') &&
+          !fichier.includes('__tests__'),
+      )
+      .flatMap((fichier) => {
+        const texte = readFileSync(fichier, 'utf8');
+        return [...texte.matchAll(/(?<!function )\bassertEcranServi\(/g)].map(
+          ({ index }) => {
+            const englobantes = [
+              ...texte.slice(0, index).matchAll(/\bfunction (\w+)/g),
+            ];
+            return `${relative(racine, fichier)} › ${englobantes.at(-1)?.[1] ?? '?'}`;
+          },
+        );
+      });
+
+    expect(appels).toEqual([
+      `${join('domain', 'cours', 'EcranServi.ts')} › cibleServie`,
+    ]);
   });
 });
 

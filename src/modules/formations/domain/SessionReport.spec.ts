@@ -14,6 +14,7 @@ import {
   buildSessionRecord,
   detailsDeFeuilleSansReponse,
 } from '../../../../test/factories/formation.factory';
+import { ESPACE_FINE_INSECABLE } from '../../../common/domain/texte/sans-espaces-typographiques';
 import { libelleDeConfusion } from './cours/banque/confusions';
 import { ouvrirTirages } from './cours/OuvertureTirages';
 import { tirer } from './cours/Tirage';
@@ -310,7 +311,7 @@ describe('buildRapportSession', () => {
             correcte: false,
             misconception: CONFUSION,
           }),
-          ecriteAuTirage({ questionId: 'Q-TEST-NUM', valeur: 412.5 }),
+          ecriteAuTirage({ questionId: 'Q-TEST-NUM', valeur: 12500.5 }),
           ecriteAuTirage({
             questionId: 'Q-TEST-NUM-2',
             valeur: NE_SAIT_PAS,
@@ -341,12 +342,12 @@ describe('buildRapportSession', () => {
       );
     });
 
-    it('lit une valeur numerique telle quelle et je ne sais pas en toutes lettres', () => {
+    it('D-04 · écrit une valeur numérique à la française, milliers compris, et je ne sais pas en toutes lettres', () => {
       expect(reponsesLues()).toEqual(
         expect.arrayContaining([
           {
             questionId: 'Q-TEST-NUM',
-            reponse: '412.5',
+            reponse: `12${ESPACE_FINE_INSECABLE}500,5`,
             libelleConfusion: null,
           },
           {

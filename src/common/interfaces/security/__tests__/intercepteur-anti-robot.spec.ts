@@ -19,12 +19,24 @@ const soumettre = (body: unknown) =>
   });
 
 const REFUS = new BadRequestException('Invalid request');
+const INSTANT_DE_SOUMISSION = Date.UTC(2026, 9, 16, 15, 0, 0);
 
 describe('IntercepteurAntiRobot', () => {
+  beforeEach(() => {
+    jest.spyOn(Date, 'now').mockReturnValue(INSTANT_DE_SOUMISSION);
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it('laisse passer une saisie humaine après le délai minimal', () => {
-    expect(soumettre({ website: '', formStartedAt: Date.now() - 2_000 })).toBe(
-      SUITE,
-    );
+    expect(
+      soumettre({
+        website: '',
+        formStartedAt: INSTANT_DE_SOUMISSION - 2_000,
+      }),
+    ).toBe(SUITE);
   });
 
   it('laisse passer les clients qui ignorent encore les champs anti-robot', () => {
@@ -41,7 +53,12 @@ describe('IntercepteurAntiRobot', () => {
   });
 
   it('refuse une soumission plus rapide qu une saisie humaine', () => {
-    expect(() => soumettre({ formStartedAt: Date.now() })).toThrow(REFUS);
+    expect(() => soumettre({ formStartedAt: INSTANT_DE_SOUMISSION })).toThrow(
+      REFUS,
+    );
+    expect(() =>
+      soumettre({ formStartedAt: INSTANT_DE_SOUMISSION - 1_199 }),
+    ).toThrow(REFUS);
   });
 
   it('refuse un horodatage qui n est pas un nombre fini', () => {

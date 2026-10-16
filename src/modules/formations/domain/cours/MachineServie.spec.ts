@@ -43,6 +43,21 @@ describe('sortiesDeLaMachine', () => {
     expect(sorties.resultat.affichage).toBe('100,8');
   });
 
+  it('L4-F11 · arrondit un demi comme Excel : 1 € à −50 % puis +13 % arrive à 0,57 €', () => {
+    const sorties = sortiesDeLaMachine(machineDuB201(), {
+      depart: 1,
+      tauxUn: -50,
+      tauxDeux: 13,
+    });
+
+    expect(sorties.resultat.affichage).toBe('0,57');
+    expect(sorties.etapes.map(({ affichage }) => affichage)).toEqual([
+      '1',
+      '0,5',
+      '0,57',
+    ]);
+  });
+
   it('dresse la table de chaque curseur sur six intervalles, réglage courant inséré et marqué', () => {
     const lignes = sortiesDeLaMachine(machineDuB201(), {}).lignes.tauxUn;
 

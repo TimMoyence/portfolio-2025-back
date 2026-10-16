@@ -3,6 +3,7 @@ import {
   CONTENUS,
   COURS_B2_01,
   COURS_B2_03,
+  COURS_B2_05,
 } from '../../../../../test/factories/contenus-publies';
 import { ESPACE_INSECABLE as INSECABLE } from '../../../../common/domain/texte/sans-espaces-typographiques';
 import type { Ecran } from '../contrats/cours';
@@ -13,6 +14,7 @@ import {
   planDeTableauDuCours,
   tableauDuCorrige,
 } from './TableauEvalue';
+import { tirer } from './Tirage';
 
 type EcranDeTableau = Extract<Ecran, { readonly brique: 'fp-table-build' }>;
 
@@ -160,6 +162,71 @@ describe('evaluerLeTableauDuPlan', () => {
       { valeur: 1, affichage: '1' },
       { valeur: null, affichage: '—' },
     ]);
+  });
+});
+
+interface PlanDeTableauServi {
+  readonly id: string;
+  readonly tableauInitial?: TableauEvalue;
+}
+
+function plansServisDu(
+  contenu: (typeof CONTENUS)[number],
+): PlanDeTableauServi[] {
+  return tirer(buildCoursDuContenu(contenu), 1).sujet.ecrans.flatMap((ecran) =>
+    ecran.type === 'fp-table-build'
+      ? [(ecran.donnees as { readonly plan: PlanDeTableauServi }).plan]
+      : [],
+  );
+}
+
+function tableauInitialServi(
+  contenu: (typeof CONTENUS)[number],
+  planId: string,
+): TableauEvalue | undefined {
+  return plansServisDu(contenu).find(({ id }) => id === planId)?.tableauInitial;
+}
+
+describe('le plan de tableau servi au sujet', () => {
+  it('porte dans chaque tableau des cours le tableau évalué sans saisie', () => {
+    const servis = CONTENUS.flatMap(plansServisDu);
+
+    expect(servis.map(({ id }) => id)).toEqual(
+      TABLEAUX_DES_COURS.map((ecran) => ecran.proprietes.plan.id),
+    );
+    for (const [rang, ecran] of TABLEAUX_DES_COURS.entries()) {
+      expect({
+        plan: servis[rang].id,
+        tableauInitial: servis[rang].tableauInitial,
+      }).toEqual({
+        plan: ecran.proprietes.plan.id,
+        tableauInitial: evaluerLeTableauDuPlan(ecran.proprietes.plan, []),
+      });
+    }
+  });
+
+  it('calcule sans saisie la somme des taux de la toile et le capital emprunté de l amortissement, et rien de ce qui dépend d une saisie', () => {
+    const toile = tableauInitialServi(COURS_B2_01, 'b2-01-a4-indice-toile');
+    const amortissement = tableauInitialServi(
+      COURS_B2_05,
+      'b2-05-a3-tableau-amortissement',
+    );
+
+    expect({
+      taux: toile?.totaux,
+      sommeDesTaux: toile?.synthese[0].affichage,
+      prix: toile === undefined ? [] : affichagesDe(toile, 'prix'),
+      capital: amortissement?.lignes.map(
+        ({ valeurs }) => valeurs.capital.valeur,
+      ),
+      annuites: amortissement?.totaux.annuite.valeur,
+    }).toEqual({
+      taux: { taux: { valeur: 4, affichage: '4' } },
+      sommeDesTaux: `4,00${INSECABLE}%`,
+      prix: ['—', '—', '—', '—'],
+      capital: [60000, null, null, null, null],
+      annuites: 67388.15,
+    });
   });
 });
 

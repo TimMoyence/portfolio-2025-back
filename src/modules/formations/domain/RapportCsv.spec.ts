@@ -3,6 +3,8 @@ import {
   buildRapportQuestion,
   buildRapportSession,
 } from '../../../../test/factories/formation.factory';
+import { ESPACE_FINE_INSECABLE } from '../../../common/domain/texte/sans-espaces-typographiques';
+import { NE_SAIT_PAS } from './GradingCore';
 import type { RapportSession } from './IFormationMailer.port';
 import { rapportEnCsv } from './RapportCsv';
 
@@ -39,8 +41,54 @@ describe('rapportEnCsv', () => {
     expect(lignes[0]).toBe(
       'prénom;nom;email;question;concept;réponse;correcte;confusion;durée_ms',
     );
-    expect(lignes[1]).toContain(';');
-    expect(lignes[1]).not.toContain(',');
+    expect(lignes[1].split(';')).toHaveLength(9);
+    expect(lignes[1].split(';')[5]).toBe('"1338,23"');
+  });
+
+  it('D-04 · écrit une réponse numérique comme l Excel français la lit en nombre : virgule, sans séparateur de milliers', () => {
+    const csv = texteDe(
+      buildRapportAvecReponses([
+        buildRapportQuestion({
+          questionId: 'Q-1',
+          valeur: '12500.5',
+          reponse: `12${ESPACE_FINE_INSECABLE}500,5`,
+        }),
+        buildRapportQuestion({
+          questionId: 'Q-2',
+          valeur: '-12.5',
+          reponse: '-12,5',
+        }),
+        buildRapportQuestion({
+          questionId: 'Q-3',
+          valeur: '1e-7',
+          reponse: '0,0000001',
+        }),
+        buildRapportQuestion({
+          questionId: 'Q-4',
+          valeur: NE_SAIT_PAS,
+          reponse: 'Je ne sais pas',
+        }),
+        buildRapportQuestion({
+          questionId: 'Q-5',
+          type: 'vote',
+          valeur: '12',
+          reponse: 'douze mois',
+        }),
+      ]),
+    );
+    const reponses = csv
+      .slice(1)
+      .split('\r\n')
+      .slice(1)
+      .map((ligne) => ligne.split(';')[5]);
+
+    expect(reponses).toEqual([
+      '"12500,5"',
+      '"-12,5"',
+      '"0,0000001"',
+      '"Je ne sais pas"',
+      '"douze mois"',
+    ]);
   });
 
   it('ecrit le libelle de l option choisie et celui de la confusion, jamais leurs identifiants', () => {
@@ -124,11 +172,13 @@ describe('rapportEnCsv', () => {
       buildRapportAvecReponses([
         buildRapportQuestion({
           questionId: 'Q-1',
+          type: 'vote',
           reponse: premiere,
           correcte: false,
         }),
         buildRapportQuestion({
           questionId: 'Q-2',
+          type: 'vote',
           reponse: seconde,
           correcte: false,
         }),

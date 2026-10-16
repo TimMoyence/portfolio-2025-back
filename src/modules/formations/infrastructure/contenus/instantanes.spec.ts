@@ -4,14 +4,20 @@ import {
   construireLInstantane,
   lireLInstantane,
 } from '../../../../../test/helpers/instantane-de-cours';
-import { ESPACE_INSECABLE } from '../../../../common/domain/texte/sans-espaces-typographiques';
-import { CONTENUS } from './index';
+import {
+  ESPACE_FINE_INSECABLE,
+  ESPACE_INSECABLE,
+} from '../../../../common/domain/texte/sans-espaces-typographiques';
+import { CONTENUS, citationsLitteralesDe } from './index';
 
 const MILLIER_SANS_ESPACE_FINE = new RegExp(
   `(?<![\\d,])\\d{1,3}[ ${ESPACE_INSECABLE}]\\d{3}(?!\\d)`,
   'gu',
 );
-const UNITE_DETACHEE = /\d (?:%|‰|[kM]?€)(?!\p{L})/gu;
+const UNITE_SANS_INSECABLE = new RegExp(
+  `\\d[ ${ESPACE_FINE_INSECABLE}]?(?:%|‰|[kM]?€|kWh|km|kg)(?!\\p{L})`,
+  'gu',
+);
 
 describe.each(CONTENUS.map((contenu) => [contenu.slug, contenu] as const))(
   'instantané livré au front — %s',
@@ -35,7 +41,7 @@ describe.each(CONTENUS.map((contenu) => [contenu.slug, contenu] as const))(
       expect(livre).toEqual(construit);
     });
 
-    it('écrit chaque millier servi avec l espace fine et lie chaque nombre à son unité par une espace insécable', () => {
+    it('écrit chaque millier servi avec l espace fine et lie chaque nombre à son unité par une espace insécable, hors citation littérale d une cellule', () => {
       const textes = (noeud: unknown): string[] => {
         if (typeof noeud === 'string') {
           return [noeud];
@@ -44,10 +50,18 @@ describe.each(CONTENUS.map((contenu) => [contenu.slug, contenu] as const))(
           ? Object.values(noeud).flatMap(textes)
           : [];
       };
-      const fautifs = textes(construit).flatMap((texte) => [
-        ...texte.matchAll(MILLIER_SANS_ESPACE_FINE),
-        ...texte.matchAll(UNITE_DETACHEE),
-      ]);
+      const citations = citationsLitteralesDe(contenu.slug);
+      const fautifs = textes(construit)
+        .map((texte) =>
+          citations.reduce(
+            (reste, citation) => reste.replaceAll(citation, '…'),
+            texte,
+          ),
+        )
+        .flatMap((prose) => [
+          ...prose.matchAll(MILLIER_SANS_ESPACE_FINE),
+          ...prose.matchAll(UNITE_SANS_INSECABLE),
+        ]);
 
       expect(fautifs.map(([trouve]) => trouve)).toEqual([]);
     });

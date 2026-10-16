@@ -23,6 +23,7 @@ import { ecranCorrigePar, ecransCorrigeantDe } from './Corrections';
 import { estInteractif, estReservee } from './Cours';
 import { planDeFeuilleServi } from './FeuilleEvaluee';
 import { machineCalculee } from './MachineServie';
+import { planDeTableauServi } from './TableauEvalue';
 import { traceCalcule } from './TraceServi';
 import type {
   PieceJointeServie,
@@ -412,7 +413,12 @@ function donneesDeBrique(
         },
       };
     case 'fp-table-build':
-      return { plan: { ...ecran.proprietes.plan, metadonnees: communes } };
+      return {
+        plan: {
+          ...planDeTableauServi(ecran.proprietes.plan),
+          metadonnees: communes,
+        },
+      };
     case 'fp-escape':
       return {
         parcours: { ...ecran.proprietes.parcours, metadonnees: communes },

@@ -25,7 +25,6 @@ import {
   ESCAPE_REPOSITORY,
   MASTERY_REPOSITORY,
 } from '../domain/token';
-import { assertEcranOuvertAuxProductions } from './CoursDeLaSeance';
 import { ParticipationEnSeance } from './ParticipationEnSeance';
 
 export interface TenterEnigmeCommand {
@@ -56,14 +55,11 @@ export class TenterEnigmeUseCase {
   ) {}
 
   async execute(command: TenterEnigmeCommand): Promise<TenterEnigmeResult> {
-    const { session, cours } = await this.participation.seanceEtCours(
+    const { cible } = await this.participation.cibleOuverteAuxProductions(
       command.sessionId,
+      { id: command.parcoursId, trouver: ecranDEnigmes },
+      (parcoursId) => new EnigmeInconnueError(parcoursId, command.enigmeId),
     );
-    const cible = ecranDEnigmes(cours, command.parcoursId);
-    if (cible === null) {
-      throw new EnigmeInconnueError(command.parcoursId, command.enigmeId);
-    }
-    assertEcranOuvertAuxProductions(session, cours, cible);
 
     const visee = enigmeVisee(cible, command.enigmeId);
     if (visee === null) {

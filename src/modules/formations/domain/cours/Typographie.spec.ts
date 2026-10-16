@@ -88,6 +88,26 @@ describe('typographier', () => {
     const lie = typographier('1 200 k€ : seuil atteint ?');
     expect(typographier(lie)).toBe(lie);
   });
+
+  it.each([
+    [
+      'le ca_ht saisi comme le texte « 1 150,00 € ».',
+      `le ca_ht saisi comme le texte «${INSECABLE}1 150,00 €${INSECABLE}».`,
+    ],
+    [
+      'Quelle formule convertit « 1 150,00 € » en 1 150 € ?',
+      `Quelle formule convertit «${INSECABLE}1 150,00 €${INSECABLE}» en 1${FINE}150${INSECABLE}€${INSECABLE}?`,
+    ],
+    [
+      '=CNUM(L2) : « 1 150,00 € » devient 1 150.',
+      `=CNUM(L2)${INSECABLE}: «${INSECABLE}1 150,00 €${INSECABLE}» devient 1${FINE}150.`,
+    ],
+  ])(
+    'garde la citation littérale d une cellule telle que le classeur l écrit, et lie la prose autour : « %s »',
+    (brut, attendu) => {
+      expect(typographier(brut, ['1 150,00 €'])).toBe(attendu);
+    },
+  );
 });
 
 describe('typographierEnProfondeur', () => {
@@ -102,6 +122,14 @@ describe('typographierEnProfondeur', () => {
       'cle : brute': `Seuil${INSECABLE}: 1${FINE}200${INSECABLE}k€`,
       valeurs: [6, true, null, `6${INSECABLE}%`],
       cellules: { B2: '=A2*1,06', A1: `CA (k€)${INSECABLE}:` },
+    });
+  });
+
+  it('porte les citations littérales jusqu aux textes imbriqués', () => {
+    const contenu = { ecrans: [{ libelle: 'En texte : 1 150,00 €' }] };
+
+    expect(typographierEnProfondeur(contenu, ['1 150,00 €'])).toEqual({
+      ecrans: [{ libelle: `En texte${INSECABLE}: 1 150,00 €` }],
     });
   });
 });

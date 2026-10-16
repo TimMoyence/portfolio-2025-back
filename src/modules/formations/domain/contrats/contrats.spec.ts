@@ -92,7 +92,7 @@ import { PLAN_TABLEAU } from '../../../../../test/factories/ecrans-stockes.facto
 import { REGLE_DE_NOTATION } from '../RegleDeNotation';
 import { planDeFeuilleServi } from '../cours/FeuilleEvaluee';
 import { machineCalculee } from '../cours/MachineServie';
-import { tableauDuCorrige } from '../cours/TableauEvalue';
+import { planDeTableauServi, tableauDuCorrige } from '../cours/TableauEvalue';
 import { traceCalcule } from '../cours/TraceServi';
 
 const METADONNEES = {
@@ -1079,7 +1079,7 @@ describe('Contrats figés du cours B2-01 V3 (§ 9, lot 0)', () => {
         metadonnees: METADONNEES,
       } satisfies StoryRecit;
       const plan = {
-        ...PLAN_TABLEAU_ANNUEL,
+        ...planDeTableauServi(PLAN_TABLEAU_ANNUEL),
         metadonnees: METADONNEES,
       } satisfies TableBuildPlanPublic;
       const colonne = plan.colonnes[1] satisfies TableColonneServie;
