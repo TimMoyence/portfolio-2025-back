@@ -1,15 +1,13 @@
 import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { join } from 'node:path';
 import Ajv2020 from 'ajv/dist/2020.js';
 import addFormats from 'ajv-formats';
+import { RACINE } from '../../../../test/helpers/racine';
 import { validArticleIngestEnvelope } from '../testing/article-ingest.fixture';
 
 const schema = JSON.parse(
   readFileSync(
-    resolve(
-      __dirname,
-      '../../../../docs/contracts/article-ingest-envelope-v1.json',
-    ),
+    join(RACINE, 'docs/contracts/article-ingest-envelope-v1.json'),
     'utf8',
   ),
 );

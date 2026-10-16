@@ -2,10 +2,9 @@ import { readFileSync } from 'fs';
 import { join } from 'path';
 import { parse } from 'dotenv';
 import { buildProductionSecrets } from '../../test/factories/env.factory';
+import { RACINE } from '../../test/helpers/racine';
 import { ALIAS_POSTGRES } from '../database/connexion-postgres';
 import { validateEnv, VARIABLES_DE_L_ENV } from './env.validation';
-
-const RACINE = join(__dirname, '../..');
 
 function lireExemple(chemin: string): Record<string, string> {
   return parse(readFileSync(join(RACINE, chemin)));

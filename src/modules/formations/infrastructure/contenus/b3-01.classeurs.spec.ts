@@ -21,9 +21,9 @@ import {
   genererJeuB301,
 } from '../../../../../test/helpers/cours-b3-01/generateur';
 import { ongletDe } from '../../../../../test/helpers/cours-b3-01/modele';
+import { RACINE } from '../../../../../test/helpers/racine';
 import { CLASSEURS_B3_01, VALEURS_B3_01 } from './b3-01.donnees';
 
-const RACINE = join(__dirname, '../../../../..');
 const DOSSIER_DES_CLASSEURS = join(__dirname, '../classeurs/b3-01');
 const CORRIGE_FORMATEUR = join(
   RACINE,

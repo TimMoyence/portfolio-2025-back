@@ -6,6 +6,7 @@ import {
 } from 'typeorm';
 import type { SourceDEnv } from '../../src/config/env-readers.util';
 import { resoudreConnexionPostgres } from '../../src/database/connexion-postgres';
+import { RACINE } from './racine';
 
 type PostgresEntities = Extract<
   DataSourceOptions,
@@ -13,9 +14,9 @@ type PostgresEntities = Extract<
 >['entities'];
 
 const DELAI_MIGRATIONS_MS = 120_000;
-const DOSSIER_DES_MIGRATIONS = join(__dirname, '../../src/migrations');
+const DOSSIER_DES_MIGRATIONS = join(RACINE, 'src/migrations');
 
-export const TOUTES_LES_ENTITES = join(__dirname, '../../src/**/*.entity.ts');
+export const TOUTES_LES_ENTITES = join(RACINE, 'src/**/*.entity.ts');
 export const TOUTES_LES_MIGRATIONS = join(
   DOSSIER_DES_MIGRATIONS,
   '!(*.spec).ts',

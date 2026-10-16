@@ -1,12 +1,12 @@
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { test } from 'node:test';
 
 import { fichiersDeMigration } from './lib/migrations-chargees.mjs';
 import { prochainHorodatage } from './lib/prochain-horodatage.mjs';
-
-const root = new URL('..', import.meta.url).pathname;
+import { RACINE as root } from './lib/racine.mjs';
 
 void test('reprend l horloge quand elle depasse la derniere migration', () => {
   assert.equal(prochainHorodatage(['1000-A.ts', '2000-B.ts'], 5000), 5000);
@@ -38,7 +38,7 @@ void test('la CLI donne un horodatage posterieur a toutes les migrations du depo
 
 void test('migration:generate impose cet horodatage a la CLI TypeORM', () => {
   const { scripts } = JSON.parse(
-    readFileSync(new URL('../package.json', import.meta.url), 'utf8'),
+    readFileSync(join(root, 'package.json'), 'utf8'),
   );
 
   assert.match(
