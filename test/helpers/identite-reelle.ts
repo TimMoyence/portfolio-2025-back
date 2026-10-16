@@ -6,7 +6,7 @@ import { createHmac } from 'node:crypto';
 import { JwtAuthGuard } from '../../src/common/interfaces/auth/jwt-auth.guard';
 import { JwtTokenService } from '../../src/modules/users/application/services/JwtTokenService';
 import { USERS_REPOSITORY } from '../../src/modules/users/domain/token';
-import { TEST_JWT_SECRET } from '../factories/env.factory';
+import { buildConfigService, TEST_JWT_SECRET } from '../factories/env.factory';
 import { buildUser, createMockUsersRepo } from '../factories/user.factory';
 
 export const EN_TETE_IDENTITE = 'x-test-identite';
@@ -53,7 +53,7 @@ export function authentificationReelle(): Provider[] {
   return [
     {
       provide: ConfigService,
-      useValue: new ConfigService({ JWT_SECRET: TEST_JWT_SECRET }),
+      useValue: buildConfigService({ JWT_SECRET: TEST_JWT_SECRET }),
     },
     JwtTokenService,
     { provide: USERS_REPOSITORY, useValue: utilisateurs },

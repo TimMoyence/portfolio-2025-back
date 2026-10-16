@@ -1,4 +1,3 @@
-import { ConfigService } from '@nestjs/config';
 import type { EntitySubscriberInterface } from 'typeorm';
 import { RefreshTokensUseCase } from '../src/modules/users/application/RefreshTokens.useCase';
 import { RevokeTokenUseCase } from '../src/modules/users/application/RevokeToken.useCase';
@@ -8,7 +7,7 @@ import { RefreshTokenEntity } from '../src/modules/users/infrastructure/entities
 import { UsersEntity } from '../src/modules/users/infrastructure/entities/Users.entity';
 import { RefreshTokensRepositoryTypeORM } from '../src/modules/users/infrastructure/RefreshTokens.repository.typeORM';
 import { UsersRepositoryTypeORM } from '../src/modules/users/infrastructure/Users.repository.typeORM';
-import { TEST_JWT_SECRET } from './factories/env.factory';
+import { buildConfigService, TEST_JWT_SECRET } from './factories/env.factory';
 import {
   baseMigreeDeLaSuite,
   describeDb,
@@ -25,7 +24,7 @@ describeDb(
       [TOUTES_LES_MIGRATIONS],
     );
     const jwtTokenService = new JwtTokenService(
-      new ConfigService({
+      buildConfigService({
         JWT_SECRET: TEST_JWT_SECRET,
         JWT_EXPIRES_IN: '900s',
       }),

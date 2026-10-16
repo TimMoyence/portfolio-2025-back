@@ -1,3 +1,5 @@
+import { ConfigService } from '@nestjs/config';
+
 export const TEST_JWT_SECRET = 'test-jwt-secret-at-least-32-characters-long'; // gitleaks:allow (ci.yml)
 export const TEST_HASHING_KEY = 'test-hashing-key-at-least-32-characters-long'; // gitleaks:allow (ci.yml)
 export const TEST_MORNING_BRIEF_HMAC_SECRET =
@@ -27,6 +29,17 @@ export function buildValidEnv(
     ...SECRETS_REQUIS,
     ...overrides,
   };
+}
+
+type OptionSkipProcessEnvDeConfigModule = { skipProcessEnv: boolean };
+
+export function buildConfigService(
+  valeurs: Readonly<Record<string, unknown>> = {},
+): ConfigService {
+  const config = new ConfigService({ ...valeurs });
+  (config as unknown as OptionSkipProcessEnvDeConfigModule).skipProcessEnv =
+    true;
+  return config;
 }
 
 export function buildProductionSecrets(): Record<string, string> {

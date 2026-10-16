@@ -1,5 +1,4 @@
 import { APP_GUARD, Reflector } from '@nestjs/core';
-import { ConfigService } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
 import { AuthController } from '../src/modules/users/interfaces/Auth.controller';
@@ -13,7 +12,7 @@ import {
   authControllerProviders,
   createAuthUseCaseStubs,
 } from './factories/core-api.factory';
-import { TEST_JWT_SECRET } from './factories/env.factory';
+import { buildConfigService, TEST_JWT_SECRET } from './factories/env.factory';
 import { createMockRefreshTokensRepo } from './factories/refresh-token.factory';
 import {
   buildUser,
@@ -36,7 +35,7 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
   const JWT_EXPIRES_IN = '900s';
 
   const jwtTokenService = new JwtTokenService(
-    new ConfigService({ JWT_SECRET: TEST_JWT_SECRET, JWT_EXPIRES_IN }),
+    buildConfigService({ JWT_SECRET: TEST_JWT_SECRET, JWT_EXPIRES_IN }),
   );
 
   const authStubs = createAuthUseCaseStubs();
@@ -206,7 +205,7 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
   });
 
   it('GET /api/auth/me avec un Bearer signe par un autre secret retourne 401', async () => {
-    const otherConfigService = new ConfigService({
+    const otherConfigService = buildConfigService({
       JWT_SECRET: 'un-autre-secret-totalement-different!',
       JWT_EXPIRES_IN: '900s',
     });

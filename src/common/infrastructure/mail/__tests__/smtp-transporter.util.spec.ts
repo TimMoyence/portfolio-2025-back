@@ -2,7 +2,9 @@
 import { Logger } from '@nestjs/common';
 import { generateKeyPairSync } from 'node:crypto';
 import {
+  creationDeTransportSimulee,
   DEFAULT_SMTP_ENV,
+  nodemailerSimule,
   SMTP_ET_DKIM_ABSENTS,
 } from '../../../../../test/factories/mailer.factory';
 import {
@@ -10,13 +12,11 @@ import {
   installerVariables,
 } from '../../../../../test/helpers/environnement';
 
-const mockCreateTransport = jest.fn().mockReturnValue({ sendMail: jest.fn() });
-
-jest.mock('nodemailer', () => ({
-  createTransport: (...args: unknown[]) => mockCreateTransport(...args),
-}));
+jest.mock('nodemailer', () => nodemailerSimule());
 
 import { createOptionalSmtpTransporter } from '../smtp-transporter.util';
+
+const mockCreateTransport = creationDeTransportSimulee();
 
 interface TransportOptions {
   host: string;

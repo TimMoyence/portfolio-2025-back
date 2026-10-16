@@ -1,15 +1,15 @@
 import { ForbiddenException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { MetricsAuthGuard } from './metrics-auth.guard';
+import { buildConfigService } from '../../../../test/factories/env.factory';
 import { createHttpExecutionContext } from '../../../../test/factories/execution-context.factory';
+import { installerVariables } from '../../../../test/helpers/environnement';
 
 const VALID_TOKEN = 'super-secret-metrics-token';
 
 function verifier(tokenConfigure: string | undefined, authHeader?: string) {
-  const configService = {
-    get: jest.fn().mockReturnValue(tokenConfigure),
-  } as unknown as ConfigService;
-  const guard = new MetricsAuthGuard(configService);
+  const guard = new MetricsAuthGuard(
+    buildConfigService({ METRICS_TOKEN: tokenConfigure }),
+  );
   const context = createHttpExecutionContext({
     headers: authHeader ? { authorization: authHeader } : {},
   });
@@ -26,11 +26,15 @@ describe('MetricsAuthGuard', () => {
     expect(verifier(VALID_TOKEN, `Bearer ${VALID_TOKEN}`)()).toBe(true);
   });
 
-  it('devrait refuser l acces si METRICS_TOKEN n est pas configure', () => {
-    attendreRefus(
-      verifier(undefined, 'Bearer some-token'),
-      'Metrics endpoint not configured',
-    );
+  describe('absent de sa configuration, meme pose dans l environnement du processus', () => {
+    installerVariables({ METRICS_TOKEN: VALID_TOKEN }, 'chaque-test');
+
+    it('devrait refuser l acces si METRICS_TOKEN n est pas configure', () => {
+      attendreRefus(
+        verifier(undefined, `Bearer ${VALID_TOKEN}`),
+        'Metrics endpoint not configured',
+      );
+    });
   });
 
   it('devrait refuser l acces sans header Authorization', () => {

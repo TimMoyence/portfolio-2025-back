@@ -1,22 +1,23 @@
-import { ConfigService } from '@nestjs/config';
 import { SignJWT, decodeProtectedHeader } from 'jose';
 import { JwtTokenService } from './JwtTokenService';
 import type { JwtPayload } from './JwtPayload';
-import { TEST_JWT_SECRET as JWT_SECRET } from '../../../../../test/factories/env.factory';
+import {
+  buildConfigService,
+  TEST_JWT_SECRET as JWT_SECRET,
+} from '../../../../../test/factories/env.factory';
 
 describe('JwtTokenService', () => {
   const JWT_SECRET_PREVIOUS = 'old-secret-key-for-rotation-test!';
   const SECRET_DE_31_ENTOURE = `  ${'p'.repeat(31)}  `;
   const CONFIG_COURANTE = { JWT_SECRET, JWT_EXPIRES_IN: '3600s' };
   const CONFIG_EN_ROTATION = { ...CONFIG_COURANTE, JWT_SECRET_PREVIOUS };
-  let configService: jest.Mocked<ConfigService>;
   let service: JwtTokenService;
 
   const encodeSecret = (secret = JWT_SECRET): Uint8Array =>
     new TextEncoder().encode(secret);
 
   const configurer = (variables: Readonly<Record<string, string>>): void => {
-    configService.get.mockImplementation((key: string) => variables[key]);
+    service = new JwtTokenService(buildConfigService(variables));
   };
 
   const signer = () => service.sign({ sub: 'user-1', email: 'a@b.com' });
@@ -44,9 +45,7 @@ describe('JwtTokenService', () => {
   };
 
   beforeEach(() => {
-    configService = { get: jest.fn() } as unknown as jest.Mocked<ConfigService>;
     configurer(CONFIG_COURANTE);
-    service = new JwtTokenService(configService);
   });
 
   describe('sign', () => {

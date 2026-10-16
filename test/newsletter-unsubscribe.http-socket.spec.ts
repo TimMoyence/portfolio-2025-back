@@ -4,15 +4,16 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { APP_GUARD, Reflector } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
+import { envoiSmtpSimule, moduleSmtpSimule } from './factories/mailer.factory';
 import { IS_PUBLIC_KEY } from '../src/common/interfaces/auth/public.decorator';
 import { ConfirmSubscriptionUseCase } from '../src/modules/newsletter/application/ConfirmSubscription.useCase';
 import { SubscribeNewsletterUseCase } from '../src/modules/newsletter/application/SubscribeNewsletter.useCase';
 import { UnsubscribeNewsletterUseCase } from '../src/modules/newsletter/application/UnsubscribeNewsletter.useCase';
 import { NewsletterController } from '../src/modules/newsletter/interfaces/Newsletter.controller';
+import { buildConfigService } from './factories/env.factory';
 import { buildNewsletterSubscriber } from './factories/newsletter-subscriber.factory';
 import {
   applicationDeLaSuite,
@@ -20,11 +21,9 @@ import {
   ouvrirApplication,
 } from './helpers/nest-test-app';
 
-const mockSendMail = jest.fn().mockResolvedValue({ messageId: 'test-id' });
-
-jest.mock('../src/common/infrastructure/mail/smtp-transporter.util', () => ({
-  createOptionalSmtpTransporter: jest.fn(() => ({ sendMail: mockSendMail })),
-}));
+jest.mock('../src/common/infrastructure/mail/smtp-transporter.util', () =>
+  moduleSmtpSimule(),
+);
 
 import { NewsletterMailerService } from '../src/modules/newsletter/infrastructure/NewsletterMailer.service';
 import { PREFIXE_API_PAR_DEFAUT as API_PREFIX } from '../src/config/prefixe-api';
@@ -145,17 +144,14 @@ describe('Desabonnement newsletter (e2e http socket)', () => {
 
   describe('contrat entre l’en-tete List-Unsubscribe et la route servie', () => {
     it('l’URL annoncee dans l’en-tete resout vers une route reellement montee', async () => {
-      const configService = {
-        get: jest.fn((key: string) =>
-          key === 'API_PREFIX' ? API_PREFIX : undefined,
-        ),
-      } as unknown as ConfigService;
-      const mailer = new NewsletterMailerService(configService);
+      const mailer = new NewsletterMailerService(
+        buildConfigService({ API_PREFIX }),
+      );
 
-      mockSendMail.mockClear();
+      envoiSmtpSimule.mockClear();
       await mailer.sendWelcome(buildNewsletterSubscriber());
 
-      const [[message]] = mockSendMail.mock.calls as [
+      const [[message]] = envoiSmtpSimule.mock.calls as [
         [{ headers: Record<string, string> }],
       ];
       const httpUri = /<(https?:\/\/[^>]+)>/.exec(

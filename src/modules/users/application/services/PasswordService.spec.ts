@@ -1,21 +1,18 @@
-import { ConfigService } from '@nestjs/config';
 import { pbkdf2Sync } from 'crypto';
-import { TEST_HASHING_KEY as SECRET } from '../../../../../test/factories/env.factory';
+import {
+  buildConfigService,
+  TEST_HASHING_KEY as SECRET,
+} from '../../../../../test/factories/env.factory';
+import { installerVariables } from '../../../../../test/helpers/environnement';
 import { PasswordService } from './PasswordService';
 
 describe('PasswordService', () => {
-  let configService: jest.Mocked<ConfigService>;
   let service: PasswordService;
 
   beforeEach(() => {
-    configService = {
-      get: jest.fn((key: string) => {
-        if (key === 'SECURE_KEY_FOR_PASSWORD_HASHING') return SECRET;
-        return undefined;
-      }),
-    } as unknown as jest.Mocked<ConfigService>;
-
-    service = new PasswordService(configService);
+    service = new PasswordService(
+      buildConfigService({ SECURE_KEY_FOR_PASSWORD_HASHING: SECRET }),
+    );
   });
 
   describe('hash', () => {
@@ -100,20 +97,23 @@ describe('PasswordService', () => {
     });
   });
 
-  it('devrait lever une erreur si SECURE_KEY_FOR_PASSWORD_HASHING n est pas defini', () => {
-    const emptyConfigService = {
-      get: jest.fn().mockReturnValue(undefined),
-    } as unknown as jest.Mocked<ConfigService>;
-
-    expect(() => new PasswordService(emptyConfigService)).toThrow(
-      'SECURE_KEY_FOR_PASSWORD_HASHING is not defined',
+  describe('absente de sa configuration, meme posee dans l environnement du processus', () => {
+    installerVariables(
+      { SECURE_KEY_FOR_PASSWORD_HASHING: SECRET },
+      'chaque-test',
     );
+
+    it('devrait lever une erreur si SECURE_KEY_FOR_PASSWORD_HASHING n est pas defini', () => {
+      expect(() => new PasswordService(buildConfigService())).toThrow(
+        'SECURE_KEY_FOR_PASSWORD_HASHING is not defined',
+      );
+    });
   });
 
   it('devrait lever une erreur si SECURE_KEY_FOR_PASSWORD_HASHING fait moins de 32 caracteres hors blancs', () => {
-    const courtConfigService = {
-      get: jest.fn().mockReturnValue(`  ${'k'.repeat(31)}  `),
-    } as unknown as jest.Mocked<ConfigService>;
+    const courtConfigService = buildConfigService({
+      SECURE_KEY_FOR_PASSWORD_HASHING: `  ${'k'.repeat(31)}  `,
+    });
 
     expect(() => new PasswordService(courtConfigService)).toThrow(
       'SECURE_KEY_FOR_PASSWORD_HASHING must be at least 32 characters',

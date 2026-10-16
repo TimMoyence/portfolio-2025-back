@@ -1,10 +1,17 @@
 import type { createTransport, Transporter } from 'nodemailer';
+import type { IEmailVerificationNotifier } from '../../src/modules/users/domain/IEmailVerificationNotifier';
 import type { IPasswordResetNotifier } from '../../src/modules/users/domain/IPasswordResetNotifier';
 import { poserVariables } from '../helpers/environnement';
 
 export function createMockPasswordResetNotifier(): jest.Mocked<IPasswordResetNotifier> {
   return {
     sendPasswordResetEmail: jest.fn(),
+  };
+}
+
+export function createMockEmailVerificationNotifier(): jest.Mocked<IEmailVerificationNotifier> {
+  return {
+    sendVerificationEmail: jest.fn().mockResolvedValue(undefined),
   };
 }
 

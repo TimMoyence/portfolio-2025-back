@@ -1,14 +1,16 @@
 import { buildArticleRecord } from '../../../../test/factories/article.factory';
+import {
+  mailSimule,
+  moduleSmtpSimule,
+} from '../../../../test/factories/mailer.factory';
 import { installerVariables } from '../../../../test/helpers/environnement';
 import type { ArticleRecord } from '../application/articles.repository';
 
-const mockSendMail = jest.fn().mockResolvedValue({ messageId: 'test-id' });
-const mockCreateTransporter = jest.fn(() => ({ sendMail: mockSendMail }));
+jest.mock('../../../common/infrastructure/mail/smtp-transporter.util', () =>
+  moduleSmtpSimule(),
+);
 
-jest.mock('../../../common/infrastructure/mail/smtp-transporter.util', () => ({
-  createOptionalSmtpTransporter: () => mockCreateTransporter(),
-}));
-
+import { createOptionalSmtpTransporter } from '../../../common/infrastructure/mail/smtp-transporter.util';
 import { ArticleBroadcastMailerService } from './article-broadcast.mailer';
 
 const recipient = {
@@ -64,9 +66,7 @@ describe('ArticleBroadcastMailerService', () => {
   });
 
   it('se déclare inactif sans transport SMTP', () => {
-    mockCreateTransporter.mockReturnValueOnce(
-      null as unknown as { sendMail: jest.Mock },
-    );
+    jest.mocked(createOptionalSmtpTransporter).mockReturnValueOnce(null);
 
     expect(new ArticleBroadcastMailerService().isEnabled()).toBe(false);
   });
@@ -74,7 +74,7 @@ describe('ArticleBroadcastMailerService', () => {
   it('envoie l édition avec les en-têtes de désabonnement en un clic', async () => {
     await new ArticleBroadcastMailerService().send(article(), recipient);
 
-    const mail = mockSendMail.mock.calls[0][0];
+    const mail = mailSimule();
     const unsubscribeUrl =
       'https://asilidesign.fr/api/v1/portfolio25/newsletter/unsubscribe?token=jeton-de-desabonnement';
     expect(mail).toMatchObject({
@@ -98,7 +98,7 @@ describe('ArticleBroadcastMailerService', () => {
   it('échappe le contenu et neutralise les liens non HTTP(S)', async () => {
     await new ArticleBroadcastMailerService().send(article(), recipient);
 
-    const html: string = mockSendMail.mock.calls[0][0].html;
+    const { html } = mailSimule();
     expect(html).toContain('Veille IA &lt;du&gt; 23 septembre');
     expect(html).toContain('OpenAI &lt;script&gt;');
     expect(html).toContain('Bonjour Anne &amp; &lt;Marie&gt;');
@@ -115,7 +115,7 @@ describe('ArticleBroadcastMailerService', () => {
       recipient,
     );
 
-    const html: string = mockSendMail.mock.calls[0][0].html;
+    const { html } = mailSimule();
     expect(html).toContain('Radar');
   });
 });
