@@ -1,14 +1,12 @@
 import { applyDecorators } from '@nestjs/common';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsArray, IsIn, IsOptional, IsString, Matches } from 'class-validator';
 import {
-  IsArray,
-  IsIn,
-  IsOptional,
-  IsString,
-  Matches,
-  MaxLength,
-  MinLength,
-} from 'class-validator';
+  AuMoinsCaracteres,
+  AuPlusCaracteres,
+  Rogne,
+  TexteSaisi,
+} from '../../../../common/interfaces/dto/longueur-de-texte.decorator';
 import { VALID_ROLES } from '../../domain/roles';
 import { FORME_D_UN_JETON_EMIS } from '../../domain/TokenHash';
 import { LONGUEUR_MAX_D_UN_NOM } from '../../domain/User';
@@ -22,14 +20,14 @@ export const DOCUMENTATION_D_UN_JETON_DE_LIEN = {
 const LONGUEUR_MAX_D_UN_MOT_DE_PASSE = 256;
 
 const MotDePasseBorne = (): PropertyDecorator =>
-  MaxLength(LONGUEUR_MAX_D_UN_MOT_DE_PASSE, {
+  AuPlusCaracteres(LONGUEUR_MAX_D_UN_MOT_DE_PASSE, {
     message: 'Le mot de passe est trop long.',
   });
 
 export function MotDePasseSaisi(): PropertyDecorator {
   return applyDecorators(
     IsString(),
-    MinLength(1, { message: 'Le mot de passe est requis.' }),
+    AuMoinsCaracteres(1, { message: 'Le mot de passe est requis.' }),
     MotDePasseBorne(),
   );
 }
@@ -37,7 +35,7 @@ export function MotDePasseSaisi(): PropertyDecorator {
 export function MotDePasseRobuste(): PropertyDecorator {
   return applyDecorators(
     IsString(),
-    MinLength(12, {
+    AuMoinsCaracteres(12, {
       message: 'Le mot de passe doit contenir au moins 12 caracteres.',
     }),
     MotDePasseBorne(),
@@ -62,10 +60,9 @@ export function NomDeCompte(
     ...(facultatif
       ? [ApiPropertyOptional(documentation), IsOptional()]
       : [ApiProperty(documentation)]),
-    IsString(),
-    MinLength(1, { message: `${libelle} doit contenir au moins 1 caractere.` }),
-    MaxLength(LONGUEUR_MAX_D_UN_NOM, {
-      message: `${libelle} doit contenir au plus ${LONGUEUR_MAX_D_UN_NOM} caracteres.`,
+    TexteSaisi(1, LONGUEUR_MAX_D_UN_NOM, {
+      min: `${libelle} doit contenir au moins 1 caractere.`,
+      max: `${libelle} doit contenir au plus ${LONGUEUR_MAX_D_UN_NOM} caracteres.`,
     }),
   );
 }
@@ -74,8 +71,9 @@ export function TelephoneOptionnel(exemple: string): PropertyDecorator {
   return applyDecorators(
     ApiPropertyOptional({ example: exemple, nullable: true, maxLength: 30 }),
     IsOptional(),
+    Rogne(),
     IsString(),
-    MaxLength(30),
+    AuPlusCaracteres(30),
   );
 }
 

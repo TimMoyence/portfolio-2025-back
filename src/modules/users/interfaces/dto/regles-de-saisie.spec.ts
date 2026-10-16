@@ -1,7 +1,9 @@
 import {
   champsRefuses,
   messagesDeRefus,
+  saisieRetenue,
 } from '../../../../../test/helpers/validation-pipe';
+import { User } from '../../domain/User';
 import { ChangePasswordDto } from './ChangePassword.dto';
 import { CreateUserDto } from './CreateUser.dto';
 import { LoginDto } from './Login.dto';
@@ -37,6 +39,38 @@ describe('prenom et nom d un compte', () => {
       ]);
     },
   );
+
+  it.each([
+    ['30 emoji', String.fromCodePoint(0x1f600).repeat(30)],
+    ['50 emoji', String.fromCodePoint(0x1f600).repeat(50)],
+    ['51 emoji', String.fromCodePoint(0x1f600).repeat(51)],
+    ['des blancs seuls', '   '],
+    ['50 lettres entourees de blancs', ` ${'a'.repeat(50)} `],
+    ['51 lettres', 'a'.repeat(51)],
+  ])(
+    'jugent %s comme le domaine, a l inscription et au profil',
+    (_cas, nom) => {
+      const leDomaineGarde = (): string | null => {
+        try {
+          return User.update({ firstName: nom }).firstName ?? null;
+        } catch {
+          return null;
+        }
+      };
+
+      expect([
+        saisieRetenue(CreateUserDto, { ...inscription, firstName: nom })
+          ?.firstName ?? null,
+        saisieRetenue(UpdateProfileDto, { firstName: nom })?.firstName ?? null,
+      ]).toEqual([leDomaineGarde(), leDomaineGarde()]);
+    },
+  );
+
+  it('refusent des blancs seuls avec le message de la saisie', () => {
+    expect(messagesDeRefus(UpdateProfileDto, { firstName: '   ' })).toEqual([
+      'Le prenom doit contenir au moins 1 caractere.',
+    ]);
+  });
 
   it('portent les memes messages a l inscription et au profil', () => {
     const messagesDe = (dto: new () => object, base: object) =>

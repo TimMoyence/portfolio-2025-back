@@ -1,14 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import {
-  IsBoolean,
-  IsIn,
-  IsString,
-  MaxLength,
-  ValidateNested,
-} from 'class-validator';
+import { IsBoolean, IsIn, ValidateNested } from 'class-validator';
 import type { SupportedLocale } from '../../../../common/domain/value-objects/LocaleCode';
 import { LocaleSupportee } from '../../../../common/interfaces/dto/locale-supportee.decorator';
+import { TexteSaisi } from '../../../../common/interfaces/dto/longueur-de-texte.decorator';
 import {
   ACTIONS_DE_CONSENTEMENT,
   SOURCES_DE_CONSENTEMENT,
@@ -35,16 +30,14 @@ class CookieConsentPreferencesRequestDto {
 
 export class CookieConsentRequestDto {
   @ApiProperty({ example: '2026-02-11' })
-  @IsString()
-  @MaxLength(50)
+  @TexteSaisi(1, 50)
   policyVersion: string;
 
   @LocaleSupportee()
   locale: SupportedLocale;
 
   @ApiProperty({ example: 'EU_UK' })
-  @IsString()
-  @MaxLength(20)
+  @TexteSaisi(1, 20)
   region: string;
 
   @ApiProperty({ example: 'banner', enum: SOURCES_DE_CONSENTEMENT })

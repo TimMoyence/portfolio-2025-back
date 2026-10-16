@@ -1,5 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsInt, IsOptional, IsString, MaxLength, Min } from 'class-validator';
+import { IsInt, IsOptional, IsString, Min } from 'class-validator';
+import { AuPlusCaracteres } from '../dto/longueur-de-texte.decorator';
 
 export class ChampsAntiRobotDto {
   @ApiPropertyOptional({
@@ -7,7 +8,7 @@ export class ChampsAntiRobotDto {
   })
   @IsOptional()
   @IsString()
-  @MaxLength(200)
+  @AuPlusCaracteres(200)
   website?: string;
 
   @ApiPropertyOptional({

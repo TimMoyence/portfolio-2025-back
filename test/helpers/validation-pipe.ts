@@ -26,6 +26,14 @@ const erreursDeSaisie = (
 export const champsRefuses = (dto: new () => object, corps: object): string[] =>
   erreursDeSaisie(dto, corps).map((erreur) => erreur.property);
 
+export const saisieRetenue = <T extends object>(
+  dto: new () => T,
+  corps: object,
+): T | null => {
+  const saisie = plainToInstance(dto, corps);
+  return validateSync(saisie).length === 0 ? saisie : null;
+};
+
 export const messagesDeRefus = (
   dto: new () => object,
   corps: object,

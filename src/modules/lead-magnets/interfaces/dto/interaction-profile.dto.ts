@@ -5,8 +5,8 @@ import {
   IsIn,
   IsOptional,
   IsString,
-  MaxLength,
 } from 'class-validator';
+import { AuPlusCaracteres } from '../../../../common/interfaces/dto/longueur-de-texte.decorator';
 import {
   AI_LEVELS,
   BUDGET_TIERS,
@@ -26,7 +26,7 @@ export class InteractionProfileDto {
   @IsArray()
   @ArrayMaxSize(50)
   @IsString({ each: true })
-  @MaxLength(100, { each: true })
+  @AuPlusCaracteres(100, { each: true })
   toolsAlreadyUsed?: string[];
 
   @ApiPropertyOptional({ example: '60', enum: [...BUDGET_TIERS] })
@@ -38,12 +38,12 @@ export class InteractionProfileDto {
   @ApiPropertyOptional({ example: 'coaching' })
   @IsOptional()
   @IsString()
-  @MaxLength(100)
+  @AuPlusCaracteres(100)
   sector?: string | null;
 
   @ApiPropertyOptional({ example: 'Genere-moi un plan marketing pour...' })
   @IsOptional()
   @IsString()
-  @MaxLength(2000)
+  @AuPlusCaracteres(2000)
   generatedPrompt?: string | null;
 }

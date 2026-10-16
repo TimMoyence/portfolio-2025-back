@@ -7,18 +7,20 @@ import {
   IsString,
   Matches,
   Max,
-  MaxLength,
   Min,
-  MinLength,
 } from 'class-validator';
 import { PUBLISHABLE_STATUSES } from '../../domain/types/publishable-status';
+import {
+  AuMoinsCaracteres,
+  AuPlusCaracteres,
+} from './longueur-de-texte.decorator';
 
 export function SlugDeContenu(exemple: string): PropertyDecorator {
   return applyDecorators(
     ApiProperty({ example: exemple }),
     IsString(),
-    MinLength(2),
-    MaxLength(120),
+    AuMoinsCaracteres(2),
+    AuPlusCaracteres(120),
     Matches(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
   );
 }

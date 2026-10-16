@@ -1,14 +1,11 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import {
-  IsIn,
-  IsOptional,
-  IsString,
-  MaxLength,
-  MinLength,
-  ValidateNested,
-} from 'class-validator';
+import { IsIn, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { AdresseEmail } from '../../../../common/interfaces/dto/adresse-email.decorator';
+import {
+  Rogne,
+  TexteSaisi,
+} from '../../../../common/interfaces/dto/longueur-de-texte.decorator';
 import {
   AcceptationDesConditions,
   VersionDesConditions,
@@ -20,9 +17,7 @@ import { InteractionProfileDto } from './interaction-profile.dto';
 
 export class RequestToolkitRequestDto extends ChampsAntiRobotDto {
   @ApiProperty({ example: 'Marie' })
-  @IsString()
-  @MinLength(1)
-  @MaxLength(50)
+  @TexteSaisi(1, 50)
   firstName: string;
 
   @ApiProperty({ example: 'marie@example.com' })
@@ -30,6 +25,7 @@ export class RequestToolkitRequestDto extends ChampsAntiRobotDto {
   email: string;
 
   @ApiProperty({ example: 'ia-solopreneurs' })
+  @Rogne()
   @IsString()
   @IsIn(['ia-solopreneurs'])
   formationSlug: string;

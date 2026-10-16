@@ -169,6 +169,15 @@ describe('requireText', () => {
       DomainValidationError,
     );
   });
+
+  it('compte un emoji pour un caractere, comme une colonne varchar', () => {
+    const emoji = String.fromCodePoint(0x1f600);
+
+    expect(requireText(emoji.repeat(50), 'test', 2, 50)).toBe(emoji.repeat(50));
+    expect(() => requireText(emoji.repeat(51), 'test', 2, 50)).toThrow(
+      DomainValidationError,
+    );
+  });
 });
 
 describe('optionalText', () => {
@@ -184,6 +193,12 @@ describe('optionalText', () => {
 
   it('devrait retourner le texte trimme', () => {
     expect(optionalText('  hello  ', 'test', 50)).toBe('hello');
+  });
+
+  it('compte un emoji pour un caractere, comme une colonne varchar', () => {
+    const emoji = String.fromCodePoint(0x1f600);
+
+    expect(optionalText(emoji.repeat(50), 'test', 50)).toBe(emoji.repeat(50));
   });
 
   it('devrait rejeter un texte trop long', () => {
