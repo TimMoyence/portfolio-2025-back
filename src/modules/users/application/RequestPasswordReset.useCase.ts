@@ -1,6 +1,5 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { emettreJeton } from '../domain/TokenHash';
 import type { IPasswordResetNotifier } from '../domain/IPasswordResetNotifier';
 import type { IPasswordResetTokensRepository } from '../domain/IPasswordResetTokens.repository';
 import type { IUsersRepository } from '../domain/IUsers.repository';
@@ -10,7 +9,9 @@ import {
   USERS_REPOSITORY,
 } from '../domain/token';
 import type { RequestPasswordResetCommand } from './dto/RequestPasswordReset.command';
-import { lienAvecJeton } from '../../../common/domain/lien-avec-jeton';
+import { emettreUnLienTemporaire } from './services/emission-de-lien-temporaire';
+
+const PASSWORD_RESET_TTL_MS = 60 * 60 * 1000;
 
 export interface RequestPasswordResetResult {
   message: string;
@@ -47,30 +48,28 @@ export class RequestPasswordResetUseCase {
       return { message: this.genericMessage };
     }
 
-    const jeton = emettreJeton();
-    const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
-
-    await this.passwordResetTokensRepository.invalidateActiveByUserId(user.id);
-    await this.passwordResetTokensRepository.create({
-      userId: user.id,
-      tokenHash: jeton.empreinte,
-      expiresAt,
-      usedAt: null,
-    });
-
-    try {
-      await this.passwordResetNotifier.sendPasswordResetEmail({
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        resetUrl: lienAvecJeton(this.resetPasswordUrlBase, jeton.brut),
-        expiresInMinutes: 60,
-      });
-    } catch (error) {
-      this.logger.error(
-        `Password reset email failed for ${user.email}: ${String(error)}`,
-      );
-    }
+    await emettreUnLienTemporaire(
+      user,
+      user.id,
+      {
+        dureeDeValiditeMs: PASSWORD_RESET_TTL_MS,
+        adresseDeBase: this.resetPasswordUrlBase,
+        echecDEnvoi: 'Password reset email failed',
+        invaliderLesLiensActifs: (id) =>
+          this.passwordResetTokensRepository.invalidateActiveByUserId(id),
+        enregistrer: (jeton) =>
+          this.passwordResetTokensRepository.create({
+            ...jeton,
+            usedAt: null,
+          }),
+        envoyer: ({ url, ...envoi }) =>
+          this.passwordResetNotifier.sendPasswordResetEmail({
+            ...envoi,
+            resetUrl: url,
+          }),
+      },
+      this.logger,
+    );
 
     return { message: this.genericMessage };
   }

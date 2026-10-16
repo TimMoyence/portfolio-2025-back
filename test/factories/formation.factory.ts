@@ -634,7 +634,9 @@ export function createMockPulsesRepo(): jest.Mocked<IPulsesRepository> {
 export function createMockRappelsServisRepo(): jest.Mocked<IRappelsServisRepository> {
   const servis: RappelServiRecord[] = [];
   return {
-    lister: jest.fn().mockImplementation(() => Promise.resolve([...servis])),
+    listerDuParticipant: jest
+      .fn()
+      .mockImplementation(() => Promise.resolve([...servis])),
     figer: jest
       .fn()
       .mockImplementation(

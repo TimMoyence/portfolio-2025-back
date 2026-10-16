@@ -7,20 +7,23 @@ import type {
   TentativeDeMaitrise,
 } from '../domain/IMastery.repository';
 import { BOITE_MAX, BOITE_MIN } from '../domain/LeitnerBox';
+import { DepotEnDomaine } from '../../../common/infrastructure/typeorm/DepotEnDomaine';
 import { FormationMasteryEntity } from './entities/FormationMastery.entity';
 
 @Injectable()
-export class MasteryRepositoryTypeORM implements IMasteryRepository {
+export class MasteryRepositoryTypeORM
+  extends DepotEnDomaine<FormationMasteryEntity, MasteryRecord>
+  implements IMasteryRepository
+{
   constructor(
     @InjectRepository(FormationMasteryEntity)
-    private readonly repo: Repository<FormationMasteryEntity>,
-  ) {}
+    repo: Repository<FormationMasteryEntity>,
+  ) {
+    super(repo);
+  }
 
-  async findByStudentKey(
-    studentKey: string,
-  ): Promise<readonly MasteryRecord[]> {
-    const entities = await this.repo.find({ where: { studentKey } });
-    return entities.map((entity) => this.toDomain(entity));
+  findByStudentKey(studentKey: string): Promise<readonly MasteryRecord[]> {
+    return this.lister({ where: { studentKey } });
   }
 
   async enregistrerTentative(tentative: TentativeDeMaitrise): Promise<void> {
@@ -50,7 +53,7 @@ export class MasteryRepositoryTypeORM implements IMasteryRepository {
     );
   }
 
-  private toDomain(entity: FormationMasteryEntity): MasteryRecord {
+  protected toDomain(entity: FormationMasteryEntity): MasteryRecord {
     return {
       studentKey: entity.studentKey,
       concept: entity.concept,

@@ -12,6 +12,7 @@ import type {
   QuestionTally,
 } from '../domain/IAnswers.repository';
 import { DepotEnDomaine } from '../../../common/infrastructure/typeorm/DepotEnDomaine';
+import { aAffecte } from '../../../common/infrastructure/typeorm/lignes-affectees';
 import { FormationAnswerEntity } from './entities/FormationAnswer.entity';
 
 const ORDRE_DE_SOUMISSION: FindOptionsOrder<FormationAnswerEntity> = {
@@ -75,21 +76,18 @@ export class AnswersRepositoryTypeORM
     super(repo);
   }
 
-  async create(input: CreateAnswerInput): Promise<AnswerRecord> {
-    const entity = this.repo.create({
-      sessionId: input.sessionId,
-      participantId: input.participantId,
-      questionId: input.questionId,
-      concept: input.concept,
-      seed: input.seed,
-      ...correctionDe(input),
-    });
-    const saved = await this.enregistrerSansDoublon(
-      this.repo,
-      entity,
+  create(input: CreateAnswerInput): Promise<AnswerRecord> {
+    return this.enregistrer(
+      {
+        sessionId: input.sessionId,
+        participantId: input.participantId,
+        questionId: input.questionId,
+        concept: input.concept,
+        seed: input.seed,
+        ...correctionDe(input),
+      },
       () => new AnswerAlreadySubmittedError(input.questionId),
     );
-    return this.toDomain(saved);
   }
 
   async remplacer(
@@ -104,7 +102,7 @@ export class AnswersRepositoryTypeORM
       },
       { ...correctionDe(input), soumissions: () => 'soumissions + 1' },
     );
-    if (resultat.affected === 1) {
+    if (aAffecte(resultat)) {
       return true;
     }
     if (await this.existsFor(input.participantId, input.questionId)) {

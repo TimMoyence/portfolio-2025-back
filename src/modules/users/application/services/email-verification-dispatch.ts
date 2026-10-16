@@ -6,13 +6,10 @@ import {
   EMAIL_VERIFICATION_NOTIFIER,
   EMAIL_VERIFICATION_TOKENS_REPOSITORY,
 } from '../../domain/token';
-import { emettreJeton } from '../../domain/TokenHash';
 import type { User } from '../../domain/User';
-import { lienAvecJeton } from '../../../../common/domain/lien-avec-jeton';
+import { emettreUnLienTemporaire } from './emission-de-lien-temporaire';
 
 const EMAIL_VERIFICATION_TTL_MS = 24 * 60 * 60 * 1000;
-
-const EMAIL_VERIFICATION_TTL_MINUTES = EMAIL_VERIFICATION_TTL_MS / 60_000;
 
 @Injectable()
 export class EnvoiDeVerificationEmail {
@@ -31,30 +28,29 @@ export class EnvoiDeVerificationEmail {
     );
   }
 
-  async envoyer(
+  envoyer(
     user: User,
     userId: string,
     logger: Logger,
     failureLogPrefix: string,
   ): Promise<void> {
-    const jeton = emettreJeton();
-
-    await this.tokensRepo.create({
+    return emettreUnLienTemporaire(
+      user,
       userId,
-      tokenHash: jeton.empreinte,
-      expiresAt: new Date(Date.now() + EMAIL_VERIFICATION_TTL_MS),
-    });
-
-    try {
-      await this.notifier.sendVerificationEmail({
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        verificationUrl: lienAvecJeton(this.verificationUrlBase, jeton.brut),
-        expiresInMinutes: EMAIL_VERIFICATION_TTL_MINUTES,
-      });
-    } catch (error) {
-      logger.error(`${failureLogPrefix} for ${user.email}: ${String(error)}`);
-    }
+      {
+        dureeDeValiditeMs: EMAIL_VERIFICATION_TTL_MS,
+        adresseDeBase: this.verificationUrlBase,
+        echecDEnvoi: failureLogPrefix,
+        invaliderLesLiensActifs: (id) =>
+          this.tokensRepo.invalidateActiveByUserId(id),
+        enregistrer: (jeton) => this.tokensRepo.create(jeton),
+        envoyer: ({ url, ...envoi }) =>
+          this.notifier.sendVerificationEmail({
+            ...envoi,
+            verificationUrl: url,
+          }),
+      },
+      logger,
+    );
   }
 }

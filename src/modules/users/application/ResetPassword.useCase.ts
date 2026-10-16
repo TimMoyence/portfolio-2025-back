@@ -14,6 +14,7 @@ import { PasswordService } from './services/PasswordService';
 
 export interface ResetPasswordResult {
   message: string;
+  userId: string;
 }
 
 @Injectable()
@@ -45,11 +46,14 @@ export class ResetPasswordUseCase extends CasDUsageMotDePasse {
       throw new LienInvalideError();
     }
 
+    if (!(await this.passwordResetTokensRepository.markUsed(token.id))) {
+      throw new LienInvalideError();
+    }
     await this.enregistrerMotDePasse(user, dto.newPassword, 'password-reset');
-    await this.passwordResetTokensRepository.markUsed(token.id);
 
     return {
       message: 'Mot de passe reinitialise avec succes.',
+      userId: user.id,
     };
   }
 }

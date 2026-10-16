@@ -67,14 +67,7 @@ export class SubscribeNewsletterUseCase {
     );
 
     if (existing) {
-      if (existing.status === 'pending') {
-        await this.resendConfirmationIfAllowed(existing);
-      }
-      return {
-        created: false,
-        alreadySubscribed: true,
-        status: existing.status,
-      };
+      return this.dejaInscrit(existing);
     }
 
     try {
@@ -92,18 +85,24 @@ export class SubscribeNewsletterUseCase {
           candidate.sourceFormationSlug,
         );
         if (raced) {
-          if (raced.status === 'pending') {
-            await this.resendConfirmationIfAllowed(raced);
-          }
-          return {
-            created: false,
-            alreadySubscribed: true,
-            status: raced.status,
-          };
+          return this.dejaInscrit(raced);
         }
       }
       throw error;
     }
+  }
+
+  private async dejaInscrit(
+    abonne: NewsletterSubscriber,
+  ): Promise<SubscribeNewsletterResult> {
+    if (abonne.status === 'pending') {
+      await this.resendConfirmationIfAllowed(abonne);
+    }
+    return {
+      created: false,
+      alreadySubscribed: true,
+      status: abonne.status,
+    };
   }
 
   private async resendConfirmationIfAllowed(

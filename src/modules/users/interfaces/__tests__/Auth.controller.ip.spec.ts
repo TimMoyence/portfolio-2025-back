@@ -5,12 +5,17 @@ import {
   createMockAuthAuditLogger,
   createMockUseCase,
 } from '../../../../../test/factories/user.factory';
+import { LienInvalideError } from '../../../../common/domain/errors/LienInvalideError';
+import type { AuthAuditEntry } from '../../application/services/AuthAuditLogger';
 import { REFRESH_TOKEN_COOKIE_NAME } from '../../domain/auth.constants';
+import { emettreJeton } from '../../domain/TokenHash';
 import { AuthController } from '../Auth.controller';
+import type { ForgotPasswordDto } from '../dto/ForgotPassword.dto';
 import type { GoogleAuthDto } from '../dto/GoogleAuth.dto';
 import type { LoginDto } from '../dto/Login.dto';
+import type { ResetPasswordDto } from '../dto/ResetPassword.dto';
 
-type Flux = 'login' | 'google' | 'refresh';
+type Flux = 'login' | 'google' | 'refresh' | 'demande' | 'reinitialisation';
 type Issue = { resolves: unknown } | { rejects: Error };
 
 describe('AuthController — IP tracee dans l’audit', () => {
@@ -24,6 +29,15 @@ describe('AuthController — IP tracee dans l’audit', () => {
     password: 'secret',
   } as LoginDto;
   const googleDto = { idToken: 'google-token' } as GoogleAuthDto;
+  const JETON_DE_LIEN = emettreJeton().brut;
+  const CHOSEN_CREDENTIAL = 'NewPassword456!';
+  const resetDto = {
+    token: JETON_DE_LIEN,
+    newPassword: CHOSEN_CREDENTIAL,
+  } as ResetPasswordDto;
+
+  let journal: AuthAuditEntry[] = [];
+  let derniereReponse: unknown;
 
   const res = {
     cookie: jest.fn(),
@@ -64,15 +78,16 @@ describe('AuthController — IP tracee dans l’audit', () => {
     const auditLogger = createMockAuthAuditLogger();
     const unused = {} as never;
     const useCase = createMockUseCase<never>(issue);
+    const pour = (cible: Flux) => (flux === cible ? useCase : unused);
     const controller = new AuthController(
-      flux === 'login' ? useCase : unused,
-      flux === 'google' ? useCase : unused,
+      pour('login'),
+      pour('google'),
       unused,
       unused,
-      flux === 'refresh' ? useCase : unused,
+      pour('refresh'),
       unused,
-      unused,
-      unused,
+      pour('demande'),
+      pour('reinitialisation'),
       unused,
       unused,
       unused,
@@ -88,15 +103,21 @@ describe('AuthController — IP tracee dans l’audit', () => {
       login: () => controller.login(loginDto, echange),
       google: () => controller.googleAuth(googleDto, echange),
       refresh: () => controller.refresh(echange),
+      demande: () =>
+        controller.forgotPassword(
+          { email: loginDto.email } as ForgotPasswordDto,
+          echange.req,
+        ),
+      reinitialisation: () => controller.resetPassword(resetDto, echange.req),
     };
     const appel = appels[flux]();
     if ('rejects' in issue) {
       await expect(appel).rejects.toThrow();
     } else {
-      await appel;
+      derniereReponse = await appel;
     }
-    const [entry] = jest.mocked(auditLogger.log).mock.calls[0];
-    return { ...entry };
+    journal = jest.mocked(auditLogger.log).mock.calls.map(([entree]) => entree);
+    return { ...journal[0] };
   }
 
   it.each([
@@ -191,6 +212,40 @@ describe('AuthController — IP tracee dans l’audit', () => {
       details: 'Refresh token expired',
     });
     expect(entree).not.toHaveProperty('email');
+  });
+
+  it('journalise la demande de reinitialisation avec l email saisi', async () => {
+    expect(
+      await entreeDAudit('demande', { resolves: { message: 'generique' } }),
+    ).toMatchObject({
+      event: 'PASSWORD_RESET_REQUEST',
+      email: loginDto.email,
+      ip: RESOLVED_BY_EXPRESS,
+      userAgent: 'jest-agent',
+    });
+  });
+
+  it('journalise la reinitialisation aboutie avec le compte sans le jeton ni le renvoyer au client', async () => {
+    const entree = await entreeDAudit('reinitialisation', {
+      resolves: { message: 'reinitialise', userId: 'u-9' },
+    });
+
+    expect(entree).toMatchObject({
+      event: 'PASSWORD_RESET_COMPLETE',
+      userId: 'u-9',
+      ip: RESOLVED_BY_EXPRESS,
+      userAgent: 'jest-agent',
+    });
+    expect(JSON.stringify(journal)).not.toContain(JETON_DE_LIEN);
+    expect(derniereReponse).toEqual({ message: 'reinitialise' });
+  });
+
+  it('ne journalise aucun aboutissement quand le lien est refuse', async () => {
+    await entreeDAudit('reinitialisation', {
+      rejects: new LienInvalideError(),
+    });
+
+    expect(journal).toEqual([]);
   });
 
   it('ne journalise aucun email sur un echec Google', async () => {

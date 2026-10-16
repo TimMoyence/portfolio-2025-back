@@ -1,19 +1,25 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MoreThan, Repository } from 'typeorm';
+import { DepotEnDomaine } from '../../../common/infrastructure/typeorm/DepotEnDomaine';
 import type { ILeadMagnetRequestRepository } from '../domain/ILeadMagnetRequestRepository';
 import { LeadMagnetRequest } from '../domain/LeadMagnetRequest';
 import { LeadMagnetRequestEntity } from './entities/LeadMagnetRequest.entity';
 
 @Injectable()
-export class LeadMagnetRequestRepositoryTypeORM implements ILeadMagnetRequestRepository {
+export class LeadMagnetRequestRepositoryTypeORM
+  extends DepotEnDomaine<LeadMagnetRequestEntity, LeadMagnetRequest>
+  implements ILeadMagnetRequestRepository
+{
   constructor(
     @InjectRepository(LeadMagnetRequestEntity)
-    private readonly repo: Repository<LeadMagnetRequestEntity>,
-  ) {}
+    repo: Repository<LeadMagnetRequestEntity>,
+  ) {
+    super(repo);
+  }
 
-  async create(data: LeadMagnetRequest): Promise<LeadMagnetRequest> {
-    const entity = this.repo.create({
+  create(data: LeadMagnetRequest): Promise<LeadMagnetRequest> {
+    return this.enregistrer({
       firstName: data.firstName,
       email: data.email,
       formationSlug: data.formationSlug,
@@ -22,8 +28,6 @@ export class LeadMagnetRequestRepositoryTypeORM implements ILeadMagnetRequestRep
       termsAcceptedAt: data.termsAcceptedAt,
       profile: data.profile ?? ({} as LeadMagnetRequestEntity['profile']),
     });
-    const saved = await this.repo.save(entity);
-    return this.toDomain(saved);
   }
 
   async existsRecentByEmail(
@@ -41,13 +45,11 @@ export class LeadMagnetRequestRepositoryTypeORM implements ILeadMagnetRequestRep
     return count > 0;
   }
 
-  async findByToken(accessToken: string): Promise<LeadMagnetRequest | null> {
-    const entity = await this.repo.findOne({ where: { accessToken } });
-    if (!entity) return null;
-    return this.toDomain(entity);
+  findByToken(accessToken: string): Promise<LeadMagnetRequest | null> {
+    return this.trouver({ accessToken });
   }
 
-  private toDomain(entity: LeadMagnetRequestEntity): LeadMagnetRequest {
+  protected toDomain(entity: LeadMagnetRequestEntity): LeadMagnetRequest {
     const request = new LeadMagnetRequest();
     request.id = entity.id;
     request.firstName = entity.firstName;

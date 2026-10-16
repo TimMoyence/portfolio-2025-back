@@ -17,6 +17,7 @@ import type {
   ParticipantRecord,
 } from '../domain/IParticipants.repository';
 import { DepotEnDomaine } from '../../../common/infrastructure/typeorm/DepotEnDomaine';
+import { aAffecte } from '../../../common/infrastructure/typeorm/lignes-affectees';
 import { FormationParticipantEntity } from './entities/FormationParticipant.entity';
 
 const SESSION_KEY_CONSTRAINT = 'uq_formation_participants_session_key';
@@ -135,7 +136,7 @@ export class ParticipantsRepositoryTypeORM
       { id: existant.id, evinceLe: IsNull() },
       { empreinteDeReprise: input.empreinteDeReprise },
     );
-    if ((misAJour.affected ?? 0) === 0) {
+    if (!aAffecte(misAJour)) {
       throw new ParticipantEvinceError();
     }
     return { participant: this.toDomain(existant), nouveau: false };
@@ -198,7 +199,7 @@ export class ParticipantsRepositoryTypeORM
       { id: participantId, sessionId, evinceLe: IsNull() },
       { evinceLe: new Date() },
     );
-    return (misAJour.affected ?? 0) > 0;
+    return aAffecte(misAJour);
   }
 
   readmettre(
@@ -215,7 +216,7 @@ export class ParticipantsRepositoryTypeORM
           { id: participantId, sessionId, evinceLe: Not(IsNull()) },
           { evinceLe: null },
         );
-        return (misAJour.affected ?? 0) > 0;
+        return aAffecte(misAJour);
       } catch (error) {
         if (!this.isUniqueViolation(error)) {
           throw error;
@@ -247,7 +248,7 @@ export class ParticipantsRepositoryTypeORM
           generationDeJeton: () => '"generation_de_jeton" + 1',
         },
       );
-      return (misAJour.affected ?? 0) > 0;
+      return aAffecte(misAJour);
     });
   }
 

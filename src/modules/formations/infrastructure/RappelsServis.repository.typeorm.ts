@@ -5,21 +5,28 @@ import type {
   IRappelsServisRepository,
   RappelServiRecord,
 } from '../domain/IRappelsServis.repository';
+import { DepotEnDomaine } from '../../../common/infrastructure/typeorm/DepotEnDomaine';
 import { FormationRappelServiEntity } from './entities/FormationRappelServi.entity';
 
 @Injectable()
-export class RappelsServisRepositoryTypeORM implements IRappelsServisRepository {
+export class RappelsServisRepositoryTypeORM
+  extends DepotEnDomaine<FormationRappelServiEntity, RappelServiRecord>
+  implements IRappelsServisRepository
+{
   constructor(
     @InjectRepository(FormationRappelServiEntity)
-    private readonly repo: Repository<FormationRappelServiEntity>,
-  ) {}
+    repo: Repository<FormationRappelServiEntity>,
+  ) {
+    super(repo);
+  }
 
-  async lister(participantId: string): Promise<readonly RappelServiRecord[]> {
-    const lignes = await this.repo.find({
+  listerDuParticipant(
+    participantId: string,
+  ): Promise<readonly RappelServiRecord[]> {
+    return this.lister({
       where: { participantId },
       order: { rang: 'ASC' },
     });
-    return lignes.map((ligne) => this.toDomain(ligne));
   }
 
   async figer(input: {
@@ -43,10 +50,10 @@ export class RappelsServisRepositoryTypeORM implements IRappelsServisRepository 
         .orIgnore()
         .execute();
     }
-    return this.lister(input.participantId);
+    return this.listerDuParticipant(input.participantId);
   }
 
-  private toDomain(ligne: FormationRappelServiEntity): RappelServiRecord {
+  protected toDomain(ligne: FormationRappelServiEntity): RappelServiRecord {
     return {
       participantId: ligne.participantId,
       questionId: ligne.questionId,

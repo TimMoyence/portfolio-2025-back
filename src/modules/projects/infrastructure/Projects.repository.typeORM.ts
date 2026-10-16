@@ -25,8 +25,8 @@ export class ProjectsRepositoryTypeORM
     });
   }
 
-  async create(data: Projects): Promise<Projects> {
-    const entity = this.repo.create({
+  create(data: Projects): Promise<Projects> {
+    return this.enregistrer({
       slug: data.slug,
       type: data.type as ProjectTypeEnum,
       repoUrl: data.repoUrl,
@@ -37,8 +37,6 @@ export class ProjectsRepositoryTypeORM
       status: data.status,
       order: data.order,
     });
-    const saved = await this.repo.save(entity);
-    return this.toDomain(saved);
   }
 
   protected toDomain(entity: ProjectsEntity): Projects {

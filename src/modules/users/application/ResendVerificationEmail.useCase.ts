@@ -1,5 +1,4 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { InvalidInputError } from '../../../common/domain/errors/InvalidInputError';
 import type { IEmailVerificationTokensRepository } from '../domain/IEmailVerificationTokens.repository';
 import type { IUsersRepository } from '../domain/IUsers.repository';
 import {
@@ -47,12 +46,8 @@ export class ResendVerificationEmailUseCase {
       );
 
     if (recentCount >= RATE_LIMIT_MAX) {
-      throw new InvalidInputError(
-        'Trop de demandes de verification. Veuillez reessayer dans une heure.',
-      );
+      return { message: this.genericMessage };
     }
-
-    await this.emailVerificationTokensRepo.deleteByUserId(user.id);
 
     await this.envoiDeVerification.envoyer(
       user,

@@ -1,26 +1,40 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MoreThan, Repository } from 'typeorm';
+import { DepotEnDomaine } from '../../../common/infrastructure/typeorm/DepotEnDomaine';
 import type { IEmailVerificationTokensRepository } from '../domain/IEmailVerificationTokens.repository';
 import type { EmailVerificationToken } from '../domain/EmailVerificationToken';
 import { EmailVerificationTokenEntity } from './entities/EmailVerificationToken.entity';
-import { champsDuJeton, enregistrerJeton, jetonActif } from './jetons.typeorm';
+import { champsDuJeton, nonExpire } from './jetons.typeorm';
 
 @Injectable()
-export class EmailVerificationTokensRepositoryTypeORM implements IEmailVerificationTokensRepository {
+export class EmailVerificationTokensRepositoryTypeORM
+  extends DepotEnDomaine<EmailVerificationTokenEntity, EmailVerificationToken>
+  implements IEmailVerificationTokensRepository
+{
   constructor(
     @InjectRepository(EmailVerificationTokenEntity)
-    private readonly repo: Repository<EmailVerificationTokenEntity>,
-  ) {}
+    repo: Repository<EmailVerificationTokenEntity>,
+  ) {
+    super(repo);
+  }
 
   create(token: EmailVerificationToken): Promise<EmailVerificationToken> {
-    return enregistrerJeton(this.repo, champsDuJeton(token), versLeDomaine);
+    return this.enregistrer(champsDuJeton(token));
   }
 
   findActiveByTokenHash(
     tokenHash: string,
   ): Promise<EmailVerificationToken | null> {
-    return jetonActif(this.repo, { tokenHash }, versLeDomaine);
+    return this.trouver(nonExpire({ tokenHash }));
+  }
+
+  async invalidateActiveByUserId(userId: string): Promise<void> {
+    const maintenant = new Date();
+    await this.repo.update(
+      { userId, expiresAt: MoreThan(maintenant) },
+      { expiresAt: maintenant },
+    );
   }
 
   async deleteByUserId(userId: string): Promise<void> {
@@ -36,16 +50,16 @@ export class EmailVerificationTokensRepositoryTypeORM implements IEmailVerificat
       },
     });
   }
-}
 
-function versLeDomaine(
-  entity: EmailVerificationTokenEntity,
-): EmailVerificationToken {
-  return {
-    id: entity.id,
-    userId: entity.userId,
-    tokenHash: entity.tokenHash,
-    expiresAt: entity.expiresAt,
-    createdAt: entity.createdAt,
-  };
+  protected toDomain(
+    entity: EmailVerificationTokenEntity,
+  ): EmailVerificationToken {
+    return {
+      id: entity.id,
+      userId: entity.userId,
+      tokenHash: entity.tokenHash,
+      expiresAt: entity.expiresAt,
+      createdAt: entity.createdAt,
+    };
+  }
 }
