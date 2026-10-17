@@ -1,25 +1,21 @@
 import {
-  buildProductionSecrets,
+  buildProductionEnv,
   buildValidEnv,
 } from '../../test/factories/env.factory';
 import { optionsDesMigrations } from './data-source';
 
-const ENV_DE_PRODUCTION = {
-  ...buildValidEnv(buildProductionSecrets()),
-  NODE_ENV: 'production',
-  DB_HOST: 'db-migrations',
+const ENV_DE_PRODUCTION = buildProductionEnv({
   DATABASE_USER: 'migrateur',
   DB_PASS: 'secret',
-  DB_NAME: undefined,
   DATABASE_NAME: 'portfolio',
   DB_SSL: 'true',
-};
+});
 
 describe('data-source des migrations', () => {
   it('se connecte comme l API, SSL compris', () => {
     expect(optionsDesMigrations(ENV_DE_PRODUCTION)).toMatchObject({
       type: 'postgres',
-      host: 'db-migrations',
+      host: 'db',
       username: 'migrateur',
       password: 'secret',
       database: 'portfolio',

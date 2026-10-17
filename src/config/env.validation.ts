@@ -124,10 +124,17 @@ function addEmplacementSauvegardeIssues(
   env: EnvLue,
   ctx: z.RefinementCtx,
 ): void {
+  if (!estEnProduction(env)) return;
   const base = env.POSTGRES_DB?.trim();
-  if (!estEnProduction(env) || !base) return;
   const parUrl = Boolean(env.DATABASE_URL?.trim());
-  if (env.DB_NAME !== base) {
+  if (!base) {
+    ctx.addIssue({
+      code: 'custom',
+      path: ['POSTGRES_DB'],
+      message:
+        'est requise en production, c est la base que le deploiement sauvegarde avant migrate',
+    });
+  } else if (env.DB_NAME !== base) {
     ctx.addIssue({
       code: 'custom',
       path: [parUrl ? 'DATABASE_URL' : 'DB_NAME'],

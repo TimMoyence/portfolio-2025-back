@@ -1,5 +1,5 @@
 import {
-  buildProductionSecrets,
+  buildProductionEnv,
   buildValidEnv,
   TEST_JWT_SECRET,
   TEST_MORNING_BRIEF_HMAC_KEYS,
@@ -85,8 +85,7 @@ describe('validateEnv', () => {
   });
 
   it('devrait accepter un trousseau HMAC en production', () => {
-    const env = buildValidEnv({
-      NODE_ENV: 'production',
+    const env = buildProductionEnv({
       MORNING_BRIEF_HMAC_KEYS: TEST_MORNING_BRIEF_HMAC_KEYS,
     });
 
@@ -367,11 +366,7 @@ describe('validateEnv', () => {
     it('refuse en production une DATABASE_URL qui nomme une autre base que POSTGRES_DB, que db-backup sauvegarde', () => {
       expect(() =>
         validateEnv(
-          buildValidEnv({
-            ...buildProductionSecrets(),
-            NODE_ENV: 'production',
-            DB_NAME: undefined,
-            POSTGRES_DB: 'portfolio',
+          buildProductionEnv({
             DATABASE_URL: 'postgres://u:p@db:5432/portfolio_prod',
           }),
         ),
@@ -379,16 +374,6 @@ describe('validateEnv', () => {
         'DATABASE_URL: doit nommer la base POSTGRES_DB, la seule que db-backup sauvegarde',
       );
     });
-
-    const envDeProduction = (surcharge: Record<string, string | undefined>) =>
-      buildValidEnv({
-        ...buildProductionSecrets(),
-        NODE_ENV: 'production',
-        DB_HOST: 'db',
-        DB_NAME: undefined,
-        POSTGRES_DB: 'portfolio',
-        ...surcharge,
-      });
 
     it.each([
       [
@@ -411,13 +396,32 @@ describe('validateEnv', () => {
         { DATABASE_URL: 'postgres://u:p@pg.exemple.net:5432/portfolio' },
         'DATABASE_URL: doit designer le service db, le seul que db-backup sauvegarde',
       ],
+      [
+        'une env sans POSTGRES_DB, la base que le deploiement sauvegarde avant migrate',
+        { POSTGRES_DB: undefined, DB_NAME: 'portfolio' },
+        'POSTGRES_DB: est requise en production, c est la base que le deploiement sauvegarde avant migrate',
+      ],
+      [
+        'une POSTGRES_DB blanche',
+        { POSTGRES_DB: '  ', DB_NAME: 'portfolio' },
+        'POSTGRES_DB: est requise en production, c est la base que le deploiement sauvegarde avant migrate',
+      ],
+      [
+        'un autre hote que le service db, meme sans POSTGRES_DB',
+        {
+          POSTGRES_DB: undefined,
+          DB_NAME: 'portfolio_prod',
+          DB_HOST: 'pg.exemple.net',
+        },
+        'DB_HOST: doit designer le service db, le seul que db-backup sauvegarde',
+      ],
     ])('refuse en production %s', (_cas, surcharge, message) => {
-      expect(() => validateEnv(envDeProduction(surcharge))).toThrow(message);
+      expect(() => validateEnv(buildProductionEnv(surcharge))).toThrow(message);
     });
 
     it('ouvre en production POSTGRES_DB sur le service db, un DB_DATABASE etant alors ignore', () => {
       const env = validateEnv(
-        envDeProduction({ DB_DATABASE: 'portfolio_prod' }),
+        buildProductionEnv({ DB_DATABASE: 'portfolio_prod' }),
       );
 
       expect([env.DB_HOST, env.DB_NAME]).toEqual(['db', 'portfolio']);
@@ -426,11 +430,7 @@ describe('validateEnv', () => {
     it('accepte en production une DATABASE_URL qui nomme POSTGRES_DB', () => {
       expect(
         validateEnv(
-          buildValidEnv({
-            ...buildProductionSecrets(),
-            NODE_ENV: 'production',
-            DB_NAME: undefined,
-            POSTGRES_DB: 'portfolio',
+          buildProductionEnv({
             DATABASE_URL: 'postgres://u:p@db:5432/portfolio',
           }),
         ).DB_NAME,

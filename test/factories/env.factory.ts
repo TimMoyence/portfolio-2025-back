@@ -48,3 +48,16 @@ export function buildProductionSecrets(): Record<string, string> {
     MORNING_BRIEF_HMAC_KEYS: TEST_MORNING_BRIEF_HMAC_KEYS,
   };
 }
+
+export function buildProductionEnv(
+  overrides: Record<string, unknown> = {},
+): Record<string, unknown> {
+  return buildValidEnv({
+    ...buildProductionSecrets(),
+    NODE_ENV: 'production',
+    DB_HOST: 'db',
+    DB_NAME: undefined,
+    POSTGRES_DB: 'portfolio',
+    ...overrides,
+  });
+}
