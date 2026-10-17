@@ -22,6 +22,15 @@ export class RetireLeCoursOrphelin1792500000000 implements MigrationInterface {
   name = 'RetireLeCoursOrphelin1792500000000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
+    const [{ ouvertes }] = (await queryRunner.query(
+      `SELECT count(*)::int AS "ouvertes" FROM "formation_sessions" WHERE "course_slug" = $1 AND "etat" <> 'terminee'`,
+      [ANCIEN_B2_02],
+    )) as { ouvertes: number }[];
+    if (ouvertes > 0) {
+      throw new Error(
+        `Retrait de l ancien B2-02 refuse : ${ouvertes} seance(s) non terminee(s) le portent encore. Les clore avant de deployer.`,
+      );
+    }
     await queryRunner.query(
       `DELETE FROM "formation_course_publications" WHERE "slug" = $1`,
       [ANCIEN_B2_02],

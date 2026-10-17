@@ -70,8 +70,40 @@ describeDb(
       ),
     });
 
-    it('retire la publication, la version et les ecrans de l ancien B2-02, et garde le B2-02 servi et ses seances', async () => {
+    it('refuse de retirer l ancien B2-02 tant qu une seance en attente ou en cours le porte, sans rien retirer', async () => {
       await publier(ANCIEN_B2_02);
+      const formateur = await inscrireUtilisateur(
+        base(),
+        'formateur-ancien@example.com',
+        'teacher',
+      );
+      await base().query(
+        `INSERT INTO "formation_sessions" ("course_slug", "teacher_id", "code", "etat", "bareme")
+       VALUES ($1, $2, '4270', 'attente', $3), ($1, $2, '4269', 'en_cours', $3)`,
+        [ANCIEN_B2_02, formateur, JSON.stringify(buildBareme())],
+      );
+
+      await expect(
+        jouerLaMigration(
+          base(),
+          new RetireLeCoursOrphelin1792500000000(),
+          'up',
+        ),
+      ).rejects.toThrow('2 seance(s) non terminee(s)');
+
+      expect(await lignesDu(ANCIEN_B2_02)).toEqual({
+        contenus: 1,
+        ecrans: 2,
+        publications: 1,
+        seances: 2,
+      });
+      await base().query(
+        `UPDATE "formation_sessions" SET "etat" = 'terminee', "fermee_le" = now() WHERE "course_slug" = $1`,
+        [ANCIEN_B2_02],
+      );
+    });
+
+    it('retire la publication, la version et les ecrans de l ancien B2-02, et garde le B2-02 servi et ses seances', async () => {
       await publier(B2_02_SERVI);
       const formateur = await inscrireUtilisateur(
         base(),
@@ -95,14 +127,14 @@ describeDb(
 
       const servi = { contenus: 1, ecrans: 2, publications: 1, seances: 1 };
       expect(avant).toEqual({
-        ancien: { contenus: 1, ecrans: 2, publications: 1, seances: 0 },
+        ancien: { contenus: 1, ecrans: 2, publications: 1, seances: 2 },
         servi,
       });
       expect({
         ancien: await lignesDu(ANCIEN_B2_02),
         servi: await lignesDu(B2_02_SERVI),
       }).toEqual({
-        ancien: { contenus: 0, ecrans: 0, publications: 0, seances: 0 },
+        ancien: { contenus: 0, ecrans: 0, publications: 0, seances: 2 },
         servi,
       });
     });
@@ -131,7 +163,7 @@ describeDb(
         contenus: 0,
         ecrans: 0,
         publications: 0,
-        seances: 0,
+        seances: 2,
       });
     });
   },
