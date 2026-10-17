@@ -80,6 +80,11 @@ import {
   fermerApplication,
 } from './helpers/nest-test-app';
 import { installerEnvFormations } from './helpers/env-formations';
+import {
+  REFUS_DE_L_OCTET_NUL,
+  statutEtDetail,
+} from './helpers/reponse-probleme';
+import { enregistrerLesReponsesServies } from './helpers/reponses-servies';
 const SYNTHESE_A = 'synthese-formateur@example.com';
 
 installerEnvFormations({ syntheseA: SYNTHESE_A });
@@ -445,6 +450,7 @@ async function creerHarnais(
   const moduleRef = await compilerModuleFormations(depots, catalogueHttp);
 
   const app = moduleRef.createNestApplication<NestExpressApplication>();
+  enregistrerLesReponsesServies(app);
   bornerLesCorpsDeRequete(app);
   signerLesIdentitesDeTest(app);
   app.setGlobalPrefix(PREFIXE_API_PAR_DEFAUT);
@@ -761,7 +767,30 @@ describe('Session de formation (e2e http socket)', () => {
       expect(reponse.status).toBe(statut);
     });
 
-    it('refuse de rejoindre avec une adresse que @IsEmail laisse passer mais que l adresse email commune rejette', async () => {
+    it('refuse en 400 un octet nul dans le corps ou le chemin, avant tout cas d usage', async () => {
+      const seance = await http.ouvrirSession();
+      const poste = await http.inscrire(
+        seance.code,
+        '11111111-1111-4111-8111-111111111114',
+      );
+
+      const refus = [
+        await http
+          .post(`/sessions/${seance.code}/join`)
+          .send({ ...inscription('martin'), prenom: 'Th\u0000eo' }),
+        await http
+          .post(`/sessions/${seance.sessionId}/machines/ecran%00x/evaluation`)
+          .set(EN_TETE_JETON, poste.jeton)
+          .send({}),
+      ];
+
+      expect(refus.map(statutEtDetail)).toEqual([
+        REFUS_DE_L_OCTET_NUL,
+        REFUS_DE_L_OCTET_NUL,
+      ]);
+    });
+
+    it('refuse de rejoindre avec une adresse citee, que la regle commune des adresses rejette', async () => {
       const { code } = await http.ouvrirSession();
 
       const reponse = await http

@@ -9,8 +9,8 @@ import {
   fichiersDeMigration,
   migrationsChargees,
 } from './lib/migrations-chargees.mjs';
+import { RACINE as root } from './lib/racine.mjs';
 
-const root = new URL('..', import.meta.url).pathname;
 const CLASSEURS = join('src', CLASSEURS_DANS_DIST);
 
 let construit = false;

@@ -6,7 +6,7 @@ import { createHmac } from 'node:crypto';
 import { JwtAuthGuard } from '../../src/common/interfaces/auth/jwt-auth.guard';
 import { JwtTokenService } from '../../src/modules/users/application/services/JwtTokenService';
 import { USERS_REPOSITORY } from '../../src/modules/users/domain/token';
-import { TEST_JWT_SECRET } from '../factories/env.factory';
+import { buildConfigService, TEST_JWT_SECRET } from '../factories/env.factory';
 import { buildUser, createMockUsersRepo } from '../factories/user.factory';
 
 export const EN_TETE_IDENTITE = 'x-test-identite';
@@ -41,15 +41,19 @@ export function jetonSigne(
   return `${entete}.${charge}.${signature}`;
 }
 
+const rolesEnBase = new Map<string, string[]>();
+
 export function authentificationReelle(): Provider[] {
   const utilisateurs = createMockUsersRepo();
   utilisateurs.findById.mockImplementation((id: string) =>
-    Promise.resolve(buildUser({ id, emailVerified: true })),
+    Promise.resolve(
+      buildUser({ id, emailVerified: true, roles: rolesEnBase.get(id) ?? [] }),
+    ),
   );
   return [
     {
       provide: ConfigService,
-      useValue: new ConfigService({ JWT_SECRET: TEST_JWT_SECRET }),
+      useValue: buildConfigService({ JWT_SECRET: TEST_JWT_SECRET }),
     },
     JwtTokenService,
     { provide: USERS_REPOSITORY, useValue: utilisateurs },
@@ -62,6 +66,7 @@ export function signerLesIdentitesDeTest(app: INestApplication): void {
     const identite = requete.headers[EN_TETE_IDENTITE];
     if (typeof identite === 'string') {
       const [sub, ...roles] = identite.split(':');
+      rolesEnBase.set(sub, roles);
       requete.headers.authorization = `Bearer ${jetonSigne(sub, roles)}`;
     }
     suite();

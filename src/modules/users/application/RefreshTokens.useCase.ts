@@ -3,7 +3,9 @@ import { InvalidCredentialsError } from '../../../common/domain/errors/InvalidCr
 import { TokenExpiredError } from '../../../common/domain/errors/TokenExpiredError';
 import { TokenReuseDetectedError } from '../../../common/domain/errors/TokenReuseDetectedError';
 import type { IRefreshTokensRepository } from '../domain/IRefreshTokens.repository';
+import type { RefreshToken } from '../domain/RefreshToken';
 import type { IUsersRepository } from '../domain/IUsers.repository';
+import { estRevoqueHorsRotation } from '../domain/RefreshToken';
 import { REFRESH_TOKENS_REPOSITORY, USERS_REPOSITORY } from '../domain/token';
 import { REFRESH_TOKEN_ROTATION_GRACE_MS } from '../domain/auth.constants';
 import type { AuthResult } from './AuthenticateUser.useCase';
@@ -29,6 +31,10 @@ export class RefreshTokensUseCase {
       rawRefreshToken,
     );
 
+    if (estRevoqueHorsRotation(stored)) {
+      throw new InvalidCredentialsError('Refresh token revoked');
+    }
+
     const maintenant = Date.now();
     if (
       stored.revoked &&
@@ -36,7 +42,7 @@ export class RefreshTokensUseCase {
       stored.rotationGraceUntil !== undefined &&
       stored.rotationGraceUntil.getTime() > maintenant
     ) {
-      return this.ouvrirUneSession(stored.userId);
+      return this.ouvrirUneSession(stored);
     }
 
     if (stored.revoked) {
@@ -56,14 +62,19 @@ export class RefreshTokensUseCase {
       throw new InvalidCredentialsError('Invalid refresh token');
     }
 
-    return this.ouvrirUneSession(stored.userId);
+    return this.ouvrirUneSession(stored);
   }
 
-  private async ouvrirUneSession(userId: string): Promise<AuthResult> {
-    const user = await this.usersRepo.findById(userId);
+  private async ouvrirUneSession(precedent: RefreshToken): Promise<AuthResult> {
+    const user = await this.usersRepo.findById(precedent.userId);
     if (!user || !user.isActive) {
       throw new InvalidCredentialsError('User not found or inactive');
     }
-    return issueAuthSession(user, this.jwtTokenService, this.refreshTokensRepo);
+    return issueAuthSession(
+      user,
+      this.jwtTokenService,
+      this.refreshTokensRepo,
+      precedent.id,
+    );
   }
 }

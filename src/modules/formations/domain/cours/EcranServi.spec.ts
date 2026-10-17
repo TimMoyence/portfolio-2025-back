@@ -1,7 +1,10 @@
+import { readFileSync } from 'fs';
+import { join, relative } from 'path';
 import {
   buildCoursDeTest,
   EN_CATALOGUE,
 } from '../../../../../test/factories/cours.factory';
+import { collectFiles } from '../../../../../test/helpers/source-tree';
 import {
   buildCasAQuestionsLibres,
   buildCorrectionDeReponses,
@@ -20,11 +23,14 @@ import {
   PhaseFermeeError,
   PieceJointeIntrouvableError,
   PieceJointeRetenueError,
+  TypeDeQuestionError,
 } from '../errors/FormationErrors';
 import {
   activitesLibres,
   assertCorrectionNonProjetee,
+  absenteDuCours,
   assertEcranServi,
+  cibleServie,
   dernierEcranServi,
   ecranParId,
   pieceJointeServieAuPoste,
@@ -32,7 +38,7 @@ import {
   rangDeLEcran,
   verdictServiDe,
 } from './EcranServi';
-import type { DiffusionDeSeance } from './EcranServi';
+import type { CibleDuCours, DiffusionDeSeance } from './EcranServi';
 import {
   VOTES_JUMELES,
   VOTES_SIMPLES,
@@ -117,6 +123,65 @@ describe('assertEcranServi', () => {
     expect(new EcranNonServiError('E-CONCEPT')).toBeInstanceOf(
       ResourceNotFoundError,
     );
+  });
+});
+
+describe('cibleServie', () => {
+  const cours = buildCoursDeTest();
+  const aVenir = PILOTE.ecranCourant + 1;
+  const absente = absenteDuCours('une feuille');
+
+  function plan(valeur: string | null, rang: number): CibleDuCours<string> {
+    return { valeur, id: 'PLAN-X', rang: () => rang };
+  }
+
+  it('rend la cible d un écran déjà projeté', () => {
+    expect(
+      cibleServie(PILOTE, cours, plan('plan', PILOTE.ecranCourant), absente),
+    ).toBe('plan');
+  });
+
+  it('refuse un écran à venir en nommant l écran du rang, pas l identifiant de la cible', () => {
+    expect(() =>
+      cibleServie(PILOTE, cours, plan('plan', aVenir), absente),
+    ).toThrow(new EcranNonServiError(cours.ecrans[aVenir]?.id ?? ''));
+  });
+
+  it('lève l erreur propre à l appelant quand la cible manque au cours, avant de regarder l écran', () => {
+    const rang = jest.fn(() => aVenir);
+
+    expect(() =>
+      cibleServie(PILOTE, cours, { valeur: null, id: 'PLAN-X', rang }, absente),
+    ).toThrow(
+      new TypeDeQuestionError('PLAN-X', 'n’est pas une feuille de ce cours'),
+    );
+    expect(rang).not.toHaveBeenCalled();
+  });
+
+  it('est la seule source des formations à vérifier qu un écran est servi', () => {
+    const racine = join(__dirname, '..', '..');
+    const appels = collectFiles(racine)
+      .filter(
+        (fichier) =>
+          fichier.endsWith('.ts') &&
+          !fichier.endsWith('.spec.ts') &&
+          !fichier.includes('__tests__'),
+      )
+      .flatMap((fichier) => {
+        const texte = readFileSync(fichier, 'utf8');
+        return [...texte.matchAll(/(?<!function )\bassertEcranServi\(/g)].map(
+          ({ index }) => {
+            const englobantes = [
+              ...texte.slice(0, index).matchAll(/\bfunction (\w+)/g),
+            ];
+            return `${relative(racine, fichier)} › ${englobantes.at(-1)?.[1] ?? '?'}`;
+          },
+        );
+      });
+
+    expect(appels).toEqual([
+      `${join('domain', 'cours', 'EcranServi.ts')} › cibleServie`,
+    ]);
   });
 });
 

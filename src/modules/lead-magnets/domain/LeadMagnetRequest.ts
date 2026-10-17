@@ -1,9 +1,9 @@
 import {
   requireEmail,
+  requireLocale,
   requireText,
   requireValidDate,
 } from '../../../common/domain/validation/domain-validators';
-import type { InteractionProfile } from './InteractionProfile';
 
 export interface CreateLeadMagnetRequestProps {
   firstName: string;
@@ -12,7 +12,6 @@ export interface CreateLeadMagnetRequestProps {
   termsVersion: string;
   termsLocale: string;
   termsAcceptedAt: Date;
-  profile?: InteractionProfile;
 }
 
 export class LeadMagnetRequest {
@@ -24,7 +23,6 @@ export class LeadMagnetRequest {
   termsLocale: string;
   termsAcceptedAt: Date;
   accessToken?: string;
-  profile?: InteractionProfile;
   createdAt?: Date;
 
   static create(props: CreateLeadMagnetRequestProps): LeadMagnetRequest {
@@ -47,7 +45,7 @@ export class LeadMagnetRequest {
       1,
       50,
     );
-    const termsLocale = requireText(props.termsLocale, 'terms locale', 1, 10);
+    const termsLocale = requireLocale(props.termsLocale, 'terms locale');
     requireValidDate(props.termsAcceptedAt, 'terms accepted');
     const request = new LeadMagnetRequest();
     request.firstName = firstName;
@@ -56,7 +54,6 @@ export class LeadMagnetRequest {
     request.termsVersion = termsVersion;
     request.termsLocale = termsLocale;
     request.termsAcceptedAt = props.termsAcceptedAt;
-    request.profile = props.profile;
     return request;
   }
 }

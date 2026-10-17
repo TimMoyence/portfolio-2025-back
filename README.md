@@ -51,17 +51,7 @@ Une fois l'API demarree :
   - `GET /articles` et `GET /articles/:slug` (articles publiés uniquement)
   - `GET /articles/feed.xml?locale=fr|en` (RSS 2.0 : `pubDate`, `lastBuildDate`, `atom:link rel="self"`)
   - modération (JWT, rôle `admin`) : `GET /articles/admin/articles`,
-    `POST /articles/admin/:articleId/withdraw|restore`,
-    `POST /articles/admin/:articleId/broadcast/approve|cancel`
-- chaque édition reçue programme une diffusion email aux abonnés confirmés de
-  la source `veille-ia`, dans la langue de l'article, après
-  `ARTICLE_BROADCAST_DELAY_MINUTES` (fenêtre de modération, 90 min par défaut).
-  Un cron (5 min) l'envoie par lots de `ARTICLE_BROADCAST_BATCH_SIZE` ; chaque
-  destinataire est réservé avant l'envoi, donc jamais servi deux fois, même
-  après un redémarrage. Rien ne part tant que `ARTICLE_BROADCAST_ENABLED=true`
-  et le SMTP ne sont pas configurés ; une diffusion restée plus de 24 h sans
-  envoi expire au lieu de partir en retard. Retirer un article annule sa
-  diffusion.
+    `POST /articles/admin/:articleId/withdraw|restore`
 - les seances de formation reposent sur un cours servi par le serveur ([details](./docs/formations.md)) :
   - `POST /formations/sessions` avec `{ courseSlug }`, le serveur tirant le bareme
   - `GET /formations/sessions/:id/sujet` (sujet du tirage de l'etudiant, sans corrige)
@@ -145,6 +135,6 @@ Les details de securisation contre le prompt injection et les contenus non fiabl
 
 - Image locale : `docker build -t ghcr.io/<owner>/portfolio-2025-back:dev .`
 - Run local containerise : copier `deploy/backend.env.example` vers `deploy/backend.env` et renseigner ses secrets (le gabarit brut est refuse par la validation d'environnement), puis `docker run --rm -p 3000:3000 --env-file deploy/backend.env ghcr.io/<owner>/portfolio-2025-back:dev`
-- Stack de production : copier `deploy/.env.example` vers `deploy/.env` et `deploy/backend.env.example` vers `deploy/backend.env`, puis lancer `docker compose -f deploy/compose.yaml up -d`
+- Stack de production : copier `deploy/backend.env.example` vers `deploy/backend.env` et renseigner ses secrets ; ce seul fichier sert aux conteneurs et a l'interpolation de `compose.yaml`. Puis, dans l'ordre du deploiement de la CI, chaque commande prefixee par `BACK_IMAGE=<image back> FRONT_IMAGE=<image front> docker compose -p portfolio25 -f deploy/compose.yaml --env-file deploy/backend.env` : `pull`, `run --rm migrate` (qui demarre `db` et refuse une env que l'API refuserait), puis `up -d`. Un `up -d` seul lancerait `migrate` et `api` ensemble, et l'API publierait les cours avant que leurs tables existent. Sur une stack deja en service, la CI sauvegarde la base avant `migrate` ([docs/database-governance.md](./docs/database-governance.md) §5).
 
 Le workflow [`.github/workflows/ci.yml`](./.github/workflows/ci.yml) construit l'image, publie sur GHCR et peut relancer le service `api` via SSH quand la branche `master` est mise a jour.

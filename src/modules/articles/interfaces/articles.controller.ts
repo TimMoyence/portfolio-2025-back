@@ -15,28 +15,40 @@ import {
   ApiAcceptedResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiProduces,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import type { Response } from 'express';
 import { LocaleCode } from '../../../common/domain/value-objects/LocaleCode';
-import { Public } from '../../../common/interfaces/auth/public.decorator';
+import { RoutePublique } from '../../../common/interfaces/security/formulaire-public.decorator';
 import type { ArticleRecord } from '../application/articles.repository';
 import { ArticlesService } from '../application/articles.service';
 import { ArticleHmacGuard } from './article-hmac.guard';
+import {
+  ArticleDeliveryResponseDto,
+  ArticleIngestResponseDto,
+} from './dto/article-delivery.response.dto';
 import { ArticleListQueryDto } from './dto/article-list.query.dto';
+import {
+  ArticleListResponseDto,
+  PublishedArticleResponseDto,
+} from './dto/article.response.dto';
 
 @ApiTags('articles')
 @Controller(['articles', 'api/articles'])
 export class ArticlesController {
   constructor(private readonly articles: ArticlesService) {}
 
-  @Public()
+  @RoutePublique()
   @Post('ingest')
   @UseGuards(ArticleHmacGuard)
   @HttpCode(HttpStatus.ACCEPTED)
   @ApiOperation({ summary: 'Recevoir une édition Morning-Brief signée' })
-  @ApiAcceptedResponse({ description: 'Édition acceptée ou déjà reçue' })
+  @ApiAcceptedResponse({
+    description: 'Édition acceptée ou déjà reçue',
+    type: ArticleIngestResponseDto,
+  })
   @ApiUnauthorizedResponse({ description: 'Signature machine invalide' })
   async ingest(
     @Body() payload: unknown,
@@ -48,7 +60,10 @@ export class ArticlesController {
 
   @Get('ingest/:deliveryId')
   @ApiOperation({ summary: "Consulter l'état d'une livraison" })
-  async getDelivery(@Param('deliveryId') deliveryId: string) {
+  @ApiOkResponse({ type: ArticleDeliveryResponseDto })
+  async getDelivery(
+    @Param('deliveryId') deliveryId: string,
+  ): Promise<ArticleDeliveryResponseDto> {
     const delivery = await this.articles.getDelivery(deliveryId);
     return {
       delivery_id: delivery.deliveryId,
@@ -59,18 +74,23 @@ export class ArticlesController {
     };
   }
 
-  @Public()
+  @RoutePublique()
   @Get('feed.xml')
   @ApiOperation({ summary: 'Flux RSS des articles publiés' })
+  @ApiProduces('application/rss+xml')
+  @ApiOkResponse({ description: 'Flux RSS 2.0', schema: { type: 'string' } })
   async feed(@Query('locale') locale: string, @Res() response: Response) {
     const xml = await this.articles.feed(LocaleCode.resolve(locale).value);
     response.type('application/rss+xml').send(xml);
   }
 
-  @Public()
+  @RoutePublique()
   @Get()
   @ApiOperation({ summary: 'Lister les articles publiés' })
-  @ApiOkResponse({ description: 'Liste paginée des articles' })
+  @ApiOkResponse({
+    description: 'Liste paginée des articles',
+    type: ArticleListResponseDto,
+  })
   async list(@Query() query: ArticleListQueryDto) {
     const result = await this.articles.listPublished({
       locale: query.locale,
@@ -84,10 +104,13 @@ export class ArticlesController {
     };
   }
 
-  @Public()
+  @RoutePublique()
   @Get(':slug')
   @ApiOperation({ summary: 'Lire un article publié' })
-  @ApiOkResponse({ description: 'Article publié normalisé' })
+  @ApiOkResponse({
+    description: 'Article publié normalisé',
+    type: PublishedArticleResponseDto,
+  })
   async getBySlug(
     @Param('slug') slug: string,
     @Query('locale') locale: string,

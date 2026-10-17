@@ -27,14 +27,14 @@ describe('prefixeApi', () => {
 
 describe('cheminDeLApi', () => {
   it('place le chemin sous le prefixe, sans double barre', () => {
-    expect(
-      cheminDeLApi('/newsletter/unsubscribe', { API_PREFIX: '/custom/' }),
-    ).toBe('/custom/newsletter/unsubscribe');
+    expect(cheminDeLApi('/auth/verify-email', { API_PREFIX: '/custom/' })).toBe(
+      '/custom/auth/verify-email',
+    );
   });
 
   it('ne rend qu une barre de tete sous un prefixe vide', () => {
-    expect(cheminDeLApi('newsletter/confirm', { API_PREFIX: '' })).toBe(
-      '/newsletter/confirm',
+    expect(cheminDeLApi('auth/verify-email', { API_PREFIX: '' })).toBe(
+      '/auth/verify-email',
     );
   });
 

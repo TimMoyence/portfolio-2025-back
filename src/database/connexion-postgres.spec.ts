@@ -51,8 +51,8 @@ describe('resoudreConnexionPostgres', () => {
     ).toBe(5433);
   });
 
-  it.each(['abc', '5433x', '-1', '54.3'])(
-    'refuse au demarrage un port qui n est pas un entier positif (%p)',
+  it.each(['abc', '5433x', '-1', '54.3', '0', '65536'])(
+    'refuse au demarrage un port qui n est pas un entier de 1 a 65535 (%p)',
     (port) => {
       expect(() => resoudreConnexionPostgres({ DB_PORT: port })).toThrow(
         /port PostgreSQL/,
@@ -90,6 +90,52 @@ describe('resoudreConnexionPostgres', () => {
     expect(connexion.password).toBe('secret ');
   });
 
+  it('retient la base de DATABASE_URL, celle que pg ouvre, avant tout alias', () => {
+    expect(
+      resoudreConnexionPostgres({
+        DATABASE_URL: 'postgres://u:p@h:5432/depuis_url',
+        DB_NAME: 'a',
+        POSTGRES_DB: 'c',
+      }).database,
+    ).toBe('depuis_url');
+  });
+
+  it.each([
+    ['postgres://u:p@h:5432/donn%C3%A9es_2025', 'données_2025'],
+    ['postgres://u:p@h:5432/ma%20base', 'ma base'],
+    ['postgres://u:p@h:5432/ma base', 'ma base'],
+    ['postgres://u:p w@h:5432/donn%C3%A9es', 'donn%C3%A9es'],
+    ['socket:/var/run/postgresql?db=portfolio', undefined],
+    ['mysql://u:p@h:3306/portfolio', undefined],
+    ['postgres://u:p@h:5432/%E0%A4%A', undefined],
+  ])(
+    'garantit la base que pg ouvre pour %s, decodee, et aucune hors postgres',
+    (url, base) => {
+      expect(resoudreConnexionPostgres({ DATABASE_URL: url }).database).toBe(
+        base,
+      );
+    },
+  );
+
+  it('retient l hote de DATABASE_URL, celui que pg ouvre, avant tout alias', () => {
+    expect(
+      resoudreConnexionPostgres({
+        DATABASE_URL: 'postgres://u:p@depuis-url:5432/portfolio',
+        DB_HOST: 'alias',
+      }).host,
+    ).toBe('depuis-url');
+  });
+
+  it('ne retient ni hote ni base d une URL sans hote, que l amorcage ne sait pas lire', () => {
+    const connexion = resoudreConnexionPostgres({
+      DATABASE_URL: 'postgres://u:p@/portfolio',
+      DB_HOST: 'alias',
+    });
+
+    expect(connexion.host).toBeUndefined();
+    expect(connexion.database).toBeUndefined();
+  });
+
   it('ne leve pas sur une URL invalide et ne deduit alors aucune base', () => {
     expect(
       resoudreConnexionPostgres({ DATABASE_URL: 'pas une url' }).database,
@@ -118,7 +164,7 @@ describe('resoudreConnexionPostgres', () => {
 });
 
 describe('emplacementTypeOrm', () => {
-  it('prefere l URL aux identifiants et garde la base et SSL', () => {
+  it('prefere l URL aux identifiants, a sa base comprise, et garde SSL', () => {
     const emplacement = emplacementTypeOrm(
       resoudreConnexionPostgres({
         DATABASE_URL: 'postgres://u:p@h:5432/x',
@@ -130,7 +176,7 @@ describe('emplacementTypeOrm', () => {
 
     expect(emplacement).toEqual({
       url: 'postgres://u:p@h:5432/x',
-      database: 'cible',
+      database: 'x',
       ssl: { rejectUnauthorized: false },
     });
   });

@@ -1,5 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import type { IRefreshTokensRepository } from '../domain/IRefreshTokens.repository';
+import { estRevoqueHorsRotation } from '../domain/RefreshToken';
 import { REFRESH_TOKENS_REPOSITORY } from '../domain/token';
 import { jetonDeRafraichissementConnu } from './services/issue-auth-session';
 
@@ -15,6 +16,7 @@ export class RevokeTokenUseCase {
       this.refreshTokensRepo,
       rawRefreshToken,
     );
+    if (estRevoqueHorsRotation(stored)) return;
     await this.refreshTokensRepo.revokeByUserId(stored.userId);
   }
 }

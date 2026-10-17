@@ -1,35 +1,37 @@
 import { generateUserSummary } from './user-summary.generator';
 import {
   buildSectionGeneratorArgs,
+  createStructuredOutputLlmStub,
   systemMessagesOf,
 } from '../../../../../../test/factories/section-generator.factory';
+import { userSummarySchema } from '../schemas/audit-report.schemas';
 
 describe('generateUserSummary', () => {
   it('retourne le summaryText extrait de la reponse LLM', async () => {
-    const invokeTracked = jest
+    const invoke = jest
       .fn()
       .mockResolvedValue({ summaryText: 'Synthese test.' });
+    const { llm, withStructuredOutput } = createStructuredOutputLlmStub(invoke);
 
     const result = await generateUserSummary(
-      { invokeTracked },
-      buildSectionGeneratorArgs({ payload: { any: 'payload' } }),
+      buildSectionGeneratorArgs({ llm, payload: { any: 'payload' } }),
     );
 
     expect(result).toBe('Synthese test.');
-    expect(invokeTracked).toHaveBeenCalledTimes(1);
-    const [, messages, section] = invokeTracked.mock.calls[0];
-    expect(section).toBe('user_summary');
-    expect((messages as unknown[]).length).toBeGreaterThanOrEqual(3);
+    expect(withStructuredOutput).toHaveBeenCalledWith(userSummarySchema);
+    expect(invoke).toHaveBeenCalledTimes(1);
+    const [messages] = invoke.mock.calls[0] as [unknown[]];
+    expect(messages.length).toBeGreaterThanOrEqual(3);
   });
 
   it('insere le retry constraint en retryMode=true', async () => {
-    const invokeTracked = jest.fn().mockResolvedValue({ summaryText: 'x' });
+    const invoke = jest.fn().mockResolvedValue({ summaryText: 'x' });
+    const { llm } = createStructuredOutputLlmStub(invoke);
 
     await generateUserSummary(
-      { invokeTracked },
-      buildSectionGeneratorArgs({ retryMode: true }),
+      buildSectionGeneratorArgs({ llm, retryMode: true }),
     );
 
-    expect(systemMessagesOf(invokeTracked)).toHaveLength(3);
+    expect(systemMessagesOf(invoke)).toHaveLength(3);
   });
 });

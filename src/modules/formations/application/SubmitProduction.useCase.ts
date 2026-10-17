@@ -14,12 +14,11 @@ import {
   ecranDeProduction,
   normaliserProduction,
 } from '../domain/cours/ProductionSoumise';
+import { absenteDuCours } from '../domain/cours/EcranServi';
 import {
   AnswerAlreadySubmittedError,
   ReprisesEpuiseesError,
-  TypeDeQuestionError,
 } from '../domain/errors/FormationErrors';
-import { assertEcranOuvertAuxProductions } from './CoursDeLaSeance';
 import { EnregistrementDeReponse } from './EnregistrementDeReponse';
 
 export interface SubmitProductionCommand {
@@ -42,17 +41,12 @@ export class SubmitProductionUseCase extends EnregistrementDeReponse {
   async execute(
     command: SubmitProductionCommand,
   ): Promise<SubmitProductionResult> {
-    const { session, cours } = await this.participation.seanceEtCours(
-      command.sessionId,
-    );
-    const cible = ecranDeProduction(cours, command.questionId);
-    if (cible === null) {
-      throw new TypeDeQuestionError(
-        command.questionId,
-        'n’est pas une production de ce cours',
+    const { session, cible } =
+      await this.participation.cibleOuverteAuxProductions(
+        command.sessionId,
+        { id: command.questionId, trouver: ecranDeProduction },
+        absenteDuCours('une production'),
       );
-    }
-    assertEcranOuvertAuxProductions(session, cours, cible);
 
     const valeur = normaliserProduction(cible, command.valeur);
 

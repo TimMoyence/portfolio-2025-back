@@ -1,4 +1,5 @@
 import { estObjet } from '../../../../common/domain/est-objet';
+import { textesUniquesBornes } from '../../../../common/domain/texte/textes-uniques-bornes';
 import type { ReportSeverity } from '../../domain/AuditReportTiers';
 import type { AuditAutomationConfig, AuditLlmProfile } from './audit.config';
 import type {
@@ -35,7 +36,7 @@ const TEXTES_PAR_RUBRIQUE_DE_PAGE = 6;
 
 function premiersTextes(valeur: unknown): string[] {
   return Array.isArray(valeur)
-    ? valeur.map(String).slice(0, TEXTES_PAR_RUBRIQUE_DE_PAGE)
+    ? textesUniquesBornes(valeur.map(String), TEXTES_PAR_RUBRIQUE_DE_PAGE)
     : [];
 }
 

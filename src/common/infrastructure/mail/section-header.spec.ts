@@ -1,4 +1,5 @@
 import {
+  htmlEmis,
   safeHtml,
   type EscapedHtml,
 } from '../../domain/texte/html-escape.util';
@@ -6,7 +7,7 @@ import { sectionHeader } from './section-header';
 
 describe('sectionHeader', () => {
   it('echappe le numero, le titre et le sous-titre', () => {
-    const header = sectionHeader('<n>', '<t>', '<s>');
+    const header = htmlEmis(sectionHeader('<n>', '<t>', '<s>'));
 
     expect(header).toContain('&lt;n&gt;');
     expect(header).toContain('&lt;t&gt;');
@@ -18,7 +19,7 @@ describe('sectionHeader', () => {
   it('produit un fragment marque, interpolable sans re-echappement', () => {
     const header: EscapedHtml = sectionHeader('01', 'Cheatsheet', 'Vos outils');
 
-    expect(safeHtml`<section>${header}</section>`).toContain(
+    expect(htmlEmis(safeHtml`<section>${header}</section>`)).toContain(
       '<header class="section-header">',
     );
   });

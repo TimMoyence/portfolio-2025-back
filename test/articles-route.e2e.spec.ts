@@ -11,14 +11,19 @@ import { createMockArticlesService } from './factories/article.factory';
 import {
   ecouterEnBoucleLocale,
   fermerApplication,
-  httpServerOf,
+  serveurHttpDe,
 } from './helpers/nest-test-app';
+import {
+  REFUS_DE_L_OCTET_NUL,
+  statutEtDetail,
+} from './helpers/reponse-probleme';
+import { enregistrerLesReponsesServies } from './helpers/reponses-servies';
 
 describe('Articles HTTP aliases', () => {
   let app: INestApplication;
+  const articles = createMockArticlesService();
 
   beforeAll(async () => {
-    const articles = createMockArticlesService();
     articles.listPublished.mockResolvedValue({ items: [], nextCursor: null });
     const moduleRef = await Test.createTestingModule({
       controllers: [ArticlesController],
@@ -29,6 +34,7 @@ describe('Articles HTTP aliases', () => {
     }).compile();
 
     app = moduleRef.createNestApplication();
+    enregistrerLesReponsesServies(app);
     appliquerLesTraitementsGlobaux(app);
     app.setGlobalPrefix(PREFIXE_API_PAR_DEFAUT, {
       exclude: [
@@ -44,21 +50,32 @@ describe('Articles HTTP aliases', () => {
   });
 
   it('serves the contract path used by the Raspberry Pi', async () => {
-    await request(httpServerOf(app)).get('/api/articles').expect(200).expect({
+    await request(serveurHttpDe(app)).get('/api/articles').expect(200).expect({
       items: [],
       next_cursor: null,
     });
   });
 
   it('keeps the existing prefixed site API path', async () => {
-    await request(httpServerOf(app))
+    await request(serveurHttpDe(app))
       .get('/api/v1/portfolio25/articles')
       .expect(200)
       .expect({ items: [], next_cursor: null });
   });
 
+  it('refuse en 400 un octet nul dans la requete, sans interroger les articles', async () => {
+    articles.listPublished.mockClear();
+
+    const reponse = await request(serveurHttpDe(app)).get(
+      '/api/articles?tag=finance%00x',
+    );
+
+    expect(statutEtDetail(reponse)).toEqual(REFUS_DE_L_OCTET_NUL);
+    expect(articles.listPublished).not.toHaveBeenCalled();
+  });
+
   it('routes and protects the Raspberry Pi ingest endpoint', async () => {
-    const response = await request(httpServerOf(app))
+    const response = await request(serveurHttpDe(app))
       .post('/api/articles/ingest')
       .send({});
 

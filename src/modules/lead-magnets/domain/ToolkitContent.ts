@@ -1,4 +1,6 @@
-import type { AiLevel } from './InteractionProfile';
+export const AI_LEVELS = ['debutant', 'intermediaire', 'avance'] as const;
+
+type AiLevel = (typeof AI_LEVELS)[number];
 
 export interface CheatsheetEntry {
   tool: string;
@@ -7,7 +9,6 @@ export interface CheatsheetEntry {
   url: string;
   tip: string;
   decision: string;
-  alreadyUsed: boolean;
 }
 
 export interface PromptEntry {
@@ -48,13 +49,9 @@ export interface TemplateEntry {
 export interface ToolkitContent {
   recap: {
     firstName: string;
-    aiLevel: string | null;
-    sector: string | null;
-    budgetTier: string | null;
   };
   cheatsheet: CheatsheetEntry[];
   prompts: PromptEntry[];
   workflows: WorkflowEntry[];
   templates: TemplateEntry[];
-  generatedPrompt: string | null;
 }

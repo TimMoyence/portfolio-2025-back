@@ -21,6 +21,7 @@ import {
   recomposer,
 } from '../../../../../test/factories/structure.factory';
 import type { Cours, Ecran } from '../contrats/cours';
+import { questionsDuCours } from './Cours';
 import type { Derogation } from './StructureCours';
 import { REGLES_STRUCTURE, verifierStructure } from './StructureCours';
 
@@ -141,6 +142,22 @@ describe('verifierStructure', () => {
     expect(regles(present)).toEqual([]);
   });
 
+  it('refuse une remediation vers une question, le back servant sa cible comme ecranId', () => {
+    const [question] = questionsDuCours(base);
+    const versUneQuestion: Cours = {
+      ...base,
+      remediations: { 'base-arrivee': question.id },
+    };
+
+    expect(verifierStructure(versUneQuestion, [])).toEqual([
+      {
+        regle: 'reference-inconnue',
+        ecran: null,
+        raison: `la remédiation renvoie vers « ${question.id} » qui n'est déclaré par aucun écran de ce cours.`,
+      },
+    ]);
+  });
+
   it('E10 · refuse un renvoi vers un écran absent et accepte un écran du cours', () => {
     const renvoyer = (renvoi: string): Cours =>
       recomposer(base, [ouverture, citation, { ...atelier, renvoi }, cloture]);
@@ -149,6 +166,24 @@ describe('verifierStructure', () => {
       'reference-inconnue',
     );
     expect(regles(renvoyer(citation.id))).toEqual([]);
+  });
+
+  it('refuse un renvoi vers une question, le poste ne cherchant sa cible que parmi les ecrans', () => {
+    const [question] = questionsDuCours(base);
+    const versUneQuestion = recomposer(base, [
+      ouverture,
+      citation,
+      { ...atelier, renvoi: question.id },
+      cloture,
+    ]);
+
+    expect(verifierStructure(versUneQuestion, [])).toEqual([
+      {
+        regle: 'reference-inconnue',
+        ecran: atelier.id,
+        raison: `l'écran « ${atelier.id} » renvoie vers « ${question.id} » qui n'est déclaré par aucun écran de ce cours.`,
+      },
+    ]);
   });
 
   it('SEC-4.2 · refuse un renvoi vers l écran lui-même ou un écran pas encore projeté', () => {

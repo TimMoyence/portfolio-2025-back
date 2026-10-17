@@ -2,6 +2,7 @@ import type {
   AuMoinsUn,
   AuMoinsUnModifiable,
 } from '../../../../common/domain/au-moins-un';
+import { estEntierStrictementPositif } from '../../../../common/domain/nombres/dans-les-bornes';
 import type { ConfusionId } from '../../domain/cours/banque/confusions';
 import { decalerFormule } from '../../domain/cours/Formule';
 import { ligneDeLaReference } from '../../domain/cours/PlansStockes';
@@ -52,7 +53,7 @@ const CLICS_EN_LETTRES = [
 
 export function clicsDeRecopie(clics: number): string {
   const enLettres = CLICS_EN_LETTRES.at(clics - 1);
-  if (!Number.isInteger(clics) || clics < 1 || enLettres === undefined) {
+  if (!estEntierStrictementPositif(clics) || enLettres === undefined) {
     throw new RangeError(`une recopie compte de 1 à 20 clics, pas ${clics}`);
   }
   return `cliquez ${enLettres} fois sur « Recopier vers le bas »`;

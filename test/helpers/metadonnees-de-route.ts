@@ -1,5 +1,6 @@
 import { RequestMethod } from '@nestjs/common';
 import { METHOD_METADATA, PATH_METADATA } from '@nestjs/common/constants';
+import { MetadataScanner } from '@nestjs/core';
 
 export function methodeDe<T extends object>(
   classe: { prototype: T },
@@ -55,17 +56,11 @@ function methodeHttpDe(gestionnaire: object, action: string): MethodeHttp {
 export function routesDuControleur(controleur: {
   readonly prototype: object;
 }): RouteDeclaree[] {
-  const { prototype } = controleur;
-  return Object.getOwnPropertyNames(prototype)
-    .filter((action) => action !== 'constructor')
+  const prototype = controleur.prototype as Readonly<Record<string, unknown>>;
+  return new MetadataScanner()
+    .getAllMethodNames(prototype)
     .flatMap((action) => {
-      const gestionnaire: unknown = Object.getOwnPropertyDescriptor(
-        prototype,
-        action,
-      )?.value;
-      if (typeof gestionnaire !== 'function') {
-        return [];
-      }
+      const gestionnaire = prototype[action] as object;
       const chemin = Reflect.getMetadata(PATH_METADATA, gestionnaire) as
         | string
         | undefined;

@@ -1,6 +1,5 @@
 import { ChatOpenAI } from '@langchain/openai';
-import { Inject, Injectable, Logger, Optional } from '@nestjs/common';
-import { MetricsService } from '../../../../common/interfaces/metrics/metrics.service';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { AuditLocale, localeDeRedaction } from '../../domain/audit-locale.util';
 import { AUDIT_AUTOMATION_CONFIG } from '../../domain/token';
 import type { AuditAutomationConfig } from './audit.config';
@@ -25,11 +24,7 @@ import {
 } from './langchain-fallback-report.builder';
 import { DeadlineBudget, withHardTimeout } from './llm-execution.guardrails';
 import { PROMPT_VERSION } from './prompts/v1/audit-system-prompts';
-import {
-  GENERATEURS_DE_SECTION,
-  suivreLesAppelsLlm,
-  type InvokeTrackedFn,
-} from './section-generators/cacheable-section.generators';
+import { GENERATEURS_DE_SECTION } from './section-generators/cacheable-section.generators';
 import {
   CachingSectionRunner,
   generateExpertReport as runExpertReportGenerator,
@@ -69,6 +64,13 @@ import type {
 
 export type { ExpertReport } from './schemas/audit-report.schemas';
 
+interface SortieDuRapport {
+  retried: boolean;
+  fallback: boolean;
+  warnings: Array<{ type: 'summary' | 'expert'; message: string }>;
+  llmMeta?: Record<string, unknown>;
+}
+
 @Injectable()
 export class LangchainAuditReportService {
   private readonly logger = new Logger(LangchainAuditReportService.name);
@@ -82,13 +84,7 @@ export class LangchainAuditReportService {
     @Inject(LLM_EXECUTOR)
     private readonly llmExecutor: LlmExecutor,
     private readonly cachingRunner: CachingSectionRunner,
-    @Optional()
-    metricsService?: MetricsService,
-  ) {
-    this.invokeTracked = suivreLesAppelsLlm(config, metricsService);
-  }
-
-  private readonly invokeTracked: InvokeTrackedFn;
+  ) {}
 
   async generate(
     input: LangchainAuditInput,
@@ -230,39 +226,20 @@ export class LangchainAuditReportService {
         }
       }
 
-      const adminReport = this.buildAdminReport(gate, locale, {
+      return this.finaliserSortie(gate, normalizedInput, {
         retried,
         fallback: candidate.usedExpertFallback,
-      });
-
-      this.applyWarningsToReport(adminReport, candidate.warnings, locale);
-
-      if (!gate.valid) {
-        adminReport.qualityWarning = localizedText(
-          locale,
-          'Sortie normalisee apres echec du quality gate.',
-          'Output normalized after quality gate failure.',
-        );
-      }
-      adminReport.llmMeta = {
-        profile: 'stability_first_sequential',
-        promptVersion: PROMPT_VERSION,
-        payloadBytes: {
-          summary: summaryPayloadBytes,
-          expert: expertPayloadBytes,
-          expertCompact: expertCompactPayloadBytes,
+        warnings: candidate.warnings,
+        llmMeta: {
+          profile: 'stability_first_sequential',
+          promptVersion: PROMPT_VERSION,
+          payloadBytes: {
+            summary: summaryPayloadBytes,
+            expert: expertPayloadBytes,
+            expertCompact: expertCompactPayloadBytes,
+          },
         },
-      };
-
-      return {
-        summaryText: gate.summaryText,
-        adminReport,
-        expertSynthesis: buildExpertSynthesis(
-          gate.summaryText,
-          adminReport,
-          normalizedInput,
-        ),
-      };
+      });
     } catch (error) {
       this.logger.warn(`LLM generation failed: ${String(error)}`);
       return this.fallback(normalizedInput, String(error));
@@ -309,45 +286,25 @@ export class LangchainAuditReportService {
       ),
     ]);
 
-    const warnings = [...summaryResult.warnings, ...sectionResult.warnings];
     const gate = this.runQualityGate(
       summaryResult.summaryText,
       sectionResult.report,
       normalizedInput,
     );
-    const adminReport = this.buildAdminReport(gate, locale, {
+    return this.finaliserSortie(gate, normalizedInput, {
       retried: sectionResult.retryCount > 0,
       fallback: sectionResult.usedFallback,
+      warnings: [...summaryResult.warnings, ...sectionResult.warnings],
+      llmMeta: {
+        profile: 'parallel_sections_v1',
+        promptVersion: PROMPT_VERSION,
+        deadlineMs: this.config.llmGlobalTimeoutMs,
+        elapsedMs: budget.elapsedMs(),
+        retryCount: sectionResult.retryCount,
+        failedSections: sectionResult.failedSections,
+        sectionPayloadBytes,
+      },
     });
-    adminReport.llmMeta = {
-      profile: 'parallel_sections_v1',
-      promptVersion: PROMPT_VERSION,
-      deadlineMs: this.config.llmGlobalTimeoutMs,
-      elapsedMs: budget.elapsedMs(),
-      retryCount: sectionResult.retryCount,
-      failedSections: sectionResult.failedSections,
-      sectionPayloadBytes,
-    };
-
-    this.applyWarningsToReport(adminReport, warnings, locale);
-
-    if (!gate.valid) {
-      adminReport.qualityWarning = localizedText(
-        locale,
-        'Sortie normalisee apres echec du quality gate.',
-        'Output normalized after quality gate failure.',
-      );
-    }
-
-    return {
-      summaryText: gate.summaryText,
-      adminReport,
-      expertSynthesis: buildExpertSynthesis(
-        gate.summaryText,
-        adminReport,
-        normalizedInput,
-      ),
-    };
   }
 
   private async generateSummaryWithDeadline(
@@ -609,10 +566,7 @@ export class LangchainAuditReportService {
         budget,
         (signal) =>
           generer(
-            {
-              cachingRunner: this.cachingRunner,
-              invokeTracked: this.invokeTracked,
-            },
+            { cachingRunner: this.cachingRunner },
             { llm, payload, locale, retryMode, signal },
           ),
       );
@@ -657,10 +611,13 @@ export class LangchainAuditReportService {
     retryMode = false,
     signal?: AbortSignal,
   ): Promise<string> {
-    return runUserSummaryGenerator(
-      { invokeTracked: this.invokeTracked },
-      { llm, payload, locale, retryMode, signal },
-    );
+    return runUserSummaryGenerator({
+      llm,
+      payload,
+      locale,
+      retryMode,
+      signal,
+    });
   }
 
   private generateExpertReport(
@@ -671,10 +628,14 @@ export class LangchainAuditReportService {
     compactMode = false,
     signal?: AbortSignal,
   ): Promise<ExpertReport> {
-    return runExpertReportGenerator(
-      { invokeTracked: this.invokeTracked },
-      { llm, payload, locale, retryMode, compactMode, signal },
-    );
+    return runExpertReportGenerator({
+      llm,
+      payload,
+      locale,
+      retryMode,
+      compactMode,
+      signal,
+    });
   }
 
   private fallback(
@@ -686,12 +647,48 @@ export class LangchainAuditReportService {
       buildFallbackExpertReport(input, reason),
       input,
     );
-
-    const adminReport = this.buildAdminReport(gate, input.locale, {
+    return this.sortieDuRapport(gate, input, {
       retried: false,
       fallback: true,
+      warnings: [],
     });
+  }
 
+  private finaliserSortie(
+    gate: ReportQualityGateResult,
+    input: LangchainAuditInput,
+    sortie: SortieDuRapport,
+  ): LangchainAuditOutput {
+    if (!gate.repli) {
+      return this.sortieDuRapport(gate, input, sortie);
+    }
+    const motifs = gate.reasons.join(', ');
+    this.logger.warn(`Expert report fails tier validation: ${motifs}`);
+    const repli = this.runQualityGate(
+      gate.summaryText,
+      buildFallbackExpertReport(input, `quality gate: ${motifs}`),
+      input,
+    );
+    return this.sortieDuRapport(repli, input, { ...sortie, fallback: true });
+  }
+
+  private sortieDuRapport(
+    gate: ReportQualityGateResult,
+    input: LangchainAuditInput,
+    sortie: SortieDuRapport,
+  ): LangchainAuditOutput {
+    const adminReport = this.buildAdminReport(gate, input.locale, sortie);
+    this.applyWarningsToReport(adminReport, sortie.warnings, input.locale);
+    if (!gate.valid) {
+      adminReport.qualityWarning = localizedText(
+        input.locale,
+        'Sortie normalisee apres echec du quality gate.',
+        'Output normalized after quality gate failure.',
+      );
+    }
+    if (sortie.llmMeta) {
+      adminReport.llmMeta = sortie.llmMeta;
+    }
     return {
       summaryText: gate.summaryText,
       adminReport,

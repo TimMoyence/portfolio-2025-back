@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { pieceJointePdf } from '../../../../common/infrastructure/mail/piece-jointe-pdf';
+import { pieceJointePdf } from '../../../../common/infrastructure/mail/piece-jointe';
 import { destinataireDesRapportsDAudit } from '../../../../config/adresses-de-courriel';
 import {
   LIBELLES_DE_LA_GRAVITE,
@@ -8,7 +8,12 @@ import {
 import type { ExpertReportMailInput } from '../../domain/IAuditNotifier.port';
 import { buildMailLayout } from './mail-layout.util';
 import { MailerDAudit } from './mailer-d-audit';
-import { escapeHtml, safeHtml, slugify } from './mail-rendering.util';
+import {
+  escapeHtml,
+  safeHtml,
+  slugify,
+  type EscapedHtml,
+} from './mail-rendering.util';
 import { lignesDeVisibilite, listeDeVisibilite } from './visibilite-google-ia';
 
 @Injectable()
@@ -31,7 +36,7 @@ export class AuditExpertReportMailer extends MailerDAudit {
     });
   }
 
-  private buildExpertReportHtml(input: ExpertReportMailInput): string {
+  private buildExpertReportHtml(input: ExpertReportMailInput): EscapedHtml {
     const expert = input.expertReport;
     const client = input.clientReport;
     const contactHtml =

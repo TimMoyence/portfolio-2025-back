@@ -6,8 +6,7 @@ import {
   fichiersDeMigration,
   migrationsChargees,
 } from './lib/migrations-chargees.mjs';
-
-const root = new URL('..', import.meta.url).pathname;
+import { RACINE as root } from './lib/racine.mjs';
 
 void test('la data-source de la CLI TypeORM charge chaque migration de src/migrations sans ses specs Jest', () => {
   const chargees = migrationsChargees({

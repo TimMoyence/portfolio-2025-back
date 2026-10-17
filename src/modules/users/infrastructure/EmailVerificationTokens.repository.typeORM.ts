@@ -1,51 +1,64 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { MoreThan, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
+import { DepotEnDomaine } from '../../../common/infrastructure/typeorm/DepotEnDomaine';
 import type { IEmailVerificationTokensRepository } from '../domain/IEmailVerificationTokens.repository';
 import type { EmailVerificationToken } from '../domain/EmailVerificationToken';
+import type { PlafondDEnvois } from '../domain/PlafondDEnvois';
 import { EmailVerificationTokenEntity } from './entities/EmailVerificationToken.entity';
-import { champsDuJeton, enregistrerJeton, jetonActif } from './jetons.typeorm';
+import {
+  champsDuJeton,
+  nonExpire,
+  remplacerSousVerrou,
+} from './jetons.typeorm';
 
 @Injectable()
-export class EmailVerificationTokensRepositoryTypeORM implements IEmailVerificationTokensRepository {
+export class EmailVerificationTokensRepositoryTypeORM
+  extends DepotEnDomaine<EmailVerificationTokenEntity, EmailVerificationToken>
+  implements IEmailVerificationTokensRepository
+{
   constructor(
     @InjectRepository(EmailVerificationTokenEntity)
-    private readonly repo: Repository<EmailVerificationTokenEntity>,
-  ) {}
+    repo: Repository<EmailVerificationTokenEntity>,
+  ) {
+    super(repo);
+  }
 
-  create(token: EmailVerificationToken): Promise<EmailVerificationToken> {
-    return enregistrerJeton(this.repo, champsDuJeton(token), versLeDomaine);
+  async remplacerLesJetonsActifs(
+    jeton: Pick<EmailVerificationToken, 'userId' | 'tokenHash' | 'expiresAt'>,
+    plafond: PlafondDEnvois,
+  ): Promise<EmailVerificationToken | null> {
+    const enregistre = await remplacerSousVerrou(
+      this.repo,
+      champsDuJeton(jeton),
+      plafond,
+      (depot) =>
+        depot.update(nonExpire({ userId: jeton.userId }), {
+          expiresAt: new Date(),
+        }),
+    );
+    return enregistre && this.toDomain(enregistre);
   }
 
   findActiveByTokenHash(
     tokenHash: string,
   ): Promise<EmailVerificationToken | null> {
-    return jetonActif(this.repo, { tokenHash }, versLeDomaine);
+    return this.trouver(nonExpire({ tokenHash }));
   }
 
   async deleteByUserId(userId: string): Promise<void> {
     await this.repo.delete({ userId });
   }
 
-  async countRecentByUserId(userId: string, sinceMs: number): Promise<number> {
-    const since = new Date(Date.now() - sinceMs);
-    return this.repo.count({
-      where: {
-        userId,
-        createdAt: MoreThan(since),
-      },
-    });
+  protected toDomain(
+    entity: EmailVerificationTokenEntity,
+  ): EmailVerificationToken {
+    return {
+      id: entity.id,
+      userId: entity.userId,
+      tokenHash: entity.tokenHash,
+      expiresAt: entity.expiresAt,
+      createdAt: entity.createdAt,
+    };
   }
-}
-
-function versLeDomaine(
-  entity: EmailVerificationTokenEntity,
-): EmailVerificationToken {
-  return {
-    id: entity.id,
-    userId: entity.userId,
-    tokenHash: entity.tokenHash,
-    expiresAt: entity.expiresAt,
-    createdAt: entity.createdAt,
-  };
 }

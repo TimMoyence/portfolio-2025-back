@@ -16,7 +16,7 @@ const empreinte = (jeton: string): string =>
 describeDb('Hachage des jetons de verification sur une base migree', () => {
   const base = baseMigreeDeLaSuite(
     [],
-    [migrationsAnterieuresA('1791624795249-HacheLesJetonsDeVerification')],
+    migrationsAnterieuresA('1791624795249-HacheLesJetonsDeVerification'),
   );
   const migration = new HacheLesJetonsDeVerification1791624795249();
 

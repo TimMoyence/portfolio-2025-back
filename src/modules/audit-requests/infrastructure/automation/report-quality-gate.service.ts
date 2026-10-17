@@ -2,19 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { arrondi } from '../../../../common/domain/nombres/arrondi';
 import { borner } from '../../../../common/domain/nombres/borner';
 import { compacterBlancs } from '../../../../common/domain/texte/compacter-blancs';
+import { textesUniquesBornes } from '../../../../common/domain/texte/textes-uniques-bornes';
 import type {
-  ClientReportSynthesis,
   FindingImpact,
   ReportSeverity,
 } from '../../domain/AuditReportTiers';
 import { AuditLocale } from '../../domain/audit-locale.util';
+import { nonVerifiable } from '../../domain/non-verifiable';
 import { normalizeClientEmailDraft } from './langchain-synthesis.util';
 import { hasLanguageMismatch } from './report-quality-gate/language-check.util';
-import {
-  validateClientReport as runClientTierValidation,
-  validateExpertReport as runExpertTierValidation,
-  type TierValidationResult,
-} from './report-quality-gate/tier-validators';
+import { validateExpertReport } from './report-quality-gate/tier-validators';
 import type {
   ExpertReport,
   TechFingerprint,
@@ -29,8 +26,6 @@ import {
   ACTIONABLE_PILLARS,
   type ActionablePillarKey,
 } from './scoring.service';
-
-export type { TierValidationResult };
 
 const PILLAR_DEGRADED_SCORE = 65;
 
@@ -152,6 +147,7 @@ export interface ReportQualityGateResult {
   report: ExpertReport;
   valid: boolean;
   reasons: string[];
+  repli: boolean;
 }
 
 @Injectable()
@@ -292,12 +288,16 @@ export class ReportQualityGateService {
       reasons.push('language_mismatch_detected');
     }
 
+    const palier = validateExpertReport(normalizedReport);
+    reasons.push(...palier.issues);
+
     const valid = reasons.length === 0;
     return {
       summaryText: normalizedSummary,
       report: normalizedReport,
       valid,
       reasons: Array.from(new Set(reasons)),
+      repli: !palier.valid,
     };
   }
 
@@ -516,49 +516,44 @@ export class ReportQualityGateService {
     chapters: Partial<DiagnosticChapters> | undefined,
     locale: AuditLocale,
   ): DiagnosticChapters {
+    const chapitre = (
+      texte: string | undefined,
+      fr: string,
+      en: string,
+    ): string =>
+      this.cleanText(texte) ||
+      `${localizedText(locale, fr, en)}: ${nonVerifiable(locale)}.`;
     return {
-      conversionAndClarity:
-        this.cleanText(chapters?.conversionAndClarity) ||
-        localizedText(
-          locale,
-          'Conversion et clarte: Non verifiable.',
-          'Conversion and clarity: Not verifiable.',
-        ),
-      speedAndPerformance:
-        this.cleanText(chapters?.speedAndPerformance) ||
-        localizedText(
-          locale,
-          'Vitesse et performance: Non verifiable.',
-          'Speed and performance: Not verifiable.',
-        ),
-      seoFoundations:
-        this.cleanText(chapters?.seoFoundations) ||
-        localizedText(
-          locale,
-          'Fondations SEO: Non verifiable.',
-          'SEO foundations: Not verifiable.',
-        ),
-      credibilityAndTrust:
-        this.cleanText(chapters?.credibilityAndTrust) ||
-        localizedText(
-          locale,
-          'Credibilite et confiance: Non verifiable.',
-          'Credibility and trust: Not verifiable.',
-        ),
-      techAndScalability:
-        this.cleanText(chapters?.techAndScalability) ||
-        localizedText(
-          locale,
-          'Tech et scalabilite: Non verifiable.',
-          'Tech and scalability: Not verifiable.',
-        ),
-      scorecardAndBusinessOpportunities:
-        this.cleanText(chapters?.scorecardAndBusinessOpportunities) ||
-        localizedText(
-          locale,
-          'Scorecard et opportunites business: Non verifiable.',
-          'Scorecard and business opportunities: Not verifiable.',
-        ),
+      conversionAndClarity: chapitre(
+        chapters?.conversionAndClarity,
+        'Conversion et clarte',
+        'Conversion and clarity',
+      ),
+      speedAndPerformance: chapitre(
+        chapters?.speedAndPerformance,
+        'Vitesse et performance',
+        'Speed and performance',
+      ),
+      seoFoundations: chapitre(
+        chapters?.seoFoundations,
+        'Fondations SEO',
+        'SEO foundations',
+      ),
+      credibilityAndTrust: chapitre(
+        chapters?.credibilityAndTrust,
+        'Credibilite et confiance',
+        'Credibility and trust',
+      ),
+      techAndScalability: chapitre(
+        chapters?.techAndScalability,
+        'Tech et scalabilite',
+        'Tech and scalability',
+      ),
+      scorecardAndBusinessOpportunities: chapitre(
+        chapters?.scorecardAndBusinessOpportunities,
+        'Scorecard et opportunites business',
+        'Scorecard and business opportunities',
+      ),
     };
   }
 
@@ -569,14 +564,13 @@ export class ReportQualityGateService {
     const confidence = Number(value?.confidence);
     return {
       primaryStack:
-        this.cleanText(value?.primaryStack) ||
-        localizedText(locale, 'Non verifiable', 'Not verifiable'),
+        this.cleanText(value?.primaryStack) || nonVerifiable(locale),
       confidence: Number.isFinite(confidence)
         ? borner(arrondi(confidence, 2), 0, 1)
         : 0,
-      evidence: this.normalizeStringArray(value?.evidence).slice(0, 8),
-      alternatives: this.normalizeStringArray(value?.alternatives).slice(0, 4),
-      unknowns: this.normalizeStringArray(value?.unknowns).slice(0, 5),
+      evidence: this.normalizeStringArray(value?.evidence, 8),
+      alternatives: this.normalizeStringArray(value?.alternatives, 4),
+      unknowns: this.normalizeStringArray(value?.unknowns, 5),
     };
   }
 
@@ -699,11 +693,15 @@ export class ReportQualityGateService {
       .filter((entry) => Boolean(estComplete(entry)));
   }
 
-  private normalizeStringArray(value: unknown): string[] {
+  private normalizeStringArray(
+    value: unknown,
+    max = Number.POSITIVE_INFINITY,
+  ): string[] {
     if (!Array.isArray(value)) return [];
-    return value
-      .map((entry) => this.cleanText(entry))
-      .filter((entry): entry is string => Boolean(entry));
+    return textesUniquesBornes(
+      value.map((entry) => this.cleanText(entry)),
+      max,
+    );
   }
 
   private requireText(
@@ -737,15 +735,5 @@ export class ReportQualityGateService {
       return fallback;
     }
     return arrondi(value, 1);
-  }
-
-  validateClientReport(report: ClientReportSynthesis): TierValidationResult {
-    return runClientTierValidation(report);
-  }
-
-  validateExpertReport(
-    report: Parameters<typeof runExpertTierValidation>[0],
-  ): TierValidationResult {
-    return runExpertTierValidation(report);
   }
 }

@@ -1,5 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
-import type { Cours } from '../domain/contrats/cours';
+import type { Cours, Ecran } from '../domain/contrats/cours';
+import { planServi } from '../domain/cours/EcranServi';
 import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
 import type {
   IParticipantsRepository,
@@ -18,6 +19,7 @@ import {
 } from '../domain/token';
 import {
   coursDeLaSeance,
+  ecranOuvertAuxProductions,
   seanceExistante,
   seanceOuverteAuxReponses,
 } from './CoursDeLaSeance';
@@ -50,6 +52,37 @@ export class ParticipationEnSeance {
     );
     await this.participantActif(cible);
     return { session, cours: await coursDeLaSeance(this.catalogue, session) };
+  }
+
+  async planDeLaSeance<P>(
+    cible: CibleDuParticipant & { readonly planId: string },
+    planDe: (ecran: Ecran) => P | null,
+    nature: string,
+  ): Promise<P> {
+    const { session, cours } = await this.ouverte(cible);
+    return planServi(session, cours, cible.planId, planDe, nature);
+  }
+
+  async cibleOuverteAuxProductions<
+    T extends { readonly rang: number; readonly ecran: Ecran },
+  >(
+    sessionId: string,
+    cible: {
+      readonly id: string;
+      readonly trouver: (cours: Cours, id: string) => T | null;
+    },
+    absente: (id: string) => Error,
+  ): Promise<{ session: SessionRecord; cible: T }> {
+    const { session, cours } = await this.seanceEtCours(sessionId);
+    return {
+      session,
+      cible: ecranOuvertAuxProductions(
+        session,
+        cours,
+        { valeur: cible.trouver(cours, cible.id), id: cible.id },
+        absente,
+      ),
+    };
   }
 
   async seanceEtCours(

@@ -1,11 +1,8 @@
-import { plainToInstance } from 'class-transformer';
-import { validateSync } from 'class-validator';
+import { champsRefuses as champsRefusesPar } from '../../../../../test/helpers/validation-pipe';
 import { UpdateUserDto } from './UpdateUser.dto';
 
 const champsRefuses = (corps: Record<string, unknown>): string[] =>
-  validateSync(plainToInstance(UpdateUserDto, corps)).map(
-    (erreur) => erreur.property,
-  );
+  champsRefusesPar(UpdateUserDto, corps);
 
 describe('UpdateUserDto', () => {
   it('accepte une mise à jour vide : chaque champ est facultatif', () => {

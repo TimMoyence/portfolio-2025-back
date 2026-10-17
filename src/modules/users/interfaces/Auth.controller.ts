@@ -71,7 +71,8 @@ import { SetPasswordDto } from './dto/SetPassword.dto';
 import { AuthResponseDto } from './dto/Auth.response.dto';
 import { UpdateProfileDto } from './dto/UpdateProfile.dto';
 import { UserResponseDto } from './dto/User.response.dto';
-import { Public } from '../../../common/interfaces/auth/public.decorator';
+import { compteConnecte } from '../../../common/interfaces/auth/compte-connecte';
+import { RoutePublique } from '../../../common/interfaces/security/formulaire-public.decorator';
 import { messageDErreur } from '../../../common/domain/errors/message-d-erreur';
 
 @ApiTags('auth')
@@ -116,8 +117,9 @@ export class AuthController {
     );
   }
 
-  @Public()
+  @RoutePublique()
   @Post('login')
+  @HttpCode(200)
   @Throttle({ default: { limit: 10, ttl: 3600000 } })
   @ApiOperation({ summary: 'Connexion par email et mot de passe' })
   @ApiOkResponse({ type: AuthResponseDto })
@@ -133,9 +135,10 @@ export class AuthController {
     );
   }
 
-  @Public()
+  @RoutePublique()
   @Throttle({ default: { limit: 10, ttl: 3600000 } })
   @Post('google')
+  @HttpCode(200)
   @ApiOperation({ summary: 'Authentification via Google OAuth' })
   @ApiOkResponse({ type: AuthResponseDto })
   @ApiUnauthorizedResponse({ description: 'Invalid Google token' })
@@ -159,37 +162,41 @@ export class AuthController {
     },
     authentifier: () => Promise<AuthResult>,
   ): Promise<AuthResponseDto> {
-    const ip = this.extractIp(req);
-    const userAgent = this.extractUserAgent(req);
     const emailSaisi =
       journal.email === undefined ? {} : { email: journal.email };
 
     try {
       const result = await authentifier();
       this.setRefreshCookie(res, result.refreshToken);
-      this.auditLogger.log({
-        event: journal.succes,
+      this.journaliser(req, journal.succes, {
         email: journal.email ?? result.user.email,
         userId: result.user.id,
-        ip,
-        userAgent,
-        timestamp: new Date(),
       });
       return AuthResponseDto.fromAuthResult(result);
     } catch (error) {
-      this.auditLogger.log({
-        event: journal.echec,
+      this.journaliser(req, journal.echec, {
         ...emailSaisi,
-        ip,
-        userAgent,
-        timestamp: new Date(),
         details: messageDErreur(error),
       });
       throw error;
     }
   }
 
-  @Public()
+  private journaliser(
+    req: Request,
+    event: AuthAuditEntry['event'],
+    compte: Pick<AuthAuditEntry, 'email' | 'userId' | 'details'> = {},
+  ): void {
+    this.auditLogger.log({
+      event,
+      ...compte,
+      ip: this.extractIp(req),
+      userAgent: this.extractUserAgent(req),
+      timestamp: new Date(),
+    });
+  }
+
+  @RoutePublique()
   @Post('refresh')
   @HttpCode(200)
   @Throttle({
@@ -225,7 +232,7 @@ export class AuthController {
     ];
   }
 
-  @Public()
+  @RoutePublique()
   @Post('logout')
   @HttpCode(200)
   @Throttle({ default: { limit: 10, ttl: 3600000 } })
@@ -235,8 +242,6 @@ export class AuthController {
   async logout(
     @EchangeCourant() { req, res }: EchangeHttp,
   ): Promise<AuthMessageResponseDto> {
-    const ip = this.extractIp(req);
-    const userAgent = this.extractUserAgent(req);
     const rawRefreshToken = this.jetonDuCookie(req);
 
     if (rawRefreshToken) {
@@ -244,23 +249,22 @@ export class AuthController {
     }
 
     this.clearRefreshCookie(res);
-    this.auditLogger.log({
-      event: 'LOGOUT',
-      ip,
-      userAgent,
-      timestamp: new Date(),
-    });
+    this.journaliser(req, 'LOGOUT');
     return { message: 'Deconnexion reussie.' };
   }
 
   @Patch('change-password')
+  @Throttle({ default: { limit: 5, ttl: 3600000 } })
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Changer le mot de passe (utilisateur connecte)' })
   @ApiOkResponse({ type: UserResponseDto })
-  @ApiBadRequestResponse({ description: 'Validation echouee' })
-  @ApiUnauthorizedResponse({
-    description: 'Identifiants invalides ou utilisateur inactif',
+  @ApiBadRequestResponse({
+    description: 'Validation echouee ou mot de passe actuel incorrect',
   })
+  @ApiUnauthorizedResponse({
+    description: 'Session absente, expiree ou compte desactive',
+  })
+  @ApiConflictResponse({ description: 'No password set for this account' })
   async changePassword(
     @Body() dto: ChangePasswordDto,
     @Req() req: Request,
@@ -270,7 +274,7 @@ export class AuthController {
     );
   }
 
-  @Public()
+  @RoutePublique()
   @Post('forgot-password')
   @HttpCode(200)
   @Throttle({ default: { limit: 3, ttl: 3600000 } })
@@ -281,11 +285,14 @@ export class AuthController {
   @ApiBadRequestResponse({ description: 'Validation failed' })
   async forgotPassword(
     @Body() dto: ForgotPasswordDto,
+    @Req() req: Request,
   ): Promise<AuthMessageResponseDto> {
-    return this.requestPasswordResetUseCase.execute(dto);
+    const reponse = await this.requestPasswordResetUseCase.execute(dto);
+    this.journaliser(req, 'PASSWORD_RESET_REQUEST', { email: dto.email });
+    return reponse;
   }
 
-  @Public()
+  @RoutePublique()
   @Post('reset-password')
   @HttpCode(200)
   @Throttle({ default: { limit: 10, ttl: 3600000 } })
@@ -297,8 +304,11 @@ export class AuthController {
   @RefusDeLienDocumente()
   async resetPassword(
     @Body() dto: ResetPasswordDto,
+    @Req() req: Request,
   ): Promise<AuthMessageResponseDto> {
-    return this.resetPasswordUseCase.execute(dto);
+    const { message, userId } = await this.resetPasswordUseCase.execute(dto);
+    this.journaliser(req, 'PASSWORD_RESET_COMPLETE', { userId });
+    return { message };
   }
 
   @Post('set-password')
@@ -327,11 +337,12 @@ export class AuthController {
     req: Request,
     modifier: (userId: string) => Promise<User>,
   ): Promise<UserResponseDto> {
-    return UserResponseDto.fromDomain(await modifier(req.user!.sub));
+    return UserResponseDto.fromDomain(await modifier(compteConnecte(req).id));
   }
 
-  @Public()
+  @RoutePublique()
   @Post('register')
+  @HttpCode(200)
   @Throttle({ default: { limit: 5, ttl: 3600000 } })
   @ApiOperation({
     summary:
@@ -339,18 +350,11 @@ export class AuthController {
   })
   @ApiOkResponse({ type: AuthMessageResponseDto })
   @ApiBadRequestResponse({ description: 'Inscription echouee' })
-  async register(@Body() dto: CreateUserDto): Promise<AuthMessageResponseDto> {
-    await this.createUsersUseCase.execute({
-      ...dto,
-      updatedOrCreatedBy: 'self-registration',
-    });
-    return {
-      message:
-        'Inscription reussie. Un email de verification a ete envoye a votre adresse.',
-    };
+  register(@Body() dto: CreateUserDto): Promise<AuthMessageResponseDto> {
+    return this.createUsersUseCase.inscrire(dto);
   }
 
-  @Public()
+  @RoutePublique()
   @Get('verify-email')
   @Throttle({ default: { limit: 10, ttl: 3600000 } })
   @ApiOperation({ summary: "Verifie l'adresse email via le token envoye" })
@@ -363,7 +367,7 @@ export class AuthController {
     return this.verifyEmailUseCase.execute(token);
   }
 
-  @Public()
+  @RoutePublique()
   @Post('resend-verification')
   @HttpCode(200)
   @Throttle({ default: { limit: 3, ttl: 3600000 } })
@@ -371,7 +375,7 @@ export class AuthController {
     summary: "Renvoie l'email de verification (rate limited 3/h)",
   })
   @ApiOkResponse({ type: AuthMessageResponseDto })
-  @ApiBadRequestResponse({ description: 'Trop de demandes' })
+  @ApiBadRequestResponse({ description: 'Validation failed' })
   async resendVerification(
     @Body() dto: ResendVerificationDto,
   ): Promise<AuthMessageResponseDto> {
@@ -390,12 +394,9 @@ export class AuthController {
     @Body() dto: UpdateProfileDto,
     @Req() req: Request,
   ): Promise<UserResponseDto> {
-    const payload = req.user!;
-    const updatedUser = await this.updateProfileUseCase.execute(
-      payload.sub,
-      dto,
+    return this.pourLeCompteConnecte(req, (userId) =>
+      this.updateProfileUseCase.execute(userId, dto),
     );
-    return UserResponseDto.fromDomain(updatedUser);
   }
 
   @Get('me')
@@ -403,9 +404,9 @@ export class AuthController {
   @ApiOperation({ summary: "Recuperer le profil de l'utilisateur connecte" })
   @ApiOkResponse({ type: UserResponseDto })
   @ApiUnauthorizedResponse({ description: 'Token invalide ou expire' })
-  async me(@Req() req: Request): Promise<UserResponseDto> {
-    const payload = req.user!;
-    const user = await this.getCurrentUserUseCase.execute(payload.sub);
-    return UserResponseDto.fromDomain(user);
+  me(@Req() req: Request): Promise<UserResponseDto> {
+    return this.pourLeCompteConnecte(req, (userId) =>
+      this.getCurrentUserUseCase.execute(userId),
+    );
   }
 }

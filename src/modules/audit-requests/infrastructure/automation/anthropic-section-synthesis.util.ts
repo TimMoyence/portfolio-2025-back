@@ -1,7 +1,6 @@
 import type Anthropic from '@anthropic-ai/sdk';
 import { Logger } from '@nestjs/common';
 import { z, type ZodType } from 'zod';
-import type { MetricsService } from '../../../../common/interfaces/metrics/metrics.service';
 
 /**
  * Contraintes Anthropic Messages API :
@@ -15,13 +14,11 @@ export interface AnthropicStructuredSectionParams<T> {
   client: Anthropic;
   model: string;
   section: string;
-  locale: string;
   schema: ZodType<T>;
   systemBlocks: string[];
   userContent: string;
   maxTokens?: number;
   signal?: AbortSignal;
-  metrics?: MetricsService | null;
   logger: Logger;
 }
 
@@ -69,63 +66,24 @@ function buildCachedSystemBlocks(systemBlocks: string[]): Array<{
   });
 }
 
-function emitUsageMetrics(
+function journaliserLUsage(
   usage: AnthropicUsageSnapshot,
-  params: Pick<
-    AnthropicStructuredSectionParams<unknown>,
-    'metrics' | 'model' | 'section' | 'locale' | 'logger'
-  >,
-  status: 'success' | 'error',
-  latencyMs: number,
+  {
+    section,
+    logger,
+  }: Pick<AnthropicStructuredSectionParams<unknown>, 'section' | 'logger'>,
 ): void {
-  const { metrics, model, section, locale, logger } = params;
-  if (metrics) {
-    metrics.llmCallsTotal.inc({
-      model,
-      section,
-      locale,
-      status,
-    });
-    metrics.llmLatencySeconds.observe(
-      { model, section, locale, status },
-      latencyMs / 1000,
-    );
-    if (status === 'success') {
-      metrics.llmTokensTotal.inc(
-        { model, section, locale, type: 'input' },
-        usage.inputTokens,
-      );
-      metrics.llmTokensTotal.inc(
-        { model, section, locale, type: 'output' },
-        usage.outputTokens,
-      );
-      if (usage.cacheReadInputTokens > 0) {
-        metrics.llmTokensTotal.inc(
-          { model, section, locale, type: 'cached' },
-          usage.cacheReadInputTokens,
-        );
-      }
-      if (usage.cacheCreationInputTokens > 0) {
-        metrics.llmTokensTotal.inc(
-          { model, section, locale, type: 'cache_write' },
-          usage.cacheCreationInputTokens,
-        );
-      }
-    }
-  }
-  if (status === 'success') {
-    const hitRate =
-      usage.cacheReadInputTokens + usage.inputTokens > 0
-        ? Math.round(
-            (usage.cacheReadInputTokens /
-              (usage.cacheReadInputTokens + usage.inputTokens)) *
-              100,
-          )
-        : 0;
-    logger.log(
-      `Anthropic ${section} ok in=${usage.inputTokens} out=${usage.outputTokens} cacheRead=${usage.cacheReadInputTokens} cacheCreate=${usage.cacheCreationInputTokens} hitRate=${hitRate}%`,
-    );
-  }
+  const hitRate =
+    usage.cacheReadInputTokens + usage.inputTokens > 0
+      ? Math.round(
+          (usage.cacheReadInputTokens /
+            (usage.cacheReadInputTokens + usage.inputTokens)) *
+            100,
+        )
+      : 0;
+  logger.log(
+    `Anthropic ${section} ok in=${usage.inputTokens} out=${usage.outputTokens} cacheRead=${usage.cacheReadInputTokens} cacheCreate=${usage.cacheCreationInputTokens} hitRate=${hitRate}%`,
+  );
 }
 
 export async function invokeAnthropicStructuredSection<T>(
@@ -145,73 +103,56 @@ export async function invokeAnthropicStructuredSection<T>(
   const toolName = `emit_${section}`;
   const inputSchema = zodToAnthropicInputSchema(schema);
 
-  const start = Date.now();
-  let status: 'success' | 'error' = 'error';
-  try {
-    const response = await client.messages.create(
-      {
-        model,
-        max_tokens: maxTokens,
-        system: buildCachedSystemBlocks(systemBlocks),
-        tools: [
-          {
-            name: toolName,
-            description: `Emit the ${section} section payload strictly matching the provided schema.`,
-            input_schema: inputSchema,
-          },
-        ],
-        tool_choice: { type: 'tool', name: toolName },
-        messages: [
-          {
-            role: 'user',
-            content: userContent,
-          },
-        ],
-      },
-      { signal },
+  const response = await client.messages.create(
+    {
+      model,
+      max_tokens: maxTokens,
+      system: buildCachedSystemBlocks(systemBlocks),
+      tools: [
+        {
+          name: toolName,
+          description: `Emit the ${section} section payload strictly matching the provided schema.`,
+          input_schema: inputSchema,
+        },
+      ],
+      tool_choice: { type: 'tool', name: toolName },
+      messages: [
+        {
+          role: 'user',
+          content: userContent,
+        },
+      ],
+    },
+    { signal },
+  );
+
+  const toolUseBlock = response.content.find(
+    (
+      block,
+    ): block is Extract<
+      (typeof response.content)[number],
+      { type: 'tool_use' }
+    > => block.type === 'tool_use' && block.name === toolName,
+  );
+
+  if (!toolUseBlock) {
+    throw new Error(
+      `Anthropic ${section}: response missing tool_use block for ${toolName}`,
     );
+  }
 
-    const toolUseBlock = response.content.find(
-      (
-        block,
-      ): block is Extract<
-        (typeof response.content)[number],
-        { type: 'tool_use' }
-      > => block.type === 'tool_use' && block.name === toolName,
-    );
+  const parsed = schema.parse(toolUseBlock.input);
 
-    if (!toolUseBlock) {
-      throw new Error(
-        `Anthropic ${section}: response missing tool_use block for ${toolName}`,
-      );
-    }
-
-    const parsed = schema.parse(toolUseBlock.input);
-
-    const usage: AnthropicUsageSnapshot = {
+  journaliserLUsage(
+    {
       inputTokens: response.usage?.input_tokens ?? 0,
       outputTokens: response.usage?.output_tokens ?? 0,
       cacheCreationInputTokens:
         response.usage?.cache_creation_input_tokens ?? 0,
       cacheReadInputTokens: response.usage?.cache_read_input_tokens ?? 0,
-    };
+    },
+    params,
+  );
 
-    status = 'success';
-    emitUsageMetrics(usage, params, status, Date.now() - start);
-
-    return parsed;
-  } catch (error) {
-    emitUsageMetrics(
-      {
-        inputTokens: 0,
-        outputTokens: 0,
-        cacheCreationInputTokens: 0,
-        cacheReadInputTokens: 0,
-      },
-      params,
-      status,
-      Date.now() - start,
-    );
-    throw error;
-  }
+  return parsed;
 }

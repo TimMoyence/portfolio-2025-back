@@ -1,3 +1,5 @@
+import { estEntierStrictementPositif } from '../../../../common/domain/nombres/dans-les-bornes';
+
 export interface CacheLRU<V> {
   lire(cle: string): V | undefined;
   ecrire(cle: string, valeur: V): void;
@@ -5,7 +7,7 @@ export interface CacheLRU<V> {
 }
 
 export function creerCacheLRU<V>(capacite: number): CacheLRU<V> {
-  if (!Number.isInteger(capacite) || capacite < 1) {
+  if (!estEntierStrictementPositif(capacite)) {
     throw new RangeError(
       `Capacite de cache invalide: ${String(capacite)} (entier positif attendu)`,
     );

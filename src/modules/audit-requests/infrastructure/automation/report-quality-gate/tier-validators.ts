@@ -8,7 +8,6 @@ const REQUIRED_CLIENT_PILLARS: ReadonlyArray<string> = PILLAR_KEYS;
 export interface TierValidationResult {
   valid: boolean;
   issues: string[];
-  shouldFallback: boolean;
 }
 
 function checkExecutiveSummary(report: ClientReportSynthesis): string[] {
@@ -103,17 +102,7 @@ export function validateClientReport(
     ...checkTopFindings(report),
   ];
 
-  return {
-    valid: issues.length === 0,
-    issues,
-    shouldFallback: issues.some(
-      (issue) =>
-        issue.includes('executive_summary') ||
-        issue.includes('pillar') ||
-        issue.includes('quick_wins') ||
-        issue.includes('cta_incomplete'),
-    ),
-  };
+  return { valid: issues.length === 0, issues };
 }
 
 export function validateExpertReport(report: {
@@ -155,15 +144,5 @@ export function validateExpertReport(report: {
     issues.push('expert_report_internal_notes_missing');
   }
 
-  const valid = issues.length === 0;
-  return {
-    valid,
-    issues,
-    shouldFallback: issues.some(
-      (issue) =>
-        issue.includes('per_page') ||
-        issue.includes('client_email_draft_missing') ||
-        issue.includes('internal_notes'),
-    ),
-  };
+  return { valid: issues.length === 0, issues };
 }

@@ -1,26 +1,24 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsIn, IsInt, IsOptional, Min, ValidateNested } from 'class-validator';
+import { IsIn, IsOptional, ValidateNested } from 'class-validator';
+import { EntierBorne } from '../../../../common/interfaces/dto/bornes-annoncees.decorator';
 import type { FreeRange, PacingMode } from '../../domain/PacingMode';
 import { PACING_MODES } from '../../domain/PacingMode';
 
 export class FreeRangeDto implements FreeRange {
-  @ApiPropertyOptional({ example: 3 })
-  @IsInt()
-  @Min(0)
+  @ApiProperty({ example: 3 })
+  @EntierBorne(0)
   premier: number;
 
-  @ApiPropertyOptional({ example: 9 })
-  @IsInt()
-  @Min(0)
+  @ApiProperty({ example: 9 })
+  @EntierBorne(0)
   dernier: number;
 }
 
 export class ControlSessionRequestDto {
   @ApiPropertyOptional({ example: 4 })
   @IsOptional()
-  @IsInt()
-  @Min(0)
+  @EntierBorne(0)
   ecran?: number;
 
   @ApiPropertyOptional({ enum: PACING_MODES, example: 'pilote' })

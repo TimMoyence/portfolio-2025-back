@@ -14,7 +14,7 @@ import {
 } from './Formule';
 
 const GRILLE = { lignes: 12, colonnes: 6 };
-const DELAI_MAX_MS = 200;
+const BUDGET_D_UN_CYCLE_COUPE = { budgetNoeuds: 24 };
 const IMBRICATIONS = 200;
 
 function feuille(cellules: Readonly<Record<string, string>>): Feuille {
@@ -103,6 +103,16 @@ describe('references', () => {
     expect(erreurDe({ A1: '=B1+1', B1: 'trois' })).toBe('#VALEUR!');
   });
 
+  it('lit « 1 200 » et « −5 » saisis dans une cellule comme des nombres, comme une saisie d eleve', () => {
+    expect(
+      valeurDe({ A1: '=B1+B2+B3', B1: '1 200', B2: '−5', B3: '2 000,5' }),
+    ).toBe(3195.5);
+    expect(resultatDe({ A1: '1 200' })).toBe(1200);
+    expect(resultatDe({ A1: '−5' })).toBe(-5);
+    expect(valeurDe({ A1: '=B1*2', B1: '="1 200"' })).toBe(2400);
+    expect(erreurDe({ A1: '=B1+1', B1: '1 2 trois' })).toBe('#VALEUR!');
+  });
+
   it('propage l erreur de la cellule visee au lieu de la masquer', () => {
     expect(erreurDe({ A1: '=B1+1', B1: '=1/0' })).toBe('#DIV/0!');
   });
@@ -117,25 +127,27 @@ describe('references', () => {
 });
 
 describe('references circulaires', () => {
+  function erreurDuCycle(
+    cellules: Readonly<Record<string, string>>,
+    nom = 'A1',
+  ): string | null {
+    return evaluerCellule(feuille(cellules), nom, BUDGET_D_UN_CYCLE_COUPE)
+      .erreur;
+  }
+
   it('rend #REF! et non une boucle quand une cellule se cite elle-meme : un cycle direct est coupe, pas parcouru', () => {
-    const debut = Date.now();
-    expect(erreurDe({ A1: '=A1' })).toBe('#REF!');
-    expect(erreurDe({ A1: '=A1+1' })).toBe('#REF!');
-    expect(Date.now() - debut).toBeLessThan(DELAI_MAX_MS);
+    expect(erreurDuCycle({ A1: '=A1' })).toBe('#REF!');
+    expect(erreurDuCycle({ A1: '=A1+1' })).toBe('#REF!');
   });
 
   it('rend #REF! et non une boucle pour un cycle indirect de deux cellules', () => {
-    const debut = Date.now();
-    expect(erreurDe({ A1: '=B1', B1: '=A1' })).toBe('#REF!');
-    expect(Date.now() - debut).toBeLessThan(DELAI_MAX_MS);
+    expect(erreurDuCycle({ A1: '=B1', B1: '=A1' })).toBe('#REF!');
   });
 
   it('rend #REF! et non une boucle pour un cycle indirect de trois cellules, coupe et non parcouru', () => {
-    const debut = Date.now();
     const cellules = { A1: '=B1+1', B1: '=C1*2', C1: '=A1-3' };
-    expect(erreurDe(cellules)).toBe('#REF!');
-    expect(erreurDe(cellules, 'B1')).toBe('#REF!');
-    expect(Date.now() - debut).toBeLessThan(DELAI_MAX_MS);
+    expect(erreurDuCycle(cellules)).toBe('#REF!');
+    expect(erreurDuCycle(cellules, 'B1')).toBe('#REF!');
   });
 
   it('ne prend pas un losange sans cycle pour une reference circulaire', () => {

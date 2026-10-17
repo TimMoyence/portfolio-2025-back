@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { empreinteSha256 } from '../../../common/domain/crypto/empreintes';
+import { LOCALES_SUPPORTEES } from '../../../common/domain/value-objects/LocaleCode';
 
 const dateTime = z
   .string()
@@ -22,10 +23,17 @@ const itemSchema = z
   })
   .strict();
 
+export const TYPES_DE_SECTION = [
+  'essential',
+  'deep_dive',
+  'rubric',
+  'radar',
+] as const;
+
 const sectionSchema = z
   .object({
     id: z.string().regex(/^[a-z0-9][a-z0-9-]{1,79}$/),
-    kind: z.enum(['essential', 'deep_dive', 'rubric', 'radar']),
+    kind: z.enum(TYPES_DE_SECTION),
     title: z.string().min(1).max(120),
     intro: z.string().max(4000),
     body: z.string().max(20000),
@@ -56,7 +64,7 @@ const articleSchema = z
   .object({
     article_id: ArticleId,
     slug: ArticleSlug,
-    locale: z.enum(['fr', 'en']),
+    locale: z.enum(LOCALES_SUPPORTEES),
     status: z.literal('published'),
     title: z.string().min(1).max(180),
     excerpt: z.string().min(1).max(280),

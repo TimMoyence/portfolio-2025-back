@@ -1,9 +1,6 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import type { AuditSnapshot } from '../../domain/AuditProcessing';
-import type {
-  ClientReportSynthesis,
-  ExpertReportSynthesis,
-} from '../../domain/AuditReportTiers';
+import type { ClientReportSynthesis } from '../../domain/AuditReportTiers';
 import type { EngineCoverage } from '../../domain/EngineCoverage';
 import type { IAuditNotifierPort } from '../../domain/IAuditNotifier.port';
 import type { IAuditPdfGenerator } from '../../domain/IAuditPdfGenerator';
@@ -12,6 +9,8 @@ import {
   buildAuditSnapshot,
   buildClientReportSynthesis,
   buildEngineCoverage,
+  buildEngineScore,
+  buildExpertReportSynthesis,
   buildPageAiRecap,
   createMockAuditNotifier,
   createMockAuditRequestsRepo,
@@ -32,17 +31,6 @@ function buildClientReport(): ClientReportSynthesis {
     ...buildClientReportSynthesis(),
     executiveSummary: 'Resume',
     topFindings: [{ title: 'Finding', impact: 'Impact', severity: 'high' }],
-  };
-}
-
-function buildExpertReport(): ExpertReportSynthesis {
-  return {
-    executiveSummary: 'Expert summary',
-    perPageAnalysis: [],
-    crossPageFindings: [],
-    priorityBacklog: [],
-    clientEmailDraft: { subject: 'Subject', body: 'Body' },
-    internalNotes: 'Notes',
   };
 }
 
@@ -91,7 +79,7 @@ describe('AuditDeliveryOrchestrator', () => {
       pillarScores: {},
       quickWins: [],
       pageRecaps: [buildPageAiRecap()],
-      expertReport: buildExpertReport(),
+      expertReport: buildExpertReportSynthesis(),
       deepFindings: [],
       ...overrides,
     });
@@ -125,7 +113,7 @@ describe('AuditDeliveryOrchestrator', () => {
         expect.objectContaining({ executiveSummary: 'Resume' }),
       );
       expect(pdfArgs[2]).toEqual(
-        expect.objectContaining({ executiveSummary: 'Expert summary' }),
+        expect.objectContaining({ executiveSummary: 'Synthese expert' }),
       );
 
       expect(repo.updateState).toHaveBeenCalledTimes(1);
@@ -290,6 +278,47 @@ describe('AuditDeliveryOrchestrator', () => {
       expect(coverage.bingChatGpt.score).toBe(50);
       expect(coverage.perplexity.score).toBe(50);
       expect(coverage.geminiOverviews.score).toBe(40);
+    });
+
+    it('nettoie, dedoublonne et borne a 8 les forces, blocages et opportunites agreges', async () => {
+      repo.findById.mockResolvedValue(baseSnapshot);
+      const neuf = Array.from({ length: 9 }, (_, i) => `Levier ${i + 1}`);
+      const pageAvec = (
+        strengths: string[],
+        blockers: string[],
+        opportunities: string[],
+      ) =>
+        buildPageAiRecap({
+          engineScores: {
+            ...buildEngineCoverage(),
+            google: buildEngineScore('google', {
+              strengths,
+              blockers,
+              opportunities,
+            }),
+          },
+        });
+
+      await runForAudit({
+        pageRecaps: [
+          pageAvec(
+            [' Titres clairs ', ''],
+            ['Pas de sitemap'],
+            neuf.slice(0, 5),
+          ),
+          pageAvec(
+            ['Titres clairs', '   '],
+            [' Pas de sitemap'],
+            neuf.slice(3),
+          ),
+        ],
+      });
+
+      const state = repo.updateState.mock.calls[0][1];
+      const { google } = state.engineCoverage as EngineCoverage;
+      expect(google.strengths).toEqual(['Titres clairs']);
+      expect(google.blockers).toEqual(['Pas de sitemap']);
+      expect(google.opportunities).toEqual(neuf.slice(0, 8));
     });
   });
 });

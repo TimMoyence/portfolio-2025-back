@@ -23,6 +23,7 @@ export async function issueAuthSession(
   user: User,
   jwtTokenService: JwtTokenService,
   refreshTokensRepo: IRefreshTokensRepository,
+  jetonPrecedentId?: string,
 ): Promise<AuthResult> {
   const { token, expiresIn } = await jwtTokenService.sign({
     sub: user.id,
@@ -31,13 +32,23 @@ export async function issueAuthSession(
   });
 
   const jeton = emettreJeton();
-
-  await refreshTokensRepo.create({
+  const aEnregistrer: RefreshToken = {
     userId: user.id!,
     tokenHash: jeton.empreinte,
     expiresAt: new Date(Date.now() + REFRESH_TOKEN_TTL_MS),
     revoked: false,
-  });
+  };
+
+  if (jetonPrecedentId === undefined) {
+    await refreshTokensRepo.create(aEnregistrer);
+  } else if (
+    (await refreshTokensRepo.createSuccessor(
+      jetonPrecedentId,
+      aEnregistrer,
+    )) === null
+  ) {
+    throw new InvalidCredentialsError('Invalid refresh token');
+  }
 
   return {
     accessToken: token,

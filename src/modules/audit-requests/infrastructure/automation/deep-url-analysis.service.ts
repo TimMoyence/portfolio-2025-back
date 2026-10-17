@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { AuditLocale } from '../../domain/audit-locale.util';
+import { textesUniquesBornes } from '../../../../common/domain/texte/textes-uniques-bornes';
+import { AuditLocale, localeDeHtmlLang } from '../../domain/audit-locale.util';
 import type {
   FindingImpact,
   ReportSeverity,
@@ -283,11 +284,8 @@ export class DeepUrlAnalysisService {
       return;
     }
 
-    const normalizedLang = entry.htmlLang.toLowerCase();
-    const mismatched =
-      (locale === 'fr' && normalizedLang.startsWith('en')) ||
-      (locale === 'en' && normalizedLang.startsWith('fr'));
-    if (mismatched) {
+    const langue = localeDeHtmlLang(entry.htmlLang);
+    if (langue && langue !== locale) {
       acc.languageMismatch += 1;
       acc.languageMismatchUrls.push(entry.url);
     }
@@ -927,10 +925,7 @@ export class DeepUrlAnalysisService {
       severity,
       confidence: borner(confidence, 0, 1),
       impact,
-      affectedUrls: Array.from(new Set(affectedUrls)).slice(
-        0,
-        AFFECTED_URLS_MAX,
-      ),
+      affectedUrls: textesUniquesBornes(affectedUrls, AFFECTED_URLS_MAX),
       recommendation,
     });
   }

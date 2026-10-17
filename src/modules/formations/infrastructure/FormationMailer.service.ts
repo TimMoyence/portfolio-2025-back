@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ExpediteurSmtp } from '../../../common/infrastructure/mail/expediteur-smtp';
+import { pieceJointeCsv } from '../../../common/infrastructure/mail/piece-jointe';
 import {
   escapeHtml,
   safeHtml,
@@ -18,7 +19,10 @@ import {
   DECIMALES_DE_LA_NOTE,
   REGLE_DE_NOTATION,
 } from '../domain/RegleDeNotation';
-import { nombreFrancais } from '../../../common/domain/nombres/ecriture-francaise';
+import {
+  nombreFrancais,
+  pourcentageAffiche,
+} from '../../../common/domain/nombres/ecriture-francaise';
 
 function noteSur20(note: number): string {
   return `${nombreFrancais(note, DECIMALES_DE_LA_NOTE)}/${REGLE_DE_NOTATION.noteMax}`;
@@ -46,33 +50,19 @@ export class FormationMailerService
     destinataire: string,
     rapport: RapportSession,
   ): Promise<void> {
-    if (!this.transporter) {
-      return;
-    }
     const csv = rapportEnCsv(rapport);
-    await this.transporter.sendMail({
-      from: this.from,
+    await this.envoyer({
       to: destinataire,
       subject: `Cours ${rapport.courseSlug} — session ${rapport.code}`,
       text: this.syntheseTexte(rapport),
       html: this.syntheseHtml(rapport),
-      attachments: [
-        {
-          filename: csv.nom,
-          content: Buffer.from(csv.contenu),
-          contentType: csv.type,
-        },
-      ],
+      attachments: [pieceJointeCsv(csv.nom, csv.contenu)],
     });
   }
 
   async sendCopieEtudiant(copie: CopieEtudiant): Promise<void> {
-    if (!this.transporter) {
-      return;
-    }
     const { participant } = copie;
-    await this.transporter.sendMail({
-      from: this.from,
+    await this.envoyer({
       to: participant.email,
       subject: `Votre copie — ${copie.courseSlug}`,
       text: this.copieTexte(participant),
@@ -82,7 +72,7 @@ export class FormationMailerService
           <p>Voici le détail de vos réponses pour la session ${escapeHtml(copie.code)}.</p>
           <p>
             Note obtenue : <strong>${escapeHtml(noteSur20(participant.note))}</strong>
-            (complétion ${Math.round(participant.completion * 100)}%).
+            (complétion ${escapeHtml(pourcentageAffiche(participant.completion))}).
           </p>
           <ul>${this.copieReponsesHtml(participant.reponses)}</ul>
         </div>
@@ -115,7 +105,7 @@ export class FormationMailerService
     for (const participant of rapport.participants) {
       lignes.push(
         `${participant.prenom} ${participant.nom} : complétion ` +
-          `${Math.round(participant.completion * 100)}%, note ` +
+          `${pourcentageAffiche(participant.completion)}, note ` +
           noteSur20(participant.note) +
           `${participant.sousSeuil ? ' (sous le seuil)' : ''}.`,
       );
@@ -133,7 +123,7 @@ export class FormationMailerService
     const lignesParticipants = rapport.participants.map(
       (participant) => safeHtml`<tr>
           <td style="padding:4px 8px;">${escapeHtml(participant.prenom)} ${escapeHtml(participant.nom)}</td>
-          <td style="padding:4px 8px;">${Math.round(participant.completion * 100)}%</td>
+          <td style="padding:4px 8px;">${escapeHtml(pourcentageAffiche(participant.completion))}</td>
           <td style="padding:4px 8px;">${escapeHtml(noteSur20(participant.note))}</td>
         </tr>`,
     );

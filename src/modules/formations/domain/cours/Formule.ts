@@ -1,5 +1,11 @@
+import { avecVirgule } from '../../../../common/domain/nombres/ecriture-francaise';
 import { estEntierPositif } from '../../../../common/domain/nombres/est-entier-positif';
+import { longueurDeTexte } from '../../../../common/domain/texte/longueur-de-texte';
 import { sansEspacesNiMoinsTypographiques } from '../../../../common/domain/texte/sans-espaces-typographiques';
+import {
+  arrondi,
+  sansZeroNegatif,
+} from '../../../../common/domain/nombres/arrondi';
 
 export type CodeErreur = '#REF!' | '#DIV/0!' | '#NOM?' | '#VALEUR!';
 
@@ -179,7 +185,6 @@ const ARGUMENTS_MAX_VERSEMENT = 5;
 const RANG_MAX_QUARTILE = 4;
 const ALPHABET = 26;
 const CODE_A = 'A'.charCodeAt(0);
-const PRECISION_DECIMALE = 15;
 const DECIMALES_EXPRESSION = 6;
 const ERREUR_VALEUR: CodeErreur = '#VALEUR!';
 const ERREUR_REFERENCE: CodeErreur = '#REF!';
@@ -242,8 +247,7 @@ function ecrireReference(reference: Reference): string {
 }
 
 function lireNombre(brut: string): number {
-  const compact = brut.trim().replace(',', '.');
-  return MOTIF_NOMBRE_SAISI.test(compact) ? Number(compact) : Number.NaN;
+  return lireNombreSaisi(brut) ?? Number.NaN;
 }
 
 const ESPACES_SAISIS = /\s/g;
@@ -332,7 +336,7 @@ function jetonSuivant(reste: string): Jeton {
 }
 
 function decouper(source: string): Jeton[] {
-  if (source.length > LONGUEUR_MAX_FORMULE) {
+  if (longueurDeTexte(source) > LONGUEUR_MAX_FORMULE) {
     refuser(ERREUR_VALEUR);
   }
   const jetons: Jeton[] = [];
@@ -643,22 +647,6 @@ function satisfait(critere: Critere, valeur: ValeurFormule): boolean {
     return false;
   }
   return selonOrdre(critere.operateur, ordre(valeur, critere.valeur));
-}
-
-function sansZeroNegatif(valeur: number): number {
-  return valeur === 0 ? 0 : valeur;
-}
-
-export function arrondirMoitieLoinDeZero(
-  valeur: number,
-  decimales: number,
-): number {
-  const facteur = 10 ** Math.trunc(decimales);
-  const decale = Number(
-    (Math.abs(valeur) * facteur).toPrecision(PRECISION_DECIMALE),
-  );
-  const arrondi = (Math.sign(valeur) * Math.round(decale)) / facteur;
-  return sansZeroNegatif(Number(arrondi.toPrecision(PRECISION_DECIMALE)));
 }
 
 function appliquer(operateur: string, gauche: number, droite: number): number {
@@ -1133,9 +1121,7 @@ class Evaluation {
     const [premier, second] = parametres.map((argument) =>
       this.nombre(argument),
     );
-    return nom === 'ARRONDI'
-      ? arrondirMoitieLoinDeZero(premier, second)
-      : premier ** second;
+    return nom === 'ARRONDI' ? arrondi(premier, second) : premier ** second;
   }
 
   private appeler(noeud: Extract<Noeud, { genre: 'appel' }>): ValeurFormule {
@@ -1294,6 +1280,32 @@ export function evaluerExpression(
   }
 }
 
+function variablesDu(noeud: Noeud): string[] {
+  switch (noeud.genre) {
+    case 'variable':
+      return [noeud.nom];
+    case 'unaire':
+      return variablesDu(noeud.operande);
+    case 'binaire':
+      return [...variablesDu(noeud.gauche), ...variablesDu(noeud.droite)];
+    case 'appel':
+      return noeud.arguments.flatMap(variablesDu);
+    default:
+      return [];
+  }
+}
+
+export function variablesDeLExpression(
+  expression: string,
+): readonly string[] | null {
+  try {
+    const source = sourceDeFormule(expression) ?? expression;
+    return [...new Set(variablesDu(analyser(source)))];
+  } catch {
+    return null;
+  }
+}
+
 function formeRelative(reference: Reference, origine: Reference): string {
   const ecart = (
     axe: 'R' | 'C',
@@ -1381,6 +1393,24 @@ export function decalerFormule(
   } catch {
     return formule;
   }
+}
+
+function formaterValeur(valeur: ValeurFormule): string {
+  switch (typeof valeur) {
+    case 'number':
+      return avecVirgule(Number(valeur.toFixed(DECIMALES_EXPRESSION)));
+    case 'boolean':
+      return valeur ? 'VRAI' : 'FAUX';
+    default:
+      return valeur;
+  }
+}
+
+export function formaterResultat(resultat: ResultatFormule): string {
+  if (resultat.erreur !== null || resultat.valeur === null) {
+    return resultat.erreur ?? ERREUR_VALEUR;
+  }
+  return formaterValeur(resultat.valeur);
 }
 
 function decalerJeton(

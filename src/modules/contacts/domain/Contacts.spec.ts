@@ -27,7 +27,7 @@ describe('Contacts aggregate', () => {
       message: ' I need support for a new enterprise feature rollout. ',
       role: ' CTO ',
       terms: true,
-      termsLocale: 'fr-FR',
+      termsLocale: 'fr',
     });
 
     expect(contact.email).toBe('john.doe@example.com');
@@ -75,14 +75,17 @@ describe('Contacts aggregate', () => {
     expect(contact.termsLocale).toBeUndefined();
   });
 
-  it('devrait refuser une termsLocale invalide', () => {
-    expect(() =>
-      Contacts.create({
-        ...VALID_CONTACT_PROPS,
-        termsLocale: 'xx-INVALID-TOO-LONG',
-      }),
-    ).toThrow(DomainValidationError);
-  });
+  it.each([['xx-INVALID-TOO-LONG'], ['fr-FR']])(
+    'devrait refuser la termsLocale %p',
+    (termsLocale) => {
+      expect(() =>
+        Contacts.create({
+          ...VALID_CONTACT_PROPS,
+          termsLocale,
+        }),
+      ).toThrow(new DomainValidationError('Invalid terms locale'));
+    },
+  );
 
   it('devrait accepter termsAcceptedAt valide', () => {
     const now = new Date();
@@ -159,5 +162,37 @@ describe('Contacts aggregate', () => {
         termsVersion: 'a'.repeat(51),
       }),
     ).toThrow(DomainValidationError);
+  });
+
+  it('normalise un telephone et nomme le champ d un telephone invalide', () => {
+    expect(
+      Contacts.create({ ...VALID_CONTACT_PROPS, phone: ' 06 12 34 56 78 ' })
+        .phone,
+    ).toBe('0612345678');
+    expect(() =>
+      Contacts.create({ ...VALID_CONTACT_PROPS, phone: 'abc' }),
+    ).toThrow(new DomainValidationError('Invalid contact phone number'));
+  });
+
+  it('nomme le drapeau des conditions quand il n est pas booleen', () => {
+    expect(() =>
+      Contacts.create({
+        ...VALID_CONTACT_PROPS,
+        terms: 'true' as unknown as boolean,
+      }),
+    ).toThrow(new DomainValidationError('Invalid terms flag'));
+  });
+
+  it.each([
+    ['termsVersion', 'Invalid contact terms version'],
+    ['termsMethod', 'Invalid contact terms method'],
+    ['termsLocale', 'Invalid terms locale'],
+  ])('refuse un %s non textuel', (champ, message) => {
+    expect(() =>
+      Contacts.create({
+        ...VALID_CONTACT_PROPS,
+        [champ]: 42 as unknown as string,
+      }),
+    ).toThrow(new DomainValidationError(message));
   });
 });

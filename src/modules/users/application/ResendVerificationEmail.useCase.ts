@@ -1,15 +1,8 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { InvalidInputError } from '../../../common/domain/errors/InvalidInputError';
-import type { IEmailVerificationTokensRepository } from '../domain/IEmailVerificationTokens.repository';
+import { aHeureFixe } from '../../../common/application/plancher-de-latence';
 import type { IUsersRepository } from '../domain/IUsers.repository';
-import {
-  EMAIL_VERIFICATION_TOKENS_REPOSITORY,
-  USERS_REPOSITORY,
-} from '../domain/token';
+import { USERS_REPOSITORY } from '../domain/token';
 import { EnvoiDeVerificationEmail } from './services/email-verification-dispatch';
-
-const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000;
-const RATE_LIMIT_MAX = 3;
 
 export interface ResendVerificationResult {
   message: string;
@@ -24,35 +17,24 @@ export class ResendVerificationEmailUseCase {
   constructor(
     @Inject(USERS_REPOSITORY)
     private readonly usersRepo: IUsersRepository,
-    @Inject(EMAIL_VERIFICATION_TOKENS_REPOSITORY)
-    private readonly emailVerificationTokensRepo: IEmailVerificationTokensRepository,
     private readonly envoiDeVerification: EnvoiDeVerificationEmail,
   ) {}
 
-  async execute(email: string): Promise<ResendVerificationResult> {
+  execute(email: string): Promise<ResendVerificationResult> {
+    return aHeureFixe(
+      () => this.renvoyer(email),
+      { message: this.genericMessage },
+      'Resend verification request failed',
+      this.logger,
+    );
+  }
+
+  private async renvoyer(email: string): Promise<ResendVerificationResult> {
     const user = await this.usersRepo.findByEmail(email);
 
-    if (!user || !user.id || !user.isActive) {
+    if (!user || !user.id || !user.isActive || user.emailVerified) {
       return { message: this.genericMessage };
     }
-
-    if (user.emailVerified) {
-      return { message: this.genericMessage };
-    }
-
-    const recentCount =
-      await this.emailVerificationTokensRepo.countRecentByUserId(
-        user.id,
-        RATE_LIMIT_WINDOW_MS,
-      );
-
-    if (recentCount >= RATE_LIMIT_MAX) {
-      throw new InvalidInputError(
-        'Trop de demandes de verification. Veuillez reessayer dans une heure.',
-      );
-    }
-
-    await this.emailVerificationTokensRepo.deleteByUserId(user.id);
 
     await this.envoiDeVerification.envoyer(
       user,

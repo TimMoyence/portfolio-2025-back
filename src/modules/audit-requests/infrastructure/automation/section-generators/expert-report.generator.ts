@@ -4,13 +4,11 @@ import {
 } from '../schemas/audit-report.schemas';
 import { buildExpertReportSystemBlocks } from './section-prompts.builder';
 import {
-  buildOpenAiMessages,
+  invoquerOpenAi,
   type ArgsDeGeneration,
-  type InvokeTrackedFn,
 } from './cacheable-section.generators';
 
 export function generateExpertReport(
-  deps: { invokeTracked: InvokeTrackedFn },
   args: ArgsDeGeneration & { compactMode?: boolean },
 ): Promise<ExpertReport> {
   const {
@@ -26,12 +24,9 @@ export function generateExpertReport(
     compactMode,
     retryMode,
   );
-  const chain = llm.withStructuredOutput(expertReportSchema);
-  return deps.invokeTracked(
-    chain,
-    buildOpenAiMessages(systemBlocks, payload),
-    'expert_report',
-    locale,
+  return invoquerOpenAi(llm, expertReportSchema, {
+    systemBlocks,
+    payload,
     signal,
-  );
+  });
 }

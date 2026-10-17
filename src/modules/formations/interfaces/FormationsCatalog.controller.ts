@@ -5,13 +5,13 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { Public } from '../../../common/interfaces/auth/public.decorator';
+import { RoutePublique } from '../../../common/interfaces/security/formulaire-public.decorator';
 import { LireCoursPublicUseCase } from '../application/LireCoursPublic.useCase';
 import type { CoursPublicCatalogue } from '../domain/contrats/tirage';
 import { CoursPublicCatalogueResponseDto } from './dto/contrat/sujet.response.dto';
 
 @ApiTags('formations')
-@Public()
+@RoutePublique()
 @Controller('formations')
 export class FormationsCatalogController {
   constructor(private readonly lireCoursPublic: LireCoursPublicUseCase) {}

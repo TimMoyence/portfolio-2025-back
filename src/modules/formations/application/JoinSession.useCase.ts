@@ -1,12 +1,17 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { pickFreeSeed } from '../domain/Bareme';
-import type { IParticipantsRepository } from '../domain/IParticipants.repository';
+import {
+  type IParticipantsRepository,
+  LONGUEUR_MAX_D_UN_NOM_DE_PARTICIPANT,
+  LONGUEUR_MAX_D_UNE_ADRESSE_DE_PARTICIPANT,
+} from '../domain/IParticipants.repository';
 import type { ISessionStateCache } from '../domain/ISessionStateCache.port';
 import type { ISessionsRepository } from '../domain/ISessions.repository';
 import { SecretDeReprise } from '../domain/SecretDeReprise';
 import { SessionCode } from '../domain/SessionCode';
 import { assertSeanceTrouvee } from '../domain/SessionOwnership';
 import { assertSeanceNonTerminee } from '../domain/SessionState';
+import { texteRenseigne } from '../domain/TexteRenseigne';
 import {
   PARTICIPANTS_REPOSITORY,
   SESSION_STATE_CACHE,
@@ -29,6 +34,21 @@ export class JoinSessionUseCase {
   ) {}
 
   async execute(command: JoinSessionCommand): Promise<JoinSessionResult> {
+    const prenom = texteRenseigne(
+      command.prenom,
+      'Le prénom',
+      LONGUEUR_MAX_D_UN_NOM_DE_PARTICIPANT,
+    );
+    const nom = texteRenseigne(
+      command.nom,
+      'Le nom',
+      LONGUEUR_MAX_D_UN_NOM_DE_PARTICIPANT,
+    );
+    const email = texteRenseigne(
+      command.email,
+      "L'adresse électronique",
+      LONGUEUR_MAX_D_UNE_ADRESSE_DE_PARTICIPANT,
+    );
     const code = SessionCode.parse(command.code);
     const session = assertSeanceTrouvee(
       await this.sessions.findActiveByCode(code),
@@ -40,9 +60,9 @@ export class JoinSessionUseCase {
     const { participant, nouveau } = await this.participants.inscrire({
       sessionId: session.id,
       studentKey: command.studentKey,
-      prenom: command.prenom,
-      nom: command.nom,
-      email: command.email,
+      prenom,
+      nom,
+      email,
       capacite: session.capacite,
       empreinteDeReprise: SecretDeReprise.empreinte(secretDeReprise),
       repriseAutorisee: (empreinteStockee) =>

@@ -9,6 +9,7 @@ import type {
   IPulsesRepository,
   JalonDuParticipant,
 } from '../domain/IPulses.repository';
+import { DepotEnDomaine } from '../../../common/infrastructure/typeorm/DepotEnDomaine';
 import { FormationPulseEntity } from './entities/FormationPulse.entity';
 
 interface LigneDeCompte {
@@ -38,11 +39,16 @@ function regrouperLesJalons(
 }
 
 @Injectable()
-export class PulsesRepositoryTypeORM implements IPulsesRepository {
+export class PulsesRepositoryTypeORM
+  extends DepotEnDomaine<FormationPulseEntity, JalonDuParticipant>
+  implements IPulsesRepository
+{
   constructor(
     @InjectRepository(FormationPulseEntity)
-    private readonly repo: Repository<FormationPulseEntity>,
-  ) {}
+    repo: Repository<FormationPulseEntity>,
+  ) {
+    super(repo);
+  }
 
   async declarer(input: DeclarationDeJalon): Promise<void> {
     await this.repo
@@ -76,17 +82,17 @@ export class PulsesRepositoryTypeORM implements IPulsesRepository {
     );
   }
 
-  async listerDuParticipant(
+  listerDuParticipant(
     sessionId: string,
     cleParticipant: string,
   ): Promise<readonly JalonDuParticipant[]> {
-    const lignes = await this.repo.find({
+    return this.lister({
       where: { sessionId, cleParticipant },
       order: { sondageId: 'ASC' },
     });
-    return lignes.map((ligne) => ({
-      sondageId: ligne.sondageId,
-      etat: ligne.etat,
-    }));
+  }
+
+  protected toDomain(ligne: FormationPulseEntity): JalonDuParticipant {
+    return { sondageId: ligne.sondageId, etat: ligne.etat };
   }
 }

@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { envListe } from '../../config/env-readers.util';
 import { CreateAuditRequestsUseCase } from './application/CreateAuditRequests.useCase';
 import { GetAuditSummaryUseCase } from './application/GetAuditSummary.useCase';
 import { StreamAuditEventsUseCase } from './application/StreamAuditEvents.useCase';
@@ -17,7 +18,7 @@ import { AuditClientReportMailer } from './infrastructure/mail/audit-client-repo
 import { AuditExpertReportMailer } from './infrastructure/mail/audit-expert-report.mailer';
 import { AuditNotificationMailer } from './infrastructure/mail/audit-notification.mailer';
 import { AuditNotifierFacade } from './infrastructure/mail/audit-notifier.facade';
-import { SmtpTransporterProvider } from './infrastructure/mail/smtp-transporter.provider';
+import { ExpediteurDAuditProvider } from './infrastructure/mail/expediteur-d-audit.provider';
 import { AiHeadersAnalyzerService } from './infrastructure/automation/ai-headers-analyzer.service';
 import { AuditDeliveryOrchestrator } from './infrastructure/automation/audit-delivery.orchestrator';
 import { AuditPdfGeneratorService } from './infrastructure/automation/audit-pdf-generator.service';
@@ -123,7 +124,7 @@ const AUDIT_PDF_SERVICES = [
     ...AUDIT_LLM_ABSTRACTIONS,
     ...AUDIT_ORCHESTRATION_SERVICES,
     ...AUDIT_PDF_SERVICES,
-    SmtpTransporterProvider,
+    ExpediteurDAuditProvider,
     AuditNotificationMailer,
     AuditClientReportMailer,
     AuditExpertReportMailer,
@@ -151,14 +152,10 @@ const AUDIT_PDF_SERVICES = [
     {
       provide: AUDIT_SELF_GUARD,
       useFactory: (): SelfAuditGuard => {
-        const raw = process.env.AUDIT_SELF_DOMAINS?.trim();
-        const domains = raw
-          ? raw
-              .split(',')
-              .map((entry) => entry.trim())
-              .filter((entry) => entry.length > 0)
-          : ['asilidesign.fr'];
-        return new SelfAuditGuard(domains);
+        const domains = envListe('AUDIT_SELF_DOMAINS');
+        return new SelfAuditGuard(
+          domains.length > 0 ? domains : ['asilidesign.fr'],
+        );
       },
     },
   ],

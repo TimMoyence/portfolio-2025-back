@@ -104,7 +104,7 @@ export function buildPayload(
   const caps = PROFILE_CAPS[profile];
 
   const compactedFindings = compactFindings(
-    input,
+    input.deepFindings,
     caps.findings,
     caps.affectedUrls,
   );
@@ -140,16 +140,7 @@ export type SectionPayloads = Record<
 export function buildSectionPayloads(
   input: LangchainAuditInput,
 ): SectionPayloads {
-  const compactedFindings = input.deepFindings.slice(0, 10).map((finding) => ({
-    code: finding.code,
-    title: compactText(finding.title, 140),
-    description: compactText(finding.description, 260),
-    severity: finding.severity,
-    confidence: finding.confidence,
-    impact: finding.impact,
-    recommendation: compactText(finding.recommendation, 260),
-    affectedUrls: finding.affectedUrls.slice(0, 3),
-  }));
+  const compactedFindings = compactFindings(input.deepFindings, 10, 3);
 
   const compactedRecaps = input.pageRecaps
     .slice(0, 10)
@@ -237,19 +228,31 @@ export function buildSectionPayloads(
   };
 }
 
+const LONGUEURS_DES_CONSTATS = {
+  title: 140,
+  description: 260,
+  recommendation: 260,
+} as const;
+
 function compactFindings(
-  input: LangchainAuditInput,
+  findings: LangchainAuditInput['deepFindings'],
   maxFindings: number,
   maxAffectedUrls: number,
 ): Array<Record<string, unknown>> {
-  return input.deepFindings.slice(0, maxFindings).map((finding) => ({
+  return findings.slice(0, maxFindings).map((finding) => ({
     code: finding.code,
-    title: finding.title,
-    description: finding.description,
+    title: compactText(finding.title, LONGUEURS_DES_CONSTATS.title),
+    description: compactText(
+      finding.description,
+      LONGUEURS_DES_CONSTATS.description,
+    ),
     severity: finding.severity,
     confidence: finding.confidence,
     impact: finding.impact,
-    recommendation: finding.recommendation,
+    recommendation: compactText(
+      finding.recommendation,
+      LONGUEURS_DES_CONSTATS.recommendation,
+    ),
     affectedUrls: finding.affectedUrls.slice(0, maxAffectedUrls),
   }));
 }

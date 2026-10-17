@@ -1,10 +1,7 @@
 import { Logger } from '@nestjs/common';
 import { z } from 'zod';
 import type Anthropic from '@anthropic-ai/sdk';
-import {
-  createMockLlmMetrics,
-  type MockLlmMetrics,
-} from '../../../../../test/factories/metrics.factory';
+import { espionnerLeLoggerAChaqueTest } from '../../../../../test/helpers/silence-nest-logger';
 import { invokeAnthropicStructuredSection } from './anthropic-section-synthesis.util';
 
 const section = z.object({
@@ -66,28 +63,24 @@ function invokeSection(
   overrides: {
     section?: string;
     systemBlocks?: string[];
-    metrics?: MockLlmMetrics;
   } = {},
 ): Promise<Section> {
-  const {
-    section: sectionName = 'executive',
-    systemBlocks = ['main'],
-    metrics,
-  } = overrides;
+  const { section: sectionName = 'executive', systemBlocks = ['main'] } =
+    overrides;
   return invokeAnthropicStructuredSection<Section>({
     client,
     model: 'claude-sonnet-4-6',
     section: sectionName,
-    locale: 'fr',
     schema: section,
     systemBlocks,
     userContent: 'user',
     logger: new Logger('test'),
-    ...(metrics ? { metrics: metrics as never } : {}),
   });
 }
 
 describe('invokeAnthropicStructuredSection', () => {
+  const journal = espionnerLeLoggerAChaqueTest('log');
+
   it('applies cache_control ephemeral on the last system block', async () => {
     const { client, calls } = buildClient();
 
@@ -133,21 +126,35 @@ describe('invokeAnthropicStructuredSection', () => {
     expect(result).toEqual({ summary: 'ok', priority: 1 });
   });
 
-  it('records input/output/cache metrics on success', async () => {
-    const { client } = buildClient();
-    const metrics = createMockLlmMetrics();
+  it.each([
+    [
+      { cache_read_input_tokens: 0, cache_creation_input_tokens: 0 },
+      'cacheRead=0 cacheCreate=0 hitRate=0%',
+    ],
+    [
+      { cache_read_input_tokens: 20, cache_creation_input_tokens: 30 },
+      'cacheRead=20 cacheCreate=30 hitRate=67%',
+    ],
+  ])(
+    'journalise les jetons consommés et la part lue en cache (%o)',
+    async (cache, attendu) => {
+      const { client } = buildClient({
+        usage: {
+          input_tokens: 10,
+          output_tokens: 5,
+          server_tool_use: null,
+          service_tier: null,
+          ...cache,
+        } as Anthropic.Usage,
+      });
 
-    await invokeSection(client, { metrics });
+      await invokeSection(client);
 
-    const tokenCalls = metrics.llmTokensTotal.inc.mock.calls;
-    const types = tokenCalls.map((call) => (call[0] as { type: string }).type);
-    expect(types).toEqual(
-      expect.arrayContaining(['input', 'output', 'cached']),
-    );
-    expect(metrics.llmCallsTotal.inc).toHaveBeenCalledWith(
-      expect.objectContaining({ status: 'success', section: 'executive' }),
-    );
-  });
+      expect(journal()).toHaveBeenCalledWith(
+        `Anthropic executive ok in=10 out=5 ${attendu}`,
+      );
+    },
+  );
 
   it.each([
     [
@@ -170,20 +177,15 @@ describe('invokeAnthropicStructuredSection', () => {
       undefined,
     ],
   ])(
-    'throws and records error status when %s',
+    'throws without journaling a success when %s',
     async (_cas, bloc: Anthropic.ContentBlock, erreurAttendue) => {
       const { client } = buildClient({
         content: [bloc],
       } as Partial<Anthropic.Message>);
-      const metrics = createMockLlmMetrics();
 
-      await expect(invokeSection(client, { metrics })).rejects.toThrow(
-        erreurAttendue,
-      );
+      await expect(invokeSection(client)).rejects.toThrow(erreurAttendue);
 
-      expect(metrics.llmCallsTotal.inc).toHaveBeenCalledWith(
-        expect.objectContaining({ status: 'error' }),
-      );
+      expect(journal()).not.toHaveBeenCalled();
     },
   );
 });

@@ -5,10 +5,12 @@ import type { Cours } from '../domain/contrats/cours';
 import type { EtatParticipant } from '../domain/contrats/pilotage';
 import { cleDeJalon } from '../domain/cours/CleDeJalon';
 import { ecranDeDefi } from '../domain/cours/Defis';
-import { verdictServiDe } from '../domain/cours/EcranServi';
+import { ecranServi, verdictServiDe } from '../domain/cours/EcranServi';
 import {
   ecranDEnigmes,
   enigmeVisee,
+  etatDesEnigmes,
+  progressionDesLignes,
   tentativesRestantes,
 } from '../domain/cours/Enigmes';
 import type {
@@ -62,7 +64,7 @@ export class LireEtatParticipantUseCase {
           cleDeJalon(sessionId, participantId),
         ),
         this.escape.listerProgressionDuParticipant(participantId),
-        this.rappels.lister(participantId),
+        this.rappels.listerDuParticipant(participantId),
       ],
     );
 
@@ -78,7 +80,7 @@ export class LireEtatParticipantUseCase {
           response: libre.response,
         })),
       jalons: [...jalons],
-      enigmes: this.enigmesLues(cours, progressions),
+      enigmes: this.enigmesLues(session, cours, progressions),
       defis: libres
         .filter((libre) => ecranDeDefi(cours, libre.activityId) !== null)
         .map((libre) => ({
@@ -112,24 +114,29 @@ export class LireEtatParticipantUseCase {
   }
 
   private enigmesLues(
+    session: SessionRecord,
     cours: Cours,
     progressions: readonly ProgressionEnigmeRecord[],
   ): EtatParticipant['enigmes'] {
-    const parParcours = new Map<string, ProgressionEnigmeRecord[]>();
-    for (const ligne of progressions) {
-      parParcours.set(ligne.parcoursId, [
-        ...(parParcours.get(ligne.parcoursId) ?? []),
-        ligne,
-      ]);
-    }
-    return [...parParcours.entries()].flatMap(([parcoursId, lignes]) => {
-      const cible = ecranDEnigmes(cours, parcoursId);
-      if (cible === null) {
+    return cours.ecrans.flatMap((ecran) => {
+      if (ecran.brique !== 'fp-escape') {
         return [];
       }
+      const parcoursId = ecran.proprietes.parcours.id;
+      const cible = ecranDEnigmes(cours, parcoursId);
+      if (
+        cible === null ||
+        !ecranServi(session, cible.rang, cours.ecrans.length)
+      ) {
+        return [];
+      }
+      const lignes = progressions.filter(
+        (ligne) => ligne.parcoursId === parcoursId,
+      );
       return [
         {
           parcoursId,
+          ...etatDesEnigmes(cible, progressionDesLignes(lignes)),
           resolues: lignes
             .filter((ligne) => ligne.resolueLe !== null)
             .map((ligne) => ({

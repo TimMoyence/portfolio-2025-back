@@ -21,15 +21,13 @@ export class ContactMailerService
   }
 
   async sendContactNotification(contact: Contacts): Promise<void> {
-    if (!this.transporter) return;
-
+    if (!this.to) return;
     const { firstName, lastName, email, phone, subject, message, role } =
       contact;
 
     const fullName = `${firstName} ${lastName}`;
 
-    await this.transporter.sendMail({
-      from: this.from,
+    await this.envoyer({
       to: this.to,
       subject: `📩 Nouveau message de contact — ${subject}`,
       text: `

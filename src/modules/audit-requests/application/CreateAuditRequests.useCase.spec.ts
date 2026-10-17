@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/unbound-method */
+import { RateLimitExceededError } from '../../../common/domain/errors/RateLimitExceededError';
 import { CreateAuditRequestsUseCase } from './CreateAuditRequests.useCase';
 import type { IAuditRequestsRepository } from '../domain/IAuditRequests.repository';
 import type { IAuditNotifierPort } from '../domain/IAuditNotifier.port';
@@ -14,6 +15,7 @@ import {
   createMockAuditNotifier,
   createMockAuditQueue,
 } from '../../../../test/factories/audit-requests.factory';
+import { sectionSurLeDepot } from '../../../../test/factories/verrou-par-boite.factory';
 import {
   attendreLAvertissement,
   espionnerLesAvertissements,
@@ -59,6 +61,12 @@ describe('CreateAuditRequestsUseCase', () => {
     queueService.enqueue.mockResolvedValue(undefined);
     notifier.sendAuditNotification.mockResolvedValue(undefined);
   });
+
+  const attendreAucunAuditLance = () => {
+    expect(repo.create).not.toHaveBeenCalled();
+    expect(queueService.enqueue).not.toHaveBeenCalled();
+    expect(notifier.sendAuditNotification).not.toHaveBeenCalled();
+  };
 
   it('devrait creer la demande, la mettre en file d attente et retourner la reponse', async () => {
     const result = await useCase.execute(validCommand);
@@ -109,6 +117,106 @@ describe('CreateAuditRequestsUseCase', () => {
     expect(queueService.enqueue).toHaveBeenCalledWith('audit-custom-456');
   });
 
+  describe('plafond par adresse de contact', () => {
+    const UNE_HEURE_MS = 60 * 60 * 1000;
+
+    const refusDe = async (command: CreateAuditRequestCommand) => {
+      const refus: unknown = await useCase.execute(command).catch((e) => e);
+      expect(refus).toBeInstanceOf(RateLimitExceededError);
+      return refus as RateLimitExceededError;
+    };
+
+    it('refuse en 429 la quatrieme demande de l heure vers la meme adresse, sans audit, file ni notification', async () => {
+      repo.secondesAvantLaSortieDesDemandesVers.mockResolvedValue([
+        120.2, 1800, 3000,
+      ]);
+
+      await refusDe(validCommand);
+      attendreAucunAuditLance();
+    });
+
+    it.each([
+      [[120.2, 1800, 3000], 121],
+      [[5, 60.0001, 1800, 3000], 61],
+      [[0.4, 1, 2], 1],
+    ])(
+      'fait attendre jusqu a la sortie de fenetre de la plus ancienne des trois dernieres demandes (%j s -> Retry-After %i)',
+      async (delais, attente) => {
+        repo.secondesAvantLaSortieDesDemandesVers.mockResolvedValue(delais);
+
+        const refus = await refusDe(validCommand);
+
+        expect(refus.secondesAvantDeReessayer).toBe(attente);
+        expect(refus.message).toBe(
+          'Trop de demandes d audit vers cette adresse.',
+        );
+      },
+    );
+
+    it('compte les demandes de la derniere heure vers l adresse de la demande et accepte la troisieme', async () => {
+      repo.secondesAvantLaSortieDesDemandesVers.mockResolvedValue([1800, 3000]);
+
+      await expect(useCase.execute(validCommand)).resolves.toEqual(
+        expectedResponse,
+      );
+
+      expect(repo.secondesAvantLaSortieDesDemandesVers).toHaveBeenCalledTimes(
+        1,
+      );
+      expect(repo.secondesAvantLaSortieDesDemandesVers).toHaveBeenCalledWith(
+        validCommand.contactValue,
+        UNE_HEURE_MS,
+      );
+      expect(repo.create).toHaveBeenCalledTimes(1);
+    });
+
+    it('compte et cree dans la section verrouillee de la boite, puis met en file et notifie apres sa fin', async () => {
+      const depotDeLaSection = createMockAuditRequestsRepo();
+      depotDeLaSection.create.mockResolvedValue(expectedResponse);
+      repo.sousVerrouDeLaBoite = sectionSurLeDepot(
+        () => depotDeLaSection,
+        () => {
+          expect(queueService.enqueue).not.toHaveBeenCalled();
+          expect(notifier.sendAuditNotification).not.toHaveBeenCalled();
+        },
+      );
+
+      await expect(useCase.execute(validCommand)).resolves.toEqual(
+        expectedResponse,
+      );
+
+      expect(repo.sousVerrouDeLaBoite).toHaveBeenCalledTimes(1);
+      expect(repo.sousVerrouDeLaBoite).toHaveBeenCalledWith(
+        validCommand.contactValue,
+        expect.any(Function),
+      );
+      expect(
+        depotDeLaSection.secondesAvantLaSortieDesDemandesVers,
+      ).toHaveBeenCalledTimes(1);
+      expect(depotDeLaSection.create).toHaveBeenCalledTimes(1);
+      expect(repo.secondesAvantLaSortieDesDemandesVers).not.toHaveBeenCalled();
+      expect(repo.create).not.toHaveBeenCalled();
+      expect(queueService.enqueue).toHaveBeenCalledWith('audit-123');
+      expect(notifier.sendAuditNotification).toHaveBeenCalledTimes(1);
+    });
+
+    it('verrouille et compte l adresse normalisee par le domaine, pas la saisie brute', async () => {
+      await useCase.execute({
+        ...validCommand,
+        contactValue: ' Test@Example.COM ',
+      });
+
+      expect(repo.sousVerrouDeLaBoite).toHaveBeenCalledWith(
+        'test@example.com',
+        expect.any(Function),
+      );
+      expect(repo.secondesAvantLaSortieDesDemandesVers).toHaveBeenCalledWith(
+        'test@example.com',
+        UNE_HEURE_MS,
+      );
+    });
+  });
+
   describe('P0.2 — SelfAuditGuard protection', () => {
     const attendreLeRefusDe = async (websiteName: string) => {
       const selfCommand: CreateAuditRequestCommand = {
@@ -124,8 +232,7 @@ describe('CreateAuditRequestsUseCase', () => {
 
     it('devrait rejeter un audit sur le domaine self (asilidesign.fr)', async () => {
       await attendreLeRefusDe('asilidesign.fr');
-      expect(queueService.enqueue).not.toHaveBeenCalled();
-      expect(notifier.sendAuditNotification).not.toHaveBeenCalled();
+      attendreAucunAuditLance();
     });
 
     it('devrait rejeter un audit sur un sous-domaine self', async () => {

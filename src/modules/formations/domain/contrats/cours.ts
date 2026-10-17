@@ -32,9 +32,15 @@ export {
 } from './contrat-de-l-api';
 export type OrdreQuestions = 'fixe' | 'melange';
 
-export type SheetPlanStocke = Omit<SheetPlanPublic, 'metadonnees'>;
+export type SheetPlanStocke = Omit<
+  SheetPlanPublic,
+  'metadonnees' | 'lettres' | 'grille' | 'longueurMaxSaisie' | 'initiale'
+>;
 export type CardsortPlanStocke = Omit<CardsortPlanPublic, 'metadonnees'>;
-export type TableBuildPlanStocke = Omit<TableBuildPlanPublic, 'metadonnees'>;
+export type TableBuildPlanStocke = Omit<
+  TableBuildPlanPublic,
+  'metadonnees' | 'tableauInitial'
+>;
 export type EscapeParcoursStocke = Omit<EscapeParcoursPublic, 'metadonnees'>;
 
 export interface LigneDuDossier {

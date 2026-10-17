@@ -9,10 +9,10 @@ import { CookieConsent } from './CookieConsent';
 const VALID_PROPS = buildChoixDeConsentement();
 
 describe('CookieConsent aggregate', () => {
-  it('creates consent with normalized locale', () => {
+  it('creates consent with its locale and trimmed request metadata', () => {
     const consent = CookieConsent.create({
       ...VALID_PROPS,
-      locale: 'EN-us',
+      locale: 'en',
       ip: ' 203.0.113.10 ',
       userAgent: ' test-agent ',
       referer: ' https://example.com ',
@@ -101,6 +101,21 @@ describe('CookieConsent aggregate', () => {
     ).toThrow(DomainValidationError);
   });
 
+  it.each(['essential', 'preferences', 'analytics', 'marketing'] as const)(
+    'refuse le choix %s transmis en texte en nommant les preferences',
+    (choix) => {
+      expect(() =>
+        CookieConsent.create({
+          ...VALID_PROPS,
+          preferences: {
+            ...VALID_PROPS.preferences,
+            [choix]: 'true' as unknown as boolean,
+          },
+        }),
+      ).toThrow('Invalid cookie consent preferences');
+    },
+  );
+
   it('devrait gerer les metadonnees null/undefined', () => {
     const consent = CookieConsent.create({
       ...VALID_PROPS,
@@ -119,11 +134,12 @@ describe('CookieConsent aggregate', () => {
     );
   });
 
-  it('devrait defaulter la locale a fr si invalide', () => {
-    const consent = CookieConsent.create({
-      ...VALID_PROPS,
-      locale: 'xx-invalid',
-    });
-    expect(consent.locale).toBe('fr');
-  });
+  it.each([['xx-invalid'], ['de'], [''], ['EN-us']])(
+    'refuse la locale non supportee %p au lieu de la remplacer par fr',
+    (locale) => {
+      expect(() => CookieConsent.create({ ...VALID_PROPS, locale })).toThrow(
+        new DomainValidationError('Invalid cookie consent locale'),
+      );
+    },
+  );
 });

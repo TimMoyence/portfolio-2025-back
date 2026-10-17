@@ -5,6 +5,7 @@ import {
   buildEcranDeJalon,
   buildEcranDEnigmes,
   ENIGMES_DE_TEST,
+  PARCOURS_AVANT_TOUTE_TENTATIVE,
   PARCOURS_DE_TEST,
   SONDAGE_DE_TEST,
 } from './factories/cours.factory';
@@ -33,7 +34,7 @@ decrireSurLeDernierEcran(
     const monEtat = (seance: SeanceDeTest, jeton = seance.jeton): Test =>
       banc.avecJeton('get', `/sessions/${seance.sessionId}/moi`, jeton);
 
-    it('rend un etat vide au participant qui vient de rejoindre', async () => {
+    it('rend au participant qui vient de rejoindre un etat sans reponse, et chaque enigme a son ouverture', async () => {
       const seance = await banc.ouvrirSeance({
         cle: '88888888-8888-4888-8888-000000000001',
       });
@@ -47,7 +48,7 @@ decrireSurLeDernierEcran(
         reponses: [],
         reponsesLibres: [],
         jalons: [],
-        enigmes: [],
+        enigmes: [PARCOURS_AVANT_TOUTE_TENTATIVE],
         defis: [],
         rappels: { questionIds: [] },
       });

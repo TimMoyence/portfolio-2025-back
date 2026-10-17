@@ -6,7 +6,7 @@ import {
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
-import { Public } from '../../../common/interfaces/auth/public.decorator';
+import { RoutePublique } from '../../../common/interfaces/security/formulaire-public.decorator';
 import { GetPresentationInteractionsUseCase } from '../application/GetPresentationInteractions.useCase';
 import { PresentationInteractionsResponseDto } from './dto/presentation-interactions.response.dto';
 
@@ -17,7 +17,7 @@ export class PresentationsController {
     private readonly getInteractionsUseCase: GetPresentationInteractionsUseCase,
   ) {}
 
-  @Public()
+  @RoutePublique()
   @Get(':slug/interactions')
   @ApiOperation({
     summary: "Récupérer les interactions d'une présentation par slug",

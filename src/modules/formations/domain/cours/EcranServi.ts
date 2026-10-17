@@ -5,12 +5,14 @@ import { libelleLisible } from './banque/confusions';
 import { correctionsDe, ecranCorrigePar } from './Corrections';
 import { estReservee, questionsDe } from './Cours';
 import type { PieceJointeReservee } from './Cours';
+import { ecranDeProduction } from './ProductionSoumise';
 import type { PilotageEcran, VotePhase } from '../contrats/pilotage';
 import {
   EcranNonServiError,
   PhaseFermeeError,
   PieceJointeIntrouvableError,
   PieceJointeRetenueError,
+  TypeDeQuestionError,
 } from '../errors/FormationErrors';
 import type { FreeRange, PacingMode } from '../PacingMode';
 import type { SessionState } from '../SessionState';
@@ -22,7 +24,7 @@ export interface DiffusionDeSeance {
   readonly intervalleLibre: FreeRange | null;
 }
 
-type SeancePilotee = DiffusionDeSeance & {
+export type SeancePilotee = DiffusionDeSeance & {
   readonly pilotageEcrans: Readonly<Record<string, PilotageEcran>>;
 };
 
@@ -105,15 +107,94 @@ export function dernierEcranServi(
   return seance.ecranCourant;
 }
 
+export function ecranServi(
+  seance: DiffusionDeSeance,
+  rang: number,
+  total: number = Number.MAX_SAFE_INTEGER,
+): boolean {
+  return rang >= 0 && rang <= dernierEcranServi(seance, total);
+}
+
 export function assertEcranServi(
   seance: DiffusionDeSeance,
   rang: number,
   screenId: string,
   total: number = Number.MAX_SAFE_INTEGER,
 ): void {
-  if (rang < 0 || rang > dernierEcranServi(seance, total)) {
+  if (!ecranServi(seance, rang, total)) {
     throw new EcranNonServiError(screenId);
   }
+}
+
+export interface CibleDuCours<T> {
+  readonly valeur: T | null;
+  readonly id: string;
+  readonly rang: (valeur: T) => number;
+}
+
+export function absenteDuCours(
+  nature: string,
+): (id: string) => TypeDeQuestionError {
+  return (id) => new TypeDeQuestionError(id, `n’est pas ${nature} de ce cours`);
+}
+
+export function cibleServie<T>(
+  seance: DiffusionDeSeance,
+  cours: Cours,
+  cible: CibleDuCours<T>,
+  absente: (id: string) => Error,
+): T {
+  if (cible.valeur === null) {
+    throw absente(cible.id);
+  }
+  const rang = cible.rang(cible.valeur);
+  assertEcranServi(
+    seance,
+    rang,
+    idDeLEcranAuRang(cours, rang, cible.id),
+    cours.ecrans.length,
+  );
+  return cible.valeur;
+}
+
+export function idDeLEcranAuRang(
+  cours: Cours,
+  rang: number,
+  repli: string,
+): string {
+  return cours.ecrans[rang]?.id ?? repli;
+}
+
+function planEtRang<P>(
+  cours: Cours,
+  planId: string,
+  planDe: (ecran: Ecran) => P | null,
+): { readonly plan: P; readonly rang: number } | null {
+  const production = ecranDeProduction(cours, planId);
+  if (production === null) {
+    return null;
+  }
+  const plan = planDe(production.ecran);
+  return plan === null ? null : { plan, rang: production.rang };
+}
+
+export function planServi<P>(
+  seance: DiffusionDeSeance,
+  cours: Cours,
+  planId: string,
+  planDe: (ecran: Ecran) => P | null,
+  nature: string,
+): P {
+  return cibleServie(
+    seance,
+    cours,
+    {
+      valeur: planEtRang(cours, planId, planDe),
+      id: planId,
+      rang: ({ rang }) => rang,
+    },
+    absenteDuCours(nature),
+  ).plan;
 }
 
 export function etayageAtteint(pilotage: PilotageEcran | undefined): number {
@@ -143,13 +224,17 @@ export function pieceJointeServieAuPoste(
   cours: Cours,
   screenId: string,
 ): PieceJointeReservee {
-  const rang = rangDeLEcran(cours, screenId);
-  if (rang < 0) {
-    throw new PieceJointeIntrouvableError(screenId);
-  }
-  const ecran = cours.ecrans[rang];
+  const ecran = cibleServie(
+    seance,
+    cours,
+    {
+      valeur: ecranParId(cours, screenId) ?? null,
+      id: screenId,
+      rang: (servi) => cours.ecrans.indexOf(servi),
+    },
+    (id) => new PieceJointeIntrouvableError(id),
+  );
   const revele = (source: string): boolean => sourceRevelee(seance, source);
-  assertEcranServi(seance, rang, screenId, cours.ecrans.length);
   const source = ecranCorrigePar(ecran);
   if (source !== null && !revele(source)) {
     throw new EcranNonServiError(screenId);
@@ -170,6 +255,19 @@ export function ecranParId(cours: Cours, screenId: string): Ecran | undefined {
 
 export function rangDeLEcran(cours: Cours, screenId: string): number {
   return cours.ecrans.findIndex((ecran) => ecran.id === screenId);
+}
+
+export const SEUIL_PAR_DEFAUT = 0.7;
+
+export function seuilDe(ecran: Ecran): number | null {
+  if (
+    ecran.brique === 'fp-numeric' ||
+    ecran.brique === 'fp-vote' ||
+    ecran.brique === 'fp-recall'
+  ) {
+    return ecran.seuil ?? SEUIL_PAR_DEFAUT;
+  }
+  return null;
 }
 
 export function rangDeLaQuestion(cours: Cours, questionId: string): number {

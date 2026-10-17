@@ -14,6 +14,7 @@ import {
   valeursDevoileesAvantLeurEcran,
   valeursDevoileesParLesExplications,
 } from '../../../../../test/helpers/relecture-de-cours';
+import { arrondi } from '../../../../common/domain/nombres/arrondi';
 import { avecVirgule } from '../../../../common/domain/nombres/ecriture-francaise';
 import { sansEspacesTypographiques } from '../../../../common/domain/texte/sans-espaces-typographiques';
 import { libelleDeConfusion } from '../../domain/cours/banque/confusions';
@@ -21,6 +22,7 @@ import { estReservee, questionsDuCours } from '../../domain/cours/Cours';
 import { tirer } from '../../domain/cours/Tirage';
 import { COURS_B3_01 } from './b3-01.cours';
 import {
+  CA_HT_SAISI_EN_TEXTE,
   CLASSEURS_B3_01,
   DEFIS_B3_01,
   HISTOIRES_B3_01,
@@ -29,6 +31,7 @@ import {
   TOLERANCES_B3_01,
   VALEURS_B3_01,
 } from './b3-01.donnees';
+import { CONTENUS } from './index';
 
 const COURS = buildCoursDuContenu(COURS_B3_01);
 const DOCUMENT = lireConception('cours-b3-01-conception.md');
@@ -469,6 +472,17 @@ describe('B3-01 — acte 1 : consignes et corrections exactes', () => {
     );
     expect(texte).not.toContain('« bordeaux »');
     expect(texte).not.toContain('1 250');
+  });
+
+  it('D-03 · sert la cellule L2971 citée avec les caractères du classeur : quatre citations, aucune typographiée', () => {
+    const servi = JSON.stringify(
+      CONTENUS.find(({ slug }) => slug === COURS_B3_01.slug),
+    );
+
+    expect(servi.split(CA_HT_SAISI_EN_TEXTE)).toHaveLength(5);
+    expect(
+      sansEspacesTypographiques(servi).split(CA_HT_SAISI_EN_TEXTE),
+    ).toHaveLength(5);
   });
 
   it('A1-13 · diagnostique un mauvais classement par la confusion qui le décrit selon la case choisie, jamais par une suppression', () => {
@@ -963,10 +977,11 @@ describe('B3-01 — actes 2 et 3 : consignes et corrections exactes', () => {
   });
 
   it('A3-02 · renvoie au graphique de l’écran précédent et chiffre l’écart affiché', () => {
-    const ecart = Math.round(
+    const ecart = arrondi(
       (1 -
         HISTOIRES_B3_01['ca-2025-rennes'] / HISTOIRES_B3_01['ca-2025-nantes']) *
         100,
+      0,
     );
     const texte = texteDe('B3-01-A3-02-VOTE-GRAPHIQUE');
 
@@ -1416,7 +1431,7 @@ describe('B3-01 — actes 2 et 3 : consignes et corrections exactes', () => {
 
   it('A3-10 · décrit les catégories de Rennes et de Rouen telles que le jeu les fait évoluer', () => {
     const enPourcentEntier = (evolution: number): string => {
-      const entier = Math.round(evolution);
+      const entier = arrondi(evolution, 0);
       if (entier < 0) {
         return `−${-entier} %`;
       }
@@ -1430,7 +1445,7 @@ describe('B3-01 — actes 2 et 3 : consignes et corrections exactes', () => {
       `les autres catégories bougent peu, de ${enPourcentEntier(HISTOIRES_B3_01['evolution-min-rennes-hors-informatique'])} à ${enPourcentEntier(HISTOIRES_B3_01['evolution-max-rennes-hors-informatique'])}`,
     );
     expect(texte).toContain(
-      `en recul d’environ ${-Math.round(HISTOIRES_B3_01['evolution-rouen'])} % sur un an, de ${enPourcentEntier(HISTOIRES_B3_01['evolution-min-categorie-rouen'])} à ${enPourcentEntier(HISTOIRES_B3_01['evolution-max-categorie-rouen'])} selon la catégorie`,
+      `en recul d’environ ${-arrondi(HISTOIRES_B3_01['evolution-rouen'], 0)} % sur un an, de ${enPourcentEntier(HISTOIRES_B3_01['evolution-min-categorie-rouen'])} à ${enPourcentEntier(HISTOIRES_B3_01['evolution-max-categorie-rouen'])} selon la catégorie`,
     );
     expect(texte).not.toContain('dans toutes ses catégories');
   });

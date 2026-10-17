@@ -1,4 +1,5 @@
 import type { Provider } from '@nestjs/common';
+import { Test, type TestingModuleBuilder } from '@nestjs/testing';
 import { of } from 'rxjs';
 import { CreateAuditRequestsUseCase } from '../../src/modules/audit-requests/application/CreateAuditRequests.useCase';
 import { GetAuditSummaryUseCase } from '../../src/modules/audit-requests/application/GetAuditSummary.useCase';
@@ -26,7 +27,7 @@ import { AuthController } from '../../src/modules/users/interfaces/Auth.controll
 import { USERS_REPOSITORY } from '../../src/modules/users/domain/token';
 import { createMockUsersRepo } from './user.factory';
 
-export const CORE_CONTROLLERS = [
+const CORE_CONTROLLERS = [
   ContactsController,
   CookieConsentsController,
   AuditsController,
@@ -98,6 +99,7 @@ export const PASSWORD_RESET_REQUESTED_RESULT = {
 
 export const PASSWORD_RESET_DONE_RESULT = {
   message: 'Mot de passe reinitialise avec succes.',
+  userId: 'user-1',
 };
 
 export const SET_PASSWORD_RESULT = {
@@ -140,7 +142,7 @@ export interface CoreUseCaseStubs {
 export interface AuthUseCaseStubs {
   authenticateUserUseCase: { execute: jest.Mock };
   authenticateGoogleUserUseCase: { execute: jest.Mock };
-  createUsersUseCase: { execute: jest.Mock };
+  createUsersUseCase: { inscrire: jest.Mock };
   changePasswordUseCase: { execute: jest.Mock };
   refreshTokensUseCase: { execute: jest.Mock };
   revokeTokenUseCase: { execute: jest.Mock };
@@ -167,7 +169,7 @@ export function createAuthUseCaseStubs(): AuthUseCaseStubs {
   return {
     authenticateUserUseCase: { execute: jest.fn() },
     authenticateGoogleUserUseCase: { execute: jest.fn() },
-    createUsersUseCase: { execute: jest.fn() },
+    createUsersUseCase: { inscrire: jest.fn() },
     changePasswordUseCase: { execute: jest.fn() },
     refreshTokensUseCase: { execute: jest.fn() },
     revokeTokenUseCase: { execute: jest.fn() },
@@ -234,6 +236,18 @@ export function authControllerProviders(
     { provide: USERS_REPOSITORY, useValue: usersRepository },
   ];
 }
+
+export const moduleDesControleursDuSocle = (
+  coreStubs: CoreUseCaseStubs,
+  authStubs: AuthUseCaseStubs,
+): TestingModuleBuilder =>
+  Test.createTestingModule({
+    controllers: CORE_CONTROLLERS,
+    providers: [
+      ...coreControllerProviders(coreStubs),
+      ...authControllerProviders(authStubs),
+    ],
+  });
 
 export function primeCoreUseCaseStubs(stubs: CoreUseCaseStubs): void {
   stubs.createContactsUseCase.execute.mockResolvedValue(CONTACT_CREATED_RESULT);

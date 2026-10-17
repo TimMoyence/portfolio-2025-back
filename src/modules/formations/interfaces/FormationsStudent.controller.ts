@@ -1,4 +1,5 @@
 import {
+  applyDecorators,
   Body,
   Controller,
   Get,
@@ -10,7 +11,6 @@ import {
   Post,
   Put,
   Req,
-  Sse,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
@@ -26,9 +26,12 @@ import {
 import { Throttle } from '@nestjs/throttler';
 import type { Request } from 'express';
 import { Observable } from 'rxjs';
-import { Public } from '../../../common/interfaces/auth/public.decorator';
+import { FluxDEvenements } from '../../../common/interfaces/http/flux-d-evenements.decorator';
 import { resolveClientIpOrUnknown } from '../../../common/interfaces/security/client-ip.util';
-import { ProtegeContreLesRobots } from '../../../common/interfaces/security/formulaire-public.decorator';
+import {
+  ProtegeContreLesRobots,
+  RoutePublique,
+} from '../../../common/interfaces/security/formulaire-public.decorator';
 import { JoinSessionUseCase } from '../application/JoinSession.useCase';
 import { LireSujetUseCase } from '../application/LireSujet.useCase';
 import { RecordIncidentsUseCase } from '../application/RecordIncidents.useCase';
@@ -36,6 +39,9 @@ import { SaveFreeResponseUseCase } from '../application/SaveFreeResponse.useCase
 import { StreamSessionUseCase } from '../application/StreamSession.useCase';
 import { SubmitAnswerUseCase } from '../application/SubmitAnswer.useCase';
 import { SubmitProductionUseCase } from '../application/SubmitProduction.useCase';
+import { EvaluerFeuilleUseCase } from '../application/EvaluerFeuille.useCase';
+import { EvaluerTableauUseCase } from '../application/EvaluerTableau.useCase';
+import { EvaluerMachineUseCase } from '../application/EvaluerMachine.useCase';
 import { TelechargerPieceJointeUseCase } from '../application/TelechargerPieceJointe.useCase';
 import { TenterEnigmeUseCase } from '../application/TenterEnigme.useCase';
 import type { ClasseurTelecharge } from '../domain/IClasseursDeCours.port';
@@ -64,6 +70,12 @@ import { RappelsResponseDto } from './dto/contrat/rappels.response.dto';
 import { StrategiesDefiResponseDto } from './dto/contrat/strategies-defi.response.dto';
 import { SubmitDefiRequestDto } from './dto/contrat/submit-defi.request.dto';
 import { SubmitProductionRequestDto } from './dto/contrat/submit-production.request.dto';
+import { EvaluerFeuilleRequestDto } from './dto/contrat/evaluer-feuille.request.dto';
+import { FeuilleEvalueeResponseDto } from './dto/contrat/feuille-evaluee.response.dto';
+import { EvaluerTableauRequestDto } from './dto/contrat/evaluer-tableau.request.dto';
+import { TableauEvalueResponseDto } from './dto/contrat/tableau-evalue.response.dto';
+import { EvaluerMachineRequestDto } from './dto/contrat/evaluer-machine.request.dto';
+import { MachineEvalueeResponseDto } from './dto/contrat/machine-evaluee.response.dto';
 import { TentativeEnigmeResponseDto } from './dto/contrat/tentative-enigme.response.dto';
 import { TenterEnigmeRequestDto } from './dto/contrat/tenter-enigme.request.dto';
 import { SubmitProductionResponseDto } from './dto/contrat/verdict-production.response.dto';
@@ -72,6 +84,7 @@ import {
   FENETRE_THROTTLE_MS,
   LIMITE_FLUX_PAR_PARTICIPANT,
   LIMITE_ETAT_PAR_PARTICIPANT,
+  LIMITE_EVALUATIONS_PAR_PARTICIPANT,
   LIMITE_INCIDENTS_PAR_PARTICIPANT,
   LIMITE_JALONS_PAR_PARTICIPANT,
   LIMITE_JOIN_PAR_CODE,
@@ -89,14 +102,44 @@ import {
 } from './ParticipantToken.service';
 import { TelechargementDePieceJointe } from './piece-jointe-telechargee';
 
+function EvaluationEnSeance(
+  chemin: string,
+  resume: string,
+  reponse: new () => unknown,
+): MethodDecorator {
+  return applyDecorators(
+    LimiteParParticipant(LIMITE_EVALUATIONS_PAR_PARTICIPANT),
+    Post(chemin),
+    HttpCode(HttpStatus.OK),
+    ApiOperation({ summary: resume }),
+    ApiOkResponse({ type: reponse }),
+    ApiBadRequestResponse({
+      description:
+        'Evaluation refusee, cause dans le champ code du corps : TYPE_DE_QUESTION ou PRODUCTION_INVALIDE',
+    }),
+    ApiNotFoundResponse({
+      description:
+        'Evaluation refusee, cause dans le champ code du corps : ECRAN_NON_SERVI ou PARTICIPANT_INTROUVABLE',
+    }),
+    ApiConflictResponse({
+      description:
+        'Evaluation refusee, cause dans le champ code du corps : SEANCE_NON_DEMARREE ou SEANCE_TERMINEE',
+    }),
+    RouteParticipant(),
+  );
+}
+
 @ApiTags('formations')
-@Public()
+@RoutePublique()
 @Controller('formations')
 export class FormationsStudentController {
   constructor(
     private readonly joinSession: JoinSessionUseCase,
     private readonly submitAnswer: SubmitAnswerUseCase,
     private readonly submitProduction: SubmitProductionUseCase,
+    private readonly evaluerFeuille: EvaluerFeuilleUseCase,
+    private readonly evaluerTableau: EvaluerTableauUseCase,
+    private readonly evaluerMachine: EvaluerMachineUseCase,
     private readonly tenterEnigme: TenterEnigmeUseCase,
     private readonly declarerJalon: DeclarerJalonUseCase,
     private readonly defis: DefisUseCase,
@@ -241,9 +284,13 @@ export class FormationsStudentController {
     description:
       'Production refusee, cause dans le champ code du corps : TYPE_DE_QUESTION, PRODUCTION_VIDE ou PRODUCTION_INVALIDE',
   })
+  @ApiNotFoundResponse({
+    description:
+      'Production refusee, cause dans le champ code du corps : ECRAN_NON_SERVI',
+  })
   @ApiConflictResponse({
     description:
-      'Production refusee, cause dans le champ code du corps : SEANCE_NON_DEMARREE, SEANCE_TERMINEE, ECRAN_NON_SERVI, REPONSE_DEJA_ENREGISTREE ou REPRISES_EPUISEES',
+      'Production refusee, cause dans le champ code du corps : SEANCE_NON_DEMARREE, SEANCE_TERMINEE, REPONSE_DEJA_ENREGISTREE ou REPRISES_EPUISEES',
   })
   @RouteParticipant()
   async production(
@@ -260,16 +307,77 @@ export class FormationsStudentController {
     });
   }
 
+  @EvaluationEnSeance(
+    'sessions/:id/feuilles/:planId/evaluation',
+    'Calcule la feuille de l eleve a la validation d une cellule, sans rien enregistrer',
+    FeuilleEvalueeResponseDto,
+  )
+  async evaluationDeFeuille(
+    @Param('id', ParseUUIDPipe) sessionId: string,
+    @Param('planId') planId: string,
+    @IdentiteDuJeton() { participantId }: IdentiteSignee,
+    @Body() dto: EvaluerFeuilleRequestDto,
+  ): Promise<FeuilleEvalueeResponseDto> {
+    return this.evaluerFeuille.execute({
+      sessionId,
+      participantId,
+      planId,
+      cellules: dto.cellules,
+      recopie: dto.recopie,
+    });
+  }
+
+  @EvaluationEnSeance(
+    'sessions/:id/tableaux/:planId/evaluation',
+    'Calcule le tableau de l eleve a la validation d une cellule, sans rien enregistrer',
+    TableauEvalueResponseDto,
+  )
+  async evaluationDeTableau(
+    @Param('id', ParseUUIDPipe) sessionId: string,
+    @Param('planId') planId: string,
+    @IdentiteDuJeton() { participantId }: IdentiteSignee,
+    @Body() dto: EvaluerTableauRequestDto,
+  ): Promise<TableauEvalueResponseDto> {
+    return this.evaluerTableau.execute({
+      sessionId,
+      participantId,
+      planId,
+      saisies: dto.saisies,
+    });
+  }
+
+  @EvaluationEnSeance(
+    'sessions/:id/machines/:ecranId/evaluation',
+    'Calcule la machine de l eleve au relachement d un curseur, sans rien enregistrer',
+    MachineEvalueeResponseDto,
+  )
+  async evaluationDeMachine(
+    @Param('id', ParseUUIDPipe) sessionId: string,
+    @Param('ecranId') ecranId: string,
+    @IdentiteDuJeton() { participantId }: IdentiteSignee,
+    @Body() dto: EvaluerMachineRequestDto,
+  ): Promise<MachineEvalueeResponseDto> {
+    return this.evaluerMachine.execute({
+      sessionId,
+      participantId,
+      ecranId,
+      reglages: dto.reglages,
+    });
+  }
+
   @LimiteParParticipant(LIMITE_TENTATIVES_PAR_PARTICIPANT)
   @Post('sessions/:id/escape/:parcoursId/tentatives')
   @ApiOperation({
     summary: 'Tente une enigme, corrigee et plafonnee cote serveur',
   })
   @ApiCreatedResponse({ type: TentativeEnigmeResponseDto })
-  @ApiNotFoundResponse({ description: 'Enigme absente du parcours' })
+  @ApiNotFoundResponse({
+    description:
+      'Enigme absente du parcours, ou ecran non encore projete : code ECRAN_NON_SERVI',
+  })
   @ApiConflictResponse({
     description:
-      'Tentative refusee, cause dans le champ code du corps : ECRAN_NON_SERVI, ENIGME_VERROUILLEE, ENIGME_DEJA_RESOLUE ou TENTATIVES_EPUISEES',
+      'Tentative refusee, cause dans le champ code du corps : ENIGME_VERROUILLEE, ENIGME_DEJA_RESOLUE ou TENTATIVES_EPUISEES',
   })
   @RouteParticipant()
   async tentativeEnigme(
@@ -296,9 +404,13 @@ export class FormationsStudentController {
   })
   @ApiNoContentResponse({ description: 'Jalon enregistre' })
   @ApiBadRequestResponse({ description: 'Sondage inconnu du cours' })
+  @ApiNotFoundResponse({
+    description:
+      'Jalon refuse, cause dans le champ code du corps : ECRAN_NON_SERVI',
+  })
   @ApiConflictResponse({
     description:
-      'Jalon refuse, cause dans le champ code du corps : SEANCE_NON_DEMARREE, SEANCE_TERMINEE ou ECRAN_NON_SERVI',
+      'Jalon refuse, cause dans le champ code du corps : SEANCE_NON_DEMARREE ou SEANCE_TERMINEE',
   })
   @RouteParticipant()
   async jalon(
@@ -322,7 +434,10 @@ export class FormationsStudentController {
       'Envoie la tentative du defi et rend les strategies de reference, sans leur justesse',
   })
   @ApiCreatedResponse({ type: StrategiesDefiResponseDto })
-  @ApiNotFoundResponse({ description: 'Defi absent du cours' })
+  @ApiNotFoundResponse({
+    description:
+      'Defi absent du cours, ou ecran non encore projete : code ECRAN_NON_SERVI',
+  })
   @ApiBadRequestResponse({ description: 'Tentative vide' })
   @RouteParticipant()
   async tentativeDeDefi(
@@ -348,7 +463,8 @@ export class FormationsStudentController {
   })
   @ApiOkResponse({ type: StrategiesDefiResponseDto })
   @ApiNotFoundResponse({
-    description: 'Defi inconnu, ou aucune tentative envoyee',
+    description:
+      'Defi inconnu, aucune tentative envoyee, ou ecran non encore projete : code ECRAN_NON_SERVI',
   })
   @RouteParticipant()
   async strategiesDuDefi(
@@ -384,10 +500,9 @@ export class FormationsStudentController {
       'Sert la liste figee des rappels espaces du participant, options melangees par sa graine',
   })
   @ApiOkResponse({ type: RappelsResponseDto })
-  @ApiNotFoundResponse({ description: 'Cours sans ecran de rappel espace' })
-  @ApiConflictResponse({
+  @ApiNotFoundResponse({
     description:
-      'Rappels refuses, cause dans le champ code du corps : ECRAN_NON_SERVI',
+      'Cours sans ecran de rappel espace, ou ecran non encore projete : code ECRAN_NON_SERVI',
   })
   @RouteParticipant()
   async rappels(
@@ -476,7 +591,10 @@ export class FormationsStudentController {
   }
 
   @LimiteParParticipant(LIMITE_FLUX_PAR_PARTICIPANT)
-  @Sse('sessions/:id/stream')
+  @FluxDEvenements(
+    'sessions/:id/stream',
+    'Etat de la seance a chaque changement, vu du participant',
+  )
   @ApiOperation({ summary: 'Flux temps reel de l etat de la session' })
   @RouteParticipant()
   @ApiTooManyRequestsResponse({

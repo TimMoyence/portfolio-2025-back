@@ -1,3 +1,4 @@
+import { arrondi } from '../../../common/domain/nombres/arrondi';
 import type { Tolerance } from './contrats/contrat-de-l-api';
 
 export type { Tolerance } from './contrats/contrat-de-l-api';
@@ -39,8 +40,9 @@ export function matchesSolution(
     return ecartDansLaBorne(valeur, solution, tolerance.valeur);
   }
   if (tolerance.type === 'decimales') {
-    const facteur = 10 ** tolerance.valeur;
-    return Math.round(valeur * facteur) === Math.round(solution * facteur);
+    return (
+      arrondi(valeur, tolerance.valeur) === arrondi(solution, tolerance.valeur)
+    );
   }
   if (solution === 0) {
     return valeur === 0;

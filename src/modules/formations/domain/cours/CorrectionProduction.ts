@@ -2,6 +2,7 @@ import {
   mapperAuMoinsUn,
   type AuMoinsUn,
 } from '../../../../common/domain/au-moins-un';
+import { estEntierDansLesBornes } from '../../../../common/domain/nombres/dans-les-bornes';
 import { proportion } from '../../../../common/domain/nombres/statistiques';
 import type { Tolerance } from '../GradingCore';
 import { matchesSolution } from '../GradingCore';
@@ -70,7 +71,7 @@ function confusionDuPiege(
   return trouve?.confusion ?? null;
 }
 
-function reconstruire(
+export function reconstruire(
   plan: SheetPlanStocke,
   envoi: Readonly<Record<string, string>>,
 ): Feuille {
@@ -85,7 +86,7 @@ function reconstruire(
 }
 
 function estValeurDeControle(valeur: number): boolean {
-  return Number.isInteger(valeur) && Math.abs(valeur) <= 1;
+  return estEntierDansLesBornes(valeur, { min: -1, max: 1 });
 }
 
 function trahitLaFormule(saisie: string, attendu: AttenduDeCellule): boolean {

@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import type { Cours } from '../domain/contrats/cours';
-import { assertEcranServi, sourceRevelee } from '../domain/cours/EcranServi';
+import { cibleServie, sourceRevelee } from '../domain/cours/EcranServi';
 import { ecranDeDefi, strategiesPubliees } from '../domain/cours/Defis';
 import type { EcranDeDefi, StrategiePubliee } from '../domain/cours/Defis';
 import { assertPhaseOuverte } from '../domain/cours/PilotageEcrans';
@@ -26,17 +26,21 @@ export interface StrategiesDeDefi {
   strategies: StrategiePubliee[];
 }
 
-function cibleServie(
+function defiServi(
   session: SessionRecord,
   cours: Cours,
   defiId: string,
 ): EcranDeDefi {
-  const cible = ecranDeDefi(cours, defiId);
-  if (cible === null) {
-    throw new DefiInconnuError(defiId);
-  }
-  assertEcranServi(session, cible.rang, cible.ecran.id, cours.ecrans.length);
-  return cible;
+  return cibleServie(
+    session,
+    cours,
+    {
+      valeur: ecranDeDefi(cours, defiId),
+      id: defiId,
+      rang: (defi) => defi.rang,
+    },
+    (id) => new DefiInconnuError(id),
+  );
 }
 
 @Injectable()
@@ -50,7 +54,7 @@ export class DefisUseCase {
   async tenter(command: TentativeDeDefiCommand): Promise<StrategiesDeDefi> {
     const texte = texteRenseigne(command.texte, 'La tentative');
     const { session, cours } = await this.participation.ouverte(command);
-    const cible = cibleServie(session, cours, command.defiId);
+    const cible = defiServi(session, cours, command.defiId);
     assertPhaseOuverte(session.pilotageEcrans, { ecranId: cible.ecran.id });
 
     await this.freeResponses.enregistrerTentativeDeDefi({
@@ -75,7 +79,7 @@ export class DefisUseCase {
       sessionId,
       participantId,
     });
-    const cible = cibleServie(session, cours, defiId);
+    const cible = defiServi(session, cours, defiId);
     const tentative = await this.freeResponses.trouverParActivite(
       participantId,
       defiId,

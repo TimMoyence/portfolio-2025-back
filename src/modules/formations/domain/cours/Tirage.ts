@@ -21,6 +21,10 @@ import type { Rng, Tirage } from './Aleatoire';
 import type { ConfusionId } from './banque/confusions';
 import { ecranCorrigePar, ecransCorrigeantDe } from './Corrections';
 import { estInteractif, estReservee } from './Cours';
+import { planDeFeuilleServi } from './FeuilleEvaluee';
+import { machineCalculee } from './MachineServie';
+import { planDeTableauServi } from './TableauEvalue';
+import { traceCalcule } from './TraceServi';
 import type {
   PieceJointeServie,
   QuestionNumerique,
@@ -402,8 +406,19 @@ function donneesDeBrique(
         },
       };
     case 'fp-sheet':
+      return {
+        plan: {
+          ...planDeFeuilleServi(ecran.proprietes.plan),
+          metadonnees: communes,
+        },
+      };
     case 'fp-table-build':
-      return { plan: { ...ecran.proprietes.plan, metadonnees: communes } };
+      return {
+        plan: {
+          ...planDeTableauServi(ecran.proprietes.plan),
+          metadonnees: communes,
+        },
+      };
     case 'fp-escape':
       return {
         parcours: { ...ecran.proprietes.parcours, metadonnees: communes },
@@ -414,12 +429,28 @@ function donneesDeBrique(
     case 'fp-quote':
     case 'fp-story':
     case 'fp-pro':
-    case 'fp-concept4':
-    case 'fp-plot':
       return {
         [PROPRIETE_PAR_BRIQUE[ecran.brique]]: {
           id: ecran.id,
           ...proprietesPubliques(ecran.proprietes),
+          metadonnees: communes,
+        },
+      };
+    case 'fp-concept4':
+      return {
+        definition: {
+          id: ecran.id,
+          ...proprietesPubliques(ecran.proprietes),
+          ...machineCalculee(ecran.proprietes),
+          metadonnees: communes,
+        },
+      };
+    case 'fp-plot':
+      return {
+        definition: {
+          id: ecran.id,
+          ...proprietesPubliques(ecran.proprietes),
+          ...traceCalcule(ecran.proprietes),
           metadonnees: communes,
         },
       };

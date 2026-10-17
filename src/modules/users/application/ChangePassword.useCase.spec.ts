@@ -1,7 +1,10 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { InvalidCredentialsError } from '../../../common/domain/errors/InvalidCredentialsError';
+import { InvalidInputError } from '../../../common/domain/errors/InvalidInputError';
+import { ResourceConflictError } from '../../../common/domain/errors/ResourceConflictError';
 import { UserNotFoundError } from '../../../common/domain/errors/UserNotFoundError';
 import type { IUsersRepository } from '../domain/IUsers.repository';
+import { MotDePasseActuelIncorrectError } from '../domain/MotDePasseActuelIncorrectError';
 import type { User } from '../domain/User';
 import { ChangePasswordUseCase } from './ChangePassword.useCase';
 import type { ChangePasswordCommand } from './dto/ChangePassword.command';
@@ -11,7 +14,11 @@ import {
   createMockUsersRepo,
   createMockPasswordService,
 } from '../../../../test/factories/user.factory';
-import { attendreMiseAJourDeLUtilisateur } from '../../../../test/helpers/utilisateurs';
+import { createMockRefreshTokensRepo } from '../../../../test/factories/refresh-token.factory';
+import {
+  attendreAucunMotDePasseEnregistre,
+  attendreNouveauMotDePasseEnregistre,
+} from '../../../../test/helpers/utilisateurs';
 
 const CURRENT_CREDENTIAL = 'OldPassword123';
 const NEXT_CREDENTIAL = 'NewPassword456';
@@ -19,6 +26,7 @@ const NEXT_CREDENTIAL = 'NewPassword456';
 describe('ChangePasswordUseCase', () => {
   let repo: jest.Mocked<IUsersRepository>;
   let passwordService: jest.Mocked<PasswordService>;
+  let refreshTokensRepo: ReturnType<typeof createMockRefreshTokensRepo>;
   let useCase: ChangePasswordUseCase;
 
   beforeEach(() => {
@@ -26,8 +34,13 @@ describe('ChangePasswordUseCase', () => {
     passwordService = createMockPasswordService();
     passwordService.hash.mockResolvedValue('new-hash');
     passwordService.verify.mockResolvedValue(true);
+    refreshTokensRepo = createMockRefreshTokensRepo();
 
-    useCase = new ChangePasswordUseCase(repo, passwordService);
+    useCase = new ChangePasswordUseCase(
+      repo,
+      passwordService,
+      refreshTokensRepo,
+    );
   });
 
   it('changes the password when current password matches', async () => {
@@ -55,34 +68,13 @@ describe('ChangePasswordUseCase', () => {
       dto.currentPassword,
       user.passwordHash,
     );
-    expect(passwordService.hash).toHaveBeenCalledWith(dto.newPassword);
-    attendreMiseAJourDeLUtilisateur(repo.update, {
-      passwordHash: 'new-hash',
-      updatedOrCreatedBy: user.updatedOrCreatedBy,
-    });
+    attendreNouveauMotDePasseEnregistre(
+      { passwordService, usersRepository: repo, refreshTokensRepo },
+      dto.newPassword,
+      'password-change',
+    );
     expect(result).toBe(updatedUser);
   });
-
-  it.each(['', '   '])(
-    'garde l auteur précédent quand l auteur envoyé est blanc (%p)',
-    async (auteurBlanc) => {
-      repo.findById.mockResolvedValue(
-        buildUser({ passwordHash: 'old-hash', updatedOrCreatedBy: 'system' }),
-      );
-
-      await useCase.execute({
-        userId: 'user-1',
-        currentPassword: CURRENT_CREDENTIAL,
-        newPassword: NEXT_CREDENTIAL,
-        updatedOrCreatedBy: auteurBlanc,
-      });
-
-      attendreMiseAJourDeLUtilisateur(repo.update, {
-        passwordHash: 'new-hash',
-        updatedOrCreatedBy: 'system',
-      });
-    },
-  );
 
   it('throws when user is not found', async () => {
     repo.findById.mockResolvedValue(null);
@@ -106,14 +98,45 @@ describe('ChangePasswordUseCase', () => {
     repo.findById.mockResolvedValue(user);
     passwordService.verify.mockResolvedValue(false);
 
+    const refus = useCase.execute({
+      userId: 'user-1',
+      currentPassword: 'wrong',
+      newPassword: 'new',
+    });
+
+    await expect(refus).rejects.toBeInstanceOf(MotDePasseActuelIncorrectError);
+    await expect(refus).rejects.toBeInstanceOf(InvalidInputError);
+    attendreAucunMotDePasseEnregistre(
+      repo.update,
+      refreshTokensRepo.revokeByUserId,
+    );
+  });
+
+  const attendreUnRefusAvantLaVerification = async (
+    compte: User,
+    erreur: new (...args: never[]) => Error,
+  ) => {
+    repo.findById.mockResolvedValue(compte);
+
     await expect(
       useCase.execute({
-        userId: 'user-1',
-        currentPassword: 'wrong',
-        newPassword: 'new',
+        userId: compte.id ?? '',
+        currentPassword: 'whatever',
+        newPassword: 'new-pass',
       }),
-    ).rejects.toBeInstanceOf(InvalidCredentialsError);
-    expect(repo.update).not.toHaveBeenCalled();
+    ).rejects.toBeInstanceOf(erreur);
+    expect(passwordService.verify).not.toHaveBeenCalled();
+    attendreAucunMotDePasseEnregistre(
+      repo.update,
+      refreshTokensRepo.revokeByUserId,
+    );
+  };
+
+  it('refuse par un conflit, et non comme une session perdue, un compte qui n a pas de mot de passe', async () => {
+    await attendreUnRefusAvantLaVerification(
+      buildUser({ passwordHash: null }),
+      ResourceConflictError,
+    );
   });
 
   it('rejects inactive users even if the password matches', async () => {
@@ -127,16 +150,9 @@ describe('ChangePasswordUseCase', () => {
       updatedOrCreatedBy: 'system',
     });
 
-    repo.findById.mockResolvedValue(inactiveUser);
-
-    await expect(
-      useCase.execute({
-        userId: 'user-2',
-        currentPassword: 'whatever',
-        newPassword: 'new-pass',
-      }),
-    ).rejects.toBeInstanceOf(InvalidCredentialsError);
-    expect(passwordService.verify).not.toHaveBeenCalled();
-    expect(repo.update).not.toHaveBeenCalled();
+    await attendreUnRefusAvantLaVerification(
+      inactiveUser,
+      InvalidCredentialsError,
+    );
   });
 });

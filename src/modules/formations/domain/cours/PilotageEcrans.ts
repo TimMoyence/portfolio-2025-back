@@ -1,6 +1,10 @@
-import { dansLesBornes } from '../../../../common/domain/nombres/dans-les-bornes';
 import type { Cours, Ecran } from '../contrats/cours';
-import type { PilotageDemande, PilotageEcran } from '../contrats/pilotage';
+import type {
+  PilotageDemande,
+  PilotageEcran,
+  PilotageServi,
+  VotePhase,
+} from '../contrats/pilotage';
 import { PHASES_DE_VOTE } from '../contrats/pilotage';
 import {
   PhaseFermeeError,
@@ -15,9 +19,13 @@ import { questionsDe } from './Cours';
 import {
   activitesDeLEcran,
   ecranRevele,
+  ecranServi,
   etayageAtteint,
   phaseDuVote,
 } from './EcranServi';
+import type { SeancePilotee } from './EcranServi';
+import { refusDuReglage, sortiesDeLaMachine } from './MachineServie';
+import { reglageServi } from './TraceServi';
 
 export type { PilotageDemande } from '../contrats/pilotage';
 
@@ -62,12 +70,15 @@ function assertReglagesDeLaMachine(
     refuser('seuls une machine et un tracé portent des réglages');
   }
   for (const [cle, valeur] of Object.entries(reglages)) {
-    const parametre = parametres.find((candidat) => candidat.cle === cle);
-    if (parametre === undefined) {
-      refuser(`paramètre ${cle} absent de l’écran`);
+    const refus = refusDuReglage(parametres, cle, valeur);
+    if (refus !== null) {
+      refuser(refus);
     }
-    if (!dansLesBornes(valeur, parametre)) {
-      refuser(`réglage ${cle} hors de [${parametre.min} ; ${parametre.max}]`);
+    if (
+      ecran.brique === 'fp-plot' &&
+      !reglageServi(ecran.proprietes, cle, valeur)
+    ) {
+      refuser(`réglage ${cle} hors des positions servies du tracé`);
     }
   }
 }
@@ -190,6 +201,22 @@ export function fusionnerPilotage(
   };
 }
 
+type CoteDuVote = NonNullable<QuestionPilotee['ouverture']>;
+
+function coteAffiche(pilotage: PilotageEcran | undefined): CoteDuVote {
+  const phase = phaseDuVote(pilotage);
+  return phase === 'revote' || phase === 'revele' ? 'jumelle' : 'principale';
+}
+
+const PHASES_FERMEES: readonly VotePhase[] = ['discussion', 'revele'];
+
+function coteOuvert(pilotage: PilotageEcran | undefined): CoteDuVote | null {
+  if (ecranRevele(pilotage) || PHASES_FERMEES.includes(phaseDuVote(pilotage))) {
+    return null;
+  }
+  return coteAffiche(pilotage);
+}
+
 export function assertPhaseOuverte(
   pilotage: Readonly<Record<string, PilotageEcran>>,
   question: QuestionPilotee,
@@ -197,13 +224,10 @@ export function assertPhaseOuverte(
   if (ecranRevele(pilotage[question.ecranId])) {
     throw new PhaseFermeeError(question.ecranId);
   }
-  if (question.ouverture === undefined) {
-    return;
-  }
-  const phase = phaseDuVote(pilotage[question.ecranId]);
-  const ouverte =
-    question.ouverture === 'principale' ? phase === 'vote' : phase === 'revote';
-  if (!ouverte) {
+  if (
+    question.ouverture !== undefined &&
+    coteOuvert(pilotage[question.ecranId]) !== question.ouverture
+  ) {
     throw new PhaseFermeeError(question.ecranId);
   }
 }
@@ -216,15 +240,47 @@ export function estVoteJumele(
   return ecran.brique === 'fp-vote' && ecran.questionJumelle !== undefined;
 }
 
+function enDirectDe(
+  ecran: Ecran,
+  pilotage: PilotageEcran | undefined,
+): PilotageServi | undefined {
+  if (estVoteJumele(ecran)) {
+    const questions: Record<CoteDuVote, string> = {
+      principale: ecran.question.id,
+      jumelle: ecran.questionJumelle.id,
+    };
+    const ouvert = coteOuvert(pilotage);
+    return {
+      ...pilotage,
+      phase: phaseDuVote(pilotage),
+      questionAffichee: questions[coteAffiche(pilotage)],
+      questionOuverte: ouvert === null ? null : questions[ouvert],
+    };
+  }
+  if (ecran.brique === 'fp-concept4' && pilotage?.reglages !== undefined) {
+    return {
+      ...pilotage,
+      sortiesProjetees: sortiesDeLaMachine(ecran.proprietes, pilotage.reglages),
+    };
+  }
+  return pilotage;
+}
+
 export function pilotageEnDirect(
-  pilotage: Readonly<Record<string, PilotageEcran>>,
+  seance: SeancePilotee,
   cours: Cours,
-): Readonly<Record<string, PilotageEcran>> {
-  return cours.ecrans.filter(estVoteJumele).reduce(
-    (servi, { id }) => ({
-      ...servi,
-      [id]: { ...pilotage[id], phase: phaseDuVote(pilotage[id]) },
-    }),
+): Readonly<Record<string, PilotageServi>> {
+  const pilotage = seance.pilotageEcrans;
+  return cours.ecrans.reduce<Readonly<Record<string, PilotageServi>>>(
+    (servi, ecran, rang) => {
+      if (!ecranServi(seance, rang, cours.ecrans.length)) {
+        return servi;
+      }
+      const enDirect = enDirectDe(ecran, pilotage[ecran.id]);
+      return enDirect === undefined || enDirect === pilotage[ecran.id]
+        ? servi
+        : { ...servi, [ecran.id]: enDirect };
+    },
     pilotage,
   );
 }

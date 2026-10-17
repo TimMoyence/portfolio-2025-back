@@ -8,3 +8,9 @@ export type CreateUserCommand = Omit<
 export interface CreateUserResult {
   user: User;
 }
+
+export type InscriptionCommand = Omit<CreateUserCommand, 'updatedOrCreatedBy'>;
+
+export interface InscriptionResult {
+  message: string;
+}

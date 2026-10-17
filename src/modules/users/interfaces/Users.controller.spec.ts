@@ -107,7 +107,10 @@ describe('UsersController', () => {
 
     const result = await controller.create(dto);
 
-    expect(useCases.createUsers.execute).toHaveBeenCalledWith(dto);
+    expect(useCases.createUsers.execute).toHaveBeenCalledWith({
+      ...dto,
+      updatedOrCreatedBy: 'admin',
+    });
     expect(result.id).toBe(user.id);
   });
 
@@ -118,7 +121,10 @@ describe('UsersController', () => {
     const dto = { firstName: 'Pierre' };
     const result = await controller.update('user-1', dto);
 
-    expect(useCases.updateUsers.execute).toHaveBeenCalledWith('user-1', dto);
+    expect(useCases.updateUsers.execute).toHaveBeenCalledWith('user-1', {
+      ...dto,
+      updatedOrCreatedBy: 'admin',
+    });
     expect(result.firstName).toBe('Pierre');
   });
 

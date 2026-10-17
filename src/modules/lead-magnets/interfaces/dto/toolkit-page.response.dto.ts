@@ -1,30 +1,123 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import type { ToolkitContent } from '../../domain/ToolkitContent';
+import { AI_LEVELS, type ToolkitContent } from '../../domain/ToolkitContent';
 
-export class ToolkitPageResponseDto {
+class ToolkitRecapDto {
   @ApiProperty()
-  recap: ToolkitContent['recap'];
+  firstName: string;
+}
 
-  @ApiProperty({ type: Array })
-  cheatsheet: ToolkitContent['cheatsheet'];
+class CheatsheetEntryDto {
+  @ApiProperty()
+  tool: string;
 
   @ApiProperty()
-  prompts: Array<{
-    category: string;
-    title: string;
-    level: string;
-    prompt: string;
-    tool: string;
-  }>;
+  category: string;
 
-  @ApiProperty({ type: Array })
-  workflows: ToolkitContent['workflows'];
+  @ApiProperty()
+  price: string;
 
-  @ApiProperty({ type: Array })
-  templates: ToolkitContent['templates'];
+  @ApiProperty()
+  url: string;
+
+  @ApiProperty()
+  tip: string;
+
+  @ApiProperty()
+  decision: string;
+}
+
+class PromptEntryDto {
+  @ApiProperty()
+  category: string;
+
+  @ApiProperty()
+  title: string;
+
+  @ApiProperty({ enum: AI_LEVELS })
+  level: string;
+
+  @ApiProperty()
+  prompt: string;
+
+  @ApiProperty()
+  tool: string;
 
   @ApiPropertyOptional()
-  generatedPrompt: string | null;
+  description?: string;
+
+  @ApiPropertyOptional()
+  example?: string;
+
+  @ApiPropertyOptional()
+  tip?: string;
+}
+
+class WorkflowStepDto {
+  @ApiProperty({ type: 'integer' })
+  step: number;
+
+  @ApiProperty()
+  action: string;
+
+  @ApiProperty()
+  tool: string;
+
+  @ApiProperty()
+  detail: string;
+}
+
+class WorkflowEntryDto {
+  @ApiProperty()
+  title: string;
+
+  @ApiProperty()
+  description: string;
+
+  @ApiProperty()
+  setupTime: string;
+
+  @ApiProperty()
+  monthlyCost: number;
+
+  @ApiProperty({ type: [WorkflowStepDto] })
+  steps: WorkflowStepDto[];
+
+  @ApiProperty({ type: [String] })
+  tools: string[];
+}
+
+class TemplateEntryDto {
+  @ApiProperty()
+  name: string;
+
+  @ApiProperty()
+  platform: string;
+
+  @ApiProperty()
+  url: string;
+
+  @ApiProperty()
+  description: string;
+
+  @ApiProperty()
+  minBudget: number;
+}
+
+export class ToolkitPageResponseDto {
+  @ApiProperty({ type: ToolkitRecapDto })
+  recap: ToolkitContent['recap'];
+
+  @ApiProperty({ type: [CheatsheetEntryDto] })
+  cheatsheet: ToolkitContent['cheatsheet'];
+
+  @ApiProperty({ type: [PromptEntryDto] })
+  prompts: ToolkitContent['prompts'];
+
+  @ApiProperty({ type: [WorkflowEntryDto] })
+  workflows: ToolkitContent['workflows'];
+
+  @ApiProperty({ type: [TemplateEntryDto] })
+  templates: ToolkitContent['templates'];
 
   static fromContent(content: ToolkitContent): ToolkitPageResponseDto {
     const dto = new ToolkitPageResponseDto();
@@ -33,7 +126,6 @@ export class ToolkitPageResponseDto {
     dto.prompts = content.prompts;
     dto.workflows = content.workflows;
     dto.templates = content.templates;
-    dto.generatedPrompt = content.generatedPrompt;
     return dto;
   }
 }

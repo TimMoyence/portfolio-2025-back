@@ -1,18 +1,13 @@
+import { applyDecorators } from '@nestjs/common';
 import { ApiExtraModels, ApiProperty, getSchemaPath } from '@nestjs/swagger';
 import { plainToInstance, Transform, Type } from 'class-transformer';
 import {
-  ArrayMaxSize,
   Equals,
   IsArray,
   IsIn,
-  IsInt,
   IsNumber,
   IsObject,
   IsString,
-  Matches,
-  MaxLength,
-  Min,
-  MinLength,
   Validate,
   ValidateNested,
   ValidatorConstraint,
@@ -23,26 +18,37 @@ import type {
 } from 'class-validator';
 import { LONGUEUR_MAX_FORMULE } from '../../../domain/cours/Formule';
 import { estObjet } from '../../../../../common/domain/est-objet';
+import { longueurDeTexte } from '../../../../../common/domain/texte/longueur-de-texte';
+import {
+  AuPlusElements,
+  DictionnaireBorne,
+  EntierBorne,
+  Motif,
+} from '../../../../../common/interfaces/dto/bornes-annoncees.decorator';
+import {
+  AuPlusCaracteres,
+  TexteBorne,
+} from '../../../../../common/interfaces/dto/longueur-de-texte.decorator';
 import type { ValeurProduction } from '../../../domain/contrats/resultats';
 import { NOM_DE_VARIABLE } from '../../../domain/cours/PlansStockes';
 import { DureeDeReponse } from '../duree-de-reponse.decorator';
 import { entreesBornees } from '../objet-plat';
 
 const LONGUEUR_MAX_IDENTIFIANT = 60;
-const ENTREES_MAX = 400;
+export const ENTREES_MAX = 400;
 const TYPES_DE_PRODUCTION = ['feuille', 'tableau', 'classement'] as const;
 
 @ValidatorConstraint({ name: 'dictionnaireDeTextes', async: false })
-class DictionnaireDeTextes implements ValidatorConstraintInterface {
+class DictionnaireDeTextesBorne implements ValidatorConstraintInterface {
   validate(valeur: unknown, args: ValidationArguments): boolean {
     const [longueurMax] = args.constraints as [number];
     return (
       entreesBornees(valeur, ENTREES_MAX)?.every(
         ([cle, texte]) =>
           cle.length > 0 &&
-          cle.length <= LONGUEUR_MAX_IDENTIFIANT &&
+          longueurDeTexte(cle) <= LONGUEUR_MAX_IDENTIFIANT &&
           typeof texte === 'string' &&
-          texte.length <= longueurMax,
+          longueurDeTexte(texte) <= longueurMax,
       ) ?? false
     );
   }
@@ -53,33 +59,41 @@ class DictionnaireDeTextes implements ValidatorConstraintInterface {
   }
 }
 
+export const DictionnaireDeTextes = (longueurMax: number): PropertyDecorator =>
+  applyDecorators(
+    DictionnaireBorne(ENTREES_MAX, LONGUEUR_MAX_IDENTIFIANT, {
+      type: 'string',
+      maxLength: longueurMax,
+    }),
+    Validate(DictionnaireDeTextesBorne, [longueurMax]),
+  );
+
 class ProductionFeuilleDto {
   @ApiProperty({ enum: ['feuille'] })
   @Equals('feuille')
   type: 'feuille';
 
   @ApiProperty({
-    type: 'object',
-    additionalProperties: { type: 'string', maxLength: LONGUEUR_MAX_FORMULE },
     description: 'Saisie brute de chaque cellule, formule ou valeur',
     example: { B5: '=SOMME(B2:B4)', E2: '=C2/$C$5' },
   })
-  @Validate(DictionnaireDeTextes, [LONGUEUR_MAX_FORMULE])
+  @DictionnaireDeTextes(LONGUEUR_MAX_FORMULE)
   cellules: Record<string, string>;
 }
 
-class SaisieTableauDto {
+export class CelluleDeTableauDto {
   @ApiProperty({ example: 1 })
-  @IsInt()
-  @Min(0)
+  @EntierBorne(0)
   rang: number;
 
   @ApiProperty({ example: 'prix' })
   @IsString()
-  @Matches(NOM_DE_VARIABLE)
-  @MaxLength(LONGUEUR_MAX_IDENTIFIANT)
+  @Motif(NOM_DE_VARIABLE)
+  @AuPlusCaracteres(LONGUEUR_MAX_IDENTIFIANT)
   cle: string;
+}
 
+class SaisieTableauDto extends CelluleDeTableauDto {
   @ApiProperty({ example: 20.52 })
   @IsNumber({ allowNaN: false, allowInfinity: false })
   valeur: number;
@@ -92,7 +106,7 @@ class ProductionTableauDto {
 
   @ApiProperty({ type: [SaisieTableauDto] })
   @IsArray()
-  @ArrayMaxSize(ENTREES_MAX)
+  @AuPlusElements(ENTREES_MAX)
   @ValidateNested({ each: true })
   @Type(() => SaisieTableauDto)
   saisies: SaisieTableauDto[];
@@ -104,12 +118,10 @@ class ProductionClassementDto {
   type: 'classement';
 
   @ApiProperty({
-    type: 'object',
-    additionalProperties: { type: 'string' },
     description: 'Categorie choisie pour chaque carte',
     example: { 'carte-ca-2024-2025': 'comparable' },
   })
-  @Validate(DictionnaireDeTextes, [LONGUEUR_MAX_IDENTIFIANT])
+  @DictionnaireDeTextes(LONGUEUR_MAX_IDENTIFIANT)
   classement: Record<string, string>;
 }
 
@@ -118,7 +130,7 @@ class ProductionNeSaitPasDto {
   @IsIn(TYPES_DE_PRODUCTION)
   type: (typeof TYPES_DE_PRODUCTION)[number];
 
-  @ApiProperty({ enum: [true] })
+  @ApiProperty({ oneOf: [{ type: 'boolean', enum: [true] }] })
   @Equals(true)
   neSaitPas: true;
 }
@@ -162,9 +174,7 @@ export class SubmitProductionRequestDto {
       'Identifiant de la question de production, egal a celui du plan',
     example: 'b2-01-a4-feuille-canaux',
   })
-  @IsString()
-  @MinLength(1)
-  @MaxLength(LONGUEUR_MAX_IDENTIFIANT)
+  @TexteBorne(1, LONGUEUR_MAX_IDENTIFIANT)
   questionId: string;
 
   @ApiProperty({

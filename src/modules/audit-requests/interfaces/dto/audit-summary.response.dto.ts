@@ -18,16 +18,22 @@ export class AuditSummaryResponseDto {
   progress: number;
 
   @ApiProperty({
+    type: String,
     example:
       'Votre site est accessible et indexable, mais la meta description manque sur plusieurs pages importantes.',
     nullable: true,
   })
   summaryText: string | null;
 
-  @ApiProperty({ example: { accessibility: { https: true, statusCode: 200 } } })
+  @ApiProperty({
+    type: 'object',
+    additionalProperties: true,
+    example: { accessibility: { https: true, statusCode: 200 } },
+  })
   keyChecks: Record<string, unknown>;
 
   @ApiProperty({
+    type: [String],
     example: [
       'Ajouter une meta description sur la page d’accueil.',
       'Déclarer un sitemap.xml dans robots.txt.',
@@ -36,6 +42,8 @@ export class AuditSummaryResponseDto {
   quickWins: string[];
 
   @ApiProperty({
+    type: 'object',
+    additionalProperties: { type: 'number' },
     example: {
       seo: 72,
       performance: 64,

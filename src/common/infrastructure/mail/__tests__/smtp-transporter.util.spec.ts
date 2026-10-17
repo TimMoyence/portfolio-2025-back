@@ -2,7 +2,9 @@
 import { Logger } from '@nestjs/common';
 import { generateKeyPairSync } from 'node:crypto';
 import {
+  creationDeTransportSimulee,
   DEFAULT_SMTP_ENV,
+  nodemailerSimule,
   SMTP_ET_DKIM_ABSENTS,
 } from '../../../../../test/factories/mailer.factory';
 import {
@@ -10,13 +12,11 @@ import {
   installerVariables,
 } from '../../../../../test/helpers/environnement';
 
-const mockCreateTransport = jest.fn().mockReturnValue({ sendMail: jest.fn() });
-
-jest.mock('nodemailer', () => ({
-  createTransport: (...args: unknown[]) => mockCreateTransport(...args),
-}));
+jest.mock('nodemailer', () => nodemailerSimule());
 
 import { createOptionalSmtpTransporter } from '../smtp-transporter.util';
+
+const mockCreateTransport = creationDeTransportSimulee();
 
 interface TransportOptions {
   host: string;
@@ -27,7 +27,6 @@ interface TransportOptions {
     domainName: string;
     keySelector: string;
     privateKey: string;
-    headerFieldNames?: string;
   };
 }
 
@@ -73,10 +72,6 @@ describe('createOptionalSmtpTransporter', () => {
     return lastOptions().dkim;
   }
 
-  function enTetesSignes(): string[] {
-    return (dkimRetenu()?.headerFieldNames ?? '').split(':');
-  }
-
   function attendreSignatureRefusee(dkim: TransportOptions['dkim']): void {
     expect(dkim).toBeUndefined();
     expect(logger.error).toHaveBeenCalled();
@@ -98,6 +93,18 @@ describe('createOptionalSmtpTransporter', () => {
         appliquer({ [missing]: undefined });
 
         expect(createOptionalSmtpTransporter(logger, 'Test')).toBeNull();
+      },
+    );
+
+    it.each(['587x', '0', '65536'])(
+      'refuse un SMTP_PORT %p qui n est pas un entier de 1 a 65535 en le nommant',
+      (port) => {
+        configureSmtp();
+        appliquer({ SMTP_PORT: port });
+
+        expect(() => createOptionalSmtpTransporter(logger, 'Test')).toThrow(
+          `Le port SMTP « ${port} » n'est pas un entier de 1 a 65535 en chiffres seuls (SMTP_PORT).`,
+        );
       },
     );
   });
@@ -130,7 +137,7 @@ describe('createOptionalSmtpTransporter', () => {
     });
   });
 
-  describe('signature DKIM (RFC 8058 §4)', () => {
+  describe('signature DKIM', () => {
     it('n’active pas DKIM quand la configuration est absente', () => {
       configureSmtp();
 
@@ -147,33 +154,12 @@ describe('createOptionalSmtpTransporter', () => {
       expect(dkim?.privateKey).toBe(VALID_KEY);
     });
 
-    it('couvre List-Unsubscribe et List-Unsubscribe-Post par la signature', () => {
-      // La RFC 8058 §4 impose que ces deux en-tetes figurent dans le tag
-      // `h=` de la signature, faute de quoi Gmail ignore le bouton natif
-      // de desabonnement.
-      //
-      // L'assertion porte sur la liste eclatee, jamais sur la chaine :
-      // `toContain('List-Unsubscribe')` sur une chaine est satisfait par
-      // la seule presence de `List-Unsubscribe-Post`, ce qui laisserait
-      // passer le retrait de l'en-tete central.
-      const names = enTetesSignes();
-      expect(names).toContain('List-Unsubscribe');
-      expect(names).toContain('List-Unsubscribe-Post');
-      expect(names).toContain('From');
-      expect(names).toContain('Subject');
-    });
-
-    it('conserve la couverture par defaut de nodemailer (RFC 4871 §5.5)', () => {
-      const names = enTetesSignes();
-      for (const field of [
-        'Cc',
-        'Content-Transfer-Encoding',
-        'In-Reply-To',
-        'References',
-        'List-Id',
-      ]) {
-        expect(names).toContain(field);
-      }
+    it('laisse a nodemailer sa couverture par defaut (RFC 4871 §5.5)', () => {
+      expect(dkimRetenu()).toEqual({
+        domainName: 'asilidesign.fr',
+        keySelector: 'default',
+        privateKey: VALID_KEY,
+      });
     });
 
     it('desactive la signature si la cle privee est inexploitable', () => {

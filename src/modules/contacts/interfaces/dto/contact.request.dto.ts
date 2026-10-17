@@ -1,54 +1,48 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
+import { IsBoolean, IsDate, IsOptional, IsString } from 'class-validator';
+import type { SupportedLocale } from '../../../../common/domain/value-objects/LocaleCode';
+import { AdresseEmail } from '../../../../common/interfaces/dto/adresse-email.decorator';
+import { LocaleSupportee } from '../../../../common/interfaces/dto/locale-supportee.decorator';
 import {
-  IsBoolean,
-  IsDate,
-  IsEmail,
-  IsOptional,
-  IsString,
-  MaxLength,
-  MinLength,
-} from 'class-validator';
+  AuPlusCaracteres,
+  Rogne,
+  TexteSaisi,
+} from '../../../../common/interfaces/dto/longueur-de-texte.decorator';
 import { ChampsAntiRobotDto } from '../../../../common/interfaces/security/champs-anti-robot.dto';
 
 export class ContactRequestDto extends ChampsAntiRobotDto {
   @ApiProperty({ example: 'John' })
-  @IsString()
-  @MinLength(1)
-  @MaxLength(50)
+  @TexteSaisi(1, 50)
   firstName: string;
 
   @ApiProperty({ example: 'Doe' })
-  @IsString()
-  @MinLength(1)
-  @MaxLength(50)
+  @TexteSaisi(1, 50)
   lastName: string;
 
   @ApiProperty({ example: 'john.doe@example.com' })
-  @IsEmail()
+  @AdresseEmail()
   email: string;
 
   @ApiProperty({ example: 'Hello, I would like to get in touch.' })
-  @IsString()
-  @MinLength(10)
-  @MaxLength(2000)
+  @TexteSaisi(10, 2000)
   message: string;
 
-  @ApiProperty({ example: '+11234567890', nullable: true })
+  @ApiPropertyOptional({
+    type: String,
+    example: '+11234567890',
+    nullable: true,
+  })
   @IsOptional()
   @IsString()
   phone?: string | null;
 
   @ApiProperty({ example: 'Devis Asking' })
-  @IsString()
-  @MinLength(2)
-  @MaxLength(100)
+  @TexteSaisi(2, 100)
   subject: string;
 
   @ApiProperty({ example: 'Manager' })
-  @IsString()
-  @MinLength(2)
-  @MaxLength(100)
+  @TexteSaisi(2, 100)
   role: string;
 
   @ApiProperty({ example: true, default: false })
@@ -57,20 +51,19 @@ export class ContactRequestDto extends ChampsAntiRobotDto {
 
   @ApiProperty({ example: '2026-02-11', required: false })
   @IsOptional()
+  @Rogne()
   @IsString()
-  @MaxLength(50)
+  @AuPlusCaracteres(50)
   termsVersion?: string;
 
-  @ApiProperty({ example: 'fr', required: false })
-  @IsOptional()
-  @IsString()
-  @MaxLength(10)
-  termsLocale?: string;
+  @LocaleSupportee({ facultative: true })
+  termsLocale?: SupportedLocale;
 
   @ApiProperty({ example: 'contact_form_checkbox', required: false })
   @IsOptional()
+  @Rogne()
   @IsString()
-  @MaxLength(50)
+  @AuPlusCaracteres(50)
   termsMethod?: string;
 
   @ApiProperty({ example: '2026-02-11T10:45:00.000Z', required: false })

@@ -15,18 +15,18 @@ describe('urlJournalisable', () => {
   it.each([
     [
       'le jeton d un lien porte par la requete',
-      `/api/newsletter/confirm?token=${JETON}&locale=fr`,
-      `/api/newsletter/confirm?token=${CENSURE}&locale=fr`,
+      `/api/auth/verify-email?token=${JETON}&locale=fr`,
+      `/api/auth/verify-email?token=${CENSURE}&locale=fr`,
     ],
     [
       'chaque valeur d un jeton repete',
-      `/api/newsletter/unsubscribe?token=${JETON}&token=${JETON}`,
-      `/api/newsletter/unsubscribe?token=${CENSURE}&token=${CENSURE}`,
+      `/api/auth/verify-email?token=${JETON}&token=${JETON}`,
+      `/api/auth/verify-email?token=${CENSURE}&token=${CENSURE}`,
     ],
     [
       'un jeton indexe, que la requete lit comme un objet',
-      `/api/newsletter/confirm?token%5Bjeton%5D=${JETON}`,
-      `/api/newsletter/confirm?token%5Bjeton%5D=${CENSURE}`,
+      `/api/auth/verify-email?token%5Bjeton%5D=${JETON}`,
+      `/api/auth/verify-email?token%5Bjeton%5D=${CENSURE}`,
     ],
   ])('censure %s', (_cas, url, attendue) => {
     expect(urlJournalisable(url)).toBe(attendue);

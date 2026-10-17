@@ -41,8 +41,8 @@ describe('AuthenticateUserUseCase', () => {
 
     useCase = new AuthenticateUserUseCase(
       repo,
-      refreshTokensRepo,
       passwordService,
+      refreshTokensRepo,
       jwtTokenService,
     );
   });
@@ -153,6 +153,7 @@ describe('AuthenticateUserUseCase', () => {
         passwordHash: REHASHED_ARGON2,
         updatedOrCreatedBy: 'password-rehash',
       });
+      expect(refreshTokensRepo.revokeByUserId).not.toHaveBeenCalled();
     });
 
     it('ne re-hache pas si needsRehash retourne false', async () => {

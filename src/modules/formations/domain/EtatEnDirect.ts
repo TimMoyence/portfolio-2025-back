@@ -15,7 +15,7 @@ export function etatEnDirect(
     intervalleLibre: seance.intervalleLibre,
     participants,
     revision: seance.revision,
-    pilotage: pilotageEnDirect(seance.pilotageEcrans, cours),
+    pilotage: pilotageEnDirect(seance, cours),
     majLe: seance.majLe,
   };
 }

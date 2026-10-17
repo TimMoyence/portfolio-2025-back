@@ -11,7 +11,6 @@ import {
   Patch,
   Post,
   Req,
-  Sse,
 } from '@nestjs/common';
 import {
   ApiConflictResponse,
@@ -24,6 +23,8 @@ import {
 } from '@nestjs/swagger';
 import type { Request } from 'express';
 import { EMPTY, Observable } from 'rxjs';
+import { compteConnecte } from '../../../common/interfaces/auth/compte-connecte';
+import { FluxDEvenements } from '../../../common/interfaces/http/flux-d-evenements.decorator';
 import { CloseSessionUseCase } from '../application/CloseSession.useCase';
 import { ControlSessionUseCase } from '../application/ControlSession.useCase';
 import { GetSessionResultsUseCase } from '../application/GetSessionResults.useCase';
@@ -45,7 +46,6 @@ import { OpenSessionRequestDto } from './dto/contrat/open-session.request.dto';
 import { OpenSessionResponseDto } from './dto/open-session.response.dto';
 import { SessionResultsResponseDto } from './dto/contrat/session-results.response.dto';
 import {
-  acteurDe,
   ControleurFormateur,
   LectureDeSeance,
   PilotageDeSeance,
@@ -94,7 +94,7 @@ export class FormationsPresenterController {
   ): Promise<OpenSessionResponseDto> {
     const result = await this.openSession.execute({
       courseSlug: dto.courseSlug,
-      teacherId: request.user!.sub,
+      teacherId: compteConnecte(request).id,
       capacite: dto.capacite,
     });
     return { sessionId: result.sessionId, code: result.code };
@@ -109,7 +109,7 @@ export class FormationsPresenterController {
     @Param('id', ParseUUIDPipe) id: string,
     @Req() request: Request,
   ): Promise<void> {
-    await this.controlSession.start(id, request.user!.sub);
+    await this.controlSession.start(id, compteConnecte(request).id);
   }
 
   @Patch('sessions/:id/control')
@@ -134,7 +134,7 @@ export class FormationsPresenterController {
         'Indiquez un écran, un mode de rythme ou un pilotage d’écran à appliquer.',
       );
     }
-    await this.controlSession.apply(id, request.user!.sub, {
+    await this.controlSession.apply(id, compteConnecte(request).id, {
       ecran: dto.ecran,
       mode: dto.mode,
       intervalle: dto.intervalle ?? null,
@@ -155,10 +155,13 @@ export class FormationsPresenterController {
     @Param('id', ParseUUIDPipe) id: string,
     @Req() request: Request,
   ): Promise<void> {
-    await this.closeSession.execute(id, request.user!.sub);
+    await this.closeSession.execute(id, compteConnecte(request).id);
   }
 
-  @Sse('sessions/:id/presenter-stream')
+  @FluxDEvenements(
+    'sessions/:id/presenter-stream',
+    'Etat de la seance a chaque changement, vu du pupitre',
+  )
   @ApiOperation({
     summary: 'Flux temps reel reserve au formateur de la session',
   })
@@ -177,7 +180,7 @@ export class FormationsPresenterController {
     });
     const flux = await this.streamSession.executeForTeacher(
       id,
-      request.user!.sub,
+      compteConnecte(request).id,
     );
     return clientDeconnecte || request.destroyed ? EMPTY : flux;
   }
@@ -195,7 +198,7 @@ export class FormationsPresenterController {
     @Param('id', ParseUUIDPipe) id: string,
     @Req() request: Request,
   ): Promise<ResultatsDeSeance> {
-    return this.results.execute(id, acteurDe(request));
+    return this.results.execute(id, compteConnecte(request));
   }
 
   @Get('sessions/:id/report')
@@ -218,7 +221,7 @@ export class FormationsPresenterController {
     @Param('id', ParseUUIDPipe) id: string,
     @Req() request: Request,
   ): Promise<ClasseurTelecharge> {
-    return this.results.exporterEnCsv(id, acteurDe(request));
+    return this.results.exporterEnCsv(id, compteConnecte(request));
   }
 
   @Get('sessions/:id/deroule')
@@ -235,7 +238,7 @@ export class FormationsPresenterController {
     @Param('id', ParseUUIDPipe) id: string,
     @Req() request: Request,
   ): Promise<DerouleCours> {
-    return this.lireDeroule.execute(id, acteurDe(request));
+    return this.lireDeroule.execute(id, compteConnecte(request));
   }
 
   @Get('sessions/:id/deroule/pieces-jointes/:ecranId')
@@ -254,7 +257,7 @@ export class FormationsPresenterController {
   ): Promise<ClasseurTelecharge> {
     return this.telechargerPieceJointe.pourLeFormateur(
       id,
-      acteurDe(request),
+      compteConnecte(request),
       ecranId,
     );
   }
@@ -274,7 +277,10 @@ export class FormationsPresenterController {
     @Req() request: Request,
   ): Promise<{ responses: readonly FreeResponseRecord[] }> {
     return {
-      responses: await this.listFreeResponses.execute(id, acteurDe(request)),
+      responses: await this.listFreeResponses.execute(
+        id,
+        compteConnecte(request),
+      ),
     };
   }
 
@@ -291,7 +297,7 @@ export class FormationsPresenterController {
   ): Promise<SyntheseRappelsResponseDto> {
     return this.syntheseRappels.execute(
       id,
-      acteurDe(request),
+      compteConnecte(request),
     ) as Promise<SyntheseRappelsResponseDto>;
   }
 }

@@ -122,11 +122,51 @@ describe('StreamAuditEventsUseCase', () => {
     const data = await uniqueEvenementTermine({
       clientReport: clientReport as never,
     });
-    expect(data['clientReport']).toEqual(clientReport);
+    expect(data['clientReport']).toEqual({
+      ...clientReport,
+      googleVsAiMatrix: {
+        googleVisibility: {
+          score: 80,
+          summary: 'OK',
+          status: 'ok',
+          statusLabel: 'Objectif atteint',
+        },
+        aiVisibility: {
+          score: 40,
+          summary: 'A ameliorer',
+          status: 'critical',
+          statusLabel: 'Critique',
+        },
+      },
+    });
     expect(data['summaryText']).toBe('Rapport final');
     expect(data['keyChecks']).toBeDefined();
     expect(data['quickWins']).toBeDefined();
     expect(data['pillarScores']).toBeDefined();
+  });
+
+  it('B-68 · recalcule à l affichage le statut d un rapport déjà livré face à la cible affichée, libellé dans la langue de l audit', async () => {
+    const data = await uniqueEvenementTermine({
+      locale: 'en',
+      clientReport: {
+        ...buildClientReportSynthesis(),
+        pillarScorecard: [
+          { pillar: 'seo', score: 84, target: 85, status: 'ok' },
+        ],
+      } as never,
+    });
+
+    expect(
+      (data['clientReport'] as { pillarScorecard: unknown }).pillarScorecard,
+    ).toEqual([
+      {
+        pillar: 'seo',
+        score: 84,
+        target: 85,
+        status: 'warning',
+        statusLabel: 'Needs improvement',
+      },
+    ]);
   });
 
   it('devrait completer le stream quand le statut est FAILED', async () => {

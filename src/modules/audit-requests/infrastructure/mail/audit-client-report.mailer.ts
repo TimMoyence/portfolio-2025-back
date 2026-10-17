@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { pieceJointePdf } from '../../../../common/infrastructure/mail/piece-jointe-pdf';
+import { pieceJointePdf } from '../../../../common/infrastructure/mail/piece-jointe';
 import { destinataireDesRapportsDAudit } from '../../../../config/adresses-de-courriel';
+import { envString } from '../../../../config/env-readers.util';
 import { LIBELLES_DU_NIVEAU } from '../../domain/AuditReportTiers';
 import type { ClientReportMailInput } from '../../domain/IAuditNotifier.port';
-import { LIBELLES_DU_STATUT } from '../../domain/StatutScore';
+import { rapportClientServi } from '../../domain/RapportClientServi';
 import { pillarLabel } from '../automation/shared/pillar-labels.util';
 import { buildMailLayout } from './mail-layout.util';
 import { MailerDAudit } from './mailer-d-audit';
@@ -12,6 +13,7 @@ import {
   escapeUrl,
   safeHtml,
   slugify,
+  type EscapedHtml,
 } from './mail-rendering.util';
 import { lignesDeVisibilite, listeDeVisibilite } from './visibilite-google-ia';
 
@@ -37,7 +39,7 @@ export class AuditClientReportMailer extends MailerDAudit {
     });
   }
 
-  private buildClientReportHtml(input: ClientReportMailInput): string {
+  private buildClientReportHtml(input: ClientReportMailInput): EscapedHtml {
     const report = input.clientReport;
     const greeting = input.firstName
       ? safeHtml`Bonjour ${escapeHtml(input.firstName)},`
@@ -51,12 +53,12 @@ export class AuditClientReportMailer extends MailerDAudit {
           </li>`,
     );
 
-    const pillarsHtml = report.pillarScorecard.map(
+    const pillarsHtml = rapportClientServi(report, 'fr').pillarScorecard.map(
       (pillar) => safeHtml`
           <tr>
             <td style="padding:6px 8px; border:1px solid #e5e7eb;">${escapeHtml(pillarLabel(pillar.pillar))}</td>
             <td style="padding:6px 8px; border:1px solid #e5e7eb; text-align:right;">${pillar.score}/${pillar.target}</td>
-            <td style="padding:6px 8px; border:1px solid #e5e7eb;">${escapeHtml(LIBELLES_DU_STATUT[pillar.status])}</td>
+            <td style="padding:6px 8px; border:1px solid #e5e7eb;">${escapeHtml(pillar.statusLabel)}</td>
           </tr>`,
     );
 
@@ -104,7 +106,7 @@ export class AuditClientReportMailer extends MailerDAudit {
         <strong style="font-size:16px;">${escapeHtml(report.cta.title)}</strong>
         <p style="margin:6px 0 14px 0;color:#d1d5db;">${escapeHtml(report.cta.description)}</p>
         <a
-          href="${escapeUrl(this.resolveBookingUrl(input))}"
+          href="${escapeUrl(this.resolveBookingUrl())}"
           target="_blank"
           rel="noopener noreferrer"
           style="display:inline-block;padding:12px 22px;background:#ffffff;color:#111;border-radius:8px;text-decoration:none;font-weight:600;"
@@ -130,12 +132,10 @@ export class AuditClientReportMailer extends MailerDAudit {
     });
   }
 
-  private resolveBookingUrl(input: ClientReportMailInput): string {
-    const explicit = input.bookingUrl?.trim();
-    if (explicit) return explicit;
-    const fromEnv = process.env.AUDIT_BOOKING_URL?.trim();
-    if (fromEnv) return fromEnv;
-    return 'https://asilidesign.fr/fr/contact';
+  private resolveBookingUrl(): string {
+    return (
+      envString('AUDIT_BOOKING_URL') ?? 'https://asilidesign.fr/fr/contact'
+    );
   }
 
   private buildClientReportText(input: ClientReportMailInput): string {
@@ -158,9 +158,9 @@ export class AuditClientReportMailer extends MailerDAudit {
     }
     lines.push('');
     lines.push('Scorecard 7 piliers :');
-    for (const pillar of report.pillarScorecard) {
+    for (const pillar of rapportClientServi(report, 'fr').pillarScorecard) {
       lines.push(
-        `- ${pillarLabel(pillar.pillar)}: ${pillar.score}/${pillar.target} (${LIBELLES_DU_STATUT[pillar.status]})`,
+        `- ${pillarLabel(pillar.pillar)}: ${pillar.score}/${pillar.target} (${pillar.statusLabel})`,
       );
     }
     lines.push('');
@@ -173,7 +173,7 @@ export class AuditClientReportMailer extends MailerDAudit {
     lines.push('');
     lines.push(`${report.cta.title} — ${report.cta.description}`);
     lines.push(
-      `Action : ${report.cta.actionLabel} → ${this.resolveBookingUrl(input)}`,
+      `Action : ${report.cta.actionLabel} → ${this.resolveBookingUrl()}`,
     );
     lines.push('');
     lines.push(

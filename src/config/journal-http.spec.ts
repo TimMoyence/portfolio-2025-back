@@ -86,7 +86,10 @@ describe('optionsJournalHttp', () => {
   ): Promise<unknown[]> {
     const flux = fluxDeJournal();
     const ligne = once(flux, EVENEMENT_LIGNE);
-    const journal = pinoHttp(optionsJournalHttp('production'), flux);
+    const journal = pinoHttp(
+      optionsJournalHttp({ NODE_ENV: 'production' }),
+      flux,
+    );
     serveur = createServer({ maxHeaderSize: 64 * 1024 }, (requete, reponse) => {
       journal(requete, reponse);
       repondre(reponse);
@@ -193,6 +196,21 @@ describe('optionsJournalHttp', () => {
   );
 
   it('reste muet en environnement de test', () => {
-    expect(optionsJournalHttp('test').level).toBe('silent');
+    expect(optionsJournalHttp({ NODE_ENV: 'test' }).level).toBe('silent');
   });
+
+  it.each([
+    ['production', undefined],
+    [' production ', undefined],
+    ['development', 'pino-pretty'],
+  ])(
+    'juge NODE_ENV « %s » par la regle commune de la production',
+    (environnement, transport) => {
+      const options = optionsJournalHttp({ NODE_ENV: environnement });
+
+      expect(
+        (options.transport as { target?: string } | undefined)?.target,
+      ).toBe(transport);
+    },
+  );
 });

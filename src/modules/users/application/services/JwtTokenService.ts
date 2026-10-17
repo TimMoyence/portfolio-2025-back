@@ -1,6 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { SignJWT, jwtVerify, errors, type JWTPayload } from 'jose';
+import {
+  estUnSecretValable,
+  LONGUEUR_MIN_DU_SECRET,
+} from '../../../../common/domain/crypto/secret-hmac';
+import type { ValeursDeLEnv } from '../../../../config/env.validation';
 import type { JwtPayload } from './JwtPayload';
 
 interface SignedToken {
@@ -49,9 +54,7 @@ export class JwtTokenService {
   private static readonly ISSUER = 'portfolio-2025';
   private static readonly AUDIENCE = 'portfolio-2025-api';
 
-  constructor(private readonly configService: ConfigService) {}
-
-  private static readonly MIN_SECRET_LENGTH = 32;
+  constructor(private readonly configService: ConfigService<ValeursDeLEnv>) {}
 
   async sign(payload: Record<string, unknown>): Promise<SignedToken> {
     const secret = this.getEncodedSecret();
@@ -136,9 +139,9 @@ export class JwtTokenService {
     if (!secret) {
       throw new Error('JWT_SECRET is not defined');
     }
-    if (secret.length < JwtTokenService.MIN_SECRET_LENGTH) {
+    if (!estUnSecretValable(secret)) {
       throw new Error(
-        `JWT_SECRET must be at least ${JwtTokenService.MIN_SECRET_LENGTH} characters`,
+        `JWT_SECRET must be at least ${LONGUEUR_MIN_DU_SECRET} characters`,
       );
     }
     return secret;
@@ -151,12 +154,11 @@ export class JwtTokenService {
 
   private getPreviousSecret(): Uint8Array | null {
     const secret = this.configService.get<string>('JWT_SECRET_PREVIOUS');
-    if (!secret || secret.length < JwtTokenService.MIN_SECRET_LENGTH)
-      return null;
+    if (!estUnSecretValable(secret)) return null;
     return new TextEncoder().encode(secret);
   }
 
   private getKid(): string {
-    return this.configService.get<string>('JWT_SECRET_PREVIOUS') ? 'v2' : 'v1';
+    return this.getPreviousSecret() ? 'v2' : 'v1';
   }
 }

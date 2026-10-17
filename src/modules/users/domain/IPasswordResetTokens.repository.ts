@@ -1,11 +1,13 @@
 import type { PasswordResetToken } from './PasswordResetToken';
+import type { PlafondDEnvois } from './PlafondDEnvois';
 
 export interface IPasswordResetTokensRepository {
-  create(token: PasswordResetToken): Promise<PasswordResetToken>;
+  remplacerLesJetonsActifs(
+    jeton: Pick<PasswordResetToken, 'userId' | 'tokenHash' | 'expiresAt'>,
+    plafond: PlafondDEnvois,
+  ): Promise<PasswordResetToken | null>;
 
   findActiveByTokenHash(tokenHash: string): Promise<PasswordResetToken | null>;
 
-  invalidateActiveByUserId(userId: string): Promise<void>;
-
-  markUsed(id: string): Promise<void>;
+  markUsed(id: string): Promise<boolean>;
 }

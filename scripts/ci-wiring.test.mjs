@@ -1,10 +1,20 @@
 import assert from 'node:assert/strict';
-import { readFileSync, readdirSync } from 'node:fs';
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { spawnSync } from 'node:child_process';
+import {
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  readdirSync,
+  rmSync,
+  writeFileSync,
+} from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { test } from 'node:test';
 
-const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
+import { RACINE as ROOT } from './lib/racine.mjs';
+
 const TEST_DIR = join(ROOT, 'test');
 const WORKFLOW_PATH = join(ROOT, '.github/workflows/ci.yml');
 const SUFFIXE_DB_INTEGRATION = '.db-integration.spec.ts';
@@ -169,6 +179,285 @@ void test('les jobs bloquant et non bloquant sont correctement marques dans le w
     `le job "${nomJobCharge}" qui lance la suite de charge doit etre marque continue-on-error: true pour rester visible sans bloquer la fusion`,
   );
 });
+
+void test('le deploiement sauvegarde la base, puis migre, puis remplace l api', () => {
+  const jobs = blocsDesJobs(readFileSync(WORKFLOW_PATH, 'utf8'));
+  const deploiement = Object.values(jobs).find((bloc) =>
+    bloc.includes('run --rm migrate'),
+  );
+  assert.ok(deploiement, 'aucun job du workflow ne lance migrate');
+  const commandes = deploiement
+    .split('\n')
+    .map((ligne) => ligne.replace(/(^|\s)#.*$/, ''))
+    .join('\n');
+
+  const rotation =
+    /ls -1t "\$SAUVEGARDES"\/avant-migrate-\*\.dump \| tail -n \+(\d+) \| xargs -r rm -f --\n/;
+  const etapes = [
+    /script: \|\n\s*set -euo pipefail\n/,
+    /mkdir -p "\$SAUVEGARDES"\n\s*chmod 700 "\$SAUVEGARDES"\n/,
+    /exec -T db \\\n\s*sh -c 'pg_dump -U "\$POSTGRES_USER" -d "\$1" --format=custom' sauvegarde "\$BASE_MIGREE" \\\n\s*> "\$SAUVEGARDES\/avant-migrate-[^"\n]*\.dump"\n/,
+    rotation,
+    /run --rm migrate\n/,
+    /up -d --no-deps --wait /,
+  ];
+  const rangs = etapes.map((etape) => commandes.search(etape));
+
+  assert.ok(
+    rangs.every((rang) => rang >= 0),
+    `etapes absentes du deploiement : ${etapes.filter((_, i) => rangs[i] < 0).join(', ')}`,
+  );
+  assert.deepEqual(
+    [...rangs].sort((gauche, droite) => gauche - droite),
+    rangs,
+    'le deploiement doit s arreter a la premiere erreur, fermer le dossier des sauvegardes, sauvegarder la base avant migrate, et migrer avant de remplacer l api',
+  );
+  assert.deepEqual(
+    commandes.match(/(^|\n)\s*set \+\S*/g),
+    null,
+    'le deploiement ne doit jamais rendre une erreur muette avant de remplacer l api',
+  );
+  assert.equal(
+    Number(rotation.exec(commandes)?.[1]) - 1,
+    5,
+    'la rotation doit garder les cinq dernieres sauvegardes, la neuve comprise',
+  );
+});
+
+const scriptDuDeploiement = () => {
+  const jobs = blocsDesJobs(readFileSync(WORKFLOW_PATH, 'utf8'));
+  const deploiement = Object.values(jobs).find((bloc) =>
+    bloc.includes('run --rm migrate'),
+  );
+  assert.ok(deploiement, 'aucun job du workflow ne lance migrate');
+  const lignes = deploiement.split('\n');
+  const debut = lignes.findIndex((ligne) => /^\s*script: \|\s*$/.test(ligne));
+  assert.ok(debut >= 0, 'le deploiement ne porte aucun script: |');
+  const retrait = /^\s*/.exec(lignes[debut + 1] ?? '')?.[0] ?? '';
+  const corps = [];
+  for (const ligne of lignes.slice(debut + 1)) {
+    if (ligne.trim() !== '' && !ligne.startsWith(retrait)) break;
+    corps.push(ligne.slice(retrait.length));
+  }
+  return corps
+    .join('\n')
+    .replace(
+      /\$\{\{\s*([^}]+?)\s*\}\}/g,
+      (_, expression) => `faux-${String(expression).replace(/\W+/g, '-')}`,
+    );
+};
+
+const fauxDocker = () => {
+  const { appendFileSync } = process.getBuiltinModule('node:fs');
+  const { spawnSync } = process.getBuiltinModule('node:child_process');
+  const args = String(process.env.FAUX_ARGS).split('\u001f').slice(0, -1);
+  appendFileSync(
+    String(process.env.JOURNAL_DOCKER),
+    `${JSON.stringify(args)}\n`,
+  );
+  let i = 1;
+  while (['-p', '-f', '--env-file'].includes(args[i] ?? '')) i += 2;
+  const [sousCommande, ...reste] = args.slice(i);
+  if (args[0] !== 'compose' || !['exec', 'run'].includes(sousCommande ?? '')) {
+    process.exit(0);
+  }
+  const ajouts = new Map();
+  let entree = null;
+  let j = 0;
+  while ((reste[j] ?? '').startsWith('-')) {
+    if (reste[j] === '-e' || reste[j] === '--env') {
+      const [cle, ...valeur] = String(reste[j + 1]).split('=');
+      ajouts.set(cle, valeur.join('='));
+      j += 2;
+    } else if (reste[j] === '--entrypoint') {
+      entree = reste[j + 1];
+      j += 2;
+    } else {
+      j += 1;
+    }
+  }
+  const [service, ...commande] = reste.slice(j);
+  if (sousCommande === 'run' && entree === null) process.exit(0);
+  const envDuService = JSON.parse(
+    String(
+      service === 'db' ? process.env.FAUX_ENV_DB : process.env.FAUX_ENV_MIGRATE,
+    ),
+  );
+  const executable = entree ?? String(commande[0]);
+  const { status } = spawnSync(
+    executable,
+    entree === null ? commande.slice(1) : commande,
+    {
+      stdio: 'inherit',
+      env: {
+        PATH: process.env.PATH,
+        JOURNAL_PG_DUMP: process.env.JOURNAL_PG_DUMP,
+        FAUX_PG_DUMP_EXIT: process.env.FAUX_PG_DUMP_EXIT,
+        ...envDuService,
+        ...Object.fromEntries(ajouts),
+      },
+    },
+  );
+  process.exit(status ?? 1);
+};
+
+const fauxPgDump = () => {
+  const { appendFileSync } = process.getBuiltinModule('node:fs');
+  appendFileSync(
+    String(process.env.JOURNAL_PG_DUMP),
+    `${JSON.stringify(String(process.env.FAUX_ARGS).split('\u001f').slice(0, -1))}\n`,
+  );
+  process.stdout.write('sauvegarde');
+  process.exit(Number(process.env.FAUX_PG_DUMP_EXIT));
+};
+
+/** @param {string} chemin @returns {string[][]} */
+const lireJournal = (chemin) =>
+  existsSync(chemin)
+    ? readFileSync(chemin, 'utf8')
+        .split('\n')
+        .filter(Boolean)
+        .map((ligne) => JSON.parse(ligne))
+    : [];
+
+/**
+ * @param {{ envDuMigrate: Record<string, string>, envDuDb: Record<string, string>, dumpEchoue?: boolean }} cas
+ */
+const jouerLeDeploiement = ({ envDuMigrate, envDuDb, dumpEchoue = false }) => {
+  const dossier = mkdtempSync(join(tmpdir(), 'deploiement-'));
+  try {
+    return jouerLeDeploiementDans(dossier, {
+      envDuMigrate,
+      envDuDb,
+      dumpEchoue,
+    });
+  } finally {
+    rmSync(dossier, { recursive: true, force: true });
+  }
+};
+
+/**
+ * @param {string} dossier
+ * @param {{ envDuMigrate: Record<string, string>, envDuDb: Record<string, string>, dumpEchoue: boolean }} cas
+ */
+const jouerLeDeploiementDans = (
+  dossier,
+  { envDuMigrate, envDuDb, dumpEchoue },
+) => {
+  const bin = join(dossier, 'bin');
+  const travail = join(dossier, 'travail');
+  mkdirSync(bin);
+  mkdirSync(travail);
+  for (const [nom, faux] of [
+    ['docker', fauxDocker],
+    ['pg_dump', fauxPgDump],
+  ]) {
+    const programme = join(bin, `${String(nom)}.cjs`);
+    writeFileSync(programme, `(${String(faux)})();\n`);
+    writeFileSync(
+      join(bin, String(nom)),
+      `#!/usr/bin/env bash\nFAUX_ARGS="$(printf '%s\\037' "$@")" exec node "${programme}"\n`,
+      { mode: 0o755 },
+    );
+  }
+  writeFileSync(join(dossier, 'deploiement.sh'), scriptDuDeploiement());
+  const journalDocker = join(dossier, 'docker.jsonl');
+  const journalPgDump = join(dossier, 'pg_dump.jsonl');
+  const resultat = spawnSync('bash', [join(dossier, 'deploiement.sh')], {
+    encoding: 'utf8',
+    env: {
+      PATH: `${bin}:${process.env.PATH}`,
+      DEPLOY_PATH: travail,
+      JOURNAL_DOCKER: journalDocker,
+      JOURNAL_PG_DUMP: journalPgDump,
+      FAUX_ENV_MIGRATE: JSON.stringify(envDuMigrate),
+      FAUX_ENV_DB: JSON.stringify(envDuDb),
+      FAUX_PG_DUMP_EXIT: dumpEchoue ? '1' : '0',
+    },
+  });
+  const appels = lireJournal(journalDocker);
+  const rangDe = (/** @type {(appel: string[]) => boolean} */ critere) =>
+    appels.findIndex(critere);
+  const migre = (/** @type {string[]} */ appel) =>
+    appel.includes('run') &&
+    appel.includes('migrate') &&
+    !appel.includes('--entrypoint');
+  const remplaceLApi = (/** @type {string[]} */ appel) => appel.includes('up');
+  return {
+    code: resultat.status,
+    sortie: `${resultat.stdout}${resultat.stderr}`,
+    basesSauvegardees: lireJournal(journalPgDump).map(
+      (argumentsDuDump) => argumentsDuDump[argumentsDuDump.indexOf('-d') + 1],
+    ),
+    rangDuPull: rangDe((appel) => appel.includes('pull')),
+    rangDuDump: rangDe(
+      (appel) => appel.includes('exec') && appel.includes('db'),
+    ),
+    rangDeMigrate: rangDe(migre),
+    rangDuRemplacement: rangDe(remplaceLApi),
+    sauvegardes: existsSync(join(travail, 'sauvegardes'))
+      ? readdirSync(join(travail, 'sauvegardes'))
+      : [],
+  };
+};
+
+const ENV_DU_DB_FIGEE = {
+  POSTGRES_USER: 'proprietaire',
+  POSTGRES_DB: 'base-figee-a-la-creation-du-conteneur-db',
+};
+
+void test('le deploiement sauvegarde la base que migrate va migrer, lue dans backend.env comme par la regle de l env', () => {
+  const deploiement = jouerLeDeploiement({
+    envDuMigrate: { POSTGRES_DB: 'base-de-backend-env' },
+    envDuDb: ENV_DU_DB_FIGEE,
+  });
+
+  assert.equal(deploiement.code, 0, deploiement.sortie);
+  assert.deepEqual(deploiement.basesSauvegardees, ['base-de-backend-env']);
+  assert.ok(
+    deploiement.rangDuDump >= 0 &&
+      deploiement.rangDuDump < deploiement.rangDeMigrate &&
+      deploiement.rangDeMigrate < deploiement.rangDuRemplacement,
+    'la sauvegarde precede migrate, qui precede le remplacement de l api',
+  );
+  assert.equal(deploiement.sauvegardes.length, 1);
+});
+
+for (const [cas, entree, basesAttendues] of /** @type {const} */ ([
+  [
+    'pg_dump echoue',
+    {
+      envDuMigrate: { POSTGRES_DB: 'base-de-backend-env' },
+      envDuDb: ENV_DU_DB_FIGEE,
+      dumpEchoue: true,
+    },
+    ['base-de-backend-env'],
+  ],
+  [
+    'backend.env ne nomme aucune POSTGRES_DB',
+    { envDuMigrate: {}, envDuDb: ENV_DU_DB_FIGEE },
+    [],
+  ],
+  [
+    'backend.env porte une POSTGRES_DB vide',
+    { envDuMigrate: { POSTGRES_DB: '' }, envDuDb: ENV_DU_DB_FIGEE },
+    [],
+  ],
+])) {
+  void test(`le deploiement s arrete avant migrate quand ${cas}`, () => {
+    const deploiement = jouerLeDeploiement(entree);
+
+    assert.notEqual(deploiement.code, 0, deploiement.sortie);
+    assert.ok(deploiement.rangDuPull >= 0, deploiement.sortie);
+    assert.deepEqual(deploiement.basesSauvegardees, basesAttendues);
+    assert.equal(deploiement.rangDeMigrate, -1, 'migrate ne doit pas tourner');
+    assert.equal(
+      deploiement.rangDuRemplacement,
+      -1,
+      'l api ne doit pas etre remplacee',
+    );
+  });
+}
 
 void test('les suites de resilience et de concurrence sont prises par la configuration db-integration bloquante', () => {
   const configDbIntegration = lireJson(

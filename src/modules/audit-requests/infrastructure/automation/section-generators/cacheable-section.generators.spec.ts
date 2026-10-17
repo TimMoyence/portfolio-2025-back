@@ -1,10 +1,14 @@
-import type { ChatOpenAI } from '@langchain/openai';
+import {
+  createStructuredOutputLlm,
+  createStructuredOutputLlmStub,
+} from '../../../../../../test/factories/section-generator.factory';
 import {
   clientCommsSectionSchema,
   executiveSectionSchema,
   executionSectionSchema,
   prioritySectionSchema,
 } from '../schemas/audit-report.schemas';
+import { wrapUntrustedUserPayload } from '../shared/prompt-sanitize.util';
 import { GENERATEURS_DE_SECTION } from './cacheable-section.generators';
 import type { CachingSectionRunner } from './caching-section.runner';
 import { buildSystemBlocks } from './section-prompts.builder';
@@ -28,23 +32,15 @@ function buildRunnerSpy<T>(resolved: T): RunSpy {
   };
 }
 
-function buildLlmStub(): {
-  llm: ChatOpenAI;
-  withStructuredOutputSpy: jest.Mock;
-} {
-  const invoke = jest.fn();
-  const withStructuredOutputSpy = jest.fn().mockReturnValue({ invoke });
-  return {
-    llm: {
-      withStructuredOutput: withStructuredOutputSpy,
-    } as unknown as ChatOpenAI,
-    withStructuredOutputSpy,
-  };
-}
+const runnerQuiReplieSurOpenAi = {
+  run: jest.fn((params: { openAiFallback: () => Promise<unknown> }) =>
+    params.openAiFallback(),
+  ),
+} as unknown as CachingSectionRunner;
 
 describe('cacheable section generators', () => {
   const baseArgs = {
-    llm: buildLlmStub().llm,
+    llm: createStructuredOutputLlm(),
     payload: { key: 'value' },
     locale: 'fr' as const,
     retryMode: false,
@@ -59,9 +55,8 @@ describe('cacheable section generators', () => {
     '%s delegue au runner sa section, son schema et ses blocs systeme',
     async (generateur, section, schema) => {
       const { runner, runCalls } = buildRunnerSpy({ ok: true });
-      const invokeTracked = jest.fn();
       await GENERATEURS_DE_SECTION[generateur](
-        { cachingRunner: runner, invokeTracked },
+        { cachingRunner: runner },
         baseArgs,
       );
       expect(runCalls[0]).toEqual(
@@ -77,29 +72,45 @@ describe('cacheable section generators', () => {
 
   it('ajoute le retry constraint aux systemBlocks quand retryMode=true', async () => {
     const { runner, runCalls } = buildRunnerSpy({});
-    const invokeTracked = jest.fn();
     await generateExecutiveSection(
-      { cachingRunner: runner, invokeTracked },
+      { cachingRunner: runner },
       { ...baseArgs, retryMode: true },
     );
     expect(runCalls[0].systemBlocks).toHaveLength(3);
   });
 
-  it('invoque le fallback OpenAI via llm.withStructuredOutput quand appele', async () => {
-    const runner = {
-      run: jest.fn((params: { openAiFallback: () => Promise<unknown> }) =>
-        params.openAiFallback(),
-      ),
-    } as unknown as CachingSectionRunner;
-    const invokeTracked = jest.fn().mockResolvedValue({ ok: 'ok' });
-    const { llm, withStructuredOutputSpy } = buildLlmStub();
+  it('replie sur OpenAI : schema de la section, blocs systeme puis charge emballee, signal transmis', async () => {
+    const invoke = jest.fn().mockResolvedValue({ ok: 'ok' });
+    const { llm, withStructuredOutput } = createStructuredOutputLlmStub(invoke);
+    const { signal } = new AbortController();
 
-    await generateExecutiveSection(
-      { cachingRunner: runner, invokeTracked },
-      { ...baseArgs, llm },
+    const resultat = await generateExecutiveSection(
+      { cachingRunner: runnerQuiReplieSurOpenAi },
+      { ...baseArgs, llm, signal },
     );
 
-    expect(withStructuredOutputSpy).toHaveBeenCalled();
-    expect(invokeTracked).toHaveBeenCalledTimes(1);
+    expect(resultat).toEqual({ ok: 'ok' });
+    expect(withStructuredOutput).toHaveBeenCalledWith(executiveSectionSchema);
+    expect(invoke).toHaveBeenCalledWith(
+      [
+        ...buildSystemBlocks('executive', 'fr', false).map((content) => ({
+          role: 'system',
+          content,
+        })),
+        { role: 'user', content: wrapUntrustedUserPayload({ key: 'value' }) },
+      ],
+      { signal },
+    );
+  });
+
+  it('propage l erreur du repli OpenAI', async () => {
+    const invoke = jest.fn().mockRejectedValue(new Error('openai down'));
+
+    await expect(
+      generateExecutiveSection(
+        { cachingRunner: runnerQuiReplieSurOpenAi },
+        { ...baseArgs, llm: createStructuredOutputLlm(invoke) },
+      ),
+    ).rejects.toThrow('openai down');
   });
 });

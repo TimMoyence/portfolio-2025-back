@@ -1,24 +1,12 @@
-import { plainToInstance } from 'class-transformer';
-import { validateSync } from 'class-validator';
-import { AuditRequestRequestDto } from '../../../modules/audit-requests/interfaces/dto/audit-request.request.dto';
-import { ContactRequestDto } from '../../../modules/contacts/interfaces/dto/contact.request.dto';
-import { JoinSessionRequestDto } from '../../../modules/formations/interfaces/dto/join-session.request.dto';
-import { RequestToolkitRequestDto } from '../../../modules/lead-magnets/interfaces/dto/request-toolkit.request.dto';
-import { SubscribeNewsletterRequestDto } from '../../../modules/newsletter/interfaces/dto/subscribe-newsletter.request.dto';
+import { FORMULAIRES_PUBLICS } from '../../../../test/helpers/formulaires-publics';
+import {
+  champsRefuses,
+  messagesDuRefus,
+} from '../../../../test/helpers/validation-pipe';
 import { ChampsAntiRobotDto } from './champs-anti-robot.dto';
 
-const FORMULAIRES_PUBLICS = [
-  AuditRequestRequestDto,
-  ContactRequestDto,
-  JoinSessionRequestDto,
-  RequestToolkitRequestDto,
-  SubscribeNewsletterRequestDto,
-];
-
 const proprietesEnErreur = (corps: Record<string, unknown>): string[] =>
-  validateSync(plainToInstance(ChampsAntiRobotDto, corps)).map(
-    (erreur) => erreur.property,
-  );
+  champsRefuses(ChampsAntiRobotDto, corps);
 
 describe('ChampsAntiRobotDto', () => {
   it('accepte un formulaire sans champ anti-robot', () => {
@@ -44,21 +32,18 @@ describe('ChampsAntiRobotDto', () => {
     ]);
   });
 
-  it('refuse un horodatage negatif, non entier ou qui n est pas un nombre', () => {
-    expect(proprietesEnErreur({ formStartedAt: -1 })).toEqual([
-      'formStartedAt',
-    ]);
-    expect(proprietesEnErreur({ formStartedAt: 1.5 })).toEqual([
-      'formStartedAt',
-    ]);
-    expect(proprietesEnErreur({ formStartedAt: 'hier' })).toEqual([
-      'formStartedAt',
-    ]);
+  it('refuse l horodatage d ouverture, remplace par la duree de saisie (LEG-ANTIROBOT)', async () => {
+    await expect(
+      messagesDuRefus(ChampsAntiRobotDto, {
+        formStartedAt: Date.UTC(2026, 9, 17, 3, 0, 0),
+        formFillDurationMs: 20_000,
+      }),
+    ).resolves.toEqual(['property formStartedAt should not exist']);
   });
 
   it.each(FORMULAIRES_PUBLICS)(
-    '%p herite des champs anti-robot',
-    (Formulaire) => {
+    'le formulaire de %s herite des champs anti-robot',
+    (_saisie, Formulaire) => {
       expect(Formulaire.prototype).toBeInstanceOf(ChampsAntiRobotDto);
     },
   );

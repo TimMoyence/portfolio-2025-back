@@ -46,7 +46,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libcairo2 \
   && rm -rf /var/lib/apt/lists/*
 
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 
 # 1) Créer user + group explicitement (évite le souci "group missing")

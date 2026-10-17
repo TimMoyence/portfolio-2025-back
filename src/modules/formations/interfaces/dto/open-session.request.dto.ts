@@ -1,11 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, Matches, MaxLength, MinLength } from 'class-validator';
+import { Motif } from '../../../../common/interfaces/dto/bornes-annoncees.decorator';
+import { TexteBorne } from '../../../../common/interfaces/dto/longueur-de-texte.decorator';
 
 export class OpenSessionRequestDto {
   @ApiProperty({ example: 'b2-01-traitement-information-chiffree' })
-  @IsString()
-  @Matches(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
-  @MinLength(1)
-  @MaxLength(120)
+  @TexteBorne(1, 120)
+  @Motif(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
   courseSlug: string;
 }

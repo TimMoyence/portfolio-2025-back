@@ -7,7 +7,7 @@ import type { Cours, TypeQuestion } from './contrats/cours';
 import type { ResumeBareme } from './contrats/resultats';
 import type { QuestionAAgreger } from './ResultatsSeance';
 import { CONCEPTS, type ConceptId } from './cours/banque/concepts';
-import { rangDeLaQuestion } from './cours/EcranServi';
+import { rangDeLaQuestion, seuilDe } from './cours/EcranServi';
 import { NE_SAIT_PAS } from './GradingCore';
 
 type QuestionType = 'numeric' | 'vote' | 'asn' | 'order';
@@ -169,11 +169,13 @@ export function questionsAAgreger(
 ): readonly QuestionAAgreger[] {
   return questionsDuBareme(bareme).map((question) => {
     const enrichie = questionDuBareme(bareme, question.id, cours);
+    const ecran = cours?.ecrans.find(({ id }) => id === enrichie?.ecranId);
     return {
       id: question.id,
       type: enrichie?.type ?? typeAgregeable(question.type),
       noteCompte: question.noteCompte,
       ecranId: enrichie?.ecranId ?? '',
+      seuil: ecran === undefined ? null : seuilDe(ecran),
     };
   });
 }

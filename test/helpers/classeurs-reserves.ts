@@ -2,10 +2,11 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { Cours } from '../../src/modules/formations/domain/contrats/cours';
 import { estReservee } from '../../src/modules/formations/domain/cours/Cours';
+import { RACINE } from './racine';
 
 const DOSSIER_DES_CLASSEURS = join(
-  __dirname,
-  '../../src/modules/formations/infrastructure/classeurs',
+  RACINE,
+  'src/modules/formations/infrastructure/classeurs',
 );
 
 export interface ClasseurReserve {

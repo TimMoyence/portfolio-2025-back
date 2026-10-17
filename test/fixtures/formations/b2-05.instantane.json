@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "7e4b728bd8ac295304987fd0a36497957a072f54b6cc7294adb455642139f115",
+  "empreinte": "6370f27445c91d8e1f80f703b27c838edac7ea4263e77fc5ad2daa766f72d272",
   "sujet": {
     "id": "b2-05-mathematiques-financieres",
     "titre": "Mathématiques financières : placer, emprunter",
@@ -226,15 +226,15 @@
                   },
                   {
                     "rubrique": "La trésorerie",
-                    "contenu": "40 000 € disponibles au 1ᵉʳ janvier 2026, placés à 2,5 % par an, intérêts laissés sur le compte, en attendant le chantier."
+                    "contenu": "40 000 € disponibles au 1ᵉʳ janvier 2026, placés à 2,5 % par an, intérêts laissés sur le compte, en attendant le chantier."
                   },
                   {
                     "rubrique": "L’épargne des machines",
-                    "contenu": "6 000 € mis de côté à la fin de chaque année, de 2026 à 2030, sur un compte à 3 % par an."
+                    "contenu": "6 000 € mis de côté à la fin de chaque année, de 2026 à 2030, sur un compte à 3 % par an."
                   },
                   {
                     "rubrique": "L’emprunt d’équipement",
-                    "contenu": "60 000 € empruntés sur 5 ans au taux annuel de 4 %, remboursés par annuités constantes."
+                    "contenu": "60 000 € empruntés sur 5 ans au taux annuel de 4 %, remboursés par annuités constantes."
                   },
                   {
                     "rubrique": "La question de la banque",
@@ -267,23 +267,23 @@
           "cas": {
             "id": "B2-05-A1-06-MISSION",
             "metier": "Assistant·e de gestion — Atelier Rivage (voilerie artisanale, 14 salariés, La Rochelle)",
-            "situation": "Lundi, 9 h. Hélène Garnier écrit : « La banque veut voir trois lignes de notre plan : les 40 000 € de trésorerie placés à 2,5 % par an, les 6 000 € que nous mettrons de côté chaque fin d’année de 2026 à 2030 à 3 %, et l’emprunt de 60 000 € sur 5 ans à 4 %. Pouvez-vous chiffrer chaque ligne ? » Marc Lefèvre, l’expert-comptable, ajoute : « Pour l’emprunt, ne vous contentez pas de diviser 60 000 € par 5 : la banque se paie aussi en intérêts. »",
+            "situation": "Lundi, 9 h. Hélène Garnier écrit : « La banque veut voir trois lignes de notre plan : les 40 000 € de trésorerie placés à 2,5 % par an, les 6 000 € que nous mettrons de côté chaque fin d’année de 2026 à 2030 à 3 %, et l’emprunt de 60 000 € sur 5 ans à 4 %. Pouvez-vous chiffrer chaque ligne ? » Marc Lefèvre, l’expert-comptable, ajoute : « Pour l’emprunt, ne vous contentez pas de diviser 60 000 € par 5 : la banque se paie aussi en intérêts. »",
             "geste": "Sans calculatrice, répondez aux trois questions à partir du dossier.",
             "consequence": "Un placement surestimé, et le chantier manque d’argent ; un emprunt sous-estimé, et les annuités pèsent sur la trésorerie des cinq prochaines années.",
             "questionsLibres": [
               {
                 "id": "b2-05-a1-mission:placement",
-                "question": "Le placement de 40 000 € rapporte-t-il les mêmes intérêts chaque année ? Pourquoi ?",
+                "question": "Le placement de 40 000 € rapporte-t-il les mêmes intérêts chaque année ? Pourquoi ?",
                 "placeholder": "Oui / Non, parce que chaque année…"
               },
               {
                 "id": "b2-05-a1-mission:epargne",
-                "question": "Cinq versements de 6 000 € font-ils 30 000 € d’épargne fin 2030 ? Plus, moins ?",
+                "question": "Cinq versements de 6 000 € font-ils 30 000 € d’épargne fin 2030 ? Plus, moins ?",
                 "placeholder": "Plus / moins / autant, parce que…"
               },
               {
                 "id": "b2-05-a1-mission:emprunt",
-                "question": "Rembourser 12 000 € par an pendant cinq ans suffit-il à solder l’emprunt ? Pourquoi ?",
+                "question": "Rembourser 12 000 € par an pendant cinq ans suffit-il à solder l’emprunt ? Pourquoi ?",
                 "placeholder": "Oui / Non, parce que la banque…"
               }
             ],
@@ -327,12 +327,12 @@
                   {
                     "kind": "example",
                     "title": "Pour débuter : le livret à 3 %",
-                    "text": "On place 2 000 € sur un livret à 3 % par an, intérêts laissés sur le livret. C₀ = 2 000 et 1 + t = 1,03.",
+                    "text": "On place 2 000 € sur un livret à 3 % par an, intérêts laissés sur le livret. C₀ = 2 000 et 1 + t = 1,03.",
                     "steps": [
-                      "Après un an : 2 000 × 1,03 = 2 060 € ; les intérêts sont de 60 €.",
-                      "Après deux ans : 2 060 × 1,03 = 2 121,80 € ; les intérêts de la deuxième année, 61,80 €, portent sur 2 060 €.",
-                      "Après dix ans : 2 000 × 1,03¹⁰ ≈ 2 687,83 €.",
-                      "Aux intérêts simples : 2 000 × (1 + 10 × 0,03) = 2 600 € seulement."
+                      "Après un an : 2 000 × 1,03 = 2 060 € ; les intérêts sont de 60 €.",
+                      "Après deux ans : 2 060 × 1,03 = 2 121,80 € ; les intérêts de la deuxième année, 61,80 €, portent sur 2 060 €.",
+                      "Après dix ans : 2 000 × 1,03¹⁰ ≈ 2 687,83 €.",
+                      "Aux intérêts simples : 2 000 × (1 + 10 × 0,03) = 2 600 € seulement."
                     ]
                   },
                   {
@@ -423,13 +423,13 @@
       {
         "id": "B2-05-A1-09-EXEMPLE-PLACEMENT",
         "type": "fp-worked",
-        "titre": "Exemple guidé : placer 8 000 € à 2 %",
+        "titre": "Exemple guidé : placer 8 000 € à 2 %",
         "duree": 6,
         "interactif": true,
         "donnees": {
           "exemple": {
             "id": "b2-05-a1-exemple-placement",
-            "enonce": "Le comité d’entreprise d’Atelier Rivage place 8 000 € à intérêts composés au taux annuel de 2 %. Il se demande aussi combien placer aujourd’hui pour disposer de 10 000 € dans 5 ans.",
+            "enonce": "Le comité d’entreprise d’Atelier Rivage place 8 000 € à intérêts composés au taux annuel de 2 %. Il se demande aussi combien placer aujourd’hui pour disposer de 10 000 € dans 5 ans.",
             "etapes": [
               {
                 "id": "coefficient",
@@ -440,26 +440,26 @@
               {
                 "id": "premieres",
                 "intitule": "Les deux premières valeurs",
-                "raisonnement": "Après un an : 8 000 × 1,02 = 8 160 € ; après deux ans : 8 160 × 1,02 = 8 323,20 €.",
+                "raisonnement": "Après un an : 8 000 × 1,02 = 8 160 € ; après deux ans : 8 160 × 1,02 = 8 323,20 €.",
                 "invite": "Calculez le capital après un an, puis après deux ans."
               },
               {
                 "id": "valeur-acquise",
                 "intitule": "La valeur acquise",
-                "raisonnement": "Après cinq ans : 8 000 × 1,02⁵ ≈ 8 832,65 €, soit 832,65 € d’intérêts.",
+                "raisonnement": "Après cinq ans : 8 000 × 1,02⁵ ≈ 8 832,65 €, soit 832,65 € d’intérêts.",
                 "invite": "Calculez la valeur acquise au bout de 5 ans."
               },
               {
                 "id": "simples",
                 "intitule": "La comparaison",
-                "raisonnement": "Aux intérêts simples : 8 000 × (1 + 5 × 0,02) = 8 800 €. Les intérêts composés rapportent 32,65 € de plus : les intérêts des intérêts.",
+                "raisonnement": "Aux intérêts simples : 8 000 × (1 + 5 × 0,02) = 8 800 €. Les intérêts composés rapportent 32,65 € de plus : les intérêts des intérêts.",
                 "invite": "Que donneraient les intérêts simples sur 5 ans ?"
               },
               {
                 "id": "actualiser",
                 "intitule": "La valeur actuelle",
-                "raisonnement": "10 000 ÷ 1,02⁵ ≈ 9 057,31 € : c’est la somme à placer aujourd’hui. Multiplier par 1,02⁵ donnerait une somme plus grande que 10 000 €, absurde.",
-                "invite": "Combien placer aujourd’hui pour avoir 10 000 € dans 5 ans ?"
+                "raisonnement": "10 000 ÷ 1,02⁵ ≈ 9 057,31 € : c’est la somme à placer aujourd’hui. Multiplier par 1,02⁵ donnerait une somme plus grande que 10 000 €, absurde.",
+                "invite": "Combien placer aujourd’hui pour avoir 10 000 € dans 5 ans ?"
               }
             ],
             "metadonnees": {
@@ -481,7 +481,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 1 — Placer la trésorerie",
-          "consigne": "Trésorerie : 40 000 € placés le 1ᵉʳ janvier 2026 à intérêts composés, au taux annuel de 2,5 %. Résultats au centime.",
+          "consigne": "Trésorerie : 40 000 € placés le 1ᵉʳ janvier 2026 à intérêts composés, au taux annuel de 2,5 %. Résultats au centime.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -526,19 +526,19 @@
               "donnees": {
                 "question": {
                   "id": "b2-05-a1-actualiser",
-                  "enonce": "Hélène voudrait disposer de 50 000 € au 1ᵉʳ janvier 2029. Quel calcul donne la somme à placer au 1ᵉʳ janvier 2026 ?",
+                  "enonce": "Hélène voudrait disposer de 50 000 € au 1ᵉʳ janvier 2029. Quel calcul donne la somme à placer au 1ᵉʳ janvier 2026 ?",
                   "options": [
                     {
                       "id": "50-000-1-025-1d0b8136",
-                      "libelle": "50 000 ÷ 1,025³"
+                      "libelle": "50 000 ÷ 1,025³"
                     },
                     {
                       "id": "50-000-1-plus-3-0-025-686f41b6",
-                      "libelle": "50 000 ÷ (1 + 3 × 0,025)"
+                      "libelle": "50 000 ÷ (1 + 3 × 0,025)"
                     },
                     {
                       "id": "50-000-1-025-1d6087df",
-                      "libelle": "50 000 × 1,025³"
+                      "libelle": "50 000 × 1,025³"
                     }
                   ]
                 }
@@ -549,7 +549,7 @@
               "donnees": {
                 "question": {
                   "id": "b2-05-a1-valeur-actuelle",
-                  "enonce": "Quelle somme faut-il placer au 1ᵉʳ janvier 2026 pour disposer de 50 000 € au 1ᵉʳ janvier 2029 ?",
+                  "enonce": "Quelle somme faut-il placer au 1ᵉʳ janvier 2026 pour disposer de 50 000 € au 1ᵉʳ janvier 2029 ?",
                   "unite": "€",
                   "metadonnees": {
                     "concepts": ["interets-composes", "valeur-actuelle"],
@@ -624,6 +624,63 @@
               "En D3, écrivez les intérêts gagnés pendant l’année écoulée. Recopiez jusqu’en D7 : sélectionnez D3 et cliquez quatre fois sur « Recopier vers le bas », une ligne par clic.",
               "Le taux ne s’écrit pas dans la formule : utilisez la cellule G1."
             ],
+            "lettres": ["A", "B", "C", "D", "E", "F", "G"],
+            "grille": [
+              ["A1", "B1", "C1", "D1", "E1", "F1", "G1"],
+              ["A2", "B2", "C2", "D2", "E2", "F2", "G2"],
+              ["A3", "B3", "C3", "D3", "E3", "F3", "G3"],
+              ["A4", "B4", "C4", "D4", "E4", "F4", "G4"],
+              ["A5", "B5", "C5", "D5", "E5", "F5", "G5"],
+              ["A6", "B6", "C6", "D6", "E6", "F6", "G6"],
+              ["A7", "B7", "C7", "D7", "E7", "F7", "G7"]
+            ],
+            "longueurMaxSaisie": 200,
+            "initiale": {
+              "saisies": {},
+              "affichages": {
+                "A1": "Au 1ᵉʳ janvier",
+                "B1": "Années n",
+                "C1": "Valeur acquise (€)",
+                "C2": "40000",
+                "D1": "Intérêts de l’année (€)",
+                "F1": "Taux annuel",
+                "G1": "0,025",
+                "A2": "2026",
+                "B2": "0",
+                "A3": "2027",
+                "B3": "1",
+                "A4": "2028",
+                "B4": "2",
+                "A5": "2029",
+                "B5": "3",
+                "A6": "2030",
+                "B6": "4",
+                "A7": "2031",
+                "B7": "5"
+              },
+              "natures": {
+                "A1": "texte",
+                "B1": "texte",
+                "C1": "texte",
+                "C2": "nombre",
+                "D1": "texte",
+                "F1": "texte",
+                "G1": "nombre",
+                "A2": "nombre",
+                "B2": "nombre",
+                "A3": "nombre",
+                "B3": "nombre",
+                "A4": "nombre",
+                "B4": "nombre",
+                "A5": "nombre",
+                "B5": "nombre",
+                "A6": "nombre",
+                "B6": "nombre",
+                "A7": "nombre",
+                "B7": "nombre"
+              },
+              "formules": []
+            },
             "metadonnees": {
               "concepts": ["tableur", "interets-composes"],
               "misconceptionsCiblees": [],
@@ -657,7 +714,7 @@
       {
         "id": "B2-05-A2-01-REFLEXION-VERSEMENTS",
         "type": "fp-story",
-        "titre": "Réfléchir : 6 000 € par an pendant cinq ans",
+        "titre": "Réfléchir : 6 000 € par an pendant cinq ans",
         "duree": 5,
         "interactif": true,
         "donnees": {
@@ -671,7 +728,7 @@
                 "promptData": {
                   "id": "b2-05-a2-reflexion-versements",
                   "type": "reflection",
-                  "question": "Un stagiaire chiffre l’épargne des machines : « Cinq versements de 6 000 € placés cinq ans à 3 % : 5 × 6 000 × 1,03⁵. » Sans calculatrice, dites s’il a raison, versement par versement : combien d’années chacun rapporte-t-il des intérêts jusqu’à fin 2030 ?",
+                  "question": "Un stagiaire chiffre l’épargne des machines : « Cinq versements de 6 000 € placés cinq ans à 3 % : 5 × 6 000 × 1,03⁵. » Sans calculatrice, dites s’il a raison, versement par versement : combien d’années chacun rapporte-t-il des intérêts jusqu’à fin 2030 ?",
                   "placeholder": "Il a raison / il a tort, parce que le versement de…",
                   "competency": "Modéliser · reconnaître une suite de versements"
                 }
@@ -713,19 +770,19 @@
                   },
                   {
                     "kind": "example",
-                    "title": "Pour débuter : 1 000 € par an à 2 %",
-                    "text": "Trois versements de 1 000 €, en fin d’année, sur un compte à 2 %. Valeur acquise au troisième versement ?",
+                    "title": "Pour débuter : 1 000 € par an à 2 %",
+                    "text": "Trois versements de 1 000 €, en fin d’année, sur un compte à 2 %. Valeur acquise au troisième versement ?",
                     "steps": [
-                      "Le premier est placé deux ans : 1 000 × 1,02² = 1 040,40 €.",
-                      "Le deuxième est placé un an : 1 000 × 1,02 = 1 020 €.",
-                      "Le troisième ne rapporte rien : 1 000 €.",
-                      "Somme : 3 060,40 € ; formule : 1 000 × (1,02³ − 1) ÷ 0,02 = 3 060,40 €."
+                      "Le premier est placé deux ans : 1 000 × 1,02² = 1 040,40 €.",
+                      "Le deuxième est placé un an : 1 000 × 1,02 = 1 020 €.",
+                      "Le troisième ne rapporte rien : 1 000 €.",
+                      "Somme : 3 060,40 € ; formule : 1 000 × (1,02³ − 1) ÷ 0,02 = 3 060,40 €."
                     ]
                   },
                   {
                     "kind": "method",
                     "title": "Calculer la valeur acquise d’une suite d’annuités",
-                    "text": "Pièges : additionner les versements sans leurs intérêts (3 000 € au lieu de 3 060,40 €) ; placer chaque versement pendant toute la durée ; compter un versement de trop ou de moins.",
+                    "text": "Pièges : additionner les versements sans leurs intérêts (3 000 € au lieu de 3 060,40 €) ; placer chaque versement pendant toute la durée ; compter un versement de trop ou de moins.",
                     "steps": [
                       "Compter les versements n, du premier au dernier inclus.",
                       "Repérer la date d’évaluation : celle du dernier versement.",
@@ -806,13 +863,13 @@
       {
         "id": "B2-05-A2-04-EXEMPLE-ANNUITES",
         "type": "fp-worked",
-        "titre": "Exemple guidé : 1 500 € par an à 2,5 %",
+        "titre": "Exemple guidé : 1 500 € par an à 2,5 %",
         "duree": 6,
         "interactif": true,
         "donnees": {
           "exemple": {
             "id": "b2-05-a2-exemple-annuites",
-            "enonce": "Le comité d’entreprise verse 1 500 € à la fin de chaque année, pendant quatre ans, sur un compte à 2,5 % par an. Quelle épargne aura-t-il au quatrième versement ?",
+            "enonce": "Le comité d’entreprise verse 1 500 € à la fin de chaque année, pendant quatre ans, sur un compte à 2,5 % par an. Quelle épargne aura-t-il au quatrième versement ?",
             "etapes": [
               {
                 "id": "durees",
@@ -823,25 +880,25 @@
               {
                 "id": "valeurs",
                 "intitule": "Les valeurs acquises",
-                "raisonnement": "1 500 × 1,025³ ≈ 1 615,34 € ; 1 500 × 1,025² ≈ 1 575,94 € ; 1 500 × 1,025 = 1 537,50 € ; 1 500 €.",
+                "raisonnement": "1 500 × 1,025³ ≈ 1 615,34 € ; 1 500 × 1,025² ≈ 1 575,94 € ; 1 500 × 1,025 = 1 537,50 € ; 1 500 €.",
                 "invite": "Calculez la valeur acquise de chaque versement."
               },
               {
                 "id": "formule",
                 "intitule": "La formule donnée",
-                "raisonnement": "1 500 × (1,025⁴ − 1) ÷ 0,025 ≈ 6 228,77 €. La somme des valeurs arrondies donne 6 228,78 € : un centime d’arrondi.",
+                "raisonnement": "1 500 × (1,025⁴ − 1) ÷ 0,025 ≈ 6 228,77 €. La somme des valeurs arrondies donne 6 228,78 € : un centime d’arrondi.",
                 "invite": "Retrouvez l’épargne avec la formule de la trace écrite."
               },
               {
                 "id": "interets",
                 "intitule": "Les intérêts gagnés",
-                "raisonnement": "Versé : 4 × 1 500 = 6 000 €. Intérêts : 6 228,77 − 6 000 = 228,77 €.",
+                "raisonnement": "Versé : 4 × 1 500 = 6 000 €. Intérêts : 6 228,77 − 6 000 = 228,77 €.",
                 "invite": "Combien les versements ont-ils rapporté ?"
               },
               {
                 "id": "piege",
                 "intitule": "Le piège de la durée pleine",
-                "raisonnement": "4 × 1 500 × 1,025⁴ ≈ 6 622,88 € : c’est trop, car le dernier versement ne rapporte rien.",
+                "raisonnement": "4 × 1 500 × 1,025⁴ ≈ 6 622,88 € : c’est trop, car le dernier versement ne rapporte rien.",
                 "invite": "Que donnerait le calcul « quatre versements placés quatre ans » ?"
               }
             ],
@@ -864,7 +921,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 3 — L’épargne des machines",
-          "consigne": "Épargne des machines : 6 000 € versés à la fin de chaque année, de 2026 à 2030, sur un compte à 3 % par an. Résultats au centime.",
+          "consigne": "Épargne des machines : 6 000 € versés à la fin de chaque année, de 2026 à 2030, sur un compte à 3 % par an. Résultats au centime.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -913,15 +970,15 @@
                   "options": [
                     {
                       "id": "6-000-1-03-moins-1-0-03-d12e1314",
-                      "libelle": "6 000 × (1,03⁵ − 1) ÷ 0,03"
+                      "libelle": "6 000 × (1,03⁵ − 1) ÷ 0,03"
                     },
                     {
                       "id": "5-6-000-e47edac5",
-                      "libelle": "5 × 6 000"
+                      "libelle": "5 × 6 000"
                     },
                     {
                       "id": "5-6-000-1-03-2567f5fe",
-                      "libelle": "5 × 6 000 × 1,03⁵"
+                      "libelle": "5 × 6 000 × 1,03⁵"
                     }
                   ]
                 }
@@ -998,6 +1055,52 @@
               "En F3, calculez le total des intérêts gagnés de 2027 à 2030.",
               "Le taux et le versement ne s’écrivent pas dans les formules : utilisez F1 et H1."
             ],
+            "lettres": ["A", "B", "C", "D", "E", "F", "G", "H"],
+            "grille": [
+              ["A1", "B1", "C1", "D1", "E1", "F1", "G1", "H1"],
+              ["A2", "B2", "C2", "D2", "E2", "F2", "G2", "H2"],
+              ["A3", "B3", "C3", "D3", "E3", "F3", "G3", "H3"],
+              ["A4", "B4", "C4", "D4", "E4", "F4", "G4", "H4"],
+              ["A5", "B5", "C5", "D5", "E5", "F5", "G5", "H5"],
+              ["A6", "B6", "C6", "D6", "E6", "F6", "G6", "H6"]
+            ],
+            "longueurMaxSaisie": 200,
+            "initiale": {
+              "saisies": {},
+              "affichages": {
+                "A1": "Fin d’année",
+                "B1": "Épargne disponible (€)",
+                "B2": "6000",
+                "C1": "Intérêts de l’année (€)",
+                "E1": "Taux annuel",
+                "F1": "0,03",
+                "G1": "Versement (€)",
+                "H1": "6000",
+                "E3": "Total des intérêts (€)",
+                "A2": "2026",
+                "A3": "2027",
+                "A4": "2028",
+                "A5": "2029",
+                "A6": "2030"
+              },
+              "natures": {
+                "A1": "texte",
+                "B1": "texte",
+                "B2": "nombre",
+                "C1": "texte",
+                "E1": "texte",
+                "F1": "nombre",
+                "G1": "texte",
+                "H1": "nombre",
+                "E3": "texte",
+                "A2": "nombre",
+                "A3": "nombre",
+                "A4": "nombre",
+                "A5": "nombre",
+                "A6": "nombre"
+              },
+              "formules": []
+            },
             "metadonnees": {
               "concepts": ["tableur", "annuites"],
               "misconceptionsCiblees": [],
@@ -1042,7 +1145,7 @@
               "screenId": "B2-05-A3-01-GRAPHIQUE",
               "renderer": "chart",
               "props": {
-                "title": "Emprunt type : 100 000 € sur 10 ans à 5 %",
+                "title": "Emprunt type : 100 000 € sur 10 ans à 5 %",
                 "caption": "Décomposition de chaque annuité, en euros",
                 "labels": [
                   "Année 1",
@@ -1075,11 +1178,11 @@
                   }
                 ],
                 "unit": "€",
-                "formula": "Annuité = intérêts + amortissement, environ 12 950,46 € chaque année",
+                "formula": "Annuité = intérêts + amortissement, environ 12 950,46 € chaque année",
                 "reading": "Chaque année, la barre a la même hauteur : l’annuité. Les intérêts baissent, car ils portent sur un capital restant dû de plus en plus petit ; l’amortissement monte d’autant.",
                 "source": "Emprunt type. Données fictives Atelier Rivage, créées pour ce cours.",
                 "kind": "bars",
-                "description": "Dix barres de même hauteur totale. La part des intérêts part de 5 000 € en année 1 et descend jusqu’à 617 € environ en année 10 ; la part de l’amortissement monte de 7 950 € environ à 12 334 € environ."
+                "description": "Dix barres de même hauteur totale. La part des intérêts part de 5 000 € en année 1 et descend jusqu’à 617 € environ en année 10 ; la part de l’amortissement monte de 7 950 € environ à 12 334 € environ."
               }
             },
             "metadonnees": {
@@ -1101,29 +1204,29 @@
         "donnees": {
           "question": {
             "id": "b2-05-a3-rembourse",
-            "enonce": "Une annuité de 13 000 € contient 2 000 € d’intérêts. Quelle part du capital emprunté rembourse-t-elle ?",
+            "enonce": "Une annuité de 13 000 € contient 2 000 € d’intérêts. Quelle part du capital emprunté rembourse-t-elle ?",
             "options": [
               {
                 "id": "13-000-eur-toute-l-annuite-5c472c0c",
-                "libelle": "13 000 € : toute l’annuité"
+                "libelle": "13 000 € : toute l’annuité"
               },
               {
                 "id": "11-000-eur-l-annuite-moins-les-interets-de572ef1",
-                "libelle": "11 000 € : l’annuité moins les intérêts"
+                "libelle": "11 000 € : l’annuité moins les intérêts"
               }
             ]
           },
           "questionJumelle": {
             "id": "b2-05-a3-cout-vote",
-            "enonce": "On emprunte 10 000 € et l’on rembourse 11 200 € en tout. Combien le crédit a-t-il coûté ?",
+            "enonce": "On emprunte 10 000 € et l’on rembourse 11 200 € en tout. Combien le crédit a-t-il coûté ?",
             "options": [
               {
                 "id": "11-200-eur-le-total-rembourse-a7b8d1f8",
-                "libelle": "11 200 € : le total remboursé"
+                "libelle": "11 200 € : le total remboursé"
               },
               {
                 "id": "1-200-eur-le-total-rembourse-moins-le-ca-5a48e536",
-                "libelle": "1 200 € : le total remboursé moins le capital"
+                "libelle": "1 200 € : le total remboursé moins le capital"
               }
             ]
           }
@@ -1154,12 +1257,12 @@
                   },
                   {
                     "kind": "example",
-                    "title": "Pour débuter : 10 000 € sur 3 ans à 5 %",
-                    "text": "a = 10 000 × 0,05 ÷ (1 − 1,05⁻³) ≈ 3 672,09 €.",
+                    "title": "Pour débuter : 10 000 € sur 3 ans à 5 %",
+                    "text": "a = 10 000 × 0,05 ÷ (1 − 1,05⁻³) ≈ 3 672,09 €.",
                     "steps": [
-                      "Année 1 : intérêts 10 000 × 0,05 = 500 € ; amortissement 3 672,09 − 500 = 3 172,09 €.",
-                      "Capital restant dû : 10 000 − 3 172,09 = 6 827,91 €.",
-                      "Année 2 : intérêts 6 827,91 × 0,05 ≈ 341,40 € ; amortissement 3 330,69 €.",
+                      "Année 1 : intérêts 10 000 × 0,05 = 500 € ; amortissement 3 672,09 − 500 = 3 172,09 €.",
+                      "Capital restant dû : 10 000 − 3 172,09 = 6 827,91 €.",
+                      "Année 2 : intérêts 6 827,91 × 0,05 ≈ 341,40 € ; amortissement 3 330,69 €.",
                       "La dernière ligne solde le capital, au centime d’arrondi près."
                     ]
                   },
@@ -1247,42 +1350,42 @@
       {
         "id": "B2-05-A3-05-EXEMPLE-EMPRUNT",
         "type": "fp-worked",
-        "titre": "Exemple guidé : emprunter 24 000 € à 3 %",
+        "titre": "Exemple guidé : emprunter 24 000 € à 3 %",
         "duree": 6,
         "interactif": true,
         "donnees": {
           "exemple": {
             "id": "b2-05-a3-exemple-emprunt",
-            "enonce": "Atelier Rivage finance une machine à coudre industrielle : 24 000 € empruntés sur 4 ans au taux annuel de 3 %, remboursés par annuités constantes.",
+            "enonce": "Atelier Rivage finance une machine à coudre industrielle : 24 000 € empruntés sur 4 ans au taux annuel de 3 %, remboursés par annuités constantes.",
             "etapes": [
               {
                 "id": "annuite",
                 "intitule": "L’annuité",
-                "raisonnement": "a = 24 000 × 0,03 ÷ (1 − 1,03⁻⁴) ≈ 6 456,65 €.",
+                "raisonnement": "a = 24 000 × 0,03 ÷ (1 − 1,03⁻⁴) ≈ 6 456,65 €.",
                 "invite": "Calculez l’annuité avec la formule de la trace écrite."
               },
               {
                 "id": "ligne-1",
                 "intitule": "La première ligne",
-                "raisonnement": "Intérêts : 24 000 × 0,03 = 720 € ; amortissement : 6 456,65 − 720 = 5 736,65 € ; reste dû : 18 263,35 €.",
+                "raisonnement": "Intérêts : 24 000 × 0,03 = 720 € ; amortissement : 6 456,65 − 720 = 5 736,65 € ; reste dû : 18 263,35 €.",
                 "invite": "Calculez les intérêts, l’amortissement et le capital restant dû de l’année 1."
               },
               {
                 "id": "ligne-2",
                 "intitule": "La deuxième ligne",
-                "raisonnement": "Intérêts : 18 263,35 × 0,03 ≈ 547,90 €, et non 720 € ; amortissement : 5 908,75 € ; reste dû : 12 354,60 €.",
+                "raisonnement": "Intérêts : 18 263,35 × 0,03 ≈ 547,90 €, et non 720 € ; amortissement : 5 908,75 € ; reste dû : 12 354,60 €.",
                 "invite": "Même travail pour l’année 2."
               },
               {
                 "id": "cout",
                 "intitule": "Le coût du crédit",
-                "raisonnement": "4 × 6 456,65 − 24 000 = 1 826,60 €. Le total remboursé, 25 826,60 €, n’est pas le coût.",
+                "raisonnement": "4 × 6 456,65 − 24 000 = 1 826,60 €. Le total remboursé, 25 826,60 €, n’est pas le coût.",
                 "invite": "Combien ce crédit coûte-t-il ?"
               },
               {
                 "id": "tableur",
                 "intitule": "Au tableur",
-                "raisonnement": "=VPM(A1;A2;-A3) ≈ 6 456,65 € ; sans le signe moins, −6 456,65 €.",
+                "raisonnement": "=VPM(A1;A2;-A3) ≈ 6 456,65 € ; sans le signe moins, −6 456,65 €.",
                 "invite": "Taux en A1, durée en A2, capital en A3 : quelle formule donne l’annuité ?"
               }
             ],
@@ -1300,12 +1403,12 @@
       {
         "id": "B2-05-A3-06-ATELIER-EMPRUNT",
         "type": "questionnaire",
-        "titre": "Exercice 5 — L’emprunt de 60 000 €",
+        "titre": "Exercice 5 — L’emprunt de 60 000 €",
         "duree": 10,
         "interactif": true,
         "donnees": {
-          "intitule": "Exercice 5 — L’emprunt de 60 000 €",
-          "consigne": "Emprunt d’équipement : 60 000 € sur 5 ans au taux annuel de 4 %, remboursés par annuités constantes a = C × t ÷ (1 − (1 + t)⁻ⁿ). Résultats au centime.",
+          "intitule": "Exercice 5 — L’emprunt de 60 000 €",
+          "consigne": "Emprunt d’équipement : 60 000 € sur 5 ans au taux annuel de 4 %, remboursés par annuités constantes a = C × t ÷ (1 − (1 + t)⁻ⁿ). Résultats au centime.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -1343,7 +1446,7 @@
                     },
                     {
                       "id": "sur-les-60-000-eur-empruntes-0e73514e",
-                      "libelle": "Sur les 60 000 € empruntés"
+                      "libelle": "Sur les 60 000 € empruntés"
                     }
                   ]
                 }
@@ -1406,9 +1509,9 @@
         "donnees": {
           "plan": {
             "id": "b2-05-a3-tableau-amortissement",
-            "intitule": "Le tableau d’amortissement de l’emprunt de 60 000 €",
+            "intitule": "Le tableau d’amortissement de l’emprunt de 60 000 €",
             "consignes": [
-              "Emprunt de 60 000 € sur 5 ans à 4 %, annuité de 13 477,63 €.",
+              "Emprunt de 60 000 € sur 5 ans à 4 %, annuité de 13 477,63 €.",
               "Pour chaque année, saisissez les intérêts (capital dû × 0,04), puis l’amortissement (annuité − intérêts), arrondis au centime.",
               "Le capital dû en début d’année se calcule seul à partir de vos saisies ; le solde final contrôle votre tableau, à quelques centimes près : l’annuité est arrondie."
             ],
@@ -1459,6 +1562,134 @@
               }
             ],
             "synthese": [],
+            "tableauInitial": {
+              "lignes": [
+                {
+                  "rang": 0,
+                  "valeurs": {
+                    "capital": {
+                      "valeur": 60000,
+                      "affichage": "60 000,00"
+                    },
+                    "interets": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "amortissement": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "annuite": {
+                      "valeur": 13477.63,
+                      "affichage": "13 477,63"
+                    }
+                  }
+                },
+                {
+                  "rang": 1,
+                  "valeurs": {
+                    "capital": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "interets": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "amortissement": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "annuite": {
+                      "valeur": 13477.63,
+                      "affichage": "13 477,63"
+                    }
+                  }
+                },
+                {
+                  "rang": 2,
+                  "valeurs": {
+                    "capital": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "interets": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "amortissement": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "annuite": {
+                      "valeur": 13477.63,
+                      "affichage": "13 477,63"
+                    }
+                  }
+                },
+                {
+                  "rang": 3,
+                  "valeurs": {
+                    "capital": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "interets": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "amortissement": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "annuite": {
+                      "valeur": 13477.63,
+                      "affichage": "13 477,63"
+                    }
+                  }
+                },
+                {
+                  "rang": 4,
+                  "valeurs": {
+                    "capital": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "interets": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "amortissement": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "annuite": {
+                      "valeur": 13477.63,
+                      "affichage": "13 477,63"
+                    }
+                  }
+                }
+              ],
+              "totaux": {
+                "interets": {
+                  "valeur": null,
+                  "affichage": "—"
+                },
+                "amortissement": {
+                  "valeur": null,
+                  "affichage": "—"
+                },
+                "annuite": {
+                  "valeur": 67388.15,
+                  "affichage": "67 388,15"
+                }
+              },
+              "synthese": [],
+              "soldeFinal": {
+                "valeur": null,
+                "affichage": "—"
+              }
+            },
             "metadonnees": {
               "concepts": ["tableau-d-amortissement"],
               "misconceptionsCiblees": [],
@@ -1478,7 +1709,7 @@
         "donnees": {
           "probleme": {
             "id": "b2-05-a3-defi-ia",
-            "enonce": "Hélène a demandé à un assistant IA de chiffrer l’emprunt de 60 000 € sur 5 ans à 4 %. Réponse : « 1. Chaque année, vous remboursez 60 000 ÷ 5 = 12 000 € de capital, plus 60 000 × 4 % = 2 400 € d’intérêts : l’annuité est de 14 400 €. 2. Les intérêts restent de 2 400 € chaque année, puisque le taux ne change pas. 3. Le coût du crédit est de 5 × 14 400 = 72 000 €. »",
+            "enonce": "Hélène a demandé à un assistant IA de chiffrer l’emprunt de 60 000 € sur 5 ans à 4 %. Réponse : « 1. Chaque année, vous remboursez 60 000 ÷ 5 = 12 000 € de capital, plus 60 000 × 4 % = 2 400 € d’intérêts : l’annuité est de 14 400 €. 2. Les intérêts restent de 2 400 € chaque année, puisque le taux ne change pas. 3. Le coût du crédit est de 5 × 14 400 = 72 000 €. »",
             "invite": "Trouvez les erreurs de l’IA, corrigez chacune et dites comment la contrôler.",
             "strategies": [],
             "metadonnees": {
@@ -1545,19 +1776,19 @@
                   },
                   {
                     "rubrique": "Emprunt",
-                    "contenu": "32 000 € empruntés sur 4 ans au taux annuel de 3,5 %, remboursés par annuités constantes a = C × t ÷ (1 − (1 + t)⁻ⁿ)."
+                    "contenu": "32 000 € empruntés sur 4 ans au taux annuel de 3,5 %, remboursés par annuités constantes a = C × t ÷ (1 − (1 + t)⁻ⁿ)."
                   },
                   {
                     "rubrique": "Placement",
-                    "contenu": "15 000 € de trésorerie placés 4 ans à intérêts composés, au taux annuel de 2 %."
+                    "contenu": "15 000 € de trésorerie placés 4 ans à intérêts composés, au taux annuel de 2 %."
                   },
                   {
                     "rubrique": "Batterie",
-                    "contenu": "Une batterie de rechange de 20 000 € sera à payer dans 4 ans ; la somme est placée dès aujourd’hui à 2 % par an."
+                    "contenu": "Une batterie de rechange de 20 000 € sera à payer dans 4 ans ; la somme est placée dès aujourd’hui à 2 % par an."
                   },
                   {
                     "rubrique": "Épargne",
-                    "contenu": "5 000 € versés à la fin de chacune des 4 prochaines années, sur un compte à 2 % par an."
+                    "contenu": "5 000 € versés à la fin de chacune des 4 prochaines années, sur un compte à 2 % par an."
                   },
                   {
                     "rubrique": "Barème",
@@ -1635,6 +1866,55 @@
               "En I2, calculez le coût du crédit.",
               "Le taux et l’annuité ne s’écrivent pas dans les formules : utilisez F2 et H2, figés par des $ là où la formule est recopiée."
             ],
+            "lettres": ["A", "B", "C", "D", "E", "F", "G", "H", "I"],
+            "grille": [
+              ["A1", "B1", "C1", "D1", "E1", "F1", "G1", "H1", "I1"],
+              ["A2", "B2", "C2", "D2", "E2", "F2", "G2", "H2", "I2"],
+              ["A3", "B3", "C3", "D3", "E3", "F3", "G3", "H3", "I3"],
+              ["A4", "B4", "C4", "D4", "E4", "F4", "G4", "H4", "I4"],
+              ["A5", "B5", "C5", "D5", "E5", "F5", "G5", "H5", "I5"]
+            ],
+            "longueurMaxSaisie": 200,
+            "initiale": {
+              "saisies": {},
+              "affichages": {
+                "A1": "Année",
+                "B1": "Capital dû en début d’année (€)",
+                "B2": "32000",
+                "C1": "Intérêts (€)",
+                "D1": "Amortissement (€)",
+                "E1": "Capital dû en fin d’année (€)",
+                "F1": "Taux annuel",
+                "F2": "0,035",
+                "G1": "Durée (années)",
+                "G2": "4",
+                "H1": "Annuité (€)",
+                "I1": "Coût du crédit (€)",
+                "A2": "1",
+                "A3": "2",
+                "A4": "3",
+                "A5": "4"
+              },
+              "natures": {
+                "A1": "texte",
+                "B1": "texte",
+                "B2": "nombre",
+                "C1": "texte",
+                "D1": "texte",
+                "E1": "texte",
+                "F1": "texte",
+                "F2": "nombre",
+                "G1": "texte",
+                "G2": "nombre",
+                "H1": "texte",
+                "I1": "texte",
+                "A2": "nombre",
+                "A3": "nombre",
+                "A4": "nombre",
+                "A5": "nombre"
+              },
+              "formules": []
+            },
             "metadonnees": {
               "concepts": [
                 "tableur",
@@ -1667,19 +1947,19 @@
               {
                 "id": "b2-05-a4-e1-placement",
                 "intitule": "Le placement (2 points)",
-                "enonce": "Que vaudra le placement de 15 000 € au bout de 4 ans, en euros, arrondi au centime ?",
+                "enonce": "Que vaudra le placement de 15 000 € au bout de 4 ans, en euros, arrondi au centime ?",
                 "indice": "Les intérêts rapportent à leur tour : multipliez par le coefficient autant de fois qu’il y a d’années."
               },
               {
                 "id": "b2-05-a4-e2-batterie",
                 "intitule": "La batterie (2 points)",
-                "enonce": "Quelle somme placer aujourd’hui pour payer la batterie de 20 000 € dans 4 ans, en euros, arrondie au centime ?",
+                "enonce": "Quelle somme placer aujourd’hui pour payer la batterie de 20 000 € dans 4 ans, en euros, arrondie au centime ?",
                 "indice": "On remonte le temps : on divise, on ne multiplie pas."
               },
               {
                 "id": "b2-05-a4-e3-epargne",
                 "intitule": "L’épargne (1,5 point)",
-                "enonce": "Quelle épargne sera disponible au quatrième versement de 5 000 €, en euros, arrondie au centime ?",
+                "enonce": "Quelle épargne sera disponible au quatrième versement de 5 000 €, en euros, arrondie au centime ?",
                 "indice": "Le dernier versement ne rapporte rien : utilisez la formule des suites d’annuités."
               },
               {
@@ -1953,7 +2233,8 @@
             ]
           }
         ],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-05-A1-02-ACCROCHE",
@@ -1997,7 +2278,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-05-A1-03-VOTE-ACQUIS",
@@ -2098,7 +2380,8 @@
             "Du rang 0 au rang 4 inclus, on compte 4 − 0 + 1 = 5 termes.",
             "L’écran suivant dit ce que ces acquis deviennent aujourd’hui."
           ]
-        }
+        },
+        "reflexion": null
       },
       {
         "id": "B2-05-A1-04-ACQUIS",
@@ -2167,7 +2450,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-05-A1-05-DOSSIER",
@@ -2203,15 +2487,15 @@
                   },
                   {
                     "rubrique": "La trésorerie",
-                    "contenu": "40 000 € disponibles au 1ᵉʳ janvier 2026, placés à 2,5 % par an, intérêts laissés sur le compte, en attendant le chantier."
+                    "contenu": "40 000 € disponibles au 1ᵉʳ janvier 2026, placés à 2,5 % par an, intérêts laissés sur le compte, en attendant le chantier."
                   },
                   {
                     "rubrique": "L’épargne des machines",
-                    "contenu": "6 000 € mis de côté à la fin de chaque année, de 2026 à 2030, sur un compte à 3 % par an."
+                    "contenu": "6 000 € mis de côté à la fin de chaque année, de 2026 à 2030, sur un compte à 3 % par an."
                   },
                   {
                     "rubrique": "L’emprunt d’équipement",
-                    "contenu": "60 000 € empruntés sur 5 ans au taux annuel de 4 %, remboursés par annuités constantes."
+                    "contenu": "60 000 € empruntés sur 5 ans au taux annuel de 4 %, remboursés par annuités constantes."
                   },
                   {
                     "rubrique": "La question de la banque",
@@ -2238,7 +2522,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-05-A1-06-MISSION",
@@ -2250,23 +2535,23 @@
           "cas": {
             "id": "B2-05-A1-06-MISSION",
             "metier": "Assistant·e de gestion — Atelier Rivage (voilerie artisanale, 14 salariés, La Rochelle)",
-            "situation": "Lundi, 9 h. Hélène Garnier écrit : « La banque veut voir trois lignes de notre plan : les 40 000 € de trésorerie placés à 2,5 % par an, les 6 000 € que nous mettrons de côté chaque fin d’année de 2026 à 2030 à 3 %, et l’emprunt de 60 000 € sur 5 ans à 4 %. Pouvez-vous chiffrer chaque ligne ? » Marc Lefèvre, l’expert-comptable, ajoute : « Pour l’emprunt, ne vous contentez pas de diviser 60 000 € par 5 : la banque se paie aussi en intérêts. »",
+            "situation": "Lundi, 9 h. Hélène Garnier écrit : « La banque veut voir trois lignes de notre plan : les 40 000 € de trésorerie placés à 2,5 % par an, les 6 000 € que nous mettrons de côté chaque fin d’année de 2026 à 2030 à 3 %, et l’emprunt de 60 000 € sur 5 ans à 4 %. Pouvez-vous chiffrer chaque ligne ? » Marc Lefèvre, l’expert-comptable, ajoute : « Pour l’emprunt, ne vous contentez pas de diviser 60 000 € par 5 : la banque se paie aussi en intérêts. »",
             "geste": "Sans calculatrice, répondez aux trois questions à partir du dossier.",
             "consequence": "Un placement surestimé, et le chantier manque d’argent ; un emprunt sous-estimé, et les annuités pèsent sur la trésorerie des cinq prochaines années.",
             "questionsLibres": [
               {
                 "id": "b2-05-a1-mission:placement",
-                "question": "Le placement de 40 000 € rapporte-t-il les mêmes intérêts chaque année ? Pourquoi ?",
+                "question": "Le placement de 40 000 € rapporte-t-il les mêmes intérêts chaque année ? Pourquoi ?",
                 "placeholder": "Oui / Non, parce que chaque année…"
               },
               {
                 "id": "b2-05-a1-mission:epargne",
-                "question": "Cinq versements de 6 000 € font-ils 30 000 € d’épargne fin 2030 ? Plus, moins ?",
+                "question": "Cinq versements de 6 000 € font-ils 30 000 € d’épargne fin 2030 ? Plus, moins ?",
                 "placeholder": "Plus / moins / autant, parce que…"
               },
               {
                 "id": "b2-05-a1-mission:emprunt",
-                "question": "Rembourser 12 000 € par an pendant cinq ans suffit-il à solder l’emprunt ? Pourquoi ?",
+                "question": "Rembourser 12 000 € par an pendant cinq ans suffit-il à solder l’emprunt ? Pourquoi ?",
                 "placeholder": "Oui / Non, parce que la banque…"
               }
             ],
@@ -2288,7 +2573,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-05-A1-07-COURS-INTERETS-COMPOSES",
@@ -2316,12 +2602,12 @@
                   {
                     "kind": "example",
                     "title": "Pour débuter : le livret à 3 %",
-                    "text": "On place 2 000 € sur un livret à 3 % par an, intérêts laissés sur le livret. C₀ = 2 000 et 1 + t = 1,03.",
+                    "text": "On place 2 000 € sur un livret à 3 % par an, intérêts laissés sur le livret. C₀ = 2 000 et 1 + t = 1,03.",
                     "steps": [
-                      "Après un an : 2 000 × 1,03 = 2 060 € ; les intérêts sont de 60 €.",
-                      "Après deux ans : 2 060 × 1,03 = 2 121,80 € ; les intérêts de la deuxième année, 61,80 €, portent sur 2 060 €.",
-                      "Après dix ans : 2 000 × 1,03¹⁰ ≈ 2 687,83 €.",
-                      "Aux intérêts simples : 2 000 × (1 + 10 × 0,03) = 2 600 € seulement."
+                      "Après un an : 2 000 × 1,03 = 2 060 € ; les intérêts sont de 60 €.",
+                      "Après deux ans : 2 060 × 1,03 = 2 121,80 € ; les intérêts de la deuxième année, 61,80 €, portent sur 2 060 €.",
+                      "Après dix ans : 2 000 × 1,03¹⁰ ≈ 2 687,83 €.",
+                      "Aux intérêts simples : 2 000 × (1 + 10 × 0,03) = 2 600 € seulement."
                     ]
                   },
                   {
@@ -2352,7 +2638,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-05-A1-08-COURS-VALEUR-ACTUELLE",
@@ -2419,18 +2706,19 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-05-A1-09-EXEMPLE-PLACEMENT",
         "type": "fp-worked",
-        "titre": "Exemple guidé : placer 8 000 € à 2 %",
+        "titre": "Exemple guidé : placer 8 000 € à 2 %",
         "duree": 6,
         "interactif": true,
         "donnees": {
           "exemple": {
             "id": "b2-05-a1-exemple-placement",
-            "enonce": "Le comité d’entreprise d’Atelier Rivage place 8 000 € à intérêts composés au taux annuel de 2 %. Il se demande aussi combien placer aujourd’hui pour disposer de 10 000 € dans 5 ans.",
+            "enonce": "Le comité d’entreprise d’Atelier Rivage place 8 000 € à intérêts composés au taux annuel de 2 %. Il se demande aussi combien placer aujourd’hui pour disposer de 10 000 € dans 5 ans.",
             "etapes": [
               {
                 "id": "coefficient",
@@ -2441,26 +2729,26 @@
               {
                 "id": "premieres",
                 "intitule": "Les deux premières valeurs",
-                "raisonnement": "Après un an : 8 000 × 1,02 = 8 160 € ; après deux ans : 8 160 × 1,02 = 8 323,20 €.",
+                "raisonnement": "Après un an : 8 000 × 1,02 = 8 160 € ; après deux ans : 8 160 × 1,02 = 8 323,20 €.",
                 "invite": "Calculez le capital après un an, puis après deux ans."
               },
               {
                 "id": "valeur-acquise",
                 "intitule": "La valeur acquise",
-                "raisonnement": "Après cinq ans : 8 000 × 1,02⁵ ≈ 8 832,65 €, soit 832,65 € d’intérêts.",
+                "raisonnement": "Après cinq ans : 8 000 × 1,02⁵ ≈ 8 832,65 €, soit 832,65 € d’intérêts.",
                 "invite": "Calculez la valeur acquise au bout de 5 ans."
               },
               {
                 "id": "simples",
                 "intitule": "La comparaison",
-                "raisonnement": "Aux intérêts simples : 8 000 × (1 + 5 × 0,02) = 8 800 €. Les intérêts composés rapportent 32,65 € de plus : les intérêts des intérêts.",
+                "raisonnement": "Aux intérêts simples : 8 000 × (1 + 5 × 0,02) = 8 800 €. Les intérêts composés rapportent 32,65 € de plus : les intérêts des intérêts.",
                 "invite": "Que donneraient les intérêts simples sur 5 ans ?"
               },
               {
                 "id": "actualiser",
                 "intitule": "La valeur actuelle",
-                "raisonnement": "10 000 ÷ 1,02⁵ ≈ 9 057,31 € : c’est la somme à placer aujourd’hui. Multiplier par 1,02⁵ donnerait une somme plus grande que 10 000 €, absurde.",
-                "invite": "Combien placer aujourd’hui pour avoir 10 000 € dans 5 ans ?"
+                "raisonnement": "10 000 ÷ 1,02⁵ ≈ 9 057,31 € : c’est la somme à placer aujourd’hui. Multiplier par 1,02⁵ donnerait une somme plus grande que 10 000 €, absurde.",
+                "invite": "Combien placer aujourd’hui pour avoir 10 000 € dans 5 ans ?"
               }
             ],
             "metadonnees": {
@@ -2478,7 +2766,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-05-A1-10-ATELIER-PLACEMENT",
@@ -2488,7 +2777,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 1 — Placer la trésorerie",
-          "consigne": "Trésorerie : 40 000 € placés le 1ᵉʳ janvier 2026 à intérêts composés, au taux annuel de 2,5 %. Résultats au centime.",
+          "consigne": "Trésorerie : 40 000 € placés le 1ᵉʳ janvier 2026 à intérêts composés, au taux annuel de 2,5 %. Résultats au centime.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -2533,19 +2822,19 @@
               "donnees": {
                 "question": {
                   "id": "b2-05-a1-actualiser",
-                  "enonce": "Hélène voudrait disposer de 50 000 € au 1ᵉʳ janvier 2029. Quel calcul donne la somme à placer au 1ᵉʳ janvier 2026 ?",
+                  "enonce": "Hélène voudrait disposer de 50 000 € au 1ᵉʳ janvier 2029. Quel calcul donne la somme à placer au 1ᵉʳ janvier 2026 ?",
                   "options": [
                     {
                       "id": "50-000-1-025-1d0b8136",
-                      "libelle": "50 000 ÷ 1,025³"
+                      "libelle": "50 000 ÷ 1,025³"
                     },
                     {
                       "id": "50-000-1-plus-3-0-025-686f41b6",
-                      "libelle": "50 000 ÷ (1 + 3 × 0,025)"
+                      "libelle": "50 000 ÷ (1 + 3 × 0,025)"
                     },
                     {
                       "id": "50-000-1-025-1d6087df",
-                      "libelle": "50 000 × 1,025³"
+                      "libelle": "50 000 × 1,025³"
                     }
                   ]
                 }
@@ -2556,7 +2845,7 @@
               "donnees": {
                 "question": {
                   "id": "b2-05-a1-valeur-actuelle",
-                  "enonce": "Quelle somme faut-il placer au 1ᵉʳ janvier 2026 pour disposer de 50 000 € au 1ᵉʳ janvier 2029 ?",
+                  "enonce": "Quelle somme faut-il placer au 1ᵉʳ janvier 2026 pour disposer de 50 000 € au 1ᵉʳ janvier 2029 ?",
                   "unite": "€",
                   "metadonnees": {
                     "concepts": ["interets-composes", "valeur-actuelle"],
@@ -2587,7 +2876,7 @@
           },
           {
             "questionId": "b2-05-a1-valeur-acquise",
-            "bonneReponse": "43 075,63 €",
+            "bonneReponse": "43 075,63 €",
             "confusions": [
               {
                 "id": "interets-simples-au-lieu-de-composes",
@@ -2601,7 +2890,7 @@
           },
           {
             "questionId": "b2-05-a1-actualiser",
-            "bonneReponse": "50 000 ÷ 1,025³",
+            "bonneReponse": "50 000 ÷ 1,025³",
             "confusions": [
               {
                 "id": "actualisation-inversee",
@@ -2615,7 +2904,7 @@
           },
           {
             "questionId": "b2-05-a1-valeur-actuelle",
-            "bonneReponse": "46 429,97 €",
+            "bonneReponse": "46 429,97 €",
             "confusions": [
               {
                 "id": "actualisation-inversee",
@@ -2650,29 +2939,30 @@
           },
           {
             "id": "b2-05-a1-actualiser",
-            "enonce": "Hélène voudrait disposer de 50 000 € au 1ᵉʳ janvier 2029. Quel calcul donne la somme à placer au 1ᵉʳ janvier 2026 ?",
+            "enonce": "Hélène voudrait disposer de 50 000 € au 1ᵉʳ janvier 2029. Quel calcul donne la somme à placer au 1ᵉʳ janvier 2026 ?",
             "options": [
               {
                 "id": "50-000-1-025-1d0b8136",
-                "libelle": "50 000 ÷ 1,025³"
+                "libelle": "50 000 ÷ 1,025³"
               },
               {
                 "id": "50-000-1-plus-3-0-025-686f41b6",
-                "libelle": "50 000 ÷ (1 + 3 × 0,025)"
+                "libelle": "50 000 ÷ (1 + 3 × 0,025)"
               },
               {
                 "id": "50-000-1-025-1d6087df",
-                "libelle": "50 000 × 1,025³"
+                "libelle": "50 000 × 1,025³"
               }
             ]
           },
           {
             "id": "b2-05-a1-valeur-actuelle",
-            "enonce": "Quelle somme faut-il placer au 1ᵉʳ janvier 2026 pour disposer de 50 000 € au 1ᵉʳ janvier 2029 ?",
+            "enonce": "Quelle somme faut-il placer au 1ᵉʳ janvier 2026 pour disposer de 50 000 € au 1ᵉʳ janvier 2029 ?",
             "options": null
           }
         ],
         "corrigeEcran": null,
+        "reflexion": null,
         "explications": [
           {
             "reference": "b2-05-a1-coefficient",
@@ -2680,7 +2970,7 @@
           },
           {
             "reference": "b2-05-a1-valeur-acquise",
-            "texte": "Du 1ᵉʳ janvier 2026 au 1ᵉʳ janvier 2029 : trois années. 40 000 × 1,025³ ≈ 43 075,63 €. Aux intérêts simples, 40 000 × 1,075 = 43 000 € ; avec une année de trop, 44 152,52 €."
+            "texte": "Du 1ᵉʳ janvier 2026 au 1ᵉʳ janvier 2029 : trois années. 40 000 × 1,025³ ≈ 43 075,63 €. Aux intérêts simples, 40 000 × 1,075 = 43 000 € ; avec une année de trop, 44 152,52 €."
           },
           {
             "reference": "b2-05-a1-actualiser",
@@ -2688,7 +2978,7 @@
           },
           {
             "reference": "b2-05-a1-valeur-actuelle",
-            "texte": "50 000 ÷ 1,025³ ≈ 46 429,97 €. Contrôle : 46 429,97 × 1,025³ ≈ 50 000 €. Multiplier donnerait 53 844,53 €, plus que la somme visée."
+            "texte": "50 000 ÷ 1,025³ ≈ 46 429,97 €. Contrôle : 46 429,97 × 1,025³ ≈ 50 000 €. Multiplier donnerait 53 844,53 €, plus que la somme visée."
           }
         ]
       },
@@ -2751,6 +3041,63 @@
               "En D3, écrivez les intérêts gagnés pendant l’année écoulée. Recopiez jusqu’en D7 : sélectionnez D3 et cliquez quatre fois sur « Recopier vers le bas », une ligne par clic.",
               "Le taux ne s’écrit pas dans la formule : utilisez la cellule G1."
             ],
+            "lettres": ["A", "B", "C", "D", "E", "F", "G"],
+            "grille": [
+              ["A1", "B1", "C1", "D1", "E1", "F1", "G1"],
+              ["A2", "B2", "C2", "D2", "E2", "F2", "G2"],
+              ["A3", "B3", "C3", "D3", "E3", "F3", "G3"],
+              ["A4", "B4", "C4", "D4", "E4", "F4", "G4"],
+              ["A5", "B5", "C5", "D5", "E5", "F5", "G5"],
+              ["A6", "B6", "C6", "D6", "E6", "F6", "G6"],
+              ["A7", "B7", "C7", "D7", "E7", "F7", "G7"]
+            ],
+            "longueurMaxSaisie": 200,
+            "initiale": {
+              "saisies": {},
+              "affichages": {
+                "A1": "Au 1ᵉʳ janvier",
+                "B1": "Années n",
+                "C1": "Valeur acquise (€)",
+                "C2": "40000",
+                "D1": "Intérêts de l’année (€)",
+                "F1": "Taux annuel",
+                "G1": "0,025",
+                "A2": "2026",
+                "B2": "0",
+                "A3": "2027",
+                "B3": "1",
+                "A4": "2028",
+                "B4": "2",
+                "A5": "2029",
+                "B5": "3",
+                "A6": "2030",
+                "B6": "4",
+                "A7": "2031",
+                "B7": "5"
+              },
+              "natures": {
+                "A1": "texte",
+                "B1": "texte",
+                "C1": "texte",
+                "C2": "nombre",
+                "D1": "texte",
+                "F1": "texte",
+                "G1": "nombre",
+                "A2": "nombre",
+                "B2": "nombre",
+                "A3": "nombre",
+                "B3": "nombre",
+                "A4": "nombre",
+                "B4": "nombre",
+                "A5": "nombre",
+                "B5": "nombre",
+                "A6": "nombre",
+                "B6": "nombre",
+                "A7": "nombre",
+                "B7": "nombre"
+              },
+              "formules": []
+            },
             "metadonnees": {
               "concepts": ["tableur", "interets-composes"],
               "misconceptionsCiblees": [],
@@ -2760,7 +3107,7 @@
             }
           }
         },
-        "notes": "• Temps : réflexion 1 min · travail 5 min · correction 2 min\n• Réflexion : écrire sur papier la formule de C3, puis ce qu’elle devient en C4 une fois recopiée.\n• Erreurs à chercher : =C2*$G$1 (le taux seul) ; G1 sans $ : la colonne reste bloquée à 41 000 ; des intérêts toujours égaux à 1 000 €.\n• Papier : formules écrites sur la copie, puis les valeurs à la calculatrice.\n• Projeter la feuille d’un poste volontaire, relire la formule de C3 et montrer les $ qui la font recopier.\n• Transition : jalon 1, puis pause de 15 minutes.",
+        "notes": "• Temps : réflexion 1 min · travail 5 min · correction 2 min\n• Réflexion : écrire sur papier la formule de C3, puis ce qu’elle devient en C4 une fois recopiée.\n• Erreurs à chercher : =C2*$G$1 (le taux seul) ; G1 sans $ : la colonne reste bloquée à 41 000 ; des intérêts toujours égaux à 1 000 €.\n• Papier : formules écrites sur la copie, puis les valeurs à la calculatrice.\n• Projeter la feuille d’un poste volontaire, relire la formule de C3 et montrer les $ qui la font recopier.\n• Transition : jalon 1, puis pause de 15 minutes.",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -2778,6 +3125,7 @@
               "reference": "C3",
               "formuleReference": "=C2*(1+$G$1)",
               "valeur": 41000,
+              "affichage": "41 000",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -2788,6 +3136,7 @@
               "reference": "C4",
               "formuleReference": "=C3*(1+$G$1)",
               "valeur": 42025,
+              "affichage": "42 025",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -2800,6 +3149,7 @@
               "reference": "C5",
               "formuleReference": "=C4*(1+$G$1)",
               "valeur": 43075.625,
+              "affichage": "43 075,63",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -2812,6 +3162,7 @@
               "reference": "C6",
               "formuleReference": "=C5*(1+$G$1)",
               "valeur": 44152.515625,
+              "affichage": "44 152,52",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -2824,6 +3175,7 @@
               "reference": "C7",
               "formuleReference": "=C6*(1+$G$1)",
               "valeur": 45256.328516,
+              "affichage": "45 256,33",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -2836,6 +3188,7 @@
               "reference": "D3",
               "formuleReference": "=C3-C2",
               "valeur": 1000,
+              "affichage": "1 000",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -2846,6 +3199,7 @@
               "reference": "D4",
               "formuleReference": "=C4-C3",
               "valeur": 1025,
+              "affichage": "1 025",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -2858,6 +3212,7 @@
               "reference": "D5",
               "formuleReference": "=C5-C4",
               "valeur": 1050.625,
+              "affichage": "1 050,63",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -2870,6 +3225,7 @@
               "reference": "D6",
               "formuleReference": "=C6-C5",
               "valeur": 1076.890625,
+              "affichage": "1 076,89",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -2882,6 +3238,7 @@
               "reference": "D7",
               "formuleReference": "=C7-C6",
               "valeur": 1103.812891,
+              "affichage": "1 103,81",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -2892,14 +3249,15 @@
             }
           ]
         },
+        "reflexion": null,
         "explications": [
           {
             "reference": "C3 à C7",
-            "texte": "=C2*(1+$G$1), recopiée : 41 000 € au 1er janvier 2027, jusqu’à environ 45 256,33 € au 1er janvier 2031. Sans les $, la recopie lit G2, vide, et la colonne reste à 41 000."
+            "texte": "=C2*(1+$G$1), recopiée : 41 000 € au 1ᵉʳ janvier 2027, jusqu’à environ 45 256,33 € au 1ᵉʳ janvier 2031. Sans les $, la recopie lit G2, vide, et la colonne reste à 41 000."
           },
           {
             "reference": "D3 à D7",
-            "texte": "=C3-C2, recopiée : 1 000 €, puis 1 025 €, 1 050,63 €… Les intérêts grossissent chaque année ; toujours 1 000 €, ce seraient des intérêts simples."
+            "texte": "=C3-C2, recopiée : 1 000 €, puis 1 025 €, 1 050,63 €… Les intérêts grossissent chaque année ; toujours 1 000 €, ce seraient des intérêts simples."
           }
         ]
       },
@@ -2927,12 +3285,13 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-05-A2-01-REFLEXION-VERSEMENTS",
         "type": "fp-story",
-        "titre": "Réfléchir : 6 000 € par an pendant cinq ans",
+        "titre": "Réfléchir : 6 000 € par an pendant cinq ans",
         "duree": 5,
         "interactif": true,
         "donnees": {
@@ -2946,7 +3305,7 @@
                 "promptData": {
                   "id": "b2-05-a2-reflexion-versements",
                   "type": "reflection",
-                  "question": "Un stagiaire chiffre l’épargne des machines : « Cinq versements de 6 000 € placés cinq ans à 3 % : 5 × 6 000 × 1,03⁵. » Sans calculatrice, dites s’il a raison, versement par versement : combien d’années chacun rapporte-t-il des intérêts jusqu’à fin 2030 ?",
+                  "question": "Un stagiaire chiffre l’épargne des machines : « Cinq versements de 6 000 € placés cinq ans à 3 % : 5 × 6 000 × 1,03⁵. » Sans calculatrice, dites s’il a raison, versement par versement : combien d’années chacun rapporte-t-il des intérêts jusqu’à fin 2030 ?",
                   "placeholder": "Il a raison / il a tort, parce que le versement de…",
                   "competency": "Modéliser · reconnaître une suite de versements"
                 }
@@ -2969,6 +3328,10 @@
         "questions": [],
         "corrigeEcran": {
           "type": "reflexion",
+          "attendu": "Il a tort : le versement de fin 2026 rapporte quatre ans, celui de fin 2027 trois ans, et ainsi de suite ; celui de fin 2030 ne rapporte rien. Chaque versement a sa propre durée, et son calcul surestime l’épargne.",
+          "suite": "Gardez votre réponse : la trace écrite additionne les versements un par un."
+        },
+        "reflexion": {
           "attendu": "Il a tort : le versement de fin 2026 rapporte quatre ans, celui de fin 2027 trois ans, et ainsi de suite ; celui de fin 2030 ne rapporte rien. Chaque versement a sa propre durée, et son calcul surestime l’épargne.",
           "suite": "Gardez votre réponse : la trace écrite additionne les versements un par un."
         }
@@ -2998,19 +3361,19 @@
                   },
                   {
                     "kind": "example",
-                    "title": "Pour débuter : 1 000 € par an à 2 %",
-                    "text": "Trois versements de 1 000 €, en fin d’année, sur un compte à 2 %. Valeur acquise au troisième versement ?",
+                    "title": "Pour débuter : 1 000 € par an à 2 %",
+                    "text": "Trois versements de 1 000 €, en fin d’année, sur un compte à 2 %. Valeur acquise au troisième versement ?",
                     "steps": [
-                      "Le premier est placé deux ans : 1 000 × 1,02² = 1 040,40 €.",
-                      "Le deuxième est placé un an : 1 000 × 1,02 = 1 020 €.",
-                      "Le troisième ne rapporte rien : 1 000 €.",
-                      "Somme : 3 060,40 € ; formule : 1 000 × (1,02³ − 1) ÷ 0,02 = 3 060,40 €."
+                      "Le premier est placé deux ans : 1 000 × 1,02² = 1 040,40 €.",
+                      "Le deuxième est placé un an : 1 000 × 1,02 = 1 020 €.",
+                      "Le troisième ne rapporte rien : 1 000 €.",
+                      "Somme : 3 060,40 € ; formule : 1 000 × (1,02³ − 1) ÷ 0,02 = 3 060,40 €."
                     ]
                   },
                   {
                     "kind": "method",
                     "title": "Calculer la valeur acquise d’une suite d’annuités",
-                    "text": "Pièges : additionner les versements sans leurs intérêts (3 000 € au lieu de 3 060,40 €) ; placer chaque versement pendant toute la durée ; compter un versement de trop ou de moins.",
+                    "text": "Pièges : additionner les versements sans leurs intérêts (3 000 € au lieu de 3 060,40 €) ; placer chaque versement pendant toute la durée ; compter un versement de trop ou de moins.",
                     "steps": [
                       "Compter les versements n, du premier au dernier inclus.",
                       "Repérer la date d’évaluation : celle du dernier versement.",
@@ -3035,7 +3398,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-05-A2-03-COURS-ANNUITES-TABLEUR",
@@ -3098,18 +3462,19 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-05-A2-04-EXEMPLE-ANNUITES",
         "type": "fp-worked",
-        "titre": "Exemple guidé : 1 500 € par an à 2,5 %",
+        "titre": "Exemple guidé : 1 500 € par an à 2,5 %",
         "duree": 6,
         "interactif": true,
         "donnees": {
           "exemple": {
             "id": "b2-05-a2-exemple-annuites",
-            "enonce": "Le comité d’entreprise verse 1 500 € à la fin de chaque année, pendant quatre ans, sur un compte à 2,5 % par an. Quelle épargne aura-t-il au quatrième versement ?",
+            "enonce": "Le comité d’entreprise verse 1 500 € à la fin de chaque année, pendant quatre ans, sur un compte à 2,5 % par an. Quelle épargne aura-t-il au quatrième versement ?",
             "etapes": [
               {
                 "id": "durees",
@@ -3120,25 +3485,25 @@
               {
                 "id": "valeurs",
                 "intitule": "Les valeurs acquises",
-                "raisonnement": "1 500 × 1,025³ ≈ 1 615,34 € ; 1 500 × 1,025² ≈ 1 575,94 € ; 1 500 × 1,025 = 1 537,50 € ; 1 500 €.",
+                "raisonnement": "1 500 × 1,025³ ≈ 1 615,34 € ; 1 500 × 1,025² ≈ 1 575,94 € ; 1 500 × 1,025 = 1 537,50 € ; 1 500 €.",
                 "invite": "Calculez la valeur acquise de chaque versement."
               },
               {
                 "id": "formule",
                 "intitule": "La formule donnée",
-                "raisonnement": "1 500 × (1,025⁴ − 1) ÷ 0,025 ≈ 6 228,77 €. La somme des valeurs arrondies donne 6 228,78 € : un centime d’arrondi.",
+                "raisonnement": "1 500 × (1,025⁴ − 1) ÷ 0,025 ≈ 6 228,77 €. La somme des valeurs arrondies donne 6 228,78 € : un centime d’arrondi.",
                 "invite": "Retrouvez l’épargne avec la formule de la trace écrite."
               },
               {
                 "id": "interets",
                 "intitule": "Les intérêts gagnés",
-                "raisonnement": "Versé : 4 × 1 500 = 6 000 €. Intérêts : 6 228,77 − 6 000 = 228,77 €.",
+                "raisonnement": "Versé : 4 × 1 500 = 6 000 €. Intérêts : 6 228,77 − 6 000 = 228,77 €.",
                 "invite": "Combien les versements ont-ils rapporté ?"
               },
               {
                 "id": "piege",
                 "intitule": "Le piège de la durée pleine",
-                "raisonnement": "4 × 1 500 × 1,025⁴ ≈ 6 622,88 € : c’est trop, car le dernier versement ne rapporte rien.",
+                "raisonnement": "4 × 1 500 × 1,025⁴ ≈ 6 622,88 € : c’est trop, car le dernier versement ne rapporte rien.",
                 "invite": "Que donnerait le calcul « quatre versements placés quatre ans » ?"
               }
             ],
@@ -3157,7 +3522,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-05-A2-05-ATELIER-ANNUITES",
@@ -3167,7 +3533,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 3 — L’épargne des machines",
-          "consigne": "Épargne des machines : 6 000 € versés à la fin de chaque année, de 2026 à 2030, sur un compte à 3 % par an. Résultats au centime.",
+          "consigne": "Épargne des machines : 6 000 € versés à la fin de chaque année, de 2026 à 2030, sur un compte à 3 % par an. Résultats au centime.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -3216,15 +3582,15 @@
                   "options": [
                     {
                       "id": "6-000-1-03-moins-1-0-03-d12e1314",
-                      "libelle": "6 000 × (1,03⁵ − 1) ÷ 0,03"
+                      "libelle": "6 000 × (1,03⁵ − 1) ÷ 0,03"
                     },
                     {
                       "id": "5-6-000-e47edac5",
-                      "libelle": "5 × 6 000"
+                      "libelle": "5 × 6 000"
                     },
                     {
                       "id": "5-6-000-1-03-2567f5fe",
-                      "libelle": "5 × 6 000 × 1,03⁵"
+                      "libelle": "5 × 6 000 × 1,03⁵"
                     }
                   ]
                 }
@@ -3266,7 +3632,7 @@
           },
           {
             "questionId": "b2-05-a2-premier",
-            "bonneReponse": "6 753,05 €",
+            "bonneReponse": "6 753,05 €",
             "confusions": [
               {
                 "id": "versements-places-toute-la-duree",
@@ -3280,7 +3646,7 @@
           },
           {
             "questionId": "b2-05-a2-expression",
-            "bonneReponse": "6 000 × (1,03⁵ − 1) ÷ 0,03",
+            "bonneReponse": "6 000 × (1,03⁵ − 1) ÷ 0,03",
             "confusions": [
               {
                 "id": "versements-places-toute-la-duree",
@@ -3294,7 +3660,7 @@
           },
           {
             "questionId": "b2-05-a2-valeur-acquise",
-            "bonneReponse": "31 854,81 €",
+            "bonneReponse": "31 854,81 €",
             "confusions": [
               {
                 "id": "versements-sans-interets",
@@ -3337,15 +3703,15 @@
             "options": [
               {
                 "id": "6-000-1-03-moins-1-0-03-d12e1314",
-                "libelle": "6 000 × (1,03⁵ − 1) ÷ 0,03"
+                "libelle": "6 000 × (1,03⁵ − 1) ÷ 0,03"
               },
               {
                 "id": "5-6-000-e47edac5",
-                "libelle": "5 × 6 000"
+                "libelle": "5 × 6 000"
               },
               {
                 "id": "5-6-000-1-03-2567f5fe",
-                "libelle": "5 × 6 000 × 1,03⁵"
+                "libelle": "5 × 6 000 × 1,03⁵"
               }
             ]
           },
@@ -3356,6 +3722,7 @@
           }
         ],
         "corrigeEcran": null,
+        "reflexion": null,
         "explications": [
           {
             "reference": "b2-05-a2-duree",
@@ -3363,15 +3730,15 @@
           },
           {
             "reference": "b2-05-a2-premier",
-            "texte": "6 000 × 1,03⁴ ≈ 6 753,05 €. Placé cinq ans, on trouverait 6 955,64 € ; aux intérêts simples, 6 000 × 1,12 = 6 720 €."
+            "texte": "6 000 × 1,03⁴ ≈ 6 753,05 €. Placé cinq ans, on trouverait 6 955,64 € ; aux intérêts simples, 6 000 × 1,12 = 6 720 €."
           },
           {
             "reference": "b2-05-a2-expression",
-            "texte": "Cinq versements de 6 000 € en fin d’année : la formule donnée avec a = 6 000, t = 0,03 et n = 5. 5 × 6 000 × 1,03⁵ place chaque versement cinq ans ; 5 × 6 000 oublie les intérêts."
+            "texte": "Cinq versements de 6 000 € en fin d’année : la formule donnée avec a = 6 000, t = 0,03 et n = 5. 5 × 6 000 × 1,03⁵ place chaque versement cinq ans ; 5 × 6 000 oublie les intérêts."
           },
           {
             "reference": "b2-05-a2-valeur-acquise",
-            "texte": "6 000 × (1,03⁵ − 1) ÷ 0,03 ≈ 31 854,81 €, soit 1 854,81 € d’intérêts. 30 000 € oublie les intérêts ; 5 × 6 000 × 1,03⁵ ≈ 34 778,22 € place chaque versement cinq ans ; 32 810,46 € place tout un an de trop."
+            "texte": "6 000 × (1,03⁵ − 1) ÷ 0,03 ≈ 31 854,81 €, soit 1 854,81 € d’intérêts. 30 000 € oublie les intérêts ; 5 × 6 000 × 1,03⁵ ≈ 34 778,22 € place chaque versement cinq ans ; 32 810,46 € place tout un an de trop."
           }
         ]
       },
@@ -3425,6 +3792,52 @@
               "En F3, calculez le total des intérêts gagnés de 2027 à 2030.",
               "Le taux et le versement ne s’écrivent pas dans les formules : utilisez F1 et H1."
             ],
+            "lettres": ["A", "B", "C", "D", "E", "F", "G", "H"],
+            "grille": [
+              ["A1", "B1", "C1", "D1", "E1", "F1", "G1", "H1"],
+              ["A2", "B2", "C2", "D2", "E2", "F2", "G2", "H2"],
+              ["A3", "B3", "C3", "D3", "E3", "F3", "G3", "H3"],
+              ["A4", "B4", "C4", "D4", "E4", "F4", "G4", "H4"],
+              ["A5", "B5", "C5", "D5", "E5", "F5", "G5", "H5"],
+              ["A6", "B6", "C6", "D6", "E6", "F6", "G6", "H6"]
+            ],
+            "longueurMaxSaisie": 200,
+            "initiale": {
+              "saisies": {},
+              "affichages": {
+                "A1": "Fin d’année",
+                "B1": "Épargne disponible (€)",
+                "B2": "6000",
+                "C1": "Intérêts de l’année (€)",
+                "E1": "Taux annuel",
+                "F1": "0,03",
+                "G1": "Versement (€)",
+                "H1": "6000",
+                "E3": "Total des intérêts (€)",
+                "A2": "2026",
+                "A3": "2027",
+                "A4": "2028",
+                "A5": "2029",
+                "A6": "2030"
+              },
+              "natures": {
+                "A1": "texte",
+                "B1": "texte",
+                "B2": "nombre",
+                "C1": "texte",
+                "E1": "texte",
+                "F1": "nombre",
+                "G1": "texte",
+                "H1": "nombre",
+                "E3": "texte",
+                "A2": "nombre",
+                "A3": "nombre",
+                "A4": "nombre",
+                "A5": "nombre",
+                "A6": "nombre"
+              },
+              "formules": []
+            },
             "metadonnees": {
               "concepts": ["tableur", "annuites"],
               "misconceptionsCiblees": [],
@@ -3452,6 +3865,7 @@
               "reference": "B3",
               "formuleReference": "=B2*(1+$F$1)+$H$1",
               "valeur": 12180,
+              "affichage": "12 180",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -3462,6 +3876,7 @@
               "reference": "B4",
               "formuleReference": "=B3*(1+$F$1)+$H$1",
               "valeur": 18545.4,
+              "affichage": "18 545,4",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -3474,6 +3889,7 @@
               "reference": "B5",
               "formuleReference": "=B4*(1+$F$1)+$H$1",
               "valeur": 25101.762,
+              "affichage": "25 101,76",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -3486,6 +3902,7 @@
               "reference": "B6",
               "formuleReference": "=B5*(1+$F$1)+$H$1",
               "valeur": 31854.81486,
+              "affichage": "31 854,81",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -3498,6 +3915,7 @@
               "reference": "C3",
               "formuleReference": "=B2*$F$1",
               "valeur": 180,
+              "affichage": "180",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -3508,6 +3926,7 @@
               "reference": "C4",
               "formuleReference": "=B3*$F$1",
               "valeur": 365.4,
+              "affichage": "365,4",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -3520,6 +3939,7 @@
               "reference": "C5",
               "formuleReference": "=B4*$F$1",
               "valeur": 556.362,
+              "affichage": "556,36",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -3532,6 +3952,7 @@
               "reference": "C6",
               "formuleReference": "=B5*$F$1",
               "valeur": 753.05286,
+              "affichage": "753,05",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -3544,6 +3965,7 @@
               "reference": "F3",
               "formuleReference": "=SOMME(C3:C6)",
               "valeur": 1854.81486,
+              "affichage": "1 854,81",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -3552,18 +3974,19 @@
             }
           ]
         },
+        "reflexion": null,
         "explications": [
           {
             "reference": "B3 à B6",
-            "texte": "=B2*(1+$F$1)+$H$1, recopiée : 12 180 € fin 2027, jusqu’à environ 31 854,81 € fin 2030, la valeur de l’exercice 3. =B2+$H$1 additionne les versements sans intérêts."
+            "texte": "=B2*(1+$F$1)+$H$1, recopiée : 12 180 € fin 2027, jusqu’à environ 31 854,81 € fin 2030, la valeur de l’exercice 3. =B2+$H$1 additionne les versements sans intérêts."
           },
           {
             "reference": "C3 à C6",
-            "texte": "=B2*$F$1, recopiée : 180 €, puis 365,40 €, 556,36 € et 753,05 €. Sans les $, la recopie lit F2, vide, et donne 0."
+            "texte": "=B2*$F$1, recopiée : 180 €, puis 365,40 €, 556,36 € et 753,05 €. Sans les $, la recopie lit F2, vide, et donne 0."
           },
           {
             "reference": "F3",
-            "texte": "=SOMME(C3:C6) : environ 1 854,81 € d’intérêts. =C6 ne donne que ceux de 2030."
+            "texte": "=SOMME(C3:C6) : environ 1 854,81 € d’intérêts. =C6 ne donne que ceux de 2030."
           }
         ]
       },
@@ -3591,7 +4014,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-05-A3-01-GRAPHIQUE",
@@ -3607,7 +4031,7 @@
               "screenId": "B2-05-A3-01-GRAPHIQUE",
               "renderer": "chart",
               "props": {
-                "title": "Emprunt type : 100 000 € sur 10 ans à 5 %",
+                "title": "Emprunt type : 100 000 € sur 10 ans à 5 %",
                 "caption": "Décomposition de chaque annuité, en euros",
                 "labels": [
                   "Année 1",
@@ -3640,11 +4064,11 @@
                   }
                 ],
                 "unit": "€",
-                "formula": "Annuité = intérêts + amortissement, environ 12 950,46 € chaque année",
+                "formula": "Annuité = intérêts + amortissement, environ 12 950,46 € chaque année",
                 "reading": "Chaque année, la barre a la même hauteur : l’annuité. Les intérêts baissent, car ils portent sur un capital restant dû de plus en plus petit ; l’amortissement monte d’autant.",
                 "source": "Emprunt type. Données fictives Atelier Rivage, créées pour ce cours.",
                 "kind": "bars",
-                "description": "Dix barres de même hauteur totale. La part des intérêts part de 5 000 € en année 1 et descend jusqu’à 617 € environ en année 10 ; la part de l’amortissement monte de 7 950 € environ à 12 334 € environ."
+                "description": "Dix barres de même hauteur totale. La part des intérêts part de 5 000 € en année 1 et descend jusqu’à 617 € environ en année 10 ; la part de l’amortissement monte de 7 950 € environ à 12 334 € environ."
               }
             },
             "metadonnees": {
@@ -3661,7 +4085,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-05-A3-02-VOTE-EMPRUNT",
@@ -3672,29 +4097,29 @@
         "donnees": {
           "question": {
             "id": "b2-05-a3-rembourse",
-            "enonce": "Une annuité de 13 000 € contient 2 000 € d’intérêts. Quelle part du capital emprunté rembourse-t-elle ?",
+            "enonce": "Une annuité de 13 000 € contient 2 000 € d’intérêts. Quelle part du capital emprunté rembourse-t-elle ?",
             "options": [
               {
                 "id": "13-000-eur-toute-l-annuite-5c472c0c",
-                "libelle": "13 000 € : toute l’annuité"
+                "libelle": "13 000 € : toute l’annuité"
               },
               {
                 "id": "11-000-eur-l-annuite-moins-les-interets-de572ef1",
-                "libelle": "11 000 € : l’annuité moins les intérêts"
+                "libelle": "11 000 € : l’annuité moins les intérêts"
               }
             ]
           },
           "questionJumelle": {
             "id": "b2-05-a3-cout-vote",
-            "enonce": "On emprunte 10 000 € et l’on rembourse 11 200 € en tout. Combien le crédit a-t-il coûté ?",
+            "enonce": "On emprunte 10 000 € et l’on rembourse 11 200 € en tout. Combien le crédit a-t-il coûté ?",
             "options": [
               {
                 "id": "11-200-eur-le-total-rembourse-a7b8d1f8",
-                "libelle": "11 200 € : le total remboursé"
+                "libelle": "11 200 € : le total remboursé"
               },
               {
                 "id": "1-200-eur-le-total-rembourse-moins-le-ca-5a48e536",
-                "libelle": "1 200 € : le total remboursé moins le capital"
+                "libelle": "1 200 € : le total remboursé moins le capital"
               }
             ]
           }
@@ -3705,7 +4130,7 @@
         "corriges": [
           {
             "questionId": "b2-05-a3-rembourse",
-            "bonneReponse": "11 000 € : l’annuité moins les intérêts",
+            "bonneReponse": "11 000 € : l’annuité moins les intérêts",
             "confusions": [
               {
                 "id": "annuite-confondue-avec-amortissement",
@@ -3715,7 +4140,7 @@
           },
           {
             "questionId": "b2-05-a3-cout-vote",
-            "bonneReponse": "1 200 € : le total remboursé moins le capital",
+            "bonneReponse": "1 200 € : le total remboursé moins le capital",
             "confusions": [
               {
                 "id": "cout-credit-confondu-avec-total-rembourse",
@@ -3727,29 +4152,29 @@
         "questions": [
           {
             "id": "b2-05-a3-rembourse",
-            "enonce": "Une annuité de 13 000 € contient 2 000 € d’intérêts. Quelle part du capital emprunté rembourse-t-elle ?",
+            "enonce": "Une annuité de 13 000 € contient 2 000 € d’intérêts. Quelle part du capital emprunté rembourse-t-elle ?",
             "options": [
               {
                 "id": "13-000-eur-toute-l-annuite-5c472c0c",
-                "libelle": "13 000 € : toute l’annuité"
+                "libelle": "13 000 € : toute l’annuité"
               },
               {
                 "id": "11-000-eur-l-annuite-moins-les-interets-de572ef1",
-                "libelle": "11 000 € : l’annuité moins les intérêts"
+                "libelle": "11 000 € : l’annuité moins les intérêts"
               }
             ]
           },
           {
             "id": "b2-05-a3-cout-vote",
-            "enonce": "On emprunte 10 000 € et l’on rembourse 11 200 € en tout. Combien le crédit a-t-il coûté ?",
+            "enonce": "On emprunte 10 000 € et l’on rembourse 11 200 € en tout. Combien le crédit a-t-il coûté ?",
             "options": [
               {
                 "id": "11-200-eur-le-total-rembourse-a7b8d1f8",
-                "libelle": "11 200 € : le total remboursé"
+                "libelle": "11 200 € : le total remboursé"
               },
               {
                 "id": "1-200-eur-le-total-rembourse-moins-le-ca-5a48e536",
-                "libelle": "1 200 € : le total remboursé moins le capital"
+                "libelle": "1 200 € : le total remboursé moins le capital"
               }
             ]
           }
@@ -3758,11 +4183,12 @@
           "type": "revelation",
           "titre": "Rembourser, ce n’est pas seulement rendre le capital",
           "lignes": [
-            "Une annuité paie d’abord les intérêts de l’année ; le reste, l’amortissement, rembourse le capital : 13 000 − 2 000 = 11 000 €.",
-            "Le coût du crédit est ce que l’on paie en plus du capital : 11 200 − 10 000 = 1 200 €.",
+            "Une annuité paie d’abord les intérêts de l’année ; le reste, l’amortissement, rembourse le capital : 13 000 − 2 000 = 11 000 €.",
+            "Le coût du crédit est ce que l’on paie en plus du capital : 11 200 − 10 000 = 1 200 €.",
             "La trace écrite construit le tableau d’amortissement ligne par ligne."
           ]
-        }
+        },
+        "reflexion": null
       },
       {
         "id": "B2-05-A3-03-COURS-EMPRUNT",
@@ -3789,12 +4215,12 @@
                   },
                   {
                     "kind": "example",
-                    "title": "Pour débuter : 10 000 € sur 3 ans à 5 %",
-                    "text": "a = 10 000 × 0,05 ÷ (1 − 1,05⁻³) ≈ 3 672,09 €.",
+                    "title": "Pour débuter : 10 000 € sur 3 ans à 5 %",
+                    "text": "a = 10 000 × 0,05 ÷ (1 − 1,05⁻³) ≈ 3 672,09 €.",
                     "steps": [
-                      "Année 1 : intérêts 10 000 × 0,05 = 500 € ; amortissement 3 672,09 − 500 = 3 172,09 €.",
-                      "Capital restant dû : 10 000 − 3 172,09 = 6 827,91 €.",
-                      "Année 2 : intérêts 6 827,91 × 0,05 ≈ 341,40 € ; amortissement 3 330,69 €.",
+                      "Année 1 : intérêts 10 000 × 0,05 = 500 € ; amortissement 3 672,09 − 500 = 3 172,09 €.",
+                      "Capital restant dû : 10 000 − 3 172,09 = 6 827,91 €.",
+                      "Année 2 : intérêts 6 827,91 × 0,05 ≈ 341,40 € ; amortissement 3 330,69 €.",
                       "La dernière ligne solde le capital, au centime d’arrondi près."
                     ]
                   },
@@ -3821,12 +4247,13 @@
             }
           }
         },
-        "notes": "• 3 min ; la trace écrite est imprimée dans le livret.\n• Remplir au tableau la première ligne de l’exemple, puis la deuxième : faire dire sur quel capital portent les intérêts.\n• Lien au dossier : « L’emprunt d’Hélène, 60 000 € : combien d’intérêts la première année ? »",
+        "notes": "• 3 min ; la trace écrite est imprimée dans le livret.\n• Remplir au tableau la première ligne de l’exemple, puis la deuxième : faire dire sur quel capital portent les intérêts.\n• Lien au dossier : « L’emprunt d’Hélène, 60 000 € : combien d’intérêts la première année ? »",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-05-A3-04-COURS-COUT-TABLEUR",
@@ -3889,47 +4316,48 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-05-A3-05-EXEMPLE-EMPRUNT",
         "type": "fp-worked",
-        "titre": "Exemple guidé : emprunter 24 000 € à 3 %",
+        "titre": "Exemple guidé : emprunter 24 000 € à 3 %",
         "duree": 6,
         "interactif": true,
         "donnees": {
           "exemple": {
             "id": "b2-05-a3-exemple-emprunt",
-            "enonce": "Atelier Rivage finance une machine à coudre industrielle : 24 000 € empruntés sur 4 ans au taux annuel de 3 %, remboursés par annuités constantes.",
+            "enonce": "Atelier Rivage finance une machine à coudre industrielle : 24 000 € empruntés sur 4 ans au taux annuel de 3 %, remboursés par annuités constantes.",
             "etapes": [
               {
                 "id": "annuite",
                 "intitule": "L’annuité",
-                "raisonnement": "a = 24 000 × 0,03 ÷ (1 − 1,03⁻⁴) ≈ 6 456,65 €.",
+                "raisonnement": "a = 24 000 × 0,03 ÷ (1 − 1,03⁻⁴) ≈ 6 456,65 €.",
                 "invite": "Calculez l’annuité avec la formule de la trace écrite."
               },
               {
                 "id": "ligne-1",
                 "intitule": "La première ligne",
-                "raisonnement": "Intérêts : 24 000 × 0,03 = 720 € ; amortissement : 6 456,65 − 720 = 5 736,65 € ; reste dû : 18 263,35 €.",
+                "raisonnement": "Intérêts : 24 000 × 0,03 = 720 € ; amortissement : 6 456,65 − 720 = 5 736,65 € ; reste dû : 18 263,35 €.",
                 "invite": "Calculez les intérêts, l’amortissement et le capital restant dû de l’année 1."
               },
               {
                 "id": "ligne-2",
                 "intitule": "La deuxième ligne",
-                "raisonnement": "Intérêts : 18 263,35 × 0,03 ≈ 547,90 €, et non 720 € ; amortissement : 5 908,75 € ; reste dû : 12 354,60 €.",
+                "raisonnement": "Intérêts : 18 263,35 × 0,03 ≈ 547,90 €, et non 720 € ; amortissement : 5 908,75 € ; reste dû : 12 354,60 €.",
                 "invite": "Même travail pour l’année 2."
               },
               {
                 "id": "cout",
                 "intitule": "Le coût du crédit",
-                "raisonnement": "4 × 6 456,65 − 24 000 = 1 826,60 €. Le total remboursé, 25 826,60 €, n’est pas le coût.",
+                "raisonnement": "4 × 6 456,65 − 24 000 = 1 826,60 €. Le total remboursé, 25 826,60 €, n’est pas le coût.",
                 "invite": "Combien ce crédit coûte-t-il ?"
               },
               {
                 "id": "tableur",
                 "intitule": "Au tableur",
-                "raisonnement": "=VPM(A1;A2;-A3) ≈ 6 456,65 € ; sans le signe moins, −6 456,65 €.",
+                "raisonnement": "=VPM(A1;A2;-A3) ≈ 6 456,65 € ; sans le signe moins, −6 456,65 €.",
                 "invite": "Taux en A1, durée en A2, capital en A3 : quelle formule donne l’annuité ?"
               }
             ],
@@ -3948,17 +4376,18 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-05-A3-06-ATELIER-EMPRUNT",
         "type": "questionnaire",
-        "titre": "Exercice 5 — L’emprunt de 60 000 €",
+        "titre": "Exercice 5 — L’emprunt de 60 000 €",
         "duree": 10,
         "interactif": true,
         "donnees": {
-          "intitule": "Exercice 5 — L’emprunt de 60 000 €",
-          "consigne": "Emprunt d’équipement : 60 000 € sur 5 ans au taux annuel de 4 %, remboursés par annuités constantes a = C × t ÷ (1 − (1 + t)⁻ⁿ). Résultats au centime.",
+          "intitule": "Exercice 5 — L’emprunt de 60 000 €",
+          "consigne": "Emprunt d’équipement : 60 000 € sur 5 ans au taux annuel de 4 %, remboursés par annuités constantes a = C × t ÷ (1 − (1 + t)⁻ⁿ). Résultats au centime.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -3996,7 +4425,7 @@
                     },
                     {
                       "id": "sur-les-60-000-eur-empruntes-0e73514e",
-                      "libelle": "Sur les 60 000 € empruntés"
+                      "libelle": "Sur les 60 000 € empruntés"
                     }
                   ]
                 }
@@ -4049,13 +4478,13 @@
           ]
         },
         "renvoi": "B2-05-A1-05-DOSSIER",
-        "notes": "• Temps : réflexion 2 min · travail 6 min · correction 2 min\n• Réflexion : écrire C, t et n, puis poser la formule de l’annuité sans l’effectuer.\n• Pièges : 60 000 ÷ 5 ; intérêts toujours sur 60 000 € ; total remboursé pris pour le coût ; VPM sans signe moins.\n• Papier : exercice 5 du livret.\n• Corriger question par question, en commençant par la moins réussie.\n• Transition : « L’annuité est trouvée : remplissons le tableau d’amortissement, exercice 6. »",
+        "notes": "• Temps : réflexion 2 min · travail 6 min · correction 2 min\n• Réflexion : écrire C, t et n, puis poser la formule de l’annuité sans l’effectuer.\n• Pièges : 60 000 ÷ 5 ; intérêts toujours sur 60 000 € ; total remboursé pris pour le coût ; VPM sans signe moins.\n• Papier : exercice 5 du livret.\n• Corriger question par question, en commençant par la moins réussie.\n• Transition : « L’annuité est trouvée : remplissons le tableau d’amortissement, exercice 6. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [
           {
             "questionId": "b2-05-a3-annuite",
-            "bonneReponse": "13 477,63 €",
+            "bonneReponse": "13 477,63 €",
             "confusions": [
               {
                 "id": "annuite-confondue-avec-amortissement",
@@ -4079,7 +4508,7 @@
           },
           {
             "questionId": "b2-05-a3-cout",
-            "bonneReponse": "7 388,15 €",
+            "bonneReponse": "7 388,15 €",
             "confusions": [
               {
                 "id": "cout-credit-confondu-avec-total-rembourse",
@@ -4122,7 +4551,7 @@
               },
               {
                 "id": "sur-les-60-000-eur-empruntes-0e73514e",
-                "libelle": "Sur les 60 000 € empruntés"
+                "libelle": "Sur les 60 000 € empruntés"
               }
             ]
           },
@@ -4151,18 +4580,19 @@
           }
         ],
         "corrigeEcran": null,
+        "reflexion": null,
         "explications": [
           {
             "reference": "b2-05-a3-annuite",
-            "texte": "a = 60 000 × 0,04 ÷ (1 − 1,04⁻⁵) ≈ 13 477,63 €. 60 000 ÷ 5 = 12 000 € ne rembourse que le capital ; 12 000 + 2 400 = 14 400 € garde les intérêts de la première année chaque année."
+            "texte": "a = 60 000 × 0,04 ÷ (1 − 1,04⁻⁵) ≈ 13 477,63 €. 60 000 ÷ 5 = 12 000 € ne rembourse que le capital ; 12 000 + 2 400 = 14 400 € garde les intérêts de la première année chaque année."
           },
           {
             "reference": "b2-05-a3-base",
-            "texte": "Les intérêts portent sur ce qui reste dû : 60 000 € moins l’amortissement de la première année. L’exercice 6 le calcule ligne par ligne."
+            "texte": "Les intérêts portent sur ce qui reste dû : 60 000 € moins l’amortissement de la première année. L’exercice 6 le calcule ligne par ligne."
           },
           {
             "reference": "b2-05-a3-cout",
-            "texte": "5 × 13 477,63 − 60 000 = 7 388,15 €. 67 388,15 € est le total remboursé ; 5 × 2 400 = 12 000 € calcule les intérêts sur 60 000 € chaque année."
+            "texte": "5 × 13 477,63 − 60 000 = 7 388,15 €. 67 388,15 € est le total remboursé ; 5 × 2 400 = 12 000 € calcule les intérêts sur 60 000 € chaque année."
           },
           {
             "reference": "b2-05-a3-vpm",
@@ -4179,9 +4609,9 @@
         "donnees": {
           "plan": {
             "id": "b2-05-a3-tableau-amortissement",
-            "intitule": "Le tableau d’amortissement de l’emprunt de 60 000 €",
+            "intitule": "Le tableau d’amortissement de l’emprunt de 60 000 €",
             "consignes": [
-              "Emprunt de 60 000 € sur 5 ans à 4 %, annuité de 13 477,63 €.",
+              "Emprunt de 60 000 € sur 5 ans à 4 %, annuité de 13 477,63 €.",
               "Pour chaque année, saisissez les intérêts (capital dû × 0,04), puis l’amortissement (annuité − intérêts), arrondis au centime.",
               "Le capital dû en début d’année se calcule seul à partir de vos saisies ; le solde final contrôle votre tableau, à quelques centimes près : l’annuité est arrondie."
             ],
@@ -4232,6 +4662,134 @@
               }
             ],
             "synthese": [],
+            "tableauInitial": {
+              "lignes": [
+                {
+                  "rang": 0,
+                  "valeurs": {
+                    "capital": {
+                      "valeur": 60000,
+                      "affichage": "60 000,00"
+                    },
+                    "interets": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "amortissement": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "annuite": {
+                      "valeur": 13477.63,
+                      "affichage": "13 477,63"
+                    }
+                  }
+                },
+                {
+                  "rang": 1,
+                  "valeurs": {
+                    "capital": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "interets": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "amortissement": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "annuite": {
+                      "valeur": 13477.63,
+                      "affichage": "13 477,63"
+                    }
+                  }
+                },
+                {
+                  "rang": 2,
+                  "valeurs": {
+                    "capital": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "interets": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "amortissement": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "annuite": {
+                      "valeur": 13477.63,
+                      "affichage": "13 477,63"
+                    }
+                  }
+                },
+                {
+                  "rang": 3,
+                  "valeurs": {
+                    "capital": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "interets": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "amortissement": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "annuite": {
+                      "valeur": 13477.63,
+                      "affichage": "13 477,63"
+                    }
+                  }
+                },
+                {
+                  "rang": 4,
+                  "valeurs": {
+                    "capital": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "interets": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "amortissement": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "annuite": {
+                      "valeur": 13477.63,
+                      "affichage": "13 477,63"
+                    }
+                  }
+                }
+              ],
+              "totaux": {
+                "interets": {
+                  "valeur": null,
+                  "affichage": "—"
+                },
+                "amortissement": {
+                  "valeur": null,
+                  "affichage": "—"
+                },
+                "annuite": {
+                  "valeur": 67388.15,
+                  "affichage": "67 388,15"
+                }
+              },
+              "synthese": [],
+              "soldeFinal": {
+                "valeur": null,
+                "affichage": "—"
+              }
+            },
             "metadonnees": {
               "concepts": ["tableau-d-amortissement"],
               "misconceptionsCiblees": [],
@@ -4241,14 +4799,14 @@
             }
           }
         },
-        "notes": "• Temps : réflexion 1 min · travail 5 min · correction 2 min\n• Réflexion : dire en français comment passer d’une ligne à la suivante.\n• Pièges : intérêts sur 60 000 € chaque année ; annuité écrite comme amortissement.\n• Papier : tableau du livret, rempli à la main, calculs arrondis au centime.\n• Projeter le tableau juste, ligne par ligne ; faire lire la colonne des intérêts de haut en bas.\n• Transition : « Une IA a fait le même calcul. »",
+        "notes": "• Temps : réflexion 1 min · travail 5 min · correction 2 min\n• Réflexion : dire en français comment passer d’une ligne à la suivante.\n• Pièges : intérêts sur 60 000 € chaque année ; annuité écrite comme amortissement.\n• Papier : tableau du livret, rempli à la main, calculs arrondis au centime.\n• Projeter le tableau juste, ligne par ligne ; faire lire la colonne des intérêts de haut en bas.\n• Transition : « Une IA a fait le même calcul. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
         "questions": [
           {
             "id": "b2-05-a3-tableau-amortissement",
-            "enonce": "Le tableau d’amortissement de l’emprunt de 60 000 €",
+            "enonce": "Le tableau d’amortissement de l’emprunt de 60 000 €",
             "options": null
           }
         ],
@@ -4306,15 +4864,144 @@
               "valeur": 12959.26
             }
           ],
+          "tableauCorrige": {
+            "lignes": [
+              {
+                "rang": 0,
+                "valeurs": {
+                  "capital": {
+                    "valeur": 60000,
+                    "affichage": "60 000,00"
+                  },
+                  "interets": {
+                    "valeur": 2400,
+                    "affichage": "2 400,00"
+                  },
+                  "amortissement": {
+                    "valeur": 11077.63,
+                    "affichage": "11 077,63"
+                  },
+                  "annuite": {
+                    "valeur": 13477.63,
+                    "affichage": "13 477,63"
+                  }
+                }
+              },
+              {
+                "rang": 1,
+                "valeurs": {
+                  "capital": {
+                    "valeur": 48922.37,
+                    "affichage": "48 922,37"
+                  },
+                  "interets": {
+                    "valeur": 1956.89,
+                    "affichage": "1 956,89"
+                  },
+                  "amortissement": {
+                    "valeur": 11520.74,
+                    "affichage": "11 520,74"
+                  },
+                  "annuite": {
+                    "valeur": 13477.63,
+                    "affichage": "13 477,63"
+                  }
+                }
+              },
+              {
+                "rang": 2,
+                "valeurs": {
+                  "capital": {
+                    "valeur": 37401.63,
+                    "affichage": "37 401,63"
+                  },
+                  "interets": {
+                    "valeur": 1496.07,
+                    "affichage": "1 496,07"
+                  },
+                  "amortissement": {
+                    "valeur": 11981.56,
+                    "affichage": "11 981,56"
+                  },
+                  "annuite": {
+                    "valeur": 13477.63,
+                    "affichage": "13 477,63"
+                  }
+                }
+              },
+              {
+                "rang": 3,
+                "valeurs": {
+                  "capital": {
+                    "valeur": 25420.07,
+                    "affichage": "25 420,07"
+                  },
+                  "interets": {
+                    "valeur": 1016.8,
+                    "affichage": "1 016,80"
+                  },
+                  "amortissement": {
+                    "valeur": 12460.83,
+                    "affichage": "12 460,83"
+                  },
+                  "annuite": {
+                    "valeur": 13477.63,
+                    "affichage": "13 477,63"
+                  }
+                }
+              },
+              {
+                "rang": 4,
+                "valeurs": {
+                  "capital": {
+                    "valeur": 12959.24,
+                    "affichage": "12 959,24"
+                  },
+                  "interets": {
+                    "valeur": 518.37,
+                    "affichage": "518,37"
+                  },
+                  "amortissement": {
+                    "valeur": 12959.26,
+                    "affichage": "12 959,26"
+                  },
+                  "annuite": {
+                    "valeur": 13477.63,
+                    "affichage": "13 477,63"
+                  }
+                }
+              }
+            ],
+            "totaux": {
+              "interets": {
+                "valeur": 7388.13,
+                "affichage": "7 388,13"
+              },
+              "amortissement": {
+                "valeur": 60000.020000000004,
+                "affichage": "60 000,02"
+              },
+              "annuite": {
+                "valeur": 67388.15,
+                "affichage": "67 388,15"
+              }
+            },
+            "synthese": [],
+            "soldeFinal": {
+              "valeur": -0.020000000000436557,
+              "affichage": "-0,02"
+            }
+          },
           "tolerance": {
             "type": "absolue",
             "valeur": 0.02
           }
         },
+        "reflexion": null,
         "explications": [
           {
             "reference": "b2-05-a3-tableau-amortissement",
-            "texte": "Intérêts : 2 400 ; 1 956,89 ; 1 496,07 ; 1 016,80 ; 518,37 €. Amortissements : 11 077,63 ; 11 520,74 ; 11 981,56 ; 12 460,83 ; 12 959,26 €. Le solde final de −0,02 € vient de l’annuité arrondie au centime : c’est aussi l’écart entre le coût du crédit, 7 388,15 €, et la somme des intérêts, 7 388,13 €."
+            "texte": "Intérêts : 2 400 ; 1 956,89 ; 1 496,07 ; 1 016,80 ; 518,37 €. Amortissements : 11 077,63 ; 11 520,74 ; 11 981,56 ; 12 460,83 ; 12 959,26 €. Le solde final de −0,02 € vient de l’annuité arrondie au centime : c’est aussi l’écart entre le coût du crédit, 7 388,15 €, et la somme des intérêts, 7 388,13 €."
           }
         ]
       },
@@ -4327,7 +5014,7 @@
         "donnees": {
           "probleme": {
             "id": "b2-05-a3-defi-ia",
-            "enonce": "Hélène a demandé à un assistant IA de chiffrer l’emprunt de 60 000 € sur 5 ans à 4 %. Réponse : « 1. Chaque année, vous remboursez 60 000 ÷ 5 = 12 000 € de capital, plus 60 000 × 4 % = 2 400 € d’intérêts : l’annuité est de 14 400 €. 2. Les intérêts restent de 2 400 € chaque année, puisque le taux ne change pas. 3. Le coût du crédit est de 5 × 14 400 = 72 000 €. »",
+            "enonce": "Hélène a demandé à un assistant IA de chiffrer l’emprunt de 60 000 € sur 5 ans à 4 %. Réponse : « 1. Chaque année, vous remboursez 60 000 ÷ 5 = 12 000 € de capital, plus 60 000 × 4 % = 2 400 € d’intérêts : l’annuité est de 14 400 €. 2. Les intérêts restent de 2 400 € chaque année, puisque le taux ne change pas. 3. Le coût du crédit est de 5 × 14 400 = 72 000 €. »",
             "invite": "Trouvez les erreurs de l’IA, corrigez chacune et dites comment la contrôler.",
             "strategies": [],
             "metadonnees": {
@@ -4369,27 +5056,28 @@
             },
             {
               "id": "garder",
-              "libelle": "Garder le calcul : il rembourse bien 60 000 € et paie des intérêts.",
+              "libelle": "Garder le calcul : il rembourse bien 60 000 € et paie des intérêts.",
               "fausse": true
             }
           ]
         },
+        "reflexion": null,
         "explications": [
           {
             "reference": "formule",
-            "texte": "a = 60 000 × 0,04 ÷ (1 − 1,04⁻⁵) ≈ 13 477,63 € : l’IA surestime l’annuité de près de 1 000 € par an."
+            "texte": "a = 60 000 × 0,04 ÷ (1 − 1,04⁻⁵) ≈ 13 477,63 € : l’IA surestime l’annuité de près de 1 000 € par an."
           },
           {
             "reference": "base",
-            "texte": "Deuxième année : 48 922,37 × 0,04 ≈ 1 956,89 €, et non 2 400 €. Les intérêts baissent jusqu’à 518,37 € la dernière année."
+            "texte": "Deuxième année : 48 922,37 × 0,04 ≈ 1 956,89 €, et non 2 400 €. Les intérêts baissent jusqu’à 518,37 € la dernière année."
           },
           {
             "reference": "cout",
-            "texte": "72 000 € est un total remboursé, et encore faux ; le coût est 5 × 13 477,63 − 60 000 = 7 388,15 €."
+            "texte": "72 000 € est un total remboursé, et encore faux ; le coût est 5 × 13 477,63 − 60 000 = 7 388,15 €."
           },
           {
             "reference": "controle",
-            "texte": "Deuxième année chez l’IA : 2 400 € d’intérêts sur 48 000 € restant dus, soit 5 %, pas 4 %. Ses amortissements font bien 60 000 €, ce contrôle-là ne la trahit pas ; ses intérêts, 12 000 €, dépassent les 7 388,13 € du tableau juste."
+            "texte": "Deuxième année chez l’IA : 2 400 € d’intérêts sur 48 000 € restant dus, soit 5 %, pas 4 %. Ses amortissements font bien 60 000 €, ce contrôle-là ne la trahit pas ; ses intérêts, 12 000 €, dépassent les 7 388,13 € du tableau juste."
           },
           {
             "reference": "garder",
@@ -4421,7 +5109,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-05-A4-01-SITUATION-CAMIONNETTE",
@@ -4457,19 +5146,19 @@
                   },
                   {
                     "rubrique": "Emprunt",
-                    "contenu": "32 000 € empruntés sur 4 ans au taux annuel de 3,5 %, remboursés par annuités constantes a = C × t ÷ (1 − (1 + t)⁻ⁿ)."
+                    "contenu": "32 000 € empruntés sur 4 ans au taux annuel de 3,5 %, remboursés par annuités constantes a = C × t ÷ (1 − (1 + t)⁻ⁿ)."
                   },
                   {
                     "rubrique": "Placement",
-                    "contenu": "15 000 € de trésorerie placés 4 ans à intérêts composés, au taux annuel de 2 %."
+                    "contenu": "15 000 € de trésorerie placés 4 ans à intérêts composés, au taux annuel de 2 %."
                   },
                   {
                     "rubrique": "Batterie",
-                    "contenu": "Une batterie de rechange de 20 000 € sera à payer dans 4 ans ; la somme est placée dès aujourd’hui à 2 % par an."
+                    "contenu": "Une batterie de rechange de 20 000 € sera à payer dans 4 ans ; la somme est placée dès aujourd’hui à 2 % par an."
                   },
                   {
                     "rubrique": "Épargne",
-                    "contenu": "5 000 € versés à la fin de chacune des 4 prochaines années, sur un compte à 2 % par an."
+                    "contenu": "5 000 € versés à la fin de chacune des 4 prochaines années, sur un compte à 2 % par an."
                   },
                   {
                     "rubrique": "Barème",
@@ -4496,7 +5185,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-05-A4-02-TABLEUR-CAMIONNETTE",
@@ -4553,6 +5243,55 @@
               "En I2, calculez le coût du crédit.",
               "Le taux et l’annuité ne s’écrivent pas dans les formules : utilisez F2 et H2, figés par des $ là où la formule est recopiée."
             ],
+            "lettres": ["A", "B", "C", "D", "E", "F", "G", "H", "I"],
+            "grille": [
+              ["A1", "B1", "C1", "D1", "E1", "F1", "G1", "H1", "I1"],
+              ["A2", "B2", "C2", "D2", "E2", "F2", "G2", "H2", "I2"],
+              ["A3", "B3", "C3", "D3", "E3", "F3", "G3", "H3", "I3"],
+              ["A4", "B4", "C4", "D4", "E4", "F4", "G4", "H4", "I4"],
+              ["A5", "B5", "C5", "D5", "E5", "F5", "G5", "H5", "I5"]
+            ],
+            "longueurMaxSaisie": 200,
+            "initiale": {
+              "saisies": {},
+              "affichages": {
+                "A1": "Année",
+                "B1": "Capital dû en début d’année (€)",
+                "B2": "32000",
+                "C1": "Intérêts (€)",
+                "D1": "Amortissement (€)",
+                "E1": "Capital dû en fin d’année (€)",
+                "F1": "Taux annuel",
+                "F2": "0,035",
+                "G1": "Durée (années)",
+                "G2": "4",
+                "H1": "Annuité (€)",
+                "I1": "Coût du crédit (€)",
+                "A2": "1",
+                "A3": "2",
+                "A4": "3",
+                "A5": "4"
+              },
+              "natures": {
+                "A1": "texte",
+                "B1": "texte",
+                "B2": "nombre",
+                "C1": "texte",
+                "D1": "texte",
+                "E1": "texte",
+                "F1": "texte",
+                "F2": "nombre",
+                "G1": "texte",
+                "G2": "nombre",
+                "H1": "texte",
+                "I1": "texte",
+                "A2": "nombre",
+                "A3": "nombre",
+                "A4": "nombre",
+                "A5": "nombre"
+              },
+              "formules": []
+            },
             "metadonnees": {
               "concepts": [
                 "tableur",
@@ -4567,7 +5306,7 @@
           }
         },
         "renvoi": "B2-05-A4-01-SITUATION-CAMIONNETTE",
-        "notes": "• Temps : réflexion 3 min · travail 11 min · correction 2 min\n• Réflexion : chacun nomme en français les colonnes C, D et E, puis écrit sur papier les formules de la ligne 2.\n• Erreurs à chercher : VPM sans signe moins ; F2 ou H2 sans $ ; intérêts sur 32 000 € chaque ligne ; I2 = total remboursé.\n• Papier : formules écrites sur la copie, valeurs calculées à la calculatrice ; en CCF, la question se fait devant l’examinateur.\n• Projeter la feuille d’un poste volontaire et relire H2, puis les intérêts de la ligne 2.\n• Transition : « Avec cette feuille, ouvrez le coffre de la mini-situation. »",
+        "notes": "• Temps : réflexion 3 min · travail 11 min · correction 2 min\n• Réflexion : chacun nomme en français les colonnes C, D et E, puis écrit sur papier les formules de la ligne 2.\n• Erreurs à chercher : VPM sans signe moins ; F2 ou H2 sans $ ; intérêts sur 32 000 € chaque ligne ; I2 = total remboursé.\n• Papier : formules écrites sur la copie, valeurs calculées à la calculatrice ; en CCF, la question se fait devant l’examinateur.\n• Projeter la feuille d’un poste volontaire et relire H2, puis les intérêts de la ligne 2.\n• Transition : « Avec cette feuille, ouvrez le coffre de la mini-situation. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -4585,6 +5324,7 @@
               "reference": "H2",
               "formuleReference": "=VPM(F2;G2;-B2)",
               "valeur": 8712.036464,
+              "affichage": "8 712,04",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -4595,6 +5335,7 @@
               "reference": "B3",
               "formuleReference": "=E2",
               "valeur": 24407.963536,
+              "affichage": "24 407,96",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -4605,6 +5346,7 @@
               "reference": "B4",
               "formuleReference": "=E3",
               "valeur": 16550.205796,
+              "affichage": "16 550,21",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -4617,6 +5359,7 @@
               "reference": "B5",
               "formuleReference": "=E4",
               "valeur": 8417.426535,
+              "affichage": "8 417,43",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -4629,6 +5372,7 @@
               "reference": "C2",
               "formuleReference": "=B2*$F$2",
               "valeur": 1120,
+              "affichage": "1 120",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -4639,6 +5383,7 @@
               "reference": "C3",
               "formuleReference": "=B3*$F$2",
               "valeur": 854.278724,
+              "affichage": "854,28",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -4651,6 +5396,7 @@
               "reference": "C4",
               "formuleReference": "=B4*$F$2",
               "valeur": 579.257203,
+              "affichage": "579,26",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -4663,6 +5409,7 @@
               "reference": "C5",
               "formuleReference": "=B5*$F$2",
               "valeur": 294.609929,
+              "affichage": "294,61",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -4675,6 +5422,7 @@
               "reference": "D2",
               "formuleReference": "=$H$2-C2",
               "valeur": 7592.036464,
+              "affichage": "7 592,04",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -4685,6 +5433,7 @@
               "reference": "D3",
               "formuleReference": "=$H$2-C3",
               "valeur": 7857.75774,
+              "affichage": "7 857,76",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -4697,6 +5446,7 @@
               "reference": "D4",
               "formuleReference": "=$H$2-C4",
               "valeur": 8132.779261,
+              "affichage": "8 132,78",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -4709,6 +5459,7 @@
               "reference": "D5",
               "formuleReference": "=$H$2-C5",
               "valeur": 8417.426535,
+              "affichage": "8 417,43",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -4721,6 +5472,7 @@
               "reference": "E2",
               "formuleReference": "=B2-D2",
               "valeur": 24407.963536,
+              "affichage": "24 407,96",
               "tolerance": {
                 "type": "decimales",
                 "valeur": 2
@@ -4731,6 +5483,7 @@
               "reference": "E3",
               "formuleReference": "=B3-D3",
               "valeur": 16550.205796,
+              "affichage": "16 550,21",
               "tolerance": {
                 "type": "decimales",
                 "valeur": 2
@@ -4743,6 +5496,7 @@
               "reference": "E4",
               "formuleReference": "=B4-D4",
               "valeur": 8417.426535,
+              "affichage": "8 417,43",
               "tolerance": {
                 "type": "decimales",
                 "valeur": 2
@@ -4755,6 +5509,7 @@
               "reference": "E5",
               "formuleReference": "=B5-D5",
               "valeur": 0,
+              "affichage": "0",
               "tolerance": {
                 "type": "decimales",
                 "valeur": 2
@@ -4767,6 +5522,7 @@
               "reference": "I2",
               "formuleReference": "=H2*G2-B2",
               "valeur": 2848.145855,
+              "affichage": "2 848,15",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -4775,26 +5531,27 @@
             }
           ]
         },
+        "reflexion": null,
         "explications": [
           {
             "reference": "H2",
-            "texte": "=VPM(F2;G2;-B2) ≈ 8 712,04 €. Sans le signe moins, l’annuité s’affiche négative ; 32 000 ÷ 4 = 8 000 € oublie les intérêts."
+            "texte": "=VPM(F2;G2;-B2) ≈ 8 712,04 €. Sans le signe moins, l’annuité s’affiche négative ; 32 000 ÷ 4 = 8 000 € oublie les intérêts."
           },
           {
             "reference": "C2 à C5",
-            "texte": "=B2*$F$2, recopiée : 1 120 €, puis 854,28 €, 579,26 € et 294,61 €. Sans les $, la recopie lit F3, vide."
+            "texte": "=B2*$F$2, recopiée : 1 120 €, puis 854,28 €, 579,26 € et 294,61 €. Sans les $, la recopie lit F3, vide."
           },
           {
             "reference": "D2 à D5 et E2 à E5",
-            "texte": "=$H$2-C2 et =B2-D2, recopiées : le capital dû tombe à 0 en fin d’année 4."
+            "texte": "=$H$2-C2 et =B2-D2, recopiées : le capital dû tombe à 0 en fin d’année 4."
           },
           {
             "reference": "B3 à B5",
-            "texte": "=E2, recopiée : le capital dû en début d’année reprend la fin de l’année précédente."
+            "texte": "=E2, recopiée : le capital dû en début d’année reprend la fin de l’année précédente."
           },
           {
             "reference": "I2",
-            "texte": "=H2*G2-B2 : le total remboursé moins le capital emprunté. =H2*G2 donne le total remboursé, pas le coût."
+            "texte": "=H2*G2-B2 : le total remboursé moins le capital emprunté. =H2*G2 donne le total remboursé, pas le coût."
           }
         ]
       },
@@ -4815,19 +5572,19 @@
               {
                 "id": "b2-05-a4-e1-placement",
                 "intitule": "Le placement (2 points)",
-                "enonce": "Que vaudra le placement de 15 000 € au bout de 4 ans, en euros, arrondi au centime ?",
+                "enonce": "Que vaudra le placement de 15 000 € au bout de 4 ans, en euros, arrondi au centime ?",
                 "indice": "Les intérêts rapportent à leur tour : multipliez par le coefficient autant de fois qu’il y a d’années."
               },
               {
                 "id": "b2-05-a4-e2-batterie",
                 "intitule": "La batterie (2 points)",
-                "enonce": "Quelle somme placer aujourd’hui pour payer la batterie de 20 000 € dans 4 ans, en euros, arrondie au centime ?",
+                "enonce": "Quelle somme placer aujourd’hui pour payer la batterie de 20 000 € dans 4 ans, en euros, arrondie au centime ?",
                 "indice": "On remonte le temps : on divise, on ne multiplie pas."
               },
               {
                 "id": "b2-05-a4-e3-epargne",
                 "intitule": "L’épargne (1,5 point)",
-                "enonce": "Quelle épargne sera disponible au quatrième versement de 5 000 €, en euros, arrondie au centime ?",
+                "enonce": "Quelle épargne sera disponible au quatrième versement de 5 000 €, en euros, arrondie au centime ?",
                 "indice": "Le dernier versement ne rapporte rien : utilisez la formule des suites d’annuités."
               },
               {
@@ -4859,17 +5616,17 @@
         "questions": [
           {
             "id": "b2-05-a4-e1-placement",
-            "enonce": "Que vaudra le placement de 15 000 € au bout de 4 ans, en euros, arrondi au centime ?",
+            "enonce": "Que vaudra le placement de 15 000 € au bout de 4 ans, en euros, arrondi au centime ?",
             "options": null
           },
           {
             "id": "b2-05-a4-e2-batterie",
-            "enonce": "Quelle somme placer aujourd’hui pour payer la batterie de 20 000 € dans 4 ans, en euros, arrondie au centime ?",
+            "enonce": "Quelle somme placer aujourd’hui pour payer la batterie de 20 000 € dans 4 ans, en euros, arrondie au centime ?",
             "options": null
           },
           {
             "id": "b2-05-a4-e3-epargne",
-            "enonce": "Quelle épargne sera disponible au quatrième versement de 5 000 €, en euros, arrondie au centime ?",
+            "enonce": "Quelle épargne sera disponible au quatrième versement de 5 000 €, en euros, arrondie au centime ?",
             "options": null
           },
           {
@@ -4883,43 +5640,44 @@
           "enigmes": [
             {
               "enigmeId": "b2-05-a4-e1-placement",
-              "solution": "16 236,48 euros",
+              "solution": "16 236,48 euros",
               "fragment": "K4"
             },
             {
               "enigmeId": "b2-05-a4-e2-batterie",
-              "solution": "18 476,91 euros",
+              "solution": "18 476,91 euros",
               "fragment": "V8"
             },
             {
               "enigmeId": "b2-05-a4-e3-epargne",
-              "solution": "20 608,04 euros",
+              "solution": "20 608,04 euros",
               "fragment": "M3"
             },
             {
               "enigmeId": "b2-05-a4-e4-cout",
-              "solution": "2 848,15 euros",
+              "solution": "2 848,15 euros",
               "fragment": "T6"
             }
           ],
           "codeFinal": "K4V8M3T6"
         },
+        "reflexion": null,
         "explications": [
           {
             "reference": "b2-05-a4-e1-placement",
-            "texte": "15 000 × 1,02⁴ ≈ 16 236,48 €. Aux intérêts simples : 15 000 × 1,08 = 16 200 € ; avec une année de trop : 16 561,21 €."
+            "texte": "15 000 × 1,02⁴ ≈ 16 236,48 €. Aux intérêts simples : 15 000 × 1,08 = 16 200 € ; avec une année de trop : 16 561,21 €."
           },
           {
             "reference": "b2-05-a4-e2-batterie",
-            "texte": "20 000 ÷ 1,02⁴ ≈ 18 476,91 €. Multiplier donne 21 648,64 €, plus que la batterie ; diviser par 1,08 donne 18 518,52 €."
+            "texte": "20 000 ÷ 1,02⁴ ≈ 18 476,91 €. Multiplier donne 21 648,64 €, plus que la batterie ; diviser par 1,08 donne 18 518,52 €."
           },
           {
             "reference": "b2-05-a4-e3-epargne",
-            "texte": "5 000 × (1,02⁴ − 1) ÷ 0,02 ≈ 20 608,04 €. 20 000 € oublie les intérêts ; 4 × 5 000 × 1,02⁴ ≈ 21 648,64 € place chaque versement quatre ans ; 21 020,20 € place tout un an de trop."
+            "texte": "5 000 × (1,02⁴ − 1) ÷ 0,02 ≈ 20 608,04 €. 20 000 € oublie les intérêts ; 4 × 5 000 × 1,02⁴ ≈ 21 648,64 € place chaque versement quatre ans ; 21 020,20 € place tout un an de trop."
           },
           {
             "reference": "b2-05-a4-e4-cout",
-            "texte": "4 × 8 712,036… − 32 000 ≈ 2 848,15 €, la cellule I2 ; avec l’annuité arrondie, 2 848,16 €, accepté. 34 848,15 € est le total remboursé ; 4 × 1 120 = 4 480 € garde les intérêts de la première année."
+            "texte": "4 × 8 712,036… − 32 000 ≈ 2 848,15 €, la cellule I2 ; avec l’annuité arrondie, 2 848,16 €, accepté. 34 848,15 € est le total remboursé ; 4 × 1 120 = 4 480 € garde les intérêts de la première année."
           }
         ]
       },
@@ -4965,7 +5723,7 @@
           },
           {
             "questionId": "b2-05-r-deux-ans",
-            "bonneReponse": "1 102,50 €, soit 1 000 × 1,05²",
+            "bonneReponse": "1 102,50 €, soit 1 000 × 1,05²",
             "confusions": [
               {
                 "id": "interets-simples-au-lieu-de-composes",
@@ -4975,7 +5733,7 @@
           },
           {
             "questionId": "b2-05-r-valeur-actuelle",
-            "bonneReponse": "1 000 €, soit 1 210 ÷ 1,1²",
+            "bonneReponse": "1 000 €, soit 1 210 ÷ 1,1²",
             "confusions": [
               {
                 "id": "actualisation-inversee",
@@ -5005,7 +5763,7 @@
           },
           {
             "questionId": "b2-05-r-versements",
-            "bonneReponse": "Non : 3 060,40 €, intérêts compris",
+            "bonneReponse": "Non : 3 060,40 €, intérêts compris",
             "confusions": [
               {
                 "id": "versements-sans-interets",
@@ -5025,7 +5783,7 @@
           },
           {
             "questionId": "b2-05-r-amortissement",
-            "bonneReponse": "4 200 €",
+            "bonneReponse": "4 200 €",
             "confusions": [
               {
                 "id": "annuite-confondue-avec-amortissement",
@@ -5091,29 +5849,29 @@
           },
           {
             "id": "b2-05-r-deux-ans",
-            "enonce": "1 000 € sont placés à 5 % par an, à intérêts composés. Que valent-ils après deux ans ?",
+            "enonce": "1 000 € sont placés à 5 % par an, à intérêts composés. Que valent-ils après deux ans ?",
             "options": [
               {
                 "id": "1-102-50-eur-soit-1-000-1-05-6a757919",
-                "libelle": "1 102,50 €, soit 1 000 × 1,05²"
+                "libelle": "1 102,50 €, soit 1 000 × 1,05²"
               },
               {
                 "id": "1-100-eur-soit-1-000-plus-2-50-a18e1dea",
-                "libelle": "1 100 €, soit 1 000 + 2 × 50"
+                "libelle": "1 100 €, soit 1 000 + 2 × 50"
               }
             ]
           },
           {
             "id": "b2-05-r-valeur-actuelle",
-            "enonce": "Quelle somme placer aujourd’hui à 10 % par an pour disposer de 1 210 € dans deux ans ?",
+            "enonce": "Quelle somme placer aujourd’hui à 10 % par an pour disposer de 1 210 € dans deux ans ?",
             "options": [
               {
                 "id": "1-000-eur-soit-1-210-1-1-9e2b033b",
-                "libelle": "1 000 €, soit 1 210 ÷ 1,1²"
+                "libelle": "1 000 €, soit 1 210 ÷ 1,1²"
               },
               {
                 "id": "1-464-10-eur-soit-1-210-1-1-ef56483d",
-                "libelle": "1 464,10 €, soit 1 210 × 1,1²"
+                "libelle": "1 464,10 €, soit 1 210 × 1,1²"
               }
             ]
           },
@@ -5147,15 +5905,15 @@
           },
           {
             "id": "b2-05-r-versements",
-            "enonce": "Trois versements de 1 000 € en fin d’année, à 2 %. L’épargne au troisième versement vaut-elle 3 000 € ?",
+            "enonce": "Trois versements de 1 000 € en fin d’année, à 2 %. L’épargne au troisième versement vaut-elle 3 000 € ?",
             "options": [
               {
                 "id": "non-3-060-40-eur-interets-compris-619e70fa",
-                "libelle": "Non : 3 060,40 €, intérêts compris"
+                "libelle": "Non : 3 060,40 €, intérêts compris"
               },
               {
                 "id": "oui-trois-fois-1-000-eur-91ddcca9",
-                "libelle": "Oui : trois fois 1 000 €"
+                "libelle": "Oui : trois fois 1 000 €"
               }
             ]
           },
@@ -5175,15 +5933,15 @@
           },
           {
             "id": "b2-05-r-amortissement",
-            "enonce": "Une annuité de 5 000 € contient 800 € d’intérêts. Quel capital rembourse-t-elle ?",
+            "enonce": "Une annuité de 5 000 € contient 800 € d’intérêts. Quel capital rembourse-t-elle ?",
             "options": [
               {
                 "id": "4-200-eur-8ad7fe38",
-                "libelle": "4 200 €"
+                "libelle": "4 200 €"
               },
               {
                 "id": "5-000-eur-9680c6f0",
-                "libelle": "5 000 €"
+                "libelle": "5 000 €"
               }
             ]
           },
@@ -5203,7 +5961,7 @@
           },
           {
             "id": "b2-05-r-cout",
-            "enonce": "Quatre annuités de 2 740 € remboursent un emprunt de 10 000 €. Quel est le coût du crédit ?",
+            "enonce": "Quatre annuités de 2 740 € remboursent un emprunt de 10 000 €. Quel est le coût du crédit ?",
             "options": [
               {
                 "id": "960-eur-7be7010a",
@@ -5211,7 +5969,7 @@
               },
               {
                 "id": "10-960-eur-efb83cc3",
-                "libelle": "10 960 €"
+                "libelle": "10 960 €"
               }
             ]
           },
@@ -5244,7 +6002,8 @@
             ]
           }
         ],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-05-A4-05-FICHE-MEMO",
@@ -5339,7 +6098,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-05-A4-06-BILLET-DE-SORTIE",
@@ -5426,7 +6186,8 @@
             ]
           }
         ],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       }
     ],
     "remediations": {
@@ -5616,15 +6377,15 @@
                   },
                   {
                     "rubrique": "La trésorerie",
-                    "contenu": "40 000 € disponibles au 1ᵉʳ janvier 2026, placés à 2,5 % par an, intérêts laissés sur le compte, en attendant le chantier."
+                    "contenu": "40 000 € disponibles au 1ᵉʳ janvier 2026, placés à 2,5 % par an, intérêts laissés sur le compte, en attendant le chantier."
                   },
                   {
                     "rubrique": "L’épargne des machines",
-                    "contenu": "6 000 € mis de côté à la fin de chaque année, de 2026 à 2030, sur un compte à 3 % par an."
+                    "contenu": "6 000 € mis de côté à la fin de chaque année, de 2026 à 2030, sur un compte à 3 % par an."
                   },
                   {
                     "rubrique": "L’emprunt d’équipement",
-                    "contenu": "60 000 € empruntés sur 5 ans au taux annuel de 4 %, remboursés par annuités constantes."
+                    "contenu": "60 000 € empruntés sur 5 ans au taux annuel de 4 %, remboursés par annuités constantes."
                   },
                   {
                     "rubrique": "La question de la banque",
@@ -5681,12 +6442,12 @@
                   {
                     "kind": "example",
                     "title": "Pour débuter : le livret à 3 %",
-                    "text": "On place 2 000 € sur un livret à 3 % par an, intérêts laissés sur le livret. C₀ = 2 000 et 1 + t = 1,03.",
+                    "text": "On place 2 000 € sur un livret à 3 % par an, intérêts laissés sur le livret. C₀ = 2 000 et 1 + t = 1,03.",
                     "steps": [
-                      "Après un an : 2 000 × 1,03 = 2 060 € ; les intérêts sont de 60 €.",
-                      "Après deux ans : 2 060 × 1,03 = 2 121,80 € ; les intérêts de la deuxième année, 61,80 €, portent sur 2 060 €.",
-                      "Après dix ans : 2 000 × 1,03¹⁰ ≈ 2 687,83 €.",
-                      "Aux intérêts simples : 2 000 × (1 + 10 × 0,03) = 2 600 € seulement."
+                      "Après un an : 2 000 × 1,03 = 2 060 € ; les intérêts sont de 60 €.",
+                      "Après deux ans : 2 060 × 1,03 = 2 121,80 € ; les intérêts de la deuxième année, 61,80 €, portent sur 2 060 €.",
+                      "Après dix ans : 2 000 × 1,03¹⁰ ≈ 2 687,83 €.",
+                      "Aux intérêts simples : 2 000 × (1 + 10 × 0,03) = 2 600 € seulement."
                     ]
                   },
                   {
@@ -5777,7 +6538,7 @@
       {
         "id": "B2-05-A1-09-EXEMPLE-PLACEMENT",
         "type": "ecran-verrouille",
-        "titre": "Exemple guidé : placer 8 000 € à 2 %",
+        "titre": "Exemple guidé : placer 8 000 € à 2 %",
         "duree": 6,
         "interactif": false,
         "donnees": {}
@@ -5809,7 +6570,7 @@
       {
         "id": "B2-05-A2-01-REFLEXION-VERSEMENTS",
         "type": "ecran-verrouille",
-        "titre": "Réfléchir : 6 000 € par an pendant cinq ans",
+        "titre": "Réfléchir : 6 000 € par an pendant cinq ans",
         "duree": 5,
         "interactif": false,
         "donnees": {}
@@ -5839,19 +6600,19 @@
                   },
                   {
                     "kind": "example",
-                    "title": "Pour débuter : 1 000 € par an à 2 %",
-                    "text": "Trois versements de 1 000 €, en fin d’année, sur un compte à 2 %. Valeur acquise au troisième versement ?",
+                    "title": "Pour débuter : 1 000 € par an à 2 %",
+                    "text": "Trois versements de 1 000 €, en fin d’année, sur un compte à 2 %. Valeur acquise au troisième versement ?",
                     "steps": [
-                      "Le premier est placé deux ans : 1 000 × 1,02² = 1 040,40 €.",
-                      "Le deuxième est placé un an : 1 000 × 1,02 = 1 020 €.",
-                      "Le troisième ne rapporte rien : 1 000 €.",
-                      "Somme : 3 060,40 € ; formule : 1 000 × (1,02³ − 1) ÷ 0,02 = 3 060,40 €."
+                      "Le premier est placé deux ans : 1 000 × 1,02² = 1 040,40 €.",
+                      "Le deuxième est placé un an : 1 000 × 1,02 = 1 020 €.",
+                      "Le troisième ne rapporte rien : 1 000 €.",
+                      "Somme : 3 060,40 € ; formule : 1 000 × (1,02³ − 1) ÷ 0,02 = 3 060,40 €."
                     ]
                   },
                   {
                     "kind": "method",
                     "title": "Calculer la valeur acquise d’une suite d’annuités",
-                    "text": "Pièges : additionner les versements sans leurs intérêts (3 000 € au lieu de 3 060,40 €) ; placer chaque versement pendant toute la durée ; compter un versement de trop ou de moins.",
+                    "text": "Pièges : additionner les versements sans leurs intérêts (3 000 € au lieu de 3 060,40 €) ; placer chaque versement pendant toute la durée ; compter un versement de trop ou de moins.",
                     "steps": [
                       "Compter les versements n, du premier au dernier inclus.",
                       "Repérer la date d’évaluation : celle du dernier versement.",
@@ -5932,7 +6693,7 @@
       {
         "id": "B2-05-A2-04-EXEMPLE-ANNUITES",
         "type": "ecran-verrouille",
-        "titre": "Exemple guidé : 1 500 € par an à 2,5 %",
+        "titre": "Exemple guidé : 1 500 € par an à 2,5 %",
         "duree": 6,
         "interactif": false,
         "donnees": {}
@@ -5975,7 +6736,7 @@
               "screenId": "B2-05-A3-01-GRAPHIQUE",
               "renderer": "chart",
               "props": {
-                "title": "Emprunt type : 100 000 € sur 10 ans à 5 %",
+                "title": "Emprunt type : 100 000 € sur 10 ans à 5 %",
                 "caption": "Décomposition de chaque annuité, en euros",
                 "labels": [
                   "Année 1",
@@ -6008,11 +6769,11 @@
                   }
                 ],
                 "unit": "€",
-                "formula": "Annuité = intérêts + amortissement, environ 12 950,46 € chaque année",
+                "formula": "Annuité = intérêts + amortissement, environ 12 950,46 € chaque année",
                 "reading": "Chaque année, la barre a la même hauteur : l’annuité. Les intérêts baissent, car ils portent sur un capital restant dû de plus en plus petit ; l’amortissement monte d’autant.",
                 "source": "Emprunt type. Données fictives Atelier Rivage, créées pour ce cours.",
                 "kind": "bars",
-                "description": "Dix barres de même hauteur totale. La part des intérêts part de 5 000 € en année 1 et descend jusqu’à 617 € environ en année 10 ; la part de l’amortissement monte de 7 950 € environ à 12 334 € environ."
+                "description": "Dix barres de même hauteur totale. La part des intérêts part de 5 000 € en année 1 et descend jusqu’à 617 € environ en année 10 ; la part de l’amortissement monte de 7 950 € environ à 12 334 € environ."
               }
             },
             "metadonnees": {
@@ -6058,12 +6819,12 @@
                   },
                   {
                     "kind": "example",
-                    "title": "Pour débuter : 10 000 € sur 3 ans à 5 %",
-                    "text": "a = 10 000 × 0,05 ÷ (1 − 1,05⁻³) ≈ 3 672,09 €.",
+                    "title": "Pour débuter : 10 000 € sur 3 ans à 5 %",
+                    "text": "a = 10 000 × 0,05 ÷ (1 − 1,05⁻³) ≈ 3 672,09 €.",
                     "steps": [
-                      "Année 1 : intérêts 10 000 × 0,05 = 500 € ; amortissement 3 672,09 − 500 = 3 172,09 €.",
-                      "Capital restant dû : 10 000 − 3 172,09 = 6 827,91 €.",
-                      "Année 2 : intérêts 6 827,91 × 0,05 ≈ 341,40 € ; amortissement 3 330,69 €.",
+                      "Année 1 : intérêts 10 000 × 0,05 = 500 € ; amortissement 3 672,09 − 500 = 3 172,09 €.",
+                      "Capital restant dû : 10 000 − 3 172,09 = 6 827,91 €.",
+                      "Année 2 : intérêts 6 827,91 × 0,05 ≈ 341,40 € ; amortissement 3 330,69 €.",
                       "La dernière ligne solde le capital, au centime d’arrondi près."
                     ]
                   },
@@ -6151,7 +6912,7 @@
       {
         "id": "B2-05-A3-05-EXEMPLE-EMPRUNT",
         "type": "ecran-verrouille",
-        "titre": "Exemple guidé : emprunter 24 000 € à 3 %",
+        "titre": "Exemple guidé : emprunter 24 000 € à 3 %",
         "duree": 6,
         "interactif": false,
         "donnees": {}
@@ -6159,7 +6920,7 @@
       {
         "id": "B2-05-A3-06-ATELIER-EMPRUNT",
         "type": "ecran-verrouille",
-        "titre": "Exercice 5 — L’emprunt de 60 000 €",
+        "titre": "Exercice 5 — L’emprunt de 60 000 €",
         "duree": 10,
         "interactif": false,
         "donnees": {}
@@ -6222,19 +6983,19 @@
                   },
                   {
                     "rubrique": "Emprunt",
-                    "contenu": "32 000 € empruntés sur 4 ans au taux annuel de 3,5 %, remboursés par annuités constantes a = C × t ÷ (1 − (1 + t)⁻ⁿ)."
+                    "contenu": "32 000 € empruntés sur 4 ans au taux annuel de 3,5 %, remboursés par annuités constantes a = C × t ÷ (1 − (1 + t)⁻ⁿ)."
                   },
                   {
                     "rubrique": "Placement",
-                    "contenu": "15 000 € de trésorerie placés 4 ans à intérêts composés, au taux annuel de 2 %."
+                    "contenu": "15 000 € de trésorerie placés 4 ans à intérêts composés, au taux annuel de 2 %."
                   },
                   {
                     "rubrique": "Batterie",
-                    "contenu": "Une batterie de rechange de 20 000 € sera à payer dans 4 ans ; la somme est placée dès aujourd’hui à 2 % par an."
+                    "contenu": "Une batterie de rechange de 20 000 € sera à payer dans 4 ans ; la somme est placée dès aujourd’hui à 2 % par an."
                   },
                   {
                     "rubrique": "Épargne",
-                    "contenu": "5 000 € versés à la fin de chacune des 4 prochaines années, sur un compte à 2 % par an."
+                    "contenu": "5 000 € versés à la fin de chacune des 4 prochaines années, sur un compte à 2 % par an."
                   },
                   {
                     "rubrique": "Barème",
