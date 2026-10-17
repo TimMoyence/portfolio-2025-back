@@ -276,22 +276,40 @@ const estUnModule = (classe: unknown): boolean =>
 
 const MODULES_DES_SOURCES = CLASSES_DES_FICHIERS_DE_MODULE.filter(estUnModule);
 
-const valeursExportees = (exportees: unknown): unknown[] => [
-  exportees,
-  ...Object.values(
-    Object.getOwnPropertyDescriptors((exportees ?? {}) as object),
-  ).flatMap((descripteur) =>
-    'value' in descripteur ? [descripteur.value as unknown] : [],
-  ),
-];
+const valeurDeLAccesseur = (exportees: object, cle: string): unknown[] => {
+  try {
+    return [Reflect.get(exportees, cle) as unknown];
+  } catch {
+    return [];
+  }
+};
+
+const valeursExportees = (
+  exportees: unknown,
+  accesseursLus: boolean,
+): unknown[] => {
+  const objet = (exportees ?? {}) as object;
+  return [
+    exportees,
+    ...Object.entries(Object.getOwnPropertyDescriptors(objet)).flatMap(
+      ([cle, descripteur]) => {
+        if ('value' in descripteur) return [descripteur.value as unknown];
+        return accesseursLus ? valeurDeLAccesseur(objet, cle) : [];
+      },
+    ),
+  ];
+};
 
 const exportsDejaCharges = (
   retenir: (chemin: string) => boolean,
+  accesseursLus: boolean,
 ): Set<unknown> =>
   new Set(
     Object.entries(require.cache)
       .filter(([chemin]) => retenir(chemin))
-      .flatMap(([, module]) => valeursExportees(module?.exports)),
+      .flatMap(([, module]) =>
+        valeursExportees(module?.exports, accesseursLus),
+      ),
   );
 
 const estUneSource = (chemin: string): boolean =>
@@ -791,8 +809,8 @@ describe('Injection des providers qui héritent d un constructeur injecté', () 
 
   it('ne construit comme module aucune classe des sources hors d un fichier de module', async () => {
     const visites = await modulesVisites();
-    const exportees = exportsDejaCharges(estUneSource);
-    const deBibliotheque = exportsDejaCharges(estUneBibliotheque);
+    const exportees = exportsDejaCharges(estUneSource, false);
+    const deBibliotheque = exportsDejaCharges(estUneBibliotheque, true);
 
     expect(visites.length).toBeGreaterThan(MODULES_DES_SOURCES.length);
     expect(
