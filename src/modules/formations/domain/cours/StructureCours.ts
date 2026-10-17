@@ -369,12 +369,12 @@ function introuvables(
 function controlerReferences({ cours }: Analyse): readonly Manquement[] {
   return [
     ...introuvables(
-      [...referencesEcrans(cours), ...referencesRenvois(cours)],
+      referencesEcrans(cours),
       identifiantsConnus(cours),
       'aucun écran ni aucune question',
     ),
     ...introuvables(
-      referencesRemediations(cours),
+      [...referencesRenvois(cours), ...referencesRemediations(cours)],
       identifiantsDEcrans(cours),
       'aucun écran',
     ),

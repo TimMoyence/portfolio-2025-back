@@ -168,6 +168,24 @@ describe('verifierStructure', () => {
     expect(regles(renvoyer(citation.id))).toEqual([]);
   });
 
+  it('refuse un renvoi vers une question, le poste ne cherchant sa cible que parmi les ecrans', () => {
+    const [question] = questionsDuCours(base);
+    const versUneQuestion = recomposer(base, [
+      ouverture,
+      citation,
+      { ...atelier, renvoi: question.id },
+      cloture,
+    ]);
+
+    expect(verifierStructure(versUneQuestion, [])).toEqual([
+      {
+        regle: 'reference-inconnue',
+        ecran: atelier.id,
+        raison: `l'écran « ${atelier.id} » renvoie vers « ${question.id} » qui n'est déclaré par aucun écran de ce cours.`,
+      },
+    ]);
+  });
+
   it('SEC-4.2 · refuse un renvoi vers l écran lui-même ou un écran pas encore projeté', () => {
     const renvoyer = (renvoi: string): Cours =>
       recomposer(base, [ouverture, citation, { ...atelier, renvoi }, cloture]);
