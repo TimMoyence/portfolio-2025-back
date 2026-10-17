@@ -5,13 +5,21 @@ import {
   Get,
   Inject,
   Injectable,
+  Module,
+  Optional,
+  UseGuards,
   type DynamicModule,
   type ForwardReference,
 } from '@nestjs/common';
 import {
   CONTROLLER_WATERMARK,
+  EXCEPTION_FILTERS_METADATA,
+  GUARDS_METADATA,
+  INTERCEPTORS_METADATA,
   MODULE_METADATA,
+  OPTIONAL_DEPS_METADATA,
   PARAMTYPES_METADATA,
+  PIPES_METADATA,
   SELF_DECLARED_DEPS_METADATA,
 } from '@nestjs/common/constants';
 import { Test } from '@nestjs/testing';
@@ -119,32 +127,84 @@ const classeDuProvider = (provider: unknown): Classe | null => {
   return typeof useClass === 'function' ? (useClass as Classe) : null;
 };
 
-const rangsDeclares = (dependances: unknown): number[] =>
-  ((dependances ?? []) as { index: number }[]).map(({ index }) => index);
+const DEPENDANCES_HERITEES: Readonly<Record<string, string>> = {
+  [SELF_DECLARED_DEPS_METADATA]: 'paramètre',
+  [OPTIONAL_DEPS_METADATA]: 'paramètre facultatif',
+};
 
-const rangsHerites = (classe: Classe): number[] =>
-  rangsDeclares(
-    Reflect.getMetadata(
-      SELF_DECLARED_DEPS_METADATA,
-      Object.getPrototypeOf(classe) as object,
-    ),
+const ENHANCERS = [
+  GUARDS_METADATA,
+  INTERCEPTORS_METADATA,
+  PIPES_METADATA,
+  EXCEPTION_FILTERS_METADATA,
+];
+
+const CONSTRUCTEUR_DECLARE = /[{};]\s*constructor\s*\(/;
+
+const rangsDeclares = (dependances: unknown): number[] =>
+  ((dependances ?? []) as (number | { index: number })[]).map((dependance) =>
+    typeof dependance === 'number' ? dependance : dependance.index,
   );
 
-function rangsHeritesSansInjection(classe: Classe): number[] {
-  if (!Reflect.hasOwnMetadata(PARAMTYPES_METADATA, classe)) return [];
-  const herites = rangsHerites(classe);
-  const propres = rangsDeclares(
-    Reflect.getOwnMetadata(SELF_DECLARED_DEPS_METADATA, classe),
-  ).slice(herites.length);
-  return [...new Set(herites)].filter((rang) => !propres.includes(rang));
+const mereDe = (classe: Classe): object =>
+  Object.getPrototypeOf(classe) as object;
+
+const rangsHerites = (classe: Classe, cle: string): number[] =>
+  rangsDeclares(Reflect.getMetadata(cle, mereDe(classe)));
+
+const constructeurSansMetadonnees = (classe: Classe): boolean =>
+  !Reflect.hasOwnMetadata(PARAMTYPES_METADATA, classe) &&
+  Reflect.hasMetadata(PARAMTYPES_METADATA, mereDe(classe)) &&
+  CONSTRUCTEUR_DECLARE.test(Function.prototype.toString.call(classe));
+
+function defautsDInjection(classe: Classe, nom = classe.name): string[] {
+  if (constructeurSansMetadonnees(classe))
+    return [`${nom} : constructeur sans métadonnées propres`];
+  if (!Reflect.hasOwnMetadata(PARAMTYPES_METADATA, classe))
+    return Reflect.hasMetadata(PARAMTYPES_METADATA, mereDe(classe))
+      ? defautsDInjection(mereDe(classe) as Classe, nom)
+      : [];
+  return Object.entries(DEPENDANCES_HERITEES).flatMap(([cle, libelle]) => {
+    const herites = rangsHerites(classe, cle);
+    const propres = rangsDeclares(Reflect.getOwnMetadata(cle, classe)).slice(
+      herites.length,
+    );
+    return [...new Set(herites)]
+      .filter((rang) => !propres.includes(rang))
+      .map((rang) => `${nom} : ${libelle} ${rang}`);
+  });
 }
 
 const providersMalInjectes = (classes: readonly Classe[]): string[] =>
-  classes.flatMap((classe) =>
-    rangsHeritesSansInjection(classe).map(
-      (rang) => `${classe.name} : paramètre ${rang}`,
-    ),
+  classes.flatMap((classe) => defautsDInjection(classe));
+
+const enhancersDe = (cible: object): unknown[] =>
+  ENHANCERS.flatMap(
+    (cle) => (Reflect.getMetadata(cle, cible) as unknown[] | undefined) ?? [],
   );
+
+async function classesConstruitesDepuis(
+  racines: readonly unknown[],
+): Promise<Classe[]> {
+  const providers = await declaresDepuis(
+    MODULE_METADATA.PROVIDERS as Rubrique,
+    racines,
+  );
+  const controleurs = await controleursAtteintsDepuis(racines);
+  const enhancers = [
+    ...controleurs.flatMap(enhancersDe),
+    ...routesDe(controleurs).flatMap(({ cibles }) =>
+      cibles.flatMap(enhancersDe),
+    ),
+  ];
+  return [
+    ...new Set(
+      [...providers, ...controleurs, ...enhancers]
+        .map(classeDuProvider)
+        .filter((classe): classe is Classe => classe !== null),
+    ),
+  ];
+}
 
 const routesDe = (controleurs: Iterable<Controleur>) =>
   [...controleurs].flatMap((controleur) =>
@@ -302,21 +362,77 @@ describe('Injection des providers qui héritent d un constructeur injecté', () 
   @Injectable()
   class FilleSansConstructeur extends Mere {}
 
+  class FilleNonDecoree extends Mere {
+    constructor(depot: object, journal: object, outil: Outil) {
+      super(depot, outil, journal);
+    }
+  }
+
+  class Introuvable {}
+
+  @Injectable()
+  abstract class MereFacultative {
+    constructor(
+      readonly outil: Outil,
+      @Optional() readonly absent?: Introuvable,
+    ) {}
+  }
+
+  @Injectable()
+  class FilleFacultative extends MereFacultative {
+    constructor(
+      outil: Outil,
+      readonly requis: Introuvable,
+    ) {
+      super(outil);
+    }
+  }
+
+  @Injectable()
+  class GardeQuiReordonne extends FilleQuiReordonne {
+    canActivate(): boolean {
+      return true;
+    }
+  }
+
+  @Controller('temoin-injection')
+  @UseGuards(GardeQuiReordonne)
+  class ControleurQuiReordonne extends FilleQuiReordonne {
+    @Get()
+    lire(): string {
+      return 'temoin';
+    }
+  }
+
+  const depot = { nom: 'depot' };
+  const journal = { nom: 'journal' };
+  const DEPENDANCES = [
+    Outil,
+    { provide: DEPOT, useValue: depot },
+    { provide: JOURNAL, useValue: journal },
+  ];
+
+  @Module({
+    controllers: [ControleurQuiReordonne],
+    providers: [...DEPENDANCES, FilleNonDecoree, FilleFacultative],
+    exports: [Outil, DEPOT, JOURNAL],
+  })
+  class ModuleTemoin {}
+
   it('lit les injections héritées comme Nest les résout', async () => {
-    const depot = { nom: 'depot' };
-    const journal = { nom: 'journal' };
     const module = await Test.createTestingModule({
-      providers: [
-        Outil,
-        FilleQuiReordonne,
-        FilleQuiReinjecte,
-        FilleSansConstructeur,
-        { provide: DEPOT, useValue: depot },
-        { provide: JOURNAL, useValue: journal },
-      ],
+      imports: [ModuleTemoin],
+      providers: [FilleQuiReordonne, FilleQuiReinjecte, FilleSansConstructeur],
     }).compile();
 
     expect(module.get(FilleQuiReordonne).outil).toBe(journal);
+    expect(module.get(FilleNonDecoree).outil).toBe(journal);
+    expect(module.get(ControleurQuiReordonne).outil).toBe(journal);
+    expect(
+      (await module.resolve(GardeQuiReordonne, undefined, { strict: false }))
+        .outil,
+    ).toBe(journal);
+    expect(module.get(FilleFacultative).requis).toBeUndefined();
     expect(module.get(FilleQuiReinjecte).outil).toBeInstanceOf(Outil);
     expect(module.get(FilleSansConstructeur).outil).toBeInstanceOf(Outil);
     expect(
@@ -328,17 +444,28 @@ describe('Injection des providers qui héritent d un constructeur injecté', () 
     ).toEqual(['FilleQuiReordonne : paramètre 2']);
   });
 
-  it('fait ré-injecter par chaque provider servi les rangs que sa classe mère injecte', async () => {
-    const providers = await declaresDepuis(
-      MODULE_METADATA.PROVIDERS as Rubrique,
-      [...MODULES_SERVIS, ...MODULES_DES_SOURCES],
-    );
-    const classes = providers
-      .map(classeDuProvider)
-      .filter((classe): classe is Classe => classe !== null);
+  it('juge chaque classe que construit Nest : providers, contrôleurs et leurs gardes', async () => {
+    expect(
+      providersMalInjectes(await classesConstruitesDepuis([ModuleTemoin])),
+    ).toEqual([
+      'FilleNonDecoree : constructeur sans métadonnées propres',
+      'FilleFacultative : paramètre facultatif 1',
+      'ControleurQuiReordonne : paramètre 2',
+      'GardeQuiReordonne : paramètre 2',
+    ]);
+  });
+
+  it('fait ré-injecter par chaque classe servie les rangs que sa classe mère injecte', async () => {
+    const classes = await classesConstruitesDepuis([
+      ...MODULES_SERVIS,
+      ...MODULES_DES_SOURCES,
+    ]);
 
     expect(
-      classes.filter((classe) => rangsHerites(classe).length > 0).length,
+      classes.filter(
+        (classe) =>
+          rangsHerites(classe, SELF_DECLARED_DEPS_METADATA).length > 0,
+      ).length,
     ).toBeGreaterThan(0);
     expect(providersMalInjectes(classes)).toEqual([]);
   });
