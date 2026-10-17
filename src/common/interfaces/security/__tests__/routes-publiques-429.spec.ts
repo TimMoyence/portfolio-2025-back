@@ -294,7 +294,9 @@ const valeursExportees = (
     ...Object.entries(Object.getOwnPropertyDescriptors(objet)).flatMap(
       ([cle, descripteur]) => {
         if ('value' in descripteur) return [descripteur.value as unknown];
-        return accesseursLus ? valeurDeLAccesseur(objet, cle) : [];
+        return accesseursLus && descripteur.enumerable === true
+          ? valeurDeLAccesseur(objet, cle)
+          : [];
       },
     ),
   ];
