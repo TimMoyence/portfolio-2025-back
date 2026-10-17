@@ -434,13 +434,23 @@ describe('contrat OpenAPI des saisies', () => {
       >;
     const ecartDuCorps = (type: unknown, schema: unknown): string | null => {
       if (type === undefined) {
-        return schema === undefined ? 'corps non decrit' : null;
+        if (schema === undefined) {
+          return 'corps non decrit';
+        }
+        return estSansForme(schema as SchemaOpenApi)
+          ? 'schema sans forme'
+          : null;
       }
-      return typeof type === 'function' &&
-        ![String, Number, Boolean].includes(type as StringConstructor) &&
-        !modeles.includes(type)
-        ? `${type.name} sans champ documente`
-        : null;
+      const element: unknown = Array.isArray(type) ? type[0] : type;
+      if (
+        typeof element !== 'function' ||
+        [String, Number, Boolean].includes(element as StringConstructor)
+      ) {
+        return 'type sans forme, un corps texte s annonce par schema';
+      }
+      return modeles.includes(element)
+        ? null
+        : `${element.name} sans champ documente`;
     };
     expect(
       controleurs.flatMap((controleur) =>
