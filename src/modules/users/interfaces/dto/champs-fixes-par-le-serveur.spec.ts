@@ -1,5 +1,4 @@
-import { BadRequestException } from '@nestjs/common';
-import { validateBody } from '../../../../../test/helpers/validation-pipe';
+import { messagesDuRefus } from '../../../../../test/helpers/validation-pipe';
 import { ChangePasswordDto } from './ChangePassword.dto';
 import { CreateUserDto } from './CreateUser.dto';
 import { UpdateUserDto } from './UpdateUser.dto';
@@ -16,21 +15,6 @@ const CHANGEMENT = {
   newPassword: 'Nouveau1234!',
 };
 /* eslint-enable sonarjs/no-hardcoded-passwords */
-
-const messagesDuRefus = async (
-  dto: new () => object,
-  corps: object,
-): Promise<unknown> => {
-  try {
-    await validateBody(corps, dto);
-  } catch (erreur) {
-    if (erreur instanceof BadRequestException) {
-      return (erreur.getResponse() as { message: unknown }).message;
-    }
-    throw erreur;
-  }
-  return [];
-};
 
 describe('champs d un compte que le serveur fixe seul', () => {
   it.each([

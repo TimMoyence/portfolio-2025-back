@@ -245,19 +245,30 @@ describe('Reponses du site public servies par les vrais controleurs', () => {
     },
   );
 
-  it('POST /api/lead-magnets/formations-toolkit refuse le profil d interaction retire (LEG-06)', async () => {
-    const reponse = await request(serveur())
-      .post('/api/lead-magnets/formations-toolkit')
-      .send({
-        ...demandeDuGuide(),
-        profile: { aiLevel: 'debutant', budgetTier: '0' },
-      })
-      .expect(400);
+  it.each([
+    [
+      'le profil d interaction retire (LEG-06)',
+      'profile',
+      { aiLevel: 'debutant', budgetTier: '0' },
+    ],
+    [
+      'l horodatage d ouverture remplace par la duree de saisie (LEG-ANTIROBOT)',
+      'formStartedAt',
+      Date.now() - SAISIE_HUMAINE_MS,
+    ],
+  ])(
+    'POST /api/lead-magnets/formations-toolkit refuse %s',
+    async (_cas, champ, valeur) => {
+      const reponse = await request(serveur())
+        .post('/api/lead-magnets/formations-toolkit')
+        .send({ ...demandeDuGuide(), [champ]: valeur })
+        .expect(400);
 
-    expect((reponse.body as { detail: string[] }).detail).toContain(
-      'property profile should not exist',
-    );
-  });
+      expect((reponse.body as { detail: string[] }).detail).toEqual([
+        `property ${champ} should not exist`,
+      ]);
+    },
+  );
 
   it('GET /api/lead-magnets/toolkit/:token sert a chacun le meme guide, sans personnalisation (LEG-06)', async () => {
     demandes.findByToken.mockResolvedValueOnce(buildLeadMagnetRequest());
@@ -301,7 +312,7 @@ describe('Reponses du site public servies par les vrais controleurs', () => {
 
 function demandeDuGuide() {
   return {
-    formStartedAt: Date.now() - SAISIE_HUMAINE_MS,
+    formFillDurationMs: SAISIE_HUMAINE_MS,
     firstName: 'Marie',
     email: 'marie@example.com',
     formationSlug: 'ia-solopreneurs',

@@ -1,5 +1,8 @@
 import { FORMULAIRES_PUBLICS } from '../../../../test/helpers/formulaires-publics';
-import { champsRefuses } from '../../../../test/helpers/validation-pipe';
+import {
+  champsRefuses,
+  messagesDuRefus,
+} from '../../../../test/helpers/validation-pipe';
 import { ChampsAntiRobotDto } from './champs-anti-robot.dto';
 
 const proprietesEnErreur = (corps: Record<string, unknown>): string[] =>
@@ -29,16 +32,13 @@ describe('ChampsAntiRobotDto', () => {
     ]);
   });
 
-  it('refuse un horodatage negatif, non entier ou qui n est pas un nombre', () => {
-    expect(proprietesEnErreur({ formStartedAt: -1 })).toEqual([
-      'formStartedAt',
-    ]);
-    expect(proprietesEnErreur({ formStartedAt: 1.5 })).toEqual([
-      'formStartedAt',
-    ]);
-    expect(proprietesEnErreur({ formStartedAt: 'hier' })).toEqual([
-      'formStartedAt',
-    ]);
+  it('refuse l horodatage d ouverture, remplace par la duree de saisie (LEG-ANTIROBOT)', async () => {
+    await expect(
+      messagesDuRefus(ChampsAntiRobotDto, {
+        formStartedAt: Date.UTC(2026, 9, 17, 3, 0, 0),
+        formFillDurationMs: 20_000,
+      }),
+    ).resolves.toEqual(['property formStartedAt should not exist']);
   });
 
   it.each(FORMULAIRES_PUBLICS)(

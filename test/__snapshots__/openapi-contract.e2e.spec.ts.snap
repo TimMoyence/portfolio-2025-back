@@ -3113,12 +3113,6 @@ exports[`OpenAPI core contract fige les schemas des DTO de saisie : comptes, con
         "minimum": 0,
         "type": "integer",
       },
-      "formStartedAt": {
-        "deprecated": true,
-        "description": "Timestamp ms d'ouverture du formulaire, pris sur l'horloge du poste : accepté, jamais comparé",
-        "minimum": 0,
-        "type": "integer",
-      },
       "locale": {
         "enum": [
           "fr",
@@ -3324,12 +3318,6 @@ exports[`OpenAPI core contract fige les schemas des DTO de saisie : comptes, con
       },
       "formFillDurationMs": {
         "description": "Durée de saisie en ms, mesurée par le poste sur une horloge monotone",
-        "minimum": 0,
-        "type": "integer",
-      },
-      "formStartedAt": {
-        "deprecated": true,
-        "description": "Timestamp ms d'ouverture du formulaire, pris sur l'horloge du poste : accepté, jamais comparé",
         "minimum": 0,
         "type": "integer",
       },
@@ -3620,12 +3608,6 @@ exports[`OpenAPI core contract fige les schemas des DTO de saisie : comptes, con
         "minimum": 0,
         "type": "integer",
       },
-      "formStartedAt": {
-        "deprecated": true,
-        "description": "Timestamp ms d'ouverture du formulaire, pris sur l'horloge du poste : accepté, jamais comparé",
-        "minimum": 0,
-        "type": "integer",
-      },
       "nom": {
         "example": "Martin",
         "maxLength": 80,
@@ -3691,12 +3673,6 @@ exports[`OpenAPI core contract fige les schemas des DTO de saisie : comptes, con
       },
       "formFillDurationMs": {
         "description": "Durée de saisie en ms, mesurée par le poste sur une horloge monotone",
-        "minimum": 0,
-        "type": "integer",
-      },
-      "formStartedAt": {
-        "deprecated": true,
-        "description": "Timestamp ms d'ouverture du formulaire, pris sur l'horloge du poste : accepté, jamais comparé",
         "minimum": 0,
         "type": "integer",
       },
