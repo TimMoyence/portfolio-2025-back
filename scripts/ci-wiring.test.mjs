@@ -181,9 +181,13 @@ void test('le deploiement sauvegarde la base, puis migre, puis remplace l api', 
     .map((ligne) => ligne.replace(/(^|\s)#.*$/, ''))
     .join('\n');
 
+  const rotation =
+    /ls -1t "\$SAUVEGARDES"\/avant-migrate-\*\.dump \| tail -n \+(\d+) \| xargs -r rm -f --\n/;
   const etapes = [
+    /script: \|\n\s*set -euo pipefail\n/,
     /mkdir -p "\$SAUVEGARDES"\n\s*chmod 700 "\$SAUVEGARDES"\n/,
     /exec -T db \\\n\s*sh -c 'pg_dump -U "\$POSTGRES_USER" -d "\$POSTGRES_DB" --format=custom' \\\n\s*> "\$SAUVEGARDES\/avant-migrate-[^"\n]*\.dump"\n/,
+    rotation,
     /run --rm migrate\n/,
     /up -d --no-deps --wait /,
   ];
@@ -196,7 +200,17 @@ void test('le deploiement sauvegarde la base, puis migre, puis remplace l api', 
   assert.deepEqual(
     [...rangs].sort((gauche, droite) => gauche - droite),
     rangs,
-    'le deploiement doit fermer le dossier des sauvegardes, sauvegarder la base avant migrate, et migrer avant de remplacer l api',
+    'le deploiement doit s arreter a la premiere erreur, fermer le dossier des sauvegardes, sauvegarder la base avant migrate, et migrer avant de remplacer l api',
+  );
+  assert.deepEqual(
+    commandes.match(/(^|\n)\s*set \+\S*/g),
+    null,
+    'le deploiement ne doit jamais rendre une erreur muette avant de remplacer l api',
+  );
+  assert.equal(
+    Number(rotation.exec(commandes)?.[1]) - 1,
+    5,
+    'la rotation doit garder les cinq dernieres sauvegardes, la neuve comprise',
   );
 });
 
