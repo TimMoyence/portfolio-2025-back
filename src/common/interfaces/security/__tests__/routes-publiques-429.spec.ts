@@ -32,7 +32,6 @@ import { DECORATORS } from '@nestjs/swagger/dist/constants';
 import { AppModule } from '../../../../app.module';
 import { IS_PUBLIC_KEY } from '../../auth/public.decorator';
 import { routesDuControleur } from '../../../../../test/helpers/metadonnees-de-route';
-import { RACINE } from '../../../../../test/helpers/racine';
 
 jest.mock('../../../../config/env.validation', () => ({
   validateEnv: (configuration: Record<string, unknown>) => configuration,
@@ -161,21 +160,16 @@ function lireLeCodeDesSources(): {
 
 const CODE_DES_SOURCES = lireLeCodeDesSources();
 
-const POINT_D_ENTREE = `${
-  (
-    JSON.parse(readFileSync(join(RACINE, 'nest-cli.json'), 'utf8')) as {
-      entryFile?: string;
-    }
-  ).entryFile ?? 'main'
-}.ts`;
-
-const FICHIERS_CHARGEABLES = SOURCES.filter(
-  (fichier) =>
-    fichier.endsWith('.ts') &&
-    !fichier.endsWith('.spec.ts') &&
-    !fichier.endsWith('.d.ts') &&
-    fichier !== POINT_D_ENTREE,
-);
+const exportsDesSourcesDejaChargees = (): unknown[] =>
+  Object.entries(require.cache)
+    .filter(
+      ([chemin]) =>
+        chemin.startsWith(join(RACINE_DES_SOURCES, '/')) &&
+        !chemin.endsWith('.spec.ts'),
+    )
+    .flatMap(([, module]) =>
+      Object.values((module?.exports ?? {}) as Record<string, unknown>),
+    );
 
 const metadonneeDeModule = (cle: string, module: unknown): unknown[] =>
   (Reflect.getMetadata(cle, module as object) as unknown[] | undefined) ?? [];
@@ -664,7 +658,7 @@ describe('Injection des providers qui héritent d un constructeur injecté', () 
         ...MODULES_DES_SOURCES,
       ]),
     );
-    const exportees = new Set(FICHIERS_CHARGEABLES.flatMap(exportsDe));
+    const exportees = new Set(exportsDesSourcesDejaChargees());
 
     expect(visites.length).toBeGreaterThan(MODULES_DES_SOURCES.length);
     expect(
