@@ -1,8 +1,4 @@
-import {
-  lienDeDesabonnement,
-  urlDuSite,
-  urlPubliqueDeLApi,
-} from './urls-publiques';
+import { urlDuSite, urlPubliqueDeLApi } from './urls-publiques';
 
 describe('urlDuSite', () => {
   it.each([
@@ -34,25 +30,14 @@ describe('urlPubliqueDeLApi', () => {
       }),
     ).toBe('https://preprod.asilidesign.fr/api/auth');
   });
-});
-
-describe('lienDeDesabonnement', () => {
-  it('pointe le désabonnement de la newsletter avec le jeton en paramètre', () => {
-    expect(lienDeDesabonnement('jeton-1', {})).toBe(
-      'https://asilidesign.fr/api/v1/portfolio25/newsletter/unsubscribe?token=jeton-1',
-    );
-  });
-
-  it('encode un jeton qui contiendrait des caractères réservés', () => {
-    expect(lienDeDesabonnement('a&b=c d', { API_PREFIX: '' })).toBe(
-      'https://asilidesign.fr/newsletter/unsubscribe?token=a%26b%3Dc+d',
-    );
-  });
 
   it('ne laisse pas un préfixe hostile détourner l hôte', () => {
     expect(
-      new URL(lienDeDesabonnement('jeton', { API_PREFIX: '//evil.example' }))
-        .host,
+      new URL(
+        urlPubliqueDeLApi('articles/feed.xml', {
+          API_PREFIX: '//evil.example',
+        }),
+      ).host,
     ).toBe('asilidesign.fr');
   });
 });

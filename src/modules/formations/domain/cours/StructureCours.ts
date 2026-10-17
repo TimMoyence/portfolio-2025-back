@@ -1,3 +1,4 @@
+import { estEntierStrictementPositif } from '../../../../common/domain/nombres/dans-les-bornes';
 import { avecVirgule } from '../../../../common/domain/nombres/ecriture-francaise';
 import { somme } from '../../../../common/domain/nombres/statistiques';
 import { listeEntreGuillemets } from '../../../../common/domain/texte/liste-entre-guillemets';
@@ -98,7 +99,7 @@ function nomEcran(ecran: Ecran, rang: number): string {
 }
 
 function estDureeValide(minutes: number): boolean {
-  return Number.isInteger(minutes) && minutes > 0;
+  return estEntierStrictementPositif(minutes);
 }
 
 function minutesDe(ecran: Ecran): number {
@@ -274,10 +275,11 @@ function raisonIntrouvable(
   sujet: string,
   identifiant: string,
   connus: ReadonlySet<string>,
+  declarants: string,
 ): string {
   const voisin = voisinIndistinct(identifiant, connus);
   if (voisin === null) {
-    return `${sujet} « ${identifiant} » qui n'est déclaré par aucun écran ni aucune question de ce cours.`;
+    return `${sujet} « ${identifiant} » qui n'est déclaré par ${declarants} de ce cours.`;
   }
   return `${sujet} « ${identifiant} » est un identifiant distinct de « ${voisin} » : la casse et les accents ne sont jamais rapprochés en silence.`;
 }
@@ -331,10 +333,13 @@ function referencesRemediations(cours: Cours): readonly CibleReferencee[] {
   }));
 }
 
+function identifiantsDEcrans(cours: Cours): ReadonlySet<string> {
+  return new Set(cours.ecrans.map((ecran, rang) => nomEcran(ecran, rang)));
+}
+
 function identifiantsConnus(cours: Cours): ReadonlySet<string> {
-  const idsEcrans = cours.ecrans.map((ecran, rang) => nomEcran(ecran, rang));
   const idsQuestions = questionsDuCours(cours).map((question) => question.id);
-  return new Set([...idsEcrans, ...idsQuestions]);
+  return new Set([...identifiantsDEcrans(cours), ...idsQuestions]);
 }
 
 function sujetDe(cible: CibleReferencee): string {
@@ -343,19 +348,37 @@ function sujetDe(cible: CibleReferencee): string {
     : `l'écran « ${cible.ecran} » renvoie vers`;
 }
 
-function controlerReferences({ cours }: Analyse): readonly Manquement[] {
-  const connus = identifiantsConnus(cours);
-  const references = [
-    ...referencesEcrans(cours),
-    ...referencesRenvois(cours),
-    ...referencesRemediations(cours),
-  ];
+function introuvables(
+  references: readonly CibleReferencee[],
+  connus: ReadonlySet<string>,
+  declarants: string,
+): readonly Manquement[] {
   return references
     .filter((reference) => !connus.has(reference.cible))
     .map((reference) => ({
       ecran: reference.ecran,
-      raison: raisonIntrouvable(sujetDe(reference), reference.cible, connus),
+      raison: raisonIntrouvable(
+        sujetDe(reference),
+        reference.cible,
+        connus,
+        declarants,
+      ),
     }));
+}
+
+function controlerReferences({ cours }: Analyse): readonly Manquement[] {
+  return [
+    ...introuvables(
+      referencesEcrans(cours),
+      identifiantsConnus(cours),
+      'aucun écran ni aucune question',
+    ),
+    ...introuvables(
+      [...referencesRenvois(cours), ...referencesRemediations(cours)],
+      identifiantsDEcrans(cours),
+      'aucun écran',
+    ),
+  ];
 }
 
 function rangsParNom(cours: Cours): ReadonlyMap<string, number> {

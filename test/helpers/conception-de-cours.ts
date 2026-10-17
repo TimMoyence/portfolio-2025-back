@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { echapperPourRegex } from './echapper-pour-regex';
+import { RACINE } from './racine';
 
 const LIGNE_DE_TABLEAU = /^\|\s*\d+\s*\|/;
 const ENTETE_DE_FICHE = /^#### (A\d-\d{2}) · `(B\d-\d{2}-[^`]+)`/;
@@ -37,7 +38,7 @@ export interface PieceJointeDuDocument {
 }
 
 export function lireConception(fichier: string): string {
-  return readFileSync(join(__dirname, '../../docs', fichier), 'utf8');
+  return readFileSync(join(RACINE, 'docs', fichier), 'utf8');
 }
 
 function lignesDeSection(

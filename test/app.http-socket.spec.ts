@@ -1,41 +1,28 @@
 import { UnauthorizedException } from '@nestjs/common';
-import { Test } from '@nestjs/testing';
 import request from 'supertest';
 import {
   applicationDeLaSuite,
   bootstrapTestApp,
-  httpServerOf,
+  serveurHttpDe,
 } from './helpers/nest-test-app';
+import { RateLimitExceededError } from '../src/common/domain/errors/RateLimitExceededError';
 import { RolesGuard } from '../src/common/interfaces/auth/roles.guard';
 import { JwtAuthGuard } from '../src/common/interfaces/auth/jwt-auth.guard';
 import {
   AUDIT_CREATED_RESPONSE,
   AUDIT_REQUEST_PAYLOAD,
   AUDIT_SUMMARY_RESULT,
-  authControllerProviders,
   CONTACT_CREATED_RESPONSE,
   CONTACT_PAYLOAD,
-  CORE_CONTROLLERS,
-  coreControllerProviders,
   createAuthUseCaseStubs,
   createCoreUseCaseStubs,
+  moduleDesControleursDuSocle,
+  PASSWORD_RESET_DONE_RESULT,
   PASSWORD_RESET_REQUESTED_RESULT,
   primeCoreUseCaseStubs,
   primePasswordUseCaseStubs,
 } from './factories/core-api.factory';
-import {
-  attendreCreationTransmise,
-  attendreFiltreTransmis,
-  attendreListeParDefaut,
-  CAS_LEGACY,
-  CAS_LEGACY_FILTRABLES,
-  createLegacyUseCaseStubs,
-  LEGACY_CONTROLLERS,
-  legacyControllerProviders,
-  legacyListBody,
-  parametresDeListeParDefaut,
-  primeLegacyUseCaseStubs,
-} from './factories/legacy-contract.factory';
+import { emettreJeton } from '../src/modules/users/domain/TokenHash';
 
 // eslint-disable-next-line sonarjs/no-hardcoded-passwords -- fixture de test, pas un secret reel
 const WRONG_PASSWORD = 'WrongPassword1!';
@@ -43,19 +30,11 @@ const WRONG_PASSWORD = 'WrongPassword1!';
 describe('API coherence and connectivity (e2e http socket)', () => {
   const coreStubs = createCoreUseCaseStubs();
   const authStubs = createAuthUseCaseStubs();
-  const legacyStubs = createLegacyUseCaseStubs();
 
   const { authenticateUserUseCase } = authStubs;
 
   const app = applicationDeLaSuite(async () => {
-    const moduleRef = await Test.createTestingModule({
-      controllers: [...CORE_CONTROLLERS, ...LEGACY_CONTROLLERS],
-      providers: [
-        ...coreControllerProviders(coreStubs),
-        ...authControllerProviders(authStubs),
-        ...legacyControllerProviders(legacyStubs),
-      ],
-    })
+    const moduleRef = await moduleDesControleursDuSocle(coreStubs, authStubs)
       .overrideGuard(RolesGuard)
       .useValue({ canActivate: () => true })
       .overrideGuard(JwtAuthGuard)
@@ -65,7 +44,7 @@ describe('API coherence and connectivity (e2e http socket)', () => {
     return bootstrapTestApp(moduleRef);
   });
 
-  const getHttpServer = () => httpServerOf(app());
+  const getHttpServer = () => serveurHttpDe(app());
 
   function validationMessages(response: request.Response): string[] {
     const detail = response.body.detail as string | string[];
@@ -88,7 +67,6 @@ describe('API coherence and connectivity (e2e http socket)', () => {
 
     primeCoreUseCaseStubs(coreStubs);
     primePasswordUseCaseStubs(authStubs);
-    primeLegacyUseCaseStubs(legacyStubs);
   });
 
   it('POST /api/contacts validates payload and returns contract response', async () => {
@@ -136,6 +114,26 @@ describe('API coherence and connectivity (e2e http socket)', () => {
     expect(response.body).toEqual(AUDIT_CREATED_RESPONSE);
   });
 
+  it('POST /api/audits refuse en 429 avec Retry-After quand la boite a atteint son plafond', async () => {
+    coreStubs.createAuditRequestsUseCase.execute.mockRejectedValueOnce(
+      new RateLimitExceededError(
+        'Trop de demandes d audit vers cette adresse.',
+        121,
+      ),
+    );
+
+    const response = await request(getHttpServer())
+      .post('/api/audits')
+      .send(AUDIT_REQUEST_PAYLOAD)
+      .expect(429);
+
+    expect(response.headers['retry-after']).toBe('121');
+    expect(response.body).toMatchObject({
+      status: 429,
+      detail: 'Trop de demandes d audit vers cette adresse.',
+    });
+  });
+
   it('GET /api/audits/:id/summary returns summary snapshot', async () => {
     const response = await request(getHttpServer())
       .get('/api/audits/00000000-0000-4000-a000-000000000001/summary')
@@ -179,72 +177,15 @@ describe('API coherence and connectivity (e2e http socket)', () => {
     expect(response.body).toEqual(PASSWORD_RESET_REQUESTED_RESULT);
   });
 
-  it.each(CAS_LEGACY)(
-    'GET /api/%s exposes paginated contract',
-    async (route, contexte) => {
-      const response = await request(getHttpServer())
-        .get(`/api/${route}`)
-        .query(parametresDeListeParDefaut(contexte))
-        .expect(200);
-
-      expect(response.body).toEqual(legacyListBody(contexte.entite));
-      attendreListeParDefaut(contexte, legacyStubs);
-    },
-  );
-
-  it.each(CAS_LEGACY_FILTRABLES)(
-    'GET /api/%s forwards optional list filters',
-    async (route, contexte) => {
-      await request(getHttpServer())
-        .get(`/api/${route}`)
-        .query({ ...contexte.filtre?.parametres })
-        .expect(200);
-
-      attendreFiltreTransmis(contexte, legacyStubs);
-    },
-  );
-
-  it.each(CAS_LEGACY)(
-    'POST /api/%s forwards payload to legacy use case',
-    async (route, contexte) => {
-      const response = await request(getHttpServer())
-        .post(`/api/${route}`)
-        .send(contexte.payload)
-        .expect(201);
-
-      attendreCreationTransmise(contexte, legacyStubs, response.body);
-    },
-  );
-
-  it('POST /api/services rejects non-whitelisted fields', async () => {
+  it('POST /api/auth/reset-password confirme sans livrer l identifiant du compte', async () => {
+    const chosenCredential = 'NouveauMotDePasse1!';
     const response = await request(getHttpServer())
-      .post('/api/services')
-      .send({
-        slug: 'technical-seo',
-        name: 'Technical SEO',
-        injected: 'forbidden',
-      })
-      .expect(400);
+      .post('/api/auth/reset-password')
+      .send({ token: emettreJeton().brut, newPassword: chosenCredential })
+      .expect(200);
 
-    expectValidationMessage(response, 'property injected should not exist');
-  });
-
-  it('GET /api/services rejects invalid sort query', async () => {
-    const response = await request(getHttpServer())
-      .get('/api/services?sortBy=invalid')
-      .expect(400);
-
-    expectValidationMessage(
-      response,
-      'sortBy must be one of the following values',
-    );
-  });
-
-  it('GET /api/redirects rejects invalid enabled query filter', async () => {
-    const response = await request(getHttpServer())
-      .get('/api/redirects?enabled=not-a-boolean')
-      .expect(400);
-
-    expectValidationMessage(response, 'enabled must be a boolean value');
+    expect(response.body).toEqual({
+      message: PASSWORD_RESET_DONE_RESULT.message,
+    });
   });
 });

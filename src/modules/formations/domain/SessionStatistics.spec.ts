@@ -19,11 +19,13 @@ describe('calculerStatistiquesSeance', () => {
             questionId: 'Q1',
             total: 3,
             correctes: 1,
+            part: 1 / 3,
           }),
           buildResultatQuestion({
             questionId: 'Q2',
             total: 2,
             correctes: 2,
+            part: 1,
           }),
         ],
       },
@@ -37,6 +39,34 @@ describe('calculerStatistiquesSeance', () => {
       tauxReussite: 3 / 5,
       questionsProblemes: ['Q1'],
     });
+  });
+
+  it('retient les questions problemes sur la part servie, sans refaire la division', () => {
+    const statistiques = calculerStatistiquesSeance([], {
+      participants: 0,
+      questions: [
+        buildResultatQuestion({
+          questionId: 'Q-PART-BASSE',
+          total: 4,
+          correctes: 4,
+          part: 0.25,
+        }),
+        buildResultatQuestion({
+          questionId: 'Q-PART-HAUTE',
+          total: 4,
+          correctes: 0,
+          part: 1,
+        }),
+        buildResultatQuestion({
+          questionId: 'Q-SANS-REPONSE',
+          total: 0,
+          correctes: 0,
+          part: 0,
+        }),
+      ],
+    });
+
+    expect(statistiques.questionsProblemes).toEqual(['Q-PART-BASSE']);
   });
 
   it('somme les notes triées, sans quoi 11,875 tomberait à 11,87', () => {

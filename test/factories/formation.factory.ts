@@ -353,6 +353,7 @@ export function buildQuestionAAgreger(
     type: 'numeric',
     noteCompte: true,
     ecranId: 'E-NUM',
+    seuil: null,
     ...overrides,
   };
 }
@@ -372,6 +373,10 @@ export function buildResultatQuestion(
     parOption: null,
     scoreMoyen: null,
     parCle: null,
+    confusionDominante: null,
+    part: 0,
+    sousLeSeuil: false,
+    remediation: null,
     ...overrides,
   };
 }
@@ -634,7 +639,9 @@ export function createMockPulsesRepo(): jest.Mocked<IPulsesRepository> {
 export function createMockRappelsServisRepo(): jest.Mocked<IRappelsServisRepository> {
   const servis: RappelServiRecord[] = [];
   return {
-    lister: jest.fn().mockImplementation(() => Promise.resolve([...servis])),
+    listerDuParticipant: jest
+      .fn()
+      .mockImplementation(() => Promise.resolve([...servis])),
     figer: jest
       .fn()
       .mockImplementation(

@@ -1,13 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { ResourceConflictError } from '../../../common/domain/errors/ResourceConflictError';
 import { ResourceNotFoundError } from '../../../common/domain/errors/ResourceNotFoundError';
+import type { SupportedLocale } from '../../../common/domain/value-objects/LocaleCode';
 import {
-  ARTICLE_BROADCAST_REPOSITORY,
-  type ArticleBroadcastRecord,
-  type ArticleBroadcastRepository,
-  type ModeratedArticle,
-} from './article-broadcast.repository';
-import { clotureDeDiffusion, estAnnulable } from './cloture-de-diffusion';
+  type ArticleModerationRepository,
+  type ArticleRecord,
+  type ArticleStatus,
+  ARTICLES_REPOSITORY,
+} from './articles.repository';
 import { ArticleId } from '../domain/article-contract';
 
 const MODERATION_LIST_LIMIT = 30;
@@ -15,82 +14,50 @@ const MODERATION_LIST_LIMIT = 30;
 export interface ModerationView {
   article_id: string;
   slug: string;
-  locale: 'fr' | 'en';
+  locale: SupportedLocale;
   title: string;
-  status: string;
+  status: ArticleStatus;
   published_at: string;
-  broadcast: {
-    status: string;
-    send_after: string;
-    sent_count: number;
-    failed_count: number;
-    completed_at: string | null;
-  } | null;
 }
 
 @Injectable()
 export class ArticleModerationService {
   constructor(
-    @Inject(ARTICLE_BROADCAST_REPOSITORY)
-    private readonly broadcasts: ArticleBroadcastRepository,
+    @Inject(ARTICLES_REPOSITORY)
+    private readonly articles: ArticleModerationRepository,
   ) {}
 
   async list(): Promise<ModerationView[]> {
-    const items = await this.broadcasts.listModerated(MODERATION_LIST_LIMIT);
+    const items = await this.articles.listLatest(MODERATION_LIST_LIMIT);
     return items.map((item) => this.view(item));
   }
 
-  async withdraw(articleId: string, now: Date = new Date()) {
-    const item = await this.find(articleId);
-    await this.broadcasts.setArticleStatus(item.article.id, 'withdrawn');
-    if (estAnnulable(item.broadcast)) {
-      await this.annuler(item.broadcast, now);
-    }
+  withdraw(articleId: string): Promise<ModerationView> {
+    return this.changerLeStatut(articleId, 'withdrawn');
+  }
+
+  restore(articleId: string): Promise<ModerationView> {
+    return this.changerLeStatut(articleId, 'published');
+  }
+
+  private async changerLeStatut(
+    articleId: string,
+    status: ArticleStatus,
+  ): Promise<ModerationView> {
+    const article = await this.find(articleId);
+    await this.articles.setArticleStatus(article.id, status);
     return this.view(await this.find(articleId));
   }
 
-  async restore(articleId: string) {
-    const item = await this.find(articleId);
-    await this.broadcasts.setArticleStatus(item.article.id, 'published');
-    return this.view(await this.find(articleId));
-  }
-
-  async approveBroadcast(articleId: string, now: Date = new Date()) {
-    const item = await this.find(articleId);
-    if (item.broadcast?.status !== 'scheduled') {
-      throw new ResourceConflictError('Broadcast is not awaiting moderation');
-    }
-    await this.broadcasts.updateBroadcast(item.broadcast.id, {
-      sendAfter: now,
-    });
-    return this.view(await this.find(articleId));
-  }
-
-  async cancelBroadcast(articleId: string, now: Date = new Date()) {
-    const item = await this.find(articleId);
-    if (!estAnnulable(item.broadcast)) {
-      throw new ResourceConflictError('Broadcast can no longer be cancelled');
-    }
-    await this.annuler(item.broadcast, now);
-    return this.view(await this.find(articleId));
-  }
-
-  private annuler(broadcast: ArticleBroadcastRecord, now: Date): Promise<void> {
-    return this.broadcasts.updateBroadcast(
-      broadcast.id,
-      clotureDeDiffusion('cancelled', now),
-    );
-  }
-
-  private async find(articleId: string): Promise<ModeratedArticle> {
-    const item = ArticleId.safeParse(articleId).success
-      ? await this.broadcasts.findModerated(articleId)
+  private async find(articleId: string): Promise<ArticleRecord> {
+    const article = ArticleId.safeParse(articleId).success
+      ? await this.articles.findByArticleId(articleId)
       : null;
-    if (!item) throw new ResourceNotFoundError('Article not found');
-    return item;
+    if (!article) throw new ResourceNotFoundError('Article not found');
+    return article;
   }
 
-  private view({ article, broadcast }: ModeratedArticle): ModerationView {
+  private view(article: ArticleRecord): ModerationView {
     return {
       article_id: article.articleId,
       slug: article.slug,
@@ -98,15 +65,6 @@ export class ArticleModerationService {
       title: article.title,
       status: article.status,
       published_at: article.publishedAt.toISOString(),
-      broadcast: broadcast
-        ? {
-            status: broadcast.status,
-            send_after: broadcast.sendAfter.toISOString(),
-            sent_count: broadcast.sentCount,
-            failed_count: broadcast.failedCount,
-            completed_at: broadcast.completedAt?.toISOString() ?? null,
-          }
-        : null,
     };
   }
 }

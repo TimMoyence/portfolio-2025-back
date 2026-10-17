@@ -6,6 +6,7 @@ import {
   PrimaryGeneratedColumn,
   Unique,
 } from 'typeorm';
+import type { SupportedLocale } from '../../../../common/domain/value-objects/LocaleCode';
 import type { ArticleStatus } from '../../application/articles.repository';
 
 @Entity({ name: 'articles' })
@@ -23,7 +24,7 @@ export class ArticleEntity {
   slug: string;
 
   @Column({ type: 'varchar', length: 2 })
-  locale: 'fr' | 'en';
+  locale: SupportedLocale;
 
   @Column({ type: 'varchar', length: 20, default: 'published' })
   status: ArticleStatus;

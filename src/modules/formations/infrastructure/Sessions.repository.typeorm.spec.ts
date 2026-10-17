@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import { FindOperator, Not } from 'typeorm';
+import { EntityNotFoundError, FindOperator, Not } from 'typeorm';
 import type { FindOptionsWhere, Repository } from 'typeorm';
 import {
   mockTypeOrmUpdateBuilder,
@@ -83,6 +83,14 @@ describe('SessionsRepositoryTypeORM', () => {
       findOne: jest.fn((options: OptionsRecherche) =>
         Promise.resolve(filtrer(options)[0] ?? null),
       ),
+      findOneOrFail: jest.fn((options: OptionsRecherche) => {
+        const trouvee = filtrer(options)[0];
+        return trouvee
+          ? Promise.resolve(trouvee)
+          : Promise.reject(
+              new EntityNotFoundError('FormationSessionEntity', options),
+            );
+      }),
       count: jest.fn((options: OptionsRecherche) =>
         Promise.resolve(filtrer(options).length),
       ),

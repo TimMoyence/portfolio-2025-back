@@ -1,5 +1,4 @@
 import { BadRequestException, UnauthorizedException } from '@nestjs/common';
-import { Test } from '@nestjs/testing';
 import type { Request, Response } from 'express';
 import { firstValueFrom, toArray } from 'rxjs';
 import { LienInvalideError } from '../src/common/domain/errors/LienInvalideError';
@@ -18,14 +17,12 @@ import {
   AUDIT_REQUEST_PAYLOAD,
   AUDIT_CREATED_RESPONSE,
   AUDIT_SUMMARY_RESULT,
-  authControllerProviders,
   CONTACT_CREATED_RESPONSE,
   CONTACT_PAYLOAD,
   COOKIE_CONSENT_RECORDED_RESPONSE,
-  CORE_CONTROLLERS,
-  coreControllerProviders,
   createAuthUseCaseStubs,
   createCoreUseCaseStubs,
+  moduleDesControleursDuSocle,
   PASSWORD_RESET_REQUESTED_RESULT,
   primeCoreUseCaseStubs,
   primePasswordUseCaseStubs,
@@ -63,13 +60,10 @@ describe('API coherence and connectivity (e2e transportless)', () => {
   let authController: AuthController;
 
   beforeAll(async () => {
-    const moduleRef = await Test.createTestingModule({
-      controllers: CORE_CONTROLLERS,
-      providers: [
-        ...coreControllerProviders(coreStubs),
-        ...authControllerProviders(authStubs),
-      ],
-    }).compile();
+    const moduleRef = await moduleDesControleursDuSocle(
+      coreStubs,
+      authStubs,
+    ).compile();
 
     contactsController = moduleRef.get(ContactsController);
     cookieConsentsController = moduleRef.get(CookieConsentsController);
@@ -269,7 +263,10 @@ describe('API coherence and connectivity (e2e transportless)', () => {
       ForgotPasswordDto,
     );
 
-    const response = await authController.forgotPassword(dto);
+    const response = await authController.forgotPassword(
+      dto,
+      makeRequestMock({ 'user-agent': 'test-agent' }),
+    );
 
     expect(response).toEqual(PASSWORD_RESET_REQUESTED_RESULT);
     expect(requestPasswordResetUseCase.execute).toHaveBeenCalledWith(dto);
@@ -286,9 +283,12 @@ describe('API coherence and connectivity (e2e transportless)', () => {
       ResetPasswordDto,
     );
 
-    await expect(authController.resetPassword(dto)).rejects.toBeInstanceOf(
-      LienInvalideError,
-    );
+    await expect(
+      authController.resetPassword(
+        dto,
+        makeRequestMock({ 'user-agent': 'test-agent' }),
+      ),
+    ).rejects.toBeInstanceOf(LienInvalideError);
   });
 
   it('injects user id from JWT payload when setting password', async () => {

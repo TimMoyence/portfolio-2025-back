@@ -1,18 +1,22 @@
 import { Logger } from '@nestjs/common';
 import { createPrivateKey } from 'node:crypto';
 import { createTransport, type Transporter } from 'nodemailer';
-import { envBool } from '../../../config/env-readers.util';
+import {
+  envBool,
+  envBrut,
+  envPort,
+  envString,
+} from '../../../config/env-readers.util';
 import { messageDErreur } from '../../domain/errors/message-d-erreur';
 
 export function createOptionalSmtpTransporter(
   logger: Logger,
   context: string,
 ): Transporter | null {
-  const host = process.env.SMTP_HOST;
-  const portRaw = process.env.SMTP_PORT;
-  const port = portRaw ? Number(portRaw) : undefined;
-  const user = process.env.SMTP_USER;
-  const pass = process.env.SMTP_PASS;
+  const host = envString('SMTP_HOST');
+  const port = envPort(['SMTP_PORT'], 'SMTP');
+  const user = envBrut('SMTP_USER');
+  const pass = envBrut('SMTP_PASS');
 
   if (!host || !port || !user || !pass) {
     logger.warn(
@@ -32,45 +36,13 @@ export function createOptionalSmtpTransporter(
   }) as Transporter;
 }
 
-const DKIM_SIGNED_HEADERS = [
-  'From',
-  'Sender',
-  'Reply-To',
-  'Subject',
-  'Date',
-  'Message-ID',
-  'To',
-  'Cc',
-  'MIME-Version',
-  'Content-Type',
-  'Content-Transfer-Encoding',
-  'Content-ID',
-  'Content-Description',
-  'Resent-Date',
-  'Resent-From',
-  'Resent-Sender',
-  'Resent-To',
-  'Resent-Cc',
-  'Resent-Message-ID',
-  'In-Reply-To',
-  'References',
-  'List-Id',
-  'List-Help',
-  'List-Unsubscribe',
-  'List-Subscribe',
-  'List-Post',
-  'List-Owner',
-  'List-Archive',
-  'List-Unsubscribe-Post',
-].join(':');
-
 function buildDkimOptions(
   logger: Logger,
   context: string,
 ): Record<string, unknown> {
-  const domainName = process.env.SMTP_DKIM_DOMAIN;
-  const keySelector = process.env.SMTP_DKIM_SELECTOR;
-  const rawPrivateKey = process.env.SMTP_DKIM_PRIVATE_KEY;
+  const domainName = envString('SMTP_DKIM_DOMAIN');
+  const keySelector = envString('SMTP_DKIM_SELECTOR');
+  const rawPrivateKey = envBrut('SMTP_DKIM_PRIVATE_KEY');
 
   if (!domainName && !keySelector && !rawPrivateKey) return {};
 
@@ -111,14 +83,7 @@ function buildDkimOptions(
     return {};
   }
 
-  return {
-    dkim: {
-      domainName,
-      keySelector,
-      privateKey,
-      headerFieldNames: DKIM_SIGNED_HEADERS,
-    },
-  };
+  return { dkim: { domainName, keySelector, privateKey } };
 }
 
 const DKIM_DOMAIN_REGEX =

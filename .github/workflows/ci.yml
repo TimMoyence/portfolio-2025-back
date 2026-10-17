@@ -287,6 +287,24 @@ jobs:
             BACK_IMAGE="$BACK_IMAGE_VALUE" FRONT_IMAGE="$FRONT_IMAGE_VALUE" \
             docker compose -p "$PROJECT" -f "$COMPOSE_FILE" --env-file "$WORKDIR/backend.env" pull api migrate
 
+            # Dump the database before migrate: some migrations have no down, see docs/database-governance.md §5
+            # The base is the one migrate reads in backend.env; the db container keeps the env it was created with
+            BASE_MIGREE="$(BACK_IMAGE="$BACK_IMAGE_VALUE" FRONT_IMAGE="$FRONT_IMAGE_VALUE" \
+              docker compose -p "$PROJECT" -f "$COMPOSE_FILE" --env-file "$WORKDIR/backend.env" \
+              run --rm --no-deps -T --entrypoint printenv migrate POSTGRES_DB)"
+            if [ -z "$BASE_MIGREE" ]; then
+              echo 'POSTGRES_DB is empty in backend.env: no dump, no migration'
+              exit 1
+            fi
+            SAUVEGARDES="$WORKDIR/sauvegardes"
+            mkdir -p "$SAUVEGARDES"
+            chmod 700 "$SAUVEGARDES"
+            BACK_IMAGE="$BACK_IMAGE_VALUE" FRONT_IMAGE="$FRONT_IMAGE_VALUE" \
+            docker compose -p "$PROJECT" -f "$COMPOSE_FILE" --env-file "$WORKDIR/backend.env" exec -T db \
+              sh -c 'pg_dump -U "$POSTGRES_USER" -d "$1" --format=custom' sauvegarde "$BASE_MIGREE" \
+              > "$SAUVEGARDES/avant-migrate-$(date -u +%Y%m%dT%H%M%SZ)-${{ github.sha }}.dump"
+            ls -1t "$SAUVEGARDES"/avant-migrate-*.dump | tail -n +6 | xargs -r rm -f --
+
             # Run migrations on THE SAME project/network/db
             BACK_IMAGE="$BACK_IMAGE_VALUE" FRONT_IMAGE="$FRONT_IMAGE_VALUE" \
             docker compose -p "$PROJECT" -f "$COMPOSE_FILE" --env-file "$WORKDIR/backend.env" run --rm migrate

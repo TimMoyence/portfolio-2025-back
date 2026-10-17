@@ -1,67 +1,77 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { IsNull, MoreThan, Repository } from 'typeorm';
+import {
+  IsNull,
+  Repository,
+  type FindOptionsWhere,
+  type UpdateResult,
+} from 'typeorm';
+import { DepotEnDomaine } from '../../../common/infrastructure/typeorm/DepotEnDomaine';
+import { aAffecte } from '../../../common/infrastructure/typeorm/lignes-affectees';
 import type { IPasswordResetTokensRepository } from '../domain/IPasswordResetTokens.repository';
 import type { PasswordResetToken } from '../domain/PasswordResetToken';
+import type { PlafondDEnvois } from '../domain/PlafondDEnvois';
 import { PasswordResetTokenEntity } from './entities/PasswordResetToken.entity';
-import { champsDuJeton, enregistrerJeton, jetonActif } from './jetons.typeorm';
+import {
+  champsDuJeton,
+  nonExpire,
+  remplacerSousVerrou,
+} from './jetons.typeorm';
+
+function marquerUtilises(
+  depot: Repository<PasswordResetTokenEntity>,
+  critere: FindOptionsWhere<PasswordResetTokenEntity>,
+): Promise<UpdateResult> {
+  const maintenant = new Date();
+  return depot.update(critere, { usedAt: maintenant, updatedAt: maintenant });
+}
 
 @Injectable()
-export class PasswordResetTokensRepositoryTypeORM implements IPasswordResetTokensRepository {
+export class PasswordResetTokensRepositoryTypeORM
+  extends DepotEnDomaine<PasswordResetTokenEntity, PasswordResetToken>
+  implements IPasswordResetTokensRepository
+{
   constructor(
     @InjectRepository(PasswordResetTokenEntity)
-    private readonly repo: Repository<PasswordResetTokenEntity>,
-  ) {}
+    repo: Repository<PasswordResetTokenEntity>,
+  ) {
+    super(repo);
+  }
 
-  create(token: PasswordResetToken): Promise<PasswordResetToken> {
-    return enregistrerJeton(
+  async remplacerLesJetonsActifs(
+    jeton: Pick<PasswordResetToken, 'userId' | 'tokenHash' | 'expiresAt'>,
+    plafond: PlafondDEnvois,
+  ): Promise<PasswordResetToken | null> {
+    const enregistre = await remplacerSousVerrou(
       this.repo,
-      { ...champsDuJeton(token), usedAt: token.usedAt },
-      versLeDomaine,
+      { ...champsDuJeton(jeton), usedAt: null },
+      plafond,
+      (depot) =>
+        marquerUtilises(
+          depot,
+          nonExpire({ userId: jeton.userId, usedAt: IsNull() }),
+        ),
     );
+    return enregistre && this.toDomain(enregistre);
   }
 
   findActiveByTokenHash(tokenHash: string): Promise<PasswordResetToken | null> {
-    return jetonActif(
-      this.repo,
-      { tokenHash, usedAt: IsNull() },
-      versLeDomaine,
-    );
+    return this.trouver(nonExpire({ tokenHash, usedAt: IsNull() }));
   }
 
-  async invalidateActiveByUserId(userId: string): Promise<void> {
-    await this.repo.update(
-      {
-        userId,
-        usedAt: IsNull(),
-        expiresAt: MoreThan(new Date()),
-      },
-      {
-        usedAt: new Date(),
-        updatedAt: new Date(),
-      },
-    );
+  async markUsed(id: string): Promise<boolean> {
+    return aAffecte(await marquerUtilises(this.repo, { id, usedAt: IsNull() }));
   }
 
-  async markUsed(id: string): Promise<void> {
-    await this.repo.update(
-      { id },
-      {
-        usedAt: new Date(),
-        updatedAt: new Date(),
-      },
-    );
+  protected toDomain(entity: PasswordResetTokenEntity): PasswordResetToken {
+    return {
+      id: entity.id,
+      userId: entity.userId,
+      tokenHash: entity.tokenHash,
+      expiresAt: entity.expiresAt,
+      usedAt: entity.usedAt,
+      createdAt: entity.createdAt,
+      updatedAt: entity.updatedAt,
+    };
   }
-}
-
-function versLeDomaine(entity: PasswordResetTokenEntity): PasswordResetToken {
-  return {
-    id: entity.id,
-    userId: entity.userId,
-    tokenHash: entity.tokenHash,
-    expiresAt: entity.expiresAt,
-    usedAt: entity.usedAt,
-    createdAt: entity.createdAt,
-    updatedAt: entity.updatedAt,
-  };
 }

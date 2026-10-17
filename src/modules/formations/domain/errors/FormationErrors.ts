@@ -16,6 +16,12 @@ export class BlankFieldError extends DomainValidationError {
   }
 }
 
+export class FieldTooLongError extends DomainValidationError {
+  constructor(champ: string, longueurMax: number) {
+    super(`${champ} ne peut pas dépasser ${longueurMax} caractères.`);
+  }
+}
+
 export class SessionNotFoundError extends ResourceNotFoundError {
   readonly code = 'SEANCE_INTROUVABLE';
 
@@ -188,6 +194,10 @@ export class ProductionInvalideError extends DomainValidationError {
   constructor(questionId: string, raison: string) {
     super(`Production refusée pour ${questionId} : ${raison}.`);
   }
+}
+
+export function refuserLaProduction(questionId: string, raison: string): never {
+  throw new ProductionInvalideError(questionId, raison);
 }
 
 export class PilotageIncompatibleError extends DomainValidationError {

@@ -14,6 +14,7 @@ import {
   SESSIONS_REPOSITORY,
 } from '../domain/token';
 import { enArrierePlan } from '../../../common/application/en-arriere-plan';
+import { envString } from '../../../config/env-readers.util';
 import { GetSessionResultsUseCase } from './GetSessionResults.useCase';
 import type { BilanDeSeance } from './GetSessionResults.useCase';
 import { seanceNonTermineePilotablePar } from './SessionAccess';
@@ -87,7 +88,7 @@ export class CloseSessionUseCase {
   ): string {
     return (
       destinataireFormateur ??
-      process.env.FORMATION_TEACHER_NOTIFICATION_TO ??
+      envString('FORMATION_TEACHER_NOTIFICATION_TO') ??
       ''
     );
   }

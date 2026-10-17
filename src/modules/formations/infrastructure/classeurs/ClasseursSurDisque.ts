@@ -1,17 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
+import { TYPES_DE_FICHIER } from '../../../../common/domain/types/types-de-fichier';
 import { CLASSEUR_RESERVE } from '../../domain/cours/ProprietesStockees';
 import type {
   ClasseurTelecharge,
   IClasseursDeCours,
 } from '../../domain/IClasseursDeCours.port';
-
-const TYPES_DES_CLASSEURS = {
-  xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-  csv: 'text/csv; charset=utf-8',
-  pdf: 'application/pdf',
-} as const;
 
 export function classeurATelecharger(
   classeur: string,
@@ -23,7 +18,7 @@ export function classeurATelecharger(
   const [, base, extension] = correspondance;
   return {
     nom: `${base}.${extension}`,
-    type: TYPES_DES_CLASSEURS[extension as keyof typeof TYPES_DES_CLASSEURS],
+    type: TYPES_DE_FICHIER[extension as keyof typeof TYPES_DE_FICHIER],
   };
 }
 

@@ -1,14 +1,15 @@
 import 'reflect-metadata';
 import { DataSource, type DataSourceOptions } from 'typeorm';
-import type { SourceDEnv } from '../config/env-readers.util';
+import { estEnProduction, type SourceDEnv } from '../config/env-readers.util';
+import { validateEnv } from '../config/env.validation';
 import {
   emplacementTypeOrm,
   resoudreConnexionPostgres,
 } from './connexion-postgres';
 // dotenv 17.4 n'est charge qu'hors production : en production les variables
-// sont injectees par le bloc `environment:` du service api de compose.yaml.
-const nodeEnv = (process.env.NODE_ENV ?? '').trim();
-if (nodeEnv !== 'production') {
+// sont injectees par `env_file` et `environment:` du service migrate de
+// compose.yaml.
+if (!estEnProduction()) {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   require('dotenv/config');
 }
@@ -16,6 +17,9 @@ if (nodeEnv !== 'production') {
 export function optionsDesMigrations(
   source: SourceDEnv = process.env,
 ): DataSourceOptions {
+  if (estEnProduction(source)) {
+    validateEnv(source);
+  }
   return {
     type: 'postgres',
     ...emplacementTypeOrm(resoudreConnexionPostgres(source)),

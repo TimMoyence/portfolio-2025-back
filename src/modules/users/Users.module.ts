@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import type { ValeursDeLEnv } from '../../config/env.validation';
 import { AuthenticateGoogleUserUseCase } from './application/AuthenticateGoogleUser.useCase';
 import { CreateUsersUseCase } from './application/CreateUsers.useCase';
 import { DeleteUsersUseCase } from './application/DeleteUsers.useCase';
@@ -33,6 +34,7 @@ import { UsersController } from './interfaces/Users.controller';
 import { AuthAuditLogger } from './application/services/AuthAuditLogger';
 import { PasswordService } from './application/services/PasswordService';
 import { EnvoiDeVerificationEmail } from './application/services/email-verification-dispatch';
+import { EnvoiDeReinitialisation } from './application/services/password-reset-dispatch';
 import { JwtTokenService } from './application/services/JwtTokenService';
 import { AuthenticateUserUseCase } from './application/AuthenticateUser.useCase';
 import { ChangePasswordUseCase } from './application/ChangePassword.useCase';
@@ -82,6 +84,7 @@ const USERS_USE_CASES = [
     AuthAuditLogger,
     PasswordService,
     EnvoiDeVerificationEmail,
+    EnvoiDeReinitialisation,
     JwtTokenService,
     {
       provide: USERS_REPOSITORY,
@@ -109,7 +112,7 @@ const USERS_USE_CASES = [
     },
     {
       provide: GOOGLE_CLIENT_ID,
-      useFactory: (config: ConfigService) =>
+      useFactory: (config: ConfigService<ValeursDeLEnv>) =>
         config.get<string>('GOOGLE_CLIENT_ID', ''),
       inject: [ConfigService],
     },

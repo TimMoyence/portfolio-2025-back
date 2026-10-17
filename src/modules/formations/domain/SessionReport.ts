@@ -1,4 +1,8 @@
 import { arrondi } from '../../../common/domain/nombres/arrondi';
+import {
+  nombreAffiche,
+  TOUTES_LES_DECIMALES,
+} from '../../../common/domain/nombres/ecriture-francaise';
 import { moyenneOu } from '../../../common/domain/nombres/statistiques';
 import type { QuestionDeBareme } from './Bareme';
 import {
@@ -243,7 +247,10 @@ function reponseLisible(
   if (reponse.valeur === NE_SAIT_PAS) {
     return LIBELLE_NE_SAIT_PAS;
   }
-  const valeur = String(reponse.valeur);
+  if (typeof reponse.valeur === 'number') {
+    return nombreAffiche(reponse.valeur, TOUTES_LES_DECIMALES);
+  }
+  const valeur = reponse.valeur;
   if (!Object.hasOwn(libelles, reponse.questionId)) {
     return valeur;
   }

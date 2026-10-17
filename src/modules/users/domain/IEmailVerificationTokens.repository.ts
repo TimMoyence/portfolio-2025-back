@@ -1,13 +1,15 @@
 import type { EmailVerificationToken } from './EmailVerificationToken';
+import type { PlafondDEnvois } from './PlafondDEnvois';
 
 export interface IEmailVerificationTokensRepository {
-  create(token: EmailVerificationToken): Promise<EmailVerificationToken>;
+  remplacerLesJetonsActifs(
+    jeton: Pick<EmailVerificationToken, 'userId' | 'tokenHash' | 'expiresAt'>,
+    plafond: PlafondDEnvois,
+  ): Promise<EmailVerificationToken | null>;
 
   findActiveByTokenHash(
     tokenHash: string,
   ): Promise<EmailVerificationToken | null>;
 
   deleteByUserId(userId: string): Promise<void>;
-
-  countRecentByUserId(userId: string, sinceMs: number): Promise<number>;
 }

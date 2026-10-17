@@ -41,6 +41,20 @@ describe('AuditRequest aggregate', () => {
     ).toThrow(new DomainValidationError('Invalid audit contact email'));
   });
 
+  it.each([['de'], ['xx-invalid'], ['fr-FR']])(
+    'refuse la locale non supportee %p au lieu de la remplacer par fr',
+    (locale) => {
+      expect(() =>
+        AuditRequest.create({
+          websiteName: 'Example Studio',
+          contactMethod: 'EMAIL',
+          contactValue: 'hello@example.com',
+          locale: locale as 'fr',
+        }),
+      ).toThrow(new DomainValidationError('Invalid audit locale'));
+    },
+  );
+
   it('borne la provenance consignée', () => {
     attendreUneProvenanceBornee(
       AuditRequest.create({

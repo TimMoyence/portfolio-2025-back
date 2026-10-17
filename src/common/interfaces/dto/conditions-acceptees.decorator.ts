@@ -1,13 +1,13 @@
 import { applyDecorators } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsDate, IsString, MaxLength } from 'class-validator';
+import { IsDate } from 'class-validator';
+import { TexteSaisi } from './longueur-de-texte.decorator';
 
 export function VersionDesConditions(): PropertyDecorator {
   return applyDecorators(
     ApiProperty({ example: '2026-04-10' }),
-    IsString(),
-    MaxLength(50),
+    TexteSaisi(1, 50),
   );
 }
 

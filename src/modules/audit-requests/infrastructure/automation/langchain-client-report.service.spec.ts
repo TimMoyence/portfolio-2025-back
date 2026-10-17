@@ -6,13 +6,14 @@ import {
 } from '../../../../../test/helpers/appels-llm';
 import { buildAuditAutomationConfig } from '../../../../../test/factories/audit-config.factory';
 import {
+  buildClientReportConforme,
   buildClientReportContext,
-  buildClientReportSynthesis,
 } from '../../../../../test/factories/audit-requests.factory';
 import {
+  createChatOpenAIFactoryQuiInvoque,
   createChatOpenAIFactoryStub,
-  createLlmSuiviStub,
 } from '../../../../../test/factories/section-generator.factory';
+import type { AuditLocale } from '../../domain/audit-locale.util';
 import type { AuditAutomationConfig } from './audit.config';
 import {
   ClientReportContext,
@@ -22,7 +23,7 @@ import { UNTRUSTED_DATA_DISCLAIMER_FR } from './shared/prompt-sanitize.util';
 
 interface ClientReportTestable {
   generate: LangchainClientReportService['generate'];
-  buildFallback: (context: ClientReportContext, locale: 'fr' | 'en') => unknown;
+  buildFallback: (context: ClientReportContext, locale: AuditLocale) => unknown;
 }
 
 function asTestable(
@@ -66,17 +67,16 @@ describe('LangchainClientReportService', () => {
   function serviceAvecLlm(
     invoke: jest.Mock = jest
       .fn()
-      .mockResolvedValue(buildClientReportSynthesis()),
+      .mockResolvedValue(buildClientReportConforme()),
   ) {
-    const { fabrique, metrics } = createLlmSuiviStub(invoke);
+    const fabrique = createChatOpenAIFactoryQuiInvoque(invoke);
     const service = new LangchainClientReportService(
       { ...config, openAiApiKey: 'test-key' },
       fabrique,
-      metrics,
     );
     const generer = (contexte: Partial<ClientReportContext> = {}) =>
       service.generate({ ...baseContext(), ...contexte });
-    return { service, fabrique, metrics, invoke, generer };
+    return { service, fabrique, invoke, generer };
   }
 
   it('returns a deterministic fallback when the api key is missing', async () => {
@@ -122,6 +122,80 @@ describe('LangchainClientReportService', () => {
     expect(result.quickWins.length).toBeGreaterThanOrEqual(3);
   });
 
+  it('nettoie, dedoublonne et borne a 5 les quick wins du repli', async () => {
+    const service = new LangchainClientReportService(
+      config,
+      createChatOpenAIFactoryStub(),
+    );
+    const leviers = Array.from({ length: 6 }, (_, i) => `Levier ${i + 1}`);
+
+    const result = await service.generate({
+      ...baseContext(),
+      quickWins: [
+        ' Publier llms.txt ',
+        'Publier llms.txt',
+        '',
+        '  ',
+        ...leviers,
+      ],
+    });
+
+    expect(result.quickWins.map((entry) => entry.title)).toEqual([
+      'Publier llms.txt',
+      ...leviers.slice(0, 4),
+    ]);
+  });
+
+  describe('validateurs du palier client', () => {
+    it.each([
+      [
+        'du Markdown dans son résumé',
+        { executiveSummary: '**Synthese** en gras pour le decideur.' },
+      ],
+      [
+        'du Markdown dans le titre d un constat',
+        {
+          topFindings: [
+            {
+              title: '## Meta descriptions manquantes',
+              impact: 'Reduction du CTR organique.',
+              severity: 'high' as const,
+            },
+          ],
+        },
+      ],
+    ])(
+      'bascule sur le repli quand le rapport du LLM porte %s',
+      async (_cas, alteration) => {
+        const { service, generer } = serviceAvecLlm(
+          jest.fn().mockResolvedValue({
+            ...buildClientReportConforme(),
+            ...alteration,
+          }),
+        );
+
+        const rapport = await generer();
+
+        expect(rapport).toEqual(
+          asTestable(service).buildFallback(baseContext(), 'fr'),
+        );
+      },
+    );
+
+    it('garde le rapport du LLM qui respecte son palier', async () => {
+      const { generer } = serviceAvecLlm();
+
+      const rapport = await generer();
+
+      expect(rapport.executiveSummary).toBe(
+        buildClientReportConforme().executiveSummary,
+      );
+      expect(rapport.topFindings).toEqual(
+        buildClientReportConforme().topFindings,
+      );
+    });
+  });
+
   describe('appel du LLM de synthèse client', () => {
     it('construit son LLM par la fabrique, au délai de la synthèse', async () => {
       const { fabrique, generer } = serviceAvecLlm();
@@ -149,19 +223,6 @@ describe('LangchainClientReportService', () => {
       await generer({ websiteName: BALISE_FERMANTE_INJECTEE });
 
       attendreUnPayloadEmballe(invoke, UNTRUSTED_DATA_DISCLAIMER_FR);
-    });
-
-    it('compte l appel dans les métriques LLM', async () => {
-      const { metrics, generer } = serviceAvecLlm();
-
-      await generer();
-
-      expect(metrics.llmCallsTotal.inc).toHaveBeenCalledWith({
-        model: config.llmModel,
-        section: 'client_report',
-        locale: 'fr',
-        status: 'success',
-      });
     });
   });
 });

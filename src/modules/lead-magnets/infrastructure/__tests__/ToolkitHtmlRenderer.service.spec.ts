@@ -1,3 +1,6 @@
+import { buildToolkitContent } from '../../../../../test/factories/lead-magnet-request.factory';
+import { couvertureRendue } from '../../../../../test/helpers/couverture-de-pdf';
+import { htmlEmis } from '../../../../common/domain/texte/html-escape.util';
 import type { ToolkitContent } from '../../domain/ToolkitContent';
 import { ToolkitHtmlRendererService } from '../ToolkitHtmlRenderer.service';
 
@@ -8,91 +11,54 @@ describe('ToolkitHtmlRendererService', () => {
     service = new ToolkitHtmlRendererService();
   });
 
-  const buildContent = (
-    overrides: Partial<ToolkitContent> = {},
-  ): ToolkitContent => ({
-    recap: {
-      firstName: 'Tim',
-      aiLevel: 'intermediaire',
-      sector: 'Coach sportif',
-      budgetTier: '60',
-    },
-    cheatsheet: [
-      {
-        tool: 'ChatGPT',
-        category: 'produire',
-        price: 'Gratuit',
-        url: 'https://chat.openai.com',
-        tip: 'Le couteau suisse',
-        decision: 'Brainstormer ou analyser',
-        alreadyUsed: false,
-      },
-    ],
-    prompts: [
-      {
-        category: 'Prospection',
-        title: 'Message LinkedIn',
-        level: 'debutant',
-        prompt: 'Ecris un message pour {{prospect}}',
-        tool: 'ChatGPT',
-      },
-    ],
-    workflows: [
-      {
-        title: 'Prospection automatisee',
-        description: 'Detecte les leads LinkedIn',
-        setupTime: '2h',
-        monthlyCost: 0,
-        tools: ['Waalaxy', 'Zapier'],
-        steps: [
-          {
-            step: 1,
-            action: 'Capturer le lead',
-            tool: 'Waalaxy',
-            detail: 'Campagne LinkedIn ciblee',
-          },
-        ],
-      },
-    ],
-    templates: [
-      {
-        name: 'CRM Solopreneur',
-        platform: 'Notion',
-        url: 'https://notion.so/templates/crm',
-        description: 'Pipeline de vente complet',
-        minBudget: 0,
-      },
-    ],
-    generatedPrompt: null,
-    ...overrides,
-  });
+  const rendre = (content: ToolkitContent): string =>
+    htmlEmis(service.render(content));
 
   describe('render', () => {
     it('retourne un document HTML complet avec DOCTYPE', () => {
-      const html = service.render(buildContent());
+      const html = rendre(buildToolkitContent());
       expect(html).toMatch(/^<!DOCTYPE html>/);
       expect(html).toContain('<html lang="fr">');
       expect(html).toContain('</html>');
     });
 
     it('inclut le prenom dans la page de couverture', () => {
-      const html = service.render(
-        buildContent({
-          recap: { ...buildContent().recap, firstName: 'Marie' },
+      const html = rendre(
+        buildToolkitContent({
+          recap: { ...buildToolkitContent().recap, firstName: 'Marie' },
         }),
       );
       expect(html).toContain('Marie');
     });
 
-    it('inclut le secteur, le niveau et le budget dans la couverture', () => {
-      const html = service.render(buildContent());
-      expect(html).toContain('Coach sportif');
-      expect(html.toLowerCase()).toContain('interm');
-      expect(html).toContain('60');
+    it('rend la couverture du guide au seul prenom, sans badge (LEG-06)', () => {
+      jest.useFakeTimers({ now: Date.parse('2026-04-15T10:00:00Z') });
+      try {
+        const html = rendre(
+          buildToolkitContent({
+            recap: { ...buildToolkitContent().recap, firstName: 'Léa <3' },
+          }),
+        );
+
+        expect(couvertureRendue(html)).toBe(
+          '<section class="page cover"><div class="cover-gradient">' +
+            '<div class="cover-shape cover-shape-1"></div><div class="cover-shape cover-shape-2"></div>' +
+            '<div class="cover-shape cover-shape-3"></div></div><div class="cover-content">' +
+            '<p class="cover-eyebrow">🚀 Asili Design — Guide personnalisé</p>' +
+            '<h1 class="cover-title">L\'IA au service<br/>des solopreneurs</h1>' +
+            '<p class="cover-subtitle">Votre boîte à outils sur mesure pour transformer votre activité avec l\'IA en 2026.</p>' +
+            '<div class="cover-meta"><p class="cover-prepared">Préparé pour <strong>Léa &lt;3</strong></p>' +
+            '<p class="cover-date">15 avril 2026</p></div></div>' +
+            '<footer class="cover-footer"><span>asilidesign.fr</span><span>•</span>' +
+            '<span>Guide généré sur mesure</span><span>•</span><span>Édition 2026</span></footer></section>',
+        );
+      } finally {
+        jest.useRealTimers();
+      }
     });
 
     it('rend les outils du cheatsheet avec leur URL et prix', () => {
-      const html = service.render(buildContent());
+      const html = rendre(buildToolkitContent());
       expect(html).toContain('ChatGPT');
       expect(html).toContain('https://chat.openai.com');
       expect(html).toContain('Gratuit');
@@ -100,7 +66,7 @@ describe('ToolkitHtmlRendererService', () => {
     });
 
     it('rend les prompts avec leur contenu et metadonnees', () => {
-      const html = service.render(buildContent());
+      const html = rendre(buildToolkitContent());
       expect(html).toContain('Message LinkedIn');
       expect(html).toContain('Prospection');
       expect(html.toLowerCase()).toContain('but');
@@ -108,8 +74,8 @@ describe('ToolkitHtmlRendererService', () => {
     });
 
     it('rend la description, l exemple et l astuce quand ils sont fournis', () => {
-      const html = service.render(
-        buildContent({
+      const html = rendre(
+        buildToolkitContent({
           prompts: [
             {
               category: 'Prospection',
@@ -132,13 +98,13 @@ describe('ToolkitHtmlRendererService', () => {
     });
 
     it('omet les blocs description / example / tip quand ils sont absents', () => {
-      const html = service.render(buildContent());
+      const html = rendre(buildToolkitContent());
       expect(html).not.toContain("Cas d'usage");
       expect(html).not.toContain("Astuce d'it");
     });
 
     it('rend la page stats avec les chiffres cles solopreneurs', () => {
-      const html = service.render(buildContent());
+      const html = rendre(buildToolkitContent());
       expect(html).toContain('Pourquoi ce guide');
       expect(html).toContain('74');
       expect(html).toContain('64');
@@ -146,7 +112,7 @@ describe('ToolkitHtmlRendererService', () => {
     });
 
     it('rend les workflows avec etapes numerotees', () => {
-      const html = service.render(buildContent());
+      const html = rendre(buildToolkitContent());
       expect(html).toContain('Prospection automatisee');
       expect(html).toContain('Capturer le lead');
       expect(html).toContain('Waalaxy');
@@ -154,51 +120,35 @@ describe('ToolkitHtmlRendererService', () => {
     });
 
     it('rend les templates avec leur lien', () => {
-      const html = service.render(buildContent());
+      const html = rendre(buildToolkitContent());
       expect(html).toContain('CRM Solopreneur');
       expect(html).toContain('Notion');
       expect(html).toContain('https://notion.so/templates/crm');
     });
 
-    it('omet la section prompt genere si null', () => {
-      const html = service.render(buildContent({ generatedPrompt: null }));
-      expect(html).not.toContain('Votre prompt personnalisé');
-      expect(html).not.toContain('Votre prompt personnalise');
-    });
-
-    it('inclut la section prompt genere si present', () => {
-      const html = service.render(
-        buildContent({
+    it('ne rend ni puce d usage, ni prompt genere, ni tri par niveau (LEG-06)', () => {
+      const html = rendre(
+        Object.assign(buildToolkitContent(), {
           generatedPrompt: 'Genere-moi un plan pour coach sportif',
         }),
       );
-      expect(html).toContain('Genere-moi un plan pour coach sportif');
-    });
 
-    it("utilise des valeurs par defaut si le profil n'est pas defini", () => {
-      const html = service.render(
-        buildContent({
-          recap: {
-            firstName: 'Tim',
-            aiLevel: null,
-            sector: null,
-            budgetTier: null,
-          },
-        }),
-      );
-      expect(html).toContain('Tim');
-      expect(html).toMatch(/^<!DOCTYPE html>/);
+      expect(html).not.toContain('class="chip');
+      expect(html).not.toContain('Genere-moi un plan');
+      expect(html).not.toContain('Votre prompt');
+      expect(html).not.toContain('Personnalisés selon votre niveau');
+      expect(html).toContain('Pour tous les niveaux');
     });
 
     it('inclut la date du jour formatee en francais', () => {
-      const html = service.render(buildContent());
+      const html = rendre(buildToolkitContent());
       const currentYear = new Date().getFullYear().toString();
       expect(html).toContain(currentYear);
     });
 
     it('rend plusieurs outils cheatsheet regroupes par categorie', () => {
-      const html = service.render(
-        buildContent({
+      const html = rendre(
+        buildToolkitContent({
           cheatsheet: [
             {
               tool: 'ChatGPT',
@@ -207,7 +157,6 @@ describe('ToolkitHtmlRendererService', () => {
               url: 'https://chat.openai.com',
               tip: 'Polyvalent',
               decision: 'Brainstormer',
-              alreadyUsed: true,
             },
             {
               tool: 'Zapier',
@@ -216,7 +165,6 @@ describe('ToolkitHtmlRendererService', () => {
               url: 'https://zapier.com',
               tip: 'No-code',
               decision: 'Connecter deux apps',
-              alreadyUsed: false,
             },
           ],
         }),
@@ -227,8 +175,8 @@ describe('ToolkitHtmlRendererService', () => {
     });
 
     it('rend tous les niveaux de prompts (debutant, intermediaire, avance)', () => {
-      const html = service.render(
-        buildContent({
+      const html = rendre(
+        buildToolkitContent({
           prompts: [
             {
               category: 'Contenu',
@@ -260,13 +208,13 @@ describe('ToolkitHtmlRendererService', () => {
     });
 
     it('rend le CSS inline dans une balise style', () => {
-      const html = service.render(buildContent());
+      const html = rendre(buildToolkitContent());
       expect(html).toContain('<style>');
       expect(html).toContain('</style>');
     });
 
     it('teinte categories, prompts et templates par classe, jamais par un style interpole', () => {
-      const html = service.render(buildContent());
+      const html = rendre(buildToolkitContent());
 
       expect(html).toContain('class="category-title teinte-accent"');
       expect(html).toContain('class="prompt-card teinte-rose"');
@@ -278,14 +226,14 @@ describe('ToolkitHtmlRendererService', () => {
     });
 
     it('force https sur le lien d un outil sans laisser passer un autre schema', () => {
-      const html = service.render(buildContent());
+      const html = rendre(buildToolkitContent());
 
       expect(html).toContain('href="https://chat.openai.com"');
     });
 
     it('neutralise un outil dont l URL porte un schema hostile', () => {
-      const html = service.render(
-        buildContent({
+      const html = rendre(
+        buildToolkitContent({
           cheatsheet: [
             {
               tool: 'Piege',
@@ -294,7 +242,6 @@ describe('ToolkitHtmlRendererService', () => {
               url: 'javascript:alert(1)',
               tip: 'x',
               decision: 'x',
-              alreadyUsed: false,
             },
           ],
         }),
@@ -305,34 +252,34 @@ describe('ToolkitHtmlRendererService', () => {
     });
 
     it('etale l outil seul de sa categorie par une classe, sans style interpole', () => {
-      const html = service.render(buildContent());
+      const html = rendre(buildToolkitContent());
 
       expect(html).toContain('class="tool-card tool-card-solo"');
       expect(html).not.toContain('style="grid-column');
     });
 
     it("inclut l'accent Asili dans le CSS", () => {
-      const html = service.render(buildContent());
+      const html = rendre(buildToolkitContent());
       expect(html).toContain('#4fb3a2');
     });
 
     it('gere une cheatsheet vide sans crasher', () => {
-      const html = service.render(buildContent({ cheatsheet: [] }));
+      const html = rendre(buildToolkitContent({ cheatsheet: [] }));
       expect(html).toMatch(/^<!DOCTYPE html>/);
     });
 
     it('gere des prompts vides sans crasher', () => {
-      const html = service.render(buildContent({ prompts: [] }));
+      const html = rendre(buildToolkitContent({ prompts: [] }));
       expect(html).toMatch(/^<!DOCTYPE html>/);
     });
 
     it('gere des workflows vides sans crasher', () => {
-      const html = service.render(buildContent({ workflows: [] }));
+      const html = rendre(buildToolkitContent({ workflows: [] }));
       expect(html).toMatch(/^<!DOCTYPE html>/);
     });
 
     it('gere des templates vides sans crasher', () => {
-      const html = service.render(buildContent({ templates: [] }));
+      const html = rendre(buildToolkitContent({ templates: [] }));
       expect(html).toMatch(/^<!DOCTYPE html>/);
     });
   });

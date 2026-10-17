@@ -40,6 +40,7 @@ import type {
   DonneesParBrique,
   EscapeParcoursPublic,
   ExitBilletPublic,
+  MachineCalculee,
   MetadonneesBrique,
   NumeriquePublic,
   OptionPublique,
@@ -50,6 +51,7 @@ import type {
   StoryRecit,
   TableBuildPlanPublic,
   TableColonneServie,
+  TraceCalcule,
   VotePublic,
   WorkedExemple,
 } from './donnees-publiques';
@@ -82,9 +84,16 @@ import type {
   EcranPublic,
   TirageDuCours,
 } from './tirage';
-import { ATTENDU_PRIX_REVISE } from '../../../../../test/factories/corriges.factory';
+import {
+  ATTENDU_PRIX_INITIAL,
+  ATTENDU_PRIX_REVISE,
+} from '../../../../../test/factories/corriges.factory';
 import { PLAN_TABLEAU } from '../../../../../test/factories/ecrans-stockes.factory';
 import { REGLE_DE_NOTATION } from '../RegleDeNotation';
+import { planDeFeuilleServi } from '../cours/FeuilleEvaluee';
+import { machineCalculee } from '../cours/MachineServie';
+import { planDeTableauServi, tableauDuCorrige } from '../cours/TableauEvalue';
+import { traceCalcule } from '../cours/TraceServi';
 
 const METADONNEES = {
   concepts: ['evolutions-successives'],
@@ -327,6 +336,13 @@ const RESULTAT_QUESTION = {
   },
   scoreMoyen: null,
   parCle: null,
+  confusionDominante: 'hausse-baisse-symetriques',
+  part: 0.625,
+  sousLeSeuil: true,
+  remediation: {
+    confusionId: 'hausse-baisse-symetriques',
+    ecranId: 'B2-01-A2-04',
+  },
 } satisfies ResultatQuestion;
 
 const RESULTATS = {
@@ -782,6 +798,7 @@ describe('Contrats figés du cours B2-01 V3 (§ 9, lot 0)', () => {
               reference: 'E2',
               formuleReference: '=C2/$C$5',
               valeur: 0.345217,
+              affichage: '0,3452',
               tolerance: TOLERANCE_RELATIVE,
               forme: 'references',
             },
@@ -790,6 +807,9 @@ describe('Contrats figés du cours B2-01 V3 (§ 9, lot 0)', () => {
         {
           type: 'tableau',
           attendus: [{ rang: 0, cle: 'prix', valeur: 21.6 }],
+          tableauCorrige: tableauDuCorrige(PLAN_TABLEAU, [
+            ATTENDU_PRIX_INITIAL,
+          ]),
           tolerance: TOLERANCE_ABSOLUE,
         },
         {
@@ -829,6 +849,7 @@ describe('Contrats figés du cours B2-01 V3 (§ 9, lot 0)', () => {
           { id: 'b2-01-a4-feuille-canaux', enonce: 'Feuille', options: null },
         ],
         corrigeEcran: corriges[0],
+        reflexion: null,
       } satisfies EcranDeroule;
       const deroule = {
         ...COURS_PUBLIC,
@@ -999,6 +1020,12 @@ describe('Contrats figés du cours B2-01 V3 (§ 9, lot 0)', () => {
             parcoursId: 'b2-01-a6-coffre',
             resolues: [{ enigmeId: 'enigme-1', fragment: '7' }],
             tentativesRestantes: { 'enigme-2': 9 },
+            etats: {
+              'enigme-1': { etat: 'resolue', tentativesRestantes: 8 },
+              'enigme-2': { etat: 'ouverte', tentativesRestantes: 9 },
+            },
+            enigmeOuverte: 'enigme-2',
+            acheve: false,
           },
         ],
         defis: [
@@ -1052,7 +1079,7 @@ describe('Contrats figés du cours B2-01 V3 (§ 9, lot 0)', () => {
         metadonnees: METADONNEES,
       } satisfies StoryRecit;
       const plan = {
-        ...PLAN_TABLEAU_ANNUEL,
+        ...planDeTableauServi(PLAN_TABLEAU_ANNUEL),
         metadonnees: METADONNEES,
       } satisfies TableBuildPlanPublic;
       const colonne = plan.colonnes[1] satisfies TableColonneServie;
@@ -1085,7 +1112,7 @@ describe('Contrats figés du cours B2-01 V3 (§ 9, lot 0)', () => {
         calcul: '1 + t / 100',
         phrase: 'Le coefficient vaut {resultat}.',
         metadonnees: METADONNEES,
-      } satisfies Concept4Definition;
+      } satisfies Omit<Concept4Definition, keyof MachineCalculee>;
       const plot = {
         id: 'B2-01-A5-04-SIMULATEUR-MIX',
         abscisse: { libelle: 'Part du sur-mesure', min: 0, max: 1 },
@@ -1096,7 +1123,7 @@ describe('Contrats figés du cours B2-01 V3 (§ 9, lot 0)', () => {
         ],
         description: 'Le taux global suit la part de chaque canal.',
         metadonnees: METADONNEES,
-      } satisfies PlotDefinition;
+      } satisfies Omit<PlotDefinition, keyof TraceCalcule>;
       const spaced = {
         questionId: 'b2-01-r-compensation',
         concept: 'evolution-reciproque',
@@ -1123,8 +1150,18 @@ describe('Contrats figés du cours B2-01 V3 (§ 9, lot 0)', () => {
           },
         },
         'fp-worked': { exemple, etayage: 3 },
-        'fp-concept4': { definition: concept4 },
-        'fp-plot': { definition: plot },
+        'fp-concept4': {
+          definition: {
+            ...concept4,
+            ...machineCalculee(concept4),
+          } satisfies Concept4Definition,
+        },
+        'fp-plot': {
+          definition: {
+            ...plot,
+            ...traceCalcule(plot),
+          } satisfies PlotDefinition,
+        },
         'fp-challenge': {
           probleme: {
             id: 'b2-01-a5-defi-recommandation',
@@ -1137,7 +1174,12 @@ describe('Contrats figés du cours B2-01 V3 (§ 9, lot 0)', () => {
         'fp-cardsort': {
           plan: { ...PLAN_CARTES, metadonnees: METADONNEES },
         },
-        'fp-sheet': { plan: { ...PLAN_FEUILLE, metadonnees: METADONNEES } },
+        'fp-sheet': {
+          plan: {
+            ...planDeFeuilleServi(PLAN_FEUILLE),
+            metadonnees: METADONNEES,
+          },
+        },
         'fp-table-build': { plan },
         'fp-escape': { parcours: { ...PARCOURS, metadonnees: METADONNEES } },
         'fp-pulse': { sondage },

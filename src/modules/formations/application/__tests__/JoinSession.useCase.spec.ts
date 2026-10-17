@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/unbound-method */
+import { DomainValidationError } from '../../../../common/domain/errors/DomainValidationError';
 import {
   buildParticipantRecord,
   buildSessionRecord,
@@ -50,6 +51,35 @@ describe('JoinSessionUseCase', () => {
         capacite: 12,
       }),
     );
+  });
+
+  it('confie au depot le prenom et le nom rognes', async () => {
+    await sut.execute({ ...commande, prenom: '  Theo ', nom: ' Martin  ' });
+
+    expect(participants.inscrire).toHaveBeenCalledWith(
+      expect.objectContaining({ prenom: 'Theo', nom: 'Martin' }),
+    );
+  });
+
+  it.each([
+    ['un prenom blanc', { prenom: '   ' }],
+    [
+      'un prenom que la colonne de 80 caracteres ne tient pas',
+      { prenom: String.fromCodePoint(0x2764, 0xfe0f).repeat(41) },
+    ],
+    [
+      'un nom que la colonne de 80 caracteres ne tient pas',
+      { nom: 'M'.repeat(81) },
+    ],
+    [
+      'une adresse que la colonne de 180 caracteres ne tient pas',
+      { email: `${'a'.repeat(64)}@${'b'.repeat(113)}.fr` },
+    ],
+  ])('refuse %s sans rien inscrire', async (_cas, identite) => {
+    await expect(sut.execute({ ...commande, ...identite })).rejects.toThrow(
+      DomainValidationError,
+    );
+    expect(participants.inscrire).not.toHaveBeenCalled();
   });
 
   it('choisit une graine libre parmi celles que le depot lui presente', async () => {

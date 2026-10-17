@@ -40,19 +40,50 @@ export function preparerNouveauMotDePasse(
   return updatedUser;
 }
 
+function attendreSessionsFermeesApres(
+  mettreAJour: IUsersRepository['update'],
+  fermerLesSessions: IRefreshTokensRepository['revokeByUserId'],
+): void {
+  expect(fermerLesSessions).toHaveBeenCalledWith('user-1');
+  expect(
+    jest.mocked(fermerLesSessions).mock.invocationCallOrder[0],
+  ).toBeGreaterThan(
+    Math.max(...jest.mocked(mettreAJour).mock.invocationCallOrder),
+  );
+}
+
+export function attendreAucunMotDePasseEnregistre(
+  mettreAJour: IUsersRepository['update'],
+  fermerLesSessions: IRefreshTokensRepository['revokeByUserId'],
+): void {
+  expect(mettreAJour).not.toHaveBeenCalled();
+  expect(fermerLesSessions).not.toHaveBeenCalled();
+}
+
 export function attendreNouveauMotDePasseEnregistre(
-  effets: {
-    hacher: PasswordService['hash'];
-    mettreAJour: IUsersRepository['update'];
+  {
+    passwordService,
+    usersRepository,
+    refreshTokensRepo,
+  }: {
+    readonly passwordService: { readonly hash: PasswordService['hash'] };
+    readonly usersRepository: { readonly update: IUsersRepository['update'] };
+    readonly refreshTokensRepo: {
+      readonly revokeByUserId: IRefreshTokensRepository['revokeByUserId'];
+    };
   },
   motDePasse: string,
   auteur: string,
 ): void {
-  expect(effets.hacher).toHaveBeenCalledWith(motDePasse);
-  attendreMiseAJourDeLUtilisateur(effets.mettreAJour, {
+  expect(passwordService.hash).toHaveBeenCalledWith(motDePasse);
+  attendreMiseAJourDeLUtilisateur(usersRepository.update, {
     passwordHash: 'new-hash',
     updatedOrCreatedBy: auteur,
   });
+  attendreSessionsFermeesApres(
+    usersRepository.update,
+    refreshTokensRepo.revokeByUserId,
+  );
 }
 
 export function itRefuseUnRefreshTokenInconnu(

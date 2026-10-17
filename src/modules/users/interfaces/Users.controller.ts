@@ -12,6 +12,7 @@ import {
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
+  ApiConflictResponse,
   ApiCreatedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -24,11 +25,14 @@ import { DeleteUsersUseCase } from '../application/DeleteUsers.useCase';
 import { ListOneUserUseCase } from '../application/ListOneUser.useCase';
 import { ListUsersUseCase } from '../application/ListUsers.useCase';
 import { UpdateUsersUseCase } from '../application/UpdateUsers.useCase';
+import { ADRESSE_OU_COMPTE_GOOGLE_PRIS } from '../domain/CompteDejaInscritError';
 import { Roles } from '../../../common/interfaces/auth/roles.decorator';
 import { RolesGuard } from '../../../common/interfaces/auth/roles.guard';
 import { CreateUserDto } from './dto/CreateUser.dto';
 import { UpdateUserDto } from './dto/UpdateUser.dto';
 import { UserResponseDto } from './dto/User.response.dto';
+
+const AUTEUR_ADMINISTRATEUR = 'admin';
 
 @ApiTags('users')
 @ApiBearerAuth()
@@ -68,8 +72,12 @@ export class UsersController {
   @ApiOperation({ summary: 'Creer un utilisateur (admin)' })
   @ApiCreatedResponse({ type: UserResponseDto })
   @ApiBadRequestResponse({ description: 'Validation echouee' })
+  @ApiConflictResponse({ description: ADRESSE_OU_COMPTE_GOOGLE_PRIS })
   async create(@Body() dto: CreateUserDto): Promise<UserResponseDto> {
-    const result = await this.createUseCase.execute(dto);
+    const result = await this.createUseCase.execute({
+      ...dto,
+      updatedOrCreatedBy: AUTEUR_ADMINISTRATEUR,
+    });
     return UserResponseDto.fromDomain(result.user);
   }
 
@@ -78,11 +86,15 @@ export class UsersController {
   @ApiOkResponse({ type: UserResponseDto })
   @ApiBadRequestResponse({ description: 'Validation echouee' })
   @ApiNotFoundResponse({ description: 'Utilisateur non trouve' })
+  @ApiConflictResponse({ description: ADRESSE_OU_COMPTE_GOOGLE_PRIS })
   async update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: UpdateUserDto,
   ): Promise<UserResponseDto> {
-    const user = await this.updateUseCase.execute(id, dto);
+    const user = await this.updateUseCase.execute(id, {
+      ...dto,
+      updatedOrCreatedBy: AUTEUR_ADMINISTRATEUR,
+    });
     return UserResponseDto.fromDomain(user);
   }
 

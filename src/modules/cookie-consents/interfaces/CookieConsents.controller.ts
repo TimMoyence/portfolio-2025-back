@@ -5,7 +5,7 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { Public } from '../../../common/interfaces/auth/public.decorator';
+import { RoutePublique } from '../../../common/interfaces/security/formulaire-public.decorator';
 import type { Request } from 'express';
 import { provenanceDeLaRequete } from '../../../common/interfaces/security/client-ip.util';
 import { CreateCookieConsentsUseCase } from '../application/CreateCookieConsents.useCase';
@@ -18,7 +18,7 @@ import { CookieConsentRequestDto } from './dto/cookie-consent.request.dto';
 export class CookieConsentsController {
   constructor(private readonly createUseCase: CreateCookieConsentsUseCase) {}
 
-  @Public()
+  @RoutePublique()
   @Post()
   @ApiOperation({
     summary: 'Enregistrer un consentement cookie (acces public)',

@@ -1,8 +1,9 @@
-import type { AuditSnapshot } from '../../domain/AuditProcessing';
-import type {
-  ClientReportSynthesis,
-  ExpertReportSynthesis,
-} from '../../domain/AuditReportTiers';
+import {
+  buildAuditSnapshot,
+  buildClientReportSynthesis,
+  buildExpertReportSynthesis,
+} from '../../../../../test/factories/audit-requests.factory';
+import { safeHtml } from '../../../../common/domain/texte/html-escape.util';
 import { AuditPdfGeneratorService } from './audit-pdf-generator.service';
 import { AuditReportHtmlRendererService } from './audit-report-html-renderer.service';
 
@@ -32,20 +33,9 @@ describe('AuditPdfGeneratorService', () => {
   let htmlRenderer: AuditReportHtmlRendererService;
   let renderMock: jest.Mock;
 
-  const audit = {
-    websiteName: 'Test Co',
-    createdAt: new Date('2026-04-15T10:00:00Z'),
-    finalUrl: 'https://test.co',
-    keyChecks: {},
-  } as unknown as AuditSnapshot;
-
-  const clientReport = {} as ClientReportSynthesis;
-  const expertReport = {
-    perPageAnalysis: [],
-    crossPageFindings: [],
-    priorityBacklog: [],
-    internalNotes: '',
-  } as unknown as ExpertReportSynthesis;
+  const audit = buildAuditSnapshot();
+  const clientReport = buildClientReportSynthesis();
+  const expertReport = buildExpertReportSynthesis();
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -65,7 +55,7 @@ describe('AuditPdfGeneratorService', () => {
 
     renderMock = jest
       .fn()
-      .mockReturnValue('<html><body>FAKE HTML</body></html>');
+      .mockReturnValue(safeHtml`<html><body>FAKE HTML</body></html>`);
     htmlRenderer = {
       render: renderMock,
     } as unknown as AuditReportHtmlRendererService;
@@ -98,6 +88,18 @@ describe('AuditPdfGeneratorService', () => {
       left: '22mm',
       right: '22mm',
     });
+  });
+
+  it('n imprime aucun HTML qui n a pas ete emis par escapeHtml ou safeHtml', async () => {
+    renderMock.mockReturnValueOnce(
+      '<html><body><img src=x onerror=alert(1)></body></html>',
+    );
+
+    await expect(
+      service.generate(audit, clientReport, expertReport),
+    ).rejects.toThrow(/Fragment HTML refusé/);
+    expect(newPageMock).not.toHaveBeenCalled();
+    expect(pageSetContentMock).not.toHaveBeenCalled();
   });
 
   it('ferme la page meme si page.pdf() throw', async () => {

@@ -1,1 +1,0 @@
-export const PROJECTS_REPOSITORY = Symbol('PROJECTS_REPOSITORY');

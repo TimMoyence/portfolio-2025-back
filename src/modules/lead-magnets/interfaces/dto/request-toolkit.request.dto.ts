@@ -1,51 +1,41 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsIn, IsString } from 'class-validator';
+import { AdresseEmail } from '../../../../common/interfaces/dto/adresse-email.decorator';
 import {
-  IsEmail,
-  IsIn,
-  IsOptional,
-  IsString,
-  MaxLength,
-  MinLength,
-  ValidateNested,
-} from 'class-validator';
+  Rogne,
+  TexteSaisi,
+} from '../../../../common/interfaces/dto/longueur-de-texte.decorator';
 import {
   AcceptationDesConditions,
   VersionDesConditions,
 } from '../../../../common/interfaces/dto/conditions-acceptees.decorator';
+import type { SupportedLocale } from '../../../../common/domain/value-objects/LocaleCode';
+import { LocaleSupportee } from '../../../../common/interfaces/dto/locale-supportee.decorator';
 import { ChampsAntiRobotDto } from '../../../../common/interfaces/security/champs-anti-robot.dto';
-import { InteractionProfileDto } from './interaction-profile.dto';
+
+const FORMATIONS_DE_LA_BOITE = ['ia-solopreneurs'];
 
 export class RequestToolkitRequestDto extends ChampsAntiRobotDto {
   @ApiProperty({ example: 'Marie' })
-  @IsString()
-  @MinLength(1)
-  @MaxLength(50)
+  @TexteSaisi(1, 50)
   firstName: string;
 
   @ApiProperty({ example: 'marie@example.com' })
-  @IsEmail()
+  @AdresseEmail()
   email: string;
 
-  @ApiProperty({ example: 'ia-solopreneurs' })
+  @ApiProperty({ example: 'ia-solopreneurs', enum: FORMATIONS_DE_LA_BOITE })
+  @Rogne()
   @IsString()
-  @IsIn(['ia-solopreneurs'])
+  @IsIn(FORMATIONS_DE_LA_BOITE)
   formationSlug: string;
 
   @VersionDesConditions()
   termsVersion: string;
 
-  @ApiProperty({ example: 'fr' })
-  @IsString()
-  @MaxLength(10)
-  termsLocale: string;
+  @LocaleSupportee()
+  termsLocale: SupportedLocale;
 
   @AcceptationDesConditions()
   termsAcceptedAt: Date;
-
-  @ApiPropertyOptional({ type: InteractionProfileDto })
-  @IsOptional()
-  @ValidateNested()
-  @Type(() => InteractionProfileDto)
-  profile?: InteractionProfileDto;
 }

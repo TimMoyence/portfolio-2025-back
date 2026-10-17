@@ -540,8 +540,8 @@ describe('QA-01 · phase servie des votes jumelés des cours servis', () => {
     '%s : publie la phase « vote » de chaque vote jumelé encore non piloté, sans réécrire le pilotage',
     async (_slug, cours) => {
       const b = banc(creerCatalogueDeTest(cours));
-      const { pilotageEcrans, attendu } = pilotageDUnCoursServi(cours);
-      b.seanceLue({ courseSlug: cours.slug, pilotageEcrans });
+      const { seance, attendu } = pilotageDUnCoursServi(cours);
+      b.seanceLue({ courseSlug: cours.slug, ...seance });
 
       await b.piloter({ ecran: 0 });
 

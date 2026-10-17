@@ -69,6 +69,8 @@ generate-architecture.mjs
 # Skills de cluster regenerees par GitNexus a chaque commit (hook post-commit) :
 # artefacts locaux, non versionnes pour eviter le churn.
 .claude/skills/generated/
+.claude/skills/gitnexus-area-*/
+.claude/skills/gitnexus/
 
 # Hook local de re-index GitNexus : chemin absolu machine + script cible non
 # versionne, donc inutilisable sur un autre clone.

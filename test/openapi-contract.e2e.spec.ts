@@ -6,12 +6,6 @@ import {
   SwaggerModule,
 } from '@nestjs/swagger';
 
-import {
-  createLegacyUseCaseStubs,
-  LEGACY_CONTROLLERS,
-  legacyControllerProviders,
-} from './factories/legacy-contract.factory';
-
 import { UsersController } from '../src/modules/users/interfaces/Users.controller';
 import { ListUsersUseCase } from '../src/modules/users/application/ListUsers.useCase';
 import { ListOneUserUseCase } from '../src/modules/users/application/ListOneUser.useCase';
@@ -23,6 +17,9 @@ import { AuthController } from '../src/modules/users/interfaces/Auth.controller'
 import { ContactsController } from '../src/modules/contacts/interfaces/Contacts.controller';
 import { CookieConsentsController } from '../src/modules/cookie-consents/interfaces/CookieConsents.controller';
 import { AuditsController } from '../src/modules/audit-requests/interfaces/Audits.controller';
+import { RequestToolkitRequestDto } from '../src/modules/lead-magnets/interfaces/dto/request-toolkit.request.dto';
+import { ArticleListQueryDto } from '../src/modules/articles/interfaces/dto/article-list.query.dto';
+import { JoinSessionRequestDto } from '../src/modules/formations/interfaces/dto/join-session.request.dto';
 
 import {
   authControllerProviders,
@@ -37,6 +34,12 @@ import { ControlSessionRequestDto } from '../src/modules/formations/interfaces/d
 import { DeclarerJalonRequestDto } from '../src/modules/formations/interfaces/dto/contrat/declarer-jalon.request.dto';
 import { DerouleResponseDto } from '../src/modules/formations/interfaces/dto/contrat/deroule.response.dto';
 import { EtatParticipantResponseDto } from '../src/modules/formations/interfaces/dto/contrat/etat-participant.response.dto';
+import { EvaluerFeuilleRequestDto } from '../src/modules/formations/interfaces/dto/contrat/evaluer-feuille.request.dto';
+import { EvaluerMachineRequestDto } from '../src/modules/formations/interfaces/dto/contrat/evaluer-machine.request.dto';
+import { EvaluerTableauRequestDto } from '../src/modules/formations/interfaces/dto/contrat/evaluer-tableau.request.dto';
+import { FeuilleEvalueeResponseDto } from '../src/modules/formations/interfaces/dto/contrat/feuille-evaluee.response.dto';
+import { MachineEvalueeResponseDto } from '../src/modules/formations/interfaces/dto/contrat/machine-evaluee.response.dto';
+import { TableauEvalueResponseDto } from '../src/modules/formations/interfaces/dto/contrat/tableau-evalue.response.dto';
 import { OpenSessionRequestDto } from '../src/modules/formations/interfaces/dto/contrat/open-session.request.dto';
 import { RappelsResponseDto } from '../src/modules/formations/interfaces/dto/contrat/rappels.response.dto';
 import { SessionResultsResponseDto } from '../src/modules/formations/interfaces/dto/contrat/session-results.response.dto';
@@ -52,9 +55,23 @@ import { TentativeEnigmeResponseDto } from '../src/modules/formations/interfaces
 import { TenterEnigmeRequestDto } from '../src/modules/formations/interfaces/dto/contrat/tenter-enigme.request.dto';
 import { SubmitProductionResponseDto } from '../src/modules/formations/interfaces/dto/contrat/verdict-production.response.dto';
 import { SubmitAnswerResponseDto } from '../src/modules/formations/interfaces/dto/submit-answer.response.dto';
+import { deroulePresentateur } from '../src/modules/formations/domain/cours/DeroulePresentateur';
+import {
+  correctionDeLEcranRevele,
+  correctionServie,
+  correctionSurPlaceServie,
+} from '../src/modules/formations/domain/cours/Diffusion';
+import { tirer } from '../src/modules/formations/domain/cours/Tirage';
+import { buildCoursDuContenu } from './factories/contenus-de-cours.factory';
+import { CONTENUS } from './factories/contenus-publies';
 import { createMockDepotsFormations } from './factories/formation.factory';
 import { monterApplicationFormations } from './helpers/formations-harness';
 import { fermerApplication } from './helpers/nest-test-app';
+import {
+  documentOpenApiFormations,
+  estSansForme,
+  type SchemaOpenApi,
+} from './helpers/schema-openapi';
 
 const stub = () => ({ execute: jest.fn() });
 
@@ -75,6 +92,12 @@ const DTO_DU_CONTRAT = [
   SessionResultsResponseDto,
   SyntheseRappelsResponseDto,
   CoursPublicCatalogueResponseDto,
+  EvaluerFeuilleRequestDto,
+  FeuilleEvalueeResponseDto,
+  EvaluerTableauRequestDto,
+  TableauEvalueResponseDto,
+  EvaluerMachineRequestDto,
+  MachineEvalueeResponseDto,
 ];
 
 const ROUTES_ACTIVES_DU_CONTRAT = [
@@ -87,11 +110,21 @@ const ROUTES_ACTIVES_DU_CONTRAT = [
   '/sessions/{id}/participants/{participantId}',
   '/sessions/{id}/rappels',
   '/sessions/{id}/rappels/synthese',
+  '/sessions/{id}/feuilles/{planId}/evaluation',
+  '/sessions/{id}/tableaux/{planId}/evaluation',
+  '/sessions/{id}/machines/{ecranId}/evaluation',
 ];
 
 const ROUTES_A_VENIR_DU_CONTRAT: readonly string[] = [];
 
 type DocumentOpenApi = ReturnType<typeof SwaggerModule.createDocument>;
+
+async function documentDesFormations(): Promise<DocumentOpenApi> {
+  const app = await monterApplicationFormations(createMockDepotsFormations());
+  const document = documentOpenApiFormations(app);
+  await fermerApplication(app);
+  return document;
+}
 
 async function documenterLeModule(
   metadonnees: ModuleMetadata,
@@ -109,58 +142,63 @@ async function documenterLeModule(
   }
 }
 
-describe('OpenAPI legacy contract (phase 11)', () => {
-  let document: DocumentOpenApi;
+interface SchemaDeChamp {
+  readonly type?: string;
+  readonly default?: unknown;
+  readonly example?: unknown;
+  readonly minimum?: number;
+  readonly maximum?: number;
+  readonly properties?: Record<string, SchemaDeChamp>;
+  readonly oneOf?: readonly SchemaDeChamp[];
+  readonly anyOf?: readonly SchemaDeChamp[];
+}
 
-  beforeAll(async () => {
-    document = await documenterLeModule(
-      {
-        controllers: LEGACY_CONTROLLERS,
-        providers: legacyControllerProviders(createLegacyUseCaseStubs()),
-      },
-      new DocumentBuilder().setTitle('Contract Test').setVersion('1.0'),
-    );
-  });
+const porteUnNombre = (schema: SchemaDeChamp): boolean =>
+  typeof schema.default === 'number' ||
+  typeof schema.example === 'number' ||
+  schema.minimum !== undefined ||
+  schema.maximum !== undefined;
 
-  it('keeps legacy path contracts stable', () => {
-    const pathBySuffix = (suffix: string) => {
-      const path = Object.keys(document.paths).find((candidate) =>
-        candidate.endsWith(suffix),
-      );
-      if (!path) {
-        throw new Error(`Missing OpenAPI path with suffix ${suffix}`);
-      }
-      return document.paths[path];
-    };
+const admetUnNombre = (schema: SchemaDeChamp): boolean =>
+  schema.type === 'integer' ||
+  schema.type === 'number' ||
+  [...(schema.oneOf ?? []), ...(schema.anyOf ?? [])].some(admetUnNombre);
 
-    expect({
-      services: pathBySuffix('/services'),
-      projects: pathBySuffix('/projects'),
-      courses: pathBySuffix('/courses'),
-      redirects: pathBySuffix('/redirects'),
-    }).toMatchSnapshot();
-  });
+function champsDuDocument(
+  document: DocumentOpenApi,
+): (readonly [string, SchemaDeChamp])[] {
+  const proprietes = Object.entries(document.components?.schemas ?? {}).flatMap(
+    ([nom, schema]) =>
+      Object.entries((schema as SchemaDeChamp).properties ?? {}).map(
+        ([champ, propriete]) => [`${nom}.${champ}`, propriete] as const,
+      ),
+  );
+  const parametres = Object.entries(document.paths).flatMap(
+    ([chemin, operations]) =>
+      Object.values(operations as object).flatMap(
+        (operation: {
+          parameters?: { name: string; schema?: SchemaDeChamp }[];
+        }) =>
+          (operation.parameters ?? []).map(
+            (parametre) =>
+              [`${chemin} ${parametre.name}`, parametre.schema ?? {}] as const,
+          ),
+      ),
+  );
+  return [...proprietes, ...parametres];
+}
 
-  it('keeps legacy DTO schemas stable', () => {
-    const schemas = document.components?.schemas ?? {};
+const champsNumeriquesSansTypeNumerique = (
+  document: DocumentOpenApi,
+): string[] =>
+  champsDuDocument(document)
+    .filter(([, schema]) => porteUnNombre(schema) && !admetUnNombre(schema))
+    .map(([nom]) => nom);
 
-    expect({
-      ServiceResponseDto: schemas.ServiceResponseDto,
-      ServiceListResponseDto: schemas.ServiceListResponseDto,
-      ServiceRequestDto: schemas.ServiceRequestDto,
-      ProjectRequestDto: schemas.ProjectRequestDto,
-      ProjectResponseDto: schemas.ProjectResponseDto,
-      ProjectListResponseDto: schemas.ProjectListResponseDto,
-      CourseRequestDto: schemas.CourseRequestDto,
-      CourseResponseDto: schemas.CourseResponseDto,
-      CourseListResponseDto: schemas.CourseListResponseDto,
-      RedirectRequestDto: schemas.RedirectRequestDto,
-      RedirectResponseDto: schemas.RedirectResponseDto,
-      RedirectListResponseDto: schemas.RedirectListResponseDto,
-      PaginationMetaResponseDto: schemas.PaginationMetaResponseDto,
-    }).toMatchSnapshot();
-  });
-});
+const champsSansForme = (document: DocumentOpenApi): string[] =>
+  champsDuDocument(document)
+    .filter(([, schema]) => estSansForme(schema as SchemaOpenApi))
+    .map(([nom]) => nom);
 
 describe('OpenAPI core contract', () => {
   let document: DocumentOpenApi;
@@ -191,7 +229,26 @@ describe('OpenAPI core contract', () => {
         .setTitle('Core Contract Test')
         .setVersion('1.0')
         .addBearerAuth(),
+      {
+        extraModels: [
+          RequestToolkitRequestDto,
+          ArticleListQueryDto,
+          JoinSessionRequestDto,
+        ],
+      },
     );
+  });
+
+  it('fige les schemas des DTO de saisie : comptes, contact, cookies, audit, boite a outils, articles et entree en seance', () => {
+    expect(document.components?.schemas).toMatchSnapshot();
+  });
+
+  it('documente par un type numerique chaque champ qui porte un defaut, un exemple ou une borne numerique', () => {
+    expect(champsNumeriquesSansTypeNumerique(document)).toEqual([]);
+  });
+
+  it('donne a chaque champ un type, et a chaque objet sa forme', () => {
+    expect(champsSansForme(document)).toEqual([]);
   });
 
   const pathsContaining = (segment: string) =>
@@ -265,11 +322,7 @@ describe('OpenAPI contrat B2-01', () => {
   });
 
   it('branche les routes du § 9.5 deja livrees et aucune autre', async () => {
-    const app = await monterApplicationFormations(createMockDepotsFormations());
-    const chemins = Object.keys(
-      SwaggerModule.createDocument(app, new DocumentBuilder().build()).paths,
-    );
-    await fermerApplication(app);
+    const chemins = Object.keys((await documentDesFormations()).paths);
     const servie = (route: string): boolean =>
       chemins.some((chemin) => chemin.endsWith(route));
 
@@ -285,9 +338,7 @@ describe('OpenAPI des pièces jointes réservées', () => {
   let document: DocumentOpenApi;
 
   beforeAll(async () => {
-    const app = await monterApplicationFormations(createMockDepotsFormations());
-    document = SwaggerModule.createDocument(app, new DocumentBuilder().build());
-    await fermerApplication(app);
+    document = await documentDesFormations();
   });
 
   const reponsesDe = (suffixe: string): Record<string, string> => {
@@ -335,5 +386,241 @@ describe('OpenAPI des pièces jointes réservées', () => {
       introuvable: expect.stringContaining('PIECE_JOINTE_INTROUVABLE'),
     });
     expect(pupitre['404']).not.toContain('ECRAN_NON_SERVI');
+  });
+});
+
+describe('OpenAPI des écrans servis', () => {
+  let document: DocumentOpenApi;
+
+  beforeAll(async () => {
+    document = await documentDesFormations();
+  });
+
+  it('documente par un type numerique chaque champ des formations qui porte un defaut, un exemple ou une borne numerique', () => {
+    expect(champsNumeriquesSansTypeNumerique(document)).toEqual([]);
+  });
+
+  it('donne a chaque champ des formations un type, et a chaque objet sa forme', () => {
+    expect(champsSansForme(document)).toEqual([]);
+  });
+
+  interface SchemaOpenApi {
+    readonly $ref?: string;
+    readonly type?: string;
+    readonly properties?: Readonly<Record<string, SchemaOpenApi>>;
+    readonly allOf?: readonly SchemaOpenApi[];
+    readonly oneOf?: readonly SchemaOpenApi[];
+    readonly items?: SchemaOpenApi;
+    readonly enum?: readonly unknown[];
+  }
+
+  const schemaNomme = (ref: string): SchemaOpenApi => {
+    const nom = ref.split('/').at(-1) ?? '';
+    const schema = document.components?.schemas?.[nom];
+    if (schema === undefined) {
+      throw new Error(`Schéma OpenAPI absent : ${nom}`);
+    }
+    return schema as SchemaOpenApi;
+  };
+
+  const proprietesDe = (
+    schema: SchemaOpenApi,
+  ): Readonly<Record<string, SchemaOpenApi>> | null => {
+    const resolu =
+      schema.$ref === undefined ? schema : schemaNomme(schema.$ref);
+    const heritees = (resolu.allOf ?? []).map(proprietesDe);
+    if (resolu.properties === undefined && heritees.every((p) => p === null)) {
+      return null;
+    }
+    return Object.assign({}, ...heritees, resolu.properties);
+  };
+
+  const nonDeclares = (
+    valeur: unknown,
+    schema: SchemaOpenApi,
+    chemin: string,
+  ): string[] => {
+    if (valeur === null || typeof valeur !== 'object') {
+      return [];
+    }
+    if (schema.oneOf !== undefined) {
+      return (
+        schema.oneOf
+          .filter(
+            (variante) =>
+              variante.enum === undefined || variante.enum.includes(valeur),
+          )
+          .map((variante) => nonDeclares(valeur, variante, chemin))
+          .reduce<string[] | null>(
+            (retenue, essai) =>
+              retenue === null || essai.length < retenue.length
+                ? essai
+                : retenue,
+            null,
+          ) ?? [`${chemin} (oneOf vide)`]
+      );
+    }
+    if (
+      schema.type !== undefined &&
+      !['object', 'array'].includes(schema.type)
+    ) {
+      return [`${chemin} (${schema.type})`];
+    }
+    if (Array.isArray(valeur)) {
+      const items = schema.items;
+      return items === undefined
+        ? [`${chemin} (tableau non déclaré)`]
+        : valeur.flatMap((element) =>
+            nonDeclares(element, items, `${chemin}[]`),
+          );
+    }
+    const proprietes = proprietesDe(schema);
+    if (proprietes === null) {
+      return [];
+    }
+    return Object.entries(valeur).flatMap(([cle, champ]) =>
+      Object.hasOwn(proprietes, cle)
+        ? nonDeclares(champ, proprietes[cle], `${chemin}.${cle}`)
+        : [`${chemin}.${cle}`],
+    );
+  };
+
+  const confronter = (servis: readonly unknown[], dto: string): string[] => {
+    expect(servis.length).toBeGreaterThan(0);
+    return [
+      ...new Set(
+        servis.flatMap((servi) =>
+          nonDeclares(servi, { $ref: `#/components/schemas/${dto}` }, dto),
+        ),
+      ),
+    ].sort((a, b) => a.localeCompare(b));
+  };
+
+  it('déclare chaque champ du déroulé tel que le pupitre le reçoit, imbriqués compris, sur tous les cours', () => {
+    const servis = CONTENUS.map((contenu) =>
+      deroulePresentateur(buildCoursDuContenu(contenu), 0),
+    );
+
+    expect(confronter(servis, 'DerouleResponseDto')).toEqual([]);
+  });
+
+  it('déclare chaque champ du sujet tel que le poste le reçoit, chaque forme de correction comprise, sur tous les cours', () => {
+    const revele = { revele: true };
+    const servis = CONTENUS.flatMap((contenu) => {
+      const cours = buildCoursDuContenu(contenu);
+      const tirage = tirer(cours, 0);
+      return [
+        tirage.sujet,
+        ...[
+          (rang: number) => correctionServie(cours, cours.ecrans[rang], tirage),
+          (rang: number) =>
+            correctionSurPlaceServie(cours.ecrans[rang], tirage, revele),
+          (rang: number) =>
+            correctionDeLEcranRevele(cours.ecrans[rang], tirage),
+        ].map((correctionDuRang) => ({
+          ...tirage.sujet,
+          ecrans: tirage.sujet.ecrans.map((ecran, rang) => {
+            const correction = correctionDuRang(rang);
+            return correction === null ? ecran : { ...ecran, correction };
+          }),
+        })),
+      ];
+    });
+
+    expect(confronter(servis, 'SujetResponseDto')).toEqual([]);
+  });
+
+  it('fait rougir la confrontation sur un champ imbriqué que le DTO ne déclare pas', () => {
+    const deroule = deroulePresentateur(buildCoursDuContenu(CONTENUS[0]), 0);
+    const [premier, ...suivants] = deroule.ecrans;
+
+    expect(
+      confronter(
+        [
+          {
+            ...deroule,
+            ecrans: [
+              {
+                ...premier,
+                reflexion: { attendu: 'a', suite: null, cache: 1 },
+              },
+              ...suivants,
+            ],
+          },
+        ],
+        'DerouleResponseDto',
+      ),
+    ).toEqual(['DerouleResponseDto.ecrans[].reflexion.cache']);
+  });
+});
+
+const ROUTES_SUR_UN_ECRAN_SERVI = [
+  'post /sessions/{id}/answers',
+  'post /sessions/{id}/free-responses',
+  'post /sessions/{id}/productions',
+  'post /sessions/{id}/feuilles/{planId}/evaluation',
+  'post /sessions/{id}/tableaux/{planId}/evaluation',
+  'post /sessions/{id}/machines/{ecranId}/evaluation',
+  'post /sessions/{id}/escape/{parcoursId}/tentatives',
+  'put /sessions/{id}/pulses/{sondageId}',
+  'post /sessions/{id}/defis/{defiId}/tentative',
+  'get /sessions/{id}/defis/{defiId}/strategies',
+  'get /sessions/{id}/rappels',
+  'get /sessions/{id}/pieces-jointes/{ecranId}',
+] as const;
+
+describe('OpenAPI de l écran pas encore servi', () => {
+  let document: DocumentOpenApi;
+
+  beforeAll(async () => {
+    document = await documentDesFormations();
+  });
+
+  const reponses = (): {
+    methode: string;
+    chemin: string;
+    statut: string;
+    description: string;
+  }[] =>
+    Object.entries(document.paths).flatMap(([chemin, operations]) =>
+      Object.entries(operations).flatMap(([methode, operation]) =>
+        Object.entries(
+          (operation as { responses?: Record<string, unknown> }).responses ??
+            {},
+        ).map(([statut, reponse]) => ({
+          methode,
+          chemin,
+          statut,
+          description: (reponse as { description?: string }).description ?? '',
+        })),
+      ),
+    );
+
+  it('n annonce ECRAN_NON_SERVI sous aucun autre statut que 404', () => {
+    const ailleurs = reponses()
+      .filter(
+        ({ statut, description }) =>
+          statut !== '404' && description.includes('ECRAN_NON_SERVI'),
+      )
+      .map(({ methode, chemin, statut }) => `${statut} ${methode} ${chemin}`);
+
+    expect(ailleurs).toEqual([]);
+  });
+
+  it('annonce ECRAN_NON_SERVI en 404 sur chaque route qui refuse un écran pas encore servi', () => {
+    const annoncees = reponses().filter(
+      ({ statut, description }) =>
+        statut === '404' && description.includes('ECRAN_NON_SERVI'),
+    );
+
+    const muettes = ROUTES_SUR_UN_ECRAN_SERVI.filter((route) => {
+      const [methode, suffixe] = route.split(' ');
+      return !annoncees.some(
+        (annoncee) =>
+          annoncee.methode === methode && annoncee.chemin.endsWith(suffixe),
+      );
+    });
+
+    expect(muettes).toEqual([]);
   });
 });

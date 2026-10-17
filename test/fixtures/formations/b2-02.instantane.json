@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "740cd05b03c074298b4b62cbcfb72e2db86d07bb9a09df220e164e7a423cd4f7",
+  "empreinte": "5442e30bde656860447020df0380148ced9baf31242066f3ee396dfa354fe3ba",
   "sujet": {
     "id": "b2-02-series-statistiques",
     "titre": "Séries statistiques : résumer, relier, prévoir",
@@ -507,7 +507,7 @@
               {
                 "id": "ecart-type",
                 "intitule": "L’écart-type",
-                "raisonnement": "Carrés des écarts à 42,5 : 210,25 ; 2,25 ; 56,25 ; 2 256,25 ; 90,25 ; 12,25 ; 2,25 ; 156,25, de somme 2 786. Variance = 2 786 ÷ 8 = 348,25 jours² ; écart-type = √348,25 ≈ 18,66 jours.",
+                "raisonnement": "Carrés des écarts à 42,5 : 210,25 ; 2,25 ; 56,25 ; 2 256,25 ; 90,25 ; 12,25 ; 2,25 ; 156,25, de somme 2 786. Variance = 2 786 ÷ 8 = 348,25 jours² ; écart-type = √348,25 ≈ 18,66 jours.",
                 "invite": "Quel est l’écart-type des huit délais ?"
               },
               {
@@ -1128,6 +1128,139 @@
               }
             ],
             "synthese": [],
+            "tableauInitial": {
+              "lignes": [
+                {
+                  "rang": 0,
+                  "valeurs": {
+                    "rang": {
+                      "valeur": 1,
+                      "affichage": "1"
+                    },
+                    "ca": {
+                      "valeur": 610,
+                      "affichage": "610"
+                    },
+                    "ecartX": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "ecartY": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                },
+                {
+                  "rang": 1,
+                  "valeurs": {
+                    "rang": {
+                      "valeur": 2,
+                      "affichage": "2"
+                    },
+                    "ca": {
+                      "valeur": 652,
+                      "affichage": "652"
+                    },
+                    "ecartX": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "ecartY": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                },
+                {
+                  "rang": 2,
+                  "valeurs": {
+                    "rang": {
+                      "valeur": 3,
+                      "affichage": "3"
+                    },
+                    "ca": {
+                      "valeur": 694,
+                      "affichage": "694"
+                    },
+                    "ecartX": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "ecartY": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                },
+                {
+                  "rang": 3,
+                  "valeurs": {
+                    "rang": {
+                      "valeur": 4,
+                      "affichage": "4"
+                    },
+                    "ca": {
+                      "valeur": 736,
+                      "affichage": "736"
+                    },
+                    "ecartX": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "ecartY": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                },
+                {
+                  "rang": 4,
+                  "valeurs": {
+                    "rang": {
+                      "valeur": 5,
+                      "affichage": "5"
+                    },
+                    "ca": {
+                      "valeur": 790,
+                      "affichage": "790"
+                    },
+                    "ecartX": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "ecartY": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                },
+                {
+                  "rang": 5,
+                  "valeurs": {
+                    "rang": {
+                      "valeur": 6,
+                      "affichage": "6"
+                    },
+                    "ca": {
+                      "valeur": 826,
+                      "affichage": "826"
+                    },
+                    "ecartX": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "ecartY": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                }
+              ],
+              "totaux": {},
+              "synthese": [],
+              "soldeFinal": null
+            },
             "metadonnees": {
               "concepts": ["nuage-de-points"],
               "misconceptionsCiblees": [],
@@ -1307,7 +1440,7 @@
                     "text": "Droite y = 2,5x + 1, en milliers d’euros, avec le rang 1 pour 2022.",
                     "steps": [
                       "Rang de 2026 : 2026 − 2022 + 1 = 5.",
-                      "Prévision : 2,5 × 5 + 1 = 13,5 milliers d’euros, si la tendance se poursuit. Avec x = 2026, on trouverait 5 066 : absurde.",
+                      "Prévision : 2,5 × 5 + 1 = 13,5 milliers d’euros, si la tendance se poursuit. Avec x = 2026, on trouverait 5 066 : absurde.",
                       "Seuil de 18 : 2,5x + 1 ≥ 18 donne x ≥ 17 ÷ 2,5 = 6,8.",
                       "Premier rang entier : 7, soit 2022 + 7 − 1 = 2028. Le rang 6 ne suffit pas : 2,5 × 6 + 1 = 16."
                     ]
@@ -1350,7 +1483,7 @@
               "renderer": "illustration",
               "props": {
                 "image": "/assets/cours/b2-02/v2/boutique-prevision-seuil.webp",
-                "imageAlt": "Schéma de la prévision de la boutique avec y = 2,5x + 1. L’année 2026 a le rang 5 : 2,5 × 5 + 1 = 13,5 milliers d’euros. Remplacer x par 2026 donnerait 5 066, un résultat absurde : x est le rang, jamais l’année. Seuil de 18 milliers d’euros : 2,5x + 1 ≥ 18 donne x ≥ 6,8 ; le rang 6 donne 16, sous le seuil, donc le seuil est atteint au rang 7, soit en 2028."
+                "imageAlt": "Schéma de la prévision de la boutique avec y = 2,5x + 1. L’année 2026 a le rang 5 : 2,5 × 5 + 1 = 13,5 milliers d’euros. Remplacer x par 2026 donnerait 5 066, un résultat absurde : x est le rang, jamais l’année. Seuil de 18 milliers d’euros : 2,5x + 1 ≥ 18 donne x ≥ 6,8 ; le rang 6 donne 16, sous le seuil, donc le seuil est atteint au rang 7, soit en 2028."
               }
             },
             "metadonnees": {
@@ -1395,13 +1528,13 @@
               {
                 "id": "prevision",
                 "intitule": "Prévoir",
-                "raisonnement": "Pour 1 000 € de publicité, x = 10 : y = 1,9 × 10 + 7,5 = 26,5, soit environ 26 à 27 commandes. x = 10 est hors des données observées : c’est une extrapolation.",
-                "invite": "Combien de commandes prévoir pour 1 000 € de publicité ?"
+                "raisonnement": "Pour 1 000 € de publicité, x = 10 : y = 1,9 × 10 + 7,5 = 26,5, soit environ 26 à 27 commandes. x = 10 est hors des données observées : c’est une extrapolation.",
+                "invite": "Combien de commandes prévoir pour 1 000 € de publicité ?"
               },
               {
                 "id": "seuil",
                 "intitule": "Le seuil de 30 commandes",
-                "raisonnement": "1,9x + 7,5 ≥ 30 donne x ≥ 22,5 ÷ 1,9 ≈ 11,84. Premier entier : 12, soit 1 200 € de publicité. Arrondir à 11 ne suffirait pas.",
+                "raisonnement": "1,9x + 7,5 ≥ 30 donne x ≥ 22,5 ÷ 1,9 ≈ 11,84. Premier entier : 12, soit 1 200 € de publicité. Arrondir à 11 ne suffirait pas.",
                 "invite": "À partir de quel budget la droite prévoit-elle 30 commandes ?"
               }
             ],
@@ -1484,7 +1617,7 @@
               "donnees": {
                 "question": {
                   "id": "b2-02-a3-seuil",
-                  "enonce": "Selon ce modèle, en quelle année le chiffre d’affaires dépasserait-il 1 000 k€ pour la première fois ?",
+                  "enonce": "Selon ce modèle, en quelle année le chiffre d’affaires dépasserait-il 1 000 k€ pour la première fois ?",
                   "unite": null,
                   "metadonnees": {
                     "concepts": ["ajustement-affine", "prevision"],
@@ -1509,7 +1642,7 @@
         "donnees": {
           "probleme": {
             "id": "b2-02-a3-defi-ia",
-            "enonce": "Samir a demandé une prévision pour 2035 à un assistant IA. Réponse : « Droite : y = 43,89x + 564,4. En 2035, y = 43,89 × 2035 + 564,4 ≈ 89 881 k€. Comme r est proche de 1, ce sont nos hausses de tarifs qui causent la croissance. »",
+            "enonce": "Samir a demandé une prévision pour 2035 à un assistant IA. Réponse : « Droite : y = 43,89x + 564,4. En 2035, y = 43,89 × 2035 + 564,4 ≈ 89 881 k€. Comme r est proche de 1, ce sont nos hausses de tarifs qui causent la croissance. »",
             "invite": "Trouvez les erreurs de l’IA, corrigez la prévision et écrivez la réserve à ajouter.",
             "strategies": [],
             "metadonnees": {
@@ -1691,6 +1824,77 @@
               "En E5 et E6, calculez les coordonnées du point moyen G avec MOYENNE.",
               "En E7, contrôlez : =SI(ARRONDI(E3*E5+E4-E6;6)=0;1;0) doit afficher 1."
             ],
+            "lettres": ["A", "B", "C", "D", "E"],
+            "grille": [
+              ["A1", "B1", "C1", "D1", "E1"],
+              ["A2", "B2", "C2", "D2", "E2"],
+              ["A3", "B3", "C3", "D3", "E3"],
+              ["A4", "B4", "C4", "D4", "E4"],
+              ["A5", "B5", "C5", "D5", "E5"],
+              ["A6", "B6", "C6", "D6", "E6"],
+              ["A7", "B7", "C7", "D7", "E7"]
+            ],
+            "longueurMaxSaisie": 200,
+            "initiale": {
+              "saisies": {},
+              "affichages": {
+                "A1": "Rang x",
+                "B1": "Abonnements y (millions)",
+                "C1": "Année",
+                "D1": "Indicateur",
+                "E1": "Valeur",
+                "A2": "1",
+                "B2": "10,3",
+                "C2": "2020",
+                "A3": "2",
+                "B3": "14,5",
+                "C3": "2021",
+                "A4": "3",
+                "B4": "18,1",
+                "C4": "2022",
+                "A5": "4",
+                "B5": "21,4",
+                "C5": "2023",
+                "A6": "5",
+                "B6": "24,4",
+                "C6": "2024",
+                "D2": "Coefficient de corrélation r",
+                "D3": "Coefficient directeur a",
+                "D4": "Ordonnée à l’origine b",
+                "D5": "x̄",
+                "D6": "ȳ",
+                "D7": "Contrôle : la droite passe par G"
+              },
+              "natures": {
+                "A1": "texte",
+                "B1": "texte",
+                "C1": "texte",
+                "D1": "texte",
+                "E1": "texte",
+                "A2": "nombre",
+                "B2": "nombre",
+                "C2": "nombre",
+                "A3": "nombre",
+                "B3": "nombre",
+                "C3": "nombre",
+                "A4": "nombre",
+                "B4": "nombre",
+                "C4": "nombre",
+                "A5": "nombre",
+                "B5": "nombre",
+                "C5": "nombre",
+                "A6": "nombre",
+                "B6": "nombre",
+                "C6": "nombre",
+                "D2": "texte",
+                "D3": "texte",
+                "D4": "texte",
+                "D5": "texte",
+                "D6": "texte",
+                "D7": "texte"
+              },
+              "formules": []
+            },
             "metadonnees": {
               "concepts": ["correlation", "ajustement-affine"],
               "misconceptionsCiblees": [],
@@ -2006,7 +2210,8 @@
             ]
           }
         ],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-02-A1-02-ACCROCHE",
@@ -2045,7 +2250,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-02-A1-03-MISSION",
@@ -2091,7 +2297,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-02-A1-04-FACTURES",
@@ -2234,7 +2441,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-02-A1-05-UN-SEUL-NOMBRE",
@@ -2276,6 +2484,10 @@
         "questions": [],
         "corrigeEcran": {
           "type": "reflexion",
+          "attendu": "Un centre seul ne suffit pas : la facture contestée de 146 jours tire la moyenne vers le haut, et un centre ne dit rien de la régularité. Il faut un centre choisi en connaissance de cause et une mesure de l’écart.",
+          "suite": "Gardez votre réponse : la trace écrite dit comment choisir le centre et mesurer l’écart."
+        },
+        "reflexion": {
           "attendu": "Un centre seul ne suffit pas : la facture contestée de 146 jours tire la moyenne vers le haut, et un centre ne dit rien de la régularité. Il faut un centre choisi en connaissance de cause et une mesure de l’écart.",
           "suite": "Gardez votre réponse : la trace écrite dit comment choisir le centre et mesurer l’écart."
         }
@@ -2342,7 +2554,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-02-A1-06-ILLUSTRATION-RESUMER",
@@ -2376,7 +2589,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-02-A1-06-COURS-ECART",
@@ -2439,7 +2653,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-02-A1-06-ILLUSTRATION-ECART",
@@ -2473,7 +2688,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-02-A1-07-EXEMPLE-RESUME",
@@ -2513,7 +2729,7 @@
               {
                 "id": "ecart-type",
                 "intitule": "L’écart-type",
-                "raisonnement": "Carrés des écarts à 42,5 : 210,25 ; 2,25 ; 56,25 ; 2 256,25 ; 90,25 ; 12,25 ; 2,25 ; 156,25, de somme 2 786. Variance = 2 786 ÷ 8 = 348,25 jours² ; écart-type = √348,25 ≈ 18,66 jours.",
+                "raisonnement": "Carrés des écarts à 42,5 : 210,25 ; 2,25 ; 56,25 ; 2 256,25 ; 90,25 ; 12,25 ; 2,25 ; 156,25, de somme 2 786. Variance = 2 786 ÷ 8 = 348,25 jours² ; écart-type = √348,25 ≈ 18,66 jours.",
                 "invite": "Quel est l’écart-type des huit délais ?"
               },
               {
@@ -2538,7 +2754,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-02-A1-08-ATELIER-RESUME",
@@ -2744,6 +2961,7 @@
           }
         ],
         "corrigeEcran": null,
+        "reflexion": null,
         "explications": [
           {
             "reference": "b2-02-a1-mediane",
@@ -2787,7 +3005,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-02-A2-01-NUAGE-RIVAGE",
@@ -2860,7 +3079,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-02-A2-02-VOTE-CORRELATION",
@@ -2977,7 +3197,8 @@
             "Formation et chiffre d’affaires : les deux séries augmentent avec le temps, pour bien d’autres raisons.",
             "Une corrélation mesure l’alignement de deux séries, pas ce qui cause leurs variations."
           ]
-        }
+        },
+        "reflexion": null
       },
       {
         "id": "B2-02-A2-03-COURS-NUAGE",
@@ -3040,7 +3261,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-02-A2-03-ILLUSTRATION-NUAGE",
@@ -3074,7 +3296,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-02-A2-03-COURS-CORRELATION",
@@ -3137,7 +3360,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-02-A2-03-ILLUSTRATION-CORRELATION",
@@ -3171,7 +3395,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-02-A2-04-EXEMPLE-NUAGE",
@@ -3230,7 +3455,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-02-A2-05-ATELIER-NUAGE",
@@ -3405,6 +3631,7 @@
           }
         ],
         "corrigeEcran": null,
+        "reflexion": null,
         "explications": [
           {
             "reference": "b2-02-a2-x-moyen",
@@ -3412,7 +3639,7 @@
           },
           {
             "reference": "b2-02-a2-y-moyen",
-            "texte": "ȳ = 4 308 ÷ 6 = 718 k€. La demi-somme des deux valeurs du milieu, 715, n’est pas la moyenne."
+            "texte": "ȳ = 4 308 ÷ 6 = 718 k€. La demi-somme des deux valeurs du milieu, 715, n’est pas la moyenne."
           },
           {
             "reference": "b2-02-a2-r",
@@ -3476,6 +3703,139 @@
               }
             ],
             "synthese": [],
+            "tableauInitial": {
+              "lignes": [
+                {
+                  "rang": 0,
+                  "valeurs": {
+                    "rang": {
+                      "valeur": 1,
+                      "affichage": "1"
+                    },
+                    "ca": {
+                      "valeur": 610,
+                      "affichage": "610"
+                    },
+                    "ecartX": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "ecartY": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                },
+                {
+                  "rang": 1,
+                  "valeurs": {
+                    "rang": {
+                      "valeur": 2,
+                      "affichage": "2"
+                    },
+                    "ca": {
+                      "valeur": 652,
+                      "affichage": "652"
+                    },
+                    "ecartX": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "ecartY": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                },
+                {
+                  "rang": 2,
+                  "valeurs": {
+                    "rang": {
+                      "valeur": 3,
+                      "affichage": "3"
+                    },
+                    "ca": {
+                      "valeur": 694,
+                      "affichage": "694"
+                    },
+                    "ecartX": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "ecartY": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                },
+                {
+                  "rang": 3,
+                  "valeurs": {
+                    "rang": {
+                      "valeur": 4,
+                      "affichage": "4"
+                    },
+                    "ca": {
+                      "valeur": 736,
+                      "affichage": "736"
+                    },
+                    "ecartX": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "ecartY": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                },
+                {
+                  "rang": 4,
+                  "valeurs": {
+                    "rang": {
+                      "valeur": 5,
+                      "affichage": "5"
+                    },
+                    "ca": {
+                      "valeur": 790,
+                      "affichage": "790"
+                    },
+                    "ecartX": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "ecartY": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                },
+                {
+                  "rang": 5,
+                  "valeurs": {
+                    "rang": {
+                      "valeur": 6,
+                      "affichage": "6"
+                    },
+                    "ca": {
+                      "valeur": 826,
+                      "affichage": "826"
+                    },
+                    "ecartX": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "ecartY": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                }
+              ],
+              "totaux": {},
+              "synthese": [],
+              "soldeFinal": null
+            },
             "metadonnees": {
               "concepts": ["nuage-de-points"],
               "misconceptionsCiblees": [],
@@ -3560,11 +3920,145 @@
               "valeur": 108
             }
           ],
+          "tableauCorrige": {
+            "lignes": [
+              {
+                "rang": 0,
+                "valeurs": {
+                  "rang": {
+                    "valeur": 1,
+                    "affichage": "1"
+                  },
+                  "ca": {
+                    "valeur": 610,
+                    "affichage": "610"
+                  },
+                  "ecartX": {
+                    "valeur": -2.5,
+                    "affichage": "-2,5"
+                  },
+                  "ecartY": {
+                    "valeur": -108,
+                    "affichage": "-108"
+                  }
+                }
+              },
+              {
+                "rang": 1,
+                "valeurs": {
+                  "rang": {
+                    "valeur": 2,
+                    "affichage": "2"
+                  },
+                  "ca": {
+                    "valeur": 652,
+                    "affichage": "652"
+                  },
+                  "ecartX": {
+                    "valeur": -1.5,
+                    "affichage": "-1,5"
+                  },
+                  "ecartY": {
+                    "valeur": -66,
+                    "affichage": "-66"
+                  }
+                }
+              },
+              {
+                "rang": 2,
+                "valeurs": {
+                  "rang": {
+                    "valeur": 3,
+                    "affichage": "3"
+                  },
+                  "ca": {
+                    "valeur": 694,
+                    "affichage": "694"
+                  },
+                  "ecartX": {
+                    "valeur": -0.5,
+                    "affichage": "-0,5"
+                  },
+                  "ecartY": {
+                    "valeur": -24,
+                    "affichage": "-24"
+                  }
+                }
+              },
+              {
+                "rang": 3,
+                "valeurs": {
+                  "rang": {
+                    "valeur": 4,
+                    "affichage": "4"
+                  },
+                  "ca": {
+                    "valeur": 736,
+                    "affichage": "736"
+                  },
+                  "ecartX": {
+                    "valeur": 0.5,
+                    "affichage": "0,5"
+                  },
+                  "ecartY": {
+                    "valeur": 18,
+                    "affichage": "18"
+                  }
+                }
+              },
+              {
+                "rang": 4,
+                "valeurs": {
+                  "rang": {
+                    "valeur": 5,
+                    "affichage": "5"
+                  },
+                  "ca": {
+                    "valeur": 790,
+                    "affichage": "790"
+                  },
+                  "ecartX": {
+                    "valeur": 1.5,
+                    "affichage": "1,5"
+                  },
+                  "ecartY": {
+                    "valeur": 72,
+                    "affichage": "72"
+                  }
+                }
+              },
+              {
+                "rang": 5,
+                "valeurs": {
+                  "rang": {
+                    "valeur": 6,
+                    "affichage": "6"
+                  },
+                  "ca": {
+                    "valeur": 826,
+                    "affichage": "826"
+                  },
+                  "ecartX": {
+                    "valeur": 2.5,
+                    "affichage": "2,5"
+                  },
+                  "ecartY": {
+                    "valeur": 108,
+                    "affichage": "108"
+                  }
+                }
+              }
+            ],
+            "totaux": {},
+            "synthese": [],
+            "soldeFinal": null
+          },
           "tolerance": {
             "type": "absolue",
             "valeur": 0.01
           }
         },
+        "reflexion": null,
         "explications": [
           {
             "reference": "b2-02-a2-ecarts-point-moyen",
@@ -3596,7 +4090,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-02-A3-01-JUSQU-OU",
@@ -3638,6 +4133,10 @@
         "questions": [],
         "corrigeEcran": {
           "type": "reflexion",
+          "attendu": "Une droite qui passe au plus près de tous les points, et donc par le point moyen. Près des données, la prévision est solide ; plus on s’en éloigne, plus elle suppose que la tendance continue.",
+          "suite": "Gardez votre réponse : la trace écrite donne la droite et la règle pour prévoir."
+        },
+        "reflexion": {
           "attendu": "Une droite qui passe au plus près de tous les points, et donc par le point moyen. Près des données, la prévision est solide ; plus on s’en éloigne, plus elle suppose que la tendance continue.",
           "suite": "Gardez votre réponse : la trace écrite donne la droite et la règle pour prévoir."
         }
@@ -3704,7 +4203,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-02-A3-02-ILLUSTRATION-DROITE",
@@ -3738,7 +4238,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-02-A3-02-COURS-PREVOIR",
@@ -3769,7 +4270,7 @@
                     "text": "Droite y = 2,5x + 1, en milliers d’euros, avec le rang 1 pour 2022.",
                     "steps": [
                       "Rang de 2026 : 2026 − 2022 + 1 = 5.",
-                      "Prévision : 2,5 × 5 + 1 = 13,5 milliers d’euros, si la tendance se poursuit. Avec x = 2026, on trouverait 5 066 : absurde.",
+                      "Prévision : 2,5 × 5 + 1 = 13,5 milliers d’euros, si la tendance se poursuit. Avec x = 2026, on trouverait 5 066 : absurde.",
                       "Seuil de 18 : 2,5x + 1 ≥ 18 donne x ≥ 17 ÷ 2,5 = 6,8.",
                       "Premier rang entier : 7, soit 2022 + 7 − 1 = 2028. Le rang 6 ne suffit pas : 2,5 × 6 + 1 = 16."
                     ]
@@ -3796,12 +4297,13 @@
             }
           }
         },
-        "notes": "• 2 min, puis 1 min sur son illustration, enchaînées sur la page 1 : 6 min pour les deux pages et leurs illustrations.\n• Faire calculer à main levée 2,5 × 2026 + 1 : l’absurdité de 5 066 fixe la règle du rang.\n• Question : « À 6,8, on prend le rang 6 ou le rang 7 ? » Faire vérifier que le rang 6 donne 16, sous le seuil.\n• Relance : « Jusqu’à quelle année feriez-vous confiance à cette droite ? » Renvoyer aux réponses de la réflexion A3-01.\n• Insister : x est le rang de l’année, jamais l’année.",
+        "notes": "• 2 min, puis 1 min sur son illustration, enchaînées sur la page 1 : 6 min pour les deux pages et leurs illustrations.\n• Faire calculer à main levée 2,5 × 2026 + 1 : l’absurdité de 5 066 fixe la règle du rang.\n• Question : « À 6,8, on prend le rang 6 ou le rang 7 ? » Faire vérifier que le rang 6 donne 16, sous le seuil.\n• Relance : « Jusqu’à quelle année feriez-vous confiance à cette droite ? » Renvoyer aux réponses de la réflexion A3-01.\n• Insister : x est le rang de l’année, jamais l’année.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-02-A3-02-ILLUSTRATION-PREVOIR",
@@ -3818,7 +4320,7 @@
               "renderer": "illustration",
               "props": {
                 "image": "/assets/cours/b2-02/v2/boutique-prevision-seuil.webp",
-                "imageAlt": "Schéma de la prévision de la boutique avec y = 2,5x + 1. L’année 2026 a le rang 5 : 2,5 × 5 + 1 = 13,5 milliers d’euros. Remplacer x par 2026 donnerait 5 066, un résultat absurde : x est le rang, jamais l’année. Seuil de 18 milliers d’euros : 2,5x + 1 ≥ 18 donne x ≥ 6,8 ; le rang 6 donne 16, sous le seuil, donc le seuil est atteint au rang 7, soit en 2028."
+                "imageAlt": "Schéma de la prévision de la boutique avec y = 2,5x + 1. L’année 2026 a le rang 5 : 2,5 × 5 + 1 = 13,5 milliers d’euros. Remplacer x par 2026 donnerait 5 066, un résultat absurde : x est le rang, jamais l’année. Seuil de 18 milliers d’euros : 2,5x + 1 ≥ 18 donne x ≥ 6,8 ; le rang 6 donne 16, sous le seuil, donc le seuil est atteint au rang 7, soit en 2028."
               }
             },
             "metadonnees": {
@@ -3835,7 +4337,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-02-A3-03-EXEMPLE-DROITE",
@@ -3869,13 +4372,13 @@
               {
                 "id": "prevision",
                 "intitule": "Prévoir",
-                "raisonnement": "Pour 1 000 € de publicité, x = 10 : y = 1,9 × 10 + 7,5 = 26,5, soit environ 26 à 27 commandes. x = 10 est hors des données observées : c’est une extrapolation.",
-                "invite": "Combien de commandes prévoir pour 1 000 € de publicité ?"
+                "raisonnement": "Pour 1 000 € de publicité, x = 10 : y = 1,9 × 10 + 7,5 = 26,5, soit environ 26 à 27 commandes. x = 10 est hors des données observées : c’est une extrapolation.",
+                "invite": "Combien de commandes prévoir pour 1 000 € de publicité ?"
               },
               {
                 "id": "seuil",
                 "intitule": "Le seuil de 30 commandes",
-                "raisonnement": "1,9x + 7,5 ≥ 30 donne x ≥ 22,5 ÷ 1,9 ≈ 11,84. Premier entier : 12, soit 1 200 € de publicité. Arrondir à 11 ne suffirait pas.",
+                "raisonnement": "1,9x + 7,5 ≥ 30 donne x ≥ 22,5 ÷ 1,9 ≈ 11,84. Premier entier : 12, soit 1 200 € de publicité. Arrondir à 11 ne suffirait pas.",
                 "invite": "À partir de quel budget la droite prévoit-elle 30 commandes ?"
               }
             ],
@@ -3894,7 +4397,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-02-A3-04-ATELIER-DROITE",
@@ -3964,7 +4468,7 @@
               "donnees": {
                 "question": {
                   "id": "b2-02-a3-seuil",
-                  "enonce": "Selon ce modèle, en quelle année le chiffre d’affaires dépasserait-il 1 000 k€ pour la première fois ?",
+                  "enonce": "Selon ce modèle, en quelle année le chiffre d’affaires dépasserait-il 1 000 k€ pour la première fois ?",
                   "unite": null,
                   "metadonnees": {
                     "concepts": ["ajustement-affine", "prevision"],
@@ -4042,15 +4546,16 @@
           },
           {
             "id": "b2-02-a3-seuil",
-            "enonce": "Selon ce modèle, en quelle année le chiffre d’affaires dépasserait-il 1 000 k€ pour la première fois ?",
+            "enonce": "Selon ce modèle, en quelle année le chiffre d’affaires dépasserait-il 1 000 k€ pour la première fois ?",
             "options": null
           }
         ],
         "corrigeEcran": null,
+        "reflexion": null,
         "explications": [
           {
             "reference": "b2-02-a3-pente",
-            "texte": "=PENTE(plage des y;plage des x) ≈ 43,89 : le chiffre d’affaires augmente d’environ 43,89 k€ par an. Inverser les deux plages donne 0,02, sans signification ici."
+            "texte": "=PENTE(plage des y;plage des x) ≈ 43,89 : le chiffre d’affaires augmente d’environ 43,89 k€ par an. Inverser les deux plages donne 0,02, sans signification ici."
           },
           {
             "reference": "b2-02-a3-ordonnee",
@@ -4058,11 +4563,11 @@
           },
           {
             "reference": "b2-02-a3-prevision",
-            "texte": "2028 a le rang 9 : y ≈ 43,885714 × 9 + 564,4 ≈ 959 k€, si la tendance se poursuit. Avec x = 2028, on obtient 89 565 k€, absurde."
+            "texte": "2028 a le rang 9 : y ≈ 43,885714 × 9 + 564,4 ≈ 959 k€, si la tendance se poursuit. Avec x = 2028, on obtient 89 565 k€, absurde."
           },
           {
             "reference": "b2-02-a3-seuil",
-            "texte": "43,885714x + 564,4 ≥ 1 000 donne x ≥ 9,93. Premier rang entier : 10, soit 2029. Le rang 9 (2028) donne 959 k€, sous le seuil."
+            "texte": "43,885714x + 564,4 ≥ 1 000 donne x ≥ 9,93. Premier rang entier : 10, soit 2029. Le rang 9 (2028) donne 959 k€, sous le seuil."
           }
         ]
       },
@@ -4075,7 +4580,7 @@
         "donnees": {
           "probleme": {
             "id": "b2-02-a3-defi-ia",
-            "enonce": "Samir a demandé une prévision pour 2035 à un assistant IA. Réponse : « Droite : y = 43,89x + 564,4. En 2035, y = 43,89 × 2035 + 564,4 ≈ 89 881 k€. Comme r est proche de 1, ce sont nos hausses de tarifs qui causent la croissance. »",
+            "enonce": "Samir a demandé une prévision pour 2035 à un assistant IA. Réponse : « Droite : y = 43,89x + 564,4. En 2035, y = 43,89 × 2035 + 564,4 ≈ 89 881 k€. Comme r est proche de 1, ce sont nos hausses de tarifs qui causent la croissance. »",
             "invite": "Trouvez les erreurs de l’IA, corrigez la prévision et écrivez la réserve à ajouter.",
             "strategies": [],
             "metadonnees": {
@@ -4098,7 +4603,7 @@
           "strategies": [
             {
               "id": "rang",
-              "libelle": "Remplacer x par le rang de 2035, 16, et non par 2035 : y ≈ 43,89 × 16 + 564,4 ≈ 1 267 k€.",
+              "libelle": "Remplacer x par le rang de 2035, 16, et non par 2035 : y ≈ 43,89 × 16 + 564,4 ≈ 1 267 k€.",
               "fausse": false
             },
             {
@@ -4123,10 +4628,11 @@
             }
           ]
         },
+        "reflexion": null,
         "explications": [
           {
             "reference": "rang",
-            "texte": "L’IA a remplacé x par l’année : avec le rang 16, on prévoit environ 1 267 k€, pas 89 881."
+            "texte": "L’IA a remplacé x par l’année : avec le rang 16, on prévoit environ 1 267 k€, pas 89 881."
           },
           {
             "reference": "loin",
@@ -4170,7 +4676,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-02-A4-01-SITUATION-FIBRE",
@@ -4250,7 +4757,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-02-A4-02-TABLEUR-FIBRE",
@@ -4326,6 +4834,77 @@
               "En E5 et E6, calculez les coordonnées du point moyen G avec MOYENNE.",
               "En E7, contrôlez : =SI(ARRONDI(E3*E5+E4-E6;6)=0;1;0) doit afficher 1."
             ],
+            "lettres": ["A", "B", "C", "D", "E"],
+            "grille": [
+              ["A1", "B1", "C1", "D1", "E1"],
+              ["A2", "B2", "C2", "D2", "E2"],
+              ["A3", "B3", "C3", "D3", "E3"],
+              ["A4", "B4", "C4", "D4", "E4"],
+              ["A5", "B5", "C5", "D5", "E5"],
+              ["A6", "B6", "C6", "D6", "E6"],
+              ["A7", "B7", "C7", "D7", "E7"]
+            ],
+            "longueurMaxSaisie": 200,
+            "initiale": {
+              "saisies": {},
+              "affichages": {
+                "A1": "Rang x",
+                "B1": "Abonnements y (millions)",
+                "C1": "Année",
+                "D1": "Indicateur",
+                "E1": "Valeur",
+                "A2": "1",
+                "B2": "10,3",
+                "C2": "2020",
+                "A3": "2",
+                "B3": "14,5",
+                "C3": "2021",
+                "A4": "3",
+                "B4": "18,1",
+                "C4": "2022",
+                "A5": "4",
+                "B5": "21,4",
+                "C5": "2023",
+                "A6": "5",
+                "B6": "24,4",
+                "C6": "2024",
+                "D2": "Coefficient de corrélation r",
+                "D3": "Coefficient directeur a",
+                "D4": "Ordonnée à l’origine b",
+                "D5": "x̄",
+                "D6": "ȳ",
+                "D7": "Contrôle : la droite passe par G"
+              },
+              "natures": {
+                "A1": "texte",
+                "B1": "texte",
+                "C1": "texte",
+                "D1": "texte",
+                "E1": "texte",
+                "A2": "nombre",
+                "B2": "nombre",
+                "C2": "nombre",
+                "A3": "nombre",
+                "B3": "nombre",
+                "C3": "nombre",
+                "A4": "nombre",
+                "B4": "nombre",
+                "C4": "nombre",
+                "A5": "nombre",
+                "B5": "nombre",
+                "C5": "nombre",
+                "A6": "nombre",
+                "B6": "nombre",
+                "C6": "nombre",
+                "D2": "texte",
+                "D3": "texte",
+                "D4": "texte",
+                "D5": "texte",
+                "D6": "texte",
+                "D7": "texte"
+              },
+              "formules": []
+            },
             "metadonnees": {
               "concepts": ["correlation", "ajustement-affine"],
               "misconceptionsCiblees": [],
@@ -4353,6 +4932,7 @@
               "reference": "E2",
               "formuleReference": "=COEFFICIENT.CORRELATION(A2:A6;B2:B6)",
               "valeur": 0.997852,
+              "affichage": "0,9979",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -4363,6 +4943,7 @@
               "reference": "E3",
               "formuleReference": "=PENTE(B2:B6;A2:A6)",
               "valeur": 3.51,
+              "affichage": "3,51",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -4373,6 +4954,7 @@
               "reference": "E4",
               "formuleReference": "=ORDONNEE.ORIGINE(B2:B6;A2:A6)",
               "valeur": 7.21,
+              "affichage": "7,21",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -4383,6 +4965,7 @@
               "reference": "E5",
               "formuleReference": "=MOYENNE(A2:A6)",
               "valeur": 3,
+              "affichage": "3",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -4393,6 +4976,7 @@
               "reference": "E6",
               "formuleReference": "=MOYENNE(B2:B6)",
               "valeur": 17.74,
+              "affichage": "17,74",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -4403,6 +4987,7 @@
               "reference": "E7",
               "formuleReference": "=SI(ARRONDI(E3*E5+E4-E6;6)=0;1;0)",
               "valeur": 1,
+              "affichage": "1",
               "tolerance": {
                 "type": "absolue",
                 "valeur": 0
@@ -4411,14 +4996,15 @@
             }
           ]
         },
+        "reflexion": null,
         "explications": [
           {
             "reference": "E2",
-            "texte": "=COEFFICIENT.CORRELATION(A2:A6;B2:B6) ≈ 0,998 : les points sont presque alignés, un ajustement affine est justifié."
+            "texte": "=COEFFICIENT.CORRELATION(A2:A6;B2:B6) ≈ 0,998 : les points sont presque alignés, un ajustement affine est justifié."
           },
           {
             "reference": "E3 et E4",
-            "texte": "=PENTE(B2:B6;A2:A6) = 3,51 et =ORDONNEE.ORIGINE(B2:B6;A2:A6) = 7,21 : y = 3,51x + 7,21. Plages inversées : 0,28, la pente de x en y."
+            "texte": "=PENTE(B2:B6;A2:A6) = 3,51 et =ORDONNEE.ORIGINE(B2:B6;A2:A6) = 7,21 : y = 3,51x + 7,21. Plages inversées : 0,28, la pente de x en y."
           },
           {
             "reference": "E5 à E7",
@@ -4526,10 +5112,11 @@
           ],
           "codeFinal": "F7B3R9E5"
         },
+        "reflexion": null,
         "explications": [
           {
             "reference": "b2-02-a4-e1-prevision",
-            "texte": "Fin 2025 a le rang 6 : 3,51 × 6 + 7,21 = 28,27 millions. Avec x = 2025, on trouve 7 114,96 millions, absurde."
+            "texte": "Fin 2025 a le rang 6 : 3,51 × 6 + 7,21 = 28,27 millions. Avec x = 2025, on trouve 7 114,96 millions, absurde."
           },
           {
             "reference": "b2-02-a4-e2-seuil",
@@ -4942,7 +5529,8 @@
             ]
           }
         ],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-02-A4-05-FICHE-MEMO",
@@ -5041,7 +5629,8 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B2-02-A4-06-BILLET-DE-SORTIE",
@@ -5128,7 +5717,8 @@
             ]
           }
         ],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "reflexion": null
       }
     ],
     "remediations": {
@@ -5957,7 +6547,7 @@
                     "text": "Droite y = 2,5x + 1, en milliers d’euros, avec le rang 1 pour 2022.",
                     "steps": [
                       "Rang de 2026 : 2026 − 2022 + 1 = 5.",
-                      "Prévision : 2,5 × 5 + 1 = 13,5 milliers d’euros, si la tendance se poursuit. Avec x = 2026, on trouverait 5 066 : absurde.",
+                      "Prévision : 2,5 × 5 + 1 = 13,5 milliers d’euros, si la tendance se poursuit. Avec x = 2026, on trouverait 5 066 : absurde.",
                       "Seuil de 18 : 2,5x + 1 ≥ 18 donne x ≥ 17 ÷ 2,5 = 6,8.",
                       "Premier rang entier : 7, soit 2022 + 7 − 1 = 2028. Le rang 6 ne suffit pas : 2,5 × 6 + 1 = 16."
                     ]
@@ -6000,7 +6590,7 @@
               "renderer": "illustration",
               "props": {
                 "image": "/assets/cours/b2-02/v2/boutique-prevision-seuil.webp",
-                "imageAlt": "Schéma de la prévision de la boutique avec y = 2,5x + 1. L’année 2026 a le rang 5 : 2,5 × 5 + 1 = 13,5 milliers d’euros. Remplacer x par 2026 donnerait 5 066, un résultat absurde : x est le rang, jamais l’année. Seuil de 18 milliers d’euros : 2,5x + 1 ≥ 18 donne x ≥ 6,8 ; le rang 6 donne 16, sous le seuil, donc le seuil est atteint au rang 7, soit en 2028."
+                "imageAlt": "Schéma de la prévision de la boutique avec y = 2,5x + 1. L’année 2026 a le rang 5 : 2,5 × 5 + 1 = 13,5 milliers d’euros. Remplacer x par 2026 donnerait 5 066, un résultat absurde : x est le rang, jamais l’année. Seuil de 18 milliers d’euros : 2,5x + 1 ≥ 18 donne x ≥ 6,8 ; le rang 6 donne 16, sous le seuil, donc le seuil est atteint au rang 7, soit en 2028."
               }
             },
             "metadonnees": {

@@ -55,4 +55,8 @@ describe('creerCacheLRU', () => {
   it('refuse une capacite nulle ou negative', () => {
     expect(() => creerCacheLRU<number>(0)).toThrow(RangeError);
   });
+
+  it('refuse une capacite fractionnaire', () => {
+    expect(() => creerCacheLRU<number>(1.5)).toThrow(RangeError);
+  });
 });

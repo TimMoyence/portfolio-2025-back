@@ -43,7 +43,7 @@ describe('RefreshTokensUseCase', () => {
   const rafraichir = async (stored: RefreshToken, token: string) => {
     const user = buildUser();
     refreshTokensRepo.findByTokenHash.mockResolvedValue(stored);
-    refreshTokensRepo.create.mockResolvedValue(
+    refreshTokensRepo.createSuccessor.mockResolvedValue(
       buildRefreshToken({ id: 'rt-2' }),
     );
     usersRepo.findById.mockResolvedValue(user);
@@ -51,7 +51,11 @@ describe('RefreshTokensUseCase', () => {
     const result = await useCase.execute(token);
 
     expect(result.user).toBe(user);
-    expect(refreshTokensRepo.create).toHaveBeenCalled();
+    expect(refreshTokensRepo.createSuccessor).toHaveBeenCalledWith(
+      stored.id,
+      expect.objectContaining({ userId: user.id, revoked: false }),
+    );
+    expect(refreshTokensRepo.create).not.toHaveBeenCalled();
     return result;
   };
 
@@ -81,30 +85,64 @@ describe('RefreshTokensUseCase', () => {
     expect(refreshTokensRepo.create).not.toHaveBeenCalled();
   });
 
+  it.each([
+    ['apres la rotation', () => buildRefreshToken(), true],
+    [
+      'pendant le delai de grace',
+      () =>
+        buildRefreshToken({
+          revoked: true,
+          rotationGraceUntil: new Date(Date.now() + 30_000),
+        }),
+      false,
+    ],
+  ])(
+    'refuse la session quand une deconnexion a revoque le jeton %s, avant l emission du suivant',
+    async (_moment, stored, rotation) => {
+      refreshTokensRepo.findByTokenHash.mockResolvedValue(stored());
+      refreshTokensRepo.rotateById.mockResolvedValue(rotation);
+      usersRepo.findById.mockResolvedValue(buildUser());
+      refreshTokensRepo.createSuccessor.mockResolvedValue(null);
+
+      await expect(useCase.execute('jeton-deconnecte')).rejects.toBeInstanceOf(
+        InvalidCredentialsError,
+      );
+      expect(refreshTokensRepo.create).not.toHaveBeenCalled();
+    },
+  );
+
   itRefuseUnRefreshTokenInconnu(() => ({ refreshTokensRepo, useCase }));
 
-  it.each([
-    [
-      'revoque tous les tokens et lance TokenReuseDetectedError quand le token est deja revoque (reutilisation)',
-      () => ({}),
-      'reused-token',
-    ],
-    [
-      'revoque la session quand le delai de grace est depasse',
-      () => ({ rotationGraceUntil: new Date(Date.now() - 1) }),
-      'late-replay',
-    ],
-  ])('%s', async (_titre, grace, token) => {
-    const stored = buildRefreshToken({ revoked: true, ...grace() });
+  it('revoque toutes les sessions quand un token remplace par rotation est rejoue apres le delai de grace', async () => {
+    const stored = buildRefreshToken({
+      revoked: true,
+      rotationGraceUntil: new Date(Date.now() - 1),
+    });
     refreshTokensRepo.findByTokenHash.mockResolvedValue(stored);
 
-    await expect(useCase.execute(token)).rejects.toBeInstanceOf(
+    await expect(useCase.execute('late-replay')).rejects.toBeInstanceOf(
       TokenReuseDetectedError,
     );
     expect(refreshTokensRepo.revokeByUserId).toHaveBeenCalledWith(
       stored.userId,
     );
   });
+
+  it.each([null, undefined])(
+    'refuse un token revoque hors rotation (grace %s) sans fermer les sessions ouvertes depuis',
+    async (rotationGraceUntil) => {
+      refreshTokensRepo.findByTokenHash.mockResolvedValue(
+        buildRefreshToken({ revoked: true, rotationGraceUntil }),
+      );
+
+      await expect(useCase.execute('revoked-token')).rejects.toBeInstanceOf(
+        InvalidCredentialsError,
+      );
+      expect(refreshTokensRepo.revokeByUserId).not.toHaveBeenCalled();
+      expect(refreshTokensRepo.rotateById).not.toHaveBeenCalled();
+      expect(refreshTokensRepo.create).not.toHaveBeenCalled();
+    },
+  );
 
   it('lance TokenExpiredError quand le token est expire', async () => {
     const stored = buildRefreshToken({

@@ -4,8 +4,8 @@ import cookieParser from 'cookie-parser';
 import type { NextFunction, Request, Response } from 'express';
 import type { Server } from 'node:http';
 import type { AddressInfo } from 'node:net';
-import type request from 'supertest';
 import { appliquerLesTraitementsGlobaux } from '../../src/common/interfaces/http/traitements-globaux';
+import { enregistrerLesReponsesServies } from './reponses-servies';
 
 export const ADRESSE_BOUCLE_LOCALE = '127.0.0.1';
 
@@ -30,6 +30,7 @@ export async function ouvrirApplication(
   configurer?: (app: INestApplication) => void,
 ): Promise<INestApplication> {
   const app = moduleRef.createNestApplication();
+  enregistrerLesReponsesServies(app);
   appliquerLesTraitementsGlobaux(app);
   configurer?.(app);
   await ecouterEnBoucleLocale(app);
@@ -83,12 +84,6 @@ export function bootstrapTestAppAvecCookies(
   });
 }
 
-export function httpServerOf(
-  app: INestApplication,
-): Parameters<typeof request>[0] {
-  return serveurHttpDe(app);
-}
-
-function serveurHttpDe(app: INestApplication): Server {
+export function serveurHttpDe(app: INestApplication): Server {
   return app.getHttpServer() as Server;
 }

@@ -1,3 +1,7 @@
+export const LONGUEUR_MAX_D_UN_NOM_DE_PARTICIPANT = 80;
+
+export const LONGUEUR_MAX_D_UNE_ADRESSE_DE_PARTICIPANT = 180;
+
 export interface ParticipantRecord {
   id: string;
   sessionId: string;

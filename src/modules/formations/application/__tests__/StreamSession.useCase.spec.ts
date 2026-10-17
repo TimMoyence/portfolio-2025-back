@@ -234,8 +234,8 @@ describe('StreamSessionUseCase', () => {
   it.each(CAS_DES_COURS_SERVIS)(
     'QA-01 · %s : sert dans l état lu en base la phase « vote » de chaque vote jumelé encore non piloté',
     async (_slug, cours) => {
-      const { pilotageEcrans, attendu } = pilotageDUnCoursServi(cours);
-      seanceLue({ courseSlug: cours.slug, pilotageEcrans });
+      const { seance, attendu } = pilotageDUnCoursServi(cours);
+      seanceLue({ courseSlug: cours.slug, ...seance });
       const flux = new StreamSessionUseCase(
         sessions,
         new SessionStateCacheService(),
@@ -791,6 +791,7 @@ describe('StreamSessionUseCase', () => {
               ecranId: '',
               total: 1,
               correctes: 1,
+              part: 1,
             }),
           ],
           statistiques: {

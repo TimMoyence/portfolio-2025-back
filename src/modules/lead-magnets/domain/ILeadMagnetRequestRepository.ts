@@ -1,7 +1,11 @@
+import type { VerrouParBoite } from '../../../common/domain/verrou-par-boite';
 import type { LeadMagnetRequest } from './LeadMagnetRequest';
 
-export interface ILeadMagnetRequestRepository {
+export interface ILeadMagnetRequestRepository extends VerrouParBoite<ILeadMagnetRequestRepository> {
   create(data: LeadMagnetRequest): Promise<LeadMagnetRequest>;
-  existsRecentByEmail(email: string, formationSlug: string): Promise<boolean>;
+  existeUneDemandeRecenteVersLaBoiteDe(
+    email: string,
+    formationSlug: string,
+  ): Promise<boolean>;
   findByToken(accessToken: string): Promise<LeadMagnetRequest | null>;
 }

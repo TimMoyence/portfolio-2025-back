@@ -6,25 +6,27 @@ import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { ScheduleModule } from '@nestjs/schedule';
 import { LoggerModule } from 'nestjs-pino';
 import { join } from 'path';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { HealthModule } from './common/interfaces/health/health.module';
-import { MetricsModule } from './common/interfaces/metrics/metrics.module';
 import { SecurityModule } from './common/interfaces/security/security.module';
 import { validateEnv } from './config/env.validation';
 import { optionsJournalHttp } from './config/journal-http';
 
 import { optionsTypeOrmDeLApi } from './database/options-typeorm';
+import { ArticlesModule } from './modules/articles/Articles.module';
+import { AuditRequestsModule } from './modules/audit-requests/AuditRequests.module';
+import { ContactsModule } from './modules/contacts/Contacts.module';
+import { CookieConsentsModule } from './modules/cookie-consents/CookieConsents.module';
+import { FormationsModule } from './modules/formations/Formations.module';
+import { LeadMagnetsModule } from './modules/lead-magnets/LeadMagnets.module';
+import { PresentationsModule } from './modules/presentations/Presentations.module';
+import { UsersModule } from './modules/users/Users.module';
 import { logBootstrapStep } from './runtime/log-bootstrap-step';
-import { resolveRuntimeContexts } from './runtime/runtime-contexts';
-
-const runtimeContexts = resolveRuntimeContexts();
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, validate: validateEnv }),
     LoggerModule.forRoot({
-      pinoHttp: optionsJournalHttp(process.env.NODE_ENV),
+      pinoHttp: optionsJournalHttp(),
     }),
     ThrottlerModule.forRoot([
       {
@@ -43,14 +45,18 @@ const runtimeContexts = resolveRuntimeContexts();
         return options;
       },
     }),
-    ...runtimeContexts.runtimeModules,
+    UsersModule,
+    ContactsModule,
+    CookieConsentsModule,
+    AuditRequestsModule,
+    LeadMagnetsModule,
+    PresentationsModule,
+    ArticlesModule,
+    FormationsModule,
     HealthModule,
     SecurityModule,
-    MetricsModule,
   ],
-  controllers: [AppController],
   providers: [
-    AppService,
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,

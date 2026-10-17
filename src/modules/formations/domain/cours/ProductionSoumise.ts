@@ -1,10 +1,10 @@
 import type { Cours, Ecran, QuestionProduction } from '../contrats/cours';
 import type { DetailProduction, ValeurProduction } from '../contrats/resultats';
 import {
-  ProductionInvalideError,
   ProductionVideError,
+  refuserLaProduction,
 } from '../errors/FormationErrors';
-import type { ConfusionId } from './banque/confusions';
+import { confusionsParFrequence, type ConfusionId } from './banque/confusions';
 import type { CorrigeProduction } from './Corrige';
 import {
   corrigerClassement,
@@ -12,11 +12,8 @@ import {
   corrigerTableau,
   type SaisiesDeTableau,
 } from './CorrectionProduction';
-import {
-  estDansLaGrille,
-  estReferenceDeCellule,
-  estUneValeurDeVerite,
-} from './PlansStockes';
+import { saisiesRetenues } from './FeuilleEvaluee';
+import { estUneValeurDeVerite } from './PlansStockes';
 
 export interface EcranDeProduction {
   readonly ecran: Extract<
@@ -50,30 +47,17 @@ export function ecranDeProduction(
   return null;
 }
 
-function refuser(questionId: string, raison: string): never {
-  throw new ProductionInvalideError(questionId, raison);
-}
-
 function feuilleNettoyee(
   cible: EcranDeProduction,
   cellules: Readonly<Record<string, string>>,
 ): Readonly<Record<string, string>> {
   if (cible.ecran.brique !== 'fp-sheet') {
-    refuser(cible.question.id, 'cette question n’attend pas une feuille');
+    refuserLaProduction(
+      cible.question.id,
+      'cette question n’attend pas une feuille',
+    );
   }
-  const plan = cible.ecran.proprietes.plan;
-  const verrouillees = new Set(plan.verrouillees);
-  const retenues: Record<string, string> = {};
-  for (const [reference, saisie] of Object.entries(cellules)) {
-    const nom = reference.toUpperCase();
-    if (!estReferenceDeCellule(nom) || !estDansLaGrille(plan, nom)) {
-      refuser(cible.question.id, `cellule hors de la grille : ${reference}`);
-    }
-    if (!verrouillees.has(nom) && saisie.trim().length > 0) {
-      retenues[nom] = saisie;
-    }
-  }
-  return retenues;
+  return saisiesRetenues(cible.ecran.proprietes.plan, cellules);
 }
 
 function saisiesNettoyees(
@@ -81,7 +65,10 @@ function saisiesNettoyees(
   saisies: readonly { rang: number; cle: string; valeur: number }[],
 ): SaisiesDeTableau {
   if (cible.ecran.brique !== 'fp-table-build') {
-    refuser(cible.question.id, 'cette question n’attend pas un tableau');
+    refuserLaProduction(
+      cible.question.id,
+      'cette question n’attend pas un tableau',
+    );
   }
   const plan = cible.ecran.proprietes.plan;
   const aSaisir = plan.colonnes.filter((colonne) => colonne.role === 'saisie');
@@ -97,19 +84,19 @@ function saisiesNettoyees(
   );
   for (const saisie of saisies) {
     if (saisie.rang >= plan.echeances || !colonnes.has(saisie.cle)) {
-      refuser(
+      refuserLaProduction(
         cible.question.id,
         `saisie hors du plan : ${saisie.rang}:${saisie.cle}`,
       );
     }
     if (booleennes.has(saisie.cle) && !estUneValeurDeVerite(saisie.valeur)) {
-      refuser(
+      refuserLaProduction(
         cible.question.id,
         `valeur de vérité attendue : ${saisie.rang}:${saisie.cle}`,
       );
     }
     if (lignes[saisie.rang][saisie.cle] !== undefined) {
-      refuser(
+      refuserLaProduction(
         cible.question.id,
         `saisie en double : ${saisie.rang}:${saisie.cle}`,
       );
@@ -124,17 +111,26 @@ function classementNettoye(
   classement: Readonly<Record<string, string>>,
 ): Readonly<Record<string, string>> {
   if (cible.ecran.brique !== 'fp-cardsort') {
-    refuser(cible.question.id, 'cette question n’attend pas un classement');
+    refuserLaProduction(
+      cible.question.id,
+      'cette question n’attend pas un classement',
+    );
   }
   const plan = cible.ecran.proprietes.plan;
   const cartes = new Set(plan.cartes.map((carte) => carte.id));
   const categories = new Set(plan.categories.map((categorie) => categorie.id));
   for (const [carteId, categorieId] of Object.entries(classement)) {
     if (!cartes.has(carteId)) {
-      refuser(cible.question.id, `carte absente du plan : ${carteId}`);
+      refuserLaProduction(
+        cible.question.id,
+        `carte absente du plan : ${carteId}`,
+      );
     }
     if (!categories.has(categorieId)) {
-      refuser(cible.question.id, `catégorie absente du plan : ${categorieId}`);
+      refuserLaProduction(
+        cible.question.id,
+        `catégorie absente du plan : ${categorieId}`,
+      );
     }
   }
   return classement;
@@ -178,7 +174,7 @@ export function normaliserProduction(
   valeur: ValeurProduction,
 ): ValeurProduction {
   if (valeur.type !== cible.question.type) {
-    refuser(
+    refuserLaProduction(
       cible.question.id,
       `production de type ${valeur.type} pour une question ${cible.question.type}`,
     );
@@ -266,25 +262,17 @@ export function corrigerProduction(
       })),
     };
   }
-  return refuser(cible.question.id, 'corrigé absent pour cette production');
+  return refuserLaProduction(
+    cible.question.id,
+    'corrigé absent pour cette production',
+  );
 }
 
 export function confusionDominante(
   details: readonly DetailProduction[],
 ): ConfusionId | null {
-  const comptes = new Map<ConfusionId, number>();
-  for (const detail of details) {
-    if (detail.confusion !== null) {
-      comptes.set(detail.confusion, (comptes.get(detail.confusion) ?? 0) + 1);
-    }
-  }
-  let dominante: ConfusionId | null = null;
-  let meilleur = 0;
-  for (const [confusion, compte] of comptes) {
-    if (compte > meilleur) {
-      dominante = confusion;
-      meilleur = compte;
-    }
-  }
-  return dominante;
+  const [dominante] = confusionsParFrequence(
+    details.map((detail) => detail.confusion),
+  );
+  return dominante?.[0] ?? null;
 }

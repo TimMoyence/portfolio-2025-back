@@ -74,6 +74,22 @@ function ajouterLesAidesDuBrut(feuille: Worksheet, derniere: number): void {
   }
 }
 
+function retirerLesResultatsDuGenerateur(
+  feuille: Worksheet,
+  derniere: number,
+): void {
+  for (let r = 2; r <= derniere; r += 1) {
+    COLONNES_CALCULEES.forEach((_, rang) => {
+      const cellule = feuille
+        .getRow(r)
+        .getCell(PREMIERE_COLONNE_CALCULEE + rang);
+      if (cellule.formula) {
+        cellule.value = formule(cellule.formula);
+      }
+    });
+  }
+}
+
 function ajouterLAideDeStrasbourg(feuille: Worksheet, derniere: number): void {
   const colonne = PREMIERE_COLONNE_CALCULEE + COLONNES_CALCULEES.length;
   feuille.getRow(1).getCell(colonne).value = 'delai_strasbourg_2026';
@@ -183,6 +199,7 @@ export async function ecrireLeCorrigeFormateur(
     throw new Error('Onglets du corrigé absents');
   }
   ajouterLesAidesDuBrut(brut, derniereDuBrut);
+  retirerLesResultatsDuGenerateur(commandes, derniereDesCommandes);
   ajouterLAideDeStrasbourg(commandes, derniereDesCommandes);
   ajouterLesCalculs(classeur.addWorksheet('Calculs'), agences);
   const formules = formulesDesQuestions(

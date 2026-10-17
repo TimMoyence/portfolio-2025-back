@@ -7,7 +7,7 @@ export function ouvrirAuxOrigines(
   app.enableCors({
     origin: [...origines],
     methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
-    exposedHeaders: ['Content-Disposition'],
+    exposedHeaders: ['Content-Disposition', 'WWW-Authenticate'],
     credentials: true,
   });
 }

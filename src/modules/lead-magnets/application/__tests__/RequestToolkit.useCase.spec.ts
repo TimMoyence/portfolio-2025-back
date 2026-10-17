@@ -5,6 +5,7 @@ import {
   createMockToolkitPdfGenerator,
   createMockToolkitContentAssembler,
 } from '../../../../../test/factories/lead-magnet-request.factory';
+import { sectionSurLeDepot } from '../../../../../test/factories/verrou-par-boite.factory';
 import { BadRequestException } from '@nestjs/common';
 import {
   attendreLAvertissement,
@@ -57,19 +58,54 @@ describe('RequestToolkitUseCase', () => {
 
     expect(repo.create).toHaveBeenCalledTimes(1);
     expect(assembler.assemble).toHaveBeenCalledTimes(1);
+    expect(assembler.assemble).toHaveBeenCalledWith('Marie');
     expect(pdfGenerator.generate).toHaveBeenCalledTimes(1);
     expect(notifier.sendToolkitEmail).toHaveBeenCalledTimes(1);
     expect(result.accessToken).toBeDefined();
   });
 
   it('should skip if recent duplicate exists (< 24h)', async () => {
-    repo.existsRecentByEmail.mockResolvedValue(true);
+    repo.existeUneDemandeRecenteVersLaBoiteDe.mockResolvedValue(true);
 
     await demanderLeToolkit();
 
     expect(repo.create).not.toHaveBeenCalled();
     expect(pdfGenerator.generate).not.toHaveBeenCalled();
     expect(notifier.sendToolkitEmail).not.toHaveBeenCalled();
+  });
+
+  it('cherche le doublon et cree la demande dans la section verrouillee de la boite, puis genere et envoie apres sa fin', async () => {
+    const depotDeLaSection = createMockLeadMagnetRequestRepo();
+    repo.sousVerrouDeLaBoite = sectionSurLeDepot(
+      () => depotDeLaSection,
+      () => {
+        expect(assembler.assemble).not.toHaveBeenCalled();
+        expect(notifier.sendToolkitEmail).not.toHaveBeenCalled();
+      },
+    );
+
+    await demanderLeToolkit();
+
+    expect(repo.sousVerrouDeLaBoite).toHaveBeenCalledWith(
+      validCommand.email,
+      expect.any(Function),
+    );
+    expect(
+      depotDeLaSection.existeUneDemandeRecenteVersLaBoiteDe,
+    ).toHaveBeenCalledWith(validCommand.email, validCommand.formationSlug);
+    expect(depotDeLaSection.create).toHaveBeenCalledTimes(1);
+    expect(repo.existeUneDemandeRecenteVersLaBoiteDe).not.toHaveBeenCalled();
+    expect(repo.create).not.toHaveBeenCalled();
+    expect(notifier.sendToolkitEmail).toHaveBeenCalledTimes(1);
+  });
+
+  it('verrouille la boite de l adresse normalisee, pas la saisie brute', async () => {
+    await useCase.execute({ ...validCommand, email: '  Marie@Example.COM ' });
+
+    expect(repo.sousVerrouDeLaBoite).toHaveBeenCalledWith(
+      'marie@example.com',
+      expect.any(Function),
+    );
   });
 
   it('should not block on email failure', async () => {

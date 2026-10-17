@@ -29,6 +29,7 @@ import {
 } from './factories/contenus-de-cours.factory';
 import { tireurSequentiel } from './factories/cours.factory';
 import { describeDb } from './helpers/db-integration-datasource';
+import { formulesDuCorrige } from './helpers/feuille-de-cours';
 import {
   DELAI_OUVERTURE_CONTEXTE_MS,
   ouvrirContexteFormations,
@@ -166,12 +167,7 @@ for (const contenu of CONTENUS) {
     } else {
       it('recalcule depuis la base chaque valeur du corrigé de la feuille (AC-11)', () => {
         const corrige = corrigeDeLaFeuille();
-        const formules = Object.fromEntries(
-          corrige.attendus.map((attendu) => [
-            attendu.reference,
-            attendu.formuleReference,
-          ]),
-        );
+        const formules = formulesDuCorrige(corrige);
 
         const resultats = evaluerFeuille({
           lignes: corrige.plan.lignes,

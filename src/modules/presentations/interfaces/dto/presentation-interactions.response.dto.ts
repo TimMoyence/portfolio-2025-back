@@ -1,11 +1,58 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { PresentationInteractions } from '../../domain/SlideInteraction';
+import {
+  ApiExtraModels,
+  ApiProperty,
+  ApiPropertyOptional,
+  getSchemaPath,
+} from '@nestjs/swagger';
+import type {
+  PresentationInteractions,
+  SlideInteractions,
+} from '../../domain/SlideInteraction';
 
+class PollInteractionDto {
+  @ApiProperty({ enum: ['poll'] })
+  type!: 'poll';
+
+  @ApiProperty()
+  question!: string;
+
+  @ApiProperty({ type: [String] })
+  options!: string[];
+
+  @ApiPropertyOptional()
+  multiSelect?: boolean;
+}
+
+class ReflectionInteractionDto {
+  @ApiProperty({ enum: ['reflection'] })
+  type!: 'reflection';
+
+  @ApiProperty()
+  question!: string;
+
+  @ApiProperty()
+  placeholder!: string;
+
+  @ApiPropertyOptional({ type: 'integer' })
+  rows?: number;
+}
+
+class SlideInteractionsDto {
+  @ApiPropertyOptional({ type: [PollInteractionDto] })
+  present?: PollInteractionDto[];
+
+  @ApiPropertyOptional({ type: [ReflectionInteractionDto] })
+  scroll?: ReflectionInteractionDto[];
+}
+
+@ApiExtraModels(SlideInteractionsDto)
 export class PresentationInteractionsResponseDto {
   @ApiProperty({ example: 'ia-solopreneurs' })
   slug!: string;
 
   @ApiProperty({
+    type: 'object',
+    additionalProperties: { $ref: getSchemaPath(SlideInteractionsDto) },
     description: 'Map slideId → SlideInteractions (present + scroll)',
     example: {
       accroche: {
@@ -19,7 +66,7 @@ export class PresentationInteractionsResponseDto {
       },
     },
   })
-  interactions!: Record<string, unknown>;
+  interactions!: Record<string, SlideInteractions>;
 
   static fromDomain(
     domain: PresentationInteractions,

@@ -6,14 +6,20 @@ import type {
   IncidentInput,
   IncidentRecord,
 } from '../domain/IIncidents.repository';
+import { DepotEnDomaine } from '../../../common/infrastructure/typeorm/DepotEnDomaine';
 import { FormationIncidentEntity } from './entities/FormationIncident.entity';
 
 @Injectable()
-export class IncidentsRepositoryTypeORM implements IIncidentsRepository {
+export class IncidentsRepositoryTypeORM
+  extends DepotEnDomaine<FormationIncidentEntity, IncidentRecord>
+  implements IIncidentsRepository
+{
   constructor(
     @InjectRepository(FormationIncidentEntity)
-    private readonly repo: Repository<FormationIncidentEntity>,
-  ) {}
+    repo: Repository<FormationIncidentEntity>,
+  ) {
+    super(repo);
+  }
 
   async createMany(inputs: readonly IncidentInput[]): Promise<void> {
     if (inputs.length === 0) return;
@@ -29,12 +35,11 @@ export class IncidentsRepositoryTypeORM implements IIncidentsRepository {
     await this.repo.save(entities);
   }
 
-  async listBySession(sessionId: string): Promise<readonly IncidentRecord[]> {
-    const entities = await this.repo.find({ where: { sessionId } });
-    return entities.map((entity) => this.toDomain(entity));
+  listBySession(sessionId: string): Promise<readonly IncidentRecord[]> {
+    return this.lister({ where: { sessionId } });
   }
 
-  private toDomain(entity: FormationIncidentEntity): IncidentRecord {
+  protected toDomain(entity: FormationIncidentEntity): IncidentRecord {
     return {
       id: entity.id,
       sessionId: entity.sessionId,

@@ -160,31 +160,6 @@ export function buildToolkitCss(): FeuilleDeStyle {
         color: rgba(255, 255, 255, 0.8);
         margin-top: 2mm;
       }
-      .badges {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 3mm;
-      }
-      .badge {
-        display: inline-flex;
-        align-items: baseline;
-        gap: 2mm;
-        padding: 2.5mm 5mm;
-        background: rgba(0, 0, 0, 0.22);
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        border-radius: 99mm;
-      }
-      .badge-label {
-        font-size: 7.5pt;
-        text-transform: uppercase;
-        letter-spacing: 0.8pt;
-        color: rgba(255, 255, 255, 0.7);
-      }
-      .badge-value {
-        font-size: 10pt;
-        font-weight: 700;
-        color: #ffffff;
-      }
       .cover-footer {
         position: relative;
         z-index: 2;
@@ -382,21 +357,6 @@ export function buildToolkitCss(): FeuilleDeStyle {
         text-decoration: none;
         word-break: break-all;
         font-weight: 500;
-      }
-      .chip {
-        font-size: 7.5pt;
-        font-weight: 600;
-        padding: 0.5mm 2mm;
-        border-radius: 2mm;
-        white-space: nowrap;
-      }
-      .chip-used {
-        background: #fff4d6;
-        color: #8a6d1c;
-      }
-      .chip-new {
-        background: var(--accent-soft);
-        color: var(--accent-dark);
       }
 
       /* ----- Prompts ----- */
@@ -680,22 +640,6 @@ export function buildToolkitCss(): FeuilleDeStyle {
       .template-budget-free {
         color: var(--accent-dark);
         font-weight: 700;
-      }
-
-      /* ----- Generated prompt ----- */
-      .generated-box {
-        padding: 6mm;
-        background: transparent;
-        border: 1px solid var(--accent);
-        border-radius: 3mm;
-      }
-      .generated-text {
-        font-family: "SF Mono", "Cascadia Code", "Liberation Mono", Menlo, monospace;
-        font-size: 9.5pt;
-        line-height: 1.6;
-        color: var(--ink);
-        white-space: pre-wrap;
-        word-wrap: break-word;
       }
       ${cssDesTeintes()}
       ${cssDesPlateformes()}

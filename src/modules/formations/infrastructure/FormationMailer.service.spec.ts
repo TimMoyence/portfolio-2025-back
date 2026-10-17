@@ -16,6 +16,7 @@ import type {
   RapportParticipant,
   RapportSession,
 } from '../domain/IFormationMailer.port';
+import { ESPACE_INSECABLE } from '../../../common/domain/texte/sans-espaces-typographiques';
 import { rapportEnCsv } from '../domain/RapportCsv';
 import { FormationMailerService } from './FormationMailer.service';
 
@@ -74,7 +75,8 @@ describe('FormationMailerService', () => {
     }
 
     it('envoie un mail au destinataire avec un texte et un csv joint', async () => {
-      const mail = await synthese(buildRapport());
+      const rapport = buildRapport();
+      const mail = await synthese(rapport);
 
       expect(smtp.transporteur().sendMail).toHaveBeenCalledTimes(1);
       expect(mail.to).toBe('prof@example.com');
@@ -84,6 +86,9 @@ describe('FormationMailerService', () => {
       expect(mail.attachments).toHaveLength(1);
       expect(mail.attachments?.[0].filename).toBe('session-4271.csv');
       expect(mail.attachments?.[0].contentType).toBe('text/csv; charset=utf-8');
+      expect(mail.attachments?.[0].contentType).toBe(
+        rapportEnCsv(rapport).type,
+      );
     });
 
     it('QA-09 · écrit la note sur 20 au dixième et à la française dans le texte et le html', async () => {
@@ -96,6 +101,18 @@ describe('FormationMailerService', () => {
       expect(mail.text).toContain('12,3/20');
       expect(mail.html).toContain('12,3/20');
       expect(`${mail.text}${mail.html}`).not.toContain('12.3/20');
+    });
+
+    it('D-04 · écrit la complétion en pour cent à la française, liée au signe par une insécable', async () => {
+      const mail = await synthese(
+        buildRapport({
+          participants: [buildRapportParticipant({ completion: 0.85 })],
+        }),
+      );
+
+      expect(mail.text).toContain(`complétion 85${ESPACE_INSECABLE}%`);
+      expect(mail.html).toContain(`85${ESPACE_INSECABLE}%`);
+      expect(`${mail.text}${mail.html}`).not.toMatch(/85 ?%/);
     });
 
     it('joint le csv de la séance tel que le domaine le produit', async () => {
@@ -177,6 +194,13 @@ describe('FormationMailerService', () => {
 
       expect(mail.text).toContain('Note obtenue : 12,3/20.');
       expect(mail.html).toContain('<strong>12,3/20</strong>');
+    });
+
+    it('D-04 · écrit la complétion de la copie en pour cent à la française', async () => {
+      const mail = await copieAvec({ completion: 0.85 });
+
+      expect(mail.html).toContain(`(complétion 85${ESPACE_INSECABLE}%)`);
+      expect(mail.html).not.toMatch(/85 ?%/);
     });
 
     it('detaille chaque reponse avec son verdict, comme le promet le message', async () => {

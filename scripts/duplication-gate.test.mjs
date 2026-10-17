@@ -9,10 +9,10 @@ import {
 } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { test } from 'node:test';
 
-const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
+import { RACINE as ROOT } from './lib/racine.mjs';
+
 const MOTEURS = {
   v5: join(ROOT, 'node_modules/jscpd/run-jscpd.js'),
   v4: join(ROOT, 'node_modules/jscpd4/bin/jscpd'),

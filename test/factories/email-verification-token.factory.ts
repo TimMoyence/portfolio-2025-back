@@ -17,9 +17,8 @@ export function buildEmailVerificationToken(
 
 export function createMockEmailVerificationTokensRepo(): jest.Mocked<IEmailVerificationTokensRepository> {
   return {
-    create: jest.fn(),
+    remplacerLesJetonsActifs: jest.fn(),
     findActiveByTokenHash: jest.fn(),
     deleteByUserId: jest.fn(),
-    countRecentByUserId: jest.fn(),
   };
 }

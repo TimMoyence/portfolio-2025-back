@@ -4,8 +4,11 @@ import {
   provenanceConsignable,
   type Provenance,
 } from '../../../common/domain/provenance';
-import { requireText } from '../../../common/domain/validation/domain-validators';
-import { LocaleCode } from '../../../common/domain/value-objects/LocaleCode';
+import {
+  requireBoolean,
+  requireLocale,
+  requireText,
+} from '../../../common/domain/validation/domain-validators';
 
 export interface CookieConsentPreferences {
   essential: boolean;
@@ -14,12 +17,16 @@ export interface CookieConsentPreferences {
   marketing: boolean;
 }
 
-type CookieConsentSource = 'banner' | 'settings';
-type CookieConsentAction =
-  | 'accept_all'
-  | 'essential_only'
-  | 'save_preferences'
-  | 'withdraw';
+export const SOURCES_DE_CONSENTEMENT = ['banner', 'settings'] as const;
+export const ACTIONS_DE_CONSENTEMENT = [
+  'accept_all',
+  'essential_only',
+  'save_preferences',
+  'withdraw',
+] as const;
+
+type CookieConsentSource = (typeof SOURCES_DE_CONSENTEMENT)[number];
+type CookieConsentAction = (typeof ACTIONS_DE_CONSENTEMENT)[number];
 
 export interface CreateCookieConsentProps extends Provenance {
   policyVersion: string;
@@ -49,34 +56,30 @@ export class CookieConsent {
       1,
       50,
     );
-    const locale = LocaleCode.resolve(props.locale, 'fr').value;
+    const locale = requireLocale(props.locale, 'cookie consent locale');
     const region = requireText(props.region, 'cookie consent region', 1, 20);
 
-    if (!['banner', 'settings'].includes(props.source)) {
+    if (
+      !(SOURCES_DE_CONSENTEMENT as readonly string[]).includes(props.source)
+    ) {
       throw new DomainValidationError('Invalid cookie consent source');
     }
 
     if (
-      ![
-        'accept_all',
-        'essential_only',
-        'save_preferences',
-        'withdraw',
-      ].includes(props.action)
+      !(ACTIONS_DE_CONSENTEMENT as readonly string[]).includes(props.action)
     ) {
       throw new DomainValidationError('Invalid cookie consent action');
     }
 
     const preferences = props.preferences;
-    if (
-      !estObjet(preferences) ||
-      typeof preferences.essential !== 'boolean' ||
-      typeof preferences.preferences !== 'boolean' ||
-      typeof preferences.analytics !== 'boolean' ||
-      typeof preferences.marketing !== 'boolean'
-    ) {
-      throw new DomainValidationError('Invalid cookie consent preferences');
+    const champDesPreferences = 'cookie consent preferences';
+    if (!estObjet(preferences)) {
+      throw new DomainValidationError(`Invalid ${champDesPreferences}`);
     }
+    requireBoolean(preferences.essential, champDesPreferences);
+    requireBoolean(preferences.preferences, champDesPreferences);
+    requireBoolean(preferences.analytics, champDesPreferences);
+    requireBoolean(preferences.marketing, champDesPreferences);
 
     if (preferences.essential !== true) {
       throw new DomainValidationError('Essential cookie flag must be true');

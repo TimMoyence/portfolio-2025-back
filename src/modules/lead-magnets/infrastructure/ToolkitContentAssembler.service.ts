@@ -1,14 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import {
-  AI_LEVELS,
-  type AiLevel,
-  type InteractionProfile,
-} from '../domain/InteractionProfile';
 import type { IToolkitContentAssembler } from '../domain/IToolkitContentAssembler';
 import type {
   CheatsheetEntry,
   PromptEntry,
-  TemplateEntry,
   ToolkitContent,
   WorkflowEntry,
 } from '../domain/ToolkitContent';
@@ -21,31 +15,17 @@ import {
 
 @Injectable()
 export class ToolkitContentAssemblerService implements IToolkitContentAssembler {
-  assemble(
-    firstName: string,
-    profile: InteractionProfile | null,
-  ): ToolkitContent {
+  assemble(firstName: string): ToolkitContent {
     return {
-      recap: {
-        firstName,
-        aiLevel: profile?.aiLevel ?? null,
-        sector: profile?.sector ?? null,
-        budgetTier: profile?.budgetTier ?? null,
-      },
-      cheatsheet: this.buildCheatsheet(profile),
-      prompts: this.buildPrompts(profile),
-      workflows: this.buildWorkflows(profile),
-      templates: this.buildTemplates(profile),
-      generatedPrompt: profile?.generatedPrompt ?? null,
+      recap: { firstName },
+      cheatsheet: this.buildCheatsheet(),
+      prompts: this.buildPrompts(),
+      workflows: this.buildWorkflows(),
+      templates: TEMPLATES_DATA.map((t) => ({ ...t })),
     };
   }
 
-  private buildCheatsheet(
-    profile: InteractionProfile | null,
-  ): CheatsheetEntry[] {
-    const usedIds = new Set(
-      (profile?.toolsAlreadyUsed ?? []).map((t) => t.toLowerCase()),
-    );
+  private buildCheatsheet(): CheatsheetEntry[] {
     return CHEATSHEET_DATA.map((tool) => ({
       tool: tool.id,
       category: tool.category,
@@ -53,15 +33,11 @@ export class ToolkitContentAssemblerService implements IToolkitContentAssembler 
       url: tool.url,
       tip: tool.tip,
       decision: tool.decision,
-      alreadyUsed: usedIds.has(tool.id.toLowerCase()),
     }));
   }
 
-  private buildPrompts(profile: InteractionProfile | null): PromptEntry[] {
-    const level = profile?.aiLevel ?? null;
-    const allowedLevels = this.getAllowedLevels(level);
-
-    return PROMPTS_DATA.filter((p) => allowedLevels.has(p.level)).map((p) => ({
+  private buildPrompts(): PromptEntry[] {
+    return PROMPTS_DATA.map((p) => ({
       category: p.category,
       title: p.title,
       level: p.level,
@@ -73,8 +49,8 @@ export class ToolkitContentAssemblerService implements IToolkitContentAssembler 
     }));
   }
 
-  private buildWorkflows(profile: InteractionProfile | null): WorkflowEntry[] {
-    const workflows: WorkflowEntry[] = WORKFLOWS_DATA.map((w) => ({
+  private buildWorkflows(): WorkflowEntry[] {
+    return WORKFLOWS_DATA.map((w) => ({
       title: w.title,
       description: w.description,
       setupTime: w.setupTime,
@@ -87,37 +63,5 @@ export class ToolkitContentAssemblerService implements IToolkitContentAssembler 
       })),
       tools: [...w.tools],
     }));
-
-    if (profile?.budgetTier === '0') {
-      workflows.sort((a, b) => a.monthlyCost - b.monthlyCost);
-    }
-
-    return workflows;
-  }
-
-  private buildTemplates(profile: InteractionProfile | null): TemplateEntry[] {
-    const budgetTier = profile?.budgetTier ?? null;
-
-    if (budgetTier === null) {
-      return TEMPLATES_DATA.map((t) => ({ ...t }));
-    }
-
-    const maxBudget = Number(budgetTier);
-    return TEMPLATES_DATA.filter((t) => t.minBudget <= maxBudget).map((t) => ({
-      ...t,
-    }));
-  }
-
-  private getAllowedLevels(level: AiLevel | null): ReadonlySet<AiLevel> {
-    switch (level) {
-      case 'debutant':
-        return new Set(['debutant']);
-      case 'intermediaire':
-        return new Set(['debutant', 'intermediaire']);
-      case 'avance':
-        return new Set(['intermediaire', 'avance']);
-      default:
-        return new Set(AI_LEVELS);
-    }
   }
 }

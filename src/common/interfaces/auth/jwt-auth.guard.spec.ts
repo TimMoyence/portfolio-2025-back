@@ -7,6 +7,7 @@ import {
 import { Reflector } from '@nestjs/core';
 import { JwtTokenService } from '../../../modules/users/application/services/JwtTokenService';
 import type { IUsersRepository } from '../../../modules/users/domain/IUsers.repository';
+import type { User } from '../../../modules/users/domain/User';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { IS_PUBLIC_KEY } from './public.decorator';
 import {
@@ -41,7 +42,10 @@ describe('JwtAuthGuard', () => {
     headers: Record<string, string | undefined> = {},
     path = '/api/v1/portfolio25/test',
   ): ExecutionContext {
-    return createHttpExecutionContext({ headers, path });
+    return createHttpExecutionContext(
+      { headers, path },
+      { setHeader: jest.fn() },
+    );
   }
 
   const BEARER_VALID = { authorization: 'Bearer valid-token' };
@@ -119,32 +123,78 @@ describe('JwtAuthGuard', () => {
     );
   });
 
+  function givenAccount(compte: User | null) {
+    givenVerifiedToken('user-1', 'a@b.com');
+    usersRepo.findById.mockResolvedValue(compte);
+  }
+
+  const tentativePour = (compte: User | null) => {
+    givenAccount(compte);
+    return guard.canActivate(createMockContext(BEARER_VALID));
+  };
+
   it('devrait rejeter avec 403 quand emailVerified est false', async () => {
-    givenVerifiedToken('user-unverified', 'unverified@b.com');
-    usersRepo.findById.mockResolvedValue(
-      buildUser({ id: 'user-unverified', emailVerified: false }),
-    );
-
-    const context = createMockContext(BEARER_VALID);
-
-    await expect(guard.canActivate(context)).rejects.toThrow(
-      ForbiddenException,
-    );
+    await expect(
+      tentativePour(buildUser({ emailVerified: false })),
+    ).rejects.toThrow(ForbiddenException);
   });
 
   it('devrait rejeter (401) quand le compte du JWT n existe plus', async () => {
-    givenVerifiedToken('user-deleted', 'deleted@b.com');
-    usersRepo.findById.mockResolvedValue(null);
-
-    const context = createMockContext(BEARER_VALID);
-
-    await expect(guard.canActivate(context)).rejects.toThrow(
-      UnauthorizedException,
-    );
+    await expect(tentativePour(null)).rejects.toThrow(UnauthorizedException);
   });
 
+  it('devrait rejeter (401) un compte desactive dont le jeton d acces est encore valide', async () => {
+    await expect(
+      tentativePour(buildUser({ emailVerified: true, isActive: false })),
+    ).rejects.toThrow(new UnauthorizedException('Invalid or expired token'));
+  });
+
+  const defiPosePour = async (compte: User | null) => {
+    givenAccount(compte);
+    const context = createMockContext(BEARER_VALID);
+    await guard.canActivate(context).catch(() => undefined);
+    return context.switchToHttp().getResponse<{ setHeader: jest.Mock }>()
+      .setHeader.mock.calls;
+  };
+
+  it.each([
+    ['le compte du JWT n existe plus', null],
+    [
+      'le compte est desactive',
+      buildUser({ emailVerified: true, isActive: false }),
+    ],
+  ])('marque du defi Bearer le 401 quand %s', async (_cas, compte) => {
+    expect(await defiPosePour(compte)).toEqual([
+      ['WWW-Authenticate', 'Bearer error="invalid_token"'],
+    ]);
+  });
+
+  it('ne pose aucun defi sur le 403 d un email non verifie', async () => {
+    expect(await defiPosePour(buildUser({ emailVerified: false }))).toEqual([]);
+  });
+
+  it('presente aux gardes suivantes les roles du compte en base, pas ceux du jeton', async () => {
+    const payload = buildJwtPayload({ roles: ['admin', 'teacher'] });
+    jwtTokenService.verify.mockResolvedValue(payload);
+    reflector.getAllAndOverride.mockReturnValue(false);
+    usersRepo.findById.mockResolvedValue(
+      buildUser({ emailVerified: true, roles: ['teacher'] }),
+    );
+
+    const context = createMockContext(BEARER_VALID);
+    await guard.canActivate(context);
+
+    expect(context.switchToHttp().getRequest()['user']).toEqual({
+      ...payload,
+      roles: ['teacher'],
+    });
+  });
+
+  const givenUnverifiedAccount = () =>
+    givenAccount(buildUser({ emailVerified: false }));
+
   it('devrait autoriser un email non verifie sur /auth/verify-email', async () => {
-    givenVerifiedToken('user-unverified', 'unverified@b.com');
+    givenUnverifiedAccount();
 
     const context = createMockContext(
       BEARER_VALID,
@@ -155,7 +205,7 @@ describe('JwtAuthGuard', () => {
   });
 
   it('devrait autoriser un email non verifie sur /auth/logout', async () => {
-    givenVerifiedToken('user-unverified', 'unverified@b.com');
+    givenUnverifiedAccount();
 
     const context = createMockContext(
       BEARER_VALID,

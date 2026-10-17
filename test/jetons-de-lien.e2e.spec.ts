@@ -5,9 +5,6 @@ import request from 'supertest';
 import { optionsJournalHttp } from '../src/config/journal-http';
 import { GetToolkitByTokenUseCase } from '../src/modules/lead-magnets/application/queries/GetToolkitByToken.useCase';
 import { LeadMagnetsController } from '../src/modules/lead-magnets/interfaces/LeadMagnets.controller';
-import { ConfirmSubscriptionUseCase } from '../src/modules/newsletter/application/ConfirmSubscription.useCase';
-import { UnsubscribeNewsletterUseCase } from '../src/modules/newsletter/application/UnsubscribeNewsletter.useCase';
-import { NewsletterController } from '../src/modules/newsletter/interfaces/Newsletter.controller';
 import { ResetPasswordUseCase } from '../src/modules/users/application/ResetPassword.useCase';
 import { VerifyEmailUseCase } from '../src/modules/users/application/VerifyEmail.useCase';
 import {
@@ -18,7 +15,7 @@ import { AuthController } from '../src/modules/users/interfaces/Auth.controller'
 import {
   applicationDeLaSuite,
   bootstrapTestApp,
-  httpServerOf,
+  serveurHttpDe,
 } from './helpers/nest-test-app';
 import {
   EVENEMENT_LIGNE,
@@ -27,7 +24,7 @@ import {
 } from './helpers/flux-de-journal';
 import { documentOpenApiFormations } from './helpers/schema-openapi';
 
-type Serveur = ReturnType<typeof httpServerOf>;
+type Serveur = ReturnType<typeof serveurHttpDe>;
 type Jeton = string | readonly string[] | undefined;
 type Requete = (serveur: Serveur) => request.Test;
 
@@ -44,8 +41,6 @@ interface Lien {
 
 const depot = {
   findByToken: jest.fn(),
-  findByConfirmToken: jest.fn(),
-  findByUnsubscribeToken: jest.fn(),
   findActiveByTokenHash: jest.fn(),
 };
 
@@ -97,33 +92,6 @@ const LIENS: readonly Lien[] = [
     appeler: (serveur, jeton) =>
       request(serveur).get(`/api/lead-magnets/toolkit/${String(jeton)}`),
     jetonDansLeChemin: true,
-  },
-  {
-    nom: 'la confirmation newsletter',
-    operation: ['get', '/api/newsletter/confirm'],
-    inconnu: UUID_INCONNU,
-    lecture: depot.findByConfirmToken,
-    cleCherchee: tel,
-    appeler: parQuery('get', 'newsletter/confirm'),
-    jetonDansLeChemin: false,
-  },
-  {
-    nom: 'le desabonnement',
-    operation: ['get', '/api/newsletter/unsubscribe'],
-    inconnu: UUID_INCONNU,
-    lecture: depot.findByUnsubscribeToken,
-    cleCherchee: tel,
-    appeler: parQuery('get', 'newsletter/unsubscribe'),
-    jetonDansLeChemin: false,
-  },
-  {
-    nom: 'le desabonnement en un clic',
-    operation: ['post', '/api/newsletter/unsubscribe'],
-    inconnu: UUID_INCONNU,
-    lecture: depot.findByUnsubscribeToken,
-    cleCherchee: tel,
-    appeler: parQuery('post', 'newsletter/unsubscribe'),
-    jetonDansLeChemin: false,
   },
   {
     nom: 'la verification d adresse',
@@ -206,18 +174,12 @@ describe('Liens a jeton envoyes par courriel — un jeton refuse ne se distingue
     const moduleRef = await Test.createTestingModule({
       imports: [
         LoggerModule.forRoot({
-          pinoHttp: [optionsJournalHttp('production'), journal],
+          pinoHttp: [optionsJournalHttp({ NODE_ENV: 'production' }), journal],
         }),
       ],
-      controllers: [
-        LeadMagnetsController,
-        NewsletterController,
-        AuthController,
-      ],
+      controllers: [LeadMagnetsController, AuthController],
       providers: [
         GetToolkitByTokenUseCase,
-        ConfirmSubscriptionUseCase,
-        UnsubscribeNewsletterUseCase,
         VerifyEmailUseCase,
         ResetPasswordUseCase,
       ],
@@ -226,7 +188,7 @@ describe('Liens a jeton envoyes par courriel — un jeton refuse ne se distingue
       .compile();
     return bootstrapTestApp(moduleRef);
   });
-  const serveur = () => httpServerOf(app());
+  const serveur = () => serveurHttpDe(app());
 
   beforeEach(() => {
     for (const lecture of Object.values(depot)) {

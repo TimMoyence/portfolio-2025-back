@@ -19,9 +19,8 @@ export function buildPasswordResetToken(
 
 export function createMockPasswordResetTokensRepo(): jest.Mocked<IPasswordResetTokensRepository> {
   return {
-    create: jest.fn(),
+    remplacerLesJetonsActifs: jest.fn(),
     findActiveByTokenHash: jest.fn(),
-    invalidateActiveByUserId: jest.fn(),
     markUsed: jest.fn(),
   };
 }

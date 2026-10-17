@@ -131,6 +131,35 @@ describe('buildPayload', () => {
 
     expect(result.website).not.toContain('\n');
   });
+
+  it('compacte les findings comme les charges par section', () => {
+    const [constat] = buildMinimalInput().deepFindings;
+    const input = buildMinimalInput({
+      deepFindings: [
+        {
+          ...constat,
+          title: 'T'.repeat(300),
+          description: 'D'.repeat(500),
+          recommendation: 'R'.repeat(500),
+        },
+      ],
+    });
+    const [parSection] = buildSectionPayloads(input).prioritySection
+      .deepFindings as Array<Record<string, string>>;
+
+    expect([
+      parSection.title,
+      parSection.description,
+      parSection.recommendation,
+    ]).toEqual([
+      compactText('T'.repeat(300), 140),
+      compactText('D'.repeat(500), 260),
+      compactText('R'.repeat(500), 260),
+    ]);
+    for (const profil of ['summary', 'expert', 'expert_compact'] as const) {
+      expect(buildPayload(input, profil).deepFindings).toEqual([parSection]);
+    }
+  });
 });
 
 describe('buildSectionPayloads', () => {

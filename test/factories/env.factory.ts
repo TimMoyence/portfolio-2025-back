@@ -1,7 +1,10 @@
+import { ConfigService } from '@nestjs/config';
+
 export const TEST_JWT_SECRET = 'test-jwt-secret-at-least-32-characters-long'; // gitleaks:allow (ci.yml)
 export const TEST_HASHING_KEY = 'test-hashing-key-at-least-32-characters-long'; // gitleaks:allow (ci.yml)
-export const TEST_MORNING_BRIEF_HMAC_KEYS =
-  'morning-brief:key-from-secret-manager';
+export const TEST_MORNING_BRIEF_HMAC_SECRET =
+  'test-morning-brief-hmac-secret-at-least-32-chars'; // gitleaks:allow
+export const TEST_MORNING_BRIEF_HMAC_KEYS = `morning-brief:${TEST_MORNING_BRIEF_HMAC_SECRET}`;
 export const TEST_FORMATION_REVIEW_TOKEN_SECRET =
   'test-formation-review-secret-at-least-32-chars'; // gitleaks:allow (ci.yml)
 export const TEST_FORMATIONS_PULSE_SECRET =
@@ -28,9 +31,33 @@ export function buildValidEnv(
   };
 }
 
+type OptionSkipProcessEnvDeConfigModule = { skipProcessEnv: boolean };
+
+export function buildConfigService(
+  valeurs: Readonly<Record<string, unknown>> = {},
+): ConfigService {
+  const config = new ConfigService({ ...valeurs });
+  (config as unknown as OptionSkipProcessEnvDeConfigModule).skipProcessEnv =
+    true;
+  return config;
+}
+
 export function buildProductionSecrets(): Record<string, string> {
   return {
     ...SECRETS_REQUIS,
     MORNING_BRIEF_HMAC_KEYS: TEST_MORNING_BRIEF_HMAC_KEYS,
   };
+}
+
+export function buildProductionEnv(
+  overrides: Record<string, unknown> = {},
+): Record<string, unknown> {
+  return buildValidEnv({
+    ...buildProductionSecrets(),
+    NODE_ENV: 'production',
+    DB_HOST: 'db',
+    DB_NAME: undefined,
+    POSTGRES_DB: 'portfolio',
+    ...overrides,
+  });
 }

@@ -1,4 +1,7 @@
-import { buildClientReportSynthesis } from '../../../../../../test/factories/audit-requests.factory';
+import {
+  buildClientReportSynthesis,
+  buildExpertReportConforme,
+} from '../../../../../../test/factories/audit-requests.factory';
 import {
   codesBrutsDuCourriel,
   createMockTransporter,
@@ -8,34 +11,11 @@ import {
 } from '../../../../../../test/factories/mailer.factory';
 import type { ExpertReportMailInput } from '../../../domain/IAuditNotifier.port';
 import { AuditExpertReportMailer } from '../audit-expert-report.mailer';
-import type { SmtpTransporter } from '../smtp-transporter.provider';
+import { ExpediteurDeCourriels } from '../../../../../common/infrastructure/mail/expediteur-smtp';
 
-const buildExpertReport = () => ({
-  executiveSummary: 'Synthese expert detaillee',
-  perPageAnalysis: [],
-  crossPageFindings: [
-    {
-      title: 'Canonicals inconsistantes',
-      severity: 'high' as const,
-      affectedUrls: ['https://ex.fr/a', 'https://ex.fr/b'],
-      rootCause: 'CMS genere des URLs dupliquees',
-      remediation: 'Forcer canonical absolu',
-    },
-  ],
-  priorityBacklog: [
-    {
-      title: 'Corriger canonicals',
-      impact: 'high' as const,
-      effort: 'medium' as const,
-      acceptanceCriteria: ['Tous les canonicals sont absolus'],
-    },
-  ],
-  clientEmailDraft: {
-    subject: 'Resultats audit — actions prioritaires',
-    body: 'Bonjour,\n\nVoici les 3 axes majeurs...\n',
-  },
-  internalNotes: 'Attention: le client a deja refuse une refonte.',
-});
+const EXPERT = buildExpertReportConforme();
+const [CONSTAT] = EXPERT.crossPageFindings;
+const [ACTION] = EXPERT.priorityBacklog;
 
 const buildInput = (
   overrides: Partial<ExpertReportMailInput> = {},
@@ -44,7 +24,7 @@ const buildInput = (
   auditId: 'audit-42',
   clientContact: { method: 'EMAIL', value: 'client@example.com' },
   clientReport: buildClientReportSynthesis(),
-  expertReport: buildExpertReport(),
+  expertReport: buildExpertReportConforme(),
   pdfBuffer: Buffer.from('pdf'),
   ...overrides,
 });
@@ -64,7 +44,7 @@ describe('AuditExpertReportMailer', () => {
   async function envoyer(overrides: Partial<ExpertReportMailInput> = {}) {
     const transporter = createMockTransporter();
     const mailer = new AuditExpertReportMailer(
-      transporter as unknown as SmtpTransporter,
+      new ExpediteurDeCourriels(transporter),
     );
     await mailer.sendExpertReport(buildInput(overrides));
     return premierMailEnvoye(transporter);
@@ -89,29 +69,26 @@ describe('AuditExpertReportMailer', () => {
     expect(call.attachments).toHaveLength(1);
     expect(call.attachments?.[0]?.content).toBe(pdf);
     expect(call.text).toContain('audit-42');
-    expect(call.text).toContain('Synthese expert detaillee');
-    expect(call.text).toContain(
-      'Subject : Resultats audit — actions prioritaires',
-    );
-    expect(call.text).toContain('Voici les 3 axes majeurs');
-    expect(call.text).toContain('Canonicals inconsistantes');
-    expect(call.text).toContain('Corriger canonicals');
-    expect(call.text).toContain('refuse une refonte');
+    expect(call.text).toContain(EXPERT.executiveSummary);
+    expect(call.text).toContain(`Subject : ${EXPERT.clientEmailDraft.subject}`);
+    expect(call.text).toContain(EXPERT.clientEmailDraft.body);
+    expect(call.text).toContain(CONSTAT.title);
+    expect(call.text).toContain(ACTION.title);
+    expect(call.text).toContain(EXPERT.internalNotes);
   });
 
   it('nomme la gravité, l impact et l effort par leur libellé, comme le PDF joint', async () => {
     const call = await envoyer({
       expertReport: {
-        ...buildExpertReport(),
-        crossPageFindings: [
-          { ...buildExpertReport().crossPageFindings[0], severity: 'critical' },
-        ],
+        ...EXPERT,
+        crossPageFindings: [{ ...CONSTAT, severity: 'critical' }],
+        priorityBacklog: [{ ...ACTION, impact: 'high', effort: 'medium' }],
       },
     });
 
-    expect(call.html).toContain('[Critique] Canonicals inconsistantes');
+    expect(call.html).toContain(`[Critique] ${CONSTAT.title}`);
     expect(call.html).toContain('impact Élevé / effort Moyen');
-    expect(call.text).toContain('- [Critique] Canonicals inconsistantes');
+    expect(call.text).toContain(`- [Critique] ${CONSTAT.title}`);
     expect(call.text).toContain('(impact Élevé / effort Moyen)');
     expect(
       codesBrutsDuCourriel(call, [
@@ -136,7 +113,7 @@ describe('AuditExpertReportMailer', () => {
   it('devrait escape le HTML dans le draft client', async () => {
     const call = await envoyer({
       expertReport: {
-        ...buildExpertReport(),
+        ...EXPERT,
         clientEmailDraft: {
           subject: '<script>xss</script>',
           body: '<img src=x onerror=1>',
@@ -150,7 +127,7 @@ describe('AuditExpertReportMailer', () => {
   });
 
   it('devrait ne rien faire sans transporter', async () => {
-    const mailer = new AuditExpertReportMailer(null);
+    const mailer = new AuditExpertReportMailer(new ExpediteurDeCourriels(null));
 
     await expect(
       mailer.sendExpertReport(buildInput()),

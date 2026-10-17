@@ -1,12 +1,16 @@
+import type { SupportedLocale } from '../../../common/domain/value-objects/LocaleCode';
+
 export const ARTICLES_REPOSITORY = Symbol('ARTICLES_REPOSITORY');
 
-export type ArticleStatus = 'published' | 'withdrawn';
+export const STATUTS_D_ARTICLE = ['published', 'withdrawn'] as const;
+
+export type ArticleStatus = (typeof STATUTS_D_ARTICLE)[number];
 
 export interface ArticleRecord {
   id: string;
   articleId: string;
   slug: string;
-  locale: 'fr' | 'en';
+  locale: SupportedLocale;
   status: ArticleStatus;
   title: string;
   excerpt: string;
@@ -49,12 +53,8 @@ export interface ArticleDeliveryWrite {
   processedAt: Date;
 }
 
-export interface ArticleBroadcastSchedule {
-  sendAfter: Date;
-}
-
 export interface PagePubliee {
-  locale: 'fr' | 'en';
+  locale: SupportedLocale;
   tag?: string;
   offset: number;
   limit: number;
@@ -71,11 +71,21 @@ export interface ArticlesRepository {
   saveArticleAndDelivery(
     article: ArticleWrite,
     delivery: ArticleDeliveryWrite,
-    broadcast: ArticleBroadcastSchedule,
   ): Promise<void>;
   listPublished(params: PagePubliee): Promise<ArticleRecord[]>;
   findPublishedBySlug(
     slug: string,
-    locale: 'fr' | 'en',
+    locale: SupportedLocale,
   ): Promise<ArticleRecord | null>;
+  findByArticleId(articleId: string): Promise<ArticleRecord | null>;
+  listLatest(limit: number): Promise<ArticleRecord[]>;
+  setArticleStatus(
+    articleRecordId: string,
+    status: ArticleStatus,
+  ): Promise<void>;
 }
+
+export type ArticleModerationRepository = Pick<
+  ArticlesRepository,
+  'findByArticleId' | 'listLatest' | 'setArticleStatus'
+>;

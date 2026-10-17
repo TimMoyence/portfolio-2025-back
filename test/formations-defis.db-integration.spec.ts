@@ -5,6 +5,7 @@ import {
   STRATEGIES_REVELEES_DU_DEFI,
 } from './factories/cours.factory';
 import {
+  attendreEcranNonServi,
   attendreJetonEtrangerRefuse,
   CODE_HTTP,
   decrireSurLeDernierEcran,
@@ -157,6 +158,19 @@ decrireSurLeDernierEcran(
         .send({ texte: 'Une idée.', dureeMs: 1000 });
 
       expect(refus.status).toBe(INTROUVABLE);
+    });
+
+    it('refuse la tentative et les strategies avant que le formateur ait projete l ecran du defi', async () => {
+      await attendreEcranNonServi(
+        banc,
+        '77777777-7777-4777-8777-000000000011',
+        (seance) => tenter(seance, 'Je lis l’origine.'),
+      );
+      await attendreEcranNonServi(
+        banc,
+        '77777777-7777-4777-8777-000000000012',
+        (seance) => relire(seance),
+      );
     });
   },
 );

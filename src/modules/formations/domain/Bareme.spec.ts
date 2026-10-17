@@ -1,13 +1,19 @@
+import {
+  buildCoursB2_01,
+  ouvrirLeBaremeV2DuB2_01,
+} from '../../../../test/factories/cours-b2-01.factory';
 import { buildCoursDeTest } from '../../../../test/factories/cours.factory';
 import {
   buildBareme,
   buildBaremeV2,
 } from '../../../../test/factories/formation.factory';
+import { seuilDe } from './cours/EcranServi';
 import {
   estValeurConnue,
   findQuestion,
   pickFreeSeed,
   questionDuBareme,
+  questionsAAgreger,
   questionsNotees,
   solutionFor,
   solutionsDuTirage,
@@ -248,5 +254,26 @@ describe('barème v2 (§ 9.3.4)', () => {
       expect(questionDuBareme(v1, 'Q-TEST-VOTE', null)).toBeNull();
       expect(questionDuBareme(v1, 'Q-INCONNUE', cours)).toBeNull();
     });
+  });
+});
+
+describe('questionsAAgreger', () => {
+  it('B-70 · porte à chaque question le seuil de son écran, sur le B2-01 servi', () => {
+    const cours = buildCoursB2_01();
+    const baremeDuCours = ouvrirLeBaremeV2DuB2_01(cours);
+
+    const seuils = questionsAAgreger(baremeDuCours, cours).map(
+      ({ id, seuil }) => [id, seuil],
+    );
+
+    expect(seuils).toEqual(
+      baremeDuCours.questions.map((question) => [
+        question.id,
+        seuilDe(cours.ecrans[question.rangEcran]),
+      ]),
+    );
+    expect(new Set(seuils.map(([, seuil]) => seuil === null))).toEqual(
+      new Set([true, false]),
+    );
   });
 });

@@ -2,15 +2,13 @@ import { INestApplication, type Provider } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { Test as ModuleDeTest, type TestingModule } from '@nestjs/testing';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import {
-  request as requeteNode,
-  type IncomingMessage,
-  type Server,
-} from 'node:http';
+import { request as requeteNode, type IncomingMessage } from 'node:http';
 import request from 'supertest';
 import type { Test } from 'supertest';
 import { appliquerLesTraitementsGlobaux } from '../../src/common/interfaces/http/traitements-globaux';
 import { PREFIXE_API_PAR_DEFAUT } from '../../src/config/prefixe-api';
+import { enregistrerLesReponsesServies } from './reponses-servies';
+import { lecteurDeTrames, type EvenementFlux } from './trames-sse';
 import { CloseSessionUseCase } from '../../src/modules/formations/application/CloseSession.useCase';
 import { ControlSessionUseCase } from '../../src/modules/formations/application/ControlSession.useCase';
 import { GetSessionResultsUseCase } from '../../src/modules/formations/application/GetSessionResults.useCase';
@@ -38,6 +36,9 @@ import { LibererPosteUseCase } from '../../src/modules/formations/application/Li
 import { SyntheseRappelsUseCase } from '../../src/modules/formations/application/SyntheseRappels.useCase';
 import { LireEtatParticipantUseCase } from '../../src/modules/formations/application/LireEtatParticipant.useCase';
 import { SubmitProductionUseCase } from '../../src/modules/formations/application/SubmitProduction.useCase';
+import { EvaluerFeuilleUseCase } from '../../src/modules/formations/application/EvaluerFeuille.useCase';
+import { EvaluerTableauUseCase } from '../../src/modules/formations/application/EvaluerTableau.useCase';
+import { EvaluerMachineUseCase } from '../../src/modules/formations/application/EvaluerMachine.useCase';
 import { TelechargerPieceJointeUseCase } from '../../src/modules/formations/application/TelechargerPieceJointe.useCase';
 import { TenterEnigmeUseCase } from '../../src/modules/formations/application/TenterEnigme.useCase';
 import type { IAnswersRepository } from '../../src/modules/formations/domain/IAnswers.repository';
@@ -114,14 +115,11 @@ import {
   ADRESSE_BOUCLE_LOCALE,
   ecouterEnBoucleLocale,
   fermerApplication,
+  portDe,
+  serveurHttpDe,
 } from './nest-test-app';
 
-export { EN_TETE_IDENTITE };
-
-export const serveurHttpDe = (
-  app: INestApplication,
-): Parameters<typeof request>[0] =>
-  app.getHttpServer() as Parameters<typeof request>[0];
+export { EN_TETE_IDENTITE, serveurHttpDe };
 
 export const routeFormations = (chemin: string): string =>
   `/${PREFIXE_API_PAR_DEFAUT}/formations${chemin}`;
@@ -177,6 +175,9 @@ export function fournisseursFormations(
     JoinSessionUseCase,
     SubmitAnswerUseCase,
     SubmitProductionUseCase,
+    EvaluerFeuilleUseCase,
+    EvaluerTableauUseCase,
+    EvaluerMachineUseCase,
     TenterEnigmeUseCase,
     ParticipationEnSeance,
     LectureDeSeance,
@@ -257,17 +258,13 @@ export async function monterApplicationFormations(
   const moduleRef = await compilerModuleFormations(depots, catalogue);
 
   const app = moduleRef.createNestApplication();
+  enregistrerLesReponsesServies(app);
   configurer(app);
   signerLesIdentitesDeTest(app);
   app.setGlobalPrefix(PREFIXE_API_PAR_DEFAUT);
   appliquerLesTraitementsGlobaux(app);
-  await app.init();
+  await ecouterEnBoucleLocale(app);
   return app;
-}
-
-export interface EvenementFlux {
-  type: string;
-  donnees: Record<string, unknown>;
 }
 
 export interface FluxEcoute {
@@ -277,36 +274,11 @@ export interface FluxEcoute {
   fermer(): void;
 }
 
-const SEPARATEUR_DE_TRAMES = '\n\n';
-const PREFIXE_EVENEMENT = 'event: ';
-const PREFIXE_DONNEES = 'data: ';
-
-function evenementsDeLaTrame(trame: string): EvenementFlux[] {
-  const lignes = trame.split('\n');
-  const type = lignes
-    .find((ligne) => ligne.startsWith(PREFIXE_EVENEMENT))
-    ?.slice(PREFIXE_EVENEMENT.length);
-  const donnees = lignes
-    .filter((ligne) => ligne.startsWith(PREFIXE_DONNEES))
-    .map((ligne) => ligne.slice(PREFIXE_DONNEES.length));
-  if (type === undefined || donnees.length === 0) {
-    return [];
-  }
-  return [
-    {
-      type,
-      donnees: JSON.parse(donnees.join('\n')) as Record<string, unknown>,
-    },
-  ];
-}
-
 function suivreLeFlux(reponse: IncomingMessage, flux: FluxEcoute): void {
-  let reste = '';
+  const lire = lecteurDeTrames();
   reponse.setEncoding('utf8');
   reponse.on('data', (morceau: string) => {
-    const trames = `${reste}${morceau}`.split(SEPARATEUR_DE_TRAMES);
-    reste = trames.pop() ?? '';
-    flux.evenements.push(...trames.flatMap(evenementsDeLaTrame));
+    flux.evenements.push(...lire(morceau));
   });
   reponse.on('close', () => {
     flux.ferme = true;
@@ -341,7 +313,7 @@ export function fermetureCoteServeur(
   app: INestApplication,
   chemin: string,
 ): Promise<void> {
-  const serveur = app.getHttpServer() as Server;
+  const serveur = serveurHttpDe(app);
   return new Promise((resoudre) => {
     const surRequete = (requete: IncomingMessage): void => {
       if (requete.url !== chemin) {
@@ -399,7 +371,7 @@ export async function monterBancFormations(
     { ...contexte, mailer },
     catalogueDeTest ?? contexte.catalogue,
   );
-  const port = await ecouterEnBoucleLocale(app);
+  const port = portDe(app);
   return {
     contexte,
     app,

@@ -1,9 +1,11 @@
+import { parse } from 'pg-connection-string';
 import { sansIndefinis } from '../common/domain/sans-indefinis';
 import {
   envBrut,
   envPort,
   envPremier,
   envUnVrai,
+  estEnProduction,
   type SourceDEnv,
 } from '../config/env-readers.util';
 
@@ -25,7 +27,7 @@ export interface ConnexionPostgres extends EmplacementTypeOrm {
   readonly baseAdmin: string;
 }
 
-const ALIAS_POSTGRES = {
+export const ALIAS_POSTGRES = {
   host: ['DB_HOST', 'DATABASE_HOST', 'PGHOST'],
   port: ['DB_PORT', 'DATABASE_PORT', 'PGPORT'],
   username: ['DB_USERNAME', 'DB_USER', 'DATABASE_USER', 'POSTGRES_USER'],
@@ -38,31 +40,53 @@ const ALIAS_POSTGRES = {
   database: ['DB_NAME', 'DATABASE_NAME', 'POSTGRES_DB', 'DB_DATABASE'],
   ssl: ['DB_SSL', 'DATABASE_SSL'],
   baseAdmin: ['DB_ADMIN_DATABASE', 'DATABASE_ADMIN_NAME'],
+  synchronize: ['DB_SYNCHRONIZE', 'TYPEORM_SYNCHRONIZE'],
 } as const;
 
-function nomDeBaseDeLUrl(url: string): string | undefined {
+const SCHEMAS_POSTGRES: ReadonlySet<string> = new Set([
+  'postgres:',
+  'postgresql:',
+]);
+
+interface EmplacementDeLUrl {
+  readonly host: string;
+  readonly database: string;
+}
+
+export function emplacementDeLUrl(url: string): EmplacementDeLUrl | undefined {
   if (!URL.canParse(url)) return undefined;
-  return new URL(url).pathname.replace(/^\//, '') || undefined;
+  if (!SCHEMAS_POSTGRES.has(new URL(url).protocol)) return undefined;
+  try {
+    const { host, database } = parse(url);
+    return host && database ? { host, database } : undefined;
+  } catch {
+    return undefined;
+  }
 }
 
 function sslDe(source: SourceDEnv): SslPostgres | undefined {
   if (!envUnVrai(ALIAS_POSTGRES.ssl, source)) return undefined;
-  return { rejectUnauthorized: source.NODE_ENV === 'production' };
+  return { rejectUnauthorized: estEnProduction(source) };
 }
 
 export function resoudreConnexionPostgres(
   source: SourceDEnv = process.env,
 ): ConnexionPostgres {
   const url = envPremier(['DATABASE_URL'], source);
+  const deLUrl = url === undefined ? undefined : emplacementDeLUrl(url);
   return sansIndefinis({
     url,
-    host: envPremier(ALIAS_POSTGRES.host, source),
+    host:
+      url === undefined
+        ? envPremier(ALIAS_POSTGRES.host, source)
+        : deLUrl?.host,
     port: envPort(ALIAS_POSTGRES.port, 'PostgreSQL', source),
     username: envPremier(ALIAS_POSTGRES.username, source, envBrut),
     password: envPremier(ALIAS_POSTGRES.password, source, envBrut),
     database:
-      envPremier(ALIAS_POSTGRES.database, source) ??
-      (url === undefined ? undefined : nomDeBaseDeLUrl(url)),
+      url === undefined
+        ? envPremier(ALIAS_POSTGRES.database, source)
+        : deLUrl?.database,
     ssl: sslDe(source),
     baseAdmin: envPremier(ALIAS_POSTGRES.baseAdmin, source) ?? 'postgres',
   });

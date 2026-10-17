@@ -1,8 +1,9 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { InvalidCredentialsError } from '../../../common/domain/errors/InvalidCredentialsError';
+import { CompteDejaInscritError } from '../domain/CompteDejaInscritError';
 import type { IRefreshTokensRepository } from '../domain/IRefreshTokens.repository';
 import type { IUsersRepository } from '../domain/IUsers.repository';
-import { User } from '../domain/User';
+import { LONGUEUR_MAX_D_UN_NOM, User } from '../domain/User';
 import {
   GOOGLE_CLIENT_ID,
   REFRESH_TOKENS_REPOSITORY,
@@ -20,6 +21,14 @@ interface GoogleTokenPayload {
   email_verified?: boolean;
   given_name?: string;
   family_name?: string;
+}
+
+function auPlafondDUnNom(nom: string): string {
+  const coupe = nom.trim().slice(0, LONGUEUR_MAX_D_UN_NOM);
+  const sansDemiCaractere = /[\uD800-\uDBFF]$/.test(coupe)
+    ? coupe.slice(0, -1)
+    : coupe;
+  return sansDemiCaractere.trim();
 }
 
 interface GoogleTokenTicket {
@@ -69,6 +78,39 @@ export class AuthenticateGoogleUserUseCase {
     email: string,
     payload: GoogleTokenPayload,
   ): Promise<User> {
+    const existant = await this.resolveExistingUser(googleId, email);
+    if (existant) {
+      return existant;
+    }
+
+    const newUser = UsersMapper.fromGoogleAuth({
+      email,
+      firstName: auPlafondDUnNom(
+        payload.given_name?.trim() || email.split('@')[0],
+      ),
+      lastName: auPlafondDUnNom(payload.family_name ?? ''),
+      googleId,
+      roles: DEFAULT_SELF_REGISTRATION_ROLES,
+      emailVerified: true,
+    });
+    try {
+      return await this.repo.create(newUser);
+    } catch (erreur) {
+      if (!(erreur instanceof CompteDejaInscritError)) {
+        throw erreur;
+      }
+      const creeEntreTemps = await this.resolveExistingUser(googleId, email);
+      if (!creeEntreTemps) {
+        throw erreur;
+      }
+      return creeEntreTemps;
+    }
+  }
+
+  private async resolveExistingUser(
+    googleId: string,
+    email: string,
+  ): Promise<User | null> {
     const byGoogleId = await this.repo.findByGoogleId(googleId);
     if (byGoogleId) {
       this.ensureActive(byGoogleId);
@@ -90,20 +132,12 @@ export class AuthenticateGoogleUserUseCase {
           'Local account email not verified — refusing Google link',
         );
       }
-      await this.repo.update(byEmail.id!, { googleId } as Partial<User>);
+      await this.repo.update(byEmail.id!, User.update({ googleId }));
       byEmail.googleId = googleId;
       return byEmail;
     }
 
-    const newUser = UsersMapper.fromGoogleAuth({
-      email,
-      firstName: payload.given_name ?? email.split('@')[0],
-      lastName: payload.family_name ?? '',
-      googleId,
-      roles: DEFAULT_SELF_REGISTRATION_ROLES,
-      emailVerified: true,
-    });
-    return this.repo.create(newUser);
+    return null;
   }
 
   private async verifyGoogleToken(idToken: string) {

@@ -8,7 +8,9 @@ import {
   createMockPasswordService,
   createMockUsersRepo,
 } from '../../../../test/factories/user.factory';
+import { createMockRefreshTokensRepo } from '../../../../test/factories/refresh-token.factory';
 import {
+  attendreAucunMotDePasseEnregistre,
   attendreNouveauMotDePasseEnregistre,
   preparerNouveauMotDePasse,
 } from '../../../../test/helpers/utilisateurs';
@@ -19,12 +21,18 @@ const EXISTING_HASH = 'existing-hash';
 describe('SetPasswordUseCase', () => {
   let usersRepository: ReturnType<typeof createMockUsersRepo>;
   let passwordService: ReturnType<typeof createMockPasswordService>;
+  let refreshTokensRepo: ReturnType<typeof createMockRefreshTokensRepo>;
   let useCase: SetPasswordUseCase;
 
   beforeEach(() => {
     usersRepository = createMockUsersRepo();
     passwordService = createMockPasswordService();
-    useCase = new SetPasswordUseCase(usersRepository, passwordService);
+    refreshTokensRepo = createMockRefreshTokensRepo();
+    useCase = new SetPasswordUseCase(
+      usersRepository,
+      passwordService,
+      refreshTokensRepo,
+    );
   });
 
   it('autorise un compte Google-only a definir un mot de passe', async () => {
@@ -37,13 +45,12 @@ describe('SetPasswordUseCase', () => {
     const result = await useCase.execute({
       userId: 'user-1',
       newPassword: CHOSEN_CREDENTIAL,
-      updatedOrCreatedBy: 'self-service',
     });
 
     attendreNouveauMotDePasseEnregistre(
-      { hacher: passwordService.hash, mettreAJour: usersRepository.update },
+      { passwordService, usersRepository, refreshTokensRepo },
       CHOSEN_CREDENTIAL,
-      'self-service',
+      'password-set',
     );
     expect(result).toEqual(updatedUser);
   });
@@ -57,7 +64,10 @@ describe('SetPasswordUseCase', () => {
       useCase.execute({ userId: 'user-1', newPassword: CHOSEN_CREDENTIAL }),
     ).rejects.toBeInstanceOf(ResourceConflictError);
 
-    expect(usersRepository.update).not.toHaveBeenCalled();
+    attendreAucunMotDePasseEnregistre(
+      usersRepository.update,
+      refreshTokensRepo.revokeByUserId,
+    );
   });
 
   it('rejette un compte inactif ou inexistant', async () => {

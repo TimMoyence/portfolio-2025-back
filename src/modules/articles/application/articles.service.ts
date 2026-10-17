@@ -1,9 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { escapeHtml } from '../../../common/domain/texte/html-escape.util';
+import {
+  escapeHtml,
+  htmlEmis,
+} from '../../../common/domain/texte/html-escape.util';
 import { estEntierPositif } from '../../../common/domain/nombres/est-entier-positif';
 import { InvalidInputError } from '../../../common/domain/errors/InvalidInputError';
 import { ResourceConflictError } from '../../../common/domain/errors/ResourceConflictError';
 import { ResourceNotFoundError } from '../../../common/domain/errors/ResourceNotFoundError';
+import type { SupportedLocale } from '../../../common/domain/value-objects/LocaleCode';
 import {
   ArticleContract,
   type ArticleIngestEnvelope,
@@ -19,7 +23,7 @@ import {
 } from './articles.repository';
 import { Inject } from '@nestjs/common';
 import { urlDuSite, urlPubliqueDeLApi } from '../../../config/urls-publiques';
-import { articlePageUrl, broadcastDelayMs } from './article-settings';
+import { articlePageUrl } from './article-settings';
 
 const FEED_LANGUAGE = { fr: 'fr-FR', en: 'en' } as const;
 const FEED_DESCRIPTION = {
@@ -27,8 +31,12 @@ const FEED_DESCRIPTION = {
   en: 'Daily sourced AI briefing by Asili Design.',
 } as const;
 
+function texteXml(valeur: string): string {
+  return htmlEmis(escapeHtml(valeur));
+}
+
 export interface ArticleListQuery {
-  locale: 'fr' | 'en';
+  locale: SupportedLocale;
   tag?: string;
   cursor?: string;
   limit: number;
@@ -101,9 +109,7 @@ export class ArticlesService {
       processedAt: receivedAt,
     } as const;
 
-    await this.articles.saveArticleAndDelivery(article, delivery, {
-      sendAfter: new Date(receivedAt.getTime() + broadcastDelayMs()),
-    });
+    await this.articles.saveArticleAndDelivery(article, delivery);
 
     return {
       delivery_id: envelope.delivery_id,
@@ -149,7 +155,7 @@ export class ArticlesService {
 
   async getPublishedBySlug(
     slug: string,
-    locale: 'fr' | 'en',
+    locale: SupportedLocale,
   ): Promise<ArticleRecord> {
     const article = ArticleSlug.safeParse(slug).success
       ? await this.articles.findPublishedBySlug(slug, locale)
@@ -158,16 +164,16 @@ export class ArticlesService {
     return article;
   }
 
-  async feed(locale: 'fr' | 'en'): Promise<string> {
+  async feed(locale: SupportedLocale): Promise<string> {
     const { items } = await this.listPublished({ locale, limit: 24 });
     const xml = items
       .map(
         (article) =>
-          `<item><title>${escapeHtml(article.title)}</title>` +
-          `<link>${escapeHtml(articlePageUrl(locale, article.slug))}</link>` +
-          `<guid isPermaLink="false">${escapeHtml(article.articleId)}</guid>` +
+          `<item><title>${texteXml(article.title)}</title>` +
+          `<link>${texteXml(articlePageUrl(locale, article.slug))}</link>` +
+          `<guid isPermaLink="false">${texteXml(article.articleId)}</guid>` +
           `<pubDate>${article.publishedAt.toUTCString()}</pubDate>` +
-          `<description>${escapeHtml(article.excerpt)}</description></item>`,
+          `<description>${texteXml(article.excerpt)}</description></item>`,
       )
       .join('');
     const lastBuild = items.reduce<Date | null>(
@@ -182,9 +188,9 @@ export class ArticlesService {
       '<?xml version="1.0" encoding="UTF-8"?>' +
       '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel>' +
       `<title>Asili Design — Articles</title>` +
-      `<link>${escapeHtml(urlDuSite() + '/' + locale + '/articles')}</link>` +
-      `<description>${escapeHtml(FEED_DESCRIPTION[locale])}</description>` +
-      `<atom:link href="${escapeHtml(selfUrl)}" rel="self" type="application/rss+xml"/>` +
+      `<link>${texteXml(urlDuSite() + '/' + locale + '/articles')}</link>` +
+      `<description>${texteXml(FEED_DESCRIPTION[locale])}</description>` +
+      `<atom:link href="${texteXml(selfUrl)}" rel="self" type="application/rss+xml"/>` +
       `<language>${FEED_LANGUAGE[locale]}</language>` +
       `<lastBuildDate>${(lastBuild ?? new Date()).toUTCString()}</lastBuildDate>` +
       `${xml}</channel></rss>`

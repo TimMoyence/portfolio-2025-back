@@ -4,7 +4,7 @@ import type {
   VotePublic,
 } from '../domain/contrats/donnees-publiques';
 import { choisirRappels, ecranDeRappel } from '../domain/cours/ChoixDesRappels';
-import { assertEcranServi } from '../domain/cours/EcranServi';
+import { cibleServie } from '../domain/cours/EcranServi';
 import { tirer } from '../domain/cours/Tirage';
 import { RappelsIndisponiblesError } from '../domain/errors/FormationErrors';
 import type { IAnswersRepository } from '../domain/IAnswers.repository';
@@ -61,13 +61,18 @@ export class LireRappelsUseCase {
     const { sessionId, participantId } = demande;
     const { session, participant, cours } =
       await this.participation.contexte(demande);
-    const cible = ecranDeRappel(cours);
-    if (cible === null) {
-      throw new RappelsIndisponiblesError(session.courseSlug);
-    }
-    assertEcranServi(session, cible.rang, cible.screenId, cours.ecrans.length);
+    const cible = cibleServie(
+      session,
+      cours,
+      {
+        valeur: ecranDeRappel(cours),
+        id: session.courseSlug,
+        rang: (rappel) => rappel.rang,
+      },
+      (courseSlug) => new RappelsIndisponiblesError(courseSlug),
+    );
 
-    const deja = await this.rappels.lister(participantId);
+    const deja = await this.rappels.listerDuParticipant(participantId);
     const servis =
       deja.length > 0
         ? deja

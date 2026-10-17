@@ -1,5 +1,7 @@
 import type { CheerioAPI } from 'cheerio';
+import { textesUniquesBornes } from '../../../../../common/domain/texte/textes-uniques-bornes';
 import type { SafeFetchResult } from '../safe-fetch.service';
+import { urlCandidateMemeOrigine } from './url.util';
 
 export const CACHE_HEADER_KEYS = [
   'cache-control',
@@ -76,28 +78,12 @@ export function detectCmsHints(html: string): string[] {
 }
 
 function extractInternalLinks($: CheerioAPI, finalUrl: string): string[] {
-  let origin: string;
-  try {
-    origin = new URL(finalUrl).origin;
-  } catch {
-    return [];
-  }
-
   const links = new Set<string>();
   for (const node of $('a[href]').toArray()) {
     const href = $(node).attr('href')?.trim();
     if (!href || href.startsWith('#')) continue;
-    if (href.startsWith('mailto:') || href.startsWith('tel:')) continue;
-
-    try {
-      const absolute = new URL(href, finalUrl);
-      if (!['http:', 'https:'].includes(absolute.protocol)) continue;
-      if (absolute.origin !== origin) continue;
-      absolute.hash = '';
-      links.add(absolute.toString());
-    } catch {
-      continue;
-    }
+    const lien = urlCandidateMemeOrigine(href, finalUrl);
+    if (lien) links.add(lien);
   }
 
   return Array.from(links).slice(0, 30);
@@ -130,17 +116,15 @@ export function pickHeaders(
 export function extractSetCookiePatterns(raw: string | undefined): string[] {
   if (!raw) return [];
   const matches: string[] = raw.match(/(?:^|,)\s*([^=;,\s]+)=/g) ?? [];
-  const names: string[] = [];
-  for (const chunk of matches) {
-    const normalized = chunk
-      .replace(/(?:^|,)\s*/, '')
-      .replace(/=$/, '')
-      .trim()
-      .toLowerCase();
-    if (!normalized) continue;
-    names.push(normalized);
-  }
-  return Array.from(new Set(names)).slice(0, 12);
+  return textesUniquesBornes(
+    matches.map((chunk) =>
+      chunk
+        .replace(/(?:^|,)\s*/, '')
+        .replace(/=$/, '')
+        .toLowerCase(),
+    ),
+    12,
+  );
 }
 
 export interface EnTetesTechniques {

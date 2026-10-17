@@ -9,6 +9,7 @@ import { TenterEnigmeRequestDto } from './tenter-enigme.request.dto';
 
 const DUREE_MS = 42000;
 const QUESTION_FEUILLE = 'b2-01-a4-feuille-canaux';
+const SOURIRE = String.fromCodePoint(0x1f600);
 
 function production(valeur: unknown): Record<string, unknown> {
   return { questionId: QUESTION_FEUILLE, valeur, dureeMs: DUREE_MS };
@@ -30,6 +31,17 @@ describe('DTO de requête du contrat V3 (§ 9.5, sans route active)', () => {
         },
       ],
       ['« je ne sais pas »', { type: 'classement', neSaitPas: true }],
+      [
+        'une formule de 200 points de code hors du plan de base',
+        { type: 'feuille', cellules: { E2: `="${SOURIRE.repeat(197)}"` } },
+      ],
+      [
+        'un classement dont la carte et la catégorie tiennent 60 points de code',
+        {
+          type: 'classement',
+          classement: { [SOURIRE.repeat(60)]: SOURIRE.repeat(60) },
+        },
+      ],
     ])('accepte %s', async (_forme, valeur) => {
       const dto = await validateBody(
         production(valeur),
@@ -49,6 +61,10 @@ describe('DTO de requête du contrat V3 (§ 9.5, sans route active)', () => {
       [
         'une formule de plus de 200 caractères',
         { type: 'feuille', cellules: { E2: `=${'1+'.repeat(100)}1` } },
+      ],
+      [
+        'une formule de 201 points de code',
+        { type: 'feuille', cellules: { E2: `="${SOURIRE.repeat(198)}"` } },
       ],
       ['une cellule non textuelle', { type: 'feuille', cellules: { E2: 3 } }],
       [

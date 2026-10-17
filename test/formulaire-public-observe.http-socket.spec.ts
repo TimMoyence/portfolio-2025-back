@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/unbound-method */
 import {
   Body,
   type CanActivate,
@@ -17,20 +16,16 @@ import { once } from 'node:events';
 import { request as requeteNode } from 'node:http';
 import { interval, map, type Observable } from 'rxjs';
 import request from 'supertest';
-import { HttpMetricsInterceptor } from '../src/common/interfaces/metrics/http-metrics.interceptor';
-import { MetricsService } from '../src/common/interfaces/metrics/metrics.service';
 import { FormulairePublic } from '../src/common/interfaces/security/formulaire-public.decorator';
-import { SECURITY_EVENTS_STORE } from '../src/common/interfaces/security/ISecurityEventsStore';
-import { InMemorySecurityEventsStore } from '../src/common/interfaces/security/in-memory-security-events-store';
 import { loadSecurityConfig } from '../src/common/interfaces/security/security.config';
 import { SECURITY_CONFIG } from '../src/common/interfaces/security/security.tokens';
 import { SuspiciousRequestInterceptor } from '../src/common/interfaces/security/suspicious-request.interceptor';
-import { createMockMetricsService } from './factories/metrics.factory';
+import { espionnerLesAvertissements } from './helpers/avertissements';
 import { abonnerAuFlux, attendreQue } from './helpers/formations-harness';
 import {
   ADRESSE_BOUCLE_LOCALE,
   applicationDeLaSuite,
-  httpServerOf,
+  serveurHttpDe,
   ouvrirApplication,
   portDe,
   preparerChaqueRequete,
@@ -94,22 +89,17 @@ function couperLaRequeteALaGarde(
 const IP_DISTANTE = '203.0.113.7';
 
 describe('Refus anti-robot d un formulaire public — intégration HTTP', () => {
-  const metriques = createMockMetricsService();
-  const evenements = new InMemorySecurityEventsStore();
-  const enregistrement = jest.spyOn(evenements, 'recordEvent');
+  const avertissements = espionnerLesAvertissements();
 
   const app = applicationDeLaSuite(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [ThrottlerModule.forRoot([{ ttl: 60000, limit: 100 }])],
       controllers: [FormulaireTemoinController],
       providers: [
-        { provide: MetricsService, useValue: metriques },
-        { provide: APP_INTERCEPTOR, useClass: HttpMetricsInterceptor },
         {
           provide: SECURITY_CONFIG,
           useValue: { ...loadSecurityConfig(), suspiciousScoreThreshold: 0 },
         },
-        { provide: SECURITY_EVENTS_STORE, useValue: evenements },
         { provide: APP_INTERCEPTOR, useClass: SuspiciousRequestInterceptor },
       ],
     }).compile();
@@ -124,61 +114,43 @@ describe('Refus anti-robot d un formulaire public — intégration HTTP', () => 
     });
   });
 
-  beforeEach(() => jest.clearAllMocks());
+  const tracesSuspectes = (): string[] =>
+    avertissements()
+      .mock.calls.map(([message]) => String(message))
+      .filter((message) => message.startsWith('[SECURITY] suspicious '));
 
-  function verifierUneSeuleMesure(route: string, statut: string): void {
-    expect(metriques.httpRequestsTotal.inc).toHaveBeenCalledTimes(1);
-    expect(metriques.httpRequestsTotal.inc).toHaveBeenCalledWith(
-      expect.objectContaining({ route, status_code: statut }),
-    );
+  async function seuleTraceApresFermeture(chemin: string): Promise<string> {
+    await attendreQue(() => tracesSuspectes().length > 0, ATTENTE_MAX_MS);
+    const traces = tracesSuspectes();
+    expect(traces).toHaveLength(1);
+    expect(traces[0]).toContain(` ip=${IP_DISTANTE} `);
+    expect(traces[0]).toContain(` path=${chemin} `);
+    return traces[0];
   }
 
   it.each([
     ['un refus', { website: 'https://spam.test' }, 400],
     ['une soumission acceptée', {}, 201],
   ])(
-    'mesure %s une seule fois, avec le statut renvoyé au client',
+    'journalise %s une seule fois, avec le statut renvoyé au client',
     async (_cas, corps, statut) => {
-      await request(httpServerOf(app()))
+      await request(serveurHttpDe(app()))
         .post('/temoin')
         .send(corps)
         .expect(statut);
 
-      verifierUneSeuleMesure('/temoin', String(statut));
-      expect(enregistrement).toHaveBeenCalledTimes(1);
-      expect(enregistrement).toHaveBeenCalledWith(
-        expect.objectContaining({
-          ip: IP_DISTANTE,
-          statusCode: statut,
-          reasons: expect.not.arrayContaining(['http:aborted']) as unknown,
-        }),
-      );
+      const trace = await seuleTraceApresFermeture('/temoin');
+      expect(trace).toContain(` status=${statut} `);
+      expect(trace).toMatch(/ aborted=false$/);
     },
   );
 
-  async function seuleMesureApresFermeture(
-    chemin: string,
-    statut: string,
-  ): Promise<{ abandonnee: boolean }> {
-    await attendreQue(
-      () => enregistrement.mock.calls.length > 0,
-      ATTENTE_MAX_MS,
-    );
-    verifierUneSeuleMesure(chemin, statut);
-    expect(enregistrement).toHaveBeenCalledTimes(1);
-    const [evenement] = enregistrement.mock.calls[0];
-    expect(evenement.path).toBe(chemin);
-    return { abandonnee: evenement.reasons.includes('http:aborted') };
-  }
-
-  it('mesure en 499 et note abandonnée une requête coupée avant les intercepteurs', async () => {
+  it('note abandonnée une requête coupée avant les intercepteurs', async () => {
     await expect(
       couperLaRequeteALaGarde(portDe(app()), '/lent'),
     ).resolves.toMatchObject({ code: 'ECONNRESET' });
 
-    expect(await seuleMesureApresFermeture('/lent', '499')).toEqual({
-      abandonnee: true,
-    });
+    expect(await seuleTraceApresFermeture('/lent')).toMatch(/ aborted=true$/);
   });
 
   it('ne note pas abandonné un flux SSE que le client referme', async () => {
@@ -186,8 +158,6 @@ describe('Refus anti-robot d un formulaire public — intégration HTTP', () => 
     await attendreQue(() => flux.evenements.length > 0, ATTENTE_MAX_MS);
     flux.fermer();
 
-    expect(await seuleMesureApresFermeture('/flux', '200')).toEqual({
-      abandonnee: false,
-    });
+    expect(await seuleTraceApresFermeture('/flux')).toMatch(/ aborted=false$/);
   });
 });

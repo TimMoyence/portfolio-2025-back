@@ -1,3 +1,4 @@
+import { readdirSync } from 'fs';
 import { join } from 'path';
 import {
   DataSource,
@@ -6,6 +7,7 @@ import {
 } from 'typeorm';
 import type { SourceDEnv } from '../../src/config/env-readers.util';
 import { resoudreConnexionPostgres } from '../../src/database/connexion-postgres';
+import { RACINE } from './racine';
 
 type PostgresEntities = Extract<
   DataSourceOptions,
@@ -13,16 +15,32 @@ type PostgresEntities = Extract<
 >['entities'];
 
 const DELAI_MIGRATIONS_MS = 120_000;
-const DOSSIER_DES_MIGRATIONS = join(__dirname, '../../src/migrations');
+const DOSSIER_DES_MIGRATIONS = join(RACINE, 'src/migrations');
 
-export const TOUTES_LES_ENTITES = join(__dirname, '../../src/**/*.entity.ts');
+export const TOUTES_LES_ENTITES = join(RACINE, 'src/**/*.entity.ts');
 export const TOUTES_LES_MIGRATIONS = join(
   DOSSIER_DES_MIGRATIONS,
   '!(*.spec).ts',
 );
 
-export function migrationsAnterieuresA(fichierDeMigration: string): string {
-  return join(DOSSIER_DES_MIGRATIONS, `!(*.spec|${fichierDeMigration}).ts`);
+const MIGRATION_HORODATEE = /^(\d+)-.+(?<!\.spec)\.ts$/;
+
+function horodatageDe(fichierDeMigration: string): number {
+  const horodatage = MIGRATION_HORODATEE.exec(`${fichierDeMigration}.ts`);
+  if (!horodatage) {
+    throw new Error(`Migration « ${fichierDeMigration} » sans horodatage.`);
+  }
+  return Number(horodatage[1]);
+}
+
+export function migrationsAnterieuresA(fichierDeMigration: string): string[] {
+  const limite = horodatageDe(fichierDeMigration);
+  return readdirSync(DOSSIER_DES_MIGRATIONS)
+    .filter((fichier) => {
+      const horodatage = MIGRATION_HORODATEE.exec(fichier);
+      return horodatage !== null && Number(horodatage[1]) < limite;
+    })
+    .map((fichier) => join(DOSSIER_DES_MIGRATIONS, fichier));
 }
 
 export const describeDb =
@@ -77,11 +95,15 @@ const FONCTIONS_HORS_DU_DROP_SCHEMA = [
 export async function initBaseMigree(
   entities: PostgresEntities,
   migrations: string[],
+  fuseauDeLaSession?: string,
 ): Promise<DataSource> {
   const dataSource = new DataSource({
     ...buildDbIntegrationOptions(entities),
     synchronize: false,
     migrations,
+    ...(fuseauDeLaSession === undefined
+      ? {}
+      : { extra: { options: `-c TimeZone=${fuseauDeLaSession}` } }),
   });
   await initialiserEtMigrer(dataSource);
   return dataSource;
@@ -90,11 +112,12 @@ export async function initBaseMigree(
 export function baseMigreeDeLaSuite(
   entities: PostgresEntities,
   migrations: string[],
+  fuseauDeLaSession?: string,
 ): () => DataSource {
   let dataSource: DataSource | undefined;
 
   beforeAll(async () => {
-    dataSource = await initBaseMigree(entities, migrations);
+    dataSource = await initBaseMigree(entities, migrations, fuseauDeLaSession);
   }, DELAI_MIGRATIONS_MS);
 
   afterAll(async () => {
@@ -115,6 +138,46 @@ export function jouerLaMigration(
   return dataSource.transaction((manager) =>
     migration[sens](manager.queryRunner!),
   );
+}
+
+export async function tablesPresentes(
+  dataSource: DataSource,
+  tables: readonly string[],
+): Promise<string[]> {
+  const lignes: { table_name: string }[] = await dataSource.query(
+    `SELECT table_name FROM information_schema.tables
+     WHERE table_schema = 'public' AND table_name = ANY($1)
+     ORDER BY table_name`,
+    [tables],
+  );
+  return lignes.map(({ table_name }) => table_name);
+}
+
+export async function typesEnumeresPresents(
+  dataSource: DataSource,
+  types: readonly string[],
+): Promise<string[]> {
+  const lignes: { typname: string }[] = await dataSource.query(
+    `SELECT t.typname FROM pg_type t
+     JOIN pg_namespace n ON n.oid = t.typnamespace
+     WHERE n.nspname = 'public' AND t.typtype = 'e' AND t.typname = ANY($1)
+     ORDER BY t.typname`,
+    [types],
+  );
+  return lignes.map(({ typname }) => typname);
+}
+
+export async function colonnesDeLaTable(
+  dataSource: DataSource,
+  table: string,
+): Promise<string[]> {
+  const lignes: { column_name: string }[] = await dataSource.query(
+    `SELECT column_name FROM information_schema.columns
+     WHERE table_schema = 'public' AND table_name = $1
+     ORDER BY column_name`,
+    [table],
+  );
+  return lignes.map(({ column_name }) => column_name);
 }
 
 export async function inscrireUtilisateur(

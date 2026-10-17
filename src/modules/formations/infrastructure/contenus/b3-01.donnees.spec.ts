@@ -1,7 +1,5 @@
-import {
-  arrondirMoitieLoinDeZero,
-  lireNombreSaisi,
-} from '../../domain/cours/Formule';
+import { arrondi } from '../../../../common/domain/nombres/arrondi';
+import { lireNombreSaisi } from '../../domain/cours/Formule';
 import {
   dateExcel,
   dateval,
@@ -35,6 +33,7 @@ import {
   medianesDUneListeTropLarge,
 } from '../../../../../test/helpers/cours-b3-01/valeurs';
 import {
+  CA_HT_SAISI_EN_TEXTE,
   DEFIS_B3_01,
   HISTOIRES_B3_01,
   PIEGES_B3_01,
@@ -86,11 +85,7 @@ const DETECTEURS: Readonly<Record<string, (ligne: Ligne) => boolean>> = {
       return false;
     }
     const [quantite, prix, remise, ca] = nombres;
-    return (
-      Math.abs(
-        ca - arrondirMoitieLoinDeZero(quantite * prix * (1 - remise), 2),
-      ) > 1
-    );
+    return Math.abs(ca - arrondi(quantite * prix * (1 - remise), 2)) > 1;
   },
   F5: (ligne) =>
     /^\d{4}-\d{2}-\d{2}$/.test(String(valeurDe(ligne, 'date_commande'))),
@@ -107,8 +102,7 @@ const DETECTEURS: Readonly<Record<string, (ligne: Ligne) => boolean>> = {
     const prix = prixCatalogue.get(texteDe(ligne, 'produit_id'));
     return (
       prix !== undefined &&
-      valeurDe(ligne, 'prix_unitaire_ht') ===
-        arrondirMoitieLoinDeZero(10 * prix, 2)
+      valeurDe(ligne, 'prix_unitaire_ht') === arrondi(10 * prix, 2)
     );
   },
 };
@@ -310,7 +304,7 @@ describe('jeu Norvane du B3-01', () => {
     const aLaLigne = (rang: number): Ligne => commandesBrutes[rang - 2];
 
     expect(valeurDe(aLaLigne(783), 'ville')).toBe(' Bordeaux ');
-    expect(valeurDe(aLaLigne(2971), 'ca_ht')).toBe('1 150,00 €');
+    expect(valeurDe(aLaLigne(2971), 'ca_ht')).toBe(CA_HT_SAISI_EN_TEXTE);
   });
 
   it('porte au brut la date que citent A1-13 et A1-14 : B3785 « 08/04/26 », commande C-11481, en ligne 3741 de la copie dédoublonnée, lue le 8 avril par DATEVAL, livrée le 7 août 2026', () => {

@@ -4,11 +4,14 @@ import {
   PARCOURS_DE_TEST,
   TENTATIVES_MAX_DE_TEST,
 } from '../../../../../test/factories/cours.factory';
+import { buildCoursDuContenu } from '../../../../../test/factories/contenus-de-cours.factory';
+import { CONTENUS } from '../../../../../test/factories/contenus-publies';
 import {
   corrigerEnigme,
   ecranDEnigmes,
   enigmeOuverte,
   enigmeVisee,
+  etatDesEnigmes,
 } from './Enigmes';
 import type { EcranDEnigmes } from './Enigmes';
 
@@ -93,6 +96,122 @@ describe('enigmeOuverte', () => {
       ),
     ).toBe(true);
   });
+});
+
+const PARCOURS_DES_COURS: readonly (readonly [string, EcranDEnigmes])[] =
+  CONTENUS.flatMap((contenu) => {
+    const cours = buildCoursDuContenu(contenu);
+    return cours.ecrans.flatMap((ecran) => {
+      const parcours =
+        ecran.brique === 'fp-escape'
+          ? ecranDEnigmes(cours, ecran.proprietes.parcours.id)
+          : null;
+      return parcours === null ? [] : [[ecran.id, parcours] as const];
+    });
+  });
+
+function idsDe(parcours: EcranDEnigmes): string[] {
+  return parcours.ecran.proprietes.parcours.enigmes.map(({ id }) => id);
+}
+
+const PARCOURS_A_PLUSIEURS_ENIGMES = PARCOURS_DES_COURS.filter(
+  ([, parcours]) => idsDe(parcours).length > 2,
+);
+
+describe('etatDesEnigmes', () => {
+  it('trouve dans les cours servis des parcours de plus de deux énigmes', () => {
+    expect(PARCOURS_A_PLUSIEURS_ENIGMES.length).toBeGreaterThan(0);
+  });
+
+  it.each(PARCOURS_DES_COURS)(
+    '%s : sans tentative, ouvre la première énigme seule, toutes au plafond',
+    (_ecran, parcours) => {
+      const [premiere, ...suivantes] = idsDe(parcours);
+
+      const etat = etatDesEnigmes(parcours, []);
+
+      expect(etat.enigmeOuverte).toBe(premiere);
+      expect(etat.acheve).toBe(false);
+      expect(etat.etats[premiere]).toEqual({
+        etat: 'ouverte',
+        tentativesRestantes: parcours.tentativesMax,
+      });
+      expect(
+        suivantes
+          .map((id) => etat.etats[id].etat)
+          .every((e) => e === 'verrouillee'),
+      ).toBe(true);
+    },
+  );
+
+  it.each(PARCOURS_A_PLUSIEURS_ENIGMES)(
+    '%s : ouvre l énigme suivante après une énigme résolue, puis après une épuisée',
+    (_ecran, parcours) => {
+      const [premiere, seconde, troisieme] = idsDe(parcours);
+
+      const apresResolue = etatDesEnigmes(parcours, [
+        { enigmeId: premiere, tentatives: 2, resolue: true },
+      ]);
+      const apresEpuisee = etatDesEnigmes(parcours, [
+        {
+          enigmeId: premiere,
+          tentatives: parcours.tentativesMax,
+          resolue: false,
+        },
+      ]);
+
+      expect(apresResolue.etats[premiere]).toEqual({
+        etat: 'resolue',
+        tentativesRestantes: parcours.tentativesMax - 2,
+      });
+      expect(apresResolue.enigmeOuverte).toBe(seconde);
+      expect(apresEpuisee.etats[premiere]).toEqual({
+        etat: 'epuisee',
+        tentativesRestantes: 0,
+      });
+      expect(apresEpuisee.enigmeOuverte).toBe(seconde);
+      expect(apresResolue.etats[troisieme].etat).toBe('verrouillee');
+    },
+  );
+
+  it.each(PARCOURS_DES_COURS)(
+    '%s : achève le parcours quand chaque énigme est résolue ou épuisée',
+    (_ecran, parcours) => {
+      const ids = idsDe(parcours);
+      const progression = ids.map((enigmeId, rang) => ({
+        enigmeId,
+        tentatives: rang === ids.length - 1 ? parcours.tentativesMax : 1,
+        resolue: rang < ids.length - 1,
+      }));
+
+      const etat = etatDesEnigmes(parcours, progression);
+
+      expect(etat.enigmeOuverte).toBeNull();
+      expect(etat.acheve).toBe(true);
+      expect(ids.map((id) => etat.etats[id].etat)).toEqual([
+        ...ids.slice(0, -1).map(() => 'resolue'),
+        'epuisee',
+      ]);
+    },
+  );
+
+  it.each(PARCOURS_DES_COURS)(
+    '%s : n ouvre que l énigme que la tentative accepte',
+    (_ecran, parcours) => {
+      const ids = idsDe(parcours);
+      const progression = [{ enigmeId: ids[0], tentatives: 3, resolue: true }];
+
+      const etat = etatDesEnigmes(parcours, progression);
+
+      expect(ids.filter((id) => etat.etats[id].etat === 'ouverte')).toEqual(
+        ids.filter(
+          (id, rang) =>
+            enigmeOuverte(parcours, progression, rang) &&
+            !progression.some((p) => p.enigmeId === id && p.resolue),
+        ),
+      );
+    },
+  );
 });
 
 describe('corrigerEnigme', () => {

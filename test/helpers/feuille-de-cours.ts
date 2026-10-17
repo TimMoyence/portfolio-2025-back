@@ -25,6 +25,17 @@ export function attendusDeColonne<T>(
   );
 }
 
+export function formulesDuCorrige(
+  corrige: Pick<CorrigeFeuille, 'attendus'>,
+): Record<string, string> {
+  return Object.fromEntries(
+    corrige.attendus.map((attendu) => [
+      attendu.reference,
+      attendu.formuleReference,
+    ]),
+  );
+}
+
 export function recopier(
   modele: string,
   colonne: string,

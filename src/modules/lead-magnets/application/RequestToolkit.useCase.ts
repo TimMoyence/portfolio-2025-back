@@ -37,13 +37,17 @@ export class RequestToolkitUseCase {
     const response = new MessageLeadMagnetResponse();
     response.message = `Votre boite a outils a ete envoyee a ${domainRequest.email}`;
 
-    const recentExists = await this.repo.existsRecentByEmail(
+    const savedRequest = await this.repo.sousVerrouDeLaBoite(
       domainRequest.email,
-      domainRequest.formationSlug,
+      async (depot) =>
+        (await depot.existeUneDemandeRecenteVersLaBoiteDe(
+          domainRequest.email,
+          domainRequest.formationSlug,
+        ))
+          ? null
+          : depot.create(domainRequest),
     );
-    if (recentExists) return response;
-
-    const savedRequest = await this.repo.create(domainRequest);
+    if (!savedRequest) return response;
     response.accessToken = savedRequest.accessToken;
 
     enArrierePlan(
@@ -56,10 +60,7 @@ export class RequestToolkitUseCase {
   }
 
   private async generateAndSend(request: LeadMagnetRequest): Promise<void> {
-    const content = this.assembler.assemble(
-      request.firstName,
-      request.profile ?? null,
-    );
+    const content = this.assembler.assemble(request.firstName);
     const pdfBuffer = await this.pdfGenerator.generate(request, content);
     await this.notifier.sendToolkitEmail(request, pdfBuffer);
   }

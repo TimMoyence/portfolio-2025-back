@@ -8,14 +8,11 @@ import {
 } from '@nestjs/common';
 import type { Request, Response } from 'express';
 import type { Observable } from 'rxjs';
-import { enArrierePlan } from '../../application/en-arriere-plan';
 import { navigateurConsignable } from '../../domain/provenance';
 import { aLaFermeture } from '../http/a-la-fermeture';
 import { dureeEnMsDepuis, instantEnNs } from '../http/duree-de-requete';
 import { urlJournalisable } from '../http/url-journalisable';
 import { lireEnTete, resolveClientIpOrUnknown } from './client-ip.util';
-import type { ISecurityEventsStore } from './ISecurityEventsStore';
-import { SECURITY_EVENTS_STORE } from './ISecurityEventsStore';
 import type { SecurityConfig } from './security.config';
 import { SECURITY_CONFIG } from './security.tokens';
 import { scoreRequest } from './suspicious-request-scorer';
@@ -29,8 +26,6 @@ export class SuspiciousRequestInterceptor implements NestInterceptor {
 
   constructor(
     @Inject(SECURITY_CONFIG) private readonly config: SecurityConfig,
-    @Inject(SECURITY_EVENTS_STORE)
-    private readonly store: ISecurityEventsStore,
   ) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
@@ -81,24 +76,8 @@ export class SuspiciousRequestInterceptor implements NestInterceptor {
           return;
         }
 
-        const occurredAtMs = Date.now();
         const path = urlJournalisable(urlBrute, req.params);
         const navigateur = navigateurConsignable(userAgent) ?? '';
-
-        enArrierePlan(
-          this.store.recordEvent({
-            ip,
-            userAgent: navigateur,
-            method: req.method,
-            path,
-            statusCode: res.statusCode,
-            score,
-            reasons,
-            occurredAtMs,
-          }),
-          '[SECURITY] store.recordEvent a echoue',
-          this.logger,
-        );
 
         this.logger.warn(
           `[SECURITY] suspicious ip=${ip} method=${req.method} path=${path} status=${res.statusCode} score=${score} reasons=${reasons.join(',')} ua="${navigateur}" rtMs=${responseTimeMs.toFixed(1)} aborted=${aborted}`,

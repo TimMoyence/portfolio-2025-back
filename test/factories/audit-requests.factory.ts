@@ -1,4 +1,7 @@
-import type { ClientReportSynthesis } from '../../src/modules/audit-requests/domain/AuditReportTiers';
+import type {
+  ClientReportSynthesis,
+  ExpertReportSynthesis,
+} from '../../src/modules/audit-requests/domain/AuditReportTiers';
 import type { IAuditRequestsRepository } from '../../src/modules/audit-requests/domain/IAuditRequests.repository';
 import type { IAuditNotifierPort } from '../../src/modules/audit-requests/domain/IAuditNotifier.port';
 import type { IAuditQueuePort } from '../../src/modules/audit-requests/domain/IAuditQueue.port';
@@ -17,7 +20,10 @@ import type { HomepageAuditSnapshot } from '../../src/modules/audit-requests/inf
 import type { LangchainAuditInput } from '../../src/modules/audit-requests/infrastructure/automation/langchain-audit-report.service';
 import type { ClientReportContext } from '../../src/modules/audit-requests/infrastructure/automation/langchain-client-report.service';
 import type { PageAiRecap } from '../../src/modules/audit-requests/infrastructure/automation/page-ai-recap.service';
+import type { ExpertReport } from '../../src/modules/audit-requests/infrastructure/automation/schemas/audit-report.schemas';
+import { engineCoverageSchema } from '../../src/modules/audit-requests/infrastructure/automation/schemas/engine-coverage.schema';
 import type { UrlIndexabilityResult } from '../../src/modules/audit-requests/infrastructure/automation/url-indexability.service';
+import { sectionSurLeDepot } from './verrou-par-boite.factory';
 
 export function buildAuditRequest(
   overrides?: Partial<AuditRequest>,
@@ -193,12 +199,15 @@ export function buildPageExploree(
 }
 
 export function createMockAuditRequestsRepo(): jest.Mocked<IAuditRequestsRepository> {
-  return {
+  const repo: jest.Mocked<IAuditRequestsRepository> = {
+    sousVerrouDeLaBoite: sectionSurLeDepot(() => repo),
     create: jest.fn(),
+    secondesAvantLaSortieDesDemandesVers: jest.fn().mockResolvedValue([]),
     findById: jest.fn(),
     findSummaryById: jest.fn(),
     updateState: jest.fn(),
   };
+  return repo;
 }
 
 export function createMockAuditNotifier(): jest.Mocked<IAuditNotifierPort> {
@@ -418,5 +427,166 @@ export function buildClientReportSynthesis(): ClientReportSynthesis {
     pillarScorecard: [],
     quickWins: [],
     cta: { title: 'CTA', description: 'Desc', actionLabel: 'Action' },
+  };
+}
+
+export function buildClientReportConforme(): ClientReportSynthesis {
+  return {
+    executiveSummary:
+      'Audit complet finalise avec 3 leviers prioritaires et un plan de 30 jours.',
+    topFindings: [
+      {
+        title: 'Meta descriptions manquantes',
+        impact: 'Reduction du CTR organique sur les pages commerciales.',
+        severity: 'high',
+      },
+      {
+        title: 'CTA peu visible',
+        impact: 'Baisse du taux de conversion sur les pages de landing.',
+        severity: 'medium',
+      },
+    ],
+    googleVsAiMatrix: {
+      googleVisibility: { score: 65, summary: 'Bon potentiel Google.' },
+      aiVisibility: { score: 50, summary: 'Couverture IA a renforcer.' },
+    },
+    pillarScorecard: [
+      { pillar: 'seo', score: 62, target: 85 },
+      { pillar: 'performance', score: 55, target: 85 },
+      { pillar: 'technical', score: 70, target: 85 },
+      { pillar: 'trust', score: 68, target: 85 },
+      { pillar: 'conversion', score: 60, target: 85 },
+      { pillar: 'aiVisibility', score: 48, target: 85 },
+      { pillar: 'citationWorthiness', score: 52, target: 85 },
+    ],
+    quickWins: [
+      {
+        title: 'Ajouter les meta descriptions',
+        businessImpact: 'Augmente le CTR organique rapidement.',
+        effort: 'low',
+      },
+      {
+        title: 'Repositionner le CTA principal',
+        businessImpact: 'Ameliore la conversion mobile.',
+        effort: 'low',
+      },
+      {
+        title: 'Publier un fichier llms.txt',
+        businessImpact: 'Ouvre la visibilite aux moteurs IA.',
+        effort: 'medium',
+      },
+    ],
+    cta: {
+      title: 'Planifier un appel de 30 minutes',
+      description: 'Nous prioriserons ensemble les premieres actions.',
+      actionLabel: 'Reserver',
+    },
+  };
+}
+
+type PageAnalysee = ExpertReport['perPageAnalysis'][number];
+
+export function buildPageAnalysee(
+  overrides: Partial<PageAnalysee> = {},
+): PageAnalysee {
+  return {
+    url: 'https://acme.com/pricing',
+    title: 'Pricing page',
+    engineScores: engineCoverageSchema.parse(buildEngineCoverage()),
+    topIssues: ['Pas de FAQ schema', 'H1 manquant'],
+    recommendations: ['Ajouter FAQPage JSON-LD', 'Ajouter un H1 clair'],
+    evidence: ['DOM ne contient pas <h1>'],
+    ...overrides,
+  };
+}
+
+export function buildExpertReportSynthesis(): ExpertReportSynthesis {
+  return {
+    executiveSummary: 'Synthese expert',
+    perPageAnalysis: [],
+    crossPageFindings: [],
+    priorityBacklog: [],
+    clientEmailDraft: { subject: '', body: '' },
+    internalNotes: '',
+  };
+}
+
+export function buildExpertReportConforme(): ExpertReportSynthesis {
+  return {
+    executiveSummary: 'Analyse expert: 2 pages auditees, 4 blockers critiques.',
+    perPageAnalysis: [buildPageAnalysee()],
+    crossPageFindings: [
+      {
+        title: 'Meta descriptions dupliquees',
+        severity: 'high',
+        affectedUrls: ['https://acme.com/a', 'https://acme.com/b'],
+        rootCause: 'Template CMS utilise le meme modele',
+        remediation: 'Generer des meta descriptions dynamiques',
+      },
+    ],
+    priorityBacklog: [
+      {
+        title: 'Deployer llms.txt',
+        impact: 'high',
+        effort: 'low',
+        acceptanceCriteria: ['Fichier accessible en HTTP 200'],
+      },
+    ],
+    clientEmailDraft: {
+      subject: 'Votre audit Growth Audit',
+      body:
+        'Bonjour,\n\nVoici les resultats de votre audit Growth Audit. Trois chantiers ' +
+        'ressortent : la page de tarifs sans FAQ structuree, des meta descriptions ' +
+        'dupliquees et un fichier llms.txt a publier. Le rapport joint detaille ' +
+        'chaque action et son effort.\n\nBien a vous,',
+    },
+    internalNotes: 'Client reactif, CMS WordPress standard',
+  };
+}
+
+export function buildExpertReport(): ExpertReport {
+  return {
+    executiveSummary: 'Executive summary.',
+    reportExplanation: 'Report explanation.',
+    strengths: ['Strong technical baseline'],
+    diagnosticChapters: {
+      conversionAndClarity: 'Conversion issues detected on key templates.',
+      speedAndPerformance: 'Performance bottlenecks affect mobile rendering.',
+      seoFoundations: 'Metadata and heading structure need standardization.',
+      credibilityAndTrust: 'Trust signals are inconsistent across core pages.',
+      techAndScalability:
+        'Stack hygiene requires stronger maintenance controls.',
+      scorecardAndBusinessOpportunities:
+        'Prioritized quick wins can improve leads in 30 days.',
+    },
+    techFingerprint: {
+      primaryStack: 'WordPress',
+      confidence: 0.78,
+      evidence: ['WordPress hint detected'],
+      alternatives: ['PHP runtime'],
+      unknowns: [],
+    },
+    priorities: [
+      {
+        title: 'Fix canonical consistency',
+        severity: 'high',
+        whyItMatters: 'Canonical defects split ranking signals.',
+        recommendedFix:
+          'Set one self-referencing canonical per indexable page.',
+        estimatedHours: 5,
+      },
+    ],
+    urlLevelImprovements: [],
+    implementationTodo: [],
+    whatToFixThisWeek: [],
+    whatToFixThisMonth: [],
+    clientMessageTemplate: 'Hello, here are top priorities.',
+    clientLongEmail: 'Detailed client email.',
+    fastImplementationPlan: [],
+    implementationBacklog: [],
+    invoiceScope: [],
+    perPageAnalysis: [],
+    clientEmailDraft: { subject: '', body: '' },
+    internalNotes: '',
   };
 }

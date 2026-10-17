@@ -1,15 +1,15 @@
 import { InvalidInputError } from '../../../common/domain/errors/InvalidInputError';
 import { ResourceConflictError } from '../../../common/domain/errors/ResourceConflictError';
 import { ResourceNotFoundError } from '../../../common/domain/errors/ResourceNotFoundError';
+import type { SupportedLocale } from '../../../common/domain/value-objects/LocaleCode';
 import {
   buildArticleDeliveryRecord,
   buildArticleRecord,
   createMockArticlesRepository,
 } from '../../../../test/factories/article.factory';
-import { sousEnvironnement } from '../../../../test/helpers/environnement';
+import { validArticleIngestEnvelope as payload } from '../../../../test/factories/article-ingest.factory';
 import type { ArticleRecord } from './articles.repository';
 import { ArticlesService } from './articles.service';
-import { validArticleIngestEnvelope as payload } from '../testing/article-ingest.fixture';
 
 const articleId = payload.article.article_id;
 const articleRecord = (): ArticleRecord =>
@@ -110,23 +110,6 @@ describe('ArticlesService', () => {
       expect(repository[lecture].mock.calls).toHaveLength(0);
     },
   );
-
-  it('programme la diffusion abonnés dans la même écriture que l article', async () => {
-    const repository = createMockArticlesRepository();
-    repository.findDeliveryByDeliveryOrIdempotency.mockResolvedValue(null);
-    repository.findDeliveryByNonce.mockResolvedValue(null);
-    const service = new ArticlesService(repository);
-
-    const result = await sousEnvironnement(
-      { ARTICLE_BROADCAST_DELAY_MINUTES: '45' },
-      () => service.ingest(payload, 'idempotency-1', 'nonce-1'),
-    );
-    const [, , broadcast] = repository.saveArticleAndDelivery.mock.calls[0];
-
-    expect(broadcast.sendAfter.getTime()).toBe(
-      Date.parse(result.received_at) + 45 * 60_000,
-    );
-  });
 });
 
 describe('ArticlesService.listPublished', () => {
@@ -155,7 +138,7 @@ describe('ArticlesService.listPublished', () => {
 
 describe('ArticlesService.feed', () => {
   const feedOf = async (
-    locale: 'fr' | 'en',
+    locale: SupportedLocale,
     records: ArticleRecord[],
   ): Promise<string> => {
     const repository = createMockArticlesRepository();
