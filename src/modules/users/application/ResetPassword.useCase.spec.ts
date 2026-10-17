@@ -48,17 +48,23 @@ describe('ResetPasswordUseCase', () => {
       useCase.execute({ token, newPassword: ANY_VALID_CREDENTIAL }),
     ).rejects.toBeInstanceOf(LienInvalideError);
 
-  const preparerUnLienValide = () => {
+  const preparerUnLienValide = (
+    titulaire: Parameters<typeof buildUser>[0] = { passwordHash: 'old-hash' },
+  ) => {
     tokensRepository.findActiveByTokenHash.mockResolvedValue(
       buildPasswordResetToken({ id: 'token-1', userId: 'user-1' }),
     );
-    preparerNouveauMotDePasse(usersRepository, passwordService, {
-      passwordHash: 'old-hash',
-    });
+    preparerNouveauMotDePasse(usersRepository, passwordService, titulaire);
   };
 
-  it('reinitialise le mot de passe avec un token valide', async () => {
-    preparerUnLienValide();
+  it.each<[string, Parameters<typeof buildUser>[0]]>([
+    ['reinitialise le mot de passe avec un token valide', undefined],
+    [
+      'donne un mot de passe au titulaire Google qui n en avait pas, par le lien de sa tentative d inscription',
+      { passwordHash: null, googleId: 'google-sub-1' },
+    ],
+  ])('%s', async (_cas, titulaire) => {
+    preparerUnLienValide(titulaire);
     tokensRepository.markUsed.mockResolvedValue(true);
 
     const result = await useCase.execute({
