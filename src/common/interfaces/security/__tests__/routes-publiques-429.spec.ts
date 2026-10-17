@@ -127,12 +127,23 @@ const cleEcrite = (noeud: ts.Node): string | null => {
     : null;
 };
 
+const EXPRESSIONS_EXTERNES: readonly ((noeud: ts.Node) => boolean)[] = [
+  ts.isParenthesizedExpression,
+  ts.isAsExpression,
+  ts.isSatisfiesExpression,
+  ts.isTypeAssertionExpression,
+  ts.isNonNullExpression,
+  ts.isExpressionWithTypeArguments,
+];
+
 const liaisonDe = (
   classe: ts.ClassLikeDeclaration,
 ): { nom?: string; instruction?: ts.Node } => {
   if (ts.isClassDeclaration(classe))
     return { nom: classe.name?.text, instruction: classe };
-  const liaison = classe.parent;
+  let liaison = classe.parent;
+  while (EXPRESSIONS_EXTERNES.some((externe) => externe(liaison)))
+    liaison = liaison.parent;
   return ts.isVariableDeclaration(liaison) && ts.isIdentifier(liaison.name)
     ? { nom: liaison.name.text, instruction: liaison.parent.parent }
     : {};
@@ -799,7 +810,6 @@ describe('Injection des providers qui héritent d un constructeur injecté', () 
         .filter(
           (module) =>
             !CLASSES_DES_FICHIERS_DE_MODULE.includes(module) &&
-            exportees.has(module) &&
             !deBibliotheque.has(module),
         )
         .map(({ name }) => `${name} : hors d un fichier de module`),
