@@ -12,7 +12,6 @@ const COURRIEL: CourrielHtml = {
   subject: 'objet',
   text: 'texte',
   html: safeHtml`<p>${escapeHtml('<mot>')}</p>`,
-  headers: { 'List-Id': 'Liste <liste.test.local>' },
   attachments: [
     {
       filename: 'rapport.pdf',
@@ -38,6 +37,7 @@ describe('ExpediteurDeCourriels', () => {
       watchHtml: '<script>',
       raw: 'Content-Type: text/html\r\n\r\n<script>',
       icalEvent: { content: '<script>' },
+      headers: { 'X-Mailer': 'x', 'List-Id': 'x\r\nBcc: y' },
       attachments: [
         { ...COURRIEL.attachments?.[0], path: '/etc/passwd', href: 'x' },
       ],
@@ -59,11 +59,6 @@ describe('ExpediteurDeCourriels', () => {
   it.each([
     ['un texte lu sur disque', { text: { path: '/etc/passwd' } }],
     ['un objet pour objet', { subject: { toString: () => 'objet' } }],
-    ['un en-tete hors de la liste', { headers: { 'X-Mailer': 'x' } }],
-    [
-      'un en-tete prepare, ecrit tel quel',
-      { headers: { 'List-Id': { prepared: true, value: 'x\r\nBcc: y' } } },
-    ],
     [
       'une piece jointe HTML',
       {

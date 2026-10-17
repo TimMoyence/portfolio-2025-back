@@ -1,26 +1,11 @@
-import type { ArticleBroadcastRecord } from '../../src/modules/articles/application/article-broadcast.repository';
 import type {
   ArticleDeliveryRecord,
+  ArticleModerationRepository,
   ArticleRecord,
   ArticlesRepository,
+  ArticleStatus,
   ArticleWrite,
 } from '../../src/modules/articles/application/articles.repository';
-
-export function buildArticleBroadcastRecord(
-  overrides: Partial<ArticleBroadcastRecord> = {},
-): ArticleBroadcastRecord {
-  return {
-    id: 'broadcast-1',
-    articleRecordId: 'record-1',
-    status: 'scheduled',
-    sendAfter: new Date('2026-09-23T07:44:00.000Z'),
-    lockedUntil: null,
-    sentCount: 0,
-    failedCount: 0,
-    completedAt: null,
-    ...overrides,
-  };
-}
 
 export function buildArticleWrite(
   overrides: Partial<ArticleWrite> = {},
@@ -87,5 +72,37 @@ export function createMockArticlesRepository(): jest.Mocked<ArticlesRepository> 
     saveArticleAndDelivery: jest.fn(),
     listPublished: jest.fn(),
     findPublishedBySlug: jest.fn(),
+    findByArticleId: jest.fn(),
+    listLatest: jest.fn(),
+    setArticleStatus: jest.fn(),
   };
+}
+
+export class ArticlesEnMemoire implements ArticleModerationRepository {
+  readonly articles = new Map<string, ArticleRecord>();
+
+  findByArticleId(articleId: string): Promise<ArticleRecord | null> {
+    return Promise.resolve(
+      [...this.articles.values()].find(
+        (candidate) => candidate.articleId === articleId,
+      ) ?? null,
+    );
+  }
+
+  listLatest(limit: number): Promise<ArticleRecord[]> {
+    return Promise.resolve(
+      [...this.articles.values()]
+        .sort((a, b) => b.publishedAt.getTime() - a.publishedAt.getTime())
+        .slice(0, limit),
+    );
+  }
+
+  setArticleStatus(
+    articleRecordId: string,
+    status: ArticleStatus,
+  ): Promise<void> {
+    const article = this.articles.get(articleRecordId);
+    if (article) article.status = status;
+    return Promise.resolve();
+  }
 }

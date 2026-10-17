@@ -5,22 +5,9 @@ import {
 } from '../common/domain/crypto/secret-hmac';
 import { EmailAddress } from '../common/domain/value-objects/EmailAddress';
 import { resoudreConnexionPostgres } from '../database/connexion-postgres';
-import {
-  DELAI_DE_DIFFUSION_EN_MINUTES,
-  TAILLE_DU_LOT_DE_DIFFUSION,
-} from './diffusion-des-articles';
-import {
-  estEnProduction,
-  lirePort,
-  PORT_ATTENDU,
-  type BornesEntieres,
-} from './env-readers.util';
+import { estEnProduction, lirePort, PORT_ATTENDU } from './env-readers.util';
 import { PREFIXE_API_PAR_DEFAUT } from './prefixe-api';
 import { trousseauHmac } from './trousseau-hmac';
-
-function entierDansLesBornes({ defaut, min, max }: BornesEntieres) {
-  return z.coerce.number().int().min(min).max(max).default(defaut);
-}
 
 function portTcp(defaut: number) {
   return z
@@ -84,7 +71,6 @@ function addSmtpIssues(
     SMTP_USER?: string;
     SMTP_PASS?: string;
     SMTP_FROM?: string;
-    ARTICLE_BROADCAST_ENABLED: string;
   },
   ctx: z.RefinementCtx,
 ): void {
@@ -108,14 +94,6 @@ function addSmtpIssues(
       message:
         'requis des lors que SMTP_HOST, SMTP_USER et SMTP_PASS sont definis ' +
         '(sinon les emails partent avec un expediteur vide)',
-    });
-  }
-
-  if (env.ARTICLE_BROADCAST_ENABLED === 'true' && !smtpConfigured) {
-    ctx.addIssue({
-      code: 'custom',
-      path: ['ARTICLE_BROADCAST_ENABLED'],
-      message: 'exige SMTP_HOST, SMTP_USER, SMTP_PASS et SMTP_FROM',
     });
   }
 }
@@ -246,11 +224,6 @@ const formeDeLEnv = z.object({
   MORNING_BRIEF_HMAC_KEYS: z.string().optional(),
   MORNING_BRIEF_HMAC_KEY_ID: z.string().optional(),
   MORNING_BRIEF_HMAC_SECRET: secretFacultatif('MORNING_BRIEF_HMAC_SECRET'),
-  ARTICLE_BROADCAST_ENABLED: z.enum(['true', 'false']).default('false'),
-  ARTICLE_BROADCAST_DELAY_MINUTES: entierDansLesBornes(
-    DELAI_DE_DIFFUSION_EN_MINUTES,
-  ),
-  ARTICLE_BROADCAST_BATCH_SIZE: entierDansLesBornes(TAILLE_DU_LOT_DE_DIFFUSION),
 
   PUPPETEER_EXECUTABLE_PATH: z.string().optional(),
 

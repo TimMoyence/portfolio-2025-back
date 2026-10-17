@@ -7,7 +7,6 @@ import { AuditsController } from '../../../../modules/audit-requests/interfaces/
 import { ContactsController } from '../../../../modules/contacts/interfaces/Contacts.controller';
 import { FormationsStudentController } from '../../../../modules/formations/interfaces/FormationsStudent.controller';
 import { LeadMagnetsController } from '../../../../modules/lead-magnets/interfaces/LeadMagnets.controller';
-import { NewsletterController } from '../../../../modules/newsletter/interfaces/Newsletter.controller';
 import { IntercepteurAntiRobot } from '../intercepteur-anti-robot';
 
 const intercepteur = new IntercepteurAntiRobot();
@@ -81,7 +80,6 @@ const FORMULAIRES_PUBLICS = [
   methodeDe(ContactsController, 'create'),
   methodeDe(FormationsStudentController, 'join'),
   methodeDe(LeadMagnetsController, 'create'),
-  methodeDe(NewsletterController, 'subscribeEndpoint'),
 ];
 
 describe('Formulaires publics', () => {

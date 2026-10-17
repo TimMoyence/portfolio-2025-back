@@ -140,6 +140,19 @@ export function jouerLaMigration(
   );
 }
 
+export async function tablesPresentes(
+  dataSource: DataSource,
+  tables: readonly string[],
+): Promise<string[]> {
+  const lignes: { table_name: string }[] = await dataSource.query(
+    `SELECT table_name FROM information_schema.tables
+     WHERE table_schema = 'public' AND table_name = ANY($1)
+     ORDER BY table_name`,
+    [tables],
+  );
+  return lignes.map(({ table_name }) => table_name);
+}
+
 export async function inscrireUtilisateur(
   dataSource: DataSource,
   email: string,

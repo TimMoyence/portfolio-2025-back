@@ -14,7 +14,7 @@ import {
 
 describe('requireLocale', () => {
   it.each([['fr'], ['en']])('rend la locale supportee %s', (saisie) => {
-    expect(requireLocale(saisie, 'newsletter locale')).toBe(saisie);
+    expect(requireLocale(saisie, 'article locale')).toBe(saisie);
   });
 
   it.each([
@@ -26,8 +26,8 @@ describe('requireLocale', () => {
     ['un nombre', 42],
     ['undefined', undefined],
   ])('refuse %s en nommant le champ', (_cas, valeur) => {
-    expect(() => requireLocale(valeur, 'newsletter locale')).toThrow(
-      new DomainValidationError('Invalid newsletter locale'),
+    expect(() => requireLocale(valeur, 'article locale')).toThrow(
+      new DomainValidationError('Invalid article locale'),
     );
   });
 });

@@ -9,7 +9,6 @@ import { RedirectsModule } from '../modules/redirects/Redirects.module';
 import { ServicesModule } from '../modules/services/Services.module';
 import { UsersModule } from '../modules/users/Users.module';
 import { LeadMagnetsModule } from '../modules/lead-magnets/LeadMagnets.module';
-import { NewsletterModule } from '../modules/newsletter/Newsletter.module';
 import { PresentationsModule } from '../modules/presentations/Presentations.module';
 import { ArticlesModule } from '../modules/articles/Articles.module';
 import { FormationsModule } from '../modules/formations/Formations.module';
@@ -30,7 +29,6 @@ export function resolveRuntimeContexts(
     CookieConsentsModule,
     AuditRequestsModule,
     LeadMagnetsModule,
-    NewsletterModule,
     PresentationsModule,
     ArticlesModule,
     FormationsModule,

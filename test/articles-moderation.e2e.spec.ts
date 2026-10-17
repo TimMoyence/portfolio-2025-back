@@ -22,8 +22,6 @@ describe('Modération des articles (admin)', () => {
     list: jest.fn().mockResolvedValue([]),
     withdraw: jest.fn().mockResolvedValue({ article_id: ARTICLE_ID }),
     restore: jest.fn().mockResolvedValue({ article_id: ARTICLE_ID }),
-    approveBroadcast: jest.fn().mockResolvedValue({ article_id: ARTICLE_ID }),
-    cancelBroadcast: jest.fn().mockResolvedValue({ article_id: ARTICLE_ID }),
   };
 
   const app = applicationDeLaSuite(async () => {
@@ -69,8 +67,6 @@ describe('Modération des articles (admin)', () => {
   it.each([
     ['withdraw', 'withdraw'],
     ['restore', 'restore'],
-    ['broadcast/approve', 'approveBroadcast'],
-    ['broadcast/cancel', 'cancelBroadcast'],
   ] as const)('route POST %s vers le service', async (path, method) => {
     await request(serveur())
       .post(`/api/v1/portfolio25/articles/admin/${ARTICLE_ID}/${path}`)

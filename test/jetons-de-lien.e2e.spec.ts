@@ -5,9 +5,6 @@ import request from 'supertest';
 import { optionsJournalHttp } from '../src/config/journal-http';
 import { GetToolkitByTokenUseCase } from '../src/modules/lead-magnets/application/queries/GetToolkitByToken.useCase';
 import { LeadMagnetsController } from '../src/modules/lead-magnets/interfaces/LeadMagnets.controller';
-import { ConfirmSubscriptionUseCase } from '../src/modules/newsletter/application/ConfirmSubscription.useCase';
-import { UnsubscribeNewsletterUseCase } from '../src/modules/newsletter/application/UnsubscribeNewsletter.useCase';
-import { NewsletterController } from '../src/modules/newsletter/interfaces/Newsletter.controller';
 import { ResetPasswordUseCase } from '../src/modules/users/application/ResetPassword.useCase';
 import { VerifyEmailUseCase } from '../src/modules/users/application/VerifyEmail.useCase';
 import {
@@ -44,8 +41,6 @@ interface Lien {
 
 const depot = {
   findByToken: jest.fn(),
-  findByConfirmToken: jest.fn(),
-  findByUnsubscribeToken: jest.fn(),
   findActiveByTokenHash: jest.fn(),
 };
 
@@ -97,33 +92,6 @@ const LIENS: readonly Lien[] = [
     appeler: (serveur, jeton) =>
       request(serveur).get(`/api/lead-magnets/toolkit/${String(jeton)}`),
     jetonDansLeChemin: true,
-  },
-  {
-    nom: 'la confirmation newsletter',
-    operation: ['get', '/api/newsletter/confirm'],
-    inconnu: UUID_INCONNU,
-    lecture: depot.findByConfirmToken,
-    cleCherchee: tel,
-    appeler: parQuery('get', 'newsletter/confirm'),
-    jetonDansLeChemin: false,
-  },
-  {
-    nom: 'le desabonnement',
-    operation: ['get', '/api/newsletter/unsubscribe'],
-    inconnu: UUID_INCONNU,
-    lecture: depot.findByUnsubscribeToken,
-    cleCherchee: tel,
-    appeler: parQuery('get', 'newsletter/unsubscribe'),
-    jetonDansLeChemin: false,
-  },
-  {
-    nom: 'le desabonnement en un clic',
-    operation: ['post', '/api/newsletter/unsubscribe'],
-    inconnu: UUID_INCONNU,
-    lecture: depot.findByUnsubscribeToken,
-    cleCherchee: tel,
-    appeler: parQuery('post', 'newsletter/unsubscribe'),
-    jetonDansLeChemin: false,
   },
   {
     nom: 'la verification d adresse',
@@ -209,15 +177,9 @@ describe('Liens a jeton envoyes par courriel — un jeton refuse ne se distingue
           pinoHttp: [optionsJournalHttp({ NODE_ENV: 'production' }), journal],
         }),
       ],
-      controllers: [
-        LeadMagnetsController,
-        NewsletterController,
-        AuthController,
-      ],
+      controllers: [LeadMagnetsController, AuthController],
       providers: [
         GetToolkitByTokenUseCase,
-        ConfirmSubscriptionUseCase,
-        UnsubscribeNewsletterUseCase,
         VerifyEmailUseCase,
         ResetPasswordUseCase,
       ],

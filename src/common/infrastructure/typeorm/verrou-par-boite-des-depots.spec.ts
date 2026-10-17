@@ -6,7 +6,6 @@ import {
 import type { VerrouParBoite } from '../../domain/verrou-par-boite';
 import { AuditRequestsRepositoryTypeORM } from '../../../modules/audit-requests/infrastructure/AuditRequests.repository.typeORM';
 import { LeadMagnetRequestRepositoryTypeORM } from '../../../modules/lead-magnets/infrastructure/LeadMagnetRequest.repository.typeorm';
-import { NewsletterSubscriberRepositoryTypeORM } from '../../../modules/newsletter/infrastructure/NewsletterSubscriber.repository.typeorm';
 
 const VERROU = 'SELECT pg_advisory_xact_lock(hashtext($1))';
 
@@ -25,13 +24,6 @@ const DEPOTS_DE_FORMULAIRE: readonly [
     'des demandes de boite a outils',
     (manager) =>
       new LeadMagnetRequestRepositoryTypeORM(
-        mockTypeOrmRepositoryAvecManager({}, manager),
-      ),
-  ],
-  [
-    'des abonnes a la newsletter',
-    (manager) =>
-      new NewsletterSubscriberRepositoryTypeORM(
         mockTypeOrmRepositoryAvecManager({}, manager),
       ),
   ],

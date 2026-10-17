@@ -9,13 +9,6 @@ import { AuditRequestEntity } from '../src/modules/audit-requests/infrastructure
 import { RequestToolkitUseCase } from '../src/modules/lead-magnets/application/RequestToolkit.useCase';
 import { LeadMagnetRequestEntity } from '../src/modules/lead-magnets/infrastructure/entities/LeadMagnetRequest.entity';
 import { LeadMagnetRequestRepositoryTypeORM } from '../src/modules/lead-magnets/infrastructure/LeadMagnetRequest.repository.typeorm';
-import { SubscribeNewsletterUseCase } from '../src/modules/newsletter/application/SubscribeNewsletter.useCase';
-import {
-  DAILY_BRIEF_SOURCE,
-  SUPPORTED_FORMATION_SLUGS,
-} from '../src/modules/newsletter/domain/SupportedFormationSlugs';
-import { NewsletterSubscriberEntity } from '../src/modules/newsletter/infrastructure/entities/NewsletterSubscriber.entity';
-import { NewsletterSubscriberRepositoryTypeORM } from '../src/modules/newsletter/infrastructure/NewsletterSubscriber.repository.typeorm';
 import {
   buildAuditRequest,
   createMockAuditNotifier,
@@ -26,11 +19,6 @@ import {
   createMockToolkitContentAssembler,
   createMockToolkitPdfGenerator,
 } from './factories/lead-magnet-request.factory';
-import {
-  buildNewsletterSubscriber,
-  buildSubscribeNewsletterCommand,
-  createMockNewsletterMailer,
-} from './factories/newsletter-subscriber.factory';
 import { ADRESSE_A_BOITE_PLUS_LONGUE_QUE_255 } from './factories/verrou-par-boite.factory';
 import {
   baseMigreeDeLaSuite,
@@ -50,8 +38,6 @@ describeDb('Plafonds par destinataire sur une base migree', () => {
     [TOUTES_LES_MIGRATIONS],
     FUSEAU_ELOIGNE_DE_L_API,
   );
-
-  const ilYA = (minutes: number) => new Date(Date.now() - minutes * MINUTE_MS);
 
   const issuesDe = <T>(demandes: readonly (() => Promise<T>)[]) =>
     Promise.allSettled(demandes.map((demande) => demande()));
@@ -233,204 +219,6 @@ describeDb('Plafonds par destinataire sur une base migree', () => {
 
       await refusDe(useCase.execute(demande(cible)));
       await expect(adressesSaisiesVers(cible)).resolves.toHaveLength(3);
-    });
-  });
-
-  describe('newsletter', () => {
-    const depotNewsletter = () =>
-      new NewsletterSubscriberRepositoryTypeORM(
-        base().getRepository(NewsletterSubscriberEntity),
-      );
-
-    const inscrire = (
-      email: string,
-      sourceFormationSlug: string,
-      lastConfirmationSentAt: Date | null,
-    ) =>
-      depotNewsletter().create(
-        buildNewsletterSubscriber({
-          email,
-          sourceFormationSlug,
-          lastConfirmationSentAt,
-        }),
-      );
-
-    const newsletterSurLaBase = () => {
-      const mailer = createMockNewsletterMailer();
-      return {
-        mailer,
-        useCase: new SubscribeNewsletterUseCase(depotNewsletter(), mailer),
-      };
-    };
-
-    const commande = (email: string, sourceFormationSlug: string) => ({
-      ...buildSubscribeNewsletterCommand(),
-      email,
-      firstName: 'Lea',
-      sourceFormationSlug,
-      termsAcceptedAt: new Date(),
-    });
-
-    const confirmationsDesInscriptionsSimultanees = async (
-      emails: readonly string[],
-    ) => {
-      const { useCase, mailer } = newsletterSurLaBase();
-      await Promise.all(
-        emails.map((email) =>
-          useCase.execute(commande(email, 'ia-solopreneurs')),
-        ),
-      );
-      await flushPromises();
-      return mailer.sendConfirmation;
-    };
-
-    it('retrouve la ligne de l adresse dont la confirmation est partie le plus recemment, toutes sources confondues', async () => {
-      const depot = depotNewsletter();
-      await inscrire('lea@exemple.fr', 'ia-solopreneurs', ilYA(30));
-      const recente = await inscrire(
-        'lea@exemple.fr',
-        'automatiser-avec-ia',
-        ilYA(5),
-      );
-      await inscrire('lea@exemple.fr', DAILY_BRIEF_SOURCE, null);
-      await inscrire('autre@exemple.fr', 'ia-solopreneurs', ilYA(1));
-      await inscrire('jamais@exemple.fr', 'ia-solopreneurs', null);
-
-      await expect(
-        depot.derniereConfirmationVersLaBoiteDe('lea@exemple.fr'),
-      ).resolves.toMatchObject({
-        id: recente.id,
-        sourceFormationSlug: 'automatiser-avec-ia',
-      });
-      await expect(
-        depot.derniereConfirmationVersLaBoiteDe('jamais@exemple.fr'),
-      ).resolves.toBeNull();
-      await expect(
-        depot.derniereConfirmationVersLaBoiteDe('inconnu@exemple.fr'),
-      ).resolves.toBeNull();
-    });
-
-    it('retrouve la derniere confirmation et les sources d une boite depuis chacune de ses variantes', async () => {
-      const depot = depotNewsletter();
-      await inscrire('noa@gmail.com', 'ia-solopreneurs', ilYA(30));
-      const recente = await inscrire(
-        'n.oa+veille@gmail.com',
-        DAILY_BRIEF_SOURCE,
-        ilYA(2),
-      );
-
-      for (const variante of [
-        'noa@gmail.com',
-        'NOA+1@googlemail.com',
-        'n.o.a@gmail.com',
-      ]) {
-        await expect(
-          depot.derniereConfirmationVersLaBoiteDe(variante),
-        ).resolves.toMatchObject({ id: recente.id });
-        await expect(
-          depot.boiteInscriteA(variante, 'ia-solopreneurs'),
-        ).resolves.toBe(true);
-        await expect(
-          depot.boiteInscriteA(variante, 'automatiser-avec-ia'),
-        ).resolves.toBe(false);
-      }
-    });
-
-    it('n envoie qu une confirmation pour 6 inscriptions simultanees sur 3 sources en attente eligibles d une boite', async () => {
-      const email = 'nl-concurrence@exemple.fr';
-      for (const source of SUPPORTED_FORMATION_SLUGS) {
-        await inscrire(email, source, ilYA(30));
-      }
-      const { useCase, mailer } = newsletterSurLaBase();
-
-      await Promise.all(
-        [...SUPPORTED_FORMATION_SLUGS, ...SUPPORTED_FORMATION_SLUGS].map(
-          (source, rang) =>
-            useCase.execute(
-              commande(rang % 2 ? email : 'NL-Concurrence@exemple.fr', source),
-            ),
-        ),
-      );
-      await flushPromises();
-
-      expect(mailer.sendConfirmation).toHaveBeenCalledTimes(1);
-    });
-
-    it('n envoie qu une confirmation pour 4 inscriptions simultanees sur une seule source en attente eligible', async () => {
-      const email = 'nl-une-source@exemple.fr';
-      await inscrire(email, 'ia-solopreneurs', ilYA(30));
-
-      const confirmations = await confirmationsDesInscriptionsSimultanees(
-        Array.from({ length: 4 }, () => email),
-      );
-
-      expect(confirmations).toHaveBeenCalledTimes(1);
-    });
-
-    it('n envoie qu une confirmation pour 4 inscriptions simultanees de variantes d une boite sur une source en attente eligible', async () => {
-      await inscrire('rafale@gmail.com', 'ia-solopreneurs', ilYA(30));
-
-      const confirmations = await confirmationsDesInscriptionsSimultanees([
-        'rafale+1@gmail.com',
-        'r.afale@gmail.com',
-        'RAFALE@googlemail.com',
-        'ra.fale+2@gmail.com',
-      ]);
-
-      expect(confirmations).toHaveBeenCalledTimes(1);
-    });
-
-    it('bloque une deuxieme source eligible dans les 10 min de la premiere confirmation (temoin sequentiel)', async () => {
-      const email = 'nl-sequentiel@exemple.fr';
-      await inscrire(email, 'ia-solopreneurs', ilYA(30));
-      await inscrire(email, 'automatiser-avec-ia', ilYA(30));
-      const { useCase, mailer } = newsletterSurLaBase();
-
-      await useCase.execute(commande(email, 'ia-solopreneurs'));
-      await useCase.execute(commande(email, 'automatiser-avec-ia'));
-      await flushPromises();
-
-      expect(mailer.sendConfirmation).toHaveBeenCalledTimes(1);
-    });
-
-    it('n envoie rien aux variantes d une boite confirmee il y a une minute pour la meme source, mais confirme toujours une source neuve', async () => {
-      await inscrire('lea@gmail.com', 'ia-solopreneurs', ilYA(1));
-      const { useCase, mailer } = newsletterSurLaBase();
-
-      for (const variante of [
-        'lea+1@gmail.com',
-        'lea+2@gmail.com',
-        'l.ea@gmail.com',
-      ]) {
-        await expect(
-          useCase.execute(commande(variante, 'ia-solopreneurs')),
-        ).resolves.toMatchObject({ created: true });
-      }
-      await flushPromises();
-      expect(mailer.sendConfirmation).not.toHaveBeenCalled();
-
-      await useCase.execute(commande('lea+3@gmail.com', 'automatiser-avec-ia'));
-      await flushPromises();
-      expect(mailer.sendConfirmation).toHaveBeenCalledTimes(1);
-      expect(mailer.sendConfirmation).toHaveBeenCalledWith(
-        expect.objectContaining({
-          email: 'lea+3@gmail.com',
-          sourceFormationSlug: 'automatiser-avec-ia',
-        }),
-      );
-    });
-
-    it('inscrit et confirme une adresse dont la boite en punycode depasse 255 caracteres', async () => {
-      const { useCase, mailer } = newsletterSurLaBase();
-
-      await expect(
-        useCase.execute(
-          commande(ADRESSE_A_BOITE_PLUS_LONGUE_QUE_255, 'ia-solopreneurs'),
-        ),
-      ).resolves.toMatchObject({ created: true });
-      await flushPromises();
-
-      expect(mailer.sendConfirmation).toHaveBeenCalledTimes(1);
     });
   });
 

@@ -322,9 +322,9 @@ describe('SuspiciousRequestInterceptor', () => {
   it.each([
     [
       'en requete',
-      `/api/v1/portfolio25/newsletter/confirm?token=${JETON_DE_LIEN}`,
+      `/api/v1/portfolio25/auth/verify-email?token=${JETON_DE_LIEN}`,
       {},
-      `/api/v1/portfolio25/newsletter/confirm?token=${CENSURE}`,
+      `/api/v1/portfolio25/auth/verify-email?token=${CENSURE}`,
     ],
     [
       'en chemin',

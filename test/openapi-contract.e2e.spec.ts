@@ -24,7 +24,6 @@ import { ContactsController } from '../src/modules/contacts/interfaces/Contacts.
 import { CookieConsentsController } from '../src/modules/cookie-consents/interfaces/CookieConsents.controller';
 import { AuditsController } from '../src/modules/audit-requests/interfaces/Audits.controller';
 import { RequestToolkitRequestDto } from '../src/modules/lead-magnets/interfaces/dto/request-toolkit.request.dto';
-import { SubscribeNewsletterRequestDto } from '../src/modules/newsletter/interfaces/dto/subscribe-newsletter.request.dto';
 import { ArticleListQueryDto } from '../src/modules/articles/interfaces/dto/article-list.query.dto';
 import { JoinSessionRequestDto } from '../src/modules/formations/interfaces/dto/join-session.request.dto';
 
@@ -300,7 +299,6 @@ describe('OpenAPI core contract', () => {
       {
         extraModels: [
           RequestToolkitRequestDto,
-          SubscribeNewsletterRequestDto,
           ArticleListQueryDto,
           JoinSessionRequestDto,
         ],
@@ -308,7 +306,7 @@ describe('OpenAPI core contract', () => {
     );
   });
 
-  it('fige les schemas des DTO de saisie : comptes, contact, cookies, audit, boite a outils, newsletter, articles et entree en seance', () => {
+  it('fige les schemas des DTO de saisie : comptes, contact, cookies, audit, boite a outils, articles et entree en seance', () => {
     expect(document.components?.schemas).toMatchSnapshot();
   });
 

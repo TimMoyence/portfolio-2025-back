@@ -8,12 +8,6 @@ import {
 import { TYPES_DE_FICHIER } from '../../domain/types/types-de-fichier';
 import { createOptionalSmtpTransporter } from './smtp-transporter.util';
 
-const ENTETES_ADMIS = [
-  'List-Unsubscribe',
-  'List-Unsubscribe-Post',
-  'List-Id',
-] as const;
-
 const TYPES_DE_PIECE_JOINTE = [
   TYPES_DE_FICHIER.pdf,
   TYPES_DE_FICHIER.csv,
@@ -32,9 +26,6 @@ export interface CourrielHtml {
   readonly subject: string;
   readonly text?: string;
   readonly html: EscapedHtml;
-  readonly headers?: Readonly<
-    Partial<Record<(typeof ENTETES_ADMIS)[number], string>>
-  >;
   readonly attachments?: readonly PieceJointe[];
 }
 
@@ -58,7 +49,6 @@ export class ExpediteurDeCourriels {
       subject: texteAdmis(courriel.subject, 'subject'),
       text: texteAdmis(courriel.text, 'text'),
       html: htmlEmis(courriel.html),
-      headers: entetesAdmis(courriel.headers),
       attachments:
         courriel.attachments === undefined
           ? undefined
@@ -75,22 +65,6 @@ function texteAdmis(
     throw new Error(`Champ de courriel refusé : ${champ}`);
   }
   return valeur;
-}
-
-const ENTETES = new Set<string>(ENTETES_ADMIS);
-
-function entetesAdmis(
-  entetes: CourrielHtml['headers'],
-): Record<string, string> | undefined {
-  if (entetes === undefined) return undefined;
-  return Object.fromEntries(
-    Object.entries(entetes).map(([nom, valeur]: [string, unknown]) => {
-      if (!ENTETES.has(nom) || typeof valeur !== 'string') {
-        throw new Error(`En-tête de courriel refusé : ${nom}`);
-      }
-      return [nom, valeur];
-    }),
-  );
 }
 
 const TYPES = new Set<string>(TYPES_DE_PIECE_JOINTE);

@@ -3,15 +3,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import type { SupportedLocale } from '../../../common/domain/value-objects/LocaleCode';
 import {
-  type ArticleBroadcastSchedule,
   type ArticleDeliveryRecord,
   type ArticleDeliveryWrite,
   type ArticleRecord,
+  type ArticleStatus,
   type ArticleWrite,
   type ArticlesRepository,
   type PagePubliee,
 } from '../application/articles.repository';
-import { ArticleBroadcastEntity } from './entities/article-broadcast.entity';
 import { ArticleDeliveryEntity } from './entities/article-delivery.entity';
 import { ArticleEntity } from './entities/article.entity';
 
@@ -49,7 +48,6 @@ export class TypeOrmArticlesRepository implements ArticlesRepository {
   async saveArticleAndDelivery(
     article: ArticleWrite,
     delivery: ArticleDeliveryWrite,
-    broadcast: ArticleBroadcastSchedule,
   ): Promise<void> {
     await this.dataSource.transaction(async (manager) => {
       const articleRecord = await manager
@@ -61,11 +59,6 @@ export class TypeOrmArticlesRepository implements ArticlesRepository {
           articleRecordId: articleRecord.id,
         }),
       );
-      await manager.getRepository(ArticleBroadcastEntity).insert({
-        articleRecordId: articleRecord.id,
-        status: 'scheduled',
-        sendAfter: broadcast.sendAfter,
-      });
     });
   }
 
@@ -95,5 +88,23 @@ export class TypeOrmArticlesRepository implements ArticlesRepository {
     return this.articles.findOne({
       where: { slug, locale, status: 'published' },
     });
+  }
+
+  findByArticleId(articleId: string): Promise<ArticleRecord | null> {
+    return this.articles.findOne({ where: { articleId } });
+  }
+
+  listLatest(limit: number): Promise<ArticleRecord[]> {
+    return this.articles.find({
+      order: { publishedAt: 'DESC', id: 'DESC' },
+      take: limit,
+    });
+  }
+
+  async setArticleStatus(
+    articleRecordId: string,
+    status: ArticleStatus,
+  ): Promise<void> {
+    await this.articles.update({ id: articleRecordId }, { status });
   }
 }

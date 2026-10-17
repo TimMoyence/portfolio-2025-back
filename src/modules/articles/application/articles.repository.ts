@@ -51,10 +51,6 @@ export interface ArticleDeliveryWrite {
   processedAt: Date;
 }
 
-export interface ArticleBroadcastSchedule {
-  sendAfter: Date;
-}
-
 export interface PagePubliee {
   locale: SupportedLocale;
   tag?: string;
@@ -73,11 +69,21 @@ export interface ArticlesRepository {
   saveArticleAndDelivery(
     article: ArticleWrite,
     delivery: ArticleDeliveryWrite,
-    broadcast: ArticleBroadcastSchedule,
   ): Promise<void>;
   listPublished(params: PagePubliee): Promise<ArticleRecord[]>;
   findPublishedBySlug(
     slug: string,
     locale: SupportedLocale,
   ): Promise<ArticleRecord | null>;
+  findByArticleId(articleId: string): Promise<ArticleRecord | null>;
+  listLatest(limit: number): Promise<ArticleRecord[]>;
+  setArticleStatus(
+    articleRecordId: string,
+    status: ArticleStatus,
+  ): Promise<void>;
 }
+
+export type ArticleModerationRepository = Pick<
+  ArticlesRepository,
+  'findByArticleId' | 'listLatest' | 'setArticleStatus'
+>;

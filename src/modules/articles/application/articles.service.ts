@@ -23,7 +23,7 @@ import {
 } from './articles.repository';
 import { Inject } from '@nestjs/common';
 import { urlDuSite, urlPubliqueDeLApi } from '../../../config/urls-publiques';
-import { articlePageUrl, broadcastDelayMs } from './article-settings';
+import { articlePageUrl } from './article-settings';
 
 const FEED_LANGUAGE = { fr: 'fr-FR', en: 'en' } as const;
 const FEED_DESCRIPTION = {
@@ -109,9 +109,7 @@ export class ArticlesService {
       processedAt: receivedAt,
     } as const;
 
-    await this.articles.saveArticleAndDelivery(article, delivery, {
-      sendAfter: new Date(receivedAt.getTime() + broadcastDelayMs()),
-    });
+    await this.articles.saveArticleAndDelivery(article, delivery);
 
     return {
       delivery_id: envelope.delivery_id,

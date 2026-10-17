@@ -5,6 +5,7 @@ import {
   inscrireUtilisateur,
   jouerLaMigration,
   migrationsAnterieuresA,
+  tablesPresentes,
 } from './helpers/db-integration-datasource';
 
 const TABLES_DE_L_ATELIER = [
@@ -22,15 +23,7 @@ describeDb('Retrait de l atelier sur une base migree', () => {
     migrationsAnterieuresA('1790800000000-RetireLAtelier'),
   );
 
-  const tablesPresentes = async (): Promise<string[]> => {
-    const lignes: { table_name: string }[] = await base().query(
-      `SELECT table_name FROM information_schema.tables
-       WHERE table_schema = 'public' AND table_name = ANY($1)
-       ORDER BY table_name`,
-      [TABLES_DE_L_ATELIER],
-    );
-    return lignes.map(({ table_name }) => table_name);
-  };
+  const tablesDeLAtelier = () => tablesPresentes(base(), TABLES_DE_L_ATELIER);
 
   const inscrire = (email: string, roles: string) =>
     inscrireUtilisateur(base(), email, roles);
@@ -44,7 +37,7 @@ describeDb('Retrait de l atelier sur une base migree', () => {
   };
 
   it('supprime les tables meteo, sebastian et telegram et retire leurs roles', async () => {
-    expect(await tablesPresentes()).toEqual(TABLES_DE_L_ATELIER);
+    expect(await tablesDeLAtelier()).toEqual(TABLES_DE_L_ATELIER);
     await inscrire('mixte@example.com', 'weather,sebastian,teacher');
     await inscrire('atelier@example.com', 'sebastian,weather');
     await inscrire('admin@example.com', 'admin');
@@ -52,7 +45,7 @@ describeDb('Retrait de l atelier sur une base migree', () => {
 
     await jouerLaMigration(base(), new RetireLAtelier1790800000000(), 'up');
 
-    expect(await tablesPresentes()).toEqual([]);
+    expect(await tablesDeLAtelier()).toEqual([]);
     expect(await rolesDe('mixte@example.com')).toBe('teacher');
     expect(await rolesDe('atelier@example.com')).toBe('');
     expect(await rolesDe('admin@example.com')).toBe('admin');
@@ -63,6 +56,6 @@ describeDb('Retrait de l atelier sur une base migree', () => {
     await expect(new RetireLAtelier1790800000000().down()).rejects.toThrow(
       /definitif/,
     );
-    expect(await tablesPresentes()).toEqual([]);
+    expect(await tablesDeLAtelier()).toEqual([]);
   });
 });

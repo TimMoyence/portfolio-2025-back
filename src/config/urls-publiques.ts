@@ -1,4 +1,3 @@
-import { lienAvecJeton } from '../common/domain/lien-avec-jeton';
 import { sansFin } from '../common/domain/texte/sans-bords';
 import { envString, type SourceDEnv } from './env-readers.util';
 import { cheminDeLApi } from './prefixe-api';
@@ -17,14 +16,4 @@ export function urlPubliqueDeLApi(
   source: SourceDEnv = process.env,
 ): string {
   return `${urlDuSite(source)}${cheminDeLApi(chemin, source)}`;
-}
-
-export function lienDeDesabonnement(
-  jeton: string,
-  source: SourceDEnv = process.env,
-): string {
-  return lienAvecJeton(
-    urlPubliqueDeLApi('newsletter/unsubscribe', source),
-    jeton,
-  );
 }

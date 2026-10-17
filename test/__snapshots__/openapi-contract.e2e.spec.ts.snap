@@ -3063,7 +3063,7 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
 }
 `;
 
-exports[`OpenAPI core contract fige les schemas des DTO de saisie : comptes, contact, cookies, audit, boite a outils, newsletter, articles et entree en seance 1`] = `
+exports[`OpenAPI core contract fige les schemas des DTO de saisie : comptes, contact, cookies, audit, boite a outils, articles et entree en seance 1`] = `
 {
   "ArticleListQueryDto": {
     "properties": {
@@ -3831,74 +3831,6 @@ exports[`OpenAPI core contract fige les schemas des DTO de saisie : comptes, con
     },
     "required": [
       "newPassword",
-    ],
-    "type": "object",
-  },
-  "SubscribeNewsletterRequestDto": {
-    "properties": {
-      "email": {
-        "example": "marie@example.com",
-        "format": "email",
-        "type": "string",
-      },
-      "firstName": {
-        "example": "Marie",
-        "maxLength": 50,
-        "type": "string",
-      },
-      "formFillDurationMs": {
-        "description": "Durée de saisie en ms, mesurée par le poste sur une horloge monotone",
-        "minimum": 0,
-        "type": "integer",
-      },
-      "formStartedAt": {
-        "deprecated": true,
-        "description": "Timestamp ms d'ouverture du formulaire, pris sur l'horloge du poste : accepté, jamais comparé",
-        "minimum": 0,
-        "type": "integer",
-      },
-      "locale": {
-        "enum": [
-          "fr",
-          "en",
-        ],
-        "example": "fr",
-        "type": "string",
-      },
-      "sourceFormationSlug": {
-        "enum": [
-          "ia-solopreneurs",
-          "automatiser-avec-ia",
-          "veille-ia",
-        ],
-        "example": "ia-solopreneurs",
-        "maxLength": 100,
-        "minLength": 1,
-        "type": "string",
-      },
-      "termsAcceptedAt": {
-        "example": "2026-04-10T10:00:00.000Z",
-        "format": "date-time",
-        "type": "string",
-      },
-      "termsVersion": {
-        "example": "2026-04-10",
-        "maxLength": 50,
-        "minLength": 1,
-        "type": "string",
-      },
-      "website": {
-        "description": "Champ piège anti-robot, doit rester vide",
-        "maxLength": 200,
-        "type": "string",
-      },
-    },
-    "required": [
-      "email",
-      "locale",
-      "sourceFormationSlug",
-      "termsVersion",
-      "termsAcceptedAt",
     ],
     "type": "object",
   },

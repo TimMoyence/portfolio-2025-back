@@ -97,19 +97,6 @@ export function envInt(
   return Number.isFinite(parsed) ? parsed : fallback;
 }
 
-export interface BornesEntieres extends Bornes {
-  readonly defaut: number;
-}
-
-export function envEntierBorne(
-  name: VariableDEnv,
-  bornes: BornesEntieres,
-  source: SourceDEnv = process.env,
-): number {
-  const valeur = Number(envString(name, source));
-  return estEntierDansLesBornes(valeur, bornes) ? valeur : bornes.defaut;
-}
-
 export function envFloat(
   name: VariableDEnv,
   fallback: number,

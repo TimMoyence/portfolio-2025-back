@@ -27,7 +27,6 @@ interface TransportOptions {
     domainName: string;
     keySelector: string;
     privateKey: string;
-    headerFieldNames?: string;
   };
 }
 
@@ -71,10 +70,6 @@ describe('createOptionalSmtpTransporter', () => {
     enableDkim(overrides);
     createOptionalSmtpTransporter(logger, 'Test');
     return lastOptions().dkim;
-  }
-
-  function enTetesSignes(): string[] {
-    return (dkimRetenu()?.headerFieldNames ?? '').split(':');
   }
 
   function attendreSignatureRefusee(dkim: TransportOptions['dkim']): void {
@@ -142,7 +137,7 @@ describe('createOptionalSmtpTransporter', () => {
     });
   });
 
-  describe('signature DKIM (RFC 8058 §4)', () => {
+  describe('signature DKIM', () => {
     it('n’active pas DKIM quand la configuration est absente', () => {
       configureSmtp();
 
@@ -159,33 +154,12 @@ describe('createOptionalSmtpTransporter', () => {
       expect(dkim?.privateKey).toBe(VALID_KEY);
     });
 
-    it('couvre List-Unsubscribe et List-Unsubscribe-Post par la signature', () => {
-      // La RFC 8058 §4 impose que ces deux en-tetes figurent dans le tag
-      // `h=` de la signature, faute de quoi Gmail ignore le bouton natif
-      // de desabonnement.
-      //
-      // L'assertion porte sur la liste eclatee, jamais sur la chaine :
-      // `toContain('List-Unsubscribe')` sur une chaine est satisfait par
-      // la seule presence de `List-Unsubscribe-Post`, ce qui laisserait
-      // passer le retrait de l'en-tete central.
-      const names = enTetesSignes();
-      expect(names).toContain('List-Unsubscribe');
-      expect(names).toContain('List-Unsubscribe-Post');
-      expect(names).toContain('From');
-      expect(names).toContain('Subject');
-    });
-
-    it('conserve la couverture par defaut de nodemailer (RFC 4871 §5.5)', () => {
-      const names = enTetesSignes();
-      for (const field of [
-        'Cc',
-        'Content-Transfer-Encoding',
-        'In-Reply-To',
-        'References',
-        'List-Id',
-      ]) {
-        expect(names).toContain(field);
-      }
+    it('laisse a nodemailer sa couverture par defaut (RFC 4871 §5.5)', () => {
+      expect(dkimRetenu()).toEqual({
+        domainName: 'asilidesign.fr',
+        keySelector: 'default',
+        privateKey: VALID_KEY,
+      });
     });
 
     it('desactive la signature si la cle privee est inexploitable', () => {

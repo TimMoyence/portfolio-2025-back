@@ -9,7 +9,6 @@
 - `cookie-consents` (trace RGPD du consentement)
 - `audit-requests` (demande d'audit + pipeline async + SSE)
 - `lead-magnets` (capture email + PDF toolkit)
-- `newsletter` (inscription et envoi de newsletter)
 - `presentations` (interactions slides in-memory)
 - `articles` (articles publics servis par l'API)
 - `formations` (cours servis, seances en direct, correction et notation)
