@@ -6,6 +6,7 @@ import {
   mkdtempSync,
   readFileSync,
   readdirSync,
+  rmSync,
   writeFileSync,
 } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -324,6 +325,25 @@ const lireJournal = (chemin) =>
  */
 const jouerLeDeploiement = ({ envDuMigrate, envDuDb, dumpEchoue = false }) => {
   const dossier = mkdtempSync(join(tmpdir(), 'deploiement-'));
+  try {
+    return jouerLeDeploiementDans(dossier, {
+      envDuMigrate,
+      envDuDb,
+      dumpEchoue,
+    });
+  } finally {
+    rmSync(dossier, { recursive: true, force: true });
+  }
+};
+
+/**
+ * @param {string} dossier
+ * @param {{ envDuMigrate: Record<string, string>, envDuDb: Record<string, string>, dumpEchoue: boolean }} cas
+ */
+const jouerLeDeploiementDans = (
+  dossier,
+  { envDuMigrate, envDuDb, dumpEchoue },
+) => {
   const bin = join(dossier, 'bin');
   const travail = join(dossier, 'travail');
   mkdirSync(bin);
