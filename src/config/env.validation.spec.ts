@@ -300,6 +300,18 @@ describe('validateEnv', () => {
         },
         'MORNING_BRIEF_HMAC_SECRET: doit etre distinct de FORMATIONS_PULSE_SECRET',
       ],
+      [
+        'la seconde cle du trousseau HMAC qui reprend JWT_SECRET',
+        {
+          MORNING_BRIEF_HMAC_KEYS: `nouvelle:${PARTAGE},ancienne:${TEST_JWT_SECRET}`,
+        },
+        'MORNING_BRIEF_HMAC_KEYS: doit etre distinct de JWT_SECRET',
+      ],
+      [
+        'un secret qui ne differe d un autre que par ses blancs',
+        { FORMATIONS_PULSE_SECRET: ` ${TEST_JWT_SECRET} ` },
+        'FORMATIONS_PULSE_SECRET: doit etre distinct de JWT_SECRET',
+      ],
     ])('refuse %s', (_cas, surcharge, message) => {
       expect(() => validateEnv(buildValidEnv(surcharge))).toThrow(message);
     });
@@ -340,11 +352,15 @@ describe('validateEnv', () => {
         'postgres://u:p@h:5432',
       ],
       ['un chemin mal encode', 'postgres://u:p@h:5432/%E0%A4%A'],
+      [
+        'une URL sans hote, que l amorcage de la base ne sait pas lire',
+        'postgres://u:p@/portfolio',
+      ],
     ])('refuse %s', (_cas, url) => {
       expect(() =>
         validateEnv(buildValidEnv({ DB_NAME: undefined, DATABASE_URL: url })),
       ).toThrow(
-        'DATABASE_URL: doit etre une URL postgres:// ou postgresql:// qui nomme sa base',
+        'DATABASE_URL: doit etre une URL postgres:// ou postgresql:// qui nomme son hote et sa base',
       );
     });
 
@@ -362,6 +378,49 @@ describe('validateEnv', () => {
       ).toThrow(
         'DATABASE_URL: doit nommer la base POSTGRES_DB, la seule que db-backup sauvegarde',
       );
+    });
+
+    const envDeProduction = (surcharge: Record<string, string | undefined>) =>
+      buildValidEnv({
+        ...buildProductionSecrets(),
+        NODE_ENV: 'production',
+        DB_HOST: 'db',
+        DB_NAME: undefined,
+        POSTGRES_DB: 'portfolio',
+        ...surcharge,
+      });
+
+    it.each([
+      [
+        'un DB_NAME qui nomme une autre base, comme le gabarit de 32bde264',
+        { DB_NAME: 'portfolio_prod' },
+        'DB_NAME: doit nommer la base POSTGRES_DB, la seule que db-backup sauvegarde',
+      ],
+      [
+        'un DATABASE_NAME qui nomme une autre base',
+        { DATABASE_NAME: 'portfolio_prod' },
+        'DB_NAME: doit nommer la base POSTGRES_DB, la seule que db-backup sauvegarde',
+      ],
+      [
+        'un DB_HOST qui designe un autre hote que le service db',
+        { DB_HOST: 'pg.exemple.net' },
+        'DB_HOST: doit designer le service db, le seul que db-backup sauvegarde',
+      ],
+      [
+        'une DATABASE_URL qui designe un autre hote que le service db',
+        { DATABASE_URL: 'postgres://u:p@pg.exemple.net:5432/portfolio' },
+        'DATABASE_URL: doit designer le service db, le seul que db-backup sauvegarde',
+      ],
+    ])('refuse en production %s', (_cas, surcharge, message) => {
+      expect(() => validateEnv(envDeProduction(surcharge))).toThrow(message);
+    });
+
+    it('ouvre en production POSTGRES_DB sur le service db, un DB_DATABASE etant alors ignore', () => {
+      const env = validateEnv(
+        envDeProduction({ DB_DATABASE: 'portfolio_prod' }),
+      );
+
+      expect([env.DB_HOST, env.DB_NAME]).toEqual(['db', 'portfolio']);
     });
 
     it('accepte en production une DATABASE_URL qui nomme POSTGRES_DB', () => {

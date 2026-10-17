@@ -104,6 +104,7 @@ describe('resoudreConnexionPostgres', () => {
     ['postgres://u:p@h:5432/donn%C3%A9es_2025', 'données_2025'],
     ['postgres://u:p@h:5432/ma%20base', 'ma base'],
     ['postgres://u:p@h:5432/ma base', 'ma base'],
+    ['postgres://u:p w@h:5432/donn%C3%A9es', 'donn%C3%A9es'],
     ['socket:/var/run/postgresql?db=portfolio', undefined],
     ['mysql://u:p@h:3306/portfolio', undefined],
     ['postgres://u:p@h:5432/%E0%A4%A', undefined],
@@ -115,6 +116,25 @@ describe('resoudreConnexionPostgres', () => {
       );
     },
   );
+
+  it('retient l hote de DATABASE_URL, celui que pg ouvre, avant tout alias', () => {
+    expect(
+      resoudreConnexionPostgres({
+        DATABASE_URL: 'postgres://u:p@depuis-url:5432/portfolio',
+        DB_HOST: 'alias',
+      }).host,
+    ).toBe('depuis-url');
+  });
+
+  it('ne retient ni hote ni base d une URL sans hote, que l amorcage ne sait pas lire', () => {
+    const connexion = resoudreConnexionPostgres({
+      DATABASE_URL: 'postgres://u:p@/portfolio',
+      DB_HOST: 'alias',
+    });
+
+    expect(connexion.host).toBeUndefined();
+    expect(connexion.database).toBeUndefined();
+  });
 
   it('ne leve pas sur une URL invalide et ne deduit alors aucune base', () => {
     expect(

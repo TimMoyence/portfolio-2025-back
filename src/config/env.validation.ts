@@ -5,7 +5,7 @@ import {
 } from '../common/domain/crypto/secret-hmac';
 import { EmailAddress } from '../common/domain/value-objects/EmailAddress';
 import {
-  nomDeBaseDeLUrl,
+  emplacementDeLUrl,
   resoudreConnexionPostgres,
 } from '../database/connexion-postgres';
 import { estEnProduction, lirePort, PORT_ATTENDU } from './env-readers.util';
@@ -118,6 +118,32 @@ function addSmtpIssues(
   }
 }
 
+const HOTE_SAUVEGARDE_EN_PRODUCTION = 'db';
+
+function addEmplacementSauvegardeIssues(
+  env: EnvLue,
+  ctx: z.RefinementCtx,
+): void {
+  const base = env.POSTGRES_DB?.trim();
+  if (!estEnProduction(env) || !base) return;
+  const parUrl = Boolean(env.DATABASE_URL?.trim());
+  if (env.DB_NAME !== base) {
+    ctx.addIssue({
+      code: 'custom',
+      path: [parUrl ? 'DATABASE_URL' : 'DB_NAME'],
+      message:
+        'doit nommer la base POSTGRES_DB, la seule que db-backup sauvegarde',
+    });
+  }
+  if (env.DB_HOST !== HOTE_SAUVEGARDE_EN_PRODUCTION) {
+    ctx.addIssue({
+      code: 'custom',
+      path: [parUrl ? 'DATABASE_URL' : 'DB_HOST'],
+      message: `doit designer le service ${HOTE_SAUVEGARDE_EN_PRODUCTION}, le seul que db-backup sauvegarde`,
+    });
+  }
+}
+
 const formeDeLEnv = z.object({
   NODE_ENV: z
     .enum(['development', 'production', 'test'])
@@ -148,8 +174,8 @@ const formeDeLEnv = z.object({
     .string()
     .optional()
     .refine(
-      (url) => !url?.trim() || nomDeBaseDeLUrl(url.trim()) !== undefined,
-      'doit etre une URL postgres:// ou postgresql:// qui nomme sa base',
+      (url) => !url?.trim() || emplacementDeLUrl(url.trim()) !== undefined,
+      'doit etre une URL postgres:// ou postgresql:// qui nomme son hote et sa base',
     ),
   DATABASE_HOST: z.string().optional(),
   DATABASE_PORT: z.string().optional(),
@@ -282,19 +308,7 @@ const envSchema = formeDeLEnv.superRefine((env, ctx) => {
 
   addSmtpIssues(env, ctx);
 
-  if (
-    estEnProduction(env) &&
-    env.DATABASE_URL?.trim() &&
-    env.POSTGRES_DB?.trim() &&
-    env.DB_NAME !== env.POSTGRES_DB.trim()
-  ) {
-    ctx.addIssue({
-      code: 'custom',
-      path: ['DATABASE_URL'],
-      message:
-        'doit nommer la base POSTGRES_DB, la seule que db-backup sauvegarde',
-    });
-  }
+  addEmplacementSauvegardeIssues(env, ctx);
 
   const hmacRingConfigured = Boolean(env.MORNING_BRIEF_HMAC_KEYS?.trim());
   const hmacKeyIdConfigured = Boolean(env.MORNING_BRIEF_HMAC_KEY_ID?.trim());

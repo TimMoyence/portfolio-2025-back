@@ -1,3 +1,4 @@
+import { parse } from 'pg-connection-string';
 import { sansIndefinis } from '../common/domain/sans-indefinis';
 import {
   envBrut,
@@ -47,12 +48,17 @@ const SCHEMAS_POSTGRES: ReadonlySet<string> = new Set([
   'postgresql:',
 ]);
 
-export function nomDeBaseDeLUrl(url: string): string | undefined {
+interface EmplacementDeLUrl {
+  readonly host: string;
+  readonly database: string;
+}
+
+export function emplacementDeLUrl(url: string): EmplacementDeLUrl | undefined {
   if (!URL.canParse(url)) return undefined;
-  const { protocol, pathname } = new URL(url);
-  if (!SCHEMAS_POSTGRES.has(protocol)) return undefined;
+  if (!SCHEMAS_POSTGRES.has(new URL(url).protocol)) return undefined;
   try {
-    return decodeURI(pathname.slice(1)) || undefined;
+    const { host, database } = parse(url);
+    return host && database ? { host, database } : undefined;
   } catch {
     return undefined;
   }
@@ -67,16 +73,20 @@ export function resoudreConnexionPostgres(
   source: SourceDEnv = process.env,
 ): ConnexionPostgres {
   const url = envPremier(['DATABASE_URL'], source);
+  const deLUrl = url === undefined ? undefined : emplacementDeLUrl(url);
   return sansIndefinis({
     url,
-    host: envPremier(ALIAS_POSTGRES.host, source),
+    host:
+      url === undefined
+        ? envPremier(ALIAS_POSTGRES.host, source)
+        : deLUrl?.host,
     port: envPort(ALIAS_POSTGRES.port, 'PostgreSQL', source),
     username: envPremier(ALIAS_POSTGRES.username, source, envBrut),
     password: envPremier(ALIAS_POSTGRES.password, source, envBrut),
     database:
       url === undefined
         ? envPremier(ALIAS_POSTGRES.database, source)
-        : nomDeBaseDeLUrl(url),
+        : deLUrl?.database,
     ssl: sslDe(source),
     baseAdmin: envPremier(ALIAS_POSTGRES.baseAdmin, source) ?? 'postgres',
   });
