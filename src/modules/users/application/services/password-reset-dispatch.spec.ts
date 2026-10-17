@@ -1,7 +1,10 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { Logger } from '@nestjs/common';
 import { buildConfigService } from '../../../../../test/factories/env.factory';
-import { createMockPasswordResetNotifier } from '../../../../../test/factories/mailer.factory';
+import {
+  createMockPasswordResetNotifier,
+  lienDeReinitialisationEnvoyeA,
+} from '../../../../../test/factories/mailer.factory';
 import {
   buildPasswordResetToken,
   createMockPasswordResetTokensRepo,
@@ -84,10 +87,6 @@ describe('EnvoiDeReinitialisation', () => {
     it.each([
       ['aucun compte', null],
       ['un compte inactif', buildUser({ id: 'user-5', isActive: false })],
-      [
-        'un compte Google sans mot de passe',
-        buildUser({ id: 'user-5', passwordHash: null, googleId: 'g-5' }),
-      ],
     ])('n emet aucun lien pour %s', async (_cas, compte) => {
       const { tokensRepo, notifier, logger, envoi } = construire();
 
@@ -108,6 +107,33 @@ describe('EnvoiDeReinitialisation', () => {
         `${echec} for lea@example.com: smtp`,
       );
     });
+  });
+
+  const compteGoogle = buildUser({
+    id: 'user-5',
+    email: 'lea@example.com',
+    passwordHash: null,
+    googleId: 'g-5',
+  });
+
+  it('n emet aucun lien de reinitialisation demande pour un compte Google sans mot de passe', async () => {
+    const { tokensRepo, notifier, logger, envoi } = construire();
+
+    await envoi.envoyer(compteGoogle, 'demande', logger);
+
+    expect(tokensRepo.remplacerLesJetonsActifs).not.toHaveBeenCalled();
+    expect(notifier.sendPasswordResetEmail).not.toHaveBeenCalled();
+  });
+
+  it('previent d une tentative d inscription le titulaire d un compte Google, par le lien qui lui donne un mot de passe', async () => {
+    const { tokensRepo, notifier, logger, envoi } = construire();
+
+    await envoi.envoyer(compteGoogle, 'tentative-d-inscription', logger);
+
+    expect(tokensRepo.remplacerLesJetonsActifs).toHaveBeenCalledTimes(1);
+    expect(notifier.sendRegistrationAttemptEmail).toHaveBeenCalledWith(
+      lienDeReinitialisationEnvoyeA('lea@example.com'),
+    );
   });
 
   it('n envoie a une tentative d inscription que son propre courriel', async () => {

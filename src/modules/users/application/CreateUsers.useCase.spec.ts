@@ -3,6 +3,7 @@ import { buildConfigService } from '../../../../test/factories/env.factory';
 import {
   createMockEmailVerificationNotifier,
   createMockPasswordResetNotifier,
+  lienDeReinitialisationEnvoyeA,
 } from '../../../../test/factories/mailer.factory';
 import {
   buildPasswordResetToken,
@@ -297,10 +298,7 @@ describe('CreateUsersUseCase', () => {
 
       expect(repo.findByEmail).toHaveBeenCalledWith('lea@example.com');
       expect(resetNotifier.sendRegistrationAttemptEmail).toHaveBeenCalledWith(
-        expect.objectContaining({
-          email: 'lea@example.com',
-          resetUrl: expect.stringContaining('token=') as string,
-        }),
+        lienDeReinitialisationEnvoyeA('lea@example.com'),
       );
       expect(resetNotifier.sendPasswordResetEmail).not.toHaveBeenCalled();
       expect(
@@ -308,16 +306,23 @@ describe('CreateUsersUseCase', () => {
       ).not.toHaveBeenCalled();
     });
 
-    it('repond pareil sans ecrire au titulaire d un compte Google sans mot de passe', async () => {
+    it('repond pareil et previent aussi le titulaire d un compte Google sans mot de passe', async () => {
       adresseDejaInscrite(
-        buildUser({ id: 'user-5', passwordHash: null, googleId: 'g-5' }),
+        buildUser({
+          id: 'user-5',
+          email: 'lea@example.com',
+          passwordHash: null,
+          googleId: 'g-5',
+        }),
       );
 
       await expect(
         rendueAuPlancher(useCase.inscrire(candidat)),
       ).resolves.toEqual(INSCRIPTION_ENREGISTREE);
 
-      expect(resetNotifier.sendRegistrationAttemptEmail).not.toHaveBeenCalled();
+      expect(resetNotifier.sendRegistrationAttemptEmail).toHaveBeenCalledWith(
+        lienDeReinitialisationEnvoyeA('lea@example.com'),
+      );
     });
 
     it('laisse passer une autre panne de la creation', async () => {

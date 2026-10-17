@@ -16,14 +16,20 @@ const COURRIELS = {
   demande: {
     envoyer: 'sendPasswordResetEmail',
     echec: 'Password reset email failed',
+    exigeUnMotDePasse: true,
   },
   'tentative-d-inscription': {
     envoyer: 'sendRegistrationAttemptEmail',
     echec: 'Registration attempt email failed',
+    exigeUnMotDePasse: false,
   },
 } as const satisfies Record<
   string,
-  { envoyer: keyof IPasswordResetNotifier; echec: string }
+  {
+    envoyer: keyof IPasswordResetNotifier;
+    echec: string;
+    exigeUnMotDePasse: boolean;
+  }
 >;
 
 export type MotifDuLienDeReinitialisation = keyof typeof COURRIELS;
@@ -50,11 +56,14 @@ export class EnvoiDeReinitialisation {
     motif: MotifDuLienDeReinitialisation,
     logger: Logger,
   ): Promise<void> {
-    if (!titulaire?.isActive || !titulaire.id || !titulaire.passwordHash) {
+    const courriel = COURRIELS[motif];
+    if (!titulaire?.isActive || !titulaire.id) {
+      return;
+    }
+    if (courriel.exigeUnMotDePasse && !titulaire.passwordHash) {
       return;
     }
 
-    const courriel = COURRIELS[motif];
     await emettreUnLienTemporaire(
       titulaire,
       titulaire.id,

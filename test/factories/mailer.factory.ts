@@ -10,6 +10,13 @@ export function createMockPasswordResetNotifier(): jest.Mocked<IPasswordResetNot
   };
 }
 
+export function lienDeReinitialisationEnvoyeA(email: string): unknown {
+  return expect.objectContaining({
+    email,
+    resetUrl: expect.stringContaining('token=') as string,
+  }) as unknown;
+}
+
 export function createMockEmailVerificationNotifier(): jest.Mocked<IEmailVerificationNotifier> {
   return {
     sendVerificationEmail: jest.fn().mockResolvedValue(undefined),
