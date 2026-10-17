@@ -1,5 +1,5 @@
 import { readdirSync, readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { join, sep } from 'node:path';
 import * as ts from 'typescript';
 import {
   Controller,
@@ -160,16 +160,30 @@ function lireLeCodeDesSources(): {
 
 const CODE_DES_SOURCES = lireLeCodeDesSources();
 
-const exportsDesSourcesDejaChargees = (): unknown[] =>
-  Object.entries(require.cache)
-    .filter(
-      ([chemin]) =>
-        chemin.startsWith(join(RACINE_DES_SOURCES, '/')) &&
-        !chemin.endsWith('.spec.ts'),
-    )
-    .flatMap(([, module]) =>
-      Object.values((module?.exports ?? {}) as Record<string, unknown>),
-    );
+const valeursExportees = (exportees: unknown): unknown[] => [
+  exportees,
+  ...Object.values(
+    Object.getOwnPropertyDescriptors((exportees ?? {}) as object),
+  ).flatMap((descripteur) =>
+    'value' in descripteur ? [descripteur.value as unknown] : [],
+  ),
+];
+
+const exportsDejaCharges = (
+  retenir: (chemin: string) => boolean,
+): Set<unknown> =>
+  new Set(
+    Object.entries(require.cache)
+      .filter(([chemin]) => retenir(chemin))
+      .flatMap(([, module]) => valeursExportees(module?.exports)),
+  );
+
+const estUneSource = (chemin: string): boolean =>
+  chemin.startsWith(join(RACINE_DES_SOURCES, '/')) &&
+  !chemin.endsWith('.spec.ts');
+
+const estUneBibliotheque = (chemin: string): boolean =>
+  chemin.split(sep).includes('node_modules');
 
 const metadonneeDeModule = (cle: string, module: unknown): unknown[] =>
   (Reflect.getMetadata(cle, module as object) as unknown[] | undefined) ?? [];
@@ -658,18 +672,23 @@ describe('Injection des providers qui héritent d un constructeur injecté', () 
         ...MODULES_DES_SOURCES,
       ]),
     );
-    const exportees = new Set(exportsDesSourcesDejaChargees());
+    const exportees = exportsDejaCharges(estUneSource);
+    const deBibliotheque = exportsDejaCharges(estUneBibliotheque);
 
     expect(visites.length).toBeGreaterThan(MODULES_DES_SOURCES.length);
     expect(
-      MODULES_DES_SOURCES.filter((module) => !exportees.has(module)),
+      MODULES_DES_SOURCES.filter(
+        (module) => !exportees.has(module) || deBibliotheque.has(module),
+      ),
     ).toEqual([]);
     expect(CODE_DES_SOURCES.clesDeModule).toEqual([]);
     expect(
       visites
         .filter(
           (module) =>
-            !MODULES_DES_SOURCES.includes(module) && exportees.has(module),
+            !MODULES_DES_SOURCES.includes(module) &&
+            exportees.has(module) &&
+            !deBibliotheque.has(module),
         )
         .map(({ name }) => `${name} : hors d un fichier de module`),
     ).toEqual([]);
