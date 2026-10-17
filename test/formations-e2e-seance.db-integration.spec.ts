@@ -17,6 +17,7 @@ import {
   questionsDe,
 } from '../src/modules/formations/domain/cours/Cours';
 import { activitesLibres } from '../src/modules/formations/domain/cours/EcranServi';
+import { sortiesDeLaMachine } from '../src/modules/formations/domain/cours/MachineServie';
 import {
   tirer,
   type TirageDuCours,
@@ -774,6 +775,40 @@ function seanceComplete(
         ]);
       };
 
+      const sortiesProjeteesAuPoste = (ecranId: string): unknown =>
+        fluxEtudiant.evenements
+          .filter((evenement) => evenement.type === 'etat')
+          .map(
+            ({ donnees }) =>
+              (
+                donnees.pilotage as
+                  | Record<string, { sortiesProjetees?: unknown }>
+                  | undefined
+              )?.[ecranId]?.sortiesProjetees,
+          )
+          .findLast((sorties) => sorties !== undefined);
+
+      const jouerMachine = async (ecran: Ecran): Promise<void> => {
+        if (ecran.brique !== 'fp-concept4') {
+          throw new Error(`L ecran ${ecran.id} n est pas une machine`);
+        }
+        const reglages = Object.fromEntries(
+          ecran.proprietes.parametres.map(({ cle, max }) => [cle, max]),
+        );
+        await piloter({
+          pilotage: { screenId: ecran.id, reglages },
+        }).expect(SANS_CONTENU);
+        await attendreQue(
+          () => sortiesProjeteesAuPoste(ecran.id) !== undefined,
+          DELAI_FLUX_MS,
+        );
+
+        expect(sortiesProjeteesAuPoste(ecran.id)).toEqual(
+          sortiesDeLaMachine(ecran.proprietes, reglages),
+        );
+        await jouerQuestionsFermees(ecran);
+      };
+
       const jouerReponsesLibres = async (ecran: Ecran): Promise<void> => {
         const activites = activitesLibres(cours).get(ecran.id) ?? [];
         for (const activite of activites) {
@@ -975,6 +1010,9 @@ function seanceComplete(
             break;
           case 'fp-sheet':
             await jouerFeuille(ecran);
+            break;
+          case 'fp-concept4':
+            await jouerMachine(ecran);
             break;
           case 'fp-cardsort':
           case 'fp-table-build':

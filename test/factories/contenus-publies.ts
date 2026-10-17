@@ -15,6 +15,11 @@ export const [
 export const PLAN_VISA_B2_03 = 'b2-03-a4-feuille-controle';
 export const ECRAN_VISA_B2_03 = 'B2-03-A4-02-TABLEUR-CONTROLE';
 export const FORMULE_VISA_B2_03 = '=SI(OU(D3>=5000;C3<>"France");"Visa";"Non")';
+export const TABLE_VERITE_B2_03 = 'b2-03-a1-table-verite';
+export const PLANS_HORS_FEUILLE_DU_B2_03: readonly [string, string][] = [
+  ['une feuille d un autre cours', 'b2-01-a4-feuille-canaux'],
+  ['le tableau du cours de la séance', TABLE_VERITE_B2_03],
+];
 export const PLAN_TOILE_B2_01 = 'b2-01-a4-indice-toile';
 export const ECRAN_TOILE_B2_01 = 'B2-01-A4-05-INDICE-TOILE';
 export const TRI_ANATOMIE_B2_01 = 'b2-01-a1-anatomie';

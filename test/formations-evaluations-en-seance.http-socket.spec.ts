@@ -24,6 +24,7 @@ import {
   MACHINE_B2_01 as MACHINE,
   PLAN_TOILE_B2_01 as PLAN_TOILE,
   PLAN_VISA_B2_03 as PLAN_VISA,
+  PLANS_HORS_FEUILLE_DU_B2_03 as PLANS_HORS_FEUILLE,
 } from './factories/contenus-publies';
 import {
   buildSeanceDuCours,
@@ -119,14 +120,14 @@ describe('Évaluation de la feuille de l élève (e2e http socket)', () => {
     );
   });
 
-  it('refuse en 400 TYPE_DE_QUESTION un plan qui n est pas une feuille du cours', async () => {
-    const refus = feuille(
-      { cellules: { D2: '=1' } },
-      'b2-01-a4-feuille-canaux',
-    );
+  it.each(PLANS_HORS_FEUILLE)(
+    'refuse en 400 TYPE_DE_QUESTION %s',
+    async (_cas, planId) => {
+      const refus = feuille({ cellules: { D2: '=1' } }, planId);
 
-    expect(await codeDuRefus(refus)).toBe('TYPE_DE_QUESTION');
-  });
+      expect(await codeDuRefus(refus)).toBe('TYPE_DE_QUESTION');
+    },
+  );
 
   it.each([
     ['une cellule hors de la grille', { cellules: { Z99: '=1' } }],

@@ -9,6 +9,7 @@ import {
   MACHINE_B2_01 as MACHINE,
   PLAN_TOILE_B2_01 as PLAN_TOILE,
   PLAN_VISA_B2_03 as PLAN_VISA,
+  PLANS_HORS_FEUILLE_DU_B2_03 as PLANS_HORS_FEUILLE,
   TRI_ANATOMIE_B2_01 as TRI_ANATOMIE,
 } from '../../../../../test/factories/contenus-publies';
 import {
@@ -82,11 +83,14 @@ describe('EvaluerFeuilleUseCase', () => {
     );
   });
 
-  it('refuse en TYPE_DE_QUESTION un plan qui n est pas une feuille du cours de la séance', async () => {
-    await expect(
-      evaluer({ I3: '=1' }, 'b2-01-a4-feuille-canaux'),
-    ).rejects.toBeInstanceOf(TypeDeQuestionError);
-  });
+  it.each(PLANS_HORS_FEUILLE)(
+    'refuse en TYPE_DE_QUESTION %s',
+    async (_cas, planId) => {
+      await expect(evaluer({ I3: '=1' }, planId)).rejects.toBeInstanceOf(
+        TypeDeQuestionError,
+      );
+    },
+  );
 
   it('refuse en PRODUCTION_INVALIDE une cellule hors de la grille', async () => {
     await expect(evaluer({ Z99: '=1' })).rejects.toBeInstanceOf(
