@@ -1,4 +1,4 @@
-import { readdirSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import {
   Controller,
@@ -12,6 +12,8 @@ import {
   UseInterceptors,
   type DynamicModule,
   type ForwardReference,
+  type MiddlewareConsumer,
+  type NestModule,
 } from '@nestjs/common';
 import {
   CONTROLLER_WATERMARK,
@@ -82,7 +84,7 @@ const MODULES_DES_SOURCES = SOURCES.filter((fichier) =>
 const metadonneeDeModule = (cle: string, module: unknown): unknown[] =>
   (Reflect.getMetadata(cle, module as object) as unknown[] | undefined) ?? [];
 
-type Rubrique = 'controllers' | 'providers';
+type Rubrique = 'controllers' | 'providers' | 'modules';
 
 async function declaresDepuis(
   rubrique: Rubrique,
@@ -95,9 +97,10 @@ async function declaresDepuis(
     if (module === null || vus.has(module)) return;
     vus.add(module);
     if (typeof module === 'function') {
-      metadonneeDeModule(rubrique, module).forEach((declare) =>
-        declares.add(declare),
-      );
+      (rubrique === 'modules'
+        ? [module]
+        : metadonneeDeModule(rubrique, module)
+      ).forEach((declare) => declares.add(declare));
       for (const suivant of metadonneeDeModule(MODULE_METADATA.IMPORTS, module))
         await parcourir(suivant);
       return;
@@ -108,7 +111,9 @@ async function declaresDepuis(
       return;
     }
     const dynamique = module as Partial<DynamicModule>;
-    (dynamique[rubrique] ?? []).forEach((declare) => declares.add(declare));
+    (rubrique === 'modules' ? [] : (dynamique[rubrique] ?? [])).forEach(
+      (declare) => declares.add(declare),
+    );
     for (const suivant of [dynamique.module, ...(dynamique.imports ?? [])])
       await parcourir(suivant);
   };
@@ -211,17 +216,39 @@ const classesDe = (declares: readonly unknown[]): Classe[] =>
     .map(classeDuProvider)
     .filter((classe): classe is Classe => classe !== null);
 
+function middlewaresDe(module: Classe): unknown[] {
+  const { configure } = module.prototype as { configure?: unknown };
+  if (typeof configure !== 'function') return [];
+  const appliques: unknown[] = [];
+  const consommateur = {
+    apply: (...middlewares: unknown[]) => {
+      appliques.push(...middlewares.flat());
+      const routes = { exclude: () => routes, forRoutes: () => consommateur };
+      return routes;
+    },
+  };
+  configure.call(Object.create(module.prototype as object), consommateur);
+  return appliques;
+}
+
 async function classesConstruitesDepuis(
   racines: readonly unknown[],
 ): Promise<Classe[]> {
+  const modules = classesDe(await declaresDepuis('modules', racines));
   const composants = classesDe([
     ...(await declaresDepuis(MODULE_METADATA.PROVIDERS as Rubrique, racines)),
     ...(await controleursAtteintsDepuis(racines)),
   ]);
   return [
     ...new Set([
+      ...modules,
       ...composants,
-      ...classesDe(composants.flatMap(injectablesDe)),
+      ...classesDe([
+        ...composants.flatMap(injectablesDe),
+        ...modules
+          .filter((module) => racines.includes(module))
+          .flatMap(middlewaresDe),
+      ]),
     ]),
   ];
 }
@@ -347,7 +374,6 @@ describe('Injection des providers qui héritent d un constructeur injecté', () 
   @Injectable()
   class Outil {}
 
-  @Injectable()
   abstract class Mere {
     constructor(
       @Inject(DEPOT) readonly depot: object,
@@ -455,6 +481,16 @@ describe('Injection des providers qui héritent d un constructeur injecté', () 
     }
   }
 
+  const middlewaresConstruits: FilleQuiReordonne[] = [];
+
+  class MiddlewareDeModule extends FilleQuiReordonne {
+    readonly rang = middlewaresConstruits.push(this);
+
+    use(requete: unknown, reponse: unknown, suite: () => void): void {
+      suite();
+    }
+  }
+
   const depot = { nom: 'depot' };
   const journal = { nom: 'journal' };
   const DEPENDANCES = [
@@ -473,13 +509,32 @@ describe('Injection des providers qui héritent d un constructeur injecté', () 
     ],
     exports: [Outil, DEPOT, JOURNAL],
   })
-  class ModuleTemoin {}
+  class ModuleTemoin extends Mere implements NestModule {
+    constructor(
+      @Inject(JOURNAL) journal: object,
+      @Inject(DEPOT) depot: object,
+      outil: Outil,
+    ) {
+      super(depot, outil, journal);
+    }
+
+    configure(consommateur: MiddlewareConsumer): void {
+      consommateur.apply(MiddlewareDeModule).forRoutes(ControleurQuiReordonne);
+    }
+  }
 
   it('lit les injections héritées comme Nest les résout', async () => {
     const module = await Test.createTestingModule({
       imports: [ModuleTemoin],
       providers: [FilleQuiReordonne, FilleQuiReinjecte, FilleSansConstructeur],
     }).compile();
+    const application = module.createNestApplication({ logger: false });
+    await application.init();
+    const construitsParLeModule = [
+      module.get(ModuleTemoin, { strict: false }).outil,
+      ...middlewaresConstruits.map(({ outil }) => outil),
+    ];
+    await application.close();
     const injectables = await Promise.all(
       [
         GardeQuiReordonne,
@@ -500,6 +555,7 @@ describe('Injection des providers qui héritent d un constructeur injecté', () 
       journal,
       journal,
     ]);
+    expect(construitsParLeModule).toEqual([journal, journal]);
     expect(module.get(FilleFacultative).requis).toBeUndefined();
     expect(module.get(FilleQuiReinjecte).outil).toBeInstanceOf(Outil);
     expect(module.get(FilleSansConstructeur).outil).toBeInstanceOf(Outil);
@@ -512,10 +568,11 @@ describe('Injection des providers qui héritent d un constructeur injecté', () 
     ).toEqual(['FilleQuiReordonne : paramètre 2']);
   });
 
-  it('juge chaque classe que construit Nest : providers, contrôleurs, enhancers et pipes de paramètre', async () => {
+  it('juge chaque classe que construit Nest : modules, providers, contrôleurs, enhancers, pipes de paramètre et middlewares', async () => {
     expect(
       providersMalInjectes(await classesConstruitesDepuis([ModuleTemoin])),
     ).toEqual([
+      'ModuleTemoin : paramètre 2',
       'FilleNonDecoree : constructeur sans métadonnées propres',
       'FilleFacultative : paramètre facultatif 1',
       'ControleurQuiReordonne : paramètre 2',
@@ -523,7 +580,31 @@ describe('Injection des providers qui héritent d un constructeur injecté', () 
       'GardeQuiReordonne : paramètre 2',
       'PipeDeParametre : paramètre 2',
       'IntercepteurDeMethode : paramètre 2',
+      'MiddlewareDeModule : paramètre 2',
     ]);
+  });
+
+  it('lit chaque module des sources dans un fichier de module qui l exporte', () => {
+    const declarants = SOURCES.filter(
+      (fichier) => fichier.endsWith('.ts') && !fichier.endsWith('.spec.ts'),
+    )
+      .map((fichier) => ({
+        fichier,
+        texte: readFileSync(join(RACINE_DES_SOURCES, fichier), 'utf8'),
+      }))
+      .filter(({ texte }) => texte.includes('@Module('));
+
+    expect(declarants.length).toBeGreaterThan(0);
+    expect(
+      declarants.flatMap(({ fichier, texte }) => [
+        ...(fichier.endsWith('.module.ts')
+          ? []
+          : [`${fichier} : hors d un fichier de module`]),
+        ...[...texte.matchAll(/^(?!export ).*\bclass (\w+)/gm)].map(
+          ([, classe]) => `${fichier} : ${classe} non exportée`,
+        ),
+      ]),
+    ).toEqual([]);
   });
 
   it('fait ré-injecter par chaque classe servie les rangs que sa classe mère injecte', async () => {
