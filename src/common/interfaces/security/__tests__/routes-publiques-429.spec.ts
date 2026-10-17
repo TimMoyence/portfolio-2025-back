@@ -32,6 +32,7 @@ import { DECORATORS } from '@nestjs/swagger/dist/constants';
 import { AppModule } from '../../../../app.module';
 import { IS_PUBLIC_KEY } from '../../auth/public.decorator';
 import { routesDuControleur } from '../../../../../test/helpers/metadonnees-de-route';
+import { RACINE } from '../../../../../test/helpers/racine';
 
 jest.mock('../../../../config/env.validation', () => ({
   validateEnv: (configuration: Record<string, unknown>) => configuration,
@@ -86,30 +87,60 @@ const NOMS_DES_MIDDLEWARES_DE_MODULE = new Set([
   'MiddlewareConsumer',
 ]);
 
-const nomDeClasse = (noeud: ts.Node): string | null => {
-  if (ts.isClassLike(noeud)) return noeud.name?.text ?? null;
-  if (
-    ts.isVariableDeclaration(noeud) &&
-    noeud.initializer !== undefined &&
-    ts.isClassExpression(noeud.initializer) &&
-    ts.isIdentifier(noeud.name)
-  )
-    return noeud.name.text;
-  return null;
+const CLE_D_UN_MODULE_DYNAMIQUE = 'module';
+
+const estUnFichierDeModule = (fichier: string): boolean =>
+  fichier.endsWith('.module.ts');
+
+const texteDeLaCle = (cle: ts.Node | undefined): string | null => {
+  const ecrite =
+    cle !== undefined && ts.isComputedPropertyName(cle) ? cle.expression : cle;
+  return ecrite !== undefined &&
+    (ts.isIdentifier(ecrite) || ts.isStringLiteralLike(ecrite))
+    ? ecrite.text
+    : null;
 };
 
+const cleEcrite = (noeud: ts.Node): string | null => {
+  if (ts.isObjectLiteralElementLike(noeud) && !ts.isSpreadAssignment(noeud))
+    return texteDeLaCle(noeud.name);
+  if (
+    !ts.isBinaryExpression(noeud) ||
+    noeud.operatorToken.kind !== ts.SyntaxKind.EqualsToken
+  )
+    return null;
+  if (ts.isPropertyAccessExpression(noeud.left))
+    return texteDeLaCle(noeud.left.name);
+  return ts.isElementAccessExpression(noeud.left)
+    ? texteDeLaCle(noeud.left.argumentExpression)
+    : null;
+};
+
+const estExportee = (classe: ts.ClassLikeDeclaration): boolean =>
+  ts.isClassDeclaration(classe) &&
+  (ts.getModifiers(classe) ?? []).some(
+    ({ kind }) => kind === ts.SyntaxKind.ExportKeyword,
+  );
+
 function lireLeCodeDesSources(): {
-  classes: Set<string>;
   middlewares: string[];
+  clesDeModule: string[];
+  classesNonExportees: string[];
 } {
-  const classes = new Set<string>();
   const middlewares: string[] = [];
+  const clesDeModule: string[] = [];
+  const classesNonExportees: string[] = [];
   for (const fichier of SOURCES.filter(
     (source) => source.endsWith('.ts') && !source.endsWith('.spec.ts'),
   )) {
+    const deModule = estUnFichierDeModule(fichier);
     const visiter = (noeud: ts.Node): void => {
-      const classe = nomDeClasse(noeud);
-      if (classe !== null) classes.add(classe);
+      if (deModule && ts.isClassLike(noeud) && !estExportee(noeud))
+        classesNonExportees.push(
+          `${fichier} : ${noeud.name?.text ?? 'classe anonyme'} non exportée`,
+        );
+      if (!deModule && cleEcrite(noeud) === CLE_D_UN_MODULE_DYNAMIQUE)
+        clesDeModule.push(`${fichier} : clé ${CLE_D_UN_MODULE_DYNAMIQUE}`);
       if (
         (ts.isIdentifier(noeud) || ts.isStringLiteralLike(noeud)) &&
         NOMS_DES_MIDDLEWARES_DE_MODULE.has(noeud.text)
@@ -125,10 +156,26 @@ function lireLeCodeDesSources(): {
       ),
     );
   }
-  return { classes, middlewares };
+  return { middlewares, clesDeModule, classesNonExportees };
 }
 
 const CODE_DES_SOURCES = lireLeCodeDesSources();
+
+const POINT_D_ENTREE = `${
+  (
+    JSON.parse(readFileSync(join(RACINE, 'nest-cli.json'), 'utf8')) as {
+      entryFile?: string;
+    }
+  ).entryFile ?? 'main'
+}.ts`;
+
+const FICHIERS_CHARGEABLES = SOURCES.filter(
+  (fichier) =>
+    fichier.endsWith('.ts') &&
+    !fichier.endsWith('.spec.ts') &&
+    !fichier.endsWith('.d.ts') &&
+    fichier !== POINT_D_ENTREE,
+);
 
 const metadonneeDeModule = (cle: string, module: unknown): unknown[] =>
   (Reflect.getMetadata(cle, module as object) as unknown[] | undefined) ?? [];
@@ -593,25 +640,21 @@ describe('Injection des providers qui héritent d un constructeur injecté', () 
 
   it('lit chaque module des sources dans un fichier de module qui l exporte', () => {
     const declarants = SOURCES.filter(
-      (fichier) => fichier.endsWith('.ts') && !fichier.endsWith('.spec.ts'),
-    )
-      .map((fichier) => ({
-        fichier,
-        texte: readFileSync(join(RACINE_DES_SOURCES, fichier), 'utf8'),
-      }))
-      .filter(({ texte }) => texte.includes('@Module('));
+      (fichier) =>
+        fichier.endsWith('.ts') &&
+        !fichier.endsWith('.spec.ts') &&
+        readFileSync(join(RACINE_DES_SOURCES, fichier), 'utf8').includes(
+          '@Module(',
+        ),
+    );
 
     expect(declarants.length).toBeGreaterThan(0);
-    expect(
-      declarants.flatMap(({ fichier, texte }) => [
-        ...(fichier.endsWith('.module.ts')
-          ? []
-          : [`${fichier} : hors d un fichier de module`]),
-        ...[...texte.matchAll(/^(?!export ).*\bclass (\w+)/gm)].map(
-          ([, classe]) => `${fichier} : ${classe} non exportée`,
-        ),
-      ]),
-    ).toEqual([]);
+    expect([
+      ...declarants
+        .filter((fichier) => !estUnFichierDeModule(fichier))
+        .map((fichier) => `${fichier} : hors d un fichier de module`),
+      ...CODE_DES_SOURCES.classesNonExportees,
+    ]).toEqual([]);
   });
 
   it('ne construit comme module aucune classe des sources hors d un fichier de module', async () => {
@@ -621,19 +664,20 @@ describe('Injection des providers qui héritent d un constructeur injecté', () 
         ...MODULES_DES_SOURCES,
       ]),
     );
+    const exportees = new Set(FICHIERS_CHARGEABLES.flatMap(exportsDe));
 
     expect(visites.length).toBeGreaterThan(MODULES_DES_SOURCES.length);
+    expect(
+      MODULES_DES_SOURCES.filter((module) => !exportees.has(module)),
+    ).toEqual([]);
+    expect(CODE_DES_SOURCES.clesDeModule).toEqual([]);
     expect(
       visites
         .filter(
           (module) =>
-            !MODULES_DES_SOURCES.includes(module) &&
-            (module.name === '' || CODE_DES_SOURCES.classes.has(module.name)),
+            !MODULES_DES_SOURCES.includes(module) && exportees.has(module),
         )
-        .map(
-          (module) =>
-            `${module.name || 'classe anonyme'} : hors d un fichier de module`,
-        ),
+        .map(({ name }) => `${name} : hors d un fichier de module`),
     ).toEqual([]);
   });
 
