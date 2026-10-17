@@ -11,7 +11,6 @@ import {
   Post,
   Put,
   Req,
-  Sse,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
@@ -27,6 +26,7 @@ import {
 import { Throttle } from '@nestjs/throttler';
 import type { Request } from 'express';
 import { Observable } from 'rxjs';
+import { FluxDEvenements } from '../../../common/interfaces/http/flux-d-evenements.decorator';
 import { resolveClientIpOrUnknown } from '../../../common/interfaces/security/client-ip.util';
 import {
   ProtegeContreLesRobots,
@@ -591,7 +591,10 @@ export class FormationsStudentController {
   }
 
   @LimiteParParticipant(LIMITE_FLUX_PAR_PARTICIPANT)
-  @Sse('sessions/:id/stream')
+  @FluxDEvenements(
+    'sessions/:id/stream',
+    'Etat de la seance a chaque changement, vu du participant',
+  )
   @ApiOperation({ summary: 'Flux temps reel de l etat de la session' })
   @RouteParticipant()
   @ApiTooManyRequestsResponse({

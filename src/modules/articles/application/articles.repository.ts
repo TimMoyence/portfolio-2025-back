@@ -2,7 +2,9 @@ import type { SupportedLocale } from '../../../common/domain/value-objects/Local
 
 export const ARTICLES_REPOSITORY = Symbol('ARTICLES_REPOSITORY');
 
-export type ArticleStatus = 'published' | 'withdrawn';
+export const STATUTS_D_ARTICLE = ['published', 'withdrawn'] as const;
+
+export type ArticleStatus = (typeof STATUTS_D_ARTICLE)[number];
 
 export interface ArticleRecord {
   id: string;

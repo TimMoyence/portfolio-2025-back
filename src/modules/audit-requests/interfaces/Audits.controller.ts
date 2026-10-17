@@ -7,7 +7,6 @@ import {
   Param,
   ParseUUIDPipe,
   Req,
-  Sse,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
@@ -18,6 +17,7 @@ import {
 } from '@nestjs/swagger';
 import { SkipThrottle } from '@nestjs/throttler';
 import { Public } from '../../../common/interfaces/auth/public.decorator';
+import { FluxDEvenements } from '../../../common/interfaces/http/flux-d-evenements.decorator';
 import { Observable } from 'rxjs';
 import type { Request } from 'express';
 import { provenanceDeLaRequete } from '../../../common/interfaces/security/client-ip.util';
@@ -94,11 +94,11 @@ export class AuditsController {
 
   @Public()
   @SkipThrottle()
-  @Sse(':id/stream')
+  @FluxDEvenements(
+    ':id/stream',
+    "Flux SSE des evenements d'audit en temps reel",
+  )
   @ApiOperation({ summary: "Flux SSE des evenements d'avancement d'un audit" })
-  @ApiOkResponse({
-    description: "Flux SSE des evenements d'audit en temps reel",
-  })
   stream(
     @Param('id', ParseUUIDPipe) auditId: string,
   ): Observable<MessageEvent> {

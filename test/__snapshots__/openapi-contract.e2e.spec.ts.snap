@@ -3408,7 +3408,20 @@ exports[`OpenAPI core contract fige les schemas des DTO de saisie : comptes, con
     "type": "object",
   },
   "ContactResponseDto": {
-    "properties": {},
+    "properties": {
+      "httpCode": {
+        "example": 201,
+        "type": "number",
+      },
+      "message": {
+        "example": "Contact message created successfully.",
+        "type": "string",
+      },
+    },
+    "required": [
+      "message",
+      "httpCode",
+    ],
     "type": "object",
   },
   "CookieConsentPreferencesRequestDto": {
@@ -4041,6 +4054,13 @@ exports[`OpenAPI core contract keeps AuditRequests path contracts stable 1`] = `
       ],
       "responses": {
         "200": {
+          "content": {
+            "text/event-stream": {
+              "schema": {
+                "type": "string",
+              },
+            },
+          },
           "description": "Flux SSE des evenements d'audit en temps reel",
         },
       },

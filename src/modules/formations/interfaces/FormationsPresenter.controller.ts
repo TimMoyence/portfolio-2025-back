@@ -11,7 +11,6 @@ import {
   Patch,
   Post,
   Req,
-  Sse,
 } from '@nestjs/common';
 import {
   ApiConflictResponse,
@@ -25,6 +24,7 @@ import {
 import type { Request } from 'express';
 import { EMPTY, Observable } from 'rxjs';
 import { compteConnecte } from '../../../common/interfaces/auth/compte-connecte';
+import { FluxDEvenements } from '../../../common/interfaces/http/flux-d-evenements.decorator';
 import { CloseSessionUseCase } from '../application/CloseSession.useCase';
 import { ControlSessionUseCase } from '../application/ControlSession.useCase';
 import { GetSessionResultsUseCase } from '../application/GetSessionResults.useCase';
@@ -158,7 +158,10 @@ export class FormationsPresenterController {
     await this.closeSession.execute(id, compteConnecte(request).id);
   }
 
-  @Sse('sessions/:id/presenter-stream')
+  @FluxDEvenements(
+    'sessions/:id/presenter-stream',
+    'Etat de la seance a chaque changement, vu du pupitre',
+  )
   @ApiOperation({
     summary: 'Flux temps reel reserve au formateur de la session',
   })

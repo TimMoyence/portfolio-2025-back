@@ -35,7 +35,7 @@ export function estSansForme(schema: SchemaOpenApi): boolean {
   return (
     schema.type === undefined ||
     (schema.type === 'object' &&
-      schema.properties === undefined &&
+      Object.keys(schema.properties ?? {}).length === 0 &&
       schema.additionalProperties === undefined)
   );
 }

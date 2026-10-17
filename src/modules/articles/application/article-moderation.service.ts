@@ -16,7 +16,7 @@ export interface ModerationView {
   slug: string;
   locale: SupportedLocale;
   title: string;
-  status: string;
+  status: ArticleStatus;
   published_at: string;
 }
 

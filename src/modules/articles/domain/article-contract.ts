@@ -23,10 +23,17 @@ const itemSchema = z
   })
   .strict();
 
+export const TYPES_DE_SECTION = [
+  'essential',
+  'deep_dive',
+  'rubric',
+  'radar',
+] as const;
+
 const sectionSchema = z
   .object({
     id: z.string().regex(/^[a-z0-9][a-z0-9-]{1,79}$/),
-    kind: z.enum(['essential', 'deep_dive', 'rubric', 'radar']),
+    kind: z.enum(TYPES_DE_SECTION),
     title: z.string().min(1).max(120),
     intro: z.string().max(4000),
     body: z.string().max(20000),

@@ -415,14 +415,54 @@ describe('contrat OpenAPI des saisies', () => {
     expect([
       ...new Set(
         [...schemas.values()].flatMap((composants) =>
-          Object.entries(composants).flatMap(([nom, schema]) =>
-            Object.entries(schema.properties ?? {})
+          Object.entries(composants).flatMap(([nom, schema]) => [
+            ...(estSansForme(schema) ? [nom] : []),
+            ...Object.entries(schema.properties ?? {})
               .filter(([, champ]) => estSansForme(champ))
               .map(([champ]) => `${nom}.${champ}`),
-          ),
+          ]),
         ),
       ),
     ]).toEqual([]);
+  });
+
+  it('decrit le corps de chaque reponse 2xx de chaque route, hors 204', () => {
+    const reponsesDe = (
+      cible: object,
+    ): Record<string, { type?: unknown; schema?: unknown }> =>
+      (Reflect.getMetadata(DECORATORS.API_RESPONSE, cible) ?? {}) as Record<
+        string,
+        { type?: unknown; schema?: unknown }
+      >;
+    const ecartDuCorps = (type: unknown, schema: unknown): string | null => {
+      if (type === undefined) {
+        return schema === undefined ? 'corps non decrit' : null;
+      }
+      return typeof type === 'function' &&
+        ![String, Number, Boolean].includes(type as StringConstructor) &&
+        !modeles.includes(type)
+        ? `${type.name} sans champ documente`
+        : null;
+    };
+    expect(
+      controleurs.flatMap((controleur) =>
+        routesDuControleur(controleur).flatMap(({ action, gestionnaire }) => {
+          const succes = Object.entries({
+            ...reponsesDe(controleur),
+            ...reponsesDe(gestionnaire),
+          }).filter(([statut]) => /^2\d\d$/.test(statut));
+          const nom = `${controleur.name}.${action}`;
+          return succes.length === 0
+            ? [`${nom} : aucune reponse 2xx documentee`]
+            : succes
+                .filter(([statut]) => statut !== '204')
+                .flatMap(([statut, { type, schema }]) => {
+                  const ecart = ecartDuCorps(type, schema);
+                  return ecart === null ? [] : [`${nom} ${statut} : ${ecart}`];
+                });
+        }),
+      ),
+    ).toEqual([]);
   });
 
   it('donne a chaque tableau le type de ses elements', () => {
