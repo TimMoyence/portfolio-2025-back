@@ -12,7 +12,6 @@ import {
 } from '@nestjs/common/constants';
 import { DECORATORS } from '@nestjs/swagger/dist/constants';
 import { AppModule } from '../../../../app.module';
-import { resolveRuntimeContexts } from '../../../../runtime/runtime-contexts';
 import { IS_PUBLIC_KEY } from '../../auth/public.decorator';
 import { routesDuControleur } from '../../../../../test/helpers/metadonnees-de-route';
 
@@ -57,11 +56,7 @@ const CONTROLEURS = CONTROLEURS_PAR_FICHIER.flatMap(
   ({ controleurs }) => controleurs,
 );
 
-const MODULES_SERVIS: unknown[] = [
-  AppModule,
-  ...resolveRuntimeContexts({ ENABLE_LEGACY_CMS_CONTEXTS: 'true' })
-    .legacyModules,
-];
+const MODULES_SERVIS: unknown[] = [AppModule];
 
 const MODULES_DES_SOURCES = SOURCES.filter((fichier) =>
   fichier.endsWith('.module.ts'),
@@ -170,7 +165,7 @@ describe('Refus 429 des routes publiques', () => {
     expect(absentsDe(CONTROLEURS, CONTROLEURS_DECLARES)).toEqual([]);
   });
 
-  it('sert depuis AppModule, contextes hérités compris, chaque contrôleur exporté', () => {
+  it('sert depuis AppModule chaque contrôleur exporté', () => {
     expect(absentsDe(CONTROLEURS_SERVIS, CONTROLEURS)).toEqual([]);
   });
 

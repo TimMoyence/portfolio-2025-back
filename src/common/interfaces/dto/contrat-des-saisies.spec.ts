@@ -127,7 +127,6 @@ const ANNONCES: Readonly<Record<string, (contrainte: Contrainte) => Ecarts>> = {
   isObject: () => admet('object'),
   isDate: () => ensemble(admet('string'), porte('format', 'date-time')),
   isEmail: () => porte('format', 'email'),
-  isUrl: () => porte('format', 'uri'),
   isNotEmpty: () => nonVide,
   isIn: ({ constraints: [valeurs] }) =>
     enumeration(valeurs as readonly unknown[]),
@@ -138,7 +137,6 @@ const ANNONCES: Readonly<Record<string, (contrainte: Contrainte) => Ecarts>> = {
   max: ({ constraints }) => porte('maximum', constraints[0]),
   minLength: ({ constraints }) => porte('minLength', constraints[0]),
   maxLength: ({ constraints }) => porte('maxLength', constraints[0]),
-  arrayMinSize: ({ constraints }) => porte('minItems', constraints[0]),
   arrayMaxSize: ({ constraints }) => porte('maxItems', constraints[0]),
   isOptional: () => facultatif,
   nestedValidation: () => reference,

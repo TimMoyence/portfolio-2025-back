@@ -1,4 +1,5 @@
 import type { Provider } from '@nestjs/common';
+import { Test, type TestingModuleBuilder } from '@nestjs/testing';
 import { of } from 'rxjs';
 import { CreateAuditRequestsUseCase } from '../../src/modules/audit-requests/application/CreateAuditRequests.useCase';
 import { GetAuditSummaryUseCase } from '../../src/modules/audit-requests/application/GetAuditSummary.useCase';
@@ -26,7 +27,7 @@ import { AuthController } from '../../src/modules/users/interfaces/Auth.controll
 import { USERS_REPOSITORY } from '../../src/modules/users/domain/token';
 import { createMockUsersRepo } from './user.factory';
 
-export const CORE_CONTROLLERS = [
+const CORE_CONTROLLERS = [
   ContactsController,
   CookieConsentsController,
   AuditsController,
@@ -235,6 +236,18 @@ export function authControllerProviders(
     { provide: USERS_REPOSITORY, useValue: usersRepository },
   ];
 }
+
+export const moduleDesControleursDuSocle = (
+  coreStubs: CoreUseCaseStubs,
+  authStubs: AuthUseCaseStubs,
+): TestingModuleBuilder =>
+  Test.createTestingModule({
+    controllers: CORE_CONTROLLERS,
+    providers: [
+      ...coreControllerProviders(coreStubs),
+      ...authControllerProviders(authStubs),
+    ],
+  });
 
 export function primeCoreUseCaseStubs(stubs: CoreUseCaseStubs): void {
   stubs.createContactsUseCase.execute.mockResolvedValue(CONTACT_CREATED_RESULT);

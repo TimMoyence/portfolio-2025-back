@@ -233,7 +233,6 @@ const formeDeLEnv = z.object({
     .positive()
     .default(25),
 
-  ENABLE_LEGACY_CMS_CONTEXTS: z.string().default('false'),
   BOOTSTRAP_DEBUG: z.string().optional(),
 });
 

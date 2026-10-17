@@ -1,1 +1,0 @@
-export const SERVICES_REPOSITORY = Symbol('SERVICES_REPOSITORY');

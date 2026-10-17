@@ -1,5 +1,4 @@
 import { UnauthorizedException } from '@nestjs/common';
-import { Test } from '@nestjs/testing';
 import request from 'supertest';
 import {
   applicationDeLaSuite,
@@ -13,32 +12,17 @@ import {
   AUDIT_CREATED_RESPONSE,
   AUDIT_REQUEST_PAYLOAD,
   AUDIT_SUMMARY_RESULT,
-  authControllerProviders,
   CONTACT_CREATED_RESPONSE,
   CONTACT_PAYLOAD,
-  CORE_CONTROLLERS,
-  coreControllerProviders,
   createAuthUseCaseStubs,
   createCoreUseCaseStubs,
+  moduleDesControleursDuSocle,
   PASSWORD_RESET_DONE_RESULT,
   PASSWORD_RESET_REQUESTED_RESULT,
   primeCoreUseCaseStubs,
   primePasswordUseCaseStubs,
 } from './factories/core-api.factory';
 import { emettreJeton } from '../src/modules/users/domain/TokenHash';
-import {
-  attendreCreationTransmise,
-  attendreFiltreTransmis,
-  attendreListeParDefaut,
-  CAS_LEGACY,
-  CAS_LEGACY_FILTRABLES,
-  createLegacyUseCaseStubs,
-  LEGACY_CONTROLLERS,
-  legacyControllerProviders,
-  legacyListBody,
-  parametresDeListeParDefaut,
-  primeLegacyUseCaseStubs,
-} from './factories/legacy-contract.factory';
 
 // eslint-disable-next-line sonarjs/no-hardcoded-passwords -- fixture de test, pas un secret reel
 const WRONG_PASSWORD = 'WrongPassword1!';
@@ -46,19 +30,11 @@ const WRONG_PASSWORD = 'WrongPassword1!';
 describe('API coherence and connectivity (e2e http socket)', () => {
   const coreStubs = createCoreUseCaseStubs();
   const authStubs = createAuthUseCaseStubs();
-  const legacyStubs = createLegacyUseCaseStubs();
 
   const { authenticateUserUseCase } = authStubs;
 
   const app = applicationDeLaSuite(async () => {
-    const moduleRef = await Test.createTestingModule({
-      controllers: [...CORE_CONTROLLERS, ...LEGACY_CONTROLLERS],
-      providers: [
-        ...coreControllerProviders(coreStubs),
-        ...authControllerProviders(authStubs),
-        ...legacyControllerProviders(legacyStubs),
-      ],
-    })
+    const moduleRef = await moduleDesControleursDuSocle(coreStubs, authStubs)
       .overrideGuard(RolesGuard)
       .useValue({ canActivate: () => true })
       .overrideGuard(JwtAuthGuard)
@@ -91,7 +67,6 @@ describe('API coherence and connectivity (e2e http socket)', () => {
 
     primeCoreUseCaseStubs(coreStubs);
     primePasswordUseCaseStubs(authStubs);
-    primeLegacyUseCaseStubs(legacyStubs);
   });
 
   it('POST /api/contacts validates payload and returns contract response', async () => {
@@ -212,74 +187,5 @@ describe('API coherence and connectivity (e2e http socket)', () => {
     expect(response.body).toEqual({
       message: PASSWORD_RESET_DONE_RESULT.message,
     });
-  });
-
-  it.each(CAS_LEGACY)(
-    'GET /api/%s exposes paginated contract',
-    async (route, contexte) => {
-      const response = await request(getHttpServer())
-        .get(`/api/${route}`)
-        .query(parametresDeListeParDefaut(contexte))
-        .expect(200);
-
-      expect(response.body).toEqual(legacyListBody(contexte.entite));
-      attendreListeParDefaut(contexte, legacyStubs);
-    },
-  );
-
-  it.each(CAS_LEGACY_FILTRABLES)(
-    'GET /api/%s forwards optional list filters',
-    async (route, contexte) => {
-      await request(getHttpServer())
-        .get(`/api/${route}`)
-        .query({ ...contexte.filtre?.parametres })
-        .expect(200);
-
-      attendreFiltreTransmis(contexte, legacyStubs);
-    },
-  );
-
-  it.each(CAS_LEGACY)(
-    'POST /api/%s forwards payload to legacy use case',
-    async (route, contexte) => {
-      const response = await request(getHttpServer())
-        .post(`/api/${route}`)
-        .send(contexte.payload)
-        .expect(201);
-
-      attendreCreationTransmise(contexte, legacyStubs, response.body);
-    },
-  );
-
-  it('POST /api/services rejects non-whitelisted fields', async () => {
-    const response = await request(getHttpServer())
-      .post('/api/services')
-      .send({
-        slug: 'technical-seo',
-        name: 'Technical SEO',
-        injected: 'forbidden',
-      })
-      .expect(400);
-
-    expectValidationMessage(response, 'property injected should not exist');
-  });
-
-  it('GET /api/services rejects invalid sort query', async () => {
-    const response = await request(getHttpServer())
-      .get('/api/services?sortBy=invalid')
-      .expect(400);
-
-    expectValidationMessage(
-      response,
-      'sortBy must be one of the following values',
-    );
-  });
-
-  it('GET /api/redirects rejects invalid enabled query filter', async () => {
-    const response = await request(getHttpServer())
-      .get('/api/redirects?enabled=not-a-boolean')
-      .expect(400);
-
-    expectValidationMessage(response, 'enabled must be a boolean value');
   });
 });

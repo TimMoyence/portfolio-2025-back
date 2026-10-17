@@ -29,14 +29,4 @@ describe('Cross-context naming coherence', () => {
 
     expect(offending).toEqual([]);
   });
-
-  it('uses canonical course resource entity filename in imports', () => {
-    const offending = files.filter((file) => {
-      if (!file.endsWith('.ts')) return false;
-      const content = readFileSync(file, 'utf8');
-      return content.includes('CoursesRessources.entity');
-    });
-
-    expect(offending).toEqual([]);
-  });
 });

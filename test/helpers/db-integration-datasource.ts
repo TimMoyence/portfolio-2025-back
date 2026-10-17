@@ -153,6 +153,20 @@ export async function tablesPresentes(
   return lignes.map(({ table_name }) => table_name);
 }
 
+export async function typesEnumeresPresents(
+  dataSource: DataSource,
+  types: readonly string[],
+): Promise<string[]> {
+  const lignes: { typname: string }[] = await dataSource.query(
+    `SELECT t.typname FROM pg_type t
+     JOIN pg_namespace n ON n.oid = t.typnamespace
+     WHERE n.nspname = 'public' AND t.typtype = 'e' AND t.typname = ANY($1)
+     ORDER BY t.typname`,
+    [types],
+  );
+  return lignes.map(({ typname }) => typname);
+}
+
 export async function inscrireUtilisateur(
   dataSource: DataSource,
   email: string,

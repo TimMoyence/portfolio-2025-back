@@ -6,12 +6,6 @@ import {
   SwaggerModule,
 } from '@nestjs/swagger';
 
-import {
-  createLegacyUseCaseStubs,
-  LEGACY_CONTROLLERS,
-  legacyControllerProviders,
-} from './factories/legacy-contract.factory';
-
 import { UsersController } from '../src/modules/users/interfaces/Users.controller';
 import { ListUsersUseCase } from '../src/modules/users/application/ListUsers.useCase';
 import { ListOneUserUseCase } from '../src/modules/users/application/ListOneUser.useCase';
@@ -205,67 +199,6 @@ const champsSansForme = (document: DocumentOpenApi): string[] =>
   champsDuDocument(document)
     .filter(([, schema]) => estSansForme(schema as SchemaOpenApi))
     .map(([nom]) => nom);
-
-describe('OpenAPI legacy contract (phase 11)', () => {
-  let document: DocumentOpenApi;
-
-  beforeAll(async () => {
-    document = await documenterLeModule(
-      {
-        controllers: LEGACY_CONTROLLERS,
-        providers: legacyControllerProviders(createLegacyUseCaseStubs()),
-      },
-      new DocumentBuilder().setTitle('Contract Test').setVersion('1.0'),
-    );
-  });
-
-  it('keeps legacy path contracts stable', () => {
-    const pathBySuffix = (suffix: string) => {
-      const path = Object.keys(document.paths).find((candidate) =>
-        candidate.endsWith(suffix),
-      );
-      if (!path) {
-        throw new Error(`Missing OpenAPI path with suffix ${suffix}`);
-      }
-      return document.paths[path];
-    };
-
-    expect({
-      services: pathBySuffix('/services'),
-      projects: pathBySuffix('/projects'),
-      courses: pathBySuffix('/courses'),
-      redirects: pathBySuffix('/redirects'),
-    }).toMatchSnapshot();
-  });
-
-  it('documente par un type numerique chaque champ legacy qui porte un defaut, un exemple ou une borne numerique', () => {
-    expect(champsNumeriquesSansTypeNumerique(document)).toEqual([]);
-  });
-
-  it('donne a chaque champ legacy un type, et a chaque objet sa forme', () => {
-    expect(champsSansForme(document)).toEqual([]);
-  });
-
-  it('keeps legacy DTO schemas stable', () => {
-    const schemas = document.components?.schemas ?? {};
-
-    expect({
-      ServiceResponseDto: schemas.ServiceResponseDto,
-      ServiceListResponseDto: schemas.ServiceListResponseDto,
-      ServiceRequestDto: schemas.ServiceRequestDto,
-      ProjectRequestDto: schemas.ProjectRequestDto,
-      ProjectResponseDto: schemas.ProjectResponseDto,
-      ProjectListResponseDto: schemas.ProjectListResponseDto,
-      CourseRequestDto: schemas.CourseRequestDto,
-      CourseResponseDto: schemas.CourseResponseDto,
-      CourseListResponseDto: schemas.CourseListResponseDto,
-      RedirectRequestDto: schemas.RedirectRequestDto,
-      RedirectResponseDto: schemas.RedirectResponseDto,
-      RedirectListResponseDto: schemas.RedirectListResponseDto,
-      PaginationMetaResponseDto: schemas.PaginationMetaResponseDto,
-    }).toMatchSnapshot();
-  });
-});
 
 describe('OpenAPI core contract', () => {
   let document: DocumentOpenApi;

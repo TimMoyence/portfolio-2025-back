@@ -3,7 +3,6 @@ import { ApiProperty, type ApiPropertyOptions } from '@nestjs/swagger';
 import {
   ArrayMaxSize,
   IsInt,
-  IsUrl,
   Matches,
   Max,
   Min,
@@ -45,9 +44,3 @@ export const DictionnaireBorne = (
   };
   return ApiProperty(schema);
 };
-
-export const UrlAbsolue = (): PropertyDecorator =>
-  applyDecorators(
-    ApiProperty({ type: String, format: 'uri' }),
-    IsUrl({ require_protocol: true }),
-  );
