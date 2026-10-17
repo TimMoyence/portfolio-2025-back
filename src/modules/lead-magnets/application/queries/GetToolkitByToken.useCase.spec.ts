@@ -45,7 +45,7 @@ describe('GetToolkitByTokenUseCase', () => {
     // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(repo.findByToken).toHaveBeenCalledWith('token-123');
     // eslint-disable-next-line @typescript-eslint/unbound-method
-    expect(assembler.assemble).toHaveBeenCalledWith('Tim', null);
+    expect(assembler.assemble).toHaveBeenCalledWith('Tim');
   });
 
   it('refuse un token inconnu comme tout lien invalide', async () => {

@@ -32,9 +32,6 @@ export class ToolkitHtmlRendererService {
     const prompts = this.renderPrompts(content.prompts);
     const workflows = this.renderWorkflows(content.workflows);
     const templates = this.renderTemplates(content.templates);
-    const generated = content.generatedPrompt
-      ? this.renderGeneratedPrompt(content.generatedPrompt)
-      : safeHtml``;
 
     return safeHtml`<!DOCTYPE html>
 <html lang="fr">
@@ -50,30 +47,12 @@ export class ToolkitHtmlRendererService {
     ${prompts}
     ${workflows}
     ${templates}
-    ${generated}
   </body>
 </html>`;
   }
 
   private renderCover(content: ToolkitContent, date: string): EscapedHtml {
-    const recap = content.recap;
-    const firstName = escapeHtml(recap.firstName);
-    const badges: EscapedHtml[] = [];
-    if (recap.aiLevel) {
-      badges.push(
-        safeHtml`<span class="badge"><span class="badge-label">Niveau IA</span><span class="badge-value">${escapeHtml(levelLabel(recap.aiLevel))}</span></span>`,
-      );
-    }
-    if (recap.sector) {
-      badges.push(
-        safeHtml`<span class="badge"><span class="badge-label">Secteur</span><span class="badge-value">${escapeHtml(recap.sector)}</span></span>`,
-      );
-    }
-    if (recap.budgetTier) {
-      badges.push(
-        safeHtml`<span class="badge"><span class="badge-label">Budget</span><span class="badge-value">${escapeHtml(recap.budgetTier)} €/mois</span></span>`,
-      );
-    }
+    const firstName = escapeHtml(content.recap.firstName);
     return couvertureDePdf({
       formes: 3,
       surtitre: '🚀 Asili Design — Guide personnalisé',
@@ -83,7 +62,6 @@ export class ToolkitHtmlRendererService {
         safeHtml`<p class="cover-prepared">Préparé pour <strong>${firstName}</strong></p>`,
         safeHtml`<p class="cover-date">${escapeHtml(date)}</p>`,
       ],
-      badges,
       pied: ['Guide généré sur mesure', 'Édition 2026'],
     });
   }
@@ -150,9 +128,6 @@ export class ToolkitHtmlRendererService {
   }
 
   private renderToolCard(tool: CheatsheetEntry, soloCard = false): EscapedHtml {
-    const used = tool.alreadyUsed
-      ? safeHtml`<span class="chip chip-used">Déjà utilisé</span>`
-      : safeHtml`<span class="chip chip-new">À découvrir</span>`;
     const url = tool.url.replace(/^https?:\/\//, '');
     const decision = tool.decision
       ? safeHtml`<p class="tool-decision">${escapeHtml(tool.decision)}</p>`
@@ -167,7 +142,6 @@ export class ToolkitHtmlRendererService {
       ${decision}
       <footer class="tool-card-footer">
         <a class="tool-link" href="${escapeUrl(`https://${url}`)}">${escapeHtml(url)}</a>
-        ${used}
       </footer>
     </article>`;
   }
@@ -202,7 +176,7 @@ export class ToolkitHtmlRendererService {
     });
 
     return safeHtml`<section class="page section">
-      ${sectionHeader('02', '✍️ Prompts', 'Personnalisés selon votre niveau')}
+      ${sectionHeader('02', '✍️ Prompts', 'Pour tous les niveaux')}
       <div class="prompt-list">${cards}</div>
     </section>`;
   }
@@ -270,15 +244,6 @@ export class ToolkitHtmlRendererService {
     return safeHtml`<section class="page section section-templates">
       ${sectionHeader('04', '📋 Templates', "Prêts à l'emploi")}
       <div class="template-grid">${cards}</div>
-    </section>`;
-  }
-
-  private renderGeneratedPrompt(generatedPrompt: string): EscapedHtml {
-    return safeHtml`<section class="page section">
-      ${sectionHeader('05', '✨ Votre prompt', 'Sur mesure pour votre activité')}
-      <div class="generated-box">
-        <pre class="generated-text">${escapeHtml(generatedPrompt)}</pre>
-      </div>
     </section>`;
   }
 }

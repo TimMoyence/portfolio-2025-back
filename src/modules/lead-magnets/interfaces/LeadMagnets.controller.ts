@@ -9,7 +9,6 @@ import {
 import { RequestToolkitUseCase } from '../application/RequestToolkit.useCase';
 import type { RequestToolkitCommand } from '../application/dto/RequestToolkit.command';
 import { GetToolkitByTokenUseCase } from '../application/queries/GetToolkitByToken.useCase';
-import type { InteractionProfile } from '../domain/InteractionProfile';
 import { LeadMagnetResponseDto } from './dto/lead-magnet.response.dto';
 import { RequestToolkitRequestDto } from './dto/request-toolkit.request.dto';
 import { ToolkitPageResponseDto } from './dto/toolkit-page.response.dto';
@@ -40,16 +39,6 @@ export class LeadMagnetsController {
   async create(
     @Body() dto: RequestToolkitRequestDto,
   ): Promise<LeadMagnetResponseDto> {
-    const profile: InteractionProfile | undefined = dto.profile
-      ? {
-          aiLevel: dto.profile.aiLevel ?? null,
-          toolsAlreadyUsed: dto.profile.toolsAlreadyUsed ?? [],
-          budgetTier: dto.profile.budgetTier ?? null,
-          sector: dto.profile.sector ?? null,
-          generatedPrompt: dto.profile.generatedPrompt ?? null,
-        }
-      : undefined;
-
     const command: RequestToolkitCommand = {
       firstName: dto.firstName,
       email: dto.email,
@@ -57,7 +46,6 @@ export class LeadMagnetsController {
       termsVersion: dto.termsVersion,
       termsLocale: dto.termsLocale,
       termsAcceptedAt: dto.termsAcceptedAt,
-      profile,
     };
     const response = await this.requestToolkit.execute(command);
     const responseDto = new LeadMagnetResponseDto();

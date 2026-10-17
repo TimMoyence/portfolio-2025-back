@@ -1,6 +1,5 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
-import { IsIn, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsIn, IsString } from 'class-validator';
 import { AdresseEmail } from '../../../../common/interfaces/dto/adresse-email.decorator';
 import {
   Rogne,
@@ -13,7 +12,6 @@ import {
 import type { SupportedLocale } from '../../../../common/domain/value-objects/LocaleCode';
 import { LocaleSupportee } from '../../../../common/interfaces/dto/locale-supportee.decorator';
 import { ChampsAntiRobotDto } from '../../../../common/interfaces/security/champs-anti-robot.dto';
-import { InteractionProfileDto } from './interaction-profile.dto';
 
 const FORMATIONS_DE_LA_BOITE = ['ia-solopreneurs'];
 
@@ -40,10 +38,4 @@ export class RequestToolkitRequestDto extends ChampsAntiRobotDto {
 
   @AcceptationDesConditions()
   termsAcceptedAt: Date;
-
-  @ApiPropertyOptional({ type: InteractionProfileDto })
-  @IsOptional()
-  @ValidateNested()
-  @Type(() => InteractionProfileDto)
-  profile?: InteractionProfileDto;
 }

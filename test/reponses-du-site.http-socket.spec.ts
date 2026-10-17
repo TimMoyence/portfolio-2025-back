@@ -17,7 +17,6 @@ import { ArticlesController } from '../src/modules/articles/interfaces/articles.
 import { CookieConsentsController } from '../src/modules/cookie-consents/interfaces/CookieConsents.controller';
 import { RequestToolkitUseCase } from '../src/modules/lead-magnets/application/RequestToolkit.useCase';
 import { GetToolkitByTokenUseCase } from '../src/modules/lead-magnets/application/queries/GetToolkitByToken.useCase';
-import type { InteractionProfile } from '../src/modules/lead-magnets/domain/InteractionProfile';
 import {
   LEAD_MAGNET_NOTIFIER,
   LEAD_MAGNET_REQUEST_REPOSITORY,
@@ -25,6 +24,12 @@ import {
   TOOLKIT_PDF_GENERATOR,
 } from '../src/modules/lead-magnets/domain/token';
 import { ToolkitContentAssemblerService } from '../src/modules/lead-magnets/infrastructure/ToolkitContentAssembler.service';
+import {
+  CHEATSHEET_DATA,
+  PROMPTS_DATA,
+  TEMPLATES_DATA,
+  WORKFLOWS_DATA,
+} from '../src/modules/lead-magnets/infrastructure/data/toolkit-content.data';
 import { LeadMagnetsController } from '../src/modules/lead-magnets/interfaces/LeadMagnets.controller';
 import { GetPresentationInteractionsUseCase } from '../src/modules/presentations/application/GetPresentationInteractions.useCase';
 import { PRESENTATIONS_REPOSITORY } from '../src/modules/presentations/domain/token';
@@ -108,14 +113,6 @@ const ARTICLE_DE_L_EDITION: ArticleIngestEnvelope = {
       image_alt: 'Couverture de l edition',
     },
   },
-};
-
-const PROFIL_DEBUTANT_SANS_BUDGET: InteractionProfile = {
-  aiLevel: 'debutant',
-  toolsAlreadyUsed: ['chatgpt'],
-  budgetTier: '0',
-  sector: 'conseil',
-  generatedPrompt: 'Tu es mon assistant de prospection.',
 };
 
 function serveurDeLaSuite(
@@ -248,25 +245,58 @@ describe('Reponses du site public servies par les vrais controleurs', () => {
     },
   );
 
-  it.each([
-    ['sans profil', undefined],
-    ['avec le profil saisi', PROFIL_DEBUTANT_SANS_BUDGET],
-  ])(
-    'GET /api/lead-magnets/toolkit/:token sert le guide %s',
-    async (_cas, profile) => {
-      demandes.findByToken.mockResolvedValueOnce(
-        buildLeadMagnetRequest({ profile }),
-      );
+  it('POST /api/lead-magnets/formations-toolkit refuse le profil d interaction retire (LEG-06)', async () => {
+    const reponse = await request(serveur())
+      .post('/api/lead-magnets/formations-toolkit')
+      .send({
+        ...demandeDuGuide(),
+        profile: { aiLevel: 'debutant', budgetTier: '0' },
+      })
+      .expect(400);
 
-      const reponse = await request(serveur())
-        .get(`/api/lead-magnets/toolkit/${JETON_DU_GUIDE}`)
-        .expect(200);
+    expect((reponse.body as { detail: string[] }).detail).toContain(
+      'property profile should not exist',
+    );
+  });
 
-      expect(reponse.body).toMatchObject({
-        generatedPrompt: profile?.generatedPrompt ?? null,
-      });
-    },
-  );
+  it('GET /api/lead-magnets/toolkit/:token sert a chacun le meme guide, sans personnalisation (LEG-06)', async () => {
+    demandes.findByToken.mockResolvedValueOnce(buildLeadMagnetRequest());
+
+    const reponse = await request(serveur())
+      .get(`/api/lead-magnets/toolkit/${JETON_DU_GUIDE}`)
+      .expect(200);
+    const page = reponse.body as {
+      recap: object;
+      cheatsheet: object[];
+      prompts: object[];
+      workflows: { title: string }[];
+      templates: object[];
+    };
+
+    expect(Object.keys(page)).toEqual([
+      'recap',
+      'cheatsheet',
+      'prompts',
+      'workflows',
+      'templates',
+    ]);
+    expect(page.recap).toEqual({ firstName: 'Marie' });
+    expect(page.cheatsheet.map((outil) => Object.keys(outil))).toEqual(
+      CHEATSHEET_DATA.map(() => [
+        'tool',
+        'category',
+        'price',
+        'url',
+        'tip',
+        'decision',
+      ]),
+    );
+    expect(page.prompts).toHaveLength(PROMPTS_DATA.length);
+    expect(page.workflows.map(({ title }) => title)).toEqual(
+      WORKFLOWS_DATA.map(({ title }) => title),
+    );
+    expect(page.templates).toHaveLength(TEMPLATES_DATA.length);
+  });
 });
 
 function demandeDuGuide() {
@@ -278,7 +308,6 @@ function demandeDuGuide() {
     termsVersion: '2026-04-10',
     termsLocale: 'fr',
     termsAcceptedAt: '2026-04-10T10:00:00.000Z',
-    profile: { aiLevel: 'debutant', budgetTier: '0' },
   };
 }
 

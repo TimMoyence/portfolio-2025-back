@@ -39,7 +39,7 @@ describe('LeadMagnetRequestRepositoryTypeORM', () => {
     findOne.mockReset();
   });
 
-  it('enregistre la demande sans profil sous un profil vide et rend la ligne sauvegardee', async () => {
+  it('enregistre la demande, sans profil d interaction, et rend la ligne sauvegardee', async () => {
     const demande = buildLeadMagnetRequest();
     const saisie = {
       firstName: demande.firstName,
@@ -52,18 +52,15 @@ describe('LeadMagnetRequestRepositoryTypeORM', () => {
 
     const enregistree = await sut.create(demande);
 
-    expect(demande.profile).toBeUndefined();
     expect(create).toHaveBeenCalledWith({
       ...saisie,
       boite: 'marie@example.com',
-      profile: {},
     });
     expect(save).toHaveBeenCalledWith(create.mock.results[0].value);
     expect({ ...enregistree }).toEqual({
       ...saisie,
       id: 'demande-1',
       accessToken: JETON_D_ACCES,
-      profile: {},
       createdAt: CREEE_LE,
     });
   });
@@ -83,15 +80,17 @@ describe('LeadMagnetRequestRepositoryTypeORM', () => {
 
   it('retrouve une demande par son jeton d acces et la traduit', async () => {
     findOne.mockResolvedValue(
-      ligneEnregistree({
-        firstName: 'Ada',
-        email: 'ada@example.com',
-        formationSlug: 'ia-solopreneurs',
-        termsVersion: '2026-04-10',
-        termsLocale: 'en',
-        termsAcceptedAt: CREEE_LE,
-        profile: { aiLevel: 'debutant' } as LeadMagnetRequestEntity['profile'],
-      }),
+      Object.assign(
+        ligneEnregistree({
+          firstName: 'Ada',
+          email: 'ada@example.com',
+          formationSlug: 'ia-solopreneurs',
+          termsVersion: '2026-04-10',
+          termsLocale: 'en',
+          termsAcceptedAt: CREEE_LE,
+        }),
+        { profile: { aiLevel: 'debutant' } },
+      ),
     );
 
     const trouvee = await sut.findByToken(JETON_D_ACCES);
@@ -104,9 +103,9 @@ describe('LeadMagnetRequestRepositoryTypeORM', () => {
       firstName: 'Ada',
       termsLocale: 'en',
       accessToken: JETON_D_ACCES,
-      profile: { aiLevel: 'debutant' },
       createdAt: CREEE_LE,
     });
+    expect(trouvee).not.toHaveProperty('profile');
   });
 
   it('rend null pour un jeton d acces inconnu', async () => {

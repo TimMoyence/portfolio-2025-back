@@ -3,7 +3,6 @@ import {
   ColonneAcceptationDesConditions,
   ColonneVersionDesConditions,
 } from '../../../../common/infrastructure/typeorm/ColonnesDeConsentement';
-import type { InteractionProfile } from '../../domain/InteractionProfile';
 
 @Entity({ name: 'lead_magnet_requests' })
 @Index('idx_lead_magnet_requests_email_slug', ['email', 'formationSlug'])
@@ -41,9 +40,6 @@ export class LeadMagnetRequestEntity {
     nullable: true,
   })
   accessToken: string;
-
-  @Column({ type: 'jsonb', default: '{}' })
-  profile: InteractionProfile;
 
   @Column({ name: 'created_at', type: 'timestamptz', default: () => 'NOW()' })
   createdAt: Date;

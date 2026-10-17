@@ -32,7 +32,6 @@ export class LeadMagnetRequestRepositoryTypeORM
       termsVersion: data.termsVersion,
       termsLocale: data.termsLocale,
       termsAcceptedAt: data.termsAcceptedAt,
-      profile: data.profile ?? ({} as LeadMagnetRequestEntity['profile']),
     });
   }
 
@@ -72,7 +71,6 @@ export class LeadMagnetRequestRepositoryTypeORM
     request.termsLocale = entity.termsLocale;
     request.termsAcceptedAt = entity.termsAcceptedAt;
     request.accessToken = entity.accessToken;
-    request.profile = entity.profile;
     request.createdAt = entity.createdAt;
     return request;
   }

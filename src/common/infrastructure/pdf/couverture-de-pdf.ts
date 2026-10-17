@@ -10,7 +10,6 @@ export interface CouvertureDePdf {
   readonly titre: EscapedHtml;
   readonly sousTitre: EscapedHtml;
   readonly meta: readonly EscapedHtml[];
-  readonly badges?: readonly EscapedHtml[];
   readonly pied: readonly string[];
 }
 
@@ -20,7 +19,6 @@ export function couvertureDePdf({
   titre,
   sousTitre,
   meta,
-  badges = [],
   pied,
 }: CouvertureDePdf): EscapedHtml {
   const decor = Array.from(
@@ -32,9 +30,6 @@ export function couvertureDePdf({
     const span = safeHtml`<span>${escapeHtml(mention)}</span>`;
     return rang === 0 ? [span] : [safeHtml`<span>•</span>`, span];
   });
-  const encarts = badges.length
-    ? safeHtml`<div class="badges">${badges}</div>`
-    : safeHtml``;
 
   return safeHtml`<section class="page cover">
       <div class="cover-gradient">${decor}</div>
@@ -43,7 +38,6 @@ export function couvertureDePdf({
         <h1 class="cover-title">${titre}</h1>
         <p class="cover-subtitle">${sousTitre}</p>
         <div class="cover-meta">${meta}</div>
-        ${encarts}
       </div>
       <footer class="cover-footer">${mentions}</footer>
     </section>`;

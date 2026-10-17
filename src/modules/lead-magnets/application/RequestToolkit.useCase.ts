@@ -60,10 +60,7 @@ export class RequestToolkitUseCase {
   }
 
   private async generateAndSend(request: LeadMagnetRequest): Promise<void> {
-    const content = this.assembler.assemble(
-      request.firstName,
-      request.profile ?? null,
-    );
+    const content = this.assembler.assemble(request.firstName);
     const pdfBuffer = await this.pdfGenerator.generate(request, content);
     await this.notifier.sendToolkitEmail(request, pdfBuffer);
   }

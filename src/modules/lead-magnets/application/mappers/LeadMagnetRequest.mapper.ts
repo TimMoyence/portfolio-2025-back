@@ -12,7 +12,6 @@ export class LeadMagnetRequestMapper {
         termsVersion: command.termsVersion,
         termsLocale: command.termsLocale,
         termsAcceptedAt: command.termsAcceptedAt,
-        profile: command.profile,
       }),
     );
   }

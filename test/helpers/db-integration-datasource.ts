@@ -167,6 +167,19 @@ export async function typesEnumeresPresents(
   return lignes.map(({ typname }) => typname);
 }
 
+export async function colonnesDeLaTable(
+  dataSource: DataSource,
+  table: string,
+): Promise<string[]> {
+  const lignes: { column_name: string }[] = await dataSource.query(
+    `SELECT column_name FROM information_schema.columns
+     WHERE table_schema = 'public' AND table_name = $1
+     ORDER BY column_name`,
+    [table],
+  );
+  return lignes.map(({ column_name }) => column_name);
+}
+
 export async function inscrireUtilisateur(
   dataSource: DataSource,
   email: string,

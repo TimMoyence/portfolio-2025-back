@@ -58,6 +58,7 @@ describe('RequestToolkitUseCase', () => {
 
     expect(repo.create).toHaveBeenCalledTimes(1);
     expect(assembler.assemble).toHaveBeenCalledTimes(1);
+    expect(assembler.assemble).toHaveBeenCalledWith('Marie');
     expect(pdfGenerator.generate).toHaveBeenCalledTimes(1);
     expect(notifier.sendToolkitEmail).toHaveBeenCalledTimes(1);
     expect(result.accessToken).toBeDefined();

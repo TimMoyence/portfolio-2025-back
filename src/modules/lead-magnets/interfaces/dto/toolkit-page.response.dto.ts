@@ -1,19 +1,9 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { AI_LEVELS } from '../../domain/InteractionProfile';
-import type { ToolkitContent } from '../../domain/ToolkitContent';
+import { AI_LEVELS, type ToolkitContent } from '../../domain/ToolkitContent';
 
 class ToolkitRecapDto {
   @ApiProperty()
   firstName: string;
-
-  @ApiProperty({ type: String, nullable: true })
-  aiLevel: string | null;
-
-  @ApiProperty({ type: String, nullable: true })
-  sector: string | null;
-
-  @ApiProperty({ type: String, nullable: true })
-  budgetTier: string | null;
 }
 
 class CheatsheetEntryDto {
@@ -34,9 +24,6 @@ class CheatsheetEntryDto {
 
   @ApiProperty()
   decision: string;
-
-  @ApiProperty()
-  alreadyUsed: boolean;
 }
 
 class PromptEntryDto {
@@ -132,9 +119,6 @@ export class ToolkitPageResponseDto {
   @ApiProperty({ type: [TemplateEntryDto] })
   templates: ToolkitContent['templates'];
 
-  @ApiProperty({ type: String, nullable: true })
-  generatedPrompt: string | null;
-
   static fromContent(content: ToolkitContent): ToolkitPageResponseDto {
     const dto = new ToolkitPageResponseDto();
     dto.recap = content.recap;
@@ -142,7 +126,6 @@ export class ToolkitPageResponseDto {
     dto.prompts = content.prompts;
     dto.workflows = content.workflows;
     dto.templates = content.templates;
-    dto.generatedPrompt = content.generatedPrompt;
     return dto;
   }
 }

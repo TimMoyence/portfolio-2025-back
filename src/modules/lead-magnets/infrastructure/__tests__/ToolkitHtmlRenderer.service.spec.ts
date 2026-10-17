@@ -31,29 +31,12 @@ describe('ToolkitHtmlRendererService', () => {
       expect(html).toContain('Marie');
     });
 
-    it.each([
-      [
-        'avec ses badges',
-        {},
-        '<div class="badges"><span class="badge"><span class="badge-label">Niveau IA</span>' +
-          '<span class="badge-value">Intermédiaire</span></span>' +
-          '<span class="badge"><span class="badge-label">Secteur</span>' +
-          '<span class="badge-value">Coach &amp; sport</span></span>' +
-          '<span class="badge"><span class="badge-label">Budget</span>' +
-          '<span class="badge-value">60 €/mois</span></span></div>',
-      ],
-      ['sans badge', { aiLevel: '', sector: '', budgetTier: '' }, ''],
-    ])('rend la couverture du guide %s', (_cas, recap, badges) => {
+    it('rend la couverture du guide au seul prenom, sans badge (LEG-06)', () => {
       jest.useFakeTimers({ now: Date.parse('2026-04-15T10:00:00Z') });
       try {
         const html = rendre(
           buildToolkitContent({
-            recap: {
-              ...buildToolkitContent().recap,
-              firstName: 'Léa <3',
-              sector: 'Coach & sport',
-              ...recap,
-            },
+            recap: { ...buildToolkitContent().recap, firstName: 'Léa <3' },
           }),
         );
 
@@ -65,20 +48,13 @@ describe('ToolkitHtmlRendererService', () => {
             '<h1 class="cover-title">L\'IA au service<br/>des solopreneurs</h1>' +
             '<p class="cover-subtitle">Votre boîte à outils sur mesure pour transformer votre activité avec l\'IA en 2026.</p>' +
             '<div class="cover-meta"><p class="cover-prepared">Préparé pour <strong>Léa &lt;3</strong></p>' +
-            `<p class="cover-date">15 avril 2026</p></div>${badges}</div>` +
+            '<p class="cover-date">15 avril 2026</p></div></div>' +
             '<footer class="cover-footer"><span>asilidesign.fr</span><span>•</span>' +
             '<span>Guide généré sur mesure</span><span>•</span><span>Édition 2026</span></footer></section>',
         );
       } finally {
         jest.useRealTimers();
       }
-    });
-
-    it('inclut le secteur, le niveau et le budget dans la couverture', () => {
-      const html = rendre(buildToolkitContent());
-      expect(html).toContain('Coach sportif');
-      expect(html.toLowerCase()).toContain('interm');
-      expect(html).toContain('60');
     });
 
     it('rend les outils du cheatsheet avec leur URL et prix', () => {
@@ -150,34 +126,18 @@ describe('ToolkitHtmlRendererService', () => {
       expect(html).toContain('https://notion.so/templates/crm');
     });
 
-    it('omet la section prompt genere si null', () => {
-      const html = rendre(buildToolkitContent({ generatedPrompt: null }));
-      expect(html).not.toContain('Votre prompt personnalisé');
-      expect(html).not.toContain('Votre prompt personnalise');
-    });
-
-    it('inclut la section prompt genere si present', () => {
+    it('ne rend ni puce d usage, ni prompt genere, ni tri par niveau (LEG-06)', () => {
       const html = rendre(
-        buildToolkitContent({
+        Object.assign(buildToolkitContent(), {
           generatedPrompt: 'Genere-moi un plan pour coach sportif',
         }),
       );
-      expect(html).toContain('Genere-moi un plan pour coach sportif');
-    });
 
-    it("utilise des valeurs par defaut si le profil n'est pas defini", () => {
-      const html = rendre(
-        buildToolkitContent({
-          recap: {
-            firstName: 'Tim',
-            aiLevel: null,
-            sector: null,
-            budgetTier: null,
-          },
-        }),
-      );
-      expect(html).toContain('Tim');
-      expect(html).toMatch(/^<!DOCTYPE html>/);
+      expect(html).not.toContain('class="chip');
+      expect(html).not.toContain('Genere-moi un plan');
+      expect(html).not.toContain('Votre prompt');
+      expect(html).not.toContain('Personnalisés selon votre niveau');
+      expect(html).toContain('Pour tous les niveaux');
     });
 
     it('inclut la date du jour formatee en francais', () => {
@@ -197,7 +157,6 @@ describe('ToolkitHtmlRendererService', () => {
               url: 'https://chat.openai.com',
               tip: 'Polyvalent',
               decision: 'Brainstormer',
-              alreadyUsed: true,
             },
             {
               tool: 'Zapier',
@@ -206,7 +165,6 @@ describe('ToolkitHtmlRendererService', () => {
               url: 'https://zapier.com',
               tip: 'No-code',
               decision: 'Connecter deux apps',
-              alreadyUsed: false,
             },
           ],
         }),
@@ -284,7 +242,6 @@ describe('ToolkitHtmlRendererService', () => {
               url: 'javascript:alert(1)',
               tip: 'x',
               decision: 'x',
-              alreadyUsed: false,
             },
           ],
         }),

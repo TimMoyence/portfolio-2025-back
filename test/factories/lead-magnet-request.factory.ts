@@ -28,12 +28,7 @@ export function buildToolkitContent(
   overrides: Partial<ToolkitContent> = {},
 ): ToolkitContent {
   return {
-    recap: {
-      firstName: 'Tim',
-      aiLevel: 'intermediaire',
-      sector: 'Coach sportif',
-      budgetTier: '60',
-    },
+    recap: { firstName: 'Tim' },
     cheatsheet: [
       {
         tool: 'ChatGPT',
@@ -42,7 +37,6 @@ export function buildToolkitContent(
         url: 'https://chat.openai.com',
         tip: 'Le couteau suisse',
         decision: 'Brainstormer ou analyser',
-        alreadyUsed: false,
       },
     ],
     prompts: [
@@ -80,7 +74,6 @@ export function buildToolkitContent(
         minBudget: 0,
       },
     ],
-    generatedPrompt: null,
     ...overrides,
   };
 }

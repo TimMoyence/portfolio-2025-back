@@ -5,7 +5,7 @@ import type {
   WorkflowEntry,
 } from '../../domain/ToolkitContent';
 
-type CheatsheetDataEntry = Omit<CheatsheetEntry, 'tool' | 'alreadyUsed'> & {
+type CheatsheetDataEntry = Omit<CheatsheetEntry, 'tool'> & {
   id: string;
 };
 

@@ -2,7 +2,6 @@ import { Inject, Injectable } from '@nestjs/common';
 import { LienInvalideError } from '../../../../common/domain/errors/LienInvalideError';
 import type { ILeadMagnetRequestRepository } from '../../domain/ILeadMagnetRequestRepository';
 import type { IToolkitContentAssembler } from '../../domain/IToolkitContentAssembler';
-import type { InteractionProfile } from '../../domain/InteractionProfile';
 import type { ToolkitContent } from '../../domain/ToolkitContent';
 import {
   LEAD_MAGNET_REQUEST_REPOSITORY,
@@ -25,7 +24,6 @@ export class GetToolkitByTokenUseCase {
       throw new LienInvalideError();
     }
 
-    const profile: InteractionProfile | null = request.profile ?? null;
-    return this.assembler.assemble(request.firstName, profile);
+    return this.assembler.assemble(request.firstName);
   }
 }
