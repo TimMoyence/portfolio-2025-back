@@ -42,9 +42,20 @@ export const ALIAS_POSTGRES = {
   synchronize: ['DB_SYNCHRONIZE', 'TYPEORM_SYNCHRONIZE'],
 } as const;
 
-function nomDeBaseDeLUrl(url: string): string | undefined {
+const SCHEMAS_POSTGRES: ReadonlySet<string> = new Set([
+  'postgres:',
+  'postgresql:',
+]);
+
+export function nomDeBaseDeLUrl(url: string): string | undefined {
   if (!URL.canParse(url)) return undefined;
-  return new URL(url).pathname.replace(/^\//, '') || undefined;
+  const { protocol, pathname } = new URL(url);
+  if (!SCHEMAS_POSTGRES.has(protocol)) return undefined;
+  try {
+    return decodeURI(pathname.slice(1)) || undefined;
+  } catch {
+    return undefined;
+  }
 }
 
 function sslDe(source: SourceDEnv): SslPostgres | undefined {

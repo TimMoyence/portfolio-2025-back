@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 import { DataSource, type DataSourceOptions } from 'typeorm';
 import { estEnProduction, type SourceDEnv } from '../config/env-readers.util';
+import { validateEnv } from '../config/env.validation';
 import {
   emplacementTypeOrm,
   resoudreConnexionPostgres,
@@ -16,6 +17,9 @@ if (!estEnProduction()) {
 export function optionsDesMigrations(
   source: SourceDEnv = process.env,
 ): DataSourceOptions {
+  if (estEnProduction(source)) {
+    validateEnv(source);
+  }
   return {
     type: 'postgres',
     ...emplacementTypeOrm(resoudreConnexionPostgres(source)),

@@ -1,4 +1,5 @@
 import {
+  buildProductionSecrets,
   buildValidEnv,
   TEST_JWT_SECRET,
   TEST_MORNING_BRIEF_HMAC_KEYS,
@@ -271,6 +272,111 @@ describe('validateEnv', () => {
     });
 
     expect(() => validateEnv(env)).toThrow('FORMATIONS_PULSE_SECRET');
+  });
+
+  describe('secrets distincts entre usages, trousseau HMAC et JWT precedent compris', () => {
+    const PARTAGE = 'p'.repeat(40);
+
+    it.each<[string, Record<string, unknown>, string]>([
+      [
+        'une cle du trousseau HMAC qui reprend JWT_SECRET',
+        { MORNING_BRIEF_HMAC_KEYS: `mb:${TEST_JWT_SECRET}` },
+        'MORNING_BRIEF_HMAC_KEYS: doit etre distinct de JWT_SECRET',
+      ],
+      [
+        'JWT_SECRET_PREVIOUS repris par le hachage des mots de passe',
+        {
+          JWT_SECRET_PREVIOUS: PARTAGE,
+          SECURE_KEY_FOR_PASSWORD_HASHING: PARTAGE,
+        },
+        'SECURE_KEY_FOR_PASSWORD_HASHING: doit etre distinct de JWT_SECRET_PREVIOUS',
+      ],
+      [
+        'le secret HMAC du couple qui reprend FORMATIONS_PULSE_SECRET',
+        {
+          FORMATIONS_PULSE_SECRET: PARTAGE,
+          MORNING_BRIEF_HMAC_KEY_ID: 'mb',
+          MORNING_BRIEF_HMAC_SECRET: PARTAGE,
+        },
+        'MORNING_BRIEF_HMAC_SECRET: doit etre distinct de FORMATIONS_PULSE_SECRET',
+      ],
+    ])('refuse %s', (_cas, surcharge, message) => {
+      expect(() => validateEnv(buildValidEnv(surcharge))).toThrow(message);
+    });
+
+    it('accepte un meme secret porte par le couple et le trousseau HMAC, un seul usage', () => {
+      expect(() =>
+        validateEnv(
+          buildValidEnv({
+            MORNING_BRIEF_HMAC_KEYS: `mb:${PARTAGE}`,
+            MORNING_BRIEF_HMAC_KEY_ID: 'mb',
+            MORNING_BRIEF_HMAC_SECRET: PARTAGE,
+          }),
+        ),
+      ).not.toThrow();
+    });
+  });
+
+  describe('base de DATABASE_URL, lue comme pg la lit', () => {
+    it.each([
+      ['postgres://u:p@h:5432/donn%C3%A9es_2025', 'données_2025'],
+      ['postgresql://u:p@h:5432/données_2025', 'données_2025'],
+      ['postgres://u:p@h:5432/ma%20base', 'ma base'],
+    ])('nomme DB_NAME la base decodee de %s', (url, base) => {
+      expect(
+        validateEnv(buildValidEnv({ DB_NAME: undefined, DATABASE_URL: url }))
+          .DB_NAME,
+      ).toBe(base);
+    });
+
+    it.each([
+      [
+        'un socket, dont pg lit la base dans ?db=',
+        'socket:/var/run/postgresql?db=portfolio',
+      ],
+      ['un autre schema que postgres', 'mysql://u:p@h:3306/portfolio'],
+      [
+        'une URL sans base, ou pg ouvrirait celle de l utilisateur',
+        'postgres://u:p@h:5432',
+      ],
+      ['un chemin mal encode', 'postgres://u:p@h:5432/%E0%A4%A'],
+    ])('refuse %s', (_cas, url) => {
+      expect(() =>
+        validateEnv(buildValidEnv({ DB_NAME: undefined, DATABASE_URL: url })),
+      ).toThrow(
+        'DATABASE_URL: doit etre une URL postgres:// ou postgresql:// qui nomme sa base',
+      );
+    });
+
+    it('refuse en production une DATABASE_URL qui nomme une autre base que POSTGRES_DB, que db-backup sauvegarde', () => {
+      expect(() =>
+        validateEnv(
+          buildValidEnv({
+            ...buildProductionSecrets(),
+            NODE_ENV: 'production',
+            DB_NAME: undefined,
+            POSTGRES_DB: 'portfolio',
+            DATABASE_URL: 'postgres://u:p@db:5432/portfolio_prod',
+          }),
+        ),
+      ).toThrow(
+        'DATABASE_URL: doit nommer la base POSTGRES_DB, la seule que db-backup sauvegarde',
+      );
+    });
+
+    it('accepte en production une DATABASE_URL qui nomme POSTGRES_DB', () => {
+      expect(
+        validateEnv(
+          buildValidEnv({
+            ...buildProductionSecrets(),
+            NODE_ENV: 'production',
+            DB_NAME: undefined,
+            POSTGRES_DB: 'portfolio',
+            DATABASE_URL: 'postgres://u:p@db:5432/portfolio',
+          }),
+        ).DB_NAME,
+      ).toBe('portfolio');
+    });
   });
 
   it('devrait lancer une erreur si FORMATION_REVIEW_TOKEN_SECRET est manquant', () => {

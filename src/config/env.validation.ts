@@ -4,7 +4,10 @@ import {
   LONGUEUR_MIN_DU_SECRET,
 } from '../common/domain/crypto/secret-hmac';
 import { EmailAddress } from '../common/domain/value-objects/EmailAddress';
-import { resoudreConnexionPostgres } from '../database/connexion-postgres';
+import {
+  nomDeBaseDeLUrl,
+  resoudreConnexionPostgres,
+} from '../database/connexion-postgres';
 import { estEnProduction, lirePort, PORT_ATTENDU } from './env-readers.util';
 import { PREFIXE_API_PAR_DEFAUT } from './prefixe-api';
 import { trousseauHmac } from './trousseau-hmac';
@@ -39,29 +42,46 @@ function secretFacultatif(nom: string) {
     );
 }
 
-const cryptographicSecretKeys = [
-  'JWT_SECRET',
-  'SECURE_KEY_FOR_PASSWORD_HASHING',
-  'FORMATION_REVIEW_TOKEN_SECRET',
-  'FORMATIONS_PULSE_SECRET',
-  'MORNING_BRIEF_HMAC_SECRET',
+const USAGES_DES_SECRETS = [
+  ['JWT_SECRET', 'JWT_SECRET_PREVIOUS'],
+  ['SECURE_KEY_FOR_PASSWORD_HASHING'],
+  ['FORMATION_REVIEW_TOKEN_SECRET'],
+  ['FORMATIONS_PULSE_SECRET'],
+  ['MORNING_BRIEF_HMAC_SECRET', 'MORNING_BRIEF_HMAC_KEYS'],
 ] as const;
 
-export type CryptographicSecretKey = (typeof cryptographicSecretKeys)[number];
+type CleDeSecret = (typeof USAGES_DES_SECRETS)[number][number];
+
+export type CryptographicSecretKey = Exclude<
+  CleDeSecret,
+  'JWT_SECRET_PREVIOUS' | 'MORNING_BRIEF_HMAC_KEYS'
+>;
+
+type EnvLue = z.infer<typeof formeDeLEnv>;
+
+function secretsDe(env: EnvLue, cle: CleDeSecret): string[] {
+  const valeurs =
+    cle === 'MORNING_BRIEF_HMAC_KEYS'
+      ? trousseauHmac(env).map(({ secret }) => secret)
+      : [env[cle]];
+  return valeurs.flatMap((valeur) => valeur?.trim() || []);
+}
 
 function findDuplicateCryptographicSecret(
-  values: Readonly<Record<CryptographicSecretKey, string | undefined>>,
-): { key: CryptographicSecretKey; previousKey: CryptographicSecretKey } | null {
-  const seenSecrets = new Map<string, CryptographicSecretKey>();
-  for (const key of cryptographicSecretKeys) {
-    const secret = values[key]?.trim();
-    if (!secret) continue;
-
-    const previousKey = seenSecrets.get(secret);
-    if (previousKey) return { key, previousKey };
-    seenSecrets.set(secret, key);
+  env: EnvLue,
+): { key: CleDeSecret; previousKey: CleDeSecret } | null {
+  const premiereCle = new Map<string, { usage: number; cle: CleDeSecret }>();
+  for (const [usage, cles] of USAGES_DES_SECRETS.entries()) {
+    for (const cle of cles) {
+      for (const secret of secretsDe(env, cle)) {
+        const vue = premiereCle.get(secret);
+        if (vue !== undefined && vue.usage !== usage) {
+          return { key: cle, previousKey: vue.cle };
+        }
+        premiereCle.set(secret, { usage, cle });
+      }
+    }
   }
-
   return null;
 }
 
@@ -124,7 +144,13 @@ const formeDeLEnv = z.object({
   DB_POOL_MAX: z.string().optional(),
   DB_POOL_IDLE_TIMEOUT_MS: z.string().optional(),
   DB_POOL_CONNECT_TIMEOUT_MS: z.string().optional(),
-  DATABASE_URL: z.string().optional(),
+  DATABASE_URL: z
+    .string()
+    .optional()
+    .refine(
+      (url) => !url?.trim() || nomDeBaseDeLUrl(url.trim()) !== undefined,
+      'doit etre une URL postgres:// ou postgresql:// qui nomme sa base',
+    ),
   DATABASE_HOST: z.string().optional(),
   DATABASE_PORT: z.string().optional(),
   DATABASE_NAME: z.string().optional(),
@@ -245,13 +271,7 @@ export const VARIABLES_DE_L_ENV = Object.keys(
 ) as readonly VariableDEnv[];
 
 const envSchema = formeDeLEnv.superRefine((env, ctx) => {
-  const duplicateSecret = findDuplicateCryptographicSecret({
-    JWT_SECRET: env.JWT_SECRET,
-    SECURE_KEY_FOR_PASSWORD_HASHING: env.SECURE_KEY_FOR_PASSWORD_HASHING,
-    FORMATION_REVIEW_TOKEN_SECRET: env.FORMATION_REVIEW_TOKEN_SECRET,
-    FORMATIONS_PULSE_SECRET: env.FORMATIONS_PULSE_SECRET,
-    MORNING_BRIEF_HMAC_SECRET: env.MORNING_BRIEF_HMAC_SECRET,
-  });
+  const duplicateSecret = findDuplicateCryptographicSecret(env);
   if (duplicateSecret) {
     ctx.addIssue({
       code: 'custom',
@@ -261,6 +281,20 @@ const envSchema = formeDeLEnv.superRefine((env, ctx) => {
   }
 
   addSmtpIssues(env, ctx);
+
+  if (
+    estEnProduction(env) &&
+    env.DATABASE_URL?.trim() &&
+    env.POSTGRES_DB?.trim() &&
+    env.DB_NAME !== env.POSTGRES_DB.trim()
+  ) {
+    ctx.addIssue({
+      code: 'custom',
+      path: ['DATABASE_URL'],
+      message:
+        'doit nommer la base POSTGRES_DB, la seule que db-backup sauvegarde',
+    });
+  }
 
   const hmacRingConfigured = Boolean(env.MORNING_BRIEF_HMAC_KEYS?.trim());
   const hmacKeyIdConfigured = Boolean(env.MORNING_BRIEF_HMAC_KEY_ID?.trim());

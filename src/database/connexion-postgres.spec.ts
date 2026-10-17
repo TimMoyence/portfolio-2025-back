@@ -100,6 +100,22 @@ describe('resoudreConnexionPostgres', () => {
     ).toBe('depuis_url');
   });
 
+  it.each([
+    ['postgres://u:p@h:5432/donn%C3%A9es_2025', 'données_2025'],
+    ['postgres://u:p@h:5432/ma%20base', 'ma base'],
+    ['postgres://u:p@h:5432/ma base', 'ma base'],
+    ['socket:/var/run/postgresql?db=portfolio', undefined],
+    ['mysql://u:p@h:3306/portfolio', undefined],
+    ['postgres://u:p@h:5432/%E0%A4%A', undefined],
+  ])(
+    'garantit la base que pg ouvre pour %s, decodee, et aucune hors postgres',
+    (url, base) => {
+      expect(resoudreConnexionPostgres({ DATABASE_URL: url }).database).toBe(
+        base,
+      );
+    },
+  );
+
   it('ne leve pas sur une URL invalide et ne deduit alors aucune base', () => {
     expect(
       resoudreConnexionPostgres({ DATABASE_URL: 'pas une url' }).database,
