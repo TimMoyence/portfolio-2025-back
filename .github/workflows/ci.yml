@@ -287,6 +287,15 @@ jobs:
             BACK_IMAGE="$BACK_IMAGE_VALUE" FRONT_IMAGE="$FRONT_IMAGE_VALUE" \
             docker compose -p "$PROJECT" -f "$COMPOSE_FILE" --env-file "$WORKDIR/backend.env" pull api migrate
 
+            # Dump the database before migrate: some migrations have no down, see docs/database-governance.md §5
+            SAUVEGARDES="$WORKDIR/sauvegardes"
+            mkdir -p "$SAUVEGARDES"
+            BACK_IMAGE="$BACK_IMAGE_VALUE" FRONT_IMAGE="$FRONT_IMAGE_VALUE" \
+            docker compose -p "$PROJECT" -f "$COMPOSE_FILE" --env-file "$WORKDIR/backend.env" exec -T db \
+              sh -c 'pg_dump -U "$POSTGRES_USER" -d "$POSTGRES_DB" --format=custom' \
+              > "$SAUVEGARDES/avant-migrate-$(date -u +%Y%m%dT%H%M%SZ)-${{ github.sha }}.dump"
+            ls -1t "$SAUVEGARDES"/avant-migrate-*.dump | tail -n +6 | xargs -r rm -f --
+
             # Run migrations on THE SAME project/network/db
             BACK_IMAGE="$BACK_IMAGE_VALUE" FRONT_IMAGE="$FRONT_IMAGE_VALUE" \
             docker compose -p "$PROJECT" -f "$COMPOSE_FILE" --env-file "$WORKDIR/backend.env" run --rm migrate

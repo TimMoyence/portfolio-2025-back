@@ -170,6 +170,27 @@ void test('les jobs bloquant et non bloquant sont correctement marques dans le w
   );
 });
 
+void test('le deploiement sauvegarde la base, puis migre, puis remplace l api', () => {
+  const jobs = blocsDesJobs(readFileSync(WORKFLOW_PATH, 'utf8'));
+  const deploiement = Object.values(jobs).find((bloc) =>
+    bloc.includes('run --rm migrate'),
+  );
+  assert.ok(deploiement, 'aucun job du workflow ne lance migrate');
+
+  const etapes = ['pg_dump', 'run --rm migrate', 'up -d --no-deps --wait'];
+  const rangs = etapes.map((etape) => deploiement.indexOf(etape));
+
+  assert.ok(
+    rangs.every((rang) => rang >= 0),
+    `etapes absentes du deploiement : ${etapes.filter((_, i) => rangs[i] < 0).join(', ')}`,
+  );
+  assert.deepEqual(
+    [...rangs].sort((gauche, droite) => gauche - droite),
+    rangs,
+    'le deploiement doit sauvegarder la base avant migrate, et migrer avant de remplacer l api',
+  );
+});
+
 void test('les suites de resilience et de concurrence sont prises par la configuration db-integration bloquante', () => {
   const configDbIntegration = lireJson(
     join(TEST_DIR, 'jest-db-integration.json'),
