@@ -37,6 +37,22 @@ jest.mock('../../../../config/env.validation', () => ({
   validateEnv: (configuration: Record<string, unknown>) => configuration,
 }));
 
+jest.mock('@nestjs/common', () => {
+  const nest =
+    jest.requireActual<typeof import('@nestjs/common')>('@nestjs/common');
+  const modulesDecores = new Set<unknown>();
+  return {
+    ...nest,
+    modulesDecores,
+    Module:
+      (...parametres: Parameters<typeof nest.Module>): ClassDecorator =>
+      (cible) => {
+        modulesDecores.add(cible);
+        nest.Module(...parametres)(cible);
+      },
+  };
+});
+
 const RACINE_DES_SOURCES = join(__dirname, '..', '..', '..', '..');
 const EXEMPTEE_DE_LIMITATION = 'THROTTLER:SKIPdefault';
 
@@ -111,17 +127,70 @@ const cleEcrite = (noeud: ts.Node): string | null => {
     : null;
 };
 
-const porteLeMotCle = (
+const liaisonDe = (
   classe: ts.ClassLikeDeclaration,
-  motCle: ts.SyntaxKind,
-): boolean =>
-  ts.isClassDeclaration(classe) &&
-  (ts.getModifiers(classe) ?? []).some(({ kind }) => kind === motCle);
+): { nom?: string; instruction?: ts.Node } => {
+  if (ts.isClassDeclaration(classe))
+    return { nom: classe.name?.text, instruction: classe };
+  const liaison = classe.parent;
+  return ts.isVariableDeclaration(liaison) && ts.isIdentifier(liaison.name)
+    ? { nom: liaison.name.text, instruction: liaison.parent.parent }
+    : {};
+};
+
+const clausesDExport = (source: ts.SourceFile): Map<string, string[]> => {
+  const clauses = new Map<string, string[]>();
+  const exporter = (local: string, cle: string): void => {
+    clauses.set(local, [...(clauses.get(local) ?? []), cle]);
+  };
+  for (const instruction of source.statements) {
+    if (
+      ts.isExportAssignment(instruction) &&
+      !instruction.isExportEquals &&
+      ts.isIdentifier(instruction.expression)
+    )
+      exporter(instruction.expression.text, 'default');
+    if (
+      ts.isExportDeclaration(instruction) &&
+      instruction.moduleSpecifier === undefined &&
+      !instruction.isTypeOnly &&
+      instruction.exportClause !== undefined &&
+      ts.isNamedExports(instruction.exportClause)
+    )
+      for (const element of instruction.exportClause.elements)
+        if (!element.isTypeOnly)
+          exporter(
+            (element.propertyName ?? element.name).text,
+            element.name.text,
+          );
+  }
+  return clauses;
+};
+
+const clesDExport = (
+  classe: ts.ClassLikeDeclaration,
+  clauses: Map<string, string[]>,
+): string[] => {
+  const { nom, instruction } = liaisonDe(classe);
+  if (instruction === undefined || !ts.isSourceFile(instruction.parent))
+    return [];
+  const motsCles = (
+    ts.canHaveModifiers(instruction) ? (ts.getModifiers(instruction) ?? []) : []
+  ).map(({ kind }) => kind);
+  const parSesClauses = nom === undefined ? [] : (clauses.get(nom) ?? []);
+  if (!motsCles.includes(ts.SyntaxKind.ExportKeyword)) return parSesClauses;
+  return [
+    motsCles.includes(ts.SyntaxKind.DefaultKeyword) || nom === undefined
+      ? 'default'
+      : nom,
+    ...parSesClauses,
+  ];
+};
 
 interface ClasseDeModule {
   readonly fichier: string;
   readonly nom: string;
-  readonly cle: string;
+  readonly cles: readonly string[];
 }
 
 function lireLeCodeDesSources(): {
@@ -138,19 +207,20 @@ function lireLeCodeDesSources(): {
     (source) => source.endsWith('.ts') && !source.endsWith('.spec.ts'),
   )) {
     const deModule = estUnFichierDeModule(fichier);
+    const source = ts.createSourceFile(
+      fichier,
+      readFileSync(join(RACINE_DES_SOURCES, fichier), 'utf8'),
+      ts.ScriptTarget.Latest,
+      true,
+    );
+    const clauses = clausesDExport(source);
     const visiter = (noeud: ts.Node): void => {
       if (deModule && ts.isClassLike(noeud)) {
-        const nom = noeud.name?.text ?? 'classe anonyme';
-        if (!porteLeMotCle(noeud, ts.SyntaxKind.ExportKeyword))
+        const nom = liaisonDe(noeud).nom ?? 'classe anonyme';
+        const cles = clesDExport(noeud, clauses);
+        if (cles.length === 0)
           classesNonExportees.push(`${fichier} : ${nom} non exportée`);
-        else
-          classesDeModule.push({
-            fichier,
-            nom,
-            cle: porteLeMotCle(noeud, ts.SyntaxKind.DefaultKeyword)
-              ? 'default'
-              : nom,
-          });
+        else classesDeModule.push({ fichier, nom, cles });
       }
       if (!deModule && cleEcrite(noeud) === CLE_D_UN_MODULE_DYNAMIQUE)
         clesDeModule.push(`${fichier} : clé ${CLE_D_UN_MODULE_DYNAMIQUE}`);
@@ -161,21 +231,15 @@ function lireLeCodeDesSources(): {
         middlewares.push(`${fichier} : ${noeud.text}`);
       ts.forEachChild(noeud, visiter);
     };
-    visiter(
-      ts.createSourceFile(
-        fichier,
-        readFileSync(join(RACINE_DES_SOURCES, fichier), 'utf8'),
-        ts.ScriptTarget.Latest,
-      ),
-    );
+    visiter(source);
   }
   return { middlewares, clesDeModule, classesNonExportees, classesDeModule };
 }
 
 const CODE_DES_SOURCES = lireLeCodeDesSources();
 
-const MODULES_PAR_FICHIER = CODE_DES_SOURCES.classesDeModule.map(
-  ({ fichier, nom, cle }) => ({
+const CLASSES_PAR_FICHIER = CODE_DES_SOURCES.classesDeModule.map(
+  ({ fichier, nom, cles: [cle] }) => ({
     fichier,
     nom,
     module: jest.requireActual<Record<string, unknown>>(
@@ -184,7 +248,22 @@ const MODULES_PAR_FICHIER = CODE_DES_SOURCES.classesDeModule.map(
   }),
 );
 
-const MODULES_DES_SOURCES = MODULES_PAR_FICHIER.map(({ module }) => module);
+const CLASSES_DES_FICHIERS_DE_MODULE = CLASSES_PAR_FICHIER.map(
+  ({ module }) => module,
+);
+
+const { modulesDecores: MODULES_DECORES_PAR_NEST } = jest.requireMock<{
+  modulesDecores: ReadonlySet<unknown>;
+}>('@nestjs/common');
+
+const estUnModule = (classe: unknown): boolean =>
+  typeof classe === 'function' &&
+  (MODULES_DECORES_PAR_NEST.has(classe) ||
+    Object.values(MODULE_METADATA).some(
+      (cle) => Reflect.getMetadata(cle, classe) !== undefined,
+    ));
+
+const MODULES_DES_SOURCES = CLASSES_DES_FICHIERS_DE_MODULE.filter(estUnModule);
 
 const valeursExportees = (exportees: unknown): unknown[] => [
   exportees,
@@ -345,6 +424,14 @@ const classesDe = (declares: readonly unknown[]): Classe[] =>
   declares
     .map(classeDuProvider)
     .filter((classe): classe is Classe => classe !== null);
+
+const modulesVisites = async (): Promise<Classe[]> =>
+  classesDe(
+    await declaresDepuis('modules', [
+      ...MODULES_SERVIS,
+      ...MODULES_DES_SOURCES,
+    ]),
+  );
 
 async function classesConstruitesDepuis(
   racines: readonly unknown[],
@@ -692,18 +779,13 @@ describe('Injection des providers qui héritent d un constructeur injecté', () 
   });
 
   it('ne construit comme module aucune classe des sources hors d un fichier de module', async () => {
-    const visites = classesDe(
-      await declaresDepuis('modules', [
-        ...MODULES_SERVIS,
-        ...MODULES_DES_SOURCES,
-      ]),
-    );
+    const visites = await modulesVisites();
     const exportees = exportsDejaCharges(estUneSource);
     const deBibliotheque = exportsDejaCharges(estUneBibliotheque);
 
     expect(visites.length).toBeGreaterThan(MODULES_DES_SOURCES.length);
     expect(
-      MODULES_PAR_FICHIER.flatMap(({ fichier, nom, module }) => {
+      CLASSES_PAR_FICHIER.flatMap(({ fichier, nom, module }) => {
         if (!exportees.has(module))
           return [`${fichier} : ${nom} absent des exports des sources`];
         return deBibliotheque.has(module)
@@ -716,7 +798,7 @@ describe('Injection des providers qui héritent d un constructeur injecté', () 
       visites
         .filter(
           (module) =>
-            !MODULES_DES_SOURCES.includes(module) &&
+            !CLASSES_DES_FICHIERS_DE_MODULE.includes(module) &&
             exportees.has(module) &&
             !deBibliotheque.has(module),
         )
@@ -724,9 +806,9 @@ describe('Injection des providers qui héritent d un constructeur injecté', () 
     ).toEqual([]);
   });
 
-  it('ne laisse aucun module des sources appliquer un middleware, que la garde ne lit pas', () => {
-    const modules = MODULES_DES_SOURCES.filter(
-      (module): module is Classe => typeof module === 'function',
+  it('ne laisse aucun module des sources appliquer un middleware, que la garde ne lit pas', async () => {
+    const modules = (await modulesVisites()).filter((module) =>
+      CLASSES_DES_FICHIERS_DE_MODULE.includes(module),
     );
 
     expect(modules.length).toBeGreaterThan(0);
