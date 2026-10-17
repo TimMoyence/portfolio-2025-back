@@ -7,7 +7,9 @@ import {
   Injectable,
   Module,
   Optional,
+  Param,
   UseGuards,
+  UseInterceptors,
   type DynamicModule,
   type ForwardReference,
 } from '@nestjs/common';
@@ -20,8 +22,10 @@ import {
   OPTIONAL_DEPS_METADATA,
   PARAMTYPES_METADATA,
   PIPES_METADATA,
+  ROUTE_ARGS_METADATA,
   SELF_DECLARED_DEPS_METADATA,
 } from '@nestjs/common/constants';
+import { MetadataScanner } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
 import { DECORATORS } from '@nestjs/swagger/dist/constants';
 import { AppModule } from '../../../../app.module';
@@ -183,26 +187,42 @@ const enhancersDe = (cible: object): unknown[] =>
     (cle) => (Reflect.getMetadata(cle, cible) as unknown[] | undefined) ?? [],
   );
 
+const pipesDesParametres = (classe: Classe, methode: string): unknown[] =>
+  Object.values(
+    (Reflect.getMetadata(ROUTE_ARGS_METADATA, classe, methode) as
+      | Record<string, { pipes?: unknown[] }>
+      | undefined) ?? {},
+  ).flatMap(({ pipes }) => pipes ?? []);
+
+const injectablesDe = (classe: Classe): unknown[] => [
+  ...enhancersDe(classe),
+  ...new MetadataScanner()
+    .getAllMethodNames(classe.prototype as object)
+    .flatMap((methode) => [
+      ...enhancersDe(
+        (classe.prototype as Record<string, object>)[methode] ?? {},
+      ),
+      ...pipesDesParametres(classe, methode),
+    ]),
+];
+
+const classesDe = (declares: readonly unknown[]): Classe[] =>
+  declares
+    .map(classeDuProvider)
+    .filter((classe): classe is Classe => classe !== null);
+
 async function classesConstruitesDepuis(
   racines: readonly unknown[],
 ): Promise<Classe[]> {
-  const providers = await declaresDepuis(
-    MODULE_METADATA.PROVIDERS as Rubrique,
-    racines,
-  );
-  const controleurs = await controleursAtteintsDepuis(racines);
-  const enhancers = [
-    ...controleurs.flatMap(enhancersDe),
-    ...routesDe(controleurs).flatMap(({ cibles }) =>
-      cibles.flatMap(enhancersDe),
-    ),
-  ];
+  const composants = classesDe([
+    ...(await declaresDepuis(MODULE_METADATA.PROVIDERS as Rubrique, racines)),
+    ...(await controleursAtteintsDepuis(racines)),
+  ]);
   return [
-    ...new Set(
-      [...providers, ...controleurs, ...enhancers]
-        .map(classeDuProvider)
-        .filter((classe): classe is Classe => classe !== null),
-    ),
+    ...new Set([
+      ...composants,
+      ...classesDe(composants.flatMap(injectablesDe)),
+    ]),
   ];
 }
 
@@ -395,11 +415,42 @@ describe('Injection des providers qui héritent d un constructeur injecté', () 
     }
   }
 
+  class GardeDeMethode extends FilleQuiReordonne {
+    canActivate(): boolean {
+      return true;
+    }
+  }
+
+  class PipeDeParametre extends FilleQuiReordonne {
+    transform(valeur: unknown): unknown {
+      return valeur;
+    }
+  }
+
+  class IntercepteurDeMethode extends FilleQuiReordonne {
+    intercept(): undefined {
+      return undefined;
+    }
+  }
+
+  @Injectable()
+  class ServiceAvecGarde {
+    @UseGuards(GardeDeMethode)
+    traiter(): boolean {
+      return true;
+    }
+  }
+
   @Controller('temoin-injection')
   @UseGuards(GardeQuiReordonne)
   class ControleurQuiReordonne extends FilleQuiReordonne {
-    @Get()
-    lire(): string {
+    @Get(':id')
+    lire(@Param('id', PipeDeParametre) id: string): string {
+      return id;
+    }
+
+    @UseInterceptors(IntercepteurDeMethode)
+    preparer(): string {
       return 'temoin';
     }
   }
@@ -414,7 +465,12 @@ describe('Injection des providers qui héritent d un constructeur injecté', () 
 
   @Module({
     controllers: [ControleurQuiReordonne],
-    providers: [...DEPENDANCES, FilleNonDecoree, FilleFacultative],
+    providers: [
+      ...DEPENDANCES,
+      FilleNonDecoree,
+      FilleFacultative,
+      ServiceAvecGarde,
+    ],
     exports: [Outil, DEPOT, JOURNAL],
   })
   class ModuleTemoin {}
@@ -424,14 +480,26 @@ describe('Injection des providers qui héritent d un constructeur injecté', () 
       imports: [ModuleTemoin],
       providers: [FilleQuiReordonne, FilleQuiReinjecte, FilleSansConstructeur],
     }).compile();
+    const injectables = await Promise.all(
+      [
+        GardeQuiReordonne,
+        GardeDeMethode,
+        PipeDeParametre,
+        IntercepteurDeMethode,
+      ].map((injectable) =>
+        module.resolve(injectable, undefined, { strict: false }),
+      ),
+    );
 
     expect(module.get(FilleQuiReordonne).outil).toBe(journal);
     expect(module.get(FilleNonDecoree).outil).toBe(journal);
     expect(module.get(ControleurQuiReordonne).outil).toBe(journal);
-    expect(
-      (await module.resolve(GardeQuiReordonne, undefined, { strict: false }))
-        .outil,
-    ).toBe(journal);
+    expect(injectables.map(({ outil }) => outil)).toEqual([
+      journal,
+      journal,
+      journal,
+      journal,
+    ]);
     expect(module.get(FilleFacultative).requis).toBeUndefined();
     expect(module.get(FilleQuiReinjecte).outil).toBeInstanceOf(Outil);
     expect(module.get(FilleSansConstructeur).outil).toBeInstanceOf(Outil);
@@ -444,14 +512,17 @@ describe('Injection des providers qui héritent d un constructeur injecté', () 
     ).toEqual(['FilleQuiReordonne : paramètre 2']);
   });
 
-  it('juge chaque classe que construit Nest : providers, contrôleurs et leurs gardes', async () => {
+  it('juge chaque classe que construit Nest : providers, contrôleurs, enhancers et pipes de paramètre', async () => {
     expect(
       providersMalInjectes(await classesConstruitesDepuis([ModuleTemoin])),
     ).toEqual([
       'FilleNonDecoree : constructeur sans métadonnées propres',
       'FilleFacultative : paramètre facultatif 1',
       'ControleurQuiReordonne : paramètre 2',
+      'GardeDeMethode : paramètre 2',
       'GardeQuiReordonne : paramètre 2',
+      'PipeDeParametre : paramètre 2',
+      'IntercepteurDeMethode : paramètre 2',
     ]);
   });
 
