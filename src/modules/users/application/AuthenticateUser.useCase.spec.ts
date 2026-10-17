@@ -41,8 +41,8 @@ describe('AuthenticateUserUseCase', () => {
 
     useCase = new AuthenticateUserUseCase(
       repo,
-      refreshTokensRepo,
       passwordService,
+      refreshTokensRepo,
       jwtTokenService,
     );
   });

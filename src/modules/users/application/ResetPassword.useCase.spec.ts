@@ -36,10 +36,10 @@ describe('ResetPasswordUseCase', () => {
     refreshTokensRepo = createMockRefreshTokensRepo();
 
     useCase = new ResetPasswordUseCase(
-      tokensRepository,
       usersRepository,
       passwordService,
       refreshTokensRepo,
+      tokensRepository,
     );
   });
 

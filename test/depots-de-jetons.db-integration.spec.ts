@@ -453,8 +453,8 @@ describeDb('Depots de jetons sur une base migree', () => {
       );
       const connexion = new AuthenticateUserUseCase(
         comptes,
-        sessions,
         motsDePasse,
+        sessions,
         jwt,
       );
       return {
@@ -496,10 +496,10 @@ describeDb('Depots de jetons sur une base migree', () => {
             TROIS_ENVOIS_PAR_HEURE,
           );
           return new ResetPasswordUseCase(
-            depotDeReinitialisation(),
             comptes,
             motsDePasse,
             sessions,
+            depotDeReinitialisation(),
           ).execute({ token: lien.brut, newPassword: MOT_DE_PASSE });
         },
       ],

@@ -22,9 +22,9 @@ export class AuthenticateUserUseCase extends CasDUsageMotDePasse {
   constructor(
     @Inject(USERS_REPOSITORY)
     repo: IUsersRepository,
+    passwordService: PasswordService,
     @Inject(REFRESH_TOKENS_REPOSITORY)
     refreshTokensRepo: IRefreshTokensRepository,
-    passwordService: PasswordService,
     private readonly jwtTokenService: JwtTokenService,
   ) {
     super(repo, passwordService, refreshTokensRepo);

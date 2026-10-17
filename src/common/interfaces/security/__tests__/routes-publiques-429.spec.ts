@@ -3,13 +3,18 @@ import { join } from 'node:path';
 import {
   Controller,
   Get,
+  Inject,
+  Injectable,
   type DynamicModule,
   type ForwardReference,
 } from '@nestjs/common';
 import {
   CONTROLLER_WATERMARK,
   MODULE_METADATA,
+  PARAMTYPES_METADATA,
+  SELF_DECLARED_DEPS_METADATA,
 } from '@nestjs/common/constants';
+import { Test } from '@nestjs/testing';
 import { DECORATORS } from '@nestjs/swagger/dist/constants';
 import { AppModule } from '../../../../app.module';
 import { IS_PUBLIC_KEY } from '../../auth/public.decorator';
@@ -65,18 +70,21 @@ const MODULES_DES_SOURCES = SOURCES.filter((fichier) =>
 const metadonneeDeModule = (cle: string, module: unknown): unknown[] =>
   (Reflect.getMetadata(cle, module as object) as unknown[] | undefined) ?? [];
 
-async function controleursAtteintsDepuis(
+type Rubrique = 'controllers' | 'providers';
+
+async function declaresDepuis(
+  rubrique: Rubrique,
   racines: readonly unknown[],
-): Promise<Controleur[]> {
+): Promise<unknown[]> {
   const vus = new Set<unknown>();
-  const servis = new Set<Controleur>();
+  const declares = new Set<unknown>();
   const parcourir = async (importe: unknown): Promise<void> => {
     const module: unknown = await importe;
     if (module === null || vus.has(module)) return;
     vus.add(module);
     if (typeof module === 'function') {
-      metadonneeDeModule(MODULE_METADATA.CONTROLLERS, module).forEach(
-        (controleur) => servis.add(controleur as Controleur),
+      metadonneeDeModule(rubrique, module).forEach((declare) =>
+        declares.add(declare),
       );
       for (const suivant of metadonneeDeModule(MODULE_METADATA.IMPORTS, module))
         await parcourir(suivant);
@@ -88,15 +96,55 @@ async function controleursAtteintsDepuis(
       return;
     }
     const dynamique = module as Partial<DynamicModule>;
-    (dynamique.controllers ?? []).forEach((controleur) =>
-      servis.add(controleur as Controleur),
-    );
+    (dynamique[rubrique] ?? []).forEach((declare) => declares.add(declare));
     for (const suivant of [dynamique.module, ...(dynamique.imports ?? [])])
       await parcourir(suivant);
   };
   for (const racine of racines) await parcourir(racine);
-  return [...servis];
+  return [...declares];
 }
+
+const controleursAtteintsDepuis = async (
+  racines: readonly unknown[],
+): Promise<Controleur[]> =>
+  (await declaresDepuis(MODULE_METADATA.CONTROLLERS as Rubrique, racines)).map(
+    (controleur) => controleur as Controleur,
+  );
+
+type Classe = abstract new (...parametres: never[]) => unknown;
+
+const classeDuProvider = (provider: unknown): Classe | null => {
+  if (typeof provider === 'function') return provider as Classe;
+  const useClass = (provider as { useClass?: unknown } | null)?.useClass;
+  return typeof useClass === 'function' ? (useClass as Classe) : null;
+};
+
+const rangsDeclares = (dependances: unknown): number[] =>
+  ((dependances ?? []) as { index: number }[]).map(({ index }) => index);
+
+const rangsHerites = (classe: Classe): number[] =>
+  rangsDeclares(
+    Reflect.getMetadata(
+      SELF_DECLARED_DEPS_METADATA,
+      Object.getPrototypeOf(classe) as object,
+    ),
+  );
+
+function rangsHeritesSansInjection(classe: Classe): number[] {
+  if (!Reflect.hasOwnMetadata(PARAMTYPES_METADATA, classe)) return [];
+  const herites = rangsHerites(classe);
+  const propres = rangsDeclares(
+    Reflect.getOwnMetadata(SELF_DECLARED_DEPS_METADATA, classe),
+  ).slice(herites.length);
+  return [...new Set(herites)].filter((rang) => !propres.includes(rang));
+}
+
+const providersMalInjectes = (classes: readonly Classe[]): string[] =>
+  classes.flatMap((classe) =>
+    rangsHeritesSansInjection(classe).map(
+      (rang) => `${classe.name} : paramètre ${rang}`,
+    ),
+  );
 
 const routesDe = (controleurs: Iterable<Controleur>) =>
   [...controleurs].flatMap((controleur) =>
@@ -209,5 +257,89 @@ describe('Refus 429 des routes publiques', () => {
         ROUTES.filter((route) => estExemptee(route) && declareSon429(route)),
       ),
     ).toEqual([]);
+  });
+});
+
+describe('Injection des providers qui héritent d un constructeur injecté', () => {
+  const DEPOT = 'DEPOT';
+  const JOURNAL = 'JOURNAL';
+
+  @Injectable()
+  class Outil {}
+
+  @Injectable()
+  abstract class Mere {
+    constructor(
+      @Inject(DEPOT) readonly depot: object,
+      readonly outil: Outil,
+      @Inject(JOURNAL) readonly journal: object,
+    ) {}
+  }
+
+  @Injectable()
+  class FilleQuiReordonne extends Mere {
+    constructor(
+      @Inject(DEPOT) depot: object,
+      @Inject(JOURNAL) journal: object,
+      outil: Outil,
+    ) {
+      super(depot, outil, journal);
+    }
+  }
+
+  @Injectable()
+  class FilleQuiReinjecte extends Mere {
+    constructor(
+      @Inject(DEPOT) depot: object,
+      outil: Outil,
+      @Inject(JOURNAL) journal: object,
+      readonly suivant: Outil,
+    ) {
+      super(depot, outil, journal);
+    }
+  }
+
+  @Injectable()
+  class FilleSansConstructeur extends Mere {}
+
+  it('lit les injections héritées comme Nest les résout', async () => {
+    const depot = { nom: 'depot' };
+    const journal = { nom: 'journal' };
+    const module = await Test.createTestingModule({
+      providers: [
+        Outil,
+        FilleQuiReordonne,
+        FilleQuiReinjecte,
+        FilleSansConstructeur,
+        { provide: DEPOT, useValue: depot },
+        { provide: JOURNAL, useValue: journal },
+      ],
+    }).compile();
+
+    expect(module.get(FilleQuiReordonne).outil).toBe(journal);
+    expect(module.get(FilleQuiReinjecte).outil).toBeInstanceOf(Outil);
+    expect(module.get(FilleSansConstructeur).outil).toBeInstanceOf(Outil);
+    expect(
+      providersMalInjectes([
+        FilleQuiReordonne,
+        FilleQuiReinjecte,
+        FilleSansConstructeur,
+      ]),
+    ).toEqual(['FilleQuiReordonne : paramètre 2']);
+  });
+
+  it('fait ré-injecter par chaque provider servi les rangs que sa classe mère injecte', async () => {
+    const providers = await declaresDepuis(
+      MODULE_METADATA.PROVIDERS as Rubrique,
+      [...MODULES_SERVIS, ...MODULES_DES_SOURCES],
+    );
+    const classes = providers
+      .map(classeDuProvider)
+      .filter((classe): classe is Classe => classe !== null);
+
+    expect(
+      classes.filter((classe) => rangsHerites(classe).length > 0).length,
+    ).toBeGreaterThan(0);
+    expect(providersMalInjectes(classes)).toEqual([]);
   });
 });

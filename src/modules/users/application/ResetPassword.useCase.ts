@@ -22,13 +22,13 @@ export interface ResetPasswordResult {
 @Injectable()
 export class ResetPasswordUseCase extends CasDUsageMotDePasse {
   constructor(
-    @Inject(PASSWORD_RESET_TOKENS_REPOSITORY)
-    private readonly passwordResetTokensRepository: IPasswordResetTokensRepository,
     @Inject(USERS_REPOSITORY)
     repo: IUsersRepository,
     passwordService: PasswordService,
     @Inject(REFRESH_TOKENS_REPOSITORY)
     refreshTokensRepo: IRefreshTokensRepository,
+    @Inject(PASSWORD_RESET_TOKENS_REPOSITORY)
+    private readonly passwordResetTokensRepository: IPasswordResetTokensRepository,
   ) {
     super(repo, passwordService, refreshTokensRepo);
   }
