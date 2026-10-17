@@ -6,13 +6,18 @@ import { UsersMapper } from './mappers/UsersMapper';
 
 @Injectable()
 export class UpdateUsersUseCase extends CasDUsageMotDePasse {
-  async execute(id: string, dto: UpdateUserCommand): Promise<User> {
+  async execute(
+    id: string,
+    { password, ...champs }: UpdateUserCommand,
+  ): Promise<User> {
     await this.utilisateurExistant(id);
 
-    const passwordHash = dto.password
-      ? await this.passwordService.hash(dto.password)
-      : undefined;
-    const updatePayload = UsersMapper.fromUpdateCommand(dto, passwordHash);
-    return this.repo.update(id, updatePayload);
+    const misAJour = await this.repo.update(
+      id,
+      UsersMapper.fromUpdateCommand(champs),
+    );
+    return password
+      ? this.remplacerMotDePasse(misAJour, password, champs.updatedOrCreatedBy)
+      : misAJour;
   }
 }

@@ -62,7 +62,7 @@ export class LireEtatParticipantUseCase {
           cleDeJalon(sessionId, participantId),
         ),
         this.escape.listerProgressionDuParticipant(participantId),
-        this.rappels.lister(participantId),
+        this.rappels.listerDuParticipant(participantId),
       ],
     );
 

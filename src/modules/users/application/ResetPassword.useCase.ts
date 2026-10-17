@@ -3,9 +3,11 @@ import { LienInvalideError } from '../../../common/domain/errors/LienInvalideErr
 import { jetonDeLien } from '../../../common/domain/lien-avec-jeton';
 import { FORME_D_UN_JETON_EMIS, TokenHash } from '../domain/TokenHash';
 import type { IPasswordResetTokensRepository } from '../domain/IPasswordResetTokens.repository';
+import type { IRefreshTokensRepository } from '../domain/IRefreshTokens.repository';
 import type { IUsersRepository } from '../domain/IUsers.repository';
 import {
   PASSWORD_RESET_TOKENS_REPOSITORY,
+  REFRESH_TOKENS_REPOSITORY,
   USERS_REPOSITORY,
 } from '../domain/token';
 import { CasDUsageMotDePasse } from './CasDUsageUtilisateurs';
@@ -14,6 +16,7 @@ import { PasswordService } from './services/PasswordService';
 
 export interface ResetPasswordResult {
   message: string;
+  userId: string;
 }
 
 @Injectable()
@@ -24,8 +27,10 @@ export class ResetPasswordUseCase extends CasDUsageMotDePasse {
     @Inject(USERS_REPOSITORY)
     repo: IUsersRepository,
     passwordService: PasswordService,
+    @Inject(REFRESH_TOKENS_REPOSITORY)
+    refreshTokensRepo: IRefreshTokensRepository,
   ) {
-    super(repo, passwordService);
+    super(repo, passwordService, refreshTokensRepo);
   }
 
   async execute(dto: ResetPasswordCommand): Promise<ResetPasswordResult> {
@@ -45,11 +50,14 @@ export class ResetPasswordUseCase extends CasDUsageMotDePasse {
       throw new LienInvalideError();
     }
 
-    await this.enregistrerMotDePasse(user, dto.newPassword, 'password-reset');
-    await this.passwordResetTokensRepository.markUsed(token.id);
+    if (!(await this.passwordResetTokensRepository.markUsed(token.id))) {
+      throw new LienInvalideError();
+    }
+    await this.remplacerMotDePasse(user, dto.newPassword, 'password-reset');
 
     return {
       message: 'Mot de passe reinitialise avec succes.',
+      userId: user.id,
     };
   }
 }

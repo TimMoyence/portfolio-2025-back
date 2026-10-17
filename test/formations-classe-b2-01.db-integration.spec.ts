@@ -369,7 +369,9 @@ describeDb('Classe de trente sur le B2-01 (db integration)', () => {
         sessionId,
         premier.participantId,
       );
-      const rappels = await banc.contexte.rappels.lister(premier.participantId);
+      const rappels = await banc.contexte.rappels.listerDuParticipant(
+        premier.participantId,
+      );
       expect(Object.keys(jalons).length).toBeGreaterThan(0);
       expect(enigmes.length).toBeGreaterThan(0);
       expect(libres.length).toBeGreaterThan(0);

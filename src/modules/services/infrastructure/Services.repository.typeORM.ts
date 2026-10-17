@@ -24,17 +24,14 @@ export class ServicesRepositoryTypeORM
     });
   }
 
-  async create(data: Services): Promise<Services> {
-    const saved = await this.repo.save(
-      this.repo.create({
-        slug: data.slug,
-        name: data.name,
-        icon: data.icon,
-        status: data.status,
-        order: data.order,
-      }),
-    );
-    return this.toDomain(saved);
+  create(data: Services): Promise<Services> {
+    return this.enregistrer({
+      slug: data.slug,
+      name: data.name,
+      icon: data.icon,
+      status: data.status,
+      order: data.order,
+    });
   }
 
   protected toDomain(entity: ServicesEntity): Services {

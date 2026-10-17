@@ -53,7 +53,9 @@ describeDb('Rappels espaces (B9, db integration)', () => {
         (question) => question.questionId,
       );
     expect(idsDe(second.body)).toEqual(idsDe(premier.body));
-    const servis = await banc.contexte().rappels.lister(seance.participantId);
+    const servis = await banc
+      .contexte()
+      .rappels.listerDuParticipant(seance.participantId);
     expect(servis.map((servi) => servi.questionId)).toEqual(
       idsDe(premier.body),
     );
@@ -74,10 +76,10 @@ describeDb('Rappels espaces (B9, db integration)', () => {
 
     const servisPremier = await banc
       .contexte()
-      .rappels.lister(premier.participantId);
+      .rappels.listerDuParticipant(premier.participantId);
     const servisSecond = await banc
       .contexte()
-      .rappels.lister(second.participantId);
+      .rappels.listerDuParticipant(second.participantId);
     expect(servisPremier.length).toBeGreaterThan(0);
     expect(servisSecond.length).toBeGreaterThan(0);
   });
@@ -149,7 +151,7 @@ describeDb('Rappels espaces (B9, db integration)', () => {
       ]);
 
     await expect(
-      banc.contexte().rappels.lister(seance.participantId),
+      banc.contexte().rappels.listerDuParticipant(seance.participantId),
     ).resolves.toEqual([]);
   });
 });

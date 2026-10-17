@@ -67,7 +67,7 @@ export class LireRappelsUseCase {
     }
     assertEcranServi(session, cible.rang, cible.screenId, cours.ecrans.length);
 
-    const deja = await this.rappels.lister(participantId);
+    const deja = await this.rappels.listerDuParticipant(participantId);
     const servis =
       deja.length > 0
         ? deja

@@ -11,7 +11,9 @@ import {
   buildPasswordResetToken,
   createMockPasswordResetTokensRepo,
 } from '../../../../test/factories/password-reset-token.factory';
+import { createMockRefreshTokensRepo } from '../../../../test/factories/refresh-token.factory';
 import {
+  attendreAucunMotDePasseEnregistre,
   attendreNouveauMotDePasseEnregistre,
   preparerNouveauMotDePasse,
 } from '../../../../test/helpers/utilisateurs';
@@ -24,17 +26,20 @@ describe('ResetPasswordUseCase', () => {
   let usersRepository: ReturnType<typeof createMockUsersRepo>;
   let tokensRepository: ReturnType<typeof createMockPasswordResetTokensRepo>;
   let passwordService: ReturnType<typeof createMockPasswordService>;
+  let refreshTokensRepo: ReturnType<typeof createMockRefreshTokensRepo>;
   let useCase: ResetPasswordUseCase;
 
   beforeEach(() => {
     usersRepository = createMockUsersRepo();
     tokensRepository = createMockPasswordResetTokensRepo();
     passwordService = createMockPasswordService();
+    refreshTokensRepo = createMockRefreshTokensRepo();
 
     useCase = new ResetPasswordUseCase(
       tokensRepository,
       usersRepository,
       passwordService,
+      refreshTokensRepo,
     );
   });
 
@@ -43,13 +48,18 @@ describe('ResetPasswordUseCase', () => {
       useCase.execute({ token, newPassword: ANY_VALID_CREDENTIAL }),
     ).rejects.toBeInstanceOf(LienInvalideError);
 
-  it('reinitialise le mot de passe avec un token valide', async () => {
+  const preparerUnLienValide = () => {
     tokensRepository.findActiveByTokenHash.mockResolvedValue(
       buildPasswordResetToken({ id: 'token-1', userId: 'user-1' }),
     );
     preparerNouveauMotDePasse(usersRepository, passwordService, {
       passwordHash: 'old-hash',
     });
+  };
+
+  it('reinitialise le mot de passe avec un token valide', async () => {
+    preparerUnLienValide();
+    tokensRepository.markUsed.mockResolvedValue(true);
 
     const result = await useCase.execute({
       token: JETON_EMIS,
@@ -57,12 +67,31 @@ describe('ResetPasswordUseCase', () => {
     });
 
     attendreNouveauMotDePasseEnregistre(
-      { hacher: passwordService.hash, mettreAJour: usersRepository.update },
+      {
+        hacher: passwordService.hash,
+        mettreAJour: usersRepository.update,
+        fermerLesSessions: refreshTokensRepo.revokeByUserId,
+      },
       CHOSEN_CREDENTIAL,
       'password-reset',
     );
     expect(tokensRepository.markUsed).toHaveBeenCalledWith('token-1');
     expect(result.message).toContain('reinitialise');
+    expect(result.userId).toBe('user-1');
+  });
+
+  it('refuse le lien qu un usage concurrent a deja consomme sans changer le mot de passe', async () => {
+    preparerUnLienValide();
+    tokensRepository.markUsed.mockResolvedValue(false);
+
+    await attendreReinitialisationRefusee(JETON_EMIS);
+
+    expect(tokensRepository.markUsed).toHaveBeenCalledWith('token-1');
+    expect(passwordService.hash).not.toHaveBeenCalled();
+    attendreAucunMotDePasseEnregistre(
+      usersRepository.update,
+      refreshTokensRepo.revokeByUserId,
+    );
   });
 
   it('rejette un token inconnu, expire ou deja utilise', async () => {

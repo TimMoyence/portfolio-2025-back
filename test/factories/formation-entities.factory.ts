@@ -42,8 +42,13 @@ export function mockTypeOrmManager(
 export function mockTypeOrmRepositoryAvecManager<E extends ObjectLiteral>(
   methodes: MethodesSimulees,
   manager: GestionnaireSimule,
+  tableName = 'table_simulee',
 ): Repository<E> {
-  return { ...methodes, manager } as unknown as Repository<E>;
+  return {
+    ...methodes,
+    manager,
+    metadata: { tableName },
+  } as unknown as Repository<E>;
 }
 
 export interface QueryBuilderSimule {

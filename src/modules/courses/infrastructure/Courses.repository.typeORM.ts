@@ -23,16 +23,13 @@ export class CoursesRepositoryTypeORM
     });
   }
 
-  async create(data: Courses): Promise<Courses> {
-    const saved = await this.repo.save(
-      this.repo.create({
-        slug: data.slug,
-        title: data.title,
-        summary: data.summary,
-        coverImage: data.coverImage,
-      }),
-    );
-    return this.toDomain(saved);
+  create(data: Courses): Promise<Courses> {
+    return this.enregistrer({
+      slug: data.slug,
+      title: data.title,
+      summary: data.summary,
+      coverImage: data.coverImage,
+    });
   }
 
   protected toDomain(entity: CoursesEntity): Courses {

@@ -4,6 +4,7 @@ import type { IEmailVerificationTokensRepository } from '../domain/IEmailVerific
 import type { IUsersRepository } from '../domain/IUsers.repository';
 import { DEFAULT_SELF_REGISTRATION_ROLES } from '../domain/roles';
 import { TokenHash } from '../domain/TokenHash';
+import { User } from '../domain/User';
 import {
   EMAIL_VERIFICATION_TOKENS_REPOSITORY,
   USERS_REPOSITORY,
@@ -42,10 +43,13 @@ export class VerifyEmailUseCase {
       return { message: 'Adresse email deja verifiee.' };
     }
 
-    await this.usersRepo.update(user.id!, {
-      emailVerified: true,
-      roles: [...DEFAULT_SELF_REGISTRATION_ROLES],
-    });
+    await this.usersRepo.update(
+      stored.userId,
+      User.update({
+        emailVerified: true,
+        roles: [...DEFAULT_SELF_REGISTRATION_ROLES],
+      }),
+    );
 
     await this.emailVerificationTokensRepo.deleteByUserId(stored.userId);
 

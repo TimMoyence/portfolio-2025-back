@@ -42,7 +42,6 @@ export function createMockUsersRepo(): jest.Mocked<IUsersRepository> {
     findByEmail: jest.fn(),
     findByGoogleId: jest.fn(),
     update: jest.fn(),
-    deactivate: jest.fn(),
   };
 }
 

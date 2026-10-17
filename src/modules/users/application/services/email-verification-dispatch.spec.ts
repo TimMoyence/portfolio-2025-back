@@ -27,7 +27,7 @@ function construire(base = 'https://asilidesign.fr/verify-email') {
 
 describe('EnvoiDeVerificationEmail', () => {
   const user = buildUser({ id: 'user-7', email: 'eve@example.com' });
-  const erreurs = espionnerLeLoggerAChaqueTest('error');
+  const avertissements = espionnerLeLoggerAChaqueTest('warn');
 
   it('n enregistre que l empreinte du jeton envoye dans le lien', async () => {
     const { tokensRepo, notifier, logger, envoi } = construire();
@@ -39,7 +39,7 @@ describe('EnvoiDeVerificationEmail', () => {
     );
     const jetonBrut = lien.searchParams.get('token') ?? '';
     expect(jetonBrut).toMatch(/^[0-9a-f]{64}$/);
-    expect(tokensRepo.create).toHaveBeenCalledWith({
+    expect(tokensRepo.remplacerLesJetonsActifs).toHaveBeenCalledWith({
       userId: 'user-7',
       tokenHash: TokenHash.fromRaw(jetonBrut).value,
       expiresAt: expect.any(Date) as Date,
@@ -53,6 +53,17 @@ describe('EnvoiDeVerificationEmail', () => {
     );
   });
 
+  it('expire les liens encore actifs du compte sans les effacer avant d en emettre un neuf', async () => {
+    const { tokensRepo, logger, envoi } = construire();
+
+    await envoi.envoyer(user, 'user-7', logger, 'Echec');
+
+    expect(tokensRepo.remplacerLesJetonsActifs).toHaveBeenCalledWith(
+      expect.objectContaining({ userId: 'user-7' }),
+    );
+    expect(tokensRepo.deleteByUserId).not.toHaveBeenCalled();
+  });
+
   it('journalise l echec d envoi sans le propager', async () => {
     const { notifier, logger, envoi } = construire();
     notifier.sendVerificationEmail.mockRejectedValue(new Error('smtp'));
@@ -61,9 +72,9 @@ describe('EnvoiDeVerificationEmail', () => {
       envoi.envoyer(user, 'user-7', logger, 'Echec du renvoi'),
     ).resolves.toBeUndefined();
 
-    expect(erreurs()).toHaveBeenCalledWith(
-      'Echec du renvoi for eve@example.com: Error: smtp',
+    expect(avertissements()).toHaveBeenCalledWith(
+      'Echec du renvoi for eve@example.com: smtp',
     );
-    expect(erreurs().mock.contexts).toEqual([logger]);
+    expect(avertissements().mock.contexts).toEqual([logger]);
   });
 });
