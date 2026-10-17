@@ -1,5 +1,6 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import * as ts from 'typescript';
 import {
   Controller,
   Get,
@@ -78,6 +79,56 @@ const MODULES_SERVIS: unknown[] = [AppModule];
 const MODULES_DES_SOURCES = SOURCES.filter((fichier) =>
   fichier.endsWith('.module.ts'),
 ).flatMap(exportsDe);
+
+const NOMS_DES_MIDDLEWARES_DE_MODULE = new Set([
+  'configure',
+  'NestModule',
+  'MiddlewareConsumer',
+]);
+
+const nomDeClasse = (noeud: ts.Node): string | null => {
+  if (ts.isClassLike(noeud)) return noeud.name?.text ?? null;
+  if (
+    ts.isVariableDeclaration(noeud) &&
+    noeud.initializer !== undefined &&
+    ts.isClassExpression(noeud.initializer) &&
+    ts.isIdentifier(noeud.name)
+  )
+    return noeud.name.text;
+  return null;
+};
+
+function lireLeCodeDesSources(): {
+  classes: Set<string>;
+  middlewares: string[];
+} {
+  const classes = new Set<string>();
+  const middlewares: string[] = [];
+  for (const fichier of SOURCES.filter(
+    (source) => source.endsWith('.ts') && !source.endsWith('.spec.ts'),
+  )) {
+    const visiter = (noeud: ts.Node): void => {
+      const classe = nomDeClasse(noeud);
+      if (classe !== null) classes.add(classe);
+      if (
+        (ts.isIdentifier(noeud) || ts.isStringLiteralLike(noeud)) &&
+        NOMS_DES_MIDDLEWARES_DE_MODULE.has(noeud.text)
+      )
+        middlewares.push(`${fichier} : ${noeud.text}`);
+      ts.forEachChild(noeud, visiter);
+    };
+    visiter(
+      ts.createSourceFile(
+        fichier,
+        readFileSync(join(RACINE_DES_SOURCES, fichier), 'utf8'),
+        ts.ScriptTarget.Latest,
+      ),
+    );
+  }
+  return { classes, middlewares };
+}
+
+const CODE_DES_SOURCES = lireLeCodeDesSources();
 
 const metadonneeDeModule = (cle: string, module: unknown): unknown[] =>
   (Reflect.getMetadata(cle, module as object) as unknown[] | undefined) ?? [];
@@ -563,22 +614,42 @@ describe('Injection des providers qui héritent d un constructeur injecté', () 
     ).toEqual([]);
   });
 
+  it('ne construit comme module aucune classe des sources hors d un fichier de module', async () => {
+    const visites = classesDe(
+      await declaresDepuis('modules', [
+        ...MODULES_SERVIS,
+        ...MODULES_DES_SOURCES,
+      ]),
+    );
+
+    expect(visites.length).toBeGreaterThan(MODULES_DES_SOURCES.length);
+    expect(
+      visites
+        .filter(
+          (module) =>
+            !MODULES_DES_SOURCES.includes(module) &&
+            (module.name === '' || CODE_DES_SOURCES.classes.has(module.name)),
+        )
+        .map(
+          (module) =>
+            `${module.name || 'classe anonyme'} : hors d un fichier de module`,
+        ),
+    ).toEqual([]);
+  });
+
   it('ne laisse aucun module des sources appliquer un middleware, que la garde ne lit pas', () => {
     const modules = MODULES_DES_SOURCES.filter(
       (module): module is Classe => typeof module === 'function',
     );
 
     expect(modules.length).toBeGreaterThan(0);
+    expect(CODE_DES_SOURCES.middlewares).toEqual([]);
     expect(
-      modules.flatMap((module) => [
-        ...(Object.getPrototypeOf(module) === Function.prototype
-          ? []
-          : [`${module.name} : hérite d une classe`]),
-        ...('configure' in (module.prototype as object) ||
-        /\bconfigure\b/.test(Function.prototype.toString.call(module))
-          ? [`${module.name} : configure`]
-          : []),
-      ]),
+      modules
+        .filter(
+          (module) => Object.getPrototypeOf(module) !== Function.prototype,
+        )
+        .map((module) => `${module.name} : hérite d une classe`),
     ).toEqual([]);
   });
 
