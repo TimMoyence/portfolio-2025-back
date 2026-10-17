@@ -176,9 +176,18 @@ void test('le deploiement sauvegarde la base, puis migre, puis remplace l api', 
     bloc.includes('run --rm migrate'),
   );
   assert.ok(deploiement, 'aucun job du workflow ne lance migrate');
+  const commandes = deploiement
+    .split('\n')
+    .map((ligne) => ligne.replace(/(^|\s)#.*$/, ''))
+    .join('\n');
 
-  const etapes = ['pg_dump', 'run --rm migrate', 'up -d --no-deps --wait'];
-  const rangs = etapes.map((etape) => deploiement.indexOf(etape));
+  const etapes = [
+    /mkdir -p "\$SAUVEGARDES"\n\s*chmod 700 "\$SAUVEGARDES"\n/,
+    /exec -T db \\\n\s*sh -c 'pg_dump -U "\$POSTGRES_USER" -d "\$POSTGRES_DB" --format=custom' \\\n\s*> "\$SAUVEGARDES\/avant-migrate-[^"\n]*\.dump"\n/,
+    /run --rm migrate\n/,
+    /up -d --no-deps --wait /,
+  ];
+  const rangs = etapes.map((etape) => commandes.search(etape));
 
   assert.ok(
     rangs.every((rang) => rang >= 0),
@@ -187,7 +196,7 @@ void test('le deploiement sauvegarde la base, puis migre, puis remplace l api', 
   assert.deepEqual(
     [...rangs].sort((gauche, droite) => gauche - droite),
     rangs,
-    'le deploiement doit sauvegarder la base avant migrate, et migrer avant de remplacer l api',
+    'le deploiement doit fermer le dossier des sauvegardes, sauvegarder la base avant migrate, et migrer avant de remplacer l api',
   );
 });
 

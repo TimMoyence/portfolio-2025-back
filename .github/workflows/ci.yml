@@ -290,6 +290,7 @@ jobs:
             # Dump the database before migrate: some migrations have no down, see docs/database-governance.md §5
             SAUVEGARDES="$WORKDIR/sauvegardes"
             mkdir -p "$SAUVEGARDES"
+            chmod 700 "$SAUVEGARDES"
             BACK_IMAGE="$BACK_IMAGE_VALUE" FRONT_IMAGE="$FRONT_IMAGE_VALUE" \
             docker compose -p "$PROJECT" -f "$COMPOSE_FILE" --env-file "$WORKDIR/backend.env" exec -T db \
               sh -c 'pg_dump -U "$POSTGRES_USER" -d "$POSTGRES_DB" --format=custom' \
