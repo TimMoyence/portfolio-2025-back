@@ -44,8 +44,7 @@ export function calculerStatistiquesSeance(
     questionsProblemes: questionsComptees
       .filter(
         (question) =>
-          question.total > 0 &&
-          question.correctes / question.total < seuilQuestionProbleme,
+          question.total > 0 && question.part < seuilQuestionProbleme,
       )
       .map((question) => question.questionId),
   };
