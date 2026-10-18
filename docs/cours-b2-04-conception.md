@@ -15,7 +15,7 @@
 | Gabarit     | `v3`, déclaré par le contenu et contrôlé par les quatre règles `gabarit-*` de `verifierStructure`                   |
 | Titre servi | « Suites : modéliser une évolution régulière »                                                                      |
 | Durée       | **180 minutes exactes** (somme des écrans), 4 actes de 49, 39, 47 et 45 minutes, plus 2 pauses de 15 min hors durée |
-| Écrans      | **34**, dont 12 écrans catalogue                                                                                    |
+| Écrans      | **38**, dont 16 écrans catalogue (5 illustrations)                                                                  |
 | Sources     | `docs/donnees-b2-04-sources.md` (espace de travail) : programme officiel, annales de CCF, données fictives          |
 
 ---
@@ -99,11 +99,14 @@ aujourd'hui. On interroge avant de montrer : le rappel de mémoire précède la 
 ### 2.3 Le cycle d'une notion
 
 Chaque notion suit : **Réfléchir** (mission, réflexion écrite ou vote non noté) → **Comprendre**
-(trace écrite en deux pages v2 `lesson` de 3 minutes, puis exemple guidé `fp-worked` corrigé étape
-par étape sur son propre écran) → **S'exercer** (exercices notés, corrigés sur place). Chaque page de
-trace écrite porte trois blocs : une définition en langage courant qui dit à quoi sert la notion pour
-le plan d'Hélène, un exemple pour débuter hors du dossier (tirelire, livret d'épargne) et une méthode
-ou un encadré « Au CCF » qui nomme les pièges.
+(trace écrite v2 `lesson`, chaque page précédée de l'illustration de son exemple pour débuter, puis
+exemple guidé `fp-worked` corrigé étape par étape sur son propre écran) → **S'exercer** (exercices
+notés, corrigés sur place). N1 et N3 ont deux pages de 2 minutes, N2 une seule page de 3 minutes ;
+chaque illustration dure 1 minute. Chaque page se lit d'un coup d'œil : une définition en deux lignes,
+formules une par ligne ; un exemple pour débuter hors du dossier ; une méthode en trois ou quatre
+lignes courtes, titrée par un moyen mnémotechnique (« A comme Ajouter », « × q, jamais + t % »,
+« Tant que = pas encore »). Pas d'encadré « Au CCF » dans les traces écrites : les pièges sont
+travaillés dans les exercices et leurs corrections.
 
 Chaque exercice annonce ses temps dans les notes formateur, sous la forme
 `• Temps : réflexion N min · travail N min · correction N min`, dont la somme est la durée de
@@ -111,15 +114,15 @@ l'écran. La correction se dévoile sur l'écran de l'exercice (`correctionSurPl
 
 ### 2.4 Règles de structure
 
-Le cours passe les règles communes et les quatre règles du gabarit v3 : 34 écrans ≤ 40,
+Le cours passe les règles communes et les quatre règles du gabarit v3 : 38 écrans ≤ 40,
 180 minutes ≤ 180, chaque trace écrite précédée d'une réflexion et suivie d'un exercice, chaque
 exercice avec ses trois temps et sa correction sur place, mini-situation (`fp-escape`) sans trace
 écrite après elle. Exposition continue de 6 minutes au plus.
 
 ### 2.5 Diffusion
 
-Catalogue : l'accroche, la synthèse des acquis, l'historique du chiffre d'affaires, les six pages de
-trace écrite, le graphique des deux hypothèses, le dossier de la mini-situation et la fiche mémo.
+Catalogue : l'accroche, la synthèse des acquis, l'historique du chiffre d'affaires, les cinq pages de
+trace écrite, chacune précédée de l'illustration de son exemple, le graphique des deux hypothèses, le dossier de la mini-situation et la fiche mémo.
 Tout le reste est servi en séance. Aucun écran catalogue ne porte une réponse.
 
 ### 2.6 Notation
@@ -136,44 +139,48 @@ Colonne « Brique · rendu » : valeur de la colonne `brique` ; les écrans « v
 `fp-story` avec une présentation v2. « I » = interactif. « Q » = questions fermées notées (vote,
 numérique, classement) portées par l'écran.
 
-| Rang | Identifiant                      | Min | Brique · rendu               |  I  |   Q | Diffusion |
-| ---: | -------------------------------- | --: | ---------------------------- | :-: | --: | --------- |
-|    1 | B2-04-A1-01-RAPPEL-COEFFICIENT   |   3 | `fp-recall`                  |  I  |   1 | seance    |
-|    2 | B2-04-A1-02-ACCROCHE             |   1 | `fp-story` · v2 `hero`       |     |   0 | catalogue |
-|    3 | B2-04-A1-03-VOTE-ACQUIS          |   4 | `fp-vote`                    |  I  |   0 | seance    |
-|    4 | B2-04-A1-04-ACQUIS               |   2 | `fp-story` · v2 `comparison` |     |   0 | catalogue |
-|    5 | B2-04-A1-05-HISTORIQUE           |   2 | `fp-story` · v2 `table`      |     |   0 | catalogue |
-|    6 | B2-04-A1-06-MISSION              |   6 | `fp-pro`                     |  I  |   0 | seance    |
-|    7 | B2-04-A1-07-COURS-ARITHMETIQUE   |   3 | `fp-story` · v2 `lesson`     |     |   0 | catalogue |
-|    8 | B2-04-A1-08-COURS-RAISON-TABLEUR |   3 | `fp-story` · v2 `lesson`     |     |   0 | catalogue |
-|    9 | B2-04-A1-09-EXEMPLE-ARITHMETIQUE |   6 | `fp-worked`                  |  I  |   0 | seance    |
-|   10 | B2-04-A1-10-ATELIER-ARITHMETIQUE |  10 | `questionnaire`              |  I  |   4 | seance    |
-|   11 | B2-04-A1-11-TABLEUR-ARITHMETIQUE |   8 | `fp-sheet`                   |  I  |   0 | seance    |
-|   12 | B2-04-A1-12-JALON                |   1 | `fp-pulse`                   |     |   0 | seance    |
-|   13 | B2-04-A2-01-REFLEXION-TAUX       |   5 | `fp-story` · v2 `reflection` |  I  |   0 | seance    |
-|   14 | B2-04-A2-02-COURS-GEOMETRIQUE    |   3 | `fp-story` · v2 `lesson`     |     |   0 | catalogue |
-|   15 | B2-04-A2-03-COURS-VARIATION      |   3 | `fp-story` · v2 `lesson`     |     |   0 | catalogue |
-|   16 | B2-04-A2-04-EXEMPLE-GEOMETRIQUE  |   6 | `fp-worked`                  |  I  |   0 | seance    |
-|   17 | B2-04-A2-05-ATELIER-GEOMETRIQUE  |  11 | `questionnaire`              |  I  |   4 | seance    |
-|   18 | B2-04-A2-06-TABLEUR-GEOMETRIQUE  |  10 | `fp-sheet`                   |  I  |   0 | seance    |
-|   19 | B2-04-A2-07-JALON                |   1 | `fp-pulse`                   |     |   0 | seance    |
-|   20 | B2-04-A3-01-GRAPHIQUE            |   2 | `fp-story` · v2 `chart`      |     |   0 | catalogue |
-|   21 | B2-04-A3-02-VOTE-SEUIL           |   4 | `fp-vote`                    |  I  |   0 | seance    |
-|   22 | B2-04-A3-03-COURS-SEUIL          |   3 | `fp-story` · v2 `lesson`     |     |   0 | catalogue |
-|   23 | B2-04-A3-04-COURS-SOMME          |   3 | `fp-story` · v2 `lesson`     |     |   0 | catalogue |
-|   24 | B2-04-A3-05-EXEMPLE-SEUIL        |   6 | `fp-worked`                  |  I  |   0 | seance    |
-|   25 | B2-04-A3-06-TABLEAU-ALGORITHME   |   7 | `fp-table-build`             |  I  |   0 | seance    |
-|   26 | B2-04-A3-07-ATELIER-SEUIL        |  11 | `questionnaire`              |  I  |   4 | seance    |
-|   27 | B2-04-A3-08-DEFI-IA              |  10 | `fp-challenge`               |  I  |   0 | seance    |
-|   28 | B2-04-A3-09-JALON                |   1 | `fp-pulse`                   |     |   0 | seance    |
-|   29 | B2-04-A4-01-SITUATION-BOUTIQUE   |   3 | `fp-story` · v2 `table`      |     |   0 | catalogue |
-|   30 | B2-04-A4-02-TABLEUR-BOUTIQUE     |  16 | `fp-sheet`                   |  I  |   0 | seance    |
-|   31 | B2-04-A4-03-COFFRE-BOUTIQUE      |  14 | `fp-escape`                  |  I  |   0 | seance    |
-|   32 | B2-04-A4-04-RAPPEL               |   6 | `fp-spaced`                  |  I  |   0 | seance    |
-|   33 | B2-04-A4-05-FICHE-MEMO           |   2 | `fp-story` · v2 `grid`       |     |   0 | catalogue |
-|   34 | B2-04-A4-06-BILLET-DE-SORTIE     |   4 | `fp-exit`                    |  I  |   1 | seance    |
+| Rang | Identifiant                             | Min | Brique · rendu                 |  I  |   Q | Diffusion |
+| ---: | --------------------------------------- | --: | ------------------------------ | :-: | --: | --------- |
+|    1 | B2-04-A1-01-RAPPEL-COEFFICIENT          |   3 | `fp-recall`                    |  I  |   1 | seance    |
+|    2 | B2-04-A1-02-ACCROCHE                    |   1 | `fp-story` · v2 `hero`         |     |   0 | catalogue |
+|    3 | B2-04-A1-03-VOTE-ACQUIS                 |   4 | `fp-vote`                      |  I  |   0 | seance    |
+|    4 | B2-04-A1-04-ACQUIS                      |   2 | `fp-story` · v2 `comparison`   |     |   0 | catalogue |
+|    5 | B2-04-A1-05-HISTORIQUE                  |   2 | `fp-story` · v2 `table`        |     |   0 | catalogue |
+|    6 | B2-04-A1-06-MISSION                     |   6 | `fp-pro`                       |  I  |   0 | seance    |
+|    7 | B2-04-A1-07-ILLUSTRATION-LOYER          |   1 | `fp-story` · v2 `illustration` |     |   0 | catalogue |
+|    8 | B2-04-A1-07-COURS-ARITHMETIQUE          |   2 | `fp-story` · v2 `lesson`       |     |   0 | catalogue |
+|    9 | B2-04-A1-08-ILLUSTRATION-POINTS-ALIGNES |   1 | `fp-story` · v2 `illustration` |     |   0 | catalogue |
+|   10 | B2-04-A1-08-COURS-RAISON-TABLEUR        |   2 | `fp-story` · v2 `lesson`       |     |   0 | catalogue |
+|   11 | B2-04-A1-09-EXEMPLE-ARITHMETIQUE        |   6 | `fp-worked`                    |  I  |   0 | seance    |
+|   12 | B2-04-A1-10-ATELIER-ARITHMETIQUE        |  10 | `questionnaire`                |  I  |   4 | seance    |
+|   13 | B2-04-A1-11-TABLEUR-ARITHMETIQUE        |   8 | `fp-sheet`                     |  I  |   0 | seance    |
+|   14 | B2-04-A1-12-JALON                       |   1 | `fp-pulse`                     |     |   0 | seance    |
+|   15 | B2-04-A2-01-REFLEXION-TAUX              |   5 | `fp-story` · v2 `reflection`   |  I  |   0 | seance    |
+|   16 | B2-04-A2-02-ILLUSTRATION-LIVRET         |   1 | `fp-story` · v2 `illustration` |     |   0 | catalogue |
+|   17 | B2-04-A2-02-COURS-GEOMETRIQUE           |   3 | `fp-story` · v2 `lesson`       |     |   0 | catalogue |
+|   18 | B2-04-A2-04-EXEMPLE-GEOMETRIQUE         |   6 | `fp-worked`                    |  I  |   0 | seance    |
+|   19 | B2-04-A2-05-ATELIER-GEOMETRIQUE         |  11 | `questionnaire`                |  I  |   4 | seance    |
+|   20 | B2-04-A2-06-TABLEUR-GEOMETRIQUE         |  12 | `fp-sheet`                     |  I  |   0 | seance    |
+|   21 | B2-04-A2-07-JALON                       |   1 | `fp-pulse`                     |     |   0 | seance    |
+|   22 | B2-04-A3-01-GRAPHIQUE                   |   2 | `fp-story` · v2 `chart`        |     |   0 | catalogue |
+|   23 | B2-04-A3-02-VOTE-SEUIL                  |   4 | `fp-vote`                      |  I  |   0 | seance    |
+|   24 | B2-04-A3-03-ILLUSTRATION-TIRELIRE       |   1 | `fp-story` · v2 `illustration` |     |   0 | catalogue |
+|   25 | B2-04-A3-03-COURS-SEUIL                 |   2 | `fp-story` · v2 `lesson`       |     |   0 | catalogue |
+|   26 | B2-04-A3-04-ILLUSTRATION-BAIL           |   1 | `fp-story` · v2 `illustration` |     |   0 | catalogue |
+|   27 | B2-04-A3-04-COURS-SOMME                 |   2 | `fp-story` · v2 `lesson`       |     |   0 | catalogue |
+|   28 | B2-04-A3-05-EXEMPLE-SEUIL               |   6 | `fp-worked`                    |  I  |   0 | seance    |
+|   29 | B2-04-A3-06-TABLEAU-ALGORITHME          |   7 | `fp-table-build`               |  I  |   0 | seance    |
+|   30 | B2-04-A3-07-ATELIER-SEUIL               |  11 | `questionnaire`                |  I  |   4 | seance    |
+|   31 | B2-04-A3-08-DEFI-IA                     |  10 | `fp-challenge`                 |  I  |   0 | seance    |
+|   32 | B2-04-A3-09-JALON                       |   1 | `fp-pulse`                     |     |   0 | seance    |
+|   33 | B2-04-A4-01-SITUATION-BOUTIQUE          |   3 | `fp-story` · v2 `table`        |     |   0 | catalogue |
+|   34 | B2-04-A4-02-TABLEUR-BOUTIQUE            |  16 | `fp-sheet`                     |  I  |   0 | seance    |
+|   35 | B2-04-A4-03-COFFRE-BOUTIQUE             |  14 | `fp-escape`                    |  I  |   0 | seance    |
+|   36 | B2-04-A4-04-RAPPEL                      |   6 | `fp-spaced`                    |  I  |   0 | seance    |
+|   37 | B2-04-A4-05-FICHE-MEMO                  |   2 | `fp-story` · v2 `grid`         |     |   0 | catalogue |
+|   38 | B2-04-A4-06-BILLET-DE-SORTIE            |   4 | `fp-exit`                      |  I  |   1 | seance    |
 
-Rythme : 147 minutes interactives, 33 d'exposition, exposition continue de 6 minutes au plus.
+Rythme : 149 minutes interactives, 31 d'exposition, exposition continue de 6 minutes au plus.
 
 ### 3.2 Acte 1 — Rappel des trois cours, puis ajouter chaque an (49 min)
 
@@ -214,22 +221,36 @@ Rythme : 147 minutes interactives, 33 d'exposition, exposition continue de 6 min
 
 - Titre public : « Votre mission : le plan à cinq ans »
 - Courriel d'Hélène Garnier (plan 2026-2030, seuil de 1 200 k€), hypothèse A de Marc Lefèvre,
-  hypothèse B de Samir. Trois questions libres, temps « réfléchir » de N1 : le calcul direct de 2030
+  hypothèse B de Samir, un paragraphe par personne. Ni geste professionnel ni « Sur le terrain » à
+  l'écran : la consigne (sans calculatrice) et l'enjeu passent dans les notes formateur. Trois questions libres, temps « réfléchir » de N1 : le calcul direct de 2030
   sous l'hypothèse A (`hypothese-a`) ; la hausse en k€ est-elle constante sous l'hypothèse B
   (`hypothese-b`) ; laquelle atteint le seuil la première, et comment le vérifier (`seuil`).
 - Papier : trois lignes d'écriture dans le livret.
 
-#### A1-07 · `B2-04-A1-07-COURS-ARITHMETIQUE` — 3 min · v2 `lesson` · catalogue
+#### A1-07 · `B2-04-A1-07-ILLUSTRATION-LOYER` — 1 min · v2 `illustration` · catalogue
+
+- Titre public : « Illustration : le loyer »
+- Infographie M1 de l'exemple pour débuter : 900 € en 2025, + 15 € par an, u₁₀ = 1 050 €.
+
+#### A1-07 · `B2-04-A1-07-COURS-ARITHMETIQUE` — 2 min · v2 `lesson` · catalogue
 
 - Titre public : « Cours : suites arithmétiques »
-- Page 1 sur 2 : suite, rang, terme ; suite arithmétique, raison, terme général ; exemple pour
-  débuter (la tirelire de Léa) ; méthode pour reconnaître la suite et compter le rang.
+- Page 1 sur 2 : définition en deux lignes (uₙ₊₁ = uₙ + r, puis uₙ = u₀ + n × r) ; exemple pour
+  débuter (le loyer) ; méthode « A comme Arithmétique, A comme Ajouter » : raison, rang 0, terme,
+  rang retrouvé.
 
-#### A1-08 · `B2-04-A1-08-COURS-RAISON-TABLEUR` — 3 min · v2 `lesson` · catalogue
+#### A1-08 · `B2-04-A1-08-ILLUSTRATION-POINTS-ALIGNES` — 1 min · v2 `illustration` · catalogue
+
+- Titre public : « Illustration : des points alignés »
+- Infographie M2 : points (n ; uₙ) alignés, pente r, ordonnée à l'origine u₀, signe de r. Le
+  formateur précise qu'il s'agit de la même forme que la droite d'ajustement du B2-02, pas de la
+  même droite.
+
+#### A1-08 · `B2-04-A1-08-COURS-RAISON-TABLEUR` — 2 min · v2 `lesson` · catalogue
 
 - Titre public : « Cours : raison, graphique et tableur »
-- Page 2 sur 2 : sens de variation, points alignés, raison = pente (lien B2-02) ; la tirelire au
-  tableur, référence figée par `$` ; au CCF, la phrase de justification.
+- Page 2 sur 2 : points alignés, pente = r, ordonnée à l'origine = u₀, sens de variation (une ligne
+  chacun) ; la méthode au tableur, référence figée par `$`.
 
 #### A1-09 · `B2-04-A1-09-EXEMPLE-ARITHMETIQUE` — 6 min · `fp-worked` · séance
 
@@ -266,17 +287,20 @@ Rythme : 147 minutes interactives, 33 d'exposition, exposition continue de 6 min
 - Titre public : « Réfléchir : +6 % par an pendant cinq ans »
 - Samir additionne les taux (+30 %). Calculer 2026 puis 2027 et conclure. Temps « réfléchir » de N2.
 
+#### A2-02 · `B2-04-A2-02-ILLUSTRATION-LIVRET` — 1 min · v2 `illustration` · catalogue
+
+- Titre public : « Illustration : le livret »
+- Infographie M3 : 2 000 € à 3 % par an, u₁₀ ≈ 2 687,83 €, l'erreur des taux additionnés, la touche
+  puissance.
+
 #### A2-02 · `B2-04-A2-02-COURS-GEOMETRIQUE` — 3 min · v2 `lesson` · catalogue
 
 - Titre public : « Cours : suites géométriques »
-- Page 1 sur 2 : suite géométrique, raison q = 1 + t ÷ 100 (lien B2-01), terme général ; exemple
-  pour débuter (le livret d'épargne) ; méthode et pièges (taux pris pour la raison, taux additionnés).
-
-#### A2-03 · `B2-04-A2-03-COURS-VARIATION` — 3 min · v2 `lesson` · catalogue
-
-- Titre public : « Cours : variation et tableur »
-- Page 2 sur 2 : sens de variation selon q, hausse et baisse ; le livret au tableur (`$`,
-  `PUISSANCE`) ; au CCF, justifier qu'une suite est géométrique.
+- Page unique : définition en deux lignes (uₙ₊₁ = uₙ × q, uₙ = u₀ × qⁿ, q = 1 + t ÷ 100) ; exemple
+  pour débuter (le livret d'épargne) ; méthode « × q, jamais + t % » : raison d'une hausse et d'une
+  baisse, sens de variation selon q, formule recopiable `=B2*(1+$E$1)`. L'ancienne page 2
+  (variation et tableur) est supprimée : son essentiel tient dans la méthode, la pratique du tableur
+  passe à l'exercice 4, allongé de 2 minutes.
 
 #### A2-04 · `B2-04-A2-04-EXEMPLE-GEOMETRIQUE` — 6 min · `fp-worked` · séance
 
@@ -294,10 +318,10 @@ Rythme : 147 minutes interactives, 33 d'exposition, exposition continue de 6 min
   `coefficient-confondu-avec-taux`.
 - `b2-04-a2-ecart` : écart entre B et A en 2030 ; piège `taux-successifs-additionnes`.
 
-#### A2-06 · `B2-04-A2-06-TABLEUR-GEOMETRIQUE` — 10 min · `fp-sheet` · séance
+#### A2-06 · `B2-04-A2-06-TABLEUR-GEOMETRIQUE` — 12 min · `fp-sheet` · séance
 
 - Titre public : « Exercice 4 — Les deux hypothèses au tableur »
-- Temps : réflexion 2 min · travail 6 min · correction 2 min sur place.
+- Temps : réflexion 2 min · travail 8 min · correction 2 min sur place.
 - Hypothèse A donnée en colonne C ; hypothèse B en colonne D (taux en G2, référence figée), écart
   B − A en colonne E (références relatives). Dix cellules attendues ; pièges
   `coefficient-confondu-avec-taux`, `reference-relative-non-figee`.
@@ -320,17 +344,29 @@ Rythme : 147 minutes interactives, 33 d'exposition, exposition continue de 6 min
 - Deux votes non notés (temps « réfléchir » de N3) : la valeur sur laquelle s'arrête une boucle
   (`seuil-mal-arrondi`) ; le nombre de termes de 2026 à 2030 (`nombre-de-termes-decale`).
 
-#### A3-03 · `B2-04-A3-03-COURS-SEUIL` — 3 min · v2 `lesson` · catalogue
+#### A3-03 · `B2-04-A3-03-ILLUSTRATION-TIRELIRE` — 1 min · v2 `illustration` · catalogue
+
+- Titre public : « Illustration : la tirelire »
+- Infographie M4 : 150 €, + 20 € par mois, boucle « Tant que u < 200 » déroulée, l'algorithme
+  affiche 3.
+
+#### A3-03 · `B2-04-A3-03-COURS-SEUIL` — 2 min · v2 `lesson` · catalogue
 
 - Titre public : « Cours : seuil et boucle « Tant que » »
-- Page 1 sur 2 : seuil, tableau de valeurs, boucle « Tant que » et son arrêt (lien B2-03) ; exemple
-  pour débuter (la tirelire atteint 200 €) ; méthode pour écrire et lire l'algorithme.
+- Page 1 sur 2 : définition en deux lignes, objectif et condition de la boucle sur deux lignes (lien
+  B2-03) ; exemple pour débuter (la tirelire) ; méthode « « Tant que » = « pas encore » » : une
+  ligne par passage, arrêt à la première ligne F, rang → année, `SI` avec guillemets.
 
-#### A3-04 · `B2-04-A3-04-COURS-SOMME` — 3 min · v2 `lesson` · catalogue
+#### A3-04 · `B2-04-A3-04-ILLUSTRATION-BAIL` — 1 min · v2 `illustration` · catalogue
+
+- Titre public : « Illustration : les loyers d’un bail »
+- Infographie M5 : loyers de 2026 à 2028, trois termes, 33 480 €, `=SOMME(B3:B5)`.
+
+#### A3-04 · `B2-04-A3-04-COURS-SOMME` — 2 min · v2 `lesson` · catalogue
 
 - Titre public : « Cours : cumul et somme de termes »
-- Page 2 sur 2 : somme de termes consécutifs, nombre de termes, `SOMME`, formules données au CCF,
-  algorithme de somme ; exemple pour débuter ; au CCF, compléter et interpréter.
+- Page 2 sur 2 : un terme ou une somme, nombre de termes n − p + 1 (deux lignes) ; exemple pour
+  débuter (les loyers d'un bail). Sans encadré « Au CCF ».
 
 #### A3-05 · `B2-04-A3-05-EXEMPLE-SEUIL` — 6 min · `fp-worked` · séance
 
@@ -363,7 +399,7 @@ Rythme : 147 minutes interactives, 33 d'exposition, exposition continue de 6 min
 - Titre public : « Exercice 7 — Corriger le plan d’une IA »
 - Temps : réflexion 2 min · travail 6 min · correction 2 min, piste par piste sur place.
 - L'IA additionne les taux, inverse la condition du « Tant que » et donne le dernier terme pour le
-  cumul. Pistes justes : puissance, condition, cumul, contrôle par l'ordre de grandeur ; piste
+  cumul. Sa réponse s'affiche point par point, un point par ligne. Pistes justes : puissance, condition, cumul, contrôle par l'ordre de grandeur ; piste
   fausse : garder la réponse.
 
 #### A3-09 · `B2-04-A3-09-JALON` — 1 min · `fp-pulse` · séance
@@ -404,6 +440,7 @@ Rythme : 147 minutes interactives, 33 d'exposition, exposition continue de 6 min
 #### A4-04 · `B2-04-A4-04-RAPPEL` — 6 min · `fp-spaced` · séance
 
 - Titre public : « Rappel : de mémoire, sans vos notes »
+- Les douze questions de la banque sont obligatoires : chaque étudiant les reçoit toutes.
 
 #### A4-05 · `B2-04-A4-05-FICHE-MEMO` — 2 min · v2 `grid` · catalogue
 
@@ -461,7 +498,7 @@ Chaque valeur est recalculée par `b2-04.cours.spec.ts` à partir des seuls para
 | `coefficient-confondu-avec-taux` | coefficient-multiplicateur | Prendre le taux pour la raison.                         | B2-04-A2-02-COURS-GEOMETRIQUE    |
 | `nature-de-suite-confondue`      | suite-geometrique          | Confondre « ajouter » et « multiplier ».                | B2-04-A2-02-COURS-GEOMETRIQUE    |
 | `taux-successifs-additionnes`    | evolutions-successives     | Additionner les taux au lieu de multiplier.             | B2-04-A2-02-COURS-GEOMETRIQUE    |
-| `sens-de-variation`              | taux-evolution             | Traiter une baisse comme une hausse.                    | B2-04-A2-03-COURS-VARIATION      |
+| `sens-de-variation`              | taux-evolution             | Traiter une baisse comme une hausse.                    | B2-04-A2-02-COURS-GEOMETRIQUE    |
 | `negation-comparaison`           | negation                   | Nier « < » en « > » au lieu de « ≥ ».                   | B2-04-A3-03-COURS-SEUIL          |
 | `seuil-mal-arrondi`              | prevision                  | S'arrêter un rang trop tôt.                             | B2-04-A3-03-COURS-SEUIL          |
 | `condition-tant-que-inversee`    | algorithme-de-seuil        | Écrire la condition d'arrêt dans le « Tant que ».       | B2-04-A3-03-COURS-SEUIL          |
@@ -475,18 +512,30 @@ Chaque valeur est recalculée par `b2-04.cours.spec.ts` à partir des seuls para
 Douze rappels : terme d'une suite arithmétique, nature d'une évolution à taux constant, raison d'une
 baisse, terme d'une suite géométrique, terme général, rang d'une année, condition du « Tant que »,
 interprétation de la valeur affichée, nombre de termes, cumul et dernier terme, référence figée,
-sens de variation. Obligatoires : `b2-04-r-nature` et `b2-04-r-tant-que`.
+sens de variation. Les douze sont obligatoires : tous les étudiants reçoivent toute la banque.
 
 ## 8. Médias
 
 ### 8.1 Principe
 
-Aucune image : l'historique et le dossier sont rendus par `table`, les deux hypothèses par `chart`,
-les feuilles par `fp-sheet`, le tableau d'exécution par `fp-table-build`.
+Cinq infographies, une par exemple pour débuter, chacune projetée sur un écran `illustration` placé
+juste avant sa page de trace écrite. Le reste est rendu sans image : l'historique et le dossier par
+`table`, les deux hypothèses par `chart`, les feuilles par `fp-sheet`, le tableau d'exécution par
+`fp-table-build`.
 
 ### 8.2 Catalogue des médias
 
-Aucun média catalogué.
+Chaque PNG d'origine (1 536 × 1 024 px) est converti en WebP à la même taille et servi depuis
+`/assets/cours/b2-04/v1/`. Le catalogue est stocké avec le cours (`Cours.medias`) et contrôlé par la
+règle `media-sans-licence`.
+
+| Id  | Écran | Fichier source (page)      | Original                     | Auteur, date       | Licence      | Dérivé servi                    | Attribution affichée                                            |
+| --- | ----- | -------------------------- | ---------------------------- | ------------------ | ------------ | ------------------------------- | --------------------------------------------------------------- |
+| M1  | A1-07 | production propre du cours | PNG 1 536 × 1 024 px, 1,5 Mo | Asili Design, 2026 | CC BY-SA 4.0 | `loyer-croissant.webp`          | « Pour débuter : le loyer · Asili Design, 2026 · CC BY-SA 4.0 » |
+| M2  | A1-08 | production propre du cours | PNG 1 536 × 1 024 px, 1,5 Mo | Asili Design, 2026 | CC BY-SA 4.0 | `points-alignes.webp`           | « Des points alignés · Asili Design, 2026 · CC BY-SA 4.0 »      |
+| M3  | A2-02 | production propre du cours | PNG 1 536 × 1 024 px, 1,6 Mo | Asili Design, 2026 | CC BY-SA 4.0 | `livret-interets-composes.webp` | « Le livret · Asili Design, 2026 · CC BY-SA 4.0 »               |
+| M4  | A3-03 | production propre du cours | PNG 1 536 × 1 024 px, 1,7 Mo | Asili Design, 2026 | CC BY-SA 4.0 | `tirelire-boucle.webp`          | « La tirelire · Asili Design, 2026 · CC BY-SA 4.0 »             |
+| M5  | A3-04 | production propre du cours | PNG 1 536 × 1 024 px, 1,6 Mo | Asili Design, 2026 | CC BY-SA 4.0 | `loyers-du-bail.webp`           | « Les loyers d’un bail · Asili Design, 2026 · CC BY-SA 4.0 »    |
 
 ### 8.3 Sources des données
 
