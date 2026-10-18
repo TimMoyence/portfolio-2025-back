@@ -58,6 +58,11 @@ const TAUX_POUR_RAISON = 'coefficient-confondu-avec-taux';
 const DONNEES_FICTIVES =
   'Données fictives Atelier Rivage, créées pour ce cours.';
 
+const DOSSIER_DES_ILLUSTRATIONS = '/assets/cours/b2-04/v1';
+
+const AVANT_SA_PAGE =
+  '1 min, avant la trace écrite : faire décrire l’image, la page suivante en donne la règle.';
+
 const RENVOI_A_L_HISTORIQUE = 'B2-04-A1-05-HISTORIQUE';
 const RENVOI_A_LA_BOUTIQUE = 'B2-04-A4-01-SITUATION-BOUTIQUE';
 
@@ -471,6 +476,7 @@ const ACTE_1: moteur.Acte = [
     ],
     notes: moteur.puces(
       'Lecture à voix haute du courriel (1 min), puis 4 min d’écriture individuelle et 1 min de mise en commun au pupitre.',
+      'Consigne orale : sans calculatrice. Enjeu : trop optimiste, la banque finance un atelier que les ventes ne rempliront pas ; trop prudent, le prêt est refusé.',
       'Question 1 : faire dire « on ajoute toujours le même montant ».',
       'Question 2 : faire dire que 6 % d’un chiffre d’affaires qui grossit représentent de plus en plus de k€.',
       'Question 3 : faire émerger l’idée d’avancer année après année jusqu’au seuil ; c’est l’acte 3.',
@@ -479,12 +485,14 @@ const ACTE_1: moteur.Acte = [
     proprietes: {
       metier:
         'Assistant·e de gestion — Atelier Rivage (voilerie artisanale, 14 salariés, La Rochelle)',
-      situation:
-        'Lundi, 9 h. Hélène Garnier, la dirigeante, prépare un plan à cinq ans, de 2026 à 2030, pour le dossier de prêt de la banque. Elle écrit : « Notre chiffre d’affaires 2025 est de 826 k€. Il me faut une prévision année par année, et l’année où nous atteindrons 1 200 k€ : à partir de ce seuil, la banque finance le second atelier. » Marc Lefèvre, l’expert-comptable, propose l’hypothèse A : « Prolongez la droite d’ajustement : + 44 k€ chaque année. » Samir, le responsable commercial, défend l’hypothèse B : « Notre croissance moyenne est d’environ 6 % par an : appliquez + 6 % chaque année. »',
-      geste:
-        'Sans calculatrice, répondez aux trois questions à partir des deux hypothèses.',
-      consequence:
-        'Un plan trop optimiste, et la banque finance un atelier que les ventes ne rempliront pas ; trop prudent, et le prêt est refusé. Les deux hypothèses sont proches en 2026, beaucoup moins au bout de cinq ans.',
+      situation: [
+        'Lundi, 9 h. Hélène Garnier, la dirigeante, prépare un plan à cinq ans, de 2026 à 2030, pour le dossier de prêt de la banque.',
+        'Elle écrit : « Notre chiffre d’affaires 2025 est de 826 k€. Il me faut une prévision année par année, et l’année où nous atteindrons 1 200 k€ : à partir de ce seuil, la banque finance le second atelier. »',
+        'Marc Lefèvre, l’expert-comptable, propose l’hypothèse A : « Prolongez la droite d’ajustement : + 44 k€ chaque année. »',
+        'Samir, le responsable commercial, défend l’hypothèse B : « Notre croissance moyenne est d’environ 6 % par an : appliquez + 6 % chaque année. »',
+      ].join('\n'),
+      geste: null,
+      consequence: null,
       questionsLibres: [
         {
           id: 'b2-04-a1-mission:hypothese-a',
@@ -507,16 +515,33 @@ const ACTE_1: moteur.Acte = [
       ],
     },
   },
+  moteur.ecranDIllustration(
+    {
+      screenId: 'B2-04-A1-07-ILLUSTRATION-LOYER',
+      titre: 'Illustration : le loyer',
+      concepts: ['suite-arithmetique'],
+    },
+    DOSSIER_DES_ILLUSTRATIONS,
+    {
+      fichier: 'loyer-croissant.webp',
+      imageAlt:
+        'Infographie « Pour débuter : le loyer ». Un local loué 900 € par mois en 2025, 15 € de plus chaque année : u₀ = 900 et r = 15. u₁ = 900 + 15 = 915 € en 2026, u₂ = 915 + 15 = 930 € en 2027. Directement, u₁₀ = 900 + 10 × 15 = 1 050 € en 2035, sans calculer les neuf loyers précédents. Le rang n compte les années écoulées depuis 2025 ; un tableau récapitule rang, année, formule et loyer.',
+    },
+    [
+      AVANT_SA_PAGE,
+      'Avant de lire : « Pour 2035, faut-il calculer les dix loyers ? » Laisser venir « dix fois 15 € ».',
+    ],
+  ),
   moteur.ecranV2(
     {
       screenId: 'B2-04-A1-07-COURS-ARITHMETIQUE',
       titre: 'Cours : suites arithmétiques',
       diffusion: 'catalogue',
-      dureeMinutes: 3,
+      dureeMinutes: 2,
       concepts: ['suite-arithmetique'],
       notes: moteur.puces(
-        '3 min ; la trace écrite est imprimée dans le livret : on lit et on commente, on ne recopie pas.',
-        'Avant l’exemple, demander : « Le loyer de 2035, faut-il calculer les dix loyers ? » Laisser venir « dix fois 15 € ».',
+        '2 min après l’illustration ; la trace écrite est imprimée dans le livret : on lit et on commente, on ne recopie pas.',
+        'Faire répéter le moyen mnémotechnique : A comme Arithmétique, A comme Ajouter.',
         'Insister sur le rang 0 : c’est l’année de départ, pas la première année du plan.',
         'Lien au dossier : « L’hypothèse de Marc, est-ce une suite arithmétique ? De quelle raison ? »',
       ),
@@ -528,9 +553,9 @@ const ACTE_1: moteur.Acte = [
       blocks: [
         {
           kind: 'definition',
-          title: 'Une liste numérotée de nombres',
-          text: 'Une suite est une liste de nombres numérotés : u₀, u₁, u₂… Le numéro n s’appelle le rang, et uₙ est le terme de rang n. Une suite est arithmétique quand on passe d’un terme au suivant en ajoutant toujours le même nombre r, appelé la raison. On obtient alors n’importe quel terme sans calculer les précédents : on part de u₀ et l’on ajoute n fois la raison. En gestion, c’est le modèle d’une grandeur qui gagne ou perd le même montant à chaque période : un loyer révisé d’un montant fixe, un amortissement linéaire.',
-          formula: 'uₙ₊₁ = uₙ + r · uₙ = u₀ + n × r',
+          title: 'Ajouter toujours le même nombre',
+          text: 'À chaque pas, on ajoute la même raison r.\nuₙ : le terme de rang n ; u₀ : le départ.',
+          formula: 'uₙ₊₁ = uₙ + r\nuₙ = u₀ + n × r',
         },
         {
           kind: 'example',
@@ -545,27 +570,44 @@ const ACTE_1: moteur.Acte = [
         },
         {
           kind: 'method',
-          title: 'Reconnaître et utiliser une suite arithmétique',
-          text: 'Pour reconnaître : calculer les différences entre termes consécutifs ; si elles sont toutes égales, la suite est arithmétique et cette différence est la raison. Pièges : compter un rang de trop ou de moins (le terme de départ est u₀, pas u₁) ; répondre par le rang quand on demande l’année.',
+          title: 'A comme Arithmétique, A comme Ajouter',
+          text: 'Même écart entre deux termes → arithmétique.',
           steps: [
-            'Différences constantes : suite arithmétique, de raison cette différence.',
-            'Noter ce que représente le rang 0 avant tout calcul.',
-            'Terme de rang n : u₀ + n × r.',
-            'Retrouver un rang : (uₙ − u₀) ÷ r.',
+            'Raison : r = l’écart.',
+            'Rang 0 = l’année de départ.',
+            'Terme : uₙ = u₀ + n × r.',
+            'Rang : n = (uₙ − u₀) ÷ r.',
           ],
         },
       ],
     },
+  ),
+  moteur.ecranDIllustration(
+    {
+      screenId: 'B2-04-A1-08-ILLUSTRATION-POINTS-ALIGNES',
+      titre: 'Illustration : des points alignés',
+      concepts: ['suite-arithmetique', 'ajustement-affine'],
+    },
+    DOSSIER_DES_ILLUSTRATIONS,
+    {
+      fichier: 'points-alignes.webp',
+      imageAlt:
+        'Infographie « Des points alignés ». Les points (n ; uₙ) d’une suite arithmétique sont alignés : uₙ = u₀ + n × r s’écrit r × n + u₀, de la forme y = ax + b, avec la raison r pour pente et u₀ pour ordonnée à l’origine. On ne garde que les rangs entiers. Trois graphiques : r > 0, suite croissante ; r < 0, suite décroissante ; r = 0, suite constante.',
+    },
+    [
+      AVANT_SA_PAGE,
+      'Préciser : même forme que la droite d’ajustement du B2-02 (pente ≈ 44), mais pas la même droite : l’hypothèse A part de 826 k€.',
+    ],
   ),
   moteur.ecranV2(
     {
       screenId: 'B2-04-A1-08-COURS-RAISON-TABLEUR',
       titre: 'Cours : raison, graphique et tableur',
       diffusion: 'catalogue',
-      dureeMinutes: 3,
+      dureeMinutes: 2,
       concepts: ['suite-arithmetique', 'ajustement-affine', 'tableur'],
       notes: moteur.puces(
-        moteur.DEUXIEME_PAGE_DE_COURS,
+        '2 min après l’illustration, enchaînées sur la page 1 : 6 min pour les deux pages et leurs illustrations.',
         'Relier au vote de rappel : la pente 43,9 de la droite du B2-02 est la raison, arrondie à 44.',
         'Faire taper la formule sans $ sur un poste volontaire, puis la recopier : la colonne se bloque, l’erreur fixe la règle.',
       ),
@@ -578,29 +620,18 @@ const ACTE_1: moteur.Acte = [
         {
           kind: 'property',
           title: 'Des points alignés',
-          text: 'Les points (n ; uₙ) d’une suite arithmétique sont alignés : uₙ = u₀ + n × r est de la forme y = ax + b, avec la raison r pour pente et u₀ pour ordonnée à l’origine. C’est la droite d’ajustement du B2-02, lue aux seuls rangs entiers. Si r est positif, la suite est croissante ; si r est négatif, elle est décroissante ; si r est nul, elle est constante.',
+          text: 'Les points (n ; uₙ) sont alignés : uₙ = u₀ + n × r a la forme y = ax + b.',
           formula:
-            'r > 0 : croissante · r < 0 : décroissante · pente = r · ordonnée à l’origine = u₀',
+            'pente = r\nordonnée à l’origine = u₀\nr > 0 : croissante\nr < 0 : décroissante\nr = 0 : constante',
         },
         {
           kind: 'method',
-          title: 'Au tableur : une formule, recopiée',
-          text: 'On écrit la valeur de départ, puis une seule formule qui ajoute la raison au terme du dessus, et on la recopie vers le bas. La raison est rangée dans une cellule à part : on la fige avec des $ pour que la recopie ne la décale pas.',
+          title: 'La méthode au tableur',
+          text: 'Une formule, recopiée vers le bas ; la raison figée par des $.',
           steps: [
-            'B2 contient u₀ ; la raison est en E1.',
-            'En B3 : =B2+$E$1, puis recopier vers le bas.',
-            'Sans les $, B4 contiendrait =B3+E2 : E2 est vide, la suite n’avance plus.',
-            'Changer E1 recalcule toute la colonne : c’est l’intérêt de la cellule à part.',
-          ],
-        },
-        {
-          kind: 'exam',
-          title: 'Au CCF : justifier la nature de la suite',
-          text: 'Une réponse complète nomme la suite, donne son premier terme et sa raison avec l’unité, puis écrit la formule. Pièges : échanger u₀ et r dans la formule ; oublier l’unité de la raison.',
-          steps: [
-            'Phrase type : « la suite (uₙ) est arithmétique, de premier terme u₀ = … et de raison r = … ».',
-            'Vérifier la formule sur un terme connu, par exemple u₁.',
-            'Conclure par une phrase, avec l’unité.',
+            'B2 : u₀ ; E1 : la raison.',
+            'En B3 : =B2+$E$1, puis recopier.',
+            'Sans $ : =B3+E2, une cellule vide, la suite n’avance plus.',
           ],
         },
       ],
@@ -879,6 +910,23 @@ const ACTE_2: moteur.Acte = [
       renvoi: RENVOI_A_L_HISTORIQUE,
     },
   ),
+  moteur.ecranDIllustration(
+    {
+      screenId: 'B2-04-A2-02-ILLUSTRATION-LIVRET',
+      titre: 'Illustration : le livret',
+      concepts: ['suite-geometrique', 'coefficient-multiplicateur'],
+    },
+    DOSSIER_DES_ILLUSTRATIONS,
+    {
+      fichier: 'livret-interets-composes.webp',
+      imageAlt:
+        'Infographie « Le livret ». 2 000 € en 2025 à 3 % par an, intérêts laissés sur le livret : u₀ = 2 000 et q = 1,03. u₁ = 2 000 × 1,03 = 2 060 € en 2026, u₂ = 2 060 × 1,03 = 2 121,80 € en 2027, u₁₀ = 2 000 × 1,03¹⁰ ≈ 2 687,83 € en 2035. Erreur classique : 10 × 3 % = 30 %, soit 2 600 €, faux car il manque les intérêts des intérêts. À la calculatrice : 2000 × 1,03 ^ 10.',
+    },
+    [
+      AVANT_SA_PAGE,
+      'Question : « Le livret à 3 %, par combien multiplie-t-on chaque année ? » 1,03, pas 0,03. Faire faire u₁₀ à la calculatrice : repérer la touche puissance.',
+    ],
+  ),
   moteur.ecranV2(
     {
       screenId: 'B2-04-A2-02-COURS-GEOMETRIQUE',
@@ -887,21 +935,21 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 3,
       concepts: ['suite-geometrique', 'coefficient-multiplicateur'],
       notes: moteur.puces(
-        '3 min ; garder la réflexion précédente sous les yeux.',
-        'Question : « Le livret à 3 %, par combien multiplie-t-on chaque année ? » 1,03, pas 0,03.',
-        'Faire faire le calcul de u₁₀ à la calculatrice : repérer la touche puissance sur chaque modèle.',
+        '3 min après l’illustration ; garder la réflexion précédente sous les yeux.',
+        'Faire répéter le moyen mnémotechnique : on multiplie par q, on n’additionne jamais les taux.',
+        'Question : « − 5 % par an : la raison est-elle négative ? » Non : 0,95, positive et plus petite que 1.',
       ),
     },
     'lesson',
     {
       title: 'Suites géométriques : multiplier toujours par le même nombre',
-      subtitle: 'Trace écrite · notion 2 · page 1 sur 2',
+      subtitle: 'Trace écrite · notion 2',
       blocks: [
         {
           kind: 'definition',
           title: 'Multiplier par la raison',
-          text: 'Une suite est géométrique quand on passe d’un terme au suivant en multipliant toujours par le même nombre q, appelé la raison. Le terme de rang n s’obtient en multipliant u₀ n fois par q. Une évolution à taux constant est une suite géométrique : augmenter de t % à chaque période, c’est multiplier chaque fois par le coefficient multiplicateur du B2-01. La raison est ce coefficient, pas le taux. C’est le modèle de l’hypothèse de Samir.',
-          formula: 'uₙ₊₁ = uₙ × q · uₙ = u₀ × qⁿ · q = 1 + t ÷ 100',
+          text: 'À chaque pas, on multiplie par la même raison q.\nUn taux constant donne une suite géométrique.',
+          formula: 'uₙ₊₁ = uₙ × q\nuₙ = u₀ × qⁿ\nq = 1 + t ÷ 100',
         },
         {
           kind: 'example',
@@ -917,61 +965,12 @@ const ACTE_2: moteur.Acte = [
         },
         {
           kind: 'method',
-          title: 'Reconnaître et utiliser une suite géométrique',
-          text: 'Pour reconnaître : calculer les quotients de termes consécutifs ; s’ils sont tous égaux, la suite est géométrique et ce quotient est la raison. Différences égales : arithmétique ; quotients égaux : géométrique. Pièges : prendre le taux pour la raison (0,03 au lieu de 1,03) ; additionner les taux au lieu de multiplier les coefficients.',
+          title: '× q, jamais + t %',
+          text: 'Même quotient entre deux termes → géométrique.',
           steps: [
-            'Quotients constants : suite géométrique, de raison ce quotient.',
-            '« + t % par période » : q = 1 + t ÷ 100 ; « − t % par période » : q = 1 − t ÷ 100.',
-            'Terme de rang n : u₀ × qⁿ, avec la touche puissance.',
-            'Arrondir seulement le résultat final, jamais la raison.',
-          ],
-        },
-      ],
-    },
-  ),
-  moteur.ecranV2(
-    {
-      screenId: 'B2-04-A2-03-COURS-VARIATION',
-      titre: 'Cours : variation et tableur',
-      diffusion: 'catalogue',
-      dureeMinutes: 3,
-      concepts: ['suite-geometrique', 'tableur'],
-      notes: moteur.puces(
-        moteur.DEUXIEME_PAGE_DE_COURS,
-        'Question : « − 5 % par an : la raison est-elle négative ? » Non : 0,95, positive et plus petite que 1.',
-        'Relier à la réflexion A2-01 : faire relire les réponses qui ont ajouté les taux.',
-      ),
-    },
-    'lesson',
-    {
-      title: 'Variation, comparaison et tableur',
-      subtitle: 'Trace écrite · notion 2 · page 2 sur 2',
-      blocks: [
-        {
-          kind: 'property',
-          title: 'Croissante ou décroissante ?',
-          text: 'Pour une suite géométrique de premier terme positif : si q est plus grand que 1, la suite est croissante ; si q est entre 0 et 1, elle est décroissante ; si q vaut 1, elle est constante. Une baisse de 5 % par an donne q = 0,95 : les termes diminuent, de moins en moins vite. Une croissance géométrique finit toujours par dépasser une croissance arithmétique : ses hausses grossissent d’année en année, alors que celles de la suite arithmétique restent égales.',
-          formula: 'q > 1 : croissante · 0 < q < 1 : décroissante',
-        },
-        {
-          kind: 'method',
-          title: 'Au tableur : le taux dans une cellule figée',
-          text: 'Même principe que pour une suite arithmétique : une valeur de départ, puis une formule recopiée. Le taux est rangé dans une cellule à part, figée par des $ ; la formule multiplie le terme du dessus par 1 + taux.',
-          steps: [
-            'B2 contient u₀ ; le taux, écrit 0,03, est en E1.',
-            'En B3 : =B2*(1+$E$1), puis recopier vers le bas.',
-            'Piège : =B2*$E$1 multiplie par le taux seul : on obtient les intérêts, pas le nouveau montant.',
-            'Terme de rang 10 en une formule : =B2*(1+$E$1)^10.',
-          ],
-        },
-        {
-          kind: 'exam',
-          title: 'Au CCF : comparer deux modèles',
-          text: 'Un sujet oppose souvent une évolution à montant constant (arithmétique) et une évolution à taux constant (géométrique). On calcule les deux au même rang, puis on conclut par une phrase. Pièges : comparer des rangs différents ; conclure sans unité.',
-          steps: [
-            'Identifier, pour chaque modèle, le premier terme et la raison.',
-            'Calculer le terme demandé dans chaque modèle, au même rang.',
-            'Donner l’écart, dire quel modèle est le plus favorable et à partir de quand.',
+            '+ 3 % → q = 1,03 ; − 5 % → q = 0,95.',
+            'u₀ > 0 : q > 1 croît ; 0 < q < 1 décroît.',
+            'Au tableur : =B2*(1+$E$1), recopiée.',
           ],
         },
       ],
@@ -1143,10 +1142,10 @@ const ACTE_2: moteur.Acte = [
       titre: 'Exercice 4 — Les deux hypothèses au tableur',
       diffusion: 'seance',
       brique: 'fp-sheet',
-      dureeMinutes: 8,
+      dureeMinutes: 10,
       concepts: ['tableur', 'suite-geometrique'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(2, 6),
+        moteur.tempsDeLExercice(2, 8),
         'Réflexion : écrire sur papier la formule de D3, puis ce qu’elle devient en D4 une fois recopiée.',
         'Erreurs à chercher : =D2*$G$2 (le taux seul) ; G2 sans $ ; le taux écrit en dur.',
         'Papier : les deux formules écrites sur la copie, puis les valeurs de 2026 et 2030 à la calculatrice.',
@@ -1302,16 +1301,33 @@ const ACTE_3: moteur.Acte = [
       },
     },
   },
+  moteur.ecranDIllustration(
+    {
+      screenId: 'B2-04-A3-03-ILLUSTRATION-TIRELIRE',
+      titre: 'Illustration : la tirelire',
+      concepts: ['algorithme-de-seuil'],
+    },
+    DOSSIER_DES_ILLUSTRATIONS,
+    {
+      fichier: 'tirelire-boucle.webp',
+      imageAlt:
+        'Infographie « La tirelire ». 150 € dans une tirelire, 20 € ajoutés par mois : dans combien de mois contiendra-t-elle au moins 200 € ? Algorithme : n ← 0 ; u ← 150 ; Tant que u < 200 : n ← n + 1 ; u ← u + 20 ; Afficher n. Passages : n = 1, u = 170 ; n = 2, u = 190 ; n = 3, u = 210. La condition 210 < 200 est fausse : la boucle s’arrête, l’algorithme affiche 3. La tirelire atteint au moins 200 € au bout de trois mois.',
+    },
+    [
+      AVANT_SA_PAGE,
+      'Dérouler la tirelire au tableau, une ligne par passage : c’est le geste de l’exercice 5.',
+    ],
+  ),
   moteur.ecranV2(
     {
       screenId: 'B2-04-A3-03-COURS-SEUIL',
       titre: 'Cours : seuil et boucle « Tant que »',
       diffusion: 'catalogue',
-      dureeMinutes: 3,
+      dureeMinutes: 2,
       concepts: ['algorithme-de-seuil', 'negation', 'tableur'],
       notes: moteur.puces(
-        '3 min ; la trace écrite est imprimée dans le livret.',
-        'Dérouler la tirelire au tableau, une ligne par passage : c’est le geste de l’exercice 5.',
+        '2 min après l’illustration ; la trace écrite est imprimée dans le livret.',
+        'Faire répéter le moyen mnémotechnique : « Tant que » veut dire « pas encore atteint ».',
         'Relier au rappel du B2-03 : la condition de la boucle est la négation de l’objectif.',
         'Question : « Que se passe-t-il si l’on écrit Tant que u ≥ 200 ? » La boucle ne démarre pas.',
       ),
@@ -1324,8 +1340,8 @@ const ACTE_3: moteur.Acte = [
         {
           kind: 'definition',
           title: 'Le premier rang qui atteint le seuil',
-          text: 'Chercher un seuil, c’est trouver le premier rang pour lequel un terme atteint ou dépasse une valeur donnée. On avance terme après terme tant que le seuil n’est pas atteint. Un algorithme l’écrit avec une boucle « Tant que » : la condition de la boucle est le contraire de l’objectif. Pour l’objectif « u ≥ 1 000 », on continue tant que u < 1 000 : c’est la négation d’une comparaison, vue au B2-03. Pour Hélène, c’est la question de la banque : en quelle année le chiffre d’affaires atteint-il le seuil ?',
-          formula: 'Tant que (objectif non atteint) : passer au terme suivant',
+          text: 'On avance terme par terme tant que le seuil n’est pas atteint.\nLa condition est le contraire de l’objectif.',
+          formula: 'Objectif : u ≥ 1 000\nBoucle : Tant que u < 1 000',
         },
         {
           kind: 'example',
@@ -1340,29 +1356,43 @@ const ACTE_3: moteur.Acte = [
         },
         {
           kind: 'method',
-          title: 'Dérouler l’algorithme, à la main ou au tableur',
-          text: 'On remplit un tableau, une ligne par passage dans la boucle : rang, terme, condition vraie ou fausse. Pièges : inverser la condition (avec « Tant que u ≥ seuil », la boucle ne démarre pas et affiche 0) ; s’arrêter un terme trop tôt, sur la dernière valeur sous le seuil ; répondre par le rang quand on demande l’année.',
+          title: '« Tant que » = « pas encore »',
+          text: 'Une ligne par passage : n, u, condition V ou F.',
           steps: [
-            'Initialiser : rang 0, premier terme.',
-            'À chaque passage : augmenter le rang, calculer le terme, tester la condition.',
-            'Arrêt : première ligne où la condition est fausse ; le rang affiché est celui de cette ligne.',
-            'Au tableur : =SI(B5>=200;"Atteint";"") à côté de chaque terme ; le texte s’écrit entre guillemets (B2-03).',
-            'Convertir le rang en année ou en mois pour conclure.',
+            'Arrêt à la première ligne F : on affiche son n.',
+            'Rang → année : 2025 + n.',
+            'Au tableur : =SI(B5>=200;"Atteint";""), texte entre guillemets.',
           ],
         },
       ],
     },
+  ),
+  moteur.ecranDIllustration(
+    {
+      screenId: 'B2-04-A3-04-ILLUSTRATION-BAIL',
+      titre: 'Illustration : les loyers d’un bail',
+      concepts: ['somme-de-termes', 'tableur'],
+    },
+    DOSSIER_DES_ILLUSTRATIONS,
+    {
+      fichier: 'loyers-du-bail.webp',
+      imageAlt:
+        'Infographie « Les loyers d’un bail ». Loyer annuel de 10 800 € en 2025, puis 180 € de plus chaque année : 10 980 € en 2026, 11 160 € en 2027, 11 340 € en 2028. De 2026 à 2028 : 2028 − 2026 + 1 = 3 termes. Somme : 10 980 + 11 160 + 11 340 = 33 480 €. Au tableur, loyers de 2025 à 2028 en B2:B5 : =SOMME(B3:B5), la plage commence en B3 car 2025 n’est pas demandé.',
+    },
+    [
+      AVANT_SA_PAGE,
+      'Question : « De 2026 à 2028 inclus, combien de loyers ? » Trois, pas deux.',
+    ],
   ),
   moteur.ecranV2(
     {
       screenId: 'B2-04-A3-04-COURS-SOMME',
       titre: 'Cours : cumul et somme de termes',
       diffusion: 'catalogue',
-      dureeMinutes: 3,
+      dureeMinutes: 2,
       concepts: ['somme-de-termes', 'tableur'],
       notes: moteur.puces(
-        moteur.DEUXIEME_PAGE_DE_COURS,
-        'Question : « De 2026 à 2028 inclus, combien de loyers ? » Trois, pas deux.',
+        '2 min après l’illustration, enchaînées sur la page 1 : 6 min pour les deux pages et leurs illustrations.',
         'Insister : un terme est la valeur d’une année, une somme est un total sur plusieurs années.',
       ),
     },
@@ -1374,8 +1404,8 @@ const ACTE_3: moteur.Acte = [
         {
           kind: 'definition',
           title: 'Un terme, ou une somme ?',
-          text: 'Le cumul d’une grandeur sur plusieurs périodes est la somme des termes de la suite sur ces périodes : chiffre d’affaires cumulé d’un plan, total des loyers d’un bail. Un terme donne la valeur d’une seule période ; la somme donne le total. Du rang p au rang n inclus, on additionne n − p + 1 termes. On calcule la somme à la calculatrice ou, plus sûrement, au tableur. C’est ce que la banque demande à Hélène : le chiffre d’affaires cumulé du plan.',
-          formula: 'Du rang p au rang n inclus : n − p + 1 termes',
+          text: 'Un terme = la valeur d’une année.\nUn cumul = la somme de plusieurs termes.',
+          formula: 'Du rang p au rang n inclus :\nn − p + 1 termes',
         },
         {
           kind: 'example',
@@ -1386,16 +1416,6 @@ const ACTE_3: moteur.Acte = [
             'Trois termes, de 2026 à 2028 inclus : 2028 − 2026 + 1 = 3.',
             'Somme : 10 980 + 11 160 + 11 340 = 33 480 €.',
             'Au tableur, loyers de 2025 à 2028 en B2:B5 : =SOMME(B3:B5). La plage commence en B3, car 2025 n’est pas demandé.',
-          ],
-        },
-        {
-          kind: 'exam',
-          title: 'Au CCF : seuil et cumul',
-          text: 'Deux questions reviennent : « à partir de quelle année… ? » (seuil) et « quel total sur la période… ? » (cumul). Pièges : donner le dernier terme à la place de la somme ; compter un terme de trop ou de moins, selon que l’année de départ est demandée ou non.',
-          steps: [
-            'Seuil : dérouler la boucle, donner le rang, puis l’année.',
-            'Cumul : lister les années demandées, compter les termes, puis additionner.',
-            'Contrôle : avec des termes positifs, la somme dépasse le plus grand terme.',
           ],
         },
       ],
@@ -1666,8 +1686,12 @@ const ACTE_3: moteur.Acte = [
         modalite: 'solo',
         probleme: {
           id: 'b2-04-a3-defi-ia',
-          enonce:
-            'Hélène a demandé à un assistant IA de rédiger le plan avec l’hypothèse B. Réponse : « 1. Avec + 6 % par an, le chiffre d’affaires de 2030 sera de 826 × (1 + 5 × 0,06) = 1 073,8 k€. 2. Pour trouver l’année du seuil, j’utilise la boucle : Tant que v ≥ 1 200, passer à l’année suivante. Elle affiche 0 : le seuil est donc atteint dès 2025. 3. Le chiffre d’affaires cumulé de 2026 à 2030 est celui de 2030, soit 1 073,8 k€. »',
+          enonce: [
+            'Hélène a demandé à un assistant IA de rédiger le plan avec l’hypothèse B. Réponse :',
+            '« 1. Avec + 6 % par an, le chiffre d’affaires de 2030 sera de 826 × (1 + 5 × 0,06) = 1 073,8 k€.',
+            '2. Pour trouver l’année du seuil, j’utilise la boucle : Tant que v ≥ 1 200, passer à l’année suivante. Elle affiche 0 : le seuil est donc atteint dès 2025.',
+            '3. Le chiffre d’affaires cumulé de 2026 à 2030 est celui de 2030, soit 1 073,8 k€. »',
+          ].join('\n'),
           invite:
             'Trouvez les erreurs de l’IA, corrigez chacune et dites comment la contrôler.',
         },
@@ -1741,6 +1765,101 @@ const ACTE_3: moteur.Acte = [
         'Je sais dérouler une boucle « Tant que » pour trouver un seuil, et calculer un cumul sans me tromper de termes.',
     },
     moteur.PAUSE_HORS_DUREE,
+  ),
+];
+
+const QUESTIONS_DU_RAPPEL: AuMoinsUnModifiable<moteur.VoteDuCours> = [
+  moteur.rappel(
+    'b2-04-r-arithmetique',
+    'suite-arithmetique',
+    'Un abonnement coûte 30 € et augmente de 2 € par an. Quelle suite modélise son prix ?',
+    'Une suite arithmétique de raison 2 €',
+    [['Une suite géométrique de raison 2', 'nature-de-suite-confondue']],
+  ),
+  moteur.rappel(
+    'b2-04-r-nature',
+    'suite-geometrique',
+    'Un effectif vaut 200, puis 220, puis 242. Quelle est la nature de la suite ?',
+    'Géométrique : chaque terme est le précédent multiplié par 1,1',
+    [
+      [
+        'Arithmétique : on ajoute 20 à chaque fois',
+        'nature-de-suite-confondue',
+      ],
+    ],
+  ),
+  moteur.rappel(
+    'b2-04-r-baisse',
+    'suite-geometrique',
+    'Un prix baisse de 20 % par an. Quelle est la raison de la suite ?',
+    'q = 0,80, soit 1 − 0,20',
+    [
+      ['q = 0,20, le taux de la baisse', TAUX_POUR_RAISON],
+      ['q = 1,20, soit 1 + 0,20', 'sens-de-variation'],
+    ],
+  ),
+  moteur.rappel(
+    'b2-04-r-geometrique',
+    'suite-geometrique',
+    'Un capital de 1 000 € est placé à 2 % par an. Que vaut-il après deux ans ?',
+    '1 040,40 €, soit 1 000 × 1,02 × 1,02',
+    [['1 040 €, soit 1 000 + 2 × 20', 'taux-successifs-additionnes']],
+  ),
+  moteur.rappel(
+    'b2-04-r-terme-general',
+    'suite-arithmetique',
+    'Suite arithmétique : u₀ = 500, raison 12. Comment obtenir u₈ ?',
+    'On ajoute huit fois 12 à 500',
+    [['On ajoute neuf fois 12 à 500', 'rang-decale']],
+  ),
+  moteur.rappel(
+    'b2-04-r-rang',
+    'algorithme-de-seuil',
+    'Le rang 0 est l’année 2025. À quelle année correspond le rang 4 ?',
+    'À 2029 : quatre années après 2025',
+    [['À 2028 : la quatrième année', 'rang-decale']],
+  ),
+  moteur.rappel(
+    'b2-04-r-tant-que',
+    'algorithme-de-seuil',
+    'On cherche quand un stock s passe sous 50 unités. Quelle condition écrire dans la boucle ?',
+    'Tant que s ≥ 50',
+    [['Tant que s < 50', 'condition-tant-que-inversee']],
+  ),
+  moteur.rappel(
+    'b2-04-r-affichage',
+    'algorithme-de-seuil',
+    'u ← 10 ; n ← 0. Tant que u < 25 : n ← n + 1 ; u ← u + 10. Qu’affiche « Afficher n » ?',
+    'Il affiche 2 : u vaut alors 30',
+    [['Il affiche 1 : u vaut alors 20', 'seuil-mal-arrondi']],
+  ),
+  moteur.rappel(
+    'b2-04-r-nombre-de-termes',
+    'somme-de-termes',
+    'Combien de termes additionne-t-on du rang 3 au rang 9 inclus ?',
+    'Sept termes : 9 − 3 + 1',
+    [['Six termes : 9 − 3', 'nombre-de-termes-decale']],
+  ),
+  moteur.rappel(
+    'b2-04-r-somme',
+    'somme-de-termes',
+    'Des ventes mensuelles valent 10, 12 et 14 k€. Quel est leur cumul ?',
+    '36 k€ : la somme des trois mois',
+    [['14 k€ : la valeur du dernier mois', 'terme-pris-pour-somme']],
+  ),
+  moteur.rappel(
+    'b2-04-r-dollar',
+    'tableur',
+    'Terme précédent en C2, raison en G1. Quelle formule recopier vers le bas ?',
+    '=C2+$G$1',
+    [['=C2+G1', NON_FIGEE]],
+  ),
+  moteur.rappel(
+    'b2-04-r-sens',
+    'suite-geometrique',
+    'Une suite géométrique a pour raison 0,97 et un premier terme positif. Comment varie-t-elle ?',
+    'Elle décroît : chaque terme perd 3 %',
+    [['Elle croît : sa raison est positive', 'sens-de-variation']],
   ),
 ];
 
@@ -2002,104 +2121,11 @@ const ACTE_4: moteur.Acte = [
   ),
   moteur.ecranDeRappel(
     { screenId: 'B2-04-A4-04-RAPPEL', concepts: [...CONCEPTS_DES_SUITES] },
-    'Tous reçoivent les deux questions obligatoires (nature d’une suite, condition du « Tant que »), en plus de leurs points faibles.',
+    'Tous reçoivent les douze questions de la banque : le rappel couvre tout le cours pour chacun.',
     'b2-04-a4-rappel',
     {
-      questions: [
-        moteur.rappel(
-          'b2-04-r-arithmetique',
-          'suite-arithmetique',
-          'Un abonnement coûte 30 € et augmente de 2 € par an. Quelle suite modélise son prix ?',
-          'Une suite arithmétique de raison 2 €',
-          [['Une suite géométrique de raison 2', 'nature-de-suite-confondue']],
-        ),
-        moteur.rappel(
-          'b2-04-r-nature',
-          'suite-geometrique',
-          'Un effectif vaut 200, puis 220, puis 242. Quelle est la nature de la suite ?',
-          'Géométrique : chaque terme est le précédent multiplié par 1,1',
-          [
-            [
-              'Arithmétique : on ajoute 20 à chaque fois',
-              'nature-de-suite-confondue',
-            ],
-          ],
-        ),
-        moteur.rappel(
-          'b2-04-r-baisse',
-          'suite-geometrique',
-          'Un prix baisse de 20 % par an. Quelle est la raison de la suite ?',
-          'q = 0,80, soit 1 − 0,20',
-          [
-            ['q = 0,20, le taux de la baisse', TAUX_POUR_RAISON],
-            ['q = 1,20, soit 1 + 0,20', 'sens-de-variation'],
-          ],
-        ),
-        moteur.rappel(
-          'b2-04-r-geometrique',
-          'suite-geometrique',
-          'Un capital de 1 000 € est placé à 2 % par an. Que vaut-il après deux ans ?',
-          '1 040,40 €, soit 1 000 × 1,02 × 1,02',
-          [['1 040 €, soit 1 000 + 2 × 20', 'taux-successifs-additionnes']],
-        ),
-        moteur.rappel(
-          'b2-04-r-terme-general',
-          'suite-arithmetique',
-          'Suite arithmétique : u₀ = 500, raison 12. Comment obtenir u₈ ?',
-          'On ajoute huit fois 12 à 500',
-          [['On ajoute neuf fois 12 à 500', 'rang-decale']],
-        ),
-        moteur.rappel(
-          'b2-04-r-rang',
-          'algorithme-de-seuil',
-          'Le rang 0 est l’année 2025. À quelle année correspond le rang 4 ?',
-          'À 2029 : quatre années après 2025',
-          [['À 2028 : la quatrième année', 'rang-decale']],
-        ),
-        moteur.rappel(
-          'b2-04-r-tant-que',
-          'algorithme-de-seuil',
-          'On cherche quand un stock s passe sous 50 unités. Quelle condition écrire dans la boucle ?',
-          'Tant que s ≥ 50',
-          [['Tant que s < 50', 'condition-tant-que-inversee']],
-        ),
-        moteur.rappel(
-          'b2-04-r-affichage',
-          'algorithme-de-seuil',
-          'u ← 10 ; n ← 0. Tant que u < 25 : n ← n + 1 ; u ← u + 10. Qu’affiche « Afficher n » ?',
-          'Il affiche 2 : u vaut alors 30',
-          [['Il affiche 1 : u vaut alors 20', 'seuil-mal-arrondi']],
-        ),
-        moteur.rappel(
-          'b2-04-r-nombre-de-termes',
-          'somme-de-termes',
-          'Combien de termes additionne-t-on du rang 3 au rang 9 inclus ?',
-          'Sept termes : 9 − 3 + 1',
-          [['Six termes : 9 − 3', 'nombre-de-termes-decale']],
-        ),
-        moteur.rappel(
-          'b2-04-r-somme',
-          'somme-de-termes',
-          'Des ventes mensuelles valent 10, 12 et 14 k€. Quel est leur cumul ?',
-          '36 k€ : la somme des trois mois',
-          [['14 k€ : la valeur du dernier mois', 'terme-pris-pour-somme']],
-        ),
-        moteur.rappel(
-          'b2-04-r-dollar',
-          'tableur',
-          'Terme précédent en C2, raison en G1. Quelle formule recopier vers le bas ?',
-          '=C2+$G$1',
-          [['=C2+G1', NON_FIGEE]],
-        ),
-        moteur.rappel(
-          'b2-04-r-sens',
-          'suite-geometrique',
-          'Une suite géométrique a pour raison 0,97 et un premier terme positif. Comment varie-t-elle ?',
-          'Elle décroît : chaque terme perd 3 %',
-          [['Elle croît : sa raison est positive', 'sens-de-variation']],
-        ),
-      ],
-      obligatoires: ['b2-04-r-nature', 'b2-04-r-tant-que'],
+      questions: QUESTIONS_DU_RAPPEL,
+      obligatoires: QUESTIONS_DU_RAPPEL.map((question) => question.id),
     },
   ),
   moteur.ficheMemo(
@@ -2197,7 +2223,7 @@ const REMEDIATIONS: ContenuDeCours['remediations'] = {
   [TAUX_POUR_RAISON]: 'B2-04-A2-02-COURS-GEOMETRIQUE',
   'nature-de-suite-confondue': 'B2-04-A2-02-COURS-GEOMETRIQUE',
   'taux-successifs-additionnes': 'B2-04-A2-02-COURS-GEOMETRIQUE',
-  'sens-de-variation': 'B2-04-A2-03-COURS-VARIATION',
+  'sens-de-variation': 'B2-04-A2-02-COURS-GEOMETRIQUE',
   'negation-comparaison': 'B2-04-A3-03-COURS-SEUIL',
   'seuil-mal-arrondi': 'B2-04-A3-03-COURS-SEUIL',
   'condition-tant-que-inversee': 'B2-04-A3-03-COURS-SEUIL',
@@ -2207,10 +2233,18 @@ const REMEDIATIONS: ContenuDeCours['remediations'] = {
   'terme-pris-pour-somme': 'B2-04-A3-04-COURS-SOMME',
 };
 
+const ILLUSTRATIONS = [
+  ['M1', 'loyer-croissant.webp', 'Pour débuter : le loyer'],
+  ['M2', 'points-alignes.webp', 'Des points alignés'],
+  ['M3', 'livret-interets-composes.webp', 'Le livret'],
+  ['M4', 'tirelire-boucle.webp', 'La tirelire'],
+  ['M5', 'loyers-du-bail.webp', 'Les loyers d’un bail'],
+] as const;
+
 export const COURS_B2_04 = moteur.coursB2(
   [ACTE_1, ACTE_2, ACTE_3, ACTE_4],
   REMEDIATIONS,
-  [],
+  moteur.mediasDesIllustrations(DOSSIER_DES_ILLUSTRATIONS, ILLUSTRATIONS),
   {
     slug: 'b2-04-suites',
     titre: 'Suites : modéliser une évolution régulière',
