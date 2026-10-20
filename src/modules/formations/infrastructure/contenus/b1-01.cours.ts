@@ -5,7 +5,6 @@ import {
   ALTERNANTS,
   ALTERNANTS_DE_NANTES,
   ARRONDI_OUBLIE,
-  ATTENDUS_DES_CLIENTS,
   AUTRES_PORTEURS,
   BASE_INVERSEE,
   BOUTIQUES,
@@ -14,16 +13,12 @@ import {
   CONCEPTS_DU_COURS,
   DONNEES_FICTIVES,
   FACTEUR_CENT,
-  FORMULE_DE_LA_PART_DES_CLIENTS,
-  FORMULE_DU_CONTROLE_DES_CLIENTS,
-  FORMULE_DU_TOTAL_DES_CLIENTS,
   MARQUE_POUR_MARGE,
   MAUVAIS_TOUT,
   MOYENNE_SIMPLE,
   NON_FIGEE,
   OBJECTIF_D_ALTERNANCE,
   PART_POUR_EVOLUTION,
-  PLAN_DES_CLIENTS,
   POINTS_POUR_POURCENTAGE,
   PART_DES_JEUNES_2025,
   PART_DES_JEUNES_2026,
@@ -42,6 +37,7 @@ import {
   ACHAT_DE_LA_MANETTE,
   VENTE_DE_LA_MANETTE,
   enPourcentage,
+  REPARTITION_DES_CLIENTS,
 } from './b1-01.donnees';
 import * as moteur from './briques';
 
@@ -516,19 +512,12 @@ const ACTE_1: moteur.Acte = [
       ),
       proprietes: {
         modalite: 'solo',
-        plan: PLAN_DES_CLIENTS,
+        plan: REPARTITION_DES_CLIENTS.plan,
         questions: [
-          {
-            type: 'feuille',
-            id: PLAN_DES_CLIENTS.id,
-            concept: 'tableur',
-            noteCompte: true,
-            corrige: {
-              type: 'feuille',
-              plan: PLAN_DES_CLIENTS,
-              attendus: ATTENDUS_DES_CLIENTS,
-            },
-          },
+          moteur.questionDeFeuille(
+            REPARTITION_DES_CLIENTS.plan,
+            REPARTITION_DES_CLIENTS.attendus,
+          ),
         ],
       },
     },
@@ -536,15 +525,15 @@ const ACTE_1: moteur.Acte = [
     [
       [
         'B6',
-        `${FORMULE_DU_TOTAL_DES_CLIENTS} : 3 000 clients. Tapé au clavier, le total ne suivrait pas un changement de chiffre.`,
+        `${REPARTITION_DES_CLIENTS.formules.total} : 3 000 clients. Tapé au clavier, le total ne suivrait pas un changement de chiffre.`,
       ],
       [
         'C2 à C5',
-        `${FORMULE_DE_LA_PART_DES_CLIENTS}, recopiée : 40 ; 26,7 ; 20 ; 13,3. Sans les $, C3 lit B7, vide : #DIV/0!. Sans ARRONDI, 26,666… n’est pas arrondi au dixième.`,
+        `${REPARTITION_DES_CLIENTS.formules.part}, recopiée : 40 ; 26,7 ; 20 ; 13,3. Sans les $, C3 lit B7, vide : #DIV/0!. Sans ARRONDI, 26,666… n’est pas arrondi au dixième.`,
       ],
       [
         'C6',
-        `${FORMULE_DU_CONTROLE_DES_CLIENTS} : 100. Les parts d’un tout font toujours 100 %.`,
+        `${REPARTITION_DES_CLIENTS.formules.controle} : 100. Les parts d’un tout font toujours 100 %.`,
       ],
     ],
   ),

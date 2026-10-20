@@ -891,17 +891,11 @@ const ACTE_2: moteur.Acte = [
         modalite: 'solo',
         plan: PLAN_DE_LA_TVA,
         questions: [
-          {
-            type: 'feuille',
-            id: PLAN_DE_LA_TVA.id,
-            concept: 'negation',
-            noteCompte: true,
-            corrige: {
-              type: 'feuille',
-              plan: PLAN_DE_LA_TVA,
-              attendus: ATTENDUS_DE_LA_TVA,
-            },
-          },
+          moteur.questionDeFeuille(
+            PLAN_DE_LA_TVA,
+            ATTENDUS_DE_LA_TVA,
+            'negation',
+          ),
         ],
       },
     },
@@ -1345,17 +1339,7 @@ const ACTE_4: moteur.Acte = [
         modalite: 'solo',
         plan: PLAN_DU_CONTROLE,
         questions: [
-          {
-            type: 'feuille',
-            id: PLAN_DU_CONTROLE.id,
-            concept: 'tableur',
-            noteCompte: true,
-            corrige: {
-              type: 'feuille',
-              plan: PLAN_DU_CONTROLE,
-              attendus: ATTENDUS_DU_CONTROLE,
-            },
-          },
+          moteur.questionDeFeuille(PLAN_DU_CONTROLE, ATTENDUS_DU_CONTROLE),
         ],
       },
     },

@@ -40,6 +40,11 @@ type EcranDeTableau = Extract<
 >;
 export type PlanDeTableau = EcranDeTableau['proprietes']['plan'];
 type QuestionDeTableau = EcranDeTableau['proprietes']['questions'][number];
+type EcranDeFeuille = Extract<EcranDuCours, { readonly brique: 'fp-sheet' }>;
+type QuestionDeFeuille = Extract<
+  EcranDeFeuille['proprietes']['questions'][number],
+  { readonly type: 'feuille' }
+>;
 
 export const TOLERANCE_RELATIVE = {
   type: 'relative',
@@ -535,6 +540,20 @@ export function questionDeTableau(
       attendus,
       tolerance: { type: 'absolue', valeur: ecartToleree },
     },
+  };
+}
+
+export function questionDeFeuille(
+  plan: QuestionDeFeuille['corrige']['plan'],
+  attendus: QuestionDeFeuille['corrige']['attendus'],
+  concept: ConceptId = 'tableur',
+): QuestionDeFeuille {
+  return {
+    type: 'feuille',
+    id: plan.id,
+    concept,
+    noteCompte: true,
+    corrige: { type: 'feuille', plan, attendus },
   };
 }
 

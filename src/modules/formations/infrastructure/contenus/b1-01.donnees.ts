@@ -1,5 +1,10 @@
 import type { ConceptId } from '../../domain/cours/banque/concepts';
-import type { AuMoinsUnModifiable } from '../../../../common/domain/au-moins-un';
+import {
+  mapperAuMoinsUn,
+  type AuMoinsUn,
+  type AuMoinsUnModifiable,
+} from '../../../../common/domain/au-moins-un';
+import type { ConfusionId } from '../../domain/cours/banque/confusions';
 import { somme } from '../../../../common/domain/nombres/statistiques';
 import {
   arrondi,
@@ -111,126 +116,119 @@ const PORTEURS = CLIENTS.map((clients, rang) =>
 export const TOTAL_DES_PORTEURS = somme(PORTEURS);
 export const TOTAL_DES_BILLETS = somme(BILLETS);
 
-export const FORMULE_DU_TOTAL_DES_CLIENTS = '=SOMME(B2:B5)';
-export const FORMULE_DE_LA_PART_DES_CLIENTS = '=ARRONDI(B2/$B$6*100;1)';
-export const FORMULE_DU_CONTROLE_DES_CLIENTS = '=SOMME(C2:C5)';
+interface Repartition {
+  readonly id: string;
+  readonly intitule: string;
+  readonly titre?: string;
+  readonly entetes: readonly [string, string, string];
+  readonly libelles: readonly string[];
+  readonly effectifs: AuMoinsUn<number>;
+  readonly duTout: string;
+  readonly consigneDeLaPart: (cellule: string) => string;
+}
 
-const CELLULES_DES_CLIENTS = {
-  A1: 'Boutique',
-  B1: 'Clients en septembre',
-  C1: 'Part des clients (%)',
-  A6: 'Total',
-  ...colonneDeValeurs('A', BOUTIQUES),
-  ...colonneDeValeurs('B', CLIENTS),
-};
+function piegesDistincts(
+  pieges: readonly (readonly [number, ConfusionId])[],
+): (readonly [number, ConfusionId])[] {
+  return pieges.filter(
+    ([valeur], rang) =>
+      pieges.findIndex(([autre]) => autre === valeur) === rang,
+  );
+}
 
-export const PLAN_DES_CLIENTS = {
+function feuilleDeRepartition({
+  id,
+  intitule,
+  titre,
+  entetes,
+  libelles,
+  effectifs,
+  duTout,
+  consigneDeLaPart,
+}: Repartition) {
+  const premiere = titre === undefined ? 2 : 3;
+  const derniere = premiere + effectifs.length - 1;
+  const ligneDuTotal = derniere + 1;
+  const modele = `C${premiere}`;
+  const total = somme(effectifs);
+  const [premierEffectif] = effectifs;
+  const formules = {
+    total: `=SOMME(B${premiere}:B${derniere})`,
+    part: `=ARRONDI(B${premiere}/$B$${ligneDuTotal}*100;1)`,
+    controle: `=SOMME(C${premiere}:C${derniere})`,
+  };
+  const [colonneA, colonneB, colonneC] = entetes;
+  const cellules = {
+    ...(titre === undefined ? {} : { A1: titre }),
+    [`A${premiere - 1}`]: colonneA,
+    [`B${premiere - 1}`]: colonneB,
+    [`C${premiere - 1}`]: colonneC,
+    [`A${ligneDuTotal}`]: 'Total',
+    ...colonneDeValeurs('A', libelles, premiere),
+    ...colonneDeValeurs('B', effectifs, premiere),
+  };
+  const attendus: AuMoinsUnModifiable<AttenduDeFeuille> = [
+    moteur.attendu(`B${ligneDuTotal}`, formules.total, total, 'references'),
+    ...colonneRecopiee(
+      {
+        colonne: 'C',
+        premiereLigne: premiere,
+        formule: formules.part,
+        piegesDuModele: piegesDistincts([
+          [arrondi(premierEffectif / total, 1), FACTEUR_CENT],
+          [auMillionieme(premierEffectif / total), FACTEUR_CENT],
+          [arrondi((total / premierEffectif) * 100, 1), BASE_INVERSEE],
+          ...piegeDeLArrondi(premierEffectif, total),
+        ]),
+        piegesDuRang: (rang) => piegeDeLArrondi(effectifs[rang], total),
+        confusionSiErreur: NON_FIGEE,
+      },
+      mapperAuMoinsUn(effectifs, (effectif) => partArrondie(effectif, total)),
+    ),
+    moteur.attendu(`C${ligneDuTotal}`, formules.controle, 100, 'references'),
+  ];
+  return {
+    formules,
+    attendus,
+    plan: {
+      id,
+      intitule,
+      lignes: ligneDuTotal,
+      colonnes: 3,
+      cellules,
+      verrouillees: Object.keys(cellules),
+      consignes: [
+        `En B${ligneDuTotal}, calculez ${duTout}.`,
+        `${consigneDeLaPart(modele)} Recopiez jusqu’en C${derniere} : ${gesteDeRecopie([modele], derniere)}.`,
+        `En C${ligneDuTotal}, vérifiez que les parts font 100 %.`,
+        `Le total ne s’écrit pas dans la formule : utilisez B${ligneDuTotal}, figé par des $.`,
+      ],
+    },
+  };
+}
+
+export const REPARTITION_DES_CLIENTS = feuilleDeRepartition({
   id: 'b1-01-a1-tableur-clients',
   intitule: 'Exercice 2 — La répartition des clients au tableur',
-  lignes: 6,
-  colonnes: 3,
-  cellules: CELLULES_DES_CLIENTS,
-  verrouillees: Object.keys(CELLULES_DES_CLIENTS),
-  consignes: [
-    'En B6, calculez le total des clients.',
-    `En C2, écrivez la part des clients de Nantes, en %, arrondie au dixième avec ARRONDI. Recopiez jusqu’en C5 : ${gesteDeRecopie(['C2'], 5)}.`,
-    'En C6, vérifiez que les parts font 100 %.',
-    'Le total ne s’écrit pas dans la formule : utilisez B6, figé par des $.',
-  ],
-};
+  entetes: ['Boutique', 'Clients en septembre', 'Part des clients (%)'],
+  libelles: BOUTIQUES,
+  effectifs: CLIENTS,
+  duTout: 'le total des clients',
+  consigneDeLaPart: (cellule) =>
+    `En ${cellule}, écrivez la part des clients de Nantes, en %, arrondie au dixième avec ARRONDI.`,
+});
 
-export const ATTENDUS_DES_CLIENTS: AuMoinsUnModifiable<AttenduDeFeuille> = [
-  moteur.attendu(
-    'B6',
-    FORMULE_DU_TOTAL_DES_CLIENTS,
-    TOTAL_DES_CLIENTS,
-    'references',
-  ),
-  ...colonneRecopiee(
-    {
-      colonne: 'C',
-      premiereLigne: 2,
-      formule: FORMULE_DE_LA_PART_DES_CLIENTS,
-      piegesDuModele: [
-        [arrondi(CLIENTS[0] / TOTAL_DES_CLIENTS, 1), FACTEUR_CENT],
-        [enPourcentage(TOTAL_DES_CLIENTS, CLIENTS[0]), BASE_INVERSEE],
-      ],
-      piegesDuRang: (rang) => piegeDeLArrondi(CLIENTS[rang], TOTAL_DES_CLIENTS),
-      confusionSiErreur: NON_FIGEE,
-    },
-    [
-      partArrondie(CLIENTS[0], TOTAL_DES_CLIENTS),
-      partArrondie(CLIENTS[1], TOTAL_DES_CLIENTS),
-      partArrondie(CLIENTS[2], TOTAL_DES_CLIENTS),
-      partArrondie(CLIENTS[3], TOTAL_DES_CLIENTS),
-    ],
-  ),
-  moteur.attendu('C6', FORMULE_DU_CONTROLE_DES_CLIENTS, 100, 'references'),
-];
-
-export const FORMULE_DU_TOTAL_DES_BILLETS = '=SOMME(B3:B6)';
-export const FORMULE_DE_LA_PART_DES_BILLETS = '=ARRONDI(B3/$B$7*100;1)';
-export const FORMULE_DU_CONTROLE_DES_BILLETS = '=SOMME(C3:C6)';
-
-const CELLULES_DES_BILLETS = {
-  A1: 'Billets du Week-end du jeu',
-  A2: 'Catégorie',
-  B2: 'Billets vendus',
-  C2: 'Part des billets (%)',
-  A7: 'Total',
-  ...Object.fromEntries(
-    CATEGORIES_DE_BILLETS.map((categorie, rang) => [`A${rang + 3}`, categorie]),
-  ),
-  ...Object.fromEntries(
-    BILLETS.map((billets, rang) => [`B${rang + 3}`, String(billets)]),
-  ),
-};
-
-export const PLAN_DES_BILLETS = {
+export const REPARTITION_DES_BILLETS = feuilleDeRepartition({
   id: 'b1-01-a4-feuille-billets',
   intitule: 'Question tableur (3 points) — La répartition des billets',
-  lignes: 7,
-  colonnes: 3,
-  cellules: CELLULES_DES_BILLETS,
-  verrouillees: Object.keys(CELLULES_DES_BILLETS),
-  consignes: [
-    'En B7, calculez le nombre total de billets.',
-    `En C3, écrivez la formule de la part des billets plein tarif, en %, arrondie au dixième, à recopier vers le bas. Recopiez jusqu’en C6 : ${gesteDeRecopie(['C3'], 6)}.`,
-    'En C7, vérifiez que les parts font 100 %.',
-    'Le total ne s’écrit pas dans la formule : utilisez B7, figé par des $.',
-  ],
-};
-
-export const ATTENDUS_DES_BILLETS: AuMoinsUnModifiable<AttenduDeFeuille> = [
-  moteur.attendu(
-    'B7',
-    FORMULE_DU_TOTAL_DES_BILLETS,
-    TOTAL_DES_BILLETS,
-    'references',
-  ),
-  ...colonneRecopiee(
-    {
-      colonne: 'C',
-      premiereLigne: 3,
-      formule: FORMULE_DE_LA_PART_DES_BILLETS,
-      piegesDuModele: [
-        [arrondi(BILLETS[0] / TOTAL_DES_BILLETS, 1), FACTEUR_CENT],
-        [auMillionieme(BILLETS[0] / TOTAL_DES_BILLETS), FACTEUR_CENT],
-        [arrondi((TOTAL_DES_BILLETS / BILLETS[0]) * 100, 1), BASE_INVERSEE],
-        ...piegeDeLArrondi(BILLETS[0], TOTAL_DES_BILLETS),
-      ],
-      piegesDuRang: (rang) => piegeDeLArrondi(BILLETS[rang], TOTAL_DES_BILLETS),
-      confusionSiErreur: NON_FIGEE,
-    },
-    [
-      partArrondie(BILLETS[0], TOTAL_DES_BILLETS),
-      partArrondie(BILLETS[1], TOTAL_DES_BILLETS),
-      partArrondie(BILLETS[2], TOTAL_DES_BILLETS),
-      partArrondie(BILLETS[3], TOTAL_DES_BILLETS),
-    ],
-  ),
-  moteur.attendu('C7', FORMULE_DU_CONTROLE_DES_BILLETS, 100, 'references'),
-];
+  titre: 'Billets du Week-end du jeu',
+  entetes: ['Catégorie', 'Billets vendus', 'Part des billets (%)'],
+  libelles: CATEGORIES_DE_BILLETS,
+  effectifs: BILLETS,
+  duTout: 'le nombre total de billets',
+  consigneDeLaPart: (cellule) =>
+    `En ${cellule}, écrivez la formule de la part des billets plein tarif, en %, arrondie au dixième, à recopier vers le bas.`,
+});
 
 type AttenduDeTableau = Parameters<typeof moteur.questionDeTableau>[2][number];
 

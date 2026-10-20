@@ -2,7 +2,6 @@ import type { AuMoinsUnModifiable } from '../../../../common/domain/au-moins-un'
 import {
   ADDITIF,
   ATELIERS,
-  ATTENDUS_DES_BILLETS,
   ACHAT_AU_STAND,
   BASE_INVERSEE,
   BILLETS,
@@ -10,9 +9,6 @@ import {
   CONCEPTS_DES_PROPORTIONS,
   DONNEES_FICTIVES,
   FACTEUR_CENT,
-  FORMULE_DE_LA_PART_DES_BILLETS,
-  FORMULE_DU_CONTROLE_DES_BILLETS,
-  FORMULE_DU_TOTAL_DES_BILLETS,
   MARQUE_POUR_MARGE,
   MAUVAIS_TOUT,
   MOYENNE_SIMPLE,
@@ -20,7 +16,6 @@ import {
   OPTION_TOURNOI,
   PARCOURS_DU_COFFRE,
   PART_POUR_EVOLUTION,
-  PLAN_DES_BILLETS,
   POINTS_POUR_POURCENTAGE,
   RENVOI_AU_FESTIVAL,
   TOTAL_DES_BILLETS,
@@ -28,6 +23,7 @@ import {
   VENTE_AU_STAND,
   enPourcentage,
   partArrondie,
+  REPARTITION_DES_BILLETS,
 } from './b1-01.donnees';
 import * as moteur from './briques';
 
@@ -193,19 +189,12 @@ export const ACTE_4: moteur.Acte = [
       proprietes: {
         modalite: 'solo',
         renvoi: RENVOI_AU_FESTIVAL,
-        plan: PLAN_DES_BILLETS,
+        plan: REPARTITION_DES_BILLETS.plan,
         questions: [
-          {
-            type: 'feuille',
-            id: PLAN_DES_BILLETS.id,
-            concept: 'tableur',
-            noteCompte: true,
-            corrige: {
-              type: 'feuille',
-              plan: PLAN_DES_BILLETS,
-              attendus: ATTENDUS_DES_BILLETS,
-            },
-          },
+          moteur.questionDeFeuille(
+            REPARTITION_DES_BILLETS.plan,
+            REPARTITION_DES_BILLETS.attendus,
+          ),
         ],
       },
     },
@@ -217,14 +206,14 @@ export const ACTE_4: moteur.Acte = [
       ],
     },
     [
-      ['B7', `${FORMULE_DU_TOTAL_DES_BILLETS} : 960 billets.`],
+      ['B7', `${REPARTITION_DES_BILLETS.formules.total} : 960 billets.`],
       [
         'C3 à C6',
-        `${FORMULE_DE_LA_PART_DES_BILLETS}, recopiée : 42,9 ; 30 ; 17,9 ; 9,2. Sans les $, C4 lit B8, vide : #DIV/0!. Sans × 100, 0,4 ; sans ARRONDI, 42,916….`,
+        `${REPARTITION_DES_BILLETS.formules.part}, recopiée : 42,9 ; 30 ; 17,9 ; 9,2. Sans les $, C4 lit B8, vide : #DIV/0!. Sans × 100, 0,4 ; sans ARRONDI, 42,916….`,
       ],
       [
         'C7',
-        `${FORMULE_DU_CONTROLE_DES_BILLETS} : 100. Les parts arrondies tombent juste.`,
+        `${REPARTITION_DES_BILLETS.formules.controle} : 100. Les parts arrondies tombent juste.`,
       ],
     ],
   ),

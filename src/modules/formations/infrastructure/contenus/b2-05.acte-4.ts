@@ -93,17 +93,10 @@ export const ACTE_4: moteur.Acte = [
         renvoi: RENVOI_A_LA_CAMIONNETTE,
         plan: PLAN_DE_LA_CAMIONNETTE,
         questions: [
-          {
-            type: 'feuille',
-            id: PLAN_DE_LA_CAMIONNETTE.id,
-            concept: 'tableur',
-            noteCompte: true,
-            corrige: {
-              type: 'feuille',
-              plan: PLAN_DE_LA_CAMIONNETTE,
-              attendus: ATTENDUS_DE_LA_CAMIONNETTE,
-            },
-          },
+          moteur.questionDeFeuille(
+            PLAN_DE_LA_CAMIONNETTE,
+            ATTENDUS_DE_LA_CAMIONNETTE,
+          ),
         ],
       },
     },

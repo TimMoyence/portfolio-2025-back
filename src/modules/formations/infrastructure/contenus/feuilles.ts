@@ -84,9 +84,13 @@ export function anneesEtRangs(
 export function colonneDeValeurs(
   colonne: string,
   valeurs: readonly (number | string)[],
+  premiereLigne = 2,
 ): Record<string, string> {
   return Object.fromEntries(
-    valeurs.map((valeur, rang) => [`${colonne}${rang + 2}`, String(valeur)]),
+    valeurs.map((valeur, rang) => [
+      `${colonne}${premiereLigne + rang}`,
+      String(valeur),
+    ]),
   );
 }
 

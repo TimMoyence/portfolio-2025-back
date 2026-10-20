@@ -826,17 +826,10 @@ const ACTE_1: moteur.Acte = [
         modalite: 'solo',
         plan: PLAN_DE_L_HYPOTHESE_A,
         questions: [
-          {
-            type: 'feuille',
-            id: PLAN_DE_L_HYPOTHESE_A.id,
-            concept: 'tableur',
-            noteCompte: true,
-            corrige: {
-              type: 'feuille',
-              plan: PLAN_DE_L_HYPOTHESE_A,
-              attendus: ATTENDUS_DE_L_HYPOTHESE_A,
-            },
-          },
+          moteur.questionDeFeuille(
+            PLAN_DE_L_HYPOTHESE_A,
+            ATTENDUS_DE_L_HYPOTHESE_A,
+          ),
         ],
       },
     },
@@ -1154,17 +1147,11 @@ const ACTE_2: moteur.Acte = [
         modalite: 'solo',
         plan: PLAN_DES_DEUX_HYPOTHESES,
         questions: [
-          {
-            type: 'feuille',
-            id: PLAN_DES_DEUX_HYPOTHESES.id,
-            concept: 'suite-geometrique',
-            noteCompte: true,
-            corrige: {
-              type: 'feuille',
-              plan: PLAN_DES_DEUX_HYPOTHESES,
-              attendus: ATTENDUS_DES_DEUX_HYPOTHESES,
-            },
-          },
+          moteur.questionDeFeuille(
+            PLAN_DES_DEUX_HYPOTHESES,
+            ATTENDUS_DES_DEUX_HYPOTHESES,
+            'suite-geometrique',
+          ),
         ],
       },
     },
@@ -1936,17 +1923,10 @@ const ACTE_4: moteur.Acte = [
         renvoi: RENVOI_A_LA_BOUTIQUE,
         plan: PLAN_DE_LA_BOUTIQUE,
         questions: [
-          {
-            type: 'feuille',
-            id: PLAN_DE_LA_BOUTIQUE.id,
-            concept: 'tableur',
-            noteCompte: true,
-            corrige: {
-              type: 'feuille',
-              plan: PLAN_DE_LA_BOUTIQUE,
-              attendus: ATTENDUS_DE_LA_BOUTIQUE,
-            },
-          },
+          moteur.questionDeFeuille(
+            PLAN_DE_LA_BOUTIQUE,
+            ATTENDUS_DE_LA_BOUTIQUE,
+          ),
         ],
       },
     },

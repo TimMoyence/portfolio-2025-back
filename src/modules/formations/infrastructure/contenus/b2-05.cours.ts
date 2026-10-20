@@ -568,17 +568,7 @@ const ACTE_1: moteur.Acte = [
         modalite: 'solo',
         plan: PLAN_DU_PLACEMENT,
         questions: [
-          {
-            type: 'feuille',
-            id: PLAN_DU_PLACEMENT.id,
-            concept: 'tableur',
-            noteCompte: true,
-            corrige: {
-              type: 'feuille',
-              plan: PLAN_DU_PLACEMENT,
-              attendus: ATTENDUS_DU_PLACEMENT,
-            },
-          },
+          moteur.questionDeFeuille(PLAN_DU_PLACEMENT, ATTENDUS_DU_PLACEMENT),
         ],
       },
     },
@@ -931,17 +921,7 @@ const ACTE_2: moteur.Acte = [
         modalite: 'solo',
         plan: PLAN_DE_L_EPARGNE,
         questions: [
-          {
-            type: 'feuille',
-            id: PLAN_DE_L_EPARGNE.id,
-            concept: 'tableur',
-            noteCompte: true,
-            corrige: {
-              type: 'feuille',
-              plan: PLAN_DE_L_EPARGNE,
-              attendus: ATTENDUS_DE_L_EPARGNE,
-            },
-          },
+          moteur.questionDeFeuille(PLAN_DE_L_EPARGNE, ATTENDUS_DE_L_EPARGNE),
         ],
       },
     },
