@@ -687,6 +687,11 @@ const DEFINITIONS = {
     libelle:
       'Déclarer fausse une donnée seulement douteuse : une valeur inhabituelle mais possible peut être juste, et seul qui l’a saisie peut le dire.',
   },
+  'arrondi-oublie': {
+    concept: 'tableur',
+    libelle:
+      'Laisser un résultat en pleine précision au lieu de l’arrondir comme demandé, avec ARRONDI.',
+  },
 } as const satisfies Readonly<Record<string, DefinitionConfusion>>;
 
 export const CONFUSIONS = typographierEnProfondeur(DEFINITIONS);

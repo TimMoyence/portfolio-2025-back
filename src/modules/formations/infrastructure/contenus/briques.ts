@@ -40,6 +40,11 @@ type EcranDeTableau = Extract<
 >;
 export type PlanDeTableau = EcranDeTableau['proprietes']['plan'];
 type QuestionDeTableau = EcranDeTableau['proprietes']['questions'][number];
+type EcranDeFeuille = Extract<EcranDuCours, { readonly brique: 'fp-sheet' }>;
+type QuestionDeFeuille = Extract<
+  EcranDeFeuille['proprietes']['questions'][number],
+  { readonly type: 'feuille' }
+>;
 
 export const TOLERANCE_RELATIVE = {
   type: 'relative',
@@ -77,6 +82,15 @@ export const NOTES_DE_L_EXEMPLE_ETAPE_PAR_ETAPE = [
 
 export const DEUXIEME_PAGE_DE_COURS =
   '3 min, enchaînées sur la page 1 : 6 min pour les deux pages.';
+
+export const AVANT_SA_PAGE =
+  '1 min, avant la trace écrite : faire décrire l’image, la page suivante en donne la règle.';
+
+export const PAGE_APRES_SON_ILLUSTRATION =
+  '2 min après l’illustration ; la trace écrite est imprimée dans le livret : on lit et on commente, on ne recopie pas.';
+
+export const DEUXIEME_PAGE_APRES_SON_ILLUSTRATION =
+  '2 min après l’illustration, enchaînées sur la page 1 : 6 min pour les deux pages et leurs illustrations.';
 
 export const CORRIGER_PAR_LA_MOINS_REUSSIE =
   'Corriger question par question, en commençant par la moins réussie.';
@@ -428,6 +442,19 @@ export function ecranDeRappel(
   };
 }
 
+export function rappelDeToutLeCours(
+  socle: Pick<SocleDEcran, 'screenId' | 'concepts'>,
+  rappelId: string,
+  questions: AuMoinsUnModifiable<VoteDuCours>,
+): EcranDeRappel {
+  return ecranDeRappel(
+    socle,
+    'Tous reçoivent les douze questions de la banque : le rappel couvre tout le cours pour chacun.',
+    rappelId,
+    { questions, obligatoires: questions.map((question) => question.id) },
+  );
+}
+
 export function ficheMemo(
   { screenId, titre, concepts }: SocleNomme,
   items: readonly unknown[],
@@ -525,6 +552,20 @@ export function questionDeTableau(
   };
 }
 
+export function questionDeFeuille(
+  plan: QuestionDeFeuille['corrige']['plan'],
+  attendus: QuestionDeFeuille['corrige']['attendus'],
+  concept: ConceptId = 'tableur',
+): QuestionDeFeuille {
+  return {
+    type: 'feuille',
+    id: plan.id,
+    concept,
+    noteCompte: true,
+    corrige: { type: 'feuille', plan, attendus },
+  };
+}
+
 export const ETAPE_TRANSFERER = {
   id: 'transferer',
   title: 'Acte 6 · Transférer',
@@ -574,3 +615,4 @@ function coursDuNiveau(niveau: string) {
 
 export const coursB2 = coursDuNiveau('B2');
 export const coursB3 = coursDuNiveau('B3');
+export const coursB1 = coursDuNiveau('B1');

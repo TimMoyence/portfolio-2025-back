@@ -578,17 +578,7 @@ const ACTE_1: moteur.Acte = [
         modalite: 'solo',
         plan: PLAN_DES_VENTES,
         questions: [
-          {
-            type: 'feuille',
-            id: PLAN_DES_VENTES.id,
-            concept: 'tableur',
-            noteCompte: true,
-            corrige: {
-              type: 'feuille',
-              plan: PLAN_DES_VENTES,
-              attendus: ATTENDUS_DES_VENTES,
-            },
-          },
+          moteur.questionDeFeuille(PLAN_DES_VENTES, ATTENDUS_DES_VENTES),
         ],
       },
     },
@@ -939,17 +929,7 @@ const ACTE_2: moteur.Acte = [
         modalite: 'solo',
         plan: PLAN_DES_OBJECTIFS,
         questions: [
-          {
-            type: 'feuille',
-            id: PLAN_DES_OBJECTIFS.id,
-            concept: 'tableur',
-            noteCompte: true,
-            corrige: {
-              type: 'feuille',
-              plan: PLAN_DES_OBJECTIFS,
-              attendus: ATTENDUS_DES_OBJECTIFS,
-            },
-          },
+          moteur.questionDeFeuille(PLAN_DES_OBJECTIFS, ATTENDUS_DES_OBJECTIFS),
         ],
       },
     },

@@ -91,19 +91,7 @@ export const ACTE_4: moteur.Acte = [
         modalite: 'solo',
         renvoi: RENVOI_AUX_KITS,
         plan: PLAN_DES_KITS,
-        questions: [
-          {
-            type: 'feuille',
-            id: PLAN_DES_KITS.id,
-            concept: 'tableur',
-            noteCompte: true,
-            corrige: {
-              type: 'feuille',
-              plan: PLAN_DES_KITS,
-              attendus: ATTENDUS_DES_KITS,
-            },
-          },
-        ],
+        questions: [moteur.questionDeFeuille(PLAN_DES_KITS, ATTENDUS_DES_KITS)],
       },
     },
     {

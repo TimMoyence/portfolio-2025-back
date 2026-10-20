@@ -78,6 +78,44 @@ export const FICHE_DU_GABARIT_V3 = {
   ],
 } as const satisfies Partial<FicheAttendue>;
 
+export const CATALOGUE_ILLUSTRE_A_CINQ_PAGES = [
+  'A1-02',
+  'A1-04',
+  'A1-05',
+  'A1-07',
+  'A1-07',
+  'A1-08',
+  'A1-08',
+  'A2-02',
+  'A2-02',
+  'A3-01',
+  'A3-03',
+  'A3-03',
+  'A3-04',
+  'A3-04',
+  'A4-01',
+  'A4-05',
+] as const;
+
+export const CATALOGUE_ILLUSTRE_A_SIX_PAGES = [
+  'A1-02',
+  'A1-04',
+  'A1-06',
+  'A1-06',
+  'A1-07',
+  'A1-07',
+  'A2-02',
+  'A2-02',
+  'A2-03',
+  'A2-03',
+  'A3-02',
+  'A3-02',
+  'A3-03',
+  'A3-03',
+  'A4-01',
+  'A4-05',
+] as const;
+
 export function pointsImprimes(texte: string): number[] {
   return [...texte.matchAll(/\((\d+(?:,\d+)?) points?\)/g)].map(
     ([, valeur]) => lireNombreSaisi(valeur) ?? Number.NaN,

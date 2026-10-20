@@ -5,6 +5,7 @@ import {
   attendreLesNumeriques,
   corrigeDe,
   corrigeDeFeuille,
+  CATALOGUE_ILLUSTRE_A_CINQ_PAGES,
   decrireLaFicheDuCours,
   decrireLaMiniSituation,
   ecranDuContenu,
@@ -144,7 +145,10 @@ const LIGNES_DE_LA_CAMIONNETTE = tableauDAmortissement(
 decrireLaFicheDuCours('B2-05', COURS, {
   ...FICHE_DU_GABARIT_V3,
   conception: 'cours-b2-05-conception.md',
-  ateliersNotes: ['A1-10 (10)', 'A2-05 (11)', 'A3-06 (10)'],
+  ecrans: 38,
+  rythme: { expositionContinueMax: 6, interactives: 150, exposition: 30 },
+  catalogue: CATALOGUE_ILLUSTRE_A_CINQ_PAGES,
+  ateliersNotes: ['A1-10 (10)', 'A2-05 (12)', 'A3-06 (10)'],
   remediations: 15,
   corrigesSurPlace: [
     'B2-05-A1-10-ATELIER-PLACEMENT',

@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "6370f27445c91d8e1f80f703b27c838edac7ea4263e77fc5ad2daa766f72d272",
+  "empreinte": "64de29e4105e966cb5cb0acaf392857ce2813abe60dff2166e3f960875602f41",
   "sujet": {
     "id": "b2-05-mathematiques-financieres",
     "titre": "Mathématiques financières : placer, emprunter",
@@ -267,9 +267,9 @@
           "cas": {
             "id": "B2-05-A1-06-MISSION",
             "metier": "Assistant·e de gestion — Atelier Rivage (voilerie artisanale, 14 salariés, La Rochelle)",
-            "situation": "Lundi, 9 h. Hélène Garnier écrit : « La banque veut voir trois lignes de notre plan : les 40 000 € de trésorerie placés à 2,5 % par an, les 6 000 € que nous mettrons de côté chaque fin d’année de 2026 à 2030 à 3 %, et l’emprunt de 60 000 € sur 5 ans à 4 %. Pouvez-vous chiffrer chaque ligne ? » Marc Lefèvre, l’expert-comptable, ajoute : « Pour l’emprunt, ne vous contentez pas de diviser 60 000 € par 5 : la banque se paie aussi en intérêts. »",
-            "geste": "Sans calculatrice, répondez aux trois questions à partir du dossier.",
-            "consequence": "Un placement surestimé, et le chantier manque d’argent ; un emprunt sous-estimé, et les annuités pèsent sur la trésorerie des cinq prochaines années.",
+            "situation": "Lundi, 9 h. Hélène Garnier, la dirigeante, écrit : « La banque veut voir trois lignes de notre plan. Pouvez-vous chiffrer chacune ? »\n1. Les 40 000 € de trésorerie, placés à 2,5 % par an.\n2. Les 6 000 € mis de côté à chaque fin d’année, de 2026 à 2030, à 3 %.\n3. L’emprunt de 60 000 € sur 5 ans à 4 %.\nMarc Lefèvre, l’expert-comptable, ajoute : « Pour l’emprunt, ne divisez pas 60 000 € par 5 : la banque se paie aussi en intérêts. »",
+            "geste": null,
+            "consequence": null,
             "questionsLibres": [
               {
                 "id": "b2-05-a1-mission:placement",
@@ -302,10 +302,38 @@
         }
       },
       {
+        "id": "B2-05-A1-07-ILLUSTRATION-LIVRET",
+        "type": "fp-story",
+        "titre": "Illustration : le livret",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B2-05-A1-07-ILLUSTRATION-LIVRET",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-05-A1-07-ILLUSTRATION-LIVRET",
+              "renderer": "illustration",
+              "props": {
+                "image": "/assets/cours/b2-05/v1/livret-interets-composes.webp",
+                "imageAlt": "Infographie « Le livret à 3 % ». 2 000 € placés à 3 % par an, intérêts laissés sur le livret. Après un an, 2 000 × 1,03 = 2 060 € ; après deux ans, 2 060 × 1,03 = 2 121,80 €, les intérêts portant aussi sur les 60 € gagnés ; après dix ans, 2 000 × 1,03¹⁰ ≈ 2 687,83 €. Aux intérêts simples, 2 000 × 1,30 = 2 600 € seulement : il manque les intérêts des intérêts. À la calculatrice : 2000 × 1,03 ^ 10, avec la touche puissance."
+              }
+            },
+            "metadonnees": {
+              "concepts": ["interets-composes", "suite-geometrique"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
         "id": "B2-05-A1-07-COURS-INTERETS-COMPOSES",
         "type": "fp-story",
         "titre": "Cours : intérêts composés et valeur acquise",
-        "duree": 3,
+        "duree": 2,
         "interactif": false,
         "donnees": {
           "recit": {
@@ -321,28 +349,28 @@
                   {
                     "kind": "definition",
                     "title": "Capitaliser : multiplier par 1 + t chaque année",
-                    "text": "Un capital C₀ placé au taux annuel t rapporte des intérêts. Aux intérêts simples, ils sont calculés chaque année sur le seul capital de départ. Aux intérêts composés, ils s’ajoutent au capital à la fin de chaque année et rapportent à leur tour : on multiplie par 1 + t chaque année. Le capital Cₙ obtenu au bout de n années s’appelle la valeur acquise. C’est une suite géométrique de raison 1 + t (B2-04). C’est le calcul de la trésorerie d’Hélène.",
-                    "formula": "Intérêts composés : Cₙ = C₀ × (1 + t)ⁿ · intérêts simples : C₀ × (1 + n × t)"
+                    "text": "Chaque année, les intérêts s’ajoutent au capital et rapportent à leur tour.\nCₙ, la valeur acquise : le capital au bout de n années.",
+                    "formula": "Cₙ = C₀ × (1 + t)ⁿ\nIntérêts simples : C₀ × (1 + n × t)"
                   },
                   {
                     "kind": "example",
                     "title": "Pour débuter : le livret à 3 %",
-                    "text": "On place 2 000 € sur un livret à 3 % par an, intérêts laissés sur le livret. C₀ = 2 000 et 1 + t = 1,03.",
+                    "text": "2 000 € sur un livret à 3 % par an, intérêts laissés sur le livret.",
                     "steps": [
-                      "Après un an : 2 000 × 1,03 = 2 060 € ; les intérêts sont de 60 €.",
-                      "Après deux ans : 2 060 × 1,03 = 2 121,80 € ; les intérêts de la deuxième année, 61,80 €, portent sur 2 060 €.",
+                      "Après un an : 2 000 × 1,03 = 2 060 €.",
+                      "Après deux ans : 2 060 × 1,03 = 2 121,80 € ; les intérêts portent aussi sur les 60 € gagnés.",
                       "Après dix ans : 2 000 × 1,03¹⁰ ≈ 2 687,83 €.",
                       "Aux intérêts simples : 2 000 × (1 + 10 × 0,03) = 2 600 € seulement."
                     ]
                   },
                   {
                     "kind": "method",
-                    "title": "Calculer une valeur acquise",
-                    "text": "Pièges : multiplier par le taux au lieu du coefficient (0,03 au lieu de 1,03) ; calculer les intérêts sur le seul capital de départ ; placer une année de trop ou de moins en comptant mal la durée.",
+                    "title": "× 1,03, jamais × 0,03",
+                    "text": "On multiplie par le coefficient, autant de fois qu’il y a d’années.",
                     "steps": [
-                      "Écrire le capital de départ et le taux en décimal.",
-                      "Compter la durée n en années entières de placement.",
-                      "Calculer C₀ × (1 + t)ⁿ avec la touche puissance ; arrondir au centime à la fin.",
+                      "3 % → 1 + t = 1,03.",
+                      "n = nombre d’années de placement.",
+                      "Cₙ = C₀ × (1 + t)ⁿ, arrondi à la fin.",
                       "Intérêts gagnés : Cₙ − C₀."
                     ]
                   }
@@ -352,7 +380,35 @@
             "metadonnees": {
               "concepts": ["interets-composes", "suite-geometrique"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
+              "dureeMinutes": 2,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B2-05-A1-08-ILLUSTRATION-FUTUR-PRESENT",
+        "type": "fp-story",
+        "titre": "Illustration : futur et présent",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B2-05-A1-08-ILLUSTRATION-FUTUR-PRESENT",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-05-A1-08-ILLUSTRATION-FUTUR-PRESENT",
+              "renderer": "illustration",
+              "props": {
+                "image": "/assets/cours/b2-05/v1/capitaliser-actualiser.webp",
+                "imageAlt": "Infographie « Futur : ×, présent : ÷ ». Une frise d’aujourd’hui à dans 2 ans, au taux annuel de 10 %. Vers la droite, capitaliser : 1 000 × 1,1² = 1 210 €. Vers la gauche, actualiser : 1 210 ÷ 1,1² = 1 000 €. Formules générales : Cₙ = C₀ × (1 + t)ⁿ et C₀ = Cₙ ÷ (1 + t)ⁿ. À retenir : la valeur actuelle est plus petite."
+              }
+            },
+            "metadonnees": {
+              "concepts": ["valeur-actuelle", "interets-composes"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
               "modalite": "solo",
               "regime": "ouvert"
             }
@@ -363,7 +419,7 @@
         "id": "B2-05-A1-08-COURS-VALEUR-ACTUELLE",
         "type": "fp-story",
         "titre": "Cours : valeur actuelle et tableur",
-        "duree": 3,
+        "duree": 2,
         "interactif": false,
         "donnees": {
           "recit": {
@@ -378,29 +434,19 @@
                 "blocks": [
                   {
                     "kind": "definition",
-                    "title": "Actualiser : diviser par (1 + t)ⁿ",
-                    "text": "La valeur actuelle d’une somme Cₙ disponible dans n années est le capital C₀ qu’il faut placer aujourd’hui, au taux t, pour obtenir Cₙ. On remonte le temps : on divise par le coefficient, comme pour annuler une hausse (B2-01). Capitaliser, c’est aller vers le futur (× (1 + t)ⁿ) ; actualiser, c’est revenir au présent (÷ (1 + t)ⁿ).",
-                    "formula": "C₀ = Cₙ ÷ (1 + t)ⁿ"
+                    "title": "Futur : ×, présent : ÷",
+                    "text": "La valeur actuelle : ce qu’il faut placer aujourd’hui pour avoir Cₙ dans n années.\nOn remonte le temps : on divise, comme pour annuler une hausse.",
+                    "formula": "C₀ = Cₙ ÷ (1 + t)ⁿ\nCapitaliser : × (1 + t)ⁿ\nActualiser : ÷ (1 + t)ⁿ"
                   },
                   {
                     "kind": "method",
-                    "title": "Au tableur : le taux dans une cellule figée",
-                    "text": "Une valeur de départ, puis une formule recopiée qui multiplie le capital du dessus par 1 + taux. Le taux est rangé dans une cellule à part, figé par des $.",
+                    "title": "La méthode au tableur",
+                    "text": "Une formule, recopiée vers le bas ; le taux figé par des $.",
                     "steps": [
-                      "B2 contient le capital placé ; le taux, écrit 0,03, est en E1.",
-                      "En B3 : =B2*(1+$E$1), puis recopier vers le bas.",
-                      "Intérêts de l’année en C3 : =B3-B2, recopiée.",
-                      "Sans les $, B4 lirait E2, vide : le capital cesserait de grossir."
-                    ]
-                  },
-                  {
-                    "kind": "exam",
-                    "title": "Au CCF : capitaliser ou actualiser ?",
-                    "text": "Lire d’abord le sens de la question. « Que vaudra… dans n ans ? » : on capitalise. « Combien placer aujourd’hui pour avoir… ? » : on actualise. Pièges : multiplier au lieu de diviser ; diviser par 1 + n × t, comme aux intérêts simples.",
-                    "steps": [
-                      "Repérer la somme connue et sa date.",
-                      "Futur connu, présent cherché : ÷ (1 + t)ⁿ.",
-                      "Contrôle : la valeur actuelle est plus petite que la somme future."
+                      "B2 : le capital ; E1 : le taux, écrit 0,03.",
+                      "En B3 : =B2*(1+$E$1), puis recopier.",
+                      "Intérêts de l’année : =B3-B2.",
+                      "Sans $ : =B3*(1+E2), une cellule vide, le capital ne grossit plus."
                     ]
                   }
                 ]
@@ -413,7 +459,7 @@
                 "tableur"
               ],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
+              "dureeMinutes": 2,
               "modalite": "solo",
               "regime": "ouvert"
             }
@@ -746,10 +792,38 @@
         "renvoi": "B2-05-A1-05-DOSSIER"
       },
       {
+        "id": "B2-05-A2-02-ILLUSTRATION-VERSEMENTS",
+        "type": "fp-story",
+        "titre": "Illustration : les versements",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B2-05-A2-02-ILLUSTRATION-VERSEMENTS",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-05-A2-02-ILLUSTRATION-VERSEMENTS",
+              "renderer": "illustration",
+              "props": {
+                "image": "/assets/cours/b2-05/v1/frise-des-versements.webp",
+                "imageAlt": "Infographie « Chaque versement a sa durée ». 1 000 € versés à la fin de chacune de trois années, à 2 % par an. Le premier versement, placé deux ans, vaut 1 000 × 1,02² = 1 040,40 € ; le deuxième, placé un an, 1 000 × 1,02 = 1 020 € ; le troisième, pas placé, 1 000 €. Somme en fin d’année 3 : 3 060,40 €, et non 3 000 € : les deux premiers versements ont produit des intérêts."
+              }
+            },
+            "metadonnees": {
+              "concepts": ["annuites", "somme-de-termes"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
         "id": "B2-05-A2-02-COURS-ANNUITES",
         "type": "fp-story",
         "titre": "Cours : suite d’annuités et valeur acquise",
-        "duree": 3,
+        "duree": 2,
         "interactif": false,
         "donnees": {
           "recit": {
@@ -760,18 +834,18 @@
               "renderer": "lesson",
               "props": {
                 "title": "Suite d’annuités : additionner des versements placés",
-                "subtitle": "Trace écrite · notion 2 · page 1 sur 2",
+                "subtitle": "Trace écrite · notion 2",
                 "blocks": [
                   {
                     "kind": "definition",
                     "title": "Chaque versement a sa durée",
-                    "text": "Une suite d’annuités est une suite de versements égaux, faits à intervalles réguliers, ici en fin d’année. Sa valeur acquise, à la date du dernier versement, est la somme des valeurs acquises de chaque versement : le premier est placé n − 1 années, le dernier ne rapporte rien. Ces valeurs forment une suite géométrique de raison 1 + t (B2-04), d’où une formule donnée au CCF. C’est l’épargne des machines d’Hélène.",
-                    "formula": "Vₙ = a × ((1 + t)ⁿ − 1) ÷ t · n versements de a, en fin de période"
+                    "text": "Des versements égaux, en fin d’année : le premier rapporte n − 1 ans, le dernier rien.\nValeur acquise : la somme de leurs valeurs, au dernier versement.",
+                    "formula": "Vₙ = a × ((1 + t)ⁿ − 1) ÷ t\nn versements de a, formule donnée au CCF"
                   },
                   {
                     "kind": "example",
                     "title": "Pour débuter : 1 000 € par an à 2 %",
-                    "text": "Trois versements de 1 000 €, en fin d’année, sur un compte à 2 %. Valeur acquise au troisième versement ?",
+                    "text": "Trois versements de 1 000 € en fin d’année, à 2 %. Valeur au troisième versement ?",
                     "steps": [
                       "Le premier est placé deux ans : 1 000 × 1,02² = 1 040,40 €.",
                       "Le deuxième est placé un an : 1 000 × 1,02 = 1 020 €.",
@@ -781,13 +855,12 @@
                   },
                   {
                     "kind": "method",
-                    "title": "Calculer la valeur acquise d’une suite d’annuités",
-                    "text": "Pièges : additionner les versements sans leurs intérêts (3 000 € au lieu de 3 060,40 €) ; placer chaque versement pendant toute la durée ; compter un versement de trop ou de moins.",
+                    "title": "× (1 + t), puis + a",
+                    "text": "Une ligne par année : l’épargne grossit, puis le versement arrive.",
                     "steps": [
-                      "Compter les versements n, du premier au dernier inclus.",
-                      "Repérer la date d’évaluation : celle du dernier versement.",
-                      "Appliquer la formule donnée, taux en décimal ; arrondir au centime à la fin.",
-                      "Intérêts gagnés : valeur acquise − n × a."
+                      "Au tableur : =B2*(1+$E$1)+$G$1, recopiée.",
+                      "Intérêts gagnés : Vₙ − n × a.",
+                      "Total des intérêts : =SOMME(…), pas la dernière cellule."
                     ]
                   }
                 ]
@@ -796,64 +869,7 @@
             "metadonnees": {
               "concepts": ["annuites", "suite-geometrique", "somme-de-termes"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
-        }
-      },
-      {
-        "id": "B2-05-A2-03-COURS-ANNUITES-TABLEUR",
-        "type": "fp-story",
-        "titre": "Cours : les annuités au tableur",
-        "duree": 3,
-        "interactif": false,
-        "donnees": {
-          "recit": {
-            "id": "B2-05-A2-03-COURS-ANNUITES-TABLEUR",
-            "presentation": {
-              "version": 2,
-              "screenId": "B2-05-A2-03-COURS-ANNUITES-TABLEUR",
-              "renderer": "lesson",
-              "props": {
-                "title": "Les annuités au tableur : une ligne par année",
-                "subtitle": "Trace écrite · notion 2 · page 2 sur 2",
-                "blocks": [
-                  {
-                    "kind": "method",
-                    "title": "Le tableau d’épargne",
-                    "text": "Première ligne : le premier versement. Chaque ligne suivante reprend l’épargne de l’an passé, lui ajoute ses intérêts de l’année, puis le nouveau versement. Taux et versement sont rangés dans deux cellules figées par des $.",
-                    "steps": [
-                      "B2 contient le premier versement ; le taux est en E1, le versement en G1.",
-                      "En B3 : =B2*(1+$E$1)+$G$1, puis recopier vers le bas.",
-                      "Intérêts de l’année en C3 : =B2*$E$1, recopiée.",
-                      "Sans les $, la recopie lit E2 et G2, vides : l’épargne n’augmente plus."
-                    ]
-                  },
-                  {
-                    "kind": "property",
-                    "title": "Total des intérêts : une somme",
-                    "text": "Le total des intérêts gagnés est la somme de la colonne des intérêts, ou la dernière épargne moins le total versé. La dernière cellule de la colonne ne donne que les intérêts d’une seule année.",
-                    "formula": "=SOMME(plage des intérêts) = dernière épargne − n × a"
-                  },
-                  {
-                    "kind": "exam",
-                    "title": "Au CCF : lire la date d’évaluation",
-                    "text": "Un sujet demande souvent la valeur acquise « au dernier versement » avec la formule donnée, puis une formule de tableur à recopier. Pièges : compter le dernier versement comme placé ; oublier les $ ; donner une valeur de la colonne pour le total.",
-                    "steps": [
-                      "Relever a, t et n, puis vérifier la date du dernier versement.",
-                      "Contrôle : la valeur acquise dépasse n × a, d’un écart plausible.",
-                      "Au tableur : une formule, recopiée, taux et versement figés."
-                    ]
-                  }
-                ]
-              }
-            },
-            "metadonnees": {
-              "concepts": ["annuites", "tableur", "somme-de-termes"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
+              "dureeMinutes": 2,
               "modalite": "solo",
               "regime": "ouvert"
             }
@@ -917,7 +933,7 @@
         "id": "B2-05-A2-05-ATELIER-ANNUITES",
         "type": "questionnaire",
         "titre": "Exercice 3 — L’épargne des machines",
-        "duree": 11,
+        "duree": 12,
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 3 — L’épargne des machines",
@@ -954,7 +970,7 @@
                   "metadonnees": {
                     "concepts": ["annuites"],
                     "misconceptionsCiblees": [],
-                    "dureeMinutes": 11,
+                    "dureeMinutes": 12,
                     "modalite": "solo",
                     "regime": "focus"
                   }
@@ -994,7 +1010,7 @@
                   "metadonnees": {
                     "concepts": ["annuites"],
                     "misconceptionsCiblees": [],
-                    "dureeMinutes": 11,
+                    "dureeMinutes": 12,
                     "modalite": "solo",
                     "regime": "focus"
                   }
@@ -1009,7 +1025,7 @@
         "id": "B2-05-A2-06-TABLEUR-EPARGNE",
         "type": "fp-sheet",
         "titre": "Exercice 4 — L’épargne au tableur",
-        "duree": 10,
+        "duree": 12,
         "interactif": true,
         "donnees": {
           "plan": {
@@ -1104,7 +1120,7 @@
             "metadonnees": {
               "concepts": ["tableur", "annuites"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 10,
+              "dureeMinutes": 12,
               "modalite": "solo",
               "regime": "ouvert"
             }
@@ -1233,10 +1249,38 @@
         }
       },
       {
+        "id": "B2-05-A3-03-ILLUSTRATION-ANNUITE",
+        "type": "fp-story",
+        "titre": "Illustration : l’annuité",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B2-05-A3-03-ILLUSTRATION-ANNUITE",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-05-A3-03-ILLUSTRATION-ANNUITE",
+              "renderer": "illustration",
+              "props": {
+                "image": "/assets/cours/b2-05/v1/annuite-decomposee.webp",
+                "imageAlt": "Infographie « Les intérêts d’abord, le reste rembourse ». Emprunt de 10 000 € sur 3 ans à 5 %, annuité constante de 3 672,09 €. Trois barres de même hauteur : les intérêts baissent, 500 €, puis 341,40 €, puis 174,86 € ; l’amortissement monte, 3 172,09 €, puis 3 330,69 €, puis 3 497,23 €. Capital dû : 10 000 € au départ, puis 6 827,91 €, 3 497,22 € et 0 €. L’annuité reste la même, sa composition change."
+              }
+            },
+            "metadonnees": {
+              "concepts": ["tableau-d-amortissement", "annuites"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
         "id": "B2-05-A3-03-COURS-EMPRUNT",
         "type": "fp-story",
         "titre": "Cours : emprunt et tableau d’amortissement",
-        "duree": 3,
+        "duree": 2,
         "interactif": false,
         "donnees": {
           "recit": {
@@ -1252,8 +1296,8 @@
                   {
                     "kind": "definition",
                     "title": "Une annuité paie les intérêts, puis rembourse",
-                    "text": "Un emprunt de capital C, au taux t, sur n années, se rembourse par annuités constantes a. Chaque annuité paie les intérêts de l’année, calculés sur le capital restant dû en début d’année ; le reste, l’amortissement, rembourse le capital : rien à voir avec la dotation aux amortissements d’une immobilisation. Les intérêts baissent donc chaque année, et l’amortissement monte. L’annuité est donnée au CCF par une formule.",
-                    "formula": "a = C × t ÷ (1 − (1 + t)⁻ⁿ) · intérêts = capital restant dû × t · amortissement = a − intérêts"
+                    "text": "Annuité constante = intérêts de l’année + amortissement du capital.\nLes intérêts portent sur le capital restant dû : ils baissent chaque année.",
+                    "formula": "a = C × t ÷ (1 − (1 + t)⁻ⁿ), formule donnée au CCF\nintérêts = capital restant dû × t\namortissement = a − intérêts"
                   },
                   {
                     "kind": "example",
@@ -1268,13 +1312,13 @@
                   },
                   {
                     "kind": "method",
-                    "title": "Remplir le tableau ligne par ligne",
-                    "text": "Pièges : calculer les intérêts chaque année sur le capital emprunté ; prendre l’annuité pour l’amortissement ; oublier de retirer l’amortissement du capital restant dû.",
+                    "title": "Les intérêts d’abord, le reste rembourse",
+                    "text": "Une ligne par année, toujours dans cet ordre.",
                     "steps": [
-                      "Capital dû en début d’année : le capital emprunté, puis la fin d’année précédente.",
-                      "Intérêts : capital dû × t.",
-                      "Amortissement : annuité − intérêts.",
-                      "Capital dû en fin d’année : début − amortissement ; il tombe à 0 à la dernière ligne, à quelques centimes près si l’annuité est arrondie."
+                      "Intérêts = capital dû × t.",
+                      "Amortissement = a − intérêts.",
+                      "Capital dû suivant = capital dû − amortissement.",
+                      "Dernière ligne : 0, à quelques centimes près."
                     ]
                   }
                 ]
@@ -1283,7 +1327,35 @@
             "metadonnees": {
               "concepts": ["tableau-d-amortissement", "annuites"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
+              "dureeMinutes": 2,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B2-05-A3-04-ILLUSTRATION-COUT",
+        "type": "fp-story",
+        "titre": "Illustration : le coût du crédit",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B2-05-A3-04-ILLUSTRATION-COUT",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-05-A3-04-ILLUSTRATION-COUT",
+              "renderer": "illustration",
+              "props": {
+                "image": "/assets/cours/b2-05/v1/cout-du-credit.webp",
+                "imageAlt": "Infographie « Ce que l’on paie en plus ». Emprunt de 10 000 € sur 3 ans à 5 % : 3 × 3 672,09 = 11 016,27 € remboursés pour 10 000 € empruntés. Coût du crédit : 11 016,27 − 10 000 = 1 016,27 €, la somme des intérêts à un centime près. Au tableur, VPM avec le taux 5 %, la durée 3 et le capital −10 000 donne 3 672,09 € : le signe moins rend l’annuité positive ; sans lui, −3 672,09 €."
+              }
+            },
+            "metadonnees": {
+              "concepts": ["cout-du-credit", "tableur"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
               "modalite": "solo",
               "regime": "ouvert"
             }
@@ -1294,7 +1366,7 @@
         "id": "B2-05-A3-04-COURS-COUT-TABLEUR",
         "type": "fp-story",
         "titre": "Cours : coût du crédit et tableur",
-        "duree": 3,
+        "duree": 2,
         "interactif": false,
         "donnees": {
           "recit": {
@@ -1310,28 +1382,18 @@
                   {
                     "kind": "definition",
                     "title": "Le coût du crédit",
-                    "text": "Le coût du crédit est ce que l’emprunteur paie en plus du capital : le total remboursé moins le capital emprunté, hors frais de dossier et assurance. C’est aussi la somme des intérêts du tableau, à quelques centimes près quand l’annuité est arrondie.",
-                    "formula": "Coût = n × a − C = somme des intérêts"
+                    "text": "Ce que l’on paie en plus du capital emprunté.\nC’est aussi la somme des intérêts, à quelques centimes près.",
+                    "formula": "Coût = n × a − C\nhors frais de dossier et assurance"
                   },
                   {
                     "kind": "method",
-                    "title": "Au tableur : VPM et formules recopiées",
-                    "text": "VPM(taux ; durée ; capital) renvoie l’annuité avec la convention du tableur : un capital reçu positif donne une annuité à payer négative. On écrit donc le capital avec un signe moins.",
+                    "title": "VPM : le capital avec un signe moins",
+                    "text": "Une ligne de formules, recopiée ; taux et annuité figés par des $.",
                     "steps": [
-                      "Taux en K1, durée en K2, capital emprunté en K3 : =VPM(K1;K2;-K3).",
-                      "Capital dû en B2 : intérêts =B2*$K$1, recopiée, le taux restant figé en K1.",
-                      "Amortissement : annuité figée moins intérêts ; capital en fin d’année : début moins amortissement.",
+                      "Taux K1, durée K2, capital K3 : =VPM(K1;K2;-K3).",
+                      "Sans le signe moins : une annuité négative.",
+                      "Intérêts : =B2*$K$1, recopiée.",
                       "Coût : annuité × durée − capital."
-                    ]
-                  },
-                  {
-                    "kind": "exam",
-                    "title": "Au CCF : les formules d’un tableau d’amortissement",
-                    "text": "Un sujet donne souvent un tableau à compléter et demande les formules de deux cellules, à recopier vers le bas. Pièges : taux ou annuité non figés ; annuité négative par oubli du signe ; total remboursé donné pour le coût.",
-                    "steps": [
-                      "Nommer chaque colonne en français avant d’écrire sa formule.",
-                      "Figer par des $ ce qui ne change pas d’une ligne à l’autre.",
-                      "Contrôle : dernier capital dû égal à 0 et somme des amortissements égale au capital, à quelques centimes près si l’annuité est arrondie."
                     ]
                   }
                 ]
@@ -1340,7 +1402,7 @@
             "metadonnees": {
               "concepts": ["cout-du-credit", "tableur"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
+              "dureeMinutes": 2,
               "modalite": "solo",
               "regime": "ouvert"
             }
@@ -1709,7 +1771,7 @@
         "donnees": {
           "probleme": {
             "id": "b2-05-a3-defi-ia",
-            "enonce": "Hélène a demandé à un assistant IA de chiffrer l’emprunt de 60 000 € sur 5 ans à 4 %. Réponse : « 1. Chaque année, vous remboursez 60 000 ÷ 5 = 12 000 € de capital, plus 60 000 × 4 % = 2 400 € d’intérêts : l’annuité est de 14 400 €. 2. Les intérêts restent de 2 400 € chaque année, puisque le taux ne change pas. 3. Le coût du crédit est de 5 × 14 400 = 72 000 €. »",
+            "enonce": "Hélène a demandé à un assistant IA de chiffrer l’emprunt de 60 000 € sur 5 ans à 4 %. Réponse :\n« 1. Chaque année, vous remboursez 60 000 ÷ 5 = 12 000 € de capital, plus 60 000 × 4 % = 2 400 € d’intérêts : l’annuité est de 14 400 €.\n2. Les intérêts restent de 2 400 € chaque année, puisque le taux ne change pas.\n3. Le coût du crédit est de 5 × 14 400 = 72 000 €. »",
             "invite": "Trouvez les erreurs de l’IA, corrigez chacune et dites comment la contrôler.",
             "strategies": [],
             "metadonnees": {
@@ -2535,9 +2597,9 @@
           "cas": {
             "id": "B2-05-A1-06-MISSION",
             "metier": "Assistant·e de gestion — Atelier Rivage (voilerie artisanale, 14 salariés, La Rochelle)",
-            "situation": "Lundi, 9 h. Hélène Garnier écrit : « La banque veut voir trois lignes de notre plan : les 40 000 € de trésorerie placés à 2,5 % par an, les 6 000 € que nous mettrons de côté chaque fin d’année de 2026 à 2030 à 3 %, et l’emprunt de 60 000 € sur 5 ans à 4 %. Pouvez-vous chiffrer chaque ligne ? » Marc Lefèvre, l’expert-comptable, ajoute : « Pour l’emprunt, ne vous contentez pas de diviser 60 000 € par 5 : la banque se paie aussi en intérêts. »",
-            "geste": "Sans calculatrice, répondez aux trois questions à partir du dossier.",
-            "consequence": "Un placement surestimé, et le chantier manque d’argent ; un emprunt sous-estimé, et les annuités pèsent sur la trésorerie des cinq prochaines années.",
+            "situation": "Lundi, 9 h. Hélène Garnier, la dirigeante, écrit : « La banque veut voir trois lignes de notre plan. Pouvez-vous chiffrer chacune ? »\n1. Les 40 000 € de trésorerie, placés à 2,5 % par an.\n2. Les 6 000 € mis de côté à chaque fin d’année, de 2026 à 2030, à 3 %.\n3. L’emprunt de 60 000 € sur 5 ans à 4 %.\nMarc Lefèvre, l’expert-comptable, ajoute : « Pour l’emprunt, ne divisez pas 60 000 € par 5 : la banque se paie aussi en intérêts. »",
+            "geste": null,
+            "consequence": null,
             "questionsLibres": [
               {
                 "id": "b2-05-a1-mission:placement",
@@ -2568,8 +2630,43 @@
             }
           }
         },
-        "notes": "• Lecture à voix haute du courriel (1 min), puis 4 min d’écriture individuelle et 1 min de mise en commun au pupitre.\n• Question 1 : faire dire que les intérêts de la deuxième année portent aussi sur ceux de la première.\n• Question 2 : faire dire que chaque versement ne rapporte pas pendant la même durée.\n• Question 3 : faire émerger qu’une annuité paie aussi des intérêts ; c’est l’acte 3.\n• Papier : trois lignes d’écriture dans le livret.",
+        "notes": "• Lecture à voix haute du courriel (1 min), puis 4 min d’écriture individuelle et 1 min de mise en commun au pupitre.\n• Consigne orale : sans calculatrice. Enjeu : un placement surestimé, et le chantier manque d’argent ; un emprunt sous-estimé, et les annuités pèsent sur la trésorerie pendant cinq ans.\n• Question 1 : faire dire que les intérêts de la deuxième année portent aussi sur ceux de la première.\n• Question 2 : faire dire que chaque versement ne rapporte pas pendant la même durée.\n• Question 3 : faire émerger qu’une annuité paie aussi des intérêts ; c’est l’acte 3.\n• Papier : trois lignes d’écriture dans le livret.",
         "diffusion": "seance",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null,
+        "reflexion": null
+      },
+      {
+        "id": "B2-05-A1-07-ILLUSTRATION-LIVRET",
+        "type": "fp-story",
+        "titre": "Illustration : le livret",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B2-05-A1-07-ILLUSTRATION-LIVRET",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-05-A1-07-ILLUSTRATION-LIVRET",
+              "renderer": "illustration",
+              "props": {
+                "image": "/assets/cours/b2-05/v1/livret-interets-composes.webp",
+                "imageAlt": "Infographie « Le livret à 3 % ». 2 000 € placés à 3 % par an, intérêts laissés sur le livret. Après un an, 2 000 × 1,03 = 2 060 € ; après deux ans, 2 060 × 1,03 = 2 121,80 €, les intérêts portant aussi sur les 60 € gagnés ; après dix ans, 2 000 × 1,03¹⁰ ≈ 2 687,83 €. Aux intérêts simples, 2 000 × 1,30 = 2 600 € seulement : il manque les intérêts des intérêts. À la calculatrice : 2000 × 1,03 ^ 10, avec la touche puissance."
+              }
+            },
+            "metadonnees": {
+              "concepts": ["interets-composes", "suite-geometrique"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 1 min, avant la trace écrite : faire décrire l’image, la page suivante en donne la règle.\n• Avant de lire : « 3 % pendant 10 ans, est-ce 30 % ? » Laisser venir les intérêts des intérêts.",
+        "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
         "questions": [],
@@ -2580,7 +2677,7 @@
         "id": "B2-05-A1-07-COURS-INTERETS-COMPOSES",
         "type": "fp-story",
         "titre": "Cours : intérêts composés et valeur acquise",
-        "duree": 3,
+        "duree": 2,
         "interactif": false,
         "donnees": {
           "recit": {
@@ -2596,28 +2693,28 @@
                   {
                     "kind": "definition",
                     "title": "Capitaliser : multiplier par 1 + t chaque année",
-                    "text": "Un capital C₀ placé au taux annuel t rapporte des intérêts. Aux intérêts simples, ils sont calculés chaque année sur le seul capital de départ. Aux intérêts composés, ils s’ajoutent au capital à la fin de chaque année et rapportent à leur tour : on multiplie par 1 + t chaque année. Le capital Cₙ obtenu au bout de n années s’appelle la valeur acquise. C’est une suite géométrique de raison 1 + t (B2-04). C’est le calcul de la trésorerie d’Hélène.",
-                    "formula": "Intérêts composés : Cₙ = C₀ × (1 + t)ⁿ · intérêts simples : C₀ × (1 + n × t)"
+                    "text": "Chaque année, les intérêts s’ajoutent au capital et rapportent à leur tour.\nCₙ, la valeur acquise : le capital au bout de n années.",
+                    "formula": "Cₙ = C₀ × (1 + t)ⁿ\nIntérêts simples : C₀ × (1 + n × t)"
                   },
                   {
                     "kind": "example",
                     "title": "Pour débuter : le livret à 3 %",
-                    "text": "On place 2 000 € sur un livret à 3 % par an, intérêts laissés sur le livret. C₀ = 2 000 et 1 + t = 1,03.",
+                    "text": "2 000 € sur un livret à 3 % par an, intérêts laissés sur le livret.",
                     "steps": [
-                      "Après un an : 2 000 × 1,03 = 2 060 € ; les intérêts sont de 60 €.",
-                      "Après deux ans : 2 060 × 1,03 = 2 121,80 € ; les intérêts de la deuxième année, 61,80 €, portent sur 2 060 €.",
+                      "Après un an : 2 000 × 1,03 = 2 060 €.",
+                      "Après deux ans : 2 060 × 1,03 = 2 121,80 € ; les intérêts portent aussi sur les 60 € gagnés.",
                       "Après dix ans : 2 000 × 1,03¹⁰ ≈ 2 687,83 €.",
                       "Aux intérêts simples : 2 000 × (1 + 10 × 0,03) = 2 600 € seulement."
                     ]
                   },
                   {
                     "kind": "method",
-                    "title": "Calculer une valeur acquise",
-                    "text": "Pièges : multiplier par le taux au lieu du coefficient (0,03 au lieu de 1,03) ; calculer les intérêts sur le seul capital de départ ; placer une année de trop ou de moins en comptant mal la durée.",
+                    "title": "× 1,03, jamais × 0,03",
+                    "text": "On multiplie par le coefficient, autant de fois qu’il y a d’années.",
                     "steps": [
-                      "Écrire le capital de départ et le taux en décimal.",
-                      "Compter la durée n en années entières de placement.",
-                      "Calculer C₀ × (1 + t)ⁿ avec la touche puissance ; arrondir au centime à la fin.",
+                      "3 % → 1 + t = 1,03.",
+                      "n = nombre d’années de placement.",
+                      "Cₙ = C₀ × (1 + t)ⁿ, arrondi à la fin.",
                       "Intérêts gagnés : Cₙ − C₀."
                     ]
                   }
@@ -2627,13 +2724,48 @@
             "metadonnees": {
               "concepts": ["interets-composes", "suite-geometrique"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
+              "dureeMinutes": 2,
               "modalite": "solo",
               "regime": "ouvert"
             }
           }
         },
-        "notes": "• 3 min ; la trace écrite est imprimée dans le livret : on lit et on commente, on ne recopie pas.\n• Avant l’exemple, demander : « 3 % pendant 10 ans, est-ce 30 % ? » Laisser venir les intérêts des intérêts.\n• Relier au B2-04 : le capital placé est une suite géométrique de raison 1 + t.\n• Lien au dossier : « La trésorerie d’Hélène, placée combien d’années avant le chantier ? »",
+        "notes": "• 2 min après l’illustration ; la trace écrite est imprimée dans le livret : on lit et on commente, on ne recopie pas.\n• Faire répéter le moyen mnémotechnique : × 1,03, jamais × 0,03.\n• Relier au B2-04 : le capital placé est une suite géométrique de raison 1 + t.\n• Lien au dossier : « La trésorerie d’Hélène, placée combien d’années avant le chantier ? »",
+        "diffusion": "catalogue",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null,
+        "reflexion": null
+      },
+      {
+        "id": "B2-05-A1-08-ILLUSTRATION-FUTUR-PRESENT",
+        "type": "fp-story",
+        "titre": "Illustration : futur et présent",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B2-05-A1-08-ILLUSTRATION-FUTUR-PRESENT",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-05-A1-08-ILLUSTRATION-FUTUR-PRESENT",
+              "renderer": "illustration",
+              "props": {
+                "image": "/assets/cours/b2-05/v1/capitaliser-actualiser.webp",
+                "imageAlt": "Infographie « Futur : ×, présent : ÷ ». Une frise d’aujourd’hui à dans 2 ans, au taux annuel de 10 %. Vers la droite, capitaliser : 1 000 × 1,1² = 1 210 €. Vers la gauche, actualiser : 1 210 ÷ 1,1² = 1 000 €. Formules générales : Cₙ = C₀ × (1 + t)ⁿ et C₀ = Cₙ ÷ (1 + t)ⁿ. À retenir : la valeur actuelle est plus petite."
+              }
+            },
+            "metadonnees": {
+              "concepts": ["valeur-actuelle", "interets-composes"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 1 min, avant la trace écrite : faire décrire l’image, la page suivante en donne la règle.\n• Question : « 1 210 € dans deux ans, combien aujourd’hui ? » On divise : la valeur actuelle est plus petite.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -2645,7 +2777,7 @@
         "id": "B2-05-A1-08-COURS-VALEUR-ACTUELLE",
         "type": "fp-story",
         "titre": "Cours : valeur actuelle et tableur",
-        "duree": 3,
+        "duree": 2,
         "interactif": false,
         "donnees": {
           "recit": {
@@ -2660,29 +2792,19 @@
                 "blocks": [
                   {
                     "kind": "definition",
-                    "title": "Actualiser : diviser par (1 + t)ⁿ",
-                    "text": "La valeur actuelle d’une somme Cₙ disponible dans n années est le capital C₀ qu’il faut placer aujourd’hui, au taux t, pour obtenir Cₙ. On remonte le temps : on divise par le coefficient, comme pour annuler une hausse (B2-01). Capitaliser, c’est aller vers le futur (× (1 + t)ⁿ) ; actualiser, c’est revenir au présent (÷ (1 + t)ⁿ).",
-                    "formula": "C₀ = Cₙ ÷ (1 + t)ⁿ"
+                    "title": "Futur : ×, présent : ÷",
+                    "text": "La valeur actuelle : ce qu’il faut placer aujourd’hui pour avoir Cₙ dans n années.\nOn remonte le temps : on divise, comme pour annuler une hausse.",
+                    "formula": "C₀ = Cₙ ÷ (1 + t)ⁿ\nCapitaliser : × (1 + t)ⁿ\nActualiser : ÷ (1 + t)ⁿ"
                   },
                   {
                     "kind": "method",
-                    "title": "Au tableur : le taux dans une cellule figée",
-                    "text": "Une valeur de départ, puis une formule recopiée qui multiplie le capital du dessus par 1 + taux. Le taux est rangé dans une cellule à part, figé par des $.",
+                    "title": "La méthode au tableur",
+                    "text": "Une formule, recopiée vers le bas ; le taux figé par des $.",
                     "steps": [
-                      "B2 contient le capital placé ; le taux, écrit 0,03, est en E1.",
-                      "En B3 : =B2*(1+$E$1), puis recopier vers le bas.",
-                      "Intérêts de l’année en C3 : =B3-B2, recopiée.",
-                      "Sans les $, B4 lirait E2, vide : le capital cesserait de grossir."
-                    ]
-                  },
-                  {
-                    "kind": "exam",
-                    "title": "Au CCF : capitaliser ou actualiser ?",
-                    "text": "Lire d’abord le sens de la question. « Que vaudra… dans n ans ? » : on capitalise. « Combien placer aujourd’hui pour avoir… ? » : on actualise. Pièges : multiplier au lieu de diviser ; diviser par 1 + n × t, comme aux intérêts simples.",
-                    "steps": [
-                      "Repérer la somme connue et sa date.",
-                      "Futur connu, présent cherché : ÷ (1 + t)ⁿ.",
-                      "Contrôle : la valeur actuelle est plus petite que la somme future."
+                      "B2 : le capital ; E1 : le taux, écrit 0,03.",
+                      "En B3 : =B2*(1+$E$1), puis recopier.",
+                      "Intérêts de l’année : =B3-B2.",
+                      "Sans $ : =B3*(1+E2), une cellule vide, le capital ne grossit plus."
                     ]
                   }
                 ]
@@ -2695,13 +2817,13 @@
                 "tableur"
               ],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
+              "dureeMinutes": 2,
               "modalite": "solo",
               "regime": "ouvert"
             }
           }
         },
-        "notes": "• 3 min, enchaînées sur la page 1 : 6 min pour les deux pages.\n• Relier au vote de rappel : annuler une hausse, c’est diviser par son coefficient ; actualiser, c’est annuler n hausses.\n• Faire taper la formule sans $ sur un poste volontaire, puis la recopier : la colonne se fige, l’erreur fixe la règle.",
+        "notes": "• 2 min après l’illustration, enchaînées sur la page 1 : 6 min pour les deux pages et leurs illustrations.\n• Faire répéter le moyen mnémotechnique : vers le futur, on multiplie ; vers le présent, on divise.\n• Relier au vote de rappel : annuler une hausse, c’est diviser par son coefficient ; actualiser, c’est annuler n hausses.\n• Faire taper la formule sans $ sur un poste volontaire, puis la recopier : la colonne se fige, l’erreur fixe la règle.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -3337,10 +3459,45 @@
         }
       },
       {
+        "id": "B2-05-A2-02-ILLUSTRATION-VERSEMENTS",
+        "type": "fp-story",
+        "titre": "Illustration : les versements",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B2-05-A2-02-ILLUSTRATION-VERSEMENTS",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-05-A2-02-ILLUSTRATION-VERSEMENTS",
+              "renderer": "illustration",
+              "props": {
+                "image": "/assets/cours/b2-05/v1/frise-des-versements.webp",
+                "imageAlt": "Infographie « Chaque versement a sa durée ». 1 000 € versés à la fin de chacune de trois années, à 2 % par an. Le premier versement, placé deux ans, vaut 1 000 × 1,02² = 1 040,40 € ; le deuxième, placé un an, 1 000 × 1,02 = 1 020 € ; le troisième, pas placé, 1 000 €. Somme en fin d’année 3 : 3 060,40 €, et non 3 000 € : les deux premiers versements ont produit des intérêts."
+              }
+            },
+            "metadonnees": {
+              "concepts": ["annuites", "somme-de-termes"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 1 min, avant la trace écrite : faire décrire l’image, la page suivante en donne la règle.\n• Question : « Trois versements de 1 000 €, donc 3 000 € ? » Non : chacun a rapporté selon sa durée.",
+        "diffusion": "catalogue",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null,
+        "reflexion": null
+      },
+      {
         "id": "B2-05-A2-02-COURS-ANNUITES",
         "type": "fp-story",
         "titre": "Cours : suite d’annuités et valeur acquise",
-        "duree": 3,
+        "duree": 2,
         "interactif": false,
         "donnees": {
           "recit": {
@@ -3351,18 +3508,18 @@
               "renderer": "lesson",
               "props": {
                 "title": "Suite d’annuités : additionner des versements placés",
-                "subtitle": "Trace écrite · notion 2 · page 1 sur 2",
+                "subtitle": "Trace écrite · notion 2",
                 "blocks": [
                   {
                     "kind": "definition",
                     "title": "Chaque versement a sa durée",
-                    "text": "Une suite d’annuités est une suite de versements égaux, faits à intervalles réguliers, ici en fin d’année. Sa valeur acquise, à la date du dernier versement, est la somme des valeurs acquises de chaque versement : le premier est placé n − 1 années, le dernier ne rapporte rien. Ces valeurs forment une suite géométrique de raison 1 + t (B2-04), d’où une formule donnée au CCF. C’est l’épargne des machines d’Hélène.",
-                    "formula": "Vₙ = a × ((1 + t)ⁿ − 1) ÷ t · n versements de a, en fin de période"
+                    "text": "Des versements égaux, en fin d’année : le premier rapporte n − 1 ans, le dernier rien.\nValeur acquise : la somme de leurs valeurs, au dernier versement.",
+                    "formula": "Vₙ = a × ((1 + t)ⁿ − 1) ÷ t\nn versements de a, formule donnée au CCF"
                   },
                   {
                     "kind": "example",
                     "title": "Pour débuter : 1 000 € par an à 2 %",
-                    "text": "Trois versements de 1 000 €, en fin d’année, sur un compte à 2 %. Valeur acquise au troisième versement ?",
+                    "text": "Trois versements de 1 000 € en fin d’année, à 2 %. Valeur au troisième versement ?",
                     "steps": [
                       "Le premier est placé deux ans : 1 000 × 1,02² = 1 040,40 €.",
                       "Le deuxième est placé un an : 1 000 × 1,02 = 1 020 €.",
@@ -3372,13 +3529,12 @@
                   },
                   {
                     "kind": "method",
-                    "title": "Calculer la valeur acquise d’une suite d’annuités",
-                    "text": "Pièges : additionner les versements sans leurs intérêts (3 000 € au lieu de 3 060,40 €) ; placer chaque versement pendant toute la durée ; compter un versement de trop ou de moins.",
+                    "title": "× (1 + t), puis + a",
+                    "text": "Une ligne par année : l’épargne grossit, puis le versement arrive.",
                     "steps": [
-                      "Compter les versements n, du premier au dernier inclus.",
-                      "Repérer la date d’évaluation : celle du dernier versement.",
-                      "Appliquer la formule donnée, taux en décimal ; arrondir au centime à la fin.",
-                      "Intérêts gagnés : valeur acquise − n × a."
+                      "Au tableur : =B2*(1+$E$1)+$G$1, recopiée.",
+                      "Intérêts gagnés : Vₙ − n × a.",
+                      "Total des intérêts : =SOMME(…), pas la dernière cellule."
                     ]
                   }
                 ]
@@ -3387,77 +3543,13 @@
             "metadonnees": {
               "concepts": ["annuites", "suite-geometrique", "somme-de-termes"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
+              "dureeMinutes": 2,
               "modalite": "solo",
               "regime": "ouvert"
             }
           }
         },
-        "notes": "• 3 min ; garder la réflexion précédente sous les yeux.\n• Faire tracer au tableau une frise de 2026 à 2030, une flèche par versement jusqu’à fin 2030.\n• Relier au B2-04 : les valeurs acquises forment une suite géométrique de raison 1 + t, qu’on additionne.",
-        "diffusion": "catalogue",
-        "seuil": null,
-        "corriges": [],
-        "questions": [],
-        "corrigeEcran": null,
-        "reflexion": null
-      },
-      {
-        "id": "B2-05-A2-03-COURS-ANNUITES-TABLEUR",
-        "type": "fp-story",
-        "titre": "Cours : les annuités au tableur",
-        "duree": 3,
-        "interactif": false,
-        "donnees": {
-          "recit": {
-            "id": "B2-05-A2-03-COURS-ANNUITES-TABLEUR",
-            "presentation": {
-              "version": 2,
-              "screenId": "B2-05-A2-03-COURS-ANNUITES-TABLEUR",
-              "renderer": "lesson",
-              "props": {
-                "title": "Les annuités au tableur : une ligne par année",
-                "subtitle": "Trace écrite · notion 2 · page 2 sur 2",
-                "blocks": [
-                  {
-                    "kind": "method",
-                    "title": "Le tableau d’épargne",
-                    "text": "Première ligne : le premier versement. Chaque ligne suivante reprend l’épargne de l’an passé, lui ajoute ses intérêts de l’année, puis le nouveau versement. Taux et versement sont rangés dans deux cellules figées par des $.",
-                    "steps": [
-                      "B2 contient le premier versement ; le taux est en E1, le versement en G1.",
-                      "En B3 : =B2*(1+$E$1)+$G$1, puis recopier vers le bas.",
-                      "Intérêts de l’année en C3 : =B2*$E$1, recopiée.",
-                      "Sans les $, la recopie lit E2 et G2, vides : l’épargne n’augmente plus."
-                    ]
-                  },
-                  {
-                    "kind": "property",
-                    "title": "Total des intérêts : une somme",
-                    "text": "Le total des intérêts gagnés est la somme de la colonne des intérêts, ou la dernière épargne moins le total versé. La dernière cellule de la colonne ne donne que les intérêts d’une seule année.",
-                    "formula": "=SOMME(plage des intérêts) = dernière épargne − n × a"
-                  },
-                  {
-                    "kind": "exam",
-                    "title": "Au CCF : lire la date d’évaluation",
-                    "text": "Un sujet demande souvent la valeur acquise « au dernier versement » avec la formule donnée, puis une formule de tableur à recopier. Pièges : compter le dernier versement comme placé ; oublier les $ ; donner une valeur de la colonne pour le total.",
-                    "steps": [
-                      "Relever a, t et n, puis vérifier la date du dernier versement.",
-                      "Contrôle : la valeur acquise dépasse n × a, d’un écart plausible.",
-                      "Au tableur : une formule, recopiée, taux et versement figés."
-                    ]
-                  }
-                ]
-              }
-            },
-            "metadonnees": {
-              "concepts": ["annuites", "tableur", "somme-de-termes"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
-        },
-        "notes": "• 3 min, enchaînées sur la page 1 : 6 min pour les deux pages.\n• Dire la formule en français avant de l’écrire : « l’épargne de l’an passé, plus ses intérêts, plus le versement ».\n• Question : « Le total des intérêts, c’est la dernière ligne de la colonne ? » Non : une somme.",
+        "notes": "• 2 min après l’illustration ; la trace écrite est imprimée dans le livret : on lit et on commente, on ne recopie pas.\n• Faire tracer au tableau une frise de 2026 à 2030, une flèche par versement jusqu’à fin 2030.\n• Faire répéter le moyen mnémotechnique : « × (1 + t), puis + a » : l’épargne de l’an passé grossit, puis le versement arrive.\n• Question : « Le total des intérêts, c’est la dernière ligne de la colonne ? » Non : une somme.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -3529,7 +3621,7 @@
         "id": "B2-05-A2-05-ATELIER-ANNUITES",
         "type": "questionnaire",
         "titre": "Exercice 3 — L’épargne des machines",
-        "duree": 11,
+        "duree": 12,
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 3 — L’épargne des machines",
@@ -3566,7 +3658,7 @@
                   "metadonnees": {
                     "concepts": ["annuites"],
                     "misconceptionsCiblees": [],
-                    "dureeMinutes": 11,
+                    "dureeMinutes": 12,
                     "modalite": "solo",
                     "regime": "focus"
                   }
@@ -3606,7 +3698,7 @@
                   "metadonnees": {
                     "concepts": ["annuites"],
                     "misconceptionsCiblees": [],
-                    "dureeMinutes": 11,
+                    "dureeMinutes": 12,
                     "modalite": "solo",
                     "regime": "focus"
                   }
@@ -3616,7 +3708,7 @@
           ]
         },
         "renvoi": "B2-05-A1-05-DOSSIER",
-        "notes": "• Temps : réflexion 2 min · travail 7 min · correction 2 min\n• Réflexion : dessiner la frise des cinq versements et écrire sous chacun sa durée de placement.\n• Pièges : chaque versement placé cinq ans ; versements additionnés sans intérêts ; intérêts simples.\n• Papier : exercice 3 du livret.\n• Corriger question par question, en commençant par la moins réussie.\n• Transition : « Faisons tenir l’épargne dans un tableau : exercice 4. »",
+        "notes": "• Temps : réflexion 3 min · travail 7 min · correction 2 min\n• Réflexion : dessiner la frise des cinq versements et écrire sous chacun sa durée de placement.\n• Pièges : chaque versement placé cinq ans ; versements additionnés sans intérêts ; intérêts simples.\n• Papier : exercice 3 du livret.\n• Corriger question par question, en commençant par la moins réussie.\n• Transition : « Faisons tenir l’épargne dans un tableau : exercice 4. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [
@@ -3746,7 +3838,7 @@
         "id": "B2-05-A2-06-TABLEUR-EPARGNE",
         "type": "fp-sheet",
         "titre": "Exercice 4 — L’épargne au tableur",
-        "duree": 10,
+        "duree": 12,
         "interactif": true,
         "donnees": {
           "plan": {
@@ -3841,13 +3933,13 @@
             "metadonnees": {
               "concepts": ["tableur", "annuites"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 10,
+              "dureeMinutes": 12,
               "modalite": "solo",
               "regime": "ouvert"
             }
           }
         },
-        "notes": "• Temps : réflexion 2 min · travail 6 min · correction 2 min\n• Réflexion : dire en français la formule de B3, puis l’écrire sur papier.\n• Erreurs à chercher : =B2+$H$1 (pas d’intérêts) ; F1 ou H1 sans $ ; =C6 pour le total.\n• Papier : formules écrites sur la copie, puis les valeurs à la calculatrice.\n• Projeter la feuille d’un poste volontaire ; comparer B6 à la réponse de l’exercice 3.\n• Transition : jalon 2.",
+        "notes": "• Temps : réflexion 2 min · travail 8 min · correction 2 min\n• Réflexion : dire en français la formule de B3, puis l’écrire sur papier.\n• Erreurs à chercher : =B2+$H$1 (pas d’intérêts) ; F1 ou H1 sans $ ; =C6 pour le total.\n• Papier : formules écrites sur la copie, puis les valeurs à la calculatrice.\n• Projeter la feuille d’un poste volontaire ; comparer B6 à la réponse de l’exercice 3.\n• Transition : jalon 2.",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -4191,10 +4283,45 @@
         "reflexion": null
       },
       {
+        "id": "B2-05-A3-03-ILLUSTRATION-ANNUITE",
+        "type": "fp-story",
+        "titre": "Illustration : l’annuité",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B2-05-A3-03-ILLUSTRATION-ANNUITE",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-05-A3-03-ILLUSTRATION-ANNUITE",
+              "renderer": "illustration",
+              "props": {
+                "image": "/assets/cours/b2-05/v1/annuite-decomposee.webp",
+                "imageAlt": "Infographie « Les intérêts d’abord, le reste rembourse ». Emprunt de 10 000 € sur 3 ans à 5 %, annuité constante de 3 672,09 €. Trois barres de même hauteur : les intérêts baissent, 500 €, puis 341,40 €, puis 174,86 € ; l’amortissement monte, 3 172,09 €, puis 3 330,69 €, puis 3 497,23 €. Capital dû : 10 000 € au départ, puis 6 827,91 €, 3 497,22 € et 0 €. L’annuité reste la même, sa composition change."
+              }
+            },
+            "metadonnees": {
+              "concepts": ["tableau-d-amortissement", "annuites"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 1 min, avant la trace écrite : faire décrire l’image, la page suivante en donne la règle.\n• Question : « L’annuité ne change pas : pourquoi les intérêts baissent-ils ? » Le capital dû baisse.",
+        "diffusion": "catalogue",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null,
+        "reflexion": null
+      },
+      {
         "id": "B2-05-A3-03-COURS-EMPRUNT",
         "type": "fp-story",
         "titre": "Cours : emprunt et tableau d’amortissement",
-        "duree": 3,
+        "duree": 2,
         "interactif": false,
         "donnees": {
           "recit": {
@@ -4210,8 +4337,8 @@
                   {
                     "kind": "definition",
                     "title": "Une annuité paie les intérêts, puis rembourse",
-                    "text": "Un emprunt de capital C, au taux t, sur n années, se rembourse par annuités constantes a. Chaque annuité paie les intérêts de l’année, calculés sur le capital restant dû en début d’année ; le reste, l’amortissement, rembourse le capital : rien à voir avec la dotation aux amortissements d’une immobilisation. Les intérêts baissent donc chaque année, et l’amortissement monte. L’annuité est donnée au CCF par une formule.",
-                    "formula": "a = C × t ÷ (1 − (1 + t)⁻ⁿ) · intérêts = capital restant dû × t · amortissement = a − intérêts"
+                    "text": "Annuité constante = intérêts de l’année + amortissement du capital.\nLes intérêts portent sur le capital restant dû : ils baissent chaque année.",
+                    "formula": "a = C × t ÷ (1 − (1 + t)⁻ⁿ), formule donnée au CCF\nintérêts = capital restant dû × t\namortissement = a − intérêts"
                   },
                   {
                     "kind": "example",
@@ -4226,13 +4353,13 @@
                   },
                   {
                     "kind": "method",
-                    "title": "Remplir le tableau ligne par ligne",
-                    "text": "Pièges : calculer les intérêts chaque année sur le capital emprunté ; prendre l’annuité pour l’amortissement ; oublier de retirer l’amortissement du capital restant dû.",
+                    "title": "Les intérêts d’abord, le reste rembourse",
+                    "text": "Une ligne par année, toujours dans cet ordre.",
                     "steps": [
-                      "Capital dû en début d’année : le capital emprunté, puis la fin d’année précédente.",
-                      "Intérêts : capital dû × t.",
-                      "Amortissement : annuité − intérêts.",
-                      "Capital dû en fin d’année : début − amortissement ; il tombe à 0 à la dernière ligne, à quelques centimes près si l’annuité est arrondie."
+                      "Intérêts = capital dû × t.",
+                      "Amortissement = a − intérêts.",
+                      "Capital dû suivant = capital dû − amortissement.",
+                      "Dernière ligne : 0, à quelques centimes près."
                     ]
                   }
                 ]
@@ -4241,13 +4368,48 @@
             "metadonnees": {
               "concepts": ["tableau-d-amortissement", "annuites"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
+              "dureeMinutes": 2,
               "modalite": "solo",
               "regime": "ouvert"
             }
           }
         },
-        "notes": "• 3 min ; la trace écrite est imprimée dans le livret.\n• Remplir au tableau la première ligne de l’exemple, puis la deuxième : faire dire sur quel capital portent les intérêts.\n• Lien au dossier : « L’emprunt d’Hélène, 60 000 € : combien d’intérêts la première année ? »",
+        "notes": "• 2 min après l’illustration ; la trace écrite est imprimée dans le livret : on lit et on commente, on ne recopie pas.\n• Remplir au tableau la première ligne de l’exemple, puis la deuxième : faire dire sur quel capital portent les intérêts.\n• Faire répéter le moyen mnémotechnique : les intérêts d’abord, le reste rembourse.\n• Prévenir : l’amortissement d’un emprunt n’a rien à voir avec la dotation aux amortissements d’une immobilisation.\n• Lien au dossier : « L’emprunt d’Hélène, 60 000 € : combien d’intérêts la première année ? »",
+        "diffusion": "catalogue",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null,
+        "reflexion": null
+      },
+      {
+        "id": "B2-05-A3-04-ILLUSTRATION-COUT",
+        "type": "fp-story",
+        "titre": "Illustration : le coût du crédit",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B2-05-A3-04-ILLUSTRATION-COUT",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-05-A3-04-ILLUSTRATION-COUT",
+              "renderer": "illustration",
+              "props": {
+                "image": "/assets/cours/b2-05/v1/cout-du-credit.webp",
+                "imageAlt": "Infographie « Ce que l’on paie en plus ». Emprunt de 10 000 € sur 3 ans à 5 % : 3 × 3 672,09 = 11 016,27 € remboursés pour 10 000 € empruntés. Coût du crédit : 11 016,27 − 10 000 = 1 016,27 €, la somme des intérêts à un centime près. Au tableur, VPM avec le taux 5 %, la durée 3 et le capital −10 000 donne 3 672,09 € : le signe moins rend l’annuité positive ; sans lui, −3 672,09 €."
+              }
+            },
+            "metadonnees": {
+              "concepts": ["cout-du-credit", "tableur"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 1 min, avant la trace écrite : faire décrire l’image, la page suivante en donne la règle.\n• Avant de lire : faire calculer 3 × 3 672,09 au tableau, puis demander combien on paie en plus.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -4259,7 +4421,7 @@
         "id": "B2-05-A3-04-COURS-COUT-TABLEUR",
         "type": "fp-story",
         "titre": "Cours : coût du crédit et tableur",
-        "duree": 3,
+        "duree": 2,
         "interactif": false,
         "donnees": {
           "recit": {
@@ -4275,28 +4437,18 @@
                   {
                     "kind": "definition",
                     "title": "Le coût du crédit",
-                    "text": "Le coût du crédit est ce que l’emprunteur paie en plus du capital : le total remboursé moins le capital emprunté, hors frais de dossier et assurance. C’est aussi la somme des intérêts du tableau, à quelques centimes près quand l’annuité est arrondie.",
-                    "formula": "Coût = n × a − C = somme des intérêts"
+                    "text": "Ce que l’on paie en plus du capital emprunté.\nC’est aussi la somme des intérêts, à quelques centimes près.",
+                    "formula": "Coût = n × a − C\nhors frais de dossier et assurance"
                   },
                   {
                     "kind": "method",
-                    "title": "Au tableur : VPM et formules recopiées",
-                    "text": "VPM(taux ; durée ; capital) renvoie l’annuité avec la convention du tableur : un capital reçu positif donne une annuité à payer négative. On écrit donc le capital avec un signe moins.",
+                    "title": "VPM : le capital avec un signe moins",
+                    "text": "Une ligne de formules, recopiée ; taux et annuité figés par des $.",
                     "steps": [
-                      "Taux en K1, durée en K2, capital emprunté en K3 : =VPM(K1;K2;-K3).",
-                      "Capital dû en B2 : intérêts =B2*$K$1, recopiée, le taux restant figé en K1.",
-                      "Amortissement : annuité figée moins intérêts ; capital en fin d’année : début moins amortissement.",
+                      "Taux K1, durée K2, capital K3 : =VPM(K1;K2;-K3).",
+                      "Sans le signe moins : une annuité négative.",
+                      "Intérêts : =B2*$K$1, recopiée.",
                       "Coût : annuité × durée − capital."
-                    ]
-                  },
-                  {
-                    "kind": "exam",
-                    "title": "Au CCF : les formules d’un tableau d’amortissement",
-                    "text": "Un sujet donne souvent un tableau à compléter et demande les formules de deux cellules, à recopier vers le bas. Pièges : taux ou annuité non figés ; annuité négative par oubli du signe ; total remboursé donné pour le coût.",
-                    "steps": [
-                      "Nommer chaque colonne en français avant d’écrire sa formule.",
-                      "Figer par des $ ce qui ne change pas d’une ligne à l’autre.",
-                      "Contrôle : dernier capital dû égal à 0 et somme des amortissements égale au capital, à quelques centimes près si l’annuité est arrondie."
                     ]
                   }
                 ]
@@ -4305,13 +4457,13 @@
             "metadonnees": {
               "concepts": ["cout-du-credit", "tableur"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
+              "dureeMinutes": 2,
               "modalite": "solo",
               "regime": "ouvert"
             }
           }
         },
-        "notes": "• 3 min, enchaînées sur la page 1 : 6 min pour les deux pages.\n• Faire taper VPM sans le signe moins sur un poste volontaire : l’annuité sort négative, l’erreur fixe la règle.\n• Question : « Le coût du crédit, c’est ce que je rembourse ? » Non : ce que je rembourse en plus.",
+        "notes": "• 2 min après l’illustration, enchaînées sur la page 1 : 6 min pour les deux pages et leurs illustrations.\n• Faire répéter le moyen mnémotechnique : VPM prend le capital avec un signe moins.\n• Faire taper VPM sans le signe moins sur un poste volontaire : l’annuité sort négative, l’erreur fixe la règle.\n• Question : « Le coût du crédit, c’est ce que je rembourse ? » Non : ce que je rembourse en plus.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -5014,7 +5166,7 @@
         "donnees": {
           "probleme": {
             "id": "b2-05-a3-defi-ia",
-            "enonce": "Hélène a demandé à un assistant IA de chiffrer l’emprunt de 60 000 € sur 5 ans à 4 %. Réponse : « 1. Chaque année, vous remboursez 60 000 ÷ 5 = 12 000 € de capital, plus 60 000 × 4 % = 2 400 € d’intérêts : l’annuité est de 14 400 €. 2. Les intérêts restent de 2 400 € chaque année, puisque le taux ne change pas. 3. Le coût du crédit est de 5 × 14 400 = 72 000 €. »",
+            "enonce": "Hélène a demandé à un assistant IA de chiffrer l’emprunt de 60 000 € sur 5 ans à 4 %. Réponse :\n« 1. Chaque année, vous remboursez 60 000 ÷ 5 = 12 000 € de capital, plus 60 000 × 4 % = 2 400 € d’intérêts : l’annuité est de 14 400 €.\n2. Les intérêts restent de 2 400 € chaque année, puisque le taux ne change pas.\n3. Le coût du crédit est de 5 × 14 400 = 72 000 €. »",
             "invite": "Trouvez les erreurs de l’IA, corrigez chacune et dites comment la contrôler.",
             "strategies": [],
             "metadonnees": {
@@ -5707,7 +5859,7 @@
             }
           }
         },
-        "notes": "• 5 min individuelles, puis projeter la carte de maîtrise.\n• Tous reçoivent les deux questions obligatoires (valeur actuelle, base des intérêts d’un emprunt), en plus de leurs points faibles.",
+        "notes": "• 5 min individuelles, puis projeter la carte de maîtrise.\n• Tous reçoivent les douze questions de la banque : le rappel couvre tout le cours pour chacun.",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [
@@ -6201,7 +6353,7 @@
       "versements-sans-interets": "B2-05-A2-02-COURS-ANNUITES",
       "versements-places-toute-la-duree": "B2-05-A2-02-COURS-ANNUITES",
       "nombre-de-termes-decale": "B2-05-A2-02-COURS-ANNUITES",
-      "terme-pris-pour-somme": "B2-05-A2-03-COURS-ANNUITES-TABLEUR",
+      "terme-pris-pour-somme": "B2-05-A2-02-COURS-ANNUITES",
       "interets-sur-capital-initial": "B2-05-A3-03-COURS-EMPRUNT",
       "annuite-confondue-avec-amortissement": "B2-05-A3-03-COURS-EMPRUNT",
       "cout-credit-confondu-avec-total-rembourse": "B2-05-A3-04-COURS-COUT-TABLEUR",
@@ -6417,10 +6569,38 @@
         "donnees": {}
       },
       {
+        "id": "B2-05-A1-07-ILLUSTRATION-LIVRET",
+        "type": "fp-story",
+        "titre": "Illustration : le livret",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B2-05-A1-07-ILLUSTRATION-LIVRET",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-05-A1-07-ILLUSTRATION-LIVRET",
+              "renderer": "illustration",
+              "props": {
+                "image": "/assets/cours/b2-05/v1/livret-interets-composes.webp",
+                "imageAlt": "Infographie « Le livret à 3 % ». 2 000 € placés à 3 % par an, intérêts laissés sur le livret. Après un an, 2 000 × 1,03 = 2 060 € ; après deux ans, 2 060 × 1,03 = 2 121,80 €, les intérêts portant aussi sur les 60 € gagnés ; après dix ans, 2 000 × 1,03¹⁰ ≈ 2 687,83 €. Aux intérêts simples, 2 000 × 1,30 = 2 600 € seulement : il manque les intérêts des intérêts. À la calculatrice : 2000 × 1,03 ^ 10, avec la touche puissance."
+              }
+            },
+            "metadonnees": {
+              "concepts": ["interets-composes", "suite-geometrique"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
         "id": "B2-05-A1-07-COURS-INTERETS-COMPOSES",
         "type": "fp-story",
         "titre": "Cours : intérêts composés et valeur acquise",
-        "duree": 3,
+        "duree": 2,
         "interactif": false,
         "donnees": {
           "recit": {
@@ -6436,28 +6616,28 @@
                   {
                     "kind": "definition",
                     "title": "Capitaliser : multiplier par 1 + t chaque année",
-                    "text": "Un capital C₀ placé au taux annuel t rapporte des intérêts. Aux intérêts simples, ils sont calculés chaque année sur le seul capital de départ. Aux intérêts composés, ils s’ajoutent au capital à la fin de chaque année et rapportent à leur tour : on multiplie par 1 + t chaque année. Le capital Cₙ obtenu au bout de n années s’appelle la valeur acquise. C’est une suite géométrique de raison 1 + t (B2-04). C’est le calcul de la trésorerie d’Hélène.",
-                    "formula": "Intérêts composés : Cₙ = C₀ × (1 + t)ⁿ · intérêts simples : C₀ × (1 + n × t)"
+                    "text": "Chaque année, les intérêts s’ajoutent au capital et rapportent à leur tour.\nCₙ, la valeur acquise : le capital au bout de n années.",
+                    "formula": "Cₙ = C₀ × (1 + t)ⁿ\nIntérêts simples : C₀ × (1 + n × t)"
                   },
                   {
                     "kind": "example",
                     "title": "Pour débuter : le livret à 3 %",
-                    "text": "On place 2 000 € sur un livret à 3 % par an, intérêts laissés sur le livret. C₀ = 2 000 et 1 + t = 1,03.",
+                    "text": "2 000 € sur un livret à 3 % par an, intérêts laissés sur le livret.",
                     "steps": [
-                      "Après un an : 2 000 × 1,03 = 2 060 € ; les intérêts sont de 60 €.",
-                      "Après deux ans : 2 060 × 1,03 = 2 121,80 € ; les intérêts de la deuxième année, 61,80 €, portent sur 2 060 €.",
+                      "Après un an : 2 000 × 1,03 = 2 060 €.",
+                      "Après deux ans : 2 060 × 1,03 = 2 121,80 € ; les intérêts portent aussi sur les 60 € gagnés.",
                       "Après dix ans : 2 000 × 1,03¹⁰ ≈ 2 687,83 €.",
                       "Aux intérêts simples : 2 000 × (1 + 10 × 0,03) = 2 600 € seulement."
                     ]
                   },
                   {
                     "kind": "method",
-                    "title": "Calculer une valeur acquise",
-                    "text": "Pièges : multiplier par le taux au lieu du coefficient (0,03 au lieu de 1,03) ; calculer les intérêts sur le seul capital de départ ; placer une année de trop ou de moins en comptant mal la durée.",
+                    "title": "× 1,03, jamais × 0,03",
+                    "text": "On multiplie par le coefficient, autant de fois qu’il y a d’années.",
                     "steps": [
-                      "Écrire le capital de départ et le taux en décimal.",
-                      "Compter la durée n en années entières de placement.",
-                      "Calculer C₀ × (1 + t)ⁿ avec la touche puissance ; arrondir au centime à la fin.",
+                      "3 % → 1 + t = 1,03.",
+                      "n = nombre d’années de placement.",
+                      "Cₙ = C₀ × (1 + t)ⁿ, arrondi à la fin.",
                       "Intérêts gagnés : Cₙ − C₀."
                     ]
                   }
@@ -6467,7 +6647,35 @@
             "metadonnees": {
               "concepts": ["interets-composes", "suite-geometrique"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
+              "dureeMinutes": 2,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B2-05-A1-08-ILLUSTRATION-FUTUR-PRESENT",
+        "type": "fp-story",
+        "titre": "Illustration : futur et présent",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B2-05-A1-08-ILLUSTRATION-FUTUR-PRESENT",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-05-A1-08-ILLUSTRATION-FUTUR-PRESENT",
+              "renderer": "illustration",
+              "props": {
+                "image": "/assets/cours/b2-05/v1/capitaliser-actualiser.webp",
+                "imageAlt": "Infographie « Futur : ×, présent : ÷ ». Une frise d’aujourd’hui à dans 2 ans, au taux annuel de 10 %. Vers la droite, capitaliser : 1 000 × 1,1² = 1 210 €. Vers la gauche, actualiser : 1 210 ÷ 1,1² = 1 000 €. Formules générales : Cₙ = C₀ × (1 + t)ⁿ et C₀ = Cₙ ÷ (1 + t)ⁿ. À retenir : la valeur actuelle est plus petite."
+              }
+            },
+            "metadonnees": {
+              "concepts": ["valeur-actuelle", "interets-composes"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
               "modalite": "solo",
               "regime": "ouvert"
             }
@@ -6478,7 +6686,7 @@
         "id": "B2-05-A1-08-COURS-VALEUR-ACTUELLE",
         "type": "fp-story",
         "titre": "Cours : valeur actuelle et tableur",
-        "duree": 3,
+        "duree": 2,
         "interactif": false,
         "donnees": {
           "recit": {
@@ -6493,29 +6701,19 @@
                 "blocks": [
                   {
                     "kind": "definition",
-                    "title": "Actualiser : diviser par (1 + t)ⁿ",
-                    "text": "La valeur actuelle d’une somme Cₙ disponible dans n années est le capital C₀ qu’il faut placer aujourd’hui, au taux t, pour obtenir Cₙ. On remonte le temps : on divise par le coefficient, comme pour annuler une hausse (B2-01). Capitaliser, c’est aller vers le futur (× (1 + t)ⁿ) ; actualiser, c’est revenir au présent (÷ (1 + t)ⁿ).",
-                    "formula": "C₀ = Cₙ ÷ (1 + t)ⁿ"
+                    "title": "Futur : ×, présent : ÷",
+                    "text": "La valeur actuelle : ce qu’il faut placer aujourd’hui pour avoir Cₙ dans n années.\nOn remonte le temps : on divise, comme pour annuler une hausse.",
+                    "formula": "C₀ = Cₙ ÷ (1 + t)ⁿ\nCapitaliser : × (1 + t)ⁿ\nActualiser : ÷ (1 + t)ⁿ"
                   },
                   {
                     "kind": "method",
-                    "title": "Au tableur : le taux dans une cellule figée",
-                    "text": "Une valeur de départ, puis une formule recopiée qui multiplie le capital du dessus par 1 + taux. Le taux est rangé dans une cellule à part, figé par des $.",
+                    "title": "La méthode au tableur",
+                    "text": "Une formule, recopiée vers le bas ; le taux figé par des $.",
                     "steps": [
-                      "B2 contient le capital placé ; le taux, écrit 0,03, est en E1.",
-                      "En B3 : =B2*(1+$E$1), puis recopier vers le bas.",
-                      "Intérêts de l’année en C3 : =B3-B2, recopiée.",
-                      "Sans les $, B4 lirait E2, vide : le capital cesserait de grossir."
-                    ]
-                  },
-                  {
-                    "kind": "exam",
-                    "title": "Au CCF : capitaliser ou actualiser ?",
-                    "text": "Lire d’abord le sens de la question. « Que vaudra… dans n ans ? » : on capitalise. « Combien placer aujourd’hui pour avoir… ? » : on actualise. Pièges : multiplier au lieu de diviser ; diviser par 1 + n × t, comme aux intérêts simples.",
-                    "steps": [
-                      "Repérer la somme connue et sa date.",
-                      "Futur connu, présent cherché : ÷ (1 + t)ⁿ.",
-                      "Contrôle : la valeur actuelle est plus petite que la somme future."
+                      "B2 : le capital ; E1 : le taux, écrit 0,03.",
+                      "En B3 : =B2*(1+$E$1), puis recopier.",
+                      "Intérêts de l’année : =B3-B2.",
+                      "Sans $ : =B3*(1+E2), une cellule vide, le capital ne grossit plus."
                     ]
                   }
                 ]
@@ -6528,7 +6726,7 @@
                 "tableur"
               ],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
+              "dureeMinutes": 2,
               "modalite": "solo",
               "regime": "ouvert"
             }
@@ -6576,10 +6774,38 @@
         "donnees": {}
       },
       {
+        "id": "B2-05-A2-02-ILLUSTRATION-VERSEMENTS",
+        "type": "fp-story",
+        "titre": "Illustration : les versements",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B2-05-A2-02-ILLUSTRATION-VERSEMENTS",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-05-A2-02-ILLUSTRATION-VERSEMENTS",
+              "renderer": "illustration",
+              "props": {
+                "image": "/assets/cours/b2-05/v1/frise-des-versements.webp",
+                "imageAlt": "Infographie « Chaque versement a sa durée ». 1 000 € versés à la fin de chacune de trois années, à 2 % par an. Le premier versement, placé deux ans, vaut 1 000 × 1,02² = 1 040,40 € ; le deuxième, placé un an, 1 000 × 1,02 = 1 020 € ; le troisième, pas placé, 1 000 €. Somme en fin d’année 3 : 3 060,40 €, et non 3 000 € : les deux premiers versements ont produit des intérêts."
+              }
+            },
+            "metadonnees": {
+              "concepts": ["annuites", "somme-de-termes"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
         "id": "B2-05-A2-02-COURS-ANNUITES",
         "type": "fp-story",
         "titre": "Cours : suite d’annuités et valeur acquise",
-        "duree": 3,
+        "duree": 2,
         "interactif": false,
         "donnees": {
           "recit": {
@@ -6590,18 +6816,18 @@
               "renderer": "lesson",
               "props": {
                 "title": "Suite d’annuités : additionner des versements placés",
-                "subtitle": "Trace écrite · notion 2 · page 1 sur 2",
+                "subtitle": "Trace écrite · notion 2",
                 "blocks": [
                   {
                     "kind": "definition",
                     "title": "Chaque versement a sa durée",
-                    "text": "Une suite d’annuités est une suite de versements égaux, faits à intervalles réguliers, ici en fin d’année. Sa valeur acquise, à la date du dernier versement, est la somme des valeurs acquises de chaque versement : le premier est placé n − 1 années, le dernier ne rapporte rien. Ces valeurs forment une suite géométrique de raison 1 + t (B2-04), d’où une formule donnée au CCF. C’est l’épargne des machines d’Hélène.",
-                    "formula": "Vₙ = a × ((1 + t)ⁿ − 1) ÷ t · n versements de a, en fin de période"
+                    "text": "Des versements égaux, en fin d’année : le premier rapporte n − 1 ans, le dernier rien.\nValeur acquise : la somme de leurs valeurs, au dernier versement.",
+                    "formula": "Vₙ = a × ((1 + t)ⁿ − 1) ÷ t\nn versements de a, formule donnée au CCF"
                   },
                   {
                     "kind": "example",
                     "title": "Pour débuter : 1 000 € par an à 2 %",
-                    "text": "Trois versements de 1 000 €, en fin d’année, sur un compte à 2 %. Valeur acquise au troisième versement ?",
+                    "text": "Trois versements de 1 000 € en fin d’année, à 2 %. Valeur au troisième versement ?",
                     "steps": [
                       "Le premier est placé deux ans : 1 000 × 1,02² = 1 040,40 €.",
                       "Le deuxième est placé un an : 1 000 × 1,02 = 1 020 €.",
@@ -6611,13 +6837,12 @@
                   },
                   {
                     "kind": "method",
-                    "title": "Calculer la valeur acquise d’une suite d’annuités",
-                    "text": "Pièges : additionner les versements sans leurs intérêts (3 000 € au lieu de 3 060,40 €) ; placer chaque versement pendant toute la durée ; compter un versement de trop ou de moins.",
+                    "title": "× (1 + t), puis + a",
+                    "text": "Une ligne par année : l’épargne grossit, puis le versement arrive.",
                     "steps": [
-                      "Compter les versements n, du premier au dernier inclus.",
-                      "Repérer la date d’évaluation : celle du dernier versement.",
-                      "Appliquer la formule donnée, taux en décimal ; arrondir au centime à la fin.",
-                      "Intérêts gagnés : valeur acquise − n × a."
+                      "Au tableur : =B2*(1+$E$1)+$G$1, recopiée.",
+                      "Intérêts gagnés : Vₙ − n × a.",
+                      "Total des intérêts : =SOMME(…), pas la dernière cellule."
                     ]
                   }
                 ]
@@ -6626,64 +6851,7 @@
             "metadonnees": {
               "concepts": ["annuites", "suite-geometrique", "somme-de-termes"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
-        }
-      },
-      {
-        "id": "B2-05-A2-03-COURS-ANNUITES-TABLEUR",
-        "type": "fp-story",
-        "titre": "Cours : les annuités au tableur",
-        "duree": 3,
-        "interactif": false,
-        "donnees": {
-          "recit": {
-            "id": "B2-05-A2-03-COURS-ANNUITES-TABLEUR",
-            "presentation": {
-              "version": 2,
-              "screenId": "B2-05-A2-03-COURS-ANNUITES-TABLEUR",
-              "renderer": "lesson",
-              "props": {
-                "title": "Les annuités au tableur : une ligne par année",
-                "subtitle": "Trace écrite · notion 2 · page 2 sur 2",
-                "blocks": [
-                  {
-                    "kind": "method",
-                    "title": "Le tableau d’épargne",
-                    "text": "Première ligne : le premier versement. Chaque ligne suivante reprend l’épargne de l’an passé, lui ajoute ses intérêts de l’année, puis le nouveau versement. Taux et versement sont rangés dans deux cellules figées par des $.",
-                    "steps": [
-                      "B2 contient le premier versement ; le taux est en E1, le versement en G1.",
-                      "En B3 : =B2*(1+$E$1)+$G$1, puis recopier vers le bas.",
-                      "Intérêts de l’année en C3 : =B2*$E$1, recopiée.",
-                      "Sans les $, la recopie lit E2 et G2, vides : l’épargne n’augmente plus."
-                    ]
-                  },
-                  {
-                    "kind": "property",
-                    "title": "Total des intérêts : une somme",
-                    "text": "Le total des intérêts gagnés est la somme de la colonne des intérêts, ou la dernière épargne moins le total versé. La dernière cellule de la colonne ne donne que les intérêts d’une seule année.",
-                    "formula": "=SOMME(plage des intérêts) = dernière épargne − n × a"
-                  },
-                  {
-                    "kind": "exam",
-                    "title": "Au CCF : lire la date d’évaluation",
-                    "text": "Un sujet demande souvent la valeur acquise « au dernier versement » avec la formule donnée, puis une formule de tableur à recopier. Pièges : compter le dernier versement comme placé ; oublier les $ ; donner une valeur de la colonne pour le total.",
-                    "steps": [
-                      "Relever a, t et n, puis vérifier la date du dernier versement.",
-                      "Contrôle : la valeur acquise dépasse n × a, d’un écart plausible.",
-                      "Au tableur : une formule, recopiée, taux et versement figés."
-                    ]
-                  }
-                ]
-              }
-            },
-            "metadonnees": {
-              "concepts": ["annuites", "tableur", "somme-de-termes"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
+              "dureeMinutes": 2,
               "modalite": "solo",
               "regime": "ouvert"
             }
@@ -6702,7 +6870,7 @@
         "id": "B2-05-A2-05-ATELIER-ANNUITES",
         "type": "ecran-verrouille",
         "titre": "Exercice 3 — L’épargne des machines",
-        "duree": 11,
+        "duree": 12,
         "interactif": false,
         "donnees": {}
       },
@@ -6710,7 +6878,7 @@
         "id": "B2-05-A2-06-TABLEUR-EPARGNE",
         "type": "ecran-verrouille",
         "titre": "Exercice 4 — L’épargne au tableur",
-        "duree": 10,
+        "duree": 12,
         "interactif": false,
         "donnees": {}
       },
@@ -6795,10 +6963,38 @@
         "donnees": {}
       },
       {
+        "id": "B2-05-A3-03-ILLUSTRATION-ANNUITE",
+        "type": "fp-story",
+        "titre": "Illustration : l’annuité",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B2-05-A3-03-ILLUSTRATION-ANNUITE",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-05-A3-03-ILLUSTRATION-ANNUITE",
+              "renderer": "illustration",
+              "props": {
+                "image": "/assets/cours/b2-05/v1/annuite-decomposee.webp",
+                "imageAlt": "Infographie « Les intérêts d’abord, le reste rembourse ». Emprunt de 10 000 € sur 3 ans à 5 %, annuité constante de 3 672,09 €. Trois barres de même hauteur : les intérêts baissent, 500 €, puis 341,40 €, puis 174,86 € ; l’amortissement monte, 3 172,09 €, puis 3 330,69 €, puis 3 497,23 €. Capital dû : 10 000 € au départ, puis 6 827,91 €, 3 497,22 € et 0 €. L’annuité reste la même, sa composition change."
+              }
+            },
+            "metadonnees": {
+              "concepts": ["tableau-d-amortissement", "annuites"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
         "id": "B2-05-A3-03-COURS-EMPRUNT",
         "type": "fp-story",
         "titre": "Cours : emprunt et tableau d’amortissement",
-        "duree": 3,
+        "duree": 2,
         "interactif": false,
         "donnees": {
           "recit": {
@@ -6814,8 +7010,8 @@
                   {
                     "kind": "definition",
                     "title": "Une annuité paie les intérêts, puis rembourse",
-                    "text": "Un emprunt de capital C, au taux t, sur n années, se rembourse par annuités constantes a. Chaque annuité paie les intérêts de l’année, calculés sur le capital restant dû en début d’année ; le reste, l’amortissement, rembourse le capital : rien à voir avec la dotation aux amortissements d’une immobilisation. Les intérêts baissent donc chaque année, et l’amortissement monte. L’annuité est donnée au CCF par une formule.",
-                    "formula": "a = C × t ÷ (1 − (1 + t)⁻ⁿ) · intérêts = capital restant dû × t · amortissement = a − intérêts"
+                    "text": "Annuité constante = intérêts de l’année + amortissement du capital.\nLes intérêts portent sur le capital restant dû : ils baissent chaque année.",
+                    "formula": "a = C × t ÷ (1 − (1 + t)⁻ⁿ), formule donnée au CCF\nintérêts = capital restant dû × t\namortissement = a − intérêts"
                   },
                   {
                     "kind": "example",
@@ -6830,13 +7026,13 @@
                   },
                   {
                     "kind": "method",
-                    "title": "Remplir le tableau ligne par ligne",
-                    "text": "Pièges : calculer les intérêts chaque année sur le capital emprunté ; prendre l’annuité pour l’amortissement ; oublier de retirer l’amortissement du capital restant dû.",
+                    "title": "Les intérêts d’abord, le reste rembourse",
+                    "text": "Une ligne par année, toujours dans cet ordre.",
                     "steps": [
-                      "Capital dû en début d’année : le capital emprunté, puis la fin d’année précédente.",
-                      "Intérêts : capital dû × t.",
-                      "Amortissement : annuité − intérêts.",
-                      "Capital dû en fin d’année : début − amortissement ; il tombe à 0 à la dernière ligne, à quelques centimes près si l’annuité est arrondie."
+                      "Intérêts = capital dû × t.",
+                      "Amortissement = a − intérêts.",
+                      "Capital dû suivant = capital dû − amortissement.",
+                      "Dernière ligne : 0, à quelques centimes près."
                     ]
                   }
                 ]
@@ -6845,7 +7041,35 @@
             "metadonnees": {
               "concepts": ["tableau-d-amortissement", "annuites"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
+              "dureeMinutes": 2,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B2-05-A3-04-ILLUSTRATION-COUT",
+        "type": "fp-story",
+        "titre": "Illustration : le coût du crédit",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B2-05-A3-04-ILLUSTRATION-COUT",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-05-A3-04-ILLUSTRATION-COUT",
+              "renderer": "illustration",
+              "props": {
+                "image": "/assets/cours/b2-05/v1/cout-du-credit.webp",
+                "imageAlt": "Infographie « Ce que l’on paie en plus ». Emprunt de 10 000 € sur 3 ans à 5 % : 3 × 3 672,09 = 11 016,27 € remboursés pour 10 000 € empruntés. Coût du crédit : 11 016,27 − 10 000 = 1 016,27 €, la somme des intérêts à un centime près. Au tableur, VPM avec le taux 5 %, la durée 3 et le capital −10 000 donne 3 672,09 € : le signe moins rend l’annuité positive ; sans lui, −3 672,09 €."
+              }
+            },
+            "metadonnees": {
+              "concepts": ["cout-du-credit", "tableur"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
               "modalite": "solo",
               "regime": "ouvert"
             }
@@ -6856,7 +7080,7 @@
         "id": "B2-05-A3-04-COURS-COUT-TABLEUR",
         "type": "fp-story",
         "titre": "Cours : coût du crédit et tableur",
-        "duree": 3,
+        "duree": 2,
         "interactif": false,
         "donnees": {
           "recit": {
@@ -6872,28 +7096,18 @@
                   {
                     "kind": "definition",
                     "title": "Le coût du crédit",
-                    "text": "Le coût du crédit est ce que l’emprunteur paie en plus du capital : le total remboursé moins le capital emprunté, hors frais de dossier et assurance. C’est aussi la somme des intérêts du tableau, à quelques centimes près quand l’annuité est arrondie.",
-                    "formula": "Coût = n × a − C = somme des intérêts"
+                    "text": "Ce que l’on paie en plus du capital emprunté.\nC’est aussi la somme des intérêts, à quelques centimes près.",
+                    "formula": "Coût = n × a − C\nhors frais de dossier et assurance"
                   },
                   {
                     "kind": "method",
-                    "title": "Au tableur : VPM et formules recopiées",
-                    "text": "VPM(taux ; durée ; capital) renvoie l’annuité avec la convention du tableur : un capital reçu positif donne une annuité à payer négative. On écrit donc le capital avec un signe moins.",
+                    "title": "VPM : le capital avec un signe moins",
+                    "text": "Une ligne de formules, recopiée ; taux et annuité figés par des $.",
                     "steps": [
-                      "Taux en K1, durée en K2, capital emprunté en K3 : =VPM(K1;K2;-K3).",
-                      "Capital dû en B2 : intérêts =B2*$K$1, recopiée, le taux restant figé en K1.",
-                      "Amortissement : annuité figée moins intérêts ; capital en fin d’année : début moins amortissement.",
+                      "Taux K1, durée K2, capital K3 : =VPM(K1;K2;-K3).",
+                      "Sans le signe moins : une annuité négative.",
+                      "Intérêts : =B2*$K$1, recopiée.",
                       "Coût : annuité × durée − capital."
-                    ]
-                  },
-                  {
-                    "kind": "exam",
-                    "title": "Au CCF : les formules d’un tableau d’amortissement",
-                    "text": "Un sujet donne souvent un tableau à compléter et demande les formules de deux cellules, à recopier vers le bas. Pièges : taux ou annuité non figés ; annuité négative par oubli du signe ; total remboursé donné pour le coût.",
-                    "steps": [
-                      "Nommer chaque colonne en français avant d’écrire sa formule.",
-                      "Figer par des $ ce qui ne change pas d’une ligne à l’autre.",
-                      "Contrôle : dernier capital dû égal à 0 et somme des amortissements égale au capital, à quelques centimes près si l’annuité est arrondie."
                     ]
                   }
                 ]
@@ -6902,7 +7116,7 @@
             "metadonnees": {
               "concepts": ["cout-du-credit", "tableur"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
+              "dureeMinutes": 2,
               "modalite": "solo",
               "regime": "ouvert"
             }

@@ -33,6 +33,7 @@ import {
   COURS_B2_05,
   COURS_B2_06,
   COURS_B3_01,
+  COURS_B1_01,
 } from './factories/contenus-publies';
 import { prefixeDuCours } from './factories/contenus-de-cours.factory';
 import {
@@ -1769,4 +1770,11 @@ seanceComplete(COURS_B3_01, {
   piecesJointesAuCatalogue: ['B3-01-A1-02-COURRIEL'],
   classeursReserves: ['B3-01-A2-01-VOTE-FAMILLE', 'B3-01-A3-02-VOTE-GRAPHIQUE'],
   intervalleLibre: { premier: 34, dernier: 35 },
+});
+
+seanceComplete(COURS_B1_01, {
+  ...TRAME_DES_COURS_B2,
+  questionsNotees: 17,
+  cellulesDesFeuilles: [6, 6],
+  exerciceEnAvance: 'B1-01-A2-04-EXEMPLE-SOIREES',
 });
