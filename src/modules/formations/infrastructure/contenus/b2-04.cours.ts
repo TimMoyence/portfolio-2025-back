@@ -60,9 +60,6 @@ const DONNEES_FICTIVES =
 
 const DOSSIER_DES_ILLUSTRATIONS = '/assets/cours/b2-04/v1';
 
-const AVANT_SA_PAGE =
-  '1 min, avant la trace écrite : faire décrire l’image, la page suivante en donne la règle.';
-
 const RENVOI_A_L_HISTORIQUE = 'B2-04-A1-05-HISTORIQUE';
 const RENVOI_A_LA_BOUTIQUE = 'B2-04-A4-01-SITUATION-BOUTIQUE';
 
@@ -528,7 +525,7 @@ const ACTE_1: moteur.Acte = [
         'Infographie « Pour débuter : le loyer ». Un local loué 900 € par mois en 2025, 15 € de plus chaque année : u₀ = 900 et r = 15. u₁ = 900 + 15 = 915 € en 2026, u₂ = 915 + 15 = 930 € en 2027. Directement, u₁₀ = 900 + 10 × 15 = 1 050 € en 2035, sans calculer les neuf loyers précédents. Le rang n compte les années écoulées depuis 2025 ; un tableau récapitule rang, année, formule et loyer.',
     },
     [
-      AVANT_SA_PAGE,
+      moteur.AVANT_SA_PAGE,
       'Avant de lire : « Pour 2035, faut-il calculer les dix loyers ? » Laisser venir « dix fois 15 € ».',
     ],
   ),
@@ -540,7 +537,7 @@ const ACTE_1: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['suite-arithmetique'],
       notes: moteur.puces(
-        '2 min après l’illustration ; la trace écrite est imprimée dans le livret : on lit et on commente, on ne recopie pas.',
+        moteur.PAGE_APRES_SON_ILLUSTRATION,
         'Faire répéter le moyen mnémotechnique : A comme Arithmétique, A comme Ajouter.',
         'Insister sur le rang 0 : c’est l’année de départ, pas la première année du plan.',
         'Lien au dossier : « L’hypothèse de Marc, est-ce une suite arithmétique ? De quelle raison ? »',
@@ -595,7 +592,7 @@ const ACTE_1: moteur.Acte = [
         'Infographie « Des points alignés ». Les points (n ; uₙ) d’une suite arithmétique sont alignés : uₙ = u₀ + n × r s’écrit r × n + u₀, de la forme y = ax + b, avec la raison r pour pente et u₀ pour ordonnée à l’origine. On ne garde que les rangs entiers. Trois graphiques : r > 0, suite croissante ; r < 0, suite décroissante ; r = 0, suite constante.',
     },
     [
-      AVANT_SA_PAGE,
+      moteur.AVANT_SA_PAGE,
       'Préciser : même forme que la droite d’ajustement du B2-02 (pente ≈ 44), mais pas la même droite : l’hypothèse A part de 826 k€.',
     ],
   ),
@@ -607,7 +604,7 @@ const ACTE_1: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['suite-arithmetique', 'ajustement-affine', 'tableur'],
       notes: moteur.puces(
-        '2 min après l’illustration, enchaînées sur la page 1 : 6 min pour les deux pages et leurs illustrations.',
+        moteur.DEUXIEME_PAGE_APRES_SON_ILLUSTRATION,
         'Relier au vote de rappel : la pente 43,9 de la droite du B2-02 est la raison, arrondie à 44.',
         'Faire taper la formule sans $ sur un poste volontaire, puis la recopier : la colonne se bloque, l’erreur fixe la règle.',
       ),
@@ -916,7 +913,7 @@ const ACTE_2: moteur.Acte = [
         'Infographie « Le livret ». 2 000 € en 2025 à 3 % par an, intérêts laissés sur le livret : u₀ = 2 000 et q = 1,03. u₁ = 2 000 × 1,03 = 2 060 € en 2026, u₂ = 2 060 × 1,03 = 2 121,80 € en 2027, u₁₀ = 2 000 × 1,03¹⁰ ≈ 2 687,83 € en 2035. Erreur classique : 10 × 3 % = 30 %, soit 2 600 €, faux car il manque les intérêts des intérêts. À la calculatrice : 2000 × 1,03 ^ 10.',
     },
     [
-      AVANT_SA_PAGE,
+      moteur.AVANT_SA_PAGE,
       'Question : « Le livret à 3 %, par combien multiplie-t-on chaque année ? » 1,03, pas 0,03. Faire faire u₁₀ à la calculatrice : repérer la touche puissance.',
     ],
   ),
@@ -1301,7 +1298,7 @@ const ACTE_3: moteur.Acte = [
         'Infographie « La tirelire ». 150 € dans une tirelire, 20 € ajoutés par mois : dans combien de mois contiendra-t-elle au moins 200 € ? Algorithme : n ← 0 ; u ← 150 ; Tant que u < 200 : n ← n + 1 ; u ← u + 20 ; Afficher n. Passages : n = 1, u = 170 ; n = 2, u = 190 ; n = 3, u = 210. La condition 210 < 200 est fausse : la boucle s’arrête, l’algorithme affiche 3. La tirelire atteint au moins 200 € au bout de trois mois.',
     },
     [
-      AVANT_SA_PAGE,
+      moteur.AVANT_SA_PAGE,
       'Dérouler la tirelire au tableau, une ligne par passage : c’est le geste de l’exercice 5.',
     ],
   ),
@@ -1367,7 +1364,7 @@ const ACTE_3: moteur.Acte = [
         'Infographie « Les loyers d’un bail ». Loyer annuel de 10 800 € en 2025, puis 180 € de plus chaque année : 10 980 € en 2026, 11 160 € en 2027, 11 340 € en 2028. De 2026 à 2028 : 2028 − 2026 + 1 = 3 termes. Somme : 10 980 + 11 160 + 11 340 = 33 480 €. Au tableur, loyers de 2025 à 2028 en B2:B5 : =SOMME(B3:B5), la plage commence en B3 car 2025 n’est pas demandé.',
     },
     [
-      AVANT_SA_PAGE,
+      moteur.AVANT_SA_PAGE,
       'Question : « De 2026 à 2028 inclus, combien de loyers ? » Trois, pas deux.',
     ],
   ),
@@ -1379,7 +1376,7 @@ const ACTE_3: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['somme-de-termes', 'tableur'],
       notes: moteur.puces(
-        '2 min après l’illustration, enchaînées sur la page 1 : 6 min pour les deux pages et leurs illustrations.',
+        moteur.DEUXIEME_PAGE_APRES_SON_ILLUSTRATION,
         'Insister : un terme est la valeur d’une année, une somme est un total sur plusieurs années.',
       ),
     },
@@ -2099,14 +2096,10 @@ const ACTE_4: moteur.Acte = [
       ],
     ],
   ),
-  moteur.ecranDeRappel(
+  moteur.rappelDeToutLeCours(
     { screenId: 'B2-04-A4-04-RAPPEL', concepts: [...CONCEPTS_DES_SUITES] },
-    'Tous reçoivent les douze questions de la banque : le rappel couvre tout le cours pour chacun.',
     'b2-04-a4-rappel',
-    {
-      questions: QUESTIONS_DU_RAPPEL,
-      obligatoires: QUESTIONS_DU_RAPPEL.map((question) => question.id),
-    },
+    QUESTIONS_DU_RAPPEL,
   ),
   moteur.ficheMemo(
     {
