@@ -78,6 +78,15 @@ export const NOTES_DE_L_EXEMPLE_ETAPE_PAR_ETAPE = [
 export const DEUXIEME_PAGE_DE_COURS =
   '3 min, enchaînées sur la page 1 : 6 min pour les deux pages.';
 
+export const AVANT_SA_PAGE =
+  '1 min, avant la trace écrite : faire décrire l’image, la page suivante en donne la règle.';
+
+export const PAGE_APRES_SON_ILLUSTRATION =
+  '2 min après l’illustration ; la trace écrite est imprimée dans le livret : on lit et on commente, on ne recopie pas.';
+
+export const DEUXIEME_PAGE_APRES_SON_ILLUSTRATION =
+  '2 min après l’illustration, enchaînées sur la page 1 : 6 min pour les deux pages et leurs illustrations.';
+
 export const CORRIGER_PAR_LA_MOINS_REUSSIE =
   'Corriger question par question, en commençant par la moins réussie.';
 

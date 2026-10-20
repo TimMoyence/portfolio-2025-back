@@ -15,7 +15,7 @@
 | Gabarit     | `v3`, déclaré par le contenu et contrôlé par les quatre règles `gabarit-*` de `verifierStructure`                   |
 | Titre servi | « Mathématiques financières : placer, emprunter »                                                                   |
 | Durée       | **180 minutes exactes** (somme des écrans), 4 actes de 49, 39, 47 et 45 minutes, plus 2 pauses de 15 min hors durée |
-| Écrans      | **33**, dont 11 écrans catalogue                                                                                    |
+| Écrans      | **38**, dont 16 écrans catalogue (5 illustrations)                                                                  |
 | Sources     | `docs/donnees-b2-05-sources.md` (espace de travail) : programme officiel, sujets d'examen, données fictives         |
 
 ---
@@ -106,15 +106,13 @@ avant de montrer : le rappel de mémoire précède la synthèse.
 
 Chaque notion suit : **Réfléchir** (mission, réflexion écrite ou vote non noté) → **Comprendre**
 (trace écrite v2 `lesson`, puis exemple guidé `fp-worked` corrigé étape par étape sur son propre
-écran) → **S'exercer** (exercices notés, corrigés sur place). N1 et N3 ont deux pages de 3 minutes,
-N2 une seule page de 3 minutes. Chaque page se lit d'un coup d'œil : une définition en deux lignes,
+écran) → **S'exercer** (exercices notés, corrigés sur place). N1 et N3 ont deux pages de 2 minutes,
+N2 une seule page de 2 minutes, chacune précédée d'1 minute sur l'illustration de son exemple (§ 8). Chaque page se lit d'un coup d'œil : une définition en deux lignes,
 formules une par ligne ; un exemple pour débuter hors du dossier (livret, emprunt d'un particulier) ;
 une méthode en trois ou quatre lignes courtes, titrée par un moyen mnémotechnique (« × 1,03, jamais
 × 0,03 », « Futur : ×, présent : ÷ », « × (1 + t), puis + a », « Les intérêts d'abord, le reste
 rembourse », « VPM : le capital avec un signe moins »). Pas d'encadré « Au CCF » dans les traces
-écrites : les pièges sont travaillés dans les exercices et leurs corrections. Chaque page de 3
-minutes sera précédée de l'illustration de son exemple (§ 8.4) : à l'arrivée des images, la page
-passe à 2 minutes et l'illustration prend la troisième.
+écrites : les pièges sont travaillés dans les exercices et leurs corrections.
 
 Chaque exercice annonce ses temps dans les notes formateur, sous la forme
 `• Temps : réflexion N min · travail N min · correction N min`, dont la somme est la durée de
@@ -122,7 +120,7 @@ l'écran. La correction se dévoile sur l'écran de l'exercice (`correctionSurPl
 
 ### 2.4 Règles de structure
 
-Le cours passe les règles communes et les quatre règles du gabarit v3 : 33 écrans ≤ 40,
+Le cours passe les règles communes et les quatre règles du gabarit v3 : 38 écrans ≤ 40,
 180 minutes ≤ 180, chaque trace écrite précédée d'une réflexion et suivie d'un exercice, chaque
 exercice avec ses trois temps et sa correction sur place, mini-situation (`fp-escape`) sans trace
 écrite après elle. Exposition continue de 6 minutes au plus.
@@ -130,7 +128,7 @@ exercice avec ses trois temps et sa correction sur place, mini-situation (`fp-es
 ### 2.5 Diffusion
 
 Catalogue : l'accroche, la synthèse des acquis, le dossier de financement, les cinq pages de trace
-écrite, le graphique d'un emprunt type, le dossier de la mini-situation et la fiche mémo. Tout le
+écrite et leurs cinq illustrations, le graphique d'un emprunt type, le dossier de la mini-situation et la fiche mémo. Tout le
 reste est servi en séance. Aucun écran catalogue ne porte une réponse : le graphique montre un
 emprunt de 100 000 € qui n'est demandé dans aucun exercice.
 
@@ -149,41 +147,46 @@ Colonne « Brique · rendu » : valeur de la colonne `brique` ; les écrans « v
 `fp-story` avec une présentation v2. « I » = interactif. « Q » = questions fermées notées (vote,
 numérique, classement) portées par l'écran.
 
-| Rang | Identifiant                         | Min | Brique · rendu               |  I  |   Q | Diffusion |
-| ---: | ----------------------------------- | --: | ---------------------------- | :-: | --: | --------- |
-|    1 | B2-05-A1-01-RAPPEL-SUITE            |   3 | `fp-recall`                  |  I  |   1 | seance    |
-|    2 | B2-05-A1-02-ACCROCHE                |   1 | `fp-story` · v2 `hero`       |     |   0 | catalogue |
-|    3 | B2-05-A1-03-VOTE-ACQUIS             |   4 | `fp-vote`                    |  I  |   0 | seance    |
-|    4 | B2-05-A1-04-ACQUIS                  |   2 | `fp-story` · v2 `comparison` |     |   0 | catalogue |
-|    5 | B2-05-A1-05-DOSSIER                 |   2 | `fp-story` · v2 `table`      |     |   0 | catalogue |
-|    6 | B2-05-A1-06-MISSION                 |   6 | `fp-pro`                     |  I  |   0 | seance    |
-|    7 | B2-05-A1-07-COURS-INTERETS-COMPOSES |   3 | `fp-story` · v2 `lesson`     |     |   0 | catalogue |
-|    8 | B2-05-A1-08-COURS-VALEUR-ACTUELLE   |   3 | `fp-story` · v2 `lesson`     |     |   0 | catalogue |
-|    9 | B2-05-A1-09-EXEMPLE-PLACEMENT       |   6 | `fp-worked`                  |  I  |   0 | seance    |
-|   10 | B2-05-A1-10-ATELIER-PLACEMENT       |  10 | `questionnaire`              |  I  |   4 | seance    |
-|   11 | B2-05-A1-11-TABLEUR-PLACEMENT       |   8 | `fp-sheet`                   |  I  |   0 | seance    |
-|   12 | B2-05-A1-12-JALON                   |   1 | `fp-pulse`                   |     |   0 | seance    |
-|   13 | B2-05-A2-01-REFLEXION-VERSEMENTS    |   5 | `fp-story` · v2 `reflection` |  I  |   0 | seance    |
-|   14 | B2-05-A2-02-COURS-ANNUITES          |   3 | `fp-story` · v2 `lesson`     |     |   0 | catalogue |
-|   15 | B2-05-A2-04-EXEMPLE-ANNUITES        |   6 | `fp-worked`                  |  I  |   0 | seance    |
-|   16 | B2-05-A2-05-ATELIER-ANNUITES        |  12 | `questionnaire`              |  I  |   4 | seance    |
-|   17 | B2-05-A2-06-TABLEUR-EPARGNE         |  12 | `fp-sheet`                   |  I  |   0 | seance    |
-|   18 | B2-05-A2-07-JALON                   |   1 | `fp-pulse`                   |     |   0 | seance    |
-|   19 | B2-05-A3-01-GRAPHIQUE               |   2 | `fp-story` · v2 `chart`      |     |   0 | catalogue |
-|   20 | B2-05-A3-02-VOTE-EMPRUNT            |   4 | `fp-vote`                    |  I  |   0 | seance    |
-|   21 | B2-05-A3-03-COURS-EMPRUNT           |   3 | `fp-story` · v2 `lesson`     |     |   0 | catalogue |
-|   22 | B2-05-A3-04-COURS-COUT-TABLEUR      |   3 | `fp-story` · v2 `lesson`     |     |   0 | catalogue |
-|   23 | B2-05-A3-05-EXEMPLE-EMPRUNT         |   6 | `fp-worked`                  |  I  |   0 | seance    |
-|   24 | B2-05-A3-06-ATELIER-EMPRUNT         |  10 | `questionnaire`              |  I  |   4 | seance    |
-|   25 | B2-05-A3-07-TABLEAU-AMORTISSEMENT   |   8 | `fp-table-build`             |  I  |   0 | seance    |
-|   26 | B2-05-A3-08-DEFI-IA                 |  10 | `fp-challenge`               |  I  |   0 | seance    |
-|   27 | B2-05-A3-09-JALON                   |   1 | `fp-pulse`                   |     |   0 | seance    |
-|   28 | B2-05-A4-01-SITUATION-CAMIONNETTE   |   3 | `fp-story` · v2 `table`      |     |   0 | catalogue |
-|   29 | B2-05-A4-02-TABLEUR-CAMIONNETTE     |  16 | `fp-sheet`                   |  I  |   0 | seance    |
-|   30 | B2-05-A4-03-COFFRE-CAMIONNETTE      |  14 | `fp-escape`                  |  I  |   0 | seance    |
-|   31 | B2-05-A4-04-RAPPEL                  |   6 | `fp-spaced`                  |  I  |   0 | seance    |
-|   32 | B2-05-A4-05-FICHE-MEMO              |   2 | `fp-story` · v2 `grid`       |     |   0 | catalogue |
-|   33 | B2-05-A4-06-BILLET-DE-SORTIE        |   4 | `fp-exit`                    |  I  |   1 | seance    |
+| Rang | Identifiant                            | Min | Brique · rendu                 |  I  |   Q | Diffusion |
+| ---: | -------------------------------------- | --: | ------------------------------ | :-: | --: | --------- |
+|    1 | B2-05-A1-01-RAPPEL-SUITE               |   3 | `fp-recall`                    |  I  |   1 | seance    |
+|    2 | B2-05-A1-02-ACCROCHE                   |   1 | `fp-story` · v2 `hero`         |     |   0 | catalogue |
+|    3 | B2-05-A1-03-VOTE-ACQUIS                |   4 | `fp-vote`                      |  I  |   0 | seance    |
+|    4 | B2-05-A1-04-ACQUIS                     |   2 | `fp-story` · v2 `comparison`   |     |   0 | catalogue |
+|    5 | B2-05-A1-05-DOSSIER                    |   2 | `fp-story` · v2 `table`        |     |   0 | catalogue |
+|    6 | B2-05-A1-06-MISSION                    |   6 | `fp-pro`                       |  I  |   0 | seance    |
+|    7 | B2-05-A1-07-ILLUSTRATION-LIVRET        |   1 | `fp-story` · v2 `illustration` |     |   0 | catalogue |
+|    8 | B2-05-A1-07-COURS-INTERETS-COMPOSES    |   2 | `fp-story` · v2 `lesson`       |     |   0 | catalogue |
+|    9 | B2-05-A1-08-ILLUSTRATION-FUTUR-PRESENT |   1 | `fp-story` · v2 `illustration` |     |   0 | catalogue |
+|   10 | B2-05-A1-08-COURS-VALEUR-ACTUELLE      |   2 | `fp-story` · v2 `lesson`       |     |   0 | catalogue |
+|   11 | B2-05-A1-09-EXEMPLE-PLACEMENT          |   6 | `fp-worked`                    |  I  |   0 | seance    |
+|   12 | B2-05-A1-10-ATELIER-PLACEMENT          |  10 | `questionnaire`                |  I  |   4 | seance    |
+|   13 | B2-05-A1-11-TABLEUR-PLACEMENT          |   8 | `fp-sheet`                     |  I  |   0 | seance    |
+|   14 | B2-05-A1-12-JALON                      |   1 | `fp-pulse`                     |     |   0 | seance    |
+|   15 | B2-05-A2-01-REFLEXION-VERSEMENTS       |   5 | `fp-story` · v2 `reflection`   |  I  |   0 | seance    |
+|   16 | B2-05-A2-02-ILLUSTRATION-VERSEMENTS    |   1 | `fp-story` · v2 `illustration` |     |   0 | catalogue |
+|   17 | B2-05-A2-02-COURS-ANNUITES             |   2 | `fp-story` · v2 `lesson`       |     |   0 | catalogue |
+|   18 | B2-05-A2-04-EXEMPLE-ANNUITES           |   6 | `fp-worked`                    |  I  |   0 | seance    |
+|   19 | B2-05-A2-05-ATELIER-ANNUITES           |  12 | `questionnaire`                |  I  |   4 | seance    |
+|   20 | B2-05-A2-06-TABLEUR-EPARGNE            |  12 | `fp-sheet`                     |  I  |   0 | seance    |
+|   21 | B2-05-A2-07-JALON                      |   1 | `fp-pulse`                     |     |   0 | seance    |
+|   22 | B2-05-A3-01-GRAPHIQUE                  |   2 | `fp-story` · v2 `chart`        |     |   0 | catalogue |
+|   23 | B2-05-A3-02-VOTE-EMPRUNT               |   4 | `fp-vote`                      |  I  |   0 | seance    |
+|   24 | B2-05-A3-03-ILLUSTRATION-ANNUITE       |   1 | `fp-story` · v2 `illustration` |     |   0 | catalogue |
+|   25 | B2-05-A3-03-COURS-EMPRUNT              |   2 | `fp-story` · v2 `lesson`       |     |   0 | catalogue |
+|   26 | B2-05-A3-04-ILLUSTRATION-COUT          |   1 | `fp-story` · v2 `illustration` |     |   0 | catalogue |
+|   27 | B2-05-A3-04-COURS-COUT-TABLEUR         |   2 | `fp-story` · v2 `lesson`       |     |   0 | catalogue |
+|   28 | B2-05-A3-05-EXEMPLE-EMPRUNT            |   6 | `fp-worked`                    |  I  |   0 | seance    |
+|   29 | B2-05-A3-06-ATELIER-EMPRUNT            |  10 | `questionnaire`                |  I  |   4 | seance    |
+|   30 | B2-05-A3-07-TABLEAU-AMORTISSEMENT      |   8 | `fp-table-build`               |  I  |   0 | seance    |
+|   31 | B2-05-A3-08-DEFI-IA                    |  10 | `fp-challenge`                 |  I  |   0 | seance    |
+|   32 | B2-05-A3-09-JALON                      |   1 | `fp-pulse`                     |     |   0 | seance    |
+|   33 | B2-05-A4-01-SITUATION-CAMIONNETTE      |   3 | `fp-story` · v2 `table`        |     |   0 | catalogue |
+|   34 | B2-05-A4-02-TABLEUR-CAMIONNETTE        |  16 | `fp-sheet`                     |  I  |   0 | seance    |
+|   35 | B2-05-A4-03-COFFRE-CAMIONNETTE         |  14 | `fp-escape`                    |  I  |   0 | seance    |
+|   36 | B2-05-A4-04-RAPPEL                     |   6 | `fp-spaced`                    |  I  |   0 | seance    |
+|   37 | B2-05-A4-05-FICHE-MEMO                 |   2 | `fp-story` · v2 `grid`         |     |   0 | catalogue |
+|   38 | B2-05-A4-06-BILLET-DE-SORTIE           |   4 | `fp-exit`                      |  I  |   1 | seance    |
 
 Rythme : 150 minutes interactives, 30 d'exposition, exposition continue de 6 minutes au plus.
 
@@ -232,14 +235,24 @@ Rythme : 150 minutes interactives, 30 d'exposition, exposition continue de 6 min
   suffit-il (`emprunt`).
 - Papier : trois lignes d'écriture dans le livret.
 
-#### A1-07 · `B2-05-A1-07-COURS-INTERETS-COMPOSES` — 3 min · v2 `lesson` · catalogue
+#### A1-07 · `B2-05-A1-07-ILLUSTRATION-LIVRET` — 1 min · v2 `illustration` · catalogue
+
+- Titre public : « Illustration : le livret »
+- Infographie M1 de l'exemple pour débuter : 2 000 € à 3 %, 2 060 €, 2 121,80 €, puis 2 687,83 € après dix ans ; intérêts simples barrés, 2 600 €.
+
+#### A1-07 · `B2-05-A1-07-COURS-INTERETS-COMPOSES` — 2 min · v2 `lesson` · catalogue
 
 - Titre public : « Cours : intérêts composés et valeur acquise »
 - Page 1 sur 2 : définition en deux lignes (Cₙ = C₀ × (1 + t)ⁿ, puis les intérêts simples) ; exemple
   pour débuter (le livret à 3 %) ; méthode « × 1,03, jamais × 0,03 » : coefficient, durée, valeur
   acquise, intérêts gagnés.
 
-#### A1-08 · `B2-05-A1-08-COURS-VALEUR-ACTUELLE` — 3 min · v2 `lesson` · catalogue
+#### A1-08 · `B2-05-A1-08-ILLUSTRATION-FUTUR-PRESENT` — 1 min · v2 `illustration` · catalogue
+
+- Titre public : « Illustration : futur et présent »
+- Infographie M2 : 1 000 € capitalisés en 1 210 € sur 2 ans à 10 %, puis actualisés en sens inverse ; la valeur actuelle est plus petite.
+
+#### A1-08 · `B2-05-A1-08-COURS-VALEUR-ACTUELLE` — 2 min · v2 `lesson` · catalogue
 
 - Titre public : « Cours : valeur actuelle et tableur »
 - Page 2 sur 2 : définition « Futur : ×, présent : ÷ » en deux lignes, C₀ = Cₙ ÷ (1 + t)ⁿ (lien
@@ -287,7 +300,12 @@ Rythme : 150 minutes interactives, 30 d'exposition, exposition continue de 6 min
 - Un stagiaire place les cinq versements pendant cinq ans (5 × 6 000 × 1,03⁵). Dire s'il a raison,
   versement par versement. Temps « réfléchir » de N2.
 
-#### A2-02 · `B2-05-A2-02-COURS-ANNUITES` — 3 min · v2 `lesson` · catalogue
+#### A2-02 · `B2-05-A2-02-ILLUSTRATION-VERSEMENTS` — 1 min · v2 `illustration` · catalogue
+
+- Titre public : « Illustration : les versements »
+- Infographie M3 : trois versements de 1 000 € à 2 %, placés deux ans, un an, puis pas du tout : 1 040,40 + 1 020 + 1 000 = 3 060,40 €.
+
+#### A2-02 · `B2-05-A2-02-COURS-ANNUITES` — 2 min · v2 `lesson` · catalogue
 
 - Titre public : « Cours : suite d’annuités et valeur acquise »
 - Page unique : définition en deux lignes (chaque versement a sa durée, valeur acquise au dernier
@@ -344,7 +362,12 @@ Rythme : 150 minutes interactives, 30 d'exposition, exposition continue de 6 min
   (`annuite-confondue-avec-amortissement`) ; le coût d'un crédit
   (`cout-credit-confondu-avec-total-rembourse`).
 
-#### A3-03 · `B2-05-A3-03-COURS-EMPRUNT` — 3 min · v2 `lesson` · catalogue
+#### A3-03 · `B2-05-A3-03-ILLUSTRATION-ANNUITE` — 1 min · v2 `illustration` · catalogue
+
+- Titre public : « Illustration : l’annuité »
+- Infographie M4 : 10 000 € sur 3 ans à 5 %, annuité 3 672,09 € ; les intérêts baissent, l'amortissement monte, le capital dû tombe à 0.
+
+#### A3-03 · `B2-05-A3-03-COURS-EMPRUNT` — 2 min · v2 `lesson` · catalogue
 
 - Titre public : « Cours : emprunt et tableau d’amortissement »
 - Page 1 sur 2 : définition en deux lignes (annuité = intérêts + amortissement, intérêts sur le
@@ -353,7 +376,12 @@ Rythme : 150 minutes interactives, 30 d'exposition, exposition continue de 6 min
   rembourse », une ligne du tableau par étape. La mise en garde sur la dotation aux amortissements
   passe dans les notes formateur.
 
-#### A3-04 · `B2-05-A3-04-COURS-COUT-TABLEUR` — 3 min · v2 `lesson` · catalogue
+#### A3-04 · `B2-05-A3-04-ILLUSTRATION-COUT` — 1 min · v2 `illustration` · catalogue
+
+- Titre public : « Illustration : le coût du crédit »
+- Infographie M5 : 11 016,27 € remboursés pour 10 000 € empruntés, coût 1 016,27 € ; `=VPM(5%;3;-10000)`, le signe moins rend l'annuité positive.
+
+#### A3-04 · `B2-05-A3-04-COURS-COUT-TABLEUR` — 2 min · v2 `lesson` · catalogue
 
 - Titre public : « Cours : coût du crédit et tableur »
 - Page 2 sur 2 : coût du crédit en deux lignes, n × a − C ; méthode « VPM : le capital avec un
@@ -540,12 +568,24 @@ nul : − (va + vc) ÷ npm ; nombre de périodes nul : `#DIV/0!` ; nombre d'argu
 
 ### 8.1 Principe
 
-Aucune image : les dossiers sont rendus par `table`, l'emprunt type par `chart`, les feuilles par
-`fp-sheet`, le tableau d'amortissement par `fp-table-build`.
+Cinq infographies, une par exemple pour débuter, chacune projetée sur un écran `illustration` placé
+juste avant sa page de trace écrite. Le reste est rendu sans image : les dossiers par `table`,
+l'emprunt type par `chart`, les feuilles par `fp-sheet`, le tableau d'amortissement par
+`fp-table-build`.
 
 ### 8.2 Catalogue des médias
 
-Aucun média catalogué.
+Chaque PNG d'origine (1 536 × 1 024 px) est converti en WebP à la même taille et servi depuis
+`/assets/cours/b2-05/v1/`. Le catalogue est stocké avec le cours (`Cours.medias`) et contrôlé par la
+règle `media-sans-licence`.
+
+| Id  | Écran | Fichier source (page)      | Original                     | Auteur, date       | Licence      | Dérivé servi                    | Attribution affichée                                                             |
+| --- | ----- | -------------------------- | ---------------------------- | ------------------ | ------------ | ------------------------------- | -------------------------------------------------------------------------------- |
+| M1  | A1-07 | production propre du cours | PNG 1 536 × 1 024 px, 1,6 Mo | Asili Design, 2026 | CC BY-SA 4.0 | `livret-interets-composes.webp` | « Le livret à 3 % · Asili Design, 2026 · CC BY-SA 4.0 »                          |
+| M2  | A1-08 | production propre du cours | PNG 1 536 × 1 024 px, 1,6 Mo | Asili Design, 2026 | CC BY-SA 4.0 | `capitaliser-actualiser.webp`   | « Futur : ×, présent : ÷ · Asili Design, 2026 · CC BY-SA 4.0 »                   |
+| M3  | A2-02 | production propre du cours | PNG 1 536 × 1 024 px, 1,6 Mo | Asili Design, 2026 | CC BY-SA 4.0 | `frise-des-versements.webp`     | « Chaque versement a sa durée · Asili Design, 2026 · CC BY-SA 4.0 »              |
+| M4  | A3-03 | production propre du cours | PNG 1 536 × 1 024 px, 1,7 Mo | Asili Design, 2026 | CC BY-SA 4.0 | `annuite-decomposee.webp`       | « Les intérêts d’abord, le reste rembourse · Asili Design, 2026 · CC BY-SA 4.0 » |
+| M5  | A3-04 | production propre du cours | PNG 1 536 × 1 024 px, 1,7 Mo | Asili Design, 2026 | CC BY-SA 4.0 | `cout-du-credit.webp`           | « Ce que l’on paie en plus · Asili Design, 2026 · CC BY-SA 4.0 »                 |
 
 ### 8.3 Sources des données
 
@@ -555,15 +595,12 @@ Aucun média catalogué.
   partie C), recensés dans `docs/programme-bts-cg-maths-officiel.md` ; détail dans
   `docs/donnees-b2-05-sources.md`.
 
-### 8.4 Illustrations prévues
+### 8.4 Illustrations livrées
 
-Cinq infographies, une par page de trace écrite, à produire au format des illustrations du B2-04
-(PNG 1 536 × 1 024 px, converti en WebP, servi depuis `/assets/cours/b2-05/v1/`). Chacune sera
-projetée sur un écran `illustration` d'1 minute, placé juste avant sa page ; la page passera alors de
-3 à 2 minutes, la durée du cours restant de 180 minutes. Tant que les images ne sont pas livrées,
-aucun écran d'illustration n'est servi et le § 8.2 reste vide.
+Brief de chaque infographie, à suivre si une image est refaite. Chacune est projetée sur un écran
+`illustration` d'1 minute, juste avant sa page de 2 minutes.
 
-| Id  | Écran prévu                                    | Fichier prévu                   | Contenu de l'infographie                                                                                                                                                                                                                                                            |
+| Id  | Écran                                          | Fichier                         | Contenu de l'infographie                                                                                                                                                                                                                                                            |
 | --- | ---------------------------------------------- | ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | M1  | `B2-05-A1-07-ILLUSTRATION-LIVRET`, avant A1-07 | `livret-interets-composes.webp` | « Le livret à 3 % » : 2 000 € ; après un an 2 060 € ; après deux ans 2 121,80 €, les intérêts portent sur 2 060 € ; après dix ans 2 000 × 1,03¹⁰ ≈ 2 687,83 €. Comparaison barrée : intérêts simples, 2 600 € seulement. Touche puissance.                                          |
 | M2  | `B2-05-A1-08-ILLUSTRATION-FUTUR-PRESENT`       | `capitaliser-actualiser.webp`   | « Futur : ×, présent : ÷ » : une frise aujourd'hui → dans 2 ans à 10 %. Flèche vers la droite : 1 000 × 1,1² = 1 210 € (capitaliser). Flèche vers la gauche : 1 210 ÷ 1,1² = 1 000 € (actualiser). Contrôle : la valeur actuelle est plus petite.                                   |

@@ -40,6 +40,8 @@ import {
 } from '../../../../common/domain/nombres/arrondi';
 import { termes } from './feuilles';
 
+const DOSSIER_DES_ILLUSTRATIONS = '/assets/cours/b2-05/v1';
+
 const ACTE_1: moteur.Acte = [
   {
     screenId: 'B2-05-A1-01-RAPPEL-SUITE',
@@ -293,16 +295,32 @@ const ACTE_1: moteur.Acte = [
       ],
     },
   },
+  moteur.ecranDIllustration(
+    {
+      screenId: 'B2-05-A1-07-ILLUSTRATION-LIVRET',
+      titre: 'Illustration : le livret',
+      concepts: ['interets-composes', 'suite-geometrique'],
+    },
+    DOSSIER_DES_ILLUSTRATIONS,
+    {
+      fichier: 'livret-interets-composes.webp',
+      imageAlt:
+        'Infographie « Le livret à 3 % ». 2 000 € placés à 3 % par an, intérêts laissés sur le livret. Après un an, 2 000 × 1,03 = 2 060 € ; après deux ans, 2 060 × 1,03 = 2 121,80 €, les intérêts portant aussi sur les 60 € gagnés ; après dix ans, 2 000 × 1,03¹⁰ ≈ 2 687,83 €. Aux intérêts simples, 2 000 × 1,30 = 2 600 € seulement : il manque les intérêts des intérêts. À la calculatrice : 2000 × 1,03 ^ 10, avec la touche puissance.',
+    },
+    [
+      moteur.AVANT_SA_PAGE,
+      'Avant de lire : « 3 % pendant 10 ans, est-ce 30 % ? » Laisser venir les intérêts des intérêts.',
+    ],
+  ),
   moteur.ecranV2(
     {
       screenId: 'B2-05-A1-07-COURS-INTERETS-COMPOSES',
       titre: 'Cours : intérêts composés et valeur acquise',
       diffusion: 'catalogue',
-      dureeMinutes: 3,
+      dureeMinutes: 2,
       concepts: ['interets-composes', 'suite-geometrique'],
       notes: moteur.puces(
-        '3 min ; la trace écrite est imprimée dans le livret : on lit et on commente, on ne recopie pas.',
-        'Avant l’exemple, demander : « 3 % pendant 10 ans, est-ce 30 % ? » Laisser venir les intérêts des intérêts.',
+        moteur.PAGE_APRES_SON_ILLUSTRATION,
         'Faire répéter le moyen mnémotechnique : × 1,03, jamais × 0,03.',
         'Relier au B2-04 : le capital placé est une suite géométrique de raison 1 + t.',
         'Lien au dossier : « La trésorerie d’Hélène, placée combien d’années avant le chantier ? »',
@@ -344,15 +362,32 @@ const ACTE_1: moteur.Acte = [
       ],
     },
   ),
+  moteur.ecranDIllustration(
+    {
+      screenId: 'B2-05-A1-08-ILLUSTRATION-FUTUR-PRESENT',
+      titre: 'Illustration : futur et présent',
+      concepts: ['valeur-actuelle', 'interets-composes'],
+    },
+    DOSSIER_DES_ILLUSTRATIONS,
+    {
+      fichier: 'capitaliser-actualiser.webp',
+      imageAlt:
+        'Infographie « Futur : ×, présent : ÷ ». Une frise d’aujourd’hui à dans 2 ans, au taux annuel de 10 %. Vers la droite, capitaliser : 1 000 × 1,1² = 1 210 €. Vers la gauche, actualiser : 1 210 ÷ 1,1² = 1 000 €. Formules générales : Cₙ = C₀ × (1 + t)ⁿ et C₀ = Cₙ ÷ (1 + t)ⁿ. À retenir : la valeur actuelle est plus petite.',
+    },
+    [
+      moteur.AVANT_SA_PAGE,
+      'Question : « 1 210 € dans deux ans, combien aujourd’hui ? » On divise : la valeur actuelle est plus petite.',
+    ],
+  ),
   moteur.ecranV2(
     {
       screenId: 'B2-05-A1-08-COURS-VALEUR-ACTUELLE',
       titre: 'Cours : valeur actuelle et tableur',
       diffusion: 'catalogue',
-      dureeMinutes: 3,
+      dureeMinutes: 2,
       concepts: ['valeur-actuelle', 'evolution-reciproque', 'tableur'],
       notes: moteur.puces(
-        moteur.DEUXIEME_PAGE_DE_COURS,
+        moteur.DEUXIEME_PAGE_APRES_SON_ILLUSTRATION,
         'Faire répéter le moyen mnémotechnique : vers le futur, on multiplie ; vers le présent, on divise.',
         'Relier au vote de rappel : annuler une hausse, c’est diviser par son coefficient ; actualiser, c’est annuler n hausses.',
         'Faire taper la formule sans $ sur un poste volontaire, puis la recopier : la colonne se fige, l’erreur fixe la règle.',
@@ -648,15 +683,32 @@ const ACTE_2: moteur.Acte = [
       renvoi: RENVOI_AU_DOSSIER,
     },
   ),
+  moteur.ecranDIllustration(
+    {
+      screenId: 'B2-05-A2-02-ILLUSTRATION-VERSEMENTS',
+      titre: 'Illustration : les versements',
+      concepts: ['annuites', 'somme-de-termes'],
+    },
+    DOSSIER_DES_ILLUSTRATIONS,
+    {
+      fichier: 'frise-des-versements.webp',
+      imageAlt:
+        'Infographie « Chaque versement a sa durée ». 1 000 € versés à la fin de chacune de trois années, à 2 % par an. Le premier versement, placé deux ans, vaut 1 000 × 1,02² = 1 040,40 € ; le deuxième, placé un an, 1 000 × 1,02 = 1 020 € ; le troisième, pas placé, 1 000 €. Somme en fin d’année 3 : 3 060,40 €, et non 3 000 € : les deux premiers versements ont produit des intérêts.',
+    },
+    [
+      moteur.AVANT_SA_PAGE,
+      'Question : « Trois versements de 1 000 €, donc 3 000 € ? » Non : chacun a rapporté selon sa durée.',
+    ],
+  ),
   moteur.ecranV2(
     {
       screenId: 'B2-05-A2-02-COURS-ANNUITES',
       titre: 'Cours : suite d’annuités et valeur acquise',
       diffusion: 'catalogue',
-      dureeMinutes: 3,
+      dureeMinutes: 2,
       concepts: ['annuites', 'suite-geometrique', 'somme-de-termes'],
       notes: moteur.puces(
-        '3 min ; garder la réflexion précédente sous les yeux.',
+        moteur.PAGE_APRES_SON_ILLUSTRATION,
         'Faire tracer au tableau une frise de 2026 à 2030, une flèche par versement jusqu’à fin 2030.',
         'Faire répéter le moyen mnémotechnique : « × (1 + t), puis + a » : l’épargne de l’an passé grossit, puis le versement arrive.',
         'Question : « Le total des intérêts, c’est la dernière ligne de la colonne ? » Non : une somme.',
@@ -1015,15 +1067,32 @@ const ACTE_3: moteur.Acte = [
       },
     },
   },
+  moteur.ecranDIllustration(
+    {
+      screenId: 'B2-05-A3-03-ILLUSTRATION-ANNUITE',
+      titre: 'Illustration : l’annuité',
+      concepts: ['tableau-d-amortissement', 'annuites'],
+    },
+    DOSSIER_DES_ILLUSTRATIONS,
+    {
+      fichier: 'annuite-decomposee.webp',
+      imageAlt:
+        'Infographie « Les intérêts d’abord, le reste rembourse ». Emprunt de 10 000 € sur 3 ans à 5 %, annuité constante de 3 672,09 €. Trois barres de même hauteur : les intérêts baissent, 500 €, puis 341,40 €, puis 174,86 € ; l’amortissement monte, 3 172,09 €, puis 3 330,69 €, puis 3 497,23 €. Capital dû : 10 000 € au départ, puis 6 827,91 €, 3 497,22 € et 0 €. L’annuité reste la même, sa composition change.',
+    },
+    [
+      moteur.AVANT_SA_PAGE,
+      'Question : « L’annuité ne change pas : pourquoi les intérêts baissent-ils ? » Le capital dû baisse.',
+    ],
+  ),
   moteur.ecranV2(
     {
       screenId: 'B2-05-A3-03-COURS-EMPRUNT',
       titre: 'Cours : emprunt et tableau d’amortissement',
       diffusion: 'catalogue',
-      dureeMinutes: 3,
+      dureeMinutes: 2,
       concepts: ['tableau-d-amortissement', 'annuites'],
       notes: moteur.puces(
-        '3 min ; la trace écrite est imprimée dans le livret.',
+        moteur.PAGE_APRES_SON_ILLUSTRATION,
         'Remplir au tableau la première ligne de l’exemple, puis la deuxième : faire dire sur quel capital portent les intérêts.',
         'Faire répéter le moyen mnémotechnique : les intérêts d’abord, le reste rembourse.',
         'Prévenir : l’amortissement d’un emprunt n’a rien à voir avec la dotation aux amortissements d’une immobilisation.',
@@ -1067,15 +1136,32 @@ const ACTE_3: moteur.Acte = [
       ],
     },
   ),
+  moteur.ecranDIllustration(
+    {
+      screenId: 'B2-05-A3-04-ILLUSTRATION-COUT',
+      titre: 'Illustration : le coût du crédit',
+      concepts: ['cout-du-credit', 'tableur'],
+    },
+    DOSSIER_DES_ILLUSTRATIONS,
+    {
+      fichier: 'cout-du-credit.webp',
+      imageAlt:
+        'Infographie « Ce que l’on paie en plus ». Emprunt de 10 000 € sur 3 ans à 5 % : 3 × 3 672,09 = 11 016,27 € remboursés pour 10 000 € empruntés. Coût du crédit : 11 016,27 − 10 000 = 1 016,27 €, la somme des intérêts à un centime près. Au tableur, VPM avec le taux 5 %, la durée 3 et le capital −10 000 donne 3 672,09 € : le signe moins rend l’annuité positive ; sans lui, −3 672,09 €.',
+    },
+    [
+      moteur.AVANT_SA_PAGE,
+      'Avant de lire : faire calculer 3 × 3 672,09 au tableau, puis demander combien on paie en plus.',
+    ],
+  ),
   moteur.ecranV2(
     {
       screenId: 'B2-05-A3-04-COURS-COUT-TABLEUR',
       titre: 'Cours : coût du crédit et tableur',
       diffusion: 'catalogue',
-      dureeMinutes: 3,
+      dureeMinutes: 2,
       concepts: ['cout-du-credit', 'tableur'],
       notes: moteur.puces(
-        moteur.DEUXIEME_PAGE_DE_COURS,
+        moteur.DEUXIEME_PAGE_APRES_SON_ILLUSTRATION,
         'Faire répéter le moyen mnémotechnique : VPM prend le capital avec un signe moins.',
         'Faire taper VPM sans le signe moins sur un poste volontaire : l’annuité sort négative, l’erreur fixe la règle.',
         'Question : « Le coût du crédit, c’est ce que je rembourse ? » Non : ce que je rembourse en plus.',
@@ -1483,10 +1569,18 @@ const REMEDIATIONS: ContenuDeCours['remediations'] = {
   [VPM_NON_SIGNE]: 'B2-05-A3-04-COURS-COUT-TABLEUR',
 };
 
+const ILLUSTRATIONS = [
+  ['M1', 'livret-interets-composes.webp', 'Le livret à 3 %'],
+  ['M2', 'capitaliser-actualiser.webp', 'Futur : ×, présent : ÷'],
+  ['M3', 'frise-des-versements.webp', 'Chaque versement a sa durée'],
+  ['M4', 'annuite-decomposee.webp', 'Les intérêts d’abord, le reste rembourse'],
+  ['M5', 'cout-du-credit.webp', 'Ce que l’on paie en plus'],
+] as const;
+
 export const COURS_B2_05 = moteur.coursB2(
   [ACTE_1, ACTE_2, ACTE_3, ACTE_4],
   REMEDIATIONS,
-  [],
+  moteur.mediasDesIllustrations(DOSSIER_DES_ILLUSTRATIONS, ILLUSTRATIONS),
   {
     slug: 'b2-05-mathematiques-financieres',
     titre: 'Mathématiques financières : placer, emprunter',
