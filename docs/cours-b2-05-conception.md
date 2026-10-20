@@ -583,7 +583,7 @@ règle `media-sans-licence`.
 | --- | ----- | -------------------------- | ---------------------------- | ------------------ | ------------ | ------------------------------- | -------------------------------------------------------------------------------- |
 | M1  | A1-07 | production propre du cours | PNG 1 536 × 1 024 px, 1,6 Mo | Asili Design, 2026 | CC BY-SA 4.0 | `livret-interets-composes.webp` | « Le livret à 3 % · Asili Design, 2026 · CC BY-SA 4.0 »                          |
 | M2  | A1-08 | production propre du cours | PNG 1 536 × 1 024 px, 1,6 Mo | Asili Design, 2026 | CC BY-SA 4.0 | `capitaliser-actualiser.webp`   | « Futur : ×, présent : ÷ · Asili Design, 2026 · CC BY-SA 4.0 »                   |
-| M3  | A2-02 | production propre du cours | PNG 1 536 × 1 024 px, 1,6 Mo | Asili Design, 2026 | CC BY-SA 4.0 | `frise-des-versements.webp`     | « Chaque versement a sa durée · Asili Design, 2026 · CC BY-SA 4.0 »              |
+| M3  | A2-02 | production propre du cours | PNG 1 536 × 1 024 px, 1,7 Mo | Asili Design, 2026 | CC BY-SA 4.0 | `frise-des-versements.webp`     | « Chaque versement a sa durée · Asili Design, 2026 · CC BY-SA 4.0 »              |
 | M4  | A3-03 | production propre du cours | PNG 1 536 × 1 024 px, 1,7 Mo | Asili Design, 2026 | CC BY-SA 4.0 | `annuite-decomposee.webp`       | « Les intérêts d’abord, le reste rembourse · Asili Design, 2026 · CC BY-SA 4.0 » |
 | M5  | A3-04 | production propre du cours | PNG 1 536 × 1 024 px, 1,7 Mo | Asili Design, 2026 | CC BY-SA 4.0 | `cout-du-credit.webp`           | « Ce que l’on paie en plus · Asili Design, 2026 · CC BY-SA 4.0 »                 |
 
