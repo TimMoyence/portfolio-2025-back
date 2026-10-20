@@ -428,6 +428,19 @@ export function ecranDeRappel(
   };
 }
 
+export function rappelDeToutLeCours(
+  socle: Pick<SocleDEcran, 'screenId' | 'concepts'>,
+  rappelId: string,
+  questions: AuMoinsUnModifiable<VoteDuCours>,
+): EcranDeRappel {
+  return ecranDeRappel(
+    socle,
+    'Tous reçoivent les douze questions de la banque : le rappel couvre tout le cours pour chacun.',
+    rappelId,
+    { questions, obligatoires: questions.map((question) => question.id) },
+  );
+}
+
 export function ficheMemo(
   { screenId, titre, concepts }: SocleNomme,
   items: readonly unknown[],

@@ -375,17 +375,13 @@ export const ACTE_4: moteur.Acte = [
       ],
     ],
   ),
-  moteur.ecranDeRappel(
+  moteur.rappelDeToutLeCours(
     {
       screenId: 'B2-05-A4-04-RAPPEL',
       concepts: [...CONCEPTS_DES_MATHEMATIQUES_FINANCIERES],
     },
-    'Tous reçoivent les douze questions de la banque : le rappel couvre tout le cours pour chacun.',
     'b2-05-a4-rappel',
-    {
-      questions: QUESTIONS_DU_RAPPEL,
-      obligatoires: QUESTIONS_DU_RAPPEL.map((question) => question.id),
-    },
+    QUESTIONS_DU_RAPPEL,
   ),
   moteur.ficheMemo(
     {
