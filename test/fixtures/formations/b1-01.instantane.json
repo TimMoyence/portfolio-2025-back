@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "9debb48d9e65b31249d390b767da16b7cb22bdc915f1c8dfafce374587200891",
+  "empreinte": "f379ceb1bf127aec61455efed5bbea80e0e4eac29179fb9909ba0b518f6a5316",
   "sujet": {
     "id": "b1-01-proportions-pourcentages",
     "titre": "Proportions et pourcentages",
@@ -232,10 +232,38 @@
         }
       },
       {
+        "id": "B1-01-A1-06-ILLUSTRATION-CLASSE",
+        "type": "fp-story",
+        "titre": "Illustration : la classe de 25",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B1-01-A1-06-ILLUSTRATION-CLASSE",
+            "presentation": {
+              "version": 2,
+              "screenId": "B1-01-A1-06-ILLUSTRATION-CLASSE",
+              "renderer": "illustration",
+              "props": {
+                "image": "/assets/cours/b1-01/v1/classe-alternants.webp",
+                "imageAlt": "Infographie « Pour débuter : la classe de 25 ». Une classe de 25 étudiants, dont 10 en alternance, représentés par 25 silhouettes dont 10 colorées. La partie, 10 alternants, se divise par le tout, 25 étudiants : p = 10 ÷ 25 = 0,4, soit 40 %. Moyen mnémotechnique : partie en haut, tout en bas. Encadré : 60 % de la classe font 0,6 × 25 = 15 étudiants."
+              }
+            },
+            "metadonnees": {
+              "concepts": ["proportion", "pourcentage"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
         "id": "B1-01-A1-06-COURS-PROPORTION",
         "type": "fp-story",
         "titre": "Cours : proportion et pourcentage",
-        "duree": 3,
+        "duree": 2,
         "interactif": false,
         "donnees": {
           "recit": {
@@ -280,7 +308,35 @@
             "metadonnees": {
               "concepts": ["proportion", "pourcentage"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
+              "dureeMinutes": 2,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B1-01-A1-07-ILLUSTRATION-PARMI",
+        "type": "fp-story",
+        "titre": "Illustration : parmi qui ?",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B1-01-A1-07-ILLUSTRATION-PARMI",
+            "presentation": {
+              "version": 2,
+              "screenId": "B1-01-A1-07-ILLUSTRATION-PARMI",
+              "renderer": "illustration",
+              "props": {
+                "image": "/assets/cours/b1-01/v1/parmi-qui.webp",
+                "imageAlt": "Infographie « Parmi qui ? ». Un lycée de 800 élèves, dont 200 en STMG, dont 120 filles. Les 120 filles font 120 ÷ 200 = 60 % des élèves de STMG, mais 120 ÷ 800 = 15 % des élèves du lycée : même partie, autre tout, autre pourcentage. Le tout s’appelle la population de référence. Encart tableur : la part s’écrit =B2/$B$6, le total figé par des dollars."
+              }
+            },
+            "metadonnees": {
+              "concepts": ["proportion", "tableur"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
               "modalite": "solo",
               "regime": "ouvert"
             }
@@ -291,7 +347,7 @@
         "id": "B1-01-A1-07-COURS-REFERENCE-TABLEUR",
         "type": "fp-story",
         "titre": "Cours : population de référence et tableur",
-        "duree": 3,
+        "duree": 2,
         "interactif": false,
         "donnees": {
           "recit": {
@@ -335,7 +391,7 @@
             "metadonnees": {
               "concepts": ["proportion", "tableur"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
+              "dureeMinutes": 2,
               "modalite": "solo",
               "regime": "ouvert"
             }
@@ -634,10 +690,38 @@
         "renvoi": "B1-01-A1-04-DOSSIER"
       },
       {
+        "id": "B1-01-A2-02-ILLUSTRATION-SALLE",
+        "type": "fp-story",
+        "titre": "Illustration : la part d’une part",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B1-01-A2-02-ILLUSTRATION-SALLE",
+            "presentation": {
+              "version": 2,
+              "screenId": "B1-01-A2-02-ILLUSTRATION-SALLE",
+              "renderer": "illustration",
+              "props": {
+                "image": "/assets/cours/b1-01/v1/salle-de-spectacle.webp",
+                "imageAlt": "Infographie « La part d’une part ». Une salle de 200 spectateurs : 30 % ont moins de 18 ans, soit 60 ; parmi eux, 40 % ont une place gratuite, soit 24. Part de la salle : 0,30 × 0,40 = 0,12, soit 12 %, et 24 ÷ 200 = 0,12. L’addition 30 % + 40 % = 70 % est barrée. Moyen mnémotechnique : parmi, je multiplie."
+              }
+            },
+            "metadonnees": {
+              "concepts": ["proportion"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
         "id": "B1-01-A2-02-COURS-PROPORTION-DE-PROPORTION",
         "type": "fp-story",
         "titre": "Cours : proportion de proportion",
-        "duree": 3,
+        "duree": 2,
         "interactif": false,
         "donnees": {
           "recit": {
@@ -682,7 +766,35 @@
             "metadonnees": {
               "concepts": ["proportion"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
+              "dureeMinutes": 2,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B1-01-A2-03-ILLUSTRATION-DEUX-CLASSES",
+        "type": "fp-story",
+        "titre": "Illustration : deux classes, un taux",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B1-01-A2-03-ILLUSTRATION-DEUX-CLASSES",
+            "presentation": {
+              "version": 2,
+              "screenId": "B1-01-A2-03-ILLUSTRATION-DEUX-CLASSES",
+              "renderer": "illustration",
+              "props": {
+                "image": "/assets/cours/b1-01/v1/deux-classes.webp",
+                "imageAlt": "Infographie « Deux classes, un taux ». Classe A : 20 élèves, 50 % reçus, soit 10 ; classe B : 30 élèves, 80 % reçus, soit 24. Taux global : 34 reçus sur 50 élèves, soit 68 %. La moyenne simple des deux taux, 65 %, est barrée : la classe B, plus nombreuse, pèse plus. Moyen mnémotechnique : des personnes, pas des pourcentages."
+              }
+            },
+            "metadonnees": {
+              "concepts": ["moyenne-ponderee"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
               "modalite": "solo",
               "regime": "ouvert"
             }
@@ -693,7 +805,7 @@
         "id": "B1-01-A2-03-COURS-TAUX-GLOBAL",
         "type": "fp-story",
         "titre": "Cours : taux global et moyenne pondérée",
-        "duree": 3,
+        "duree": 2,
         "interactif": false,
         "donnees": {
           "recit": {
@@ -738,7 +850,7 @@
             "metadonnees": {
               "concepts": ["moyenne-ponderee"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
+              "dureeMinutes": 2,
               "modalite": "solo",
               "regime": "ouvert"
             }
@@ -1093,10 +1205,38 @@
         }
       },
       {
+        "id": "B1-01-A3-02-ILLUSTRATION-CODE",
+        "type": "fp-story",
+        "titre": "Illustration : points ou pourcentage ?",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B1-01-A3-02-ILLUSTRATION-CODE",
+            "presentation": {
+              "version": 2,
+              "screenId": "B1-01-A3-02-ILLUSTRATION-CODE",
+              "renderer": "illustration",
+              "props": {
+                "image": "/assets/cours/b1-01/v1/code-de-la-route.webp",
+                "imageAlt": "Infographie « Points ou pourcentage ? ». Le taux de réussite au code passe de 60 % en 2025 à 66 % en 2026 : l’écart est de 66 − 60 = 6 points. En évolution, (66 − 60) ÷ 60 = 0,10, soit + 10 %. L’écriture « + 6 % » est barrée. Moyen mnémotechnique : deux pourcentages qu’on soustrait, ce sont des points."
+              }
+            },
+            "metadonnees": {
+              "concepts": ["point-de-pourcentage", "taux-evolution"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
         "id": "B1-01-A3-02-COURS-POINTS",
         "type": "fp-story",
         "titre": "Cours : proportion, évolution et points",
-        "duree": 3,
+        "duree": 2,
         "interactif": false,
         "donnees": {
           "recit": {
@@ -1140,7 +1280,35 @@
             "metadonnees": {
               "concepts": ["point-de-pourcentage", "taux-evolution"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
+              "dureeMinutes": 2,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B1-01-A3-03-ILLUSTRATION-ETIQUETTE",
+        "type": "fp-story",
+        "titre": "Illustration : une marge, deux taux",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B1-01-A3-03-ILLUSTRATION-ETIQUETTE",
+            "presentation": {
+              "version": 2,
+              "screenId": "B1-01-A3-03-ILLUSTRATION-ETIQUETTE",
+              "renderer": "illustration",
+              "props": {
+                "image": "/assets/cours/b1-01/v1/etiquette-marge-marque.webp",
+                "imageAlt": "Infographie « Une marge, deux taux ». Un tee-shirt acheté 10 € HT et vendu 25 € HT : la marge est de 15 €. Taux de marge : 15 ÷ 10 = 150 %, la marge rapportée au coût d’achat. Taux de marque : 15 ÷ 25 = 60 %, la marge rapportée au prix de vente. Moyen mnémotechnique : la marque se lit sur l’étiquette, celle du prix de vente."
+              }
+            },
+            "metadonnees": {
+              "concepts": ["pourcentage"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
               "modalite": "solo",
               "regime": "ouvert"
             }
@@ -1151,7 +1319,7 @@
         "id": "B1-01-A3-03-COURS-MARGE-MARQUE",
         "type": "fp-story",
         "titre": "Cours : taux de marge et taux de marque",
-        "duree": 3,
+        "duree": 2,
         "interactif": false,
         "donnees": {
           "recit": {
@@ -1196,7 +1364,7 @@
             "metadonnees": {
               "concepts": ["pourcentage"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
+              "dureeMinutes": 2,
               "modalite": "solo",
               "regime": "ouvert"
             }
@@ -2158,10 +2326,45 @@
         "reflexion": null
       },
       {
+        "id": "B1-01-A1-06-ILLUSTRATION-CLASSE",
+        "type": "fp-story",
+        "titre": "Illustration : la classe de 25",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B1-01-A1-06-ILLUSTRATION-CLASSE",
+            "presentation": {
+              "version": 2,
+              "screenId": "B1-01-A1-06-ILLUSTRATION-CLASSE",
+              "renderer": "illustration",
+              "props": {
+                "image": "/assets/cours/b1-01/v1/classe-alternants.webp",
+                "imageAlt": "Infographie « Pour débuter : la classe de 25 ». Une classe de 25 étudiants, dont 10 en alternance, représentés par 25 silhouettes dont 10 colorées. La partie, 10 alternants, se divise par le tout, 25 étudiants : p = 10 ÷ 25 = 0,4, soit 40 %. Moyen mnémotechnique : partie en haut, tout en bas. Encadré : 60 % de la classe font 0,6 × 25 = 15 étudiants."
+              }
+            },
+            "metadonnees": {
+              "concepts": ["proportion", "pourcentage"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 1 min, avant la trace écrite : faire décrire l’image, la page suivante en donne la règle.\n• Avant de lire : « 10 sur 25, c’est plus ou moins de la moitié ? »",
+        "diffusion": "catalogue",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null,
+        "reflexion": null
+      },
+      {
         "id": "B1-01-A1-06-COURS-PROPORTION",
         "type": "fp-story",
         "titre": "Cours : proportion et pourcentage",
-        "duree": 3,
+        "duree": 2,
         "interactif": false,
         "donnees": {
           "recit": {
@@ -2206,13 +2409,48 @@
             "metadonnees": {
               "concepts": ["proportion", "pourcentage"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
+              "dureeMinutes": 2,
               "modalite": "solo",
               "regime": "ouvert"
             }
           }
         },
-        "notes": "• 3 min ; la trace écrite est imprimée dans le livret : on lit et on commente, on ne recopie pas.\n• Avant l’exemple, demander : « 10 sur 25, c’est plus ou moins de la moitié ? »\n• Faire répéter le moyen mnémotechnique : partie en haut, tout en bas.\n• Lien au dossier : « 10 alternants sur 40 salariés : quel calcul ? »",
+        "notes": "• 2 min après l’illustration ; la trace écrite est imprimée dans le livret : on lit et on commente, on ne recopie pas.\n• Faire répéter le moyen mnémotechnique : partie en haut, tout en bas.\n• Lien au dossier : « 10 alternants sur 40 salariés : quel calcul ? »",
+        "diffusion": "catalogue",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null,
+        "reflexion": null
+      },
+      {
+        "id": "B1-01-A1-07-ILLUSTRATION-PARMI",
+        "type": "fp-story",
+        "titre": "Illustration : parmi qui ?",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B1-01-A1-07-ILLUSTRATION-PARMI",
+            "presentation": {
+              "version": 2,
+              "screenId": "B1-01-A1-07-ILLUSTRATION-PARMI",
+              "renderer": "illustration",
+              "props": {
+                "image": "/assets/cours/b1-01/v1/parmi-qui.webp",
+                "imageAlt": "Infographie « Parmi qui ? ». Un lycée de 800 élèves, dont 200 en STMG, dont 120 filles. Les 120 filles font 120 ÷ 200 = 60 % des élèves de STMG, mais 120 ÷ 800 = 15 % des élèves du lycée : même partie, autre tout, autre pourcentage. Le tout s’appelle la population de référence. Encart tableur : la part s’écrit =B2/$B$6, le total figé par des dollars."
+              }
+            },
+            "metadonnees": {
+              "concepts": ["proportion", "tableur"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 1 min, avant la trace écrite : faire décrire l’image, la page suivante en donne la règle.\n• Question : « Les 120 filles, c’est 60 % ou 15 % ? » Les deux : tout dépend du tout.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -2224,7 +2462,7 @@
         "id": "B1-01-A1-07-COURS-REFERENCE-TABLEUR",
         "type": "fp-story",
         "titre": "Cours : population de référence et tableur",
-        "duree": 3,
+        "duree": 2,
         "interactif": false,
         "donnees": {
           "recit": {
@@ -2268,13 +2506,13 @@
             "metadonnees": {
               "concepts": ["proportion", "tableur"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
+              "dureeMinutes": 2,
               "modalite": "solo",
               "regime": "ouvert"
             }
           }
         },
-        "notes": "• 3 min, enchaînées sur la page 1 : 6 min pour les deux pages.\n• Faire répéter le moyen mnémotechnique : « parmi qui ? » devant chaque pourcentage du dossier.\n• Faire taper la formule sans $ sur un poste volontaire, puis la recopier : l’erreur fixe la règle.",
+        "notes": "• 2 min après l’illustration, enchaînées sur la page 1 : 6 min pour les deux pages et leurs illustrations.\n• Faire répéter le moyen mnémotechnique : « parmi qui ? » devant chaque pourcentage du dossier.\n• Faire taper la formule sans $ sur un poste volontaire, puis la recopier : l’erreur fixe la règle.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -2809,10 +3047,45 @@
         }
       },
       {
+        "id": "B1-01-A2-02-ILLUSTRATION-SALLE",
+        "type": "fp-story",
+        "titre": "Illustration : la part d’une part",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B1-01-A2-02-ILLUSTRATION-SALLE",
+            "presentation": {
+              "version": 2,
+              "screenId": "B1-01-A2-02-ILLUSTRATION-SALLE",
+              "renderer": "illustration",
+              "props": {
+                "image": "/assets/cours/b1-01/v1/salle-de-spectacle.webp",
+                "imageAlt": "Infographie « La part d’une part ». Une salle de 200 spectateurs : 30 % ont moins de 18 ans, soit 60 ; parmi eux, 40 % ont une place gratuite, soit 24. Part de la salle : 0,30 × 0,40 = 0,12, soit 12 %, et 24 ÷ 200 = 0,12. L’addition 30 % + 40 % = 70 % est barrée. Moyen mnémotechnique : parmi, je multiplie."
+              }
+            },
+            "metadonnees": {
+              "concepts": ["proportion"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 1 min, avant la trace écrite : faire décrire l’image, la page suivante en donne la règle.\n• Question : « Les 40 %, ce sont 40 % de qui ? » Des moins de 18 ans, pas de la salle.",
+        "diffusion": "catalogue",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null,
+        "reflexion": null
+      },
+      {
         "id": "B1-01-A2-02-COURS-PROPORTION-DE-PROPORTION",
         "type": "fp-story",
         "titre": "Cours : proportion de proportion",
-        "duree": 3,
+        "duree": 2,
         "interactif": false,
         "donnees": {
           "recit": {
@@ -2857,13 +3130,48 @@
             "metadonnees": {
               "concepts": ["proportion"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
+              "dureeMinutes": 2,
               "modalite": "solo",
               "regime": "ouvert"
             }
           }
         },
-        "notes": "• 3 min ; garder la réflexion précédente sous les yeux.\n• Question : « 30 % + 40 % = 70 % de la salle ? » Non : il n’y a que 24 personnes.\n• Faire répéter le moyen mnémotechnique : « parmi », je multiplie.",
+        "notes": "• 2 min après l’illustration ; la trace écrite est imprimée dans le livret : on lit et on commente, on ne recopie pas.\n• Question : « 30 % + 40 % = 70 % de la salle ? » Non : il n’y a que 24 personnes.\n• Faire répéter le moyen mnémotechnique : « parmi », je multiplie.",
+        "diffusion": "catalogue",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null,
+        "reflexion": null
+      },
+      {
+        "id": "B1-01-A2-03-ILLUSTRATION-DEUX-CLASSES",
+        "type": "fp-story",
+        "titre": "Illustration : deux classes, un taux",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B1-01-A2-03-ILLUSTRATION-DEUX-CLASSES",
+            "presentation": {
+              "version": 2,
+              "screenId": "B1-01-A2-03-ILLUSTRATION-DEUX-CLASSES",
+              "renderer": "illustration",
+              "props": {
+                "image": "/assets/cours/b1-01/v1/deux-classes.webp",
+                "imageAlt": "Infographie « Deux classes, un taux ». Classe A : 20 élèves, 50 % reçus, soit 10 ; classe B : 30 élèves, 80 % reçus, soit 24. Taux global : 34 reçus sur 50 élèves, soit 68 %. La moyenne simple des deux taux, 65 %, est barrée : la classe B, plus nombreuse, pèse plus. Moyen mnémotechnique : des personnes, pas des pourcentages."
+              }
+            },
+            "metadonnees": {
+              "concepts": ["moyenne-ponderee"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 1 min, avant la trace écrite : faire décrire l’image, la page suivante en donne la règle.\n• Question : « Pourquoi pas 65 % ? » La classe B, plus nombreuse, pèse plus.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -2875,7 +3183,7 @@
         "id": "B1-01-A2-03-COURS-TAUX-GLOBAL",
         "type": "fp-story",
         "titre": "Cours : taux global et moyenne pondérée",
-        "duree": 3,
+        "duree": 2,
         "interactif": false,
         "donnees": {
           "recit": {
@@ -2920,13 +3228,13 @@
             "metadonnees": {
               "concepts": ["moyenne-ponderee"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
+              "dureeMinutes": 2,
               "modalite": "solo",
               "regime": "ouvert"
             }
           }
         },
-        "notes": "• 3 min, enchaînées sur la page 1 : 6 min pour les deux pages.\n• Faire répéter le moyen mnémotechnique : des personnes, pas des pourcentages.\n• Relier à la question 3 de la mission : la moyenne de Théo.",
+        "notes": "• 2 min après l’illustration, enchaînées sur la page 1 : 6 min pour les deux pages et leurs illustrations.\n• Faire répéter le moyen mnémotechnique : des personnes, pas des pourcentages.\n• Relier à la question 3 de la mission : la moyenne de Théo.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -3601,10 +3909,45 @@
         "reflexion": null
       },
       {
+        "id": "B1-01-A3-02-ILLUSTRATION-CODE",
+        "type": "fp-story",
+        "titre": "Illustration : points ou pourcentage ?",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B1-01-A3-02-ILLUSTRATION-CODE",
+            "presentation": {
+              "version": 2,
+              "screenId": "B1-01-A3-02-ILLUSTRATION-CODE",
+              "renderer": "illustration",
+              "props": {
+                "image": "/assets/cours/b1-01/v1/code-de-la-route.webp",
+                "imageAlt": "Infographie « Points ou pourcentage ? ». Le taux de réussite au code passe de 60 % en 2025 à 66 % en 2026 : l’écart est de 66 − 60 = 6 points. En évolution, (66 − 60) ÷ 60 = 0,10, soit + 10 %. L’écriture « + 6 % » est barrée. Moyen mnémotechnique : deux pourcentages qu’on soustrait, ce sont des points."
+              }
+            },
+            "metadonnees": {
+              "concepts": ["point-de-pourcentage", "taux-evolution"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 1 min, avant la trace écrite : faire décrire l’image, la page suivante en donne la règle.\n• Question : « De 60 % à 66 %, + 6 % ou + 10 % ? » Laisser venir les deux réponses avant de lire.",
+        "diffusion": "catalogue",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null,
+        "reflexion": null
+      },
+      {
         "id": "B1-01-A3-02-COURS-POINTS",
         "type": "fp-story",
         "titre": "Cours : proportion, évolution et points",
-        "duree": 3,
+        "duree": 2,
         "interactif": false,
         "donnees": {
           "recit": {
@@ -3648,13 +3991,48 @@
             "metadonnees": {
               "concepts": ["point-de-pourcentage", "taux-evolution"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
+              "dureeMinutes": 2,
               "modalite": "solo",
               "regime": "ouvert"
             }
           }
         },
-        "notes": "• 3 min ; la trace écrite est imprimée dans le livret.\n• Relier au diagnostic A1-03 : une évolution se divise par la valeur de départ.\n• Faire répéter le moyen mnémotechnique : deux % qu’on soustrait, ce sont des points.\n• Les évolutions reviennent au B1-02.",
+        "notes": "• 2 min après l’illustration ; la trace écrite est imprimée dans le livret : on lit et on commente, on ne recopie pas.\n• Relier au diagnostic A1-03 : une évolution se divise par la valeur de départ.\n• Faire répéter le moyen mnémotechnique : deux % qu’on soustrait, ce sont des points.\n• Les évolutions reviennent au B1-02.",
+        "diffusion": "catalogue",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null,
+        "reflexion": null
+      },
+      {
+        "id": "B1-01-A3-03-ILLUSTRATION-ETIQUETTE",
+        "type": "fp-story",
+        "titre": "Illustration : une marge, deux taux",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B1-01-A3-03-ILLUSTRATION-ETIQUETTE",
+            "presentation": {
+              "version": 2,
+              "screenId": "B1-01-A3-03-ILLUSTRATION-ETIQUETTE",
+              "renderer": "illustration",
+              "props": {
+                "image": "/assets/cours/b1-01/v1/etiquette-marge-marque.webp",
+                "imageAlt": "Infographie « Une marge, deux taux ». Un tee-shirt acheté 10 € HT et vendu 25 € HT : la marge est de 15 €. Taux de marge : 15 ÷ 10 = 150 %, la marge rapportée au coût d’achat. Taux de marque : 15 ÷ 25 = 60 %, la marge rapportée au prix de vente. Moyen mnémotechnique : la marque se lit sur l’étiquette, celle du prix de vente."
+              }
+            },
+            "metadonnees": {
+              "concepts": ["pourcentage"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 1 min, avant la trace écrite : faire décrire l’image, la page suivante en donne la règle.\n• Question : « 15 € de marge : 150 % ou 60 % ? » Les deux, selon le prix par lequel on divise.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -3666,7 +4044,7 @@
         "id": "B1-01-A3-03-COURS-MARGE-MARQUE",
         "type": "fp-story",
         "titre": "Cours : taux de marge et taux de marque",
-        "duree": 3,
+        "duree": 2,
         "interactif": false,
         "donnees": {
           "recit": {
@@ -3711,13 +4089,13 @@
             "metadonnees": {
               "concepts": ["pourcentage"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
+              "dureeMinutes": 2,
               "modalite": "solo",
               "regime": "ouvert"
             }
           }
         },
-        "notes": "• 3 min, enchaînées sur la page 1 : 6 min pour les deux pages.\n• Faire répéter le moyen mnémotechnique : la marque se lit sur l’étiquette.\n• Lien au dossier : « La console à 150 € et 240 € : quel taux voit le client ? »",
+        "notes": "• 2 min après l’illustration, enchaînées sur la page 1 : 6 min pour les deux pages et leurs illustrations.\n• Faire répéter le moyen mnémotechnique : la marque se lit sur l’étiquette.\n• Lien au dossier : « La console à 150 € et 240 € : quel taux voit le client ? »",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -5154,10 +5532,38 @@
         "donnees": {}
       },
       {
+        "id": "B1-01-A1-06-ILLUSTRATION-CLASSE",
+        "type": "fp-story",
+        "titre": "Illustration : la classe de 25",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B1-01-A1-06-ILLUSTRATION-CLASSE",
+            "presentation": {
+              "version": 2,
+              "screenId": "B1-01-A1-06-ILLUSTRATION-CLASSE",
+              "renderer": "illustration",
+              "props": {
+                "image": "/assets/cours/b1-01/v1/classe-alternants.webp",
+                "imageAlt": "Infographie « Pour débuter : la classe de 25 ». Une classe de 25 étudiants, dont 10 en alternance, représentés par 25 silhouettes dont 10 colorées. La partie, 10 alternants, se divise par le tout, 25 étudiants : p = 10 ÷ 25 = 0,4, soit 40 %. Moyen mnémotechnique : partie en haut, tout en bas. Encadré : 60 % de la classe font 0,6 × 25 = 15 étudiants."
+              }
+            },
+            "metadonnees": {
+              "concepts": ["proportion", "pourcentage"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
         "id": "B1-01-A1-06-COURS-PROPORTION",
         "type": "fp-story",
         "titre": "Cours : proportion et pourcentage",
-        "duree": 3,
+        "duree": 2,
         "interactif": false,
         "donnees": {
           "recit": {
@@ -5202,7 +5608,35 @@
             "metadonnees": {
               "concepts": ["proportion", "pourcentage"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
+              "dureeMinutes": 2,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B1-01-A1-07-ILLUSTRATION-PARMI",
+        "type": "fp-story",
+        "titre": "Illustration : parmi qui ?",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B1-01-A1-07-ILLUSTRATION-PARMI",
+            "presentation": {
+              "version": 2,
+              "screenId": "B1-01-A1-07-ILLUSTRATION-PARMI",
+              "renderer": "illustration",
+              "props": {
+                "image": "/assets/cours/b1-01/v1/parmi-qui.webp",
+                "imageAlt": "Infographie « Parmi qui ? ». Un lycée de 800 élèves, dont 200 en STMG, dont 120 filles. Les 120 filles font 120 ÷ 200 = 60 % des élèves de STMG, mais 120 ÷ 800 = 15 % des élèves du lycée : même partie, autre tout, autre pourcentage. Le tout s’appelle la population de référence. Encart tableur : la part s’écrit =B2/$B$6, le total figé par des dollars."
+              }
+            },
+            "metadonnees": {
+              "concepts": ["proportion", "tableur"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
               "modalite": "solo",
               "regime": "ouvert"
             }
@@ -5213,7 +5647,7 @@
         "id": "B1-01-A1-07-COURS-REFERENCE-TABLEUR",
         "type": "fp-story",
         "titre": "Cours : population de référence et tableur",
-        "duree": 3,
+        "duree": 2,
         "interactif": false,
         "donnees": {
           "recit": {
@@ -5257,7 +5691,7 @@
             "metadonnees": {
               "concepts": ["proportion", "tableur"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
+              "dureeMinutes": 2,
               "modalite": "solo",
               "regime": "ouvert"
             }
@@ -5305,10 +5739,38 @@
         "donnees": {}
       },
       {
+        "id": "B1-01-A2-02-ILLUSTRATION-SALLE",
+        "type": "fp-story",
+        "titre": "Illustration : la part d’une part",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B1-01-A2-02-ILLUSTRATION-SALLE",
+            "presentation": {
+              "version": 2,
+              "screenId": "B1-01-A2-02-ILLUSTRATION-SALLE",
+              "renderer": "illustration",
+              "props": {
+                "image": "/assets/cours/b1-01/v1/salle-de-spectacle.webp",
+                "imageAlt": "Infographie « La part d’une part ». Une salle de 200 spectateurs : 30 % ont moins de 18 ans, soit 60 ; parmi eux, 40 % ont une place gratuite, soit 24. Part de la salle : 0,30 × 0,40 = 0,12, soit 12 %, et 24 ÷ 200 = 0,12. L’addition 30 % + 40 % = 70 % est barrée. Moyen mnémotechnique : parmi, je multiplie."
+              }
+            },
+            "metadonnees": {
+              "concepts": ["proportion"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
         "id": "B1-01-A2-02-COURS-PROPORTION-DE-PROPORTION",
         "type": "fp-story",
         "titre": "Cours : proportion de proportion",
-        "duree": 3,
+        "duree": 2,
         "interactif": false,
         "donnees": {
           "recit": {
@@ -5353,7 +5815,35 @@
             "metadonnees": {
               "concepts": ["proportion"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
+              "dureeMinutes": 2,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B1-01-A2-03-ILLUSTRATION-DEUX-CLASSES",
+        "type": "fp-story",
+        "titre": "Illustration : deux classes, un taux",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B1-01-A2-03-ILLUSTRATION-DEUX-CLASSES",
+            "presentation": {
+              "version": 2,
+              "screenId": "B1-01-A2-03-ILLUSTRATION-DEUX-CLASSES",
+              "renderer": "illustration",
+              "props": {
+                "image": "/assets/cours/b1-01/v1/deux-classes.webp",
+                "imageAlt": "Infographie « Deux classes, un taux ». Classe A : 20 élèves, 50 % reçus, soit 10 ; classe B : 30 élèves, 80 % reçus, soit 24. Taux global : 34 reçus sur 50 élèves, soit 68 %. La moyenne simple des deux taux, 65 %, est barrée : la classe B, plus nombreuse, pèse plus. Moyen mnémotechnique : des personnes, pas des pourcentages."
+              }
+            },
+            "metadonnees": {
+              "concepts": ["moyenne-ponderee"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
               "modalite": "solo",
               "regime": "ouvert"
             }
@@ -5364,7 +5854,7 @@
         "id": "B1-01-A2-03-COURS-TAUX-GLOBAL",
         "type": "fp-story",
         "titre": "Cours : taux global et moyenne pondérée",
-        "duree": 3,
+        "duree": 2,
         "interactif": false,
         "donnees": {
           "recit": {
@@ -5409,7 +5899,7 @@
             "metadonnees": {
               "concepts": ["moyenne-ponderee"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
+              "dureeMinutes": 2,
               "modalite": "solo",
               "regime": "ouvert"
             }
@@ -5457,10 +5947,38 @@
         "donnees": {}
       },
       {
+        "id": "B1-01-A3-02-ILLUSTRATION-CODE",
+        "type": "fp-story",
+        "titre": "Illustration : points ou pourcentage ?",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B1-01-A3-02-ILLUSTRATION-CODE",
+            "presentation": {
+              "version": 2,
+              "screenId": "B1-01-A3-02-ILLUSTRATION-CODE",
+              "renderer": "illustration",
+              "props": {
+                "image": "/assets/cours/b1-01/v1/code-de-la-route.webp",
+                "imageAlt": "Infographie « Points ou pourcentage ? ». Le taux de réussite au code passe de 60 % en 2025 à 66 % en 2026 : l’écart est de 66 − 60 = 6 points. En évolution, (66 − 60) ÷ 60 = 0,10, soit + 10 %. L’écriture « + 6 % » est barrée. Moyen mnémotechnique : deux pourcentages qu’on soustrait, ce sont des points."
+              }
+            },
+            "metadonnees": {
+              "concepts": ["point-de-pourcentage", "taux-evolution"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
         "id": "B1-01-A3-02-COURS-POINTS",
         "type": "fp-story",
         "titre": "Cours : proportion, évolution et points",
-        "duree": 3,
+        "duree": 2,
         "interactif": false,
         "donnees": {
           "recit": {
@@ -5504,7 +6022,35 @@
             "metadonnees": {
               "concepts": ["point-de-pourcentage", "taux-evolution"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
+              "dureeMinutes": 2,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B1-01-A3-03-ILLUSTRATION-ETIQUETTE",
+        "type": "fp-story",
+        "titre": "Illustration : une marge, deux taux",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B1-01-A3-03-ILLUSTRATION-ETIQUETTE",
+            "presentation": {
+              "version": 2,
+              "screenId": "B1-01-A3-03-ILLUSTRATION-ETIQUETTE",
+              "renderer": "illustration",
+              "props": {
+                "image": "/assets/cours/b1-01/v1/etiquette-marge-marque.webp",
+                "imageAlt": "Infographie « Une marge, deux taux ». Un tee-shirt acheté 10 € HT et vendu 25 € HT : la marge est de 15 €. Taux de marge : 15 ÷ 10 = 150 %, la marge rapportée au coût d’achat. Taux de marque : 15 ÷ 25 = 60 %, la marge rapportée au prix de vente. Moyen mnémotechnique : la marque se lit sur l’étiquette, celle du prix de vente."
+              }
+            },
+            "metadonnees": {
+              "concepts": ["pourcentage"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
               "modalite": "solo",
               "regime": "ouvert"
             }
@@ -5515,7 +6061,7 @@
         "id": "B1-01-A3-03-COURS-MARGE-MARQUE",
         "type": "fp-story",
         "titre": "Cours : taux de marge et taux de marque",
-        "duree": 3,
+        "duree": 2,
         "interactif": false,
         "donnees": {
           "recit": {
@@ -5560,7 +6106,7 @@
             "metadonnees": {
               "concepts": ["pourcentage"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
+              "dureeMinutes": 2,
               "modalite": "solo",
               "regime": "ouvert"
             }

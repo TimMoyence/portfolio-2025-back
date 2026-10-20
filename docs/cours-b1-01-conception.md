@@ -18,7 +18,7 @@
 | Titre servi | « Proportions et pourcentages »                                                                                                |
 | Séance      | Semaine du 26 octobre 2026, BTS CG 1re année                                                                                   |
 | Durée       | **160 minutes exactes** (somme des écrans), 4 actes de 49, 36, 37 et 38 minutes, plus 2 pauses de 15 min hors durée            |
-| Écrans      | **31**, dont 10 écrans catalogue ; six illustrations prévues (§ 8.3), pas encore servies                                       |
+| Écrans      | **37**, dont 16 écrans catalogue (6 illustrations)                                                                             |
 | Sources     | Programme officiel du BTS CG (module « Information chiffrée »), forme de la CCF n° 1 ; données fictives Partie Libre           |
 
 ---
@@ -46,8 +46,8 @@
   recopier, le total figé par `$`. Trois fonctions ou notions de tableur, sous le plafond de cinq.
 - **Traces écrites courtes, illustrées** : chaque page tient en une définition de deux lignes, des
   formules une par ligne, un exemple pour débuter hors du fil rouge, une méthode de trois ou quatre
-  lignes titrée par un moyen mnémotechnique. Pas d'encadré « Au CCF ». Chaque page sera précédée de
-  l'infographie de son exemple (six infographies, à produire : § 8.3).
+  lignes titrée par un moyen mnémotechnique. Pas d'encadré « Au CCF ». Chaque page est précédée de
+  l'infographie de son exemple (six infographies : § 8).
 - **Mini-situation sur un contexte neuf, écrite pour le cours** : le Week-end du jeu, festival
   organisé par Partie Libre. Question tableur sur la répartition des 960 billets (formule de la part
   en C3, recopiée vers le bas), puis quatre énigmes, une par capacité du cours. Elle prépare la
@@ -121,15 +121,13 @@ pupitre les étudiants à suivre pendant les exercices.
 ### 2.3 Le cycle d'une notion
 
 Chaque notion suit : **Réfléchir** (mission, réflexion écrite ou vote non noté) → **Comprendre**
-(deux pages v2 `lesson` de 3 minutes, puis un exemple guidé `fp-worked` corrigé étape par étape sur
+(deux pages v2 `lesson` de 2 minutes, chacune précédée d'1 minute sur l'illustration de son exemple, puis un exemple guidé `fp-worked` corrigé étape par étape sur
 son propre écran) → **S'exercer** (exercices notés, corrigés sur place). Chaque page se lit d'un coup d'œil : une
 définition en deux lignes, formules une par ligne ; un exemple pour débuter hors du dossier ; une
 méthode en trois ou quatre lignes courtes, titrée par un moyen mnémotechnique (« La partie sur le
 tout », « Parmi qui ? », « Parmi → je multiplie », « Des personnes, pas des pourcentages »,
 « Deux % qu'on soustrait : des points », « La marque se lit sur l'étiquette »). Pas d'encadré
-« Au CCF » : les pièges sont travaillés dans les exercices et leurs corrections. Chaque page de 3
-minutes sera précédée de l'illustration de son exemple (§ 8.3) : à l'arrivée des images, la page
-passe à 2 minutes et l'illustration prend la troisième, la durée du cours restant de 160 minutes.
+« Au CCF » : les pièges sont travaillés dans les exercices et leurs corrections.
 
 Chaque exercice annonce ses temps dans les notes formateur, sous la forme
 `• Temps : réflexion N min · travail N min · correction N min`, dont la somme est la durée de
@@ -137,14 +135,14 @@ l'écran. La correction se dévoile sur l'écran de l'exercice (`correctionSurPl
 
 ### 2.4 Règles de structure
 
-Le cours passe les règles communes et les quatre règles du gabarit v3 : 31 écrans ≤ 40,
+Le cours passe les règles communes et les quatre règles du gabarit v3 : 37 écrans ≤ 40,
 160 minutes ≤ 180, chaque trace écrite précédée d'une réflexion et suivie d'un exercice, chaque
 exercice avec ses trois temps et sa correction sur place, mini-situation (`fp-escape`) sans trace
-écrite après elle. Exposition continue de 6 minutes au plus (les deux pages d'une notion).
+écrite après elle. Exposition continue de 6 minutes au plus (les deux pages d'une notion et leurs illustrations).
 
 ### 2.5 Diffusion
 
-Catalogue : l'accroche, le dossier de Partie Libre, les six pages de trace écrite, le dossier de la
+Catalogue : l'accroche, le dossier de Partie Libre, les six pages de trace écrite et leurs six illustrations, le dossier de la
 mini-situation et la fiche mémo. Tout le reste est servi en
 séance. Aucun écran catalogue ne porte une réponse d'exercice.
 
@@ -172,39 +170,45 @@ illustration, à son arrivée, portera le rang de la page qu'elle précède. Col
 colonne `brique` ; les écrans « v2 » sont stockés en `fp-story` avec une présentation v2. « I » =
 interactif. « Q » = questions fermées notées portées par l'écran.
 
-| Rang | Identifiant                                | Min | Brique · rendu               |  I  |   Q | Diffusion |
-| ---: | ------------------------------------------ | --: | ---------------------------- | :-: | --: | --------- |
-|    1 | B1-01-A1-01-DIAGNOSTIC-PART                |   4 | `fp-recall`                  |  I  |   1 | seance    |
-|    2 | B1-01-A1-02-ACCROCHE                       |   1 | `fp-story` · v2 `hero`       |     |   0 | catalogue |
-|    3 | B1-01-A1-03-VOTE-DIAGNOSTIC                |   4 | `fp-vote`                    |  I  |   0 | seance    |
-|    4 | B1-01-A1-04-DOSSIER                        |   2 | `fp-story` · v2 `table`      |     |   0 | catalogue |
-|    5 | B1-01-A1-05-MISSION                        |   6 | `fp-pro`                     |  I  |   0 | seance    |
-|    6 | B1-01-A1-06-COURS-PROPORTION               |   3 | `fp-story` · v2 `lesson`     |     |   0 | catalogue |
-|    7 | B1-01-A1-07-COURS-REFERENCE-TABLEUR        |   3 | `fp-story` · v2 `lesson`     |     |   0 | catalogue |
-|    8 | B1-01-A1-08-EXEMPLE-STOCK                  |   6 | `fp-worked`                  |  I  |   0 | seance    |
-|    9 | B1-01-A1-09-ATELIER-ALTERNANTS             |  10 | `questionnaire`              |  I  |   4 | seance    |
-|   10 | B1-01-A1-10-TABLEUR-CLIENTS                |   9 | `fp-sheet`                   |  I  |   0 | seance    |
-|   11 | B1-01-A1-11-JALON                          |   1 | `fp-pulse`                   |     |   0 | seance    |
-|   12 | B1-01-A2-01-REFLEXION-CARTE                |   5 | `fp-story` · v2 `reflection` |  I  |   0 | seance    |
-|   13 | B1-01-A2-02-COURS-PROPORTION-DE-PROPORTION |   3 | `fp-story` · v2 `lesson`     |     |   0 | catalogue |
-|   14 | B1-01-A2-03-COURS-TAUX-GLOBAL              |   3 | `fp-story` · v2 `lesson`     |     |   0 | catalogue |
-|   15 | B1-01-A2-04-EXEMPLE-SOIREES                |   6 | `fp-worked`                  |  I  |   0 | seance    |
-|   16 | B1-01-A2-05-TABLEAU-FIDELITE               |   8 | `fp-table-build`             |  I  |   0 | seance    |
-|   17 | B1-01-A2-06-ATELIER-FIDELITE               |  10 | `questionnaire`              |  I  |   4 | seance    |
-|   18 | B1-01-A2-07-JALON                          |   1 | `fp-pulse`                   |     |   0 | seance    |
-|   19 | B1-01-A3-01-VOTE-POURCENTAGES              |   5 | `fp-vote`                    |  I  |   0 | seance    |
-|   20 | B1-01-A3-02-COURS-POINTS                   |   3 | `fp-story` · v2 `lesson`     |     |   0 | catalogue |
-|   21 | B1-01-A3-03-COURS-MARGE-MARQUE             |   3 | `fp-story` · v2 `lesson`     |     |   0 | catalogue |
-|   22 | B1-01-A3-04-EXEMPLE-JEU                    |   6 | `fp-worked`                  |  I  |   0 | seance    |
-|   23 | B1-01-A3-05-ATELIER-VENTES                 |  10 | `questionnaire`              |  I  |   4 | seance    |
-|   24 | B1-01-A3-06-DEFI-IA                        |   9 | `fp-challenge`               |  I  |   0 | seance    |
-|   25 | B1-01-A3-07-JALON                          |   1 | `fp-pulse`                   |     |   0 | seance    |
-|   26 | B1-01-A4-01-SITUATION-FESTIVAL             |   3 | `fp-story` · v2 `table`      |     |   0 | catalogue |
-|   27 | B1-01-A4-02-TABLEUR-FESTIVAL               |  13 | `fp-sheet`                   |  I  |   0 | seance    |
-|   28 | B1-01-A4-03-COFFRE-FESTIVAL                |  11 | `fp-escape`                  |  I  |   0 | seance    |
-|   29 | B1-01-A4-04-RAPPEL                         |   6 | `fp-spaced`                  |  I  |   0 | seance    |
-|   30 | B1-01-A4-05-FICHE-MEMO                     |   2 | `fp-story` · v2 `grid`       |     |   0 | catalogue |
-|   31 | B1-01-A4-06-BILLET-DE-SORTIE               |   3 | `fp-exit`                    |  I  |   1 | seance    |
+| Rang | Identifiant                                | Min | Brique · rendu                 |  I  |   Q | Diffusion |
+| ---: | ------------------------------------------ | --: | ------------------------------ | :-: | --: | --------- |
+|    1 | B1-01-A1-01-DIAGNOSTIC-PART                |   4 | `fp-recall`                    |  I  |   1 | seance    |
+|    2 | B1-01-A1-02-ACCROCHE                       |   1 | `fp-story` · v2 `hero`         |     |   0 | catalogue |
+|    3 | B1-01-A1-03-VOTE-DIAGNOSTIC                |   4 | `fp-vote`                      |  I  |   0 | seance    |
+|    4 | B1-01-A1-04-DOSSIER                        |   2 | `fp-story` · v2 `table`        |     |   0 | catalogue |
+|    5 | B1-01-A1-05-MISSION                        |   6 | `fp-pro`                       |  I  |   0 | seance    |
+|    6 | B1-01-A1-06-ILLUSTRATION-CLASSE            |   1 | `fp-story` · v2 `illustration` |     |   0 | catalogue |
+|    7 | B1-01-A1-06-COURS-PROPORTION               |   2 | `fp-story` · v2 `lesson`       |     |   0 | catalogue |
+|    8 | B1-01-A1-07-ILLUSTRATION-PARMI             |   1 | `fp-story` · v2 `illustration` |     |   0 | catalogue |
+|    9 | B1-01-A1-07-COURS-REFERENCE-TABLEUR        |   2 | `fp-story` · v2 `lesson`       |     |   0 | catalogue |
+|   10 | B1-01-A1-08-EXEMPLE-STOCK                  |   6 | `fp-worked`                    |  I  |   0 | seance    |
+|   11 | B1-01-A1-09-ATELIER-ALTERNANTS             |  10 | `questionnaire`                |  I  |   4 | seance    |
+|   12 | B1-01-A1-10-TABLEUR-CLIENTS                |   9 | `fp-sheet`                     |  I  |   0 | seance    |
+|   13 | B1-01-A1-11-JALON                          |   1 | `fp-pulse`                     |     |   0 | seance    |
+|   14 | B1-01-A2-01-REFLEXION-CARTE                |   5 | `fp-story` · v2 `reflection`   |  I  |   0 | seance    |
+|   15 | B1-01-A2-02-ILLUSTRATION-SALLE             |   1 | `fp-story` · v2 `illustration` |     |   0 | catalogue |
+|   16 | B1-01-A2-02-COURS-PROPORTION-DE-PROPORTION |   2 | `fp-story` · v2 `lesson`       |     |   0 | catalogue |
+|   17 | B1-01-A2-03-ILLUSTRATION-DEUX-CLASSES      |   1 | `fp-story` · v2 `illustration` |     |   0 | catalogue |
+|   18 | B1-01-A2-03-COURS-TAUX-GLOBAL              |   2 | `fp-story` · v2 `lesson`       |     |   0 | catalogue |
+|   19 | B1-01-A2-04-EXEMPLE-SOIREES                |   6 | `fp-worked`                    |  I  |   0 | seance    |
+|   20 | B1-01-A2-05-TABLEAU-FIDELITE               |   8 | `fp-table-build`               |  I  |   0 | seance    |
+|   21 | B1-01-A2-06-ATELIER-FIDELITE               |  10 | `questionnaire`                |  I  |   4 | seance    |
+|   22 | B1-01-A2-07-JALON                          |   1 | `fp-pulse`                     |     |   0 | seance    |
+|   23 | B1-01-A3-01-VOTE-POURCENTAGES              |   5 | `fp-vote`                      |  I  |   0 | seance    |
+|   24 | B1-01-A3-02-ILLUSTRATION-CODE              |   1 | `fp-story` · v2 `illustration` |     |   0 | catalogue |
+|   25 | B1-01-A3-02-COURS-POINTS                   |   2 | `fp-story` · v2 `lesson`       |     |   0 | catalogue |
+|   26 | B1-01-A3-03-ILLUSTRATION-ETIQUETTE         |   1 | `fp-story` · v2 `illustration` |     |   0 | catalogue |
+|   27 | B1-01-A3-03-COURS-MARGE-MARQUE             |   2 | `fp-story` · v2 `lesson`       |     |   0 | catalogue |
+|   28 | B1-01-A3-04-EXEMPLE-JEU                    |   6 | `fp-worked`                    |  I  |   0 | seance    |
+|   29 | B1-01-A3-05-ATELIER-VENTES                 |  10 | `questionnaire`                |  I  |   4 | seance    |
+|   30 | B1-01-A3-06-DEFI-IA                        |   9 | `fp-challenge`                 |  I  |   0 | seance    |
+|   31 | B1-01-A3-07-JALON                          |   1 | `fp-pulse`                     |     |   0 | seance    |
+|   32 | B1-01-A4-01-SITUATION-FESTIVAL             |   3 | `fp-story` · v2 `table`        |     |   0 | catalogue |
+|   33 | B1-01-A4-02-TABLEUR-FESTIVAL               |  13 | `fp-sheet`                     |  I  |   0 | seance    |
+|   34 | B1-01-A4-03-COFFRE-FESTIVAL                |  11 | `fp-escape`                    |  I  |   0 | seance    |
+|   35 | B1-01-A4-04-RAPPEL                         |   6 | `fp-spaced`                    |  I  |   0 | seance    |
+|   36 | B1-01-A4-05-FICHE-MEMO                     |   2 | `fp-story` · v2 `grid`         |     |   0 | catalogue |
+|   37 | B1-01-A4-06-BILLET-DE-SORTIE               |   3 | `fp-exit`                      |  I  |   1 | seance    |
 
 Rythme : 131 minutes interactives, 29 d'exposition (jalons compris), exposition continue de 6
 minutes au plus. Somme : 49 + 36 + 37 + 38 = 160.
@@ -289,24 +293,34 @@ minutes au plus. Somme : 49 + 36 + 37 + 38 = 160.
   - Question 3 : ne pas trancher, c'est l'acte 2.
   - Papier : trois lignes d'écriture dans le livret.
 
-#### A1-06 · `B1-01-A1-06-COURS-PROPORTION` — 3 min · v2 `lesson` · catalogue
+#### A1-06 · `B1-01-A1-06-ILLUSTRATION-CLASSE` — 1 min · v2 `illustration` · catalogue
+
+- Titre public : « Illustration : la classe de 25 »
+- Infographie M1 de l'exemple pour débuter : 10 alternants sur 25 étudiants, 10 ÷ 25 = 40 % ; encadré 0,6 × 25 = 15 étudiants.
+
+#### A1-06 · `B1-01-A1-06-COURS-PROPORTION` — 2 min · v2 `lesson` · catalogue
 
 - Titre public : « Cours : proportion et pourcentage »
 - Page 1 sur 2 : définition « La partie sur le tout » en deux lignes, formules une par ligne
   (p = partie ÷ total, partie = p × total, total = partie ÷ p, 0,4 = 40 %) ; exemple pour débuter (la
-  classe de 25, 10 alternants : 40 %, puis 5 étudiants pour 20 %, puis le total retrouvé) ; méthode
+  classe de 25, 10 alternants : 40 %, puis 15 étudiants pour 60 %, puis le total retrouvé) ; méthode
   « Partie en haut, tout en bas » : repérer le tout, × 100 pour lire des %, part entre 0 % et 100 %.
-- Notes : 3 min ; on lit, on ne recopie pas ; question « 10 sur 25, plus ou moins de la moitié ? » ;
+- Notes : 2 min après l'illustration ; on lit, on ne recopie pas ; question « 10 sur 25, plus ou moins de la moitié ? » ;
   faire répéter le moyen mnémotechnique ; lien au dossier : « 10 alternants sur 40 : quel calcul ? »
 
-#### A1-07 · `B1-01-A1-07-COURS-REFERENCE-TABLEUR` — 3 min · v2 `lesson` · catalogue
+#### A1-07 · `B1-01-A1-07-ILLUSTRATION-PARMI` — 1 min · v2 `illustration` · catalogue
+
+- Titre public : « Illustration : parmi qui ? »
+- Infographie M2 : les 120 filles de STMG, 60 % des 200 élèves de STMG mais 15 % des 800 du lycée ; encart `=B2/$B$6`.
+
+#### A1-07 · `B1-01-A1-07-COURS-REFERENCE-TABLEUR` — 2 min · v2 `lesson` · catalogue
 
 - Titre public : « Cours : population de référence et tableur »
 - Page 2 sur 2 : définition « Parmi qui ? » (le tout est la population de référence ; changer de
   tout change le pourcentage) ; exemple pour débuter (les filles de STMG : 60 % des STMG, 15 % du
   lycée) ; méthode « Le tout ne bouge pas : $ » : `=SOMME(B2:B5)`, `=ARRONDI(B2/$B$6*100;1)`
   recopiée, sans $ C3 lit B7, vide, et affiche #DIV/0!.
-- Notes : 3 min enchaînées sur la page 1 ; « parmi qui ? » devant chaque pourcentage du dossier ;
+- Notes : 2 min après l'illustration enchaînées sur la page 1 ; « parmi qui ? » devant chaque pourcentage du dossier ;
   faire taper la formule sans $ sur un poste volontaire.
 
 #### A1-08 · `B1-01-A1-08-EXEMPLE-STOCK` — 6 min · `fp-worked` · séance
@@ -388,24 +402,34 @@ minutes au plus. Somme : 49 + 36 + 37 + 38 = 160.
 - Notes : 3 min d'écriture, puis trois réponses lues au pupitre ; ne rien trancher. Relance : « Les
   porteurs de carte sont-ils plus ou moins nombreux que les clients ? »
 
-#### A2-02 · `B1-01-A2-02-COURS-PROPORTION-DE-PROPORTION` — 3 min · v2 `lesson` · catalogue
+#### A2-02 · `B1-01-A2-02-ILLUSTRATION-SALLE` — 1 min · v2 `illustration` · catalogue
+
+- Titre public : « Illustration : la part d’une part »
+- Infographie M3 : salle de 200 places, 30 % de moins de 18 ans, 40 % d'entre eux gratuits : 0,30 × 0,40 = 12 %, soit 24 ; 30 % + 40 % barré.
+
+#### A2-02 · `B1-01-A2-02-COURS-PROPORTION-DE-PROPORTION` — 2 min · v2 `lesson` · catalogue
 
 - Titre public : « Cours : proportion de proportion »
 - Page 1 sur 2 : définition « Une partie d'une partie » (on multiplie ; le résultat se rapporte au
   plus grand tout), formule p₁ × p₂ ; exemple pour débuter (la salle de 200 : 60 de moins de 18 ans,
   24 places gratuites, 0,30 × 0,40 = 12 %) ; méthode « « Parmi » → je multiplie » : parts en
   décimal, multiplier, résultat plus petit que chaque part.
-- Notes : 3 min, la réflexion sous les yeux ; « 30 % + 40 % = 70 % de la salle ? » Non : 24
+- Notes : 2 min après l'illustration, la réflexion sous les yeux ; « 30 % + 40 % = 70 % de la salle ? » Non : 24
   personnes.
 
-#### A2-03 · `B1-01-A2-03-COURS-TAUX-GLOBAL` — 3 min · v2 `lesson` · catalogue
+#### A2-03 · `B1-01-A2-03-ILLUSTRATION-DEUX-CLASSES` — 1 min · v2 `illustration` · catalogue
+
+- Titre public : « Illustration : deux classes, un taux »
+- Infographie M4 : 10 reçus sur 20 et 24 sur 30, soit 34 sur 50 = 68 % ; la moyenne simple 65 % barrée.
+
+#### A2-03 · `B1-01-A2-03-COURS-TAUX-GLOBAL` — 2 min · v2 `lesson` · catalogue
 
 - Titre public : « Cours : taux global et moyenne pondérée »
 - Page 2 sur 2 : définition « Un taux pour tout le groupe » (on compte des personnes ; moyenne des
   taux pondérée par les effectifs), deux formules ; exemple pour débuter (deux classes : 34 reçus sur
   50, 68 %, pas 65 %) ; méthode « Des personnes, pas des pourcentages » : n × t par groupe,
   additionner, diviser, taux global près de celui du plus gros groupe.
-- Notes : 3 min enchaînées sur la page 1 ; relier à la question 3 de la mission.
+- Notes : 2 min après l'illustration enchaînées sur la page 1 ; relier à la question 3 de la mission.
 
 #### A2-04 · `B1-01-A2-04-EXEMPLE-SOIREES` — 6 min · `fp-worked` · séance
 
@@ -483,23 +507,33 @@ minutes au plus. Somme : 49 + 36 + 37 + 38 = 160.
   (24 − 18) ÷ 18 ≈ 33,3 % ; 90 ÷ 240 = 37,5 % du prix de vente, 90 ÷ 150 = 60 % du coût d'achat.
 - Notes : `notesDuVoteQuiOuvreLaNotion(3)`.
 
-#### A3-02 · `B1-01-A3-02-COURS-POINTS` — 3 min · v2 `lesson` · catalogue
+#### A3-02 · `B1-01-A3-02-ILLUSTRATION-CODE` — 1 min · v2 `illustration` · catalogue
+
+- Titre public : « Illustration : points ou pourcentage ? »
+- Infographie M5 : réussite au code de 60 % à 66 %, + 6 points, mais + 10 % en évolution ; « + 6 % » barré.
+
+#### A3-02 · `B1-01-A3-02-COURS-POINTS` — 2 min · v2 `lesson` · catalogue
 
 - Titre public : « Cours : proportion, évolution et points »
 - Page 1 sur 2 : définition « Une part ou une évolution ? » (une part compare à un tout, une
   évolution à une valeur de départ ; l'écart de deux pourcentages se dit en points), deux formules ;
   exemple pour débuter (le code de la route : 60 % puis 66 %, + 6 points, + 10 % en évolution) ;
   méthode « Deux % qu'on soustrait : des points » : lire le mot qui accompagne le pourcentage.
-- Notes : 3 min ; relier au diagnostic A1-03 ; les évolutions reviennent au B1-02.
+- Notes : 2 min après l'illustration ; relier au diagnostic A1-03 ; les évolutions reviennent au B1-02.
 
-#### A3-03 · `B1-01-A3-03-COURS-MARGE-MARQUE` — 3 min · v2 `lesson` · catalogue
+#### A3-03 · `B1-01-A3-03-ILLUSTRATION-ETIQUETTE` — 1 min · v2 `illustration` · catalogue
+
+- Titre public : « Illustration : une marge, deux taux »
+- Infographie M6 : tee-shirt acheté 10 € HT, vendu 25 € HT, marge 15 € ; taux de marge 150 %, taux de marque 60 %.
+
+#### A3-03 · `B1-01-A3-03-COURS-MARGE-MARQUE` — 2 min · v2 `lesson` · catalogue
 
 - Titre public : « Cours : taux de marge et taux de marque »
 - Page 2 sur 2 : définition « Taux de marge, taux de marque » (marge = vente HT − achat HT,
   rapportée au coût d'achat ou au prix de vente), deux formules ; exemple pour débuter (le
   tee-shirt : 10 € HT, 25 € HT, marge 150 %, marque 60 %) ; méthode « La marque se lit sur
   l'étiquette » : ÷ coût d'achat, ÷ prix de vente, marque plus petite que marge.
-- Notes : 3 min enchaînées sur la page 1 ; lien au dossier : la console à 150 € et 240 €.
+- Notes : 2 min après l'illustration enchaînées sur la page 1 ; lien au dossier : la console à 150 € et 240 €.
 
 #### A3-04 · `B1-01-A3-04-EXEMPLE-JEU` — 6 min · `fp-worked` · séance
 
@@ -797,24 +831,33 @@ Contrôles : 15 ÷ 50 = 0,3 ; 0,2 × 150 = 30 ; 12 ÷ 40 = 0,3 (12 ÷ 30 = 0,4) 
 
 ### 8.1 Principe
 
-Aucune image servie pour l'instant : les dossiers sont rendus par `table`, les feuilles par
-`fp-sheet`, le tableau de fidélité par `fp-table-build`. Six infographies sont prévues (§ 8.3).
+Six infographies, une par exemple pour débuter, chacune projetée sur un écran `illustration` placé
+juste avant sa page de trace écrite. Le reste est rendu sans image : les dossiers par `table`, les
+feuilles par `fp-sheet`, le tableau de fidélité par `fp-table-build`.
 
 ### 8.2 Catalogue des médias
 
-Aucun média catalogué.
+Chaque PNG d'origine (1 536 × 1 024 px) est converti en WebP à la même taille et servi depuis
+`/assets/cours/b1-01/v1/`. Le catalogue est stocké avec le cours (`Cours.medias`) et contrôlé par la
+règle `media-sans-licence`.
 
-### 8.3 Illustrations prévues
+| Id  | Écran | Fichier source (page)      | Original                     | Auteur, date       | Licence      | Dérivé servi                  | Attribution affichée                                                   |
+| --- | ----- | -------------------------- | ---------------------------- | ------------------ | ------------ | ----------------------------- | ---------------------------------------------------------------------- |
+| M1  | A1-06 | production propre du cours | PNG 1 536 × 1 024 px, 1,7 Mo | Asili Design, 2026 | CC BY-SA 4.0 | `classe-alternants.webp`      | « Pour débuter : la classe de 25 · Asili Design, 2026 · CC BY-SA 4.0 » |
+| M2  | A1-07 | production propre du cours | PNG 1 536 × 1 024 px, 1,7 Mo | Asili Design, 2026 | CC BY-SA 4.0 | `parmi-qui.webp`              | « Parmi qui ? · Asili Design, 2026 · CC BY-SA 4.0 »                    |
+| M3  | A2-02 | production propre du cours | PNG 1 536 × 1 024 px, 1,8 Mo | Asili Design, 2026 | CC BY-SA 4.0 | `salle-de-spectacle.webp`     | « La part d’une part · Asili Design, 2026 · CC BY-SA 4.0 »             |
+| M4  | A2-03 | production propre du cours | PNG 1 536 × 1 024 px, 1,8 Mo | Asili Design, 2026 | CC BY-SA 4.0 | `deux-classes.webp`           | « Deux classes, un taux · Asili Design, 2026 · CC BY-SA 4.0 »          |
+| M5  | A3-02 | production propre du cours | PNG 1 536 × 1 024 px, 1,5 Mo | Asili Design, 2026 | CC BY-SA 4.0 | `code-de-la-route.webp`       | « Points ou pourcentage ? · Asili Design, 2026 · CC BY-SA 4.0 »        |
+| M6  | A3-03 | production propre du cours | PNG 1 536 × 1 024 px, 1,6 Mo | Asili Design, 2026 | CC BY-SA 4.0 | `etiquette-marge-marque.webp` | « Une marge, deux taux · Asili Design, 2026 · CC BY-SA 4.0 »           |
 
-Six infographies, une par page de trace écrite, à produire au format des illustrations du B2-04
-(PNG 1 536 × 1 024 px, paysage, converti en WebP, servi depuis `/assets/cours/b1-01/v1/`) et dans
-leur charte : fond clair, titre en haut à gauche, chiffres en gras, une flèche ou un encadré pour le
-résultat, lisible projeté au fond d'une salle. Auteur et licence prévus : Asili Design, 2026,
-CC BY-SA 4.0. Chacune sera projetée sur un écran `illustration` d'1 minute, placé juste avant sa
-page ; la page passera alors de 3 à 2 minutes, la durée du cours restant de 160 minutes. Tant que
-les images ne sont pas livrées, aucun écran d'illustration n'est servi et le § 8.2 reste vide.
+### 8.3 Illustrations livrées
 
-| Id  | Écran prévu                                          | Fichier prévu                 | Titre de l'infographie             |
+Brief de chaque infographie, à suivre si une image est refaite, dans la charte des illustrations du
+B2-04 : fond clair, titre en haut à gauche, chiffres en gras, une flèche ou un encadré pour le
+résultat, lisible projeté au fond d'une salle. Chacune est projetée sur un écran `illustration` d'1
+minute, juste avant sa page de 2 minutes.
+
+| Id  | Écran                                                | Fichier                       | Titre de l'infographie             |
 | --- | ---------------------------------------------------- | ----------------------------- | ---------------------------------- |
 | M1  | `B1-01-A1-06-ILLUSTRATION-CLASSE`, avant A1-06       | `classe-alternants.webp`      | « Pour débuter : la classe de 25 » |
 | M2  | `B1-01-A1-07-ILLUSTRATION-PARMI`, avant A1-07        | `parmi-qui.webp`              | « Parmi qui ? »                    |
@@ -830,13 +873,13 @@ Briefs et textes alternatifs (`imageAlt`) :
 - Contenu : 25 silhouettes d'étudiants en 5 rangées de 5, dont 10 colorées et marquées
   « alternance ». À droite, trois lignes : « Partie : 10 alternants » ; « Tout : 25 étudiants » ;
   « p = 10 ÷ 25 = 0,4 = 40 % ». En bas, bandeau : « Partie en haut, tout en bas ». Encadré
-  secondaire : « 20 % de la classe : 0,2 × 25 = 5 étudiants ».
+  secondaire : « 60 % de la classe : 0,6 × 25 = 15 étudiants ».
 - Mise en page : silhouettes à gauche (60 % de la largeur), calcul à droite ; la fraction 10/25
   dessinée en grand, « 10 » en couleur, « 25 » en gris.
 - `imageAlt` : « Infographie « Pour débuter : la classe de 25 ». Une classe de 25 étudiants, dont
   10 en alternance, représentés par 25 silhouettes dont 10 colorées. La partie, 10 alternants, se
   divise par le tout, 25 étudiants : p = 10 ÷ 25 = 0,4, soit 40 %. Moyen mnémotechnique : partie en
-  haut, tout en bas. Encadré : 20 % de la classe font 0,2 × 25 = 5 étudiants. »
+  haut, tout en bas. Encadré : 60 % de la classe font 0,6 × 25 = 15 étudiants. »
 
 **M2 · « Parmi qui ? »** (`parmi-qui.webp`)
 

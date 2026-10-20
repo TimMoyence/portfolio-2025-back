@@ -41,6 +41,8 @@ import {
 } from './b1-01.donnees';
 import * as moteur from './briques';
 
+const DOSSIER_DES_ILLUSTRATIONS = '/assets/cours/b1-01/v1';
+
 const ACTE_1: moteur.Acte = [
   {
     screenId: 'B1-01-A1-01-DIAGNOSTIC-PART',
@@ -239,16 +241,32 @@ const ACTE_1: moteur.Acte = [
       ],
     },
   },
+  moteur.ecranDIllustration(
+    {
+      screenId: 'B1-01-A1-06-ILLUSTRATION-CLASSE',
+      titre: 'Illustration : la classe de 25',
+      concepts: ['proportion', 'pourcentage'],
+    },
+    DOSSIER_DES_ILLUSTRATIONS,
+    {
+      fichier: 'classe-alternants.webp',
+      imageAlt:
+        'Infographie « Pour débuter : la classe de 25 ». Une classe de 25 étudiants, dont 10 en alternance, représentés par 25 silhouettes dont 10 colorées. La partie, 10 alternants, se divise par le tout, 25 étudiants : p = 10 ÷ 25 = 0,4, soit 40 %. Moyen mnémotechnique : partie en haut, tout en bas. Encadré : 60 % de la classe font 0,6 × 25 = 15 étudiants.',
+    },
+    [
+      moteur.AVANT_SA_PAGE,
+      'Avant de lire : « 10 sur 25, c’est plus ou moins de la moitié ? »',
+    ],
+  ),
   moteur.ecranV2(
     {
       screenId: 'B1-01-A1-06-COURS-PROPORTION',
       titre: 'Cours : proportion et pourcentage',
       diffusion: 'catalogue',
-      dureeMinutes: 3,
+      dureeMinutes: 2,
       concepts: ['proportion', 'pourcentage'],
       notes: moteur.puces(
-        '3 min ; la trace écrite est imprimée dans le livret : on lit et on commente, on ne recopie pas.',
-        'Avant l’exemple, demander : « 10 sur 25, c’est plus ou moins de la moitié ? »',
+        moteur.PAGE_APRES_SON_ILLUSTRATION,
         'Faire répéter le moyen mnémotechnique : partie en haut, tout en bas.',
         'Lien au dossier : « 10 alternants sur 40 salariés : quel calcul ? »',
       ),
@@ -288,15 +306,32 @@ const ACTE_1: moteur.Acte = [
       ],
     },
   ),
+  moteur.ecranDIllustration(
+    {
+      screenId: 'B1-01-A1-07-ILLUSTRATION-PARMI',
+      titre: 'Illustration : parmi qui ?',
+      concepts: ['proportion', 'tableur'],
+    },
+    DOSSIER_DES_ILLUSTRATIONS,
+    {
+      fichier: 'parmi-qui.webp',
+      imageAlt:
+        'Infographie « Parmi qui ? ». Un lycée de 800 élèves, dont 200 en STMG, dont 120 filles. Les 120 filles font 120 ÷ 200 = 60 % des élèves de STMG, mais 120 ÷ 800 = 15 % des élèves du lycée : même partie, autre tout, autre pourcentage. Le tout s’appelle la population de référence. Encart tableur : la part s’écrit =B2/$B$6, le total figé par des dollars.',
+    },
+    [
+      moteur.AVANT_SA_PAGE,
+      'Question : « Les 120 filles, c’est 60 % ou 15 % ? » Les deux : tout dépend du tout.',
+    ],
+  ),
   moteur.ecranV2(
     {
       screenId: 'B1-01-A1-07-COURS-REFERENCE-TABLEUR',
       titre: 'Cours : population de référence et tableur',
       diffusion: 'catalogue',
-      dureeMinutes: 3,
+      dureeMinutes: 2,
       concepts: ['proportion', 'tableur'],
       notes: moteur.puces(
-        moteur.DEUXIEME_PAGE_DE_COURS,
+        moteur.DEUXIEME_PAGE_APRES_SON_ILLUSTRATION,
         'Faire répéter le moyen mnémotechnique : « parmi qui ? » devant chaque pourcentage du dossier.',
         'Faire taper la formule sans $ sur un poste volontaire, puis la recopier : l’erreur fixe la règle.',
       ),
@@ -590,15 +625,32 @@ const ACTE_2: moteur.Acte = [
       renvoi: RENVOI_AU_DOSSIER,
     },
   ),
+  moteur.ecranDIllustration(
+    {
+      screenId: 'B1-01-A2-02-ILLUSTRATION-SALLE',
+      titre: 'Illustration : la part d’une part',
+      concepts: ['proportion'],
+    },
+    DOSSIER_DES_ILLUSTRATIONS,
+    {
+      fichier: 'salle-de-spectacle.webp',
+      imageAlt:
+        'Infographie « La part d’une part ». Une salle de 200 spectateurs : 30 % ont moins de 18 ans, soit 60 ; parmi eux, 40 % ont une place gratuite, soit 24. Part de la salle : 0,30 × 0,40 = 0,12, soit 12 %, et 24 ÷ 200 = 0,12. L’addition 30 % + 40 % = 70 % est barrée. Moyen mnémotechnique : parmi, je multiplie.',
+    },
+    [
+      moteur.AVANT_SA_PAGE,
+      'Question : « Les 40 %, ce sont 40 % de qui ? » Des moins de 18 ans, pas de la salle.',
+    ],
+  ),
   moteur.ecranV2(
     {
       screenId: 'B1-01-A2-02-COURS-PROPORTION-DE-PROPORTION',
       titre: 'Cours : proportion de proportion',
       diffusion: 'catalogue',
-      dureeMinutes: 3,
+      dureeMinutes: 2,
       concepts: ['proportion'],
       notes: moteur.puces(
-        '3 min ; garder la réflexion précédente sous les yeux.',
+        moteur.PAGE_APRES_SON_ILLUSTRATION,
         'Question : « 30 % + 40 % = 70 % de la salle ? » Non : il n’y a que 24 personnes.',
         'Faire répéter le moyen mnémotechnique : « parmi », je multiplie.',
       ),
@@ -637,15 +689,32 @@ const ACTE_2: moteur.Acte = [
       ],
     },
   ),
+  moteur.ecranDIllustration(
+    {
+      screenId: 'B1-01-A2-03-ILLUSTRATION-DEUX-CLASSES',
+      titre: 'Illustration : deux classes, un taux',
+      concepts: ['moyenne-ponderee'],
+    },
+    DOSSIER_DES_ILLUSTRATIONS,
+    {
+      fichier: 'deux-classes.webp',
+      imageAlt:
+        'Infographie « Deux classes, un taux ». Classe A : 20 élèves, 50 % reçus, soit 10 ; classe B : 30 élèves, 80 % reçus, soit 24. Taux global : 34 reçus sur 50 élèves, soit 68 %. La moyenne simple des deux taux, 65 %, est barrée : la classe B, plus nombreuse, pèse plus. Moyen mnémotechnique : des personnes, pas des pourcentages.',
+    },
+    [
+      moteur.AVANT_SA_PAGE,
+      'Question : « Pourquoi pas 65 % ? » La classe B, plus nombreuse, pèse plus.',
+    ],
+  ),
   moteur.ecranV2(
     {
       screenId: 'B1-01-A2-03-COURS-TAUX-GLOBAL',
       titre: 'Cours : taux global et moyenne pondérée',
       diffusion: 'catalogue',
-      dureeMinutes: 3,
+      dureeMinutes: 2,
       concepts: ['moyenne-ponderee'],
       notes: moteur.puces(
-        moteur.DEUXIEME_PAGE_DE_COURS,
+        moteur.DEUXIEME_PAGE_APRES_SON_ILLUSTRATION,
         'Faire répéter le moyen mnémotechnique : des personnes, pas des pourcentages.',
         'Relier à la question 3 de la mission : la moyenne de Théo.',
       ),
@@ -1004,15 +1073,32 @@ const ACTE_3: moteur.Acte = [
       },
     },
   },
+  moteur.ecranDIllustration(
+    {
+      screenId: 'B1-01-A3-02-ILLUSTRATION-CODE',
+      titre: 'Illustration : points ou pourcentage ?',
+      concepts: ['point-de-pourcentage', 'taux-evolution'],
+    },
+    DOSSIER_DES_ILLUSTRATIONS,
+    {
+      fichier: 'code-de-la-route.webp',
+      imageAlt:
+        'Infographie « Points ou pourcentage ? ». Le taux de réussite au code passe de 60 % en 2025 à 66 % en 2026 : l’écart est de 66 − 60 = 6 points. En évolution, (66 − 60) ÷ 60 = 0,10, soit + 10 %. L’écriture « + 6 % » est barrée. Moyen mnémotechnique : deux pourcentages qu’on soustrait, ce sont des points.',
+    },
+    [
+      moteur.AVANT_SA_PAGE,
+      'Question : « De 60 % à 66 %, + 6 % ou + 10 % ? » Laisser venir les deux réponses avant de lire.',
+    ],
+  ),
   moteur.ecranV2(
     {
       screenId: 'B1-01-A3-02-COURS-POINTS',
       titre: 'Cours : proportion, évolution et points',
       diffusion: 'catalogue',
-      dureeMinutes: 3,
+      dureeMinutes: 2,
       concepts: ['point-de-pourcentage', 'taux-evolution'],
       notes: moteur.puces(
-        '3 min ; la trace écrite est imprimée dans le livret.',
+        moteur.PAGE_APRES_SON_ILLUSTRATION,
         'Relier au diagnostic A1-03 : une évolution se divise par la valeur de départ.',
         'Faire répéter le moyen mnémotechnique : deux % qu’on soustrait, ce sont des points.',
         'Les évolutions reviennent au B1-02.',
@@ -1052,15 +1138,32 @@ const ACTE_3: moteur.Acte = [
       ],
     },
   ),
+  moteur.ecranDIllustration(
+    {
+      screenId: 'B1-01-A3-03-ILLUSTRATION-ETIQUETTE',
+      titre: 'Illustration : une marge, deux taux',
+      concepts: ['pourcentage'],
+    },
+    DOSSIER_DES_ILLUSTRATIONS,
+    {
+      fichier: 'etiquette-marge-marque.webp',
+      imageAlt:
+        'Infographie « Une marge, deux taux ». Un tee-shirt acheté 10 € HT et vendu 25 € HT : la marge est de 15 €. Taux de marge : 15 ÷ 10 = 150 %, la marge rapportée au coût d’achat. Taux de marque : 15 ÷ 25 = 60 %, la marge rapportée au prix de vente. Moyen mnémotechnique : la marque se lit sur l’étiquette, celle du prix de vente.',
+    },
+    [
+      moteur.AVANT_SA_PAGE,
+      'Question : « 15 € de marge : 150 % ou 60 % ? » Les deux, selon le prix par lequel on divise.',
+    ],
+  ),
   moteur.ecranV2(
     {
       screenId: 'B1-01-A3-03-COURS-MARGE-MARQUE',
       titre: 'Cours : taux de marge et taux de marque',
       diffusion: 'catalogue',
-      dureeMinutes: 3,
+      dureeMinutes: 2,
       concepts: ['pourcentage'],
       notes: moteur.puces(
-        moteur.DEUXIEME_PAGE_DE_COURS,
+        moteur.DEUXIEME_PAGE_APRES_SON_ILLUSTRATION,
         'Faire répéter le moyen mnémotechnique : la marque se lit sur l’étiquette.',
         'Lien au dossier : « La console à 150 € et 240 € : quel taux voit le client ? »',
       ),
@@ -1402,10 +1505,19 @@ const REMEDIATIONS: ContenuDeCours['remediations'] = {
   [MARQUE_POUR_MARGE]: 'B1-01-A3-03-COURS-MARGE-MARQUE',
 };
 
+const ILLUSTRATIONS = [
+  ['M1', 'classe-alternants.webp', 'Pour débuter : la classe de 25'],
+  ['M2', 'parmi-qui.webp', 'Parmi qui ?'],
+  ['M3', 'salle-de-spectacle.webp', 'La part d’une part'],
+  ['M4', 'deux-classes.webp', 'Deux classes, un taux'],
+  ['M5', 'code-de-la-route.webp', 'Points ou pourcentage ?'],
+  ['M6', 'etiquette-marge-marque.webp', 'Une marge, deux taux'],
+] as const;
+
 export const COURS_B1_01 = moteur.coursB1(
   [ACTE_1, ACTE_2, ACTE_3, ACTE_4],
   REMEDIATIONS,
-  [],
+  moteur.mediasDesIllustrations(DOSSIER_DES_ILLUSTRATIONS, ILLUSTRATIONS),
   {
     slug: 'b1-01-proportions-pourcentages',
     titre: 'Proportions et pourcentages',
