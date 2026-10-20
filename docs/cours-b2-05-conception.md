@@ -15,7 +15,7 @@
 | Gabarit     | `v3`, déclaré par le contenu et contrôlé par les quatre règles `gabarit-*` de `verifierStructure`                   |
 | Titre servi | « Mathématiques financières : placer, emprunter »                                                                   |
 | Durée       | **180 minutes exactes** (somme des écrans), 4 actes de 49, 39, 47 et 45 minutes, plus 2 pauses de 15 min hors durée |
-| Écrans      | **34**, dont 12 écrans catalogue                                                                                    |
+| Écrans      | **33**, dont 11 écrans catalogue                                                                                    |
 | Sources     | `docs/donnees-b2-05-sources.md` (espace de travail) : programme officiel, sujets d'examen, données fictives         |
 
 ---
@@ -105,11 +105,16 @@ avant de montrer : le rappel de mémoire précède la synthèse.
 ### 2.3 Le cycle d'une notion
 
 Chaque notion suit : **Réfléchir** (mission, réflexion écrite ou vote non noté) → **Comprendre**
-(trace écrite en deux pages v2 `lesson` de 3 minutes, puis exemple guidé `fp-worked` corrigé étape
-par étape sur son propre écran) → **S'exercer** (exercices notés, corrigés sur place). Chaque page de
-trace écrite porte trois blocs : une définition en langage courant qui dit à quoi sert la notion pour
-le dossier d'Hélène, un exemple pour débuter hors du dossier (livret, emprunt d'un particulier) et
-une méthode ou un encadré « Au CCF » qui nomme les pièges.
+(trace écrite v2 `lesson`, puis exemple guidé `fp-worked` corrigé étape par étape sur son propre
+écran) → **S'exercer** (exercices notés, corrigés sur place). N1 et N3 ont deux pages de 3 minutes,
+N2 une seule page de 3 minutes. Chaque page se lit d'un coup d'œil : une définition en deux lignes,
+formules une par ligne ; un exemple pour débuter hors du dossier (livret, emprunt d'un particulier) ;
+une méthode en trois ou quatre lignes courtes, titrée par un moyen mnémotechnique (« × 1,03, jamais
+× 0,03 », « Futur : ×, présent : ÷ », « × (1 + t), puis + a », « Les intérêts d'abord, le reste
+rembourse », « VPM : le capital avec un signe moins »). Pas d'encadré « Au CCF » dans les traces
+écrites : les pièges sont travaillés dans les exercices et leurs corrections. Chaque page de 3
+minutes sera précédée de l'illustration de son exemple (§ 8.4) : à l'arrivée des images, la page
+passe à 2 minutes et l'illustration prend la troisième.
 
 Chaque exercice annonce ses temps dans les notes formateur, sous la forme
 `• Temps : réflexion N min · travail N min · correction N min`, dont la somme est la durée de
@@ -117,14 +122,14 @@ l'écran. La correction se dévoile sur l'écran de l'exercice (`correctionSurPl
 
 ### 2.4 Règles de structure
 
-Le cours passe les règles communes et les quatre règles du gabarit v3 : 34 écrans ≤ 40,
+Le cours passe les règles communes et les quatre règles du gabarit v3 : 33 écrans ≤ 40,
 180 minutes ≤ 180, chaque trace écrite précédée d'une réflexion et suivie d'un exercice, chaque
 exercice avec ses trois temps et sa correction sur place, mini-situation (`fp-escape`) sans trace
 écrite après elle. Exposition continue de 6 minutes au plus.
 
 ### 2.5 Diffusion
 
-Catalogue : l'accroche, la synthèse des acquis, le dossier de financement, les six pages de trace
+Catalogue : l'accroche, la synthèse des acquis, le dossier de financement, les cinq pages de trace
 écrite, le graphique d'un emprunt type, le dossier de la mini-situation et la fiche mémo. Tout le
 reste est servi en séance. Aucun écran catalogue ne porte une réponse : le graphique montre un
 emprunt de 100 000 € qui n'est demandé dans aucun exercice.
@@ -160,28 +165,27 @@ numérique, classement) portées par l'écran.
 |   12 | B2-05-A1-12-JALON                   |   1 | `fp-pulse`                   |     |   0 | seance    |
 |   13 | B2-05-A2-01-REFLEXION-VERSEMENTS    |   5 | `fp-story` · v2 `reflection` |  I  |   0 | seance    |
 |   14 | B2-05-A2-02-COURS-ANNUITES          |   3 | `fp-story` · v2 `lesson`     |     |   0 | catalogue |
-|   15 | B2-05-A2-03-COURS-ANNUITES-TABLEUR  |   3 | `fp-story` · v2 `lesson`     |     |   0 | catalogue |
-|   16 | B2-05-A2-04-EXEMPLE-ANNUITES        |   6 | `fp-worked`                  |  I  |   0 | seance    |
-|   17 | B2-05-A2-05-ATELIER-ANNUITES        |  11 | `questionnaire`              |  I  |   4 | seance    |
-|   18 | B2-05-A2-06-TABLEUR-EPARGNE         |  10 | `fp-sheet`                   |  I  |   0 | seance    |
-|   19 | B2-05-A2-07-JALON                   |   1 | `fp-pulse`                   |     |   0 | seance    |
-|   20 | B2-05-A3-01-GRAPHIQUE               |   2 | `fp-story` · v2 `chart`      |     |   0 | catalogue |
-|   21 | B2-05-A3-02-VOTE-EMPRUNT            |   4 | `fp-vote`                    |  I  |   0 | seance    |
-|   22 | B2-05-A3-03-COURS-EMPRUNT           |   3 | `fp-story` · v2 `lesson`     |     |   0 | catalogue |
-|   23 | B2-05-A3-04-COURS-COUT-TABLEUR      |   3 | `fp-story` · v2 `lesson`     |     |   0 | catalogue |
-|   24 | B2-05-A3-05-EXEMPLE-EMPRUNT         |   6 | `fp-worked`                  |  I  |   0 | seance    |
-|   25 | B2-05-A3-06-ATELIER-EMPRUNT         |  10 | `questionnaire`              |  I  |   4 | seance    |
-|   26 | B2-05-A3-07-TABLEAU-AMORTISSEMENT   |   8 | `fp-table-build`             |  I  |   0 | seance    |
-|   27 | B2-05-A3-08-DEFI-IA                 |  10 | `fp-challenge`               |  I  |   0 | seance    |
-|   28 | B2-05-A3-09-JALON                   |   1 | `fp-pulse`                   |     |   0 | seance    |
-|   29 | B2-05-A4-01-SITUATION-CAMIONNETTE   |   3 | `fp-story` · v2 `table`      |     |   0 | catalogue |
-|   30 | B2-05-A4-02-TABLEUR-CAMIONNETTE     |  16 | `fp-sheet`                   |  I  |   0 | seance    |
-|   31 | B2-05-A4-03-COFFRE-CAMIONNETTE      |  14 | `fp-escape`                  |  I  |   0 | seance    |
-|   32 | B2-05-A4-04-RAPPEL                  |   6 | `fp-spaced`                  |  I  |   0 | seance    |
-|   33 | B2-05-A4-05-FICHE-MEMO              |   2 | `fp-story` · v2 `grid`       |     |   0 | catalogue |
-|   34 | B2-05-A4-06-BILLET-DE-SORTIE        |   4 | `fp-exit`                    |  I  |   1 | seance    |
+|   15 | B2-05-A2-04-EXEMPLE-ANNUITES        |   6 | `fp-worked`                  |  I  |   0 | seance    |
+|   16 | B2-05-A2-05-ATELIER-ANNUITES        |  12 | `questionnaire`              |  I  |   4 | seance    |
+|   17 | B2-05-A2-06-TABLEUR-EPARGNE         |  12 | `fp-sheet`                   |  I  |   0 | seance    |
+|   18 | B2-05-A2-07-JALON                   |   1 | `fp-pulse`                   |     |   0 | seance    |
+|   19 | B2-05-A3-01-GRAPHIQUE               |   2 | `fp-story` · v2 `chart`      |     |   0 | catalogue |
+|   20 | B2-05-A3-02-VOTE-EMPRUNT            |   4 | `fp-vote`                    |  I  |   0 | seance    |
+|   21 | B2-05-A3-03-COURS-EMPRUNT           |   3 | `fp-story` · v2 `lesson`     |     |   0 | catalogue |
+|   22 | B2-05-A3-04-COURS-COUT-TABLEUR      |   3 | `fp-story` · v2 `lesson`     |     |   0 | catalogue |
+|   23 | B2-05-A3-05-EXEMPLE-EMPRUNT         |   6 | `fp-worked`                  |  I  |   0 | seance    |
+|   24 | B2-05-A3-06-ATELIER-EMPRUNT         |  10 | `questionnaire`              |  I  |   4 | seance    |
+|   25 | B2-05-A3-07-TABLEAU-AMORTISSEMENT   |   8 | `fp-table-build`             |  I  |   0 | seance    |
+|   26 | B2-05-A3-08-DEFI-IA                 |  10 | `fp-challenge`               |  I  |   0 | seance    |
+|   27 | B2-05-A3-09-JALON                   |   1 | `fp-pulse`                   |     |   0 | seance    |
+|   28 | B2-05-A4-01-SITUATION-CAMIONNETTE   |   3 | `fp-story` · v2 `table`      |     |   0 | catalogue |
+|   29 | B2-05-A4-02-TABLEUR-CAMIONNETTE     |  16 | `fp-sheet`                   |  I  |   0 | seance    |
+|   30 | B2-05-A4-03-COFFRE-CAMIONNETTE      |  14 | `fp-escape`                  |  I  |   0 | seance    |
+|   31 | B2-05-A4-04-RAPPEL                  |   6 | `fp-spaced`                  |  I  |   0 | seance    |
+|   32 | B2-05-A4-05-FICHE-MEMO              |   2 | `fp-story` · v2 `grid`       |     |   0 | catalogue |
+|   33 | B2-05-A4-06-BILLET-DE-SORTIE        |   4 | `fp-exit`                    |  I  |   1 | seance    |
 
-Rythme : 147 minutes interactives, 33 d'exposition, exposition continue de 6 minutes au plus.
+Rythme : 150 minutes interactives, 30 d'exposition, exposition continue de 6 minutes au plus.
 
 ### 3.2 Acte 1 — Rappel des cours, puis placer un capital (49 min)
 
@@ -220,7 +224,9 @@ Rythme : 147 minutes interactives, 33 d'exposition, exposition continue de 6 min
 #### A1-06 · `B2-05-A1-06-MISSION` — 6 min · `fp-pro` · séance
 
 - Titre public : « Votre mission : le dossier de financement »
-- Courriel d'Hélène Garnier, remarque de Marc Lefèvre sur l'emprunt. Trois questions libres, temps
+- Courriel d'Hélène Garnier, une ligne par ligne du plan, puis la remarque de Marc Lefèvre sur
+  l'emprunt. Ni geste professionnel ni « Sur le terrain » à l'écran : la consigne (sans calculatrice)
+  et l'enjeu passent dans les notes formateur. Trois questions libres, temps
   « réfléchir » de N1 : les intérêts du placement sont-ils les mêmes chaque année (`placement`) ;
   cinq versements de 6 000 € font-ils 30 000 € (`epargne`) ; rembourser 12 000 € par an
   suffit-il (`emprunt`).
@@ -229,14 +235,16 @@ Rythme : 147 minutes interactives, 33 d'exposition, exposition continue de 6 min
 #### A1-07 · `B2-05-A1-07-COURS-INTERETS-COMPOSES` — 3 min · v2 `lesson` · catalogue
 
 - Titre public : « Cours : intérêts composés et valeur acquise »
-- Page 1 sur 2 : intérêts simples et intérêts composés, valeur acquise Cₙ = C₀ × (1 + t)ⁿ (lien
-  B2-04) ; exemple pour débuter (le livret à 3 %) ; méthode et pièges.
+- Page 1 sur 2 : définition en deux lignes (Cₙ = C₀ × (1 + t)ⁿ, puis les intérêts simples) ; exemple
+  pour débuter (le livret à 3 %) ; méthode « × 1,03, jamais × 0,03 » : coefficient, durée, valeur
+  acquise, intérêts gagnés.
 
 #### A1-08 · `B2-05-A1-08-COURS-VALEUR-ACTUELLE` — 3 min · v2 `lesson` · catalogue
 
 - Titre public : « Cours : valeur actuelle et tableur »
-- Page 2 sur 2 : valeur actuelle C₀ = Cₙ ÷ (1 + t)ⁿ (lien B2-01, évolution réciproque) ; le
-  placement au tableur, taux figé par `$` ; au CCF, capitaliser ou actualiser.
+- Page 2 sur 2 : définition « Futur : ×, présent : ÷ » en deux lignes, C₀ = Cₙ ÷ (1 + t)ⁿ (lien
+  B2-01, évolution réciproque), capitaliser et actualiser une formule par ligne ; la méthode au
+  tableur, taux figé par `$`. Sans encadré « Au CCF ».
 
 #### A1-09 · `B2-05-A1-09-EXEMPLE-PLACEMENT` — 6 min · `fp-worked` · séance
 
@@ -282,15 +290,11 @@ Rythme : 147 minutes interactives, 33 d'exposition, exposition continue de 6 min
 #### A2-02 · `B2-05-A2-02-COURS-ANNUITES` — 3 min · v2 `lesson` · catalogue
 
 - Titre public : « Cours : suite d’annuités et valeur acquise »
-- Page 1 sur 2 : annuités, valeur acquise au dernier versement = somme des valeurs acquises de
-  chaque versement (lien B2-04), formule donnée ; exemple pour débuter (1 000 € par an à 2 %) ;
-  méthode et pièges.
-
-#### A2-03 · `B2-05-A2-03-COURS-ANNUITES-TABLEUR` — 3 min · v2 `lesson` · catalogue
-
-- Titre public : « Cours : les annuités au tableur »
-- Page 2 sur 2 : le tableau d'épargne (épargne de l'an passé, plus ses intérêts, plus le
-  versement), taux et versement figés ; total des intérêts avec `SOMME` ; au CCF.
+- Page unique : définition en deux lignes (chaque versement a sa durée, valeur acquise au dernier
+  versement, lien B2-04), formule donnée ; exemple pour débuter (1 000 € par an à 2 %) ; méthode
+  « × (1 + t), puis + a » : formule recopiable `=B2*(1+$E$1)+$G$1`, intérêts gagnés, total des
+  intérêts par `SOMME`. L'ancienne page 2 (les annuités au tableur) est supprimée : son essentiel
+  tient dans la méthode, la pratique passe aux exercices 3 et 4, allongés d'1 et de 2 minutes.
 
 #### A2-04 · `B2-05-A2-04-EXEMPLE-ANNUITES` — 6 min · `fp-worked` · séance
 
@@ -298,10 +302,10 @@ Rythme : 147 minutes interactives, 33 d'exposition, exposition continue de 6 min
 - Quatre versements de fin d'année : durée de placement de chacun, valeurs acquises, somme, formule
   donnée, intérêts gagnés.
 
-#### A2-05 · `B2-05-A2-05-ATELIER-ANNUITES` — 11 min · `questionnaire` · séance
+#### A2-05 · `B2-05-A2-05-ATELIER-ANNUITES` — 12 min · `questionnaire` · séance
 
 - Titre public : « Exercice 3 — L’épargne des machines »
-- Temps : réflexion 2 min · travail 7 min · correction 2 min, question par question sur place.
+- Temps : réflexion 3 min · travail 7 min · correction 2 min, question par question sur place.
 - `b2-05-a2-duree` (vote) : durée de placement du premier versement ; piège
   `versements-places-toute-la-duree`.
 - `b2-05-a2-premier` : valeur du premier versement fin 2030 ; pièges
@@ -312,10 +316,10 @@ Rythme : 147 minutes interactives, 33 d'exposition, exposition continue de 6 min
   `versements-places-toute-la-duree` (cinq versements placés cinq ans), `rang-decale` (un an de
   trop).
 
-#### A2-06 · `B2-05-A2-06-TABLEUR-EPARGNE` — 10 min · `fp-sheet` · séance
+#### A2-06 · `B2-05-A2-06-TABLEUR-EPARGNE` — 12 min · `fp-sheet` · séance
 
 - Titre public : « Exercice 4 — L’épargne au tableur »
-- Temps : réflexion 2 min · travail 6 min · correction 2 min sur place.
+- Temps : réflexion 2 min · travail 8 min · correction 2 min sur place.
 - Fins d'année 2026 à 2030, taux en F1 et versement en H1 : épargne disponible en colonne B,
   intérêts de l'année en colonne C, total des intérêts en F3. Neuf cellules attendues ; pièges
   `versements-sans-interets`, `reference-relative-non-figee`,
@@ -343,14 +347,17 @@ Rythme : 147 minutes interactives, 33 d'exposition, exposition continue de 6 min
 #### A3-03 · `B2-05-A3-03-COURS-EMPRUNT` — 3 min · v2 `lesson` · catalogue
 
 - Titre public : « Cours : emprunt et tableau d’amortissement »
-- Page 1 sur 2 : annuité = intérêts + amortissement, intérêts sur le capital restant dû, formule
-  donnée de l'annuité ; exemple pour débuter (10 000 € sur 3 ans à 5 %) ; méthode ligne par ligne.
+- Page 1 sur 2 : définition en deux lignes (annuité = intérêts + amortissement, intérêts sur le
+  capital restant dû), formule donnée de l'annuité, intérêts et amortissement une par ligne ;
+  exemple pour débuter (10 000 € sur 3 ans à 5 %) ; méthode « Les intérêts d'abord, le reste
+  rembourse », une ligne du tableau par étape. La mise en garde sur la dotation aux amortissements
+  passe dans les notes formateur.
 
 #### A3-04 · `B2-05-A3-04-COURS-COUT-TABLEUR` — 3 min · v2 `lesson` · catalogue
 
 - Titre public : « Cours : coût du crédit et tableur »
-- Page 2 sur 2 : coût du crédit, `VPM` et son signe, formules recopiables du tableau
-  d'amortissement ; au CCF, les formules C2 et F2 d'un sujet.
+- Page 2 sur 2 : coût du crédit en deux lignes, n × a − C ; méthode « VPM : le capital avec un
+  signe moins », intérêts recopiés, coût. Sans encadré « Au CCF ».
 
 #### A3-05 · `B2-05-A3-05-EXEMPLE-EMPRUNT` — 6 min · `fp-worked` · séance
 
@@ -386,7 +393,8 @@ Rythme : 147 minutes interactives, 33 d'exposition, exposition continue de 6 min
 - Titre public : « Exercice 7 — Corriger le calcul d’une IA »
 - Temps : réflexion 2 min · travail 6 min · correction 2 min, piste par piste sur place.
 - L'IA ajoute au capital divisé par la durée les intérêts de la première année, garde ces intérêts
-  chaque année et prend le total remboursé pour le coût. Pistes justes : formule de l'annuité,
+  chaque année et prend le total remboursé pour le coût. Sa réponse s'affiche point par point, un
+  point par ligne. Pistes justes : formule de l'annuité,
   capital restant dû, coût, contrôle par les intérêts (capital restant dû × 4 %), qui trahit l'IA
   quand la somme des amortissements ne la trahit pas ; piste fausse : garder le calcul.
 
@@ -433,6 +441,7 @@ Rythme : 147 minutes interactives, 33 d'exposition, exposition continue de 6 min
 #### A4-04 · `B2-05-A4-04-RAPPEL` — 6 min · `fp-spaced` · séance
 
 - Titre public : « Rappel : de mémoire, sans vos notes »
+- Les douze questions de la banque sont obligatoires : chaque étudiant les reçoit toutes.
 
 #### A4-05 · `B2-05-A4-05-FICHE-MEMO` — 2 min · v2 `grid` · catalogue
 
@@ -506,7 +515,7 @@ précédents : `suite-geometrique`, `somme-de-termes`, `coefficient-multiplicate
 | `versements-sans-interets`                  | annuites                   | Additionner les versements sans leurs intérêts.             | B2-05-A2-02-COURS-ANNUITES          |
 | `versements-places-toute-la-duree`          | annuites                   | Placer chaque versement pendant toute la durée.             | B2-05-A2-02-COURS-ANNUITES          |
 | `nombre-de-termes-decale`                   | somme-de-termes            | Compter un terme de trop ou de moins.                       | B2-05-A2-02-COURS-ANNUITES          |
-| `terme-pris-pour-somme`                     | somme-de-termes            | Donner le dernier terme pour la somme.                      | B2-05-A2-03-COURS-ANNUITES-TABLEUR  |
+| `terme-pris-pour-somme`                     | somme-de-termes            | Donner le dernier terme pour la somme.                      | B2-05-A2-02-COURS-ANNUITES          |
 | `interets-sur-capital-initial`              | tableau-d-amortissement    | Calculer les intérêts sur le capital emprunté chaque année. | B2-05-A3-03-COURS-EMPRUNT           |
 | `annuite-confondue-avec-amortissement`      | tableau-d-amortissement    | Confondre l'annuité et le capital remboursé.                | B2-05-A3-03-COURS-EMPRUNT           |
 | `cout-credit-confondu-avec-total-rembourse` | cout-du-credit             | Donner le total remboursé pour le coût.                     | B2-05-A3-04-COURS-COUT-TABLEUR      |
@@ -517,7 +526,7 @@ précédents : `suite-geometrique`, `somme-de-termes`, `coefficient-multiplicate
 Douze rappels : coefficient d'un placement, intérêts composés sur deux ans, valeur actuelle, sens de
 l'actualisation, durée de placement d'un versement, valeur acquise et total versé, base des intérêts
 d'un emprunt, amortissement d'une annuité, évolution des intérêts, coût du crédit, signe de `VPM`,
-référence figée. Obligatoires : `b2-05-r-valeur-actuelle` et `b2-05-r-interets-emprunt`.
+référence figée. Les douze sont obligatoires : tous les étudiants reçoivent toute la banque.
 
 ## 6. Moteur de formules
 
@@ -545,3 +554,21 @@ Aucun média catalogué.
 - Forme de la mini-situation : sujets ponctuels 2025 (exercice 2, partie C) et 2026 (exercice 2,
   partie C), recensés dans `docs/programme-bts-cg-maths-officiel.md` ; détail dans
   `docs/donnees-b2-05-sources.md`.
+
+### 8.4 Illustrations prévues
+
+Cinq infographies, une par page de trace écrite, à produire au format des illustrations du B2-04
+(PNG 1 536 × 1 024 px, converti en WebP, servi depuis `/assets/cours/b2-05/v1/`). Chacune sera
+projetée sur un écran `illustration` d'1 minute, placé juste avant sa page ; la page passera alors de
+3 à 2 minutes, la durée du cours restant de 180 minutes. Tant que les images ne sont pas livrées,
+aucun écran d'illustration n'est servi et le § 8.2 reste vide.
+
+| Id  | Écran prévu                                    | Fichier prévu                   | Contenu de l'infographie                                                                                                                                                                                                                                                            |
+| --- | ---------------------------------------------- | ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| M1  | `B2-05-A1-07-ILLUSTRATION-LIVRET`, avant A1-07 | `livret-interets-composes.webp` | « Le livret à 3 % » : 2 000 € ; après un an 2 060 € ; après deux ans 2 121,80 €, les intérêts portent sur 2 060 € ; après dix ans 2 000 × 1,03¹⁰ ≈ 2 687,83 €. Comparaison barrée : intérêts simples, 2 600 € seulement. Touche puissance.                                          |
+| M2  | `B2-05-A1-08-ILLUSTRATION-FUTUR-PRESENT`       | `capitaliser-actualiser.webp`   | « Futur : ×, présent : ÷ » : une frise aujourd'hui → dans 2 ans à 10 %. Flèche vers la droite : 1 000 × 1,1² = 1 210 € (capitaliser). Flèche vers la gauche : 1 210 ÷ 1,1² = 1 000 € (actualiser). Contrôle : la valeur actuelle est plus petite.                                   |
+| M3  | `B2-05-A2-02-ILLUSTRATION-VERSEMENTS`          | `frise-des-versements.webp`     | « Chaque versement a sa durée » : frise de trois fins d'année, 1 000 € à 2 %. Le premier placé deux ans : 1 040,40 € ; le deuxième un an : 1 020 € ; le troisième rien : 1 000 €. Somme : 3 060,40 €, et non 3 000 €.                                                               |
+| M4  | `B2-05-A3-03-ILLUSTRATION-ANNUITE`             | `annuite-decomposee.webp`       | « Les intérêts d'abord, le reste rembourse » : 10 000 € sur 3 ans à 5 %, annuité 3 672,09 €. Trois barres de même hauteur : intérêts 500 ; 341,40 ; 174,86 € qui baissent, amortissement 3 172,09 ; 3 330,69 ; 3 497,23 € qui monte. Capital dû : 10 000 → 6 827,91 → 3 497,22 → 0. |
+| M5  | `B2-05-A3-04-ILLUSTRATION-COUT`                | `cout-du-credit.webp`           | « Ce que l'on paie en plus » : 3 × 3 672,09 = 11 016,27 € remboursés pour 10 000 € empruntés : coût du crédit 1 016,27 €, soit la somme des intérêts à un centime près. Au tableur : =VPM(5%;3;-10000) ; sans le signe moins, −3 672,09 €.                                          |
+
+Texte alternatif de chaque écran : le contenu ci-dessus, rédigé en phrases, comme ceux du B2-04.

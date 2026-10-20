@@ -144,7 +144,22 @@ const LIGNES_DE_LA_CAMIONNETTE = tableauDAmortissement(
 decrireLaFicheDuCours('B2-05', COURS, {
   ...FICHE_DU_GABARIT_V3,
   conception: 'cours-b2-05-conception.md',
-  ateliersNotes: ['A1-10 (10)', 'A2-05 (11)', 'A3-06 (10)'],
+  ecrans: 33,
+  rythme: { expositionContinueMax: 6, interactives: 150, exposition: 30 },
+  catalogue: [
+    'A1-02',
+    'A1-04',
+    'A1-05',
+    'A1-07',
+    'A1-08',
+    'A2-02',
+    'A3-01',
+    'A3-03',
+    'A3-04',
+    'A4-01',
+    'A4-05',
+  ],
+  ateliersNotes: ['A1-10 (10)', 'A2-05 (12)', 'A3-06 (10)'],
   remediations: 15,
   corrigesSurPlace: [
     'B2-05-A1-10-ATELIER-PLACEMENT',

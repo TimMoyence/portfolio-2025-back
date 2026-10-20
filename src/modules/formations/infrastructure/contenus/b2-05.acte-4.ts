@@ -1,3 +1,4 @@
+import type { AuMoinsUnModifiable } from '../../../../common/domain/au-moins-un';
 import * as moteur from './briques';
 import {
   ACTUALISATION_INVERSEE,
@@ -23,6 +24,93 @@ import {
   TOUTE_LA_DUREE,
   VPM_NON_SIGNE,
 } from './b2-05.donnees';
+
+const QUESTIONS_DU_RAPPEL: AuMoinsUnModifiable<moteur.VoteDuCours> = [
+  moteur.rappel(
+    'b2-05-r-coefficient',
+    'interets-composes',
+    'Un placement rapporte 4 % par an. Par quel nombre multiplie-t-on le capital chaque année ?',
+    'Par 1,04',
+    [['Par 0,04', TAUX_POUR_COEFFICIENT]],
+  ),
+  moteur.rappel(
+    'b2-05-r-deux-ans',
+    'interets-composes',
+    '1 000 € sont placés à 5 % par an, à intérêts composés. Que valent-ils après deux ans ?',
+    '1 102,50 €, soit 1 000 × 1,05²',
+    [['1 100 €, soit 1 000 + 2 × 50', INTERETS_SIMPLES]],
+  ),
+  moteur.rappel(
+    'b2-05-r-valeur-actuelle',
+    'valeur-actuelle',
+    'Quelle somme placer aujourd’hui à 10 % par an pour disposer de 1 210 € dans deux ans ?',
+    '1 000 €, soit 1 210 ÷ 1,1²',
+    [['1 464,10 €, soit 1 210 × 1,1²', ACTUALISATION_INVERSEE]],
+  ),
+  moteur.rappel(
+    'b2-05-r-sens',
+    'valeur-actuelle',
+    'Pour actualiser une somme disponible dans n années, que fait-on ?',
+    'On divise par (1 + t)ⁿ',
+    [['On multiplie par (1 + t)ⁿ', ACTUALISATION_INVERSEE]],
+  ),
+  moteur.rappel(
+    'b2-05-r-duree-versement',
+    'annuites',
+    'Versements en fin d’année, de 2026 à 2030. Combien d’années le versement de fin 2027 rapporte-t-il jusqu’à fin 2030 ?',
+    'Trois ans',
+    [['Cinq ans : toute la durée du plan', TOUTE_LA_DUREE]],
+  ),
+  moteur.rappel(
+    'b2-05-r-versements',
+    'annuites',
+    'Trois versements de 1 000 € en fin d’année, à 2 %. L’épargne au troisième versement vaut-elle 3 000 € ?',
+    'Non : 3 060,40 €, intérêts compris',
+    [['Oui : trois fois 1 000 €', SANS_INTERETS]],
+  ),
+  moteur.rappel(
+    'b2-05-r-interets-emprunt',
+    'tableau-d-amortissement',
+    'Sur quel capital calcule-t-on les intérêts de la troisième année d’un emprunt ?',
+    'Sur le capital restant dû au début de la troisième année',
+    [['Sur le capital emprunté au départ', CAPITAL_INITIAL]],
+  ),
+  moteur.rappel(
+    'b2-05-r-amortissement',
+    'tableau-d-amortissement',
+    'Une annuité de 5 000 € contient 800 € d’intérêts. Quel capital rembourse-t-elle ?',
+    '4 200 €',
+    [['5 000 €', ANNUITE_POUR_AMORTISSEMENT]],
+  ),
+  moteur.rappel(
+    'b2-05-r-evolution-interets',
+    'tableau-d-amortissement',
+    'Emprunt à annuités constantes : comment évoluent les intérêts d’une année à l’autre ?',
+    'Ils baissent : le capital restant dû diminue',
+    [['Ils restent égaux : le taux ne change pas', CAPITAL_INITIAL]],
+  ),
+  moteur.rappel(
+    'b2-05-r-cout',
+    'cout-du-credit',
+    'Quatre annuités de 2 740 € remboursent un emprunt de 10 000 €. Quel est le coût du crédit ?',
+    '960 €',
+    [['10 960 €', TOTAL_REMBOURSE]],
+  ),
+  moteur.rappel(
+    'b2-05-r-vpm',
+    'tableur',
+    'Taux en C1, durée en C2, capital emprunté en C3 : quelle formule affiche une annuité positive ?',
+    '=VPM(C1;C2;-C3)',
+    [['=VPM(C1;C2;C3)', VPM_NON_SIGNE]],
+  ),
+  moteur.rappel(
+    'b2-05-r-figee',
+    'tableur',
+    'Capital dû en D2, taux en K1 : quelle formule des intérêts recopier vers le bas ?',
+    '=D2*$K$1',
+    [['=D2*K1', NON_FIGEE]],
+  ),
+];
 
 export const ACTE_4: moteur.Acte = [
   moteur.ecranV2(
@@ -292,96 +380,11 @@ export const ACTE_4: moteur.Acte = [
       screenId: 'B2-05-A4-04-RAPPEL',
       concepts: [...CONCEPTS_DES_MATHEMATIQUES_FINANCIERES],
     },
-    'Tous reçoivent les deux questions obligatoires (valeur actuelle, base des intérêts d’un emprunt), en plus de leurs points faibles.',
+    'Tous reçoivent les douze questions de la banque : le rappel couvre tout le cours pour chacun.',
     'b2-05-a4-rappel',
     {
-      questions: [
-        moteur.rappel(
-          'b2-05-r-coefficient',
-          'interets-composes',
-          'Un placement rapporte 4 % par an. Par quel nombre multiplie-t-on le capital chaque année ?',
-          'Par 1,04',
-          [['Par 0,04', TAUX_POUR_COEFFICIENT]],
-        ),
-        moteur.rappel(
-          'b2-05-r-deux-ans',
-          'interets-composes',
-          '1 000 € sont placés à 5 % par an, à intérêts composés. Que valent-ils après deux ans ?',
-          '1 102,50 €, soit 1 000 × 1,05²',
-          [['1 100 €, soit 1 000 + 2 × 50', INTERETS_SIMPLES]],
-        ),
-        moteur.rappel(
-          'b2-05-r-valeur-actuelle',
-          'valeur-actuelle',
-          'Quelle somme placer aujourd’hui à 10 % par an pour disposer de 1 210 € dans deux ans ?',
-          '1 000 €, soit 1 210 ÷ 1,1²',
-          [['1 464,10 €, soit 1 210 × 1,1²', ACTUALISATION_INVERSEE]],
-        ),
-        moteur.rappel(
-          'b2-05-r-sens',
-          'valeur-actuelle',
-          'Pour actualiser une somme disponible dans n années, que fait-on ?',
-          'On divise par (1 + t)ⁿ',
-          [['On multiplie par (1 + t)ⁿ', ACTUALISATION_INVERSEE]],
-        ),
-        moteur.rappel(
-          'b2-05-r-duree-versement',
-          'annuites',
-          'Versements en fin d’année, de 2026 à 2030. Combien d’années le versement de fin 2027 rapporte-t-il jusqu’à fin 2030 ?',
-          'Trois ans',
-          [['Cinq ans : toute la durée du plan', TOUTE_LA_DUREE]],
-        ),
-        moteur.rappel(
-          'b2-05-r-versements',
-          'annuites',
-          'Trois versements de 1 000 € en fin d’année, à 2 %. L’épargne au troisième versement vaut-elle 3 000 € ?',
-          'Non : 3 060,40 €, intérêts compris',
-          [['Oui : trois fois 1 000 €', SANS_INTERETS]],
-        ),
-        moteur.rappel(
-          'b2-05-r-interets-emprunt',
-          'tableau-d-amortissement',
-          'Sur quel capital calcule-t-on les intérêts de la troisième année d’un emprunt ?',
-          'Sur le capital restant dû au début de la troisième année',
-          [['Sur le capital emprunté au départ', CAPITAL_INITIAL]],
-        ),
-        moteur.rappel(
-          'b2-05-r-amortissement',
-          'tableau-d-amortissement',
-          'Une annuité de 5 000 € contient 800 € d’intérêts. Quel capital rembourse-t-elle ?',
-          '4 200 €',
-          [['5 000 €', ANNUITE_POUR_AMORTISSEMENT]],
-        ),
-        moteur.rappel(
-          'b2-05-r-evolution-interets',
-          'tableau-d-amortissement',
-          'Emprunt à annuités constantes : comment évoluent les intérêts d’une année à l’autre ?',
-          'Ils baissent : le capital restant dû diminue',
-          [['Ils restent égaux : le taux ne change pas', CAPITAL_INITIAL]],
-        ),
-        moteur.rappel(
-          'b2-05-r-cout',
-          'cout-du-credit',
-          'Quatre annuités de 2 740 € remboursent un emprunt de 10 000 €. Quel est le coût du crédit ?',
-          '960 €',
-          [['10 960 €', TOTAL_REMBOURSE]],
-        ),
-        moteur.rappel(
-          'b2-05-r-vpm',
-          'tableur',
-          'Taux en C1, durée en C2, capital emprunté en C3 : quelle formule affiche une annuité positive ?',
-          '=VPM(C1;C2;-C3)',
-          [['=VPM(C1;C2;C3)', VPM_NON_SIGNE]],
-        ),
-        moteur.rappel(
-          'b2-05-r-figee',
-          'tableur',
-          'Capital dû en D2, taux en K1 : quelle formule des intérêts recopier vers le bas ?',
-          '=D2*$K$1',
-          [['=D2*K1', NON_FIGEE]],
-        ),
-      ],
-      obligatoires: ['b2-05-r-valeur-actuelle', 'b2-05-r-interets-emprunt'],
+      questions: QUESTIONS_DU_RAPPEL,
+      obligatoires: QUESTIONS_DU_RAPPEL.map((question) => question.id),
     },
   ),
   moteur.ficheMemo(
