@@ -428,6 +428,19 @@ export function ecranDeRappel(
   };
 }
 
+export function rappelDeToutLeCours(
+  socle: Pick<SocleDEcran, 'screenId' | 'concepts'>,
+  rappelId: string,
+  questions: AuMoinsUnModifiable<VoteDuCours>,
+): EcranDeRappel {
+  return ecranDeRappel(
+    socle,
+    'Tous reçoivent les douze questions de la banque : le rappel couvre tout le cours pour chacun.',
+    rappelId,
+    { questions, obligatoires: questions.map((question) => question.id) },
+  );
+}
+
 export function ficheMemo(
   { screenId, titre, concepts }: SocleNomme,
   items: readonly unknown[],
@@ -574,3 +587,4 @@ function coursDuNiveau(niveau: string) {
 
 export const coursB2 = coursDuNiveau('B2');
 export const coursB3 = coursDuNiveau('B3');
+export const coursB1 = coursDuNiveau('B1');

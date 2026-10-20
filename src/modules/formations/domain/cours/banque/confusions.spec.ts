@@ -679,12 +679,17 @@ describe('CONFUSIONS', () => {
     attendreDansLaBanque(CONFUSIONS_DU_B3_01);
   });
 
-  it('QP-15 · ajoute en dernier les huit confusions qui nomment une carte rangée dans une mauvaise case', () => {
-    expect(Object.keys(CONFUSIONS)).toHaveLength(137);
-    expect(Object.keys(CONFUSIONS).slice(129)).toEqual(
+  it('QP-15 · ajoute à la suite les huit confusions qui nomment une carte rangée dans une mauvaise case', () => {
+    expect(Object.keys(CONFUSIONS).slice(129, 137)).toEqual(
       Object.keys(CONFUSIONS_DES_TRIS),
     );
     attendreDansLaBanque(CONFUSIONS_DES_TRIS);
+  });
+
+  it('ajoute en dernier la confusion d’arrondi du B1-01', () => {
+    expect(Object.keys(CONFUSIONS)).toHaveLength(138);
+    expect(Object.keys(CONFUSIONS).slice(137)).toEqual(['arrondi-oublie']);
+    expect(CONFUSIONS['arrondi-oublie'].concept).toBe('tableur');
   });
 
   it('QP-15 · nomme chacune des mauvaises cases d un tri du B3-01 qui cite une confusion existante', () => {
