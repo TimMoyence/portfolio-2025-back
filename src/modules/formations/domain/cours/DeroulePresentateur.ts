@@ -47,7 +47,6 @@ export function deroulePresentateur(
     ecrans: projection.tirage.sujet.ecrans.map((ecranPublic, index) =>
       versEcranDeroule(ecranPublic, cours.ecrans[index], projection),
     ),
-    remediations: remediationsDe(cours),
   };
 }
 

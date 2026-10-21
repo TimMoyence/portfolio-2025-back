@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "2ff5c01c4e2fdcf2a8b79696ba67ca5af0c197a6bae2186b67e9058d73362fa8",
+  "empreinte": "1f9345496f78f627878ec35341bb0d7311f11901cd10b8a780ab67632327720d",
   "sujet": {
     "id": "b2-06-exponentielle-logarithme",
     "titre": "Exponentielle et logarithme",
@@ -44,7 +44,9 @@
               }
             ],
             "metadonnees": {
-              "concepts": ["interets-composes"],
+              "concepts": [
+                "interets-composes"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",
@@ -348,7 +350,10 @@
               }
             },
             "metadonnees": {
-              "concepts": ["fonction-exponentielle", "suite-geometrique"],
+              "concepts": [
+                "fonction-exponentielle",
+                "suite-geometrique"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",
@@ -461,7 +466,9 @@
               }
             ],
             "metadonnees": {
-              "concepts": ["fonction-exponentielle"],
+              "concepts": [
+                "fonction-exponentielle"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 6,
               "modalite": "solo",
@@ -514,7 +521,9 @@
                   "enonce": "Combien de sacs le modèle prévoit-il en juin 2026 ? Arrondir à l’unité.",
                   "unite": "sacs",
                   "metadonnees": {
-                    "concepts": ["fonction-exponentielle"],
+                    "concepts": [
+                      "fonction-exponentielle"
+                    ],
                     "misconceptionsCiblees": [],
                     "dureeMinutes": 10,
                     "modalite": "solo",
@@ -550,7 +559,9 @@
                   "enonce": "Quel est le taux d’évolution mensuel des ventes en ligne, en % ? Arrondir au centième.",
                   "unite": "%",
                   "metadonnees": {
-                    "concepts": ["fonction-exponentielle"],
+                    "concepts": [
+                      "fonction-exponentielle"
+                    ],
                     "misconceptionsCiblees": [],
                     "dureeMinutes": 10,
                     "modalite": "solo",
@@ -612,16 +623,88 @@
               "En C3, écrivez le taux d’évolution des ventes entre le mois de la ligne 2 et celui de la ligne 3. Recopiez jusqu’en C8 : sélectionnez C3 et cliquez cinq fois sur « Recopier vers le bas », une ligne par clic.",
               "a et k ne s’écrivent pas dans la formule : utilisez E1 et G1, figés par des $."
             ],
-            "lettres": ["A", "B", "C", "D", "E", "F", "G"],
+            "lettres": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G"
+            ],
             "grille": [
-              ["A1", "B1", "C1", "D1", "E1", "F1", "G1"],
-              ["A2", "B2", "C2", "D2", "E2", "F2", "G2"],
-              ["A3", "B3", "C3", "D3", "E3", "F3", "G3"],
-              ["A4", "B4", "C4", "D4", "E4", "F4", "G4"],
-              ["A5", "B5", "C5", "D5", "E5", "F5", "G5"],
-              ["A6", "B6", "C6", "D6", "E6", "F6", "G6"],
-              ["A7", "B7", "C7", "D7", "E7", "F7", "G7"],
-              ["A8", "B8", "C8", "D8", "E8", "F8", "G8"]
+              [
+                "A1",
+                "B1",
+                "C1",
+                "D1",
+                "E1",
+                "F1",
+                "G1"
+              ],
+              [
+                "A2",
+                "B2",
+                "C2",
+                "D2",
+                "E2",
+                "F2",
+                "G2"
+              ],
+              [
+                "A3",
+                "B3",
+                "C3",
+                "D3",
+                "E3",
+                "F3",
+                "G3"
+              ],
+              [
+                "A4",
+                "B4",
+                "C4",
+                "D4",
+                "E4",
+                "F4",
+                "G4"
+              ],
+              [
+                "A5",
+                "B5",
+                "C5",
+                "D5",
+                "E5",
+                "F5",
+                "G5"
+              ],
+              [
+                "A6",
+                "B6",
+                "C6",
+                "D6",
+                "E6",
+                "F6",
+                "G6"
+              ],
+              [
+                "A7",
+                "B7",
+                "C7",
+                "D7",
+                "E7",
+                "F7",
+                "G7"
+              ],
+              [
+                "A8",
+                "B8",
+                "C8",
+                "D8",
+                "E8",
+                "F8",
+                "G8"
+              ]
             ],
             "longueurMaxSaisie": 200,
             "initiale": {
@@ -661,7 +744,10 @@
               "formules": []
             },
             "metadonnees": {
-              "concepts": ["tableur", "fonction-exponentielle"],
+              "concepts": [
+                "tableur",
+                "fonction-exponentielle"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 8,
               "modalite": "solo",
@@ -681,7 +767,9 @@
             "id": "b2-06-a1-jalon",
             "invite": "Je sais calculer une valeur de a e^(kx), en donner le taux par unité et l’écrire au tableur.",
             "metadonnees": {
-              "concepts": ["fonction-exponentielle"],
+              "concepts": [
+                "fonction-exponentielle"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -714,7 +802,10 @@
               }
             },
             "metadonnees": {
-              "concepts": ["logarithme-neperien", "resolution-par-logarithme"],
+              "concepts": [
+                "logarithme-neperien",
+                "resolution-par-logarithme"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 5,
               "modalite": "solo",
@@ -773,7 +864,9 @@
               }
             },
             "metadonnees": {
-              "concepts": ["logarithme-neperien"],
+              "concepts": [
+                "logarithme-neperien"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",
@@ -830,7 +923,10 @@
               }
             },
             "metadonnees": {
-              "concepts": ["resolution-par-logarithme", "tableur"],
+              "concepts": [
+                "resolution-par-logarithme",
+                "tableur"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",
@@ -882,7 +978,10 @@
               }
             ],
             "metadonnees": {
-              "concepts": ["resolution-par-logarithme", "interets-composes"],
+              "concepts": [
+                "resolution-par-logarithme",
+                "interets-composes"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 6,
               "modalite": "solo",
@@ -1038,15 +1137,79 @@
               "En C2, calculez le mois exact x en divisant par k (G1). Recopiez jusqu’en C7 : sélectionnez C2 et cliquez cinq fois sur « Recopier vers le bas », une ligne par clic.",
               "a et k ne s’écrivent pas dans les formules : utilisez E1 et G1, figés par des $."
             ],
-            "lettres": ["A", "B", "C", "D", "E", "F", "G"],
+            "lettres": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G"
+            ],
             "grille": [
-              ["A1", "B1", "C1", "D1", "E1", "F1", "G1"],
-              ["A2", "B2", "C2", "D2", "E2", "F2", "G2"],
-              ["A3", "B3", "C3", "D3", "E3", "F3", "G3"],
-              ["A4", "B4", "C4", "D4", "E4", "F4", "G4"],
-              ["A5", "B5", "C5", "D5", "E5", "F5", "G5"],
-              ["A6", "B6", "C6", "D6", "E6", "F6", "G6"],
-              ["A7", "B7", "C7", "D7", "E7", "F7", "G7"]
+              [
+                "A1",
+                "B1",
+                "C1",
+                "D1",
+                "E1",
+                "F1",
+                "G1"
+              ],
+              [
+                "A2",
+                "B2",
+                "C2",
+                "D2",
+                "E2",
+                "F2",
+                "G2"
+              ],
+              [
+                "A3",
+                "B3",
+                "C3",
+                "D3",
+                "E3",
+                "F3",
+                "G3"
+              ],
+              [
+                "A4",
+                "B4",
+                "C4",
+                "D4",
+                "E4",
+                "F4",
+                "G4"
+              ],
+              [
+                "A5",
+                "B5",
+                "C5",
+                "D5",
+                "E5",
+                "F5",
+                "G5"
+              ],
+              [
+                "A6",
+                "B6",
+                "C6",
+                "D6",
+                "E6",
+                "F6",
+                "G6"
+              ],
+              [
+                "A7",
+                "B7",
+                "C7",
+                "D7",
+                "E7",
+                "F7",
+                "G7"
+              ]
             ],
             "longueurMaxSaisie": 200,
             "initiale": {
@@ -1084,7 +1247,10 @@
               "formules": []
             },
             "metadonnees": {
-              "concepts": ["tableur", "resolution-par-logarithme"],
+              "concepts": [
+                "tableur",
+                "resolution-par-logarithme"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 10,
               "modalite": "solo",
@@ -1104,7 +1270,10 @@
             "id": "b2-06-a2-jalon",
             "invite": "Je sais résoudre qⁿ ≥ s et a e^(kx) ≥ s avec ln, et donner le premier entier solution.",
             "metadonnees": {
-              "concepts": ["logarithme-neperien", "resolution-par-logarithme"],
+              "concepts": [
+                "logarithme-neperien",
+                "resolution-par-logarithme"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -1129,11 +1298,25 @@
               "props": {
                 "title": "La demande des boutiques selon le prix de gros",
                 "caption": "Demande mensuelle de sacs Sillage relevée auprès des boutiques",
-                "labels": ["20 €", "25 €", "30 €", "35 €", "40 €", "45 €"],
+                "labels": [
+                  "20 €",
+                  "25 €",
+                  "30 €",
+                  "35 €",
+                  "40 €",
+                  "45 €"
+                ],
                 "series": [
                   {
                     "label": "Demande relevée",
-                    "values": [1100, 860, 670, 520, 410, 315],
+                    "values": [
+                      1100,
+                      860,
+                      670,
+                      520,
+                      410,
+                      315
+                    ],
                     "tone": "ink"
                   }
                 ],
@@ -1146,7 +1329,9 @@
               }
             },
             "metadonnees": {
-              "concepts": ["ajustement-exponentiel"],
+              "concepts": [
+                "ajustement-exponentiel"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -1356,7 +1541,10 @@
               }
             ],
             "metadonnees": {
-              "concepts": ["ajustement-exponentiel", "prevision"],
+              "concepts": [
+                "ajustement-exponentiel",
+                "prevision"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 6,
               "modalite": "solo",
@@ -1383,7 +1571,14 @@
             ],
             "echeances": 6,
             "intituleDesLignes": "Prix de gros",
-            "libellesLignes": ["20 €", "25 €", "30 €", "35 €", "40 €", "45 €"],
+            "libellesLignes": [
+              "20 €",
+              "25 €",
+              "30 €",
+              "35 €",
+              "40 €",
+              "45 €"
+            ],
             "parametres": {},
             "colonnes": [
               {
@@ -1391,7 +1586,14 @@
                 "intitule": "Prix de gros x (€)",
                 "role": "donnee",
                 "decimales": 0,
-                "valeurs": [20, 25, 30, 35, 40, 45],
+                "valeurs": [
+                  20,
+                  25,
+                  30,
+                  35,
+                  40,
+                  45
+                ],
                 "totalise": false
               },
               {
@@ -1399,7 +1601,14 @@
                 "intitule": "Demande y (sacs)",
                 "role": "donnee",
                 "decimales": 0,
-                "valeurs": [1100, 860, 670, 520, 410, 315],
+                "valeurs": [
+                  1100,
+                  860,
+                  670,
+                  520,
+                  410,
+                  315
+                ],
                 "totalise": false
               },
               {
@@ -1521,7 +1730,10 @@
               "soldeFinal": null
             },
             "metadonnees": {
-              "concepts": ["ajustement-exponentiel", "logarithme-neperien"],
+              "concepts": [
+                "ajustement-exponentiel",
+                "logarithme-neperien"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 8,
               "modalite": "solo",
@@ -1669,7 +1881,9 @@
             "id": "b2-06-a3-jalon",
             "invite": "Je sais reconnaître un modèle exponentiel, l’ajuster par z = ln y et m’en servir pour prévoir.",
             "metadonnees": {
-              "concepts": ["ajustement-exponentiel"],
+              "concepts": [
+                "ajustement-exponentiel"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -1803,15 +2017,79 @@
               "En F2, calculez le coefficient a du modèle y = a e^(αx).",
               "En G2, calculez la demande prévue au prix de 40 €, soit x = 4, à partir de F2 et D2."
             ],
-            "lettres": ["A", "B", "C", "D", "E", "F", "G"],
+            "lettres": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G"
+            ],
             "grille": [
-              ["A1", "B1", "C1", "D1", "E1", "F1", "G1"],
-              ["A2", "B2", "C2", "D2", "E2", "F2", "G2"],
-              ["A3", "B3", "C3", "D3", "E3", "F3", "G3"],
-              ["A4", "B4", "C4", "D4", "E4", "F4", "G4"],
-              ["A5", "B5", "C5", "D5", "E5", "F5", "G5"],
-              ["A6", "B6", "C6", "D6", "E6", "F6", "G6"],
-              ["A7", "B7", "C7", "D7", "E7", "F7", "G7"]
+              [
+                "A1",
+                "B1",
+                "C1",
+                "D1",
+                "E1",
+                "F1",
+                "G1"
+              ],
+              [
+                "A2",
+                "B2",
+                "C2",
+                "D2",
+                "E2",
+                "F2",
+                "G2"
+              ],
+              [
+                "A3",
+                "B3",
+                "C3",
+                "D3",
+                "E3",
+                "F3",
+                "G3"
+              ],
+              [
+                "A4",
+                "B4",
+                "C4",
+                "D4",
+                "E4",
+                "F4",
+                "G4"
+              ],
+              [
+                "A5",
+                "B5",
+                "C5",
+                "D5",
+                "E5",
+                "F5",
+                "G5"
+              ],
+              [
+                "A6",
+                "B6",
+                "C6",
+                "D6",
+                "E6",
+                "F6",
+                "G6"
+              ],
+              [
+                "A7",
+                "B7",
+                "C7",
+                "D7",
+                "E7",
+                "F7",
+                "G7"
+              ]
             ],
             "longueurMaxSaisie": 200,
             "initiale": {
@@ -1861,7 +2139,11 @@
               "formules": []
             },
             "metadonnees": {
-              "concepts": ["tableur", "ajustement-exponentiel", "prevision"],
+              "concepts": [
+                "tableur",
+                "ajustement-exponentiel",
+                "prevision"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 16,
               "modalite": "solo",
@@ -2070,7 +2352,10 @@
               }
             ],
             "metadonnees": {
-              "concepts": ["resolution-par-logarithme", "tableur"],
+              "concepts": [
+                "resolution-par-logarithme",
+                "tableur"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 4,
               "modalite": "solo",
@@ -2124,7 +2409,9 @@
               }
             ],
             "metadonnees": {
-              "concepts": ["interets-composes"],
+              "concepts": [
+                "interets-composes"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",
@@ -2562,7 +2849,10 @@
               }
             },
             "metadonnees": {
-              "concepts": ["fonction-exponentielle", "suite-geometrique"],
+              "concepts": [
+                "fonction-exponentielle",
+                "suite-geometrique"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",
@@ -2689,7 +2979,9 @@
               }
             ],
             "metadonnees": {
-              "concepts": ["fonction-exponentielle"],
+              "concepts": [
+                "fonction-exponentielle"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 6,
               "modalite": "solo",
@@ -2749,7 +3041,9 @@
                   "enonce": "Combien de sacs le modèle prévoit-il en juin 2026 ? Arrondir à l’unité.",
                   "unite": "sacs",
                   "metadonnees": {
-                    "concepts": ["fonction-exponentielle"],
+                    "concepts": [
+                      "fonction-exponentielle"
+                    ],
                     "misconceptionsCiblees": [],
                     "dureeMinutes": 10,
                     "modalite": "solo",
@@ -2785,7 +3079,9 @@
                   "enonce": "Quel est le taux d’évolution mensuel des ventes en ligne, en % ? Arrondir au centième.",
                   "unite": "%",
                   "metadonnees": {
-                    "concepts": ["fonction-exponentielle"],
+                    "concepts": [
+                      "fonction-exponentielle"
+                    ],
                     "misconceptionsCiblees": [],
                     "dureeMinutes": 10,
                     "modalite": "solo",
@@ -2968,16 +3264,88 @@
               "En C3, écrivez le taux d’évolution des ventes entre le mois de la ligne 2 et celui de la ligne 3. Recopiez jusqu’en C8 : sélectionnez C3 et cliquez cinq fois sur « Recopier vers le bas », une ligne par clic.",
               "a et k ne s’écrivent pas dans la formule : utilisez E1 et G1, figés par des $."
             ],
-            "lettres": ["A", "B", "C", "D", "E", "F", "G"],
+            "lettres": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G"
+            ],
             "grille": [
-              ["A1", "B1", "C1", "D1", "E1", "F1", "G1"],
-              ["A2", "B2", "C2", "D2", "E2", "F2", "G2"],
-              ["A3", "B3", "C3", "D3", "E3", "F3", "G3"],
-              ["A4", "B4", "C4", "D4", "E4", "F4", "G4"],
-              ["A5", "B5", "C5", "D5", "E5", "F5", "G5"],
-              ["A6", "B6", "C6", "D6", "E6", "F6", "G6"],
-              ["A7", "B7", "C7", "D7", "E7", "F7", "G7"],
-              ["A8", "B8", "C8", "D8", "E8", "F8", "G8"]
+              [
+                "A1",
+                "B1",
+                "C1",
+                "D1",
+                "E1",
+                "F1",
+                "G1"
+              ],
+              [
+                "A2",
+                "B2",
+                "C2",
+                "D2",
+                "E2",
+                "F2",
+                "G2"
+              ],
+              [
+                "A3",
+                "B3",
+                "C3",
+                "D3",
+                "E3",
+                "F3",
+                "G3"
+              ],
+              [
+                "A4",
+                "B4",
+                "C4",
+                "D4",
+                "E4",
+                "F4",
+                "G4"
+              ],
+              [
+                "A5",
+                "B5",
+                "C5",
+                "D5",
+                "E5",
+                "F5",
+                "G5"
+              ],
+              [
+                "A6",
+                "B6",
+                "C6",
+                "D6",
+                "E6",
+                "F6",
+                "G6"
+              ],
+              [
+                "A7",
+                "B7",
+                "C7",
+                "D7",
+                "E7",
+                "F7",
+                "G7"
+              ],
+              [
+                "A8",
+                "B8",
+                "C8",
+                "D8",
+                "E8",
+                "F8",
+                "G8"
+              ]
             ],
             "longueurMaxSaisie": 200,
             "initiale": {
@@ -3017,7 +3385,10 @@
               "formules": []
             },
             "metadonnees": {
-              "concepts": ["tableur", "fonction-exponentielle"],
+              "concepts": [
+                "tableur",
+                "fonction-exponentielle"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 8,
               "modalite": "solo",
@@ -3229,7 +3600,9 @@
             "id": "b2-06-a1-jalon",
             "invite": "Je sais calculer une valeur de a e^(kx), en donner le taux par unité et l’écrire au tableur.",
             "metadonnees": {
-              "concepts": ["fonction-exponentielle"],
+              "concepts": [
+                "fonction-exponentielle"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -3269,7 +3642,10 @@
               }
             },
             "metadonnees": {
-              "concepts": ["logarithme-neperien", "resolution-par-logarithme"],
+              "concepts": [
+                "logarithme-neperien",
+                "resolution-par-logarithme"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 5,
               "modalite": "solo",
@@ -3342,7 +3718,9 @@
               }
             },
             "metadonnees": {
-              "concepts": ["logarithme-neperien"],
+              "concepts": [
+                "logarithme-neperien"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",
@@ -3406,7 +3784,10 @@
               }
             },
             "metadonnees": {
-              "concepts": ["resolution-par-logarithme", "tableur"],
+              "concepts": [
+                "resolution-par-logarithme",
+                "tableur"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",
@@ -3465,7 +3846,10 @@
               }
             ],
             "metadonnees": {
-              "concepts": ["resolution-par-logarithme", "interets-composes"],
+              "concepts": [
+                "resolution-par-logarithme",
+                "interets-composes"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 6,
               "modalite": "solo",
@@ -3749,15 +4133,79 @@
               "En C2, calculez le mois exact x en divisant par k (G1). Recopiez jusqu’en C7 : sélectionnez C2 et cliquez cinq fois sur « Recopier vers le bas », une ligne par clic.",
               "a et k ne s’écrivent pas dans les formules : utilisez E1 et G1, figés par des $."
             ],
-            "lettres": ["A", "B", "C", "D", "E", "F", "G"],
+            "lettres": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G"
+            ],
             "grille": [
-              ["A1", "B1", "C1", "D1", "E1", "F1", "G1"],
-              ["A2", "B2", "C2", "D2", "E2", "F2", "G2"],
-              ["A3", "B3", "C3", "D3", "E3", "F3", "G3"],
-              ["A4", "B4", "C4", "D4", "E4", "F4", "G4"],
-              ["A5", "B5", "C5", "D5", "E5", "F5", "G5"],
-              ["A6", "B6", "C6", "D6", "E6", "F6", "G6"],
-              ["A7", "B7", "C7", "D7", "E7", "F7", "G7"]
+              [
+                "A1",
+                "B1",
+                "C1",
+                "D1",
+                "E1",
+                "F1",
+                "G1"
+              ],
+              [
+                "A2",
+                "B2",
+                "C2",
+                "D2",
+                "E2",
+                "F2",
+                "G2"
+              ],
+              [
+                "A3",
+                "B3",
+                "C3",
+                "D3",
+                "E3",
+                "F3",
+                "G3"
+              ],
+              [
+                "A4",
+                "B4",
+                "C4",
+                "D4",
+                "E4",
+                "F4",
+                "G4"
+              ],
+              [
+                "A5",
+                "B5",
+                "C5",
+                "D5",
+                "E5",
+                "F5",
+                "G5"
+              ],
+              [
+                "A6",
+                "B6",
+                "C6",
+                "D6",
+                "E6",
+                "F6",
+                "G6"
+              ],
+              [
+                "A7",
+                "B7",
+                "C7",
+                "D7",
+                "E7",
+                "F7",
+                "G7"
+              ]
             ],
             "longueurMaxSaisie": 200,
             "initiale": {
@@ -3795,7 +4243,10 @@
               "formules": []
             },
             "metadonnees": {
-              "concepts": ["tableur", "resolution-par-logarithme"],
+              "concepts": [
+                "tableur",
+                "resolution-par-logarithme"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 10,
               "modalite": "solo",
@@ -3994,7 +4445,10 @@
             "id": "b2-06-a2-jalon",
             "invite": "Je sais résoudre qⁿ ≥ s et a e^(kx) ≥ s avec ln, et donner le premier entier solution.",
             "metadonnees": {
-              "concepts": ["logarithme-neperien", "resolution-par-logarithme"],
+              "concepts": [
+                "logarithme-neperien",
+                "resolution-par-logarithme"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -4026,11 +4480,25 @@
               "props": {
                 "title": "La demande des boutiques selon le prix de gros",
                 "caption": "Demande mensuelle de sacs Sillage relevée auprès des boutiques",
-                "labels": ["20 €", "25 €", "30 €", "35 €", "40 €", "45 €"],
+                "labels": [
+                  "20 €",
+                  "25 €",
+                  "30 €",
+                  "35 €",
+                  "40 €",
+                  "45 €"
+                ],
                 "series": [
                   {
                     "label": "Demande relevée",
-                    "values": [1100, 860, 670, 520, 410, 315],
+                    "values": [
+                      1100,
+                      860,
+                      670,
+                      520,
+                      410,
+                      315
+                    ],
                     "tone": "ink"
                   }
                 ],
@@ -4043,7 +4511,9 @@
               }
             },
             "metadonnees": {
-              "concepts": ["ajustement-exponentiel"],
+              "concepts": [
+                "ajustement-exponentiel"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -4339,7 +4809,10 @@
               }
             ],
             "metadonnees": {
-              "concepts": ["ajustement-exponentiel", "prevision"],
+              "concepts": [
+                "ajustement-exponentiel",
+                "prevision"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 6,
               "modalite": "solo",
@@ -4373,7 +4846,14 @@
             ],
             "echeances": 6,
             "intituleDesLignes": "Prix de gros",
-            "libellesLignes": ["20 €", "25 €", "30 €", "35 €", "40 €", "45 €"],
+            "libellesLignes": [
+              "20 €",
+              "25 €",
+              "30 €",
+              "35 €",
+              "40 €",
+              "45 €"
+            ],
             "parametres": {},
             "colonnes": [
               {
@@ -4381,7 +4861,14 @@
                 "intitule": "Prix de gros x (€)",
                 "role": "donnee",
                 "decimales": 0,
-                "valeurs": [20, 25, 30, 35, 40, 45],
+                "valeurs": [
+                  20,
+                  25,
+                  30,
+                  35,
+                  40,
+                  45
+                ],
                 "totalise": false
               },
               {
@@ -4389,7 +4876,14 @@
                 "intitule": "Demande y (sacs)",
                 "role": "donnee",
                 "decimales": 0,
-                "valeurs": [1100, 860, 670, 520, 410, 315],
+                "valeurs": [
+                  1100,
+                  860,
+                  670,
+                  520,
+                  410,
+                  315
+                ],
                 "totalise": false
               },
               {
@@ -4511,7 +5005,10 @@
               "soldeFinal": null
             },
             "metadonnees": {
-              "concepts": ["ajustement-exponentiel", "logarithme-neperien"],
+              "concepts": [
+                "ajustement-exponentiel",
+                "logarithme-neperien"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 8,
               "modalite": "solo",
@@ -5012,7 +5509,9 @@
             "id": "b2-06-a3-jalon",
             "invite": "Je sais reconnaître un modèle exponentiel, l’ajuster par z = ln y et m’en servir pour prévoir.",
             "metadonnees": {
-              "concepts": ["ajustement-exponentiel"],
+              "concepts": [
+                "ajustement-exponentiel"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -5160,15 +5659,79 @@
               "En F2, calculez le coefficient a du modèle y = a e^(αx).",
               "En G2, calculez la demande prévue au prix de 40 €, soit x = 4, à partir de F2 et D2."
             ],
-            "lettres": ["A", "B", "C", "D", "E", "F", "G"],
+            "lettres": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G"
+            ],
             "grille": [
-              ["A1", "B1", "C1", "D1", "E1", "F1", "G1"],
-              ["A2", "B2", "C2", "D2", "E2", "F2", "G2"],
-              ["A3", "B3", "C3", "D3", "E3", "F3", "G3"],
-              ["A4", "B4", "C4", "D4", "E4", "F4", "G4"],
-              ["A5", "B5", "C5", "D5", "E5", "F5", "G5"],
-              ["A6", "B6", "C6", "D6", "E6", "F6", "G6"],
-              ["A7", "B7", "C7", "D7", "E7", "F7", "G7"]
+              [
+                "A1",
+                "B1",
+                "C1",
+                "D1",
+                "E1",
+                "F1",
+                "G1"
+              ],
+              [
+                "A2",
+                "B2",
+                "C2",
+                "D2",
+                "E2",
+                "F2",
+                "G2"
+              ],
+              [
+                "A3",
+                "B3",
+                "C3",
+                "D3",
+                "E3",
+                "F3",
+                "G3"
+              ],
+              [
+                "A4",
+                "B4",
+                "C4",
+                "D4",
+                "E4",
+                "F4",
+                "G4"
+              ],
+              [
+                "A5",
+                "B5",
+                "C5",
+                "D5",
+                "E5",
+                "F5",
+                "G5"
+              ],
+              [
+                "A6",
+                "B6",
+                "C6",
+                "D6",
+                "E6",
+                "F6",
+                "G6"
+              ],
+              [
+                "A7",
+                "B7",
+                "C7",
+                "D7",
+                "E7",
+                "F7",
+                "G7"
+              ]
             ],
             "longueurMaxSaisie": 200,
             "initiale": {
@@ -5218,7 +5781,11 @@
               "formules": []
             },
             "metadonnees": {
-              "concepts": ["tableur", "ajustement-exponentiel", "prevision"],
+              "concepts": [
+                "tableur",
+                "ajustement-exponentiel",
+                "prevision"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 16,
               "modalite": "solo",
@@ -5957,7 +6524,10 @@
               }
             ],
             "metadonnees": {
-              "concepts": ["resolution-par-logarithme", "tableur"],
+              "concepts": [
+                "resolution-par-logarithme",
+                "tableur"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 4,
               "modalite": "solo",
@@ -6015,24 +6585,7 @@
         "corrigeEcran": null,
         "reflexion": null
       }
-    ],
-    "remediations": {
-      "coefficient-confondu-avec-taux": "B2-06-A1-08-COURS-MODELE-EXP",
-      "interets-simples-au-lieu-de-composes": "B2-06-A1-07-COURS-EXPONENTIELLE",
-      "nature-de-suite-confondue": "B2-06-A1-07-COURS-EXPONENTIELLE",
-      "exponentielle-lue-comme-produit": "B2-06-A1-07-COURS-EXPONENTIELLE",
-      "signe-de-k-ignore": "B2-06-A1-08-COURS-MODELE-EXP",
-      "k-confondu-avec-taux": "B2-06-A1-08-COURS-MODELE-EXP",
-      "reference-relative-non-figee": "B2-06-A1-08-COURS-MODELE-EXP",
-      "ln-produit-en-produit": "B2-06-A2-02-COURS-LOGARITHME",
-      "log-decimal-au-lieu-de-ln": "B2-06-A2-02-COURS-LOGARITHME",
-      "seuil-par-division": "B2-06-A2-03-COURS-SEUIL",
-      "sens-inegalite-ln-negatif": "B2-06-A2-03-COURS-SEUIL",
-      "seuil-mal-arrondi": "B2-06-A2-03-COURS-SEUIL",
-      "ajustement-affine-sur-y": "B2-06-A3-04-COURS-AJUSTEMENT",
-      "ordonnee-non-exponentiee": "B2-06-A3-04-COURS-AJUSTEMENT",
-      "pente-ordonnee-inversees": "B2-06-A3-04-COURS-AJUSTEMENT"
-    }
+    ]
   },
   "catalogue": {
     "id": "b2-06-exponentielle-logarithme",
@@ -6289,7 +6842,10 @@
               }
             },
             "metadonnees": {
-              "concepts": ["fonction-exponentielle", "suite-geometrique"],
+              "concepts": [
+                "fonction-exponentielle",
+                "suite-geometrique"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",
@@ -6448,7 +7004,9 @@
               }
             },
             "metadonnees": {
-              "concepts": ["logarithme-neperien"],
+              "concepts": [
+                "logarithme-neperien"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",
@@ -6505,7 +7063,10 @@
               }
             },
             "metadonnees": {
-              "concepts": ["resolution-par-logarithme", "tableur"],
+              "concepts": [
+                "resolution-par-logarithme",
+                "tableur"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",
@@ -6562,11 +7123,25 @@
               "props": {
                 "title": "La demande des boutiques selon le prix de gros",
                 "caption": "Demande mensuelle de sacs Sillage relevée auprès des boutiques",
-                "labels": ["20 €", "25 €", "30 €", "35 €", "40 €", "45 €"],
+                "labels": [
+                  "20 €",
+                  "25 €",
+                  "30 €",
+                  "35 €",
+                  "40 €",
+                  "45 €"
+                ],
                 "series": [
                   {
                     "label": "Demande relevée",
-                    "values": [1100, 860, 670, 520, 410, 315],
+                    "values": [
+                      1100,
+                      860,
+                      670,
+                      520,
+                      410,
+                      315
+                    ],
                     "tone": "ink"
                   }
                 ],
@@ -6579,7 +7154,9 @@
               }
             },
             "metadonnees": {
-              "concepts": ["ajustement-exponentiel"],
+              "concepts": [
+                "ajustement-exponentiel"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",

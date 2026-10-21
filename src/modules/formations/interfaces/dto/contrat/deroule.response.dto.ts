@@ -82,11 +82,4 @@ export class DerouleResponseDto
 {
   @ApiProperty({ type: [EcranDerouleResponseDto] })
   ecrans: readonly EcranDerouleResponseDto[];
-
-  @ApiProperty({
-    type: 'object',
-    additionalProperties: { type: 'string' },
-    example: { 'base-arrivee': 'B2-01-A3-04-FIL-TECHNIQUE' },
-  })
-  remediations: Record<string, string>;
 }

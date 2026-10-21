@@ -854,7 +854,6 @@ describe('Contrats figés du cours B2-01 V3 (§ 9, lot 0)', () => {
       const deroule = {
         ...COURS_PUBLIC,
         ecrans: [ecran],
-        remediations: { 'base-arrivee': 'B2-01-A3-04-FIL-TECHNIQUE' },
       } satisfies DerouleCours;
 
       expect(corriges.map((corrige) => corrige.type)).toHaveLength(6);

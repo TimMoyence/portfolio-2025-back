@@ -27,7 +27,7 @@ import {
 } from '../../../../common/domain/texte/sans-espaces-typographiques';
 import { CONFUSIONS } from './banque/confusions';
 import { lireCoursStocke } from './CoursStocke';
-import { deroulePresentateur } from './DeroulePresentateur';
+import { deroulePresentateur, remediationsDe } from './DeroulePresentateur';
 import { correctionDeLEcranRevele } from './Diffusion';
 import { SEUIL_PAR_DEFAUT } from './EcranServi';
 import type { CorrigePresentateur, EcranDeroule } from './DeroulePresentateur';
@@ -121,8 +121,9 @@ describe('deroulePresentateur', () => {
     ).toEqual(['hausse-baisse-symetriques']);
   });
 
-  it('expose les remediations du cours', () => {
-    expect(deroule.remediations).toEqual({
+  it('lit les remediations du cours, et le déroulé ne les sert plus', () => {
+    expect(deroule).not.toHaveProperty('remediations');
+    expect(remediationsDe(cours)).toEqual({
       'hausse-baisse-symetriques': 'E-REM',
       'raisonnement-additif': 'E-REM',
       'ecart-absolu-au-lieu-du-taux': 'E-REM',

@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "7b0106a8f5cbcb2d04055d86061e3687db48f570cb202998248afe0013acbc36",
+  "empreinte": "3fe23c6c27da2274df757a3dd7fae2b9b45cc94fc71bd0a7866c6b02a315d5fd",
   "sujet": {
     "id": "b2-03-logique",
     "titre": "Logique : écrire et contrôler une règle",
@@ -38,7 +38,9 @@
               }
             },
             "metadonnees": {
-              "concepts": ["proposition"],
+              "concepts": [
+                "proposition"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -73,7 +75,10 @@
               }
             ],
             "metadonnees": {
-              "concepts": ["proposition", "connecteur"],
+              "concepts": [
+                "proposition",
+                "connecteur"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 5,
               "modalite": "solo",
@@ -278,7 +283,9 @@
               }
             },
             "metadonnees": {
-              "concepts": ["proposition"],
+              "concepts": [
+                "proposition"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -343,7 +350,10 @@
               }
             },
             "metadonnees": {
-              "concepts": ["proposition", "connecteur"],
+              "concepts": [
+                "proposition",
+                "connecteur"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -391,7 +401,11 @@
               }
             },
             "metadonnees": {
-              "concepts": ["proposition", "connecteur", "tableur"],
+              "concepts": [
+                "proposition",
+                "connecteur",
+                "tableur"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -419,7 +433,10 @@
               }
             },
             "metadonnees": {
-              "concepts": ["connecteur", "proposition"],
+              "concepts": [
+                "connecteur",
+                "proposition"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -466,7 +483,10 @@
               }
             },
             "metadonnees": {
-              "concepts": ["connecteur", "proposition"],
+              "concepts": [
+                "connecteur",
+                "proposition"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -492,7 +512,12 @@
             ],
             "echeances": 4,
             "intituleDesLignes": "Facture",
-            "libellesLignes": ["F205", "F203", "F202", "F201"],
+            "libellesLignes": [
+              "F205",
+              "F203",
+              "F202",
+              "F201"
+            ],
             "parametres": {},
             "colonnes": [
               {
@@ -501,7 +526,12 @@
                 "role": "donnee",
                 "format": "booleen",
                 "decimales": 0,
-                "valeurs": [1, 1, 0, 0],
+                "valeurs": [
+                  1,
+                  1,
+                  0,
+                  0
+                ],
                 "totalise": false
               },
               {
@@ -510,7 +540,12 @@
                 "role": "donnee",
                 "format": "booleen",
                 "decimales": 0,
-                "valeurs": [1, 0, 1, 0],
+                "valeurs": [
+                  1,
+                  0,
+                  1,
+                  0
+                ],
                 "totalise": false
               },
               {
@@ -671,7 +706,9 @@
               "soldeFinal": null
             },
             "metadonnees": {
-              "concepts": ["connecteur"],
+              "concepts": [
+                "connecteur"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 8,
               "modalite": "solo",
@@ -745,7 +782,9 @@
             "id": "b2-03-a1-jalon",
             "invite": "Je sais traduire une règle avec non, et, ou, si… alors, et placer la borne.",
             "metadonnees": {
-              "concepts": ["connecteur"],
+              "concepts": [
+                "connecteur"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -778,7 +817,9 @@
               }
             },
             "metadonnees": {
-              "concepts": ["negation"],
+              "concepts": [
+                "negation"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 5,
               "modalite": "solo",
@@ -807,7 +848,9 @@
               }
             },
             "metadonnees": {
-              "concepts": ["negation"],
+              "concepts": [
+                "negation"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -854,7 +897,10 @@
               }
             },
             "metadonnees": {
-              "concepts": ["negation", "tableur"],
+              "concepts": [
+                "negation",
+                "tableur"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -882,7 +928,10 @@
               }
             },
             "metadonnees": {
-              "concepts": ["negation", "connecteur"],
+              "concepts": [
+                "negation",
+                "connecteur"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -929,7 +978,10 @@
               }
             },
             "metadonnees": {
-              "concepts": ["negation", "connecteur"],
+              "concepts": [
+                "negation",
+                "connecteur"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -996,7 +1048,10 @@
                   "enonce": "Combien de factures ne sont pas à viser ?",
                   "unite": "factures",
                   "metadonnees": {
-                    "concepts": ["negation", "tableur"],
+                    "concepts": [
+                      "negation",
+                      "tableur"
+                    ],
                     "misconceptionsCiblees": [],
                     "dureeMinutes": 11,
                     "modalite": "solo",
@@ -1089,14 +1144,56 @@
               "En E2, écrivez le même contrôle avec SI et ET, sans NON.",
               "Recopiez D2 et E2 jusqu’à la ligne 6 : sélectionnez D2 et cliquez quatre fois sur « Recopier vers le bas », une ligne par clic, puis de même depuis E2. Les deux colonnes doivent afficher la même chose."
             ],
-            "lettres": ["A", "B", "C", "D", "E"],
+            "lettres": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E"
+            ],
             "grille": [
-              ["A1", "B1", "C1", "D1", "E1"],
-              ["A2", "B2", "C2", "D2", "E2"],
-              ["A3", "B3", "C3", "D3", "E3"],
-              ["A4", "B4", "C4", "D4", "E4"],
-              ["A5", "B5", "C5", "D5", "E5"],
-              ["A6", "B6", "C6", "D6", "E6"]
+              [
+                "A1",
+                "B1",
+                "C1",
+                "D1",
+                "E1"
+              ],
+              [
+                "A2",
+                "B2",
+                "C2",
+                "D2",
+                "E2"
+              ],
+              [
+                "A3",
+                "B3",
+                "C3",
+                "D3",
+                "E3"
+              ],
+              [
+                "A4",
+                "B4",
+                "C4",
+                "D4",
+                "E4"
+              ],
+              [
+                "A5",
+                "B5",
+                "C5",
+                "D5",
+                "E5"
+              ],
+              [
+                "A6",
+                "B6",
+                "C6",
+                "D6",
+                "E6"
+              ]
             ],
             "longueurMaxSaisie": 200,
             "initiale": {
@@ -1148,7 +1245,10 @@
               "formules": []
             },
             "metadonnees": {
-              "concepts": ["tableur", "negation"],
+              "concepts": [
+                "tableur",
+                "negation"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 10,
               "modalite": "solo",
@@ -1168,7 +1268,9 @@
             "id": "b2-03-a2-jalon",
             "invite": "Je sais nier une comparaison et une règle à deux conditions avec les lois de Morgan.",
             "metadonnees": {
-              "concepts": ["negation"],
+              "concepts": [
+                "negation"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -1233,7 +1335,9 @@
               }
             },
             "metadonnees": {
-              "concepts": ["quantificateur"],
+              "concepts": [
+                "quantificateur"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -1290,7 +1394,9 @@
               }
             },
             "metadonnees": {
-              "concepts": ["quantificateur"],
+              "concepts": [
+                "quantificateur"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -1318,7 +1424,10 @@
               }
             },
             "metadonnees": {
-              "concepts": ["quantificateur", "tableur"],
+              "concepts": [
+                "quantificateur",
+                "tableur"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -1364,7 +1473,10 @@
               }
             },
             "metadonnees": {
-              "concepts": ["quantificateur", "tableur"],
+              "concepts": [
+                "quantificateur",
+                "tableur"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -1415,7 +1527,10 @@
                   "enonce": "Combien de factures contredisent l’affirmation d’Hélène ?",
                   "unite": "factures",
                   "metadonnees": {
-                    "concepts": ["quantificateur", "negation"],
+                    "concepts": [
+                      "quantificateur",
+                      "negation"
+                    ],
                     "misconceptionsCiblees": [],
                     "dureeMinutes": 11,
                     "modalite": "solo",
@@ -1439,7 +1554,9 @@
             "id": "b2-03-a3-jalon",
             "invite": "Je sais nier une phrase avec « tous » ou « il existe » et la vérifier avec NB.SI.",
             "metadonnees": {
-              "concepts": ["quantificateur"],
+              "concepts": [
+                "quantificateur"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -1644,7 +1761,10 @@
               }
             },
             "metadonnees": {
-              "concepts": ["connecteur", "tableur"],
+              "concepts": [
+                "connecteur",
+                "tableur"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",
@@ -1922,7 +2042,19 @@
               "En I2, avec SI et OU : « Visa » si le montant HT atteint 5 000 € ou si le pays n’est pas la France, « Non » sinon. Recopiez jusqu’en I17 : sélectionnez I2 et cliquez quinze fois sur « Recopier vers le bas », une ligne par clic.",
               "En K2, comptez avec NB.SI les factures à relancer."
             ],
-            "lettres": ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K"],
+            "lettres": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H",
+              "I",
+              "J",
+              "K"
+            ],
             "grille": [
               [
                 "A1",
@@ -2404,7 +2536,10 @@
               "formules": []
             },
             "metadonnees": {
-              "concepts": ["tableur", "connecteur"],
+              "concepts": [
+                "tableur",
+                "connecteur"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 17,
               "modalite": "solo",
@@ -2453,7 +2588,10 @@
               }
             ],
             "metadonnees": {
-              "concepts": ["connecteur", "negation"],
+              "concepts": [
+                "connecteur",
+                "negation"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 16,
               "modalite": "solo",
@@ -2606,7 +2744,10 @@
               }
             ],
             "metadonnees": {
-              "concepts": ["connecteur", "tableur"],
+              "concepts": [
+                "connecteur",
+                "tableur"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 4,
               "modalite": "solo",
@@ -2654,7 +2795,9 @@
               }
             },
             "metadonnees": {
-              "concepts": ["proposition"],
+              "concepts": [
+                "proposition"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -2696,7 +2839,10 @@
               }
             ],
             "metadonnees": {
-              "concepts": ["proposition", "connecteur"],
+              "concepts": [
+                "proposition",
+                "connecteur"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 5,
               "modalite": "solo",
@@ -2908,7 +3054,9 @@
               }
             },
             "metadonnees": {
-              "concepts": ["proposition"],
+              "concepts": [
+                "proposition"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -3044,7 +3192,10 @@
               }
             },
             "metadonnees": {
-              "concepts": ["proposition", "connecteur"],
+              "concepts": [
+                "proposition",
+                "connecteur"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -3099,7 +3250,11 @@
               }
             },
             "metadonnees": {
-              "concepts": ["proposition", "connecteur", "tableur"],
+              "concepts": [
+                "proposition",
+                "connecteur",
+                "tableur"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -3134,7 +3289,10 @@
               }
             },
             "metadonnees": {
-              "concepts": ["connecteur", "proposition"],
+              "concepts": [
+                "connecteur",
+                "proposition"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -3188,7 +3346,10 @@
               }
             },
             "metadonnees": {
-              "concepts": ["connecteur", "proposition"],
+              "concepts": [
+                "connecteur",
+                "proposition"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -3221,7 +3382,12 @@
             ],
             "echeances": 4,
             "intituleDesLignes": "Facture",
-            "libellesLignes": ["F205", "F203", "F202", "F201"],
+            "libellesLignes": [
+              "F205",
+              "F203",
+              "F202",
+              "F201"
+            ],
             "parametres": {},
             "colonnes": [
               {
@@ -3230,7 +3396,12 @@
                 "role": "donnee",
                 "format": "booleen",
                 "decimales": 0,
-                "valeurs": [1, 1, 0, 0],
+                "valeurs": [
+                  1,
+                  1,
+                  0,
+                  0
+                ],
                 "totalise": false
               },
               {
@@ -3239,7 +3410,12 @@
                 "role": "donnee",
                 "format": "booleen",
                 "decimales": 0,
-                "valeurs": [1, 0, 1, 0],
+                "valeurs": [
+                  1,
+                  0,
+                  1,
+                  0
+                ],
                 "totalise": false
               },
               {
@@ -3400,7 +3576,9 @@
               "soldeFinal": null
             },
             "metadonnees": {
-              "concepts": ["connecteur"],
+              "concepts": [
+                "connecteur"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 8,
               "modalite": "solo",
@@ -3771,7 +3949,9 @@
             "id": "b2-03-a1-jalon",
             "invite": "Je sais traduire une règle avec non, et, ou, si… alors, et placer la borne.",
             "metadonnees": {
-              "concepts": ["connecteur"],
+              "concepts": [
+                "connecteur"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -3811,7 +3991,9 @@
               }
             },
             "metadonnees": {
-              "concepts": ["negation"],
+              "concepts": [
+                "negation"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 5,
               "modalite": "solo",
@@ -3854,7 +4036,9 @@
               }
             },
             "metadonnees": {
-              "concepts": ["negation"],
+              "concepts": [
+                "negation"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -3908,7 +4092,10 @@
               }
             },
             "metadonnees": {
-              "concepts": ["negation", "tableur"],
+              "concepts": [
+                "negation",
+                "tableur"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -3943,7 +4130,10 @@
               }
             },
             "metadonnees": {
-              "concepts": ["negation", "connecteur"],
+              "concepts": [
+                "negation",
+                "connecteur"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -3997,7 +4187,10 @@
               }
             },
             "metadonnees": {
-              "concepts": ["negation", "connecteur"],
+              "concepts": [
+                "negation",
+                "connecteur"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -4071,7 +4264,10 @@
                   "enonce": "Combien de factures ne sont pas à viser ?",
                   "unite": "factures",
                   "metadonnees": {
-                    "concepts": ["negation", "tableur"],
+                    "concepts": [
+                      "negation",
+                      "tableur"
+                    ],
                     "misconceptionsCiblees": [],
                     "dureeMinutes": 11,
                     "modalite": "solo",
@@ -4282,14 +4478,56 @@
               "En E2, écrivez le même contrôle avec SI et ET, sans NON.",
               "Recopiez D2 et E2 jusqu’à la ligne 6 : sélectionnez D2 et cliquez quatre fois sur « Recopier vers le bas », une ligne par clic, puis de même depuis E2. Les deux colonnes doivent afficher la même chose."
             ],
-            "lettres": ["A", "B", "C", "D", "E"],
+            "lettres": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E"
+            ],
             "grille": [
-              ["A1", "B1", "C1", "D1", "E1"],
-              ["A2", "B2", "C2", "D2", "E2"],
-              ["A3", "B3", "C3", "D3", "E3"],
-              ["A4", "B4", "C4", "D4", "E4"],
-              ["A5", "B5", "C5", "D5", "E5"],
-              ["A6", "B6", "C6", "D6", "E6"]
+              [
+                "A1",
+                "B1",
+                "C1",
+                "D1",
+                "E1"
+              ],
+              [
+                "A2",
+                "B2",
+                "C2",
+                "D2",
+                "E2"
+              ],
+              [
+                "A3",
+                "B3",
+                "C3",
+                "D3",
+                "E3"
+              ],
+              [
+                "A4",
+                "B4",
+                "C4",
+                "D4",
+                "E4"
+              ],
+              [
+                "A5",
+                "B5",
+                "C5",
+                "D5",
+                "E5"
+              ],
+              [
+                "A6",
+                "B6",
+                "C6",
+                "D6",
+                "E6"
+              ]
             ],
             "longueurMaxSaisie": 200,
             "initiale": {
@@ -4341,7 +4579,10 @@
               "formules": []
             },
             "metadonnees": {
-              "concepts": ["tableur", "negation"],
+              "concepts": [
+                "tableur",
+                "negation"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 10,
               "modalite": "solo",
@@ -4518,7 +4759,9 @@
             "id": "b2-03-a2-jalon",
             "invite": "Je sais nier une comparaison et une règle à deux conditions avec les lois de Morgan.",
             "metadonnees": {
-              "concepts": ["negation"],
+              "concepts": [
+                "negation"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -4655,7 +4898,9 @@
               }
             },
             "metadonnees": {
-              "concepts": ["quantificateur"],
+              "concepts": [
+                "quantificateur"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -4719,7 +4964,9 @@
               }
             },
             "metadonnees": {
-              "concepts": ["quantificateur"],
+              "concepts": [
+                "quantificateur"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -4754,7 +5001,10 @@
               }
             },
             "metadonnees": {
-              "concepts": ["quantificateur", "tableur"],
+              "concepts": [
+                "quantificateur",
+                "tableur"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -4807,7 +5057,10 @@
               }
             },
             "metadonnees": {
-              "concepts": ["quantificateur", "tableur"],
+              "concepts": [
+                "quantificateur",
+                "tableur"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -4865,7 +5118,10 @@
                   "enonce": "Combien de factures contredisent l’affirmation d’Hélène ?",
                   "unite": "factures",
                   "metadonnees": {
-                    "concepts": ["quantificateur", "negation"],
+                    "concepts": [
+                      "quantificateur",
+                      "negation"
+                    ],
                     "misconceptionsCiblees": [],
                     "dureeMinutes": 11,
                     "modalite": "solo",
@@ -4955,7 +5211,9 @@
             "id": "b2-03-a3-jalon",
             "invite": "Je sais nier une phrase avec « tous » ou « il existe » et la vérifier avec NB.SI.",
             "metadonnees": {
-              "concepts": ["quantificateur"],
+              "concepts": [
+                "quantificateur"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -5167,7 +5425,10 @@
               }
             },
             "metadonnees": {
-              "concepts": ["connecteur", "tableur"],
+              "concepts": [
+                "connecteur",
+                "tableur"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",
@@ -5452,7 +5713,19 @@
               "En I2, avec SI et OU : « Visa » si le montant HT atteint 5 000 € ou si le pays n’est pas la France, « Non » sinon. Recopiez jusqu’en I17 : sélectionnez I2 et cliquez quinze fois sur « Recopier vers le bas », une ligne par clic.",
               "En K2, comptez avec NB.SI les factures à relancer."
             ],
-            "lettres": ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K"],
+            "lettres": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H",
+              "I",
+              "J",
+              "K"
+            ],
             "grille": [
               [
                 "A1",
@@ -5934,7 +6207,10 @@
               "formules": []
             },
             "metadonnees": {
-              "concepts": ["tableur", "connecteur"],
+              "concepts": [
+                "tableur",
+                "connecteur"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 17,
               "modalite": "solo",
@@ -6437,7 +6713,10 @@
               }
             ],
             "metadonnees": {
-              "concepts": ["connecteur", "negation"],
+              "concepts": [
+                "connecteur",
+                "negation"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 16,
               "modalite": "solo",
@@ -6893,7 +7172,10 @@
               }
             ],
             "metadonnees": {
-              "concepts": ["connecteur", "tableur"],
+              "concepts": [
+                "connecteur",
+                "tableur"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 4,
               "modalite": "solo",
@@ -6951,18 +7233,7 @@
         "corrigeEcran": null,
         "reflexion": null
       }
-    ],
-    "remediations": {
-      "ou-lu-exclusif": "B2-03-A1-06-COURS-CONNECTEURS",
-      "implication-lue-comme-equivalence": "B2-03-A1-07-COURS-IMPLICATION",
-      "borne-stricte-large": "B2-03-A2-02-COURS-NEGATION",
-      "et-traduit-par-ou": "B2-03-A1-06-COURS-CONNECTEURS",
-      "negation-comparaison": "B2-03-A2-02-COURS-NEGATION",
-      "negation-sans-morgan": "B2-03-A2-03-COURS-MORGAN",
-      "negation-pour-tout-en-aucun": "B2-03-A3-02-COURS-PREDICATS",
-      "negation-il-existe-gardee": "B2-03-A3-02-COURS-PREDICATS",
-      "critere-sans-guillemets": "B2-03-A3-03-COURS-QUANTIFICATEURS"
-    }
+    ]
   },
   "catalogue": {
     "id": "b2-03-logique",
@@ -7001,7 +7272,9 @@
               }
             },
             "metadonnees": {
-              "concepts": ["proposition"],
+              "concepts": [
+                "proposition"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -7214,7 +7487,9 @@
               }
             },
             "metadonnees": {
-              "concepts": ["proposition"],
+              "concepts": [
+                "proposition"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -7250,7 +7525,10 @@
               }
             },
             "metadonnees": {
-              "concepts": ["proposition", "connecteur"],
+              "concepts": [
+                "proposition",
+                "connecteur"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -7298,7 +7576,11 @@
               }
             },
             "metadonnees": {
-              "concepts": ["proposition", "connecteur", "tableur"],
+              "concepts": [
+                "proposition",
+                "connecteur",
+                "tableur"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -7326,7 +7608,10 @@
               }
             },
             "metadonnees": {
-              "concepts": ["connecteur", "proposition"],
+              "concepts": [
+                "connecteur",
+                "proposition"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -7373,7 +7658,10 @@
               }
             },
             "metadonnees": {
-              "concepts": ["connecteur", "proposition"],
+              "concepts": [
+                "connecteur",
+                "proposition"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -7433,7 +7721,9 @@
               }
             },
             "metadonnees": {
-              "concepts": ["negation"],
+              "concepts": [
+                "negation"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -7480,7 +7770,10 @@
               }
             },
             "metadonnees": {
-              "concepts": ["negation", "tableur"],
+              "concepts": [
+                "negation",
+                "tableur"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -7508,7 +7801,10 @@
               }
             },
             "metadonnees": {
-              "concepts": ["negation", "connecteur"],
+              "concepts": [
+                "negation",
+                "connecteur"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -7555,7 +7851,10 @@
               }
             },
             "metadonnees": {
-              "concepts": ["negation", "connecteur"],
+              "concepts": [
+                "negation",
+                "connecteur"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -7615,7 +7914,9 @@
               }
             },
             "metadonnees": {
-              "concepts": ["quantificateur"],
+              "concepts": [
+                "quantificateur"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -7672,7 +7973,9 @@
               }
             },
             "metadonnees": {
-              "concepts": ["quantificateur"],
+              "concepts": [
+                "quantificateur"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -7700,7 +8003,10 @@
               }
             },
             "metadonnees": {
-              "concepts": ["quantificateur", "tableur"],
+              "concepts": [
+                "quantificateur",
+                "tableur"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -7746,7 +8052,10 @@
               }
             },
             "metadonnees": {
-              "concepts": ["quantificateur", "tableur"],
+              "concepts": [
+                "quantificateur",
+                "tableur"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -7967,7 +8276,10 @@
               }
             },
             "metadonnees": {
-              "concepts": ["connecteur", "tableur"],
+              "concepts": [
+                "connecteur",
+                "tableur"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",

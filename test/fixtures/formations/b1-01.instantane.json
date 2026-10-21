@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "f379ceb1bf127aec61455efed5bbea80e0e4eac29179fb9909ba0b518f6a5316",
+  "empreinte": "94998b9ab70f6a051123c2ae2419b8e30c05d592b7e820255e192dfbc1d6638c",
   "sujet": {
     "id": "b1-01-proportions-pourcentages",
     "titre": "Proportions et pourcentages",
@@ -41,7 +41,9 @@
               }
             ],
             "metadonnees": {
-              "concepts": ["proportion"],
+              "concepts": [
+                "proportion"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 4,
               "modalite": "solo",
@@ -76,7 +78,11 @@
               }
             },
             "metadonnees": {
-              "concepts": ["proportion", "pourcentage", "point-de-pourcentage"],
+              "concepts": [
+                "proportion",
+                "pourcentage",
+                "point-de-pourcentage"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -182,7 +188,10 @@
               }
             },
             "metadonnees": {
-              "concepts": ["proportion", "moyenne-ponderee"],
+              "concepts": [
+                "proportion",
+                "moyenne-ponderee"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -222,7 +231,10 @@
               }
             ],
             "metadonnees": {
-              "concepts": ["proportion", "moyenne-ponderee"],
+              "concepts": [
+                "proportion",
+                "moyenne-ponderee"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 6,
               "modalite": "solo",
@@ -250,7 +262,10 @@
               }
             },
             "metadonnees": {
-              "concepts": ["proportion", "pourcentage"],
+              "concepts": [
+                "proportion",
+                "pourcentage"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -306,7 +321,10 @@
               }
             },
             "metadonnees": {
-              "concepts": ["proportion", "pourcentage"],
+              "concepts": [
+                "proportion",
+                "pourcentage"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -334,7 +352,10 @@
               }
             },
             "metadonnees": {
-              "concepts": ["proportion", "tableur"],
+              "concepts": [
+                "proportion",
+                "tableur"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -389,7 +410,10 @@
               }
             },
             "metadonnees": {
-              "concepts": ["proportion", "tableur"],
+              "concepts": [
+                "proportion",
+                "tableur"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -441,7 +465,10 @@
               }
             ],
             "metadonnees": {
-              "concepts": ["proportion", "tableur"],
+              "concepts": [
+                "proportion",
+                "tableur"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 6,
               "modalite": "solo",
@@ -471,7 +498,10 @@
                   "enonce": "Quelle part des salariés du réseau sont des alternants ?",
                   "unite": "%",
                   "metadonnees": {
-                    "concepts": ["proportion", "pourcentage"],
+                    "concepts": [
+                      "proportion",
+                      "pourcentage"
+                    ],
                     "misconceptionsCiblees": [],
                     "dureeMinutes": 10,
                     "modalite": "solo",
@@ -507,7 +537,10 @@
                   "enonce": "Quelle part des salariés de Nantes sont des alternants ?",
                   "unite": "%",
                   "metadonnees": {
-                    "concepts": ["proportion", "pourcentage"],
+                    "concepts": [
+                      "proportion",
+                      "pourcentage"
+                    ],
                     "misconceptionsCiblees": [],
                     "dureeMinutes": 10,
                     "modalite": "solo",
@@ -524,7 +557,10 @@
                   "enonce": "Inès vise 30 % d’alternants parmi les 40 salariés. Combien d’alternants faudrait-il ?",
                   "unite": "alternants",
                   "metadonnees": {
-                    "concepts": ["proportion", "pourcentage"],
+                    "concepts": [
+                      "proportion",
+                      "pourcentage"
+                    ],
                     "misconceptionsCiblees": [],
                     "dureeMinutes": 10,
                     "modalite": "solo",
@@ -583,14 +619,42 @@
               "En C6, vérifiez que les parts font 100 %.",
               "Le total ne s’écrit pas dans la formule : utilisez B6, figé par des $."
             ],
-            "lettres": ["A", "B", "C"],
+            "lettres": [
+              "A",
+              "B",
+              "C"
+            ],
             "grille": [
-              ["A1", "B1", "C1"],
-              ["A2", "B2", "C2"],
-              ["A3", "B3", "C3"],
-              ["A4", "B4", "C4"],
-              ["A5", "B5", "C5"],
-              ["A6", "B6", "C6"]
+              [
+                "A1",
+                "B1",
+                "C1"
+              ],
+              [
+                "A2",
+                "B2",
+                "C2"
+              ],
+              [
+                "A3",
+                "B3",
+                "C3"
+              ],
+              [
+                "A4",
+                "B4",
+                "C4"
+              ],
+              [
+                "A5",
+                "B5",
+                "C5"
+              ],
+              [
+                "A6",
+                "B6",
+                "C6"
+              ]
             ],
             "longueurMaxSaisie": 200,
             "initiale": {
@@ -626,7 +690,10 @@
               "formules": []
             },
             "metadonnees": {
-              "concepts": ["tableur", "proportion"],
+              "concepts": [
+                "tableur",
+                "proportion"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 9,
               "modalite": "solo",
@@ -646,7 +713,10 @@
             "id": "b1-01-a1-jalon",
             "invite": "Je sais calculer une part, dire de quel tout elle parle et l’écrire au tableur.",
             "metadonnees": {
-              "concepts": ["proportion", "tableur"],
+              "concepts": [
+                "proportion",
+                "tableur"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -679,7 +749,9 @@
               }
             },
             "metadonnees": {
-              "concepts": ["proportion"],
+              "concepts": [
+                "proportion"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 5,
               "modalite": "solo",
@@ -708,7 +780,9 @@
               }
             },
             "metadonnees": {
-              "concepts": ["proportion"],
+              "concepts": [
+                "proportion"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -764,7 +838,9 @@
               }
             },
             "metadonnees": {
-              "concepts": ["proportion"],
+              "concepts": [
+                "proportion"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -792,7 +868,9 @@
               }
             },
             "metadonnees": {
-              "concepts": ["moyenne-ponderee"],
+              "concepts": [
+                "moyenne-ponderee"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -848,7 +926,9 @@
               }
             },
             "metadonnees": {
-              "concepts": ["moyenne-ponderee"],
+              "concepts": [
+                "moyenne-ponderee"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -900,7 +980,10 @@
               }
             ],
             "metadonnees": {
-              "concepts": ["moyenne-ponderee", "proportion"],
+              "concepts": [
+                "moyenne-ponderee",
+                "proportion"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 6,
               "modalite": "solo",
@@ -926,7 +1009,12 @@
             ],
             "echeances": 4,
             "intituleDesLignes": "Boutique",
-            "libellesLignes": ["Nantes", "Angers", "Tours", "Le Mans"],
+            "libellesLignes": [
+              "Nantes",
+              "Angers",
+              "Tours",
+              "Le Mans"
+            ],
             "parametres": {},
             "colonnes": [
               {
@@ -934,7 +1022,12 @@
                 "intitule": "Clients en septembre",
                 "role": "donnee",
                 "decimales": 0,
-                "valeurs": [1200, 800, 600, 400],
+                "valeurs": [
+                  1200,
+                  800,
+                  600,
+                  400
+                ],
                 "totalise": true
               },
               {
@@ -942,7 +1035,12 @@
                 "intitule": "Clients avec la carte (%)",
                 "role": "donnee",
                 "decimales": 0,
-                "valeurs": [45, 60, 50, 75],
+                "valeurs": [
+                  45,
+                  60,
+                  50,
+                  75
+                ],
                 "totalise": false
               },
               {
@@ -1051,7 +1149,9 @@
               "soldeFinal": null
             },
             "metadonnees": {
-              "concepts": ["moyenne-ponderee"],
+              "concepts": [
+                "moyenne-ponderee"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 8,
               "modalite": "solo",
@@ -1100,7 +1200,10 @@
                   "enonce": "Quelle part des clients du réseau a la carte et réserve en ligne ?",
                   "unite": "%",
                   "metadonnees": {
-                    "concepts": ["moyenne-ponderee", "proportion"],
+                    "concepts": [
+                      "moyenne-ponderee",
+                      "proportion"
+                    ],
                     "misconceptionsCiblees": [],
                     "dureeMinutes": 10,
                     "modalite": "solo",
@@ -1117,7 +1220,10 @@
                   "enonce": "Combien de clients du réseau ont la carte et réservent en ligne ?",
                   "unite": "clients",
                   "metadonnees": {
-                    "concepts": ["moyenne-ponderee", "proportion"],
+                    "concepts": [
+                      "moyenne-ponderee",
+                      "proportion"
+                    ],
                     "misconceptionsCiblees": [],
                     "dureeMinutes": 10,
                     "modalite": "solo",
@@ -1134,7 +1240,10 @@
                   "enonce": "En octobre, Nantes compte 1 500 clients dont 40 % de porteurs, Angers 500 dont 70 %. Quel est le taux global de porteurs des deux boutiques ?",
                   "unite": "%",
                   "metadonnees": {
-                    "concepts": ["moyenne-ponderee", "proportion"],
+                    "concepts": [
+                      "moyenne-ponderee",
+                      "proportion"
+                    ],
                     "misconceptionsCiblees": [],
                     "dureeMinutes": 10,
                     "modalite": "solo",
@@ -1158,7 +1267,10 @@
             "id": "b1-01-a2-jalon",
             "invite": "Je sais multiplier deux parts et calculer un taux global avec les effectifs.",
             "metadonnees": {
-              "concepts": ["proportion", "moyenne-ponderee"],
+              "concepts": [
+                "proportion",
+                "moyenne-ponderee"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -1223,7 +1335,10 @@
               }
             },
             "metadonnees": {
-              "concepts": ["point-de-pourcentage", "taux-evolution"],
+              "concepts": [
+                "point-de-pourcentage",
+                "taux-evolution"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -1278,7 +1393,10 @@
               }
             },
             "metadonnees": {
-              "concepts": ["point-de-pourcentage", "taux-evolution"],
+              "concepts": [
+                "point-de-pourcentage",
+                "taux-evolution"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -1306,7 +1424,9 @@
               }
             },
             "metadonnees": {
-              "concepts": ["pourcentage"],
+              "concepts": [
+                "pourcentage"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -1362,7 +1482,9 @@
               }
             },
             "metadonnees": {
-              "concepts": ["pourcentage"],
+              "concepts": [
+                "pourcentage"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -1414,7 +1536,10 @@
               }
             ],
             "metadonnees": {
-              "concepts": ["pourcentage", "point-de-pourcentage"],
+              "concepts": [
+                "pourcentage",
+                "point-de-pourcentage"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 6,
               "modalite": "solo",
@@ -1560,7 +1685,10 @@
             "id": "b1-01-a3-jalon",
             "invite": "Je sais écrire un écart en points et calculer un taux de marge et un taux de marque.",
             "metadonnees": {
-              "concepts": ["point-de-pourcentage", "pourcentage"],
+              "concepts": [
+                "point-de-pourcentage",
+                "pourcentage"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -1691,15 +1819,47 @@
               "En C7, vérifiez que les parts font 100 %.",
               "Le total ne s’écrit pas dans la formule : utilisez B7, figé par des $."
             ],
-            "lettres": ["A", "B", "C"],
+            "lettres": [
+              "A",
+              "B",
+              "C"
+            ],
             "grille": [
-              ["A1", "B1", "C1"],
-              ["A2", "B2", "C2"],
-              ["A3", "B3", "C3"],
-              ["A4", "B4", "C4"],
-              ["A5", "B5", "C5"],
-              ["A6", "B6", "C6"],
-              ["A7", "B7", "C7"]
+              [
+                "A1",
+                "B1",
+                "C1"
+              ],
+              [
+                "A2",
+                "B2",
+                "C2"
+              ],
+              [
+                "A3",
+                "B3",
+                "C3"
+              ],
+              [
+                "A4",
+                "B4",
+                "C4"
+              ],
+              [
+                "A5",
+                "B5",
+                "C5"
+              ],
+              [
+                "A6",
+                "B6",
+                "C6"
+              ],
+              [
+                "A7",
+                "B7",
+                "C7"
+              ]
             ],
             "longueurMaxSaisie": 200,
             "initiale": {
@@ -1737,7 +1897,10 @@
               "formules": []
             },
             "metadonnees": {
-              "concepts": ["tableur", "proportion"],
+              "concepts": [
+                "tableur",
+                "proportion"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 13,
               "modalite": "solo",
@@ -1787,7 +1950,11 @@
               }
             ],
             "metadonnees": {
-              "concepts": ["proportion", "moyenne-ponderee", "pourcentage"],
+              "concepts": [
+                "proportion",
+                "moyenne-ponderee",
+                "pourcentage"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 11,
               "modalite": "solo",
@@ -1941,7 +2108,10 @@
               }
             ],
             "metadonnees": {
-              "concepts": ["tableur", "proportion"],
+              "concepts": [
+                "tableur",
+                "proportion"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",
@@ -1992,7 +2162,9 @@
               }
             ],
             "metadonnees": {
-              "concepts": ["proportion"],
+              "concepts": [
+                "proportion"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 4,
               "modalite": "solo",
@@ -2068,7 +2240,11 @@
               }
             },
             "metadonnees": {
-              "concepts": ["proportion", "pourcentage", "point-de-pourcentage"],
+              "concepts": [
+                "proportion",
+                "pourcentage",
+                "point-de-pourcentage"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -2262,7 +2438,10 @@
               }
             },
             "metadonnees": {
-              "concepts": ["proportion", "moyenne-ponderee"],
+              "concepts": [
+                "proportion",
+                "moyenne-ponderee"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -2309,7 +2488,10 @@
               }
             ],
             "metadonnees": {
-              "concepts": ["proportion", "moyenne-ponderee"],
+              "concepts": [
+                "proportion",
+                "moyenne-ponderee"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 6,
               "modalite": "solo",
@@ -2344,7 +2526,10 @@
               }
             },
             "metadonnees": {
-              "concepts": ["proportion", "pourcentage"],
+              "concepts": [
+                "proportion",
+                "pourcentage"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -2407,7 +2592,10 @@
               }
             },
             "metadonnees": {
-              "concepts": ["proportion", "pourcentage"],
+              "concepts": [
+                "proportion",
+                "pourcentage"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -2442,7 +2630,10 @@
               }
             },
             "metadonnees": {
-              "concepts": ["proportion", "tableur"],
+              "concepts": [
+                "proportion",
+                "tableur"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -2504,7 +2695,10 @@
               }
             },
             "metadonnees": {
-              "concepts": ["proportion", "tableur"],
+              "concepts": [
+                "proportion",
+                "tableur"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -2563,7 +2757,10 @@
               }
             ],
             "metadonnees": {
-              "concepts": ["proportion", "tableur"],
+              "concepts": [
+                "proportion",
+                "tableur"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 6,
               "modalite": "solo",
@@ -2600,7 +2797,10 @@
                   "enonce": "Quelle part des salariés du réseau sont des alternants ?",
                   "unite": "%",
                   "metadonnees": {
-                    "concepts": ["proportion", "pourcentage"],
+                    "concepts": [
+                      "proportion",
+                      "pourcentage"
+                    ],
                     "misconceptionsCiblees": [],
                     "dureeMinutes": 10,
                     "modalite": "solo",
@@ -2636,7 +2836,10 @@
                   "enonce": "Quelle part des salariés de Nantes sont des alternants ?",
                   "unite": "%",
                   "metadonnees": {
-                    "concepts": ["proportion", "pourcentage"],
+                    "concepts": [
+                      "proportion",
+                      "pourcentage"
+                    ],
                     "misconceptionsCiblees": [],
                     "dureeMinutes": 10,
                     "modalite": "solo",
@@ -2653,7 +2856,10 @@
                   "enonce": "Inès vise 30 % d’alternants parmi les 40 salariés. Combien d’alternants faudrait-il ?",
                   "unite": "alternants",
                   "metadonnees": {
-                    "concepts": ["proportion", "pourcentage"],
+                    "concepts": [
+                      "proportion",
+                      "pourcentage"
+                    ],
                     "misconceptionsCiblees": [],
                     "dureeMinutes": 10,
                     "modalite": "solo",
@@ -2816,14 +3022,42 @@
               "En C6, vérifiez que les parts font 100 %.",
               "Le total ne s’écrit pas dans la formule : utilisez B6, figé par des $."
             ],
-            "lettres": ["A", "B", "C"],
+            "lettres": [
+              "A",
+              "B",
+              "C"
+            ],
             "grille": [
-              ["A1", "B1", "C1"],
-              ["A2", "B2", "C2"],
-              ["A3", "B3", "C3"],
-              ["A4", "B4", "C4"],
-              ["A5", "B5", "C5"],
-              ["A6", "B6", "C6"]
+              [
+                "A1",
+                "B1",
+                "C1"
+              ],
+              [
+                "A2",
+                "B2",
+                "C2"
+              ],
+              [
+                "A3",
+                "B3",
+                "C3"
+              ],
+              [
+                "A4",
+                "B4",
+                "C4"
+              ],
+              [
+                "A5",
+                "B5",
+                "C5"
+              ],
+              [
+                "A6",
+                "B6",
+                "C6"
+              ]
             ],
             "longueurMaxSaisie": 200,
             "initiale": {
@@ -2859,7 +3093,10 @@
               "formules": []
             },
             "metadonnees": {
-              "concepts": ["tableur", "proportion"],
+              "concepts": [
+                "tableur",
+                "proportion"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 9,
               "modalite": "solo",
@@ -2982,7 +3219,10 @@
             "id": "b1-01-a1-jalon",
             "invite": "Je sais calculer une part, dire de quel tout elle parle et l’écrire au tableur.",
             "metadonnees": {
-              "concepts": ["proportion", "tableur"],
+              "concepts": [
+                "proportion",
+                "tableur"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -3022,7 +3262,9 @@
               }
             },
             "metadonnees": {
-              "concepts": ["proportion"],
+              "concepts": [
+                "proportion"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 5,
               "modalite": "solo",
@@ -3065,7 +3307,9 @@
               }
             },
             "metadonnees": {
-              "concepts": ["proportion"],
+              "concepts": [
+                "proportion"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -3128,7 +3372,9 @@
               }
             },
             "metadonnees": {
-              "concepts": ["proportion"],
+              "concepts": [
+                "proportion"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -3163,7 +3409,9 @@
               }
             },
             "metadonnees": {
-              "concepts": ["moyenne-ponderee"],
+              "concepts": [
+                "moyenne-ponderee"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -3226,7 +3474,9 @@
               }
             },
             "metadonnees": {
-              "concepts": ["moyenne-ponderee"],
+              "concepts": [
+                "moyenne-ponderee"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -3285,7 +3535,10 @@
               }
             ],
             "metadonnees": {
-              "concepts": ["moyenne-ponderee", "proportion"],
+              "concepts": [
+                "moyenne-ponderee",
+                "proportion"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 6,
               "modalite": "solo",
@@ -3318,7 +3571,12 @@
             ],
             "echeances": 4,
             "intituleDesLignes": "Boutique",
-            "libellesLignes": ["Nantes", "Angers", "Tours", "Le Mans"],
+            "libellesLignes": [
+              "Nantes",
+              "Angers",
+              "Tours",
+              "Le Mans"
+            ],
             "parametres": {},
             "colonnes": [
               {
@@ -3326,7 +3584,12 @@
                 "intitule": "Clients en septembre",
                 "role": "donnee",
                 "decimales": 0,
-                "valeurs": [1200, 800, 600, 400],
+                "valeurs": [
+                  1200,
+                  800,
+                  600,
+                  400
+                ],
                 "totalise": true
               },
               {
@@ -3334,7 +3597,12 @@
                 "intitule": "Clients avec la carte (%)",
                 "role": "donnee",
                 "decimales": 0,
-                "valeurs": [45, 60, 50, 75],
+                "valeurs": [
+                  45,
+                  60,
+                  50,
+                  75
+                ],
                 "totalise": false
               },
               {
@@ -3443,7 +3711,9 @@
               "soldeFinal": null
             },
             "metadonnees": {
-              "concepts": ["moyenne-ponderee"],
+              "concepts": [
+                "moyenne-ponderee"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 8,
               "modalite": "solo",
@@ -3628,7 +3898,10 @@
                   "enonce": "Quelle part des clients du réseau a la carte et réserve en ligne ?",
                   "unite": "%",
                   "metadonnees": {
-                    "concepts": ["moyenne-ponderee", "proportion"],
+                    "concepts": [
+                      "moyenne-ponderee",
+                      "proportion"
+                    ],
                     "misconceptionsCiblees": [],
                     "dureeMinutes": 10,
                     "modalite": "solo",
@@ -3645,7 +3918,10 @@
                   "enonce": "Combien de clients du réseau ont la carte et réservent en ligne ?",
                   "unite": "clients",
                   "metadonnees": {
-                    "concepts": ["moyenne-ponderee", "proportion"],
+                    "concepts": [
+                      "moyenne-ponderee",
+                      "proportion"
+                    ],
                     "misconceptionsCiblees": [],
                     "dureeMinutes": 10,
                     "modalite": "solo",
@@ -3662,7 +3938,10 @@
                   "enonce": "En octobre, Nantes compte 1 500 clients dont 40 % de porteurs, Angers 500 dont 70 %. Quel est le taux global de porteurs des deux boutiques ?",
                   "unite": "%",
                   "metadonnees": {
-                    "concepts": ["moyenne-ponderee", "proportion"],
+                    "concepts": [
+                      "moyenne-ponderee",
+                      "proportion"
+                    ],
                     "misconceptionsCiblees": [],
                     "dureeMinutes": 10,
                     "modalite": "solo",
@@ -3790,7 +4069,10 @@
             "id": "b1-01-a2-jalon",
             "invite": "Je sais multiplier deux parts et calculer un taux global avec les effectifs.",
             "metadonnees": {
-              "concepts": ["proportion", "moyenne-ponderee"],
+              "concepts": [
+                "proportion",
+                "moyenne-ponderee"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -3927,7 +4209,10 @@
               }
             },
             "metadonnees": {
-              "concepts": ["point-de-pourcentage", "taux-evolution"],
+              "concepts": [
+                "point-de-pourcentage",
+                "taux-evolution"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -3989,7 +4274,10 @@
               }
             },
             "metadonnees": {
-              "concepts": ["point-de-pourcentage", "taux-evolution"],
+              "concepts": [
+                "point-de-pourcentage",
+                "taux-evolution"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -4024,7 +4312,9 @@
               }
             },
             "metadonnees": {
-              "concepts": ["pourcentage"],
+              "concepts": [
+                "pourcentage"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -4087,7 +4377,9 @@
               }
             },
             "metadonnees": {
-              "concepts": ["pourcentage"],
+              "concepts": [
+                "pourcentage"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -4146,7 +4438,10 @@
               }
             ],
             "metadonnees": {
-              "concepts": ["pourcentage", "point-de-pourcentage"],
+              "concepts": [
+                "pourcentage",
+                "point-de-pourcentage"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 6,
               "modalite": "solo",
@@ -4448,7 +4743,10 @@
             "id": "b1-01-a3-jalon",
             "invite": "Je sais écrire un écart en points et calculer un taux de marge et un taux de marque.",
             "metadonnees": {
-              "concepts": ["point-de-pourcentage", "pourcentage"],
+              "concepts": [
+                "point-de-pourcentage",
+                "pourcentage"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -4593,15 +4891,47 @@
               "En C7, vérifiez que les parts font 100 %.",
               "Le total ne s’écrit pas dans la formule : utilisez B7, figé par des $."
             ],
-            "lettres": ["A", "B", "C"],
+            "lettres": [
+              "A",
+              "B",
+              "C"
+            ],
             "grille": [
-              ["A1", "B1", "C1"],
-              ["A2", "B2", "C2"],
-              ["A3", "B3", "C3"],
-              ["A4", "B4", "C4"],
-              ["A5", "B5", "C5"],
-              ["A6", "B6", "C6"],
-              ["A7", "B7", "C7"]
+              [
+                "A1",
+                "B1",
+                "C1"
+              ],
+              [
+                "A2",
+                "B2",
+                "C2"
+              ],
+              [
+                "A3",
+                "B3",
+                "C3"
+              ],
+              [
+                "A4",
+                "B4",
+                "C4"
+              ],
+              [
+                "A5",
+                "B5",
+                "C5"
+              ],
+              [
+                "A6",
+                "B6",
+                "C6"
+              ],
+              [
+                "A7",
+                "B7",
+                "C7"
+              ]
             ],
             "longueurMaxSaisie": 200,
             "initiale": {
@@ -4639,7 +4969,10 @@
               "formules": []
             },
             "metadonnees": {
-              "concepts": ["tableur", "proportion"],
+              "concepts": [
+                "tableur",
+                "proportion"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 13,
               "modalite": "solo",
@@ -4792,7 +5125,11 @@
               }
             ],
             "metadonnees": {
-              "concepts": ["proportion", "moyenne-ponderee", "pourcentage"],
+              "concepts": [
+                "proportion",
+                "moyenne-ponderee",
+                "pourcentage"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 11,
               "modalite": "solo",
@@ -5321,7 +5658,10 @@
               }
             ],
             "metadonnees": {
-              "concepts": ["tableur", "proportion"],
+              "concepts": [
+                "tableur",
+                "proportion"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",
@@ -5379,23 +5719,7 @@
         "corrigeEcran": null,
         "reflexion": null
       }
-    ],
-    "remediations": {
-      "base-inversee": "B1-01-A1-06-COURS-PROPORTION",
-      "taux-valeur-facteur-cent": "B1-01-A1-06-COURS-PROPORTION",
-      "valeur-confondue-avec-taux": "B1-01-A1-06-COURS-PROPORTION",
-      "population-reference-ignoree": "B1-01-A1-07-COURS-REFERENCE-TABLEUR",
-      "reference-relative-non-figee": "B1-01-A1-07-COURS-REFERENCE-TABLEUR",
-      "valeur-saisie-sans-formule": "B1-01-A1-07-COURS-REFERENCE-TABLEUR",
-      "arrondi-oublie": "B1-01-A1-07-COURS-REFERENCE-TABLEUR",
-      "raisonnement-additif": "B1-01-A2-02-COURS-PROPORTION-DE-PROPORTION",
-      "moyenne-simple-des-taux": "B1-01-A2-03-COURS-TAUX-GLOBAL",
-      "points-confondus-avec-pourcentage": "B1-01-A3-02-COURS-POINTS",
-      "proportion-confondue-avec-evolution": "B1-01-A3-02-COURS-POINTS",
-      "ecart-absolu-au-lieu-du-taux": "B1-01-A3-02-COURS-POINTS",
-      "base-arrivee": "B1-01-A3-02-COURS-POINTS",
-      "marque-confondue-avec-marge": "B1-01-A3-03-COURS-MARGE-MARQUE"
-    }
+    ]
   },
   "catalogue": {
     "id": "b1-01-proportions-pourcentages",
@@ -5445,7 +5769,11 @@
               }
             },
             "metadonnees": {
-              "concepts": ["proportion", "pourcentage", "point-de-pourcentage"],
+              "concepts": [
+                "proportion",
+                "pourcentage",
+                "point-de-pourcentage"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -5514,7 +5842,10 @@
               }
             },
             "metadonnees": {
-              "concepts": ["proportion", "moyenne-ponderee"],
+              "concepts": [
+                "proportion",
+                "moyenne-ponderee"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -5550,7 +5881,10 @@
               }
             },
             "metadonnees": {
-              "concepts": ["proportion", "pourcentage"],
+              "concepts": [
+                "proportion",
+                "pourcentage"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -5606,7 +5940,10 @@
               }
             },
             "metadonnees": {
-              "concepts": ["proportion", "pourcentage"],
+              "concepts": [
+                "proportion",
+                "pourcentage"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -5634,7 +5971,10 @@
               }
             },
             "metadonnees": {
-              "concepts": ["proportion", "tableur"],
+              "concepts": [
+                "proportion",
+                "tableur"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -5689,7 +6029,10 @@
               }
             },
             "metadonnees": {
-              "concepts": ["proportion", "tableur"],
+              "concepts": [
+                "proportion",
+                "tableur"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -5757,7 +6100,9 @@
               }
             },
             "metadonnees": {
-              "concepts": ["proportion"],
+              "concepts": [
+                "proportion"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -5813,7 +6158,9 @@
               }
             },
             "metadonnees": {
-              "concepts": ["proportion"],
+              "concepts": [
+                "proportion"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -5841,7 +6188,9 @@
               }
             },
             "metadonnees": {
-              "concepts": ["moyenne-ponderee"],
+              "concepts": [
+                "moyenne-ponderee"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -5897,7 +6246,9 @@
               }
             },
             "metadonnees": {
-              "concepts": ["moyenne-ponderee"],
+              "concepts": [
+                "moyenne-ponderee"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -5965,7 +6316,10 @@
               }
             },
             "metadonnees": {
-              "concepts": ["point-de-pourcentage", "taux-evolution"],
+              "concepts": [
+                "point-de-pourcentage",
+                "taux-evolution"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -6020,7 +6374,10 @@
               }
             },
             "metadonnees": {
-              "concepts": ["point-de-pourcentage", "taux-evolution"],
+              "concepts": [
+                "point-de-pourcentage",
+                "taux-evolution"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -6048,7 +6405,9 @@
               }
             },
             "metadonnees": {
-              "concepts": ["pourcentage"],
+              "concepts": [
+                "pourcentage"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -6104,7 +6463,9 @@
               }
             },
             "metadonnees": {
-              "concepts": ["pourcentage"],
+              "concepts": [
+                "pourcentage"
+              ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
