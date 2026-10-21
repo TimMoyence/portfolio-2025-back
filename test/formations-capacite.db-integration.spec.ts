@@ -173,7 +173,9 @@ describeDb('Capacite et eviction (B28, db integration)', () => {
 
   const attendreAucunInscrit = (seance: { sessionId: string }) =>
     expect(
-      contexte().participants.countBySession(seance.sessionId),
+      contexte()
+        .participants.listBySession(seance.sessionId)
+        .then((inscrits) => inscrits.length),
     ).resolves.toBe(0);
 
   it('refuse en 409 SEANCE_COMPLETE au-dela de la capacite demandee', async () => {

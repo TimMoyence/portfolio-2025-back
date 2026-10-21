@@ -1,12 +1,4 @@
-import { randomInt } from 'node:crypto';
-import { parseSitemapXml, pickUrlSample } from './sitemap-parser.util';
-
-jest.mock('node:crypto', () => ({
-  ...jest.requireActual<typeof import('node:crypto')>('node:crypto'),
-  randomInt: jest.fn(),
-}));
-
-const mockedRandomInt = randomInt as unknown as jest.Mock;
+import { parseSitemapXml } from './sitemap-parser.util';
 
 describe('parseSitemapXml', () => {
   it('parses urlset', () => {
@@ -64,37 +56,5 @@ describe('parseSitemapXml', () => {
       'https://example.com/1',
       'https://example.com/2',
     ]);
-  });
-});
-
-describe('pickUrlSample', () => {
-  it('returns unique samples preserving a deterministic head', () => {
-    const urls = [
-      'https://example.com/1',
-      'https://example.com/2',
-      'https://example.com/3',
-      'https://example.com/4',
-    ];
-
-    mockedRandomInt.mockReturnValue(0);
-    const picked = pickUrlSample(urls, 2, 3);
-
-    expect(picked.sample).toHaveLength(2);
-    expect(new Set(picked.sample).size).toBe(2);
-    expect(picked.sample[0]).toBe('https://example.com/1');
-    expect(picked.deepAnalysis).toHaveLength(3);
-    expect(new Set(picked.deepAnalysis).size).toBe(3);
-    expect(picked.deepAnalysis[0]).toBe('https://example.com/1');
-  });
-
-  it('returns all URLs when limits exceed the sitemap size', () => {
-    const urls = [
-      'https://example.com/1',
-      'https://example.com/2',
-      'https://example.com/3',
-    ];
-    const picked = pickUrlSample(urls, 10, 20);
-    expect(picked.sample).toEqual(urls);
-    expect(picked.deepAnalysis).toEqual(urls);
   });
 });

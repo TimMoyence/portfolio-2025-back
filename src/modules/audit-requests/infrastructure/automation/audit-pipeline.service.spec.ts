@@ -50,7 +50,6 @@ function buildStubDeps(
     repo,
     safeFetch: {
       fetchText: jest.fn(),
-      fetchHeaders: jest.fn(),
     } as unknown as jest.Mocked<SafeFetchService>,
     homepageAnalyzer: {
       analyze: jest.fn(),
@@ -113,7 +112,6 @@ function buildPipelineService(
 
 describe('AuditPipelineService', () => {
   const config: AuditAutomationConfig = buildAuditAutomationConfig({
-    sitemapAnalyzeLimit: 10,
     urlAnalyzeConcurrency: 4,
   });
 
@@ -252,7 +250,6 @@ describe('AuditPipelineService', () => {
           contentLength: 300,
         });
       }),
-      fetchHeaders: jest.fn(),
     } as unknown as jest.Mocked<SafeFetchService>;
     const homepageAnalyzer = {
       analyze: jest.fn().mockReturnValue(homepageSnapshot),

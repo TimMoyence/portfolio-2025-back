@@ -159,13 +159,6 @@ export class ParticipantsRepositoryTypeORM
     );
   }
 
-  findBySessionAndStudentKey(
-    sessionId: string,
-    studentKey: string,
-  ): Promise<ParticipantRecord | null> {
-    return this.trouver({ sessionId, studentKey, evinceLe: IsNull() });
-  }
-
   findById(id: string): Promise<ParticipantRecord | null> {
     return this.trouver({ id });
   }
@@ -184,10 +177,6 @@ export class ParticipantsRepositoryTypeORM
       where: { sessionId, evinceLe: Not(IsNull()) },
       order: { evinceLe: 'ASC', id: 'ASC' },
     });
-  }
-
-  countBySession(sessionId: string): Promise<number> {
-    return this.repo.count({ where: { sessionId, evinceLe: IsNull() } });
   }
 
   async touch(id: string): Promise<void> {

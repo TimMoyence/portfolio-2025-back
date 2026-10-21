@@ -26,9 +26,7 @@ export interface AuditAutomationConfig {
   maxRedirects: number;
   htmlMaxBytes: number;
   textMaxBytes: number;
-  sitemapSampleSize: number;
   sitemapMaxUrls: number;
-  sitemapAnalyzeLimit: number;
   urlAnalyzeConcurrency: number;
   pageAnalyzeLimit: number;
   pageAiConcurrency: number;
@@ -44,7 +42,6 @@ export interface AuditAutomationConfig {
   llmSectionRetryMax: number;
   llmSectionRetryMinRemainingMs: number;
   llmInflightMax: number;
-  llmRetries: number;
   llmLanguage: string;
   pageAiCircuitBreakerMinSamples: number;
   pageAiCircuitBreakerFailureRatio: number;
@@ -121,12 +118,7 @@ export function loadAuditAutomationConfig(): AuditAutomationConfig {
     maxRedirects: Math.max(0, envInt('AUDIT_MAX_REDIRECTS', 5)),
     htmlMaxBytes: Math.max(1024, envInt('AUDIT_HTML_MAX_BYTES', 1_000_000)),
     textMaxBytes: Math.max(1024, envInt('AUDIT_TEXT_MAX_BYTES', 1_000_000)),
-    sitemapSampleSize: Math.max(1, envInt('AUDIT_SITEMAP_SAMPLE_SIZE', 10)),
     sitemapMaxUrls: Math.max(10, envInt('AUDIT_SITEMAP_MAX_URLS', 50_000)),
-    sitemapAnalyzeLimit: Math.max(
-      1,
-      envInt('AUDIT_SITEMAP_ANALYZE_LIMIT', 150),
-    ),
     urlAnalyzeConcurrency: Math.max(
       1,
       envInt('AUDIT_URL_ANALYZE_CONCURRENCY', 6),
@@ -145,7 +137,6 @@ export function loadAuditAutomationConfig(): AuditAutomationConfig {
     llmSectionRetryMax,
     llmSectionRetryMinRemainingMs,
     llmInflightMax,
-    llmRetries: Math.max(0, envInt('AUDIT_LLM_RETRIES', 2)),
     llmLanguage: envString('AUDIT_LLM_LANGUAGE') ?? 'fr',
     pageAiCircuitBreakerMinSamples,
     pageAiCircuitBreakerFailureRatio,

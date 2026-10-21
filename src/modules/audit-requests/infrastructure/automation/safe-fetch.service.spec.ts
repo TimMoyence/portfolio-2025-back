@@ -83,19 +83,6 @@ describe('SafeFetchService', () => {
     expect(typeof result.totalMs).toBe('number');
   });
 
-  it('fetchHeaders retourne null pour body', async () => {
-    fetchSpy.mockResolvedValueOnce(
-      buildResponse(200, { 'content-length': '42', 'x-custom': 'test' }),
-    );
-
-    const result = await service.fetchHeaders('https://example.com');
-
-    expect(result.body).toBeNull();
-    expect(result.statusCode).toBe(200);
-    expect(result.contentLength).toBe(42);
-    expect(result.headers['x-custom']).toBe('test');
-  });
-
   it('suit les redirections (301, 302)', async () => {
     fetchSpy
       .mockResolvedValueOnce(
@@ -254,15 +241,6 @@ describe('SafeFetchService', () => {
       await service.fetchText('https://example.com');
 
       expect(redirection.annulation).toHaveBeenCalledTimes(1);
-    });
-
-    it('annule le corps d une lecture des seuls en-tetes', async () => {
-      const entetes = reponseEspionnee(200, {}, 'ignore');
-      fetchSpy.mockResolvedValueOnce(entetes.reponse);
-
-      await service.fetchHeaders('https://example.com');
-
-      expect(entetes.annulation).toHaveBeenCalledTimes(1);
     });
 
     it('annule le corps qui dépasse maxBytes', async () => {

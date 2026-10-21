@@ -496,11 +496,9 @@ export function createMockParticipantsRepo(): jest.Mocked<IParticipantsRepositor
   const participant = buildParticipantRecord();
   return {
     inscrire: jest.fn().mockResolvedValue({ participant, nouveau: true }),
-    findBySessionAndStudentKey: jest.fn().mockResolvedValue(null),
     findById: jest.fn().mockResolvedValue(participant),
     listBySession: jest.fn().mockResolvedValue([participant]),
     listEvincesBySession: jest.fn().mockResolvedValue([]),
-    countBySession: jest.fn().mockResolvedValue(1),
     touch: jest.fn().mockResolvedValue(undefined),
     evincer: jest.fn().mockResolvedValue(true),
     readmettre: jest.fn().mockResolvedValue(true),
@@ -519,7 +517,6 @@ export function createMockAnswersRepo(): jest.Mocked<IAnswersRepository> {
     existsFor: jest.fn().mockResolvedValue(false),
     remplacer: jest.fn().mockResolvedValue(true),
     listBySession: jest.fn().mockResolvedValue([buildAnswerRecord()]),
-    tallyBySession: jest.fn().mockResolvedValue([]),
   };
 }
 

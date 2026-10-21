@@ -54,10 +54,6 @@ interface TypeColonne {
   data_type: string;
 }
 
-interface ValeurBrute {
-  valeur: string | number;
-}
-
 interface ContrainteNommee {
   nom: string;
 }
@@ -120,6 +116,9 @@ describeDb('Formations repositories (db integration)', () => {
       email: 'theo.martin@example.com',
       seed,
     });
+
+  const inscrits = async (sessionId: string): Promise<number> =>
+    (await contexte.participants.listBySession(sessionId)).length;
 
   const repondre = (
     sessionId: string,
@@ -297,12 +296,8 @@ describeDb('Formations repositories (db integration)', () => {
     await inscrireGrainesARebours(seance.id);
     await inscrire(autre.id, CLE_ETUDIANT, 1001);
 
-    await expect(contexte.participants.countBySession(seance.id)).resolves.toBe(
-      GRAINES_A_REBOURS.length,
-    );
-    await expect(contexte.participants.countBySession(autre.id)).resolves.toBe(
-      1,
-    );
+    await expect(inscrits(seance.id)).resolves.toBe(GRAINES_A_REBOURS.length);
+    await expect(inscrits(autre.id)).resolves.toBe(1);
   });
 
   it('liste les reponses dans leur ordre d ecriture et non dans l ordre des questions', async () => {
@@ -387,9 +382,7 @@ describeDb('Formations repositories (db integration)', () => {
     const second = await inscrire(seance.id, CLE_ETUDIANT, 1002);
 
     expect(second).toMatchObject({ id: premier.id, seed: 1001 });
-    await expect(contexte.participants.countBySession(seance.id)).resolves.toBe(
-      1,
-    );
+    await expect(inscrits(seance.id)).resolves.toBe(1);
   });
 
   describe('S1 · S2 · reprise, eviction et readmission sous verrou', () => {
@@ -473,9 +466,7 @@ describeDb('Formations repositories (db integration)', () => {
       await expect(
         inscrireAvecSecret(seance.id, secret),
       ).rejects.toBeInstanceOf(ParticipantEvinceError);
-      await expect(
-        contexte.participants.countBySession(seance.id),
-      ).resolves.toBe(0);
+      await expect(inscrits(seance.id)).resolves.toBe(0);
     });
 
     it('traduit la graine reprise par un autre poste en GraineRepriseError, jamais en erreur SQL', async () => {
@@ -510,9 +501,7 @@ describeDb('Formations repositories (db integration)', () => {
           .filter((resultat) => resultat.status === 'rejected')
           .map((resultat) => resultat.reason),
       ).toEqual([expect.any(SeanceCompleteError)]);
-      await expect(
-        contexte.participants.countBySession(seance.id),
-      ).resolves.toBe(2);
+      await expect(inscrits(seance.id)).resolves.toBe(2);
     });
   });
 
@@ -605,26 +594,6 @@ describeDb('Formations repositories (db integration)', () => {
 
     expect(typeof reponse.valeur).toBe('number');
     expect(JSON.stringify(reponse.valeur)).toBe('1480.24');
-  });
-
-  it('convertit les agregats que postgres rend en chaines', async () => {
-    const seance = await ouvrirSeance('4271');
-    const premier = await inscrire(seance.id, CLE_ETUDIANT, 1001);
-    const second = await inscrire(seance.id, AUTRE_CLE_ETUDIANT, 1002);
-    await repondre(seance.id, premier.id, 'Q-CAP-03', true);
-    await repondre(seance.id, second.id, 'Q-CAP-03', false);
-
-    const brut: ValeurBrute[] = await contexte.dataSource.query(
-      `SELECT COUNT(*) AS valeur FROM "formation_answers" WHERE "session_id" = $1`,
-      [seance.id],
-    );
-    expect(typeof brut[0].valeur).toBe('string');
-
-    const tally = await contexte.answers.tallyBySession(seance.id);
-    expect(tally).toHaveLength(1);
-    expect(tally[0].total).toBe(2);
-    expect(tally[0].correctes).toBe(1);
-    expect(tally[0].parMisconception).toEqual({ 'interet-simple': 1 });
   });
 
   it('conserve l instant exact des horodatages relus', async () => {

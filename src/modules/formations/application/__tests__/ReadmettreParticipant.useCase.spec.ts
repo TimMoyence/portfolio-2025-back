@@ -20,7 +20,6 @@ describe('ReadmettreParticipantUseCase', () => {
 
   beforeEach(() => {
     depots = monterDepotsDeParticipation(buildSessionRecord({ capacite: 30 }));
-    depots.participants.countBySession.mockResolvedValue(12);
     depots.participants.readmettre.mockResolvedValue(true);
     sut = new ReadmettreParticipantUseCase(depots.participation);
   });
@@ -36,7 +35,7 @@ describe('ReadmettreParticipantUseCase', () => {
     expect(depots.cache.signalerActivite).toHaveBeenCalledWith('session-uuid');
   });
 
-  it('S2 · laisse le depot verifier la capacite sous verrou, sans compter avant lui', async () => {
+  it('S2 · laisse le depot verifier la capacite sous verrou', async () => {
     depots.participants.readmettre.mockRejectedValue(
       new SeanceCompleteError(30),
     );
@@ -44,7 +43,6 @@ describe('ReadmettreParticipantUseCase', () => {
     await expect(readmettrePar(TEACHER_ID)).rejects.toThrow(
       SeanceCompleteError,
     );
-    expect(depots.participants.countBySession).not.toHaveBeenCalled();
     expect(depots.cache.signalerActivite).not.toHaveBeenCalled();
   });
 

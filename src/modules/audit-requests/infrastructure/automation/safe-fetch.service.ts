@@ -38,16 +38,11 @@ export class SafeFetchService {
     url: string,
     maxBytes: number = this.config.textMaxBytes,
   ): Promise<SafeFetchResult> {
-    return this.fetchInternal(url, true, maxBytes);
-  }
-
-  async fetchHeaders(url: string): Promise<SafeFetchResult> {
-    return this.fetchInternal(url, false, 0);
+    return this.fetchInternal(url, maxBytes);
   }
 
   private async fetchInternal(
     targetUrl: string,
-    readBody: boolean,
     maxBytes: number,
   ): Promise<SafeFetchResult> {
     const redirectChain: string[] = [];
@@ -61,7 +56,7 @@ export class SafeFetchService {
       const saut = await withHardTimeout(
         `Fetch ${url}`,
         this.config.fetchTimeoutMs,
-        (signal) => this.fetchOnce(url, readBody, maxBytes, signal),
+        (signal) => this.fetchOnce(url, maxBytes, signal),
       );
 
       if (saut.location !== null) {
@@ -95,7 +90,6 @@ export class SafeFetchService {
 
   private async fetchOnce(
     url: string,
-    readBody: boolean,
     maxBytes: number,
     signal: AbortSignal,
   ): Promise<SautHttp> {
@@ -119,7 +113,7 @@ export class SafeFetchService {
         : null;
     const saut = { statusCode: response.status, headers, ttfbMs, location };
 
-    if (location !== null || !readBody) {
+    if (location !== null) {
       await response.body?.cancel();
       return { ...saut, body: null };
     }

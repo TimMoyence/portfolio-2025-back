@@ -325,18 +325,10 @@ function creerParticipantsRepo(): IParticipantsRepository {
       empreintes.set(participant.id, empreinteDeReprise);
       return Promise.resolve({ participant, nouveau: true });
     },
-    findBySessionAndStudentKey: (sessionId, studentKey) =>
-      Promise.resolve(
-        deLaSession(sessionId).find(
-          (participant) => participant.studentKey === studentKey,
-        ) ?? null,
-      ),
     findById: (id) => Promise.resolve(participants.get(id) ?? null),
     listBySession: (sessionId) => Promise.resolve(deLaSession(sessionId)),
     listEvincesBySession: (sessionId) =>
       Promise.resolve(evincesDeLaSession(sessionId)),
-    countBySession: (sessionId) =>
-      Promise.resolve(deLaSession(sessionId).length),
     touch: () => Promise.resolve(),
     evincer: (sessionId, participantId) =>
       modifierDansLaSession(sessionId, participantId, false, () => ({
@@ -416,7 +408,6 @@ function creerAnswersRepo(): IAnswersRepository {
       Promise.resolve(
         reponses.filter((reponse) => reponse.sessionId === sessionId),
       ),
-    tallyBySession: () => Promise.resolve([]),
   };
 }
 
