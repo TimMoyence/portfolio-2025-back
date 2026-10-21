@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "dff07c3104d7457eee0b4de02f81781645f599c39dfcb41fb5708a416221e1aa",
+  "empreinte": "440deeb24bca33ec8f1c9bc2a59fbdced246b3f9e788624de76dc89d52361382",
   "sujet": {
     "id": "b2-06-exponentielle-logarithme",
     "titre": "Exponentielle et logarithme",
@@ -2427,6 +2427,7 @@
           {
             "questionId": "b2-06-a1-rappel-placement",
             "bonneReponse": "1 000 × 1,03ⁿ",
+            "optionId": "1-000-1-03-d7fba9c1",
             "confusions": [
               {
                 "id": "coefficient-confondu-avec-taux",
@@ -2550,6 +2551,7 @@
           {
             "questionId": "b2-06-a1-rappel-suite",
             "bonneReponse": "Ils baissent de 10 % à chaque rang",
+            "optionId": "ils-baissent-de-10-pct-a-chaque-rang-117ce664",
             "confusions": [
               {
                 "id": "nature-de-suite-confondue",
@@ -2560,6 +2562,7 @@
           {
             "questionId": "b2-06-a1-rappel-pente",
             "bonneReponse": "=PENTE(B2:B7;A2:A7)",
+            "optionId": "pente-b2-b7-a2-a7-024fc786",
             "confusions": [
               {
                 "id": "pente-ordonnee-inversees",
@@ -3100,6 +3103,7 @@
           {
             "questionId": "b2-06-a1-calcul",
             "bonneReponse": "400 × e^(0,06 × 5), soit 400 × e^0,3",
+            "optionId": "400-e-0-06-5-soit-400-e-0-3-9f72ad1c",
             "confusions": [
               {
                 "id": "exponentielle-lue-comme-produit",
@@ -3114,6 +3118,7 @@
           {
             "questionId": "b2-06-a1-ventes",
             "bonneReponse": "540 sacs",
+            "optionId": null,
             "confusions": [
               {
                 "id": "k-confondu-avec-taux",
@@ -3128,6 +3133,7 @@
           {
             "questionId": "b2-06-a1-sens",
             "bonneReponse": "Elles baissent chaque mois, car k = −0,04 est négatif",
+            "optionId": "elles-baissent-chaque-mois-car-k-moins-0-4479918d",
             "confusions": [
               {
                 "id": "signe-de-k-ignore",
@@ -3138,6 +3144,7 @@
           {
             "questionId": "b2-06-a1-taux",
             "bonneReponse": "6,18 %",
+            "optionId": null,
             "confusions": [
               {
                 "id": "k-confondu-avec-taux",
@@ -3970,6 +3977,7 @@
           {
             "questionId": "b2-06-a2-equivalence",
             "bonneReponse": "n ≥ ln 2 ÷ ln 1,06",
+            "optionId": "n-ln-2-ln-1-06-b4ca802a",
             "confusions": [
               {
                 "id": "seuil-par-division",
@@ -3984,6 +3992,7 @@
           {
             "questionId": "b2-06-a2-capacite",
             "bonneReponse": "16 mois",
+            "optionId": null,
             "confusions": [
               {
                 "id": "seuil-mal-arrondi",
@@ -3998,6 +4007,7 @@
           {
             "questionId": "b2-06-a2-sens",
             "bonneReponse": "n > ln 0,4 ÷ ln 0,8",
+            "optionId": "n-ln-0-4-ln-0-8-3ab4eb63",
             "confusions": [
               {
                 "id": "sens-inegalite-ln-negatif",
@@ -4008,6 +4018,7 @@
           {
             "questionId": "b2-06-a2-machine",
             "bonneReponse": "5 ans",
+            "optionId": null,
             "confusions": [
               {
                 "id": "seuil-mal-arrondi",
@@ -4572,6 +4583,7 @@
           {
             "questionId": "b2-06-a3-vote-modele",
             "bonneReponse": "Un modèle exponentiel, de la forme a e^(kx)",
+            "optionId": "un-modele-exponentiel-de-la-forme-a-e-kx-eeabb057",
             "confusions": [
               {
                 "id": "ajustement-affine-sur-y",
@@ -4582,6 +4594,7 @@
           {
             "questionId": "b2-06-a3-vote-ln",
             "bonneReponse": "ln y = ln a + kx",
+            "optionId": "ln-y-ln-a-plus-kx-ffee7473",
             "confusions": [
               {
                 "id": "ln-produit-en-produit",
@@ -5291,6 +5304,7 @@
           {
             "questionId": "b2-06-a3-coefficient",
             "bonneReponse": "a = e⁸, soit environ 2 981",
+            "optionId": "a-e-soit-environ-2-981-3292dad8",
             "confusions": [
               {
                 "id": "ordonnee-non-exponentiee",
@@ -5305,6 +5319,7 @@
           {
             "questionId": "b2-06-a3-demande",
             "bonneReponse": "446 sacs",
+            "optionId": null,
             "confusions": [
               {
                 "id": "k-confondu-avec-taux",
@@ -5319,6 +5334,7 @@
           {
             "questionId": "b2-06-a3-methode",
             "bonneReponse": "x = ln(600 ÷ a) ÷ (−0,05)",
+            "optionId": "x-ln-600-a-moins-0-05-74159ec0",
             "confusions": [
               {
                 "id": "seuil-par-division",
@@ -5333,6 +5349,7 @@
           {
             "questionId": "b2-06-a3-prix",
             "bonneReponse": "32,06 €",
+            "optionId": null,
             "confusions": [
               {
                 "id": "seuil-par-division",
@@ -6108,6 +6125,7 @@
           {
             "questionId": "b2-06-r-zero",
             "bonneReponse": "1, comme toute puissance d’exposant nul",
+            "optionId": "1-comme-toute-puissance-d-exposant-nul-8d2c2051",
             "confusions": [
               {
                 "id": "exponentielle-lue-comme-produit",
@@ -6118,6 +6136,7 @@
           {
             "questionId": "b2-06-r-sens",
             "bonneReponse": "Elle décroît, car k = −0,2 est négatif",
+            "optionId": "elle-decroit-car-k-moins-0-2-est-negatif-b411a57a",
             "confusions": [
               {
                 "id": "signe-de-k-ignore",
@@ -6128,6 +6147,7 @@
           {
             "questionId": "b2-06-r-taux",
             "bonneReponse": "e^0,03 − 1, soit environ 3,05 %",
+            "optionId": "e-0-03-moins-1-soit-environ-3-05-pct-702ff124",
             "confusions": [
               {
                 "id": "k-confondu-avec-taux",
@@ -6138,6 +6158,7 @@
           {
             "questionId": "b2-06-r-valeur",
             "bonneReponse": "Environ 442,07, soit 400 × e^0,1",
+            "optionId": "environ-442-07-soit-400-e-0-1-d7798f30",
             "confusions": [
               {
                 "id": "exponentielle-lue-comme-produit",
@@ -6148,6 +6169,7 @@
           {
             "questionId": "b2-06-r-equation",
             "bonneReponse": "x = ln 7, soit environ 1,95",
+            "optionId": "x-ln-7-soit-environ-1-95-50949ecc",
             "confusions": [
               {
                 "id": "seuil-par-division",
@@ -6158,6 +6180,7 @@
           {
             "questionId": "b2-06-r-produit",
             "bonneReponse": "À ln 2 + ln 5",
+            "optionId": "a-ln-2-plus-ln-5-84abb038",
             "confusions": [
               {
                 "id": "ln-produit-en-produit",
@@ -6168,6 +6191,7 @@
           {
             "questionId": "b2-06-r-touche",
             "bonneReponse": "La touche ln, qui affiche environ 2,996",
+            "optionId": "la-touche-ln-qui-affiche-environ-2-996-0f1ef2ca",
             "confusions": [
               {
                 "id": "log-decimal-au-lieu-de-ln",
@@ -6178,6 +6202,7 @@
           {
             "questionId": "b2-06-r-seuil",
             "bonneReponse": "n ≥ ln 3 ÷ ln 1,1, soit environ 11,53",
+            "optionId": "n-ln-3-ln-1-1-soit-environ-11-53-6c149426",
             "confusions": [
               {
                 "id": "seuil-par-division",
@@ -6188,6 +6213,7 @@
           {
             "questionId": "b2-06-r-sens-change",
             "bonneReponse": "n ≥ ln 0,5 ÷ ln 0,9, le sens change",
+            "optionId": "n-ln-0-5-ln-0-9-le-sens-change-0f285860",
             "confusions": [
               {
                 "id": "sens-inegalite-ln-negatif",
@@ -6198,6 +6224,7 @@
           {
             "questionId": "b2-06-r-entier",
             "bonneReponse": "Huit, l’entier juste au-dessus",
+            "optionId": "huit-l-entier-juste-au-dessus-5a27755a",
             "confusions": [
               {
                 "id": "seuil-mal-arrondi",
@@ -6208,6 +6235,7 @@
           {
             "questionId": "b2-06-r-ajustement",
             "bonneReponse": "Celle de z = ln y en x",
+            "optionId": "celle-de-z-ln-y-en-x-ff035096",
             "confusions": [
               {
                 "id": "ajustement-affine-sur-y",
@@ -6218,6 +6246,7 @@
           {
             "questionId": "b2-06-r-retour",
             "bonneReponse": "a = e³, soit environ 20,09",
+            "optionId": "a-e-soit-environ-20-09-e893df7b",
             "confusions": [
               {
                 "id": "ordonnee-non-exponentiee",
@@ -6542,6 +6571,7 @@
           {
             "questionId": "b2-06-a4-billet",
             "bonneReponse": "=LN(2)/LN(1,03)",
+            "optionId": "ln-2-ln-1-03-127ca479",
             "confusions": [
               {
                 "id": "seuil-par-division",

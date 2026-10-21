@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "ef43f4766ddf7aa4dc99bbeb63adb5ca52db02136b31be884f69c8e78d9230bf",
+  "empreinte": "f7cc2964bc8db72a54db9becb4abf2054bea108f8b9c7c7f289af2075c1614f2",
   "sujet": {
     "id": "b2-02-series-statistiques",
     "titre": "Séries statistiques : résumer, relier, prévoir",
@@ -2351,6 +2351,7 @@
           {
             "questionId": "b2-02-a1-diagnostic",
             "bonneReponse": "30 jours",
+            "optionId": "30-jours-4e9241c2",
             "confusions": [
               {
                 "id": "moyenne-lue-comme-mediane",
@@ -3065,6 +3066,7 @@
           {
             "questionId": "b2-02-a1-mediane",
             "bonneReponse": "43",
+            "optionId": null,
             "confusions": [
               {
                 "id": "mediane-sans-tri",
@@ -3083,6 +3085,7 @@
           {
             "questionId": "b2-02-a1-moyenne",
             "bonneReponse": "47,75",
+            "optionId": null,
             "confusions": [
               {
                 "id": "valeur-extreme-supprimee",
@@ -3097,6 +3100,7 @@
           {
             "questionId": "b2-02-a1-ecart-type",
             "bonneReponse": "26,2",
+            "optionId": null,
             "confusions": [
               {
                 "id": "ecart-type-population-echantillon",
@@ -3111,6 +3115,7 @@
           {
             "questionId": "b2-02-a1-resume",
             "bonneReponse": "Garder F105, la signaler, et publier la médiane avec la moyenne et l’écart-type",
+            "optionId": "garder-f105-la-signaler-et-publier-la-me-07ab59f8",
             "confusions": [
               {
                 "id": "valeur-extreme-supprimee",
@@ -3341,6 +3346,7 @@
           {
             "questionId": "b2-02-a2-glaces",
             "bonneReponse": "Rien sur une cause : la saison fait varier les deux ventes",
+            "optionId": "rien-sur-une-cause-la-saison-fait-varier-7fa82ffd",
             "confusions": [
               {
                 "id": "correlation-prise-pour-causalite",
@@ -3351,6 +3357,7 @@
           {
             "questionId": "b2-02-a2-formation",
             "bonneReponse": "Les deux séries suivent le temps : leur lien ne prouve pas une cause",
+            "optionId": "les-deux-series-suivent-le-temps-leur-li-f7571bfd",
             "confusions": [
               {
                 "id": "correlation-prise-pour-causalite",
@@ -3781,6 +3788,7 @@
           {
             "questionId": "b2-02-a2-x-moyen",
             "bonneReponse": "3,5",
+            "optionId": null,
             "confusions": [
               {
                 "id": "point-moyen-confondu",
@@ -3791,6 +3799,7 @@
           {
             "questionId": "b2-02-a2-y-moyen",
             "bonneReponse": "718",
+            "optionId": null,
             "confusions": [
               {
                 "id": "point-moyen-confondu",
@@ -3801,6 +3810,7 @@
           {
             "questionId": "b2-02-a2-r",
             "bonneReponse": "0,999",
+            "optionId": null,
             "confusions": [
               {
                 "id": "correlation-lue-comme-pente",
@@ -3811,6 +3821,7 @@
           {
             "questionId": "b2-02-a2-lecture-r",
             "bonneReponse": "Oui : r est très proche de 1, les points sont presque alignés",
+            "optionId": "oui-r-est-tres-proche-de-1-les-points-so-9279855e",
             "confusions": [
               {
                 "id": "correlation-prise-pour-causalite",
@@ -4768,6 +4779,7 @@
           {
             "questionId": "b2-02-a3-pente",
             "bonneReponse": "43,89",
+            "optionId": null,
             "confusions": [
               {
                 "id": "pente-ordonnee-inversees",
@@ -4778,6 +4790,7 @@
           {
             "questionId": "b2-02-a3-ordonnee",
             "bonneReponse": "564,40",
+            "optionId": null,
             "confusions": [
               {
                 "id": "pente-ordonnee-inversees",
@@ -4788,6 +4801,7 @@
           {
             "questionId": "b2-02-a3-prevision",
             "bonneReponse": "959",
+            "optionId": null,
             "confusions": [
               {
                 "id": "rang-pris-pour-annee",
@@ -4798,6 +4812,7 @@
           {
             "questionId": "b2-02-a3-seuil",
             "bonneReponse": "2029",
+            "optionId": null,
             "confusions": [
               {
                 "id": "seuil-mal-arrondi",
@@ -5508,6 +5523,7 @@
           {
             "questionId": "b2-02-r-mediane-paire",
             "bonneReponse": "23, la demi-somme des deux valeurs du milieu",
+            "optionId": "23-la-demi-somme-des-deux-valeurs-du-mil-99c665ba",
             "confusions": [
               {
                 "id": "mediane-rang-pair",
@@ -5522,6 +5538,7 @@
           {
             "questionId": "b2-02-r-mediane-tri",
             "bonneReponse": "5, la valeur du milieu une fois la série triée",
+            "optionId": "5-la-valeur-du-milieu-une-fois-la-serie-e6f9f725",
             "confusions": [
               {
                 "id": "mediane-sans-tri",
@@ -5536,6 +5553,7 @@
           {
             "questionId": "b2-02-r-extreme",
             "bonneReponse": "La garder, la signaler et donner la médiane avec la moyenne",
+            "optionId": "la-garder-la-signaler-et-donner-la-media-02c13111",
             "confusions": [
               {
                 "id": "valeur-extreme-supprimee",
@@ -5550,6 +5568,7 @@
           {
             "questionId": "b2-02-r-variance",
             "bonneReponse": "6 jours, la racine carrée de la variance",
+            "optionId": "6-jours-la-racine-carree-de-la-variance-33463d50",
             "confusions": [
               {
                 "id": "variance-confondue-avec-ecart-type",
@@ -5560,6 +5579,7 @@
           {
             "questionId": "b2-02-r-population",
             "bonneReponse": "ECARTYPEP, division par n",
+            "optionId": "ecartypep-division-par-n-799f2609",
             "confusions": [
               {
                 "id": "ecart-type-population-echantillon",
@@ -5574,6 +5594,7 @@
           {
             "questionId": "b2-02-r-etendue",
             "bonneReponse": "Pas forcément : l’étendue ne regarde que les deux extrêmes",
+            "optionId": "pas-forcement-l-etendue-ne-regarde-que-l-0acf9f62",
             "confusions": [
               {
                 "id": "etendue-prise-pour-dispersion",
@@ -5584,6 +5605,7 @@
           {
             "questionId": "b2-02-r-point-moyen",
             "bonneReponse": "(2,5 ; 30), les deux moyennes",
+            "optionId": "2-5-30-les-deux-moyennes-a11b161c",
             "confusions": [
               {
                 "id": "point-moyen-confondu",
@@ -5594,6 +5616,7 @@
           {
             "questionId": "b2-02-r-signe",
             "bonneReponse": "Oui : les points sont proches d’une droite qui descend",
+            "optionId": "oui-les-points-sont-proches-d-une-droite-3a6eb09c",
             "confusions": [
               {
                 "id": "correlation-jugee-au-signe",
@@ -5608,6 +5631,7 @@
           {
             "questionId": "b2-02-r-pente",
             "bonneReponse": "12, le coefficient directeur",
+            "optionId": "12-le-coefficient-directeur-be82faad",
             "confusions": [
               {
                 "id": "correlation-lue-comme-pente",
@@ -5622,6 +5646,7 @@
           {
             "questionId": "b2-02-r-causalite",
             "bonneReponse": "Rien sur une cause : l’hiver fait varier les deux séries",
+            "optionId": "rien-sur-une-cause-l-hiver-fait-varier-l-f9fb9f9c",
             "confusions": [
               {
                 "id": "correlation-prise-pour-causalite",
@@ -5632,6 +5657,7 @@
           {
             "questionId": "b2-02-r-rang",
             "bonneReponse": "6, le rang de 2026",
+            "optionId": "6-le-rang-de-2026-478bc17a",
             "confusions": [
               {
                 "id": "rang-pris-pour-annee",
@@ -5642,6 +5668,7 @@
           {
             "questionId": "b2-02-r-seuil",
             "bonneReponse": "8, l’entier suivant",
+            "optionId": "8-l-entier-suivant-b4205cc5",
             "confusions": [
               {
                 "id": "seuil-mal-arrondi",
@@ -6019,6 +6046,7 @@
           {
             "questionId": "b2-02-a4-billet",
             "bonneReponse": "La moitié de nos factures est encaissée en 43 jours au plus ; si la tendance de 2020 à 2025 se poursuit, notre chiffre d’affaires 2028 serait d’environ 959 k€.",
+            "optionId": "la-moitie-de-nos-factures-est-encaissee-d4f39369",
             "confusions": [
               {
                 "id": "extrapolation-sans-reserve",

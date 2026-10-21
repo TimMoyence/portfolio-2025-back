@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "2612f0208625c40d2dc44776065520cc97a081b76512e23143dad5777a9c24a3",
+  "empreinte": "139cef0f7b554aaca996e3a1b337735ef38b5c8f29a525fd0257d12d7cfd8075",
   "sujet": {
     "id": "b2-01-traitement-information-chiffree",
     "titre": "Lire, contrôler et décider avec l’information chiffrée",
@@ -9359,6 +9359,7 @@
           {
             "questionId": "b2-01-a1-diagnostic",
             "bonneReponse": "+25 %",
+            "optionId": "plus-25-pct-ecd953a1",
             "confusions": [
               {
                 "id": "base-arrivee",
@@ -10559,6 +10560,7 @@
           {
             "questionId": "b2-01-a2-evolution-marge",
             "bonneReponse": "+2,1 % en trois ans",
+            "optionId": "plus-2-1-pct-en-trois-ans-fedf4a82",
             "confusions": [
               {
                 "id": "axe-tronque-lu-comme-ecart",
@@ -10573,6 +10575,7 @@
           {
             "questionId": "b2-01-a2-part-marketplace",
             "bonneReponse": "45,5",
+            "optionId": null,
             "confusions": [
               {
                 "id": "taux-valeur-facteur-cent",
@@ -10587,6 +10590,7 @@
           {
             "questionId": "b2-01-a2-population-reference",
             "bonneReponse": "Rien ne le prouve : 84 % des commandes ne disent rien de la part du CA.",
+            "optionId": "rien-ne-le-prouve-84-pct-des-commandes-n-233ce064",
             "confusions": [
               {
                 "id": "population-reference-ignoree",
@@ -10746,6 +10750,7 @@
           {
             "questionId": "b2-01-a2-evolution-sur-mesure",
             "bonneReponse": "−17,81",
+            "optionId": null,
             "confusions": [
               {
                 "id": "base-arrivee",
@@ -10768,6 +10773,7 @@
           {
             "questionId": "b2-01-a2-ordre-de-grandeur",
             "bonneReponse": "Environ +45 %",
+            "optionId": "environ-plus-45-pct-3828ed2c",
             "confusions": [
               {
                 "id": "base-arrivee",
@@ -10782,6 +10788,7 @@
           {
             "questionId": "b2-01-a2-marge-marque",
             "bonneReponse": "Taux de marque : 20 % ; taux de marge : 25 %",
+            "optionId": "taux-de-marque-20-pct-taux-de-marge-25-p-ed5e6cc4",
             "confusions": [
               {
                 "id": "marque-confondue-avec-marge",
@@ -11311,6 +11318,7 @@
           {
             "questionId": "b2-01-a3-sac-v1",
             "bonneReponse": "Inférieur de 1 % au prix de départ",
+            "optionId": "inferieur-de-1-pct-au-prix-de-depart-7b7f8a6e",
             "confusions": [
               {
                 "id": "hausse-baisse-symetriques",
@@ -11325,6 +11333,7 @@
           {
             "questionId": "b2-01-a3-remise-v2",
             "bonneReponse": "11,8 %",
+            "optionId": "11-8-pct-43eed297",
             "confusions": [
               {
                 "id": "taux-successifs-additionnes",
@@ -15845,6 +15854,7 @@
           {
             "questionId": "b2-01-a3-niveau-prix",
             "bonneReponse": "Plus élevé qu’en 2024",
+            "optionId": "plus-eleve-qu-en-2024-fb0ec71f",
             "confusions": [
               {
                 "id": "rythme-confondu-avec-niveau",
@@ -15855,6 +15865,7 @@
           {
             "questionId": "b2-01-a3-indice-2023",
             "bonneReponse": "112,68",
+            "optionId": null,
             "confusions": [
               {
                 "id": "taux-successifs-additionnes",
@@ -15869,6 +15880,7 @@
           {
             "questionId": "b2-01-a3-hausse-2019-2025",
             "bonneReponse": "15,97",
+            "optionId": null,
             "confusions": [
               {
                 "id": "taux-successifs-additionnes",
@@ -15993,6 +16005,7 @@
           {
             "questionId": "b2-01-a3-taux-moyen",
             "bonneReponse": "2,50",
+            "optionId": null,
             "confusions": [
               {
                 "id": "taux-moyen-arithmetique",
@@ -16003,6 +16016,7 @@
           {
             "questionId": "b2-01-a3-reciproque",
             "bonneReponse": "Une baisse de 20 %",
+            "optionId": "une-baisse-de-20-pct-b2b09374",
             "confusions": [
               {
                 "id": "reciproque-meme-taux",
@@ -16758,6 +16772,7 @@
           {
             "questionId": "b2-01-a4-forme",
             "bonneReponse": "Trois courbes, une par canal, trimestres en abscisse",
+            "optionId": "trois-courbes-une-par-canal-trimestres-e-7dfb14e4",
             "confusions": [
               {
                 "id": "forme-inadaptee",
@@ -16768,6 +16783,7 @@
           {
             "questionId": "b2-01-a4-titre",
             "bonneReponse": "CA HT 2025 par canal et par trimestre (en milliers d’euros)",
+            "optionId": "ca-ht-2025-par-canal-et-par-trimestre-en-80bc316f",
             "confusions": [
               {
                 "id": "titre-interpretatif",
@@ -16898,6 +16914,7 @@
           {
             "questionId": "b2-01-a4-axe",
             "bonneReponse": "À 0, avec une graduation tous les 20 000 €",
+            "optionId": "a-0-avec-une-graduation-tous-les-20-000-c6f42a59",
             "confusions": [
               {
                 "id": "axe-tronque-lu-comme-ecart",
@@ -16908,6 +16925,7 @@
           {
             "questionId": "b2-01-a4-lecture",
             "bonneReponse": "Au 3ᵉ trimestre, la marketplace atteint 167 000 €, contre 102 000 € pour le sur-mesure.",
+            "optionId": "au-3e-trimestre-la-marketplace-atteint-1-503e77a3",
             "confusions": [
               {
                 "id": "valeur-confondue-avec-taux",
@@ -17661,6 +17679,7 @@
           {
             "questionId": "b2-01-a5-paradoxe-v1",
             "bonneReponse": "Le poids des canaux dans le CA a changé.",
+            "optionId": "le-poids-des-canaux-dans-le-ca-a-change-871f0d7f",
             "confusions": [
               {
                 "id": "moyenne-simple-des-taux",
@@ -17675,6 +17694,7 @@
           {
             "questionId": "b2-01-a5-paradoxe-v2",
             "bonneReponse": "Les candidats de MCO pèsent davantage dans l’ensemble des candidats.",
+            "optionId": "les-candidats-de-mco-pesent-davantage-da-333e1344",
             "confusions": [
               {
                 "id": "moyenne-simple-des-taux",
@@ -19329,6 +19349,7 @@
           {
             "questionId": "b2-01-a5-part-marge-marketplace",
             "bonneReponse": "28,8",
+            "optionId": null,
             "confusions": [
               {
                 "id": "population-reference-ignoree",
@@ -19347,6 +19368,7 @@
           {
             "questionId": "b2-01-a5-variation-marge-sur-mesure",
             "bonneReponse": "−30 960",
+            "optionId": null,
             "confusions": [
               {
                 "id": "sens-de-variation",
@@ -19361,6 +19383,7 @@
           {
             "questionId": "b2-01-a5-causalite",
             "bonneReponse": "Hypothèse plausible, à vérifier avec les données par client.",
+            "optionId": "hypothese-plausible-a-verifier-avec-les-fc60feec",
             "confusions": [
               {
                 "id": "correlation-prise-pour-causalite",
@@ -19484,6 +19507,7 @@
           {
             "questionId": "b2-01-a5-synthese",
             "bonneReponse": "En 2025, la marge brute progresse de 1 200 € et son taux recule de 2,3 points.",
+            "optionId": "en-2025-la-marge-brute-progresse-de-1-20-b1bfb2f4",
             "confusions": [
               {
                 "id": "points-confondus-avec-pourcentage",
@@ -19498,6 +19522,7 @@
           {
             "questionId": "b2-01-a5-tcd",
             "bonneReponse": "24,3 % : il pondère chaque canal par son CA",
+            "optionId": "24-3-pct-il-pondere-chaque-canal-par-son-80ae0cc5",
             "confusions": [
               {
                 "id": "moyenne-simple-des-taux",
@@ -20313,6 +20338,7 @@
           {
             "questionId": "b2-01-r-taux-evolution",
             "bonneReponse": "Environ +9,5 %",
+            "optionId": "environ-plus-9-5-pct-84cc9cc7",
             "confusions": [
               {
                 "id": "base-arrivee",
@@ -20327,6 +20353,7 @@
           {
             "questionId": "b2-01-r-points",
             "bonneReponse": "+1 point, soit +25 % en valeur relative",
+            "optionId": "plus-1-point-soit-plus-25-pct-en-valeur-1ead1749",
             "confusions": [
               {
                 "id": "points-confondus-avec-pourcentage",
@@ -20337,6 +20364,7 @@
           {
             "questionId": "b2-01-r-successives",
             "bonneReponse": "Une baisse de 4 %",
+            "optionId": "une-baisse-de-4-pct-81141d75",
             "confusions": [
               {
                 "id": "hausse-baisse-symetriques",
@@ -20351,6 +20379,7 @@
           {
             "questionId": "b2-01-r-reciproque",
             "bonneReponse": "Une hausse de 25 %",
+            "optionId": "une-hausse-de-25-pct-dce25779",
             "confusions": [
               {
                 "id": "reciproque-meme-taux",
@@ -20365,6 +20394,7 @@
           {
             "questionId": "b2-01-r-indice",
             "bonneReponse": "Le prix a augmenté de 3,5 % depuis le 1ᵉʳ janvier",
+            "optionId": "le-prix-a-augmente-de-3-5-pct-depuis-le-80ed3822",
             "confusions": [
               {
                 "id": "indice-lu-comme-valeur",
@@ -20379,6 +20409,7 @@
           {
             "questionId": "b2-01-r-taux-moyen",
             "bonneReponse": "10 % par an",
+            "optionId": "10-pct-par-an-528cdee8",
             "confusions": [
               {
                 "id": "taux-moyen-arithmetique",
@@ -20393,6 +20424,7 @@
           {
             "questionId": "b2-01-r-ponderee",
             "bonneReponse": "Un taux global de 15 %",
+            "optionId": "un-taux-global-de-15-pct-f80f9cd2",
             "confusions": [
               {
                 "id": "moyenne-simple-des-taux",
@@ -20407,6 +20439,7 @@
           {
             "questionId": "b2-01-r-population",
             "bonneReponse": "Non : les deux parts n’ont pas la même population de référence",
+            "optionId": "non-les-deux-parts-n-ont-pas-la-meme-pop-5cedee2a",
             "confusions": [
               {
                 "id": "population-reference-ignoree",
@@ -20417,6 +20450,7 @@
           {
             "questionId": "b2-01-r-axe",
             "bonneReponse": "Environ +2 %",
+            "optionId": "environ-plus-2-pct-9e6e5fc1",
             "confusions": [
               {
                 "id": "axe-tronque-lu-comme-ecart",
@@ -20427,6 +20461,7 @@
           {
             "questionId": "b2-01-r-compensation",
             "bonneReponse": "Non : deux erreurs de sens contraire se compensent",
+            "optionId": "non-deux-erreurs-de-sens-contraire-se-co-eaed520b",
             "confusions": [
               {
                 "id": "total-concordant-vaut-preuve",
@@ -20441,6 +20476,7 @@
           {
             "questionId": "b2-01-r-multiple-neuf",
             "bonneReponse": "C’est un indice d’inversion de chiffres, à confirmer avec la pièce",
+            "optionId": "c-est-un-indice-d-inversion-de-chiffres-a8aa43bb",
             "confusions": [
               {
                 "id": "indice-pris-pour-preuve",
@@ -20455,6 +20491,7 @@
           {
             "questionId": "b2-01-r-taux-mensuel",
             "bonneReponse": "Environ 0,49 % par mois",
+            "optionId": "environ-0-49-pct-par-mois-2ae857c3",
             "confusions": [
               {
                 "id": "taux-moyen-arithmetique",
@@ -20469,6 +20506,7 @@
           {
             "questionId": "b2-01-r-ttc-ht",
             "bonneReponse": "Une baisse d’environ 16,7 %",
+            "optionId": "une-baisse-d-environ-16-7-pct-8a24c928",
             "confusions": [
               {
                 "id": "reciproque-meme-taux",
@@ -20980,6 +21018,7 @@
           {
             "questionId": "b2-01-a6-billet",
             "bonneReponse": "Le CA progresse de 9,5 % mais le taux de marge brute recule de 2,3 points : la marketplace, moins margée, pèse davantage dans le CA.",
+            "optionId": "le-ca-progresse-de-9-5-pct-mais-le-taux-8d4ee2ff",
             "confusions": [
               {
                 "id": "points-confondus-avec-pourcentage",

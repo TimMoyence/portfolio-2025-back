@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "34c0cac6ddd83bf72db8f68a74b0db4e5427b434cb90d788871453bb7b0c7498",
+  "empreinte": "137dce6a8f37dd7edfb4ece29462ffa14f837c4fdd6531b7f5444819d69559aa",
   "sujet": {
     "id": "b1-01-proportions-pourcentages",
     "titre": "Proportions et pourcentages",
@@ -2180,6 +2180,7 @@
           {
             "questionId": "b1-01-a1-diagnostic-part",
             "bonneReponse": "20 %",
+            "optionId": "20-pct-7ae8d407",
             "confusions": [
               {
                 "id": "valeur-confondue-avec-taux",
@@ -2311,6 +2312,7 @@
           {
             "questionId": "b1-01-a1-diagnostic-pourcentage",
             "bonneReponse": "12 €",
+            "optionId": "12-eur-c918b766",
             "confusions": [
               {
                 "id": "raisonnement-additif",
@@ -2325,6 +2327,7 @@
           {
             "questionId": "b1-01-a1-diagnostic-evolution",
             "bonneReponse": "+ 20 %",
+            "optionId": "plus-20-pct-7431fd3a",
             "confusions": [
               {
                 "id": "ecart-absolu-au-lieu-du-taux",
@@ -2878,6 +2881,7 @@
           {
             "questionId": "b1-01-a1-part-alternants",
             "bonneReponse": "25 %",
+            "optionId": null,
             "confusions": [
               {
                 "id": "base-inversee",
@@ -2892,6 +2896,7 @@
           {
             "questionId": "b1-01-a1-phrase-theo",
             "bonneReponse": "40 % des alternants du réseau travaillent à Nantes",
+            "optionId": "40-pct-des-alternants-du-reseau-travaill-a2a0b349",
             "confusions": [
               {
                 "id": "population-reference-ignoree",
@@ -2902,6 +2907,7 @@
           {
             "questionId": "b1-01-a1-alternants-nantes",
             "bonneReponse": "25 %",
+            "optionId": null,
             "confusions": [
               {
                 "id": "population-reference-ignoree",
@@ -2912,6 +2918,7 @@
           {
             "questionId": "b1-01-a1-objectif",
             "bonneReponse": "12 alternants",
+            "optionId": null,
             "confusions": [
               {
                 "id": "population-reference-ignoree",
@@ -3960,6 +3967,7 @@
           {
             "questionId": "b1-01-a2-poids",
             "bonneReponse": "Nantes, la boutique qui a le plus de clients, a le taux le plus bas : il pèse le plus",
+            "optionId": "nantes-la-boutique-qui-a-le-plus-de-clie-e45fbda2",
             "confusions": [
               {
                 "id": "moyenne-simple-des-taux",
@@ -3970,6 +3978,7 @@
           {
             "questionId": "b1-01-a2-part-reservation",
             "bonneReponse": "21,6 %",
+            "optionId": null,
             "confusions": [
               {
                 "id": "population-reference-ignoree",
@@ -3984,6 +3993,7 @@
           {
             "questionId": "b1-01-a2-clients-reservation",
             "bonneReponse": "648 clients",
+            "optionId": null,
             "confusions": [
               {
                 "id": "population-reference-ignoree",
@@ -3994,6 +4004,7 @@
           {
             "questionId": "b1-01-a2-octobre",
             "bonneReponse": "47,5 %",
+            "optionId": null,
             "confusions": [
               {
                 "id": "moyenne-simple-des-taux",
@@ -4131,6 +4142,7 @@
           {
             "questionId": "b1-01-a3-points",
             "bonneReponse": "Elle gagne 6 points",
+            "optionId": "elle-gagne-6-points-40691afe",
             "confusions": [
               {
                 "id": "points-confondus-avec-pourcentage",
@@ -4141,6 +4153,7 @@
           {
             "questionId": "b1-01-a3-marque",
             "bonneReponse": "37,5 %",
+            "optionId": "37-5-pct-f8efdb56",
             "confusions": [
               {
                 "id": "marque-confondue-avec-marge",
@@ -4563,6 +4576,7 @@
           {
             "questionId": "b1-01-a3-ecart-points",
             "bonneReponse": "5,8 points",
+            "optionId": null,
             "confusions": [
               {
                 "id": "points-confondus-avec-pourcentage",
@@ -4573,6 +4587,7 @@
           {
             "questionId": "b1-01-a3-evolution",
             "bonneReponse": "15,9 %",
+            "optionId": null,
             "confusions": [
               {
                 "id": "points-confondus-avec-pourcentage",
@@ -4587,6 +4602,7 @@
           {
             "questionId": "b1-01-a3-taux-de-marge",
             "bonneReponse": "62,5 %",
+            "optionId": null,
             "confusions": [
               {
                 "id": "marque-confondue-avec-marge",
@@ -4597,6 +4613,7 @@
           {
             "questionId": "b1-01-a3-taux-de-marque",
             "bonneReponse": "38,5 %",
+            "optionId": null,
             "confusions": [
               {
                 "id": "marque-confondue-avec-marge",
@@ -5242,6 +5259,7 @@
           {
             "questionId": "b1-01-r-proportion",
             "bonneReponse": "15 ÷ 50 = 0,3, soit 30 %",
+            "optionId": "15-50-0-3-soit-30-pct-93e4d94d",
             "confusions": [
               {
                 "id": "valeur-confondue-avec-taux",
@@ -5252,6 +5270,7 @@
           {
             "questionId": "b1-01-r-partie",
             "bonneReponse": "30 clients",
+            "optionId": "30-clients-57064bbd",
             "confusions": [
               {
                 "id": "valeur-confondue-avec-taux",
@@ -5262,6 +5281,7 @@
           {
             "questionId": "b1-01-r-decimal",
             "bonneReponse": "0,04, soit 4 ÷ 100",
+            "optionId": "0-04-soit-4-100-edc43794",
             "confusions": [
               {
                 "id": "taux-valeur-facteur-cent",
@@ -5272,6 +5292,7 @@
           {
             "questionId": "b1-01-r-tout",
             "bonneReponse": "Les cadres",
+            "optionId": "les-cadres-bb6e2357",
             "confusions": [
               {
                 "id": "population-reference-ignoree",
@@ -5282,6 +5303,7 @@
           {
             "questionId": "b1-01-r-parmi",
             "bonneReponse": "12 ÷ 40 = 0,3, soit 30 %",
+            "optionId": "12-40-0-3-soit-30-pct-14cea07e",
             "confusions": [
               {
                 "id": "population-reference-ignoree",
@@ -5292,6 +5314,7 @@
           {
             "questionId": "b1-01-r-part-de-part",
             "bonneReponse": "0,5 × 0,2 = 0,1, soit 10 %",
+            "optionId": "0-5-0-2-0-1-soit-10-pct-4a3c38fc",
             "confusions": [
               {
                 "id": "raisonnement-additif",
@@ -5302,6 +5325,7 @@
           {
             "questionId": "b1-01-r-global",
             "bonneReponse": "(2 + 18) ÷ 40 = 0,5, soit 50 %",
+            "optionId": "2-plus-18-40-0-5-soit-50-pct-89d1fcea",
             "confusions": [
               {
                 "id": "moyenne-simple-des-taux",
@@ -5312,6 +5336,7 @@
           {
             "questionId": "b1-01-r-points",
             "bonneReponse": "+ 3 points",
+            "optionId": "plus-3-points-c9151355",
             "confusions": [
               {
                 "id": "points-confondus-avec-pourcentage",
@@ -5322,6 +5347,7 @@
           {
             "questionId": "b1-01-r-evolution",
             "bonneReponse": "Une évolution",
+            "optionId": "une-evolution-516e08bb",
             "confusions": [
               {
                 "id": "proportion-confondue-avec-evolution",
@@ -5332,6 +5358,7 @@
           {
             "questionId": "b1-01-r-marge",
             "bonneReponse": "10 ÷ 40 = 0,25, soit 25 %",
+            "optionId": "10-40-0-25-soit-25-pct-837ddb34",
             "confusions": [
               {
                 "id": "marque-confondue-avec-marge",
@@ -5342,6 +5369,7 @@
           {
             "questionId": "b1-01-r-marque",
             "bonneReponse": "10 ÷ 50 = 0,2, soit 20 %",
+            "optionId": "10-50-0-2-soit-20-pct-e7c8d80a",
             "confusions": [
               {
                 "id": "marque-confondue-avec-marge",
@@ -5352,6 +5380,7 @@
           {
             "questionId": "b1-01-r-somme",
             "bonneReponse": "=SOMME(D3:D8)",
+            "optionId": "somme-d3-d8-34aab757",
             "confusions": [
               {
                 "id": "valeur-saisie-sans-formule",
@@ -5676,6 +5705,7 @@
           {
             "questionId": "b1-01-a4-billet",
             "bonneReponse": "=ARRONDI(B3/$B$7*100;1)",
+            "optionId": "arrondi-b3-b-7-100-1-b39bfb3d",
             "confusions": [
               {
                 "id": "reference-relative-non-figee",

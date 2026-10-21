@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "38902114f88c12d809586297549bc85fbf7c6c9e13b0de010a7b8ee4555a5967",
+  "empreinte": "23499d46be73cabfd0282e8d03a334f3ead00924aa956e4474ee3c902b1b2d65",
   "sujet": {
     "id": "b2-04-suites",
     "titre": "Suites : modéliser une évolution régulière",
@@ -2605,6 +2605,7 @@
           {
             "questionId": "b2-04-a1-rappel-coefficient",
             "bonneReponse": "Par 1,06 : le coefficient multiplicateur 1 + 6 ÷ 100",
+            "optionId": "par-1-06-le-coefficient-multiplicateur-1-8c9f8da1",
             "confusions": [
               {
                 "id": "coefficient-confondu-avec-taux",
@@ -2723,6 +2724,7 @@
           {
             "questionId": "b2-04-a1-rappel-pente",
             "bonneReponse": "La hausse moyenne du chiffre d’affaires par an, en k€",
+            "optionId": "la-hausse-moyenne-du-chiffre-d-affaires-f7798775",
             "confusions": [
               {
                 "id": "pente-ordonnee-inversees",
@@ -2733,6 +2735,7 @@
           {
             "questionId": "b2-04-a1-rappel-negation",
             "bonneReponse": "Le chiffre d’affaires est supérieur ou égal à 1 200 k€",
+            "optionId": "le-chiffre-d-affaires-est-superieur-ou-e-b228738b",
             "confusions": [
               {
                 "id": "negation-comparaison",
@@ -3361,6 +3364,7 @@
           {
             "questionId": "b2-04-a1-nature",
             "bonneReponse": "Arithmétique : on ajoute 44 k€ chaque année",
+            "optionId": "arithmetique-on-ajoute-44-k-eur-chaque-a-f15a4c1b",
             "confusions": [
               {
                 "id": "nature-de-suite-confondue",
@@ -3371,6 +3375,7 @@
           {
             "questionId": "b2-04-a1-u3",
             "bonneReponse": "958 k€",
+            "optionId": null,
             "confusions": [
               {
                 "id": "rang-decale",
@@ -3381,6 +3386,7 @@
           {
             "questionId": "b2-04-a1-terme-general",
             "bonneReponse": "uₙ = 826 + 44n : le départ, plus n fois la raison",
+            "optionId": "u-826-plus-44n-le-depart-plus-n-fois-la-6534faaa",
             "confusions": [
               {
                 "id": "pente-ordonnee-inversees",
@@ -3395,6 +3401,7 @@
           {
             "questionId": "b2-04-a1-rang",
             "bonneReponse": "6 années",
+            "optionId": null,
             "confusions": [
               {
                 "id": "rang-confondu-avec-annee",
@@ -4093,6 +4100,7 @@
           {
             "questionId": "b2-04-a2-raison",
             "bonneReponse": "q = 1,06 : on multiplie par 1 + 0,06",
+            "optionId": "q-1-06-on-multiplie-par-1-plus-0-06-2b92fd04",
             "confusions": [
               {
                 "id": "coefficient-confondu-avec-taux",
@@ -4103,6 +4111,7 @@
           {
             "questionId": "b2-04-a2-v3",
             "bonneReponse": "983,78 k€",
+            "optionId": null,
             "confusions": [
               {
                 "id": "taux-successifs-additionnes",
@@ -4117,6 +4126,7 @@
           {
             "questionId": "b2-04-a2-terme-general",
             "bonneReponse": "vₙ = 826 × 1,06ⁿ",
+            "optionId": "v-826-1-06-9b700548",
             "confusions": [
               {
                 "id": "nature-de-suite-confondue",
@@ -4131,6 +4141,7 @@
           {
             "questionId": "b2-04-a2-ecart",
             "bonneReponse": "59,37 k€",
+            "optionId": null,
             "confusions": [
               {
                 "id": "taux-successifs-additionnes",
@@ -4750,6 +4761,7 @@
           {
             "questionId": "b2-04-a3-arret",
             "bonneReponse": "Sur 220 : la première valeur qui n’est plus inférieure à 200",
+            "optionId": "sur-220-la-premiere-valeur-qui-n-est-plu-e952c805",
             "confusions": [
               {
                 "id": "seuil-mal-arrondi",
@@ -4760,6 +4772,7 @@
           {
             "questionId": "b2-04-a3-nombre-de-termes",
             "bonneReponse": "Cinq nombres : un par année, de 2026 à 2030",
+            "optionId": "cinq-nombres-un-par-annee-de-2026-a-2030-b16e043b",
             "confusions": [
               {
                 "id": "nombre-de-termes-decale",
@@ -5460,6 +5473,7 @@
           {
             "questionId": "b2-04-a3-seuil-b",
             "bonneReponse": "7 années",
+            "optionId": null,
             "confusions": [
               {
                 "id": "seuil-mal-arrondi",
@@ -5474,6 +5488,7 @@
           {
             "questionId": "b2-04-a3-condition",
             "bonneReponse": "Tant que v < 1 200",
+            "optionId": "tant-que-v-1-200-68faa4fb",
             "confusions": [
               {
                 "id": "condition-tant-que-inversee",
@@ -5484,6 +5499,7 @@
           {
             "questionId": "b2-04-a3-cumul-a",
             "bonneReponse": "4 790 k€",
+            "optionId": null,
             "confusions": [
               {
                 "id": "terme-pris-pour-somme",
@@ -5498,6 +5514,7 @@
           {
             "questionId": "b2-04-a3-somme",
             "bonneReponse": "=SOMME(C3:C7)",
+            "optionId": "somme-c3-c7-9e437fbc",
             "confusions": [
               {
                 "id": "nombre-de-termes-decale",
@@ -6406,6 +6423,7 @@
           {
             "questionId": "b2-04-r-arithmetique",
             "bonneReponse": "Une suite arithmétique de raison 2 €",
+            "optionId": "une-suite-arithmetique-de-raison-2-eur-b99808a6",
             "confusions": [
               {
                 "id": "nature-de-suite-confondue",
@@ -6416,6 +6434,7 @@
           {
             "questionId": "b2-04-r-nature",
             "bonneReponse": "Géométrique : chaque terme est le précédent multiplié par 1,1",
+            "optionId": "geometrique-chaque-terme-est-le-preceden-88b86e38",
             "confusions": [
               {
                 "id": "nature-de-suite-confondue",
@@ -6426,6 +6445,7 @@
           {
             "questionId": "b2-04-r-baisse",
             "bonneReponse": "q = 0,80, soit 1 − 0,20",
+            "optionId": "q-0-80-soit-1-moins-0-20-05b01a75",
             "confusions": [
               {
                 "id": "coefficient-confondu-avec-taux",
@@ -6440,6 +6460,7 @@
           {
             "questionId": "b2-04-r-geometrique",
             "bonneReponse": "1 040,40 €, soit 1 000 × 1,02 × 1,02",
+            "optionId": "1-040-40-eur-soit-1-000-1-02-1-02-7128045c",
             "confusions": [
               {
                 "id": "taux-successifs-additionnes",
@@ -6450,6 +6471,7 @@
           {
             "questionId": "b2-04-r-terme-general",
             "bonneReponse": "On ajoute huit fois 12 à 500",
+            "optionId": "on-ajoute-huit-fois-12-a-500-9da615d3",
             "confusions": [
               {
                 "id": "rang-decale",
@@ -6460,6 +6482,7 @@
           {
             "questionId": "b2-04-r-rang",
             "bonneReponse": "À 2029 : quatre années après 2025",
+            "optionId": "a-2029-quatre-annees-apres-2025-4f021508",
             "confusions": [
               {
                 "id": "rang-decale",
@@ -6470,6 +6493,7 @@
           {
             "questionId": "b2-04-r-tant-que",
             "bonneReponse": "Tant que s ≥ 50",
+            "optionId": "tant-que-s-50-08ed78b9",
             "confusions": [
               {
                 "id": "condition-tant-que-inversee",
@@ -6480,6 +6504,7 @@
           {
             "questionId": "b2-04-r-affichage",
             "bonneReponse": "Il affiche 2 : u vaut alors 30",
+            "optionId": "il-affiche-2-u-vaut-alors-30-40b1f083",
             "confusions": [
               {
                 "id": "seuil-mal-arrondi",
@@ -6490,6 +6515,7 @@
           {
             "questionId": "b2-04-r-nombre-de-termes",
             "bonneReponse": "Sept termes : 9 − 3 + 1",
+            "optionId": "sept-termes-9-moins-3-plus-1-a31ba87b",
             "confusions": [
               {
                 "id": "nombre-de-termes-decale",
@@ -6500,6 +6526,7 @@
           {
             "questionId": "b2-04-r-somme",
             "bonneReponse": "36 k€ : la somme des trois mois",
+            "optionId": "36-k-eur-la-somme-des-trois-mois-02931138",
             "confusions": [
               {
                 "id": "terme-pris-pour-somme",
@@ -6510,6 +6537,7 @@
           {
             "questionId": "b2-04-r-dollar",
             "bonneReponse": "=C2+$G$1",
+            "optionId": "c2-plus-g-1-3da3b06e",
             "confusions": [
               {
                 "id": "reference-relative-non-figee",
@@ -6520,6 +6548,7 @@
           {
             "questionId": "b2-04-r-sens",
             "bonneReponse": "Elle décroît : chaque terme perd 3 %",
+            "optionId": "elle-decroit-chaque-terme-perd-3-pct-08b723e5",
             "confusions": [
               {
                 "id": "sens-de-variation",
@@ -6848,6 +6877,7 @@
           {
             "questionId": "b2-04-a4-billet",
             "bonneReponse": "=D2*(1+$H$1)",
+            "optionId": "d2-1-plus-h-1-f425a45f",
             "confusions": [
               {
                 "id": "reference-relative-non-figee",

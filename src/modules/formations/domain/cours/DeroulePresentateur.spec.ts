@@ -96,6 +96,10 @@ describe('deroulePresentateur', () => {
     const corrigeAttendu: CorrigePresentateur = {
       questionId: 'Q-TEST-RAPPEL',
       bonneReponse: 'plus bas qu’au départ',
+      optionId:
+        ecran('E-OUV').questions[0].options?.find(
+          ({ libelle }) => libelle === 'plus bas qu’au départ',
+        )?.id ?? null,
       confusions: [
         {
           id: 'hausse-baisse-symetriques',
@@ -119,6 +123,27 @@ describe('deroulePresentateur', () => {
     expect(
       repetee.ecrans[0].corriges[0].confusions.map((confusion) => confusion.id),
     ).toEqual(['hausse-baisse-symetriques']);
+  });
+
+  it('sert l option de la bonne réponse d un vote, et aucune à une question numérique, sur tous les cours', () => {
+    const ecarts = CONTENUS.flatMap((contenu) =>
+      deroulePresentateur(buildCoursDuContenu(contenu), 0).ecrans.flatMap(
+        ({ questions, corriges }) =>
+          corriges.flatMap(({ questionId, bonneReponse, optionId }) => {
+            const options = questions.find(
+              ({ id }) => id === questionId,
+            )?.options;
+            const attendue =
+              options === null || options === undefined
+                ? null
+                : (options.find(({ libelle }) => libelle === bonneReponse)
+                    ?.id ?? 'absente');
+            return optionId === attendue ? [] : [`${questionId} : ${optionId}`];
+          }),
+      ),
+    );
+
+    expect(ecarts).toEqual([]);
   });
 
   it('lit les remediations du cours, et le déroulé ne les sert plus', () => {

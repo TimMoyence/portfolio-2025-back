@@ -24,6 +24,7 @@ export type { DerouleCours, EcranDeroule } from '../contrats/deroule';
 export interface CorrigePresentateur {
   readonly questionId: string;
   readonly bonneReponse: string;
+  readonly optionId: string | null;
   readonly confusions: readonly {
     readonly id: string;
     readonly libelle: string;
@@ -84,6 +85,10 @@ function corrigesDe(
       return {
         questionId: question.id,
         bonneReponse: corrige.bonneReponse,
+        optionId:
+          question.type === 'vote'
+            ? String(tirage.solutions[question.id].valeur)
+            : null,
         confusions: [...new Set(corrige.confusions)].map((id) =>
           confusionPresentateur(id),
         ),

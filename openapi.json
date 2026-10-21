@@ -7983,6 +7983,12 @@
             "description": "Bonne reponse du tirage de reference : libelle pour un vote, valeur pour une question numerique",
             "example": "plus bas qu’au départ"
           },
+          "optionId": {
+            "type": "string",
+            "nullable": true,
+            "description": "Option de la bonne reponse d un vote, null pour une question numerique",
+            "example": "b"
+          },
           "confusions": {
             "type": "array",
             "items": {
@@ -7993,6 +7999,7 @@
         "required": [
           "questionId",
           "bonneReponse",
+          "optionId",
           "confusions"
         ]
       },

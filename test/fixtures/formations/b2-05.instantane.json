@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "bcc18389c2180d9bd6f0c45dae7ba54f612aad528da9ae43de8ef8199c6d8c1b",
+  "empreinte": "ebbf8fcf573a4403693b32ecc8b4e2331971cf9dd90dbf9839bd296bf85a4eb9",
   "sujet": {
     "id": "b2-05-mathematiques-financieres",
     "titre": "Mathématiques financières : placer, emprunter",
@@ -2549,6 +2549,7 @@
           {
             "questionId": "b2-05-a1-rappel-suite",
             "bonneReponse": "Une suite géométrique de raison 1,02",
+            "optionId": "une-suite-geometrique-de-raison-1-02-c94f2a0a",
             "confusions": [
               {
                 "id": "coefficient-confondu-avec-taux",
@@ -2672,6 +2673,7 @@
           {
             "questionId": "b2-05-a1-rappel-reciproque",
             "bonneReponse": "Par 1 ÷ 1,25 = 0,8",
+            "optionId": "par-1-1-25-0-8-fac8c7a9",
             "confusions": [
               {
                 "id": "reciproque-meme-taux",
@@ -2682,6 +2684,7 @@
           {
             "questionId": "b2-05-a1-rappel-termes",
             "bonneReponse": "Cinq termes : 4 − 0 + 1",
+            "optionId": "cinq-termes-4-moins-0-plus-1-1b0b427b",
             "confusions": [
               {
                 "id": "nombre-de-termes-decale",
@@ -3293,6 +3296,7 @@
           {
             "questionId": "b2-05-a1-coefficient",
             "bonneReponse": "1,025 : on multiplie par 1 + 0,025",
+            "optionId": "1-025-on-multiplie-par-1-plus-0-025-768772c6",
             "confusions": [
               {
                 "id": "coefficient-confondu-avec-taux",
@@ -3303,6 +3307,7 @@
           {
             "questionId": "b2-05-a1-valeur-acquise",
             "bonneReponse": "43 075,63 €",
+            "optionId": null,
             "confusions": [
               {
                 "id": "interets-simples-au-lieu-de-composes",
@@ -3317,6 +3322,7 @@
           {
             "questionId": "b2-05-a1-actualiser",
             "bonneReponse": "50 000 ÷ 1,025³",
+            "optionId": "50-000-1-025-1d0b8136",
             "confusions": [
               {
                 "id": "actualisation-inversee",
@@ -3331,6 +3337,7 @@
           {
             "questionId": "b2-05-a1-valeur-actuelle",
             "bonneReponse": "46 429,97 €",
+            "optionId": null,
             "confusions": [
               {
                 "id": "actualisation-inversee",
@@ -4105,6 +4112,7 @@
           {
             "questionId": "b2-05-a2-duree",
             "bonneReponse": "Quatre ans : de fin 2026 à fin 2030",
+            "optionId": "quatre-ans-de-fin-2026-a-fin-2030-a3601264",
             "confusions": [
               {
                 "id": "versements-places-toute-la-duree",
@@ -4115,6 +4123,7 @@
           {
             "questionId": "b2-05-a2-premier",
             "bonneReponse": "6 753,05 €",
+            "optionId": null,
             "confusions": [
               {
                 "id": "versements-places-toute-la-duree",
@@ -4129,6 +4138,7 @@
           {
             "questionId": "b2-05-a2-expression",
             "bonneReponse": "6 000 × (1,03⁵ − 1) ÷ 0,03",
+            "optionId": "6-000-1-03-moins-1-0-03-d12e1314",
             "confusions": [
               {
                 "id": "versements-places-toute-la-duree",
@@ -4143,6 +4153,7 @@
           {
             "questionId": "b2-05-a2-valeur-acquise",
             "bonneReponse": "31 854,81 €",
+            "optionId": null,
             "confusions": [
               {
                 "id": "versements-sans-interets",
@@ -4699,6 +4710,7 @@
           {
             "questionId": "b2-05-a3-rembourse",
             "bonneReponse": "11 000 € : l’annuité moins les intérêts",
+            "optionId": "11-000-eur-l-annuite-moins-les-interets-de572ef1",
             "confusions": [
               {
                 "id": "annuite-confondue-avec-amortissement",
@@ -4709,6 +4721,7 @@
           {
             "questionId": "b2-05-a3-cout-vote",
             "bonneReponse": "1 200 € : le total remboursé moins le capital",
+            "optionId": "1-200-eur-le-total-rembourse-moins-le-ca-5a48e536",
             "confusions": [
               {
                 "id": "cout-credit-confondu-avec-total-rembourse",
@@ -5128,6 +5141,7 @@
           {
             "questionId": "b2-05-a3-annuite",
             "bonneReponse": "13 477,63 €",
+            "optionId": null,
             "confusions": [
               {
                 "id": "annuite-confondue-avec-amortissement",
@@ -5142,6 +5156,7 @@
           {
             "questionId": "b2-05-a3-base",
             "bonneReponse": "Sur le capital restant dû au début de la deuxième année",
+            "optionId": "sur-le-capital-restant-du-au-debut-de-la-841a48b8",
             "confusions": [
               {
                 "id": "interets-sur-capital-initial",
@@ -5152,6 +5167,7 @@
           {
             "questionId": "b2-05-a3-cout",
             "bonneReponse": "7 388,15 €",
+            "optionId": null,
             "confusions": [
               {
                 "id": "cout-credit-confondu-avec-total-rembourse",
@@ -5166,6 +5182,7 @@
           {
             "questionId": "b2-05-a3-vpm",
             "bonneReponse": "=VPM(F1;F2;-F3)",
+            "optionId": "vpm-f1-f2-f3-9c4dd652",
             "confusions": [
               {
                 "id": "capital-de-vpm-non-signe",
@@ -6431,6 +6448,7 @@
           {
             "questionId": "b2-05-r-coefficient",
             "bonneReponse": "Par 1,04",
+            "optionId": "par-1-04-2cc43379",
             "confusions": [
               {
                 "id": "coefficient-confondu-avec-taux",
@@ -6441,6 +6459,7 @@
           {
             "questionId": "b2-05-r-deux-ans",
             "bonneReponse": "1 102,50 €, soit 1 000 × 1,05²",
+            "optionId": "1-102-50-eur-soit-1-000-1-05-6a757919",
             "confusions": [
               {
                 "id": "interets-simples-au-lieu-de-composes",
@@ -6451,6 +6470,7 @@
           {
             "questionId": "b2-05-r-valeur-actuelle",
             "bonneReponse": "1 000 €, soit 1 210 ÷ 1,1²",
+            "optionId": "1-000-eur-soit-1-210-1-1-9e2b033b",
             "confusions": [
               {
                 "id": "actualisation-inversee",
@@ -6461,6 +6481,7 @@
           {
             "questionId": "b2-05-r-sens",
             "bonneReponse": "On divise par (1 + t)ⁿ",
+            "optionId": "on-divise-par-1-plus-t-7f4a40d7",
             "confusions": [
               {
                 "id": "actualisation-inversee",
@@ -6471,6 +6492,7 @@
           {
             "questionId": "b2-05-r-duree-versement",
             "bonneReponse": "Trois ans",
+            "optionId": "trois-ans-c6d764ba",
             "confusions": [
               {
                 "id": "versements-places-toute-la-duree",
@@ -6481,6 +6503,7 @@
           {
             "questionId": "b2-05-r-versements",
             "bonneReponse": "Non : 3 060,40 €, intérêts compris",
+            "optionId": "non-3-060-40-eur-interets-compris-619e70fa",
             "confusions": [
               {
                 "id": "versements-sans-interets",
@@ -6491,6 +6514,7 @@
           {
             "questionId": "b2-05-r-interets-emprunt",
             "bonneReponse": "Sur le capital restant dû au début de la troisième année",
+            "optionId": "sur-le-capital-restant-du-au-debut-de-la-e8f11952",
             "confusions": [
               {
                 "id": "interets-sur-capital-initial",
@@ -6501,6 +6525,7 @@
           {
             "questionId": "b2-05-r-amortissement",
             "bonneReponse": "4 200 €",
+            "optionId": "4-200-eur-8ad7fe38",
             "confusions": [
               {
                 "id": "annuite-confondue-avec-amortissement",
@@ -6511,6 +6536,7 @@
           {
             "questionId": "b2-05-r-evolution-interets",
             "bonneReponse": "Ils baissent : le capital restant dû diminue",
+            "optionId": "ils-baissent-le-capital-restant-du-dimin-9fdeedca",
             "confusions": [
               {
                 "id": "interets-sur-capital-initial",
@@ -6521,6 +6547,7 @@
           {
             "questionId": "b2-05-r-cout",
             "bonneReponse": "960 €",
+            "optionId": "960-eur-7be7010a",
             "confusions": [
               {
                 "id": "cout-credit-confondu-avec-total-rembourse",
@@ -6531,6 +6558,7 @@
           {
             "questionId": "b2-05-r-vpm",
             "bonneReponse": "=VPM(C1;C2;-C3)",
+            "optionId": "vpm-c1-c2-c3-0fde3305",
             "confusions": [
               {
                 "id": "capital-de-vpm-non-signe",
@@ -6541,6 +6569,7 @@
           {
             "questionId": "b2-05-r-figee",
             "bonneReponse": "=D2*$K$1",
+            "optionId": "d2-k-1-368dfb9b",
             "confusions": [
               {
                 "id": "reference-relative-non-figee",
@@ -6866,6 +6895,7 @@
           {
             "questionId": "b2-05-a4-billet",
             "bonneReponse": "=B2*$H$1",
+            "optionId": "b2-h-1-c53d0532",
             "confusions": [
               {
                 "id": "reference-relative-non-figee",

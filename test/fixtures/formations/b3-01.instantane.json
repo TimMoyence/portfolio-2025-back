@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "c1d58e54fc25bcd31a0c175817b8a8f3abdd9b7132ac2bb5eeec47b195be0083",
+  "empreinte": "f83f368f33e15296cefdd29e88f91432289ebeeed1019adc17505fc332c2db67",
   "sujet": {
     "id": "b3-01-donnee-brute-decision",
     "titre": "Expert Data : de la donnée brute à la décision",
@@ -2146,6 +2146,7 @@
           {
             "questionId": "b3-01-a1-rappel-recopie",
             "bonneReponse": "=C3*$H$1",
+            "optionId": "c3-h-1-2c847da8",
             "confusions": [
               {
                 "id": "reference-absolue-ignoree",
@@ -2344,6 +2345,7 @@
           {
             "questionId": "b3-01-a1-part-douteuse",
             "bonneReponse": "Environ 15 % des lignes",
+            "optionId": "environ-15-pct-des-lignes-0166cfeb",
             "confusions": [
               {
                 "id": "part-douteuse-estimee-sans-mesure",
@@ -2354,6 +2356,7 @@
           {
             "questionId": "b3-01-a1-cle-client",
             "bonneReponse": "Non : il faut un identifiant attribué par le système",
+            "optionId": "non-il-faut-un-identifiant-attribue-par-0a64eae8",
             "confusions": [
               {
                 "id": "libelle-pris-pour-cle",
@@ -2818,6 +2821,7 @@
           {
             "questionId": "b3-01-a1-granularite",
             "bonneReponse": "Plus de lignes que de commandes",
+            "optionId": "plus-de-lignes-que-de-commandes-2dcfa295",
             "confusions": [
               {
                 "id": "lignes-comptees-pour-commandes",
@@ -2828,6 +2832,7 @@
           {
             "questionId": "b3-01-a1-lignes-commande",
             "bonneReponse": "3 lignes",
+            "optionId": null,
             "confusions": [
               {
                 "id": "commandes-comptees-pour-lignes",
@@ -2907,6 +2912,7 @@
           {
             "questionId": "b3-01-a1-ca-texte",
             "bonneReponse": "Elle l’ignore, sans aucun message",
+            "optionId": "elle-l-ignore-sans-aucun-message-91c3e7b3",
             "confusions": [
               {
                 "id": "texte-pris-pour-nombre",
@@ -3393,6 +3399,7 @@
           {
             "questionId": "b3-01-a1-lignes-uniques",
             "bonneReponse": "4 098 lignes",
+            "optionId": null,
             "confusions": [
               {
                 "id": "doublons-supprimes-sur-une-colonne",
@@ -3407,6 +3414,7 @@
           {
             "questionId": "b3-01-a1-ca-total",
             "bonneReponse": "1 340 208 €",
+            "optionId": null,
             "confusions": [
               {
                 "id": "texte-pris-pour-nombre",
@@ -3417,6 +3425,7 @@
           {
             "questionId": "b3-01-a1-a-verifier",
             "bonneReponse": "85 lignes",
+            "optionId": null,
             "confusions": [
               {
                 "id": "suspect-corrige-sans-validation",
@@ -3504,6 +3513,7 @@
           {
             "questionId": "b3-01-a2-famille",
             "bonneReponse": "Additionner sous conditions, après avoir cherché la catégorie",
+            "optionId": "additionner-sous-conditions-apres-avoir-7f957438",
             "confusions": [
               {
                 "id": "famille-de-probleme-mal-nommee",
@@ -3798,6 +3808,7 @@
           {
             "questionId": "b3-01-a2-ca-rennes-info",
             "bonneReponse": "8 342 €",
+            "optionId": null,
             "confusions": [
               {
                 "id": "critere-mal-ecrit",
@@ -3816,6 +3827,7 @@
           {
             "questionId": "b3-01-a2-ca-ouest",
             "bonneReponse": "77 850 €",
+            "optionId": null,
             "confusions": [
               {
                 "id": "critere-mal-ecrit",
@@ -3890,6 +3902,7 @@
           {
             "questionId": "b3-01-a2-delai",
             "bonneReponse": "1 jour ouvré",
+            "optionId": "1-jour-ouvre-a80f6644",
             "confusions": [
               {
                 "id": "jours-calendaires-pour-ouvres",
@@ -4064,6 +4077,7 @@
           {
             "questionId": "b3-01-a2-delai-strasbourg",
             "bonneReponse": "8 jours ouvrés",
+            "optionId": null,
             "confusions": [
               {
                 "id": "jours-calendaires-pour-ouvres",
@@ -4090,6 +4104,7 @@
           {
             "questionId": "b3-01-a2-retards",
             "bonneReponse": "99 lignes",
+            "optionId": null,
             "confusions": [
               {
                 "id": "jours-calendaires-pour-ouvres",
@@ -4160,6 +4175,7 @@
           {
             "questionId": "b3-01-a2-nouvelles-lignes",
             "bonneReponse": "Non, elles restent hors de la plage",
+            "optionId": "non-elles-restent-hors-de-la-plage-e87d8a01",
             "confusions": [
               {
                 "id": "plage-fixe-au-lieu-de-tableau",
@@ -4376,6 +4392,7 @@
           {
             "questionId": "b3-01-a2-part-info-rennes",
             "bonneReponse": "27,2 %",
+            "optionId": null,
             "confusions": [
               {
                 "id": "pourcentage-du-mauvais-total",
@@ -4394,6 +4411,7 @@
           {
             "questionId": "b3-01-a2-meilleur-trimestre",
             "bonneReponse": "T4 2025",
+            "optionId": "t4-2025-2dcece61",
             "confusions": [
               {
                 "id": "tcd-filtre-ou-dates-mal-groupees",
@@ -4542,6 +4560,7 @@
           {
             "questionId": "b3-01-a3-graphique",
             "bonneReponse": "Non : l’axe est tronqué",
+            "optionId": "non-l-axe-est-tronque-21b46954",
             "confusions": [
               {
                 "id": "axe-tronque-lu-comme-ecart",
@@ -4704,6 +4723,7 @@
           {
             "questionId": "b3-01-a3-agences-sous-objectif",
             "bonneReponse": "3 agences",
+            "optionId": null,
             "confusions": [
               {
                 "id": "objectif-annuel-pour-cumul",
@@ -4718,6 +4738,7 @@
           {
             "questionId": "b3-01-a3-atteinte-rennes",
             "bonneReponse": "79,0 %",
+            "optionId": null,
             "confusions": [
               {
                 "id": "objectif-annuel-pour-cumul",
@@ -4792,6 +4813,7 @@
           {
             "questionId": "b3-01-a3-trente-secondes",
             "bonneReponse": "Quatre chiffres, chacun avec sa comparaison",
+            "optionId": "quatre-chiffres-chacun-avec-sa-comparais-da3f031e",
             "confusions": [
               {
                 "id": "detail-au-lieu-de-synthese",
@@ -5059,6 +5081,7 @@
           {
             "questionId": "b3-01-a3-evolution",
             "bonneReponse": "8,6 %",
+            "optionId": null,
             "confusions": [
               {
                 "id": "evolution-sur-annee-pleine",
@@ -5069,6 +5092,7 @@
           {
             "questionId": "b3-01-a3-ca-2026",
             "bonneReponse": "575 046 €",
+            "optionId": null,
             "confusions": [
               {
                 "id": "periode-mal-delimitee",
@@ -5079,6 +5103,7 @@
           {
             "questionId": "b3-01-a3-marge-marseille",
             "bonneReponse": "26,9 %",
+            "optionId": null,
             "confusions": [
               {
                 "id": "moyenne-simple-des-taux",
@@ -5097,6 +5122,7 @@
           {
             "questionId": "b3-01-a3-quarantaine",
             "bonneReponse": "60 lignes",
+            "optionId": null,
             "confusions": [
               {
                 "id": "en-tete-compte-comme-ligne",
@@ -5416,6 +5442,7 @@
           {
             "questionId": "b3-01-a3-billet",
             "bonneReponse": "Non : on la signale et on demande (faux · humain)",
+            "optionId": "non-on-la-signale-et-on-demande-faux-hum-c6b7abb5",
             "confusions": [
               {
                 "id": "suspect-corrige-sans-validation",
