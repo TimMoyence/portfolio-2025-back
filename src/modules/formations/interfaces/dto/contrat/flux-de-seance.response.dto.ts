@@ -35,6 +35,8 @@ class PilotageServiResponseDto
   implements PilotageServi
 {
   @ApiPropertyOptional({
+    type: 'integer',
+    minimum: 0,
     description: 'Etapes deja montrees d un exemple travaille, jamais reculees',
     example: 2,
   })
@@ -88,6 +90,9 @@ class EtatDeSeanceResponseDto {
   participants: number;
 
   @ApiProperty({
+    type: 'integer',
+    minimum: 0,
+    maximum: Number.MAX_SAFE_INTEGER,
     description: 'Revision de l etat, croissante a chaque changement',
     example: 12,
   })

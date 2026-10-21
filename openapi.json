@@ -6905,7 +6905,8 @@
             "description": "Affichage immediat des options d un rappel, sans attendre la fin du decompte, jamais retire"
           },
           "etayageAtteint": {
-            "type": "number",
+            "type": "integer",
+            "minimum": 0,
             "description": "Etapes deja montrees d un exemple travaille, jamais reculees",
             "example": 2
           },
@@ -6986,7 +6987,9 @@
             "example": 24
           },
           "revision": {
-            "type": "number",
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991,
             "description": "Revision de l etat, croissante a chaque changement",
             "example": 12
           },
@@ -9995,7 +9998,9 @@
             "format": "uuid"
           },
           "revision": {
-            "type": "number",
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991,
             "example": 7
           },
           "reponses": {

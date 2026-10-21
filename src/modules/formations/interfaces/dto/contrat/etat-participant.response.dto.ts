@@ -101,7 +101,12 @@ export class EtatParticipantResponseDto
   extends ParticipantDeSeanceResponseDto
   implements EtatParticipant
 {
-  @ApiProperty({ example: 7 })
+  @ApiProperty({
+    type: 'integer',
+    minimum: 0,
+    maximum: Number.MAX_SAFE_INTEGER,
+    example: 7,
+  })
   revision: number;
 
   @ApiProperty({ type: [ReponseParticipantResponseDto] })
