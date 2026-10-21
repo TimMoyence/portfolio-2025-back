@@ -1,5 +1,5 @@
 import type { AuMoinsUn } from '../../../../common/domain/au-moins-un';
-import type { Tolerance } from '../GradingCore';
+import type { Piege, Tolerance } from '../GradingCore';
 import type { SheetPlanStocke } from '../contrats/cours';
 import type { FormeFormule } from '../contrats/contrat-de-l-api';
 import type { ValeurFormule } from './Formule';
@@ -10,6 +10,15 @@ export type { FormeFormule } from '../contrats/contrat-de-l-api';
 export interface PiegeNumerique {
   readonly valeur: number;
   readonly confusion: ConfusionId;
+}
+
+export function piegesDuCorrige(
+  pieges: readonly PiegeNumerique[],
+): readonly Piege<ConfusionId>[] {
+  return pieges.map(({ valeur, confusion }) => ({
+    valeur,
+    misconception: confusion,
+  }));
 }
 
 export interface CorrigeFeuille {

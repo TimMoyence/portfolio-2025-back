@@ -1,11 +1,12 @@
 import { lireNombreSaisiAvecUnite } from './Formule';
 import { sansDiacritiques } from '../../../../common/domain/texte/sans-diacritiques';
-import { matchesSolution } from '../GradingCore';
+import { gradeAnswer } from '../AnswerGrading';
 import type { Cours, Ecran, QuestionProduction } from '../contrats/cours';
 import type { EtatDesEnigmes, EtatEnigme } from '../contrats/pilotage';
 import type { ProgressionEnigme } from '../contrats/resultats';
 import type { ConfusionId } from './banque/confusions';
 import type { CorrigeEnigme } from './Corrige';
+import { piegesDuCorrige } from './Corrige';
 
 export const TENTATIVES_MAX_PAR_ENIGME = 10;
 
@@ -182,17 +183,18 @@ export function corrigerEnigme(
   if (valeur === null) {
     return { correcte: false, valeurNormalisee: null, confusion: null };
   }
-  const tolerance = corrige.solution.tolerance;
-  if (matchesSolution(valeur, corrige.solution.valeur, tolerance)) {
-    return { correcte: true, valeurNormalisee: valeur, confusion: null };
-  }
-  const piege = corrige.pieges.find((candidat) =>
-    matchesSolution(valeur, candidat.valeur, tolerance),
+  const verdict = gradeAnswer(
+    valeur,
+    {
+      valeur: corrige.solution.valeur,
+      pieges: piegesDuCorrige(corrige.pieges),
+    },
+    corrige.solution.tolerance,
   );
   return {
-    correcte: false,
+    correcte: verdict.correcte,
     valeurNormalisee: valeur,
-    confusion: piege?.confusion ?? null,
+    confusion: verdict.misconception,
   };
 }
 

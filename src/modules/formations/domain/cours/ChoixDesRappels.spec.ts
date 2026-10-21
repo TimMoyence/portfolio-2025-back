@@ -131,6 +131,31 @@ describe('choisirRappels', () => {
     expect(servis[2]).toBe('R-INDICE');
   });
 
+  it.each([
+    [1, 'R-PROPORTION'],
+    [2, 'R-PROPORTION'],
+    [3, 'R-TAUX'],
+  ] as const)(
+    'un concept maitrise en boite %i passe avant un concept en boite trois : %s',
+    (boite, attendu) => {
+      const servis = choisir(
+        [],
+        [
+          buildMasteryRecord({
+            concept: 'proportion',
+            boite,
+            succes: 9,
+            echecs: 1,
+          }),
+          enBoiteTrois('taux-evolution', 1, 9),
+          enBoiteTrois('indice-base-100', 1, 9),
+        ],
+      );
+
+      expect(servis[2]).toBe(attendu);
+    },
+  );
+
   it('retient le plus faible taux de reussite a priorite egale', () => {
     const servis = choisir(
       [],

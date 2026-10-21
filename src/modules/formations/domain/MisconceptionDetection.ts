@@ -1,11 +1,11 @@
 import type { AnswerValue, Piege, Tolerance } from './GradingCore';
 import { matchesSolution } from './GradingCore';
 
-export function detectMisconception(
+export function detectMisconception<M extends string>(
   valeur: AnswerValue,
-  pieges: readonly Piege[],
+  pieges: readonly Piege<M>[],
   tolerance?: Tolerance,
-): string | null {
+): M | null {
   const trouve = pieges.find((piege) =>
     matchesSolution(valeur, piege.valeur, tolerance),
   );

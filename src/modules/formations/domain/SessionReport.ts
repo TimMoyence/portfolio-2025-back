@@ -19,7 +19,6 @@ import { activitesLibres } from './cours/EcranServi';
 import { tirer } from './cours/Tirage';
 import type { LibellesDesOptions } from './cours/Tirage';
 import { computeCohortScore } from './CompletionScore';
-import { NE_SAIT_PAS } from './GradingCore';
 import type { AnswerRecord } from './IAnswers.repository';
 import type {
   RapportParticipant,
@@ -32,6 +31,7 @@ import type { IncidentRecord } from './IIncidents.repository';
 import type { ParticipantRecord } from './IParticipants.repository';
 import type { SessionRecord } from './ISessions.repository';
 import { DECIMALES_DE_LA_NOTE, REGLE_DE_NOTATION } from './RegleDeNotation';
+import { estNeSaitPas } from './ResultatsSeance';
 import { estUneProduction, texteDeValeur } from './ValeurReponse';
 
 const SEUIL_CONCEPT_FRAGILE = 0.7;
@@ -139,7 +139,7 @@ function completionDe(
 
 function compteCommeReponse(reponse: AnswerRecord): boolean {
   return (
-    reponse.valeur !== NE_SAIT_PAS ||
+    !estNeSaitPas(reponse.valeur) ||
     REGLE_DE_NOTATION.neSaitPasCompteCommeReponse
   );
 }
@@ -230,7 +230,7 @@ function productionLisible(
   details: readonly DetailProduction[] | null,
 ): string {
   const titre = LIBELLE_PAR_TYPE[valeur.type] ?? valeur.type;
-  if ('neSaitPas' in valeur || details === null) {
+  if (estNeSaitPas(valeur) || details === null) {
     return `${titre} : ${LIBELLE_NE_SAIT_PAS.toLowerCase()}`;
   }
   const justes = details.filter((detail) => detail.juste).length;
@@ -244,7 +244,7 @@ function reponseLisible(
   if (estUneProduction(reponse.valeur)) {
     return productionLisible(reponse.valeur, reponse.details);
   }
-  if (reponse.valeur === NE_SAIT_PAS) {
+  if (estNeSaitPas(reponse.valeur)) {
     return LIBELLE_NE_SAIT_PAS;
   }
   if (typeof reponse.valeur === 'number') {

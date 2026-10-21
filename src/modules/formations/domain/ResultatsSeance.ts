@@ -5,6 +5,7 @@ import type {
   Decompte,
   ResultatQuestion,
   ResultatsSeance,
+  ValeurReponse,
 } from './contrats/resultats';
 import {
   confusionsParFrequence,
@@ -19,8 +20,6 @@ export type {
   ResultatQuestion,
   ResultatsSeance,
 } from './contrats/resultats';
-
-const CLE_NE_SAIT_PAS = '__je_ne_sais_pas__';
 
 export interface QuestionAAgreger {
   readonly id: string;
@@ -67,7 +66,8 @@ function agregerQuestion(
     type: question.type,
     noteCompte: question.noteCompte,
     ...decompte,
-    neSaitPas: reponses.filter((reponse) => estNeSaitPas(reponse)).length,
+    neSaitPas: reponses.filter((reponse) => estNeSaitPas(reponse.valeur))
+      .length,
     parOption: question.type === 'vote' ? compterParOption(reponses) : null,
     scoreMoyen: moyenneDesScores(reponses),
     parCle: compterParCle(reponses),
@@ -75,11 +75,11 @@ function agregerQuestion(
   };
 }
 
-function estNeSaitPas(reponse: AnswerRecord): boolean {
-  if (reponse.valeur === NE_SAIT_PAS) {
+export function estNeSaitPas(valeur: ValeurReponse): boolean {
+  if (valeur === NE_SAIT_PAS) {
     return true;
   }
-  return estUneProduction(reponse.valeur) && 'neSaitPas' in reponse.valeur;
+  return estUneProduction(valeur) && 'neSaitPas' in valeur;
 }
 
 function compterParOption(
@@ -87,8 +87,8 @@ function compterParOption(
 ): Readonly<Record<string, number>> {
   const parOption: Record<string, number> = {};
   for (const reponse of reponses) {
-    const cle = estNeSaitPas(reponse)
-      ? CLE_NE_SAIT_PAS
+    const cle = estNeSaitPas(reponse.valeur)
+      ? NE_SAIT_PAS
       : texteDeValeur(reponse.valeur);
     parOption[cle] = (parOption[cle] ?? 0) + 1;
   }

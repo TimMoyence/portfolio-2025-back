@@ -120,7 +120,6 @@ export class SubmitAnswerUseCase extends EnregistrementDeReponse {
       studentKey: participant.studentKey,
       concept: question.concept,
       reussi: verdict.correcte,
-      vueLe: new Date(),
     });
 
     return verdictServiDe(session, question, verdict);

@@ -1,8 +1,7 @@
-import { Column, Entity, Index, PrimaryColumn } from 'typeorm';
+import { Column, Entity, PrimaryColumn } from 'typeorm';
 import type { Boite } from '../../domain/LeitnerBox';
 
 @Entity({ name: 'formation_mastery' })
-@Index('idx_formation_mastery_derniere_vue', ['derniereVue'])
 export class FormationMasteryEntity {
   @PrimaryColumn({ name: 'student_key', type: 'varchar', length: 64 })
   studentKey: string;
@@ -12,9 +11,6 @@ export class FormationMasteryEntity {
 
   @Column({ type: 'int', default: 1 })
   boite: Boite;
-
-  @Column({ name: 'derniere_vue', type: 'timestamptz', default: () => 'now()' })
-  derniereVue: Date;
 
   @Column({ type: 'int', default: 0 })
   succes: number;
