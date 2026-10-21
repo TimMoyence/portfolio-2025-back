@@ -108,7 +108,7 @@ export function buildRapportSession(input: SessionReportInput): RapportSession {
     courseSlug: input.session.courseSlug,
     code: input.session.code,
     ouverteLe: input.session.ouverteLe,
-    fermeeLe: input.session.fermeeLe ?? new Date(),
+    fermeeLe: input.session.fermeeLe ?? null,
     participants,
     conceptsFragiles,
     libellesDesConcepts: Object.fromEntries(

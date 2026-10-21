@@ -1,3 +1,5 @@
+import { estAuMoinsUn } from '../../../../common/domain/au-moins-un';
+import { moyenne, somme } from '../../../../common/domain/nombres/statistiques';
 import { avecVirgule } from '../../../../common/domain/nombres/ecriture-francaise';
 import { estEntierPositif } from '../../../../common/domain/nombres/est-entier-positif';
 import { longueurDeTexte } from '../../../../common/domain/texte/longueur-de-texte';
@@ -678,16 +680,13 @@ function quantile(valeurs: readonly number[], part: number): number {
 
 function ecartType(valeurs: readonly number[], degresPerdus: number): number {
   const diviseur = valeurs.length - degresPerdus;
-  if (diviseur <= 0) {
-    refuser(ERREUR_DIVISION);
+  if (diviseur <= 0 || !estAuMoinsUn(valeurs)) {
+    return refuser(ERREUR_DIVISION);
   }
-  const moyenne =
-    valeurs.reduce((cumul, valeur) => cumul + valeur, 0) / valeurs.length;
-  const carres = valeurs.reduce(
-    (cumul, valeur) => cumul + (valeur - moyenne) ** 2,
-    0,
+  const centre = moyenne(valeurs);
+  return Math.sqrt(
+    somme(valeurs.map((valeur) => (valeur - centre) ** 2)) / diviseur,
   );
-  return Math.sqrt(carres / diviseur);
 }
 
 function statistique(nom: string, valeurs: readonly number[]): number {
@@ -714,9 +713,9 @@ function deuxSeries(
   if (paires.length < 2) {
     return refuser(ERREUR_DIVISION);
   }
-  const moyenne = (rang: 0 | 1): number =>
-    paires.reduce((cumul, paire) => cumul + paire[rang], 0) / paires.length;
-  const [moyenneGauche, moyenneDroite] = [moyenne(0), moyenne(1)];
+  const moyenneDuRang = (rang: 0 | 1): number =>
+    somme(paires.map((paire) => paire[rang])) / paires.length;
+  const [moyenneGauche, moyenneDroite] = [moyenneDuRang(0), moyenneDuRang(1)];
   let carresGauche = 0;
   let carresDroite = 0;
   let produits = 0;
@@ -1098,13 +1097,10 @@ class Evaluation {
 
   private agreger(nom: string, parametres: readonly Noeud[]): number {
     const valeurs = parametres.flatMap((argument) => this.etendre(argument));
-    const somme = valeurs.reduce((cumul, valeur) => cumul + valeur, 0);
     if (nom === 'SOMME') {
-      return somme;
+      return somme(valeurs);
     }
-    return valeurs.length === 0
-      ? refuser(ERREUR_DIVISION)
-      : somme / valeurs.length;
+    return estAuMoinsUn(valeurs) ? moyenne(valeurs) : refuser(ERREUR_DIVISION);
   }
 
   private unaireNommee(nom: string, parametres: readonly Noeud[]): number {

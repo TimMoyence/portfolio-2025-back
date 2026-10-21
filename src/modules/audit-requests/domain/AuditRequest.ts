@@ -9,6 +9,7 @@ import {
   requireText,
 } from '../../../common/domain/validation/domain-validators';
 import { PhoneNumber } from '../../../common/domain/value-objects/PhoneNumber';
+import { adresseDuSite } from './AdresseDuSite';
 import { AuditLocale } from './audit-locale.util';
 
 export const METHODES_DE_CONTACT = Object.freeze(['EMAIL', 'PHONE'] as const);
@@ -39,6 +40,7 @@ export class AuditRequest {
       2,
       200,
     );
+    adresseDuSite(websiteName);
     const locale = requireLocale(props.locale, 'audit locale');
 
     if (props.contactMethod !== 'EMAIL' && props.contactMethod !== 'PHONE') {

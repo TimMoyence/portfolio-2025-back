@@ -1,5 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { pickFreeSeed } from '../domain/Bareme';
+import { cleEtudianteDe } from '../domain/CleEtudiante';
 import {
   type IParticipantsRepository,
   LONGUEUR_MAX_D_UN_NOM_DE_PARTICIPANT,
@@ -49,6 +50,7 @@ export class JoinSessionUseCase {
       "L'adresse électronique",
       LONGUEUR_MAX_D_UNE_ADRESSE_DE_PARTICIPANT,
     );
+    const studentKey = cleEtudianteDe(email);
     const code = SessionCode.parse(command.code);
     const session = assertSeanceTrouvee(
       await this.sessions.findActiveByCode(code),
@@ -59,7 +61,7 @@ export class JoinSessionUseCase {
     const secretDeReprise = SecretDeReprise.generer();
     const { participant, nouveau } = await this.participants.inscrire({
       sessionId: session.id,
-      studentKey: command.studentKey,
+      studentKey,
       prenom,
       nom,
       email,

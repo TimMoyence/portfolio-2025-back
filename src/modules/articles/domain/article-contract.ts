@@ -59,6 +59,8 @@ export const ArticleSlug = z
   .string()
   .regex(/^morning-brief-\d{4}-\d{2}-\d{2}$/);
 
+export const LONGUEUR_MAX_DU_NONCE = 128;
+
 export const DeliveryId = z.string().regex(/^mb-\d{4}-\d{2}-\d{2}-(fr|en)$/);
 
 const articleSchema = z

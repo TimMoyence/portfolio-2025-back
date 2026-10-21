@@ -5,6 +5,7 @@ import {
   appliquer,
   installerVariables,
 } from '../../../../test/helpers/environnement';
+import { LONGUEUR_MAX_DU_NONCE } from '../domain/article-contract';
 import { ArticleHmacGuard } from './article-hmac.guard';
 
 function contextFor(headers: Record<string, string>, rawBody: Buffer) {
@@ -54,6 +55,25 @@ describe('ArticleHmacGuard', () => {
     expect(
       guard.canActivate(
         contextFor(entetesSignes('test-key', SECRET, 'nonce-1'), body),
+      ),
+    ).toBe(true);
+  });
+
+  it('refuse un nonce signe plus long que la colonne qui le consigne', () => {
+    const guard = new ArticleHmacGuard();
+    const nonce = 'n'.repeat(LONGUEUR_MAX_DU_NONCE + 1);
+
+    expect(() =>
+      guard.canActivate(
+        contextFor(entetesSignes('test-key', SECRET, nonce), body),
+      ),
+    ).toThrow(UnauthorizedException);
+    expect(
+      guard.canActivate(
+        contextFor(
+          entetesSignes('test-key', SECRET, 'n'.repeat(LONGUEUR_MAX_DU_NONCE)),
+          body,
+        ),
       ),
     ).toBe(true);
   });

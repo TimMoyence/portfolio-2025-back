@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { InvalidCredentialsError } from '../../../common/domain/errors/InvalidCredentialsError';
 import { ResourceConflictError } from '../../../common/domain/errors/ResourceConflictError';
 import { MotDePasseActuelIncorrectError } from '../domain/MotDePasseActuelIncorrectError';
 import { User } from '../domain/User';
@@ -10,10 +9,6 @@ import type { ChangePasswordCommand } from './dto/ChangePassword.command';
 export class ChangePasswordUseCase extends CasDUsageMotDePasse {
   async execute(dto: ChangePasswordCommand): Promise<User> {
     const user = await this.utilisateurExistant(dto.userId);
-
-    if (!user.isActive) {
-      throw new InvalidCredentialsError('Inactive user cannot change password');
-    }
 
     if (!user.passwordHash) {
       throw new ResourceConflictError('No password set for this account');

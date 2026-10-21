@@ -1,4 +1,10 @@
 import { Injectable } from '@nestjs/common';
+import {
+  baliseAbsente,
+  canonicalNonConforme,
+  h1NonConforme,
+  texteDeBalise,
+} from './shared/controles-seo-de-page.util';
 import { textesUniquesBornes } from '../../../../common/domain/texte/textes-uniques-bornes';
 import { AuditLocale, localeDeHtmlLang } from '../../domain/audit-locale.util';
 import type {
@@ -58,10 +64,6 @@ function mesureDeBaliseVide(): MesureDeBalise {
     manquantes: 0,
     horsBornes: 0,
   };
-}
-
-function texteDeBalise(valeur: string | null | undefined): string {
-  return (valeur ?? '').trim();
 }
 
 function longueurHorsBornes(texte: string, bornes: Bornes): boolean {
@@ -260,7 +262,7 @@ export class DeepUrlAnalysisService {
     lire: (entry: UrlIndexabilityResult) => string | null | undefined,
   ): string[] {
     return urls
-      .filter((entry) => !texteDeBalise(lire(entry)))
+      .filter((entry) => baliseAbsente(lire(entry)))
       .map((entry) => entry.url);
   }
 
@@ -298,11 +300,11 @@ export class DeepUrlAnalysisService {
     const pageUrl = entry.url;
     const statusCode = entry.statusCode ?? 500;
 
-    if ((entry.h1Count ?? 1) !== 1) {
+    if (h1NonConforme(entry)) {
       acc.badH1Count += 1;
     }
 
-    if (!entry.canonical || (entry.canonicalCount ?? 0) !== 1) {
+    if (canonicalNonConforme(entry)) {
       acc.canonicalIssues += 1;
       acc.canonicalIssueUrls.push(pageUrl);
     } else if (!this.isSelfReferencingCanonical(entry)) {
@@ -544,9 +546,7 @@ export class DeepUrlAnalysisService {
       this.severityFromRatio(acc.badH1Count, urls.length),
       0.8,
       'indexation',
-      urls
-        .filter((entry) => (entry.h1Count ?? 1) !== 1)
-        .map((entry) => entry.url),
+      urls.filter(h1NonConforme).map((entry) => entry.url),
       localizedText(
         locale,
         'Conserver un seul H1 descriptif par page.',

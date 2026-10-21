@@ -221,9 +221,10 @@ export class SessionResultsResponseDto {
   @ApiProperty({
     type: String,
     format: 'date-time',
-    description: 'Date de cloture, ou date de lecture si la seance est ouverte',
+    nullable: true,
+    description: 'Date de cloture, null tant que la seance est ouverte',
   })
-  fermeeLe: Date;
+  fermeeLe: Date | null;
 
   @ApiProperty({
     type: [RapportParticipantResponseDto],

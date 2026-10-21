@@ -55,7 +55,6 @@ import {
   InvalidSessionCodeError,
   SessionNotFoundError,
 } from '../domain/errors/FormationErrors';
-import { CleEtudiantService } from './CleEtudiant.service';
 import { CodeScanProtectionService } from './CodeScanProtection.service';
 import { IdentiteDuJeton, RouteParticipant } from './ParticipantToken.guard';
 import { JoinSessionRequestDto } from './dto/join-session.request.dto';
@@ -153,7 +152,6 @@ export class FormationsStudentController {
     private readonly telechargerPieceJointe: TelechargerPieceJointeUseCase,
     private readonly saveFreeResponse: SaveFreeResponseUseCase,
     private readonly tokens: ParticipantTokenService,
-    private readonly clesEtudiants: CleEtudiantService,
     private readonly codeScan: CodeScanProtectionService,
   ) {}
 
@@ -182,7 +180,6 @@ export class FormationsStudentController {
     const result = await this.joinSession
       .execute({
         code,
-        studentKey: this.clesEtudiants.de(dto.email),
         prenom: dto.prenom,
         nom: dto.nom,
         email: dto.email,

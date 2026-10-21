@@ -9,7 +9,10 @@ export interface CreateUserResult {
   user: User;
 }
 
-export type InscriptionCommand = Omit<CreateUserCommand, 'updatedOrCreatedBy'>;
+export type InscriptionCommand = Omit<
+  CreateUserCommand,
+  'updatedOrCreatedBy' | 'roles' | 'isActive'
+>;
 
 export interface InscriptionResult {
   message: string;

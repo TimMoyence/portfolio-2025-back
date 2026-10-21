@@ -80,7 +80,6 @@ import {
 } from '../../src/modules/formations/domain/token';
 import { ClasseursSurDisque } from '../../src/modules/formations/infrastructure/classeurs/ClasseursSurDisque';
 import { SessionStateCacheService } from '../../src/modules/formations/infrastructure/SessionStateCache.service';
-import { CleEtudiantService } from '../../src/modules/formations/interfaces/CleEtudiant.service';
 import { CodeScanProtectionService } from '../../src/modules/formations/interfaces/CodeScanProtection.service';
 import { FormationsAnnotationsController } from '../../src/modules/formations/interfaces/FormationsAnnotations.controller';
 import { FormationsCatalogController } from '../../src/modules/formations/interfaces/FormationsCatalog.controller';
@@ -201,7 +200,6 @@ export function fournisseursFormations(
     ListFreeResponsesUseCase,
     SaveFreeResponseUseCase,
     ParticipantTokenService,
-    CleEtudiantService,
     CodeScanProtectionService,
     { provide: SESSIONS_REPOSITORY, useValue: depots.sessions },
     { provide: PARTICIPANTS_REPOSITORY, useValue: depots.participants },

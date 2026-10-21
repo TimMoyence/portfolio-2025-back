@@ -1,4 +1,8 @@
 import type { ChatOpenAI } from '@langchain/openai';
+import {
+  baliseAbsente,
+  h1NonConforme,
+} from './shared/controles-seo-de-page.util';
 import { Injectable, Logger } from '@nestjs/common';
 import { z } from 'zod';
 import { textesUniquesBornes } from '../../../../common/domain/texte/textes-uniques-bornes';
@@ -360,7 +364,7 @@ export class PageAiRecapService extends LlmOpenAiParLaConfig {
     const topIssues: string[] = [];
     const recommendations: string[] = [];
 
-    if (!(page.title ?? '').trim()) {
+    if (baliseAbsente(page.title)) {
       seoCopy -= 18;
       topIssues.push(
         localizedText(locale, 'Balise title manquante', 'Missing title tag'),
@@ -373,7 +377,7 @@ export class PageAiRecapService extends LlmOpenAiParLaConfig {
         ),
       );
     }
-    if (!(page.metaDescription ?? '').trim()) {
+    if (baliseAbsente(page.metaDescription)) {
       wording -= 10;
       seoCopy -= 16;
       topIssues.push(
@@ -391,7 +395,7 @@ export class PageAiRecapService extends LlmOpenAiParLaConfig {
         ),
       );
     }
-    if ((page.h1Count ?? 1) !== 1) {
+    if (h1NonConforme(page)) {
       wording -= 8;
       seoCopy -= 10;
       topIssues.push(
