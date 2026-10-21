@@ -1,4 +1,5 @@
 import type { EntityManager, ObjectLiteral, Repository } from 'typeorm';
+import { boiteDeLivraison } from '../../domain/value-objects/boite-de-livraison';
 
 export async function verrouillerJusquALaFinDeLaTransaction(
   manager: EntityManager,
@@ -27,5 +28,16 @@ export function enTransactionSurLaCle<E extends ObjectLiteral, T>(
     repo.manager,
     `${repo.metadata.tableName}:${cle}`,
     (transaction) => travail(transaction.withRepository(repo)),
+  );
+}
+
+export function enTransactionSurLaBoite<E extends ObjectLiteral, D, T>(
+  repo: Repository<E>,
+  destinataire: string,
+  depotSur: (repo: Repository<E>) => D,
+  travail: (depot: D) => Promise<T>,
+): Promise<T> {
+  return enTransactionSurLaCle(repo, boiteDeLivraison(destinataire), (depot) =>
+    travail(depotSur(depot)),
   );
 }

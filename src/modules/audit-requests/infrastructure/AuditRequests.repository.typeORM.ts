@@ -7,7 +7,7 @@ import {
   poseeDepuisMoinsDe,
   secondesAvantDeSortirDeLaFenetre,
 } from '../../../common/infrastructure/typeorm/horloge-de-la-base';
-import { enTransactionSurLaCle } from '../../../common/infrastructure/typeorm/verrou-de-transaction';
+import { enTransactionSurLaBoite } from '../../../common/infrastructure/typeorm/verrou-de-transaction';
 import {
   AuditSnapshot,
   AuditSummarySnapshot,
@@ -76,10 +76,11 @@ export class AuditRequestsRepositoryTypeORM
     contactValue: string,
     travail: (depot: IAuditRequestsRepository) => Promise<T>,
   ): Promise<T> {
-    return enTransactionSurLaCle(
+    return enTransactionSurLaBoite(
       this.repo,
-      boiteDeLivraison(contactValue),
-      (repo) => travail(new AuditRequestsRepositoryTypeORM(repo)),
+      contactValue,
+      (repo) => new AuditRequestsRepositoryTypeORM(repo),
+      travail,
     );
   }
 

@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { boiteDeLivraison } from '../../../common/domain/value-objects/boite-de-livraison';
 import { DepotEnDomaine } from '../../../common/infrastructure/typeorm/DepotEnDomaine';
 import { poseeDepuisMoinsDe } from '../../../common/infrastructure/typeorm/horloge-de-la-base';
-import { enTransactionSurLaCle } from '../../../common/infrastructure/typeorm/verrou-de-transaction';
+import { enTransactionSurLaBoite } from '../../../common/infrastructure/typeorm/verrou-de-transaction';
 import type { ILeadMagnetRequestRepository } from '../domain/ILeadMagnetRequestRepository';
 import { LeadMagnetRequest } from '../domain/LeadMagnetRequest';
 import { LeadMagnetRequestEntity } from './entities/LeadMagnetRequest.entity';
@@ -39,8 +39,11 @@ export class LeadMagnetRequestRepositoryTypeORM
     email: string,
     travail: (depot: ILeadMagnetRequestRepository) => Promise<T>,
   ): Promise<T> {
-    return enTransactionSurLaCle(this.repo, boiteDeLivraison(email), (repo) =>
-      travail(new LeadMagnetRequestRepositoryTypeORM(repo)),
+    return enTransactionSurLaBoite(
+      this.repo,
+      email,
+      (repo) => new LeadMagnetRequestRepositoryTypeORM(repo),
+      travail,
     );
   }
 
