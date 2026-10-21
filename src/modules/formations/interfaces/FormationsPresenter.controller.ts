@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Get,
   Header,
@@ -125,15 +124,6 @@ export class FormationsPresenterController {
     @Body() dto: ControlSessionRequestDto,
     @Req() request: Request,
   ): Promise<void> {
-    if (
-      dto.ecran === undefined &&
-      dto.mode === undefined &&
-      dto.pilotage === undefined
-    ) {
-      throw new BadRequestException(
-        'Indiquez un écran, un mode de rythme ou un pilotage d’écran à appliquer.',
-      );
-    }
     await this.controlSession.apply(id, compteConnecte(request).id, {
       ecran: dto.ecran,
       mode: dto.mode,
