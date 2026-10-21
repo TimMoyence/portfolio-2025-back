@@ -209,6 +209,10 @@ export class FormationsStudentController {
   @Post('sessions/:id/answers')
   @ApiOperation({ summary: 'Soumet une reponse, corrigee cote serveur' })
   @ApiCreatedResponse({ type: SubmitAnswerResponseDto })
+  @ApiBadRequestResponse({
+    description:
+      'Saisie d une question numerique qui ne se lit pas en nombre : code SAISIE_NON_NUMERIQUE',
+  })
   @ApiConflictResponse({
     description:
       'Reponse refusee, cause dans le champ code du corps : SEANCE_NON_DEMARREE, SEANCE_TERMINEE, PHASE_FERMEE, REPONSE_DEJA_ENREGISTREE ou COURS_MODIFIE',

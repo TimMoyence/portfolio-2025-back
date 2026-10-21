@@ -2696,6 +2696,9 @@
               }
             }
           },
+          "400": {
+            "description": "Saisie d une question numerique qui ne se lit pas en nombre : code SAISIE_NON_NUMERIQUE"
+          },
           "401": {
             "description": "Jeton de participant invalide"
           },

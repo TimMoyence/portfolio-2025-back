@@ -12,7 +12,13 @@ import {
 } from '../domain/cours/EcranServi';
 import { assertQuestionNonCorrigee } from '../domain/cours/CorrectionSurPlace';
 import { assertPhaseOuverte } from '../domain/cours/PilotageEcrans';
-import { AnswerAlreadySubmittedError } from '../domain/errors/FormationErrors';
+import { lireNombreSaisi } from '../domain/cours/Formule';
+import {
+  AnswerAlreadySubmittedError,
+  SaisieNonNumeriqueError,
+} from '../domain/errors/FormationErrors';
+import type { AnswerValue } from '../domain/GradingCore';
+import { estNeSaitPas } from '../domain/ResultatsSeance';
 import { EnregistrementDeReponse } from './EnregistrementDeReponse';
 import type {
   SubmitAnswerCommand,
@@ -25,6 +31,23 @@ const TYPES_A_ROUTE_PROPRE: readonly string[] = [
   'classement',
   'enigme',
 ];
+
+function estUneSaisieNumerique(
+  type: string,
+  valeur: AnswerValue,
+): valeur is string {
+  return (
+    type === 'numeric' && typeof valeur === 'string' && !estNeSaitPas(valeur)
+  );
+}
+
+function nombreSaisi(questionId: string, saisie: string): number {
+  const nombre = lireNombreSaisi(saisie);
+  if (nombre === null) {
+    throw new SaisieNonNumeriqueError(questionId);
+  }
+  return nombre;
+}
 
 @Injectable()
 export class SubmitAnswerUseCase extends EnregistrementDeReponse {
@@ -95,7 +118,10 @@ export class SubmitAnswerUseCase extends EnregistrementDeReponse {
       );
     }
 
-    const verdict = gradeAnswer(command.valeur, solution, question.tolerance);
+    const valeur = estUneSaisieNumerique(question.type, command.valeur)
+      ? nombreSaisi(command.questionId, command.valeur)
+      : command.valeur;
+    const verdict = gradeAnswer(valeur, solution, question.tolerance);
 
     await this.enregistrerPremiereReponse(
       {
@@ -103,7 +129,7 @@ export class SubmitAnswerUseCase extends EnregistrementDeReponse {
         participantId: command.participantId,
         questionId: command.questionId,
         concept: question.concept,
-        valeur: command.valeur,
+        valeur,
         seed: participant.seed,
         correcte: verdict.correcte,
         misconception: verdict.misconception,

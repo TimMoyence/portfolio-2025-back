@@ -228,6 +228,22 @@ describe('SubmitAnswerUseCase', () => {
     );
   });
 
+  it('lit au serveur la saisie brute d une question numérique, et l enregistre en nombre', async () => {
+    const result = await sut.execute({ ...commande, valeur: ' 1 338,23 ' });
+
+    expect(result.correcte).toBe(true);
+    expect(deps.answers.create).toHaveBeenCalledWith(
+      expect.objectContaining({ valeur: 1338.23 }),
+    );
+  });
+
+  it('refuse par SAISIE_NON_NUMERIQUE une saisie que le lecteur ne lit pas en nombre', async () => {
+    await expect(
+      sut.execute({ ...commande, valeur: 'douze' }),
+    ).rejects.toMatchObject({ code: 'SAISIE_NON_NUMERIQUE' });
+    expect(deps.answers.create).not.toHaveBeenCalled();
+  });
+
   it('refuse une valeur hors des options connues sur une question de vote', async () => {
     sessionDeVote([{ valeur: 'a', misconception: 'interet-simple' }]);
     await expect(
