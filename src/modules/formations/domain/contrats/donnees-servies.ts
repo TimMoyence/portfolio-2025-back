@@ -51,6 +51,7 @@ const parametreCurseur = strict({
   max: z.number(),
   pas: z.number(),
   defaut: z.number(),
+  positions: z.array(z.number()),
 });
 
 const prereglages = z.array(

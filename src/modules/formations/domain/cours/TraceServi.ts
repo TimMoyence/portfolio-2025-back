@@ -1,5 +1,8 @@
 import { borner } from '../../../../common/domain/nombres/borner';
-import type { TraceCalcule } from '../contrats/donnees-publiques';
+import type {
+  PositionsDuCurseur,
+  TraceCalcule,
+} from '../contrats/donnees-publiques';
 import { evaluerExpression, variablesDeLExpression } from './Formule';
 
 export const ECHANTILLONS_D_UNE_COURBE = 24;
@@ -51,15 +54,19 @@ export function jalons(
   );
 }
 
-function dansLeCurseur(curseur: CurseurReglable, valeur: number): number {
-  return borner(valeur, curseur.min, Math.max(curseur.max, curseur.min));
+export function plafondDu(curseur: CurseurReglable): number {
+  return Math.max(curseur.max, curseur.min);
 }
 
-function positionsDuCurseur(
+function dansLeCurseur(curseur: CurseurReglable, valeur: number): number {
+  return borner(valeur, curseur.min, plafondDu(curseur));
+}
+
+export function positionsDuCurseur(
   curseur: CurseurReglable,
   prereglages: readonly PrereglageDuTrace[] = [],
 ): number[] {
-  const etendue = Math.max(curseur.max, curseur.min) - curseur.min;
+  const etendue = plafondDu(curseur) - curseur.min;
   const crans = Math.floor(etendue / curseur.pas + TOLERANCE_DU_DERNIER_CRAN);
   const surLePas = Array.from({ length: crans + 1 }, (_, rang) =>
     dansLeCurseur(
@@ -75,6 +82,16 @@ function positionsDuCurseur(
     ),
   ].map((valeur) => dansLeCurseur(curseur, valeur));
   return [...new Set([...surLePas, ...posees])].sort((a, b) => a - b);
+}
+
+export function curseursServis<C extends CurseurReglable>(reglable: {
+  readonly parametres: readonly C[];
+  readonly prereglages?: readonly PrereglageDuTrace[];
+}): (C & PositionsDuCurseur)[] {
+  return reglable.parametres.map((curseur) => ({
+    ...curseur,
+    positions: positionsDuCurseur(curseur, reglable.prereglages),
+  }));
 }
 
 export function reglageServi(
@@ -117,7 +134,7 @@ export function pointsDuTrace(trace: TraceACalculer): number {
   );
 }
 
-function ordonnee(
+export function valeurFinie(
   calcul: string,
   variables: Readonly<Record<string, number>>,
 ): number | null {
@@ -134,7 +151,7 @@ export function traceCalcule(trace: TraceACalculer): TraceCalcule {
       ordonnees: Object.fromEntries(
         trace.series.map(({ id, calcul }) => [
           id,
-          abscisses.map((x) => ordonnee(calcul, { ...valeurs, x })),
+          abscisses.map((x) => valeurFinie(calcul, { ...valeurs, x })),
         ]),
       ),
     })),

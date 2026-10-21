@@ -12571,6 +12571,12 @@
                     },
                     "defaut": {
                       "type": "number"
+                    },
+                    "positions": {
+                      "type": "array",
+                      "items": {
+                        "type": "number"
+                      }
                     }
                   },
                   "required": [
@@ -12579,7 +12585,8 @@
                     "min",
                     "max",
                     "pas",
-                    "defaut"
+                    "defaut",
+                    "positions"
                   ],
                   "additionalProperties": false
                 },
@@ -12866,6 +12873,12 @@
                     },
                     "defaut": {
                       "type": "number"
+                    },
+                    "positions": {
+                      "type": "array",
+                      "items": {
+                        "type": "number"
+                      }
                     }
                   },
                   "required": [
@@ -12874,7 +12887,8 @@
                     "min",
                     "max",
                     "pas",
-                    "defaut"
+                    "defaut",
+                    "positions"
                   ],
                   "additionalProperties": false
                 }

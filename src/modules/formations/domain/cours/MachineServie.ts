@@ -1,4 +1,3 @@
-import { borner } from '../../../../common/domain/nombres/borner';
 import { dansLesBornes } from '../../../../common/domain/nombres/dans-les-bornes';
 import { nombreAffiche } from '../../../../common/domain/nombres/ecriture-francaise';
 import type { Cours } from '../contrats/cours';
@@ -10,16 +9,17 @@ import type {
 } from '../contrats/donnees-publiques';
 import { ProductionInvalideError } from '../errors/FormationErrors';
 import { ecranParId } from './EcranServi';
-import { evaluerExpression } from './Formule';
 import {
   type CurseurReglable,
   ECHANTILLONS_D_UNE_COURBE,
   jalons,
+  plafondDu,
+  positionsDuCurseur,
+  valeurFinie,
 } from './TraceServi';
 
 const INTERVALLES_DU_TABLEAU = 6;
 const DECIMALES_AFFICHEES = 2;
-const PRECISION_D_UN_CRAN = 1e9;
 const MOTIF_CLE_GABARIT = /\{([^{}]+)\}/g;
 
 type Reglages = Readonly<Record<string, number>>;
@@ -33,22 +33,14 @@ export interface MachineACalculer {
   readonly animation?: readonly Reglages[];
 }
 
-function plafondDu(curseur: CurseurReglable): number {
-  return Math.max(curseur.max, curseur.min);
-}
-
-function caler(curseur: CurseurReglable, valeur: number): number {
-  const borne = borner(valeur, curseur.min, plafondDu(curseur));
-  if (curseur.pas <= 0) {
-    return borne;
-  }
-  const cale =
-    curseur.min + Math.round((borne - curseur.min) / curseur.pas) * curseur.pas;
-  return borner(
-    Math.round(cale * PRECISION_D_UN_CRAN) / PRECISION_D_UN_CRAN,
-    curseur.min,
-    plafondDu(curseur),
-  );
+function caler(
+  machine: MachineACalculer,
+  curseur: CurseurReglable,
+  valeur: number,
+): number {
+  const positions = positionsDuCurseur(curseur, machine.prereglages);
+  const ecarts = positions.map((position) => Math.abs(position - valeur));
+  return positions[ecarts.lastIndexOf(Math.min(...ecarts))];
 }
 
 function poser(
@@ -60,7 +52,7 @@ function poser(
     machine.parametres.map((curseur) => [
       curseur.cle,
       Object.hasOwn(reglages, curseur.cle)
-        ? caler(curseur, reglages[curseur.cle])
+        ? caler(machine, curseur, reglages[curseur.cle])
         : courantes[curseur.cle],
     ]),
   );
@@ -70,14 +62,9 @@ function reglagesParDefaut(machine: MachineACalculer): Reglages {
   return Object.fromEntries(
     machine.parametres.map((curseur) => [
       curseur.cle,
-      caler(curseur, curseur.defaut),
+      caler(machine, curseur, curseur.defaut),
     ]),
   );
-}
-
-function valeurFinie(calcul: string, valeurs: Reglages): number | null {
-  const { valeur } = evaluerExpression(calcul, valeurs);
-  return valeur !== null && Number.isFinite(valeur) ? valeur : null;
 }
 
 function affichageDe(valeur: number | null): string {

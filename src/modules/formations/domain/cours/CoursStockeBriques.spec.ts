@@ -501,6 +501,20 @@ describe('stockage multi-briques (B1)', () => {
     );
   });
 
+  it('admet une animation qui passe par un préréglage hors du pas, position servie du curseur', () => {
+    const ecran = lireEcran(
+      avecProprietes('fp-plot', (p: any) => {
+        p.prereglages = [{ libelle: 'Axe proche', valeurs: { origine: 1000 } }];
+        p.animation = [{ origine: 284000 }, { origine: 1000 }];
+      }),
+    );
+
+    expect(ecran.brique === 'fp-plot' && ecran.proprietes.animation).toEqual([
+      { origine: 284000 },
+      { origine: 1000 },
+    ]);
+  });
+
   describe('titre, diffusion et description des écrans', () => {
     const GRAPHIQUE_SANS_DESCRIPTION = buildEcranDeBrique('fp-story', {
       proprietes: {

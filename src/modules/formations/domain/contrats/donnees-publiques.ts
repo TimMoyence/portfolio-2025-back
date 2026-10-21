@@ -54,6 +54,18 @@ type DefinitionPublique<P> = P & {
   readonly metadonnees: MetadonneesBrique;
 };
 
+export interface PositionsDuCurseur {
+  readonly positions: readonly number[];
+}
+
+type ReglablePublic<P extends { readonly parametres: readonly object[] }> =
+  DefinitionPublique<
+    Omit<P, 'parametres'> & {
+      readonly parametres: readonly (P['parametres'][number] &
+        PositionsDuCurseur)[];
+    }
+  >;
+
 export interface ValeurDeMachine {
   readonly valeur: number | null;
   readonly affichage: string;
@@ -80,7 +92,7 @@ export interface MachineCalculee {
   readonly sorties: readonly SortiesMachine[];
 }
 
-export type Concept4Definition = DefinitionPublique<
+export type Concept4Definition = ReglablePublic<
   ProprietesExposition['fp-concept4']
 > &
   MachineCalculee;
@@ -95,9 +107,7 @@ export interface TraceCalcule {
   readonly positions: readonly PositionDuTrace[];
 }
 
-export type PlotDefinition = DefinitionPublique<
-  ProprietesExposition['fp-plot']
-> &
+export type PlotDefinition = ReglablePublic<ProprietesExposition['fp-plot']> &
   TraceCalcule;
 
 export const NATURES_DE_CELLULE = Object.freeze([

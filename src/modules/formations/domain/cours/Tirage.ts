@@ -24,7 +24,7 @@ import { estInteractif, estReservee } from './Cours';
 import { planDeFeuilleServi } from './FeuilleEvaluee';
 import { machineCalculee } from './MachineServie';
 import { planDeTableauServi } from './TableauEvalue';
-import { traceCalcule } from './TraceServi';
+import { curseursServis, traceCalcule } from './TraceServi';
 import type {
   PieceJointeServie,
   QuestionNumerique,
@@ -437,20 +437,15 @@ function donneesDeBrique(
         },
       };
     case 'fp-concept4':
-      return {
-        definition: {
-          id: ecran.id,
-          ...proprietesPubliques(ecran.proprietes),
-          ...machineCalculee(ecran.proprietes),
-          metadonnees: communes,
-        },
-      };
     case 'fp-plot':
       return {
         definition: {
           id: ecran.id,
           ...proprietesPubliques(ecran.proprietes),
-          ...traceCalcule(ecran.proprietes),
+          parametres: curseursServis(ecran.proprietes),
+          ...(ecran.brique === 'fp-concept4'
+            ? machineCalculee(ecran.proprietes)
+            : traceCalcule(ecran.proprietes)),
           metadonnees: communes,
         },
       };

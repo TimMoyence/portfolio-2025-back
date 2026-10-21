@@ -29,7 +29,11 @@ import {
   sondage,
 } from './PlansStockes';
 import { numeriqueStockee, voteStocke } from './QuestionStockee';
-import { POINTS_MAX_D_UN_TRACE, pointsDuTrace } from './TraceServi';
+import {
+  POINTS_MAX_D_UN_TRACE,
+  pointsDuTrace,
+  positionsDuCurseur,
+} from './TraceServi';
 import {
   auMoinsUn,
   concept,
@@ -446,6 +450,9 @@ function defautDeLEtape(
   curseur: Curseur | undefined,
   valeur: number,
   support: string,
+  prereglages: readonly {
+    readonly valeurs: Readonly<Record<string, number>>;
+  }[],
 ): string | undefined {
   if (curseur === undefined) {
     return `l’animation règle un paramètre absent ${support}`;
@@ -453,8 +460,8 @@ function defautDeLEtape(
   if (!dansLesBornes(valeur, curseur)) {
     return `l’animation sort des bornes du curseur ${curseur.cle} : ${valeur}`;
   }
-  if (!Number.isInteger((valeur - curseur.min) / curseur.pas)) {
-    return `l’animation ne tombe pas sur le pas du curseur ${curseur.cle} : ${valeur}`;
+  if (!positionsDuCurseur(curseur, prereglages).includes(valeur)) {
+    return `l’animation ne tombe pas sur une position du curseur ${curseur.cle} : ${valeur}`;
   }
   return undefined;
 }
@@ -462,6 +469,9 @@ function defautDeLEtape(
 function signalerAnimationHorsParametres(support: string): (
   proprietes: {
     readonly parametres: readonly Curseur[];
+    readonly prereglages?: readonly {
+      readonly valeurs: Readonly<Record<string, number>>;
+    }[];
     readonly animation?: readonly Readonly<Record<string, number>>[];
   },
   contexte: z.RefinementCtx,
@@ -470,7 +480,12 @@ function signalerAnimationHorsParametres(support: string): (
     const curseurs = new Map(proprietes.parametres.map((p) => [p.cle, p]));
     proprietes.animation?.forEach((etape, rang) => {
       for (const [cle, valeur] of Object.entries(etape)) {
-        const defaut = defautDeLEtape(curseurs.get(cle), valeur, support);
+        const defaut = defautDeLEtape(
+          curseurs.get(cle),
+          valeur,
+          support,
+          proprietes.prereglages ?? [],
+        );
         if (defaut !== undefined) {
           signaleurDe(contexte)(['animation', rang, cle], defaut);
         }

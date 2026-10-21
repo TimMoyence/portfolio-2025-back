@@ -5,6 +5,7 @@ import {
 } from '../../../../../test/factories/contenus-publies';
 import type { Ecran } from '../contrats/cours';
 import {
+  curseursServis,
   POINTS_MAX_D_UN_TRACE,
   pointsDuTrace,
   reglageServi,
@@ -145,5 +146,25 @@ describe('reglageServi', () => {
         (ecrit) => !reglageServi(aPasDecimal(0.1, 0.3), 'k', Number(ecrit)),
       ),
     }).toEqual({ dixieme: [], decale: [] });
+  });
+});
+
+describe('curseursServis', () => {
+  it('sert à chaque curseur ses positions : les crans du pas, le défaut et les préréglages, sans le maximum hors du pas', () => {
+    expect(
+      curseursServis({
+        parametres: [{ cle: 'k', min: 0, max: 10, pas: 4, defaut: 5 }],
+        prereglages: [{ valeurs: { k: 6 } }],
+      }),
+    ).toEqual([
+      {
+        cle: 'k',
+        min: 0,
+        max: 10,
+        pas: 4,
+        defaut: 5,
+        positions: [0, 4, 5, 6, 8],
+      },
+    ]);
   });
 });

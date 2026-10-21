@@ -43,6 +43,18 @@ describe('sortiesDeLaMachine', () => {
     expect(sorties.resultat.affichage).toBe('100,8');
   });
 
+  it('cale sur la position servie la plus proche : de 0 à 10 au pas de 4, 10 donne 8 et le défaut 5 reste 5', () => {
+    const machine: MachineACalculer = {
+      parametres: [{ cle: 'k', min: 0, max: 10, pas: 4, defaut: 5 }],
+      calcul: 'k',
+      phrase: '',
+    };
+
+    expect(sortiesDeLaMachine(machine, {}).valeurs).toEqual({ k: 5 });
+    expect(sortiesDeLaMachine(machine, { k: 10 }).valeurs).toEqual({ k: 8 });
+    expect(sortiesDeLaMachine(machine, { k: 6 }).valeurs).toEqual({ k: 5 });
+  });
+
   it('L4-F11 · arrondit un demi comme Excel : 1 € à −50 % puis +13 % arrive à 0,57 €', () => {
     const sorties = sortiesDeLaMachine(machineDuB201(), {
       depart: 1,
