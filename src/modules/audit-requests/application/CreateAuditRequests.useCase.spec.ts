@@ -1,3 +1,4 @@
+import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
 /* eslint-disable @typescript-eslint/unbound-method */
 import { RateLimitExceededError } from '../../../common/domain/errors/RateLimitExceededError';
 import { CreateAuditRequestsUseCase } from './CreateAuditRequests.useCase';
@@ -237,6 +238,14 @@ describe('CreateAuditRequestsUseCase', () => {
 
     it('devrait rejeter un audit sur un sous-domaine self', async () => {
       await attendreLeRefusDe('https://api.asilidesign.fr/path');
+    });
+
+    it('refuse en 400 un site que le pipeline ne sait pas auditer, sans rien lancer', async () => {
+      await expect(
+        useCase.execute({ ...validCommand, websiteName: 'localhost' }),
+      ).rejects.toThrow(new DomainValidationError('Invalid audit website'));
+      expect(repo.create).not.toHaveBeenCalled();
+      attendreAucunAuditLance();
     });
 
     it('devrait accepter un audit sur un domaine tiers (example.com)', async () => {

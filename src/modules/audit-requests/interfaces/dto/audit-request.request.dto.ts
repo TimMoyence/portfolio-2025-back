@@ -10,7 +10,7 @@ import { TexteSaisi } from '../../../../common/interfaces/dto/longueur-de-texte.
 import { ChampsAntiRobotDto } from '../../../../common/interfaces/security/champs-anti-robot.dto';
 
 export class AuditRequestRequestDto extends ChampsAntiRobotDto {
-  @ApiProperty({ example: 'Example Studio' })
+  @ApiProperty({ example: 'https://example.com' })
   @TexteSaisi(2, 200)
   websiteName: string;
 

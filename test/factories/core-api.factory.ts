@@ -45,7 +45,7 @@ export const CONTACT_PAYLOAD = {
 };
 
 export const AUDIT_REQUEST_PAYLOAD = {
-  websiteName: 'Example Studio',
+  websiteName: 'example.com',
   contactMethod: 'EMAIL',
   contactValue: 'hello@example.com',
 };

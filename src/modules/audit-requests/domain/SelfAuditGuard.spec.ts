@@ -1,3 +1,4 @@
+import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
 import { SelfAuditForbiddenError, SelfAuditGuard } from './SelfAuditGuard';
 
 describe('SelfAuditGuard', () => {
@@ -59,6 +60,20 @@ describe('SelfAuditGuard', () => {
       );
     });
 
+    it.each([
+      ['asilidesign.fr?x'],
+      ['asilidesign.fr#x'],
+      ['https://asilidesign.fr?utm_source=x'],
+      ['asilidesign.fr.'],
+    ])(
+      'bloque %p, que le pipeline auditerait sur le domaine self',
+      (saisie) => {
+        expect(() => guard.ensureNotSelf(saisie)).toThrow(
+          SelfAuditForbiddenError,
+        );
+      },
+    );
+
     it('supporte plusieurs domaines self (tim-moyence.dev)', () => {
       expect(() => guard.ensureNotSelf('tim-moyence.dev')).toThrow(
         SelfAuditForbiddenError,
@@ -83,13 +98,11 @@ describe('SelfAuditGuard', () => {
     });
   });
 
-  describe('ensureNotSelf — tolere les entrees degenerees', () => {
-    it('no-op sur chaine vide', () => {
-      expect(() => guard.ensureNotSelf('')).not.toThrow();
-    });
-
-    it('no-op sur espaces uniquement', () => {
-      expect(() => guard.ensureNotSelf('   ')).not.toThrow();
+  describe('ensureNotSelf — refuse une saisie qui n est pas une adresse', () => {
+    it.each([[''], ['   ']])('refuse %p', (saisie) => {
+      expect(() => guard.ensureNotSelf(saisie)).toThrow(
+        new DomainValidationError('Invalid audit website'),
+      );
     });
   });
 
@@ -98,8 +111,6 @@ describe('SelfAuditGuard', () => {
       const mixed = new SelfAuditGuard([
         'HTTPS://asilidesign.fr/',
         'www.tim-moyence.dev',
-        '',
-        '   ',
       ]);
       expect(() => mixed.ensureNotSelf('asilidesign.fr')).toThrow(
         SelfAuditForbiddenError,
