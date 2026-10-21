@@ -278,7 +278,7 @@ export function pilotageEnDirect(
         return servi;
       }
       const pose = correctionProjetee(seance, cours, ecran.id)
-        ? { ...pilotage[ecran.id], correctionProjetee: true as const }
+        ? { ...pilotage[ecran.id], saisieFermee: true as const }
         : pilotage[ecran.id];
       const enDirect = enDirectDe(ecran, pose);
       return enDirect === undefined || enDirect === pilotage[ecran.id]

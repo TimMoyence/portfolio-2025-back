@@ -6910,12 +6910,12 @@
             "description": "Etapes deja montrees d un exemple travaille, jamais reculees",
             "example": 2
           },
-          "correctionProjetee": {
+          "saisieFermee": {
             "type": "number",
             "enum": [
               true
             ],
-            "description": "Correction de l ecran projetee : les productions n y sont plus acceptees"
+            "description": "Saisie de l ecran fermee par le pupitre : les productions n y sont plus acceptees"
           },
           "sortiesProjetees": {
             "description": "Sorties de la machine aux reglages projetes",

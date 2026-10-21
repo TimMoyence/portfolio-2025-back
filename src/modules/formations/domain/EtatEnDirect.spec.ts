@@ -129,7 +129,7 @@ describe('etatEnDirect', () => {
     it('ne diffuse aucune sortie tant que le pupitre n a rien réglé', () => {
       expect(diffuse(RANG, { revele: true })).toEqual({
         revele: true,
-        correctionProjetee: true,
+        saisieFermee: true,
       });
     });
 
@@ -150,7 +150,7 @@ describe('etatEnDirect', () => {
   );
 
   it.each(CAS_DES_COURS_SERVIS)(
-    '%s : sert la correction projetée là, et seulement là, où la route des productions refuse d écrire',
+    '%s : sert la saisie fermée là, et seulement là, où la route des productions refuse d écrire',
     (_slug, cours) => {
       const seances = [
         {
@@ -178,8 +178,7 @@ describe('etatEnDirect', () => {
             }
           })();
           const servie =
-            etatEnDirect(seance, 0, cours).pilotage[id]?.correctionProjetee ===
-            true;
+            etatEnDirect(seance, 0, cours).pilotage[id]?.saisieFermee === true;
           return refusee === servie ? [] : [`${id} : ${String(refusee)}`];
         }),
       );

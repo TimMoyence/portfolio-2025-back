@@ -45,9 +45,9 @@ class PilotageServiResponseDto
   @ApiPropertyOptional({
     enum: [true],
     description:
-      'Correction de l ecran projetee : les productions n y sont plus acceptees',
+      'Saisie de l ecran fermee par le pupitre : les productions n y sont plus acceptees',
   })
-  correctionProjetee?: true;
+  saisieFermee?: true;
 
   @ApiPropertyOptional({
     type: MachineEvalueeResponseDto,
