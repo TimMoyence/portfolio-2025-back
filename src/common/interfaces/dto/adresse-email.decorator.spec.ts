@@ -21,8 +21,8 @@ const jugements = (adresse: string): [boolean, boolean] => [
 ];
 
 const INVISIBLES = [
-  0x00a0, 0x2000, 0x200a, 0x200b, 0x2028, 0x2029, 0x202e, 0x202f, 0x3000,
-  0xfeff, 0xe000,
+  0x00a0, 0x00ad, 0x061c, 0x180e, 0x2000, 0x200a, 0x200b, 0x2028, 0x2029,
+  0x202e, 0x202f, 0x3000, 0xfeff, 0xe000,
 ].map((point) => String.fromCodePoint(point));
 
 describe('AdresseEmail', () => {
@@ -34,6 +34,9 @@ describe('AdresseEmail', () => {
     'пример@почта.рф',
     'μαθητής@σχολείο.ελ',
     '用户@例子.广告',
+    'col·legi@escola.cat',
+    'jean@cal·ligraf.cat',
+    'ｊｅａｎ@exemple.fr',
     'jean@exemple.xn--p1ai',
     'jean@sous-domaine.exemple.fr',
     `${'a'.repeat(64)}@exemple.fr`,

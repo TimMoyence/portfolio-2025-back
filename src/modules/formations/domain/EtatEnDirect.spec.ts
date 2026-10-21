@@ -184,6 +184,29 @@ describe('etatEnDirect', () => {
     },
   );
 
+  it.each(CAS_DES_COURS_SERVIS)(
+    '%s : ne ferme pas un exemple travaillé dont une étape reste à corriger',
+    (_slug, cours) => {
+      const fermes = cours.ecrans.flatMap((ecran) => {
+        if (
+          ecran.brique !== 'fp-worked' ||
+          ecran.proprietes.exemple.etapes.length < 2
+        ) {
+          return [];
+        }
+        const seance = buildSessionRecord({
+          ecranCourant: cours.ecrans.length - 1,
+          pilotageEcrans: { [ecran.id]: { etayageAtteint: 1 } },
+        });
+        return etatEnDirect(seance, cours).pilotage[ecran.id]?.saisieFermee
+          ? [ecran.id]
+          : [];
+      });
+
+      expect(fermes).toEqual([]);
+    },
+  );
+
   it.each(
     CAS_DES_COURS_SERVIS.flatMap(([slug, cours]) =>
       ecransDesVotesJumeles(cours).map(

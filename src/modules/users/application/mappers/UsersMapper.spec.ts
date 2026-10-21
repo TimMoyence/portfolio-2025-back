@@ -1,6 +1,5 @@
 import { BadRequestException } from '@nestjs/common';
 import type { CreateUserCommand } from '../dto/CreateUser.command';
-import type { UpdateUserCommand } from '../dto/UpdateUser.command';
 import { UsersMapper } from './UsersMapper';
 
 const PLAIN_CREDENTIAL = 'StrongPassword123!';
@@ -50,24 +49,23 @@ describe('UsersMapper', () => {
     ).toThrow(BadRequestException);
   });
 
-  it('normalizes and maps partial fields on update', () => {
-    const command: UpdateUserCommand = {
-      email: '  Jane.Doe@Example.com ',
+  it('ne met à jour que les champs du profil, signés par leur titulaire', () => {
+    const mapped = UsersMapper.fromProfileCommand({
+      firstName: '  Jane ',
       phone: '  ',
-      isActive: false,
-    };
+    });
 
-    const mapped = UsersMapper.fromUpdateCommand(command);
-
-    expect(mapped.email).toBe('jane.doe@example.com');
-    expect(mapped.phone).toBeNull();
-    expect(mapped.isActive).toBe(false);
-    expect(mapped.updatedAt).toBeInstanceOf(Date);
+    expect(mapped).toEqual({
+      firstName: 'Jane',
+      phone: null,
+      updatedOrCreatedBy: 'self-update',
+      updatedAt: expect.any(Date),
+    });
   });
 
   it('throws when update phone is provided and invalid', () => {
     expect(() =>
-      UsersMapper.fromUpdateCommand({
+      UsersMapper.fromProfileCommand({
         phone: 'invalid',
       }),
     ).toThrow(BadRequestException);

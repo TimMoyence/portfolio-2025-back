@@ -211,8 +211,13 @@ export function correctionProjetee(
     seance.modeRythme === 'pilote' &&
     correctionsDe(cours, screenId).some((rang) => rang <= seance.ecranCourant);
   const pilotage = seance.pilotageEcrans[screenId];
+  const corrigeParEtapes = cours.ecrans.some(
+    (ecran) => ecran.id === screenId && ecran.brique === 'fp-worked',
+  );
   return (
-    correctionAtteinte || ecranRevele(pilotage) || etayageAtteint(pilotage) > 0
+    correctionAtteinte ||
+    ecranRevele(pilotage) ||
+    (!corrigeParEtapes && etayageAtteint(pilotage) > 0)
   );
 }
 
