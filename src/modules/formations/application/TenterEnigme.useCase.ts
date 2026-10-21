@@ -187,7 +187,6 @@ export class TenterEnigmeUseCase {
       studentKey: question.studentKey,
       concept: question.concept,
       reussi: question.correcte,
-      vueLe: new Date(),
     });
   }
 }

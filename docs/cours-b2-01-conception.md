@@ -2392,17 +2392,17 @@ Les formes exactes des données publiques sont au § 9.4, les corrigés au § 9.
 - **Rôle** : reposer à chacun, après au moins 30 minutes, des questions **nouvelles** : les deux
   réflexes de contrôle servis à tous (R10 compensation, R11 multiple de 9) et un ou deux concepts
   fragiles selon le Leitner ; donner au formateur la carte de maîtrise réelle.
-- **Problème résolu** : `DueQuestionsUseCase` compte les séances en jours distincts (`isDue`,
-  boîte 1 = 1 séance) : pendant la séance, aucun concept n’est « dû ». La nouvelle fonction de domaine
-  `choisirRappels` le remplace pour cette brique. `DueQuestions`, gardé pour une page de révision
-  jamais construite, est retiré le 2026-10-13 avec le lien de la copie qui y menait (décision de Tim).
+- **Problème résolu** : `DueQuestionsUseCase` comptait les séances en jours distincts : pendant la
+  séance, aucun concept n’était « dû ». La fonction de domaine `choisirRappels` le remplace pour
+  cette brique. `DueQuestions` est retiré le 2026-10-13, puis la règle temporelle (`isDue`, colonne
+  `derniere_vue`) le 2026-10-21 : elle ne servait jamais (décision de Tim). Seule la boîte compte.
 - **Règle de sélection** `choisirRappels(participant)`, déterministe :
   1. obligatoires : `b2-01-r-compensation` puis `b2-01-r-multiple-neuf` ;
   2. candidats : concepts ayant au moins une question de la banque non encore répondue, hors
      `controle-coherence` ;
   3. priorité 1 : concepts dont la dernière réponse de la séance est fausse et date d’au moins
-     30 minutes (les plus anciennes d’abord) ; priorité 2 : concepts dus selon `isDue` (séances
-     antérieures) ; priorité 3 : concepts réussis une seule fois dans la séance, depuis au moins
+     30 minutes (les plus anciennes d’abord) ; priorité 2 : concepts en boîte 1 ou 2 (jamais en
+     boîte 3, la plus haute) ; priorité 3 : concepts réussis une seule fois dans la séance, depuis au moins
      30 minutes ; complément : plus faible taux de réussite (`succes ÷ (succes + echecs)`), ordre de la
      banque en cas d’égalité ;
   4. un concept retenu donne une question (la première non répondue de la banque) ; 1 à 2 concepts ;

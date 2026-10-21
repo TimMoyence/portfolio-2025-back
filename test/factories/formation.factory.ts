@@ -530,7 +530,6 @@ export function buildMasteryRecord(
     studentKey: '11111111-1111-4111-8111-111111111111',
     concept: 'taux-evolution',
     boite: 1,
-    derniereVue: new Date('2026-09-11T08:00:00.000Z'),
     succes: 0,
     echecs: 0,
     ...overrides,

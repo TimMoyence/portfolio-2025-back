@@ -79,7 +79,6 @@ export class SubmitProductionUseCase extends EnregistrementDeReponse {
         studentKey: participant.studentKey,
         concept: cible.question.concept,
         reussi: verdict.correcte,
-        vueLe: new Date(),
       });
     }
 

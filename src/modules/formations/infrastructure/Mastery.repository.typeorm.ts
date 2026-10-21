@@ -29,21 +29,19 @@ export class MasteryRepositoryTypeORM
   async enregistrerTentative(tentative: TentativeDeMaitrise): Promise<void> {
     await this.repo.query(
       `INSERT INTO formation_mastery
-         (student_key, concept, boite, derniere_vue, succes, echecs)
-       VALUES ($1, $2, $3, $4, $5, $6)
+         (student_key, concept, boite, succes, echecs)
+       VALUES ($1, $2, $3, $4, $5)
        ON CONFLICT (student_key, concept) DO UPDATE
          SET boite = CASE
-               WHEN $7 THEN LEAST(formation_mastery.boite + 1, $8)
-               ELSE $9
+               WHEN $6 THEN LEAST(formation_mastery.boite + 1, $7)
+               ELSE $8
              END,
-             derniere_vue = EXCLUDED.derniere_vue,
              succes = formation_mastery.succes + EXCLUDED.succes,
              echecs = formation_mastery.echecs + EXCLUDED.echecs`,
       [
         tentative.studentKey,
         tentative.concept,
         tentative.reussi ? BOITE_MIN + 1 : BOITE_MIN,
-        tentative.vueLe,
         tentative.reussi ? 1 : 0,
         tentative.reussi ? 0 : 1,
         tentative.reussi,
@@ -58,7 +56,6 @@ export class MasteryRepositoryTypeORM
       studentKey: entity.studentKey,
       concept: entity.concept,
       boite: entity.boite,
-      derniereVue: entity.derniereVue,
       succes: entity.succes,
       echecs: entity.echecs,
     };
