@@ -148,6 +148,7 @@ L'agent ne doit jamais declarer une tache "terminee" si une verification attendu
 - Les timeouts, retries, fallback et limites sont explicites pour tout appel reseau, traitement asynchrone ou integration externe.
 - Les erreurs et logs ne doivent jamais exposer de donnees sensibles.
 - Les DTO, validations et contrats OpenAPI doivent rester synchronises avec le comportement reel.
+- `openapi.json` est le contrat unique du front (ADR 0003) : chaque entree et chaque sortie y est typee precisement (listes, entiers bornes, variantes liees a leur discriminant), `pnpm openapi` le regenere dans le meme commit que le DTO. Une regle metier vit au back ; le front lit ce qui est servi et ne la recalcule pas.
 - Les changements de comportement public, d'endpoint, d'env, de migration, de workflow de deploiement ou d'architecture doivent mettre a jour `README.md`, `docs/` et les exemples de configuration appropries.
 - Le code livre doit etre exploitable en production sans TODO bloquant, sans valeur magique critique cachee et sans comportement implicite non documente.
 
