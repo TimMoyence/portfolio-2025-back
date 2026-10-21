@@ -13,7 +13,11 @@ import {
 } from './cours/ProductionSoumise';
 import { NE_SAIT_PAS } from './GradingCore';
 import type { AnswerRecord } from './IAnswers.repository';
-import { agregerResultats, estNeSaitPas } from './ResultatsSeance';
+import {
+  agregerResultats,
+  estNeSaitPas,
+  partDesReponses,
+} from './ResultatsSeance';
 
 function reponseDeFeuilleAMoitieJuste(questionId: string): AnswerRecord {
   return buildAnswerRecord({
@@ -41,7 +45,58 @@ describe('estNeSaitPas', () => {
   });
 });
 
+describe('partDesReponses', () => {
+  it.each([
+    ['aucune réponse', [], 0],
+    [
+      'des votes sans score, par la part des correctes',
+      [
+        buildAnswerRecord({ correcte: true, score: null }),
+        buildAnswerRecord({ correcte: false, score: null }),
+      ],
+      0.5,
+    ],
+    [
+      'des productions, par leur score moyen même sans réponse correcte',
+      [
+        buildAnswerRecord({ correcte: false, score: 0.8 }),
+        buildAnswerRecord({ correcte: false, score: 0.6 }),
+      ],
+      0.7,
+    ],
+  ] as const)('lit %s', (_cas, reponses, attendue) => {
+    expect(partDesReponses(reponses)).toBeCloseTo(attendue);
+  });
+});
+
 describe('agregerResultats', () => {
+  it('classe une fois les confusions de la séance, toutes questions agrégées, par fréquence puis identifiant', () => {
+    const resultats = agregerResultats({
+      participants: 3,
+      questions: [
+        buildQuestionAAgreger({ id: 'Q1' }),
+        buildQuestionAAgreger({ id: 'Q2' }),
+      ],
+      answers: [
+        buildAnswerRecord({ questionId: 'Q1', misconception: 'b-confusion' }),
+        buildAnswerRecord({ questionId: 'Q2', misconception: 'b-confusion' }),
+        buildAnswerRecord({ questionId: 'Q2', misconception: 'a-confusion' }),
+        buildAnswerRecord({ questionId: 'Q2', misconception: 'c-confusion' }),
+        buildAnswerRecord({ questionId: 'Q2', misconception: 'c-confusion' }),
+        buildAnswerRecord({
+          questionId: 'Q-HORS',
+          misconception: 'a-confusion',
+        }),
+      ],
+    });
+
+    expect(resultats.confusions.map(({ id, nombre }) => [id, nombre])).toEqual([
+      ['b-confusion', 2],
+      ['c-confusion', 2],
+      ['a-confusion', 1],
+    ]);
+  });
+
   it('compte par sens et non par valeur saisie', () => {
     const resultats = agregerResultats({
       questions: [

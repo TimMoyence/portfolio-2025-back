@@ -3,17 +3,8 @@ import type { RegleDeNotation } from './contrats/contrat-de-l-api';
 export type { RegleDeNotation } from './contrats/contrat-de-l-api';
 
 export const REGLE_DE_NOTATION: RegleDeNotation = Object.freeze({
-  typesNotables: [
-    'numeric',
-    'vote',
-    'feuille',
-    'tableau',
-    'classement',
-  ] as const,
-  productionCompteSi: 'au-moins-une-saisie',
   statistiquesSurQuestionsNotees: true,
   noteMax: 20,
-  base: 'participation-relative-cohorte',
   partCohorteReference: 0.2,
   ratioSeuilValidation: 0.4,
   neSaitPasCompteCommeReponse: true,

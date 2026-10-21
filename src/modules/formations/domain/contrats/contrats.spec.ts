@@ -348,6 +348,7 @@ const RESULTAT_QUESTION = {
 const RESULTATS = {
   participants: 24,
   questions: [RESULTAT_QUESTION],
+  confusions: RESULTAT_QUESTION.confusions,
 } satisfies ResultatsSeance;
 
 const JALONS = {
@@ -945,14 +946,7 @@ describe('Contrats figés du cours B2-01 V3 (§ 9, lot 0)', () => {
       } satisfies ResultatsDeSeance;
 
       expect(enDirect.bareme.questionsNotees).toBe(31);
-      expect(deSeance.notation.typesNotables).not.toContain('enigme');
-    });
-  });
-
-  describe('§ 9.3.8 — contrat notation final', () => {
-    it('étend la règle servie de trois champs sans en retirer', () => {
-      expect(Object.keys(NOTATION)).toHaveLength(12);
-      expect(NOTATION.productionCompteSi).toBe('au-moins-une-saisie');
+      expect(deSeance.notation).toBe(NOTATION);
     });
   });
 
@@ -964,7 +958,6 @@ describe('Contrats figés du cours B2-01 V3 (§ 9, lot 0)', () => {
         modeRythme: 'pilote',
         ecranCourant: 30,
         intervalleLibre: null,
-        participants: 24,
         majLe: new Date('2026-10-05T08:00:00.000Z'),
         revision: 7,
         pilotage: {

@@ -86,9 +86,6 @@ class EtatDeSeanceResponseDto {
   )
   intervalleLibre: FreeRangeDto | null;
 
-  @ApiProperty({ example: 24 })
-  participants: number;
-
   @ApiProperty({
     type: 'integer',
     minimum: 0,

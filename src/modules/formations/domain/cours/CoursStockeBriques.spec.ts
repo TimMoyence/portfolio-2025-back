@@ -338,6 +338,34 @@ describe('stockage multi-briques (B1)', () => {
     ],
     [
       'fp-plot',
+      'un curseur dont le minimum dépasse le maximum',
+      (p) => {
+        p.parametres[0].min = 300000;
+      },
+    ],
+    [
+      'fp-plot',
+      'un défaut hors des bornes du curseur',
+      (p) => {
+        p.parametres[0].defaut = 300000;
+      },
+    ],
+    [
+      'fp-concept4',
+      'un curseur aux positions trop nombreuses pour être servies',
+      (p) => {
+        p.parametres[0].pas = 0.001;
+      },
+    ],
+    [
+      'fp-concept4',
+      'un préréglage hors des bornes du curseur',
+      (p) => {
+        p.prereglages = [{ libelle: 'Trop', valeurs: { depart: 201 } }];
+      },
+    ],
+    [
+      'fp-plot',
       'une animation qui règle un paramètre absent du tracé',
       (p) => {
         p.animation = [{ origine: 284000 }, { absent: 0 }];

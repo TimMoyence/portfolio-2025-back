@@ -142,6 +142,7 @@ export interface ResultatQuestion {
 export interface ResultatsSeance {
   readonly participants: number;
   readonly questions: readonly ResultatQuestion[];
+  readonly confusions: readonly ConfusionComptee[];
 }
 
 export interface StatistiquesSeance {
@@ -188,7 +189,6 @@ export interface ResultatsEnDirect extends ResultatsSeance {
 
 export interface RegleDeNotation {
   readonly noteMax: number;
-  readonly base: 'participation-relative-cohorte';
   readonly partCohorteReference: number;
   readonly ratioSeuilValidation: number;
   readonly neSaitPasCompteCommeReponse: boolean;
@@ -196,7 +196,5 @@ export interface RegleDeNotation {
   readonly reponsesLibresNotees: boolean;
   readonly seuilQuestionProbleme: number;
   readonly decimalesStatistiques: number;
-  readonly typesNotables: readonly TypeQuestion[];
-  readonly productionCompteSi: 'au-moins-une-saisie';
   readonly statistiquesSurQuestionsNotees: boolean;
 }

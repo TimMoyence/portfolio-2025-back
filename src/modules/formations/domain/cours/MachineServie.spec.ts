@@ -36,23 +36,11 @@ describe('sortiesDeLaMachine', () => {
     expect(sorties.phrase).toBe(machineDuB201().phrase);
   });
 
-  it('cale un réglage sur le pas de son curseur et garde les autres à leur défaut', () => {
-    const sorties = sortiesDeLaMachine(machineDuB201(), { tauxUn: 12.4 });
+  it('pose un réglage et garde les autres à leur défaut', () => {
+    const sorties = sortiesDeLaMachine(machineDuB201(), { tauxUn: 12 });
 
     expect(sorties.valeurs).toEqual({ depart: 100, tauxUn: 12, tauxDeux: -10 });
     expect(sorties.resultat.affichage).toBe('100,8');
-  });
-
-  it('cale sur la position servie la plus proche : de 0 à 10 au pas de 4, 10 donne 8 et le défaut 5 reste 5', () => {
-    const machine: MachineACalculer = {
-      parametres: [{ cle: 'k', min: 0, max: 10, pas: 4, defaut: 5 }],
-      calcul: 'k',
-      phrase: '',
-    };
-
-    expect(sortiesDeLaMachine(machine, {}).valeurs).toEqual({ k: 5 });
-    expect(sortiesDeLaMachine(machine, { k: 10 }).valeurs).toEqual({ k: 8 });
-    expect(sortiesDeLaMachine(machine, { k: 6 }).valeurs).toEqual({ k: 5 });
   });
 
   it('L4-F11 · arrondit un demi comme Excel : 1 € à −50 % puis +13 % arrive à 0,57 €', () => {
@@ -155,6 +143,20 @@ describe('machineCalculee', () => {
 });
 
 describe('evaluerLaMachine', () => {
+  it('admet le défaut hors du pas, position servie, et refuse le maximum hors du pas : de 0 à 10 au pas de 4', () => {
+    const machine: MachineACalculer = {
+      parametres: [{ cle: 'k', min: 0, max: 10, pas: 4, defaut: 5 }],
+      calcul: 'k',
+      phrase: '',
+    };
+
+    expect(evaluerLaMachine(machine, 'E', { k: 5 }).valeurs).toEqual({ k: 5 });
+    expect(evaluerLaMachine(machine, 'E', { k: 8 }).valeurs).toEqual({ k: 8 });
+    expect(() => evaluerLaMachine(machine, 'E', { k: 10 })).toThrow(
+      'k hors des positions servies',
+    );
+  });
+
   it('calcule les réglages de l élève, bornes incluses', () => {
     const sorties = evaluerLaMachine(machineDuB201(), ECRAN_MACHINE, {
       tauxDeux: -50,
@@ -169,11 +171,20 @@ describe('evaluerLaMachine', () => {
       { prix: 10 },
       'paramètre prix absent',
     ],
-    ['un réglage sous la borne', { tauxUn: -51 }, 'tauxUn hors de [-50 ; 50]'],
+    [
+      'un réglage sous la borne',
+      { tauxUn: -51 },
+      'tauxUn hors des positions servies',
+    ],
     [
       'un réglage au-delà de la borne',
       { depart: 201 },
-      'depart hors de [1 ; 200]',
+      'depart hors des positions servies',
+    ],
+    [
+      'un réglage entre deux crans du pas',
+      { tauxUn: 12.4 },
+      'tauxUn hors des positions servies',
     ],
     [
       'une clé héritée d Object',

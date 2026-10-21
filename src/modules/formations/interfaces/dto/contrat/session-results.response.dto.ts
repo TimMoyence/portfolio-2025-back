@@ -18,6 +18,7 @@ import type {
   ResumeBareme,
 } from '../../../domain/contrats/resultats';
 import {
+  ConfusionCompteeResponseDto,
   RapportParticipantResponseDto as RapportParticipantServiResponseDto,
   RapportQuestionResponseDto as RapportQuestionServieResponseDto,
   RegleDeNotationResponseDto as RegleDeNotationServieResponseDto,
@@ -147,23 +148,19 @@ export class ResultatsSeanceResponseDto implements ResultatsSeance {
 
   @ApiProperty({ type: [ResultatQuestionResponseDto] })
   questions: readonly ResultatQuestionResponseDto[];
+
+  @ApiProperty({
+    type: [ConfusionCompteeResponseDto],
+    description:
+      'Confusions de toutes les questions agregees, triees par frequence puis identifiant',
+  })
+  confusions: readonly ConfusionCompteeResponseDto[];
 }
 
 export class RegleDeNotationResponseDto
   extends RegleDeNotationServieResponseDto
   implements RegleDeNotation
 {
-  @ApiProperty({
-    enum: TYPES_QUESTION,
-    enumName: 'TypeQuestion',
-    isArray: true,
-    example: ['vote', 'numeric', 'classement', 'feuille', 'tableau'],
-  })
-  typesNotables: readonly TypeQuestion[];
-
-  @ApiProperty({ enum: ['au-moins-une-saisie'] })
-  productionCompteSi: 'au-moins-une-saisie';
-
   @ApiProperty({
     description: 'Les statistiques ne portent que sur les questions notees',
     example: true,

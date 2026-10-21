@@ -19,7 +19,7 @@ export type { StatistiquesSeance } from './contrats/contrat-de-l-api';
 
 export function calculerStatistiquesSeance(
   participants: readonly RapportParticipant[],
-  resultats: ResultatsSeance,
+  resultats: Pick<ResultatsSeance, 'questions'>,
 ): StatistiquesSeance {
   const questionsComptees = statistiquesSurQuestionsNotees
     ? resultats.questions.filter((question) => question.noteCompte)

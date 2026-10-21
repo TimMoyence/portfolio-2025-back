@@ -13,7 +13,6 @@ describe('calculerStatistiquesSeance', () => {
         buildRapportParticipant({ completion: 0, note: 0, sousSeuil: true }),
       ],
       {
-        participants: 3,
         questions: [
           buildResultatQuestion({
             questionId: 'Q1',
@@ -44,7 +43,6 @@ describe('calculerStatistiquesSeance', () => {
 
   it('retient les questions problemes sur le seuil servi, sans refaire la comparaison', () => {
     const statistiques = calculerStatistiquesSeance([], {
-      participants: 0,
       questions: [
         buildResultatQuestion({
           questionId: 'Q-PART-BASSE',
@@ -74,7 +72,6 @@ describe('calculerStatistiquesSeance', () => {
 
   it('pèse la réussite par la part servie : dix feuilles à 0,9 de score réussissent à 90 %, pas 0 %', () => {
     const statistiques = calculerStatistiquesSeance([], {
-      participants: 10,
       questions: [
         buildResultatQuestion({
           questionId: 'Q-FEUILLE',
@@ -102,7 +99,7 @@ describe('calculerStatistiquesSeance', () => {
       repondues.map((questions) =>
         buildRapportParticipant({ note: (questions / 12) * 20 }),
       ),
-      { participants: repondues.length, questions: [] },
+      { questions: [] },
     );
 
     expect(statistiques).toMatchObject({ moyenne: 11.88 });

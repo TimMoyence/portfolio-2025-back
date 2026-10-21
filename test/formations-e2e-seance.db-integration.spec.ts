@@ -23,6 +23,7 @@ import {
   type TirageDuCours,
 } from '../src/modules/formations/domain/cours/Tirage';
 import { NE_SAIT_PAS } from '../src/modules/formations/domain/GradingCore';
+import { REGLE_DE_NOTATION } from '../src/modules/formations/domain/RegleDeNotation';
 import type { ContenuDeCours } from '../src/modules/formations/domain/cours/CoursStocke';
 import { EN_TETE_JETON } from '../src/modules/formations/interfaces/ParticipantToken.service';
 import {
@@ -70,7 +71,6 @@ import { silenceNestLogger } from './helpers/silence-nest-logger';
 
 const VERSION_COURS = VERSION_PUBLIEE_SUR_BASE_NEUVE;
 const VERSION_DU_BAREME = 2;
-const TYPES_NOTABLES = 5;
 const CAPACITE = 4;
 const FORMATEUR = 'e1111111-1111-4111-8111-111111111111:teacher';
 const SYNTHESE_A = 'e2e-formateur@example.test';
@@ -1544,7 +1544,7 @@ function seanceComplete(
             baremeDeLaSeance: seance?.bareme.version,
             participants: bilan.participants.length,
             questionsNotees: bilan.bareme.questionsNotees,
-            notation: bilan.notation.typesNotables.length,
+            notation: bilan.notation.noteMax,
             jalons: Object.keys(bilan.jalons).length,
             enigmes: bilan.enigmes.length,
             scores: scores[0].nombre > 0,
@@ -1556,7 +1556,7 @@ function seanceComplete(
             baremeDeLaSeance: VERSION_DU_BAREME,
             participants: CAPACITE,
             questionsNotees: attendu.questionsNotees,
-            notation: TYPES_NOTABLES,
+            notation: REGLE_DE_NOTATION.noteMax,
             jalons: attendu.jalons,
             enigmes: attendu.enigmes,
             scores: true,

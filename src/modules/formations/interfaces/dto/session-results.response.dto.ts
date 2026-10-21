@@ -138,7 +138,8 @@ export class StatistiquesSeanceResponseDto {
   tauxParticipation: number;
 
   @ApiProperty({
-    description: 'Part des reponses correctes parmi toutes les reponses',
+    description:
+      'Reussite des reponses, chaque question pesee par son nombre de reponses : score moyen d une production, part des correctes sinon',
     example: 0.64,
   })
   tauxReussite: number;
@@ -154,14 +155,6 @@ export class StatistiquesSeanceResponseDto {
 export class RegleDeNotationResponseDto {
   @ApiProperty({ description: 'Note maximale', example: 20 })
   noteMax: number;
-
-  @ApiProperty({
-    enum: ['participation-relative-cohorte'],
-    description:
-      'Note de participation : part des questions notees repondues, rapportee a la reference de la cohorte',
-    example: 'participation-relative-cohorte',
-  })
-  base: 'participation-relative-cohorte';
 
   @ApiProperty({
     description:

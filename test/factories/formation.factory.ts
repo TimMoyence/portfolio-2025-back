@@ -236,7 +236,6 @@ export function buildLiveSessionState(
     modeRythme: 'pilote',
     ecranCourant: 0,
     intervalleLibre: null,
-    participants: 0,
     revision: 0,
     pilotage: {},
     majLe: new Date('2026-09-11T08:00:00.000Z'),

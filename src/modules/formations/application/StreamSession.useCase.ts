@@ -511,7 +511,7 @@ export class StreamSessionUseCase {
       return null;
     }
     const cours = await coursDeLaSeance(this.catalogue, session);
-    const etat = etatEnDirect(session, 0, cours);
+    const etat = etatEnDirect(session, cours);
     this.cache.publish(sessionId, etat);
     return etat;
   }

@@ -39,10 +39,14 @@ export interface AgregerResultatsInput {
 export function agregerResultats(
   entree: AgregerResultatsInput,
 ): ResultatsSeance {
+  const agregees = new Set(entree.questions.map(({ id }) => id));
   return {
     participants: entree.participants,
     questions: entree.questions.map((question) =>
       agregerQuestion(question, entree.answers, entree.remediations ?? {}),
+    ),
+    confusions: compterConfusions(
+      entree.answers.filter(({ questionId }) => agregees.has(questionId)),
     ),
   };
 }

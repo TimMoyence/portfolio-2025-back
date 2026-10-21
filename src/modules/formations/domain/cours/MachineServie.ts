@@ -1,4 +1,3 @@
-import { dansLesBornes } from '../../../../common/domain/nombres/dans-les-bornes';
 import { nombreAffiche } from '../../../../common/domain/nombres/ecriture-francaise';
 import type { Cours } from '../contrats/cours';
 import type {
@@ -13,8 +12,7 @@ import {
   type CurseurReglable,
   ECHANTILLONS_D_UNE_COURBE,
   jalons,
-  plafondDu,
-  positionsDuCurseur,
+  refusDuReglage,
   valeurFinie,
 } from './TraceServi';
 
@@ -33,37 +31,22 @@ export interface MachineACalculer {
   readonly animation?: readonly Reglages[];
 }
 
-function caler(
-  machine: MachineACalculer,
-  curseur: CurseurReglable,
-  valeur: number,
-): number {
-  const positions = positionsDuCurseur(curseur, machine.prereglages);
-  const ecarts = positions.map((position) => Math.abs(position - valeur));
-  return positions[ecarts.lastIndexOf(Math.min(...ecarts))];
-}
-
 function poser(
   machine: MachineACalculer,
   courantes: Reglages,
   reglages: Reglages,
 ): Reglages {
   return Object.fromEntries(
-    machine.parametres.map((curseur) => [
-      curseur.cle,
-      Object.hasOwn(reglages, curseur.cle)
-        ? caler(machine, curseur, reglages[curseur.cle])
-        : courantes[curseur.cle],
+    machine.parametres.map(({ cle }) => [
+      cle,
+      Object.hasOwn(reglages, cle) ? reglages[cle] : courantes[cle],
     ]),
   );
 }
 
 function reglagesParDefaut(machine: MachineACalculer): Reglages {
   return Object.fromEntries(
-    machine.parametres.map((curseur) => [
-      curseur.cle,
-      caler(machine, curseur, curseur.defaut),
-    ]),
+    machine.parametres.map(({ cle, defaut }) => [cle, defaut]),
   );
 }
 
@@ -83,7 +66,7 @@ function lignesDuCurseur(
   const courante = valeurs[curseur.cle];
   return [
     ...new Set([
-      ...jalons(curseur.min, plafondDu(curseur), INTERVALLES_DU_TABLEAU),
+      ...jalons(curseur.min, curseur.max, INTERVALLES_DU_TABLEAU),
       courante,
     ]),
   ]
@@ -102,7 +85,7 @@ function courbeDuCurseur(
   curseur: CurseurReglable,
   valeurs: Reglages,
 ): { x: number; y: number | null }[] {
-  return jalons(curseur.min, plafondDu(curseur), ECHANTILLONS_D_UNE_COURBE).map(
+  return jalons(curseur.min, curseur.max, ECHANTILLONS_D_UNE_COURBE).map(
     (x) => ({
       x,
       y: valeurFinie(machine.calcul, { ...valeurs, [curseur.cle]: x }),
@@ -162,27 +145,13 @@ export function machineDuCours(
   return ecran?.brique === 'fp-concept4' ? ecran.proprietes : null;
 }
 
-export function refusDuReglage(
-  parametres: readonly { cle: string; min: number; max: number }[],
-  cle: string,
-  valeur: number,
-): string | null {
-  const parametre = parametres.find((candidat) => candidat.cle === cle);
-  if (parametre === undefined) {
-    return `paramètre ${cle} absent de l’écran`;
-  }
-  return dansLesBornes(valeur, parametre)
-    ? null
-    : `réglage ${cle} hors de [${parametre.min} ; ${parametre.max}]`;
-}
-
 export function evaluerLaMachine(
   machine: MachineACalculer,
   ecranId: string,
   reglages: Reglages,
 ): SortiesMachine {
   for (const [cle, valeur] of Object.entries(reglages)) {
-    const refus = refusDuReglage(machine.parametres, cle, valeur);
+    const refus = refusDuReglage(machine, cle, valeur);
     if (refus !== null) {
       throw new ProductionInvalideError(ecranId, refus);
     }

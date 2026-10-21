@@ -54,25 +54,19 @@ export function jalons(
   );
 }
 
-export function plafondDu(curseur: CurseurReglable): number {
-  return Math.max(curseur.max, curseur.min);
-}
-
-function dansLeCurseur(curseur: CurseurReglable, valeur: number): number {
-  return borner(valeur, curseur.min, plafondDu(curseur));
-}
-
-export function positionsDuCurseur(
+function positionsDuCurseur(
   curseur: CurseurReglable,
   prereglages: readonly PrereglageDuTrace[] = [],
 ): number[] {
-  const etendue = plafondDu(curseur) - curseur.min;
-  const crans = Math.floor(etendue / curseur.pas + TOLERANCE_DU_DERNIER_CRAN);
+  const crans = Math.floor(
+    (curseur.max - curseur.min) / curseur.pas + TOLERANCE_DU_DERNIER_CRAN,
+  );
   const surLePas = Array.from({ length: crans + 1 }, (_, rang) =>
-    dansLeCurseur(
-      curseur,
+    borner(
       Math.round((curseur.min + rang * curseur.pas) * PRECISION_D_UN_CRAN) /
         PRECISION_D_UN_CRAN,
+      curseur.min,
+      curseur.max,
     ),
   );
   const posees = [
@@ -80,8 +74,25 @@ export function positionsDuCurseur(
     ...prereglages.flatMap(({ valeurs }) =>
       Object.hasOwn(valeurs, curseur.cle) ? [valeurs[curseur.cle]] : [],
     ),
-  ].map((valeur) => dansLeCurseur(curseur, valeur));
+  ];
   return [...new Set([...surLePas, ...posees])].sort((a, b) => a - b);
+}
+
+export function refusDuReglage(
+  reglable: {
+    readonly parametres: readonly CurseurReglable[];
+    readonly prereglages?: readonly PrereglageDuTrace[];
+  },
+  cle: string,
+  valeur: number,
+): string | null {
+  const curseur = reglable.parametres.find((candidat) => candidat.cle === cle);
+  if (curseur === undefined) {
+    return `paramètre ${cle} absent de l’écran`;
+  }
+  return positionsDuCurseur(curseur, reglable.prereglages).includes(valeur)
+    ? null
+    : `réglage ${cle} hors des positions servies : ${valeur}`;
 }
 
 export function curseursServis<C extends CurseurReglable>(reglable: {
@@ -92,18 +103,6 @@ export function curseursServis<C extends CurseurReglable>(reglable: {
     ...curseur,
     positions: positionsDuCurseur(curseur, reglable.prereglages),
   }));
-}
-
-export function reglageServi(
-  trace: TraceACalculer,
-  cle: string,
-  valeur: number,
-): boolean {
-  const curseur = trace.parametres.find((candidat) => candidat.cle === cle);
-  return (
-    curseur !== undefined &&
-    positionsDuCurseur(curseur, trace.prereglages).includes(valeur)
-  );
 }
 
 function curseursLus(trace: TraceACalculer): CurseurReglable[] {

@@ -230,6 +230,7 @@ describe('GetSessionResultsUseCase', () => {
     const resultatsAttendus: ResultatsSeance = {
       participants: 1,
       questions: questionsAttendues,
+      confusions: confusionsAttendues,
     };
     expect(rapport.resultats).toEqual(resultatsAttendus);
   });

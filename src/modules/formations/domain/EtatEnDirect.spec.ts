@@ -16,7 +16,7 @@ import { assertPhaseOuverte } from './cours/PilotageEcrans';
 import { etatEnDirect } from './EtatEnDirect';
 
 describe('etatEnDirect', () => {
-  it('projette la séance et son nombre de participants dans l état diffusé', () => {
+  it('projette la séance dans l état diffusé', () => {
     const majLe = new Date('2026-10-10T09:00:00Z');
     const seance = buildSessionRecord({
       etat: 'en_cours',
@@ -28,12 +28,11 @@ describe('etatEnDirect', () => {
       majLe,
     });
 
-    expect(etatEnDirect(seance, 12, buildCoursDeTest())).toEqual({
+    expect(etatEnDirect(seance, buildCoursDeTest())).toEqual({
       etat: 'en_cours',
       modeRythme: 'libre',
       ecranCourant: 3,
       intervalleLibre: { premier: 1, dernier: 4 },
-      participants: 12,
       revision: 7,
       pilotage: { 'E-1': { revele: true } },
       majLe,
@@ -81,7 +80,6 @@ describe('etatEnDirect', () => {
             ecranCourant: rangDeLEcran(vote.cours, ecranId),
             pilotageEcrans: { [ecranId]: pilotage },
           }),
-          0,
           vote.cours,
         ).pilotage[ecranId];
 
@@ -108,7 +106,6 @@ describe('etatEnDirect', () => {
           ecranCourant,
           pilotageEcrans: { [MACHINE]: pilotage },
         }),
-        0,
         cours,
       ).pilotage[MACHINE];
 
@@ -143,9 +140,9 @@ describe('etatEnDirect', () => {
     (_slug, cours) => {
       const { seance, attendu } = pilotageDUnCoursServi(cours);
 
-      expect(
-        etatEnDirect(buildSessionRecord(seance), 0, cours).pilotage,
-      ).toEqual(attendu);
+      expect(etatEnDirect(buildSessionRecord(seance), cours).pilotage).toEqual(
+        attendu,
+      );
     },
   );
 
@@ -178,7 +175,7 @@ describe('etatEnDirect', () => {
             }
           })();
           const servie =
-            etatEnDirect(seance, 0, cours).pilotage[id]?.saisieFermee === true;
+            etatEnDirect(seance, cours).pilotage[id]?.saisieFermee === true;
           return refusee === servie ? [] : [`${id} : ${String(refusee)}`];
         }),
       );
@@ -198,7 +195,7 @@ describe('etatEnDirect', () => {
     (_slug, ecranId, cours) => {
       const rang = rangDeLEcran(cours, ecranId);
       const diffuse = (ecranCourant: number) =>
-        etatEnDirect(buildSessionRecord({ ecranCourant }), 0, cours).pilotage[
+        etatEnDirect(buildSessionRecord({ ecranCourant }), cours).pilotage[
           ecranId
         ];
 

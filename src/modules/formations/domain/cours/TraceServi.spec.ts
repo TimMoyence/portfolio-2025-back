@@ -8,9 +8,15 @@ import {
   curseursServis,
   POINTS_MAX_D_UN_TRACE,
   pointsDuTrace,
-  reglageServi,
+  refusDuReglage,
   traceCalcule,
 } from './TraceServi';
+
+const reglageServi = (
+  reglable: Parameters<typeof refusDuReglage>[0],
+  cle: string,
+  valeur: number,
+): boolean => refusDuReglage(reglable, cle, valeur) === null;
 
 type EcranDeTrace = Extract<Ecran, { readonly brique: 'fp-plot' }>;
 
@@ -113,7 +119,7 @@ describe('traceCalcule', () => {
   });
 });
 
-describe('reglageServi', () => {
+describe('refusDuReglage', () => {
   const trace = traceDuB201('B2-01-A2-02-ORIGINE-AXE');
 
   it('admet un cran du curseur et un préréglage, refuse un réglage entre deux crans ou un curseur inconnu', () => {

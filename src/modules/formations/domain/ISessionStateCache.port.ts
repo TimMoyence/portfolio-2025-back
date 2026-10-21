@@ -7,7 +7,6 @@ export interface LiveSessionState {
   modeRythme: PacingMode;
   ecranCourant: number;
   intervalleLibre: FreeRange | null;
-  participants: number;
   revision: number;
   pilotage: Readonly<Record<string, PilotageServi>>;
   majLe: Date;

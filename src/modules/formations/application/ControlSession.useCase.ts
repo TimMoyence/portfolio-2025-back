@@ -218,10 +218,6 @@ export class ControlSessionUseCase {
     session: SessionRecord,
   ): Promise<void> {
     const cours = await coursDeLaSeance(this.catalogue, session);
-    const enCache = this.cache.read(sessionId);
-    this.cache.publish(
-      sessionId,
-      etatEnDirect(session, enCache?.participants ?? 0, cours),
-    );
+    this.cache.publish(sessionId, etatEnDirect(session, cours));
   }
 }

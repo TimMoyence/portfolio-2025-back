@@ -32,7 +32,7 @@ import { numeriqueStockee, voteStocke } from './QuestionStockee';
 import {
   POINTS_MAX_D_UN_TRACE,
   pointsDuTrace,
-  positionsDuCurseur,
+  refusDuReglage,
 } from './TraceServi';
 import {
   auMoinsUn,
@@ -333,7 +333,13 @@ const parametreCurseur = z
     pas: z.number().positive(),
     defaut: z.number(),
   })
-  .strict();
+  .strict()
+  .refine((curseur) => dansLesBornes(curseur.defaut, curseur), {
+    message: 'un curseur va de son minimum à son maximum, défaut compris',
+  })
+  .refine(({ min, max, pas }) => (max - min) / pas <= POINTS_MAX_D_UN_TRACE, {
+    message: `un curseur sert au plus ${POINTS_MAX_D_UN_TRACE} positions`,
+  });
 
 const proprietesCitation = z
   .object({
@@ -410,29 +416,6 @@ const prereglages = z
   )
   .optional();
 
-function signalerPrereglagesHorsParametres(support: string): (
-  proprietes: {
-    readonly parametres: readonly { readonly cle: string }[];
-    readonly prereglages?: readonly {
-      readonly valeurs: Readonly<Record<string, number>>;
-    }[];
-  },
-  contexte: z.RefinementCtx,
-) => void {
-  return (proprietes, contexte) => {
-    const signaler = signaleurDe(contexte);
-    const cles = new Set(proprietes.parametres.map(({ cle }) => cle));
-    proprietes.prereglages?.forEach(({ valeurs }, rang) => {
-      for (const cle of Object.keys(valeurs).filter((c) => !cles.has(c))) {
-        signaler(
-          ['prereglages', rang, 'valeurs', cle],
-          `le préréglage règle un paramètre absent ${support} : ${cle}`,
-        );
-      }
-    });
-  };
-}
-
 const animation = z
   .array(
     z
@@ -446,27 +429,7 @@ const animation = z
 
 type Curseur = z.output<typeof parametreCurseur>;
 
-function defautDeLEtape(
-  curseur: Curseur | undefined,
-  valeur: number,
-  support: string,
-  prereglages: readonly {
-    readonly valeurs: Readonly<Record<string, number>>;
-  }[],
-): string | undefined {
-  if (curseur === undefined) {
-    return `l’animation règle un paramètre absent ${support}`;
-  }
-  if (!dansLesBornes(valeur, curseur)) {
-    return `l’animation sort des bornes du curseur ${curseur.cle} : ${valeur}`;
-  }
-  if (!positionsDuCurseur(curseur, prereglages).includes(valeur)) {
-    return `l’animation ne tombe pas sur une position du curseur ${curseur.cle} : ${valeur}`;
-  }
-  return undefined;
-}
-
-function signalerAnimationHorsParametres(support: string): (
+function signalerReglagesHorsCurseurs(support: string): (
   proprietes: {
     readonly parametres: readonly Curseur[];
     readonly prereglages?: readonly {
@@ -477,17 +440,29 @@ function signalerAnimationHorsParametres(support: string): (
   contexte: z.RefinementCtx,
 ) => void {
   return (proprietes, contexte) => {
+    const signaler = signaleurDe(contexte);
     const curseurs = new Map(proprietes.parametres.map((p) => [p.cle, p]));
+    proprietes.prereglages?.forEach(({ valeurs }, rang) => {
+      for (const [cle, valeur] of Object.entries(valeurs)) {
+        const curseur = curseurs.get(cle);
+        if (curseur === undefined || !dansLesBornes(valeur, curseur)) {
+          signaler(
+            ['prereglages', rang, 'valeurs', cle],
+            curseur === undefined
+              ? `le préréglage règle un paramètre absent ${support} : ${cle}`
+              : `le préréglage sort des bornes du curseur ${cle} : ${valeur}`,
+          );
+        }
+      }
+    });
     proprietes.animation?.forEach((etape, rang) => {
       for (const [cle, valeur] of Object.entries(etape)) {
-        const defaut = defautDeLEtape(
-          curseurs.get(cle),
-          valeur,
-          support,
-          proprietes.prereglages ?? [],
-        );
-        if (defaut !== undefined) {
-          signaleurDe(contexte)(['animation', rang, cle], defaut);
+        const refus = refusDuReglage(proprietes, cle, valeur);
+        if (refus !== null) {
+          signaler(
+            ['animation', rang, cle],
+            `l’animation ${support} : ${refus}`,
+          );
         }
       }
     });
@@ -509,8 +484,7 @@ const proprietesMachine = z
     ...communes,
   })
   .strict()
-  .superRefine(signalerPrereglagesHorsParametres('de la machine'))
-  .superRefine(signalerAnimationHorsParametres('de la machine'));
+  .superRefine(signalerReglagesHorsCurseurs('de la machine'));
 
 const proprietesTrace = z
   .object({
@@ -553,8 +527,7 @@ const proprietesTrace = z
     ...communes,
   })
   .strict()
-  .superRefine(signalerPrereglagesHorsParametres('du tracé'))
-  .superRefine(signalerAnimationHorsParametres('du tracé'))
+  .superRefine(signalerReglagesHorsCurseurs('du tracé'))
   .superRefine((trace, contexte) => {
     if (
       trace.reference !== undefined &&

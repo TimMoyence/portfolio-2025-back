@@ -25,8 +25,8 @@ import {
   phaseDuVote,
 } from './EcranServi';
 import type { SeancePilotee } from './EcranServi';
-import { refusDuReglage, sortiesDeLaMachine } from './MachineServie';
-import { reglageServi } from './TraceServi';
+import { sortiesDeLaMachine } from './MachineServie';
+import { refusDuReglage } from './TraceServi';
 
 export type { PilotageDemande } from '../contrats/pilotage';
 
@@ -52,34 +52,18 @@ function etapesDeLEcran(ecran: Ecran): number | null {
   }
 }
 
-function parametresReglables(
-  ecran: Ecran,
-): readonly { cle: string; min: number; max: number }[] | null {
-  if (ecran.brique === 'fp-concept4' || ecran.brique === 'fp-plot') {
-    return ecran.proprietes.parametres;
-  }
-  return null;
-}
-
 function assertReglagesDeLaMachine(
   ecran: Ecran,
   reglages: Readonly<Record<string, number>>,
   refuser: (raison: string) => never,
 ): void {
-  const parametres = parametresReglables(ecran);
-  if (parametres === null) {
+  if (ecran.brique !== 'fp-concept4' && ecran.brique !== 'fp-plot') {
     refuser('seuls une machine et un tracé portent des réglages');
   }
   for (const [cle, valeur] of Object.entries(reglages)) {
-    const refus = refusDuReglage(parametres, cle, valeur);
+    const refus = refusDuReglage(ecran.proprietes, cle, valeur);
     if (refus !== null) {
       refuser(refus);
-    }
-    if (
-      ecran.brique === 'fp-plot' &&
-      !reglageServi(ecran.proprietes, cle, valeur)
-    ) {
-      refuser(`réglage ${cle} hors des positions servies du tracé`);
     }
   }
 }

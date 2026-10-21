@@ -794,6 +794,7 @@ describe('StreamSessionUseCase', () => {
               part: 1,
             }),
           ],
+          confusions: [],
           statistiques: {
             moyenne: 20,
             mediane: 20,

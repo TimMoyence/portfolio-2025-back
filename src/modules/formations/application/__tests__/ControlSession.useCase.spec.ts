@@ -7,7 +7,6 @@ import {
   creerCatalogueDeTest,
 } from '../../../../../test/factories/cours.factory';
 import {
-  buildLiveSessionState,
   buildSessionRecord,
   createMockSessionsRepo,
   createMockSessionStateCache,
@@ -115,12 +114,6 @@ describe('ControlSessionUseCase', () => {
   it('publie l etat dans le cache apres avoir change l ecran', async () => {
     await b.piloter({ ecran: 4 });
     b.attendrePublication({ ecranCourant: 4 });
-  });
-
-  it('reprend le nombre de participants deja en cache lors de la publication', async () => {
-    b.cache.read.mockReturnValue(buildLiveSessionState({ participants: 9 }));
-    await b.piloter({ ecran: 4 });
-    b.attendrePublication({ participants: 9 });
   });
 
   it('refuse un ecran negatif', async () => {

@@ -13,7 +13,6 @@ import {
   type Modalite,
   type PacingMode,
   type RegimeVerrou,
-  type RegleDeNotation,
   type ResultatQuestion,
   type ResultatsEnDirect,
   type ResultatsSeance,
@@ -104,11 +103,10 @@ describe('contrats — résultats d une séance', () => {
     expect(decomptes).not.toContain(false);
   });
 
-  it('le barème et la règle de notation se lisent par type de question', () => {
-    const parType: [
-      Egaux<keyof ResumeBareme['parType'], TypeQuestion>,
-      Egaux<RegleDeNotation['typesNotables'], readonly TypeQuestion[]>,
-    ] = [true, true];
+  it('le barème se lit par type de question', () => {
+    const parType: [Egaux<keyof ResumeBareme['parType'], TypeQuestion>] = [
+      true,
+    ];
 
     expect(parType).not.toContain(false);
   });

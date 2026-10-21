@@ -39,7 +39,6 @@ export class SessionStateCacheService implements ISessionStateCache {
       state.modeRythme,
       state.ecranCourant,
       intervalle,
-      state.participants,
       state.revision,
     ].join('|');
   }

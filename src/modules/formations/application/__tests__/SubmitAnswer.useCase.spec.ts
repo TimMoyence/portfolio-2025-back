@@ -237,11 +237,23 @@ describe('SubmitAnswerUseCase', () => {
     );
   });
 
-  it('refuse par SAISIE_NON_NUMERIQUE une saisie que le lecteur ne lit pas en nombre', async () => {
-    await expect(
-      sut.execute({ ...commande, valeur: 'douze' }),
-    ).rejects.toMatchObject({ code: 'SAISIE_NON_NUMERIQUE' });
-    expect(deps.answers.create).not.toHaveBeenCalled();
+  it.each(['douze', '', '   '])(
+    'refuse par SAISIE_NON_NUMERIQUE la saisie « %s » que le lecteur ne lit pas en nombre',
+    async (saisie) => {
+      await expect(
+        sut.execute({ ...commande, valeur: saisie }),
+      ).rejects.toMatchObject({ code: 'SAISIE_NON_NUMERIQUE' });
+      expect(deps.answers.create).not.toHaveBeenCalled();
+    },
+  );
+
+  it('enregistre « je ne sais pas » d une question numérique sans le lire en nombre', async () => {
+    const result = await sut.execute({ ...commande, valeur: NE_SAIT_PAS });
+
+    expect(result.correcte).toBe(false);
+    expect(deps.answers.create).toHaveBeenCalledWith(
+      expect.objectContaining({ valeur: NE_SAIT_PAS }),
+    );
   });
 
   it('refuse une valeur hors des options connues sur une question de vote', async () => {

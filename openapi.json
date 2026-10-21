@@ -6982,10 +6982,6 @@
             ],
             "description": "Ecrans ouverts en rythme libre, null en rythme pilote"
           },
-          "participants": {
-            "type": "number",
-            "example": 24
-          },
           "revision": {
             "type": "integer",
             "minimum": 0,
@@ -7010,7 +7006,6 @@
           "modeRythme",
           "ecranCourant",
           "intervalleLibre",
-          "participants",
           "revision",
           "pilotage",
           "majLe"
@@ -7247,7 +7242,7 @@
           },
           "tauxReussite": {
             "type": "number",
-            "description": "Part des reponses correctes parmi toutes les reponses",
+            "description": "Reussite des reponses, chaque question pesee par son nombre de reponses : score moyen d une production, part des correctes sinon",
             "example": 0.64
           },
           "questionsProblemes": {
@@ -7385,6 +7380,13 @@
               "$ref": "#/components/schemas/ResultatQuestionResponseDto"
             }
           },
+          "confusions": {
+            "description": "Confusions de toutes les questions agregees, triees par frequence puis identifiant",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ConfusionCompteeResponseDto"
+            }
+          },
           "statistiques": {
             "description": "Indicateurs calculés côté serveur pour le pilotage formateur",
             "allOf": [
@@ -7418,6 +7420,7 @@
         "required": [
           "participants",
           "questions",
+          "confusions",
           "statistiques",
           "bareme",
           "jalons",
@@ -7753,11 +7756,19 @@
             "items": {
               "$ref": "#/components/schemas/ResultatQuestionResponseDto"
             }
+          },
+          "confusions": {
+            "description": "Confusions de toutes les questions agregees, triees par frequence puis identifiant",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ConfusionCompteeResponseDto"
+            }
           }
         },
         "required": [
           "participants",
-          "questions"
+          "questions",
+          "confusions"
         ]
       },
       "RegleDeNotationResponseDto": {
@@ -7767,14 +7778,6 @@
             "type": "number",
             "description": "Note maximale",
             "example": 20
-          },
-          "base": {
-            "type": "string",
-            "enum": [
-              "participation-relative-cohorte"
-            ],
-            "description": "Note de participation : part des questions notees repondues, rapportee a la reference de la cohorte",
-            "example": "participation-relative-cohorte"
           },
           "partCohorteReference": {
             "type": "number",
@@ -7811,25 +7814,6 @@
             "description": "Nombre de decimales des statistiques arrondies",
             "example": 2
           },
-          "typesNotables": {
-            "type": "array",
-            "example": [
-              "vote",
-              "numeric",
-              "classement",
-              "feuille",
-              "tableau"
-            ],
-            "items": {
-              "$ref": "#/components/schemas/TypeQuestion"
-            }
-          },
-          "productionCompteSi": {
-            "type": "string",
-            "enum": [
-              "au-moins-une-saisie"
-            ]
-          },
           "statistiquesSurQuestionsNotees": {
             "type": "boolean",
             "description": "Les statistiques ne portent que sur les questions notees",
@@ -7838,7 +7822,6 @@
         },
         "required": [
           "noteMax",
-          "base",
           "partCohorteReference",
           "ratioSeuilValidation",
           "neSaitPasCompteCommeReponse",
@@ -7846,8 +7829,6 @@
           "reponsesLibresNotees",
           "seuilQuestionProbleme",
           "decimalesStatistiques",
-          "typesNotables",
-          "productionCompteSi",
           "statistiquesSurQuestionsNotees"
         ]
       },

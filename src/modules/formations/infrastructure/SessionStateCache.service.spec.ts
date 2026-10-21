@@ -4,7 +4,7 @@ import { SessionStateCacheService } from './SessionStateCache.service';
 describe('SessionStateCacheService', () => {
   let sut: SessionStateCacheService;
 
-  const etat = buildLiveSessionState({ ecranCourant: 3, participants: 12 });
+  const etat = buildLiveSessionState({ ecranCourant: 3 });
 
   beforeEach(() => {
     sut = new SessionStateCacheService();
