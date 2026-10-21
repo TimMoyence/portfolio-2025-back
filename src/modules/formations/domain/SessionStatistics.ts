@@ -12,11 +12,8 @@ import type { RapportParticipant } from './IFormationMailer.port';
 import { REGLE_DE_NOTATION } from './RegleDeNotation';
 import type { ResultatsSeance } from './ResultatsSeance';
 
-const {
-  seuilQuestionProbleme,
-  decimalesStatistiques,
-  statistiquesSurQuestionsNotees,
-} = REGLE_DE_NOTATION;
+const { decimalesStatistiques, statistiquesSurQuestionsNotees } =
+  REGLE_DE_NOTATION;
 
 export type { StatistiquesSeance } from './contrats/contrat-de-l-api';
 
@@ -42,10 +39,7 @@ export function calculerStatistiquesSeance(
       : 0,
     tauxReussite: reponses === 0 ? 0 : correctes / reponses,
     questionsProblemes: questionsComptees
-      .filter(
-        (question) =>
-          question.total > 0 && question.part < seuilQuestionProbleme,
-      )
+      .filter((question) => question.sousLeSeuil)
       .map((question) => question.questionId),
   };
 }

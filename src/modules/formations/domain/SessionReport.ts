@@ -34,7 +34,6 @@ import { DECIMALES_DE_LA_NOTE, REGLE_DE_NOTATION } from './RegleDeNotation';
 import { estNeSaitPas } from './ResultatsSeance';
 import { estUneProduction, texteDeValeur } from './ValeurReponse';
 
-const SEUIL_CONCEPT_FRAGILE = 0.7;
 const LIBELLE_NE_SAIT_PAS = 'Je ne sais pas';
 const POINT_PAR_QUESTION_REPONDUE = 1;
 
@@ -305,7 +304,7 @@ function conceptsFragilesDe(
   }
   const fragiles: string[] = [];
   for (const [concept, { total, correctes }] of parConcept) {
-    if (correctes / total < SEUIL_CONCEPT_FRAGILE) {
+    if (correctes / total < REGLE_DE_NOTATION.seuilQuestionProbleme) {
       fragiles.push(concept);
     }
   }

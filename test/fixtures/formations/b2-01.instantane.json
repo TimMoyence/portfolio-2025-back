@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "8b54883b204025937ed25132a52446a0973ba062be6d6cd54c1065327725ba60",
+  "empreinte": "1b772d425972f9830e87bda1a82679bdbfa767499d026133753f8d3224a9d276",
   "sujet": {
     "id": "b2-01-traitement-information-chiffree",
     "titre": "Lire, contrôler et décider avec l’information chiffrée",
@@ -9258,7 +9258,7 @@
         ],
         "notes": "• Binômes, 5 min de tri ; annoncer « plus qu’une minute » à 4 min. Chacun envoie depuis son poste.\n• Cartes les plus ratées : « Taux de marge : −2,3 % » (des points) et « Inflation : 4,9 » (ambigu, pas une évolution).\n• Relance pour toute carte discutée : « Rapporté à quoi ? »\n• Les 3 dernières minutes : débriefing sur l’écran de correction suivant.",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [],
         "questions": [
           {
@@ -9975,7 +9975,7 @@
         "renvoi": "B2-01-A1-09-DIAPOSITIVE",
         "notes": "• 5 min de travail sur les questions 1 à 3 (annoncer « plus qu’une minute » à 4 min), puis 1 min de comparaison avec le voisin.\n• Pièges : Q1 « sept fois plus » (axe) ; Q3 « 84 % des commandes, donc 84 % du CA ».\n• Contrôle à faire dire : 1 150 000 × 0,455 ≈ 523 000.\n• Commencer par la question la moins réussie (score affiché sous chaque correction).\n• Rapprocher Q2 et Q3 : la marketplace fait 84 % des commandes mais 45,5 % du CA ; même canal, deux populations de référence.\n• Q1 : si « +6 000 € : une forte croissance » domine, faire rapporter l’écart à 285 000 € : +2,1 %.\n• Transition : « Trois questions de plus : deux évolutions, puis marge et marque. »",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [
           {
             "questionId": "b2-01-a2-evolution-marge",
@@ -10162,7 +10162,7 @@
         },
         "notes": "• 5 min seul, puis 1 min avec le voisin (le pupitre numérote ces questions 1 à 3).\n• Pièges : sur-mesure (Q4) −21,66 % (÷ 397 000) ou 17,81 sans signe ; commandes (Q5) ≈ +31 % (÷ 4 200) ; marque et marge (Q6) inversées.\n• Contrôles à faire dire : 483 000 × 0,822 ≈ 397 000 ; 80 × 1,25 = 100.\n• Commencer par la question la moins réussie ; à l’écran, elles sont numérotées 1 à 3.\n• Sur-mesure : nommer les deux erreurs, −21,66 % (÷ 397 000, la valeur d’arrivée) et 17,81 sans signe moins.\n• Revenir à la diapositive de Samir : de 285 000 € à 291 000 €, la marge brute gagne +6 000 €, soit +2,1 % en trois ans. Faire nommer les quatre exigences d’un graphique de référence : titre descriptif, unité, source, phrase de lecture chiffrée.\n• Transition : « Cinq écritures reviennent sans cesse : fixons-les. »",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [
           {
             "questionId": "b2-01-a2-evolution-sur-mesure",
@@ -10479,7 +10479,7 @@
         ],
         "notes": "• Binômes, chrono de 5 min (annoncer la dernière minute), puis débriefing sur l’écran de correction.\n• Cartes à risque : « semestre / année » (activité saisonnière : doubler un semestre ne donne pas l’année) et « inflation » (4,9 = inflation 2023, pas 2025).",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [],
         "questions": [
           {
@@ -14853,7 +14853,7 @@
         "renvoi": "B2-01-A3-05-INFLATION-RYTHME",
         "notes": "• 4 min individuelles sur les questions 1 à 3.\n• Pièges : Q1 « plus bas » (rythme lu comme niveau) ; Q2 112,2 et Q3 15,1 % (taux additionnés).\n• Commencer par la question la moins réussie.\n• Ne pas citer le taux moyen ni 1,025⁶ : c’est la question suivante. Laisser 1,1597 en vue, elle en part.\n• Niveau des prix : si « plus bas » domine, faire dire que 0,9 % reste une hausse (le mot « désinflation » viendra en A3-08).\n• Transition : « Deux questions de plus : le rythme moyen, puis le retour en arrière. »",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [
           {
             "questionId": "b2-01-a3-niveau-prix",
@@ -15001,7 +15001,7 @@
         "renvoi": "B2-01-A3-05-INFLATION-RYTHME",
         "notes": "• 3 min seul, puis 1 min avec le voisin (le pupitre numérote ces questions 1 et 2).\n• Pièges : taux moyen (Q4) 2,66 % (15,97 ÷ 6) ; réparation (Q5) « baisse de 25 % » (même taux à l’envers).\n• La réparation est le diagnostic du début à l’envers : +25 % à l’aller, −20 % au retour.\n• Taux moyen : la moyenne des six taux annuels (2,52 %) tombe près de 2,50 % parce que les taux sont petits ; la méthode reste fausse (A6-04 : 33,25 % au lieu de 32,6 %).\n• Transition : « Voici la courbe que vous venez de calculer. »",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [
           {
             "questionId": "b2-01-a3-taux-moyen",
@@ -15485,7 +15485,7 @@
         },
         "notes": "• Binômes ; circuler. À 9 min, projeter la grille d’un binôme volontaire.\n• Erreurs à chercher : #DIV/0! en E3 ($C$5 oublié) ; taux saisis × 100 (−17,8 au lieu de −0,178) ; valeurs tapées sans formule.\n• Valeurs de contrôle : D2 −0,178 ; E4 0,455 ; G5 291 000 ; F5 0,253 ; B7 = C7 = 1.\n• F5 = 0,267 : moyenne simple des trois taux ; renvoyer à « marge totale ÷ CA total ».",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [],
         "questions": [
           {
@@ -15766,7 +15766,7 @@
         },
         "notes": "• 3 min de travail sur la forme et le titre.\n• Piège principal : un titre qui conclut (« La marketplace s’envole… ») ; exiger un titre qui décrit, avec l’unité.\n• Faire justifier la forme par la question posée : une évolution dans le temps.\n• Transition : « Il reste l’axe et la phrase de lecture. »",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [
           {
             "questionId": "b2-01-a4-forme",
@@ -15906,7 +15906,7 @@
         },
         "notes": "• 3 min seul.\n• Pièges : l’axe à 49 000 € (le geste de la diapositive de Samir) ; « 167 % du CA » (167 milliers d’euros lus comme un pourcentage).\n• Pour les plus rapides : « Les quatre trimestres redonnent-ils le CA annuel ? » (397, 230 et 523 k€ : oui).\n• « Le sur-mesure s’effondre » est même faux au 3ᵉ trimestre : il remonte de 95 à 102 k€.\n• Relance sur « 167 % du CA » : quelle est la vraie part ? 167 ÷ 318 ≈ 52,5 % (on la retrouvera dans le TCD).\n• Transition : « Voici le graphique retenu pour le dossier. »",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [
           {
             "questionId": "b2-01-a4-axe",
@@ -16292,7 +16292,7 @@
         },
         "notes": "• Individuel, 7 min ; la synthèse se corrige ensuite sur ce même écran.\n• Piège : recalculer chaque prix depuis 20,00 € (20,60 ; 21,40 ; 20,80 €). Le 20,80 € du tableau de bord de Samir vient de là.\n• Contrôles : 21,60 ; 20,52 ; 21,34 ; 20,70 € ; coefficients 1,08 ; 0,95 ; 1,04 ; 0,97 ; évolution réelle +3,50 % contre « +4 % ».\n• Boucler avec la carte « toile » du tri A1-05, laissée « à vérifier à l’acte 4 » : +3,50 %, et non +4 %.\n• Comparaison à l’inflation : prendre le glissement de l’IPC sur l’année (décembre à décembre, ≈ +0,8 %), pas la moyenne annuelle de 0,9 %.\n• Transition : jalon 4, puis l’acte 5.",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [],
         "questions": [
           {
@@ -18314,7 +18314,7 @@
         },
         "notes": "• 3 min de travail sur les questions 1 à 3.\n• Pièges : Q1 45,5 % (part du CA, pas de la marge) ; Q2 −86 000 € (écart de CA, pas de marge) ; Q3 « c’est prouvé ».\n• Chiffre absent de l’écran : la marketplace apporte +26 560 € de marge (83 680 − 57 120) ; c’est l’argument contre « arrêter la marketplace ».\n• Contrôle par canal : −30 960 + 5 600 + 26 560 = +1 200 €, la hausse de marge du tableau de bord.\n• Transition : « Deux questions de plus, pour rédiger le dossier. »",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [
           {
             "questionId": "b2-01-a5-part-marge-marketplace",
@@ -18469,7 +18469,7 @@
         "renvoi": "B2-01-A5-05-TCD",
         "notes": "• 2 min seul, puis 1 min avec le voisin (le pupitre numérote ces questions 1 et 2).\n• Phrase du dossier (Q4) : pièges « recule de 2,3 % » (des points) et « la rentabilité progresse » (un montant ne dit rien d’un taux).\n• TCD (Q5) : piège 26,7 %, la moyenne simple qui met les trois canaux à égalité.\n• Faire relire la phrase retenue à voix haute : c’est celle du dossier.\n• Transition : « Quel contrôle pour chaque anomalie du dossier ? »",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [
           {
             "questionId": "b2-01-a5-synthese",
@@ -18629,7 +18629,7 @@
         ],
         "notes": "• Binômes, 5 min de tri (annoncer la dernière minute), puis écran de correction.\n• Cartes à risque : « factures de mars » et « compensation de février » (preuve par la pièce, pas recalcul) ; « détourne nos clients » (seule une donnée par client tranche).\n• Relance : « Ce contrôle permet-il de trancher, ou seulement de soupçonner ? »",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [],
         "questions": [
           {
@@ -19074,7 +19074,7 @@
         },
         "notes": "• Lancer ; indices disponibles après 60 s. À 7 min, projeter l’énigme la moins résolue.\n• Pièges : E1 26,7 % (moyenne simple) ; E2 −10,7 (en %, pas en points) ; E3 1 032,57 € (÷ 1,02, taux additionnés).\n• E3 : le prix du 1ᵉʳ janvier 2026 est celui du 31 décembre 2025 : 20,70 €/m² × 50 m² = 1 035,00 € ; contrôle 1 035 × 1,06 × 0,96 = 1 053,22.\n• E4 : l’écart de 90 € vient de F004 (12 430 saisi pour 12 340 : inversion, 90 = 9 × 10). TVA = 48 705 × 0,20 = 9 741 €, pas 9 759 € (base du grand livre).\n• S’attarder sur l’énigme la moins résolue (pupitre).\n• Faire relier chaque énigme à son acte : E1 la moyenne pondérée (A5-03), E2 les points (A2-06), E3 le 20,70 €/m² de la tâche de tableur 2 (A4-05), E4 l’inversion de Pacioli (A6-01).\n• Transition : « Avant la dernière réponse à corriger, le cadre : ce que l’IA peut faire, et ce qu’elle ne peut pas faire. »",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [],
         "questions": [
           {
@@ -19298,7 +19298,7 @@
         },
         "notes": "• 2 min 30 individuelles, puis projeter la carte de maîtrise.\n• Tous reçoivent les deux questions obligatoires (compensation, multiple de 9), en plus de leurs points faibles.\n• Annoncer que les concepts restés en boîte 1 pour plus de 30 % de la classe ouvriront B2-02.",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [
           {
             "questionId": "b2-01-r-taux-evolution",
@@ -19965,7 +19965,7 @@
         },
         "notes": "• 3 min ; clore la séance quand le compteur de billets est complet.\n• Pièges : la phrase en « −2,3 % » et celle qui attribue la baisse au taux de chaque canal.\n• Réponse attendue : « 27,6 % → 25,3 %, soit −2,3 points ; la marketplace passe de 34 % à 45,5 % du CA. »\n• Transition : « Rendez-vous en B2-02. »",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [
           {
             "questionId": "b2-01-a6-billet",

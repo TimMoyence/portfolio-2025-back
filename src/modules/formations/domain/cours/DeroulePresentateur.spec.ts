@@ -29,7 +29,7 @@ import { CONFUSIONS } from './banque/confusions';
 import { lireCoursStocke } from './CoursStocke';
 import { deroulePresentateur, remediationsDe } from './DeroulePresentateur';
 import { correctionDeLEcranRevele } from './Diffusion';
-import { SEUIL_PAR_DEFAUT } from './EcranServi';
+import { REGLE_DE_NOTATION } from '../RegleDeNotation';
 import type { CorrigePresentateur, EcranDeroule } from './DeroulePresentateur';
 import { tirer } from './Tirage';
 
@@ -87,9 +87,9 @@ describe('deroulePresentateur', () => {
   it('ajoute les notes, le seuil et le corrige de chaque ecran', () => {
     expect(ecran('E-OUV').notes).toBe('Rappel');
     expect(ecran('E-OUV').seuil).toBeCloseTo(0.6);
-    expect(ecran('E-NUM').seuil).toBe(SEUIL_PAR_DEFAUT);
+    expect(ecran('E-NUM').seuil).toBe(REGLE_DE_NOTATION.seuilQuestionProbleme);
     expect(ecran('E-CITATION').seuil).toBeNull();
-    expect(ecran('E-EXIT').seuil).toBeNull();
+    expect(ecran('E-EXIT').seuil).toBe(REGLE_DE_NOTATION.seuilQuestionProbleme);
     expect(
       ecran('E-PRATIQUE').corriges.map((corrige) => corrige.questionId),
     ).toEqual(['Q-TEST-NUM-2', 'Q-TEST-NUM-3', 'Q-TEST-VOTE']);

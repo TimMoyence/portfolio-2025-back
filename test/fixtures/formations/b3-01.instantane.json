@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "a06d6a00835fd87f8d7339644f2ccda41a84a1a3e1a74106c9b67842fb8766e5",
+  "empreinte": "c1d58e54fc25bcd31a0c175817b8a8f3abdd9b7132ac2bb5eeec47b195be0083",
   "sujet": {
     "id": "b3-01-donnee-brute-decision",
     "titre": "Expert Data : de la donnée brute à la décision",
@@ -2652,7 +2652,7 @@
         },
         "notes": "• Temps : réflexion 1 min · travail 3 min · correction 1 min\n• Réflexion : relire les en-têtes de l’onglet Commandes avant de trier.\n• Pièges : n_commande pris pour une mesure, parce qu’il contient des chiffres ; ville prise pour un identifiant ; identifiant rangé parmi les catégories (agence_id, client_id, produit_id, commercial_id).\n• Corriger catégorie par catégorie, en commençant par la carte la plus ratée (taux d’erreur au pupitre).\n• Transition : « Une ligne, c’est quoi ? Exercice 2. »",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [],
         "questions": [
           {
@@ -2813,7 +2813,7 @@
         },
         "notes": "• Temps : réflexion 1 min · travail 3 min · correction 1 min\n• Réflexion : faire dire ce qu’on va compter, des lignes ou des commandes, avant de filtrer.\n• Piège : compter une commande là où l’on demande des lignes.\n• Corriger les deux questions ensemble : une commande, plusieurs lignes.\n• Transition : « Le fichier a-t-il d’autres surprises ? Un vote. »",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [
           {
             "questionId": "b3-01-a1-granularite",
@@ -3228,7 +3228,7 @@
         },
         "notes": "• Temps : réflexion 1 min · travail 6 min · correction 1 min\n• Réflexion : rappeler les deux questions de la grille avant de trier.\n• Pièges : corriger seul une date douteuse ; renvoyer à un humain une erreur que le fichier corrige.\n• Corriger case par case ; finir par la case vide.\n• Transition : « Au travail sur le vrai fichier : exercice 4. »",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [],
         "questions": [
           {
@@ -3388,7 +3388,7 @@
         },
         "notes": "• Temps : réflexion 1 min · travail 12 min · correction 2 min\n• Réflexion : faire dire l’ordre du travail : copie, colonnes nettoyées, doublons, contrôle.\n• Annoncer le palier défi aux plus rapides : il se corrige oralement, sans note.\n• Pièges : dédoublonner sur n_commande seule ; compter l’en-tête parmi les lignes ; additionner avant de convertir ; poser le contrôle sur les dates converties (45 par la formule de A1-11, 39 par DATEVAL sur toute date en texte).\n• Défi, villes distinctes : copier la colonne N, en-tête compris, en valeurs à part, puis Supprimer les doublons, case « Mes données ont des en-têtes » cochée ; sous Excel 2021 ou 365, =NBVAL(UNIQUE(N2:N4099)).\n• Corriger question par question, dans l’ordre où les explications se dévoilent ; s’attarder sur la moins réussie (score sous chaque correction).\n• Révéler la part des lignes fausses ou douteuses : c’est la réponse à la première question du vote sur le fichier et Dupont, Bordeaux (A1-04).\n• Défi : 48 villes ; sans SUPPRESPACE, les espaces en trop en font compter 83 ; la casse ne change rien, Excel l’ignore.\n• Piège des dates : la formule de A1-11, =SI(NBCAR(B2)=10;DATEVAL(B2);B2), laisse en texte « 08/04/26 » (commande C-11481 : ligne 3785 du brut, 3741 de la copie dédoublonnée) ; DATEVAL la lirait 8 avril sur un poste réglé en français (jj/mm/aa), or elle est livrée le 7 août : la commande date sans doute du 4 août, et seul l’émetteur peut le dire.\n• Avant la pause, dire les règles des niveaux 1 et 2 : « Je relie les tables par un identifiant, jamais par un libellé » ; « Je corrige seul ce qui est faux et certain ; je signale ce qui est douteux et je demande. »\n• Puis pause de 15 minutes ; reprise à 9 h 45 sur le classeur de reprise.",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [
           {
             "questionId": "b3-01-a1-lignes-uniques",
@@ -3793,7 +3793,7 @@
         },
         "notes": "• Temps : réflexion 1 min · travail 9 min · correction 2 min\n• Réflexion : faire nommer la famille de chaque question avant d’écrire une formule.\n• Pièges : fonction DATE écrite dans les guillemets (\">=DATE(2026;1;1)\") ; plage de recherche non figée ; période oubliée.\n• Corriger question par question, dans l’ordre où les explications se dévoilent ; s’attarder sur la moins réussie (score sous chaque correction).\n• Défi : 66 lignes avec le critère \">0,15\" ; \">15\" n’en trouve aucune : la remise est un taux.\n• Transition : « Passons au temps : un vote. »",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [
           {
             "questionId": "b3-01-a2-ca-rennes-info",
@@ -4059,7 +4059,7 @@
         },
         "notes": "• Temps : réflexion 1 min · travail 9 min · correction 2 min\n• Réflexion : faire dire en quelle unité le contrat compte les délais avant d’écrire la colonne.\n• Pièges : soustraire les dates ; oublier le − 1 ; résumer par la moyenne ; prendre toute la table au lieu de 2026 ; oublier l’agence, ou prendre MEDIANE sous un filtre, qui compte les lignes masquées.\n• Corriger question par question ; sur la médiane, trier les délais de Strasbourg pour montrer les ruptures en bas de colonne.\n• Retards : 2025 n’a aucun retard, et toute la table donne le même compte que 2026 : faire montrer le critère 2026.\n• Défi : 32,0 % ; la moyenne des taux de ligne donne 35,4 % ; marge ÷ coût donne 47,0 % : c’est le taux de marge.\n• Transition : « Et si l’export d’octobre arrive ? Un vote. »",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [
           {
             "questionId": "b3-01-a2-delai-strasbourg",
@@ -4371,7 +4371,7 @@
         },
         "notes": "• Temps : réflexion 1 min · travail 12 min · correction 2 min\n• Réflexion : faire dire, avant de construire, ce que chaque TCD montre en lignes, en colonnes et en valeurs.\n• Pièges : % du total général ou de la colonne au lieu du % de la ligne ; filtre annee oublié au premier TCD ; resté actif au second, recopié du premier ou de l’exemple ; trimestres groupés sans les années.\n• Corriger les deux questions ; montrer le regroupement par années qui sépare les deux printemps.\n• Défi : clic dans un TCD › Insertion › Segment (sur Mac, Analyse du tableau croisé dynamique › Segment) › categorie ; puis, le segment sélectionné, onglet Segment › Connexions de rapport : cocher les deux TCD.\n• Avant la pause, dire les règles des niveaux 3 et 4 : « Avant la fonction, je nomme la famille du problème » ; « Je travaille sur un tableau structuré, jamais sur une plage fixe. »\n• Puis pause de 15 minutes ; reprise à 11 h 01 sur le classeur de reprise de l’acte 3.",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [
           {
             "questionId": "b3-01-a2-part-info-rennes",
@@ -4699,7 +4699,7 @@
         },
         "notes": "• Temps : réflexion 1 min · travail 9 min · correction 1 min\n• Réflexion : faire dire où vit l’objectif : dans une autre table que les ventes, d’où SOMME.SI.ENS et pas un TCD seul.\n• Pièges : comparer neuf mois de ventes à l’objectif de toute la table ; oublier la période des deux côtés.\n• Corriger les deux questions ; projeter un graphique réussi, titre compris.\n• Défi : un TCD mois en lignes, années en colonnes, puis un graphique en courbes.\n• Transition : « Nadia a trente secondes : un vote. »",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [
           {
             "questionId": "b3-01-a3-agences-sous-objectif",
@@ -5054,7 +5054,7 @@
         },
         "notes": "• Temps : réflexion 1 min · travail 12 min · correction 2 min\n• Réflexion : faire dire les quatre indicateurs et la comparaison de chacun avant de construire.\n• Annoncer le palier défi aux plus rapides : il se corrige oralement, sans note.\n• Pièges : neuf mois comparés à douze ; toute la table au lieu de 2026 ; moyenne des taux ; marge divisée par le coût d’achat ; ligne d’en-tête comptée parmi les lignes.\n• Corriger question par question, dans l’ordre où les explications se dévoilent ; s’attarder sur la moins réussie (score sous chaque correction).\n• Projeter un tableau de bord réussi : quatre indicateurs, chacun avec sa comparaison, et le TCD de la marge par agence en barres de données, posées sur les seules cellules des agences : le total général écraserait les autres barres.\n• Défi : clic dans le TCD › Insertion › Segment (sur Mac, Analyse du tableau croisé dynamique › Segment) › region.\n• Transition : « Vos analyses de la séance racontent quatre histoires : vos recommandations. »",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [
           {
             "questionId": "b3-01-a3-evolution",
@@ -5411,7 +5411,7 @@
         },
         "notes": "• 3 min ; clore la séance quand le compteur de billets est complet.\n• Pièges : échanger les deux dates ; supprimer la ligne.",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [
           {
             "questionId": "b3-01-a3-billet",

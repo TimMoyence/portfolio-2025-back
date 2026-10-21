@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "bff827a9209f282de41fe7b646d506232204754051de43f9e4a268d66a5834e3",
+  "empreinte": "38902114f88c12d809586297549bc85fbf7c6c9e13b0de010a7b8ee4555a5967",
   "sujet": {
     "id": "b2-04-suites",
     "titre": "Suites : modéliser une évolution régulière",
@@ -3356,7 +3356,7 @@
         "renvoi": "B2-04-A1-05-HISTORIQUE",
         "notes": "• Temps : réflexion 2 min · travail 6 min · correction 2 min\n• Réflexion : écrire u₀, la raison et ce que représente le rang 0 avant de calculer.\n• Pièges : un rang de trop ; u₀ et r échangés ; répondre par l’année quand on demande un nombre d’années.\n• Papier : exercice 1 du livret.\n• Corriger question par question, en commençant par la moins réussie (score sous chaque correction).\n• Transition : « Faisons calculer tout le plan par le tableur : exercice 2. »",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [
           {
             "questionId": "b2-04-a1-nature",
@@ -3654,7 +3654,7 @@
         },
         "notes": "• Temps : réflexion 1 min · travail 5 min · correction 2 min\n• Réflexion : écrire sur papier la formule de C3, puis ce qu’elle devient en C4 une fois recopiée.\n• Erreurs à chercher : la raison écrite en dur (44) ; F1 sans $ : la colonne reste bloquée à 870.\n• Papier : formule écrite sur la copie, puis les cinq valeurs calculées à la main.\n• Projeter la feuille d’un poste volontaire et relire la formule de C3, puis celle de C7.\n• Transition : jalon 1, puis pause de 15 minutes.",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [],
         "questions": [
           {
@@ -4088,7 +4088,7 @@
         "renvoi": "B2-04-A1-05-HISTORIQUE",
         "notes": "• Temps : réflexion 2 min · travail 7 min · correction 2 min\n• Réflexion : écrire v₀ et la raison, puis poser le calcul de v₃ sans l’effectuer.\n• Pièges : raison 0,06 ; taux ajoutés (3 × 6 % = 18 %) ; un rang de trop.\n• Papier : exercice 3 du livret.\n• Corriger question par question, en commençant par la moins réussie.\n• Transition : « Mettons les deux hypothèses côte à côte au tableur : exercice 4. »",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [
           {
             "questionId": "b2-04-a2-raison",
@@ -4438,7 +4438,7 @@
         },
         "notes": "• Temps : réflexion 2 min · travail 8 min · correction 2 min\n• Réflexion : écrire sur papier la formule de D3, puis ce qu’elle devient en D4 une fois recopiée.\n• Erreurs à chercher : =D2*$G$2 (le taux seul) ; G2 sans $ ; le taux écrit en dur.\n• Papier : les deux formules écrites sur la copie, puis les valeurs de 2026 et 2030 à la calculatrice.\n• Projeter la feuille d’un poste volontaire ; faire lire la colonne des écarts de haut en bas.\n• Transition : jalon 2.",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [],
         "questions": [
           {
@@ -5215,7 +5215,7 @@
         },
         "notes": "• Temps : réflexion 1 min · travail 4 min · correction 2 min\n• Réflexion : lire l’algorithme à voix basse et dire ce qu’il cherche.\n• Pièges : écrire le u d’avant le calcul ; répondre V au dernier passage.\n• Papier : tableau du livret, V ou F à entourer dans la dernière colonne.\n• Projeter le tableau juste, ligne par ligne ; faire dire ce qu’affiche l’algorithme.\n• Transition : « Même question pour le seuil de la banque : exercice 6. »",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [],
         "questions": [
           {
@@ -5455,7 +5455,7 @@
         "renvoi": "B2-04-A3-01-GRAPHIQUE",
         "notes": "• Temps : réflexion 2 min · travail 7 min · correction 2 min\n• Réflexion : écrire la condition de la boucle, puis la liste des années du cumul, sans rien calculer.\n• Pièges : s’arrêter un terme trop tôt ; l’année à la place du nombre d’années ; le terme de 2030 pris pour le cumul ; 2025 compté en trop.\n• Papier : exercice 6 du livret.\n• Corriger question par question, en commençant par la moins réussie.\n• Conclure pour Hélène : 2032 avec l’hypothèse B, 2034 avec l’hypothèse A ; deux ans d’écart sur le second atelier.\n• Transition : « Une IA a rédigé le même plan. »",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [
           {
             "questionId": "b2-04-a3-seuil-b",
@@ -6017,7 +6017,7 @@
         "renvoi": "B2-04-A4-01-SITUATION-BOUTIQUE",
         "notes": "• Temps : réflexion 3 min · travail 11 min · correction 2 min\n• Réflexion : chacun écrit sur papier la nature de la suite, sa raison, puis les trois formules à saisir.\n• Erreurs à chercher : le taux seul à la place de 1 + taux ; F1 ou H1 sans $ ; « Oui » sans guillemets ; la plage du cumul décalée d’une ligne.\n• Papier : formules écrites sur la copie, valeurs calculées à la calculatrice ; en CCF, la question se fait devant l’examinateur.\n• Projeter la feuille d’un poste volontaire et relire chaque formule.\n• Transition : « Avec cette feuille, ouvrez le coffre de la mini-situation. »",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [],
         "questions": [
           {
@@ -6304,7 +6304,7 @@
         "renvoi": "B2-04-A4-01-SITUATION-BOUTIQUE",
         "notes": "• Temps : réflexion 2 min · travail 10 min · correction 2 min\n• Réflexion : relire le dossier et noter, pour chaque question, s’il s’agit d’un terme, d’un rang ou d’une somme.\n• Indices disponibles après 60 s. À 8 min, projeter l’énigme la moins résolue.\n• Papier : quatre questions rédigées du livret, sans code de coffre.\n• Dévoiler énigme par énigme, en s’attardant sur la moins résolue (pupitre).\n• Finir sur la décision d’Hélène : l’embauche se prépare pour 2031.",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [],
         "questions": [
           {
@@ -6401,7 +6401,7 @@
         },
         "notes": "• 5 min individuelles, puis projeter la carte de maîtrise.\n• Tous reçoivent les douze questions de la banque : le rappel couvre tout le cours pour chacun.",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [
           {
             "questionId": "b2-04-r-arithmetique",
@@ -6843,7 +6843,7 @@
         },
         "notes": "• 4 min ; clore la séance quand le compteur de billets est complet.\n• Pièges : taux non figé, addition au lieu de multiplication, taux seul à la place de 1 + taux.",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [
           {
             "questionId": "b2-04-a4-billet",

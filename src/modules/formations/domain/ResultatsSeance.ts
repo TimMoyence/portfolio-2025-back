@@ -59,6 +59,7 @@ function agregerQuestion(
     total: reponses.length,
     correctes: reponses.filter((reponse) => reponse.correcte).length,
     confusions: compterConfusions(reponses),
+    scoreMoyen: moyenneDesScores(reponses),
   };
   return {
     questionId: question.id,
@@ -69,7 +70,6 @@ function agregerQuestion(
     neSaitPas: reponses.filter((reponse) => estNeSaitPas(reponse.valeur))
       .length,
     parOption: question.type === 'vote' ? compterParOption(reponses) : null,
-    scoreMoyen: moyenneDesScores(reponses),
     parCle: compterParCle(reponses),
     ...lectureDuSeuil(question, decompte, remediations),
   };
@@ -136,13 +136,17 @@ function lectureDuSeuil(
     total,
     correctes,
     confusions,
-  }: Pick<ResultatQuestion, 'total' | 'correctes' | 'confusions'>,
+    scoreMoyen,
+  }: Pick<
+    ResultatQuestion,
+    'total' | 'correctes' | 'confusions' | 'scoreMoyen'
+  >,
   remediations: Readonly<Record<string, string>>,
 ): Pick<
   ResultatQuestion,
   'confusionDominante' | 'part' | 'sousLeSeuil' | 'remediation'
 > {
-  const part = total > 0 ? correctes / total : 0;
+  const part = scoreMoyen ?? (total > 0 ? correctes / total : 0);
   const sousLeSeuil =
     question.seuil !== null && total > 0 && part < question.seuil;
   const dominante = confusions.at(0)?.id ?? null;

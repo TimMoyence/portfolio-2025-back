@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "1102b77b3615c95d2dfed882e4ea21811a86fa50de7e7ea106edd432124aabc7",
+  "empreinte": "ef43f4766ddf7aa4dc99bbeb63adb5ca52db02136b31be884f69c8e78d9230bf",
   "sujet": {
     "id": "b2-02-series-statistiques",
     "titre": "Séries statistiques : résumer, relier, prévoir",
@@ -3060,7 +3060,7 @@
         },
         "notes": "• Temps : réflexion 2 min · travail 8 min · correction 2 min\n• Réflexion : chacun relit la trace écrite et note la méthode de chaque question, sans calculer.\n• Pièges : le milieu de la liste non triée ; une seule des deux valeurs centrales ; ECARTYPE au lieu de ECARTYPEP ; F105 retirée.\n• Papier : exercice 1 du livret.\n• Corriger question par question, en commençant par la moins réussie (score sous chaque correction).\n• Transition : jalon 1, puis pause de 15 minutes.",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [
           {
             "questionId": "b2-02-a1-mediane",
@@ -3776,7 +3776,7 @@
         },
         "notes": "• Temps : réflexion 2 min · travail 7 min · correction 2 min\n• Réflexion : relire la trace écrite et repérer la touche de r sur la calculatrice.\n• Pièges : les sommes au lieu des moyennes ; le point du milieu du tableau ; r lu comme la hausse annuelle.\n• Papier : exercice 2 du livret.\n• Corriger question par question, en commençant par la moins réussie.\n• Transition : « Vérifions G autrement : les écarts au point moyen. »",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [
           {
             "questionId": "b2-02-a2-x-moyen",
@@ -4098,7 +4098,7 @@
         },
         "notes": "• Temps : réflexion 2 min · travail 8 min · correction 2 min\n• Réflexion : prévoir le signe des écarts de la première et de la dernière année.\n• Piège : l’écart au rang du milieu du tableau au lieu de x̄.\n• Contrôle à faire dire : les écarts d’une colonne ont une somme nulle.\n• Papier : tableau du livret.\n• Faire lire les signes : négatifs ensemble avant G, positifs ensemble après.\n• Transition : jalon 2.",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [],
         "questions": [
           {
@@ -4763,7 +4763,7 @@
         "renvoi": "B2-02-A2-01-NUAGE-RIVAGE",
         "notes": "• Temps : réflexion 2 min · travail 7 min · correction 2 min\n• Réflexion : écrire le rang de 2028 avant tout calcul.\n• Pièges : séries inversées dans PENTE ; 2028 à la place du rang ; seuil arrondi à l’entier inférieur.\n• Papier : exercice 4 du livret.\n• Corriger question par question, en commençant par la moins réussie.\n• Transition : « Une IA a fait la même prévision, pour 2035. »",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [
           {
             "questionId": "b2-02-a3-pente",
@@ -5253,7 +5253,7 @@
         },
         "notes": "• Temps : réflexion 3 min · travail 12 min · correction 2 min\n• Réflexion : chacun écrit sur papier les fonctions à utiliser et l’ordre des plages.\n• Erreurs à chercher : plages inversées dans PENTE ; valeurs tapées à la main au lieu de formules.\n• Papier : même question à la calculatrice, formules écrites sur la copie ; en CCF, elle se fait devant l’examinateur.\n• Projeter la feuille d’un poste volontaire et relire chaque formule.\n• Transition : « Avec cette droite, prévoyez : le coffre de la mini-situation. »",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [],
         "questions": [
           {
@@ -5401,7 +5401,7 @@
         },
         "notes": "• Temps : réflexion 2 min · travail 12 min · correction 2 min\n• Réflexion : écrire les rangs de 2025 et de 2030 avant d’ouvrir le coffre.\n• Indices disponibles après 60 s. À 10 min, projeter l’énigme la moins résolue.\n• Papier : quatre questions rédigées du livret, sans code de coffre.\n• Dévoiler énigme par énigme, en s’attardant sur la moins résolue (pupitre).\n• Finir sur la comparaison au réel : c’est la réserve à écrire au CCF.",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [],
         "questions": [
           {
@@ -5503,7 +5503,7 @@
         },
         "notes": "• 5 min individuelles, puis projeter la carte de maîtrise.\n• Tous reçoivent les deux questions obligatoires (causalité, rang), en plus de leurs points faibles.",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [
           {
             "questionId": "b2-02-r-mediane-paire",
@@ -6014,7 +6014,7 @@
         },
         "notes": "• 4 min ; clore la séance quand le compteur de billets est complet.\n• Pièges : la prévision sans réserve, la moyenne tirée par F105, la causalité.",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [
           {
             "questionId": "b2-02-a4-billet",

@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "3fe23c6c27da2274df757a3dd7fae2b9b45cc94fc71bd0a7866c6b02a315d5fd",
+  "empreinte": "c1650cbf679af8f45e301d07ea7834879693cfc9c15ee12a4c45ff50aa01191e",
   "sujet": {
     "id": "b2-03-logique",
     "titre": "Logique : écrire et contrôler une règle",
@@ -3588,7 +3588,7 @@
         },
         "notes": "• Temps : réflexion 1 min · travail 5 min · correction 2 min\n• Réflexion : chacun écrit P et Q pour la première facture avant de remplir.\n• Pièges : « ou » lu exclusif sur la ligne V, V ; implication lue comme une équivalence sur la ligne F, V.\n• Papier : tableau du livret, V ou F à entourer dans chaque case.\n• Projeter la table juste, colonne par colonne, en commençant par la moins réussie.\n• Transition : « Appliquons ces connecteurs aux seize factures : exercice 2. »",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [],
         "questions": [
           {
@@ -3872,7 +3872,7 @@
         "renvoi": "B2-03-A1-04-FACTURES",
         "notes": "• Temps : réflexion 1 min · travail 5 min · correction 2 min\n• Réflexion : écrire chaque règle avec ses lettres et ses symboles.\n• Pièges : « ou » exclusif ; réciproque prise pour la règle.\n• Papier : exercice 2 du livret.\n• Corriger question par question, en commençant par la moins réussie (score sous chaque correction).\n• Transition : jalon 1, puis pause de 15 minutes.",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [
           {
             "questionId": "b2-03-a1-implication",
@@ -4300,7 +4300,7 @@
         "renvoi": "B2-03-A1-04-FACTURES",
         "notes": "• Temps : réflexion 2 min · travail 7 min · correction 2 min\n• Réflexion : écrire chaque règle avec ses lettres, puis sa négation, sans rien compter.\n• Pièges : nier sans échanger le connecteur ; > nié en < au lieu de ≤.\n• Papier : exercice 3 du livret.\n• Corriger question par question, en commençant par la moins réussie.\n• Transition : « Vérifions Morgan au tableur : exercice 4. »",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [
           {
             "questionId": "b2-03-a2-non-relance",
@@ -4592,7 +4592,7 @@
         },
         "notes": "• Temps : réflexion 2 min · travail 6 min · correction 2 min\n• Réflexion : écrire la règle d’anomalie avec ses lettres, puis sa forme avec NON et OU.\n• Erreurs à chercher : textes sans guillemets ; les deux colonnes qui ne s’accordent pas (Morgan oublié).\n• Papier : les deux formules écrites sur la copie, puis appliquées aux cinq lignes.\n• Projeter une feuille où les deux colonnes s’accordent, puis une où elles divergent.\n• Transition : jalon 2.",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [],
         "questions": [
           {
@@ -5135,7 +5135,7 @@
         "renvoi": "B2-03-A1-04-FACTURES",
         "notes": "• Temps : réflexion 2 min · travail 7 min · correction 2 min\n• Réflexion : écrire chaque affirmation avec ∀ ou ∃, puis sa négation.\n• Pièges : « toutes » nié en « aucune » ; ≥ nié en ≤.\n• Papier : exercice 5 du livret.\n• Corriger question par question, en commençant par la moins réussie.\n• Transition : jalon 3, puis pause de 15 minutes.",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [
           {
             "questionId": "b2-03-a3-non-toutes",
@@ -6220,7 +6220,7 @@
         },
         "notes": "• Temps : réflexion 3 min · travail 12 min · correction 2 min\n• Réflexion : chacun écrit sur papier les deux règles avec leurs symboles, puis les fonctions à utiliser.\n• Erreurs à chercher : textes sans guillemets ; >= au lieu de > pour la relance.\n• Papier : formules écrites sur la copie, résultats comptés à la main ; en CCF, la question se fait devant l’examinateur.\n• Projeter la feuille d’un poste volontaire et relire chaque formule.\n• Transition : « Avec ce fichier, ouvrez le coffre de la mini-situation. »",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [],
         "questions": [
           {
@@ -6726,7 +6726,7 @@
         },
         "notes": "• Temps : réflexion 2 min · travail 12 min · correction 2 min\n• Réflexion : écrire la négation de la règle de relance avant d’ouvrir le coffre.\n• Indices disponibles après 60 s. À 10 min, projeter l’énigme la moins résolue.\n• Papier : quatre questions rédigées du livret, sans code de coffre.\n• Dévoiler énigme par énigme, en s’attardant sur la moins résolue (pupitre).\n• Finir sur la requête : le même « et » s’écrit ET au tableur et AND en SQL.",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [],
         "questions": [
           {
@@ -6823,7 +6823,7 @@
         },
         "notes": "• 5 min individuelles, puis projeter la carte de maîtrise.\n• Tous reçoivent les deux questions obligatoires (Morgan, négation de « tous »), en plus de leurs points faibles.",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [
           {
             "questionId": "b2-03-r-ou",
@@ -7185,7 +7185,7 @@
         },
         "notes": "• 4 min ; clore la séance quand le compteur de billets est complet.\n• Pièges : OU au lieu de ET, >= au lieu de >, texte sans guillemets.",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [
           {
             "questionId": "b2-03-a4-billet",

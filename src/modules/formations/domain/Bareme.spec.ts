@@ -272,8 +272,16 @@ describe('questionsAAgreger', () => {
         seuilDe(cours.ecrans[question.rangEcran]),
       ]),
     );
-    expect(new Set(seuils.map(([, seuil]) => seuil === null))).toEqual(
-      new Set([true, false]),
+  });
+
+  it('donne un seuil à toute question, production comprise', () => {
+    const cours = buildCoursB2_01();
+    const baremeDuCours = ouvrirLeBaremeV2DuB2_01(cours);
+
+    const sansSeuil = questionsAAgreger(baremeDuCours, cours).filter(
+      ({ seuil }) => seuil === null,
     );
+
+    expect(sansSeuil).toEqual([]);
   });
 });

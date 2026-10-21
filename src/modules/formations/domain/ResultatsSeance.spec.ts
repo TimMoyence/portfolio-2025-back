@@ -143,6 +143,28 @@ describe('agregerResultats', () => {
     });
   });
 
+  it('prend le score moyen d une production pour sa part et son seuil, comme le pupitre l affiche', () => {
+    const [question] = agregerResultats({
+      questions: [
+        buildQuestionAAgreger({ id: 'Q-FEUILLE', type: 'feuille', seuil: 0.7 }),
+      ],
+      participants: 2,
+      answers: [
+        reponseDeFeuilleAMoitieJuste('Q-FEUILLE'),
+        buildAnswerRecord({
+          questionId: 'Q-FEUILLE',
+          valeur: { type: 'feuille', cellules: { D2: '=1' } },
+          correcte: false,
+          score: 0.95,
+          details: detailsDeFeuilleJuste(),
+        }),
+      ],
+    }).questions;
+
+    expect(question.part).toBeCloseTo(0.725);
+    expect(question.sousLeSeuil).toBe(false);
+  });
+
   it('QA-06 · compte « je ne sais pas » d une production a zero et faux pour chaque cle', () => {
     const feuille = ecranDeProduction(
       buildCoursAvecProductions(),

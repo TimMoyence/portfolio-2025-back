@@ -20,6 +20,7 @@ describe('calculerStatistiquesSeance', () => {
             total: 3,
             correctes: 1,
             part: 1 / 3,
+            sousLeSeuil: true,
           }),
           buildResultatQuestion({
             questionId: 'Q2',
@@ -41,7 +42,7 @@ describe('calculerStatistiquesSeance', () => {
     });
   });
 
-  it('retient les questions problemes sur la part servie, sans refaire la division', () => {
+  it('retient les questions problemes sur le seuil servi, sans refaire la comparaison', () => {
     const statistiques = calculerStatistiquesSeance([], {
       participants: 0,
       questions: [
@@ -50,12 +51,14 @@ describe('calculerStatistiquesSeance', () => {
           total: 4,
           correctes: 4,
           part: 0.25,
+          sousLeSeuil: true,
         }),
         buildResultatQuestion({
           questionId: 'Q-PART-HAUTE',
           total: 4,
           correctes: 0,
-          part: 1,
+          part: 0.25,
+          sousLeSeuil: false,
         }),
         buildResultatQuestion({
           questionId: 'Q-SANS-REPONSE',
