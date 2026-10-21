@@ -143,12 +143,12 @@ describe('buildRapportSession', () => {
     expect(rapport.fermeeLe).toBe(fermeeLe);
   });
 
-  it('substitue la date courante quand la session n est pas encore fermee', () => {
+  it('ne date pas la fermeture d une session encore ouverte', () => {
     const rapport = rapportDe({
       session: buildSessionRecord({ fermeeLe: null }),
     });
 
-    expect(rapport.fermeeLe).toBeInstanceOf(Date);
+    expect(rapport.fermeeLe).toBeNull();
   });
 
   it('signale un concept sous 70 pourcent de reussite comme fragile', () => {

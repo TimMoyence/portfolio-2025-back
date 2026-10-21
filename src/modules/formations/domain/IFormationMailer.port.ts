@@ -35,7 +35,7 @@ export interface RapportSession {
   courseSlug: string;
   code: string;
   ouverteLe: Date;
-  fermeeLe: Date;
+  fermeeLe: Date | null;
   participants: readonly RapportParticipant[];
   conceptsFragiles: readonly string[];
   libellesDesConcepts: Readonly<Record<string, string>>;
