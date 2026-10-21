@@ -16,11 +16,11 @@ export type {
 } from './GradingCore';
 export { matchesSolution };
 
-export function gradeAnswer(
+export function gradeAnswer<M extends string>(
   valeur: AnswerValue,
-  solution: Solution,
+  solution: Solution<M>,
   tolerance?: Tolerance,
-): GradingResult {
+): GradingResult<M> {
   if (valeur === NE_SAIT_PAS) {
     return { correcte: false, misconception: null };
   }
