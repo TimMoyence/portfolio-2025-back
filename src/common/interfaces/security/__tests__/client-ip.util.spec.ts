@@ -1,3 +1,7 @@
+import {
+  ADRESSE_IPV4,
+  ADRESSE_IPV4_MAPPEE,
+} from '../../../../../test/helpers/provenance';
 import type { Request } from 'express';
 import { JETON_DE_PAGE } from '../../../../../test/helpers/referents-des-pages-a-jeton';
 import {
@@ -5,6 +9,7 @@ import {
   provenanceDeLaRequete,
   resolveClientIp,
   resolveClientIpOrUnknown,
+  suivreParAdresse,
 } from '../client-ip.util';
 
 const EXPRESS_IP = '192.0.2.10';
@@ -76,6 +81,19 @@ describe('resolveClientIp', () => {
     expect(resolveClientIpOrUnknown(buildRequest({ ip: EXPRESS_IP }))).toBe(
       EXPRESS_IP,
     );
+  });
+});
+
+describe('suivreParAdresse', () => {
+  it('donne le meme seau a une adresse IPv4 et a sa forme IPv4-mappee-IPv6', () => {
+    expect(suivreParAdresse({ ip: ADRESSE_IPV4_MAPPEE })).toBe(
+      `ip:${ADRESSE_IPV4}`,
+    );
+    expect(suivreParAdresse({ ip: ADRESSE_IPV4 })).toBe(`ip:${ADRESSE_IPV4}`);
+  });
+
+  it('compte dans un seau commun une requete sans adresse', () => {
+    expect(suivreParAdresse({})).toBe('ip:unknown');
   });
 });
 

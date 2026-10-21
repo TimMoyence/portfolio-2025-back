@@ -1,4 +1,5 @@
 import { Throttle } from '@nestjs/throttler';
+import { suivreParAdresse } from '../../../common/interfaces/security/client-ip.util';
 import { identiteSignee, jetonDesEntetes } from './ParticipantToken.service';
 
 export const FENETRE_THROTTLE_MS = 60_000;
@@ -38,7 +39,7 @@ export function suivreParCodeDeSession(req: Record<string, unknown>): string {
   const code = params?.code;
   return typeof code === 'string' && code.length > 0
     ? `code:${code}`
-    : parAdresse(req);
+    : suivreParAdresse(req);
 }
 
 export function suivreParParticipant(req: Record<string, unknown>): string {
@@ -48,11 +49,11 @@ export function suivreParParticipant(req: Record<string, unknown>): string {
   const params = req.params as Record<string, unknown> | undefined;
   const sessionId = params?.id;
   if (jeton === undefined || typeof sessionId !== 'string') {
-    return parAdresse(req);
+    return suivreParAdresse(req);
   }
   const identite = identiteSignee(sessionId, jeton);
   return identite === null
-    ? parAdresse(req)
+    ? suivreParAdresse(req)
     : `participant:${identite.participantId}:${identite.generation}`;
 }
 
@@ -68,9 +69,4 @@ export function LimiteParParticipant(limit: number): MethodDecorator {
       getTracker: suivreParParticipant,
     },
   });
-}
-
-function parAdresse(req: Record<string, unknown>): string {
-  const ip = req.ip;
-  return typeof ip === 'string' ? `ip:${ip}` : 'ip:inconnue';
 }

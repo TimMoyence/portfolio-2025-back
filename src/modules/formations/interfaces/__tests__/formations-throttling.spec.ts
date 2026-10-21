@@ -1,4 +1,8 @@
 import {
+  ADRESSE_IPV4,
+  ADRESSE_IPV4_MAPPEE,
+} from '../../../../../test/helpers/provenance';
+import {
   FENETRE_THROTTLE_MS,
   LimiteParMinute,
   LimiteParParticipant,
@@ -86,6 +90,12 @@ describe('suivreParCodeDeSession', () => {
   it('retombe sur l adresse quand aucun code n est presente', () => {
     expect(suivreParCodeDeSession(requete())).toBe(`ip:${IP_SALLE}`);
   });
+
+  it('compte une adresse IPv4 et sa forme IPv4-mappee-IPv6 dans le meme seau', () => {
+    expect(suivreParCodeDeSession(requete({ ip: ADRESSE_IPV4_MAPPEE }))).toBe(
+      suivreParCodeDeSession(requete({ ip: ADRESSE_IPV4 })),
+    );
+  });
 });
 
 describe('suivreParParticipant', () => {
@@ -170,6 +180,12 @@ describe('suivreParParticipant', () => {
     );
   });
 
+  it('compte une adresse IPv4 et sa forme IPv4-mappee-IPv6 dans le meme seau', () => {
+    expect(suivreParParticipant(requete({ ip: ADRESSE_IPV4_MAPPEE }))).toBe(
+      suivreParParticipant(requete({ ip: ADRESSE_IPV4 })),
+    );
+  });
+
   it('retombe sur l adresse quand la route ne porte pas de seance', () => {
     expect(suivreParParticipant(requeteDe(jetonTheo, { params: {} }))).toBe(
       `ip:${IP_SALLE}`,
@@ -178,7 +194,7 @@ describe('suivreParParticipant', () => {
 
   it('ne laisse pas une requete sans adresse echapper au comptage', () => {
     expect(suivreParParticipant({ params: {}, headers: {} })).toBe(
-      'ip:inconnue',
+      'ip:unknown',
     );
   });
 
