@@ -12,9 +12,6 @@ import {
 import type { RapportClientServi } from '../../domain/RapportClientServi';
 import { AuditSummaryResponseDto } from './audit-summary.response.dto';
 
-const MOTIF_JAMAIS_EXPOSE =
-  'Toujours null : le motif de l echec n est pas expose';
-
 class InstantDAuditResponseDto extends PickType(AuditSummaryResponseDto, [
   'auditId',
 ] as const) {
@@ -74,17 +71,11 @@ class AuditTermineResponseDto extends PickType(AuditSummaryResponseDto, [
 class AuditEchoueResponseDto extends AvancementCommunResponseDto {
   @ApiProperty({ enum: ['FAILED'] })
   status: Extract<StatutDuFluxDAudit, 'FAILED'>;
-
-  @ReferenceOuNul([], MOTIF_JAMAIS_EXPOSE)
-  error: null;
 }
 
 class AuditExpireResponseDto extends InstantDAuditResponseDto {
   @ApiProperty({ enum: ['TIMEOUT'] })
   status: Extract<StatutDuFluxDAudit, 'TIMEOUT'>;
-
-  @ReferenceOuNul([], MOTIF_JAMAIS_EXPOSE)
-  error: null;
 }
 
 export const EVENEMENTS_DU_FLUX_D_AUDIT: DonneesParEvenement = {

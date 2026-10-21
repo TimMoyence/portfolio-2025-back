@@ -18,6 +18,7 @@ import {
   estSansForme,
   estSansFormeHorsOuverts,
   type SchemaOpenApi,
+  selonOpenApi30,
   variantesDe,
 } from '../../../../test/helpers/schema-openapi';
 
@@ -114,7 +115,7 @@ const auxBornes =
   (echantillons: (contrainte: Contrainte) => readonly Echantillon[]) =>
   (contrainte: Contrainte): Ecarts =>
   (champ) => {
-    const contrat = ajv.compile(champ);
+    const contrat = ajv.compile(selonOpenApi30(champ) as object);
     return echantillons(contrainte).flatMap(([valeur, accepte]) => {
       const annonce = contrat(valeur);
       const valide = valideLaContrainte(contrainte, valeur);
@@ -534,8 +535,8 @@ describe('contrat OpenAPI des saisies', () => {
           .flatMap(([[chemin, forme], composants]) => {
             try {
               return ajv.compile({
-                ...forme,
-                components: { schemas: composants },
+                ...(selonOpenApi30(forme) as object),
+                components: { schemas: selonOpenApi30(composants) },
               })(null)
                 ? []
                 : [`${chemin} : null refuse`];

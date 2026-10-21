@@ -4372,16 +4372,10 @@
             "example": true
           },
           "clientReport": {
+            "nullable": true,
             "oneOf": [
               {
                 "$ref": "#/components/schemas/RapportClientServi"
-              },
-              {
-                "type": "object",
-                "nullable": true,
-                "enum": [
-                  null
-                ]
               }
             ],
             "description": "Rapport client, null avant sa persistance"
@@ -4428,18 +4422,6 @@
             "enum": [
               "FAILED"
             ]
-          },
-          "error": {
-            "oneOf": [
-              {
-                "type": "object",
-                "nullable": true,
-                "enum": [
-                  null
-                ]
-              }
-            ],
-            "description": "Toujours null : le motif de l echec n est pas expose"
           }
         },
         "required": [
@@ -4447,8 +4429,7 @@
           "progress",
           "done",
           "updatedAt",
-          "status",
-          "error"
+          "status"
         ]
       },
       "AuditExpireResponseDto": {
@@ -4467,25 +4448,12 @@
             "enum": [
               "TIMEOUT"
             ]
-          },
-          "error": {
-            "oneOf": [
-              {
-                "type": "object",
-                "nullable": true,
-                "enum": [
-                  null
-                ]
-              }
-            ],
-            "description": "Toujours null : le motif de l echec n est pas expose"
           }
         },
         "required": [
           "auditId",
           "updatedAt",
-          "status",
-          "error"
+          "status"
         ]
       },
       "BattementResponseDto": {
@@ -5772,16 +5740,10 @@
             }
           },
           "soldeFinal": {
+            "nullable": true,
             "oneOf": [
               {
                 "$ref": "#/components/schemas/ValeurDuTableauResponseDto"
-              },
-              {
-                "type": "object",
-                "nullable": true,
-                "enum": [
-                  null
-                ]
               }
             ],
             "description": "Reste a verser apres la derniere ligne, null sans colonne soldee"
@@ -6084,6 +6046,7 @@
             }
           },
           "corrige": {
+            "nullable": true,
             "oneOf": [
               {
                 "$ref": "#/components/schemas/CorrigeFeuillePresentateurResponseDto"
@@ -6105,27 +6068,14 @@
               },
               {
                 "$ref": "#/components/schemas/CorrigeReflexionPresentateurResponseDto"
-              },
-              {
-                "type": "object",
-                "nullable": true,
-                "enum": [
-                  null
-                ]
               }
             ]
           },
           "reflexion": {
+            "nullable": true,
             "oneOf": [
               {
                 "$ref": "#/components/schemas/ReflexionPresentateurResponseDto"
-              },
-              {
-                "type": "object",
-                "nullable": true,
-                "enum": [
-                  null
-                ]
               }
             ]
           },
@@ -6578,16 +6528,10 @@
             "example": 4
           },
           "intervalleLibre": {
+            "nullable": true,
             "oneOf": [
               {
                 "$ref": "#/components/schemas/FreeRangeDto"
-              },
-              {
-                "type": "object",
-                "nullable": true,
-                "enum": [
-                  null
-                ]
               }
             ],
             "description": "Ecrans ouverts en rythme libre, null en rythme pilote"
@@ -6803,16 +6747,10 @@
             "example": true
           },
           "remediation": {
+            "nullable": true,
             "oneOf": [
               {
                 "$ref": "#/components/schemas/RemediationResponseDto"
-              },
-              {
-                "type": "object",
-                "nullable": true,
-                "enum": [
-                  null
-                ]
               }
             ],
             "description": "Ecran de remediation de la confusion dominante, sous le seuil seulement"
@@ -7817,6 +7755,7 @@
             }
           },
           "corrigeEcran": {
+            "nullable": true,
             "oneOf": [
               {
                 "$ref": "#/components/schemas/CorrigeFeuillePresentateurResponseDto"
@@ -7838,28 +7777,15 @@
               },
               {
                 "$ref": "#/components/schemas/CorrigeReflexionPresentateurResponseDto"
-              },
-              {
-                "type": "object",
-                "nullable": true,
-                "enum": [
-                  null
-                ]
               }
             ],
             "description": "Corrige de production, de defi, de revelation ou de reflexion ; servi au sujet seulement une fois l ecran revele, jamais au catalogue"
           },
           "reflexion": {
+            "nullable": true,
             "oneOf": [
               {
                 "$ref": "#/components/schemas/ReflexionPresentateurResponseDto"
-              },
-              {
-                "type": "object",
-                "nullable": true,
-                "enum": [
-                  null
-                ]
               }
             ],
             "description": "Reponse attendue d un recit a reflexion, la meme que celle revelee a l etudiant"

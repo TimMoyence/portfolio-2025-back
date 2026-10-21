@@ -26,6 +26,20 @@ export interface SchemaOpenApi {
   [motCle: string]: unknown;
 }
 
+export function selonOpenApi30(schema: unknown): unknown {
+  if (Array.isArray(schema)) {
+    return schema.map(selonOpenApi30);
+  }
+  if (!estObjet(schema)) {
+    return schema;
+  }
+  const { nullable, ...reste } = schema;
+  const traduit = Object.fromEntries(
+    Object.entries(reste).map(([cle, valeur]) => [cle, selonOpenApi30(valeur)]),
+  );
+  return nullable === true ? { anyOf: [traduit, { type: 'null' }] } : traduit;
+}
+
 export const variantesDe = (schema: SchemaOpenApi): SchemaOpenApi[] => [
   ...(schema.allOf ?? []),
   ...(schema.oneOf ?? []),
@@ -160,7 +174,10 @@ function ecartsDeValidation(
 ): string[] {
   const valider =
     validateurs.get(schema) ??
-    ajv.compile({ ...schema, components: document.components });
+    ajv.compile({
+      ...(selonOpenApi30(schema) as object),
+      components: selonOpenApi30(document.components),
+    });
   validateurs.set(schema, valider);
   return valider(valeur)
     ? []

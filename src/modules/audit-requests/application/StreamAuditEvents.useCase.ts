@@ -139,7 +139,6 @@ export class StreamAuditEventsUseCase {
           status: audit.processingStatus,
           progress: audit.progress,
           done: audit.done,
-          error: null,
           updatedAt,
         },
       };
@@ -167,7 +166,6 @@ export class StreamAuditEventsUseCase {
         status: 'FAILED',
         progress: 100,
         done: false,
-        error: null,
         updatedAt: new Date().toISOString(),
       },
     };
@@ -179,7 +177,6 @@ export class StreamAuditEventsUseCase {
       data: {
         auditId,
         status: 'TIMEOUT',
-        error: null,
         updatedAt: new Date().toISOString(),
       },
     };
