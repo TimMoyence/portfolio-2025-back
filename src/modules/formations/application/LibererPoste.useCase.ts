@@ -1,27 +1,16 @@
-import { Inject, Injectable } from '@nestjs/common';
-import type { IParticipantsRepository } from '../domain/IParticipants.repository';
-import type { ISessionsRepository } from '../domain/ISessions.repository';
-import { PARTICIPANTS_REPOSITORY, SESSIONS_REPOSITORY } from '../domain/token';
-import { agirSurUnParticipant } from './SessionAccess';
+import { Injectable } from '@nestjs/common';
+import type { SessionRecord } from '../domain/ISessions.repository';
+import { ActionSurUnParticipant } from './ActionSurUnParticipant';
 
 @Injectable()
-export class LibererPosteUseCase {
-  constructor(
-    @Inject(SESSIONS_REPOSITORY)
-    private readonly sessions: ISessionsRepository,
-    @Inject(PARTICIPANTS_REPOSITORY)
-    private readonly participants: IParticipantsRepository,
-  ) {}
-
-  execute(
-    sessionId: string,
-    teacherId: string,
+export class LibererPosteUseCase extends ActionSurUnParticipant {
+  protected agir(
+    session: SessionRecord,
     participantId: string,
-  ): Promise<void> {
-    return agirSurUnParticipant(
-      this.sessions,
-      { sessionId, teacherId, participantId },
-      () => this.participants.libererPoste(sessionId, participantId),
+  ): Promise<boolean> {
+    return this.participation.participants.libererPoste(
+      session.id,
+      participantId,
     );
   }
 }
