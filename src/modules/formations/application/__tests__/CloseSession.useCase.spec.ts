@@ -58,7 +58,10 @@ describe('CloseSessionUseCase', () => {
   );
 
   beforeEach(() => {
-    sessions = createMockSessionsRepo({ teacherId: TEACHER_ID });
+    sessions = createMockSessionsRepo({
+      teacherId: TEACHER_ID,
+      courseSlug: COURS.slug,
+    });
     participants = createMockParticipantsRepo();
     answers = createMockAnswersRepo();
     incidents = createMockIncidentsRepo();

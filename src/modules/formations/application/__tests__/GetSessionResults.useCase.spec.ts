@@ -23,10 +23,10 @@ import {
   ouvrirLeBaremeV2DuB2_01,
 } from '../../../../../test/factories/cours-b2-01.factory';
 import { seuilDe } from '../../domain/cours/EcranServi';
-import { TENTATIVES_MAX_PAR_ENIGME } from '../../domain/cours/Enigmes';
 import type { ICatalogueCours } from '../../domain/cours/ICatalogueCours.port';
 import type { ProgressionEnigmeRecord } from '../../domain/IEscape.repository';
 import {
+  CoursInconnuError,
   SessionNotFoundError,
   SessionNotOwnedError,
 } from '../../domain/errors/FormationErrors';
@@ -70,7 +70,11 @@ describe('GetSessionResultsUseCase', () => {
 
   beforeEach(() => {
     depots = createMockDepotsFormations();
-    sut = monter(creerCatalogueDeTest());
+    sut = monter(
+      creerCatalogueDeTest(
+        buildCoursDeTest({ slug: buildSessionRecord().courseSlug }),
+      ),
+    );
   });
 
   it('V6 · joint au rapport de chaque participant les réponses libres de la séance', async () => {
@@ -95,18 +99,6 @@ describe('GetSessionResultsUseCase', () => {
 
     expect(depots.freeResponses.listBySession).not.toHaveBeenCalled();
     expect(bilan.resultats.participants[0].reponsesLibres).toEqual([]);
-  });
-
-  it('rend la valeur envoyee telle quelle quand le cours de la seance est absent du catalogue', async () => {
-    depots.answers.listBySession.mockResolvedValue([
-      buildAnswerRecord({ valeur: 'o2', correcte: false }),
-    ]);
-
-    const rapport = await sut.execute('session-uuid', PROPRIETAIRE);
-
-    expect(rapport.participants[0].reponses).toEqual([
-      expect.objectContaining({ valeur: 'o2', reponse: 'o2' }),
-    ]);
   });
 
   it('lit les libelles dans la version figee a l ouverture, pas dans la derniere publiee', async () => {
@@ -143,6 +135,16 @@ describe('GetSessionResultsUseCase', () => {
       SessionNotFoundError,
     );
     expect(depots.participants.listBySession).not.toHaveBeenCalled();
+  });
+
+  it('refuse en CoursInconnu les resultats d une seance dont le cours a disparu du catalogue, comme le deroule', async () => {
+    depots.sessions.findById.mockResolvedValue(
+      buildSessionRecord({ courseSlug: 'cours-absent' }),
+    );
+
+    await expect(sut.execute('session-uuid', PROPRIETAIRE)).rejects.toThrow(
+      CoursInconnuError,
+    );
   });
 
   it('laisse un administrateur lire les resultats d une seance qui n est pas la sienne', async () => {
@@ -211,23 +213,6 @@ describe('GetSessionResultsUseCase', () => {
       expect.objectContaining({ enigmeId: ENIGMES_DE_TEST[0], epuisees: 1 }),
     ]);
   });
-
-  it.each([
-    [TENTATIVES_MAX_PAR_ENIGME, 1],
-    [TENTATIVES_MAX_PAR_ENIGME - 1, 0],
-  ])(
-    'sans cours publie, compte sur le plafond commun (%i tentatives)',
-    async (tentatives, epuisees) => {
-      depots.sessions.findById.mockResolvedValue(
-        buildSessionRecord({ courseSlug: 'cours-retire-du-catalogue' }),
-      );
-      const enigmes = await enigmesDuRapport([
-        buildProgressionEnigme({ tentatives, resolueLe: null }),
-      ]);
-
-      expect(enigmes).toEqual([expect.objectContaining({ epuisees })]);
-    },
-  );
 
   it('agrege les resultats par question du bareme dans le rapport', async () => {
     const rapport = await sut.execute('session-uuid', PROPRIETAIRE);
