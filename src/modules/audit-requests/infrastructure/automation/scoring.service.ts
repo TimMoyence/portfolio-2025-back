@@ -1,4 +1,9 @@
 import { Injectable } from '@nestjs/common';
+import {
+  baliseAbsente,
+  canonicalNonConforme,
+  h1NonConforme,
+} from './shared/controles-seo-de-page.util';
 import type {
   AiBotsAccess,
   LlmsTxtAnalysis,
@@ -218,15 +223,13 @@ export class ScoringService {
     sampledUrls: UrlIndexabilityResult[],
   ): SampledCoverage {
     return {
-      missingTitle: sampledUrls.filter((entry) => !(entry.title ?? '').trim())
+      missingTitle: sampledUrls.filter((entry) => baliseAbsente(entry.title))
         .length,
-      missingMeta: sampledUrls.filter(
-        (entry) => !(entry.metaDescription ?? '').trim(),
+      missingMeta: sampledUrls.filter((entry) =>
+        baliseAbsente(entry.metaDescription),
       ).length,
-      badH1: sampledUrls.filter((entry) => (entry.h1Count ?? 1) !== 1).length,
-      canonicalIssues: sampledUrls.filter(
-        (entry) => !entry.canonical || (entry.canonicalCount ?? 0) !== 1,
-      ).length,
+      badH1: sampledUrls.filter(h1NonConforme).length,
+      canonicalIssues: sampledUrls.filter(canonicalNonConforme).length,
       missingLang: sampledUrls.filter((entry) => !entry.htmlLang).length,
       indexabilityErrors: sampledUrls.filter(
         (entry) => !entry.indexable || (entry.statusCode ?? 500) >= 400,
