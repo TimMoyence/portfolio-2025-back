@@ -19,7 +19,8 @@ la bonne reponse) etaient aussi recopiees au front.
   `pnpm openapi:check` (CI et pre-push) refuse un `openapi.json` qui ne correspond plus au code.
 - Toute entree et toute sortie est typee precisement : listes par `ValeurDuContrat`, entiers
   bornes, flux SSE en `oneOf` d'evenements nommes, donnees d'ecran liees a leur brique
-  (`allOf [socle, { type: litteral, donnees }]`).
+  (`allOf [socle, { type: litteral, donnees }]`). Une adresse e-mail est validee par un seul
+  motif (`MOTIF_D_UNE_ADRESSE_EMAIL`), le meme pour le DTO et le domaine, publie en `pattern`.
 - Une regle vit au back. Le front lit ce qui est servi (part, seuil, positions des curseurs,
   saisie fermee, option de la bonne reponse) et n'en recalcule rien ; une saisie brute est lue
   par le serveur.
