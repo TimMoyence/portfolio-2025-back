@@ -13,7 +13,7 @@ import {
 } from './cours/ProductionSoumise';
 import { NE_SAIT_PAS } from './GradingCore';
 import type { AnswerRecord } from './IAnswers.repository';
-import { agregerResultats } from './ResultatsSeance';
+import { agregerResultats, estNeSaitPas } from './ResultatsSeance';
 
 function reponseDeFeuilleAMoitieJuste(questionId: string): AnswerRecord {
   return buildAnswerRecord({
@@ -23,6 +23,23 @@ function reponseDeFeuilleAMoitieJuste(questionId: string): AnswerRecord {
     details: detailsDeFeuilleAMoitieJuste(),
   });
 }
+
+describe('estNeSaitPas', () => {
+  it.each([
+    ['la valeur reservee', NE_SAIT_PAS, true],
+    ['une production declaree', { type: 'feuille', neSaitPas: true }, true],
+    ['zero', 0, false],
+    ['un texte vide', '', false],
+    ['le libelle affiche', 'Je ne sais pas', false],
+    [
+      'une production saisie',
+      { type: 'feuille', cellules: { D2: '=2' } },
+      false,
+    ],
+  ] as const)('%s', (_cas, valeur, attendu) => {
+    expect(estNeSaitPas(valeur)).toBe(attendu);
+  });
+});
 
 describe('agregerResultats', () => {
   it('compte par sens et non par valeur saisie', () => {
