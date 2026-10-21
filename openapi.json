@@ -3699,9 +3699,12 @@
           "email",
           "firstName",
           "lastName",
+          "phone",
           "isActive",
           "roles",
           "createdAt",
+          "updatedAt",
+          "updatedOrCreatedBy",
           "hasPassword",
           "emailVerified"
         ]
@@ -4350,8 +4353,28 @@
           },
           "pillarScores": {
             "type": "object",
-            "additionalProperties": {
-              "type": "number"
+            "properties": {
+              "seo": {
+                "type": "number"
+              },
+              "performance": {
+                "type": "number"
+              },
+              "technical": {
+                "type": "number"
+              },
+              "trust": {
+                "type": "number"
+              },
+              "conversion": {
+                "type": "number"
+              },
+              "aiVisibility": {
+                "type": "number"
+              },
+              "citationWorthiness": {
+                "type": "number"
+              }
             },
             "example": {
               "seo": 72,
@@ -4615,8 +4638,28 @@
           },
           "pillarScores": {
             "type": "object",
-            "additionalProperties": {
-              "type": "number"
+            "properties": {
+              "seo": {
+                "type": "number"
+              },
+              "performance": {
+                "type": "number"
+              },
+              "technical": {
+                "type": "number"
+              },
+              "trust": {
+                "type": "number"
+              },
+              "conversion": {
+                "type": "number"
+              },
+              "aiVisibility": {
+                "type": "number"
+              },
+              "citationWorthiness": {
+                "type": "number"
+              }
             },
             "example": {
               "seo": 72,
@@ -4809,7 +4852,10 @@
           "title",
           "level",
           "prompt",
-          "tool"
+          "tool",
+          "description",
+          "example",
+          "tip"
         ]
       },
       "WorkflowStepDto": {

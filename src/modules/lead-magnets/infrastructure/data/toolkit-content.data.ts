@@ -169,7 +169,7 @@ export const CHEATSHEET_DATA: CheatsheetDataEntry[] = [
   },
 ];
 
-export const PROMPTS_DATA: Required<PromptEntry>[] = [
+export const PROMPTS_DATA: PromptEntry[] = [
   {
     category: 'Prospection',
     title: 'Message LinkedIn de premier contact',

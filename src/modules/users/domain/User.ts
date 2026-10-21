@@ -36,8 +36,8 @@ export class User {
   roles: string[];
   googleId: string | null;
   emailVerified: boolean;
-  createdAt?: Date;
-  updatedAt?: Date;
+  createdAt: Date;
+  updatedAt: Date;
   updatedOrCreatedBy: string | null;
 
   static create(props: CreateUserProps): User {

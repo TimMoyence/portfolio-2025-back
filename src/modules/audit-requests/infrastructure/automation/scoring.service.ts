@@ -10,6 +10,7 @@ import type {
 } from '../../domain/AiIndexability';
 import type { StructuredDataQualityResult } from '../../domain/StructuredDataQuality';
 import { AuditLocale } from '../../domain/audit-locale.util';
+import type { PillarKey } from '../../domain/Piliers';
 import { HomepageAuditSnapshot } from './homepage-analyzer.service';
 import { UrlIndexabilityResult } from './url-indexability.service';
 import { scoreMoyenSur100, scoreSur100 } from '../../domain/score-sur-100';
@@ -17,26 +18,7 @@ import { estAuMoinsUn } from '../../../../common/domain/au-moins-un';
 import { proportion } from '../../../../common/domain/nombres/statistiques';
 import { textesUniquesBornes } from '../../../../common/domain/texte/textes-uniques-bornes';
 
-export type PillarKey =
-  | 'seo'
-  | 'performance'
-  | 'technical'
-  | 'trust'
-  | 'conversion'
-  | 'aiVisibility'
-  | 'citationWorthiness';
-
 type PillarScores = Record<PillarKey, number>;
-
-export const PILLAR_KEYS: readonly PillarKey[] = [
-  'seo',
-  'performance',
-  'technical',
-  'trust',
-  'conversion',
-  'aiVisibility',
-  'citationWorthiness',
-] as const;
 
 export type ActionablePillarKey = Exclude<
   PillarKey,

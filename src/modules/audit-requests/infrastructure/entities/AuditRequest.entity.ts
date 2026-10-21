@@ -1,6 +1,7 @@
 import { ColonnesDeRequete } from '../../../../common/infrastructure/typeorm/ColonnesDeProvenance';
 import { Column, Entity, Index } from 'typeorm';
 import type { AuditProcessingStatus } from '../../domain/AuditProcessing';
+import type { ScoresDesPiliers } from '../../domain/Piliers';
 import type {
   ClientReportSynthesis,
   ExpertReportSynthesis,
@@ -61,7 +62,7 @@ export class AuditRequestEntity extends ColonnesDeRequete {
   quickWins: string[];
 
   @Column({ type: 'jsonb', default: {} })
-  pillarScores: Record<string, number>;
+  pillarScores: ScoresDesPiliers;
 
   @Column({ type: 'text', nullable: true })
   summaryText?: string | null;

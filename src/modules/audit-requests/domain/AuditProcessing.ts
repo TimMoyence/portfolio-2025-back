@@ -5,6 +5,7 @@ import type {
   ExpertReportSynthesis,
 } from './AuditReportTiers';
 import type { EngineCoverage } from './EngineCoverage';
+import type { ScoresDesPiliers } from './Piliers';
 
 export const STATUTS_D_AUDIT = Object.freeze([
   'PENDING',
@@ -33,7 +34,7 @@ export interface AuditSnapshot {
   redirectChain: string[];
   keyChecks: Record<string, unknown>;
   quickWins: string[];
-  pillarScores: Record<string, number>;
+  pillarScores: ScoresDesPiliers;
   summaryText: string | null;
   fullReport: Record<string, unknown> | null;
   clientReport?: ClientReportSynthesis | null;
@@ -53,7 +54,7 @@ export interface AuditSummarySnapshot {
   summaryText: string | null;
   keyChecks: Record<string, unknown>;
   quickWins: string[];
-  pillarScores: Record<string, number>;
+  pillarScores: ScoresDesPiliers;
 }
 
 export interface UpdateAuditStateInput {
@@ -66,7 +67,7 @@ export interface UpdateAuditStateInput {
   redirectChain?: string[];
   keyChecks?: Record<string, unknown>;
   quickWins?: string[];
-  pillarScores?: Record<string, number>;
+  pillarScores?: ScoresDesPiliers;
   summaryText?: string | null;
   fullReport?: Record<string, unknown> | null;
   clientReport?: ClientReportSynthesis | null;

@@ -1,5 +1,5 @@
 import type { ClientReportSynthesis } from '../../../domain/AuditReportTiers';
-import { PILLAR_KEYS } from '../scoring.service';
+import { PILLAR_KEYS } from '../../../domain/Piliers';
 
 const MARKDOWN_PATTERN = /(^|[^\w])[*#]{1,3}[^\s]|^[ \t]*-[ \t]+|```/m;
 
