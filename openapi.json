@@ -4093,7 +4093,7 @@
             "type": "string",
             "minLength": 2,
             "maxLength": 200,
-            "example": "Example Studio"
+            "example": "https://example.com"
           },
           "contactMethod": {
             "example": "EMAIL",
@@ -6619,7 +6619,8 @@
           "fermeeLe": {
             "type": "string",
             "format": "date-time",
-            "description": "Date de cloture, ou date de lecture si la seance est ouverte"
+            "nullable": true,
+            "description": "Date de cloture, null tant que la seance est ouverte"
           },
           "conceptsFragiles": {
             "example": [
