@@ -5,6 +5,7 @@ import {
   PrimaryGeneratedColumn,
   Unique,
 } from 'typeorm';
+import { LONGUEUR_MAX_DU_NONCE } from '../../domain/article-contract';
 import { ReferenceArticle } from './reference-article';
 
 @Entity({ name: 'article_deliveries' })
@@ -21,7 +22,7 @@ export class ArticleDeliveryEntity {
   @Column({ type: 'varchar', length: 160 })
   idempotencyKey: string;
 
-  @Column({ type: 'varchar', length: 128 })
+  @Column({ type: 'varchar', length: LONGUEUR_MAX_DU_NONCE })
   nonce: string;
 
   @ReferenceArticle('FK_article_delivery_article', 'RESTRICT')
