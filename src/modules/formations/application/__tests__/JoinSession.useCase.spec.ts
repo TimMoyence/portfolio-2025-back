@@ -13,10 +13,13 @@ import {
   SessionClosedError,
   SessionNotFoundError,
 } from '../../domain/errors/FormationErrors';
+import { installerSecretDeSignature } from '../../../../../test/helpers/env-formations';
+import { cleEtudianteDe } from '../../domain/CleEtudiante';
 import { SecretDeReprise } from '../../domain/SecretDeReprise';
 import { JoinSessionUseCase } from '../JoinSession.useCase';
 
 describe('JoinSessionUseCase', () => {
+  installerSecretDeSignature();
   let sessions: ReturnType<typeof createMockSessionsRepo>;
   let participants: ReturnType<typeof createMockParticipantsRepo>;
   let cache: ReturnType<typeof createMockSessionStateCache>;
@@ -24,7 +27,6 @@ describe('JoinSessionUseCase', () => {
 
   const commande = {
     code: '4271',
-    studentKey: 'cle-derivee-du-courriel',
     prenom: 'Theo',
     nom: 'Martin',
     email: 'theo.martin@example.com',
@@ -47,7 +49,7 @@ describe('JoinSessionUseCase', () => {
     expect(participants.inscrire).toHaveBeenCalledWith(
       expect.objectContaining({
         sessionId: 'session-uuid',
-        studentKey: 'cle-derivee-du-courriel',
+        studentKey: cleEtudianteDe('theo.martin@example.com'),
         capacite: 12,
       }),
     );

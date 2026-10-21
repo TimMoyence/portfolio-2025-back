@@ -42,7 +42,6 @@ import type {
 } from '../../src/modules/formations/domain/IParticipants.repository';
 import { AnswersRepositoryTypeORM } from '../../src/modules/formations/infrastructure/Answers.repository.typeorm';
 import { CoursCatalogueRepositoryTypeORM } from '../../src/modules/formations/infrastructure/CoursCatalogue.repository.typeorm';
-import { CleEtudiantService } from '../../src/modules/formations/interfaces/CleEtudiant.service';
 import { FormationAnswerEntity } from '../../src/modules/formations/infrastructure/entities/FormationAnswer.entity';
 import { FormationEscapeAttemptEntity } from '../../src/modules/formations/infrastructure/entities/FormationEscapeAttempt.entity';
 import { FormationEscapeProgressEntity } from '../../src/modules/formations/infrastructure/entities/FormationEscapeProgress.entity';
@@ -156,12 +155,6 @@ export interface InscriptionDeTest {
   nom: string;
   email: string;
   seed: number;
-}
-
-const clesEtudiants = new CleEtudiantService();
-
-export function cleEtudianteDe(email: string): string {
-  return clesEtudiants.de(email);
 }
 
 export async function inscrireParticipant(

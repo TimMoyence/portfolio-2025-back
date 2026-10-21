@@ -1,6 +1,6 @@
-import { installerSecretDeSignature } from '../../../../../test/helpers/env-formations';
-import { appliquer } from '../../../../../test/helpers/environnement';
-import { signer } from '../SignatureFormations';
+import { installerSecretDeSignature } from '../../../../test/helpers/env-formations';
+import { appliquer } from '../../../../test/helpers/environnement';
+import { signer } from './SignatureFormations';
 
 describe('SignatureFormations', () => {
   installerSecretDeSignature('chaque-test');

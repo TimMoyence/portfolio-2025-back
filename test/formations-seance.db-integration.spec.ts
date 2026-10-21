@@ -23,8 +23,8 @@ import {
 } from './factories/mailer.factory';
 import { describeDb } from './helpers/db-integration-datasource';
 import { installerEnvFormations } from './helpers/env-formations';
+import { cleEtudianteDe } from '../src/modules/formations/domain/CleEtudiante';
 import {
-  cleEtudianteDe,
   DELAI_OUVERTURE_CONTEXTE_MS,
   ouvrirContexteFormations,
   type ContexteFormations,

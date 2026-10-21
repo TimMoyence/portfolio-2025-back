@@ -1,6 +1,6 @@
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { egalEnTempsConstant } from '../../../common/domain/crypto/empreintes';
-import { signer } from '../application/SignatureFormations';
+import { signer } from '../domain/SignatureFormations';
 import { appartenanceDuParticipant } from '../domain/AppartenanceDuParticipant';
 import type { IParticipantsRepository } from '../domain/IParticipants.repository';
 import { PARTICIPANTS_REPOSITORY } from '../domain/token';

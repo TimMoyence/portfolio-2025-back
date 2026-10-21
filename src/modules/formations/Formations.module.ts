@@ -93,7 +93,6 @@ import { FormationsPresenterController } from './interfaces/FormationsPresenter.
 import { FormationsStudentController } from './interfaces/FormationsStudent.controller';
 import { FormationsCatalogController } from './interfaces/FormationsCatalog.controller';
 import { FormationsLivretController } from './interfaces/FormationsLivret.controller';
-import { CleEtudiantService } from './interfaces/CleEtudiant.service';
 import { CodeScanProtectionService } from './interfaces/CodeScanProtection.service';
 import { ParticipantTokenService } from './interfaces/ParticipantToken.service';
 
@@ -163,7 +162,6 @@ import { ParticipantTokenService } from './interfaces/ParticipantToken.service';
     ListFreeResponsesUseCase,
     SaveFreeResponseUseCase,
     ParticipantTokenService,
-    CleEtudiantService,
     CodeScanProtectionService,
     {
       provide: SESSIONS_REPOSITORY,
