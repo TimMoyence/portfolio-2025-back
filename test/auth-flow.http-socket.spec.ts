@@ -415,6 +415,27 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
       );
     });
 
+    it.each([
+      ['roles', ['admin']],
+      ['isActive', false],
+    ])(
+      'POST /api/auth/register refuse en 400 le champ %s, que seul un admin fixe',
+      async (champ, valeur) => {
+        await request(getHttpServer())
+          .post('/api/auth/register')
+          .send({
+            email: titulaire.email,
+            password: LOGIN_PASSWORD,
+            firstName: titulaire.firstName,
+            lastName: titulaire.lastName,
+            [champ]: valeur,
+          })
+          .expect(400);
+
+        expect(authStubs.createUsersUseCase.inscrire).not.toHaveBeenCalled();
+      },
+    );
+
     it('POST /api/auth/google ouvre une session', async () => {
       authStubs.authenticateGoogleUserUseCase.execute.mockResolvedValue(
         await sessionSigneePour(titulaire, 'google-refresh-token'),

@@ -60,7 +60,7 @@ import {
 } from '../domain/auth.constants';
 import { AuthMessageResponseDto } from './dto/AuthMessage.response.dto';
 import { ChangePasswordDto } from './dto/ChangePassword.dto';
-import { CreateUserDto } from './dto/CreateUser.dto';
+import { InscriptionDto } from './dto/Inscription.dto';
 import { ForgotPasswordDto } from './dto/ForgotPassword.dto';
 import { GoogleAuthDto } from './dto/GoogleAuth.dto';
 import { LoginDto } from './dto/Login.dto';
@@ -350,7 +350,7 @@ export class AuthController {
   })
   @ApiOkResponse({ type: AuthMessageResponseDto })
   @ApiBadRequestResponse({ description: 'Inscription echouee' })
-  register(@Body() dto: CreateUserDto): Promise<AuthMessageResponseDto> {
+  register(@Body() dto: InscriptionDto): Promise<AuthMessageResponseDto> {
     return this.createUsersUseCase.inscrire(dto);
   }
 

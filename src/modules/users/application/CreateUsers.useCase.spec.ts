@@ -38,7 +38,6 @@ import {
 } from '../../../../test/factories/email-verification-token.factory';
 
 const PLAIN_CREDENTIAL = 'SecurePassword123!';
-const ATTACKER_CREDENTIAL = 'Hack123!';
 const DERIVED_HASH = 'hashed-password';
 
 describe('CreateUsersUseCase', () => {
@@ -183,23 +182,6 @@ describe('CreateUsersUseCase', () => {
     );
   });
 
-  it('devrait creer le compte actif et sans roles pour les inscriptions publiques (roles attribues apres verification)', async () => {
-    const dto: CreateUserCommand = {
-      email: 'attacker@example.com',
-      password: ATTACKER_CREDENTIAL,
-      firstName: 'Evil',
-      lastName: 'User',
-      roles: ['admin', 'teacher'],
-      isActive: false,
-      updatedOrCreatedBy: 'self-registration',
-    };
-
-    await creerEtAttendreLesRoles(dto, [], { emailVerified: false });
-    expect(repo.create).toHaveBeenCalledWith(
-      expect.objectContaining({ isActive: true }),
-    );
-  });
-
   it("devrait respecter les choix d'un admin qui omet l'auteur, sans courriel de verification", async () => {
     const dto: CreateUserCommand = {
       email: 'inactif@example.com',
@@ -262,8 +244,6 @@ describe('CreateUsersUseCase', () => {
       repo.create.mockResolvedValue(buildUser({ id: 'uuid', roles: [] }));
       const corpsForge: InscriptionCommand & { updatedOrCreatedBy: string } = {
         ...candidat,
-        roles: ['admin'],
-        isActive: false,
         updatedOrCreatedBy: 'admin-forge',
       };
 

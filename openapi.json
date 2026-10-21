@@ -516,7 +516,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateUserDto"
+                "$ref": "#/components/schemas/InscriptionDto"
               }
             }
           }
@@ -3801,6 +3801,47 @@
         },
         "required": [
           "newPassword"
+        ]
+      },
+      "InscriptionDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "john@example.com"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 12,
+            "maxLength": 256,
+            "pattern": "^(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z0-9]).+$",
+            "example": "StrongPassword123!"
+          },
+          "firstName": {
+            "type": "string",
+            "example": "John",
+            "minLength": 1,
+            "maxLength": 50
+          },
+          "lastName": {
+            "type": "string",
+            "example": "Doe",
+            "minLength": 1,
+            "maxLength": 50
+          },
+          "phone": {
+            "type": "string",
+            "example": "+11234567890",
+            "nullable": true,
+            "maxLength": 30
+          }
+        },
+        "required": [
+          "email",
+          "password",
+          "firstName",
+          "lastName"
         ]
       },
       "ResendVerificationDto": {

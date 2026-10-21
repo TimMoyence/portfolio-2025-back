@@ -57,14 +57,7 @@ export class CreateUsersUseCase {
     const passwordHash = await this.passwordService.hash(dto.password);
     const isSelfRegistration = dto.updatedOrCreatedBy === 'self-registration';
 
-    const imposeALInscriptionPublique = isSelfRegistration
-      ? { roles: [], isActive: true }
-      : {};
-
-    const user = UsersMapper.fromCreateCommand(
-      { ...dto, ...imposeALInscriptionPublique },
-      passwordHash,
-    );
+    const user = UsersMapper.fromCreateCommand(dto, passwordHash);
     const created = await this.repo.create(user);
 
     if (isSelfRegistration && created.id) {
