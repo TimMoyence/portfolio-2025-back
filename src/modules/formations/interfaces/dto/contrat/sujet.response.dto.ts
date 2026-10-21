@@ -3,7 +3,6 @@ import {
   ApiProperty,
   ApiPropertyOptional,
   getSchemaPath,
-  OmitType,
 } from '@nestjs/swagger';
 import { CHAMPS_EXTRAITS_DU_CAS } from '../../../domain/contrats/cours';
 import type { PieceJointeServie } from '../../../domain/cours/Cours';
@@ -14,6 +13,7 @@ import type {
 } from '../../../domain/contrats/tirage';
 import {
   EcranPublicResponseDto as EcranPublicServiResponseDto,
+  ecransDuContrat,
   SujetResponseDto as SujetServiResponseDto,
 } from '../sujet.response.dto';
 import { CorrectionServieResponseDto } from './corrige-ecran.response.dto';
@@ -112,11 +112,12 @@ export class EcranPublicResponseDto
   correction?: CorrectionServieResponseDto;
 }
 
+@ApiExtraModels(EcranPublicResponseDto)
 export class SujetResponseDto
-  extends OmitType(SujetServiResponseDto, ['ecrans'] as const)
+  extends SujetServiResponseDto
   implements CoursPublic
 {
-  @ApiProperty({ type: [EcranPublicResponseDto] })
+  @ApiProperty(ecransDuContrat(EcranPublicResponseDto))
   ecrans: readonly EcranPublicResponseDto[];
 }
 

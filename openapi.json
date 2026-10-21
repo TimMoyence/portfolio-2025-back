@@ -5526,31 +5526,6 @@
           "reservee"
         ]
       },
-      "TypeDEcranServi": {
-        "type": "string",
-        "enum": [
-          "fp-quote",
-          "fp-story",
-          "fp-pro",
-          "fp-worked",
-          "fp-concept4",
-          "fp-plot",
-          "fp-challenge",
-          "fp-cardsort",
-          "fp-sheet",
-          "fp-table-build",
-          "fp-escape",
-          "fp-pulse",
-          "fp-spaced",
-          "fp-numeric",
-          "fp-vote",
-          "fp-recall",
-          "fp-exit",
-          "questionnaire",
-          "ecran-verrouille"
-        ],
-        "description": "Brique qui rend l ecran"
-      },
       "ChampExtraitDuCas": {
         "type": "string",
         "enum": [
@@ -6156,15 +6131,6 @@
             "type": "string",
             "example": "E-OUV-RAPPEL"
           },
-          "type": {
-            "description": "Brique qui rend l ecran",
-            "example": "fp-recall",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/TypeDEcranServi"
-              }
-            ]
-          },
           "duree": {
             "type": "number",
             "description": "Duree de l ecran en minutes",
@@ -6173,68 +6139,6 @@
           "interactif": {
             "type": "boolean",
             "example": true
-          },
-          "donnees": {
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/DonneesFpQuote"
-              },
-              {
-                "$ref": "#/components/schemas/DonneesFpStory"
-              },
-              {
-                "$ref": "#/components/schemas/DonneesFpPro"
-              },
-              {
-                "$ref": "#/components/schemas/DonneesFpWorked"
-              },
-              {
-                "$ref": "#/components/schemas/DonneesFpConcept4"
-              },
-              {
-                "$ref": "#/components/schemas/DonneesFpPlot"
-              },
-              {
-                "$ref": "#/components/schemas/DonneesFpChallenge"
-              },
-              {
-                "$ref": "#/components/schemas/DonneesFpCardsort"
-              },
-              {
-                "$ref": "#/components/schemas/DonneesFpSheet"
-              },
-              {
-                "$ref": "#/components/schemas/DonneesFpTableBuild"
-              },
-              {
-                "$ref": "#/components/schemas/DonneesFpEscape"
-              },
-              {
-                "$ref": "#/components/schemas/DonneesFpPulse"
-              },
-              {
-                "$ref": "#/components/schemas/DonneesFpSpaced"
-              },
-              {
-                "$ref": "#/components/schemas/DonneesFpNumeric"
-              },
-              {
-                "$ref": "#/components/schemas/DonneesFpVote"
-              },
-              {
-                "$ref": "#/components/schemas/DonneesFpRecall"
-              },
-              {
-                "$ref": "#/components/schemas/DonneesFpExit"
-              },
-              {
-                "$ref": "#/components/schemas/DonneesQuestionnaire"
-              },
-              {
-                "$ref": "#/components/schemas/DonneesEcranVerrouille"
-              }
-            ],
-            "description": "Proprietes de la brique nommee par type, rangees sous la propriete de la brique ; sans solution, piege, confusion ni notes"
           },
           "titre": {
             "type": "string",
@@ -6283,10 +6187,8 @@
         },
         "required": [
           "id",
-          "type",
           "duree",
           "interactif",
-          "donnees",
           "titre"
         ]
       },
@@ -6322,8 +6224,485 @@
           },
           "ecrans": {
             "type": "array",
+            "description": "Ecrans, chacun avec les donnees de la brique nommee par son type ; sans solution, piege, confusion ni notes",
             "items": {
-              "$ref": "#/components/schemas/EcranPublicResponseDto"
+              "oneOf": [
+                {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EcranPublicResponseDto"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "fp-quote"
+                          ]
+                        },
+                        "donnees": {
+                          "$ref": "#/components/schemas/DonneesFpQuote"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "donnees"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EcranPublicResponseDto"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "fp-story"
+                          ]
+                        },
+                        "donnees": {
+                          "$ref": "#/components/schemas/DonneesFpStory"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "donnees"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EcranPublicResponseDto"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "fp-pro"
+                          ]
+                        },
+                        "donnees": {
+                          "$ref": "#/components/schemas/DonneesFpPro"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "donnees"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EcranPublicResponseDto"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "fp-worked"
+                          ]
+                        },
+                        "donnees": {
+                          "$ref": "#/components/schemas/DonneesFpWorked"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "donnees"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EcranPublicResponseDto"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "fp-concept4"
+                          ]
+                        },
+                        "donnees": {
+                          "$ref": "#/components/schemas/DonneesFpConcept4"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "donnees"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EcranPublicResponseDto"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "fp-plot"
+                          ]
+                        },
+                        "donnees": {
+                          "$ref": "#/components/schemas/DonneesFpPlot"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "donnees"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EcranPublicResponseDto"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "fp-challenge"
+                          ]
+                        },
+                        "donnees": {
+                          "$ref": "#/components/schemas/DonneesFpChallenge"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "donnees"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EcranPublicResponseDto"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "fp-cardsort"
+                          ]
+                        },
+                        "donnees": {
+                          "$ref": "#/components/schemas/DonneesFpCardsort"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "donnees"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EcranPublicResponseDto"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "fp-sheet"
+                          ]
+                        },
+                        "donnees": {
+                          "$ref": "#/components/schemas/DonneesFpSheet"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "donnees"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EcranPublicResponseDto"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "fp-table-build"
+                          ]
+                        },
+                        "donnees": {
+                          "$ref": "#/components/schemas/DonneesFpTableBuild"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "donnees"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EcranPublicResponseDto"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "fp-escape"
+                          ]
+                        },
+                        "donnees": {
+                          "$ref": "#/components/schemas/DonneesFpEscape"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "donnees"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EcranPublicResponseDto"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "fp-pulse"
+                          ]
+                        },
+                        "donnees": {
+                          "$ref": "#/components/schemas/DonneesFpPulse"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "donnees"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EcranPublicResponseDto"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "fp-spaced"
+                          ]
+                        },
+                        "donnees": {
+                          "$ref": "#/components/schemas/DonneesFpSpaced"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "donnees"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EcranPublicResponseDto"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "fp-numeric"
+                          ]
+                        },
+                        "donnees": {
+                          "$ref": "#/components/schemas/DonneesFpNumeric"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "donnees"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EcranPublicResponseDto"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "fp-vote"
+                          ]
+                        },
+                        "donnees": {
+                          "$ref": "#/components/schemas/DonneesFpVote"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "donnees"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EcranPublicResponseDto"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "fp-recall"
+                          ]
+                        },
+                        "donnees": {
+                          "$ref": "#/components/schemas/DonneesFpRecall"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "donnees"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EcranPublicResponseDto"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "fp-exit"
+                          ]
+                        },
+                        "donnees": {
+                          "$ref": "#/components/schemas/DonneesFpExit"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "donnees"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EcranPublicResponseDto"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "questionnaire"
+                          ]
+                        },
+                        "donnees": {
+                          "$ref": "#/components/schemas/DonneesQuestionnaire"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "donnees"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EcranPublicResponseDto"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "ecran-verrouille"
+                          ]
+                        },
+                        "donnees": {
+                          "$ref": "#/components/schemas/DonneesEcranVerrouille"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "donnees"
+                      ]
+                    }
+                  ]
+                }
+              ]
             }
           },
           "version": {
@@ -7658,15 +8037,6 @@
             "type": "string",
             "example": "E-OUV-RAPPEL"
           },
-          "type": {
-            "description": "Brique qui rend l ecran",
-            "example": "fp-recall",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/TypeDEcranServi"
-              }
-            ]
-          },
           "duree": {
             "type": "number",
             "description": "Duree de l ecran en minutes",
@@ -7675,68 +8045,6 @@
           "interactif": {
             "type": "boolean",
             "example": true
-          },
-          "donnees": {
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/DonneesFpQuote"
-              },
-              {
-                "$ref": "#/components/schemas/DonneesFpStory"
-              },
-              {
-                "$ref": "#/components/schemas/DonneesFpPro"
-              },
-              {
-                "$ref": "#/components/schemas/DonneesFpWorked"
-              },
-              {
-                "$ref": "#/components/schemas/DonneesFpConcept4"
-              },
-              {
-                "$ref": "#/components/schemas/DonneesFpPlot"
-              },
-              {
-                "$ref": "#/components/schemas/DonneesFpChallenge"
-              },
-              {
-                "$ref": "#/components/schemas/DonneesFpCardsort"
-              },
-              {
-                "$ref": "#/components/schemas/DonneesFpSheet"
-              },
-              {
-                "$ref": "#/components/schemas/DonneesFpTableBuild"
-              },
-              {
-                "$ref": "#/components/schemas/DonneesFpEscape"
-              },
-              {
-                "$ref": "#/components/schemas/DonneesFpPulse"
-              },
-              {
-                "$ref": "#/components/schemas/DonneesFpSpaced"
-              },
-              {
-                "$ref": "#/components/schemas/DonneesFpNumeric"
-              },
-              {
-                "$ref": "#/components/schemas/DonneesFpVote"
-              },
-              {
-                "$ref": "#/components/schemas/DonneesFpRecall"
-              },
-              {
-                "$ref": "#/components/schemas/DonneesFpExit"
-              },
-              {
-                "$ref": "#/components/schemas/DonneesQuestionnaire"
-              },
-              {
-                "$ref": "#/components/schemas/DonneesEcranVerrouille"
-              }
-            ],
-            "description": "Proprietes de la brique nommee par type, rangees sous la propriete de la brique ; sans solution, piege, confusion ni notes"
           },
           "titre": {
             "type": "string",
@@ -7856,10 +8164,8 @@
         },
         "required": [
           "id",
-          "type",
           "duree",
           "interactif",
-          "donnees",
           "titre",
           "notes",
           "diffusion",
@@ -7902,8 +8208,485 @@
           },
           "ecrans": {
             "type": "array",
+            "description": "Ecrans, chacun avec les donnees de la brique nommee par son type ; sans solution, piege, confusion ni notes",
             "items": {
-              "$ref": "#/components/schemas/EcranDerouleResponseDto"
+              "oneOf": [
+                {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EcranDerouleResponseDto"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "fp-quote"
+                          ]
+                        },
+                        "donnees": {
+                          "$ref": "#/components/schemas/DonneesFpQuote"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "donnees"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EcranDerouleResponseDto"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "fp-story"
+                          ]
+                        },
+                        "donnees": {
+                          "$ref": "#/components/schemas/DonneesFpStory"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "donnees"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EcranDerouleResponseDto"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "fp-pro"
+                          ]
+                        },
+                        "donnees": {
+                          "$ref": "#/components/schemas/DonneesFpPro"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "donnees"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EcranDerouleResponseDto"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "fp-worked"
+                          ]
+                        },
+                        "donnees": {
+                          "$ref": "#/components/schemas/DonneesFpWorked"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "donnees"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EcranDerouleResponseDto"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "fp-concept4"
+                          ]
+                        },
+                        "donnees": {
+                          "$ref": "#/components/schemas/DonneesFpConcept4"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "donnees"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EcranDerouleResponseDto"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "fp-plot"
+                          ]
+                        },
+                        "donnees": {
+                          "$ref": "#/components/schemas/DonneesFpPlot"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "donnees"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EcranDerouleResponseDto"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "fp-challenge"
+                          ]
+                        },
+                        "donnees": {
+                          "$ref": "#/components/schemas/DonneesFpChallenge"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "donnees"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EcranDerouleResponseDto"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "fp-cardsort"
+                          ]
+                        },
+                        "donnees": {
+                          "$ref": "#/components/schemas/DonneesFpCardsort"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "donnees"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EcranDerouleResponseDto"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "fp-sheet"
+                          ]
+                        },
+                        "donnees": {
+                          "$ref": "#/components/schemas/DonneesFpSheet"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "donnees"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EcranDerouleResponseDto"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "fp-table-build"
+                          ]
+                        },
+                        "donnees": {
+                          "$ref": "#/components/schemas/DonneesFpTableBuild"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "donnees"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EcranDerouleResponseDto"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "fp-escape"
+                          ]
+                        },
+                        "donnees": {
+                          "$ref": "#/components/schemas/DonneesFpEscape"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "donnees"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EcranDerouleResponseDto"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "fp-pulse"
+                          ]
+                        },
+                        "donnees": {
+                          "$ref": "#/components/schemas/DonneesFpPulse"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "donnees"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EcranDerouleResponseDto"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "fp-spaced"
+                          ]
+                        },
+                        "donnees": {
+                          "$ref": "#/components/schemas/DonneesFpSpaced"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "donnees"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EcranDerouleResponseDto"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "fp-numeric"
+                          ]
+                        },
+                        "donnees": {
+                          "$ref": "#/components/schemas/DonneesFpNumeric"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "donnees"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EcranDerouleResponseDto"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "fp-vote"
+                          ]
+                        },
+                        "donnees": {
+                          "$ref": "#/components/schemas/DonneesFpVote"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "donnees"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EcranDerouleResponseDto"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "fp-recall"
+                          ]
+                        },
+                        "donnees": {
+                          "$ref": "#/components/schemas/DonneesFpRecall"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "donnees"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EcranDerouleResponseDto"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "fp-exit"
+                          ]
+                        },
+                        "donnees": {
+                          "$ref": "#/components/schemas/DonneesFpExit"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "donnees"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EcranDerouleResponseDto"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "questionnaire"
+                          ]
+                        },
+                        "donnees": {
+                          "$ref": "#/components/schemas/DonneesQuestionnaire"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "donnees"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EcranDerouleResponseDto"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "ecran-verrouille"
+                          ]
+                        },
+                        "donnees": {
+                          "$ref": "#/components/schemas/DonneesEcranVerrouille"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "donnees"
+                      ]
+                    }
+                  ]
+                }
+              ]
             }
           }
         },
@@ -9420,8 +10203,485 @@
           },
           "ecrans": {
             "type": "array",
+            "description": "Ecrans, chacun avec les donnees de la brique nommee par son type ; sans solution, piege, confusion ni notes",
             "items": {
-              "$ref": "#/components/schemas/EcranPublicResponseDto"
+              "oneOf": [
+                {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EcranPublicResponseDto"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "fp-quote"
+                          ]
+                        },
+                        "donnees": {
+                          "$ref": "#/components/schemas/DonneesFpQuote"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "donnees"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EcranPublicResponseDto"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "fp-story"
+                          ]
+                        },
+                        "donnees": {
+                          "$ref": "#/components/schemas/DonneesFpStory"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "donnees"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EcranPublicResponseDto"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "fp-pro"
+                          ]
+                        },
+                        "donnees": {
+                          "$ref": "#/components/schemas/DonneesFpPro"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "donnees"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EcranPublicResponseDto"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "fp-worked"
+                          ]
+                        },
+                        "donnees": {
+                          "$ref": "#/components/schemas/DonneesFpWorked"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "donnees"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EcranPublicResponseDto"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "fp-concept4"
+                          ]
+                        },
+                        "donnees": {
+                          "$ref": "#/components/schemas/DonneesFpConcept4"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "donnees"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EcranPublicResponseDto"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "fp-plot"
+                          ]
+                        },
+                        "donnees": {
+                          "$ref": "#/components/schemas/DonneesFpPlot"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "donnees"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EcranPublicResponseDto"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "fp-challenge"
+                          ]
+                        },
+                        "donnees": {
+                          "$ref": "#/components/schemas/DonneesFpChallenge"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "donnees"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EcranPublicResponseDto"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "fp-cardsort"
+                          ]
+                        },
+                        "donnees": {
+                          "$ref": "#/components/schemas/DonneesFpCardsort"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "donnees"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EcranPublicResponseDto"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "fp-sheet"
+                          ]
+                        },
+                        "donnees": {
+                          "$ref": "#/components/schemas/DonneesFpSheet"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "donnees"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EcranPublicResponseDto"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "fp-table-build"
+                          ]
+                        },
+                        "donnees": {
+                          "$ref": "#/components/schemas/DonneesFpTableBuild"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "donnees"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EcranPublicResponseDto"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "fp-escape"
+                          ]
+                        },
+                        "donnees": {
+                          "$ref": "#/components/schemas/DonneesFpEscape"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "donnees"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EcranPublicResponseDto"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "fp-pulse"
+                          ]
+                        },
+                        "donnees": {
+                          "$ref": "#/components/schemas/DonneesFpPulse"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "donnees"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EcranPublicResponseDto"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "fp-spaced"
+                          ]
+                        },
+                        "donnees": {
+                          "$ref": "#/components/schemas/DonneesFpSpaced"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "donnees"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EcranPublicResponseDto"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "fp-numeric"
+                          ]
+                        },
+                        "donnees": {
+                          "$ref": "#/components/schemas/DonneesFpNumeric"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "donnees"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EcranPublicResponseDto"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "fp-vote"
+                          ]
+                        },
+                        "donnees": {
+                          "$ref": "#/components/schemas/DonneesFpVote"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "donnees"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EcranPublicResponseDto"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "fp-recall"
+                          ]
+                        },
+                        "donnees": {
+                          "$ref": "#/components/schemas/DonneesFpRecall"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "donnees"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EcranPublicResponseDto"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "fp-exit"
+                          ]
+                        },
+                        "donnees": {
+                          "$ref": "#/components/schemas/DonneesFpExit"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "donnees"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EcranPublicResponseDto"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "questionnaire"
+                          ]
+                        },
+                        "donnees": {
+                          "$ref": "#/components/schemas/DonneesQuestionnaire"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "donnees"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EcranPublicResponseDto"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "ecran-verrouille"
+                          ]
+                        },
+                        "donnees": {
+                          "$ref": "#/components/schemas/DonneesEcranVerrouille"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "donnees"
+                      ]
+                    }
+                  ]
+                }
+              ]
             }
           }
         },

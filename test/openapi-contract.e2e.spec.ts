@@ -17,6 +17,7 @@ import { buildCoursDeTest } from './factories/cours.factory';
 import { CONTENUS } from './factories/contenus-publies';
 import {
   documentPublie,
+  ecartsAuSchemaDeReponse,
   estSansFormeHorsOuverts,
   evenementsDuFlux,
   type SchemaOpenApi,
@@ -436,27 +437,26 @@ describe('OpenAPI des données de chaque brique', () => {
     ).toEqual([]);
   });
 
-  it('décrit les données de l écran par un oneOf des composants nommés de chaque brique', () => {
-    const ecran = document.components?.schemas?.EcranPublicResponseDto as {
-      properties: Record<string, SchemaOpenApi>;
-    };
-    const references = (ecran.properties.donnees.oneOf ?? []).map(
-      ({ $ref }) => $ref?.split('/').at(-1) ?? '',
-    );
+  it.each(['/sujet', '/deroule'])(
+    'lie les données de l écran de %s à sa brique : un vote qui porte les données d un rappel est refusé',
+    (route) => {
+      const cours = buildCoursDuContenu(CONTENUS[0]);
+      const servi =
+        route === '/sujet'
+          ? tirer(cours, 0).sujet
+          : deroulePresentateur(cours, 0);
+      const rappel = servi.ecrans.find(({ type }) => type === 'fp-recall');
 
-    expect(references).toHaveLength(Object.keys(DONNEES_PAR_BRIQUE).length);
-    expect(
-      references.filter(
-        (nom) => document.components?.schemas?.[nom] === undefined,
-      ),
-    ).toEqual([]);
-    expect(JSON.stringify(ecran.properties.type)).toContain(
-      '#/components/schemas/TypeDEcranServi',
-    );
-    expect(document.components?.schemas?.TypeDEcranServi).toMatchObject({
-      enum: Object.keys(DONNEES_PAR_BRIQUE),
-    });
-  });
+      expect(rappel).toBeDefined();
+      expect(ecartsAuSchemaDeReponse(document, route, servi)).toEqual([]);
+      expect(
+        ecartsAuSchemaDeReponse(document, route, {
+          ...servi,
+          ecrans: [{ ...rappel, type: 'fp-vote' }],
+        }),
+      ).not.toEqual([]);
+    },
+  );
 });
 
 describe('OpenAPI des flux d événements', () => {

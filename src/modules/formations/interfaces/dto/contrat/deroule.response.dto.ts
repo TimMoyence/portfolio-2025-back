@@ -13,6 +13,7 @@ import type {
   EcranDeroule,
 } from '../../../domain/contrats/deroule';
 import { CorrigePresentateurResponseDto } from '../deroule.response.dto';
+import { ecransDuContrat } from '../sujet.response.dto';
 import {
   CORRIGES_D_ECRAN,
   ExplicationDeCorrectionResponseDto,
@@ -76,10 +77,11 @@ export class EcranDerouleResponseDto
   explications?: readonly ExplicationDeCorrectionResponseDto[];
 }
 
+@ApiExtraModels(EcranDerouleResponseDto)
 export class DerouleResponseDto
   extends OmitType(SujetResponseDto, ['ecrans'] as const)
   implements DerouleCours
 {
-  @ApiProperty({ type: [EcranDerouleResponseDto] })
+  @ApiProperty(ecransDuContrat(EcranDerouleResponseDto))
   ecrans: readonly EcranDerouleResponseDto[];
 }

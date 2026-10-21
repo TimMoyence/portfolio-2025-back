@@ -1,22 +1,14 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, getSchemaPath } from '@nestjs/swagger';
+import type { ApiPropertyOptions } from '@nestjs/swagger';
 import { referenceAuContrat } from '../../../../common/interfaces/http/schemas-du-contrat';
 import type { TypeDEcranServi } from '../../domain/contrats/donnees-publiques';
-import {
-  DONNEES_PAR_BRIQUE,
-  TYPES_D_ECRAN_SERVI,
-} from '../../domain/contrats/donnees-servies';
+import { DONNEES_PAR_BRIQUE } from '../../domain/contrats/donnees-servies';
 import type { EcranPublic } from '../../domain/cours/CoursPublic';
 
 export class EcranPublicResponseDto {
   @ApiProperty({ example: 'E-OUV-RAPPEL' })
   id: string;
 
-  @ApiProperty({
-    enum: TYPES_D_ECRAN_SERVI,
-    enumName: 'TypeDEcranServi',
-    description: 'Brique qui rend l ecran',
-    example: 'fp-recall',
-  })
   type: TypeDEcranServi;
 
   @ApiProperty({ description: 'Duree de l ecran en minutes', example: 4 })
@@ -25,12 +17,32 @@ export class EcranPublicResponseDto {
   @ApiProperty({ example: true })
   interactif: boolean;
 
-  @ApiProperty({
-    oneOf: Object.values(DONNEES_PAR_BRIQUE).map(referenceAuContrat),
-    description:
-      'Proprietes de la brique nommee par type, rangees sous la propriete de la brique ; sans solution, piege, confusion ni notes',
-  })
   donnees: EcranPublic['donnees'];
+}
+
+export function ecransDuContrat(
+  socle: typeof EcranPublicResponseDto,
+): ApiPropertyOptions {
+  return {
+    type: 'array',
+    description:
+      'Ecrans, chacun avec les donnees de la brique nommee par son type ; sans solution, piege, confusion ni notes',
+    items: {
+      oneOf: Object.entries(DONNEES_PAR_BRIQUE).map(([brique, donnees]) => ({
+        allOf: [
+          { $ref: getSchemaPath(socle) },
+          {
+            type: 'object',
+            properties: {
+              type: { type: 'string', enum: [brique] },
+              donnees: referenceAuContrat(donnees),
+            },
+            required: ['type', 'donnees'],
+          },
+        ],
+      })),
+    },
+  };
 }
 
 export class SujetResponseDto {
@@ -51,7 +63,4 @@ export class SujetResponseDto {
 
   @ApiProperty({ type: [String], example: ['proportion'] })
   concepts: readonly string[];
-
-  @ApiProperty({ type: [EcranPublicResponseDto] })
-  ecrans: readonly EcranPublicResponseDto[];
 }

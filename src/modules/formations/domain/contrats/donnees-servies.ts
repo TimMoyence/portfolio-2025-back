@@ -8,11 +8,7 @@ import {
 import { auMoinsUn, texte } from '../cours/SchemasCommuns';
 import { presentationsVisuelles } from '../cours/VisualPresentation';
 import { MODALITES, REGIMES_DE_VERROU } from './contrat-de-l-api';
-import {
-  NATURES_DE_CELLULE,
-  type DonneesParBrique,
-  type TypeDEcranServi,
-} from './donnees-publiques';
+import { NATURES_DE_CELLULE, type DonneesParBrique } from './donnees-publiques';
 
 const strict = <F extends z.ZodRawShape>(forme: F) => z.object(forme).strict();
 
@@ -380,7 +376,3 @@ export const DONNEES_PAR_BRIQUE: SchemasParBrique = Object.fromEntries(
     nomme(schema, nomDuComposant(brique)),
   ]),
 ) as unknown as SchemasParBrique;
-
-export const TYPES_D_ECRAN_SERVI = Object.freeze(
-  Object.keys(DONNEES_PAR_BRIQUE) as TypeDEcranServi[],
-);

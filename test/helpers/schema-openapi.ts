@@ -129,6 +129,36 @@ function ecartsAuSchema(
   chemin: string,
 ): string[] {
   const resolu = resoudre(document, schema);
+  if (valeur === null && resolu.nullable === true) {
+    return [];
+  }
+  if (resolu.oneOf !== undefined) {
+    const essais = resolu.oneOf.map((variante) =>
+      ecartsAuSchema(document, variante, valeur, chemin),
+    );
+    return essais.reduce(
+      (retenus, essai) => (essai.length < retenus.length ? essai : retenus),
+      essais[0],
+    );
+  }
+  if (resolu.allOf?.length === 1) {
+    return ecartsAuSchema(document, resolu.allOf[0], valeur, chemin);
+  }
+  if (resolu.allOf !== undefined) {
+    const membres = resolu.allOf.map((membre) => resoudre(document, membre));
+    return ecartsDesProprietes(
+      document,
+      Object.fromEntries(
+        membres.flatMap(({ properties }) => Object.entries(properties ?? {})),
+      ),
+      membres.flatMap(({ required }) => required ?? []),
+      valeur,
+      chemin,
+    );
+  }
+  if (Array.isArray(resolu.enum) && !resolu.enum.includes(valeur)) {
+    return [`${chemin} : hors de l enumeration`];
+  }
   if (resolu.properties !== undefined) {
     return ecartsDesProprietes(
       document,
