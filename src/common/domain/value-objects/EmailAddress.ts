@@ -1,6 +1,6 @@
 const LETTRES =
   'A-Za-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u167F\\u1681-\\u1FFF' +
-  '\\u2C00-\\u2DFF\\u2E80-\\u2FDF\\u3040-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFEFE\\uFF10-\\uFFEF';
+  '\\u2C00-\\u2DFF\\u2E80-\\u2FDF\\u3040-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFEFE';
 const ALPHANUMERIQUES = `${LETTRES}0-9`;
 const MORCEAU_LOCAL = `[${ALPHANUMERIQUES}!#$%&'*+/=?^_\`{|}~-]+`;
 const LABEL = `[${ALPHANUMERIQUES}](?:[${ALPHANUMERIQUES}-]{0,61}[${ALPHANUMERIQUES}])?`;
