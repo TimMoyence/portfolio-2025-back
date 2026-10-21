@@ -4,10 +4,7 @@ import {
   detailsLisibles,
   libelleLisible,
 } from '../domain/cours/banque/confusions';
-import type {
-  ConfusionId,
-  DetailLisible,
-} from '../domain/cours/banque/confusions';
+import type { DetailLisible } from '../domain/cours/banque/confusions';
 import {
   confusionDominante,
   corrigerProduction,
@@ -19,6 +16,7 @@ import {
   AnswerAlreadySubmittedError,
   ReprisesEpuiseesError,
 } from '../domain/errors/FormationErrors';
+import type { CreateAnswerInput } from '../domain/IAnswers.repository';
 import { EnregistrementDeReponse } from './EnregistrementDeReponse';
 
 export interface SubmitProductionCommand {
@@ -57,31 +55,27 @@ export class SubmitProductionUseCase extends EnregistrementDeReponse {
     if (reprise && !PRODUCTIONS_REPRENABLES.includes(cible.ecran.brique)) {
       throw new AnswerAlreadySubmittedError(command.questionId);
     }
-    const participant = await this.participation.participantActif(command);
+    const participant = await this.participation.participant(command);
 
     const verdict = corrigerProduction(cible.question.corrige, valeur, cible);
     const confusion = confusionDominante(verdict.details);
-    await this.enregistrer(
-      command,
-      { sessionId: session.id, seed: participant.seed, reprise },
-      {
-        concept: cible.question.concept,
-        correcte: verdict.correcte,
-        score: verdict.score,
-        confusion,
-        details: verdict.details,
-        valeur,
-      },
-    );
+    const reponse: CreateAnswerInput = {
+      sessionId: session.id,
+      participantId: command.participantId,
+      questionId: command.questionId,
+      concept: cible.question.concept,
+      valeur,
+      seed: participant.seed,
+      correcte: verdict.correcte,
+      misconception: confusion,
+      score: verdict.score,
+      details: verdict.details,
+      dureeMs: command.dureeMs,
+    };
+    await (reprise
+      ? this.remplacer(reponse)
+      : this.enregistrerPremiereReponse(reponse, participant.studentKey));
     this.participation.signalerActivite(command.sessionId);
-    if (!reprise) {
-      await this.mastery.enregistrerTentative({
-        studentKey: participant.studentKey,
-        concept: cible.question.concept,
-        reussi: verdict.correcte,
-        vueLe: new Date(),
-      });
-    }
 
     return {
       correcte: verdict.correcte,
@@ -91,56 +85,18 @@ export class SubmitProductionUseCase extends EnregistrementDeReponse {
     };
   }
 
-  private async enregistrer(
-    command: SubmitProductionCommand,
-    { sessionId, seed, reprise }: EnregistrementDeProduction,
-    verdict: {
-      concept: string;
-      correcte: boolean;
-      score: number;
-      confusion: ConfusionId | null;
-      details: readonly {
-        cle: string;
-        juste: boolean;
-        confusion: ConfusionId | null;
-      }[];
-      valeur: ValeurProduction;
-    },
-  ): Promise<void> {
-    const reponse = {
-      sessionId,
-      participantId: command.participantId,
-      questionId: command.questionId,
-      concept: verdict.concept,
-      valeur: verdict.valeur,
-      seed,
-      correcte: verdict.correcte,
-      misconception: verdict.confusion,
-      score: verdict.score,
-      details: verdict.details,
-      dureeMs: command.dureeMs,
-    };
-    if (!reprise) {
-      await this.answers.create(reponse);
-      return;
-    }
+  private async remplacer(reponse: CreateAnswerInput): Promise<void> {
     const remplacee = await this.answers.remplacer(
       reponse,
       SOUMISSIONS_MAX_PAR_PRODUCTION,
     );
     if (!remplacee) {
       throw new ReprisesEpuiseesError(
-        command.questionId,
+        reponse.questionId,
         SOUMISSIONS_MAX_PAR_PRODUCTION,
       );
     }
   }
-}
-
-interface EnregistrementDeProduction {
-  readonly sessionId: string;
-  readonly seed: number;
-  readonly reprise: boolean;
 }
 
 export const SOUMISSIONS_MAX_PAR_PRODUCTION = 3;

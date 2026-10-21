@@ -2099,6 +2099,9 @@
           "401": {
             "description": "Jeton de participant invalide"
           },
+          "403": {
+            "description": "Participant evince par le formateur, cause dans le champ code du corps : PARTICIPANT_EVINCE"
+          },
           "404": {
             "description": "Seance ou cours introuvable, ou ecran non encore projete : code ECRAN_NON_SERVI"
           },
@@ -2510,6 +2513,9 @@
           "401": {
             "description": "Jeton de participant invalide"
           },
+          "403": {
+            "description": "Participant evince par le formateur, cause dans le champ code du corps : PARTICIPANT_EVINCE"
+          },
           "404": {
             "description": "Ecran non encore projete par le formateur : code ECRAN_NON_SERVI"
           },
@@ -2565,6 +2571,9 @@
           },
           "401": {
             "description": "Jeton de participant invalide"
+          },
+          "403": {
+            "description": "Participant evince par le formateur, cause dans le champ code du corps : PARTICIPANT_EVINCE"
           },
           "404": {
             "description": "Production refusee, cause dans le champ code du corps : ECRAN_NON_SERVI"
@@ -2630,8 +2639,11 @@
           "401": {
             "description": "Jeton de participant invalide"
           },
+          "403": {
+            "description": "Participant evince par le formateur, cause dans le champ code du corps : PARTICIPANT_EVINCE"
+          },
           "404": {
-            "description": "Evaluation refusee, cause dans le champ code du corps : ECRAN_NON_SERVI ou PARTICIPANT_INTROUVABLE"
+            "description": "Evaluation refusee, cause dans le champ code du corps : ECRAN_NON_SERVI"
           },
           "409": {
             "description": "Evaluation refusee, cause dans le champ code du corps : SEANCE_NON_DEMARREE ou SEANCE_TERMINEE"
@@ -2694,8 +2706,11 @@
           "401": {
             "description": "Jeton de participant invalide"
           },
+          "403": {
+            "description": "Participant evince par le formateur, cause dans le champ code du corps : PARTICIPANT_EVINCE"
+          },
           "404": {
-            "description": "Evaluation refusee, cause dans le champ code du corps : ECRAN_NON_SERVI ou PARTICIPANT_INTROUVABLE"
+            "description": "Evaluation refusee, cause dans le champ code du corps : ECRAN_NON_SERVI"
           },
           "409": {
             "description": "Evaluation refusee, cause dans le champ code du corps : SEANCE_NON_DEMARREE ou SEANCE_TERMINEE"
@@ -2758,8 +2773,11 @@
           "401": {
             "description": "Jeton de participant invalide"
           },
+          "403": {
+            "description": "Participant evince par le formateur, cause dans le champ code du corps : PARTICIPANT_EVINCE"
+          },
           "404": {
-            "description": "Evaluation refusee, cause dans le champ code du corps : ECRAN_NON_SERVI ou PARTICIPANT_INTROUVABLE"
+            "description": "Evaluation refusee, cause dans le champ code du corps : ECRAN_NON_SERVI"
           },
           "409": {
             "description": "Evaluation refusee, cause dans le champ code du corps : SEANCE_NON_DEMARREE ou SEANCE_TERMINEE"
@@ -2819,6 +2837,9 @@
           "401": {
             "description": "Jeton de participant invalide"
           },
+          "403": {
+            "description": "Participant evince par le formateur, cause dans le champ code du corps : PARTICIPANT_EVINCE"
+          },
           "404": {
             "description": "Enigme absente du parcours, ou ecran non encore projete : code ECRAN_NON_SERVI"
           },
@@ -2875,6 +2896,9 @@
           },
           "401": {
             "description": "Jeton de participant invalide"
+          },
+          "403": {
+            "description": "Participant evince par le formateur, cause dans le champ code du corps : PARTICIPANT_EVINCE"
           },
           "404": {
             "description": "Jalon refuse, cause dans le champ code du corps : ECRAN_NON_SERVI"
@@ -2940,6 +2964,9 @@
           "401": {
             "description": "Jeton de participant invalide"
           },
+          "403": {
+            "description": "Participant evince par le formateur, cause dans le champ code du corps : PARTICIPANT_EVINCE"
+          },
           "404": {
             "description": "Defi absent du cours, ou ecran non encore projete : code ECRAN_NON_SERVI"
           },
@@ -2988,6 +3015,9 @@
           "401": {
             "description": "Jeton de participant invalide"
           },
+          "403": {
+            "description": "Participant evince par le formateur, cause dans le champ code du corps : PARTICIPANT_EVINCE"
+          },
           "404": {
             "description": "Defi inconnu, aucune tentative envoyee, ou ecran non encore projete : code ECRAN_NON_SERVI"
           },
@@ -3028,6 +3058,9 @@
           "401": {
             "description": "Jeton de participant invalide"
           },
+          "403": {
+            "description": "Participant evince par le formateur, cause dans le champ code du corps : PARTICIPANT_EVINCE"
+          },
           "429": {
             "description": "Trop de requetes"
           }
@@ -3064,6 +3097,9 @@
           },
           "401": {
             "description": "Jeton de participant invalide"
+          },
+          "403": {
+            "description": "Participant evince par le formateur, cause dans le champ code du corps : PARTICIPANT_EVINCE"
           },
           "404": {
             "description": "Cours sans ecran de rappel espace, ou ecran non encore projete : code ECRAN_NON_SERVI"
@@ -3108,6 +3144,9 @@
           "401": {
             "description": "Jeton de participant invalide"
           },
+          "403": {
+            "description": "Participant evince par le formateur, cause dans le champ code du corps : PARTICIPANT_EVINCE"
+          },
           "409": {
             "description": "SEANCE_TERMINEE : la seance est close"
           },
@@ -3147,6 +3186,9 @@
           },
           "401": {
             "description": "Jeton de participant invalide"
+          },
+          "403": {
+            "description": "Participant evince par le formateur, cause dans le champ code du corps : PARTICIPANT_EVINCE"
           },
           "409": {
             "description": "Le cours a change depuis l ouverture de la seance"
@@ -3209,6 +3251,9 @@
           "401": {
             "description": "Jeton de participant invalide"
           },
+          "403": {
+            "description": "Participant evince par le formateur, cause dans le champ code du corps : PARTICIPANT_EVINCE"
+          },
           "404": {
             "description": "Écran pas encore projeté au poste, ou dont l’écran corrigé reste caché (ECRAN_NON_SERVI) ; écran sans classeur réservé (PIECE_JOINTE_INTROUVABLE)"
           },
@@ -3251,6 +3296,9 @@
           },
           "401": {
             "description": "Jeton de participant invalide"
+          },
+          "403": {
+            "description": "Participant evince par le formateur, cause dans le champ code du corps : PARTICIPANT_EVINCE"
           },
           "429": {
             "description": "Seance pleine (cent flux etudiants) ou trop d ouvertures par minute ; au-dela de deux flux, le plus ancien du participant est ferme"

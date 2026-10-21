@@ -10,10 +10,7 @@ import {
   buildSessionRecord,
   createMockFreeResponsesRepo,
 } from '../../../../../test/factories/formation.factory';
-import {
-  verifierContratDeParticipation,
-  verifierGardesDeParticipant,
-} from '../../../../../test/helpers/gardes-de-seance';
+import { verifierContratDeParticipation } from '../../../../../test/helpers/gardes-de-seance';
 import {
   BlankFieldError,
   DefiInconnuError,
@@ -170,11 +167,5 @@ describe('DefisUseCase', () => {
     beforeEach(() => {
       reveler();
     });
-
-    verifierGardesDeParticipant(() => ({
-      participants: depots.participants,
-      executer: lireStrategies,
-      effetsInterdits: () => [freeResponses.trouverParActivite],
-    }));
   });
 });

@@ -29,7 +29,6 @@ import { tirer } from '../../domain/cours/Tirage';
 import {
   CoursInconnuError,
   CoursModifieError,
-  ParticipantNotFoundError,
 } from '../../domain/errors/FormationErrors';
 import type { SessionRecord } from '../../domain/ISessions.repository';
 import type { LireSujetUseCase } from '../LireSujet.useCase';
@@ -192,18 +191,6 @@ describe('LireSujetUseCase', () => {
     participants,
     executer: demander,
   }));
-
-  it('refuse un participant inscrit dans une autre session', async () => {
-    participants.findById.mockResolvedValue(
-      buildParticipantRecord({
-        id: PARTICIPANT.id,
-        sessionId: 'autre-session-uuid',
-        seed: SEED,
-      }),
-    );
-
-    await expect(demander()).rejects.toBeInstanceOf(ParticipantNotFoundError);
-  });
 
   it('refuse un cours absent du catalogue', async () => {
     sut = lireSujetSur(

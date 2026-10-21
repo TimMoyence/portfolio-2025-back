@@ -7,7 +7,7 @@ import {
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
-import { ApiUnauthorizedResponse } from '@nestjs/swagger';
+import { ApiForbiddenResponse, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import type { Request } from 'express';
 import {
   type IdentiteSignee,
@@ -35,6 +35,10 @@ export function RouteParticipant(): MethodDecorator {
   return applyDecorators(
     UseGuards(ParticipantTokenGuard),
     ApiUnauthorizedResponse({ description: 'Jeton de participant invalide' }),
+    ApiForbiddenResponse({
+      description:
+        'Participant evince par le formateur, cause dans le champ code du corps : PARTICIPANT_EVINCE',
+    }),
   );
 }
 

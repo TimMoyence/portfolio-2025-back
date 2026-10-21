@@ -13,7 +13,6 @@ import {
   createMockSessionStateCache,
 } from '../../../../../test/factories/formation.factory';
 import {
-  verifierGardesDeParticipant,
   verifierSeanceIntrouvable,
   verifierSignalementDActivite,
 } from '../../../../../test/helpers/gardes-de-seance';
@@ -186,10 +185,4 @@ describe('SaveFreeResponseUseCase', () => {
 
     expect(freeResponses.save).toHaveBeenCalled();
   });
-
-  verifierGardesDeParticipant(() => ({
-    participants,
-    executer: () => sut.execute(REPONSE),
-    effetsInterdits: () => [freeResponses.save],
-  }));
 });

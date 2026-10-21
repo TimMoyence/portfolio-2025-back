@@ -81,7 +81,8 @@ const MARGE_DU_DEBIT = 2;
 const FORMULE_HORS_SUJET = '=123456789';
 const TABLES_HORS_SEANCE = ['formation_mastery'];
 
-const { OK, CREE, SANS_CONTENU, INVALIDE, INTROUVABLE, CONFLIT } = CODE_HTTP;
+const { OK, CREE, SANS_CONTENU, INVALIDE, INTERDIT, INTROUVABLE, CONFLIT } =
+  CODE_HTTP;
 
 function parOrdreAlphabetique(gauche: string, droite: string): number {
   return gauche.localeCompare(droite);
@@ -1193,9 +1194,15 @@ function seanceComplete(
             enAvance.map((reponse) => [reponse.status, codeDe(reponse)]),
           ).toEqual(enAvance.map(() => [INTROUVABLE, 'ECRAN_NON_SERVI']));
           expect({
-            jetonRevoque: jetonRevoque.status,
-            ecritureDeLEvince: ecritureDeLEvince.status,
-            lectureDeLEvince: lectureDeLEvince.status,
+            jetonRevoque: [jetonRevoque.status, codeDe(jetonRevoque)],
+            ecritureDeLEvince: [
+              ecritureDeLEvince.status,
+              codeDe(ecritureDeLEvince),
+            ],
+            lectureDeLEvince: [
+              lectureDeLEvince.status,
+              codeDe(lectureDeLEvince),
+            ],
             remplacant: remplacant.status,
             graineReprise: postes[3].graine,
             graineLiberee: evince.graine,
@@ -1208,9 +1215,9 @@ function seanceComplete(
             ),
             secretsDuSujet: clesSecretesDans(sujet.body),
           }).toEqual({
-            jetonRevoque: INTROUVABLE,
-            ecritureDeLEvince: INTROUVABLE,
-            lectureDeLEvince: INTROUVABLE,
+            jetonRevoque: [INTERDIT, 'PARTICIPANT_EVINCE'],
+            ecritureDeLEvince: [INTERDIT, 'PARTICIPANT_EVINCE'],
+            lectureDeLEvince: [INTERDIT, 'PARTICIPANT_EVINCE'],
             remplacant: CREE,
             graineReprise: evince.graine,
             graineLiberee: evince.graine,

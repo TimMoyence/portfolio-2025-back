@@ -13,7 +13,6 @@ import {
   TRI_ANATOMIE_B2_01 as TRI_ANATOMIE,
 } from '../../../../../test/factories/contenus-publies';
 import {
-  buildParticipantRecord,
   buildSessionRecord,
   createMockParticipantsRepo,
   createMockSessionsRepo,
@@ -23,7 +22,6 @@ import type { Cours } from '../../domain/contrats/cours';
 import { rangDeLEcran } from '../../domain/cours/EcranServi';
 import {
   EcranNonServiError,
-  ParticipantNotFoundError,
   ProductionInvalideError,
   SessionClosedError,
   SessionNotStartedError,
@@ -237,15 +235,5 @@ describe.each([
     );
 
     await expect(evaluer(seance.participation)).rejects.toBeInstanceOf(erreur);
-  });
-
-  it('refuse un participant évincé', async () => {
-    seance.participants.findById.mockResolvedValue(
-      buildParticipantRecord({ evinceLe: new Date('2026-10-15T10:00:00Z') }),
-    );
-
-    await expect(evaluer(seance.participation)).rejects.toBeInstanceOf(
-      ParticipantNotFoundError,
-    );
   });
 });
