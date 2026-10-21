@@ -72,6 +72,29 @@ describe('calculerStatistiquesSeance', () => {
     expect(statistiques.questionsProblemes).toEqual(['Q-PART-BASSE']);
   });
 
+  it('pèse la réussite par la part servie : dix feuilles à 0,9 de score réussissent à 90 %, pas 0 %', () => {
+    const statistiques = calculerStatistiquesSeance([], {
+      participants: 10,
+      questions: [
+        buildResultatQuestion({
+          questionId: 'Q-FEUILLE',
+          total: 10,
+          correctes: 0,
+          scoreMoyen: 0.9,
+          part: 0.9,
+        }),
+        buildResultatQuestion({
+          questionId: 'Q-VOTE',
+          total: 10,
+          correctes: 5,
+          part: 0.5,
+        }),
+      ],
+    });
+
+    expect(statistiques.tauxReussite).toBeCloseTo(0.7);
+  });
+
   it('somme les notes triées, sans quoi 11,875 tomberait à 11,87', () => {
     const repondues = [1, 12, 8, 4, 12, 7, 11, 2];
 

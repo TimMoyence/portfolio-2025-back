@@ -31,7 +31,7 @@ import type { IncidentRecord } from './IIncidents.repository';
 import type { ParticipantRecord } from './IParticipants.repository';
 import type { SessionRecord } from './ISessions.repository';
 import { DECIMALES_DE_LA_NOTE, REGLE_DE_NOTATION } from './RegleDeNotation';
-import { estNeSaitPas } from './ResultatsSeance';
+import { estNeSaitPas, partDesReponses } from './ResultatsSeance';
 import { estUneProduction, texteDeValeur } from './ValeurReponse';
 
 const LIBELLE_NE_SAIT_PAS = 'Je ne sais pas';
@@ -290,23 +290,17 @@ function nomDErreur(erreur: unknown): string {
 function conceptsFragilesDe(
   reponses: readonly AnswerRecord[],
 ): readonly string[] {
-  const parConcept = new Map<string, { total: number; correctes: number }>();
+  const parConcept = new Map<string, AnswerRecord[]>();
   for (const reponse of reponses) {
-    const entree = parConcept.get(reponse.concept) ?? {
-      total: 0,
-      correctes: 0,
-    };
-    entree.total += 1;
-    if (reponse.correcte) {
-      entree.correctes += 1;
-    }
-    parConcept.set(reponse.concept, entree);
+    parConcept.set(reponse.concept, [
+      ...(parConcept.get(reponse.concept) ?? []),
+      reponse,
+    ]);
   }
-  const fragiles: string[] = [];
-  for (const [concept, { total, correctes }] of parConcept) {
-    if (correctes / total < REGLE_DE_NOTATION.seuilQuestionProbleme) {
-      fragiles.push(concept);
-    }
-  }
-  return fragiles;
+  return [...parConcept]
+    .filter(
+      ([, duConcept]) =>
+        partDesReponses(duConcept) < REGLE_DE_NOTATION.seuilQuestionProbleme,
+    )
+    .map(([concept]) => concept);
 }

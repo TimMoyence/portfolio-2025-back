@@ -60,6 +60,7 @@ function agregerQuestion(
     correctes: reponses.filter((reponse) => reponse.correcte).length,
     confusions: compterConfusions(reponses),
     scoreMoyen: moyenneDesScores(reponses),
+    part: partDesReponses(reponses),
   };
   return {
     questionId: question.id,
@@ -102,6 +103,15 @@ function moyenneDesScores(reponses: readonly AnswerRecord[]): number | null {
   return moyenneOu(scores, null);
 }
 
+export function partDesReponses(reponses: readonly AnswerRecord[]): number {
+  return (
+    moyenneDesScores(reponses) ??
+    (reponses.length > 0
+      ? reponses.filter((reponse) => reponse.correcte).length / reponses.length
+      : 0)
+  );
+}
+
 function compterParCle(
   reponses: readonly AnswerRecord[],
 ): Readonly<Record<string, Decompte>> | null {
@@ -134,19 +144,14 @@ function lectureDuSeuil(
   question: QuestionAAgreger,
   {
     total,
-    correctes,
     confusions,
-    scoreMoyen,
-  }: Pick<
-    ResultatQuestion,
-    'total' | 'correctes' | 'confusions' | 'scoreMoyen'
-  >,
+    part,
+  }: Pick<ResultatQuestion, 'total' | 'confusions' | 'part'>,
   remediations: Readonly<Record<string, string>>,
 ): Pick<
   ResultatQuestion,
-  'confusionDominante' | 'part' | 'sousLeSeuil' | 'remediation'
+  'confusionDominante' | 'sousLeSeuil' | 'remediation'
 > {
-  const part = scoreMoyen ?? (total > 0 ? correctes / total : 0);
   const sousLeSeuil =
     question.seuil !== null && total > 0 && part < question.seuil;
   const dominante = confusions.at(0)?.id ?? null;
@@ -156,7 +161,6 @@ function lectureDuSeuil(
       : null;
   return {
     confusionDominante: dominante,
-    part,
     sousLeSeuil,
     remediation:
       sousLeSeuil && dominante !== null && ecranId !== null

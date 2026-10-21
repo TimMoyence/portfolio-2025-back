@@ -191,6 +191,16 @@ describe('buildRapportSession', () => {
     expect(rapport.conceptsFragiles).not.toContain('actualisation');
   });
 
+  it('lit la réussite d un concept comme la part d une question : des feuilles à 0,9 de score ne sont pas fragiles', () => {
+    const rapport = rapportDe({
+      answers: Array.from({ length: 10 }, () =>
+        buildAnswerRecord({ concept: 'tableur', correcte: false, score: 0.9 }),
+      ),
+    });
+
+    expect(rapport.conceptsFragiles).not.toContain('tableur');
+  });
+
   it('compte les incidents par participant', () => {
     const rapport = rapportDe({
       participants: deuxParticipants(),

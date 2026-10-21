@@ -25,8 +25,8 @@ export function calculerStatistiquesSeance(
     ? resultats.questions.filter((question) => question.noteCompte)
     : resultats.questions;
   const reponses = somme(questionsComptees.map((question) => question.total));
-  const correctes = somme(
-    questionsComptees.map((question) => question.correctes),
+  const reussies = somme(
+    questionsComptees.map((question) => question.part * question.total),
   );
   return {
     ...repartitionDesNotes(
@@ -37,7 +37,7 @@ export function calculerStatistiquesSeance(
     tauxParticipation: estAuMoinsUn(participants)
       ? proportion(participants, (participant) => participant.completion > 0)
       : 0,
-    tauxReussite: reponses === 0 ? 0 : correctes / reponses,
+    tauxReussite: reponses === 0 ? 0 : reussies / reponses,
     questionsProblemes: questionsComptees
       .filter((question) => question.sousLeSeuil)
       .map((question) => question.questionId),
