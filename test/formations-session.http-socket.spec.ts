@@ -62,6 +62,7 @@ import {
   attendreQue,
   compilerModuleFormations,
   fermetureCoteServeur,
+  remettreLesCompteursAZero,
   routeFormations,
   serveurHttpDe,
 } from './helpers/formations-harness';
@@ -557,6 +558,10 @@ describe('Session de formation (e2e http socket)', () => {
 
   beforeAll(async () => {
     ({ app, mailer, scores, port } = await creerHarnais());
+  });
+
+  beforeEach(() => {
+    remettreLesCompteursAZero(app);
   });
 
   afterAll(async () => {

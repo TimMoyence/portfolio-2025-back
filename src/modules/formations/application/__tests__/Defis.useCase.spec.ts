@@ -162,10 +162,4 @@ describe('DefisUseCase', () => {
       DEFI_DE_TEST,
     );
   });
-
-  describe('corrige du defi deja revele', () => {
-    beforeEach(() => {
-      reveler();
-    });
-  });
 });

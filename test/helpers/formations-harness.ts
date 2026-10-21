@@ -1,7 +1,12 @@
 import { INestApplication, type Provider } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { Test as ModuleDeTest, type TestingModule } from '@nestjs/testing';
-import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import {
+  ThrottlerGuard,
+  ThrottlerModule,
+  ThrottlerStorage,
+  type ThrottlerStorageService,
+} from '@nestjs/throttler';
 import { request as requeteNode, type IncomingMessage } from 'node:http';
 import request from 'supertest';
 import type { Test } from 'supertest';
@@ -217,6 +222,10 @@ export function fournisseursFormations(
     { provide: SESSION_STATE_CACHE, useClass: SessionStateCacheService },
     { provide: CLASSEURS_DE_COURS, useClass: ClasseursSurDisque },
   ];
+}
+
+export function remettreLesCompteursAZero(app: INestApplication): void {
+  app.get<ThrottlerStorageService>(ThrottlerStorage).storage.clear();
 }
 
 export function compilerModuleFormations(
