@@ -5645,7 +5645,17 @@
             "example": "=C2/$C$5"
           },
           "valeur": {
-            "type": "number",
+            "oneOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "boolean"
+              }
+            ],
             "example": 0.345217
           },
           "affichage": {

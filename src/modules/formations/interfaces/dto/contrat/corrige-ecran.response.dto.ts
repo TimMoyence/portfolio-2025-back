@@ -11,6 +11,7 @@ import {
 import { ReferenceOuNul } from '../../../../../common/interfaces/dto/reference-ou-nul.decorator';
 import type { CorrigeEcranPresentateur } from '../../../domain/contrats/deroule';
 import type { FormeFormule } from '../../../domain/cours/Corrige';
+import type { ValeurFormule } from '../../../domain/cours/Formule';
 import { TableauEvalueResponseDto } from './tableau-evalue.response.dto';
 
 class ToleranceResponseDto {
@@ -37,8 +38,11 @@ class AttenduFeuillePresentateurResponseDto {
   @ApiProperty({ example: '=C2/$C$5' })
   formuleReference: string;
 
-  @ApiProperty({ example: 0.345217 })
-  valeur: number;
+  @ApiProperty({
+    oneOf: [{ type: 'number' }, { type: 'string' }, { type: 'boolean' }],
+    example: 0.345217,
+  })
+  valeur: ValeurFormule;
 
   @ApiProperty({
     description:
