@@ -8,6 +8,13 @@ export const TYPES_QUESTION = Object.freeze([
 ] as const);
 export type TypeQuestion = (typeof TYPES_QUESTION)[number];
 
+export const TYPES_DE_PRODUCTION = Object.freeze([
+  'feuille',
+  'tableau',
+  'classement',
+] as const);
+export type TypeDeProduction = (typeof TYPES_DE_PRODUCTION)[number];
+
 export const DIFFUSIONS = Object.freeze(['catalogue', 'seance'] as const);
 export type Diffusion = (typeof DIFFUSIONS)[number];
 
@@ -53,8 +60,15 @@ export interface MetadonneesBrique {
   readonly regime: RegimeVerrou;
 }
 
+export const TYPES_DE_TOLERANCE = Object.freeze([
+  'relative',
+  'absolue',
+  'decimales',
+] as const);
+export type TypeDeTolerance = (typeof TYPES_DE_TOLERANCE)[number];
+
 export interface Tolerance {
-  readonly type: 'relative' | 'absolue' | 'decimales';
+  readonly type: TypeDeTolerance;
   readonly valeur: number;
 }
 
@@ -78,7 +92,7 @@ export type ValeurProduction =
       readonly classement: Readonly<Record<string, string>>;
     }
   | {
-      readonly type: 'feuille' | 'tableau' | 'classement';
+      readonly type: TypeDeProduction;
       readonly neSaitPas: true;
     };
 

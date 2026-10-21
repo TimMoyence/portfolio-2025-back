@@ -12,7 +12,11 @@ export class JoinSessionResponseDto {
   @ApiProperty({ example: 0 })
   ecranCourant: number;
 
-  @ApiProperty({ enum: PACING_MODES, example: 'pilote' })
+  @ApiProperty({
+    enum: PACING_MODES,
+    enumName: 'PacingMode',
+    example: 'pilote',
+  })
   modeRythme: PacingMode;
 
   @ApiProperty({

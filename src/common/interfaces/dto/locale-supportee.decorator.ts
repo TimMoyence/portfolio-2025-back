@@ -18,6 +18,7 @@ export function LocaleSupportee({
 }: OptionsDeLocale = {}): PropertyDecorator {
   const documentation = {
     example: 'fr',
+    enumName: 'Locale',
     enum: [...LOCALES_SUPPORTEES],
     ...(parDefaut === undefined ? {} : { default: parDefaut }),
   };

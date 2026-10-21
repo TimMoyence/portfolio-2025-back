@@ -75,6 +75,18 @@ const enumeration =
       requis,
     );
 
+const enumerationNommeeResolue = (
+  champ: SchemaOpenApi,
+  composants: Record<string, SchemaOpenApi>,
+): SchemaOpenApi => {
+  const reference = champ.$ref ?? champ.allOf?.at(0)?.$ref;
+  const nommee = composants[reference?.split('/').at(-1) ?? ''];
+  if (nommee?.enum === undefined) {
+    return champ;
+  }
+  return { ...champ, ...nommee, $ref: undefined, allOf: undefined };
+};
+
 const reference: Ecarts = (champ) =>
   champ.$ref !== undefined ||
   (variantesDe(champ).length > 0 &&
@@ -357,10 +369,10 @@ describe('contrat OpenAPI des saisies', () => {
       contraintes.flatMap((contrainte) => {
         const libelle = `${classeDe(contrainte)}.${contrainte.propertyName} ${nomDe(contrainte)}`;
         const { target } = contrainte;
+        const composants =
+          typeof target === 'function' ? schemas.get(target) : undefined;
         const schema =
-          typeof target === 'function'
-            ? schemas.get(target)?.[target.name]
-            : undefined;
+          typeof target === 'function' ? composants?.[target.name] : undefined;
         const champ = schema?.properties?.[contrainte.propertyName];
         const cible = contrainte.each ? champ?.items : champ;
         if (cible === undefined) {
@@ -369,7 +381,7 @@ describe('contrat OpenAPI des saisies', () => {
         const annonce = ANNONCES[nomDe(contrainte)];
         return (
           annonce?.(contrainte)(
-            cible,
+            enumerationNommeeResolue(cible, composants ?? {}),
             schema?.required?.includes(contrainte.propertyName) ?? false,
           ) ?? []
         ).map((ecart) => `${libelle} : ${ecart}`);

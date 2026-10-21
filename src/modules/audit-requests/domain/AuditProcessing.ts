@@ -1,3 +1,4 @@
+import type { MethodeDeContact } from './AuditRequest';
 import { AuditLocale } from './audit-locale.util';
 import type {
   ClientReportSynthesis,
@@ -5,17 +6,19 @@ import type {
 } from './AuditReportTiers';
 import type { EngineCoverage } from './EngineCoverage';
 
-export type AuditProcessingStatus =
-  | 'PENDING'
-  | 'RUNNING'
-  | 'COMPLETED'
-  | 'FAILED';
+export const STATUTS_D_AUDIT = Object.freeze([
+  'PENDING',
+  'RUNNING',
+  'COMPLETED',
+  'FAILED',
+] as const);
+export type AuditProcessingStatus = (typeof STATUTS_D_AUDIT)[number];
 
 export interface AuditSnapshot {
   id: string;
   requestId: string;
   websiteName: string;
-  contactMethod: 'EMAIL' | 'PHONE';
+  contactMethod: MethodeDeContact;
   contactValue: string;
   locale: AuditLocale;
   done: boolean;

@@ -6,7 +6,11 @@ import type {
 import { ETATS_D_ENIGME } from '../../../domain/contrats/pilotage';
 
 export class EtatDEnigmeResponseDto {
-  @ApiProperty({ enum: ETATS_D_ENIGME, example: 'ouverte' })
+  @ApiProperty({
+    enum: ETATS_D_ENIGME,
+    enumName: 'EtatDEnigme',
+    example: 'ouverte',
+  })
   etat: EtatEnigme;
 
   @ApiProperty({ minimum: 0, maximum: 10, example: 9 })

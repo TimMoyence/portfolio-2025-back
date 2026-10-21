@@ -44,7 +44,7 @@ export class EcranDerouleResponseDto
   @ApiProperty({ description: 'Notes du formateur' })
   notes: string;
 
-  @ApiProperty({ enum: DIFFUSIONS })
+  @ApiProperty({ enum: DIFFUSIONS, enumName: 'Diffusion' })
   diffusion: Diffusion;
 
   @ApiProperty({ nullable: true, type: Number, example: 0.7 })

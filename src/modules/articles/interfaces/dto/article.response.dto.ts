@@ -29,7 +29,7 @@ export class ArticleSectionResponseDto {
   @ApiProperty({ example: 'essentiel' })
   id: string;
 
-  @ApiProperty({ enum: [...TYPES_DE_SECTION] })
+  @ApiProperty({ enum: [...TYPES_DE_SECTION], enumName: 'TypeDeSection' })
   kind: (typeof TYPES_DE_SECTION)[number];
 
   @ApiProperty()
@@ -100,7 +100,11 @@ export class PublishedArticleResponseDto {
   @ApiProperty({ example: 'morning-brief-2026-09-23' })
   slug: string;
 
-  @ApiProperty({ enum: [...LOCALES_SUPPORTEES], example: 'fr' })
+  @ApiProperty({
+    enum: [...LOCALES_SUPPORTEES],
+    enumName: 'Locale',
+    example: 'fr',
+  })
   locale: SupportedLocale;
 
   @ApiProperty({ example: 'Veille IA du 23 septembre' })

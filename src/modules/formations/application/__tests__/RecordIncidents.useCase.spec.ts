@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import { DomainValidationError } from '../../../../common/domain/errors/DomainValidationError';
 import {
   buildIncidentInput,
   buildParticipantRecord,
@@ -43,22 +42,8 @@ describe('RecordIncidentsUseCase', () => {
     expect(incidents.createMany).toHaveBeenCalledWith(lot);
   });
 
-  it('ignore silencieusement un type inconnu sans faire echouer le lot', async () => {
-    const connu = buildIncidentInput({ type: 'window_blur' });
-    const inconnu = buildIncidentInput({ type: 'type_jamais_vu' });
-    await expect(remonter([connu, inconnu])).resolves.toBeUndefined();
-    expect(incidents.createMany).toHaveBeenCalledWith([connu]);
-  });
-
-  it('n appelle pas le depot quand aucun type n est connu', async () => {
-    const lot = [buildIncidentInput({ type: 'type_jamais_vu' })];
-    await remonter(lot);
-    expect(incidents.createMany).not.toHaveBeenCalled();
-  });
-
-  it('refuse un envoi qui depasse la limite de volume', async () => {
-    const lot = Array.from({ length: 201 }, () => buildIncidentInput());
-    await expect(remonter(lot)).rejects.toThrow(DomainValidationError);
+  it('n appelle pas le depot pour un lot vide', async () => {
+    await remonter([]);
     expect(incidents.createMany).not.toHaveBeenCalled();
   });
 

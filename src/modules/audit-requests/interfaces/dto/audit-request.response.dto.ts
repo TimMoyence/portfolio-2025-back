@@ -1,5 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import type { AuditProcessingStatus } from '../../domain/AuditProcessing';
+import {
+  type AuditProcessingStatus,
+  STATUTS_D_AUDIT,
+} from '../../domain/AuditProcessing';
 
 export class AuditRequestResponseDto {
   @ApiProperty({ example: 'Audit request created successfully.' })
@@ -13,7 +16,8 @@ export class AuditRequestResponseDto {
 
   @ApiProperty({
     example: 'PENDING',
-    enum: ['PENDING', 'RUNNING', 'COMPLETED', 'FAILED'],
+    enumName: 'StatutDAudit',
+    enum: STATUTS_D_AUDIT,
   })
   status: AuditProcessingStatus;
 }

@@ -33,7 +33,7 @@ class PromptEntryDto {
   @ApiProperty()
   title: string;
 
-  @ApiProperty({ enum: AI_LEVELS })
+  @ApiProperty({ enum: AI_LEVELS, enumName: 'NiveauIa' })
   level: string;
 
   @ApiProperty()

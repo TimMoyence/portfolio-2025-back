@@ -56,7 +56,7 @@ export class JalonParticipantResponseDto {
   @ApiProperty({ example: 'b2-01-jalon-1' })
   sondageId: string;
 
-  @ApiProperty({ enum: ETATS_PULSE, example: 'ca-va' })
+  @ApiProperty({ enum: ETATS_PULSE, enumName: 'EtatPulse', example: 'ca-va' })
   etat: EtatPulse;
 }
 

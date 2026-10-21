@@ -1,6 +1,7 @@
+import { ValeurDuContrat } from '../../../../common/interfaces/dto/valeur-du-contrat.decorator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsBoolean, IsIn, ValidateNested } from 'class-validator';
+import { IsBoolean, ValidateNested } from 'class-validator';
 import type { SupportedLocale } from '../../../../common/domain/value-objects/LocaleCode';
 import { LocaleSupportee } from '../../../../common/interfaces/dto/locale-supportee.decorator';
 import { TexteSaisi } from '../../../../common/interfaces/dto/longueur-de-texte.decorator';
@@ -40,12 +41,14 @@ export class CookieConsentRequestDto {
   @TexteSaisi(1, 20)
   region: string;
 
-  @ApiProperty({ example: 'banner', enum: SOURCES_DE_CONSENTEMENT })
-  @IsIn(SOURCES_DE_CONSENTEMENT)
+  @ValeurDuContrat(SOURCES_DE_CONSENTEMENT, 'SourceDeConsentement', {
+    documentation: { example: 'banner' },
+  })
   source: CreateCookieConsentProps['source'];
 
-  @ApiProperty({ example: 'accept_all', enum: ACTIONS_DE_CONSENTEMENT })
-  @IsIn(ACTIONS_DE_CONSENTEMENT)
+  @ValeurDuContrat(ACTIONS_DE_CONSENTEMENT, 'ActionDeConsentement', {
+    documentation: { example: 'accept_all' },
+  })
   action: CreateCookieConsentProps['action'];
 
   @ApiProperty({ type: CookieConsentPreferencesRequestDto })

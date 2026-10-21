@@ -28,6 +28,7 @@ class ExtraitDuRenvoiResponseDto {
 
   @ApiPropertyOptional({
     enum: CHAMPS_EXTRAITS_DU_CAS,
+    enumName: 'ChampExtraitDuCas',
     isArray: true,
     description: 'Champs du cas repris de l ecran renvoye',
   })

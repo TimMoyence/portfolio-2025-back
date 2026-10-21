@@ -29,7 +29,11 @@ export class RapportQuestionResponseDto
   extends RapportQuestionServieResponseDto
   implements RapportQuestion
 {
-  @ApiProperty({ enum: TYPES_QUESTION, example: 'feuille' })
+  @ApiProperty({
+    enum: TYPES_QUESTION,
+    enumName: 'TypeQuestion',
+    example: 'feuille',
+  })
   type: TypeQuestion;
 
   @ApiProperty({
@@ -73,7 +77,11 @@ export class ResultatQuestionResponseDto
   @ApiProperty({ example: 'B2-01-A4-02-FEUILLE-CANAUX' })
   ecranId: string;
 
-  @ApiProperty({ enum: TYPES_QUESTION, example: 'feuille' })
+  @ApiProperty({
+    enum: TYPES_QUESTION,
+    enumName: 'TypeQuestion',
+    example: 'feuille',
+  })
   type: TypeQuestion;
 
   @ApiProperty({ example: true })
@@ -147,6 +155,7 @@ export class RegleDeNotationResponseDto
 {
   @ApiProperty({
     enum: TYPES_QUESTION,
+    enumName: 'TypeQuestion',
     isArray: true,
     example: ['vote', 'numeric', 'classement', 'feuille', 'tableau'],
   })

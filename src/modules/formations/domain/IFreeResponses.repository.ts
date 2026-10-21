@@ -1,4 +1,9 @@
-export type FreeResponseStatus = 'enregistre' | 'en_attente' | 'echec';
+export const STATUTS_DE_REPONSE_LIBRE = Object.freeze([
+  'enregistre',
+  'en_attente',
+  'echec',
+] as const);
+export type FreeResponseStatus = (typeof STATUTS_DE_REPONSE_LIBRE)[number];
 
 export interface FreeResponseRecord {
   id: string;

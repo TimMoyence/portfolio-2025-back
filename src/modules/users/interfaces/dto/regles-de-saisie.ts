@@ -88,6 +88,7 @@ export function RolesValides(): PropertyDecorator {
     ApiPropertyOptional({
       example: ['teacher'],
       isArray: true,
+      enumName: 'Role',
       enum: [...VALID_ROLES],
       description: 'Liste des roles. Reserve aux administrateurs.',
     }),

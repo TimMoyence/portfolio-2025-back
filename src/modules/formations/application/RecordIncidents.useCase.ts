@@ -1,15 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
 import type {
   IIncidentsRepository,
   IncidentInput,
 } from '../domain/IIncidents.repository';
 import type { IParticipantsRepository } from '../domain/IParticipants.repository';
 import type { ISessionsRepository } from '../domain/ISessions.repository';
-import {
-  envoiDansLaLimite,
-  filtrerIncidentsConnus,
-} from '../domain/IncidentType';
 import { assertSeanceNonTerminee } from '../domain/SessionState';
 import {
   INCIDENTS_REPOSITORY,
@@ -35,16 +30,12 @@ export class RecordIncidentsUseCase {
     participantId: string,
     inputs: readonly IncidentInput[],
   ): Promise<void> {
-    if (!envoiDansLaLimite(inputs.length)) {
-      throw new DomainValidationError('Trop d incidents dans un seul envoi');
-    }
     const session = await seanceExistante(this.sessions, sessionId);
     assertSeanceNonTerminee(session.etat);
     await participantActif(this.participants, sessionId, participantId);
-    const valides = filtrerIncidentsConnus(inputs);
-    if (valides.length === 0) {
+    if (inputs.length === 0) {
       return;
     }
-    await this.incidents.createMany(valides);
+    await this.incidents.createMany(inputs);
   }
 }

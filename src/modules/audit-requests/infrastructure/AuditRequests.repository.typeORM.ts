@@ -1,3 +1,4 @@
+import type { MethodeDeContact } from '../domain/AuditRequest';
 import { Injectable } from '@nestjs/common';
 import { estObjet } from '../../../common/domain/est-objet';
 import { boiteDeLivraison } from '../../../common/domain/value-objects/boite-de-livraison';
@@ -160,7 +161,7 @@ export class AuditRequestsRepositoryTypeORM
       id: entity.id,
       requestId: entity.requestId,
       websiteName: entity.websiteName,
-      contactMethod: entity.contactMethod as 'EMAIL' | 'PHONE',
+      contactMethod: entity.contactMethod as MethodeDeContact,
       contactValue: entity.contactValue,
       locale: LocaleCode.resolve(entity.locale).value,
       done: entity.done,

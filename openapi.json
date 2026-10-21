@@ -1333,13 +1333,7 @@
             "required": false,
             "in": "query",
             "schema": {
-              "default": "fr",
-              "example": "fr",
-              "type": "string",
-              "enum": [
-                "fr",
-                "en"
-              ]
+              "$ref": "#/components/schemas/Locale"
             }
           },
           {
@@ -1401,13 +1395,7 @@
             "required": false,
             "in": "query",
             "schema": {
-              "default": "fr",
-              "example": "fr",
-              "type": "string",
-              "enum": [
-                "fr",
-                "en"
-              ]
+              "$ref": "#/components/schemas/Locale"
             }
           },
           {
@@ -3566,6 +3554,14 @@
           "emailVerified"
         ]
       },
+      "Role": {
+        "type": "string",
+        "enum": [
+          "admin",
+          "teacher"
+        ],
+        "description": "Liste des roles. Reserve aux administrateurs."
+      },
       "CreateUserDto": {
         "type": "object",
         "properties": {
@@ -3610,11 +3606,7 @@
             ],
             "description": "Liste des roles. Reserve aux administrateurs.",
             "items": {
-              "type": "string",
-              "enum": [
-                "admin",
-                "teacher"
-              ]
+              "$ref": "#/components/schemas/Role"
             }
           }
         },
@@ -3669,11 +3661,7 @@
             ],
             "description": "Liste des roles. Reserve aux administrateurs.",
             "items": {
-              "type": "string",
-              "enum": [
-                "admin",
-                "teacher"
-              ]
+              "$ref": "#/components/schemas/Role"
             }
           }
         }
@@ -3853,6 +3841,13 @@
           }
         }
       },
+      "Locale": {
+        "type": "string",
+        "enum": [
+          "fr",
+          "en"
+        ]
+      },
       "ContactRequestDto": {
         "type": "object",
         "properties": {
@@ -3917,11 +3912,11 @@
             "example": "2026-02-11"
           },
           "termsLocale": {
-            "type": "string",
             "example": "fr",
-            "enum": [
-              "fr",
-              "en"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Locale"
+              }
             ]
           },
           "termsMethod": {
@@ -3962,6 +3957,22 @@
           "httpCode"
         ]
       },
+      "SourceDeConsentement": {
+        "type": "string",
+        "enum": [
+          "banner",
+          "settings"
+        ]
+      },
+      "ActionDeConsentement": {
+        "type": "string",
+        "enum": [
+          "accept_all",
+          "essential_only",
+          "save_preferences",
+          "withdraw"
+        ]
+      },
       "CookieConsentPreferencesRequestDto": {
         "type": "object",
         "properties": {
@@ -3999,11 +4010,11 @@
             "example": "2026-02-11"
           },
           "locale": {
-            "type": "string",
             "example": "fr",
-            "enum": [
-              "fr",
-              "en"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Locale"
+              }
             ]
           },
           "region": {
@@ -4013,21 +4024,19 @@
             "example": "EU_UK"
           },
           "source": {
-            "type": "string",
             "example": "banner",
-            "enum": [
-              "banner",
-              "settings"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SourceDeConsentement"
+              }
             ]
           },
           "action": {
-            "type": "string",
             "example": "accept_all",
-            "enum": [
-              "accept_all",
-              "essential_only",
-              "save_preferences",
-              "withdraw"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ActionDeConsentement"
+              }
             ]
           },
           "preferences": {
@@ -4060,6 +4069,13 @@
           "httpCode"
         ]
       },
+      "MethodeDeContact": {
+        "type": "string",
+        "enum": [
+          "EMAIL",
+          "PHONE"
+        ]
+      },
       "AuditRequestRequestDto": {
         "type": "object",
         "properties": {
@@ -4080,11 +4096,11 @@
             "example": "Example Studio"
           },
           "contactMethod": {
-            "type": "string",
             "example": "EMAIL",
-            "enum": [
-              "EMAIL",
-              "PHONE"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MethodeDeContact"
+              }
             ]
           },
           "contactValue": {
@@ -4094,11 +4110,11 @@
             "example": "hello@example.com"
           },
           "locale": {
-            "type": "string",
             "example": "fr",
-            "enum": [
-              "fr",
-              "en"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Locale"
+              }
             ]
           }
         },
@@ -4106,6 +4122,15 @@
           "websiteName",
           "contactMethod",
           "contactValue"
+        ]
+      },
+      "StatutDAudit": {
+        "type": "string",
+        "enum": [
+          "PENDING",
+          "RUNNING",
+          "COMPLETED",
+          "FAILED"
         ]
       },
       "AuditRequestResponseDto": {
@@ -4124,13 +4149,11 @@
             "example": "f8dd820d-fc38-4f6a-83be-a833aa6be16f"
           },
           "status": {
-            "type": "string",
             "example": "PENDING",
-            "enum": [
-              "PENDING",
-              "RUNNING",
-              "COMPLETED",
-              "FAILED"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StatutDAudit"
+              }
             ]
           }
         },
@@ -4153,13 +4176,11 @@
             "example": true
           },
           "status": {
-            "type": "string",
             "example": "COMPLETED",
-            "enum": [
-              "PENDING",
-              "RUNNING",
-              "COMPLETED",
-              "FAILED"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StatutDAudit"
+              }
             ]
           },
           "progress": {
@@ -4216,6 +4237,12 @@
           "pillarScores"
         ]
       },
+      "FormationDeLaBoite": {
+        "type": "string",
+        "enum": [
+          "ia-solopreneurs"
+        ]
+      },
       "RequestToolkitRequestDto": {
         "type": "object",
         "properties": {
@@ -4241,10 +4268,11 @@
             "example": "marie@example.com"
           },
           "formationSlug": {
-            "type": "string",
             "example": "ia-solopreneurs",
-            "enum": [
-              "ia-solopreneurs"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FormationDeLaBoite"
+              }
             ]
           },
           "termsVersion": {
@@ -4254,11 +4282,11 @@
             "maxLength": 50
           },
           "termsLocale": {
-            "type": "string",
             "example": "fr",
-            "enum": [
-              "fr",
-              "en"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Locale"
+              }
             ]
           },
           "termsAcceptedAt": {
@@ -4335,6 +4363,14 @@
           "decision"
         ]
       },
+      "NiveauIa": {
+        "type": "string",
+        "enum": [
+          "debutant",
+          "intermediaire",
+          "avance"
+        ]
+      },
       "PromptEntryDto": {
         "type": "object",
         "properties": {
@@ -4345,11 +4381,10 @@
             "type": "string"
           },
           "level": {
-            "type": "string",
-            "enum": [
-              "debutant",
-              "intermediaire",
-              "avance"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/NiveauIa"
+              }
             ]
           },
           "prompt": {
@@ -4607,6 +4642,13 @@
           "interactions"
         ]
       },
+      "StatutDArticle": {
+        "type": "string",
+        "enum": [
+          "published",
+          "withdrawn"
+        ]
+      },
       "ArticleModerationResponseDto": {
         "type": "object",
         "properties": {
@@ -4619,12 +4661,12 @@
             "example": "morning-brief-2026-09-23"
           },
           "locale": {
-            "type": "string",
-            "enum": [
-              "fr",
-              "en"
-            ],
-            "example": "fr"
+            "example": "fr",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Locale"
+              }
+            ]
           },
           "title": {
             "type": "string",
@@ -4635,10 +4677,10 @@
             "format": "date-time"
           },
           "status": {
-            "type": "string",
-            "enum": [
-              "published",
-              "withdrawn"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StatutDArticle"
+              }
             ]
           }
         },
@@ -4720,6 +4762,15 @@
           "processed_at"
         ]
       },
+      "TypeDeSection": {
+        "type": "string",
+        "enum": [
+          "essential",
+          "deep_dive",
+          "rubric",
+          "radar"
+        ]
+      },
       "ArticleSectionItemResponseDto": {
         "type": "object",
         "properties": {
@@ -4762,12 +4813,10 @@
             "example": "essentiel"
           },
           "kind": {
-            "type": "string",
-            "enum": [
-              "essential",
-              "deep_dive",
-              "rubric",
-              "radar"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TypeDeSection"
+              }
             ]
           },
           "title": {
@@ -4901,12 +4950,12 @@
             "example": "morning-brief-2026-09-23"
           },
           "locale": {
-            "type": "string",
-            "enum": [
-              "fr",
-              "en"
-            ],
-            "example": "fr"
+            "example": "fr",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Locale"
+              }
+            ]
           },
           "title": {
             "type": "string",
@@ -5030,6 +5079,16 @@
           "reservee"
         ]
       },
+      "ChampExtraitDuCas": {
+        "type": "string",
+        "enum": [
+          "metier",
+          "situation",
+          "geste",
+          "consequence"
+        ],
+        "description": "Champs du cas repris de l ecran renvoye"
+      },
       "ExtraitDuRenvoiResponseDto": {
         "type": "object",
         "properties": {
@@ -5048,13 +5107,7 @@
             "type": "array",
             "description": "Champs du cas repris de l ecran renvoye",
             "items": {
-              "type": "string",
-              "enum": [
-                "metier",
-                "situation",
-                "geste",
-                "consequence"
-              ]
+              "$ref": "#/components/schemas/ChampExtraitDuCas"
             }
           }
         }
@@ -5080,15 +5133,22 @@
           "memeQue"
         ]
       },
+      "TypeDeTolerance": {
+        "type": "string",
+        "enum": [
+          "relative",
+          "absolue",
+          "decimales"
+        ]
+      },
       "ToleranceResponseDto": {
         "type": "object",
         "properties": {
           "type": {
-            "type": "string",
-            "enum": [
-              "relative",
-              "absolue",
-              "decimales"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TypeDeTolerance"
+              }
             ]
           },
           "valeur": {
@@ -5803,6 +5863,13 @@
           "code"
         ]
       },
+      "PacingMode": {
+        "type": "string",
+        "enum": [
+          "pilote",
+          "libre"
+        ]
+      },
       "FreeRangeDto": {
         "type": "object",
         "properties": {
@@ -5822,6 +5889,16 @@
           "dernier"
         ]
       },
+      "PhaseDeVote": {
+        "type": "string",
+        "enum": [
+          "vote",
+          "discussion",
+          "revote",
+          "revele"
+        ],
+        "description": "Phase d un vote a question jumelle, jamais ramenee en arriere"
+      },
       "PilotageEcranRequestDto": {
         "type": "object",
         "properties": {
@@ -5832,14 +5909,12 @@
             "example": "B2-01-A3-01-VOTE-HAUSSE-BAISSE"
           },
           "phase": {
-            "type": "string",
-            "enum": [
-              "vote",
-              "discussion",
-              "revote",
-              "revele"
-            ],
-            "description": "Phase d un vote a question jumelle, jamais ramenee en arriere"
+            "description": "Phase d un vote a question jumelle, jamais ramenee en arriere",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PhaseDeVote"
+              }
+            ]
           },
           "revele": {
             "type": "boolean",
@@ -5890,12 +5965,12 @@
             "example": 4
           },
           "mode": {
-            "type": "string",
-            "enum": [
-              "pilote",
-              "libre"
-            ],
-            "example": "pilote"
+            "example": "pilote",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PacingMode"
+              }
+            ]
           },
           "intervalle": {
             "$ref": "#/components/schemas/FreeRangeDto"
@@ -6002,6 +6077,17 @@
           "reponse"
         ]
       },
+      "TypeQuestion": {
+        "type": "string",
+        "enum": [
+          "numeric",
+          "vote",
+          "feuille",
+          "tableau",
+          "classement",
+          "enigme"
+        ]
+      },
       "RapportQuestionResponseDto": {
         "type": "object",
         "properties": {
@@ -6042,16 +6128,12 @@
             "example": 42000
           },
           "type": {
-            "type": "string",
-            "enum": [
-              "numeric",
-              "vote",
-              "feuille",
-              "tableau",
-              "classement",
-              "enigme"
-            ],
-            "example": "feuille"
+            "example": "feuille",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TypeQuestion"
+              }
+            ]
           },
           "score": {
             "type": "number",
@@ -6220,16 +6302,12 @@
             "example": "B2-01-A4-02-FEUILLE-CANAUX"
           },
           "type": {
-            "type": "string",
-            "enum": [
-              "numeric",
-              "vote",
-              "feuille",
-              "tableau",
-              "classement",
-              "enigme"
-            ],
-            "example": "feuille"
+            "example": "feuille",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TypeQuestion"
+              }
+            ]
           },
           "noteCompte": {
             "type": "boolean",
@@ -6392,15 +6470,7 @@
               "tableau"
             ],
             "items": {
-              "type": "string",
-              "enum": [
-                "numeric",
-                "vote",
-                "feuille",
-                "tableau",
-                "classement",
-                "enigme"
-              ]
+              "$ref": "#/components/schemas/TypeQuestion"
             }
           },
           "productionCompteSi": {
@@ -6629,6 +6699,13 @@
           "enigmes"
         ]
       },
+      "Diffusion": {
+        "type": "string",
+        "enum": [
+          "catalogue",
+          "seance"
+        ]
+      },
       "ConfusionCorrigeeResponseDto": {
         "type": "object",
         "properties": {
@@ -6790,10 +6867,10 @@
             "description": "Notes du formateur"
           },
           "diffusion": {
-            "type": "string",
-            "enum": [
-              "catalogue",
-              "seance"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Diffusion"
+              }
             ]
           },
           "seuil": {
@@ -6941,6 +7018,14 @@
           "remediations"
         ]
       },
+      "StatutDeReponseLibre": {
+        "type": "string",
+        "enum": [
+          "enregistre",
+          "en_attente",
+          "echec"
+        ]
+      },
       "FreeResponseResponseDto": {
         "type": "object",
         "properties": {
@@ -6984,11 +7069,10 @@
             "example": 12000
           },
           "status": {
-            "type": "string",
-            "enum": [
-              "enregistre",
-              "en_attente",
-              "echec"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StatutDeReponseLibre"
+              }
             ]
           },
           "submittedAt": {
@@ -7253,12 +7337,12 @@
             "example": 0
           },
           "modeRythme": {
-            "type": "string",
-            "enum": [
-              "pilote",
-              "libre"
-            ],
-            "example": "pilote"
+            "example": "pilote",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PacingMode"
+              }
+            ]
           },
           "jeton": {
             "type": "string",
@@ -7502,15 +7586,22 @@
           "classement"
         ]
       },
+      "TypeDeProduction": {
+        "type": "string",
+        "enum": [
+          "feuille",
+          "tableau",
+          "classement"
+        ]
+      },
       "ProductionNeSaitPasDto": {
         "type": "object",
         "properties": {
           "type": {
-            "type": "string",
-            "enum": [
-              "feuille",
-              "tableau",
-              "classement"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TypeDeProduction"
+              }
             ]
           },
           "neSaitPas": {
@@ -7936,18 +8027,25 @@
           "dureeMs"
         ]
       },
+      "EtatDEnigme": {
+        "type": "string",
+        "enum": [
+          "resolue",
+          "epuisee",
+          "ouverte",
+          "verrouillee"
+        ]
+      },
       "EtatDEnigmeResponseDto": {
         "type": "object",
         "properties": {
           "etat": {
-            "type": "string",
-            "enum": [
-              "resolue",
-              "epuisee",
-              "ouverte",
-              "verrouillee"
-            ],
-            "example": "ouverte"
+            "example": "ouverte",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/EtatDEnigme"
+              }
+            ]
           },
           "tentativesRestantes": {
             "type": "number",
@@ -8014,17 +8112,24 @@
           "tentativesRestantes"
         ]
       },
+      "EtatPulse": {
+        "type": "string",
+        "enum": [
+          "perdu",
+          "ca-va",
+          "clair"
+        ]
+      },
       "DeclarerJalonRequestDto": {
         "type": "object",
         "properties": {
           "etat": {
-            "type": "string",
-            "enum": [
-              "perdu",
-              "ca-va",
-              "clair"
-            ],
-            "example": "ca-va"
+            "example": "ca-va",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/EtatPulse"
+              }
+            ]
           }
         },
         "required": [
@@ -8177,13 +8282,12 @@
             "example": "b2-01-jalon-1"
           },
           "etat": {
-            "type": "string",
-            "enum": [
-              "perdu",
-              "ca-va",
-              "clair"
-            ],
-            "example": "ca-va"
+            "example": "ca-va",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/EtatPulse"
+              }
+            ]
           }
         },
         "required": [
@@ -8360,6 +8464,14 @@
           "rappels"
         ]
       },
+      "Boite": {
+        "type": "number",
+        "enum": [
+          1,
+          2,
+          3
+        ]
+      },
       "SpacedQuestionPubliqueResponseDto": {
         "type": "object",
         "properties": {
@@ -8372,13 +8484,12 @@
             "example": "evolution-reciproque"
           },
           "boite": {
-            "type": "number",
-            "enum": [
-              1,
-              2,
-              3
-            ],
-            "example": 1
+            "example": 1,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Boite"
+              }
+            ]
           },
           "cours": {
             "type": "string",
@@ -8420,14 +8531,30 @@
           "questions"
         ]
       },
+      "TypeDIncident": {
+        "type": "string",
+        "enum": [
+          "tab_hidden",
+          "window_blur",
+          "copy_attempt",
+          "paste_attempt",
+          "context_menu",
+          "blocked_shortcut",
+          "devtools_suspected",
+          "page_unload",
+          "fast_answer"
+        ]
+      },
       "IncidentEntryDto": {
         "type": "object",
         "properties": {
           "type": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 60,
-            "example": "tab_hidden"
+            "example": "tab_hidden",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TypeDIncident"
+              }
+            ]
           },
           "contexte": {
             "type": "object",

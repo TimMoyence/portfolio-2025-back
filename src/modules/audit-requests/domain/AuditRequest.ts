@@ -11,9 +11,12 @@ import {
 import { PhoneNumber } from '../../../common/domain/value-objects/PhoneNumber';
 import { AuditLocale } from './audit-locale.util';
 
+export const METHODES_DE_CONTACT = Object.freeze(['EMAIL', 'PHONE'] as const);
+export type MethodeDeContact = (typeof METHODES_DE_CONTACT)[number];
+
 export interface CreateAuditRequestProps extends Provenance {
   websiteName: string;
-  contactMethod: 'EMAIL' | 'PHONE';
+  contactMethod: MethodeDeContact;
   contactValue: string;
   locale: AuditLocale;
 }
@@ -21,7 +24,7 @@ export interface CreateAuditRequestProps extends Provenance {
 export class AuditRequest {
   id?: string;
   websiteName: string;
-  contactMethod: 'EMAIL' | 'PHONE';
+  contactMethod: MethodeDeContact;
   contactValue: string;
   locale: AuditLocale;
   done?: boolean;

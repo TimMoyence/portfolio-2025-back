@@ -1,4 +1,5 @@
 import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
+import type { IncidentType } from '../../domain/IncidentType';
 import { FormationParticipantEntity } from './FormationParticipant.entity';
 import { RelieeAuParticipant } from './ligne-de-participant';
 
@@ -18,7 +19,7 @@ export class FormationIncidentEntity {
   participant: FormationParticipantEntity;
 
   @Column({ type: 'varchar', length: 40 })
-  type: string;
+  type: IncidentType;
 
   @Column({ type: 'jsonb', nullable: true })
   contexte: Record<string, unknown> | null;

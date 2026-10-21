@@ -29,6 +29,8 @@ interface SchemaDeChamp {
   readonly properties?: Record<string, SchemaDeChamp>;
   readonly oneOf?: readonly SchemaDeChamp[];
   readonly anyOf?: readonly SchemaDeChamp[];
+  readonly allOf?: readonly SchemaDeChamp[];
+  readonly $ref?: string;
 }
 
 const porteUnNombre = (schema: SchemaDeChamp): boolean =>
@@ -37,10 +39,19 @@ const porteUnNombre = (schema: SchemaDeChamp): boolean =>
   schema.minimum !== undefined ||
   schema.maximum !== undefined;
 
+const composantNomme = (ref: string): SchemaDeChamp =>
+  (document.components?.schemas?.[ref.split('/').at(-1) ?? ''] ??
+    {}) as SchemaDeChamp;
+
 const admetUnNombre = (schema: SchemaDeChamp): boolean =>
   schema.type === 'integer' ||
   schema.type === 'number' ||
-  [...(schema.oneOf ?? []), ...(schema.anyOf ?? [])].some(admetUnNombre);
+  (schema.$ref !== undefined && admetUnNombre(composantNomme(schema.$ref))) ||
+  [
+    ...(schema.oneOf ?? []),
+    ...(schema.anyOf ?? []),
+    ...(schema.allOf ?? []),
+  ].some(admetUnNombre);
 
 function champsDuDocument(
   document: DocumentOpenApi,
@@ -165,14 +176,6 @@ describe('OpenAPI des pièces jointes réservées', () => {
 });
 
 describe('OpenAPI des écrans servis', () => {
-  it('documente par un type numerique chaque champ des formations qui porte un defaut, un exemple ou une borne numerique', () => {
-    expect(champsNumeriquesSansTypeNumerique(document)).toEqual([]);
-  });
-
-  it('donne a chaque champ des formations un type, et a chaque objet sa forme', () => {
-    expect(champsSansForme(document)).toEqual([]);
-  });
-
   interface SchemaOpenApi {
     readonly $ref?: string;
     readonly type?: string;

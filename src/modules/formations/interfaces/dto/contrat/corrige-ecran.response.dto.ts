@@ -1,4 +1,8 @@
 import {
+  TYPES_DE_TOLERANCE,
+  type TypeDeTolerance,
+} from '../../../domain/contrats/contrat-de-l-api';
+import {
   ApiExtraModels,
   ApiProperty,
   ApiPropertyOptional,
@@ -10,8 +14,8 @@ import type { FormeFormule } from '../../../domain/cours/Corrige';
 import { TableauEvalueResponseDto } from './tableau-evalue.response.dto';
 
 class ToleranceResponseDto {
-  @ApiProperty({ enum: ['relative', 'absolue', 'decimales'] })
-  type: 'relative' | 'absolue' | 'decimales';
+  @ApiProperty({ enum: TYPES_DE_TOLERANCE, enumName: 'TypeDeTolerance' })
+  type: TypeDeTolerance;
 
   @ApiProperty({ example: 0.0001 })
   valeur: number;

@@ -1,3 +1,7 @@
+import {
+  type FreeResponseStatus,
+  STATUTS_DE_REPONSE_LIBRE,
+} from '../../domain/IFreeResponses.repository';
 import { ApiProperty } from '@nestjs/swagger';
 import { ParticipantDeSeanceResponseDto } from './participant-de-seance.response.dto';
 
@@ -32,8 +36,11 @@ export class FreeResponseResponseDto extends ParticipantDeSeanceResponseDto {
   @ApiProperty({ example: 12000 })
   dureeMs: number;
 
-  @ApiProperty({ enum: ['enregistre', 'en_attente', 'echec'] })
-  status: string;
+  @ApiProperty({
+    enum: STATUTS_DE_REPONSE_LIBRE,
+    enumName: 'StatutDeReponseLibre',
+  })
+  status: FreeResponseStatus;
 
   @ApiProperty({
     type: String,

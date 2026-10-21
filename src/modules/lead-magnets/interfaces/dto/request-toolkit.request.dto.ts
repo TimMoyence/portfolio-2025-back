@@ -1,5 +1,5 @@
+import { ValeurDuContrat } from '../../../../common/interfaces/dto/valeur-du-contrat.decorator';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsIn, IsString } from 'class-validator';
 import { AdresseEmail } from '../../../../common/interfaces/dto/adresse-email.decorator';
 import {
   Rogne,
@@ -24,10 +24,10 @@ export class RequestToolkitRequestDto extends ChampsAntiRobotDto {
   @AdresseEmail()
   email: string;
 
-  @ApiProperty({ example: 'ia-solopreneurs', enum: FORMATIONS_DE_LA_BOITE })
+  @ValeurDuContrat(FORMATIONS_DE_LA_BOITE, 'FormationDeLaBoite', {
+    documentation: { example: 'ia-solopreneurs' },
+  })
   @Rogne()
-  @IsString()
-  @IsIn(FORMATIONS_DE_LA_BOITE)
   formationSlug: string;
 
   @VersionDesConditions()

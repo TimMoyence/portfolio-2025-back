@@ -16,6 +16,6 @@ export class ArticleModerationResponseDto
   ] as const)
   implements ModerationView
 {
-  @ApiProperty({ enum: [...STATUTS_D_ARTICLE] })
+  @ApiProperty({ enum: [...STATUTS_D_ARTICLE], enumName: 'StatutDArticle' })
   status: ArticleStatus;
 }

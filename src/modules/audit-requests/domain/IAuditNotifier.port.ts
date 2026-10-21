@@ -1,3 +1,4 @@
+import type { MethodeDeContact } from './AuditRequest';
 import { AuditRequest } from './AuditRequest';
 import type {
   ClientReportSynthesis,
@@ -15,7 +16,7 @@ export interface ClientReportMailInput {
 export interface ExpertReportMailInput {
   readonly websiteName: string;
   readonly auditId: string;
-  readonly clientContact: { method: 'EMAIL' | 'PHONE'; value: string };
+  readonly clientContact: { method: MethodeDeContact; value: string };
   readonly clientReport: ClientReportSynthesis;
   readonly expertReport: ExpertReportSynthesis;
   readonly pdfBuffer: Buffer;

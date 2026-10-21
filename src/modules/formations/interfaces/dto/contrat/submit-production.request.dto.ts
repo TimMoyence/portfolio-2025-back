@@ -1,10 +1,14 @@
+import { ValeurDuContrat } from '../../../../../common/interfaces/dto/valeur-du-contrat.decorator';
+import {
+  TYPES_DE_PRODUCTION,
+  type TypeDeProduction,
+} from '../../../domain/contrats/contrat-de-l-api';
 import { applyDecorators } from '@nestjs/common';
 import { ApiExtraModels, ApiProperty, getSchemaPath } from '@nestjs/swagger';
 import { plainToInstance, Transform, Type } from 'class-transformer';
 import {
   Equals,
   IsArray,
-  IsIn,
   IsNumber,
   IsObject,
   IsString,
@@ -36,7 +40,6 @@ import { entreesBornees } from '../objet-plat';
 
 const LONGUEUR_MAX_IDENTIFIANT = 60;
 export const ENTREES_MAX = 400;
-const TYPES_DE_PRODUCTION = ['feuille', 'tableau', 'classement'] as const;
 
 @ValidatorConstraint({ name: 'dictionnaireDeTextes', async: false })
 class DictionnaireDeTextesBorne implements ValidatorConstraintInterface {
@@ -126,9 +129,8 @@ class ProductionClassementDto {
 }
 
 class ProductionNeSaitPasDto {
-  @ApiProperty({ enum: TYPES_DE_PRODUCTION })
-  @IsIn(TYPES_DE_PRODUCTION)
-  type: (typeof TYPES_DE_PRODUCTION)[number];
+  @ValeurDuContrat(TYPES_DE_PRODUCTION, 'TypeDeProduction')
+  type: TypeDeProduction;
 
   @ApiProperty({ oneOf: [{ type: 'boolean', enum: [true] }] })
   @Equals(true)

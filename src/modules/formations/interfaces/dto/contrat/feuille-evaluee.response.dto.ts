@@ -1,5 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import type { NatureDeCellule } from '../../../domain/contrats/donnees-publiques';
+import {
+  NATURES_DE_CELLULE,
+  type NatureDeCellule,
+} from '../../../domain/contrats/donnees-publiques';
 
 export class FeuilleEvalueeResponseDto {
   @ApiProperty({
@@ -24,7 +27,7 @@ export class FeuilleEvalueeResponseDto {
     type: 'object',
     additionalProperties: {
       type: 'string',
-      enum: ['texte', 'nombre', 'logique', 'erreur'],
+      enum: [...NATURES_DE_CELLULE],
     },
     description: 'Nature de la valeur affichee par chaque cellule non vide',
     example: { C2: 'nombre', D2: 'nombre' },

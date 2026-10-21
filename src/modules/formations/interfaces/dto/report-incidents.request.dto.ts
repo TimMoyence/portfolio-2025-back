@@ -15,8 +15,12 @@ import {
   AuPlusElements,
   DictionnaireBorne,
 } from '../../../../common/interfaces/dto/bornes-annoncees.decorator';
-import { TexteBorne } from '../../../../common/interfaces/dto/longueur-de-texte.decorator';
-import { MAX_INCIDENTS_PAR_ENVOI } from '../../domain/IncidentType';
+import { ValeurDuContrat } from '../../../../common/interfaces/dto/valeur-du-contrat.decorator';
+import {
+  INCIDENT_TYPES,
+  type IncidentType,
+  MAX_INCIDENTS_PAR_ENVOI,
+} from '../../domain/IncidentType';
 import { entreesBornees } from './objet-plat';
 
 const ENTREES_MAX_DU_CONTEXTE = 10;
@@ -64,9 +68,10 @@ const ContexteDIncident = (): PropertyDecorator =>
   );
 
 export class IncidentEntryDto {
-  @ApiProperty({ example: 'tab_hidden' })
-  @TexteBorne(1, 60)
-  type: string;
+  @ValeurDuContrat(INCIDENT_TYPES, 'TypeDIncident', {
+    documentation: { example: 'tab_hidden' },
+  })
+  type: IncidentType;
 
   @ApiPropertyOptional({ example: { duree: 1200 } })
   @IsOptional()

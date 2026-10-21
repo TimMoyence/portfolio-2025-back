@@ -1,7 +1,8 @@
+import type { IncidentType } from './IncidentType';
 export interface IncidentInput {
   sessionId: string;
   participantId: string;
-  type: string;
+  type: IncidentType;
   contexte: Record<string, unknown> | null;
   horodatage: Date;
 }

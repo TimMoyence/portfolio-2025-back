@@ -1,3 +1,4 @@
+import type { MethodeDeContact } from '../../domain/AuditRequest';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { enArrierePlan } from '../../../../common/application/en-arriere-plan';
 import { moyenneOu } from '../../../../common/domain/nombres/statistiques';
@@ -31,7 +32,7 @@ export interface RunDeliveryInput {
   readonly auditId: string;
   readonly locale: AuditLocale;
   readonly websiteName: string;
-  readonly contactMethod: 'EMAIL' | 'PHONE';
+  readonly contactMethod: MethodeDeContact;
   readonly contactValue: string;
   readonly normalizedUrl: string;
   readonly pillarScores: Record<string, number>;
@@ -47,7 +48,7 @@ export interface AuditDeliveryContext {
   readonly locale: AuditLocale;
   readonly websiteName: string;
   readonly normalizedUrl: string;
-  readonly contactMethod: 'EMAIL' | 'PHONE';
+  readonly contactMethod: MethodeDeContact;
   readonly contactValue: string;
   readonly pillarScores: Record<string, number>;
   readonly quickWins: ReadonlyArray<string>;

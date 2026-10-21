@@ -99,7 +99,13 @@ export type PlotDefinition = DefinitionPublique<
 > &
   TraceCalcule;
 
-export type NatureDeCellule = 'texte' | 'nombre' | 'logique' | 'erreur';
+export const NATURES_DE_CELLULE = Object.freeze([
+  'texte',
+  'nombre',
+  'logique',
+  'erreur',
+] as const);
+export type NatureDeCellule = (typeof NATURES_DE_CELLULE)[number];
 
 export interface FeuilleEvaluee {
   readonly saisies: Readonly<Record<string, string>>;
