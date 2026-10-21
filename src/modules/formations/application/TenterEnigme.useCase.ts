@@ -17,7 +17,10 @@ import {
   EnigmeVerrouilleeError,
   TentativesEpuiseesError,
 } from '../domain/errors/FormationErrors';
-import type { IAnswersRepository } from '../domain/IAnswers.repository';
+import type {
+  CreateAnswerInput,
+  IAnswersRepository,
+} from '../domain/IAnswers.repository';
 import type { IEscapeRepository } from '../domain/IEscape.repository';
 import type { IMasteryRepository } from '../domain/IMastery.repository';
 import {
@@ -25,6 +28,7 @@ import {
   ESCAPE_REPOSITORY,
   MASTERY_REPOSITORY,
 } from '../domain/token';
+import { EnregistrementDeReponse } from './EnregistrementDeReponse';
 import { ParticipationEnSeance } from './ParticipationEnSeance';
 
 export interface TenterEnigmeCommand {
@@ -43,16 +47,18 @@ export interface TenterEnigmeResult extends EtatDesEnigmes {
 }
 
 @Injectable()
-export class TenterEnigmeUseCase {
+export class TenterEnigmeUseCase extends EnregistrementDeReponse {
   constructor(
-    private readonly participation: ParticipationEnSeance,
+    participation: ParticipationEnSeance,
+    @Inject(ANSWERS_REPOSITORY)
+    answers: IAnswersRepository,
+    @Inject(MASTERY_REPOSITORY)
+    mastery: IMasteryRepository,
     @Inject(ESCAPE_REPOSITORY)
     private readonly escape: IEscapeRepository,
-    @Inject(ANSWERS_REPOSITORY)
-    private readonly answers: IAnswersRepository,
-    @Inject(MASTERY_REPOSITORY)
-    private readonly mastery: IMasteryRepository,
-  ) {}
+  ) {
+    super(participation, answers, mastery);
+  }
 
   async execute(command: TenterEnigmeCommand): Promise<TenterEnigmeResult> {
     const { cible } = await this.participation.cibleOuverteAuxProductions(
@@ -65,7 +71,7 @@ export class TenterEnigmeUseCase {
     if (visee === null) {
       throw new EnigmeInconnueError(command.parcoursId, command.enigmeId);
     }
-    const participant = await this.participation.participantActif(command);
+    const participant = await this.participation.participant(command);
 
     const progression = await this.lireProgression(command);
     if (!enigmeOuverte(cible, progression, visee.rangEnigme)) {
@@ -97,12 +103,20 @@ export class TenterEnigmeUseCase {
       saisie: command.reponse,
       correcte: verdict.correcte,
     });
-    await this.enregistrerPremiereTentative(command, participant.seed, {
-      concept: visee.question.concept,
-      correcte: verdict.correcte,
-      confusion: verdict.confusion,
-      studentKey: participant.studentKey,
-    });
+    await this.noterLaPremiereTentative(
+      {
+        sessionId: command.sessionId,
+        participantId: command.participantId,
+        questionId: command.enigmeId,
+        concept: visee.question.concept,
+        valeur: command.reponse,
+        seed: participant.seed,
+        correcte: verdict.correcte,
+        misconception: verdict.confusion,
+        dureeMs: command.dureeMs,
+      },
+      participant.studentKey,
+    );
     if (verdict.correcte) {
       await this.escape.marquerResolue(command.participantId, command.enigmeId);
     }
@@ -152,41 +166,21 @@ export class TenterEnigmeUseCase {
     );
   }
 
-  private async enregistrerPremiereTentative(
-    command: TenterEnigmeCommand,
-    seed: number,
-    question: {
-      concept: string;
-      correcte: boolean;
-      confusion: string | null;
-      studentKey: string;
-    },
+  private async noterLaPremiereTentative(
+    reponse: CreateAnswerInput,
+    studentKey: string,
   ): Promise<void> {
-    if (await this.answers.existsFor(command.participantId, command.enigmeId)) {
+    if (
+      await this.answers.existsFor(reponse.participantId, reponse.questionId)
+    ) {
       return;
     }
     try {
-      await this.answers.create({
-        sessionId: command.sessionId,
-        participantId: command.participantId,
-        questionId: command.enigmeId,
-        concept: question.concept,
-        valeur: command.reponse,
-        seed,
-        correcte: question.correcte,
-        misconception: question.confusion,
-        dureeMs: command.dureeMs,
-      });
+      await this.enregistrerPremiereReponse(reponse, studentKey);
     } catch (erreur) {
-      if (erreur instanceof AnswerAlreadySubmittedError) {
-        return;
+      if (!(erreur instanceof AnswerAlreadySubmittedError)) {
+        throw erreur;
       }
-      throw erreur;
     }
-    await this.mastery.enregistrerTentative({
-      studentKey: question.studentKey,
-      concept: question.concept,
-      reussi: question.correcte,
-    });
   }
 }

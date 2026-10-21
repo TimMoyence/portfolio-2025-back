@@ -13,7 +13,6 @@ import {
 import { assertQuestionNonCorrigee } from '../domain/cours/CorrectionSurPlace';
 import { assertPhaseOuverte } from '../domain/cours/PilotageEcrans';
 import { AnswerAlreadySubmittedError } from '../domain/errors/FormationErrors';
-import { coursDeLaSeance, seanceOuverteAuxReponses } from './CoursDeLaSeance';
 import { EnregistrementDeReponse } from './EnregistrementDeReponse';
 import type {
   SubmitAnswerCommand,
@@ -30,12 +29,8 @@ const TYPES_A_ROUTE_PROPRE: readonly string[] = [
 @Injectable()
 export class SubmitAnswerUseCase extends EnregistrementDeReponse {
   async execute(command: SubmitAnswerCommand): Promise<SubmitAnswerResult> {
-    const session = await seanceOuverteAuxReponses(
-      this.participation.sessions,
-      command.sessionId,
-    );
-
-    const participant = await this.participation.participantActif(command);
+    const { session, cours } = await this.participation.ouverte(command);
+    const participant = await this.participation.participant(command);
 
     const deja = await this.answers.existsFor(
       command.participantId,
@@ -56,7 +51,6 @@ export class SubmitAnswerUseCase extends EnregistrementDeReponse {
         `La question ${command.questionId} de type ${question.type} passe par sa propre route`,
       );
     }
-    const cours = await coursDeLaSeance(this.participation.catalogue, session);
     const rangEcran =
       'rangEcran' in question
         ? question.rangEcran
@@ -103,24 +97,21 @@ export class SubmitAnswerUseCase extends EnregistrementDeReponse {
 
     const verdict = gradeAnswer(command.valeur, solution, question.tolerance);
 
-    await this.answers.create({
-      sessionId: command.sessionId,
-      participantId: command.participantId,
-      questionId: command.questionId,
-      concept: question.concept,
-      valeur: command.valeur,
-      seed: participant.seed,
-      correcte: verdict.correcte,
-      misconception: verdict.misconception,
-      dureeMs: command.dureeMs,
-    });
+    await this.enregistrerPremiereReponse(
+      {
+        sessionId: command.sessionId,
+        participantId: command.participantId,
+        questionId: command.questionId,
+        concept: question.concept,
+        valeur: command.valeur,
+        seed: participant.seed,
+        correcte: verdict.correcte,
+        misconception: verdict.misconception,
+        dureeMs: command.dureeMs,
+      },
+      participant.studentKey,
+    );
     this.participation.signalerActivite(command.sessionId);
-
-    await this.mastery.enregistrerTentative({
-      studentKey: participant.studentKey,
-      concept: question.concept,
-      reussi: verdict.correcte,
-    });
 
     return verdictServiDe(session, question, verdict);
   }

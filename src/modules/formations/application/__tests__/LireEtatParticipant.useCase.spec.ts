@@ -33,10 +33,7 @@ import {
 } from '../../../../../test/factories/votes-des-cours-servis.factory';
 import { decrireLeVerdictDesVotesServis } from '../../../../../test/helpers/verdict-des-votes-servis';
 import { installerSecretDeJalons } from '../../../../../test/helpers/env-formations';
-import {
-  verifierGardesDeParticipant,
-  verifierSeanceIntrouvable,
-} from '../../../../../test/helpers/gardes-de-seance';
+import { verifierSeanceIntrouvable } from '../../../../../test/helpers/gardes-de-seance';
 import type { Cours } from '../../domain/contrats/cours';
 import type { PilotageEcran } from '../../domain/contrats/pilotage';
 import { libelleLisible } from '../../domain/cours/banque/confusions';
@@ -291,12 +288,6 @@ describe('LireEtatParticipantUseCase', () => {
 
     expect(etat.jalons).toEqual([{ sondageId: 'jalon-test-1', etat: 'ca-va' }]);
   });
-
-  verifierGardesDeParticipant(() => ({
-    participants,
-    executer: () => sut.execute(PARTICIPANT_DE_TEST),
-    effetsInterdits: () => [answers.listerDuParticipant],
-  }));
 
   it('T10 · ne livre avant revelation ni corrige, ni fragment d une enigme encore ouverte', async () => {
     answers.listerDuParticipant.mockResolvedValue([

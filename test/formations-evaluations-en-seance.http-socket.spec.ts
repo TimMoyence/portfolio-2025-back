@@ -400,7 +400,7 @@ describe.each(EVALUATIONS)(
       expect(statuts).toEqual([401, 401]);
     });
 
-    it('refuse en 404 PARTICIPANT_INTROUVABLE le poste évincé, sans rien calculer', async () => {
+    it('refuse en 403 PARTICIPANT_EVINCE le poste évincé, sans rien calculer', async () => {
       depots.participants.findById.mockResolvedValue({
         ...POSTE,
         evinceLe: new Date('2026-10-15T10:00:00Z'),
@@ -409,8 +409,8 @@ describe.each(EVALUATIONS)(
       const reponse = await evaluer(chemin, corps);
 
       expect({ statut: reponse.status, code: codeDe(reponse) }).toEqual({
-        statut: 404,
-        code: 'PARTICIPANT_INTROUVABLE',
+        statut: 403,
+        code: 'PARTICIPANT_EVINCE',
       });
       expect(JSON.stringify(reponse.body)).not.toContain(calcul);
     });

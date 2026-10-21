@@ -120,7 +120,7 @@ function EvaluationEnSeance(
     }),
     ApiNotFoundResponse({
       description:
-        'Evaluation refusee, cause dans le champ code du corps : ECRAN_NON_SERVI ou PARTICIPANT_INTROUVABLE',
+        'Evaluation refusee, cause dans le champ code du corps : ECRAN_NON_SERVI',
     }),
     ApiConflictResponse({
       description:
@@ -527,7 +527,6 @@ export class FormationsStudentController {
   ): Promise<void> {
     await this.recordIncidents.execute(
       sessionId,
-      participantId,
       dto.incidents.map((incident) => ({
         sessionId,
         participantId,

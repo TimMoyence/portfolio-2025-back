@@ -1006,6 +1006,38 @@ describe('Session de formation (e2e http socket)', () => {
       expect(retour.body).toMatchObject({ code: 'PARTICIPANT_EVINCE' });
       expect(retour.body).not.toHaveProperty('jeton');
     });
+
+    it('refuse en 403 PARTICIPANT_EVINCE chaque route du poste a l evince, quel que soit l etat de la seance', async () => {
+      const seance = await seanceAvecUnPoste();
+      await http.demarrer(seance.sessionId).expect(204);
+      await agirSurLeParticipant(seance, 'eviction').expect(204);
+      const routes = routesDuControleur(FormationsStudentController).filter(
+        ({ chemin }) => !chemin.includes(':code'),
+      );
+
+      const refus = await Promise.all(
+        routes.map(async ({ methode, chemin }) => {
+          const url = routeFormations(
+            `/${chemin.replace(':id', seance.sessionId).replaceAll(/:\w+/g, 'x')}`,
+          );
+          const reponse = await request(serveurHttpDe(app))
+            [methode](url)
+            .set(EN_TETE_JETON, seance.jeton);
+          return {
+            route: `${methode} ${chemin}`,
+            statut: reponse.status,
+            code: (reponse.body as { code?: string }).code,
+          };
+        }),
+      );
+
+      expect(routes.length).toBeGreaterThan(10);
+      expect(
+        refus.filter(
+          ({ statut, code }) => statut !== 403 || code !== 'PARTICIPANT_EVINCE',
+        ),
+      ).toEqual([]);
+    });
   });
 
   describe('soumission d une reponse', () => {

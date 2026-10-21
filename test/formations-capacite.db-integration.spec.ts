@@ -292,10 +292,14 @@ describeDb('Capacite et eviction (B28, db integration)', () => {
     ]);
   });
 
-  it('revoque l acces du participant evince', async () => {
+  it('revoque en 403 PARTICIPANT_EVINCE l acces du participant evince', async () => {
     const { seance, premier } = await seanceAvecUnInscrit(true);
 
-    expect((await lireLeSujet(seance, premier)).status).toBe(INTROUVABLE);
+    attendreRefus(
+      await lireLeSujet(seance, premier),
+      INTERDIT,
+      'PARTICIPANT_EVINCE',
+    );
   });
 
   it('marque evince dans la liste du formateur, pour qu il reste readmissible', async () => {

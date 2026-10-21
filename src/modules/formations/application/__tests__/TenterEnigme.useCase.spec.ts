@@ -50,9 +50,9 @@ describe('TenterEnigmeUseCase', () => {
     mastery = createMockMasteryRepo();
     sut = new TenterEnigmeUseCase(
       depots.participation,
-      escape,
       answers,
       mastery,
+      escape,
     );
   });
 

@@ -7,19 +7,12 @@ import {
   SessionNotOwnedError,
 } from '../../src/modules/formations/domain/errors/FormationErrors';
 import {
-  buildParticipantRecord,
   buildSessionRecord,
   createMockParticipantsRepo,
   createMockSessionsRepo,
 } from '../factories/formation.factory';
 
 type EffetInterdit = (...args: never[]) => unknown;
-
-export interface ContexteDeGardeParticipant {
-  readonly participants: ReturnType<typeof createMockParticipantsRepo>;
-  readonly executer: () => Promise<unknown>;
-  readonly effetsInterdits?: () => ReadonlyArray<EffetInterdit>;
-}
 
 export interface ContexteDeGardeSeance {
   readonly sessions: ReturnType<typeof createMockSessionsRepo>;
@@ -32,21 +25,6 @@ function attendreSansEffet(effets?: () => ReadonlyArray<EffetInterdit>) {
   for (const effet of effets?.() ?? []) {
     expect(effet).not.toHaveBeenCalled();
   }
-}
-
-export function verifierGardesDeParticipant(
-  contexte: () => ContexteDeGardeParticipant,
-): void {
-  it.each([
-    ['rattache a une autre seance', { sessionId: 'autre-session' }],
-    ['evince', { evinceLe: new Date('2026-09-20T09:00:00.000Z') }],
-  ])('T10 · refuse un participant %s, sans rien ecrire', async (_cas, etat) => {
-    const { participants, executer, effetsInterdits } = contexte();
-    participants.findById.mockResolvedValue(buildParticipantRecord(etat));
-
-    await expect(executer()).rejects.toThrow(ParticipantNotFoundError);
-    attendreSansEffet(effetsInterdits);
-  });
 }
 
 export interface ContexteDeGardeFormateur {
@@ -196,16 +174,12 @@ export function verifierLectureDeSeanceEtCours(
 }
 
 export interface ContexteDeParticipation
-  extends
-    ContexteDeGardeSeance,
-    ContexteDeGardeParticipant,
-    ContexteDActivite {}
+  extends ContexteDeGardeSeance, ContexteDActivite {}
 
 export function verifierContratDeParticipation(
   contexte: () => ContexteDeParticipation,
 ): void {
   verifierGardesDeSeance(contexte);
-  verifierGardesDeParticipant(contexte);
   verifierSignalementDActivite(contexte);
 }
 

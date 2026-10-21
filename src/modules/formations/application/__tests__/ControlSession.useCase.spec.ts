@@ -158,6 +158,14 @@ describe('ControlSessionUseCase', () => {
     );
   });
 
+  it.each([{}, { intervalle: { premier: 1, dernier: 3 } }])(
+    'refuse en validation un pilotage qui ne change ni ecran, ni rythme, ni ecran pilote %p, sans lire la seance',
+    async (commande) => {
+      await b.refuseSansEffet(b.piloter(commande), DomainValidationError);
+      expect(b.sessions.findById).not.toHaveBeenCalled();
+    },
+  );
+
   it('refuse de piloter un ecran quand le cours est absent du catalogue', async () => {
     b.seanceLue(COURS_ABSENT);
     await b.refuseSansEffet(b.piloter({ ecran: 2 }), CoursInconnuError);

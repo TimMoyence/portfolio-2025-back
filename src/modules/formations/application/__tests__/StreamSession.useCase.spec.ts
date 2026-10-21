@@ -206,7 +206,7 @@ describe('StreamSessionUseCase', () => {
       participants,
       answers,
       createMockIncidentsRepo(),
-      creerCatalogueDeTest(),
+      catalogue,
       createMockPulsesRepo(),
       createMockEscapeRepo(),
       reponsesLibres,
