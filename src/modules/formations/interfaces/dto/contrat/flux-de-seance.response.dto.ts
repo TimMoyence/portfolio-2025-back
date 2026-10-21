@@ -41,6 +41,13 @@ class PilotageServiResponseDto
   etayageAtteint?: number;
 
   @ApiPropertyOptional({
+    enum: [true],
+    description:
+      'Correction de l ecran projetee : les productions n y sont plus acceptees',
+  })
+  correctionProjetee?: true;
+
+  @ApiPropertyOptional({
     type: MachineEvalueeResponseDto,
     description: 'Sorties de la machine aux reglages projetes',
   })

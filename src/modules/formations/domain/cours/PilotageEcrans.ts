@@ -18,6 +18,7 @@ import {
 import { questionsDe } from './Cours';
 import {
   activitesDeLEcran,
+  correctionProjetee,
   ecranRevele,
   ecranServi,
   etayageAtteint,
@@ -276,7 +277,10 @@ export function pilotageEnDirect(
       if (!ecranServi(seance, rang, cours.ecrans.length)) {
         return servi;
       }
-      const enDirect = enDirectDe(ecran, pilotage[ecran.id]);
+      const pose = correctionProjetee(seance, cours, ecran.id)
+        ? { ...pilotage[ecran.id], correctionProjetee: true as const }
+        : pilotage[ecran.id];
+      const enDirect = enDirectDe(ecran, pose);
       return enDirect === undefined || enDirect === pilotage[ecran.id]
         ? servi
         : { ...servi, [ecran.id]: enDirect };

@@ -10,7 +10,7 @@ import {
   VOTES_JUMELES,
 } from '../../../../test/factories/votes-des-cours-servis.factory';
 import type { PilotageEcran } from './contrats/pilotage';
-import { rangDeLEcran } from './cours/EcranServi';
+import { assertCorrectionNonProjetee, rangDeLEcran } from './cours/EcranServi';
 import { machineDuCours, sortiesDeLaMachine } from './cours/MachineServie';
 import { assertPhaseOuverte } from './cours/PilotageEcrans';
 import { etatEnDirect } from './EtatEnDirect';
@@ -127,7 +127,10 @@ describe('etatEnDirect', () => {
     });
 
     it('ne diffuse aucune sortie tant que le pupitre n a rien réglé', () => {
-      expect(diffuse(RANG, { revele: true })).toEqual({ revele: true });
+      expect(diffuse(RANG, { revele: true })).toEqual({
+        revele: true,
+        correctionProjetee: true,
+      });
     });
 
     it('D-05 · ne calcule aucune sortie tant que l écran de la machine n est pas servi', () => {
@@ -143,6 +146,45 @@ describe('etatEnDirect', () => {
       expect(
         etatEnDirect(buildSessionRecord(seance), 0, cours).pilotage,
       ).toEqual(attendu);
+    },
+  );
+
+  it.each(CAS_DES_COURS_SERVIS)(
+    '%s : sert la correction projetée là, et seulement là, où la route des productions refuse d écrire',
+    (_slug, cours) => {
+      const seances = [
+        {
+          ecranCourant: cours.ecrans.length - 1,
+          modeRythme: 'pilote' as const,
+        },
+        ...cours.ecrans.flatMap(({ id }) => [
+          { pilotageEcrans: { [id]: { revele: true } } },
+          { pilotageEcrans: { [id]: { etayageAtteint: 1 } } },
+        ]),
+      ].map((champs) =>
+        buildSessionRecord({
+          ecranCourant: cours.ecrans.length - 1,
+          ...champs,
+        }),
+      );
+      const ecarts = seances.flatMap((seance) =>
+        cours.ecrans.flatMap(({ id }) => {
+          const refusee = (() => {
+            try {
+              assertCorrectionNonProjetee(seance, cours, id);
+              return false;
+            } catch {
+              return true;
+            }
+          })();
+          const servie =
+            etatEnDirect(seance, 0, cours).pilotage[id]?.correctionProjetee ===
+            true;
+          return refusee === servie ? [] : [`${id} : ${String(refusee)}`];
+        }),
+      );
+
+      expect(ecarts).toEqual([]);
     },
   );
 

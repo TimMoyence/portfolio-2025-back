@@ -202,20 +202,26 @@ export function etayageAtteint(pilotage: PilotageEcran | undefined): number {
   return Math.max(pilotage?.etayageAtteint ?? 0, pilotage?.etayage ?? 0);
 }
 
+export function correctionProjetee(
+  seance: SeancePilotee,
+  cours: Cours,
+  screenId: string,
+): boolean {
+  const correctionAtteinte =
+    seance.modeRythme === 'pilote' &&
+    correctionsDe(cours, screenId).some((rang) => rang <= seance.ecranCourant);
+  const pilotage = seance.pilotageEcrans[screenId];
+  return (
+    correctionAtteinte || ecranRevele(pilotage) || etayageAtteint(pilotage) > 0
+  );
+}
+
 export function assertCorrectionNonProjetee(
   seance: SeancePilotee,
   cours: Cours,
   screenId: string,
 ): void {
-  const correctionAtteinte =
-    seance.modeRythme === 'pilote' &&
-    correctionsDe(cours, screenId).some((rang) => rang <= seance.ecranCourant);
-  const pilotage = seance.pilotageEcrans[screenId];
-  if (
-    correctionAtteinte ||
-    ecranRevele(pilotage) ||
-    etayageAtteint(pilotage) > 0
-  ) {
+  if (correctionProjetee(seance, cours, screenId)) {
     throw new PhaseFermeeError(screenId);
   }
 }
