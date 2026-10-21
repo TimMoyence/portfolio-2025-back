@@ -74,14 +74,14 @@ export class RapportParticipantResponseDto {
   sousSeuil: boolean;
 
   @ApiProperty({ type: [RapportQuestionResponseDto] })
-  reponses: RapportQuestionResponseDto[];
+  reponses: readonly RapportQuestionResponseDto[];
 
   @ApiProperty({
     type: [RapportReponseLibreResponseDto],
     description:
       'Réponses libres du poste, dans l’ordre des écrans puis des activités',
   })
-  reponsesLibres: RapportReponseLibreResponseDto[];
+  reponsesLibres: readonly RapportReponseLibreResponseDto[];
 
   @ApiProperty({ description: 'Nombre d incidents du poste', example: 0 })
   incidents: number;
@@ -118,7 +118,7 @@ export class ResultatQuestionResponseDto {
     type: [ConfusionCompteeResponseDto],
     description: 'Confusions triees par frequence',
   })
-  confusions: ConfusionCompteeResponseDto[];
+  confusions: readonly ConfusionCompteeResponseDto[];
 }
 
 export class StatistiquesSeanceResponseDto {
@@ -148,7 +148,7 @@ export class StatistiquesSeanceResponseDto {
     description: 'Questions dont le taux de reussite est sous le seuil',
     example: ['Q-M2-PIVOT'],
   })
-  questionsProblemes: string[];
+  questionsProblemes: readonly string[];
 }
 
 export class RegleDeNotationResponseDto {
@@ -229,10 +229,10 @@ export class SessionResultsResponseDto {
     type: [RapportParticipantResponseDto],
     description: 'Participants dans leur ordre d arrivee',
   })
-  participants: RapportParticipantResponseDto[];
+  participants: readonly RapportParticipantResponseDto[];
 
   @ApiProperty({ type: [String], example: ['taux-evolution'] })
-  conceptsFragiles: string[];
+  conceptsFragiles: readonly string[];
 
   @ApiProperty({
     type: 'object',

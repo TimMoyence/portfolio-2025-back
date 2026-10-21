@@ -38,7 +38,7 @@ export class ReponseParticipantResponseDto {
   score: number | null;
 
   @ApiProperty({ type: [DetailVerdictResponseDto], nullable: true })
-  details: DetailVerdictResponseDto[] | null;
+  details: readonly DetailVerdictResponseDto[] | null;
 
   @ApiProperty({ nullable: true, type: String })
   libelleConfusion: string | null;
@@ -73,7 +73,7 @@ export class EnigmesParticipantResponseDto extends EtatDesEnigmesResponseDto {
   parcoursId: string;
 
   @ApiProperty({ type: [EnigmeResolueResponseDto] })
-  resolues: EnigmeResolueResponseDto[];
+  resolues: readonly EnigmeResolueResponseDto[];
 
   @ApiProperty({
     type: 'object',
@@ -94,7 +94,7 @@ export class DefiParticipantResponseDto {
 
 export class RappelsServisResponseDto {
   @ApiProperty({ type: [String], example: ['b2-01-r-compensation'] })
-  questionIds: string[];
+  questionIds: readonly string[];
 }
 
 export class EtatParticipantResponseDto
@@ -105,19 +105,19 @@ export class EtatParticipantResponseDto
   revision: number;
 
   @ApiProperty({ type: [ReponseParticipantResponseDto] })
-  reponses: ReponseParticipantResponseDto[];
+  reponses: readonly ReponseParticipantResponseDto[];
 
   @ApiProperty({ type: [ReponseLibreParticipantResponseDto] })
-  reponsesLibres: ReponseLibreParticipantResponseDto[];
+  reponsesLibres: readonly ReponseLibreParticipantResponseDto[];
 
   @ApiProperty({ type: [JalonParticipantResponseDto] })
-  jalons: JalonParticipantResponseDto[];
+  jalons: readonly JalonParticipantResponseDto[];
 
   @ApiProperty({ type: [EnigmesParticipantResponseDto] })
-  enigmes: EnigmesParticipantResponseDto[];
+  enigmes: readonly EnigmesParticipantResponseDto[];
 
   @ApiProperty({ type: [DefiParticipantResponseDto] })
-  defis: DefiParticipantResponseDto[];
+  defis: readonly DefiParticipantResponseDto[];
 
   @ApiProperty({ type: RappelsServisResponseDto })
   rappels: RappelsServisResponseDto;

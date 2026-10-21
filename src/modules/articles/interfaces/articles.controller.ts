@@ -13,6 +13,7 @@ import {
 } from '@nestjs/common';
 import {
   ApiAcceptedResponse,
+  ApiBody,
   ApiOkResponse,
   ApiOperation,
   ApiProduces,
@@ -21,7 +22,9 @@ import {
 } from '@nestjs/swagger';
 import type { Response } from 'express';
 import { LocaleCode } from '../../../common/domain/value-objects/LocaleCode';
+import { referenceAuContrat } from '../../../common/interfaces/http/schemas-du-contrat';
 import { RoutePublique } from '../../../common/interfaces/security/formulaire-public.decorator';
+import { ArticleContract } from '../domain/article-contract';
 import type { ArticleRecord } from '../application/articles.repository';
 import { ArticlesService } from '../application/articles.service';
 import { ArticleHmacGuard } from './article-hmac.guard';
@@ -45,6 +48,11 @@ export class ArticlesController {
   @UseGuards(ArticleHmacGuard)
   @HttpCode(HttpStatus.ACCEPTED)
   @ApiOperation({ summary: 'Recevoir une édition Morning-Brief signée' })
+  @ApiBody({
+    description:
+      'Enveloppe Morning-Brief v1 (docs/contracts/article-ingest-envelope-v1.json)',
+    schema: referenceAuContrat(ArticleContract),
+  })
   @ApiAcceptedResponse({
     description: 'Édition acceptée ou déjà reçue',
     type: ArticleIngestResponseDto,
@@ -54,7 +62,7 @@ export class ArticlesController {
     @Body() payload: unknown,
     @Headers('idempotency-key') idempotencyKey: string,
     @Headers('x-morning-brief-nonce') nonce: string,
-  ) {
+  ): Promise<ArticleIngestResponseDto> {
     return this.articles.ingest(payload, idempotencyKey, nonce);
   }
 
@@ -79,7 +87,10 @@ export class ArticlesController {
   @ApiOperation({ summary: 'Flux RSS des articles publiés' })
   @ApiProduces('application/rss+xml')
   @ApiOkResponse({ description: 'Flux RSS 2.0', schema: { type: 'string' } })
-  async feed(@Query('locale') locale: string, @Res() response: Response) {
+  async feed(
+    @Query('locale') locale: string,
+    @Res() response: Response,
+  ): Promise<void> {
     const xml = await this.articles.feed(LocaleCode.resolve(locale).value);
     response.type('application/rss+xml').send(xml);
   }
@@ -91,7 +102,9 @@ export class ArticlesController {
     description: 'Liste paginée des articles',
     type: ArticleListResponseDto,
   })
-  async list(@Query() query: ArticleListQueryDto) {
+  async list(
+    @Query() query: ArticleListQueryDto,
+  ): Promise<ArticleListResponseDto> {
     const result = await this.articles.listPublished({
       locale: query.locale,
       tag: query.tag,
@@ -114,7 +127,7 @@ export class ArticlesController {
   async getBySlug(
     @Param('slug') slug: string,
     @Query('locale') locale: string,
-  ) {
+  ): Promise<PublishedArticleResponseDto> {
     return this.publicArticle(
       await this.articles.getPublishedBySlug(
         slug,
@@ -123,7 +136,7 @@ export class ArticlesController {
     );
   }
 
-  private publicArticle(article: ArticleRecord) {
+  private publicArticle(article: ArticleRecord): PublishedArticleResponseDto {
     return {
       article_id: article.articleId,
       slug: article.slug,

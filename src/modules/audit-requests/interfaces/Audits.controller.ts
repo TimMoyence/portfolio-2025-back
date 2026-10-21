@@ -11,6 +11,7 @@ import {
 import {
   ApiBadRequestResponse,
   ApiCreatedResponse,
+  ApiExtraModels,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -18,6 +19,7 @@ import {
 import { SkipThrottle } from '@nestjs/throttler';
 import { Public } from '../../../common/interfaces/auth/public.decorator';
 import { FluxDEvenements } from '../../../common/interfaces/http/flux-d-evenements.decorator';
+import { EVENEMENTS_DU_FLUX_D_AUDIT } from './dto/evenements-du-flux.response.dto';
 import { Observable } from 'rxjs';
 import type { Request } from 'express';
 import { provenanceDeLaRequete } from '../../../common/interfaces/security/client-ip.util';
@@ -37,6 +39,7 @@ import { AuditSummaryResponseDto } from './dto/audit-summary.response.dto';
 
 @ApiTags('audits')
 @Controller('audits')
+@ApiExtraModels(...Object.values(EVENEMENTS_DU_FLUX_D_AUDIT))
 export class AuditsController {
   constructor(
     private readonly createUseCase: CreateAuditRequestsUseCase,
@@ -97,6 +100,7 @@ export class AuditsController {
   @FluxDEvenements(
     ':id/stream',
     "Flux SSE des evenements d'audit en temps reel",
+    EVENEMENTS_DU_FLUX_D_AUDIT,
   )
   @ApiOperation({ summary: "Flux SSE des evenements d'avancement d'un audit" })
   stream(

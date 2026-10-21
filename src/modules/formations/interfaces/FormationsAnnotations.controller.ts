@@ -8,7 +8,6 @@ import {
 import type { Request } from 'express';
 import { compteConnecte } from '../../../common/interfaces/auth/compte-connecte';
 import { ManageTeacherAnnotationsUseCase } from '../application/ManageTeacherAnnotations.useCase';
-import type { TeacherAnnotationRecord } from '../domain/ITeacherAnnotations.repository';
 import { SaveTeacherAnnotationRequestDto } from './dto/save-teacher-annotation.request.dto';
 import {
   TeacherAnnotationResponseDto,
@@ -33,7 +32,7 @@ export class FormationsAnnotationsController {
   async getAnnotations(
     @Param('id', ParseUUIDPipe) id: string,
     @Req() request: Request,
-  ): Promise<{ annotations: readonly TeacherAnnotationRecord[] }> {
+  ): Promise<TeacherAnnotationsResponseDto> {
     return {
       annotations: await this.annotations.list(id, compteConnecte(request)),
     };
@@ -54,7 +53,7 @@ export class FormationsAnnotationsController {
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: SaveTeacherAnnotationRequestDto,
     @Req() request: Request,
-  ): Promise<TeacherAnnotationRecord> {
+  ): Promise<TeacherAnnotationResponseDto> {
     return this.annotations.save(id, compteConnecte(request).id, {
       screenId: dto.screenId,
       note: dto.note,

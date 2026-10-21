@@ -1,6 +1,7 @@
 import type { MetadonneesBrique, RegimeVerrou } from './contrat-de-l-api';
 import type { AuMoinsUn } from '../../../../common/domain/au-moins-un';
 import type { CasProfessionnel } from '../cours/Cours';
+import type { ProprietesRecit } from '../cours/ProprietesStockees';
 import type {
   LigneDuDossier,
   OrdreQuestions,
@@ -215,34 +216,10 @@ export interface SpacedQuestionPublique {
   readonly options: readonly OptionPublique[];
 }
 
-export interface StoryRecit {
+export type StoryRecit = Omit<ProprietesRecit, 'interaction' | 'correction'> & {
   readonly id: string;
-  readonly titre: string;
-  readonly paragraphes: readonly string[];
-  readonly visuel?: {
-    readonly src: string;
-    readonly alt: string;
-    readonly legende?: string;
-    readonly source?: string;
-  };
-  readonly video?: {
-    readonly src: string;
-    readonly srcPoste?: string;
-    readonly type: 'video/webm' | 'video/mp4';
-    readonly titre: string;
-    readonly poster?: string;
-    readonly transcript: string;
-    readonly source: string;
-    readonly licence: string;
-    readonly sousTitres?: {
-      readonly src: string;
-      readonly srclang: string;
-      readonly libelle: string;
-    };
-    readonly preload?: 'none' | 'metadata';
-  };
   readonly metadonnees: MetadonneesBrique;
-}
+};
 
 type QuestionDeQuestionnaire =
   | {
@@ -255,6 +232,15 @@ type QuestionDeQuestionnaire =
     };
 
 export interface DonneesParBrique {
+  readonly 'fp-quote': {
+    readonly citation: {
+      readonly id: string;
+      readonly texte: string;
+      readonly auteur: string | null;
+      readonly source: string | null;
+      readonly metadonnees: MetadonneesBrique;
+    };
+  };
   readonly 'fp-story': { readonly recit: StoryRecit };
   readonly 'fp-pro': {
     readonly cas: CasProfessionnel & {
@@ -311,3 +297,5 @@ export interface DonneesParBrique {
   };
   readonly 'ecran-verrouille': Readonly<Record<string, never>>;
 }
+
+export type TypeDEcranServi = keyof DonneesParBrique;

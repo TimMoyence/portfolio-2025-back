@@ -24,7 +24,7 @@ class ExtraitDuRenvoiResponseDto {
     description: 'Rangs des lignes reprises de l ecran renvoye',
     example: [0, 2],
   })
-  lignes?: number[];
+  lignes?: readonly number[];
 
   @ApiPropertyOptional({
     enum: CHAMPS_EXTRAITS_DU_CAS,
@@ -32,7 +32,7 @@ class ExtraitDuRenvoiResponseDto {
     isArray: true,
     description: 'Champs du cas repris de l ecran renvoye',
   })
-  champs?: (typeof CHAMPS_EXTRAITS_DU_CAS)[number][];
+  champs?: readonly (typeof CHAMPS_EXTRAITS_DU_CAS)[number][];
 }
 
 class CadrageDuRenvoiResponseDto {
@@ -103,7 +103,7 @@ export class EcranPublicResponseDto
     type: [String],
     description: 'Ecrans qui corrigent celui-ci',
   })
-  resoluPar?: string[];
+  resoluPar?: readonly string[];
 
   @ApiPropertyOptional({
     type: CorrectionServieResponseDto,
@@ -117,7 +117,7 @@ export class SujetResponseDto
   implements CoursPublic
 {
   @ApiProperty({ type: [EcranPublicResponseDto] })
-  ecrans: EcranPublicResponseDto[];
+  ecrans: readonly EcranPublicResponseDto[];
 }
 
 export class CoursPublicCatalogueResponseDto

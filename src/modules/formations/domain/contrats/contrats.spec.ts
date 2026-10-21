@@ -1138,6 +1138,15 @@ describe('Contrats figés du cours B2-01 V3 (§ 9, lot 0)', () => {
         metadonnees: METADONNEES,
       } satisfies PulseSondage;
       const donnees = {
+        'fp-quote': {
+          citation: {
+            id: 'b2-01-citation',
+            texte: 'Un chiffre sans base ne dit rien.',
+            auteur: null,
+            source: null,
+            metadonnees: METADONNEES,
+          },
+        },
         'fp-story': { recit },
         'fp-pro': {
           cas: {
@@ -1215,7 +1224,7 @@ describe('Contrats figés du cours B2-01 V3 (§ 9, lot 0)', () => {
         donnees['fp-escape'].parcours satisfies EscapeParcoursPublic,
       ];
 
-      expect(Object.keys(donnees)).toHaveLength(18);
+      expect(Object.keys(donnees)).toHaveLength(19);
       expect(colonne.role).toBe('deduite');
       expect(spaced.boite).toBe(1);
       expect(plans.map((entree) => entree.id)).toHaveLength(3);

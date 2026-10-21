@@ -132,7 +132,7 @@ const correction = z.union([
   z.object({ nestedQuiz: correctionDeQuiz }).strict(),
 ]);
 
-const presentationInitiale = z
+export const presentationInitiale = z
   .object({
     version: z.literal(1),
     screenId: texte,
@@ -221,7 +221,7 @@ function afficheLeQuizNote(
   );
 }
 
-const visuel = z
+export const visuel = z
   .object({
     src: media,
     alt: texte,
@@ -230,7 +230,7 @@ const visuel = z
   })
   .strict();
 
-const video = z
+export const video = z
   .object({
     src: media,
     srcPoste: media.optional(),

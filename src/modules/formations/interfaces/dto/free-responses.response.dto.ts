@@ -55,7 +55,7 @@ export class FreeResponsesResponseDto {
     type: [FreeResponseResponseDto],
     description: 'Réponses libres de la séance, non notées',
   })
-  responses: FreeResponseResponseDto[];
+  responses: readonly FreeResponseResponseDto[];
 }
 
 export class FreeResponseSavedResponseDto {

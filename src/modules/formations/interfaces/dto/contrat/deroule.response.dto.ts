@@ -33,7 +33,7 @@ export class QuestionDerouleResponseDto {
     nullable: true,
     description: 'Options d un vote, null pour une question numerique',
   })
-  options: OptionPubliqueResponseDto[] | null;
+  options: readonly OptionPubliqueResponseDto[] | null;
 }
 
 @ApiExtraModels(...CORRIGES_D_ECRAN, ReflexionPresentateurResponseDto)
@@ -51,10 +51,10 @@ export class EcranDerouleResponseDto
   seuil: number | null;
 
   @ApiProperty({ type: [CorrigePresentateurResponseDto] })
-  corriges: CorrigePresentateurResponseDto[];
+  corriges: readonly CorrigePresentateurResponseDto[];
 
   @ApiProperty({ type: [QuestionDerouleResponseDto] })
-  questions: QuestionDerouleResponseDto[];
+  questions: readonly QuestionDerouleResponseDto[];
 
   @ReferenceOuNul(
     CORRIGES_D_ECRAN,
@@ -73,7 +73,7 @@ export class EcranDerouleResponseDto
     description:
       'Explications d un exercice corrige sur place, devoilees une a une au pupitre',
   })
-  explications?: ExplicationDeCorrectionResponseDto[];
+  explications?: readonly ExplicationDeCorrectionResponseDto[];
 }
 
 export class DerouleResponseDto
@@ -81,7 +81,7 @@ export class DerouleResponseDto
   implements DerouleCours
 {
   @ApiProperty({ type: [EcranDerouleResponseDto] })
-  ecrans: EcranDerouleResponseDto[];
+  ecrans: readonly EcranDerouleResponseDto[];
 
   @ApiProperty({
     type: 'object',

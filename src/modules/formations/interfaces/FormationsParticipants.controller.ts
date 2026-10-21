@@ -22,7 +22,6 @@ import { compteConnecte } from '../../../common/interfaces/auth/compte-connecte'
 import { EvincerParticipantUseCase } from '../application/EvincerParticipant.useCase';
 import { LibererPosteUseCase } from '../application/LibererPoste.useCase';
 import { ListSessionParticipantsUseCase } from '../application/ListSessionParticipants.useCase';
-import type { ParticipantDeSeance } from '../application/ListSessionParticipants.useCase';
 import { ReadmettreParticipantUseCase } from '../application/ReadmettreParticipant.useCase';
 import { CibleParticipantPipe } from './dto/cible-participant.params';
 import type { CibleParticipant } from './dto/cible-participant.params';
@@ -62,7 +61,7 @@ export class FormationsParticipantsController {
   async getParticipants(
     @Param('id', ParseUUIDPipe) id: string,
     @Req() request: Request,
-  ): Promise<{ participants: readonly ParticipantDeSeance[] }> {
+  ): Promise<SessionParticipantsResponseDto> {
     return {
       participants: await this.participants.execute(
         id,

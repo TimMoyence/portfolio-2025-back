@@ -25,5 +25,5 @@ export class TeacherAnnotationsResponseDto {
     type: [TeacherAnnotationResponseDto],
     description: 'Annotations triées par écran',
   })
-  annotations: TeacherAnnotationResponseDto[];
+  annotations: readonly TeacherAnnotationResponseDto[];
 }

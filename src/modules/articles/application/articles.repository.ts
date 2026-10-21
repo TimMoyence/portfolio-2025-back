@@ -1,4 +1,5 @@
 import type { SupportedLocale } from '../../../common/domain/value-objects/LocaleCode';
+import type { ArticleIngere } from '../domain/article-contract';
 
 export const ARTICLES_REPOSITORY = Symbol('ARTICLES_REPOSITORY');
 
@@ -17,10 +18,10 @@ export interface ArticleRecord {
   contentMarkdown: string;
   readingTimeMinutes: number | null;
   tags: string[];
-  sections: unknown[];
-  sources: unknown[];
-  provenance: Record<string, unknown>;
-  seo: Record<string, unknown>;
+  sections: ArticleIngere['sections'];
+  sources: ArticleIngere['sources'];
+  provenance: ArticleIngere['provenance'];
+  seo: ArticleIngere['seo'];
   publishedAt: Date;
   updatedAt: Date;
   contentSha256: string;

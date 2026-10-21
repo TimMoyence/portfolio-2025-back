@@ -1,5 +1,3 @@
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
 import type { OpenAPIObject } from '@nestjs/swagger';
 
 import { deroulePresentateur } from '../src/modules/formations/domain/cours/DeroulePresentateur';
@@ -9,16 +7,24 @@ import {
   correctionSurPlaceServie,
 } from '../src/modules/formations/domain/cours/Diffusion';
 import { tirer } from '../src/modules/formations/domain/cours/Tirage';
+import {
+  ecranVerrouille,
+  exempleAuRythmeDuPilotage,
+} from '../src/modules/formations/domain/cours/Diffusion';
+import { DONNEES_PAR_BRIQUE } from '../src/modules/formations/domain/contrats/donnees-servies';
 import { buildCoursDuContenu } from './factories/contenus-de-cours.factory';
+import { buildCoursDeTest } from './factories/cours.factory';
 import { CONTENUS } from './factories/contenus-publies';
-import { RACINE } from './helpers/racine';
-import { estSansForme, type SchemaOpenApi } from './helpers/schema-openapi';
+import {
+  documentPublie,
+  estSansFormeHorsOuverts,
+  evenementsDuFlux,
+  type SchemaOpenApi,
+} from './helpers/schema-openapi';
 
 type DocumentOpenApi = OpenAPIObject;
 
-const document: DocumentOpenApi = JSON.parse(
-  readFileSync(join(RACINE, 'openapi.json'), 'utf8'),
-) as DocumentOpenApi;
+const document: DocumentOpenApi = documentPublie();
 
 interface SchemaDeChamp {
   readonly type?: string;
@@ -86,7 +92,9 @@ const champsNumeriquesSansTypeNumerique = (
 
 const champsSansForme = (document: DocumentOpenApi): string[] =>
   champsDuDocument(document)
-    .filter(([, schema]) => estSansForme(schema as SchemaOpenApi))
+    .filter(([nom, schema]) =>
+      estSansFormeHorsOuverts(nom, schema as SchemaOpenApi),
+    )
     .map(([nom]) => nom);
 
 describe('OpenAPI du contrat publié', () => {
@@ -388,5 +396,114 @@ describe('OpenAPI de l écran pas encore servi', () => {
     });
 
     expect(muettes).toEqual([]);
+  });
+});
+
+describe('OpenAPI des données de chaque brique', () => {
+  const ecransServis = [
+    ...CONTENUS.map(buildCoursDuContenu),
+    buildCoursDeTest(),
+  ].flatMap((cours) => {
+    const sujet = tirer(cours, 0).sujet.ecrans;
+    return [
+      ...sujet,
+      ...sujet.map(ecranVerrouille),
+      ...sujet.map((ecran) => exempleAuRythmeDuPilotage(ecran, undefined)),
+      ...deroulePresentateur(cours, 0).ecrans,
+    ];
+  });
+
+  it('valide par le schéma de sa brique les données de chaque écran servi, sur tous les cours', () => {
+    const ecarts = ecransServis.flatMap(({ id, type, donnees }) => {
+      const lecture = DONNEES_PAR_BRIQUE[type].safeParse(donnees);
+      return lecture.success
+        ? []
+        : lecture.error.issues.map(
+            (probleme) =>
+              `${id} : ${probleme.path.join('.')} ${probleme.message}`,
+          );
+    });
+
+    expect(ecransServis.length).toBeGreaterThan(0);
+    expect([...new Set(ecarts)]).toEqual([]);
+  });
+
+  it('sert chaque brique décrite au moins une fois', () => {
+    const servies = new Set<string>(ecransServis.map(({ type }) => type));
+
+    expect(
+      Object.keys(DONNEES_PAR_BRIQUE).filter((brique) => !servies.has(brique)),
+    ).toEqual([]);
+  });
+
+  it('décrit les données de l écran par un oneOf des composants nommés de chaque brique', () => {
+    const ecran = document.components?.schemas?.EcranPublicResponseDto as {
+      properties: Record<string, SchemaOpenApi>;
+    };
+    const references = (ecran.properties.donnees.oneOf ?? []).map(
+      ({ $ref }) => $ref?.split('/').at(-1) ?? '',
+    );
+
+    expect(references).toHaveLength(Object.keys(DONNEES_PAR_BRIQUE).length);
+    expect(
+      references.filter(
+        (nom) => document.components?.schemas?.[nom] === undefined,
+      ),
+    ).toEqual([]);
+    expect(JSON.stringify(ecran.properties.type)).toContain(
+      '#/components/schemas/TypeDEcranServi',
+    );
+    expect(document.components?.schemas?.TypeDEcranServi).toMatchObject({
+      enum: Object.keys(DONNEES_PAR_BRIQUE),
+    });
+  });
+});
+
+describe('OpenAPI des flux d événements', () => {
+  const donneesParEvenement = (suffixe: string): Record<string, string> =>
+    Object.fromEntries(
+      Object.entries(evenementsDuFlux(document, suffixe)).map(
+        ([nom, { $ref }]) => [nom, $ref?.split('/').at(-1) ?? ''],
+      ),
+    );
+  const FLUX_DU_POSTE = {
+    etat: 'EtatDeSeanceResponseDto',
+    fin: 'FinDuFluxResponseDto',
+    heartbeat: 'BattementResponseDto',
+  };
+
+  it('nomme chaque événement du flux du poste et la forme de ses données', () => {
+    expect(donneesParEvenement('/sessions/{id}/stream')).toEqual(FLUX_DU_POSTE);
+  });
+
+  it('ajoute au flux du pupitre les résultats en direct', () => {
+    expect(donneesParEvenement('/sessions/{id}/presenter-stream')).toEqual({
+      ...FLUX_DU_POSTE,
+      resultats: 'ResultatsEnDirectResponseDto',
+    });
+  });
+
+  it('nomme chaque événement du flux d audit et la forme de ses données', () => {
+    expect(donneesParEvenement('/audits/{id}/stream')).toEqual({
+      progress: 'ProgressionDAuditResponseDto',
+      completed: 'AuditTermineResponseDto',
+      failed: 'AuditEchoueResponseDto',
+      timeout: 'AuditExpireResponseDto',
+      heartbeat: 'BattementResponseDto',
+    });
+  });
+
+  it('nomme dans le contrat chaque composant référencé', () => {
+    const references = [
+      ...JSON.stringify(document).matchAll(
+        /"#\/components\/schemas\/([^"]+)"/g,
+      ),
+    ].map(([, nom]) => nom);
+
+    expect(
+      [...new Set(references)].filter(
+        (nom) => document.components?.schemas?.[nom] === undefined,
+      ),
+    ).toEqual([]);
   });
 });

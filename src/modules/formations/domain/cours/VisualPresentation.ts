@@ -2,8 +2,6 @@ import { z } from 'zod';
 import { auMoinsUn, media, signaleurDe, texte } from './SchemasCommuns';
 
 const strict = <F extends z.ZodRawShape>(forme: F) => z.object(forme).strict();
-const rendu = <R extends string, P extends z.ZodType>(renderer: R, props: P) =>
-  strict({ renderer: z.literal(renderer), props });
 
 const textes = auMoinsUn(texte);
 const lien = strict({ href: z.url(), label: texte });
@@ -155,129 +153,137 @@ const image = {
   sourceLink: lien.optional(),
 };
 
-export const presentationVisuelle = z.discriminatedUnion('renderer', [
-  rendu(
-    'hero',
-    strict({
-      ...titled,
-      bullets: textes,
-      bgImage: media.optional(),
-      bgImageAlt: texte.optional(),
-    }),
-  ),
-  rendu(
-    'method-path',
-    strict({
-      ...titled,
-      steps: auMoinsUn(
-        strict({
-          id: texte,
-          title: texte,
-          question: texte,
-          proof: texte,
-          result: texte,
-        }),
-      ),
-    }),
-  ),
-  rendu('quiz', strict({ questionData: quiz })),
-  rendu(
-    'chart',
-    strict({
-      title: texte,
-      caption: texte.optional(),
-      context: texte.optional(),
-      labels: textes,
-      series: auMoinsUn(series),
-      axisRanges: z.array(z.tuple([z.number(), z.number()])).optional(),
-      axisLabels: textes.optional(),
-      unit: texte.optional(),
-      formula: texte.optional(),
-      reading: texte.optional(),
-      source: texte.optional(),
-      kind: z.enum(['bars', 'line']).optional(),
-      description: texte.optional(),
-    }),
-  ),
-  rendu('boxplot', boiteAMoustaches),
-  rendu('scatter', nuageDePoints),
-  rendu(
-    'lesson',
-    strict({
-      ...titled,
-      blocks: z.array(blocDeLecon).min(1).max(BLOCS_MAXIMUM_D_UNE_LECON),
-    }),
-  ),
-  rendu(
-    'grid',
-    strict({
-      ...titled,
-      items: auMoinsUn(item),
-      imprimable: z.boolean().optional(),
-    }),
-  ),
-  rendu(
-    'comparison',
-    strict({ ...titled, note: texte.optional(), columns: auMoinsUn(column) }),
-  ),
-  rendu(
-    'stats',
-    strict({
-      ...titled,
-      stats: auMoinsUn(strict({ value: texte, label: texte })),
-    }),
-  ),
-  rendu('reflection', strict({ promptData: reflection })),
-  rendu(
-    'quote',
-    strict({
-      quote: texte,
-      author: texte.optional(),
-      role: texte.optional(),
-      context: texte.optional(),
-    }),
-  ),
-  rendu(
-    'table',
-    strict({
-      ...titled,
-      note: texte.optional(),
-      columns: auMoinsUn(strict({ key: texte, label: texte })),
-      rows: auMoinsUn(z.record(texte, texte)),
-      sourceLink: lien.optional(),
-    }),
-  ),
-  rendu('image-left', strict({ ...image, nestedQuiz: quiz.optional() })),
-  rendu('image-right', strict(image)),
-  rendu('illustration', strict({ image: media, imageAlt: texte })),
-  rendu(
-    'cta',
-    strict({
-      title: texte,
-      description: texte,
-      ctaLabel: texte,
-      ctaHref: texte,
-    }),
-  ),
-  rendu(
-    'guide',
-    strict({
-      ...titled,
-      context: texte.optional(),
-      takeaway: texte.optional(),
-      nextAction: texte.optional(),
-      items: auMoinsUn(
-        strict({
-          title: texte,
-          description: texte,
-          detail: texte.optional(),
-        }),
-      ),
-    }),
-  ),
-  rendu('sort-review', correctionDeTri),
-  rendu('answer-review', correctionDeReponses),
-]);
+export function presentationsVisuelles<S extends z.ZodRawShape>(socle: S) {
+  const rendu = <R extends string, P extends z.ZodType>(
+    renderer: R,
+    props: P,
+  ) => strict({ ...socle, renderer: z.literal(renderer), props });
+  return z.discriminatedUnion('renderer', [
+    rendu(
+      'hero',
+      strict({
+        ...titled,
+        bullets: textes,
+        bgImage: media.optional(),
+        bgImageAlt: texte.optional(),
+      }),
+    ),
+    rendu(
+      'method-path',
+      strict({
+        ...titled,
+        steps: auMoinsUn(
+          strict({
+            id: texte,
+            title: texte,
+            question: texte,
+            proof: texte,
+            result: texte,
+          }),
+        ),
+      }),
+    ),
+    rendu('quiz', strict({ questionData: quiz })),
+    rendu(
+      'chart',
+      strict({
+        title: texte,
+        caption: texte.optional(),
+        context: texte.optional(),
+        labels: textes,
+        series: auMoinsUn(series),
+        axisRanges: z.array(z.tuple([z.number(), z.number()])).optional(),
+        axisLabels: textes.optional(),
+        unit: texte.optional(),
+        formula: texte.optional(),
+        reading: texte.optional(),
+        source: texte.optional(),
+        kind: z.enum(['bars', 'line']).optional(),
+        description: texte.optional(),
+      }),
+    ),
+    rendu('boxplot', boiteAMoustaches),
+    rendu('scatter', nuageDePoints),
+    rendu(
+      'lesson',
+      strict({
+        ...titled,
+        blocks: z.array(blocDeLecon).min(1).max(BLOCS_MAXIMUM_D_UNE_LECON),
+      }),
+    ),
+    rendu(
+      'grid',
+      strict({
+        ...titled,
+        items: auMoinsUn(item),
+        imprimable: z.boolean().optional(),
+      }),
+    ),
+    rendu(
+      'comparison',
+      strict({ ...titled, note: texte.optional(), columns: auMoinsUn(column) }),
+    ),
+    rendu(
+      'stats',
+      strict({
+        ...titled,
+        stats: auMoinsUn(strict({ value: texte, label: texte })),
+      }),
+    ),
+    rendu('reflection', strict({ promptData: reflection })),
+    rendu(
+      'quote',
+      strict({
+        quote: texte,
+        author: texte.optional(),
+        role: texte.optional(),
+        context: texte.optional(),
+      }),
+    ),
+    rendu(
+      'table',
+      strict({
+        ...titled,
+        note: texte.optional(),
+        columns: auMoinsUn(strict({ key: texte, label: texte })),
+        rows: auMoinsUn(z.record(texte, texte)),
+        sourceLink: lien.optional(),
+      }),
+    ),
+    rendu('image-left', strict({ ...image, nestedQuiz: quiz.optional() })),
+    rendu('image-right', strict(image)),
+    rendu('illustration', strict({ image: media, imageAlt: texte })),
+    rendu(
+      'cta',
+      strict({
+        title: texte,
+        description: texte,
+        ctaLabel: texte,
+        ctaHref: texte,
+      }),
+    ),
+    rendu(
+      'guide',
+      strict({
+        ...titled,
+        context: texte.optional(),
+        takeaway: texte.optional(),
+        nextAction: texte.optional(),
+        items: auMoinsUn(
+          strict({
+            title: texte,
+            description: texte,
+            detail: texte.optional(),
+          }),
+        ),
+      }),
+    ),
+    rendu('sort-review', correctionDeTri),
+    rendu('answer-review', correctionDeReponses),
+  ]);
+}
+
+export const presentationVisuelle = presentationsVisuelles({});
 
 export type VisualPresentation = z.infer<typeof presentationVisuelle>;
 

@@ -22,5 +22,5 @@ export class SyntheseConceptResponseDto {
 
 export class SyntheseRappelsResponseDto {
   @ApiProperty({ type: [SyntheseConceptResponseDto] })
-  concepts: SyntheseConceptResponseDto[];
+  concepts: readonly SyntheseConceptResponseDto[];
 }

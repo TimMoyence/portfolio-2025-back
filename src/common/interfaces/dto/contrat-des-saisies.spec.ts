@@ -16,6 +16,7 @@ import {
 } from '../../../../test/helpers/saisies-validees';
 import {
   estSansForme,
+  estSansFormeHorsOuverts,
   type SchemaOpenApi,
   variantesDe,
 } from '../../../../test/helpers/schema-openapi';
@@ -428,7 +429,9 @@ describe('contrat OpenAPI des saisies', () => {
           Object.entries(composants).flatMap(([nom, schema]) => [
             ...(estSansForme(schema) ? [nom] : []),
             ...Object.entries(schema.properties ?? {})
-              .filter(([, champ]) => estSansForme(champ))
+              .filter(([champ, schema]) =>
+                estSansFormeHorsOuverts(`${nom}.${champ}`, schema),
+              )
               .map(([champ]) => `${nom}.${champ}`),
           ]),
         ),

@@ -72,6 +72,7 @@ import {
 import { routesDuControleur } from './helpers/metadonnees-de-route';
 import {
   documentOpenApiFormations,
+  ecartsAuFlux,
   ecartsAuSchemaDeReponse,
 } from './helpers/schema-openapi';
 import {
@@ -562,12 +563,17 @@ describe('Session de formation (e2e http socket)', () => {
     await fermerApplication(app);
   });
 
-  describe('flux simultanes d une seance ouverte', () => {
-    const ouvrirFluxEtudiant = (sessionId: string, jeton: string) =>
-      abonnerAuFlux(port, route(`/sessions/${sessionId}/stream`), {
-        [EN_TETE_JETON]: jeton,
-      });
+  const ouvrirFluxEtudiant = (sessionId: string, jeton: string) =>
+    abonnerAuFlux(port, route(`/sessions/${sessionId}/stream`), {
+      [EN_TETE_JETON]: jeton,
+    });
 
+  const ouvrirFluxDuPupitre = (sessionId: string) =>
+    abonnerAuFlux(port, route(`/sessions/${sessionId}/presenter-stream`), {
+      [EN_TETE_IDENTITE]: `${FORMATEUR_A}:teacher`,
+    });
+
+  describe('flux simultanes d une seance ouverte', () => {
     it('ferme le plus ancien flux du participant a l ouverture de son troisieme et garde au formateur sa place', async () => {
       const { sessionId, code } = await http.ouvrirSession();
       const { jeton } = await http.inscrire(
@@ -580,11 +586,7 @@ describe('Session de formation (e2e http socket)', () => {
         await ouvrirFluxEtudiant(sessionId, jeton),
         await ouvrirFluxEtudiant(sessionId, jeton),
       ];
-      const formateur = await abonnerAuFlux(
-        port,
-        route(`/sessions/${sessionId}/presenter-stream`),
-        { [EN_TETE_IDENTITE]: `${FORMATEUR_A}:teacher` },
-      );
+      const formateur = await ouvrirFluxDuPupitre(sessionId);
       await attendreQue(() => siens[0].ferme, DELAI_FERMETURE_FLUX_MS);
       const fermes = siens.map((flux) => flux.ferme);
       [...siens, formateur].forEach((flux) => flux.fermer());
@@ -676,6 +678,35 @@ describe('Session de formation (e2e http socket)', () => {
       expect(exportBilan.headers['content-disposition']).toContain(
         'bilan-seance.json',
       );
+    });
+
+    it('documente exactement chaque evenement des flux du poste et du pupitre, jusqu a la fin', async () => {
+      const { sessionId, jeton } = await seanceSurLaSentinelle(
+        '11111111-1111-4111-8111-111111111122',
+      );
+      const poste = await ouvrirFluxEtudiant(sessionId, jeton);
+      const pupitre = await ouvrirFluxDuPupitre(sessionId);
+      await http.repondre(sessionId, jeton, TEMOIN.piege).expect(201);
+      await attendreQue(
+        () => pupitre.evenements.some(({ type }) => type === 'resultats'),
+        DELAI_FERMETURE_FLUX_MS,
+      );
+      await http.postEnFormateur(`/sessions/${sessionId}/close`).expect(204);
+      await attendreQue(
+        () => poste.ferme && pupitre.ferme,
+        DELAI_FERMETURE_FLUX_MS,
+      );
+      const document = documentOpenApiFormations(app);
+
+      expect(
+        [...new Set(pupitre.evenements.map(({ type }) => type))].sort((a, b) =>
+          a.localeCompare(b),
+        ),
+      ).toEqual(['etat', 'fin', 'resultats']);
+      expect([
+        ...ecartsAuFlux(document, '/{id}/stream', poste.evenements),
+        ...ecartsAuFlux(document, '/{id}/presenter-stream', pupitre.evenements),
+      ]).toEqual([]);
     });
 
     it('sert au formateur le csv de la seance en piece jointe nommee par son code', async () => {

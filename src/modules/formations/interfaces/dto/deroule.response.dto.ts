@@ -23,5 +23,5 @@ export class CorrigePresentateurResponseDto {
   bonneReponse: string;
 
   @ApiProperty({ type: [ConfusionCorrigeeResponseDto] })
-  confusions: ConfusionCorrigeeResponseDto[];
+  confusions: readonly ConfusionCorrigeeResponseDto[];
 }

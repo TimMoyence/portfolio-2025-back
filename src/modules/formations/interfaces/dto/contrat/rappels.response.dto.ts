@@ -38,7 +38,7 @@ export class SpacedQuestionPubliqueResponseDto implements SpacedQuestionPublique
     type: [OptionPubliqueResponseDto],
     description: 'Options melangees selon la graine du participant',
   })
-  options: OptionPubliqueResponseDto[];
+  options: readonly OptionPubliqueResponseDto[];
 }
 
 export class RappelsResponseDto {
@@ -46,5 +46,5 @@ export class RappelsResponseDto {
     type: [SpacedQuestionPubliqueResponseDto],
     description: 'Liste figee au premier appel',
   })
-  questions: SpacedQuestionPubliqueResponseDto[];
+  questions: readonly SpacedQuestionPubliqueResponseDto[];
 }

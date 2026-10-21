@@ -66,6 +66,7 @@ import {
 } from './helpers/nest-test-app';
 import { silenceNestLogger } from './helpers/silence-nest-logger';
 import { lecteurDeTrames } from './helpers/trames-sse';
+import { documentPublie, ecartsAuFlux } from './helpers/schema-openapi';
 
 const AUDIT_SUIVI = '00000000-0000-4000-a000-000000000001';
 const JETON_DU_GUIDE = '550e8400-e29b-41d4-a716-446655440000';
@@ -346,7 +347,11 @@ describe('Flux SSE d un audit servi par le vrai cas d usage', () => {
   const cheminDuFlux = `/api/audits/${AUDIT_SUIVI}/stream`;
 
   function evenementsDe(texte: string): string[] {
-    return lecteurDeTrames()(texte).map(({ type }) => type);
+    const evenements = lecteurDeTrames()(texte);
+    expect(
+      ecartsAuFlux(documentPublie(), '/audits/{id}/stream', evenements),
+    ).toEqual([]);
+    return evenements.map(({ type }) => type);
   }
 
   afterEach(() => {

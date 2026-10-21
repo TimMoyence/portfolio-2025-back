@@ -32,6 +32,8 @@ export class AuditSummaryResponseDto {
   @ApiProperty({
     type: 'object',
     additionalProperties: true,
+    description:
+      'Constats bruts des controles techniques, volontairement ouverts : leurs cles suivent les controles executes et evoluent avec eux',
     example: { accessibility: { https: true, statusCode: 200 } },
   })
   keyChecks: Record<string, unknown>;

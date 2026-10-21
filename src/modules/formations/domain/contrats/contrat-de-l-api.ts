@@ -32,6 +32,15 @@ export type VotePhase = (typeof PHASES_DE_VOTE)[number];
 export const PACING_MODES = Object.freeze(['pilote', 'libre'] as const);
 export type PacingMode = (typeof PACING_MODES)[number];
 
+export const RAISONS_DE_FIN = Object.freeze([
+  'cloturee',
+  'introuvable',
+  'expiree',
+  'evince',
+  'revoque',
+] as const);
+export type RaisonDeFin = (typeof RAISONS_DE_FIN)[number];
+
 export interface FreeRange {
   premier: number;
   dernier: number;

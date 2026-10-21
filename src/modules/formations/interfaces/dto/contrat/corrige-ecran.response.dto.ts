@@ -64,7 +64,7 @@ class CorrigeFeuillePresentateurResponseDto {
   type: 'feuille';
 
   @ApiProperty({ type: [AttenduFeuillePresentateurResponseDto] })
-  attendus: AttenduFeuillePresentateurResponseDto[];
+  attendus: readonly AttenduFeuillePresentateurResponseDto[];
 }
 
 class AttenduTableauPresentateurResponseDto {
@@ -83,7 +83,7 @@ class CorrigeTableauPresentateurResponseDto {
   type: 'tableau';
 
   @ApiProperty({ type: [AttenduTableauPresentateurResponseDto] })
-  attendus: AttenduTableauPresentateurResponseDto[];
+  attendus: readonly AttenduTableauPresentateurResponseDto[];
 
   @ApiProperty({
     type: TableauEvalueResponseDto,
@@ -112,7 +112,7 @@ class CorrigeClassementPresentateurResponseDto {
   type: 'classement';
 
   @ApiProperty({ type: [AttenduClassementPresentateurResponseDto] })
-  attendus: AttenduClassementPresentateurResponseDto[];
+  attendus: readonly AttenduClassementPresentateurResponseDto[];
 }
 
 class EnigmePresentateurResponseDto {
@@ -131,7 +131,7 @@ class CorrigeEnigmesPresentateurResponseDto {
   type: 'enigmes';
 
   @ApiProperty({ type: [EnigmePresentateurResponseDto] })
-  enigmes: EnigmePresentateurResponseDto[];
+  enigmes: readonly EnigmePresentateurResponseDto[];
 
   @ApiProperty({ example: '7-3-1-9' })
   codeFinal: string;
@@ -153,7 +153,7 @@ class CorrigeDefiPresentateurResponseDto {
   type: 'defi';
 
   @ApiProperty({ type: [StrategiePresentateurResponseDto] })
-  strategies: StrategiePresentateurResponseDto[];
+  strategies: readonly StrategiePresentateurResponseDto[];
 }
 
 class CorrigeRevelationPresentateurResponseDto {
@@ -164,7 +164,7 @@ class CorrigeRevelationPresentateurResponseDto {
   titre: string;
 
   @ApiProperty({ type: [String] })
-  lignes: string[];
+  lignes: readonly string[];
 }
 
 class CorrigeReflexionPresentateurResponseDto {
@@ -227,7 +227,7 @@ export class CorrectionServieResponseDto {
   ecranId: string;
 
   @ApiProperty({ type: [QuestionCorrigeeResponseDto] })
-  questions: QuestionCorrigeeResponseDto[];
+  questions: readonly QuestionCorrigeeResponseDto[];
 
   @ReferenceOuNul(CORRIGES_D_ECRAN)
   corrige: CorrigeEcranPresentateur | null;
@@ -236,5 +236,5 @@ export class CorrectionServieResponseDto {
   reflexion: ReflexionPresentateurResponseDto | null;
 
   @ApiPropertyOptional({ type: [ExplicationDeCorrectionResponseDto] })
-  explications?: ExplicationDeCorrectionResponseDto[];
+  explications?: readonly ExplicationDeCorrectionResponseDto[];
 }

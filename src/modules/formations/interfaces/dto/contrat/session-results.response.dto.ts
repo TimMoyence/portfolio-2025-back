@@ -50,7 +50,7 @@ export class RapportParticipantResponseDto extends OmitType(
   ['reponses'] as const,
 ) {
   @ApiProperty({ type: [RapportQuestionResponseDto] })
-  reponses: RapportQuestionResponseDto[];
+  reponses: readonly RapportQuestionResponseDto[];
 }
 
 export class JustesParCleResponseDto {
@@ -146,7 +146,7 @@ export class ResultatsSeanceResponseDto implements ResultatsSeance {
   participants: number;
 
   @ApiProperty({ type: [ResultatQuestionResponseDto] })
-  questions: ResultatQuestionResponseDto[];
+  questions: readonly ResultatQuestionResponseDto[];
 }
 
 export class RegleDeNotationResponseDto
@@ -159,7 +159,7 @@ export class RegleDeNotationResponseDto
     isArray: true,
     example: ['vote', 'numeric', 'classement', 'feuille', 'tableau'],
   })
-  typesNotables: TypeQuestion[];
+  typesNotables: readonly TypeQuestion[];
 
   @ApiProperty({ enum: ['au-moins-une-saisie'] })
   productionCompteSi: 'au-moins-une-saisie';
@@ -256,7 +256,7 @@ export class SessionResultsResponseDto
     type: [RapportParticipantResponseDto],
     description: 'Participants dans leur ordre d arrivee',
   })
-  participants: RapportParticipantResponseDto[];
+  participants: readonly RapportParticipantResponseDto[];
 
   @ApiProperty({ type: ResultatsSeanceResponseDto })
   resultats: ResultatsSeanceResponseDto;
@@ -278,5 +278,5 @@ export class SessionResultsResponseDto
   jalons: Record<string, ComptesJalonResponseDto>;
 
   @ApiProperty({ type: [ProgressionEnigmeResponseDto] })
-  enigmes: ProgressionEnigmeResponseDto[];
+  enigmes: readonly ProgressionEnigmeResponseDto[];
 }

@@ -14,6 +14,8 @@ export const STATUTS_D_AUDIT = Object.freeze([
 ] as const);
 export type AuditProcessingStatus = (typeof STATUTS_D_AUDIT)[number];
 
+export type StatutDuFluxDAudit = AuditProcessingStatus | 'TIMEOUT';
+
 export interface AuditSnapshot {
   id: string;
   requestId: string;

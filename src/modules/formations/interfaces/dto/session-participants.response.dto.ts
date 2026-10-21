@@ -24,5 +24,5 @@ export class SessionParticipantsResponseDto {
     description:
       'Participants inscrits dans leur ordre d’arrivée, puis les évincés, sans adresse',
   })
-  participants: SessionParticipantResponseDto[];
+  participants: readonly SessionParticipantResponseDto[];
 }
