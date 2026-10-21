@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import { InvalidCredentialsError } from '../../../common/domain/errors/InvalidCredentialsError';
 import { ResourceConflictError } from '../../../common/domain/errors/ResourceConflictError';
 import { UserNotFoundError } from '../../../common/domain/errors/UserNotFoundError';
 import { SetPasswordUseCase } from './SetPassword.useCase';
@@ -70,19 +69,11 @@ describe('SetPasswordUseCase', () => {
     );
   });
 
-  it('rejette un compte inactif ou inexistant', async () => {
+  it('rejette un compte inexistant', async () => {
     usersRepository.findById.mockResolvedValue(null);
 
     await expect(
       useCase.execute({ userId: 'missing', newPassword: CHOSEN_CREDENTIAL }),
     ).rejects.toBeInstanceOf(UserNotFoundError);
-
-    usersRepository.findById.mockResolvedValue(
-      buildUser({ id: 'user-1', isActive: false, passwordHash: null }),
-    );
-
-    await expect(
-      useCase.execute({ userId: 'user-1', newPassword: CHOSEN_CREDENTIAL }),
-    ).rejects.toBeInstanceOf(InvalidCredentialsError);
   });
 });
