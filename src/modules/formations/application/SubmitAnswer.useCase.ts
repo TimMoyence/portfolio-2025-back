@@ -4,6 +4,7 @@ import { gradeAnswer } from '../domain/AnswerGrading';
 import { estValeurConnue, findQuestion, solutionFor } from '../domain/Bareme';
 import {
   absenteDuCours,
+  assertCorrectionNonProjetee,
   cibleServie,
   ecranParId,
   idDeLEcranAuRang,
@@ -97,6 +98,7 @@ export class SubmitAnswerUseCase extends EnregistrementDeReponse {
       ecranParId(cours, ecranId),
       command.questionId,
     );
+    assertCorrectionNonProjetee(session, cours, ecranId);
 
     const solution = solutionFor(
       session.bareme,

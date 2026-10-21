@@ -32,7 +32,7 @@ export interface TraceACalculer {
 
 function abscissesDu(trace: TraceACalculer): number[] {
   const depart = trace.abscisse.min;
-  const arrivee = Math.max(trace.abscisse.max, depart);
+  const arrivee = trace.abscisse.max;
   if (trace.forme === 'barres') {
     const premiere = Math.ceil(depart);
     return Array.from(

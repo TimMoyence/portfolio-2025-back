@@ -1,6 +1,6 @@
 import { applyDecorators } from '@nestjs/common';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsArray, IsIn, IsOptional, IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 import { Motif } from '../../../../common/interfaces/dto/bornes-annoncees.decorator';
 import {
   AuMoinsCaracteres,
@@ -8,7 +8,6 @@ import {
   Rogne,
   TexteSaisi,
 } from '../../../../common/interfaces/dto/longueur-de-texte.decorator';
-import { VALID_ROLES } from '../../domain/roles';
 import { FORME_D_UN_JETON_EMIS } from '../../domain/TokenHash';
 import { LONGUEUR_MAX_D_UN_NOM } from '../../domain/User';
 
@@ -80,24 +79,5 @@ export function TelephoneOptionnel(exemple: string): PropertyDecorator {
     Rogne(),
     IsString(),
     AuPlusCaracteres(30),
-  );
-}
-
-export function RolesValides(): PropertyDecorator {
-  return applyDecorators(
-    ApiPropertyOptional({
-      example: ['teacher'],
-      isArray: true,
-      enumName: 'Role',
-      enum: [...VALID_ROLES],
-      description: 'Liste des roles. Reserve aux administrateurs.',
-    }),
-    IsOptional(),
-    IsArray(),
-    IsString({ each: true }),
-    IsIn([...VALID_ROLES], {
-      each: true,
-      message: 'Chaque role doit etre un role valide',
-    }),
   );
 }

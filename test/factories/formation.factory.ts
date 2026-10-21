@@ -557,9 +557,7 @@ export function buildFreeResponseRecord(
     activityId: 'b2-s11-c1',
     response: 'Je vérifie la base avant de comparer.',
     premiereReponse: null,
-    strategiesServiesLe: null,
     dureeMs: 12000,
-    status: 'enregistre',
     submittedAt: new Date('2026-09-11T08:20:00.000Z'),
     ...overrides,
   };

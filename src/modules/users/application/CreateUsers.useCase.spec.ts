@@ -20,10 +20,7 @@ import type { IUsersRepository } from '../domain/IUsers.repository';
 import { TROIS_ENVOIS_PAR_HEURE } from '../domain/PlafondDEnvois';
 import type { User } from '../domain/User';
 import { CreateUsersUseCase } from './CreateUsers.useCase';
-import type {
-  CreateUserCommand,
-  InscriptionCommand,
-} from './dto/CreateUser.command';
+import type { InscriptionCommand } from './dto/CreateUser.command';
 import type { PasswordService } from './services/PasswordService';
 import { EnvoiDeVerificationEmail } from './services/email-verification-dispatch';
 import { EnvoiDeReinitialisation } from './services/password-reset-dispatch';
@@ -85,138 +82,6 @@ describe('CreateUsersUseCase', () => {
     );
   });
 
-  const creerEtAttendreLesRoles = async (
-    dto: CreateUserCommand,
-    roles: User['roles'],
-    persiste: Partial<User> = {},
-  ) => {
-    repo.create.mockResolvedValue(
-      buildUser({ email: dto.email, roles, ...persiste }),
-    );
-
-    await useCase.execute(dto);
-
-    expect(repo.create).toHaveBeenCalledWith(
-      expect.objectContaining({ roles }),
-    );
-  };
-
-  it('maps the DTO and persists the user', async () => {
-    const dto: CreateUserCommand = {
-      email: 'john@example.com',
-      password: PLAIN_CREDENTIAL,
-      firstName: 'John',
-      lastName: 'Doe',
-      updatedOrCreatedBy: 'self-registration',
-    };
-
-    const savedUser = buildUser({
-      id: 'uuid',
-      email: dto.email,
-      passwordHash: DERIVED_HASH,
-      firstName: dto.firstName,
-      lastName: dto.lastName,
-      updatedOrCreatedBy: 'self-registration',
-    });
-    repo.create.mockResolvedValue(savedUser);
-
-    const result = await useCase.execute(dto);
-
-    expect(repo.create).toHaveBeenCalledWith(
-      expect.objectContaining({
-        email: dto.email,
-        passwordHash: DERIVED_HASH,
-        firstName: dto.firstName,
-        lastName: dto.lastName,
-        phone: null,
-        isActive: true,
-        updatedOrCreatedBy: 'self-registration',
-        createdAt: expect.any(Date),
-        updatedAt: expect.any(Date),
-      }),
-    );
-    expect(passwordService.hash).toHaveBeenCalledWith(dto.password);
-    expect(result.user).toBe(savedUser);
-  });
-
-  it('devrait envoyer un email de verification pour les inscriptions publiques', async () => {
-    const dto: CreateUserCommand = {
-      email: 'new@example.com',
-      password: PLAIN_CREDENTIAL,
-      firstName: 'New',
-      lastName: 'User',
-      updatedOrCreatedBy: 'self-registration',
-    };
-
-    const savedUser = buildUser({
-      id: 'uuid',
-      email: dto.email,
-      firstName: dto.firstName,
-      lastName: dto.lastName,
-      emailVerified: false,
-    });
-    repo.create.mockResolvedValue(savedUser);
-
-    await useCase.execute(dto);
-
-    expect(
-      emailVerificationTokensRepo.remplacerLesJetonsActifs,
-    ).toHaveBeenCalledWith(
-      expect.objectContaining({
-        userId: 'uuid',
-        tokenHash: expect.stringMatching(/^[0-9a-f]{64}$/),
-        expiresAt: expect.any(Date),
-      }),
-      TROIS_ENVOIS_PAR_HEURE,
-    );
-    expect(
-      emailVerificationNotifier.sendVerificationEmail,
-    ).toHaveBeenCalledWith(
-      expect.objectContaining({
-        email: dto.email,
-        firstName: 'New',
-        lastName: 'User',
-        verificationUrl: expect.stringContaining('token='),
-        expiresInMinutes: 1440,
-      }),
-    );
-  });
-
-  it("devrait respecter les choix d'un admin qui omet l'auteur, sans courriel de verification", async () => {
-    const dto: CreateUserCommand = {
-      email: 'inactif@example.com',
-      password: PLAIN_CREDENTIAL,
-      firstName: 'Compte',
-      lastName: 'Inactif',
-      roles: ['teacher'],
-      isActive: false,
-    };
-
-    await creerEtAttendreLesRoles(dto, ['teacher']);
-    expect(repo.create).toHaveBeenCalledWith(
-      expect.objectContaining({ isActive: false }),
-    );
-    expect(
-      emailVerificationNotifier.sendVerificationEmail,
-    ).not.toHaveBeenCalled();
-  });
-
-  it('devrait conserver les roles quand cree par un admin', async () => {
-    const dto: CreateUserCommand = {
-      email: 'new@example.com',
-      password: PLAIN_CREDENTIAL,
-      firstName: 'New',
-      lastName: 'User',
-      roles: ['admin', 'teacher'],
-      updatedOrCreatedBy: 'admin-user-id',
-    };
-
-    await creerEtAttendreLesRoles(dto, ['admin', 'teacher']);
-    expect(
-      emailVerificationNotifier.sendVerificationEmail,
-    ).not.toHaveBeenCalled();
-  });
-
   describe('inscrire', () => {
     simulerLHorlogeAChaqueTest();
 
@@ -261,6 +126,46 @@ describe('CreateUsersUseCase', () => {
       expect(
         emailVerificationNotifier.sendVerificationEmail,
       ).toHaveBeenCalledTimes(1);
+    });
+
+    it('hache le mot de passe, enregistre les champs saisis et envoie le courriel de vérification', async () => {
+      repo.create.mockResolvedValue(
+        buildUser({ id: 'uuid', email: candidat.email, emailVerified: false }),
+      );
+
+      await rendueAuPlancher(useCase.inscrire(candidat));
+
+      expect(passwordService.hash).toHaveBeenCalledWith(candidat.password);
+      expect(repo.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          email: candidat.email,
+          passwordHash: DERIVED_HASH,
+          firstName: candidat.firstName,
+          lastName: candidat.lastName,
+          phone: null,
+          createdAt: expect.any(Date),
+          updatedAt: expect.any(Date),
+        }),
+      );
+      expect(
+        emailVerificationTokensRepo.remplacerLesJetonsActifs,
+      ).toHaveBeenCalledWith(
+        expect.objectContaining({
+          userId: 'uuid',
+          tokenHash: expect.stringMatching(/^[0-9a-f]{64}$/),
+          expiresAt: expect.any(Date),
+        }),
+        TROIS_ENVOIS_PAR_HEURE,
+      );
+      expect(
+        emailVerificationNotifier.sendVerificationEmail,
+      ).toHaveBeenCalledWith(
+        expect.objectContaining({
+          email: candidat.email,
+          verificationUrl: expect.stringContaining('token='),
+          expiresInMinutes: 1440,
+        }),
+      );
     });
 
     it('repond a une adresse deja inscrite comme a une inscription neuve, au meme plancher', async () => {

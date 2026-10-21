@@ -5,13 +5,12 @@ import {
 } from '../../../../../test/helpers/validation-pipe';
 import { User } from '../../domain/User';
 import { ChangePasswordDto } from './ChangePassword.dto';
-import { CreateUserDto } from './CreateUser.dto';
+import { InscriptionDto } from './Inscription.dto';
 import { LoginDto } from './Login.dto';
-import { MotDePasseRobuste, RolesValides } from './regles-de-saisie';
+import { MotDePasseRobuste } from './regles-de-saisie';
 import { ResetPasswordDto } from './ResetPassword.dto';
 import { SetPasswordDto } from './SetPassword.dto';
 import { UpdateProfileDto } from './UpdateProfile.dto';
-import { UpdateUserDto } from './UpdateUser.dto';
 
 describe('prenom et nom d un compte', () => {
   const secretRobuste = 'StrongPassword123!';
@@ -23,8 +22,7 @@ describe('prenom et nom d un compte', () => {
   };
 
   it.each([
-    ['l inscription', CreateUserDto, inscription],
-    ['la modification par l admin', UpdateUserDto, {}],
+    ['l inscription', InscriptionDto, inscription],
     ['le profil', UpdateProfileDto, {}],
   ])(
     'acceptent 1 a 50 caracteres et refusent un texte vide ou plus long a %s',
@@ -59,7 +57,7 @@ describe('prenom et nom d un compte', () => {
       };
 
       expect([
-        saisieRetenue(CreateUserDto, { ...inscription, firstName: nom })
+        saisieRetenue(InscriptionDto, { ...inscription, firstName: nom })
           ?.firstName ?? null,
         saisieRetenue(UpdateProfileDto, { firstName: nom })?.firstName ?? null,
       ]).toEqual([leDomaineGarde(), leDomaineGarde()]);
@@ -76,7 +74,7 @@ describe('prenom et nom d un compte', () => {
     const messagesDe = (dto: new () => object, base: object) =>
       messagesDeRefus(dto, { ...base, firstName: 'a'.repeat(51) });
 
-    expect(messagesDe(CreateUserDto, inscription)).toEqual([
+    expect(messagesDe(InscriptionDto, inscription)).toEqual([
       'Le prenom doit contenir au plus 50 caracteres.',
     ]);
     expect(messagesDe(UpdateProfileDto, {})).toEqual([
@@ -88,9 +86,6 @@ describe('prenom et nom d un compte', () => {
 class Saisie {
   @MotDePasseRobuste()
   motDePasse: string;
-
-  @RolesValides()
-  roles?: string[];
 }
 
 const messages = (corps: Record<string, unknown>): string[] =>
@@ -123,8 +118,7 @@ describe('MotDePasseRobuste', () => {
 
 describe('borne d un mot de passe saisi', () => {
   it.each([
-    ['l inscription', CreateUserDto, 'password'],
-    ['la modification par l admin', UpdateUserDto, 'password'],
+    ['l inscription', InscriptionDto, 'password'],
     ['la reinitialisation', ResetPasswordDto, 'newPassword'],
     ['la definition', SetPasswordDto, 'newPassword'],
     ['le changement', ChangePasswordDto, 'newPassword'],
@@ -144,19 +138,4 @@ describe('borne d un mot de passe saisi', () => {
       expect(refusesPour(`A1!${'a'.repeat(254)}`)).toContain(champ);
     },
   );
-});
-
-describe('RolesValides', () => {
-  it('accepte l absence de roles et des roles connus', () => {
-    expect(messages({ motDePasse: 'StrongPassword123!' })).toEqual([]);
-    expect(
-      messages({ motDePasse: 'StrongPassword123!', roles: ['teacher'] }),
-    ).toEqual([]);
-  });
-
-  it('refuse un role inconnu', () => {
-    expect(
-      messages({ motDePasse: 'StrongPassword123!', roles: ['weather'] }),
-    ).toContain('Chaque role doit etre un role valide');
-  });
 });

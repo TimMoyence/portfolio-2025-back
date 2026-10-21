@@ -1,10 +1,3 @@
-export const STATUTS_DE_REPONSE_LIBRE = Object.freeze([
-  'enregistre',
-  'en_attente',
-  'echec',
-] as const);
-export type FreeResponseStatus = (typeof STATUTS_DE_REPONSE_LIBRE)[number];
-
 export interface FreeResponseRecord {
   id: string;
   sessionId: string;
@@ -13,9 +6,7 @@ export interface FreeResponseRecord {
   activityId: string;
   response: string;
   premiereReponse: string | null;
-  strategiesServiesLe: Date | null;
   dureeMs: number;
-  status: FreeResponseStatus;
   submittedAt: Date;
 }
 

@@ -1,209 +1,6 @@
 {
   "openapi": "3.0.0",
   "paths": {
-    "/api/v1/portfolio25/users": {
-      "get": {
-        "operationId": "UsersController_findAll",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/UserResponseDto"
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Token JWT invalide ou absent"
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Lister tous les utilisateurs (admin)",
-        "tags": [
-          "users"
-        ]
-      },
-      "post": {
-        "operationId": "UsersController_create",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateUserDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UserResponseDto"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Validation echouee"
-          },
-          "409": {
-            "description": "Adresse ou compte Google deja utilise par un autre compte"
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Creer un utilisateur (admin)",
-        "tags": [
-          "users"
-        ]
-      }
-    },
-    "/api/v1/portfolio25/users/{id}": {
-      "get": {
-        "operationId": "UsersController_findOne",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UserResponseDto"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Utilisateur non trouve"
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Recuperer un utilisateur par ID (admin)",
-        "tags": [
-          "users"
-        ]
-      },
-      "patch": {
-        "operationId": "UsersController_update",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateUserDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UserResponseDto"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Validation echouee"
-          },
-          "404": {
-            "description": "Utilisateur non trouve"
-          },
-          "409": {
-            "description": "Adresse ou compte Google deja utilise par un autre compte"
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Mettre a jour un utilisateur (admin)",
-        "tags": [
-          "users"
-        ]
-      },
-      "delete": {
-        "operationId": "UsersController_delete",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UserResponseDto"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Utilisateur non trouve"
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Supprimer un utilisateur (admin)",
-        "tags": [
-          "users"
-        ]
-      }
-    },
     "/api/v1/portfolio25/auth/login": {
       "post": {
         "operationId": "AuthController_login",
@@ -3636,6 +3433,26 @@
   "servers": [],
   "components": {
     "schemas": {
+      "LoginDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "pattern": "^(?=[^@]{1,64}@)(?=.{1,254}$)[A-Za-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u167F\\u1681-\\u1FFF\\u2C00-\\u2DFF\\u2E80-\\u2FDF\\u3040-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFEFE\\uFF10-\\uFFEF0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[A-Za-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u167F\\u1681-\\u1FFF\\u2C00-\\u2DFF\\u2E80-\\u2FDF\\u3040-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFEFE\\uFF10-\\uFFEF0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[A-Za-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u167F\\u1681-\\u1FFF\\u2C00-\\u2DFF\\u2E80-\\u2FDF\\u3040-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFEFE\\uFF10-\\uFFEF0-9](?:[A-Za-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u167F\\u1681-\\u1FFF\\u2C00-\\u2DFF\\u2E80-\\u2FDF\\u3040-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFEFE\\uFF10-\\uFFEF0-9-]{0,61}[A-Za-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u167F\\u1681-\\u1FFF\\u2C00-\\u2DFF\\u2E80-\\u2FDF\\u3040-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFEFE\\uFF10-\\uFFEF0-9])?\\.)+(?:[A-Za-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u167F\\u1681-\\u1FFF\\u2C00-\\u2DFF\\u2E80-\\u2FDF\\u3040-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFEFE\\uFF10-\\uFFEF]{2,63}|xn--[A-Za-z0-9-]{2,59})$",
+            "example": "john@example.com"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256,
+            "example": "StrongPassword123!"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
       "UserResponseDto": {
         "type": "object",
         "properties": {
@@ -3712,138 +3529,6 @@
           "emailVerified"
         ]
       },
-      "Role": {
-        "type": "string",
-        "enum": [
-          "admin",
-          "teacher"
-        ],
-        "description": "Liste des roles. Reserve aux administrateurs."
-      },
-      "CreateUserDto": {
-        "type": "object",
-        "properties": {
-          "email": {
-            "type": "string",
-            "format": "email",
-            "example": "john@example.com"
-          },
-          "password": {
-            "type": "string",
-            "minLength": 12,
-            "maxLength": 256,
-            "pattern": "^(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z0-9]).+$",
-            "example": "StrongPassword123!"
-          },
-          "firstName": {
-            "type": "string",
-            "example": "John",
-            "minLength": 1,
-            "maxLength": 50
-          },
-          "lastName": {
-            "type": "string",
-            "example": "Doe",
-            "minLength": 1,
-            "maxLength": 50
-          },
-          "phone": {
-            "type": "string",
-            "example": "+11234567890",
-            "nullable": true,
-            "maxLength": 30
-          },
-          "isActive": {
-            "type": "boolean",
-            "example": true
-          },
-          "roles": {
-            "type": "array",
-            "example": [
-              "teacher"
-            ],
-            "description": "Liste des roles. Reserve aux administrateurs.",
-            "items": {
-              "$ref": "#/components/schemas/Role"
-            }
-          }
-        },
-        "required": [
-          "email",
-          "password",
-          "firstName",
-          "lastName"
-        ]
-      },
-      "UpdateUserDto": {
-        "type": "object",
-        "properties": {
-          "email": {
-            "type": "string",
-            "format": "email",
-            "example": "john@example.com"
-          },
-          "password": {
-            "type": "string",
-            "minLength": 12,
-            "maxLength": 256,
-            "pattern": "^(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z0-9]).+$",
-            "example": "StrongPassword123!"
-          },
-          "firstName": {
-            "type": "string",
-            "example": "John",
-            "minLength": 1,
-            "maxLength": 50
-          },
-          "lastName": {
-            "type": "string",
-            "example": "Doe",
-            "minLength": 1,
-            "maxLength": 50
-          },
-          "phone": {
-            "type": "string",
-            "example": "+11234567890",
-            "nullable": true,
-            "maxLength": 30
-          },
-          "isActive": {
-            "type": "boolean",
-            "example": true
-          },
-          "roles": {
-            "type": "array",
-            "example": [
-              "teacher"
-            ],
-            "description": "Liste des roles. Reserve aux administrateurs.",
-            "items": {
-              "$ref": "#/components/schemas/Role"
-            }
-          }
-        }
-      },
-      "LoginDto": {
-        "type": "object",
-        "properties": {
-          "email": {
-            "type": "string",
-            "format": "email",
-            "example": "john@example.com"
-          },
-          "password": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 256,
-            "example": "StrongPassword123!"
-          }
-        },
-        "required": [
-          "email",
-          "password"
-        ]
-      },
       "AuthResponseDto": {
         "type": "object",
         "properties": {
@@ -3917,7 +3602,7 @@
         "properties": {
           "email": {
             "type": "string",
-            "format": "email",
+            "pattern": "^(?=[^@]{1,64}@)(?=.{1,254}$)[A-Za-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u167F\\u1681-\\u1FFF\\u2C00-\\u2DFF\\u2E80-\\u2FDF\\u3040-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFEFE\\uFF10-\\uFFEF0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[A-Za-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u167F\\u1681-\\u1FFF\\u2C00-\\u2DFF\\u2E80-\\u2FDF\\u3040-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFEFE\\uFF10-\\uFFEF0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[A-Za-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u167F\\u1681-\\u1FFF\\u2C00-\\u2DFF\\u2E80-\\u2FDF\\u3040-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFEFE\\uFF10-\\uFFEF0-9](?:[A-Za-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u167F\\u1681-\\u1FFF\\u2C00-\\u2DFF\\u2E80-\\u2FDF\\u3040-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFEFE\\uFF10-\\uFFEF0-9-]{0,61}[A-Za-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u167F\\u1681-\\u1FFF\\u2C00-\\u2DFF\\u2E80-\\u2FDF\\u3040-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFEFE\\uFF10-\\uFFEF0-9])?\\.)+(?:[A-Za-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u167F\\u1681-\\u1FFF\\u2C00-\\u2DFF\\u2E80-\\u2FDF\\u3040-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFEFE\\uFF10-\\uFFEF]{2,63}|xn--[A-Za-z0-9-]{2,59})$",
             "example": "john@example.com"
           }
         },
@@ -3966,7 +3651,7 @@
         "properties": {
           "email": {
             "type": "string",
-            "format": "email",
+            "pattern": "^(?=[^@]{1,64}@)(?=.{1,254}$)[A-Za-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u167F\\u1681-\\u1FFF\\u2C00-\\u2DFF\\u2E80-\\u2FDF\\u3040-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFEFE\\uFF10-\\uFFEF0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[A-Za-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u167F\\u1681-\\u1FFF\\u2C00-\\u2DFF\\u2E80-\\u2FDF\\u3040-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFEFE\\uFF10-\\uFFEF0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[A-Za-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u167F\\u1681-\\u1FFF\\u2C00-\\u2DFF\\u2E80-\\u2FDF\\u3040-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFEFE\\uFF10-\\uFFEF0-9](?:[A-Za-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u167F\\u1681-\\u1FFF\\u2C00-\\u2DFF\\u2E80-\\u2FDF\\u3040-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFEFE\\uFF10-\\uFFEF0-9-]{0,61}[A-Za-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u167F\\u1681-\\u1FFF\\u2C00-\\u2DFF\\u2E80-\\u2FDF\\u3040-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFEFE\\uFF10-\\uFFEF0-9])?\\.)+(?:[A-Za-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u167F\\u1681-\\u1FFF\\u2C00-\\u2DFF\\u2E80-\\u2FDF\\u3040-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFEFE\\uFF10-\\uFFEF]{2,63}|xn--[A-Za-z0-9-]{2,59})$",
             "example": "john@example.com"
           },
           "password": {
@@ -4007,7 +3692,7 @@
         "properties": {
           "email": {
             "type": "string",
-            "format": "email",
+            "pattern": "^(?=[^@]{1,64}@)(?=.{1,254}$)[A-Za-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u167F\\u1681-\\u1FFF\\u2C00-\\u2DFF\\u2E80-\\u2FDF\\u3040-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFEFE\\uFF10-\\uFFEF0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[A-Za-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u167F\\u1681-\\u1FFF\\u2C00-\\u2DFF\\u2E80-\\u2FDF\\u3040-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFEFE\\uFF10-\\uFFEF0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[A-Za-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u167F\\u1681-\\u1FFF\\u2C00-\\u2DFF\\u2E80-\\u2FDF\\u3040-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFEFE\\uFF10-\\uFFEF0-9](?:[A-Za-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u167F\\u1681-\\u1FFF\\u2C00-\\u2DFF\\u2E80-\\u2FDF\\u3040-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFEFE\\uFF10-\\uFFEF0-9-]{0,61}[A-Za-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u167F\\u1681-\\u1FFF\\u2C00-\\u2DFF\\u2E80-\\u2FDF\\u3040-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFEFE\\uFF10-\\uFFEF0-9])?\\.)+(?:[A-Za-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u167F\\u1681-\\u1FFF\\u2C00-\\u2DFF\\u2E80-\\u2FDF\\u3040-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFEFE\\uFF10-\\uFFEF]{2,63}|xn--[A-Za-z0-9-]{2,59})$",
             "description": "Adresse email du compte a verifier",
             "example": "john@example.com",
             "minLength": 1
@@ -4074,7 +3759,7 @@
           },
           "email": {
             "type": "string",
-            "format": "email",
+            "pattern": "^(?=[^@]{1,64}@)(?=.{1,254}$)[A-Za-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u167F\\u1681-\\u1FFF\\u2C00-\\u2DFF\\u2E80-\\u2FDF\\u3040-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFEFE\\uFF10-\\uFFEF0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[A-Za-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u167F\\u1681-\\u1FFF\\u2C00-\\u2DFF\\u2E80-\\u2FDF\\u3040-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFEFE\\uFF10-\\uFFEF0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[A-Za-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u167F\\u1681-\\u1FFF\\u2C00-\\u2DFF\\u2E80-\\u2FDF\\u3040-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFEFE\\uFF10-\\uFFEF0-9](?:[A-Za-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u167F\\u1681-\\u1FFF\\u2C00-\\u2DFF\\u2E80-\\u2FDF\\u3040-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFEFE\\uFF10-\\uFFEF0-9-]{0,61}[A-Za-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u167F\\u1681-\\u1FFF\\u2C00-\\u2DFF\\u2E80-\\u2FDF\\u3040-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFEFE\\uFF10-\\uFFEF0-9])?\\.)+(?:[A-Za-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u167F\\u1681-\\u1FFF\\u2C00-\\u2DFF\\u2E80-\\u2FDF\\u3040-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFEFE\\uFF10-\\uFFEF]{2,63}|xn--[A-Za-z0-9-]{2,59})$",
             "example": "john.doe@example.com"
           },
           "message": {
@@ -4711,7 +4396,7 @@
           },
           "email": {
             "type": "string",
-            "format": "email",
+            "pattern": "^(?=[^@]{1,64}@)(?=.{1,254}$)[A-Za-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u167F\\u1681-\\u1FFF\\u2C00-\\u2DFF\\u2E80-\\u2FDF\\u3040-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFEFE\\uFF10-\\uFFEF0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[A-Za-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u167F\\u1681-\\u1FFF\\u2C00-\\u2DFF\\u2E80-\\u2FDF\\u3040-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFEFE\\uFF10-\\uFFEF0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[A-Za-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u167F\\u1681-\\u1FFF\\u2C00-\\u2DFF\\u2E80-\\u2FDF\\u3040-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFEFE\\uFF10-\\uFFEF0-9](?:[A-Za-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u167F\\u1681-\\u1FFF\\u2C00-\\u2DFF\\u2E80-\\u2FDF\\u3040-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFEFE\\uFF10-\\uFFEF0-9-]{0,61}[A-Za-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u167F\\u1681-\\u1FFF\\u2C00-\\u2DFF\\u2E80-\\u2FDF\\u3040-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFEFE\\uFF10-\\uFFEF0-9])?\\.)+(?:[A-Za-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u167F\\u1681-\\u1FFF\\u2C00-\\u2DFF\\u2E80-\\u2FDF\\u3040-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFEFE\\uFF10-\\uFFEF]{2,63}|xn--[A-Za-z0-9-]{2,59})$",
             "example": "marie@example.com"
           },
           "formationSlug": {
@@ -8700,14 +8385,6 @@
           "ecrans"
         ]
       },
-      "StatutDeReponseLibre": {
-        "type": "string",
-        "enum": [
-          "enregistre",
-          "en_attente",
-          "echec"
-        ]
-      },
       "FreeResponseResponseDto": {
         "type": "object",
         "properties": {
@@ -8740,22 +8417,9 @@
             "nullable": true,
             "description": "Première tentative d’un défi, jamais réécrite"
           },
-          "strategiesServiesLe": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true,
-            "description": "Date à laquelle les stratégies du défi ont été servies"
-          },
           "dureeMs": {
             "type": "number",
             "example": 12000
-          },
-          "status": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/StatutDeReponseLibre"
-              }
-            ]
           },
           "submittedAt": {
             "type": "string",
@@ -8771,9 +8435,7 @@
           "activityId",
           "response",
           "premiereReponse",
-          "strategiesServiesLe",
           "dureeMs",
-          "status",
           "submittedAt"
         ]
       },
@@ -8988,7 +8650,7 @@
           "email": {
             "type": "string",
             "maxLength": 180,
-            "format": "email",
+            "pattern": "^(?=[^@]{1,64}@)(?=.{1,254}$)[A-Za-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u167F\\u1681-\\u1FFF\\u2C00-\\u2DFF\\u2E80-\\u2FDF\\u3040-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFEFE\\uFF10-\\uFFEF0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[A-Za-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u167F\\u1681-\\u1FFF\\u2C00-\\u2DFF\\u2E80-\\u2FDF\\u3040-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFEFE\\uFF10-\\uFFEF0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[A-Za-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u167F\\u1681-\\u1FFF\\u2C00-\\u2DFF\\u2E80-\\u2FDF\\u3040-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFEFE\\uFF10-\\uFFEF0-9](?:[A-Za-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u167F\\u1681-\\u1FFF\\u2C00-\\u2DFF\\u2E80-\\u2FDF\\u3040-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFEFE\\uFF10-\\uFFEF0-9-]{0,61}[A-Za-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u167F\\u1681-\\u1FFF\\u2C00-\\u2DFF\\u2E80-\\u2FDF\\u3040-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFEFE\\uFF10-\\uFFEF0-9])?\\.)+(?:[A-Za-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u167F\\u1681-\\u1FFF\\u2C00-\\u2DFF\\u2E80-\\u2FDF\\u3040-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFEFE\\uFF10-\\uFFEF]{2,63}|xn--[A-Za-z0-9-]{2,59})$",
             "example": "theo.martin@example.com"
           },
           "secretDeReprise": {

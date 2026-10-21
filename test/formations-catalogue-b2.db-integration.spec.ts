@@ -362,7 +362,6 @@ describeDb('catalogue B2 migré', () => {
         participantId: participant.id,
         activityId: 'b2-s11-c1',
         response: 'Réponse reprise après reconnexion',
-        status: 'enregistre',
         dureeMs: 2200,
       }),
     ]);

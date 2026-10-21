@@ -5,12 +5,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import type { ValeursDeLEnv } from '../../config/env.validation';
 import { AuthenticateGoogleUserUseCase } from './application/AuthenticateGoogleUser.useCase';
 import { CreateUsersUseCase } from './application/CreateUsers.useCase';
-import { DeleteUsersUseCase } from './application/DeleteUsers.useCase';
-import { ListUsersUseCase } from './application/ListUsers.useCase';
-import { ListOneUserUseCase } from './application/ListOneUser.useCase';
 import { RefreshTokensUseCase } from './application/RefreshTokens.useCase';
 import { RevokeTokenUseCase } from './application/RevokeToken.useCase';
-import { UpdateUsersUseCase } from './application/UpdateUsers.useCase';
 import { VerifyEmailUseCase } from './application/VerifyEmail.useCase';
 import { ResendVerificationEmailUseCase } from './application/ResendVerificationEmail.useCase';
 import {
@@ -30,7 +26,6 @@ import { UsersRepositoryTypeORM } from './infrastructure/Users.repository.typeOR
 import { RefreshTokensRepositoryTypeORM } from './infrastructure/RefreshTokens.repository.typeORM';
 import { PasswordResetTokensRepositoryTypeORM } from './infrastructure/PasswordResetTokens.repository.typeORM';
 import { EmailVerificationTokensRepositoryTypeORM } from './infrastructure/EmailVerificationTokens.repository.typeORM';
-import { UsersController } from './interfaces/Users.controller';
 import { AuthAuditLogger } from './application/services/AuthAuditLogger';
 import { PasswordService } from './application/services/PasswordService';
 import { EnvoiDeVerificationEmail } from './application/services/email-verification-dispatch';
@@ -50,11 +45,7 @@ import { GetCurrentUserUseCase } from './application/GetCurrentUser.useCase';
 import { RefreshTokenCleanupService } from './infrastructure/RefreshTokenCleanup.service';
 
 const USERS_USE_CASES = [
-  ListUsersUseCase,
-  ListOneUserUseCase,
   CreateUsersUseCase,
-  UpdateUsersUseCase,
-  DeleteUsersUseCase,
   AuthenticateUserUseCase,
   AuthenticateGoogleUserUseCase,
   ChangePasswordUseCase,
@@ -78,7 +69,7 @@ const USERS_USE_CASES = [
       EmailVerificationTokenEntity,
     ]),
   ],
-  controllers: [UsersController, AuthController],
+  controllers: [AuthController],
   providers: [
     ...USERS_USE_CASES,
     AuthAuditLogger,

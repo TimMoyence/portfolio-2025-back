@@ -30,6 +30,7 @@ import { AjouteEmpreinteDeReprise1790700000000 } from '../../src/migrations/1790
 import { AjouteGenerationDeJeton1790900000000 } from '../../src/migrations/1790900000000-AjouteGenerationDeJeton';
 import { AjouteGabaritDuCours1790900000002 } from '../../src/migrations/1790900000002-AjouteGabaritDuCours';
 import { RetireLaDerniereVueDeLaMaitrise1792576513090 } from '../../src/migrations/1792576513090-RetireLaDerniereVueDeLaMaitrise';
+import { RetireLeStatutEtLesStrategiesDesReponsesLibres1792576513091 } from '../../src/migrations/1792576513091-RetireLeStatutEtLesStrategiesDesReponsesLibres';
 import {
   SynchroniserCoursUseCase,
   type IssueDeSynchronisation,
@@ -124,6 +125,7 @@ const FORMATION_MIGRATIONS = [
   AjouteGenerationDeJeton1790900000000,
   AjouteGabaritDuCours1790900000002,
   RetireLaDerniereVueDeLaMaitrise1792576513090,
+  RetireLeStatutEtLesStrategiesDesReponsesLibres1792576513091,
 ];
 
 export const TABLES_DE_SEANCE = [

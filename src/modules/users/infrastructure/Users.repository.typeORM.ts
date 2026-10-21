@@ -17,9 +17,6 @@ export class UsersRepositoryTypeORM
   ) {
     super();
   }
-  async findAll(): Promise<UsersEntity[]> {
-    return this.repo.find();
-  }
 
   async create(data: Partial<UsersEntity>): Promise<UsersEntity> {
     return this.enregistrerSansDoublon(

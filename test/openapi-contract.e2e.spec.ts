@@ -12,6 +12,7 @@ import {
   exempleAuRythmeDuPilotage,
 } from '../src/modules/formations/domain/cours/Diffusion';
 import { DONNEES_PAR_BRIQUE } from '../src/modules/formations/domain/contrats/donnees-servies';
+import { MOTIF_D_UNE_ADRESSE_EMAIL } from '../src/common/domain/value-objects/EmailAddress';
 import { buildCoursDuContenu } from './factories/contenus-de-cours.factory';
 import { buildCoursDeTest } from './factories/cours.factory';
 import { CONTENUS } from './factories/contenus-publies';
@@ -98,6 +99,28 @@ const champsSansForme = (document: DocumentOpenApi): string[] =>
     )
     .map(([nom]) => nom);
 
+describe('OpenAPI des adresses e-mail', () => {
+  it('publie sur chaque champ email saisi le motif du domaine, et aucun format que le front lirait autrement', () => {
+    const champs = Object.entries(document.components?.schemas ?? {}).flatMap(
+      ([nom, schema]) => {
+        const email = (schema as SchemaOpenApi).properties?.email;
+        return email === undefined || nom.endsWith('ResponseDto')
+          ? []
+          : [[nom, email] as const];
+      },
+    );
+
+    expect(champs.length).toBeGreaterThan(0);
+    expect(
+      champs.filter(
+        ([, email]) =>
+          email.pattern !== MOTIF_D_UNE_ADRESSE_EMAIL.source ||
+          email.format !== undefined,
+      ),
+    ).toEqual([]);
+  });
+});
+
 describe('OpenAPI du contrat publié', () => {
   it('documente par un type numerique chaque champ qui porte un defaut, un exemple ou une borne numerique', () => {
     expect(champsNumeriquesSansTypeNumerique(document)).toEqual([]);
@@ -105,15 +128,6 @@ describe('OpenAPI du contrat publié', () => {
 
   it('donne a chaque champ un type, et a chaque objet sa forme', () => {
     expect(champsSansForme(document)).toEqual([]);
-  });
-
-  it('n annonce au PATCH utilisateur aucune valeur par défaut de la création', () => {
-    const { properties } = document.components?.schemas?.UpdateUserDto as {
-      properties: Record<string, object>;
-    };
-
-    expect(properties.isActive).not.toHaveProperty('default');
-    expect(properties.roles).not.toHaveProperty('default');
   });
 
   it('QA-12 · documente nullable le verdict servi par la réponse et par l état du participant', () => {

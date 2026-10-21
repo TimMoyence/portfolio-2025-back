@@ -761,7 +761,7 @@ describeDb('Formations repositories (db integration)', () => {
         .checks.map((controle) => ({ nom: controle.name })),
     );
 
-    expect(enBase).toHaveLength(12);
+    expect(enBase).toHaveLength(11);
     expect(enBase).toContainEqual({ nom: 'chk_formation_screen_diffusion' });
     expect(trierParNom(declarees)).toEqual(trierParNom(enBase));
   });

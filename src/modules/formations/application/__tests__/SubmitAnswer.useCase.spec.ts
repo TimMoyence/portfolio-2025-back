@@ -6,10 +6,13 @@ import {
   tireurSequentiel,
 } from '../../../../../test/factories/cours.factory';
 import {
+  buildCorrectionDeReponses,
   buildCoursDeBriques,
+  buildEcranDeBrique,
   buildQuestionnaireCorrigeSurPlace,
   EXPLICATIONS_SUR_PLACE,
 } from '../../../../../test/factories/ecrans-stockes.factory';
+import { questionsDe } from '../../domain/cours/Cours';
 import { lireCoursStocke } from '../../domain/cours/CoursStocke';
 import { ouvrirTirages } from '../../domain/cours/OuvertureTirages';
 import {
@@ -96,6 +99,24 @@ describe('SubmitAnswerUseCase', () => {
       PhaseFermeeError,
     );
     expect(deps.answers.create).not.toHaveBeenCalled();
+  };
+
+  const monterSurLeCours = (
+    cours: ReturnType<typeof lireCoursStocke>,
+    seance: Parameters<typeof buildSessionRecord>[0],
+  ) => {
+    const bareme = ouvrirTirages(cours, tireurSequentiel(300));
+    deps = creerDependancesDEnregistrement(
+      buildSessionRecord({ ...seance, courseSlug: cours.slug, bareme }),
+    );
+    deps.participants.findById.mockResolvedValue(
+      buildParticipantRecord({ seed: bareme.tirages[0].seed }),
+    );
+    sut = monterEnregistrement(
+      SubmitAnswerUseCase,
+      deps,
+      creerCatalogueDeTest(cours),
+    );
   };
 
   const soumettreEnDouble = async () => {
@@ -500,31 +521,40 @@ describe('SubmitAnswerUseCase', () => {
     );
   });
 
+  describe('question corrigée par un écran projeté', () => {
+    const numerique = buildEcranDeBrique('fp-numeric', { screenId: 'E-NUM' });
+    const cours = lireCoursStocke(
+      buildCoursDeBriques([numerique, buildCorrectionDeReponses('E-NUM')]),
+    );
+    const [question] = questionsDe(cours.ecrans[0]);
+
+    const repondreAuRang = (ecranCourant: number) => {
+      monterSurLeCours(cours, { modeRythme: 'pilote', ecranCourant });
+      return repondreA(question.id, 1);
+    };
+
+    it('accepte la réponse tant que la correction n est pas projetée', async () => {
+      await expect(repondreAuRang(0)).resolves.toBeDefined();
+    });
+
+    it('refuse PHASE_FERMEE la réponse une fois la correction projetée, comme une production', async () => {
+      await expect(repondreAuRang(1)).rejects.toThrow(PhaseFermeeError);
+      expect(deps.answers.create).not.toHaveBeenCalled();
+    });
+  });
+
   describe('exercice corrigé sur place', () => {
     const questionnaire = buildQuestionnaireCorrigeSurPlace();
     const cours = lireCoursStocke(buildCoursDeBriques([questionnaire]));
-    const bareme = ouvrirTirages(cours, tireurSequentiel(300));
     const [premiere, seconde] = EXPLICATIONS_SUR_PLACE;
 
     beforeEach(() => {
-      deps = creerDependancesDEnregistrement(
-        buildSessionRecord({
-          ...EN_RYTHME_LIBRE,
-          courseSlug: cours.slug,
-          bareme,
-          pilotageEcrans: {
-            [questionnaire.screenId]: { explicationsDevoilees: 1 },
-          },
-        }),
-      );
-      deps.participants.findById.mockResolvedValue(
-        buildParticipantRecord({ seed: bareme.tirages[0].seed }),
-      );
-      sut = monterEnregistrement(
-        SubmitAnswerUseCase,
-        deps,
-        creerCatalogueDeTest(cours),
-      );
+      monterSurLeCours(cours, {
+        ...EN_RYTHME_LIBRE,
+        pilotageEcrans: {
+          [questionnaire.screenId]: { explicationsDevoilees: 1 },
+        },
+      });
     });
 
     it('refuse une réponse à une question déjà corrigée', async () => {

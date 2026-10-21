@@ -5,11 +5,6 @@ import type { PasswordService } from '../../src/modules/users/application/servic
 import type { JwtTokenService } from '../../src/modules/users/application/services/JwtTokenService';
 import type { AuthResult } from '../../src/modules/users/application/AuthenticateUser.useCase';
 import type { JwtPayload } from '../../src/modules/users/application/services/JwtPayload';
-import type { ListUsersUseCase } from '../../src/modules/users/application/ListUsers.useCase';
-import type { ListOneUserUseCase } from '../../src/modules/users/application/ListOneUser.useCase';
-import type { CreateUsersUseCase } from '../../src/modules/users/application/CreateUsers.useCase';
-import type { UpdateUsersUseCase } from '../../src/modules/users/application/UpdateUsers.useCase';
-import type { DeleteUsersUseCase } from '../../src/modules/users/application/DeleteUsers.useCase';
 import type { AuthAuditLogger } from '../../src/modules/users/application/services/AuthAuditLogger';
 import {
   buildRefreshToken,
@@ -36,7 +31,6 @@ export function buildUser(overrides?: Partial<User>): User {
 
 export function createMockUsersRepo(): jest.Mocked<IUsersRepository> {
   return {
-    findAll: jest.fn(),
     create: jest.fn(),
     findById: jest.fn(),
     findByEmail: jest.fn(),
@@ -105,24 +99,6 @@ export function attendreSessionOuverte(
   });
   expect(result.user).toBe(user);
   expect(effets.creerRefreshToken).toHaveBeenCalled();
-}
-
-export interface MockUsersUseCases {
-  listUsers: jest.Mocked<Pick<ListUsersUseCase, 'execute'>>;
-  listOneUser: jest.Mocked<Pick<ListOneUserUseCase, 'execute'>>;
-  createUsers: jest.Mocked<Pick<CreateUsersUseCase, 'execute'>>;
-  updateUsers: jest.Mocked<Pick<UpdateUsersUseCase, 'execute'>>;
-  deleteUsers: jest.Mocked<Pick<DeleteUsersUseCase, 'execute'>>;
-}
-
-export function createMockUsersUseCases(): MockUsersUseCases {
-  return {
-    listUsers: { execute: jest.fn() },
-    listOneUser: { execute: jest.fn() },
-    createUsers: { execute: jest.fn() },
-    updateUsers: { execute: jest.fn() },
-    deleteUsers: { execute: jest.fn() },
-  };
 }
 
 export function createMockAuthAuditLogger(): jest.Mocked<AuthAuditLogger> {

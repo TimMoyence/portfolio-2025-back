@@ -19,7 +19,6 @@ function ligneEnregistree(input: SaveFreeResponseInput) {
     activityId: input.activityId,
     response: input.response,
     dureeMs: input.dureeMs,
-    status: 'enregistre' as const,
   };
 }
 
@@ -94,9 +93,7 @@ export class FreeResponsesRepositoryTypeORM
       activityId: row.activityId,
       response: row.response,
       premiereReponse: row.premiereReponse,
-      strategiesServiesLe: row.strategiesServiesLe,
       dureeMs: row.dureeMs,
-      status: row.status,
       submittedAt: row.submittedAt,
     };
   }

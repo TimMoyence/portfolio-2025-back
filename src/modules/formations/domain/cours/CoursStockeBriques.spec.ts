@@ -338,6 +338,13 @@ describe('stockage multi-briques (B1)', () => {
     ],
     [
       'fp-plot',
+      'un axe des abscisses dont le minimum dépasse le maximum',
+      (p) => {
+        p.abscisse.min = 4;
+      },
+    ],
+    [
+      'fp-plot',
       'un curseur dont le minimum dépasse le maximum',
       (p) => {
         p.parametres[0].min = 300000;

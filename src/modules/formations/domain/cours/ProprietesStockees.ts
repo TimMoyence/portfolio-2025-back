@@ -493,7 +493,10 @@ const proprietesTrace = z
     source: texte.optional(),
     abscisse: z
       .object({ libelle: texte, min: z.number(), max: z.number() })
-      .strict(),
+      .strict()
+      .refine(({ min, max }) => min <= max, {
+        message: 'l’axe des abscisses va de son minimum à son maximum',
+      }),
     ordonnee: texte,
     parametres: z.array(parametreCurseur),
     series: auMoinsUn(

@@ -1,7 +1,3 @@
-import {
-  type FreeResponseStatus,
-  STATUTS_DE_REPONSE_LIBRE,
-} from '../../domain/IFreeResponses.repository';
 import { ApiProperty } from '@nestjs/swagger';
 import { ParticipantDeSeanceResponseDto } from './participant-de-seance.response.dto';
 
@@ -25,22 +21,8 @@ export class FreeResponseResponseDto extends ParticipantDeSeanceResponseDto {
   })
   premiereReponse: string | null;
 
-  @ApiProperty({
-    type: String,
-    format: 'date-time',
-    nullable: true,
-    description: 'Date à laquelle les stratégies du défi ont été servies',
-  })
-  strategiesServiesLe: Date | null;
-
   @ApiProperty({ example: 12000 })
   dureeMs: number;
-
-  @ApiProperty({
-    enum: STATUTS_DE_REPONSE_LIBRE,
-    enumName: 'StatutDeReponseLibre',
-  })
-  status: FreeResponseStatus;
 
   @ApiProperty({
     type: String,
