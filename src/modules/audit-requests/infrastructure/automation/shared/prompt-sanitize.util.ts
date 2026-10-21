@@ -1,14 +1,9 @@
+import { compacterBlancs } from '../../../../../common/domain/texte/compacter-blancs';
+
 const MAX_PROMPT_INPUT_LENGTH = 500;
 
-export function sanitizePromptInput(
-  input: string,
-  maxLength = MAX_PROMPT_INPUT_LENGTH,
-): string {
-  return input
-    .replace(/[\r\n]+/g, ' ')
-    .replace(/\s{2,}/g, ' ')
-    .trim()
-    .slice(0, maxLength);
+export function sanitizePromptInput(input: string): string {
+  return compacterBlancs(input).slice(0, MAX_PROMPT_INPUT_LENGTH);
 }
 
 /**
