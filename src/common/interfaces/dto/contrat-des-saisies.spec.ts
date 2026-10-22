@@ -140,7 +140,6 @@ const ANNONCES: Readonly<Record<string, (contrainte: Contrainte) => Ecarts>> = {
   isArray: () => admet('array'),
   isObject: () => admet('object'),
   isDate: () => ensemble(admet('string'), porte('format', 'date-time')),
-  isEmail: () => porte('format', 'email'),
   isNotEmpty: () => nonVide,
   isIn: ({ constraints: [valeurs] }) =>
     enumeration(valeurs as readonly unknown[]),

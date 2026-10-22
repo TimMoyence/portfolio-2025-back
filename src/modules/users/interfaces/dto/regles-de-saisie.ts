@@ -5,11 +5,12 @@ import { Motif } from '../../../../common/interfaces/dto/bornes-annoncees.decora
 import {
   AuMoinsCaracteres,
   AuPlusCaracteres,
-  Rogne,
   TexteSaisi,
 } from '../../../../common/interfaces/dto/longueur-de-texte.decorator';
 import { FORME_D_UN_JETON_EMIS } from '../../domain/TokenHash';
 import { LONGUEUR_MAX_D_UN_NOM } from '../../domain/User';
+
+export const LONGUEUR_MAX_D_UN_TELEPHONE = 30;
 
 export const DOCUMENTATION_D_UN_JETON_DE_LIEN = {
   type: String,
@@ -64,20 +65,5 @@ export function NomDeCompte(
       min: `${libelle} doit contenir au moins 1 caractere.`,
       max: `${libelle} doit contenir au plus ${LONGUEUR_MAX_D_UN_NOM} caracteres.`,
     }),
-  );
-}
-
-export function TelephoneOptionnel(exemple: string): PropertyDecorator {
-  return applyDecorators(
-    ApiPropertyOptional({
-      type: String,
-      example: exemple,
-      nullable: true,
-      maxLength: 30,
-    }),
-    IsOptional(),
-    Rogne(),
-    IsString(),
-    AuPlusCaracteres(30),
   );
 }

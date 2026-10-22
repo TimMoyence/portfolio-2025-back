@@ -1,13 +1,14 @@
 import { applyDecorators } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, Matches } from 'class-validator';
+import { IsString } from 'class-validator';
 import { MOTIF_D_UNE_ADRESSE_EMAIL } from '../../domain/value-objects/EmailAddress';
+import { Motif } from './bornes-annoncees.decorator';
 
 export function AdresseEmail(): PropertyDecorator {
   return applyDecorators(
-    ApiProperty({ type: String, pattern: MOTIF_D_UNE_ADRESSE_EMAIL.source }),
+    ApiProperty({ type: String }),
     IsString(),
-    Matches(MOTIF_D_UNE_ADRESSE_EMAIL, {
+    Motif(MOTIF_D_UNE_ADRESSE_EMAIL, {
       message: ({ property }) => `${property} must be an email`,
     }),
   );
