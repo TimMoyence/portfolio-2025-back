@@ -14,7 +14,6 @@ import { ArticlesService } from '../src/modules/articles/application/articles.se
 import type { ArticleIngestEnvelope } from '../src/modules/articles/domain/article-contract';
 import { ArticleHmacGuard } from '../src/modules/articles/interfaces/article-hmac.guard';
 import { ArticlesController } from '../src/modules/articles/interfaces/articles.controller';
-import { CookieConsentsController } from '../src/modules/cookie-consents/interfaces/CookieConsents.controller';
 import { RequestToolkitUseCase } from '../src/modules/lead-magnets/application/RequestToolkit.useCase';
 import { GetToolkitByTokenUseCase } from '../src/modules/lead-magnets/application/queries/GetToolkitByToken.useCase';
 import {
@@ -46,12 +45,7 @@ import {
   buildClientReportContext,
   createMockAuditRequestsRepo,
 } from './factories/audit-requests.factory';
-import {
-  coreControllerProviders,
-  createCoreUseCaseStubs,
-  primeCoreUseCaseStubs,
-} from './factories/core-api.factory';
-import { buildChoixDeConsentement } from './factories/cookie-consents.factory';
+import { createCoreUseCaseStubs } from './factories/core-api.factory';
 import {
   buildLeadMagnetRequest,
   createMockLeadMagnetNotifier,
@@ -137,19 +131,16 @@ async function ecritureDeLArticle(
 }
 
 describe('Reponses du site public servies par les vrais controleurs', () => {
-  const coreStubs = createCoreUseCaseStubs();
   const articles = createMockArticlesRepository();
   const demandes = createMockLeadMagnetRequestRepo();
 
   const serveur = serveurDeLaSuite({
     controllers: [
-      CookieConsentsController,
       ArticlesController,
       PresentationsController,
       LeadMagnetsController,
     ],
     providers: [
-      ...coreControllerProviders(coreStubs),
       ArticlesService,
       ArticleHmacGuard,
       { provide: ARTICLES_REPOSITORY, useValue: articles },
@@ -177,22 +168,12 @@ describe('Reponses du site public servies par les vrais controleurs', () => {
   });
 
   beforeEach(async () => {
-    primeCoreUseCaseStubs(coreStubs);
     const ecrite = await ecritureDeLArticle(ARTICLE_DE_L_EDITION);
     articles.listPublished.mockResolvedValue([
       buildArticleRecord(ecrite),
       buildArticleRecord({ ...ecrite, id: 'record-2' }),
     ]);
     articles.findPublishedBySlug.mockResolvedValue(buildArticleRecord(ecrite));
-  });
-
-  it('POST /api/cookie-consents enregistre le choix du visiteur', async () => {
-    const reponse = await request(serveur())
-      .post('/api/cookie-consents')
-      .send(buildChoixDeConsentement())
-      .expect(201);
-
-    expect(reponse.body).toMatchObject({ httpCode: 201 });
   });
 
   it('GET /api/articles sert une page d articles complets et le curseur de la suivante', async () => {

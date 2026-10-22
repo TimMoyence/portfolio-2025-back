@@ -15,7 +15,6 @@ import { optionsTypeOrmDeLApi } from './database/options-typeorm';
 import { ArticlesModule } from './modules/articles/Articles.module';
 import { AuditRequestsModule } from './modules/audit-requests/AuditRequests.module';
 import { ContactsModule } from './modules/contacts/Contacts.module';
-import { CookieConsentsModule } from './modules/cookie-consents/CookieConsents.module';
 import { FormationsModule } from './modules/formations/Formations.module';
 import { LeadMagnetsModule } from './modules/lead-magnets/LeadMagnets.module';
 import { PresentationsModule } from './modules/presentations/Presentations.module';
@@ -47,7 +46,6 @@ import { logBootstrapStep } from './runtime/log-bootstrap-step';
     }),
     UsersModule,
     ContactsModule,
-    CookieConsentsModule,
     AuditRequestsModule,
     LeadMagnetsModule,
     PresentationsModule,

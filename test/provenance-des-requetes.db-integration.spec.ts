@@ -6,12 +6,8 @@ import { AuditRequestEntity } from '../src/modules/audit-requests/infrastructure
 import { Contacts } from '../src/modules/contacts/domain/Contacts';
 import { ContactsRepositoryTypeORM } from '../src/modules/contacts/infrastructure/Contacts.repository.typeORM';
 import { ContactMessagesEntity } from '../src/modules/contacts/infrastructure/entities/ContactMessage.entity';
-import { CookieConsent } from '../src/modules/cookie-consents/domain/CookieConsent';
-import { CookieConsentsRepositoryTypeORM } from '../src/modules/cookie-consents/infrastructure/CookieConsents.repository.typeORM';
-import { CookieConsentEntity } from '../src/modules/cookie-consents/infrastructure/entities/CookieConsent.entity';
 import { buildAuditRequest } from './factories/audit-requests.factory';
 import { buildContact } from './factories/contacts.factory';
-import { buildChoixDeConsentement } from './factories/cookie-consents.factory';
 import {
   baseMigreeDeLaSuite,
   describeDb,
@@ -32,10 +28,6 @@ const DEPOTS = {
     new AuditRequestsRepositoryTypeORM(
       base.getRepository(AuditRequestEntity),
     ).create(AuditRequest.create(buildAuditRequest(provenance)), null),
-  cookie_consents: (base: DataSource, provenance: Provenance) =>
-    new CookieConsentsRepositoryTypeORM(
-      base.getRepository(CookieConsentEntity),
-    ).create(CookieConsent.create(buildChoixDeConsentement(provenance))),
 };
 
 type TableDeProvenance = keyof typeof DEPOTS;

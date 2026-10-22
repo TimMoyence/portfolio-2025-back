@@ -112,7 +112,7 @@ describe('bornes de longueur des saisies', () => {
       expect.arrayContaining([
         'ContactRequestDto.firstName maxLength 50',
         'JoinSessionRequestDto.prenom maxLength 80',
-        'CookieConsentRequestDto.policyVersion maxLength 50',
+        'RequestToolkitRequestDto.firstName maxLength 50',
       ]),
     );
   });
