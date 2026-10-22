@@ -28,6 +28,31 @@ describe('PhoneNumber', () => {
     expect(PhoneNumber.parse(saisie)?.value).toBe(attendu);
   });
 
+  it.each([
+    '+33 6 98 50 32 82',
+    '06 98 50 32 82',
+    '0033698503282',
+    '(01) 23-45.67',
+    '123456',
+    '+123456789012345',
+    ' 0698503282 ',
+  ])('accepte %p', (saisie) => {
+    expect(PhoneNumber.parse(saisie)).not.toBeNull();
+  });
+
+  it.each([
+    '   ',
+    '12345',
+    '+1234567890123456',
+    '06 98 a0 32 82',
+    '++33612345678',
+    '06+98503282',
+    '()-. ',
+    '06/98/50/32/82',
+  ])('refuse %p', (saisie) => {
+    expect(PhoneNumber.parse(saisie)).toBeNull();
+  });
+
   it.each(['0012345', '00+33612345678', '33+612345678', '+', '()', ''])(
     'refuse %p : préfixe 00 trop court, plus ailleurs qu en tête, ou rien à composer',
     (saisie) => {
