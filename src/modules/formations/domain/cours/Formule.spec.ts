@@ -122,10 +122,24 @@ describe('evaluerFeuille', () => {
 
   it('moyenne une plage vide de nombres par #DIV/0!', () => {
     const resultats = evaluerFeuille(
-      feuille({ A1: 'Canal', A2: '=MOYENNE(A1:A1)' }),
+      feuille({ A1: 'Canal', A2: '=MOYENNE(A1:A1)', B2: '=MOYENNE(C1:C3)' }),
     );
 
     expect(valeurs(resultats).A2).toBe(DIV);
+    expect(valeurs(resultats).B2).toBe(DIV);
+  });
+
+  it('ignore les cellules vides d’une plage dans MOYENNE, comme le tableur', () => {
+    const resultats = evaluerFeuille(
+      feuille({
+        A1: '10',
+        A3: '20',
+        B1: '=MOYENNE(A1:A3)',
+        B2: '=SOMME(A1:A3)',
+      }),
+    );
+
+    expect(valeurs(resultats)).toMatchObject({ B1: 15, B2: 30 });
   });
 
   it('accepte une plage écrite à l’envers et une plage figée', () => {

@@ -167,7 +167,7 @@ describe('erreurs nommees', () => {
     expect(refus('=1/0')).toBe('#DIV/0!');
     expect(refus('=0/0')).toBe('#DIV/0!');
     expect(erreurDe({ A1: '=10/B1', B1: '' })).toBe('#DIV/0!');
-    expect(refus('=MOYENNE(B1:B2)')).toBeNull();
+    expect(refus('=MOYENNE(B1:B2)')).toBe('#DIV/0!');
   });
 
   it('rend #NOM? pour une fonction inconnue et pour un mot isole', () => {

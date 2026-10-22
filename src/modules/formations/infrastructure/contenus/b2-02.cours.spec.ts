@@ -19,6 +19,7 @@ import {
   moyenne,
   somme,
 } from '../../../../common/domain/nombres/statistiques';
+import { corrigerFeuille } from '../../domain/cours/CorrectionProduction';
 import { COURS_B2_02 } from './b2-02.cours';
 
 const COURS = buildCoursDuContenu(COURS_B2_02);
@@ -110,6 +111,14 @@ decrireLaFicheDuCours('B2-02', COURS, {
 const FACTURES_DE_SEPTEMBRE: AuMoinsUn<number> = [
   28, 41, 35, 90, 33, 39, 44, 30,
 ];
+
+function corrigeDeLaFeuilleFibre() {
+  const corrige = corrigeDe(COURS, 'b2-02-a4-feuille-fibre');
+  if (corrige.type !== 'feuille') {
+    throw new Error('la feuille A4-02 n’a pas de corrigé de feuille');
+  }
+  return corrige;
+}
 
 function texteDeLEcran(screenId: string): string {
   const ecran = COURS_B2_02.ecrans.find(
@@ -265,11 +274,7 @@ describe('B2-02 — recalcul des corrigés depuis les données brutes', () => {
   });
 
   it('recalcule les six cellules attendues de la feuille A4-02 et leurs pièges', () => {
-    const corrige = corrigeDe(COURS, 'b2-02-a4-feuille-fibre');
-    if (corrige.type !== 'feuille') {
-      throw new Error('la feuille A4-02 n’a pas de corrigé de feuille');
-    }
-    attendreLaFeuille(corrige, {
+    attendreLaFeuille(corrigeDeLaFeuilleFibre(), {
       E2: [fibre.r],
       E3: [fibre.pente, fibre.penteInversee],
       E4: [fibre.ordonnee, fibre.ordonneeInversee],
@@ -277,6 +282,19 @@ describe('B2-02 — recalcul des corrigés depuis les données brutes', () => {
       E6: [moyenne(FIBRE), moyenne(RANGS_FIBRE)],
       E7: [1],
     });
+  });
+
+  it('note juste la feuille A4-02 quand les plages englobent la ligne vide, comme le tableur', () => {
+    const correction = corrigerFeuille(corrigeDeLaFeuilleFibre(), {
+      E2: '=COEFFICIENT.CORRELATION(A2:A7;B2:B7)',
+      E3: '=PENTE(B2:B7;A2:A7)',
+      E4: '=ORDONNEE.ORIGINE(B2:B7;A2:A7)',
+      E5: '=MOYENNE(A2:A7)',
+      E6: '=MOYENNE(B2:B7)',
+      E7: '=SI(ARRONDI(E3*E5+E4-E6;6)=0;1;0)',
+    });
+
+    expect(correction.correcte).toBe(true);
   });
 
   it('recalcule les écarts au point moyen du tableau A2-06 et leurs pièges', () => {

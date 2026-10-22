@@ -105,10 +105,6 @@ type Contenu =
   | { readonly genre: 'logique'; readonly valeur: boolean }
   | { readonly genre: 'formule'; readonly source: string };
 
-const TEXTE_IGNORE: ReadonlySet<Contenu['genre']> = new Set([
-  'texte',
-  'logique',
-]);
 const TEXTE_ET_VIDES_IGNORES: ReadonlySet<Contenu['genre']> = new Set([
   'texte',
   'logique',
@@ -952,27 +948,26 @@ class Evaluation {
 
   private cellulesDeLaPlage(
     noeud: Extract<Noeud, { genre: 'plage' }>,
-    ignorees: ReadonlySet<Contenu['genre']>,
   ): (ValeurFormule | null)[] {
     return Array.from(this.nomsDeLaPlage(noeud), (nom) =>
-      ignorees.has(this.genreDe(nom)) ? null : this.valeurNommee(nom),
+      TEXTE_ET_VIDES_IGNORES.has(this.genreDe(nom))
+        ? null
+        : this.valeurNommee(nom),
     );
   }
 
   private nombresDeLaPlage(
     noeud: Extract<Noeud, { genre: 'plage' }>,
-    ignorees: ReadonlySet<Contenu['genre']>,
   ): (number | null)[] {
-    return this.cellulesDeLaPlage(noeud, ignorees).map((valeur) =>
+    return this.cellulesDeLaPlage(noeud).map((valeur) =>
       typeof valeur === 'number' ? valeur : null,
     );
   }
 
   private valeursDeLaPlage(
     noeud: Extract<Noeud, { genre: 'plage' }>,
-    ignorees: ReadonlySet<Contenu['genre']> = TEXTE_IGNORE,
   ): number[] {
-    return this.nombresDeLaPlage(noeud, ignorees).filter(
+    return this.nombresDeLaPlage(noeud).filter(
       (valeur): valeur is number => valeur !== null,
     );
   }
@@ -989,7 +984,7 @@ class Evaluation {
     if (argument.genre !== 'plage') {
       return [this.logique(argument)];
     }
-    return this.cellulesDeLaPlage(argument, TEXTE_ET_VIDES_IGNORES)
+    return this.cellulesDeLaPlage(argument)
       .filter(
         (valeur): valeur is number | boolean =>
           valeur !== null && typeof valeur !== 'string',
@@ -1045,8 +1040,8 @@ class Evaluation {
     ) {
       return refuser(ERREUR_VALEUR);
     }
-    const gauche = this.nombresDeLaPlage(premiere, TEXTE_ET_VIDES_IGNORES);
-    const droite = this.nombresDeLaPlage(seconde, TEXTE_ET_VIDES_IGNORES);
+    const gauche = this.nombresDeLaPlage(premiere);
+    const droite = this.nombresDeLaPlage(seconde);
     if (gauche.length !== droite.length) {
       return refuser(ERREUR_VALEUR);
     }
@@ -1067,11 +1062,7 @@ class Evaluation {
   }
 
   private serie(parametres: readonly Noeud[]): number[] {
-    return parametres.flatMap((argument) =>
-      argument.genre === 'plage'
-        ? this.valeursDeLaPlage(argument, TEXTE_ET_VIDES_IGNORES)
-        : [this.nombre(argument)],
-    );
+    return parametres.flatMap((argument) => this.etendre(argument));
   }
 
   private quartile(parametres: readonly Noeud[]): number {
@@ -1096,7 +1087,7 @@ class Evaluation {
   }
 
   private agreger(nom: string, parametres: readonly Noeud[]): number {
-    const valeurs = parametres.flatMap((argument) => this.etendre(argument));
+    const valeurs = this.serie(parametres);
     if (nom === 'SOMME') {
       return somme(valeurs);
     }
