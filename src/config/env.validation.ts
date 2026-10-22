@@ -12,6 +12,8 @@ import { estEnProduction, lirePort, PORT_ATTENDU } from './env-readers.util';
 import { PREFIXE_API_PAR_DEFAUT } from './prefixe-api';
 import { trousseauHmac } from './trousseau-hmac';
 
+export const DUREE_D_UN_JETON = /^([1-9]\d*)([smhd])?$/i;
+
 function portTcp(defaut: number) {
   return z
     .union([z.string(), z.number()])
@@ -199,7 +201,14 @@ const formeDeLEnv = z.object({
   TYPEORM_SYNCHRONIZE: z.string().optional(),
 
   JWT_SECRET: secretRequis('JWT_SECRET'),
-  JWT_EXPIRES_IN: z.string().default('900s'),
+  JWT_EXPIRES_IN: z
+    .string()
+    .trim()
+    .regex(
+      DUREE_D_UN_JETON,
+      'JWT_EXPIRES_IN doit etre une duree strictement positive, en secondes ou suffixee par s, m, h ou d',
+    )
+    .default('900s'),
   JWT_SECRET_PREVIOUS: secretFacultatif('JWT_SECRET_PREVIOUS'),
   SECURE_KEY_FOR_PASSWORD_HASHING: secretRequis(
     'SECURE_KEY_FOR_PASSWORD_HASHING',

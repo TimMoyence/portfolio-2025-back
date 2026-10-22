@@ -172,6 +172,24 @@ describe('validateEnv', () => {
     expect(() => validateEnv(env)).toThrow('DB_HOST');
   });
 
+  it.each(['', ' ', '-60', '0', '15min', '1.5h', '2 h', '1e9'])(
+    'refuse au demarrage une duree de jeton illisible ou nulle : %j',
+    (duree) => {
+      expect(() =>
+        validateEnv(buildValidEnv({ JWT_EXPIRES_IN: duree })),
+      ).toThrow('JWT_EXPIRES_IN');
+    },
+  );
+
+  it.each(['3600', '900s', '15m', '2H', '1d'])(
+    'accepte une duree de jeton en secondes ou suffixee : %s',
+    (duree) => {
+      expect(
+        validateEnv(buildValidEnv({ JWT_EXPIRES_IN: duree })).JWT_EXPIRES_IN,
+      ).toBe(duree);
+    },
+  );
+
   it('devrait lancer une erreur si JWT_SECRET est manquant', () => {
     const env = buildValidEnv({ JWT_SECRET: undefined });
 
