@@ -7,17 +7,17 @@ description: 'Use when the user needs to run GitNexus CLI commands like analyze/
 
 Commands below use `node .gitnexus/run.cjs <command>` — the project-local runner `gitnexus analyze` drops next to the index. It auto-selects an available runner at call time (global `gitnexus`, else `pnpm dlx`, else `bunx`, else `npx`), so no package-manager assumption and no global install is required — including on a bun-only machine, which has no npm, npx or pnpm at all.
 
-> **Not analyzed yet, or `node .gitnexus/run.cjs` reports `Cannot find module`** (the gitignored runner is absent — e.g. a fresh clone or `git clean`)? (Re)generate it with `npx gitnexus analyze` from the project root, or `bunx gitnexus@latest analyze` on a bun-only machine. On **npm 11.x**, if `npx` crashes during install (`node.target is null`), install once with `npm i -g gitnexus` (then `gitnexus analyze`), or use `bunx gitnexus@latest analyze`, or `pnpm --allow-build=@ladybugdb/core --allow-build=gitnexus --allow-build=tree-sitter dlx gitnexus@latest analyze`. See [#1939](https://github.com/abhigyanpatwari/GitNexus/issues/1939).
+> **Not analyzed yet, or `node .gitnexus/run.cjs` reports `Cannot find module`** (the gitignored runner is absent — e.g. a fresh clone or `git clean`)? (Re)generate it with `npx gitnexus analyze --index-only` from the project root, or `bunx gitnexus@latest analyze --index-only` on a bun-only machine. On **npm 11.x**, if `npx` crashes during install (`node.target is null`), install once with `npm i -g gitnexus` (then `gitnexus analyze --index-only`), or use `bunx gitnexus@latest analyze --index-only`, or `pnpm --allow-build=@ladybugdb/core --allow-build=gitnexus --allow-build=tree-sitter dlx gitnexus@latest analyze --index-only`. See [#1939](https://github.com/abhigyanpatwari/GitNexus/issues/1939).
 
 ## Commands
 
 ### analyze — Build or refresh the index
 
 ```bash
-node .gitnexus/run.cjs analyze
+node .gitnexus/run.cjs analyze --index-only
 ```
 
-Run from the project root. This parses all source files, builds the knowledge graph, writes it to `.gitnexus/`, and generates CLAUDE.md / AGENTS.md context files.
+Run from the project root. This parses all source files, builds the knowledge graph and writes it to `.gitnexus/`. In this repository, always pass `--index-only`: without it, `analyze` injects a generated block into CLAUDE.md / AGENTS.md and reinstalls these skills.
 
 | Flag                       | Effect                                                                                                                                                                    |
 | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
