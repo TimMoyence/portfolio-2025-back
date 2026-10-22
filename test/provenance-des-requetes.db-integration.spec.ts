@@ -1,13 +1,4 @@
-import type { DataSource } from 'typeorm';
 import type { Provenance } from '../src/common/domain/provenance';
-import { AuditRequest } from '../src/modules/audit-requests/domain/AuditRequest';
-import { AuditRequestsRepositoryTypeORM } from '../src/modules/audit-requests/infrastructure/AuditRequests.repository.typeORM';
-import { AuditRequestEntity } from '../src/modules/audit-requests/infrastructure/entities/AuditRequest.entity';
-import { Contacts } from '../src/modules/contacts/domain/Contacts';
-import { ContactsRepositoryTypeORM } from '../src/modules/contacts/infrastructure/Contacts.repository.typeORM';
-import { ContactMessagesEntity } from '../src/modules/contacts/infrastructure/entities/ContactMessage.entity';
-import { buildAuditRequest } from './factories/audit-requests.factory';
-import { buildContact } from './factories/contacts.factory';
 import {
   baseMigreeDeLaSuite,
   describeDb,
@@ -15,24 +6,14 @@ import {
   TOUTES_LES_MIGRATIONS,
 } from './helpers/db-integration-datasource';
 import {
+  DEPOTS_DE_PROVENANCE as DEPOTS,
+  TABLES_DE_PROVENANCE as TABLES,
+  type TableDeProvenance,
+} from './helpers/depots-de-provenance';
+import {
   attendreUneProvenanceBornee,
   PROVENANCE_DEMESUREE,
 } from './helpers/provenance';
-
-const DEPOTS = {
-  contacts: (base: DataSource, provenance: Provenance) =>
-    new ContactsRepositoryTypeORM(
-      base.getRepository(ContactMessagesEntity),
-    ).create(Contacts.create(buildContact(provenance))),
-  audit_requests: (base: DataSource, provenance: Provenance) =>
-    new AuditRequestsRepositoryTypeORM(
-      base.getRepository(AuditRequestEntity),
-    ).create(AuditRequest.create(buildAuditRequest(provenance)), null),
-};
-
-type TableDeProvenance = keyof typeof DEPOTS;
-
-const TABLES = Object.keys(DEPOTS) as TableDeProvenance[];
 
 describeDb('Provenance des requetes consignee sur une base migree', () => {
   const base = baseMigreeDeLaSuite(

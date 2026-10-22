@@ -6,6 +6,7 @@ import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { ScheduleModule } from '@nestjs/schedule';
 import { LoggerModule } from 'nestjs-pino';
 import { join } from 'path';
+import { EffacementDesProvenancesService } from './common/infrastructure/typeorm/EffacementDesProvenances.service';
 import { HealthModule } from './common/interfaces/health/health.module';
 import { SecurityModule } from './common/interfaces/security/security.module';
 import { validateEnv } from './config/env.validation';
@@ -59,6 +60,7 @@ import { logBootstrapStep } from './runtime/log-bootstrap-step';
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
     },
+    EffacementDesProvenancesService,
   ],
 })
 export class AppModule {}

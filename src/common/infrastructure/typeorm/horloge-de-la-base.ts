@@ -23,6 +23,14 @@ export const poseeDepuisMoinsDe = (ancienneteMs: number) =>
 export const poseeIlYAPlusDe = (ancienneteMs: number) =>
   compareeALHorlogeDeLaBase('<', ancienneteMs);
 
+export const poseeIlYAPlusDeMois = (mois: number) =>
+  Raw(
+    (colonne) => `${colonne} < LOCALTIMESTAMP - make_interval(months => :mois)`,
+    {
+      mois,
+    },
+  );
+
 export function secondesAvantDeSortirDeLaFenetre(
   colonne: string,
   ancienneteMs: number,

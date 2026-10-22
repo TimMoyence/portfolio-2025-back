@@ -3,6 +3,7 @@ import { optionalMetadata } from './validation/domain-validators';
 
 export const LONGUEUR_MAX_DU_NAVIGATEUR = 512;
 export const LONGUEUR_MAX_DU_REFERENT = 1000;
+export const MOIS_DE_CONSERVATION_DE_LA_PROVENANCE = 6;
 
 export interface Provenance {
   ip?: string | null;
