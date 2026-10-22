@@ -4,11 +4,11 @@ describe('pillarLabel', () => {
   it.each([
     ['seo', 'SEO'],
     ['performance', 'Performance'],
-    ['technical', 'Tech & scalabilite'],
-    ['trust', 'Credibilite'],
+    ['technical', 'Tech & scalabilité'],
+    ['trust', 'Crédibilité'],
     ['conversion', 'Conversion'],
-    ['aiVisibility', 'Visibilite IA'],
-    ['citationWorthiness', 'Citabilite IA'],
+    ['aiVisibility', 'Visibilité IA'],
+    ['citationWorthiness', 'Citabilité IA'],
   ])('mappe "%s" vers "%s"', (input, expected) => {
     expect(pillarLabel(input)).toBe(expected);
   });

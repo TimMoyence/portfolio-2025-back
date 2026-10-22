@@ -110,7 +110,6 @@ type UrlMetricsCollector = Omit<
 >;
 
 const SLOW_RESPONSE_MS = 2200;
-const THIN_CONTENT_WORDS = 180;
 const WEAK_INTERNAL_LINKS = 2;
 
 function compteursCommunsAZero(): Pick<
@@ -335,7 +334,7 @@ export class DeepUrlAnalysisService {
     if (
       typeof entry.wordCount === 'number' &&
       entry.wordCount > 0 &&
-      entry.wordCount < THIN_CONTENT_WORDS
+      entry.wordCount < CONTENT_DEPTH_THIN
     ) {
       acc.thinContentUrls.push(pageUrl);
     }

@@ -57,7 +57,7 @@ describe('AuditReportHtmlRendererService', () => {
       'Audit complet finalise avec 3 leviers prioritaires et un plan de 30 jours.',
     );
     expect(html).toContain('Planifier un appel de 30 minutes');
-    expect(html).toContain('Citabilite IA');
+    expect(html).toContain('Citabilité IA');
     expect(html).toContain('Analyse expert');
     expect(html).toContain('Meta descriptions dupliquees');
     expect(html).toContain('Deployer llms.txt');

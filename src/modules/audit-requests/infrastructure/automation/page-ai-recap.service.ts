@@ -6,6 +6,10 @@ import {
 import { Injectable, Logger } from '@nestjs/common';
 import { z } from 'zod';
 import { textesUniquesBornes } from '../../../../common/domain/texte/textes-uniques-bornes';
+import {
+  CONTENT_DEPTH_DENSE,
+  CONTENT_DEPTH_VERY_THIN,
+} from './audit-thresholds.config';
 import type { ReportSeverity } from '../../domain/AuditReportTiers';
 import type { EngineCoverage, EngineScore } from '../../domain/EngineCoverage';
 import { AuditLocale, localeDeHtmlLang } from '../../domain/audit-locale.util';
@@ -413,7 +417,7 @@ export class PageAiRecapService extends LlmOpenAiParLaConfig {
         ),
       );
     }
-    if ((page.wordCount ?? 0) < 120) {
+    if ((page.wordCount ?? 0) < CONTENT_DEPTH_VERY_THIN) {
       wording -= 12;
       seoCopy -= 8;
       topIssues.push(
@@ -735,10 +739,10 @@ export class PageAiRecapService extends LlmOpenAiParLaConfig {
         ),
       );
     }
-    if (wordCount >= 400) {
+    if (wordCount >= CONTENT_DEPTH_DENSE) {
       score += 10;
       strengths.push(localizedText(locale, 'Contenu dense', 'Dense content'));
-    } else if (wordCount < 150) {
+    } else if (wordCount < CONTENT_DEPTH_VERY_THIN) {
       score -= 10;
       blockers.push(
         localizedText(

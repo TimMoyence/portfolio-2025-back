@@ -109,9 +109,9 @@ describe('AuditClientReportMailer', () => {
     }
     expect(call.text).toContain('SEO: 62/85 (À améliorer)');
     expect(call.text).toContain('Conversion: 60/85 (À améliorer)');
-    expect(call.text).toContain('Citabilite IA: 52/85 (Critique)');
-    expect(call.text).toContain('Visibilite IA: 48/85 (Critique)');
-    expect(call.text).toContain('Tech & scalabilite: 90/85 (Objectif atteint)');
+    expect(call.text).toContain('Citabilité IA: 52/85 (Critique)');
+    expect(call.text).toContain('Visibilité IA: 48/85 (Critique)');
+    expect(call.text).toContain('Tech & scalabilité: 90/85 (Objectif atteint)');
     expect(
       codesBrutsDuCourriel(call, ['warning', 'critical', '(ok)', '>ok<']),
     ).toEqual([]);

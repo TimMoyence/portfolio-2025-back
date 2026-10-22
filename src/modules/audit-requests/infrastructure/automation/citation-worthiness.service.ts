@@ -4,6 +4,10 @@ import { compterMots } from '../../../../common/domain/texte/compter-mots';
 import type { CitationWorthinessScore } from '../../domain/AiIndexability';
 import { scoreSur100 } from '../../domain/score-sur-100';
 import { BALISES } from './shared/html-signals.util';
+import {
+  CONTENT_DEPTH_DENSE,
+  CONTENT_DEPTH_THIN,
+} from './audit-thresholds.config';
 
 const TRUSTED_DOMAINS: ReadonlyArray<string> = [
   'nature.com',
@@ -100,8 +104,8 @@ export class CitationWorthinessService {
   }
 
   private densityBucket(wordCount: number): 'low' | 'medium' | 'high' {
-    if (wordCount < 200) return 'low';
-    if (wordCount <= 400) return 'medium';
+    if (wordCount < CONTENT_DEPTH_THIN) return 'low';
+    if (wordCount < CONTENT_DEPTH_DENSE) return 'medium';
     return 'high';
   }
 }

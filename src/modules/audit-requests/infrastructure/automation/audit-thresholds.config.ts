@@ -4,8 +4,11 @@ export const LONGUEUR_DU_TITLE: Bornes = { min: 20, max: 65 };
 
 export const LONGUEUR_DE_LA_META: Bornes = { min: 80, max: 170 };
 
+export const NOMBRE_DE_PRIORITES: Bornes = { min: 8, max: 10 };
+
 export const CONTENT_DEPTH_VERY_THIN = 120;
 export const CONTENT_DEPTH_THIN = 260;
+export const CONTENT_DEPTH_DENSE = 400;
 export const CONTENT_DEPTH_NORMAL = 900;
 
 export const INTERNAL_LINKS_STRONG_MIN = 3;
