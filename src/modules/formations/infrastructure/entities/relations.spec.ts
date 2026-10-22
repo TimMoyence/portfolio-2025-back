@@ -7,7 +7,6 @@ import { FormationFreeResponseEntity } from './FormationFreeResponse.entity';
 import { FormationIncidentEntity } from './FormationIncident.entity';
 import { FormationParticipantEntity } from './FormationParticipant.entity';
 import { FormationRappelServiEntity } from './FormationRappelServi.entity';
-import { FormationScoreEntity } from './FormationScore.entity';
 import { FormationScreenContentEntity } from './FormationScreenContent.entity';
 import { FormationSessionEntity } from './FormationSession.entity';
 import { FormationTeacherAnnotationEntity } from './FormationTeacherAnnotation.entity';
@@ -60,18 +59,6 @@ const ATTENDUES: readonly RelationAttendue[] = [
     'participant',
     FormationParticipantEntity,
     'FK_formation_incidents_participant',
-  ),
-  cascade(
-    FormationScoreEntity,
-    'session',
-    FormationSessionEntity,
-    'FK_formation_scores_session',
-  ),
-  cascade(
-    FormationScoreEntity,
-    'participant',
-    FormationParticipantEntity,
-    'FK_formation_scores_participant',
   ),
   cascade(
     FormationFreeResponseEntity,
@@ -143,8 +130,8 @@ describe('relations des entites formations', () => {
   const relations = getMetadataArgsStorage().relations;
   const jointures = getMetadataArgsStorage().joinColumns;
 
-  it('declare les seize clefs etrangeres des migrations', () => {
-    expect(ATTENDUES).toHaveLength(16);
+  it('declare les quatorze clefs etrangeres des migrations', () => {
+    expect(ATTENDUES).toHaveLength(14);
   });
 
   for (const attendue of ATTENDUES) {

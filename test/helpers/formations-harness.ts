@@ -58,7 +58,6 @@ import type {
   IParticipantsRepository,
   ParticipantRecord,
 } from '../../src/modules/formations/domain/IParticipants.repository';
-import type { IScoresRepository } from '../../src/modules/formations/domain/IScores.repository';
 import type {
   ISessionsRepository,
   SessionRecord,
@@ -78,7 +77,6 @@ import {
   ESCAPE_REPOSITORY,
   PULSES_REPOSITORY,
   RAPPELS_SERVIS_REPOSITORY,
-  SCORES_REPOSITORY,
   SESSION_STATE_CACHE,
   SESSIONS_REPOSITORY,
   TEACHER_ANNOTATIONS_REPOSITORY,
@@ -149,7 +147,6 @@ export interface DepotsFormations {
   answers: IAnswersRepository;
   incidents: IIncidentsRepository;
   mastery: IMasteryRepository;
-  scores: IScoresRepository;
   freeResponses: IFreeResponsesRepository;
   annotations: ITeacherAnnotationsRepository;
   escape: IEscapeRepository;
@@ -211,7 +208,6 @@ export function fournisseursFormations(
     { provide: ANSWERS_REPOSITORY, useValue: depots.answers },
     { provide: INCIDENTS_REPOSITORY, useValue: depots.incidents },
     { provide: MASTERY_REPOSITORY, useValue: depots.mastery },
-    { provide: SCORES_REPOSITORY, useValue: depots.scores },
     { provide: FREE_RESPONSES_REPOSITORY, useValue: depots.freeResponses },
     { provide: TEACHER_ANNOTATIONS_REPOSITORY, useValue: depots.annotations },
     { provide: ESCAPE_REPOSITORY, useValue: depots.escape },

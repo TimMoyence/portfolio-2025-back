@@ -16,7 +16,7 @@ Séances de cours en classe : le formateur ouvre une séance, les étudiants la 
 - À l'ouverture, `trouverCourant` fournit la dernière version publiée ; la séance la fige dans `formation_sessions.course_version` et toutes ses lectures (sujet, déroulé, pilotage, résultats, clôture) relisent cette version, même après une nouvelle publication.
 - Un cours évalué ouvre avec son barème et soixante tirages non ambigus ; un cours sans question ouvre avec un barème vide et attribue seulement une graine technique unique par participant. Le barème est stocké dans `formation_sessions.bareme` (jsonb) et ne quitte jamais le serveur.
 - Le client n'envoie pas de barème : un champ `bareme` dans le corps d'ouverture est refusé en `400` (`property bareme should not exist`).
-- Réponses libres, annotations formateur et scores sont persistés par séance (`formation_free_responses`, `formation_teacher_annotations`, `formation_scores`).
+- Réponses libres et annotations formateur sont persistées par séance (`formation_free_responses`, `formation_teacher_annotations`).
 - **Pièce jointe d'écran.** Un écran peut porter une `pieceJointe`, clé commune stockée dans ses `proprietes` (`ProprietesStockees.ts`), sous l'une de deux formes :
   - **publique** `{ libelle, fichier }` : `fichier` est le chemin d'un fichier servi par le front (le classeur brut du B3-01 sous `/assets/cours/b3-01/`). Réservée aux écrans diffusés au catalogue ;
   - **réservée à la séance** `{ libelle, classeur, reprend }` : `classeur` est le chemin `<cours>/<nom>.<empreinte sur 8 hexa>.(xlsx|csv|pdf)`, relatif à `src/modules/formations/infrastructure/classeurs/` ; `reprend` liste les activités antérieures dont le classeur porte les réponses. Le fichier n'existe sur le site que côté serveur : `scripts/copier-classeurs.mjs` le copie dans `dist/` au build, sans son manifeste, et aucune URL du site ne le sert hors des deux routes ci-dessous. Le dépôt du back étant public, ses classeurs y restent lisibles : la réserve tient pour le site, pas pour qui lit le dépôt. Réservée aux écrans diffusés en séance ; la règle `reprise-apres-ses-activites` exige que chaque écran repris soit une activité qui précède la pièce.
@@ -117,17 +117,12 @@ Routes publiques. Hors inscription, chaque appel présente le jeton rendu à l'i
 `GET results` (et `report`) rend :
 
 - `resultats` : `{ participants, questions[] }`, chaque question donnant `questionId`, `total`, `correctes`, `neSaitPas` et `confusions[] { id, libelle, nombre }` triées par fréquence, `parOption` pour un vote, `scoreMoyen` pour une production, et `parCle { [cle]: { total, justes } }` pour une production détaillée (carte d'un tri, case d'une feuille, cellule d'un tableau), puis `confusionDominante` (la première de `confusions`, l'identifiant départageant deux fréquences égales), `part` (correctes sur total), `sousLeSeuil` (`part` strictement inférieure au seuil de l'écran) et `remediation { confusionId, ecranId }`, l'écran de remédiation de la confusion dominante quand la question est sous le seuil, `null` sinon ; un « je ne sais pas » à une production y vaut 0 et compte faux pour chaque clé, sans confusion (`corrigerProduction` le corrige comme une production vide) : le front projette sur l'écran `sort-review` le nombre d'étudiants ayant bien placé chaque carte ;
-- `statistiques` : `moyenne`, `mediane` et `dispersion` (écart type) des notes, arrondies à deux décimales ; `tauxParticipation`, part des participants ayant répondu à au moins une question notée ; `tauxReussite`, réponses correctes sur réponses enregistrées ; `questionsProblemes`, questions dont moins de 70 % des réponses sont correctes ;
+- `statistiques` : `tauxParticipation`, part des participants ayant répondu à au moins une question notée ; `tauxReussite`, réponses correctes sur réponses enregistrées ; `questionsProblemes`, questions dont moins de 70 % des réponses sont correctes ;
 - `notation` : la règle appliquée, `REGLE_DE_NOTATION` (`src/modules/formations/domain/RegleDeNotation.ts`), rendue telle quelle.
 
-La règle en clair :
+Il n'y a pas de note sur 20. La **complétion** d'un étudiant est la part des questions notées (`noteCompte`) auxquelles il a répondu : « Je ne sais pas » compte comme une réponse, une question sans réponse vaut 0, les réponses libres n'entrent pas dans le calcul. La justesse se lit dans `resultats` et `tauxReussite`.
 
-1. La note est une **note de participation sur 20, relative à la classe** : elle ne mesure pas la justesse des réponses (portée par `resultats` et `tauxReussite`).
-2. La **complétion** d'un étudiant est la part des questions notées (`noteCompte`) auxquelles il a répondu. « Je ne sais pas » compte comme une réponse, une question sans réponse vaut 0, les réponses libres ne sont pas notées.
-3. La **référence** est la complétion de l'étudiant qui ferme le premier cinquième de la classe (rang `⌈20 % × effectif⌉` par complétion décroissante).
-4. **Note** = `min(20, 20 × complétion / référence)`, et 0 si la référence est nulle. Un étudiant est signalé **sous le seuil** quand sa complétion est inférieure à 40 % de la référence.
-
-Les notes, complétions et statistiques ne sont écrites qu'**à la clôture** (`POST close`), dans `formation_scores` ; `results`, `report` et le flux formateur les recalculent sans rien écrire.
+`results`, `report` et le flux formateur calculent la complétion et les statistiques à chaque lecture, sans rien écrire.
 
 ## Flux SSE et limites de débit
 

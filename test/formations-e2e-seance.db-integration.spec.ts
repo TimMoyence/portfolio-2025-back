@@ -1526,17 +1526,12 @@ function seanceComplete(
           const apresCloture = noterConflit(
             await repondre(postes[3], questionsDe(ecranDe('fp-exit'))[0]),
           );
+          const seance = await banc.contexte.sessions.findById(sessionId);
           const rapport = await formateur(
             'get',
             `/sessions/${sessionId}/report`,
           ).expect(OK);
           const bilan = rapport.body as ResultatsDeSeance;
-          const scores: { nombre: number }[] =
-            await banc.contexte.dataSource.query(
-              'SELECT COUNT(*)::int AS "nombre" FROM formation_scores WHERE session_id = $1',
-              [sessionId],
-            );
-          const seance = await banc.contexte.sessions.findById(sessionId);
 
           expect({
             apresCloture: [apresCloture.status, codeDe(apresCloture)],
@@ -1544,10 +1539,9 @@ function seanceComplete(
             baremeDeLaSeance: seance?.bareme.version,
             participants: bilan.participants.length,
             questionsNotees: bilan.bareme.questionsNotees,
-            notation: bilan.notation.noteMax,
+            notation: bilan.notation.seuilQuestionProbleme,
             jalons: Object.keys(bilan.jalons).length,
             enigmes: bilan.enigmes.length,
-            scores: scores[0].nombre > 0,
             synthese: banc.mailer.sendSyntheseFormateur.mock.calls.length,
             copies: banc.mailer.sendCopieEtudiant.mock.calls.length,
           }).toEqual({
@@ -1556,10 +1550,9 @@ function seanceComplete(
             baremeDeLaSeance: VERSION_DU_BAREME,
             participants: CAPACITE,
             questionsNotees: attendu.questionsNotees,
-            notation: REGLE_DE_NOTATION.noteMax,
+            notation: REGLE_DE_NOTATION.seuilQuestionProbleme,
             jalons: attendu.jalons,
             enigmes: attendu.enigmes,
-            scores: true,
             synthese: 1,
             copies: CAPACITE,
           });

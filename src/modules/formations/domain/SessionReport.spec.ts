@@ -217,7 +217,7 @@ describe('buildRapportSession', () => {
     expect(p1?.incidents).toBe(2);
   });
 
-  it('QA-09 · arrondit au dixieme la note sur 20 que montrent la synthese et le mail', () => {
+  it('mesure la completion de chaque participant sur les questions notees, sans note ni reference de cohorte', () => {
     const questions = Array.from({ length: 9 }, (_, rang) => `Q-${rang + 1}`);
     const rapport = rapportDe({
       session: buildSessionRecord({
@@ -236,20 +236,12 @@ describe('buildRapportSession', () => {
       ],
     });
 
-    expect(rapport.participants.map(({ note }) => note)).toEqual([20, 17.8]);
-  });
-
-  it('classe les participants sous le seuil via computeCohortScore', () => {
-    const rapport = rapportDe({
-      participants: deuxParticipants(),
-      answers: [buildAnswerRecord({ participantId: 'p1' })],
-    });
-
-    const p1 = rapport.participants[0];
-    const p2 = rapport.participants[1];
-    expect(p1.completion).toBe(1);
-    expect(p2.completion).toBe(0);
-    expect(p2.sousSeuil).toBe(true);
+    expect(rapport.participants.map(({ completion }) => completion)).toEqual([
+      1,
+      8 / 9,
+    ]);
+    expect(rapport.participants[0]).not.toHaveProperty('note');
+    expect(rapport.participants[0]).not.toHaveProperty('sousSeuil');
   });
 
   it('range les reponses d un etudiant dans l ordre des questions du bareme, quel que soit leur ordre d ecriture', () => {

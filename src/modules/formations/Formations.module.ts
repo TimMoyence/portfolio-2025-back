@@ -52,7 +52,6 @@ import {
   MASTERY_REPOSITORY,
   PARTICIPANTS_REPOSITORY,
   SESSION_STATE_CACHE,
-  SCORES_REPOSITORY,
   SESSIONS_REPOSITORY,
   STREAM_CAPACITY,
   TEACHER_ANNOTATIONS_REPOSITORY,
@@ -69,8 +68,6 @@ import { RappelsServisRepositoryTypeORM } from './infrastructure/RappelsServis.r
 import { PulsesRepositoryTypeORM } from './infrastructure/Pulses.repository.typeorm';
 import { FreeResponsesRepositoryTypeORM } from './infrastructure/FreeResponses.repository.typeorm';
 import { FormationFreeResponseEntity } from './infrastructure/entities/FormationFreeResponse.entity';
-import { FormationScoreEntity } from './infrastructure/entities/FormationScore.entity';
-import { ScoresRepositoryTypeORM } from './infrastructure/Scores.repository.typeorm';
 import { FormationTeacherAnnotationEntity } from './infrastructure/entities/FormationTeacherAnnotation.entity';
 import { FormationIncidentEntity } from './infrastructure/entities/FormationIncident.entity';
 import { FormationMasteryEntity } from './infrastructure/entities/FormationMastery.entity';
@@ -108,7 +105,6 @@ import { ParticipantTokenService } from './interfaces/ParticipantToken.service';
       FormationCourseContentEntity,
       FormationScreenContentEntity,
       FormationTeacherAnnotationEntity,
-      FormationScoreEntity,
       FormationEscapeProgressEntity,
       FormationEscapeAttemptEntity,
       FormationPulseEntity,
@@ -182,10 +178,6 @@ import { ParticipantTokenService } from './interfaces/ParticipantToken.service';
     {
       provide: TEACHER_ANNOTATIONS_REPOSITORY,
       useClass: TeacherAnnotationsRepositoryTypeORM,
-    },
-    {
-      provide: SCORES_REPOSITORY,
-      useClass: ScoresRepositoryTypeORM,
     },
     {
       provide: ESCAPE_REPOSITORY,

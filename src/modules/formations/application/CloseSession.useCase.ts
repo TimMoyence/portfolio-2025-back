@@ -4,19 +4,16 @@ import type {
   RapportSession,
 } from '../domain/IFormationMailer.port';
 import type { ParticipantRecord } from '../domain/IParticipants.repository';
-import type { IScoresRepository } from '../domain/IScores.repository';
 import type { ISessionStateCache } from '../domain/ISessionStateCache.port';
 import type { ISessionsRepository } from '../domain/ISessions.repository';
 import {
   FORMATION_MAILER,
-  SCORES_REPOSITORY,
   SESSION_STATE_CACHE,
   SESSIONS_REPOSITORY,
 } from '../domain/token';
 import { enArrierePlan } from '../../../common/application/en-arriere-plan';
 import { envString } from '../../../config/env-readers.util';
 import { GetSessionResultsUseCase } from './GetSessionResults.useCase';
-import type { BilanDeSeance } from './GetSessionResults.useCase';
 import { seanceNonTermineePilotablePar } from './SessionAccess';
 
 @Injectable()
@@ -27,8 +24,6 @@ export class CloseSessionUseCase {
     @Inject(SESSIONS_REPOSITORY)
     private readonly sessions: ISessionsRepository,
     private readonly results: GetSessionResultsUseCase,
-    @Inject(SCORES_REPOSITORY)
-    private readonly scores: IScoresRepository,
     @Inject(FORMATION_MAILER)
     private readonly mailer: IFormationMailer,
     @Inject(SESSION_STATE_CACHE)
@@ -50,30 +45,12 @@ export class CloseSessionUseCase {
     this.cache.drop(sessionId);
 
     const bilan = await this.results.bilanDe(misAJour);
-    await this.enregistrerScores(sessionId, bilan);
 
     this.envoyerSynthese(
       this.resolveDestinataireFormateur(destinataireFormateur),
       bilan.resultats,
     );
     this.envoyerCopies(bilan.participants, bilan.resultats);
-  }
-
-  private async enregistrerScores(
-    sessionId: string,
-    { participants, resultats }: BilanDeSeance,
-  ): Promise<void> {
-    await Promise.all([
-      this.scores.saveIndividuals(
-        participants.map((participant, rang) => ({
-          sessionId,
-          participantId: participant.id,
-          note: resultats.participants[rang].note,
-          completion: resultats.participants[rang].completion,
-        })),
-      ),
-      this.scores.saveSession({ sessionId, ...resultats.statistiques }),
-    ]);
   }
 
   /**

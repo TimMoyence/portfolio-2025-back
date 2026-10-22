@@ -40,7 +40,6 @@ import type {
   IRappelsServisRepository,
   RappelServiRecord,
 } from '../../src/modules/formations/domain/IRappelsServis.repository';
-import type { IScoresRepository } from '../../src/modules/formations/domain/IScores.repository';
 import type {
   ISessionStateCache,
   LiveSessionState,
@@ -388,8 +387,6 @@ export function buildRapportParticipant(
     nom: 'Martin',
     email: 'theo.martin@example.com',
     completion: 1,
-    note: 20,
-    sousSeuil: false,
     reponses: [],
     reponsesLibres: [],
     incidents: 0,
@@ -652,13 +649,6 @@ export function createMockRappelsServisRepo(): jest.Mocked<IRappelsServisReposit
   };
 }
 
-export function createMockScoresRepo(): jest.Mocked<IScoresRepository> {
-  return {
-    saveIndividuals: jest.fn().mockResolvedValue(undefined),
-    saveSession: jest.fn().mockResolvedValue(undefined),
-  };
-}
-
 export function createMockSessionStateCache(): jest.Mocked<ISessionStateCache> {
   return {
     publish: jest.fn(),
@@ -684,7 +674,6 @@ export function createMockDepotsFormations() {
     answers: createMockAnswersRepo(),
     incidents: createMockIncidentsRepo(),
     mastery: createMockMasteryRepo(),
-    scores: createMockScoresRepo(),
     freeResponses: createMockFreeResponsesRepo(),
     annotations: createMockTeacherAnnotationsRepo(),
     escape: createMockEscapeRepo(),

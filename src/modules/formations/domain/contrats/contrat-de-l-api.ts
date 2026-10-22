@@ -146,9 +146,6 @@ export interface ResultatsSeance {
 }
 
 export interface StatistiquesSeance {
-  readonly moyenne: number;
-  readonly mediane: number;
-  readonly dispersion: number;
   readonly tauxParticipation: number;
   readonly tauxReussite: number;
   readonly questionsProblemes: readonly string[];
@@ -188,13 +185,9 @@ export interface ResultatsEnDirect extends ResultatsSeance {
 }
 
 export interface RegleDeNotation {
-  readonly noteMax: number;
-  readonly partCohorteReference: number;
-  readonly ratioSeuilValidation: number;
   readonly neSaitPasCompteCommeReponse: boolean;
   readonly pointsNonReponse: number;
   readonly reponsesLibresNotees: boolean;
   readonly seuilQuestionProbleme: number;
-  readonly decimalesStatistiques: number;
   readonly statistiquesSurQuestionsNotees: boolean;
 }

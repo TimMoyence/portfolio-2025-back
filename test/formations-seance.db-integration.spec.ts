@@ -55,7 +55,6 @@ const SYNTHESE_A = 'synthese-formateur@example.test';
 const PERIODE_PIEGE_ETUDIANT = 5;
 const PERIODE_PIEGE_QUESTION = 4;
 const RESTE_PIEGE_QUESTION = 3;
-const NOTE_ATTENDUE = 20;
 const ECART_DANS_LA_TOLERANCE = 0.5;
 const TIRAGES_DU_CORRIGE = NOMBRE_TIRAGES_DISTRIBUES + 1;
 
@@ -214,16 +213,12 @@ function verifierRapport(
       nom: ligne.nom,
       email: ligne.email,
       completion: ligne.completion,
-      note: ligne.note,
-      sousSeuil: ligne.sousSeuil,
       reponses: ligne.reponses.map((reponse) => reponse.questionId),
       incidents: ligne.incidents,
     }).toEqual({
       nom: etudiant.nom,
       email: etudiant.email,
       completion: 1,
-      note: NOTE_ATTENDUE,
-      sousSeuil: false,
       reponses: QUESTIONS_NOTEES.map(({ id }) => id),
       incidents: etudiant.index % PERIODE_PIEGE_ETUDIANT === 0 ? 1 : 0,
     });

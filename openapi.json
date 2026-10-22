@@ -606,6 +606,45 @@
         ]
       }
     },
+    "/api/v1/portfolio25/audits/confirmation": {
+      "post": {
+        "operationId": "AuditsController_confirm",
+        "parameters": [
+          {
+            "name": "token",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "pattern": "^[0-9a-f]{64}$",
+              "example": "4f7ab9f3f7b3d0eaa77a4b5b0dcaea31695f15de22f22e53f35b98b0aaf3112c",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuditConfirmeResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Lien invalide ou expiré."
+          },
+          "429": {
+            "description": "Trop de requetes"
+          }
+        },
+        "summary": "Confirmer une demande d'audit par le lien recu : l'audit ne demarre qu'apres",
+        "tags": [
+          "audits"
+        ]
+      }
+    },
     "/api/v1/portfolio25/audits/{id}/summary": {
       "get": {
         "operationId": "AuditsController_summary",
@@ -3990,6 +4029,7 @@
           "status": {
             "type": "string",
             "enum": [
+              "UNCONFIRMED",
               "PENDING",
               "RUNNING"
             ]
@@ -4253,6 +4293,7 @@
       "StatutDAudit": {
         "type": "string",
         "enum": [
+          "UNCONFIRMED",
           "PENDING",
           "RUNNING",
           "COMPLETED",
@@ -4288,6 +4329,18 @@
           "httpCode",
           "auditId",
           "status"
+        ]
+      },
+      "AuditConfirmeResponseDto": {
+        "type": "object",
+        "properties": {
+          "auditId": {
+            "type": "string",
+            "example": "f8dd820d-fc38-4f6a-83be-a833aa6be16f"
+          }
+        },
+        "required": [
+          "auditId"
         ]
       },
       "AuditSummaryResponseDto": {
@@ -6920,21 +6973,6 @@
       "StatistiquesSeanceResponseDto": {
         "type": "object",
         "properties": {
-          "moyenne": {
-            "type": "number",
-            "description": "Moyenne des notes sur 20",
-            "example": 12.5
-          },
-          "mediane": {
-            "type": "number",
-            "description": "Mediane des notes sur 20",
-            "example": 13
-          },
-          "dispersion": {
-            "type": "number",
-            "description": "Ecart type des notes",
-            "example": 3.21
-          },
           "tauxParticipation": {
             "type": "number",
             "description": "Part des participants ayant repondu a au moins une question",
@@ -6957,9 +6995,6 @@
           }
         },
         "required": [
-          "moyenne",
-          "mediane",
-          "dispersion",
           "tauxParticipation",
           "tauxReussite",
           "questionsProblemes"
@@ -7403,15 +7438,6 @@
             "description": "Part des questions notees repondues",
             "example": 1
           },
-          "note": {
-            "type": "number",
-            "description": "Note sur 20",
-            "example": 20
-          },
-          "sousSeuil": {
-            "type": "boolean",
-            "example": false
-          },
           "reponsesLibres": {
             "description": "Réponses libres du poste, dans l’ordre des écrans puis des activités",
             "type": "array",
@@ -7436,8 +7462,6 @@
           "nom",
           "email",
           "completion",
-          "note",
-          "sousSeuil",
           "reponsesLibres",
           "incidents",
           "reponses"
@@ -7474,21 +7498,6 @@
       "RegleDeNotationResponseDto": {
         "type": "object",
         "properties": {
-          "noteMax": {
-            "type": "number",
-            "description": "Note maximale",
-            "example": 20
-          },
-          "partCohorteReference": {
-            "type": "number",
-            "description": "Part de la cohorte qui fixe la reference : completion du participant classe a ce rang, qui obtient la note maximale",
-            "example": 0.2
-          },
-          "ratioSeuilValidation": {
-            "type": "number",
-            "description": "Seuil de validation, en fraction de la completion de reference",
-            "example": 0.4
-          },
           "neSaitPasCompteCommeReponse": {
             "type": "boolean",
             "description": "Une reponse « Je ne sais pas » compte comme repondue",
@@ -7509,11 +7518,6 @@
             "description": "Taux de reussite sous lequel une question est problematique",
             "example": 0.7
           },
-          "decimalesStatistiques": {
-            "type": "number",
-            "description": "Nombre de decimales des statistiques arrondies",
-            "example": 2
-          },
           "statistiquesSurQuestionsNotees": {
             "type": "boolean",
             "description": "Les statistiques ne portent que sur les questions notees",
@@ -7521,14 +7525,10 @@
           }
         },
         "required": [
-          "noteMax",
-          "partCohorteReference",
-          "ratioSeuilValidation",
           "neSaitPasCompteCommeReponse",
           "pointsNonReponse",
           "reponsesLibresNotees",
           "seuilQuestionProbleme",
-          "decimalesStatistiques",
           "statistiquesSurQuestionsNotees"
         ]
       },

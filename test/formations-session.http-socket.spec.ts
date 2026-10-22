@@ -414,7 +414,6 @@ function creerAnswersRepo(): IAnswersRepository {
 interface HarnaisFormations {
   app: INestApplication;
   mailer: ReturnType<typeof createMockDepotsFormations>['mailer'];
-  scores: ReturnType<typeof createMockDepotsFormations>['scores'];
   port: number;
 }
 
@@ -438,7 +437,7 @@ async function creerHarnais(
     participants: creerParticipantsRepo(),
     answers: creerAnswersRepo(),
   };
-  const { mailer, scores } = depots;
+  const { mailer } = depots;
 
   const moduleRef = await compilerModuleFormations(depots, catalogueHttp);
 
@@ -449,7 +448,7 @@ async function creerHarnais(
   app.setGlobalPrefix(PREFIXE_API_PAR_DEFAUT);
   appliquerLesTraitementsGlobaux(app);
   const port = await ecouterEnBoucleLocale(app);
-  return { app, mailer, scores, port };
+  return { app, mailer, port };
 }
 
 interface SeanceOuverte {
@@ -527,7 +526,6 @@ function clientFormations(application: () => INestApplication) {
 describe('Session de formation (e2e http socket)', () => {
   let app: INestApplication;
   let mailer: HarnaisFormations['mailer'];
-  let scores: HarnaisFormations['scores'];
   let port: number;
 
   const http = clientFormations(() => app);
@@ -548,7 +546,7 @@ describe('Session de formation (e2e http socket)', () => {
   };
 
   beforeAll(async () => {
-    ({ app, mailer, scores, port } = await creerHarnais());
+    ({ app, mailer, port } = await creerHarnais());
   });
 
   beforeEach(() => {
@@ -1362,28 +1360,11 @@ describe('Session de formation (e2e http socket)', () => {
         '11111111-1111-4111-8111-111111111117',
       ));
       mailer.sendSyntheseFormateur.mockClear();
-      scores.saveIndividuals.mockClear();
-      scores.saveSession.mockClear();
-    });
-
-    it('ne persiste aucun score a la lecture des resultats ni du bilan', async () => {
-      for (const lecture of ['results', 'report', 'report.csv']) {
-        await http.lireEnFormateur(sessionId, lecture).expect(200);
-      }
-
-      expect(scores.saveIndividuals).not.toHaveBeenCalled();
-      expect(scores.saveSession).not.toHaveBeenCalled();
     });
 
     it('cloture et adresse la synthese a la boite configuree, jamais au teacherId', async () => {
       await http.postEnFormateur(`/sessions/${sessionId}/close`).expect(204);
 
-      expect(scores.saveIndividuals).toHaveBeenCalledWith([
-        expect.objectContaining({ sessionId, note: 0, completion: 0 }),
-      ]);
-      expect(scores.saveSession).toHaveBeenCalledWith(
-        expect.objectContaining({ sessionId, tauxParticipation: 0 }),
-      );
       expect(mailer.sendSyntheseFormateur).toHaveBeenCalledWith(
         SYNTHESE_A,
         expect.anything(),

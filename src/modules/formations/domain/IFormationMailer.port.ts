@@ -18,8 +18,6 @@ export interface RapportParticipant {
   nom: string;
   email: string;
   completion: number;
-  note: number;
-  sousSeuil: boolean;
   reponses: readonly RapportQuestion[];
   reponsesLibres: readonly RapportReponseLibre[];
   incidents: number;
@@ -49,7 +47,7 @@ export function conceptsFragilesLisibles(rapport: RapportSession): string {
 
 /**
  * La copie d un etudiant ne porte que sa propre copie. Le rapport complet
- * — nom, adresse et note de chaque camarade — reste a la synthese du
+ * — nom, adresse et completion de chaque camarade — reste a la synthese du
  * formateur : le jour ou le corps du message gagnera un classement, la
  * donnee des autres ne sera pas deja dans la main de celui qui redige
  * (CloseSession.useCase.ts).

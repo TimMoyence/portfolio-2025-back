@@ -67,12 +67,6 @@ export class RapportParticipantResponseDto {
   })
   completion: number;
 
-  @ApiProperty({ description: 'Note sur 20', example: 20 })
-  note: number;
-
-  @ApiProperty({ example: false })
-  sousSeuil: boolean;
-
   @ApiProperty({ type: [RapportQuestionResponseDto] })
   reponses: readonly RapportQuestionResponseDto[];
 
@@ -122,15 +116,6 @@ export class ResultatQuestionResponseDto {
 }
 
 export class StatistiquesSeanceResponseDto {
-  @ApiProperty({ description: 'Moyenne des notes sur 20', example: 12.5 })
-  moyenne: number;
-
-  @ApiProperty({ description: 'Mediane des notes sur 20', example: 13 })
-  mediane: number;
-
-  @ApiProperty({ description: 'Ecart type des notes', example: 3.21 })
-  dispersion: number;
-
   @ApiProperty({
     description: 'Part des participants ayant repondu a au moins une question',
     example: 0.9,
@@ -153,23 +138,6 @@ export class StatistiquesSeanceResponseDto {
 }
 
 export class RegleDeNotationResponseDto {
-  @ApiProperty({ description: 'Note maximale', example: 20 })
-  noteMax: number;
-
-  @ApiProperty({
-    description:
-      'Part de la cohorte qui fixe la reference : completion du participant classe a ce rang, qui obtient la note maximale',
-    example: 0.2,
-  })
-  partCohorteReference: number;
-
-  @ApiProperty({
-    description:
-      'Seuil de validation, en fraction de la completion de reference',
-    example: 0.4,
-  })
-  ratioSeuilValidation: number;
-
   @ApiProperty({
     description: 'Une reponse « Je ne sais pas » compte comme repondue',
     example: true,
@@ -193,12 +161,6 @@ export class RegleDeNotationResponseDto {
     example: 0.7,
   })
   seuilQuestionProbleme: number;
-
-  @ApiProperty({
-    description: 'Nombre de decimales des statistiques arrondies',
-    example: 2,
-  })
-  decimalesStatistiques: number;
 }
 
 export class SessionResultsResponseDto {
@@ -244,7 +206,7 @@ export class SessionResultsResponseDto {
 
   @ApiProperty({
     type: RegleDeNotationResponseDto,
-    description: 'Barème appliqué aux notes et aux statistiques du rapport',
+    description: 'Barème appliqué aux statistiques du rapport',
   })
   notation: RegleDeNotationResponseDto;
 }

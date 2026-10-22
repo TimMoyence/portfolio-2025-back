@@ -31,6 +31,7 @@ import { AjouteGenerationDeJeton1790900000000 } from '../../src/migrations/17909
 import { AjouteGabaritDuCours1790900000002 } from '../../src/migrations/1790900000002-AjouteGabaritDuCours';
 import { RetireLaDerniereVueDeLaMaitrise1792576513090 } from '../../src/migrations/1792576513090-RetireLaDerniereVueDeLaMaitrise';
 import { RetireLeStatutEtLesStrategiesDesReponsesLibres1792576513091 } from '../../src/migrations/1792576513091-RetireLeStatutEtLesStrategiesDesReponsesLibres';
+import { RetireLesScoresDeSeance1792660808302 } from '../../src/migrations/1792660808302-RetireLesScoresDeSeance';
 import {
   SynchroniserCoursUseCase,
   type IssueDeSynchronisation,
@@ -58,7 +59,6 @@ import { FormationFreeResponseEntity } from '../../src/modules/formations/infras
 import { FormationIncidentEntity } from '../../src/modules/formations/infrastructure/entities/FormationIncident.entity';
 import { FormationMasteryEntity } from '../../src/modules/formations/infrastructure/entities/FormationMastery.entity';
 import { FormationParticipantEntity } from '../../src/modules/formations/infrastructure/entities/FormationParticipant.entity';
-import { FormationScoreEntity } from '../../src/modules/formations/infrastructure/entities/FormationScore.entity';
 import { FormationScreenContentEntity } from '../../src/modules/formations/infrastructure/entities/FormationScreenContent.entity';
 import { FormationSessionEntity } from '../../src/modules/formations/infrastructure/entities/FormationSession.entity';
 import { FormationTeacherAnnotationEntity } from '../../src/modules/formations/infrastructure/entities/FormationTeacherAnnotation.entity';
@@ -67,7 +67,6 @@ import { IncidentsRepositoryTypeORM } from '../../src/modules/formations/infrast
 import { MasteryRepositoryTypeORM } from '../../src/modules/formations/infrastructure/Mastery.repository.typeorm';
 import { SecretDeReprise } from '../../src/modules/formations/domain/SecretDeReprise';
 import { ParticipantsRepositoryTypeORM } from '../../src/modules/formations/infrastructure/Participants.repository.typeorm';
-import { ScoresRepositoryTypeORM } from '../../src/modules/formations/infrastructure/Scores.repository.typeorm';
 import { SessionsRepositoryTypeORM } from '../../src/modules/formations/infrastructure/Sessions.repository.typeorm';
 import { TeacherAnnotationsRepositoryTypeORM } from '../../src/modules/formations/infrastructure/TeacherAnnotations.repository.typeorm';
 import {
@@ -81,7 +80,6 @@ export const FORMATION_ENTITIES = [
   FormationAnswerEntity,
   FormationIncidentEntity,
   FormationMasteryEntity,
-  FormationScoreEntity,
   FormationFreeResponseEntity,
   FormationTeacherAnnotationEntity,
   FormationCourseContentEntity,
@@ -126,6 +124,7 @@ const FORMATION_MIGRATIONS = [
   AjouteGabaritDuCours1790900000002,
   RetireLaDerniereVueDeLaMaitrise1792576513090,
   RetireLeStatutEtLesStrategiesDesReponsesLibres1792576513091,
+  RetireLesScoresDeSeance1792660808302,
 ];
 
 export const TABLES_DE_SEANCE = [
@@ -134,7 +133,6 @@ export const TABLES_DE_SEANCE = [
   'formation_answers',
   'formation_incidents',
   'formation_mastery',
-  'formation_scores',
   'formation_free_responses',
   'formation_teacher_annotations',
   'formation_escape_progress',
@@ -182,7 +180,6 @@ export interface ContexteFormations {
   answers: AnswersRepositoryTypeORM;
   incidents: IncidentsRepositoryTypeORM;
   mastery: MasteryRepositoryTypeORM;
-  scores: ScoresRepositoryTypeORM;
   freeResponses: FreeResponsesRepositoryTypeORM;
   annotations: TeacherAnnotationsRepositoryTypeORM;
   escape: EscapeRepositoryTypeORM;
@@ -238,9 +235,6 @@ export async function ouvrirContexteFormations(): Promise<ContexteFormations> {
     ),
     mastery: new MasteryRepositoryTypeORM(
       dataSource.getRepository(FormationMasteryEntity),
-    ),
-    scores: new ScoresRepositoryTypeORM(
-      dataSource.getRepository(FormationScoreEntity),
     ),
     freeResponses: new FreeResponsesRepositoryTypeORM(
       dataSource.getRepository(FormationFreeResponseEntity),
