@@ -7,16 +7,9 @@ import {
   AuPlusCaracteres,
   TexteSaisi,
 } from '../../../../common/interfaces/dto/longueur-de-texte.decorator';
-import { FORME_D_UN_JETON_EMIS } from '../../domain/TokenHash';
 import { LONGUEUR_MAX_D_UN_NOM } from '../../domain/User';
 
 export const LONGUEUR_MAX_D_UN_TELEPHONE = 30;
-
-export const DOCUMENTATION_D_UN_JETON_DE_LIEN = {
-  type: String,
-  example: '4f7ab9f3f7b3d0eaa77a4b5b0dcaea31695f15de22f22e53f35b98b0aaf3112c',
-  pattern: FORME_D_UN_JETON_EMIS.source,
-};
 
 const LONGUEUR_MAX_D_UN_MOT_DE_PASSE = 256;
 

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { LienInvalideError } from '../../../common/domain/errors/LienInvalideError';
-import { emettreJeton } from '../domain/TokenHash';
+import { emettreJeton } from '../../../common/domain/crypto/TokenHash';
 import { ResetPasswordUseCase } from './ResetPassword.useCase';
 import {
   buildUser,

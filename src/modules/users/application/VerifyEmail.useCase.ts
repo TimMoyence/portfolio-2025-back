@@ -4,7 +4,7 @@ import type { IEmailVerificationTokensRepository } from '../domain/IEmailVerific
 import type { IRefreshTokensRepository } from '../domain/IRefreshTokens.repository';
 import type { IUsersRepository } from '../domain/IUsers.repository';
 import { DEFAULT_SELF_REGISTRATION_ROLES } from '../domain/roles';
-import { TokenHash } from '../domain/TokenHash';
+import { TokenHash } from '../../../common/domain/crypto/TokenHash';
 import { User } from '../domain/User';
 import {
   EMAIL_VERIFICATION_TOKENS_REPOSITORY,

@@ -1,5 +1,5 @@
 import { randomBytes } from 'crypto';
-import { empreinteSha256 } from '../../../common/domain/crypto/empreintes';
+import { empreinteSha256 } from './empreintes';
 
 const OCTETS_D_UN_JETON = 32;
 

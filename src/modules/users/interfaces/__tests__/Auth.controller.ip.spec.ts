@@ -8,7 +8,7 @@ import {
 import { LienInvalideError } from '../../../../common/domain/errors/LienInvalideError';
 import type { AuthAuditEntry } from '../../application/services/AuthAuditLogger';
 import { REFRESH_TOKEN_COOKIE_NAME } from '../../domain/auth.constants';
-import { emettreJeton } from '../../domain/TokenHash';
+import { emettreJeton } from '../../../../common/domain/crypto/TokenHash';
 import { AuthController } from '../Auth.controller';
 import type { ForgotPasswordDto } from '../dto/ForgotPassword.dto';
 import type { GoogleAuthDto } from '../dto/GoogleAuth.dto';

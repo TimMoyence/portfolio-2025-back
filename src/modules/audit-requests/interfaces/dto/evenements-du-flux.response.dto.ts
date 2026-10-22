@@ -31,8 +31,8 @@ class AvancementCommunResponseDto extends PickType(AuditSummaryResponseDto, [
 }
 
 class ProgressionDAuditResponseDto extends AvancementCommunResponseDto {
-  @ApiProperty({ enum: ['PENDING', 'RUNNING'] })
-  status: Extract<StatutDuFluxDAudit, 'PENDING' | 'RUNNING'>;
+  @ApiProperty({ enum: ['UNCONFIRMED', 'PENDING', 'RUNNING'] })
+  status: Extract<StatutDuFluxDAudit, 'UNCONFIRMED' | 'PENDING' | 'RUNNING'>;
 
   @ApiProperty({ type: String, nullable: true, example: 'Analyse des pages' })
   step: string | null;

@@ -10,7 +10,7 @@ import { VerifyEmailUseCase } from '../src/modules/users/application/VerifyEmail
 import {
   FORME_D_UN_JETON_EMIS,
   TokenHash,
-} from '../src/modules/users/domain/TokenHash';
+} from '../src/common/domain/crypto/TokenHash';
 import { AuthController } from '../src/modules/users/interfaces/Auth.controller';
 import {
   applicationDeLaSuite,

@@ -11,7 +11,7 @@ import { createMockRefreshTokensRepo } from '../../../../test/factories/refresh-
 import { attendreMiseAJourDeLUtilisateur } from '../../../../test/helpers/utilisateurs';
 import { LienInvalideError } from '../../../common/domain/errors/LienInvalideError';
 import { DEFAULT_SELF_REGISTRATION_ROLES } from '../domain/roles';
-import { TokenHash } from '../domain/TokenHash';
+import { TokenHash } from '../../../common/domain/crypto/TokenHash';
 import { VerifyEmailUseCase } from './VerifyEmail.useCase';
 
 describe('VerifyEmailUseCase', () => {

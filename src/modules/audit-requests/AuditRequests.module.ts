@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { envListe } from '../../config/env-readers.util';
+import { ConfirmAuditRequestUseCase } from './application/ConfirmAuditRequest.useCase';
 import { CreateAuditRequestsUseCase } from './application/CreateAuditRequests.useCase';
 import { GetAuditSummaryUseCase } from './application/GetAuditSummary.useCase';
 import { StreamAuditEventsUseCase } from './application/StreamAuditEvents.useCase';
@@ -16,6 +17,7 @@ import {
 import { AuditRequestsRepositoryTypeORM } from './infrastructure/AuditRequests.repository.typeORM';
 import { AuditClientReportMailer } from './infrastructure/mail/audit-client-report.mailer';
 import { AuditExpertReportMailer } from './infrastructure/mail/audit-expert-report.mailer';
+import { AuditConfirmationMailer } from './infrastructure/mail/audit-confirmation.mailer';
 import { AuditNotificationMailer } from './infrastructure/mail/audit-notification.mailer';
 import { AuditNotifierFacade } from './infrastructure/mail/audit-notifier.facade';
 import { ExpediteurDAuditProvider } from './infrastructure/mail/expediteur-d-audit.provider';
@@ -58,6 +60,7 @@ import { AuditsController } from './interfaces/Audits.controller';
 
 const AUDIT_REQUESTS_USE_CASES = [
   CreateAuditRequestsUseCase,
+  ConfirmAuditRequestUseCase,
   GetAuditSummaryUseCase,
   StreamAuditEventsUseCase,
 ];
@@ -128,6 +131,7 @@ const AUDIT_PDF_SERVICES = [
     AuditNotificationMailer,
     AuditClientReportMailer,
     AuditExpertReportMailer,
+    AuditConfirmationMailer,
     AuditNotifierFacade,
     {
       provide: AUDIT_AUTOMATION_CONFIG,

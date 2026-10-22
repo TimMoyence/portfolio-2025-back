@@ -1,6 +1,7 @@
 import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
 /* eslint-disable @typescript-eslint/unbound-method */
 import { RateLimitExceededError } from '../../../common/domain/errors/RateLimitExceededError';
+import { TokenHash } from '../../../common/domain/crypto/TokenHash';
 import { CreateAuditRequestsUseCase } from './CreateAuditRequests.useCase';
 import type { IAuditRequestsRepository } from '../domain/IAuditRequests.repository';
 import type { IAuditNotifierPort } from '../domain/IAuditNotifier.port';
@@ -33,9 +34,16 @@ describe('CreateAuditRequestsUseCase', () => {
 
   const validCommand: CreateAuditRequestCommand = {
     websiteName: 'example.com',
+    contactMethod: 'PHONE',
+    contactValue: '+33612345678',
+    locale: 'fr',
+  };
+
+  const demandeParCourriel: CreateAuditRequestCommand = {
+    websiteName: 'https://www.example.com/tarifs?x=1',
     contactMethod: 'EMAIL',
     contactValue: 'test@example.com',
-    locale: 'fr',
+    locale: 'en',
   };
 
   const expectedResponse: AuditRequestResponse = (() => {
@@ -116,6 +124,42 @@ describe('CreateAuditRequestsUseCase', () => {
     await useCase.execute(validCommand);
 
     expect(queueService.enqueue).toHaveBeenCalledWith('audit-custom-456');
+  });
+
+  describe('demande par courriel : rien ne part avant la confirmation', () => {
+    it('cree la demande avec la seule empreinte du jeton, sans la mettre en file', async () => {
+      await useCase.execute(demandeParCourriel);
+
+      const [, empreinte] = repo.create.mock.calls[0];
+      expect(empreinte).toMatch(/^[0-9a-f]{64}$/);
+      expect(queueService.enqueue).not.toHaveBeenCalled();
+    });
+
+    it('envoie le lien de confirmation a l adresse saisie, nommant le seul hote du site', async () => {
+      await useCase.execute(demandeParCourriel);
+      await new Promise<void>((resolve) => setImmediate(resolve));
+
+      const [demande] = notifier.demanderLaConfirmation.mock.calls[0];
+      const lien = new URL(demande.lien);
+      const [, empreinte] = repo.create.mock.calls[0];
+      expect(demande).toMatchObject({
+        to: 'test@example.com',
+        hote: 'www.example.com',
+        locale: 'en',
+      });
+      expect(lien.pathname).toBe('/en/growth-audit');
+      expect(
+        TokenHash.fromRaw(lien.searchParams.get('token') ?? '').value,
+      ).toBe(empreinte);
+    });
+
+    it('cree une demande par telephone sans jeton et la met en file aussitot', async () => {
+      await useCase.execute(validCommand);
+
+      expect(repo.create).toHaveBeenCalledWith(expect.anything(), null);
+      expect(notifier.demanderLaConfirmation).not.toHaveBeenCalled();
+      expect(queueService.enqueue).toHaveBeenCalledWith('audit-123');
+    });
   });
 
   describe('plafond par adresse de contact', () => {
@@ -203,7 +247,7 @@ describe('CreateAuditRequestsUseCase', () => {
 
     it('verrouille et compte l adresse normalisee par le domaine, pas la saisie brute', async () => {
       await useCase.execute({
-        ...validCommand,
+        ...demandeParCourriel,
         contactValue: ' Test@Example.COM ',
       });
 

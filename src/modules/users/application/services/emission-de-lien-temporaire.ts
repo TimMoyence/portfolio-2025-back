@@ -5,7 +5,7 @@ import {
   TROIS_ENVOIS_PAR_HEURE,
   type PlafondDEnvois,
 } from '../../domain/PlafondDEnvois';
-import { emettreJeton } from '../../domain/TokenHash';
+import { emettreJeton } from '../../../../common/domain/crypto/TokenHash';
 import type { User } from '../../domain/User';
 
 const MINUTE_MS = 60_000;

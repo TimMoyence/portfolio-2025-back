@@ -13,7 +13,10 @@ import {
   AuditSummarySnapshot,
   UpdateAuditStateInput,
 } from '../domain/AuditProcessing';
-import { AuditRequest } from '../domain/AuditRequest';
+import {
+  AuditRequest,
+  VALIDITE_D_UNE_CONFIRMATION_MS,
+} from '../domain/AuditRequest';
 import { AuditRequestResponse } from '../domain/AuditRequestResponse';
 import type { IAuditRequestsRepository } from '../domain/IAuditRequests.repository';
 import { LocaleCode } from '../../../common/domain/value-objects/LocaleCode';
@@ -45,7 +48,11 @@ export class AuditRequestsRepositoryTypeORM
   extends DepotDeRequetes(AuditRequestEntity)
   implements IAuditRequestsRepository
 {
-  async create(data: AuditRequest): Promise<AuditRequestResponse> {
+  async create(
+    data: AuditRequest,
+    empreinteDeConfirmation: string | null,
+  ): Promise<AuditRequestResponse> {
+    const aConfirmer = empreinteDeConfirmation !== null;
     const entity = await this.consigner(
       {
         websiteName: data.websiteName,
@@ -53,9 +60,10 @@ export class AuditRequestsRepositoryTypeORM
         contactValue: data.contactValue,
         boite: boiteDeLivraison(data.contactValue),
         done: false,
-        processingStatus: 'PENDING',
+        processingStatus: aConfirmer ? 'UNCONFIRMED' : 'PENDING',
+        confirmationHash: empreinteDeConfirmation,
         progress: 0,
-        step: 'Queued',
+        step: aConfirmer ? 'Awaiting confirmation' : 'Queued',
         locale: LocaleCode.resolve(data.locale).value,
         redirectChain: [],
         keyChecks: {},
@@ -70,6 +78,27 @@ export class AuditRequestsRepositoryTypeORM
       auditId: entity.id,
       status: entity.processingStatus,
     };
+  }
+
+  async confirmer(empreinteDeConfirmation: string): Promise<string | null> {
+    const resultat = await this.repo
+      .createQueryBuilder()
+      .update()
+      .set({
+        processingStatus: 'PENDING',
+        step: 'Queued',
+        confirmationHash: null,
+        confirmeeLe: () => 'LOCALTIMESTAMP',
+      })
+      .where({
+        confirmationHash: empreinteDeConfirmation,
+        processingStatus: 'UNCONFIRMED',
+        createdAt: poseeDepuisMoinsDe(VALIDITE_D_UNE_CONFIRMATION_MS),
+      })
+      .returning(['id'])
+      .execute();
+    const [ligne] = resultat.raw as readonly { id: string }[];
+    return ligne?.id ?? null;
   }
 
   sousVerrouDeLaBoite<T>(

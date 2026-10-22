@@ -2,10 +2,12 @@ import {
   Body,
   Controller,
   Get,
+  HttpCode,
   HttpStatus,
   MessageEvent,
   Param,
   ParseUUIDPipe,
+  Post,
   Req,
 } from '@nestjs/common';
 import {
@@ -14,9 +16,19 @@ import {
   ApiExtraModels,
   ApiOkResponse,
   ApiOperation,
+  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
-import { SkipThrottle } from '@nestjs/throttler';
+import { SkipThrottle, Throttle } from '@nestjs/throttler';
+import { PARAMETRE_DU_JETON } from '../../../common/domain/lien-avec-jeton';
+import {
+  DOCUMENTATION_D_UN_JETON_DE_LIEN,
+  JetonDuLienEnRequete,
+  RefusDeLienDocumente,
+} from '../../../common/interfaces/security/jeton-de-lien.pipe';
+import { FORME_D_UN_JETON_EMIS } from '../../../common/domain/crypto/TokenHash';
+import { ConfirmAuditRequestUseCase } from '../application/ConfirmAuditRequest.useCase';
+import { AuditConfirmeResponseDto } from './dto/audit-confirme.response.dto';
 import { Public } from '../../../common/interfaces/auth/public.decorator';
 import { FluxDEvenements } from '../../../common/interfaces/http/flux-d-evenements.decorator';
 import { EVENEMENTS_DU_FLUX_D_AUDIT } from './dto/evenements-du-flux.response.dto';
@@ -43,6 +55,7 @@ import { AuditSummaryResponseDto } from './dto/audit-summary.response.dto';
 export class AuditsController {
   constructor(
     private readonly createUseCase: CreateAuditRequestsUseCase,
+    private readonly confirmUseCase: ConfirmAuditRequestUseCase,
     private readonly summaryUseCase: GetAuditSummaryUseCase,
     private readonly streamUseCase: StreamAuditEventsUseCase,
   ) {}
@@ -73,6 +86,23 @@ export class AuditsController {
     responseDto.auditId = response.auditId;
     responseDto.status = response.status;
     return responseDto;
+  }
+
+  @RoutePublique()
+  @Post('confirmation')
+  @HttpCode(HttpStatus.OK)
+  @Throttle({ default: { limit: 10, ttl: 3600000 } })
+  @ApiOperation({
+    summary:
+      "Confirmer une demande d'audit par le lien recu : l'audit ne demarre qu'apres",
+  })
+  @ApiQuery({ name: PARAMETRE_DU_JETON, ...DOCUMENTATION_D_UN_JETON_DE_LIEN })
+  @ApiOkResponse({ type: AuditConfirmeResponseDto })
+  @RefusDeLienDocumente()
+  confirm(
+    @JetonDuLienEnRequete(FORME_D_UN_JETON_EMIS) jeton: string,
+  ): Promise<AuditConfirmeResponseDto> {
+    return this.confirmUseCase.execute(jeton);
   }
 
   @RoutePublique()

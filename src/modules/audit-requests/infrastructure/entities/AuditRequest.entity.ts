@@ -87,4 +87,14 @@ export class AuditRequestEntity extends ColonnesDeRequete {
 
   @Column({ type: 'text', default: 'fr' })
   locale: string;
+
+  @Index('idx_audit_requests_confirmation_hash', {
+    unique: true,
+    where: '"confirmation_hash" IS NOT NULL',
+  })
+  @Column({ type: 'text', name: 'confirmation_hash', nullable: true })
+  confirmationHash?: string | null;
+
+  @Column({ type: 'timestamp', name: 'confirmee_le', nullable: true })
+  confirmeeLe?: Date | null;
 }

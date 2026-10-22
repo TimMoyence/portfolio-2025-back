@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { pieceJointePdf } from '../../../../common/infrastructure/mail/piece-jointe';
 import { destinataireDesRapportsDAudit } from '../../../../config/adresses-de-courriel';
 import { envString } from '../../../../config/env-readers.util';
+import { adresseDuSite } from '../../domain/AdresseDuSite';
 import { LIBELLES_DU_NIVEAU } from '../../domain/AuditReportTiers';
 import type { ClientReportMailInput } from '../../domain/IAuditNotifier.port';
 import { rapportClientServi } from '../../domain/RapportClientServi';
@@ -19,8 +20,12 @@ import { lignesDeVisibilite, listeDeVisibilite } from './visibilite-google-ia';
 
 @Injectable()
 export class AuditClientReportMailer extends MailerDAudit {
-  async sendClientReport(input: ClientReportMailInput): Promise<void> {
-    if (!input.to || input.to.trim().length === 0) return;
+  async sendClientReport(saisie: ClientReportMailInput): Promise<void> {
+    if (!saisie.to || saisie.to.trim().length === 0) return;
+    const input = {
+      ...saisie,
+      websiteName: adresseDuSite(saisie.websiteName).hostname,
+    };
 
     await this.envoyer({
       to: input.to,

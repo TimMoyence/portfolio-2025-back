@@ -1,5 +1,6 @@
 import type { MethodeDeContact } from './AuditRequest';
 import { AuditRequest } from './AuditRequest';
+import type { AuditLocale } from './audit-locale.util';
 import type {
   ClientReportSynthesis,
   ExpertReportSynthesis,
@@ -22,7 +23,15 @@ export interface ExpertReportMailInput {
   readonly pdfBuffer: Buffer;
 }
 
+export interface DemandeDeConfirmation {
+  readonly to: string;
+  readonly hote: string;
+  readonly lien: string;
+  readonly locale: AuditLocale;
+}
+
 export interface IAuditNotifierPort {
+  demanderLaConfirmation(demande: DemandeDeConfirmation): Promise<void>;
   sendAuditNotification(request: AuditRequest): Promise<void>;
   sendClientReport(input: ClientReportMailInput): Promise<void>;
   sendExpertReport(input: ExpertReportMailInput): Promise<void>;

@@ -18,7 +18,7 @@ import { RevokeTokenUseCase } from '../src/modules/users/application/RevokeToken
 import { EnvoiDeVerificationEmail } from '../src/modules/users/application/services/email-verification-dispatch';
 import { EnvoiDeReinitialisation } from '../src/modules/users/application/services/password-reset-dispatch';
 import { TROIS_ENVOIS_PAR_HEURE } from '../src/modules/users/domain/PlafondDEnvois';
-import { emettreJeton, TokenHash } from '../src/modules/users/domain/TokenHash';
+import { emettreJeton, TokenHash } from '../src/common/domain/crypto/TokenHash';
 import { EmailVerificationTokensRepositoryTypeORM } from '../src/modules/users/infrastructure/EmailVerificationTokens.repository.typeORM';
 import { EmailVerificationTokenEntity } from '../src/modules/users/infrastructure/entities/EmailVerificationToken.entity';
 import { PasswordResetTokenEntity } from '../src/modules/users/infrastructure/entities/PasswordResetToken.entity';

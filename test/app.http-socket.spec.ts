@@ -22,7 +22,7 @@ import {
   primeCoreUseCaseStubs,
   primePasswordUseCaseStubs,
 } from './factories/core-api.factory';
-import { emettreJeton } from '../src/modules/users/domain/TokenHash';
+import { emettreJeton } from '../src/common/domain/crypto/TokenHash';
 
 // eslint-disable-next-line sonarjs/no-hardcoded-passwords -- fixture de test, pas un secret reel
 const WRONG_PASSWORD = 'WrongPassword1!';

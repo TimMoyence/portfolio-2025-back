@@ -49,6 +49,15 @@ describe('AuditClientReportMailer', () => {
       ...parametres,
     });
 
+  it('nomme le seul hote du site dans l objet, jamais la saisie brute du demandeur', async () => {
+    await envoyerRapport(buildMailer(), {
+      websiteName: 'https://www.mon-site.fr/Reglez-ici?montant=500',
+    });
+
+    expect(sentMail().subject).toBe('Votre audit Growth — www.mon-site.fr');
+    expect(JSON.stringify(sentMail())).not.toContain('Reglez-ici');
+  });
+
   it('devrait envoyer le rapport client sans pdf', async () => {
     await envoyerRapport(buildMailer(), { firstName: 'Alice' });
 

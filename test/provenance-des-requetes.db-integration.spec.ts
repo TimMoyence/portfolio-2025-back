@@ -31,7 +31,7 @@ const DEPOTS = {
   audit_requests: (base: DataSource, provenance: Provenance) =>
     new AuditRequestsRepositoryTypeORM(
       base.getRepository(AuditRequestEntity),
-    ).create(AuditRequest.create(buildAuditRequest(provenance))),
+    ).create(AuditRequest.create(buildAuditRequest(provenance)), null),
   cookie_consents: (base: DataSource, provenance: Provenance) =>
     new CookieConsentsRepositoryTypeORM(
       base.getRepository(CookieConsentEntity),

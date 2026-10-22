@@ -5,6 +5,7 @@ import {
   buildExpertReportSynthesis,
 } from '../../../../../../test/factories/audit-requests.factory';
 import type { AuditClientReportMailer } from '../audit-client-report.mailer';
+import type { AuditConfirmationMailer } from '../audit-confirmation.mailer';
 import type { AuditExpertReportMailer } from '../audit-expert-report.mailer';
 import type { AuditNotificationMailer } from '../audit-notification.mailer';
 import { AuditNotifierFacade } from '../audit-notifier.facade';
@@ -30,6 +31,9 @@ describe('AuditNotifierFacade', () => {
       notificationMailer,
       clientReportMailer,
       expertReportMailer,
+      {
+        demanderLaConfirmation: jest.fn().mockResolvedValue(undefined),
+      } as unknown as AuditConfirmationMailer,
     );
   });
 

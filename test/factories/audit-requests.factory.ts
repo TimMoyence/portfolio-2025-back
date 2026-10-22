@@ -202,6 +202,7 @@ export function createMockAuditRequestsRepo(): jest.Mocked<IAuditRequestsReposit
   const repo: jest.Mocked<IAuditRequestsRepository> = {
     sousVerrouDeLaBoite: sectionSurLeDepot(() => repo),
     create: jest.fn(),
+    confirmer: jest.fn(),
     secondesAvantLaSortieDesDemandesVers: jest.fn().mockResolvedValue([]),
     findById: jest.fn(),
     findSummaryById: jest.fn(),
@@ -212,6 +213,7 @@ export function createMockAuditRequestsRepo(): jest.Mocked<IAuditRequestsReposit
 
 export function createMockAuditNotifier(): jest.Mocked<IAuditNotifierPort> {
   return {
+    demanderLaConfirmation: jest.fn().mockResolvedValue(undefined),
     sendAuditNotification: jest.fn().mockResolvedValue(undefined),
     sendClientReport: jest.fn().mockResolvedValue(undefined),
     sendExpertReport: jest.fn().mockResolvedValue(undefined),

@@ -8,6 +8,7 @@ import type { EngineCoverage } from './EngineCoverage';
 import type { ScoresDesPiliers } from './Piliers';
 
 export const STATUTS_D_AUDIT = Object.freeze([
+  'UNCONFIRMED',
   'PENDING',
   'RUNNING',
   'COMPLETED',

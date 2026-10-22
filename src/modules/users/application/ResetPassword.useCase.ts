@@ -1,7 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { LienInvalideError } from '../../../common/domain/errors/LienInvalideError';
 import { jetonDeLien } from '../../../common/domain/lien-avec-jeton';
-import { FORME_D_UN_JETON_EMIS, TokenHash } from '../domain/TokenHash';
+import {
+  FORME_D_UN_JETON_EMIS,
+  TokenHash,
+} from '../../../common/domain/crypto/TokenHash';
 import type { IPasswordResetTokensRepository } from '../domain/IPasswordResetTokens.repository';
 import type { IRefreshTokensRepository } from '../domain/IRefreshTokens.repository';
 import type { IUsersRepository } from '../domain/IUsers.repository';
