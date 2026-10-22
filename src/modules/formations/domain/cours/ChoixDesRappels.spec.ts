@@ -188,6 +188,25 @@ describe('choisirRappels', () => {
     expect(servis).not.toContain('R-TAUX');
   });
 
+  it('departage a egalite par la premiere question du concept dans la banque', () => {
+    const servis = choisirRappels({
+      cible: {
+        ...CIBLE,
+        obligatoires: [],
+        banque: [
+          { id: 'R-TAUX', concept: 'taux-evolution' },
+          { id: 'R-INDICE', concept: 'indice-base-100' },
+          { id: 'R-TAUX-BIS', concept: 'taux-evolution' },
+        ],
+      },
+      reponses: [],
+      maitrise: [],
+      maintenant: MAINTENANT,
+    });
+
+    expect(servis[0]).toBe('R-TAUX');
+  });
+
   it('rend la meme liste pour le meme etat, sans hasard', () => {
     const reponses = [reponse('proportion', false, ANCIEN)];
 

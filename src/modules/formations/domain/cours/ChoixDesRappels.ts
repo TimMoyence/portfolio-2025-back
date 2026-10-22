@@ -119,7 +119,9 @@ export function choisirRappels(contexte: ContexteDeChoix): readonly string[] {
   );
   const derniere = derniereReponseParConcept(contexte.reponses);
   const rangDansLaBanque = new Map(
-    contexte.cible.banque.map((question, rang) => [question.concept, rang]),
+    contexte.cible.banque
+      .map((question, rang) => [question.concept, rang] as const)
+      .reverse(),
   );
   const concepts = [...new Set(restantes.map((question) => question.concept))];
   const classes = concepts
