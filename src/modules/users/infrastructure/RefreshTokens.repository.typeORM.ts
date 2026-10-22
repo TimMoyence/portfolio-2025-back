@@ -8,6 +8,7 @@ import {
   lignesAffectees,
 } from '../../../common/infrastructure/typeorm/lignes-affectees';
 import { verrouillerJusquALaFinDeLaTransaction } from '../../../common/infrastructure/typeorm/verrou-de-transaction';
+import { SUCCESSEURS_MAX_D_UN_JETON } from '../domain/auth.constants';
 import type { IRefreshTokensRepository } from '../domain/IRefreshTokens.repository';
 import type { RefreshToken } from '../domain/RefreshToken';
 import { RefreshTokenEntity } from './entities/RefreshToken.entity';
@@ -50,9 +51,18 @@ export class RefreshTokensRepositoryTypeORM
           rotationGraceUntil: Not(IsNull()),
         },
       });
-      if (precedentEnGrace === null) {
+      if (
+        precedentEnGrace === null ||
+        precedentEnGrace.successeursEmis >= SUCCESSEURS_MAX_D_UN_JETON
+      ) {
         return null;
       }
+      await manager.increment(
+        RefreshTokenEntity,
+        { id: previousId },
+        'successeursEmis',
+        1,
+      );
       return this.toDomain(
         await manager.save(
           manager.create(

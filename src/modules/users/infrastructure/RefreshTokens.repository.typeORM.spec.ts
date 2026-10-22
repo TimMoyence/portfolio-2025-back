@@ -4,6 +4,7 @@ import {
   mockTypeOrmManager,
   mockTypeOrmRepositoryAvecManager,
 } from '../../../../test/factories/formation-entities.factory';
+import { SUCCESSEURS_MAX_D_UN_JETON } from '../domain/auth.constants';
 import { RefreshTokensRepositoryTypeORM } from './RefreshTokens.repository.typeORM';
 import { RefreshTokenEntity } from './entities/RefreshToken.entity';
 
@@ -103,19 +104,26 @@ describe('RefreshTokensRepositoryTypeORM.createSuccessor', () => {
     const save = jest.fn((entite: object) =>
       Promise.resolve({ ...entite, id: 'refresh-2', createdAt }),
     );
-    const { manager, depot } = depotSousVerrou({ findOne, create, save });
+    const increment = jest.fn().mockResolvedValue({ affected: 1 });
+    const { manager, depot } = depotSousVerrou({
+      findOne,
+      create,
+      save,
+      increment,
+    });
     const succession = depot.createSuccessor('refresh-1', {
       userId: 'user-1',
       tokenHash: 'empreinte',
       expiresAt,
       revoked: false,
     });
-    return { findOne, save, manager, succession };
+    return { findOne, save, increment, manager, succession };
   };
 
   it('enregistre le suivant sous le verrou du compte quand le precedent est encore en grace', async () => {
-    const { findOne, save, manager, succession } = succederA({
+    const { findOne, save, increment, manager, succession } = succederA({
       id: 'refresh-1',
+      successeursEmis: SUCCESSEURS_MAX_D_UN_JETON - 1,
     });
 
     await expect(succession).resolves.toEqual({
@@ -141,12 +149,32 @@ describe('RefreshTokensRepositoryTypeORM.createSuccessor', () => {
     expect(findOne.mock.invocationCallOrder[0]).toBeLessThan(
       save.mock.invocationCallOrder[0],
     );
+    expect(increment).toHaveBeenCalledWith(
+      RefreshTokenEntity,
+      { id: 'refresh-1' },
+      'successeursEmis',
+      1,
+    );
+    expect(increment.mock.invocationCallOrder[0]).toBeLessThan(
+      save.mock.invocationCallOrder[0],
+    );
   });
 
   it('n enregistre rien quand une deconnexion a retire la grace du precedent', async () => {
     const { save, succession } = succederA(null);
 
     await expect(succession).resolves.toBeNull();
+    expect(save).not.toHaveBeenCalled();
+  });
+
+  it('n enregistre plus rien quand le precedent a deja engendre le nombre maximal de successeurs', async () => {
+    const { save, increment, succession } = succederA({
+      id: 'refresh-1',
+      successeursEmis: SUCCESSEURS_MAX_D_UN_JETON,
+    });
+
+    await expect(succession).resolves.toBeNull();
+    expect(increment).not.toHaveBeenCalled();
     expect(save).not.toHaveBeenCalled();
   });
 });
