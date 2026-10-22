@@ -7201,6 +7201,63 @@
           "reponse"
         ]
       },
+      "TypeDIncident": {
+        "type": "string",
+        "enum": [
+          "tab_hidden",
+          "window_blur",
+          "copy_attempt",
+          "paste_attempt",
+          "context_menu",
+          "blocked_shortcut",
+          "devtools_suspected",
+          "page_unload",
+          "fast_answer"
+        ]
+      },
+      "RapportIncidentResponseDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "example": "tab_hidden",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TypeDIncident"
+              }
+            ]
+          },
+          "horodatage": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-09-11T10:00:00.000Z"
+          },
+          "contexte": {
+            "type": "object",
+            "nullable": true,
+            "additionalProperties": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                }
+              ]
+            },
+            "example": {
+              "duree": 1200
+            }
+          }
+        },
+        "required": [
+          "type",
+          "horodatage",
+          "contexte"
+        ]
+      },
       "RapportQuestionResponseDto": {
         "type": "object",
         "properties": {
@@ -7296,9 +7353,11 @@
             }
           },
           "incidents": {
-            "type": "number",
-            "description": "Nombre d incidents du poste",
-            "example": 0
+            "description": "Incidents du poste, dans l ordre du temps",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RapportIncidentResponseDto"
+            }
           },
           "reponses": {
             "type": "array",
@@ -9622,20 +9681,6 @@
         },
         "required": [
           "questions"
-        ]
-      },
-      "TypeDIncident": {
-        "type": "string",
-        "enum": [
-          "tab_hidden",
-          "window_blur",
-          "copy_attempt",
-          "paste_attempt",
-          "context_menu",
-          "blocked_shortcut",
-          "devtools_suspected",
-          "page_unload",
-          "fast_answer"
         ]
       },
       "IncidentEntryDto": {

@@ -718,7 +718,7 @@ describe('Session de formation (e2e http socket)', () => {
         type: 'text/csv; charset=utf-8',
         disposition: `attachment; filename="session-${code}.csv"`,
         entete:
-          'prénom;nom;email;question;concept;réponse;correcte;confusion;durée_ms',
+          'prénom;nom;email;question;concept;réponse;correcte;confusion;durée_ms;horodatage',
       });
     });
 

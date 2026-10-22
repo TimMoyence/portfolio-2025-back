@@ -19,10 +19,12 @@ import { tirer } from './cours/Tirage';
 import type { LibellesDesOptions } from './cours/Tirage';
 import type { AnswerRecord } from './IAnswers.repository';
 import type {
+  RapportIncident,
   RapportParticipant,
   RapportQuestion,
   RapportReponseLibre,
   RapportSession,
+  ValeurDeContexte,
 } from './IFormationMailer.port';
 import type { FreeResponseRecord } from './IFreeResponses.repository';
 import type { IncidentRecord } from './IIncidents.repository';
@@ -82,9 +84,7 @@ export function buildRapportSession(input: SessionReportInput): RapportSession {
           types,
         ),
         reponsesLibres: reponsesLibresDe(participant.id, input, rangDeLibre),
-        incidents: input.incidents.filter(
-          (incident) => incident.participantId === participant.id,
-        ).length,
+        incidents: incidentsDe(participant.id, input.incidents),
       };
     },
   );
@@ -102,6 +102,37 @@ export function buildRapportSession(input: SessionReportInput): RapportSession {
       conceptsFragiles.map((concept) => [concept, libelleDeConcept(concept)]),
     ),
   };
+}
+
+function incidentsDe(
+  participantId: string,
+  incidents: readonly IncidentRecord[],
+): readonly RapportIncident[] {
+  return incidents
+    .filter((incident) => incident.participantId === participantId)
+    .sort(
+      (gauche, droite) =>
+        gauche.horodatage.getTime() - droite.horodatage.getTime(),
+    )
+    .map((incident) => ({
+      type: incident.type,
+      horodatage: incident.horodatage.toISOString(),
+      contexte: contexteScalaire(incident.contexte),
+    }));
+}
+
+function contexteScalaire(
+  contexte: Readonly<Record<string, unknown>> | null,
+): Readonly<Record<string, ValeurDeContexte>> | null {
+  if (contexte === null) {
+    return null;
+  }
+  return Object.fromEntries(
+    Object.entries(contexte).filter(
+      (entree): entree is [string, ValeurDeContexte] =>
+        ['string', 'number', 'boolean'].includes(typeof entree[1]),
+    ),
+  );
 }
 
 function completionDe(

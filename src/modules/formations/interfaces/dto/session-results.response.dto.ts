@@ -1,4 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
+import type {
+  RapportIncident,
+  ValeurDeContexte,
+} from '../../domain/IFormationMailer.port';
+import { INCIDENT_TYPES, type IncidentType } from '../../domain/IncidentType';
 
 export class RapportQuestionResponseDto {
   @ApiProperty({ example: 'Q-OUV-RAPPEL' })
@@ -51,6 +56,28 @@ export class RapportReponseLibreResponseDto {
   reponse: string;
 }
 
+export class RapportIncidentResponseDto implements RapportIncident {
+  @ApiProperty({
+    enum: INCIDENT_TYPES,
+    enumName: 'TypeDIncident',
+    example: 'tab_hidden',
+  })
+  type: IncidentType;
+
+  @ApiProperty({ format: 'date-time', example: '2026-09-11T10:00:00.000Z' })
+  horodatage: string;
+
+  @ApiProperty({
+    type: 'object',
+    nullable: true,
+    additionalProperties: {
+      oneOf: [{ type: 'string' }, { type: 'number' }, { type: 'boolean' }],
+    },
+    example: { duree: 1200 },
+  })
+  contexte: Readonly<Record<string, ValeurDeContexte>> | null;
+}
+
 export class RapportParticipantResponseDto {
   @ApiProperty({ example: 'Theo' })
   prenom: string;
@@ -77,8 +104,11 @@ export class RapportParticipantResponseDto {
   })
   reponsesLibres: readonly RapportReponseLibreResponseDto[];
 
-  @ApiProperty({ description: 'Nombre d incidents du poste', example: 0 })
-  incidents: number;
+  @ApiProperty({
+    type: [RapportIncidentResponseDto],
+    description: 'Incidents du poste, dans l ordre du temps',
+  })
+  incidents: readonly RapportIncidentResponseDto[];
 }
 
 export class ConfusionCompteeResponseDto {

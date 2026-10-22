@@ -389,7 +389,7 @@ export function buildRapportParticipant(
     completion: 1,
     reponses: [],
     reponsesLibres: [],
-    incidents: 0,
+    incidents: [],
     ...overrides,
   };
 }

@@ -1,4 +1,5 @@
 import type { TypeQuestion } from './contrats/cours';
+import type { IncidentType } from './IncidentType';
 
 export interface RapportQuestion {
   questionId: string;
@@ -20,7 +21,15 @@ export interface RapportParticipant {
   completion: number;
   reponses: readonly RapportQuestion[];
   reponsesLibres: readonly RapportReponseLibre[];
-  incidents: number;
+  incidents: readonly RapportIncident[];
+}
+
+export type ValeurDeContexte = string | number | boolean;
+
+export interface RapportIncident {
+  type: IncidentType;
+  horodatage: string;
+  contexte: Readonly<Record<string, ValeurDeContexte>> | null;
 }
 
 export interface RapportReponseLibre {

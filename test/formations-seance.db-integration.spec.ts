@@ -220,7 +220,16 @@ function verifierRapport(
       email: etudiant.email,
       completion: 1,
       reponses: QUESTIONS_NOTEES.map(({ id }) => id),
-      incidents: etudiant.index % PERIODE_PIEGE_ETUDIANT === 0 ? 1 : 0,
+      incidents:
+        etudiant.index % PERIODE_PIEGE_ETUDIANT === 0
+          ? [
+              {
+                type: 'tab_hidden',
+                horodatage: '2026-09-12T09:30:00.000Z',
+                contexte: null,
+              },
+            ]
+          : [],
     });
   });
 }
@@ -238,9 +247,12 @@ function verifierSynthese(
     .slice(1)
     .map((ligne) => ligne.split(';').slice(2, 4).join(';'));
   expect(emailEtQuestionParLigne).toEqual(
-    etudiants.flatMap((etudiant) =>
-      QUESTIONS_NOTEES.map(({ id }) => `"${etudiant.email}";"${id}"`),
-    ),
+    etudiants.flatMap((etudiant) => [
+      ...QUESTIONS_NOTEES.map(({ id }) => `"${etudiant.email}";"${id}"`),
+      ...(etudiant.index % PERIODE_PIEGE_ETUDIANT === 0
+        ? [`"${etudiant.email}";"incident"`]
+        : []),
+    ]),
   );
   for (const etudiant of etudiants) {
     expect(corps).toContain(etudiant.nom);

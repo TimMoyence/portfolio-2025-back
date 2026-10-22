@@ -201,12 +201,22 @@ describe('buildRapportSession', () => {
     expect(rapport.conceptsFragiles).not.toContain('tableur');
   });
 
-  it('compte les incidents par participant', () => {
+  it('sert les incidents de chaque participant dans l ordre du temps, avec leur type, leur heure et leur contexte', () => {
     const rapport = rapportDe({
       participants: deuxParticipants(),
       incidents: [
-        buildIncidentRecord({ participantId: 'p1' }),
-        buildIncidentRecord({ participantId: 'p1' }),
+        buildIncidentRecord({
+          participantId: 'p1',
+          type: 'paste_attempt',
+          horodatage: new Date('2026-09-11T10:05:00.000Z'),
+          contexte: { champ: 'reponse', longueur: 42, bloque: true },
+        }),
+        buildIncidentRecord({
+          participantId: 'p1',
+          type: 'tab_hidden',
+          horodatage: new Date('2026-09-11T10:01:00.000Z'),
+          contexte: null,
+        }),
         buildIncidentRecord({ participantId: 'p2' }),
       ],
     });
@@ -214,7 +224,34 @@ describe('buildRapportSession', () => {
     const p1 = rapport.participants.find(
       (participant) => participant.email === 'theo.martin@example.com',
     );
-    expect(p1?.incidents).toBe(2);
+    expect(p1?.incidents).toEqual([
+      {
+        type: 'tab_hidden',
+        horodatage: '2026-09-11T10:01:00.000Z',
+        contexte: null,
+      },
+      {
+        type: 'paste_attempt',
+        horodatage: '2026-09-11T10:05:00.000Z',
+        contexte: { champ: 'reponse', longueur: 42, bloque: true },
+      },
+    ]);
+  });
+
+  it('ne sert du contexte d un incident que ses valeurs scalaires', () => {
+    const rapport = rapportDe({
+      participants: deuxParticipants(),
+      incidents: [
+        buildIncidentRecord({
+          participantId: 'p1',
+          contexte: { duree: 1200, imbrique: { cle: 'x' }, liste: [1] },
+        }),
+      ],
+    });
+
+    expect(rapport.participants[0]?.incidents[0]?.contexte).toEqual({
+      duree: 1200,
+    });
   });
 
   it('mesure la completion de chaque participant sur les questions notees, sans note ni reference de cohorte', () => {
