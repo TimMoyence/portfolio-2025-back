@@ -14,6 +14,7 @@ import {
 import {
   ApiAcceptedResponse,
   ApiBody,
+  ApiForbiddenResponse,
   ApiOkResponse,
   ApiOperation,
   ApiProduces,
@@ -22,6 +23,8 @@ import {
 } from '@nestjs/swagger';
 import type { Response } from 'express';
 import { LocaleCode } from '../../../common/domain/value-objects/LocaleCode';
+import { Roles } from '../../../common/interfaces/auth/roles.decorator';
+import { RolesGuard } from '../../../common/interfaces/auth/roles.guard';
 import { referenceAuContrat } from '../../../common/interfaces/http/schemas-du-contrat';
 import { RoutePublique } from '../../../common/interfaces/security/formulaire-public.decorator';
 import { ArticleContract } from '../domain/article-contract';
@@ -67,6 +70,9 @@ export class ArticlesController {
   }
 
   @Get('ingest/:deliveryId')
+  @UseGuards(RolesGuard)
+  @Roles('admin')
+  @ApiForbiddenResponse({ description: 'Rôle admin requis' })
   @ApiOperation({ summary: "Consulter l'état d'une livraison" })
   @ApiOkResponse({ type: ArticleDeliveryResponseDto })
   async getDelivery(

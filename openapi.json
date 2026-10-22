@@ -1127,6 +1127,9 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Rôle admin requis"
           }
         },
         "summary": "Consulter l'état d'une livraison",
@@ -1158,6 +1161,9 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Rôle admin requis"
           }
         },
         "summary": "Consulter l'état d'une livraison",
@@ -3789,9 +3795,15 @@
             "example": "Manager"
           },
           "terms": {
-            "type": "boolean",
-            "example": true,
-            "default": false
+            "oneOf": [
+              {
+                "type": "boolean",
+                "enum": [
+                  true
+                ]
+              }
+            ],
+            "example": true
           },
           "termsVersion": {
             "type": "string",
