@@ -1,4 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { pseudonymeDAdresse } from '../../../../common/domain/crypto/pseudonyme-d-adresse';
+import type { ValeursDeLEnv } from '../../../../config/env.validation';
 
 type AuthEvent =
   | 'LOGIN_SUCCESS'
@@ -25,7 +28,19 @@ export interface AuthAuditEntry {
 export class AuthAuditLogger {
   private readonly logger = new Logger('AuthAudit');
 
-  log(entry: AuthAuditEntry): void {
-    this.logger.log(JSON.stringify(entry));
+  constructor(private readonly config: ConfigService<ValeursDeLEnv>) {}
+
+  log({ email, ...entry }: AuthAuditEntry): void {
+    const secret = this.config.getOrThrow<string>(
+      'SECURE_KEY_FOR_PASSWORD_HASHING',
+    );
+    this.logger.log(
+      JSON.stringify({
+        ...entry,
+        ...(email === undefined
+          ? {}
+          : { compte: pseudonymeDAdresse(secret, email) }),
+      }),
+    );
   }
 }

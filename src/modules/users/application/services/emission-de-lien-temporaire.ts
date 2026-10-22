@@ -63,7 +63,7 @@ export async function emettreUnLienTemporaire(
       url: lienAvecJeton(canal.adresseDeBase, jeton.brut),
       expiresInMinutes: canal.dureeDeValiditeMs / MINUTE_MS,
     }),
-    `${canal.echecDEnvoi} for ${destinataire.email}`,
+    `${canal.echecDEnvoi} for user ${destinataire.id ?? 'inconnu'}`,
     logger,
   );
 }

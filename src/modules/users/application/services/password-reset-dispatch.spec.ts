@@ -96,7 +96,7 @@ describe('EnvoiDeReinitialisation', () => {
       expect(notifier[courriel]).not.toHaveBeenCalled();
     });
 
-    it('nomme son courriel dans le journal d un echec d envoi, sans le propager', async () => {
+    it('nomme le compte, jamais son adresse, dans le journal d un echec d envoi, sans le propager', async () => {
       const { notifier, logger, envoi } = construire();
       notifier[courriel].mockRejectedValue(new Error('smtp'));
 
@@ -104,7 +104,7 @@ describe('EnvoiDeReinitialisation', () => {
       await new Promise<void>((resolve) => setImmediate(resolve));
 
       expect(avertissements()).toHaveBeenCalledWith(
-        `${echec} for lea@example.com: smtp`,
+        `${echec} for user user-5: smtp`,
       );
     });
   });

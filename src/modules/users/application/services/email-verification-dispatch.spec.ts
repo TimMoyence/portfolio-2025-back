@@ -74,7 +74,7 @@ describe('EnvoiDeVerificationEmail', () => {
     ).resolves.toBeUndefined();
 
     expect(avertissements()).toHaveBeenCalledWith(
-      'Echec du renvoi for eve@example.com: smtp',
+      'Echec du renvoi for user user-7: smtp',
     );
     expect(avertissements().mock.contexts).toEqual([logger]);
   });

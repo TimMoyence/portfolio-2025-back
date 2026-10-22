@@ -79,7 +79,7 @@ describe('ResendVerificationEmailUseCase', () => {
     await new Promise<void>((resolve) => setImmediate(resolve));
 
     expect(avertissements()).toHaveBeenCalledWith(
-      'Resend verification email failed for marie@example.com: smtp',
+      'Resend verification email failed for user user-1: smtp',
     );
   });
 
