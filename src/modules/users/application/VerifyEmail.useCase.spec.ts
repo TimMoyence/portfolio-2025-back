@@ -7,6 +7,7 @@ import {
   buildUser,
   createMockUsersRepo,
 } from '../../../../test/factories/user.factory';
+import { createMockRefreshTokensRepo } from '../../../../test/factories/refresh-token.factory';
 import { attendreMiseAJourDeLUtilisateur } from '../../../../test/helpers/utilisateurs';
 import { LienInvalideError } from '../../../common/domain/errors/LienInvalideError';
 import { DEFAULT_SELF_REGISTRATION_ROLES } from '../domain/roles';
@@ -17,23 +18,35 @@ describe('VerifyEmailUseCase', () => {
   function construire() {
     const tokensRepo = createMockEmailVerificationTokensRepo();
     const usersRepo = createMockUsersRepo();
+    const refreshTokensRepo = createMockRefreshTokensRepo();
     return {
       tokensRepo,
       usersRepo,
-      useCase: new VerifyEmailUseCase(tokensRepo, usersRepo),
+      refreshTokensRepo,
+      useCase: new VerifyEmailUseCase(tokensRepo, usersRepo, refreshTokensRepo),
     };
   }
 
-  it('cherche le jeton par son empreinte, jamais par sa valeur brute', async () => {
-    const { tokensRepo, usersRepo, useCase } = construire();
-    tokensRepo.findActiveByTokenHash.mockResolvedValue(
+  async function verifierUnCompteNonVerifie() {
+    const depots = construire();
+    depots.tokensRepo.findActiveByTokenHash.mockResolvedValue(
       buildEmailVerificationToken({ userId: 'user-1' }),
     );
-    usersRepo.findById.mockResolvedValue(
+    depots.usersRepo.findById.mockResolvedValue(
       buildUser({ id: 'user-1', emailVerified: false }),
     );
+    await depots.useCase.execute('jeton-brut');
+    return depots;
+  }
 
-    await useCase.execute('jeton-brut');
+  it('coupe les sessions ouvertes avant la vérification : l adresse vient d être prouvée, pas le compte', async () => {
+    const { refreshTokensRepo } = await verifierUnCompteNonVerifie();
+
+    expect(refreshTokensRepo.revokeByUserId).toHaveBeenCalledWith('user-1');
+  });
+
+  it('cherche le jeton par son empreinte, jamais par sa valeur brute', async () => {
+    const { tokensRepo, usersRepo } = await verifierUnCompteNonVerifie();
 
     expect(tokensRepo.findActiveByTokenHash).toHaveBeenCalledWith(
       TokenHash.fromRaw('jeton-brut').value,

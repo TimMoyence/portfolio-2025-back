@@ -133,6 +133,7 @@ export class AuthenticateGoogleUserUseCase {
         );
       }
       await this.repo.update(byEmail.id!, User.update({ googleId }));
+      await this.refreshTokensRepo.revokeByUserId(byEmail.id!);
       byEmail.googleId = googleId;
       return byEmail;
     }
