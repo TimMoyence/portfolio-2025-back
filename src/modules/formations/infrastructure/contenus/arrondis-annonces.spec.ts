@@ -6,6 +6,7 @@ import { CONTENUS } from './index';
 const ARRONDIS_ANNONCES = [
   { annonce: /arrondie? au centime/u, pas: 0.01, decimales: 2 },
   { annonce: /arrondie? au dixième/u, pas: 0.1, decimales: 1 },
+  { annonce: /arrondi[er]? à l’unité/u, pas: 1, decimales: 0 },
 ] as const;
 
 const TOLERANCES_VOULUES = new Set(['b2-05-a4-e4-cout']);
@@ -69,10 +70,19 @@ const REPONSES_ARRONDIES = CONTENUS.flatMap((contenu) =>
 });
 
 describe('arrondis annoncés par l énoncé', () => {
-  it('trouve des réponses au centime et au dixième dans les cours servis', () => {
+  it('trouve des réponses à l unité, au dixième et au centime dans les cours servis', () => {
     expect(
       new Set(REPONSES_ARRONDIES.map(({ decimales }) => decimales)),
-    ).toEqual(new Set([1, 2]));
+    ).toEqual(new Set([0, 1, 2]));
+  });
+
+  it('exprime chaque arrondi annoncé par la tolérance en décimales du même rang, une seule règle', () => {
+    expect(
+      REPONSES_ARRONDIES.filter(
+        ({ tolerance, decimales }) =>
+          tolerance.type !== 'decimales' || tolerance.valeur !== decimales,
+      ).map(({ id }) => id),
+    ).toEqual([]);
   });
 
   it.each(REPONSES_ARRONDIES.map((reponse) => [reponse.id, reponse] as const))(

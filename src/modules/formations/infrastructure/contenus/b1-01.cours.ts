@@ -32,7 +32,6 @@ import {
   TAUX_D_OCTOBRE,
   TOTAL_DES_CLIENTS,
   TOTAL_DES_PORTEURS,
-  UNE_DECIMALE,
   VALEUR_POUR_TAUX,
   ACHAT_DE_LA_MANETTE,
   VENTE_DE_LA_MANETTE,
@@ -461,7 +460,7 @@ const ACTE_1: moteur.Acte = [
             'Quelle part des salariés du réseau sont des alternants ?',
             '%',
             enPourcentage(ALTERNANTS, SALARIES),
-            UNE_DECIMALE,
+            moteur.UNE_DECIMALE,
             '25 %',
             [
               [enPourcentage(SALARIES, ALTERNANTS), BASE_INVERSEE],
@@ -482,7 +481,7 @@ const ACTE_1: moteur.Acte = [
             'Quelle part des salariés de Nantes sont des alternants ?',
             '%',
             enPourcentage(ALTERNANTS_DE_NANTES, SALARIES_DE_NANTES),
-            UNE_DECIMALE,
+            moteur.UNE_DECIMALE,
             '25 %',
             [
               [enPourcentage(ALTERNANTS_DE_NANTES, ALTERNANTS), MAUVAIS_TOUT],
@@ -948,7 +947,7 @@ const ACTE_2: moteur.Acte = [
               TOTAL_DES_PORTEURS * RESERVATION_EN_LIGNE,
               TOTAL_DES_CLIENTS,
             ),
-            UNE_DECIMALE,
+            moteur.UNE_DECIMALE,
             '21,6 %',
             [
               [RESERVATION_EN_LIGNE * 100, MAUVAIS_TOUT],
@@ -982,7 +981,7 @@ const ACTE_2: moteur.Acte = [
                 CLIENTS_D_OCTOBRE[1] * TAUX_D_OCTOBRE[1],
               CLIENTS_D_OCTOBRE[0] + CLIENTS_D_OCTOBRE[1],
             ),
-            UNE_DECIMALE,
+            moteur.UNE_DECIMALE,
             '47,5 %',
             [
               [
@@ -1292,7 +1291,7 @@ const ACTE_3: moteur.Acte = [
             'De combien de points la part des moins de 25 ans a-t-elle augmenté ?',
             'points',
             ECART_DES_JEUNES,
-            UNE_DECIMALE,
+            moteur.UNE_DECIMALE,
             '5,8 points',
             [
               [
@@ -1307,7 +1306,7 @@ const ACTE_3: moteur.Acte = [
             'Quel est le taux d’évolution de la part des moins de 25 ans ?',
             '%',
             enPourcentage(ECART_DES_JEUNES, PART_DES_JEUNES_2025),
-            UNE_DECIMALE,
+            moteur.UNE_DECIMALE,
             '15,9 %',
             [
               [ECART_DES_JEUNES, POINTS_POUR_POURCENTAGE],
@@ -1326,7 +1325,7 @@ const ACTE_3: moteur.Acte = [
               VENTE_DE_LA_MANETTE - ACHAT_DE_LA_MANETTE,
               ACHAT_DE_LA_MANETTE,
             ),
-            UNE_DECIMALE,
+            moteur.UNE_DECIMALE,
             '62,5 %',
             [
               [
@@ -1347,7 +1346,7 @@ const ACTE_3: moteur.Acte = [
               VENTE_DE_LA_MANETTE - ACHAT_DE_LA_MANETTE,
               VENTE_DE_LA_MANETTE,
             ),
-            UNE_DECIMALE,
+            moteur.UNE_DECIMALE,
             '38,5 %',
             [
               [

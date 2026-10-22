@@ -1,5 +1,6 @@
 import { arrondi } from '../../../../common/domain/nombres/arrondi';
 import { lireNombreSaisi } from '../../domain/cours/Formule';
+import { matchesSolution } from '../../domain/GradingCore';
 import {
   dateExcel,
   dateval,
@@ -572,14 +573,18 @@ describe('jeu Norvane du B3-01', () => {
   });
 
   it.each(QUESTIONS_CHIFFREES_B3_01)(
-    'donne à %s au moins un piège, écarté de la bonne réponse de plus que la tolérance',
+    'donne à %s au moins un piège, que la tolérance de la question refuse',
     (question) => {
       const pieges = Object.values(PIEGES_B3_01[question] ?? {});
       expect(pieges.length).toBeGreaterThan(0);
       for (const piege of pieges) {
-        expect(Math.abs(piege - VALEURS_B3_01[question])).toBeGreaterThan(
-          TOLERANCES_B3_01[question],
-        );
+        expect(
+          matchesSolution(
+            piege,
+            VALEURS_B3_01[question],
+            TOLERANCES_B3_01[question],
+          ),
+        ).toBe(false);
       }
       expect(new Set(pieges).size).toBe(pieges.length);
     },

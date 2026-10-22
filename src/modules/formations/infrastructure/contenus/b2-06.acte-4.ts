@@ -190,7 +190,7 @@ export const ACTE_4: moteur.Acte = [
             'b2-06-a4-e1-demande',
             'fonction-exponentielle',
             348,
-            0.5,
+            moteur.A_L_UNITE,
             '348 kits',
             'S5',
             [
@@ -204,7 +204,7 @@ export const ACTE_4: moteur.Acte = [
             'b2-06-a4-e2-prix',
             'resolution-par-logarithme',
             22.99,
-            moteur.ECART_AU_CENTIME,
+            moteur.DEUX_DECIMALES,
             '22,99 euros',
             'L7',
             [
@@ -218,7 +218,7 @@ export const ACTE_4: moteur.Acte = [
             'b2-06-a4-e3-plancher',
             'resolution-par-logarithme',
             33,
-            0,
+            moteur.TOLERANCE_NULLE,
             '33 euros',
             'N2',
             [
@@ -232,7 +232,7 @@ export const ACTE_4: moteur.Acte = [
             'b2-06-a4-e4-baisse',
             'fonction-exponentielle',
             50.3,
-            0.05,
+            moteur.UNE_DECIMALE,
             '50,3 %',
             'E9',
             [

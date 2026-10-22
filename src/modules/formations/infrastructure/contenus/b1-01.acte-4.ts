@@ -281,7 +281,7 @@ export const ACTE_4: moteur.Acte = [
             'b1-01-a4-e1-en-ligne',
             'proportion',
             partArrondie(BILLETS_EN_LIGNE, BILLETS[0]),
-            0.05,
+            moteur.UNE_DECIMALE,
             '36,4 %',
             'P7',
             [
@@ -295,7 +295,7 @@ export const ACTE_4: moteur.Acte = [
             'b1-01-a4-e2-tournoi',
             'proportion',
             enPourcentage(BILLETS[1] * OPTION_TOURNOI, TOTAL_DES_BILLETS),
-            0.05,
+            moteur.UNE_DECIMALE,
             '13,5 %',
             'J2',
             [
@@ -313,7 +313,7 @@ export const ACTE_4: moteur.Acte = [
                 PLACES_DU_DIMANCHE * REMPLISSAGE_DU_DIMANCHE,
               PLACES_DU_SAMEDI + PLACES_DU_DIMANCHE,
             ),
-            0.05,
+            moteur.UNE_DECIMALE,
             '73,3 %',
             'R5',
             [
@@ -333,7 +333,7 @@ export const ACTE_4: moteur.Acte = [
             'b1-01-a4-e4-stand',
             'pourcentage',
             partArrondie(MARGE_AU_STAND, VENTE_AU_STAND),
-            0.05,
+            moteur.UNE_DECIMALE,
             '36 %',
             'Q8',
             [

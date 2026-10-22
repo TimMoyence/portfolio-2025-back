@@ -1,42 +1,46 @@
 import { Raw } from 'typeorm';
 
-const DEBUT_DE_LA_FENETRE =
-  'LOCALTIMESTAMP - make_interval(secs => :ancienneteEnSecondes)';
+interface FenetreDeLaBase {
+  readonly debut: string;
+  readonly parametres: Readonly<Record<string, number>>;
+}
 
-const parametresDeLaFenetre = (ancienneteMs: number) => ({
-  ancienneteEnSecondes: ancienneteMs / 1000,
+const fenetreEnMillisecondes = (ancienneteMs: number): FenetreDeLaBase => ({
+  debut: 'LOCALTIMESTAMP - make_interval(secs => :ancienneteEnSecondes)',
+  parametres: { ancienneteEnSecondes: ancienneteMs / 1000 },
+});
+
+const fenetreEnMois = (mois: number): FenetreDeLaBase => ({
+  debut: 'LOCALTIMESTAMP - make_interval(months => :ancienneteEnMois)',
+  parametres: { ancienneteEnMois: mois },
 });
 
 function compareeALHorlogeDeLaBase(
   comparaison: '>' | '<',
-  ancienneteMs: number,
+  fenetre: FenetreDeLaBase,
 ) {
   return Raw(
-    (colonne) => `${colonne} ${comparaison} ${DEBUT_DE_LA_FENETRE}`,
-    parametresDeLaFenetre(ancienneteMs),
+    (colonne) => `${colonne} ${comparaison} ${fenetre.debut}`,
+    fenetre.parametres,
   );
 }
 
 export const poseeDepuisMoinsDe = (ancienneteMs: number) =>
-  compareeALHorlogeDeLaBase('>', ancienneteMs);
+  compareeALHorlogeDeLaBase('>', fenetreEnMillisecondes(ancienneteMs));
 
 export const poseeIlYAPlusDe = (ancienneteMs: number) =>
-  compareeALHorlogeDeLaBase('<', ancienneteMs);
+  compareeALHorlogeDeLaBase('<', fenetreEnMillisecondes(ancienneteMs));
 
 export const poseeIlYAPlusDeMois = (mois: number) =>
-  Raw(
-    (colonne) => `${colonne} < LOCALTIMESTAMP - make_interval(months => :mois)`,
-    {
-      mois,
-    },
-  );
+  compareeALHorlogeDeLaBase('<', fenetreEnMois(mois));
 
 export function secondesAvantDeSortirDeLaFenetre(
   colonne: string,
   ancienneteMs: number,
 ) {
+  const fenetre = fenetreEnMillisecondes(ancienneteMs);
   return {
-    selection: `EXTRACT(EPOCH FROM ${colonne} - (${DEBUT_DE_LA_FENETRE}))`,
-    parametres: parametresDeLaFenetre(ancienneteMs),
+    selection: `EXTRACT(EPOCH FROM ${colonne} - (${fenetre.debut}))`,
+    parametres: fenetre.parametres,
   };
 }

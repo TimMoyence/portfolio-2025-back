@@ -204,10 +204,7 @@ describe('B3-01 — valeurs servies face au jeu Norvane', () => {
       ),
     ).toEqual(
       Object.fromEntries(
-        QUESTIONS_CHIFFREES_B3_01.map((id) => [
-          id,
-          { type: 'absolue', valeur: TOLERANCES_B3_01[id] },
-        ]),
+        QUESTIONS_CHIFFREES_B3_01.map((id) => [id, TOLERANCES_B3_01[id]]),
       ),
     );
   });
