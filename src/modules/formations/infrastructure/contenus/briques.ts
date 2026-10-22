@@ -51,9 +51,9 @@ export const TOLERANCE_RELATIVE = {
   valeur: 0.0001,
 } as const;
 export const TOLERANCE_NULLE = { type: 'absolue', valeur: 0 } as const;
+export const A_L_UNITE = { type: 'decimales', valeur: 0 } as const;
+export const UNE_DECIMALE = { type: 'decimales', valeur: 1 } as const;
 export const DEUX_DECIMALES = { type: 'decimales', valeur: 2 } as const;
-export const ECART_AU_DIXIEME = 0.05;
-export const ECART_AU_CENTIME = 0.005;
 
 export function puces(...lignes: AuMoinsUnModifiable<string>): string {
   return lignes.map((ligne) => `• ${ligne}`).join('\n');
@@ -378,7 +378,7 @@ export function enigme(
   id: string,
   concept: ConceptId,
   valeur: number,
-  tolerance: number,
+  tolerance: NumeriqueDuCours['tolerance'],
   formePubliee: string,
   fragment: string,
   pieges: AuMoinsUnModifiable<readonly [number, ConfusionId]>,
@@ -396,7 +396,7 @@ export function enigme(
       solution: {
         type: 'nombre' as const,
         valeur,
-        tolerance: { type: 'absolue' as const, valeur: tolerance },
+        tolerance,
         formePubliee,
       },
       fragment,

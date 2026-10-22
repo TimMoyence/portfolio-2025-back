@@ -1,4 +1,8 @@
-import { poseeDepuisMoinsDe, poseeIlYAPlusDe } from './horloge-de-la-base';
+import {
+  poseeDepuisMoinsDe,
+  poseeIlYAPlusDe,
+  poseeIlYAPlusDeMois,
+} from './horloge-de-la-base';
 
 describe('horloge de la base', () => {
   it.each([
@@ -17,4 +21,13 @@ describe('horloge de la base', () => {
       });
     },
   );
+
+  it('compte une anciennete en mois civils sur la meme horloge', () => {
+    const critere = poseeIlYAPlusDeMois(6);
+
+    expect(critere.getSql?.('"created_at"')).toBe(
+      `"created_at" < LOCALTIMESTAMP - make_interval(months => :ancienneteEnMois)`,
+    );
+    expect(critere.objectLiteralParameters).toEqual({ ancienneteEnMois: 6 });
+  });
 });

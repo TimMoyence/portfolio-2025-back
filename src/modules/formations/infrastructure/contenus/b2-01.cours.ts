@@ -724,7 +724,7 @@ const ACTE_2: moteur.Acte = [
             'En 2025, la marketplace réalise 523 000 € d’un CA HT total de 1 150 000 €. Quelle part du CA représente-t-elle ? Réponse en %, arrondie au dixième.',
             '%',
             45.478261,
-            { type: 'absolue', valeur: 0.05 },
+            moteur.UNE_DECIMALE,
             '45,5',
             [
               [0.454783, 'taux-valeur-facteur-cent'],
@@ -2596,7 +2596,7 @@ const ACTE_5: moteur.Acte = [
             'En 2025, quelle part de la marge brute d’Atelier Rivage provient de la marketplace ? Réponse en %, arrondie au dixième.',
             '%',
             28.756014,
-            { type: 'absolue', valeur: 0.05 },
+            moteur.UNE_DECIMALE,
             '28,8',
             [
               [45.478261, 'population-reference-ignoree'],
@@ -2610,7 +2610,7 @@ const ACTE_5: moteur.Acte = [
             'De combien la marge brute du sur-mesure a-t-elle varié entre 2024 et 2025 ? Réponse en euros, signe compris.',
             '€',
             -30960,
-            { type: 'absolue', valeur: 0.5 },
+            moteur.A_L_UNITE,
             '−30 960',
             [
               [30960, 'sens-de-variation'],
@@ -3122,7 +3122,7 @@ const ACTE_6: moteur.Acte = [
             'b2-01-a6-e1-mix',
             'moyenne-ponderee',
             23.4,
-            0.05,
+            moteur.UNE_DECIMALE,
             '23,4',
             'K7',
             [[26.666667, 'moyenne-simple-des-taux']],
@@ -3133,7 +3133,7 @@ const ACTE_6: moteur.Acte = [
             'b2-01-a6-e2-points',
             'point-de-pourcentage',
             -2.8,
-            0.05,
+            moteur.UNE_DECIMALE,
             '−2,8',
             'M2',
             [
@@ -3148,7 +3148,7 @@ const ACTE_6: moteur.Acte = [
             'b2-01-a6-e3-rouleau',
             'evolution-reciproque',
             1035.003931,
-            moteur.ECART_AU_CENTIME,
+            moteur.DEUX_DECIMALES,
             '1 035,00',
             'Q9',
             [
@@ -3163,7 +3163,7 @@ const ACTE_6: moteur.Acte = [
             'b2-01-a6-e4-tva',
             'controle-coherence',
             9741,
-            0.5,
+            moteur.A_L_UNITE,
             '9 741',
             '4X',
             [

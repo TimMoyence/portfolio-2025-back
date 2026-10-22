@@ -49,7 +49,7 @@ export function questionChiffree(
     `${question} ${CONSIGNES_DE_SAISIE[unite]}`,
     unite,
     VALEURS_B3_01[id],
-    { type: 'absolue', valeur: TOLERANCES_B3_01[id] },
+    TOLERANCES_B3_01[id],
     formePubliee(VALEURS_B3_01[id], unite),
     [
       valeurDuPiege(id, premiere),

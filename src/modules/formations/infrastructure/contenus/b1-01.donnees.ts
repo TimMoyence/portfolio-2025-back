@@ -48,8 +48,6 @@ export const POINTS_POUR_POURCENTAGE = 'points-confondus-avec-pourcentage';
 export const PART_POUR_EVOLUTION = 'proportion-confondue-avec-evolution';
 export const MARQUE_POUR_MARGE = 'marque-confondue-avec-marge';
 
-export const UNE_DECIMALE = { type: 'decimales', valeur: 1 } as const;
-
 export const DONNEES_FICTIVES =
   'Données fictives Partie Libre, créées pour ce cours.';
 

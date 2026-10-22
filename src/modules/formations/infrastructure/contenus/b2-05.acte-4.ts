@@ -288,7 +288,7 @@ export const ACTE_4: moteur.Acte = [
             'b2-05-a4-e1-placement',
             'interets-composes',
             16236.48,
-            moteur.ECART_AU_CENTIME,
+            moteur.DEUX_DECIMALES,
             '16 236,48 euros',
             'K4',
             [
@@ -302,7 +302,7 @@ export const ACTE_4: moteur.Acte = [
             'b2-05-a4-e2-batterie',
             'valeur-actuelle',
             18476.91,
-            moteur.ECART_AU_CENTIME,
+            moteur.DEUX_DECIMALES,
             '18 476,91 euros',
             'V8',
             [
@@ -316,7 +316,7 @@ export const ACTE_4: moteur.Acte = [
             'b2-05-a4-e3-epargne',
             'annuites',
             20608.04,
-            moteur.ECART_AU_CENTIME,
+            moteur.DEUX_DECIMALES,
             '20 608,04 euros',
             'M3',
             [
@@ -331,7 +331,7 @@ export const ACTE_4: moteur.Acte = [
             'b2-05-a4-e4-cout',
             'cout-du-credit',
             2848.15,
-            0.02,
+            { type: 'absolue', valeur: 0.02 },
             '2 848,15 euros',
             'T6',
             [

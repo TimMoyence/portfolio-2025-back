@@ -2015,7 +2015,7 @@ const ACTE_4: moteur.Acte = [
             'b2-04-a4-e1-cout',
             'suite-geometrique',
             26.24,
-            moteur.ECART_AU_CENTIME,
+            moteur.DEUX_DECIMALES,
             '26,24 euros',
             'R7',
             [
@@ -2030,7 +2030,7 @@ const ACTE_4: moteur.Acte = [
             'b2-04-a4-e2-affichage',
             'algorithme-de-seuil',
             6,
-            0,
+            moteur.TOLERANCE_NULLE,
             '6 passages',
             'S2',
             [
@@ -2045,7 +2045,7 @@ const ACTE_4: moteur.Acte = [
             'b2-04-a4-e3-cumul',
             'somme-de-termes',
             957,
-            0.5,
+            moteur.A_L_UNITE,
             '957 k€',
             'G9',
             [
@@ -2059,7 +2059,7 @@ const ACTE_4: moteur.Acte = [
             'b2-04-a4-e4-hausse',
             'suite-geometrique',
             110,
-            0.5,
+            moteur.A_L_UNITE,
             '110 %',
             'Q5',
             [

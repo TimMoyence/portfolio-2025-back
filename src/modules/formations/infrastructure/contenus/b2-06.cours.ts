@@ -498,7 +498,7 @@ const ACTE_1: moteur.Acte = [
             'Combien de sacs le modèle prévoit-il en juin 2026 ? Arrondir à l’unité.',
             'sacs',
             540,
-            { type: 'absolue', valeur: 0.5 },
+            moteur.A_L_UNITE,
             '540 sacs',
             [
               [535, K_POUR_TAUX],
@@ -1321,7 +1321,7 @@ const ACTE_3: moteur.Acte = [
             'Avec ce modèle, en arrondissant a à l’unité, quelle demande prévoir au prix de gros de 38 € ? Arrondir le résultat à l’unité.',
             'sacs',
             446,
-            { type: 'absolue', valeur: 0.5 },
+            moteur.A_L_UNITE,
             '446 sacs',
             [
               [424, K_POUR_TAUX],
