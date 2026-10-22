@@ -1,4 +1,3 @@
-import { BadRequestException } from '@nestjs/common';
 import type { Request } from 'express';
 import { of } from 'rxjs';
 import { buildFreeResponseRecord } from '../../../../../test/factories/formation.factory';
@@ -113,12 +112,6 @@ describe('FormationsPresenterController', () => {
       mode: 'pilote',
       intervalle: null,
     });
-  });
-
-  it('refuse une demande de pilotage vide sans toucher a la session', async () => {
-    await expect(controle({})).rejects.toBeInstanceOf(BadRequestException);
-
-    expect(controlSession.apply).not.toHaveBeenCalled();
   });
 
   it('cloture sans deriver de destinataire de l identite du formateur', async () => {

@@ -13,7 +13,10 @@ import {
   lireContenuAPublier,
   lireCoursStocke,
 } from '../../domain/cours/CoursStocke';
-import { deroulePresentateur } from '../../domain/cours/DeroulePresentateur';
+import {
+  deroulePresentateur,
+  remediationsDe,
+} from '../../domain/cours/DeroulePresentateur';
 import {
   ouvrirTirages,
   TiragesInsuffisantsError,
@@ -216,7 +219,7 @@ describe('B2-01 — simulation du tirage et de l’ouverture', () => {
         expect(deroule.ecrans.flatMap((ecran) => ecran.questions)).toHaveLength(
           48,
         );
-        expect(Object.keys(deroule.remediations)).toHaveLength(43);
+        expect(Object.keys(remediationsDe(COURS))).toHaveLength(43);
       }),
       { numRuns: 50 },
     );

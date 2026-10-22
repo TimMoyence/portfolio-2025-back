@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "5442e30bde656860447020df0380148ced9baf31242066f3ee396dfa354fe3ba",
+  "empreinte": "e145170d5202b719629227f184f8df7b24db07fc9de9ccc6c07707b33967bc6a",
   "sujet": {
     "id": "b2-02-series-statistiques",
     "titre": "Séries statistiques : résumer, relier, prévoir",
@@ -2089,6 +2089,7 @@
             "id": "b2-02-a4-billet",
             "question": "La banque lira une seule phrase. Laquelle peut partir telle quelle ?",
             "invite": "Quelle réserve la phrase juste contient-elle, et pourquoi est-elle nécessaire ?",
+            "longueurMax": 500,
             "options": [
               {
                 "id": "nos-clients-paient-en-moyenne-a-48-jours-fe436567",
@@ -2178,6 +2179,7 @@
           {
             "questionId": "b2-02-a1-diagnostic",
             "bonneReponse": "30 jours",
+            "optionId": "30-jours-4e9241c2",
             "confusions": [
               {
                 "id": "moyenne-lue-comme-mediane",
@@ -2862,11 +2864,12 @@
         },
         "notes": "• Temps : réflexion 2 min · travail 8 min · correction 2 min\n• Réflexion : chacun relit la trace écrite et note la méthode de chaque question, sans calculer.\n• Pièges : le milieu de la liste non triée ; une seule des deux valeurs centrales ; ECARTYPE au lieu de ECARTYPEP ; F105 retirée.\n• Papier : exercice 1 du livret.\n• Corriger question par question, en commençant par la moins réussie (score sous chaque correction).\n• Transition : jalon 1, puis pause de 15 minutes.",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [
           {
             "questionId": "b2-02-a1-mediane",
             "bonneReponse": "43",
+            "optionId": null,
             "confusions": [
               {
                 "id": "mediane-sans-tri",
@@ -2885,6 +2888,7 @@
           {
             "questionId": "b2-02-a1-moyenne",
             "bonneReponse": "47,75",
+            "optionId": null,
             "confusions": [
               {
                 "id": "valeur-extreme-supprimee",
@@ -2899,6 +2903,7 @@
           {
             "questionId": "b2-02-a1-ecart-type",
             "bonneReponse": "26,2",
+            "optionId": null,
             "confusions": [
               {
                 "id": "ecart-type-population-echantillon",
@@ -2913,6 +2918,7 @@
           {
             "questionId": "b2-02-a1-resume",
             "bonneReponse": "Garder F105, la signaler, et publier la médiane avec la moyenne et l’écart-type",
+            "optionId": "garder-f105-la-signaler-et-publier-la-me-07ab59f8",
             "confusions": [
               {
                 "id": "valeur-extreme-supprimee",
@@ -3133,6 +3139,7 @@
           {
             "questionId": "b2-02-a2-glaces",
             "bonneReponse": "Rien sur une cause : la saison fait varier les deux ventes",
+            "optionId": "rien-sur-une-cause-la-saison-fait-varier-7fa82ffd",
             "confusions": [
               {
                 "id": "correlation-prise-pour-causalite",
@@ -3143,6 +3150,7 @@
           {
             "questionId": "b2-02-a2-formation",
             "bonneReponse": "Les deux séries suivent le temps : leur lien ne prouve pas une cause",
+            "optionId": "les-deux-series-suivent-le-temps-leur-li-f7571bfd",
             "confusions": [
               {
                 "id": "correlation-prise-pour-causalite",
@@ -3548,11 +3556,12 @@
         },
         "notes": "• Temps : réflexion 2 min · travail 7 min · correction 2 min\n• Réflexion : relire la trace écrite et repérer la touche de r sur la calculatrice.\n• Pièges : les sommes au lieu des moyennes ; le point du milieu du tableau ; r lu comme la hausse annuelle.\n• Papier : exercice 2 du livret.\n• Corriger question par question, en commençant par la moins réussie.\n• Transition : « Vérifions G autrement : les écarts au point moyen. »",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [
           {
             "questionId": "b2-02-a2-x-moyen",
             "bonneReponse": "3,5",
+            "optionId": null,
             "confusions": [
               {
                 "id": "point-moyen-confondu",
@@ -3563,6 +3572,7 @@
           {
             "questionId": "b2-02-a2-y-moyen",
             "bonneReponse": "718",
+            "optionId": null,
             "confusions": [
               {
                 "id": "point-moyen-confondu",
@@ -3573,6 +3583,7 @@
           {
             "questionId": "b2-02-a2-r",
             "bonneReponse": "0,999",
+            "optionId": null,
             "confusions": [
               {
                 "id": "correlation-lue-comme-pente",
@@ -3583,6 +3594,7 @@
           {
             "questionId": "b2-02-a2-lecture-r",
             "bonneReponse": "Oui : r est très proche de 1, les points sont presque alignés",
+            "optionId": "oui-r-est-tres-proche-de-1-les-points-so-9279855e",
             "confusions": [
               {
                 "id": "correlation-prise-pour-causalite",
@@ -3847,7 +3859,7 @@
         },
         "notes": "• Temps : réflexion 2 min · travail 8 min · correction 2 min\n• Réflexion : prévoir le signe des écarts de la première et de la dernière année.\n• Piège : l’écart au rang du milieu du tableau au lieu de x̄.\n• Contrôle à faire dire : les écarts d’une colonne ont une somme nulle.\n• Papier : tableau du livret.\n• Faire lire les signes : négatifs ensemble avant G, positifs ensemble après.\n• Transition : jalon 2.",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [],
         "questions": [
           {
@@ -4485,11 +4497,12 @@
         "renvoi": "B2-02-A2-01-NUAGE-RIVAGE",
         "notes": "• Temps : réflexion 2 min · travail 7 min · correction 2 min\n• Réflexion : écrire le rang de 2028 avant tout calcul.\n• Pièges : séries inversées dans PENTE ; 2028 à la place du rang ; seuil arrondi à l’entier inférieur.\n• Papier : exercice 4 du livret.\n• Corriger question par question, en commençant par la moins réussie.\n• Transition : « Une IA a fait la même prévision, pour 2035. »",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [
           {
             "questionId": "b2-02-a3-pente",
             "bonneReponse": "43,89",
+            "optionId": null,
             "confusions": [
               {
                 "id": "pente-ordonnee-inversees",
@@ -4500,6 +4513,7 @@
           {
             "questionId": "b2-02-a3-ordonnee",
             "bonneReponse": "564,40",
+            "optionId": null,
             "confusions": [
               {
                 "id": "pente-ordonnee-inversees",
@@ -4510,6 +4524,7 @@
           {
             "questionId": "b2-02-a3-prevision",
             "bonneReponse": "959",
+            "optionId": null,
             "confusions": [
               {
                 "id": "rang-pris-pour-annee",
@@ -4520,6 +4535,7 @@
           {
             "questionId": "b2-02-a3-seuil",
             "bonneReponse": "2029",
+            "optionId": null,
             "confusions": [
               {
                 "id": "seuil-mal-arrondi",
@@ -4916,7 +4932,7 @@
         },
         "notes": "• Temps : réflexion 3 min · travail 12 min · correction 2 min\n• Réflexion : chacun écrit sur papier les fonctions à utiliser et l’ordre des plages.\n• Erreurs à chercher : plages inversées dans PENTE ; valeurs tapées à la main au lieu de formules.\n• Papier : même question à la calculatrice, formules écrites sur la copie ; en CCF, elle se fait devant l’examinateur.\n• Projeter la feuille d’un poste volontaire et relire chaque formule.\n• Transition : « Avec cette droite, prévoyez : le coffre de la mini-situation. »",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [],
         "questions": [
           {
@@ -5062,7 +5078,7 @@
         },
         "notes": "• Temps : réflexion 2 min · travail 12 min · correction 2 min\n• Réflexion : écrire les rangs de 2025 et de 2030 avant d’ouvrir le coffre.\n• Indices disponibles après 60 s. À 10 min, projeter l’énigme la moins résolue.\n• Papier : quatre questions rédigées du livret, sans code de coffre.\n• Dévoiler énigme par énigme, en s’attardant sur la moins résolue (pupitre).\n• Finir sur la comparaison au réel : c’est la réserve à écrire au CCF.",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [],
         "questions": [
           {
@@ -5164,11 +5180,12 @@
         },
         "notes": "• 5 min individuelles, puis projeter la carte de maîtrise.\n• Tous reçoivent les deux questions obligatoires (causalité, rang), en plus de leurs points faibles.",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [
           {
             "questionId": "b2-02-r-mediane-paire",
             "bonneReponse": "23, la demi-somme des deux valeurs du milieu",
+            "optionId": "23-la-demi-somme-des-deux-valeurs-du-mil-99c665ba",
             "confusions": [
               {
                 "id": "mediane-rang-pair",
@@ -5183,6 +5200,7 @@
           {
             "questionId": "b2-02-r-mediane-tri",
             "bonneReponse": "5, la valeur du milieu une fois la série triée",
+            "optionId": "5-la-valeur-du-milieu-une-fois-la-serie-e6f9f725",
             "confusions": [
               {
                 "id": "mediane-sans-tri",
@@ -5197,6 +5215,7 @@
           {
             "questionId": "b2-02-r-extreme",
             "bonneReponse": "La garder, la signaler et donner la médiane avec la moyenne",
+            "optionId": "la-garder-la-signaler-et-donner-la-media-02c13111",
             "confusions": [
               {
                 "id": "valeur-extreme-supprimee",
@@ -5211,6 +5230,7 @@
           {
             "questionId": "b2-02-r-variance",
             "bonneReponse": "6 jours, la racine carrée de la variance",
+            "optionId": "6-jours-la-racine-carree-de-la-variance-33463d50",
             "confusions": [
               {
                 "id": "variance-confondue-avec-ecart-type",
@@ -5221,6 +5241,7 @@
           {
             "questionId": "b2-02-r-population",
             "bonneReponse": "ECARTYPEP, division par n",
+            "optionId": "ecartypep-division-par-n-799f2609",
             "confusions": [
               {
                 "id": "ecart-type-population-echantillon",
@@ -5235,6 +5256,7 @@
           {
             "questionId": "b2-02-r-etendue",
             "bonneReponse": "Pas forcément : l’étendue ne regarde que les deux extrêmes",
+            "optionId": "pas-forcement-l-etendue-ne-regarde-que-l-0acf9f62",
             "confusions": [
               {
                 "id": "etendue-prise-pour-dispersion",
@@ -5245,6 +5267,7 @@
           {
             "questionId": "b2-02-r-point-moyen",
             "bonneReponse": "(2,5 ; 30), les deux moyennes",
+            "optionId": "2-5-30-les-deux-moyennes-a11b161c",
             "confusions": [
               {
                 "id": "point-moyen-confondu",
@@ -5255,6 +5278,7 @@
           {
             "questionId": "b2-02-r-signe",
             "bonneReponse": "Oui : les points sont proches d’une droite qui descend",
+            "optionId": "oui-les-points-sont-proches-d-une-droite-3a6eb09c",
             "confusions": [
               {
                 "id": "correlation-jugee-au-signe",
@@ -5269,6 +5293,7 @@
           {
             "questionId": "b2-02-r-pente",
             "bonneReponse": "12, le coefficient directeur",
+            "optionId": "12-le-coefficient-directeur-be82faad",
             "confusions": [
               {
                 "id": "correlation-lue-comme-pente",
@@ -5283,6 +5308,7 @@
           {
             "questionId": "b2-02-r-causalite",
             "bonneReponse": "Rien sur une cause : l’hiver fait varier les deux séries",
+            "optionId": "rien-sur-une-cause-l-hiver-fait-varier-l-f9fb9f9c",
             "confusions": [
               {
                 "id": "correlation-prise-pour-causalite",
@@ -5293,6 +5319,7 @@
           {
             "questionId": "b2-02-r-rang",
             "bonneReponse": "6, le rang de 2026",
+            "optionId": "6-le-rang-de-2026-478bc17a",
             "confusions": [
               {
                 "id": "rang-pris-pour-annee",
@@ -5303,6 +5330,7 @@
           {
             "questionId": "b2-02-r-seuil",
             "bonneReponse": "8, l’entier suivant",
+            "optionId": "8-l-entier-suivant-b4205cc5",
             "confusions": [
               {
                 "id": "seuil-mal-arrondi",
@@ -5643,6 +5671,7 @@
             "id": "b2-02-a4-billet",
             "question": "La banque lira une seule phrase. Laquelle peut partir telle quelle ?",
             "invite": "Quelle réserve la phrase juste contient-elle, et pourquoi est-elle nécessaire ?",
+            "longueurMax": 500,
             "options": [
               {
                 "id": "nos-clients-paient-en-moyenne-a-48-jours-fe436567",
@@ -5672,11 +5701,12 @@
         },
         "notes": "• 4 min ; clore la séance quand le compteur de billets est complet.\n• Pièges : la prévision sans réserve, la moyenne tirée par F105, la causalité.",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [
           {
             "questionId": "b2-02-a4-billet",
             "bonneReponse": "La moitié de nos factures est encaissée en 43 jours au plus ; si la tendance de 2020 à 2025 se poursuit, notre chiffre d’affaires 2028 serait d’environ 959 k€.",
+            "optionId": "la-moitie-de-nos-factures-est-encaissee-d4f39369",
             "confusions": [
               {
                 "id": "extrapolation-sans-reserve",
@@ -5720,25 +5750,7 @@
         "corrigeEcran": null,
         "reflexion": null
       }
-    ],
-    "remediations": {
-      "moyenne-lue-comme-mediane": "B2-02-A1-07-EXEMPLE-RESUME",
-      "mediane-sans-tri": "B2-02-A1-07-EXEMPLE-RESUME",
-      "mediane-rang-pair": "B2-02-A1-07-EXEMPLE-RESUME",
-      "valeur-extreme-ignoree": "B2-02-A1-06-COURS-ECART",
-      "valeur-extreme-supprimee": "B2-02-A1-06-COURS-ECART",
-      "ecart-type-population-echantillon": "B2-02-A1-06-COURS-ECART",
-      "variance-confondue-avec-ecart-type": "B2-02-A1-06-COURS-ECART",
-      "etendue-prise-pour-dispersion": "B2-02-A1-06-COURS-ECART",
-      "correlation-prise-pour-causalite": "B2-02-A2-03-COURS-CORRELATION",
-      "point-moyen-confondu": "B2-02-A2-04-EXEMPLE-NUAGE",
-      "correlation-lue-comme-pente": "B2-02-A2-03-COURS-CORRELATION",
-      "correlation-jugee-au-signe": "B2-02-A2-03-COURS-CORRELATION",
-      "pente-ordonnee-inversees": "B2-02-A3-03-EXEMPLE-DROITE",
-      "rang-pris-pour-annee": "B2-02-A3-03-EXEMPLE-DROITE",
-      "seuil-mal-arrondi": "B2-02-A3-03-EXEMPLE-DROITE",
-      "extrapolation-sans-reserve": "B2-02-A3-02-COURS-PREVOIR"
-    }
+    ]
   },
   "catalogue": {
     "id": "b2-02-series-statistiques",

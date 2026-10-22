@@ -17,10 +17,7 @@ import {
   createMockParticipantsRepo,
   createMockSessionsRepo,
 } from '../../../../../test/factories/formation.factory';
-import {
-  verifierGardesDeParticipant,
-  verifierIntrouvables,
-} from '../../../../../test/helpers/gardes-de-seance';
+import { verifierIntrouvables } from '../../../../../test/helpers/gardes-de-seance';
 import { lireCoursStocke } from '../../domain/cours/CoursStocke';
 import {
   EcranNonServiError,
@@ -140,12 +137,6 @@ describe('TelechargerPieceJointeUseCase', () => {
 
     verifierIntrouvables(() => ({
       sessions,
-      participants,
-      executer: () => pourLeParticipant(VOTE),
-      effetsInterdits: () => [classeurs.lire],
-    }));
-
-    verifierGardesDeParticipant(() => ({
       participants,
       executer: () => pourLeParticipant(VOTE),
       effetsInterdits: () => [classeurs.lire],

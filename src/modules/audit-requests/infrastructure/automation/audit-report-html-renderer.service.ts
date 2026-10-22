@@ -111,7 +111,7 @@ export class AuditReportHtmlRendererService {
         <p class="matrix-summary">${escapeHtml(matrix.googleVisibility.summary)}</p>
       </article>
       <article class="matrix-card">
-        <h3 class="matrix-title">Visibilite IA</h3>
+        <h3 class="matrix-title">Visibilité IA</h3>
         <div class="matrix-score">${matrix.aiVisibility.score}<span class="matrix-score-unit">/100</span></div>
         <p class="matrix-summary">${escapeHtml(matrix.aiVisibility.summary)}</p>
       </article>

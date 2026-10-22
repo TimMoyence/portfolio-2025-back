@@ -26,6 +26,7 @@ export interface PilotageEcran {
 }
 
 export interface PilotageServi extends PilotageEcran {
+  readonly saisieFermee?: true;
   readonly sortiesProjetees?: SortiesMachine;
   readonly questionAffichee?: string;
   readonly questionOuverte?: string | null;

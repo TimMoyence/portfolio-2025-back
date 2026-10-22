@@ -45,7 +45,6 @@ describe('FormationsStudentController', () => {
     streamSession,
     lireSujet,
     tokens,
-    clesEtudiants,
     codeScan,
     saveFreeResponse,
   } = dependances;
@@ -93,7 +92,6 @@ describe('FormationsStudentController', () => {
 
     expect(joinSession.execute).toHaveBeenCalledWith({
       code: '4271',
-      studentKey: 'cle-etudiant',
       prenom: 'Theo',
       nom: 'Martin',
       email: 'theo@example.com',
@@ -118,15 +116,14 @@ describe('FormationsStudentController', () => {
     );
   });
 
-  it('derive la cle etudiante du courriel cote serveur, sans jamais lire celle du corps', async () => {
+  it('ne transmet jamais au cas d usage une cle etudiante lue dans le corps', async () => {
     await rejoindre({
       ...inscription,
       studentKey: 'cle-forgee-par-le-client',
     } as JoinSessionRequestDto);
 
-    expect(clesEtudiants.de).toHaveBeenCalledWith('theo@example.com');
     expect(joinSession.execute).toHaveBeenCalledWith(
-      expect.objectContaining({ studentKey: 'cle-etudiant' }),
+      expect.not.objectContaining({ studentKey: expect.anything() }),
     );
   });
 
@@ -209,26 +206,22 @@ describe('FormationsStudentController', () => {
       ],
     });
 
-    expect(recordIncidents.execute).toHaveBeenCalledWith(
-      SESSION_ID,
-      PARTICIPANT_ID,
-      [
-        {
-          sessionId: SESSION_ID,
-          participantId: PARTICIPANT_ID,
-          type: 'tab_hidden',
-          contexte: null,
-          horodatage,
-        },
-        {
-          sessionId: SESSION_ID,
-          participantId: PARTICIPANT_ID,
-          type: 'copy_attempt',
-          contexte: { cible: 'enonce' },
-          horodatage,
-        },
-      ],
-    );
+    expect(recordIncidents.execute).toHaveBeenCalledWith(SESSION_ID, [
+      {
+        sessionId: SESSION_ID,
+        participantId: PARTICIPANT_ID,
+        type: 'tab_hidden',
+        contexte: null,
+        horodatage,
+      },
+      {
+        sessionId: SESSION_ID,
+        participantId: PARTICIPANT_ID,
+        type: 'copy_attempt',
+        contexte: { cible: 'enonce' },
+        horodatage,
+      },
+    ]);
   });
 
   it('branche le flux temps reel sur la session demandee, au nom du participant verifie par la garde', () => {

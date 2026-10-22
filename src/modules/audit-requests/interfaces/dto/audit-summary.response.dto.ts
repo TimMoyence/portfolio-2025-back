@@ -1,5 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import type { AuditProcessingStatus } from '../../domain/AuditProcessing';
+import {
+  type AuditProcessingStatus,
+  STATUTS_D_AUDIT,
+} from '../../domain/AuditProcessing';
+import { PILLAR_KEYS, type ScoresDesPiliers } from '../../domain/Piliers';
 
 export class AuditSummaryResponseDto {
   @ApiProperty({ example: 'f8dd820d-fc38-4f6a-83be-a833aa6be16f' })
@@ -10,7 +14,8 @@ export class AuditSummaryResponseDto {
 
   @ApiProperty({
     example: 'COMPLETED',
-    enum: ['PENDING', 'RUNNING', 'COMPLETED', 'FAILED'],
+    enumName: 'StatutDAudit',
+    enum: STATUTS_D_AUDIT,
   })
   status: AuditProcessingStatus;
 
@@ -28,6 +33,8 @@ export class AuditSummaryResponseDto {
   @ApiProperty({
     type: 'object',
     additionalProperties: true,
+    description:
+      'Constats bruts des controles techniques, volontairement ouverts : leurs cles suivent les controles executes et evoluent avec eux',
     example: { accessibility: { https: true, statusCode: 200 } },
   })
   keyChecks: Record<string, unknown>;
@@ -43,7 +50,9 @@ export class AuditSummaryResponseDto {
 
   @ApiProperty({
     type: 'object',
-    additionalProperties: { type: 'number' },
+    properties: Object.fromEntries(
+      PILLAR_KEYS.map((pilier) => [pilier, { type: 'number' }]),
+    ),
     example: {
       seo: 72,
       performance: 64,
@@ -52,5 +61,5 @@ export class AuditSummaryResponseDto {
       conversion: 66,
     },
   })
-  pillarScores: Record<string, number>;
+  pillarScores: ScoresDesPiliers;
 }

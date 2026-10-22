@@ -5,11 +5,18 @@ import {
 } from '../../../../../test/factories/contenus-publies';
 import type { Ecran } from '../contrats/cours';
 import {
+  curseursServis,
   POINTS_MAX_D_UN_TRACE,
   pointsDuTrace,
-  reglageServi,
+  refusDuReglage,
   traceCalcule,
 } from './TraceServi';
+
+const reglageServi = (
+  reglable: Parameters<typeof refusDuReglage>[0],
+  cle: string,
+  valeur: number,
+): boolean => refusDuReglage(reglable, cle, valeur) === null;
 
 type EcranDeTrace = Extract<Ecran, { readonly brique: 'fp-plot' }>;
 
@@ -112,7 +119,7 @@ describe('traceCalcule', () => {
   });
 });
 
-describe('reglageServi', () => {
+describe('refusDuReglage', () => {
   const trace = traceDuB201('B2-01-A2-02-ORIGINE-AXE');
 
   it('admet un cran du curseur et un préréglage, refuse un réglage entre deux crans ou un curseur inconnu', () => {
@@ -145,5 +152,25 @@ describe('reglageServi', () => {
         (ecrit) => !reglageServi(aPasDecimal(0.1, 0.3), 'k', Number(ecrit)),
       ),
     }).toEqual({ dixieme: [], decale: [] });
+  });
+});
+
+describe('curseursServis', () => {
+  it('sert à chaque curseur ses positions : les crans du pas, le défaut et les préréglages, sans le maximum hors du pas', () => {
+    expect(
+      curseursServis({
+        parametres: [{ cle: 'k', min: 0, max: 10, pas: 4, defaut: 5 }],
+        prereglages: [{ valeurs: { k: 6 } }],
+      }),
+    ).toEqual([
+      {
+        cle: 'k',
+        min: 0,
+        max: 10,
+        pas: 4,
+        defaut: 5,
+        positions: [0, 4, 5, 6, 8],
+      },
+    ]);
   });
 });

@@ -1,4 +1,9 @@
 import {
+  ecartTypePopulation,
+  moyenne,
+  somme,
+} from '../../../../common/domain/nombres/statistiques';
+import {
   type Feuille,
   type ValeurFormule,
   LONGUEUR_MAX_FORMULE,
@@ -162,7 +167,7 @@ describe('erreurs nommees', () => {
     expect(refus('=1/0')).toBe('#DIV/0!');
     expect(refus('=0/0')).toBe('#DIV/0!');
     expect(erreurDe({ A1: '=10/B1', B1: '' })).toBe('#DIV/0!');
-    expect(refus('=MOYENNE(B1:B2)')).toBeNull();
+    expect(refus('=MOYENNE(B1:B2)')).toBe('#DIV/0!');
   });
 
   it('rend #NOM? pour une fonction inconnue et pour un mot isole', () => {
@@ -270,6 +275,22 @@ describe('fonctions statistiques', () => {
     );
     expect(refus('=ECARTYPE(5)')).toBe('#DIV/0!');
     expect(calcul('=ECARTYPEP(5)')).toBe(0);
+  });
+
+  it('calcule SOMME, MOYENNE et les ecarts types au bit pres comme statistiques.ts', () => {
+    const valeurs = [0.1, 0.2, 0.7, 1.3, 2.9];
+    const arguments_ = '0,1;0,2;0,7;1,3;2,9';
+    const centre = moyenne([0.1, 0.2, 0.7, 1.3, 2.9]);
+    const carres = somme(valeurs.map((valeur) => (valeur - centre) ** 2));
+
+    expect(calcul(`=SOMME(${arguments_})`)).toBe(somme(valeurs));
+    expect(calcul(`=MOYENNE(${arguments_})`)).toBe(centre);
+    expect(calcul(`=ECARTYPEP(${arguments_})`)).toBe(
+      ecartTypePopulation([0.1, 0.2, 0.7, 1.3, 2.9]),
+    );
+    expect(calcul(`=ECARTYPE(${arguments_})`)).toBe(
+      Math.sqrt(carres / (valeurs.length - 1)),
+    );
   });
 
   it('ignore les cellules vides et le texte d une plage, comme un tableur', () => {

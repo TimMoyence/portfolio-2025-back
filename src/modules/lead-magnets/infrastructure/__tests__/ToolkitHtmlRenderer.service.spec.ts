@@ -1,4 +1,7 @@
-import { buildToolkitContent } from '../../../../../test/factories/lead-magnet-request.factory';
+import {
+  buildPromptEntry,
+  buildToolkitContent,
+} from '../../../../../test/factories/lead-magnet-request.factory';
 import { couvertureRendue } from '../../../../../test/helpers/couverture-de-pdf';
 import { htmlEmis } from '../../../../common/domain/texte/html-escape.util';
 import type { ToolkitContent } from '../../domain/ToolkitContent';
@@ -97,10 +100,11 @@ describe('ToolkitHtmlRendererService', () => {
       expect(html).toContain("Astuce d'it");
     });
 
-    it('omet les blocs description / example / tip quand ils sont absents', () => {
+    it('rend la description, le cas d usage et l astuce de chaque prompt', () => {
       const html = rendre(buildToolkitContent());
-      expect(html).not.toContain("Cas d'usage");
-      expect(html).not.toContain("Astuce d'it");
+      expect(html).toContain('Premier message a un prospect');
+      expect(html).toContain("Cas d'usage");
+      expect(html).toContain("Astuce d'it");
     });
 
     it('rend la page stats avec les chiffres cles solopreneurs', () => {
@@ -178,27 +182,12 @@ describe('ToolkitHtmlRendererService', () => {
       const html = rendre(
         buildToolkitContent({
           prompts: [
-            {
-              category: 'Contenu',
-              title: 'Post simple',
-              level: 'debutant',
-              prompt: 'Ecris un post',
-              tool: 'ChatGPT',
-            },
-            {
-              category: 'Contenu',
+            buildPromptEntry({ title: 'Post simple', level: 'debutant' }),
+            buildPromptEntry({
               title: 'Calendrier editorial',
               level: 'intermediaire',
-              prompt: 'Cree un calendrier',
-              tool: 'Claude',
-            },
-            {
-              category: 'Contenu',
-              title: 'Strategie 360',
-              level: 'avance',
-              prompt: 'Concois une strategie',
-              tool: 'Claude',
-            },
+            }),
+            buildPromptEntry({ title: 'Strategie 360', level: 'avance' }),
           ],
         }),
       );

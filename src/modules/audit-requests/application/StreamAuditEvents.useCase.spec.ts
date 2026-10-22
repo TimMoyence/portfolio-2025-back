@@ -40,7 +40,7 @@ describe('StreamAuditEventsUseCase', () => {
   function attendreUnSeulEchecSansTexte(events: MessageEvent[]): void {
     expect(events).toHaveLength(1);
     expect(events[0].type).toBe('failed');
-    expect((events[0].data as Record<string, unknown>)['error']).toBeNull();
+    expect(events[0].data).not.toHaveProperty('error');
   }
 
   it('devrait emettre un snapshot initial', async () => {
@@ -66,7 +66,7 @@ describe('StreamAuditEventsUseCase', () => {
 
     const event = await resultPromise;
     expect(event.type).toBe('failed');
-    expect((event.data as Record<string, unknown>)['error']).toBeNull();
+    expect(event.data).not.toHaveProperty('error');
   });
 
   it('ne sert pas le texte d une lecture en echec et en journalise la cause', async () => {
@@ -197,7 +197,7 @@ describe('StreamAuditEventsUseCase', () => {
     expect((timeoutEvent!.data as Record<string, unknown>)['status']).toBe(
       'TIMEOUT',
     );
-    expect((timeoutEvent!.data as Record<string, unknown>)['error']).toBeNull();
+    expect(timeoutEvent!.data).not.toHaveProperty('error');
     expect(suivi.completed).toBe(true);
 
     subscription.unsubscribe();

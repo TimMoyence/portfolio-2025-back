@@ -1,4 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
+import type { RapportIncident } from '../../domain/IFormationMailer.port';
+import {
+  INCIDENT_TYPES,
+  type IncidentType,
+  type ValeurDeContexte,
+} from '../../domain/IncidentType';
 
 export class RapportQuestionResponseDto {
   @ApiProperty({ example: 'Q-OUV-RAPPEL' })
@@ -51,6 +57,28 @@ export class RapportReponseLibreResponseDto {
   reponse: string;
 }
 
+export class RapportIncidentResponseDto implements RapportIncident {
+  @ApiProperty({
+    enum: INCIDENT_TYPES,
+    enumName: 'TypeDIncident',
+    example: 'tab_hidden',
+  })
+  type: IncidentType;
+
+  @ApiProperty({ format: 'date-time', example: '2026-09-11T10:00:00.000Z' })
+  horodatage: string;
+
+  @ApiProperty({
+    type: 'object',
+    nullable: true,
+    additionalProperties: {
+      oneOf: [{ type: 'string' }, { type: 'number' }, { type: 'boolean' }],
+    },
+    example: { duree: 1200 },
+  })
+  contexte: Readonly<Record<string, ValeurDeContexte>> | null;
+}
+
 export class RapportParticipantResponseDto {
   @ApiProperty({ example: 'Theo' })
   prenom: string;
@@ -67,24 +95,21 @@ export class RapportParticipantResponseDto {
   })
   completion: number;
 
-  @ApiProperty({ description: 'Note sur 20', example: 20 })
-  note: number;
-
-  @ApiProperty({ example: false })
-  sousSeuil: boolean;
-
   @ApiProperty({ type: [RapportQuestionResponseDto] })
-  reponses: RapportQuestionResponseDto[];
+  reponses: readonly RapportQuestionResponseDto[];
 
   @ApiProperty({
     type: [RapportReponseLibreResponseDto],
     description:
       'Réponses libres du poste, dans l’ordre des écrans puis des activités',
   })
-  reponsesLibres: RapportReponseLibreResponseDto[];
+  reponsesLibres: readonly RapportReponseLibreResponseDto[];
 
-  @ApiProperty({ description: 'Nombre d incidents du poste', example: 0 })
-  incidents: number;
+  @ApiProperty({
+    type: [RapportIncidentResponseDto],
+    description: 'Incidents du poste, dans l ordre du temps',
+  })
+  incidents: readonly RapportIncidentResponseDto[];
 }
 
 export class ConfusionCompteeResponseDto {
@@ -118,19 +143,10 @@ export class ResultatQuestionResponseDto {
     type: [ConfusionCompteeResponseDto],
     description: 'Confusions triees par frequence',
   })
-  confusions: ConfusionCompteeResponseDto[];
+  confusions: readonly ConfusionCompteeResponseDto[];
 }
 
 export class StatistiquesSeanceResponseDto {
-  @ApiProperty({ description: 'Moyenne des notes sur 20', example: 12.5 })
-  moyenne: number;
-
-  @ApiProperty({ description: 'Mediane des notes sur 20', example: 13 })
-  mediane: number;
-
-  @ApiProperty({ description: 'Ecart type des notes', example: 3.21 })
-  dispersion: number;
-
   @ApiProperty({
     description: 'Part des participants ayant repondu a au moins une question',
     example: 0.9,
@@ -138,7 +154,8 @@ export class StatistiquesSeanceResponseDto {
   tauxParticipation: number;
 
   @ApiProperty({
-    description: 'Part des reponses correctes parmi toutes les reponses',
+    description:
+      'Reussite des reponses, chaque question pesee par son nombre de reponses : score moyen d une production, part des correctes sinon',
     example: 0.64,
   })
   tauxReussite: number;
@@ -148,35 +165,10 @@ export class StatistiquesSeanceResponseDto {
     description: 'Questions dont le taux de reussite est sous le seuil',
     example: ['Q-M2-PIVOT'],
   })
-  questionsProblemes: string[];
+  questionsProblemes: readonly string[];
 }
 
 export class RegleDeNotationResponseDto {
-  @ApiProperty({ description: 'Note maximale', example: 20 })
-  noteMax: number;
-
-  @ApiProperty({
-    enum: ['participation-relative-cohorte'],
-    description:
-      'Note de participation : part des questions notees repondues, rapportee a la reference de la cohorte',
-    example: 'participation-relative-cohorte',
-  })
-  base: 'participation-relative-cohorte';
-
-  @ApiProperty({
-    description:
-      'Part de la cohorte qui fixe la reference : completion du participant classe a ce rang, qui obtient la note maximale',
-    example: 0.2,
-  })
-  partCohorteReference: number;
-
-  @ApiProperty({
-    description:
-      'Seuil de validation, en fraction de la completion de reference',
-    example: 0.4,
-  })
-  ratioSeuilValidation: number;
-
   @ApiProperty({
     description: 'Une reponse « Je ne sais pas » compte comme repondue',
     example: true,
@@ -200,12 +192,6 @@ export class RegleDeNotationResponseDto {
     example: 0.7,
   })
   seuilQuestionProbleme: number;
-
-  @ApiProperty({
-    description: 'Nombre de decimales des statistiques arrondies',
-    example: 2,
-  })
-  decimalesStatistiques: number;
 }
 
 export class SessionResultsResponseDto {
@@ -221,18 +207,19 @@ export class SessionResultsResponseDto {
   @ApiProperty({
     type: String,
     format: 'date-time',
-    description: 'Date de cloture, ou date de lecture si la seance est ouverte',
+    nullable: true,
+    description: 'Date de cloture, null tant que la seance est ouverte',
   })
-  fermeeLe: Date;
+  fermeeLe: Date | null;
 
   @ApiProperty({
     type: [RapportParticipantResponseDto],
     description: 'Participants dans leur ordre d arrivee',
   })
-  participants: RapportParticipantResponseDto[];
+  participants: readonly RapportParticipantResponseDto[];
 
   @ApiProperty({ type: [String], example: ['taux-evolution'] })
-  conceptsFragiles: string[];
+  conceptsFragiles: readonly string[];
 
   @ApiProperty({
     type: 'object',
@@ -250,7 +237,7 @@ export class SessionResultsResponseDto {
 
   @ApiProperty({
     type: RegleDeNotationResponseDto,
-    description: 'Barème appliqué aux notes et aux statistiques du rapport',
+    description: 'Barème appliqué aux statistiques du rapport',
   })
   notation: RegleDeNotationResponseDto;
 }

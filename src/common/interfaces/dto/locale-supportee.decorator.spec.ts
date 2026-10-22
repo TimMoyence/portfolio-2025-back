@@ -5,7 +5,6 @@ import {
 import { ArticleListQueryDto } from '../../../modules/articles/interfaces/dto/article-list.query.dto';
 import { AuditRequestRequestDto } from '../../../modules/audit-requests/interfaces/dto/audit-request.request.dto';
 import { ContactRequestDto } from '../../../modules/contacts/interfaces/dto/contact.request.dto';
-import { CookieConsentRequestDto } from '../../../modules/cookie-consents/interfaces/dto/cookie-consent.request.dto';
 import { RequestToolkitRequestDto } from '../../../modules/lead-magnets/interfaces/dto/request-toolkit.request.dto';
 import { requireLocale } from '../../domain/validation/domain-validators';
 import { LocaleSupportee } from './locale-supportee.decorator';
@@ -69,7 +68,6 @@ describe('LocaleSupportee', () => {
 
   it.each([
     ['le contact', ContactRequestDto, 'termsLocale'],
-    ['le consentement cookies', CookieConsentRequestDto, 'locale'],
     ['la boite a outils', RequestToolkitRequestDto, 'termsLocale'],
     ['la liste des articles', ArticleListQueryDto, 'locale'],
     ['la demande d audit', AuditRequestRequestDto, 'locale'],

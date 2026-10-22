@@ -131,6 +131,31 @@ describe('choisirRappels', () => {
     expect(servis[2]).toBe('R-INDICE');
   });
 
+  it.each([
+    [1, 'R-PROPORTION'],
+    [2, 'R-PROPORTION'],
+    [3, 'R-TAUX'],
+  ] as const)(
+    'un concept maitrise en boite %i passe avant un concept en boite trois : %s',
+    (boite, attendu) => {
+      const servis = choisir(
+        [],
+        [
+          buildMasteryRecord({
+            concept: 'proportion',
+            boite,
+            succes: 9,
+            echecs: 1,
+          }),
+          enBoiteTrois('taux-evolution', 1, 9),
+          enBoiteTrois('indice-base-100', 1, 9),
+        ],
+      );
+
+      expect(servis[2]).toBe(attendu);
+    },
+  );
+
   it('retient le plus faible taux de reussite a priorite egale', () => {
     const servis = choisir(
       [],
@@ -161,6 +186,25 @@ describe('choisirRappels', () => {
 
     expect(servis).not.toContain('R-COMPENSATION');
     expect(servis).not.toContain('R-TAUX');
+  });
+
+  it('departage a egalite par la premiere question du concept dans la banque', () => {
+    const servis = choisirRappels({
+      cible: {
+        ...CIBLE,
+        obligatoires: [],
+        banque: [
+          { id: 'R-TAUX', concept: 'taux-evolution' },
+          { id: 'R-INDICE', concept: 'indice-base-100' },
+          { id: 'R-TAUX-BIS', concept: 'taux-evolution' },
+        ],
+      },
+      reponses: [],
+      maitrise: [],
+      maintenant: MAINTENANT,
+    });
+
+    expect(servis[0]).toBe('R-TAUX');
   });
 
   it('rend la meme liste pour le meme etat, sans hasard', () => {

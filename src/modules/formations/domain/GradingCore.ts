@@ -7,19 +7,19 @@ export const NE_SAIT_PAS = '__je_ne_sais_pas__';
 
 export type AnswerValue = number | string;
 
-export interface Piege {
+export interface Piege<M extends string = string> {
   valeur: AnswerValue;
-  misconception: string;
+  misconception: M;
 }
 
-export interface Solution {
+export interface Solution<M extends string = string> {
   valeur: AnswerValue;
-  pieges: readonly Piege[];
+  pieges: readonly Piege<M>[];
 }
 
-export interface GradingResult {
+export interface GradingResult<M extends string = string> {
   correcte: boolean;
-  misconception: string | null;
+  misconception: M | null;
 }
 
 export function matchesSolution(

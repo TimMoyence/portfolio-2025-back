@@ -130,8 +130,8 @@ describe('langchain-synthesis.util', () => {
       );
 
       expect(notes).toEqual([
-        '- Pilier le plus faible : Visibilite IA (40).',
-        '- Weakest pillar: Visibilite IA (40).',
+        '- Pilier le plus faible : Visibilité IA (40).',
+        '- Weakest pillar: Visibilité IA (40).',
       ]);
     });
   });

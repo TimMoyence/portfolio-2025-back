@@ -1,6 +1,7 @@
 import type { MetadonneesBrique, RegimeVerrou } from './contrat-de-l-api';
 import type { AuMoinsUn } from '../../../../common/domain/au-moins-un';
 import type { CasProfessionnel } from '../cours/Cours';
+import type { ProprietesRecit } from '../cours/ProprietesStockees';
 import type {
   LigneDuDossier,
   OrdreQuestions,
@@ -27,10 +28,13 @@ export interface NumeriquePublic {
   readonly metadonnees: MetadonneesBrique;
 }
 
+export const LONGUEUR_MAX_DU_BILLET_DE_SORTIE = 500;
+
 export interface ExitBilletPublic {
   readonly id: string;
   readonly question: string;
   readonly invite: string;
+  readonly longueurMax: typeof LONGUEUR_MAX_DU_BILLET_DE_SORTIE;
   readonly options: readonly OptionPublique[];
   readonly metadonnees: MetadonneesBrique;
 }
@@ -52,6 +56,18 @@ type DefinitionPublique<P> = P & {
   readonly id: string;
   readonly metadonnees: MetadonneesBrique;
 };
+
+export interface PositionsDuCurseur {
+  readonly positions: readonly number[];
+}
+
+type ReglablePublic<P extends { readonly parametres: readonly object[] }> =
+  DefinitionPublique<
+    Omit<P, 'parametres'> & {
+      readonly parametres: readonly (P['parametres'][number] &
+        PositionsDuCurseur)[];
+    }
+  >;
 
 export interface ValeurDeMachine {
   readonly valeur: number | null;
@@ -79,7 +95,7 @@ export interface MachineCalculee {
   readonly sorties: readonly SortiesMachine[];
 }
 
-export type Concept4Definition = DefinitionPublique<
+export type Concept4Definition = ReglablePublic<
   ProprietesExposition['fp-concept4']
 > &
   MachineCalculee;
@@ -94,12 +110,16 @@ export interface TraceCalcule {
   readonly positions: readonly PositionDuTrace[];
 }
 
-export type PlotDefinition = DefinitionPublique<
-  ProprietesExposition['fp-plot']
-> &
+export type PlotDefinition = ReglablePublic<ProprietesExposition['fp-plot']> &
   TraceCalcule;
 
-export type NatureDeCellule = 'texte' | 'nombre' | 'logique' | 'erreur';
+export const NATURES_DE_CELLULE = Object.freeze([
+  'texte',
+  'nombre',
+  'logique',
+  'erreur',
+] as const);
+export type NatureDeCellule = (typeof NATURES_DE_CELLULE)[number];
 
 export interface FeuilleEvaluee {
   readonly saisies: Readonly<Record<string, string>>;
@@ -209,34 +229,10 @@ export interface SpacedQuestionPublique {
   readonly options: readonly OptionPublique[];
 }
 
-export interface StoryRecit {
+export type StoryRecit = Omit<ProprietesRecit, 'interaction' | 'correction'> & {
   readonly id: string;
-  readonly titre: string;
-  readonly paragraphes: readonly string[];
-  readonly visuel?: {
-    readonly src: string;
-    readonly alt: string;
-    readonly legende?: string;
-    readonly source?: string;
-  };
-  readonly video?: {
-    readonly src: string;
-    readonly srcPoste?: string;
-    readonly type: 'video/webm' | 'video/mp4';
-    readonly titre: string;
-    readonly poster?: string;
-    readonly transcript: string;
-    readonly source: string;
-    readonly licence: string;
-    readonly sousTitres?: {
-      readonly src: string;
-      readonly srclang: string;
-      readonly libelle: string;
-    };
-    readonly preload?: 'none' | 'metadata';
-  };
   readonly metadonnees: MetadonneesBrique;
-}
+};
 
 type QuestionDeQuestionnaire =
   | {
@@ -249,6 +245,15 @@ type QuestionDeQuestionnaire =
     };
 
 export interface DonneesParBrique {
+  readonly 'fp-quote': {
+    readonly citation: {
+      readonly id: string;
+      readonly texte: string;
+      readonly auteur: string | null;
+      readonly source: string | null;
+      readonly metadonnees: MetadonneesBrique;
+    };
+  };
   readonly 'fp-story': { readonly recit: StoryRecit };
   readonly 'fp-pro': {
     readonly cas: CasProfessionnel & {
@@ -305,3 +310,5 @@ export interface DonneesParBrique {
   };
   readonly 'ecran-verrouille': Readonly<Record<string, never>>;
 }
+
+export type TypeDEcranServi = keyof DonneesParBrique;

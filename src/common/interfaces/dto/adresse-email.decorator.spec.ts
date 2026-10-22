@@ -3,11 +3,10 @@ import {
   type FormulaireNomme,
 } from '../../../../test/helpers/formulaires-publics';
 import { champsRefuses } from '../../../../test/helpers/validation-pipe';
-import { CreateUserDto } from '../../../modules/users/interfaces/dto/CreateUser.dto';
 import { ForgotPasswordDto } from '../../../modules/users/interfaces/dto/ForgotPassword.dto';
 import { LoginDto } from '../../../modules/users/interfaces/dto/Login.dto';
 import { ResendVerificationDto } from '../../../modules/users/interfaces/dto/ResendVerification.dto';
-import { UpdateUserDto } from '../../../modules/users/interfaces/dto/UpdateUser.dto';
+import { InscriptionDto } from '../../../modules/users/interfaces/dto/Inscription.dto';
 import { EmailAddress } from '../../domain/value-objects/EmailAddress';
 import { AdresseEmail } from './adresse-email.decorator';
 
@@ -22,8 +21,8 @@ const jugements = (adresse: string): [boolean, boolean] => [
 ];
 
 const INVISIBLES = [
-  0x00a0, 0x2000, 0x200a, 0x200b, 0x2028, 0x2029, 0x202e, 0x202f, 0x3000,
-  0xfeff, 0xe000,
+  0x00a0, 0x00ad, 0x061c, 0x180e, 0x2000, 0x200a, 0x200b, 0x2028, 0x2029,
+  0x202e, 0x202f, 0x3000, 0xfeff, 0xe000,
 ].map((point) => String.fromCodePoint(point));
 
 describe('AdresseEmail', () => {
@@ -32,7 +31,14 @@ describe('AdresseEmail', () => {
     'Jean.Dupont+cours@exemple.co.uk',
     "o'neil@exemple.fr",
     'élève@lycée.fr',
+    'пример@почта.рф',
+    'μαθητής@σχολείο.ελ',
+    '用户@例子.广告',
+    'col·legi@escola.cat',
+    'jean@cal·ligraf.cat',
+    'ｊｅａｎ@exemple.fr',
     'jean@exemple.xn--p1ai',
+    'jean@sous-domaine.exemple.fr',
     `${'a'.repeat(64)}@exemple.fr`,
     `jean@${'a'.repeat(63)}.fr`,
   ])('accepte %p a la saisie comme dans le domaine', (adresse) => {
@@ -40,14 +46,29 @@ describe('AdresseEmail', () => {
   });
 
   it.each([
+    '',
+    'jean',
+    '@exemple.fr',
+    'jean@@exemple.fr',
     'jean@exemple.c',
+    'jean@exemple.123',
     'jean@-x.fr',
     'jean@exemple-.fr',
     'jean@exe_mple.fr',
+    'jean@ｅxemple.fr',
     'jean..dupont@exemple.fr',
+    '.jean@exemple.fr',
+    'jean.@exemple.fr',
+    'jean @exemple.fr',
+    'Jean Dupont <jean@exemple.fr>',
     'jean@gmail',
+    'jean@localhost',
     'jean@127.0.0.1',
+    'jean@[127.0.0.1]',
     `${'a'.repeat(65)}@exemple.fr`,
+    `jean@${'a'.repeat(64)}.fr`,
+    `${'a'.repeat(64)}@${'b'.repeat(63)}.${'c'.repeat(63)}.${'d'.repeat(63)}.fr`,
+    '"jean"@exemple.fr',
     '"jean dupont"@exemple.fr',
     '"jean\r\nBcc: autre@exemple.fr"@exemple.fr',
     '"jean\u0001"@exemple.fr',
@@ -61,8 +82,7 @@ describe('AdresseEmail', () => {
 
   it.each<FormulaireNomme>([
     ...FORMULAIRES_PUBLICS_A_ADRESSE,
-    ['l inscription', CreateUserDto],
-    ['la modification par l admin', UpdateUserDto],
+    ['l inscription', InscriptionDto],
     ['le mot de passe oublie', ForgotPasswordDto],
     ['la connexion', LoginDto],
     ['le renvoi de la verification', ResendVerificationDto],

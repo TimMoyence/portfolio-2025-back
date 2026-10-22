@@ -4,8 +4,6 @@ import { CompteDejaInscritError } from '../domain/CompteDejaInscritError';
 import type { IUsersRepository } from '../domain/IUsers.repository';
 import { USERS_REPOSITORY } from '../domain/token';
 import type {
-  CreateUserCommand,
-  CreateUserResult,
   InscriptionCommand,
   InscriptionResult,
 } from './dto/CreateUser.command';
@@ -39,7 +37,7 @@ export class CreateUsersUseCase {
     dto: InscriptionCommand,
   ): Promise<InscriptionResult> {
     try {
-      await this.execute({ ...dto, updatedOrCreatedBy: 'self-registration' });
+      await this.creerLeCompte(dto);
     } catch (erreur) {
       if (!(erreur instanceof CompteDejaInscritError)) {
         throw erreur;
@@ -53,21 +51,22 @@ export class CreateUsersUseCase {
     return INSCRIPTION_ENREGISTREE;
   }
 
-  async execute(dto: CreateUserCommand): Promise<CreateUserResult> {
+  private async creerLeCompte(dto: InscriptionCommand): Promise<void> {
     const passwordHash = await this.passwordService.hash(dto.password);
-    const isSelfRegistration = dto.updatedOrCreatedBy === 'self-registration';
-
-    const imposeALInscriptionPublique = isSelfRegistration
-      ? { roles: [], isActive: true }
-      : {};
-
-    const user = UsersMapper.fromCreateCommand(
-      { ...dto, ...imposeALInscriptionPublique },
-      passwordHash,
+    const created = await this.repo.create(
+      UsersMapper.fromCreateCommand(
+        {
+          email: dto.email,
+          password: dto.password,
+          firstName: dto.firstName,
+          lastName: dto.lastName,
+          phone: dto.phone,
+          updatedOrCreatedBy: 'self-registration',
+        },
+        passwordHash,
+      ),
     );
-    const created = await this.repo.create(user);
-
-    if (isSelfRegistration && created.id) {
+    if (created.id) {
       await this.envoiDeVerification.envoyer(
         created,
         created.id,
@@ -75,7 +74,5 @@ export class CreateUsersUseCase {
         'Email verification send failed',
       );
     }
-
-    return { user: created };
   }
 }

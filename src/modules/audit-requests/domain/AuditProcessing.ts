@@ -1,21 +1,28 @@
+import type { MethodeDeContact } from './AuditRequest';
 import { AuditLocale } from './audit-locale.util';
 import type {
   ClientReportSynthesis,
   ExpertReportSynthesis,
 } from './AuditReportTiers';
 import type { EngineCoverage } from './EngineCoverage';
+import type { ScoresDesPiliers } from './Piliers';
 
-export type AuditProcessingStatus =
-  | 'PENDING'
-  | 'RUNNING'
-  | 'COMPLETED'
-  | 'FAILED';
+export const STATUTS_D_AUDIT = Object.freeze([
+  'UNCONFIRMED',
+  'PENDING',
+  'RUNNING',
+  'COMPLETED',
+  'FAILED',
+] as const);
+export type AuditProcessingStatus = (typeof STATUTS_D_AUDIT)[number];
+
+export type StatutDuFluxDAudit = AuditProcessingStatus | 'TIMEOUT';
 
 export interface AuditSnapshot {
   id: string;
   requestId: string;
   websiteName: string;
-  contactMethod: 'EMAIL' | 'PHONE';
+  contactMethod: MethodeDeContact;
   contactValue: string;
   locale: AuditLocale;
   done: boolean;
@@ -28,7 +35,7 @@ export interface AuditSnapshot {
   redirectChain: string[];
   keyChecks: Record<string, unknown>;
   quickWins: string[];
-  pillarScores: Record<string, number>;
+  pillarScores: ScoresDesPiliers;
   summaryText: string | null;
   fullReport: Record<string, unknown> | null;
   clientReport?: ClientReportSynthesis | null;
@@ -48,7 +55,7 @@ export interface AuditSummarySnapshot {
   summaryText: string | null;
   keyChecks: Record<string, unknown>;
   quickWins: string[];
-  pillarScores: Record<string, number>;
+  pillarScores: ScoresDesPiliers;
 }
 
 export interface UpdateAuditStateInput {
@@ -61,7 +68,7 @@ export interface UpdateAuditStateInput {
   redirectChain?: string[];
   keyChecks?: Record<string, unknown>;
   quickWins?: string[];
-  pillarScores?: Record<string, number>;
+  pillarScores?: ScoresDesPiliers;
   summaryText?: string | null;
   fullReport?: Record<string, unknown> | null;
   clientReport?: ClientReportSynthesis | null;

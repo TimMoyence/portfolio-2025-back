@@ -1,5 +1,6 @@
 import { BadRequestException } from '@nestjs/common';
 import { lookup } from 'dns/promises';
+import { DomainValidationError } from '../../../../common/domain/errors/DomainValidationError';
 import { normalizeAuditUrl } from './url-normalizer.util';
 
 jest.mock('dns/promises', () => ({
@@ -27,16 +28,19 @@ describe('normalizeAuditUrl', () => {
     expect(result.normalizedUrl).toBe('https://example.com/path?a=1');
   });
 
-  it('rejects localhost and private hostnames', async () => {
+  it('rejects localhost and URLs with credentials, as AuditRequest.create does', async () => {
     await expect(normalizeAuditUrl('http://localhost:3000')).rejects.toThrow(
-      BadRequestException,
+      DomainValidationError,
     );
-  });
-
-  it('rejects URLs with credentials', async () => {
     await expect(
       normalizeAuditUrl('https://user:pass@example.com'),
-    ).rejects.toThrow(BadRequestException);
+    ).rejects.toThrow(DomainValidationError);
+  });
+
+  it('rejects private hostnames that only the network can tell apart', async () => {
+    await expect(normalizeAuditUrl('https://nas.local')).rejects.toThrow(
+      BadRequestException,
+    );
   });
 
   it('rejects blocked resolved IP ranges', async () => {

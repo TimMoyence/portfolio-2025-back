@@ -11,7 +11,6 @@ import {
 } from '../src/modules/formations/domain/errors/FormationErrors';
 import { SecretDeReprise } from '../src/modules/formations/domain/SecretDeReprise';
 import type { ParticipantRecord } from '../src/modules/formations/domain/IParticipants.repository';
-import { nextBox } from '../src/modules/formations/domain/LeitnerBox';
 import { FormationSessionEntity } from '../src/modules/formations/infrastructure/entities/FormationSession.entity';
 import { buildCoursDeClasse } from './factories/cours.factory';
 import { buildBareme } from './factories/formation.factory';
@@ -53,10 +52,6 @@ function identifiantsTries(lignes: readonly { id: string }[]): string[] {
 
 interface TypeColonne {
   data_type: string;
-}
-
-interface ValeurBrute {
-  valeur: string | number;
 }
 
 interface ContrainteNommee {
@@ -121,6 +116,9 @@ describeDb('Formations repositories (db integration)', () => {
       email: 'theo.martin@example.com',
       seed,
     });
+
+  const inscrits = async (sessionId: string): Promise<number> =>
+    (await contexte.participants.listBySession(sessionId)).length;
 
   const repondre = (
     sessionId: string,
@@ -298,12 +296,8 @@ describeDb('Formations repositories (db integration)', () => {
     await inscrireGrainesARebours(seance.id);
     await inscrire(autre.id, CLE_ETUDIANT, 1001);
 
-    await expect(contexte.participants.countBySession(seance.id)).resolves.toBe(
-      GRAINES_A_REBOURS.length,
-    );
-    await expect(contexte.participants.countBySession(autre.id)).resolves.toBe(
-      1,
-    );
+    await expect(inscrits(seance.id)).resolves.toBe(GRAINES_A_REBOURS.length);
+    await expect(inscrits(autre.id)).resolves.toBe(1);
   });
 
   it('liste les reponses dans leur ordre d ecriture et non dans l ordre des questions', async () => {
@@ -388,9 +382,7 @@ describeDb('Formations repositories (db integration)', () => {
     const second = await inscrire(seance.id, CLE_ETUDIANT, 1002);
 
     expect(second).toMatchObject({ id: premier.id, seed: 1001 });
-    await expect(contexte.participants.countBySession(seance.id)).resolves.toBe(
-      1,
-    );
+    await expect(inscrits(seance.id)).resolves.toBe(1);
   });
 
   describe('S1 · S2 · reprise, eviction et readmission sous verrou', () => {
@@ -474,9 +466,7 @@ describeDb('Formations repositories (db integration)', () => {
       await expect(
         inscrireAvecSecret(seance.id, secret),
       ).rejects.toBeInstanceOf(ParticipantEvinceError);
-      await expect(
-        contexte.participants.countBySession(seance.id),
-      ).resolves.toBe(0);
+      await expect(inscrits(seance.id)).resolves.toBe(0);
     });
 
     it('traduit la graine reprise par un autre poste en GraineRepriseError, jamais en erreur SQL', async () => {
@@ -511,9 +501,7 @@ describeDb('Formations repositories (db integration)', () => {
           .filter((resultat) => resultat.status === 'rejected')
           .map((resultat) => resultat.reason),
       ).toEqual([expect.any(SeanceCompleteError)]);
-      await expect(
-        contexte.participants.countBySession(seance.id),
-      ).resolves.toBe(2);
+      await expect(inscrits(seance.id)).resolves.toBe(2);
     });
   });
 
@@ -608,26 +596,6 @@ describeDb('Formations repositories (db integration)', () => {
     expect(JSON.stringify(reponse.valeur)).toBe('1480.24');
   });
 
-  it('convertit les agregats que postgres rend en chaines', async () => {
-    const seance = await ouvrirSeance('4271');
-    const premier = await inscrire(seance.id, CLE_ETUDIANT, 1001);
-    const second = await inscrire(seance.id, AUTRE_CLE_ETUDIANT, 1002);
-    await repondre(seance.id, premier.id, 'Q-CAP-03', true);
-    await repondre(seance.id, second.id, 'Q-CAP-03', false);
-
-    const brut: ValeurBrute[] = await contexte.dataSource.query(
-      `SELECT COUNT(*) AS valeur FROM "formation_answers" WHERE "session_id" = $1`,
-      [seance.id],
-    );
-    expect(typeof brut[0].valeur).toBe('string');
-
-    const tally = await contexte.answers.tallyBySession(seance.id);
-    expect(tally).toHaveLength(1);
-    expect(tally[0].total).toBe(2);
-    expect(tally[0].correctes).toBe(1);
-    expect(tally[0].parMisconception).toEqual({ 'interet-simple': 1 });
-  });
-
   it('conserve l instant exact des horodatages relus', async () => {
     const seance = await ouvrirSeance('4271');
     const participant = await inscrire(seance.id, CLE_ETUDIANT, 1001);
@@ -659,18 +627,15 @@ describeDb('Formations repositories (db integration)', () => {
   });
 
   it('remplace la maitrise existante au lieu de la dupliquer', async () => {
-    const derniereVue = new Date('2026-09-11T09:00:00.000Z');
     await contexte.mastery.enregistrerTentative({
       studentKey: CLE_ETUDIANT,
       concept: 'capitalisation',
       reussi: true,
-      vueLe: derniereVue,
     });
     await contexte.mastery.enregistrerTentative({
       studentKey: CLE_ETUDIANT,
       concept: 'capitalisation',
       reussi: true,
-      vueLe: derniereVue,
     });
 
     const maitrise = await contexte.mastery.findByStudentKey(CLE_ETUDIANT);
@@ -678,17 +643,14 @@ describeDb('Formations repositories (db integration)', () => {
     expect(maitrise[0].boite).toBe(3);
     expect(typeof maitrise[0].succes).toBe('number');
     expect(maitrise[0].succes).toBe(2);
-    expect(maitrise[0].derniereVue.getTime()).toBe(derniereVue.getTime());
   });
 
   it('compte chaque tentative simultanee sans perte de mise a jour', async () => {
-    const vueLe = new Date('2026-09-11T09:30:00.000Z');
     const tentatives = Array.from({ length: 20 }, (_, rang) =>
       contexte.mastery.enregistrerTentative({
         studentKey: CLE_ETUDIANT,
         concept: 'taux-evolution',
         reussi: rang % 2 === 0,
-        vueLe,
       }),
     );
 
@@ -704,30 +666,33 @@ describeDb('Formations repositories (db integration)', () => {
     expect(ligne!.echecs).toBe(10);
   });
 
-  it('applique en base la meme transition de boite que le domaine', async () => {
-    for (const reussi of [true, false]) {
-      for (const boiteDepart of [1, 2, 3] as const) {
-        await contexte.nettoyer();
-        for (let montee = 1; montee < boiteDepart; montee += 1) {
-          await contexte.mastery.enregistrerTentative({
-            studentKey: CLE_ETUDIANT,
-            concept: 'controle-coherence',
-            reussi: true,
-            vueLe: new Date('2026-09-11T10:00:00.000Z'),
-          });
-        }
+  it.each([
+    [1, true, 2],
+    [2, true, 3],
+    [3, true, 3],
+    [1, false, 1],
+    [2, false, 1],
+    [3, false, 1],
+  ] as const)(
+    'applique en base la transition de boite : boite %i, reussi %s, boite %i',
+    async (boiteDepart, reussi, boiteAttendue) => {
+      for (let montee = 1; montee < boiteDepart; montee += 1) {
         await contexte.mastery.enregistrerTentative({
           studentKey: CLE_ETUDIANT,
           concept: 'controle-coherence',
-          reussi,
-          vueLe: new Date('2026-09-11T10:05:00.000Z'),
+          reussi: true,
         });
-
-        const maitrise = await contexte.mastery.findByStudentKey(CLE_ETUDIANT);
-        expect(maitrise[0].boite).toBe(nextBox(boiteDepart, reussi));
       }
-    }
-  });
+      await contexte.mastery.enregistrerTentative({
+        studentKey: CLE_ETUDIANT,
+        concept: 'controle-coherence',
+        reussi,
+      });
+
+      const maitrise = await contexte.mastery.findByStudentKey(CLE_ETUDIANT);
+      expect(maitrise[0].boite).toBe(boiteAttendue);
+    },
+  );
 
   it('decrit dans les entites le schema exact que produit la migration', async () => {
     await attendreSchemaAligneSurLesEntites(contexte.dataSource);
@@ -751,7 +716,7 @@ describeDb('Formations repositories (db integration)', () => {
       })),
     );
 
-    expect(enBase).toHaveLength(5);
+    expect(enBase).toHaveLength(4);
     expect(trierParNom(declarees)).toEqual(trierParNom(enBase));
   });
 
@@ -778,7 +743,7 @@ describeDb('Formations repositories (db integration)', () => {
       })),
     );
 
-    expect(enBase).toHaveLength(17);
+    expect(enBase).toHaveLength(15);
     expect(trierParNom(declarees)).toEqual(trierParNom(enBase));
   });
 
@@ -796,7 +761,7 @@ describeDb('Formations repositories (db integration)', () => {
         .checks.map((controle) => ({ nom: controle.name })),
     );
 
-    expect(enBase).toHaveLength(12);
+    expect(enBase).toHaveLength(10);
     expect(enBase).toContainEqual({ nom: 'chk_formation_screen_diffusion' });
     expect(trierParNom(declarees)).toEqual(trierParNom(enBase));
   });
@@ -822,7 +787,7 @@ describeDb('Formations repositories (db integration)', () => {
       })),
     );
 
-    expect(enBase).toHaveLength(19);
+    expect(enBase).toHaveLength(16);
     expect(trierParNom(declarees)).toEqual(trierParNom(enBase));
   });
 

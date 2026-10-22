@@ -12,6 +12,7 @@ import {
 import { estUnSecretValable } from '../../../common/domain/crypto/secret-hmac';
 import { envBrut, envString } from '../../../config/env-readers.util';
 import { trousseauHmac } from '../../../config/trousseau-hmac';
+import { LONGUEUR_MAX_DU_NONCE } from '../domain/article-contract';
 
 interface ArticleRequest extends Request {
   rawBody?: Buffer;
@@ -50,7 +51,8 @@ export class ArticleHmacGuard implements CanActivate {
       !signature ||
       !idempotencyKey ||
       !secret ||
-      !rawBody
+      !rawBody ||
+      nonce.length > LONGUEUR_MAX_DU_NONCE
     ) {
       throw new UnauthorizedException('Invalid machine credentials');
     }

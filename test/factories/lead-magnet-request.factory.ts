@@ -3,8 +3,27 @@ import type { ILeadMagnetRequestRepository } from '../../src/modules/lead-magnet
 import type { ILeadMagnetNotifier } from '../../src/modules/lead-magnets/domain/ILeadMagnetNotifier';
 import type { IToolkitPdfGenerator } from '../../src/modules/lead-magnets/domain/IToolkitPdfGenerator';
 import type { IToolkitContentAssembler } from '../../src/modules/lead-magnets/domain/IToolkitContentAssembler';
-import type { ToolkitContent } from '../../src/modules/lead-magnets/domain/ToolkitContent';
+import type {
+  PromptEntry,
+  ToolkitContent,
+} from '../../src/modules/lead-magnets/domain/ToolkitContent';
 import { sectionSurLeDepot } from './verrou-par-boite.factory';
+
+export function buildPromptEntry(
+  overrides: Partial<PromptEntry> = {},
+): PromptEntry {
+  return {
+    category: 'Prospection',
+    title: 'Message LinkedIn',
+    level: 'debutant',
+    prompt: 'Ecris un message pour {{prospect}}',
+    tool: 'ChatGPT',
+    description: 'Premier message a un prospect',
+    example: 'Bonjour Claire, ...',
+    tip: 'Personnaliser la premiere phrase',
+    ...overrides,
+  };
+}
 
 export function buildLeadMagnetRequest(
   overrides?: Partial<LeadMagnetRequest>,
@@ -39,15 +58,7 @@ export function buildToolkitContent(
         decision: 'Brainstormer ou analyser',
       },
     ],
-    prompts: [
-      {
-        category: 'Prospection',
-        title: 'Message LinkedIn',
-        level: 'debutant',
-        prompt: 'Ecris un message pour {{prospect}}',
-        tool: 'ChatGPT',
-      },
-    ],
+    prompts: [buildPromptEntry()],
     workflows: [
       {
         title: 'Prospection automatisee',

@@ -7,54 +7,8 @@ import {
 } from '../../../../test/factories/formation.factory';
 import { verifierPanneDEcritureTransmise } from '../../../../test/helpers/pannes-d-ecriture';
 import { AnswerAlreadySubmittedError } from '../domain/errors/FormationErrors';
-import {
-  AnswersRepositoryTypeORM,
-  regrouperParQuestion,
-} from './Answers.repository.typeorm';
+import { AnswersRepositoryTypeORM } from './Answers.repository.typeorm';
 import type { FormationAnswerEntity } from './entities/FormationAnswer.entity';
-
-describe('regrouperParQuestion', () => {
-  it('agrege plusieurs lignes de la meme question en un seul total', () => {
-    const resultat = regrouperParQuestion([
-      { questionId: 'Q1', total: '3', correctes: '2', misconception: null },
-      {
-        questionId: 'Q1',
-        total: '1',
-        correctes: '0',
-        misconception: 'interet-simple',
-      },
-    ]);
-    expect(resultat).toEqual([
-      {
-        questionId: 'Q1',
-        total: 4,
-        correctes: 2,
-        parMisconception: { 'interet-simple': 1 },
-      },
-    ]);
-  });
-
-  it('ne cree pas d entree dans parMisconception pour une ligne sans misconception', () => {
-    const resultat = regrouperParQuestion([
-      { questionId: 'Q2', total: '5', correctes: '5', misconception: null },
-    ]);
-    expect(resultat).toEqual([
-      { questionId: 'Q2', total: 5, correctes: 5, parMisconception: {} },
-    ]);
-  });
-
-  it('garde des questions distinctes separees', () => {
-    const resultat = regrouperParQuestion([
-      { questionId: 'Q1', total: '2', correctes: '2', misconception: null },
-      { questionId: 'Q2', total: '3', correctes: '1', misconception: null },
-    ]);
-    expect(resultat.map((tally) => tally.questionId)).toEqual(['Q1', 'Q2']);
-  });
-
-  it('retourne une liste vide pour une session sans reponse', () => {
-    expect(regrouperParQuestion([])).toEqual([]);
-  });
-});
 
 describe('AnswersRepositoryTypeORM', () => {
   let repo: jest.Mocked<Repository<FormationAnswerEntity>>;

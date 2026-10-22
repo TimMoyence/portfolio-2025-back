@@ -6,6 +6,7 @@ import type {
   ArticleStatus,
   ArticleWrite,
 } from '../../src/modules/articles/application/articles.repository';
+import { validArticleIngestEnvelope } from './article-ingest.factory';
 
 export function buildArticleWrite(
   overrides: Partial<ArticleWrite> = {},
@@ -22,8 +23,8 @@ export function buildArticleWrite(
     tags: [],
     sections: [],
     sources: [],
-    provenance: {},
-    seo: {},
+    provenance: validArticleIngestEnvelope.article.provenance,
+    seo: validArticleIngestEnvelope.article.seo,
     publishedAt: new Date('2026-09-23T04:15:00.000Z'),
     updatedAt: new Date('2026-09-23T04:15:00.000Z'),
     contentSha256: 'a'.repeat(64),

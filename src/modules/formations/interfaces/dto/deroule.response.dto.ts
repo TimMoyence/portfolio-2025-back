@@ -22,6 +22,15 @@ export class CorrigePresentateurResponseDto {
   })
   bonneReponse: string;
 
+  @ApiProperty({
+    nullable: true,
+    type: String,
+    description:
+      'Option de la bonne reponse d un vote, null pour une question numerique',
+    example: 'b',
+  })
+  optionId: string | null;
+
   @ApiProperty({ type: [ConfusionCorrigeeResponseDto] })
-  confusions: ConfusionCorrigeeResponseDto[];
+  confusions: readonly ConfusionCorrigeeResponseDto[];
 }

@@ -25,3 +25,6 @@ export function attendreUnNavigateurEtUnReferentBornes(
     true,
   );
 }
+
+export const ADRESSE_IPV4 = '203.0.113.4';
+export const ADRESSE_IPV4_MAPPEE = `::ffff:${ADRESSE_IPV4}`;

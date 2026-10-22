@@ -17,8 +17,9 @@ import { ResetPasswordUseCase } from '../src/modules/users/application/ResetPass
 import { RevokeTokenUseCase } from '../src/modules/users/application/RevokeToken.useCase';
 import { EnvoiDeVerificationEmail } from '../src/modules/users/application/services/email-verification-dispatch';
 import { EnvoiDeReinitialisation } from '../src/modules/users/application/services/password-reset-dispatch';
+import { SUCCESSEURS_MAX_D_UN_JETON } from '../src/modules/users/domain/auth.constants';
 import { TROIS_ENVOIS_PAR_HEURE } from '../src/modules/users/domain/PlafondDEnvois';
-import { emettreJeton, TokenHash } from '../src/modules/users/domain/TokenHash';
+import { emettreJeton, TokenHash } from '../src/common/domain/crypto/TokenHash';
 import { EmailVerificationTokensRepositoryTypeORM } from '../src/modules/users/infrastructure/EmailVerificationTokens.repository.typeORM';
 import { EmailVerificationTokenEntity } from '../src/modules/users/infrastructure/entities/EmailVerificationToken.entity';
 import { PasswordResetTokenEntity } from '../src/modules/users/infrastructure/entities/PasswordResetToken.entity';
@@ -531,6 +532,27 @@ describeDb('Depots de jetons sur une base migree', () => {
         ).resolves.toMatchObject({ user: banc.utilisateur });
       },
     );
+
+    it('n ouvre pas plus de sessions que le nombre maximal de successeurs quand un jeton est rejoue pendant sa grace', async () => {
+      const banc = await monter('sessions-rejeu-en-grace@example.com');
+      const rejoue = await banc.seConnecter();
+
+      const issues: PromiseSettledResult<unknown>[] = [];
+      for (let rejeu = 0; rejeu < SUCCESSEURS_MAX_D_UN_JETON + 2; rejeu++) {
+        issues.push(
+          ...(await Promise.allSettled([banc.rafraichir.execute(rejoue)])),
+        );
+      }
+
+      expect(
+        issues.filter(({ status }) => status === 'fulfilled'),
+      ).toHaveLength(SUCCESSEURS_MAX_D_UN_JETON);
+      expect(
+        await base()
+          .getRepository(RefreshTokenEntity)
+          .count({ where: { userId: banc.utilisateur.id, revoked: false } }),
+      ).toBe(SUCCESSEURS_MAX_D_UN_JETON);
+    });
 
     it('ferme toutes les sessions quand un jeton remplace par rotation est rejoue apres le delai de grace', async () => {
       const banc = await monter('sessions-rejeu@example.com');

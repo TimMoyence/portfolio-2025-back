@@ -23,8 +23,8 @@ import {
 } from './factories/mailer.factory';
 import { describeDb } from './helpers/db-integration-datasource';
 import { installerEnvFormations } from './helpers/env-formations';
+import { cleEtudianteDe } from '../src/modules/formations/domain/CleEtudiante';
 import {
-  cleEtudianteDe,
   DELAI_OUVERTURE_CONTEXTE_MS,
   ouvrirContexteFormations,
   type ContexteFormations,
@@ -55,7 +55,6 @@ const SYNTHESE_A = 'synthese-formateur@example.test';
 const PERIODE_PIEGE_ETUDIANT = 5;
 const PERIODE_PIEGE_QUESTION = 4;
 const RESTE_PIEGE_QUESTION = 3;
-const NOTE_ATTENDUE = 20;
 const ECART_DANS_LA_TOLERANCE = 0.5;
 const TIRAGES_DU_CORRIGE = NOMBRE_TIRAGES_DISTRIBUES + 1;
 
@@ -214,18 +213,23 @@ function verifierRapport(
       nom: ligne.nom,
       email: ligne.email,
       completion: ligne.completion,
-      note: ligne.note,
-      sousSeuil: ligne.sousSeuil,
       reponses: ligne.reponses.map((reponse) => reponse.questionId),
       incidents: ligne.incidents,
     }).toEqual({
       nom: etudiant.nom,
       email: etudiant.email,
       completion: 1,
-      note: NOTE_ATTENDUE,
-      sousSeuil: false,
       reponses: QUESTIONS_NOTEES.map(({ id }) => id),
-      incidents: etudiant.index % PERIODE_PIEGE_ETUDIANT === 0 ? 1 : 0,
+      incidents:
+        etudiant.index % PERIODE_PIEGE_ETUDIANT === 0
+          ? [
+              {
+                type: 'tab_hidden',
+                horodatage: '2026-09-12T09:30:00.000Z',
+                contexte: null,
+              },
+            ]
+          : [],
     });
   });
 }
@@ -243,9 +247,12 @@ function verifierSynthese(
     .slice(1)
     .map((ligne) => ligne.split(';').slice(2, 4).join(';'));
   expect(emailEtQuestionParLigne).toEqual(
-    etudiants.flatMap((etudiant) =>
-      QUESTIONS_NOTEES.map(({ id }) => `"${etudiant.email}";"${id}"`),
-    ),
+    etudiants.flatMap((etudiant) => [
+      ...QUESTIONS_NOTEES.map(({ id }) => `"${etudiant.email}";"${id}"`),
+      ...(etudiant.index % PERIODE_PIEGE_ETUDIANT === 0
+        ? [`"${etudiant.email}";"incident"`]
+        : []),
+    ]),
   );
   for (const etudiant of etudiants) {
     expect(corps).toContain(etudiant.nom);

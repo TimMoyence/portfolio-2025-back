@@ -24,7 +24,6 @@ import { ParticipantsRepositoryTypeORM } from './Participants.repository.typeorm
 describe('ParticipantsRepositoryTypeORM', () => {
   const save = jest.fn();
   const update = jest.fn();
-  const count = jest.fn();
   const findOne = jest.fn();
   const find = jest.fn();
   const query = jest.fn();
@@ -43,7 +42,7 @@ describe('ParticipantsRepositoryTypeORM', () => {
   });
   const sut = new ParticipantsRepositoryTypeORM(
     mockTypeOrmRepositoryAvecManager<FormationParticipantEntity>(
-      { update, count, findOne, find },
+      { update, findOne, find },
       manager,
     ),
   );
@@ -70,7 +69,6 @@ describe('ParticipantsRepositoryTypeORM', () => {
       }),
     );
     update.mockReset().mockResolvedValue({ affected: 1 });
-    count.mockReset().mockResolvedValue(3);
     findOne.mockReset().mockResolvedValue(buildParticipantEntity());
     find.mockReset().mockResolvedValue([buildParticipantEntity()]);
     query.mockReset().mockResolvedValue([]);
@@ -235,23 +233,11 @@ describe('ParticipantsRepositoryTypeORM', () => {
     ecrire: () => sut.inscrire(input),
   }));
 
-  it('retrouve un participant par seance et cle etudiante, ou par identifiant', async () => {
-    await expect(
-      sut.findBySessionAndStudentKey('session-uuid', 'student-uuid'),
-    ).resolves.toMatchObject({ id: 'participant-uuid' });
+  it('retrouve un participant par identifiant', async () => {
     await expect(sut.findById('participant-uuid')).resolves.toMatchObject({
       id: 'participant-uuid',
     });
     expect(findOne.mock.calls).toEqual([
-      [
-        {
-          where: {
-            sessionId: 'session-uuid',
-            studentKey: 'student-uuid',
-            evinceLe: IsNull(),
-          },
-        },
-      ],
       [{ where: { id: 'participant-uuid' } }],
     ]);
   });
@@ -266,13 +252,6 @@ describe('ParticipantsRepositoryTypeORM', () => {
     expect(find).toHaveBeenCalledWith({
       where: { sessionId: 'session-uuid', evinceLe: IsNull() },
       order: { rejointLe: 'ASC', id: 'ASC' },
-    });
-  });
-
-  it('compte les participants d une seance sans les charger', async () => {
-    await expect(sut.countBySession('session-uuid')).resolves.toBe(3);
-    expect(count).toHaveBeenCalledWith({
-      where: { sessionId: 'session-uuid', evinceLe: IsNull() },
     });
   });
 

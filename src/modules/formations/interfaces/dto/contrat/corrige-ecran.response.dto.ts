@@ -1,4 +1,8 @@
 import {
+  TYPES_DE_TOLERANCE,
+  type TypeDeTolerance,
+} from '../../../domain/contrats/contrat-de-l-api';
+import {
   ApiExtraModels,
   ApiProperty,
   ApiPropertyOptional,
@@ -7,11 +11,12 @@ import {
 import { ReferenceOuNul } from '../../../../../common/interfaces/dto/reference-ou-nul.decorator';
 import type { CorrigeEcranPresentateur } from '../../../domain/contrats/deroule';
 import type { FormeFormule } from '../../../domain/cours/Corrige';
+import type { ValeurFormule } from '../../../domain/cours/Formule';
 import { TableauEvalueResponseDto } from './tableau-evalue.response.dto';
 
 class ToleranceResponseDto {
-  @ApiProperty({ enum: ['relative', 'absolue', 'decimales'] })
-  type: 'relative' | 'absolue' | 'decimales';
+  @ApiProperty({ enum: TYPES_DE_TOLERANCE, enumName: 'TypeDeTolerance' })
+  type: TypeDeTolerance;
 
   @ApiProperty({ example: 0.0001 })
   valeur: number;
@@ -33,8 +38,11 @@ class AttenduFeuillePresentateurResponseDto {
   @ApiProperty({ example: '=C2/$C$5' })
   formuleReference: string;
 
-  @ApiProperty({ example: 0.345217 })
-  valeur: number;
+  @ApiProperty({
+    oneOf: [{ type: 'number' }, { type: 'string' }, { type: 'boolean' }],
+    example: 0.345217,
+  })
+  valeur: ValeurFormule;
 
   @ApiProperty({
     description:
@@ -60,7 +68,7 @@ class CorrigeFeuillePresentateurResponseDto {
   type: 'feuille';
 
   @ApiProperty({ type: [AttenduFeuillePresentateurResponseDto] })
-  attendus: AttenduFeuillePresentateurResponseDto[];
+  attendus: readonly AttenduFeuillePresentateurResponseDto[];
 }
 
 class AttenduTableauPresentateurResponseDto {
@@ -79,7 +87,7 @@ class CorrigeTableauPresentateurResponseDto {
   type: 'tableau';
 
   @ApiProperty({ type: [AttenduTableauPresentateurResponseDto] })
-  attendus: AttenduTableauPresentateurResponseDto[];
+  attendus: readonly AttenduTableauPresentateurResponseDto[];
 
   @ApiProperty({
     type: TableauEvalueResponseDto,
@@ -108,7 +116,7 @@ class CorrigeClassementPresentateurResponseDto {
   type: 'classement';
 
   @ApiProperty({ type: [AttenduClassementPresentateurResponseDto] })
-  attendus: AttenduClassementPresentateurResponseDto[];
+  attendus: readonly AttenduClassementPresentateurResponseDto[];
 }
 
 class EnigmePresentateurResponseDto {
@@ -127,7 +135,7 @@ class CorrigeEnigmesPresentateurResponseDto {
   type: 'enigmes';
 
   @ApiProperty({ type: [EnigmePresentateurResponseDto] })
-  enigmes: EnigmePresentateurResponseDto[];
+  enigmes: readonly EnigmePresentateurResponseDto[];
 
   @ApiProperty({ example: '7-3-1-9' })
   codeFinal: string;
@@ -149,7 +157,7 @@ class CorrigeDefiPresentateurResponseDto {
   type: 'defi';
 
   @ApiProperty({ type: [StrategiePresentateurResponseDto] })
-  strategies: StrategiePresentateurResponseDto[];
+  strategies: readonly StrategiePresentateurResponseDto[];
 }
 
 class CorrigeRevelationPresentateurResponseDto {
@@ -160,7 +168,7 @@ class CorrigeRevelationPresentateurResponseDto {
   titre: string;
 
   @ApiProperty({ type: [String] })
-  lignes: string[];
+  lignes: readonly string[];
 }
 
 class CorrigeReflexionPresentateurResponseDto {
@@ -223,7 +231,7 @@ export class CorrectionServieResponseDto {
   ecranId: string;
 
   @ApiProperty({ type: [QuestionCorrigeeResponseDto] })
-  questions: QuestionCorrigeeResponseDto[];
+  questions: readonly QuestionCorrigeeResponseDto[];
 
   @ReferenceOuNul(CORRIGES_D_ECRAN)
   corrige: CorrigeEcranPresentateur | null;
@@ -232,5 +240,5 @@ export class CorrectionServieResponseDto {
   reflexion: ReflexionPresentateurResponseDto | null;
 
   @ApiPropertyOptional({ type: [ExplicationDeCorrectionResponseDto] })
-  explications?: ExplicationDeCorrectionResponseDto[];
+  explications?: readonly ExplicationDeCorrectionResponseDto[];
 }

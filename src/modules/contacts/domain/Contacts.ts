@@ -1,3 +1,4 @@
+import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
 import { provenanceConsignable } from '../../../common/domain/provenance';
 import {
   optionalPhone,
@@ -41,6 +42,9 @@ export class Contacts {
     const role = requireText(props.role, 'contact role', 2, 100);
 
     const terms = requireBoolean(props.terms, 'terms flag');
+    if (!terms) {
+      throw new DomainValidationError('Terms must be accepted');
+    }
 
     const termsLocaleInput = optionalText(
       props.termsLocale,

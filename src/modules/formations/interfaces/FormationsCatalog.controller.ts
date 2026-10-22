@@ -7,7 +7,6 @@ import {
 } from '@nestjs/swagger';
 import { RoutePublique } from '../../../common/interfaces/security/formulaire-public.decorator';
 import { LireCoursPublicUseCase } from '../application/LireCoursPublic.useCase';
-import type { CoursPublicCatalogue } from '../domain/contrats/tirage';
 import { CoursPublicCatalogueResponseDto } from './dto/contrat/sujet.response.dto';
 
 @ApiTags('formations')
@@ -26,7 +25,9 @@ export class FormationsCatalogController {
       'Sujet public du tirage de référence, avec la version publiée et sa date de bascule : ni notes, ni correction, ni quiz noté',
   })
   @ApiNotFoundResponse({ description: 'Cours introuvable' })
-  async get(@Param('slug') slug: string): Promise<CoursPublicCatalogue> {
+  async get(
+    @Param('slug') slug: string,
+  ): Promise<CoursPublicCatalogueResponseDto> {
     return this.lireCoursPublic.execute(slug);
   }
 }

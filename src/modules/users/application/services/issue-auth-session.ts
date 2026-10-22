@@ -1,7 +1,10 @@
 import { InvalidCredentialsError } from '../../../../common/domain/errors/InvalidCredentialsError';
 import type { IRefreshTokensRepository } from '../../domain/IRefreshTokens.repository';
 import type { RefreshToken } from '../../domain/RefreshToken';
-import { emettreJeton, TokenHash } from '../../domain/TokenHash';
+import {
+  emettreJeton,
+  TokenHash,
+} from '../../../../common/domain/crypto/TokenHash';
 import { REFRESH_TOKEN_TTL_MS } from '../../domain/auth.constants';
 import type { User } from '../../domain/User';
 import type { AuthResult } from '../AuthenticateUser.useCase';

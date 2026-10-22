@@ -22,7 +22,7 @@ import {
   primeCoreUseCaseStubs,
   primePasswordUseCaseStubs,
 } from './factories/core-api.factory';
-import { emettreJeton } from '../src/modules/users/domain/TokenHash';
+import { emettreJeton } from '../src/common/domain/crypto/TokenHash';
 
 // eslint-disable-next-line sonarjs/no-hardcoded-passwords -- fixture de test, pas un secret reel
 const WRONG_PASSWORD = 'WrongPassword1!';
@@ -102,6 +102,15 @@ describe('API coherence and connectivity (e2e http socket)', () => {
       .expect(400);
 
     expectValidationMessage(response, 'property injected should not exist');
+  });
+
+  it('POST /api/contacts refuse un message dont les conditions ne sont pas acceptées', async () => {
+    const response = await request(getHttpServer())
+      .post('/api/contacts')
+      .send({ ...CONTACT_PAYLOAD, terms: false })
+      .expect(400);
+
+    expectValidationMessage(response, 'terms must be equal to true');
   });
 
   it('POST /api/audits resolves locale from referer when not provided', async () => {

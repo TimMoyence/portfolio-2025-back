@@ -25,15 +25,13 @@ describe('User aggregate', () => {
 
   it('builds normalized partial update', () => {
     const partial = User.update({
-      email: '  jane.doe@Example.com ',
       phone: '  ',
-      isActive: false,
+      roles: ['student'],
       updatedOrCreatedBy: ' ',
     });
 
-    expect(partial.email).toBe('jane.doe@example.com');
     expect(partial.phone).toBeNull();
-    expect(partial.isActive).toBe(false);
+    expect(partial.roles).toEqual(['student']);
     expect(partial.updatedOrCreatedBy).toBeNull();
     expect(partial.updatedAt).toBeInstanceOf(Date);
   });
@@ -169,9 +167,6 @@ describe('User aggregate', () => {
   });
 
   it('nomme le drapeau qui n est pas booleen a la mise a jour', () => {
-    expect(() =>
-      User.update({ isActive: 'true' as unknown as boolean }),
-    ).toThrow(new DomainValidationError('Invalid user active flag'));
     expect(() =>
       User.update({ emailVerified: 'true' as unknown as boolean }),
     ).toThrow(new DomainValidationError('Invalid email verified flag'));

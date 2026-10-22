@@ -91,16 +91,12 @@ describe('FormationMailerService', () => {
       );
     });
 
-    it('QA-09 · écrit la note sur 20 au dixième et à la française dans le texte et le html', async () => {
+    it('ne donne aucune note sur 20 dans la synthese', async () => {
       const mail = await synthese(
-        buildRapport({
-          participants: [buildRapportParticipant({ note: 12.25 })],
-        }),
+        buildRapport({ participants: [buildRapportParticipant()] }),
       );
 
-      expect(mail.text).toContain('12,3/20');
-      expect(mail.html).toContain('12,3/20');
-      expect(`${mail.text}${mail.html}`).not.toContain('12.3/20');
+      expect(`${mail.text}${mail.html}`).not.toMatch(/\/20|note|seuil/i);
     });
 
     it('D-04 · écrit la complétion en pour cent à la française, liée au signe par une insécable', async () => {
@@ -189,17 +185,19 @@ describe('FormationMailerService', () => {
       expect(mail.html).not.toContain('<a ');
     });
 
-    it('QA-09 · écrit la note sur 20 au dixième et à la française dans la copie', async () => {
-      const mail = await copieAvec({ note: 12.25 });
+    it('ne donne aucune note sur 20 dans la copie', async () => {
+      const mail = await copieAvec({});
 
-      expect(mail.text).toContain('Note obtenue : 12,3/20.');
-      expect(mail.html).toContain('<strong>12,3/20</strong>');
+      expect(`${mail.text}${mail.html}`).not.toMatch(/\/20|note obtenue/i);
     });
 
     it('D-04 · écrit la complétion de la copie en pour cent à la française', async () => {
       const mail = await copieAvec({ completion: 0.85 });
 
-      expect(mail.html).toContain(`(complétion 85${ESPACE_INSECABLE}%)`);
+      expect(mail.text).toContain(
+        `Questions répondues : 85${ESPACE_INSECABLE}%.`,
+      );
+      expect(mail.html).toContain(`<strong>85${ESPACE_INSECABLE}%</strong>`);
       expect(mail.html).not.toMatch(/85 ?%/);
     });
 

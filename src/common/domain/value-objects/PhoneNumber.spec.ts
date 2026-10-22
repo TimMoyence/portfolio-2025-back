@@ -20,6 +20,46 @@ describe('PhoneNumber', () => {
     expect(parsed?.value).toBe('0123456789');
   });
 
+  it.each([
+    ['0 0 1 2 3 4 5 6', '+123456'],
+    ['(+33) 6.12.34.56.78', '+33612345678'],
+    ['+00 33 6 12 34 56 78', '+0033612345678'],
+  ])('lit %p, séparateurs compris, en %p', (saisie, attendu) => {
+    expect(PhoneNumber.parse(saisie)?.value).toBe(attendu);
+  });
+
+  it.each([
+    '+33 6 98 50 32 82',
+    '06 98 50 32 82',
+    '0033698503282',
+    '(01) 23-45.67',
+    '123456',
+    '+123456789012345',
+    ' 0698503282 ',
+  ])('accepte %p', (saisie) => {
+    expect(PhoneNumber.parse(saisie)).not.toBeNull();
+  });
+
+  it.each([
+    '   ',
+    '12345',
+    '+1234567890123456',
+    '06 98 a0 32 82',
+    '++33612345678',
+    '06+98503282',
+    '()-. ',
+    '06/98/50/32/82',
+  ])('refuse %p', (saisie) => {
+    expect(PhoneNumber.parse(saisie)).toBeNull();
+  });
+
+  it.each(['0012345', '00+33612345678', '33+612345678', '+', '()', ''])(
+    'refuse %p : préfixe 00 trop court, plus ailleurs qu en tête, ou rien à composer',
+    (saisie) => {
+      expect(PhoneNumber.parse(saisie)).toBeNull();
+    },
+  );
+
   it('returns null for invalid inputs', () => {
     expect(PhoneNumber.parse('abc')).toBeNull();
     expect(PhoneNumber.parse('12')).toBeNull();

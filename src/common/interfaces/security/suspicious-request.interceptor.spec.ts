@@ -22,15 +22,15 @@ const HEADLESS_CHROME_HEADERS = {
   'accept-language': 'en-US,en;q=0.9',
 };
 
-const COOKIE_CONSENT_POST = {
+const CONTACT_POST = {
   method: 'POST',
-  url: '/api/v1/portfolio25/cookie-consents',
+  url: '/api/v1/portfolio25/contacts',
 };
 
 const NAVIGATEUR_DEMESURE = `HeadlessChrome/145 ${'B'.repeat(15_000)}`;
 
-const CONSENTEMENT_AU_NAVIGATEUR_DEMESURE: FakeRequest = {
-  ...COOKIE_CONSENT_POST,
+const CONTACT_AU_NAVIGATEUR_DEMESURE: FakeRequest = {
+  ...CONTACT_POST,
   headers: { ...HEADLESS_CHROME_HEADERS, 'user-agent': NAVIGATEUR_DEMESURE },
   ip: '203.0.113.42',
 };
@@ -109,7 +109,7 @@ describe('SuspiciousRequestInterceptor', () => {
     xForwardedFor?: string,
   ): FakeRequest {
     return {
-      ...COOKIE_CONSENT_POST,
+      ...CONTACT_POST,
       headers: {
         ...HEADLESS_CHROME_HEADERS,
         ...(xForwardedFor === undefined
@@ -159,9 +159,7 @@ describe('SuspiciousRequestInterceptor', () => {
   });
 
   it('journalise un navigateur borne pour une requete suspecte', async () => {
-    const [trace] = await tracesApresCreation(
-      CONSENTEMENT_AU_NAVIGATEUR_DEMESURE,
-    );
+    const [trace] = await tracesApresCreation(CONTACT_AU_NAVIGATEUR_DEMESURE);
 
     expect(trace.reasons).toContain('ua:headless-chrome');
     expect(trace.ua).toHaveLength(LONGUEUR_MAX_DU_NAVIGATEUR);

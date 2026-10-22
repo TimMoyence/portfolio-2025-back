@@ -16,6 +16,7 @@ import {
   ApiBadRequestResponse,
   ApiConflictResponse,
   ApiCreatedResponse,
+  ApiExtraModels,
   ApiNoContentResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -33,6 +34,7 @@ import {
   RoutePublique,
 } from '../../../common/interfaces/security/formulaire-public.decorator';
 import { JoinSessionUseCase } from '../application/JoinSession.useCase';
+import { EVENEMENTS_DU_FLUX_DU_POSTE } from './dto/contrat/flux-de-seance.response.dto';
 import { LireSujetUseCase } from '../application/LireSujet.useCase';
 import { RecordIncidentsUseCase } from '../application/RecordIncidents.useCase';
 import { SaveFreeResponseUseCase } from '../application/SaveFreeResponse.useCase';
@@ -49,12 +51,10 @@ import { DeclarerJalonUseCase } from '../application/DeclarerJalon.useCase';
 import { DefisUseCase } from '../application/Defis.useCase';
 import { LireEtatParticipantUseCase } from '../application/LireEtatParticipant.useCase';
 import { LireRappelsUseCase } from '../application/LireRappels.useCase';
-import type { CoursPublic } from '../domain/contrats/tirage';
 import {
   InvalidSessionCodeError,
   SessionNotFoundError,
 } from '../domain/errors/FormationErrors';
-import { CleEtudiantService } from './CleEtudiant.service';
 import { CodeScanProtectionService } from './CodeScanProtection.service';
 import { IdentiteDuJeton, RouteParticipant } from './ParticipantToken.guard';
 import { JoinSessionRequestDto } from './dto/join-session.request.dto';
@@ -119,7 +119,7 @@ function EvaluationEnSeance(
     }),
     ApiNotFoundResponse({
       description:
-        'Evaluation refusee, cause dans le champ code du corps : ECRAN_NON_SERVI ou PARTICIPANT_INTROUVABLE',
+        'Evaluation refusee, cause dans le champ code du corps : ECRAN_NON_SERVI',
     }),
     ApiConflictResponse({
       description:
@@ -132,6 +132,7 @@ function EvaluationEnSeance(
 @ApiTags('formations')
 @RoutePublique()
 @Controller('formations')
+@ApiExtraModels(...Object.values(EVENEMENTS_DU_FLUX_DU_POSTE))
 export class FormationsStudentController {
   constructor(
     private readonly joinSession: JoinSessionUseCase,
@@ -151,7 +152,6 @@ export class FormationsStudentController {
     private readonly telechargerPieceJointe: TelechargerPieceJointeUseCase,
     private readonly saveFreeResponse: SaveFreeResponseUseCase,
     private readonly tokens: ParticipantTokenService,
-    private readonly clesEtudiants: CleEtudiantService,
     private readonly codeScan: CodeScanProtectionService,
   ) {}
 
@@ -180,7 +180,6 @@ export class FormationsStudentController {
     const result = await this.joinSession
       .execute({
         code,
-        studentKey: this.clesEtudiants.de(dto.email),
         prenom: dto.prenom,
         nom: dto.nom,
         email: dto.email,
@@ -210,6 +209,10 @@ export class FormationsStudentController {
   @Post('sessions/:id/answers')
   @ApiOperation({ summary: 'Soumet une reponse, corrigee cote serveur' })
   @ApiCreatedResponse({ type: SubmitAnswerResponseDto })
+  @ApiBadRequestResponse({
+    description:
+      'Saisie d une question numerique qui ne se lit pas en nombre : code SAISIE_NON_NUMERIQUE',
+  })
   @ApiConflictResponse({
     description:
       'Reponse refusee, cause dans le champ code du corps : SEANCE_NON_DEMARREE, SEANCE_TERMINEE, PHASE_FERMEE, REPONSE_DEJA_ENREGISTREE ou COURS_MODIFIE',
@@ -487,10 +490,7 @@ export class FormationsStudentController {
     @Param('id', ParseUUIDPipe) sessionId: string,
     @IdentiteDuJeton() { participantId }: IdentiteSignee,
   ): Promise<EtatParticipantResponseDto> {
-    return this.lireEtatParticipant.execute({
-      sessionId,
-      participantId,
-    }) as Promise<EtatParticipantResponseDto>;
+    return this.lireEtatParticipant.execute({ sessionId, participantId });
   }
 
   @LimiteParParticipant(LIMITE_RAPPELS_PAR_PARTICIPANT)
@@ -509,10 +509,7 @@ export class FormationsStudentController {
     @Param('id', ParseUUIDPipe) sessionId: string,
     @IdentiteDuJeton() { participantId }: IdentiteSignee,
   ): Promise<RappelsResponseDto> {
-    return this.lireRappels.execute({
-      sessionId,
-      participantId,
-    }) as Promise<RappelsResponseDto>;
+    return this.lireRappels.execute({ sessionId, participantId });
   }
 
   @LimiteParParticipant(LIMITE_INCIDENTS_PAR_PARTICIPANT)
@@ -531,7 +528,6 @@ export class FormationsStudentController {
   ): Promise<void> {
     await this.recordIncidents.execute(
       sessionId,
-      participantId,
       dto.incidents.map((incident) => ({
         sessionId,
         participantId,
@@ -558,7 +554,7 @@ export class FormationsStudentController {
   async sujet(
     @Param('id', ParseUUIDPipe) sessionId: string,
     @IdentiteDuJeton() { participantId }: IdentiteSignee,
-  ): Promise<CoursPublic> {
+  ): Promise<SujetResponseDto> {
     return this.lireSujet.execute({ sessionId, participantId });
   }
 
@@ -594,6 +590,7 @@ export class FormationsStudentController {
   @FluxDEvenements(
     'sessions/:id/stream',
     'Etat de la seance a chaque changement, vu du participant',
+    EVENEMENTS_DU_FLUX_DU_POSTE,
   )
   @ApiOperation({ summary: 'Flux temps reel de l etat de la session' })
   @RouteParticipant()

@@ -7,7 +7,6 @@ import {
   creerCatalogueDeTest,
 } from '../../../../../test/factories/cours.factory';
 import {
-  buildLiveSessionState,
   buildSessionRecord,
   createMockSessionsRepo,
   createMockSessionStateCache,
@@ -117,12 +116,6 @@ describe('ControlSessionUseCase', () => {
     b.attendrePublication({ ecranCourant: 4 });
   });
 
-  it('reprend le nombre de participants deja en cache lors de la publication', async () => {
-    b.cache.read.mockReturnValue(buildLiveSessionState({ participants: 9 }));
-    await b.piloter({ ecran: 4 });
-    b.attendrePublication({ participants: 9 });
-  });
-
   it('refuse un ecran negatif', async () => {
     await expect(b.piloter({ ecran: -1 })).rejects.toThrow();
   });
@@ -157,6 +150,14 @@ describe('ControlSessionUseCase', () => {
       `Écran ${NOMBRE_ECRANS} hors du cours : ${NOMBRE_ECRANS} écrans`,
     );
   });
+
+  it.each([{}, { intervalle: { premier: 1, dernier: 3 } }])(
+    'refuse en validation un pilotage qui ne change ni ecran, ni rythme, ni ecran pilote %p, sans lire la seance',
+    async (commande) => {
+      await b.refuseSansEffet(b.piloter(commande), DomainValidationError);
+      expect(b.sessions.findById).not.toHaveBeenCalled();
+    },
+  );
 
   it('refuse de piloter un ecran quand le cours est absent du catalogue', async () => {
     b.seanceLue(COURS_ABSENT);

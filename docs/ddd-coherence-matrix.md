@@ -6,7 +6,6 @@
 
 - `users` (authentification et gestion d'utilisateurs)
 - `contacts` (formulaire de contact + notification email)
-- `cookie-consents` (trace RGPD du consentement)
 - `audit-requests` (demande d'audit + pipeline async + SSE)
 - `lead-magnets` (capture email + PDF toolkit)
 - `presentations` (interactions slides in-memory)

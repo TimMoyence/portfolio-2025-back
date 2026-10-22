@@ -1,3 +1,4 @@
+import { arrondi } from '../../../common/domain/nombres/arrondi';
 import { moyenneOu } from '../../../common/domain/nombres/statistiques';
 import type { TypeQuestion } from './contrats/cours';
 import type {
@@ -5,6 +6,7 @@ import type {
   Decompte,
   ResultatQuestion,
   ResultatsSeance,
+  ValeurReponse,
 } from './contrats/resultats';
 import {
   confusionsParFrequence,
@@ -19,8 +21,6 @@ export type {
   ResultatQuestion,
   ResultatsSeance,
 } from './contrats/resultats';
-
-const CLE_NE_SAIT_PAS = '__je_ne_sais_pas__';
 
 export interface QuestionAAgreger {
   readonly id: string;
@@ -40,10 +40,14 @@ export interface AgregerResultatsInput {
 export function agregerResultats(
   entree: AgregerResultatsInput,
 ): ResultatsSeance {
+  const agregees = new Set(entree.questions.map(({ id }) => id));
   return {
     participants: entree.participants,
     questions: entree.questions.map((question) =>
       agregerQuestion(question, entree.answers, entree.remediations ?? {}),
+    ),
+    confusions: compterConfusions(
+      entree.answers.filter(({ questionId }) => agregees.has(questionId)),
     ),
   };
 }
@@ -60,6 +64,8 @@ function agregerQuestion(
     total: reponses.length,
     correctes: reponses.filter((reponse) => reponse.correcte).length,
     confusions: compterConfusions(reponses),
+    scoreMoyen: moyenneDesScores(reponses),
+    part: partDesReponses(reponses),
   };
   return {
     questionId: question.id,
@@ -67,19 +73,19 @@ function agregerQuestion(
     type: question.type,
     noteCompte: question.noteCompte,
     ...decompte,
-    neSaitPas: reponses.filter((reponse) => estNeSaitPas(reponse)).length,
+    neSaitPas: reponses.filter((reponse) => estNeSaitPas(reponse.valeur))
+      .length,
     parOption: question.type === 'vote' ? compterParOption(reponses) : null,
-    scoreMoyen: moyenneDesScores(reponses),
     parCle: compterParCle(reponses),
     ...lectureDuSeuil(question, decompte, remediations),
   };
 }
 
-function estNeSaitPas(reponse: AnswerRecord): boolean {
-  if (reponse.valeur === NE_SAIT_PAS) {
+export function estNeSaitPas(valeur: ValeurReponse): boolean {
+  if (valeur === NE_SAIT_PAS) {
     return true;
   }
-  return estUneProduction(reponse.valeur) && 'neSaitPas' in reponse.valeur;
+  return estUneProduction(valeur) && 'neSaitPas' in valeur;
 }
 
 function compterParOption(
@@ -87,8 +93,8 @@ function compterParOption(
 ): Readonly<Record<string, number>> {
   const parOption: Record<string, number> = {};
   for (const reponse of reponses) {
-    const cle = estNeSaitPas(reponse)
-      ? CLE_NE_SAIT_PAS
+    const cle = estNeSaitPas(reponse.valeur)
+      ? NE_SAIT_PAS
       : texteDeValeur(reponse.valeur);
     parOption[cle] = (parOption[cle] ?? 0) + 1;
   }
@@ -100,6 +106,19 @@ function moyenneDesScores(reponses: readonly AnswerRecord[]): number | null {
     .map((reponse) => reponse.score)
     .filter((score): score is number => score !== null);
   return moyenneOu(scores, null);
+}
+
+const DECIMALES_D_UNE_PART = 9;
+
+function scoreDeLaReponse(reponse: AnswerRecord): number {
+  return reponse.score ?? (reponse.correcte ? 1 : 0);
+}
+
+export function partDesReponses(reponses: readonly AnswerRecord[]): number {
+  return arrondi(
+    moyenneOu(reponses.map(scoreDeLaReponse), 0),
+    DECIMALES_D_UNE_PART,
+  );
 }
 
 function compterParCle(
@@ -134,15 +153,14 @@ function lectureDuSeuil(
   question: QuestionAAgreger,
   {
     total,
-    correctes,
     confusions,
-  }: Pick<ResultatQuestion, 'total' | 'correctes' | 'confusions'>,
+    part,
+  }: Pick<ResultatQuestion, 'total' | 'confusions' | 'part'>,
   remediations: Readonly<Record<string, string>>,
 ): Pick<
   ResultatQuestion,
-  'confusionDominante' | 'part' | 'sousLeSeuil' | 'remediation'
+  'confusionDominante' | 'sousLeSeuil' | 'remediation'
 > {
-  const part = total > 0 ? correctes / total : 0;
   const sousLeSeuil =
     question.seuil !== null && total > 0 && part < question.seuil;
   const dominante = confusions.at(0)?.id ?? null;
@@ -152,7 +170,6 @@ function lectureDuSeuil(
       : null;
   return {
     confusionDominante: dominante,
-    part,
     sousLeSeuil,
     remediation:
       sousLeSeuil && dominante !== null && ecranId !== null

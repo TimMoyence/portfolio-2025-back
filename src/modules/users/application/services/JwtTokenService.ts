@@ -5,7 +5,10 @@ import {
   estUnSecretValable,
   LONGUEUR_MIN_DU_SECRET,
 } from '../../../../common/domain/crypto/secret-hmac';
-import type { ValeursDeLEnv } from '../../../../config/env.validation';
+import {
+  DUREE_D_UN_JETON,
+  type ValeursDeLEnv,
+} from '../../../../config/env.validation';
 import type { JwtPayload } from './JwtPayload';
 
 interface SignedToken {
@@ -14,7 +17,12 @@ interface SignedToken {
   expiresAt: number;
 }
 
-const EXPIRES_IN_PATTERN = /^(\d+)([smhd])$/i;
+const SECONDES_PAR_UNITE: Readonly<Record<string, number>> = {
+  s: 1,
+  m: 60,
+  h: 3600,
+  d: 86400,
+};
 
 function toJwtPayload(payload: JWTPayload): JwtPayload {
   const sub = payload.sub;
@@ -80,28 +88,12 @@ export class JwtTokenService {
   }
 
   private parseExpiresIn(value: string): number {
-    const match = EXPIRES_IN_PATTERN.exec(value.trim());
-
+    const match = DUREE_D_UN_JETON.exec(value.trim());
     if (!match) {
-      const numeric = Number(value);
-      return Number.isFinite(numeric) ? numeric : 900;
+      throw new Error(`JWT_EXPIRES_IN invalide : ${value}`);
     }
-
-    const amount = Number(match[1]);
-    const unit = match[2].toLowerCase();
-
-    switch (unit) {
-      case 's':
-        return amount;
-      case 'm':
-        return amount * 60;
-      case 'h':
-        return amount * 3600;
-      case 'd':
-        return amount * 86400;
-      default:
-        return 900;
-    }
+    const [, quantite, unite = 's'] = match;
+    return Number(quantite) * SECONDES_PAR_UNITE[unite.toLowerCase()];
   }
 
   async verify(token: string): Promise<JwtPayload> {

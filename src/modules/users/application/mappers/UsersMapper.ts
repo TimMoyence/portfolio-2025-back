@@ -1,7 +1,7 @@
 import { mapDomainValidation } from '../../../../common/application/mappers/map-domain-validation';
 import { User } from '../../domain/User';
 import type { CreateUserCommand } from '../dto/CreateUser.command';
-import type { UpdateUserCommand } from '../dto/UpdateUser.command';
+import type { UpdateProfileCommand } from '../dto/UpdateProfile.command';
 
 export class UsersMapper {
   static fromCreateCommand(
@@ -22,18 +22,13 @@ export class UsersMapper {
     );
   }
 
-  static fromUpdateCommand(
-    command: Omit<UpdateUserCommand, 'password'>,
-  ): Partial<User> {
+  static fromProfileCommand(command: UpdateProfileCommand): Partial<User> {
     return mapDomainValidation(() =>
       User.update({
-        email: command.email,
         firstName: command.firstName,
         lastName: command.lastName,
         phone: command.phone,
-        isActive: command.isActive,
-        roles: command.roles,
-        updatedOrCreatedBy: command.updatedOrCreatedBy,
+        updatedOrCreatedBy: 'self-update',
       }),
     );
   }

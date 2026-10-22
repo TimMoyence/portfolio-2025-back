@@ -1,13 +1,14 @@
-import { RequestMethod } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { SwaggerModule } from '@nestjs/swagger';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import { Logger } from 'nestjs-pino';
 import { AppModule } from './app.module';
 import { bornerLesCorpsDeRequete } from './common/interfaces/http/corps-de-requete';
 import { ouvrirAuxOrigines } from './common/interfaces/http/cors';
+import { documentOpenApi } from './common/interfaces/http/document-openapi';
+import { prefixerLesRoutes } from './common/interfaces/http/prefixer-les-routes';
 import { appliquerLesTraitementsGlobaux } from './common/interfaces/http/traitements-globaux';
 import {
   envListe,
@@ -15,7 +16,6 @@ import {
   envString,
   estEnProduction,
 } from './config/env-readers.util';
-import { prefixeApi } from './config/prefixe-api';
 import { logBootstrapStep } from './runtime/log-bootstrap-step';
 
 async function bootstrap() {
@@ -79,22 +79,11 @@ async function bootstrap() {
 
   appliquerLesTraitementsGlobaux(app);
 
-  app.setGlobalPrefix(prefixeApi(), {
-    exclude: [
-      { path: 'api/articles', method: RequestMethod.ALL },
-      { path: 'api/articles/(.*)', method: RequestMethod.ALL },
-    ],
-  });
+  prefixerLesRoutes(app);
 
   if (!isProd) {
-    const swaggerConfig = new DocumentBuilder()
-      .setTitle('Portfolio 2025 API')
-      .setDescription('HTTP API documentation for the portfolio backend')
-      .setVersion('1.0')
-      .build();
-    const document = SwaggerModule.createDocument(app, swaggerConfig);
     const swaggerPath = envString('SWAGGER_PATH') ?? 'docs';
-    SwaggerModule.setup(swaggerPath, app, document, {
+    SwaggerModule.setup(swaggerPath, app, documentOpenApi(app), {
       swaggerOptions: { persistAuthorization: true },
     });
   }

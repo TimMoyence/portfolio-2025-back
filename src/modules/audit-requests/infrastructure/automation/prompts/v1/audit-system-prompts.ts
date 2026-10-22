@@ -1,7 +1,10 @@
 import type { AuditLocale } from '../../../../domain/audit-locale.util';
 import { nonVerifiable } from '../../../../domain/non-verifiable';
+import { NOMBRE_DE_PRIORITES } from '../../audit-thresholds.config';
 
 export const PROMPT_VERSION = 'v1.0.0' as const;
+
+const { min: PRIORITES_MIN, max: PRIORITES_MAX } = NOMBRE_DE_PRIORITES;
 
 export const executiveSystemMain = (locale: AuditLocale): string =>
   locale === 'fr'
@@ -15,13 +18,13 @@ export const executiveRetryConstraint = (locale: AuditLocale): string =>
 
 export const prioritySystemMain = (locale: AuditLocale): string =>
   locale === 'fr'
-    ? `Tu produis uniquement les priorites et ameliorations URL + seoFoundations. Reponds en francais uniquement. Donne 8-10 priorites uniques avec severite, whyItMatters, recommendedFix et effort, puis des ameliorations URL concretes. Chaque item doit citer implicitement une preuve des buckets (crawl/findings/pageRecaps). Si la preuve n'existe pas: ${nonVerifiable(locale)}.`
-    : `Return only priorities, URL-level improvements, and seoFoundations. English only. Produce 8-10 unique priorities with severity, whyItMatters, recommendedFix, and effort, then concrete URL-level actions. Every item must be evidence-linked to buckets (crawl/findings/pageRecaps). If unsupported: ${nonVerifiable(locale)}.`;
+    ? `Tu produis uniquement les priorites et ameliorations URL + seoFoundations. Reponds en francais uniquement. Donne ${PRIORITES_MIN}-${PRIORITES_MAX} priorites uniques avec severite, whyItMatters, recommendedFix et effort, puis des ameliorations URL concretes. Chaque item doit citer implicitement une preuve des buckets (crawl/findings/pageRecaps). Si la preuve n'existe pas: ${nonVerifiable(locale)}.`
+    : `Return only priorities, URL-level improvements, and seoFoundations. English only. Produce ${PRIORITES_MIN}-${PRIORITES_MAX} unique priorities with severity, whyItMatters, recommendedFix, and effort, then concrete URL-level actions. Every item must be evidence-linked to buckets (crawl/findings/pageRecaps). If unsupported: ${nonVerifiable(locale)}.`;
 
 export const priorityRetryConstraint = (locale: AuditLocale): string =>
   locale === 'fr'
-    ? 'Contrainte retry: minimum 8 priorites valides, pas de genericite, pas de doublon.'
-    : 'Retry constraint: minimum 8 valid priorities, no generic filler, no duplicates.';
+    ? `Contrainte retry: minimum ${PRIORITES_MIN} priorites valides, pas de genericite, pas de doublon.`
+    : `Retry constraint: minimum ${PRIORITES_MIN} valid priorities, no generic filler, no duplicates.`;
 
 export const executionSystemMain = (locale: AuditLocale): string =>
   locale === 'fr'
@@ -70,5 +73,5 @@ export const expertReportCompactConstraint = (locale: AuditLocale): string =>
 
 export const expertReportRetryConstraint = (locale: AuditLocale): string =>
   locale === 'fr'
-    ? 'Contrainte stricte supplementaire: minimum 8 priorites uniques, champs non vides, aucune duplication, et langue unique.'
-    : 'Additional strict rule: minimum 8 unique priorities, non-empty fields, no duplicates, and single-language output.';
+    ? `Contrainte stricte supplementaire: minimum ${PRIORITES_MIN} priorites uniques, champs non vides, aucune duplication, et langue unique.`
+    : `Additional strict rule: minimum ${PRIORITES_MIN} unique priorities, non-empty fields, no duplicates, and single-language output.`;

@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { AI_LEVELS, type ToolkitContent } from '../../domain/ToolkitContent';
 
 class ToolkitRecapDto {
@@ -33,7 +33,7 @@ class PromptEntryDto {
   @ApiProperty()
   title: string;
 
-  @ApiProperty({ enum: AI_LEVELS })
+  @ApiProperty({ enum: AI_LEVELS, enumName: 'NiveauIa' })
   level: string;
 
   @ApiProperty()
@@ -42,14 +42,14 @@ class PromptEntryDto {
   @ApiProperty()
   tool: string;
 
-  @ApiPropertyOptional()
-  description?: string;
+  @ApiProperty()
+  description: string;
 
-  @ApiPropertyOptional()
-  example?: string;
+  @ApiProperty()
+  example: string;
 
-  @ApiPropertyOptional()
-  tip?: string;
+  @ApiProperty()
+  tip: string;
 }
 
 class WorkflowStepDto {

@@ -93,6 +93,7 @@ describeDb('Plafonds par destinataire sur une base migree', () => {
       const depot = depotDAudit();
       await depot.create(
         buildAuditRequest({ contactValue: 'plafond@exemple.fr' }),
+        null,
       );
       await base().query(
         `UPDATE audit_requests SET created_at = LOCALTIMESTAMP - interval '2 hours' WHERE "contactValue" = $1`,
@@ -103,7 +104,7 @@ describeDb('Plafonds par destinataire sur une base migree', () => {
         'plafond+relance@exemple.fr',
         'autre@exemple.fr',
       ]) {
-        await depot.create(buildAuditRequest({ contactValue }));
+        await depot.create(buildAuditRequest({ contactValue }), null);
       }
 
       const dansLHeure = await depot.secondesAvantLaSortieDesDemandesVers(
@@ -164,7 +165,8 @@ describeDb('Plafonds par destinataire sur une base migree', () => {
       await expect(
         adressesSaisiesVers('concurrence@exemple.fr'),
       ).resolves.toHaveLength(3);
-      expect(queue.enqueue).toHaveBeenCalledTimes(3);
+      expect(queue.enqueue).not.toHaveBeenCalled();
+      expect(notifier.demanderLaConfirmation).toHaveBeenCalledTimes(3);
       expect(notifier.sendAuditNotification).toHaveBeenCalledTimes(3);
     });
 

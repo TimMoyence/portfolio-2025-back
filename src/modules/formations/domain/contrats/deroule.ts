@@ -90,5 +90,4 @@ export type CorrigeEcranPresentateur =
 
 export interface DerouleCours extends Omit<CoursPublic, 'ecrans'> {
   readonly ecrans: readonly EcranDeroule[];
-  readonly remediations: Readonly<Record<string, string>>;
 }

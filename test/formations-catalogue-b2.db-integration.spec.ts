@@ -1,5 +1,3 @@
-import { CloseSessionUseCase } from '../src/modules/formations/application/CloseSession.useCase';
-import { GetSessionResultsUseCase } from '../src/modules/formations/application/GetSessionResults.useCase';
 import { LireCoursPublicUseCase } from '../src/modules/formations/application/LireCoursPublic.useCase';
 import {
   ContenuDeCoursInvalideError,
@@ -14,13 +12,7 @@ import {
   buildEcranStockeAvec,
   buildQuizNote,
 } from './factories/cours-stocke.factory';
-import {
-  buildBareme,
-  createMockEscapeRepo,
-  createMockFormationMailer,
-  createMockPulsesRepo,
-  createMockSessionStateCache,
-} from './factories/formation.factory';
+import { buildBareme } from './factories/formation.factory';
 import { describeDb } from './helpers/db-integration-datasource';
 import {
   DELAI_OUVERTURE_CONTEXTE_MS,
@@ -362,7 +354,6 @@ describeDb('catalogue B2 migré', () => {
         participantId: participant.id,
         activityId: 'b2-s11-c1',
         response: 'Réponse reprise après reconnexion',
-        status: 'enregistre',
         dureeMs: 2200,
       }),
     ]);
@@ -403,112 +394,5 @@ describeDb('catalogue B2 migré', () => {
         'b2222222-2222-4222-8222-222222222222',
       ),
     ).resolves.toEqual([]);
-  });
-
-  it('persiste à la clôture la note et la complétion de chaque participant et les statistiques de la séance', async () => {
-    const {
-      sessions,
-      participants,
-      answers,
-      incidents,
-      catalogue,
-      scores,
-      freeResponses,
-    } = contexte;
-    const session = await ouvrirSeanceB2('7315');
-    const ada = await inscrireParticipant(participants, {
-      sessionId: session.id,
-      studentKey: 'b4111111-1111-4111-8111-111111111111',
-      prenom: 'Ada',
-      nom: 'Lovelace',
-      email: 'ada@example.test',
-      seed: 1001,
-    });
-    const grace = await inscrireParticipant(participants, {
-      sessionId: session.id,
-      studentKey: 'b5111111-1111-4111-8111-111111111111',
-      prenom: 'Grace',
-      nom: 'Hopper',
-      email: 'grace@example.test',
-      seed: 1002,
-    });
-    await answers.create({
-      sessionId: session.id,
-      participantId: ada.id,
-      questionId: 'Q-CAP-03',
-      concept: 'capitalisation',
-      valeur: 1338.23,
-      seed: 1001,
-      correcte: true,
-      misconception: null,
-      dureeMs: 1000,
-    });
-    const cloture = new CloseSessionUseCase(
-      sessions,
-      new GetSessionResultsUseCase(
-        sessions,
-        participants,
-        answers,
-        incidents,
-        catalogue,
-        createMockPulsesRepo(),
-        createMockEscapeRepo(),
-        freeResponses,
-      ),
-      scores,
-      createMockFormationMailer(),
-      createMockSessionStateCache(),
-    );
-
-    await cloture.execute(session.id, FORMATEUR);
-    const statistiques = {
-      sessionId: session.id,
-      moyenne: 10,
-      mediane: 10,
-      dispersion: 10,
-      tauxParticipation: 0.5,
-      tauxReussite: 1,
-      questionsProblemes: [],
-    };
-    await Promise.all([
-      scores.saveSession(statistiques),
-      scores.saveSession(statistiques),
-    ]);
-
-    await expect(
-      contexte.dataSource.query(
-        `SELECT "participant_id" AS "participantId", "kind", "score", "percentage", "metrics"
-         FROM "formation_scores" WHERE "session_id" = $1
-         ORDER BY "kind", "score" DESC`,
-        [session.id],
-      ),
-    ).resolves.toEqual([
-      {
-        participantId: ada.id,
-        kind: 'individual',
-        score: 20,
-        percentage: 1,
-        metrics: {},
-      },
-      {
-        participantId: grace.id,
-        kind: 'individual',
-        score: 0,
-        percentage: 0,
-        metrics: {},
-      },
-      {
-        participantId: null,
-        kind: 'session',
-        score: 10,
-        percentage: 1,
-        metrics: {
-          mediane: 10,
-          dispersion: 10,
-          tauxParticipation: 0.5,
-          questionsProblemes: [],
-        },
-      },
-    ]);
   });
 });

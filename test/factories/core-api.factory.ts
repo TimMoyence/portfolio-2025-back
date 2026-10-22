@@ -1,14 +1,14 @@
 import type { Provider } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Test, type TestingModuleBuilder } from '@nestjs/testing';
 import { of } from 'rxjs';
+import { ConfirmAuditRequestUseCase } from '../../src/modules/audit-requests/application/ConfirmAuditRequest.useCase';
 import { CreateAuditRequestsUseCase } from '../../src/modules/audit-requests/application/CreateAuditRequests.useCase';
 import { GetAuditSummaryUseCase } from '../../src/modules/audit-requests/application/GetAuditSummary.useCase';
 import { StreamAuditEventsUseCase } from '../../src/modules/audit-requests/application/StreamAuditEvents.useCase';
 import { AuditsController } from '../../src/modules/audit-requests/interfaces/Audits.controller';
 import { CreateContactsUseCase } from '../../src/modules/contacts/application/CreateContacts.useCase';
 import { ContactsController } from '../../src/modules/contacts/interfaces/Contacts.controller';
-import { CreateCookieConsentsUseCase } from '../../src/modules/cookie-consents/application/CreateCookieConsents.useCase';
-import { CookieConsentsController } from '../../src/modules/cookie-consents/interfaces/CookieConsents.controller';
 import { AuthenticateGoogleUserUseCase } from '../../src/modules/users/application/AuthenticateGoogleUser.useCase';
 import { AuthenticateUserUseCase } from '../../src/modules/users/application/AuthenticateUser.useCase';
 import { ChangePasswordUseCase } from '../../src/modules/users/application/ChangePassword.useCase';
@@ -25,14 +25,10 @@ import { VerifyEmailUseCase } from '../../src/modules/users/application/VerifyEm
 import { AuthAuditLogger } from '../../src/modules/users/application/services/AuthAuditLogger';
 import { AuthController } from '../../src/modules/users/interfaces/Auth.controller';
 import { USERS_REPOSITORY } from '../../src/modules/users/domain/token';
+import { buildConfigService, buildValidEnv } from './env.factory';
 import { createMockUsersRepo } from './user.factory';
 
-const CORE_CONTROLLERS = [
-  ContactsController,
-  CookieConsentsController,
-  AuditsController,
-  AuthController,
-];
+const CORE_CONTROLLERS = [ContactsController, AuditsController, AuthController];
 
 export const CONTACT_PAYLOAD = {
   firstName: 'John',
@@ -45,17 +41,13 @@ export const CONTACT_PAYLOAD = {
 };
 
 export const AUDIT_REQUEST_PAYLOAD = {
-  websiteName: 'Example Studio',
+  websiteName: 'example.com',
   contactMethod: 'EMAIL',
   contactValue: 'hello@example.com',
 };
 
 export const CONTACT_CREATED_RESULT = {
   message: 'Contact request created successfully.',
-};
-
-export const COOKIE_CONSENT_RECORDED_RESULT = {
-  message: 'Cookie consent recorded successfully.',
 };
 
 export const AUDIT_CREATED_RESULT = {
@@ -77,11 +69,6 @@ export const AUDIT_SUMMARY_RESULT = {
 
 export const CONTACT_CREATED_RESPONSE = {
   ...CONTACT_CREATED_RESULT,
-  httpCode: 201,
-};
-
-export const COOKIE_CONSENT_RECORDED_RESPONSE = {
-  ...COOKIE_CONSENT_RECORDED_RESULT,
   httpCode: 201,
 };
 
@@ -133,8 +120,8 @@ export function buildAuditProgressEvent() {
 
 export interface CoreUseCaseStubs {
   createContactsUseCase: { execute: jest.Mock };
-  createCookieConsentsUseCase: { execute: jest.Mock };
   createAuditRequestsUseCase: { execute: jest.Mock };
+  confirmAuditRequestUseCase: { execute: jest.Mock };
   getAuditSummaryUseCase: { execute: jest.Mock };
   streamAuditEventsUseCase: { execute: jest.Mock };
 }
@@ -158,8 +145,8 @@ export interface AuthUseCaseStubs {
 export function createCoreUseCaseStubs(): CoreUseCaseStubs {
   return {
     createContactsUseCase: { execute: jest.fn() },
-    createCookieConsentsUseCase: { execute: jest.fn() },
     createAuditRequestsUseCase: { execute: jest.fn() },
+    confirmAuditRequestUseCase: { execute: jest.fn() },
     getAuditSummaryUseCase: { execute: jest.fn() },
     streamAuditEventsUseCase: { execute: jest.fn() },
   };
@@ -187,12 +174,12 @@ export function coreControllerProviders(stubs: CoreUseCaseStubs): Provider[] {
   return [
     { provide: CreateContactsUseCase, useValue: stubs.createContactsUseCase },
     {
-      provide: CreateCookieConsentsUseCase,
-      useValue: stubs.createCookieConsentsUseCase,
-    },
-    {
       provide: CreateAuditRequestsUseCase,
       useValue: stubs.createAuditRequestsUseCase,
+    },
+    {
+      provide: ConfirmAuditRequestUseCase,
+      useValue: stubs.confirmAuditRequestUseCase,
     },
     { provide: GetAuditSummaryUseCase, useValue: stubs.getAuditSummaryUseCase },
     {
@@ -233,6 +220,7 @@ export function authControllerProviders(
       useValue: stubs.resendVerificationEmailUseCase,
     },
     AuthAuditLogger,
+    { provide: ConfigService, useValue: buildConfigService(buildValidEnv()) },
     { provide: USERS_REPOSITORY, useValue: usersRepository },
   ];
 }
@@ -251,9 +239,6 @@ export const moduleDesControleursDuSocle = (
 
 export function primeCoreUseCaseStubs(stubs: CoreUseCaseStubs): void {
   stubs.createContactsUseCase.execute.mockResolvedValue(CONTACT_CREATED_RESULT);
-  stubs.createCookieConsentsUseCase.execute.mockResolvedValue(
-    COOKIE_CONSENT_RECORDED_RESULT,
-  );
   stubs.createAuditRequestsUseCase.execute.mockResolvedValue(
     AUDIT_CREATED_RESULT,
   );

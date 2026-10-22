@@ -149,17 +149,10 @@ export class ToolkitHtmlRendererService {
   private renderPrompts(prompts: PromptEntry[]): EscapedHtml {
     if (!prompts.length) return safeHtml``;
 
-    const cards = prompts.map((prompt) => {
-      const description = prompt.description
-        ? safeHtml`<p class="prompt-description">${escapeHtml(prompt.description)}</p>`
-        : safeHtml``;
-      const example = prompt.example
-        ? safeHtml`<div class="prompt-example"><span class="prompt-example-label">Cas d'usage</span><p>${escapeHtml(prompt.example)}</p></div>`
-        : safeHtml``;
-      const tip = prompt.tip
-        ? safeHtml`<div class="prompt-tip"><span class="prompt-tip-label">💡 Astuce d'itération</span><p>${escapeHtml(prompt.tip)}</p></div>`
-        : safeHtml``;
-      return safeHtml`<article class="prompt-card teinte-${escapeHtml(teinteDe(prompt.category))}">
+    const cards = prompts.map(
+      (
+        prompt,
+      ) => safeHtml`<article class="prompt-card teinte-${escapeHtml(teinteDe(prompt.category))}">
         <header class="prompt-header">
           <div class="prompt-pills">
             <span class="pill pill-categorie">${escapeHtml(prompt.category)}</span>
@@ -167,13 +160,13 @@ export class ToolkitHtmlRendererService {
             <span class="pill pill-tool">${escapeHtml(prompt.tool)}</span>
           </div>
           <h4 class="prompt-title">${escapeHtml(prompt.title)}</h4>
-          ${description}
+          <p class="prompt-description">${escapeHtml(prompt.description)}</p>
         </header>
         <pre class="prompt-code">${escapeHtml(prompt.prompt)}</pre>
-        ${example}
-        ${tip}
-      </article>`;
-    });
+        <div class="prompt-example"><span class="prompt-example-label">Cas d'usage</span><p>${escapeHtml(prompt.example)}</p></div>
+        <div class="prompt-tip"><span class="prompt-tip-label">💡 Astuce d'itération</span><p>${escapeHtml(prompt.tip)}</p></div>
+      </article>`,
+    );
 
     return safeHtml`<section class="page section">
       ${sectionHeader('02', '✍️ Prompts', 'Pour tous les niveaux')}

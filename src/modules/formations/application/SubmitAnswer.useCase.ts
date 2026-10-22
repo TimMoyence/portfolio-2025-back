@@ -4,6 +4,7 @@ import { gradeAnswer } from '../domain/AnswerGrading';
 import { estValeurConnue, findQuestion, solutionFor } from '../domain/Bareme';
 import {
   absenteDuCours,
+  assertCorrectionNonProjetee,
   cibleServie,
   ecranParId,
   idDeLEcranAuRang,
@@ -12,8 +13,13 @@ import {
 } from '../domain/cours/EcranServi';
 import { assertQuestionNonCorrigee } from '../domain/cours/CorrectionSurPlace';
 import { assertPhaseOuverte } from '../domain/cours/PilotageEcrans';
-import { AnswerAlreadySubmittedError } from '../domain/errors/FormationErrors';
-import { coursDeLaSeance, seanceOuverteAuxReponses } from './CoursDeLaSeance';
+import { lireNombreSaisi } from '../domain/cours/Formule';
+import {
+  AnswerAlreadySubmittedError,
+  SaisieNonNumeriqueError,
+} from '../domain/errors/FormationErrors';
+import type { AnswerValue } from '../domain/GradingCore';
+import { estNeSaitPas } from '../domain/ResultatsSeance';
 import { EnregistrementDeReponse } from './EnregistrementDeReponse';
 import type {
   SubmitAnswerCommand,
@@ -27,15 +33,28 @@ const TYPES_A_ROUTE_PROPRE: readonly string[] = [
   'enigme',
 ];
 
+function estUneSaisieNumerique(
+  type: string,
+  valeur: AnswerValue,
+): valeur is string {
+  return (
+    type === 'numeric' && typeof valeur === 'string' && !estNeSaitPas(valeur)
+  );
+}
+
+function nombreSaisi(questionId: string, saisie: string): number {
+  const nombre = lireNombreSaisi(saisie);
+  if (nombre === null) {
+    throw new SaisieNonNumeriqueError(questionId);
+  }
+  return nombre;
+}
+
 @Injectable()
 export class SubmitAnswerUseCase extends EnregistrementDeReponse {
   async execute(command: SubmitAnswerCommand): Promise<SubmitAnswerResult> {
-    const session = await seanceOuverteAuxReponses(
-      this.participation.sessions,
-      command.sessionId,
-    );
-
-    const participant = await this.participation.participantActif(command);
+    const { session, cours } = await this.participation.ouverte(command);
+    const participant = await this.participation.participant(command);
 
     const deja = await this.answers.existsFor(
       command.participantId,
@@ -56,7 +75,6 @@ export class SubmitAnswerUseCase extends EnregistrementDeReponse {
         `La question ${command.questionId} de type ${question.type} passe par sa propre route`,
       );
     }
-    const cours = await coursDeLaSeance(this.participation.catalogue, session);
     const rangEcran =
       'rangEcran' in question
         ? question.rangEcran
@@ -80,6 +98,7 @@ export class SubmitAnswerUseCase extends EnregistrementDeReponse {
       ecranParId(cours, ecranId),
       command.questionId,
     );
+    assertCorrectionNonProjetee(session, cours, ecranId);
 
     const solution = solutionFor(
       session.bareme,
@@ -101,27 +120,26 @@ export class SubmitAnswerUseCase extends EnregistrementDeReponse {
       );
     }
 
-    const verdict = gradeAnswer(command.valeur, solution, question.tolerance);
+    const valeur = estUneSaisieNumerique(question.type, command.valeur)
+      ? nombreSaisi(command.questionId, command.valeur)
+      : command.valeur;
+    const verdict = gradeAnswer(valeur, solution, question.tolerance);
 
-    await this.answers.create({
-      sessionId: command.sessionId,
-      participantId: command.participantId,
-      questionId: command.questionId,
-      concept: question.concept,
-      valeur: command.valeur,
-      seed: participant.seed,
-      correcte: verdict.correcte,
-      misconception: verdict.misconception,
-      dureeMs: command.dureeMs,
-    });
+    await this.enregistrerPremiereReponse(
+      {
+        sessionId: command.sessionId,
+        participantId: command.participantId,
+        questionId: command.questionId,
+        concept: question.concept,
+        valeur,
+        seed: participant.seed,
+        correcte: verdict.correcte,
+        misconception: verdict.misconception,
+        dureeMs: command.dureeMs,
+      },
+      participant.studentKey,
+    );
     this.participation.signalerActivite(command.sessionId);
-
-    await this.mastery.enregistrerTentative({
-      studentKey: participant.studentKey,
-      concept: question.concept,
-      reussi: verdict.correcte,
-      vueLe: new Date(),
-    });
 
     return verdictServiDe(session, question, verdict);
   }

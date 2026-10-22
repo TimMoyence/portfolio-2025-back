@@ -1,8 +1,11 @@
-import { Test } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import request from 'supertest';
 import { ArticleModerationService } from '../src/modules/articles/application/article-moderation.service';
 import { ARTICLES_REPOSITORY } from '../src/modules/articles/application/articles.repository';
+import { ArticlesService } from '../src/modules/articles/application/articles.service';
+import { ArticleHmacGuard } from '../src/modules/articles/interfaces/article-hmac.guard';
 import { ArticleModerationController } from '../src/modules/articles/interfaces/article-moderation.controller';
+import { ArticlesController } from '../src/modules/articles/interfaces/articles.controller';
 import { PREFIXE_API_PAR_DEFAUT } from '../src/config/prefixe-api';
 import {
   ArticlesEnMemoire,
@@ -31,6 +34,18 @@ const vueDeModeration = (status: string) => ({
   published_at: ARTICLE.publishedAt.toISOString(),
 });
 
+function ouvrirAvecLeRoleDeLEntete(moduleRef: TestingModule) {
+  return ouvrirApplication(moduleRef, (application) => {
+    application.setGlobalPrefix(PREFIXE_API_PAR_DEFAUT);
+    preparerChaqueRequete(application, (req) => {
+      const role = req.header('x-test-role');
+      if (role) {
+        (req as unknown as { user: unknown }).user = { roles: [role] };
+      }
+    });
+  });
+}
+
 describe('Modération des articles (admin)', () => {
   const articles = new ArticlesEnMemoire();
 
@@ -43,15 +58,7 @@ describe('Modération des articles (admin)', () => {
       ],
     }).compile();
 
-    return ouvrirApplication(moduleRef, (application) => {
-      application.setGlobalPrefix(PREFIXE_API_PAR_DEFAUT);
-      preparerChaqueRequete(application, (req) => {
-        const role = req.header('x-test-role');
-        if (role) {
-          (req as unknown as { user: unknown }).user = { roles: [role] };
-        }
-      });
-    });
+    return ouvrirAvecLeRoleDeLEntete(moduleRef);
   });
 
   const serveur = () => serveurHttpDe(app());
@@ -125,5 +132,55 @@ describe('Modération des articles (admin)', () => {
     expect(statutEtDetail(reponse)).toEqual(REFUS_DE_L_OCTET_NUL);
     expect(withdraw).not.toHaveBeenCalled();
     expect(statutEnBase()).toBe('published');
+  });
+});
+
+describe('État d une livraison d article (admin)', () => {
+  const getDelivery = jest.fn();
+
+  const app = applicationDeLaSuite(async () => {
+    const moduleRef = await Test.createTestingModule({
+      controllers: [ArticlesController],
+      providers: [{ provide: ArticlesService, useValue: { getDelivery } }],
+    })
+      .overrideGuard(ArticleHmacGuard)
+      .useValue({ canActivate: () => true })
+      .compile();
+
+    return ouvrirAvecLeRoleDeLEntete(moduleRef);
+  });
+
+  beforeEach(() => {
+    getDelivery.mockReset().mockResolvedValue({
+      deliveryId: 'mb-2026-10-22-fr',
+      status: 'processed',
+      articleId: ARTICLE_ID,
+      attempts: 1,
+      processedAt: null,
+    });
+  });
+
+  it('refuse un compte sans rôle admin, sans interroger le service', async () => {
+    await request(serveurHttpDe(app()))
+      .get('/api/v1/portfolio25/articles/ingest/mb-2026-10-22-fr')
+      .set('x-test-role', 'user')
+      .expect(403);
+
+    expect(getDelivery).not.toHaveBeenCalled();
+  });
+
+  it('rend l état de la livraison à un admin', async () => {
+    const reponse = await request(serveurHttpDe(app()))
+      .get('/api/v1/portfolio25/articles/ingest/mb-2026-10-22-fr')
+      .set('x-test-role', 'admin')
+      .expect(200);
+
+    expect(reponse.body).toEqual({
+      delivery_id: 'mb-2026-10-22-fr',
+      status: 'processed',
+      article_id: ARTICLE_ID,
+      attempts: 1,
+      processed_at: null,
+    });
   });
 });

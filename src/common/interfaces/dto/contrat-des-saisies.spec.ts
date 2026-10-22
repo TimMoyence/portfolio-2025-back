@@ -16,7 +16,9 @@ import {
 } from '../../../../test/helpers/saisies-validees';
 import {
   estSansForme,
+  estSansFormeHorsOuverts,
   type SchemaOpenApi,
+  selonOpenApi30,
   variantesDe,
 } from '../../../../test/helpers/schema-openapi';
 
@@ -75,6 +77,18 @@ const enumeration =
       requis,
     );
 
+const enumerationNommeeResolue = (
+  champ: SchemaOpenApi,
+  composants: Record<string, SchemaOpenApi>,
+): SchemaOpenApi => {
+  const reference = champ.$ref ?? champ.allOf?.at(0)?.$ref;
+  const nommee = composants[reference?.split('/').at(-1) ?? ''];
+  if (nommee?.enum === undefined) {
+    return champ;
+  }
+  return { ...champ, ...nommee, $ref: undefined, allOf: undefined };
+};
+
 const reference: Ecarts = (champ) =>
   champ.$ref !== undefined ||
   (variantesDe(champ).length > 0 &&
@@ -101,7 +115,7 @@ const auxBornes =
   (echantillons: (contrainte: Contrainte) => readonly Echantillon[]) =>
   (contrainte: Contrainte): Ecarts =>
   (champ) => {
-    const contrat = ajv.compile(champ);
+    const contrat = ajv.compile(selonOpenApi30(champ) as object);
     return echantillons(contrainte).flatMap(([valeur, accepte]) => {
       const annonce = contrat(valeur);
       const valide = valideLaContrainte(contrainte, valeur);
@@ -126,7 +140,6 @@ const ANNONCES: Readonly<Record<string, (contrainte: Contrainte) => Ecarts>> = {
   isArray: () => admet('array'),
   isObject: () => admet('object'),
   isDate: () => ensemble(admet('string'), porte('format', 'date-time')),
-  isEmail: () => porte('format', 'email'),
   isNotEmpty: () => nonVide,
   isIn: ({ constraints: [valeurs] }) =>
     enumeration(valeurs as readonly unknown[]),
@@ -357,10 +370,10 @@ describe('contrat OpenAPI des saisies', () => {
       contraintes.flatMap((contrainte) => {
         const libelle = `${classeDe(contrainte)}.${contrainte.propertyName} ${nomDe(contrainte)}`;
         const { target } = contrainte;
+        const composants =
+          typeof target === 'function' ? schemas.get(target) : undefined;
         const schema =
-          typeof target === 'function'
-            ? schemas.get(target)?.[target.name]
-            : undefined;
+          typeof target === 'function' ? composants?.[target.name] : undefined;
         const champ = schema?.properties?.[contrainte.propertyName];
         const cible = contrainte.each ? champ?.items : champ;
         if (cible === undefined) {
@@ -369,7 +382,7 @@ describe('contrat OpenAPI des saisies', () => {
         const annonce = ANNONCES[nomDe(contrainte)];
         return (
           annonce?.(contrainte)(
-            cible,
+            enumerationNommeeResolue(cible, composants ?? {}),
             schema?.required?.includes(contrainte.propertyName) ?? false,
           ) ?? []
         ).map((ecart) => `${libelle} : ${ecart}`);
@@ -416,7 +429,9 @@ describe('contrat OpenAPI des saisies', () => {
           Object.entries(composants).flatMap(([nom, schema]) => [
             ...(estSansForme(schema) ? [nom] : []),
             ...Object.entries(schema.properties ?? {})
-              .filter(([, champ]) => estSansForme(champ))
+              .filter(([champ, schema]) =>
+                estSansFormeHorsOuverts(`${nom}.${champ}`, schema),
+              )
               .map(([champ]) => `${nom}.${champ}`),
           ]),
         ),
@@ -519,8 +534,8 @@ describe('contrat OpenAPI des saisies', () => {
           .flatMap(([[chemin, forme], composants]) => {
             try {
               return ajv.compile({
-                ...forme,
-                components: { schemas: composants },
+                ...(selonOpenApi30(forme) as object),
+                components: { schemas: selonOpenApi30(composants) },
               })(null)
                 ? []
                 : [`${chemin} : null refuse`];

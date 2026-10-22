@@ -13,6 +13,7 @@ import type {
   EcranDeroule,
 } from '../../../domain/contrats/deroule';
 import { CorrigePresentateurResponseDto } from '../deroule.response.dto';
+import { ecransDuContrat } from '../sujet.response.dto';
 import {
   CORRIGES_D_ECRAN,
   ExplicationDeCorrectionResponseDto,
@@ -33,7 +34,7 @@ export class QuestionDerouleResponseDto {
     nullable: true,
     description: 'Options d un vote, null pour une question numerique',
   })
-  options: OptionPubliqueResponseDto[] | null;
+  options: readonly OptionPubliqueResponseDto[] | null;
 }
 
 @ApiExtraModels(...CORRIGES_D_ECRAN, ReflexionPresentateurResponseDto)
@@ -44,17 +45,17 @@ export class EcranDerouleResponseDto
   @ApiProperty({ description: 'Notes du formateur' })
   notes: string;
 
-  @ApiProperty({ enum: DIFFUSIONS })
+  @ApiProperty({ enum: DIFFUSIONS, enumName: 'Diffusion' })
   diffusion: Diffusion;
 
   @ApiProperty({ nullable: true, type: Number, example: 0.7 })
   seuil: number | null;
 
   @ApiProperty({ type: [CorrigePresentateurResponseDto] })
-  corriges: CorrigePresentateurResponseDto[];
+  corriges: readonly CorrigePresentateurResponseDto[];
 
   @ApiProperty({ type: [QuestionDerouleResponseDto] })
-  questions: QuestionDerouleResponseDto[];
+  questions: readonly QuestionDerouleResponseDto[];
 
   @ReferenceOuNul(
     CORRIGES_D_ECRAN,
@@ -73,20 +74,14 @@ export class EcranDerouleResponseDto
     description:
       'Explications d un exercice corrige sur place, devoilees une a une au pupitre',
   })
-  explications?: ExplicationDeCorrectionResponseDto[];
+  explications?: readonly ExplicationDeCorrectionResponseDto[];
 }
 
+@ApiExtraModels(EcranDerouleResponseDto)
 export class DerouleResponseDto
   extends OmitType(SujetResponseDto, ['ecrans'] as const)
   implements DerouleCours
 {
-  @ApiProperty({ type: [EcranDerouleResponseDto] })
-  ecrans: EcranDerouleResponseDto[];
-
-  @ApiProperty({
-    type: 'object',
-    additionalProperties: { type: 'string' },
-    example: { 'base-arrivee': 'B2-01-A3-04-FIL-TECHNIQUE' },
-  })
-  remediations: Record<string, string>;
+  @ApiProperty(ecransDuContrat(EcranDerouleResponseDto))
+  ecrans: readonly EcranDerouleResponseDto[];
 }

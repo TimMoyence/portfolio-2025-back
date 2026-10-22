@@ -62,6 +62,7 @@ import {
   attendreQue,
   compilerModuleFormations,
   fermetureCoteServeur,
+  remettreLesCompteursAZero,
   routeFormations,
   serveurHttpDe,
 } from './helpers/formations-harness';
@@ -72,6 +73,7 @@ import {
 import { routesDuControleur } from './helpers/metadonnees-de-route';
 import {
   documentOpenApiFormations,
+  ecartsAuFlux,
   ecartsAuSchemaDeReponse,
 } from './helpers/schema-openapi';
 import {
@@ -323,18 +325,10 @@ function creerParticipantsRepo(): IParticipantsRepository {
       empreintes.set(participant.id, empreinteDeReprise);
       return Promise.resolve({ participant, nouveau: true });
     },
-    findBySessionAndStudentKey: (sessionId, studentKey) =>
-      Promise.resolve(
-        deLaSession(sessionId).find(
-          (participant) => participant.studentKey === studentKey,
-        ) ?? null,
-      ),
     findById: (id) => Promise.resolve(participants.get(id) ?? null),
     listBySession: (sessionId) => Promise.resolve(deLaSession(sessionId)),
     listEvincesBySession: (sessionId) =>
       Promise.resolve(evincesDeLaSession(sessionId)),
-    countBySession: (sessionId) =>
-      Promise.resolve(deLaSession(sessionId).length),
     touch: () => Promise.resolve(),
     evincer: (sessionId, participantId) =>
       modifierDansLaSession(sessionId, participantId, false, () => ({
@@ -414,14 +408,12 @@ function creerAnswersRepo(): IAnswersRepository {
       Promise.resolve(
         reponses.filter((reponse) => reponse.sessionId === sessionId),
       ),
-    tallyBySession: () => Promise.resolve([]),
   };
 }
 
 interface HarnaisFormations {
   app: INestApplication;
   mailer: ReturnType<typeof createMockDepotsFormations>['mailer'];
-  scores: ReturnType<typeof createMockDepotsFormations>['scores'];
   port: number;
 }
 
@@ -445,7 +437,7 @@ async function creerHarnais(
     participants: creerParticipantsRepo(),
     answers: creerAnswersRepo(),
   };
-  const { mailer, scores } = depots;
+  const { mailer } = depots;
 
   const moduleRef = await compilerModuleFormations(depots, catalogueHttp);
 
@@ -456,7 +448,7 @@ async function creerHarnais(
   app.setGlobalPrefix(PREFIXE_API_PAR_DEFAUT);
   appliquerLesTraitementsGlobaux(app);
   const port = await ecouterEnBoucleLocale(app);
-  return { app, mailer, scores, port };
+  return { app, mailer, port };
 }
 
 interface SeanceOuverte {
@@ -534,7 +526,6 @@ function clientFormations(application: () => INestApplication) {
 describe('Session de formation (e2e http socket)', () => {
   let app: INestApplication;
   let mailer: HarnaisFormations['mailer'];
-  let scores: HarnaisFormations['scores'];
   let port: number;
 
   const http = clientFormations(() => app);
@@ -555,19 +546,28 @@ describe('Session de formation (e2e http socket)', () => {
   };
 
   beforeAll(async () => {
-    ({ app, mailer, scores, port } = await creerHarnais());
+    ({ app, mailer, port } = await creerHarnais());
+  });
+
+  beforeEach(() => {
+    remettreLesCompteursAZero(app);
   });
 
   afterAll(async () => {
     await fermerApplication(app);
   });
 
-  describe('flux simultanes d une seance ouverte', () => {
-    const ouvrirFluxEtudiant = (sessionId: string, jeton: string) =>
-      abonnerAuFlux(port, route(`/sessions/${sessionId}/stream`), {
-        [EN_TETE_JETON]: jeton,
-      });
+  const ouvrirFluxEtudiant = (sessionId: string, jeton: string) =>
+    abonnerAuFlux(port, route(`/sessions/${sessionId}/stream`), {
+      [EN_TETE_JETON]: jeton,
+    });
 
+  const ouvrirFluxDuPupitre = (sessionId: string) =>
+    abonnerAuFlux(port, route(`/sessions/${sessionId}/presenter-stream`), {
+      [EN_TETE_IDENTITE]: `${FORMATEUR_A}:teacher`,
+    });
+
+  describe('flux simultanes d une seance ouverte', () => {
     it('ferme le plus ancien flux du participant a l ouverture de son troisieme et garde au formateur sa place', async () => {
       const { sessionId, code } = await http.ouvrirSession();
       const { jeton } = await http.inscrire(
@@ -580,11 +580,7 @@ describe('Session de formation (e2e http socket)', () => {
         await ouvrirFluxEtudiant(sessionId, jeton),
         await ouvrirFluxEtudiant(sessionId, jeton),
       ];
-      const formateur = await abonnerAuFlux(
-        port,
-        route(`/sessions/${sessionId}/presenter-stream`),
-        { [EN_TETE_IDENTITE]: `${FORMATEUR_A}:teacher` },
-      );
+      const formateur = await ouvrirFluxDuPupitre(sessionId);
       await attendreQue(() => siens[0].ferme, DELAI_FERMETURE_FLUX_MS);
       const fermes = siens.map((flux) => flux.ferme);
       [...siens, formateur].forEach((flux) => flux.fermer());
@@ -678,6 +674,35 @@ describe('Session de formation (e2e http socket)', () => {
       );
     });
 
+    it('documente exactement chaque evenement des flux du poste et du pupitre, jusqu a la fin', async () => {
+      const { sessionId, jeton } = await seanceSurLaSentinelle(
+        '11111111-1111-4111-8111-111111111122',
+      );
+      const poste = await ouvrirFluxEtudiant(sessionId, jeton);
+      const pupitre = await ouvrirFluxDuPupitre(sessionId);
+      await http.repondre(sessionId, jeton, TEMOIN.piege).expect(201);
+      await attendreQue(
+        () => pupitre.evenements.some(({ type }) => type === 'resultats'),
+        DELAI_FERMETURE_FLUX_MS,
+      );
+      await http.postEnFormateur(`/sessions/${sessionId}/close`).expect(204);
+      await attendreQue(
+        () => poste.ferme && pupitre.ferme,
+        DELAI_FERMETURE_FLUX_MS,
+      );
+      const document = documentOpenApiFormations(app);
+
+      expect(
+        [...new Set(pupitre.evenements.map(({ type }) => type))].sort((a, b) =>
+          a.localeCompare(b),
+        ),
+      ).toEqual(['etat', 'fin', 'resultats']);
+      expect([
+        ...ecartsAuFlux(document, '/{id}/stream', poste.evenements),
+        ...ecartsAuFlux(document, '/{id}/presenter-stream', pupitre.evenements),
+      ]).toEqual([]);
+    });
+
     it('sert au formateur le csv de la seance en piece jointe nommee par son code', async () => {
       const { sessionId, code } = await http.ouvrirSession();
 
@@ -693,7 +718,7 @@ describe('Session de formation (e2e http socket)', () => {
         type: 'text/csv; charset=utf-8',
         disposition: `attachment; filename="session-${code}.csv"`,
         entete:
-          'prénom;nom;email;question;concept;réponse;correcte;confusion;durée_ms',
+          'prénom;nom;email;question;concept;réponse;correcte;confusion;durée_ms;horodatage',
       });
     });
 
@@ -974,6 +999,38 @@ describe('Session de formation (e2e http socket)', () => {
 
       expect(retour.body).toMatchObject({ code: 'PARTICIPANT_EVINCE' });
       expect(retour.body).not.toHaveProperty('jeton');
+    });
+
+    it('refuse en 403 PARTICIPANT_EVINCE chaque route du poste a l evince, quel que soit l etat de la seance', async () => {
+      const seance = await seanceAvecUnPoste();
+      await http.demarrer(seance.sessionId).expect(204);
+      await agirSurLeParticipant(seance, 'eviction').expect(204);
+      const routes = routesDuControleur(FormationsStudentController).filter(
+        ({ chemin }) => !chemin.includes(':code'),
+      );
+
+      const refus = await Promise.all(
+        routes.map(async ({ methode, chemin }) => {
+          const url = routeFormations(
+            `/${chemin.replace(':id', seance.sessionId).replaceAll(/:\w+/g, 'x')}`,
+          );
+          const reponse = await request(serveurHttpDe(app))
+            [methode](url)
+            .set(EN_TETE_JETON, seance.jeton);
+          return {
+            route: `${methode} ${chemin}`,
+            statut: reponse.status,
+            code: (reponse.body as { code?: string }).code,
+          };
+        }),
+      );
+
+      expect(routes.length).toBeGreaterThan(10);
+      expect(
+        refus.filter(
+          ({ statut, code }) => statut !== 403 || code !== 'PARTICIPANT_EVINCE',
+        ),
+      ).toEqual([]);
     });
   });
 
@@ -1303,28 +1360,11 @@ describe('Session de formation (e2e http socket)', () => {
         '11111111-1111-4111-8111-111111111117',
       ));
       mailer.sendSyntheseFormateur.mockClear();
-      scores.saveIndividuals.mockClear();
-      scores.saveSession.mockClear();
-    });
-
-    it('ne persiste aucun score a la lecture des resultats ni du bilan', async () => {
-      for (const lecture of ['results', 'report', 'report.csv']) {
-        await http.lireEnFormateur(sessionId, lecture).expect(200);
-      }
-
-      expect(scores.saveIndividuals).not.toHaveBeenCalled();
-      expect(scores.saveSession).not.toHaveBeenCalled();
     });
 
     it('cloture et adresse la synthese a la boite configuree, jamais au teacherId', async () => {
       await http.postEnFormateur(`/sessions/${sessionId}/close`).expect(204);
 
-      expect(scores.saveIndividuals).toHaveBeenCalledWith([
-        expect.objectContaining({ sessionId, note: 0, completion: 0 }),
-      ]);
-      expect(scores.saveSession).toHaveBeenCalledWith(
-        expect.objectContaining({ sessionId, tauxParticipation: 0 }),
-      );
       expect(mailer.sendSyntheseFormateur).toHaveBeenCalledWith(
         SYNTHESE_A,
         expect.anything(),

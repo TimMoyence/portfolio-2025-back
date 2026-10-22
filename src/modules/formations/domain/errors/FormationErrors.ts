@@ -178,6 +178,14 @@ export class TypeDeQuestionError extends DomainValidationError {
   }
 }
 
+export class SaisieNonNumeriqueError extends DomainValidationError {
+  readonly code = 'SAISIE_NON_NUMERIQUE';
+
+  constructor(questionId: string) {
+    super(`La saisie envoyée pour ${questionId} ne se lit pas en nombre.`);
+  }
+}
+
 export class ProductionVideError extends DomainValidationError {
   readonly code = 'PRODUCTION_VIDE';
 

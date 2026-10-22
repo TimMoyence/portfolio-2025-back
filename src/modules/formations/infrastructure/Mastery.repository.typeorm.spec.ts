@@ -11,7 +11,6 @@ describe('MasteryRepositoryTypeORM', () => {
     studentKey: 'student-uuid',
     concept: 'capitalisation',
     boite: 2 as const,
-    derniereVue: new Date('2026-09-11T08:00:00.000Z'),
     succes: 3,
     echecs: 1,
   };
@@ -29,7 +28,6 @@ describe('MasteryRepositoryTypeORM', () => {
       studentKey: 'student-uuid',
       concept: 'capitalisation',
       reussi,
-      vueLe: record.derniereVue,
     });
 
   beforeEach(() => {
@@ -61,8 +59,8 @@ describe('MasteryRepositoryTypeORM', () => {
     await tenter(true);
     await tenter(false);
 
-    const [, , , , succesReussi, echecsReussi] = parametresDe(0);
-    const [, , , , succesEchoue, echecsEchoue] = parametresDe(1);
+    const [, , , succesReussi, echecsReussi] = parametresDe(0);
+    const [, , , succesEchoue, echecsEchoue] = parametresDe(1);
     expect([succesReussi, echecsReussi]).toEqual([1, 0]);
     expect([succesEchoue, echecsEchoue]).toEqual([0, 1]);
   });

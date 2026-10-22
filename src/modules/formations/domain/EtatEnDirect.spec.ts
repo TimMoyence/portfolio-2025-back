@@ -10,13 +10,13 @@ import {
   VOTES_JUMELES,
 } from '../../../../test/factories/votes-des-cours-servis.factory';
 import type { PilotageEcran } from './contrats/pilotage';
-import { rangDeLEcran } from './cours/EcranServi';
+import { assertCorrectionNonProjetee, rangDeLEcran } from './cours/EcranServi';
 import { machineDuCours, sortiesDeLaMachine } from './cours/MachineServie';
 import { assertPhaseOuverte } from './cours/PilotageEcrans';
 import { etatEnDirect } from './EtatEnDirect';
 
 describe('etatEnDirect', () => {
-  it('projette la séance et son nombre de participants dans l état diffusé', () => {
+  it('projette la séance dans l état diffusé', () => {
     const majLe = new Date('2026-10-10T09:00:00Z');
     const seance = buildSessionRecord({
       etat: 'en_cours',
@@ -28,12 +28,11 @@ describe('etatEnDirect', () => {
       majLe,
     });
 
-    expect(etatEnDirect(seance, 12, buildCoursDeTest())).toEqual({
+    expect(etatEnDirect(seance, buildCoursDeTest())).toEqual({
       etat: 'en_cours',
       modeRythme: 'libre',
       ecranCourant: 3,
       intervalleLibre: { premier: 1, dernier: 4 },
-      participants: 12,
       revision: 7,
       pilotage: { 'E-1': { revele: true } },
       majLe,
@@ -81,7 +80,6 @@ describe('etatEnDirect', () => {
             ecranCourant: rangDeLEcran(vote.cours, ecranId),
             pilotageEcrans: { [ecranId]: pilotage },
           }),
-          0,
           vote.cours,
         ).pilotage[ecranId];
 
@@ -108,7 +106,6 @@ describe('etatEnDirect', () => {
           ecranCourant,
           pilotageEcrans: { [MACHINE]: pilotage },
         }),
-        0,
         cours,
       ).pilotage[MACHINE];
 
@@ -127,7 +124,10 @@ describe('etatEnDirect', () => {
     });
 
     it('ne diffuse aucune sortie tant que le pupitre n a rien réglé', () => {
-      expect(diffuse(RANG, { revele: true })).toEqual({ revele: true });
+      expect(diffuse(RANG, { revele: true })).toEqual({
+        revele: true,
+        saisieFermee: true,
+      });
     });
 
     it('D-05 · ne calcule aucune sortie tant que l écran de la machine n est pas servi', () => {
@@ -140,9 +140,70 @@ describe('etatEnDirect', () => {
     (_slug, cours) => {
       const { seance, attendu } = pilotageDUnCoursServi(cours);
 
-      expect(
-        etatEnDirect(buildSessionRecord(seance), 0, cours).pilotage,
-      ).toEqual(attendu);
+      expect(etatEnDirect(buildSessionRecord(seance), cours).pilotage).toEqual(
+        attendu,
+      );
+    },
+  );
+
+  it.each(CAS_DES_COURS_SERVIS)(
+    '%s : sert la saisie fermée là, et seulement là, où la route des productions refuse d écrire',
+    (_slug, cours) => {
+      const seances = [
+        {
+          ecranCourant: cours.ecrans.length - 1,
+          modeRythme: 'pilote' as const,
+        },
+        ...cours.ecrans.flatMap(({ id }) => [
+          { pilotageEcrans: { [id]: { revele: true } } },
+          { pilotageEcrans: { [id]: { etayageAtteint: 1 } } },
+        ]),
+      ].map((champs) =>
+        buildSessionRecord({
+          ecranCourant: cours.ecrans.length - 1,
+          ...champs,
+        }),
+      );
+      const ecarts = seances.flatMap((seance) =>
+        cours.ecrans.flatMap(({ id }) => {
+          const refusee = (() => {
+            try {
+              assertCorrectionNonProjetee(seance, cours, id);
+              return false;
+            } catch {
+              return true;
+            }
+          })();
+          const servie =
+            etatEnDirect(seance, cours).pilotage[id]?.saisieFermee === true;
+          return refusee === servie ? [] : [`${id} : ${String(refusee)}`];
+        }),
+      );
+
+      expect(ecarts).toEqual([]);
+    },
+  );
+
+  it.each(CAS_DES_COURS_SERVIS)(
+    '%s : ne ferme pas un exemple travaillé dont une étape reste à corriger',
+    (_slug, cours) => {
+      const fermes = cours.ecrans.flatMap((ecran) => {
+        if (
+          ecran.brique !== 'fp-worked' ||
+          ecran.proprietes.exemple.etapes.length < 2
+        ) {
+          return [];
+        }
+        const seance = buildSessionRecord({
+          ecranCourant: cours.ecrans.length - 1,
+          pilotageEcrans: { [ecran.id]: { etayageAtteint: 1 } },
+        });
+        return etatEnDirect(seance, cours).pilotage[ecran.id]?.saisieFermee
+          ? [ecran.id]
+          : [];
+      });
+
+      expect(fermes).toEqual([]);
     },
   );
 
@@ -157,7 +218,7 @@ describe('etatEnDirect', () => {
     (_slug, ecranId, cours) => {
       const rang = rangDeLEcran(cours, ecranId);
       const diffuse = (ecranCourant: number) =>
-        etatEnDirect(buildSessionRecord({ ecranCourant }), 0, cours).pilotage[
+        etatEnDirect(buildSessionRecord({ ecranCourant }), cours).pilotage[
           ecranId
         ];
 

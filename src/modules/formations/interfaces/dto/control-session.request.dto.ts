@@ -1,6 +1,7 @@
+import { ValeurDuContrat } from '../../../../common/interfaces/dto/valeur-du-contrat.decorator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsIn, IsOptional, ValidateNested } from 'class-validator';
+import { IsOptional, ValidateNested } from 'class-validator';
 import { EntierBorne } from '../../../../common/interfaces/dto/bornes-annoncees.decorator';
 import type { FreeRange, PacingMode } from '../../domain/PacingMode';
 import { PACING_MODES } from '../../domain/PacingMode';
@@ -21,9 +22,10 @@ export class ControlSessionRequestDto {
   @EntierBorne(0)
   ecran?: number;
 
-  @ApiPropertyOptional({ enum: PACING_MODES, example: 'pilote' })
-  @IsOptional()
-  @IsIn(PACING_MODES as unknown as readonly string[])
+  @ValeurDuContrat(PACING_MODES, 'PacingMode', {
+    facultative: true,
+    documentation: { example: 'pilote' },
+  })
   mode?: PacingMode;
 
   @ApiPropertyOptional({ type: FreeRangeDto })

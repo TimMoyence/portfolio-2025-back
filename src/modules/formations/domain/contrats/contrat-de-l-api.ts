@@ -8,6 +8,13 @@ export const TYPES_QUESTION = Object.freeze([
 ] as const);
 export type TypeQuestion = (typeof TYPES_QUESTION)[number];
 
+export const TYPES_DE_PRODUCTION = Object.freeze([
+  'feuille',
+  'tableau',
+  'classement',
+] as const);
+export type TypeDeProduction = (typeof TYPES_DE_PRODUCTION)[number];
+
 export const DIFFUSIONS = Object.freeze(['catalogue', 'seance'] as const);
 export type Diffusion = (typeof DIFFUSIONS)[number];
 
@@ -24,6 +31,15 @@ export type VotePhase = (typeof PHASES_DE_VOTE)[number];
 
 export const PACING_MODES = Object.freeze(['pilote', 'libre'] as const);
 export type PacingMode = (typeof PACING_MODES)[number];
+
+export const RAISONS_DE_FIN = Object.freeze([
+  'cloturee',
+  'introuvable',
+  'expiree',
+  'evince',
+  'revoque',
+] as const);
+export type RaisonDeFin = (typeof RAISONS_DE_FIN)[number];
 
 export interface FreeRange {
   premier: number;
@@ -53,8 +69,15 @@ export interface MetadonneesBrique {
   readonly regime: RegimeVerrou;
 }
 
+export const TYPES_DE_TOLERANCE = Object.freeze([
+  'relative',
+  'absolue',
+  'decimales',
+] as const);
+export type TypeDeTolerance = (typeof TYPES_DE_TOLERANCE)[number];
+
 export interface Tolerance {
-  readonly type: 'relative' | 'absolue' | 'decimales';
+  readonly type: TypeDeTolerance;
   readonly valeur: number;
 }
 
@@ -78,7 +101,7 @@ export type ValeurProduction =
       readonly classement: Readonly<Record<string, string>>;
     }
   | {
-      readonly type: 'feuille' | 'tableau' | 'classement';
+      readonly type: TypeDeProduction;
       readonly neSaitPas: true;
     };
 
@@ -119,12 +142,10 @@ export interface ResultatQuestion {
 export interface ResultatsSeance {
   readonly participants: number;
   readonly questions: readonly ResultatQuestion[];
+  readonly confusions: readonly ConfusionComptee[];
 }
 
 export interface StatistiquesSeance {
-  readonly moyenne: number;
-  readonly mediane: number;
-  readonly dispersion: number;
   readonly tauxParticipation: number;
   readonly tauxReussite: number;
   readonly questionsProblemes: readonly string[];
@@ -164,16 +185,9 @@ export interface ResultatsEnDirect extends ResultatsSeance {
 }
 
 export interface RegleDeNotation {
-  readonly noteMax: number;
-  readonly base: 'participation-relative-cohorte';
-  readonly partCohorteReference: number;
-  readonly ratioSeuilValidation: number;
   readonly neSaitPasCompteCommeReponse: boolean;
   readonly pointsNonReponse: number;
   readonly reponsesLibresNotees: boolean;
   readonly seuilQuestionProbleme: number;
-  readonly decimalesStatistiques: number;
-  readonly typesNotables: readonly TypeQuestion[];
-  readonly productionCompteSi: 'au-moins-une-saisie';
   readonly statistiquesSurQuestionsNotees: boolean;
 }

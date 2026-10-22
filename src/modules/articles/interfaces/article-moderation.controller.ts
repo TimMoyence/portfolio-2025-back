@@ -35,7 +35,7 @@ export class ArticleModerationController {
     description: 'Articles publiés ou retirés',
     type: [ArticleModerationResponseDto],
   })
-  list() {
+  list(): Promise<ArticleModerationResponseDto[]> {
     return this.moderation.list();
   }
 
@@ -44,7 +44,9 @@ export class ArticleModerationController {
   @ApiOperation({ summary: 'Retirer un article du site' })
   @ApiOkResponse({ type: ArticleModerationResponseDto })
   @ApiNotFoundResponse({ description: 'Article inconnu' })
-  withdraw(@Param('articleId') articleId: string) {
+  withdraw(
+    @Param('articleId') articleId: string,
+  ): Promise<ArticleModerationResponseDto> {
     return this.moderation.withdraw(articleId);
   }
 
@@ -53,7 +55,9 @@ export class ArticleModerationController {
   @ApiOperation({ summary: 'Republier un article retiré' })
   @ApiOkResponse({ type: ArticleModerationResponseDto })
   @ApiNotFoundResponse({ description: 'Article inconnu' })
-  restore(@Param('articleId') articleId: string) {
+  restore(
+    @Param('articleId') articleId: string,
+  ): Promise<ArticleModerationResponseDto> {
     return this.moderation.restore(articleId);
   }
 }

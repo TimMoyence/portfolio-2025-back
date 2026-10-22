@@ -4,7 +4,14 @@ import {
   SwaggerModule,
   type OpenAPIObject,
 } from '@nestjs/swagger';
+import Ajv, { type ValidateFunction } from 'ajv';
+import addFormats from 'ajv-formats';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { estObjet } from '../../src/common/domain/est-objet';
+import { avecLesSchemasDuContrat } from '../../src/common/interfaces/http/document-openapi';
+import { RACINE } from './racine';
+import type { EvenementFlux } from './trames-sse';
 
 export interface SchemaOpenApi {
   $ref?: string;
@@ -19,10 +26,29 @@ export interface SchemaOpenApi {
   [motCle: string]: unknown;
 }
 
+export function selonOpenApi30(schema: unknown): unknown {
+  if (Array.isArray(schema)) {
+    return schema.map(selonOpenApi30);
+  }
+  if (!estObjet(schema)) {
+    return schema;
+  }
+  const { nullable, ...reste } = schema;
+  const traduit = Object.fromEntries(
+    Object.entries(reste).map(([cle, valeur]) => [cle, selonOpenApi30(valeur)]),
+  );
+  return nullable === true ? { anyOf: [traduit, { type: 'null' }] } : traduit;
+}
+
 export const variantesDe = (schema: SchemaOpenApi): SchemaOpenApi[] => [
   ...(schema.allOf ?? []),
   ...(schema.oneOf ?? []),
   ...(schema.anyOf ?? []),
+];
+
+export const CHAMPS_VOLONTAIREMENT_OUVERTS: readonly string[] = [
+  'AuditSummaryResponseDto.keyChecks',
+  'AuditTermineResponseDto.keyChecks',
 ];
 
 export function estSansForme(schema: SchemaOpenApi): boolean {
@@ -36,9 +62,16 @@ export function estSansForme(schema: SchemaOpenApi): boolean {
     schema.type === undefined ||
     (schema.type === 'object' &&
       Object.keys(schema.properties ?? {}).length === 0 &&
-      schema.additionalProperties === undefined)
+      (schema.additionalProperties === undefined ||
+        schema.additionalProperties === true))
   );
 }
+
+export const estSansFormeHorsOuverts = (
+  nom: string,
+  schema: SchemaOpenApi,
+): boolean =>
+  estSansForme(schema) && !CHAMPS_VOLONTAIREMENT_OUVERTS.includes(nom);
 
 const PREFIXE_COMPOSANT = '#/components/schemas/';
 
@@ -96,6 +129,36 @@ function ecartsAuSchema(
   chemin: string,
 ): string[] {
   const resolu = resoudre(document, schema);
+  if (valeur === null && resolu.nullable === true) {
+    return [];
+  }
+  if (resolu.oneOf !== undefined) {
+    const essais = resolu.oneOf.map((variante) =>
+      ecartsAuSchema(document, variante, valeur, chemin),
+    );
+    return essais.reduce(
+      (retenus, essai) => (essai.length < retenus.length ? essai : retenus),
+      essais[0],
+    );
+  }
+  if (resolu.allOf?.length === 1) {
+    return ecartsAuSchema(document, resolu.allOf[0], valeur, chemin);
+  }
+  if (resolu.allOf !== undefined) {
+    const membres = resolu.allOf.map((membre) => resoudre(document, membre));
+    return ecartsDesProprietes(
+      document,
+      Object.fromEntries(
+        membres.flatMap(({ properties }) => Object.entries(properties ?? {})),
+      ),
+      membres.flatMap(({ required }) => required ?? []),
+      valeur,
+      chemin,
+    );
+  }
+  if (Array.isArray(resolu.enum) && !resolu.enum.includes(valeur)) {
+    return [`${chemin} : hors de l enumeration`];
+  }
   if (resolu.properties !== undefined) {
     return ecartsDesProprietes(
       document,
@@ -117,10 +180,92 @@ function ecartsAuSchema(
 export function documentOpenApiFormations(
   app: INestApplication,
 ): OpenAPIObject {
-  return SwaggerModule.createDocument(
-    app,
-    new DocumentBuilder().setTitle('formations').build(),
+  return avecLesSchemasDuContrat(
+    SwaggerModule.createDocument(
+      app,
+      new DocumentBuilder().setTitle('formations').build(),
+    ),
   );
+}
+
+export const documentPublie = (): OpenAPIObject =>
+  JSON.parse(
+    readFileSync(join(RACINE, 'openapi.json'), 'utf8'),
+  ) as OpenAPIObject;
+
+const ajv = addFormats(new Ajv({ strict: false, allErrors: true }));
+const validateurs = new WeakMap<SchemaOpenApi, ValidateFunction>();
+
+function ecartsDeValidation(
+  document: OpenAPIObject,
+  schema: SchemaOpenApi,
+  valeur: unknown,
+  chemin: string,
+): string[] {
+  const valider =
+    validateurs.get(schema) ??
+    ajv.compile({
+      ...(selonOpenApi30(schema) as object),
+      components: selonOpenApi30(document.components),
+    });
+  validateurs.set(schema, valider);
+  return valider(valeur)
+    ? []
+    : (valider.errors ?? []).map(
+        ({ instancePath, message }) => `${chemin}${instancePath} : ${message}`,
+      );
+}
+
+function operationDu(
+  document: OpenAPIObject,
+  suffixeDeChemin: string,
+): { responses?: Record<string, unknown> } | undefined {
+  const chemin = Object.keys(document.paths).find((candidat) =>
+    candidat.endsWith(suffixeDeChemin),
+  );
+  return chemin === undefined ? undefined : document.paths[chemin].get;
+}
+
+export function evenementsDuFlux(
+  document: OpenAPIObject,
+  suffixeDeChemin: string,
+): Readonly<Record<string, SchemaOpenApi>> {
+  const reponse = operationDu(document, suffixeDeChemin)?.responses?.['200'] as
+    | { content?: Record<string, { schema?: SchemaOpenApi }> }
+    | undefined;
+  const variantes = reponse?.content?.['text/event-stream']?.schema?.oneOf;
+  return Object.fromEntries(
+    (variantes ?? []).flatMap(({ properties }) => {
+      const nom = properties?.event?.enum;
+      const donnees = properties?.data;
+      return Array.isArray(nom) && donnees !== undefined
+        ? [[String(nom[0]), donnees] as const]
+        : [];
+    }),
+  );
+}
+
+export function ecartsAuFlux(
+  document: OpenAPIObject,
+  suffixeDeChemin: string,
+  evenements: readonly EvenementFlux[],
+): string[] {
+  const contrat = evenementsDuFlux(document, suffixeDeChemin);
+  return [
+    ...new Set(
+      evenements.flatMap(({ type, donnees }) => {
+        const chemin = `${suffixeDeChemin} ${type}`;
+        if (!Object.hasOwn(contrat, type)) {
+          return [`${chemin} : evenement absent du contrat`];
+        }
+        const schema = contrat[type];
+        return [
+          ...ecartsDeValidation(document, schema, donnees, chemin),
+          ...ecartsAuSchema(document, schema, donnees, chemin),
+        ];
+      }),
+    ),
+  ];
 }
 
 export function attendreVersionServie(corps: unknown, version: number): void {
@@ -134,16 +279,11 @@ export function ecartsAuSchemaDeReponse(
   suffixeDeChemin: string,
   corps: unknown,
 ): string[] {
-  const chemin = Object.keys(document.paths).find((candidat) =>
-    candidat.endsWith(suffixeDeChemin),
-  );
-  const schema = chemin
-    ? (
-        document.paths[chemin].get?.responses?.['200'] as {
-          content?: Record<string, { schema?: SchemaOpenApi }>;
-        }
-      )?.content?.['application/json']?.schema
-    : undefined;
+  const schema = (
+    operationDu(document, suffixeDeChemin)?.responses?.['200'] as
+      | { content?: Record<string, { schema?: SchemaOpenApi }> }
+      | undefined
+  )?.content?.['application/json']?.schema;
   if (schema === undefined) {
     return [`${suffixeDeChemin} : aucun schema de reponse 200`];
   }

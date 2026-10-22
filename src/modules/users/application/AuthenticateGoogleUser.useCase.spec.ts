@@ -60,7 +60,7 @@ describe('AuthenticateGoogleUserUseCase', () => {
     });
   });
 
-  it('lie le googleId et retourne AuthResult quand le user est trouve par email', async () => {
+  it('lie le googleId, coupe les sessions ouvertes avant, puis ouvre la sienne quand le user est trouve par email', async () => {
     const user = buildUser({ googleId: null });
     repo.findByGoogleId.mockResolvedValue(null);
     repo.findByEmail.mockResolvedValue(user);
@@ -74,6 +74,10 @@ describe('AuthenticateGoogleUserUseCase', () => {
     });
     expect(result.accessToken).toBe('jwt-token');
     expect(result.refreshToken).toBeDefined();
+    expect(refreshTokensRepo.revokeByUserId).toHaveBeenCalledWith(user.id);
+    expect(
+      refreshTokensRepo.revokeByUserId.mock.invocationCallOrder[0],
+    ).toBeLessThan(refreshTokensRepo.create.mock.invocationCallOrder[0]);
   });
 
   it('cree un nouveau compte quand aucun user existant', async () => {

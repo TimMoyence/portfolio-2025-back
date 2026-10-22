@@ -39,9 +39,9 @@ describe('rapportEnCsv', () => {
     expect(csv.charCodeAt(0)).toBe(0xfeff);
     const lignes = csv.slice(1).split('\r\n');
     expect(lignes[0]).toBe(
-      'prénom;nom;email;question;concept;réponse;correcte;confusion;durée_ms',
+      'prénom;nom;email;question;concept;réponse;correcte;confusion;durée_ms;horodatage',
     );
-    expect(lignes[1].split(';')).toHaveLength(9);
+    expect(lignes[1].split(';')).toHaveLength(10);
     expect(lignes[1].split(';')[5]).toBe('"1338,23"');
   });
 
@@ -140,6 +140,36 @@ describe('rapportEnCsv', () => {
       '""',
       '""',
       '""',
+      '""',
+    ]);
+  });
+
+  it('ajoute une ligne par incident du participant, avec son type, son contexte et son heure', () => {
+    const lignes = texteDe(
+      buildRapportAvecReponses([buildRapportQuestion()], {
+        incidents: [
+          {
+            type: 'paste_attempt',
+            horodatage: '2026-09-11T10:05:00.000Z',
+            contexte: { champ: '=reponse', longueur: 42 },
+          },
+        ],
+      }),
+    )
+      .slice(1)
+      .split('\r\n');
+
+    expect(lignes[2].split(';')).toEqual([
+      '"Theo"',
+      '"Martin"',
+      '"theo.martin@example.com"',
+      '"incident"',
+      '"paste_attempt"',
+      '"champ==reponse, longueur=42"',
+      '""',
+      '""',
+      '""',
+      '"2026-09-11T10:05:00.000Z"',
     ]);
   });
 

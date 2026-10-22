@@ -1,3 +1,7 @@
+import type {
+  AvancementDAudit,
+  AvancementParPage,
+} from '../../domain/contrats/flux-d-audit';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { borner } from '../../../../common/domain/nombres/borner';
 import { textesUniquesBornes } from '../../../../common/domain/texte/textes-uniques-bornes';
@@ -225,7 +229,7 @@ export class AuditPipelineService {
             iaSubTask: 'summary',
             done: 0,
             total: 5,
-          },
+          } satisfies AvancementDAudit,
         },
         quickWins: fullQuickWins,
         pillarScores: scoring.pillarScores,
@@ -338,7 +342,7 @@ export class AuditPipelineService {
       stepForProgress: (done: number, total: number) => string;
     },
     bornes: readonly [number, number],
-    etape: { phase: string; iaTask: string; iaSubTask: string },
+    etape: Pick<AvancementParPage, 'phase' | 'iaTask' | 'iaSubTask'>,
   ): {
     signaler: (
       done: number,
@@ -367,7 +371,7 @@ export class AuditPipelineService {
                 total,
                 currentUrl,
                 recentCompletedUrls: [...recentCompletedUrls],
-              },
+              } satisfies AvancementDAudit,
             },
           });
         });
@@ -463,7 +467,10 @@ export class AuditPipelineService {
       'executionSection',
       'clientCommsSection',
     ] as const;
-    const synthesisStatus = new Map<string, string>();
+    const synthesisStatus = new Map<
+      string,
+      LlmSynthesisProgressEvent['sectionStatus']
+    >();
     let writeQueue = Promise.resolve();
     const enqueueUpdate = (
       progressEvent: LlmSynthesisProgressEvent,
@@ -502,7 +509,7 @@ export class AuditPipelineService {
               section: progressEvent.section,
               sectionStatus: progressEvent.sectionStatus,
               sectionStatuses: Object.fromEntries(synthesisStatus.entries()),
-            },
+            } satisfies AvancementDAudit,
           },
         });
       });

@@ -13,7 +13,11 @@ import {
 } from './cours/ProductionSoumise';
 import { NE_SAIT_PAS } from './GradingCore';
 import type { AnswerRecord } from './IAnswers.repository';
-import { agregerResultats } from './ResultatsSeance';
+import {
+  agregerResultats,
+  estNeSaitPas,
+  partDesReponses,
+} from './ResultatsSeance';
 
 function reponseDeFeuilleAMoitieJuste(questionId: string): AnswerRecord {
   return buildAnswerRecord({
@@ -24,7 +28,93 @@ function reponseDeFeuilleAMoitieJuste(questionId: string): AnswerRecord {
   });
 }
 
+describe('estNeSaitPas', () => {
+  it.each([
+    ['la valeur reservee', NE_SAIT_PAS, true],
+    ['une production declaree', { type: 'feuille', neSaitPas: true }, true],
+    ['zero', 0, false],
+    ['un texte vide', '', false],
+    ['le libelle affiche', 'Je ne sais pas', false],
+    [
+      'une production saisie',
+      { type: 'feuille', cellules: { D2: '=2' } },
+      false,
+    ],
+  ] as const)('%s', (_cas, valeur, attendu) => {
+    expect(estNeSaitPas(valeur)).toBe(attendu);
+  });
+});
+
+describe('partDesReponses', () => {
+  it.each([
+    ['aucune réponse', [], 0],
+    [
+      'des votes sans score, par la part des correctes',
+      [
+        buildAnswerRecord({ correcte: true, score: null }),
+        buildAnswerRecord({ correcte: false, score: null }),
+      ],
+      0.5,
+    ],
+    [
+      'des productions, par leur score moyen même sans réponse correcte',
+      [
+        buildAnswerRecord({ correcte: false, score: 0.8 }),
+        buildAnswerRecord({ correcte: false, score: 0.6 }),
+      ],
+      0.7,
+    ],
+    [
+      'un concept qui mêle réponses sans score et productions, chacune pour sa part',
+      [
+        ...Array.from({ length: 10 }, () =>
+          buildAnswerRecord({ correcte: false, score: null }),
+        ),
+        buildAnswerRecord({ correcte: true, score: 1 }),
+      ],
+      1 / 11,
+    ],
+  ] as const)('lit %s', (_cas, reponses, attendue) => {
+    expect(partDesReponses(reponses)).toBeCloseTo(attendue);
+  });
+
+  it('ne passe pas sous le seuil quand les scores le valent, sans reste flottant', () => {
+    const reponses = [0.7, 0.7, 0.7].map((score) =>
+      buildAnswerRecord({ correcte: false, score }),
+    );
+
+    expect(partDesReponses(reponses)).toBeGreaterThanOrEqual(0.7);
+  });
+});
+
 describe('agregerResultats', () => {
+  it('classe une fois les confusions de la séance, toutes questions agrégées, par fréquence puis identifiant', () => {
+    const resultats = agregerResultats({
+      participants: 3,
+      questions: [
+        buildQuestionAAgreger({ id: 'Q1' }),
+        buildQuestionAAgreger({ id: 'Q2' }),
+      ],
+      answers: [
+        buildAnswerRecord({ questionId: 'Q1', misconception: 'b-confusion' }),
+        buildAnswerRecord({ questionId: 'Q2', misconception: 'b-confusion' }),
+        buildAnswerRecord({ questionId: 'Q2', misconception: 'a-confusion' }),
+        buildAnswerRecord({ questionId: 'Q2', misconception: 'c-confusion' }),
+        buildAnswerRecord({ questionId: 'Q2', misconception: 'c-confusion' }),
+        buildAnswerRecord({
+          questionId: 'Q-HORS',
+          misconception: 'a-confusion',
+        }),
+      ],
+    });
+
+    expect(resultats.confusions.map(({ id, nombre }) => [id, nombre])).toEqual([
+      ['b-confusion', 2],
+      ['c-confusion', 2],
+      ['a-confusion', 1],
+    ]);
+  });
+
   it('compte par sens et non par valeur saisie', () => {
     const resultats = agregerResultats({
       questions: [
@@ -124,6 +214,28 @@ describe('agregerResultats', () => {
       D2: { total: 2, justes: 1 },
       D3: { total: 2, justes: 2 },
     });
+  });
+
+  it('prend le score moyen d une production pour sa part et son seuil, comme le pupitre l affiche', () => {
+    const [question] = agregerResultats({
+      questions: [
+        buildQuestionAAgreger({ id: 'Q-FEUILLE', type: 'feuille', seuil: 0.7 }),
+      ],
+      participants: 2,
+      answers: [
+        reponseDeFeuilleAMoitieJuste('Q-FEUILLE'),
+        buildAnswerRecord({
+          questionId: 'Q-FEUILLE',
+          valeur: { type: 'feuille', cellules: { D2: '=1' } },
+          correcte: false,
+          score: 0.95,
+          details: detailsDeFeuilleJuste(),
+        }),
+      ],
+    }).questions;
+
+    expect(question.part).toBeCloseTo(0.725);
+    expect(question.sousLeSeuil).toBe(false);
   });
 
   it('QA-06 · compte « je ne sais pas » d une production a zero et faux pour chaque cle', () => {

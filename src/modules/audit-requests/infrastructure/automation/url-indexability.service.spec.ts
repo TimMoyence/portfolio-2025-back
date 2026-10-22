@@ -48,7 +48,6 @@ describe('UrlIndexabilityService (Phase 3 — aiSignals)', () => {
         totalMs: 400,
         contentLength: 500,
       }),
-      fetchHeaders: jest.fn(),
     } as unknown as jest.Mocked<SafeFetchService>;
   };
 
@@ -339,7 +338,6 @@ describe('UrlIndexabilityService (Phase 3 — aiSignals)', () => {
   it("retourne aiSignals null quand l'URL est en erreur", async () => {
     const safeFetch = {
       fetchText: jest.fn().mockRejectedValue(new Error('boom')),
-      fetchHeaders: jest.fn(),
     } as unknown as jest.Mocked<SafeFetchService>;
     const service = buildService({ safeFetch });
 

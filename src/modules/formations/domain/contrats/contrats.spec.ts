@@ -55,6 +55,7 @@ import type {
   VotePublic,
   WorkedExemple,
 } from './donnees-publiques';
+import { LONGUEUR_MAX_DU_BILLET_DE_SORTIE } from './donnees-publiques';
 import type { RegleDeNotation } from '../RegleDeNotation';
 import type {
   ControlSessionChanges,
@@ -348,6 +349,7 @@ const RESULTAT_QUESTION = {
 const RESULTATS = {
   participants: 24,
   questions: [RESULTAT_QUESTION],
+  confusions: RESULTAT_QUESTION.confusions,
 } satisfies ResultatsSeance;
 
 const JALONS = {
@@ -854,7 +856,6 @@ describe('Contrats figés du cours B2-01 V3 (§ 9, lot 0)', () => {
       const deroule = {
         ...COURS_PUBLIC,
         ecrans: [ecran],
-        remediations: { 'base-arrivee': 'B2-01-A3-04-FIL-TECHNIQUE' },
       } satisfies DerouleCours;
 
       expect(corriges.map((corrige) => corrige.type)).toHaveLength(6);
@@ -946,14 +947,7 @@ describe('Contrats figés du cours B2-01 V3 (§ 9, lot 0)', () => {
       } satisfies ResultatsDeSeance;
 
       expect(enDirect.bareme.questionsNotees).toBe(31);
-      expect(deSeance.notation.typesNotables).not.toContain('enigme');
-    });
-  });
-
-  describe('§ 9.3.8 — contrat notation final', () => {
-    it('étend la règle servie de trois champs sans en retirer', () => {
-      expect(Object.keys(NOTATION)).toHaveLength(12);
-      expect(NOTATION.productionCompteSi).toBe('au-moins-une-saisie');
+      expect(deSeance.notation).toBe(NOTATION);
     });
   });
 
@@ -965,7 +959,6 @@ describe('Contrats figés du cours B2-01 V3 (§ 9, lot 0)', () => {
         modeRythme: 'pilote',
         ecranCourant: 30,
         intervalleLibre: null,
-        participants: 24,
         majLe: new Date('2026-10-05T08:00:00.000Z'),
         revision: 7,
         pilotage: {
@@ -1093,6 +1086,7 @@ describe('Contrats figés du cours B2-01 V3 (§ 9, lot 0)', () => {
         id: 'b2-01-a6-billet',
         question: 'Quelle vérification ferez-vous d’abord ?',
         invite: 'Justifiez en une phrase.',
+        longueurMax: LONGUEUR_MAX_DU_BILLET_DE_SORTIE,
         options: OPTIONS_BAISSE,
         metadonnees: METADONNEES,
       } satisfies ExitBilletPublic;
@@ -1104,8 +1098,9 @@ describe('Contrats figés du cours B2-01 V3 (§ 9, lot 0)', () => {
             libelle: 'Taux',
             min: -50,
             max: 50,
-            pas: 1,
-            defaut: 20,
+            pas: 50,
+            defaut: 0,
+            positions: [-50, 0, 50],
           },
         ],
         formuleLatexSimplifie: 'CM = 1 + t / 100',
@@ -1138,6 +1133,15 @@ describe('Contrats figés du cours B2-01 V3 (§ 9, lot 0)', () => {
         metadonnees: METADONNEES,
       } satisfies PulseSondage;
       const donnees = {
+        'fp-quote': {
+          citation: {
+            id: 'b2-01-citation',
+            texte: 'Un chiffre sans base ne dit rien.',
+            auteur: null,
+            source: null,
+            metadonnees: METADONNEES,
+          },
+        },
         'fp-story': { recit },
         'fp-pro': {
           cas: {
@@ -1215,7 +1219,7 @@ describe('Contrats figés du cours B2-01 V3 (§ 9, lot 0)', () => {
         donnees['fp-escape'].parcours satisfies EscapeParcoursPublic,
       ];
 
-      expect(Object.keys(donnees)).toHaveLength(18);
+      expect(Object.keys(donnees)).toHaveLength(19);
       expect(colonne.role).toBe('deduite');
       expect(spaced.boite).toBe(1);
       expect(plans.map((entree) => entree.id)).toHaveLength(3);

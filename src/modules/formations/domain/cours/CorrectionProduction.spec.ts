@@ -292,6 +292,11 @@ describe('corrigerTableau', () => {
       'indice-lu-comme-taux',
     ],
     [
+      'reconnaît le piège à la tolérance du corrigé',
+      { prix: 21.6, indice: 8.008 },
+      'indice-lu-comme-taux',
+    ],
+    [
       'refuse une saisie absente sans lui prêter de confusion',
       { prix: 21.6 },
       null,

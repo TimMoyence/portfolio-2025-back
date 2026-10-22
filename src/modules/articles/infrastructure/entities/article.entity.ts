@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import type { SupportedLocale } from '../../../../common/domain/value-objects/LocaleCode';
 import type { ArticleStatus } from '../../application/articles.repository';
+import type { ArticleIngere } from '../../domain/article-contract';
 
 @Entity({ name: 'articles' })
 @Index('uq_articles_locale_slug', ['locale', 'slug'], { unique: true })
@@ -45,16 +46,16 @@ export class ArticleEntity {
   tags: string[];
 
   @Column({ type: 'jsonb' })
-  sections: unknown[];
+  sections: ArticleIngere['sections'];
 
   @Column({ type: 'jsonb' })
-  sources: unknown[];
+  sources: ArticleIngere['sources'];
 
   @Column({ type: 'jsonb' })
-  provenance: Record<string, unknown>;
+  provenance: ArticleIngere['provenance'];
 
   @Column({ type: 'jsonb' })
-  seo: Record<string, unknown>;
+  seo: ArticleIngere['seo'];
 
   @Column({ type: 'timestamp with time zone' })
   publishedAt: Date;

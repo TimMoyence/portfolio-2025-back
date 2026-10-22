@@ -1,5 +1,6 @@
 import { BadRequestException } from '@nestjs/common';
 import { validateBody } from '../../../../../test/helpers/validation-pipe';
+import { INCIDENT_TYPES } from '../../domain/IncidentType';
 import { ReportIncidentsRequestDto } from './report-incidents.request.dto';
 
 const HORODATAGE = '2026-09-11T10:00:00.000Z';
@@ -55,4 +56,25 @@ describe('POST sessions/:id/incidents — S6 · contexte borne', () => {
       validateBody(lot(contexte), ReportIncidentsRequestDto),
     ).rejects.toThrow(BadRequestException);
   });
+});
+
+describe('POST sessions/:id/incidents — vocabulaire du contrat', () => {
+  const incident = (type: unknown) => ({
+    incidents: [{ type, horodatage: HORODATAGE }],
+  });
+
+  it.each(INCIDENT_TYPES.map((type) => [type]))('accepte %s', async (type) => {
+    const dto = await validateBody(incident(type), ReportIncidentsRequestDto);
+
+    expect(dto.incidents[0].type).toBe(type);
+  });
+
+  it.each([['visibility'], ['blur'], ['fullscreen_exit'], ['']])(
+    'refuse %p au lieu de le jeter en silence',
+    async (type) => {
+      await expect(
+        validateBody(incident(type), ReportIncidentsRequestDto),
+      ).rejects.toThrow(BadRequestException);
+    },
+  );
 });

@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { User } from '../../domain/User';
 
 export class UserResponseDto {
@@ -14,7 +14,7 @@ export class UserResponseDto {
   @ApiProperty({ example: 'Doe' })
   lastName: string;
 
-  @ApiPropertyOptional({
+  @ApiProperty({
     type: String,
     example: '+11234567890',
     nullable: true,
@@ -28,12 +28,12 @@ export class UserResponseDto {
   roles: string[];
 
   @ApiProperty({ type: String, example: '2025-01-01T00:00:00.000Z' })
-  createdAt?: Date;
+  createdAt: Date;
 
-  @ApiPropertyOptional({ type: String, example: '2025-01-02T00:00:00.000Z' })
-  updatedAt?: Date;
+  @ApiProperty({ type: String, example: '2025-01-02T00:00:00.000Z' })
+  updatedAt: Date;
 
-  @ApiPropertyOptional({ type: String, example: 'system', nullable: true })
+  @ApiProperty({ type: String, example: 'system', nullable: true })
   updatedOrCreatedBy: string | null;
 
   @ApiProperty({

@@ -236,22 +236,10 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
       authenticateUserUseCase.execute.mockRejectedValue(
         new InvalidCredentialsError('Invalid credentials'),
       );
-      authStubs.changePasswordUseCase.execute.mockRejectedValue(
-        new InvalidCredentialsError('Inactive user cannot change password'),
-      );
-      const { token } = await signerPour(buildUser());
-
       const reponses = await Promise.all([
         request(getHttpServer())
           .post('/api/auth/login')
           .send({ email: 'test@example.com', password: LOGIN_PASSWORD }),
-        request(getHttpServer())
-          .patch('/api/auth/change-password')
-          .set('Authorization', `Bearer ${token}`)
-          .send({
-            currentPassword: LOGIN_PASSWORD.toLowerCase(),
-            newPassword: LOGIN_PASSWORD,
-          }),
         request(getHttpServer()).post('/api/auth/refresh'),
       ]);
 
@@ -261,7 +249,6 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
           reponse.headers['www-authenticate'],
         ]),
       ).toEqual([
-        [401, undefined],
         [401, undefined],
         [401, undefined],
       ]);
@@ -427,6 +414,27 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
         candidat,
       );
     });
+
+    it.each([
+      ['roles', ['admin']],
+      ['isActive', false],
+    ])(
+      'POST /api/auth/register refuse en 400 le champ %s, que seul un admin fixe',
+      async (champ, valeur) => {
+        await request(getHttpServer())
+          .post('/api/auth/register')
+          .send({
+            email: titulaire.email,
+            password: LOGIN_PASSWORD,
+            firstName: titulaire.firstName,
+            lastName: titulaire.lastName,
+            [champ]: valeur,
+          })
+          .expect(400);
+
+        expect(authStubs.createUsersUseCase.inscrire).not.toHaveBeenCalled();
+      },
+    );
 
     it('POST /api/auth/google ouvre une session', async () => {
       authStubs.authenticateGoogleUserUseCase.execute.mockResolvedValue(

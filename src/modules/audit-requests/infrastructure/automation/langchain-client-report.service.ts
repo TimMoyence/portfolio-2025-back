@@ -378,8 +378,8 @@ export class LangchainClientReportService extends LlmOpenAiParLaConfig {
           score: aiScore,
           summary: localizedText(
             locale,
-            'Visibilite IA evaluee sur aiVisibility, citationWorthiness et trust.',
-            'AI visibility assessed on aiVisibility, citationWorthiness and trust.',
+            'Visibilite IA : score du pilier aiVisibility.',
+            'AI visibility: score of the aiVisibility pillar.',
           ),
         },
       },
@@ -411,11 +411,7 @@ export class LangchainClientReportService extends LlmOpenAiParLaConfig {
         context.pillarScores.performance,
         context.pillarScores.technical,
       ]),
-      aiScore: this.averageScore([
-        context.pillarScores.aiVisibility,
-        context.pillarScores.citationWorthiness,
-        context.pillarScores.trust,
-      ]),
+      aiScore: this.extractPillarScore(context.pillarScores, 'aiVisibility'),
     };
   }
 

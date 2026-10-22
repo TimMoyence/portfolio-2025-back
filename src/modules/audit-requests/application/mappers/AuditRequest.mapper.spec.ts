@@ -4,7 +4,7 @@ import { AuditRequestMapper } from './AuditRequest.mapper';
 
 describe('AuditRequestMapper', () => {
   const baseCommand: CreateAuditRequestCommand = {
-    websiteName: 'Example Studio',
+    websiteName: 'example.com',
     contactMethod: 'EMAIL',
     contactValue: 'hello@example.com',
     locale: 'fr',
@@ -16,12 +16,12 @@ describe('AuditRequestMapper', () => {
   it('trims website name, normalizes locale and email', () => {
     const mapped = AuditRequestMapper.fromCreateCommand({
       ...baseCommand,
-      websiteName: '  Example Studio  ',
+      websiteName: '  example.com  ',
       contactValue: '  HELLO@Example.com ',
       locale: 'en',
     });
 
-    expect(mapped.websiteName).toBe('Example Studio');
+    expect(mapped.websiteName).toBe('example.com');
     expect(mapped.contactValue).toBe('hello@example.com');
     expect(mapped.locale).toBe('en');
   });

@@ -3,7 +3,6 @@ import {
   ApiProperty,
   ApiPropertyOptional,
   getSchemaPath,
-  OmitType,
 } from '@nestjs/swagger';
 import { CHAMPS_EXTRAITS_DU_CAS } from '../../../domain/contrats/cours';
 import type { PieceJointeServie } from '../../../domain/cours/Cours';
@@ -14,6 +13,7 @@ import type {
 } from '../../../domain/contrats/tirage';
 import {
   EcranPublicResponseDto as EcranPublicServiResponseDto,
+  ecransDuContrat,
   SujetResponseDto as SujetServiResponseDto,
 } from '../sujet.response.dto';
 import { CorrectionServieResponseDto } from './corrige-ecran.response.dto';
@@ -24,14 +24,15 @@ class ExtraitDuRenvoiResponseDto {
     description: 'Rangs des lignes reprises de l ecran renvoye',
     example: [0, 2],
   })
-  lignes?: number[];
+  lignes?: readonly number[];
 
   @ApiPropertyOptional({
     enum: CHAMPS_EXTRAITS_DU_CAS,
+    enumName: 'ChampExtraitDuCas',
     isArray: true,
     description: 'Champs du cas repris de l ecran renvoye',
   })
-  champs?: (typeof CHAMPS_EXTRAITS_DU_CAS)[number][];
+  champs?: readonly (typeof CHAMPS_EXTRAITS_DU_CAS)[number][];
 }
 
 class CadrageDuRenvoiResponseDto {
@@ -102,7 +103,7 @@ export class EcranPublicResponseDto
     type: [String],
     description: 'Ecrans qui corrigent celui-ci',
   })
-  resoluPar?: string[];
+  resoluPar?: readonly string[];
 
   @ApiPropertyOptional({
     type: CorrectionServieResponseDto,
@@ -111,12 +112,13 @@ export class EcranPublicResponseDto
   correction?: CorrectionServieResponseDto;
 }
 
+@ApiExtraModels(EcranPublicResponseDto)
 export class SujetResponseDto
-  extends OmitType(SujetServiResponseDto, ['ecrans'] as const)
+  extends SujetServiResponseDto
   implements CoursPublic
 {
-  @ApiProperty({ type: [EcranPublicResponseDto] })
-  ecrans: EcranPublicResponseDto[];
+  @ApiProperty(ecransDuContrat(EcranPublicResponseDto))
+  ecrans: readonly EcranPublicResponseDto[];
 }
 
 export class CoursPublicCatalogueResponseDto

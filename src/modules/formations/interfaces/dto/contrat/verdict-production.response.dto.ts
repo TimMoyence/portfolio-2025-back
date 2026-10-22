@@ -29,7 +29,7 @@ export class SubmitProductionResponseDto {
   score: number;
 
   @ApiProperty({ type: [DetailVerdictResponseDto] })
-  details: DetailVerdictResponseDto[];
+  details: readonly DetailVerdictResponseDto[];
 
   @ApiProperty({
     description: 'Libelle de la confusion la plus frequente du detail',

@@ -27,9 +27,9 @@ import {
 } from '../../../../common/domain/texte/sans-espaces-typographiques';
 import { CONFUSIONS } from './banque/confusions';
 import { lireCoursStocke } from './CoursStocke';
-import { deroulePresentateur } from './DeroulePresentateur';
+import { deroulePresentateur, remediationsDe } from './DeroulePresentateur';
 import { correctionDeLEcranRevele } from './Diffusion';
-import { SEUIL_PAR_DEFAUT } from './EcranServi';
+import { REGLE_DE_NOTATION } from '../RegleDeNotation';
 import type { CorrigePresentateur, EcranDeroule } from './DeroulePresentateur';
 import { tirer } from './Tirage';
 
@@ -87,15 +87,19 @@ describe('deroulePresentateur', () => {
   it('ajoute les notes, le seuil et le corrige de chaque ecran', () => {
     expect(ecran('E-OUV').notes).toBe('Rappel');
     expect(ecran('E-OUV').seuil).toBeCloseTo(0.6);
-    expect(ecran('E-NUM').seuil).toBe(SEUIL_PAR_DEFAUT);
+    expect(ecran('E-NUM').seuil).toBe(REGLE_DE_NOTATION.seuilQuestionProbleme);
     expect(ecran('E-CITATION').seuil).toBeNull();
-    expect(ecran('E-EXIT').seuil).toBeNull();
+    expect(ecran('E-EXIT').seuil).toBe(REGLE_DE_NOTATION.seuilQuestionProbleme);
     expect(
       ecran('E-PRATIQUE').corriges.map((corrige) => corrige.questionId),
     ).toEqual(['Q-TEST-NUM-2', 'Q-TEST-NUM-3', 'Q-TEST-VOTE']);
     const corrigeAttendu: CorrigePresentateur = {
       questionId: 'Q-TEST-RAPPEL',
       bonneReponse: 'plus bas qu’au départ',
+      optionId:
+        ecran('E-OUV').questions[0].options?.find(
+          ({ libelle }) => libelle === 'plus bas qu’au départ',
+        )?.id ?? null,
       confusions: [
         {
           id: 'hausse-baisse-symetriques',
@@ -121,8 +125,30 @@ describe('deroulePresentateur', () => {
     ).toEqual(['hausse-baisse-symetriques']);
   });
 
-  it('expose les remediations du cours', () => {
-    expect(deroule.remediations).toEqual({
+  it('sert l option de la bonne réponse d un vote, et aucune à une question numérique, sur tous les cours', () => {
+    const ecarts = CONTENUS.flatMap((contenu) =>
+      deroulePresentateur(buildCoursDuContenu(contenu), 0).ecrans.flatMap(
+        ({ questions, corriges }) =>
+          corriges.flatMap(({ questionId, bonneReponse, optionId }) => {
+            const options = questions.find(
+              ({ id }) => id === questionId,
+            )?.options;
+            const attendue =
+              options === null || options === undefined
+                ? null
+                : (options.find(({ libelle }) => libelle === bonneReponse)
+                    ?.id ?? 'absente');
+            return optionId === attendue ? [] : [`${questionId} : ${optionId}`];
+          }),
+      ),
+    );
+
+    expect(ecarts).toEqual([]);
+  });
+
+  it('lit les remediations du cours, et le déroulé ne les sert plus', () => {
+    expect(deroule).not.toHaveProperty('remediations');
+    expect(remediationsDe(cours)).toEqual({
       'hausse-baisse-symetriques': 'E-REM',
       'raisonnement-additif': 'E-REM',
       'ecart-absolu-au-lieu-du-taux': 'E-REM',

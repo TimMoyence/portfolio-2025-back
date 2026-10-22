@@ -1,6 +1,8 @@
+import type { TypeDEcranServi } from '../contrats/donnees-publiques';
+
 export interface EcranPublic {
   readonly id: string;
-  readonly type: string;
+  readonly type: TypeDEcranServi;
   readonly duree: number;
   readonly interactif: boolean;
   readonly donnees: Readonly<Record<string, unknown>>;

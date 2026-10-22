@@ -1,3 +1,4 @@
+import { BOITES } from '../../../domain/LeitnerBox';
 import { ApiProperty } from '@nestjs/swagger';
 import type {
   OptionPublique,
@@ -22,7 +23,7 @@ export class SpacedQuestionPubliqueResponseDto implements SpacedQuestionPublique
   @ApiProperty({ example: 'evolution-reciproque' })
   concept: string;
 
-  @ApiProperty({ enum: [1, 2, 3], example: 1 })
+  @ApiProperty({ enum: BOITES, enumName: 'Boite', example: 1 })
   boite: 1 | 2 | 3;
 
   @ApiProperty({ example: 'B2-01 · Traitement de l’information chiffrée' })
@@ -37,7 +38,7 @@ export class SpacedQuestionPubliqueResponseDto implements SpacedQuestionPublique
     type: [OptionPubliqueResponseDto],
     description: 'Options melangees selon la graine du participant',
   })
-  options: OptionPubliqueResponseDto[];
+  options: readonly OptionPubliqueResponseDto[];
 }
 
 export class RappelsResponseDto {
@@ -45,5 +46,5 @@ export class RappelsResponseDto {
     type: [SpacedQuestionPubliqueResponseDto],
     description: 'Liste figee au premier appel',
   })
-  questions: SpacedQuestionPubliqueResponseDto[];
+  questions: readonly SpacedQuestionPubliqueResponseDto[];
 }

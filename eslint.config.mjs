@@ -70,6 +70,15 @@ export default tseslint.config(
     },
   },
   {
+    files: ['src/**/*.controller.ts'],
+    rules: {
+      '@typescript-eslint/explicit-function-return-type': [
+        'error',
+        { allowExpressions: true },
+      ],
+    },
+  },
+  {
     files: ['test/**/*.ts', 'src/**/*.spec.ts'],
     rules: {
       '@typescript-eslint/no-unsafe-assignment': 'off',

@@ -40,7 +40,6 @@ export function createMockFormationsStudentDependances() {
     telechargerPieceJointe: { pourLeParticipant: jest.fn() },
     saveFreeResponse: { execute: jest.fn() },
     tokens: { sign: jest.fn() },
-    clesEtudiants: { de: jest.fn().mockReturnValue('cle-etudiant') },
     codeScan: { assertPasDeBalayage: jest.fn(), enregistrerEchec: jest.fn() },
   };
 }
@@ -70,7 +69,6 @@ export function buildFormationsStudentController(
     dependances.telechargerPieceJointe as never,
     dependances.saveFreeResponse as never,
     dependances.tokens as never,
-    dependances.clesEtudiants as never,
     dependances.codeScan as never,
   );
 }

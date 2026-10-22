@@ -1,3 +1,5 @@
+import { estAuMoinsUn } from '../../../../common/domain/au-moins-un';
+import { moyenne, somme } from '../../../../common/domain/nombres/statistiques';
 import { avecVirgule } from '../../../../common/domain/nombres/ecriture-francaise';
 import { estEntierPositif } from '../../../../common/domain/nombres/est-entier-positif';
 import { longueurDeTexte } from '../../../../common/domain/texte/longueur-de-texte';
@@ -103,10 +105,6 @@ type Contenu =
   | { readonly genre: 'logique'; readonly valeur: boolean }
   | { readonly genre: 'formule'; readonly source: string };
 
-const TEXTE_IGNORE: ReadonlySet<Contenu['genre']> = new Set([
-  'texte',
-  'logique',
-]);
 const TEXTE_ET_VIDES_IGNORES: ReadonlySet<Contenu['genre']> = new Set([
   'texte',
   'logique',
@@ -678,16 +676,13 @@ function quantile(valeurs: readonly number[], part: number): number {
 
 function ecartType(valeurs: readonly number[], degresPerdus: number): number {
   const diviseur = valeurs.length - degresPerdus;
-  if (diviseur <= 0) {
-    refuser(ERREUR_DIVISION);
+  if (diviseur <= 0 || !estAuMoinsUn(valeurs)) {
+    return refuser(ERREUR_DIVISION);
   }
-  const moyenne =
-    valeurs.reduce((cumul, valeur) => cumul + valeur, 0) / valeurs.length;
-  const carres = valeurs.reduce(
-    (cumul, valeur) => cumul + (valeur - moyenne) ** 2,
-    0,
+  const centre = moyenne(valeurs);
+  return Math.sqrt(
+    somme(valeurs.map((valeur) => (valeur - centre) ** 2)) / diviseur,
   );
-  return Math.sqrt(carres / diviseur);
 }
 
 function statistique(nom: string, valeurs: readonly number[]): number {
@@ -714,9 +709,9 @@ function deuxSeries(
   if (paires.length < 2) {
     return refuser(ERREUR_DIVISION);
   }
-  const moyenne = (rang: 0 | 1): number =>
-    paires.reduce((cumul, paire) => cumul + paire[rang], 0) / paires.length;
-  const [moyenneGauche, moyenneDroite] = [moyenne(0), moyenne(1)];
+  const moyenneDuRang = (rang: 0 | 1): number =>
+    somme(paires.map((paire) => paire[rang])) / paires.length;
+  const [moyenneGauche, moyenneDroite] = [moyenneDuRang(0), moyenneDuRang(1)];
   let carresGauche = 0;
   let carresDroite = 0;
   let produits = 0;
@@ -953,27 +948,26 @@ class Evaluation {
 
   private cellulesDeLaPlage(
     noeud: Extract<Noeud, { genre: 'plage' }>,
-    ignorees: ReadonlySet<Contenu['genre']>,
   ): (ValeurFormule | null)[] {
     return Array.from(this.nomsDeLaPlage(noeud), (nom) =>
-      ignorees.has(this.genreDe(nom)) ? null : this.valeurNommee(nom),
+      TEXTE_ET_VIDES_IGNORES.has(this.genreDe(nom))
+        ? null
+        : this.valeurNommee(nom),
     );
   }
 
   private nombresDeLaPlage(
     noeud: Extract<Noeud, { genre: 'plage' }>,
-    ignorees: ReadonlySet<Contenu['genre']>,
   ): (number | null)[] {
-    return this.cellulesDeLaPlage(noeud, ignorees).map((valeur) =>
+    return this.cellulesDeLaPlage(noeud).map((valeur) =>
       typeof valeur === 'number' ? valeur : null,
     );
   }
 
   private valeursDeLaPlage(
     noeud: Extract<Noeud, { genre: 'plage' }>,
-    ignorees: ReadonlySet<Contenu['genre']> = TEXTE_IGNORE,
   ): number[] {
-    return this.nombresDeLaPlage(noeud, ignorees).filter(
+    return this.nombresDeLaPlage(noeud).filter(
       (valeur): valeur is number => valeur !== null,
     );
   }
@@ -990,7 +984,7 @@ class Evaluation {
     if (argument.genre !== 'plage') {
       return [this.logique(argument)];
     }
-    return this.cellulesDeLaPlage(argument, TEXTE_ET_VIDES_IGNORES)
+    return this.cellulesDeLaPlage(argument)
       .filter(
         (valeur): valeur is number | boolean =>
           valeur !== null && typeof valeur !== 'string',
@@ -1046,8 +1040,8 @@ class Evaluation {
     ) {
       return refuser(ERREUR_VALEUR);
     }
-    const gauche = this.nombresDeLaPlage(premiere, TEXTE_ET_VIDES_IGNORES);
-    const droite = this.nombresDeLaPlage(seconde, TEXTE_ET_VIDES_IGNORES);
+    const gauche = this.nombresDeLaPlage(premiere);
+    const droite = this.nombresDeLaPlage(seconde);
     if (gauche.length !== droite.length) {
       return refuser(ERREUR_VALEUR);
     }
@@ -1068,11 +1062,7 @@ class Evaluation {
   }
 
   private serie(parametres: readonly Noeud[]): number[] {
-    return parametres.flatMap((argument) =>
-      argument.genre === 'plage'
-        ? this.valeursDeLaPlage(argument, TEXTE_ET_VIDES_IGNORES)
-        : [this.nombre(argument)],
-    );
+    return parametres.flatMap((argument) => this.etendre(argument));
   }
 
   private quartile(parametres: readonly Noeud[]): number {
@@ -1097,14 +1087,11 @@ class Evaluation {
   }
 
   private agreger(nom: string, parametres: readonly Noeud[]): number {
-    const valeurs = parametres.flatMap((argument) => this.etendre(argument));
-    const somme = valeurs.reduce((cumul, valeur) => cumul + valeur, 0);
+    const valeurs = this.serie(parametres);
     if (nom === 'SOMME') {
-      return somme;
+      return somme(valeurs);
     }
-    return valeurs.length === 0
-      ? refuser(ERREUR_DIVISION)
-      : somme / valeurs.length;
+    return estAuMoinsUn(valeurs) ? moyenne(valeurs) : refuser(ERREUR_DIVISION);
   }
 
   private unaireNommee(nom: string, parametres: readonly Noeud[]): number {

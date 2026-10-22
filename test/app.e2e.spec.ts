@@ -6,8 +6,6 @@ import { AuditsController } from '../src/modules/audit-requests/interfaces/Audit
 import { AuditRequestRequestDto } from '../src/modules/audit-requests/interfaces/dto/audit-request.request.dto';
 import { ContactsController } from '../src/modules/contacts/interfaces/Contacts.controller';
 import { ContactRequestDto } from '../src/modules/contacts/interfaces/dto/contact.request.dto';
-import { CookieConsentsController } from '../src/modules/cookie-consents/interfaces/CookieConsents.controller';
-import { CookieConsentRequestDto } from '../src/modules/cookie-consents/interfaces/dto/cookie-consent.request.dto';
 import { ForgotPasswordDto } from '../src/modules/users/interfaces/dto/ForgotPassword.dto';
 import { LoginDto } from '../src/modules/users/interfaces/dto/Login.dto';
 import { ResetPasswordDto } from '../src/modules/users/interfaces/dto/ResetPassword.dto';
@@ -19,7 +17,6 @@ import {
   AUDIT_SUMMARY_RESULT,
   CONTACT_CREATED_RESPONSE,
   CONTACT_PAYLOAD,
-  COOKIE_CONSENT_RECORDED_RESPONSE,
   createAuthUseCaseStubs,
   createCoreUseCaseStubs,
   moduleDesControleursDuSocle,
@@ -27,7 +24,6 @@ import {
   primeCoreUseCaseStubs,
   primePasswordUseCaseStubs,
 } from './factories/core-api.factory';
-import { buildChoixDeConsentement } from './factories/cookie-consents.factory';
 import { buildAuthResult, buildUser } from './factories/user.factory';
 import { validateBody } from './helpers/validation-pipe';
 
@@ -42,11 +38,7 @@ describe('API coherence and connectivity (e2e transportless)', () => {
   const coreStubs = createCoreUseCaseStubs();
   const authStubs = createAuthUseCaseStubs();
 
-  const {
-    createContactsUseCase,
-    createCookieConsentsUseCase,
-    createAuditRequestsUseCase,
-  } = coreStubs;
+  const { createContactsUseCase, createAuditRequestsUseCase } = coreStubs;
   const {
     authenticateUserUseCase,
     requestPasswordResetUseCase,
@@ -55,7 +47,6 @@ describe('API coherence and connectivity (e2e transportless)', () => {
   } = authStubs;
 
   let contactsController: ContactsController;
-  let cookieConsentsController: CookieConsentsController;
   let auditsController: AuditsController;
   let authController: AuthController;
 
@@ -66,7 +57,6 @@ describe('API coherence and connectivity (e2e transportless)', () => {
     ).compile();
 
     contactsController = moduleRef.get(ContactsController);
-    cookieConsentsController = moduleRef.get(CookieConsentsController);
     auditsController = moduleRef.get(AuditsController);
     authController = moduleRef.get(AuthController);
   });
@@ -122,7 +112,11 @@ describe('API coherence and connectivity (e2e transportless)', () => {
     const dto = await validateBody(CONTACT_PAYLOAD, ContactRequestDto);
 
     const req = makeRequestMock(
-      { 'user-agent': 'e2e-test-agent', referer: 'https://example.com/fr' },
+      {
+        'x-forwarded-for': '203.0.113.10, 10.0.0.1',
+        'user-agent': 'e2e-test-agent',
+        referer: 'https://example.com/fr',
+      },
       RESOLVED_CLIENT_IP,
     );
 
@@ -130,6 +124,9 @@ describe('API coherence and connectivity (e2e transportless)', () => {
 
     expect(response).toEqual(CONTACT_CREATED_RESPONSE);
     expect(createContactsUseCase.execute).toHaveBeenCalledTimes(1);
+    // L'IP persistee est celle resolue par Express sous `trust proxy`,
+    // jamais la premiere entree de `X-Forwarded-For` : cette derniere est
+    // fournie par le client, qui choisirait alors son identite.
     expect(createContactsUseCase.execute).toHaveBeenCalledWith(
       expect.objectContaining({
         ip: RESOLVED_CLIENT_IP,
@@ -137,6 +134,9 @@ describe('API coherence and connectivity (e2e transportless)', () => {
         referer: 'https://example.com/fr',
       }),
     );
+    expect(
+      firstCommand<{ ip: string | null }>(createContactsUseCase).ip,
+    ).not.toBe('203.0.113.10');
   });
 
   it('rejects non-whitelisted fields with global validation policy', async () => {
@@ -148,40 +148,6 @@ describe('API coherence and connectivity (e2e transportless)', () => {
     ).rejects.toBeInstanceOf(BadRequestException);
 
     expect(createContactsUseCase.execute).not.toHaveBeenCalled();
-  });
-
-  it('creates cookie consent and forwards request metadata to the use case', async () => {
-    const dto = await validateBody(
-      buildChoixDeConsentement({ locale: 'en' }),
-      CookieConsentRequestDto,
-    );
-    const req = makeRequestMock(
-      {
-        'x-forwarded-for': '203.0.113.10, 10.0.0.1',
-        'user-agent': 'e2e-test-agent',
-        referer: 'https://example.com/en/pricing',
-      },
-      RESOLVED_CLIENT_IP,
-    );
-
-    const response = await cookieConsentsController.create(dto, req);
-
-    expect(response).toEqual(COOKIE_CONSENT_RECORDED_RESPONSE);
-    // L'IP persistee au titre du RGPD est celle resolue par Express sous
-    // `trust proxy`, jamais la premiere entree de `X-Forwarded-For` :
-    // cette derniere est fournie par le client, qui choisirait alors
-    // l'identite sous laquelle son consentement est enregistre.
-    expect(createCookieConsentsUseCase.execute).toHaveBeenCalledWith(
-      expect.objectContaining({
-        ip: RESOLVED_CLIENT_IP,
-        userAgent: 'e2e-test-agent',
-        referer: 'https://example.com/en/pricing',
-      }),
-    );
-    const command = firstCommand<{ ip: string | null }>(
-      createCookieConsentsUseCase,
-    );
-    expect(command.ip).not.toBe('203.0.113.10');
   });
 
   it('creates audit request and resolves locale from referer when locale is omitted', async () => {

@@ -1,3 +1,4 @@
+import type { TypeDeProduction } from '../contrats/contrat-de-l-api';
 import type { Cours, Ecran, QuestionProduction } from '../contrats/cours';
 import type { DetailProduction, ValeurProduction } from '../contrats/resultats';
 import {
@@ -189,9 +190,7 @@ export function normaliserProduction(
   return normalisee;
 }
 
-function productionVide(
-  type: 'feuille' | 'tableau' | 'classement',
-): ValeurProduction {
+function productionVide(type: TypeDeProduction): ValeurProduction {
   switch (type) {
     case 'feuille':
       return { type, cellules: {} };

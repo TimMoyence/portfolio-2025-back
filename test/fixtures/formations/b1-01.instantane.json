@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "f379ceb1bf127aec61455efed5bbea80e0e4eac29179fb9909ba0b518f6a5316",
+  "empreinte": "05f9a4b2a93814f62a29886e5e6d5b2a1030e1df3a7f148c325391a5bc9a03a1",
   "sujet": {
     "id": "b1-01-proportions-pourcentages",
     "titre": "Proportions et pourcentages",
@@ -1922,6 +1922,7 @@
             "id": "b1-01-a4-billet",
             "question": "Effectif en B3, total en B7. Quelle formule écrire en C3 pour la part en %, arrondie au dixième, à recopier vers le bas ?",
             "invite": "En une phrase : pourquoi se demander « parmi qui ? » devant un pourcentage ?",
+            "longueurMax": 500,
             "options": [
               {
                 "id": "arrondi-b-7-b3-100-1-5ab8d03b",
@@ -2008,6 +2009,7 @@
           {
             "questionId": "b1-01-a1-diagnostic-part",
             "bonneReponse": "20 %",
+            "optionId": "20-pct-7ae8d407",
             "confusions": [
               {
                 "id": "valeur-confondue-avec-taux",
@@ -2135,6 +2137,7 @@
           {
             "questionId": "b1-01-a1-diagnostic-pourcentage",
             "bonneReponse": "12 €",
+            "optionId": "12-eur-c918b766",
             "confusions": [
               {
                 "id": "raisonnement-additif",
@@ -2149,6 +2152,7 @@
           {
             "questionId": "b1-01-a1-diagnostic-evolution",
             "bonneReponse": "+ 20 %",
+            "optionId": "plus-20-pct-7431fd3a",
             "confusions": [
               {
                 "id": "ecart-absolu-au-lieu-du-taux",
@@ -2667,11 +2671,12 @@
         "renvoi": "B1-01-A1-04-DOSSIER",
         "notes": "• Temps : réflexion 2 min · travail 6 min · correction 2 min\n• Réflexion : souligner le tout de chaque question avant de calculer.\n• Pièges : tout divisé par la partie ; 0,25 écrit pour 25 % ; mauvais tout.\n• Papier : exercice 1 du livret.\n• Corriger question par question, en commençant par la moins réussie (score sous chaque correction).\n• Transition : « Faisons calculer toutes les parts par le tableur : exercice 2. »",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [
           {
             "questionId": "b1-01-a1-part-alternants",
             "bonneReponse": "25 %",
+            "optionId": null,
             "confusions": [
               {
                 "id": "base-inversee",
@@ -2686,6 +2691,7 @@
           {
             "questionId": "b1-01-a1-phrase-theo",
             "bonneReponse": "40 % des alternants du réseau travaillent à Nantes",
+            "optionId": "40-pct-des-alternants-du-reseau-travaill-a2a0b349",
             "confusions": [
               {
                 "id": "population-reference-ignoree",
@@ -2696,6 +2702,7 @@
           {
             "questionId": "b1-01-a1-alternants-nantes",
             "bonneReponse": "25 %",
+            "optionId": null,
             "confusions": [
               {
                 "id": "population-reference-ignoree",
@@ -2706,6 +2713,7 @@
           {
             "questionId": "b1-01-a1-objectif",
             "bonneReponse": "12 alternants",
+            "optionId": null,
             "confusions": [
               {
                 "id": "population-reference-ignoree",
@@ -2869,7 +2877,7 @@
         },
         "notes": "• Temps : réflexion 2 min · travail 5 min · correction 2 min\n• Réflexion : écrire sur papier la formule de C2, puis ce qu’elle devient en C3 une fois recopiée.\n• Erreurs à chercher : B6 sans $ (#DIV/0! dès C3) ; total tapé au clavier ; part sans × 100 ; ARRONDI oublié.\n• Papier : formules écrites sur la copie, puis les parts à la calculatrice.\n• Corriger question par question, en commençant par la moins réussie (score sous chaque correction).\n• Transition : jalon 1, puis pause de 15 minutes.",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [],
         "questions": [
           {
@@ -3454,7 +3462,7 @@
         "renvoi": "B1-01-A1-04-DOSSIER",
         "notes": "• Temps : réflexion 1 min · travail 5 min · correction 2 min\n• Réflexion : dire en français ce qu’on saisit : des personnes, pas des pourcentages.\n• Pièges : le taux saisi tel quel ; les clients divisés par le taux.\n• Papier : tableau du livret, rempli à la main.\n• Projeter le tableau juste ; comparer le taux global, 54 %, à la moyenne des quatre taux, 57,5 %.\n• Transition : « Le taux global est trouvé : exercice 4. »",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [],
         "questions": [
           {
@@ -3676,11 +3684,12 @@
         "renvoi": "B1-01-A1-04-DOSSIER",
         "notes": "• Temps : réflexion 2 min · travail 6 min · correction 2 min\n• Réflexion : pour chaque question, écrire « parmi qui ? » avant de calculer.\n• Pièges : taux additionnés ; moyenne simple ; mauvais tout.\n• Papier : exercice 4 du livret.\n• Corriger question par question, en commençant par la moins réussie.\n• Transition : jalon 2.",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [
           {
             "questionId": "b1-01-a2-poids",
             "bonneReponse": "Nantes, la boutique qui a le plus de clients, a le taux le plus bas : il pèse le plus",
+            "optionId": "nantes-la-boutique-qui-a-le-plus-de-clie-e45fbda2",
             "confusions": [
               {
                 "id": "moyenne-simple-des-taux",
@@ -3691,6 +3700,7 @@
           {
             "questionId": "b1-01-a2-part-reservation",
             "bonneReponse": "21,6 %",
+            "optionId": null,
             "confusions": [
               {
                 "id": "population-reference-ignoree",
@@ -3705,6 +3715,7 @@
           {
             "questionId": "b1-01-a2-clients-reservation",
             "bonneReponse": "648 clients",
+            "optionId": null,
             "confusions": [
               {
                 "id": "population-reference-ignoree",
@@ -3715,6 +3726,7 @@
           {
             "questionId": "b1-01-a2-octobre",
             "bonneReponse": "47,5 %",
+            "optionId": null,
             "confusions": [
               {
                 "id": "moyenne-simple-des-taux",
@@ -3849,6 +3861,7 @@
           {
             "questionId": "b1-01-a3-points",
             "bonneReponse": "Elle gagne 6 points",
+            "optionId": "elle-gagne-6-points-40691afe",
             "confusions": [
               {
                 "id": "points-confondus-avec-pourcentage",
@@ -3859,6 +3872,7 @@
           {
             "questionId": "b1-01-a3-marque",
             "bonneReponse": "37,5 %",
+            "optionId": "37-5-pct-f8efdb56",
             "confusions": [
               {
                 "id": "marque-confondue-avec-marge",
@@ -4263,11 +4277,12 @@
         },
         "notes": "• Temps : réflexion 2 min · travail 6 min · correction 2 min\n• Réflexion : écrire « proportion », « évolution » ou « marge, marque » devant chaque question.\n• Pièges : points écrits en % ; évolution divisée par l’arrivée ; marge et marque inversées.\n• Papier : exercice 5 du livret.\n• Corriger question par question, en commençant par la moins réussie.\n• Transition : « Une IA a rédigé le bilan : exercice 6. »",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [
           {
             "questionId": "b1-01-a3-ecart-points",
             "bonneReponse": "5,8 points",
+            "optionId": null,
             "confusions": [
               {
                 "id": "points-confondus-avec-pourcentage",
@@ -4278,6 +4293,7 @@
           {
             "questionId": "b1-01-a3-evolution",
             "bonneReponse": "15,9 %",
+            "optionId": null,
             "confusions": [
               {
                 "id": "points-confondus-avec-pourcentage",
@@ -4292,6 +4308,7 @@
           {
             "questionId": "b1-01-a3-taux-de-marge",
             "bonneReponse": "62,5 %",
+            "optionId": null,
             "confusions": [
               {
                 "id": "marque-confondue-avec-marge",
@@ -4302,6 +4319,7 @@
           {
             "questionId": "b1-01-a3-taux-de-marque",
             "bonneReponse": "38,5 %",
+            "optionId": null,
             "confusions": [
               {
                 "id": "marque-confondue-avec-marge",
@@ -4650,7 +4668,7 @@
         "renvoi": "B1-01-A4-01-SITUATION-FESTIVAL",
         "notes": "• Temps : réflexion 3 min · travail 8 min · correction 2 min\n• Réflexion : chacun écrit sur papier la formule de C3, puis ce qu’elle devient en C4.\n• Erreurs à chercher : B7 sans $ ; total tapé au clavier ; part sans × 100 ; ARRONDI oublié.\n• Papier : formules écrites sur la copie ; en CCF, la question se fait devant l’examinateur.\n• Projeter la feuille d’un poste volontaire et relire C3, puis sa recopie en C4.\n• Transition : « Avec ce bilan, ouvrez le coffre de la mini-situation. »",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [],
         "questions": [
           {
@@ -4803,7 +4821,7 @@
         "renvoi": "B1-01-A4-01-SITUATION-FESTIVAL",
         "notes": "• Temps : réflexion 2 min · travail 7 min · correction 2 min\n• Réflexion : relire le dossier et noter, pour chaque énigme, « parmi qui ? ».\n• Indices disponibles après 60 s. À 6 min, projeter l’énigme la moins résolue.\n• Papier : quatre questions rédigées du livret, sans code de coffre.\n• Dévoiler énigme par énigme, en s’attardant sur la moins résolue (pupitre).\n• Finir sur le bilan d’Inès : chaque pourcentage dit de quel tout il parle.",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [],
         "questions": [
           {
@@ -4900,11 +4918,12 @@
         },
         "notes": "• 5 min individuelles, puis projeter la carte de maîtrise.\n• Tous reçoivent les douze questions de la banque : le rappel couvre tout le cours pour chacun.",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [
           {
             "questionId": "b1-01-r-proportion",
             "bonneReponse": "15 ÷ 50 = 0,3, soit 30 %",
+            "optionId": "15-50-0-3-soit-30-pct-93e4d94d",
             "confusions": [
               {
                 "id": "valeur-confondue-avec-taux",
@@ -4915,6 +4934,7 @@
           {
             "questionId": "b1-01-r-partie",
             "bonneReponse": "30 clients",
+            "optionId": "30-clients-57064bbd",
             "confusions": [
               {
                 "id": "valeur-confondue-avec-taux",
@@ -4925,6 +4945,7 @@
           {
             "questionId": "b1-01-r-decimal",
             "bonneReponse": "0,04, soit 4 ÷ 100",
+            "optionId": "0-04-soit-4-100-edc43794",
             "confusions": [
               {
                 "id": "taux-valeur-facteur-cent",
@@ -4935,6 +4956,7 @@
           {
             "questionId": "b1-01-r-tout",
             "bonneReponse": "Les cadres",
+            "optionId": "les-cadres-bb6e2357",
             "confusions": [
               {
                 "id": "population-reference-ignoree",
@@ -4945,6 +4967,7 @@
           {
             "questionId": "b1-01-r-parmi",
             "bonneReponse": "12 ÷ 40 = 0,3, soit 30 %",
+            "optionId": "12-40-0-3-soit-30-pct-14cea07e",
             "confusions": [
               {
                 "id": "population-reference-ignoree",
@@ -4955,6 +4978,7 @@
           {
             "questionId": "b1-01-r-part-de-part",
             "bonneReponse": "0,5 × 0,2 = 0,1, soit 10 %",
+            "optionId": "0-5-0-2-0-1-soit-10-pct-4a3c38fc",
             "confusions": [
               {
                 "id": "raisonnement-additif",
@@ -4965,6 +4989,7 @@
           {
             "questionId": "b1-01-r-global",
             "bonneReponse": "(2 + 18) ÷ 40 = 0,5, soit 50 %",
+            "optionId": "2-plus-18-40-0-5-soit-50-pct-89d1fcea",
             "confusions": [
               {
                 "id": "moyenne-simple-des-taux",
@@ -4975,6 +5000,7 @@
           {
             "questionId": "b1-01-r-points",
             "bonneReponse": "+ 3 points",
+            "optionId": "plus-3-points-c9151355",
             "confusions": [
               {
                 "id": "points-confondus-avec-pourcentage",
@@ -4985,6 +5011,7 @@
           {
             "questionId": "b1-01-r-evolution",
             "bonneReponse": "Une évolution",
+            "optionId": "une-evolution-516e08bb",
             "confusions": [
               {
                 "id": "proportion-confondue-avec-evolution",
@@ -4995,6 +5022,7 @@
           {
             "questionId": "b1-01-r-marge",
             "bonneReponse": "10 ÷ 40 = 0,25, soit 25 %",
+            "optionId": "10-40-0-25-soit-25-pct-837ddb34",
             "confusions": [
               {
                 "id": "marque-confondue-avec-marge",
@@ -5005,6 +5033,7 @@
           {
             "questionId": "b1-01-r-marque",
             "bonneReponse": "10 ÷ 50 = 0,2, soit 20 %",
+            "optionId": "10-50-0-2-soit-20-pct-e7c8d80a",
             "confusions": [
               {
                 "id": "marque-confondue-avec-marge",
@@ -5015,6 +5044,7 @@
           {
             "questionId": "b1-01-r-somme",
             "bonneReponse": "=SOMME(D3:D8)",
+            "optionId": "somme-d3-d8-34aab757",
             "confusions": [
               {
                 "id": "valeur-saisie-sans-formule",
@@ -5302,6 +5332,7 @@
             "id": "b1-01-a4-billet",
             "question": "Effectif en B3, total en B7. Quelle formule écrire en C3 pour la part en %, arrondie au dixième, à recopier vers le bas ?",
             "invite": "En une phrase : pourquoi se demander « parmi qui ? » devant un pourcentage ?",
+            "longueurMax": 500,
             "options": [
               {
                 "id": "arrondi-b-7-b3-100-1-5ab8d03b",
@@ -5331,11 +5362,12 @@
         },
         "notes": "• 3 min ; clore la séance quand le compteur de billets est complet.\n• Pièges : total non figé, division inversée, × 100 oublié.",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [
           {
             "questionId": "b1-01-a4-billet",
             "bonneReponse": "=ARRONDI(B3/$B$7*100;1)",
+            "optionId": "arrondi-b3-b-7-100-1-b39bfb3d",
             "confusions": [
               {
                 "id": "reference-relative-non-figee",
@@ -5379,23 +5411,7 @@
         "corrigeEcran": null,
         "reflexion": null
       }
-    ],
-    "remediations": {
-      "base-inversee": "B1-01-A1-06-COURS-PROPORTION",
-      "taux-valeur-facteur-cent": "B1-01-A1-06-COURS-PROPORTION",
-      "valeur-confondue-avec-taux": "B1-01-A1-06-COURS-PROPORTION",
-      "population-reference-ignoree": "B1-01-A1-07-COURS-REFERENCE-TABLEUR",
-      "reference-relative-non-figee": "B1-01-A1-07-COURS-REFERENCE-TABLEUR",
-      "valeur-saisie-sans-formule": "B1-01-A1-07-COURS-REFERENCE-TABLEUR",
-      "arrondi-oublie": "B1-01-A1-07-COURS-REFERENCE-TABLEUR",
-      "raisonnement-additif": "B1-01-A2-02-COURS-PROPORTION-DE-PROPORTION",
-      "moyenne-simple-des-taux": "B1-01-A2-03-COURS-TAUX-GLOBAL",
-      "points-confondus-avec-pourcentage": "B1-01-A3-02-COURS-POINTS",
-      "proportion-confondue-avec-evolution": "B1-01-A3-02-COURS-POINTS",
-      "ecart-absolu-au-lieu-du-taux": "B1-01-A3-02-COURS-POINTS",
-      "base-arrivee": "B1-01-A3-02-COURS-POINTS",
-      "marque-confondue-avec-marge": "B1-01-A3-03-COURS-MARGE-MARQUE"
-    }
+    ]
   },
   "catalogue": {
     "id": "b1-01-proportions-pourcentages",

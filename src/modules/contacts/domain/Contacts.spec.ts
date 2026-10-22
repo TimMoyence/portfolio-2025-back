@@ -61,6 +61,12 @@ describe('Contacts aggregate', () => {
     expect(contact.phone).toBeNull();
   });
 
+  it('refuse un contact dont les conditions ne sont pas acceptées', () => {
+    expect(() =>
+      Contacts.create({ ...VALID_CONTACT_PROPS, terms: false }),
+    ).toThrow(DomainValidationError);
+  });
+
   it('devrait refuser un terms non boolean', () => {
     expect(() =>
       Contacts.create({

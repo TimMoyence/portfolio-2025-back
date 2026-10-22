@@ -18,6 +18,7 @@ import type {
   ResumeBareme,
 } from '../../../domain/contrats/resultats';
 import {
+  ConfusionCompteeResponseDto,
   RapportParticipantResponseDto as RapportParticipantServiResponseDto,
   RapportQuestionResponseDto as RapportQuestionServieResponseDto,
   RegleDeNotationResponseDto as RegleDeNotationServieResponseDto,
@@ -29,7 +30,11 @@ export class RapportQuestionResponseDto
   extends RapportQuestionServieResponseDto
   implements RapportQuestion
 {
-  @ApiProperty({ enum: TYPES_QUESTION, example: 'feuille' })
+  @ApiProperty({
+    enum: TYPES_QUESTION,
+    enumName: 'TypeQuestion',
+    example: 'feuille',
+  })
   type: TypeQuestion;
 
   @ApiProperty({
@@ -46,7 +51,7 @@ export class RapportParticipantResponseDto extends OmitType(
   ['reponses'] as const,
 ) {
   @ApiProperty({ type: [RapportQuestionResponseDto] })
-  reponses: RapportQuestionResponseDto[];
+  reponses: readonly RapportQuestionResponseDto[];
 }
 
 export class JustesParCleResponseDto {
@@ -73,7 +78,11 @@ export class ResultatQuestionResponseDto
   @ApiProperty({ example: 'B2-01-A4-02-FEUILLE-CANAUX' })
   ecranId: string;
 
-  @ApiProperty({ enum: TYPES_QUESTION, example: 'feuille' })
+  @ApiProperty({
+    enum: TYPES_QUESTION,
+    enumName: 'TypeQuestion',
+    example: 'feuille',
+  })
   type: TypeQuestion;
 
   @ApiProperty({ example: true })
@@ -138,23 +147,20 @@ export class ResultatsSeanceResponseDto implements ResultatsSeance {
   participants: number;
 
   @ApiProperty({ type: [ResultatQuestionResponseDto] })
-  questions: ResultatQuestionResponseDto[];
+  questions: readonly ResultatQuestionResponseDto[];
+
+  @ApiProperty({
+    type: [ConfusionCompteeResponseDto],
+    description:
+      'Confusions de toutes les questions agregees, triees par frequence puis identifiant',
+  })
+  confusions: readonly ConfusionCompteeResponseDto[];
 }
 
 export class RegleDeNotationResponseDto
   extends RegleDeNotationServieResponseDto
   implements RegleDeNotation
 {
-  @ApiProperty({
-    enum: TYPES_QUESTION,
-    isArray: true,
-    example: ['vote', 'numeric', 'classement', 'feuille', 'tableau'],
-  })
-  typesNotables: TypeQuestion[];
-
-  @ApiProperty({ enum: ['au-moins-une-saisie'] })
-  productionCompteSi: 'au-moins-une-saisie';
-
   @ApiProperty({
     description: 'Les statistiques ne portent que sur les questions notees',
     example: true,
@@ -247,7 +253,7 @@ export class SessionResultsResponseDto
     type: [RapportParticipantResponseDto],
     description: 'Participants dans leur ordre d arrivee',
   })
-  participants: RapportParticipantResponseDto[];
+  participants: readonly RapportParticipantResponseDto[];
 
   @ApiProperty({ type: ResultatsSeanceResponseDto })
   resultats: ResultatsSeanceResponseDto;
@@ -269,5 +275,5 @@ export class SessionResultsResponseDto
   jalons: Record<string, ComptesJalonResponseDto>;
 
   @ApiProperty({ type: [ProgressionEnigmeResponseDto] })
-  enigmes: ProgressionEnigmeResponseDto[];
+  enigmes: readonly ProgressionEnigmeResponseDto[];
 }

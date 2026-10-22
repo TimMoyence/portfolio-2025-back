@@ -2,7 +2,7 @@ import { Logger } from '@nestjs/common';
 import { buildUser } from '../../../../../test/factories/user.factory';
 import { flushPromises } from '../../../../../test/helpers/flush-promises';
 import { TROIS_ENVOIS_PAR_HEURE } from '../../domain/PlafondDEnvois';
-import { TokenHash } from '../../domain/TokenHash';
+import { TokenHash } from '../../../../common/domain/crypto/TokenHash';
 import {
   emettreUnLienTemporaire,
   type CanalDeLienTemporaire,

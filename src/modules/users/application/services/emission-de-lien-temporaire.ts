@@ -5,7 +5,7 @@ import {
   TROIS_ENVOIS_PAR_HEURE,
   type PlafondDEnvois,
 } from '../../domain/PlafondDEnvois';
-import { emettreJeton } from '../../domain/TokenHash';
+import { emettreJeton } from '../../../../common/domain/crypto/TokenHash';
 import type { User } from '../../domain/User';
 
 const MINUTE_MS = 60_000;
@@ -63,7 +63,7 @@ export async function emettreUnLienTemporaire(
       url: lienAvecJeton(canal.adresseDeBase, jeton.brut),
       expiresInMinutes: canal.dureeDeValiditeMs / MINUTE_MS,
     }),
-    `${canal.echecDEnvoi} for ${destinataire.email}`,
+    `${canal.echecDEnvoi} for user ${destinataire.id ?? 'inconnu'}`,
     logger,
   );
 }

@@ -1,4 +1,5 @@
 import type { TypeQuestion } from './contrats/cours';
+import type { IncidentType, ValeurDeContexte } from './IncidentType';
 
 export interface RapportQuestion {
   questionId: string;
@@ -18,11 +19,15 @@ export interface RapportParticipant {
   nom: string;
   email: string;
   completion: number;
-  note: number;
-  sousSeuil: boolean;
   reponses: readonly RapportQuestion[];
   reponsesLibres: readonly RapportReponseLibre[];
-  incidents: number;
+  incidents: readonly RapportIncident[];
+}
+
+export interface RapportIncident {
+  type: IncidentType;
+  horodatage: string;
+  contexte: Readonly<Record<string, ValeurDeContexte>> | null;
 }
 
 export interface RapportReponseLibre {
@@ -35,7 +40,7 @@ export interface RapportSession {
   courseSlug: string;
   code: string;
   ouverteLe: Date;
-  fermeeLe: Date;
+  fermeeLe: Date | null;
   participants: readonly RapportParticipant[];
   conceptsFragiles: readonly string[];
   libellesDesConcepts: Readonly<Record<string, string>>;
@@ -49,7 +54,7 @@ export function conceptsFragilesLisibles(rapport: RapportSession): string {
 
 /**
  * La copie d un etudiant ne porte que sa propre copie. Le rapport complet
- * — nom, adresse et note de chaque camarade — reste a la synthese du
+ * — nom, adresse et completion de chaque camarade — reste a la synthese du
  * formateur : le jour ou le corps du message gagnera un classement, la
  * donnee des autres ne sera pas deja dans la main de celui qui redige
  * (CloseSession.useCase.ts).

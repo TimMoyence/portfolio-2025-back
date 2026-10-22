@@ -1,4 +1,5 @@
 import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
+import { adresseDuSite } from './AdresseDuSite';
 
 export class SelfAuditForbiddenError extends DomainValidationError {
   constructor(hostname: string) {
@@ -10,28 +11,14 @@ export class SelfAuditGuard {
   private readonly selfHostnames: ReadonlySet<string>;
 
   constructor(selfDomains: ReadonlyArray<string>) {
-    this.selfHostnames = new Set(
-      selfDomains
-        .map((entry) => this.extractHostname(entry))
-        .filter((hostname) => hostname.length > 0),
-    );
+    this.selfHostnames = new Set(selfDomains.map(domaineDuSite));
   }
 
   ensureNotSelf(websiteName: string): void {
-    const hostname = this.extractHostname(websiteName);
-    if (hostname.length === 0) return;
+    const hostname = domaineDuSite(websiteName);
     if (this.matches(hostname)) {
       throw new SelfAuditForbiddenError(hostname);
     }
-  }
-
-  private extractHostname(raw: string): string {
-    const trimmed = raw.trim().toLowerCase();
-    if (!trimmed) return '';
-    const withoutScheme = trimmed.replace(/^[a-z][a-z\d+\-.]*:\/\//, '');
-    const [hostAndPort] = withoutScheme.split('/');
-    const [host] = hostAndPort.split(':');
-    return host.replace(/^www\./, '');
   }
 
   private matches(hostname: string): boolean {
@@ -41,4 +28,10 @@ export class SelfAuditGuard {
     }
     return false;
   }
+}
+
+function domaineDuSite(saisie: string): string {
+  return adresseDuSite(saisie)
+    .hostname.replace(/^www\./, '')
+    .replace(/\.$/, '');
 }

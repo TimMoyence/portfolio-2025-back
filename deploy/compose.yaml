@@ -1,3 +1,9 @@
+x-journaux-bornes: &journaux-bornes
+  driver: json-file
+  options:
+    max-size: '10m'
+    max-file: '5'
+
 services:
   redis:
     image: redis:7-alpine
@@ -86,6 +92,7 @@ services:
   api:
     image: ${BACK_IMAGE:?BACK_IMAGE is required}
     restart: unless-stopped
+    logging: *journaux-bornes
     env_file:
       - ./backend.env
     environment:
@@ -147,6 +154,7 @@ services:
   web-fr:
     image: ${FRONT_IMAGE:?FRONT_IMAGE is required}
     restart: unless-stopped
+    logging: *journaux-bornes
     environment:
       NODE_ENV: 'production'
       PORT: '4000'
@@ -183,6 +191,7 @@ services:
   web-en:
     image: ${FRONT_IMAGE:?FRONT_IMAGE is required}
     restart: unless-stopped
+    logging: *journaux-bornes
     environment:
       NODE_ENV: 'production'
       PORT: '4000'

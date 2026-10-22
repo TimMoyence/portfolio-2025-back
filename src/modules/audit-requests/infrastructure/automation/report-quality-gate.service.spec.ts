@@ -2,6 +2,7 @@ import {
   ReportQualityGateContext,
   ReportQualityGateService,
 } from './report-quality-gate.service';
+import { NOMBRE_DE_PRIORITES } from './audit-thresholds.config';
 import type { ExpertReport } from './schemas/audit-report.schemas';
 import {
   buildExpertReport,
@@ -112,7 +113,12 @@ describe('ReportQualityGateService', () => {
       baseContext(),
     );
 
-    expect(result.report.priorities.length).toBeGreaterThanOrEqual(10);
+    expect(result.report.priorities.length).toBeGreaterThanOrEqual(
+      NOMBRE_DE_PRIORITES.min,
+    );
+    expect(result.report.priorities.length).toBeLessThanOrEqual(
+      NOMBRE_DE_PRIORITES.max,
+    );
     const titles = result.report.priorities.map((entry) => entry.title);
     expect(new Set(titles).size).toBe(titles.length);
   });
@@ -154,10 +160,10 @@ describe('ReportQualityGateService', () => {
         conversionAndClarity: 'Conversion et clarte: Non verifiable.',
         speedAndPerformance: 'Vitesse et performance: Non verifiable.',
         seoFoundations: 'Fondations SEO: Non verifiable.',
-        credibilityAndTrust: 'Credibilite et confiance: Non verifiable.',
-        techAndScalability: 'Tech et scalabilite: Non verifiable.',
+        credibilityAndTrust: 'Crédibilité et confiance: Non verifiable.',
+        techAndScalability: 'Tech et scalabilité: Non verifiable.',
         scorecardAndBusinessOpportunities:
-          'Scorecard et opportunites business: Non verifiable.',
+          'Scorecard et opportunités business: Non verifiable.',
       },
     ],
     [

@@ -143,12 +143,12 @@ describe('buildRapportSession', () => {
     expect(rapport.fermeeLe).toBe(fermeeLe);
   });
 
-  it('substitue la date courante quand la session n est pas encore fermee', () => {
+  it('ne date pas la fermeture d une session encore ouverte', () => {
     const rapport = rapportDe({
       session: buildSessionRecord({ fermeeLe: null }),
     });
 
-    expect(rapport.fermeeLe).toBeInstanceOf(Date);
+    expect(rapport.fermeeLe).toBeNull();
   });
 
   it('signale un concept sous 70 pourcent de reussite comme fragile', () => {
@@ -191,12 +191,32 @@ describe('buildRapportSession', () => {
     expect(rapport.conceptsFragiles).not.toContain('actualisation');
   });
 
-  it('compte les incidents par participant', () => {
+  it('lit la réussite d un concept comme la part d une question : des feuilles à 0,9 de score ne sont pas fragiles', () => {
+    const rapport = rapportDe({
+      answers: Array.from({ length: 10 }, () =>
+        buildAnswerRecord({ concept: 'tableur', correcte: false, score: 0.9 }),
+      ),
+    });
+
+    expect(rapport.conceptsFragiles).not.toContain('tableur');
+  });
+
+  it('sert les incidents de chaque participant dans l ordre du temps, avec leur type, leur heure et leur contexte', () => {
     const rapport = rapportDe({
       participants: deuxParticipants(),
       incidents: [
-        buildIncidentRecord({ participantId: 'p1' }),
-        buildIncidentRecord({ participantId: 'p1' }),
+        buildIncidentRecord({
+          participantId: 'p1',
+          type: 'paste_attempt',
+          horodatage: new Date('2026-09-11T10:05:00.000Z'),
+          contexte: { champ: 'reponse', longueur: 42, bloque: true },
+        }),
+        buildIncidentRecord({
+          participantId: 'p1',
+          type: 'tab_hidden',
+          horodatage: new Date('2026-09-11T10:01:00.000Z'),
+          contexte: null,
+        }),
         buildIncidentRecord({ participantId: 'p2' }),
       ],
     });
@@ -204,10 +224,43 @@ describe('buildRapportSession', () => {
     const p1 = rapport.participants.find(
       (participant) => participant.email === 'theo.martin@example.com',
     );
-    expect(p1?.incidents).toBe(2);
+    expect(p1?.incidents).toEqual([
+      {
+        type: 'tab_hidden',
+        horodatage: '2026-09-11T10:01:00.000Z',
+        contexte: null,
+      },
+      {
+        type: 'paste_attempt',
+        horodatage: '2026-09-11T10:05:00.000Z',
+        contexte: { champ: 'reponse', longueur: 42, bloque: true },
+      },
+    ]);
   });
 
-  it('QA-09 · arrondit au dixieme la note sur 20 que montrent la synthese et le mail', () => {
+  it('ne sert du contexte d un incident que ses valeurs scalaires', () => {
+    const rapport = rapportDe({
+      participants: deuxParticipants(),
+      incidents: [
+        buildIncidentRecord({
+          participantId: 'p1',
+          contexte: {
+            duree: 1200,
+            imbrique: { cle: 'x' },
+            liste: [1],
+            infini: Number.POSITIVE_INFINITY,
+            indefini: Number.NaN,
+          },
+        }),
+      ],
+    });
+
+    expect(rapport.participants[0]?.incidents[0]?.contexte).toEqual({
+      duree: 1200,
+    });
+  });
+
+  it('mesure la completion de chaque participant sur les questions notees, sans note ni reference de cohorte', () => {
     const questions = Array.from({ length: 9 }, (_, rang) => `Q-${rang + 1}`);
     const rapport = rapportDe({
       session: buildSessionRecord({
@@ -226,20 +279,12 @@ describe('buildRapportSession', () => {
       ],
     });
 
-    expect(rapport.participants.map(({ note }) => note)).toEqual([20, 17.8]);
-  });
-
-  it('classe les participants sous le seuil via computeCohortScore', () => {
-    const rapport = rapportDe({
-      participants: deuxParticipants(),
-      answers: [buildAnswerRecord({ participantId: 'p1' })],
-    });
-
-    const p1 = rapport.participants[0];
-    const p2 = rapport.participants[1];
-    expect(p1.completion).toBe(1);
-    expect(p2.completion).toBe(0);
-    expect(p2.sousSeuil).toBe(true);
+    expect(rapport.participants.map(({ completion }) => completion)).toEqual([
+      1,
+      8 / 9,
+    ]);
+    expect(rapport.participants[0]).not.toHaveProperty('note');
+    expect(rapport.participants[0]).not.toHaveProperty('sousSeuil');
   });
 
   it('range les reponses d un etudiant dans l ordre des questions du bareme, quel que soit leur ordre d ecriture', () => {

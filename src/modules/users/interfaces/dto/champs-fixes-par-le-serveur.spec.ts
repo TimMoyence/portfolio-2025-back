@@ -1,7 +1,6 @@
 import { messagesDuRefus } from '../../../../../test/helpers/validation-pipe';
 import { ChangePasswordDto } from './ChangePassword.dto';
-import { CreateUserDto } from './CreateUser.dto';
-import { UpdateUserDto } from './UpdateUser.dto';
+import { InscriptionDto } from './Inscription.dto';
 
 /* eslint-disable sonarjs/no-hardcoded-passwords -- fixtures de test, pas des secrets reels */
 const CREATION = {
@@ -18,8 +17,9 @@ const CHANGEMENT = {
 
 describe('champs d un compte que le serveur fixe seul', () => {
   it.each([
-    ['la création', 'updatedOrCreatedBy', CreateUserDto, CREATION],
-    ['la mise à jour', 'updatedOrCreatedBy', UpdateUserDto, {}],
+    ['l inscription', 'updatedOrCreatedBy', InscriptionDto, CREATION],
+    ['l inscription', 'roles', InscriptionDto, CREATION],
+    ['l inscription', 'isActive', InscriptionDto, CREATION],
     [
       'le changement de mot de passe',
       'updatedOrCreatedBy',
@@ -37,8 +37,7 @@ describe('champs d un compte que le serveur fixe seul', () => {
   );
 
   it.each([
-    ['la création', CreateUserDto, CREATION],
-    ['la mise à jour', UpdateUserDto, {}],
+    ['l inscription', InscriptionDto, CREATION],
     ['le changement de mot de passe', ChangePasswordDto, CHANGEMENT],
   ])('%s accepte le corps sans ces champs', async (_route, dto, corps) => {
     await expect(messagesDuRefus(dto, corps)).resolves.toEqual([]);

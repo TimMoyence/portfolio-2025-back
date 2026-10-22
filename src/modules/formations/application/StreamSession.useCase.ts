@@ -30,6 +30,7 @@ import type {
   SessionRecord,
 } from '../domain/ISessions.repository';
 import { appartenanceDuParticipant } from '../domain/AppartenanceDuParticipant';
+import type { RaisonDeFin } from '../domain/contrats/contrat-de-l-api';
 import type { ResultatsEnDirect } from '../domain/contrats/resultats';
 import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
 import { etatEnDirect } from '../domain/EtatEnDirect';
@@ -83,9 +84,7 @@ interface PlacesDuFlux {
   readonly seance?: Place;
 }
 
-type RaisonDExclusion = 'evince' | 'revoque';
-
-type RaisonDeFin = RaisonDExclusion | 'cloturee' | 'introuvable' | 'expiree';
+type RaisonDExclusion = Extract<RaisonDeFin, 'evince' | 'revoque'>;
 
 interface PorteurEtudiant {
   readonly participantId: string;
@@ -512,7 +511,7 @@ export class StreamSessionUseCase {
       return null;
     }
     const cours = await coursDeLaSeance(this.catalogue, session);
-    const etat = etatEnDirect(session, 0, cours);
+    const etat = etatEnDirect(session, cours);
     this.cache.publish(sessionId, etat);
     return etat;
   }

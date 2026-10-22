@@ -1,3 +1,4 @@
+import { TYPES_DE_TOLERANCE } from '../contrats/contrat-de-l-api';
 import { z } from 'zod';
 import { listeEntreGuillemets } from '../../../../common/domain/texte/liste-entre-guillemets';
 import { CONCEPTS } from './banque/concepts';
@@ -37,7 +38,7 @@ export const sourceDeVideo = z.union([
 ]);
 export const tolerance = z
   .object({
-    type: z.enum(['relative', 'absolue', 'decimales']),
+    type: z.enum(TYPES_DE_TOLERANCE),
     valeur: z.number().nonnegative(),
   })
   .strict();

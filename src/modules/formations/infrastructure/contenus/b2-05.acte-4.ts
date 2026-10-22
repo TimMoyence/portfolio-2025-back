@@ -288,7 +288,7 @@ export const ACTE_4: moteur.Acte = [
             'b2-05-a4-e1-placement',
             'interets-composes',
             16236.48,
-            0.01,
+            moteur.ECART_AU_CENTIME,
             '16 236,48 euros',
             'K4',
             [
@@ -302,7 +302,7 @@ export const ACTE_4: moteur.Acte = [
             'b2-05-a4-e2-batterie',
             'valeur-actuelle',
             18476.91,
-            0.01,
+            moteur.ECART_AU_CENTIME,
             '18 476,91 euros',
             'V8',
             [
@@ -316,7 +316,7 @@ export const ACTE_4: moteur.Acte = [
             'b2-05-a4-e3-epargne',
             'annuites',
             20608.04,
-            0.01,
+            moteur.ECART_AU_CENTIME,
             '20 608,04 euros',
             'M3',
             [

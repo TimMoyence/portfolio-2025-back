@@ -1,9 +1,16 @@
+import * as undici from 'undici';
+import { Agent, Headers, Response } from 'undici';
 import { buildAuditAutomationConfig } from '../../../../../test/factories/audit-config.factory';
 import type { AuditAutomationConfig } from './audit.config';
 import { SafeFetchService } from './safe-fetch.service';
 import * as ssrfGuard from './ssrf-guard.util';
 
 jest.mock('./ssrf-guard.util');
+
+jest.mock('undici', () => ({
+  ...jest.requireActual<typeof undici>('undici'),
+  fetch: jest.fn(),
+}));
 
 const mockedAssertSafeHttpUrl =
   ssrfGuard.assertSafeHttpUrl as jest.MockedFunction<
@@ -51,13 +58,13 @@ describe('SafeFetchService', () => {
   });
 
   let service: SafeFetchService;
-  let fetchSpy: jest.SpiedFunction<typeof global.fetch>;
+  const fetchSpy = jest.mocked(undici.fetch);
 
   beforeEach(() => {
     jest.restoreAllMocks();
     mockedAssertSafeHttpUrl.mockReset();
     mockedAssertSafeHttpUrl.mockResolvedValue(undefined);
-    fetchSpy = jest.spyOn(global, 'fetch');
+    fetchSpy.mockReset();
     service = new SafeFetchService(config);
   });
 
@@ -81,19 +88,6 @@ describe('SafeFetchService', () => {
     expect(result.contentLength).toBeNull();
     expect(typeof result.ttfbMs).toBe('number');
     expect(typeof result.totalMs).toBe('number');
-  });
-
-  it('fetchHeaders retourne null pour body', async () => {
-    fetchSpy.mockResolvedValueOnce(
-      buildResponse(200, { 'content-length': '42', 'x-custom': 'test' }),
-    );
-
-    const result = await service.fetchHeaders('https://example.com');
-
-    expect(result.body).toBeNull();
-    expect(result.statusCode).toBe(200);
-    expect(result.contentLength).toBe(42);
-    expect(result.headers['x-custom']).toBe('test');
   });
 
   it('suit les redirections (301, 302)', async () => {
@@ -156,7 +150,7 @@ describe('SafeFetchService', () => {
 
   it('respecte le timeout (abort controller)', async () => {
     fetchSpy.mockImplementation((_url, init) => {
-      const signal = (init as RequestInit).signal;
+      const signal = init?.signal;
       expect(signal).toBeDefined();
       expect(signal).toBeInstanceOf(AbortSignal);
       return Promise.resolve(buildResponse(200, {}, 'ok'));
@@ -169,6 +163,7 @@ describe('SafeFetchService', () => {
       expect.objectContaining({
         signal: expect.any(AbortSignal),
         redirect: 'manual',
+        dispatcher: expect.any(Agent),
       }),
     );
   });
@@ -254,15 +249,6 @@ describe('SafeFetchService', () => {
       await service.fetchText('https://example.com');
 
       expect(redirection.annulation).toHaveBeenCalledTimes(1);
-    });
-
-    it('annule le corps d une lecture des seuls en-tetes', async () => {
-      const entetes = reponseEspionnee(200, {}, 'ignore');
-      fetchSpy.mockResolvedValueOnce(entetes.reponse);
-
-      await service.fetchHeaders('https://example.com');
-
-      expect(entetes.annulation).toHaveBeenCalledTimes(1);
     });
 
     it('annule le corps qui dépasse maxBytes', async () => {

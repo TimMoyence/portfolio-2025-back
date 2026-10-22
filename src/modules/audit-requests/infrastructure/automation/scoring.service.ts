@@ -1,10 +1,16 @@
 import { Injectable } from '@nestjs/common';
+import {
+  baliseAbsente,
+  canonicalNonConforme,
+  h1NonConforme,
+} from './shared/controles-seo-de-page.util';
 import type {
   AiBotsAccess,
   LlmsTxtAnalysis,
 } from '../../domain/AiIndexability';
 import type { StructuredDataQualityResult } from '../../domain/StructuredDataQuality';
 import { AuditLocale } from '../../domain/audit-locale.util';
+import type { PillarKey } from '../../domain/Piliers';
 import { HomepageAuditSnapshot } from './homepage-analyzer.service';
 import { UrlIndexabilityResult } from './url-indexability.service';
 import { scoreMoyenSur100, scoreSur100 } from '../../domain/score-sur-100';
@@ -12,26 +18,7 @@ import { estAuMoinsUn } from '../../../../common/domain/au-moins-un';
 import { proportion } from '../../../../common/domain/nombres/statistiques';
 import { textesUniquesBornes } from '../../../../common/domain/texte/textes-uniques-bornes';
 
-export type PillarKey =
-  | 'seo'
-  | 'performance'
-  | 'technical'
-  | 'trust'
-  | 'conversion'
-  | 'aiVisibility'
-  | 'citationWorthiness';
-
 type PillarScores = Record<PillarKey, number>;
-
-export const PILLAR_KEYS: readonly PillarKey[] = [
-  'seo',
-  'performance',
-  'technical',
-  'trust',
-  'conversion',
-  'aiVisibility',
-  'citationWorthiness',
-] as const;
 
 export type ActionablePillarKey = Exclude<
   PillarKey,
@@ -218,15 +205,13 @@ export class ScoringService {
     sampledUrls: UrlIndexabilityResult[],
   ): SampledCoverage {
     return {
-      missingTitle: sampledUrls.filter((entry) => !(entry.title ?? '').trim())
+      missingTitle: sampledUrls.filter((entry) => baliseAbsente(entry.title))
         .length,
-      missingMeta: sampledUrls.filter(
-        (entry) => !(entry.metaDescription ?? '').trim(),
+      missingMeta: sampledUrls.filter((entry) =>
+        baliseAbsente(entry.metaDescription),
       ).length,
-      badH1: sampledUrls.filter((entry) => (entry.h1Count ?? 1) !== 1).length,
-      canonicalIssues: sampledUrls.filter(
-        (entry) => !entry.canonical || (entry.canonicalCount ?? 0) !== 1,
-      ).length,
+      badH1: sampledUrls.filter(h1NonConforme).length,
+      canonicalIssues: sampledUrls.filter(canonicalNonConforme).length,
       missingLang: sampledUrls.filter((entry) => !entry.htmlLang).length,
       indexabilityErrors: sampledUrls.filter(
         (entry) => !entry.indexable || (entry.statusCode ?? 500) >= 400,

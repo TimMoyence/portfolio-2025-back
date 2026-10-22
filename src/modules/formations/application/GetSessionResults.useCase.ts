@@ -34,6 +34,7 @@ import {
   PULSES_REPOSITORY,
   SESSIONS_REPOSITORY,
 } from '../domain/token';
+import { coursDeLaSeance } from './CoursDeLaSeance';
 import { seanceLisiblePar } from './SessionAccess';
 
 export interface BilanDeSeance {
@@ -100,10 +101,7 @@ export class GetSessionResultsUseCase {
         ? []
         : this.reponsesLibres.listBySession(session.id),
     ]);
-    const cours = await this.catalogue.trouver(
-      session.courseSlug,
-      session.courseVersion,
-    );
+    const cours = await coursDeLaSeance(this.catalogue, session);
     const rapport = buildRapportSession({
       session,
       cours,
@@ -117,7 +115,7 @@ export class GetSessionResultsUseCase {
       questions: questionsAAgreger(session.bareme, cours),
       answers: reponses,
       participants: participantsListe.length,
-      remediations: cours === null ? {} : remediationsDe(cours),
+      remediations: remediationsDe(cours),
     });
     return {
       participants: participantsListe,

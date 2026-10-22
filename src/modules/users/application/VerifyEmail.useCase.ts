@@ -1,12 +1,14 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { LienInvalideError } from '../../../common/domain/errors/LienInvalideError';
 import type { IEmailVerificationTokensRepository } from '../domain/IEmailVerificationTokens.repository';
+import type { IRefreshTokensRepository } from '../domain/IRefreshTokens.repository';
 import type { IUsersRepository } from '../domain/IUsers.repository';
 import { DEFAULT_SELF_REGISTRATION_ROLES } from '../domain/roles';
-import { TokenHash } from '../domain/TokenHash';
+import { TokenHash } from '../../../common/domain/crypto/TokenHash';
 import { User } from '../domain/User';
 import {
   EMAIL_VERIFICATION_TOKENS_REPOSITORY,
+  REFRESH_TOKENS_REPOSITORY,
   USERS_REPOSITORY,
 } from '../domain/token';
 
@@ -21,6 +23,8 @@ export class VerifyEmailUseCase {
     private readonly emailVerificationTokensRepo: IEmailVerificationTokensRepository,
     @Inject(USERS_REPOSITORY)
     private readonly usersRepo: IUsersRepository,
+    @Inject(REFRESH_TOKENS_REPOSITORY)
+    private readonly refreshTokensRepo: IRefreshTokensRepository,
   ) {}
 
   async execute(token: string): Promise<VerifyEmailResult> {
@@ -51,6 +55,7 @@ export class VerifyEmailUseCase {
       }),
     );
 
+    await this.refreshTokensRepo.revokeByUserId(stored.userId);
     await this.emailVerificationTokensRepo.deleteByUserId(stored.userId);
 
     return { message: 'Adresse email verifiee avec succes.' };

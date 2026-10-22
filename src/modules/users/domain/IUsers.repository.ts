@@ -1,7 +1,6 @@
 import { User } from './User';
 
 export interface IUsersRepository {
-  findAll(): Promise<User[]>;
   create(data: User): Promise<User>;
   findById(id: string): Promise<User | null>;
   findByEmail(email: string): Promise<User | null>;

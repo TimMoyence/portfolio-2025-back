@@ -23,6 +23,7 @@ import {
   type TirageDuCours,
 } from '../src/modules/formations/domain/cours/Tirage';
 import { NE_SAIT_PAS } from '../src/modules/formations/domain/GradingCore';
+import { REGLE_DE_NOTATION } from '../src/modules/formations/domain/RegleDeNotation';
 import type { ContenuDeCours } from '../src/modules/formations/domain/cours/CoursStocke';
 import { EN_TETE_JETON } from '../src/modules/formations/interfaces/ParticipantToken.service';
 import {
@@ -70,7 +71,6 @@ import { silenceNestLogger } from './helpers/silence-nest-logger';
 
 const VERSION_COURS = VERSION_PUBLIEE_SUR_BASE_NEUVE;
 const VERSION_DU_BAREME = 2;
-const TYPES_NOTABLES = 5;
 const CAPACITE = 4;
 const FORMATEUR = 'e1111111-1111-4111-8111-111111111111:teacher';
 const SYNTHESE_A = 'e2e-formateur@example.test';
@@ -81,7 +81,8 @@ const MARGE_DU_DEBIT = 2;
 const FORMULE_HORS_SUJET = '=123456789';
 const TABLES_HORS_SEANCE = ['formation_mastery'];
 
-const { OK, CREE, SANS_CONTENU, INVALIDE, INTROUVABLE, CONFLIT } = CODE_HTTP;
+const { OK, CREE, SANS_CONTENU, INVALIDE, INTERDIT, INTROUVABLE, CONFLIT } =
+  CODE_HTTP;
 
 function parOrdreAlphabetique(gauche: string, droite: string): number {
   return gauche.localeCompare(droite);
@@ -1193,9 +1194,15 @@ function seanceComplete(
             enAvance.map((reponse) => [reponse.status, codeDe(reponse)]),
           ).toEqual(enAvance.map(() => [INTROUVABLE, 'ECRAN_NON_SERVI']));
           expect({
-            jetonRevoque: jetonRevoque.status,
-            ecritureDeLEvince: ecritureDeLEvince.status,
-            lectureDeLEvince: lectureDeLEvince.status,
+            jetonRevoque: [jetonRevoque.status, codeDe(jetonRevoque)],
+            ecritureDeLEvince: [
+              ecritureDeLEvince.status,
+              codeDe(ecritureDeLEvince),
+            ],
+            lectureDeLEvince: [
+              lectureDeLEvince.status,
+              codeDe(lectureDeLEvince),
+            ],
             remplacant: remplacant.status,
             graineReprise: postes[3].graine,
             graineLiberee: evince.graine,
@@ -1208,9 +1215,9 @@ function seanceComplete(
             ),
             secretsDuSujet: clesSecretesDans(sujet.body),
           }).toEqual({
-            jetonRevoque: INTROUVABLE,
-            ecritureDeLEvince: INTROUVABLE,
-            lectureDeLEvince: INTROUVABLE,
+            jetonRevoque: [INTERDIT, 'PARTICIPANT_EVINCE'],
+            ecritureDeLEvince: [INTERDIT, 'PARTICIPANT_EVINCE'],
+            lectureDeLEvince: [INTERDIT, 'PARTICIPANT_EVINCE'],
             remplacant: CREE,
             graineReprise: evince.graine,
             graineLiberee: evince.graine,
@@ -1519,17 +1526,12 @@ function seanceComplete(
           const apresCloture = noterConflit(
             await repondre(postes[3], questionsDe(ecranDe('fp-exit'))[0]),
           );
+          const seance = await banc.contexte.sessions.findById(sessionId);
           const rapport = await formateur(
             'get',
             `/sessions/${sessionId}/report`,
           ).expect(OK);
           const bilan = rapport.body as ResultatsDeSeance;
-          const scores: { nombre: number }[] =
-            await banc.contexte.dataSource.query(
-              'SELECT COUNT(*)::int AS "nombre" FROM formation_scores WHERE session_id = $1',
-              [sessionId],
-            );
-          const seance = await banc.contexte.sessions.findById(sessionId);
 
           expect({
             apresCloture: [apresCloture.status, codeDe(apresCloture)],
@@ -1537,10 +1539,9 @@ function seanceComplete(
             baremeDeLaSeance: seance?.bareme.version,
             participants: bilan.participants.length,
             questionsNotees: bilan.bareme.questionsNotees,
-            notation: bilan.notation.typesNotables.length,
+            notation: bilan.notation.seuilQuestionProbleme,
             jalons: Object.keys(bilan.jalons).length,
             enigmes: bilan.enigmes.length,
-            scores: scores[0].nombre > 0,
             synthese: banc.mailer.sendSyntheseFormateur.mock.calls.length,
             copies: banc.mailer.sendCopieEtudiant.mock.calls.length,
           }).toEqual({
@@ -1549,10 +1550,9 @@ function seanceComplete(
             baremeDeLaSeance: VERSION_DU_BAREME,
             participants: CAPACITE,
             questionsNotees: attendu.questionsNotees,
-            notation: TYPES_NOTABLES,
+            notation: REGLE_DE_NOTATION.seuilQuestionProbleme,
             jalons: attendu.jalons,
             enigmes: attendu.enigmes,
-            scores: true,
             synthese: 1,
             copies: CAPACITE,
           });

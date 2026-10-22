@@ -2,7 +2,6 @@ import type { PacingMode } from '../../domain/PacingMode';
 
 export interface JoinSessionCommand {
   code: string;
-  studentKey: string;
   prenom: string;
   nom: string;
   email: string;

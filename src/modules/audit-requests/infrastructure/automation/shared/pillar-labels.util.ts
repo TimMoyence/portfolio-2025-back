@@ -1,13 +1,17 @@
-const PILLAR_LABELS: Readonly<Record<string, string>> = {
+import type { PillarKey } from '../../../domain/Piliers';
+
+const PILLAR_LABELS: Readonly<Record<PillarKey, string>> = {
   seo: 'SEO',
   performance: 'Performance',
-  technical: 'Tech & scalabilite',
-  trust: 'Credibilite',
+  technical: 'Tech & scalabilité',
+  trust: 'Crédibilité',
   conversion: 'Conversion',
-  aiVisibility: 'Visibilite IA',
-  citationWorthiness: 'Citabilite IA',
+  aiVisibility: 'Visibilité IA',
+  citationWorthiness: 'Citabilité IA',
 };
 
 export function pillarLabel(pillar: string): string {
-  return PILLAR_LABELS[pillar] ?? pillar;
+  return Object.hasOwn(PILLAR_LABELS, pillar)
+    ? PILLAR_LABELS[pillar as PillarKey]
+    : pillar;
 }

@@ -1,7 +1,11 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, type OnModuleDestroy } from '@nestjs/common';
 import { performance } from 'node:perf_hooks';
+import { Agent, fetch, type Headers, type Response } from 'undici';
 import { AUDIT_AUTOMATION_CONFIG } from '../../domain/token';
-import { assertSafeHttpUrl } from './ssrf-guard.util';
+import {
+  assertSafeHttpUrl,
+  resoudreVersUneAdressePublique,
+} from './ssrf-guard.util';
 import type { AuditAutomationConfig } from './audit.config';
 import { withHardTimeout } from './llm-execution.guardrails';
 
@@ -28,26 +32,29 @@ export interface SafeFetchResult {
 }
 
 @Injectable()
-export class SafeFetchService {
+export class SafeFetchService implements OnModuleDestroy {
+  private readonly connexionsPubliques = new Agent({
+    connect: { lookup: resoudreVersUneAdressePublique },
+  });
+
   constructor(
     @Inject(AUDIT_AUTOMATION_CONFIG)
     private readonly config: AuditAutomationConfig,
   ) {}
 
+  async onModuleDestroy(): Promise<void> {
+    await this.connexionsPubliques.close();
+  }
+
   async fetchText(
     url: string,
     maxBytes: number = this.config.textMaxBytes,
   ): Promise<SafeFetchResult> {
-    return this.fetchInternal(url, true, maxBytes);
-  }
-
-  async fetchHeaders(url: string): Promise<SafeFetchResult> {
-    return this.fetchInternal(url, false, 0);
+    return this.fetchInternal(url, maxBytes);
   }
 
   private async fetchInternal(
     targetUrl: string,
-    readBody: boolean,
     maxBytes: number,
   ): Promise<SafeFetchResult> {
     const redirectChain: string[] = [];
@@ -61,7 +68,7 @@ export class SafeFetchService {
       const saut = await withHardTimeout(
         `Fetch ${url}`,
         this.config.fetchTimeoutMs,
-        (signal) => this.fetchOnce(url, readBody, maxBytes, signal),
+        (signal) => this.fetchOnce(url, maxBytes, signal),
       );
 
       if (saut.location !== null) {
@@ -95,7 +102,6 @@ export class SafeFetchService {
 
   private async fetchOnce(
     url: string,
-    readBody: boolean,
     maxBytes: number,
     signal: AbortSignal,
   ): Promise<SautHttp> {
@@ -104,6 +110,7 @@ export class SafeFetchService {
       method: 'GET',
       redirect: 'manual',
       signal,
+      dispatcher: this.connexionsPubliques,
       headers: {
         'user-agent':
           'AsiliAuditBot/1.0 (+https://asilidesign.fr; contact=admin@asilidesign.fr)',
@@ -119,7 +126,7 @@ export class SafeFetchService {
         : null;
     const saut = { statusCode: response.status, headers, ttfbMs, location };
 
-    if (location !== null || !readBody) {
+    if (location !== null) {
       await response.body?.cancel();
       return { ...saut, body: null };
     }
@@ -137,7 +144,7 @@ export class SafeFetchService {
       return '';
     }
 
-    const reader = response.body.getReader();
+    const reader = (response.body as ReadableStream<Uint8Array>).getReader();
     const decoder = new TextDecoder();
     let total = 0;
     const chunks: string[] = [];

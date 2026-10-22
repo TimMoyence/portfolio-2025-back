@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import { InvalidCredentialsError } from '../../../common/domain/errors/InvalidCredentialsError';
 import { InvalidInputError } from '../../../common/domain/errors/InvalidInputError';
 import { ResourceConflictError } from '../../../common/domain/errors/ResourceConflictError';
 import { UserNotFoundError } from '../../../common/domain/errors/UserNotFoundError';
@@ -136,23 +135,6 @@ describe('ChangePasswordUseCase', () => {
     await attendreUnRefusAvantLaVerification(
       buildUser({ passwordHash: null }),
       ResourceConflictError,
-    );
-  });
-
-  it('rejects inactive users even if the password matches', async () => {
-    const inactiveUser = buildUser({
-      id: 'user-2',
-      email: 'inactive@example.com',
-      passwordHash: 'hash',
-      firstName: 'Ina',
-      lastName: 'Ctive',
-      isActive: false,
-      updatedOrCreatedBy: 'system',
-    });
-
-    await attendreUnRefusAvantLaVerification(
-      inactiveUser,
-      InvalidCredentialsError,
     );
   });
 });

@@ -9,6 +9,7 @@ import type {
 } from '../../domain/AuditReportTiers';
 import { AuditLocale } from '../../domain/audit-locale.util';
 import { nonVerifiable } from '../../domain/non-verifiable';
+import { NOMBRE_DE_PRIORITES } from './audit-thresholds.config';
 import { normalizeClientEmailDraft } from './langchain-synthesis.util';
 import { hasLanguageMismatch } from './report-quality-gate/language-check.util';
 import { validateExpertReport } from './report-quality-gate/tier-validators';
@@ -152,8 +153,8 @@ export interface ReportQualityGateResult {
 
 @Injectable()
 export class ReportQualityGateService {
-  private readonly minPriorities = 10;
-  private readonly maxPriorities = 12;
+  private readonly minPriorities = NOMBRE_DE_PRIORITES.min;
+  private readonly maxPriorities = NOMBRE_DE_PRIORITES.max;
 
   apply(
     summaryText: string,
@@ -360,7 +361,7 @@ export class ReportQualityGateService {
       priorities,
       unique,
       this.genericActions(locale, context.websiteName),
-      this.maxPriorities,
+      this.minPriorities,
     );
 
     if (priorities.length < this.minPriorities) {
@@ -541,17 +542,17 @@ export class ReportQualityGateService {
       ),
       credibilityAndTrust: chapitre(
         chapters?.credibilityAndTrust,
-        'Credibilite et confiance',
+        'Crédibilité et confiance',
         'Credibility and trust',
       ),
       techAndScalability: chapitre(
         chapters?.techAndScalability,
-        'Tech et scalabilite',
+        'Tech et scalabilité',
         'Tech and scalability',
       ),
       scorecardAndBusinessOpportunities: chapitre(
         chapters?.scorecardAndBusinessOpportunities,
-        'Scorecard et opportunites business',
+        'Scorecard et opportunités business',
         'Scorecard and business opportunities',
       ),
     };

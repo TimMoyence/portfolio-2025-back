@@ -40,7 +40,6 @@ import type {
   IRappelsServisRepository,
   RappelServiRecord,
 } from '../../src/modules/formations/domain/IRappelsServis.repository';
-import type { IScoresRepository } from '../../src/modules/formations/domain/IScores.repository';
 import type {
   ISessionStateCache,
   LiveSessionState,
@@ -236,7 +235,6 @@ export function buildLiveSessionState(
     modeRythme: 'pilote',
     ecranCourant: 0,
     intervalleLibre: null,
-    participants: 0,
     revision: 0,
     pilotage: {},
     majLe: new Date('2026-09-11T08:00:00.000Z'),
@@ -389,11 +387,9 @@ export function buildRapportParticipant(
     nom: 'Martin',
     email: 'theo.martin@example.com',
     completion: 1,
-    note: 20,
-    sousSeuil: false,
     reponses: [],
     reponsesLibres: [],
-    incidents: 0,
+    incidents: [],
     ...overrides,
   };
 }
@@ -496,11 +492,9 @@ export function createMockParticipantsRepo(): jest.Mocked<IParticipantsRepositor
   const participant = buildParticipantRecord();
   return {
     inscrire: jest.fn().mockResolvedValue({ participant, nouveau: true }),
-    findBySessionAndStudentKey: jest.fn().mockResolvedValue(null),
     findById: jest.fn().mockResolvedValue(participant),
     listBySession: jest.fn().mockResolvedValue([participant]),
     listEvincesBySession: jest.fn().mockResolvedValue([]),
-    countBySession: jest.fn().mockResolvedValue(1),
     touch: jest.fn().mockResolvedValue(undefined),
     evincer: jest.fn().mockResolvedValue(true),
     readmettre: jest.fn().mockResolvedValue(true),
@@ -519,7 +513,6 @@ export function createMockAnswersRepo(): jest.Mocked<IAnswersRepository> {
     existsFor: jest.fn().mockResolvedValue(false),
     remplacer: jest.fn().mockResolvedValue(true),
     listBySession: jest.fn().mockResolvedValue([buildAnswerRecord()]),
-    tallyBySession: jest.fn().mockResolvedValue([]),
   };
 }
 
@@ -530,7 +523,6 @@ export function buildMasteryRecord(
     studentKey: '11111111-1111-4111-8111-111111111111',
     concept: 'taux-evolution',
     boite: 1,
-    derniereVue: new Date('2026-09-11T08:00:00.000Z'),
     succes: 0,
     echecs: 0,
     ...overrides,
@@ -562,9 +554,7 @@ export function buildFreeResponseRecord(
     activityId: 'b2-s11-c1',
     response: 'Je vérifie la base avant de comparer.',
     premiereReponse: null,
-    strategiesServiesLe: null,
     dureeMs: 12000,
-    status: 'enregistre',
     submittedAt: new Date('2026-09-11T08:20:00.000Z'),
     ...overrides,
   };
@@ -659,13 +649,6 @@ export function createMockRappelsServisRepo(): jest.Mocked<IRappelsServisReposit
   };
 }
 
-export function createMockScoresRepo(): jest.Mocked<IScoresRepository> {
-  return {
-    saveIndividuals: jest.fn().mockResolvedValue(undefined),
-    saveSession: jest.fn().mockResolvedValue(undefined),
-  };
-}
-
 export function createMockSessionStateCache(): jest.Mocked<ISessionStateCache> {
   return {
     publish: jest.fn(),
@@ -691,7 +674,6 @@ export function createMockDepotsFormations() {
     answers: createMockAnswersRepo(),
     incidents: createMockIncidentsRepo(),
     mastery: createMockMasteryRepo(),
-    scores: createMockScoresRepo(),
     freeResponses: createMockFreeResponsesRepo(),
     annotations: createMockTeacherAnnotationsRepo(),
     escape: createMockEscapeRepo(),

@@ -27,6 +27,7 @@ import {
 import { PARAMETRE_DU_JETON } from '../../../common/domain/lien-avec-jeton';
 import { navigateurConsignable } from '../../../common/domain/provenance';
 import {
+  DOCUMENTATION_D_UN_JETON_DE_LIEN,
   JetonDuLienEnRequete,
   RefusDeLienDocumente,
 } from '../../../common/interfaces/security/jeton-de-lien.pipe';
@@ -40,7 +41,7 @@ import type { AuthAuditEntry } from '../application/services/AuthAuditLogger';
 import { AuthenticateGoogleUserUseCase } from '../application/AuthenticateGoogleUser.useCase';
 import { AuthenticateUserUseCase } from '../application/AuthenticateUser.useCase';
 import type { AuthResult } from '../application/AuthenticateUser.useCase';
-import { FORME_D_UN_JETON_EMIS } from '../domain/TokenHash';
+import { FORME_D_UN_JETON_EMIS } from '../../../common/domain/crypto/TokenHash';
 import type { User } from '../domain/User';
 import { ChangePasswordUseCase } from '../application/ChangePassword.useCase';
 import { CreateUsersUseCase } from '../application/CreateUsers.useCase';
@@ -60,13 +61,12 @@ import {
 } from '../domain/auth.constants';
 import { AuthMessageResponseDto } from './dto/AuthMessage.response.dto';
 import { ChangePasswordDto } from './dto/ChangePassword.dto';
-import { CreateUserDto } from './dto/CreateUser.dto';
+import { InscriptionDto } from './dto/Inscription.dto';
 import { ForgotPasswordDto } from './dto/ForgotPassword.dto';
 import { GoogleAuthDto } from './dto/GoogleAuth.dto';
 import { LoginDto } from './dto/Login.dto';
 import { ResendVerificationDto } from './dto/ResendVerification.dto';
 import { ResetPasswordDto } from './dto/ResetPassword.dto';
-import { DOCUMENTATION_D_UN_JETON_DE_LIEN } from './dto/regles-de-saisie';
 import { SetPasswordDto } from './dto/SetPassword.dto';
 import { AuthResponseDto } from './dto/Auth.response.dto';
 import { UpdateProfileDto } from './dto/UpdateProfile.dto';
@@ -350,7 +350,7 @@ export class AuthController {
   })
   @ApiOkResponse({ type: AuthMessageResponseDto })
   @ApiBadRequestResponse({ description: 'Inscription echouee' })
-  register(@Body() dto: CreateUserDto): Promise<AuthMessageResponseDto> {
+  register(@Body() dto: InscriptionDto): Promise<AuthMessageResponseDto> {
     return this.createUsersUseCase.inscrire(dto);
   }
 

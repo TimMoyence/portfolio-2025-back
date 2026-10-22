@@ -29,7 +29,11 @@ import {
   sondage,
 } from './PlansStockes';
 import { numeriqueStockee, voteStocke } from './QuestionStockee';
-import { POINTS_MAX_D_UN_TRACE, pointsDuTrace } from './TraceServi';
+import {
+  POINTS_MAX_D_UN_TRACE,
+  pointsDuTrace,
+  refusDuReglage,
+} from './TraceServi';
 import {
   auMoinsUn,
   concept,
@@ -132,7 +136,7 @@ const correction = z.union([
   z.object({ nestedQuiz: correctionDeQuiz }).strict(),
 ]);
 
-const presentationInitiale = z
+export const presentationInitiale = z
   .object({
     version: z.literal(1),
     screenId: texte,
@@ -221,7 +225,7 @@ function afficheLeQuizNote(
   );
 }
 
-const visuel = z
+export const visuel = z
   .object({
     src: media,
     alt: texte,
@@ -230,7 +234,7 @@ const visuel = z
   })
   .strict();
 
-const video = z
+export const video = z
   .object({
     src: media,
     srcPoste: media.optional(),
@@ -329,7 +333,13 @@ const parametreCurseur = z
     pas: z.number().positive(),
     defaut: z.number(),
   })
-  .strict();
+  .strict()
+  .refine((curseur) => dansLesBornes(curseur.defaut, curseur), {
+    message: 'un curseur va de son minimum à son maximum, défaut compris',
+  })
+  .refine(({ min, max, pas }) => (max - min) / pas <= POINTS_MAX_D_UN_TRACE, {
+    message: `un curseur sert au plus ${POINTS_MAX_D_UN_TRACE} positions`,
+  });
 
 const proprietesCitation = z
   .object({
@@ -406,29 +416,6 @@ const prereglages = z
   )
   .optional();
 
-function signalerPrereglagesHorsParametres(support: string): (
-  proprietes: {
-    readonly parametres: readonly { readonly cle: string }[];
-    readonly prereglages?: readonly {
-      readonly valeurs: Readonly<Record<string, number>>;
-    }[];
-  },
-  contexte: z.RefinementCtx,
-) => void {
-  return (proprietes, contexte) => {
-    const signaler = signaleurDe(contexte);
-    const cles = new Set(proprietes.parametres.map(({ cle }) => cle));
-    proprietes.prereglages?.forEach(({ valeurs }, rang) => {
-      for (const cle of Object.keys(valeurs).filter((c) => !cles.has(c))) {
-        signaler(
-          ['prereglages', rang, 'valeurs', cle],
-          `le préréglage règle un paramètre absent ${support} : ${cle}`,
-        );
-      }
-    });
-  };
-}
-
 const animation = z
   .array(
     z
@@ -442,37 +429,40 @@ const animation = z
 
 type Curseur = z.output<typeof parametreCurseur>;
 
-function defautDeLEtape(
-  curseur: Curseur | undefined,
-  valeur: number,
-  support: string,
-): string | undefined {
-  if (curseur === undefined) {
-    return `l’animation règle un paramètre absent ${support}`;
-  }
-  if (!dansLesBornes(valeur, curseur)) {
-    return `l’animation sort des bornes du curseur ${curseur.cle} : ${valeur}`;
-  }
-  if (!Number.isInteger((valeur - curseur.min) / curseur.pas)) {
-    return `l’animation ne tombe pas sur le pas du curseur ${curseur.cle} : ${valeur}`;
-  }
-  return undefined;
-}
-
-function signalerAnimationHorsParametres(support: string): (
+function signalerReglagesHorsCurseurs(support: string): (
   proprietes: {
     readonly parametres: readonly Curseur[];
+    readonly prereglages?: readonly {
+      readonly valeurs: Readonly<Record<string, number>>;
+    }[];
     readonly animation?: readonly Readonly<Record<string, number>>[];
   },
   contexte: z.RefinementCtx,
 ) => void {
   return (proprietes, contexte) => {
+    const signaler = signaleurDe(contexte);
     const curseurs = new Map(proprietes.parametres.map((p) => [p.cle, p]));
+    proprietes.prereglages?.forEach(({ valeurs }, rang) => {
+      for (const [cle, valeur] of Object.entries(valeurs)) {
+        const curseur = curseurs.get(cle);
+        if (curseur === undefined || !dansLesBornes(valeur, curseur)) {
+          signaler(
+            ['prereglages', rang, 'valeurs', cle],
+            curseur === undefined
+              ? `le préréglage règle un paramètre absent ${support} : ${cle}`
+              : `le préréglage sort des bornes du curseur ${cle} : ${valeur}`,
+          );
+        }
+      }
+    });
     proprietes.animation?.forEach((etape, rang) => {
       for (const [cle, valeur] of Object.entries(etape)) {
-        const defaut = defautDeLEtape(curseurs.get(cle), valeur, support);
-        if (defaut !== undefined) {
-          signaleurDe(contexte)(['animation', rang, cle], defaut);
+        const refus = refusDuReglage(proprietes, cle, valeur);
+        if (refus !== null) {
+          signaler(
+            ['animation', rang, cle],
+            `l’animation ${support} : ${refus}`,
+          );
         }
       }
     });
@@ -494,8 +484,7 @@ const proprietesMachine = z
     ...communes,
   })
   .strict()
-  .superRefine(signalerPrereglagesHorsParametres('de la machine'))
-  .superRefine(signalerAnimationHorsParametres('de la machine'));
+  .superRefine(signalerReglagesHorsCurseurs('de la machine'));
 
 const proprietesTrace = z
   .object({
@@ -504,7 +493,10 @@ const proprietesTrace = z
     source: texte.optional(),
     abscisse: z
       .object({ libelle: texte, min: z.number(), max: z.number() })
-      .strict(),
+      .strict()
+      .refine(({ min, max }) => min <= max, {
+        message: 'l’axe des abscisses va de son minimum à son maximum',
+      }),
     ordonnee: texte,
     parametres: z.array(parametreCurseur),
     series: auMoinsUn(
@@ -538,8 +530,7 @@ const proprietesTrace = z
     ...communes,
   })
   .strict()
-  .superRefine(signalerPrereglagesHorsParametres('du tracé'))
-  .superRefine(signalerAnimationHorsParametres('du tracé'))
+  .superRefine(signalerReglagesHorsCurseurs('du tracé'))
   .superRefine((trace, contexte) => {
     if (
       trace.reference !== undefined &&

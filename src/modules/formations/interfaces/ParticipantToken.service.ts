@@ -1,7 +1,8 @@
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { egalEnTempsConstant } from '../../../common/domain/crypto/empreintes';
-import { signer } from '../application/SignatureFormations';
+import { signer } from '../domain/SignatureFormations';
 import { appartenanceDuParticipant } from '../domain/AppartenanceDuParticipant';
+import { ParticipantEvinceError } from '../domain/errors/FormationErrors';
 import type { IParticipantsRepository } from '../domain/IParticipants.repository';
 import { PARTICIPANTS_REPOSITORY } from '../domain/token';
 
@@ -105,7 +106,10 @@ export class ParticipantTokenService {
       sessionId,
       identite.generation,
     );
-    if (exclusion === 'absent' || exclusion === 'revoque') {
+    if (exclusion === 'evince') {
+      throw new ParticipantEvinceError();
+    }
+    if (exclusion !== null) {
       throw new UnauthorizedException('Jeton de participant revoque');
     }
     return identite;

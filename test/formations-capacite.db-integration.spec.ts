@@ -173,7 +173,9 @@ describeDb('Capacite et eviction (B28, db integration)', () => {
 
   const attendreAucunInscrit = (seance: { sessionId: string }) =>
     expect(
-      contexte().participants.countBySession(seance.sessionId),
+      contexte()
+        .participants.listBySession(seance.sessionId)
+        .then((inscrits) => inscrits.length),
     ).resolves.toBe(0);
 
   it('refuse en 409 SEANCE_COMPLETE au-dela de la capacite demandee', async () => {
@@ -292,10 +294,14 @@ describeDb('Capacite et eviction (B28, db integration)', () => {
     ]);
   });
 
-  it('revoque l acces du participant evince', async () => {
+  it('revoque en 403 PARTICIPANT_EVINCE l acces du participant evince', async () => {
     const { seance, premier } = await seanceAvecUnInscrit(true);
 
-    expect((await lireLeSujet(seance, premier)).status).toBe(INTROUVABLE);
+    attendreRefus(
+      await lireLeSujet(seance, premier),
+      INTERDIT,
+      'PARTICIPANT_EVINCE',
+    );
   });
 
   it('marque evince dans la liste du formateur, pour qu il reste readmissible', async () => {

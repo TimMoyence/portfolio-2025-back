@@ -1,20 +1,15 @@
 import { applyDecorators } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
-import { buildMessage, ValidateBy } from 'class-validator';
-import { estUneAdresseEmail } from '../../domain/value-objects/EmailAddress';
+import { IsString } from 'class-validator';
+import { MOTIF_D_UNE_ADRESSE_EMAIL } from '../../domain/value-objects/EmailAddress';
+import { Motif } from './bornes-annoncees.decorator';
 
 export function AdresseEmail(): PropertyDecorator {
   return applyDecorators(
-    ApiProperty({ type: String, format: 'email' }),
-    ValidateBy({
-      name: 'isEmail',
-      validator: {
-        validate: (valeur: unknown) =>
-          typeof valeur === 'string' && estUneAdresseEmail(valeur),
-        defaultMessage: buildMessage(
-          (prefixe) => `${prefixe}$property must be an email`,
-        ),
-      },
+    ApiProperty({ type: String }),
+    IsString(),
+    Motif(MOTIF_D_UNE_ADRESSE_EMAIL, {
+      message: ({ property }) => `${property} must be an email`,
     }),
   );
 }

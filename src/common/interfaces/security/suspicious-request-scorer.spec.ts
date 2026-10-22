@@ -32,7 +32,7 @@ describe('scoreRequest', () => {
     const result = scoreRequest(
       ctx({
         method: 'POST',
-        path: '/api/v1/portfolio25/cookie-consents',
+        path: '/api/v1/portfolio25/contacts',
         statusCode: 201,
         userAgent:
           'Mozilla/5.0 (Windows NT 10.0; Win64; x64) HeadlessChrome/145 Safari/537.36',

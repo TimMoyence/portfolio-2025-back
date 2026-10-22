@@ -4,6 +4,7 @@ import {
   buildParticipantRecord,
   createMockParticipantsRepo,
 } from '../../../../../test/factories/formation.factory';
+import { ParticipantEvinceError } from '../../domain/errors/FormationErrors';
 import { installerSecretDeSignature } from '../../../../../test/helpers/env-formations';
 import { appliquer } from '../../../../../test/helpers/environnement';
 import {
@@ -93,6 +94,20 @@ describe('ParticipantTokenService', () => {
     await expect(
       service.verifierIdentite(SESSION, service.sign(SESSION, PARTICIPANT, 0)),
     ).rejects.toThrow(UnauthorizedException);
+  });
+
+  it('refuse en PARTICIPANT_EVINCE le jeton authentique d un participant evince', async () => {
+    participants.findById.mockResolvedValue(
+      buildParticipantRecord({
+        id: PARTICIPANT,
+        sessionId: SESSION,
+        evinceLe: new Date('2026-10-15T10:00:00Z'),
+      }),
+    );
+
+    await expect(
+      service.verifierIdentite(SESSION, service.sign(SESSION, PARTICIPANT, 0)),
+    ).rejects.toThrow(ParticipantEvinceError);
   });
 
   it('ne consulte pas le depot pour un jeton dont la signature est fausse', async () => {

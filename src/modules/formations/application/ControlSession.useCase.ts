@@ -89,14 +89,6 @@ export class ControlSessionUseCase {
     misAJour: UpdateSessionInput,
     changements: ControlSessionChanges,
   ): Promise<void> {
-    if (
-      misAJour.ecranCourant === undefined &&
-      misAJour.modeRythme === undefined &&
-      !misAJour.intervalleLibre &&
-      changements.pilotage === undefined
-    ) {
-      return;
-    }
     const cours = await coursDeLaSeance(this.catalogue, session);
     const totalEcrans = cours.ecrans.length;
     if (
@@ -169,6 +161,15 @@ export class ControlSessionUseCase {
   private validerEtProjeter(
     changements: ControlSessionChanges,
   ): UpdateSessionInput {
+    if (
+      changements.ecran === undefined &&
+      changements.mode === undefined &&
+      changements.pilotage === undefined
+    ) {
+      throw new DomainValidationError(
+        'Indiquez un écran, un mode de rythme ou un pilotage d’écran à appliquer.',
+      );
+    }
     const misAJour: UpdateSessionInput = {};
     if (changements.ecran !== undefined) {
       if (!estEntierPositif(changements.ecran)) {
@@ -217,10 +218,6 @@ export class ControlSessionUseCase {
     session: SessionRecord,
   ): Promise<void> {
     const cours = await coursDeLaSeance(this.catalogue, session);
-    const enCache = this.cache.read(sessionId);
-    this.cache.publish(
-      sessionId,
-      etatEnDirect(session, enCache?.participants ?? 0, cours),
-    );
+    this.cache.publish(sessionId, etatEnDirect(session, cours));
   }
 }

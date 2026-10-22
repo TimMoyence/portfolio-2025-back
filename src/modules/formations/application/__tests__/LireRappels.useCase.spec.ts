@@ -15,7 +15,6 @@ import {
   createMockSessionsRepo,
   PARTICIPANT_DE_TEST,
 } from '../../../../../test/factories/formation.factory';
-import { verifierGardesDeParticipant } from '../../../../../test/helpers/gardes-de-seance';
 import {
   EcranNonServiError,
   RappelsIndisponiblesError,
@@ -121,12 +120,6 @@ describe('LireRappelsUseCase', () => {
 
     await expect(lire()).rejects.toThrow(EcranNonServiError);
   });
-
-  verifierGardesDeParticipant(() => ({
-    participants,
-    executer: lire,
-    effetsInterdits: () => [rappels.figer],
-  }));
 
   it('signale un cours sans ecran de rappel espace', async () => {
     const [premier, ...suite] = COURS.ecrans.filter(

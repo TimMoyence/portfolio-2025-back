@@ -1,5 +1,8 @@
 import { borner } from '../../../../common/domain/nombres/borner';
-import type { TraceCalcule } from '../contrats/donnees-publiques';
+import type {
+  PositionsDuCurseur,
+  TraceCalcule,
+} from '../contrats/donnees-publiques';
 import { evaluerExpression, variablesDeLExpression } from './Formule';
 
 export const ECHANTILLONS_D_UNE_COURBE = 24;
@@ -29,7 +32,7 @@ export interface TraceACalculer {
 
 function abscissesDu(trace: TraceACalculer): number[] {
   const depart = trace.abscisse.min;
-  const arrivee = Math.max(trace.abscisse.max, depart);
+  const arrivee = trace.abscisse.max;
   if (trace.forme === 'barres') {
     const premiere = Math.ceil(depart);
     return Array.from(
@@ -51,21 +54,19 @@ export function jalons(
   );
 }
 
-function dansLeCurseur(curseur: CurseurReglable, valeur: number): number {
-  return borner(valeur, curseur.min, Math.max(curseur.max, curseur.min));
-}
-
 function positionsDuCurseur(
   curseur: CurseurReglable,
   prereglages: readonly PrereglageDuTrace[] = [],
 ): number[] {
-  const etendue = Math.max(curseur.max, curseur.min) - curseur.min;
-  const crans = Math.floor(etendue / curseur.pas + TOLERANCE_DU_DERNIER_CRAN);
+  const crans = Math.floor(
+    (curseur.max - curseur.min) / curseur.pas + TOLERANCE_DU_DERNIER_CRAN,
+  );
   const surLePas = Array.from({ length: crans + 1 }, (_, rang) =>
-    dansLeCurseur(
-      curseur,
+    borner(
       Math.round((curseur.min + rang * curseur.pas) * PRECISION_D_UN_CRAN) /
         PRECISION_D_UN_CRAN,
+      curseur.min,
+      curseur.max,
     ),
   );
   const posees = [
@@ -73,20 +74,35 @@ function positionsDuCurseur(
     ...prereglages.flatMap(({ valeurs }) =>
       Object.hasOwn(valeurs, curseur.cle) ? [valeurs[curseur.cle]] : [],
     ),
-  ].map((valeur) => dansLeCurseur(curseur, valeur));
+  ];
   return [...new Set([...surLePas, ...posees])].sort((a, b) => a - b);
 }
 
-export function reglageServi(
-  trace: TraceACalculer,
+export function refusDuReglage(
+  reglable: {
+    readonly parametres: readonly CurseurReglable[];
+    readonly prereglages?: readonly PrereglageDuTrace[];
+  },
   cle: string,
   valeur: number,
-): boolean {
-  const curseur = trace.parametres.find((candidat) => candidat.cle === cle);
-  return (
-    curseur !== undefined &&
-    positionsDuCurseur(curseur, trace.prereglages).includes(valeur)
-  );
+): string | null {
+  const curseur = reglable.parametres.find((candidat) => candidat.cle === cle);
+  if (curseur === undefined) {
+    return `paramètre ${cle} absent de l’écran`;
+  }
+  return positionsDuCurseur(curseur, reglable.prereglages).includes(valeur)
+    ? null
+    : `réglage ${cle} hors des positions servies : ${valeur}`;
+}
+
+export function curseursServis<C extends CurseurReglable>(reglable: {
+  readonly parametres: readonly C[];
+  readonly prereglages?: readonly PrereglageDuTrace[];
+}): (C & PositionsDuCurseur)[] {
+  return reglable.parametres.map((curseur) => ({
+    ...curseur,
+    positions: positionsDuCurseur(curseur, reglable.prereglages),
+  }));
 }
 
 function curseursLus(trace: TraceACalculer): CurseurReglable[] {
@@ -117,7 +133,7 @@ export function pointsDuTrace(trace: TraceACalculer): number {
   );
 }
 
-function ordonnee(
+export function valeurFinie(
   calcul: string,
   variables: Readonly<Record<string, number>>,
 ): number | null {
@@ -134,7 +150,7 @@ export function traceCalcule(trace: TraceACalculer): TraceCalcule {
       ordonnees: Object.fromEntries(
         trace.series.map(({ id, calcul }) => [
           id,
-          abscisses.map((x) => ordonnee(calcul, { ...valeurs, x })),
+          abscisses.map((x) => valeurFinie(calcul, { ...valeurs, x })),
         ]),
       ),
     })),

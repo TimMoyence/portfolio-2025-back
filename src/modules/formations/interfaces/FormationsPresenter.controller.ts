@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Get,
   Header,
@@ -15,6 +14,7 @@ import {
 import {
   ApiConflictResponse,
   ApiCreatedResponse,
+  ApiExtraModels,
   ApiNoContentResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -28,18 +28,16 @@ import { FluxDEvenements } from '../../../common/interfaces/http/flux-d-evenemen
 import { CloseSessionUseCase } from '../application/CloseSession.useCase';
 import { ControlSessionUseCase } from '../application/ControlSession.useCase';
 import { GetSessionResultsUseCase } from '../application/GetSessionResults.useCase';
-import type { ResultatsDeSeance } from '../domain/contrats/resultats';
 import { LireDerouleUseCase } from '../application/LireDeroule.useCase';
 import { ListFreeResponsesUseCase } from '../application/ListFreeResponses.useCase';
 import { OpenSessionUseCase } from '../application/OpenSession.useCase';
 import { StreamSessionUseCase } from '../application/StreamSession.useCase';
 import { SyntheseRappelsUseCase } from '../application/SyntheseRappels.useCase';
 import { TelechargerPieceJointeUseCase } from '../application/TelechargerPieceJointe.useCase';
-import type { DerouleCours } from '../domain/cours/DeroulePresentateur';
 import type { ClasseurTelecharge } from '../domain/IClasseursDeCours.port';
-import type { FreeResponseRecord } from '../domain/IFreeResponses.repository';
 import { ControlSessionRequestDto } from './dto/contrat/control-session.request.dto';
 import { SyntheseRappelsResponseDto } from './dto/contrat/synthese-rappels.response.dto';
+import { EVENEMENTS_DU_FLUX_DU_PUPITRE } from './dto/contrat/flux-de-seance.response.dto';
 import { DerouleResponseDto } from './dto/contrat/deroule.response.dto';
 import { FreeResponsesResponseDto } from './dto/free-responses.response.dto';
 import { OpenSessionRequestDto } from './dto/contrat/open-session.request.dto';
@@ -68,6 +66,7 @@ import {
  * seul pilote, le proprietaire ou un administrateur lit.
  */
 @ControleurFormateur()
+@ApiExtraModels(...Object.values(EVENEMENTS_DU_FLUX_DU_PUPITRE))
 export class FormationsPresenterController {
   constructor(
     private readonly openSession: OpenSessionUseCase,
@@ -125,15 +124,6 @@ export class FormationsPresenterController {
     @Body() dto: ControlSessionRequestDto,
     @Req() request: Request,
   ): Promise<void> {
-    if (
-      dto.ecran === undefined &&
-      dto.mode === undefined &&
-      dto.pilotage === undefined
-    ) {
-      throw new BadRequestException(
-        'Indiquez un écran, un mode de rythme ou un pilotage d’écran à appliquer.',
-      );
-    }
     await this.controlSession.apply(id, compteConnecte(request).id, {
       ecran: dto.ecran,
       mode: dto.mode,
@@ -161,6 +151,7 @@ export class FormationsPresenterController {
   @FluxDEvenements(
     'sessions/:id/presenter-stream',
     'Etat de la seance a chaque changement, vu du pupitre',
+    EVENEMENTS_DU_FLUX_DU_PUPITRE,
   )
   @ApiOperation({
     summary: 'Flux temps reel reserve au formateur de la session',
@@ -197,7 +188,7 @@ export class FormationsPresenterController {
   async getResults(
     @Param('id', ParseUUIDPipe) id: string,
     @Req() request: Request,
-  ): Promise<ResultatsDeSeance> {
+  ): Promise<SessionResultsResponseDto> {
     return this.results.execute(id, compteConnecte(request));
   }
 
@@ -210,7 +201,7 @@ export class FormationsPresenterController {
   async exportReport(
     @Param('id', ParseUUIDPipe) id: string,
     @Req() request: Request,
-  ): Promise<ResultatsDeSeance> {
+  ): Promise<SessionResultsResponseDto> {
     return this.getResults(id, request);
   }
 
@@ -237,7 +228,7 @@ export class FormationsPresenterController {
   async getDeroule(
     @Param('id', ParseUUIDPipe) id: string,
     @Req() request: Request,
-  ): Promise<DerouleCours> {
+  ): Promise<DerouleResponseDto> {
     return this.lireDeroule.execute(id, compteConnecte(request));
   }
 
@@ -275,7 +266,7 @@ export class FormationsPresenterController {
   async getFreeResponses(
     @Param('id', ParseUUIDPipe) id: string,
     @Req() request: Request,
-  ): Promise<{ responses: readonly FreeResponseRecord[] }> {
+  ): Promise<FreeResponsesResponseDto> {
     return {
       responses: await this.listFreeResponses.execute(
         id,
@@ -295,9 +286,6 @@ export class FormationsPresenterController {
     @Param('id', ParseUUIDPipe) id: string,
     @Req() request: Request,
   ): Promise<SyntheseRappelsResponseDto> {
-    return this.syntheseRappels.execute(
-      id,
-      compteConnecte(request),
-    ) as Promise<SyntheseRappelsResponseDto>;
+    return this.syntheseRappels.execute(id, compteConnecte(request));
   }
 }

@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "3844a98831048444e37bfbf78dc17ffd53dfb1a70462b81704631c7855807b85",
+  "empreinte": "3128d1edd53b4b1d5bbb271ccd886d77e7697274eedff89c889d077af8d18739",
   "sujet": {
     "id": "b3-01-donnee-brute-decision",
     "titre": "Expert Data : de la donnée brute à la décision",
@@ -1958,6 +1958,7 @@
             "id": "b3-01-a3-billet",
             "question": "Une ligne porte une date_livraison antérieure à sa date_commande. La corrige-t-on automatiquement ?",
             "invite": "En une phrase : pourquoi ce choix ?",
+            "longueurMax": 500,
             "options": [
               {
                 "id": "non-on-la-signale-et-on-demande-faux-hum-c6b7abb5",
@@ -2046,6 +2047,7 @@
           {
             "questionId": "b3-01-a1-rappel-recopie",
             "bonneReponse": "=C3*$H$1",
+            "optionId": "c3-h-1-2c847da8",
             "confusions": [
               {
                 "id": "reference-absolue-ignoree",
@@ -2238,6 +2240,7 @@
           {
             "questionId": "b3-01-a1-part-douteuse",
             "bonneReponse": "Environ 15 % des lignes",
+            "optionId": "environ-15-pct-des-lignes-0166cfeb",
             "confusions": [
               {
                 "id": "part-douteuse-estimee-sans-mesure",
@@ -2248,6 +2251,7 @@
           {
             "questionId": "b3-01-a1-cle-client",
             "bonneReponse": "Non : il faut un identifiant attribué par le système",
+            "optionId": "non-il-faut-un-identifiant-attribue-par-0a64eae8",
             "confusions": [
               {
                 "id": "libelle-pris-pour-cle",
@@ -2538,7 +2542,7 @@
         },
         "notes": "• Temps : réflexion 1 min · travail 3 min · correction 1 min\n• Réflexion : relire les en-têtes de l’onglet Commandes avant de trier.\n• Pièges : n_commande pris pour une mesure, parce qu’il contient des chiffres ; ville prise pour un identifiant ; identifiant rangé parmi les catégories (agence_id, client_id, produit_id, commercial_id).\n• Corriger catégorie par catégorie, en commençant par la carte la plus ratée (taux d’erreur au pupitre).\n• Transition : « Une ligne, c’est quoi ? Exercice 2. »",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [],
         "questions": [
           {
@@ -2697,11 +2701,12 @@
         },
         "notes": "• Temps : réflexion 1 min · travail 3 min · correction 1 min\n• Réflexion : faire dire ce qu’on va compter, des lignes ou des commandes, avant de filtrer.\n• Piège : compter une commande là où l’on demande des lignes.\n• Corriger les deux questions ensemble : une commande, plusieurs lignes.\n• Transition : « Le fichier a-t-il d’autres surprises ? Un vote. »",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [
           {
             "questionId": "b3-01-a1-granularite",
             "bonneReponse": "Plus de lignes que de commandes",
+            "optionId": "plus-de-lignes-que-de-commandes-2dcfa295",
             "confusions": [
               {
                 "id": "lignes-comptees-pour-commandes",
@@ -2712,6 +2717,7 @@
           {
             "questionId": "b3-01-a1-lignes-commande",
             "bonneReponse": "3 lignes",
+            "optionId": null,
             "confusions": [
               {
                 "id": "commandes-comptees-pour-lignes",
@@ -2791,6 +2797,7 @@
           {
             "questionId": "b3-01-a1-ca-texte",
             "bonneReponse": "Elle l’ignore, sans aucun message",
+            "optionId": "elle-l-ignore-sans-aucun-message-91c3e7b3",
             "confusions": [
               {
                 "id": "texte-pris-pour-nombre",
@@ -3104,7 +3111,7 @@
         },
         "notes": "• Temps : réflexion 1 min · travail 6 min · correction 1 min\n• Réflexion : rappeler les deux questions de la grille avant de trier.\n• Pièges : corriger seul une date douteuse ; renvoyer à un humain une erreur que le fichier corrige.\n• Corriger case par case ; finir par la case vide.\n• Transition : « Au travail sur le vrai fichier : exercice 4. »",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [],
         "questions": [
           {
@@ -3255,11 +3262,12 @@
         },
         "notes": "• Temps : réflexion 1 min · travail 12 min · correction 2 min\n• Réflexion : faire dire l’ordre du travail : copie, colonnes nettoyées, doublons, contrôle.\n• Annoncer le palier défi aux plus rapides : il se corrige oralement, sans note.\n• Pièges : dédoublonner sur n_commande seule ; compter l’en-tête parmi les lignes ; additionner avant de convertir ; poser le contrôle sur les dates converties (45 par la formule de A1-11, 39 par DATEVAL sur toute date en texte).\n• Défi, villes distinctes : copier la colonne N, en-tête compris, en valeurs à part, puis Supprimer les doublons, case « Mes données ont des en-têtes » cochée ; sous Excel 2021 ou 365, =NBVAL(UNIQUE(N2:N4099)).\n• Corriger question par question, dans l’ordre où les explications se dévoilent ; s’attarder sur la moins réussie (score sous chaque correction).\n• Révéler la part des lignes fausses ou douteuses : c’est la réponse à la première question du vote sur le fichier et Dupont, Bordeaux (A1-04).\n• Défi : 48 villes ; sans SUPPRESPACE, les espaces en trop en font compter 83 ; la casse ne change rien, Excel l’ignore.\n• Piège des dates : la formule de A1-11, =SI(NBCAR(B2)=10;DATEVAL(B2);B2), laisse en texte « 08/04/26 » (commande C-11481 : ligne 3785 du brut, 3741 de la copie dédoublonnée) ; DATEVAL la lirait 8 avril sur un poste réglé en français (jj/mm/aa), or elle est livrée le 7 août : la commande date sans doute du 4 août, et seul l’émetteur peut le dire.\n• Avant la pause, dire les règles des niveaux 1 et 2 : « Je relie les tables par un identifiant, jamais par un libellé » ; « Je corrige seul ce qui est faux et certain ; je signale ce qui est douteux et je demande. »\n• Puis pause de 15 minutes ; reprise à 9 h 45 sur le classeur de reprise.",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [
           {
             "questionId": "b3-01-a1-lignes-uniques",
             "bonneReponse": "4 098 lignes",
+            "optionId": null,
             "confusions": [
               {
                 "id": "doublons-supprimes-sur-une-colonne",
@@ -3274,6 +3282,7 @@
           {
             "questionId": "b3-01-a1-ca-total",
             "bonneReponse": "1 340 208 €",
+            "optionId": null,
             "confusions": [
               {
                 "id": "texte-pris-pour-nombre",
@@ -3284,6 +3293,7 @@
           {
             "questionId": "b3-01-a1-a-verifier",
             "bonneReponse": "85 lignes",
+            "optionId": null,
             "confusions": [
               {
                 "id": "suspect-corrige-sans-validation",
@@ -3371,6 +3381,7 @@
           {
             "questionId": "b3-01-a2-famille",
             "bonneReponse": "Additionner sous conditions, après avoir cherché la catégorie",
+            "optionId": "additionner-sous-conditions-apres-avoir-7f957438",
             "confusions": [
               {
                 "id": "famille-de-probleme-mal-nommee",
@@ -3660,11 +3671,12 @@
         },
         "notes": "• Temps : réflexion 1 min · travail 9 min · correction 2 min\n• Réflexion : faire nommer la famille de chaque question avant d’écrire une formule.\n• Pièges : fonction DATE écrite dans les guillemets (\">=DATE(2026;1;1)\") ; plage de recherche non figée ; période oubliée.\n• Corriger question par question, dans l’ordre où les explications se dévoilent ; s’attarder sur la moins réussie (score sous chaque correction).\n• Défi : 66 lignes avec le critère \">0,15\" ; \">15\" n’en trouve aucune : la remise est un taux.\n• Transition : « Passons au temps : un vote. »",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [
           {
             "questionId": "b3-01-a2-ca-rennes-info",
             "bonneReponse": "8 342 €",
+            "optionId": null,
             "confusions": [
               {
                 "id": "critere-mal-ecrit",
@@ -3683,6 +3695,7 @@
           {
             "questionId": "b3-01-a2-ca-ouest",
             "bonneReponse": "77 850 €",
+            "optionId": null,
             "confusions": [
               {
                 "id": "critere-mal-ecrit",
@@ -3757,6 +3770,7 @@
           {
             "questionId": "b3-01-a2-delai",
             "bonneReponse": "1 jour ouvré",
+            "optionId": "1-jour-ouvre-a80f6644",
             "confusions": [
               {
                 "id": "jours-calendaires-pour-ouvres",
@@ -3917,11 +3931,12 @@
         },
         "notes": "• Temps : réflexion 1 min · travail 9 min · correction 2 min\n• Réflexion : faire dire en quelle unité le contrat compte les délais avant d’écrire la colonne.\n• Pièges : soustraire les dates ; oublier le − 1 ; résumer par la moyenne ; prendre toute la table au lieu de 2026 ; oublier l’agence, ou prendre MEDIANE sous un filtre, qui compte les lignes masquées.\n• Corriger question par question ; sur la médiane, trier les délais de Strasbourg pour montrer les ruptures en bas de colonne.\n• Retards : 2025 n’a aucun retard, et toute la table donne le même compte que 2026 : faire montrer le critère 2026.\n• Défi : 32,0 % ; la moyenne des taux de ligne donne 35,4 % ; marge ÷ coût donne 47,0 % : c’est le taux de marge.\n• Transition : « Et si l’export d’octobre arrive ? Un vote. »",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [
           {
             "questionId": "b3-01-a2-delai-strasbourg",
             "bonneReponse": "8 jours ouvrés",
+            "optionId": null,
             "confusions": [
               {
                 "id": "jours-calendaires-pour-ouvres",
@@ -3948,6 +3963,7 @@
           {
             "questionId": "b3-01-a2-retards",
             "bonneReponse": "99 lignes",
+            "optionId": null,
             "confusions": [
               {
                 "id": "jours-calendaires-pour-ouvres",
@@ -4018,6 +4034,7 @@
           {
             "questionId": "b3-01-a2-nouvelles-lignes",
             "bonneReponse": "Non, elles restent hors de la plage",
+            "optionId": "non-elles-restent-hors-de-la-plage-e87d8a01",
             "confusions": [
               {
                 "id": "plage-fixe-au-lieu-de-tableau",
@@ -4223,11 +4240,12 @@
         },
         "notes": "• Temps : réflexion 1 min · travail 12 min · correction 2 min\n• Réflexion : faire dire, avant de construire, ce que chaque TCD montre en lignes, en colonnes et en valeurs.\n• Pièges : % du total général ou de la colonne au lieu du % de la ligne ; filtre annee oublié au premier TCD ; resté actif au second, recopié du premier ou de l’exemple ; trimestres groupés sans les années.\n• Corriger les deux questions ; montrer le regroupement par années qui sépare les deux printemps.\n• Défi : clic dans un TCD › Insertion › Segment (sur Mac, Analyse du tableau croisé dynamique › Segment) › categorie ; puis, le segment sélectionné, onglet Segment › Connexions de rapport : cocher les deux TCD.\n• Avant la pause, dire les règles des niveaux 3 et 4 : « Avant la fonction, je nomme la famille du problème » ; « Je travaille sur un tableau structuré, jamais sur une plage fixe. »\n• Puis pause de 15 minutes ; reprise à 11 h 01 sur le classeur de reprise de l’acte 3.",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [
           {
             "questionId": "b3-01-a2-part-info-rennes",
             "bonneReponse": "27,2 %",
+            "optionId": null,
             "confusions": [
               {
                 "id": "pourcentage-du-mauvais-total",
@@ -4246,6 +4264,7 @@
           {
             "questionId": "b3-01-a2-meilleur-trimestre",
             "bonneReponse": "T4 2025",
+            "optionId": "t4-2025-2dcece61",
             "confusions": [
               {
                 "id": "tcd-filtre-ou-dates-mal-groupees",
@@ -4379,6 +4398,7 @@
           {
             "questionId": "b3-01-a3-graphique",
             "bonneReponse": "Non : l’axe est tronqué",
+            "optionId": "non-l-axe-est-tronque-21b46954",
             "confusions": [
               {
                 "id": "axe-tronque-lu-comme-ecart",
@@ -4528,11 +4548,12 @@
         },
         "notes": "• Temps : réflexion 1 min · travail 9 min · correction 1 min\n• Réflexion : faire dire où vit l’objectif : dans une autre table que les ventes, d’où SOMME.SI.ENS et pas un TCD seul.\n• Pièges : comparer neuf mois de ventes à l’objectif de toute la table ; oublier la période des deux côtés.\n• Corriger les deux questions ; projeter un graphique réussi, titre compris.\n• Défi : un TCD mois en lignes, années en colonnes, puis un graphique en courbes.\n• Transition : « Nadia a trente secondes : un vote. »",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [
           {
             "questionId": "b3-01-a3-agences-sous-objectif",
             "bonneReponse": "3 agences",
+            "optionId": null,
             "confusions": [
               {
                 "id": "objectif-annuel-pour-cumul",
@@ -4547,6 +4568,7 @@
           {
             "questionId": "b3-01-a3-atteinte-rennes",
             "bonneReponse": "79,0 %",
+            "optionId": null,
             "confusions": [
               {
                 "id": "objectif-annuel-pour-cumul",
@@ -4621,6 +4643,7 @@
           {
             "questionId": "b3-01-a3-trente-secondes",
             "bonneReponse": "Quatre chiffres, chacun avec sa comparaison",
+            "optionId": "quatre-chiffres-chacun-avec-sa-comparais-da3f031e",
             "confusions": [
               {
                 "id": "detail-au-lieu-de-synthese",
@@ -4867,11 +4890,12 @@
         },
         "notes": "• Temps : réflexion 1 min · travail 12 min · correction 2 min\n• Réflexion : faire dire les quatre indicateurs et la comparaison de chacun avant de construire.\n• Annoncer le palier défi aux plus rapides : il se corrige oralement, sans note.\n• Pièges : neuf mois comparés à douze ; toute la table au lieu de 2026 ; moyenne des taux ; marge divisée par le coût d’achat ; ligne d’en-tête comptée parmi les lignes.\n• Corriger question par question, dans l’ordre où les explications se dévoilent ; s’attarder sur la moins réussie (score sous chaque correction).\n• Projeter un tableau de bord réussi : quatre indicateurs, chacun avec sa comparaison, et le TCD de la marge par agence en barres de données, posées sur les seules cellules des agences : le total général écraserait les autres barres.\n• Défi : clic dans le TCD › Insertion › Segment (sur Mac, Analyse du tableau croisé dynamique › Segment) › region.\n• Transition : « Vos analyses de la séance racontent quatre histoires : vos recommandations. »",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [
           {
             "questionId": "b3-01-a3-evolution",
             "bonneReponse": "8,6 %",
+            "optionId": null,
             "confusions": [
               {
                 "id": "evolution-sur-annee-pleine",
@@ -4882,6 +4906,7 @@
           {
             "questionId": "b3-01-a3-ca-2026",
             "bonneReponse": "575 046 €",
+            "optionId": null,
             "confusions": [
               {
                 "id": "periode-mal-delimitee",
@@ -4892,6 +4917,7 @@
           {
             "questionId": "b3-01-a3-marge-marseille",
             "bonneReponse": "26,9 %",
+            "optionId": null,
             "confusions": [
               {
                 "id": "moyenne-simple-des-taux",
@@ -4910,6 +4936,7 @@
           {
             "questionId": "b3-01-a3-quarantaine",
             "bonneReponse": "60 lignes",
+            "optionId": null,
             "confusions": [
               {
                 "id": "en-tete-compte-comme-ligne",
@@ -5190,6 +5217,7 @@
             "id": "b3-01-a3-billet",
             "question": "Une ligne porte une date_livraison antérieure à sa date_commande. La corrige-t-on automatiquement ?",
             "invite": "En une phrase : pourquoi ce choix ?",
+            "longueurMax": 500,
             "options": [
               {
                 "id": "non-on-la-signale-et-on-demande-faux-hum-c6b7abb5",
@@ -5215,11 +5243,12 @@
         },
         "notes": "• 3 min ; clore la séance quand le compteur de billets est complet.\n• Pièges : échanger les deux dates ; supprimer la ligne.",
         "diffusion": "seance",
-        "seuil": null,
+        "seuil": 0.7,
         "corriges": [
           {
             "questionId": "b3-01-a3-billet",
             "bonneReponse": "Non : on la signale et on demande (faux · humain)",
+            "optionId": "non-on-la-signale-et-on-demande-faux-hum-c6b7abb5",
             "confusions": [
               {
                 "id": "suspect-corrige-sans-validation",
@@ -5255,47 +5284,7 @@
         "corrigeEcran": null,
         "reflexion": null
       }
-    ],
-    "remediations": {
-      "reference-absolue-ignoree": "B3-01-A2-03-COURS-CHERCHER-AGREGER",
-      "identifiant-pris-pour-nombre": "B3-01-A1-05-COURS-DONNEE",
-      "lignes-comptees-pour-commandes": "B3-01-A1-05-COURS-DONNEE",
-      "commandes-comptees-pour-lignes": "B3-01-A1-05-COURS-DONNEE",
-      "type-de-variable-confondu": "B3-01-A1-05-COURS-DONNEE",
-      "identifiant-range-sous-un-autre-type": "B3-01-A1-05-COURS-DONNEE",
-      "en-tete-compte-comme-ligne": "B3-01-A1-05-COURS-DONNEE",
-      "libelle-pris-pour-cle": "B3-01-A1-06-COURS-RELATIONS",
-      "cle-prise-pour-categorie": "B3-01-A1-06-COURS-RELATIONS",
-      "part-douteuse-estimee-sans-mesure": "B3-01-A1-10-COURS-GRILLE",
-      "suspect-corrige-sans-validation": "B3-01-A1-10-COURS-GRILLE",
-      "correction-certaine-renvoyee-a-un-humain": "B3-01-A1-10-COURS-GRILLE",
-      "erreur-certaine-jugee-douteuse": "B3-01-A1-10-COURS-GRILLE",
-      "donnee-douteuse-jugee-fausse": "B3-01-A1-10-COURS-GRILLE",
-      "suppression-au-lieu-de-signalement": "B3-01-A1-10-COURS-GRILLE",
-      "texte-pris-pour-nombre": "B3-01-A1-11-COURS-OUTILS",
-      "doublons-supprimes-sur-une-colonne": "B3-01-A1-11-COURS-OUTILS",
-      "controle-apres-correction": "B3-01-A1-11-COURS-OUTILS",
-      "famille-de-probleme-mal-nommee": "B3-01-A2-02-FAMILLES",
-      "plage-recherche-non-figee": "B3-01-A2-03-COURS-CHERCHER-AGREGER",
-      "critere-mal-ecrit": "B3-01-A2-03-COURS-CHERCHER-AGREGER",
-      "periode-mal-delimitee": "B3-01-A2-03-COURS-CHERCHER-AGREGER",
-      "jours-calendaires-pour-ouvres": "B3-01-A2-06-COURS-TEMPS-STATS",
-      "bornes-comptees-dans-le-delai": "B3-01-A2-06-COURS-TEMPS-STATS",
-      "valeur-extreme-ignoree": "B3-01-A2-06-COURS-TEMPS-STATS",
-      "moyenne-simple-des-taux": "B3-01-A2-06-COURS-TEMPS-STATS",
-      "marque-confondue-avec-marge": "B3-01-A2-06-COURS-TEMPS-STATS",
-      "mediane-sur-liste-trop-large": "B3-01-A2-06-COURS-TEMPS-STATS",
-      "plage-fixe-au-lieu-de-tableau": "B3-01-A2-09-COURS-TCD",
-      "pourcentage-du-mauvais-total": "B3-01-A2-09-COURS-TCD",
-      "pourcentage-du-total-de-colonne": "B3-01-A2-09-COURS-TCD",
-      "tcd-filtre-ou-dates-mal-groupees": "B3-01-A2-09-COURS-TCD",
-      "graphique-sans-question": "B3-01-A3-03-COURS-GRAPHIQUES",
-      "axe-tronque-lu-comme-ecart": "B3-01-A3-03-COURS-GRAPHIQUES",
-      "objectif-annuel-pour-cumul": "B3-01-A3-07-COURS-DASHBOARD",
-      "evolution-sur-annee-pleine": "B3-01-A3-07-COURS-DASHBOARD",
-      "kpi-sans-contexte": "B3-01-A3-07-COURS-DASHBOARD",
-      "detail-au-lieu-de-synthese": "B3-01-A3-07-COURS-DASHBOARD"
-    }
+    ]
   },
   "catalogue": {
     "id": "b3-01-donnee-brute-decision",

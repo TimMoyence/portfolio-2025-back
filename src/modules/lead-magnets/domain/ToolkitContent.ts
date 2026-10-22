@@ -17,9 +17,9 @@ export interface PromptEntry {
   level: AiLevel;
   prompt: string;
   tool: string;
-  description?: string;
-  example?: string;
-  tip?: string;
+  description: string;
+  example: string;
+  tip: string;
 }
 
 interface WorkflowStep {

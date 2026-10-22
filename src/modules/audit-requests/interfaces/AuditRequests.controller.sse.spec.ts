@@ -1,4 +1,5 @@
 import { of } from 'rxjs';
+import type { ConfirmAuditRequestUseCase } from '../application/ConfirmAuditRequest.useCase';
 import type { CreateAuditRequestsUseCase } from '../application/CreateAuditRequests.useCase';
 import type { GetAuditSummaryUseCase } from '../application/GetAuditSummary.useCase';
 import type { StreamAuditEventsUseCase } from '../application/StreamAuditEvents.useCase';
@@ -23,6 +24,7 @@ function buildUseCaseMocks(): {
 
   const controller = new AuditsController(
     createUseCase as unknown as CreateAuditRequestsUseCase,
+    { execute: jest.fn() } as unknown as ConfirmAuditRequestUseCase,
     summaryUseCase as unknown as GetAuditSummaryUseCase,
     streamUseCase as unknown as StreamAuditEventsUseCase,
   );

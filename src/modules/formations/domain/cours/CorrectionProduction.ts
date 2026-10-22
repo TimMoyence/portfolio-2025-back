@@ -4,15 +4,16 @@ import {
 } from '../../../../common/domain/au-moins-un';
 import { estEntierDansLesBornes } from '../../../../common/domain/nombres/dans-les-bornes';
 import { proportion } from '../../../../common/domain/nombres/statistiques';
-import type { Tolerance } from '../GradingCore';
+import { gradeAnswer } from '../AnswerGrading';
 import { matchesSolution } from '../GradingCore';
+import { detectMisconception } from '../MisconceptionDetection';
 import type { SheetPlanStocke } from '../contrats/cours';
 import type {
   CorrigeClassement,
   CorrigeFeuille,
   CorrigeTableau,
-  PiegeNumerique,
 } from './Corrige';
+import { piegesDuCorrige } from './Corrige';
 import type { ConfusionId } from './banque/confusions';
 import type { Feuille, ResultatFormule, ValeurFormule } from './Formule';
 import {
@@ -59,17 +60,6 @@ const SANS_FORMULE: ConfusionId = 'valeur-saisie-sans-formule';
 const NON_RECOPIABLE: ConfusionId = 'formule-non-recopiable';
 
 type AttenduDeCellule = CorrigeFeuille['attendus'][number];
-
-function confusionDuPiege(
-  valeur: number,
-  pieges: readonly PiegeNumerique[],
-  tolerance: Tolerance,
-): ConfusionId | null {
-  const trouve = pieges.find((piege) =>
-    matchesSolution(valeur, piege.valeur, tolerance),
-  );
-  return trouve?.confusion ?? null;
-}
 
 export function reconstruire(
   plan: SheetPlanStocke,
@@ -164,7 +154,11 @@ function confusionDeLaCellule(
   const valeur = resultat.valeur;
   if (!valeurConforme(valeur, attendu)) {
     return typeof valeur === 'number'
-      ? confusionDuPiege(valeur, attendu.pieges, attendu.tolerance)
+      ? detectMisconception(
+          valeur,
+          piegesDuCorrige(attendu.pieges),
+          attendu.tolerance,
+        )
       : null;
   }
   return trahitLaRecopie(attendu, feuille) ? NON_RECOPIABLE : undefined;
@@ -226,14 +220,20 @@ export function corrigerTableau(
 ): CorrectionDeTableau {
   const verdicts = mapperAuMoinsUn(corrige.attendus, (attendu) => {
     const valeur = saisies[attendu.rang]?.[attendu.cle];
-    const juste =
-      valeur !== undefined &&
-      matchesSolution(valeur, attendu.valeur, corrige.tolerance);
-    const confusion =
-      juste || valeur === undefined
-        ? null
-        : confusionDuPiege(valeur, attendu.pieges, corrige.tolerance);
-    return { rang: attendu.rang, cle: attendu.cle, juste, confusion };
+    const verdict =
+      valeur === undefined
+        ? { correcte: false, misconception: null }
+        : gradeAnswer(
+            valeur,
+            { valeur: attendu.valeur, pieges: piegesDuCorrige(attendu.pieges) },
+            corrige.tolerance,
+          );
+    return {
+      rang: attendu.rang,
+      cle: attendu.cle,
+      juste: verdict.correcte,
+      confusion: verdict.misconception,
+    };
   });
   return bilan(verdicts);
 }

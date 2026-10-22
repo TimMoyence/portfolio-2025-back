@@ -1,4 +1,3 @@
-import { arrondi } from '../../../common/domain/nombres/arrondi';
 import {
   nombreAffiche,
   TOUTES_LES_DECIMALES,
@@ -18,23 +17,23 @@ import type { DetailProduction, ValeurProduction } from './contrats/resultats';
 import { activitesLibres } from './cours/EcranServi';
 import { tirer } from './cours/Tirage';
 import type { LibellesDesOptions } from './cours/Tirage';
-import { computeCohortScore } from './CompletionScore';
-import { NE_SAIT_PAS } from './GradingCore';
 import type { AnswerRecord } from './IAnswers.repository';
 import type {
+  RapportIncident,
   RapportParticipant,
   RapportQuestion,
   RapportReponseLibre,
   RapportSession,
 } from './IFormationMailer.port';
+import { estValeurDeContexte, type ValeurDeContexte } from './IncidentType';
 import type { FreeResponseRecord } from './IFreeResponses.repository';
 import type { IncidentRecord } from './IIncidents.repository';
 import type { ParticipantRecord } from './IParticipants.repository';
 import type { SessionRecord } from './ISessions.repository';
-import { DECIMALES_DE_LA_NOTE, REGLE_DE_NOTATION } from './RegleDeNotation';
+import { REGLE_DE_NOTATION } from './RegleDeNotation';
+import { estNeSaitPas, partDesReponses } from './ResultatsSeance';
 import { estUneProduction, texteDeValeur } from './ValeurReponse';
 
-const SEUIL_CONCEPT_FRAGILE = 0.7;
 const LIBELLE_NE_SAIT_PAS = 'Je ne sais pas';
 const POINT_PAR_QUESTION_REPONDUE = 1;
 
@@ -50,11 +49,6 @@ export interface SessionReportInput {
 
 export function buildRapportSession(input: SessionReportInput): RapportSession {
   const notees = questionsNotees(input.session.bareme);
-  const completions = input.participants.map((participant) => ({
-    participantId: participant.id,
-    completion: completionDe(participant.id, input.answers, notees),
-  }));
-  const scores = computeCohortScore(completions);
   const rangs = new Map(
     input.session.bareme.questions.map((question, rang) => [question.id, rang]),
   );
@@ -77,16 +71,11 @@ export function buildRapportSession(input: SessionReportInput): RapportSession {
 
   const participants: readonly RapportParticipant[] = input.participants.map(
     (participant) => {
-      const score = scores.find(
-        (entree) => entree.participantId === participant.id,
-      );
       return {
         prenom: participant.prenom,
         nom: participant.nom,
         email: participant.email,
-        completion: score?.completion ?? 0,
-        note: arrondi(score?.note ?? 0, DECIMALES_DE_LA_NOTE),
-        sousSeuil: score?.sousSeuil ?? true,
+        completion: completionDe(participant.id, input.answers, notees),
         reponses: reponsesDe(
           participant.id,
           input.answers,
@@ -95,9 +84,7 @@ export function buildRapportSession(input: SessionReportInput): RapportSession {
           types,
         ),
         reponsesLibres: reponsesLibresDe(participant.id, input, rangDeLibre),
-        incidents: input.incidents.filter(
-          (incident) => incident.participantId === participant.id,
-        ).length,
+        incidents: incidentsDe(participant.id, input.incidents),
       };
     },
   );
@@ -108,13 +95,44 @@ export function buildRapportSession(input: SessionReportInput): RapportSession {
     courseSlug: input.session.courseSlug,
     code: input.session.code,
     ouverteLe: input.session.ouverteLe,
-    fermeeLe: input.session.fermeeLe ?? new Date(),
+    fermeeLe: input.session.fermeeLe ?? null,
     participants,
     conceptsFragiles,
     libellesDesConcepts: Object.fromEntries(
       conceptsFragiles.map((concept) => [concept, libelleDeConcept(concept)]),
     ),
   };
+}
+
+function incidentsDe(
+  participantId: string,
+  incidents: readonly IncidentRecord[],
+): readonly RapportIncident[] {
+  return incidents
+    .filter((incident) => incident.participantId === participantId)
+    .sort(
+      (gauche, droite) =>
+        gauche.horodatage.getTime() - droite.horodatage.getTime(),
+    )
+    .map((incident) => ({
+      type: incident.type,
+      horodatage: incident.horodatage.toISOString(),
+      contexte: contexteScalaire(incident.contexte),
+    }));
+}
+
+function contexteScalaire(
+  contexte: Readonly<Record<string, unknown>> | null,
+): Readonly<Record<string, ValeurDeContexte>> | null {
+  if (contexte === null) {
+    return null;
+  }
+  return Object.fromEntries(
+    Object.entries(contexte).filter(
+      (entree): entree is [string, ValeurDeContexte] =>
+        estValeurDeContexte(entree[1]),
+    ),
+  );
 }
 
 function completionDe(
@@ -139,7 +157,7 @@ function completionDe(
 
 function compteCommeReponse(reponse: AnswerRecord): boolean {
   return (
-    reponse.valeur !== NE_SAIT_PAS ||
+    !estNeSaitPas(reponse.valeur) ||
     REGLE_DE_NOTATION.neSaitPasCompteCommeReponse
   );
 }
@@ -230,7 +248,7 @@ function productionLisible(
   details: readonly DetailProduction[] | null,
 ): string {
   const titre = LIBELLE_PAR_TYPE[valeur.type] ?? valeur.type;
-  if ('neSaitPas' in valeur || details === null) {
+  if (estNeSaitPas(valeur) || details === null) {
     return `${titre} : ${LIBELLE_NE_SAIT_PAS.toLowerCase()}`;
   }
   const justes = details.filter((detail) => detail.juste).length;
@@ -244,7 +262,7 @@ function reponseLisible(
   if (estUneProduction(reponse.valeur)) {
     return productionLisible(reponse.valeur, reponse.details);
   }
-  if (reponse.valeur === NE_SAIT_PAS) {
+  if (estNeSaitPas(reponse.valeur)) {
     return LIBELLE_NE_SAIT_PAS;
   }
   if (typeof reponse.valeur === 'number') {
@@ -291,23 +309,17 @@ function nomDErreur(erreur: unknown): string {
 function conceptsFragilesDe(
   reponses: readonly AnswerRecord[],
 ): readonly string[] {
-  const parConcept = new Map<string, { total: number; correctes: number }>();
+  const parConcept = new Map<string, AnswerRecord[]>();
   for (const reponse of reponses) {
-    const entree = parConcept.get(reponse.concept) ?? {
-      total: 0,
-      correctes: 0,
-    };
-    entree.total += 1;
-    if (reponse.correcte) {
-      entree.correctes += 1;
-    }
-    parConcept.set(reponse.concept, entree);
+    parConcept.set(reponse.concept, [
+      ...(parConcept.get(reponse.concept) ?? []),
+      reponse,
+    ]);
   }
-  const fragiles: string[] = [];
-  for (const [concept, { total, correctes }] of parConcept) {
-    if (correctes / total < SEUIL_CONCEPT_FRAGILE) {
-      fragiles.push(concept);
-    }
-  }
-  return fragiles;
+  return [...parConcept]
+    .filter(
+      ([, duConcept]) =>
+        partDesReponses(duConcept) < REGLE_DE_NOTATION.seuilQuestionProbleme,
+    )
+    .map(([concept]) => concept);
 }

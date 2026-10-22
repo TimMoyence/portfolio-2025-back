@@ -49,6 +49,15 @@ describe('AuditClientReportMailer', () => {
       ...parametres,
     });
 
+  it('nomme le seul hote du site dans l objet, jamais la saisie brute du demandeur', async () => {
+    await envoyerRapport(buildMailer(), {
+      websiteName: 'https://www.mon-site.fr/Reglez-ici?montant=500',
+    });
+
+    expect(sentMail().subject).toBe('Votre audit Growth — www.mon-site.fr');
+    expect(JSON.stringify(sentMail())).not.toContain('Reglez-ici');
+  });
+
   it('devrait envoyer le rapport client sans pdf', async () => {
     await envoyerRapport(buildMailer(), { firstName: 'Alice' });
 
@@ -109,9 +118,9 @@ describe('AuditClientReportMailer', () => {
     }
     expect(call.text).toContain('SEO: 62/85 (À améliorer)');
     expect(call.text).toContain('Conversion: 60/85 (À améliorer)');
-    expect(call.text).toContain('Citabilite IA: 52/85 (Critique)');
-    expect(call.text).toContain('Visibilite IA: 48/85 (Critique)');
-    expect(call.text).toContain('Tech & scalabilite: 90/85 (Objectif atteint)');
+    expect(call.text).toContain('Citabilité IA: 52/85 (Critique)');
+    expect(call.text).toContain('Visibilité IA: 48/85 (Critique)');
+    expect(call.text).toContain('Tech & scalabilité: 90/85 (Objectif atteint)');
     expect(
       codesBrutsDuCourriel(call, ['warning', 'critical', '(ok)', '>ok<']),
     ).toEqual([]);

@@ -14,6 +14,9 @@ export class RefreshTokenEntity extends JetonDUtilisateur('refresh_tokens') {
   @Column({ name: 'rotation_grace_until', type: 'timestamp', nullable: true })
   rotationGraceUntil: Date | null;
 
+  @Column({ name: 'successeurs_emis', type: 'integer', default: 0 })
+  successeursEmis: number;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 }

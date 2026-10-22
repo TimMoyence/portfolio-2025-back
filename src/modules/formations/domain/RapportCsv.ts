@@ -1,7 +1,11 @@
 import { nombreSommable } from '../../../common/domain/nombres/ecriture-francaise';
 import { TYPES_DE_FICHIER } from '../../../common/domain/types/types-de-fichier';
 import type { ClasseurTelecharge } from './IClasseursDeCours.port';
-import type { RapportQuestion, RapportSession } from './IFormationMailer.port';
+import type {
+  RapportIncident,
+  RapportQuestion,
+  RapportSession,
+} from './IFormationMailer.port';
 
 const BOM_UTF8 = '﻿';
 
@@ -15,9 +19,11 @@ const ENTETES = [
   'correcte',
   'confusion',
   'durée_ms',
+  'horodatage',
 ];
 
 const CONCEPT_D_UNE_REPONSE_LIBRE = 'réponse libre';
+const QUESTION_D_UN_INCIDENT = 'incident';
 
 export function rapportEnCsv(rapport: RapportSession): ClasseurTelecharge {
   const lignes = rapport.participants.flatMap((participant) => {
@@ -31,6 +37,7 @@ export function rapportEnCsv(rapport: RapportSession): ClasseurTelecharge {
         reponse.correcte ? 'oui' : 'non',
         reponse.libelleConfusion ?? '',
         String(reponse.dureeMs),
+        '',
       ]),
       ...participant.reponsesLibres.map((libre) => [
         ...etudiant,
@@ -40,6 +47,17 @@ export function rapportEnCsv(rapport: RapportSession): ClasseurTelecharge {
         '',
         '',
         '',
+        '',
+      ]),
+      ...participant.incidents.map((incident) => [
+        ...etudiant,
+        QUESTION_D_UN_INCIDENT,
+        incident.type,
+        contexteDansLeCsv(incident.contexte),
+        '',
+        '',
+        '',
+        incident.horodatage,
       ]),
     ].map(ligneCsv);
   });
@@ -49,6 +67,12 @@ export function rapportEnCsv(rapport: RapportSession): ClasseurTelecharge {
     type: TYPES_DE_FICHIER.csv,
     contenu: new TextEncoder().encode(texte),
   };
+}
+
+function contexteDansLeCsv(contexte: RapportIncident['contexte']): string {
+  return Object.entries(contexte ?? {})
+    .map(([cle, valeur]) => `${cle}=${String(valeur)}`)
+    .join(', ');
 }
 
 const NOMBRE_SAISI_RE = /^-?\d+(\.\d+)?(e[+-]?\d+)?$/i;

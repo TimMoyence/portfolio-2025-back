@@ -124,8 +124,8 @@ Variables d'environnement importantes :
 
 - queue et Redis : `AUDIT_QUEUE_ENABLED`, `AUDIT_QUEUE_NAME`, `REDIS_URL` (ou `REDIS_HOST` et `REDIS_PORT`, 6379 par defaut)
 - fetch et limites reseau : `AUDIT_FETCH_TIMEOUT_MS`, `AUDIT_MAX_REDIRECTS`, `AUDIT_HTML_MAX_BYTES`, `AUDIT_TEXT_MAX_BYTES`
-- exploration sitemap : `AUDIT_SITEMAP_SAMPLE_SIZE`, `AUDIT_SITEMAP_MAX_URLS`, `AUDIT_SITEMAP_ANALYZE_LIMIT`
-- LLM : `OPENAI_API_KEY`, `AUDIT_LLM_MODEL`, `AUDIT_LLM_PROFILE`, `AUDIT_LLM_GLOBAL_TIMEOUT_MS`, `AUDIT_LLM_RETRIES`, `AUDIT_LLM_LANGUAGE`
+- exploration sitemap : `AUDIT_SITEMAP_MAX_URLS`
+- LLM : `OPENAI_API_KEY`, `AUDIT_LLM_MODEL`, `AUDIT_LLM_PROFILE`, `AUDIT_LLM_GLOBAL_TIMEOUT_MS`, `AUDIT_LLM_LANGUAGE`
 
 Redis est actif si et seulement si `REDIS_URL` ou `REDIS_HOST` est renseigne. Sans l'un ni l'autre (lignes absentes ou vides), la file d'audit s'execute dans le processus et le plafond des flux SSE des formations n'est tenu qu'en memoire, par instance. Configure mais injoignable, Redis fait repasser la file en execution locale apres trois erreurs, et les flux SSE des formations sont refuses en `429` ; `StreamSessionUseCase` journalise chaque refus en `warn`, avec l'erreur Redis en cause.
 

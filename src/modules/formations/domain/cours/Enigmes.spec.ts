@@ -237,6 +237,46 @@ describe('corrigerEnigme', () => {
     });
   });
 
+  describe('piege a la tolerance de la solution', () => {
+    const avecPieges = {
+      ...corrige,
+      solution: {
+        type: 'nombre',
+        valeur: 10,
+        tolerance: { type: 'absolue', valeur: 0.5 },
+        formePubliee: '10',
+      },
+      pieges: [
+        { valeur: 10.4, confusion: 'indice-lu-comme-taux' },
+        { valeur: 20, confusion: 'moyenne-simple-des-taux' },
+        { valeur: 20.3, confusion: 'indice-lu-comme-taux' },
+      ],
+    } as const;
+
+    it.each([
+      ['la solution passe avant un piege qui la recouvre', '10,4', true, null],
+      [
+        'le premier piege atteint gagne',
+        '20,3',
+        false,
+        'moyenne-simple-des-taux',
+      ],
+      [
+        'un piege se lit dans la tolerance',
+        '19,6',
+        false,
+        'moyenne-simple-des-taux',
+      ],
+      ['hors de toute tolerance, aucune confusion', '30', false, null],
+    ])('%s', (_cas, saisie, correcte, confusion) => {
+      expect(corrigerEnigme(avecPieges, saisie)).toEqual({
+        correcte,
+        valeurNormalisee: Number(saisie.replace(',', '.')),
+        confusion,
+      });
+    });
+  });
+
   it('refuse une saisie illisible sans valeur normalisee', () => {
     expect(corrigerEnigme(corrige, 'je ne sais pas')).toEqual({
       correcte: false,

@@ -52,6 +52,8 @@ export const TOLERANCE_RELATIVE = {
 } as const;
 export const TOLERANCE_NULLE = { type: 'absolue', valeur: 0 } as const;
 export const DEUX_DECIMALES = { type: 'decimales', valeur: 2 } as const;
+export const ECART_AU_DIXIEME = 0.05;
+export const ECART_AU_CENTIME = 0.005;
 
 export function puces(...lignes: AuMoinsUnModifiable<string>): string {
   return lignes.map((ligne) => `• ${ligne}`).join('\n');

@@ -6,7 +6,7 @@ import { createMockEmailVerificationTokensRepo } from '../../../../../test/facto
 import { createMockEmailVerificationNotifier } from '../../../../../test/factories/mailer.factory';
 import { espionnerLeLoggerAChaqueTest } from '../../../../../test/helpers/silence-nest-logger';
 import { TROIS_ENVOIS_PAR_HEURE } from '../../domain/PlafondDEnvois';
-import { TokenHash } from '../../domain/TokenHash';
+import { TokenHash } from '../../../../common/domain/crypto/TokenHash';
 import { EnvoiDeVerificationEmail } from './email-verification-dispatch';
 
 function construire(base = 'https://asilidesign.fr/verify-email') {
@@ -74,7 +74,7 @@ describe('EnvoiDeVerificationEmail', () => {
     ).resolves.toBeUndefined();
 
     expect(avertissements()).toHaveBeenCalledWith(
-      'Echec du renvoi for eve@example.com: smtp',
+      'Echec du renvoi for user user-7: smtp',
     );
     expect(avertissements().mock.contexts).toEqual([logger]);
   });

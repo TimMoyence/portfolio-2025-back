@@ -23,7 +23,9 @@ export interface CreateUserProps {
   emailVerified?: boolean;
 }
 
-export type UpdateUserProps = Partial<CreateUserProps>;
+export type UpdateUserProps = Partial<
+  Omit<CreateUserProps, 'email' | 'isActive'>
+>;
 
 export class User {
   id?: string;
@@ -36,8 +38,8 @@ export class User {
   roles: string[];
   googleId: string | null;
   emailVerified: boolean;
-  createdAt?: Date;
-  updatedAt?: Date;
+  createdAt: Date;
+  updatedAt: Date;
   updatedOrCreatedBy: string | null;
 
   static create(props: CreateUserProps): User {
@@ -77,10 +79,6 @@ export class User {
   static update(props: UpdateUserProps): Partial<User> {
     const partial: Partial<User> = {};
 
-    if (props.email !== undefined) {
-      partial.email = requireEmail(props.email, 'user email');
-    }
-
     if (props.passwordHash !== undefined) {
       partial.passwordHash = this.requirePasswordHash(props.passwordHash);
     }
@@ -97,12 +95,8 @@ export class User {
       partial.phone = optionalPhone(props.phone, 'user phone number');
     }
 
-    if (props.isActive !== undefined) {
-      partial.isActive = requireBoolean(props.isActive, 'user active flag');
-    }
-
     if (props.roles !== undefined) {
-      partial.roles = this.requireRoles(props.roles);
+      partial.roles = props.roles;
     }
 
     if (props.updatedOrCreatedBy !== undefined) {
@@ -130,13 +124,6 @@ export class User {
       throw new DomainValidationError('Invalid user password hash');
     }
     return raw;
-  }
-
-  private static requireRoles(raw: unknown): string[] {
-    if (!Array.isArray(raw)) {
-      throw new DomainValidationError('Invalid user roles');
-    }
-    return raw as string[];
   }
 
   private static requireName(raw: unknown, field: string): string {

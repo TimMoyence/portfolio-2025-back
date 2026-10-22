@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { empreinteSha256 } from '../../../common/domain/crypto/empreintes';
+import { nommeAuContrat } from '../../../common/domain/registre-du-contrat';
 import { LOCALES_SUPPORTEES } from '../../../common/domain/value-objects/LocaleCode';
 
 const dateTime = z
@@ -58,6 +59,8 @@ export const ArticleSlug = z
   .string()
   .regex(/^morning-brief-\d{4}-\d{2}-\d{2}$/);
 
+export const LONGUEUR_MAX_DU_NONCE = 128;
+
 export const DeliveryId = z.string().regex(/^mb-\d{4}-\d{2}-\d{2}-(fr|en)$/);
 
 const articleSchema = z
@@ -108,20 +111,24 @@ const articleSchema = z
     }
   });
 
-export const ArticleContract = z
-  .object({
-    schema_version: z.literal('1.0'),
-    delivery_id: DeliveryId,
-    producer: z
-      .object({
-        name: z.literal('morning-brief'),
-        version: z.string().min(1),
-        device: z.string().min(1),
-      })
-      .strict(),
-    sent_at: dateTime,
-    article: articleSchema,
-  })
-  .strict();
+export const ArticleContract = nommeAuContrat(
+  z
+    .object({
+      schema_version: z.literal('1.0'),
+      delivery_id: DeliveryId,
+      producer: z
+        .object({
+          name: z.literal('morning-brief'),
+          version: z.string().min(1),
+          device: z.string().min(1),
+        })
+        .strict(),
+      sent_at: dateTime,
+      article: articleSchema,
+    })
+    .strict(),
+  'ArticleIngestEnvelopeV1',
+);
 
 export type ArticleIngestEnvelope = z.infer<typeof ArticleContract>;
+export type ArticleIngere = ArticleIngestEnvelope['article'];

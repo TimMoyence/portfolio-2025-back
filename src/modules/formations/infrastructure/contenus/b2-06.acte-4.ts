@@ -204,7 +204,7 @@ export const ACTE_4: moteur.Acte = [
             'b2-06-a4-e2-prix',
             'resolution-par-logarithme',
             22.99,
-            0.01,
+            moteur.ECART_AU_CENTIME,
             '22,99 euros',
             'L7',
             [

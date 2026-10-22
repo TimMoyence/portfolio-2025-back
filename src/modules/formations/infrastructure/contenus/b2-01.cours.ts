@@ -3148,7 +3148,7 @@ const ACTE_6: moteur.Acte = [
             'b2-01-a6-e3-rouleau',
             'evolution-reciproque',
             1035.003931,
-            0.005,
+            moteur.ECART_AU_CENTIME,
             '1 035,00',
             'Q9',
             [

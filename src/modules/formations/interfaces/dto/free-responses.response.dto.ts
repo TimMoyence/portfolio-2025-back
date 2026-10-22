@@ -21,19 +21,8 @@ export class FreeResponseResponseDto extends ParticipantDeSeanceResponseDto {
   })
   premiereReponse: string | null;
 
-  @ApiProperty({
-    type: String,
-    format: 'date-time',
-    nullable: true,
-    description: 'Date à laquelle les stratégies du défi ont été servies',
-  })
-  strategiesServiesLe: Date | null;
-
   @ApiProperty({ example: 12000 })
   dureeMs: number;
-
-  @ApiProperty({ enum: ['enregistre', 'en_attente', 'echec'] })
-  status: string;
 
   @ApiProperty({
     type: String,
@@ -48,7 +37,7 @@ export class FreeResponsesResponseDto {
     type: [FreeResponseResponseDto],
     description: 'Réponses libres de la séance, non notées',
   })
-  responses: FreeResponseResponseDto[];
+  responses: readonly FreeResponseResponseDto[];
 }
 
 export class FreeResponseSavedResponseDto {

@@ -4,6 +4,7 @@ import type {
   Bareme as BaremeDeSeance,
 } from './contrats/bareme';
 import type { Cours, TypeQuestion } from './contrats/cours';
+import { TYPES_QUESTION } from './contrats/contrat-de-l-api';
 import type { ResumeBareme } from './contrats/resultats';
 import type { QuestionAAgreger } from './ResultatsSeance';
 import { CONCEPTS, type ConceptId } from './cours/banque/concepts';
@@ -150,17 +151,10 @@ export function questionDuBareme(
   };
 }
 
-const TYPES_DE_QUESTION: readonly string[] = [
-  'numeric',
-  'vote',
-  'feuille',
-  'tableau',
-  'classement',
-  'enigme',
-];
-
 function typeAgregeable(type: string): TypeQuestion {
-  return TYPES_DE_QUESTION.includes(type) ? (type as TypeQuestion) : 'vote';
+  return (TYPES_QUESTION as readonly string[]).includes(type)
+    ? (type as TypeQuestion)
+    : 'vote';
 }
 
 export function questionsAAgreger(
@@ -182,7 +176,7 @@ export function questionsAAgreger(
 
 export function resumeDuBareme(bareme: BaremeDeSeance): ResumeBareme {
   const parType: Record<string, { notees: number; nonNotees: number }> = {};
-  for (const type of TYPES_DE_QUESTION) {
+  for (const type of TYPES_QUESTION) {
     parType[type] = { notees: 0, nonNotees: 0 };
   }
   for (const question of questionsDuBareme(bareme)) {

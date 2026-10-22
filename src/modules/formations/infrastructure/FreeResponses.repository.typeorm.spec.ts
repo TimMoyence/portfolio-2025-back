@@ -30,7 +30,7 @@ describe('FreeResponsesRepositoryTypeORM', () => {
     await sut.save(REPONSE);
 
     expect(upsert).toHaveBeenCalledTimes(1);
-    expect(upsert).toHaveBeenCalledWith({ ...REPONSE, status: 'enregistre' }, [
+    expect(upsert).toHaveBeenCalledWith(REPONSE, [
       'sessionId',
       'participantId',
       'activityId',
@@ -41,7 +41,6 @@ describe('FreeResponsesRepositoryTypeORM', () => {
     await expect(sut.listBySession('session-uuid')).resolves.toEqual([
       expect.objectContaining({
         id: 'free-response-uuid',
-        status: 'enregistre',
       }),
     ]);
     expect(find).toHaveBeenCalledWith({

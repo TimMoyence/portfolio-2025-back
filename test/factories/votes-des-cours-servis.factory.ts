@@ -96,7 +96,7 @@ export function pilotageDUnCoursServi(cours: Cours): {
   );
   if (autre !== undefined) {
     pilotageEcrans[autre.id] = { revele: true };
-    attendu[autre.id] = { revele: true };
+    attendu[autre.id] = { revele: true, saisieFermee: true };
   }
   if (sansPhase !== undefined) {
     pilotageEcrans[sansPhase] = { resultatsProjetes: true };

@@ -1,7 +1,12 @@
 import { INestApplication, type Provider } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { Test as ModuleDeTest, type TestingModule } from '@nestjs/testing';
-import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import {
+  ThrottlerGuard,
+  ThrottlerModule,
+  ThrottlerStorage,
+  type ThrottlerStorageService,
+} from '@nestjs/throttler';
 import { request as requeteNode, type IncomingMessage } from 'node:http';
 import request from 'supertest';
 import type { Test } from 'supertest';
@@ -53,7 +58,6 @@ import type {
   IParticipantsRepository,
   ParticipantRecord,
 } from '../../src/modules/formations/domain/IParticipants.repository';
-import type { IScoresRepository } from '../../src/modules/formations/domain/IScores.repository';
 import type {
   ISessionsRepository,
   SessionRecord,
@@ -73,14 +77,12 @@ import {
   ESCAPE_REPOSITORY,
   PULSES_REPOSITORY,
   RAPPELS_SERVIS_REPOSITORY,
-  SCORES_REPOSITORY,
   SESSION_STATE_CACHE,
   SESSIONS_REPOSITORY,
   TEACHER_ANNOTATIONS_REPOSITORY,
 } from '../../src/modules/formations/domain/token';
 import { ClasseursSurDisque } from '../../src/modules/formations/infrastructure/classeurs/ClasseursSurDisque';
 import { SessionStateCacheService } from '../../src/modules/formations/infrastructure/SessionStateCache.service';
-import { CleEtudiantService } from '../../src/modules/formations/interfaces/CleEtudiant.service';
 import { CodeScanProtectionService } from '../../src/modules/formations/interfaces/CodeScanProtection.service';
 import { FormationsAnnotationsController } from '../../src/modules/formations/interfaces/FormationsAnnotations.controller';
 import { FormationsCatalogController } from '../../src/modules/formations/interfaces/FormationsCatalog.controller';
@@ -145,7 +147,6 @@ export interface DepotsFormations {
   answers: IAnswersRepository;
   incidents: IIncidentsRepository;
   mastery: IMasteryRepository;
-  scores: IScoresRepository;
   freeResponses: IFreeResponsesRepository;
   annotations: ITeacherAnnotationsRepository;
   escape: IEscapeRepository;
@@ -201,14 +202,12 @@ export function fournisseursFormations(
     ListFreeResponsesUseCase,
     SaveFreeResponseUseCase,
     ParticipantTokenService,
-    CleEtudiantService,
     CodeScanProtectionService,
     { provide: SESSIONS_REPOSITORY, useValue: depots.sessions },
     { provide: PARTICIPANTS_REPOSITORY, useValue: depots.participants },
     { provide: ANSWERS_REPOSITORY, useValue: depots.answers },
     { provide: INCIDENTS_REPOSITORY, useValue: depots.incidents },
     { provide: MASTERY_REPOSITORY, useValue: depots.mastery },
-    { provide: SCORES_REPOSITORY, useValue: depots.scores },
     { provide: FREE_RESPONSES_REPOSITORY, useValue: depots.freeResponses },
     { provide: TEACHER_ANNOTATIONS_REPOSITORY, useValue: depots.annotations },
     { provide: ESCAPE_REPOSITORY, useValue: depots.escape },
@@ -219,6 +218,10 @@ export function fournisseursFormations(
     { provide: SESSION_STATE_CACHE, useClass: SessionStateCacheService },
     { provide: CLASSEURS_DE_COURS, useClass: ClasseursSurDisque },
   ];
+}
+
+export function remettreLesCompteursAZero(app: INestApplication): void {
+  app.get<ThrottlerStorageService>(ThrottlerStorage).storage.clear();
 }
 
 export function compilerModuleFormations(

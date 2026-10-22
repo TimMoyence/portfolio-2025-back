@@ -5,7 +5,6 @@ import type { EtatDeSeanceRecord } from './ISessions.repository';
 
 export function etatEnDirect(
   seance: EtatDeSeanceRecord,
-  participants: number,
   cours: Cours,
 ): LiveSessionState {
   return {
@@ -13,7 +12,6 @@ export function etatEnDirect(
     modeRythme: seance.modeRythme,
     ecranCourant: seance.ecranCourant,
     intervalleLibre: seance.intervalleLibre,
-    participants,
     revision: seance.revision,
     pilotage: pilotageEnDirect(seance, cours),
     majLe: seance.majLe,

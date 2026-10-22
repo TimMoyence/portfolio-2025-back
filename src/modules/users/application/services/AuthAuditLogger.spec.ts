@@ -1,4 +1,8 @@
 import { espionnerLeLogger } from '../../../../../test/helpers/silence-nest-logger';
+import { ConfigService } from '@nestjs/config';
+import { TEST_HASHING_KEY } from '../../../../../test/factories/env.factory';
+import { pseudonymeDAdresse } from '../../../../common/domain/crypto/pseudonyme-d-adresse';
+import type { ValeursDeLEnv } from '../../../../config/env.validation';
 import { AuthAuditLogger, AuthAuditEntry } from './AuthAuditLogger';
 
 describe('AuthAuditLogger', () => {
@@ -6,7 +10,11 @@ describe('AuthAuditLogger', () => {
   let logSpy: jest.SpyInstance;
 
   beforeEach(() => {
-    auditLogger = new AuthAuditLogger();
+    auditLogger = new AuthAuditLogger(
+      new ConfigService<ValeursDeLEnv>({
+        SECURE_KEY_FOR_PASSWORD_HASHING: TEST_HASHING_KEY,
+      }),
+    );
     logSpy = espionnerLeLogger('log');
   });
 
@@ -32,7 +40,10 @@ describe('AuthAuditLogger', () => {
     const parsed = JSON.parse(loggedArg) as AuthAuditEntry;
 
     expect(parsed.event).toBe('LOGIN_SUCCESS');
-    expect(parsed.email).toBe('user@example.com');
+    expect(loggedArg).not.toContain('user@example.com');
+    expect(parsed).toMatchObject({
+      compte: pseudonymeDAdresse(TEST_HASHING_KEY, 'User@Example.com '),
+    });
     expect(parsed.userId).toBe('uuid-123');
     expect(parsed.ip).toBe('198.51.100.42');
     expect(parsed.userAgent).toBe('Mozilla/5.0');

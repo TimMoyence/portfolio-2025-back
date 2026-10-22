@@ -11,6 +11,7 @@ import type {
   ISessionsRepository,
   SessionRecord,
 } from '../domain/ISessions.repository';
+import { ParticipantNotFoundError } from '../domain/errors/FormationErrors';
 import {
   CATALOGUE_COURS,
   PARTICIPANTS_REPOSITORY,
@@ -23,7 +24,6 @@ import {
   seanceExistante,
   seanceOuverteAuxReponses,
 } from './CoursDeLaSeance';
-import { participantActif } from './ParticipantActif';
 
 export interface CibleDuParticipant {
   readonly sessionId: string;
@@ -43,14 +43,11 @@ export class ParticipationEnSeance {
     private readonly cache: ISessionStateCache,
   ) {}
 
-  async ouverte(
-    cible: CibleDuParticipant,
-  ): Promise<{ session: SessionRecord; cours: Cours }> {
-    const session = await seanceOuverteAuxReponses(
-      this.sessions,
-      cible.sessionId,
-    );
-    await this.participantActif(cible);
+  async ouverte({ sessionId }: Pick<CibleDuParticipant, 'sessionId'>): Promise<{
+    session: SessionRecord;
+    cours: Cours;
+  }> {
+    const session = await seanceOuverteAuxReponses(this.sessions, sessionId);
     return { session, cours: await coursDeLaSeance(this.catalogue, session) };
   }
 
@@ -73,7 +70,7 @@ export class ParticipationEnSeance {
     },
     absente: (id: string) => Error,
   ): Promise<{ session: SessionRecord; cible: T }> {
-    const { session, cours } = await this.seanceEtCours(sessionId);
+    const { session, cours } = await this.ouverte({ sessionId });
     return {
       session,
       cible: ecranOuvertAuxProductions(
@@ -85,18 +82,14 @@ export class ParticipationEnSeance {
     };
   }
 
-  async seanceEtCours(
-    sessionId: string,
-  ): Promise<{ session: SessionRecord; cours: Cours }> {
-    const session = await seanceOuverteAuxReponses(this.sessions, sessionId);
-    return { session, cours: await coursDeLaSeance(this.catalogue, session) };
-  }
-
-  participantActif({
-    sessionId,
+  async participant({
     participantId,
-  }: CibleDuParticipant): Promise<ParticipantRecord> {
-    return participantActif(this.participants, sessionId, participantId);
+  }: Pick<CibleDuParticipant, 'participantId'>): Promise<ParticipantRecord> {
+    const participant = await this.participants.findById(participantId);
+    if (participant === null) {
+      throw new ParticipantNotFoundError(participantId);
+    }
+    return participant;
   }
 
   async contexte(cible: CibleDuParticipant): Promise<{
@@ -105,7 +98,7 @@ export class ParticipationEnSeance {
     cours: Cours;
   }> {
     const session = await seanceExistante(this.sessions, cible.sessionId);
-    const participant = await this.participantActif(cible);
+    const participant = await this.participant(cible);
     const cours = await coursDeLaSeance(this.catalogue, session);
     return { session, participant, cours };
   }

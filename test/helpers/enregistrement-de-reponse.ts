@@ -10,10 +10,7 @@ import {
   createMockSessionStateCache,
   createMockSessionsRepo,
 } from '../factories/formation.factory';
-import {
-  verifierGardesDeParticipant,
-  verifierGardesDeSeance,
-} from './gardes-de-seance';
+import { verifierGardesDeSeance } from './gardes-de-seance';
 
 export function creerDependancesDEnregistrement(seance: SessionRecord) {
   const dependances = {
@@ -62,12 +59,6 @@ export function verifierContratDEnregistrement(
   verifierGardesDeSeance(() => ({
     sessions: contexte().dependances.sessions,
     courseSlug: contexte().courseSlug,
-    executer: contexte().executer,
-    effetsInterdits,
-  }));
-
-  verifierGardesDeParticipant(() => ({
-    participants: contexte().dependances.participants,
     executer: contexte().executer,
     effetsInterdits,
   }));

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
+import { ResourceConflictError } from '../../../common/domain/errors/ResourceConflictError';
 import type { SupportedLocale } from '../../../common/domain/value-objects/LocaleCode';
 import {
   type ArticleDeliveryRecord,
@@ -13,16 +14,22 @@ import {
 } from '../application/articles.repository';
 import { ArticleDeliveryEntity } from './entities/article-delivery.entity';
 import { ArticleEntity } from './entities/article.entity';
+import { PostgresErrorClassifier } from '../../../common/infrastructure/typeorm/PostgresErrorClassifier';
 
 @Injectable()
-export class TypeOrmArticlesRepository implements ArticlesRepository {
+export class TypeOrmArticlesRepository
+  extends PostgresErrorClassifier
+  implements ArticlesRepository
+{
   constructor(
     @InjectRepository(ArticleEntity)
     private readonly articles: Repository<ArticleEntity>,
     @InjectRepository(ArticleDeliveryEntity)
     private readonly deliveries: Repository<ArticleDeliveryEntity>,
     private readonly dataSource: DataSource,
-  ) {}
+  ) {
+    super();
+  }
 
   findDelivery(deliveryId: string): Promise<ArticleDeliveryRecord | null> {
     return this.deliveries.findOne({ where: { deliveryId } });
@@ -49,17 +56,24 @@ export class TypeOrmArticlesRepository implements ArticlesRepository {
     article: ArticleWrite,
     delivery: ArticleDeliveryWrite,
   ): Promise<void> {
-    await this.dataSource.transaction(async (manager) => {
-      const articleRecord = await manager
-        .getRepository(ArticleEntity)
-        .save(this.articles.create(article));
-      await manager.getRepository(ArticleDeliveryEntity).save(
-        this.deliveries.create({
-          ...delivery,
-          articleRecordId: articleRecord.id,
-        }),
-      );
-    });
+    try {
+      await this.dataSource.transaction(async (manager) => {
+        const articleRecord = await manager
+          .getRepository(ArticleEntity)
+          .save(this.articles.create(article));
+        await manager.getRepository(ArticleDeliveryEntity).save(
+          this.deliveries.create({
+            ...delivery,
+            articleRecordId: articleRecord.id,
+          }),
+        );
+      });
+    } catch (error) {
+      if (this.isUniqueViolation(error)) {
+        throw new ResourceConflictError('Delivery already processed');
+      }
+      throw error;
+    }
   }
 
   async listPublished(params: PagePubliee): Promise<ArticleRecord[]> {

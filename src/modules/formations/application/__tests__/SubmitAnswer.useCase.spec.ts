@@ -6,10 +6,13 @@ import {
   tireurSequentiel,
 } from '../../../../../test/factories/cours.factory';
 import {
+  buildCorrectionDeReponses,
   buildCoursDeBriques,
+  buildEcranDeBrique,
   buildQuestionnaireCorrigeSurPlace,
   EXPLICATIONS_SUR_PLACE,
 } from '../../../../../test/factories/ecrans-stockes.factory';
+import { questionsDe } from '../../domain/cours/Cours';
 import { lireCoursStocke } from '../../domain/cours/CoursStocke';
 import { ouvrirTirages } from '../../domain/cours/OuvertureTirages';
 import {
@@ -96,6 +99,24 @@ describe('SubmitAnswerUseCase', () => {
       PhaseFermeeError,
     );
     expect(deps.answers.create).not.toHaveBeenCalled();
+  };
+
+  const monterSurLeCours = (
+    cours: ReturnType<typeof lireCoursStocke>,
+    seance: Parameters<typeof buildSessionRecord>[0],
+  ) => {
+    const bareme = ouvrirTirages(cours, tireurSequentiel(300));
+    deps = creerDependancesDEnregistrement(
+      buildSessionRecord({ ...seance, courseSlug: cours.slug, bareme }),
+    );
+    deps.participants.findById.mockResolvedValue(
+      buildParticipantRecord({ seed: bareme.tirages[0].seed }),
+    );
+    sut = monterEnregistrement(
+      SubmitAnswerUseCase,
+      deps,
+      creerCatalogueDeTest(cours),
+    );
   };
 
   const soumettreEnDouble = async () => {
@@ -225,6 +246,34 @@ describe('SubmitAnswerUseCase', () => {
     await soumettre();
     expect(deps.answers.create).toHaveBeenCalledWith(
       expect.objectContaining({ dureeMs: 42000 }),
+    );
+  });
+
+  it('lit au serveur la saisie brute d une question numérique, et l enregistre en nombre', async () => {
+    const result = await sut.execute({ ...commande, valeur: ' 1 338,23 ' });
+
+    expect(result.correcte).toBe(true);
+    expect(deps.answers.create).toHaveBeenCalledWith(
+      expect.objectContaining({ valeur: 1338.23 }),
+    );
+  });
+
+  it.each(['douze', '', '   '])(
+    'refuse par SAISIE_NON_NUMERIQUE la saisie « %s » que le lecteur ne lit pas en nombre',
+    async (saisie) => {
+      await expect(
+        sut.execute({ ...commande, valeur: saisie }),
+      ).rejects.toMatchObject({ code: 'SAISIE_NON_NUMERIQUE' });
+      expect(deps.answers.create).not.toHaveBeenCalled();
+    },
+  );
+
+  it('enregistre « je ne sais pas » d une question numérique sans le lire en nombre', async () => {
+    const result = await sut.execute({ ...commande, valeur: NE_SAIT_PAS });
+
+    expect(result.correcte).toBe(false);
+    expect(deps.answers.create).toHaveBeenCalledWith(
+      expect.objectContaining({ valeur: NE_SAIT_PAS }),
     );
   });
 
@@ -472,31 +521,40 @@ describe('SubmitAnswerUseCase', () => {
     );
   });
 
+  describe('question corrigée par un écran projeté', () => {
+    const numerique = buildEcranDeBrique('fp-numeric', { screenId: 'E-NUM' });
+    const cours = lireCoursStocke(
+      buildCoursDeBriques([numerique, buildCorrectionDeReponses('E-NUM')]),
+    );
+    const [question] = questionsDe(cours.ecrans[0]);
+
+    const repondreAuRang = (ecranCourant: number) => {
+      monterSurLeCours(cours, { modeRythme: 'pilote', ecranCourant });
+      return repondreA(question.id, 1);
+    };
+
+    it('accepte la réponse tant que la correction n est pas projetée', async () => {
+      await expect(repondreAuRang(0)).resolves.toBeDefined();
+    });
+
+    it('refuse PHASE_FERMEE la réponse une fois la correction projetée, comme une production', async () => {
+      await expect(repondreAuRang(1)).rejects.toThrow(PhaseFermeeError);
+      expect(deps.answers.create).not.toHaveBeenCalled();
+    });
+  });
+
   describe('exercice corrigé sur place', () => {
     const questionnaire = buildQuestionnaireCorrigeSurPlace();
     const cours = lireCoursStocke(buildCoursDeBriques([questionnaire]));
-    const bareme = ouvrirTirages(cours, tireurSequentiel(300));
     const [premiere, seconde] = EXPLICATIONS_SUR_PLACE;
 
     beforeEach(() => {
-      deps = creerDependancesDEnregistrement(
-        buildSessionRecord({
-          ...EN_RYTHME_LIBRE,
-          courseSlug: cours.slug,
-          bareme,
-          pilotageEcrans: {
-            [questionnaire.screenId]: { explicationsDevoilees: 1 },
-          },
-        }),
-      );
-      deps.participants.findById.mockResolvedValue(
-        buildParticipantRecord({ seed: bareme.tirages[0].seed }),
-      );
-      sut = monterEnregistrement(
-        SubmitAnswerUseCase,
-        deps,
-        creerCatalogueDeTest(cours),
-      );
+      monterSurLeCours(cours, {
+        ...EN_RYTHME_LIBRE,
+        pilotageEcrans: {
+          [questionnaire.screenId]: { explicationsDevoilees: 1 },
+        },
+      });
     });
 
     it('refuse une réponse à une question déjà corrigée', async () => {

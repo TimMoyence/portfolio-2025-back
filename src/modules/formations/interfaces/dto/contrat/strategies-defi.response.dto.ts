@@ -17,5 +17,5 @@ export class StrategieDefiResponseDto {
 
 export class StrategiesDefiResponseDto {
   @ApiProperty({ type: [StrategieDefiResponseDto] })
-  strategies: StrategieDefiResponseDto[];
+  strategies: readonly StrategieDefiResponseDto[];
 }

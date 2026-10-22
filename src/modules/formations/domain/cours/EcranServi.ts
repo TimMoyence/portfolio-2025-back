@@ -3,6 +3,7 @@ import type { Cours, Ecran } from '../contrats/cours';
 import type { GradingResult } from '../GradingCore';
 import { libelleLisible } from './banque/confusions';
 import { correctionsDe, ecranCorrigePar } from './Corrections';
+import { REGLE_DE_NOTATION } from '../RegleDeNotation';
 import { estReservee, questionsDe } from './Cours';
 import type { PieceJointeReservee } from './Cours';
 import { ecranDeProduction } from './ProductionSoumise';
@@ -201,20 +202,31 @@ export function etayageAtteint(pilotage: PilotageEcran | undefined): number {
   return Math.max(pilotage?.etayageAtteint ?? 0, pilotage?.etayage ?? 0);
 }
 
+export function correctionProjetee(
+  seance: SeancePilotee,
+  cours: Cours,
+  screenId: string,
+): boolean {
+  const correctionAtteinte =
+    seance.modeRythme === 'pilote' &&
+    correctionsDe(cours, screenId).some((rang) => rang <= seance.ecranCourant);
+  const pilotage = seance.pilotageEcrans[screenId];
+  const corrigeParEtapes = cours.ecrans.some(
+    (ecran) => ecran.id === screenId && ecran.brique === 'fp-worked',
+  );
+  return (
+    correctionAtteinte ||
+    ecranRevele(pilotage) ||
+    (!corrigeParEtapes && etayageAtteint(pilotage) > 0)
+  );
+}
+
 export function assertCorrectionNonProjetee(
   seance: SeancePilotee,
   cours: Cours,
   screenId: string,
 ): void {
-  const correctionAtteinte =
-    seance.modeRythme === 'pilote' &&
-    correctionsDe(cours, screenId).some((rang) => rang <= seance.ecranCourant);
-  const pilotage = seance.pilotageEcrans[screenId];
-  if (
-    correctionAtteinte ||
-    ecranRevele(pilotage) ||
-    etayageAtteint(pilotage) > 0
-  ) {
+  if (correctionProjetee(seance, cours, screenId)) {
     throw new PhaseFermeeError(screenId);
   }
 }
@@ -257,17 +269,14 @@ export function rangDeLEcran(cours: Cours, screenId: string): number {
   return cours.ecrans.findIndex((ecran) => ecran.id === screenId);
 }
 
-export const SEUIL_PAR_DEFAUT = 0.7;
-
 export function seuilDe(ecran: Ecran): number | null {
-  if (
-    ecran.brique === 'fp-numeric' ||
-    ecran.brique === 'fp-vote' ||
-    ecran.brique === 'fp-recall'
-  ) {
-    return ecran.seuil ?? SEUIL_PAR_DEFAUT;
+  if (questionsDe(ecran).length === 0) {
+    return null;
   }
-  return null;
+  return (
+    ('seuil' in ecran ? ecran.seuil : undefined) ??
+    REGLE_DE_NOTATION.seuilQuestionProbleme
+  );
 }
 
 export function rangDeLaQuestion(cours: Cours, questionId: string): number {

@@ -1,6 +1,10 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { enArrierePlan } from '../../../common/application/en-arriere-plan';
 import { RateLimitExceededError } from '../../../common/domain/errors/RateLimitExceededError';
+import { lienAvecJeton } from '../../../common/domain/lien-avec-jeton';
+import { urlDuSite } from '../../../config/urls-publiques';
+import { emettreJeton } from '../../../common/domain/crypto/TokenHash';
+import { adresseDuSite } from '../domain/AdresseDuSite';
 import type { IAuditNotifierPort } from '../domain/IAuditNotifier.port';
 import type { IAuditQueuePort } from '../domain/IAuditQueue.port';
 import { AuditRequestResponse } from '../domain/AuditRequestResponse';
@@ -39,6 +43,7 @@ export class CreateAuditRequestsUseCase {
     this.selfGuard.ensureNotSelf(data.websiteName);
 
     const request = AuditRequestMapper.fromCreateCommand(data);
+    const jeton = request.contactMethod === 'EMAIL' ? emettreJeton() : null;
     const response = await this.repo.sousVerrouDeLaBoite(
       request.contactValue,
       async (depot) => {
@@ -52,11 +57,27 @@ export class CreateAuditRequestsUseCase {
             Math.ceil(delais[delais.length - DEMANDES_MAX_PAR_CONTACT]),
           );
         }
-        return depot.create(request);
+        return depot.create(request, jeton?.empreinte ?? null);
       },
     );
 
-    await this.queueService.enqueue(response.auditId);
+    if (jeton === null) {
+      await this.queueService.enqueue(response.auditId);
+    } else {
+      enArrierePlan(
+        this.notifier.demanderLaConfirmation({
+          to: request.contactValue,
+          hote: adresseDuSite(request.websiteName).hostname,
+          lien: lienAvecJeton(
+            `${urlDuSite()}/${request.locale}/growth-audit`,
+            jeton.brut,
+          ),
+          locale: request.locale,
+        }),
+        'Audit confirmation email failed',
+        this.logger,
+      );
+    }
 
     enArrierePlan(
       this.notifier.sendAuditNotification(request),

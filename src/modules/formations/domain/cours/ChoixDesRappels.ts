@@ -1,7 +1,7 @@
 import type { Cours } from '../contrats/cours';
 import type { AnswerRecord } from '../IAnswers.repository';
 import type { MasteryRecord } from '../IMastery.repository';
-import { isDue } from '../LeitnerBox';
+import { BOITE_MAX } from '../LeitnerBox';
 
 export const DELAI_MIN_RAPPEL_MS = 30 * 60 * 1000;
 const CONCEPT_EXCLU = 'controle-coherence';
@@ -91,10 +91,7 @@ function prioriteDuConcept(
   const entree = contexte.maitrise.find(
     (candidate) => candidate.concept === concept,
   );
-  if (
-    entree !== undefined &&
-    isDue({ boite: entree.boite, seancesDepuisDerniereVue: entree.boite })
-  ) {
+  if (entree !== undefined && entree.boite !== BOITE_MAX) {
     return 2;
   }
   if (
@@ -122,7 +119,9 @@ export function choisirRappels(contexte: ContexteDeChoix): readonly string[] {
   );
   const derniere = derniereReponseParConcept(contexte.reponses);
   const rangDansLaBanque = new Map(
-    contexte.cible.banque.map((question, rang) => [question.concept, rang]),
+    contexte.cible.banque
+      .map((question, rang) => [question.concept, rang] as const)
+      .reverse(),
   );
   const concepts = [...new Set(restantes.map((question) => question.concept))];
   const classes = concepts

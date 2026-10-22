@@ -1,5 +1,6 @@
 import type { ExecutionContext } from '@nestjs/common';
 import { empreinteSha256 } from '../../../common/domain/crypto/empreintes';
+import { suivreParAdresse } from '../../../common/interfaces/security/client-ip.util';
 import {
   REFRESH_SANS_JETON_PAR_ADRESSE,
   REFRESH_TOKEN_COOKIE_NAME,
@@ -13,7 +14,7 @@ export function suivreParJetonDeRafraichissement(
   if (jeton !== null) {
     return `refresh:${empreinteSha256(jeton)}`;
   }
-  return typeof req.ip === 'string' ? `ip:${req.ip}` : 'ip:inconnue';
+  return suivreParAdresse(req);
 }
 
 export function limiteDeRafraichissement(context: ExecutionContext): number {

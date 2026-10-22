@@ -3,12 +3,13 @@ import { auMillionieme } from '../../../../common/domain/nombres/arrondi';
 import { valeursAmbigues } from '../GradingCore';
 import type { AnswerValue, Solution } from '../GradingCore';
 import type { Cours, Ecran, Question } from '../contrats/cours';
-import type {
-  ExitBilletPublic,
-  MetadonneesBrique,
-  NumeriquePublic,
-  OptionPublique,
-  VotePublic,
+import {
+  type ExitBilletPublic,
+  LONGUEUR_MAX_DU_BILLET_DE_SORTIE,
+  type MetadonneesBrique,
+  type NumeriquePublic,
+  type OptionPublique,
+  type VotePublic,
 } from '../contrats/donnees-publiques';
 import type {
   CoursPublic,
@@ -24,7 +25,7 @@ import { estInteractif, estReservee } from './Cours';
 import { planDeFeuilleServi } from './FeuilleEvaluee';
 import { machineCalculee } from './MachineServie';
 import { planDeTableauServi } from './TableauEvalue';
-import { traceCalcule } from './TraceServi';
+import { curseursServis, traceCalcule } from './TraceServi';
 import type {
   PieceJointeServie,
   QuestionNumerique,
@@ -437,20 +438,15 @@ function donneesDeBrique(
         },
       };
     case 'fp-concept4':
-      return {
-        definition: {
-          id: ecran.id,
-          ...proprietesPubliques(ecran.proprietes),
-          ...machineCalculee(ecran.proprietes),
-          metadonnees: communes,
-        },
-      };
     case 'fp-plot':
       return {
         definition: {
           id: ecran.id,
           ...proprietesPubliques(ecran.proprietes),
-          ...traceCalcule(ecran.proprietes),
+          parametres: curseursServis(ecran.proprietes),
+          ...(ecran.brique === 'fp-concept4'
+            ? machineCalculee(ecran.proprietes)
+            : traceCalcule(ecran.proprietes)),
           metadonnees: communes,
         },
       };
@@ -517,6 +513,7 @@ function billet(
     id: vote.id,
     question: vote.enonce,
     invite: ecran.invite,
+    longueurMax: LONGUEUR_MAX_DU_BILLET_DE_SORTIE,
     options: vote.options,
     metadonnees: metadonnees(ecran),
   };

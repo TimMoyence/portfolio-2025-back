@@ -44,6 +44,10 @@ export function resolveClientIpOrUnknown(req: Request): string {
   return resolveClientIp(req) ?? 'unknown';
 }
 
+export function suivreParAdresse(req: Record<string, unknown>): string {
+  return `ip:${resolveClientIpOrUnknown(req as unknown as Request)}`;
+}
+
 function normalizeIp(ip: string): string {
   const mapped = /^::ffff:(\d{1,3}(?:\.\d{1,3}){3})$/i.exec(ip);
   return mapped ? mapped[1] : ip;

@@ -1,6 +1,7 @@
 import { ColonnesDeRequete } from '../../../../common/infrastructure/typeorm/ColonnesDeProvenance';
 import { Column, Entity, Index } from 'typeorm';
 import type { AuditProcessingStatus } from '../../domain/AuditProcessing';
+import type { ScoresDesPiliers } from '../../domain/Piliers';
 import type {
   ClientReportSynthesis,
   ExpertReportSynthesis,
@@ -61,7 +62,7 @@ export class AuditRequestEntity extends ColonnesDeRequete {
   quickWins: string[];
 
   @Column({ type: 'jsonb', default: {} })
-  pillarScores: Record<string, number>;
+  pillarScores: ScoresDesPiliers;
 
   @Column({ type: 'text', nullable: true })
   summaryText?: string | null;
@@ -86,4 +87,14 @@ export class AuditRequestEntity extends ColonnesDeRequete {
 
   @Column({ type: 'text', default: 'fr' })
   locale: string;
+
+  @Index('idx_audit_requests_confirmation_hash', {
+    unique: true,
+    where: '"confirmation_hash" IS NOT NULL',
+  })
+  @Column({ type: 'text', name: 'confirmation_hash', nullable: true })
+  confirmationHash?: string | null;
+
+  @Column({ type: 'timestamp', name: 'confirmee_le', nullable: true })
+  confirmeeLe?: Date | null;
 }

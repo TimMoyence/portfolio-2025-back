@@ -43,7 +43,6 @@ import { FormationPulseEntity } from './infrastructure/entities/FormationPulse.e
 import { FormationRappelServiEntity } from './infrastructure/entities/FormationRappelServi.entity';
 import { FormationIncidentEntity } from './infrastructure/entities/FormationIncident.entity';
 import { FormationFreeResponseEntity } from './infrastructure/entities/FormationFreeResponse.entity';
-import { FormationScoreEntity } from './infrastructure/entities/FormationScore.entity';
 import { FormationMasteryEntity } from './infrastructure/entities/FormationMastery.entity';
 import { FormationParticipantEntity } from './infrastructure/entities/FormationParticipant.entity';
 import { FormationSessionEntity } from './infrastructure/entities/FormationSession.entity';
@@ -62,7 +61,6 @@ const ENTITES = [
   FormationMasteryEntity,
   FormationIncidentEntity,
   FormationTeacherAnnotationEntity,
-  FormationScoreEntity,
   FormationEscapeProgressEntity,
   FormationEscapeAttemptEntity,
   FormationPulseEntity,

@@ -1,60 +1,5 @@
-import type { ModuleMetadata } from '@nestjs/common';
-import { Test } from '@nestjs/testing';
-import {
-  DocumentBuilder,
-  type SwaggerDocumentOptions,
-  SwaggerModule,
-} from '@nestjs/swagger';
+import type { OpenAPIObject } from '@nestjs/swagger';
 
-import { UsersController } from '../src/modules/users/interfaces/Users.controller';
-import { ListUsersUseCase } from '../src/modules/users/application/ListUsers.useCase';
-import { ListOneUserUseCase } from '../src/modules/users/application/ListOneUser.useCase';
-import { UpdateUsersUseCase } from '../src/modules/users/application/UpdateUsers.useCase';
-import { DeleteUsersUseCase } from '../src/modules/users/application/DeleteUsers.useCase';
-
-import { AuthController } from '../src/modules/users/interfaces/Auth.controller';
-
-import { ContactsController } from '../src/modules/contacts/interfaces/Contacts.controller';
-import { CookieConsentsController } from '../src/modules/cookie-consents/interfaces/CookieConsents.controller';
-import { AuditsController } from '../src/modules/audit-requests/interfaces/Audits.controller';
-import { RequestToolkitRequestDto } from '../src/modules/lead-magnets/interfaces/dto/request-toolkit.request.dto';
-import { ArticleListQueryDto } from '../src/modules/articles/interfaces/dto/article-list.query.dto';
-import { JoinSessionRequestDto } from '../src/modules/formations/interfaces/dto/join-session.request.dto';
-
-import {
-  authControllerProviders,
-  coreControllerProviders,
-  createAuthUseCaseStubs,
-  createCoreUseCaseStubs,
-} from './factories/core-api.factory';
-
-import { RolesGuard } from '../src/common/interfaces/auth/roles.guard';
-
-import { ControlSessionRequestDto } from '../src/modules/formations/interfaces/dto/contrat/control-session.request.dto';
-import { DeclarerJalonRequestDto } from '../src/modules/formations/interfaces/dto/contrat/declarer-jalon.request.dto';
-import { DerouleResponseDto } from '../src/modules/formations/interfaces/dto/contrat/deroule.response.dto';
-import { EtatParticipantResponseDto } from '../src/modules/formations/interfaces/dto/contrat/etat-participant.response.dto';
-import { EvaluerFeuilleRequestDto } from '../src/modules/formations/interfaces/dto/contrat/evaluer-feuille.request.dto';
-import { EvaluerMachineRequestDto } from '../src/modules/formations/interfaces/dto/contrat/evaluer-machine.request.dto';
-import { EvaluerTableauRequestDto } from '../src/modules/formations/interfaces/dto/contrat/evaluer-tableau.request.dto';
-import { FeuilleEvalueeResponseDto } from '../src/modules/formations/interfaces/dto/contrat/feuille-evaluee.response.dto';
-import { MachineEvalueeResponseDto } from '../src/modules/formations/interfaces/dto/contrat/machine-evaluee.response.dto';
-import { TableauEvalueResponseDto } from '../src/modules/formations/interfaces/dto/contrat/tableau-evalue.response.dto';
-import { OpenSessionRequestDto } from '../src/modules/formations/interfaces/dto/contrat/open-session.request.dto';
-import { RappelsResponseDto } from '../src/modules/formations/interfaces/dto/contrat/rappels.response.dto';
-import { SessionResultsResponseDto } from '../src/modules/formations/interfaces/dto/contrat/session-results.response.dto';
-import { StrategiesDefiResponseDto } from '../src/modules/formations/interfaces/dto/contrat/strategies-defi.response.dto';
-import { SubmitDefiRequestDto } from '../src/modules/formations/interfaces/dto/contrat/submit-defi.request.dto';
-import { SubmitProductionRequestDto } from '../src/modules/formations/interfaces/dto/contrat/submit-production.request.dto';
-import {
-  CoursPublicCatalogueResponseDto,
-  SujetResponseDto,
-} from '../src/modules/formations/interfaces/dto/contrat/sujet.response.dto';
-import { SyntheseRappelsResponseDto } from '../src/modules/formations/interfaces/dto/contrat/synthese-rappels.response.dto';
-import { TentativeEnigmeResponseDto } from '../src/modules/formations/interfaces/dto/contrat/tentative-enigme.response.dto';
-import { TenterEnigmeRequestDto } from '../src/modules/formations/interfaces/dto/contrat/tenter-enigme.request.dto';
-import { SubmitProductionResponseDto } from '../src/modules/formations/interfaces/dto/contrat/verdict-production.response.dto';
-import { SubmitAnswerResponseDto } from '../src/modules/formations/interfaces/dto/submit-answer.response.dto';
 import { deroulePresentateur } from '../src/modules/formations/domain/cours/DeroulePresentateur';
 import {
   correctionDeLEcranRevele,
@@ -62,85 +7,26 @@ import {
   correctionSurPlaceServie,
 } from '../src/modules/formations/domain/cours/Diffusion';
 import { tirer } from '../src/modules/formations/domain/cours/Tirage';
-import { buildCoursDuContenu } from './factories/contenus-de-cours.factory';
-import { CONTENUS } from './factories/contenus-publies';
-import { createMockDepotsFormations } from './factories/formation.factory';
-import { monterApplicationFormations } from './helpers/formations-harness';
-import { fermerApplication } from './helpers/nest-test-app';
 import {
-  documentOpenApiFormations,
-  estSansForme,
+  ecranVerrouille,
+  exempleAuRythmeDuPilotage,
+} from '../src/modules/formations/domain/cours/Diffusion';
+import { DONNEES_PAR_BRIQUE } from '../src/modules/formations/domain/contrats/donnees-servies';
+import { MOTIF_D_UNE_ADRESSE_EMAIL } from '../src/common/domain/value-objects/EmailAddress';
+import { buildCoursDuContenu } from './factories/contenus-de-cours.factory';
+import { buildCoursDeTest } from './factories/cours.factory';
+import { CONTENUS } from './factories/contenus-publies';
+import {
+  documentPublie,
+  ecartsAuSchemaDeReponse,
+  estSansFormeHorsOuverts,
+  evenementsDuFlux,
   type SchemaOpenApi,
 } from './helpers/schema-openapi';
 
-const stub = () => ({ execute: jest.fn() });
+type DocumentOpenApi = OpenAPIObject;
 
-const DTO_DU_CONTRAT = [
-  SubmitProductionRequestDto,
-  SubmitProductionResponseDto,
-  TenterEnigmeRequestDto,
-  TentativeEnigmeResponseDto,
-  DeclarerJalonRequestDto,
-  RappelsResponseDto,
-  SubmitDefiRequestDto,
-  StrategiesDefiResponseDto,
-  EtatParticipantResponseDto,
-  OpenSessionRequestDto,
-  ControlSessionRequestDto,
-  SujetResponseDto,
-  DerouleResponseDto,
-  SessionResultsResponseDto,
-  SyntheseRappelsResponseDto,
-  CoursPublicCatalogueResponseDto,
-  EvaluerFeuilleRequestDto,
-  FeuilleEvalueeResponseDto,
-  EvaluerTableauRequestDto,
-  TableauEvalueResponseDto,
-  EvaluerMachineRequestDto,
-  MachineEvalueeResponseDto,
-];
-
-const ROUTES_ACTIVES_DU_CONTRAT = [
-  '/sessions/{id}/productions',
-  '/sessions/{id}/escape/{parcoursId}/tentatives',
-  '/sessions/{id}/pulses/{sondageId}',
-  '/sessions/{id}/defis/{defiId}/tentative',
-  '/sessions/{id}/defis/{defiId}/strategies',
-  '/sessions/{id}/moi',
-  '/sessions/{id}/participants/{participantId}',
-  '/sessions/{id}/rappels',
-  '/sessions/{id}/rappels/synthese',
-  '/sessions/{id}/feuilles/{planId}/evaluation',
-  '/sessions/{id}/tableaux/{planId}/evaluation',
-  '/sessions/{id}/machines/{ecranId}/evaluation',
-];
-
-const ROUTES_A_VENIR_DU_CONTRAT: readonly string[] = [];
-
-type DocumentOpenApi = ReturnType<typeof SwaggerModule.createDocument>;
-
-async function documentDesFormations(): Promise<DocumentOpenApi> {
-  const app = await monterApplicationFormations(createMockDepotsFormations());
-  const document = documentOpenApiFormations(app);
-  await fermerApplication(app);
-  return document;
-}
-
-async function documenterLeModule(
-  metadonnees: ModuleMetadata,
-  constructeur: DocumentBuilder,
-  options?: SwaggerDocumentOptions,
-): Promise<DocumentOpenApi> {
-  const moduleRef = await Test.createTestingModule(metadonnees).compile();
-  const app = moduleRef.createNestApplication();
-  app.setGlobalPrefix('api');
-  await app.init();
-  try {
-    return SwaggerModule.createDocument(app, constructeur.build(), options);
-  } finally {
-    await app.close();
-  }
-}
+const document: DocumentOpenApi = documentPublie();
 
 interface SchemaDeChamp {
   readonly type?: string;
@@ -151,6 +37,8 @@ interface SchemaDeChamp {
   readonly properties?: Record<string, SchemaDeChamp>;
   readonly oneOf?: readonly SchemaDeChamp[];
   readonly anyOf?: readonly SchemaDeChamp[];
+  readonly allOf?: readonly SchemaDeChamp[];
+  readonly $ref?: string;
 }
 
 const porteUnNombre = (schema: SchemaDeChamp): boolean =>
@@ -159,10 +47,19 @@ const porteUnNombre = (schema: SchemaDeChamp): boolean =>
   schema.minimum !== undefined ||
   schema.maximum !== undefined;
 
+const composantNomme = (ref: string): SchemaDeChamp =>
+  (document.components?.schemas?.[ref.split('/').at(-1) ?? ''] ??
+    {}) as SchemaDeChamp;
+
 const admetUnNombre = (schema: SchemaDeChamp): boolean =>
   schema.type === 'integer' ||
   schema.type === 'number' ||
-  [...(schema.oneOf ?? []), ...(schema.anyOf ?? [])].some(admetUnNombre);
+  (schema.$ref !== undefined && admetUnNombre(composantNomme(schema.$ref))) ||
+  [
+    ...(schema.oneOf ?? []),
+    ...(schema.anyOf ?? []),
+    ...(schema.allOf ?? []),
+  ].some(admetUnNombre);
 
 function champsDuDocument(
   document: DocumentOpenApi,
@@ -197,52 +94,34 @@ const champsNumeriquesSansTypeNumerique = (
 
 const champsSansForme = (document: DocumentOpenApi): string[] =>
   champsDuDocument(document)
-    .filter(([, schema]) => estSansForme(schema as SchemaOpenApi))
+    .filter(([nom, schema]) =>
+      estSansFormeHorsOuverts(nom, schema as SchemaOpenApi),
+    )
     .map(([nom]) => nom);
 
-describe('OpenAPI core contract', () => {
-  let document: DocumentOpenApi;
-
-  beforeAll(async () => {
-    document = await documenterLeModule(
-      {
-        controllers: [
-          UsersController,
-          AuthController,
-          ContactsController,
-          CookieConsentsController,
-          AuditsController,
-        ],
-        providers: [
-          RolesGuard,
-
-          { provide: ListUsersUseCase, useValue: stub() },
-          { provide: ListOneUserUseCase, useValue: stub() },
-          { provide: UpdateUsersUseCase, useValue: stub() },
-          { provide: DeleteUsersUseCase, useValue: stub() },
-
-          ...authControllerProviders(createAuthUseCaseStubs()),
-          ...coreControllerProviders(createCoreUseCaseStubs()),
-        ],
-      },
-      new DocumentBuilder()
-        .setTitle('Core Contract Test')
-        .setVersion('1.0')
-        .addBearerAuth(),
-      {
-        extraModels: [
-          RequestToolkitRequestDto,
-          ArticleListQueryDto,
-          JoinSessionRequestDto,
-        ],
+describe('OpenAPI des adresses e-mail', () => {
+  it('publie sur chaque champ email saisi le motif du domaine, et aucun format que le front lirait autrement', () => {
+    const champs = Object.entries(document.components?.schemas ?? {}).flatMap(
+      ([nom, schema]) => {
+        const email = (schema as SchemaOpenApi).properties?.email;
+        return email === undefined || nom.endsWith('ResponseDto')
+          ? []
+          : [[nom, email] as const];
       },
     );
-  });
 
-  it('fige les schemas des DTO de saisie : comptes, contact, cookies, audit, boite a outils, articles et entree en seance', () => {
-    expect(document.components?.schemas).toMatchSnapshot();
+    expect(champs.length).toBeGreaterThan(0);
+    expect(
+      champs.filter(
+        ([, email]) =>
+          email.pattern !== MOTIF_D_UNE_ADRESSE_EMAIL.source ||
+          email.format !== undefined,
+      ),
+    ).toEqual([]);
   });
+});
 
+describe('OpenAPI du contrat publié', () => {
   it('documente par un type numerique chaque champ qui porte un defaut, un exemple ou une borne numerique', () => {
     expect(champsNumeriquesSansTypeNumerique(document)).toEqual([]);
   });
@@ -251,59 +130,7 @@ describe('OpenAPI core contract', () => {
     expect(champsSansForme(document)).toEqual([]);
   });
 
-  const pathsContaining = (segment: string) =>
-    Object.fromEntries(
-      Object.entries(document.paths).filter(([p]) => p.includes(`/${segment}`)),
-    );
-
-  it('keeps Users path contracts stable', () => {
-    expect(pathsContaining('users')).toMatchSnapshot();
-  });
-
-  it('n annonce au PATCH utilisateur aucune valeur par défaut de la création', () => {
-    const { properties } = document.components?.schemas?.UpdateUserDto as {
-      properties: Record<string, object>;
-    };
-
-    expect(properties.isActive).not.toHaveProperty('default');
-    expect(properties.roles).not.toHaveProperty('default');
-  });
-
-  it('keeps Auth path contracts stable', () => {
-    expect(pathsContaining('auth')).toMatchSnapshot();
-  });
-
-  it('keeps Contacts path contracts stable', () => {
-    expect(pathsContaining('contacts')).toMatchSnapshot();
-  });
-
-  it('keeps CookieConsents path contracts stable', () => {
-    expect(pathsContaining('cookie-consents')).toMatchSnapshot();
-  });
-
-  it('keeps AuditRequests path contracts stable', () => {
-    expect(pathsContaining('audits')).toMatchSnapshot();
-  });
-});
-
-describe('OpenAPI contrat B2-01', () => {
-  it('fige les schemas des DTO du § 9.5 sans exposer de chemin', async () => {
-    const document = await documenterLeModule(
-      {},
-      new DocumentBuilder().setTitle('Contrat B2-01').setVersion('1.0'),
-      { extraModels: DTO_DU_CONTRAT },
-    );
-
-    expect(document.paths).toEqual({});
-    expect(document.components?.schemas).toMatchSnapshot();
-  });
-
-  it('QA-12 · documente nullable le verdict servi par la réponse et par l état du participant', async () => {
-    const document = await documenterLeModule(
-      {},
-      new DocumentBuilder().setTitle('Verdict servi').setVersion('1.0'),
-      { extraModels: [SubmitAnswerResponseDto, EtatParticipantResponseDto] },
-    );
+  it('QA-12 · documente nullable le verdict servi par la réponse et par l état du participant', () => {
     const verdictDe = (dto: string): unknown => {
       const schema = document.components?.schemas?.[dto];
       return schema !== undefined && 'properties' in schema
@@ -320,27 +147,9 @@ describe('OpenAPI contrat B2-01', () => {
       etat: verdictDe('ReponseParticipantResponseDto'),
     }).toEqual({ reponse: verdictNullable, etat: verdictNullable });
   });
-
-  it('branche les routes du § 9.5 deja livrees et aucune autre', async () => {
-    const chemins = Object.keys((await documentDesFormations()).paths);
-    const servie = (route: string): boolean =>
-      chemins.some((chemin) => chemin.endsWith(route));
-
-    expect(ROUTES_ACTIVES_DU_CONTRAT.filter((route) => !servie(route))).toEqual(
-      [],
-    );
-    expect(ROUTES_A_VENIR_DU_CONTRAT.filter(servie)).toEqual([]);
-    expect(servie('/sessions/{id}/sujet')).toBe(true);
-  });
 });
 
 describe('OpenAPI des pièces jointes réservées', () => {
-  let document: DocumentOpenApi;
-
-  beforeAll(async () => {
-    document = await documentDesFormations();
-  });
-
   const reponsesDe = (suffixe: string): Record<string, string> => {
     const chemin = Object.keys(document.paths).find((candidat) =>
       candidat.endsWith(suffixe),
@@ -390,20 +199,6 @@ describe('OpenAPI des pièces jointes réservées', () => {
 });
 
 describe('OpenAPI des écrans servis', () => {
-  let document: DocumentOpenApi;
-
-  beforeAll(async () => {
-    document = await documentDesFormations();
-  });
-
-  it('documente par un type numerique chaque champ des formations qui porte un defaut, un exemple ou une borne numerique', () => {
-    expect(champsNumeriquesSansTypeNumerique(document)).toEqual([]);
-  });
-
-  it('donne a chaque champ des formations un type, et a chaque objet sa forme', () => {
-    expect(champsSansForme(document)).toEqual([]);
-  });
-
   interface SchemaOpenApi {
     readonly $ref?: string;
     readonly type?: string;
@@ -570,12 +365,6 @@ const ROUTES_SUR_UN_ECRAN_SERVI = [
 ] as const;
 
 describe('OpenAPI de l écran pas encore servi', () => {
-  let document: DocumentOpenApi;
-
-  beforeAll(async () => {
-    document = await documentDesFormations();
-  });
-
   const reponses = (): {
     methode: string;
     chemin: string;
@@ -622,5 +411,113 @@ describe('OpenAPI de l écran pas encore servi', () => {
     });
 
     expect(muettes).toEqual([]);
+  });
+});
+
+describe('OpenAPI des données de chaque brique', () => {
+  const ecransServis = [
+    ...CONTENUS.map(buildCoursDuContenu),
+    buildCoursDeTest(),
+  ].flatMap((cours) => {
+    const sujet = tirer(cours, 0).sujet.ecrans;
+    return [
+      ...sujet,
+      ...sujet.map(ecranVerrouille),
+      ...sujet.map((ecran) => exempleAuRythmeDuPilotage(ecran, undefined)),
+      ...deroulePresentateur(cours, 0).ecrans,
+    ];
+  });
+
+  it('valide par le schéma de sa brique les données de chaque écran servi, sur tous les cours', () => {
+    const ecarts = ecransServis.flatMap(({ id, type, donnees }) => {
+      const lecture = DONNEES_PAR_BRIQUE[type].safeParse(donnees);
+      return lecture.success
+        ? []
+        : lecture.error.issues.map(
+            (probleme) =>
+              `${id} : ${probleme.path.join('.')} ${probleme.message}`,
+          );
+    });
+
+    expect(ecransServis.length).toBeGreaterThan(0);
+    expect([...new Set(ecarts)]).toEqual([]);
+  });
+
+  it('sert chaque brique décrite au moins une fois', () => {
+    const servies = new Set<string>(ecransServis.map(({ type }) => type));
+
+    expect(
+      Object.keys(DONNEES_PAR_BRIQUE).filter((brique) => !servies.has(brique)),
+    ).toEqual([]);
+  });
+
+  it.each(['/sujet', '/deroule'])(
+    'lie les données de l écran de %s à sa brique : un vote qui porte les données d un rappel est refusé',
+    (route) => {
+      const cours = buildCoursDuContenu(CONTENUS[0]);
+      const servi =
+        route === '/sujet'
+          ? tirer(cours, 0).sujet
+          : deroulePresentateur(cours, 0);
+      const rappel = servi.ecrans.find(({ type }) => type === 'fp-recall');
+
+      expect(rappel).toBeDefined();
+      expect(ecartsAuSchemaDeReponse(document, route, servi)).toEqual([]);
+      expect(
+        ecartsAuSchemaDeReponse(document, route, {
+          ...servi,
+          ecrans: [{ ...rappel, type: 'fp-vote' }],
+        }),
+      ).not.toEqual([]);
+    },
+  );
+});
+
+describe('OpenAPI des flux d événements', () => {
+  const donneesParEvenement = (suffixe: string): Record<string, string> =>
+    Object.fromEntries(
+      Object.entries(evenementsDuFlux(document, suffixe)).map(
+        ([nom, { $ref }]) => [nom, $ref?.split('/').at(-1) ?? ''],
+      ),
+    );
+  const FLUX_DU_POSTE = {
+    etat: 'EtatDeSeanceResponseDto',
+    fin: 'FinDuFluxResponseDto',
+    heartbeat: 'BattementResponseDto',
+  };
+
+  it('nomme chaque événement du flux du poste et la forme de ses données', () => {
+    expect(donneesParEvenement('/sessions/{id}/stream')).toEqual(FLUX_DU_POSTE);
+  });
+
+  it('ajoute au flux du pupitre les résultats en direct', () => {
+    expect(donneesParEvenement('/sessions/{id}/presenter-stream')).toEqual({
+      ...FLUX_DU_POSTE,
+      resultats: 'ResultatsEnDirectResponseDto',
+    });
+  });
+
+  it('nomme chaque événement du flux d audit et la forme de ses données', () => {
+    expect(donneesParEvenement('/audits/{id}/stream')).toEqual({
+      progress: 'ProgressionDAuditResponseDto',
+      completed: 'AuditTermineResponseDto',
+      failed: 'AuditEchoueResponseDto',
+      timeout: 'AuditExpireResponseDto',
+      heartbeat: 'BattementResponseDto',
+    });
+  });
+
+  it('nomme dans le contrat chaque composant référencé', () => {
+    const references = [
+      ...JSON.stringify(document).matchAll(
+        /"#\/components\/schemas\/([^"]+)"/g,
+      ),
+    ].map(([, nom]) => nom);
+
+    expect(
+      [...new Set(references)].filter(
+        (nom) => document.components?.schemas?.[nom] === undefined,
+      ),
+    ).toEqual([]);
   });
 });

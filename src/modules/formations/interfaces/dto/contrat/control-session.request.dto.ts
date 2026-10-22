@@ -1,8 +1,8 @@
+import { ValeurDuContrat } from '../../../../../common/interfaces/dto/valeur-du-contrat.decorator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   IsBoolean,
-  IsIn,
   isObject,
   IsOptional,
   ValidateBy,
@@ -37,13 +37,13 @@ export class PilotageEcranRequestDto implements PilotageEcran {
   @TexteBorne(1, 120)
   screenId: string;
 
-  @ApiPropertyOptional({
-    enum: PHASES_DE_VOTE,
-    description:
-      'Phase d un vote a question jumelle, jamais ramenee en arriere',
+  @ValeurDuContrat(PHASES_DE_VOTE, 'PhaseDeVote', {
+    facultative: true,
+    documentation: {
+      description:
+        'Phase d un vote a question jumelle, jamais ramenee en arriere',
+    },
   })
-  @IsOptional()
-  @IsIn(PHASES_DE_VOTE)
   phase?: VotePhase;
 
   @ApiPropertyOptional({

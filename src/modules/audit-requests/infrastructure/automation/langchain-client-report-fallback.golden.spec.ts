@@ -19,35 +19,35 @@ describe('LangchainClientReportService — fallback golden (P5.1)', () => {
   it('executiveSummary — businessType portfolio', async () => {
     const result = await generer({ businessType: 'portfolio' });
     expect(result.executiveSummary).toMatchInlineSnapshot(
-      `"Audit finalise pour example.com. Point prioritaire (priorite haute) : Meta descriptions manquantes. 2 autres leviers sont identifies dans le rapport. Visibilite Google 62/100, IA 56/100. Contexte portfolio : focus cas clients, temoignages et CTA unique. Un appel de 30 minutes permet de prioriser le plan."`,
+      `"Audit finalise pour example.com. Point prioritaire (priorite haute) : Meta descriptions manquantes. 2 autres leviers sont identifies dans le rapport. Visibilite Google 62/100, IA 48/100. Contexte portfolio : focus cas clients, temoignages et CTA unique. Un appel de 30 minutes permet de prioriser le plan."`,
     );
   });
 
   it('executiveSummary — businessType ecommerce', async () => {
     const result = await generer({ businessType: 'ecommerce' });
     expect(result.executiveSummary).toMatchInlineSnapshot(
-      `"Audit finalise pour example.com. Point prioritaire (priorite haute) : Meta descriptions manquantes. 2 autres leviers sont identifies dans le rapport. Visibilite Google 62/100, IA 56/100. Contexte e-commerce : focus panier, fiches produits et Core Web Vitals. Un appel de 30 minutes permet de prioriser le plan."`,
+      `"Audit finalise pour example.com. Point prioritaire (priorite haute) : Meta descriptions manquantes. 2 autres leviers sont identifies dans le rapport. Visibilite Google 62/100, IA 48/100. Contexte e-commerce : focus panier, fiches produits et Core Web Vitals. Un appel de 30 minutes permet de prioriser le plan."`,
     );
   });
 
   it('executiveSummary — businessType saas EN locale', async () => {
     const result = await generer({ locale: 'en', businessType: 'saas' });
     expect(result.executiveSummary).toMatchInlineSnapshot(
-      `"Audit completed for example.com. Priority finding (high priority): Meta descriptions manquantes. 2 other levers are documented in the report. Google visibility 62/100, AI 56/100. SaaS context: focus on pricing, signup and trust signals. A 30-minute call will help prioritize the plan."`,
+      `"Audit completed for example.com. Priority finding (high priority): Meta descriptions manquantes. 2 other levers are documented in the report. Google visibility 62/100, AI 48/100. SaaS context: focus on pricing, signup and trust signals. A 30-minute call will help prioritize the plan."`,
     );
   });
 
   it('executiveSummary — businessType unknown (pas de hint)', async () => {
     const result = await generer({ businessType: 'unknown' });
     expect(result.executiveSummary).toMatchInlineSnapshot(
-      `"Audit finalise pour example.com. Point prioritaire (priorite haute) : Meta descriptions manquantes. 2 autres leviers sont identifies dans le rapport. Visibilite Google 62/100, IA 56/100.  Un appel de 30 minutes permet de prioriser le plan."`,
+      `"Audit finalise pour example.com. Point prioritaire (priorite haute) : Meta descriptions manquantes. 2 autres leviers sont identifies dans le rapport. Visibilite Google 62/100, IA 48/100.  Un appel de 30 minutes permet de prioriser le plan."`,
     );
   });
 
   it('executiveSummary — sans findings retourne texte neutre adapte au businessType', async () => {
     const result = await generer({ findings: [], businessType: 'agency' });
     expect(result.executiveSummary).toMatchInlineSnapshot(
-      `"Audit finalise pour example.com. Aucun blocage critique detecte. Visibilite Google 62/100, IA 56/100. Contexte agence : focus offres packagees et etudes de cas. Un appel de 30 minutes permet de prioriser les ameliorations fines."`,
+      `"Audit finalise pour example.com. Aucun blocage critique detecte. Visibilite Google 62/100, IA 48/100. Contexte agence : focus offres packagees et etudes de cas. Un appel de 30 minutes permet de prioriser les ameliorations fines."`,
     );
   });
 
@@ -75,10 +75,18 @@ describe('LangchainClientReportService — fallback golden (P5.1)', () => {
     ]);
   });
 
-  it('googleVsAiMatrix — scores moyennes des piliers correspondants', async () => {
+  it('googleVsAiMatrix — Google moyenne SEO, performance et technique', async () => {
     const result = await generer();
     expect(result.googleVsAiMatrix.googleVisibility.score).toBe(62);
-    expect(result.googleVsAiMatrix.aiVisibility.score).toBe(56);
+  });
+
+  it('googleVsAiMatrix — la visibilite IA est le score du pilier aiVisibility, le meme que la scorecard', async () => {
+    const result = await generer();
+    const pilier = result.pillarScorecard.find(
+      (entry) => entry.pillar === 'aiVisibility',
+    );
+    expect(result.googleVsAiMatrix.aiVisibility.score).toBe(48);
+    expect(pilier?.score).toBe(48);
   });
 
   it('quickWins — minimum 3, maximum 5', async () => {
