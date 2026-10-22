@@ -1,6 +1,8 @@
 import type { Provider } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Test, type TestingModuleBuilder } from '@nestjs/testing';
 import { of } from 'rxjs';
+import { ConfirmAuditRequestUseCase } from '../../src/modules/audit-requests/application/ConfirmAuditRequest.useCase';
 import { CreateAuditRequestsUseCase } from '../../src/modules/audit-requests/application/CreateAuditRequests.useCase';
 import { GetAuditSummaryUseCase } from '../../src/modules/audit-requests/application/GetAuditSummary.useCase';
 import { StreamAuditEventsUseCase } from '../../src/modules/audit-requests/application/StreamAuditEvents.useCase';
@@ -23,6 +25,7 @@ import { VerifyEmailUseCase } from '../../src/modules/users/application/VerifyEm
 import { AuthAuditLogger } from '../../src/modules/users/application/services/AuthAuditLogger';
 import { AuthController } from '../../src/modules/users/interfaces/Auth.controller';
 import { USERS_REPOSITORY } from '../../src/modules/users/domain/token';
+import { buildConfigService, buildValidEnv } from './env.factory';
 import { createMockUsersRepo } from './user.factory';
 
 const CORE_CONTROLLERS = [ContactsController, AuditsController, AuthController];
@@ -118,6 +121,7 @@ export function buildAuditProgressEvent() {
 export interface CoreUseCaseStubs {
   createContactsUseCase: { execute: jest.Mock };
   createAuditRequestsUseCase: { execute: jest.Mock };
+  confirmAuditRequestUseCase: { execute: jest.Mock };
   getAuditSummaryUseCase: { execute: jest.Mock };
   streamAuditEventsUseCase: { execute: jest.Mock };
 }
@@ -142,6 +146,7 @@ export function createCoreUseCaseStubs(): CoreUseCaseStubs {
   return {
     createContactsUseCase: { execute: jest.fn() },
     createAuditRequestsUseCase: { execute: jest.fn() },
+    confirmAuditRequestUseCase: { execute: jest.fn() },
     getAuditSummaryUseCase: { execute: jest.fn() },
     streamAuditEventsUseCase: { execute: jest.fn() },
   };
@@ -171,6 +176,10 @@ export function coreControllerProviders(stubs: CoreUseCaseStubs): Provider[] {
     {
       provide: CreateAuditRequestsUseCase,
       useValue: stubs.createAuditRequestsUseCase,
+    },
+    {
+      provide: ConfirmAuditRequestUseCase,
+      useValue: stubs.confirmAuditRequestUseCase,
     },
     { provide: GetAuditSummaryUseCase, useValue: stubs.getAuditSummaryUseCase },
     {
@@ -211,6 +220,7 @@ export function authControllerProviders(
       useValue: stubs.resendVerificationEmailUseCase,
     },
     AuthAuditLogger,
+    { provide: ConfigService, useValue: buildConfigService(buildValidEnv()) },
     { provide: USERS_REPOSITORY, useValue: usersRepository },
   ];
 }

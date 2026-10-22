@@ -3,6 +3,7 @@ import { Test } from '@nestjs/testing';
 import request from 'supertest';
 import { AUDIT_REQUESTS_REPOSITORY } from '../src/modules/audit-requests/domain/token';
 import type { AuditSnapshot } from '../src/modules/audit-requests/domain/AuditProcessing';
+import { ConfirmAuditRequestUseCase } from '../src/modules/audit-requests/application/ConfirmAuditRequest.useCase';
 import { CreateAuditRequestsUseCase } from '../src/modules/audit-requests/application/CreateAuditRequests.useCase';
 import { GetAuditSummaryUseCase } from '../src/modules/audit-requests/application/GetAuditSummary.useCase';
 import { StreamAuditEventsUseCase } from '../src/modules/audit-requests/application/StreamAuditEvents.useCase';
@@ -316,6 +317,10 @@ describe('Flux SSE d un audit servi par le vrai cas d usage', () => {
       {
         provide: CreateAuditRequestsUseCase,
         useValue: coreStubs.createAuditRequestsUseCase,
+      },
+      {
+        provide: ConfirmAuditRequestUseCase,
+        useValue: coreStubs.confirmAuditRequestUseCase,
       },
       {
         provide: GetAuditSummaryUseCase,
