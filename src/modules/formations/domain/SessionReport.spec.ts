@@ -244,7 +244,13 @@ describe('buildRapportSession', () => {
       incidents: [
         buildIncidentRecord({
           participantId: 'p1',
-          contexte: { duree: 1200, imbrique: { cle: 'x' }, liste: [1] },
+          contexte: {
+            duree: 1200,
+            imbrique: { cle: 'x' },
+            liste: [1],
+            infini: Number.POSITIVE_INFINITY,
+            indefini: Number.NaN,
+          },
         }),
       ],
     });

@@ -1,5 +1,5 @@
 import type { TypeQuestion } from './contrats/cours';
-import type { IncidentType } from './IncidentType';
+import type { IncidentType, ValeurDeContexte } from './IncidentType';
 
 export interface RapportQuestion {
   questionId: string;
@@ -23,8 +23,6 @@ export interface RapportParticipant {
   reponsesLibres: readonly RapportReponseLibre[];
   incidents: readonly RapportIncident[];
 }
-
-export type ValeurDeContexte = string | number | boolean;
 
 export interface RapportIncident {
   type: IncidentType;

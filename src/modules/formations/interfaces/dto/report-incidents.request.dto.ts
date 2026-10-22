@@ -17,6 +17,7 @@ import {
 } from '../../../../common/interfaces/dto/bornes-annoncees.decorator';
 import { ValeurDuContrat } from '../../../../common/interfaces/dto/valeur-du-contrat.decorator';
 import {
+  estValeurDeContexte,
   INCIDENT_TYPES,
   type IncidentType,
   MAX_INCIDENTS_PAR_ENVOI,
@@ -28,12 +29,10 @@ const LONGUEUR_MAX_CLE_DU_CONTEXTE = 40;
 const LONGUEUR_MAX_TEXTE_DU_CONTEXTE = 200;
 
 function valeurScalaireBornee(valeur: unknown): boolean {
-  if (typeof valeur === 'string') {
-    return longueurDeTexte(valeur) <= LONGUEUR_MAX_TEXTE_DU_CONTEXTE;
-  }
   return (
-    typeof valeur === 'boolean' ||
-    (typeof valeur === 'number' && Number.isFinite(valeur))
+    estValeurDeContexte(valeur) &&
+    (typeof valeur !== 'string' ||
+      longueurDeTexte(valeur) <= LONGUEUR_MAX_TEXTE_DU_CONTEXTE)
   );
 }
 

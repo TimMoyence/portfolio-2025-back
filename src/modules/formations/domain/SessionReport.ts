@@ -24,8 +24,8 @@ import type {
   RapportQuestion,
   RapportReponseLibre,
   RapportSession,
-  ValeurDeContexte,
 } from './IFormationMailer.port';
+import { estValeurDeContexte, type ValeurDeContexte } from './IncidentType';
 import type { FreeResponseRecord } from './IFreeResponses.repository';
 import type { IncidentRecord } from './IIncidents.repository';
 import type { ParticipantRecord } from './IParticipants.repository';
@@ -130,7 +130,7 @@ function contexteScalaire(
   return Object.fromEntries(
     Object.entries(contexte).filter(
       (entree): entree is [string, ValeurDeContexte] =>
-        ['string', 'number', 'boolean'].includes(typeof entree[1]),
+        estValeurDeContexte(entree[1]),
     ),
   );
 }

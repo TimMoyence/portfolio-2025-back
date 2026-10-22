@@ -1,9 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import type {
-  RapportIncident,
-  ValeurDeContexte,
-} from '../../domain/IFormationMailer.port';
-import { INCIDENT_TYPES, type IncidentType } from '../../domain/IncidentType';
+import type { RapportIncident } from '../../domain/IFormationMailer.port';
+import {
+  INCIDENT_TYPES,
+  type IncidentType,
+  type ValeurDeContexte,
+} from '../../domain/IncidentType';
 
 export class RapportQuestionResponseDto {
   @ApiProperty({ example: 'Q-OUV-RAPPEL' })
