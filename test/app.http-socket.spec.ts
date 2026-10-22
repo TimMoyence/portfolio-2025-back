@@ -104,6 +104,15 @@ describe('API coherence and connectivity (e2e http socket)', () => {
     expectValidationMessage(response, 'property injected should not exist');
   });
 
+  it('POST /api/contacts refuse un message dont les conditions ne sont pas acceptées', async () => {
+    const response = await request(getHttpServer())
+      .post('/api/contacts')
+      .send({ ...CONTACT_PAYLOAD, terms: false })
+      .expect(400);
+
+    expectValidationMessage(response, 'terms must be equal to true');
+  });
+
   it('POST /api/audits resolves locale from referer when not provided', async () => {
     const response = await request(getHttpServer())
       .post('/api/audits')

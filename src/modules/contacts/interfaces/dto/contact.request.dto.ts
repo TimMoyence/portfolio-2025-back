@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsBoolean, IsDate, IsOptional, IsString } from 'class-validator';
+import { Equals, IsDate, IsOptional, IsString } from 'class-validator';
 import type { SupportedLocale } from '../../../../common/domain/value-objects/LocaleCode';
 import { AdresseEmail } from '../../../../common/interfaces/dto/adresse-email.decorator';
 import { LocaleSupportee } from '../../../../common/interfaces/dto/locale-supportee.decorator';
@@ -40,9 +40,9 @@ export class ContactRequestDto extends ChampsAntiRobotDto {
   @TexteSaisi(2, 100)
   role: string;
 
-  @ApiProperty({ example: true, default: false })
-  @IsBoolean()
-  terms: boolean;
+  @ApiProperty({ oneOf: [{ type: 'boolean', enum: [true] }], example: true })
+  @Equals(true)
+  terms: true;
 
   @ApiProperty({ example: '2026-02-11', required: false })
   @IsOptional()
