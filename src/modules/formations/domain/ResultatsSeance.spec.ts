@@ -64,8 +64,26 @@ describe('partDesReponses', () => {
       ],
       0.7,
     ],
+    [
+      'un concept qui mêle réponses sans score et productions, chacune pour sa part',
+      [
+        ...Array.from({ length: 10 }, () =>
+          buildAnswerRecord({ correcte: false, score: null }),
+        ),
+        buildAnswerRecord({ correcte: true, score: 1 }),
+      ],
+      1 / 11,
+    ],
   ] as const)('lit %s', (_cas, reponses, attendue) => {
     expect(partDesReponses(reponses)).toBeCloseTo(attendue);
+  });
+
+  it('ne passe pas sous le seuil quand les scores le valent, sans reste flottant', () => {
+    const reponses = [0.7, 0.7, 0.7].map((score) =>
+      buildAnswerRecord({ correcte: false, score }),
+    );
+
+    expect(partDesReponses(reponses)).toBeGreaterThanOrEqual(0.7);
   });
 });
 

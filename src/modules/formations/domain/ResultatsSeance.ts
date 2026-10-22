@@ -1,3 +1,4 @@
+import { arrondi } from '../../../common/domain/nombres/arrondi';
 import { moyenneOu } from '../../../common/domain/nombres/statistiques';
 import type { TypeQuestion } from './contrats/cours';
 import type {
@@ -107,12 +108,16 @@ function moyenneDesScores(reponses: readonly AnswerRecord[]): number | null {
   return moyenneOu(scores, null);
 }
 
+const DECIMALES_D_UNE_PART = 9;
+
+function scoreDeLaReponse(reponse: AnswerRecord): number {
+  return reponse.score ?? (reponse.correcte ? 1 : 0);
+}
+
 export function partDesReponses(reponses: readonly AnswerRecord[]): number {
-  return (
-    moyenneDesScores(reponses) ??
-    (reponses.length > 0
-      ? reponses.filter((reponse) => reponse.correcte).length / reponses.length
-      : 0)
+  return arrondi(
+    moyenneOu(reponses.map(scoreDeLaReponse), 0),
+    DECIMALES_D_UNE_PART,
   );
 }
 
