@@ -716,7 +716,7 @@ describeDb('Formations repositories (db integration)', () => {
       })),
     );
 
-    expect(enBase).toHaveLength(5);
+    expect(enBase).toHaveLength(4);
     expect(trierParNom(declarees)).toEqual(trierParNom(enBase));
   });
 
@@ -743,7 +743,7 @@ describeDb('Formations repositories (db integration)', () => {
       })),
     );
 
-    expect(enBase).toHaveLength(17);
+    expect(enBase).toHaveLength(15);
     expect(trierParNom(declarees)).toEqual(trierParNom(enBase));
   });
 
@@ -761,7 +761,7 @@ describeDb('Formations repositories (db integration)', () => {
         .checks.map((controle) => ({ nom: controle.name })),
     );
 
-    expect(enBase).toHaveLength(11);
+    expect(enBase).toHaveLength(10);
     expect(enBase).toContainEqual({ nom: 'chk_formation_screen_diffusion' });
     expect(trierParNom(declarees)).toEqual(trierParNom(enBase));
   });
@@ -787,7 +787,7 @@ describeDb('Formations repositories (db integration)', () => {
       })),
     );
 
-    expect(enBase).toHaveLength(18);
+    expect(enBase).toHaveLength(16);
     expect(trierParNom(declarees)).toEqual(trierParNom(enBase));
   });
 
