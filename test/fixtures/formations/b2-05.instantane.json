@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "ebbf8fcf573a4403693b32ecc8b4e2331971cf9dd90dbf9839bd296bf85a4eb9",
+  "empreinte": "323d2cbad5a29b8874a2f7f3f9ad95c118c9c20ecd4a9e21bdd23089572c9214",
   "sujet": {
     "id": "b2-05-mathematiques-financieres",
     "titre": "Mathématiques financières : placer, emprunter",
@@ -44,9 +44,7 @@
               }
             ],
             "metadonnees": {
-              "concepts": [
-                "suite-geometrique"
-              ],
+              "concepts": ["suite-geometrique"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",
@@ -322,10 +320,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "interets-composes",
-                "suite-geometrique"
-              ],
+              "concepts": ["interets-composes", "suite-geometrique"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -383,10 +378,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "interets-composes",
-                "suite-geometrique"
-              ],
+              "concepts": ["interets-composes", "suite-geometrique"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -414,10 +406,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "valeur-actuelle",
-                "interets-composes"
-              ],
+              "concepts": ["valeur-actuelle", "interets-composes"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -520,10 +509,7 @@
               }
             ],
             "metadonnees": {
-              "concepts": [
-                "interets-composes",
-                "valeur-actuelle"
-              ],
+              "concepts": ["interets-composes", "valeur-actuelle"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 6,
               "modalite": "solo",
@@ -572,10 +558,7 @@
                   "enonce": "Quelle est la valeur acquise du placement au 1ᵉʳ janvier 2029 ?",
                   "unite": "€",
                   "metadonnees": {
-                    "concepts": [
-                      "interets-composes",
-                      "valeur-actuelle"
-                    ],
+                    "concepts": ["interets-composes", "valeur-actuelle"],
                     "misconceptionsCiblees": [],
                     "dureeMinutes": 10,
                     "modalite": "solo",
@@ -615,10 +598,7 @@
                   "enonce": "Quelle somme faut-il placer au 1ᵉʳ janvier 2026 pour disposer de 50 000 € au 1ᵉʳ janvier 2029 ?",
                   "unite": "€",
                   "metadonnees": {
-                    "concepts": [
-                      "interets-composes",
-                      "valeur-actuelle"
-                    ],
+                    "concepts": ["interets-composes", "valeur-actuelle"],
                     "misconceptionsCiblees": [],
                     "dureeMinutes": 10,
                     "modalite": "solo",
@@ -690,79 +670,15 @@
               "En D3, écrivez les intérêts gagnés pendant l’année écoulée. Recopiez jusqu’en D7 : sélectionnez D3 et cliquez quatre fois sur « Recopier vers le bas », une ligne par clic.",
               "Le taux ne s’écrit pas dans la formule : utilisez la cellule G1."
             ],
-            "lettres": [
-              "A",
-              "B",
-              "C",
-              "D",
-              "E",
-              "F",
-              "G"
-            ],
+            "lettres": ["A", "B", "C", "D", "E", "F", "G"],
             "grille": [
-              [
-                "A1",
-                "B1",
-                "C1",
-                "D1",
-                "E1",
-                "F1",
-                "G1"
-              ],
-              [
-                "A2",
-                "B2",
-                "C2",
-                "D2",
-                "E2",
-                "F2",
-                "G2"
-              ],
-              [
-                "A3",
-                "B3",
-                "C3",
-                "D3",
-                "E3",
-                "F3",
-                "G3"
-              ],
-              [
-                "A4",
-                "B4",
-                "C4",
-                "D4",
-                "E4",
-                "F4",
-                "G4"
-              ],
-              [
-                "A5",
-                "B5",
-                "C5",
-                "D5",
-                "E5",
-                "F5",
-                "G5"
-              ],
-              [
-                "A6",
-                "B6",
-                "C6",
-                "D6",
-                "E6",
-                "F6",
-                "G6"
-              ],
-              [
-                "A7",
-                "B7",
-                "C7",
-                "D7",
-                "E7",
-                "F7",
-                "G7"
-              ]
+              ["A1", "B1", "C1", "D1", "E1", "F1", "G1"],
+              ["A2", "B2", "C2", "D2", "E2", "F2", "G2"],
+              ["A3", "B3", "C3", "D3", "E3", "F3", "G3"],
+              ["A4", "B4", "C4", "D4", "E4", "F4", "G4"],
+              ["A5", "B5", "C5", "D5", "E5", "F5", "G5"],
+              ["A6", "B6", "C6", "D6", "E6", "F6", "G6"],
+              ["A7", "B7", "C7", "D7", "E7", "F7", "G7"]
             ],
             "longueurMaxSaisie": 200,
             "initiale": {
@@ -812,10 +728,7 @@
               "formules": []
             },
             "metadonnees": {
-              "concepts": [
-                "tableur",
-                "interets-composes"
-              ],
+              "concepts": ["tableur", "interets-composes"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 8,
               "modalite": "solo",
@@ -835,10 +748,7 @@
             "id": "b2-05-a1-jalon",
             "invite": "Je sais calculer une valeur acquise et une valeur actuelle, et les écrire au tableur.",
             "metadonnees": {
-              "concepts": [
-                "interets-composes",
-                "valeur-actuelle"
-              ],
+              "concepts": ["interets-composes", "valeur-actuelle"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -871,10 +781,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "annuites",
-                "interets-composes"
-              ],
+              "concepts": ["annuites", "interets-composes"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 5,
               "modalite": "solo",
@@ -903,10 +810,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "annuites",
-                "somme-de-termes"
-              ],
+              "concepts": ["annuites", "somme-de-termes"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -963,11 +867,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "annuites",
-                "suite-geometrique",
-                "somme-de-termes"
-              ],
+              "concepts": ["annuites", "suite-geometrique", "somme-de-termes"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -1019,9 +919,7 @@
               }
             ],
             "metadonnees": {
-              "concepts": [
-                "annuites"
-              ],
+              "concepts": ["annuites"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 6,
               "modalite": "solo",
@@ -1070,9 +968,7 @@
                   "enonce": "Que vaut le versement de fin 2026 à la fin de 2030 ?",
                   "unite": "€",
                   "metadonnees": {
-                    "concepts": [
-                      "annuites"
-                    ],
+                    "concepts": ["annuites"],
                     "misconceptionsCiblees": [],
                     "dureeMinutes": 12,
                     "modalite": "solo",
@@ -1112,9 +1008,7 @@
                   "enonce": "Quelle épargne Hélène aura-t-elle à la fin de 2030 ?",
                   "unite": "€",
                   "metadonnees": {
-                    "concepts": [
-                      "annuites"
-                    ],
+                    "concepts": ["annuites"],
                     "misconceptionsCiblees": [],
                     "dureeMinutes": 12,
                     "modalite": "solo",
@@ -1177,77 +1071,14 @@
               "En F3, calculez le total des intérêts gagnés de 2027 à 2030.",
               "Le taux et le versement ne s’écrivent pas dans les formules : utilisez F1 et H1."
             ],
-            "lettres": [
-              "A",
-              "B",
-              "C",
-              "D",
-              "E",
-              "F",
-              "G",
-              "H"
-            ],
+            "lettres": ["A", "B", "C", "D", "E", "F", "G", "H"],
             "grille": [
-              [
-                "A1",
-                "B1",
-                "C1",
-                "D1",
-                "E1",
-                "F1",
-                "G1",
-                "H1"
-              ],
-              [
-                "A2",
-                "B2",
-                "C2",
-                "D2",
-                "E2",
-                "F2",
-                "G2",
-                "H2"
-              ],
-              [
-                "A3",
-                "B3",
-                "C3",
-                "D3",
-                "E3",
-                "F3",
-                "G3",
-                "H3"
-              ],
-              [
-                "A4",
-                "B4",
-                "C4",
-                "D4",
-                "E4",
-                "F4",
-                "G4",
-                "H4"
-              ],
-              [
-                "A5",
-                "B5",
-                "C5",
-                "D5",
-                "E5",
-                "F5",
-                "G5",
-                "H5"
-              ],
-              [
-                "A6",
-                "B6",
-                "C6",
-                "D6",
-                "E6",
-                "F6",
-                "G6",
-                "H6"
-              ]
+              ["A1", "B1", "C1", "D1", "E1", "F1", "G1", "H1"],
+              ["A2", "B2", "C2", "D2", "E2", "F2", "G2", "H2"],
+              ["A3", "B3", "C3", "D3", "E3", "F3", "G3", "H3"],
+              ["A4", "B4", "C4", "D4", "E4", "F4", "G4", "H4"],
+              ["A5", "B5", "C5", "D5", "E5", "F5", "G5", "H5"],
+              ["A6", "B6", "C6", "D6", "E6", "F6", "G6", "H6"]
             ],
             "longueurMaxSaisie": 200,
             "initiale": {
@@ -1287,10 +1118,7 @@
               "formules": []
             },
             "metadonnees": {
-              "concepts": [
-                "tableur",
-                "annuites"
-              ],
+              "concepts": ["tableur", "annuites"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 12,
               "modalite": "solo",
@@ -1310,9 +1138,7 @@
             "id": "b2-05-a2-jalon",
             "invite": "Je sais calculer la valeur acquise d’une suite de versements et la construire au tableur.",
             "metadonnees": {
-              "concepts": [
-                "annuites"
-              ],
+              "concepts": ["annuites"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -1353,32 +1179,16 @@
                   {
                     "label": "Intérêts",
                     "values": [
-                      5000,
-                      4602.48,
-                      4185.08,
-                      3746.81,
-                      3286.63,
-                      2803.44,
-                      2296.08,
-                      1763.37,
-                      1204.01,
-                      616.69
+                      5000, 4602.48, 4185.08, 3746.81, 3286.63, 2803.44,
+                      2296.08, 1763.37, 1204.01, 616.69
                     ],
                     "tone": "ink"
                   },
                   {
                     "label": "Amortissement du capital",
                     "values": [
-                      7950.46,
-                      8347.98,
-                      8765.38,
-                      9203.65,
-                      9663.83,
-                      10147.02,
-                      10654.37,
-                      11187.09,
-                      11746.45,
-                      12333.77
+                      7950.46, 8347.98, 8765.38, 9203.65, 9663.83, 10147.02,
+                      10654.37, 11187.09, 11746.45, 12333.77
                     ],
                     "tone": "teal"
                   }
@@ -1392,9 +1202,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "tableau-d-amortissement"
-              ],
+              "concepts": ["tableau-d-amortissement"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -1459,10 +1267,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "tableau-d-amortissement",
-                "annuites"
-              ],
+              "concepts": ["tableau-d-amortissement", "annuites"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -1520,10 +1325,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "tableau-d-amortissement",
-                "annuites"
-              ],
+              "concepts": ["tableau-d-amortissement", "annuites"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -1551,10 +1353,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "cout-du-credit",
-                "tableur"
-              ],
+              "concepts": ["cout-du-credit", "tableur"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -1601,10 +1400,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "cout-du-credit",
-                "tableur"
-              ],
+              "concepts": ["cout-du-credit", "tableur"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -1656,10 +1452,7 @@
               }
             ],
             "metadonnees": {
-              "concepts": [
-                "tableau-d-amortissement",
-                "cout-du-credit"
-              ],
+              "concepts": ["tableau-d-amortissement", "cout-du-credit"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 6,
               "modalite": "solo",
@@ -1826,13 +1619,7 @@
                 "intitule": "Annuité (€)",
                 "role": "donnee",
                 "decimales": 2,
-                "valeurs": [
-                  13477.63,
-                  13477.63,
-                  13477.63,
-                  13477.63,
-                  13477.63
-                ],
+                "valeurs": [13477.63, 13477.63, 13477.63, 13477.63, 13477.63],
                 "totalise": true
               }
             ],
@@ -1966,9 +1753,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "tableau-d-amortissement"
-              ],
+              "concepts": ["tableau-d-amortissement"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 8,
               "modalite": "solo",
@@ -1990,10 +1775,7 @@
             "invite": "Trouvez les erreurs de l’IA, corrigez chacune et dites comment la contrôler.",
             "strategies": [],
             "metadonnees": {
-              "concepts": [
-                "tableau-d-amortissement",
-                "cout-du-credit"
-              ],
+              "concepts": ["tableau-d-amortissement", "cout-du-credit"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 10,
               "modalite": "solo",
@@ -2013,10 +1795,7 @@
             "id": "b2-05-a3-jalon",
             "invite": "Je sais calculer une annuité, remplir un tableau d’amortissement et donner le coût d’un crédit.",
             "metadonnees": {
-              "concepts": [
-                "tableau-d-amortissement",
-                "cout-du-credit"
-              ],
+              "concepts": ["tableau-d-amortissement", "cout-du-credit"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -2149,73 +1928,13 @@
               "En I2, calculez le coût du crédit.",
               "Le taux et l’annuité ne s’écrivent pas dans les formules : utilisez F2 et H2, figés par des $ là où la formule est recopiée."
             ],
-            "lettres": [
-              "A",
-              "B",
-              "C",
-              "D",
-              "E",
-              "F",
-              "G",
-              "H",
-              "I"
-            ],
+            "lettres": ["A", "B", "C", "D", "E", "F", "G", "H", "I"],
             "grille": [
-              [
-                "A1",
-                "B1",
-                "C1",
-                "D1",
-                "E1",
-                "F1",
-                "G1",
-                "H1",
-                "I1"
-              ],
-              [
-                "A2",
-                "B2",
-                "C2",
-                "D2",
-                "E2",
-                "F2",
-                "G2",
-                "H2",
-                "I2"
-              ],
-              [
-                "A3",
-                "B3",
-                "C3",
-                "D3",
-                "E3",
-                "F3",
-                "G3",
-                "H3",
-                "I3"
-              ],
-              [
-                "A4",
-                "B4",
-                "C4",
-                "D4",
-                "E4",
-                "F4",
-                "G4",
-                "H4",
-                "I4"
-              ],
-              [
-                "A5",
-                "B5",
-                "C5",
-                "D5",
-                "E5",
-                "F5",
-                "G5",
-                "H5",
-                "I5"
-              ]
+              ["A1", "B1", "C1", "D1", "E1", "F1", "G1", "H1", "I1"],
+              ["A2", "B2", "C2", "D2", "E2", "F2", "G2", "H2", "I2"],
+              ["A3", "B3", "C3", "D3", "E3", "F3", "G3", "H3", "I3"],
+              ["A4", "B4", "C4", "D4", "E4", "F4", "G4", "H4", "I4"],
+              ["A5", "B5", "C5", "D5", "E5", "F5", "G5", "H5", "I5"]
             ],
             "longueurMaxSaisie": 200,
             "initiale": {
@@ -2455,6 +2174,7 @@
             "id": "b2-05-a4-billet",
             "question": "Hélène prépare le tableau d’un nouvel emprunt : capital dû en début d’année en B2, taux annuel en H1. Quelle formule écrire en C2 pour les intérêts, à recopier vers le bas ?",
             "invite": "En une phrase : pourquoi les intérêts d’un emprunt baissent-ils chaque année ?",
+            "longueurMax": 500,
             "options": [
               {
                 "id": "b2-h-1-c53d0532",
@@ -2474,10 +2194,7 @@
               }
             ],
             "metadonnees": {
-              "concepts": [
-                "tableau-d-amortissement",
-                "tableur"
-              ],
+              "concepts": ["tableau-d-amortissement", "tableur"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 4,
               "modalite": "solo",
@@ -2531,9 +2248,7 @@
               }
             ],
             "metadonnees": {
-              "concepts": [
-                "suite-geometrique"
-              ],
+              "concepts": ["suite-geometrique"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",
@@ -2946,10 +2661,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "interets-composes",
-                "suite-geometrique"
-              ],
+              "concepts": ["interets-composes", "suite-geometrique"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -3014,10 +2726,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "interets-composes",
-                "suite-geometrique"
-              ],
+              "concepts": ["interets-composes", "suite-geometrique"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -3052,10 +2761,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "valeur-actuelle",
-                "interets-composes"
-              ],
+              "concepts": ["valeur-actuelle", "interets-composes"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -3172,10 +2878,7 @@
               }
             ],
             "metadonnees": {
-              "concepts": [
-                "interets-composes",
-                "valeur-actuelle"
-              ],
+              "concepts": ["interets-composes", "valeur-actuelle"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 6,
               "modalite": "solo",
@@ -3231,10 +2934,7 @@
                   "enonce": "Quelle est la valeur acquise du placement au 1ᵉʳ janvier 2029 ?",
                   "unite": "€",
                   "metadonnees": {
-                    "concepts": [
-                      "interets-composes",
-                      "valeur-actuelle"
-                    ],
+                    "concepts": ["interets-composes", "valeur-actuelle"],
                     "misconceptionsCiblees": [],
                     "dureeMinutes": 10,
                     "modalite": "solo",
@@ -3274,10 +2974,7 @@
                   "enonce": "Quelle somme faut-il placer au 1ᵉʳ janvier 2026 pour disposer de 50 000 € au 1ᵉʳ janvier 2029 ?",
                   "unite": "€",
                   "metadonnees": {
-                    "concepts": [
-                      "interets-composes",
-                      "valeur-actuelle"
-                    ],
+                    "concepts": ["interets-composes", "valeur-actuelle"],
                     "misconceptionsCiblees": [],
                     "dureeMinutes": 10,
                     "modalite": "solo",
@@ -3474,79 +3171,15 @@
               "En D3, écrivez les intérêts gagnés pendant l’année écoulée. Recopiez jusqu’en D7 : sélectionnez D3 et cliquez quatre fois sur « Recopier vers le bas », une ligne par clic.",
               "Le taux ne s’écrit pas dans la formule : utilisez la cellule G1."
             ],
-            "lettres": [
-              "A",
-              "B",
-              "C",
-              "D",
-              "E",
-              "F",
-              "G"
-            ],
+            "lettres": ["A", "B", "C", "D", "E", "F", "G"],
             "grille": [
-              [
-                "A1",
-                "B1",
-                "C1",
-                "D1",
-                "E1",
-                "F1",
-                "G1"
-              ],
-              [
-                "A2",
-                "B2",
-                "C2",
-                "D2",
-                "E2",
-                "F2",
-                "G2"
-              ],
-              [
-                "A3",
-                "B3",
-                "C3",
-                "D3",
-                "E3",
-                "F3",
-                "G3"
-              ],
-              [
-                "A4",
-                "B4",
-                "C4",
-                "D4",
-                "E4",
-                "F4",
-                "G4"
-              ],
-              [
-                "A5",
-                "B5",
-                "C5",
-                "D5",
-                "E5",
-                "F5",
-                "G5"
-              ],
-              [
-                "A6",
-                "B6",
-                "C6",
-                "D6",
-                "E6",
-                "F6",
-                "G6"
-              ],
-              [
-                "A7",
-                "B7",
-                "C7",
-                "D7",
-                "E7",
-                "F7",
-                "G7"
-              ]
+              ["A1", "B1", "C1", "D1", "E1", "F1", "G1"],
+              ["A2", "B2", "C2", "D2", "E2", "F2", "G2"],
+              ["A3", "B3", "C3", "D3", "E3", "F3", "G3"],
+              ["A4", "B4", "C4", "D4", "E4", "F4", "G4"],
+              ["A5", "B5", "C5", "D5", "E5", "F5", "G5"],
+              ["A6", "B6", "C6", "D6", "E6", "F6", "G6"],
+              ["A7", "B7", "C7", "D7", "E7", "F7", "G7"]
             ],
             "longueurMaxSaisie": 200,
             "initiale": {
@@ -3596,10 +3229,7 @@
               "formules": []
             },
             "metadonnees": {
-              "concepts": [
-                "tableur",
-                "interets-composes"
-              ],
+              "concepts": ["tableur", "interets-composes"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 8,
               "modalite": "solo",
@@ -3772,10 +3402,7 @@
             "id": "b2-05-a1-jalon",
             "invite": "Je sais calculer une valeur acquise et une valeur actuelle, et les écrire au tableur.",
             "metadonnees": {
-              "concepts": [
-                "interets-composes",
-                "valeur-actuelle"
-              ],
+              "concepts": ["interets-composes", "valeur-actuelle"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -3815,10 +3442,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "annuites",
-                "interets-composes"
-              ],
+              "concepts": ["annuites", "interets-composes"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 5,
               "modalite": "solo",
@@ -3861,10 +3485,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "annuites",
-                "somme-de-termes"
-              ],
+              "concepts": ["annuites", "somme-de-termes"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -3928,11 +3549,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "annuites",
-                "suite-geometrique",
-                "somme-de-termes"
-              ],
+              "concepts": ["annuites", "suite-geometrique", "somme-de-termes"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -3991,9 +3608,7 @@
               }
             ],
             "metadonnees": {
-              "concepts": [
-                "annuites"
-              ],
+              "concepts": ["annuites"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 6,
               "modalite": "solo",
@@ -4049,9 +3664,7 @@
                   "enonce": "Que vaut le versement de fin 2026 à la fin de 2030 ?",
                   "unite": "€",
                   "metadonnees": {
-                    "concepts": [
-                      "annuites"
-                    ],
+                    "concepts": ["annuites"],
                     "misconceptionsCiblees": [],
                     "dureeMinutes": 12,
                     "modalite": "solo",
@@ -4091,9 +3704,7 @@
                   "enonce": "Quelle épargne Hélène aura-t-elle à la fin de 2030 ?",
                   "unite": "€",
                   "metadonnees": {
-                    "concepts": [
-                      "annuites"
-                    ],
+                    "concepts": ["annuites"],
                     "misconceptionsCiblees": [],
                     "dureeMinutes": 12,
                     "modalite": "solo",
@@ -4285,77 +3896,14 @@
               "En F3, calculez le total des intérêts gagnés de 2027 à 2030.",
               "Le taux et le versement ne s’écrivent pas dans les formules : utilisez F1 et H1."
             ],
-            "lettres": [
-              "A",
-              "B",
-              "C",
-              "D",
-              "E",
-              "F",
-              "G",
-              "H"
-            ],
+            "lettres": ["A", "B", "C", "D", "E", "F", "G", "H"],
             "grille": [
-              [
-                "A1",
-                "B1",
-                "C1",
-                "D1",
-                "E1",
-                "F1",
-                "G1",
-                "H1"
-              ],
-              [
-                "A2",
-                "B2",
-                "C2",
-                "D2",
-                "E2",
-                "F2",
-                "G2",
-                "H2"
-              ],
-              [
-                "A3",
-                "B3",
-                "C3",
-                "D3",
-                "E3",
-                "F3",
-                "G3",
-                "H3"
-              ],
-              [
-                "A4",
-                "B4",
-                "C4",
-                "D4",
-                "E4",
-                "F4",
-                "G4",
-                "H4"
-              ],
-              [
-                "A5",
-                "B5",
-                "C5",
-                "D5",
-                "E5",
-                "F5",
-                "G5",
-                "H5"
-              ],
-              [
-                "A6",
-                "B6",
-                "C6",
-                "D6",
-                "E6",
-                "F6",
-                "G6",
-                "H6"
-              ]
+              ["A1", "B1", "C1", "D1", "E1", "F1", "G1", "H1"],
+              ["A2", "B2", "C2", "D2", "E2", "F2", "G2", "H2"],
+              ["A3", "B3", "C3", "D3", "E3", "F3", "G3", "H3"],
+              ["A4", "B4", "C4", "D4", "E4", "F4", "G4", "H4"],
+              ["A5", "B5", "C5", "D5", "E5", "F5", "G5", "H5"],
+              ["A6", "B6", "C6", "D6", "E6", "F6", "G6", "H6"]
             ],
             "longueurMaxSaisie": 200,
             "initiale": {
@@ -4395,10 +3943,7 @@
               "formules": []
             },
             "metadonnees": {
-              "concepts": [
-                "tableur",
-                "annuites"
-              ],
+              "concepts": ["tableur", "annuites"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 12,
               "modalite": "solo",
@@ -4560,9 +4105,7 @@
             "id": "b2-05-a2-jalon",
             "invite": "Je sais calculer la valeur acquise d’une suite de versements et la construire au tableur.",
             "metadonnees": {
-              "concepts": [
-                "annuites"
-              ],
+              "concepts": ["annuites"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -4610,32 +4153,16 @@
                   {
                     "label": "Intérêts",
                     "values": [
-                      5000,
-                      4602.48,
-                      4185.08,
-                      3746.81,
-                      3286.63,
-                      2803.44,
-                      2296.08,
-                      1763.37,
-                      1204.01,
-                      616.69
+                      5000, 4602.48, 4185.08, 3746.81, 3286.63, 2803.44,
+                      2296.08, 1763.37, 1204.01, 616.69
                     ],
                     "tone": "ink"
                   },
                   {
                     "label": "Amortissement du capital",
                     "values": [
-                      7950.46,
-                      8347.98,
-                      8765.38,
-                      9203.65,
-                      9663.83,
-                      10147.02,
-                      10654.37,
-                      11187.09,
-                      11746.45,
-                      12333.77
+                      7950.46, 8347.98, 8765.38, 9203.65, 9663.83, 10147.02,
+                      10654.37, 11187.09, 11746.45, 12333.77
                     ],
                     "tone": "teal"
                   }
@@ -4649,9 +4176,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "tableau-d-amortissement"
-              ],
+              "concepts": ["tableau-d-amortissement"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -4790,10 +4315,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "tableau-d-amortissement",
-                "annuites"
-              ],
+              "concepts": ["tableau-d-amortissement", "annuites"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -4858,10 +4380,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "tableau-d-amortissement",
-                "annuites"
-              ],
+              "concepts": ["tableau-d-amortissement", "annuites"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -4896,10 +4415,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "cout-du-credit",
-                "tableur"
-              ],
+              "concepts": ["cout-du-credit", "tableur"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -4953,10 +4469,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "cout-du-credit",
-                "tableur"
-              ],
+              "concepts": ["cout-du-credit", "tableur"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -5015,10 +4528,7 @@
               }
             ],
             "metadonnees": {
-              "concepts": [
-                "tableau-d-amortissement",
-                "cout-du-credit"
-              ],
+              "concepts": ["tableau-d-amortissement", "cout-du-credit"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 6,
               "modalite": "solo",
@@ -5317,13 +4827,7 @@
                 "intitule": "Annuité (€)",
                 "role": "donnee",
                 "decimales": 2,
-                "valeurs": [
-                  13477.63,
-                  13477.63,
-                  13477.63,
-                  13477.63,
-                  13477.63
-                ],
+                "valeurs": [13477.63, 13477.63, 13477.63, 13477.63, 13477.63],
                 "totalise": true
               }
             ],
@@ -5457,9 +4961,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "tableau-d-amortissement"
-              ],
+              "concepts": ["tableau-d-amortissement"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 8,
               "modalite": "solo",
@@ -5686,10 +5188,7 @@
             "invite": "Trouvez les erreurs de l’IA, corrigez chacune et dites comment la contrôler.",
             "strategies": [],
             "metadonnees": {
-              "concepts": [
-                "tableau-d-amortissement",
-                "cout-du-credit"
-              ],
+              "concepts": ["tableau-d-amortissement", "cout-du-credit"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 10,
               "modalite": "solo",
@@ -5767,10 +5266,7 @@
             "id": "b2-05-a3-jalon",
             "invite": "Je sais calculer une annuité, remplir un tableau d’amortissement et donner le coût d’un crédit.",
             "metadonnees": {
-              "concepts": [
-                "tableau-d-amortissement",
-                "cout-du-credit"
-              ],
+              "concepts": ["tableau-d-amortissement", "cout-du-credit"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -5917,73 +5413,13 @@
               "En I2, calculez le coût du crédit.",
               "Le taux et l’annuité ne s’écrivent pas dans les formules : utilisez F2 et H2, figés par des $ là où la formule est recopiée."
             ],
-            "lettres": [
-              "A",
-              "B",
-              "C",
-              "D",
-              "E",
-              "F",
-              "G",
-              "H",
-              "I"
-            ],
+            "lettres": ["A", "B", "C", "D", "E", "F", "G", "H", "I"],
             "grille": [
-              [
-                "A1",
-                "B1",
-                "C1",
-                "D1",
-                "E1",
-                "F1",
-                "G1",
-                "H1",
-                "I1"
-              ],
-              [
-                "A2",
-                "B2",
-                "C2",
-                "D2",
-                "E2",
-                "F2",
-                "G2",
-                "H2",
-                "I2"
-              ],
-              [
-                "A3",
-                "B3",
-                "C3",
-                "D3",
-                "E3",
-                "F3",
-                "G3",
-                "H3",
-                "I3"
-              ],
-              [
-                "A4",
-                "B4",
-                "C4",
-                "D4",
-                "E4",
-                "F4",
-                "G4",
-                "H4",
-                "I4"
-              ],
-              [
-                "A5",
-                "B5",
-                "C5",
-                "D5",
-                "E5",
-                "F5",
-                "G5",
-                "H5",
-                "I5"
-              ]
+              ["A1", "B1", "C1", "D1", "E1", "F1", "G1", "H1", "I1"],
+              ["A2", "B2", "C2", "D2", "E2", "F2", "G2", "H2", "I2"],
+              ["A3", "B3", "C3", "D3", "E3", "F3", "G3", "H3", "I3"],
+              ["A4", "B4", "C4", "D4", "E4", "F4", "G4", "H4", "I4"],
+              ["A5", "B5", "C5", "D5", "E5", "F5", "G5", "H5", "I5"]
             ],
             "longueurMaxSaisie": 200,
             "initiale": {
@@ -6858,6 +6294,7 @@
             "id": "b2-05-a4-billet",
             "question": "Hélène prépare le tableau d’un nouvel emprunt : capital dû en début d’année en B2, taux annuel en H1. Quelle formule écrire en C2 pour les intérêts, à recopier vers le bas ?",
             "invite": "En une phrase : pourquoi les intérêts d’un emprunt baissent-ils chaque année ?",
+            "longueurMax": 500,
             "options": [
               {
                 "id": "b2-h-1-c53d0532",
@@ -6877,10 +6314,7 @@
               }
             ],
             "metadonnees": {
-              "concepts": [
-                "tableau-d-amortissement",
-                "tableur"
-              ],
+              "concepts": ["tableau-d-amortissement", "tableur"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 4,
               "modalite": "solo",
@@ -7168,10 +6602,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "interets-composes",
-                "suite-geometrique"
-              ],
+              "concepts": ["interets-composes", "suite-geometrique"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -7229,10 +6660,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "interets-composes",
-                "suite-geometrique"
-              ],
+              "concepts": ["interets-composes", "suite-geometrique"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -7260,10 +6688,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "valeur-actuelle",
-                "interets-composes"
-              ],
+              "concepts": ["valeur-actuelle", "interets-composes"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -7382,10 +6807,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "annuites",
-                "somme-de-termes"
-              ],
+              "concepts": ["annuites", "somme-de-termes"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -7442,11 +6864,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "annuites",
-                "suite-geometrique",
-                "somme-de-termes"
-              ],
+              "concepts": ["annuites", "suite-geometrique", "somme-de-termes"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -7519,32 +6937,16 @@
                   {
                     "label": "Intérêts",
                     "values": [
-                      5000,
-                      4602.48,
-                      4185.08,
-                      3746.81,
-                      3286.63,
-                      2803.44,
-                      2296.08,
-                      1763.37,
-                      1204.01,
-                      616.69
+                      5000, 4602.48, 4185.08, 3746.81, 3286.63, 2803.44,
+                      2296.08, 1763.37, 1204.01, 616.69
                     ],
                     "tone": "ink"
                   },
                   {
                     "label": "Amortissement du capital",
                     "values": [
-                      7950.46,
-                      8347.98,
-                      8765.38,
-                      9203.65,
-                      9663.83,
-                      10147.02,
-                      10654.37,
-                      11187.09,
-                      11746.45,
-                      12333.77
+                      7950.46, 8347.98, 8765.38, 9203.65, 9663.83, 10147.02,
+                      10654.37, 11187.09, 11746.45, 12333.77
                     ],
                     "tone": "teal"
                   }
@@ -7558,9 +6960,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "tableau-d-amortissement"
-              ],
+              "concepts": ["tableau-d-amortissement"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -7596,10 +6996,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "tableau-d-amortissement",
-                "annuites"
-              ],
+              "concepts": ["tableau-d-amortissement", "annuites"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -7657,10 +7054,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "tableau-d-amortissement",
-                "annuites"
-              ],
+              "concepts": ["tableau-d-amortissement", "annuites"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -7688,10 +7082,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "cout-du-credit",
-                "tableur"
-              ],
+              "concepts": ["cout-du-credit", "tableur"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -7738,10 +7129,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "cout-du-credit",
-                "tableur"
-              ],
+              "concepts": ["cout-du-credit", "tableur"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",

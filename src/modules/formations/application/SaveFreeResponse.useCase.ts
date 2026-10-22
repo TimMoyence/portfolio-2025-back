@@ -1,4 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { LONGUEUR_MAX_DU_BILLET_DE_SORTIE } from '../domain/contrats/donnees-publiques';
 import {
   activitesLibres,
   cibleServie,
@@ -29,7 +30,7 @@ export class SaveFreeResponseUseCase {
   ) {}
 
   async execute(command: SaveFreeResponseInput): Promise<void> {
-    const response = texteRenseigne(command.response, 'La réponse');
+    texteRenseigne(command.response, 'La réponse');
     const { session, cours } = await this.participation.ouverte(command);
     const ecran = cibleServie(
       session,
@@ -47,6 +48,13 @@ export class SaveFreeResponseUseCase {
     }
     assertPhaseOuverte(session.pilotageEcrans, { ecranId: command.screenId });
     assertEtapeNonCorrigee(session.pilotageEcrans, ecran, command.activityId);
+    const response = texteRenseigne(
+      command.response,
+      'La réponse',
+      ecran.brique === 'fp-exit'
+        ? LONGUEUR_MAX_DU_BILLET_DE_SORTIE
+        : Number.POSITIVE_INFINITY,
+    );
     await this.freeResponses.save({ ...command, response });
     this.participation.signalerActivite(command.sessionId);
   }

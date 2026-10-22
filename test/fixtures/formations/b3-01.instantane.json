@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "f83f368f33e15296cefdd29e88f91432289ebeeed1019adc17505fc332c2db67",
+  "empreinte": "3128d1edd53b4b1d5bbb271ccd886d77e7697274eedff89c889d077af8d18739",
   "sujet": {
     "id": "b3-01-donnee-brute-decision",
     "titre": "Expert Data : de la donnée brute à la décision",
@@ -47,9 +47,7 @@
               }
             ],
             "metadonnees": {
-              "concepts": [
-                "reference-de-cellule"
-              ],
+              "concepts": ["reference-de-cellule"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",
@@ -84,9 +82,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "jeu-de-donnees"
-              ],
+              "concepts": ["jeu-de-donnees"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -144,11 +140,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "jeu-de-donnees",
-                "nettoyage",
-                "tableau-de-bord"
-              ],
+              "concepts": ["jeu-de-donnees", "nettoyage", "tableau-de-bord"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -259,10 +251,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "jeu-de-donnees",
-                "granularite"
-              ],
+              "concepts": ["jeu-de-donnees", "granularite"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",
@@ -318,9 +307,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "cle-et-relation"
-              ],
+              "concepts": ["cle-et-relation"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",
@@ -416,10 +403,7 @@
               }
             ],
             "metadonnees": {
-              "concepts": [
-                "jeu-de-donnees",
-                "cle-et-relation"
-              ],
+              "concepts": ["jeu-de-donnees", "cle-et-relation"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 5,
               "modalite": "binome",
@@ -471,9 +455,7 @@
                   "enonce": "Combien de lignes porte la commande C-10234 ? Saisissez un nombre entier.",
                   "unite": "lignes",
                   "metadonnees": {
-                    "concepts": [
-                      "granularite"
-                    ],
+                    "concepts": ["granularite"],
                     "misconceptionsCiblees": [],
                     "dureeMinutes": 5,
                     "modalite": "solo",
@@ -559,9 +541,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "qualite-des-donnees"
-              ],
+              "concepts": ["qualite-des-donnees"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",
@@ -614,9 +594,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "nettoyage"
-              ],
+              "concepts": ["nettoyage"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",
@@ -678,9 +656,7 @@
               }
             ],
             "metadonnees": {
-              "concepts": [
-                "nettoyage"
-              ],
+              "concepts": ["nettoyage"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",
@@ -761,9 +737,7 @@
               }
             ],
             "metadonnees": {
-              "concepts": [
-                "qualite-des-donnees"
-              ],
+              "concepts": ["qualite-des-donnees"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 8,
               "modalite": "binome",
@@ -792,10 +766,7 @@
                   "enonce": "Combien de lignes reste-t-il après la suppression des doublons exacts ? Saisissez un nombre entier.",
                   "unite": "lignes",
                   "metadonnees": {
-                    "concepts": [
-                      "nettoyage",
-                      "qualite-des-donnees"
-                    ],
+                    "concepts": ["nettoyage", "qualite-des-donnees"],
                     "misconceptionsCiblees": [],
                     "dureeMinutes": 15,
                     "modalite": "solo",
@@ -812,10 +783,7 @@
                   "enonce": "Quel est le CA total HT des lignes restantes, une fois les montants en texte convertis ? En euros, sans le symbole, arrondi à l’euro.",
                   "unite": "€",
                   "metadonnees": {
-                    "concepts": [
-                      "nettoyage",
-                      "qualite-des-donnees"
-                    ],
+                    "concepts": ["nettoyage", "qualite-des-donnees"],
                     "misconceptionsCiblees": [],
                     "dureeMinutes": 15,
                     "modalite": "solo",
@@ -832,10 +800,7 @@
                   "enonce": "Combien de lignes la colonne controle marque-t-elle « À vérifier » ? Saisissez un nombre entier.",
                   "unite": "lignes",
                   "metadonnees": {
-                    "concepts": [
-                      "nettoyage",
-                      "qualite-des-donnees"
-                    ],
+                    "concepts": ["nettoyage", "qualite-des-donnees"],
                     "misconceptionsCiblees": [],
                     "dureeMinutes": 15,
                     "modalite": "solo",
@@ -1187,10 +1152,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "calcul-sur-dates",
-                "indicateur-statistique"
-              ],
+              "concepts": ["calcul-sur-dates", "indicateur-statistique"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",
@@ -1219,10 +1181,7 @@
                   "enonce": "Quel est le délai médian de livraison de Strasbourg (AG12) en 2026, en jours ouvrés ? Saisissez un nombre entier.",
                   "unite": "jours ouvrés",
                   "metadonnees": {
-                    "concepts": [
-                      "calcul-sur-dates",
-                      "indicateur-statistique"
-                    ],
+                    "concepts": ["calcul-sur-dates", "indicateur-statistique"],
                     "misconceptionsCiblees": [],
                     "dureeMinutes": 12,
                     "modalite": "solo",
@@ -1239,10 +1198,7 @@
                   "enonce": "Combien de lignes commandées en 2026 sont livrées après leur date promise, cinq jours ouvrés après la commande ? Saisissez un nombre entier.",
                   "unite": "lignes",
                   "metadonnees": {
-                    "concepts": [
-                      "calcul-sur-dates",
-                      "indicateur-statistique"
-                    ],
+                    "concepts": ["calcul-sur-dates", "indicateur-statistique"],
                     "misconceptionsCiblees": [],
                     "dureeMinutes": 12,
                     "modalite": "solo",
@@ -1327,9 +1283,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "tableau-croise-dynamique"
-              ],
+              "concepts": ["tableau-croise-dynamique"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",
@@ -1369,9 +1323,7 @@
               }
             ],
             "metadonnees": {
-              "concepts": [
-                "tableau-croise-dynamique"
-              ],
+              "concepts": ["tableau-croise-dynamique"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",
@@ -1401,9 +1353,7 @@
                   "enonce": "Quelle part de son CA Rennes (AG06) réalise-t-elle en informatique, de janvier à septembre 2026 ? En %, sans le symbole, arrondi au dixième de point.",
                   "unite": "%",
                   "metadonnees": {
-                    "concepts": [
-                      "tableau-croise-dynamique"
-                    ],
+                    "concepts": ["tableau-croise-dynamique"],
                     "misconceptionsCiblees": [],
                     "dureeMinutes": 15,
                     "modalite": "solo",
@@ -1455,29 +1405,16 @@
                 "title": "Rennes, loin derrière Nantes",
                 "caption": "Diapositive préparée pour le comité de direction",
                 "context": "Un collègue de Nadia a préparé ce graphique avec le commentaire : « Rennes vend trois fois moins que Nantes ».",
-                "labels": [
-                  "Rennes",
-                  "Nantes"
-                ],
+                "labels": ["Rennes", "Nantes"],
                 "series": [
                   {
                     "label": "CA HT 2025",
-                    "values": [
-                      51600,
-                      59500
-                    ],
+                    "values": [51600, 59500],
                     "tone": "teal"
                   }
                 ],
-                "axisRanges": [
-                  [
-                    47500,
-                    60000
-                  ]
-                ],
-                "axisLabels": [
-                  "47 500 à 60 000 €"
-                ],
+                "axisRanges": [[47500, 60000]],
+                "axisLabels": ["47 500 à 60 000 €"],
                 "unit": "€",
                 "source": "Export des ventes de Norvane Équipement, CA arrondi à la centaine d’euros (données fictives).",
                 "kind": "bars",
@@ -1485,9 +1422,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "choix-du-graphique"
-              ],
+              "concepts": ["choix-du-graphique"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -1571,9 +1506,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "choix-du-graphique"
-              ],
+              "concepts": ["choix-du-graphique"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",
@@ -1602,10 +1535,7 @@
                   "enonce": "Combien d’agences ont un CA de janvier à septembre 2026 sous leur objectif cumulé de la même période ? Saisissez un nombre entier.",
                   "unite": "agences",
                   "metadonnees": {
-                    "concepts": [
-                      "choix-du-graphique",
-                      "tableau-de-bord"
-                    ],
+                    "concepts": ["choix-du-graphique", "tableau-de-bord"],
                     "misconceptionsCiblees": [],
                     "dureeMinutes": 11,
                     "modalite": "solo",
@@ -1622,10 +1552,7 @@
                   "enonce": "Quel est le taux d’atteinte de Rennes (AG06), de janvier à septembre 2026 ? En %, sans le symbole, arrondi au dixième de point.",
                   "unite": "%",
                   "metadonnees": {
-                    "concepts": [
-                      "choix-du-graphique",
-                      "tableau-de-bord"
-                    ],
+                    "concepts": ["choix-du-graphique", "tableau-de-bord"],
                     "misconceptionsCiblees": [],
                     "dureeMinutes": 11,
                     "modalite": "solo",
@@ -1715,9 +1642,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "tableau-de-bord"
-              ],
+              "concepts": ["tableau-de-bord"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",
@@ -1757,9 +1682,7 @@
               }
             ],
             "metadonnees": {
-              "concepts": [
-                "tableau-de-bord"
-              ],
+              "concepts": ["tableau-de-bord"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",
@@ -1789,10 +1712,7 @@
                   "enonce": "De combien le CA de janvier à septembre 2026 a-t-il évolué par rapport à la même période de 2025 ? En %, sans le symbole, arrondi au dixième de point.",
                   "unite": "%",
                   "metadonnees": {
-                    "concepts": [
-                      "tableau-de-bord",
-                      "indicateur-statistique"
-                    ],
+                    "concepts": ["tableau-de-bord", "indicateur-statistique"],
                     "misconceptionsCiblees": [],
                     "dureeMinutes": 15,
                     "modalite": "solo",
@@ -1809,10 +1729,7 @@
                   "enonce": "Quel est le CA HT cumulé du réseau, de janvier à septembre 2026 ? En euros, sans le symbole, arrondi à l’euro.",
                   "unite": "€",
                   "metadonnees": {
-                    "concepts": [
-                      "tableau-de-bord",
-                      "indicateur-statistique"
-                    ],
+                    "concepts": ["tableau-de-bord", "indicateur-statistique"],
                     "misconceptionsCiblees": [],
                     "dureeMinutes": 15,
                     "modalite": "solo",
@@ -1829,10 +1746,7 @@
                   "enonce": "Quel est le taux de marque de Marseille (AG09), marge ÷ CA HT, de janvier à septembre 2026 ? En %, sans le symbole, arrondi au dixième de point.",
                   "unite": "%",
                   "metadonnees": {
-                    "concepts": [
-                      "tableau-de-bord",
-                      "indicateur-statistique"
-                    ],
+                    "concepts": ["tableau-de-bord", "indicateur-statistique"],
                     "misconceptionsCiblees": [],
                     "dureeMinutes": 15,
                     "modalite": "solo",
@@ -1849,10 +1763,7 @@
                   "enonce": "Combien de lignes de données, hors en-tête, compte l’onglet Quarantaine du classeur de reprise ? Saisissez un nombre entier.",
                   "unite": "lignes",
                   "metadonnees": {
-                    "concepts": [
-                      "tableau-de-bord",
-                      "indicateur-statistique"
-                    ],
+                    "concepts": ["tableau-de-bord", "indicateur-statistique"],
                     "misconceptionsCiblees": [],
                     "dureeMinutes": 15,
                     "modalite": "solo",
@@ -1895,9 +1806,7 @@
               }
             ],
             "metadonnees": {
-              "concepts": [
-                "tableau-de-bord"
-              ],
+              "concepts": ["tableau-de-bord"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 9,
               "modalite": "solo",
@@ -1999,10 +1908,7 @@
               }
             ],
             "metadonnees": {
-              "concepts": [
-                "choix-du-graphique",
-                "tableau-de-bord"
-              ],
+              "concepts": ["choix-du-graphique", "tableau-de-bord"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 4,
               "modalite": "solo",
@@ -2032,9 +1938,7 @@
               }
             ],
             "metadonnees": {
-              "concepts": [
-                "qualite-des-donnees"
-              ],
+              "concepts": ["qualite-des-donnees"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -2054,6 +1958,7 @@
             "id": "b3-01-a3-billet",
             "question": "Une ligne porte une date_livraison antérieure à sa date_commande. La corrige-t-on automatiquement ?",
             "invite": "En une phrase : pourquoi ce choix ?",
+            "longueurMax": 500,
             "options": [
               {
                 "id": "non-on-la-signale-et-on-demande-faux-hum-c6b7abb5",
@@ -2069,9 +1974,7 @@
               }
             ],
             "metadonnees": {
-              "concepts": [
-                "qualite-des-donnees"
-              ],
+              "concepts": ["qualite-des-donnees"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",
@@ -2128,9 +2031,7 @@
               }
             ],
             "metadonnees": {
-              "concepts": [
-                "reference-de-cellule"
-              ],
+              "concepts": ["reference-de-cellule"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",
@@ -2203,9 +2104,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "jeu-de-donnees"
-              ],
+              "concepts": ["jeu-de-donnees"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -2270,11 +2169,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "jeu-de-donnees",
-                "nettoyage",
-                "tableau-de-bord"
-              ],
+              "concepts": ["jeu-de-donnees", "nettoyage", "tableau-de-bord"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -2471,10 +2366,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "jeu-de-donnees",
-                "granularite"
-              ],
+              "concepts": ["jeu-de-donnees", "granularite"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",
@@ -2537,9 +2429,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "cle-et-relation"
-              ],
+              "concepts": ["cle-et-relation"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",
@@ -2642,10 +2532,7 @@
               }
             ],
             "metadonnees": {
-              "concepts": [
-                "jeu-de-donnees",
-                "cle-et-relation"
-              ],
+              "concepts": ["jeu-de-donnees", "cle-et-relation"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 5,
               "modalite": "binome",
@@ -2801,9 +2688,7 @@
                   "enonce": "Combien de lignes porte la commande C-10234 ? Saisissez un nombre entier.",
                   "unite": "lignes",
                   "metadonnees": {
-                    "concepts": [
-                      "granularite"
-                    ],
+                    "concepts": ["granularite"],
                     "misconceptionsCiblees": [],
                     "dureeMinutes": 5,
                     "modalite": "solo",
@@ -2999,9 +2884,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "qualite-des-donnees"
-              ],
+              "concepts": ["qualite-des-donnees"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",
@@ -3061,9 +2944,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "nettoyage"
-              ],
+              "concepts": ["nettoyage"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",
@@ -3132,9 +3013,7 @@
               }
             ],
             "metadonnees": {
-              "concepts": [
-                "nettoyage"
-              ],
+              "concepts": ["nettoyage"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",
@@ -3222,9 +3101,7 @@
               }
             ],
             "metadonnees": {
-              "concepts": [
-                "qualite-des-donnees"
-              ],
+              "concepts": ["qualite-des-donnees"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 8,
               "modalite": "binome",
@@ -3338,10 +3215,7 @@
                   "enonce": "Combien de lignes reste-t-il après la suppression des doublons exacts ? Saisissez un nombre entier.",
                   "unite": "lignes",
                   "metadonnees": {
-                    "concepts": [
-                      "nettoyage",
-                      "qualite-des-donnees"
-                    ],
+                    "concepts": ["nettoyage", "qualite-des-donnees"],
                     "misconceptionsCiblees": [],
                     "dureeMinutes": 15,
                     "modalite": "solo",
@@ -3358,10 +3232,7 @@
                   "enonce": "Quel est le CA total HT des lignes restantes, une fois les montants en texte convertis ? En euros, sans le symbole, arrondi à l’euro.",
                   "unite": "€",
                   "metadonnees": {
-                    "concepts": [
-                      "nettoyage",
-                      "qualite-des-donnees"
-                    ],
+                    "concepts": ["nettoyage", "qualite-des-donnees"],
                     "misconceptionsCiblees": [],
                     "dureeMinutes": 15,
                     "modalite": "solo",
@@ -3378,10 +3249,7 @@
                   "enonce": "Combien de lignes la colonne controle marque-t-elle « À vérifier » ? Saisissez un nombre entier.",
                   "unite": "lignes",
                   "metadonnees": {
-                    "concepts": [
-                      "nettoyage",
-                      "qualite-des-donnees"
-                    ],
+                    "concepts": ["nettoyage", "qualite-des-donnees"],
                     "misconceptionsCiblees": [],
                     "dureeMinutes": 15,
                     "modalite": "solo",
@@ -3997,10 +3865,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "calcul-sur-dates",
-                "indicateur-statistique"
-              ],
+              "concepts": ["calcul-sur-dates", "indicateur-statistique"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",
@@ -4036,10 +3901,7 @@
                   "enonce": "Quel est le délai médian de livraison de Strasbourg (AG12) en 2026, en jours ouvrés ? Saisissez un nombre entier.",
                   "unite": "jours ouvrés",
                   "metadonnees": {
-                    "concepts": [
-                      "calcul-sur-dates",
-                      "indicateur-statistique"
-                    ],
+                    "concepts": ["calcul-sur-dates", "indicateur-statistique"],
                     "misconceptionsCiblees": [],
                     "dureeMinutes": 12,
                     "modalite": "solo",
@@ -4056,10 +3918,7 @@
                   "enonce": "Combien de lignes commandées en 2026 sont livrées après leur date promise, cinq jours ouvrés après la commande ? Saisissez un nombre entier.",
                   "unite": "lignes",
                   "metadonnees": {
-                    "concepts": [
-                      "calcul-sur-dates",
-                      "indicateur-statistique"
-                    ],
+                    "concepts": ["calcul-sur-dates", "indicateur-statistique"],
                     "misconceptionsCiblees": [],
                     "dureeMinutes": 12,
                     "modalite": "solo",
@@ -4261,9 +4120,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "tableau-croise-dynamique"
-              ],
+              "concepts": ["tableau-croise-dynamique"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",
@@ -4310,9 +4167,7 @@
               }
             ],
             "metadonnees": {
-              "concepts": [
-                "tableau-croise-dynamique"
-              ],
+              "concepts": ["tableau-croise-dynamique"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",
@@ -4349,9 +4204,7 @@
                   "enonce": "Quelle part de son CA Rennes (AG06) réalise-t-elle en informatique, de janvier à septembre 2026 ? En %, sans le symbole, arrondi au dixième de point.",
                   "unite": "%",
                   "metadonnees": {
-                    "concepts": [
-                      "tableau-croise-dynamique"
-                    ],
+                    "concepts": ["tableau-croise-dynamique"],
                     "misconceptionsCiblees": [],
                     "dureeMinutes": 15,
                     "modalite": "solo",
@@ -4475,29 +4328,16 @@
                 "title": "Rennes, loin derrière Nantes",
                 "caption": "Diapositive préparée pour le comité de direction",
                 "context": "Un collègue de Nadia a préparé ce graphique avec le commentaire : « Rennes vend trois fois moins que Nantes ».",
-                "labels": [
-                  "Rennes",
-                  "Nantes"
-                ],
+                "labels": ["Rennes", "Nantes"],
                 "series": [
                   {
                     "label": "CA HT 2025",
-                    "values": [
-                      51600,
-                      59500
-                    ],
+                    "values": [51600, 59500],
                     "tone": "teal"
                   }
                 ],
-                "axisRanges": [
-                  [
-                    47500,
-                    60000
-                  ]
-                ],
-                "axisLabels": [
-                  "47 500 à 60 000 €"
-                ],
+                "axisRanges": [[47500, 60000]],
+                "axisLabels": ["47 500 à 60 000 €"],
                 "unit": "€",
                 "source": "Export des ventes de Norvane Équipement, CA arrondi à la centaine d’euros (données fictives).",
                 "kind": "bars",
@@ -4505,9 +4345,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "choix-du-graphique"
-              ],
+              "concepts": ["choix-du-graphique"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -4644,9 +4482,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "choix-du-graphique"
-              ],
+              "concepts": ["choix-du-graphique"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",
@@ -4682,10 +4518,7 @@
                   "enonce": "Combien d’agences ont un CA de janvier à septembre 2026 sous leur objectif cumulé de la même période ? Saisissez un nombre entier.",
                   "unite": "agences",
                   "metadonnees": {
-                    "concepts": [
-                      "choix-du-graphique",
-                      "tableau-de-bord"
-                    ],
+                    "concepts": ["choix-du-graphique", "tableau-de-bord"],
                     "misconceptionsCiblees": [],
                     "dureeMinutes": 11,
                     "modalite": "solo",
@@ -4702,10 +4535,7 @@
                   "enonce": "Quel est le taux d’atteinte de Rennes (AG06), de janvier à septembre 2026 ? En %, sans le symbole, arrondi au dixième de point.",
                   "unite": "%",
                   "metadonnees": {
-                    "concepts": [
-                      "choix-du-graphique",
-                      "tableau-de-bord"
-                    ],
+                    "concepts": ["choix-du-graphique", "tableau-de-bord"],
                     "misconceptionsCiblees": [],
                     "dureeMinutes": 11,
                     "modalite": "solo",
@@ -4912,9 +4742,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "tableau-de-bord"
-              ],
+              "concepts": ["tableau-de-bord"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",
@@ -4961,9 +4789,7 @@
               }
             ],
             "metadonnees": {
-              "concepts": [
-                "tableau-de-bord"
-              ],
+              "concepts": ["tableau-de-bord"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",
@@ -5000,10 +4826,7 @@
                   "enonce": "De combien le CA de janvier à septembre 2026 a-t-il évolué par rapport à la même période de 2025 ? En %, sans le symbole, arrondi au dixième de point.",
                   "unite": "%",
                   "metadonnees": {
-                    "concepts": [
-                      "tableau-de-bord",
-                      "indicateur-statistique"
-                    ],
+                    "concepts": ["tableau-de-bord", "indicateur-statistique"],
                     "misconceptionsCiblees": [],
                     "dureeMinutes": 15,
                     "modalite": "solo",
@@ -5020,10 +4843,7 @@
                   "enonce": "Quel est le CA HT cumulé du réseau, de janvier à septembre 2026 ? En euros, sans le symbole, arrondi à l’euro.",
                   "unite": "€",
                   "metadonnees": {
-                    "concepts": [
-                      "tableau-de-bord",
-                      "indicateur-statistique"
-                    ],
+                    "concepts": ["tableau-de-bord", "indicateur-statistique"],
                     "misconceptionsCiblees": [],
                     "dureeMinutes": 15,
                     "modalite": "solo",
@@ -5040,10 +4860,7 @@
                   "enonce": "Quel est le taux de marque de Marseille (AG09), marge ÷ CA HT, de janvier à septembre 2026 ? En %, sans le symbole, arrondi au dixième de point.",
                   "unite": "%",
                   "metadonnees": {
-                    "concepts": [
-                      "tableau-de-bord",
-                      "indicateur-statistique"
-                    ],
+                    "concepts": ["tableau-de-bord", "indicateur-statistique"],
                     "misconceptionsCiblees": [],
                     "dureeMinutes": 15,
                     "modalite": "solo",
@@ -5060,10 +4877,7 @@
                   "enonce": "Combien de lignes de données, hors en-tête, compte l’onglet Quarantaine du classeur de reprise ? Saisissez un nombre entier.",
                   "unite": "lignes",
                   "metadonnees": {
-                    "concepts": [
-                      "tableau-de-bord",
-                      "indicateur-statistique"
-                    ],
+                    "concepts": ["tableau-de-bord", "indicateur-statistique"],
                     "misconceptionsCiblees": [],
                     "dureeMinutes": 15,
                     "modalite": "solo",
@@ -5205,9 +5019,7 @@
               }
             ],
             "metadonnees": {
-              "concepts": [
-                "tableau-de-bord"
-              ],
+              "concepts": ["tableau-de-bord"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 9,
               "modalite": "solo",
@@ -5341,10 +5153,7 @@
               }
             ],
             "metadonnees": {
-              "concepts": [
-                "choix-du-graphique",
-                "tableau-de-bord"
-              ],
+              "concepts": ["choix-du-graphique", "tableau-de-bord"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 4,
               "modalite": "solo",
@@ -5381,9 +5190,7 @@
               }
             ],
             "metadonnees": {
-              "concepts": [
-                "qualite-des-donnees"
-              ],
+              "concepts": ["qualite-des-donnees"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -5410,6 +5217,7 @@
             "id": "b3-01-a3-billet",
             "question": "Une ligne porte une date_livraison antérieure à sa date_commande. La corrige-t-on automatiquement ?",
             "invite": "En une phrase : pourquoi ce choix ?",
+            "longueurMax": 500,
             "options": [
               {
                 "id": "non-on-la-signale-et-on-demande-faux-hum-c6b7abb5",
@@ -5425,9 +5233,7 @@
               }
             ],
             "metadonnees": {
-              "concepts": [
-                "qualite-des-donnees"
-              ],
+              "concepts": ["qualite-des-donnees"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",
@@ -5534,9 +5340,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "jeu-de-donnees"
-              ],
+              "concepts": ["jeu-de-donnees"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -5594,11 +5398,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "jeu-de-donnees",
-                "nettoyage",
-                "tableau-de-bord"
-              ],
+              "concepts": ["jeu-de-donnees", "nettoyage", "tableau-de-bord"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -5668,10 +5468,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "jeu-de-donnees",
-                "granularite"
-              ],
+              "concepts": ["jeu-de-donnees", "granularite"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",
@@ -5727,9 +5524,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "cle-et-relation"
-              ],
+              "concepts": ["cle-et-relation"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",
@@ -5809,9 +5604,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "qualite-des-donnees"
-              ],
+              "concepts": ["qualite-des-donnees"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",
@@ -5864,9 +5657,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "nettoyage"
-              ],
+              "concepts": ["nettoyage"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",
@@ -6146,10 +5937,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "calcul-sur-dates",
-                "indicateur-statistique"
-              ],
+              "concepts": ["calcul-sur-dates", "indicateur-statistique"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",
@@ -6220,9 +6008,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "tableau-croise-dynamique"
-              ],
+              "concepts": ["tableau-croise-dynamique"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",
@@ -6264,29 +6050,16 @@
                 "title": "Rennes, loin derrière Nantes",
                 "caption": "Diapositive préparée pour le comité de direction",
                 "context": "Un collègue de Nadia a préparé ce graphique avec le commentaire : « Rennes vend trois fois moins que Nantes ».",
-                "labels": [
-                  "Rennes",
-                  "Nantes"
-                ],
+                "labels": ["Rennes", "Nantes"],
                 "series": [
                   {
                     "label": "CA HT 2025",
-                    "values": [
-                      51600,
-                      59500
-                    ],
+                    "values": [51600, 59500],
                     "tone": "teal"
                   }
                 ],
-                "axisRanges": [
-                  [
-                    47500,
-                    60000
-                  ]
-                ],
-                "axisLabels": [
-                  "47 500 à 60 000 €"
-                ],
+                "axisRanges": [[47500, 60000]],
+                "axisLabels": ["47 500 à 60 000 €"],
                 "unit": "€",
                 "source": "Export des ventes de Norvane Équipement, CA arrondi à la centaine d’euros (données fictives).",
                 "kind": "bars",
@@ -6294,9 +6067,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "choix-du-graphique"
-              ],
+              "concepts": ["choix-du-graphique"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -6357,9 +6128,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "choix-du-graphique"
-              ],
+              "concepts": ["choix-du-graphique"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",
@@ -6431,9 +6200,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "tableau-de-bord"
-              ],
+              "concepts": ["tableau-de-bord"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",

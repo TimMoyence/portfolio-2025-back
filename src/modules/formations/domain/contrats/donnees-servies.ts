@@ -8,7 +8,11 @@ import {
 import { auMoinsUn, texte } from '../cours/SchemasCommuns';
 import { presentationsVisuelles } from '../cours/VisualPresentation';
 import { MODALITES, REGIMES_DE_VERROU } from './contrat-de-l-api';
-import { NATURES_DE_CELLULE, type DonneesParBrique } from './donnees-publiques';
+import {
+  LONGUEUR_MAX_DU_BILLET_DE_SORTIE,
+  NATURES_DE_CELLULE,
+  type DonneesParBrique,
+} from './donnees-publiques';
 
 const strict = <F extends z.ZodRawShape>(forme: F) => z.object(forme).strict();
 
@@ -345,6 +349,7 @@ const DONNEES: SchemasParBrique = {
       id: z.string(),
       question: z.string(),
       invite: z.string(),
+      longueurMax: z.literal(LONGUEUR_MAX_DU_BILLET_DE_SORTIE),
       options: z.array(optionPublique),
       metadonnees,
     }),

@@ -3,12 +3,13 @@ import { auMillionieme } from '../../../../common/domain/nombres/arrondi';
 import { valeursAmbigues } from '../GradingCore';
 import type { AnswerValue, Solution } from '../GradingCore';
 import type { Cours, Ecran, Question } from '../contrats/cours';
-import type {
-  ExitBilletPublic,
-  MetadonneesBrique,
-  NumeriquePublic,
-  OptionPublique,
-  VotePublic,
+import {
+  type ExitBilletPublic,
+  LONGUEUR_MAX_DU_BILLET_DE_SORTIE,
+  type MetadonneesBrique,
+  type NumeriquePublic,
+  type OptionPublique,
+  type VotePublic,
 } from '../contrats/donnees-publiques';
 import type {
   CoursPublic,
@@ -512,6 +513,7 @@ function billet(
     id: vote.id,
     question: vote.enonce,
     invite: ecran.invite,
+    longueurMax: LONGUEUR_MAX_DU_BILLET_DE_SORTIE,
     options: vote.options,
     metadonnees: metadonnees(ecran),
   };

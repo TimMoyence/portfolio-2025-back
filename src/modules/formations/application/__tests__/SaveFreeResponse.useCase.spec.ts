@@ -4,6 +4,7 @@ import {
   creerCatalogueAVersions,
   creerCatalogueDeTest,
   creerParticipationEnSeance,
+  QUESTION_EXIT_TEST,
 } from '../../../../../test/factories/cours.factory';
 import {
   buildSessionRecord,
@@ -16,6 +17,7 @@ import {
   verifierSeanceIntrouvable,
   verifierSignalementDActivite,
 } from '../../../../../test/helpers/gardes-de-seance';
+import { LONGUEUR_MAX_DU_BILLET_DE_SORTIE } from '../../domain/contrats/donnees-publiques';
 import type { PilotageEcran } from '../../domain/contrats/pilotage';
 import type { SessionRecord } from '../../domain/ISessions.repository';
 import {
@@ -23,6 +25,7 @@ import {
   BlankFieldError,
   CoursInconnuError,
   EcranNonServiError,
+  FieldTooLongError,
   PhaseFermeeError,
   SessionClosedError,
   SessionNotStartedError,
@@ -119,6 +122,52 @@ describe('SaveFreeResponseUseCase', () => {
 
     await expect(sut.execute(REPONSE)).rejects.toThrow(erreur);
     expect(freeResponses.save).not.toHaveBeenCalled();
+  });
+
+  describe('billet de sortie', () => {
+    const BILLET = {
+      ...REPONSE,
+      screenId: 'E-EXIT',
+      activityId: QUESTION_EXIT_TEST.id,
+    };
+    const AU_DELA_DU_BILLET = 'a'.repeat(LONGUEUR_MAX_DU_BILLET_DE_SORTIE + 1);
+
+    beforeEach(() => {
+      sessions.findById.mockResolvedValue(
+        seanceEnCours({
+          ecranCourant: COURS.ecrans.findIndex(({ id }) => id === 'E-EXIT'),
+        }),
+      );
+    });
+
+    it('accepte la borne servie, comptee en points de code comme la colonne', async () => {
+      const aLaBorne = '😀'.repeat(LONGUEUR_MAX_DU_BILLET_DE_SORTIE);
+
+      await sut.execute({ ...BILLET, response: aLaBorne });
+
+      expect(freeResponses.save).toHaveBeenCalledWith({
+        ...BILLET,
+        response: aLaBorne,
+      });
+    });
+
+    it('refuse un caractere de plus que la borne servie, sans rien enregistrer', async () => {
+      await expect(
+        sut.execute({ ...BILLET, response: AU_DELA_DU_BILLET }),
+      ).rejects.toThrow(FieldTooLongError);
+      expect(freeResponses.save).not.toHaveBeenCalled();
+    });
+
+    it('ne borne pas ainsi les autres reponses libres', async () => {
+      sessions.findById.mockResolvedValue(seanceEnCours());
+
+      await sut.execute({ ...REPONSE, response: AU_DELA_DU_BILLET });
+
+      expect(freeResponses.save).toHaveBeenCalledWith({
+        ...REPONSE,
+        response: AU_DELA_DU_BILLET,
+      });
+    });
   });
 
   it('refuse une reponse vide avant toute lecture de la seance', async () => {

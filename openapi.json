@@ -14675,6 +14675,12 @@
               "invite": {
                 "type": "string"
               },
+              "longueurMax": {
+                "type": "number",
+                "enum": [
+                  500
+                ]
+              },
               "options": {
                 "type": "array",
                 "items": {
@@ -14702,6 +14708,7 @@
               "id",
               "question",
               "invite",
+              "longueurMax",
               "options",
               "metadonnees"
             ],

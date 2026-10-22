@@ -55,6 +55,7 @@ import type {
   VotePublic,
   WorkedExemple,
 } from './donnees-publiques';
+import { LONGUEUR_MAX_DU_BILLET_DE_SORTIE } from './donnees-publiques';
 import type { RegleDeNotation } from '../RegleDeNotation';
 import type {
   ControlSessionChanges,
@@ -1085,6 +1086,7 @@ describe('Contrats figés du cours B2-01 V3 (§ 9, lot 0)', () => {
         id: 'b2-01-a6-billet',
         question: 'Quelle vérification ferez-vous d’abord ?',
         invite: 'Justifiez en une phrase.',
+        longueurMax: LONGUEUR_MAX_DU_BILLET_DE_SORTIE,
         options: OPTIONS_BAISSE,
         metadonnees: METADONNEES,
       } satisfies ExitBilletPublic;

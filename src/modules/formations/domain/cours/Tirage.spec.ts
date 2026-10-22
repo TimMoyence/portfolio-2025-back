@@ -163,12 +163,18 @@ describe('tirer', () => {
     ).toEqual(['Q-TEST-EXIT', 'Q-TEST-RAPPEL', 'Q-TEST-VOTE']);
   });
 
-  it('projette le billet de sortie avec son invite', () => {
+  it('projette le billet de sortie avec son invite et la borne de sa reponse libre', () => {
     const donnees = ecranDe(tirer(cours, 1), 'E-EXIT').donnees as {
-      billet: { id: string; invite: string; options: unknown[] };
+      billet: {
+        id: string;
+        invite: string;
+        longueurMax: number;
+        options: unknown[];
+      };
     };
     expect(donnees.billet.id).toBe('Q-TEST-EXIT');
     expect(donnees.billet.invite).toBe('Qu’est-ce qui reste flou ?');
+    expect(donnees.billet.longueurMax).toBe(500);
     expect(donnees.billet.options).toHaveLength(3);
   });
 
