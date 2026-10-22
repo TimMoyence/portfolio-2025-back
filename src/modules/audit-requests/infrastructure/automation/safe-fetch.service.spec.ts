@@ -1,9 +1,16 @@
+import * as undici from 'undici';
+import { Agent, Headers, Response } from 'undici';
 import { buildAuditAutomationConfig } from '../../../../../test/factories/audit-config.factory';
 import type { AuditAutomationConfig } from './audit.config';
 import { SafeFetchService } from './safe-fetch.service';
 import * as ssrfGuard from './ssrf-guard.util';
 
 jest.mock('./ssrf-guard.util');
+
+jest.mock('undici', () => ({
+  ...jest.requireActual<typeof undici>('undici'),
+  fetch: jest.fn(),
+}));
 
 const mockedAssertSafeHttpUrl =
   ssrfGuard.assertSafeHttpUrl as jest.MockedFunction<
@@ -51,13 +58,13 @@ describe('SafeFetchService', () => {
   });
 
   let service: SafeFetchService;
-  let fetchSpy: jest.SpiedFunction<typeof global.fetch>;
+  const fetchSpy = jest.mocked(undici.fetch);
 
   beforeEach(() => {
     jest.restoreAllMocks();
     mockedAssertSafeHttpUrl.mockReset();
     mockedAssertSafeHttpUrl.mockResolvedValue(undefined);
-    fetchSpy = jest.spyOn(global, 'fetch');
+    fetchSpy.mockReset();
     service = new SafeFetchService(config);
   });
 
@@ -143,7 +150,7 @@ describe('SafeFetchService', () => {
 
   it('respecte le timeout (abort controller)', async () => {
     fetchSpy.mockImplementation((_url, init) => {
-      const signal = (init as RequestInit).signal;
+      const signal = init?.signal;
       expect(signal).toBeDefined();
       expect(signal).toBeInstanceOf(AbortSignal);
       return Promise.resolve(buildResponse(200, {}, 'ok'));
@@ -156,6 +163,7 @@ describe('SafeFetchService', () => {
       expect.objectContaining({
         signal: expect.any(AbortSignal),
         redirect: 'manual',
+        dispatcher: expect.any(Agent),
       }),
     );
   });

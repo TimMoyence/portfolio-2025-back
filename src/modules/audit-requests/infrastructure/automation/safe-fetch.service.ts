@@ -1,7 +1,11 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, type OnModuleDestroy } from '@nestjs/common';
 import { performance } from 'node:perf_hooks';
+import { Agent, fetch, type Headers, type Response } from 'undici';
 import { AUDIT_AUTOMATION_CONFIG } from '../../domain/token';
-import { assertSafeHttpUrl } from './ssrf-guard.util';
+import {
+  assertSafeHttpUrl,
+  resoudreVersUneAdressePublique,
+} from './ssrf-guard.util';
 import type { AuditAutomationConfig } from './audit.config';
 import { withHardTimeout } from './llm-execution.guardrails';
 
@@ -28,11 +32,19 @@ export interface SafeFetchResult {
 }
 
 @Injectable()
-export class SafeFetchService {
+export class SafeFetchService implements OnModuleDestroy {
+  private readonly connexionsPubliques = new Agent({
+    connect: { lookup: resoudreVersUneAdressePublique },
+  });
+
   constructor(
     @Inject(AUDIT_AUTOMATION_CONFIG)
     private readonly config: AuditAutomationConfig,
   ) {}
+
+  async onModuleDestroy(): Promise<void> {
+    await this.connexionsPubliques.close();
+  }
 
   async fetchText(
     url: string,
@@ -98,6 +110,7 @@ export class SafeFetchService {
       method: 'GET',
       redirect: 'manual',
       signal,
+      dispatcher: this.connexionsPubliques,
       headers: {
         'user-agent':
           'AsiliAuditBot/1.0 (+https://asilidesign.fr; contact=admin@asilidesign.fr)',
@@ -131,7 +144,7 @@ export class SafeFetchService {
       return '';
     }
 
-    const reader = response.body.getReader();
+    const reader = (response.body as ReadableStream<Uint8Array>).getReader();
     const decoder = new TextDecoder();
     let total = 0;
     const chunks: string[] = [];
