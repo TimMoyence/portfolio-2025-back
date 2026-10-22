@@ -133,7 +133,8 @@ papier, que la fiche de conception décrit écran par écran.
 3. `gabarit: 'v3'` dans le fichier de contenu, `concepts` et confusions ajoutés aux banques.
 4. `b2-XX.cours.spec.ts` : fiche du cours (`decrireLaFicheDuCours`) et recalcul de chaque valeur
    attendue depuis les données.
-5. Instantané régénéré (`ECRIRE_INSTANTANE=1`) et commité ; le front le télécharge avec le
+5. Instantané régénéré (`pnpm run instantanes:ecrire`, qui l'écrit puis le formate comme le
+   hook de commit) et commité ; le front le télécharge avec le
    contrat (`npm run contrat`) une fois son épingle `contrat.json` déplacée sur ce commit.
 6. Paramètres du cours dans les e2e DB (`formations-e2e-seance`, `formations-cours-publies`) :
    une entrée de `cellulesDesFeuilles` par écran `fp-sheet`, dans l'ordre du déroulé.

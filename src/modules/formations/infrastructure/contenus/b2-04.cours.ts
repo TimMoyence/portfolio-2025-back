@@ -2015,7 +2015,7 @@ const ACTE_4: moteur.Acte = [
             'b2-04-a4-e1-cout',
             'suite-geometrique',
             26.24,
-            0.01,
+            moteur.ECART_AU_CENTIME,
             '26,24 euros',
             'R7',
             [

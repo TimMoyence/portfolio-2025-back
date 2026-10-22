@@ -1289,7 +1289,7 @@ const ACTE_3: moteur.Acte = [
             'Quel est le coût du crédit, avec l’annuité arrondie au centime ?',
             '€',
             auMillionieme(DUREE_DE_L_EMPRUNT * ANNUITE_ARRONDIE - EMPRUNT),
-            { type: 'absolue', valeur: 0.05 },
+            moteur.DEUX_DECIMALES,
             '7 388,15 €',
             [
               [DUREE_DE_L_EMPRUNT * ANNUITE_ARRONDIE, TOTAL_REMBOURSE],

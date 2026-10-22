@@ -1,4 +1,5 @@
 import type { ConfusionId } from '../../domain/cours/banque/confusions';
+import { ECART_AU_DIXIEME } from './briques';
 
 export const QUESTIONS_CHIFFREES_B3_01 = [
   'b3-01-a1-lignes-commande',
@@ -55,7 +56,7 @@ export type DefiB301 =
 
 const EXACT = 0;
 const A_L_EURO_PRES = 1;
-const AU_DIXIEME_DE_POINT = 0.1;
+const AU_DIXIEME_DE_POINT = ECART_AU_DIXIEME;
 
 export const TOLERANCES_B3_01: Readonly<Record<QuestionChiffreeB301, number>> =
   {
