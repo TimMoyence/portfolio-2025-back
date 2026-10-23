@@ -9,14 +9,14 @@ import {
 describe('JwtTokenService', () => {
   const JWT_SECRET_PREVIOUS = 'old-secret-key-for-rotation-test!';
   const SECRET_DE_31_ENTOURE = `  ${'p'.repeat(31)}  `;
-  const CONFIG_COURANTE = { JWT_SECRET, JWT_EXPIRES_IN: '3600s' };
+  const CONFIG_COURANTE = { JWT_SECRET, JWT_EXPIRES_IN: 3600 };
   const CONFIG_EN_ROTATION = { ...CONFIG_COURANTE, JWT_SECRET_PREVIOUS };
   let service: JwtTokenService;
 
   const encodeSecret = (secret = JWT_SECRET): Uint8Array =>
     new TextEncoder().encode(secret);
 
-  const configurer = (variables: Readonly<Record<string, string>>): void => {
+  const configurer = (variables: Readonly<Record<string, unknown>>): void => {
     service = new JwtTokenService(buildConfigService(variables));
   };
 

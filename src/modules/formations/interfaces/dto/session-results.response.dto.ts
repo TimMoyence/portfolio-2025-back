@@ -1,5 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import type { RapportIncident } from '../../domain/IFormationMailer.port';
+import type {
+  ConceptFragile,
+  RapportIncident,
+} from '../../domain/IFormationMailer.port';
 import {
   INCIDENT_TYPES,
   type IncidentType,
@@ -194,6 +197,23 @@ export class RegleDeNotationResponseDto {
   seuilQuestionProbleme: number;
 }
 
+export class ConceptFragileResponseDto implements ConceptFragile {
+  @ApiProperty({ example: 'taux-evolution' })
+  concept: string;
+
+  @ApiProperty({ example: 'Taux d’évolution' })
+  libelle: string;
+
+  @ApiProperty({
+    type: 'integer',
+    minimum: 0,
+    example: 3,
+    description:
+      'Participants ayant au moins une réponse non correcte sur ce concept',
+  })
+  effectif: number;
+}
+
 export class SessionResultsResponseDto {
   @ApiProperty({ example: 'b2-01-traitement-information-chiffree' })
   courseSlug: string;
@@ -218,16 +238,12 @@ export class SessionResultsResponseDto {
   })
   participants: readonly RapportParticipantResponseDto[];
 
-  @ApiProperty({ type: [String], example: ['taux-evolution'] })
-  conceptsFragiles: readonly string[];
-
   @ApiProperty({
-    type: 'object',
-    additionalProperties: { type: 'string' },
-    example: { 'taux-evolution': 'Taux d’évolution' },
-    description: 'Libellé lisible de chaque concept fragile',
+    type: [ConceptFragileResponseDto],
+    description:
+      'Concepts fragiles de la classe, du plus touché au moins touché',
   })
-  libellesDesConcepts: Record<string, string>;
+  conceptsFragiles: readonly ConceptFragileResponseDto[];
 
   @ApiProperty({
     type: StatistiquesSeanceResponseDto,

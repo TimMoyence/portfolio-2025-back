@@ -181,12 +181,19 @@ describe('validateEnv', () => {
     },
   );
 
-  it.each(['3600', '900s', '15m', '2H', '1d'])(
-    'accepte une duree de jeton en secondes ou suffixee : %s',
-    (duree) => {
+  it.each([
+    ['3600', 3600],
+    ['900s', 900],
+    [' 15m ', 900],
+    ['2H', 7200],
+    ['1d', 86400],
+    [undefined, 900],
+  ])(
+    'lit une duree de jeton en secondes ou suffixee, quinze minutes par defaut : %j',
+    (duree, secondes) => {
       expect(
         validateEnv(buildValidEnv({ JWT_EXPIRES_IN: duree })).JWT_EXPIRES_IN,
-      ).toBe(duree);
+      ).toBe(secondes);
     },
   );
 
@@ -567,6 +574,48 @@ describe('validateEnv', () => {
     ['devrait coercer PORT en number', { PORT: '8080' }, 'PORT', 8080],
   ] as const)('%s', (_titre, overrides, cle, attendu) => {
     expect(validateEnv(buildValidEnv(overrides))[cle]).toBe(attendu);
+  });
+
+  describe('reglages de l audit, bornes et valeurs par defaut tenus par audit.config', () => {
+    const REGLAGES_ENTIERS = [
+      'AUDIT_QUEUE_CONCURRENCY',
+      'AUDIT_QUEUE_ATTEMPTS',
+      'AUDIT_QUEUE_BACKOFF_MS',
+      'AUDIT_JOB_TIMEOUT_MS',
+      'AUDIT_FETCH_TIMEOUT_MS',
+      'AUDIT_MAX_REDIRECTS',
+      'AUDIT_HTML_MAX_BYTES',
+      'AUDIT_TEXT_MAX_BYTES',
+      'AUDIT_SITEMAP_MAX_URLS',
+      'AUDIT_URL_ANALYZE_CONCURRENCY',
+      'AUDIT_PAGE_ANALYZE_LIMIT',
+      'AUDIT_PAGE_AI_CONCURRENCY',
+      'AUDIT_PAGE_AI_TIMEOUT_MS',
+    ] as const;
+
+    it.each(REGLAGES_ENTIERS)(
+      '%s : n invente aucune valeur et laisse la borne a audit.config',
+      (cle) => {
+        expect([
+          validateEnv(buildValidEnv())[cle],
+          validateEnv(buildValidEnv({ [cle]: '0' }))[cle],
+        ]).toEqual([undefined, 0]);
+      },
+    );
+
+    it.each(REGLAGES_ENTIERS)('%s : refuse une ecriture non entiere', (cle) => {
+      expect(() => validateEnv(buildValidEnv({ [cle]: '1.5' }))).toThrow(cle);
+    });
+
+    it.each([
+      'AUDIT_QUEUE_ENABLED',
+      'AUDIT_QUEUE_NAME',
+      'AUDIT_LLM_MODEL',
+      'AUDIT_LLM_LANGUAGE',
+      'SMTP_SECURE',
+    ])('%s : n invente aucune valeur', (cle) => {
+      expect(validateEnv(buildValidEnv())[cle]).toBeUndefined();
+    });
   });
 
   it('devrait lister toutes les erreurs quand plusieurs variables critiques manquent', () => {

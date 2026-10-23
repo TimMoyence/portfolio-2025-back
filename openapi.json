@@ -4172,13 +4172,20 @@
                 "$ref": "#/components/schemas/StatutDAudit"
               }
             ]
+          },
+          "heuresDeValiditeDeLaConfirmation": {
+            "type": "integer",
+            "nullable": true,
+            "example": 24,
+            "description": "Heures de validite du lien de confirmation envoye par courriel ; null quand aucune confirmation n est attendue."
           }
         },
         "required": [
           "message",
           "httpCode",
           "auditId",
-          "status"
+          "status",
+          "heuresDeValiditeDeLaConfirmation"
         ]
       },
       "AuditConfirmeResponseDto": {
@@ -7179,6 +7186,30 @@
           "total"
         ]
       },
+      "ConceptFragileResponseDto": {
+        "type": "object",
+        "properties": {
+          "concept": {
+            "type": "string",
+            "example": "taux-evolution"
+          },
+          "libelle": {
+            "type": "string",
+            "example": "Taux d’évolution"
+          },
+          "effectif": {
+            "type": "integer",
+            "minimum": 0,
+            "example": 3,
+            "description": "Participants ayant au moins une réponse non correcte sur ce concept"
+          }
+        },
+        "required": [
+          "concept",
+          "libelle",
+          "effectif"
+        ]
+      },
       "RapportReponseLibreResponseDto": {
         "type": "object",
         "properties": {
@@ -7463,23 +7494,11 @@
             "description": "Date de cloture, null tant que la seance est ouverte"
           },
           "conceptsFragiles": {
-            "example": [
-              "taux-evolution"
-            ],
+            "description": "Concepts fragiles de la classe, du plus touché au moins touché",
             "type": "array",
             "items": {
-              "type": "string"
+              "$ref": "#/components/schemas/ConceptFragileResponseDto"
             }
-          },
-          "libellesDesConcepts": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "string"
-            },
-            "example": {
-              "taux-evolution": "Taux d’évolution"
-            },
-            "description": "Libellé lisible de chaque concept fragile"
           },
           "statistiques": {
             "description": "Indicateurs calculés côté serveur pour le pilotage formateur",
@@ -7530,7 +7549,6 @@
           "ouverteLe",
           "fermeeLe",
           "conceptsFragiles",
-          "libellesDesConcepts",
           "statistiques",
           "participants",
           "resultats",
@@ -8544,6 +8562,82 @@
         "required": [
           "screenId",
           "note"
+        ]
+      },
+      "CodeDErreur": {
+        "type": "string",
+        "enum": [
+          "ACTIVITE_INCONNUE",
+          "COURS_INTROUVABLE",
+          "COURS_MODIFIE",
+          "DEFI_SANS_TENTATIVE",
+          "ECRAN_INCONNU",
+          "ECRAN_NON_SERVI",
+          "ENIGME_DEJA_RESOLUE",
+          "ENIGME_VERROUILLEE",
+          "GRAINE_REPRISE",
+          "PARTICIPANT_EVINCE",
+          "PARTICIPANT_INTROUVABLE",
+          "PHASE_FERMEE",
+          "PHASE_NON_MONOTONE",
+          "PIECE_JOINTE_INTROUVABLE",
+          "PIECE_JOINTE_RETENUE",
+          "PLACE_DEJA_PRISE",
+          "PLAFOND_DE_FLUX_ATTEINT",
+          "PRODUCTION_INVALIDE",
+          "PRODUCTION_VIDE",
+          "REPONSE_DEJA_ENREGISTREE",
+          "REPONSE_INTROUVABLE",
+          "REPRISES_EPUISEES",
+          "REVISION_OBSOLETE",
+          "SAISIE_NON_NUMERIQUE",
+          "SEANCE_COMPLETE",
+          "SEANCE_INTROUVABLE",
+          "SEANCE_NON_DEMARREE",
+          "SEANCE_TERMINEE",
+          "TENTATIVES_EPUISEES",
+          "TYPE_DE_QUESTION"
+        ],
+        "description": "Motif métier du refus, que le client traduit"
+      },
+      "ProblemeDeFormationResponseDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "https://httpstatuses.com/409"
+          },
+          "title": {
+            "type": "string",
+            "example": "CONFLICT"
+          },
+          "status": {
+            "type": "integer",
+            "example": 409
+          },
+          "detail": {
+            "type": "string",
+            "example": "La séance est terminée."
+          },
+          "instance": {
+            "type": "string",
+            "example": "/api/v1/portfolio25/formations/sessions/4271"
+          },
+          "code": {
+            "description": "Motif métier du refus, que le client traduit",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CodeDErreur"
+              }
+            ]
+          }
+        },
+        "required": [
+          "type",
+          "title",
+          "status",
+          "detail",
+          "instance"
         ]
       },
       "JoinSessionRequestDto": {

@@ -1,6 +1,6 @@
 import type { ConfusionId } from '../../domain/cours/banque/confusions';
 import type { Tolerance } from '../../domain/GradingCore';
-import { TOLERANCE_NULLE, UNE_DECIMALE } from './briques';
+import { A_L_UNITE, TOLERANCE_NULLE, UNE_DECIMALE } from './briques';
 
 export const QUESTIONS_CHIFFREES_B3_01 = [
   'b3-01-a1-lignes-commande',
@@ -56,7 +56,7 @@ export type DefiB301 =
   | 'taux-de-marge-reseau';
 
 const EXACT = TOLERANCE_NULLE;
-const A_L_EURO_PRES = { type: 'absolue', valeur: 1 } as const;
+const A_L_EURO_PRES = A_L_UNITE;
 const AU_DIXIEME_DE_POINT = UNE_DECIMALE;
 
 export const TOLERANCES_B3_01: Readonly<

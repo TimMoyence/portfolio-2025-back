@@ -6,7 +6,7 @@ import { CONTENUS } from './index';
 const ARRONDIS_ANNONCES = [
   { annonce: /arrondie? au centime/u, pas: 0.01, decimales: 2 },
   { annonce: /arrondie? au dixième/u, pas: 0.1, decimales: 1 },
-  { annonce: /arrondi[er]? à l’unité/u, pas: 1, decimales: 0 },
+  { annonce: /arrondi[er]? à l’(?:unité|euro)/u, pas: 1, decimales: 0 },
 ] as const;
 
 const TOLERANCES_VOULUES = new Set(['b2-05-a4-e4-cout']);

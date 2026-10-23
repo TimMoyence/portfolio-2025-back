@@ -20,4 +20,13 @@ export class AuditRequestResponseDto {
     enum: STATUTS_D_AUDIT,
   })
   status: AuditProcessingStatus;
+
+  @ApiProperty({
+    type: 'integer',
+    nullable: true,
+    example: 24,
+    description:
+      'Heures de validite du lien de confirmation envoye par courriel ; null quand aucune confirmation n est attendue.',
+  })
+  heuresDeValiditeDeLaConfirmation: number | null;
 }

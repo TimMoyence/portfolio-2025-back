@@ -13,6 +13,7 @@ import { businessTypePromptHint } from '../../domain/BusinessType';
 import type { EngineCoverage } from '../../domain/EngineCoverage';
 import { AuditLocale, localeDeRedaction } from '../../domain/audit-locale.util';
 import { nonVerifiable } from '../../domain/non-verifiable';
+import { PILLAR_KEYS } from '../../domain/Piliers';
 import { withHardTimeout } from './llm-execution.guardrails';
 import { LlmOpenAiParLaConfig } from './llm-executor.port';
 import { validateClientReport } from './report-quality-gate/tier-validators';
@@ -106,16 +107,6 @@ export interface ClientReportContext {
   readonly engineCoverage: EngineCoverage | null;
   readonly businessType?: BusinessType;
 }
-
-const PILLAR_ORDER: ReadonlyArray<string> = [
-  'seo',
-  'performance',
-  'technical',
-  'trust',
-  'conversion',
-  'aiVisibility',
-  'citationWorthiness',
-];
 
 @Injectable()
 export class LangchainClientReportService extends LlmOpenAiParLaConfig {
@@ -295,7 +286,7 @@ export class LangchainClientReportService extends LlmOpenAiParLaConfig {
     const byKey = new Map(
       llmPillars.map((entry) => [entry.pillar.toLowerCase(), entry]),
     );
-    return PILLAR_ORDER.map((pillar) => {
+    return PILLAR_KEYS.map((pillar) => {
       const existing = byKey.get(pillar.toLowerCase());
       if (existing) {
         return {
@@ -352,7 +343,7 @@ export class LangchainClientReportService extends LlmOpenAiParLaConfig {
 
     const quickWins = this.buildFallbackQuickWins(context, locale);
 
-    const pillarScorecard = PILLAR_ORDER.map((pillar) =>
+    const pillarScorecard = PILLAR_KEYS.map((pillar) =>
       this.pilierMesure(context, pillar),
     );
 

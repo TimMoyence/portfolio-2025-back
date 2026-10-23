@@ -42,14 +42,17 @@ export interface RapportSession {
   ouverteLe: Date;
   fermeeLe: Date | null;
   participants: readonly RapportParticipant[];
-  conceptsFragiles: readonly string[];
-  libellesDesConcepts: Readonly<Record<string, string>>;
+  conceptsFragiles: readonly ConceptFragile[];
+}
+
+export interface ConceptFragile {
+  concept: string;
+  libelle: string;
+  effectif: number;
 }
 
 export function conceptsFragilesLisibles(rapport: RapportSession): string {
-  return rapport.conceptsFragiles
-    .map((concept) => rapport.libellesDesConcepts[concept] ?? concept)
-    .join(', ');
+  return rapport.conceptsFragiles.map(({ libelle }) => libelle).join(', ');
 }
 
 /**

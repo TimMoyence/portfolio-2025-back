@@ -6,6 +6,7 @@ import {
   type MailEnvoye,
 } from '../../../../test/factories/mailer.factory';
 import {
+  buildConceptFragile,
   buildRapportAvecReponses,
   buildRapportParticipant,
   buildRapportQuestion as buildReponse,
@@ -130,20 +131,15 @@ describe('FormationMailerService', () => {
       expect(mail.html).toContain('O&#39;Brien');
     });
 
-    it('remonte les concepts fragiles dans le texte et le html', async () => {
-      const mail = await synthese(
-        buildRapport({ conceptsFragiles: ['interet-simple'] }),
-      );
-
-      expect(mail.text).toContain('interet-simple');
-      expect(mail.html).toContain('interet-simple');
-    });
-
-    it('nomme les concepts fragiles par leur libellé quand le rapport le porte', async () => {
+    it('nomme les concepts fragiles par leur libellé dans le texte et le html', async () => {
       const mail = await synthese(
         buildRapport({
-          conceptsFragiles: ['suite-geometrique'],
-          libellesDesConcepts: { 'suite-geometrique': 'Suite géométrique' },
+          conceptsFragiles: [
+            buildConceptFragile({
+              concept: 'suite-geometrique',
+              libelle: 'Suite géométrique',
+            }),
+          ],
         }),
       );
 

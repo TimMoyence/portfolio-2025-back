@@ -53,7 +53,8 @@ export const CONTACT_CREATED_RESULT = {
 export const AUDIT_CREATED_RESULT = {
   message: 'Audit request created successfully.',
   auditId: 'audit-1',
-  status: 'PENDING',
+  status: 'UNCONFIRMED',
+  heuresDeValiditeDeLaConfirmation: 24,
 };
 
 export const AUDIT_SUMMARY_RESULT = {
@@ -77,6 +78,8 @@ export const AUDIT_CREATED_RESPONSE = {
   httpCode: 201,
   auditId: AUDIT_CREATED_RESULT.auditId,
   status: AUDIT_CREATED_RESULT.status,
+  heuresDeValiditeDeLaConfirmation:
+    AUDIT_CREATED_RESULT.heuresDeValiditeDeLaConfirmation,
 };
 
 export const PASSWORD_RESET_REQUESTED_RESULT = {

@@ -151,6 +151,17 @@ describe('SaveFreeResponseUseCase', () => {
       });
     });
 
+    it('compte la borne servie sans les blancs qui entourent le texte', async () => {
+      const aLaBorne = 'a'.repeat(LONGUEUR_MAX_DU_BILLET_DE_SORTIE);
+
+      await sut.execute({ ...BILLET, response: ` \n${aLaBorne}\t ` });
+
+      expect(freeResponses.save).toHaveBeenCalledWith({
+        ...BILLET,
+        response: aLaBorne,
+      });
+    });
+
     it('refuse un caractere de plus que la borne servie, sans rien enregistrer', async () => {
       await expect(
         sut.execute({ ...BILLET, response: AU_DELA_DU_BILLET }),

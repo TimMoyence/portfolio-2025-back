@@ -43,6 +43,12 @@ function rapportDe(overrides: Partial<SessionReportInput> = {}) {
   });
 }
 
+function conceptsFragilesDe(
+  rapport: ReturnType<typeof rapportDe>,
+): readonly string[] {
+  return rapport.conceptsFragiles.map(({ concept }) => concept);
+}
+
 function completionDUnSeulParticipant(
   questionIds: readonly string[],
   reponses: readonly Partial<AnswerRecord>[],
@@ -160,21 +166,32 @@ describe('buildRapportSession', () => {
       ],
     });
 
-    expect(rapport.conceptsFragiles).toContain('interet-simple');
+    expect(conceptsFragilesDe(rapport)).toContain('interet-simple');
   });
 
-  it('joint le libellé lisible de chaque concept fragile', () => {
+  it('sert chaque concept fragile avec son libellé et les participants qui s y sont trompés au moins une fois, du plus touché au moins touché', () => {
     const rapport = rapportDe({
-      answers: [
-        buildAnswerRecord({ concept: 'suite-geometrique', correcte: false }),
-        buildAnswerRecord({ concept: 'hors-banque', correcte: false }),
-      ],
+      answers: (
+        [
+          ['p1', 'suite-geometrique', false, null],
+          ['p1', 'hors-banque', false, null],
+          ['p1', 'hors-banque', false, null],
+          ['p2', 'hors-banque', false, 0.5],
+          ['p3', 'hors-banque', true, null],
+        ] as const
+      ).map(([participantId, concept, correcte, score]) =>
+        buildAnswerRecord({ participantId, concept, correcte, score }),
+      ),
     });
 
-    expect(rapport.libellesDesConcepts).toEqual({
-      'suite-geometrique': 'Suite géométrique',
-      'hors-banque': 'hors-banque',
-    });
+    expect(rapport.conceptsFragiles).toEqual([
+      { concept: 'hors-banque', libelle: 'hors-banque', effectif: 2 },
+      {
+        concept: 'suite-geometrique',
+        libelle: 'Suite géométrique',
+        effectif: 1,
+      },
+    ]);
   });
 
   it('n inclut pas un concept dont la reussite atteint 70 pourcent ou plus', () => {
@@ -188,7 +205,7 @@ describe('buildRapportSession', () => {
       ],
     });
 
-    expect(rapport.conceptsFragiles).not.toContain('actualisation');
+    expect(conceptsFragilesDe(rapport)).not.toContain('actualisation');
   });
 
   it('lit la réussite d un concept comme la part d une question : des feuilles à 0,9 de score ne sont pas fragiles', () => {
@@ -198,7 +215,7 @@ describe('buildRapportSession', () => {
       ),
     });
 
-    expect(rapport.conceptsFragiles).not.toContain('tableur');
+    expect(conceptsFragilesDe(rapport)).not.toContain('tableur');
   });
 
   it('sert les incidents de chaque participant dans l ordre du temps, avec leur type, leur heure et leur contexte', () => {

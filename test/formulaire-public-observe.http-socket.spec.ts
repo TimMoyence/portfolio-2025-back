@@ -17,7 +17,7 @@ import { request as requeteNode } from 'node:http';
 import { interval, map, type Observable } from 'rxjs';
 import request from 'supertest';
 import { FormulairePublic } from '../src/common/interfaces/security/formulaire-public.decorator';
-import { loadSecurityConfig } from '../src/common/interfaces/security/security.config';
+import type { SecurityConfig } from '../src/common/interfaces/security/security.config';
 import { SECURITY_CONFIG } from '../src/common/interfaces/security/security.tokens';
 import { SuspiciousRequestInterceptor } from '../src/common/interfaces/security/suspicious-request.interceptor';
 import { espionnerLesAvertissements } from './helpers/avertissements';
@@ -98,7 +98,7 @@ describe('Refus anti-robot d un formulaire public — intégration HTTP', () => 
       providers: [
         {
           provide: SECURITY_CONFIG,
-          useValue: { ...loadSecurityConfig(), suspiciousScoreThreshold: 0 },
+          useValue: { suspiciousScoreThreshold: 0 } satisfies SecurityConfig,
         },
         { provide: APP_INTERCEPTOR, useClass: SuspiciousRequestInterceptor },
       ],

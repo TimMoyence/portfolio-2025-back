@@ -32,7 +32,7 @@ const LOGIN_PASSWORD = 'StrongPassword123!';
 const NOUVEAU_MOT_DE_PASSE = 'NouveauMotDePasse456!';
 
 describe('Auth flow complet — sans bypass de guard (e2e)', () => {
-  const JWT_EXPIRES_IN = '900s';
+  const JWT_EXPIRES_IN = 900;
 
   const jwtTokenService = new JwtTokenService(
     buildConfigService({ JWT_SECRET: TEST_JWT_SECRET, JWT_EXPIRES_IN }),
@@ -207,7 +207,7 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
   it('GET /api/auth/me avec un Bearer signe par un autre secret retourne 401', async () => {
     const otherConfigService = buildConfigService({
       JWT_SECRET: 'un-autre-secret-totalement-different!',
-      JWT_EXPIRES_IN: '900s',
+      JWT_EXPIRES_IN,
     });
     const otherJwtService = new JwtTokenService(otherConfigService);
     const otherSigned = await otherJwtService.sign({

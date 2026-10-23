@@ -59,13 +59,17 @@ export const MOTIF_D_UNE_ADRESSE_EMAIL = new RegExp(
     `${MORCEAU_LOCAL}(?:\\.${MORCEAU_LOCAL})*@(?:${LABEL}\\.)+${PREMIER_NIVEAU}$`,
 );
 
+export function normaliserUneAdresse(raw: string): string {
+  return raw.trim().toLowerCase();
+}
+
 export class EmailAddress {
   private constructor(private readonly normalizedValue: string) {}
 
   static parse(raw: unknown): EmailAddress | null {
     if (typeof raw !== 'string') return null;
 
-    const value = raw.trim().toLowerCase();
+    const value = normaliserUneAdresse(raw);
     if (!MOTIF_D_UNE_ADRESSE_EMAIL.test(value)) return null;
 
     return new EmailAddress(value);

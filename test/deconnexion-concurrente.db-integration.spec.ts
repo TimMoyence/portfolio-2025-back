@@ -26,7 +26,7 @@ describeDb(
     const jwtTokenService = new JwtTokenService(
       buildConfigService({
         JWT_SECRET: TEST_JWT_SECRET,
-        JWT_EXPIRES_IN: '900s',
+        JWT_EXPIRES_IN: 900,
       }),
     );
 

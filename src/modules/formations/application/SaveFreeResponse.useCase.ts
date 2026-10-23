@@ -17,9 +17,11 @@ import type {
   IFreeResponsesRepository,
   SaveFreeResponseInput,
 } from '../domain/IFreeResponses.repository';
-import { texteRenseigne } from '../domain/TexteRenseigne';
+import { assertLongueurAuPlus, texteRenseigne } from '../domain/TexteRenseigne';
 import { FREE_RESPONSES_REPOSITORY } from '../domain/token';
 import { ParticipationEnSeance } from './ParticipationEnSeance';
+
+const CHAMP = 'La réponse';
 
 @Injectable()
 export class SaveFreeResponseUseCase {
@@ -30,7 +32,7 @@ export class SaveFreeResponseUseCase {
   ) {}
 
   async execute(command: SaveFreeResponseInput): Promise<void> {
-    texteRenseigne(command.response, 'La réponse');
+    const response = texteRenseigne(command.response, CHAMP);
     const { session, cours } = await this.participation.ouverte(command);
     const ecran = cibleServie(
       session,
@@ -48,13 +50,9 @@ export class SaveFreeResponseUseCase {
     }
     assertPhaseOuverte(session.pilotageEcrans, { ecranId: command.screenId });
     assertEtapeNonCorrigee(session.pilotageEcrans, ecran, command.activityId);
-    const response = texteRenseigne(
-      command.response,
-      'La réponse',
-      ecran.brique === 'fp-exit'
-        ? LONGUEUR_MAX_DU_BILLET_DE_SORTIE
-        : Number.POSITIVE_INFINITY,
-    );
+    if (ecran.brique === 'fp-exit') {
+      assertLongueurAuPlus(response, CHAMP, LONGUEUR_MAX_DU_BILLET_DE_SORTIE);
+    }
     await this.freeResponses.save({ ...command, response });
     this.participation.signalerActivite(command.sessionId);
   }

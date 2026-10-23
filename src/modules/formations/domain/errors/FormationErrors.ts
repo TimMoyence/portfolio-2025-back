@@ -3,6 +3,7 @@ import { InsufficientPermissionsError } from '../../../../common/domain/errors/I
 import { RateLimitExceededError } from '../../../../common/domain/errors/RateLimitExceededError';
 import { ResourceConflictError } from '../../../../common/domain/errors/ResourceConflictError';
 import { ResourceNotFoundError } from '../../../../common/domain/errors/ResourceNotFoundError';
+import type { CodeDErreur } from './codes-d-erreur';
 
 export class InvalidSessionCodeError extends DomainValidationError {
   constructor(value: string) {
@@ -23,7 +24,7 @@ export class FieldTooLongError extends DomainValidationError {
 }
 
 export class SessionNotFoundError extends ResourceNotFoundError {
-  readonly code = 'SEANCE_INTROUVABLE';
+  readonly code: CodeDErreur = 'SEANCE_INTROUVABLE';
 
   constructor(id: string) {
     super(`Session introuvable: ${id}`);
@@ -31,7 +32,7 @@ export class SessionNotFoundError extends ResourceNotFoundError {
 }
 
 export class CoursInconnuError extends ResourceNotFoundError {
-  readonly code = 'COURS_INTROUVABLE';
+  readonly code: CodeDErreur = 'COURS_INTROUVABLE';
 
   constructor(slug: string) {
     super(`Cours introuvable: ${slug}`);
@@ -39,7 +40,7 @@ export class CoursInconnuError extends ResourceNotFoundError {
 }
 
 export class ParticipantNotFoundError extends ResourceNotFoundError {
-  readonly code = 'PARTICIPANT_INTROUVABLE';
+  readonly code: CodeDErreur = 'PARTICIPANT_INTROUVABLE';
 
   constructor(id: string) {
     super(`Participant introuvable: ${id}`);
@@ -47,7 +48,7 @@ export class ParticipantNotFoundError extends ResourceNotFoundError {
 }
 
 export class ReponseIntrouvableError extends ResourceNotFoundError {
-  readonly code = 'REPONSE_INTROUVABLE';
+  readonly code: CodeDErreur = 'REPONSE_INTROUVABLE';
 
   constructor(questionId: string) {
     super(`Aucune production à reprendre pour la question ${questionId}`);
@@ -61,7 +62,7 @@ export class SessionNotOwnedError extends InsufficientPermissionsError {
 }
 
 export class SessionClosedError extends ResourceConflictError {
-  readonly code = 'SEANCE_TERMINEE';
+  readonly code: CodeDErreur = 'SEANCE_TERMINEE';
 
   constructor() {
     super(
@@ -71,7 +72,7 @@ export class SessionClosedError extends ResourceConflictError {
 }
 
 export class SessionNotStartedError extends ResourceConflictError {
-  readonly code = 'SEANCE_NON_DEMARREE';
+  readonly code: CodeDErreur = 'SEANCE_NON_DEMARREE';
 
   constructor() {
     super(
@@ -87,7 +88,7 @@ export class InvalidStateTransitionError extends ResourceConflictError {
 }
 
 export class SeanceCompleteError extends ResourceConflictError {
-  readonly code = 'SEANCE_COMPLETE';
+  readonly code: CodeDErreur = 'SEANCE_COMPLETE';
 
   constructor(capacite: number) {
     super(
@@ -97,7 +98,7 @@ export class SeanceCompleteError extends ResourceConflictError {
 }
 
 export class PlaceDejaPriseError extends ResourceConflictError {
-  readonly code = 'PLACE_DEJA_PRISE';
+  readonly code: CodeDErreur = 'PLACE_DEJA_PRISE';
 
   constructor() {
     super(
@@ -107,7 +108,7 @@ export class PlaceDejaPriseError extends ResourceConflictError {
 }
 
 export class ParticipantEvinceError extends InsufficientPermissionsError {
-  readonly code = 'PARTICIPANT_EVINCE';
+  readonly code: CodeDErreur = 'PARTICIPANT_EVINCE';
 
   constructor() {
     super(
@@ -117,7 +118,7 @@ export class ParticipantEvinceError extends InsufficientPermissionsError {
 }
 
 export class GraineRepriseError extends ResourceConflictError {
-  readonly code = 'GRAINE_REPRISE';
+  readonly code: CodeDErreur = 'GRAINE_REPRISE';
 
   constructor() {
     super(
@@ -133,7 +134,7 @@ export class SeedPoolExhaustedError extends ResourceConflictError {
 }
 
 export class AnswerAlreadySubmittedError extends ResourceConflictError {
-  readonly code = 'REPONSE_DEJA_ENREGISTREE';
+  readonly code: CodeDErreur = 'REPONSE_DEJA_ENREGISTREE';
 
   constructor(questionId: string) {
     super(
@@ -143,7 +144,7 @@ export class AnswerAlreadySubmittedError extends ResourceConflictError {
 }
 
 export class ReprisesEpuiseesError extends ResourceConflictError {
-  readonly code = 'REPRISES_EPUISEES';
+  readonly code: CodeDErreur = 'REPRISES_EPUISEES';
 
   constructor(questionId: string, soumissionsMax: number) {
     super(
@@ -153,7 +154,7 @@ export class ReprisesEpuiseesError extends ResourceConflictError {
 }
 
 export class ActiviteInconnueError extends DomainValidationError {
-  readonly code = 'ACTIVITE_INCONNUE';
+  readonly code: CodeDErreur = 'ACTIVITE_INCONNUE';
 
   constructor(screenId: string, activityId: string) {
     super(
@@ -163,7 +164,7 @@ export class ActiviteInconnueError extends DomainValidationError {
 }
 
 export class EcranInconnuError extends DomainValidationError {
-  readonly code = 'ECRAN_INCONNU';
+  readonly code: CodeDErreur = 'ECRAN_INCONNU';
 
   constructor(screenId: string) {
     super(`L’écran ${screenId} n’existe pas dans le cours de cette séance.`);
@@ -171,7 +172,7 @@ export class EcranInconnuError extends DomainValidationError {
 }
 
 export class TypeDeQuestionError extends DomainValidationError {
-  readonly code = 'TYPE_DE_QUESTION';
+  readonly code: CodeDErreur = 'TYPE_DE_QUESTION';
 
   constructor(questionId: string, raison: string) {
     super(`La question ${questionId} ${raison}.`);
@@ -179,7 +180,7 @@ export class TypeDeQuestionError extends DomainValidationError {
 }
 
 export class SaisieNonNumeriqueError extends DomainValidationError {
-  readonly code = 'SAISIE_NON_NUMERIQUE';
+  readonly code: CodeDErreur = 'SAISIE_NON_NUMERIQUE';
 
   constructor(questionId: string) {
     super(`La saisie envoyée pour ${questionId} ne se lit pas en nombre.`);
@@ -187,7 +188,7 @@ export class SaisieNonNumeriqueError extends DomainValidationError {
 }
 
 export class ProductionVideError extends DomainValidationError {
-  readonly code = 'PRODUCTION_VIDE';
+  readonly code: CodeDErreur = 'PRODUCTION_VIDE';
 
   constructor(questionId: string) {
     super(
@@ -197,7 +198,7 @@ export class ProductionVideError extends DomainValidationError {
 }
 
 export class ProductionInvalideError extends DomainValidationError {
-  readonly code = 'PRODUCTION_INVALIDE';
+  readonly code: CodeDErreur = 'PRODUCTION_INVALIDE';
 
   constructor(questionId: string, raison: string) {
     super(`Production refusée pour ${questionId} : ${raison}.`);
@@ -215,7 +216,7 @@ export class PilotageIncompatibleError extends DomainValidationError {
 }
 
 export class PhaseNonMonotoneError extends ResourceConflictError {
-  readonly code = 'PHASE_NON_MONOTONE';
+  readonly code: CodeDErreur = 'PHASE_NON_MONOTONE';
 
   constructor(screenId: string) {
     super(
@@ -225,7 +226,7 @@ export class PhaseNonMonotoneError extends ResourceConflictError {
 }
 
 export class PhaseFermeeError extends ResourceConflictError {
-  readonly code = 'PHASE_FERMEE';
+  readonly code: CodeDErreur = 'PHASE_FERMEE';
 
   constructor(screenId: string) {
     super(
@@ -235,7 +236,7 @@ export class PhaseFermeeError extends ResourceConflictError {
 }
 
 export class DefiInconnuError extends ResourceNotFoundError {
-  readonly code = 'ACTIVITE_INCONNUE';
+  readonly code: CodeDErreur = 'ACTIVITE_INCONNUE';
 
   constructor(defiId: string) {
     super(`Défi absent du cours de cette séance : ${defiId}`);
@@ -243,7 +244,7 @@ export class DefiInconnuError extends ResourceNotFoundError {
 }
 
 export class DefiSansTentativeError extends ResourceNotFoundError {
-  readonly code = 'DEFI_SANS_TENTATIVE';
+  readonly code: CodeDErreur = 'DEFI_SANS_TENTATIVE';
 
   constructor(defiId: string) {
     super(
@@ -265,7 +266,7 @@ export class EnigmeInconnueError extends ResourceNotFoundError {
 }
 
 export class EnigmeVerrouilleeError extends ResourceConflictError {
-  readonly code = 'ENIGME_VERROUILLEE';
+  readonly code: CodeDErreur = 'ENIGME_VERROUILLEE';
 
   constructor(enigmeId: string) {
     super(
@@ -275,7 +276,7 @@ export class EnigmeVerrouilleeError extends ResourceConflictError {
 }
 
 export class EnigmeDejaResolueError extends ResourceConflictError {
-  readonly code = 'ENIGME_DEJA_RESOLUE';
+  readonly code: CodeDErreur = 'ENIGME_DEJA_RESOLUE';
 
   constructor(enigmeId: string) {
     super(`Vous avez déjà trouvé le fragment de l’énigme ${enigmeId}.`);
@@ -283,7 +284,7 @@ export class EnigmeDejaResolueError extends ResourceConflictError {
 }
 
 export class TentativesEpuiseesError extends ResourceConflictError {
-  readonly code = 'TENTATIVES_EPUISEES';
+  readonly code: CodeDErreur = 'TENTATIVES_EPUISEES';
 
   constructor(enigmeId: string) {
     super(
@@ -293,7 +294,7 @@ export class TentativesEpuiseesError extends ResourceConflictError {
 }
 
 export class PieceJointeIntrouvableError extends ResourceNotFoundError {
-  readonly code = 'PIECE_JOINTE_INTROUVABLE';
+  readonly code: CodeDErreur = 'PIECE_JOINTE_INTROUVABLE';
 
   constructor(screenId: string) {
     super(`L’écran ${screenId} ne joint aucun classeur réservé à la séance.`);
@@ -301,7 +302,7 @@ export class PieceJointeIntrouvableError extends ResourceNotFoundError {
 }
 
 export class PieceJointeRetenueError extends ResourceConflictError {
-  readonly code = 'PIECE_JOINTE_RETENUE';
+  readonly code: CodeDErreur = 'PIECE_JOINTE_RETENUE';
 
   constructor(screenId: string) {
     super(
@@ -311,7 +312,7 @@ export class PieceJointeRetenueError extends ResourceConflictError {
 }
 
 export class EcranNonServiError extends ResourceNotFoundError {
-  readonly code = 'ECRAN_NON_SERVI';
+  readonly code: CodeDErreur = 'ECRAN_NON_SERVI';
 
   constructor(screenId: string) {
     super(
@@ -321,7 +322,7 @@ export class EcranNonServiError extends ResourceNotFoundError {
 }
 
 export class PlafondDeFluxAtteintError extends RateLimitExceededError {
-  readonly code = 'PLAFOND_DE_FLUX_ATTEINT';
+  readonly code: CodeDErreur = 'PLAFOND_DE_FLUX_ATTEINT';
 
   constructor(cle: string) {
     super(`Plafond de flux atteint pour ${cle} sur une autre instance.`);
@@ -349,7 +350,7 @@ export class SessionCodeAlreadyActiveError extends ResourceConflictError {
 }
 
 export class RevisionDeSeanceObsoleteError extends ResourceConflictError {
-  readonly code = 'REVISION_OBSOLETE';
+  readonly code: CodeDErreur = 'REVISION_OBSOLETE';
 
   constructor(sessionId: string) {
     super(
@@ -365,7 +366,7 @@ export class CoursNonConformeError extends DomainValidationError {
 }
 
 export class CoursModifieError extends ResourceConflictError {
-  readonly code = 'COURS_MODIFIE';
+  readonly code: CodeDErreur = 'COURS_MODIFIE';
 
   constructor() {
     super(
