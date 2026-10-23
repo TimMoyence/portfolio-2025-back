@@ -26,7 +26,7 @@ describe('loadAuditAutomationConfig', () => {
 
     expect(config.queueEnabled).toBe(true);
     expect(config.queueName).toBe('audit_requests');
-    expect(config.queueConcurrency).toBe(2);
+    expect(config.queueConcurrency).toBe(1);
     expect(config.llmProfile).toBe('parallel_sections_v1');
     expect(config.rateHourlyMin).toBe(80);
     expect(config.rateHourlyMax).toBe(120);

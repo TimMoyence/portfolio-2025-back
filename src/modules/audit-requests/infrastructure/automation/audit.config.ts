@@ -109,7 +109,7 @@ export function loadAuditAutomationConfig(): AuditAutomationConfig {
   return {
     queueEnabled: envBool('AUDIT_QUEUE_ENABLED', true),
     queueName: envString('AUDIT_QUEUE_NAME') ?? 'audit_requests',
-    queueConcurrency: Math.max(1, envInt('AUDIT_QUEUE_CONCURRENCY', 2)),
+    queueConcurrency: Math.max(1, envInt('AUDIT_QUEUE_CONCURRENCY', 1)),
     queueAttempts: Math.max(1, envInt('AUDIT_QUEUE_ATTEMPTS', 3)),
     queueBackoffMs: Math.max(0, envInt('AUDIT_QUEUE_BACKOFF_MS', 2000)),
     jobTimeoutMs: Math.max(1000, envInt('AUDIT_JOB_TIMEOUT_MS', 180000)),

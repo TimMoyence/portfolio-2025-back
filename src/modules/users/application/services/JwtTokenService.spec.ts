@@ -3,13 +3,15 @@ import { JwtTokenService } from './JwtTokenService';
 import type { JwtPayload } from './JwtPayload';
 import {
   buildConfigService,
+  buildValidEnv,
   TEST_JWT_SECRET as JWT_SECRET,
 } from '../../../../../test/factories/env.factory';
+import { validateEnv } from '../../../../config/env.validation';
 
 describe('JwtTokenService', () => {
   const JWT_SECRET_PREVIOUS = 'old-secret-key-for-rotation-test!';
   const SECRET_DE_31_ENTOURE = `  ${'p'.repeat(31)}  `;
-  const CONFIG_COURANTE = { JWT_SECRET, JWT_EXPIRES_IN: 3600 };
+  const CONFIG_COURANTE = validateEnv(buildValidEnv({ JWT_EXPIRES_IN: '1h' }));
   const CONFIG_EN_ROTATION = { ...CONFIG_COURANTE, JWT_SECRET_PREVIOUS };
   let service: JwtTokenService;
 
