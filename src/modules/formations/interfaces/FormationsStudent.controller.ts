@@ -80,6 +80,7 @@ import { TentativeEnigmeResponseDto } from './dto/contrat/tentative-enigme.respo
 import { TenterEnigmeRequestDto } from './dto/contrat/tenter-enigme.request.dto';
 import { SubmitProductionResponseDto } from './dto/contrat/verdict-production.response.dto';
 import { SujetResponseDto } from './dto/contrat/sujet.response.dto';
+import { ProblemeDeFormationResponseDto } from './dto/probleme-de-formation.response.dto';
 import {
   FENETRE_THROTTLE_MS,
   LIMITE_FLUX_PAR_PARTICIPANT,
@@ -132,7 +133,10 @@ function EvaluationEnSeance(
 @ApiTags('formations')
 @RoutePublique()
 @Controller('formations')
-@ApiExtraModels(...Object.values(EVENEMENTS_DU_FLUX_DU_POSTE))
+@ApiExtraModels(
+  ...Object.values(EVENEMENTS_DU_FLUX_DU_POSTE),
+  ProblemeDeFormationResponseDto,
+)
 export class FormationsStudentController {
   constructor(
     private readonly joinSession: JoinSessionUseCase,

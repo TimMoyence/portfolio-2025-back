@@ -85,6 +85,8 @@ export class AuditsController {
     responseDto.httpCode = HttpStatus.CREATED;
     responseDto.auditId = response.auditId;
     responseDto.status = response.status;
+    responseDto.heuresDeValiditeDeLaConfirmation =
+      response.heuresDeValiditeDeLaConfirmation;
     return responseDto;
   }
 

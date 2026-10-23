@@ -15,6 +15,7 @@ import type {
   IncidentInput,
 } from '../../src/modules/formations/domain/IIncidents.repository';
 import type {
+  ConceptFragile,
   IFormationMailer,
   RapportParticipant,
   RapportQuestion,
@@ -404,7 +405,17 @@ export function buildRapportSession(
     fermeeLe: new Date('2026-09-11T11:30:00.000Z'),
     participants: [buildRapportParticipant()],
     conceptsFragiles: [],
-    libellesDesConcepts: {},
+    ...overrides,
+  };
+}
+
+export function buildConceptFragile(
+  overrides: Partial<ConceptFragile> = {},
+): ConceptFragile {
+  return {
+    concept: 'capitalisation',
+    libelle: 'Capitalisation',
+    effectif: 1,
     ...overrides,
   };
 }

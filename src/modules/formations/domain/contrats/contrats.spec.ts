@@ -934,10 +934,13 @@ describe('Contrats figés du cours B2-01 V3 (§ 9, lot 0)', () => {
         ouverteLe: new Date('2026-10-05T07:00:00.000Z'),
         fermeeLe: new Date('2026-10-05T10:30:00.000Z'),
         participants: [],
-        conceptsFragiles: ['evolutions-successives'],
-        libellesDesConcepts: {
-          'evolutions-successives': 'Évolutions successives',
-        },
+        conceptsFragiles: [
+          {
+            concept: 'evolutions-successives',
+            libelle: 'Évolutions successives',
+            effectif: 3,
+          },
+        ],
         resultats: RESULTATS,
         statistiques: STATISTIQUES,
         notation: NOTATION,

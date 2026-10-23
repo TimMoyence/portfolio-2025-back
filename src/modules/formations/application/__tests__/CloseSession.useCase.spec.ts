@@ -181,7 +181,9 @@ describe('CloseSessionUseCase', () => {
     ]);
     await sut.execute('session-uuid', TEACHER_ID);
     const rapport = mailer.sendSyntheseFormateur.mock.calls[0][1];
-    expect(rapport.conceptsFragiles).toContain('capitalisation');
+    expect(rapport.conceptsFragiles).toEqual([
+      expect.objectContaining({ concept: 'capitalisation' }),
+    ]);
   });
 
   it('vide le cache d etat', async () => {

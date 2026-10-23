@@ -1,14 +1,16 @@
-import { envInt } from '../../../config/env-readers.util';
+import type { ConfigService } from '@nestjs/config';
+import type { ValeursDeLEnv } from '../../../config/env.validation';
 
 export interface SecurityConfig {
   suspiciousScoreThreshold: number;
 }
 
-export function loadSecurityConfig(): SecurityConfig {
+export function loadSecurityConfig(
+  config: ConfigService<ValeursDeLEnv>,
+): SecurityConfig {
   return {
-    suspiciousScoreThreshold: Math.max(
-      1,
-      envInt('SECURITY_SUSPICIOUS_SCORE_THRESHOLD', 25),
+    suspiciousScoreThreshold: config.getOrThrow<number>(
+      'SECURITY_SUSPICIOUS_SCORE_THRESHOLD',
     ),
   };
 }

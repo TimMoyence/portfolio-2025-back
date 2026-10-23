@@ -5,6 +5,7 @@ import {
   setSmtpEnv,
 } from '../../../../../../test/factories/mailer.factory';
 import { ExpediteurDeCourriels } from '../../../../../common/infrastructure/mail/expediteur-smtp';
+import { HEURES_DE_VALIDITE_D_UNE_CONFIRMATION } from '../../../domain/AuditRequest';
 import { AuditConfirmationMailer } from '../audit-confirmation.mailer';
 
 describe('AuditConfirmationMailer', () => {
@@ -46,4 +47,19 @@ describe('AuditConfirmationMailer', () => {
       'Confirm the audit of www.mon-site.fr',
     );
   });
+
+  it.each([
+    ['fr', `valable ${HEURES_DE_VALIDITE_D_UNE_CONFIRMATION} heures`],
+    ['en', `valid for ${HEURES_DE_VALIDITE_D_UNE_CONFIRMATION} hours`],
+  ] as const)(
+    'annonce en %s la validite du lien que la base applique',
+    async (locale, annonce) => {
+      const courriel = await demander(locale);
+
+      expect([courriel.text, courriel.html]).toEqual([
+        expect.stringContaining(annonce),
+        expect.stringContaining(annonce),
+      ]);
+    },
+  );
 });

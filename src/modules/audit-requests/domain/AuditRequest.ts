@@ -14,7 +14,10 @@ import { AuditLocale } from './audit-locale.util';
 
 export const METHODES_DE_CONTACT = Object.freeze(['EMAIL', 'PHONE'] as const);
 
-export const VALIDITE_D_UNE_CONFIRMATION_MS = 24 * 60 * 60 * 1000;
+export const HEURES_DE_VALIDITE_D_UNE_CONFIRMATION = 24;
+
+export const VALIDITE_D_UNE_CONFIRMATION_MS =
+  HEURES_DE_VALIDITE_D_UNE_CONFIRMATION * 60 * 60 * 1000;
 export type MethodeDeContact = (typeof METHODES_DE_CONTACT)[number];
 
 export interface CreateAuditRequestProps extends Provenance {

@@ -15,6 +15,7 @@ import {
 } from '../domain/AuditProcessing';
 import {
   AuditRequest,
+  HEURES_DE_VALIDITE_D_UNE_CONFIRMATION,
   VALIDITE_D_UNE_CONFIRMATION_MS,
 } from '../domain/AuditRequest';
 import { AuditRequestResponse } from '../domain/AuditRequestResponse';
@@ -77,6 +78,9 @@ export class AuditRequestsRepositoryTypeORM
       message: 'Audit request created successfully.',
       auditId: entity.id,
       status: entity.processingStatus,
+      heuresDeValiditeDeLaConfirmation: aConfirmer
+        ? HEURES_DE_VALIDITE_D_UNE_CONFIRMATION
+        : null,
     };
   }
 

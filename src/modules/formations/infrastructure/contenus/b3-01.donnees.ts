@@ -1,6 +1,6 @@
 import type { ConfusionId } from '../../domain/cours/banque/confusions';
 import type { Tolerance } from '../../domain/GradingCore';
-import { TOLERANCE_NULLE, UNE_DECIMALE } from './briques';
+import { A_L_UNITE, TOLERANCE_NULLE, UNE_DECIMALE } from './briques';
 
 export const QUESTIONS_CHIFFREES_B3_01 = [
   'b3-01-a1-lignes-commande',
@@ -55,28 +55,24 @@ export type DefiB301 =
   | 'moyenne-des-taux-reseau'
   | 'taux-de-marge-reseau';
 
-const EXACT = TOLERANCE_NULLE;
-const A_L_EURO_PRES = { type: 'absolue', valeur: 1 } as const;
-const AU_DIXIEME_DE_POINT = UNE_DECIMALE;
-
 export const TOLERANCES_B3_01: Readonly<
   Record<QuestionChiffreeB301, Tolerance>
 > = {
-  'b3-01-a1-lignes-commande': EXACT,
-  'b3-01-a1-lignes-uniques': EXACT,
-  'b3-01-a1-ca-total': A_L_EURO_PRES,
-  'b3-01-a1-a-verifier': EXACT,
-  'b3-01-a2-ca-rennes-info': A_L_EURO_PRES,
-  'b3-01-a2-ca-ouest': A_L_EURO_PRES,
-  'b3-01-a2-delai-strasbourg': EXACT,
-  'b3-01-a2-retards': EXACT,
-  'b3-01-a2-part-info-rennes': AU_DIXIEME_DE_POINT,
-  'b3-01-a3-agences-sous-objectif': EXACT,
-  'b3-01-a3-atteinte-rennes': AU_DIXIEME_DE_POINT,
-  'b3-01-a3-evolution': AU_DIXIEME_DE_POINT,
-  'b3-01-a3-ca-2026': A_L_EURO_PRES,
-  'b3-01-a3-marge-marseille': AU_DIXIEME_DE_POINT,
-  'b3-01-a3-quarantaine': EXACT,
+  'b3-01-a1-lignes-commande': TOLERANCE_NULLE,
+  'b3-01-a1-lignes-uniques': TOLERANCE_NULLE,
+  'b3-01-a1-ca-total': A_L_UNITE,
+  'b3-01-a1-a-verifier': TOLERANCE_NULLE,
+  'b3-01-a2-ca-rennes-info': A_L_UNITE,
+  'b3-01-a2-ca-ouest': A_L_UNITE,
+  'b3-01-a2-delai-strasbourg': TOLERANCE_NULLE,
+  'b3-01-a2-retards': TOLERANCE_NULLE,
+  'b3-01-a2-part-info-rennes': UNE_DECIMALE,
+  'b3-01-a3-agences-sous-objectif': TOLERANCE_NULLE,
+  'b3-01-a3-atteinte-rennes': UNE_DECIMALE,
+  'b3-01-a3-evolution': UNE_DECIMALE,
+  'b3-01-a3-ca-2026': A_L_UNITE,
+  'b3-01-a3-marge-marseille': UNE_DECIMALE,
+  'b3-01-a3-quarantaine': TOLERANCE_NULLE,
 };
 
 export const VALEURS_B3_01: ValeursAttenduesB301 = {

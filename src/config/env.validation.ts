@@ -12,7 +12,14 @@ import { estEnProduction, lirePort, PORT_ATTENDU } from './env-readers.util';
 import { PREFIXE_API_PAR_DEFAUT } from './prefixe-api';
 import { trousseauHmac } from './trousseau-hmac';
 
-export const DUREE_D_UN_JETON = /^([1-9]\d*)([smhd])?$/i;
+const DUREE_D_UN_JETON = /^([1-9]\d*)([smhd])?$/i;
+
+const SECONDES_PAR_UNITE: Readonly<Record<string, number>> = {
+  s: 1,
+  m: 60,
+  h: 3600,
+  d: 86400,
+};
 
 function portTcp(defaut: number) {
   return z
@@ -26,6 +33,10 @@ function portTcp(defaut: number) {
       ctx.addIssue({ code: 'custom', message: `doit etre ${PORT_ATTENDU}` });
       return z.NEVER;
     });
+}
+
+function reglageEntier() {
+  return z.coerce.number().int().optional();
 }
 
 const SECRET_TROP_COURT = `doit faire au moins ${LONGUEUR_MIN_DU_SECRET} caracteres hors blancs`;
@@ -204,11 +215,20 @@ const formeDeLEnv = z.object({
   JWT_EXPIRES_IN: z
     .string()
     .trim()
-    .regex(
-      DUREE_D_UN_JETON,
-      'JWT_EXPIRES_IN doit etre une duree strictement positive, en secondes ou suffixee par s, m, h ou d',
-    )
-    .default('900s'),
+    .default('900s')
+    .transform((duree, ctx) => {
+      const lue = DUREE_D_UN_JETON.exec(duree);
+      if (lue === null) {
+        ctx.addIssue({
+          code: 'custom',
+          message:
+            'doit etre une duree strictement positive, en secondes ou suffixee par s, m, h ou d',
+        });
+        return z.NEVER;
+      }
+      const [, quantite, unite = 's'] = lue;
+      return Number(quantite) * SECONDES_PAR_UNITE[unite.toLowerCase()];
+    }),
   JWT_SECRET_PREVIOUS: secretFacultatif('JWT_SECRET_PREVIOUS'),
   SECURE_KEY_FOR_PASSWORD_HASHING: secretRequis(
     'SECURE_KEY_FOR_PASSWORD_HASHING',
@@ -229,29 +249,29 @@ const formeDeLEnv = z.object({
   REDIS_USERNAME: z.string().optional(),
   REDIS_PASSWORD: z.string().optional(),
 
-  AUDIT_QUEUE_ENABLED: z.string().default('true'),
-  AUDIT_QUEUE_NAME: z.string().default('audit_requests'),
-  AUDIT_QUEUE_CONCURRENCY: z.coerce.number().int().positive().default(1),
-  AUDIT_QUEUE_ATTEMPTS: z.coerce.number().int().positive().default(3),
-  AUDIT_QUEUE_BACKOFF_MS: z.coerce.number().int().positive().default(2000),
-  AUDIT_JOB_TIMEOUT_MS: z.coerce.number().int().positive().default(180000),
+  AUDIT_QUEUE_ENABLED: z.string().optional(),
+  AUDIT_QUEUE_NAME: z.string().optional(),
+  AUDIT_QUEUE_CONCURRENCY: reglageEntier(),
+  AUDIT_QUEUE_ATTEMPTS: reglageEntier(),
+  AUDIT_QUEUE_BACKOFF_MS: reglageEntier(),
+  AUDIT_JOB_TIMEOUT_MS: reglageEntier(),
 
-  AUDIT_FETCH_TIMEOUT_MS: z.coerce.number().int().positive().optional(),
-  AUDIT_MAX_REDIRECTS: z.coerce.number().int().nonnegative().optional(),
-  AUDIT_HTML_MAX_BYTES: z.coerce.number().int().positive().optional(),
-  AUDIT_TEXT_MAX_BYTES: z.coerce.number().int().positive().optional(),
-  AUDIT_SITEMAP_MAX_URLS: z.coerce.number().int().positive().optional(),
-  AUDIT_URL_ANALYZE_CONCURRENCY: z.coerce.number().int().positive().optional(),
-  AUDIT_PAGE_ANALYZE_LIMIT: z.coerce.number().int().positive().optional(),
-  AUDIT_PAGE_AI_CONCURRENCY: z.coerce.number().int().positive().optional(),
-  AUDIT_PAGE_AI_TIMEOUT_MS: z.coerce.number().int().positive().optional(),
+  AUDIT_FETCH_TIMEOUT_MS: reglageEntier(),
+  AUDIT_MAX_REDIRECTS: reglageEntier(),
+  AUDIT_HTML_MAX_BYTES: reglageEntier(),
+  AUDIT_TEXT_MAX_BYTES: reglageEntier(),
+  AUDIT_SITEMAP_MAX_URLS: reglageEntier(),
+  AUDIT_URL_ANALYZE_CONCURRENCY: reglageEntier(),
+  AUDIT_PAGE_ANALYZE_LIMIT: reglageEntier(),
+  AUDIT_PAGE_AI_CONCURRENCY: reglageEntier(),
+  AUDIT_PAGE_AI_TIMEOUT_MS: reglageEntier(),
   AUDIT_PAGE_AI_CIRCUIT_BREAKER_MIN_SAMPLES: z.string().optional(),
   AUDIT_PAGE_AI_CIRCUIT_BREAKER_FAILURE_RATIO: z.string().optional(),
 
   OPENAI_API_KEY: z.string().optional(),
-  AUDIT_LLM_MODEL: z.string().default('gpt-4o-mini'),
+  AUDIT_LLM_MODEL: z.string().optional(),
   AUDIT_LLM_PROFILE: z.string().optional(),
-  AUDIT_LLM_LANGUAGE: z.string().default('fr'),
+  AUDIT_LLM_LANGUAGE: z.string().optional(),
   AUDIT_LLM_PROFILE_CANARY_PERCENT: z.string().optional(),
   AUDIT_LLM_TIMEOUT_MS: z.string().optional(),
   AUDIT_LLM_SUMMARY_TIMEOUT_MS: z.string().optional(),
@@ -272,7 +292,7 @@ const formeDeLEnv = z.object({
   SMTP_PORT: portTcp(587),
   SMTP_USER: z.string().optional(),
   SMTP_PASS: z.string().optional(),
-  SMTP_SECURE: z.string().default('false'),
+  SMTP_SECURE: z.string().optional(),
   SMTP_FROM: z.string().optional(),
   SMTP_REPLY_TO: z.string().optional(),
   SMTP_DKIM_DOMAIN: z.string().optional(),

@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { HEURES_DE_VALIDITE_D_UNE_CONFIRMATION } from '../../domain/AuditRequest';
 import type { DemandeDeConfirmation } from '../../domain/IAuditNotifier.port';
 import { buildMailLayout } from './mail-layout.util';
 import { MailerDAudit } from './mailer-d-audit';
@@ -13,7 +14,7 @@ const TEXTES = {
     bouton: 'Lancer l’audit',
     avertissement:
       'Vous n’êtes pas à l’origine de cette demande ? Ignorez ce message : aucun audit ne sera lancé et rien ne vous sera envoyé.',
-    validite: 'Ce lien reste valable 24 heures.',
+    validite: `Ce lien reste valable ${HEURES_DE_VALIDITE_D_UNE_CONFIRMATION} heures.`,
   },
   en: {
     objet: (hote: string) => `Confirm the audit of ${hote}`,
@@ -23,7 +24,7 @@ const TEXTES = {
     bouton: 'Start the audit',
     avertissement:
       'You did not make this request? Ignore this message: no audit will run and nothing will be sent to you.',
-    validite: 'This link stays valid for 24 hours.',
+    validite: `This link stays valid for ${HEURES_DE_VALIDITE_D_UNE_CONFIRMATION} hours.`,
   },
 } as const;
 

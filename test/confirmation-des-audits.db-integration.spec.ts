@@ -1,4 +1,7 @@
-import { AuditRequest } from '../src/modules/audit-requests/domain/AuditRequest';
+import {
+  AuditRequest,
+  HEURES_DE_VALIDITE_D_UNE_CONFIRMATION,
+} from '../src/modules/audit-requests/domain/AuditRequest';
 import { AuditRequestsRepositoryTypeORM } from '../src/modules/audit-requests/infrastructure/AuditRequests.repository.typeORM';
 import { AuditRequestEntity } from '../src/modules/audit-requests/infrastructure/entities/AuditRequest.entity';
 import { emettreJeton } from '../src/common/domain/crypto/TokenHash';
@@ -23,11 +26,11 @@ describeDb('Confirmation d une demande d audit sur une base migree', () => {
 
   const demandeEnAttente = async () => {
     const jeton = emettreJeton();
-    const { auditId, status } = await depot().create(
+    const creee = await depot().create(
       AuditRequest.create(buildAuditRequest()),
       jeton.empreinte,
     );
-    return { auditId, status, empreinte: jeton.empreinte };
+    return { ...creee, empreinte: jeton.empreinte };
   };
 
   const ligne = async (auditId: string) => {
@@ -43,12 +46,25 @@ describeDb('Confirmation d une demande d audit sur une base migree', () => {
   };
 
   it('garde une demande par courriel hors de la file tant qu elle n est pas confirmee', async () => {
-    const { auditId, status } = await demandeEnAttente();
+    const { auditId, status, heuresDeValiditeDeLaConfirmation } =
+      await demandeEnAttente();
 
     expect(status).toBe('UNCONFIRMED');
+    expect(heuresDeValiditeDeLaConfirmation).toBe(
+      HEURES_DE_VALIDITE_D_UNE_CONFIRMATION,
+    );
     await expect(ligne(auditId)).resolves.toMatchObject({
       processingStatus: 'UNCONFIRMED',
       confirmee_le: null,
+    });
+  });
+
+  it('ne promet aucun delai de confirmation a une demande sans lien a confirmer', async () => {
+    await expect(
+      depot().create(AuditRequest.create(buildAuditRequest()), null),
+    ).resolves.toMatchObject({
+      status: 'PENDING',
+      heuresDeValiditeDeLaConfirmation: null,
     });
   });
 
@@ -64,11 +80,11 @@ describeDb('Confirmation d une demande d audit sur une base migree', () => {
     expect(confirmee.confirmee_le).toBeInstanceOf(Date);
   });
 
-  it('refuse un lien de plus de 24 heures, sur l horloge de la base', async () => {
+  it('refuse un lien plus vieux que sa validite, sur l horloge de la base', async () => {
     const { auditId, empreinte } = await demandeEnAttente();
     await base().query(
-      `UPDATE audit_requests SET created_at = LOCALTIMESTAMP - interval '25 hours' WHERE id = $1`,
-      [auditId],
+      `UPDATE audit_requests SET created_at = LOCALTIMESTAMP - make_interval(hours => $2) WHERE id = $1`,
+      [auditId, HEURES_DE_VALIDITE_D_UNE_CONFIRMATION + 1],
     );
 
     await expect(depot().confirmer(empreinte)).resolves.toBeNull();

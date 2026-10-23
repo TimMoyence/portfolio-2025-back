@@ -19,6 +19,7 @@ import { tirer } from './cours/Tirage';
 import type { LibellesDesOptions } from './cours/Tirage';
 import type { AnswerRecord } from './IAnswers.repository';
 import type {
+  ConceptFragile,
   RapportIncident,
   RapportParticipant,
   RapportQuestion,
@@ -89,7 +90,6 @@ export function buildRapportSession(input: SessionReportInput): RapportSession {
     },
   );
   signalerTiragesEnEchec(input, tiragesEnEchec);
-  const conceptsFragiles = conceptsFragilesDe(input.answers);
 
   return {
     courseSlug: input.session.courseSlug,
@@ -97,10 +97,7 @@ export function buildRapportSession(input: SessionReportInput): RapportSession {
     ouverteLe: input.session.ouverteLe,
     fermeeLe: input.session.fermeeLe ?? null,
     participants,
-    conceptsFragiles,
-    libellesDesConcepts: Object.fromEntries(
-      conceptsFragiles.map((concept) => [concept, libelleDeConcept(concept)]),
-    ),
+    conceptsFragiles: conceptsFragilesDe(input.answers),
   };
 }
 
@@ -308,7 +305,7 @@ function nomDErreur(erreur: unknown): string {
 
 function conceptsFragilesDe(
   reponses: readonly AnswerRecord[],
-): readonly string[] {
+): readonly ConceptFragile[] {
   const parConcept = new Map<string, AnswerRecord[]>();
   for (const reponse of reponses) {
     parConcept.set(reponse.concept, [
@@ -321,5 +318,14 @@ function conceptsFragilesDe(
       ([, duConcept]) =>
         partDesReponses(duConcept) < REGLE_DE_NOTATION.seuilQuestionProbleme,
     )
-    .map(([concept]) => concept);
+    .map(([concept, duConcept]) => ({
+      concept,
+      libelle: libelleDeConcept(concept),
+      effectif: new Set(
+        duConcept
+          .filter(({ correcte }) => !correcte)
+          .map(({ participantId }) => participantId),
+      ).size,
+    }))
+    .sort((gauche, droite) => droite.effectif - gauche.effectif);
 }

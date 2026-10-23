@@ -5,10 +5,7 @@ import {
   estUnSecretValable,
   LONGUEUR_MIN_DU_SECRET,
 } from '../../../../common/domain/crypto/secret-hmac';
-import {
-  DUREE_D_UN_JETON,
-  type ValeursDeLEnv,
-} from '../../../../config/env.validation';
+import type { ValeursDeLEnv } from '../../../../config/env.validation';
 import type { JwtPayload } from './JwtPayload';
 
 interface SignedToken {
@@ -16,13 +13,6 @@ interface SignedToken {
   expiresIn: number;
   expiresAt: number;
 }
-
-const SECONDES_PAR_UNITE: Readonly<Record<string, number>> = {
-  s: 1,
-  m: 60,
-  h: 3600,
-  d: 86400,
-};
 
 function toJwtPayload(payload: JWTPayload): JwtPayload {
   const sub = payload.sub;
@@ -67,9 +57,7 @@ export class JwtTokenService {
   async sign(payload: Record<string, unknown>): Promise<SignedToken> {
     const secret = this.getEncodedSecret();
 
-    const expiresInValue =
-      this.configService.get<string>('JWT_EXPIRES_IN') ?? '900s';
-    const expiresIn = this.parseExpiresIn(expiresInValue);
+    const expiresIn = this.configService.getOrThrow<number>('JWT_EXPIRES_IN');
     const issuedAt = Math.floor(Date.now() / 1000);
     const expiresAt = issuedAt + expiresIn;
 
@@ -85,15 +73,6 @@ export class JwtTokenService {
       .sign(secret);
 
     return { token, expiresIn, expiresAt };
-  }
-
-  private parseExpiresIn(value: string): number {
-    const match = DUREE_D_UN_JETON.exec(value.trim());
-    if (!match) {
-      throw new Error(`JWT_EXPIRES_IN invalide : ${value}`);
-    }
-    const [, quantite, unite = 's'] = match;
-    return Number(quantite) * SECONDES_PAR_UNITE[unite.toLowerCase()];
   }
 
   async verify(token: string): Promise<JwtPayload> {
