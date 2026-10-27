@@ -16,18 +16,16 @@ interface MomentDUnVoteJumele {
 const MOMENTS_D_UN_VOTE_JUMELE: Readonly<Record<string, MomentDUnVoteJumele>> =
   {
     avantToutePhase: { verdictServi: false },
-    vote: { pilotage: { phase: 'vote' }, verdictServi: false },
-    discussion: { pilotage: { phase: 'discussion' }, verdictServi: false },
-    revote: { pilotage: { phase: 'revote' }, verdictServi: false },
-    revoteProjete: {
-      pilotage: { phase: 'revote', resultatsProjetes: true },
+    question1: { pilotage: { phase: 'question-1' }, verdictServi: false },
+    question2: { pilotage: { phase: 'question-2' }, verdictServi: false },
+    question2Projetee: {
+      pilotage: { phase: 'question-2', resultatsProjetes: true },
       verdictServi: false,
     },
     revele: {
-      pilotage: { phase: 'revele', revele: true },
+      pilotage: { phase: 'question-2', revele: true },
       verdictServi: true,
     },
-    phaseSansRevelation: { pilotage: { phase: 'revele' }, verdictServi: false },
     ecranRevele: { pilotage: { revele: true }, verdictServi: true },
     seanceTerminee: { etat: 'terminee', verdictServi: true },
   };

@@ -433,12 +433,9 @@ deck, **C** = conservé sur le fond (texte adapté au fil rouge).
 |   51 | B2-01-A5-09-JALON-5               |   1 | `fp-pulse`                    |     |   0 | seance    | N                              |
 |   52 | B2-01-A6-01-PACIOLI               |   2 | `fp-story` · v2 `image-left`  |     |   0 | seance    | M (S50, S54, S57)              |
 |   53 | B2-01-A6-02-COFFRE                |  10 | `fp-escape` (mini-jeu 2)      |  I  |   0 | seance    | N (reprend S52 à S56)          |
-|   54 | B2-01-A6-03-IA-CADRE              |   2 | `fp-story` · v2 `guide`       |     |   0 | catalogue | M (S67, S70, S71)              |
-|   55 | B2-01-A6-04-IA-ERREUR             |   4 | `fp-challenge`                |  I  |   0 | seance    | N                              |
-|   56 | B2-01-A6-05-RAPPEL                |   3 | `fp-spaced`                   |  I  |   0 | seance    | N (remplace S57, S63 à S65)    |
-|   57 | B2-01-A6-06-FICHE-MEMO            |   2 | `fp-story` · v2 `grid`        |     |   0 | seance    | N (N4, reprend S21, S49, S65)  |
-|   58 | B2-01-A6-07-BOITE-A-OUTILS        |   2 | `fp-story` · v2 `grid`        |     |   0 | catalogue | M (S67 à S69, S72)             |
-|   59 | B2-01-A6-08-BILLET-DE-SORTIE      |   3 | `fp-exit`                     |  I  |   1 | seance    | M (S58, S62, S66)              |
+|   54 | B2-01-A6-05-RAPPEL                |   3 | `fp-spaced`                   |  I  |   0 | seance    | N (remplace S57, S63 à S65)    |
+|   55 | B2-01-A6-07-BOITE-A-OUTILS        |   2 | `fp-story` · v2 `grid`        |     |   0 | catalogue | M (S67 à S69, S72)             |
+|   56 | B2-01-A6-06-FICHE-MEMO            |   2 | `fp-story` · v2 `grid`        |     |   0 | seance    | N (N4, reprend S21, S49, S65)  |
 
 Conventions des fiches ci-dessous. Le bloc **Contenu (public)** est recopié tel quel dans le fichier
 de données : c’est tout ce que voient l’étudiant et la projection (il inclut le « titre public » servi
@@ -565,14 +562,14 @@ L’axe réglable A2-02 n’a plus de renvoi : il part déjà de l’« Axe de S
   - `title` « Le plan de la séance » ; pas de sous-titre.
   - `steps` :
 
-    | id         | title                            | question                              | proof                                              | result                                                                 |
-    | ---------- | -------------------------------- | ------------------------------------- | -------------------------------------------------- | ---------------------------------------------------------------------- |
-    | lire       | Acte 1 · Diagnostiquer           | Que mesure chaque chiffre ?           | Unité, base, période, périmètre, source.           | Le tableau de bord annoté : chaque chiffre qualifié.                   |
-    | comparer   | Acte 2 · Auditer                 | Compare-t-on la même chose ?          | Population de référence, axe, ordre de grandeur.   | Des comparaisons justes et défendables.                                |
-    | evoluer    | Acte 3 · Calculer les évolutions | Quelle base, quel coefficient ?       | Écart, taux, coefficient, indice.                  | Des évolutions justes, y compris successives et réciproques.           |
-    | outiller   | Acte 4 · Outiller au tableur     | La feuille se contrôle-t-elle seule ? | Formules, références, contrôles, graphique.        | Un classeur contrôlable qu’un tiers peut reproduire.                   |
-    | defendre   | Acte 5 · Défendre au comité      | Quel mécanisme explique l’écart ?     | Poids, répartition, preuve, limite.                | Une recommandation fondée sur les poids, les scénarios et les limites. |
-    | transferer | Acte 6 · Transférer              | Saurez-vous le refaire seul·e ?       | Situation nouvelle, réponse d’IA corrigée, rappel. | Une fiche mémo pour le CCF.                                            |
+    | id         | title                            | question                              | proof                                            | result                                                                 |
+    | ---------- | -------------------------------- | ------------------------------------- | ------------------------------------------------ | ---------------------------------------------------------------------- |
+    | lire       | Acte 1 · Diagnostiquer           | Que mesure chaque chiffre ?           | Unité, base, période, périmètre, source.         | Le tableau de bord annoté : chaque chiffre qualifié.                   |
+    | comparer   | Acte 2 · Auditer                 | Compare-t-on la même chose ?          | Population de référence, axe, ordre de grandeur. | Des comparaisons justes et défendables.                                |
+    | evoluer    | Acte 3 · Calculer les évolutions | Quelle base, quel coefficient ?       | Écart, taux, coefficient, indice.                | Des évolutions justes, y compris successives et réciproques.           |
+    | outiller   | Acte 4 · Outiller au tableur     | La feuille se contrôle-t-elle seule ? | Formules, références, contrôles, graphique.      | Un classeur contrôlable qu’un tiers peut reproduire.                   |
+    | defendre   | Acte 5 · Défendre au comité      | Quel mécanisme explique l’écart ?     | Poids, répartition, preuve, limite.              | Une recommandation fondée sur les poids, les scénarios et les limites. |
+    | transferer | Acte 6 · Transférer              | Saurez-vous le refaire seul·e ?       | Situation nouvelle, rappel.                      | Une fiche mémo pour le CCF.                                            |
 
 - **Notes** : aucune (bloc masqué au pupitre).
 
@@ -1071,8 +1068,7 @@ changent pas, puisqu’ils servent de clés en base.
   `revele` (1 min, correction révélée, les deux questions fermées). Deux réponses notées distinctes.
 - **Notes** :
   - Vote 1 individuel, sans calculatrice.
-  - Entre 30 et 70 % de bonnes réponses : débat en binôme « convainquez votre voisin », puis revote ;
-    sinon, revote directement.
+  - Puis question 2, sans débat entre les deux ; la révélation suit.
   - Pièges : « identique » (+10 % puis −10 % s’annuleraient) ; « 12 % » (remises additionnées).
     Contrôles : 110 × 0,90 = 99 ; 4 000 × 0,882 = 3 528 € HT.
   - Relance CG : une seconde remise « sur le net » reste une réduction commerciale, pas un escompte.
@@ -1619,10 +1615,10 @@ changent pas, puisqu’ils servent de clés en base.
   augmenté. »
 - **Interaction et correction** : mêmes phases que A3-01 ; deux réponses notées.
 - **Notes** :
-  - Vote 1 (2 min), débat en binôme (3 min), vote 2 sur le lycée (2 min), révélation (1 min).
-  - Juste après la démonstration, le vote 1 devrait dépasser 70 % : dans ce cas, écourter le débat
-    et passer au vote 2.
-  - Grille du débat : un argument complet associe taux stables, poids modifiés et un exemple chiffré.
+  - Vote 1 (2 min), vote 2 sur le lycée (2 min), révélation et commentaire des deux corrections
+    (4 min).
+  - Grille du commentaire : un argument complet associe taux stables, poids modifiés et un exemple
+    chiffré.
   - Transition : « Faites varier la part de la marketplace. »
 
 #### A5-04 · `B2-01-A5-04-SIMULATEUR-MIX` — 2 min · `fp-plot` · séance · Modifié (S41)
@@ -1887,7 +1883,7 @@ changent pas, puisqu’ils servent de clés en base.
     taux).
   - Transition : « Jeudi, 13 h 30. Avant d’entrer, un détour par Venise. »
 
-### 3.7 Acte 6 — Transférer et vérifier (28 min)
+### 3.7 Acte 6 — Transférer et vérifier (19 min)
 
 #### A6-01 · `B2-01-A6-01-PACIOLI` — 2 min · v2 `image-left` · séance · Modifié (S50, S54, S57)
 
@@ -1977,61 +1973,7 @@ changent pas, puisqu’ils servent de clés en base.
   - S’attarder sur l’énigme la moins résolue (pupitre).
   - Faire relier chaque énigme à son acte : E1 la moyenne pondérée (A5-03), E2 les points (A2-06), E3
     le 20,70 €/m² de la tâche de tableur 2 (A4-05), E4 l’inversion de Pacioli (A6-01).
-  - Transition : « Avant la dernière réponse à corriger, le cadre : ce que l’IA peut faire, et ce
-    qu’elle ne peut pas faire. »
-
-#### A6-03 · `B2-01-A6-03-IA-CADRE` — 2 min · v2 `guide` · catalogue · Modifié (S67, S70, S71)
-
-- **Contenu (public)** :
-  - Titre public : « IA : accélérer la préparation, jamais déléguer le jugement »
-  - `title` « IA : accélérer la préparation, jamais déléguer le jugement » ; `subtitle` « Une IA
-    générative peut proposer une méthode ou une formule. Elle ne valide ni un chiffre, ni une pièce, ni
-    une conclusion. »
-  - `context` « Le cadre d’usage de l’IA en éducation (ministère de l’Éducation nationale, juin 2025)
-    demande un usage encadré, la protection des données et la vérification des productions. Pour un
-    comptable, cela rejoint le secret professionnel et le contrôle interne. »
-  - `takeaway` « L’IA peut réduire le temps de préparation ; la responsabilité de la preuve reste
-    humaine. » ; `nextAction` « Pour chaque réponse d’IA : source, calcul refait au tableur, contrôle,
-    limite. »
-  - `items` : Cadrer (« Décrire le rôle, la question, le format attendu et les contraintes de
-    calcul. » / « Demander une méthode vérifiable, pas une réponse persuasive. ») ; Anonymiser
-    (« Remplacer noms, clients et montants réels par des données fictives. » / « Aucune donnée
-    confidentielle dans un service grand public. ») ; Faire challenger (« Demander les hypothèses, les
-    unités et les cas limites. » / « L’IA est utile comme contradicteur, pas comme source ; sachez
-    écrire « je ne peux pas conclure » quand la donnée manque. ») ; Vérifier au tableur (« Qualifier la
-    source de chaque chiffre, recalculer avec un outil déterministe et comparer aux pièces. » / « Un
-    résultat doit être reproductible hors de la conversation. ») ; Tracer (« Conserver la question, la
-    version retenue et les corrections humaines. » / « Le lecteur doit savoir ce qui vient de l’outil et
-    ce qui vient du professionnel. »).
-- **Notes** :
-  - Relance : « Quelle donnée d’Atelier Rivage ne doit jamais être collée dans un outil grand
-    public ? » (noms de clients, montants réels).
-  - Insister sur « Faire challenger » : savoir écrire « je ne peux pas conclure ».
-  - Transition : « Corrigez cette réponse d’IA. »
-
-#### A6-04 · `B2-01-A6-04-IA-ERREUR` — 4 min · `fp-challenge` · séance · Nouveau
-
-- **Intention** : corriger une erreur plausible produite par un outil (preuve « correction d’une
-  erreur »).
-- **Concept · modalité** : `taux-moyen` · solo.
-- **Contenu (public)** :
-  - Titre public : « Corriger une réponse d’IA »
-  - `id` `b2-01-a6-ia-erreur` ; `enonce` « Samir a demandé à un assistant IA : « Évolution du CA de
-    notre marketplace entre 2023 et 2025, et taux annuel moyen ? », en donnant +20 % en 2024 et +46,5 %
-    en 2025. Réponse obtenue : « Hausse totale : 20 + 46,5 = 66,5 %. Taux annuel moyen : 66,5 ÷ 2 =
-    33,25 %. » » ; `invite` « Trouvez les deux erreurs, corrigez les deux résultats, puis écrivez le
-    contrôle que vous feriez au tableur. » ; `strategies` [] à l’envoi initial.
-- **Stratégies de référence (corrigé)** : `successives` « Erreur 1 : des évolutions successives se
-  multiplient : 1,20 × 1,465 ≈ 1,758, soit +75,8 % (297 500 € → 523 000 €). » ; `racine` « Erreur 2 : le
-  taux moyen se calcule avec une racine carrée : √1,758 − 1 ≈ 0,326, soit +32,6 % par an. » ;
-  `tableur` « Contrôle au tableur : =297500\*PUISSANCE(1,326;2) redonne environ 523 000. » ; `garder`
-  (fausse) « Garder la réponse de l’IA : elle donne le bon ordre de grandeur. »
-- **Notes** :
-  - 3 min d’écriture, révélation, 1 min d’échange.
-  - Repérer qui ne trouve qu’une erreur, et qui retrouve le CA 2023 : 357 000 ÷ 1,20 = 297 500 €.
-  - Contrôle : 297 500 × 1,326² ≈ 523 000. L’IA se trompe de 0,65 point (33,25 % contre 32,6 %) :
-    l’ordre de grandeur ne suffit pas.
-  - Transition : « Votre rappel personnel. »
+  - Transition : « Un dernier rappel, de mémoire. »
 
 #### A6-05 · `B2-01-A6-05-RAPPEL` — 3 min · `fp-spaced` · séance · Nouveau (remplace S57, S63 à S65)
 
@@ -2133,27 +2075,7 @@ changent pas, puisqu’ils servent de clés en base.
   - Montrer les cartes « Une ligne = une observation » et « SIERREUR ».
   - Rappeler le devoir : refaire le TCD du 3e trimestre sur l’année ; les liens Excel et LibreOffice
     de l’écran montrent la manipulation.
-  - Transition : « Billet de sortie. »
-
-#### A6-08 · `B2-01-A6-08-BILLET-DE-SORTIE` — 3 min · `fp-exit` · séance · Modifié (S58, S62, S66)
-
-- **Concept · modalité** : `contrat-de-lecture` · solo.
-- **Contenu (public)** :
-  - Titre public : « Billet de sortie : la phrase du compte rendu »
-  - `billet` `b2-01-a6-billet` : `question` « Le comité ne retiendra qu’une phrase. Laquelle peut
-    figurer telle quelle au compte rendu ? » ; quatre options (§ 5.10) ; `invite` « Quels deux chiffres
-    du dossier prouvent que cette phrase est juste ? Écrivez-les avec leur unité. »
-- **Modification (retours QA)** : l’invite en trois consignes et l’alerte au cabinet (déjà traitée à
-  l’énigme E4) laissent place à une seule question qui prolonge le vote.
-- **Interaction et correction** : le choix est noté (participation) et corrigé serveur ; le texte libre
-  est enregistré (`activityId: b2-01-a6-billet`), lu par le formateur, non noté ; le pupitre affiche
-  « N billets reçus / M participants » avant la clôture.
-- **Notes** :
-  - 3 min ; clore la séance quand le compteur de billets est complet.
-  - Pièges : la phrase en « −2,3 % » et celle qui attribue la baisse au taux de chaque canal.
-  - Réponse attendue : « 27,6 % → 25,3 %, soit −2,3 points ; la marketplace passe de 34 % à 45,5 %
-    du CA. »
-  - Transition : « Rendez-vous en B2-02. »
+  - Transition : « La fiche mémo, pour finir. »
 
 ### 3.8 Correspondance des 72 écrans du deck actuel
 
@@ -3072,7 +2994,6 @@ confusion qui le décrit réellement (le deck étiquetait par exemple « la coul
 | `taux-moyen-arithmetique`                    | taux-moyen                 | Prendre pour taux moyen une moyenne arithmétique, le taux global divisé par le nombre de périodes ou la moyenne des taux de chaque période, au lieu de la racine n-ième du coefficient global.                                                          | B2-01-A3-06-INDICE-ET-TAUX-MOYEN  |
 | `moyenne-simple-des-taux`                    | moyenne-ponderee           | Faire la moyenne simple de taux au lieu de les pondérer par leurs bases.                                                                                                                                                                                | B2-01-A5-03-MOYENNE-PONDEREE      |
 | `hausse-base-baisse-taux`                    | moyenne-ponderee           | Croire qu’une hausse du total fait mécaniquement baisser un taux.                                                                                                                                                                                       | B2-01-A5-04-SIMULATEUR-MIX        |
-| `baisse-attribuee-aux-taux-locaux`           | moyenne-ponderee           | Attribuer la baisse d’un taux global à la baisse des taux de chaque composante, sans regarder les poids.                                                                                                                                                | B2-01-A5-03-MOYENNE-PONDEREE      |
 | `axe-tronque-lu-comme-ecart`                 | lecture-graphique          | Lire ou construire un graphique sans tenir compte de l’origine et de l’amplitude de l’axe : juger un écart à la hauteur des barres, tronquer l’axe ou supprimer ses graduations, ou renoncer à lire un écart que les graduations permettent de mesurer. | B2-01-A2-02-ORIGINE-AXE           |
 | `correlation-prise-pour-causalite`           | lecture-graphique          | Tirer de deux évolutions simultanées, ou d’un coefficient de corrélation proche de 1, une conclusion qu’ils ne prouvent pas : une cause, l’absence de cause ou la poursuite de la tendance.                                                             | B2-01-A5-08-RECOMMANDATION        |
 | `forme-inadaptee`                            | lecture-graphique          | Choisir une forme de graphique qui ne montre pas la relation demandée.                                                                                                                                                                                  | B2-01-A4-04-CA-TRIMESTRIEL        |

@@ -307,9 +307,13 @@ describe('ControlSessionUseCase', () => {
     it('avance la phase d un vote a question jumelle', async () => {
       avecVoteJumele();
 
-      await b.piloter({ pilotage: { screenId: 'E-VOTE', phase: 'revote' } });
+      await b.piloter({
+        pilotage: { screenId: 'E-VOTE', phase: 'question-2' },
+      });
 
-      b.attendreEcriture({ pilotageEcrans: { 'E-VOTE': { phase: 'revote' } } });
+      b.attendreEcriture({
+        pilotageEcrans: { 'E-VOTE': { phase: 'question-2' } },
+      });
     });
 
     it('corrige un exercice sur place et ferme le questionnaire à sa dernière correction', async () => {
@@ -342,11 +346,11 @@ describe('ControlSessionUseCase', () => {
     });
 
     it('refuse de ramener une phase en arriere', async () => {
-      b.seanceLue({ pilotageEcrans: { 'E-VOTE': { phase: 'revele' } } });
+      b.seanceLue({ pilotageEcrans: { 'E-VOTE': { phase: 'question-2' } } });
       avecVoteJumele();
 
       await expect(
-        b.piloter({ pilotage: { screenId: 'E-VOTE', phase: 'vote' } }),
+        b.piloter({ pilotage: { screenId: 'E-VOTE', phase: 'question-1' } }),
       ).rejects.toThrow(PhaseNonMonotoneError);
       expect(b.sessions.update).not.toHaveBeenCalled();
     });
@@ -525,20 +529,24 @@ describe('ControlSessionUseCase — révélation par l écran de correction (SEC
         ),
       ),
     );
-    b.seanceLue({ pilotageEcrans: { [vote.screenId]: { phase: 'revote' } } });
+    b.seanceLue({
+      pilotageEcrans: { [vote.screenId]: { phase: 'question-2' } },
+    });
 
     await b.piloter({ ecran: 2 });
 
     b.attendreEcriture({
       ecranCourant: 2,
-      pilotageEcrans: { [vote.screenId]: { phase: 'revele', revele: true } },
+      pilotageEcrans: {
+        [vote.screenId]: { phase: 'question-2', revele: true },
+      },
     });
   });
 });
 
 describe('QA-01 · phase servie des votes jumelés des cours servis', () => {
   it.each(CAS_DES_COURS_SERVIS)(
-    '%s : publie la phase « vote » de chaque vote jumelé encore non piloté, sans réécrire le pilotage',
+    '%s : publie la phase « question 1 » de chaque vote jumelé encore non piloté, sans réécrire le pilotage',
     async (_slug, cours) => {
       const b = banc(creerCatalogueDeTest(cours));
       const { seance, attendu } = pilotageDUnCoursServi(cours);
@@ -558,25 +566,23 @@ describe('Q1 · un seul chemin de révélation pour chaque vote jumelé des cour
   );
 
   it.each(casDesVotes(PRINCIPALES))(
-    '%s : « Passer à : Révélation » et « Révéler la correction » écrivent le même pilotage',
+    'M2 · %s : « Révéler la correction » après la question 2 écrit la révélation sans changer de phase',
     async (_id, { cours, question }) => {
-      for (const demande of [{ phase: 'revele' }, { revele: true }] as const) {
-        const b = banc(creerCatalogueDeTest(cours));
-        b.seanceLue({
-          courseSlug: cours.slug,
-          pilotageEcrans: { [question.ecranId]: { phase: 'revote' } },
-        });
+      const b = banc(creerCatalogueDeTest(cours));
+      b.seanceLue({
+        courseSlug: cours.slug,
+        pilotageEcrans: { [question.ecranId]: { phase: 'question-2' } },
+      });
 
-        await b.piloter({
-          pilotage: { screenId: question.ecranId, ...demande },
-        });
+      await b.piloter({
+        pilotage: { screenId: question.ecranId, revele: true },
+      });
 
-        b.attendreEcriture({
-          pilotageEcrans: {
-            [question.ecranId]: { phase: 'revele', revele: true },
-          },
-        });
-      }
+      b.attendreEcriture({
+        pilotageEcrans: {
+          [question.ecranId]: { phase: 'question-2', revele: true },
+        },
+      });
     },
   );
 });

@@ -40,6 +40,15 @@ import {
 } from '../../../../common/domain/nombres/arrondi';
 import { termes } from './feuilles';
 
+const GRAVURE_DE_L_ACCROCHE = moteur.gravureDuDomainePublic({
+  id: 'M6',
+  chemin: '/assets/cours/b2-05/v1/massys-le-preteur-1514.jpg',
+  pageSource:
+    'https://commons.wikimedia.org/wiki/File:Massysm_Quentin_%E2%80%94_The_Moneylender_and_his_Wife_%E2%80%94_1514.jpg',
+  auteur: 'Quentin Metsys, Le Prêteur et sa femme',
+  date: '1514',
+});
+
 const DOSSIER_DES_ILLUSTRATIONS = '/assets/cours/b2-05/v1';
 
 const ACTE_1: moteur.Acte = [
@@ -83,7 +92,7 @@ const ACTE_1: moteur.Acte = [
       concepts: ['interets-composes', 'annuites', 'tableau-d-amortissement'],
       notes: moteur.puces(
         'Rappeler en une phrase le B2-04 : le plan à cinq ans est prêt ; Hélène monte maintenant le dossier de financement du second atelier.',
-        'Annoncer le plan : un rappel rapide du B2-01 et du B2-04, puis trois notions, chacune en trois temps (réfléchir, comprendre, s’exercer), et une mini-situation CCF.',
+        'Annoncer le plan : un rappel rapide du B2-01 et du B2-04, puis trois notions, chacune en trois temps (réfléchir, comprendre, s’exercer), et la fiche mémo pour finir.',
         'Annoncer les deux pauses de 15 minutes, après l’acte 1 et après l’acte 3.',
       ),
     },
@@ -92,12 +101,9 @@ const ACTE_1: moteur.Acte = [
       title: 'Placer, emprunter : le prix du temps',
       subtitle:
         'Atelier Rivage, voilerie de La Rochelle. Pour financer son second atelier, la dirigeante place sa trésorerie, épargne chaque année et emprunte : trois calculs que la banque va vérifier.',
-      bullets: [
-        'BTS Comptabilité et gestion · 2e année · cinquième cours de mathématiques',
-        'Un rappel rapide du B2-01 et du B2-04, réinvestis aujourd’hui',
-        'Trois notions : intérêts composés, suites d’annuités, emprunts',
-        'Une mini-situation CCF et sa question tableur',
-      ],
+      bgImage: GRAVURE_DE_L_ACCROCHE.chemins[0],
+      bgImageAlt:
+        'Le Prêteur et sa femme, de Quentin Metsys (1514) : un changeur pèse les pièces sur sa table de comptes',
     },
   ),
   {
@@ -132,15 +138,6 @@ const ACTE_1: moteur.Acte = [
           [['Quatre termes : 4 − 0', 'nombre-de-termes-decale']],
         ),
       ],
-      corrige: {
-        type: 'revelation',
-        titre: 'Deux acquis qui resservent aujourd’hui',
-        lignes: [
-          'Pour annuler une hausse, on divise par son coefficient : ÷ 1,25, c’est × 0,8, soit une baisse de 20 %, pas de 25 %.',
-          'Du rang 0 au rang 4 inclus, on compte 4 − 0 + 1 = 5 termes.',
-          'L’écran suivant dit ce que ces acquis deviennent aujourd’hui.',
-        ],
-      },
     },
   },
   moteur.ecranV2(
@@ -1036,15 +1033,6 @@ const ACTE_3: moteur.Acte = [
           [['11 200 € : le total remboursé', TOTAL_REMBOURSE]],
         ),
       ],
-      corrige: {
-        type: 'revelation',
-        titre: 'Rembourser, ce n’est pas seulement rendre le capital',
-        lignes: [
-          'Une annuité paie d’abord les intérêts de l’année ; le reste, l’amortissement, rembourse le capital : 13 000 − 2 000 = 11 000 €.',
-          'Le coût du crédit est ce que l’on paie en plus du capital : 11 200 − 10 000 = 1 200 €.',
-          'La trace écrite construit le tableau d’amortissement ligne par ligne.',
-        ],
-      },
     },
   },
   moteur.ecranDIllustration(
@@ -1421,98 +1409,13 @@ const ACTE_3: moteur.Acte = [
       minutes: 2,
       notes: [
         'Projeter le tableau juste, ligne par ligne ; faire lire la colonne des intérêts de haut en bas.',
-        'Transition : « Une IA a fait le même calcul. »',
+        'Transition : « Faisons le point sur les emprunts. »',
       ],
     },
     [
       [
         'b2-05-a3-tableau-amortissement',
         'Intérêts : 2 400 ; 1 956,89 ; 1 496,07 ; 1 016,80 ; 518,37 €. Amortissements : 11 077,63 ; 11 520,74 ; 11 981,56 ; 12 460,83 ; 12 959,26 €. Le solde final de −0,02 € vient de l’annuité arrondie au centime : c’est aussi l’écart entre le coût du crédit, 7 388,15 €, et la somme des intérêts, 7 388,13 €.',
-      ],
-    ],
-  ),
-  moteur.corrigeSurPlace(
-    {
-      screenId: 'B2-05-A3-08-DEFI-IA',
-      titre: 'Exercice 7 — Corriger le calcul d’une IA',
-      diffusion: 'seance',
-      brique: 'fp-challenge',
-      dureeMinutes: 8,
-      concepts: ['tableau-d-amortissement', 'cout-du-credit'],
-      notes: moteur.puces(
-        moteur.tempsDeLExercice(2, 6),
-        'Réflexion : relire les traces écrites de la notion 3.',
-        'Repérer qui trouve la formule, la base des intérêts et le coût ; faire trouver la piste fausse avant de révéler.',
-        'Papier : exercice 7 du livret.',
-      ),
-      proprietes: {
-        modalite: 'solo',
-        probleme: {
-          id: 'b2-05-a3-defi-ia',
-          enonce: [
-            'Hélène a demandé à un assistant IA de chiffrer l’emprunt de 60 000 € sur 5 ans à 4 %. Réponse :',
-            '« 1. Chaque année, vous remboursez 60 000 ÷ 5 = 12 000 € de capital, plus 60 000 × 4 % = 2 400 € d’intérêts : l’annuité est de 14 400 €.',
-            '2. Les intérêts restent de 2 400 € chaque année, puisque le taux ne change pas.',
-            '3. Le coût du crédit est de 5 × 14 400 = 72 000 €. »',
-          ].join('\n'),
-          invite:
-            'Trouvez les erreurs de l’IA, corrigez chacune et dites comment la contrôler.',
-        },
-        corrige: {
-          type: 'defi',
-          strategies: [
-            moteur.strategie(
-              'formule',
-              'L’annuité constante se calcule avec la formule donnée, a = C × t ÷ (1 − (1 + t)⁻ⁿ), et non en ajoutant les intérêts de la première année au capital divisé par la durée.',
-            ),
-            moteur.strategie(
-              'base',
-              'Les intérêts portent sur le capital restant dû, qui diminue : ils baissent chaque année.',
-            ),
-            moteur.strategie(
-              'cout',
-              'Le coût du crédit est le total remboursé moins le capital, pas le total remboursé.',
-            ),
-            moteur.strategie(
-              'controle',
-              'Contrôler par le tableau : les intérêts de chaque année doivent valoir le capital restant dû × 4 %, et baisser.',
-            ),
-            moteur.strategie(
-              'garder',
-              'Garder le calcul : il rembourse bien 60 000 € et paie des intérêts.',
-              true,
-            ),
-          ],
-        },
-      },
-    },
-    {
-      minutes: 2,
-      notes: [
-        'Faire lire deux corrections de la classe, puis dévoiler les pistes une à une en recalculant l’annuité.',
-        'Transition : jalon 3, puis pause de 15 minutes.',
-      ],
-    },
-    [
-      [
-        'formule',
-        'a = 60 000 × 0,04 ÷ (1 − 1,04⁻⁵) ≈ 13 477,63 € : l’IA surestime l’annuité de près de 1 000 € par an.',
-      ],
-      [
-        'base',
-        'Deuxième année : 48 922,37 × 0,04 ≈ 1 956,89 €, et non 2 400 €. Les intérêts baissent jusqu’à 518,37 € la dernière année.',
-      ],
-      [
-        'cout',
-        '72 000 € est un total remboursé, et encore faux ; le coût est 5 × 13 477,63 − 60 000 = 7 388,15 €.',
-      ],
-      [
-        'controle',
-        'Deuxième année chez l’IA : 2 400 € d’intérêts sur 48 000 € restant dus, soit 5 %, pas 4 %. Ses amortissements font bien 60 000 €, ce contrôle-là ne la trahit pas ; ses intérêts, 12 000 €, dépassent les 7 388,13 € du tableau juste.',
-      ],
-      [
-        'garder',
-        'Piste fausse : rembourser le capital ne suffit pas, les intérêts doivent suivre le capital restant dû.',
       ],
     ],
   ),
@@ -1557,15 +1460,20 @@ const ILLUSTRATIONS = [
   ['M5', 'cout-du-credit.webp', 'Ce que l’on paie en plus'],
 ] as const;
 
+const MEDIAS = moteur.mediasDesIllustrations(
+  DOSSIER_DES_ILLUSTRATIONS,
+  ILLUSTRATIONS,
+  GRAVURE_DE_L_ACCROCHE,
+);
+
 export const COURS_B2_05 = moteur.coursB2(
   [ACTE_1, ACTE_2, ACTE_3, ACTE_4],
   REMEDIATIONS,
-  moteur.mediasDesIllustrations(DOSSIER_DES_ILLUSTRATIONS, ILLUSTRATIONS),
+  MEDIAS,
   {
     slug: 'b2-05-mathematiques-financieres',
     titre: 'Mathématiques financières : placer, emprunter',
     gabarit: 'v3',
-    dureeMinutes: 180,
     concepts: [...CONCEPTS_DU_COURS],
   },
 );

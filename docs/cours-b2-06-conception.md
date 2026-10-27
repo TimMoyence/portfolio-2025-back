@@ -179,14 +179,9 @@ numérique, classement) portées par l'écran.
 |   24 | B2-06-A3-05-EXEMPLE-AJUSTEMENT   |   6 | `fp-worked`                  |  I  |   0 | seance    |
 |   25 | B2-06-A3-06-TABLEAU-LOGARITHMES  |   8 | `fp-table-build`             |  I  |   0 | seance    |
 |   26 | B2-06-A3-07-ATELIER-DEMANDE      |  10 | `questionnaire`              |  I  |   4 | seance    |
-|   27 | B2-06-A3-08-DEFI-IA              |  10 | `fp-challenge`               |  I  |   0 | seance    |
-|   28 | B2-06-A3-09-JALON                |   1 | `fp-pulse`                   |     |   0 | seance    |
-|   29 | B2-06-A4-01-SITUATION-KITS       |   3 | `fp-story` · v2 `table`      |     |   0 | catalogue |
-|   30 | B2-06-A4-02-TABLEUR-KITS         |  16 | `fp-sheet`                   |  I  |   0 | seance    |
-|   31 | B2-06-A4-03-COFFRE-KITS          |  14 | `fp-escape`                  |  I  |   0 | seance    |
-|   32 | B2-06-A4-04-RAPPEL               |   6 | `fp-spaced`                  |  I  |   0 | seance    |
-|   33 | B2-06-A4-05-FICHE-MEMO           |   2 | `fp-story` · v2 `grid`       |     |   0 | catalogue |
-|   34 | B2-06-A4-06-BILLET-DE-SORTIE     |   4 | `fp-exit`                    |  I  |   1 | seance    |
+|   27 | B2-06-A3-09-JALON                |   1 | `fp-pulse`                   |     |   0 | seance    |
+|   28 | B2-06-A4-04-RAPPEL               |   6 | `fp-spaced`                  |  I  |   0 | seance    |
+|   29 | B2-06-A4-05-FICHE-MEMO           |   2 | `fp-story` · v2 `grid`       |     |   0 | catalogue |
 
 Rythme : 147 minutes interactives, 33 d'exposition, exposition continue de 6 minutes au plus.
 
@@ -335,7 +330,7 @@ Rythme : 147 minutes interactives, 33 d'exposition, exposition continue de 6 min
 
 - Titre public : « Jalon 2 : logarithme et seuils »
 
-### 3.4 Acte 3 — Modèles exponentiels et ajustement (47 min)
+### 3.4 Acte 3 — Modèles exponentiels et ajustement (37 min)
 
 #### A3-01 · `B2-06-A3-01-GRAPHIQUE` — 2 min · v2 `chart` · catalogue
 
@@ -390,50 +385,12 @@ Rythme : 147 minutes interactives, 33 d'exposition, exposition continue de 6 min
 - `b2-06-a3-prix` : le prix de gros pour une demande de 600 sacs ; pièges `seuil-par-division`,
   `signe-de-k-ignore`.
 
-#### A3-08 · `B2-06-A3-08-DEFI-IA` — 10 min · `fp-challenge` · séance
-
-- Titre public : « Exercice 7 — Corriger l’ajustement d’une IA »
-- Temps : réflexion 2 min · travail 6 min · correction 2 min, piste par piste sur place.
-- L'IA ajuste la demande par une droite (y = −31x + 1 653, r ≈ −0,985) et en tire une demande
-  négative au-delà de 53 €. Pistes justes : les rapports constants, l'ajustement de z = ln y et son
-  coefficient de corrélation plus proche de −1, la demande négative qui trahit la droite, la
-  prévision par le modèle exponentiel ; piste fausse : un coefficient de −0,985 suffit à valider la
-  droite.
-
 #### A3-09 · `B2-06-A3-09-JALON` — 1 min · `fp-pulse` · séance
 
 - Titre public : « Jalon 3 : modèles exponentiels »
 - Puis pause de 15 minutes.
 
-### 3.5 Acte 4 — Mini-situation CCF et clôture (45 min)
-
-#### A4-01 · `B2-06-A4-01-SITUATION-KITS` — 3 min · v2 `table` · catalogue
-
-- Titre public : « Mini-situation CCF : les kits de réparation »
-- Dossier : six prix de 10 € à 35 € et la demande mensuelle de kits, prix x en dizaines d'euros et
-  demande y en centaines de kits, ajustement par z = ln y, modèle retenu f(x) = 20e^(−0,7x),
-  barème sur 10. Mention « Données fictives ».
-
-#### A4-02 · `B2-06-A4-02-TABLEUR-KITS` — 16 min · `fp-sheet` · séance
-
-- Titre public : « Question tableur (3 points sur 10) : ajuster la demande »
-- Temps : réflexion 3 min · travail 11 min · correction 2 min sur place.
-- Prix en colonne A, demandes en colonne B : z = ln y en colonne C (`=LN(B2)`, recopiée), pente en
-  D2 (`=PENTE(C2:C7;A2:A7)`), ordonnée à l'origine en E2 (`=ORDONNEE.ORIGINE(C2:C7;A2:A7)`),
-  coefficient a en F2 (`=EXP(E2)`), demande prévue au prix de 40 € en G2 (`=F2*EXP(D2*4)`). Sept
-  colonnes, sans colonne vide (QF-28). Dix cellules attendues ; pièges `ajustement-affine-sur-y`,
-  `pente-ordonnee-inversees`, `ordonnee-non-exponentiee`, `exponentielle-lue-comme-produit`.
-
-#### A4-03 · `B2-06-A4-03-COFFRE-KITS` — 14 min · `fp-escape` · séance
-
-- Titre public : « Mini-situation : fixer le prix des kits »
-- Temps : réflexion 2 min · travail 10 min · correction 2 min sur place, énigme par énigme.
-- E1 demande au prix de 25 € (2 points ; `k-confondu-avec-taux`, `signe-de-k-ignore`) ; E2 prix
-  pour une demande de 400 kits (2 points ; `seuil-par-division`, `signe-de-k-ignore`) ; E3 premier
-  prix entier sous 200 kits (1,5 point ; `seuil-mal-arrondi`, `k-confondu-avec-taux`) ; E4 baisse
-  de la demande pour 10 € de plus (1,5 point ; `k-confondu-avec-taux`,
-  `coefficient-confondu-avec-taux`).
-- Papier : quatre questions rédigées du livret, sans code de coffre.
+### 3.5 Acte 4 — Rappel et fiche mémo (8 min)
 
 #### A4-04 · `B2-06-A4-04-RAPPEL` — 6 min · `fp-spaced` · séance
 
@@ -442,10 +399,6 @@ Rythme : 147 minutes interactives, 33 d'exposition, exposition continue de 6 min
 #### A4-05 · `B2-06-A4-05-FICHE-MEMO` — 2 min · v2 `grid` · catalogue
 
 - Titre public : « Fiche mémo : exponentielle et logarithme »
-
-#### A4-06 · `B2-06-A4-06-BILLET-DE-SORTIE` — 4 min · `fp-exit` · séance
-
-- Titre public : « Billet de sortie : la formule du seuil »
 
 ## 4. Mode papier
 
@@ -542,7 +495,9 @@ par `fp-sheet`, la colonne des logarithmes par `fp-table-build`.
 
 ### 8.2 Catalogue des médias
 
-Aucun média catalogué.
+| Id  | Écran | Fichier source (page)                                                                 | Original              | Auteur, date                                                 | Licence        | Dérivé servi                  | Attribution affichée                                                                                  |
+| --- | ----- | ------------------------------------------------------------------------------------- | --------------------- | ------------------------------------------------------------ | -------------- | ----------------------------- | ----------------------------------------------------------------------------------------------------- |
+| M1  | A1-02 | https://commons.wikimedia.org/wiki/File:Mirifici_Logarithmorum_canonis_Descriptio.jpg | JPEG 2 301 × 3 193 px | John Napier, Mirifici logarithmorum canonis descriptio, 1614 | domaine public | `napier-logarithmes-1614.jpg` | « John Napier, Mirifici logarithmorum canonis descriptio, 1614 · Wikimedia Commons (domaine public) » |
 
 ### 8.3 Sources des données
 

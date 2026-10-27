@@ -381,12 +381,6 @@ describe('LireSujetUseCase — correction de l écran source révélé (T9)', ()
     expect(feuille.correction).toBeUndefined();
   });
 
-  it('tait la bonne réponse en phase de révélation d un vote, quand la question jumelle reste ouverte', async () => {
-    servir({ pilotageEcrans: { [RAPPEL.screenId]: { phase: 'revele' } } });
-
-    expect((await ecransServis())[0].correction).toBeUndefined();
-  });
-
   it('sert sur l écran révélé la bonne réponse du tirage de l étudiant', async () => {
     servir({ pilotageEcrans: { [RAPPEL.screenId]: { revele: true } } });
 

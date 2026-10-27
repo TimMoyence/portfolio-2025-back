@@ -53,10 +53,6 @@ export const DUREE_DE_L_EMPRUNT = 5;
 export const ANNUITE_ARRONDIE = 13477.63;
 export const ECART_DE_L_ANNUITE_ARRONDIE = 0.02;
 
-const CAMIONNETTE = 32000;
-const TAUX_DE_LA_CAMIONNETTE = 0.035;
-const DUREE_DE_LA_CAMIONNETTE = 4;
-
 const EMPRUNT_TYPE = 100000;
 const TAUX_DE_L_EMPRUNT_TYPE = 0.05;
 export const DUREE_DE_L_EMPRUNT_TYPE = 10;
@@ -77,7 +73,6 @@ export const DONNEES_FICTIVES =
   'Données fictives Atelier Rivage, créées pour ce cours.';
 
 export const RENVOI_AU_DOSSIER = 'B2-05-A1-05-DOSSIER';
-export const RENVOI_A_LA_CAMIONNETTE = 'B2-05-A4-01-SITUATION-CAMIONNETTE';
 
 const annuiteConstante = (
   capital: number,
@@ -138,37 +133,6 @@ const LIGNES_DE_L_EMPRUNT = tableauDAmortissement(
   ANNUITE_ARRONDIE,
   DUREE_DE_L_EMPRUNT,
   auCentime,
-);
-
-const ANNUITE_DE_LA_CAMIONNETTE = auMillionieme(
-  annuiteConstante(
-    CAMIONNETTE,
-    TAUX_DE_LA_CAMIONNETTE,
-    DUREE_DE_LA_CAMIONNETTE,
-  ),
-);
-const LIGNES_DE_LA_CAMIONNETTE = tableauDAmortissement(
-  CAMIONNETTE,
-  TAUX_DE_LA_CAMIONNETTE,
-  annuiteConstante(
-    CAMIONNETTE,
-    TAUX_DE_LA_CAMIONNETTE,
-    DUREE_DE_LA_CAMIONNETTE,
-  ),
-  DUREE_DE_LA_CAMIONNETTE,
-  (valeur) => valeur,
-);
-const interetsSansAmortir = (annee: number): number =>
-  LIGNES_DE_LA_CAMIONNETTE[1].interets *
-  (1 + TAUX_DE_LA_CAMIONNETTE) ** (annee - 1);
-const COUT_DE_LA_CAMIONNETTE = auMillionieme(
-  DUREE_DE_LA_CAMIONNETTE *
-    annuiteConstante(
-      CAMIONNETTE,
-      TAUX_DE_LA_CAMIONNETTE,
-      DUREE_DE_LA_CAMIONNETTE,
-    ) -
-    CAMIONNETTE,
 );
 
 export const LIGNES_DE_L_EMPRUNT_TYPE = tableauDAmortissement(
@@ -300,141 +264,6 @@ export const ATTENDUS_DE_L_EPARGNE: AuMoinsUnModifiable<AttenduDeFeuille> = [
   ),
 ];
 
-export const FORMULE_DE_L_ANNUITE = '=VPM(F2;G2;-B2)';
-export const FORMULE_DES_INTERETS = '=B2*$F$2';
-export const FORMULE_DE_L_AMORTISSEMENT = '=$H$2-C2';
-export const FORMULE_DU_CAPITAL_RESTANT = '=B2-D2';
-export const FORMULE_DU_REPORT = '=E2';
-export const FORMULE_DU_COUT = '=H2*G2-B2';
-
-const CELLULES_DE_LA_CAMIONNETTE = {
-  A1: 'Année',
-  B1: 'Capital dû en début d’année (€)',
-  B2: String(CAMIONNETTE),
-  C1: 'Intérêts (€)',
-  D1: 'Amortissement (€)',
-  E1: 'Capital dû en fin d’année (€)',
-  F1: 'Taux annuel',
-  F2: avecVirgule(TAUX_DE_LA_CAMIONNETTE, 3),
-  G1: 'Durée (années)',
-  G2: String(DUREE_DE_LA_CAMIONNETTE),
-  H1: 'Annuité (€)',
-  I1: 'Coût du crédit (€)',
-  ...colonneDeValeurs(
-    'A',
-    termes((annee) => annee, 1, DUREE_DE_LA_CAMIONNETTE),
-  ),
-};
-
-export const PLAN_DE_LA_CAMIONNETTE = {
-  id: 'b2-05-a4-feuille-camionnette',
-  intitule:
-    'Question tableur (3 points) — Le tableau d’amortissement de la camionnette',
-  lignes: DUREE_DE_LA_CAMIONNETTE + 1,
-  colonnes: 9,
-  cellules: CELLULES_DE_LA_CAMIONNETTE,
-  verrouillees: Object.keys(CELLULES_DE_LA_CAMIONNETTE),
-  consignes: [
-    'En H2, calculez l’annuité avec VPM, à partir du taux (F2), de la durée (G2) et du capital emprunté (B2) ; l’annuité doit s’afficher positive.',
-    `En C2, les intérêts de l’année 1 ; en D2, l’amortissement ; en E2, le capital dû en fin d’année. Recopiez les trois formules jusqu’à la ligne 5 : ${gesteDeRecopie(['C2', 'D2', 'E2'], 5)}.`,
-    `En B3, reportez le capital dû en fin d’année 1. Recopiez jusqu’en B5 : ${gesteDeRecopie(['B3'], 5)}.`,
-    'En I2, calculez le coût du crédit.',
-    'Le taux et l’annuité ne s’écrivent pas dans les formules : utilisez F2 et H2, figés par des $ là où la formule est recopiée.',
-  ],
-};
-
-export const ATTENDUS_DE_LA_CAMIONNETTE: AuMoinsUnModifiable<AttenduDeFeuille> =
-  [
-    moteur.attendu(
-      'H2',
-      FORMULE_DE_L_ANNUITE,
-      ANNUITE_DE_LA_CAMIONNETTE,
-      'references',
-      [
-        [-ANNUITE_DE_LA_CAMIONNETTE, VPM_NON_SIGNE],
-        [CAMIONNETTE / DUREE_DE_LA_CAMIONNETTE, ANNUITE_POUR_AMORTISSEMENT],
-      ],
-    ),
-    ...colonneRecopiee(
-      {
-        colonne: 'B',
-        premiereLigne: 3,
-        formule: FORMULE_DU_REPORT,
-      },
-      termes(
-        (annee) => auMillionieme(LIGNES_DE_LA_CAMIONNETTE[annee].capital),
-        1,
-        DUREE_DE_LA_CAMIONNETTE - 1,
-      ),
-    ),
-    ...colonneRecopiee(
-      {
-        colonne: 'C',
-        premiereLigne: 2,
-        formule: FORMULE_DES_INTERETS,
-        piegesDeLaRecopie: [
-          [0, NON_FIGEE],
-          [CAMIONNETTE * TAUX_DE_LA_CAMIONNETTE, CAPITAL_INITIAL],
-        ],
-      },
-      termes(
-        (annee) => auMillionieme(LIGNES_DE_LA_CAMIONNETTE[annee].interets),
-        0,
-        DUREE_DE_LA_CAMIONNETTE - 1,
-      ),
-    ),
-    ...colonneRecopiee(
-      {
-        colonne: 'D',
-        premiereLigne: 2,
-        formule: FORMULE_DE_L_AMORTISSEMENT,
-        piegesDuModele: [
-          [ANNUITE_DE_LA_CAMIONNETTE, ANNUITE_POUR_AMORTISSEMENT],
-        ],
-        piegesDeLaRecopie: [
-          [ANNUITE_DE_LA_CAMIONNETTE, ANNUITE_POUR_AMORTISSEMENT],
-        ],
-        piegesDuRang: (annee) => [
-          [-auMillionieme(interetsSansAmortir(annee)), NON_FIGEE],
-        ],
-      },
-      termes(
-        (annee) => auMillionieme(LIGNES_DE_LA_CAMIONNETTE[annee].amortissement),
-        0,
-        DUREE_DE_LA_CAMIONNETTE - 1,
-      ),
-    ),
-    ...colonneRecopiee(
-      {
-        colonne: 'E',
-        premiereLigne: 2,
-        formule: FORMULE_DU_CAPITAL_RESTANT,
-        tolerance: moteur.DEUX_DECIMALES,
-      },
-      termes(
-        (annee) =>
-          annee < DUREE_DE_LA_CAMIONNETTE - 1
-            ? auMillionieme(LIGNES_DE_LA_CAMIONNETTE[annee + 1].capital)
-            : 0,
-        0,
-        DUREE_DE_LA_CAMIONNETTE - 1,
-      ),
-    ),
-    moteur.attendu(
-      'I2',
-      FORMULE_DU_COUT,
-      COUT_DE_LA_CAMIONNETTE,
-      'references',
-      [
-        [COUT_DE_LA_CAMIONNETTE + CAMIONNETTE, TOTAL_REMBOURSE],
-        [
-          DUREE_DE_LA_CAMIONNETTE * CAMIONNETTE * TAUX_DE_LA_CAMIONNETTE,
-          CAPITAL_INITIAL,
-        ],
-      ],
-    ),
-  ];
-
 type AttenduDeTableau = Parameters<typeof moteur.questionDeTableau>[2][number];
 
 export const [
@@ -464,5 +293,3 @@ export const [
     ],
   },
 ]);
-
-export const PARCOURS_DU_COFFRE = 'b2-05-a4-coffre-camionnette';

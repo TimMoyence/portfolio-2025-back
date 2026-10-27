@@ -25,7 +25,7 @@ export class SynchronisationAuDemarrageService implements OnApplicationBootstrap
       const cause =
         erreur instanceof Error ? erreur : new Error(String(erreur));
       this.logger.error(
-        `Synchronisation des cours échouée, la dernière version publiée reste servie : ${cause.message}`,
+        `Synchronisation des cours refusée, aucun cours publié (${this.contenus.map(({ slug }) => slug).join(', ')}) : ${cause.message}`,
         cause.stack ?? cause.message,
       );
     }
@@ -34,11 +34,21 @@ export class SynchronisationAuDemarrageService implements OnApplicationBootstrap
   private async publierLesCoursDuDepot(): Promise<void> {
     const issues = await this.synchroniser.execute(this.contenus);
     for (const issue of issues) {
-      this.logger.log(
-        issue.statut === 'publie'
-          ? `Cours ${issue.slug} publié en version ${String(issue.version)}`
-          : `Cours ${issue.slug} déjà à jour`,
-      );
+      switch (issue.statut) {
+        case 'publie':
+          this.logger.log(
+            `Cours ${issue.slug} publié en version ${String(issue.version)}`,
+          );
+          break;
+        case 'a-jour':
+          this.logger.log(`Cours ${issue.slug} déjà à jour`);
+          break;
+        case 'echec':
+          this.logger.error(
+            `Cours ${issue.slug} non publié : ${issue.cause.message}`,
+            issue.cause.stack ?? issue.cause.message,
+          );
+      }
     }
   }
 }

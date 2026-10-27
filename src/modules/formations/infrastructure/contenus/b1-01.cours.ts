@@ -40,6 +40,14 @@ import {
 } from './b1-01.donnees';
 import * as moteur from './briques';
 
+const GRAVURE_DE_L_ACCROCHE = moteur.gravureDuDomainePublic({
+  id: 'M7',
+  chemin: '/assets/cours/b1-01/v1/playfair-camemberts-1801.jpg',
+  pageSource: 'https://commons.wikimedia.org/wiki/File:Playfair_piecharts.jpg',
+  auteur: 'William Playfair, The Statistical Breviary',
+  date: '1801',
+});
+
 const DOSSIER_DES_ILLUSTRATIONS = '/assets/cours/b1-01/v1';
 
 const ACTE_1: moteur.Acte = [
@@ -91,12 +99,9 @@ const ACTE_1: moteur.Acte = [
       title: 'Proportions et pourcentages : parmi qui ?',
       subtitle:
         'Partie Libre, quatre boutiques-bars à jeux. Votre alternance commence par le bilan de rentrée : des effectifs, des parts, des marges.',
-      bullets: [
-        'BTS Comptabilité et gestion · 1re année · premier cours de mathématiques',
-        'Trois notions : la part d’un tout, la part d’une part, points et marges',
-        'Le tableur dès aujourd’hui : SOMME, ARRONDI et le $',
-        'Une mini-situation CCF pour finir',
-      ],
+      bgImage: GRAVURE_DE_L_ACCROCHE.chemins[0],
+      bgImageAlt:
+        'Diagrammes circulaires de William Playfair (1801) : la part de chaque territoire dans un tout, les premiers camemberts publiés',
     },
   ),
   {
@@ -136,15 +141,6 @@ const ACTE_1: moteur.Acte = [
           ],
         ),
       ],
-      corrige: {
-        type: 'revelation',
-        titre: 'Deux réflexes à garder',
-        lignes: [
-          '15 % de 80 €, c’est 0,15 × 80 = 12 €.',
-          'Une hausse se rapporte au prix de départ : 10 ÷ 50 = 0,20, soit + 20 %.',
-          'La deuxième question revient à l’acte 3.',
-        ],
-      },
     },
   },
   moteur.ecranV2(
@@ -1061,15 +1057,6 @@ const ACTE_3: moteur.Acte = [
           [['60 %', MARQUE_POUR_MARGE]],
         ),
       ],
-      corrige: {
-        type: 'revelation',
-        titre: 'Deux pourcentages qui se ressemblent',
-        lignes: [
-          '24 − 18 = 6 points ; en évolution, (24 − 18) ÷ 18 ≈ + 33,3 %.',
-          '90 ÷ 240 = 37,5 % du prix de vente ; 90 ÷ 150 = 60 % du coût d’achat.',
-          'La trace écrite donne un nom à chacun.',
-        ],
-      },
     },
   },
   moteur.ecranDIllustration(
@@ -1365,7 +1352,7 @@ const ACTE_3: moteur.Acte = [
       minutes: 2,
       notes: [
         moteur.CORRIGER_PAR_LA_MOINS_REUSSIE,
-        'Transition : « Une IA a rédigé le bilan : exercice 6. »',
+        'Transition : « Faisons le point : points, marge et marque. »',
       ],
     },
     [
@@ -1384,91 +1371,6 @@ const ACTE_3: moteur.Acte = [
       [
         'b1-01-a3-taux-de-marque',
         'Taux de marque : 15 ÷ 39 ≈ 0,385, soit 38,5 %. Plus petit que le taux de marge : on divise par le prix de vente, plus grand.',
-      ],
-    ],
-  ),
-  moteur.corrigeSurPlace(
-    {
-      screenId: 'B1-01-A3-06-DEFI-IA',
-      titre: 'Exercice 6 — Corriger le bilan d’une IA',
-      diffusion: 'seance',
-      brique: 'fp-challenge',
-      dureeMinutes: 7,
-      concepts: ['point-de-pourcentage', 'pourcentage', 'moyenne-ponderee'],
-      notes: moteur.puces(
-        moteur.tempsDeLExercice(2, 5),
-        'Réflexion : relire les méthodes des trois traces écrites des actes 2 et 3.',
-        'Repérer qui trouve les points, la marque et le taux global ; faire trouver la piste fausse avant de révéler.',
-        'Papier : exercice 6 du livret.',
-      ),
-      proprietes: {
-        modalite: 'solo',
-        probleme: {
-          id: 'b1-01-a3-defi-ia',
-          enonce: [
-            'Inès a demandé à un assistant IA de rédiger trois phrases du bilan. Réponse :',
-            '« 1. Les ventes en ligne sont passées de 18 % à 24 % du chiffre d’affaires : elles ont progressé de 6 %.',
-            '2. Une console achetée 150 € HT et vendue 240 € HT : notre taux de marque est de 60 %.',
-            '3. Le taux de fidélité du réseau est la moyenne des quatre boutiques : (45 + 60 + 50 + 75) ÷ 4 = 57,5 %. »',
-          ].join('\n'),
-          invite:
-            'Trouvez les erreurs de l’IA, corrigez chacune et dites comment la contrôler.',
-        },
-        corrige: {
-          type: 'defi',
-          strategies: [
-            moteur.strategie(
-              'points',
-              'L’écart de deux parts se dit en points : + 6 points, soit + 33,3 % en évolution.',
-            ),
-            moteur.strategie(
-              'marque',
-              'Le taux de marque divise la marge par le prix de vente : 90 ÷ 240 = 37,5 % ; 60 % est le taux de marge.',
-            ),
-            moteur.strategie(
-              'global',
-              'Le taux global compte les porteurs : 1 620 ÷ 3 000 = 54 %, pondéré par les clients de chaque boutique.',
-            ),
-            moteur.strategie(
-              'controle',
-              'Contrôler : le taux de marque est plus petit que le taux de marge ; le taux global est tiré vers celui de la plus grosse boutique.',
-            ),
-            moteur.strategie(
-              'garder',
-              'Garder le bilan : les trois calculs sont justes.',
-              true,
-            ),
-          ],
-        },
-      },
-    },
-    {
-      minutes: 2,
-      notes: [
-        'Faire lire deux corrections de la classe, puis dévoiler les pistes une à une.',
-        'Transition : jalon 3, puis pause de 15 minutes.',
-      ],
-    },
-    [
-      [
-        'points',
-        '24 − 18 = 6 points. En évolution : 6 ÷ 18 ≈ + 33,3 %. « + 6 % » ne veut rien dire ici.',
-      ],
-      [
-        'marque',
-        'Marge : 240 − 150 = 90 €. Taux de marque : 90 ÷ 240 = 37,5 %. Taux de marge : 90 ÷ 150 = 60 %.',
-      ],
-      [
-        'global',
-        'Porteurs : 540 + 480 + 300 + 300 = 1 620 sur 3 000 clients, soit 54 % et non 57,5 %.',
-      ],
-      [
-        'controle',
-        '37,5 % < 60 % : la marque est bien plus petite que la marge. 54 % est plus près de Nantes, 45 %, que la moyenne simple.',
-      ],
-      [
-        'garder',
-        'Piste fausse : les trois phrases se trompent de mot, de diviseur ou de tout.',
       ],
     ],
   ),
@@ -1513,15 +1415,20 @@ const ILLUSTRATIONS = [
   ['M6', 'etiquette-marge-marque.webp', 'Une marge, deux taux'],
 ] as const;
 
+const MEDIAS = moteur.mediasDesIllustrations(
+  DOSSIER_DES_ILLUSTRATIONS,
+  ILLUSTRATIONS,
+  GRAVURE_DE_L_ACCROCHE,
+);
+
 export const COURS_B1_01 = moteur.coursB1(
   [ACTE_1, ACTE_2, ACTE_3, ACTE_4],
   REMEDIATIONS,
-  moteur.mediasDesIllustrations(DOSSIER_DES_ILLUSTRATIONS, ILLUSTRATIONS),
+  MEDIAS,
   {
     slug: 'b1-01-proportions-pourcentages',
     titre: 'Proportions et pourcentages',
     gabarit: 'v3',
-    dureeMinutes: 160,
     concepts: [...CONCEPTS_DU_COURS],
   },
 );

@@ -115,7 +115,6 @@ const ecranStocke = z
     schemaDEcran('fp-numeric'),
     schemaDEcran('fp-vote'),
     schemaDEcran('fp-recall'),
-    schemaDEcran('fp-exit'),
     schemaDEcran('questionnaire'),
   ])
   .superRefine((ecran, contexte) => {
@@ -364,7 +363,6 @@ function versEcranDeVote(
   socle: SocleDEcran,
 ): Ecran {
   const [principale, jumelle] = ecran.proprietes.questions;
-  const revelation = ecran.proprietes.corrige;
   return {
     ...socle,
     brique: ecran.brique,
@@ -372,7 +370,6 @@ function versEcranDeVote(
     ...(jumelle === undefined
       ? {}
       : { questionJumelle: questionDeVote(jumelle) }),
-    ...(revelation === undefined ? {} : { revelation }),
     ...seuilDe(ecran.proprietes.seuil),
   };
 }
@@ -463,13 +460,6 @@ function versEcran(ecran: EcranStocke): Ecran {
           ? {}
           : { consigne: ecran.proprietes.consigne }),
         ...seuilDe(ecran.proprietes.seuil),
-      };
-    case 'fp-exit':
-      return {
-        ...socle,
-        brique: ecran.brique,
-        question: questionDeVote(ecran.proprietes.questions[0]),
-        invite: ecran.proprietes.invite,
       };
     case 'questionnaire':
       return versEcranDeQuestionnaire(ecran, socle);

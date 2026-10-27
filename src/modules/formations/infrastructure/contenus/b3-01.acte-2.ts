@@ -40,15 +40,6 @@ export const ACTE_2: moteur.Acte = [
           ],
         ),
       ],
-      corrige: {
-        type: 'revelation',
-        titre: 'Deux familles, dans l’ordre',
-        lignes: [
-          'La catégorie d’un produit vit dans l’onglet Produits : on la cherche d’abord, ligne par ligne.',
-          'Puis on additionne ca_ht sous trois conditions : l’agence de Rennes, la catégorie Informatique, une date en 2026.',
-          'Nommer la famille avant de choisir la fonction : c’est la règle du niveau 3.',
-        ],
-      },
     },
   },
   moteur.ecranV2(
@@ -283,15 +274,6 @@ export const ACTE_2: moteur.Acte = [
           ],
         ),
       ],
-      corrige: {
-        type: 'revelation',
-        titre: 'Jours calendaires ou jours ouvrés',
-        lignes: [
-          'Du vendredi au lundi : 3 jours calendaires, mais un seul jour ouvré, puisque le samedi et le dimanche ne se travaillent pas.',
-          'Le contrat de livraison de Norvane promet 5 jours ouvrés : le délai se mesure en jours ouvrés.',
-          'NB.JOURS.OUVRES compte les deux bornes : du vendredi au lundi, il renvoie 2, d’où le − 1 pour obtenir le délai.',
-        ],
-      },
     },
   },
   moteur.ecranV2(
@@ -436,15 +418,6 @@ export const ACTE_2: moteur.Acte = [
           ],
         ),
       ],
-      corrige: {
-        type: 'revelation',
-        titre: 'Une plage fixe ne grandit pas',
-        lignes: [
-          'A2:A4039 s’arrête à la ligne 4039 : les lignes d’octobre restent dehors, même après recalcul.',
-          'Un tableau structuré s’étend tout seul : chaque formule qui le cite voit les nouvelles lignes.',
-          'C’est l’objet du cours suivant.',
-        ],
-      },
     },
   },
   moteur.ecranV2(

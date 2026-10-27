@@ -49,7 +49,7 @@ export function sourceRevelee(
 }
 
 export function phaseDuVote(pilotage: PilotageEcran | undefined): VotePhase {
-  return pilotage?.phase ?? 'vote';
+  return pilotage?.phase ?? 'question-1';
 }
 
 export interface VerdictServi {
@@ -296,8 +296,6 @@ export function activitesDeLEcran(ecran: Ecran): readonly string[] {
       );
     case 'fp-recall':
       return ecran.delaiMs > 0 ? [`${ecran.question.id}:rappel`] : [];
-    case 'fp-exit':
-      return [ecran.question.id];
     case 'fp-story':
       return reflexionDuRecit(ecran);
     case 'fp-pro':

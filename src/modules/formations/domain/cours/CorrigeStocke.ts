@@ -7,7 +7,6 @@ import type {
   CorrigeEnigme,
   CorrigeFeuille,
   CorrigeProduction,
-  CorrigeRevelation,
   CorrigeTableau,
 } from './Corrige';
 import {
@@ -246,14 +245,6 @@ export const corrigeDefi = z
       );
     }
   }) satisfies z.ZodType<CorrigeDefi>;
-
-export const corrigeRevelation = z
-  .object({
-    type: z.literal('revelation'),
-    titre: texte,
-    lignes: auMoinsUn(texte),
-  })
-  .strict() satisfies z.ZodType<CorrigeRevelation>;
 
 function confusionsDuCorrigeBrutes(
   corrige: CorrigeProduction,

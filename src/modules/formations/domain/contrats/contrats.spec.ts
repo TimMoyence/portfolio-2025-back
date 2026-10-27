@@ -4,7 +4,6 @@ import type {
   CorrigeEnigme,
   CorrigeFeuille,
   CorrigeProduction,
-  CorrigeRevelation,
   CorrigeTableau,
   FormeFormule,
   PiegeNumerique,
@@ -39,7 +38,6 @@ import type {
   Concept4Definition,
   DonneesParBrique,
   EscapeParcoursPublic,
-  ExitBilletPublic,
   MachineCalculee,
   MetadonneesBrique,
   NumeriquePublic,
@@ -55,7 +53,6 @@ import type {
   VotePublic,
   WorkedExemple,
 } from './donnees-publiques';
-import { LONGUEUR_MAX_DU_BILLET_DE_SORTIE } from './donnees-publiques';
 import type { RegleDeNotation } from '../RegleDeNotation';
 import type {
   ControlSessionChanges,
@@ -249,12 +246,6 @@ const CORRIGE_DEFI = {
   ],
 } satisfies CorrigeDefi;
 
-const REVELATION = {
-  type: 'revelation',
-  titre: 'Une hausse puis une baisse de 20 %',
-  lignes: ['1,2 × 0,8 = 0,96 : le prix finit 4 % plus bas.'],
-} satisfies CorrigeRevelation;
-
 const QUESTION_FEUILLE = {
   id: 'b2-01-a4-feuille-canaux',
   type: 'feuille',
@@ -401,7 +392,7 @@ const DETAIL = {
   confusion: 'taux-valeur-facteur-cent',
 } satisfies DetailProduction;
 
-const PILOTAGE_VOTE = { phase: 'revote' } satisfies PilotageEcran;
+const PILOTAGE_VOTE = { phase: 'question-2' } satisfies PilotageEcran;
 
 const ECRAN_PUBLIC = {
   id: 'B2-01-A4-02-FEUILLE-CANAUX',
@@ -480,7 +471,6 @@ describe('Contrats figés du cours B2-01 V3 (§ 9, lot 0)', () => {
           brique: 'fp-vote',
           question: QUESTION_VOTE,
           questionJumelle: QUESTION_VOTE,
-          revelation: REVELATION,
         },
         {
           ...ECRAN_COMMUN,
@@ -488,13 +478,6 @@ describe('Contrats figés du cours B2-01 V3 (§ 9, lot 0)', () => {
           brique: 'fp-recall',
           question: QUESTION_VOTE,
           delaiMs: 45000,
-        },
-        {
-          ...ECRAN_COMMUN,
-          id: 'B2-01-A6-08-BILLET-DE-SORTIE',
-          brique: 'fp-exit',
-          question: QUESTION_VOTE,
-          invite: 'Justifiez votre choix en une phrase.',
         },
         {
           ...ECRAN_COMMUN,
@@ -577,7 +560,7 @@ describe('Contrats figés du cours B2-01 V3 (§ 9, lot 0)', () => {
         },
       ] satisfies Ecran[];
 
-      expect(ecrans.map((ecran) => ecran.brique)).toHaveLength(14);
+      expect(ecrans.map((ecran) => ecran.brique)).toHaveLength(13);
     });
 
     it('décrit un cours avec ses remédiations et son catalogue de médias', () => {
@@ -691,7 +674,6 @@ describe('Contrats figés du cours B2-01 V3 (§ 9, lot 0)', () => {
       expect(
         CORRIGE_DEFI.strategies.filter((strategie) => strategie.fausse),
       ).toHaveLength(1);
-      expect(REVELATION.lignes).toHaveLength(1);
       expect([...pieges, ...formes]).toHaveLength(3);
     });
   });
@@ -835,11 +817,6 @@ describe('Contrats figés du cours B2-01 V3 (§ 9, lot 0)', () => {
           type: 'defi',
           strategies: CORRIGE_DEFI.strategies,
         },
-        {
-          type: 'revelation',
-          titre: REVELATION.titre,
-          lignes: REVELATION.lignes,
-        },
       ] satisfies CorrigeEcranPresentateur[];
       const ecran = {
         ...ECRAN_PUBLIC,
@@ -858,7 +835,7 @@ describe('Contrats figés du cours B2-01 V3 (§ 9, lot 0)', () => {
         ecrans: [ecran],
       } satisfies DerouleCours;
 
-      expect(corriges.map((corrige) => corrige.type)).toHaveLength(6);
+      expect(corriges.map((corrige) => corrige.type)).toHaveLength(5);
       expect(deroule.ecrans[0].corrigeEcran?.type).toBe('feuille');
     });
   });
@@ -956,7 +933,7 @@ describe('Contrats figés du cours B2-01 V3 (§ 9, lot 0)', () => {
 
   describe('§ 9.3.9 — pilotage, état en direct et état du participant', () => {
     it('persiste le pilotage par écran et sa révision', () => {
-      const phases: VotePhase[] = ['vote', 'discussion', 'revote', 'revele'];
+      const phases: VotePhase[] = ['question-1', 'question-2'];
       const etat = {
         etat: 'en_cours',
         modeRythme: 'pilote',
@@ -973,13 +950,13 @@ describe('Contrats figés du cours B2-01 V3 (§ 9, lot 0)', () => {
       const commande = {
         pilotage: {
           screenId: 'B2-01-A3-01-VOTE-HAUSSE-BAISSE',
-          phase: 'revele',
+          phase: 'question-2',
         },
       } satisfies ControlSessionChanges;
 
-      expect(phases).toHaveLength(4);
+      expect(phases).toHaveLength(2);
       expect(Object.keys(etat.pilotage)).toHaveLength(3);
-      expect(commande.pilotage.phase).toBe('revele');
+      expect(commande.pilotage.phase).toBe('question-2');
     });
 
     it('rend à l’appelant ses seules données de séance', () => {
@@ -1085,14 +1062,6 @@ describe('Contrats figés du cours B2-01 V3 (§ 9, lot 0)', () => {
         unite: '%',
         metadonnees: METADONNEES,
       } satisfies NumeriquePublic;
-      const billet = {
-        id: 'b2-01-a6-billet',
-        question: 'Quelle vérification ferez-vous d’abord ?',
-        invite: 'Justifiez en une phrase.',
-        longueurMax: LONGUEUR_MAX_DU_BILLET_DE_SORTIE,
-        options: OPTIONS_BAISSE,
-        metadonnees: METADONNEES,
-      } satisfies ExitBilletPublic;
       const concept4 = {
         id: 'B2-01-A3-02-MACHINE-COEFFICIENTS',
         parametres: [
@@ -1203,7 +1172,6 @@ describe('Contrats figés du cours B2-01 V3 (§ 9, lot 0)', () => {
           question: { ...VOTE_PUBLIC, metadonnees: METADONNEES },
           delaiMs: 45000,
         },
-        'fp-exit': { billet },
         questionnaire: {
           intitule: 'Atelier 1 — Comparer sans tromper',
           consigne: 'Répondez seul, sans vos notes.',
@@ -1222,7 +1190,7 @@ describe('Contrats figés du cours B2-01 V3 (§ 9, lot 0)', () => {
         donnees['fp-escape'].parcours satisfies EscapeParcoursPublic,
       ];
 
-      expect(Object.keys(donnees)).toHaveLength(19);
+      expect(Object.keys(donnees)).toHaveLength(18);
       expect(colonne.role).toBe('deduite');
       expect(spaced.boite).toBe(1);
       expect(plans.map((entree) => entree.id)).toHaveLength(3);
@@ -1246,7 +1214,7 @@ describe('Contrats figés du cours B2-01 V3 (§ 9, lot 0)', () => {
         // @ts-expect-error « je ne sais pas » ne s’envoie qu’à vrai
         { type: 'feuille', neSaitPas: false } satisfies ValeurProduction,
         // @ts-expect-error une commande de pilotage désigne toujours son écran
-        { pilotage: { phase: 'vote' } } satisfies ControlSessionChanges,
+        { pilotage: { phase: 'question-1' } } satisfies ControlSessionChanges,
         {
           ...RESUME_BAREME,
           // @ts-expect-error le résumé du barème couvre les six types de question

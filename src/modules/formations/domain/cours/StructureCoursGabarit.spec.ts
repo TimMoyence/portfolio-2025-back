@@ -229,10 +229,9 @@ describe('verifierStructure — gabarit v3', () => {
   });
 
   describe('mini-situation CCF', () => {
-    it('refuse un cours v3 sans mini-situation', () => {
-      expect(violationsDuGabarit(buildEcransSansMiniSituation())).toEqual([
-        { regle: 'gabarit-mini-situation', ecran: null },
-      ]);
+    it('M6 · accepte un cours v3 sans mini-situation', () => {
+      expect(violationsDuGabarit(buildEcransV3Conformes())).toEqual([]);
+      expect(violationsDuGabarit(buildEcransSansMiniSituation())).toEqual([]);
     });
 
     it('refuse une trace écrite après la mini-situation', () => {

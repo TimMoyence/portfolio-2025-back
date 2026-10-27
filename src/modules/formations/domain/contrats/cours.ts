@@ -11,11 +11,7 @@ import type {
   RegimeVerrou,
   SocleHistorique,
 } from '../cours/Cours';
-import type {
-  CorrigeDefi,
-  CorrigeProduction,
-  CorrigeRevelation,
-} from '../cours/Corrige';
+import type { CorrigeDefi, CorrigeProduction } from '../cours/Corrige';
 import type {
   CardsortPlanPublic,
   EscapeParcoursPublic,
@@ -142,7 +138,6 @@ export type Ecran =
       readonly brique: 'fp-vote';
       readonly question: QuestionVote;
       readonly questionJumelle?: QuestionVote;
-      readonly revelation?: CorrigeRevelation;
       readonly seuil?: number;
     })
   | (EcranCommun & {
@@ -151,11 +146,6 @@ export type Ecran =
       readonly delaiMs: number;
       readonly consigne?: string;
       readonly seuil?: number;
-    })
-  | (EcranCommun & {
-      readonly brique: 'fp-exit';
-      readonly question: QuestionVote;
-      readonly invite: string;
     })
   | (EcranCommun & {
       readonly brique: 'questionnaire';

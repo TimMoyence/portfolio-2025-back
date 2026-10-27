@@ -5,7 +5,9 @@ import {
 } from '../../../../../test/factories/ecrans-stockes.factory';
 import {
   buildNumeriqueStockee,
+  buildOptionStockee,
   buildRappelDeCompensation,
+  buildVoteStocke,
 } from '../../../../../test/factories/questions-stockees.factory';
 import {
   buildCoursConforme,
@@ -48,11 +50,35 @@ function atelierAvec(numerique: Partial<NumeriqueStockee>): Ecran {
   );
 }
 
-function billetInvitant(invite: string): Ecran {
-  if (cloture.brique !== 'fp-exit') {
-    throw new Error('le cours conforme se clôt par un billet de sortie');
-  }
-  return { ...cloture, invite };
+const VOTE = 'B2-01-A1-04-VOTE';
+
+function rappelConsignant(consigne?: string): Ecran {
+  return lireEcranStocke(
+    buildEcranDeBrique('fp-recall', {
+      screenId: VOTE,
+      titre: 'Rappel',
+      proprietes: {
+        ...buildProprietesStockees('fp-recall'),
+        ...(consigne === undefined ? {} : { consigne }),
+        questions: [
+          buildVoteStocke({
+            id: 'b2-01-a1-vote',
+            concept: 'point-de-pourcentage',
+            enonce:
+              'Le taux de retour des colis passe de 4 % à 5 %. Quelle phrase est exacte ?',
+            options: [
+              buildOptionStockee('Il gagne un point', null),
+              buildOptionStockee(
+                'Il gagne 1 %',
+                'points-confondus-avec-pourcentage',
+              ),
+            ],
+            segments: ['gagne', 'point'],
+          }),
+        ],
+      },
+    }),
+  );
 }
 
 const AVANT = 'B2-01-A1-02-AVANT';
@@ -168,10 +194,11 @@ describe('garde confidentialite — volet exact', () => {
       ouverture,
       citation,
       atelier,
-      billetInvitant('Réponse attendue : Il gagne un point.'),
+      rappelConsignant('Réponse attendue : Il gagne un point.'),
+      cloture,
     ]);
 
-    expect(fuites(cours)).toEqual([cloture.id]);
+    expect(fuites(cours)).toEqual([VOTE]);
   });
 
   function graphiqueAvant(
@@ -237,6 +264,7 @@ describe('garde confidentialite — volet segments', () => {
   it('refuse une chaine precedente qui porte tous les segments, sans casse', () => {
     const cours = autourDeLAtelier(
       texteDe(APRES, 'On GAGNE toujours un Point quand le taux monte.'),
+      rappelConsignant(),
     );
 
     expect(fuites(cours)).toEqual([APRES]);
@@ -246,6 +274,7 @@ describe('garde confidentialite — volet segments', () => {
     const cours = autourDeLAtelier(
       texteDe(APRES, 'On gagne du temps.'),
       texteDe('B2-01-A1-06-APRES', 'Un point de vue.'),
+      rappelConsignant(),
     );
 
     expect(fuites(cours)).toEqual([]);
@@ -256,7 +285,8 @@ describe('garde confidentialite — volet segments', () => {
       ouverture,
       citation,
       atelier,
-      billetInvitant('Dites si l’on gagne un point et justifiez.'),
+      rappelConsignant('Dites si l’on gagne un point et justifiez.'),
+      cloture,
     ]);
 
     expect(fuites(cours)).toEqual([]);

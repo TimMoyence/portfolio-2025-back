@@ -9,7 +9,6 @@ import {
   buildCorrigeDefi,
   buildCorrigeEnigme,
   buildCorrigeFeuille,
-  buildCorrigeRevelation,
   buildCorrigeTableau,
   buildCorrigeTableDeVerite,
   buildPlanFeuille,
@@ -353,13 +352,8 @@ const PROPRIETES_PAR_BRIQUE: Readonly<Record<string, Record<string, unknown>>> =
           ],
         }),
       ],
-      corrige: buildCorrigeRevelation(),
     },
     'fp-recall': { questions: [buildVoteStocke()], delaiMs: 45000 },
-    'fp-exit': {
-      questions: [buildVoteStocke({ id: 'b2-01-a6-billet' })],
-      invite: 'Justifiez en trois phrases.',
-    },
     questionnaire: {
       intitule: 'Atelier 1 — Lire, rapporter, estimer',
       consigne: 'Calculatrice autorisée.',

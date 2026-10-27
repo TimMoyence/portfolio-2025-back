@@ -91,7 +91,7 @@ describe('ouvrirTirages', () => {
       'Q-TEST-NUM-2',
       'Q-TEST-NUM-3',
       'Q-TEST-VOTE',
-      'Q-TEST-EXIT',
+      'Q-TEST-FIN',
     ]);
     for (const { seed } of bareme.tirages) {
       const attendues = tirer(cours, seed).solutions;

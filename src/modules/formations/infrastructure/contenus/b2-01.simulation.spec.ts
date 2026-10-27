@@ -56,13 +56,13 @@ function optionsParQuestion(
 }
 
 describe('B2-01 — simulation du tirage et de l’ouverture', () => {
-  it('tire les 59 écrans et les 48 solutions pour toute graine', () => {
+  it('tire les 56 écrans et les 47 solutions pour toute graine', () => {
     fc.assert(
       fc.property(graine, (valeur) => {
         const tirage = tirer(COURS, valeur);
 
-        expect(tirage.sujet.ecrans).toHaveLength(59);
-        expect(Object.keys(tirage.solutions)).toHaveLength(19 + 7 + 13);
+        expect(tirage.sujet.ecrans).toHaveLength(56);
+        expect(Object.keys(tirage.solutions)).toHaveLength(18 + 7 + 13);
         expect(Object.keys(tirage.banque)).toHaveLength(13);
       }),
       { numRuns: 150 },
@@ -102,7 +102,7 @@ describe('B2-01 — simulation du tirage et de l’ouverture', () => {
 
           expect(new Set(seeds).size).toBe(61);
           expect(Object.keys(bareme.solutionsCommunes)).toHaveLength(
-            19 + 7 + 13,
+            18 + 7 + 13,
           );
           expect(
             bareme.tirages.filter(
@@ -215,11 +215,11 @@ describe('B2-01 — simulation du tirage et de l’ouverture', () => {
       fc.property(graine, (valeur) => {
         const deroule = deroulePresentateur(COURS, valeur);
 
-        expect(deroule.ecrans).toHaveLength(59);
+        expect(deroule.ecrans).toHaveLength(56);
         expect(deroule.ecrans.flatMap((ecran) => ecran.questions)).toHaveLength(
-          48,
+          47,
         );
-        expect(Object.keys(remediationsDe(COURS))).toHaveLength(43);
+        expect(Object.keys(remediationsDe(COURS))).toHaveLength(42);
       }),
       { numRuns: 50 },
     );

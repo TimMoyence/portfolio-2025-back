@@ -3,7 +3,6 @@ import type {
   PilotageDemande,
   PilotageEcran,
   PilotageServi,
-  VotePhase,
 } from '../contrats/pilotage';
 import { PHASES_DE_VOTE } from '../contrats/pilotage';
 import {
@@ -145,11 +144,7 @@ export function demandeAppliquee(
   ecran: Ecran,
   demande: PilotageDemande,
 ): PilotageDemande {
-  const complete = demandeDeCorrection(ecran, demande);
-  const revele = complete.revele === true || complete.phase === 'revele';
-  return estVoteJumele(ecran) && revele
-    ? { ...complete, phase: 'revele', revele: true }
-    : complete;
+  return demandeDeCorrection(ecran, demande);
 }
 
 export function fusionnerPilotage(
@@ -159,10 +154,12 @@ export function fusionnerPilotage(
   const { screenId } = demande;
   const changements = sansClesNonPilotables(demande);
   const precedent: PilotageEcran = courant[screenId] ?? {};
+  const phaseCourante = phaseDuVote(precedent);
   if (
     changements.phase !== undefined &&
-    PHASES_DE_VOTE.indexOf(changements.phase) <
-      PHASES_DE_VOTE.indexOf(phaseDuVote(precedent))
+    (PHASES_DE_VOTE.indexOf(changements.phase) <
+      PHASES_DE_VOTE.indexOf(phaseCourante) ||
+      (ecranRevele(precedent) && changements.phase !== phaseCourante))
   ) {
     throw new PhaseNonMonotoneError(screenId);
   }
@@ -189,17 +186,11 @@ export function fusionnerPilotage(
 type CoteDuVote = NonNullable<QuestionPilotee['ouverture']>;
 
 function coteAffiche(pilotage: PilotageEcran | undefined): CoteDuVote {
-  const phase = phaseDuVote(pilotage);
-  return phase === 'revote' || phase === 'revele' ? 'jumelle' : 'principale';
+  return phaseDuVote(pilotage) === 'question-2' ? 'jumelle' : 'principale';
 }
 
-const PHASES_FERMEES: readonly VotePhase[] = ['discussion', 'revele'];
-
 function coteOuvert(pilotage: PilotageEcran | undefined): CoteDuVote | null {
-  if (ecranRevele(pilotage) || PHASES_FERMEES.includes(phaseDuVote(pilotage))) {
-    return null;
-  }
-  return coteAffiche(pilotage);
+  return ecranRevele(pilotage) ? null : coteAffiche(pilotage);
 }
 
 export function assertPhaseOuverte(

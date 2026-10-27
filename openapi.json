@@ -5568,32 +5568,6 @@
           "strategies"
         ]
       },
-      "CorrigeRevelationPresentateurResponseDto": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "enum": [
-              "revelation"
-            ]
-          },
-          "titre": {
-            "type": "string",
-            "example": "Une hausse puis une baisse de 20 %"
-          },
-          "lignes": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          }
-        },
-        "required": [
-          "type",
-          "titre",
-          "lignes"
-        ]
-      },
       "CorrigeReflexionPresentateurResponseDto": {
         "type": "object",
         "properties": {
@@ -5706,9 +5680,6 @@
               },
               {
                 "$ref": "#/components/schemas/CorrigeDefiPresentateurResponseDto"
-              },
-              {
-                "$ref": "#/components/schemas/CorrigeRevelationPresentateurResponseDto"
               },
               {
                 "$ref": "#/components/schemas/CorrigeReflexionPresentateurResponseDto"
@@ -6251,31 +6222,6 @@
                         "type": {
                           "type": "string",
                           "enum": [
-                            "fp-exit"
-                          ]
-                        },
-                        "donnees": {
-                          "$ref": "#/components/schemas/DonneesFpExit"
-                        }
-                      },
-                      "required": [
-                        "type",
-                        "donnees"
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/EcranPublicResponseDto"
-                    },
-                    {
-                      "type": "object",
-                      "properties": {
-                        "type": {
-                          "type": "string",
-                          "enum": [
                             "questionnaire"
                           ]
                         },
@@ -6343,10 +6289,8 @@
       "PhaseDeVote": {
         "type": "string",
         "enum": [
-          "vote",
-          "discussion",
-          "revote",
-          "revele"
+          "question-1",
+          "question-2"
         ],
         "description": "Phase d un vote a question jumelle, jamais ramenee en arriere"
       },
@@ -6481,7 +6425,7 @@
           },
           "revele": {
             "type": "boolean",
-            "description": "Revelation des pistes fausses d un defi, jamais retiree"
+            "description": "Revelation de la correction de l ecran (defi, vote a deux questions, questionnaire), jamais retiree"
           },
           "etayage": {
             "type": "integer",
@@ -7097,7 +7041,7 @@
           },
           "revele": {
             "type": "boolean",
-            "description": "Revelation des pistes fausses d un defi, jamais retiree"
+            "description": "Revelation de la correction de l ecran (defi, vote a deux questions, questionnaire), jamais retiree"
           },
           "etayage": {
             "type": "integer",
@@ -7765,9 +7709,6 @@
                 "$ref": "#/components/schemas/CorrigeDefiPresentateurResponseDto"
               },
               {
-                "$ref": "#/components/schemas/CorrigeRevelationPresentateurResponseDto"
-              },
-              {
                 "$ref": "#/components/schemas/CorrigeReflexionPresentateurResponseDto"
               }
             ],
@@ -8230,31 +8171,6 @@
                         },
                         "donnees": {
                           "$ref": "#/components/schemas/DonneesFpRecall"
-                        }
-                      },
-                      "required": [
-                        "type",
-                        "donnees"
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/EcranDerouleResponseDto"
-                    },
-                    {
-                      "type": "object",
-                      "properties": {
-                        "type": {
-                          "type": "string",
-                          "enum": [
-                            "fp-exit"
-                          ]
-                        },
-                        "donnees": {
-                          "$ref": "#/components/schemas/DonneesFpExit"
                         }
                       },
                       "required": [
@@ -10286,31 +10202,6 @@
                         "type": {
                           "type": "string",
                           "enum": [
-                            "fp-exit"
-                          ]
-                        },
-                        "donnees": {
-                          "$ref": "#/components/schemas/DonneesFpExit"
-                        }
-                      },
-                      "required": [
-                        "type",
-                        "donnees"
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/EcranPublicResponseDto"
-                    },
-                    {
-                      "type": "object",
-                      "properties": {
-                        "type": {
-                          "type": "string",
-                          "enum": [
                             "questionnaire"
                           ]
                         },
@@ -11253,14 +11144,6 @@
                         "type": "string",
                         "minLength": 1
                       },
-                      "bullets": {
-                        "type": "array",
-                        "items": {
-                          "type": "string",
-                          "minLength": 1
-                        },
-                        "minItems": 1
-                      },
                       "bgImage": {
                         "anyOf": [
                           {
@@ -11279,8 +11162,7 @@
                       }
                     },
                     "required": [
-                      "title",
-                      "bullets"
+                      "title"
                     ],
                     "additionalProperties": false
                   }
@@ -14796,66 +14678,6 @@
         "required": [
           "question",
           "delaiMs"
-        ],
-        "additionalProperties": false
-      },
-      "DonneesFpExit": {
-        "type": "object",
-        "properties": {
-          "billet": {
-            "type": "object",
-            "properties": {
-              "id": {
-                "type": "string"
-              },
-              "question": {
-                "type": "string"
-              },
-              "invite": {
-                "type": "string"
-              },
-              "longueurMax": {
-                "type": "number",
-                "enum": [
-                  500
-                ]
-              },
-              "options": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "id": {
-                      "type": "string"
-                    },
-                    "libelle": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "id",
-                    "libelle"
-                  ],
-                  "additionalProperties": false
-                }
-              },
-              "metadonnees": {
-                "$ref": "#/components/schemas/MetadonneesBrique"
-              }
-            },
-            "required": [
-              "id",
-              "question",
-              "invite",
-              "longueurMax",
-              "options",
-              "metadonnees"
-            ],
-            "additionalProperties": false
-          }
-        },
-        "required": [
-          "billet"
         ],
         "additionalProperties": false
       },

@@ -61,17 +61,15 @@ describe('etatEnDirect', () => {
     };
 
     it.each<[string, PilotageEcran, 'principale' | 'jumelle', string | null]>([
-      ['au vote', {}, 'principale', principale],
-      ['pendant la discussion', { phase: 'discussion' }, 'principale', null],
-      ['au revote', { phase: 'revote' }, 'jumelle', jumelle],
-      ['à la phase révélée', { phase: 'revele' }, 'jumelle', null],
+      ['à la question 1', {}, 'principale', principale],
+      ['à la question 2', { phase: 'question-2' }, 'jumelle', jumelle],
       [
         'une fois la correction révélée',
-        { phase: 'revele', revele: true },
+        { phase: 'question-2', revele: true },
         'jumelle',
         null,
       ],
-      ['révélé dès le vote', { revele: true }, 'principale', null],
+      ['révélé dès la question 1', { revele: true }, 'principale', null],
     ])(
       '%s, sert la question affichée et celle qui reçoit les réponses',
       (_cas, pilotage, affichee, ouverte) => {

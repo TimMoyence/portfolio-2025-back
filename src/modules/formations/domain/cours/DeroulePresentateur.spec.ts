@@ -89,7 +89,7 @@ describe('deroulePresentateur', () => {
     expect(ecran('E-OUV').seuil).toBeCloseTo(0.6);
     expect(ecran('E-NUM').seuil).toBe(REGLE_DE_NOTATION.seuilQuestionProbleme);
     expect(ecran('E-CITATION').seuil).toBeNull();
-    expect(ecran('E-EXIT').seuil).toBe(REGLE_DE_NOTATION.seuilQuestionProbleme);
+    expect(ecran('E-FIN').seuil).toBe(REGLE_DE_NOTATION.seuilQuestionProbleme);
     expect(
       ecran('E-PRATIQUE').corriges.map((corrige) => corrige.questionId),
     ).toEqual(['Q-TEST-NUM-2', 'Q-TEST-NUM-3', 'Q-TEST-VOTE']);
@@ -294,7 +294,7 @@ describe('deroulePresentateur (corrigés au déroulé, B22)', () => {
     expect(ecran('fp-quote').titre).toBe('Écran fp-quote');
   });
 
-  it('corrige les productions, les énigmes, les défis et la révélation d un vote', () => {
+  it('M4 · corrige les productions, les énigmes et les défis, et aucun vote', () => {
     expect(ecran('fp-sheet').corrigeEcran).toEqual({
       type: 'feuille',
       attendus: [
@@ -372,11 +372,21 @@ describe('deroulePresentateur (corrigés au déroulé, B22)', () => {
         { id: 'couleur', fausse: true },
       ],
     });
-    expect(ecran('fp-vote').corrigeEcran).toMatchObject({
-      type: 'revelation',
-      titre: 'Pourquoi le prix ne revient pas à son point de départ',
-    });
+    expect(ecran('fp-vote').corrigeEcran).toBeNull();
     expect(ecran('fp-quote').corrigeEcran).toBeNull();
+  });
+
+  it('M4 · ne sert aucune prose sous la correction d un vote des cours servis', () => {
+    const votes = CONTENUS.flatMap(
+      (contenu) => deroulePresentateur(buildCoursDuContenu(contenu), 0).ecrans,
+    ).filter((ecran) => ecran.type === 'fp-vote');
+
+    expect(votes.length).toBeGreaterThan(0);
+    expect(
+      votes
+        .filter((ecran) => ecran.corrigeEcran !== null)
+        .map((ecran) => ecran.id),
+    ).toEqual([]);
   });
 
   it('T9 · donne au formateur le raisonnement attendu d une réflexion, pour le révéler', () => {

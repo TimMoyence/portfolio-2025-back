@@ -171,14 +171,12 @@ numérique, classement) portées par l'écran.
 |   28 | B2-04-A3-05-EXEMPLE-SEUIL               |   6 | `fp-worked`                    |  I  |   0 | seance    |
 |   29 | B2-04-A3-06-TABLEAU-ALGORITHME          |   7 | `fp-table-build`               |  I  |   0 | seance    |
 |   30 | B2-04-A3-07-ATELIER-SEUIL               |  11 | `questionnaire`                |  I  |   4 | seance    |
-|   31 | B2-04-A3-08-DEFI-IA                     |  10 | `fp-challenge`                 |  I  |   0 | seance    |
-|   32 | B2-04-A3-09-JALON                       |   1 | `fp-pulse`                     |     |   0 | seance    |
-|   33 | B2-04-A4-01-SITUATION-BOUTIQUE          |   3 | `fp-story` · v2 `table`        |     |   0 | catalogue |
-|   34 | B2-04-A4-02-TABLEUR-BOUTIQUE            |  16 | `fp-sheet`                     |  I  |   0 | seance    |
-|   35 | B2-04-A4-03-COFFRE-BOUTIQUE             |  14 | `fp-escape`                    |  I  |   0 | seance    |
-|   36 | B2-04-A4-04-RAPPEL                      |   6 | `fp-spaced`                    |  I  |   0 | seance    |
-|   37 | B2-04-A4-05-FICHE-MEMO                  |   2 | `fp-story` · v2 `grid`         |     |   0 | catalogue |
-|   38 | B2-04-A4-06-BILLET-DE-SORTIE            |   4 | `fp-exit`                      |  I  |   1 | seance    |
+|   31 | B2-04-A3-09-JALON                       |   1 | `fp-pulse`                     |     |   0 | seance    |
+|   32 | B2-04-A4-01-SITUATION-BOUTIQUE          |   3 | `fp-story` · v2 `table`        |     |   0 | catalogue |
+|   33 | B2-04-A4-02-TABLEUR-BOUTIQUE            |  16 | `fp-sheet`                     |  I  |   0 | seance    |
+|   34 | B2-04-A4-03-COFFRE-BOUTIQUE             |  14 | `fp-escape`                    |  I  |   0 | seance    |
+|   35 | B2-04-A4-04-RAPPEL                      |   6 | `fp-spaced`                    |  I  |   0 | seance    |
+|   36 | B2-04-A4-05-FICHE-MEMO                  |   2 | `fp-story` · v2 `grid`         |     |   0 | catalogue |
 
 Rythme : 149 minutes interactives, 31 d'exposition, exposition continue de 6 minutes au plus.
 
@@ -330,7 +328,7 @@ Rythme : 149 minutes interactives, 31 d'exposition, exposition continue de 6 min
 
 - Titre public : « Jalon 2 : suites géométriques »
 
-### 3.4 Acte 3 — Atteindre un seuil, cumuler (47 min)
+### 3.4 Acte 3 — Atteindre un seuil, cumuler (37 min)
 
 #### A3-01 · `B2-04-A3-01-GRAPHIQUE` — 2 min · v2 `chart` · catalogue
 
@@ -394,20 +392,12 @@ Rythme : 149 minutes interactives, 31 d'exposition, exposition continue de 6 min
 - `b2-04-a3-somme` (vote) : la formule `SOMME` ; pièges `nombre-de-termes-decale`,
   `terme-pris-pour-somme`.
 
-#### A3-08 · `B2-04-A3-08-DEFI-IA` — 10 min · `fp-challenge` · séance
-
-- Titre public : « Exercice 7 — Corriger le plan d’une IA »
-- Temps : réflexion 2 min · travail 6 min · correction 2 min, piste par piste sur place.
-- L'IA additionne les taux, inverse la condition du « Tant que » et donne le dernier terme pour le
-  cumul. Sa réponse s'affiche point par point, un point par ligne. Pistes justes : puissance, condition, cumul, contrôle par l'ordre de grandeur ; piste
-  fausse : garder la réponse.
-
 #### A3-09 · `B2-04-A3-09-JALON` — 1 min · `fp-pulse` · séance
 
 - Titre public : « Jalon 3 : seuils et cumuls »
 - Puis pause de 15 minutes.
 
-### 3.5 Acte 4 — Mini-situation CCF et clôture (45 min)
+### 3.5 Acte 4 — Mini-situation CCF et clôture (41 min)
 
 #### A4-01 · `B2-04-A4-01-SITUATION-BOUTIQUE` — 3 min · v2 `table` · catalogue
 
@@ -445,10 +435,6 @@ Rythme : 149 minutes interactives, 31 d'exposition, exposition continue de 6 min
 #### A4-05 · `B2-04-A4-05-FICHE-MEMO` — 2 min · v2 `grid` · catalogue
 
 - Titre public : « Fiche mémo : modéliser une évolution régulière »
-
-#### A4-06 · `B2-04-A4-06-BILLET-DE-SORTIE` — 4 min · `fp-exit` · séance
-
-- Titre public : « Billet de sortie : la formule à recopier »
 
 ## 4. Mode papier
 
@@ -529,13 +515,14 @@ Chaque PNG d'origine (1 536 × 1 024 px) est converti en WebP à la même taille
 `/assets/cours/b2-04/v1/`. Le catalogue est stocké avec le cours (`Cours.medias`) et contrôlé par la
 règle `media-sans-licence`.
 
-| Id  | Écran | Fichier source (page)      | Original                     | Auteur, date       | Licence      | Dérivé servi                    | Attribution affichée                                            |
-| --- | ----- | -------------------------- | ---------------------------- | ------------------ | ------------ | ------------------------------- | --------------------------------------------------------------- |
-| M1  | A1-07 | production propre du cours | PNG 1 536 × 1 024 px, 1,5 Mo | Asili Design, 2026 | CC BY-SA 4.0 | `loyer-croissant.webp`          | « Pour débuter : le loyer · Asili Design, 2026 · CC BY-SA 4.0 » |
-| M2  | A1-08 | production propre du cours | PNG 1 536 × 1 024 px, 1,5 Mo | Asili Design, 2026 | CC BY-SA 4.0 | `points-alignes.webp`           | « Des points alignés · Asili Design, 2026 · CC BY-SA 4.0 »      |
-| M3  | A2-02 | production propre du cours | PNG 1 536 × 1 024 px, 1,6 Mo | Asili Design, 2026 | CC BY-SA 4.0 | `livret-interets-composes.webp` | « Le livret · Asili Design, 2026 · CC BY-SA 4.0 »               |
-| M4  | A3-03 | production propre du cours | PNG 1 536 × 1 024 px, 1,7 Mo | Asili Design, 2026 | CC BY-SA 4.0 | `tirelire-boucle.webp`          | « La tirelire · Asili Design, 2026 · CC BY-SA 4.0 »             |
-| M5  | A3-04 | production propre du cours | PNG 1 536 × 1 024 px, 1,6 Mo | Asili Design, 2026 | CC BY-SA 4.0 | `loyers-du-bail.webp`           | « Les loyers d’un bail · Asili Design, 2026 · CC BY-SA 4.0 »    |
+| Id  | Écran | Fichier source (page)                                                  | Original                     | Auteur, date                                   | Licence        | Dérivé servi                    | Attribution affichée                                                                    |
+| --- | ----- | ---------------------------------------------------------------------- | ---------------------------- | ---------------------------------------------- | -------------- | ------------------------------- | --------------------------------------------------------------------------------------- |
+| M1  | A1-07 | production propre du cours                                             | PNG 1 536 × 1 024 px, 1,5 Mo | Asili Design, 2026                             | CC BY-SA 4.0   | `loyer-croissant.webp`          | « Pour débuter : le loyer · Asili Design, 2026 · CC BY-SA 4.0 »                         |
+| M2  | A1-08 | production propre du cours                                             | PNG 1 536 × 1 024 px, 1,5 Mo | Asili Design, 2026                             | CC BY-SA 4.0   | `points-alignes.webp`           | « Des points alignés · Asili Design, 2026 · CC BY-SA 4.0 »                              |
+| M3  | A2-02 | production propre du cours                                             | PNG 1 536 × 1 024 px, 1,6 Mo | Asili Design, 2026                             | CC BY-SA 4.0   | `livret-interets-composes.webp` | « Le livret · Asili Design, 2026 · CC BY-SA 4.0 »                                       |
+| M4  | A3-03 | production propre du cours                                             | PNG 1 536 × 1 024 px, 1,7 Mo | Asili Design, 2026                             | CC BY-SA 4.0   | `tirelire-boucle.webp`          | « La tirelire · Asili Design, 2026 · CC BY-SA 4.0 »                                     |
+| M5  | A3-04 | production propre du cours                                             | PNG 1 536 × 1 024 px, 1,6 Mo | Asili Design, 2026                             | CC BY-SA 4.0   | `loyers-du-bail.webp`           | « Les loyers d’un bail · Asili Design, 2026 · CC BY-SA 4.0 »                            |
+| M6  | A1-02 | https://commons.wikimedia.org/wiki/File:Liber_abbaci_magliab_f124r.jpg | JPEG 744 × 1 137 px          | Leonardo Fibonacci, Liber abbaci, XIIIᵉ siècle | domaine public | `fibonacci-liber-abbaci.jpg`    | « Leonardo Fibonacci, Liber abbaci, XIIIᵉ siècle · Wikimedia Commons (domaine public) » |
 
 ### 8.3 Sources des données
 

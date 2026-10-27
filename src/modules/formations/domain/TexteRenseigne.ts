@@ -14,7 +14,7 @@ export function texteRenseigne(
   return texte;
 }
 
-export function assertLongueurAuPlus(
+function assertLongueurAuPlus(
   texte: string,
   champ: string,
   longueurMax: number,

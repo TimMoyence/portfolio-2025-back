@@ -163,7 +163,6 @@ export function presentationsVisuelles<S extends z.ZodRawShape>(socle: S) {
       'hero',
       strict({
         ...titled,
-        bullets: textes,
         bgImage: media.optional(),
         bgImageAlt: texte.optional(),
       }),

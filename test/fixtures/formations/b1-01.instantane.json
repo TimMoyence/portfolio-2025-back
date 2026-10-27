@@ -1,11 +1,11 @@
 {
   "graine": 0,
-  "empreinte": "05f9a4b2a93814f62a29886e5e6d5b2a1030e1df3a7f148c325391a5bc9a03a1",
+  "empreinte": "6354e8b685352ff138a2502c8b9a4f726db38e31cf2806abbdaf526ebe884350",
   "sujet": {
     "id": "b1-01-proportions-pourcentages",
     "titre": "Proportions et pourcentages",
     "niveau": "B1",
-    "duree": 160,
+    "duree": 121,
     "concepts": [
       "proportion",
       "pourcentage",
@@ -67,12 +67,8 @@
               "props": {
                 "title": "Proportions et pourcentages : parmi qui ?",
                 "subtitle": "Partie Libre, quatre boutiques-bars à jeux. Votre alternance commence par le bilan de rentrée : des effectifs, des parts, des marges.",
-                "bullets": [
-                  "BTS Comptabilité et gestion · 1ʳᵉ année · premier cours de mathématiques",
-                  "Trois notions : la part d’un tout, la part d’une part, points et marges",
-                  "Le tableur dès aujourd’hui : SOMME, ARRONDI et le $",
-                  "Une mini-situation CCF pour finir"
-                ]
+                "bgImage": "/assets/cours/b1-01/v1/playfair-camemberts-1801.jpg",
+                "bgImageAlt": "Diagrammes circulaires de William Playfair (1801) : la part de chaque territoire dans un tout, les premiers camemberts publiés"
               }
             },
             "metadonnees": {
@@ -1524,32 +1520,6 @@
         }
       },
       {
-        "id": "B1-01-A3-06-DEFI-IA",
-        "type": "fp-challenge",
-        "titre": "Exercice 6 — Corriger le bilan d’une IA",
-        "duree": 9,
-        "interactif": true,
-        "donnees": {
-          "probleme": {
-            "id": "b1-01-a3-defi-ia",
-            "enonce": "Inès a demandé à un assistant IA de rédiger trois phrases du bilan. Réponse :\n« 1. Les ventes en ligne sont passées de 18 % à 24 % du chiffre d’affaires : elles ont progressé de 6 %.\n2. Une console achetée 150 € HT et vendue 240 € HT : notre taux de marque est de 60 %.\n3. Le taux de fidélité du réseau est la moyenne des quatre boutiques : (45 + 60 + 50 + 75) ÷ 4 = 57,5 %. »",
-            "invite": "Trouvez les erreurs de l’IA, corrigez chacune et dites comment la contrôler.",
-            "strategies": [],
-            "metadonnees": {
-              "concepts": [
-                "point-de-pourcentage",
-                "pourcentage",
-                "moyenne-ponderee"
-              ],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 9,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
-        }
-      },
-      {
         "id": "B1-01-A3-07-JALON",
         "type": "fp-pulse",
         "titre": "Jalon 3 : points, marge et marque",
@@ -1568,234 +1538,6 @@
             }
           }
         }
-      },
-      {
-        "id": "B1-01-A4-01-SITUATION-FESTIVAL",
-        "type": "fp-story",
-        "titre": "Mini-situation CCF : le Week-end du jeu",
-        "duree": 3,
-        "interactif": false,
-        "donnees": {
-          "recit": {
-            "id": "B1-01-A4-01-SITUATION-FESTIVAL",
-            "presentation": {
-              "version": 2,
-              "screenId": "B1-01-A4-01-SITUATION-FESTIVAL",
-              "renderer": "table",
-              "props": {
-                "title": "Mini-situation CCF : le Week-end du jeu",
-                "subtitle": "Le bilan du premier festival de Partie Libre. Barème sur 10 : une question tableur, puis quatre énigmes.",
-                "note": "Données fictives Partie Libre, créées pour ce cours.",
-                "columns": [
-                  {
-                    "key": "rubrique",
-                    "label": "Rubrique"
-                  },
-                  {
-                    "key": "contenu",
-                    "label": "Ce que montre le dossier"
-                  }
-                ],
-                "rows": [
-                  {
-                    "rubrique": "Contexte",
-                    "contenu": "Partie Libre a organisé à Nantes le Week-end du jeu, son premier festival. Inès prépare le bilan pour la mairie, qui a prêté la salle."
-                  },
-                  {
-                    "rubrique": "Billets",
-                    "contenu": "960 billets vendus : 412 plein tarif, 288 étudiant, 172 enfant et 88 pass famille."
-                  },
-                  {
-                    "rubrique": "Ventes en ligne",
-                    "contenu": "150 des billets plein tarif ont été achetés en ligne."
-                  },
-                  {
-                    "rubrique": "Option tournoi",
-                    "contenu": "45 % des billets étudiant incluent l’option tournoi."
-                  },
-                  {
-                    "rubrique": "Ateliers",
-                    "contenu": "Samedi : 160 places, remplies à 85 %. Dimanche : 140 places, remplies à 60 %."
-                  },
-                  {
-                    "rubrique": "Stand",
-                    "contenu": "Un jeu acheté 32 € HT est vendu 50 € HT au stand de la boutique."
-                  },
-                  {
-                    "rubrique": "Barème",
-                    "contenu": "Sur 10 points : 3 points pour la question tableur ; 2, 2, 1,5 et 1,5 points pour les quatre énigmes."
-                  }
-                ]
-              }
-            },
-            "metadonnees": {
-              "concepts": [
-                "proportion",
-                "moyenne-ponderee",
-                "pourcentage",
-                "tableur"
-              ],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
-        }
-      },
-      {
-        "id": "B1-01-A4-02-TABLEUR-FESTIVAL",
-        "type": "fp-sheet",
-        "titre": "Question tableur (3 points sur 10) : la répartition des billets",
-        "duree": 13,
-        "interactif": true,
-        "donnees": {
-          "plan": {
-            "id": "b1-01-a4-feuille-billets",
-            "intitule": "Question tableur (3 points) — La répartition des billets",
-            "lignes": 7,
-            "colonnes": 3,
-            "cellules": {
-              "A1": "Billets du Week-end du jeu",
-              "A2": "Catégorie",
-              "B2": "Billets vendus",
-              "C2": "Part des billets (%)",
-              "A7": "Total",
-              "A3": "Plein tarif",
-              "A4": "Étudiant",
-              "A5": "Enfant",
-              "A6": "Pass famille",
-              "B3": "412",
-              "B4": "288",
-              "B5": "172",
-              "B6": "88"
-            },
-            "verrouillees": [
-              "A1",
-              "A2",
-              "B2",
-              "C2",
-              "A7",
-              "A3",
-              "A4",
-              "A5",
-              "A6",
-              "B3",
-              "B4",
-              "B5",
-              "B6"
-            ],
-            "consignes": [
-              "En B7, calculez le nombre total de billets.",
-              "En C3, écrivez la formule de la part des billets plein tarif, en %, arrondie au dixième, à recopier vers le bas. Recopiez jusqu’en C6 : sélectionnez C3 et cliquez trois fois sur « Recopier vers le bas », une ligne par clic.",
-              "En C7, vérifiez que les parts font 100 %.",
-              "Le total ne s’écrit pas dans la formule : utilisez B7, figé par des $."
-            ],
-            "lettres": ["A", "B", "C"],
-            "grille": [
-              ["A1", "B1", "C1"],
-              ["A2", "B2", "C2"],
-              ["A3", "B3", "C3"],
-              ["A4", "B4", "C4"],
-              ["A5", "B5", "C5"],
-              ["A6", "B6", "C6"],
-              ["A7", "B7", "C7"]
-            ],
-            "longueurMaxSaisie": 200,
-            "initiale": {
-              "saisies": {},
-              "affichages": {
-                "A1": "Billets du Week-end du jeu",
-                "A2": "Catégorie",
-                "B2": "Billets vendus",
-                "C2": "Part des billets (%)",
-                "A7": "Total",
-                "A3": "Plein tarif",
-                "A4": "Étudiant",
-                "A5": "Enfant",
-                "A6": "Pass famille",
-                "B3": "412",
-                "B4": "288",
-                "B5": "172",
-                "B6": "88"
-              },
-              "natures": {
-                "A1": "texte",
-                "A2": "texte",
-                "B2": "texte",
-                "C2": "texte",
-                "A7": "texte",
-                "A3": "texte",
-                "A4": "texte",
-                "A5": "texte",
-                "A6": "texte",
-                "B3": "nombre",
-                "B4": "nombre",
-                "B5": "nombre",
-                "B6": "nombre"
-              },
-              "formules": []
-            },
-            "metadonnees": {
-              "concepts": ["tableur", "proportion"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 13,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
-        },
-        "renvoi": "B1-01-A4-01-SITUATION-FESTIVAL"
-      },
-      {
-        "id": "B1-01-A4-03-COFFRE-FESTIVAL",
-        "type": "fp-escape",
-        "titre": "Mini-situation : le bilan du Week-end du jeu",
-        "duree": 11,
-        "interactif": true,
-        "donnees": {
-          "parcours": {
-            "id": "b1-01-a4-coffre-festival",
-            "intitule": "Le bilan du Week-end du jeu : quatre réponses pour ouvrir le coffre",
-            "delaiIndiceMs": 60000,
-            "budgetEnigmeMs": 150000,
-            "tentativesMax": 10,
-            "enigmes": [
-              {
-                "id": "b1-01-a4-e1-en-ligne",
-                "intitule": "Les billets en ligne (2 points)",
-                "enonce": "Quelle part des billets plein tarif a été achetée en ligne, en %, arrondie au dixième ?",
-                "indice": "Parmi qui ? Le tout, ce sont les billets plein tarif."
-              },
-              {
-                "id": "b1-01-a4-e2-tournoi",
-                "intitule": "L’option tournoi (2 points)",
-                "enonce": "Quelle part de l’ensemble des billets sont des billets étudiant avec l’option tournoi, en %, arrondie au dixième ?",
-                "indice": "Une part des billets étudiant, qui sont eux-mêmes une part de tous les billets : on multiplie les deux parts."
-              },
-              {
-                "id": "b1-01-a4-e3-ateliers",
-                "intitule": "Les ateliers (1,5 point)",
-                "enonce": "Quel est le taux de remplissage des ateliers sur tout le week-end, en %, arrondi au dixième ?",
-                "indice": "Comptez les places remplies, pas les pourcentages."
-              },
-              {
-                "id": "b1-01-a4-e4-stand",
-                "intitule": "Le stand (1,5 point)",
-                "enonce": "Quel est le taux de marque du jeu vendu au stand, en %, arrondi au dixième ?",
-                "indice": "La marque se lit sur l’étiquette : divisez la marge par le prix de vente."
-              }
-            ],
-            "metadonnees": {
-              "concepts": ["proportion", "moyenne-ponderee", "pourcentage"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 11,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
-        },
-        "renvoi": "B1-01-A4-01-SITUATION-FESTIVAL"
       },
       {
         "id": "B1-01-A4-04-RAPPEL",
@@ -1910,46 +1652,6 @@
             }
           }
         }
-      },
-      {
-        "id": "B1-01-A4-06-BILLET-DE-SORTIE",
-        "type": "fp-exit",
-        "titre": "Billet de sortie : la formule de la part",
-        "duree": 3,
-        "interactif": true,
-        "donnees": {
-          "billet": {
-            "id": "b1-01-a4-billet",
-            "question": "Effectif en B3, total en B7. Quelle formule écrire en C3 pour la part en %, arrondie au dixième, à recopier vers le bas ?",
-            "invite": "En une phrase : pourquoi se demander « parmi qui ? » devant un pourcentage ?",
-            "longueurMax": 500,
-            "options": [
-              {
-                "id": "arrondi-b-7-b3-100-1-5ab8d03b",
-                "libelle": "=ARRONDI($B$7/B3*100;1)"
-              },
-              {
-                "id": "arrondi-b3-b7-100-1-b4cb13e3",
-                "libelle": "=ARRONDI(B3/B7*100;1)"
-              },
-              {
-                "id": "arrondi-b3-b-7-1-6e293489",
-                "libelle": "=ARRONDI(B3/$B$7;1)"
-              },
-              {
-                "id": "arrondi-b3-b-7-100-1-b39bfb3d",
-                "libelle": "=ARRONDI(B3/$B$7*100;1)"
-              }
-            ],
-            "metadonnees": {
-              "concepts": ["tableur", "proportion"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
-        }
       }
     ]
   },
@@ -1957,7 +1659,7 @@
     "id": "b1-01-proportions-pourcentages",
     "titre": "Proportions et pourcentages",
     "niveau": "B1",
-    "duree": 160,
+    "duree": 121,
     "concepts": [
       "proportion",
       "pourcentage",
@@ -2061,12 +1763,8 @@
               "props": {
                 "title": "Proportions et pourcentages : parmi qui ?",
                 "subtitle": "Partie Libre, quatre boutiques-bars à jeux. Votre alternance commence par le bilan de rentrée : des effectifs, des parts, des marges.",
-                "bullets": [
-                  "BTS Comptabilité et gestion · 1ʳᵉ année · premier cours de mathématiques",
-                  "Trois notions : la part d’un tout, la part d’une part, points et marges",
-                  "Le tableur dès aujourd’hui : SOMME, ARRONDI et le $",
-                  "Une mini-situation CCF pour finir"
-                ]
+                "bgImage": "/assets/cours/b1-01/v1/playfair-camemberts-1801.jpg",
+                "bgImageAlt": "Diagrammes circulaires de William Playfair (1801) : la part de chaque territoire dans un tout, les premiers camemberts publiés"
               }
             },
             "metadonnees": {
@@ -2130,7 +1828,7 @@
             ]
           }
         },
-        "notes": "• Diagnostic : deux votes non notés, sans calculatrice. Repérer au pupitre les postes sous 50 %.\n• Premier vote individuel ; entre 30 et 70 % de bonnes réponses, débat en binôme avant la deuxième question ; sinon, passer directement à la deuxième question.\n• La révélation s’ouvre après la deuxième question : les deux corrections se commentent ensemble.\n• Papier : vote à main levée sur chaque question, discussion en binôme entre les deux.",
+        "notes": "• Diagnostic : deux votes non notés, sans calculatrice. Repérer au pupitre les postes sous 50 %.\n• Question 1 en vote individuel, puis question 2, sans débat entre les deux.\n• La révélation s’ouvre après la question 2 : les deux corrections se commentent ensemble.\n• Papier : vote à main levée sur chaque question.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -2203,15 +1901,7 @@
             ]
           }
         ],
-        "corrigeEcran": {
-          "type": "revelation",
-          "titre": "Deux réflexes à garder",
-          "lignes": [
-            "15 % de 80 €, c’est 0,15 × 80 = 12 €.",
-            "Une hausse se rapporte au prix de départ : 10 ÷ 50 = 0,20, soit + 20 %.",
-            "La deuxième question revient à l’acte 3."
-          ]
-        },
+        "corrigeEcran": null,
         "reflexion": null
       },
       {
@@ -3854,7 +3544,7 @@
             ]
           }
         },
-        "notes": "• Temps « réfléchir » de la notion 3 : votes non notés.\n• Premier vote individuel ; entre 30 et 70 % de bonnes réponses, débat en binôme avant la deuxième question ; sinon, passer directement à la deuxième question.\n• La révélation s’ouvre après la deuxième question : les deux corrections se commentent ensemble.\n• Papier : vote à main levée sur chaque question, discussion en binôme entre les deux.",
+        "notes": "• Temps « réfléchir » de la notion 3 : votes non notés.\n• Question 1 en vote individuel, puis question 2, sans débat entre les deux.\n• La révélation s’ouvre après la question 2 : les deux corrections se commentent ensemble.\n• Papier : vote à main levée sur chaque question.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -3911,15 +3601,7 @@
             ]
           }
         ],
-        "corrigeEcran": {
-          "type": "revelation",
-          "titre": "Deux pourcentages qui se ressemblent",
-          "lignes": [
-            "24 − 18 = 6 points ; en évolution, (24 − 18) ÷ 18 ≈ + 33,3 %.",
-            "90 ÷ 240 = 37,5 % du prix de vente ; 90 ÷ 150 = 60 % du coût d’achat.",
-            "La trace écrite donne un nom à chacun."
-          ]
-        },
+        "corrigeEcran": null,
         "reflexion": null
       },
       {
@@ -4275,7 +3957,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 2 min · travail 6 min · correction 2 min\n• Réflexion : écrire « proportion », « évolution » ou « marge, marque » devant chaque question.\n• Pièges : points écrits en % ; évolution divisée par l’arrivée ; marge et marque inversées.\n• Papier : exercice 5 du livret.\n• Corriger question par question, en commençant par la moins réussie.\n• Transition : « Une IA a rédigé le bilan : exercice 6. »",
+        "notes": "• Temps : réflexion 2 min · travail 6 min · correction 2 min\n• Réflexion : écrire « proportion », « évolution » ou « marge, marque » devant chaque question.\n• Pièges : points écrits en % ; évolution divisée par l’arrivée ; marge et marque inversées.\n• Papier : exercice 5 du livret.\n• Corriger question par question, en commençant par la moins réussie.\n• Transition : « Faisons le point : points, marge et marque. »",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -4372,90 +4054,6 @@
         ]
       },
       {
-        "id": "B1-01-A3-06-DEFI-IA",
-        "type": "fp-challenge",
-        "titre": "Exercice 6 — Corriger le bilan d’une IA",
-        "duree": 9,
-        "interactif": true,
-        "donnees": {
-          "probleme": {
-            "id": "b1-01-a3-defi-ia",
-            "enonce": "Inès a demandé à un assistant IA de rédiger trois phrases du bilan. Réponse :\n« 1. Les ventes en ligne sont passées de 18 % à 24 % du chiffre d’affaires : elles ont progressé de 6 %.\n2. Une console achetée 150 € HT et vendue 240 € HT : notre taux de marque est de 60 %.\n3. Le taux de fidélité du réseau est la moyenne des quatre boutiques : (45 + 60 + 50 + 75) ÷ 4 = 57,5 %. »",
-            "invite": "Trouvez les erreurs de l’IA, corrigez chacune et dites comment la contrôler.",
-            "strategies": [],
-            "metadonnees": {
-              "concepts": [
-                "point-de-pourcentage",
-                "pourcentage",
-                "moyenne-ponderee"
-              ],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 9,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
-        },
-        "notes": "• Temps : réflexion 2 min · travail 5 min · correction 2 min\n• Réflexion : relire les méthodes des trois traces écrites des actes 2 et 3.\n• Repérer qui trouve les points, la marque et le taux global ; faire trouver la piste fausse avant de révéler.\n• Papier : exercice 6 du livret.\n• Faire lire deux corrections de la classe, puis dévoiler les pistes une à une.\n• Transition : jalon 3, puis pause de 15 minutes.",
-        "diffusion": "seance",
-        "seuil": null,
-        "corriges": [],
-        "questions": [],
-        "corrigeEcran": {
-          "type": "defi",
-          "strategies": [
-            {
-              "id": "points",
-              "libelle": "L’écart de deux parts se dit en points : + 6 points, soit + 33,3 % en évolution.",
-              "fausse": false
-            },
-            {
-              "id": "marque",
-              "libelle": "Le taux de marque divise la marge par le prix de vente : 90 ÷ 240 = 37,5 % ; 60 % est le taux de marge.",
-              "fausse": false
-            },
-            {
-              "id": "global",
-              "libelle": "Le taux global compte les porteurs : 1 620 ÷ 3 000 = 54 %, pondéré par les clients de chaque boutique.",
-              "fausse": false
-            },
-            {
-              "id": "controle",
-              "libelle": "Contrôler : le taux de marque est plus petit que le taux de marge ; le taux global est tiré vers celui de la plus grosse boutique.",
-              "fausse": false
-            },
-            {
-              "id": "garder",
-              "libelle": "Garder le bilan : les trois calculs sont justes.",
-              "fausse": true
-            }
-          ]
-        },
-        "reflexion": null,
-        "explications": [
-          {
-            "reference": "points",
-            "texte": "24 − 18 = 6 points. En évolution : 6 ÷ 18 ≈ + 33,3 %. « + 6 % » ne veut rien dire ici."
-          },
-          {
-            "reference": "marque",
-            "texte": "Marge : 240 − 150 = 90 €. Taux de marque : 90 ÷ 240 = 37,5 %. Taux de marge : 90 ÷ 150 = 60 %."
-          },
-          {
-            "reference": "global",
-            "texte": "Porteurs : 540 + 480 + 300 + 300 = 1 620 sur 3 000 clients, soit 54 % et non 57,5 %."
-          },
-          {
-            "reference": "controle",
-            "texte": "37,5 % < 60 % : la marque est bien plus petite que la marge. 54 % est plus près de Nantes, 45 %, que la moyenne simple."
-          },
-          {
-            "reference": "garder",
-            "texte": "Piste fausse : les trois phrases se trompent de mot, de diviseur ou de tout."
-          }
-        ]
-      },
-      {
         "id": "B1-01-A3-07-JALON",
         "type": "fp-pulse",
         "titre": "Jalon 3 : points, marge et marque",
@@ -4481,415 +4079,6 @@
         "questions": [],
         "corrigeEcran": null,
         "reflexion": null
-      },
-      {
-        "id": "B1-01-A4-01-SITUATION-FESTIVAL",
-        "type": "fp-story",
-        "titre": "Mini-situation CCF : le Week-end du jeu",
-        "duree": 3,
-        "interactif": false,
-        "donnees": {
-          "recit": {
-            "id": "B1-01-A4-01-SITUATION-FESTIVAL",
-            "presentation": {
-              "version": 2,
-              "screenId": "B1-01-A4-01-SITUATION-FESTIVAL",
-              "renderer": "table",
-              "props": {
-                "title": "Mini-situation CCF : le Week-end du jeu",
-                "subtitle": "Le bilan du premier festival de Partie Libre. Barème sur 10 : une question tableur, puis quatre énigmes.",
-                "note": "Données fictives Partie Libre, créées pour ce cours.",
-                "columns": [
-                  {
-                    "key": "rubrique",
-                    "label": "Rubrique"
-                  },
-                  {
-                    "key": "contenu",
-                    "label": "Ce que montre le dossier"
-                  }
-                ],
-                "rows": [
-                  {
-                    "rubrique": "Contexte",
-                    "contenu": "Partie Libre a organisé à Nantes le Week-end du jeu, son premier festival. Inès prépare le bilan pour la mairie, qui a prêté la salle."
-                  },
-                  {
-                    "rubrique": "Billets",
-                    "contenu": "960 billets vendus : 412 plein tarif, 288 étudiant, 172 enfant et 88 pass famille."
-                  },
-                  {
-                    "rubrique": "Ventes en ligne",
-                    "contenu": "150 des billets plein tarif ont été achetés en ligne."
-                  },
-                  {
-                    "rubrique": "Option tournoi",
-                    "contenu": "45 % des billets étudiant incluent l’option tournoi."
-                  },
-                  {
-                    "rubrique": "Ateliers",
-                    "contenu": "Samedi : 160 places, remplies à 85 %. Dimanche : 140 places, remplies à 60 %."
-                  },
-                  {
-                    "rubrique": "Stand",
-                    "contenu": "Un jeu acheté 32 € HT est vendu 50 € HT au stand de la boutique."
-                  },
-                  {
-                    "rubrique": "Barème",
-                    "contenu": "Sur 10 points : 3 points pour la question tableur ; 2, 2, 1,5 et 1,5 points pour les quatre énigmes."
-                  }
-                ]
-              }
-            },
-            "metadonnees": {
-              "concepts": [
-                "proportion",
-                "moyenne-ponderee",
-                "pourcentage",
-                "tableur"
-              ],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
-        },
-        "notes": "• Mini-situation de 27 min (lecture 3, tableur 13, coffre 11), calculatrice, poste individuel ; barème sur 10 : tableur 3, énigmes 2, 2, 1,5 et 1,5.\n• Papier : la situation est en tête de la partie 4 du livret.",
-        "diffusion": "catalogue",
-        "seuil": null,
-        "corriges": [],
-        "questions": [],
-        "corrigeEcran": null,
-        "reflexion": null
-      },
-      {
-        "id": "B1-01-A4-02-TABLEUR-FESTIVAL",
-        "type": "fp-sheet",
-        "titre": "Question tableur (3 points sur 10) : la répartition des billets",
-        "duree": 13,
-        "interactif": true,
-        "donnees": {
-          "plan": {
-            "id": "b1-01-a4-feuille-billets",
-            "intitule": "Question tableur (3 points) — La répartition des billets",
-            "lignes": 7,
-            "colonnes": 3,
-            "cellules": {
-              "A1": "Billets du Week-end du jeu",
-              "A2": "Catégorie",
-              "B2": "Billets vendus",
-              "C2": "Part des billets (%)",
-              "A7": "Total",
-              "A3": "Plein tarif",
-              "A4": "Étudiant",
-              "A5": "Enfant",
-              "A6": "Pass famille",
-              "B3": "412",
-              "B4": "288",
-              "B5": "172",
-              "B6": "88"
-            },
-            "verrouillees": [
-              "A1",
-              "A2",
-              "B2",
-              "C2",
-              "A7",
-              "A3",
-              "A4",
-              "A5",
-              "A6",
-              "B3",
-              "B4",
-              "B5",
-              "B6"
-            ],
-            "consignes": [
-              "En B7, calculez le nombre total de billets.",
-              "En C3, écrivez la formule de la part des billets plein tarif, en %, arrondie au dixième, à recopier vers le bas. Recopiez jusqu’en C6 : sélectionnez C3 et cliquez trois fois sur « Recopier vers le bas », une ligne par clic.",
-              "En C7, vérifiez que les parts font 100 %.",
-              "Le total ne s’écrit pas dans la formule : utilisez B7, figé par des $."
-            ],
-            "lettres": ["A", "B", "C"],
-            "grille": [
-              ["A1", "B1", "C1"],
-              ["A2", "B2", "C2"],
-              ["A3", "B3", "C3"],
-              ["A4", "B4", "C4"],
-              ["A5", "B5", "C5"],
-              ["A6", "B6", "C6"],
-              ["A7", "B7", "C7"]
-            ],
-            "longueurMaxSaisie": 200,
-            "initiale": {
-              "saisies": {},
-              "affichages": {
-                "A1": "Billets du Week-end du jeu",
-                "A2": "Catégorie",
-                "B2": "Billets vendus",
-                "C2": "Part des billets (%)",
-                "A7": "Total",
-                "A3": "Plein tarif",
-                "A4": "Étudiant",
-                "A5": "Enfant",
-                "A6": "Pass famille",
-                "B3": "412",
-                "B4": "288",
-                "B5": "172",
-                "B6": "88"
-              },
-              "natures": {
-                "A1": "texte",
-                "A2": "texte",
-                "B2": "texte",
-                "C2": "texte",
-                "A7": "texte",
-                "A3": "texte",
-                "A4": "texte",
-                "A5": "texte",
-                "A6": "texte",
-                "B3": "nombre",
-                "B4": "nombre",
-                "B5": "nombre",
-                "B6": "nombre"
-              },
-              "formules": []
-            },
-            "metadonnees": {
-              "concepts": ["tableur", "proportion"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 13,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
-        },
-        "renvoi": "B1-01-A4-01-SITUATION-FESTIVAL",
-        "notes": "• Temps : réflexion 3 min · travail 8 min · correction 2 min\n• Réflexion : chacun écrit sur papier la formule de C3, puis ce qu’elle devient en C4.\n• Erreurs à chercher : B7 sans $ ; total tapé au clavier ; part sans × 100 ; ARRONDI oublié.\n• Papier : formules écrites sur la copie ; en CCF, la question se fait devant l’examinateur.\n• Projeter la feuille d’un poste volontaire et relire C3, puis sa recopie en C4.\n• Transition : « Avec ce bilan, ouvrez le coffre de la mini-situation. »",
-        "diffusion": "seance",
-        "seuil": 0.7,
-        "corriges": [],
-        "questions": [
-          {
-            "id": "b1-01-a4-feuille-billets",
-            "enonce": "Question tableur (3 points) — La répartition des billets",
-            "options": null
-          }
-        ],
-        "corrigeEcran": {
-          "type": "feuille",
-          "attendus": [
-            {
-              "reference": "B7",
-              "formuleReference": "=SOMME(B3:B6)",
-              "valeur": 960,
-              "affichage": "960",
-              "tolerance": {
-                "type": "relative",
-                "valeur": 0.0001
-              },
-              "forme": "references"
-            },
-            {
-              "reference": "C3",
-              "formuleReference": "=ARRONDI(B3/$B$7*100;1)",
-              "valeur": 42.9,
-              "affichage": "42,9",
-              "tolerance": {
-                "type": "relative",
-                "valeur": 0.0001
-              },
-              "forme": "references"
-            },
-            {
-              "reference": "C4",
-              "formuleReference": "=ARRONDI(B4/$B$7*100;1)",
-              "valeur": 30,
-              "affichage": "30",
-              "tolerance": {
-                "type": "relative",
-                "valeur": 0.0001
-              },
-              "forme": {
-                "memeQue": "C3"
-              }
-            },
-            {
-              "reference": "C5",
-              "formuleReference": "=ARRONDI(B5/$B$7*100;1)",
-              "valeur": 17.9,
-              "affichage": "17,9",
-              "tolerance": {
-                "type": "relative",
-                "valeur": 0.0001
-              },
-              "forme": {
-                "memeQue": "C3"
-              }
-            },
-            {
-              "reference": "C6",
-              "formuleReference": "=ARRONDI(B6/$B$7*100;1)",
-              "valeur": 9.2,
-              "affichage": "9,2",
-              "tolerance": {
-                "type": "relative",
-                "valeur": 0.0001
-              },
-              "forme": {
-                "memeQue": "C3"
-              }
-            },
-            {
-              "reference": "C7",
-              "formuleReference": "=SOMME(C3:C6)",
-              "valeur": 100,
-              "affichage": "100",
-              "tolerance": {
-                "type": "relative",
-                "valeur": 0.0001
-              },
-              "forme": "references"
-            }
-          ]
-        },
-        "reflexion": null,
-        "explications": [
-          {
-            "reference": "B7",
-            "texte": "=SOMME(B3:B6) : 960 billets."
-          },
-          {
-            "reference": "C3 à C6",
-            "texte": "=ARRONDI(B3/$B$7*100;1), recopiée : 42,9 ; 30 ; 17,9 ; 9,2. Sans les $, C4 lit B8, vide : #DIV/0!. Sans × 100, 0,4 ; sans ARRONDI, 42,916…."
-          },
-          {
-            "reference": "C7",
-            "texte": "=SOMME(C3:C6) : 100. Les parts arrondies tombent juste."
-          }
-        ]
-      },
-      {
-        "id": "B1-01-A4-03-COFFRE-FESTIVAL",
-        "type": "fp-escape",
-        "titre": "Mini-situation : le bilan du Week-end du jeu",
-        "duree": 11,
-        "interactif": true,
-        "donnees": {
-          "parcours": {
-            "id": "b1-01-a4-coffre-festival",
-            "intitule": "Le bilan du Week-end du jeu : quatre réponses pour ouvrir le coffre",
-            "delaiIndiceMs": 60000,
-            "budgetEnigmeMs": 150000,
-            "tentativesMax": 10,
-            "enigmes": [
-              {
-                "id": "b1-01-a4-e1-en-ligne",
-                "intitule": "Les billets en ligne (2 points)",
-                "enonce": "Quelle part des billets plein tarif a été achetée en ligne, en %, arrondie au dixième ?",
-                "indice": "Parmi qui ? Le tout, ce sont les billets plein tarif."
-              },
-              {
-                "id": "b1-01-a4-e2-tournoi",
-                "intitule": "L’option tournoi (2 points)",
-                "enonce": "Quelle part de l’ensemble des billets sont des billets étudiant avec l’option tournoi, en %, arrondie au dixième ?",
-                "indice": "Une part des billets étudiant, qui sont eux-mêmes une part de tous les billets : on multiplie les deux parts."
-              },
-              {
-                "id": "b1-01-a4-e3-ateliers",
-                "intitule": "Les ateliers (1,5 point)",
-                "enonce": "Quel est le taux de remplissage des ateliers sur tout le week-end, en %, arrondi au dixième ?",
-                "indice": "Comptez les places remplies, pas les pourcentages."
-              },
-              {
-                "id": "b1-01-a4-e4-stand",
-                "intitule": "Le stand (1,5 point)",
-                "enonce": "Quel est le taux de marque du jeu vendu au stand, en %, arrondi au dixième ?",
-                "indice": "La marque se lit sur l’étiquette : divisez la marge par le prix de vente."
-              }
-            ],
-            "metadonnees": {
-              "concepts": ["proportion", "moyenne-ponderee", "pourcentage"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 11,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
-        },
-        "renvoi": "B1-01-A4-01-SITUATION-FESTIVAL",
-        "notes": "• Temps : réflexion 2 min · travail 7 min · correction 2 min\n• Réflexion : relire le dossier et noter, pour chaque énigme, « parmi qui ? ».\n• Indices disponibles après 60 s. À 6 min, projeter l’énigme la moins résolue.\n• Papier : quatre questions rédigées du livret, sans code de coffre.\n• Dévoiler énigme par énigme, en s’attardant sur la moins résolue (pupitre).\n• Finir sur le bilan d’Inès : chaque pourcentage dit de quel tout il parle.",
-        "diffusion": "seance",
-        "seuil": 0.7,
-        "corriges": [],
-        "questions": [
-          {
-            "id": "b1-01-a4-e1-en-ligne",
-            "enonce": "Quelle part des billets plein tarif a été achetée en ligne, en %, arrondie au dixième ?",
-            "options": null
-          },
-          {
-            "id": "b1-01-a4-e2-tournoi",
-            "enonce": "Quelle part de l’ensemble des billets sont des billets étudiant avec l’option tournoi, en %, arrondie au dixième ?",
-            "options": null
-          },
-          {
-            "id": "b1-01-a4-e3-ateliers",
-            "enonce": "Quel est le taux de remplissage des ateliers sur tout le week-end, en %, arrondi au dixième ?",
-            "options": null
-          },
-          {
-            "id": "b1-01-a4-e4-stand",
-            "enonce": "Quel est le taux de marque du jeu vendu au stand, en %, arrondi au dixième ?",
-            "options": null
-          }
-        ],
-        "corrigeEcran": {
-          "type": "enigmes",
-          "enigmes": [
-            {
-              "enigmeId": "b1-01-a4-e1-en-ligne",
-              "solution": "36,4 %",
-              "fragment": "P7"
-            },
-            {
-              "enigmeId": "b1-01-a4-e2-tournoi",
-              "solution": "13,5 %",
-              "fragment": "J2"
-            },
-            {
-              "enigmeId": "b1-01-a4-e3-ateliers",
-              "solution": "73,3 %",
-              "fragment": "R5"
-            },
-            {
-              "enigmeId": "b1-01-a4-e4-stand",
-              "solution": "36 %",
-              "fragment": "Q8"
-            }
-          ],
-          "codeFinal": "P7J2R5Q8"
-        },
-        "reflexion": null,
-        "explications": [
-          {
-            "reference": "b1-01-a4-e1-en-ligne",
-            "texte": "150 ÷ 412 ≈ 0,364, soit 36,4 % des billets plein tarif. 150 ÷ 960 ≈ 15,6 % se rapporte à tous les billets : le mauvais tout."
-          },
-          {
-            "reference": "b1-01-a4-e2-tournoi",
-            "texte": "Étudiants : 288 ÷ 960 = 0,30. Avec tournoi : 0,30 × 0,45 = 0,135, soit 13,5 % des billets. 30 + 45 = 75 % additionne les parts."
-          },
-          {
-            "reference": "b1-01-a4-e3-ateliers",
-            "texte": "Places remplies : 0,85 × 160 + 0,60 × 140 = 136 + 84 = 220 sur 300, soit 73,3 %. La moyenne simple, 72,5 %, oublie que le samedi a plus de places."
-          },
-          {
-            "reference": "b1-01-a4-e4-stand",
-            "texte": "Marge : 50 − 32 = 18 €. Taux de marque : 18 ÷ 50 = 0,36, soit 36 %. 18 ÷ 32 ≈ 56,3 % est le taux de marge."
-          }
-        ]
       },
       {
         "id": "B1-01-A4-04-RAPPEL",
@@ -5320,96 +4509,6 @@
         "questions": [],
         "corrigeEcran": null,
         "reflexion": null
-      },
-      {
-        "id": "B1-01-A4-06-BILLET-DE-SORTIE",
-        "type": "fp-exit",
-        "titre": "Billet de sortie : la formule de la part",
-        "duree": 3,
-        "interactif": true,
-        "donnees": {
-          "billet": {
-            "id": "b1-01-a4-billet",
-            "question": "Effectif en B3, total en B7. Quelle formule écrire en C3 pour la part en %, arrondie au dixième, à recopier vers le bas ?",
-            "invite": "En une phrase : pourquoi se demander « parmi qui ? » devant un pourcentage ?",
-            "longueurMax": 500,
-            "options": [
-              {
-                "id": "arrondi-b-7-b3-100-1-5ab8d03b",
-                "libelle": "=ARRONDI($B$7/B3*100;1)"
-              },
-              {
-                "id": "arrondi-b3-b7-100-1-b4cb13e3",
-                "libelle": "=ARRONDI(B3/B7*100;1)"
-              },
-              {
-                "id": "arrondi-b3-b-7-1-6e293489",
-                "libelle": "=ARRONDI(B3/$B$7;1)"
-              },
-              {
-                "id": "arrondi-b3-b-7-100-1-b39bfb3d",
-                "libelle": "=ARRONDI(B3/$B$7*100;1)"
-              }
-            ],
-            "metadonnees": {
-              "concepts": ["tableur", "proportion"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
-        },
-        "notes": "• 3 min ; clore la séance quand le compteur de billets est complet.\n• Pièges : total non figé, division inversée, × 100 oublié.",
-        "diffusion": "seance",
-        "seuil": 0.7,
-        "corriges": [
-          {
-            "questionId": "b1-01-a4-billet",
-            "bonneReponse": "=ARRONDI(B3/$B$7*100;1)",
-            "optionId": "arrondi-b3-b-7-100-1-b39bfb3d",
-            "confusions": [
-              {
-                "id": "reference-relative-non-figee",
-                "libelle": "Recopier une formule dont une référence fixe n’est pas figée ($) : elle glisse d’une ligne à chaque recopie."
-              },
-              {
-                "id": "base-inversee",
-                "libelle": "Diviser le total par la partie au lieu de la partie par le total."
-              },
-              {
-                "id": "taux-valeur-facteur-cent",
-                "libelle": "Confondre le taux 70 % et la valeur 0,7 : le résultat est décalé d’un facteur 100."
-              }
-            ]
-          }
-        ],
-        "questions": [
-          {
-            "id": "b1-01-a4-billet",
-            "enonce": "Effectif en B3, total en B7. Quelle formule écrire en C3 pour la part en %, arrondie au dixième, à recopier vers le bas ?",
-            "options": [
-              {
-                "id": "arrondi-b-7-b3-100-1-5ab8d03b",
-                "libelle": "=ARRONDI($B$7/B3*100;1)"
-              },
-              {
-                "id": "arrondi-b3-b7-100-1-b4cb13e3",
-                "libelle": "=ARRONDI(B3/B7*100;1)"
-              },
-              {
-                "id": "arrondi-b3-b-7-1-6e293489",
-                "libelle": "=ARRONDI(B3/$B$7;1)"
-              },
-              {
-                "id": "arrondi-b3-b-7-100-1-b39bfb3d",
-                "libelle": "=ARRONDI(B3/$B$7*100;1)"
-              }
-            ]
-          }
-        ],
-        "corrigeEcran": null,
-        "reflexion": null
       }
     ]
   },
@@ -5417,7 +4516,7 @@
     "id": "b1-01-proportions-pourcentages",
     "titre": "Proportions et pourcentages",
     "niveau": "B1",
-    "duree": 160,
+    "duree": 121,
     "concepts": [
       "proportion",
       "pourcentage",
@@ -5452,12 +4551,8 @@
               "props": {
                 "title": "Proportions et pourcentages : parmi qui ?",
                 "subtitle": "Partie Libre, quatre boutiques-bars à jeux. Votre alternance commence par le bilan de rentrée : des effectifs, des parts, des marges.",
-                "bullets": [
-                  "BTS Comptabilité et gestion · 1ʳᵉ année · premier cours de mathématiques",
-                  "Trois notions : la part d’un tout, la part d’une part, points et marges",
-                  "Le tableur dès aujourd’hui : SOMME, ARRONDI et le $",
-                  "Une mini-situation CCF pour finir"
-                ]
+                "bgImage": "/assets/cours/b1-01/v1/playfair-camemberts-1801.jpg",
+                "bgImageAlt": "Diagrammes circulaires de William Playfair (1801) : la part de chaque territoire dans un tout, les premiers camemberts publiés"
               }
             },
             "metadonnees": {
@@ -6146,108 +5241,10 @@
         "donnees": {}
       },
       {
-        "id": "B1-01-A3-06-DEFI-IA",
-        "type": "ecran-verrouille",
-        "titre": "Exercice 6 — Corriger le bilan d’une IA",
-        "duree": 9,
-        "interactif": false,
-        "donnees": {}
-      },
-      {
         "id": "B1-01-A3-07-JALON",
         "type": "ecran-verrouille",
         "titre": "Jalon 3 : points, marge et marque",
         "duree": 1,
-        "interactif": false,
-        "donnees": {}
-      },
-      {
-        "id": "B1-01-A4-01-SITUATION-FESTIVAL",
-        "type": "fp-story",
-        "titre": "Mini-situation CCF : le Week-end du jeu",
-        "duree": 3,
-        "interactif": false,
-        "donnees": {
-          "recit": {
-            "id": "B1-01-A4-01-SITUATION-FESTIVAL",
-            "presentation": {
-              "version": 2,
-              "screenId": "B1-01-A4-01-SITUATION-FESTIVAL",
-              "renderer": "table",
-              "props": {
-                "title": "Mini-situation CCF : le Week-end du jeu",
-                "subtitle": "Le bilan du premier festival de Partie Libre. Barème sur 10 : une question tableur, puis quatre énigmes.",
-                "note": "Données fictives Partie Libre, créées pour ce cours.",
-                "columns": [
-                  {
-                    "key": "rubrique",
-                    "label": "Rubrique"
-                  },
-                  {
-                    "key": "contenu",
-                    "label": "Ce que montre le dossier"
-                  }
-                ],
-                "rows": [
-                  {
-                    "rubrique": "Contexte",
-                    "contenu": "Partie Libre a organisé à Nantes le Week-end du jeu, son premier festival. Inès prépare le bilan pour la mairie, qui a prêté la salle."
-                  },
-                  {
-                    "rubrique": "Billets",
-                    "contenu": "960 billets vendus : 412 plein tarif, 288 étudiant, 172 enfant et 88 pass famille."
-                  },
-                  {
-                    "rubrique": "Ventes en ligne",
-                    "contenu": "150 des billets plein tarif ont été achetés en ligne."
-                  },
-                  {
-                    "rubrique": "Option tournoi",
-                    "contenu": "45 % des billets étudiant incluent l’option tournoi."
-                  },
-                  {
-                    "rubrique": "Ateliers",
-                    "contenu": "Samedi : 160 places, remplies à 85 %. Dimanche : 140 places, remplies à 60 %."
-                  },
-                  {
-                    "rubrique": "Stand",
-                    "contenu": "Un jeu acheté 32 € HT est vendu 50 € HT au stand de la boutique."
-                  },
-                  {
-                    "rubrique": "Barème",
-                    "contenu": "Sur 10 points : 3 points pour la question tableur ; 2, 2, 1,5 et 1,5 points pour les quatre énigmes."
-                  }
-                ]
-              }
-            },
-            "metadonnees": {
-              "concepts": [
-                "proportion",
-                "moyenne-ponderee",
-                "pourcentage",
-                "tableur"
-              ],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
-        }
-      },
-      {
-        "id": "B1-01-A4-02-TABLEUR-FESTIVAL",
-        "type": "ecran-verrouille",
-        "titre": "Question tableur (3 points sur 10) : la répartition des billets",
-        "duree": 13,
-        "interactif": false,
-        "donnees": {}
-      },
-      {
-        "id": "B1-01-A4-03-COFFRE-FESTIVAL",
-        "type": "ecran-verrouille",
-        "titre": "Mini-situation : le bilan du Week-end du jeu",
-        "duree": 11,
         "interactif": false,
         "donnees": {}
       },
@@ -6346,14 +5343,6 @@
             }
           }
         }
-      },
-      {
-        "id": "B1-01-A4-06-BILLET-DE-SORTIE",
-        "type": "ecran-verrouille",
-        "titre": "Billet de sortie : la formule de la part",
-        "duree": 3,
-        "interactif": false,
-        "donnees": {}
       }
     ]
   }

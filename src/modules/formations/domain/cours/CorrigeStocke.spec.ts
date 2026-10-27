@@ -4,7 +4,6 @@ import {
   buildCorrigeDefi,
   buildCorrigeEnigme,
   buildCorrigeFeuille,
-  buildCorrigeRevelation,
   buildCorrigeTableau,
   buildPlanFeuille,
 } from '../../../../../test/factories/corriges.factory';
@@ -13,7 +12,6 @@ import {
   corrigeDefi,
   corrigeEnigme,
   corrigeFeuille,
-  corrigeRevelation,
   corrigeTableau,
 } from './CorrigeStocke';
 
@@ -26,7 +24,6 @@ describe('schémas zod des corrigés (§ 9.3.3)', () => {
     ['classement', corrigeClassement, buildCorrigeClassement()],
     ['enigme', corrigeEnigme, buildCorrigeEnigme()],
     ['defi', corrigeDefi, buildCorrigeDefi()],
-    ['revelation', corrigeRevelation, buildCorrigeRevelation()],
   ] as const)('accepte un corrigé %s conforme', (_type, schema, corrige) => {
     expect(schema.safeParse(corrige).success).toBe(true);
   });
@@ -200,12 +197,5 @@ describe('schémas zod des corrigés (§ 9.3.3)', () => {
     ],
   ])('refuse un défi avec %s', (_cas, corrige) => {
     expect(corrigeDefi.safeParse(corrige).success).toBe(false);
-  });
-
-  it('refuse une révélation sans ligne', () => {
-    expect(
-      corrigeRevelation.safeParse({ ...buildCorrigeRevelation(), lignes: [] })
-        .success,
-    ).toBe(false);
   });
 });

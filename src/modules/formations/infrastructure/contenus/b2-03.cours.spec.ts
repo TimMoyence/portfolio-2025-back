@@ -83,16 +83,16 @@ const aViser: Regle = (facture) =>
 
 decrireLaFicheDuCours('B2-03', COURS, {
   conception: 'cours-b2-03-conception.md',
-  ecrans: 32,
-  dureeMinutes: 140,
-  minutesParActe: [36, 33, 23, 48, 0, 0],
-  rythme: { expositionContinueMax: 6, interactives: 111, exposition: 29 },
+  ecrans: 31,
+  dureeMinutes: 136,
+  minutesParActe: [36, 33, 23, 44, 0, 0],
+  rythme: { expositionContinueMax: 6, interactives: 107, exposition: 29 },
   ateliersNotes: ['A1-10 (8)', 'A2-05 (11)', 'A3-05 (11)'],
-  noteesParType: [7, 2, 0, 2, 1],
+  noteesParType: [6, 2, 0, 2, 1],
   enigmes: 4,
   rappels: 9,
   remediations: 9,
-  options: 11 + 9,
+  options: 19,
   catalogue: CATALOGUE_ILLUSTRE_A_SIX_PAGES,
   corrigesSurPlace: [
     'B2-03-A1-09-TABLE-VERITE',

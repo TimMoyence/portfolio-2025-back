@@ -13,7 +13,6 @@ import {
   corrigeDefi,
   corrigeEnigme,
   corrigeFeuille,
-  corrigeRevelation,
   corrigeTableau,
 } from './CorrigeStocke';
 import {
@@ -820,7 +819,6 @@ const proprietesVote = z
       z.tuple([voteStocke]),
       z.tuple([voteStocke, voteStocke]),
     ]),
-    corrige: corrigeRevelation.optional(),
     seuil: seuil.optional(),
     ...communes,
   })
@@ -832,14 +830,6 @@ const proprietesRappelDOuverture = z
     delaiMs: z.number().int().nonnegative(),
     consigne: texte.optional(),
     seuil: seuil.optional(),
-    ...communes,
-  })
-  .strict();
-
-const proprietesBillet = z
-  .object({
-    questions: z.tuple([voteStocke]),
-    invite: texte,
     ...communes,
   })
   .strict();
@@ -872,6 +862,5 @@ export const PROPRIETES_STOCKEES = {
   'fp-numeric': proprietesNumerique,
   'fp-vote': proprietesVote,
   'fp-recall': proprietesRappelDOuverture,
-  'fp-exit': proprietesBillet,
   questionnaire: proprietesQuestionnaire,
 } as const;

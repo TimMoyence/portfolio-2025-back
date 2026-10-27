@@ -11,7 +11,6 @@ const MINUTES_MAXIMUM_DU_GABARIT: Readonly<Record<Gabarit, number>> = {
 };
 const BRIQUES_HORS_CYCLE: readonly string[] = [
   'fp-recall',
-  'fp-exit',
   'fp-spaced',
   'fp-worked',
 ];
@@ -181,13 +180,7 @@ export function controlerMiniSituation(cours: Cours): readonly Manquement[] {
     (ecran) => ecran.brique === 'fp-escape',
   );
   if (rang === -1) {
-    return [
-      {
-        ecran: null,
-        raison:
-          'le cours v3 ne porte aucune mini-situation CCF (« fp-escape ») avant son billet de sortie.',
-      },
-    ];
+    return [];
   }
   return cours.ecrans
     .slice(rang + 1)

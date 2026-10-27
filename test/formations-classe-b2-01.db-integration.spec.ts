@@ -148,7 +148,7 @@ describeDb('Classe de trente sur le B2-01 (db integration)', () => {
     for (const [rang, question] of fermees.entries()) {
       if (rang > 0 && ecran.brique === 'fp-vote') {
         await piloter({
-          pilotage: { screenId: ecran.id, phase: 'revote' },
+          pilotage: { screenId: ecran.id, phase: 'question-2' },
         }).expect(SANS_CONTENU);
       }
       const envois = await Promise.all(

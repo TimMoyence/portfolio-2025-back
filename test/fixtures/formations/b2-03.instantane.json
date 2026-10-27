@@ -1,11 +1,11 @@
 {
   "graine": 0,
-  "empreinte": "2f4e5772d11fa72c81a91bd992cc60062bb6cdac8c27ec57b0418e40a87a1846",
+  "empreinte": "f1aa5c805fc8a1a67803c7369db20447366576b86ee82d02dac9841f5caaa411",
   "sujet": {
     "id": "b2-03-logique",
     "titre": "Logique : écrire et contrôler une règle",
     "niveau": "B2",
-    "duree": 140,
+    "duree": 136,
     "concepts": [
       "proposition",
       "connecteur",
@@ -30,11 +30,8 @@
               "props": {
                 "title": "Écrire et contrôler une règle",
                 "subtitle": "Atelier Rivage, voilerie de La Rochelle. Avant la clôture, l’expert-comptable fait contrôler les factures clients avec trois règles : relancer, vérifier la TVA, faire viser.",
-                "bullets": [
-                  "BTS Comptabilité et gestion · 2ᵉ année · troisième cours de mathématiques",
-                  "Trois notions : combiner des conditions, nier une règle, dire « tous » ou « au moins un »",
-                  "Une mini-situation CCF et sa question tableur"
-                ]
+                "bgImage": "/assets/cours/b2-03/v1/boole-lois-de-la-pensee-1854.jpg",
+                "bgImageAlt": "Page de titre de An Investigation of the Laws of Thought de George Boole (1854), le livre qui fonde la logique mathématique"
               }
             },
             "metadonnees": {
@@ -2575,46 +2572,6 @@
             }
           }
         }
-      },
-      {
-        "id": "B2-03-A4-06-BILLET-DE-SORTIE",
-        "type": "fp-exit",
-        "titre": "Billet de sortie : la formule pour l’expert-comptable",
-        "duree": 4,
-        "interactif": true,
-        "donnees": {
-          "billet": {
-            "id": "b2-03-a4-billet",
-            "question": "Marc veut une formule de relance à recopier dans tout le fichier, statut en F2 et délai en E2. Laquelle peut partir telle quelle ?",
-            "invite": "Quelle facture du fichier montre que la borne compte, et pourquoi ?",
-            "longueurMax": 500,
-            "options": [
-              {
-                "id": "si-ou-f2-impayee-e2-60-a-relancer-e18ac660",
-                "libelle": "=SI(OU(F2=\"Impayée\";E2>60);\"À relancer\";\"\")"
-              },
-              {
-                "id": "si-et-f2-impayee-e2-60-a-relancer-0e0cf9ea",
-                "libelle": "=SI(ET(F2=Impayée;E2>60);\"À relancer\";\"\")"
-              },
-              {
-                "id": "si-et-f2-impayee-e2-60-a-relancer-c6fcd3f7",
-                "libelle": "=SI(ET(F2=\"Impayée\";E2>=60);\"À relancer\";\"\")"
-              },
-              {
-                "id": "si-et-f2-impayee-e2-60-a-relancer-d03a3aed",
-                "libelle": "=SI(ET(F2=\"Impayée\";E2>60);\"À relancer\";\"\")"
-              }
-            ],
-            "metadonnees": {
-              "concepts": ["connecteur", "tableur"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 4,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
-        }
       }
     ]
   },
@@ -2622,7 +2579,7 @@
     "id": "b2-03-logique",
     "titre": "Logique : écrire et contrôler une règle",
     "niveau": "B2",
-    "duree": 140,
+    "duree": 136,
     "concepts": [
       "proposition",
       "connecteur",
@@ -2647,11 +2604,8 @@
               "props": {
                 "title": "Écrire et contrôler une règle",
                 "subtitle": "Atelier Rivage, voilerie de La Rochelle. Avant la clôture, l’expert-comptable fait contrôler les factures clients avec trois règles : relancer, vérifier la TVA, faire viser.",
-                "bullets": [
-                  "BTS Comptabilité et gestion · 2ᵉ année · troisième cours de mathématiques",
-                  "Trois notions : combiner des conditions, nier une règle, dire « tous » ou « au moins un »",
-                  "Une mini-situation CCF et sa question tableur"
-                ]
+                "bgImage": "/assets/cours/b2-03/v1/boole-lois-de-la-pensee-1854.jpg",
+                "bgImageAlt": "Page de titre de An Investigation of the Laws of Thought de George Boole (1854), le livre qui fonde la logique mathématique"
               }
             },
             "metadonnees": {
@@ -2961,7 +2915,7 @@
             ]
           }
         },
-        "notes": "• Temps « réfléchir » de la notion 1 : votes non notés.\n• Premier vote individuel ; entre 30 et 70 % de bonnes réponses, débat en binôme avant la deuxième question ; sinon, passer directement à la deuxième question.\n• La révélation s’ouvre après la deuxième question : les deux corrections se commentent ensemble.\n• Papier : vote à main levée sur chaque question, discussion en binôme entre les deux.",
+        "notes": "• Temps « réfléchir » de la notion 1 : votes non notés.\n• Question 1 en vote individuel, puis question 2, sans débat entre les deux.\n• La révélation s’ouvre après la question 2 : les deux corrections se commentent ensemble.\n• Papier : vote à main levée sur chaque question.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -3018,14 +2972,7 @@
             ]
           }
         ],
-        "corrigeEcran": {
-          "type": "revelation",
-          "titre": "Lire « ou » et « plus de »",
-          "lignes": [
-            "« Ou » est inclusif : la remise tient dès qu’une condition est vraie, et aussi quand les deux le sont.",
-            "« Plus de trois ans » se traduit par > 3 : la valeur 3 est exclue. « Au moins trois ans » se traduit par ≥ 3."
-          ]
-        },
+        "corrigeEcran": null,
         "reflexion": null
       },
       {
@@ -4579,7 +4526,7 @@
             ]
           }
         },
-        "notes": "• Temps « réfléchir » de la notion 3 : votes non notés.\n• Premier vote individuel ; entre 30 et 70 % de bonnes réponses, débat en binôme avant la deuxième question ; sinon, passer directement à la deuxième question.\n• La révélation s’ouvre après la deuxième question : les deux corrections se commentent ensemble.\n• Papier : vote à main levée sur chaque question, discussion en binôme entre les deux.",
+        "notes": "• Temps « réfléchir » de la notion 3 : votes non notés.\n• Question 1 en vote individuel, puis question 2, sans débat entre les deux.\n• La révélation s’ouvre après la question 2 : les deux corrections se commentent ensemble.\n• Papier : vote à main levée sur chaque question.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -4636,15 +4583,7 @@
             ]
           }
         ],
-        "corrigeEcran": {
-          "type": "revelation",
-          "titre": "Pour tout, il existe",
-          "lignes": [
-            "Pour contredire « toutes… », un seul contre-exemple suffit : « au moins une… ne… pas ».",
-            "Le contraire de « il existe… » est « aucune… », c’est-à-dire « pour toutes…, non… ».",
-            "La trace écrite donne ces deux règles et leur vérification au tableur."
-          ]
-        },
+        "corrigeEcran": null,
         "reflexion": null
       },
       {
@@ -6884,96 +6823,6 @@
         "questions": [],
         "corrigeEcran": null,
         "reflexion": null
-      },
-      {
-        "id": "B2-03-A4-06-BILLET-DE-SORTIE",
-        "type": "fp-exit",
-        "titre": "Billet de sortie : la formule pour l’expert-comptable",
-        "duree": 4,
-        "interactif": true,
-        "donnees": {
-          "billet": {
-            "id": "b2-03-a4-billet",
-            "question": "Marc veut une formule de relance à recopier dans tout le fichier, statut en F2 et délai en E2. Laquelle peut partir telle quelle ?",
-            "invite": "Quelle facture du fichier montre que la borne compte, et pourquoi ?",
-            "longueurMax": 500,
-            "options": [
-              {
-                "id": "si-ou-f2-impayee-e2-60-a-relancer-e18ac660",
-                "libelle": "=SI(OU(F2=\"Impayée\";E2>60);\"À relancer\";\"\")"
-              },
-              {
-                "id": "si-et-f2-impayee-e2-60-a-relancer-0e0cf9ea",
-                "libelle": "=SI(ET(F2=Impayée;E2>60);\"À relancer\";\"\")"
-              },
-              {
-                "id": "si-et-f2-impayee-e2-60-a-relancer-c6fcd3f7",
-                "libelle": "=SI(ET(F2=\"Impayée\";E2>=60);\"À relancer\";\"\")"
-              },
-              {
-                "id": "si-et-f2-impayee-e2-60-a-relancer-d03a3aed",
-                "libelle": "=SI(ET(F2=\"Impayée\";E2>60);\"À relancer\";\"\")"
-              }
-            ],
-            "metadonnees": {
-              "concepts": ["connecteur", "tableur"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 4,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
-        },
-        "notes": "• 4 min ; clore la séance quand le compteur de billets est complet.\n• Pièges : OU au lieu de ET, >= au lieu de >, texte sans guillemets.",
-        "diffusion": "seance",
-        "seuil": 0.7,
-        "corriges": [
-          {
-            "questionId": "b2-03-a4-billet",
-            "bonneReponse": "=SI(ET(F2=\"Impayée\";E2>60);\"À relancer\";\"\")",
-            "optionId": "si-et-f2-impayee-e2-60-a-relancer-d03a3aed",
-            "confusions": [
-              {
-                "id": "et-traduit-par-ou",
-                "libelle": "Traduire une règle « et » par un « ou » (OU dans le tableur, OR en SQL) : on retient les lignes qui ne vérifient qu’une des conditions."
-              },
-              {
-                "id": "borne-stricte-large",
-                "libelle": "Confondre une inégalité stricte et une inégalité large (> et ≥) : la valeur à la borne change de camp."
-              },
-              {
-                "id": "critere-sans-guillemets",
-                "libelle": "Écrire un texte ou un critère sans guillemets dans une formule (France au lieu de \"France\") : le tableur renvoie une erreur."
-              }
-            ]
-          }
-        ],
-        "questions": [
-          {
-            "id": "b2-03-a4-billet",
-            "enonce": "Marc veut une formule de relance à recopier dans tout le fichier, statut en F2 et délai en E2. Laquelle peut partir telle quelle ?",
-            "options": [
-              {
-                "id": "si-ou-f2-impayee-e2-60-a-relancer-e18ac660",
-                "libelle": "=SI(OU(F2=\"Impayée\";E2>60);\"À relancer\";\"\")"
-              },
-              {
-                "id": "si-et-f2-impayee-e2-60-a-relancer-0e0cf9ea",
-                "libelle": "=SI(ET(F2=Impayée;E2>60);\"À relancer\";\"\")"
-              },
-              {
-                "id": "si-et-f2-impayee-e2-60-a-relancer-c6fcd3f7",
-                "libelle": "=SI(ET(F2=\"Impayée\";E2>=60);\"À relancer\";\"\")"
-              },
-              {
-                "id": "si-et-f2-impayee-e2-60-a-relancer-d03a3aed",
-                "libelle": "=SI(ET(F2=\"Impayée\";E2>60);\"À relancer\";\"\")"
-              }
-            ]
-          }
-        ],
-        "corrigeEcran": null,
-        "reflexion": null
       }
     ]
   },
@@ -6981,7 +6830,7 @@
     "id": "b2-03-logique",
     "titre": "Logique : écrire et contrôler une règle",
     "niveau": "B2",
-    "duree": 140,
+    "duree": 136,
     "concepts": [
       "proposition",
       "connecteur",
@@ -7006,11 +6855,8 @@
               "props": {
                 "title": "Écrire et contrôler une règle",
                 "subtitle": "Atelier Rivage, voilerie de La Rochelle. Avant la clôture, l’expert-comptable fait contrôler les factures clients avec trois règles : relancer, vérifier la TVA, faire viser.",
-                "bullets": [
-                  "BTS Comptabilité et gestion · 2ᵉ année · troisième cours de mathématiques",
-                  "Trois notions : combiner des conditions, nier une règle, dire « tous » ou « au moins un »",
-                  "Une mini-situation CCF et sa question tableur"
-                ]
+                "bgImage": "/assets/cours/b2-03/v1/boole-lois-de-la-pensee-1854.jpg",
+                "bgImageAlt": "Page de titre de An Investigation of the Laws of Thought de George Boole (1854), le livre qui fonde la logique mathématique"
               }
             },
             "metadonnees": {
@@ -8100,14 +7946,6 @@
             }
           }
         }
-      },
-      {
-        "id": "B2-03-A4-06-BILLET-DE-SORTIE",
-        "type": "ecran-verrouille",
-        "titre": "Billet de sortie : la formule pour l’expert-comptable",
-        "duree": 4,
-        "interactif": false,
-        "donnees": {}
       }
     ]
   }

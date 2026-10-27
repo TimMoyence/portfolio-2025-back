@@ -12,6 +12,7 @@ import { CONFUSIONS } from '../../domain/cours/banque/confusions';
 import { matchesSolution } from '../../domain/GradingCore';
 import { questionsDuCours } from '../../domain/cours/Cours';
 import type { PiegeDeClassement } from '../../domain/cours/Corrige';
+import { confusionsDuCorrige } from '../../domain/cours/CorrigeStocke';
 import {
   lireCoursStocke,
   type ContenuDeCours,
@@ -186,6 +187,26 @@ describe.each(CONTENUS.map((contenu) => [contenu.slug, contenu] as const))(
 
     it('ne lève aucune violation de structure, sans dérogation', () => {
       expect(verifierStructure(cours)).toEqual([]);
+    });
+
+    it('M10 · ne garde aucune remédiation dont aucune question restante ne porte la confusion', () => {
+      const proprietes = JSON.stringify(
+        contenu.ecrans.map(({ proprietes: deLEcran }) => deLEcran),
+      );
+      const duMoteur = new Set<string>(
+        questionsDuCours(cours).flatMap((question) =>
+          'corrige' in question ? confusionsDuCorrige(question.corrige) : [],
+        ),
+      );
+      const confusions = Object.keys(contenu.remediations ?? {});
+
+      expect(confusions.length).toBeGreaterThan(0);
+      expect(
+        confusions.filter(
+          (confusion) =>
+            !proprietes.includes(`"${confusion}"`) && !duMoteur.has(confusion),
+        ),
+      ).toEqual([]);
     });
 
     it('QP-15 · donne à chaque couple carte × mauvaise case de ses tris sa confusion, et ne publie pas un tri qui en perd une', () => {

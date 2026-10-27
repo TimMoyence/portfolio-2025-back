@@ -22,10 +22,8 @@ export const ETATS_PULSE = Object.freeze(['perdu', 'ca-va', 'clair'] as const);
 export type EtatPulse = (typeof ETATS_PULSE)[number];
 
 export const PHASES_DE_VOTE = Object.freeze([
-  'vote',
-  'discussion',
-  'revote',
-  'revele',
+  'question-1',
+  'question-2',
 ] as const);
 export type VotePhase = (typeof PHASES_DE_VOTE)[number];
 

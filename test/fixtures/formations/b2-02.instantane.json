@@ -1,11 +1,11 @@
 {
   "graine": 0,
-  "empreinte": "e145170d5202b719629227f184f8df7b24db07fc9de9ccc6c07707b33967bc6a",
+  "empreinte": "b5595a1506512dac0add4ba194f2119013ee5c9eb638028718514455773bd029",
   "sujet": {
     "id": "b2-02-series-statistiques",
     "titre": "Séries statistiques : résumer, relier, prévoir",
     "niveau": "B2",
-    "duree": 180,
+    "duree": 166,
     "concepts": [
       "serie-statistique",
       "moyenne",
@@ -70,11 +70,8 @@
               "props": {
                 "title": "Résumer, relier, prévoir",
                 "subtitle": "Atelier Rivage, voilerie de La Rochelle. La banque demande le délai de paiement des clients et sa régularité, puis une prévision du chiffre d’affaires pour dimensionner une facilité de caisse.",
-                "bullets": [
-                  "BTS Comptabilité et gestion · 2ᵉ année · deuxième cours de mathématiques",
-                  "Trois notions : résumer une série, relier deux variables, prévoir avec une droite",
-                  "Une mini-situation CCF et sa question tableur"
-                ]
+                "bgImage": "/assets/cours/b2-02/v2/galton-correlation-1875.jpg",
+                "bgImageAlt": "Diagramme de corrélation de Francis Galton (1875) : deux variables mises en regard, l’ancêtre du nuage de points et de la droite d’ajustement"
               }
             },
             "metadonnees": {
@@ -1634,29 +1631,6 @@
         "renvoi": "B2-02-A2-01-NUAGE-RIVAGE"
       },
       {
-        "id": "B2-02-A3-05-DEFI-IA",
-        "type": "fp-challenge",
-        "titre": "Exercice 5 — Corriger la prévision d’une IA",
-        "duree": 10,
-        "interactif": true,
-        "donnees": {
-          "probleme": {
-            "id": "b2-02-a3-defi-ia",
-            "enonce": "Samir a demandé une prévision pour 2035 à un assistant IA. Réponse : « Droite : y = 43,89x + 564,4. En 2035, y = 43,89 × 2035 + 564,4 ≈ 89 881 k€. Comme r est proche de 1, ce sont nos hausses de tarifs qui causent la croissance. »",
-            "invite": "Trouvez les erreurs de l’IA, corrigez la prévision et écrivez la réserve à ajouter.",
-            "strategies": [],
-            "metadonnees": {
-              "concepts": ["prevision", "correlation"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 10,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
-        },
-        "renvoi": "B2-02-A2-01-NUAGE-RIVAGE"
-      },
-      {
         "id": "B2-02-A3-06-JALON",
         "type": "fp-pulse",
         "titre": "Jalon 3 : prévoir avec une droite",
@@ -2077,46 +2051,6 @@
             }
           }
         }
-      },
-      {
-        "id": "B2-02-A4-06-BILLET-DE-SORTIE",
-        "type": "fp-exit",
-        "titre": "Billet de sortie : la phrase pour la banque",
-        "duree": 4,
-        "interactif": true,
-        "donnees": {
-          "billet": {
-            "id": "b2-02-a4-billet",
-            "question": "La banque lira une seule phrase. Laquelle peut partir telle quelle ?",
-            "invite": "Quelle réserve la phrase juste contient-elle, et pourquoi est-elle nécessaire ?",
-            "longueurMax": 500,
-            "options": [
-              {
-                "id": "nos-clients-paient-en-moyenne-a-48-jours-fe436567",
-                "libelle": "Nos clients paient en moyenne à 48 jours ; si la tendance se poursuit, notre chiffre d’affaires 2028 serait d’environ 959 k€."
-              },
-              {
-                "id": "la-moitie-de-nos-factures-est-encaissee-df866776",
-                "libelle": "La moitié de nos factures est encaissée en 43 jours au plus ; notre chiffre d’affaires 2028 sera de 959 k€."
-              },
-              {
-                "id": "nos-delais-sont-reguliers-et-r-proche-de-5c574b23",
-                "libelle": "Nos délais sont réguliers, et r proche de 1 prouve que notre croissance va continuer."
-              },
-              {
-                "id": "la-moitie-de-nos-factures-est-encaissee-d4f39369",
-                "libelle": "La moitié de nos factures est encaissée en 43 jours au plus ; si la tendance de 2020 à 2025 se poursuit, notre chiffre d’affaires 2028 serait d’environ 959 k€."
-              }
-            ],
-            "metadonnees": {
-              "concepts": ["choix-du-resume", "prevision"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 4,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
-        }
       }
     ]
   },
@@ -2124,7 +2058,7 @@
     "id": "b2-02-series-statistiques",
     "titre": "Séries statistiques : résumer, relier, prévoir",
     "niveau": "B2",
-    "duree": 180,
+    "duree": 166,
     "concepts": [
       "serie-statistique",
       "moyenne",
@@ -2231,11 +2165,8 @@
               "props": {
                 "title": "Résumer, relier, prévoir",
                 "subtitle": "Atelier Rivage, voilerie de La Rochelle. La banque demande le délai de paiement des clients et sa régularité, puis une prévision du chiffre d’affaires pour dimensionner une facilité de caisse.",
-                "bullets": [
-                  "BTS Comptabilité et gestion · 2ᵉ année · deuxième cours de mathématiques",
-                  "Trois notions : résumer une série, relier deux variables, prévoir avec une droite",
-                  "Une mini-situation CCF et sa question tableur"
-                ]
+                "bgImage": "/assets/cours/b2-02/v2/galton-correlation-1875.jpg",
+                "bgImageAlt": "Diagramme de corrélation de Francis Galton (1875) : deux variables mises en regard, l’ancêtre du nuage de points et de la droite d’ajustement"
               }
             },
             "metadonnees": {
@@ -3132,7 +3063,7 @@
             ]
           }
         },
-        "notes": "• Temps « réfléchir » de la notion 2 : vote non noté.\n• Premier vote individuel ; entre 30 et 70 % de bonnes réponses, débat en binôme avant la deuxième question ; sinon, passer directement à la deuxième question.\n• La révélation s’ouvre après la deuxième question : les deux corrections se commentent ensemble.\n• Papier : vote à main levée sur chaque question, discussion en binôme entre les deux.",
+        "notes": "• Temps « réfléchir » de la notion 2 : vote non noté.\n• Question 1 en vote individuel, puis question 2, sans débat entre les deux.\n• La révélation s’ouvre après la question 2 : les deux corrections se commentent ensemble.\n• Papier : vote à main levée sur chaque question.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -3197,15 +3128,7 @@
             ]
           }
         ],
-        "corrigeEcran": {
-          "type": "revelation",
-          "titre": "Deux séries liées ne prouvent pas une cause",
-          "lignes": [
-            "Voiles et glaces : la saison fait varier les deux ventes à la fois.",
-            "Formation et chiffre d’affaires : les deux séries augmentent avec le temps, pour bien d’autres raisons.",
-            "Une corrélation mesure l’alignement de deux séries, pas ce qui cause leurs variations."
-          ]
-        },
+        "corrigeEcran": null,
         "reflexion": null
       },
       {
@@ -4495,7 +4418,7 @@
           ]
         },
         "renvoi": "B2-02-A2-01-NUAGE-RIVAGE",
-        "notes": "• Temps : réflexion 2 min · travail 7 min · correction 2 min\n• Réflexion : écrire le rang de 2028 avant tout calcul.\n• Pièges : séries inversées dans PENTE ; 2028 à la place du rang ; seuil arrondi à l’entier inférieur.\n• Papier : exercice 4 du livret.\n• Corriger question par question, en commençant par la moins réussie.\n• Transition : « Une IA a fait la même prévision, pour 2035. »",
+        "notes": "• Temps : réflexion 2 min · travail 7 min · correction 2 min\n• Réflexion : écrire le rang de 2028 avant tout calcul.\n• Pièges : séries inversées dans PENTE ; 2028 à la place du rang ; seuil arrondi à l’entier inférieur.\n• Papier : exercice 4 du livret.\n• Corriger question par question, en commençant par la moins réussie.\n• Transition : « Faisons le point : prévoir avec une droite. »",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -4584,87 +4507,6 @@
           {
             "reference": "b2-02-a3-seuil",
             "texte": "43,885714x + 564,4 ≥ 1 000 donne x ≥ 9,93. Premier rang entier : 10, soit 2029. Le rang 9 (2028) donne 959 k€, sous le seuil."
-          }
-        ]
-      },
-      {
-        "id": "B2-02-A3-05-DEFI-IA",
-        "type": "fp-challenge",
-        "titre": "Exercice 5 — Corriger la prévision d’une IA",
-        "duree": 10,
-        "interactif": true,
-        "donnees": {
-          "probleme": {
-            "id": "b2-02-a3-defi-ia",
-            "enonce": "Samir a demandé une prévision pour 2035 à un assistant IA. Réponse : « Droite : y = 43,89x + 564,4. En 2035, y = 43,89 × 2035 + 564,4 ≈ 89 881 k€. Comme r est proche de 1, ce sont nos hausses de tarifs qui causent la croissance. »",
-            "invite": "Trouvez les erreurs de l’IA, corrigez la prévision et écrivez la réserve à ajouter.",
-            "strategies": [],
-            "metadonnees": {
-              "concepts": ["prevision", "correlation"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 10,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
-        },
-        "renvoi": "B2-02-A2-01-NUAGE-RIVAGE",
-        "notes": "• Temps : réflexion 2 min · travail 6 min · correction 2 min\n• Réflexion : relire la trace écrite A3-02 et la règle du rang.\n• Repérer qui trouve le rang, l’extrapolation et la causalité ; faire trouver la piste fausse avant de révéler.\n• Papier : exercice 5 du livret.\n• Faire lire deux réserves écrites par la classe, puis dévoiler les pistes une à une.\n• Transition : jalon 3, puis pause de 15 minutes.",
-        "diffusion": "seance",
-        "seuil": null,
-        "corriges": [],
-        "questions": [],
-        "corrigeEcran": {
-          "type": "defi",
-          "strategies": [
-            {
-              "id": "rang",
-              "libelle": "Remplacer x par le rang de 2035, 16, et non par 2035 : y ≈ 43,89 × 16 + 564,4 ≈ 1 267 k€.",
-              "fausse": false
-            },
-            {
-              "id": "loin",
-              "libelle": "2035 est à dix ans des données : l’extrapolation suppose que la tendance dure, la prévision est très fragile.",
-              "fausse": false
-            },
-            {
-              "id": "causalite",
-              "libelle": "r proche de 1 dit que les points sont alignés, pas ce qui cause la hausse : aucune conclusion sur les tarifs.",
-              "fausse": false
-            },
-            {
-              "id": "controle",
-              "libelle": "Contrôler la droite par le point moyen : 43,89 × 3,5 + 564,4 ≈ 718, l’ordonnée de G.",
-              "fausse": false
-            },
-            {
-              "id": "garder",
-              "libelle": "Garder la réponse : r est proche de 1, donc la prévision est sûre.",
-              "fausse": true
-            }
-          ]
-        },
-        "reflexion": null,
-        "explications": [
-          {
-            "reference": "rang",
-            "texte": "L’IA a remplacé x par l’année : avec le rang 16, on prévoit environ 1 267 k€, pas 89 881."
-          },
-          {
-            "reference": "loin",
-            "texte": "Dix ans au-delà des données, rien ne garantit que la tendance tienne : la prévision doit porter sa réserve."
-          },
-          {
-            "reference": "causalite",
-            "texte": "Le coefficient de corrélation mesure l’alignement ; il ne prouve aucune cause."
-          },
-          {
-            "reference": "controle",
-            "texte": "Une droite des moindres carrés passe toujours par G : c’est le contrôle le plus rapide."
-          },
-          {
-            "reference": "garder",
-            "texte": "Piste fausse : un r proche de 1 dit que le passé est bien résumé, pas que l’avenir le suivra."
           }
         ]
       },
@@ -5659,96 +5501,6 @@
         "questions": [],
         "corrigeEcran": null,
         "reflexion": null
-      },
-      {
-        "id": "B2-02-A4-06-BILLET-DE-SORTIE",
-        "type": "fp-exit",
-        "titre": "Billet de sortie : la phrase pour la banque",
-        "duree": 4,
-        "interactif": true,
-        "donnees": {
-          "billet": {
-            "id": "b2-02-a4-billet",
-            "question": "La banque lira une seule phrase. Laquelle peut partir telle quelle ?",
-            "invite": "Quelle réserve la phrase juste contient-elle, et pourquoi est-elle nécessaire ?",
-            "longueurMax": 500,
-            "options": [
-              {
-                "id": "nos-clients-paient-en-moyenne-a-48-jours-fe436567",
-                "libelle": "Nos clients paient en moyenne à 48 jours ; si la tendance se poursuit, notre chiffre d’affaires 2028 serait d’environ 959 k€."
-              },
-              {
-                "id": "la-moitie-de-nos-factures-est-encaissee-df866776",
-                "libelle": "La moitié de nos factures est encaissée en 43 jours au plus ; notre chiffre d’affaires 2028 sera de 959 k€."
-              },
-              {
-                "id": "nos-delais-sont-reguliers-et-r-proche-de-5c574b23",
-                "libelle": "Nos délais sont réguliers, et r proche de 1 prouve que notre croissance va continuer."
-              },
-              {
-                "id": "la-moitie-de-nos-factures-est-encaissee-d4f39369",
-                "libelle": "La moitié de nos factures est encaissée en 43 jours au plus ; si la tendance de 2020 à 2025 se poursuit, notre chiffre d’affaires 2028 serait d’environ 959 k€."
-              }
-            ],
-            "metadonnees": {
-              "concepts": ["choix-du-resume", "prevision"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 4,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
-        },
-        "notes": "• 4 min ; clore la séance quand le compteur de billets est complet.\n• Pièges : la prévision sans réserve, la moyenne tirée par F105, la causalité.",
-        "diffusion": "seance",
-        "seuil": 0.7,
-        "corriges": [
-          {
-            "questionId": "b2-02-a4-billet",
-            "bonneReponse": "La moitié de nos factures est encaissée en 43 jours au plus ; si la tendance de 2020 à 2025 se poursuit, notre chiffre d’affaires 2028 serait d’environ 959 k€.",
-            "optionId": "la-moitie-de-nos-factures-est-encaissee-d4f39369",
-            "confusions": [
-              {
-                "id": "extrapolation-sans-reserve",
-                "libelle": "Se fier à une tendance au-delà de ce que les données permettent : la prolonger loin des données sans signaler la limite de la prévision, ou ne pas mesurer l’écart entre ce que prévoit le modèle et ce qui est observé."
-              },
-              {
-                "id": "valeur-extreme-ignoree",
-                "libelle": "Résumer par la moyenne une série tirée par une valeur extrême, sans le signaler."
-              },
-              {
-                "id": "correlation-prise-pour-causalite",
-                "libelle": "Tirer de deux évolutions simultanées, ou d’un coefficient de corrélation proche de 1, une conclusion qu’ils ne prouvent pas : une cause, l’absence de cause ou la poursuite de la tendance."
-              }
-            ]
-          }
-        ],
-        "questions": [
-          {
-            "id": "b2-02-a4-billet",
-            "enonce": "La banque lira une seule phrase. Laquelle peut partir telle quelle ?",
-            "options": [
-              {
-                "id": "nos-clients-paient-en-moyenne-a-48-jours-fe436567",
-                "libelle": "Nos clients paient en moyenne à 48 jours ; si la tendance se poursuit, notre chiffre d’affaires 2028 serait d’environ 959 k€."
-              },
-              {
-                "id": "la-moitie-de-nos-factures-est-encaissee-df866776",
-                "libelle": "La moitié de nos factures est encaissée en 43 jours au plus ; notre chiffre d’affaires 2028 sera de 959 k€."
-              },
-              {
-                "id": "nos-delais-sont-reguliers-et-r-proche-de-5c574b23",
-                "libelle": "Nos délais sont réguliers, et r proche de 1 prouve que notre croissance va continuer."
-              },
-              {
-                "id": "la-moitie-de-nos-factures-est-encaissee-d4f39369",
-                "libelle": "La moitié de nos factures est encaissée en 43 jours au plus ; si la tendance de 2020 à 2025 se poursuit, notre chiffre d’affaires 2028 serait d’environ 959 k€."
-              }
-            ]
-          }
-        ],
-        "corrigeEcran": null,
-        "reflexion": null
       }
     ]
   },
@@ -5756,7 +5508,7 @@
     "id": "b2-02-series-statistiques",
     "titre": "Séries statistiques : résumer, relier, prévoir",
     "niveau": "B2",
-    "duree": 180,
+    "duree": 166,
     "concepts": [
       "serie-statistique",
       "moyenne",
@@ -5794,11 +5546,8 @@
               "props": {
                 "title": "Résumer, relier, prévoir",
                 "subtitle": "Atelier Rivage, voilerie de La Rochelle. La banque demande le délai de paiement des clients et sa régularité, puis une prévision du chiffre d’affaires pour dimensionner une facilité de caisse.",
-                "bullets": [
-                  "BTS Comptabilité et gestion · 2ᵉ année · deuxième cours de mathématiques",
-                  "Trois notions : résumer une série, relier deux variables, prévoir avec une droite",
-                  "Une mini-situation CCF et sa question tableur"
-                ]
+                "bgImage": "/assets/cours/b2-02/v2/galton-correlation-1875.jpg",
+                "bgImageAlt": "Diagramme de corrélation de Francis Galton (1875) : deux variables mises en regard, l’ancêtre du nuage de points et de la droite d’ajustement"
               }
             },
             "metadonnees": {
@@ -6632,14 +6381,6 @@
         "donnees": {}
       },
       {
-        "id": "B2-02-A3-05-DEFI-IA",
-        "type": "ecran-verrouille",
-        "titre": "Exercice 5 — Corriger la prévision d’une IA",
-        "duree": 10,
-        "interactif": false,
-        "donnees": {}
-      },
-      {
         "id": "B2-02-A3-06-JALON",
         "type": "ecran-verrouille",
         "titre": "Jalon 3 : prévoir avec une droite",
@@ -6837,14 +6578,6 @@
             }
           }
         }
-      },
-      {
-        "id": "B2-02-A4-06-BILLET-DE-SORTIE",
-        "type": "ecran-verrouille",
-        "titre": "Billet de sortie : la phrase pour la banque",
-        "duree": 4,
-        "interactif": false,
-        "donnees": {}
       }
     ]
   }

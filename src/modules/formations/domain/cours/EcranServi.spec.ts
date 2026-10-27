@@ -243,10 +243,6 @@ describe('activitesLibres', () => {
     expect(activitesLibres(coursAvecDelaiDeRappel(0)).has('E-OUV')).toBe(false);
   });
 
-  it('admet le texte argumente du billet de sortie', () => {
-    expect(activites.get('E-EXIT')).toEqual(['Q-TEST-EXIT']);
-  });
-
   it('n admet aucune activite sur un ecran sans texte libre', () => {
     expect(activites.has('E-NUM')).toBe(false);
   });

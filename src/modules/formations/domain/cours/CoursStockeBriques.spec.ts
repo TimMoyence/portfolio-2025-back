@@ -70,8 +70,27 @@ function ecranDeBrique<B extends Ecran['brique']>(
 }
 
 describe('stockage multi-briques (B1)', () => {
-  it('connaît les dix-sept briques et le questionnaire', () => {
-    expect(BRIQUES_STOCKEES).toHaveLength(18);
+  it('M7 · connaît les seize briques et le questionnaire, sans billet de sortie', () => {
+    expect(BRIQUES_STOCKEES).toHaveLength(17);
+    expect(BRIQUES_STOCKEES).toContain('fp-recall');
+    expect(BRIQUES_STOCKEES).not.toContain('fp-exit');
+  });
+
+  it('M7 · refuse un billet de sortie tel qu il était stocké', () => {
+    const rappel = buildEcranDeBrique('fp-recall');
+    const billet: EcranDeCoursBrut = {
+      ...rappel,
+      screenId: 'B2-01-A6-08-BILLET-DE-SORTIE',
+      brique: 'fp-exit',
+      proprietes: {
+        modalite: 'solo',
+        questions: rappel.proprietes['questions'],
+        invite: 'Justifiez en trois phrases.',
+      },
+    };
+
+    expect(lireEcran(rappel).brique).toBe('fp-recall');
+    expect(() => lireEcran(billet)).toThrow(ContenuDeCoursInvalideError);
   });
 
   it.each(BRIQUES_STOCKEES)('lit un écran %s de la V3', (brique) => {
@@ -262,9 +281,8 @@ describe('stockage multi-briques (B1)', () => {
     ['fp-spaced', ['banque', 'questions', 1, 'options', 0]],
     ['fp-numeric', ['questions', 0, 'tolerance']],
     ['fp-vote', ['questions', 1]],
-    ['fp-vote', ['corrige']],
+    ['fp-vote', ['questions', 0]],
     ['fp-recall', ['questions', 0, 'options', 1]],
-    ['fp-exit', ['questions', 0]],
     ['questionnaire', ['questions', 1, 'pieges', 0]],
   ])('refuse une clé imbriquée inconnue dans %s sous %j', (brique, chemin) => {
     expect(() =>
@@ -755,9 +773,9 @@ describe('stockage multi-briques (B1)', () => {
 
     it('refuse deux écrans de même identifiant et deux questions de même identifiant', () => {
       const vote = buildEcranDeBrique('fp-recall');
-      const billet = buildEcranDeBrique('fp-exit', {
+      const memeQuestion = buildEcranDeBrique('fp-vote', {
         proprietes: {
-          ...buildProprietesStockees('fp-exit'),
+          modalite: 'solo',
           questions: buildProprietesStockees('fp-recall').questions,
         },
       });
@@ -766,7 +784,7 @@ describe('stockage multi-briques (B1)', () => {
         lireCoursStocke(buildCoursDeBriques([vote, { ...vote }])),
       ).toThrow(/B2-01-A1-01-FP-RECALL/);
       expect(() =>
-        lireCoursStocke(buildCoursDeBriques([vote, billet])),
+        lireCoursStocke(buildCoursDeBriques([vote, memeQuestion])),
       ).toThrow(/b2-01-a1-diagnostic/);
     });
   });
@@ -814,17 +832,12 @@ describe('stockage multi-briques (B1)', () => {
   });
 
   describe('conversion vers le domaine', () => {
-    it('porte la question, la jumelle et la révélation d un vote à pairs', () => {
+    it('porte la question et la jumelle d un vote à deux questions', () => {
       const ecran = ecranDeBrique('fp-vote');
 
       expect(ecran.question.id).toBe('b2-01-a3-sac-v1');
       expect(ecran.questionJumelle?.id).toBe('b2-01-a3-remise-v2');
       expect(ecran.question.segments).toEqual(['+25 %']);
-      expect(ecran.revelation).toEqual({
-        type: 'revelation',
-        titre: 'Pourquoi le prix ne revient pas à son point de départ',
-        lignes: ['Coefficient global : 1,10 × 0,90 = 0,99, soit −1 %.'],
-      });
       expect(ecran.modalite).toBe('solo');
     });
 
@@ -836,13 +849,6 @@ describe('stockage multi-briques (B1)', () => {
       );
 
       expect(ecran.brique === 'fp-pro' && ecran.proprietes.geste).toBeNull();
-    });
-
-    it('porte le délai du rappel d ouverture et l invite du billet', () => {
-      expect(ecranDeBrique('fp-recall').delaiMs).toBe(45000);
-      expect(ecranDeBrique('fp-exit').invite).toBe(
-        'Justifiez en trois phrases.',
-      );
     });
 
     it('porte l intitulé, la consigne, le régime et l ordre du questionnaire', () => {

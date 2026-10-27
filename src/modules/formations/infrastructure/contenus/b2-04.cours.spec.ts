@@ -8,7 +8,6 @@ import {
   CATALOGUE_ILLUSTRE_A_CINQ_PAGES,
   decrireLaFicheDuCours,
   decrireLaMiniSituation,
-  FICHE_DU_GABARIT_V3,
   valeursEtPieges,
 } from '../../../../../test/helpers/fiche-de-cours';
 import {
@@ -68,10 +67,15 @@ function rangDuSeuil(suite: (rang: number) => number, seuil: number): number {
 }
 
 decrireLaFicheDuCours('B2-04', COURS, {
-  ...FICHE_DU_GABARIT_V3,
   conception: 'cours-b2-04-conception.md',
-  ecrans: 38,
-  rythme: { expositionContinueMax: 6, interactives: 149, exposition: 31 },
+  ecrans: 36,
+  dureeMinutes: 166,
+  minutesParActe: [49, 39, 37, 41, 0, 0],
+  rythme: { expositionContinueMax: 6, interactives: 135, exposition: 31 },
+  noteesParType: [7, 6, 0, 3, 1],
+  enigmes: 4,
+  rappels: 12,
+  options: 23,
   catalogue: CATALOGUE_ILLUSTRE_A_CINQ_PAGES,
   ateliersNotes: ['A1-10 (10)', 'A2-05 (11)', 'A3-07 (11)'],
   remediations: 14,
@@ -82,7 +86,6 @@ decrireLaFicheDuCours('B2-04', COURS, {
     'B2-04-A2-06-TABLEUR-GEOMETRIQUE',
     'B2-04-A3-06-TABLEAU-ALGORITHME',
     'B2-04-A3-07-ATELIER-SEUIL',
-    'B2-04-A3-08-DEFI-IA',
     'B2-04-A4-02-TABLEUR-BOUTIQUE',
     'B2-04-A4-03-COFFRE-BOUTIQUE',
   ],

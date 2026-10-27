@@ -1,11 +1,11 @@
 {
   "graine": 0,
-  "empreinte": "7f7d80e690ab8b72173b766019e6fb68781fcc4710f5748cc3245ef15d891e24",
+  "empreinte": "4cf559620ab32b2f4fcb84f2b95b8afe2cd0d3bb279006e79192c7742d6f5e30",
   "sujet": {
     "id": "b2-04-suites",
     "titre": "Suites : modéliser une évolution régulière",
     "niveau": "B2",
-    "duree": 180,
+    "duree": 166,
     "concepts": [
       "suite-arithmetique",
       "suite-geometrique",
@@ -68,12 +68,8 @@
               "props": {
                 "title": "Modéliser une évolution régulière",
                 "subtitle": "Atelier Rivage, voilerie de La Rochelle. Pour sa banque, la dirigeante veut un plan à cinq ans : deux hypothèses de croissance, une année-seuil, un chiffre d’affaires cumulé.",
-                "bullets": [
-                  "BTS Comptabilité et gestion · 2ᵉ année · quatrième cours de mathématiques",
-                  "Un rappel rapide des trois premiers cours, réinvestis aujourd’hui",
-                  "Trois notions : suites arithmétiques, suites géométriques, seuil et cumul",
-                  "Une mini-situation CCF et sa question tableur"
-                ]
+                "bgImage": "/assets/cours/b2-04/v1/fibonacci-liber-abbaci.jpg",
+                "bgImageAlt": "Page manuscrite du Liber abbaci de Fibonacci : le problème des lapins, la suite qui ajoute à chaque terme les deux précédents"
               }
             },
             "metadonnees": {
@@ -1742,32 +1738,6 @@
         "renvoi": "B2-04-A3-01-GRAPHIQUE"
       },
       {
-        "id": "B2-04-A3-08-DEFI-IA",
-        "type": "fp-challenge",
-        "titre": "Exercice 7 — Corriger le plan d’une IA",
-        "duree": 10,
-        "interactif": true,
-        "donnees": {
-          "probleme": {
-            "id": "b2-04-a3-defi-ia",
-            "enonce": "Hélène a demandé à un assistant IA de rédiger le plan avec l’hypothèse B. Réponse :\n« 1. Avec + 6 % par an, le chiffre d’affaires de 2030 sera de 826 × (1 + 5 × 0,06) = 1 073,8 k€.\n2. Pour trouver l’année du seuil, j’utilise la boucle : Tant que v ≥ 1 200, passer à l’année suivante. Elle affiche 0 : le seuil est donc atteint dès 2025.\n3. Le chiffre d’affaires cumulé de 2026 à 2030 est celui de 2030, soit 1 073,8 k€. »",
-            "invite": "Trouvez les erreurs de l’IA, corrigez chacune et dites comment la contrôler.",
-            "strategies": [],
-            "metadonnees": {
-              "concepts": [
-                "suite-geometrique",
-                "algorithme-de-seuil",
-                "somme-de-termes"
-              ],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 10,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
-        }
-      },
-      {
         "id": "B2-04-A3-09-JALON",
         "type": "fp-pulse",
         "titre": "Jalon 3 : seuils et cumuls",
@@ -2177,46 +2147,6 @@
             }
           }
         }
-      },
-      {
-        "id": "B2-04-A4-06-BILLET-DE-SORTIE",
-        "type": "fp-exit",
-        "titre": "Billet de sortie : la formule à recopier",
-        "duree": 4,
-        "interactif": true,
-        "donnees": {
-          "billet": {
-            "id": "b2-04-a4-billet",
-            "question": "Hélène prolonge le plan dans un nouveau classeur : chiffre d’affaires de l’année précédente en D2, taux annuel en H1. Quelle formule écrire en D3 pour la recopier vers le bas ?",
-            "invite": "En une phrase : pourquoi l’hypothèse B finit-elle par dépasser l’hypothèse A ?",
-            "longueurMax": 500,
-            "options": [
-              {
-                "id": "d2-1-plus-h-1-f425a45f",
-                "libelle": "=D2*(1+$H$1)"
-              },
-              {
-                "id": "d2-1-plus-h1-658e59af",
-                "libelle": "=D2*(1+H1)"
-              },
-              {
-                "id": "d2-h-1-23adfc5c",
-                "libelle": "=D2*$H$1"
-              },
-              {
-                "id": "d2-plus-h-1-a29e5648",
-                "libelle": "=D2+$H$1"
-              }
-            ],
-            "metadonnees": {
-              "concepts": ["suite-geometrique", "tableur"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 4,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
-        }
       }
     ]
   },
@@ -2224,7 +2154,7 @@
     "id": "b2-04-suites",
     "titre": "Suites : modéliser une évolution régulière",
     "niveau": "B2",
-    "duree": 180,
+    "duree": 166,
     "concepts": [
       "suite-arithmetique",
       "suite-geometrique",
@@ -2325,12 +2255,8 @@
               "props": {
                 "title": "Modéliser une évolution régulière",
                 "subtitle": "Atelier Rivage, voilerie de La Rochelle. Pour sa banque, la dirigeante veut un plan à cinq ans : deux hypothèses de croissance, une année-seuil, un chiffre d’affaires cumulé.",
-                "bullets": [
-                  "BTS Comptabilité et gestion · 2ᵉ année · quatrième cours de mathématiques",
-                  "Un rappel rapide des trois premiers cours, réinvestis aujourd’hui",
-                  "Trois notions : suites arithmétiques, suites géométriques, seuil et cumul",
-                  "Une mini-situation CCF et sa question tableur"
-                ]
+                "bgImage": "/assets/cours/b2-04/v1/fibonacci-liber-abbaci.jpg",
+                "bgImageAlt": "Page manuscrite du Liber abbaci de Fibonacci : le problème des lapins, la suite qui ajoute à chaque terme les deux précédents"
               }
             },
             "metadonnees": {
@@ -2386,7 +2312,7 @@
             ]
           }
         },
-        "notes": "• Rappel rapide : deux votes non notés, un par cours précédent.\n• Dire où chaque acquis resservira : la pente dans l’hypothèse A, la négation dans la boucle « Tant que ».\n• Premier vote individuel ; entre 30 et 70 % de bonnes réponses, débat en binôme avant la deuxième question ; sinon, passer directement à la deuxième question.\n• La révélation s’ouvre après la deuxième question : les deux corrections se commentent ensemble.\n• Papier : vote à main levée sur chaque question, discussion en binôme entre les deux.",
+        "notes": "• Rappel rapide : deux votes non notés, un par cours précédent.\n• Dire où chaque acquis resservira : la pente dans l’hypothèse A, la négation dans la boucle « Tant que ».\n• Question 1 en vote individuel, puis question 2, sans débat entre les deux.\n• La révélation s’ouvre après la question 2 : les deux corrections se commentent ensemble.\n• Papier : vote à main levée sur chaque question.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -2443,15 +2369,7 @@
             ]
           }
         ],
-        "corrigeEcran": {
-          "type": "revelation",
-          "titre": "Deux acquis qui resservent aujourd’hui",
-          "lignes": [
-            "La pente d’une droite d’ajustement est la variation de y quand x augmente de 1 : ici, environ 44 k€ de plus par an.",
-            "Le contraire de « < » est « ≥ » : la borne passe de l’autre côté.",
-            "L’écran suivant rassemble ce que les trois premiers cours apportent à celui-ci."
-          ]
-        },
+        "corrigeEcran": null,
         "reflexion": null
       },
       {
@@ -4232,7 +4150,7 @@
             ]
           }
         },
-        "notes": "• Temps « réfléchir » de la notion 3 : votes non notés.\n• Premier vote individuel ; entre 30 et 70 % de bonnes réponses, débat en binôme avant la deuxième question ; sinon, passer directement à la deuxième question.\n• La révélation s’ouvre après la deuxième question : les deux corrections se commentent ensemble.\n• Papier : vote à main levée sur chaque question, discussion en binôme entre les deux.",
+        "notes": "• Temps « réfléchir » de la notion 3 : votes non notés.\n• Question 1 en vote individuel, puis question 2, sans débat entre les deux.\n• La révélation s’ouvre après la question 2 : les deux corrections se commentent ensemble.\n• Papier : vote à main levée sur chaque question.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -4289,15 +4207,7 @@
             ]
           }
         ],
-        "corrigeEcran": {
-          "type": "revelation",
-          "titre": "S’arrêter au bon moment, compter les bons termes",
-          "lignes": [
-            "Une boucle « tant que » s’arrête sur la première valeur qui rend la condition fausse : 100, 130, 160, 190, puis 220.",
-            "Entre deux années incluses, on compte dernière − première + 1 termes : 2030 − 2026 + 1 = 5.",
-            "La trace écrite donne l’algorithme de seuil et la somme de termes."
-          ]
-        },
+        "corrigeEcran": null,
         "reflexion": null
       },
       {
@@ -4916,7 +4826,7 @@
           ]
         },
         "renvoi": "B2-04-A3-01-GRAPHIQUE",
-        "notes": "• Temps : réflexion 2 min · travail 7 min · correction 2 min\n• Réflexion : écrire la condition de la boucle, puis la liste des années du cumul, sans rien calculer.\n• Pièges : s’arrêter un terme trop tôt ; l’année à la place du nombre d’années ; le terme de 2030 pris pour le cumul ; 2025 compté en trop.\n• Papier : exercice 6 du livret.\n• Corriger question par question, en commençant par la moins réussie.\n• Conclure pour Hélène : 2032 avec l’hypothèse B, 2034 avec l’hypothèse A ; deux ans d’écart sur le second atelier.\n• Transition : « Une IA a rédigé le même plan. »",
+        "notes": "• Temps : réflexion 2 min · travail 7 min · correction 2 min\n• Réflexion : écrire la condition de la boucle, puis la liste des années du cumul, sans rien calculer.\n• Pièges : s’arrêter un terme trop tôt ; l’année à la place du nombre d’années ; le terme de 2030 pris pour le cumul ; 2025 compté en trop.\n• Papier : exercice 6 du livret.\n• Corriger question par question, en commençant par la moins réussie.\n• Conclure pour Hélène : 2032 avec l’hypothèse B, 2034 avec l’hypothèse A ; deux ans d’écart sur le second atelier.\n• Transition : « Faisons le point : seuils et cumuls. »",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -5039,90 +4949,6 @@
           {
             "reference": "b2-04-a3-somme",
             "texte": "La ligne 3 porte 2026 et la ligne 7 porte 2030 : =SOMME(C3:C7). La plage suit les années demandées."
-          }
-        ]
-      },
-      {
-        "id": "B2-04-A3-08-DEFI-IA",
-        "type": "fp-challenge",
-        "titre": "Exercice 7 — Corriger le plan d’une IA",
-        "duree": 10,
-        "interactif": true,
-        "donnees": {
-          "probleme": {
-            "id": "b2-04-a3-defi-ia",
-            "enonce": "Hélène a demandé à un assistant IA de rédiger le plan avec l’hypothèse B. Réponse :\n« 1. Avec + 6 % par an, le chiffre d’affaires de 2030 sera de 826 × (1 + 5 × 0,06) = 1 073,8 k€.\n2. Pour trouver l’année du seuil, j’utilise la boucle : Tant que v ≥ 1 200, passer à l’année suivante. Elle affiche 0 : le seuil est donc atteint dès 2025.\n3. Le chiffre d’affaires cumulé de 2026 à 2030 est celui de 2030, soit 1 073,8 k€. »",
-            "invite": "Trouvez les erreurs de l’IA, corrigez chacune et dites comment la contrôler.",
-            "strategies": [],
-            "metadonnees": {
-              "concepts": [
-                "suite-geometrique",
-                "algorithme-de-seuil",
-                "somme-de-termes"
-              ],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 10,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
-        },
-        "notes": "• Temps : réflexion 2 min · travail 6 min · correction 2 min\n• Réflexion : relire les traces écrites des notions 2 et 3.\n• Repérer qui trouve la puissance, la condition et le cumul ; faire trouver la piste fausse avant de révéler.\n• Papier : exercice 7 du livret.\n• Faire lire deux corrections écrites par la classe, puis dévoiler les pistes une à une.\n• Transition : jalon 3, puis pause de 15 minutes.",
-        "diffusion": "seance",
-        "seuil": null,
-        "corriges": [],
-        "questions": [],
-        "corrigeEcran": {
-          "type": "defi",
-          "strategies": [
-            {
-              "id": "puissance",
-              "libelle": "Cinq hausses de 6 % multiplient cinq fois par 1,06 : 826 × 1,06⁵, et non 826 × (1 + 5 × 0,06).",
-              "fausse": false
-            },
-            {
-              "id": "condition",
-              "libelle": "La boucle continue tant que le seuil n’est pas atteint : « Tant que v < 1 200 », et non « ≥ ».",
-              "fausse": false
-            },
-            {
-              "id": "cumul",
-              "libelle": "Un cumul est une somme de cinq termes, de 2026 à 2030, pas le seul terme de 2030.",
-              "fausse": false
-            },
-            {
-              "id": "controle",
-              "libelle": "Contrôler sur une valeur connue : 826 k€ en 2025 est sous 1 200 k€, le seuil ne peut pas être atteint en 2025.",
-              "fausse": false
-            },
-            {
-              "id": "garder",
-              "libelle": "Garder le plan : l’IA a appliqué des formules, ses calculs sont forcément justes.",
-              "fausse": true
-            }
-          ]
-        },
-        "reflexion": null,
-        "explications": [
-          {
-            "reference": "puissance",
-            "texte": "826 × 1,06⁵ ≈ 1 105,37 k€ : l’IA a additionné les taux (+ 30 %) au lieu de multiplier les coefficients."
-          },
-          {
-            "reference": "condition",
-            "texte": "Avec « Tant que v ≥ 1 200 », la condition est fausse dès le départ : la boucle ne tourne pas et affiche 0. La bonne boucle affiche 7."
-          },
-          {
-            "reference": "cumul",
-            "texte": "Le cumul additionne les cinq termes de 2026 à 2030 : il dépasse forcément le chiffre d’affaires de la seule année 2030."
-          },
-          {
-            "reference": "controle",
-            "texte": "Un résultat se contrôle sur une valeur connue et sur son ordre de grandeur : un seuil atteint « dès 2025 » contredit les données."
-          },
-          {
-            "reference": "garder",
-            "texte": "Piste fausse : une réponse d’IA se contrôle comme une copie, calcul par calcul."
           }
         ]
       },
@@ -6178,96 +6004,6 @@
         "questions": [],
         "corrigeEcran": null,
         "reflexion": null
-      },
-      {
-        "id": "B2-04-A4-06-BILLET-DE-SORTIE",
-        "type": "fp-exit",
-        "titre": "Billet de sortie : la formule à recopier",
-        "duree": 4,
-        "interactif": true,
-        "donnees": {
-          "billet": {
-            "id": "b2-04-a4-billet",
-            "question": "Hélène prolonge le plan dans un nouveau classeur : chiffre d’affaires de l’année précédente en D2, taux annuel en H1. Quelle formule écrire en D3 pour la recopier vers le bas ?",
-            "invite": "En une phrase : pourquoi l’hypothèse B finit-elle par dépasser l’hypothèse A ?",
-            "longueurMax": 500,
-            "options": [
-              {
-                "id": "d2-1-plus-h-1-f425a45f",
-                "libelle": "=D2*(1+$H$1)"
-              },
-              {
-                "id": "d2-1-plus-h1-658e59af",
-                "libelle": "=D2*(1+H1)"
-              },
-              {
-                "id": "d2-h-1-23adfc5c",
-                "libelle": "=D2*$H$1"
-              },
-              {
-                "id": "d2-plus-h-1-a29e5648",
-                "libelle": "=D2+$H$1"
-              }
-            ],
-            "metadonnees": {
-              "concepts": ["suite-geometrique", "tableur"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 4,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
-        },
-        "notes": "• 4 min ; clore la séance quand le compteur de billets est complet.\n• Pièges : taux non figé, addition au lieu de multiplication, taux seul à la place de 1 + taux.",
-        "diffusion": "seance",
-        "seuil": 0.7,
-        "corriges": [
-          {
-            "questionId": "b2-04-a4-billet",
-            "bonneReponse": "=D2*(1+$H$1)",
-            "optionId": "d2-1-plus-h-1-f425a45f",
-            "confusions": [
-              {
-                "id": "reference-relative-non-figee",
-                "libelle": "Recopier une formule dont une référence fixe n’est pas figée ($) : elle glisse d’une ligne à chaque recopie."
-              },
-              {
-                "id": "nature-de-suite-confondue",
-                "libelle": "Confondre « ajouter toujours le même nombre » (suite arithmétique) et « multiplier toujours par le même nombre » (suite géométrique), dans un sens ou dans l’autre, ou ajouter un taux au lieu de multiplier par lui."
-              },
-              {
-                "id": "coefficient-confondu-avec-taux",
-                "libelle": "Confondre le taux d’évolution t et le coefficient multiplicateur 1 + t (pour + 15 % : 0,15 et 1,15)."
-              }
-            ]
-          }
-        ],
-        "questions": [
-          {
-            "id": "b2-04-a4-billet",
-            "enonce": "Hélène prolonge le plan dans un nouveau classeur : chiffre d’affaires de l’année précédente en D2, taux annuel en H1. Quelle formule écrire en D3 pour la recopier vers le bas ?",
-            "options": [
-              {
-                "id": "d2-1-plus-h-1-f425a45f",
-                "libelle": "=D2*(1+$H$1)"
-              },
-              {
-                "id": "d2-1-plus-h1-658e59af",
-                "libelle": "=D2*(1+H1)"
-              },
-              {
-                "id": "d2-h-1-23adfc5c",
-                "libelle": "=D2*$H$1"
-              },
-              {
-                "id": "d2-plus-h-1-a29e5648",
-                "libelle": "=D2+$H$1"
-              }
-            ]
-          }
-        ],
-        "corrigeEcran": null,
-        "reflexion": null
       }
     ]
   },
@@ -6275,7 +6011,7 @@
     "id": "b2-04-suites",
     "titre": "Suites : modéliser une évolution régulière",
     "niveau": "B2",
-    "duree": 180,
+    "duree": 166,
     "concepts": [
       "suite-arithmetique",
       "suite-geometrique",
@@ -6311,12 +6047,8 @@
               "props": {
                 "title": "Modéliser une évolution régulière",
                 "subtitle": "Atelier Rivage, voilerie de La Rochelle. Pour sa banque, la dirigeante veut un plan à cinq ans : deux hypothèses de croissance, une année-seuil, un chiffre d’affaires cumulé.",
-                "bullets": [
-                  "BTS Comptabilité et gestion · 2ᵉ année · quatrième cours de mathématiques",
-                  "Un rappel rapide des trois premiers cours, réinvestis aujourd’hui",
-                  "Trois notions : suites arithmétiques, suites géométriques, seuil et cumul",
-                  "Une mini-situation CCF et sa question tableur"
-                ]
+                "bgImage": "/assets/cours/b2-04/v1/fibonacci-liber-abbaci.jpg",
+                "bgImageAlt": "Page manuscrite du Liber abbaci de Fibonacci : le problème des lapins, la suite qui ajoute à chaque terme les deux précédents"
               }
             },
             "metadonnees": {
@@ -7055,14 +6787,6 @@
         "donnees": {}
       },
       {
-        "id": "B2-04-A3-08-DEFI-IA",
-        "type": "ecran-verrouille",
-        "titre": "Exercice 7 — Corriger le plan d’une IA",
-        "duree": 10,
-        "interactif": false,
-        "donnees": {}
-      },
-      {
         "id": "B2-04-A3-09-JALON",
         "type": "ecran-verrouille",
         "titre": "Jalon 3 : seuils et cumuls",
@@ -7246,14 +6970,6 @@
             }
           }
         }
-      },
-      {
-        "id": "B2-04-A4-06-BILLET-DE-SORTIE",
-        "type": "ecran-verrouille",
-        "titre": "Billet de sortie : la formule à recopier",
-        "duree": 4,
-        "interactif": false,
-        "donnees": {}
       }
     ]
   }

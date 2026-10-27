@@ -33,6 +33,15 @@ import {
 } from './b2-06.donnees';
 import * as moteur from './briques';
 
+const GRAVURE_DE_L_ACCROCHE = moteur.gravureDuDomainePublic({
+  id: 'M1',
+  chemin: '/assets/cours/b2-06/v1/napier-logarithmes-1614.jpg',
+  pageSource:
+    'https://commons.wikimedia.org/wiki/File:Mirifici_Logarithmorum_canonis_Descriptio.jpg',
+  auteur: 'John Napier, Mirifici logarithmorum canonis descriptio',
+  date: '1614',
+});
+
 const ACTE_1: moteur.Acte = [
   {
     screenId: 'B2-06-A1-01-RAPPEL-PLACEMENT',
@@ -78,7 +87,7 @@ const ACTE_1: moteur.Acte = [
       ],
       notes: moteur.puces(
         'Rappeler en une phrase le B2-05 : le financement du second atelier est bouclé ; Hélène lance maintenant une nouvelle gamme.',
-        'Annoncer le plan : un rappel rapide du B2-02, du B2-04 et du B2-05, puis trois notions, chacune en trois temps (réfléchir, comprendre, s’exercer), et une mini-situation CCF.',
+        'Annoncer le plan : un rappel rapide du B2-02, du B2-04 et du B2-05, puis trois notions, chacune en trois temps (réfléchir, comprendre, s’exercer), et la fiche mémo pour finir.',
         'Annoncer les deux pauses de 15 minutes, après l’acte 1 et après l’acte 3.',
       ),
     },
@@ -87,12 +96,9 @@ const ACTE_1: moteur.Acte = [
       title: 'Exponentielle et logarithme : croître, viser, ajuster',
       subtitle:
         'Atelier Rivage, voilerie de La Rochelle, lance la gamme Sillage : des sacs en toile de voile recyclée. Les ventes croissent, l’atelier a une capacité, les boutiques réagissent au prix : trois questions, trois outils.',
-      bullets: [
-        'BTS Comptabilité et gestion · 2e année · sixième cours de mathématiques',
-        'Un rappel rapide du B2-02, du B2-04 et du B2-05, réinvestis aujourd’hui',
-        'Trois notions : fonction exponentielle, logarithme népérien, modèles exponentiels',
-        'Une mini-situation CCF et sa question tableur',
-      ],
+      bgImage: GRAVURE_DE_L_ACCROCHE.chemins[0],
+      bgImageAlt:
+        'Page de titre de Mirifici logarithmorum canonis descriptio de John Napier (1614), le livre qui publie les premiers logarithmes',
     },
   ),
   {
@@ -127,15 +133,6 @@ const ACTE_1: moteur.Acte = [
           [['=PENTE(A2:A7;B2:B7)', SERIES_INVERSEES]],
         ),
       ],
-      corrige: {
-        type: 'revelation',
-        titre: 'Deux acquis qui resservent aujourd’hui',
-        lignes: [
-          'Raison 0,9 : chaque terme est multiplié par 0,9, il perd 10 % ; retirer 0,9 serait une suite arithmétique.',
-          'PENTE prend d’abord les y, ensuite les x ; dans l’autre ordre, on obtient la droite de x en y.',
-          'L’écran suivant dit ce que ces acquis deviennent aujourd’hui.',
-        ],
-      },
     },
   },
   moteur.ecranV2(
@@ -1031,15 +1028,6 @@ const ACTE_3: moteur.Acte = [
           [['ln y = ln a × kx', LN_EN_PRODUIT]],
         ),
       ],
-      corrige: {
-        type: 'revelation',
-        titre: 'Une même part perdue à chaque pas : l’exponentielle',
-        lignes: [
-          'Perdre la même part à chaque pas, c’est être multiplié par le même nombre : c’est un modèle exponentiel, pas une droite.',
-          'ln change le produit a × e^(kx) en somme ln a + kx : en x, ln y suit une droite.',
-          'La trace écrite en tire une méthode d’ajustement.',
-        ],
-      },
     },
   },
   moteur.ecranV2(
@@ -1359,7 +1347,7 @@ const ACTE_3: moteur.Acte = [
       minutes: 2,
       notes: [
         moteur.CORRIGER_PAR_LA_MOINS_REUSSIE,
-        'Transition : « Une IA a ajusté la même demande. »',
+        'Transition : « Faisons le point sur les modèles exponentiels. »',
       ],
     },
     [
@@ -1378,87 +1366,6 @@ const ACTE_3: moteur.Acte = [
       [
         'b2-06-a3-prix',
         'x = ln(600 ÷ 2 981) ÷ (−0,05) ≈ 32,06 €. Sans ln, on trouve −4,03 ; en oubliant le signe de k, −32,06 : un prix négatif trahit l’erreur.',
-      ],
-    ],
-  ),
-  moteur.corrigeSurPlace(
-    {
-      screenId: 'B2-06-A3-08-DEFI-IA',
-      titre: 'Exercice 7 — Corriger l’ajustement d’une IA',
-      diffusion: 'seance',
-      brique: 'fp-challenge',
-      dureeMinutes: 8,
-      concepts: ['ajustement-exponentiel', 'ajustement-affine', 'prevision'],
-      notes: moteur.puces(
-        moteur.tempsDeLExercice(2, 6),
-        'Réflexion : relire les traces écrites de la notion 3 et le graphique A3-01.',
-        'Repérer qui calcule les rapports, qui compare les deux coefficients de corrélation, qui voit la demande négative ; faire trouver la piste fausse avant de révéler.',
-        'Papier : exercice 7 du livret.',
-      ),
-      proprietes: {
-        modalite: 'solo',
-        probleme: {
-          id: 'b2-06-a3-defi-ia',
-          enonce:
-            'Hélène a donné les six relevés de demande à un assistant IA. Réponse : « 1. J’ajuste la demande par la droite y = −31x + 1 653, avec un coefficient de corrélation r ≈ −0,985 : l’ajustement est excellent. 2. Au prix de 55 €, la demande sera de −52 sacs. 3. Un modèle exponentiel est inutile : une droite suffit. »',
-          invite:
-            'Trouvez les erreurs de l’IA, corrigez chacune et dites comment la contrôler.',
-        },
-        corrige: {
-          type: 'defi',
-          strategies: [
-            moteur.strategie(
-              'rapports',
-              'Les rapports successifs des demandes sont presque constants : la demande perd la même part à chaque hausse de 5 €, signe d’un modèle exponentiel.',
-            ),
-            moteur.strategie(
-              'logarithme',
-              'Ajuster z = ln y en x : les points (x ; z) sont presque alignés, avec un coefficient de corrélation plus proche de −1 que celui de la droite.',
-            ),
-            moteur.strategie(
-              'negative',
-              'La droite annonce une demande négative au-delà de 53 € environ : un modèle qui prévoit des ventes négatives est faux.',
-            ),
-            moteur.strategie(
-              'prevision',
-              'Prévoir avec le modèle exponentiel y = 2 981e^(−0,05x), qui reste positif et ralentit comme les relevés.',
-            ),
-            moteur.strategie(
-              'garder',
-              'Garder la droite : un coefficient de corrélation de −0,985 suffit à valider l’ajustement affine.',
-              true,
-            ),
-          ],
-        },
-      },
-    },
-    {
-      minutes: 2,
-      notes: [
-        'Faire lire deux corrections de la classe, puis dévoiler les pistes une à une en recalculant la prévision à 55 €.',
-        'Transition : jalon 3, puis pause de 15 minutes.',
-      ],
-    },
-    [
-      [
-        'rapports',
-        '860 ÷ 1 100 ≈ 0,78 ; 670 ÷ 860 ≈ 0,78 ; 520 ÷ 670 ≈ 0,78 ; 410 ÷ 520 ≈ 0,79 ; 315 ÷ 410 ≈ 0,77 : la demande perd environ 22 % à chaque hausse de 5 €.',
-      ],
-      [
-        'logarithme',
-        'z ≈ −0,0499x + 8,0026, avec r ≈ −0,99994 : bien plus proche de −1 que −0,985. C’est le modèle de l’exercice 6.',
-      ],
-      [
-        'negative',
-        '−31x + 1 653 s’annule vers 53,3 € : au-delà, la droite annonce des ventes négatives, impossibles ; à 55 €, −52 sacs.',
-      ],
-      [
-        'prevision',
-        'À 55 € : 2 981 × e^(−2,75) ≈ 191 sacs, positif et cohérent avec une baisse qui ralentit.',
-      ],
-      [
-        'garder',
-        'Piste fausse : un coefficient de −0,985 mesure un alignement, il ne choisit pas le modèle ; la courbe des relevés et les rapports constants désignent l’exponentielle.',
       ],
     ],
   ),
@@ -1498,12 +1405,11 @@ const REMEDIATIONS: ContenuDeCours['remediations'] = {
 export const COURS_B2_06 = moteur.coursB2(
   [ACTE_1, ACTE_2, ACTE_3, ACTE_4],
   REMEDIATIONS,
-  [],
+  [GRAVURE_DE_L_ACCROCHE],
   {
     slug: 'b2-06-exponentielle-logarithme',
     titre: 'Exponentielle et logarithme',
     gabarit: 'v3',
-    dureeMinutes: 180,
     concepts: [...CONCEPTS_DU_COURS],
   },
 );
