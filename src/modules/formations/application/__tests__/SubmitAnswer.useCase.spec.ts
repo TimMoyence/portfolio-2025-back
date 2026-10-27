@@ -387,10 +387,10 @@ describe('SubmitAnswerUseCase', () => {
       tirages: [{ seed: 1001, ecarts: {} }],
     });
 
-    const seanceEnPhase = (phase?: 'discussion' | 'revote' | 'revele') =>
+    const seanceEnPhase = (pilotage?: PilotageEcran) =>
       buildSessionRecord({
         bareme,
-        pilotageEcrans: phase === undefined ? {} : { 'E-VOTE': { phase } },
+        pilotageEcrans: pilotage === undefined ? {} : { 'E-VOTE': pilotage },
       });
 
     it('accepte la principale avant toute phase pilotée', async () => {
@@ -403,22 +403,29 @@ describe('SubmitAnswerUseCase', () => {
       );
     });
 
-    it('refuse la jumelle avant le revote', async () => {
+    it('refuse la question 2 avant qu elle soit ouverte', async () => {
       deps.sessions.findById.mockResolvedValue(seanceEnPhase());
 
       await attendreLaPhaseFermee('Q-JUMELLE', 'b');
     });
 
-    it('ferme les deux questions pendant la discussion', async () => {
-      deps.sessions.findById.mockResolvedValue(seanceEnPhase('discussion'));
+    it('M2 · ferme les deux questions dès la révélation', async () => {
+      deps.sessions.findById.mockResolvedValue(
+        seanceEnPhase({ phase: 'question-2', revele: true }),
+      );
 
       await expect(repondreA('Q-PRINCIPALE', 'a')).rejects.toThrow(
         PhaseFermeeError,
       );
+      await expect(repondreA('Q-JUMELLE', 'b')).rejects.toThrow(
+        PhaseFermeeError,
+      );
     });
 
-    it('ouvre la jumelle seule au revote', async () => {
-      deps.sessions.findById.mockResolvedValue(seanceEnPhase('revote'));
+    it('M2 · ouvre la question 2 seule', async () => {
+      deps.sessions.findById.mockResolvedValue(
+        seanceEnPhase({ phase: 'question-2' }),
+      );
 
       await repondreA('Q-JUMELLE', 'b');
 
@@ -500,13 +507,15 @@ describe('SubmitAnswerUseCase', () => {
     );
 
     it.each(casDesVotes(JUMELLES))(
-      '%s : retient le verdict du revote, puis Q1 · ferme la jumelle à la révélation',
+      '%s : retient le verdict de la question 2, puis M2 · la ferme à la révélation',
       async (_id, vote) => {
-        const auRevote = await repondreAuVote(vote, { phase: 'revote' });
+        const aLaQuestion2 = await repondreAuVote(vote, {
+          phase: 'question-2',
+        });
 
-        expect(auRevote).toEqual(VERDICT_RETENU);
+        expect(aLaQuestion2).toEqual(VERDICT_RETENU);
         await expect(
-          repondreAuVote(vote, { phase: 'revele', revele: true }),
+          repondreAuVote(vote, { phase: 'question-2', revele: true }),
         ).rejects.toThrow(PhaseFermeeError);
       },
     );

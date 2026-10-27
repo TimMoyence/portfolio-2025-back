@@ -52,7 +52,6 @@ export const DONNEES_FICTIVES =
   'Données fictives Partie Libre, créées pour ce cours.';
 
 export const RENVOI_AU_DOSSIER = 'B1-01-A1-04-DOSSIER';
-export const RENVOI_AU_FESTIVAL = 'B1-01-A4-01-SITUATION-FESTIVAL';
 
 export const SALARIES = 40;
 export const ALTERNANTS = 10;
@@ -76,25 +75,9 @@ export const ECART_DES_JEUNES = auMillionieme(
 export const ACHAT_DE_LA_MANETTE = 24;
 export const VENTE_DE_LA_MANETTE = 39;
 
-export const BILLETS = [412, 288, 172, 88] as const;
-const CATEGORIES_DE_BILLETS = [
-  'Plein tarif',
-  'Étudiant',
-  'Enfant',
-  'Pass famille',
-] as const;
-export const BILLETS_EN_LIGNE = 150;
-export const OPTION_TOURNOI = 0.45;
-export const ATELIERS = [
-  [160, 0.85],
-  [140, 0.6],
-] as const;
-export const ACHAT_AU_STAND = 32;
-export const VENTE_AU_STAND = 50;
-
 export const enPourcentage = (partie: number, tout: number): number =>
   auMillionieme((partie / tout) * 100);
-export const partArrondie = (partie: number, tout: number): number =>
+const partArrondie = (partie: number, tout: number): number =>
   arrondi((partie / tout) * 100, 1);
 
 function piegeDeLArrondi(
@@ -112,7 +95,6 @@ const PORTEURS = CLIENTS.map((clients, rang) =>
   auMillionieme((clients * TAUX_DE_LA_CARTE[rang]) / 100),
 );
 export const TOTAL_DES_PORTEURS = somme(PORTEURS);
-export const TOTAL_DES_BILLETS = somme(BILLETS);
 
 interface Repartition {
   readonly id: string;
@@ -216,18 +198,6 @@ export const REPARTITION_DES_CLIENTS = feuilleDeRepartition({
     `En ${cellule}, écrivez la part des clients de Nantes, en %, arrondie au dixième avec ARRONDI.`,
 });
 
-export const REPARTITION_DES_BILLETS = feuilleDeRepartition({
-  id: 'b1-01-a4-feuille-billets',
-  intitule: 'Question tableur (3 points) — La répartition des billets',
-  titre: 'Billets du Week-end du jeu',
-  entetes: ['Catégorie', 'Billets vendus', 'Part des billets (%)'],
-  libelles: CATEGORIES_DE_BILLETS,
-  effectifs: BILLETS,
-  duTout: 'le nombre total de billets',
-  consigneDeLaPart: (cellule) =>
-    `En ${cellule}, écrivez la formule de la part des billets plein tarif, en %, arrondie au dixième, à recopier vers le bas.`,
-});
-
 type AttenduDeTableau = Parameters<typeof moteur.questionDeTableau>[2][number];
 
 export const [PREMIERS_PORTEURS, ...AUTRES_PORTEURS] = PORTEURS.map(
@@ -244,5 +214,3 @@ export const [PREMIERS_PORTEURS, ...AUTRES_PORTEURS] = PORTEURS.map(
     ],
   }),
 );
-
-export const PARCOURS_DU_COFFRE = 'b1-01-a4-coffre-festival';

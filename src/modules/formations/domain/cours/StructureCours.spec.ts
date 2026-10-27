@@ -15,6 +15,7 @@ import {
 import {
   buildCoursConforme,
   buildEcranDAtelier,
+  buildEcranDeFicheMemo,
   buildEcranDeCitation,
   buildEcranDExemple,
   lireEcranStocke,
@@ -120,12 +121,25 @@ describe('verifierStructure', () => {
     expect(regles(cours)).toContain('exposition-continue');
   });
 
-  it('accepte un cours qui n ouvre pas par un rappel et exige la cloture par un exit ticket', () => {
+  it('M7 · accepte un cours qui n ouvre pas par un rappel et exige la cloture par sa fiche memo imprimable', () => {
     const sansRappel = recomposer(base, [citation, atelier, cloture]);
-    const sansBillet = recomposer(base, [ouverture, citation, atelier]);
+    const sansFiche = recomposer(base, [ouverture, citation, atelier]);
+    const ficheNonImprimable = recomposer(base, [
+      ouverture,
+      citation,
+      atelier,
+      lireEcranStocke(buildEcranDeFicheMemo({ imprimable: false })),
+    ]);
 
     expect(regles(sansRappel)).toEqual([]);
-    expect(regles(sansBillet)).toEqual(['cloture']);
+    expect(verifierStructure(sansFiche)).toEqual([
+      {
+        regle: 'cloture',
+        ecran: atelier.id,
+        raison: `le cours se clôt sur « ${atelier.id} » de type « questionnaire » : un cours se clôt sur sa fiche mémo, un récit en grille imprimable.`,
+      },
+    ]);
+    expect(regles(ficheNonImprimable)).toEqual(['cloture']);
   });
 
   it('refuse une remediation vers un ecran absent et accepte un ecran du cours', () => {
@@ -416,21 +430,20 @@ describe('verifierStructure — questions fermees en atelier', () => {
     ).toEqual([classement.id]);
   });
 
-  it('n exempte le rappel qu en ouverture et le billet qu en cloture', () => {
+  it('n exempte le rappel qu en ouverture', () => {
     const cours = recomposer(base, [
       { ...atelier, id: 'B2-01-A1-00-ATELIER-0', dureeMinutes: 8 },
       citation,
       ouverture,
       buildEcranDeCitation('B2-01-A1-05-ENTRE', 1),
       cloture,
-      buildEcranDeCitation('B2-01-A1-09-FIN', 1),
     ]);
 
     expect(
       verifierStructure(cours)
         .filter((violation) => violation.regle === 'atelier-questions-fermees')
         .map((violation) => violation.ecran),
-    ).toEqual([ouverture.id, cloture.id]);
+    ).toEqual([ouverture.id]);
   });
 
   const ateliersEnSuite = (

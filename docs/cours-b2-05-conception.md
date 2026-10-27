@@ -179,14 +179,9 @@ numérique, classement) portées par l'écran.
 |   28 | B2-05-A3-05-EXEMPLE-EMPRUNT            |   6 | `fp-worked`                    |  I  |   0 | seance    |
 |   29 | B2-05-A3-06-ATELIER-EMPRUNT            |  10 | `questionnaire`                |  I  |   4 | seance    |
 |   30 | B2-05-A3-07-TABLEAU-AMORTISSEMENT      |   8 | `fp-table-build`               |  I  |   0 | seance    |
-|   31 | B2-05-A3-08-DEFI-IA                    |  10 | `fp-challenge`                 |  I  |   0 | seance    |
-|   32 | B2-05-A3-09-JALON                      |   1 | `fp-pulse`                     |     |   0 | seance    |
-|   33 | B2-05-A4-01-SITUATION-CAMIONNETTE      |   3 | `fp-story` · v2 `table`        |     |   0 | catalogue |
-|   34 | B2-05-A4-02-TABLEUR-CAMIONNETTE        |  16 | `fp-sheet`                     |  I  |   0 | seance    |
-|   35 | B2-05-A4-03-COFFRE-CAMIONNETTE         |  14 | `fp-escape`                    |  I  |   0 | seance    |
-|   36 | B2-05-A4-04-RAPPEL                     |   6 | `fp-spaced`                    |  I  |   0 | seance    |
-|   37 | B2-05-A4-05-FICHE-MEMO                 |   2 | `fp-story` · v2 `grid`         |     |   0 | catalogue |
-|   38 | B2-05-A4-06-BILLET-DE-SORTIE           |   4 | `fp-exit`                      |  I  |   1 | seance    |
+|   31 | B2-05-A3-09-JALON                      |   1 | `fp-pulse`                     |     |   0 | seance    |
+|   32 | B2-05-A4-04-RAPPEL                     |   6 | `fp-spaced`                    |  I  |   0 | seance    |
+|   33 | B2-05-A4-05-FICHE-MEMO                 |   2 | `fp-story` · v2 `grid`         |     |   0 | catalogue |
 
 Rythme : 150 minutes interactives, 30 d'exposition, exposition continue de 6 minutes au plus.
 
@@ -347,7 +342,7 @@ Rythme : 150 minutes interactives, 30 d'exposition, exposition continue de 6 min
 
 - Titre public : « Jalon 2 : suites d’annuités »
 
-### 3.4 Acte 3 — Emprunter et rembourser (47 min)
+### 3.4 Acte 3 — Emprunter et rembourser (37 min)
 
 #### A3-01 · `B2-05-A3-01-GRAPHIQUE` — 2 min · v2 `chart` · catalogue
 
@@ -416,55 +411,12 @@ Rythme : 150 minutes interactives, 30 d'exposition, exposition continue de 6 min
   on saisit les intérêts et l'amortissement de chaque année ; totaux et capital restant dû final en
   contrôle. Pièges : `interets-sur-capital-initial`, `annuite-confondue-avec-amortissement`.
 
-#### A3-08 · `B2-05-A3-08-DEFI-IA` — 10 min · `fp-challenge` · séance
-
-- Titre public : « Exercice 7 — Corriger le calcul d’une IA »
-- Temps : réflexion 2 min · travail 6 min · correction 2 min, piste par piste sur place.
-- L'IA ajoute au capital divisé par la durée les intérêts de la première année, garde ces intérêts
-  chaque année et prend le total remboursé pour le coût. Sa réponse s'affiche point par point, un
-  point par ligne. Pistes justes : formule de l'annuité,
-  capital restant dû, coût, contrôle par les intérêts (capital restant dû × 4 %), qui trahit l'IA
-  quand la somme des amortissements ne la trahit pas ; piste fausse : garder le calcul.
-
 #### A3-09 · `B2-05-A3-09-JALON` — 1 min · `fp-pulse` · séance
 
 - Titre public : « Jalon 3 : emprunts »
 - Puis pause de 15 minutes.
 
-### 3.5 Acte 4 — Mini-situation CCF et clôture (45 min)
-
-#### A4-01 · `B2-05-A4-01-SITUATION-CAMIONNETTE` — 3 min · v2 `table` · catalogue
-
-- Titre public : « Mini-situation CCF : la camionnette électrique »
-- Dossier : emprunt de 32 000 € sur 4 ans à 3,5 %, formule rappelée, placement de 15 000 €, batterie
-  de 20 000 € à payer dans 4 ans, épargne de 5 000 € par an à 2 %, barème sur 10. Mention
-  « Données fictives ».
-
-#### A4-02 · `B2-05-A4-02-TABLEUR-CAMIONNETTE` — 16 min · `fp-sheet` · séance
-
-- Titre public : « Question tableur (3 points sur 10) : le tableau d’amortissement »
-- Temps : réflexion 3 min · travail 11 min · correction 2 min sur place.
-- Années 1 à 4 en colonne A, 32 000 € en B2 ; paramètres en ligne 2 sous leurs libellés de la
-  ligne 1 : taux 0,035 en F2, durée 4 en G2. Annuité en H2 (`=VPM(F2;G2;-B2)`), intérêts en
-  colonne C (`=B2*$F$2`), amortissement en colonne D (`=$H$2-C2`), capital dû en fin d'année en
-  colonne E (`=B2-D2`, comparé au centime), report en colonne B (`=E2`), coût du crédit en I2
-  (`=H2*G2-B2`).
-  Neuf colonnes, sans colonne vide : dix colonnes de champs ne tiennent pas dans la toile du poste
-  étudiant (QF-28).
-  Dix-sept cellules attendues ; pièges `capital-de-vpm-non-signe`,
-  `annuite-confondue-avec-amortissement`, `reference-relative-non-figee`,
-  `interets-sur-capital-initial`, `cout-credit-confondu-avec-total-rembourse`.
-
-#### A4-03 · `B2-05-A4-03-COFFRE-CAMIONNETTE` — 14 min · `fp-escape` · séance
-
-- Titre public : « Mini-situation : boucler le financement de la camionnette »
-- Temps : réflexion 2 min · travail 10 min · correction 2 min sur place, énigme par énigme.
-- E1 valeur acquise du placement (2 points ; `interets-simples-au-lieu-de-composes`,
-  `rang-decale`) ; E2 valeur actuelle de la batterie (2 points ; `actualisation-inversee`,
-  `interets-simples-au-lieu-de-composes`) ; E3 valeur acquise de l'épargne (1,5 point ;
-  `versements-sans-interets`, `versements-places-toute-la-duree`, `rang-decale`) ; E4 coût du crédit (1,5 point ;
-  `cout-credit-confondu-avec-total-rembourse`, `interets-sur-capital-initial`).
-- Papier : quatre questions rédigées du livret, sans code de coffre.
+### 3.5 Acte 4 — Rappel et fiche mémo (8 min)
 
 #### A4-04 · `B2-05-A4-04-RAPPEL` — 6 min · `fp-spaced` · séance
 
@@ -474,10 +426,6 @@ Rythme : 150 minutes interactives, 30 d'exposition, exposition continue de 6 min
 #### A4-05 · `B2-05-A4-05-FICHE-MEMO` — 2 min · v2 `grid` · catalogue
 
 - Titre public : « Fiche mémo : placer, emprunter »
-
-#### A4-06 · `B2-05-A4-06-BILLET-DE-SORTIE` — 4 min · `fp-exit` · séance
-
-- Titre public : « Billet de sortie : la formule des intérêts »
 
 ## 4. Mode papier
 
@@ -579,13 +527,14 @@ Chaque PNG d'origine (1 536 × 1 024 px) est converti en WebP à la même taille
 `/assets/cours/b2-05/v1/`. Le catalogue est stocké avec le cours (`Cours.medias`) et contrôlé par la
 règle `media-sans-licence`.
 
-| Id  | Écran | Fichier source (page)      | Original                     | Auteur, date       | Licence      | Dérivé servi                    | Attribution affichée                                                             |
-| --- | ----- | -------------------------- | ---------------------------- | ------------------ | ------------ | ------------------------------- | -------------------------------------------------------------------------------- |
-| M1  | A1-07 | production propre du cours | PNG 1 536 × 1 024 px, 1,6 Mo | Asili Design, 2026 | CC BY-SA 4.0 | `livret-interets-composes.webp` | « Le livret à 3 % · Asili Design, 2026 · CC BY-SA 4.0 »                          |
-| M2  | A1-08 | production propre du cours | PNG 1 536 × 1 024 px, 1,6 Mo | Asili Design, 2026 | CC BY-SA 4.0 | `capitaliser-actualiser.webp`   | « Futur : ×, présent : ÷ · Asili Design, 2026 · CC BY-SA 4.0 »                   |
-| M3  | A2-02 | production propre du cours | PNG 1 536 × 1 024 px, 1,7 Mo | Asili Design, 2026 | CC BY-SA 4.0 | `frise-des-versements.webp`     | « Chaque versement a sa durée · Asili Design, 2026 · CC BY-SA 4.0 »              |
-| M4  | A3-03 | production propre du cours | PNG 1 536 × 1 024 px, 1,7 Mo | Asili Design, 2026 | CC BY-SA 4.0 | `annuite-decomposee.webp`       | « Les intérêts d’abord, le reste rembourse · Asili Design, 2026 · CC BY-SA 4.0 » |
-| M5  | A3-04 | production propre du cours | PNG 1 536 × 1 024 px, 1,7 Mo | Asili Design, 2026 | CC BY-SA 4.0 | `cout-du-credit.webp`           | « Ce que l’on paie en plus · Asili Design, 2026 · CC BY-SA 4.0 »                 |
+| Id  | Écran | Fichier source (page)                                                                                             | Original                     | Auteur, date                                 | Licence        | Dérivé servi                    | Attribution affichée                                                                  |
+| --- | ----- | ----------------------------------------------------------------------------------------------------------------- | ---------------------------- | -------------------------------------------- | -------------- | ------------------------------- | ------------------------------------------------------------------------------------- |
+| M1  | A1-07 | production propre du cours                                                                                        | PNG 1 536 × 1 024 px, 1,6 Mo | Asili Design, 2026                           | CC BY-SA 4.0   | `livret-interets-composes.webp` | « Le livret à 3 % · Asili Design, 2026 · CC BY-SA 4.0 »                               |
+| M2  | A1-08 | production propre du cours                                                                                        | PNG 1 536 × 1 024 px, 1,6 Mo | Asili Design, 2026                           | CC BY-SA 4.0   | `capitaliser-actualiser.webp`   | « Futur : ×, présent : ÷ · Asili Design, 2026 · CC BY-SA 4.0 »                        |
+| M3  | A2-02 | production propre du cours                                                                                        | PNG 1 536 × 1 024 px, 1,7 Mo | Asili Design, 2026                           | CC BY-SA 4.0   | `frise-des-versements.webp`     | « Chaque versement a sa durée · Asili Design, 2026 · CC BY-SA 4.0 »                   |
+| M4  | A3-03 | production propre du cours                                                                                        | PNG 1 536 × 1 024 px, 1,7 Mo | Asili Design, 2026                           | CC BY-SA 4.0   | `annuite-decomposee.webp`       | « Les intérêts d’abord, le reste rembourse · Asili Design, 2026 · CC BY-SA 4.0 »      |
+| M5  | A3-04 | production propre du cours                                                                                        | PNG 1 536 × 1 024 px, 1,7 Mo | Asili Design, 2026                           | CC BY-SA 4.0   | `cout-du-credit.webp`           | « Ce que l’on paie en plus · Asili Design, 2026 · CC BY-SA 4.0 »                      |
+| M6  | A1-02 | https://commons.wikimedia.org/wiki/File:Massysm_Quentin_%E2%80%94_The_Moneylender_and_his_Wife_%E2%80%94_1514.jpg | JPEG 1 680 × 1 581 px        | Quentin Metsys, Le Prêteur et sa femme, 1514 | domaine public | `massys-le-preteur-1514.jpg`    | « Quentin Metsys, Le Prêteur et sa femme, 1514 · Wikimedia Commons (domaine public) » |
 
 ### 8.3 Sources des données
 

@@ -111,10 +111,10 @@ function vaut(valeur: number, cible: number): boolean {
 
 decrireLaFicheDuCours('B2-01', COURS, {
   conception: 'cours-b2-01-conception.md',
-  ecrans: 59,
-  dureeMinutes: 211,
-  minutesParActe: [32, 34, 36, 38, 43, 28],
-  rythme: { expositionContinueMax: 5, interactives: 162, exposition: 49 },
+  ecrans: 56,
+  dureeMinutes: 202,
+  minutesParActe: [32, 34, 36, 38, 43, 19],
+  rythme: { expositionContinueMax: 5, interactives: 155, exposition: 47 },
   ateliersNotes: [
     'A1-05 (8)',
     'A2-03 (7)',
@@ -130,11 +130,11 @@ decrireLaFicheDuCours('B2-01', COURS, {
     'A5-06 (4)',
     'A5-07 (8)',
   ],
-  noteesParType: [19, 7, 3, 1, 1],
+  noteesParType: [18, 7, 3, 1, 1],
   enigmes: 4,
   rappels: 13,
-  remediations: 43,
-  options: 19 + 13,
+  remediations: 42,
+  options: 31,
   catalogue: [
     'A1-02',
     'A1-07',
@@ -146,7 +146,6 @@ decrireLaFicheDuCours('B2-01', COURS, {
     'A3-05',
     'A4-01',
     'A5-01',
-    'A6-03',
     'A6-07',
   ],
 });
@@ -190,14 +189,14 @@ describe('B2-01 — fichier de données', () => {
     expect(Object.keys(tirer(COURS, 42).banque)).toHaveLength(13);
   });
 
-  it('expose au déroulé 31 questions notées, 4 énigmes et 13 rappels (B22)', () => {
+  it('expose au déroulé 30 questions notées, 4 énigmes et 13 rappels (B22)', () => {
     const deroule = deroulePresentateur(COURS, 0);
     const questions = deroule.ecrans.flatMap((ecran) => ecran.questions);
 
-    expect(questions).toHaveLength(31 + 4 + 13);
+    expect(questions).toHaveLength(30 + 4 + 13);
     expect(
       deroule.ecrans.filter((ecran) => ecran.corrigeEcran !== null),
-    ).toHaveLength(13);
+    ).toHaveLength(10);
     expect(
       deroule.ecrans
         .filter((ecran) => ecran.corrigeEcran?.type === 'reflexion')
@@ -261,11 +260,6 @@ describe('B2-01 — fichier de données', () => {
       ...COURS.ecrans.flatMap((ecran) =>
         ecran.brique === 'fp-challenge'
           ? ecran.defi.strategies.map((strategie) => strategie.libelle)
-          : [],
-      ),
-      ...COURS.ecrans.flatMap((ecran) =>
-        ecran.brique === 'fp-vote' && ecran.revelation !== undefined
-          ? [ecran.revelation.titre, ...ecran.revelation.lignes]
           : [],
       ),
       ...COURS.ecrans.flatMap((ecran) =>

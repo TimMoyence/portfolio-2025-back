@@ -147,7 +147,6 @@ numérique, classement) portées par l'écran.
 |   29 | B2-03-A4-03-COFFRE-CONTROLE              |  16 | `fp-escape`                    |  I  |   0 | seance    |
 |   30 | B2-03-A4-04-RAPPEL                       |   6 | `fp-spaced`                    |  I  |   0 | seance    |
 |   31 | B2-03-A4-05-FICHE-MEMO                   |   2 | `fp-story` · v2 `grid`         |     |   0 | catalogue |
-|   32 | B2-03-A4-06-BILLET-DE-SORTIE             |   4 | `fp-exit`                      |  I  |   1 | seance    |
 
 Rythme : 111 minutes interactives, 29 d'exposition, exposition continue de 6 minutes au plus.
 
@@ -321,7 +320,7 @@ Rythme : 111 minutes interactives, 29 d'exposition, exposition continue de 6 min
 - Titre public : « Jalon 3 : quantifier »
 - Puis pause de 15 minutes.
 
-### 3.5 Acte 4 — Mini-situation CCF et clôture (48 min)
+### 3.5 Acte 4 — Mini-situation CCF et clôture (44 min)
 
 #### A4-01 · `B2-03-A4-01-SITUATION-FACTURES` — 3 min · v2 `table` · catalogue
 
@@ -353,10 +352,6 @@ AND …` (1,5 point ; `et-traduit-par-ou`).
 #### A4-05 · `B2-03-A4-05-FICHE-MEMO` — 2 min · v2 `grid` · catalogue
 
 - Titre public : « Fiche mémo : écrire et contrôler une règle »
-
-#### A4-06 · `B2-03-A4-06-BILLET-DE-SORTIE` — 4 min · `fp-exit` · séance
-
-- Titre public : « Billet de sortie : la formule pour l’expert-comptable »
 
 ## 4. Mode papier
 
@@ -410,14 +405,15 @@ Chaque PNG d'origine est converti en WebP de 1 600 px de large au plus (1 774 ×
 1 600 × 800 px ; 1 536 × 1 024 px gardé) et servi depuis `/assets/cours/b2-03/v1/`. Le catalogue est
 stocké avec le cours (`Cours.medias`) et contrôlé par la règle `media-sans-licence`.
 
-| Id  | Écran | Fichier source (page)      | Original                     | Auteur, date       | Licence      | Dérivé servi                           | Attribution affichée                                                         |
-| --- | ----- | -------------------------- | ---------------------------- | ------------------ | ------------ | -------------------------------------- | ---------------------------------------------------------------------------- |
-| M1  | A1-06 | production propre du cours | PNG 1 774 × 887 px, 1,7 Mo   | Asili Design, 2026 | CC BY-SA 4.0 | `remise-boutique-ou.webp`              | « La remise de la boutique · Asili Design, 2026 · CC BY-SA 4.0 »             |
-| M2  | A1-07 | production propre du cours | PNG 1 536 × 1 024 px, 1,7 Mo | Asili Design, 2026 | CC BY-SA 4.0 | `prime-anciennete-implication.webp`    | « La prime d’ancienneté · Asili Design, 2026 · CC BY-SA 4.0 »                |
-| M3  | A2-02 | production propre du cours | PNG 1 774 × 887 px, 1,6 Mo   | Asili Design, 2026 | CC BY-SA 4.0 | `prime-anciennete-negation.webp`       | « La prime d’ancienneté, le cas de Léo · Asili Design, 2026 · CC BY-SA 4.0 » |
-| M4  | A2-03 | production propre du cours | PNG 1 774 × 887 px, 1,7 Mo   | Asili Design, 2026 | CC BY-SA 4.0 | `remise-boutique-morgan.webp`          | « Le contraire de la remise · Asili Design, 2026 · CC BY-SA 4.0 »            |
-| M5  | A3-02 | production propre du cours | PNG 1 536 × 1 024 px, 1,8 Mo | Asili Design, 2026 | CC BY-SA 4.0 | `equipe-de-vente-quantificateurs.webp` | « L’équipe de vente · Asili Design, 2026 · CC BY-SA 4.0 »                    |
-| M6  | A3-03 | production propre du cours | PNG 1 536 × 1 024 px, 1,6 Mo | Asili Design, 2026 | CC BY-SA 4.0 | `voiles-vendues-nb-si.webp`            | « Les voiles vendues · Asili Design, 2026 · CC BY-SA 4.0 »                   |
+| Id  | Écran | Fichier source (page)                                                                                                          | Original                             | Auteur, date                                                | Licence        | Dérivé servi                           | Attribution affichée                                                                                 |
+| --- | ----- | ------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------ | ----------------------------------------------------------- | -------------- | -------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| M1  | A1-06 | production propre du cours                                                                                                     | PNG 1 774 × 887 px, 1,7 Mo           | Asili Design, 2026                                          | CC BY-SA 4.0   | `remise-boutique-ou.webp`              | « La remise de la boutique · Asili Design, 2026 · CC BY-SA 4.0 »                                     |
+| M2  | A1-07 | production propre du cours                                                                                                     | PNG 1 536 × 1 024 px, 1,7 Mo         | Asili Design, 2026                                          | CC BY-SA 4.0   | `prime-anciennete-implication.webp`    | « La prime d’ancienneté · Asili Design, 2026 · CC BY-SA 4.0 »                                        |
+| M3  | A2-02 | production propre du cours                                                                                                     | PNG 1 774 × 887 px, 1,6 Mo           | Asili Design, 2026                                          | CC BY-SA 4.0   | `prime-anciennete-negation.webp`       | « La prime d’ancienneté, le cas de Léo · Asili Design, 2026 · CC BY-SA 4.0 »                         |
+| M4  | A2-03 | production propre du cours                                                                                                     | PNG 1 774 × 887 px, 1,7 Mo           | Asili Design, 2026                                          | CC BY-SA 4.0   | `remise-boutique-morgan.webp`          | « Le contraire de la remise · Asili Design, 2026 · CC BY-SA 4.0 »                                    |
+| M5  | A3-02 | production propre du cours                                                                                                     | PNG 1 536 × 1 024 px, 1,8 Mo         | Asili Design, 2026                                          | CC BY-SA 4.0   | `equipe-de-vente-quantificateurs.webp` | « L’équipe de vente · Asili Design, 2026 · CC BY-SA 4.0 »                                            |
+| M6  | A3-03 | production propre du cours                                                                                                     | PNG 1 536 × 1 024 px, 1,6 Mo         | Asili Design, 2026                                          | CC BY-SA 4.0   | `voiles-vendues-nb-si.webp`            | « Les voiles vendues · Asili Design, 2026 · CC BY-SA 4.0 »                                           |
+| M7  | A1-02 | https://commons.wikimedia.org/wiki/File:An_Investigation_of_the_Laws_of_Thought_(1854,_Boole,_investigationofl00boolrich).djvu | DjVu 2 620 × 4 190 px, page de titre | George Boole, An Investigation of the Laws of Thought, 1854 | domaine public | `boole-lois-de-la-pensee-1854.jpg`     | « George Boole, An Investigation of the Laws of Thought, 1854 · Wikimedia Commons (domaine public) » |
 
 ### 8.3 Sources des données
 

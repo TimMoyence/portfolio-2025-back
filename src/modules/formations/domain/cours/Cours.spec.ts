@@ -177,7 +177,7 @@ describe('questionsDuCours', () => {
       'Q-TEST-NUM-2',
       'Q-TEST-NUM-3',
       'Q-TEST-VOTE',
-      'Q-TEST-EXIT',
+      'Q-TEST-FIN',
     ]);
   });
 });

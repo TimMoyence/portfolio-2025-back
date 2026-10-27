@@ -58,6 +58,15 @@ const TAUX_POUR_RAISON = 'coefficient-confondu-avec-taux';
 const DONNEES_FICTIVES =
   'Données fictives Atelier Rivage, créées pour ce cours.';
 
+const GRAVURE_DE_L_ACCROCHE = moteur.gravureDuDomainePublic({
+  id: 'M6',
+  chemin: '/assets/cours/gravures/v1/fibonacci-liber-abbaci.jpg',
+  pageSource:
+    'https://commons.wikimedia.org/wiki/File:Liber_abbaci_magliab_f124r.jpg',
+  auteur: 'Leonardo Fibonacci, Liber abbaci',
+  date: 'XIIIᵉ siècle',
+});
+
 const DOSSIER_DES_ILLUSTRATIONS = '/assets/cours/b2-04/v1';
 
 const RENVOI_A_L_HISTORIQUE = 'B2-04-A1-05-HISTORIQUE';
@@ -322,12 +331,9 @@ const ACTE_1: moteur.Acte = [
       title: 'Modéliser une évolution régulière',
       subtitle:
         'Atelier Rivage, voilerie de La Rochelle. Pour sa banque, la dirigeante veut un plan à cinq ans : deux hypothèses de croissance, une année-seuil, un chiffre d’affaires cumulé.',
-      bullets: [
-        'BTS Comptabilité et gestion · 2e année · quatrième cours de mathématiques',
-        'Un rappel rapide des trois premiers cours, réinvestis aujourd’hui',
-        'Trois notions : suites arithmétiques, suites géométriques, seuil et cumul',
-        'Une mini-situation CCF et sa question tableur',
-      ],
+      bgImage: GRAVURE_DE_L_ACCROCHE.chemins[0],
+      bgImageAlt:
+        'Page manuscrite du Liber abbaci de Fibonacci : le problème des lapins, la suite qui ajoute à chaque terme les deux précédents',
     },
   ),
   {
@@ -372,15 +378,6 @@ const ACTE_1: moteur.Acte = [
           ],
         ),
       ],
-      corrige: {
-        type: 'revelation',
-        titre: 'Deux acquis qui resservent aujourd’hui',
-        lignes: [
-          'La pente d’une droite d’ajustement est la variation de y quand x augmente de 1 : ici, environ 44 k€ de plus par an.',
-          'Le contraire de « < » est « ≥ » : la borne passe de l’autre côté.',
-          'L’écran suivant rassemble ce que les trois premiers cours apportent à celui-ci.',
-        ],
-      },
     },
   },
   moteur.ecranV2(
@@ -1274,15 +1271,6 @@ const ACTE_3: moteur.Acte = [
           [['Quatre nombres : 2030 − 2026 = 4', 'nombre-de-termes-decale']],
         ),
       ],
-      corrige: {
-        type: 'revelation',
-        titre: 'S’arrêter au bon moment, compter les bons termes',
-        lignes: [
-          'Une boucle « tant que » s’arrête sur la première valeur qui rend la condition fausse : 100, 130, 160, 190, puis 220.',
-          'Entre deux années incluses, on compte dernière − première + 1 termes : 2030 − 2026 + 1 = 5.',
-          'La trace écrite donne l’algorithme de seuil et la somme de termes.',
-        ],
-      },
     },
   },
   moteur.ecranDIllustration(
@@ -1630,7 +1618,7 @@ const ACTE_3: moteur.Acte = [
       notes: [
         moteur.CORRIGER_PAR_LA_MOINS_REUSSIE,
         'Conclure pour Hélène : 2032 avec l’hypothèse B, 2034 avec l’hypothèse A ; deux ans d’écart sur le second atelier.',
-        'Transition : « Une IA a rédigé le même plan. »',
+        'Transition : « Faisons le point : seuils et cumuls. »',
       ],
     },
     [
@@ -1649,91 +1637,6 @@ const ACTE_3: moteur.Acte = [
       [
         'b2-04-a3-somme',
         'La ligne 3 porte 2026 et la ligne 7 porte 2030 : =SOMME(C3:C7). La plage suit les années demandées.',
-      ],
-    ],
-  ),
-  moteur.corrigeSurPlace(
-    {
-      screenId: 'B2-04-A3-08-DEFI-IA',
-      titre: 'Exercice 7 — Corriger le plan d’une IA',
-      diffusion: 'seance',
-      brique: 'fp-challenge',
-      dureeMinutes: 8,
-      concepts: ['suite-geometrique', 'algorithme-de-seuil', 'somme-de-termes'],
-      notes: moteur.puces(
-        moteur.tempsDeLExercice(2, 6),
-        'Réflexion : relire les traces écrites des notions 2 et 3.',
-        'Repérer qui trouve la puissance, la condition et le cumul ; faire trouver la piste fausse avant de révéler.',
-        'Papier : exercice 7 du livret.',
-      ),
-      proprietes: {
-        modalite: 'solo',
-        probleme: {
-          id: 'b2-04-a3-defi-ia',
-          enonce: [
-            'Hélène a demandé à un assistant IA de rédiger le plan avec l’hypothèse B. Réponse :',
-            '« 1. Avec + 6 % par an, le chiffre d’affaires de 2030 sera de 826 × (1 + 5 × 0,06) = 1 073,8 k€.',
-            '2. Pour trouver l’année du seuil, j’utilise la boucle : Tant que v ≥ 1 200, passer à l’année suivante. Elle affiche 0 : le seuil est donc atteint dès 2025.',
-            '3. Le chiffre d’affaires cumulé de 2026 à 2030 est celui de 2030, soit 1 073,8 k€. »',
-          ].join('\n'),
-          invite:
-            'Trouvez les erreurs de l’IA, corrigez chacune et dites comment la contrôler.',
-        },
-        corrige: {
-          type: 'defi',
-          strategies: [
-            moteur.strategie(
-              'puissance',
-              'Cinq hausses de 6 % multiplient cinq fois par 1,06 : 826 × 1,06⁵, et non 826 × (1 + 5 × 0,06).',
-            ),
-            moteur.strategie(
-              'condition',
-              'La boucle continue tant que le seuil n’est pas atteint : « Tant que v < 1 200 », et non « ≥ ».',
-            ),
-            moteur.strategie(
-              'cumul',
-              'Un cumul est une somme de cinq termes, de 2026 à 2030, pas le seul terme de 2030.',
-            ),
-            moteur.strategie(
-              'controle',
-              'Contrôler sur une valeur connue : 826 k€ en 2025 est sous 1 200 k€, le seuil ne peut pas être atteint en 2025.',
-            ),
-            moteur.strategie(
-              'garder',
-              'Garder le plan : l’IA a appliqué des formules, ses calculs sont forcément justes.',
-              true,
-            ),
-          ],
-        },
-      },
-    },
-    {
-      minutes: 2,
-      notes: [
-        'Faire lire deux corrections écrites par la classe, puis dévoiler les pistes une à une.',
-        'Transition : jalon 3, puis pause de 15 minutes.',
-      ],
-    },
-    [
-      [
-        'puissance',
-        '826 × 1,06⁵ ≈ 1 105,37 k€ : l’IA a additionné les taux (+ 30 %) au lieu de multiplier les coefficients.',
-      ],
-      [
-        'condition',
-        'Avec « Tant que v ≥ 1 200 », la condition est fausse dès le départ : la boucle ne tourne pas et affiche 0. La bonne boucle affiche 7.',
-      ],
-      [
-        'cumul',
-        'Le cumul additionne les cinq termes de 2026 à 2030 : il dépasse forcément le chiffre d’affaires de la seule année 2030.',
-      ],
-      [
-        'controle',
-        'Un résultat se contrôle sur une valeur connue et sur son ordre de grandeur : un seuil atteint « dès 2025 » contredit les données.',
-      ],
-      [
-        'garder',
-        'Piste fausse : une réponse d’IA se contrôle comme une copie, calcul par calcul.',
       ],
     ],
   ),
@@ -2156,37 +2059,6 @@ const ACTE_4: moteur.Acte = [
       moteur.REFERENTIEL_DU_BTS_CG,
     ],
   ),
-  {
-    screenId: 'B2-04-A4-06-BILLET-DE-SORTIE',
-    titre: 'Billet de sortie : la formule à recopier',
-    diffusion: 'seance',
-    brique: 'fp-exit',
-    dureeMinutes: 4,
-    concepts: ['suite-geometrique', 'tableur'],
-    notes: moteur.puces(
-      '4 min ; clore la séance quand le compteur de billets est complet.',
-      'Pièges : taux non figé, addition au lieu de multiplication, taux seul à la place de 1 + taux.',
-    ),
-    proprietes: {
-      modalite: 'solo',
-      questions: [
-        moteur.vote(
-          'b2-04-a4-billet',
-          'suite-geometrique',
-          true,
-          'Hélène prolonge le plan dans un nouveau classeur : chiffre d’affaires de l’année précédente en D2, taux annuel en H1. Quelle formule écrire en D3 pour la recopier vers le bas ?',
-          '=D2*(1+$H$1)',
-          [
-            ['=D2*(1+H1)', NON_FIGEE],
-            ['=D2+$H$1', 'nature-de-suite-confondue'],
-            ['=D2*$H$1', TAUX_POUR_RAISON],
-          ],
-        ),
-      ],
-      invite:
-        'En une phrase : pourquoi l’hypothèse B finit-elle par dépasser l’hypothèse A ?',
-    },
-  },
 ];
 
 const REMEDIATIONS: ContenuDeCours['remediations'] = {
@@ -2214,15 +2086,20 @@ const ILLUSTRATIONS = [
   ['M5', 'loyers-du-bail.webp', 'Les loyers d’un bail'],
 ] as const;
 
+const MEDIAS = moteur.mediasDesIllustrations(
+  DOSSIER_DES_ILLUSTRATIONS,
+  ILLUSTRATIONS,
+  GRAVURE_DE_L_ACCROCHE,
+);
+
 export const COURS_B2_04 = moteur.coursB2(
   [ACTE_1, ACTE_2, ACTE_3, ACTE_4],
   REMEDIATIONS,
-  moteur.mediasDesIllustrations(DOSSIER_DES_ILLUSTRATIONS, ILLUSTRATIONS),
+  MEDIAS,
   {
     slug: 'b2-04-suites',
     titre: 'Suites : modéliser une évolution régulière',
     gabarit: 'v3',
-    dureeMinutes: 180,
     concepts: [...CONCEPTS_DU_COURS],
   },
 );

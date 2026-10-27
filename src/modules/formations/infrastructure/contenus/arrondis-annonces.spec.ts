@@ -9,8 +9,6 @@ const ARRONDIS_ANNONCES = [
   { annonce: /arrondi[er]? à l’(?:unité|euro)/u, pas: 1, decimales: 0 },
 ] as const;
 
-const TOLERANCES_VOULUES = new Set(['b2-05-a4-e4-cout']);
-
 interface ReponseChiffree {
   readonly id: string;
   readonly valeur: number;
@@ -64,9 +62,7 @@ const REPONSES_ARRONDIES = CONTENUS.flatMap((contenu) =>
 ).flatMap((reponse) => {
   const enonce = ENONCES.get(reponse.id) ?? '';
   const arrondi = ARRONDIS_ANNONCES.find(({ annonce }) => annonce.test(enonce));
-  return arrondi === undefined || TOLERANCES_VOULUES.has(reponse.id)
-    ? []
-    : [{ ...reponse, ...arrondi }];
+  return arrondi === undefined ? [] : [{ ...reponse, ...arrondi }];
 });
 
 describe('arrondis annoncés par l énoncé', () => {
@@ -97,8 +93,4 @@ describe('arrondis annoncés par l énoncé', () => {
       ).toEqual([false, true, false]);
     },
   );
-
-  it('garde la tolérance voulue et écrite dans la correction de b2-05-a4-e4', () => {
-    expect(ENONCES.get('b2-05-a4-e4-cout')).toMatch(/arrondi au centime/u);
-  });
 });

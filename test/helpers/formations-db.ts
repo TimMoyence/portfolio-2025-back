@@ -32,6 +32,7 @@ import { AjouteGabaritDuCours1790900000002 } from '../../src/migrations/17909000
 import { RetireLaDerniereVueDeLaMaitrise1792576513090 } from '../../src/migrations/1792576513090-RetireLaDerniereVueDeLaMaitrise';
 import { RetireLeStatutEtLesStrategiesDesReponsesLibres1792576513091 } from '../../src/migrations/1792576513091-RetireLeStatutEtLesStrategiesDesReponsesLibres';
 import { RetireLesScoresDeSeance1792660808302 } from '../../src/migrations/1792660808302-RetireLesScoresDeSeance';
+import { VideLesSeancesEtLesVersionsDeCours1793097907840 } from '../../src/migrations/1793097907840-VideLesSeancesEtLesVersionsDeCours';
 import {
   SynchroniserCoursUseCase,
   type IssueDeSynchronisation,
@@ -125,6 +126,7 @@ const FORMATION_MIGRATIONS = [
   RetireLaDerniereVueDeLaMaitrise1792576513090,
   RetireLeStatutEtLesStrategiesDesReponsesLibres1792576513091,
   RetireLesScoresDeSeance1792660808302,
+  VideLesSeancesEtLesVersionsDeCours1793097907840,
 ];
 
 export const TABLES_DE_SEANCE = [

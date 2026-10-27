@@ -129,10 +129,10 @@ function explicationsDe(screenId: string): string[] {
 
 fiche.decrireLaFicheDuCours('B3-01', COURS, {
   conception: 'cours-b3-01-conception.md',
-  ecrans: 38,
-  dureeMinutes: 180,
-  minutesParActe: [60, 61, 59, 0, 0, 0],
-  rythme: { expositionContinueMax: 6, interactives: 143, exposition: 37 },
+  ecrans: 36,
+  dureeMinutes: 176,
+  minutesParActe: [60, 61, 55, 0, 0, 0],
+  rythme: { expositionContinueMax: 6, interactives: 139, exposition: 37 },
   ateliersNotes: [
     'A1-07 (5)',
     'A1-08 (5)',
@@ -144,11 +144,11 @@ fiche.decrireLaFicheDuCours('B3-01', COURS, {
     'A3-05 (11)',
     'A3-09 (15)',
   ],
-  noteesParType: [4, 15, 2, 0, 0],
+  noteesParType: [3, 15, 2, 0, 0],
   enigmes: 0,
   rappels: 0,
-  remediations: 38,
-  options: 12,
+  remediations: 37,
+  options: 11,
   catalogue: [
     'A1-02',
     'A1-03',
@@ -670,13 +670,9 @@ describe('B3-01 — acte 1 : consignes et corrections exactes', () => {
     expect(aVerifier).toContain(`${horsControle} échappent au contrôle`);
   });
 
-  it('A1-04 et A1-06 · laissent au métier les raisons sociales en double, que le tri A1-13 classe suspectes', () => {
-    const revelation = texteDe('B3-01-A1-04-VOTE-PART-ET-CLE');
+  it('A1-06 · laisse au métier les raisons sociales en double, que le tri A1-13 classe suspectes', () => {
     const relations = texteDe('B3-01-A1-06-COURS-RELATIONS');
 
-    expect(revelation).toContain('doublon ou deux établissements');
-    expect(revelation).not.toContain('clients saisis deux fois');
-    expect(revelation).not.toContain('ne se trompe pas');
     expect(relations).not.toContain('ne se trompe pas');
     expect(relations).toContain('des clients peut-être saisis deux fois');
     expect(
@@ -973,18 +969,10 @@ describe('B3-01 — actes 2 et 3 : consignes et corrections exactes', () => {
     expect(texte).not.toContain('A2:A4001');
   });
 
-  it('A3-02 · renvoie au graphique de l’écran précédent et chiffre l’écart affiché', () => {
-    const ecart = arrondi(
-      (1 -
-        HISTOIRES_B3_01['ca-2025-rennes'] / HISTOIRES_B3_01['ca-2025-nantes']) *
-        100,
-      0,
+  it('A3-02 · renvoie au graphique de l’écran précédent', () => {
+    expect(texteDe('B3-01-A3-02-VOTE-GRAPHIQUE')).toContain(
+      'le graphique de l’écran précédent',
     );
-    const texte = texteDe('B3-01-A3-02-VOTE-GRAPHIQUE');
-
-    expect(texte).toContain('le graphique de l’écran précédent');
-    expect(texte).toContain(`environ ${ecart} % de moins`);
-    expect(ecart).toBe(13);
   });
 
   it('A3-07 · ne promet aux segments que les TCD et leurs graphiques', () => {
@@ -1141,9 +1129,6 @@ describe('B3-01 — actes 2 et 3 : consignes et corrections exactes', () => {
     expect(rapport).toBeGreaterThan(2.5);
     expect(rapport).toBeLessThan(3.5);
     expect(debut).toBe(47_500);
-    expect(texteDe('B3-01-A3-02-VOTE-GRAPHIQUE')).toContain(
-      'L’axe part de 47 500 €',
-    );
   });
 
   it('A3 · retire le tri des graphiques pour tenir 180 min : l’exercice du graphique de la direction devient l’exercice 8', () => {
@@ -1551,22 +1536,12 @@ describe('B3-01 — retours de la relecture du 11/10', () => {
     });
   });
 
-  it('R-06 · pose sur sa propre diapo ce qui reste flou, avant le billet qui clôt la séance', () => {
-    const [flou, billet] = COURS.ecrans.slice(-2);
-
-    expect(flou).toMatchObject({
-      id: 'B3-01-A3-13-CE-QUI-RESTE-FLOU',
-      brique: 'fp-pro',
-      proprietes: {
-        questionsLibres: [
-          { question: expect.stringContaining('qu’est-ce qui reste flou') },
-        ],
-      },
-    });
-    expect(billet.id).toBe('B3-01-A3-14-BILLET-DE-SORTIE');
-    expect(billet.brique === 'fp-exit' ? billet.invite : '').not.toContain(
-      'flou',
-    );
+  it('M7 · finit la séance sur la fiche mémo, après les recommandations et le cahier de règles', () => {
+    expect(COURS.ecrans.slice(-3).map(({ id }) => id)).toEqual([
+      'B3-01-A3-10-RECOMMANDATIONS',
+      'B3-01-A3-12-CAHIER-DE-REGLES',
+      'B3-01-A3-11-FICHE-MEMO',
+    ]);
   });
 });
 
@@ -1631,18 +1606,6 @@ describe('B3-01 — temps de travail multiplié par 1,5, défis réduits', () =>
     expect(texteDe('B3-01-A1-14-ATELIER-NETTOYAGE')).toContain(
       `Défi : ${DEFIS_B3_01['villes-distinctes']} villes ; sans SUPPRESPACE, les espaces en trop en font compter ${DEFIS_B3_01['villes-sans-supprespace']} ; la casse ne change rien, Excel l’ignore.`,
     );
-  });
-
-  it('ne garde aucune remédiation dont aucune question ne porte la confusion', () => {
-    const proprietes = JSON.stringify(
-      COURS_B3_01.ecrans.map(({ proprietes: deLEcran }) => deLEcran),
-    );
-
-    expect(
-      Object.keys(COURS_B3_01.remediations ?? {}).filter(
-        (confusion) => !proprietes.includes(`"${confusion}"`),
-      ),
-    ).toEqual([]);
   });
 
   it('A1-14 · garde au pupitre le piège de la date d’un autre système, que la formule de A1-11 laisse en texte', () => {
@@ -1750,7 +1713,6 @@ describe('B3-01 — temps de travail multiplié par 1,5, défis réduits', () =>
 describe('B3-01 — commandes vérifiées dans la documentation Microsoft', () => {
   it.each([
     ['B3-01-A1-08-ATELIER-GRANULARITE', 'Accueil › Trier et filtrer › Effacer'],
-    ['B3-01-A1-09-VOTE-CA-TEXTE', 'un petit triangle vert'],
     ['B3-01-A1-11-COURS-OUTILS', 'majuscule au début de chaque mot'],
     ['B3-01-A1-12-EXEMPLE-NETTOYAGE', 'majuscule au début de chaque mot'],
     ['B3-01-A1-11-COURS-OUTILS', 'Données › À partir de Tableau/Plage'],

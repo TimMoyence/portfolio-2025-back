@@ -15,7 +15,8 @@ export type IssueDeSynchronisation =
       readonly slug: string;
       readonly statut: 'publie';
       readonly version: number;
-    };
+    }
+  | { readonly slug: string; readonly statut: 'echec'; readonly cause: Error };
 
 function assertPubliable(contenu: ContenuAPublier): void {
   const violations = verifierStructure(lireContenuAPublier(contenu));
@@ -43,7 +44,15 @@ export class SynchroniserCoursUseCase {
     contenus.forEach(assertPubliable);
     const issues: IssueDeSynchronisation[] = [];
     for (const contenu of contenus) {
-      issues.push(await this.synchroniser(contenu));
+      try {
+        issues.push(await this.synchroniser(contenu));
+      } catch (erreur) {
+        issues.push({
+          slug: contenu.slug,
+          statut: 'echec',
+          cause: erreur instanceof Error ? erreur : new Error(String(erreur)),
+        });
+      }
     }
     return issues;
   }

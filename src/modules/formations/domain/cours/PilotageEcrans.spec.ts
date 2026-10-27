@@ -100,7 +100,7 @@ describe('assertPilotageCompatible', () => {
     [
       'refuse une phase de vote sur un ecran sans question jumelle',
       NUMERIQUE,
-      { screenId: 'E-NUM', phase: 'revote' },
+      { screenId: 'E-NUM', phase: 'question-2' },
       false,
     ],
     [
@@ -334,19 +334,14 @@ describe('Q1 · un seul chemin de révélation d un vote des cours servis', () =
   });
 
   it.each(JUMELES.map((vote) => [vote.id, vote] as const))(
-    '%s : « Passer à : Révélation » et « Révéler la correction » posent le même pilotage',
+    'M2 · %s : « Révéler la correction » révèle après la question 2, sans phase de révélation',
     (_id, vote) => {
-      const revelePar = (demande: Omit<PilotageDemande, 'screenId'>) =>
+      expect(
         fusionnerPilotage(
-          { [vote.id]: { phase: 'revote' } },
-          demandeAppliquee(vote, { screenId: vote.id, ...demande }),
-        );
-      const revele = { [vote.id]: { phase: 'revele', revele: true } };
-
-      expect([
-        revelePar({ phase: 'revele' }),
-        revelePar({ revele: true }),
-      ]).toEqual([revele, revele]);
+          { [vote.id]: { phase: 'question-2' } },
+          demandeAppliquee(vote, { screenId: vote.id, revele: true }),
+        ),
+      ).toEqual({ [vote.id]: { phase: 'question-2', revele: true } });
     },
   );
 
@@ -363,8 +358,8 @@ describe('Q1 · un seul chemin de révélation d un vote des cours servis', () =
 describe('fusionnerPilotage', () => {
   it('inscrit le pilotage d un ecran encore vierge', () => {
     expect(
-      fusionnerPilotage({}, { screenId: 'E-VOTE', phase: 'discussion' }),
-    ).toEqual({ 'E-VOTE': { phase: 'discussion' } });
+      fusionnerPilotage({}, { screenId: 'E-VOTE', phase: 'question-2' }),
+    ).toEqual({ 'E-VOTE': { phase: 'question-2' } });
   });
 
   it('conserve le pilotage des autres ecrans', () => {
@@ -373,24 +368,42 @@ describe('fusionnerPilotage', () => {
     };
 
     expect(
-      fusionnerPilotage(courant, { screenId: 'E-VOTE', phase: 'vote' }),
-    ).toEqual({ 'E-AUTRE': { etayage: 2 }, 'E-VOTE': { phase: 'vote' } });
+      fusionnerPilotage(courant, { screenId: 'E-VOTE', phase: 'question-1' }),
+    ).toEqual({
+      'E-AUTRE': { etayage: 2 },
+      'E-VOTE': { phase: 'question-1' },
+    });
   });
 
   it('avance la phase sans effacer l etayage deja pose', () => {
     expect(
       fusionnerPilotage(
-        { 'E-VOTE': { phase: 'vote', etayage: 1 } },
-        { screenId: 'E-VOTE', phase: 'revote' },
+        { 'E-VOTE': { phase: 'question-1', etayage: 1 } },
+        { screenId: 'E-VOTE', phase: 'question-2' },
       ),
-    ).toEqual({ 'E-VOTE': { phase: 'revote', etayage: 1 } });
+    ).toEqual({ 'E-VOTE': { phase: 'question-2', etayage: 1 } });
   });
 
   it('refuse de ramener la phase en arriere', () => {
     expect(() => {
       fusionnerPilotage(
-        { 'E-VOTE': { phase: 'revele' } },
-        { screenId: 'E-VOTE', phase: 'discussion' },
+        { 'E-VOTE': { phase: 'question-2' } },
+        { screenId: 'E-VOTE', phase: 'question-1' },
+      );
+    }).toThrow(PhaseNonMonotoneError);
+  });
+
+  it('M2 · refuse tout changement de phase d un vote déjà révélé', () => {
+    expect(
+      fusionnerPilotage(
+        { 'E-VOTE': { phase: 'question-1', revele: true } },
+        { screenId: 'E-VOTE', phase: 'question-1' },
+      ),
+    ).toEqual({ 'E-VOTE': { phase: 'question-1', revele: true } });
+    expect(() => {
+      fusionnerPilotage(
+        { 'E-VOTE': { phase: 'question-1', revele: true } },
+        { screenId: 'E-VOTE', phase: 'question-2' },
       );
     }).toThrow(PhaseNonMonotoneError);
   });
@@ -398,10 +411,10 @@ describe('fusionnerPilotage', () => {
   it('accepte de redemander la phase courante', () => {
     expect(
       fusionnerPilotage(
-        { 'E-VOTE': { phase: 'revote' } },
-        { screenId: 'E-VOTE', phase: 'revote' },
+        { 'E-VOTE': { phase: 'question-2' } },
+        { screenId: 'E-VOTE', phase: 'question-2' },
       ),
-    ).toEqual({ 'E-VOTE': { phase: 'revote' } });
+    ).toEqual({ 'E-VOTE': { phase: 'question-2' } });
   });
 
   it('garde la révélation quand la demande porte ses champs optionnels à undefined', () => {
@@ -460,16 +473,16 @@ describe('assertPhaseOuverte', () => {
       true,
       false,
     ],
+    ['M2 · ouvre la question 2 seule', { phase: 'question-2' }, false, true],
     [
-      'ferme les deux questions pendant la discussion',
-      { phase: 'discussion' },
+      'M2 · ferme les deux questions dès la révélation après la question 2',
+      { phase: 'question-2', revele: true },
       false,
       false,
     ],
-    ['ouvre la jumelle seule au revote', { phase: 'revote' }, false, true],
     [
-      'Q1 · ferme les deux questions dès la phase de révélation',
-      { phase: 'revele' },
+      'M2 · ferme les deux questions d un vote révélé dès la question 1',
+      { revele: true },
       false,
       false,
     ],

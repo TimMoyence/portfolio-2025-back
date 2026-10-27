@@ -131,7 +131,7 @@ export const QUESTION_A_CONFUSION_REPETEE = voteTest(
 
 export const QUESTION_RAPPEL_TEST = voteTest('Q-TEST-RAPPEL');
 export const QUESTION_VOTE_TEST = voteTest('Q-TEST-VOTE');
-export const QUESTION_EXIT_TEST = voteTest('Q-TEST-EXIT');
+export const QUESTION_FIN_TEST = voteTest('Q-TEST-FIN');
 export const QUESTION_PAIRS_TEST = voteTest('Q-TEST-PAIRS');
 export const QUESTION_JUMELLE_TEST = voteTest('Q-TEST-JUMELLE');
 
@@ -630,13 +630,12 @@ export function buildCoursDeTest(overrides: Partial<Cours> = {}): Cours {
       },
       {
         ...EN_CATALOGUE,
-        id: 'E-EXIT',
-        brique: 'fp-exit',
+        id: 'E-FIN',
+        brique: 'fp-vote',
         dureeMinutes: 5,
         concepts: ['evolutions-successives'],
         notes: 'Clôture',
-        question: QUESTION_EXIT_TEST,
-        invite: 'Qu’est-ce qui reste flou ?',
+        question: QUESTION_FIN_TEST,
       },
     ],
     remediations: {
@@ -683,12 +682,11 @@ export function buildCoursDeClasse(nombreQuestions: number): Cours {
       {
         ...EN_CATALOGUE,
         id: 'E-FIN',
-        brique: 'fp-exit',
+        brique: 'fp-vote',
         dureeMinutes: 5,
         concepts: ['evolutions-successives'],
         notes: '',
-        question: QUESTION_EXIT_TEST,
-        invite: 'Bilan',
+        question: QUESTION_FIN_TEST,
       },
     ],
   });

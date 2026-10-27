@@ -1,4 +1,5 @@
-import { QueryFailedError } from 'typeorm';
+import { QueryFailedError, type MigrationInterface } from 'typeorm';
+import { RetireLesGroupesDeSuivi1790600000000 } from '../src/migrations/1790600000000-RetireLesGroupesDeSuivi';
 import { ouvrirTirages } from '../src/modules/formations/domain/cours/OuvertureTirages';
 import {
   AnswerAlreadySubmittedError,
@@ -11,6 +12,7 @@ import {
 } from '../src/modules/formations/domain/errors/FormationErrors';
 import { SecretDeReprise } from '../src/modules/formations/domain/SecretDeReprise';
 import type { ParticipantRecord } from '../src/modules/formations/domain/IParticipants.repository';
+import { CONTENUS } from '../src/modules/formations/infrastructure/contenus';
 import { FormationSessionEntity } from '../src/modules/formations/infrastructure/entities/FormationSession.entity';
 import { buildCoursDeClasse } from './factories/cours.factory';
 import { buildBareme } from './factories/formation.factory';
@@ -107,6 +109,23 @@ describeDb('Formations repositories (db integration)', () => {
     }
   };
 
+  const jouerSeule = async (
+    migration: MigrationInterface & { readonly name: string },
+  ): Promise<void> => {
+    const requetes = contexte.dataSource.createQueryRunner();
+    await requetes.startTransaction();
+    try {
+      await migration.up(requetes);
+      await requetes.commitTransaction();
+    } finally {
+      await requetes.release();
+    }
+    await contexte.dataSource.query(
+      `INSERT INTO "migrations" ("timestamp", "name") VALUES ($1, $2)`,
+      [Number(migration.name.slice(-13)), migration.name],
+    );
+  };
+
   const inscrire = (sessionId: string, studentKey: string, seed: number) =>
     inscrireParticipant(contexte.participants, {
       sessionId,
@@ -169,6 +188,36 @@ describeDb('Formations repositories (db integration)', () => {
     await contexte.nettoyer();
   });
 
+  it('M11 · vide les séances, la maîtrise et les versions de cours, garde le schéma, puis republie les cours du dépôt', async () => {
+    const compter = async (): Promise<Record<string, number>> =>
+      Object.fromEntries(
+        await Promise.all(
+          FORMATION_TABLES.map(async (table) => {
+            const [{ lignes }] = await contexte.dataSource.query<
+              { lignes: number }[]
+            >(`SELECT COUNT(*)::int AS "lignes" FROM "${table}"`);
+            return [table, lignes] as const;
+          }),
+        ),
+      );
+    const seance = await ouvrirSeance('7310');
+    const avant = await compter();
+
+    expect(avant['formation_sessions']).toBe(1);
+    expect(avant['formation_course_contents']).toBeGreaterThan(0);
+
+    await contexte.rejouerMigration();
+
+    expect(await compter()).toEqual(
+      Object.fromEntries(FORMATION_TABLES.map((table) => [table, 0])),
+    );
+    await contexte.synchroniser(CONTENUS);
+    await expect(contexte.sessions.findById(seance.id)).resolves.toBeNull();
+    expect((await compter())['formation_course_contents']).toBe(
+      CONTENUS.length,
+    );
+  });
+
   it('rejoue la derniere migration formations apres un retour arriere', async () => {
     await contexte.rejouerMigration();
 
@@ -194,7 +243,7 @@ describeDb('Formations repositories (db integration)', () => {
       [seance.id, FORMATEUR],
     );
 
-    await contexte.dataSource.runMigrations({ transaction: 'all' });
+    await jouerSeule(new RetireLesGroupesDeSuivi1790600000000());
 
     await expect(
       contexte.annotations.listBySession(seance.id, FORMATEUR),
@@ -228,6 +277,7 @@ describeDb('Formations repositories (db integration)', () => {
     await expect(
       contexte.annotations.listBySession(seance.id, FORMATEUR),
     ).resolves.toHaveLength(2);
+    await contexte.dataSource.runMigrations({ transaction: 'all' });
   });
 
   it('diffuse en séance un écran inséré sans diffusion explicite', async () => {

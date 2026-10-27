@@ -4,6 +4,7 @@ import {
   type AuMoinsUn,
   type AuMoinsUnModifiable,
 } from '../../../../common/domain/au-moins-un';
+import { somme } from '../../../../common/domain/nombres/statistiques';
 import type { ConceptId } from '../../domain/cours/banque/concepts';
 import type { ConfusionId } from '../../domain/cours/banque/confusions';
 import type { ContenuDeCours } from '../../domain/cours/CoursStocke';
@@ -14,6 +15,7 @@ import {
 } from '../../domain/cours/QuestionStockee';
 
 type EcranDuCours = ContenuDeCours['ecrans'][number];
+type MediasDuCours = NonNullable<ContenuDeCours['medias']>;
 export type Acte = [EcranDuCours, ...EcranDuCours[]];
 export type EcranDeRecit = Extract<
   EcranDuCours,
@@ -60,9 +62,9 @@ export function puces(...lignes: AuMoinsUnModifiable<string>): string {
 }
 
 export const NOTES_DU_VOTE_A_DEUX_QUESTIONS = [
-  'Premier vote individuel ; entre 30 et 70 % de bonnes réponses, débat en binôme avant la deuxième question ; sinon, passer directement à la deuxième question.',
-  'La révélation s’ouvre après la deuxième question : les deux corrections se commentent ensemble.',
-  'Papier : vote à main levée sur chaque question, discussion en binôme entre les deux.',
+  'Question 1 en vote individuel, puis question 2, sans débat entre les deux.',
+  'La révélation s’ouvre après la question 2 : les deux corrections se commentent ensemble.',
+  'Papier : vote à main levée sur chaque question.',
 ] as const;
 
 export function notesDuVoteQuiOuvreLaNotion(notion: 1 | 2 | 3): string {
@@ -511,16 +513,44 @@ export function ecranDIllustration(
 export function mediasDesIllustrations(
   dossier: string,
   illustrations: readonly (readonly [string, string, string])[],
-): ContenuDeCours['medias'] {
-  return illustrations.map(([id, fichier, titre]) => ({
+  ...gravures: MediasDuCours
+): MediasDuCours {
+  return [
+    ...illustrations.map(([id, fichier, titre]): MediasDuCours[number] => ({
+      id,
+      chemins: [`${dossier}/${fichier}`],
+      pageSource: null,
+      auteur: 'Asili Design',
+      date: '2026',
+      licence: 'CC BY-SA 4.0',
+      attribution: `${titre} · Asili Design, 2026 · CC BY-SA 4.0`,
+    })),
+    ...gravures,
+  ];
+}
+
+export function gravureDuDomainePublic({
+  id,
+  chemin,
+  pageSource,
+  auteur,
+  date,
+}: {
+  readonly id: string;
+  readonly chemin: string;
+  readonly pageSource: string;
+  readonly auteur: string;
+  readonly date: string;
+}): MediasDuCours[number] {
+  return {
     id,
-    chemins: [`${dossier}/${fichier}`],
-    pageSource: null,
-    auteur: 'Asili Design',
-    date: '2026',
-    licence: 'CC BY-SA 4.0',
-    attribution: `${titre} · Asili Design, 2026 · CC BY-SA 4.0`,
-  }));
+    chemins: [chemin],
+    pageSource,
+    auteur,
+    date,
+    licence: 'domaine public',
+    attribution: `${auteur}, ${date} · Wikimedia Commons (domaine public)`,
+  };
 }
 
 export function controle(reference: string, formuleReference: string) {
@@ -572,7 +602,7 @@ export const ETAPE_TRANSFERER = {
   id: 'transferer',
   title: 'Acte 6 · Transférer',
   question: 'Saurez-vous le refaire seul·e ?',
-  proof: 'Situation nouvelle, réponse d’IA corrigée, rappel.',
+  proof: 'Situation nouvelle, rappel.',
   result: 'Une fiche mémo pour le CCF.',
 } as const;
 
@@ -580,12 +610,6 @@ export const COLONNES_DU_DOSSIER = [
   { key: 'rubrique', label: 'Rubrique' },
   { key: 'contenu', label: 'Ce que montre le dossier' },
 ] as const;
-
-export const BAREME_DE_LA_MINI_SITUATION = {
-  rubrique: 'Barème',
-  contenu:
-    'Sur 10 points : 3 points pour la question tableur ; 2, 2, 1,5 et 1,5 points pour les quatre énigmes.',
-} as const;
 
 export const REFERENTIEL_DU_BTS_CG = {
   title: 'Référentiel du BTS CG',
@@ -599,18 +623,17 @@ function coursDuNiveau(niveau: string) {
     actes: AuMoinsUnModifiable<Acte>,
     remediations: ContenuDeCours['remediations'],
     medias: ContenuDeCours['medias'],
-    fiche: Pick<
-      ContenuDeCours,
-      'slug' | 'titre' | 'dureeMinutes' | 'concepts' | 'gabarit'
-    >,
+    fiche: Pick<ContenuDeCours, 'slug' | 'titre' | 'concepts' | 'gabarit'>,
   ): ContenuDeCours => {
     const [premier, ...suite] = actes;
+    const ecrans: ContenuDeCours['ecrans'] = [...premier, ...suite.flat()];
     return {
       ...fiche,
       niveau,
+      dureeMinutes: somme(ecrans.map((ecran) => ecran.dureeMinutes)),
       remediations,
       medias,
-      ecrans: [...premier, ...suite.flat()],
+      ecrans,
     };
   };
 }

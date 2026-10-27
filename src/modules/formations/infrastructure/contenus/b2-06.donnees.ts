@@ -1,13 +1,8 @@
+import type { AuMoinsUnModifiable } from '../../../../common/domain/au-moins-un';
 import {
   arrondi,
   auMillionieme,
 } from '../../../../common/domain/nombres/arrondi';
-import {
-  mapperAuMoinsUn,
-  type AuMoinsUn,
-  type AuMoinsUnModifiable,
-} from '../../../../common/domain/au-moins-un';
-import { moyenne } from '../../../../common/domain/nombres/statistiques';
 import type { ConceptId } from '../../domain/cours/banque/concepts';
 import * as moteur from './briques';
 import {
@@ -49,10 +44,6 @@ const OBJECTIFS = [500, 600, 800, 1000, 1200, 1500] as const;
 export const PRIX_DE_GROS = [20, 25, 30, 35, 40, 45] as const;
 export const DEMANDES = [1100, 860, 670, 520, 410, 315] as const;
 
-const PRIX_DES_KITS = [1, 1.5, 2, 2.5, 3, 3.5] as const;
-const DEMANDES_DES_KITS = [9.9, 7, 4.9, 3.5, 2.4, 1.7] as const;
-const PRIX_DE_LA_FEUILLE = 4;
-
 export const TAUX_POUR_COEFFICIENT = 'coefficient-confondu-avec-taux';
 export const INTERETS_SIMPLES = 'interets-simples-au-lieu-de-composes';
 export const NON_FIGEE = 'reference-relative-non-figee';
@@ -72,7 +63,6 @@ export const DONNEES_FICTIVES =
   'Données fictives Atelier Rivage, créées pour ce cours.';
 
 export const RENVOI_AU_DOSSIER = 'B2-06-A1-05-DOSSIER';
-export const RENVOI_AUX_KITS = 'B2-06-A4-01-SITUATION-KITS';
 
 const ventes = (mois: number): number =>
   auMillionieme(VENTES_DE_JANVIER * Math.exp(K_DES_VENTES * mois));
@@ -225,144 +215,6 @@ export const ATTENDUS_DES_OBJECTIFS: AuMoinsUnModifiable<AttenduDeFeuille> = [
   ),
 ];
 
-interface Droite {
-  readonly pente: number;
-  readonly ordonnee: number;
-}
-
-function moindresCarres(
-  abscisses: AuMoinsUn<number>,
-  ordonnees: AuMoinsUn<number>,
-): Droite {
-  const mx = moyenne(abscisses);
-  const my = moyenne(ordonnees);
-  const covariance = moyenne(
-    mapperAuMoinsUn(abscisses, (x, rang) => (x - mx) * (ordonnees[rang] - my)),
-  );
-  const variance = moyenne(mapperAuMoinsUn(abscisses, (x) => (x - mx) ** 2));
-  const pente = covariance / variance;
-  return { pente, ordonnee: my - pente * mx };
-}
-
-const LOGARITHMES_DES_KITS = mapperAuMoinsUn(DEMANDES_DES_KITS, (demande) =>
-  Math.log(demande),
-);
-const DROITE_DES_KITS = moindresCarres(PRIX_DES_KITS, LOGARITHMES_DES_KITS);
-const DROITE_AFFINE_DES_KITS = moindresCarres(PRIX_DES_KITS, DEMANDES_DES_KITS);
-const DROITE_INVERSEE_DES_KITS = moindresCarres(
-  LOGARITHMES_DES_KITS,
-  PRIX_DES_KITS,
-);
-const COEFFICIENT_DES_KITS = Math.exp(DROITE_DES_KITS.ordonnee);
-
-export const FORMULE_DU_LOGARITHME = '=LN(B2)';
-export const FORMULE_DE_LA_PENTE = '=PENTE(C2:C7;A2:A7)';
-export const FORMULE_DE_L_ORDONNEE = '=ORDONNEE.ORIGINE(C2:C7;A2:A7)';
-export const FORMULE_DU_COEFFICIENT = '=EXP(E2)';
-export const FORMULE_DE_LA_PREVISION = '=F2*EXP(D2*4)';
-
-const CELLULES_DES_KITS = {
-  A1: 'Prix x (dizaines d’euros)',
-  B1: 'Demande y (centaines de kits)',
-  C1: 'z = ln y',
-  D1: 'Pente α',
-  E1: 'Ordonnée à l’origine β',
-  F1: 'Coefficient a = e^β',
-  G1: 'Demande prévue à 40 € (centaines)',
-  ...colonneDeValeurs(
-    'A',
-    PRIX_DES_KITS.map((prix) => avecVirgule(prix)),
-  ),
-  ...colonneDeValeurs(
-    'B',
-    DEMANDES_DES_KITS.map((demande) => avecVirgule(demande)),
-  ),
-};
-
-export const PLAN_DES_KITS = {
-  id: 'b2-06-a4-feuille-kits',
-  intitule: 'Question tableur (3 points) — Ajuster la demande des kits',
-  lignes: PRIX_DES_KITS.length + 1,
-  colonnes: 7,
-  cellules: CELLULES_DES_KITS,
-  verrouillees: Object.keys(CELLULES_DES_KITS),
-  consignes: [
-    `En C2, calculez z = ln y avec LN. Recopiez jusqu’en C7 : ${gesteDeRecopie(['C2'], 7)}.`,
-    'En D2 et E2, calculez la pente et l’ordonnée à l’origine de la droite d’ajustement de z en x, avec PENTE et ORDONNEE.ORIGINE.',
-    'En F2, calculez le coefficient a du modèle y = a e^(αx).',
-    'En G2, calculez la demande prévue au prix de 40 €, soit x = 4, à partir de F2 et D2.',
-  ],
-};
-
-export const ATTENDUS_DES_KITS: AuMoinsUnModifiable<AttenduDeFeuille> = [
-  ...colonneRecopiee(
-    {
-      colonne: 'C',
-      premiereLigne: 2,
-      formule: FORMULE_DU_LOGARITHME,
-    },
-    termes(
-      (rang) => auMillionieme(LOGARITHMES_DES_KITS[rang]),
-      0,
-      LOGARITHMES_DES_KITS.length - 1,
-    ),
-  ),
-  moteur.attendu(
-    'D2',
-    FORMULE_DE_LA_PENTE,
-    auMillionieme(DROITE_DES_KITS.pente),
-    'references',
-    [
-      [auMillionieme(DROITE_AFFINE_DES_KITS.pente), AJUSTEMENT_DE_Y],
-      [auMillionieme(DROITE_INVERSEE_DES_KITS.pente), SERIES_INVERSEES],
-    ],
-  ),
-  moteur.attendu(
-    'E2',
-    FORMULE_DE_L_ORDONNEE,
-    auMillionieme(DROITE_DES_KITS.ordonnee),
-    'references',
-    [
-      [auMillionieme(DROITE_AFFINE_DES_KITS.ordonnee), AJUSTEMENT_DE_Y],
-      [auMillionieme(DROITE_INVERSEE_DES_KITS.ordonnee), SERIES_INVERSEES],
-    ],
-  ),
-  moteur.attendu(
-    'F2',
-    FORMULE_DU_COEFFICIENT,
-    auMillionieme(COEFFICIENT_DES_KITS),
-    'references',
-    [[auMillionieme(DROITE_DES_KITS.ordonnee), ORDONNEE_NON_EXPONENTIEE]],
-  ),
-  moteur.attendu(
-    'G2',
-    FORMULE_DE_LA_PREVISION,
-    auMillionieme(
-      COEFFICIENT_DES_KITS *
-        Math.exp(DROITE_DES_KITS.pente * PRIX_DE_LA_FEUILLE),
-    ),
-    'references',
-    [
-      [
-        auMillionieme(
-          COEFFICIENT_DES_KITS *
-            Math.E *
-            DROITE_DES_KITS.pente *
-            PRIX_DE_LA_FEUILLE,
-        ),
-        LUE_COMME_PRODUIT,
-      ],
-      [
-        auMillionieme(
-          DROITE_DES_KITS.ordonnee *
-            Math.exp(DROITE_DES_KITS.pente * PRIX_DE_LA_FEUILLE),
-        ),
-        ORDONNEE_NON_EXPONENTIEE,
-      ],
-    ],
-  ),
-];
-
 type AttenduDeTableau = Parameters<typeof moteur.questionDeTableau>[2][number];
 
 const auMillieme = (valeur: number): number => arrondi(valeur, 3);
@@ -376,5 +228,3 @@ export const [PREMIER_LOGARITHME, ...AUTRES_LOGARITHMES] =
       { valeur: auMillieme(Math.log10(demande)), confusion: TOUCHE_LOG },
     ],
   }));
-
-export const PARCOURS_DU_COFFRE = 'b2-06-a4-coffre-kits';

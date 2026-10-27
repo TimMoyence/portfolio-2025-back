@@ -55,10 +55,6 @@ const ACTE_1: moteur.Acte = [
       title: 'Lire un chiffre, ce n’est pas le croire',
       subtitle:
         'Atelier Rivage, voilerie de La Rochelle. Lundi, 9 h : le comité de direction se réunit jeudi. Votre mission : fiabiliser le tableau de bord 2025.',
-      bullets: [
-        'BTS Comptabilité et gestion · 2e année · premier cours de mathématiques',
-        '3 h 30 · 6 actes',
-      ],
       bgImage: '/assets/cours/b2-01/v3/playfair-ecosse-1786.webp',
       bgImageAlt:
         'Graphique en barres de William Playfair (1786) : exportations et importations de l’Écosse avec ses partenaires commerciaux sur une année',
@@ -1141,7 +1137,7 @@ const ACTE_3: moteur.Acte = [
     concepts: ['evolutions-successives'],
     notes: moteur.puces(
       'Vote 1 individuel, sans calculatrice.',
-      'Entre 30 et 70 % de bonnes réponses : débat en binôme « convainquez votre voisin », puis revote ; sinon, revote directement.',
+      'Puis question 2, sans débat entre les deux ; la révélation suit.',
       'Pièges : « identique » (+10 % puis −10 % s’annuleraient) ; « 12 % » (remises additionnées). Contrôles : 110 × 0,90 = 99 ; 4 000 × 0,882 = 3 528 € HT.',
       'Relance CG : une seconde remise « sur le net » reste une réduction commerciale, pas un escompte.',
     ),
@@ -1175,15 +1171,6 @@ const ACTE_3: moteur.Acte = [
           ],
         ),
       ],
-      corrige: {
-        type: 'revelation',
-        titre: 'Pourquoi le prix ne revient pas à son point de départ',
-        lignes: [
-          '100 × 1,10 = 110, puis 110 × 0,90 = 99 : la baisse s’applique à 110, pas à 100.',
-          'Coefficient global : 1,10 × 0,90 = 0,99, soit −1 %.',
-          'Remises : 0,90 × 0,98 = 0,882 : le net est inférieur de 11,8 % au prix catalogue (3 528 € HT), pas de 12 %.',
-        ],
-      },
     },
   },
   {
@@ -2398,9 +2385,8 @@ const ACTE_5: moteur.Acte = [
     dureeMinutes: 8,
     concepts: ['moyenne-ponderee'],
     notes: moteur.puces(
-      'Vote 1 (2 min), débat en binôme (3 min), vote 2 sur le lycée (2 min), révélation (1 min).',
-      'Juste après la démonstration, le vote 1 devrait dépasser 70 % : dans ce cas, écourter le débat et passer au vote 2.',
-      'Grille du débat : un argument complet associe taux stables, poids modifiés et un exemple chiffré.',
+      'Vote 1 (2 min), vote 2 sur le lycée (2 min), révélation et commentaire des deux corrections (4 min).',
+      'Grille du commentaire : un argument complet associe taux stables, poids modifiés et un exemple chiffré.',
       'Transition : « Faites varier la part de la marketplace. »',
     ),
     proprietes: {
@@ -2441,15 +2427,6 @@ const ACTE_5: moteur.Acte = [
           ],
         ),
       ],
-      corrige: {
-        type: 'revelation',
-        titre: 'Un taux global est une moyenne pondérée',
-        lignes: [
-          'Taux global = somme des (poids × taux) : si les poids changent, le taux global change, même quand chaque taux reste stable.',
-          'Grille du débat — argument correct : taux locaux constants et poids modifiés, avec un exemple chiffré ; incomplet : une intuition sans chiffre ; faux : moyenne simple des taux, ou poids ignorés.',
-          'Au lycée, la part des candidats de MCO, moins souvent reçus, a augmenté.',
-        ],
-      },
     },
   },
   {
@@ -3180,7 +3157,7 @@ const ACTE_6: moteur.Acte = [
       notes: [
         'S’attarder sur l’énigme la moins résolue (pupitre).',
         'Faire relier chaque énigme à son acte : E1 la moyenne pondérée (A5-03), E2 les points (A2-06), E3 le 20,70 €/m² de la tâche de tableur 2 (A4-05), E4 l’inversion de Pacioli (A6-01).',
-        'Transition : « Avant la dernière réponse à corriger, le cadre : ce que l’IA peut faire, et ce qu’elle ne peut pas faire. »',
+        'Transition : « Un dernier rappel, de mémoire. »',
       ],
     },
     [
@@ -3202,114 +3179,6 @@ const ACTE_6: moteur.Acte = [
       ],
     ],
   ),
-  moteur.ecranV2(
-    {
-      screenId: 'B2-01-A6-03-IA-CADRE',
-      titre: 'IA : accélérer la préparation, jamais déléguer le jugement',
-      diffusion: 'catalogue',
-      dureeMinutes: 2,
-      concepts: ['controle-coherence'],
-      notes: moteur.puces(
-        'Relance : « Quelle donnée d’Atelier Rivage ne doit jamais être collée dans un outil grand public ? » (noms de clients, montants réels).',
-        'Insister sur « Faire challenger » : savoir écrire « je ne peux pas conclure ».',
-        'Transition : « Corrigez cette réponse d’IA. »',
-      ),
-    },
-    'guide',
-    {
-      title: 'IA : accélérer la préparation, jamais déléguer le jugement',
-      subtitle:
-        'Une IA générative peut proposer une méthode ou une formule. Elle ne valide ni un chiffre, ni une pièce, ni une conclusion.',
-      context:
-        'Le cadre d’usage de l’IA en éducation (ministère de l’Éducation nationale, juin 2025) demande un usage encadré, la protection des données et la vérification des productions. Pour un comptable, cela rejoint le secret professionnel et le contrôle interne.',
-      takeaway:
-        'L’IA peut réduire le temps de préparation ; la responsabilité de la preuve reste humaine.',
-      nextAction:
-        'Pour chaque réponse d’IA : source, calcul refait au tableur, contrôle, limite.',
-      items: [
-        {
-          title: 'Cadrer',
-          description:
-            'Décrire le rôle, la question, le format attendu et les contraintes de calcul.',
-          detail:
-            'Demander une méthode vérifiable, pas une réponse persuasive.',
-        },
-        {
-          title: 'Anonymiser',
-          description:
-            'Remplacer noms, clients et montants réels par des données fictives.',
-          detail: 'Aucune donnée confidentielle dans un service grand public.',
-        },
-        {
-          title: 'Faire challenger',
-          description:
-            'Demander les hypothèses, les unités et les cas limites.',
-          detail:
-            'L’IA est utile comme contradicteur, pas comme source ; sachez écrire « je ne peux pas conclure » quand la donnée manque.',
-        },
-        {
-          title: 'Vérifier au tableur',
-          description:
-            'Qualifier la source de chaque chiffre, recalculer avec un outil déterministe et comparer aux pièces.',
-          detail:
-            'Un résultat doit être reproductible hors de la conversation.',
-        },
-        {
-          title: 'Tracer',
-          description:
-            'Conserver la question, la version retenue et les corrections humaines.',
-          detail:
-            'Le lecteur doit savoir ce qui vient de l’outil et ce qui vient du professionnel.',
-        },
-      ],
-    },
-  ),
-  {
-    screenId: 'B2-01-A6-04-IA-ERREUR',
-    titre: 'Corriger une réponse d’IA',
-    diffusion: 'seance',
-    brique: 'fp-challenge',
-    dureeMinutes: 4,
-    concepts: ['taux-moyen'],
-    notes: moteur.puces(
-      '3 min d’écriture, révélation, 1 min d’échange.',
-      'Repérer qui ne trouve qu’une erreur, et qui retrouve le CA 2023 : 357 000 ÷ 1,20 = 297 500 €.',
-      'Contrôle : 297 500 × 1,326² ≈ 523 000. L’IA se trompe de 0,65 point (33,25 % contre 32,6 %) : l’ordre de grandeur ne suffit pas.',
-      'Transition : « Votre rappel personnel. »',
-    ),
-    proprietes: {
-      modalite: 'solo',
-      probleme: {
-        id: 'b2-01-a6-ia-erreur',
-        enonce:
-          'Samir a demandé à un assistant IA : « Évolution du CA de notre marketplace entre 2023 et 2025, et taux annuel moyen ? », en donnant +20 % en 2024 et +46,5 % en 2025. Réponse obtenue : « Hausse totale : 20 + 46,5 = 66,5 %. Taux annuel moyen : 66,5 ÷ 2 = 33,25 %. »',
-        invite:
-          'Trouvez les deux erreurs, corrigez les deux résultats, puis écrivez le contrôle que vous feriez au tableur.',
-      },
-      corrige: {
-        type: 'defi',
-        strategies: [
-          moteur.strategie(
-            'successives',
-            'Erreur 1 : des évolutions successives se multiplient : 1,20 × 1,465 ≈ 1,758, soit +75,8 % (297 500 € → 523 000 €).',
-          ),
-          moteur.strategie(
-            'racine',
-            'Erreur 2 : le taux moyen se calcule avec une racine carrée : √1,758 − 1 ≈ 0,326, soit +32,6 % par an.',
-          ),
-          moteur.strategie(
-            'tableur',
-            'Contrôle au tableur : =297500*PUISSANCE(1,326;2) redonne environ 523 000.',
-          ),
-          moteur.strategie(
-            'garder',
-            'Garder la réponse de l’IA : elle donne le bon ordre de grandeur.',
-            true,
-          ),
-        ],
-      },
-    },
-  },
   {
     screenId: 'B2-01-A6-05-RAPPEL',
     titre: 'Rappel : de mémoire, sans vos notes',
@@ -3489,94 +3358,6 @@ const ACTE_6: moteur.Acte = [
   },
   moteur.ecranV2(
     {
-      screenId: 'B2-01-A6-06-FICHE-MEMO',
-      titre: 'Fiche mémo : quelle méthode pour quelle question ?',
-      diffusion: 'seance',
-      dureeMinutes: 2,
-      concepts: [
-        'proportion',
-        'pourcentage',
-        'taux-evolution',
-        'evolutions-successives',
-        'evolution-reciproque',
-        'point-de-pourcentage',
-        'indice-base-100',
-        'taux-moyen',
-        'moyenne-ponderee',
-        'lecture-graphique',
-        'controle-coherence',
-      ],
-      notes: moteur.puces(
-        '90 s de lecture.',
-        'Relance : « Quelle carte pour "le taux global baisse alors que chaque taux est stable" ? » (moyenne pondérée).',
-      ),
-    },
-    'grid',
-    {
-      title: 'Fiche mémo : quelle méthode pour quelle question ?',
-      subtitle:
-        'À garder pour le CCF : chaque carte part d’une question et donne la méthode et son contrôle.',
-      items: [
-        {
-          title: 'Proportion',
-          description: 'Quelle part du total ?',
-          back: 'Partie ÷ total. Nommez la population de référence (commandes ou CA ?).',
-        },
-        {
-          title: 'Évolution',
-          description: 'De combien a-t-il varié ?',
-          back: 't = (y₂ − y₁) ÷ y₁ ; y₂ = (1 + t) × y₁. Le dénominateur est la valeur de départ.',
-        },
-        {
-          title: 'Successives',
-          description: 'Plusieurs hausses et baisses ?',
-          back: 'Multipliez les coefficients, puis retirez 1. On n’additionne jamais des taux successifs.',
-        },
-        {
-          title: 'Réciproque',
-          description: 'Comment revenir au départ ?',
-          back: 'Valeur de départ = arrivée ÷ coefficient ; taux réciproque = 1 ÷ (1 + t) − 1. Du TTC au HT : ÷ 1,20, soit une baisse de 16,67 %.',
-        },
-        {
-          title: 'Points',
-          description: 'Deux taux à comparer ?',
-          back: 'Écart en points (de 27 % à 25 % : −2 points) ; l’évolution relative du taux se calcule à part.',
-        },
-        {
-          title: 'Indice',
-          description: 'Que signifie un indice ?',
-          back: 'I = 100 × V ÷ V₀ ; taux = I ÷ 100 − 1. Un indice n’est ni un prix ni un taux.',
-        },
-        {
-          title: 'Taux moyen',
-          description: 'Quel rythme annuel constant ?',
-          back: '(Vₙ ÷ V₀)^(1/n) − 1, jamais le taux global divisé par n.',
-        },
-        {
-          title: 'Moyenne pondérée',
-          description: 'Pourquoi le taux global bouge-t-il ?',
-          back: 'Taux global = somme des marges ÷ somme des CA : il dépend des poids. Dans un TCD, utilisez un champ calculé, jamais « Moyenne de taux ».',
-        },
-        {
-          title: 'Représenter',
-          description: 'Quel graphique ?',
-          back: 'Évolution dans le temps : courbes ; comparaison de catégories : barres ; parts d’un total : barres empilées à 100 %. Toujours titre, unité, axe gradué, source et phrase de lecture ; un tableau reste l’alternative quand la forme trompe.',
-        },
-        {
-          title: 'Contrôler',
-          description: 'Le tableau est-il juste ?',
-          back: '$ fige une référence ; un contrôle de formules (les parts font 1) ; un contrôle de données (source indépendante) ; un écart multiple de 9 oriente vers une inversion ; seule la pièce prouve ; à efficacité égale, le contrôle le moins coûteux d’abord.',
-        },
-        {
-          title: 'Libellés',
-          description: 'Quel « taux de marge » ?',
-          back: 'Taux de marge = marge ÷ coût d’achat HT ; taux de marque = marge ÷ prix de vente HT ; taux de marge brute (sur CA HT) = marge sur coûts directs ÷ CA HT.',
-        },
-      ],
-    },
-  ),
-  moteur.ecranV2(
-    {
       screenId: 'B2-01-A6-07-BOITE-A-OUTILS',
       titre: 'Pour aller plus loin : outils et sources',
       diffusion: 'catalogue',
@@ -3585,7 +3366,7 @@ const ACTE_6: moteur.Acte = [
       notes: moteur.puces(
         'Montrer les cartes « Une ligne = une observation » et « SIERREUR ».',
         'Rappeler le devoir : refaire le TCD du 3e trimestre sur l’année ; les liens Excel et LibreOffice de l’écran montrent la manipulation.',
-        'Transition : « Billet de sortie. »',
+        'Transition : « La fiche mémo, pour finir. »',
       ),
     },
     'grid',
@@ -3652,59 +3433,99 @@ const ACTE_6: moteur.Acte = [
           href: 'https://www.insee.fr/fr/statistiques/serie/011814630',
           external: true,
         },
-        {
-          title: 'Cadre d’usage de l’IA en éducation',
-          description: 'Ministère de l’Éducation nationale, juin 2025.',
-          href: 'https://www.education.gouv.fr/cadre-d-usage-de-l-ia-en-education-450647',
-          external: true,
-        },
         moteur.REFERENTIEL_DU_BTS_CG,
       ],
     },
   ),
-  {
-    screenId: 'B2-01-A6-08-BILLET-DE-SORTIE',
-    titre: 'Billet de sortie : la phrase du compte rendu',
-    diffusion: 'seance',
-    brique: 'fp-exit',
-    dureeMinutes: 3,
-    concepts: ['contrat-de-lecture'],
-    notes: moteur.puces(
-      '3 min ; clore la séance quand le compteur de billets est complet.',
-      'Pièges : la phrase en « −2,3 % » et celle qui attribue la baisse au taux de chaque canal.',
-      'Réponse attendue : « 27,6 % → 25,3 %, soit −2,3 points ; la marketplace passe de 34 % à 45,5 % du CA. »',
-      'Transition : « Rendez-vous en B2-02. »',
-    ),
-    proprietes: {
-      modalite: 'solo',
-      questions: [
-        moteur.vote(
-          'b2-01-a6-billet',
-          'contrat-de-lecture',
-          true,
-          'Le comité ne retiendra qu’une phrase. Laquelle peut figurer telle quelle au compte rendu ?',
-          'Le CA progresse de 9,5 % mais le taux de marge brute recule de 2,3 points : la marketplace, moins margée, pèse davantage dans le CA.',
-          [
-            [
-              'Le CA progresse de 9,5 % mais le taux de marge brute recule de 2,3 % : la marketplace, moins margée, pèse davantage dans le CA.',
-              'points-confondus-avec-pourcentage',
-            ],
-            [
-              'Le CA progresse de 9,5 % mais le taux de marge brute recule de 2,3 points : chaque canal a vu son propre taux baisser.',
-              'baisse-attribuee-aux-taux-locaux',
-            ],
-            [
-              'La marge brute progresse de 1 200 € et le CA de 9,5 % : la rentabilité de l’entreprise s’améliore.',
-              'valeur-confondue-avec-taux',
-            ],
-          ],
-          ['2,3 points', 'pèse davantage'],
-        ),
+  moteur.ecranV2(
+    {
+      screenId: 'B2-01-A6-06-FICHE-MEMO',
+      titre: 'Fiche mémo : quelle méthode pour quelle question ?',
+      diffusion: 'seance',
+      dureeMinutes: 2,
+      concepts: [
+        'proportion',
+        'pourcentage',
+        'taux-evolution',
+        'evolutions-successives',
+        'evolution-reciproque',
+        'point-de-pourcentage',
+        'indice-base-100',
+        'taux-moyen',
+        'moyenne-ponderee',
+        'lecture-graphique',
+        'controle-coherence',
       ],
-      invite:
-        'Quels deux chiffres du dossier prouvent que cette phrase est juste ? Écrivez-les avec leur unité.',
+      notes: moteur.puces(
+        '90 s de lecture.',
+        'Relance : « Quelle carte pour "le taux global baisse alors que chaque taux est stable" ? » (moyenne pondérée).',
+      ),
     },
-  },
+    'grid',
+    {
+      title: 'Fiche mémo : quelle méthode pour quelle question ?',
+      subtitle:
+        'À garder pour le CCF : chaque carte part d’une question et donne la méthode et son contrôle.',
+      imprimable: true,
+      items: [
+        {
+          title: 'Proportion',
+          description: 'Quelle part du total ?',
+          back: 'Partie ÷ total. Nommez la population de référence (commandes ou CA ?).',
+        },
+        {
+          title: 'Évolution',
+          description: 'De combien a-t-il varié ?',
+          back: 't = (y₂ − y₁) ÷ y₁ ; y₂ = (1 + t) × y₁. Le dénominateur est la valeur de départ.',
+        },
+        {
+          title: 'Successives',
+          description: 'Plusieurs hausses et baisses ?',
+          back: 'Multipliez les coefficients, puis retirez 1. On n’additionne jamais des taux successifs.',
+        },
+        {
+          title: 'Réciproque',
+          description: 'Comment revenir au départ ?',
+          back: 'Valeur de départ = arrivée ÷ coefficient ; taux réciproque = 1 ÷ (1 + t) − 1. Du TTC au HT : ÷ 1,20, soit une baisse de 16,67 %.',
+        },
+        {
+          title: 'Points',
+          description: 'Deux taux à comparer ?',
+          back: 'Écart en points (de 27 % à 25 % : −2 points) ; l’évolution relative du taux se calcule à part.',
+        },
+        {
+          title: 'Indice',
+          description: 'Que signifie un indice ?',
+          back: 'I = 100 × V ÷ V₀ ; taux = I ÷ 100 − 1. Un indice n’est ni un prix ni un taux.',
+        },
+        {
+          title: 'Taux moyen',
+          description: 'Quel rythme annuel constant ?',
+          back: '(Vₙ ÷ V₀)^(1/n) − 1, jamais le taux global divisé par n.',
+        },
+        {
+          title: 'Moyenne pondérée',
+          description: 'Pourquoi le taux global bouge-t-il ?',
+          back: 'Taux global = somme des marges ÷ somme des CA : il dépend des poids. Dans un TCD, utilisez un champ calculé, jamais « Moyenne de taux ».',
+        },
+        {
+          title: 'Représenter',
+          description: 'Quel graphique ?',
+          back: 'Évolution dans le temps : courbes ; comparaison de catégories : barres ; parts d’un total : barres empilées à 100 %. Toujours titre, unité, axe gradué, source et phrase de lecture ; un tableau reste l’alternative quand la forme trompe.',
+        },
+        {
+          title: 'Contrôler',
+          description: 'Le tableau est-il juste ?',
+          back: '$ fige une référence ; un contrôle de formules (les parts font 1) ; un contrôle de données (source indépendante) ; un écart multiple de 9 oriente vers une inversion ; seule la pièce prouve ; à efficacité égale, le contrôle le moins coûteux d’abord.',
+        },
+        {
+          title: 'Libellés',
+          description: 'Quel « taux de marge » ?',
+          back: 'Taux de marge = marge ÷ coût d’achat HT ; taux de marque = marge ÷ prix de vente HT ; taux de marge brute (sur CA HT) = marge sur coûts directs ÷ CA HT.',
+        },
+      ],
+    },
+  ),
 ];
 
 const REMEDIATIONS: ContenuDeCours['remediations'] = {
@@ -3728,7 +3549,6 @@ const REMEDIATIONS: ContenuDeCours['remediations'] = {
   'taux-moyen-arithmetique': 'B2-01-A3-06-INDICE-ET-TAUX-MOYEN',
   'moyenne-simple-des-taux': 'B2-01-A5-03-MOYENNE-PONDEREE',
   'hausse-base-baisse-taux': 'B2-01-A5-04-SIMULATEUR-MIX',
-  'baisse-attribuee-aux-taux-locaux': 'B2-01-A5-03-MOYENNE-PONDEREE',
   'axe-tronque-lu-comme-ecart': 'B2-01-A2-02-ORIGINE-AXE',
   'correlation-prise-pour-causalite': 'B2-01-A5-08-RECOMMANDATION',
   'forme-inadaptee': 'B2-01-A4-04-CA-TRIMESTRIEL',
@@ -3820,7 +3640,6 @@ export const COURS_B2_01 = moteur.coursB2(
   {
     slug: 'b2-01-traitement-information-chiffree',
     titre: 'Lire, contrôler et décider avec l’information chiffrée',
-    dureeMinutes: 211,
     concepts: [...CONCEPTS_DU_B2_01],
   },
 );

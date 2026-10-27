@@ -183,14 +183,6 @@ export function corrigeDeLEcran(ecran: Ecran): CorrigeEcranPresentateur | null {
     }
     case 'fp-challenge':
       return { type: 'defi', strategies: ecran.defi.strategies };
-    case 'fp-vote':
-      return ecran.revelation === undefined
-        ? null
-        : {
-            type: 'revelation',
-            titre: ecran.revelation.titre,
-            lignes: ecran.revelation.lignes,
-          };
     case 'fp-story': {
       const correction = ecran.proprietes.correction;
       return correction === undefined || !('expected' in correction)

@@ -2,6 +2,15 @@ import { CA_HT_SAISI_EN_TEXTE, CLASSEURS_B3_01 } from './b3-01.donnees';
 import { questionChiffree } from './b3-01.questions';
 import * as moteur from './briques';
 
+export const GRAVURE_DE_L_ACCROCHE = moteur.gravureDuDomainePublic({
+  id: 'M1',
+  chemin: '/assets/cours/gravures/v1/hollerith-recensement-1890.jpg',
+  pageSource:
+    'https://commons.wikimedia.org/wiki/File:1890_Census_Hollerith_Electrical_Counting_Machines_Sci_Amer.jpg',
+  auteur: 'Scientific American, machines de Herman Hollerith',
+  date: '1890',
+});
+
 const CONFUSIONS_D_UN_IDENTIFIANT = {
   date: 'identifiant-range-sous-un-autre-type',
   categorie: 'cle-prise-pour-categorie',
@@ -90,12 +99,9 @@ export const ACTE_1: moteur.Acte = [
       title: 'Expert Data : de la donnée brute à la décision',
       subtitle:
         'Lundi 12 octobre, 8 h. Nadia Ferrand, directrice commerciale de Norvane Équipement, écrit : « Voici l’export des ventes depuis janvier 2025. Qu’est-ce qui ne va pas dans mon réseau ? J’ai le comité de direction jeudi. »',
-      bullets: [
-        'Bachelor 3 · Outils informatiques du manager · séance 1',
-        'Norvane Équipement : 12 agences, 36 commerciaux, 40 produits et services',
-        'Un export brut des ventes, de janvier 2025 à septembre 2026, à ouvrir dans Excel',
-        'Données fictives',
-      ],
+      bgImage: GRAVURE_DE_L_ACCROCHE.chemins[0],
+      bgImageAlt:
+        'Gravure du Scientific American (1890) : les machines électriques de Herman Hollerith dépouillent les cartes perforées du recensement américain',
     },
     {
       pieceJointe: {
@@ -166,7 +172,7 @@ export const ACTE_1: moteur.Acte = [
     notes: moteur.puces(
       'Temps « réfléchir » du niveau 1 : deux votes non notés.',
       'Première question sans révélation : la réponse tombe à la correction de l’exercice 4 ; noter au tableau la répartition des votes.',
-      'Deuxième question : entre 30 et 70 % de bonnes réponses, débat en binôme avant la révélation.',
+      'Deuxième question, sans débat : la révélation suit.',
     ),
     proprietes: {
       modalite: 'solo',
@@ -195,15 +201,6 @@ export const ACTE_1: moteur.Acte = [
           ],
         ),
       ],
-      corrige: {
-        type: 'revelation',
-        titre: 'Dupont, Bordeaux : deux clients',
-        lignes: [
-          'L’onglet Clients compte deux Dupont à Bordeaux : Dupont Bureautique et Dupont & Fils. Le nom et la ville ne les distinguent pas.',
-          'Il compte aussi des raisons sociales présentes deux fois dans la même ville, sous deux client_id : doublon ou deux établissements, seul le métier peut le dire. Le nom et la ville ne suffisent ni à distinguer deux clients, ni à les fusionner.',
-          'La part des lignes fausses ou douteuses se révèle à la correction de l’exercice 4.',
-        ],
-      },
     },
   },
   moteur.ecranV2(
@@ -564,15 +561,6 @@ export const ACTE_1: moteur.Acte = [
           ],
         ),
       ],
-      corrige: {
-        type: 'revelation',
-        titre: 'Le pire cas : un total faux, sans alerte',
-        lignes: [
-          'SOMME ignore une cellule de texte sans erreur : le total est faux et la formule ne signale rien ; tout au plus un petit triangle vert sur la cellule, facile à manquer.',
-          'Un montant aligné à gauche dans une colonne de nombres est un indice : c’est du texte.',
-          'ESTNUM renvoie FAUX pour un nombre stocké en texte : on vérifie avant d’additionner.',
-        ],
-      },
     },
   },
   moteur.ecranV2(

@@ -1,6 +1,6 @@
 import { CONCEPTS_DU_B3_01 } from '../../domain/cours/banque/concepts';
 import type { ContenuDeCours } from '../../domain/cours/CoursStocke';
-import { ACTE_1 } from './b3-01.acte-1';
+import { ACTE_1, GRAVURE_DE_L_ACCROCHE } from './b3-01.acte-1';
 import { ACTE_2 } from './b3-01.acte-2';
 import { ACTE_3 } from './b3-01.acte-3';
 import * as moteur from './briques';
@@ -20,7 +20,6 @@ const REMEDIATIONS: ContenuDeCours['remediations'] = {
   'correction-certaine-renvoyee-a-un-humain': 'B3-01-A1-10-COURS-GRILLE',
   'erreur-certaine-jugee-douteuse': 'B3-01-A1-10-COURS-GRILLE',
   'donnee-douteuse-jugee-fausse': 'B3-01-A1-10-COURS-GRILLE',
-  'suppression-au-lieu-de-signalement': 'B3-01-A1-10-COURS-GRILLE',
   'texte-pris-pour-nombre': 'B3-01-A1-11-COURS-OUTILS',
   'doublons-supprimes-sur-une-colonne': 'B3-01-A1-11-COURS-OUTILS',
   'controle-apres-correction': 'B3-01-A1-11-COURS-OUTILS',
@@ -49,12 +48,11 @@ const REMEDIATIONS: ContenuDeCours['remediations'] = {
 export const COURS_B3_01 = moteur.coursB3(
   [ACTE_1, ACTE_2, ACTE_3],
   REMEDIATIONS,
-  [],
+  [GRAVURE_DE_L_ACCROCHE],
   {
     slug: 'b3-01-donnee-brute-decision',
     titre: 'Expert Data : de la donnée brute à la décision',
     gabarit: 'b3',
-    dureeMinutes: 180,
     concepts: [...CONCEPTS_DU_B3_01],
   },
 );

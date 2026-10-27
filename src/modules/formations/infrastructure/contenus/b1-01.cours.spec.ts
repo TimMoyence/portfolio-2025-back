@@ -1,13 +1,10 @@
 import {
   attendreLaFeuille,
-  attendreLesEnigmes,
   attendreLesNumeriques,
   corrigeDe,
   corrigeDeFeuille,
   CATALOGUE_ILLUSTRE_A_SIX_PAGES,
   decrireLaFicheDuCours,
-  decrireLaMiniSituation,
-  FICHE_DU_GABARIT_V3,
   valeursEtPieges,
 } from '../../../../../test/helpers/fiche-de-cours';
 import {
@@ -46,16 +43,6 @@ const JEUNES_2026 = 42.3;
 const ACHAT_MANETTE = 24;
 const VENTE_MANETTE = 39;
 
-const BILLETS = [412, 288, 172, 88];
-const EN_LIGNE = 150;
-const TOURNOI = 0.45;
-const ATELIERS = [
-  [160, 0.85],
-  [140, 0.6],
-] as const;
-const ACHAT_STAND = 32;
-const VENTE_STAND = 50;
-
 const pourcent = (partie: number, tout: number): number =>
   auMillionieme((partie / tout) * 100);
 const auDixieme = (partie: number, tout: number): number =>
@@ -64,18 +51,18 @@ const auDixieme = (partie: number, tout: number): number =>
 const TOUS_LES_CLIENTS = somme(CLIENTS);
 const PORTEURS = CLIENTS.map((clients, rang) => clients * CARTE[rang]);
 const TOUS_LES_PORTEURS = somme(PORTEURS);
-const TOUS_LES_BILLETS = somme(BILLETS);
 
 decrireLaFicheDuCours('B1-01', COURS, {
-  ...FICHE_DU_GABARIT_V3,
   conception: 'cours-b1-01-conception.md',
-  ecrans: 37,
-  dureeMinutes: 160,
-  minutesParActe: [49, 36, 37, 38, 0, 0],
-  rythme: { expositionContinueMax: 6, interactives: 131, exposition: 29 },
-  noteesParType: [4, 10, 0, 2, 1],
-  options: 8 + 12,
-  catalogue: CATALOGUE_ILLUSTRE_A_SIX_PAGES,
+  ecrans: 32,
+  dureeMinutes: 121,
+  minutesParActe: [49, 36, 28, 8, 0, 0],
+  rythme: { expositionContinueMax: 6, interactives: 95, exposition: 26 },
+  noteesParType: [3, 10, 0, 1, 1],
+  enigmes: 0,
+  rappels: 12,
+  options: 19,
+  catalogue: CATALOGUE_ILLUSTRE_A_SIX_PAGES.filter((code) => code !== 'A4-01'),
   ateliersNotes: ['A1-09 (10)', 'A2-06 (10)', 'A3-05 (10)'],
   remediations: 14,
   corrigesSurPlace: [
@@ -84,16 +71,7 @@ decrireLaFicheDuCours('B1-01', COURS, {
     'B1-01-A2-05-TABLEAU-FIDELITE',
     'B1-01-A2-06-ATELIER-FIDELITE',
     'B1-01-A3-05-ATELIER-VENTES',
-    'B1-01-A3-06-DEFI-IA',
-    'B1-01-A4-02-TABLEUR-FESTIVAL',
-    'B1-01-A4-03-COFFRE-FESTIVAL',
   ],
-});
-
-decrireLaMiniSituation('B1-01', COURS_B1_01, {
-  donneesFictives: ['B1-01-A1-04-DOSSIER', 'B1-01-A4-01-SITUATION-FESTIVAL'],
-  coffre: 'B1-01-A4-03-COFFRE-FESTIVAL',
-  tableur: 'B1-01-A4-02-TABLEUR-FESTIVAL',
 });
 
 describe('B1-01 — textes relus contre les données', () => {
@@ -105,15 +83,6 @@ describe('B1-01 — textes relus contre les données', () => {
     expect(texte).toContain('3 000 clients');
     for (const taux of CARTE) {
       expect(texte).toContain(`${taux * 100} %`);
-    }
-  });
-
-  it('annonce dans le dossier du festival les 960 billets et leur répartition', () => {
-    const texte = texteDe(COURS_B1_01, 'B1-01-A4-01-SITUATION-FESTIVAL');
-
-    expect(texte).toContain('960 billets');
-    for (const billets of BILLETS) {
-      expect(texte).toContain(String(billets));
     }
   });
 
@@ -184,38 +153,6 @@ describe('B1-01 — recalcul des corrigés depuis les seuls paramètres', () => 
     });
   });
 
-  it('recalcule les solutions et pièges des quatre énigmes de la mini-situation', () => {
-    const partDesEtudiants = BILLETS[1] / TOUS_LES_BILLETS;
-    const [[samedi, remplissageSamedi], [dimanche, remplissageDimanche]] =
-      ATELIERS;
-    const marge = VENTE_STAND - ACHAT_STAND;
-
-    attendreLesEnigmes(COURS, {
-      'b1-01-a4-e1-en-ligne': [
-        auDixieme(EN_LIGNE, BILLETS[0]),
-        auDixieme(EN_LIGNE, TOUS_LES_BILLETS),
-        auDixieme(BILLETS[0], EN_LIGNE),
-      ],
-      'b1-01-a4-e2-tournoi': [
-        pourcent(BILLETS[1] * TOURNOI, TOUS_LES_BILLETS),
-        TOURNOI * 100,
-        (partDesEtudiants + TOURNOI) * 100,
-      ],
-      'b1-01-a4-e3-ateliers': [
-        pourcent(
-          samedi * remplissageSamedi + dimanche * remplissageDimanche,
-          samedi + dimanche,
-        ),
-        ((remplissageSamedi + remplissageDimanche) / 2) * 100,
-        (remplissageSamedi + remplissageDimanche) * 100,
-      ],
-      'b1-01-a4-e4-stand': [
-        auDixieme(marge, VENTE_STAND),
-        pourcent(marge, ACHAT_STAND),
-      ],
-    });
-  });
-
   it('attend au tableau de fidélité les porteurs de chaque boutique, et un taux global de 54 %', () => {
     const corrige = corrigeDe(COURS, 'b1-01-a2-tableau-fidelite');
     if (corrige.type !== 'tableau') {
@@ -230,15 +167,6 @@ describe('B1-01 — recalcul des corrigés depuis les seuls paramètres', () => 
       ]),
     );
     expect(pourcent(TOUS_LES_PORTEURS, TOUS_LES_CLIENTS)).toBe(54);
-  });
-
-  it('arrondit au dixième des parts de billets qui font exactement 100 %', () => {
-    expect(
-      arrondi(
-        somme(BILLETS.map((billets) => auDixieme(billets, TOUS_LES_BILLETS))),
-        6,
-      ),
-    ).toBe(100);
   });
 });
 
@@ -299,25 +227,5 @@ describe('B1-01 — les deux feuilles corrigées par le moteur de formules', () 
     expect(confusionsDe(corrige, { B6: '3000' }, 'B')).toEqual([
       'valeur-saisie-sans-formule',
     ]);
-  });
-
-  it('reconnaît juste la répartition des billets et nomme la part sans × 100 et le tout inversé', () => {
-    const corrige = corrigeDeFeuille(COURS, 'b1-01-a4-feuille-billets');
-    const juste = {
-      B7: '=SOMME(B3:B6)',
-      ...recopier('=ARRONDI(B3/$B$7*100;1)', 'C', 3, 6),
-      C7: '=SOMME(C3:C6)',
-    };
-
-    expect(corrigerFeuille(corrige, juste).score).toBe(1);
-    expect(
-      confusionsDe(corrige, { ...juste, C3: '=ARRONDI(B3/$B$7;1)' }, 'C3'),
-    ).toEqual(['taux-valeur-facteur-cent']);
-    expect(
-      confusionsDe(corrige, { ...juste, C3: '=ARRONDI($B$7/B3*100;1)' }, 'C3'),
-    ).toEqual(['base-inversee']);
-    expect(
-      confusionsDe(corrige, { ...juste, C3: '=B3/$B$7*100' }, 'C3'),
-    ).toEqual(['arrondi-oublie']);
   });
 });

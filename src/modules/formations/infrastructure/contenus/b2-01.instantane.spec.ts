@@ -2,16 +2,16 @@ import { lireLInstantane } from '../../../../../test/helpers/instantane-de-cours
 import { COURS_B2_01 } from './b2-01.cours';
 
 describe('instantané du B2-01 livré au front', () => {
-  it('porte les 59 écrans du cours, corrections sur place et dossier du comité compris', () => {
+  it('porte les 56 écrans du cours, corrections sur place et dossier du comité compris', () => {
     const livre = lireLInstantane(COURS_B2_01);
 
-    expect(livre.sujet.ecrans).toHaveLength(59);
-    expect(livre.deroule.ecrans).toHaveLength(59);
+    expect(livre.sujet.ecrans).toHaveLength(56);
+    expect(livre.deroule.ecrans).toHaveLength(56);
     expect(
       livre.catalogue.ecrans.filter(
         (ecran) => ecran.type === 'ecran-verrouille',
       ),
-    ).toHaveLength(47);
+    ).toHaveLength(45);
     expect(
       livre.deroule.ecrans.filter(
         (ecran) => (ecran.explications?.length ?? 0) > 0,

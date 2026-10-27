@@ -47,7 +47,8 @@ export class PilotageEcranRequestDto implements PilotageEcran {
   phase?: VotePhase;
 
   @ApiPropertyOptional({
-    description: 'Revelation des pistes fausses d un defi, jamais retiree',
+    description:
+      'Revelation de la correction de l ecran (defi, vote a deux questions, questionnaire), jamais retiree',
   })
   @IsOptional()
   @IsBoolean()

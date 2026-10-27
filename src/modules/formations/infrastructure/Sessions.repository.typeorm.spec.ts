@@ -235,10 +235,12 @@ describe('SessionsRepositoryTypeORM', () => {
     table = [ligne({ id: 'session-uuid' })];
 
     const session = await sut.update('session-uuid', {
-      pilotageEcrans: { 'E-VOTE': { phase: 'revote' } },
+      pilotageEcrans: { 'E-VOTE': { phase: 'question-2' } },
     });
 
-    expect(session.pilotageEcrans).toEqual({ 'E-VOTE': { phase: 'revote' } });
+    expect(session.pilotageEcrans).toEqual({
+      'E-VOTE': { phase: 'question-2' },
+    });
   });
 
   it('horodate chaque mise a jour', async () => {

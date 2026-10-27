@@ -42,8 +42,8 @@ Chaque notion suit trois temps, dans cet ordre.
 | Comprendre | Poser la trace écrite                            | `fp-story` à rendu v2 `lesson`                                                                                            | `B2-02-A2-03-COURS-NUAGE`      |
 | S'exercer  | Réinvestir, noté                                 | écran à question notée (`questionnaire`, `fp-table-build`, `fp-sheet`, `fp-cardsort`…), `fp-escape`, `fp-challenge`       | `B2-02-A2-05-ATELIER-NUAGE`    |
 
-`fp-worked` (exemple résolu), `fp-recall`, `fp-spaced` et `fp-exit` restent **hors cycle** : ils
-s'insèrent librement, sans ouvrir ni fermer un temps.
+`fp-worked` (exemple résolu), `fp-recall` et `fp-spaced` restent **hors cycle** : ils s'insèrent
+librement, sans ouvrir ni fermer un temps.
 
 Règles vérifiées (`controlerCycle`) :
 
@@ -55,7 +55,7 @@ Règles vérifiées (`controlerCycle`) :
 
 Un exercice se découpe en réflexion, travail puis correction, chacun chronométré. Est un
 exercice tout `fp-escape`, tout `fp-challenge`, et tout autre écran qui porte une question notée
-(`noteCompte`), hors `fp-recall`, `fp-exit`, `fp-spaced` et `fp-worked`.
+(`noteCompte`), hors `fp-recall`, `fp-spaced` et `fp-worked`.
 
 - **L'annonce** tient sur une ligne exacte des notes formateur :
   `• Temps : réflexion N min · travail M min`, suivie de ` · correction K min` quand la
@@ -91,19 +91,19 @@ Le rendu `scatter` (nuage de points, point moyen et droite facultatifs) complèt
 des séries à deux variables. La garde de confidentialité lit ses coordonnées comme les valeurs
 d'un graphique.
 
-## 5. La mini-situation CCF
+## 5. La mini-situation CCF et la fiche mémo
 
-Le cours se clôt sur une mini-situation au format de la CCF de mathématiques du BTS CG
-(deux situations de 55 min, dont 3 points sur 10 réservés au tableur) :
+Un cours peut porter, avant sa fiche mémo, une mini-situation au format de la CCF de mathématiques
+du BTS CG (deux situations de 55 min, dont 3 points sur 10 réservés au tableur) :
 
 - un énoncé au format officiel, sur données réelles sourcées ;
 - une question tableur, jouée en `fp-sheet` et corrigée cellule par cellule ;
 - une suite d'énigmes (`fp-escape`) qui déroule les questions de la situation ;
 - une grille : barème par question, pièges attendus et remédiation dans les notes formateur.
 
-Règles vérifiées (`controlerMiniSituation`) : le cours porte un `fp-escape`, et aucune trace
-écrite ne le suit — la mini-situation réinvestit, elle n'introduit rien. Seuls le rappel espacé,
-la fiche mémo et le billet de sortie viennent après.
+Règles vérifiées : quand le cours porte un `fp-escape`, aucune trace écrite ne le suit — la
+mini-situation réinvestit, elle n'introduit rien (`controlerMiniSituation`). Tout cours à questions
+se clôt sur sa fiche mémo, un récit `grid` imprimable (`controlerCloture`).
 
 ## 6. Équivalence papier
 
@@ -111,20 +111,20 @@ Une séance doit pouvoir se tenir sans aucun poste étudiant : le formateur proj
 révélations, les étudiants répondent sur papier. Chaque brique interactive a donc une forme
 papier, que la fiche de conception décrit écran par écran.
 
-| Brique                            | Forme papier                                                        |
-| --------------------------------- | ------------------------------------------------------------------- |
-| `fp-vote`                         | Cases à cocher, décompte à main levée                               |
-| `questionnaire`                   | Question et espace de réponse ; réponse numérique encadrée          |
-| `fp-sheet`                        | « Quelle formule écrivez-vous en E3 ? » avec la grille des cellules |
-| `fp-table-build`                  | Tableau à compléter                                                 |
-| `fp-cardsort`                     | Liste à classer en colonnes                                         |
-| `fp-escape`                       | Énigmes en série ; le code de chaque étape se vérifie au corrigé    |
-| `fp-challenge`                    | Réponse de l'IA imprimée, à critiquer par écrit                     |
-| `fp-pro`, `reflection`, `fp-exit` | Question ouverte et lignes de réponse                               |
-| `fp-pulse`                        | Pouce levé, main à plat, pouce baissé                               |
-| `fp-recall`, `fp-spaced`          | Questions de rappel en tête de feuille                              |
-| `fp-worked`                       | Exemple résolu étape par étape, révélé au tableau                   |
-| `lesson`, `scatter`               | Imprimés tels quels dans le livret                                  |
+| Brique                   | Forme papier                                                        |
+| ------------------------ | ------------------------------------------------------------------- |
+| `fp-vote`                | Cases à cocher, décompte à main levée                               |
+| `questionnaire`          | Question et espace de réponse ; réponse numérique encadrée          |
+| `fp-sheet`               | « Quelle formule écrivez-vous en E3 ? » avec la grille des cellules |
+| `fp-table-build`         | Tableau à compléter                                                 |
+| `fp-cardsort`            | Liste à classer en colonnes                                         |
+| `fp-escape`              | Énigmes en série ; le code de chaque étape se vérifie au corrigé    |
+| `fp-challenge`           | Réponse de l'IA imprimée, à critiquer par écrit                     |
+| `fp-pro`, `reflection`   | Question ouverte et lignes de réponse                               |
+| `fp-pulse`               | Pouce levé, main à plat, pouce baissé                               |
+| `fp-recall`, `fp-spaced` | Questions de rappel en tête de feuille                              |
+| `fp-worked`              | Exemple résolu étape par étape, révélé au tableau                   |
+| `lesson`, `scatter`      | Imprimés tels quels dans le livret                                  |
 
 ## 7. Liste de contrôle d'un nouveau cours v3
 

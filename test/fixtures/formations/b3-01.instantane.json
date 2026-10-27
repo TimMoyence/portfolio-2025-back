@@ -1,11 +1,11 @@
 {
   "graine": 0,
-  "empreinte": "3128d1edd53b4b1d5bbb271ccd886d77e7697274eedff89c889d077af8d18739",
+  "empreinte": "d43ef478d3be4da8d50657f17f3baaea9a91f1ee775c275b874c50a2b64fcd0e",
   "sujet": {
     "id": "b3-01-donnee-brute-decision",
     "titre": "Expert Data : de la donnée brute à la décision",
     "niveau": "B3",
-    "duree": 180,
+    "duree": 176,
     "concepts": [
       "reference-de-cellule",
       "jeu-de-donnees",
@@ -73,12 +73,8 @@
               "props": {
                 "title": "Expert Data : de la donnée brute à la décision",
                 "subtitle": "Lundi 12 octobre, 8 h. Nadia Ferrand, directrice commerciale de Norvane Équipement, écrit : « Voici l’export des ventes depuis janvier 2025. Qu’est-ce qui ne va pas dans mon réseau ? J’ai le comité de direction jeudi. »",
-                "bullets": [
-                  "Bachelor 3 · Outils informatiques du manager · séance 1",
-                  "Norvane Équipement : 12 agences, 36 commerciaux, 40 produits et services",
-                  "Un export brut des ventes, de janvier 2025 à septembre 2026, à ouvrir dans Excel",
-                  "Données fictives"
-                ]
+                "bgImage": "/assets/cours/gravures/v1/hollerith-recensement-1890.jpg",
+                "bgImageAlt": "Gravure du Scientific American (1890) : les machines électriques de Herman Hollerith dépouillent les cartes perforées du recensement américain"
               }
             },
             "metadonnees": {
@@ -1816,6 +1812,46 @@
         }
       },
       {
+        "id": "B3-01-A3-12-CAHIER-DE-REGLES",
+        "type": "fp-pro",
+        "titre": "Cahier de règles : niveaux 5 et 6, puis relecture",
+        "duree": 4,
+        "interactif": true,
+        "donnees": {
+          "cas": {
+            "id": "B3-01-A3-12-CAHIER-DE-REGLES",
+            "metier": "Analyste data — Norvane Équipement (réseau de 12 agences)",
+            "situation": "Règles dites avant les pauses : niveau 1 « Je relie les tables par un identifiant, jamais par un libellé » ; niveau 2 « Je corrige seul ce qui est faux et certain ; je signale ce qui est douteux et je demande » ; niveau 3 « Avant la fonction, je nomme la famille du problème » ; niveau 4 « Je travaille sur un tableau structuré, jamais sur une plage fixe ».",
+            "geste": "Écrivez une règle pour le niveau 5 et une pour le niveau 6, puis choisissez parmi les six celle que l’agent de la séance 2 recevra en premier.",
+            "consequence": "Une règle que l’agent n’a pas reçue, il ne l’appliquera pas.",
+            "questionsLibres": [
+              {
+                "id": "b3-01-a3-regles:regle-visualiser",
+                "question": "Niveau 5 · Visualiser : votre règle avant de choisir un graphique.",
+                "placeholder": "Avant le graphique, je…"
+              },
+              {
+                "id": "b3-01-a3-regles:regle-decider",
+                "question": "Niveau 6 · Décider : votre règle pour écrire une recommandation.",
+                "placeholder": "Je recommande…"
+              },
+              {
+                "id": "b3-01-a3-regles:regle-la-plus-utile",
+                "question": "Parmi les six règles de la séance, laquelle confieriez-vous en premier à un agent, et pourquoi ?",
+                "placeholder": "La règle du niveau … parce que…"
+              }
+            ],
+            "metadonnees": {
+              "concepts": ["choix-du-graphique", "tableau-de-bord"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 4,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
         "id": "B3-01-A3-11-FICHE-MEMO",
         "type": "fp-story",
         "titre": "Fiche mémo : de la donnée brute à la décision",
@@ -1876,112 +1912,6 @@
             }
           }
         }
-      },
-      {
-        "id": "B3-01-A3-12-CAHIER-DE-REGLES",
-        "type": "fp-pro",
-        "titre": "Cahier de règles : niveaux 5 et 6, puis relecture",
-        "duree": 4,
-        "interactif": true,
-        "donnees": {
-          "cas": {
-            "id": "B3-01-A3-12-CAHIER-DE-REGLES",
-            "metier": "Analyste data — Norvane Équipement (réseau de 12 agences)",
-            "situation": "Règles dites avant les pauses : niveau 1 « Je relie les tables par un identifiant, jamais par un libellé » ; niveau 2 « Je corrige seul ce qui est faux et certain ; je signale ce qui est douteux et je demande » ; niveau 3 « Avant la fonction, je nomme la famille du problème » ; niveau 4 « Je travaille sur un tableau structuré, jamais sur une plage fixe ».",
-            "geste": "Écrivez une règle pour le niveau 5 et une pour le niveau 6, puis choisissez parmi les six celle que l’agent de la séance 2 recevra en premier.",
-            "consequence": "Une règle que l’agent n’a pas reçue, il ne l’appliquera pas.",
-            "questionsLibres": [
-              {
-                "id": "b3-01-a3-regles:regle-visualiser",
-                "question": "Niveau 5 · Visualiser : votre règle avant de choisir un graphique.",
-                "placeholder": "Avant le graphique, je…"
-              },
-              {
-                "id": "b3-01-a3-regles:regle-decider",
-                "question": "Niveau 6 · Décider : votre règle pour écrire une recommandation.",
-                "placeholder": "Je recommande…"
-              },
-              {
-                "id": "b3-01-a3-regles:regle-la-plus-utile",
-                "question": "Parmi les six règles de la séance, laquelle confieriez-vous en premier à un agent, et pourquoi ?",
-                "placeholder": "La règle du niveau … parce que…"
-              }
-            ],
-            "metadonnees": {
-              "concepts": ["choix-du-graphique", "tableau-de-bord"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 4,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
-        }
-      },
-      {
-        "id": "B3-01-A3-13-CE-QUI-RESTE-FLOU",
-        "type": "fp-pro",
-        "titre": "Ce qui reste flou",
-        "duree": 1,
-        "interactif": true,
-        "donnees": {
-          "cas": {
-            "id": "B3-01-A3-13-CE-QUI-RESTE-FLOU",
-            "metier": "Analyste data — Norvane Équipement (réseau de 12 agences)",
-            "situation": "La séance se termine. Avant le billet de sortie, dites ce qui vous a échappé : la séance 2 commencera par là.",
-            "geste": "Écrivez une phrase, même courte.",
-            "consequence": null,
-            "questionsLibres": [
-              {
-                "id": "b3-01-a3-flou:ce-qui-reste-flou",
-                "question": "En une phrase : qu’est-ce qui reste flou pour vous après cette séance ?",
-                "placeholder": "Ce qui reste flou pour moi…"
-              }
-            ],
-            "metadonnees": {
-              "concepts": ["qualite-des-donnees"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 1,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
-        }
-      },
-      {
-        "id": "B3-01-A3-14-BILLET-DE-SORTIE",
-        "type": "fp-exit",
-        "titre": "Billet de sortie",
-        "duree": 3,
-        "interactif": true,
-        "donnees": {
-          "billet": {
-            "id": "b3-01-a3-billet",
-            "question": "Une ligne porte une date_livraison antérieure à sa date_commande. La corrige-t-on automatiquement ?",
-            "invite": "En une phrase : pourquoi ce choix ?",
-            "longueurMax": 500,
-            "options": [
-              {
-                "id": "non-on-la-signale-et-on-demande-faux-hum-c6b7abb5",
-                "libelle": "Non : on la signale et on demande (faux · humain)"
-              },
-              {
-                "id": "oui-on-echange-les-deux-dates-a6d450ff",
-                "libelle": "Oui : on échange les deux dates"
-              },
-              {
-                "id": "oui-on-supprime-la-ligne-73b05cd1",
-                "libelle": "Oui : on supprime la ligne"
-              }
-            ],
-            "metadonnees": {
-              "concepts": ["qualite-des-donnees"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
-        }
       }
     ]
   },
@@ -1989,7 +1919,7 @@
     "id": "b3-01-donnee-brute-decision",
     "titre": "Expert Data : de la donnée brute à la décision",
     "niveau": "B3",
-    "duree": 180,
+    "duree": 176,
     "concepts": [
       "reference-de-cellule",
       "jeu-de-donnees",
@@ -2095,12 +2025,8 @@
               "props": {
                 "title": "Expert Data : de la donnée brute à la décision",
                 "subtitle": "Lundi 12 octobre, 8 h. Nadia Ferrand, directrice commerciale de Norvane Équipement, écrit : « Voici l’export des ventes depuis janvier 2025. Qu’est-ce qui ne va pas dans mon réseau ? J’ai le comité de direction jeudi. »",
-                "bullets": [
-                  "Bachelor 3 · Outils informatiques du manager · séance 1",
-                  "Norvane Équipement : 12 agences, 36 commerciaux, 40 produits et services",
-                  "Un export brut des ventes, de janvier 2025 à septembre 2026, à ouvrir dans Excel",
-                  "Données fictives"
-                ]
+                "bgImage": "/assets/cours/gravures/v1/hollerith-recensement-1890.jpg",
+                "bgImageAlt": "Gravure du Scientific American (1890) : les machines électriques de Herman Hollerith dépouillent les cartes perforées du recensement américain"
               }
             },
             "metadonnees": {
@@ -2233,7 +2159,7 @@
             ]
           }
         },
-        "notes": "• Temps « réfléchir » du niveau 1 : deux votes non notés.\n• Première question sans révélation : la réponse tombe à la correction de l’exercice 4 ; noter au tableau la répartition des votes.\n• Deuxième question : entre 30 et 70 % de bonnes réponses, débat en binôme avant la révélation.",
+        "notes": "• Temps « réfléchir » du niveau 1 : deux votes non notés.\n• Première question sans révélation : la réponse tombe à la correction de l’exercice 4 ; noter au tableau la répartition des votes.\n• Deuxième question, sans débat : la révélation suit.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -2302,15 +2228,7 @@
             ]
           }
         ],
-        "corrigeEcran": {
-          "type": "revelation",
-          "titre": "Dupont, Bordeaux : deux clients",
-          "lignes": [
-            "L’onglet Clients compte deux Dupont à Bordeaux : Dupont Bureautique et Dupont & Fils. Le nom et la ville ne les distinguent pas.",
-            "Il compte aussi des raisons sociales présentes deux fois dans la même ville, sous deux client_id : doublon ou deux établissements, seul le métier peut le dire. Le nom et la ville ne suffisent ni à distinguer deux clients, ni à les fusionner.",
-            "La part des lignes fausses ou douteuses se révèle à la correction de l’exercice 4."
-          ]
-        },
+        "corrigeEcran": null,
         "reflexion": null
       },
       {
@@ -2826,15 +2744,7 @@
             ]
           }
         ],
-        "corrigeEcran": {
-          "type": "revelation",
-          "titre": "Le pire cas : un total faux, sans alerte",
-          "lignes": [
-            "SOMME ignore une cellule de texte sans erreur : le total est faux et la formule ne signale rien ; tout au plus un petit triangle vert sur la cellule, facile à manquer.",
-            "Un montant aligné à gauche dans une colonne de nombres est un indice : c’est du texte.",
-            "ESTNUM renvoie FAUX pour un nombre stocké en texte : on vérifie avant d’additionner."
-          ]
-        },
+        "corrigeEcran": null,
         "reflexion": null
       },
       {
@@ -3418,15 +3328,7 @@
             ]
           }
         ],
-        "corrigeEcran": {
-          "type": "revelation",
-          "titre": "Deux familles, dans l’ordre",
-          "lignes": [
-            "La catégorie d’un produit vit dans l’onglet Produits : on la cherche d’abord, ligne par ligne.",
-            "Puis on additionne ca_ht sous trois conditions : l’agence de Rennes, la catégorie Informatique, une date en 2026.",
-            "Nommer la famille avant de choisir la fonction : c’est la règle du niveau 3."
-          ]
-        },
+        "corrigeEcran": null,
         "reflexion": null
       },
       {
@@ -3803,15 +3705,7 @@
             ]
           }
         ],
-        "corrigeEcran": {
-          "type": "revelation",
-          "titre": "Jours calendaires ou jours ouvrés",
-          "lignes": [
-            "Du vendredi au lundi : 3 jours calendaires, mais un seul jour ouvré, puisque le samedi et le dimanche ne se travaillent pas.",
-            "Le contrat de livraison de Norvane promet 5 jours ouvrés : le délai se mesure en jours ouvrés.",
-            "NB.JOURS.OUVRES compte les deux bornes : du vendredi au lundi, il renvoie 2, d’où le − 1 pour obtenir le délai."
-          ]
-        },
+        "corrigeEcran": null,
         "reflexion": null
       },
       {
@@ -4063,15 +3957,7 @@
             ]
           }
         ],
-        "corrigeEcran": {
-          "type": "revelation",
-          "titre": "Une plage fixe ne grandit pas",
-          "lignes": [
-            "A2:A4039 s’arrête à la ligne 4039 : les lignes d’octobre restent dehors, même après recalcul.",
-            "Un tableau structuré s’étend tout seul : chaque formule qui le cite voit les nouvelles lignes.",
-            "C’est l’objet du cours suivant."
-          ]
-        },
+        "corrigeEcran": null,
         "reflexion": null
       },
       {
@@ -4427,15 +4313,7 @@
             ]
           }
         ],
-        "corrigeEcran": {
-          "type": "revelation",
-          "titre": "Un axe tronqué grossit l’écart",
-          "lignes": [
-            "L’axe part de 47 500 € : les barres ne montrent que ce qui dépasse ce seuil.",
-            "Rennes a vendu 51 600 €, Nantes 59 500 € : environ 13 % de moins, pas trois fois moins.",
-            "Depuis zéro, les deux barres ont presque la même hauteur. Un axe tronqué se signale, ou ne se montre pas à un comité."
-          ]
-        },
+        "corrigeEcran": null,
         "reflexion": null
       },
       {
@@ -4684,15 +4562,7 @@
             ]
           }
         ],
-        "corrigeEcran": {
-          "type": "revelation",
-          "titre": "Quatre chiffres en contexte, le détail sur demande",
-          "lignes": [
-            "En trente secondes, on lit quatre chiffres, pas quatre mille lignes ni dix graphiques.",
-            "Chaque chiffre porte sa comparaison : l’objectif, ou la même période de l’an passé. Seul, un chiffre ne dit ni bien ni mal.",
-            "Le détail vient ensuite, sur demande : graphiques, TCD et segments."
-          ]
-        },
+        "corrigeEcran": null,
         "reflexion": null
       },
       {
@@ -5027,7 +4897,7 @@
             }
           }
         },
-        "notes": "• Temps : réflexion 1 min · travail 6 min · correction 2 min\n• Réflexion : faire relire la synthèse de l’exercice 8 et le tableau de bord en cherchant ce qui sort de l’ordinaire : une agence, une catégorie, un délai.\n• Rouen (91,9 %) : troisième agence sous l’objectif, en recul d’environ 2 % sur un an, de −3 % à 0 % selon la catégorie, sans cause qui ressorte du détail. À surveiller, pas une histoire : un constat sans cause ne fait pas une recommandation.\n• Révéler la correction : les quatre histoires s’affichent ensemble. Les commenter une à une, en demandant à main levée qui l’avait trouvée avant de passer à la suivante.\n• Transition : « Gardez la fiche mémo, puis écrivez les règles des niveaux 5 et 6. »",
+        "notes": "• Temps : réflexion 1 min · travail 6 min · correction 2 min\n• Réflexion : faire relire la synthèse de l’exercice 8 et le tableau de bord en cherchant ce qui sort de l’ordinaire : une agence, une catégorie, un délai.\n• Rouen (91,9 %) : troisième agence sous l’objectif, en recul d’environ 2 % sur un an, de −3 % à 0 % selon la catégorie, sans cause qui ressorte du détail. À surveiller, pas une histoire : un constat sans cause ne fait pas une recommandation.\n• Révéler la correction : les quatre histoires s’affichent ensemble. Les commenter une à une, en demandant à main levée qui l’avait trouvée avant de passer à la suivante.\n• Transition : « Écrivez les règles des niveaux 5 et 6, puis gardez la fiche mémo. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -5052,6 +4922,53 @@
             "texte": "Strasbourg : les retards. Délai médian de 8 jours ouvrés en 2026, contre 2 en 2025, et des ruptures livrées environ deux mois plus tard. Le contrat promet 5 jours ouvrés. Cause : le décrochage date de mars 2026 et touche toutes les catégories, signe d’un problème de transport à l’agence, aggravé par des ruptures de stock d’avril à juillet. Action : dès octobre, traiter le transport et le stock de Strasbourg avant de perdre ses clients, plan confié au responsable de l’agence."
           }
         ]
+      },
+      {
+        "id": "B3-01-A3-12-CAHIER-DE-REGLES",
+        "type": "fp-pro",
+        "titre": "Cahier de règles : niveaux 5 et 6, puis relecture",
+        "duree": 4,
+        "interactif": true,
+        "donnees": {
+          "cas": {
+            "id": "B3-01-A3-12-CAHIER-DE-REGLES",
+            "metier": "Analyste data — Norvane Équipement (réseau de 12 agences)",
+            "situation": "Règles dites avant les pauses : niveau 1 « Je relie les tables par un identifiant, jamais par un libellé » ; niveau 2 « Je corrige seul ce qui est faux et certain ; je signale ce qui est douteux et je demande » ; niveau 3 « Avant la fonction, je nomme la famille du problème » ; niveau 4 « Je travaille sur un tableau structuré, jamais sur une plage fixe ».",
+            "geste": "Écrivez une règle pour le niveau 5 et une pour le niveau 6, puis choisissez parmi les six celle que l’agent de la séance 2 recevra en premier.",
+            "consequence": "Une règle que l’agent n’a pas reçue, il ne l’appliquera pas.",
+            "questionsLibres": [
+              {
+                "id": "b3-01-a3-regles:regle-visualiser",
+                "question": "Niveau 5 · Visualiser : votre règle avant de choisir un graphique.",
+                "placeholder": "Avant le graphique, je…"
+              },
+              {
+                "id": "b3-01-a3-regles:regle-decider",
+                "question": "Niveau 6 · Décider : votre règle pour écrire une recommandation.",
+                "placeholder": "Je recommande…"
+              },
+              {
+                "id": "b3-01-a3-regles:regle-la-plus-utile",
+                "question": "Parmi les six règles de la séance, laquelle confieriez-vous en premier à un agent, et pourquoi ?",
+                "placeholder": "La règle du niveau … parce que…"
+              }
+            ],
+            "metadonnees": {
+              "concepts": ["choix-du-graphique", "tableau-de-bord"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 4,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 3 min d’écriture individuelle, puis 1 min pour lire deux réponses à la troisième question.\n• Règles modèles, à montrer après la saisie : « Je pose la question avant de choisir le graphique » ; « Je recommande par un constat chiffré, sa cause et une action. »\n• Annoncer la séance 2 : l’agent Data Analyst appliquera les six règles de la séance au prochain export de Nadia.",
+        "diffusion": "seance",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null,
+        "reflexion": null
       },
       {
         "id": "B3-01-A3-11-FICHE-MEMO",
@@ -5114,173 +5031,11 @@
             }
           }
         },
-        "notes": "• 2 min de lecture ; la fiche s’imprime et se garde pour la séance 2.\n• Faire relier chaque case à la règle de son niveau : dite avant la pause pour les niveaux 1 à 4, écrite à l’écran suivant pour les niveaux 5 et 6.",
+        "notes": "• 2 min de lecture ; la fiche s’imprime et se garde pour la séance 2.\n• Faire relier chaque case à la règle de son niveau : dite avant la pause pour les niveaux 1 à 4, écrite à l’écran précédent pour les niveaux 5 et 6.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null,
-        "reflexion": null
-      },
-      {
-        "id": "B3-01-A3-12-CAHIER-DE-REGLES",
-        "type": "fp-pro",
-        "titre": "Cahier de règles : niveaux 5 et 6, puis relecture",
-        "duree": 4,
-        "interactif": true,
-        "donnees": {
-          "cas": {
-            "id": "B3-01-A3-12-CAHIER-DE-REGLES",
-            "metier": "Analyste data — Norvane Équipement (réseau de 12 agences)",
-            "situation": "Règles dites avant les pauses : niveau 1 « Je relie les tables par un identifiant, jamais par un libellé » ; niveau 2 « Je corrige seul ce qui est faux et certain ; je signale ce qui est douteux et je demande » ; niveau 3 « Avant la fonction, je nomme la famille du problème » ; niveau 4 « Je travaille sur un tableau structuré, jamais sur une plage fixe ».",
-            "geste": "Écrivez une règle pour le niveau 5 et une pour le niveau 6, puis choisissez parmi les six celle que l’agent de la séance 2 recevra en premier.",
-            "consequence": "Une règle que l’agent n’a pas reçue, il ne l’appliquera pas.",
-            "questionsLibres": [
-              {
-                "id": "b3-01-a3-regles:regle-visualiser",
-                "question": "Niveau 5 · Visualiser : votre règle avant de choisir un graphique.",
-                "placeholder": "Avant le graphique, je…"
-              },
-              {
-                "id": "b3-01-a3-regles:regle-decider",
-                "question": "Niveau 6 · Décider : votre règle pour écrire une recommandation.",
-                "placeholder": "Je recommande…"
-              },
-              {
-                "id": "b3-01-a3-regles:regle-la-plus-utile",
-                "question": "Parmi les six règles de la séance, laquelle confieriez-vous en premier à un agent, et pourquoi ?",
-                "placeholder": "La règle du niveau … parce que…"
-              }
-            ],
-            "metadonnees": {
-              "concepts": ["choix-du-graphique", "tableau-de-bord"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 4,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
-        },
-        "notes": "• 3 min d’écriture individuelle, puis 1 min pour lire deux réponses à la troisième question.\n• Règles modèles, à montrer après la saisie : « Je pose la question avant de choisir le graphique » ; « Je recommande par un constat chiffré, sa cause et une action. »\n• Annoncer la séance 2 : l’agent Data Analyst appliquera les six règles de la séance au prochain export de Nadia.",
-        "diffusion": "seance",
-        "seuil": null,
-        "corriges": [],
-        "questions": [],
-        "corrigeEcran": null,
-        "reflexion": null
-      },
-      {
-        "id": "B3-01-A3-13-CE-QUI-RESTE-FLOU",
-        "type": "fp-pro",
-        "titre": "Ce qui reste flou",
-        "duree": 1,
-        "interactif": true,
-        "donnees": {
-          "cas": {
-            "id": "B3-01-A3-13-CE-QUI-RESTE-FLOU",
-            "metier": "Analyste data — Norvane Équipement (réseau de 12 agences)",
-            "situation": "La séance se termine. Avant le billet de sortie, dites ce qui vous a échappé : la séance 2 commencera par là.",
-            "geste": "Écrivez une phrase, même courte.",
-            "consequence": null,
-            "questionsLibres": [
-              {
-                "id": "b3-01-a3-flou:ce-qui-reste-flou",
-                "question": "En une phrase : qu’est-ce qui reste flou pour vous après cette séance ?",
-                "placeholder": "Ce qui reste flou pour moi…"
-              }
-            ],
-            "metadonnees": {
-              "concepts": ["qualite-des-donnees"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 1,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
-        },
-        "notes": "• 1 min d’écriture individuelle, sans lecture au pupitre : les réponses restent au rapport de séance.\n• Lire les réponses avant la séance 2 : ce qui reste flou ouvre la séance.",
-        "diffusion": "seance",
-        "seuil": null,
-        "corriges": [],
-        "questions": [],
-        "corrigeEcran": null,
-        "reflexion": null
-      },
-      {
-        "id": "B3-01-A3-14-BILLET-DE-SORTIE",
-        "type": "fp-exit",
-        "titre": "Billet de sortie",
-        "duree": 3,
-        "interactif": true,
-        "donnees": {
-          "billet": {
-            "id": "b3-01-a3-billet",
-            "question": "Une ligne porte une date_livraison antérieure à sa date_commande. La corrige-t-on automatiquement ?",
-            "invite": "En une phrase : pourquoi ce choix ?",
-            "longueurMax": 500,
-            "options": [
-              {
-                "id": "non-on-la-signale-et-on-demande-faux-hum-c6b7abb5",
-                "libelle": "Non : on la signale et on demande (faux · humain)"
-              },
-              {
-                "id": "oui-on-echange-les-deux-dates-a6d450ff",
-                "libelle": "Oui : on échange les deux dates"
-              },
-              {
-                "id": "oui-on-supprime-la-ligne-73b05cd1",
-                "libelle": "Oui : on supprime la ligne"
-              }
-            ],
-            "metadonnees": {
-              "concepts": ["qualite-des-donnees"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
-        },
-        "notes": "• 3 min ; clore la séance quand le compteur de billets est complet.\n• Pièges : échanger les deux dates ; supprimer la ligne.",
-        "diffusion": "seance",
-        "seuil": 0.7,
-        "corriges": [
-          {
-            "questionId": "b3-01-a3-billet",
-            "bonneReponse": "Non : on la signale et on demande (faux · humain)",
-            "optionId": "non-on-la-signale-et-on-demande-faux-hum-c6b7abb5",
-            "confusions": [
-              {
-                "id": "suspect-corrige-sans-validation",
-                "libelle": "Corriger seul une donnée douteuse, ou une erreur certaine dont la bonne valeur n’est pas dans le fichier, au lieu de la signaler à qui peut la vérifier."
-              },
-              {
-                "id": "suppression-au-lieu-de-signalement",
-                "libelle": "Supprimer une ligne douteuse au lieu de la mettre de côté avec son motif."
-              }
-            ]
-          }
-        ],
-        "questions": [
-          {
-            "id": "b3-01-a3-billet",
-            "enonce": "Une ligne porte une date_livraison antérieure à sa date_commande. La corrige-t-on automatiquement ?",
-            "options": [
-              {
-                "id": "non-on-la-signale-et-on-demande-faux-hum-c6b7abb5",
-                "libelle": "Non : on la signale et on demande (faux · humain)"
-              },
-              {
-                "id": "oui-on-echange-les-deux-dates-a6d450ff",
-                "libelle": "Oui : on échange les deux dates"
-              },
-              {
-                "id": "oui-on-supprime-la-ligne-73b05cd1",
-                "libelle": "Oui : on supprime la ligne"
-              }
-            ]
-          }
-        ],
         "corrigeEcran": null,
         "reflexion": null
       }
@@ -5290,7 +5045,7 @@
     "id": "b3-01-donnee-brute-decision",
     "titre": "Expert Data : de la donnée brute à la décision",
     "niveau": "B3",
-    "duree": 180,
+    "duree": 176,
     "concepts": [
       "reference-de-cellule",
       "jeu-de-donnees",
@@ -5331,12 +5086,8 @@
               "props": {
                 "title": "Expert Data : de la donnée brute à la décision",
                 "subtitle": "Lundi 12 octobre, 8 h. Nadia Ferrand, directrice commerciale de Norvane Équipement, écrit : « Voici l’export des ventes depuis janvier 2025. Qu’est-ce qui ne va pas dans mon réseau ? J’ai le comité de direction jeudi. »",
-                "bullets": [
-                  "Bachelor 3 · Outils informatiques du manager · séance 1",
-                  "Norvane Équipement : 12 agences, 36 commerciaux, 40 produits et services",
-                  "Un export brut des ventes, de janvier 2025 à septembre 2026, à ouvrir dans Excel",
-                  "Données fictives"
-                ]
+                "bgImage": "/assets/cours/gravures/v1/hollerith-recensement-1890.jpg",
+                "bgImageAlt": "Gravure du Scientific American (1890) : les machines électriques de Herman Hollerith dépouillent les cartes perforées du recensement américain"
               }
             },
             "metadonnees": {
@@ -6234,6 +5985,14 @@
         "donnees": {}
       },
       {
+        "id": "B3-01-A3-12-CAHIER-DE-REGLES",
+        "type": "ecran-verrouille",
+        "titre": "Cahier de règles : niveaux 5 et 6, puis relecture",
+        "duree": 4,
+        "interactif": false,
+        "donnees": {}
+      },
+      {
         "id": "B3-01-A3-11-FICHE-MEMO",
         "type": "fp-story",
         "titre": "Fiche mémo : de la donnée brute à la décision",
@@ -6294,30 +6053,6 @@
             }
           }
         }
-      },
-      {
-        "id": "B3-01-A3-12-CAHIER-DE-REGLES",
-        "type": "ecran-verrouille",
-        "titre": "Cahier de règles : niveaux 5 et 6, puis relecture",
-        "duree": 4,
-        "interactif": false,
-        "donnees": {}
-      },
-      {
-        "id": "B3-01-A3-13-CE-QUI-RESTE-FLOU",
-        "type": "ecran-verrouille",
-        "titre": "Ce qui reste flou",
-        "duree": 1,
-        "interactif": false,
-        "donnees": {}
-      },
-      {
-        "id": "B3-01-A3-14-BILLET-DE-SORTIE",
-        "type": "ecran-verrouille",
-        "titre": "Billet de sortie",
-        "duree": 3,
-        "interactif": false,
-        "donnees": {}
       }
     ]
   }

@@ -325,7 +325,6 @@ export function questionsDe(
         : [ecran.question, ecran.questionJumelle];
     case 'fp-numeric':
     case 'fp-recall':
-    case 'fp-exit':
       return [ecran.question];
     case 'fp-cardsort':
     case 'fp-sheet':

@@ -1,15 +1,11 @@
 import { buildCoursDuContenu } from '../../../../../test/factories/contenus-de-cours.factory';
 import {
   attendreLaFeuille,
-  attendreLesEnigmes,
   attendreLesNumeriques,
   corrigeDe,
   corrigeDeFeuille,
   CATALOGUE_ILLUSTRE_A_CINQ_PAGES,
   decrireLaFicheDuCours,
-  decrireLaMiniSituation,
-  ecranDuContenu,
-  FICHE_DU_GABARIT_V3,
   valeursEtPieges,
 } from '../../../../../test/helpers/fiche-de-cours';
 import {
@@ -27,7 +23,6 @@ import {
   auCentime,
   auMillionieme,
 } from '../../../../common/domain/nombres/arrondi';
-import { colonnesVidesDeLaFeuille } from '../../../../../test/helpers/relecture-de-cours';
 import {
   corrigerFeuille,
   corrigerTableau,
@@ -59,15 +54,6 @@ const VERSEMENTS = 5;
 const EMPRUNT = 60000;
 const TAUX_DE_L_EMPRUNT = 0.04;
 const DUREE_DE_L_EMPRUNT = 5;
-
-const CAMIONNETTE = 32000;
-const TAUX_DE_LA_CAMIONNETTE = 0.035;
-const DUREE_DE_LA_CAMIONNETTE = 4;
-const PLACEMENT_DE_LA_MINI_SITUATION = 15000;
-const BATTERIE = 20000;
-const VERSEMENT_DE_LA_MINI_SITUATION = 5000;
-const TAUX_DE_LA_MINI_SITUATION = 0.02;
-const DUREE_DE_LA_MINI_SITUATION = 4;
 
 const EMPRUNT_TYPE = 100000;
 const TAUX_DE_L_EMPRUNT_TYPE = 0.05;
@@ -122,11 +108,6 @@ function tableauDAmortissement(
 const ANNUITE_ARRONDIE = auCentime(
   annuite(EMPRUNT, TAUX_DE_L_EMPRUNT, DUREE_DE_L_EMPRUNT),
 );
-const ANNUITE_DE_LA_CAMIONNETTE = annuite(
-  CAMIONNETTE,
-  TAUX_DE_LA_CAMIONNETTE,
-  DUREE_DE_LA_CAMIONNETTE,
-);
 const LIGNES_DE_L_EMPRUNT = tableauDAmortissement(
   EMPRUNT,
   TAUX_DE_L_EMPRUNT,
@@ -134,20 +115,18 @@ const LIGNES_DE_L_EMPRUNT = tableauDAmortissement(
   DUREE_DE_L_EMPRUNT,
   auCentime,
 );
-const LIGNES_DE_LA_CAMIONNETTE = tableauDAmortissement(
-  CAMIONNETTE,
-  TAUX_DE_LA_CAMIONNETTE,
-  ANNUITE_DE_LA_CAMIONNETTE,
-  DUREE_DE_LA_CAMIONNETTE,
-  (valeur) => valeur,
-);
 
 decrireLaFicheDuCours('B2-05', COURS, {
-  ...FICHE_DU_GABARIT_V3,
   conception: 'cours-b2-05-conception.md',
-  ecrans: 38,
-  rythme: { expositionContinueMax: 6, interactives: 150, exposition: 30 },
-  catalogue: CATALOGUE_ILLUSTRE_A_CINQ_PAGES,
+  ecrans: 33,
+  dureeMinutes: 133,
+  minutesParActe: [49, 39, 37, 8, 0, 0],
+  rythme: { expositionContinueMax: 6, interactives: 106, exposition: 27 },
+  noteesParType: [7, 6, 0, 2, 1],
+  enigmes: 0,
+  rappels: 12,
+  options: 23,
+  catalogue: CATALOGUE_ILLUSTRE_A_CINQ_PAGES.filter((code) => code !== 'A4-01'),
   ateliersNotes: ['A1-10 (10)', 'A2-05 (12)', 'A3-06 (10)'],
   remediations: 15,
   corrigesSurPlace: [
@@ -157,16 +136,7 @@ decrireLaFicheDuCours('B2-05', COURS, {
     'B2-05-A2-06-TABLEUR-EPARGNE',
     'B2-05-A3-06-ATELIER-EMPRUNT',
     'B2-05-A3-07-TABLEAU-AMORTISSEMENT',
-    'B2-05-A3-08-DEFI-IA',
-    'B2-05-A4-02-TABLEUR-CAMIONNETTE',
-    'B2-05-A4-03-COFFRE-CAMIONNETTE',
   ],
-});
-
-decrireLaMiniSituation('B2-05', COURS_B2_05, {
-  donneesFictives: ['B2-05-A1-05-DOSSIER', 'B2-05-A4-01-SITUATION-CAMIONNETTE'],
-  coffre: 'B2-05-A4-03-COFFRE-CAMIONNETTE',
-  tableur: 'B2-05-A4-02-TABLEUR-CAMIONNETTE',
 });
 
 describe('B2-05 — textes relus contre les données', () => {
@@ -259,64 +229,6 @@ describe('B2-05 — recalcul des corrigés depuis les seuls paramètres', () => 
       auCentime(DUREE_DE_L_EMPRUNT * ANNUITE_ARRONDIE - EMPRUNT) -
         auCentime(sommeDesInterets),
     ).toBeCloseTo(0.02, 6);
-  });
-
-  it('recalcule les solutions et pièges des quatre énigmes de la mini-situation', () => {
-    const cout =
-      DUREE_DE_LA_CAMIONNETTE * ANNUITE_DE_LA_CAMIONNETTE - CAMIONNETTE;
-    const epargneDeLaMiniSituation = suiteDAnnuites(
-      VERSEMENT_DE_LA_MINI_SITUATION,
-      TAUX_DE_LA_MINI_SITUATION,
-      DUREE_DE_LA_MINI_SITUATION,
-    );
-
-    attendreLesEnigmes(COURS, {
-      'b2-05-a4-e1-placement': [
-        valeurAcquise(
-          PLACEMENT_DE_LA_MINI_SITUATION,
-          TAUX_DE_LA_MINI_SITUATION,
-          DUREE_DE_LA_MINI_SITUATION,
-        ),
-        interetsSimples(
-          PLACEMENT_DE_LA_MINI_SITUATION,
-          TAUX_DE_LA_MINI_SITUATION,
-          DUREE_DE_LA_MINI_SITUATION,
-        ),
-        valeurAcquise(
-          PLACEMENT_DE_LA_MINI_SITUATION,
-          TAUX_DE_LA_MINI_SITUATION,
-          DUREE_DE_LA_MINI_SITUATION + 1,
-        ),
-      ],
-      'b2-05-a4-e2-batterie': [
-        valeurActuelle(
-          BATTERIE,
-          TAUX_DE_LA_MINI_SITUATION,
-          DUREE_DE_LA_MINI_SITUATION,
-        ),
-        valeurAcquise(
-          BATTERIE,
-          TAUX_DE_LA_MINI_SITUATION,
-          DUREE_DE_LA_MINI_SITUATION,
-        ),
-        BATTERIE / (1 + TAUX_DE_LA_MINI_SITUATION * DUREE_DE_LA_MINI_SITUATION),
-      ],
-      'b2-05-a4-e3-epargne': [
-        epargneDeLaMiniSituation,
-        VERSEMENT_DE_LA_MINI_SITUATION * DUREE_DE_LA_MINI_SITUATION,
-        placesToutLaDuree(
-          VERSEMENT_DE_LA_MINI_SITUATION,
-          TAUX_DE_LA_MINI_SITUATION,
-          DUREE_DE_LA_MINI_SITUATION,
-        ),
-        epargneDeLaMiniSituation * (1 + TAUX_DE_LA_MINI_SITUATION),
-      ],
-      'b2-05-a4-e4-cout': [
-        cout,
-        cout + CAMIONNETTE,
-        DUREE_DE_LA_CAMIONNETTE * CAMIONNETTE * TAUX_DE_LA_CAMIONNETTE,
-      ],
-    });
   });
 
   it('bâtit le tableau d’amortissement de l’exercice 6 avec l’annuité arrondie et les intérêts au centime', () => {
@@ -426,105 +338,6 @@ describe('B2-05 — les trois feuilles corrigées par le moteur de formules', ()
       ),
     ).toEqual(['terme-pris-pour-somme']);
   });
-
-  it('reconnaît juste le tableau d’amortissement de la camionnette, VPM et coût du crédit compris', () => {
-    const corrige = corrigeDeFeuille(COURS, 'b2-05-a4-feuille-camionnette');
-    const lignes = LIGNES_DE_LA_CAMIONNETTE;
-    const cout =
-      DUREE_DE_LA_CAMIONNETTE * ANNUITE_DE_LA_CAMIONNETTE - CAMIONNETTE;
-
-    attendreLaFeuille(corrige, {
-      H2: [
-        ANNUITE_DE_LA_CAMIONNETTE,
-        -ANNUITE_DE_LA_CAMIONNETTE,
-        CAMIONNETTE / DUREE_DE_LA_CAMIONNETTE,
-      ],
-      ...attendusDeColonne('B', 3, lignes.slice(1), (ligne) => [ligne.capital]),
-      ...attendusDeColonne('C', 2, lignes, (ligne, rang) =>
-        rang === 0
-          ? [ligne.interets]
-          : [ligne.interets, 0, CAMIONNETTE * TAUX_DE_LA_CAMIONNETTE],
-      ),
-      ...attendusDeColonne('D', 2, lignes, (ligne, rang) =>
-        rang === 0
-          ? [ligne.amortissement, auMillionieme(ANNUITE_DE_LA_CAMIONNETTE)]
-          : [
-              ligne.amortissement,
-              auMillionieme(ANNUITE_DE_LA_CAMIONNETTE),
-              -auMillionieme(
-                lignes[1].interets * (1 + TAUX_DE_LA_CAMIONNETTE) ** (rang - 1),
-              ),
-            ],
-      ),
-      ...attendusDeColonne('E', 2, lignes, (ligne) => [
-        auMillionieme(ligne.capital - ligne.amortissement),
-      ]),
-      I2: [
-        cout,
-        cout + CAMIONNETTE,
-        DUREE_DE_LA_CAMIONNETTE * CAMIONNETTE * TAUX_DE_LA_CAMIONNETTE,
-      ],
-    });
-    expect(corrige.attendus).toHaveLength(17);
-    expect(
-      corrigerFeuille(corrige, {
-        H2: '=VPM(F2;G2;-B2)',
-        ...recopier('=B2*$F$2', 'C', 2, 5),
-        ...recopier('=$H$2-C2', 'D', 2, 5),
-        ...recopier('=B2-D2', 'E', 2, 5),
-        ...recopier('=E2', 'B', 3, 5),
-        I2: '=H2*G2-B2',
-      }).score,
-    ).toBe(1);
-  });
-
-  it('QF-28 · ne laisse dans la feuille de la camionnette aucune colonne sans intitulé ni réponse, pour tenir au poste étudiant', () => {
-    expect(
-      colonnesVidesDeLaFeuille(
-        COURS_B2_05,
-        COURS,
-        'B2-05-A4-02-TABLEUR-CAMIONNETTE',
-        'b2-05-a4-feuille-camionnette',
-      ),
-    ).toEqual([]);
-  });
-
-  it('nomme dans la camionnette le capital de VPM sans signe, le taux non figé et le total remboursé', () => {
-    const corrige = corrigeDeFeuille(COURS, 'b2-05-a4-feuille-camionnette');
-    const justes = {
-      H2: '=VPM(F2;G2;-B2)',
-      ...recopier('=$H$2-C2', 'D', 2, 5),
-      ...recopier('=B2-D2', 'E', 2, 5),
-      ...recopier('=E2', 'B', 3, 5),
-    };
-
-    expect(confusionsDe(corrige, { H2: '=VPM(F2;G2;B2)' }, 'H2')).toEqual([
-      'capital-de-vpm-non-signe',
-    ]);
-    attendreUneRecopieNonFigee(
-      corrige,
-      { ...justes, ...recopier('=B2*F2', 'C', 2, 5) },
-      'C',
-      3,
-    );
-    attendreUneRecopieNonFigee(
-      corrige,
-      {
-        ...justes,
-        ...recopier('=B2*$F$2', 'C', 2, 5),
-        ...recopier('=H2-C2', 'D', 2, 5),
-      },
-      'D',
-      3,
-    );
-    expect(
-      confusionsDe(
-        corrige,
-        { ...justes, ...recopier('=B2*$F$2', 'C', 2, 5), I2: '=H2*G2' },
-        'I2',
-      ),
-    ).toEqual(['cout-credit-confondu-avec-total-rembourse']);
-  });
 });
 
 const TIRAGE = tirer(COURS, 0);
@@ -547,12 +360,6 @@ describe('B2-05 — retours de la relecture adverse', () => {
   it('rattache « toute la durée » aux n versements placés n ans, et l’année de trop au rang décalé', () => {
     const cas = [
       ['b2-05-a2-valeur-acquise', VERSEMENT, TAUX_DE_L_EPARGNE, VERSEMENTS],
-      [
-        'b2-05-a4-e3-epargne',
-        VERSEMENT_DE_LA_MINI_SITUATION,
-        TAUX_DE_LA_MINI_SITUATION,
-        DUREE_DE_LA_MINI_SITUATION,
-      ],
     ] as const;
 
     for (const [id, versement, taux, nombre] of cas) {
@@ -595,16 +402,6 @@ describe('B2-05 — retours de la relecture adverse', () => {
     ]) {
       expect(texteDe(COURS_B2_05, ecran)).toContain('quelques centimes');
     }
-  });
-
-  it('propose à l’exercice 7 un contrôle qui détecte l’erreur de l’IA', () => {
-    const { proprietes } = ecranDuContenu(COURS_B2_05, 'B2-05-A3-08-DEFI-IA');
-    const controle = /"id":"controle","libelle":"([^"]+)"/u.exec(
-      JSON.stringify(proprietes),
-    )?.[1];
-
-    expect(controle).toContain('capital restant dû');
-    expect(controle).not.toContain('somme des amortissements');
   });
 
   it('garde le taux dans une seule cellule figée de VPM aux intérêts, dans la méthode tableur', () => {

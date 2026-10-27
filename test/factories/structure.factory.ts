@@ -14,23 +14,7 @@ import {
   buildEcranDeBrique,
   buildProprietesStockees,
 } from './ecrans-stockes.factory';
-import {
-  buildNumeriqueStockee,
-  buildOptionStockee,
-  buildVoteStocke,
-} from './questions-stockees.factory';
-
-export const QUESTION_DU_BILLET = buildVoteStocke({
-  id: 'b2-01-a6-billet',
-  concept: 'point-de-pourcentage',
-  enonce:
-    'Le taux de retour des colis passe de 4 % à 5 %. Quelle phrase est exacte ?',
-  options: [
-    buildOptionStockee('Il gagne un point', null),
-    buildOptionStockee('Il gagne 1 %', 'points-confondus-avec-pourcentage'),
-  ],
-  segments: ['gagne', 'point'],
-});
+import { buildNumeriqueStockee } from './questions-stockees.factory';
 
 export function buildEcransStockesConformes(): EcranDeCoursBrut[] {
   return [
@@ -53,16 +37,32 @@ export function buildEcransStockesConformes(): EcranDeCoursBrut[] {
         questions: [buildNumeriqueStockee()],
       },
     }),
-    buildEcranDeBrique('fp-exit', {
-      screenId: 'B2-01-A1-04-BILLET',
-      titre: 'Billet de sortie',
-      dureeMinutes: 3,
-      proprietes: {
-        questions: [QUESTION_DU_BILLET],
-        invite: 'Justifiez en une phrase.',
-      },
-    }),
+    buildEcranDeFicheMemo(),
   ];
+}
+
+export function buildEcranDeFicheMemo({
+  imprimable = true,
+}: { readonly imprimable?: boolean } = {}): EcranDeCoursBrut {
+  const screenId = 'B2-01-A1-04-FICHE-MEMO';
+  return buildEcranDeBrique('fp-story', {
+    screenId,
+    titre: 'Fiche mémo',
+    diffusion: 'catalogue',
+    dureeMinutes: 2,
+    proprietes: {
+      presentation: {
+        version: 2,
+        screenId,
+        renderer: 'grid',
+        props: {
+          title: 'Fiche mémo',
+          imprimable,
+          items: [{ title: 'Un point', description: 'Il compte des écarts.' }],
+        },
+      },
+    },
+  });
 }
 
 export function buildCoursConforme(

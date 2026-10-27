@@ -201,14 +201,9 @@ interactif. « Q » = questions fermées notées portées par l'écran.
 |   27 | B1-01-A3-03-COURS-MARGE-MARQUE             |   2 | `fp-story` · v2 `lesson`       |     |   0 | catalogue |
 |   28 | B1-01-A3-04-EXEMPLE-JEU                    |   6 | `fp-worked`                    |  I  |   0 | seance    |
 |   29 | B1-01-A3-05-ATELIER-VENTES                 |  10 | `questionnaire`                |  I  |   4 | seance    |
-|   30 | B1-01-A3-06-DEFI-IA                        |   9 | `fp-challenge`                 |  I  |   0 | seance    |
-|   31 | B1-01-A3-07-JALON                          |   1 | `fp-pulse`                     |     |   0 | seance    |
-|   32 | B1-01-A4-01-SITUATION-FESTIVAL             |   3 | `fp-story` · v2 `table`        |     |   0 | catalogue |
-|   33 | B1-01-A4-02-TABLEUR-FESTIVAL               |  13 | `fp-sheet`                     |  I  |   0 | seance    |
-|   34 | B1-01-A4-03-COFFRE-FESTIVAL                |  11 | `fp-escape`                    |  I  |   0 | seance    |
-|   35 | B1-01-A4-04-RAPPEL                         |   6 | `fp-spaced`                    |  I  |   0 | seance    |
-|   36 | B1-01-A4-05-FICHE-MEMO                     |   2 | `fp-story` · v2 `grid`         |     |   0 | catalogue |
-|   37 | B1-01-A4-06-BILLET-DE-SORTIE               |   3 | `fp-exit`                      |  I  |   1 | seance    |
+|   30 | B1-01-A3-07-JALON                          |   1 | `fp-pulse`                     |     |   0 | seance    |
+|   31 | B1-01-A4-04-RAPPEL                         |   6 | `fp-spaced`                    |  I  |   0 | seance    |
+|   32 | B1-01-A4-05-FICHE-MEMO                     |   2 | `fp-story` · v2 `grid`         |     |   0 | catalogue |
 
 Rythme : 131 minutes interactives, 29 d'exposition (jalons compris), exposition continue de 6
 minutes au plus. Somme : 49 + 36 + 37 + 38 = 160.
@@ -491,7 +486,7 @@ minutes au plus. Somme : 49 + 36 + 37 + 38 = 160.
 - Invite : « Je sais multiplier deux parts et calculer un taux global avec les effectifs. »
 - Si plus de 30 % « Perdu » : reprendre l'exemple des deux classes (A2-03).
 
-### 3.4 Acte 3 — Points, évolutions, marge et marque (37 min)
+### 3.4 Acte 3 — Points, évolutions, marge et marque (28 min)
 
 #### A3-01 · `B1-01-A3-01-VOTE-POURCENTAGES` — 5 min · `fp-vote` · séance
 
@@ -567,98 +562,13 @@ minutes au plus. Somme : 49 + 36 + 37 + 38 = 160.
 - Notes : réflexion : écrire « proportion », « évolution » ou « marge/marque » devant chaque
   question ; papier : exercice 5 du livret.
 
-#### A3-06 · `B1-01-A3-06-DEFI-IA` — 9 min · `fp-challenge` · séance
-
-- Titre public : « Exercice 6 — Corriger le bilan d’une IA »
-- Temps : réflexion 2 min · travail 5 min · correction 2 min, piste par piste sur place.
-- Énoncé, un point par ligne :
-  - « Inès a demandé à un assistant IA de rédiger trois phrases du bilan. Réponse : »
-  - « « 1. Les ventes en ligne sont passées de 18 % à 24 % du chiffre d'affaires : elles ont
-    progressé de 6 %. »
-  - « 2. Une console achetée 150 € HT et vendue 240 € HT : notre taux de marque est de 60 %. »
-  - « 3. Le taux de fidélité du réseau est la moyenne des quatre boutiques : (45 + 60 + 50 + 75) ÷ 4
-    = 57,5 %. » »
-- Invite : « Trouvez les erreurs de l'IA, corrigez chacune et dites comment la contrôler. »
-- Pistes justes : `points` (+ 6 points, soit + 33,3 % en évolution) ; `marque` (90 ÷ 240 = 37,5 % ;
-  60 % est le taux de marge) ; `global` (1 620 ÷ 3 000 = 54 %, pondéré par les clients) ;
-  `controle` (le taux de marque est plus petit que le taux de marge ; le taux global est près de
-  celui de la plus grosse boutique). Piste fausse : `garder` (« Garder le bilan : les trois calculs
-  sont justes »).
-- Notes : faire lire deux corrections de la classe, puis dévoiler les pistes une à une ; jalon 3,
-  puis pause.
-
 #### A3-07 · `B1-01-A3-07-JALON` — 1 min · `fp-pulse` · séance
 
 - Titre public : « Jalon 3 : points, marge et marque »
 - Invite : « Je sais écrire un écart en points et calculer un taux de marge et un taux de marque. »
 - Puis pause de 15 minutes.
 
-### 3.5 Acte 4 — Mini-situation CCF et clôture (38 min)
-
-#### A4-01 · `B1-01-A4-01-SITUATION-FESTIVAL` — 3 min · v2 `table` · catalogue
-
-- Titre public : « Mini-situation CCF : le Week-end du jeu »
-- Lignes :
-  - « Contexte » : Partie Libre organise le Week-end du jeu, son premier festival, à Nantes. Inès
-    prépare le bilan pour la mairie, qui a prêté la salle.
-  - « Billets » : 960 billets vendus : 412 plein tarif, 288 étudiant, 172 enfant, 88 pass famille.
-  - « Ventes en ligne » : 150 des billets plein tarif ont été achetés en ligne.
-  - « Option tournoi » : 45 % des billets étudiant incluent l'option tournoi.
-  - « Ateliers » : samedi, 160 places remplies à 85 % ; dimanche, 140 places remplies à 60 %.
-  - « Stand » : un jeu acheté 32 € HT est vendu 50 € HT au stand de la boutique.
-  - `BAREME_DE_LA_MINI_SITUATION` (tableur 3 ; énigmes 2, 2, 1,5 et 1,5).
-- Note : « Données fictives Partie Libre, créées pour ce cours. »
-- Notes : mini-situation de 27 min (lecture 3, tableur 13, coffre 11), calculatrice, poste
-  individuel ; papier : la situation est en tête de la partie 4 du livret.
-
-#### A4-02 · `B1-01-A4-02-TABLEUR-FESTIVAL` — 13 min · `fp-sheet` · séance
-
-- Titre public : « Question tableur (3 points sur 10) : la répartition des billets »
-- Temps : réflexion 3 min · travail 8 min · correction 2 min sur place.
-- Feuille (7 lignes × 3 colonnes), au format d'une copie de CCF : A1 « Billets du Week-end du jeu » ;
-  ligne 2 en-têtes A2 « Catégorie », B2 « Billets vendus », C2 « Part des billets (%) » ; A3:A6
-  « Plein tarif », « Étudiant », « Enfant », « Pass famille » ; B3:B6 412, 288, 172, 88 ; A7
-  « Total ».
-- Consignes : « En B7, calculez le nombre total de billets. » ; « En C3, écrivez la formule de la
-  part des billets plein tarif, en %, arrondie au dixième, à recopier vers le bas. Recopiez jusqu'en
-  C6 : sélectionnez C3 et cliquez trois fois sur « Recopier vers le bas », une ligne par clic. » ;
-  « En C7, vérifiez que les parts font 100 %. » ; « Le total ne s'écrit pas dans la formule :
-  utilisez B7, figé par des $. »
-- Six cellules attendues : B7 `=SOMME(B3:B6)` = 960 ; C3:C6 `=ARRONDI(B3/$B$7*100;1)` recopiée =
-  42,9 ; 30 ; 17,9 ; 9,2 (pièges du modèle 0,4 et 0,429… `taux-valeur-facteur-cent`, 233
-  `base-inversee`, 42,916… `arrondi-oublie` ; 17,916… et 9,166… `arrondi-oublie` sur la recopie ;
-  B7 non figé, #DIV/0! : `reference-relative-non-figee`) ;
-  C7 `=SOMME(C3:C6)` = 100. Les parts arrondies tombent juste à 100,0 : aucun écart d'arrondi à
-  expliquer en CCF.
-- Notes : réflexion : chacun écrit sur papier la formule de C3, puis ce qu'elle devient en C4 ;
-  erreurs à chercher : B7 sans $, total tapé au clavier, part sans × 100 ; en CCF, la question se fait
-  devant l'examinateur.
-
-#### A4-03 · `B1-01-A4-03-COFFRE-FESTIVAL` — 11 min · `fp-escape` · séance
-
-- Titre public : « Mini-situation : le bilan du Week-end du jeu »
-- Temps : réflexion 2 min · travail 7 min · correction 2 min sur place, énigme par énigme.
-- Parcours `b1-01-a4-coffre-festival`, indices après 60 s, 150 s par énigme, 10 tentatives :
-  - E1 `b1-01-a4-e1-en-ligne` « Les billets en ligne (2 points) » : « Quelle part des billets plein
-    tarif a été achetée en ligne, en %, arrondie au dixième ? » 36,4 (tolérance 0,05) ; pièges 15,6
-    (`population-reference-ignoree`), 274,7 (`base-inversee`). Indice : « Parmi qui ? Le tout, ce
-    sont les billets plein tarif. »
-  - E2 `b1-01-a4-e2-tournoi` « L'option tournoi (2 points) » : « Quelle part de l'ensemble des
-    billets sont des billets étudiant avec tournoi, en % ? » 13,5 ; pièges 45
-    (`population-reference-ignoree`), 75 (`raisonnement-additif`). Indice, sans chiffre : « Une part
-    des billets étudiant, qui sont eux-mêmes une part de tous les billets : on multiplie les deux
-    parts. »
-  - E3 `b1-01-a4-e3-ateliers` « Les ateliers (1,5 point) » : « Quel est le taux de remplissage des
-    ateliers sur tout le week-end, en %, arrondi au dixième ? » 73,3 ; pièges 72,5 (`moyenne-simple-des-taux`), 145
-    (`raisonnement-additif`). Indice : « Comptez les places remplies, pas les pourcentages. »
-  - E4 `b1-01-a4-e4-stand` « Le stand (1,5 point) » : « Quel est le taux de marque du jeu vendu au
-    stand, en %, arrondi au dixième ? » 36 ; piège 56,25 (`marque-confondue-avec-marge`). Indice :
-    « La marque se lit sur l'étiquette : divisez par le prix de vente. »
-- Fragments du code : `P7`, `J2`, `R5`, `Q8`.
-- Explications : 150 ÷ 412 ≈ 0,364 ; 0,30 × 0,45 = 0,135 ; (136 + 84) ÷ 300 ≈ 0,733 ;
-  18 ÷ 50 = 0,36.
-- Notes : relire le dossier et noter, pour chaque énigme, « parmi qui ? » ; à 6 min, projeter
-  l'énigme la moins résolue ; papier : quatre questions rédigées du livret, sans code de coffre.
+### 3.5 Acte 4 — Rappel et fiche mémo (8 min)
 
 #### A4-04 · `B1-01-A4-04-RAPPEL` — 6 min · `fp-spaced` · séance
 
@@ -684,17 +594,6 @@ minutes au plus. Somme : 49 + 36 + 37 + 38 = 160.
     de vente HT : taux de marque. »
   - « Tableur » · « La part à recopier ? » · « =ARRONDI(B2/$B$6\*100;1), total =SOMME(B2:B5) figé par
     des $. »
-
-#### A4-06 · `B1-01-A4-06-BILLET-DE-SORTIE` — 3 min · `fp-exit` · séance
-
-- Titre public : « Billet de sortie : la formule de la part »
-- Vote noté `b1-01-a4-billet` : « Effectif en B3, total en B7. Quelle formule écrire en C3 pour la
-  part en %, arrondie au dixième, à recopier vers le bas ? » Bonne : `=ARRONDI(B3/$B$7*100;1)` ;
-  pièges `=ARRONDI(B3/B7*100;1)` (`reference-relative-non-figee`), `=ARRONDI($B$7/B3*100;1)`
-  (`base-inversee`), `=ARRONDI(B3/$B$7;1)` (`taux-valeur-facteur-cent`).
-- Invite : « En une phrase : pourquoi faut-il toujours se demander « parmi qui ? » devant un
-  pourcentage ? »
-- Notes : 3 min ; clore quand le compteur de billets est complet.
 
 ## 4. Mode papier
 
@@ -841,14 +740,15 @@ Chaque PNG d'origine (1 536 × 1 024 px) est converti en WebP à la même taille
 `/assets/cours/b1-01/v1/`. Le catalogue est stocké avec le cours (`Cours.medias`) et contrôlé par la
 règle `media-sans-licence`.
 
-| Id  | Écran | Fichier source (page)      | Original                     | Auteur, date       | Licence      | Dérivé servi                  | Attribution affichée                                                   |
-| --- | ----- | -------------------------- | ---------------------------- | ------------------ | ------------ | ----------------------------- | ---------------------------------------------------------------------- |
-| M1  | A1-06 | production propre du cours | PNG 1 536 × 1 024 px, 1,7 Mo | Asili Design, 2026 | CC BY-SA 4.0 | `classe-alternants.webp`      | « Pour débuter : la classe de 25 · Asili Design, 2026 · CC BY-SA 4.0 » |
-| M2  | A1-07 | production propre du cours | PNG 1 536 × 1 024 px, 1,7 Mo | Asili Design, 2026 | CC BY-SA 4.0 | `parmi-qui.webp`              | « Parmi qui ? · Asili Design, 2026 · CC BY-SA 4.0 »                    |
-| M3  | A2-02 | production propre du cours | PNG 1 536 × 1 024 px, 1,8 Mo | Asili Design, 2026 | CC BY-SA 4.0 | `salle-de-spectacle.webp`     | « La part d’une part · Asili Design, 2026 · CC BY-SA 4.0 »             |
-| M4  | A2-03 | production propre du cours | PNG 1 536 × 1 024 px, 1,8 Mo | Asili Design, 2026 | CC BY-SA 4.0 | `deux-classes.webp`           | « Deux classes, un taux · Asili Design, 2026 · CC BY-SA 4.0 »          |
-| M5  | A3-02 | production propre du cours | PNG 1 536 × 1 024 px, 1,5 Mo | Asili Design, 2026 | CC BY-SA 4.0 | `code-de-la-route.webp`       | « Points ou pourcentage ? · Asili Design, 2026 · CC BY-SA 4.0 »        |
-| M6  | A3-03 | production propre du cours | PNG 1 536 × 1 024 px, 1,6 Mo | Asili Design, 2026 | CC BY-SA 4.0 | `etiquette-marge-marque.webp` | « Une marge, deux taux · Asili Design, 2026 · CC BY-SA 4.0 »           |
+| Id  | Écran | Fichier source (page)                                          | Original                     | Auteur, date                                     | Licence        | Dérivé servi                   | Attribution affichée                                                                      |
+| --- | ----- | -------------------------------------------------------------- | ---------------------------- | ------------------------------------------------ | -------------- | ------------------------------ | ----------------------------------------------------------------------------------------- |
+| M1  | A1-06 | production propre du cours                                     | PNG 1 536 × 1 024 px, 1,7 Mo | Asili Design, 2026                               | CC BY-SA 4.0   | `classe-alternants.webp`       | « Pour débuter : la classe de 25 · Asili Design, 2026 · CC BY-SA 4.0 »                    |
+| M2  | A1-07 | production propre du cours                                     | PNG 1 536 × 1 024 px, 1,7 Mo | Asili Design, 2026                               | CC BY-SA 4.0   | `parmi-qui.webp`               | « Parmi qui ? · Asili Design, 2026 · CC BY-SA 4.0 »                                       |
+| M3  | A2-02 | production propre du cours                                     | PNG 1 536 × 1 024 px, 1,8 Mo | Asili Design, 2026                               | CC BY-SA 4.0   | `salle-de-spectacle.webp`      | « La part d’une part · Asili Design, 2026 · CC BY-SA 4.0 »                                |
+| M4  | A2-03 | production propre du cours                                     | PNG 1 536 × 1 024 px, 1,8 Mo | Asili Design, 2026                               | CC BY-SA 4.0   | `deux-classes.webp`            | « Deux classes, un taux · Asili Design, 2026 · CC BY-SA 4.0 »                             |
+| M5  | A3-02 | production propre du cours                                     | PNG 1 536 × 1 024 px, 1,5 Mo | Asili Design, 2026                               | CC BY-SA 4.0   | `code-de-la-route.webp`        | « Points ou pourcentage ? · Asili Design, 2026 · CC BY-SA 4.0 »                           |
+| M6  | A3-03 | production propre du cours                                     | PNG 1 536 × 1 024 px, 1,6 Mo | Asili Design, 2026                               | CC BY-SA 4.0   | `etiquette-marge-marque.webp`  | « Une marge, deux taux · Asili Design, 2026 · CC BY-SA 4.0 »                              |
+| M7  | A1-02 | https://commons.wikimedia.org/wiki/File:Playfair_piecharts.jpg | JPEG 6 306 × 3 456 px        | William Playfair, The Statistical Breviary, 1801 | domaine public | `playfair-camemberts-1801.jpg` | « William Playfair, The Statistical Breviary, 1801 · Wikimedia Commons (domaine public) » |
 
 ### 8.3 Illustrations livrées
 

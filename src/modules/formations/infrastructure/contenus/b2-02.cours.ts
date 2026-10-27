@@ -69,6 +69,15 @@ const CA_RIVAGE = [610, 652, 694, 736, 790, 826] as const;
 const ANNEES_FIBRE = [2020, 2021, 2022, 2023, 2024] as const;
 const FIBRE_EN_MILLIONS = ['10,3', '14,5', '18,1', '21,4', '24,4'] as const;
 
+const GRAVURE_DE_L_ACCROCHE = moteur.gravureDuDomainePublic({
+  id: 'M7',
+  chemin: '/assets/cours/gravures/v1/galton-correlation-1875.jpg',
+  pageSource:
+    'https://commons.wikimedia.org/wiki/File:Galton%27s_correlation_diagram_1875.jpg',
+  auteur: 'Francis Galton',
+  date: '1875',
+});
+
 const DOSSIER_DES_ILLUSTRATIONS = '/assets/cours/b2-02/v2';
 
 function illustration(
@@ -138,11 +147,9 @@ const ACTE_1: moteur.Acte = [
       title: 'Résumer, relier, prévoir',
       subtitle:
         'Atelier Rivage, voilerie de La Rochelle. La banque demande le délai de paiement des clients et sa régularité, puis une prévision du chiffre d’affaires pour dimensionner une facilité de caisse.',
-      bullets: [
-        'BTS Comptabilité et gestion · 2e année · deuxième cours de mathématiques',
-        'Trois notions : résumer une série, relier deux variables, prévoir avec une droite',
-        'Une mini-situation CCF et sa question tableur',
-      ],
+      bgImage: GRAVURE_DE_L_ACCROCHE.chemins[0],
+      bgImageAlt:
+        'Diagramme de corrélation de Francis Galton (1875) : deux variables mises en regard, l’ancêtre du nuage de points et de la droite d’ajustement',
     },
   ),
   {
@@ -675,15 +682,6 @@ const ACTE_2: moteur.Acte = [
           ['temps'],
         ),
       ],
-      corrige: {
-        type: 'revelation',
-        titre: 'Deux séries liées ne prouvent pas une cause',
-        lignes: [
-          'Voiles et glaces : la saison fait varier les deux ventes à la fois.',
-          'Formation et chiffre d’affaires : les deux séries augmentent avec le temps, pour bien d’autres raisons.',
-          'Une corrélation mesure l’alignement de deux séries, pas ce qui cause leurs variations.',
-        ],
-      },
     },
   },
   moteur.ecranV2(
@@ -1373,7 +1371,7 @@ const ACTE_3: moteur.Acte = [
       minutes: 2,
       notes: [
         moteur.CORRIGER_PAR_LA_MOINS_REUSSIE,
-        'Transition : « Une IA a fait la même prévision, pour 2035. »',
+        'Transition : « Faisons le point : prévoir avec une droite. »',
       ],
     },
     [
@@ -1392,88 +1390,6 @@ const ACTE_3: moteur.Acte = [
       [
         'b2-02-a3-seuil',
         '43,885714x + 564,4 ≥ 1 000 donne x ≥ 9,93. Premier rang entier : 10, soit 2029. Le rang 9 (2028) donne 959 k€, sous le seuil.',
-      ],
-    ],
-  ),
-  moteur.corrigeSurPlace(
-    {
-      screenId: 'B2-02-A3-05-DEFI-IA',
-      titre: 'Exercice 5 — Corriger la prévision d’une IA',
-      diffusion: 'seance',
-      brique: 'fp-challenge',
-      dureeMinutes: 8,
-      concepts: ['prevision', 'correlation'],
-      notes: moteur.puces(
-        moteur.tempsDeLExercice(2, 6),
-        'Réflexion : relire la trace écrite A3-02 et la règle du rang.',
-        'Repérer qui trouve le rang, l’extrapolation et la causalité ; faire trouver la piste fausse avant de révéler.',
-        'Papier : exercice 5 du livret.',
-      ),
-      proprietes: {
-        modalite: 'solo',
-        probleme: {
-          id: 'b2-02-a3-defi-ia',
-          enonce:
-            'Samir a demandé une prévision pour 2035 à un assistant IA. Réponse : « Droite : y = 43,89x + 564,4. En 2035, y = 43,89 × 2035 + 564,4 ≈ 89 881 k€. Comme r est proche de 1, ce sont nos hausses de tarifs qui causent la croissance. »',
-          invite:
-            'Trouvez les erreurs de l’IA, corrigez la prévision et écrivez la réserve à ajouter.',
-        },
-        corrige: {
-          type: 'defi',
-          strategies: [
-            moteur.strategie(
-              'rang',
-              'Remplacer x par le rang de 2035, 16, et non par 2035 : y ≈ 43,89 × 16 + 564,4 ≈ 1 267 k€.',
-            ),
-            moteur.strategie(
-              'loin',
-              '2035 est à dix ans des données : l’extrapolation suppose que la tendance dure, la prévision est très fragile.',
-            ),
-            moteur.strategie(
-              'causalite',
-              'r proche de 1 dit que les points sont alignés, pas ce qui cause la hausse : aucune conclusion sur les tarifs.',
-            ),
-            moteur.strategie(
-              'controle',
-              'Contrôler la droite par le point moyen : 43,89 × 3,5 + 564,4 ≈ 718, l’ordonnée de G.',
-            ),
-            moteur.strategie(
-              'garder',
-              'Garder la réponse : r est proche de 1, donc la prévision est sûre.',
-              true,
-            ),
-          ],
-        },
-        renvoi: 'B2-02-A2-01-NUAGE-RIVAGE',
-      },
-    },
-    {
-      minutes: 2,
-      notes: [
-        'Faire lire deux réserves écrites par la classe, puis dévoiler les pistes une à une.',
-        'Transition : jalon 3, puis pause de 15 minutes.',
-      ],
-    },
-    [
-      [
-        'rang',
-        'L’IA a remplacé x par l’année : avec le rang 16, on prévoit environ 1 267 k€, pas 89 881.',
-      ],
-      [
-        'loin',
-        'Dix ans au-delà des données, rien ne garantit que la tendance tienne : la prévision doit porter sa réserve.',
-      ],
-      [
-        'causalite',
-        'Le coefficient de corrélation mesure l’alignement ; il ne prouve aucune cause.',
-      ],
-      [
-        'controle',
-        'Une droite des moindres carrés passe toujours par G : c’est le contrôle le plus rapide.',
-      ],
-      [
-        'garder',
-        'Piste fausse : un r proche de 1 dit que le passé est bien résumé, pas que l’avenir le suivra.',
       ],
     ],
   ),
@@ -2010,47 +1926,6 @@ const ACTE_4: moteur.Acte = [
       moteur.REFERENTIEL_DU_BTS_CG,
     ],
   ),
-  {
-    screenId: 'B2-02-A4-06-BILLET-DE-SORTIE',
-    titre: 'Billet de sortie : la phrase pour la banque',
-    diffusion: 'seance',
-    brique: 'fp-exit',
-    dureeMinutes: 4,
-    concepts: ['choix-du-resume', 'prevision'],
-    notes: moteur.puces(
-      '4 min ; clore la séance quand le compteur de billets est complet.',
-      'Pièges : la prévision sans réserve, la moyenne tirée par F105, la causalité.',
-    ),
-    proprietes: {
-      modalite: 'solo',
-      questions: [
-        moteur.vote(
-          'b2-02-a4-billet',
-          'prevision',
-          true,
-          'La banque lira une seule phrase. Laquelle peut partir telle quelle ?',
-          'La moitié de nos factures est encaissée en 43 jours au plus ; si la tendance de 2020 à 2025 se poursuit, notre chiffre d’affaires 2028 serait d’environ 959 k€.',
-          [
-            [
-              'La moitié de nos factures est encaissée en 43 jours au plus ; notre chiffre d’affaires 2028 sera de 959 k€.',
-              'extrapolation-sans-reserve',
-            ],
-            [
-              'Nos clients paient en moyenne à 48 jours ; si la tendance se poursuit, notre chiffre d’affaires 2028 serait d’environ 959 k€.',
-              'valeur-extreme-ignoree',
-            ],
-            [
-              'Nos délais sont réguliers, et r proche de 1 prouve que notre croissance va continuer.',
-              'correlation-prise-pour-causalite',
-            ],
-          ],
-          ['43 jours', 'environ 959 k€'],
-        ),
-      ],
-      invite:
-        'Quelle réserve la phrase juste contient-elle, et pourquoi est-elle nécessaire ?',
-    },
-  },
 ];
 
 const REMEDIATIONS: ContenuDeCours['remediations'] = {
@@ -2085,15 +1960,20 @@ const ILLUSTRATIONS = [
   ],
 ] as const;
 
+const MEDIAS = moteur.mediasDesIllustrations(
+  DOSSIER_DES_ILLUSTRATIONS,
+  ILLUSTRATIONS,
+  GRAVURE_DE_L_ACCROCHE,
+);
+
 export const COURS_B2_02 = moteur.coursB2(
   [ACTE_1, ACTE_2, ACTE_3, ACTE_4],
   REMEDIATIONS,
-  moteur.mediasDesIllustrations(DOSSIER_DES_ILLUSTRATIONS, ILLUSTRATIONS),
+  MEDIAS,
   {
     slug: 'b2-02-series-statistiques',
     titre: 'Séries statistiques : résumer, relier, prévoir',
     gabarit: 'v3',
-    dureeMinutes: 180,
     concepts: [...CONCEPTS_DU_COURS],
   },
 );

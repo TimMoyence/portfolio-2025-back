@@ -83,7 +83,7 @@ export function pilotageDUnCoursServi(cours: Cours): {
 } {
   const jumeles = ecransDesVotesJumeles(cours);
   const sansPhase = jumeles.at(0);
-  const enDiscussion = jumeles.at(1);
+  const aLaQuestion2 = jumeles.at(1);
   const nonPilotes = jumeles.slice(2);
   const autre = cours.ecrans.find(({ id }) => !jumeles.includes(id));
   const auVote = (ecranId: string) => {
@@ -92,7 +92,7 @@ export function pilotageDUnCoursServi(cours: Cours): {
   };
   const pilotageEcrans: Record<string, PilotageEcran> = {};
   const attendu: Record<string, PilotageServi> = Object.fromEntries(
-    nonPilotes.map((id) => [id, { phase: 'vote', ...auVote(id) }]),
+    nonPilotes.map((id) => [id, { phase: 'question-1', ...auVote(id) }]),
   );
   if (autre !== undefined) {
     pilotageEcrans[autre.id] = { revele: true };
@@ -102,16 +102,17 @@ export function pilotageDUnCoursServi(cours: Cours): {
     pilotageEcrans[sansPhase] = { resultatsProjetes: true };
     attendu[sansPhase] = {
       resultatsProjetes: true,
-      phase: 'vote',
+      phase: 'question-1',
       ...auVote(sansPhase),
     };
   }
-  if (enDiscussion !== undefined) {
-    pilotageEcrans[enDiscussion] = { phase: 'discussion' };
-    attendu[enDiscussion] = {
-      phase: 'discussion',
-      questionAffichee: questionsDuVoteJumele(cours, enDiscussion).principale,
-      questionOuverte: null,
+  if (aLaQuestion2 !== undefined) {
+    const { jumelle } = questionsDuVoteJumele(cours, aLaQuestion2);
+    pilotageEcrans[aLaQuestion2] = { phase: 'question-2' };
+    attendu[aLaQuestion2] = {
+      phase: 'question-2',
+      questionAffichee: jumelle,
+      questionOuverte: jumelle,
     };
   }
   return {

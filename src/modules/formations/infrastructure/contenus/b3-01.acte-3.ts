@@ -79,15 +79,6 @@ export const ACTE_3: moteur.Acte = [
           ],
         ),
       ],
-      corrige: {
-        type: 'revelation',
-        titre: 'Un axe tronqué grossit l’écart',
-        lignes: [
-          'L’axe part de 47 500 € : les barres ne montrent que ce qui dépasse ce seuil.',
-          'Rennes a vendu 51 600 €, Nantes 59 500 € : environ 13 % de moins, pas trois fois moins.',
-          'Depuis zéro, les deux barres ont presque la même hauteur. Un axe tronqué se signale, ou ne se montre pas à un comité.',
-        ],
-      },
     },
   },
   moteur.ecranV2(
@@ -217,15 +208,6 @@ export const ACTE_3: moteur.Acte = [
           ],
         ),
       ],
-      corrige: {
-        type: 'revelation',
-        titre: 'Quatre chiffres en contexte, le détail sur demande',
-        lignes: [
-          'En trente secondes, on lit quatre chiffres, pas quatre mille lignes ni dix graphiques.',
-          'Chaque chiffre porte sa comparaison : l’objectif, ou la même période de l’an passé. Seul, un chiffre ne dit ni bien ni mal.',
-          'Le détail vient ensuite, sur demande : graphiques, TCD et segments.',
-        ],
-      },
     },
   },
   moteur.ecranV2(
@@ -458,7 +440,7 @@ export const ACTE_3: moteur.Acte = [
       minutes: 2,
       notes: [
         'Révéler la correction : les quatre histoires s’affichent ensemble. Les commenter une à une, en demandant à main levée qui l’avait trouvée avant de passer à la suivante.',
-        'Transition : « Gardez la fiche mémo, puis écrivez les règles des niveaux 5 et 6. »',
+        'Transition : « Écrivez les règles des niveaux 5 et 6, puis gardez la fiche mémo. »',
       ],
     },
     [
@@ -479,65 +461,6 @@ export const ACTE_3: moteur.Acte = [
         'Strasbourg : les retards. Délai médian de 8 jours ouvrés en 2026, contre 2 en 2025, et des ruptures livrées environ deux mois plus tard. Le contrat promet 5 jours ouvrés. Cause : le décrochage date de mars 2026 et touche toutes les catégories, signe d’un problème de transport à l’agence, aggravé par des ruptures de stock d’avril à juillet. Action : dès octobre, traiter le transport et le stock de Strasbourg avant de perdre ses clients, plan confié au responsable de l’agence.',
       ],
     ],
-  ),
-  moteur.ecranV2(
-    {
-      screenId: 'B3-01-A3-11-FICHE-MEMO',
-      titre: 'Fiche mémo : de la donnée brute à la décision',
-      diffusion: 'catalogue',
-      dureeMinutes: 2,
-      concepts: [
-        'jeu-de-donnees',
-        'nettoyage',
-        'agregation-conditionnelle',
-        'tableau-croise-dynamique',
-        'choix-du-graphique',
-        'tableau-de-bord',
-      ],
-      notes: moteur.puces(
-        '2 min de lecture ; la fiche s’imprime et se garde pour la séance 2.',
-        'Faire relier chaque case à la règle de son niveau : dite avant la pause pour les niveaux 1 à 4, écrite à l’écran suivant pour les niveaux 5 et 6.',
-      ),
-    },
-    'grid',
-    {
-      title: 'Fiche mémo : de la donnée brute à la décision',
-      subtitle:
-        'Six niveaux : pour chacun, la question à se poser, les outils et le piège principal.',
-      imprimable: true,
-      items: [
-        {
-          title: 'Comprendre',
-          description:
-            'Une ligne, c’est quoi, et quelle clé relie les tables ? Granularité, types, clés. Piège : relier par un nom ou une ville.',
-        },
-        {
-          title: 'Nettoyer',
-          description:
-            'Faux ou suspect ? Automatique ou humain ? SUPPRESPACE, NOMPROPRE, CNUM, colonne de contrôle, quarantaine. Piège : supprimer au lieu de signaler.',
-        },
-        {
-          title: 'Transformer',
-          description:
-            'Quelle famille de problème ? INDEX et EQUIV, SOMME.SI.ENS, NB.JOURS.OUVRES, MEDIANE. Piège : un critère mal écrit ou une période mal délimitée.',
-        },
-        {
-          title: 'Modéliser',
-          description:
-            'Le calcul tiendra-t-il au prochain export ? Tableau structuré, TCD, regroupement par années, segments. Piège : la plage fixe.',
-        },
-        {
-          title: 'Visualiser',
-          description:
-            'Quelle question le graphique doit-il trancher ? Barres, courbe, empilé, histogramme, nuage, indicateur. Piège : l’axe tronqué non signalé.',
-        },
-        {
-          title: 'Décider',
-          description:
-            'Que doit voir le comité en trente secondes ? Quatre indicateurs en contexte, constat, cause, action. Piège : un chiffre sans comparaison.',
-        },
-      ],
-    },
   ),
   {
     screenId: 'B3-01-A3-12-CAHIER-DE-REGLES',
@@ -581,66 +504,63 @@ export const ACTE_3: moteur.Acte = [
       ],
     },
   },
-  {
-    screenId: 'B3-01-A3-13-CE-QUI-RESTE-FLOU',
-    titre: 'Ce qui reste flou',
-    diffusion: 'seance',
-    brique: 'fp-pro',
-    dureeMinutes: 1,
-    concepts: ['qualite-des-donnees'],
-    notes: moteur.puces(
-      '1 min d’écriture individuelle, sans lecture au pupitre : les réponses restent au rapport de séance.',
-      'Lire les réponses avant la séance 2 : ce qui reste flou ouvre la séance.',
-    ),
-    proprietes: {
-      metier: 'Analyste data — Norvane Équipement (réseau de 12 agences)',
-      situation:
-        'La séance se termine. Avant le billet de sortie, dites ce qui vous a échappé : la séance 2 commencera par là.',
-      geste: 'Écrivez une phrase, même courte.',
-      consequence: null,
-      questionsLibres: [
+  moteur.ecranV2(
+    {
+      screenId: 'B3-01-A3-11-FICHE-MEMO',
+      titre: 'Fiche mémo : de la donnée brute à la décision',
+      diffusion: 'catalogue',
+      dureeMinutes: 2,
+      concepts: [
+        'jeu-de-donnees',
+        'nettoyage',
+        'agregation-conditionnelle',
+        'tableau-croise-dynamique',
+        'choix-du-graphique',
+        'tableau-de-bord',
+      ],
+      notes: moteur.puces(
+        '2 min de lecture ; la fiche s’imprime et se garde pour la séance 2.',
+        'Faire relier chaque case à la règle de son niveau : dite avant la pause pour les niveaux 1 à 4, écrite à l’écran précédent pour les niveaux 5 et 6.',
+      ),
+    },
+    'grid',
+    {
+      title: 'Fiche mémo : de la donnée brute à la décision',
+      subtitle:
+        'Six niveaux : pour chacun, la question à se poser, les outils et le piège principal.',
+      imprimable: true,
+      items: [
         {
-          id: 'b3-01-a3-flou:ce-qui-reste-flou',
-          question:
-            'En une phrase : qu’est-ce qui reste flou pour vous après cette séance ?',
-          placeholder: 'Ce qui reste flou pour moi…',
+          title: 'Comprendre',
+          description:
+            'Une ligne, c’est quoi, et quelle clé relie les tables ? Granularité, types, clés. Piège : relier par un nom ou une ville.',
+        },
+        {
+          title: 'Nettoyer',
+          description:
+            'Faux ou suspect ? Automatique ou humain ? SUPPRESPACE, NOMPROPRE, CNUM, colonne de contrôle, quarantaine. Piège : supprimer au lieu de signaler.',
+        },
+        {
+          title: 'Transformer',
+          description:
+            'Quelle famille de problème ? INDEX et EQUIV, SOMME.SI.ENS, NB.JOURS.OUVRES, MEDIANE. Piège : un critère mal écrit ou une période mal délimitée.',
+        },
+        {
+          title: 'Modéliser',
+          description:
+            'Le calcul tiendra-t-il au prochain export ? Tableau structuré, TCD, regroupement par années, segments. Piège : la plage fixe.',
+        },
+        {
+          title: 'Visualiser',
+          description:
+            'Quelle question le graphique doit-il trancher ? Barres, courbe, empilé, histogramme, nuage, indicateur. Piège : l’axe tronqué non signalé.',
+        },
+        {
+          title: 'Décider',
+          description:
+            'Que doit voir le comité en trente secondes ? Quatre indicateurs en contexte, constat, cause, action. Piège : un chiffre sans comparaison.',
         },
       ],
     },
-  },
-  {
-    screenId: 'B3-01-A3-14-BILLET-DE-SORTIE',
-    titre: 'Billet de sortie',
-    diffusion: 'seance',
-    brique: 'fp-exit',
-    dureeMinutes: 3,
-    concepts: ['qualite-des-donnees'],
-    notes: moteur.puces(
-      '3 min ; clore la séance quand le compteur de billets est complet.',
-      'Pièges : échanger les deux dates ; supprimer la ligne.',
-    ),
-    proprietes: {
-      modalite: 'solo',
-      questions: [
-        moteur.vote(
-          'b3-01-a3-billet',
-          'qualite-des-donnees',
-          true,
-          'Une ligne porte une date_livraison antérieure à sa date_commande. La corrige-t-on automatiquement ?',
-          'Non : on la signale et on demande (faux · humain)',
-          [
-            [
-              'Oui : on échange les deux dates',
-              'suspect-corrige-sans-validation',
-            ],
-            [
-              'Oui : on supprime la ligne',
-              'suppression-au-lieu-de-signalement',
-            ],
-          ],
-        ),
-      ],
-      invite: 'En une phrase : pourquoi ce choix ?',
-    },
-  },
+  ),
 ];

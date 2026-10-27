@@ -28,17 +28,6 @@ export interface NumeriquePublic {
   readonly metadonnees: MetadonneesBrique;
 }
 
-export const LONGUEUR_MAX_DU_BILLET_DE_SORTIE = 500;
-
-export interface ExitBilletPublic {
-  readonly id: string;
-  readonly question: string;
-  readonly invite: string;
-  readonly longueurMax: typeof LONGUEUR_MAX_DU_BILLET_DE_SORTIE;
-  readonly options: readonly OptionPublique[];
-  readonly metadonnees: MetadonneesBrique;
-}
-
 export interface WorkedExemple {
   readonly id: string;
   readonly enonce: string;
@@ -300,7 +289,6 @@ export interface DonneesParBrique {
     readonly delaiMs: number;
     readonly consigne?: string;
   };
-  readonly 'fp-exit': { readonly billet: ExitBilletPublic };
   readonly questionnaire: {
     readonly intitule: string;
     readonly consigne?: string;

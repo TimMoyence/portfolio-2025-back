@@ -4,7 +4,6 @@ import type {
   CorrigeDefi,
   CorrigeEnigme,
   CorrigeFeuille,
-  CorrigeRevelation,
   CorrigeTableau,
 } from '../../src/modules/formations/domain/cours/Corrige';
 
@@ -178,17 +177,6 @@ export function buildCorrigeDefi(
         fausse: true,
       },
     ],
-    ...overrides,
-  };
-}
-
-export function buildCorrigeRevelation(
-  overrides: Partial<CorrigeRevelation> = {},
-): CorrigeRevelation {
-  return {
-    type: 'revelation',
-    titre: 'Pourquoi le prix ne revient pas à son point de départ',
-    lignes: ['Coefficient global : 1,10 × 0,90 = 0,99, soit −1 %.'],
     ...overrides,
   };
 }

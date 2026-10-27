@@ -87,12 +87,6 @@ export interface CorrigeDefi {
   }>;
 }
 
-export interface CorrigeRevelation {
-  readonly type: 'revelation';
-  readonly titre: string;
-  readonly lignes: AuMoinsUn<string>;
-}
-
 export type CorrigeProduction =
   | CorrigeFeuille
   | CorrigeTableau

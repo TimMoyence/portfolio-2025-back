@@ -27,7 +27,7 @@ const IMAGE_ET_TEXTE = {
 export const PRESENTATIONS_VISUELLES_VALIDES: Readonly<
   Record<string, Readonly<Record<string, unknown>>>
 > = {
-  hero: { title: 'Lire un chiffre', bullets: ['BTS CG · deuxième année'] },
+  hero: { title: 'Lire un chiffre', subtitle: 'BTS CG · deuxième année' },
   'method-path': {
     title: 'De la donnée à la décision',
     steps: [

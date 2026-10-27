@@ -3,7 +3,6 @@ import * as fiche from '../../../../../test/helpers/fiche-de-cours';
 import * as feuille from '../../../../../test/helpers/feuille-de-cours';
 import { arrondi } from '../../../../common/domain/nombres/arrondi';
 import { somme } from '../../../../common/domain/nombres/statistiques';
-import { colonnesVidesDeLaFeuille } from '../../../../../test/helpers/relecture-de-cours';
 import type { CorrigeTableau } from '../../domain/cours/Corrige';
 import {
   corrigerFeuille,
@@ -29,16 +28,7 @@ const K_DE_LA_DEMANDE = -0.05;
 const PRIX_PREVU = 38;
 const DEMANDE_VISEE = 600;
 
-const PRIX_DES_KITS = [1, 1.5, 2, 2.5, 3, 3.5] as const;
-const DEMANDES_DES_KITS = [9.9, 7, 4.9, 3.5, 2.4, 1.7] as const;
-const A_DES_KITS = 20;
-const K_DES_KITS = -0.7;
-const PRIX_DE_LA_FEUILLE = 4;
-const PRIX_DE_L_ENIGME = 2.5;
-const KITS_VISES = 4;
-const KITS_PLANCHER = 2;
 const CENTAINES = 100;
-const DIZAINES = 10;
 
 const ventes = (mois: number): number =>
   VENTES_DE_JANVIER * Math.exp(K_DES_VENTES * mois);
@@ -69,19 +59,6 @@ function droiteDesMoindresCarres(
 const logarithmes = (valeurs: readonly number[]): number[] =>
   valeurs.map((valeur) => Math.log(valeur));
 
-const DROITE_DES_KITS = droiteDesMoindresCarres(
-  PRIX_DES_KITS,
-  logarithmes(DEMANDES_DES_KITS),
-);
-const DROITE_INVERSEE_DES_KITS = droiteDesMoindresCarres(
-  logarithmes(DEMANDES_DES_KITS),
-  PRIX_DES_KITS,
-);
-const DROITE_AFFINE_DES_KITS = droiteDesMoindresCarres(
-  PRIX_DES_KITS,
-  DEMANDES_DES_KITS,
-);
-
 function corrigeDuTableauDesLogarithmes(): CorrigeTableau {
   const corrige = fiche.corrigeDe(COURS, 'b2-06-a3-tableau-logarithmes');
   if (corrige.type !== 'tableau') {
@@ -91,10 +68,30 @@ function corrigeDuTableauDesLogarithmes(): CorrigeTableau {
 }
 
 fiche.decrireLaFicheDuCours('B2-06', COURS, {
-  ...fiche.FICHE_DU_GABARIT_V3,
   conception: 'cours-b2-06-conception.md',
+  ecrans: 29,
+  dureeMinutes: 133,
+  minutesParActe: [49, 39, 37, 8, 0, 0],
+  rythme: { expositionContinueMax: 6, interactives: 103, exposition: 30 },
   ateliersNotes: ['A1-10 (10)', 'A2-05 (11)', 'A3-07 (10)'],
+  noteesParType: [7, 6, 0, 2, 1],
+  enigmes: 0,
+  rappels: 12,
   remediations: 15,
+  options: 23,
+  catalogue: [
+    'A1-02',
+    'A1-04',
+    'A1-05',
+    'A1-07',
+    'A1-08',
+    'A2-02',
+    'A2-03',
+    'A3-01',
+    'A3-03',
+    'A3-04',
+    'A4-05',
+  ],
   corrigesSurPlace: [
     'B2-06-A1-10-ATELIER-VENTES',
     'B2-06-A1-11-TABLEUR-VENTES',
@@ -102,16 +99,7 @@ fiche.decrireLaFicheDuCours('B2-06', COURS, {
     'B2-06-A2-06-TABLEUR-OBJECTIFS',
     'B2-06-A3-06-TABLEAU-LOGARITHMES',
     'B2-06-A3-07-ATELIER-DEMANDE',
-    'B2-06-A3-08-DEFI-IA',
-    'B2-06-A4-02-TABLEUR-KITS',
-    'B2-06-A4-03-COFFRE-KITS',
   ],
-});
-
-fiche.decrireLaMiniSituation('B2-06', COURS_B2_06, {
-  donneesFictives: ['B2-06-A1-05-DOSSIER', 'B2-06-A4-01-SITUATION-KITS'],
-  coffre: 'B2-06-A4-03-COFFRE-KITS',
-  tableur: 'B2-06-A4-02-TABLEUR-KITS',
 });
 
 describe('B2-06 — textes relus contre les données', () => {
@@ -149,17 +137,6 @@ describe('B2-06 — textes relus contre les données', () => {
       ['demande', [...DEMANDES]],
       ['z', undefined],
     ]);
-  });
-
-  it('rappelle dans la mini-situation le modèle retenu et l’unité des prix et des demandes', () => {
-    const texte = feuille.texteDeLEcran(
-      COURS_B2_06,
-      'B2-06-A4-01-SITUATION-KITS',
-    );
-
-    expect(texte).toContain('f(x) = 20e^(−0,7x)');
-    expect(texte).toContain('dizaines d’euros');
-    expect(texte).toContain('centaines de kits');
   });
 });
 
@@ -215,46 +192,6 @@ describe('B2-06 — recalcul des corrigés depuis les seuls paramètres', () => 
     );
     expect(affine.pente).toBeCloseTo(-31, 6);
     expect(-affine.ordonnee / affine.pente).toBeCloseTo(53.33, 2);
-  });
-
-  it('retrouve le modèle 20e^(−0,7x) des kits en ajustant z = ln y', () => {
-    expect(DROITE_DES_KITS.pente).toBeCloseTo(K_DES_KITS, 1);
-    expect(Math.round(Math.exp(DROITE_DES_KITS.ordonnee))).toBe(A_DES_KITS);
-  });
-
-  it('recalcule les solutions et pièges des quatre énigmes de la mini-situation', () => {
-    const kits = (prix: number, k: number): number =>
-      A_DES_KITS * Math.exp(k * prix) * CENTAINES;
-    const partVisee = KITS_VISES / A_DES_KITS;
-    const plancher = Math.log(KITS_PLANCHER / A_DES_KITS) / K_DES_KITS;
-    const coefficientAuTauxK = 1 + K_DES_KITS;
-
-    fiche.attendreLesEnigmes(COURS, {
-      'b2-06-a4-e1-demande': [
-        kits(PRIX_DE_L_ENIGME, K_DES_KITS),
-        A_DES_KITS * coefficientAuTauxK ** PRIX_DE_L_ENIGME * CENTAINES,
-        kits(PRIX_DE_L_ENIGME, -K_DES_KITS),
-      ],
-      'b2-06-a4-e2-prix': [
-        (Math.log(partVisee) / K_DES_KITS) * DIZAINES,
-        (partVisee / K_DES_KITS) * DIZAINES,
-        (Math.log(partVisee) / -K_DES_KITS) * DIZAINES,
-      ],
-      'b2-06-a4-e3-plancher': [
-        premierEntier(plancher * DIZAINES),
-        Math.floor(plancher * DIZAINES),
-        premierEntier(
-          (Math.log(KITS_PLANCHER / A_DES_KITS) /
-            Math.log(coefficientAuTauxK)) *
-            DIZAINES,
-        ),
-      ],
-      'b2-06-a4-e4-baisse': [
-        (1 - Math.exp(K_DES_KITS)) * CENTAINES,
-        -K_DES_KITS * CENTAINES,
-        Math.exp(K_DES_KITS) * CENTAINES,
-      ],
-    });
   });
 
   it('calcule z = ln y au millième à l’exercice 5, la touche log pour piège', () => {
@@ -414,85 +351,6 @@ describe('B2-06 — les trois feuilles corrigées par le moteur de formules', ()
       OBJECTIFS.length - 1,
     );
   });
-
-  it('reconnaît juste l’ajustement des kits par LN, PENTE, ORDONNEE.ORIGINE et EXP', () => {
-    const corrige = fiche.corrigeDeFeuille(COURS, 'b2-06-a4-feuille-kits');
-    const { pente, ordonnee } = DROITE_DES_KITS;
-    const a = Math.exp(ordonnee);
-
-    fiche.attendreLaFeuille(corrige, {
-      ...feuille.attendusDeColonne('C', 2, DEMANDES_DES_KITS, (demande) => [
-        Math.log(demande),
-      ]),
-      D2: [pente, DROITE_AFFINE_DES_KITS.pente, DROITE_INVERSEE_DES_KITS.pente],
-      E2: [
-        ordonnee,
-        DROITE_AFFINE_DES_KITS.ordonnee,
-        DROITE_INVERSEE_DES_KITS.ordonnee,
-      ],
-      F2: [a, ordonnee],
-      G2: [
-        a * Math.exp(pente * PRIX_DE_LA_FEUILLE),
-        a * Math.E * pente * PRIX_DE_LA_FEUILLE,
-        ordonnee * Math.exp(pente * PRIX_DE_LA_FEUILLE),
-      ],
-    });
-    expect(corrige.attendus).toHaveLength(10);
-    expect(
-      corrigerFeuille(corrige, {
-        ...feuille.recopier('=LN(B2)', 'C', 2, 7),
-        D2: '=PENTE(C2:C7;A2:A7)',
-        E2: '=ORDONNEE.ORIGINE(C2:C7;A2:A7)',
-        F2: '=EXP(E2)',
-        G2: '=F2*EXP(D2*4)',
-      }).score,
-    ).toBe(1);
-  });
-
-  it('QF-28 · ne laisse dans la feuille des kits aucune colonne sans intitulé ni réponse, pour tenir au poste étudiant', () => {
-    expect(
-      colonnesVidesDeLaFeuille(
-        COURS_B2_06,
-        COURS,
-        'B2-06-A4-02-TABLEUR-KITS',
-        'b2-06-a4-feuille-kits',
-      ),
-    ).toEqual([]);
-  });
-
-  it('nomme dans les kits l’ajustement de y, les séries inversées, l’ordonnée non exponentiée et l’exponentielle lue comme un produit', () => {
-    const corrige = fiche.corrigeDeFeuille(COURS, 'b2-06-a4-feuille-kits');
-    const justes = {
-      ...feuille.recopier('=LN(B2)', 'C', 2, 7),
-      D2: '=PENTE(C2:C7;A2:A7)',
-      E2: '=ORDONNEE.ORIGINE(C2:C7;A2:A7)',
-    };
-
-    expect(
-      feuille.confusionsDe(
-        corrige,
-        { ...justes, D2: '=PENTE(B2:B7;A2:A7)' },
-        'D2',
-      ),
-    ).toEqual(['ajustement-affine-sur-y']);
-    expect(
-      feuille.confusionsDe(
-        corrige,
-        { ...justes, D2: '=PENTE(A2:A7;C2:C7)' },
-        'D2',
-      ),
-    ).toEqual(['pente-ordonnee-inversees']);
-    expect(
-      feuille.confusionsDe(corrige, { ...justes, F2: '=E2' }, 'F2'),
-    ).toEqual(['ordonnee-non-exponentiee']);
-    expect(
-      feuille.confusionsDe(
-        corrige,
-        { ...justes, F2: '=EXP(E2)', G2: '=F2*EXP(1)*D2*4' },
-        'G2',
-      ),
-    ).toEqual(['exponentielle-lue-comme-produit']);
-  });
 });
 
 describe('B2-06 — retours de la relecture adverse', () => {
@@ -516,18 +374,6 @@ describe('B2-06 — retours de la relecture adverse', () => {
     expect(
       feuille.texteDeLEcran(COURS_B2_06, 'B2-06-A2-03-COURS-SEUIL'),
     ).toContain('change le sens');
-  });
-
-  it('propose à l’exercice 7 une piste fausse qui se fie au seul coefficient de corrélation', () => {
-    const { proprietes } = fiche.ecranDuContenu(
-      COURS_B2_06,
-      'B2-06-A3-08-DEFI-IA',
-    );
-    const fausse = /"id":"garder","libelle":"([^"]+)","fausse":true/u.exec(
-      JSON.stringify(proprietes),
-    )?.[1];
-
-    expect(fausse).toContain('coefficient de corrélation');
   });
 
   it('écrit les exposants en notation e^(kx) et le taux e^k − 1 dans la trace écrite des modèles', () => {

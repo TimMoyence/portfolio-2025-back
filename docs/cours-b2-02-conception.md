@@ -153,14 +153,12 @@ numérique, classement) portées par l'écran.
 |   27 | B2-02-A3-02-ILLUSTRATION-PREVOIR     |   1 | `fp-story` · v2 `illustration` |     |   0 | catalogue |
 |   28 | B2-02-A3-03-EXEMPLE-DROITE           |   8 | `fp-worked`                    |  I  |   0 | seance    |
 |   29 | B2-02-A3-04-ATELIER-DROITE           |  11 | `questionnaire`                |  I  |   4 | seance    |
-|   30 | B2-02-A3-05-DEFI-IA                  |  10 | `fp-challenge`                 |  I  |   0 | seance    |
-|   31 | B2-02-A3-06-JALON                    |   1 | `fp-pulse`                     |     |   0 | seance    |
-|   32 | B2-02-A4-01-SITUATION-FIBRE          |   3 | `fp-story` · v2 `table`        |     |   0 | catalogue |
-|   33 | B2-02-A4-02-TABLEUR-FIBRE            |  17 | `fp-sheet`                     |  I  |   0 | seance    |
-|   34 | B2-02-A4-03-COFFRE-FIBRE             |  16 | `fp-escape`                    |  I  |   0 | seance    |
-|   35 | B2-02-A4-04-RAPPEL                   |   6 | `fp-spaced`                    |  I  |   0 | seance    |
-|   36 | B2-02-A4-05-FICHE-MEMO               |   2 | `fp-story` · v2 `grid`         |     |   0 | catalogue |
-|   37 | B2-02-A4-06-BILLET-DE-SORTIE         |   4 | `fp-exit`                      |  I  |   1 | seance    |
+|   30 | B2-02-A3-06-JALON                    |   1 | `fp-pulse`                     |     |   0 | seance    |
+|   31 | B2-02-A4-01-SITUATION-FIBRE          |   3 | `fp-story` · v2 `table`        |     |   0 | catalogue |
+|   32 | B2-02-A4-02-TABLEUR-FIBRE            |  17 | `fp-sheet`                     |  I  |   0 | seance    |
+|   33 | B2-02-A4-03-COFFRE-FIBRE             |  16 | `fp-escape`                    |  I  |   0 | seance    |
+|   34 | B2-02-A4-04-RAPPEL                   |   6 | `fp-spaced`                    |  I  |   0 | seance    |
+|   35 | B2-02-A4-05-FICHE-MEMO               |   2 | `fp-story` · v2 `grid`         |     |   0 | catalogue |
 
 Rythme : 149 minutes interactives, 31 d'exposition, exposition continue de 6 minutes au plus.
 Chaque trace écrite garde ses 3 minutes, partagées avec l'illustration de son exemple qui la suit :
@@ -329,7 +327,7 @@ séance de 180 minutes interdisent d'ajouter une minute aux traces écrites.
 
 - Titre public : « Jalon 2 : relier deux variables »
 
-### 3.4 Acte 3 — Prévoir avec une droite (41 min)
+### 3.4 Acte 3 — Prévoir avec une droite (31 min)
 
 #### A3-01 · `B2-02-A3-01-JUSQU-OU` — 5 min · v2 `reflection` · séance
 
@@ -378,20 +376,12 @@ séance de 180 minutes interdisent d'ajouter une minute aux traces écrites.
 - `b2-02-a3-prevision` : 959 k€ en 2028 (rang 9) ; piège 89 565 (`rang-pris-pour-annee`).
 - `b2-02-a3-seuil` : 2029 (premier rang 10 pour 1 000 k€) ; piège 2028 (`seuil-mal-arrondi`).
 
-#### A3-05 · `B2-02-A3-05-DEFI-IA` — 10 min · `fp-challenge` · séance
-
-- Titre public : « Exercice 5 — Corriger la prévision d’une IA »
-- Temps : réflexion 2 min · travail 6 min · correction 2 min, piste par piste sur place.
-- Une IA prolonge la droite jusqu'en 2035 avec l'année à la place du rang et conclut que les hausses
-  de tarifs causent la croissance. Pistes justes : rang, extrapolation lointaine, causalité, contrôle
-  par G ; piste fausse : garder la réponse parce que r est proche de 1.
-
 #### A3-06 · `B2-02-A3-06-JALON` — 1 min · `fp-pulse` · séance
 
 - Titre public : « Jalon 3 : prévoir avec une droite »
 - Puis pause de 15 minutes.
 
-### 3.5 Acte 4 — Mini-situation CCF et clôture (48 min)
+### 3.5 Acte 4 — Mini-situation CCF et clôture (44 min)
 
 #### A4-01 · `B2-02-A4-01-SITUATION-FIBRE` — 3 min · v2 `table` · catalogue
 
@@ -427,10 +417,6 @@ séance de 180 minutes interdisent d'ajouter une minute aux traces écrites.
 #### A4-05 · `B2-02-A4-05-FICHE-MEMO` — 2 min · v2 `grid` · catalogue
 
 - Titre public : « Fiche mémo : résumer, relier, prévoir »
-
-#### A4-06 · `B2-02-A4-06-BILLET-DE-SORTIE` — 4 min · `fp-exit` · séance
-
-- Titre public : « Billet de sortie : la phrase pour la banque »
 
 ## 4. Mode papier
 
@@ -489,14 +475,15 @@ Chaque PNG d'origine (1 774 × 887 px) est converti en WebP de 1 600 px de large
 séances clôturées. Le catalogue est stocké avec le cours (`Cours.medias`) et contrôlé par la règle
 `media-sans-licence`.
 
-| Id  | Écran | Fichier source (page)      | Original                   | Auteur, date       | Licence      | Dérivé servi                           | Attribution affichée                                                             |
-| --- | ----- | -------------------------- | -------------------------- | ------------------ | ------------ | -------------------------------------- | -------------------------------------------------------------------------------- |
-| M1  | A1-06 | production propre du cours | PNG 1 774 × 887 px, 1,6 Mo | Asili Design, 2026 | CC BY-SA 4.0 | `cinq-factures.webp`                   | « Pour débuter : cinq factures · Asili Design, 2026 · CC BY-SA 4.0 »             |
-| M2  | A1-06 | production propre du cours | PNG 1 774 × 887 px, 1,6 Mo | Asili Design, 2026 | CC BY-SA 4.0 | `deux-clients-meme-moyenne.webp`       | « Deux clients, même moyenne · Asili Design, 2026 · CC BY-SA 4.0 »               |
-| M3  | A2-03 | production propre du cours | PNG 1 774 × 887 px, 1,6 Mo | Asili Design, 2026 | CC BY-SA 4.0 | `boutique-nuage-point-moyen.webp`      | « Une boutique, trois années · Asili Design, 2026 · CC BY-SA 4.0 »               |
-| M4  | A2-03 | production propre du cours | PNG 1 774 × 887 px, 1,5 Mo | Asili Design, 2026 | CC BY-SA 4.0 | `boutique-coefficient-r.webp`          | « r de la boutique, à la main · Asili Design, 2026 · CC BY-SA 4.0 »              |
-| M5  | A3-02 | production propre du cours | PNG 1 774 × 887 px, 1,5 Mo | Asili Design, 2026 | CC BY-SA 4.0 | `boutique-droite-moindres-carres.webp` | « La droite de la boutique · Asili Design, 2026 · CC BY-SA 4.0 »                 |
-| M6  | A3-02 | production propre du cours | PNG 1 774 × 887 px, 1,5 Mo | Asili Design, 2026 | CC BY-SA 4.0 | `boutique-prevision-seuil.webp`        | « La boutique en 2026, puis le seuil de 18 · Asili Design, 2026 · CC BY-SA 4.0 » |
+| Id  | Écran | Fichier source (page)                                                           | Original                   | Auteur, date         | Licence        | Dérivé servi                           | Attribution affichée                                                             |
+| --- | ----- | ------------------------------------------------------------------------------- | -------------------------- | -------------------- | -------------- | -------------------------------------- | -------------------------------------------------------------------------------- |
+| M1  | A1-06 | production propre du cours                                                      | PNG 1 774 × 887 px, 1,6 Mo | Asili Design, 2026   | CC BY-SA 4.0   | `cinq-factures.webp`                   | « Pour débuter : cinq factures · Asili Design, 2026 · CC BY-SA 4.0 »             |
+| M2  | A1-06 | production propre du cours                                                      | PNG 1 774 × 887 px, 1,6 Mo | Asili Design, 2026   | CC BY-SA 4.0   | `deux-clients-meme-moyenne.webp`       | « Deux clients, même moyenne · Asili Design, 2026 · CC BY-SA 4.0 »               |
+| M3  | A2-03 | production propre du cours                                                      | PNG 1 774 × 887 px, 1,6 Mo | Asili Design, 2026   | CC BY-SA 4.0   | `boutique-nuage-point-moyen.webp`      | « Une boutique, trois années · Asili Design, 2026 · CC BY-SA 4.0 »               |
+| M4  | A2-03 | production propre du cours                                                      | PNG 1 774 × 887 px, 1,5 Mo | Asili Design, 2026   | CC BY-SA 4.0   | `boutique-coefficient-r.webp`          | « r de la boutique, à la main · Asili Design, 2026 · CC BY-SA 4.0 »              |
+| M5  | A3-02 | production propre du cours                                                      | PNG 1 774 × 887 px, 1,5 Mo | Asili Design, 2026   | CC BY-SA 4.0   | `boutique-droite-moindres-carres.webp` | « La droite de la boutique · Asili Design, 2026 · CC BY-SA 4.0 »                 |
+| M6  | A3-02 | production propre du cours                                                      | PNG 1 774 × 887 px, 1,5 Mo | Asili Design, 2026   | CC BY-SA 4.0   | `boutique-prevision-seuil.webp`        | « La boutique en 2026, puis le seuil de 18 · Asili Design, 2026 · CC BY-SA 4.0 » |
+| M7  | A1-02 | https://commons.wikimedia.org/wiki/File:Galton%27s_correlation_diagram_1875.jpg | JPEG 745 × 631 px          | Francis Galton, 1875 | domaine public | `galton-correlation-1875.jpg`          | « Francis Galton, 1875 · Wikimedia Commons (domaine public) »                    |
 
 ### 8.3 Sources des données
 

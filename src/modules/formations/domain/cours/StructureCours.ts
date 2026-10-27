@@ -76,7 +76,6 @@ const GRAINE_DE_CONTROLE = 0;
 const EXPOSITION_MAXIMALE_MINUTES = 6;
 const RATIO_INTERACTION_MINIMAL = 0.3;
 const BRIQUE_OUVERTURE = 'fp-recall';
-const BRIQUE_CLOTURE = 'fp-exit';
 const PREFIXE_REFERENCE = 'ref:';
 const PUCE_DES_NOTES = /^\s*•/;
 const DUREE_MINIMALE_D_ATELIER = 8;
@@ -205,16 +204,26 @@ function controlerCloture({ cours }: Analyse): readonly Manquement[] {
   }
   const rang = cours.ecrans.length - 1;
   const dernier = cours.ecrans[rang];
-  if (dernier.brique === BRIQUE_CLOTURE) {
+  if (estFicheMemo(dernier)) {
     return [];
   }
   const identifiant = nomEcran(dernier, rang);
   return [
     {
       ecran: identifiant,
-      raison: `le cours se clôt sur « ${identifiant} » de type « ${dernier.brique} » : un cours clôt par un exit ticket (« ${BRIQUE_CLOTURE} »), sans quoi la séance finit sans rien mesurer.`,
+      raison: `le cours se clôt sur « ${identifiant} » de type « ${dernier.brique} » : un cours se clôt sur sa fiche mémo, un récit en grille imprimable.`,
     },
   ];
+}
+
+function estFicheMemo(ecran: Ecran): boolean {
+  const presentation =
+    ecran.brique === 'fp-story' ? ecran.proprietes.presentation : undefined;
+  return (
+    presentation?.version === 2 &&
+    presentation.renderer === 'grid' &&
+    presentation.props.imprimable === true
+  );
 }
 
 function controlerDureeEcran({ cours }: Analyse): readonly Manquement[] {
@@ -547,15 +556,8 @@ function controlerNotes({ cours }: Analyse): readonly Manquement[] {
   });
 }
 
-function estExempteDAtelier(
-  ecran: Ecran,
-  rang: number,
-  dernier: number,
-): boolean {
-  return (
-    (rang === 0 && ecran.brique === BRIQUE_OUVERTURE) ||
-    (rang === dernier && ecran.brique === BRIQUE_CLOTURE)
-  );
+function estExempteDAtelier(ecran: Ecran, rang: number): boolean {
+  return rang === 0 && ecran.brique === BRIQUE_OUVERTURE;
 }
 
 function fermeesNotees(ecran: Ecran): number {
@@ -599,7 +601,7 @@ function tempsNotes(cours: Cours): readonly TempsNote[] {
   let rang = 0;
   while (rang <= dernier) {
     const ecran = cours.ecrans[rang];
-    if (fermeesNotees(ecran) > 0 && !estExempteDAtelier(ecran, rang, dernier)) {
+    if (fermeesNotees(ecran) > 0 && !estExempteDAtelier(ecran, rang)) {
       const temp = tempsNoteA(cours, rang);
       temps.push(temp);
       rang = temp.fin + 1;
@@ -646,7 +648,7 @@ function suiteTropCourte(suite: readonly TempsNote[]): readonly Manquement[] {
   return [
     {
       ecran: suite[0].ecran,
-      raison: `l'atelier noté ${nommes} totalise ${minutes} min, corrections comprises : un atelier noté dure au moins ${DUREE_MINIMALE_D_ATELIER} min, hors rappel d'ouverture et billet de clôture.`,
+      raison: `l'atelier noté ${nommes} totalise ${minutes} min, corrections comprises : un atelier noté dure au moins ${DUREE_MINIMALE_D_ATELIER} min, hors rappel d'ouverture.`,
     },
   ];
 }

@@ -160,17 +160,6 @@ class CorrigeDefiPresentateurResponseDto {
   strategies: readonly StrategiePresentateurResponseDto[];
 }
 
-class CorrigeRevelationPresentateurResponseDto {
-  @ApiProperty({ enum: ['revelation'] })
-  type: 'revelation';
-
-  @ApiProperty({ example: 'Une hausse puis une baisse de 20 %' })
-  titre: string;
-
-  @ApiProperty({ type: [String] })
-  lignes: readonly string[];
-}
-
 class CorrigeReflexionPresentateurResponseDto {
   @ApiProperty({ enum: ['reflexion'] })
   type: 'reflexion';
@@ -200,7 +189,6 @@ export const CORRIGES_D_ECRAN = [
   CorrigeClassementPresentateurResponseDto,
   CorrigeEnigmesPresentateurResponseDto,
   CorrigeDefiPresentateurResponseDto,
-  CorrigeRevelationPresentateurResponseDto,
   CorrigeReflexionPresentateurResponseDto,
 ];
 

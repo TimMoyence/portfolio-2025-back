@@ -48,6 +48,14 @@ describeDb('Pilotage par ecran persiste (B21, db integration)', () => {
     }
   };
 
+  const seancePilotee = async (
+    ...pilotages: Record<string, unknown>[]
+  ): Promise<string> => {
+    const sessionId = await ouvrirSeance();
+    await piloterSansErreur(sessionId, ...pilotages);
+    return sessionId;
+  };
+
   const premierEtatDuFlux = async (sessionId: string): Promise<EtatDiffuse> => {
     const chemin = banc.route(`/sessions/${sessionId}/presenter-stream`);
     const flux = await abonnerAuFlux(banc.port(), chemin, {
@@ -79,31 +87,28 @@ describeDb('Pilotage par ecran persiste (B21, db integration)', () => {
   });
 
   it('restitue le pilotage et la revision apres une recreation du module', async () => {
-    const sessionId = await ouvrirSeance();
-    await piloterSansErreur(sessionId, {
+    const sessionId = await seancePilotee({
       screenId: ECRAN_DE_VOTE,
-      phase: 'revote',
+      phase: 'question-2',
     });
 
     await banc.remonter();
 
     const etat = await premierEtatDuFlux(sessionId);
 
-    expect(etat.pilotage).toEqual({ [ECRAN_DE_VOTE]: { phase: 'revote' } });
+    expect(etat.pilotage).toEqual({ [ECRAN_DE_VOTE]: { phase: 'question-2' } });
     expect(etat.revision).toBeGreaterThan(0);
   });
 
   it('cumule les pilotages de plusieurs ecrans et incremente la revision', async () => {
-    const sessionId = await ouvrirSeance();
-    await piloterSansErreur(
-      sessionId,
-      { screenId: ECRAN_DE_VOTE, phase: 'discussion' },
+    const sessionId = await seancePilotee(
+      { screenId: ECRAN_DE_VOTE, resultatsProjetes: true },
       { screenId: ECRAN_DE_L_EXEMPLE, etayage: 1 },
     );
 
     await expect(stocke(sessionId)).resolves.toEqual({
       pilotage: {
-        [ECRAN_DE_VOTE]: { phase: 'discussion' },
+        [ECRAN_DE_VOTE]: { resultatsProjetes: true },
         [ECRAN_DE_L_EXEMPLE]: { etayage: 1 },
       },
       revision: 2,
@@ -111,41 +116,36 @@ describeDb('Pilotage par ecran persiste (B21, db integration)', () => {
   });
 
   it('garde les champs deja pilotes d un ecran quand une commande en pose un autre', async () => {
-    const sessionId = await ouvrirSeance();
-    await piloterSansErreur(
-      sessionId,
+    const sessionId = await seancePilotee(
       { screenId: ECRAN_DE_VOTE, resultatsProjetes: true },
-      { screenId: ECRAN_DE_VOTE, phase: 'discussion' },
+      { screenId: ECRAN_DE_VOTE, phase: 'question-2' },
     );
 
     expect((await stocke(sessionId)).pilotage).toEqual({
-      [ECRAN_DE_VOTE]: { phase: 'discussion', resultatsProjetes: true },
+      [ECRAN_DE_VOTE]: { phase: 'question-2', resultatsProjetes: true },
     });
   });
 
-  it('Q1 · révèle la correction d un vote jumelé passé en phase de révélation', async () => {
-    const sessionId = await ouvrirSeance();
-    await piloterSansErreur(
-      sessionId,
-      { screenId: ECRAN_DE_VOTE, phase: 'revote' },
-      { screenId: ECRAN_DE_VOTE, phase: 'revele' },
+  it('M2 · révèle la correction d un vote jumelé après la question 2, sans changer de phase', async () => {
+    const sessionId = await seancePilotee(
+      { screenId: ECRAN_DE_VOTE, phase: 'question-2' },
+      { screenId: ECRAN_DE_VOTE, revele: true },
     );
 
     expect((await stocke(sessionId)).pilotage).toEqual({
-      [ECRAN_DE_VOTE]: { phase: 'revele', revele: true },
+      [ECRAN_DE_VOTE]: { phase: 'question-2', revele: true },
     });
   });
 
   it('refuse de ramener une phase en arriere', async () => {
-    const sessionId = await ouvrirSeance();
-    await piloterSansErreur(sessionId, {
+    const sessionId = await seancePilotee({
       screenId: ECRAN_DE_VOTE,
-      phase: 'revele',
+      phase: 'question-2',
     });
 
     const refus = await piloter(sessionId, {
       screenId: ECRAN_DE_VOTE,
-      phase: 'vote',
+      phase: 'question-1',
     }).expect(CODE_HTTP.CONFLIT);
 
     expect((refus.body as { code?: string }).code).toBe('PHASE_NON_MONOTONE');
@@ -158,7 +158,7 @@ describeDb('Pilotage par ecran persiste (B21, db integration)', () => {
     ],
     [
       'un ecran absent du cours de la seance',
-      { pilotage: { screenId: 'E-INVENTE', phase: 'vote' } },
+      { pilotage: { screenId: 'E-INVENTE', phase: 'question-1' } },
     ],
     ['un corps de pilotage sans aucun changement', {}],
   ])('refuse %s', async (_cas, corps) => {

@@ -1,4 +1,7 @@
-import { buildCoursDeTest } from '../../../../../test/factories/cours.factory';
+import {
+  buildCoursDeTest,
+  buildEcranDeVoteJumele,
+} from '../../../../../test/factories/cours.factory';
 import {
   buildCorrectionDeReponses,
   buildCorrectionDExemple,
@@ -11,6 +14,7 @@ import {
 } from '../../../../../test/factories/ecrans-stockes.factory';
 import { lireCoursStocke } from './CoursStocke';
 import {
+  correctionDeLEcranRevele,
   correctionServie,
   ecranVerrouille,
   exempleAuRythmeDuPilotage,
@@ -176,6 +180,32 @@ describe('exemple corrigé au rythme du pilotage', () => {
       etayage: 1,
       exemple: { etapes: [{ raisonnement: '25,30 − 27,60 = −2,30 points.' }] },
     });
+  });
+});
+
+describe('M3 · correction d un vote à deux questions révélé', () => {
+  it('sert les deux questions, chacune avec sa bonne réponse et son option', () => {
+    const vote = buildEcranDeVoteJumele();
+    const cours = buildCoursDeTest({ ecrans: [vote] });
+    const tirage = tirer(cours, 0);
+
+    expect(
+      correctionDeLEcranRevele(vote, tirage)?.questions.map(
+        ({ questionId, optionId }) => ({
+          questionId,
+          optionId,
+        }),
+      ),
+    ).toEqual([
+      {
+        questionId: 'Q-TEST-PAIRS',
+        optionId: String(tirage.solutions['Q-TEST-PAIRS'].valeur),
+      },
+      {
+        questionId: 'Q-TEST-JUMELLE',
+        optionId: String(tirage.solutions['Q-TEST-JUMELLE'].valeur),
+      },
+    ]);
   });
 });
 

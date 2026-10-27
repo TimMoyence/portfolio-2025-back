@@ -101,6 +101,15 @@ const CONSIGNE_DES_REGLES =
 
 const RENVOI_AUX_FACTURES = 'B2-03-A1-04-FACTURES';
 
+const GRAVURE_DE_L_ACCROCHE = moteur.gravureDuDomainePublic({
+  id: 'M7',
+  chemin: '/assets/cours/gravures/v1/boole-lois-de-la-pensee-1854.jpg',
+  pageSource:
+    'https://commons.wikimedia.org/wiki/File:An_Investigation_of_the_Laws_of_Thought_(1854,_Boole,_investigationofl00boolrich).djvu',
+  auteur: 'George Boole, An Investigation of the Laws of Thought',
+  date: '1854',
+});
+
 const DOSSIER_DES_ILLUSTRATIONS = '/assets/cours/b2-03/v1';
 
 const AVANT_SA_PAGE =
@@ -285,11 +294,9 @@ const ACTE_1: moteur.Acte = [
       title: 'Écrire et contrôler une règle',
       subtitle:
         'Atelier Rivage, voilerie de La Rochelle. Avant la clôture, l’expert-comptable fait contrôler les factures clients avec trois règles : relancer, vérifier la TVA, faire viser.',
-      bullets: [
-        'BTS Comptabilité et gestion · 2e année · troisième cours de mathématiques',
-        'Trois notions : combiner des conditions, nier une règle, dire « tous » ou « au moins un »',
-        'Une mini-situation CCF et sa question tableur',
-      ],
+      bgImage: GRAVURE_DE_L_ACCROCHE.chemins[0],
+      bgImageAlt:
+        'Page de titre de An Investigation of the Laws of Thought de George Boole (1854), le livre qui fonde la logique mathématique',
     },
   ),
   {
@@ -383,14 +390,6 @@ const ACTE_1: moteur.Acte = [
           [['Oui : trois ans suffisent', 'borne-stricte-large']],
         ),
       ],
-      corrige: {
-        type: 'revelation',
-        titre: 'Lire « ou » et « plus de »',
-        lignes: [
-          '« Ou » est inclusif : la remise tient dès qu’une condition est vraie, et aussi quand les deux le sont.',
-          '« Plus de trois ans » se traduit par > 3 : la valeur 3 est exclue. « Au moins trois ans » se traduit par ≥ 3.',
-        ],
-      },
     },
   },
   moteur.ecranDIllustration(
@@ -975,15 +974,6 @@ const ACTE_3: moteur.Acte = [
           ],
         ),
       ],
-      corrige: {
-        type: 'revelation',
-        titre: 'Pour tout, il existe',
-        lignes: [
-          'Pour contredire « toutes… », un seul contre-exemple suffit : « au moins une… ne… pas ».',
-          'Le contraire de « il existe… » est « aucune… », c’est-à-dire « pour toutes…, non… ».',
-          'La trace écrite donne ces deux règles et leur vérification au tableur.',
-        ],
-      },
     },
   },
   moteur.ecranDIllustration(
@@ -1632,46 +1622,6 @@ const ACTE_4: moteur.Acte = [
       moteur.REFERENTIEL_DU_BTS_CG,
     ],
   ),
-  {
-    screenId: 'B2-03-A4-06-BILLET-DE-SORTIE',
-    titre: 'Billet de sortie : la formule pour l’expert-comptable',
-    diffusion: 'seance',
-    brique: 'fp-exit',
-    dureeMinutes: 4,
-    concepts: ['connecteur', 'tableur'],
-    notes: moteur.puces(
-      '4 min ; clore la séance quand le compteur de billets est complet.',
-      'Pièges : OU au lieu de ET, >= au lieu de >, texte sans guillemets.',
-    ),
-    proprietes: {
-      modalite: 'solo',
-      questions: [
-        moteur.vote(
-          'b2-03-a4-billet',
-          'connecteur',
-          true,
-          'Marc veut une formule de relance à recopier dans tout le fichier, statut en F2 et délai en E2. Laquelle peut partir telle quelle ?',
-          '=SI(ET(F2="Impayée";E2>60);"À relancer";"")',
-          [
-            [
-              '=SI(OU(F2="Impayée";E2>60);"À relancer";"")',
-              'et-traduit-par-ou',
-            ],
-            [
-              '=SI(ET(F2="Impayée";E2>=60);"À relancer";"")',
-              'borne-stricte-large',
-            ],
-            [
-              '=SI(ET(F2=Impayée;E2>60);"À relancer";"")',
-              'critere-sans-guillemets',
-            ],
-          ],
-        ),
-      ],
-      invite:
-        'Quelle facture du fichier montre que la borne compte, et pourquoi ?',
-    },
-  },
 ];
 
 const REMEDIATIONS: ContenuDeCours['remediations'] = {
@@ -1699,15 +1649,20 @@ const ILLUSTRATIONS = [
   ['M6', 'voiles-vendues-nb-si.webp', 'Les voiles vendues'],
 ] as const;
 
+const MEDIAS = moteur.mediasDesIllustrations(
+  DOSSIER_DES_ILLUSTRATIONS,
+  ILLUSTRATIONS,
+  GRAVURE_DE_L_ACCROCHE,
+);
+
 export const COURS_B2_03 = moteur.coursB2(
   [ACTE_1, ACTE_2, ACTE_3, ACTE_4],
   REMEDIATIONS,
-  moteur.mediasDesIllustrations(DOSSIER_DES_ILLUSTRATIONS, ILLUSTRATIONS),
+  MEDIAS,
   {
     slug: 'b2-03-logique',
     titre: 'Logique : écrire et contrôler une règle',
     gabarit: 'v3',
-    dureeMinutes: 140,
     concepts: [...CONCEPTS_DU_COURS],
   },
 );

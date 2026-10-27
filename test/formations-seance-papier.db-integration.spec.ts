@@ -22,14 +22,15 @@ const OK = 200;
 const CREE = 201;
 const SANS_CONTENU = 204;
 const DELAI_TEST_MS = 120_000;
-const PHASES_APRES_LE_VOTE = ['discussion', 'revote', 'revele'] as const;
-
 type Pilotage = { readonly screenId: string } & Partial<PilotageEcran>;
 
 function pilotagesDuFormateur(ecran: Ecran): readonly Pilotage[] {
   const screenId = ecran.id;
   if (ecran.brique === 'fp-vote' && ecran.questionJumelle !== undefined) {
-    return PHASES_APRES_LE_VOTE.map((phase) => ({ screenId, phase }));
+    return [
+      { screenId, phase: 'question-2' },
+      { screenId, revele: true },
+    ];
   }
   const pilotages: Pilotage[] = [];
   if (ecran.brique === 'fp-recall') {
@@ -95,7 +96,7 @@ describeDb('Seance du B2-02 en mode papier (db integration)', () => {
           if (pilote.status !== SANS_CONTENU) {
             refus.push(`${JSON.stringify(pilotage)} : ${pilote.status}`);
           }
-          if (pilotage.revele === true || pilotage.phase === 'revele') {
+          if (pilotage.revele === true) {
             reveles.push(ecran.id);
           }
         }

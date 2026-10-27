@@ -449,14 +449,11 @@ function seanceComplete(
         );
         const premierTour = await voterSaufLeRetardataire(ecran.question);
         await piloter({
-          pilotage: { screenId: ecran.id, phase: 'discussion' },
+          pilotage: { screenId: ecran.id, phase: 'question-2' },
         }).expect(SANS_CONTENU);
         const principaleFermee = noterConflit(
           await repondre(retardataire(), ecran.question),
         );
-        await piloter({
-          pilotage: { screenId: ecran.id, phase: 'revote' },
-        }).expect(SANS_CONTENU);
         const revote: Response[] = [];
         for (const unPoste of postes) {
           revote.push(
@@ -468,14 +465,16 @@ function seanceComplete(
           deuxTours,
         );
         await piloter({
-          pilotage: { screenId: ecran.id, phase: 'revele' },
+          pilotage: { screenId: ecran.id, revele: true },
         }).expect(SANS_CONTENU);
         const lusApresRevelation = await verdictsLusParLePoste(
           postes[0],
           deuxTours,
         );
         const retourEnArriere = noterConflit(
-          await piloter({ pilotage: { screenId: ecran.id, phase: 'vote' } }),
+          await piloter({
+            pilotage: { screenId: ecran.id, phase: 'question-1' },
+          }),
         );
         const retenu = [null, null, null];
 
@@ -964,7 +963,7 @@ function seanceComplete(
             libres.includes(ecran.id) &&
             cours.ecrans.indexOf(ecran) > intervalleLibre.dernier,
         );
-        if (dedans === undefined || dehors === undefined) {
+        if (dedans === undefined) {
           throw new Error(
             `Le ${PREFIXE} ne permet pas de borner un intervalle libre`,
           );
@@ -976,9 +975,12 @@ function seanceComplete(
           dedans,
           'Dans l intervalle libre.',
         );
-        const refusee = noterConflit(
-          await reponseLibreSur(dehors, 'Hors de l intervalle libre.'),
-        );
+        const refusee =
+          dehors === undefined
+            ? null
+            : noterConflit(
+                await reponseLibreSur(dehors, 'Hors de l intervalle libre.'),
+              );
         await piloter({
           mode: 'pilote',
           ecran: cours.ecrans.length - 1,
@@ -986,8 +988,12 @@ function seanceComplete(
 
         expect({
           admise: admise.status,
-          refusee: [refusee.status, codeDe(refusee)],
-        }).toEqual({ admise: CREE, refusee: [INTROUVABLE, 'ECRAN_NON_SERVI'] });
+          refusee: refusee === null ? null : [refusee.status, codeDe(refusee)],
+        }).toEqual({
+          admise: CREE,
+          refusee:
+            dehors === undefined ? null : [INTROUVABLE, 'ECRAN_NON_SERVI'],
+        });
       };
 
       const jouerEcran = async (rang: number, ecran: Ecran): Promise<void> => {
@@ -1496,21 +1502,6 @@ function seanceComplete(
       );
 
       it(
-        'T4 · accepte le billet de sortie de chaque poste tant que la seance est ouverte',
-        async () => {
-          const billet = questionsDe(ecranDe('fp-exit'))[0];
-          const billets: { nombre: number }[] =
-            await banc.contexte.dataSource.query(
-              'SELECT COUNT(DISTINCT participant_id)::int AS "nombre" FROM formation_answers WHERE session_id = $1 AND question_id = $2',
-              [sessionId, billet.id],
-            );
-
-          expect(billets[0].nombre).toBe(CAPACITE);
-        },
-        DELAI_TEST_MS,
-      );
-
-      it(
         'clot la seance, refuse toute ecriture ensuite et rend le rapport etendu',
         async () => {
           await formateur('post', `/sessions/${sessionId}/close`).expect(
@@ -1524,7 +1515,7 @@ function seanceComplete(
             DELAI_FLUX_MS,
           );
           const apresCloture = noterConflit(
-            await repondre(postes[3], questionsDe(ecranDe('fp-exit'))[0]),
+            await repondre(postes[3], questionDOuverture()),
           );
           const seance = await banc.contexte.sessions.findById(sessionId);
           const rapport = await formateur(
@@ -1604,7 +1595,7 @@ function seanceComplete(
             );
           }
           const ecritures: Record<string, () => Test> = {
-            billet: () => repondre(auteur, questionsDe(ecranDe('fp-exit'))[0]),
+            question: () => repondre(auteur, questionDOuverture()),
             ...ecrituresDesBriques(auteur, libre, 'Apres la cloture.'),
             incidents: () => signaler(auteur),
           };
@@ -1714,7 +1705,7 @@ const TRAME_DES_COURS_B2: Pick<
 
 seanceComplete(COURS_B2_01, {
   ...TRAME_DES_COURS_B2,
-  questionsNotees: 31,
+  questionsNotees: 30,
   cellulesDesFeuilles: [17],
   exerciceEnAvance: 'B2-01-A2-06-POINTS',
   jalons: 5,
@@ -1723,41 +1714,44 @@ seanceComplete(COURS_B2_01, {
 
 seanceComplete(COURS_B2_02, {
   ...TRAME_DES_COURS_B2,
-  questionsNotees: 16,
+  questionsNotees: 15,
   cellulesDesFeuilles: [6],
   exerciceEnAvance: 'B2-02-A2-04-EXEMPLE-NUAGE',
 });
 
 seanceComplete(COURS_B2_03, {
   ...TRAME_DES_COURS_B2,
-  questionsNotees: 12,
+  questionsNotees: 11,
   cellulesDesFeuilles: [10, 33],
-  exerciceEnAvance: 'B2-03-A4-06-BILLET-DE-SORTIE',
+  exerciceEnAvance: 'B2-03-A2-01-CONTRAIRE',
+  intervalleLibre: { premier: 1, dernier: 10 },
 });
 
 seanceComplete(COURS_B2_04, {
   ...TRAME_DES_COURS_B2,
-  questionsNotees: 18,
+  questionsNotees: 17,
   cellulesDesFeuilles: [5, 10, 16],
   exerciceEnAvance: 'B2-04-A2-04-EXEMPLE-GEOMETRIQUE',
 });
 
 seanceComplete(COURS_B2_05, {
   ...TRAME_DES_COURS_B2,
-  questionsNotees: 18,
-  cellulesDesFeuilles: [10, 9, 17],
+  questionsNotees: 16,
+  cellulesDesFeuilles: [10, 9],
   exerciceEnAvance: 'B2-05-A2-04-EXEMPLE-ANNUITES',
+  enigmes: 0,
 });
 
 seanceComplete(COURS_B2_06, {
   ...TRAME_DES_COURS_B2,
-  questionsNotees: 18,
-  cellulesDesFeuilles: [13, 12, 10],
+  questionsNotees: 16,
+  cellulesDesFeuilles: [13, 12],
   exerciceEnAvance: 'B2-06-A2-04-EXEMPLE-DOUBLEMENT',
+  enigmes: 0,
 });
 
 seanceComplete(COURS_B3_01, {
-  questionsNotees: 21,
+  questionsNotees: 20,
   cellulesDesFeuilles: [],
   exerciceEnAvance: 'B3-01-A1-12-EXEMPLE-NETTOYAGE',
   jalons: 0,
@@ -1769,12 +1763,13 @@ seanceComplete(COURS_B3_01, {
   ],
   piecesJointesAuCatalogue: ['B3-01-A1-02-COURRIEL'],
   classeursReserves: ['B3-01-A2-01-VOTE-FAMILLE', 'B3-01-A3-02-VOTE-GRAPHIQUE'],
-  intervalleLibre: { premier: 34, dernier: 35 },
+  intervalleLibre: { premier: 34, dernier: 34 },
 });
 
 seanceComplete(COURS_B1_01, {
   ...TRAME_DES_COURS_B2,
-  questionsNotees: 17,
-  cellulesDesFeuilles: [6, 6],
+  questionsNotees: 15,
+  cellulesDesFeuilles: [6],
   exerciceEnAvance: 'B1-01-A2-04-EXEMPLE-SOIREES',
+  enigmes: 0,
 });

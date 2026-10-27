@@ -1,5 +1,4 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { LONGUEUR_MAX_DU_BILLET_DE_SORTIE } from '../domain/contrats/donnees-publiques';
 import {
   activitesLibres,
   cibleServie,
@@ -17,7 +16,7 @@ import type {
   IFreeResponsesRepository,
   SaveFreeResponseInput,
 } from '../domain/IFreeResponses.repository';
-import { assertLongueurAuPlus, texteRenseigne } from '../domain/TexteRenseigne';
+import { texteRenseigne } from '../domain/TexteRenseigne';
 import { FREE_RESPONSES_REPOSITORY } from '../domain/token';
 import { ParticipationEnSeance } from './ParticipationEnSeance';
 
@@ -50,9 +49,6 @@ export class SaveFreeResponseUseCase {
     }
     assertPhaseOuverte(session.pilotageEcrans, { ecranId: command.screenId });
     assertEtapeNonCorrigee(session.pilotageEcrans, ecran, command.activityId);
-    if (ecran.brique === 'fp-exit') {
-      assertLongueurAuPlus(response, CHAMP, LONGUEUR_MAX_DU_BILLET_DE_SORTIE);
-    }
     await this.freeResponses.save({ ...command, response });
     this.participation.signalerActivite(command.sessionId);
   }

@@ -23,4 +23,4 @@ API NestJS du portfolio. Les règles transverses sont dans `~/.claude/CLAUDE.md`
 ## GitNexus
 
 - Index local absent par défaut : `npx gitnexus analyze --index-only` le crée ou le rafraîchit. Toujours `--index-only` : sans lui, `analyze` réinjecte un bloc généré dans ce fichier et dans `CLAUDE.md`.
-- Usage par les skills `.claude/skills/gitnexus-*`. Un `risk: UNKNOWN` ou zéro appelant n'est pas un feu vert : il se confirme par `git grep`.
+- Usage par les skills `gitnexus-*` du plugin `atelier@outillage` ; la livraison passe par sa skill `livrer`. Un `risk: UNKNOWN` ou zéro appelant n'est pas un feu vert : il se confirme par `git grep`.

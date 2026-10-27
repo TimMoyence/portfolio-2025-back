@@ -4,8 +4,6 @@ import { valeursAmbigues } from '../GradingCore';
 import type { AnswerValue, Solution } from '../GradingCore';
 import type { Cours, Ecran, Question } from '../contrats/cours';
 import {
-  type ExitBilletPublic,
-  LONGUEUR_MAX_DU_BILLET_DE_SORTIE,
   type MetadonneesBrique,
   type NumeriquePublic,
   type OptionPublique,
@@ -89,7 +87,6 @@ export const PROPRIETE_PAR_BRIQUE: Readonly<Record<BriqueRuntime, string>> = {
   'fp-numeric': 'question',
   'fp-vote': 'question',
   'fp-recall': 'question',
-  'fp-exit': 'billet',
 };
 
 type Donnees = Readonly<Record<string, unknown>>;
@@ -226,7 +223,6 @@ function questionAttachee(ecran: Ecran): QuestionVote | undefined {
     case 'fp-numeric':
     case 'fp-vote':
     case 'fp-recall':
-    case 'fp-exit':
       return undefined;
     default:
       return ecran.question;
@@ -352,8 +348,6 @@ function donneesDe(ecran: Ecran, contexte: Contexte): Donnees {
         delaiMs: ecran.delaiMs,
         ...(ecran.consigne === undefined ? {} : { consigne: ecran.consigne }),
       };
-    case 'fp-exit':
-      return { billet: billet(ecran, contexte) };
     default:
       return donneesDeBrique(ecran, contexte);
   }
@@ -362,12 +356,7 @@ function donneesDe(ecran: Ecran, contexte: Contexte): Donnees {
 type EcranSansQuestionPropre = Exclude<
   Ecran,
   {
-    readonly brique:
-      | 'questionnaire'
-      | 'fp-numeric'
-      | 'fp-vote'
-      | 'fp-recall'
-      | 'fp-exit';
+    readonly brique: 'questionnaire' | 'fp-numeric' | 'fp-vote' | 'fp-recall';
   }
 >;
 
@@ -501,21 +490,6 @@ function projeterQuestion(
   return {
     brique: 'fp-vote',
     donnees: { question: tirerVote(question, contexte) },
-  };
-}
-
-function billet(
-  ecran: Extract<Ecran, { readonly brique: 'fp-exit' }>,
-  contexte: Contexte,
-): ExitBilletPublic {
-  const vote = tirerVote(ecran.question, contexte);
-  return {
-    id: vote.id,
-    question: vote.enonce,
-    invite: ecran.invite,
-    longueurMax: LONGUEUR_MAX_DU_BILLET_DE_SORTIE,
-    options: vote.options,
-    metadonnees: metadonnees(ecran),
   };
 }
 

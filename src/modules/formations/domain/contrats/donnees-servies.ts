@@ -8,11 +8,7 @@ import {
 import { auMoinsUn, texte } from '../cours/SchemasCommuns';
 import { presentationsVisuelles } from '../cours/VisualPresentation';
 import { MODALITES, REGIMES_DE_VERROU } from './contrat-de-l-api';
-import {
-  LONGUEUR_MAX_DU_BILLET_DE_SORTIE,
-  NATURES_DE_CELLULE,
-  type DonneesParBrique,
-} from './donnees-publiques';
+import { NATURES_DE_CELLULE, type DonneesParBrique } from './donnees-publiques';
 
 const strict = <F extends z.ZodRawShape>(forme: F) => z.object(forme).strict();
 
@@ -343,16 +339,6 @@ const DONNEES: SchemasParBrique = {
     question: vote.extend({ metadonnees }),
     delaiMs: z.number(),
     consigne: z.string().optional(),
-  }),
-  'fp-exit': strict({
-    billet: strict({
-      id: z.string(),
-      question: z.string(),
-      invite: z.string(),
-      longueurMax: z.literal(LONGUEUR_MAX_DU_BILLET_DE_SORTIE),
-      options: z.array(optionPublique),
-      metadonnees,
-    }),
   }),
   questionnaire: strict({
     intitule: z.string(),

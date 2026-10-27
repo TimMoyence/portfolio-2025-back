@@ -207,7 +207,7 @@ describe('DTO de requête du contrat V3 (§ 9.5, sans route active)', () => {
     it.each([
       [
         'une commande de pilotage d’écran',
-        { screenId: 'B2-01-A3-01-VOTE-HAUSSE-BAISSE', phase: 'revote' },
+        { screenId: 'B2-01-A3-01-VOTE-HAUSSE-BAISSE', phase: 'question-2' },
       ],
       [
         'RET-21 · les reglages numeriques de la machine',
@@ -251,7 +251,7 @@ describe('DTO de requête du contrat V3 (§ 9.5, sans route active)', () => {
         'un affichage d options non booléen',
         { screenId: 'B2-01-A1-01', optionsAffichees: 'oui' },
       ],
-      ['un écran absent', { phase: 'vote' }],
+      ['un écran absent', { phase: 'question-1' }],
     ])('refuse %s', async (_cas, pilotage) => {
       await expect(
         validateBody({ pilotage }, ControlSessionRequestDto),

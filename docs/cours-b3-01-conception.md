@@ -199,14 +199,14 @@ vont au travail des étudiants : A1-13 + 1, A1-14 + 3, A2-04 + 1, A2-07 + 2, A2-
 ### 2.6 Règles de structure
 
 Le cours déclare `gabarit: 'b3'` et passe les règles communes et les contrôles du gabarit
-(§ 6.1) : 38 écrans ≤ 40, 180 minutes ≤ 180, chaque trace écrite précédée d'une réflexion depuis
+(§ 6.1) : 36 écrans ≤ 40, 176 minutes ≤ 180, chaque trace écrite précédée d'une réflexion depuis
 le dernier exercice et suivie d'un exercice, chaque exercice avec ses trois temps. Exposition
 continue de 6 minutes au plus (`fp-worked` est interactif).
 
 Trois règles communes à tous les cours, vérifiées dans `StructureCours.ts`, ont ajusté l'acte 1
 après la validation du brainstorming :
 
-- un cours qui pose des questions **se clôt par un `fp-exit`** ; il devait aussi, jusqu'au
+- un cours qui pose des questions **se clôt sur sa fiche mémo** ; il devait aussi, jusqu'au
   15/10, **ouvrir par un rappel `fp-recall`** : A1-01 est devenu un rappel noté sur la recopie
   d'une formule, le courriel est passé en A1-02 ;
 - une suite d'exercices notés consécutifs dure **au moins 8 minutes**, et un exercice noté
@@ -299,10 +299,8 @@ Identifiants : `B3-01-A{acte}-{rang}-{SLUG}`, conformes à `^B3-01-A[1-3]-\d{2}-
 |   32 | B3-01-A3-08-EXEMPLE-MFC-SEGMENTS   |   3 | `fp-worked`              |  I  |   0 | seance    |
 |   33 | B3-01-A3-09-ATELIER-DASHBOARD      |  15 | `questionnaire`          |  I  |   4 | seance    |
 |   34 | B3-01-A3-10-RECOMMANDATIONS        |   9 | `fp-pro`                 |  I  |   0 | seance    |
-|   35 | B3-01-A3-11-FICHE-MEMO             |   2 | `fp-story` · v2 `grid`   |     |   0 | catalogue |
-|   36 | B3-01-A3-12-CAHIER-DE-REGLES       |   4 | `fp-pro`                 |  I  |   0 | seance    |
-|   37 | B3-01-A3-13-CE-QUI-RESTE-FLOU      |   1 | `fp-pro`                 |  I  |   0 | seance    |
-|   38 | B3-01-A3-14-BILLET-DE-SORTIE       |   3 | `fp-exit`                |  I  |   1 | seance    |
+|   35 | B3-01-A3-12-CAHIER-DE-REGLES       |   4 | `fp-pro`                 |  I  |   0 | seance    |
+|   36 | B3-01-A3-11-FICHE-MEMO             |   2 | `fp-story` · v2 `grid`   |     |   0 | catalogue |
 
 Rythme : 143 minutes interactives, 37 d'exposition, exposition continue de 6 minutes au plus
 (A1-05 + A1-06, A1-10 + A1-11, A2-02 + A2-03).
@@ -705,7 +703,7 @@ Rythme : 143 minutes interactives, 37 d'exposition, exposition continue de 6 min
   structuré, jamais sur une plage fixe. »
 - Puis pause de 15 minutes ; reprise à 11 h 01.
 
-### 3.4 Acte 3 — Décider (59 min)
+### 3.4 Acte 3 — Décider (55 min)
 
 #### A3-01 · `B3-01-A3-01-GRAPHIQUE-TROMPEUR` — 1 min · v2 `chart` · catalogue
 
@@ -865,23 +863,6 @@ Rythme : 143 minutes interactives, 37 d'exposition, exposition continue de 6 min
   Les règles des niveaux 1 à 4, dites avant chaque pause (notes d'A1-14 et d'A2-11), sont
   reprises mot pour mot dans la situation de l'écran : l'étudiant compare les six sans avoir à
   s'en souvenir. Annonce de la séance 2 : l'agent Data Analyst.
-
-#### A3-13 · `B3-01-A3-13-CE-QUI-RESTE-FLOU` — 1 min · `fp-pro` · séance
-
-- Titre public : « Ce qui reste flou »
-- Une question libre, `ce-qui-reste-flou` : « En une phrase : qu'est-ce qui reste flou pour vous
-  après cette séance ? ». Sur sa propre diapo, la question ne se perd plus sous le vote du billet.
-  Le rapport de séance garde les réponses ; le formateur les lit avant la séance 2, qu'elles
-  ouvrent.
-
-#### A3-14 · `B3-01-A3-14-BILLET-DE-SORTIE` — 3 min · `fp-exit` · séance
-
-- Titre public : « Billet de sortie »
-- Une question notée `b3-01-a3-billet` : la ligne « date_livraison antérieure à date_commande »
-  se corrige-t-elle automatiquement ? Non : on la signale et on demande (faux · humain) ; pièges
-  « oui : on échange les deux dates » `suspect-corrige-sans-validation` et « oui : on supprime
-  la ligne » `suppression-au-lieu-de-signalement`. La réponse libre du billet justifie le vote
-  en une phrase.
 
 ## 4. Le jeu de données
 
@@ -1121,7 +1102,6 @@ pourcentage ; le critère sans guillemets est `critere-sans-guillemets`.
 | `correction-certaine-renvoyee-a-un-humain` | qualite-des-donnees       | Renvoyer à un humain une erreur certaine qu'une formule ou un outil du tableur corrige.                   | B3-01-A1-10-COURS-GRILLE           |
 | `erreur-certaine-jugee-douteuse`           | qualite-des-donnees       | Juger seulement douteuse une donnée qui viole une règle du fichier.                                       | B3-01-A1-10-COURS-GRILLE           |
 | `donnee-douteuse-jugee-fausse`             | qualite-des-donnees       | Déclarer fausse une donnée inhabituelle mais possible.                                                    | B3-01-A1-10-COURS-GRILLE           |
-| `suppression-au-lieu-de-signalement`       | qualite-des-donnees       | Supprimer une ligne au lieu de la signaler.                                                               | B3-01-A1-10-COURS-GRILLE           |
 | `texte-pris-pour-nombre`                   | nettoyage                 | Additionner une colonne dont des nombres sont du texte.                                                   | B3-01-A1-11-COURS-OUTILS           |
 | `doublons-supprimes-sur-une-colonne`       | nettoyage                 | Dédoublonner sur une seule colonne et perdre des lignes distinctes.                                       | B3-01-A1-11-COURS-OUTILS           |
 | `controle-apres-correction`                | qualite-des-donnees       | Lire le contrôle recalculé sur des données déjà corrigées.                                                | B3-01-A1-11-COURS-OUTILS           |
@@ -1259,6 +1239,10 @@ v2 `grid`, les familles par v2 `table`.
 | `B3-01_reprise_acte_2.<empreinte>.xlsx` | reprise du début de l'acte 2       | A2-01 | seance    | API, poste et pupitre         |
 | `B3-01_reprise_acte_3.<empreinte>.xlsx` | reprise du début de l'acte 3       | A3-02 | seance    | API, poste et pupitre         |
 | `classeurs.manifest.json` (non servi)   | empreintes des fichiers et onglets | —     | —         | —                             |
+
+| Id  | Écran | Fichier source (page)                                                                                   | Original          | Auteur, date                                            | Licence        | Dérivé servi                     | Attribution affichée                                                                             |
+| --- | ----- | ------------------------------------------------------------------------------------------------------- | ----------------- | ------------------------------------------------------- | -------------- | -------------------------------- | ------------------------------------------------------------------------------------------------ |
+| M1  | A1-02 | https://commons.wikimedia.org/wiki/File:1890_Census_Hollerith_Electrical_Counting_Machines_Sci_Amer.jpg | JPEG 622 × 480 px | Scientific American, machines de Herman Hollerith, 1890 | domaine public | `hollerith-recensement-1890.jpg` | « Scientific American, machines de Herman Hollerith, 1890 · Wikimedia Commons (domaine public) » |
 
 ### 8.3 Sources
 
