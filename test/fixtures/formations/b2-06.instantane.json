@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "6ccc9c2d470d8a84a0a3fe4ce7f8da7fc2cb7bad8fbfa817042bb148b3a5bb0e",
+  "empreinte": "e2c98db1add235ae49a36c953598f00d023b2103f18e2b83f48ebaef974e0f1d",
   "sujet": {
     "id": "b2-06-exponentielle-logarithme",
     "titre": "Exponentielle et logarithme",
@@ -70,7 +70,7 @@
               "props": {
                 "title": "Exponentielle et logarithme : croître, viser, ajuster",
                 "subtitle": "Atelier Rivage, voilerie de La Rochelle, lance la gamme Sillage : des sacs en toile de voile recyclée. Les ventes croissent, l’atelier a une capacité, les boutiques réagissent au prix : trois questions, trois outils.",
-                "bgImage": "/assets/cours/b2-06/v1/napier-logarithmes-1614.jpg",
+                "bgImage": "/assets/cours/gravures/v1/napier-logarithmes-1614.jpg",
                 "bgImageAlt": "Page de titre de Mirifici logarithmorum canonis descriptio de John Napier (1614), le livre qui publie les premiers logarithmes"
               }
             },
@@ -1876,7 +1876,7 @@
               "props": {
                 "title": "Exponentielle et logarithme : croître, viser, ajuster",
                 "subtitle": "Atelier Rivage, voilerie de La Rochelle, lance la gamme Sillage : des sacs en toile de voile recyclée. Les ventes croissent, l’atelier a une capacité, les boutiques réagissent au prix : trois questions, trois outils.",
-                "bgImage": "/assets/cours/b2-06/v1/napier-logarithmes-1614.jpg",
+                "bgImage": "/assets/cours/gravures/v1/napier-logarithmes-1614.jpg",
                 "bgImageAlt": "Page de titre de Mirifici logarithmorum canonis descriptio de John Napier (1614), le livre qui publie les premiers logarithmes"
               }
             },
@@ -5100,7 +5100,7 @@
               "props": {
                 "title": "Exponentielle et logarithme : croître, viser, ajuster",
                 "subtitle": "Atelier Rivage, voilerie de La Rochelle, lance la gamme Sillage : des sacs en toile de voile recyclée. Les ventes croissent, l’atelier a une capacité, les boutiques réagissent au prix : trois questions, trois outils.",
-                "bgImage": "/assets/cours/b2-06/v1/napier-logarithmes-1614.jpg",
+                "bgImage": "/assets/cours/gravures/v1/napier-logarithmes-1614.jpg",
                 "bgImageAlt": "Page de titre de Mirifici logarithmorum canonis descriptio de John Napier (1614), le livre qui publie les premiers logarithmes"
               }
             },

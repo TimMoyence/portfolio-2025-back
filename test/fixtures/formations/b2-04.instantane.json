@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "4cf559620ab32b2f4fcb84f2b95b8afe2cd0d3bb279006e79192c7742d6f5e30",
+  "empreinte": "18c93996d33cab5e345fb12b7d4ac20fd0f5a793fcb67c9c15663bbdd22cba70",
   "sujet": {
     "id": "b2-04-suites",
     "titre": "Suites : modéliser une évolution régulière",
@@ -68,7 +68,7 @@
               "props": {
                 "title": "Modéliser une évolution régulière",
                 "subtitle": "Atelier Rivage, voilerie de La Rochelle. Pour sa banque, la dirigeante veut un plan à cinq ans : deux hypothèses de croissance, une année-seuil, un chiffre d’affaires cumulé.",
-                "bgImage": "/assets/cours/b2-04/v1/fibonacci-liber-abbaci.jpg",
+                "bgImage": "/assets/cours/gravures/v1/fibonacci-liber-abbaci.jpg",
                 "bgImageAlt": "Page manuscrite du Liber abbaci de Fibonacci : le problème des lapins, la suite qui ajoute à chaque terme les deux précédents"
               }
             },
@@ -2255,7 +2255,7 @@
               "props": {
                 "title": "Modéliser une évolution régulière",
                 "subtitle": "Atelier Rivage, voilerie de La Rochelle. Pour sa banque, la dirigeante veut un plan à cinq ans : deux hypothèses de croissance, une année-seuil, un chiffre d’affaires cumulé.",
-                "bgImage": "/assets/cours/b2-04/v1/fibonacci-liber-abbaci.jpg",
+                "bgImage": "/assets/cours/gravures/v1/fibonacci-liber-abbaci.jpg",
                 "bgImageAlt": "Page manuscrite du Liber abbaci de Fibonacci : le problème des lapins, la suite qui ajoute à chaque terme les deux précédents"
               }
             },
@@ -6047,7 +6047,7 @@
               "props": {
                 "title": "Modéliser une évolution régulière",
                 "subtitle": "Atelier Rivage, voilerie de La Rochelle. Pour sa banque, la dirigeante veut un plan à cinq ans : deux hypothèses de croissance, une année-seuil, un chiffre d’affaires cumulé.",
-                "bgImage": "/assets/cours/b2-04/v1/fibonacci-liber-abbaci.jpg",
+                "bgImage": "/assets/cours/gravures/v1/fibonacci-liber-abbaci.jpg",
                 "bgImageAlt": "Page manuscrite du Liber abbaci de Fibonacci : le problème des lapins, la suite qui ajoute à chaque terme les deux précédents"
               }
             },

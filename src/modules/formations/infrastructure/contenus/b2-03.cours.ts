@@ -103,7 +103,7 @@ const RENVOI_AUX_FACTURES = 'B2-03-A1-04-FACTURES';
 
 const GRAVURE_DE_L_ACCROCHE = moteur.gravureDuDomainePublic({
   id: 'M7',
-  chemin: '/assets/cours/b2-03/v1/boole-lois-de-la-pensee-1854.jpg',
+  chemin: '/assets/cours/gravures/v1/boole-lois-de-la-pensee-1854.jpg',
   pageSource:
     'https://commons.wikimedia.org/wiki/File:An_Investigation_of_the_Laws_of_Thought_(1854,_Boole,_investigationofl00boolrich).djvu',
   auteur: 'George Boole, An Investigation of the Laws of Thought',

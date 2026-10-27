@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "6354e8b685352ff138a2502c8b9a4f726db38e31cf2806abbdaf526ebe884350",
+  "empreinte": "c25400dff24673c213a639dcfc7ad0727829e7b31553014a6e59ca8da15ffe89",
   "sujet": {
     "id": "b1-01-proportions-pourcentages",
     "titre": "Proportions et pourcentages",
@@ -67,7 +67,7 @@
               "props": {
                 "title": "Proportions et pourcentages : parmi qui ?",
                 "subtitle": "Partie Libre, quatre boutiques-bars à jeux. Votre alternance commence par le bilan de rentrée : des effectifs, des parts, des marges.",
-                "bgImage": "/assets/cours/b1-01/v1/playfair-camemberts-1801.jpg",
+                "bgImage": "/assets/cours/gravures/v1/playfair-camemberts-1801.jpg",
                 "bgImageAlt": "Diagrammes circulaires de William Playfair (1801) : la part de chaque territoire dans un tout, les premiers camemberts publiés"
               }
             },
@@ -1763,7 +1763,7 @@
               "props": {
                 "title": "Proportions et pourcentages : parmi qui ?",
                 "subtitle": "Partie Libre, quatre boutiques-bars à jeux. Votre alternance commence par le bilan de rentrée : des effectifs, des parts, des marges.",
-                "bgImage": "/assets/cours/b1-01/v1/playfair-camemberts-1801.jpg",
+                "bgImage": "/assets/cours/gravures/v1/playfair-camemberts-1801.jpg",
                 "bgImageAlt": "Diagrammes circulaires de William Playfair (1801) : la part de chaque territoire dans un tout, les premiers camemberts publiés"
               }
             },
@@ -4551,7 +4551,7 @@
               "props": {
                 "title": "Proportions et pourcentages : parmi qui ?",
                 "subtitle": "Partie Libre, quatre boutiques-bars à jeux. Votre alternance commence par le bilan de rentrée : des effectifs, des parts, des marges.",
-                "bgImage": "/assets/cours/b1-01/v1/playfair-camemberts-1801.jpg",
+                "bgImage": "/assets/cours/gravures/v1/playfair-camemberts-1801.jpg",
                 "bgImageAlt": "Diagrammes circulaires de William Playfair (1801) : la part de chaque territoire dans un tout, les premiers camemberts publiés"
               }
             },

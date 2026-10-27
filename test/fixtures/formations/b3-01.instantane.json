@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "7ed1bc67e63f1d7ebbc9728c29976049efcbe4f5d11cb5babc4ef62a7c872ed2",
+  "empreinte": "d43ef478d3be4da8d50657f17f3baaea9a91f1ee775c275b874c50a2b64fcd0e",
   "sujet": {
     "id": "b3-01-donnee-brute-decision",
     "titre": "Expert Data : de la donnée brute à la décision",
@@ -73,7 +73,7 @@
               "props": {
                 "title": "Expert Data : de la donnée brute à la décision",
                 "subtitle": "Lundi 12 octobre, 8 h. Nadia Ferrand, directrice commerciale de Norvane Équipement, écrit : « Voici l’export des ventes depuis janvier 2025. Qu’est-ce qui ne va pas dans mon réseau ? J’ai le comité de direction jeudi. »",
-                "bgImage": "/assets/cours/b3-01/v1/hollerith-recensement-1890.jpg",
+                "bgImage": "/assets/cours/gravures/v1/hollerith-recensement-1890.jpg",
                 "bgImageAlt": "Gravure du Scientific American (1890) : les machines électriques de Herman Hollerith dépouillent les cartes perforées du recensement américain"
               }
             },
@@ -2025,7 +2025,7 @@
               "props": {
                 "title": "Expert Data : de la donnée brute à la décision",
                 "subtitle": "Lundi 12 octobre, 8 h. Nadia Ferrand, directrice commerciale de Norvane Équipement, écrit : « Voici l’export des ventes depuis janvier 2025. Qu’est-ce qui ne va pas dans mon réseau ? J’ai le comité de direction jeudi. »",
-                "bgImage": "/assets/cours/b3-01/v1/hollerith-recensement-1890.jpg",
+                "bgImage": "/assets/cours/gravures/v1/hollerith-recensement-1890.jpg",
                 "bgImageAlt": "Gravure du Scientific American (1890) : les machines électriques de Herman Hollerith dépouillent les cartes perforées du recensement américain"
               }
             },
@@ -5086,7 +5086,7 @@
               "props": {
                 "title": "Expert Data : de la donnée brute à la décision",
                 "subtitle": "Lundi 12 octobre, 8 h. Nadia Ferrand, directrice commerciale de Norvane Équipement, écrit : « Voici l’export des ventes depuis janvier 2025. Qu’est-ce qui ne va pas dans mon réseau ? J’ai le comité de direction jeudi. »",
-                "bgImage": "/assets/cours/b3-01/v1/hollerith-recensement-1890.jpg",
+                "bgImage": "/assets/cours/gravures/v1/hollerith-recensement-1890.jpg",
                 "bgImageAlt": "Gravure du Scientific American (1890) : les machines électriques de Herman Hollerith dépouillent les cartes perforées du recensement américain"
               }
             },

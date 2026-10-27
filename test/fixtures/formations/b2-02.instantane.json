@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "b5595a1506512dac0add4ba194f2119013ee5c9eb638028718514455773bd029",
+  "empreinte": "808e0666072332625f4a635d42b59d4055f2999ad5974493ebaf166982fe4648",
   "sujet": {
     "id": "b2-02-series-statistiques",
     "titre": "Séries statistiques : résumer, relier, prévoir",
@@ -70,7 +70,7 @@
               "props": {
                 "title": "Résumer, relier, prévoir",
                 "subtitle": "Atelier Rivage, voilerie de La Rochelle. La banque demande le délai de paiement des clients et sa régularité, puis une prévision du chiffre d’affaires pour dimensionner une facilité de caisse.",
-                "bgImage": "/assets/cours/b2-02/v2/galton-correlation-1875.jpg",
+                "bgImage": "/assets/cours/gravures/v1/galton-correlation-1875.jpg",
                 "bgImageAlt": "Diagramme de corrélation de Francis Galton (1875) : deux variables mises en regard, l’ancêtre du nuage de points et de la droite d’ajustement"
               }
             },
@@ -2165,7 +2165,7 @@
               "props": {
                 "title": "Résumer, relier, prévoir",
                 "subtitle": "Atelier Rivage, voilerie de La Rochelle. La banque demande le délai de paiement des clients et sa régularité, puis une prévision du chiffre d’affaires pour dimensionner une facilité de caisse.",
-                "bgImage": "/assets/cours/b2-02/v2/galton-correlation-1875.jpg",
+                "bgImage": "/assets/cours/gravures/v1/galton-correlation-1875.jpg",
                 "bgImageAlt": "Diagramme de corrélation de Francis Galton (1875) : deux variables mises en regard, l’ancêtre du nuage de points et de la droite d’ajustement"
               }
             },
@@ -5546,7 +5546,7 @@
               "props": {
                 "title": "Résumer, relier, prévoir",
                 "subtitle": "Atelier Rivage, voilerie de La Rochelle. La banque demande le délai de paiement des clients et sa régularité, puis une prévision du chiffre d’affaires pour dimensionner une facilité de caisse.",
-                "bgImage": "/assets/cours/b2-02/v2/galton-correlation-1875.jpg",
+                "bgImage": "/assets/cours/gravures/v1/galton-correlation-1875.jpg",
                 "bgImageAlt": "Diagramme de corrélation de Francis Galton (1875) : deux variables mises en regard, l’ancêtre du nuage de points et de la droite d’ajustement"
               }
             },

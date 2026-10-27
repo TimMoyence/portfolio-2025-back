@@ -42,7 +42,7 @@ import * as moteur from './briques';
 
 const GRAVURE_DE_L_ACCROCHE = moteur.gravureDuDomainePublic({
   id: 'M7',
-  chemin: '/assets/cours/b1-01/v1/playfair-camemberts-1801.jpg',
+  chemin: '/assets/cours/gravures/v1/playfair-camemberts-1801.jpg',
   pageSource: 'https://commons.wikimedia.org/wiki/File:Playfair_piecharts.jpg',
   auteur: 'William Playfair, The Statistical Breviary',
   date: '1801',

@@ -4,7 +4,7 @@ import * as moteur from './briques';
 
 export const GRAVURE_DE_L_ACCROCHE = moteur.gravureDuDomainePublic({
   id: 'M1',
-  chemin: '/assets/cours/b3-01/v1/hollerith-recensement-1890.jpg',
+  chemin: '/assets/cours/gravures/v1/hollerith-recensement-1890.jpg',
   pageSource:
     'https://commons.wikimedia.org/wiki/File:1890_Census_Hollerith_Electrical_Counting_Machines_Sci_Amer.jpg',
   auteur: 'Scientific American, machines de Herman Hollerith',

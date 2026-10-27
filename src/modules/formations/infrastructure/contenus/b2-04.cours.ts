@@ -60,7 +60,7 @@ const DONNEES_FICTIVES =
 
 const GRAVURE_DE_L_ACCROCHE = moteur.gravureDuDomainePublic({
   id: 'M6',
-  chemin: '/assets/cours/b2-04/v1/fibonacci-liber-abbaci.jpg',
+  chemin: '/assets/cours/gravures/v1/fibonacci-liber-abbaci.jpg',
   pageSource:
     'https://commons.wikimedia.org/wiki/File:Liber_abbaci_magliab_f124r.jpg',
   auteur: 'Leonardo Fibonacci, Liber abbaci',

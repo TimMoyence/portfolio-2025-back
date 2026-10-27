@@ -71,7 +71,7 @@ const FIBRE_EN_MILLIONS = ['10,3', '14,5', '18,1', '21,4', '24,4'] as const;
 
 const GRAVURE_DE_L_ACCROCHE = moteur.gravureDuDomainePublic({
   id: 'M7',
-  chemin: '/assets/cours/b2-02/v2/galton-correlation-1875.jpg',
+  chemin: '/assets/cours/gravures/v1/galton-correlation-1875.jpg',
   pageSource:
     'https://commons.wikimedia.org/wiki/File:Galton%27s_correlation_diagram_1875.jpg',
   auteur: 'Francis Galton',

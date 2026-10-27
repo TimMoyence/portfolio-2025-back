@@ -35,7 +35,7 @@ import * as moteur from './briques';
 
 const GRAVURE_DE_L_ACCROCHE = moteur.gravureDuDomainePublic({
   id: 'M1',
-  chemin: '/assets/cours/b2-06/v1/napier-logarithmes-1614.jpg',
+  chemin: '/assets/cours/gravures/v1/napier-logarithmes-1614.jpg',
   pageSource:
     'https://commons.wikimedia.org/wiki/File:Mirifici_Logarithmorum_canonis_Descriptio.jpg',
   auteur: 'John Napier, Mirifici logarithmorum canonis descriptio',

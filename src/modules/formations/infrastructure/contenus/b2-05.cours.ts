@@ -42,7 +42,7 @@ import { termes } from './feuilles';
 
 const GRAVURE_DE_L_ACCROCHE = moteur.gravureDuDomainePublic({
   id: 'M6',
-  chemin: '/assets/cours/b2-05/v1/massys-le-preteur-1514.jpg',
+  chemin: '/assets/cours/gravures/v1/massys-le-preteur-1514.jpg',
   pageSource:
     'https://commons.wikimedia.org/wiki/File:Massysm_Quentin_%E2%80%94_The_Moneylender_and_his_Wife_%E2%80%94_1514.jpg',
   auteur: 'Quentin Metsys, Le Prêteur et sa femme',

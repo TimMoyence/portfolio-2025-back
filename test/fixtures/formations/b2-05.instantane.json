@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "4eb3514f854cac99d46244b9acbf867d3af60d66665632728d0bc4bf5d6ec314",
+  "empreinte": "5ee10f7b1af61a7221b76cdd2dad997b5c857c50479d9c231a357e07b8801c64",
   "sujet": {
     "id": "b2-05-mathematiques-financieres",
     "titre": "Mathématiques financières : placer, emprunter",
@@ -70,7 +70,7 @@
               "props": {
                 "title": "Placer, emprunter : le prix du temps",
                 "subtitle": "Atelier Rivage, voilerie de La Rochelle. Pour financer son second atelier, la dirigeante place sa trésorerie, épargne chaque année et emprunte : trois calculs que la banque va vérifier.",
-                "bgImage": "/assets/cours/b2-05/v1/massys-le-preteur-1514.jpg",
+                "bgImage": "/assets/cours/gravures/v1/massys-le-preteur-1514.jpg",
                 "bgImageAlt": "Le Prêteur et sa femme, de Quentin Metsys (1514) : un changeur pèse les pièces sur sa table de comptes"
               }
             },
@@ -2007,7 +2007,7 @@
               "props": {
                 "title": "Placer, emprunter : le prix du temps",
                 "subtitle": "Atelier Rivage, voilerie de La Rochelle. Pour financer son second atelier, la dirigeante place sa trésorerie, épargne chaque année et emprunte : trois calculs que la banque va vérifier.",
-                "bgImage": "/assets/cours/b2-05/v1/massys-le-preteur-1514.jpg",
+                "bgImage": "/assets/cours/gravures/v1/massys-le-preteur-1514.jpg",
                 "bgImageAlt": "Le Prêteur et sa femme, de Quentin Metsys (1514) : un changeur pèse les pièces sur sa table de comptes"
               }
             },
@@ -5349,7 +5349,7 @@
               "props": {
                 "title": "Placer, emprunter : le prix du temps",
                 "subtitle": "Atelier Rivage, voilerie de La Rochelle. Pour financer son second atelier, la dirigeante place sa trésorerie, épargne chaque année et emprunte : trois calculs que la banque va vérifier.",
-                "bgImage": "/assets/cours/b2-05/v1/massys-le-preteur-1514.jpg",
+                "bgImage": "/assets/cours/gravures/v1/massys-le-preteur-1514.jpg",
                 "bgImageAlt": "Le Prêteur et sa femme, de Quentin Metsys (1514) : un changeur pèse les pièces sur sa table de comptes"
               }
             },

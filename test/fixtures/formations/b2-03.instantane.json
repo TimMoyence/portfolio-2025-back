@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "f1aa5c805fc8a1a67803c7369db20447366576b86ee82d02dac9841f5caaa411",
+  "empreinte": "47140511e1e5273ddeebcb4bf7f1bfb1da2608159b71df80a6d83f366a09337b",
   "sujet": {
     "id": "b2-03-logique",
     "titre": "Logique : écrire et contrôler une règle",
@@ -30,7 +30,7 @@
               "props": {
                 "title": "Écrire et contrôler une règle",
                 "subtitle": "Atelier Rivage, voilerie de La Rochelle. Avant la clôture, l’expert-comptable fait contrôler les factures clients avec trois règles : relancer, vérifier la TVA, faire viser.",
-                "bgImage": "/assets/cours/b2-03/v1/boole-lois-de-la-pensee-1854.jpg",
+                "bgImage": "/assets/cours/gravures/v1/boole-lois-de-la-pensee-1854.jpg",
                 "bgImageAlt": "Page de titre de An Investigation of the Laws of Thought de George Boole (1854), le livre qui fonde la logique mathématique"
               }
             },
@@ -2604,7 +2604,7 @@
               "props": {
                 "title": "Écrire et contrôler une règle",
                 "subtitle": "Atelier Rivage, voilerie de La Rochelle. Avant la clôture, l’expert-comptable fait contrôler les factures clients avec trois règles : relancer, vérifier la TVA, faire viser.",
-                "bgImage": "/assets/cours/b2-03/v1/boole-lois-de-la-pensee-1854.jpg",
+                "bgImage": "/assets/cours/gravures/v1/boole-lois-de-la-pensee-1854.jpg",
                 "bgImageAlt": "Page de titre de An Investigation of the Laws of Thought de George Boole (1854), le livre qui fonde la logique mathématique"
               }
             },
@@ -6855,7 +6855,7 @@
               "props": {
                 "title": "Écrire et contrôler une règle",
                 "subtitle": "Atelier Rivage, voilerie de La Rochelle. Avant la clôture, l’expert-comptable fait contrôler les factures clients avec trois règles : relancer, vérifier la TVA, faire viser.",
-                "bgImage": "/assets/cours/b2-03/v1/boole-lois-de-la-pensee-1854.jpg",
+                "bgImage": "/assets/cours/gravures/v1/boole-lois-de-la-pensee-1854.jpg",
                 "bgImageAlt": "Page de titre de An Investigation of the Laws of Thought de George Boole (1854), le livre qui fonde la logique mathématique"
               }
             },
