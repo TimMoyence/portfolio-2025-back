@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "5a588d614da0817caba53c60058fb607af224b0f1f4f971fe0ed5b815e1e28a1",
+  "empreinte": "940a9798b56f796a616cb9876d062f3e53e594c07b7db572dbe8a2a71e6c218f",
   "sujet": {
     "id": "b1-02-evolutions-coefficients-indices",
     "titre": "Évolutions : taux, coefficients, indices",
@@ -161,7 +161,7 @@
                   },
                   {
                     "rubrique": "Le chiffre d’affaires HT",
-                    "contenu": "En milliers d’euros, 2025 puis 2026 : Nantes 184 puis 207, Angers 120 puis 126, Tours 96 puis 92, Le Mans 80 puis 94."
+                    "contenu": "En milliers d’euros, 2025 puis 2026 : Nantes 184 puis 207, Angers 120 puis 123, Tours 96 puis 92, Le Mans 80 puis 94."
                   },
                   {
                     "rubrique": "La TVA",
@@ -527,7 +527,7 @@
               "B4": "96",
               "B5": "80",
               "C2": "207",
-              "C3": "126",
+              "C3": "123",
               "C4": "92",
               "C5": "94"
             },
@@ -581,7 +581,7 @@
                 "B4": "96",
                 "B5": "80",
                 "C2": "207",
-                "C3": "126",
+                "C3": "123",
                 "C4": "92",
                 "C5": "94"
               },
@@ -653,7 +653,7 @@
                 "promptData": {
                   "id": "b1-02-a2-reflexion-soldes",
                   "type": "reflection",
-                  "question": "En janvier, Partie Libre augmente de 10 % un jeu à 100 €. En février, il est soldé à − 10 %. Théo écrit : « On retrouve le prix de départ. » Sans calculatrice : a-t-il raison ? Sur quel prix se calcule la baisse ?",
+                  "question": "En janvier, Partie Libre augmente de 10 % un jeu à 200 €. En février, il est soldé à − 10 %. Théo écrit : « On retrouve le prix de départ. » Sans calculatrice : a-t-il raison ? Sur quel prix se calcule la baisse ?",
                   "placeholder": "Il a raison / tort, parce que la baisse porte sur…",
                   "competency": "Raisonner · enchaîner deux évolutions"
                 }
@@ -1851,7 +1851,7 @@
                   },
                   {
                     "rubrique": "Le chiffre d’affaires HT",
-                    "contenu": "En milliers d’euros, 2025 puis 2026 : Nantes 184 puis 207, Angers 120 puis 126, Tours 96 puis 92, Le Mans 80 puis 94."
+                    "contenu": "En milliers d’euros, 2025 puis 2026 : Nantes 184 puis 207, Angers 120 puis 123, Tours 96 puis 92, Le Mans 80 puis 94."
                   },
                   {
                     "rubrique": "La TVA",
@@ -2372,7 +2372,7 @@
               "B4": "96",
               "B5": "80",
               "C2": "207",
-              "C3": "126",
+              "C3": "123",
               "C4": "92",
               "C5": "94"
             },
@@ -2426,7 +2426,7 @@
                 "B4": "96",
                 "B5": "80",
                 "C2": "207",
-                "C3": "126",
+                "C3": "123",
                 "C4": "92",
                 "C5": "94"
               },
@@ -2488,8 +2488,8 @@
             {
               "reference": "C6",
               "formuleReference": "=SOMME(C2:C5)",
-              "valeur": 519,
-              "affichage": "519",
+              "valeur": 516,
+              "affichage": "516",
               "tolerance": {
                 "type": "relative",
                 "valeur": 0.0001
@@ -2510,8 +2510,8 @@
             {
               "reference": "D3",
               "formuleReference": "=ARRONDI((C3-B3)/B3*100;1)",
-              "valeur": 5,
-              "affichage": "5",
+              "valeur": 2.5,
+              "affichage": "2,5",
               "tolerance": {
                 "type": "absolue",
                 "valeur": 0
@@ -2549,8 +2549,8 @@
             {
               "reference": "D6",
               "formuleReference": "=ARRONDI((C6-B6)/B6*100;1)",
-              "valeur": 8.1,
-              "affichage": "8,1",
+              "valeur": 7.5,
+              "affichage": "7,5",
               "tolerance": {
                 "type": "absolue",
                 "valeur": 0
@@ -2565,11 +2565,11 @@
         "explications": [
           {
             "reference": "B6 et C6",
-            "texte": "=SOMME(B2:B5) et =SOMME(C2:C5) : 480 et 519."
+            "texte": "=SOMME(B2:B5) et =SOMME(C2:C5) : 480 et 516."
           },
           {
             "reference": "D2 à D6",
-            "texte": "=ARRONDI((C2-B2)/B2*100;1), recopiée : 12,5 ; 5 ; −4,2 ; 17,5 ; 8,1. Ici, pas de $ : chaque ligne a son propre départ."
+            "texte": "=ARRONDI((C2-B2)/B2*100;1), recopiée : 12,5 ; 2,5 ; −4,2 ; 17,5 ; 7,5. Ici, pas de $ : chaque ligne a son propre départ."
           }
         ]
       },
@@ -2617,7 +2617,7 @@
                 "promptData": {
                   "id": "b1-02-a2-reflexion-soldes",
                   "type": "reflection",
-                  "question": "En janvier, Partie Libre augmente de 10 % un jeu à 100 €. En février, il est soldé à − 10 %. Théo écrit : « On retrouve le prix de départ. » Sans calculatrice : a-t-il raison ? Sur quel prix se calcule la baisse ?",
+                  "question": "En janvier, Partie Libre augmente de 10 % un jeu à 200 €. En février, il est soldé à − 10 %. Théo écrit : « On retrouve le prix de départ. » Sans calculatrice : a-t-il raison ? Sur quel prix se calcule la baisse ?",
                   "placeholder": "Il a raison / tort, parce que la baisse porte sur…",
                   "competency": "Raisonner · enchaîner deux évolutions"
                 }
@@ -2639,11 +2639,11 @@
         "questions": [],
         "corrigeEcran": {
           "type": "reflexion",
-          "attendu": "Il a tort : la baisse se calcule sur 110 €. 100 × 1,10 × 0,90 = 99 € : le prix final a baissé de 1 %.",
+          "attendu": "Il a tort : la baisse se calcule sur 220 €. 200 × 1,10 × 0,90 = 198 € : le prix final a baissé de 1 %.",
           "suite": "Gardez votre réponse : la trace écrite multiplie les coefficients."
         },
         "reflexion": {
-          "attendu": "Il a tort : la baisse se calcule sur 110 €. 100 × 1,10 × 0,90 = 99 € : le prix final a baissé de 1 %.",
+          "attendu": "Il a tort : la baisse se calcule sur 220 €. 200 × 1,10 × 0,90 = 198 € : le prix final a baissé de 1 %.",
           "suite": "Gardez votre réponse : la trace écrite multiplie les coefficients."
         }
       },
@@ -4457,7 +4457,7 @@
                   },
                   {
                     "rubrique": "Le chiffre d’affaires HT",
-                    "contenu": "En milliers d’euros, 2025 puis 2026 : Nantes 184 puis 207, Angers 120 puis 126, Tours 96 puis 92, Le Mans 80 puis 94."
+                    "contenu": "En milliers d’euros, 2025 puis 2026 : Nantes 184 puis 207, Angers 120 puis 123, Tours 96 puis 92, Le Mans 80 puis 94."
                   },
                   {
                     "rubrique": "La TVA",

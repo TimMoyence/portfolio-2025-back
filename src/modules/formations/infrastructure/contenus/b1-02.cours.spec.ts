@@ -16,6 +16,7 @@ import {
   arrondi,
   auMillionieme,
 } from '../../../../common/domain/nombres/arrondi';
+import { avecVirgule } from '../../../../common/domain/nombres/ecriture-francaise';
 import { somme } from '../../../../common/domain/nombres/statistiques';
 import { corrigerFeuille } from '../../domain/cours/CorrectionProduction';
 import { COURS_B1_02 } from './b1-02.cours';
@@ -31,14 +32,20 @@ const HAUSSES = [0.1, 0.05] as const;
 const BAISSE_DES_CARTES = 0.4;
 
 const CA_2025 = [184, 120, 96, 80];
-const CA_2026 = [207, 126, 92, 94];
+const CA_2026 = [207, 123, 92, 94];
 const PRIX_DE_DEPART = [120, 80, 60, 40];
 const HAUSSE_DU_TABLEAU = 0.2;
 const SOLDES_DU_TABLEAU = 0.25;
+const JEU_DES_SOLDES = 200;
 const SANCTIONS = [18, 21, 42, 87] as const;
 const [SANCTIONS_2021, SANCTIONS_2022, SANCTIONS_2023, SANCTIONS_2024] =
   SANCTIONS;
 const EVOLUTIONS_DE_L_ANNALE = 3;
+
+const APRES_HAUSSE = PRIX_DE_DEPART.map(
+  (prix) => prix * (1 + HAUSSE_DU_TABLEAU),
+);
+const APRES_SOLDES = APRES_HAUSSE.map((prix) => prix * (1 - SOLDES_DU_TABLEAU));
 
 const auDixieme = (valeur: number): number => arrondi(valeur, 1);
 const evolution = (depart: number, arrivee: number): number =>
@@ -182,29 +189,22 @@ describe('B1-02 — recalcul des corrigés depuis les seuls paramètres', () => 
 
   it('B102-M9 · attend au tableau les prix après chaque évolution, et − 10 % au global', () => {
     const corrige = corrigeDe(COURS, 'b1-02-a2-tableau-prix');
-    if (corrige.type !== 'tableau') {
-      throw new Error('l’exercice 3 n’a pas de corrigé de tableau');
-    }
-    const apresHausse = PRIX_DE_DEPART.map(
-      (prix) => prix * (1 + HAUSSE_DU_TABLEAU),
-    );
-    const apresSoldes = apresHausse.map(
-      (prix) => prix * (1 - SOLDES_DU_TABLEAU),
-    );
 
-    expect(corrige.attendus.map(valeursEtPieges)).toEqual([
+    expect(
+      corrige.type === 'tableau' ? corrige.attendus.map(valeursEtPieges) : [],
+    ).toEqual([
       ...PRIX_DE_DEPART.map((prix, rang) => [
-        auMillionieme(apresHausse[rang]),
+        auMillionieme(APRES_HAUSSE[rang]),
         auMillionieme(prix * HAUSSE_DU_TABLEAU),
       ]),
       ...PRIX_DE_DEPART.map((prix, rang) => [
-        auMillionieme(apresSoldes[rang]),
+        auMillionieme(APRES_SOLDES[rang]),
         auMillionieme(prix * 0.95),
-        auMillionieme(apresHausse[rang] * SOLDES_DU_TABLEAU),
+        auMillionieme(APRES_HAUSSE[rang] * SOLDES_DU_TABLEAU),
       ]),
     ]);
     expect(
-      auMillionieme((somme(apresSoldes) / somme(PRIX_DE_DEPART) - 1) * 100),
+      auMillionieme((somme(APRES_SOLDES) / somme(PRIX_DE_DEPART) - 1) * 100),
     ).toBe(-10);
   });
 });
@@ -354,4 +354,81 @@ describe('B1-02 — l’exercice 5, le tableau du sujet', () => {
       confusion: 'formule-non-recopiable-en-ligne',
     });
   });
+});
+
+describe('B1-02 — les nombres écrits dans les corrections', () => {
+  const ecrit = (valeur: number, decimales = 1): string =>
+    avecVirgule(arrondi(valeur, decimales)).replace('-', '−');
+  const enSerie = (valeurs: readonly number[]): string =>
+    valeurs.map((valeur) => ecrit(valeur)).join(' ; ');
+
+  const ecartDuPack = PACK_APRES - PACK_AVANT;
+  const [hausse2026, hausse2027] = HAUSSES;
+  const coefficient = (1 + hausse2026) * (1 + hausse2027);
+  const aller = 1 - BAISSE_DES_CARTES;
+  const retour = aller * (1 + BAISSE_DES_CARTES);
+  const coefficientDuTableau =
+    (1 + HAUSSE_DU_TABLEAU) * (1 - SOLDES_DU_TABLEAU);
+  const totaux = [somme(CA_2025), somme(CA_2026)] as const;
+  const tauxDuCa = [...CA_2025, totaux[0]].map((depart, rang) =>
+    evolution(depart, [...CA_2026, totaux[1]][rang]),
+  );
+  const hausseDesSanctions = evolution(SANCTIONS_2021, SANCTIONS_2024);
+  const dernierIndice = ecrit(indice(SANCTIONS_2024));
+
+  const PHRASES: readonly (readonly [string, readonly string[]])[] = [
+    [
+      'B1-02-A1-09-ATELIER-PRIX',
+      [
+        `(${PACK_APRES} − ${PACK_AVANT}) ÷ ${PACK_AVANT} = ${ecrit(ecartDuPack / PACK_AVANT, 3)}, soit + ${ecrit(evolution(PACK_AVANT, PACK_APRES))} %. Diviser par ${PACK_APRES} donnerait ${ecrit((ecartDuPack / PACK_APRES) * 100)} % :`,
+        `${MANETTE_TTC} ÷ ${avecVirgule(1 + TVA, 2)} = ${ecrit(MANETTE_TTC / (1 + TVA))} € HT. Retirer 20 % donnerait ${ecrit(MANETTE_TTC * (1 - TVA))} € :`,
+        `${MANETTE_TTC} × ${avecVirgule(1 - REMISE, 2)} = ${ecrit(MANETTE_TTC * (1 - REMISE))} €.`,
+      ],
+    ],
+    [
+      'B1-02-A1-10-TABLEUR-CA',
+      [`: ${totaux[0]} et ${totaux[1]}.`, `recopiée : ${enSerie(tauxDuCa)}.`],
+    ],
+    [
+      'B1-02-A2-01-REFLEXION-SOLDES',
+      [
+        `sur ${ecrit(JEU_DES_SOLDES * 1.1)} €. ${JEU_DES_SOLDES} × 1,10 × 0,90 = ${ecrit(JEU_DES_SOLDES * 1.1 * 0.9)} € : le prix final a baissé de ${ecrit((1 - 1.1 * 0.9) * 100)} %.`,
+      ],
+    ],
+    [
+      'B1-02-A2-05-TABLEAU-PRIX',
+      [
+        `Après hausse : ${enSerie(APRES_HAUSSE)}.`,
+        `Après soldes : ${enSerie(APRES_SOLDES)}.`,
+        `C = 1,20 × 0,75 = ${ecrit(coefficientDuTableau)} : − ${ecrit((1 - coefficientDuTableau) * 100)} %, pas − ${ecrit((SOLDES_DU_TABLEAU - HAUSSE_DU_TABLEAU) * 100)} %.`,
+      ],
+    ],
+    [
+      'B1-02-A2-06-ATELIER-RETOUR',
+      [
+        `1,10 × 1,05 = ${ecrit(coefficient, 3)}. Additionner donnerait ${ecrit(1 + hausse2026 + hausse2027, 3)} :`,
+        `soit + ${ecrit((coefficient - 1) * 100)} %, pas + ${ecrit((hausse2026 + hausse2027) * 100)} %.`,
+        `${avecVirgule(aller, 2)} × ${avecVirgule(1 + BAISSE_DES_CARTES, 2)} = ${ecrit(retour, 2)} : le prix reste ${ecrit((1 - retour) * 100)} % sous le départ.`,
+        `1 ÷ ${avecVirgule(aller, 2)} ≈ ${ecrit(1 / aller, 3)}, soit + ${ecrit((1 / aller - 1) * 100)} %.`,
+      ],
+    ],
+    [
+      'B1-02-A3-05-TABLEUR-CNIL',
+      [
+        `recopiée vers la droite : ${enSerie(SANCTIONS.slice(1).map(indice))}.`,
+        `: + ${ecrit(evolution(SANCTIONS_2022, SANCTIONS_2024))} %.`,
+        `: + ${ecrit(hausseDesSanctions)} %. L’indice ${dernierIndice} le dit aussi : ${dernierIndice} − 100.`,
+        `: + ${ecrit(TAUX_MOYEN)} % par an.`,
+      ],
+    ],
+  ];
+
+  it.each(PHRASES)(
+    'B102-M9 · recalcule depuis les données les phrases de %s',
+    (ecran, phrases) => {
+      const texte = texteDe(COURS_B1_02, ecran);
+
+      expect(phrases.filter((phrase) => !texte.includes(phrase))).toEqual([]);
+    },
+  );
 });

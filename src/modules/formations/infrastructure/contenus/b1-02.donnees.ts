@@ -62,7 +62,7 @@ const evolutionExacte = (depart: number, arrivee: number): number =>
 const auDixieme = (valeur: number): number => arrondi(valeur, 1);
 
 const CA_2025 = [184, 120, 96, 80] as const;
-const CA_2026 = [207, 126, 92, 94] as const;
+const CA_2026 = [207, 123, 92, 94] as const;
 const TOTAL_2025 = somme(CA_2025);
 const TOTAL_2026 = somme(CA_2026);
 

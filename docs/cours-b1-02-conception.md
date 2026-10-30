@@ -169,7 +169,7 @@ au plus. Somme : 49 + 36 + 28 + 8 = 121.
 
 - Titre public : « Le dossier tarifs de Partie Libre »
 - Lignes : l'entreprise ; le chiffre d'affaires HT par boutique (Nantes 184 puis 207, Angers 120
-  puis 126, Tours 96 puis 92, Le Mans 80 puis 94, en milliers d'euros, 2025 puis 2026) ; la TVA à
+  puis 123, Tours 96 puis 92, Le Mans 80 puis 94, en milliers d'euros, 2025 puis 2026) ; la TVA à
   20 % ; la carte Pass Partie à 15 % de remise sur le prix TTC ; le fournisseur à + 8 % au 1er
   janvier 2027 ; la question d'Inès : « Quels coefficients pour la grille 2027 ? ». Note :
   « Données fictives Partie Libre, créées pour ce cours. »
@@ -220,7 +220,7 @@ au plus. Somme : 49 + 36 + 28 + 8 = 121.
 - Titre public : « Exercice 2 — L’évolution du chiffre d’affaires au tableur »
 - Temps : réflexion 2 min · travail 5 min · correction 2 min.
 - Sept cellules : B6, C6 (`SOMME`) ; D2:D6 `=ARRONDI((C2-B2)/B2*100;1)` recopiée vers le bas : 12,5 ;
-  5 ; − 4,2 ; 17,5 ; 8,1. Pièges du modèle : 11,1 (`base-arrivee`), 23
+  2,5 ; − 4,2 ; 17,5 ; 7,5. Pièges du modèle : 11,1 (`base-arrivee`), 23
   (`ecart-absolu-au-lieu-du-taux`), 112,5 (`coefficient-confondu-avec-taux`).
 
 #### A1-11 · `B1-02-A1-11-JALON` — 1 min · `fp-pulse` · séance
@@ -232,8 +232,8 @@ au plus. Somme : 49 + 36 + 28 + 8 = 121.
 #### A2-01 · `B1-02-A2-01-REFLEXION-SOLDES` — 5 min · v2 `reflection` · séance
 
 - Titre public : « Réfléchir : + 10 %, puis − 10 % »
-- `b1-02-a2-reflexion-soldes` : un jeu à 100 €, + 10 % puis − 10 %. Attendu : 100 × 1,10 × 0,90 =
-  99 €, la baisse se calcule sur 110 €.
+- `b1-02-a2-reflexion-soldes` : un jeu à 200 €, + 10 % puis − 10 %. Attendu : 200 × 1,10 × 0,90 =
+  198 €, la baisse se calcule sur 220 €.
 
 #### A2-02 · `B1-02-A2-02-COURS-SUCCESSIVES` — 3 min · v2 `lesson` · catalogue
 
@@ -348,10 +348,10 @@ cellules, le tableau de prix se remplit à la main.
 | Boutique | CA 2025 (k€) | CA 2026 (k€) | Taux exact (%) | Taux arrondi (%) |
 | -------- | -----------: | -----------: | -------------: | ---------------: |
 | Nantes   |          184 |          207 |           12,5 |             12,5 |
-| Angers   |          120 |          126 |              5 |                5 |
+| Angers   |          120 |          123 |            2,5 |              2,5 |
 | Tours    |           96 |           92 |         − 4,17 |            − 4,2 |
 | Le Mans  |           80 |           94 |           17,5 |             17,5 |
-| Total    |          480 |          519 |          8,125 |              8,1 |
+| Total    |          480 |          516 |            7,5 |              7,5 |
 
 ### 5.2 L'annale : sanctions de la CNIL
 

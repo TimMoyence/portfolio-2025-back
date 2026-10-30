@@ -528,10 +528,10 @@ const ACTE_1: moteur.Acte = [
     },
     moteur.CORRECTION_AVANT_LA_PREMIERE_PAUSE,
     [
-      ['B6 et C6', '=SOMME(B2:B5) et =SOMME(C2:C5) : 480 et 519.'],
+      ['B6 et C6', '=SOMME(B2:B5) et =SOMME(C2:C5) : 480 et 516.'],
       [
         'D2 à D6',
-        `${EVOLUTION_DU_CA.formules.taux}, recopiée : 12,5 ; 5 ; −4,2 ; 17,5 ; 8,1. Ici, pas de $ : chaque ligne a son propre départ.`,
+        `${EVOLUTION_DU_CA.formules.taux}, recopiée : 12,5 ; 2,5 ; −4,2 ; 17,5 ; 7,5. Ici, pas de $ : chaque ligne a son propre départ.`,
       ],
     ],
   ),
@@ -572,7 +572,7 @@ const ACTE_2: moteur.Acte = [
         id: 'b1-02-a2-reflexion-soldes',
         type: 'reflection',
         question:
-          'En janvier, Partie Libre augmente de 10 % un jeu à 100 €. En février, il est soldé à − 10 %. Théo écrit : « On retrouve le prix de départ. » Sans calculatrice : a-t-il raison ? Sur quel prix se calcule la baisse ?',
+          'En janvier, Partie Libre augmente de 10 % un jeu à 200 €. En février, il est soldé à − 10 %. Théo écrit : « On retrouve le prix de départ. » Sans calculatrice : a-t-il raison ? Sur quel prix se calcule la baisse ?',
         placeholder: 'Il a raison / tort, parce que la baisse porte sur…',
         competency: 'Raisonner · enchaîner deux évolutions',
       },
@@ -580,7 +580,7 @@ const ACTE_2: moteur.Acte = [
     {
       correction: {
         expected:
-          'Il a tort : la baisse se calcule sur 110 €. 100 × 1,10 × 0,90 = 99 € : le prix final a baissé de 1 %.',
+          'Il a tort : la baisse se calcule sur 220 €. 200 × 1,10 × 0,90 = 198 € : le prix final a baissé de 1 %.',
         nextAction:
           'Gardez votre réponse : la trace écrite multiplie les coefficients.',
       },
