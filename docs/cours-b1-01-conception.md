@@ -17,8 +17,8 @@
 | Niveau      | `B1` (nouveau constructeur `moteur.coursB1`, même forme que `coursB2`)                                                         |
 | Titre servi | « Proportions et pourcentages »                                                                                                |
 | Séance      | Semaine du 26 octobre 2026, BTS CG 1re année                                                                                   |
-| Durée       | **160 minutes exactes** (somme des écrans), 4 actes de 49, 36, 37 et 38 minutes, plus 2 pauses de 15 min hors durée            |
-| Écrans      | **37**, dont 16 écrans catalogue (6 illustrations)                                                                             |
+| Durée       | **121 minutes exactes** (somme des écrans), 4 actes de 49, 36, 28 et 8 minutes, plus 2 pauses de 15 min hors durée             |
+| Écrans      | **32**, dont 15 écrans catalogue (6 illustrations)                                                                             |
 | Sources     | Programme officiel du BTS CG (module « Information chiffrée »), forme de la CCF n° 1 ; données fictives Partie Libre           |
 
 ---

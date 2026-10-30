@@ -11,6 +11,7 @@ export const [
   COURS_B2_06,
   COURS_B3_01,
   COURS_B1_01,
+  COURS_B1_02,
 ] = CONTENUS;
 
 export const PLAN_VISA_B2_03 = 'b2-03-a4-feuille-controle';

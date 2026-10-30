@@ -686,10 +686,36 @@ describe('CONFUSIONS', () => {
     attendreDansLaBanque(CONFUSIONS_DES_TRIS);
   });
 
-  it('ajoute en dernier la confusion d’arrondi du B1-01', () => {
-    expect(Object.keys(CONFUSIONS)).toHaveLength(138);
-    expect(Object.keys(CONFUSIONS).slice(137)).toEqual(['arrondi-oublie']);
+  it('ajoute après les tris la confusion d’arrondi du B1-01', () => {
+    expect(Object.keys(CONFUSIONS).slice(137, 138)).toEqual(['arrondi-oublie']);
     expect(CONFUSIONS['arrondi-oublie'].concept).toBe('tableur');
+  });
+
+  it('B102-M7 · ajoute en dernier les deux confusions de la recopie vers la droite', () => {
+    expect(Object.keys(CONFUSIONS)).toHaveLength(140);
+    expect(Object.keys(CONFUSIONS).slice(138)).toEqual([
+      'reference-non-figee-en-ligne',
+      'formule-non-recopiable-en-ligne',
+    ]);
+    expect(CONFUSIONS['reference-non-figee-en-ligne'].concept).toBe('tableur');
+    expect(libelleDeConfusion('reference-non-figee-en-ligne')).toContain(
+      'd’une colonne à chaque recopie',
+    );
+    expect(CONFUSIONS['formule-non-recopiable-en-ligne'].concept).toBe(
+      'tableur',
+    );
+    expect(libelleDeConfusion('formule-non-recopiable-en-ligne')).toContain(
+      'à chaque colonne',
+    );
+  });
+
+  it('B102-M7 · garde tels quels les libellés de la recopie vers le bas', () => {
+    expect(libelleDeConfusion('reference-relative-non-figee')).toContain(
+      'd’une ligne à chaque recopie',
+    );
+    expect(libelleDeConfusion('formule-non-recopiable')).toContain(
+      'à chaque ligne',
+    );
   });
 
   it('QP-15 · nomme chacune des mauvaises cases d un tri du B3-01 qui cite une confusion existante', () => {

@@ -32,6 +32,9 @@ déclaré, 180 pour l'un comme pour l'autre.
 Le plancher de 30 écrans est une convention : un cours plus court est un signe de notions
 trop tassées, pas une erreur de structure.
 
+L'exposition continue est aussi refusée à la publication (`EXPOSITION_MAXIMALE_MINUTES`). Seule
+exception : le bloc de 8 minutes de l'acte 2 du B2-06, écrit dans `DEROGATIONS_DES_COURS`.
+
 ## 2. Le cycle Réfléchir → Comprendre → S'exercer
 
 Chaque notion suit trois temps, dans cet ordre.

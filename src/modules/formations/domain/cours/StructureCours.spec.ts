@@ -308,6 +308,39 @@ describe('verifierStructure', () => {
     ).toEqual([cloture.id]);
   });
 
+  it('ILLU-3 · accepte le seul bloc écrit du B2-06 au-delà de 6 min, et refuse tous les autres', () => {
+    const SLUG_DU_B2_06 = 'b2-06-exponentielle-logarithme';
+    const ECRAN_ECRIT = 'B2-06-A2-02-ILLUSTRATION-RECIPROQUE';
+    const blocDeHuitMinutes = (slug: string, ecran: string): Cours => ({
+      ...recomposer(base, [
+        ouverture,
+        buildEcranDeCitation(ecran, 8),
+        atelier,
+        cloture,
+      ]),
+      slug,
+    });
+    const reglesParDefaut = (cours: Cours): string[] =>
+      verifierStructure(cours).map((violation) => violation.regle);
+
+    expect(
+      reglesParDefaut(blocDeHuitMinutes(SLUG_DU_B2_06, ECRAN_ECRIT)),
+    ).not.toContain('exposition-continue');
+    expect(regles(blocDeHuitMinutes(SLUG_DU_B2_06, ECRAN_ECRIT))).toContain(
+      'exposition-continue',
+    );
+    expect(
+      reglesParDefaut(
+        blocDeHuitMinutes(SLUG_DU_B2_06, 'B2-06-A1-07-ILLUSTRATION-PUISSANCES'),
+      ),
+    ).toContain('exposition-continue');
+    expect(
+      reglesParDefaut(
+        blocDeHuitMinutes('b2-05-mathematiques-financieres', ECRAN_ECRIT),
+      ),
+    ).toContain('exposition-continue');
+  });
+
   it('accepte un ratio interaction sur exposition de 0,30 exactement et refuse 0,29', () => {
     const avec = (interaction: number): Cours =>
       recomposer(base, [

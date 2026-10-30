@@ -9,6 +9,7 @@ import type {
   CorrigeProduction,
   CorrigeTableau,
 } from './Corrige';
+import { confusionDeLaRecopieTrahie } from './Corrige';
 import {
   estDansLaGrille,
   planFeuille,
@@ -258,7 +259,10 @@ function confusionsDuCorrigeBrutes(
           : [attendu.confusionSiErreurFormule]),
         attendu.forme === 'references'
           ? 'valeur-saisie-sans-formule'
-          : 'formule-non-recopiable',
+          : confusionDeLaRecopieTrahie(
+              attendu.reference,
+              attendu.forme.memeQue,
+            ),
       ]);
     case 'tableau':
     case 'classement':

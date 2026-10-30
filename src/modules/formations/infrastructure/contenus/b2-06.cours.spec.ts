@@ -69,10 +69,10 @@ function corrigeDuTableauDesLogarithmes(): CorrigeTableau {
 
 fiche.decrireLaFicheDuCours('B2-06', COURS, {
   conception: 'cours-b2-06-conception.md',
-  ecrans: 29,
-  dureeMinutes: 133,
-  minutesParActe: [49, 39, 37, 8, 0, 0],
-  rythme: { expositionContinueMax: 6, interactives: 103, exposition: 30 },
+  ecrans: 37,
+  dureeMinutes: 135,
+  minutesParActe: [49, 41, 37, 8, 0, 0],
+  rythme: { expositionContinueMax: 8, interactives: 103, exposition: 32 },
   ateliersNotes: ['A1-10 (10)', 'A2-05 (11)', 'A3-07 (10)'],
   noteesParType: [7, 6, 0, 2, 1],
   enigmes: 0,
@@ -84,11 +84,19 @@ fiche.decrireLaFicheDuCours('B2-06', COURS, {
     'A1-04',
     'A1-05',
     'A1-07',
+    'A1-07',
+    'A1-08',
     'A1-08',
     'A2-02',
+    'A2-02',
+    'A2-02',
+    'A2-03',
+    'A2-03',
     'A2-03',
     'A3-01',
     'A3-03',
+    'A3-03',
+    'A3-04',
     'A3-04',
     'A4-05',
   ],
@@ -100,6 +108,83 @@ fiche.decrireLaFicheDuCours('B2-06', COURS, {
     'B2-06-A3-06-TABLEAU-LOGARITHMES',
     'B2-06-A3-07-ATELIER-DEMANDE',
   ],
+});
+
+describe('B2-06 — illustrations de la trace écrite', () => {
+  const TEXTES_DES_ILLUSTRATIONS: Readonly<Record<string, readonly string[]>> =
+    {
+      'B2-06-A1-07-ILLUSTRATION-PUISSANCES': [
+        'e⁰ = 1',
+        '2,718',
+        'e^0,4 ≈ 1,492',
+      ],
+      'B2-06-A1-08-ILLUSTRATION-MODELE': [
+        'a = 1 000',
+        '1,98 %',
+        '=$H$1*EXP($H$2*A2)',
+      ],
+      'B2-06-A2-02-ILLUSTRATION-RECIPROQUE': ['1,609', '0,699'],
+      'B2-06-A2-02-ILLUSTRATION-PROPRIETES': ['0,693', '0,961', '2,079'],
+      'B2-06-A2-03-ILLUSTRATION-SEUIL': ['7,59', '11,39', '5,68', 'n = 6'],
+      'B2-06-A2-03-ILLUSTRATION-SENS': ['0,357', '4,51', 'n = 5', '0,168'],
+      'B2-06-A3-03-ILLUSTRATION-MODELES': ['183,94', '16,09', '0,67'],
+      'B2-06-A3-04-ILLUSTRATION-AJUSTEMENT': ['4,605', '3,401', 'e^4,61'],
+    };
+
+  it('ILLU-1 · chaque page de cours du B2-06 suit ses illustrations', () => {
+    expect(
+      COURS.ecrans
+        .map((ecran) => ecran.id)
+        .filter((id) => /-(ILLUSTRATION|COURS)-/.test(id)),
+    ).toEqual([
+      'B2-06-A1-07-ILLUSTRATION-PUISSANCES',
+      'B2-06-A1-07-COURS-EXPONENTIELLE',
+      'B2-06-A1-08-ILLUSTRATION-MODELE',
+      'B2-06-A1-08-COURS-MODELE-EXP',
+      'B2-06-A2-02-ILLUSTRATION-RECIPROQUE',
+      'B2-06-A2-02-ILLUSTRATION-PROPRIETES',
+      'B2-06-A2-02-COURS-LOGARITHME',
+      'B2-06-A2-03-ILLUSTRATION-SEUIL',
+      'B2-06-A2-03-ILLUSTRATION-SENS',
+      'B2-06-A2-03-COURS-SEUIL',
+      'B2-06-A3-03-ILLUSTRATION-MODELES',
+      'B2-06-A3-03-COURS-MODELE',
+      'B2-06-A3-04-ILLUSTRATION-AJUSTEMENT',
+      'B2-06-A3-04-COURS-AJUSTEMENT',
+    ]);
+  });
+
+  it('ILLU-2 · annonce 8 min pour les pages et les quatre illustrations de l’acte 2', () => {
+    const notes = fiche.ecranDuContenu(
+      COURS_B2_06,
+      'B2-06-A2-03-COURS-SEUIL',
+    ).notes;
+
+    expect(notes).toContain('8 min');
+    expect(notes).not.toContain('6 min');
+  });
+
+  it('ILLU-4 · décrit chaque image dans son texte alternatif et crédite chaque fichier', () => {
+    for (const [ecran, textes] of Object.entries(TEXTES_DES_ILLUSTRATIONS)) {
+      const { image, imageAlt } = feuille.proprietesV2(COURS_B2_06, ecran);
+
+      for (const texte of textes) {
+        expect(imageAlt).toContain(texte);
+      }
+      expect(COURS.medias.map(({ chemins }) => chemins[0])).toContain(image);
+    }
+    expect(COURS.medias.map(({ id }) => id)).toEqual([
+      'M1',
+      'M2',
+      'M3',
+      'M4',
+      'M5',
+      'M6',
+      'M7',
+      'M8',
+      'M9',
+    ]);
+  });
 });
 
 describe('B2-06 — textes relus contre les données', () => {

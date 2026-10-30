@@ -20,8 +20,17 @@ import {
 } from './Formule';
 import { estDansLaGrille, estReferenceDeCellule } from './PlansStockes';
 
+export const SENS_DE_RECOPIE = ['bas', 'droite'] as const;
+
+export type SensDeRecopie = (typeof SENS_DE_RECOPIE)[number];
+
+export const DECALAGES_DE_RECOPIE: Readonly<
+  Record<SensDeRecopie, readonly [lignes: number, colonnes: number]>
+> = { bas: [1, 0], droite: [0, 1] };
+
 export interface RecopieDeCellule {
   readonly de: string;
+  readonly sens?: SensDeRecopie;
 }
 
 export interface SheetPlanServi extends SheetPlanStocke {
@@ -67,18 +76,30 @@ export function saisiesRetenues(
 function avecLaRecopie(
   plan: SheetPlanStocke,
   saisies: Readonly<Record<string, string>>,
-  recopie: RecopieDeCellule,
+  { de, sens }: RecopieDeCellule,
 ): Record<string, string> {
-  const source = recopie.de.toUpperCase();
+  const source = de.toUpperCase();
   const grille = grilleDu(plan);
   const ligne = grille.findIndex((rang) => rang.includes(source));
-  const dessous = ligne < 0 ? undefined : grille.at(ligne + 1);
-  const vers = dessous?.at(grille[ligne].indexOf(source));
-  if (vers === undefined || verrouilleesDu(plan).has(vers)) {
-    refuserLaProduction(plan.id, `recopie impossible depuis ${recopie.de}`);
-  }
+  const [lignes, colonnes] = DECALAGES_DE_RECOPIE[sens ?? 'bas'];
+  const vers =
+    ligne < 0
+      ? undefined
+      : grille.at(ligne + lignes)?.at(grille[ligne].indexOf(source) + colonnes);
+  const verrouillees = verrouilleesDu(plan);
   const contenu = saisies[source] ?? plan.cellules[source] ?? '';
-  return { ...saisies, [vers]: decalerFormule(contenu, 1, 0) };
+  if (
+    vers === undefined ||
+    verrouillees.has(vers) ||
+    verrouillees.has(source) ||
+    contenu.length === 0
+  ) {
+    refuserLaProduction(plan.id, `recopie impossible depuis ${de}`);
+  }
+  return {
+    ...saisies,
+    [vers]: decalerFormule(contenu, lignes, colonnes),
+  };
 }
 
 function natureDuResultat({

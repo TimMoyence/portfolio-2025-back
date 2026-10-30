@@ -58,6 +58,7 @@ const CELLULES_DE_LA_FEUILLE: Readonly<Partial<Record<string, number>>> = {
   'b2-05-mathematiques-financieres': 10,
   'b2-06-exponentielle-logarithme': 13,
   'b1-01-proportions-pourcentages': 6,
+  'b1-02-evolutions-coefficients-indices': 7,
 };
 
 function instantaneDe(contenu: ContenuDeCours): { readonly empreinte: string } {

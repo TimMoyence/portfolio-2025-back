@@ -1,0 +1,5041 @@
+{
+  "graine": 0,
+  "empreinte": "5a588d614da0817caba53c60058fb607af224b0f1f4f971fe0ed5b815e1e28a1",
+  "sujet": {
+    "id": "b1-02-evolutions-coefficients-indices",
+    "titre": "Évolutions : taux, coefficients, indices",
+    "niveau": "B1",
+    "duree": 121,
+    "concepts": [
+      "taux-evolution",
+      "coefficient-multiplicateur",
+      "evolutions-successives",
+      "evolution-reciproque",
+      "indice-base-100",
+      "taux-moyen",
+      "pourcentage",
+      "tableur"
+    ],
+    "ecrans": [
+      {
+        "id": "B1-02-A1-01-DIAGNOSTIC-TAUX",
+        "type": "fp-recall",
+        "titre": "Diagnostic : un taux, sans calculatrice",
+        "duree": 4,
+        "interactif": true,
+        "donnees": {
+          "question": {
+            "id": "b1-02-a1-diagnostic-taux",
+            "enonce": "Un abonnement passe de 60 € à 75 €. Quel est son taux d’évolution ?",
+            "options": [
+              {
+                "id": "plus-15-pct-5eff42a0",
+                "libelle": "+ 15 %"
+              },
+              {
+                "id": "plus-20-pct-7431fd3a",
+                "libelle": "+ 20 %"
+              },
+              {
+                "id": "plus-25-pct-7ae83f12",
+                "libelle": "+ 25 %"
+              }
+            ],
+            "metadonnees": {
+              "concepts": ["taux-evolution"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 4,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          },
+          "delaiMs": 0
+        }
+      },
+      {
+        "id": "B1-02-A1-02-ACCROCHE",
+        "type": "fp-story",
+        "titre": "Évolutions : multiplier, pas ajouter",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B1-02-A1-02-ACCROCHE",
+            "presentation": {
+              "version": 2,
+              "screenId": "B1-02-A1-02-ACCROCHE",
+              "renderer": "hero",
+              "props": {
+                "title": "Évolutions : multiplier, pas ajouter",
+                "subtitle": "Partie Libre revoit ses tarifs. Votre dossier : des hausses, de la TVA, des remises et un indice à lire.",
+                "bgImage": "/assets/cours/gravures/v1/playfair-ble-salaires-1822.jpg",
+                "bgImageAlt": "Graphique de William Playfair (1822) : le prix du blé en barres et les salaires en courbe, de 1565 à 1821, une évolution suivie sur deux siècles et demi"
+              }
+            },
+            "metadonnees": {
+              "concepts": ["taux-evolution", "coefficient-multiplicateur"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B1-02-A1-03-VOTE-DIAGNOSTIC",
+        "type": "fp-vote",
+        "titre": "Vote : par quel nombre multiplier ?",
+        "duree": 4,
+        "interactif": true,
+        "donnees": {
+          "question": {
+            "id": "b1-02-a1-vote-hausse",
+            "enonce": "Un prix augmente de 5 %. Par quel nombre le multiplier ?",
+            "options": [
+              {
+                "id": "0-05-eba71749",
+                "libelle": "0,05"
+              },
+              {
+                "id": "1-5-e10f709e",
+                "libelle": "1,5"
+              },
+              {
+                "id": "1-05-e4826697",
+                "libelle": "1,05"
+              }
+            ]
+          },
+          "questionJumelle": {
+            "id": "b1-02-a1-vote-remise",
+            "enonce": "Une remise de 30 % sur un prix : par quel nombre le multiplier ?",
+            "options": [
+              {
+                "id": "0-70-01573bd7",
+                "libelle": "0,70"
+              },
+              {
+                "id": "1-30-faf12c17",
+                "libelle": "1,30"
+              },
+              {
+                "id": "0-30-27b6a029",
+                "libelle": "0,30"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "id": "B1-02-A1-04-DOSSIER",
+        "type": "fp-story",
+        "titre": "Le dossier tarifs de Partie Libre",
+        "duree": 2,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B1-02-A1-04-DOSSIER",
+            "presentation": {
+              "version": 2,
+              "screenId": "B1-02-A1-04-DOSSIER",
+              "renderer": "table",
+              "props": {
+                "title": "Le dossier tarifs de Partie Libre",
+                "subtitle": "Les chiffres de novembre 2026, avant la grille de prix 2027.",
+                "note": "Données fictives Partie Libre, créées pour ce cours.",
+                "columns": [
+                  {
+                    "key": "rubrique",
+                    "label": "Rubrique"
+                  },
+                  {
+                    "key": "contenu",
+                    "label": "Ce que montre le dossier"
+                  }
+                ],
+                "rows": [
+                  {
+                    "rubrique": "L’entreprise",
+                    "contenu": "Quatre boutiques-bars à jeux, à Nantes, Angers, Tours et Le Mans."
+                  },
+                  {
+                    "rubrique": "Le chiffre d’affaires HT",
+                    "contenu": "En milliers d’euros, 2025 puis 2026 : Nantes 184 puis 207, Angers 120 puis 126, Tours 96 puis 92, Le Mans 80 puis 94."
+                  },
+                  {
+                    "rubrique": "La TVA",
+                    "contenu": "20 % sur tous les prix de vente."
+                  },
+                  {
+                    "rubrique": "La carte Pass Partie",
+                    "contenu": "15 % de remise sur le prix TTC."
+                  },
+                  {
+                    "rubrique": "Le fournisseur",
+                    "contenu": "Une hausse de 8 % annoncée au 1ᵉʳ janvier 2027."
+                  },
+                  {
+                    "rubrique": "La question d’Inès",
+                    "contenu": "« Quels coefficients pour la grille 2027 ? »"
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": ["taux-evolution", "coefficient-multiplicateur"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 2,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B1-02-A1-05-MISSION",
+        "type": "fp-pro",
+        "titre": "Votre mission : vérifier la grille de prix",
+        "duree": 6,
+        "interactif": true,
+        "donnees": {
+          "cas": {
+            "id": "B1-02-A1-05-MISSION",
+            "metier": "Alternant·e assistant·e de gestion — Partie Libre (boutiques-bars à jeux, 40 salariés, Nantes)",
+            "situation": "Mardi, 14 h. Inès Marchal prépare la grille de prix 2027.\n« Nos achats montent de 8 % en janvier. Pouvez-vous vérifier les calculs de Théo avant que je valide ? »\nThéo a écrit : « Une console à 180 € TTC, c’est 144 € HT : j’enlève 20 %. »\nIl ajoute : « Une manette à 60 € TTC coûte 45 € avec la remise de 15 %. »",
+            "geste": null,
+            "consequence": null,
+            "questionsLibres": [
+              {
+                "id": "b1-02-a1-mission:taux",
+                "question": "Un jeu passe de 100 € à 112 €. Quel est le taux d’évolution, et par quel nombre a-t-on multiplié ?",
+                "placeholder": "Le taux est de… on a multiplié par…"
+              },
+              {
+                "id": "b1-02-a1-mission:ht",
+                "question": "Théo trouve 144 € HT. Que donne 144 € plus 20 % de TVA ? Que concluez-vous ?",
+                "placeholder": "144 € plus 20 % font… donc Théo…"
+              },
+              {
+                "id": "b1-02-a1-mission:remise",
+                "question": "Pour la manette à 45 €, qu’a fait Théo ? Quel calcul proposez-vous ?",
+                "placeholder": "Théo a… il faudrait…"
+              }
+            ],
+            "metadonnees": {
+              "concepts": ["coefficient-multiplicateur", "pourcentage"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 6,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B1-02-A1-06-COURS-COEFFICIENT",
+        "type": "fp-story",
+        "titre": "Cours : taux et coefficient multiplicateur",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B1-02-A1-06-COURS-COEFFICIENT",
+            "presentation": {
+              "version": 2,
+              "screenId": "B1-02-A1-06-COURS-COEFFICIENT",
+              "renderer": "lesson",
+              "props": {
+                "title": "Taux et coefficient : multiplier, pas ajouter",
+                "subtitle": "Trace écrite · notion 1 · page 1 sur 2",
+                "blocks": [
+                  {
+                    "kind": "definition",
+                    "title": "Le coefficient multiplicateur",
+                    "text": "Évoluer de t, c’est multiplier par 1 + t.\nUne hausse donne c plus grand que 1, une baisse plus petit.",
+                    "formula": "t = (V₂ − V₁) ÷ V₁\nc = 1 + t\nV₂ = V₁ × c\nV₁ = V₂ ÷ c"
+                  },
+                  {
+                    "kind": "example",
+                    "title": "Pour débuter : la place de cinéma",
+                    "text": "Une place passe de 10 € à 12 €.",
+                    "steps": [
+                      "t = 2 ÷ 10 = 0,2, soit + 20 %.",
+                      "c = 1 + 0,2 = 1,2 ; contrôle : 10 × 1,2 = 12 €.",
+                      "À − 20 %, c = 0,8 : 10 × 0,8 = 8 €."
+                    ]
+                  },
+                  {
+                    "kind": "method",
+                    "title": "Toujours le départ en bas",
+                    "text": "Le taux se rapporte à la valeur de départ.",
+                    "steps": [
+                      "Repérer V₁ (le départ) et V₂ (l’arrivée).",
+                      "Écrire t en décimal, puis c = 1 + t.",
+                      "Contrôle : hausse, c > 1 ; baisse, c < 1.",
+                      "Au tableur, arrondie et recopiée : =ARRONDI((B3-B2)/B2*100;1)."
+                    ]
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": ["taux-evolution", "coefficient-multiplicateur"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B1-02-A1-07-COURS-HT-TTC",
+        "type": "fp-story",
+        "titre": "Cours : HT, TTC et remises",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B1-02-A1-07-COURS-HT-TTC",
+            "presentation": {
+              "version": 2,
+              "screenId": "B1-02-A1-07-COURS-HT-TTC",
+              "renderer": "lesson",
+              "props": {
+                "title": "HT, TTC, remise : toujours un coefficient",
+                "subtitle": "Trace écrite · notion 1 · page 2 sur 2",
+                "blocks": [
+                  {
+                    "kind": "definition",
+                    "title": "Du HT au TTC",
+                    "text": "La TVA se calcule sur le prix HT.\nÀ 20 %, le coefficient vaut 1,20.",
+                    "formula": "TTC = HT × 1,20\nHT = TTC ÷ 1,20\nremise de r : prix × (1 − r)"
+                  },
+                  {
+                    "kind": "example",
+                    "title": "Pour débuter : le casque",
+                    "text": "Un casque à 30 € HT, TVA à 20 %, puis une remise de 10 %.",
+                    "steps": [
+                      "30 × 1,20 = 36 € TTC.",
+                      "Retour : 36 ÷ 1,20 = 30 € HT.",
+                      "Remise : 36 × 0,90 = 32,40 €."
+                    ]
+                  },
+                  {
+                    "kind": "method",
+                    "title": "Aller : ×, retour : ÷",
+                    "text": "Le retour divise par le même coefficient.",
+                    "steps": [
+                      "Du HT au TTC : × 1,20.",
+                      "Du TTC au HT : ÷ 1,20, jamais − 20 %.",
+                      "Une remise : × (1 − r), jamais r en euros."
+                    ]
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": ["coefficient-multiplicateur", "pourcentage"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B1-02-A1-08-EXEMPLE-JEU",
+        "type": "fp-worked",
+        "titre": "Exemple guidé : un jeu de société, de l’achat à la caisse",
+        "duree": 6,
+        "interactif": true,
+        "donnees": {
+          "exemple": {
+            "id": "b1-02-a1-exemple-jeu",
+            "enonce": "Un jeu de société s’achète 40 € HT, puis 46 € HT en janvier. Il se vend 75 € HT, TVA à 20 %. La carte Pass Partie donne 15 % de remise sur le prix TTC.",
+            "etapes": [
+              {
+                "id": "taux",
+                "intitule": "Le taux d’évolution",
+                "raisonnement": "(46 − 40) ÷ 40 = 0,15, soit + 15 %.",
+                "invite": "Quel est le taux d’évolution du prix d’achat ?"
+              },
+              {
+                "id": "coefficient",
+                "intitule": "Le coefficient",
+                "raisonnement": "c = 1 + 0,15 = 1,15 ; contrôle : 40 × 1,15 = 46 €.",
+                "invite": "Par quel nombre a-t-on multiplié ?"
+              },
+              {
+                "id": "ttc",
+                "intitule": "Le prix TTC",
+                "raisonnement": "75 × 1,20 = 90 € TTC.",
+                "invite": "Quel est le prix de vente TTC ?"
+              },
+              {
+                "id": "piege",
+                "intitule": "Retrouver le HT",
+                "raisonnement": "90 ÷ 1,20 = 75 € HT. Enlever 20 % donnerait 90 × 0,80 = 72 € : faux, la TVA se calcule sur le HT.",
+                "invite": "Comment retrouver le HT depuis 90 € TTC ? Pourquoi pas − 20 % ?"
+              },
+              {
+                "id": "remise",
+                "intitule": "La remise",
+                "raisonnement": "90 × 0,85 = 76,50 € TTC.",
+                "invite": "Combien paie un client avec la carte ?"
+              }
+            ],
+            "metadonnees": {
+              "concepts": ["coefficient-multiplicateur", "pourcentage"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 6,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          },
+          "etayage": 0
+        }
+      },
+      {
+        "id": "B1-02-A1-09-ATELIER-PRIX",
+        "type": "questionnaire",
+        "titre": "Exercice 1 — La nouvelle grille",
+        "duree": 10,
+        "interactif": true,
+        "donnees": {
+          "intitule": "Exercice 1 — La nouvelle grille",
+          "consigne": "Un pack de cartes passe de 16 € à 18 € HT. Une manette se vend 60 € TTC, TVA à 20 %, et la carte donne 15 % de remise.",
+          "regime": "focus",
+          "ordre": "fixe",
+          "questions": [
+            {
+              "brique": "fp-numeric",
+              "donnees": {
+                "question": {
+                  "id": "b1-02-a1-taux-pack",
+                  "enonce": "Quel est le taux d’évolution du pack de cartes ?",
+                  "unite": "%",
+                  "metadonnees": {
+                    "concepts": [
+                      "taux-evolution",
+                      "coefficient-multiplicateur",
+                      "pourcentage"
+                    ],
+                    "misconceptionsCiblees": [],
+                    "dureeMinutes": 10,
+                    "modalite": "solo",
+                    "regime": "focus"
+                  }
+                }
+              }
+            },
+            {
+              "brique": "fp-vote",
+              "donnees": {
+                "question": {
+                  "id": "b1-02-a1-coefficient",
+                  "enonce": "Le fournisseur annonce + 8 %. Par quel nombre multiplier les prix d’achat ?",
+                  "options": [
+                    {
+                      "id": "1-08-5e2af939",
+                      "libelle": "1,08"
+                    },
+                    {
+                      "id": "1-8-091502b7",
+                      "libelle": "1,8"
+                    },
+                    {
+                      "id": "0-08-8a7acdb8",
+                      "libelle": "0,08"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "brique": "fp-numeric",
+              "donnees": {
+                "question": {
+                  "id": "b1-02-a1-ht",
+                  "enonce": "Quel est le prix HT de la manette ?",
+                  "unite": "€",
+                  "metadonnees": {
+                    "concepts": [
+                      "taux-evolution",
+                      "coefficient-multiplicateur",
+                      "pourcentage"
+                    ],
+                    "misconceptionsCiblees": [],
+                    "dureeMinutes": 10,
+                    "modalite": "solo",
+                    "regime": "focus"
+                  }
+                }
+              }
+            },
+            {
+              "brique": "fp-numeric",
+              "donnees": {
+                "question": {
+                  "id": "b1-02-a1-remise",
+                  "enonce": "Quel prix TTC paie un client avec la carte ?",
+                  "unite": "€",
+                  "metadonnees": {
+                    "concepts": [
+                      "taux-evolution",
+                      "coefficient-multiplicateur",
+                      "pourcentage"
+                    ],
+                    "misconceptionsCiblees": [],
+                    "dureeMinutes": 10,
+                    "modalite": "solo",
+                    "regime": "focus"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "renvoi": "B1-02-A1-04-DOSSIER"
+      },
+      {
+        "id": "B1-02-A1-10-TABLEUR-CA",
+        "type": "fp-sheet",
+        "titre": "Exercice 2 — L’évolution du chiffre d’affaires au tableur",
+        "duree": 9,
+        "interactif": true,
+        "donnees": {
+          "plan": {
+            "id": "b1-02-a1-tableur-ca",
+            "intitule": "Exercice 2 — L’évolution du chiffre d’affaires au tableur",
+            "lignes": 6,
+            "colonnes": 4,
+            "cellules": {
+              "A1": "Boutique",
+              "B1": "CA 2025 (k€)",
+              "C1": "CA 2026 (k€)",
+              "D1": "Taux d’évolution (%)",
+              "A6": "Total",
+              "A2": "Nantes",
+              "A3": "Angers",
+              "A4": "Tours",
+              "A5": "Le Mans",
+              "B2": "184",
+              "B3": "120",
+              "B4": "96",
+              "B5": "80",
+              "C2": "207",
+              "C3": "126",
+              "C4": "92",
+              "C5": "94"
+            },
+            "verrouillees": [
+              "A1",
+              "B1",
+              "C1",
+              "D1",
+              "A6",
+              "A2",
+              "A3",
+              "A4",
+              "A5",
+              "B2",
+              "B3",
+              "B4",
+              "B5",
+              "C2",
+              "C3",
+              "C4",
+              "C5"
+            ],
+            "consignes": [
+              "En B6 et C6, calculez le chiffre d’affaires total de chaque année.",
+              "En D2, écrivez le taux d’évolution de Nantes, en %, arrondi au dixième avec ARRONDI. Recopiez jusqu’en D6 : sélectionnez D2 et cliquez quatre fois sur « Recopier vers le bas », une ligne par clic."
+            ],
+            "lettres": ["A", "B", "C", "D"],
+            "grille": [
+              ["A1", "B1", "C1", "D1"],
+              ["A2", "B2", "C2", "D2"],
+              ["A3", "B3", "C3", "D3"],
+              ["A4", "B4", "C4", "D4"],
+              ["A5", "B5", "C5", "D5"],
+              ["A6", "B6", "C6", "D6"]
+            ],
+            "longueurMaxSaisie": 200,
+            "initiale": {
+              "saisies": {},
+              "affichages": {
+                "A1": "Boutique",
+                "B1": "CA 2025 (k€)",
+                "C1": "CA 2026 (k€)",
+                "D1": "Taux d’évolution (%)",
+                "A6": "Total",
+                "A2": "Nantes",
+                "A3": "Angers",
+                "A4": "Tours",
+                "A5": "Le Mans",
+                "B2": "184",
+                "B3": "120",
+                "B4": "96",
+                "B5": "80",
+                "C2": "207",
+                "C3": "126",
+                "C4": "92",
+                "C5": "94"
+              },
+              "natures": {
+                "A1": "texte",
+                "B1": "texte",
+                "C1": "texte",
+                "D1": "texte",
+                "A6": "texte",
+                "A2": "texte",
+                "A3": "texte",
+                "A4": "texte",
+                "A5": "texte",
+                "B2": "nombre",
+                "B3": "nombre",
+                "B4": "nombre",
+                "B5": "nombre",
+                "C2": "nombre",
+                "C3": "nombre",
+                "C4": "nombre",
+                "C5": "nombre"
+              },
+              "formules": []
+            },
+            "metadonnees": {
+              "concepts": ["tableur", "taux-evolution"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 9,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B1-02-A1-11-JALON",
+        "type": "fp-pulse",
+        "titre": "Jalon 1 : du taux au coefficient",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "sondage": {
+            "id": "b1-02-a1-jalon",
+            "invite": "Je sais passer d’un taux à un coefficient, du HT au TTC, et écrire un taux au tableur.",
+            "metadonnees": {
+              "concepts": ["coefficient-multiplicateur", "tableur"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B1-02-A2-01-REFLEXION-SOLDES",
+        "type": "fp-story",
+        "titre": "Réfléchir : + 10 %, puis − 10 %",
+        "duree": 5,
+        "interactif": true,
+        "donnees": {
+          "recit": {
+            "id": "B1-02-A2-01-REFLEXION-SOLDES",
+            "presentation": {
+              "version": 2,
+              "screenId": "B1-02-A2-01-REFLEXION-SOLDES",
+              "renderer": "reflection",
+              "props": {
+                "promptData": {
+                  "id": "b1-02-a2-reflexion-soldes",
+                  "type": "reflection",
+                  "question": "En janvier, Partie Libre augmente de 10 % un jeu à 100 €. En février, il est soldé à − 10 %. Théo écrit : « On retrouve le prix de départ. » Sans calculatrice : a-t-il raison ? Sur quel prix se calcule la baisse ?",
+                  "placeholder": "Il a raison / tort, parce que la baisse porte sur…",
+                  "competency": "Raisonner · enchaîner deux évolutions"
+                }
+              }
+            },
+            "metadonnees": {
+              "concepts": ["evolutions-successives"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 5,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B1-02-A2-02-COURS-SUCCESSIVES",
+        "type": "fp-story",
+        "titre": "Cours : évolutions successives",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B1-02-A2-02-COURS-SUCCESSIVES",
+            "presentation": {
+              "version": 2,
+              "screenId": "B1-02-A2-02-COURS-SUCCESSIVES",
+              "renderer": "lesson",
+              "props": {
+                "title": "Évolutions successives : on multiplie",
+                "subtitle": "Trace écrite · notion 2 · page 1 sur 2",
+                "blocks": [
+                  {
+                    "kind": "definition",
+                    "title": "Un coefficient par évolution",
+                    "text": "Des évolutions successives multiplient leurs coefficients.\nLe taux global se lit sur le coefficient global.",
+                    "formula": "C = c₁ × c₂ × … × cₙ\ntaux global = C − 1"
+                  },
+                  {
+                    "kind": "example",
+                    "title": "Pour débuter : le loyer",
+                    "text": "Un loyer augmente de 10 %, puis de 20 %.",
+                    "steps": [
+                      "c₁ = 1,10 et c₂ = 1,20.",
+                      "C = 1,10 × 1,20 = 1,32.",
+                      "Taux global : + 32 %, pas + 30 %."
+                    ]
+                  },
+                  {
+                    "kind": "method",
+                    "title": "Coefficients, jamais taux",
+                    "text": "Chaque évolution porte sur le résultat de la précédente.",
+                    "steps": [
+                      "Écrire chaque évolution en coefficient.",
+                      "Multiplier les coefficients.",
+                      "Retirer 1 : C = 0,97 se lit − 3 %."
+                    ]
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": ["evolutions-successives"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B1-02-A2-03-COURS-RECIPROQUE",
+        "type": "fp-story",
+        "titre": "Cours : évolution réciproque",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B1-02-A2-03-COURS-RECIPROQUE",
+            "presentation": {
+              "version": 2,
+              "screenId": "B1-02-A2-03-COURS-RECIPROQUE",
+              "renderer": "lesson",
+              "props": {
+                "title": "Évolution réciproque : revenir au départ",
+                "subtitle": "Trace écrite · notion 2 · page 2 sur 2",
+                "blocks": [
+                  {
+                    "kind": "definition",
+                    "title": "Défaire une évolution",
+                    "text": "Revenir au départ, c’est diviser par c.\nLe taux du retour n’est pas celui de l’aller.",
+                    "formula": "c réciproque = 1 ÷ c\nt réciproque = 1 ÷ c − 1"
+                  },
+                  {
+                    "kind": "example",
+                    "title": "Pour débuter : le vélo",
+                    "text": "Le prix d’un vélo baisse de 50 %.",
+                    "steps": [
+                      "c = 0,5.",
+                      "1 ÷ 0,5 = 2.",
+                      "Pour revenir au prix : + 100 %, pas + 50 %."
+                    ]
+                  },
+                  {
+                    "kind": "method",
+                    "title": "Le retour n’a pas le même taux",
+                    "text": "On part du coefficient de l’aller.",
+                    "steps": [
+                      "Écrire le coefficient de l’aller.",
+                      "Diviser 1 par ce coefficient.",
+                      "Retirer 1 et lire le taux."
+                    ]
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": ["evolution-reciproque"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B1-02-A2-04-EXEMPLE-PROMO",
+        "type": "fp-worked",
+        "titre": "Exemple guidé : hausse, puis promotion",
+        "duree": 6,
+        "interactif": true,
+        "donnees": {
+          "exemple": {
+            "id": "b1-02-a2-exemple-promo",
+            "enonce": "Un jeu à 80 € augmente de 25 % en janvier, puis baisse de 20 % en février. Un autre jeu passe de 50 € à 40 €.",
+            "etapes": [
+              {
+                "id": "coefficients",
+                "intitule": "Les coefficients",
+                "raisonnement": "c₁ = 1,25 et c₂ = 0,80.",
+                "invite": "Quels sont les deux coefficients ?"
+              },
+              {
+                "id": "global",
+                "intitule": "Le coefficient global",
+                "raisonnement": "C = 1,25 × 0,80 = 1 : le jeu revient exactement à 80 €.",
+                "invite": "Quel est le coefficient global ?"
+              },
+              {
+                "id": "piege",
+                "intitule": "Additionner les taux",
+                "raisonnement": "+ 25 − 20 = + 5 % serait faux : 80 × 1,05 = 84 €, pas 80 €.",
+                "invite": "Que donnerait l’addition des taux ? Pourquoi est-ce faux ?"
+              },
+              {
+                "id": "baisse",
+                "intitule": "Le second jeu",
+                "raisonnement": "40 ÷ 50 = 0,8 : une baisse de 20 %.",
+                "invite": "Quel est le coefficient du second jeu ?"
+              },
+              {
+                "id": "reciproque",
+                "intitule": "Le retour",
+                "raisonnement": "1 ÷ 0,8 = 1,25 : il faudrait + 25 %, pas + 20 %.",
+                "invite": "Quelle hausse ramène le second jeu à 50 € ?"
+              }
+            ],
+            "metadonnees": {
+              "concepts": ["evolutions-successives", "evolution-reciproque"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 6,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          },
+          "etayage": 0
+        }
+      },
+      {
+        "id": "B1-02-A2-05-TABLEAU-PRIX",
+        "type": "fp-table-build",
+        "titre": "Exercice 3 — Une hausse, puis des soldes",
+        "duree": 8,
+        "interactif": true,
+        "donnees": {
+          "plan": {
+            "id": "b1-02-a2-tableau-prix",
+            "intitule": "Quatre prix, deux évolutions",
+            "consignes": [
+              "Pour chaque article, saisissez le prix après la hausse de 20 %, puis le prix après les soldes de − 25 %.",
+              "Les totaux et l’évolution globale se calculent seuls à partir de vos saisies."
+            ],
+            "echeances": 4,
+            "intituleDesLignes": "Article",
+            "libellesLignes": [
+              "Console",
+              "Manette",
+              "Jeu de plateau",
+              "Jeu de cartes"
+            ],
+            "parametres": {},
+            "colonnes": [
+              {
+                "cle": "depart",
+                "intitule": "Prix de départ (€)",
+                "role": "donnee",
+                "decimales": 0,
+                "valeurs": [120, 80, 60, 40],
+                "totalise": true
+              },
+              {
+                "cle": "hausse",
+                "intitule": "Après + 20 % (€)",
+                "role": "saisie",
+                "decimales": 0,
+                "totalise": true
+              },
+              {
+                "cle": "soldes",
+                "intitule": "Après − 25 % (€)",
+                "role": "saisie",
+                "decimales": 0,
+                "totalise": true
+              }
+            ],
+            "synthese": [
+              {
+                "libelle": "Évolution globale",
+                "formule": "(totalSoldes / totalDepart - 1) * 100",
+                "unite": "%",
+                "decimales": 1
+              }
+            ],
+            "tableauInitial": {
+              "lignes": [
+                {
+                  "rang": 0,
+                  "valeurs": {
+                    "depart": {
+                      "valeur": 120,
+                      "affichage": "120"
+                    },
+                    "hausse": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "soldes": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                },
+                {
+                  "rang": 1,
+                  "valeurs": {
+                    "depart": {
+                      "valeur": 80,
+                      "affichage": "80"
+                    },
+                    "hausse": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "soldes": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                },
+                {
+                  "rang": 2,
+                  "valeurs": {
+                    "depart": {
+                      "valeur": 60,
+                      "affichage": "60"
+                    },
+                    "hausse": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "soldes": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                },
+                {
+                  "rang": 3,
+                  "valeurs": {
+                    "depart": {
+                      "valeur": 40,
+                      "affichage": "40"
+                    },
+                    "hausse": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "soldes": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                }
+              ],
+              "totaux": {
+                "depart": {
+                  "valeur": 300,
+                  "affichage": "300"
+                },
+                "hausse": {
+                  "valeur": null,
+                  "affichage": "—"
+                },
+                "soldes": {
+                  "valeur": null,
+                  "affichage": "—"
+                }
+              },
+              "synthese": [
+                {
+                  "valeur": null,
+                  "affichage": "—"
+                }
+              ],
+              "soldeFinal": null
+            },
+            "metadonnees": {
+              "concepts": ["evolutions-successives"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 8,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B1-02-A2-06-ATELIER-RETOUR",
+        "type": "questionnaire",
+        "titre": "Exercice 4 — Deux hausses, un retour",
+        "duree": 10,
+        "interactif": true,
+        "donnees": {
+          "intitule": "Exercice 4 — Deux hausses, un retour",
+          "consigne": "Le chiffre d’affaires des jeux vidéo augmente de 10 %, puis de 5 %. Les ventes de cartes à collectionner baissent de 40 %.",
+          "regime": "focus",
+          "ordre": "fixe",
+          "questions": [
+            {
+              "brique": "fp-numeric",
+              "donnees": {
+                "question": {
+                  "id": "b1-02-a2-coefficient-global",
+                  "enonce": "Quel est le coefficient global des deux hausses ?",
+                  "unite": null,
+                  "metadonnees": {
+                    "concepts": [
+                      "evolutions-successives",
+                      "evolution-reciproque"
+                    ],
+                    "misconceptionsCiblees": [],
+                    "dureeMinutes": 10,
+                    "modalite": "solo",
+                    "regime": "focus"
+                  }
+                }
+              }
+            },
+            {
+              "brique": "fp-numeric",
+              "donnees": {
+                "question": {
+                  "id": "b1-02-a2-taux-global",
+                  "enonce": "Quel est le taux d’évolution global ?",
+                  "unite": "%",
+                  "metadonnees": {
+                    "concepts": [
+                      "evolutions-successives",
+                      "evolution-reciproque"
+                    ],
+                    "misconceptionsCiblees": [],
+                    "dureeMinutes": 10,
+                    "modalite": "solo",
+                    "regime": "focus"
+                  }
+                }
+              }
+            },
+            {
+              "brique": "fp-vote",
+              "donnees": {
+                "question": {
+                  "id": "b1-02-a2-phrase",
+                  "enonce": "Un prix baisse de 40 %, puis remonte de 40 %. Quelle phrase est juste ?",
+                  "options": [
+                    {
+                      "id": "il-revient-au-prix-de-depart-eedafaf1",
+                      "libelle": "Il revient au prix de départ"
+                    },
+                    {
+                      "id": "il-reste-sous-le-prix-de-depart-891e210f",
+                      "libelle": "Il reste sous le prix de départ"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "brique": "fp-numeric",
+              "donnees": {
+                "question": {
+                  "id": "b1-02-a2-reciproque",
+                  "enonce": "Quelle hausse ramènerait les ventes de cartes à leur niveau de départ, arrondie au dixième ?",
+                  "unite": "%",
+                  "metadonnees": {
+                    "concepts": [
+                      "evolutions-successives",
+                      "evolution-reciproque"
+                    ],
+                    "misconceptionsCiblees": [],
+                    "dureeMinutes": 10,
+                    "modalite": "solo",
+                    "regime": "focus"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "B1-02-A2-07-JALON",
+        "type": "fp-pulse",
+        "titre": "Jalon 2 : enchaîner et revenir",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "sondage": {
+            "id": "b1-02-a2-jalon",
+            "invite": "Je sais multiplier des coefficients, lire un taux global et calculer le taux du retour.",
+            "metadonnees": {
+              "concepts": ["evolutions-successives", "evolution-reciproque"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B1-02-A3-01-VOTE-INDICES",
+        "type": "fp-vote",
+        "titre": "Vote : que dit un indice ?",
+        "duree": 5,
+        "interactif": true,
+        "donnees": {
+          "question": {
+            "id": "b1-02-a3-indice",
+            "enonce": "L’indice d’un prix vaut 130, base 100 en 2020. Que signifie-t-il ?",
+            "options": [
+              {
+                "id": "le-prix-vaut-130-eur-739a3899",
+                "libelle": "Le prix vaut 130 €"
+              },
+              {
+                "id": "plus-30-pct-depuis-2020-98cd4f4c",
+                "libelle": "+ 30 % depuis 2020"
+              },
+              {
+                "id": "plus-130-pct-depuis-2020-2cb4de50",
+                "libelle": "+ 130 % depuis 2020"
+              }
+            ]
+          },
+          "questionJumelle": {
+            "id": "b1-02-a3-moyen",
+            "enonce": "Une valeur augmente de 21 % en deux ans. Quel taux constant, chaque année, donne le même résultat ?",
+            "options": [
+              {
+                "id": "plus-10-5-pct-par-an-cdfe3400",
+                "libelle": "+ 10,5 % par an"
+              },
+              {
+                "id": "plus-10-pct-par-an-220aee70",
+                "libelle": "+ 10 % par an"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "id": "B1-02-A3-02-COURS-INDICE",
+        "type": "fp-story",
+        "titre": "Cours : indice base 100",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B1-02-A3-02-COURS-INDICE",
+            "presentation": {
+              "version": 2,
+              "screenId": "B1-02-A3-02-COURS-INDICE",
+              "renderer": "lesson",
+              "props": {
+                "title": "Indice base 100 : comparer à une année",
+                "subtitle": "Trace écrite · notion 3 · page 1 sur 2",
+                "blocks": [
+                  {
+                    "kind": "definition",
+                    "title": "Une année de base",
+                    "text": "L’indice vaut 100 l’année de base.\nIl dit où en est la valeur par rapport à cette année.",
+                    "formula": "I = V ÷ V₀ × 100\ntaux depuis la base = I − 100\ntaux entre deux dates = I₂ ÷ I₁ − 1"
+                  },
+                  {
+                    "kind": "example",
+                    "title": "Pour débuter : le ticket de bus",
+                    "text": "Un ticket coûte 2 € en 2020 et 3 € en 2025.",
+                    "steps": [
+                      "I = 3 ÷ 2 × 100 = 150.",
+                      "150 − 100 = 50 : + 50 % depuis 2020.",
+                      "150 n’est ni un prix, ni + 150 %."
+                    ]
+                  },
+                  {
+                    "kind": "method",
+                    "title": "Ni un prix, ni un taux",
+                    "text": "Au tableur, la valeur de base reste figée.",
+                    "steps": [
+                      "Années en colonne, base en B2 ; en C3 : =B3/$B$2*100.",
+                      "Recopier : le $ garde la même base.",
+                      "Lire : I − 100 donne le taux depuis la base."
+                    ]
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": ["indice-base-100", "tableur"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B1-02-A3-03-COURS-TAUX-MOYEN",
+        "type": "fp-story",
+        "titre": "Cours : taux annuel moyen",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B1-02-A3-03-COURS-TAUX-MOYEN",
+            "presentation": {
+              "version": 2,
+              "screenId": "B1-02-A3-03-COURS-TAUX-MOYEN",
+              "renderer": "lesson",
+              "props": {
+                "title": "Taux moyen : la même hausse chaque année",
+                "subtitle": "Trace écrite · notion 3 · page 2 sur 2",
+                "blocks": [
+                  {
+                    "kind": "definition",
+                    "title": "Un taux constant équivalent",
+                    "text": "Le taux moyen donne la même évolution globale, à taux constant.\nOn prend la puissance 1/n du coefficient global.",
+                    "formula": "c moyen = C^(1/n)\nt moyen = C^(1/n) − 1\ntableur : =PUISSANCE(C;1/n)-1"
+                  },
+                  {
+                    "kind": "example",
+                    "title": "Pour débuter : l’épargne",
+                    "text": "Un compte passe de 100 € à 169 € en 2 ans.",
+                    "steps": [
+                      "C = 169 ÷ 100 = 1,69.",
+                      "c moyen = 1,69^(1/2) = 1,3.",
+                      "+ 30 % par an, pas + 34,5 %."
+                    ]
+                  },
+                  {
+                    "kind": "method",
+                    "title": "n compte les évolutions",
+                    "text": "Compter les évolutions, pas les années citées.",
+                    "steps": [
+                      "C = arrivée ÷ départ.",
+                      "De 2021 à 2024 : n = 3.",
+                      "Contrôle : c moyen puissance n redonne C."
+                    ]
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": ["taux-moyen", "tableur"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B1-02-A3-04-EXEMPLE-CLIENTS",
+        "type": "fp-worked",
+        "titre": "Exemple guidé : les clients du réseau",
+        "duree": 6,
+        "interactif": true,
+        "donnees": {
+          "exemple": {
+            "id": "b1-02-a3-exemple-clients",
+            "enonce": "Partie Libre compte 2 000 clients en 2023, 2 300 en 2024, 2 900 en 2025 et 3 456 en 2026.",
+            "etapes": [
+              {
+                "id": "indice",
+                "intitule": "L’indice de 2024",
+                "raisonnement": "2 300 ÷ 2 000 × 100 = 115.",
+                "invite": "Quel est l’indice de 2024, base 100 en 2023 ?"
+              },
+              {
+                "id": "lire",
+                "intitule": "Lire l’indice de 2025",
+                "raisonnement": "2 900 ÷ 2 000 × 100 = 145 : + 45 % depuis 2023.",
+                "invite": "Quel est l’indice de 2025 ? Que signifie-t-il ?"
+              },
+              {
+                "id": "global",
+                "intitule": "L’évolution globale",
+                "raisonnement": "3 456 ÷ 2 000 = 1,728, soit + 72,8 %.",
+                "invite": "Quelle est l’évolution de 2023 à 2026 ?"
+              },
+              {
+                "id": "moyen",
+                "intitule": "Le taux annuel moyen",
+                "raisonnement": "n = 3 : 1,728^(1/3) = 1,2, soit + 20 % par an.",
+                "invite": "Quel est le taux annuel moyen ?"
+              },
+              {
+                "id": "piege",
+                "intitule": "Diviser par 3 ?",
+                "raisonnement": "72,8 ÷ 3 ≈ 24,3 % : faux, car 1,243³ ≈ 1,92, pas 1,728.",
+                "invite": "Pourquoi ne pas diviser 72,8 % par 3 ?"
+              }
+            ],
+            "metadonnees": {
+              "concepts": ["indice-base-100", "taux-moyen"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 6,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          },
+          "etayage": 0
+        }
+      },
+      {
+        "id": "B1-02-A3-05-TABLEUR-CNIL",
+        "type": "fp-sheet",
+        "titre": "Exercice 5 — Les sanctions de la CNIL",
+        "duree": 10,
+        "interactif": true,
+        "donnees": {
+          "plan": {
+            "id": "b1-02-a3-tableur-cnil",
+            "intitule": "Exercice 5 — Les sanctions de la CNIL",
+            "lignes": 7,
+            "colonnes": 5,
+            "cellules": {
+              "A1": "Année",
+              "B1": "2021",
+              "C1": "2022",
+              "D1": "2023",
+              "E1": "2024",
+              "A2": "Sanctions prononcées",
+              "B2": "18",
+              "C2": "21",
+              "D2": "42",
+              "E2": "87",
+              "A3": "Indices (base 100 en 2021)",
+              "B3": "100",
+              "A5": "Taux 2022-2024 (%)",
+              "A6": "Hausse 2021-2024 (%)",
+              "A7": "Taux annuel moyen (%)"
+            },
+            "verrouillees": [
+              "A1",
+              "B1",
+              "C1",
+              "D1",
+              "E1",
+              "A2",
+              "B2",
+              "C2",
+              "D2",
+              "E2",
+              "A3",
+              "B3",
+              "A5",
+              "A6",
+              "A7"
+            ],
+            "consignes": [
+              "Données réelles : CNIL, rapport annuel 2024. Tableau du sujet de BTS CG 2026, Polynésie (26CGMATPO).",
+              "En C3, écrivez l’indice de 2022, base 100 en 2021, arrondi au dixième avec ARRONDI. Recopiez jusqu’en E3 : sélectionnez C3 et cliquez deux fois sur « Recopier vers la droite », une cellule par clic.",
+              "La valeur de 2021 ne s’écrit pas dans la formule : utilisez B2, figée par des $.",
+              "En B5, calculez le taux d’évolution des sanctions entre 2022 et 2024, en %, arrondi au dixième avec ARRONDI.",
+              "En B6, calculez la hausse des sanctions entre 2021 et 2024, en %, arrondie au dixième avec ARRONDI.",
+              "En B7, calculez le taux annuel moyen entre 2021 et 2024, en %, arrondi au dixième avec ARRONDI et PUISSANCE."
+            ],
+            "lettres": ["A", "B", "C", "D", "E"],
+            "grille": [
+              ["A1", "B1", "C1", "D1", "E1"],
+              ["A2", "B2", "C2", "D2", "E2"],
+              ["A3", "B3", "C3", "D3", "E3"],
+              ["A4", "B4", "C4", "D4", "E4"],
+              ["A5", "B5", "C5", "D5", "E5"],
+              ["A6", "B6", "C6", "D6", "E6"],
+              ["A7", "B7", "C7", "D7", "E7"]
+            ],
+            "longueurMaxSaisie": 200,
+            "initiale": {
+              "saisies": {},
+              "affichages": {
+                "A1": "Année",
+                "B1": "2021",
+                "C1": "2022",
+                "D1": "2023",
+                "E1": "2024",
+                "A2": "Sanctions prononcées",
+                "B2": "18",
+                "C2": "21",
+                "D2": "42",
+                "E2": "87",
+                "A3": "Indices (base 100 en 2021)",
+                "B3": "100",
+                "A5": "Taux 2022-2024 (%)",
+                "A6": "Hausse 2021-2024 (%)",
+                "A7": "Taux annuel moyen (%)"
+              },
+              "natures": {
+                "A1": "texte",
+                "B1": "nombre",
+                "C1": "nombre",
+                "D1": "nombre",
+                "E1": "nombre",
+                "A2": "texte",
+                "B2": "nombre",
+                "C2": "nombre",
+                "D2": "nombre",
+                "E2": "nombre",
+                "A3": "texte",
+                "B3": "nombre",
+                "A5": "texte",
+                "A6": "texte",
+                "A7": "texte"
+              },
+              "formules": []
+            },
+            "metadonnees": {
+              "concepts": ["tableur", "indice-base-100", "taux-moyen"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 10,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B1-02-A3-06-JALON",
+        "type": "fp-pulse",
+        "titre": "Jalon 3 : indice et taux moyen",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "sondage": {
+            "id": "b1-02-a3-jalon",
+            "invite": "Je sais calculer et lire un indice, et calculer un taux annuel moyen.",
+            "metadonnees": {
+              "concepts": ["indice-base-100", "taux-moyen"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B1-02-A4-01-RAPPEL",
+        "type": "fp-spaced",
+        "titre": "Rappel : de mémoire, sans vos notes",
+        "duree": 6,
+        "interactif": true,
+        "donnees": {
+          "rappel": {
+            "id": "b1-02-a4-rappel",
+            "intitule": "Rappel : de mémoire, sans vos notes",
+            "metadonnees": {
+              "concepts": [
+                "taux-evolution",
+                "coefficient-multiplicateur",
+                "evolutions-successives",
+                "evolution-reciproque",
+                "indice-base-100",
+                "taux-moyen",
+                "pourcentage",
+                "tableur"
+              ],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 6,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B1-02-A4-02-FICHE-MEMO",
+        "type": "fp-story",
+        "titre": "Fiche mémo : évolutions, coefficients, indices",
+        "duree": 2,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B1-02-A4-02-FICHE-MEMO",
+            "presentation": {
+              "version": 2,
+              "screenId": "B1-02-A4-02-FICHE-MEMO",
+              "renderer": "grid",
+              "props": {
+                "title": "Fiche mémo : évolutions, coefficients, indices",
+                "subtitle": "À garder pour le CCF : chaque carte part d’une question et donne la méthode et son piège.",
+                "items": [
+                  {
+                    "title": "Taux d’évolution",
+                    "description": "De combien ça a bougé ?",
+                    "back": "t = (V₂ − V₁) ÷ V₁. Toujours le départ en bas."
+                  },
+                  {
+                    "title": "Coefficient",
+                    "description": "Par quoi multiplier ?",
+                    "back": "c = 1 + t : + 7 % donne 1,07 ; − 7 % donne 0,93."
+                  },
+                  {
+                    "title": "Départ ou arrivée",
+                    "description": "Quelle valeur je cherche ?",
+                    "back": "V₂ = V₁ × c ; V₁ = V₂ ÷ c."
+                  },
+                  {
+                    "title": "HT et TTC",
+                    "description": "Quel sens ?",
+                    "back": "TTC = HT × 1,20 ; HT = TTC ÷ 1,20. Jamais − 20 % sur le TTC."
+                  },
+                  {
+                    "title": "Évolutions successives",
+                    "description": "Plusieurs évolutions ?",
+                    "back": "On multiplie les coefficients, jamais on n’additionne les taux. Taux global = C − 1."
+                  },
+                  {
+                    "title": "Évolution réciproque",
+                    "description": "Revenir au départ ?",
+                    "back": "c réciproque = 1 ÷ c. Le retour n’a pas le même taux."
+                  },
+                  {
+                    "title": "Indice base 100",
+                    "description": "Que dit un indice ?",
+                    "back": "I = V ÷ V₀ × 100. I − 100 donne le taux depuis la base."
+                  },
+                  {
+                    "title": "Taux moyen",
+                    "description": "Un taux constant équivalent ?",
+                    "back": "c moyen = C^(1/n), n comptant les évolutions. Jamais le taux global ÷ n."
+                  },
+                  {
+                    "title": "Tableur",
+                    "description": "La formule à recopier ?",
+                    "back": "La valeur de base figée par des $. Taux moyen : =PUISSANCE(C;1/n)-1."
+                  },
+                  {
+                    "title": "Référentiel du BTS CG",
+                    "description": "Le programme de mathématiques et l’épreuve E3.",
+                    "href": "https://enqdip.sup.adc.education.fr/bts/referentiel/BTS_ComptabiliteGestion.pdf",
+                    "external": true
+                  }
+                ],
+                "imprimable": true
+              }
+            },
+            "metadonnees": {
+              "concepts": [
+                "taux-evolution",
+                "coefficient-multiplicateur",
+                "evolutions-successives",
+                "evolution-reciproque",
+                "indice-base-100",
+                "taux-moyen",
+                "pourcentage",
+                "tableur"
+              ],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 2,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      }
+    ]
+  },
+  "deroule": {
+    "id": "b1-02-evolutions-coefficients-indices",
+    "titre": "Évolutions : taux, coefficients, indices",
+    "niveau": "B1",
+    "duree": 121,
+    "concepts": [
+      "taux-evolution",
+      "coefficient-multiplicateur",
+      "evolutions-successives",
+      "evolution-reciproque",
+      "indice-base-100",
+      "taux-moyen",
+      "pourcentage",
+      "tableur"
+    ],
+    "ecrans": [
+      {
+        "id": "B1-02-A1-01-DIAGNOSTIC-TAUX",
+        "type": "fp-recall",
+        "titre": "Diagnostic : un taux, sans calculatrice",
+        "duree": 4,
+        "interactif": true,
+        "donnees": {
+          "question": {
+            "id": "b1-02-a1-diagnostic-taux",
+            "enonce": "Un abonnement passe de 60 € à 75 €. Quel est son taux d’évolution ?",
+            "options": [
+              {
+                "id": "plus-15-pct-5eff42a0",
+                "libelle": "+ 15 %"
+              },
+              {
+                "id": "plus-20-pct-7431fd3a",
+                "libelle": "+ 20 %"
+              },
+              {
+                "id": "plus-25-pct-7ae83f12",
+                "libelle": "+ 25 %"
+              }
+            ],
+            "metadonnees": {
+              "concepts": ["taux-evolution"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 4,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          },
+          "delaiMs": 0
+        },
+        "notes": "• 4 min : écrire au tableau l’adresse et le code de séance.\n• Rappel du B1-01 : un taux se rapporte à la valeur de départ.\n• Annoncer « seule la participation compte ». Sans calculatrice.\n• Papier : la question est en tête du livret ; vote à main levée.",
+        "diffusion": "seance",
+        "seuil": 0.7,
+        "corriges": [
+          {
+            "questionId": "b1-02-a1-diagnostic-taux",
+            "bonneReponse": "+ 25 %",
+            "optionId": "plus-25-pct-7ae83f12",
+            "confusions": [
+              {
+                "id": "ecart-absolu-au-lieu-du-taux",
+                "libelle": "Donner l’écart en valeur au lieu du taux en pourcentage."
+              },
+              {
+                "id": "base-arrivee",
+                "libelle": "Diviser l’écart par la valeur d’arrivée au lieu de la valeur de départ."
+              }
+            ]
+          }
+        ],
+        "questions": [
+          {
+            "id": "b1-02-a1-diagnostic-taux",
+            "enonce": "Un abonnement passe de 60 € à 75 €. Quel est son taux d’évolution ?",
+            "options": [
+              {
+                "id": "plus-15-pct-5eff42a0",
+                "libelle": "+ 15 %"
+              },
+              {
+                "id": "plus-20-pct-7431fd3a",
+                "libelle": "+ 20 %"
+              },
+              {
+                "id": "plus-25-pct-7ae83f12",
+                "libelle": "+ 25 %"
+              }
+            ]
+          }
+        ],
+        "corrigeEcran": null,
+        "reflexion": null
+      },
+      {
+        "id": "B1-02-A1-02-ACCROCHE",
+        "type": "fp-story",
+        "titre": "Évolutions : multiplier, pas ajouter",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B1-02-A1-02-ACCROCHE",
+            "presentation": {
+              "version": 2,
+              "screenId": "B1-02-A1-02-ACCROCHE",
+              "renderer": "hero",
+              "props": {
+                "title": "Évolutions : multiplier, pas ajouter",
+                "subtitle": "Partie Libre revoit ses tarifs. Votre dossier : des hausses, de la TVA, des remises et un indice à lire.",
+                "bgImage": "/assets/cours/gravures/v1/playfair-ble-salaires-1822.jpg",
+                "bgImageAlt": "Graphique de William Playfair (1822) : le prix du blé en barres et les salaires en courbe, de 1565 à 1821, une évolution suivie sur deux siècles et demi"
+              }
+            },
+            "metadonnees": {
+              "concepts": ["taux-evolution", "coefficient-multiplicateur"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• Annoncer les deux pauses de 15 minutes, après l’acte 1 et après l’acte 3.\n• Dire que la trace écrite est imprimée dans le livret : on lit, on ne recopie pas.",
+        "diffusion": "catalogue",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null,
+        "reflexion": null
+      },
+      {
+        "id": "B1-02-A1-03-VOTE-DIAGNOSTIC",
+        "type": "fp-vote",
+        "titre": "Vote : par quel nombre multiplier ?",
+        "duree": 4,
+        "interactif": true,
+        "donnees": {
+          "question": {
+            "id": "b1-02-a1-vote-hausse",
+            "enonce": "Un prix augmente de 5 %. Par quel nombre le multiplier ?",
+            "options": [
+              {
+                "id": "0-05-eba71749",
+                "libelle": "0,05"
+              },
+              {
+                "id": "1-5-e10f709e",
+                "libelle": "1,5"
+              },
+              {
+                "id": "1-05-e4826697",
+                "libelle": "1,05"
+              }
+            ]
+          },
+          "questionJumelle": {
+            "id": "b1-02-a1-vote-remise",
+            "enonce": "Une remise de 30 % sur un prix : par quel nombre le multiplier ?",
+            "options": [
+              {
+                "id": "0-70-01573bd7",
+                "libelle": "0,70"
+              },
+              {
+                "id": "1-30-faf12c17",
+                "libelle": "1,30"
+              },
+              {
+                "id": "0-30-27b6a029",
+                "libelle": "0,30"
+              }
+            ]
+          }
+        },
+        "notes": "• Temps « réfléchir » de la notion 1 : votes non notés.\n• Question 1 en vote individuel, puis question 2, sans débat entre les deux.\n• La révélation s’ouvre après la question 2 : les deux corrections se commentent ensemble.\n• Papier : vote à main levée sur chaque question.",
+        "diffusion": "seance",
+        "seuil": 0.7,
+        "corriges": [
+          {
+            "questionId": "b1-02-a1-vote-hausse",
+            "bonneReponse": "1,05",
+            "optionId": "1-05-e4826697",
+            "confusions": [
+              {
+                "id": "coefficient-confondu-avec-taux",
+                "libelle": "Confondre le taux d’évolution t et le coefficient multiplicateur 1 + t (pour + 15 % : 0,15 et 1,15)."
+              },
+              {
+                "id": "taux-valeur-facteur-cent",
+                "libelle": "Confondre le taux 70 % et la valeur 0,7 : le résultat est décalé d’un facteur 100."
+              }
+            ]
+          },
+          {
+            "questionId": "b1-02-a1-vote-remise",
+            "bonneReponse": "0,70",
+            "optionId": "0-70-01573bd7",
+            "confusions": [
+              {
+                "id": "coefficient-confondu-avec-taux",
+                "libelle": "Confondre le taux d’évolution t et le coefficient multiplicateur 1 + t (pour + 15 % : 0,15 et 1,15)."
+              },
+              {
+                "id": "sens-de-variation",
+                "libelle": "Se tromper sur le sens d’une variation : oublier le signe moins d’une baisse, traduire une baisse par le coefficient 1 + t au lieu de 1 − t, ou juger croissante une suite géométrique de raison positive, qui ne croît que si sa raison dépasse 1."
+              }
+            ]
+          }
+        ],
+        "questions": [
+          {
+            "id": "b1-02-a1-vote-hausse",
+            "enonce": "Un prix augmente de 5 %. Par quel nombre le multiplier ?",
+            "options": [
+              {
+                "id": "0-05-eba71749",
+                "libelle": "0,05"
+              },
+              {
+                "id": "1-5-e10f709e",
+                "libelle": "1,5"
+              },
+              {
+                "id": "1-05-e4826697",
+                "libelle": "1,05"
+              }
+            ]
+          },
+          {
+            "id": "b1-02-a1-vote-remise",
+            "enonce": "Une remise de 30 % sur un prix : par quel nombre le multiplier ?",
+            "options": [
+              {
+                "id": "0-70-01573bd7",
+                "libelle": "0,70"
+              },
+              {
+                "id": "1-30-faf12c17",
+                "libelle": "1,30"
+              },
+              {
+                "id": "0-30-27b6a029",
+                "libelle": "0,30"
+              }
+            ]
+          }
+        ],
+        "corrigeEcran": null,
+        "reflexion": null
+      },
+      {
+        "id": "B1-02-A1-04-DOSSIER",
+        "type": "fp-story",
+        "titre": "Le dossier tarifs de Partie Libre",
+        "duree": 2,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B1-02-A1-04-DOSSIER",
+            "presentation": {
+              "version": 2,
+              "screenId": "B1-02-A1-04-DOSSIER",
+              "renderer": "table",
+              "props": {
+                "title": "Le dossier tarifs de Partie Libre",
+                "subtitle": "Les chiffres de novembre 2026, avant la grille de prix 2027.",
+                "note": "Données fictives Partie Libre, créées pour ce cours.",
+                "columns": [
+                  {
+                    "key": "rubrique",
+                    "label": "Rubrique"
+                  },
+                  {
+                    "key": "contenu",
+                    "label": "Ce que montre le dossier"
+                  }
+                ],
+                "rows": [
+                  {
+                    "rubrique": "L’entreprise",
+                    "contenu": "Quatre boutiques-bars à jeux, à Nantes, Angers, Tours et Le Mans."
+                  },
+                  {
+                    "rubrique": "Le chiffre d’affaires HT",
+                    "contenu": "En milliers d’euros, 2025 puis 2026 : Nantes 184 puis 207, Angers 120 puis 126, Tours 96 puis 92, Le Mans 80 puis 94."
+                  },
+                  {
+                    "rubrique": "La TVA",
+                    "contenu": "20 % sur tous les prix de vente."
+                  },
+                  {
+                    "rubrique": "La carte Pass Partie",
+                    "contenu": "15 % de remise sur le prix TTC."
+                  },
+                  {
+                    "rubrique": "Le fournisseur",
+                    "contenu": "Une hausse de 8 % annoncée au 1ᵉʳ janvier 2027."
+                  },
+                  {
+                    "rubrique": "La question d’Inès",
+                    "contenu": "« Quels coefficients pour la grille 2027 ? »"
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": ["taux-evolution", "coefficient-multiplicateur"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 2,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 1 min de lecture silencieuse ; ne rien calculer.\n• Faire dire ce qui est HT et ce qui est TTC, ligne par ligne.",
+        "diffusion": "catalogue",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null,
+        "reflexion": null
+      },
+      {
+        "id": "B1-02-A1-05-MISSION",
+        "type": "fp-pro",
+        "titre": "Votre mission : vérifier la grille de prix",
+        "duree": 6,
+        "interactif": true,
+        "donnees": {
+          "cas": {
+            "id": "B1-02-A1-05-MISSION",
+            "metier": "Alternant·e assistant·e de gestion — Partie Libre (boutiques-bars à jeux, 40 salariés, Nantes)",
+            "situation": "Mardi, 14 h. Inès Marchal prépare la grille de prix 2027.\n« Nos achats montent de 8 % en janvier. Pouvez-vous vérifier les calculs de Théo avant que je valide ? »\nThéo a écrit : « Une console à 180 € TTC, c’est 144 € HT : j’enlève 20 %. »\nIl ajoute : « Une manette à 60 € TTC coûte 45 € avec la remise de 15 %. »",
+            "geste": null,
+            "consequence": null,
+            "questionsLibres": [
+              {
+                "id": "b1-02-a1-mission:taux",
+                "question": "Un jeu passe de 100 € à 112 €. Quel est le taux d’évolution, et par quel nombre a-t-on multiplié ?",
+                "placeholder": "Le taux est de… on a multiplié par…"
+              },
+              {
+                "id": "b1-02-a1-mission:ht",
+                "question": "Théo trouve 144 € HT. Que donne 144 € plus 20 % de TVA ? Que concluez-vous ?",
+                "placeholder": "144 € plus 20 % font… donc Théo…"
+              },
+              {
+                "id": "b1-02-a1-mission:remise",
+                "question": "Pour la manette à 45 €, qu’a fait Théo ? Quel calcul proposez-vous ?",
+                "placeholder": "Théo a… il faudrait…"
+              }
+            ],
+            "metadonnees": {
+              "concepts": ["coefficient-multiplicateur", "pourcentage"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 6,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• Lecture à voix haute (1 min), puis 4 min d’écriture individuelle et 1 min de mise en commun au pupitre.\n• Consigne orale : sans calculatrice. Enjeu : une grille fausse s’affiche dans les quatre boutiques.\n• Question 2 : ajouter 20 % à 144 € ne redonne pas 180 € : Théo a retiré 20 % du mauvais prix.\n• Question 3 : ne pas donner le bon prix, c’est l’exercice 1.\n• Papier : trois lignes d’écriture dans le livret.",
+        "diffusion": "seance",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null,
+        "reflexion": null
+      },
+      {
+        "id": "B1-02-A1-06-COURS-COEFFICIENT",
+        "type": "fp-story",
+        "titre": "Cours : taux et coefficient multiplicateur",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B1-02-A1-06-COURS-COEFFICIENT",
+            "presentation": {
+              "version": 2,
+              "screenId": "B1-02-A1-06-COURS-COEFFICIENT",
+              "renderer": "lesson",
+              "props": {
+                "title": "Taux et coefficient : multiplier, pas ajouter",
+                "subtitle": "Trace écrite · notion 1 · page 1 sur 2",
+                "blocks": [
+                  {
+                    "kind": "definition",
+                    "title": "Le coefficient multiplicateur",
+                    "text": "Évoluer de t, c’est multiplier par 1 + t.\nUne hausse donne c plus grand que 1, une baisse plus petit.",
+                    "formula": "t = (V₂ − V₁) ÷ V₁\nc = 1 + t\nV₂ = V₁ × c\nV₁ = V₂ ÷ c"
+                  },
+                  {
+                    "kind": "example",
+                    "title": "Pour débuter : la place de cinéma",
+                    "text": "Une place passe de 10 € à 12 €.",
+                    "steps": [
+                      "t = 2 ÷ 10 = 0,2, soit + 20 %.",
+                      "c = 1 + 0,2 = 1,2 ; contrôle : 10 × 1,2 = 12 €.",
+                      "À − 20 %, c = 0,8 : 10 × 0,8 = 8 €."
+                    ]
+                  },
+                  {
+                    "kind": "method",
+                    "title": "Toujours le départ en bas",
+                    "text": "Le taux se rapporte à la valeur de départ.",
+                    "steps": [
+                      "Repérer V₁ (le départ) et V₂ (l’arrivée).",
+                      "Écrire t en décimal, puis c = 1 + t.",
+                      "Contrôle : hausse, c > 1 ; baisse, c < 1.",
+                      "Au tableur, arrondie et recopiée : =ARRONDI((B3-B2)/B2*100;1)."
+                    ]
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": ["taux-evolution", "coefficient-multiplicateur"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 3 min ; la trace écrite est imprimée dans le livret : on lit et on commente, on ne recopie pas.\n• Faire répéter le moyen mnémotechnique : toujours le départ en bas.\n• Lien à la mission : « De 100 € à 112 € : quel coefficient ? »",
+        "diffusion": "catalogue",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null,
+        "reflexion": null
+      },
+      {
+        "id": "B1-02-A1-07-COURS-HT-TTC",
+        "type": "fp-story",
+        "titre": "Cours : HT, TTC et remises",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B1-02-A1-07-COURS-HT-TTC",
+            "presentation": {
+              "version": 2,
+              "screenId": "B1-02-A1-07-COURS-HT-TTC",
+              "renderer": "lesson",
+              "props": {
+                "title": "HT, TTC, remise : toujours un coefficient",
+                "subtitle": "Trace écrite · notion 1 · page 2 sur 2",
+                "blocks": [
+                  {
+                    "kind": "definition",
+                    "title": "Du HT au TTC",
+                    "text": "La TVA se calcule sur le prix HT.\nÀ 20 %, le coefficient vaut 1,20.",
+                    "formula": "TTC = HT × 1,20\nHT = TTC ÷ 1,20\nremise de r : prix × (1 − r)"
+                  },
+                  {
+                    "kind": "example",
+                    "title": "Pour débuter : le casque",
+                    "text": "Un casque à 30 € HT, TVA à 20 %, puis une remise de 10 %.",
+                    "steps": [
+                      "30 × 1,20 = 36 € TTC.",
+                      "Retour : 36 ÷ 1,20 = 30 € HT.",
+                      "Remise : 36 × 0,90 = 32,40 €."
+                    ]
+                  },
+                  {
+                    "kind": "method",
+                    "title": "Aller : ×, retour : ÷",
+                    "text": "Le retour divise par le même coefficient.",
+                    "steps": [
+                      "Du HT au TTC : × 1,20.",
+                      "Du TTC au HT : ÷ 1,20, jamais − 20 %.",
+                      "Une remise : × (1 − r), jamais r en euros."
+                    ]
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": ["coefficient-multiplicateur", "pourcentage"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 3 min, enchaînées sur la page 1 : 6 min pour les deux pages.\n• Faire répéter le moyen mnémotechnique : aller, ×, retour, ÷.\n• Lien à la mission : la console de Théo, à 180 € TTC.",
+        "diffusion": "catalogue",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null,
+        "reflexion": null
+      },
+      {
+        "id": "B1-02-A1-08-EXEMPLE-JEU",
+        "type": "fp-worked",
+        "titre": "Exemple guidé : un jeu de société, de l’achat à la caisse",
+        "duree": 6,
+        "interactif": true,
+        "donnees": {
+          "exemple": {
+            "id": "b1-02-a1-exemple-jeu",
+            "enonce": "Un jeu de société s’achète 40 € HT, puis 46 € HT en janvier. Il se vend 75 € HT, TVA à 20 %. La carte Pass Partie donne 15 % de remise sur le prix TTC.",
+            "etapes": [
+              {
+                "id": "taux",
+                "intitule": "Le taux d’évolution",
+                "raisonnement": "(46 − 40) ÷ 40 = 0,15, soit + 15 %.",
+                "invite": "Quel est le taux d’évolution du prix d’achat ?"
+              },
+              {
+                "id": "coefficient",
+                "intitule": "Le coefficient",
+                "raisonnement": "c = 1 + 0,15 = 1,15 ; contrôle : 40 × 1,15 = 46 €.",
+                "invite": "Par quel nombre a-t-on multiplié ?"
+              },
+              {
+                "id": "ttc",
+                "intitule": "Le prix TTC",
+                "raisonnement": "75 × 1,20 = 90 € TTC.",
+                "invite": "Quel est le prix de vente TTC ?"
+              },
+              {
+                "id": "piege",
+                "intitule": "Retrouver le HT",
+                "raisonnement": "90 ÷ 1,20 = 75 € HT. Enlever 20 % donnerait 90 × 0,80 = 72 € : faux, la TVA se calcule sur le HT.",
+                "invite": "Comment retrouver le HT depuis 90 € TTC ? Pourquoi pas − 20 % ?"
+              },
+              {
+                "id": "remise",
+                "intitule": "La remise",
+                "raisonnement": "90 × 0,85 = 76,50 € TTC.",
+                "invite": "Combien paie un client avec la carte ?"
+              }
+            ],
+            "metadonnees": {
+              "concepts": ["coefficient-multiplicateur", "pourcentage"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 6,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          },
+          "etayage": 0
+        },
+        "notes": "• Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.\n• Papier : réponses sous chaque étape du livret.\n• S’arrêter sur le retour au HT (étape 4) : on divise, on ne retire pas 20 %.\n• Transition : « À vous, sur la nouvelle grille : exercice 1. »",
+        "diffusion": "seance",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null,
+        "reflexion": null
+      },
+      {
+        "id": "B1-02-A1-09-ATELIER-PRIX",
+        "type": "questionnaire",
+        "titre": "Exercice 1 — La nouvelle grille",
+        "duree": 10,
+        "interactif": true,
+        "donnees": {
+          "intitule": "Exercice 1 — La nouvelle grille",
+          "consigne": "Un pack de cartes passe de 16 € à 18 € HT. Une manette se vend 60 € TTC, TVA à 20 %, et la carte donne 15 % de remise.",
+          "regime": "focus",
+          "ordre": "fixe",
+          "questions": [
+            {
+              "brique": "fp-numeric",
+              "donnees": {
+                "question": {
+                  "id": "b1-02-a1-taux-pack",
+                  "enonce": "Quel est le taux d’évolution du pack de cartes ?",
+                  "unite": "%",
+                  "metadonnees": {
+                    "concepts": [
+                      "taux-evolution",
+                      "coefficient-multiplicateur",
+                      "pourcentage"
+                    ],
+                    "misconceptionsCiblees": [],
+                    "dureeMinutes": 10,
+                    "modalite": "solo",
+                    "regime": "focus"
+                  }
+                }
+              }
+            },
+            {
+              "brique": "fp-vote",
+              "donnees": {
+                "question": {
+                  "id": "b1-02-a1-coefficient",
+                  "enonce": "Le fournisseur annonce + 8 %. Par quel nombre multiplier les prix d’achat ?",
+                  "options": [
+                    {
+                      "id": "1-08-5e2af939",
+                      "libelle": "1,08"
+                    },
+                    {
+                      "id": "1-8-091502b7",
+                      "libelle": "1,8"
+                    },
+                    {
+                      "id": "0-08-8a7acdb8",
+                      "libelle": "0,08"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "brique": "fp-numeric",
+              "donnees": {
+                "question": {
+                  "id": "b1-02-a1-ht",
+                  "enonce": "Quel est le prix HT de la manette ?",
+                  "unite": "€",
+                  "metadonnees": {
+                    "concepts": [
+                      "taux-evolution",
+                      "coefficient-multiplicateur",
+                      "pourcentage"
+                    ],
+                    "misconceptionsCiblees": [],
+                    "dureeMinutes": 10,
+                    "modalite": "solo",
+                    "regime": "focus"
+                  }
+                }
+              }
+            },
+            {
+              "brique": "fp-numeric",
+              "donnees": {
+                "question": {
+                  "id": "b1-02-a1-remise",
+                  "enonce": "Quel prix TTC paie un client avec la carte ?",
+                  "unite": "€",
+                  "metadonnees": {
+                    "concepts": [
+                      "taux-evolution",
+                      "coefficient-multiplicateur",
+                      "pourcentage"
+                    ],
+                    "misconceptionsCiblees": [],
+                    "dureeMinutes": 10,
+                    "modalite": "solo",
+                    "regime": "focus"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "renvoi": "B1-02-A1-04-DOSSIER",
+        "notes": "• Temps : réflexion 2 min · travail 6 min · correction 2 min\n• Réflexion : écrire « départ » et « arrivée » devant chaque prix.\n• Pièges : écart en euros ; base d’arrivée ; − 20 % sur le TTC.\n• Papier : exercice 1 du livret.\n• Corriger question par question, en commençant par la moins réussie (score sous chaque correction).\n• Transition : « Faisons calculer tous les taux par le tableur : exercice 2. »",
+        "diffusion": "seance",
+        "seuil": 0.7,
+        "corriges": [
+          {
+            "questionId": "b1-02-a1-taux-pack",
+            "bonneReponse": "12,5 %",
+            "optionId": null,
+            "confusions": [
+              {
+                "id": "ecart-absolu-au-lieu-du-taux",
+                "libelle": "Donner l’écart en valeur au lieu du taux en pourcentage."
+              },
+              {
+                "id": "base-arrivee",
+                "libelle": "Diviser l’écart par la valeur d’arrivée au lieu de la valeur de départ."
+              }
+            ]
+          },
+          {
+            "questionId": "b1-02-a1-coefficient",
+            "bonneReponse": "1,08",
+            "optionId": "1-08-5e2af939",
+            "confusions": [
+              {
+                "id": "coefficient-confondu-avec-taux",
+                "libelle": "Confondre le taux d’évolution t et le coefficient multiplicateur 1 + t (pour + 15 % : 0,15 et 1,15)."
+              },
+              {
+                "id": "taux-valeur-facteur-cent",
+                "libelle": "Confondre le taux 70 % et la valeur 0,7 : le résultat est décalé d’un facteur 100."
+              }
+            ]
+          },
+          {
+            "questionId": "b1-02-a1-ht",
+            "bonneReponse": "50 €",
+            "optionId": null,
+            "confusions": [
+              {
+                "id": "tva-calculee-sur-ttc",
+                "libelle": "Appliquer le taux de TVA comme si la base était un montant TTC."
+              },
+              {
+                "id": "sens-de-variation",
+                "libelle": "Se tromper sur le sens d’une variation : oublier le signe moins d’une baisse, traduire une baisse par le coefficient 1 + t au lieu de 1 − t, ou juger croissante une suite géométrique de raison positive, qui ne croît que si sa raison dépasse 1."
+              }
+            ]
+          },
+          {
+            "questionId": "b1-02-a1-remise",
+            "bonneReponse": "51 €",
+            "optionId": null,
+            "confusions": [
+              {
+                "id": "ecart-absolu-au-lieu-du-taux",
+                "libelle": "Donner l’écart en valeur au lieu du taux en pourcentage."
+              },
+              {
+                "id": "coefficient-confondu-avec-taux",
+                "libelle": "Confondre le taux d’évolution t et le coefficient multiplicateur 1 + t (pour + 15 % : 0,15 et 1,15)."
+              }
+            ]
+          }
+        ],
+        "questions": [
+          {
+            "id": "b1-02-a1-taux-pack",
+            "enonce": "Quel est le taux d’évolution du pack de cartes ?",
+            "options": null
+          },
+          {
+            "id": "b1-02-a1-coefficient",
+            "enonce": "Le fournisseur annonce + 8 %. Par quel nombre multiplier les prix d’achat ?",
+            "options": [
+              {
+                "id": "1-08-5e2af939",
+                "libelle": "1,08"
+              },
+              {
+                "id": "1-8-091502b7",
+                "libelle": "1,8"
+              },
+              {
+                "id": "0-08-8a7acdb8",
+                "libelle": "0,08"
+              }
+            ]
+          },
+          {
+            "id": "b1-02-a1-ht",
+            "enonce": "Quel est le prix HT de la manette ?",
+            "options": null
+          },
+          {
+            "id": "b1-02-a1-remise",
+            "enonce": "Quel prix TTC paie un client avec la carte ?",
+            "options": null
+          }
+        ],
+        "corrigeEcran": null,
+        "reflexion": null,
+        "explications": [
+          {
+            "reference": "b1-02-a1-taux-pack",
+            "texte": "(18 − 16) ÷ 16 = 0,125, soit + 12,5 %. Diviser par 18 donnerait 11,1 % : le taux se rapporte au départ."
+          },
+          {
+            "reference": "b1-02-a1-coefficient",
+            "texte": "1 + 0,08 = 1,08. Le taux est 0,08, le coefficient 1,08."
+          },
+          {
+            "reference": "b1-02-a1-ht",
+            "texte": "60 ÷ 1,20 = 50 € HT. Retirer 20 % donnerait 48 € : la TVA se calcule sur le HT."
+          },
+          {
+            "reference": "b1-02-a1-remise",
+            "texte": "60 × 0,85 = 51 €. Théo a retiré 15 €, or 15 % n’est pas 15 €."
+          }
+        ]
+      },
+      {
+        "id": "B1-02-A1-10-TABLEUR-CA",
+        "type": "fp-sheet",
+        "titre": "Exercice 2 — L’évolution du chiffre d’affaires au tableur",
+        "duree": 9,
+        "interactif": true,
+        "donnees": {
+          "plan": {
+            "id": "b1-02-a1-tableur-ca",
+            "intitule": "Exercice 2 — L’évolution du chiffre d’affaires au tableur",
+            "lignes": 6,
+            "colonnes": 4,
+            "cellules": {
+              "A1": "Boutique",
+              "B1": "CA 2025 (k€)",
+              "C1": "CA 2026 (k€)",
+              "D1": "Taux d’évolution (%)",
+              "A6": "Total",
+              "A2": "Nantes",
+              "A3": "Angers",
+              "A4": "Tours",
+              "A5": "Le Mans",
+              "B2": "184",
+              "B3": "120",
+              "B4": "96",
+              "B5": "80",
+              "C2": "207",
+              "C3": "126",
+              "C4": "92",
+              "C5": "94"
+            },
+            "verrouillees": [
+              "A1",
+              "B1",
+              "C1",
+              "D1",
+              "A6",
+              "A2",
+              "A3",
+              "A4",
+              "A5",
+              "B2",
+              "B3",
+              "B4",
+              "B5",
+              "C2",
+              "C3",
+              "C4",
+              "C5"
+            ],
+            "consignes": [
+              "En B6 et C6, calculez le chiffre d’affaires total de chaque année.",
+              "En D2, écrivez le taux d’évolution de Nantes, en %, arrondi au dixième avec ARRONDI. Recopiez jusqu’en D6 : sélectionnez D2 et cliquez quatre fois sur « Recopier vers le bas », une ligne par clic."
+            ],
+            "lettres": ["A", "B", "C", "D"],
+            "grille": [
+              ["A1", "B1", "C1", "D1"],
+              ["A2", "B2", "C2", "D2"],
+              ["A3", "B3", "C3", "D3"],
+              ["A4", "B4", "C4", "D4"],
+              ["A5", "B5", "C5", "D5"],
+              ["A6", "B6", "C6", "D6"]
+            ],
+            "longueurMaxSaisie": 200,
+            "initiale": {
+              "saisies": {},
+              "affichages": {
+                "A1": "Boutique",
+                "B1": "CA 2025 (k€)",
+                "C1": "CA 2026 (k€)",
+                "D1": "Taux d’évolution (%)",
+                "A6": "Total",
+                "A2": "Nantes",
+                "A3": "Angers",
+                "A4": "Tours",
+                "A5": "Le Mans",
+                "B2": "184",
+                "B3": "120",
+                "B4": "96",
+                "B5": "80",
+                "C2": "207",
+                "C3": "126",
+                "C4": "92",
+                "C5": "94"
+              },
+              "natures": {
+                "A1": "texte",
+                "B1": "texte",
+                "C1": "texte",
+                "D1": "texte",
+                "A6": "texte",
+                "A2": "texte",
+                "A3": "texte",
+                "A4": "texte",
+                "A5": "texte",
+                "B2": "nombre",
+                "B3": "nombre",
+                "B4": "nombre",
+                "B5": "nombre",
+                "C2": "nombre",
+                "C3": "nombre",
+                "C4": "nombre",
+                "C5": "nombre"
+              },
+              "formules": []
+            },
+            "metadonnees": {
+              "concepts": ["tableur", "taux-evolution"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 9,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• Temps : réflexion 2 min · travail 5 min · correction 2 min\n• Réflexion : écrire sur papier la formule de D2, puis ce qu’elle devient en D3 une fois recopiée.\n• Erreurs à chercher : base d’arrivée ; écart sans division ; total tapé au clavier ; ARRONDI oublié.\n• Papier : formules écrites sur la copie, puis les taux à la calculatrice.\n• Corriger question par question, en commençant par la moins réussie (score sous chaque correction).\n• Transition : jalon 1, puis pause de 15 minutes.",
+        "diffusion": "seance",
+        "seuil": 0.7,
+        "corriges": [],
+        "questions": [
+          {
+            "id": "b1-02-a1-tableur-ca",
+            "enonce": "Exercice 2 — L’évolution du chiffre d’affaires au tableur",
+            "options": null
+          }
+        ],
+        "corrigeEcran": {
+          "type": "feuille",
+          "attendus": [
+            {
+              "reference": "B6",
+              "formuleReference": "=SOMME(B2:B5)",
+              "valeur": 480,
+              "affichage": "480",
+              "tolerance": {
+                "type": "relative",
+                "valeur": 0.0001
+              },
+              "forme": "references"
+            },
+            {
+              "reference": "C6",
+              "formuleReference": "=SOMME(C2:C5)",
+              "valeur": 519,
+              "affichage": "519",
+              "tolerance": {
+                "type": "relative",
+                "valeur": 0.0001
+              },
+              "forme": "references"
+            },
+            {
+              "reference": "D2",
+              "formuleReference": "=ARRONDI((C2-B2)/B2*100;1)",
+              "valeur": 12.5,
+              "affichage": "12,5",
+              "tolerance": {
+                "type": "absolue",
+                "valeur": 0
+              },
+              "forme": "references"
+            },
+            {
+              "reference": "D3",
+              "formuleReference": "=ARRONDI((C3-B3)/B3*100;1)",
+              "valeur": 5,
+              "affichage": "5",
+              "tolerance": {
+                "type": "absolue",
+                "valeur": 0
+              },
+              "forme": {
+                "memeQue": "D2"
+              }
+            },
+            {
+              "reference": "D4",
+              "formuleReference": "=ARRONDI((C4-B4)/B4*100;1)",
+              "valeur": -4.2,
+              "affichage": "-4,2",
+              "tolerance": {
+                "type": "absolue",
+                "valeur": 0
+              },
+              "forme": {
+                "memeQue": "D2"
+              }
+            },
+            {
+              "reference": "D5",
+              "formuleReference": "=ARRONDI((C5-B5)/B5*100;1)",
+              "valeur": 17.5,
+              "affichage": "17,5",
+              "tolerance": {
+                "type": "absolue",
+                "valeur": 0
+              },
+              "forme": {
+                "memeQue": "D2"
+              }
+            },
+            {
+              "reference": "D6",
+              "formuleReference": "=ARRONDI((C6-B6)/B6*100;1)",
+              "valeur": 8.1,
+              "affichage": "8,1",
+              "tolerance": {
+                "type": "absolue",
+                "valeur": 0
+              },
+              "forme": {
+                "memeQue": "D2"
+              }
+            }
+          ]
+        },
+        "reflexion": null,
+        "explications": [
+          {
+            "reference": "B6 et C6",
+            "texte": "=SOMME(B2:B5) et =SOMME(C2:C5) : 480 et 519."
+          },
+          {
+            "reference": "D2 à D6",
+            "texte": "=ARRONDI((C2-B2)/B2*100;1), recopiée : 12,5 ; 5 ; −4,2 ; 17,5 ; 8,1. Ici, pas de $ : chaque ligne a son propre départ."
+          }
+        ]
+      },
+      {
+        "id": "B1-02-A1-11-JALON",
+        "type": "fp-pulse",
+        "titre": "Jalon 1 : du taux au coefficient",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "sondage": {
+            "id": "b1-02-a1-jalon",
+            "invite": "Je sais passer d’un taux à un coefficient, du HT au TTC, et écrire un taux au tableur.",
+            "metadonnees": {
+              "concepts": ["coefficient-multiplicateur", "tableur"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 30 s de vote anonyme.\n• Si plus de 30 % « Perdu » : reprendre la page A1-06 après la pause.\n• Pause de 15 minutes, hors durée programmée.",
+        "diffusion": "seance",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null,
+        "reflexion": null
+      },
+      {
+        "id": "B1-02-A2-01-REFLEXION-SOLDES",
+        "type": "fp-story",
+        "titre": "Réfléchir : + 10 %, puis − 10 %",
+        "duree": 5,
+        "interactif": true,
+        "donnees": {
+          "recit": {
+            "id": "B1-02-A2-01-REFLEXION-SOLDES",
+            "presentation": {
+              "version": 2,
+              "screenId": "B1-02-A2-01-REFLEXION-SOLDES",
+              "renderer": "reflection",
+              "props": {
+                "promptData": {
+                  "id": "b1-02-a2-reflexion-soldes",
+                  "type": "reflection",
+                  "question": "En janvier, Partie Libre augmente de 10 % un jeu à 100 €. En février, il est soldé à − 10 %. Théo écrit : « On retrouve le prix de départ. » Sans calculatrice : a-t-il raison ? Sur quel prix se calcule la baisse ?",
+                  "placeholder": "Il a raison / tort, parce que la baisse porte sur…",
+                  "competency": "Raisonner · enchaîner deux évolutions"
+                }
+              }
+            },
+            "metadonnees": {
+              "concepts": ["evolutions-successives"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 5,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• Temps « réfléchir » de la notion 2 : 3 min d’écriture individuelle, puis lire trois réponses au pupitre.\n• Ne rien trancher : la trace écrite suivante répond.\n• Relance : « Les 10 % de la baisse se calculent sur quel prix ? »\n• Papier : cadre de réponse du livret.",
+        "diffusion": "seance",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": {
+          "type": "reflexion",
+          "attendu": "Il a tort : la baisse se calcule sur 110 €. 100 × 1,10 × 0,90 = 99 € : le prix final a baissé de 1 %.",
+          "suite": "Gardez votre réponse : la trace écrite multiplie les coefficients."
+        },
+        "reflexion": {
+          "attendu": "Il a tort : la baisse se calcule sur 110 €. 100 × 1,10 × 0,90 = 99 € : le prix final a baissé de 1 %.",
+          "suite": "Gardez votre réponse : la trace écrite multiplie les coefficients."
+        }
+      },
+      {
+        "id": "B1-02-A2-02-COURS-SUCCESSIVES",
+        "type": "fp-story",
+        "titre": "Cours : évolutions successives",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B1-02-A2-02-COURS-SUCCESSIVES",
+            "presentation": {
+              "version": 2,
+              "screenId": "B1-02-A2-02-COURS-SUCCESSIVES",
+              "renderer": "lesson",
+              "props": {
+                "title": "Évolutions successives : on multiplie",
+                "subtitle": "Trace écrite · notion 2 · page 1 sur 2",
+                "blocks": [
+                  {
+                    "kind": "definition",
+                    "title": "Un coefficient par évolution",
+                    "text": "Des évolutions successives multiplient leurs coefficients.\nLe taux global se lit sur le coefficient global.",
+                    "formula": "C = c₁ × c₂ × … × cₙ\ntaux global = C − 1"
+                  },
+                  {
+                    "kind": "example",
+                    "title": "Pour débuter : le loyer",
+                    "text": "Un loyer augmente de 10 %, puis de 20 %.",
+                    "steps": [
+                      "c₁ = 1,10 et c₂ = 1,20.",
+                      "C = 1,10 × 1,20 = 1,32.",
+                      "Taux global : + 32 %, pas + 30 %."
+                    ]
+                  },
+                  {
+                    "kind": "method",
+                    "title": "Coefficients, jamais taux",
+                    "text": "Chaque évolution porte sur le résultat de la précédente.",
+                    "steps": [
+                      "Écrire chaque évolution en coefficient.",
+                      "Multiplier les coefficients.",
+                      "Retirer 1 : C = 0,97 se lit − 3 %."
+                    ]
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": ["evolutions-successives"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 3 min ; la trace écrite est imprimée dans le livret : on lit et on commente, on ne recopie pas.\n• Question : « + 10 % puis + 20 %, pourquoi pas + 30 % ? » La seconde hausse porte sur un prix déjà monté.\n• Faire répéter le moyen mnémotechnique : coefficients, jamais taux.",
+        "diffusion": "catalogue",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null,
+        "reflexion": null
+      },
+      {
+        "id": "B1-02-A2-03-COURS-RECIPROQUE",
+        "type": "fp-story",
+        "titre": "Cours : évolution réciproque",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B1-02-A2-03-COURS-RECIPROQUE",
+            "presentation": {
+              "version": 2,
+              "screenId": "B1-02-A2-03-COURS-RECIPROQUE",
+              "renderer": "lesson",
+              "props": {
+                "title": "Évolution réciproque : revenir au départ",
+                "subtitle": "Trace écrite · notion 2 · page 2 sur 2",
+                "blocks": [
+                  {
+                    "kind": "definition",
+                    "title": "Défaire une évolution",
+                    "text": "Revenir au départ, c’est diviser par c.\nLe taux du retour n’est pas celui de l’aller.",
+                    "formula": "c réciproque = 1 ÷ c\nt réciproque = 1 ÷ c − 1"
+                  },
+                  {
+                    "kind": "example",
+                    "title": "Pour débuter : le vélo",
+                    "text": "Le prix d’un vélo baisse de 50 %.",
+                    "steps": [
+                      "c = 0,5.",
+                      "1 ÷ 0,5 = 2.",
+                      "Pour revenir au prix : + 100 %, pas + 50 %."
+                    ]
+                  },
+                  {
+                    "kind": "method",
+                    "title": "Le retour n’a pas le même taux",
+                    "text": "On part du coefficient de l’aller.",
+                    "steps": [
+                      "Écrire le coefficient de l’aller.",
+                      "Diviser 1 par ce coefficient.",
+                      "Retirer 1 et lire le taux."
+                    ]
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": ["evolution-reciproque"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 3 min, enchaînées sur la page 1 : 6 min pour les deux pages.\n• Question : « − 50 %, puis + 50 % : on revient au départ ? » Non : il faut + 100 %.\n• Faire répéter le moyen mnémotechnique : le retour n’a pas le même taux.",
+        "diffusion": "catalogue",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null,
+        "reflexion": null
+      },
+      {
+        "id": "B1-02-A2-04-EXEMPLE-PROMO",
+        "type": "fp-worked",
+        "titre": "Exemple guidé : hausse, puis promotion",
+        "duree": 6,
+        "interactif": true,
+        "donnees": {
+          "exemple": {
+            "id": "b1-02-a2-exemple-promo",
+            "enonce": "Un jeu à 80 € augmente de 25 % en janvier, puis baisse de 20 % en février. Un autre jeu passe de 50 € à 40 €.",
+            "etapes": [
+              {
+                "id": "coefficients",
+                "intitule": "Les coefficients",
+                "raisonnement": "c₁ = 1,25 et c₂ = 0,80.",
+                "invite": "Quels sont les deux coefficients ?"
+              },
+              {
+                "id": "global",
+                "intitule": "Le coefficient global",
+                "raisonnement": "C = 1,25 × 0,80 = 1 : le jeu revient exactement à 80 €.",
+                "invite": "Quel est le coefficient global ?"
+              },
+              {
+                "id": "piege",
+                "intitule": "Additionner les taux",
+                "raisonnement": "+ 25 − 20 = + 5 % serait faux : 80 × 1,05 = 84 €, pas 80 €.",
+                "invite": "Que donnerait l’addition des taux ? Pourquoi est-ce faux ?"
+              },
+              {
+                "id": "baisse",
+                "intitule": "Le second jeu",
+                "raisonnement": "40 ÷ 50 = 0,8 : une baisse de 20 %.",
+                "invite": "Quel est le coefficient du second jeu ?"
+              },
+              {
+                "id": "reciproque",
+                "intitule": "Le retour",
+                "raisonnement": "1 ÷ 0,8 = 1,25 : il faudrait + 25 %, pas + 20 %.",
+                "invite": "Quelle hausse ramène le second jeu à 50 € ?"
+              }
+            ],
+            "metadonnees": {
+              "concepts": ["evolutions-successives", "evolution-reciproque"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 6,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          },
+          "etayage": 0
+        },
+        "notes": "• Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.\n• Papier : réponses sous chaque étape du livret.\n• S’arrêter sur l’addition des taux (étape 3) et sur le retour (étape 5).\n• Transition : « À vous : exercice 3. »",
+        "diffusion": "seance",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null,
+        "reflexion": null
+      },
+      {
+        "id": "B1-02-A2-05-TABLEAU-PRIX",
+        "type": "fp-table-build",
+        "titre": "Exercice 3 — Une hausse, puis des soldes",
+        "duree": 8,
+        "interactif": true,
+        "donnees": {
+          "plan": {
+            "id": "b1-02-a2-tableau-prix",
+            "intitule": "Quatre prix, deux évolutions",
+            "consignes": [
+              "Pour chaque article, saisissez le prix après la hausse de 20 %, puis le prix après les soldes de − 25 %.",
+              "Les totaux et l’évolution globale se calculent seuls à partir de vos saisies."
+            ],
+            "echeances": 4,
+            "intituleDesLignes": "Article",
+            "libellesLignes": [
+              "Console",
+              "Manette",
+              "Jeu de plateau",
+              "Jeu de cartes"
+            ],
+            "parametres": {},
+            "colonnes": [
+              {
+                "cle": "depart",
+                "intitule": "Prix de départ (€)",
+                "role": "donnee",
+                "decimales": 0,
+                "valeurs": [120, 80, 60, 40],
+                "totalise": true
+              },
+              {
+                "cle": "hausse",
+                "intitule": "Après + 20 % (€)",
+                "role": "saisie",
+                "decimales": 0,
+                "totalise": true
+              },
+              {
+                "cle": "soldes",
+                "intitule": "Après − 25 % (€)",
+                "role": "saisie",
+                "decimales": 0,
+                "totalise": true
+              }
+            ],
+            "synthese": [
+              {
+                "libelle": "Évolution globale",
+                "formule": "(totalSoldes / totalDepart - 1) * 100",
+                "unite": "%",
+                "decimales": 1
+              }
+            ],
+            "tableauInitial": {
+              "lignes": [
+                {
+                  "rang": 0,
+                  "valeurs": {
+                    "depart": {
+                      "valeur": 120,
+                      "affichage": "120"
+                    },
+                    "hausse": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "soldes": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                },
+                {
+                  "rang": 1,
+                  "valeurs": {
+                    "depart": {
+                      "valeur": 80,
+                      "affichage": "80"
+                    },
+                    "hausse": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "soldes": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                },
+                {
+                  "rang": 2,
+                  "valeurs": {
+                    "depart": {
+                      "valeur": 60,
+                      "affichage": "60"
+                    },
+                    "hausse": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "soldes": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                },
+                {
+                  "rang": 3,
+                  "valeurs": {
+                    "depart": {
+                      "valeur": 40,
+                      "affichage": "40"
+                    },
+                    "hausse": {
+                      "valeur": null,
+                      "affichage": "—"
+                    },
+                    "soldes": {
+                      "valeur": null,
+                      "affichage": "—"
+                    }
+                  }
+                }
+              ],
+              "totaux": {
+                "depart": {
+                  "valeur": 300,
+                  "affichage": "300"
+                },
+                "hausse": {
+                  "valeur": null,
+                  "affichage": "—"
+                },
+                "soldes": {
+                  "valeur": null,
+                  "affichage": "—"
+                }
+              },
+              "synthese": [
+                {
+                  "valeur": null,
+                  "affichage": "—"
+                }
+              ],
+              "soldeFinal": null
+            },
+            "metadonnees": {
+              "concepts": ["evolutions-successives"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 8,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• Temps : réflexion 1 min · travail 5 min · correction 2 min\n• Réflexion : dire sur quel prix porte chaque évolution.\n• Pièges : soldes calculés sur le prix de départ ; montant de la baisse saisi au lieu du nouveau prix.\n• Papier : tableau du livret, rempli à la main.\n• Projeter le tableau juste ; comparer à l’addition des taux, − 5 %.\n• Transition : « Le coefficient global se lit : exercice 4. »",
+        "diffusion": "seance",
+        "seuil": 0.7,
+        "corriges": [],
+        "questions": [
+          {
+            "id": "b1-02-a2-tableau-prix",
+            "enonce": "Quatre prix, deux évolutions",
+            "options": null
+          }
+        ],
+        "corrigeEcran": {
+          "type": "tableau",
+          "attendus": [
+            {
+              "rang": 0,
+              "cle": "hausse",
+              "valeur": 144
+            },
+            {
+              "rang": 1,
+              "cle": "hausse",
+              "valeur": 96
+            },
+            {
+              "rang": 2,
+              "cle": "hausse",
+              "valeur": 72
+            },
+            {
+              "rang": 3,
+              "cle": "hausse",
+              "valeur": 48
+            },
+            {
+              "rang": 0,
+              "cle": "soldes",
+              "valeur": 108
+            },
+            {
+              "rang": 1,
+              "cle": "soldes",
+              "valeur": 72
+            },
+            {
+              "rang": 2,
+              "cle": "soldes",
+              "valeur": 54
+            },
+            {
+              "rang": 3,
+              "cle": "soldes",
+              "valeur": 36
+            }
+          ],
+          "tableauCorrige": {
+            "lignes": [
+              {
+                "rang": 0,
+                "valeurs": {
+                  "depart": {
+                    "valeur": 120,
+                    "affichage": "120"
+                  },
+                  "hausse": {
+                    "valeur": 144,
+                    "affichage": "144"
+                  },
+                  "soldes": {
+                    "valeur": 108,
+                    "affichage": "108"
+                  }
+                }
+              },
+              {
+                "rang": 1,
+                "valeurs": {
+                  "depart": {
+                    "valeur": 80,
+                    "affichage": "80"
+                  },
+                  "hausse": {
+                    "valeur": 96,
+                    "affichage": "96"
+                  },
+                  "soldes": {
+                    "valeur": 72,
+                    "affichage": "72"
+                  }
+                }
+              },
+              {
+                "rang": 2,
+                "valeurs": {
+                  "depart": {
+                    "valeur": 60,
+                    "affichage": "60"
+                  },
+                  "hausse": {
+                    "valeur": 72,
+                    "affichage": "72"
+                  },
+                  "soldes": {
+                    "valeur": 54,
+                    "affichage": "54"
+                  }
+                }
+              },
+              {
+                "rang": 3,
+                "valeurs": {
+                  "depart": {
+                    "valeur": 40,
+                    "affichage": "40"
+                  },
+                  "hausse": {
+                    "valeur": 48,
+                    "affichage": "48"
+                  },
+                  "soldes": {
+                    "valeur": 36,
+                    "affichage": "36"
+                  }
+                }
+              }
+            ],
+            "totaux": {
+              "depart": {
+                "valeur": 300,
+                "affichage": "300"
+              },
+              "hausse": {
+                "valeur": 360,
+                "affichage": "360"
+              },
+              "soldes": {
+                "valeur": 270,
+                "affichage": "270"
+              }
+            },
+            "synthese": [
+              {
+                "valeur": -10,
+                "affichage": "-10,0 %"
+              }
+            ],
+            "soldeFinal": null
+          },
+          "tolerance": {
+            "type": "absolue",
+            "valeur": 0.01
+          }
+        },
+        "reflexion": null,
+        "explications": [
+          {
+            "reference": "b1-02-a2-tableau-prix",
+            "texte": "Après hausse : 144 ; 96 ; 72 ; 48. Après soldes : 108 ; 72 ; 54 ; 36. C = 1,20 × 0,75 = 0,9 : − 10 %, pas − 5 %."
+          }
+        ]
+      },
+      {
+        "id": "B1-02-A2-06-ATELIER-RETOUR",
+        "type": "questionnaire",
+        "titre": "Exercice 4 — Deux hausses, un retour",
+        "duree": 10,
+        "interactif": true,
+        "donnees": {
+          "intitule": "Exercice 4 — Deux hausses, un retour",
+          "consigne": "Le chiffre d’affaires des jeux vidéo augmente de 10 %, puis de 5 %. Les ventes de cartes à collectionner baissent de 40 %.",
+          "regime": "focus",
+          "ordre": "fixe",
+          "questions": [
+            {
+              "brique": "fp-numeric",
+              "donnees": {
+                "question": {
+                  "id": "b1-02-a2-coefficient-global",
+                  "enonce": "Quel est le coefficient global des deux hausses ?",
+                  "unite": null,
+                  "metadonnees": {
+                    "concepts": [
+                      "evolutions-successives",
+                      "evolution-reciproque"
+                    ],
+                    "misconceptionsCiblees": [],
+                    "dureeMinutes": 10,
+                    "modalite": "solo",
+                    "regime": "focus"
+                  }
+                }
+              }
+            },
+            {
+              "brique": "fp-numeric",
+              "donnees": {
+                "question": {
+                  "id": "b1-02-a2-taux-global",
+                  "enonce": "Quel est le taux d’évolution global ?",
+                  "unite": "%",
+                  "metadonnees": {
+                    "concepts": [
+                      "evolutions-successives",
+                      "evolution-reciproque"
+                    ],
+                    "misconceptionsCiblees": [],
+                    "dureeMinutes": 10,
+                    "modalite": "solo",
+                    "regime": "focus"
+                  }
+                }
+              }
+            },
+            {
+              "brique": "fp-vote",
+              "donnees": {
+                "question": {
+                  "id": "b1-02-a2-phrase",
+                  "enonce": "Un prix baisse de 40 %, puis remonte de 40 %. Quelle phrase est juste ?",
+                  "options": [
+                    {
+                      "id": "il-revient-au-prix-de-depart-eedafaf1",
+                      "libelle": "Il revient au prix de départ"
+                    },
+                    {
+                      "id": "il-reste-sous-le-prix-de-depart-891e210f",
+                      "libelle": "Il reste sous le prix de départ"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "brique": "fp-numeric",
+              "donnees": {
+                "question": {
+                  "id": "b1-02-a2-reciproque",
+                  "enonce": "Quelle hausse ramènerait les ventes de cartes à leur niveau de départ, arrondie au dixième ?",
+                  "unite": "%",
+                  "metadonnees": {
+                    "concepts": [
+                      "evolutions-successives",
+                      "evolution-reciproque"
+                    ],
+                    "misconceptionsCiblees": [],
+                    "dureeMinutes": 10,
+                    "modalite": "solo",
+                    "regime": "focus"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "notes": "• Temps : réflexion 2 min · travail 6 min · correction 2 min\n• Réflexion : écrire chaque évolution en coefficient avant de calculer.\n• Pièges : taux additionnés ; coefficient lu comme un taux ; même taux au retour.\n• Papier : exercice 4 du livret.\n• Corriger question par question, en commençant par la moins réussie.\n• Transition : « Faisons le point : enchaîner et revenir. »",
+        "diffusion": "seance",
+        "seuil": 0.7,
+        "corriges": [
+          {
+            "questionId": "b1-02-a2-coefficient-global",
+            "bonneReponse": "1,155",
+            "optionId": null,
+            "confusions": [
+              {
+                "id": "taux-successifs-additionnes",
+                "libelle": "Additionner des taux successifs au lieu de multiplier les coefficients."
+              },
+              {
+                "id": "coefficient-confondu-avec-taux",
+                "libelle": "Confondre le taux d’évolution t et le coefficient multiplicateur 1 + t (pour + 15 % : 0,15 et 1,15)."
+              }
+            ]
+          },
+          {
+            "questionId": "b1-02-a2-taux-global",
+            "bonneReponse": "15,5 %",
+            "optionId": null,
+            "confusions": [
+              {
+                "id": "taux-successifs-additionnes",
+                "libelle": "Additionner des taux successifs au lieu de multiplier les coefficients."
+              },
+              {
+                "id": "coefficient-global-mal-interprete",
+                "libelle": "Mal traduire un coefficient global en taux (0,99 correspond à une baisse de 1 %)."
+              }
+            ]
+          },
+          {
+            "questionId": "b1-02-a2-phrase",
+            "bonneReponse": "Il reste sous le prix de départ",
+            "optionId": "il-reste-sous-le-prix-de-depart-891e210f",
+            "confusions": [
+              {
+                "id": "hausse-baisse-symetriques",
+                "libelle": "Croire qu’une hausse puis une baisse du même pourcentage ramènent à la valeur de départ."
+              }
+            ]
+          },
+          {
+            "questionId": "b1-02-a2-reciproque",
+            "bonneReponse": "66,7 %",
+            "optionId": null,
+            "confusions": [
+              {
+                "id": "reciproque-meme-taux",
+                "libelle": "Croire que le même pourcentage en sens inverse ramène au départ, qu’il soit le taux d’une évolution ou la somme de taux successifs : on revient au départ en divisant par le coefficient multiplicateur."
+              },
+              {
+                "id": "sens-de-variation",
+                "libelle": "Se tromper sur le sens d’une variation : oublier le signe moins d’une baisse, traduire une baisse par le coefficient 1 + t au lieu de 1 − t, ou juger croissante une suite géométrique de raison positive, qui ne croît que si sa raison dépasse 1."
+              }
+            ]
+          }
+        ],
+        "questions": [
+          {
+            "id": "b1-02-a2-coefficient-global",
+            "enonce": "Quel est le coefficient global des deux hausses ?",
+            "options": null
+          },
+          {
+            "id": "b1-02-a2-taux-global",
+            "enonce": "Quel est le taux d’évolution global ?",
+            "options": null
+          },
+          {
+            "id": "b1-02-a2-phrase",
+            "enonce": "Un prix baisse de 40 %, puis remonte de 40 %. Quelle phrase est juste ?",
+            "options": [
+              {
+                "id": "il-revient-au-prix-de-depart-eedafaf1",
+                "libelle": "Il revient au prix de départ"
+              },
+              {
+                "id": "il-reste-sous-le-prix-de-depart-891e210f",
+                "libelle": "Il reste sous le prix de départ"
+              }
+            ]
+          },
+          {
+            "id": "b1-02-a2-reciproque",
+            "enonce": "Quelle hausse ramènerait les ventes de cartes à leur niveau de départ, arrondie au dixième ?",
+            "options": null
+          }
+        ],
+        "corrigeEcran": null,
+        "reflexion": null,
+        "explications": [
+          {
+            "reference": "b1-02-a2-coefficient-global",
+            "texte": "1,10 × 1,05 = 1,155. Additionner donnerait 1,15 : la seconde hausse porte sur un montant déjà monté."
+          },
+          {
+            "reference": "b1-02-a2-taux-global",
+            "texte": "1,155 − 1 = 0,155, soit + 15,5 %, pas + 15 %."
+          },
+          {
+            "reference": "b1-02-a2-phrase",
+            "texte": "0,60 × 1,40 = 0,84 : le prix reste 16 % sous le départ."
+          },
+          {
+            "reference": "b1-02-a2-reciproque",
+            "texte": "1 ÷ 0,60 ≈ 1,667, soit + 66,7 %. Le retour ne reprend pas le taux de l’aller."
+          }
+        ]
+      },
+      {
+        "id": "B1-02-A2-07-JALON",
+        "type": "fp-pulse",
+        "titre": "Jalon 2 : enchaîner et revenir",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "sondage": {
+            "id": "b1-02-a2-jalon",
+            "invite": "Je sais multiplier des coefficients, lire un taux global et calculer le taux du retour.",
+            "metadonnees": {
+              "concepts": ["evolutions-successives", "evolution-reciproque"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 30 s de vote anonyme.\n• Si plus de 30 % « Perdu » : reprendre l’exemple du loyer de la trace écrite A2-02.",
+        "diffusion": "seance",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null,
+        "reflexion": null
+      },
+      {
+        "id": "B1-02-A3-01-VOTE-INDICES",
+        "type": "fp-vote",
+        "titre": "Vote : que dit un indice ?",
+        "duree": 5,
+        "interactif": true,
+        "donnees": {
+          "question": {
+            "id": "b1-02-a3-indice",
+            "enonce": "L’indice d’un prix vaut 130, base 100 en 2020. Que signifie-t-il ?",
+            "options": [
+              {
+                "id": "le-prix-vaut-130-eur-739a3899",
+                "libelle": "Le prix vaut 130 €"
+              },
+              {
+                "id": "plus-30-pct-depuis-2020-98cd4f4c",
+                "libelle": "+ 30 % depuis 2020"
+              },
+              {
+                "id": "plus-130-pct-depuis-2020-2cb4de50",
+                "libelle": "+ 130 % depuis 2020"
+              }
+            ]
+          },
+          "questionJumelle": {
+            "id": "b1-02-a3-moyen",
+            "enonce": "Une valeur augmente de 21 % en deux ans. Quel taux constant, chaque année, donne le même résultat ?",
+            "options": [
+              {
+                "id": "plus-10-5-pct-par-an-cdfe3400",
+                "libelle": "+ 10,5 % par an"
+              },
+              {
+                "id": "plus-10-pct-par-an-220aee70",
+                "libelle": "+ 10 % par an"
+              }
+            ]
+          }
+        },
+        "notes": "• Temps « réfléchir » de la notion 3 : votes non notés.\n• Question 1 en vote individuel, puis question 2, sans débat entre les deux.\n• La révélation s’ouvre après la question 2 : les deux corrections se commentent ensemble.\n• Papier : vote à main levée sur chaque question.",
+        "diffusion": "seance",
+        "seuil": 0.7,
+        "corriges": [
+          {
+            "questionId": "b1-02-a3-indice",
+            "bonneReponse": "+ 30 % depuis 2020",
+            "optionId": "plus-30-pct-depuis-2020-98cd4f4c",
+            "confusions": [
+              {
+                "id": "indice-lu-comme-taux",
+                "libelle": "Lire un indice comme un taux (112,68 au lieu de +12,68 %) ou l’inverse."
+              },
+              {
+                "id": "indice-lu-comme-valeur",
+                "libelle": "Lire un indice comme un prix ou un montant."
+              }
+            ]
+          },
+          {
+            "questionId": "b1-02-a3-moyen",
+            "bonneReponse": "+ 10 % par an",
+            "optionId": "plus-10-pct-par-an-220aee70",
+            "confusions": [
+              {
+                "id": "taux-moyen-arithmetique",
+                "libelle": "Prendre pour taux moyen une moyenne arithmétique, le taux global divisé par le nombre de périodes ou la moyenne des taux de chaque période, au lieu de la racine n-ième du coefficient global."
+              }
+            ]
+          }
+        ],
+        "questions": [
+          {
+            "id": "b1-02-a3-indice",
+            "enonce": "L’indice d’un prix vaut 130, base 100 en 2020. Que signifie-t-il ?",
+            "options": [
+              {
+                "id": "le-prix-vaut-130-eur-739a3899",
+                "libelle": "Le prix vaut 130 €"
+              },
+              {
+                "id": "plus-30-pct-depuis-2020-98cd4f4c",
+                "libelle": "+ 30 % depuis 2020"
+              },
+              {
+                "id": "plus-130-pct-depuis-2020-2cb4de50",
+                "libelle": "+ 130 % depuis 2020"
+              }
+            ]
+          },
+          {
+            "id": "b1-02-a3-moyen",
+            "enonce": "Une valeur augmente de 21 % en deux ans. Quel taux constant, chaque année, donne le même résultat ?",
+            "options": [
+              {
+                "id": "plus-10-5-pct-par-an-cdfe3400",
+                "libelle": "+ 10,5 % par an"
+              },
+              {
+                "id": "plus-10-pct-par-an-220aee70",
+                "libelle": "+ 10 % par an"
+              }
+            ]
+          }
+        ],
+        "corrigeEcran": null,
+        "reflexion": null
+      },
+      {
+        "id": "B1-02-A3-02-COURS-INDICE",
+        "type": "fp-story",
+        "titre": "Cours : indice base 100",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B1-02-A3-02-COURS-INDICE",
+            "presentation": {
+              "version": 2,
+              "screenId": "B1-02-A3-02-COURS-INDICE",
+              "renderer": "lesson",
+              "props": {
+                "title": "Indice base 100 : comparer à une année",
+                "subtitle": "Trace écrite · notion 3 · page 1 sur 2",
+                "blocks": [
+                  {
+                    "kind": "definition",
+                    "title": "Une année de base",
+                    "text": "L’indice vaut 100 l’année de base.\nIl dit où en est la valeur par rapport à cette année.",
+                    "formula": "I = V ÷ V₀ × 100\ntaux depuis la base = I − 100\ntaux entre deux dates = I₂ ÷ I₁ − 1"
+                  },
+                  {
+                    "kind": "example",
+                    "title": "Pour débuter : le ticket de bus",
+                    "text": "Un ticket coûte 2 € en 2020 et 3 € en 2025.",
+                    "steps": [
+                      "I = 3 ÷ 2 × 100 = 150.",
+                      "150 − 100 = 50 : + 50 % depuis 2020.",
+                      "150 n’est ni un prix, ni + 150 %."
+                    ]
+                  },
+                  {
+                    "kind": "method",
+                    "title": "Ni un prix, ni un taux",
+                    "text": "Au tableur, la valeur de base reste figée.",
+                    "steps": [
+                      "Années en colonne, base en B2 ; en C3 : =B3/$B$2*100.",
+                      "Recopier : le $ garde la même base.",
+                      "Lire : I − 100 donne le taux depuis la base."
+                    ]
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": ["indice-base-100", "tableur"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 3 min ; la trace écrite est imprimée dans le livret : on lit et on commente, on ne recopie pas.\n• Question : « 150, c’est un prix ? un taux ? » Ni l’un ni l’autre.\n• Faire répéter le moyen mnémotechnique : ni un prix, ni un taux.",
+        "diffusion": "catalogue",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null,
+        "reflexion": null
+      },
+      {
+        "id": "B1-02-A3-03-COURS-TAUX-MOYEN",
+        "type": "fp-story",
+        "titre": "Cours : taux annuel moyen",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B1-02-A3-03-COURS-TAUX-MOYEN",
+            "presentation": {
+              "version": 2,
+              "screenId": "B1-02-A3-03-COURS-TAUX-MOYEN",
+              "renderer": "lesson",
+              "props": {
+                "title": "Taux moyen : la même hausse chaque année",
+                "subtitle": "Trace écrite · notion 3 · page 2 sur 2",
+                "blocks": [
+                  {
+                    "kind": "definition",
+                    "title": "Un taux constant équivalent",
+                    "text": "Le taux moyen donne la même évolution globale, à taux constant.\nOn prend la puissance 1/n du coefficient global.",
+                    "formula": "c moyen = C^(1/n)\nt moyen = C^(1/n) − 1\ntableur : =PUISSANCE(C;1/n)-1"
+                  },
+                  {
+                    "kind": "example",
+                    "title": "Pour débuter : l’épargne",
+                    "text": "Un compte passe de 100 € à 169 € en 2 ans.",
+                    "steps": [
+                      "C = 169 ÷ 100 = 1,69.",
+                      "c moyen = 1,69^(1/2) = 1,3.",
+                      "+ 30 % par an, pas + 34,5 %."
+                    ]
+                  },
+                  {
+                    "kind": "method",
+                    "title": "n compte les évolutions",
+                    "text": "Compter les évolutions, pas les années citées.",
+                    "steps": [
+                      "C = arrivée ÷ départ.",
+                      "De 2021 à 2024 : n = 3.",
+                      "Contrôle : c moyen puissance n redonne C."
+                    ]
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": ["taux-moyen", "tableur"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 3 min, enchaînées sur la page 1 : 6 min pour les deux pages.\n• Question : « De 2021 à 2024, combien d’évolutions ? » Trois, pas quatre.\n• Faire répéter le moyen mnémotechnique : n compte les évolutions.",
+        "diffusion": "catalogue",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null,
+        "reflexion": null
+      },
+      {
+        "id": "B1-02-A3-04-EXEMPLE-CLIENTS",
+        "type": "fp-worked",
+        "titre": "Exemple guidé : les clients du réseau",
+        "duree": 6,
+        "interactif": true,
+        "donnees": {
+          "exemple": {
+            "id": "b1-02-a3-exemple-clients",
+            "enonce": "Partie Libre compte 2 000 clients en 2023, 2 300 en 2024, 2 900 en 2025 et 3 456 en 2026.",
+            "etapes": [
+              {
+                "id": "indice",
+                "intitule": "L’indice de 2024",
+                "raisonnement": "2 300 ÷ 2 000 × 100 = 115.",
+                "invite": "Quel est l’indice de 2024, base 100 en 2023 ?"
+              },
+              {
+                "id": "lire",
+                "intitule": "Lire l’indice de 2025",
+                "raisonnement": "2 900 ÷ 2 000 × 100 = 145 : + 45 % depuis 2023.",
+                "invite": "Quel est l’indice de 2025 ? Que signifie-t-il ?"
+              },
+              {
+                "id": "global",
+                "intitule": "L’évolution globale",
+                "raisonnement": "3 456 ÷ 2 000 = 1,728, soit + 72,8 %.",
+                "invite": "Quelle est l’évolution de 2023 à 2026 ?"
+              },
+              {
+                "id": "moyen",
+                "intitule": "Le taux annuel moyen",
+                "raisonnement": "n = 3 : 1,728^(1/3) = 1,2, soit + 20 % par an.",
+                "invite": "Quel est le taux annuel moyen ?"
+              },
+              {
+                "id": "piege",
+                "intitule": "Diviser par 3 ?",
+                "raisonnement": "72,8 ÷ 3 ≈ 24,3 % : faux, car 1,243³ ≈ 1,92, pas 1,728.",
+                "invite": "Pourquoi ne pas diviser 72,8 % par 3 ?"
+              }
+            ],
+            "metadonnees": {
+              "concepts": ["indice-base-100", "taux-moyen"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 6,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          },
+          "etayage": 0
+        },
+        "notes": "• Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.\n• Papier : réponses sous chaque étape du livret.\n• S’arrêter sur n = 3 (étape 4) et sur la division par 3 (étape 5).\n• Transition : « À vous, sur un vrai sujet de BTS : exercice 5. »",
+        "diffusion": "seance",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null,
+        "reflexion": null
+      },
+      {
+        "id": "B1-02-A3-05-TABLEUR-CNIL",
+        "type": "fp-sheet",
+        "titre": "Exercice 5 — Les sanctions de la CNIL",
+        "duree": 10,
+        "interactif": true,
+        "donnees": {
+          "plan": {
+            "id": "b1-02-a3-tableur-cnil",
+            "intitule": "Exercice 5 — Les sanctions de la CNIL",
+            "lignes": 7,
+            "colonnes": 5,
+            "cellules": {
+              "A1": "Année",
+              "B1": "2021",
+              "C1": "2022",
+              "D1": "2023",
+              "E1": "2024",
+              "A2": "Sanctions prononcées",
+              "B2": "18",
+              "C2": "21",
+              "D2": "42",
+              "E2": "87",
+              "A3": "Indices (base 100 en 2021)",
+              "B3": "100",
+              "A5": "Taux 2022-2024 (%)",
+              "A6": "Hausse 2021-2024 (%)",
+              "A7": "Taux annuel moyen (%)"
+            },
+            "verrouillees": [
+              "A1",
+              "B1",
+              "C1",
+              "D1",
+              "E1",
+              "A2",
+              "B2",
+              "C2",
+              "D2",
+              "E2",
+              "A3",
+              "B3",
+              "A5",
+              "A6",
+              "A7"
+            ],
+            "consignes": [
+              "Données réelles : CNIL, rapport annuel 2024. Tableau du sujet de BTS CG 2026, Polynésie (26CGMATPO).",
+              "En C3, écrivez l’indice de 2022, base 100 en 2021, arrondi au dixième avec ARRONDI. Recopiez jusqu’en E3 : sélectionnez C3 et cliquez deux fois sur « Recopier vers la droite », une cellule par clic.",
+              "La valeur de 2021 ne s’écrit pas dans la formule : utilisez B2, figée par des $.",
+              "En B5, calculez le taux d’évolution des sanctions entre 2022 et 2024, en %, arrondi au dixième avec ARRONDI.",
+              "En B6, calculez la hausse des sanctions entre 2021 et 2024, en %, arrondie au dixième avec ARRONDI.",
+              "En B7, calculez le taux annuel moyen entre 2021 et 2024, en %, arrondi au dixième avec ARRONDI et PUISSANCE."
+            ],
+            "lettres": ["A", "B", "C", "D", "E"],
+            "grille": [
+              ["A1", "B1", "C1", "D1", "E1"],
+              ["A2", "B2", "C2", "D2", "E2"],
+              ["A3", "B3", "C3", "D3", "E3"],
+              ["A4", "B4", "C4", "D4", "E4"],
+              ["A5", "B5", "C5", "D5", "E5"],
+              ["A6", "B6", "C6", "D6", "E6"],
+              ["A7", "B7", "C7", "D7", "E7"]
+            ],
+            "longueurMaxSaisie": 200,
+            "initiale": {
+              "saisies": {},
+              "affichages": {
+                "A1": "Année",
+                "B1": "2021",
+                "C1": "2022",
+                "D1": "2023",
+                "E1": "2024",
+                "A2": "Sanctions prononcées",
+                "B2": "18",
+                "C2": "21",
+                "D2": "42",
+                "E2": "87",
+                "A3": "Indices (base 100 en 2021)",
+                "B3": "100",
+                "A5": "Taux 2022-2024 (%)",
+                "A6": "Hausse 2021-2024 (%)",
+                "A7": "Taux annuel moyen (%)"
+              },
+              "natures": {
+                "A1": "texte",
+                "B1": "nombre",
+                "C1": "nombre",
+                "D1": "nombre",
+                "E1": "nombre",
+                "A2": "texte",
+                "B2": "nombre",
+                "C2": "nombre",
+                "D2": "nombre",
+                "E2": "nombre",
+                "A3": "texte",
+                "B3": "nombre",
+                "A5": "texte",
+                "A6": "texte",
+                "A7": "texte"
+              },
+              "formules": []
+            },
+            "metadonnees": {
+              "concepts": ["tableur", "indice-base-100", "taux-moyen"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 10,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• Temps : réflexion 2 min · travail 6 min · correction 2 min\n• Réflexion : le tableau est en ligne, comme au sujet : la recopie va vers la droite.\n• Erreurs à chercher : base non figée ; ARRONDI oublié ; taux global divisé par 3.\n• Papier : formules écrites sur la copie avec la grille des cellules.\n• Corriger question par question, en commençant par la moins réussie (score sous chaque correction).\n• Transition : jalon 3, puis pause de 15 minutes.",
+        "diffusion": "seance",
+        "seuil": 0.7,
+        "corriges": [],
+        "questions": [
+          {
+            "id": "b1-02-a3-tableur-cnil",
+            "enonce": "Exercice 5 — Les sanctions de la CNIL",
+            "options": null
+          }
+        ],
+        "corrigeEcran": {
+          "type": "feuille",
+          "attendus": [
+            {
+              "reference": "C3",
+              "formuleReference": "=ARRONDI(C2/$B$2*100;1)",
+              "valeur": 116.7,
+              "affichage": "116,7",
+              "tolerance": {
+                "type": "absolue",
+                "valeur": 0
+              },
+              "forme": "references"
+            },
+            {
+              "reference": "D3",
+              "formuleReference": "=ARRONDI(D2/$B$2*100;1)",
+              "valeur": 233.3,
+              "affichage": "233,3",
+              "tolerance": {
+                "type": "absolue",
+                "valeur": 0
+              },
+              "forme": {
+                "memeQue": "C3"
+              }
+            },
+            {
+              "reference": "E3",
+              "formuleReference": "=ARRONDI(E2/$B$2*100;1)",
+              "valeur": 483.3,
+              "affichage": "483,3",
+              "tolerance": {
+                "type": "absolue",
+                "valeur": 0
+              },
+              "forme": {
+                "memeQue": "C3"
+              }
+            },
+            {
+              "reference": "B5",
+              "formuleReference": "=ARRONDI((E2-C2)/C2*100;1)",
+              "valeur": 314.3,
+              "affichage": "314,3",
+              "tolerance": {
+                "type": "absolue",
+                "valeur": 0
+              },
+              "forme": "references"
+            },
+            {
+              "reference": "B6",
+              "formuleReference": "=ARRONDI((E2-B2)/B2*100;1)",
+              "valeur": 383.3,
+              "affichage": "383,3",
+              "tolerance": {
+                "type": "absolue",
+                "valeur": 0
+              },
+              "forme": "references"
+            },
+            {
+              "reference": "B7",
+              "formuleReference": "=ARRONDI((PUISSANCE(E2/B2;1/3)-1)*100;1)",
+              "valeur": 69.1,
+              "affichage": "69,1",
+              "tolerance": {
+                "type": "absolue",
+                "valeur": 0
+              },
+              "forme": "references"
+            }
+          ]
+        },
+        "reflexion": null,
+        "explications": [
+          {
+            "reference": "C3 à E3",
+            "texte": "=ARRONDI(C2/$B$2*100;1), recopiée vers la droite : 116,7 ; 233,3 ; 483,3. Au sujet, la ligne est au format nombre : =C2/$B$2*100 y suffit."
+          },
+          {
+            "reference": "B5",
+            "texte": "=ARRONDI((E2-C2)/C2*100;1) : + 314,3 %. Le départ est 2022, donc 21."
+          },
+          {
+            "reference": "B6",
+            "texte": "=ARRONDI((E2-B2)/B2*100;1) : + 383,3 %. L’indice 483,3 le dit aussi : 483,3 − 100."
+          },
+          {
+            "reference": "B7",
+            "texte": "=ARRONDI((PUISSANCE(E2/B2;1/3)-1)*100;1) : + 69,1 % par an. De 2021 à 2024, n = 3."
+          }
+        ]
+      },
+      {
+        "id": "B1-02-A3-06-JALON",
+        "type": "fp-pulse",
+        "titre": "Jalon 3 : indice et taux moyen",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "sondage": {
+            "id": "b1-02-a3-jalon",
+            "invite": "Je sais calculer et lire un indice, et calculer un taux annuel moyen.",
+            "metadonnees": {
+              "concepts": ["indice-base-100", "taux-moyen"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 30 s de vote anonyme.\n• Pause de 15 minutes, hors durée programmée.",
+        "diffusion": "seance",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null,
+        "reflexion": null
+      },
+      {
+        "id": "B1-02-A4-01-RAPPEL",
+        "type": "fp-spaced",
+        "titre": "Rappel : de mémoire, sans vos notes",
+        "duree": 6,
+        "interactif": true,
+        "donnees": {
+          "rappel": {
+            "id": "b1-02-a4-rappel",
+            "intitule": "Rappel : de mémoire, sans vos notes",
+            "metadonnees": {
+              "concepts": [
+                "taux-evolution",
+                "coefficient-multiplicateur",
+                "evolutions-successives",
+                "evolution-reciproque",
+                "indice-base-100",
+                "taux-moyen",
+                "pourcentage",
+                "tableur"
+              ],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 6,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 5 min individuelles, puis projeter la carte de maîtrise.\n• Tous reçoivent les douze questions de la banque : le rappel couvre tout le cours pour chacun.",
+        "diffusion": "seance",
+        "seuil": 0.7,
+        "corriges": [
+          {
+            "questionId": "b1-02-r-taux",
+            "bonneReponse": "30 ÷ 200 = 0,15, soit + 15 %",
+            "optionId": "30-200-0-15-soit-plus-15-pct-baf026f5",
+            "confusions": [
+              {
+                "id": "base-arrivee",
+                "libelle": "Diviser l’écart par la valeur d’arrivée au lieu de la valeur de départ."
+              }
+            ]
+          },
+          {
+            "questionId": "b1-02-r-coefficient",
+            "bonneReponse": "1 − 0,12 = 0,88",
+            "optionId": "1-moins-0-12-0-88-9eb88c4f",
+            "confusions": [
+              {
+                "id": "sens-de-variation",
+                "libelle": "Se tromper sur le sens d’une variation : oublier le signe moins d’une baisse, traduire une baisse par le coefficient 1 + t au lieu de 1 − t, ou juger croissante une suite géométrique de raison positive, qui ne croît que si sa raison dépasse 1."
+              }
+            ]
+          },
+          {
+            "questionId": "b1-02-r-depart",
+            "bonneReponse": "100 ÷ 1,25 = 80 €",
+            "optionId": "100-1-25-80-eur-26e769d4",
+            "confusions": [
+              {
+                "id": "reciproque-meme-taux",
+                "libelle": "Croire que le même pourcentage en sens inverse ramène au départ, qu’il soit le taux d’une évolution ou la somme de taux successifs : on revient au départ en divisant par le coefficient multiplicateur."
+              }
+            ]
+          },
+          {
+            "questionId": "b1-02-r-ttc",
+            "bonneReponse": "100 × 1,20 = 120 € TTC",
+            "optionId": "100-1-20-120-eur-ttc-74e10783",
+            "confusions": [
+              {
+                "id": "tva-calculee-sur-ttc",
+                "libelle": "Appliquer le taux de TVA comme si la base était un montant TTC."
+              }
+            ]
+          },
+          {
+            "questionId": "b1-02-r-ht",
+            "bonneReponse": "240 ÷ 1,20 = 200 € HT",
+            "optionId": "240-1-20-200-eur-ht-7d25d61b",
+            "confusions": [
+              {
+                "id": "tva-calculee-sur-ttc",
+                "libelle": "Appliquer le taux de TVA comme si la base était un montant TTC."
+              }
+            ]
+          },
+          {
+            "questionId": "b1-02-r-remise",
+            "bonneReponse": "40 × 0,75 = 30 €",
+            "optionId": "40-0-75-30-eur-aa5db6a8",
+            "confusions": [
+              {
+                "id": "ecart-absolu-au-lieu-du-taux",
+                "libelle": "Donner l’écart en valeur au lieu du taux en pourcentage."
+              }
+            ]
+          },
+          {
+            "questionId": "b1-02-r-successives",
+            "bonneReponse": "1,20 × 1,30 = 1,56, soit + 56 %",
+            "optionId": "1-20-1-30-1-56-soit-plus-56-pct-5be26977",
+            "confusions": [
+              {
+                "id": "taux-successifs-additionnes",
+                "libelle": "Additionner des taux successifs au lieu de multiplier les coefficients."
+              }
+            ]
+          },
+          {
+            "questionId": "b1-02-r-symetrie",
+            "bonneReponse": "1,5 × 0,5 = 0,75, soit − 25 %",
+            "optionId": "1-5-0-5-0-75-soit-moins-25-pct-ea10aaac",
+            "confusions": [
+              {
+                "id": "hausse-baisse-symetriques",
+                "libelle": "Croire qu’une hausse puis une baisse du même pourcentage ramènent à la valeur de départ."
+              }
+            ]
+          },
+          {
+            "questionId": "b1-02-r-reciproque",
+            "bonneReponse": "1 ÷ 0,8 = 1,25, soit + 25 %",
+            "optionId": "1-0-8-1-25-soit-plus-25-pct-1d31c87f",
+            "confusions": [
+              {
+                "id": "reciproque-meme-taux",
+                "libelle": "Croire que le même pourcentage en sens inverse ramène au départ, qu’il soit le taux d’une évolution ou la somme de taux successifs : on revient au départ en divisant par le coefficient multiplicateur."
+              }
+            ]
+          },
+          {
+            "questionId": "b1-02-r-indice",
+            "bonneReponse": "125 − 100 = 25 : + 25 % depuis 2020",
+            "optionId": "125-moins-100-25-plus-25-pct-depuis-2020-92a0d623",
+            "confusions": [
+              {
+                "id": "indice-lu-comme-taux",
+                "libelle": "Lire un indice comme un taux (112,68 au lieu de +12,68 %) ou l’inverse."
+              }
+            ]
+          },
+          {
+            "questionId": "b1-02-r-taux-moyen",
+            "bonneReponse": "1,44^(1/2) = 1,2, soit + 20 % par an",
+            "optionId": "1-44-1-2-1-2-soit-plus-20-pct-par-an-15b22b59",
+            "confusions": [
+              {
+                "id": "taux-moyen-arithmetique",
+                "libelle": "Prendre pour taux moyen une moyenne arithmétique, le taux global divisé par le nombre de périodes ou la moyenne des taux de chaque période, au lieu de la racine n-ième du coefficient global."
+              }
+            ]
+          },
+          {
+            "questionId": "b1-02-r-puissance",
+            "bonneReponse": "=PUISSANCE(B1;1/3)-1",
+            "optionId": "puissance-b1-1-3-1-de21cbb9",
+            "confusions": [
+              {
+                "id": "taux-moyen-arithmetique",
+                "libelle": "Prendre pour taux moyen une moyenne arithmétique, le taux global divisé par le nombre de périodes ou la moyenne des taux de chaque période, au lieu de la racine n-ième du coefficient global."
+              }
+            ]
+          }
+        ],
+        "questions": [
+          {
+            "id": "b1-02-r-taux",
+            "enonce": "Un prix passe de 200 € à 230 €. Quel est son taux d’évolution ?",
+            "options": [
+              {
+                "id": "30-200-0-15-soit-plus-15-pct-baf026f5",
+                "libelle": "30 ÷ 200 = 0,15, soit + 15 %"
+              },
+              {
+                "id": "30-230-0-13-soit-plus-13-pct-98495f1c",
+                "libelle": "30 ÷ 230 ≈ 0,13, soit + 13 %"
+              }
+            ]
+          },
+          {
+            "id": "b1-02-r-coefficient",
+            "enonce": "Quel coefficient traduit une baisse de 12 % ?",
+            "options": [
+              {
+                "id": "1-moins-0-12-0-88-9eb88c4f",
+                "libelle": "1 − 0,12 = 0,88"
+              },
+              {
+                "id": "1-plus-0-12-1-12-90b2d9d2",
+                "libelle": "1 + 0,12 = 1,12"
+              }
+            ]
+          },
+          {
+            "id": "b1-02-r-depart",
+            "enonce": "Après une hausse de 25 %, un prix vaut 100 €. Quel était le prix de départ ?",
+            "options": [
+              {
+                "id": "100-1-25-80-eur-26e769d4",
+                "libelle": "100 ÷ 1,25 = 80 €"
+              },
+              {
+                "id": "100-0-75-75-eur-d41877f0",
+                "libelle": "100 × 0,75 = 75 €"
+              }
+            ]
+          },
+          {
+            "id": "b1-02-r-ttc",
+            "enonce": "Un article vaut 100 € HT, TVA à 20 %. Quel est son prix TTC ?",
+            "options": [
+              {
+                "id": "100-0-80-125-eur-ttc-d5498ab9",
+                "libelle": "100 ÷ 0,80 = 125 € TTC"
+              },
+              {
+                "id": "100-1-20-120-eur-ttc-74e10783",
+                "libelle": "100 × 1,20 = 120 € TTC"
+              }
+            ]
+          },
+          {
+            "id": "b1-02-r-ht",
+            "enonce": "Un article vaut 240 € TTC, TVA à 20 %. Quel est son prix HT ?",
+            "options": [
+              {
+                "id": "240-0-80-192-eur-ht-ef8d5b91",
+                "libelle": "240 × 0,80 = 192 € HT"
+              },
+              {
+                "id": "240-1-20-200-eur-ht-7d25d61b",
+                "libelle": "240 ÷ 1,20 = 200 € HT"
+              }
+            ]
+          },
+          {
+            "id": "b1-02-r-remise",
+            "enonce": "Un prix de 40 € bénéficie d’une remise de 25 %. Quel est le nouveau prix ?",
+            "options": [
+              {
+                "id": "40-0-75-30-eur-aa5db6a8",
+                "libelle": "40 × 0,75 = 30 €"
+              },
+              {
+                "id": "40-moins-25-15-eur-8754862e",
+                "libelle": "40 − 25 = 15 €"
+              }
+            ]
+          },
+          {
+            "id": "b1-02-r-successives",
+            "enonce": "Un prix augmente de 20 %, puis de 30 %. Quelle est l’évolution globale ?",
+            "options": [
+              {
+                "id": "1-20-1-30-1-56-soit-plus-56-pct-5be26977",
+                "libelle": "1,20 × 1,30 = 1,56, soit + 56 %"
+              },
+              {
+                "id": "20-pct-plus-30-pct-plus-50-pct-b40539df",
+                "libelle": "20 % + 30 % = + 50 %"
+              }
+            ]
+          },
+          {
+            "id": "b1-02-r-symetrie",
+            "enonce": "Un prix augmente de 50 %, puis baisse de 50 %. Quelle est l’évolution globale ?",
+            "options": [
+              {
+                "id": "1-5-0-5-0-75-soit-moins-25-pct-ea10aaac",
+                "libelle": "1,5 × 0,5 = 0,75, soit − 25 %"
+              },
+              {
+                "id": "aucune-on-revient-au-depart-7a0b7d61",
+                "libelle": "Aucune : on revient au départ"
+              }
+            ]
+          },
+          {
+            "id": "b1-02-r-reciproque",
+            "enonce": "Un prix baisse de 20 %. Quelle hausse le ramène au départ ?",
+            "options": [
+              {
+                "id": "1-0-8-1-25-soit-plus-25-pct-1d31c87f",
+                "libelle": "1 ÷ 0,8 = 1,25, soit + 25 %"
+              },
+              {
+                "id": "la-meme-plus-20-pct-86827438",
+                "libelle": "La même : + 20 %"
+              }
+            ]
+          },
+          {
+            "id": "b1-02-r-indice",
+            "enonce": "Un indice vaut 125, base 100 en 2020. Que signifie-t-il ?",
+            "options": [
+              {
+                "id": "125-moins-100-25-plus-25-pct-depuis-2020-92a0d623",
+                "libelle": "125 − 100 = 25 : + 25 % depuis 2020"
+              },
+              {
+                "id": "plus-125-pct-depuis-2020-322e9bc4",
+                "libelle": "+ 125 % depuis 2020"
+              }
+            ]
+          },
+          {
+            "id": "b1-02-r-taux-moyen",
+            "enonce": "Une valeur augmente de 44 % en 2 ans. Quel est le taux annuel moyen ?",
+            "options": [
+              {
+                "id": "44-pct-2-plus-22-pct-par-an-52abbdb7",
+                "libelle": "44 % ÷ 2 = + 22 % par an"
+              },
+              {
+                "id": "1-44-1-2-1-2-soit-plus-20-pct-par-an-15b22b59",
+                "libelle": "1,44^(1/2) = 1,2, soit + 20 % par an"
+              }
+            ]
+          },
+          {
+            "id": "b1-02-r-puissance",
+            "enonce": "Coefficient global en B1, sur 3 évolutions : quelle formule donne le taux moyen ?",
+            "options": [
+              {
+                "id": "b1-3-64ec3004",
+                "libelle": "=B1/3"
+              },
+              {
+                "id": "puissance-b1-1-3-1-de21cbb9",
+                "libelle": "=PUISSANCE(B1;1/3)-1"
+              }
+            ]
+          }
+        ],
+        "corrigeEcran": null,
+        "reflexion": null
+      },
+      {
+        "id": "B1-02-A4-02-FICHE-MEMO",
+        "type": "fp-story",
+        "titre": "Fiche mémo : évolutions, coefficients, indices",
+        "duree": 2,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B1-02-A4-02-FICHE-MEMO",
+            "presentation": {
+              "version": 2,
+              "screenId": "B1-02-A4-02-FICHE-MEMO",
+              "renderer": "grid",
+              "props": {
+                "title": "Fiche mémo : évolutions, coefficients, indices",
+                "subtitle": "À garder pour le CCF : chaque carte part d’une question et donne la méthode et son piège.",
+                "items": [
+                  {
+                    "title": "Taux d’évolution",
+                    "description": "De combien ça a bougé ?",
+                    "back": "t = (V₂ − V₁) ÷ V₁. Toujours le départ en bas."
+                  },
+                  {
+                    "title": "Coefficient",
+                    "description": "Par quoi multiplier ?",
+                    "back": "c = 1 + t : + 7 % donne 1,07 ; − 7 % donne 0,93."
+                  },
+                  {
+                    "title": "Départ ou arrivée",
+                    "description": "Quelle valeur je cherche ?",
+                    "back": "V₂ = V₁ × c ; V₁ = V₂ ÷ c."
+                  },
+                  {
+                    "title": "HT et TTC",
+                    "description": "Quel sens ?",
+                    "back": "TTC = HT × 1,20 ; HT = TTC ÷ 1,20. Jamais − 20 % sur le TTC."
+                  },
+                  {
+                    "title": "Évolutions successives",
+                    "description": "Plusieurs évolutions ?",
+                    "back": "On multiplie les coefficients, jamais on n’additionne les taux. Taux global = C − 1."
+                  },
+                  {
+                    "title": "Évolution réciproque",
+                    "description": "Revenir au départ ?",
+                    "back": "c réciproque = 1 ÷ c. Le retour n’a pas le même taux."
+                  },
+                  {
+                    "title": "Indice base 100",
+                    "description": "Que dit un indice ?",
+                    "back": "I = V ÷ V₀ × 100. I − 100 donne le taux depuis la base."
+                  },
+                  {
+                    "title": "Taux moyen",
+                    "description": "Un taux constant équivalent ?",
+                    "back": "c moyen = C^(1/n), n comptant les évolutions. Jamais le taux global ÷ n."
+                  },
+                  {
+                    "title": "Tableur",
+                    "description": "La formule à recopier ?",
+                    "back": "La valeur de base figée par des $. Taux moyen : =PUISSANCE(C;1/n)-1."
+                  },
+                  {
+                    "title": "Référentiel du BTS CG",
+                    "description": "Le programme de mathématiques et l’épreuve E3.",
+                    "href": "https://enqdip.sup.adc.education.fr/bts/referentiel/BTS_ComptabiliteGestion.pdf",
+                    "external": true
+                  }
+                ],
+                "imprimable": true
+              }
+            },
+            "metadonnees": {
+              "concepts": [
+                "taux-evolution",
+                "coefficient-multiplicateur",
+                "evolutions-successives",
+                "evolution-reciproque",
+                "indice-base-100",
+                "taux-moyen",
+                "pourcentage",
+                "tableur"
+              ],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 2,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 90 s de lecture ; la fiche s’imprime pour le classeur de CCF.",
+        "diffusion": "catalogue",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null,
+        "reflexion": null
+      }
+    ]
+  },
+  "catalogue": {
+    "id": "b1-02-evolutions-coefficients-indices",
+    "titre": "Évolutions : taux, coefficients, indices",
+    "niveau": "B1",
+    "duree": 121,
+    "concepts": [
+      "taux-evolution",
+      "coefficient-multiplicateur",
+      "evolutions-successives",
+      "evolution-reciproque",
+      "indice-base-100",
+      "taux-moyen",
+      "pourcentage",
+      "tableur"
+    ],
+    "ecrans": [
+      {
+        "id": "B1-02-A1-01-DIAGNOSTIC-TAUX",
+        "type": "ecran-verrouille",
+        "titre": "Diagnostic : un taux, sans calculatrice",
+        "duree": 4,
+        "interactif": false,
+        "donnees": {}
+      },
+      {
+        "id": "B1-02-A1-02-ACCROCHE",
+        "type": "fp-story",
+        "titre": "Évolutions : multiplier, pas ajouter",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B1-02-A1-02-ACCROCHE",
+            "presentation": {
+              "version": 2,
+              "screenId": "B1-02-A1-02-ACCROCHE",
+              "renderer": "hero",
+              "props": {
+                "title": "Évolutions : multiplier, pas ajouter",
+                "subtitle": "Partie Libre revoit ses tarifs. Votre dossier : des hausses, de la TVA, des remises et un indice à lire.",
+                "bgImage": "/assets/cours/gravures/v1/playfair-ble-salaires-1822.jpg",
+                "bgImageAlt": "Graphique de William Playfair (1822) : le prix du blé en barres et les salaires en courbe, de 1565 à 1821, une évolution suivie sur deux siècles et demi"
+              }
+            },
+            "metadonnees": {
+              "concepts": ["taux-evolution", "coefficient-multiplicateur"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B1-02-A1-03-VOTE-DIAGNOSTIC",
+        "type": "ecran-verrouille",
+        "titre": "Vote : par quel nombre multiplier ?",
+        "duree": 4,
+        "interactif": false,
+        "donnees": {}
+      },
+      {
+        "id": "B1-02-A1-04-DOSSIER",
+        "type": "fp-story",
+        "titre": "Le dossier tarifs de Partie Libre",
+        "duree": 2,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B1-02-A1-04-DOSSIER",
+            "presentation": {
+              "version": 2,
+              "screenId": "B1-02-A1-04-DOSSIER",
+              "renderer": "table",
+              "props": {
+                "title": "Le dossier tarifs de Partie Libre",
+                "subtitle": "Les chiffres de novembre 2026, avant la grille de prix 2027.",
+                "note": "Données fictives Partie Libre, créées pour ce cours.",
+                "columns": [
+                  {
+                    "key": "rubrique",
+                    "label": "Rubrique"
+                  },
+                  {
+                    "key": "contenu",
+                    "label": "Ce que montre le dossier"
+                  }
+                ],
+                "rows": [
+                  {
+                    "rubrique": "L’entreprise",
+                    "contenu": "Quatre boutiques-bars à jeux, à Nantes, Angers, Tours et Le Mans."
+                  },
+                  {
+                    "rubrique": "Le chiffre d’affaires HT",
+                    "contenu": "En milliers d’euros, 2025 puis 2026 : Nantes 184 puis 207, Angers 120 puis 126, Tours 96 puis 92, Le Mans 80 puis 94."
+                  },
+                  {
+                    "rubrique": "La TVA",
+                    "contenu": "20 % sur tous les prix de vente."
+                  },
+                  {
+                    "rubrique": "La carte Pass Partie",
+                    "contenu": "15 % de remise sur le prix TTC."
+                  },
+                  {
+                    "rubrique": "Le fournisseur",
+                    "contenu": "Une hausse de 8 % annoncée au 1ᵉʳ janvier 2027."
+                  },
+                  {
+                    "rubrique": "La question d’Inès",
+                    "contenu": "« Quels coefficients pour la grille 2027 ? »"
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": ["taux-evolution", "coefficient-multiplicateur"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 2,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B1-02-A1-05-MISSION",
+        "type": "ecran-verrouille",
+        "titre": "Votre mission : vérifier la grille de prix",
+        "duree": 6,
+        "interactif": false,
+        "donnees": {}
+      },
+      {
+        "id": "B1-02-A1-06-COURS-COEFFICIENT",
+        "type": "fp-story",
+        "titre": "Cours : taux et coefficient multiplicateur",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B1-02-A1-06-COURS-COEFFICIENT",
+            "presentation": {
+              "version": 2,
+              "screenId": "B1-02-A1-06-COURS-COEFFICIENT",
+              "renderer": "lesson",
+              "props": {
+                "title": "Taux et coefficient : multiplier, pas ajouter",
+                "subtitle": "Trace écrite · notion 1 · page 1 sur 2",
+                "blocks": [
+                  {
+                    "kind": "definition",
+                    "title": "Le coefficient multiplicateur",
+                    "text": "Évoluer de t, c’est multiplier par 1 + t.\nUne hausse donne c plus grand que 1, une baisse plus petit.",
+                    "formula": "t = (V₂ − V₁) ÷ V₁\nc = 1 + t\nV₂ = V₁ × c\nV₁ = V₂ ÷ c"
+                  },
+                  {
+                    "kind": "example",
+                    "title": "Pour débuter : la place de cinéma",
+                    "text": "Une place passe de 10 € à 12 €.",
+                    "steps": [
+                      "t = 2 ÷ 10 = 0,2, soit + 20 %.",
+                      "c = 1 + 0,2 = 1,2 ; contrôle : 10 × 1,2 = 12 €.",
+                      "À − 20 %, c = 0,8 : 10 × 0,8 = 8 €."
+                    ]
+                  },
+                  {
+                    "kind": "method",
+                    "title": "Toujours le départ en bas",
+                    "text": "Le taux se rapporte à la valeur de départ.",
+                    "steps": [
+                      "Repérer V₁ (le départ) et V₂ (l’arrivée).",
+                      "Écrire t en décimal, puis c = 1 + t.",
+                      "Contrôle : hausse, c > 1 ; baisse, c < 1.",
+                      "Au tableur, arrondie et recopiée : =ARRONDI((B3-B2)/B2*100;1)."
+                    ]
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": ["taux-evolution", "coefficient-multiplicateur"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B1-02-A1-07-COURS-HT-TTC",
+        "type": "fp-story",
+        "titre": "Cours : HT, TTC et remises",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B1-02-A1-07-COURS-HT-TTC",
+            "presentation": {
+              "version": 2,
+              "screenId": "B1-02-A1-07-COURS-HT-TTC",
+              "renderer": "lesson",
+              "props": {
+                "title": "HT, TTC, remise : toujours un coefficient",
+                "subtitle": "Trace écrite · notion 1 · page 2 sur 2",
+                "blocks": [
+                  {
+                    "kind": "definition",
+                    "title": "Du HT au TTC",
+                    "text": "La TVA se calcule sur le prix HT.\nÀ 20 %, le coefficient vaut 1,20.",
+                    "formula": "TTC = HT × 1,20\nHT = TTC ÷ 1,20\nremise de r : prix × (1 − r)"
+                  },
+                  {
+                    "kind": "example",
+                    "title": "Pour débuter : le casque",
+                    "text": "Un casque à 30 € HT, TVA à 20 %, puis une remise de 10 %.",
+                    "steps": [
+                      "30 × 1,20 = 36 € TTC.",
+                      "Retour : 36 ÷ 1,20 = 30 € HT.",
+                      "Remise : 36 × 0,90 = 32,40 €."
+                    ]
+                  },
+                  {
+                    "kind": "method",
+                    "title": "Aller : ×, retour : ÷",
+                    "text": "Le retour divise par le même coefficient.",
+                    "steps": [
+                      "Du HT au TTC : × 1,20.",
+                      "Du TTC au HT : ÷ 1,20, jamais − 20 %.",
+                      "Une remise : × (1 − r), jamais r en euros."
+                    ]
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": ["coefficient-multiplicateur", "pourcentage"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B1-02-A1-08-EXEMPLE-JEU",
+        "type": "ecran-verrouille",
+        "titre": "Exemple guidé : un jeu de société, de l’achat à la caisse",
+        "duree": 6,
+        "interactif": false,
+        "donnees": {}
+      },
+      {
+        "id": "B1-02-A1-09-ATELIER-PRIX",
+        "type": "ecran-verrouille",
+        "titre": "Exercice 1 — La nouvelle grille",
+        "duree": 10,
+        "interactif": false,
+        "donnees": {}
+      },
+      {
+        "id": "B1-02-A1-10-TABLEUR-CA",
+        "type": "ecran-verrouille",
+        "titre": "Exercice 2 — L’évolution du chiffre d’affaires au tableur",
+        "duree": 9,
+        "interactif": false,
+        "donnees": {}
+      },
+      {
+        "id": "B1-02-A1-11-JALON",
+        "type": "ecran-verrouille",
+        "titre": "Jalon 1 : du taux au coefficient",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {}
+      },
+      {
+        "id": "B1-02-A2-01-REFLEXION-SOLDES",
+        "type": "ecran-verrouille",
+        "titre": "Réfléchir : + 10 %, puis − 10 %",
+        "duree": 5,
+        "interactif": false,
+        "donnees": {}
+      },
+      {
+        "id": "B1-02-A2-02-COURS-SUCCESSIVES",
+        "type": "fp-story",
+        "titre": "Cours : évolutions successives",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B1-02-A2-02-COURS-SUCCESSIVES",
+            "presentation": {
+              "version": 2,
+              "screenId": "B1-02-A2-02-COURS-SUCCESSIVES",
+              "renderer": "lesson",
+              "props": {
+                "title": "Évolutions successives : on multiplie",
+                "subtitle": "Trace écrite · notion 2 · page 1 sur 2",
+                "blocks": [
+                  {
+                    "kind": "definition",
+                    "title": "Un coefficient par évolution",
+                    "text": "Des évolutions successives multiplient leurs coefficients.\nLe taux global se lit sur le coefficient global.",
+                    "formula": "C = c₁ × c₂ × … × cₙ\ntaux global = C − 1"
+                  },
+                  {
+                    "kind": "example",
+                    "title": "Pour débuter : le loyer",
+                    "text": "Un loyer augmente de 10 %, puis de 20 %.",
+                    "steps": [
+                      "c₁ = 1,10 et c₂ = 1,20.",
+                      "C = 1,10 × 1,20 = 1,32.",
+                      "Taux global : + 32 %, pas + 30 %."
+                    ]
+                  },
+                  {
+                    "kind": "method",
+                    "title": "Coefficients, jamais taux",
+                    "text": "Chaque évolution porte sur le résultat de la précédente.",
+                    "steps": [
+                      "Écrire chaque évolution en coefficient.",
+                      "Multiplier les coefficients.",
+                      "Retirer 1 : C = 0,97 se lit − 3 %."
+                    ]
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": ["evolutions-successives"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B1-02-A2-03-COURS-RECIPROQUE",
+        "type": "fp-story",
+        "titre": "Cours : évolution réciproque",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B1-02-A2-03-COURS-RECIPROQUE",
+            "presentation": {
+              "version": 2,
+              "screenId": "B1-02-A2-03-COURS-RECIPROQUE",
+              "renderer": "lesson",
+              "props": {
+                "title": "Évolution réciproque : revenir au départ",
+                "subtitle": "Trace écrite · notion 2 · page 2 sur 2",
+                "blocks": [
+                  {
+                    "kind": "definition",
+                    "title": "Défaire une évolution",
+                    "text": "Revenir au départ, c’est diviser par c.\nLe taux du retour n’est pas celui de l’aller.",
+                    "formula": "c réciproque = 1 ÷ c\nt réciproque = 1 ÷ c − 1"
+                  },
+                  {
+                    "kind": "example",
+                    "title": "Pour débuter : le vélo",
+                    "text": "Le prix d’un vélo baisse de 50 %.",
+                    "steps": [
+                      "c = 0,5.",
+                      "1 ÷ 0,5 = 2.",
+                      "Pour revenir au prix : + 100 %, pas + 50 %."
+                    ]
+                  },
+                  {
+                    "kind": "method",
+                    "title": "Le retour n’a pas le même taux",
+                    "text": "On part du coefficient de l’aller.",
+                    "steps": [
+                      "Écrire le coefficient de l’aller.",
+                      "Diviser 1 par ce coefficient.",
+                      "Retirer 1 et lire le taux."
+                    ]
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": ["evolution-reciproque"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B1-02-A2-04-EXEMPLE-PROMO",
+        "type": "ecran-verrouille",
+        "titre": "Exemple guidé : hausse, puis promotion",
+        "duree": 6,
+        "interactif": false,
+        "donnees": {}
+      },
+      {
+        "id": "B1-02-A2-05-TABLEAU-PRIX",
+        "type": "ecran-verrouille",
+        "titre": "Exercice 3 — Une hausse, puis des soldes",
+        "duree": 8,
+        "interactif": false,
+        "donnees": {}
+      },
+      {
+        "id": "B1-02-A2-06-ATELIER-RETOUR",
+        "type": "ecran-verrouille",
+        "titre": "Exercice 4 — Deux hausses, un retour",
+        "duree": 10,
+        "interactif": false,
+        "donnees": {}
+      },
+      {
+        "id": "B1-02-A2-07-JALON",
+        "type": "ecran-verrouille",
+        "titre": "Jalon 2 : enchaîner et revenir",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {}
+      },
+      {
+        "id": "B1-02-A3-01-VOTE-INDICES",
+        "type": "ecran-verrouille",
+        "titre": "Vote : que dit un indice ?",
+        "duree": 5,
+        "interactif": false,
+        "donnees": {}
+      },
+      {
+        "id": "B1-02-A3-02-COURS-INDICE",
+        "type": "fp-story",
+        "titre": "Cours : indice base 100",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B1-02-A3-02-COURS-INDICE",
+            "presentation": {
+              "version": 2,
+              "screenId": "B1-02-A3-02-COURS-INDICE",
+              "renderer": "lesson",
+              "props": {
+                "title": "Indice base 100 : comparer à une année",
+                "subtitle": "Trace écrite · notion 3 · page 1 sur 2",
+                "blocks": [
+                  {
+                    "kind": "definition",
+                    "title": "Une année de base",
+                    "text": "L’indice vaut 100 l’année de base.\nIl dit où en est la valeur par rapport à cette année.",
+                    "formula": "I = V ÷ V₀ × 100\ntaux depuis la base = I − 100\ntaux entre deux dates = I₂ ÷ I₁ − 1"
+                  },
+                  {
+                    "kind": "example",
+                    "title": "Pour débuter : le ticket de bus",
+                    "text": "Un ticket coûte 2 € en 2020 et 3 € en 2025.",
+                    "steps": [
+                      "I = 3 ÷ 2 × 100 = 150.",
+                      "150 − 100 = 50 : + 50 % depuis 2020.",
+                      "150 n’est ni un prix, ni + 150 %."
+                    ]
+                  },
+                  {
+                    "kind": "method",
+                    "title": "Ni un prix, ni un taux",
+                    "text": "Au tableur, la valeur de base reste figée.",
+                    "steps": [
+                      "Années en colonne, base en B2 ; en C3 : =B3/$B$2*100.",
+                      "Recopier : le $ garde la même base.",
+                      "Lire : I − 100 donne le taux depuis la base."
+                    ]
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": ["indice-base-100", "tableur"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B1-02-A3-03-COURS-TAUX-MOYEN",
+        "type": "fp-story",
+        "titre": "Cours : taux annuel moyen",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B1-02-A3-03-COURS-TAUX-MOYEN",
+            "presentation": {
+              "version": 2,
+              "screenId": "B1-02-A3-03-COURS-TAUX-MOYEN",
+              "renderer": "lesson",
+              "props": {
+                "title": "Taux moyen : la même hausse chaque année",
+                "subtitle": "Trace écrite · notion 3 · page 2 sur 2",
+                "blocks": [
+                  {
+                    "kind": "definition",
+                    "title": "Un taux constant équivalent",
+                    "text": "Le taux moyen donne la même évolution globale, à taux constant.\nOn prend la puissance 1/n du coefficient global.",
+                    "formula": "c moyen = C^(1/n)\nt moyen = C^(1/n) − 1\ntableur : =PUISSANCE(C;1/n)-1"
+                  },
+                  {
+                    "kind": "example",
+                    "title": "Pour débuter : l’épargne",
+                    "text": "Un compte passe de 100 € à 169 € en 2 ans.",
+                    "steps": [
+                      "C = 169 ÷ 100 = 1,69.",
+                      "c moyen = 1,69^(1/2) = 1,3.",
+                      "+ 30 % par an, pas + 34,5 %."
+                    ]
+                  },
+                  {
+                    "kind": "method",
+                    "title": "n compte les évolutions",
+                    "text": "Compter les évolutions, pas les années citées.",
+                    "steps": [
+                      "C = arrivée ÷ départ.",
+                      "De 2021 à 2024 : n = 3.",
+                      "Contrôle : c moyen puissance n redonne C."
+                    ]
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": ["taux-moyen", "tableur"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B1-02-A3-04-EXEMPLE-CLIENTS",
+        "type": "ecran-verrouille",
+        "titre": "Exemple guidé : les clients du réseau",
+        "duree": 6,
+        "interactif": false,
+        "donnees": {}
+      },
+      {
+        "id": "B1-02-A3-05-TABLEUR-CNIL",
+        "type": "ecran-verrouille",
+        "titre": "Exercice 5 — Les sanctions de la CNIL",
+        "duree": 10,
+        "interactif": false,
+        "donnees": {}
+      },
+      {
+        "id": "B1-02-A3-06-JALON",
+        "type": "ecran-verrouille",
+        "titre": "Jalon 3 : indice et taux moyen",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {}
+      },
+      {
+        "id": "B1-02-A4-01-RAPPEL",
+        "type": "ecran-verrouille",
+        "titre": "Rappel : de mémoire, sans vos notes",
+        "duree": 6,
+        "interactif": false,
+        "donnees": {}
+      },
+      {
+        "id": "B1-02-A4-02-FICHE-MEMO",
+        "type": "fp-story",
+        "titre": "Fiche mémo : évolutions, coefficients, indices",
+        "duree": 2,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B1-02-A4-02-FICHE-MEMO",
+            "presentation": {
+              "version": 2,
+              "screenId": "B1-02-A4-02-FICHE-MEMO",
+              "renderer": "grid",
+              "props": {
+                "title": "Fiche mémo : évolutions, coefficients, indices",
+                "subtitle": "À garder pour le CCF : chaque carte part d’une question et donne la méthode et son piège.",
+                "items": [
+                  {
+                    "title": "Taux d’évolution",
+                    "description": "De combien ça a bougé ?",
+                    "back": "t = (V₂ − V₁) ÷ V₁. Toujours le départ en bas."
+                  },
+                  {
+                    "title": "Coefficient",
+                    "description": "Par quoi multiplier ?",
+                    "back": "c = 1 + t : + 7 % donne 1,07 ; − 7 % donne 0,93."
+                  },
+                  {
+                    "title": "Départ ou arrivée",
+                    "description": "Quelle valeur je cherche ?",
+                    "back": "V₂ = V₁ × c ; V₁ = V₂ ÷ c."
+                  },
+                  {
+                    "title": "HT et TTC",
+                    "description": "Quel sens ?",
+                    "back": "TTC = HT × 1,20 ; HT = TTC ÷ 1,20. Jamais − 20 % sur le TTC."
+                  },
+                  {
+                    "title": "Évolutions successives",
+                    "description": "Plusieurs évolutions ?",
+                    "back": "On multiplie les coefficients, jamais on n’additionne les taux. Taux global = C − 1."
+                  },
+                  {
+                    "title": "Évolution réciproque",
+                    "description": "Revenir au départ ?",
+                    "back": "c réciproque = 1 ÷ c. Le retour n’a pas le même taux."
+                  },
+                  {
+                    "title": "Indice base 100",
+                    "description": "Que dit un indice ?",
+                    "back": "I = V ÷ V₀ × 100. I − 100 donne le taux depuis la base."
+                  },
+                  {
+                    "title": "Taux moyen",
+                    "description": "Un taux constant équivalent ?",
+                    "back": "c moyen = C^(1/n), n comptant les évolutions. Jamais le taux global ÷ n."
+                  },
+                  {
+                    "title": "Tableur",
+                    "description": "La formule à recopier ?",
+                    "back": "La valeur de base figée par des $. Taux moyen : =PUISSANCE(C;1/n)-1."
+                  },
+                  {
+                    "title": "Référentiel du BTS CG",
+                    "description": "Le programme de mathématiques et l’épreuve E3.",
+                    "href": "https://enqdip.sup.adc.education.fr/bts/referentiel/BTS_ComptabiliteGestion.pdf",
+                    "external": true
+                  }
+                ],
+                "imprimable": true
+              }
+            },
+            "metadonnees": {
+              "concepts": [
+                "taux-evolution",
+                "coefficient-multiplicateur",
+                "evolutions-successives",
+                "evolution-reciproque",
+                "indice-base-100",
+                "taux-moyen",
+                "pourcentage",
+                "tableur"
+              ],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 2,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      }
+    ]
+  }
+}

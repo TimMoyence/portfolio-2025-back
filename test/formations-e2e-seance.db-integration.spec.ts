@@ -35,6 +35,7 @@ import {
   COURS_B2_06,
   COURS_B3_01,
   COURS_B1_01,
+  COURS_B1_02,
 } from './factories/contenus-publies';
 import { prefixeDuCours } from './factories/contenus-de-cours.factory';
 import {
@@ -1771,5 +1772,13 @@ seanceComplete(COURS_B1_01, {
   questionsNotees: 15,
   cellulesDesFeuilles: [6],
   exerciceEnAvance: 'B1-01-A2-04-EXEMPLE-SOIREES',
+  enigmes: 0,
+});
+
+seanceComplete(COURS_B1_02, {
+  ...TRAME_DES_COURS_B2,
+  questionsNotees: 12,
+  cellulesDesFeuilles: [7, 6],
+  exerciceEnAvance: 'B1-02-A2-04-EXEMPLE-PROMO',
   enigmes: 0,
 });

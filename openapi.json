@@ -8993,6 +8993,14 @@
           "libelleConfusion"
         ]
       },
+      "SensDeRecopie": {
+        "type": "string",
+        "enum": [
+          "bas",
+          "droite"
+        ],
+        "description": "Sens de la recopie, vers le bas si absent"
+      },
       "RecopieDeCelluleDto": {
         "type": "object",
         "properties": {
@@ -9000,8 +9008,16 @@
             "type": "string",
             "minLength": 2,
             "maxLength": 12,
-            "description": "Cellule recopiee vers la cellule du dessous",
+            "description": "Cellule recopiee vers sa voisine",
             "example": "D2"
+          },
+          "sens": {
+            "description": "Sens de la recopie, vers le bas si absent",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SensDeRecopie"
+              }
+            ]
           }
         },
         "required": [
