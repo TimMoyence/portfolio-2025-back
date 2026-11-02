@@ -13,14 +13,30 @@ import {
 import {
   rangsDe,
   recopier,
+  texteDeLEcran,
 } from '../../../../../test/helpers/feuille-de-cours';
 import type { Ecran } from '../../domain/contrats/cours';
 import type { CorrigeFeuille } from '../../domain/cours/Corrige';
 import { corrigerFeuille } from '../../domain/cours/CorrectionProduction';
 import { evaluerCellule } from '../../domain/cours/Formule';
 import { COURS_B2_03 } from './b2-03.cours';
+import {
+  AVANT_SA_PAGE,
+  DEUXIEME_PAGE_APRES_SON_ILLUSTRATION,
+  PAGE_APRES_SON_ILLUSTRATION,
+} from './briques';
 
 const COURS = buildCoursDuContenu(COURS_B2_03);
+
+describe('B2-03 — notes des pages illustrées', () => {
+  it.each([
+    ['B2-03-A1-06-ILLUSTRATION-CONNECTEURS', AVANT_SA_PAGE],
+    ['B2-03-A1-06-COURS-CONNECTEURS', PAGE_APRES_SON_ILLUSTRATION],
+    ['B2-03-A1-07-COURS-IMPLICATION', DEUXIEME_PAGE_APRES_SON_ILLUSTRATION],
+  ])('GR-M4 · %s reprend la note commune aux cours illustrés', (id, note) => {
+    expect(texteDeLEcran(COURS_B2_03, id)).toContain(note);
+  });
+});
 
 interface Facture {
   readonly numero: string;

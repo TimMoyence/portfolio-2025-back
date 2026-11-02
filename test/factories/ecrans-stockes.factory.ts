@@ -1,4 +1,5 @@
 import { somme } from '../../src/common/domain/nombres/statistiques';
+import type { CorrigeFeuille } from '../../src/modules/formations/domain/cours/Corrige';
 import type {
   ContenuAPublier,
   ContenuDeCoursBrut,
@@ -278,18 +279,7 @@ const PROPRIETES_PAR_BRIQUE: Readonly<Record<string, Record<string, unknown>>> =
         },
       ],
     },
-    'fp-sheet': {
-      plan: buildPlanFeuille(),
-      questions: [
-        {
-          type: 'feuille',
-          id: buildPlanFeuille().id,
-          concept: 'tableur',
-          noteCompte: true,
-          corrige: buildCorrigeFeuille(),
-        },
-      ],
-    },
+    'fp-sheet': buildProprietesDeFeuille(buildCorrigeFeuille()),
     'fp-table-build': {
       plan: PLAN_TABLEAU,
       questions: [
@@ -367,6 +357,23 @@ const PROPRIETES_PAR_BRIQUE: Readonly<Record<string, Record<string, unknown>>> =
   };
 
 export const BRIQUES_STOCKEES = Object.keys(PROPRIETES_PAR_BRIQUE);
+
+export function buildProprietesDeFeuille(
+  corrige: CorrigeFeuille,
+): Record<string, unknown> {
+  return {
+    plan: buildPlanFeuille(),
+    questions: [
+      {
+        type: 'feuille',
+        id: buildPlanFeuille().id,
+        concept: 'tableur',
+        noteCompte: true,
+        corrige,
+      },
+    ],
+  };
+}
 
 export function buildProprietesStockees(
   brique: string,

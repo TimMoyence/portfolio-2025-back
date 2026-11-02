@@ -1,8 +1,10 @@
 import {
   buildEcranDeBrique,
+  buildProprietesDeFeuille,
   buildProprietesStockees,
   PARCOURS_ENIGMES,
 } from '../../../../../test/factories/ecrans-stockes.factory';
+import { buildCorrigeFeuille } from '../../../../../test/factories/corriges.factory';
 import {
   buildNumeriqueStockee,
   buildOptionStockee,
@@ -174,20 +176,61 @@ describe('garde confidentialite — volet exact', () => {
     expect(fuites(cours)).toEqual(attendu);
   });
 
+  const fuitesDuTexteAvant = (texte: string, solution: number, forme: string) =>
+    fuites(
+      recomposer(base, [
+        ouverture,
+        texteDe(AVANT, texte),
+        atelierAvec({ solution, formePubliee: forme }),
+        cloture,
+      ]),
+    );
+
   it.each([
     ['−30 960 €', [AVANT]],
     ['-30 960 €', [AVANT]],
     ['−130 960 €', []],
-  ])('confond les espaces et les signes moins : « %s »', (texte, attendu) => {
-    const cours = recomposer(base, [
-      ouverture,
-      texteDe(AVANT, texte),
-      atelierAvec({ solution: -30960, formePubliee: '−30 960' }),
-      cloture,
-    ]);
+    ['−30 960,00 €', [AVANT]],
+    ['−30 960,50 €', []],
+    ['−30 960,05 €', []],
+    ['−30 960 000 €', []],
+  ])(
+    'GR-M2 · lit le nombre entier, espaces et signes moins confondus : « %s »',
+    (texte, attendu) => {
+      expect(fuitesDuTexteAvant(texte, -30960, '−30 960')).toEqual(attendu);
+    },
+  );
 
-    expect(fuites(cours)).toEqual(attendu);
-  });
+  it.each([
+    ['983,78 100 fois', '983,78', [AVANT]],
+    ['un total de 2 135 clients', '135', []],
+    ['en 2025 135 clients', '135', [AVANT]],
+    ['12,5 135 fois', '135', [AVANT]],
+    ['135,00 100 fois', '135', [AVANT]],
+  ])(
+    'GR-M2 · ne prolonge une réponse que par ce qui appartient à son nombre : « %s »',
+    (texte, forme, attendu) => {
+      expect(fuitesDuTexteAvant(texte, 135, forme)).toEqual(attendu);
+    },
+  );
+
+  it.each([
+    ['un taux de 15,5 %', '15,5 %', [AVANT]],
+    ['un taux de 15,5 sur la carte', '15,5 %', [AVANT]],
+    ['un taux de 115,5 sur la carte', '15,5 %', []],
+    ['un taux de 15,55 sur la carte', '15,5 %', []],
+    ['une hausse de + 50 %', '50 €', []],
+    ['un total de 135.', '135 €', [AVANT]],
+    ['une valeur de 135', '135 €', [AVANT]],
+    ['un total de 135 000 clients', '135 €', []],
+    ['un total de 1 250.', '1 250 €', [AVANT]],
+    ['il en reste 4 098 dans l’export', '4 098 lignes', [AVANT]],
+  ])(
+    'GR-M1 · cherche une réponse publiée sans son unité : « %s », réponse %s',
+    (texte, forme, attendu) => {
+      expect(fuitesDuTexteAvant(texte, 15.5, forme)).toEqual(attendu);
+    },
+  );
 
   it('refuse le libelle exact de la bonne option d un vote, ecran de la question compris', () => {
     const cours = recomposer(base, [
@@ -362,6 +405,30 @@ describe('garde confidentialite — rappels, productions et enigmes', () => {
     'cherche les attendus d une feuille a leur precision calculee, pas a leur arrondi d affichage : « %s »',
     (texte, attendu) => {
       expect(fuitesAvant(texte, production('fp-sheet'))).toEqual(attendu);
+    },
+  );
+
+  const feuilleArrondie = (): Ecran => {
+    const [attendu] = buildCorrigeFeuille().attendus;
+    return lireEcranStocke(
+      buildEcranDeBrique('fp-sheet', {
+        screenId: 'B2-01-A1-05-PRODUCTION',
+        dureeMinutes: 8,
+        proprietes: buildProprietesDeFeuille(
+          buildCorrigeFeuille({ attendus: [{ ...attendu, valeur: 116.7 }] }),
+        ),
+      }),
+    );
+  };
+
+  it.each([
+    ['un indice de 116,7', [AVANT_PRODUCTION]],
+    ['un indice de 116,75', []],
+    ['un indice de 1 116,7', []],
+  ])(
+    'GR-M1 · cherche un attendu de feuille arrondi par ARRONDI à sa forme propre : « %s »',
+    (texte, attendu) => {
+      expect(fuitesAvant(texte, feuilleArrondie())).toEqual(attendu);
     },
   );
 

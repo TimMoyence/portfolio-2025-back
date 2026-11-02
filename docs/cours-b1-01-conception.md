@@ -166,7 +166,7 @@ Parts arrondies au dixième de pourcentage quand elles ne tombent pas juste.
 ### 3.1 Vue d'ensemble
 
 Identifiants : `B1-01-A{acte}-{rang}-{SLUG}`, conformes à `^B1-01-A[1-6]-\d{2}-[A-Z0-9-]+$` ; une
-illustration, à son arrivée, portera le rang de la page qu'elle précède. Colonne « Brique · rendu » : valeur de la
+illustration porte le rang de la page qu'elle précède. Colonne « Brique · rendu » : valeur de la
 colonne `brique` ; les écrans « v2 » sont stockés en `fp-story` avec une présentation v2. « I » =
 interactif. « Q » = questions fermées notées portées par l'écran.
 

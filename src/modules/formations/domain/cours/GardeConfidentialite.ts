@@ -1,4 +1,8 @@
-import { nombreFrancais } from '../../../../common/domain/nombres/ecriture-francaise';
+import { auMillionieme } from '../../../../common/domain/nombres/arrondi';
+import {
+  nombreFrancais,
+  nombreSansArrondi,
+} from '../../../../common/domain/nombres/ecriture-francaise';
 import { sansEspacesNiMoinsTypographiques } from '../../../../common/domain/texte/sans-espaces-typographiques';
 import { tronquer } from '../../../../common/domain/texte/tronquer';
 import type { Cours, Ecran, Question } from '../contrats/cours';
@@ -8,6 +12,7 @@ import { cueillirDansArbre, cueillirSous } from './ArbreDeValeurs';
 import type { CorrigeProduction } from './Corrige';
 import { questionsDe } from './Cours';
 import { projeterCatalogue } from './Diffusion';
+import { lireNombreSaisi } from './Formule';
 
 export interface Manquement {
   readonly ecran: string | null;
@@ -25,6 +30,11 @@ const FACTEUR_DE_POURCENTAGE = 100;
 const CHIFFRES_SIGNIFICATIFS_MINIMUM = 3;
 const LONGUEUR_D_EXTRAIT = 80;
 const CHIFFRE = /\d/;
+const SUITE_D_UN_ENTIER = /^(?:\d|,\d| \d{3}(?!\d))/u;
+const FIN_DE_GROUPE_DE_MILLIERS = /^\d{3}(?!\d)/u;
+const DEBUT_DE_GROUPE_DE_MILLIERS = /(?:^|[^\d,])\d{1,3} $/u;
+const LONGUEUR_D_UN_DEBUT_DE_GROUPE = 5;
+const NOMBRE_ET_SON_UNITE = /^[+−-]?\s?(\d+(?:\s\d{3})*(?:,\d+)?)\s?[^\d\s]+$/u;
 const TYPE_D_ECRAN_VERROUILLE = 'ecran-verrouille';
 
 interface Contexte {
@@ -48,14 +58,36 @@ function estChiffre(caractere: string): boolean {
   return caractere >= '0' && caractere <= '9';
 }
 
-function contientLaForme(texte: string, forme: string): boolean {
+function prolongeLeNombre(forme: string, suite: string): boolean {
+  if (!estChiffre(forme.slice(-1))) {
+    return false;
+  }
+  return forme.includes(',')
+    ? estChiffre(suite.replace(/^0+/u, '').charAt(0))
+    : SUITE_D_UN_ENTIER.test(suite.replace(/^,0+(?=\D|$)/u, '.'));
+}
+
+function precedeLeNombre(forme: string, avant: string): boolean {
+  const dernier = avant.slice(-1);
+  return (
+    estChiffre(dernier) ||
+    dernier === ',' ||
+    (DEBUT_DE_GROUPE_DE_MILLIERS.test(avant) &&
+      FIN_DE_GROUPE_DE_MILLIERS.test(forme))
+  );
+}
+
+export function contientLaForme(texte: string, forme: string): boolean {
   const source = sansEspacesNiMoinsTypographiques(texte);
   const cible = sansEspacesNiMoinsTypographiques(forme);
   let depart = source.indexOf(cible);
   while (depart !== -1) {
-    const avant = source.charAt(depart - 1);
-    const apres = source.charAt(depart + cible.length);
-    if (!estChiffre(avant) && avant !== ',' && !estChiffre(apres)) {
+    const avant = source.slice(
+      Math.max(0, depart - LONGUEUR_D_UN_DEBUT_DE_GROUPE),
+      depart,
+    );
+    const suite = source.slice(depart + cible.length);
+    if (!precedeLeNombre(cible, avant) && !prolongeLeNombre(cible, suite)) {
       return true;
     }
     depart = source.indexOf(cible, depart + 1);
@@ -201,6 +233,20 @@ function signaler(
   }));
 }
 
+function formesDeLaReponse(forme: string): readonly string[] {
+  const nombre = NOMBRE_ET_SON_UNITE.exec(
+    sansEspacesNiMoinsTypographiques(forme),
+  )?.[1];
+  if (nombre === undefined) {
+    return [forme];
+  }
+  const valeur = lireNombreSaisi(nombre);
+  return valeur !== null &&
+    chiffresSignificatifs(valeur) >= CHIFFRES_SIGNIFICATIFS_MINIMUM
+    ? [forme, nombre]
+    : [forme];
+}
+
 function fuitesDeForme(
   contexte: Contexte,
   cible: QuestionPlacee,
@@ -212,11 +258,14 @@ function fuitesDeForme(
     exclue: cible.question.id,
     decimales: decimalesDe(forme),
   });
+  const formes = formesDeLaReponse(forme);
   return signaler(
     cible,
     'exact',
     `« ${forme} »`,
-    textes.filter((texte) => contientLaForme(texte.texte, forme)),
+    textes.filter((texte) =>
+      formes.some((ecrite) => contientLaForme(texte.texte, ecrite)),
+    ),
   );
 }
 
@@ -284,12 +333,22 @@ function formesDesAttendus(corrige: CorrigeProduction): readonly string[] {
     );
   return [
     ...new Set(
-      valeurs.flatMap((valeur) =>
-        decimales.flatMap((precision) => [
-          nombreFrancais(Math.abs(valeur), precision),
-          nombreFrancais(Math.abs(valeur) * FACTEUR_DE_POURCENTAGE, precision),
-        ]),
-      ),
+      valeurs.flatMap((valeur) => {
+        const part = Math.abs(valeur);
+        const pourcentage = part * FACTEUR_DE_POURCENTAGE;
+        return [
+          ...decimales.flatMap((precision) => [
+            nombreFrancais(part, precision),
+            nombreFrancais(pourcentage, precision),
+          ]),
+          ...(corrige.type === 'feuille'
+            ? [part, pourcentage]
+                .map(auMillionieme)
+                .filter((nombre) => !Number.isInteger(nombre))
+                .map(nombreSansArrondi)
+            : []),
+        ];
+      }),
     ),
   ];
 }

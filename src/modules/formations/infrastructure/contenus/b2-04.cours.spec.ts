@@ -23,6 +23,8 @@ import { arrondi } from '../../../../common/domain/nombres/arrondi';
 import { avecVirgule } from '../../../../common/domain/nombres/ecriture-francaise';
 import { somme } from '../../../../common/domain/nombres/statistiques';
 import { corrigerFeuille } from '../../domain/cours/CorrectionProduction';
+import { controlerConfidentialite } from '../../domain/cours/GardeConfidentialite';
+import { tirer } from '../../domain/cours/Tirage';
 import { COURS_B2_04 } from './b2-04.cours';
 
 const COURS = buildCoursDuContenu(COURS_B2_04);
@@ -132,6 +134,18 @@ describe('B2-04 — textes relus contre les données', () => {
       `${avecVirgule(tauxMoyen, 2)} %`,
     );
     expect(avecVirgule(tauxMoyen, 0)).toBe(avecVirgule(TAUX_B * 100, 0));
+  });
+
+  it('GR-M1 · la dérogation du graphique public ne couvre que 958 et 983,78', () => {
+    const manquements = controlerConfidentialite(COURS, tirer(COURS, 0)).filter(
+      ({ ecran }) => ecran === 'B2-04-A3-01-GRAPHIQUE',
+    );
+
+    expect(
+      manquements.map(
+        ({ raison }) => /^volet exact : « ([^»]+) »/u.exec(raison)?.[1],
+      ),
+    ).toEqual(['958 k€', '983,78 k€']);
   });
 
   it('trace les deux hypothèses de 2025 à 2030 sur le graphique', () => {

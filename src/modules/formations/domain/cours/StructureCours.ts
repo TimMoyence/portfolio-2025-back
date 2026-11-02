@@ -70,6 +70,17 @@ export interface Derogation {
 const DEROGATIONS_DES_COURS: ReadonlyMap<string, readonly Derogation[]> =
   new Map<string, readonly Derogation[]>([
     [
+      'b2-04-suites',
+      [
+        {
+          regle: 'confidentialite',
+          ecran: 'B2-04-A3-01-GRAPHIQUE',
+          raison:
+            'Le graphique public sert 958 (b2-04-a1-u3) et 983,78 (b2-04-a2-v3) : points gardés tels quels, décidé par Tim le 2 novembre 2026.',
+        },
+      ],
+    ],
+    [
       'b2-06-exponentielle-logarithme',
       [
         {
