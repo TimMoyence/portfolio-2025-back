@@ -51,9 +51,7 @@ const GRAVURE_DE_L_ACCROCHE = moteur.gravureDuDomainePublic({
   date: '1822',
 });
 
-const PAGE_1 =
-  '3 min ; la trace écrite est imprimée dans le livret : on lit et on commente, on ne recopie pas.';
-const PAGE_2 = '3 min, enchaînées sur la page 1 : 6 min pour les deux pages.';
+const DOSSIER_DES_ILLUSTRATIONS = '/assets/cours/b1-02/v1';
 
 const ACTE_1: moteur.Acte = [
   {
@@ -236,15 +234,32 @@ const ACTE_1: moteur.Acte = [
       ],
     },
   },
+  moteur.ecranDIllustration(
+    {
+      screenId: 'B1-02-A1-06-ILLUSTRATION-CINEMA',
+      titre: 'Illustration : multiplier, pas ajouter',
+      concepts: ['taux-evolution', 'coefficient-multiplicateur'],
+    },
+    DOSSIER_DES_ILLUSTRATIONS,
+    {
+      fichier: 'cinema-coefficient.webp',
+      imageAlt:
+        'Infographie « Multiplier, pas ajouter ». Deux tickets de cinéma, 10 € et 12 €, reliés par une flèche × 1,2. t = 2 ÷ 10 = 0,2, soit + 20 %. c = 1 + 0,2 = 1,2. Encadré : à − 20 %, c = 0,8 et 10 × 0,8 = 8 €. Moyen mnémotechnique : toujours le départ en bas.',
+    },
+    [
+      moteur.AVANT_SA_PAGE,
+      'Question : « De 10 € à 12 €, on ajoute 2 € ou on multiplie par 1,2 ? » Seul le coefficient resservira.',
+    ],
+  ),
   moteur.ecranV2(
     {
       screenId: 'B1-02-A1-06-COURS-COEFFICIENT',
       titre: 'Cours : taux et coefficient multiplicateur',
       diffusion: 'catalogue',
-      dureeMinutes: 3,
+      dureeMinutes: 2,
       concepts: ['taux-evolution', 'coefficient-multiplicateur'],
       notes: moteur.puces(
-        PAGE_1,
+        moteur.PAGE_APRES_SON_ILLUSTRATION,
         'Faire répéter le moyen mnémotechnique : toujours le départ en bas.',
         'Lien à la mission : « De 100 € à 112 € : quel coefficient ? »',
       ),
@@ -284,15 +299,32 @@ const ACTE_1: moteur.Acte = [
       ],
     },
   ),
+  moteur.ecranDIllustration(
+    {
+      screenId: 'B1-02-A1-07-ILLUSTRATION-CASQUE',
+      titre: 'Illustration : aller, ×, retour, ÷',
+      concepts: ['coefficient-multiplicateur', 'pourcentage'],
+    },
+    DOSSIER_DES_ILLUSTRATIONS,
+    {
+      fichier: 'casque-ht-ttc.webp',
+      imageAlt:
+        'Infographie « Aller : ×, retour : ÷ ». Un casque audio entre deux étiquettes, 30 € HT et 36 € TTC : × 1,20 à l’aller, ÷ 1,20 au retour. Le calcul 36 − 20 % = 28,80 € est barré. Encadré : remise de 10 %, 36 × 0,90 = 32,40 €.',
+    },
+    [
+      moteur.AVANT_SA_PAGE,
+      'Question : « 36 € moins 20 %, on retrouve 30 € ? » Non : 28,80 €, le retour divise.',
+    ],
+  ),
   moteur.ecranV2(
     {
       screenId: 'B1-02-A1-07-COURS-HT-TTC',
       titre: 'Cours : HT, TTC et remises',
       diffusion: 'catalogue',
-      dureeMinutes: 3,
+      dureeMinutes: 2,
       concepts: ['coefficient-multiplicateur', 'pourcentage'],
       notes: moteur.puces(
-        PAGE_2,
+        moteur.DEUXIEME_PAGE_APRES_SON_ILLUSTRATION,
         'Faire répéter le moyen mnémotechnique : aller, ×, retour, ÷.',
         'Lien à la mission : la console de Théo, à 180 € TTC.',
       ),
@@ -586,16 +618,32 @@ const ACTE_2: moteur.Acte = [
       },
     },
   ),
+  moteur.ecranDIllustration(
+    {
+      screenId: 'B1-02-A2-02-ILLUSTRATION-LOYER',
+      titre: 'Illustration : + 10 %, + 20 %, pas + 30 %',
+      concepts: ['evolutions-successives'],
+    },
+    DOSSIER_DES_ILLUSTRATIONS,
+    {
+      fichier: 'loyer-successives.webp',
+      imageAlt:
+        'Infographie « + 10 %, + 20 % : pas + 30 % ». Un escalier de 100 à 110, puis à 132 : × 1,10, puis × 1,20. Encadré : C = 1,10 × 1,20 = 1,32, soit + 32 %. Le + 30 % est barré. Moyen mnémotechnique : coefficients, jamais taux.',
+    },
+    [
+      moteur.AVANT_SA_PAGE,
+      'Question : « + 10 % puis + 20 %, pourquoi pas + 30 % ? » La seconde hausse porte sur un prix déjà monté.',
+    ],
+  ),
   moteur.ecranV2(
     {
       screenId: 'B1-02-A2-02-COURS-SUCCESSIVES',
       titre: 'Cours : évolutions successives',
       diffusion: 'catalogue',
-      dureeMinutes: 3,
+      dureeMinutes: 2,
       concepts: ['evolutions-successives'],
       notes: moteur.puces(
-        PAGE_1,
-        'Question : « + 10 % puis + 20 %, pourquoi pas + 30 % ? » La seconde hausse porte sur un prix déjà monté.',
+        moteur.PAGE_APRES_SON_ILLUSTRATION,
         'Faire répéter le moyen mnémotechnique : coefficients, jamais taux.',
       ),
     },
@@ -633,16 +681,32 @@ const ACTE_2: moteur.Acte = [
       ],
     },
   ),
+  moteur.ecranDIllustration(
+    {
+      screenId: 'B1-02-A2-03-ILLUSTRATION-VELO',
+      titre: 'Illustration : le retour n’a pas le même taux',
+      concepts: ['evolution-reciproque'],
+    },
+    DOSSIER_DES_ILLUSTRATIONS,
+    {
+      fichier: 'velo-reciproque.webp',
+      imageAlt:
+        'Infographie « Le retour n’a pas le même taux ». Un vélo passe de 200 € à 100 € par − 50 %, soit × 0,5, et revient à 200 € par + 100 %, soit × 2. Le calcul + 50 % → 150 € est barré. Encadré : 1 ÷ 0,5 = 2.',
+    },
+    [
+      moteur.AVANT_SA_PAGE,
+      'Question : « − 50 %, puis + 50 % : on revient au départ ? » Non : il faut + 100 %.',
+    ],
+  ),
   moteur.ecranV2(
     {
       screenId: 'B1-02-A2-03-COURS-RECIPROQUE',
       titre: 'Cours : évolution réciproque',
       diffusion: 'catalogue',
-      dureeMinutes: 3,
+      dureeMinutes: 2,
       concepts: ['evolution-reciproque'],
       notes: moteur.puces(
-        PAGE_2,
-        'Question : « − 50 %, puis + 50 % : on revient au départ ? » Non : il faut + 100 %.',
+        moteur.DEUXIEME_PAGE_APRES_SON_ILLUSTRATION,
         'Faire répéter le moyen mnémotechnique : le retour n’a pas le même taux.',
       ),
     },
@@ -974,16 +1038,32 @@ const ACTE_3: moteur.Acte = [
       ],
     },
   },
+  moteur.ecranDIllustration(
+    {
+      screenId: 'B1-02-A3-02-ILLUSTRATION-TICKET',
+      titre: 'Illustration : ni un prix, ni un taux',
+      concepts: ['indice-base-100', 'tableur'],
+    },
+    DOSSIER_DES_ILLUSTRATIONS,
+    {
+      fichier: 'ticket-indice.webp',
+      imageAlt:
+        'Infographie « Ni un prix, ni un taux ». Deux barres sur un axe parti de 0 : 2020, 2 €, indice 100 ; 2025, 3 €, indice 150. 3 ÷ 2 × 100 = 150 et 150 − 100 = + 50 %. Les lectures 150 € et + 150 % sont barrées. Encart tableur : 2 en B2, 3 en B3, en C3 la formule =B3/$B$2*100.',
+    },
+    [
+      moteur.AVANT_SA_PAGE,
+      'Question : « 150, c’est un prix ? un taux ? » Ni l’un ni l’autre.',
+    ],
+  ),
   moteur.ecranV2(
     {
       screenId: 'B1-02-A3-02-COURS-INDICE',
       titre: 'Cours : indice base 100',
       diffusion: 'catalogue',
-      dureeMinutes: 3,
+      dureeMinutes: 2,
       concepts: ['indice-base-100', 'tableur'],
       notes: moteur.puces(
-        PAGE_1,
-        'Question : « 150, c’est un prix ? un taux ? » Ni l’un ni l’autre.',
+        moteur.PAGE_APRES_SON_ILLUSTRATION,
         'Faire répéter le moyen mnémotechnique : ni un prix, ni un taux.',
       ),
     },
@@ -1022,15 +1102,32 @@ const ACTE_3: moteur.Acte = [
       ],
     },
   ),
+  moteur.ecranDIllustration(
+    {
+      screenId: 'B1-02-A3-03-ILLUSTRATION-EPARGNE',
+      titre: 'Illustration : la même hausse chaque année',
+      concepts: ['taux-moyen', 'tableur'],
+    },
+    DOSSIER_DES_ILLUSTRATIONS,
+    {
+      fichier: 'epargne-taux-moyen.webp',
+      imageAlt:
+        'Infographie « La même hausse chaque année ». 100 €, 130 €, 169 €, reliés par deux flèches × 1,3. C = 1,69 ; n = 2 ; 1,69 puissance 1/2 = 1,3 ; + 30 % par an. Le calcul 69 ÷ 2 = 34,5 % est barré. Encart tableur : =PUISSANCE(1,69;1/2)-1. Moyen mnémotechnique : n compte les évolutions.',
+    },
+    [
+      moteur.AVANT_SA_PAGE,
+      'Question : « + 69 % en 2 ans, ça fait + 34,5 % par an ? » Non : + 30 % par an.',
+    ],
+  ),
   moteur.ecranV2(
     {
       screenId: 'B1-02-A3-03-COURS-TAUX-MOYEN',
       titre: 'Cours : taux annuel moyen',
       diffusion: 'catalogue',
-      dureeMinutes: 3,
+      dureeMinutes: 2,
       concepts: ['taux-moyen', 'tableur'],
       notes: moteur.puces(
-        PAGE_2,
+        moteur.DEUXIEME_PAGE_APRES_SON_ILLUSTRATION,
         'Question : « De 2021 à 2024, combien d’évolutions ? » Trois, pas quatre.',
         'Faire répéter le moyen mnémotechnique : n compte les évolutions.',
       ),
@@ -1217,10 +1314,25 @@ const REMEDIATIONS: ContenuDeCours['remediations'] = {
   [TAUX_MOYEN_DIVISE]: 'B1-02-A3-03-COURS-TAUX-MOYEN',
 };
 
+const ILLUSTRATIONS = [
+  ['M1', 'cinema-coefficient.webp', 'Multiplier, pas ajouter'],
+  ['M2', 'casque-ht-ttc.webp', 'Aller : ×, retour : ÷'],
+  ['M3', 'loyer-successives.webp', '+ 10 %, + 20 % : pas + 30 %'],
+  ['M4', 'velo-reciproque.webp', 'Le retour n’a pas le même taux'],
+  ['M5', 'ticket-indice.webp', 'Ni un prix, ni un taux'],
+  ['M6', 'epargne-taux-moyen.webp', 'La même hausse chaque année'],
+] as const;
+
+const MEDIAS = moteur.mediasDesIllustrations(
+  DOSSIER_DES_ILLUSTRATIONS,
+  ILLUSTRATIONS,
+  GRAVURE_DE_L_ACCROCHE,
+);
+
 export const COURS_B1_02 = moteur.coursB1(
   [ACTE_1, ACTE_2, ACTE_3, ACTE_4],
   REMEDIATIONS,
-  [GRAVURE_DE_L_ACCROCHE],
+  MEDIAS,
   {
     slug: 'b1-02-evolutions-coefficients-indices',
     titre: 'Évolutions : taux, coefficients, indices',

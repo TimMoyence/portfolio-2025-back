@@ -1,9 +1,11 @@
 import {
   attendreLaFeuille,
   attendreLesNumeriques,
+  CATALOGUE_ILLUSTRE_A_SIX_PAGES,
   corrigeDe,
   corrigeDeFeuille,
   decrireLaFicheDuCours,
+  FORME_DES_COURS_B1,
   valeursEtPieges,
 } from '../../../../../test/helpers/fiche-de-cours';
 import {
@@ -11,6 +13,7 @@ import {
   recopier,
   texteDeLEcran as texteDe,
 } from '../../../../../test/helpers/feuille-de-cours';
+import { valeursAuCatalogue } from '../../../../../test/helpers/relecture-de-cours';
 import { buildCoursDuContenu } from '../../../../../test/factories/contenus-de-cours.factory';
 import {
   arrondi,
@@ -55,6 +58,30 @@ const indice = (valeur: number): number => (valeur / SANCTIONS_2021) * 100;
 const TAUX_MOYEN =
   ((SANCTIONS_2024 / SANCTIONS_2021) ** (1 / EVOLUTIONS_DE_L_ANNALE) - 1) * 100;
 
+const HAUSSE_DU_FOURNISSEUR = 0.08;
+const PRIX_DU_CASQUE_TTC = 36;
+const CA_DE_LA_TROISIEME_BOUTIQUE = 96;
+const PRIX_AUSSI_ECRITS_AUX_PAGES: readonly number[] = [
+  PRIX_DU_CASQUE_TTC,
+  CA_DE_LA_TROISIEME_BOUTIQUE,
+];
+const COEFFICIENT_DES_DEUX_HAUSSES = (1 + HAUSSES[0]) * (1 + HAUSSES[1]);
+
+const REPONSES_DE_L_EXERCICE_4 = [
+  arrondi(COEFFICIENT_DES_DEUX_HAUSSES, 3),
+  auDixieme((COEFFICIENT_DES_DEUX_HAUSSES - 1) * 100),
+  auDixieme((1 / (1 - BAISSE_DES_CARTES) - 1) * 100),
+];
+
+const REPONSES_DE_L_EXERCICE_5 = [
+  auDixieme(indice(SANCTIONS_2022)),
+  auDixieme(indice(SANCTIONS_2023)),
+  auDixieme(indice(SANCTIONS_2024)),
+  auDixieme(evolution(SANCTIONS_2022, SANCTIONS_2024)),
+  auDixieme(evolution(SANCTIONS_2021, SANCTIONS_2024)),
+  auDixieme(TAUX_MOYEN),
+];
+
 const FORMULES_DE_L_ANNALE = {
   C3: '=ARRONDI(C2/$B$2*100;1)',
   D3: '=ARRONDI(D2/$B$2*100;1)',
@@ -78,24 +105,14 @@ function verdictDe(
 }
 
 decrireLaFicheDuCours('B1-02', COURS, {
+  ...FORME_DES_COURS_B1,
   conception: 'cours-b1-02-conception.md',
-  ecrans: 26,
-  dureeMinutes: 121,
-  minutesParActe: [49, 36, 28, 8, 0, 0],
-  rythme: { expositionContinueMax: 6, interactives: 95, exposition: 26 },
   noteesParType: [3, 6, 0, 2, 1],
   enigmes: 0,
   rappels: 12,
   options: 19,
   catalogue: [
-    'A1-02',
-    'A1-04',
-    'A1-06',
-    'A1-07',
-    'A2-02',
-    'A2-03',
-    'A3-02',
-    'A3-03',
+    ...CATALOGUE_ILLUSTRE_A_SIX_PAGES.filter((code) => !code.startsWith('A4-')),
     'A4-02',
   ],
   ateliersNotes: ['A1-09 (10)', 'A2-06 (10)'],
@@ -148,6 +165,90 @@ describe('B1-02 — textes relus contre les données', () => {
       ),
     ).toEqual([]);
     expect(COURS.ecrans.at(-1)?.id).toBe('B1-02-A4-02-FICHE-MEMO');
+  });
+
+  it.each([
+    ['COEFFICIENT', 'CINEMA', 'A1-06', 'cinema-coefficient'],
+    ['HT-TTC', 'CASQUE', 'A1-07', 'casque-ht-ttc'],
+    ['SUCCESSIVES', 'LOYER', 'A2-02', 'loyer-successives'],
+    ['RECIPROQUE', 'VELO', 'A2-03', 'velo-reciproque'],
+    ['INDICE', 'TICKET', 'A3-02', 'ticket-indice'],
+    ['TAUX-MOYEN', 'EPARGNE', 'A3-03', 'epargne-taux-moyen'],
+  ])(
+    'B102-M14 · projette 1 min l’infographie avant la page %s de 2 min',
+    (page, sujet, rang, fichier) => {
+      const ecrans = COURS_B1_02.ecrans;
+      const position = ecrans.findIndex(
+        (ecran) => ecran.screenId === `B1-02-${rang}-COURS-${page}`,
+      );
+      const illustration = ecrans[position - 1];
+
+      expect(illustration?.screenId).toBe(
+        `B1-02-${rang}-ILLUSTRATION-${sujet}`,
+      );
+      expect(illustration?.dureeMinutes).toBe(1);
+      expect(ecrans[position]?.dureeMinutes).toBe(2);
+      expect(
+        texteDe(COURS_B1_02, `B1-02-${rang}-ILLUSTRATION-${sujet}`),
+      ).toContain(`/assets/cours/b1-02/v1/${fichier}.webp`);
+    },
+  );
+
+  it('B102-M10 · ne sert au catalogue aucune réponse d’exercice, seulement les nombres de ses pages', () => {
+    const reponses = [
+      `${arrondi(MANETTE_TTC / (1 + TVA), 0)} €`,
+      arrondi(MANETTE_TTC * (1 - REMISE), 0),
+      evolution(PACK_AVANT, PACK_APRES),
+      1 + HAUSSE_DU_FOURNISSEUR,
+      ...CA_2025.map((ca, rang) => evolution(ca, CA_2026[rang])).map(auDixieme),
+      auDixieme(evolution(somme(CA_2025), somme(CA_2026))),
+      somme(CA_2025),
+      somme(CA_2026),
+      ...[...APRES_HAUSSE, ...APRES_SOLDES].filter(
+        (prix) => !PRIX_AUSSI_ECRITS_AUX_PAGES.includes(prix),
+      ),
+      ...REPONSES_DE_L_EXERCICE_4,
+      ...REPONSES_DE_L_EXERCICE_5,
+    ];
+
+    expect(valeursAuCatalogue(COURS, reponses)).toEqual([]);
+    expect(valeursAuCatalogue(COURS, ['32,40 €'])).toHaveLength(2);
+  });
+
+  it.each([
+    ['A2-06-ATELIER-RETOUR', REPONSES_DE_L_EXERCICE_4],
+    ['A3-05-TABLEUR-CNIL', REPONSES_DE_L_EXERCICE_5],
+  ])(
+    'B102-M10 · ne montre aucune réponse de %s dans un écran antérieur',
+    (ecran, reponses) => {
+      const ecrans = COURS_B1_02.ecrans.map(({ screenId }) => screenId);
+      const anterieurs = ecrans
+        .slice(0, ecrans.indexOf(`B1-02-${ecran}`))
+        .map((screenId) => texteDe(COURS_B1_02, screenId))
+        .join(' ');
+      const ecrites = reponses.map((reponse) => avecVirgule(reponse));
+
+      expect(ecrites.filter((ecrite) => anterieurs.includes(ecrite))).toEqual(
+        [],
+      );
+      expect(
+        ecrites.filter((ecrite) =>
+          texteDe(COURS_B1_02, `B1-02-${ecran}`).includes(ecrite),
+        ),
+      ).toEqual(ecrites);
+    },
+  );
+
+  it('B102-M14 · décrit l’encart du ticket avec la formule en C3, comme sa page', () => {
+    const illustration = texteDe(
+      COURS_B1_02,
+      'B1-02-A3-02-ILLUSTRATION-TICKET',
+    );
+
+    expect(illustration).toContain('en C3 la formule =B3/$B$2*100');
+    expect(texteDe(COURS_B1_02, 'B1-02-A3-02-COURS-INDICE')).toContain(
+      'en C3 : =B3/$B$2*100',
+    );
   });
 });
 

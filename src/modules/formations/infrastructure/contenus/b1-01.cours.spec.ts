@@ -5,6 +5,7 @@ import {
   corrigeDeFeuille,
   CATALOGUE_ILLUSTRE_A_SIX_PAGES,
   decrireLaFicheDuCours,
+  FORME_DES_COURS_B1,
   valeursEtPieges,
 } from '../../../../../test/helpers/fiche-de-cours';
 import {
@@ -53,11 +54,8 @@ const PORTEURS = CLIENTS.map((clients, rang) => clients * CARTE[rang]);
 const TOUS_LES_PORTEURS = somme(PORTEURS);
 
 decrireLaFicheDuCours('B1-01', COURS, {
+  ...FORME_DES_COURS_B1,
   conception: 'cours-b1-01-conception.md',
-  ecrans: 32,
-  dureeMinutes: 121,
-  minutesParActe: [49, 36, 28, 8, 0, 0],
-  rythme: { expositionContinueMax: 6, interactives: 95, exposition: 26 },
   noteesParType: [3, 10, 0, 1, 1],
   enigmes: 0,
   rappels: 12,

@@ -53,6 +53,13 @@ export interface FicheAttendue {
   readonly gabarit?: Gabarit;
 }
 
+export const FORME_DES_COURS_B1 = {
+  ecrans: 32,
+  dureeMinutes: 121,
+  minutesParActe: [49, 36, 28, 8, 0, 0],
+  rythme: { expositionContinueMax: 6, interactives: 95, exposition: 26 },
+} as const;
+
 export const CATALOGUE_ILLUSTRE_A_CINQ_PAGES = [
   'A1-02',
   'A1-04',

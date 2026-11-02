@@ -7,17 +7,17 @@
 > d'implémentation est un défaut de l'implémentation. Les tests `b1-02.cours.spec.ts` relisent ce
 > document : § 3.1, titres publics du § 3, § 5.9, § 8.2.
 
-| Rubrique    | Valeur                                                                                                       |
-| ----------- | ------------------------------------------------------------------------------------------------------------ |
-| Date        | 30 octobre 2026                                                                                              |
-| Statut      | **Conception validée le 30 octobre 2026** : deuxième cours du plan BTS CG 1 (B1-01 → B1-12)                  |
-| Cours       | `b1-02-evolutions-coefficients-indices`                                                                      |
-| Gabarit     | `v3`, déclaré par le contenu et contrôlé par les quatre règles `gabarit-*` de `verifierStructure`            |
-| Niveau      | `B1` (`moteur.coursB1`)                                                                                      |
-| Titre servi | « Évolutions : taux, coefficients, indices »                                                                 |
-| Durée       | **121 minutes exactes** (somme des écrans), 4 actes de 49, 36, 28 et 8 minutes, plus 2 pauses de 15 min      |
-| Écrans      | **26**, dont 9 écrans catalogue ; 32 écrans et 15 au catalogue quand les six infographies arriveront (§ 8.3) |
-| Sources     | Programme officiel du BTS CG ; sujet 26CGMATPO (Polynésie 2026), exercice 1, partie B ; CNIL, rapport 2024   |
+| Rubrique    | Valeur                                                                                                     |
+| ----------- | ---------------------------------------------------------------------------------------------------------- |
+| Date        | 30 octobre 2026                                                                                            |
+| Statut      | **Conception validée le 30 octobre 2026** : deuxième cours du plan BTS CG 1 (B1-01 → B1-12)                |
+| Cours       | `b1-02-evolutions-coefficients-indices`                                                                    |
+| Gabarit     | `v3`, déclaré par le contenu et contrôlé par les quatre règles `gabarit-*` de `verifierStructure`          |
+| Niveau      | `B1` (`moteur.coursB1`)                                                                                    |
+| Titre servi | « Évolutions : taux, coefficients, indices »                                                               |
+| Durée       | **121 minutes exactes** (somme des écrans), 4 actes de 49, 36, 28 et 8 minutes, plus 2 pauses de 15 min    |
+| Écrans      | **32**, dont 15 écrans catalogue (6 illustrations)                                                         |
+| Sources     | Programme officiel du BTS CG ; sujet 26CGMATPO (Polynésie 2026), exercice 1, partie B ; CNIL, rapport 2024 |
 
 ---
 
@@ -34,8 +34,8 @@
   recopie vers la droite : le tableur gagne le bouton « Recopier vers la droite », sur toute feuille.
 - **Le tableur** : taux recopié vers le bas (exercice 2), indice recopié vers la droite et
   `PUISSANCE` (exercice 5). Deux gestes et une fonction nouvelle, sous le plafond de cinq.
-- **Illustrations en attente.** Six briefs au § 8.3. Tant que les PNG manquent, chaque page dure
-  3 minutes ; à leur arrivée, 1 minute d'illustration et 2 minutes de page, durée inchangée.
+- **Six illustrations.** Chaque page de 2 minutes suit 1 minute sur l'infographie de son exemple pour
+  débuter (§ 8), durée inchangée.
 
 ## 1. Objectifs d'apprentissage et public
 
@@ -88,15 +88,15 @@ Pause 1 après le jalon A1-11 ; pause 2 après le jalon A3-06. Les pauses ne son
 ### 2.2 Le cycle d'une notion
 
 Chaque notion suit : **Réfléchir** (mission, réflexion ou vote) → **Comprendre** (deux pages `lesson`
-de 3 minutes, puis un exemple guidé `fp-worked` corrigé étape par étape) → **S'exercer** (exercices
-notés, corrigés sur place). Chaque page tient en une définition de deux lignes, des formules une par
+de 2 minutes, chacune précédée d'1 minute sur son illustration, puis un exemple guidé `fp-worked`
+corrigé étape par étape) → **S'exercer** (exercices notés, corrigés sur place). Chaque page tient en une définition de deux lignes, des formules une par
 ligne, un exemple pour débuter hors du dossier, une méthode de trois ou quatre lignes titrée par un moyen
 mnémotechnique. Pas d'encadré « Au CCF ».
 
 ### 2.3 Diffusion
 
-Catalogue : l'accroche, le dossier, les six pages de trace écrite et la fiche mémo. Tout le reste est
-servi en séance. Aucun écran catalogue ne porte une réponse d'exercice.
+Catalogue : l'accroche, le dossier, les six pages de trace écrite, leurs six illustrations et la
+fiche mémo. Tout le reste est servi en séance. Aucun écran catalogue ne porte une réponse d'exercice.
 
 ### 2.4 Notation et écriture
 
@@ -107,37 +107,43 @@ porte toujours son signe. Coefficient : c ; coefficient global : C. Un indice s'
 
 ### 3.1 Vue d'ensemble
 
-Identifiants : `B1-02-A{acte}-{rang}-{SLUG}`. Une illustration, à son arrivée, portera le rang de la
-page qu'elle précède. « I » = interactif. « Q » = questions fermées notées portées par l'écran.
+Identifiants : `B1-02-A{acte}-{rang}-{SLUG}`. Une illustration porte le rang de la page qu'elle
+précède. « I » = interactif. « Q » = questions fermées notées portées par l'écran.
 
-| Rang | Identifiant                   | Min | Brique · rendu               |  I  |   Q | Diffusion |
-| ---: | ----------------------------- | --: | ---------------------------- | :-: | --: | --------- |
-|    1 | B1-02-A1-01-DIAGNOSTIC-TAUX   |   4 | `fp-recall`                  |  I  |   1 | seance    |
-|    2 | B1-02-A1-02-ACCROCHE          |   1 | `fp-story` · v2 `hero`       |     |   0 | catalogue |
-|    3 | B1-02-A1-03-VOTE-DIAGNOSTIC   |   4 | `fp-vote`                    |  I  |   0 | seance    |
-|    4 | B1-02-A1-04-DOSSIER           |   2 | `fp-story` · v2 `table`      |     |   0 | catalogue |
-|    5 | B1-02-A1-05-MISSION           |   6 | `fp-pro`                     |  I  |   0 | seance    |
-|    6 | B1-02-A1-06-COURS-COEFFICIENT |   3 | `fp-story` · v2 `lesson`     |     |   0 | catalogue |
-|    7 | B1-02-A1-07-COURS-HT-TTC      |   3 | `fp-story` · v2 `lesson`     |     |   0 | catalogue |
-|    8 | B1-02-A1-08-EXEMPLE-JEU       |   6 | `fp-worked`                  |  I  |   0 | seance    |
-|    9 | B1-02-A1-09-ATELIER-PRIX      |  10 | `questionnaire`              |  I  |   4 | seance    |
-|   10 | B1-02-A1-10-TABLEUR-CA        |   9 | `fp-sheet`                   |  I  |   0 | seance    |
-|   11 | B1-02-A1-11-JALON             |   1 | `fp-pulse`                   |     |   0 | seance    |
-|   12 | B1-02-A2-01-REFLEXION-SOLDES  |   5 | `fp-story` · v2 `reflection` |  I  |   0 | seance    |
-|   13 | B1-02-A2-02-COURS-SUCCESSIVES |   3 | `fp-story` · v2 `lesson`     |     |   0 | catalogue |
-|   14 | B1-02-A2-03-COURS-RECIPROQUE  |   3 | `fp-story` · v2 `lesson`     |     |   0 | catalogue |
-|   15 | B1-02-A2-04-EXEMPLE-PROMO     |   6 | `fp-worked`                  |  I  |   0 | seance    |
-|   16 | B1-02-A2-05-TABLEAU-PRIX      |   8 | `fp-table-build`             |  I  |   0 | seance    |
-|   17 | B1-02-A2-06-ATELIER-RETOUR    |  10 | `questionnaire`              |  I  |   4 | seance    |
-|   18 | B1-02-A2-07-JALON             |   1 | `fp-pulse`                   |     |   0 | seance    |
-|   19 | B1-02-A3-01-VOTE-INDICES      |   5 | `fp-vote`                    |  I  |   0 | seance    |
-|   20 | B1-02-A3-02-COURS-INDICE      |   3 | `fp-story` · v2 `lesson`     |     |   0 | catalogue |
-|   21 | B1-02-A3-03-COURS-TAUX-MOYEN  |   3 | `fp-story` · v2 `lesson`     |     |   0 | catalogue |
-|   22 | B1-02-A3-04-EXEMPLE-CLIENTS   |   6 | `fp-worked`                  |  I  |   0 | seance    |
-|   23 | B1-02-A3-05-TABLEUR-CNIL      |  10 | `fp-sheet`                   |  I  |   0 | seance    |
-|   24 | B1-02-A3-06-JALON             |   1 | `fp-pulse`                   |     |   0 | seance    |
-|   25 | B1-02-A4-01-RAPPEL            |   6 | `fp-spaced`                  |  I  |   0 | seance    |
-|   26 | B1-02-A4-02-FICHE-MEMO        |   2 | `fp-story` · v2 `grid`       |     |   0 | catalogue |
+| Rang | Identifiant                      | Min | Brique · rendu                 |  I  |   Q | Diffusion |
+| ---: | -------------------------------- | --: | ------------------------------ | :-: | --: | --------- |
+|    1 | B1-02-A1-01-DIAGNOSTIC-TAUX      |   4 | `fp-recall`                    |  I  |   1 | seance    |
+|    2 | B1-02-A1-02-ACCROCHE             |   1 | `fp-story` · v2 `hero`         |     |   0 | catalogue |
+|    3 | B1-02-A1-03-VOTE-DIAGNOSTIC      |   4 | `fp-vote`                      |  I  |   0 | seance    |
+|    4 | B1-02-A1-04-DOSSIER              |   2 | `fp-story` · v2 `table`        |     |   0 | catalogue |
+|    5 | B1-02-A1-05-MISSION              |   6 | `fp-pro`                       |  I  |   0 | seance    |
+|    6 | B1-02-A1-06-ILLUSTRATION-CINEMA  |   1 | `fp-story` · v2 `illustration` |     |   0 | catalogue |
+|    7 | B1-02-A1-06-COURS-COEFFICIENT    |   2 | `fp-story` · v2 `lesson`       |     |   0 | catalogue |
+|    8 | B1-02-A1-07-ILLUSTRATION-CASQUE  |   1 | `fp-story` · v2 `illustration` |     |   0 | catalogue |
+|    9 | B1-02-A1-07-COURS-HT-TTC         |   2 | `fp-story` · v2 `lesson`       |     |   0 | catalogue |
+|   10 | B1-02-A1-08-EXEMPLE-JEU          |   6 | `fp-worked`                    |  I  |   0 | seance    |
+|   11 | B1-02-A1-09-ATELIER-PRIX         |  10 | `questionnaire`                |  I  |   4 | seance    |
+|   12 | B1-02-A1-10-TABLEUR-CA           |   9 | `fp-sheet`                     |  I  |   0 | seance    |
+|   13 | B1-02-A1-11-JALON                |   1 | `fp-pulse`                     |     |   0 | seance    |
+|   14 | B1-02-A2-01-REFLEXION-SOLDES     |   5 | `fp-story` · v2 `reflection`   |  I  |   0 | seance    |
+|   15 | B1-02-A2-02-ILLUSTRATION-LOYER   |   1 | `fp-story` · v2 `illustration` |     |   0 | catalogue |
+|   16 | B1-02-A2-02-COURS-SUCCESSIVES    |   2 | `fp-story` · v2 `lesson`       |     |   0 | catalogue |
+|   17 | B1-02-A2-03-ILLUSTRATION-VELO    |   1 | `fp-story` · v2 `illustration` |     |   0 | catalogue |
+|   18 | B1-02-A2-03-COURS-RECIPROQUE     |   2 | `fp-story` · v2 `lesson`       |     |   0 | catalogue |
+|   19 | B1-02-A2-04-EXEMPLE-PROMO        |   6 | `fp-worked`                    |  I  |   0 | seance    |
+|   20 | B1-02-A2-05-TABLEAU-PRIX         |   8 | `fp-table-build`               |  I  |   0 | seance    |
+|   21 | B1-02-A2-06-ATELIER-RETOUR       |  10 | `questionnaire`                |  I  |   4 | seance    |
+|   22 | B1-02-A2-07-JALON                |   1 | `fp-pulse`                     |     |   0 | seance    |
+|   23 | B1-02-A3-01-VOTE-INDICES         |   5 | `fp-vote`                      |  I  |   0 | seance    |
+|   24 | B1-02-A3-02-ILLUSTRATION-TICKET  |   1 | `fp-story` · v2 `illustration` |     |   0 | catalogue |
+|   25 | B1-02-A3-02-COURS-INDICE         |   2 | `fp-story` · v2 `lesson`       |     |   0 | catalogue |
+|   26 | B1-02-A3-03-ILLUSTRATION-EPARGNE |   1 | `fp-story` · v2 `illustration` |     |   0 | catalogue |
+|   27 | B1-02-A3-03-COURS-TAUX-MOYEN     |   2 | `fp-story` · v2 `lesson`       |     |   0 | catalogue |
+|   28 | B1-02-A3-04-EXEMPLE-CLIENTS      |   6 | `fp-worked`                    |  I  |   0 | seance    |
+|   29 | B1-02-A3-05-TABLEUR-CNIL         |  10 | `fp-sheet`                     |  I  |   0 | seance    |
+|   30 | B1-02-A3-06-JALON                |   1 | `fp-pulse`                     |     |   0 | seance    |
+|   31 | B1-02-A4-01-RAPPEL               |   6 | `fp-spaced`                    |  I  |   0 | seance    |
+|   32 | B1-02-A4-02-FICHE-MEMO           |   2 | `fp-story` · v2 `grid`         |     |   0 | catalogue |
 
 Rythme : 95 minutes interactives, 26 d'exposition (jalons compris), exposition continue de 6 minutes
 au plus. Somme : 49 + 36 + 28 + 8 = 121.
@@ -182,13 +188,23 @@ au plus. Somme : 49 + 36 + 28 + 8 = 121.
 - Questions libres : `:taux` (un jeu de 100 € à 112 € : taux et coefficient) ; `:ht` (144 € plus 20 %
   de TVA : que conclure ?) ; `:remise` (qu'a fait Théo pour la manette ?).
 
-#### A1-06 · `B1-02-A1-06-COURS-COEFFICIENT` — 3 min · v2 `lesson` · catalogue
+#### A1-06 · `B1-02-A1-06-ILLUSTRATION-CINEMA` — 1 min · v2 `illustration` · catalogue
+
+- Titre public : « Illustration : multiplier, pas ajouter »
+- Infographie M1 de l'exemple pour débuter : t = 2 ÷ 10 = + 20 %, c = 1,2 ; encadré − 20 % : 10 × 0,8 = 8 €.
+
+#### A1-06 · `B1-02-A1-06-COURS-COEFFICIENT` — 2 min · v2 `lesson` · catalogue
 
 - Titre public : « Cours : taux et coefficient multiplicateur »
 - Page 1 sur 2 : t = (V₂ − V₁) ÷ V₁, c = 1 + t ; exemple la place de cinéma (10 € → 12 €) ; méthode
   « Toujours le départ en bas », dont une ligne pour la formule arrondie et recopiée au tableur.
 
-#### A1-07 · `B1-02-A1-07-COURS-HT-TTC` — 3 min · v2 `lesson` · catalogue
+#### A1-07 · `B1-02-A1-07-ILLUSTRATION-CASQUE` — 1 min · v2 `illustration` · catalogue
+
+- Titre public : « Illustration : aller, ×, retour, ÷ »
+- Infographie M2 de l'exemple pour débuter : 30 € HT, 36 € TTC, × 1,20 et ÷ 1,20 ; barré 36 − 20 % = 28,80 €.
+
+#### A1-07 · `B1-02-A1-07-COURS-HT-TTC` — 2 min · v2 `lesson` · catalogue
 
 - Titre public : « Cours : HT, TTC et remises »
 - Page 2 sur 2 : TTC = HT × 1,20, HT = TTC ÷ 1,20, remise de r : × (1 − r) ; exemple le casque
@@ -235,13 +251,23 @@ au plus. Somme : 49 + 36 + 28 + 8 = 121.
 - `b1-02-a2-reflexion-soldes` : un jeu à 200 €, + 10 % puis − 10 %. Attendu : 200 × 1,10 × 0,90 =
   198 €, la baisse se calcule sur 220 €.
 
-#### A2-02 · `B1-02-A2-02-COURS-SUCCESSIVES` — 3 min · v2 `lesson` · catalogue
+#### A2-02 · `B1-02-A2-02-ILLUSTRATION-LOYER` — 1 min · v2 `illustration` · catalogue
+
+- Titre public : « Illustration : + 10 %, + 20 %, pas + 30 % »
+- Infographie M3 de l'exemple pour débuter : 100, 110, 132 ; C = 1,32, soit + 32 % ; barré + 30 %.
+
+#### A2-02 · `B1-02-A2-02-COURS-SUCCESSIVES` — 2 min · v2 `lesson` · catalogue
 
 - Titre public : « Cours : évolutions successives »
 - Page 1 sur 2 : C = c₁ × c₂, taux global = C − 1 ; exemple le loyer (+ 10 %, + 20 %, + 32 %) ; méthode
   « Coefficients, jamais taux ».
 
-#### A2-03 · `B1-02-A2-03-COURS-RECIPROQUE` — 3 min · v2 `lesson` · catalogue
+#### A2-03 · `B1-02-A2-03-ILLUSTRATION-VELO` — 1 min · v2 `illustration` · catalogue
+
+- Titre public : « Illustration : le retour n’a pas le même taux »
+- Infographie M4 de l'exemple pour débuter : 200 € à 100 € par × 0,5, retour par × 2 ; barré + 50 % → 150 €.
+
+#### A2-03 · `B1-02-A2-03-COURS-RECIPROQUE` — 2 min · v2 `lesson` · catalogue
 
 - Titre public : « Cours : évolution réciproque »
 - Page 2 sur 2 : c réciproque = 1 ÷ c ; exemple le vélo (− 50 %, + 100 %) ; méthode « Le retour n'a
@@ -290,13 +316,23 @@ au plus. Somme : 49 + 36 + 28 + 8 = 121.
 - `b1-02-a3-moyen` : + 21 % en deux ans. Bonne : + 10 % par an ; piège + 10,5 % par an
   (`taux-moyen-arithmetique`).
 
-#### A3-02 · `B1-02-A3-02-COURS-INDICE` — 3 min · v2 `lesson` · catalogue
+#### A3-02 · `B1-02-A3-02-ILLUSTRATION-TICKET` — 1 min · v2 `illustration` · catalogue
+
+- Titre public : « Illustration : ni un prix, ni un taux »
+- Infographie M5 de l'exemple pour débuter : 2 € indice 100, 3 € indice 150 ; barrés 150 € et + 150 % ; encart tableur, formule en C3.
+
+#### A3-02 · `B1-02-A3-02-COURS-INDICE` — 2 min · v2 `lesson` · catalogue
 
 - Titre public : « Cours : indice base 100 »
 - Page 1 sur 2 : I = V ÷ V₀ × 100, taux depuis la base = I − 100 ; exemple le ticket de bus (2 € →
   3 €, 150) ; méthode « Ni un prix, ni un taux ».
 
-#### A3-03 · `B1-02-A3-03-COURS-TAUX-MOYEN` — 3 min · v2 `lesson` · catalogue
+#### A3-03 · `B1-02-A3-03-ILLUSTRATION-EPARGNE` — 1 min · v2 `illustration` · catalogue
+
+- Titre public : « Illustration : la même hausse chaque année »
+- Infographie M6 de l'exemple pour débuter : 100 €, 130 €, 169 €, × 1,3 deux fois ; barré 69 ÷ 2 = 34,5 % ; encart =PUISSANCE(1,69;1/2)-1.
+
+#### A3-03 · `B1-02-A3-03-COURS-TAUX-MOYEN` — 2 min · v2 `lesson` · catalogue
 
 - Titre public : « Cours : taux annuel moyen »
 - Page 2 sur 2 : c moyen = C^(1/n), `PUISSANCE` ; exemple l'épargne (100 € → 169 € en 2 ans, + 30 %) ;
@@ -428,19 +464,28 @@ lecture d'un indice, taux moyen, `PUISSANCE`.
 ### 8.1 Principe
 
 Six infographies, une par exemple pour débuter, chacune projetée sur un écran `illustration` placé
-juste avant sa page. Elles arrivent après ce lot, à partir des briefs du § 8.3. Le cours sert pour
-l'instant la seule gravure de l'accroche.
+juste avant sa page, à partir des briefs du § 8.3. La gravure de l'accroche complète le catalogue.
 
 ### 8.2 Catalogue des médias
 
-| Id  | Écran | Fichier source (page)                                                                                                                                       | Original           | Auteur, date           | Licence        | Dérivé servi                     | Attribution affichée                                            |
-| --- | ----- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------ | ---------------------- | -------------- | -------------------------------- | --------------------------------------------------------------- |
-| M7  | A1-02 | https://commons.wikimedia.org/wiki/File:Chart_Showing_at_One_View_the_Price_of_the_Quarter_of_Wheat,_and_Wages_of_Labour_by_the_Week,_from_1565_to_1821.png | PNG 1 109 × 586 px | William Playfair, 1822 | domaine public | `playfair-ble-salaires-1822.jpg` | « William Playfair, 1822 · Wikimedia Commons (domaine public) » |
+Chaque PNG d'origine (1 536 × 1 024 px) est converti en WebP à la même taille et servi depuis
+`/assets/cours/b1-02/v1/`. Le catalogue est stocké avec le cours (`Cours.medias`) et contrôlé par la
+règle `media-sans-licence`.
+
+| Id  | Écran | Fichier source (page)                                                                                                                                       | Original                     | Auteur, date           | Licence        | Dérivé servi                     | Attribution affichée                                                   |
+| --- | ----- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------- | ---------------------- | -------------- | -------------------------------- | ---------------------------------------------------------------------- |
+| M1  | A1-06 | production propre du cours                                                                                                                                  | PNG 1 536 × 1 024 px, 1,5 Mo | Asili Design, 2026     | CC BY-SA 4.0   | `cinema-coefficient.webp`        | « Multiplier, pas ajouter · Asili Design, 2026 · CC BY-SA 4.0 »        |
+| M2  | A1-07 | production propre du cours                                                                                                                                  | PNG 1 536 × 1 024 px, 1,5 Mo | Asili Design, 2026     | CC BY-SA 4.0   | `casque-ht-ttc.webp`             | « Aller : ×, retour : ÷ · Asili Design, 2026 · CC BY-SA 4.0 »          |
+| M3  | A2-02 | production propre du cours                                                                                                                                  | PNG 1 536 × 1 024 px, 1,5 Mo | Asili Design, 2026     | CC BY-SA 4.0   | `loyer-successives.webp`         | « + 10 %, + 20 % : pas + 30 % · Asili Design, 2026 · CC BY-SA 4.0 »    |
+| M4  | A2-03 | production propre du cours                                                                                                                                  | PNG 1 536 × 1 024 px, 1,6 Mo | Asili Design, 2026     | CC BY-SA 4.0   | `velo-reciproque.webp`           | « Le retour n’a pas le même taux · Asili Design, 2026 · CC BY-SA 4.0 » |
+| M5  | A3-02 | production propre du cours                                                                                                                                  | PNG 1 536 × 1 024 px, 2,2 Mo | Asili Design, 2026     | CC BY-SA 4.0   | `ticket-indice.webp`             | « Ni un prix, ni un taux · Asili Design, 2026 · CC BY-SA 4.0 »         |
+| M6  | A3-03 | production propre du cours                                                                                                                                  | PNG 1 536 × 1 024 px, 1,5 Mo | Asili Design, 2026     | CC BY-SA 4.0   | `epargne-taux-moyen.webp`        | « La même hausse chaque année · Asili Design, 2026 · CC BY-SA 4.0 »    |
+| M7  | A1-02 | https://commons.wikimedia.org/wiki/File:Chart_Showing_at_One_View_the_Price_of_the_Quarter_of_Wheat,_and_Wages_of_Labour_by_the_Week,_from_1565_to_1821.png | PNG 1 109 × 586 px           | William Playfair, 1822 | domaine public | `playfair-ble-salaires-1822.jpg` | « William Playfair, 1822 · Wikimedia Commons (domaine public) »        |
 
 ### 8.3 Briefs des infographies
 
-Charte du B1-01 : PNG 1 536 × 1 024 px, fond clair, titre en haut à gauche, chiffres en gras, une
-flèche ou un encadré pour le résultat, lisible projeté au fond d'une salle. Virgule décimale.
+PNG 1 536 × 1 024 px, fond clair, titre en bulle jaune en haut, chiffres en gras, une flèche ou un
+encadré pour le résultat, lisible projeté au fond d'une salle. Virgule décimale.
 
 **M1 · « Multiplier, pas ajouter »** (`cinema-coefficient.webp`, avant A1-06)
 
@@ -452,7 +497,7 @@ flèche ou un encadré pour le résultat, lisible projeté au fond d'une salle. 
 
 - Contenu : un casque audio, deux étiquettes « 30 € HT » et « 36 € TTC ». Flèche haute « × 1,20 »,
   flèche basse « ÷ 1,20 ». Barré : « 36 − 20 % = 28,80 € ». Encadré : « Remise de 10 % : 36 × 0,90 =
-  32,40 € ». Bandeau : « Aller : ×, retour : ÷ ».
+  32,40 € ».
 
 **M3 · « + 10 %, + 20 % : pas + 30 % »** (`loyer-successives.webp`, avant A2-02)
 
@@ -463,14 +508,13 @@ flèche ou un encadré pour le résultat, lisible projeté au fond d'une salle. 
 **M4 · « Le retour n'a pas le même taux »** (`velo-reciproque.webp`, avant A2-03)
 
 - Contenu : un vélo à 200 €, flèche descendante « − 50 % = × 0,5 » vers 100 €, flèche montante
-  « + 100 % = × 2 » vers 200 €. Barré : « + 50 % → 150 € ». Calcul : « 1 ÷ 0,5 = 2 ». Bandeau : « Le
-  retour n'a pas le même taux ».
+  « + 100 % = × 2 » vers 200 €. Barré : « + 50 % → 150 € ». Calcul : « 1 ÷ 0,5 = 2 ».
 
 **M5 · « Ni un prix, ni un taux »** (`ticket-indice.webp`, avant A3-02)
 
 - Contenu : deux barres sur un axe partant de 0, « 2020 : 2 €, indice 100 » et « 2025 : 3 €, indice
   150 ». Calcul : « 3 ÷ 2 × 100 = 150 » ; « 150 − 100 = + 50 % ». Barrés : « 150 € » et « + 150 % ».
-  Encart tableur : « =B3/$B$2\*100 ». Bandeau : « Ni un prix, ni un taux ».
+  Encart tableur : 2 en B2, 3 en B3, « =B3/$B$2\*100 » en C3.
 
 **M6 · « La même hausse chaque année »** (`epargne-taux-moyen.webp`, avant A3-03)
 

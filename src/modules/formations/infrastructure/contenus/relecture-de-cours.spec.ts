@@ -11,6 +11,7 @@ import {
   valeursDevoileesAvantLeurEcran,
   valeursDevoileesParLesExplications,
 } from '../../../../../test/helpers/relecture-de-cours';
+import { COURS_B1_02 } from './b1-02.cours';
 import { COURS_B2_05 } from './b2-05.cours';
 import { COURS_B2_06 } from './b2-06.cours';
 import { COURS_B3_01 } from './b3-01.cours';
@@ -236,6 +237,7 @@ describe('Gardes de relecture, éprouvées par mutation du B3-01', () => {
 
 describe('Gardes de relecture sur les cours à feuilles exigeant une formule', () => {
   it.each([
+    ['B1-02', COURS_B1_02],
     ['B2-05', COURS_B2_05],
     ['B2-06', COURS_B2_06],
   ])(
