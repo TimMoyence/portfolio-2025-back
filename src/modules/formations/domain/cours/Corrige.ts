@@ -3,6 +3,7 @@ import type { Piege, Tolerance } from '../GradingCore';
 import type { SheetPlanStocke } from '../contrats/cours';
 import type { FormeFormule } from '../contrats/contrat-de-l-api';
 import type { ValeurFormule } from './Formule';
+import { ligneDeLaReference } from './PlansStockes';
 import type { ConfusionId } from './banque/confusions';
 
 export type { FormeFormule } from '../contrats/contrat-de-l-api';
@@ -19,6 +20,15 @@ export function piegesDuCorrige(
     valeur,
     misconception: confusion,
   }));
+}
+
+export function confusionDeLaRecopieTrahie(
+  reference: string,
+  modele: string,
+): ConfusionId {
+  return ligneDeLaReference(reference) === ligneDeLaReference(modele)
+    ? 'formule-non-recopiable-en-ligne'
+    : 'formule-non-recopiable';
 }
 
 export interface CorrigeFeuille {

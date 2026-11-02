@@ -109,15 +109,42 @@ describe('Évaluation de la feuille de l élève (e2e http socket)', () => {
     expect(depots.answers.create.mock.calls).toEqual([]);
   });
 
-  it('applique la recopie vers le bas demandée par l élève', async () => {
+  it.each([
+    ['sans sens', { de: 'I3' }],
+    ['avec le sens bas', { de: 'I3', sens: 'bas' }],
+    [
+      'B102-M4 · avec un sens nul, sans erreur serveur',
+      { de: 'I3', sens: null },
+    ],
+  ])('applique la recopie vers le bas %s', async (_cas, recopie) => {
     const reponse = await feuille({
       cellules: { I3: VISA },
-      recopie: { de: 'I3' },
+      recopie,
     }).expect(200);
 
     expect((reponse.body as FeuilleEvaluee).saisies.I4).toBe(
       '=SI(OU(D4>=5000;C4<>"France");"Visa";"Non")',
     );
+  });
+
+  it('B102-M4 · applique la recopie vers la droite demandée par l élève', async () => {
+    const reponse = await feuille({
+      cellules: { I3: VISA },
+      recopie: { de: 'I3', sens: 'droite' },
+    }).expect(200);
+
+    expect((reponse.body as FeuilleEvaluee).saisies.J3).toBe(
+      '=SI(OU(E3>=5000;D3<>"France");"Visa";"Non")',
+    );
+  });
+
+  it('B102-M4 · refuse en 400 un sens de recopie inconnu', async () => {
+    const reponse = await feuille({
+      cellules: { I3: VISA },
+      recopie: { de: 'I3', sens: 'gauche' },
+    });
+
+    expect(reponse.status).toBe(400);
   });
 
   it.each(PLANS_HORS_FEUILLE)(

@@ -67,6 +67,32 @@ export interface Derogation {
   readonly raison: string;
 }
 
+const DEROGATIONS_DES_COURS: ReadonlyMap<string, readonly Derogation[]> =
+  new Map<string, readonly Derogation[]>([
+    [
+      'b2-04-suites',
+      [
+        {
+          regle: 'confidentialite',
+          ecran: 'B2-04-A3-01-GRAPHIQUE',
+          raison:
+            'Le graphique public sert 958 (b2-04-a1-u3) et 983,78 (b2-04-a2-v3) : points gardés tels quels, décidé par Tim le 2 novembre 2026.',
+        },
+      ],
+    ],
+    [
+      'b2-06-exponentielle-logarithme',
+      [
+        {
+          regle: 'exposition-continue',
+          ecran: 'B2-06-A2-02-ILLUSTRATION-RECIPROQUE',
+          raison:
+            'Quatre illustrations avant les deux pages de l’acte 2 : 8 min, décidé le 30 octobre 2026.',
+        },
+      ],
+    ],
+  ]);
+
 interface Analyse {
   readonly cours: Cours;
   readonly tirage: TirageDuCours;
@@ -937,7 +963,8 @@ function appliquerDerogations(
 
 export function verifierStructure(
   cours: Cours,
-  derogations: readonly Derogation[] = [],
+  derogations: readonly Derogation[] = DEROGATIONS_DES_COURS.get(cours.slug) ??
+    [],
 ): readonly ViolationStructure[] {
   const analyse: Analyse = { cours, tirage: tirer(cours, GRAINE_DE_CONTROLE) };
   const violations = REGLES.flatMap((regle) => executer(regle, analyse));

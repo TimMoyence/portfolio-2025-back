@@ -6,14 +6,14 @@ import { cueillirSous } from '../../src/modules/formations/domain/cours/ArbreDeV
 import { questionsDe } from '../../src/modules/formations/domain/cours/Cours';
 import type { ContenuDeCours } from '../../src/modules/formations/domain/cours/CoursStocke';
 import { projeterCatalogue } from '../../src/modules/formations/domain/cours/Diffusion';
+import { contientLaForme } from '../../src/modules/formations/domain/cours/GardeConfidentialite';
 import { tirer } from '../../src/modules/formations/domain/cours/Tirage';
 import { typographier } from '../../src/modules/formations/domain/cours/Typographie';
-import { nombreFrancais } from '../../src/common/domain/nombres/ecriture-francaise';
+import { nombreSansArrondi } from '../../src/common/domain/nombres/ecriture-francaise';
 import {
   sansEspacesNiMoinsTypographiques,
   sansEspacesTypographiques,
 } from '../../src/common/domain/texte/sans-espaces-typographiques';
-import { echapperPourRegex } from './echapper-pour-regex';
 import { corrigeDeFeuille, ecranDuContenu } from './fiche-de-cours';
 import { arrondi } from '../../src/common/domain/nombres/arrondi';
 
@@ -58,7 +58,7 @@ export function valeursDevoileesAvantLeurEcran(cours: Cours): string[] {
       return ordre
         .slice(0, ordre.indexOf(ecran.id))
         .filter((anterieur) =>
-          contientLaForme(corrections.get(anterieur) ?? '', arrondie),
+          contientLaValeur(corrections.get(anterieur) ?? '', arrondie),
         )
         .map(
           (anterieur) =>
@@ -178,18 +178,7 @@ export function formulesAltereesALaPublication(
 }
 
 export function formeFrancaise(valeur: number | string): string {
-  if (typeof valeur === 'string') {
-    return valeur;
-  }
-  const decimales = String(valeur).split('.').at(1)?.length ?? 0;
-  return nombreFrancais(valeur, decimales);
-}
-
-function zerosDeFinPermis(valeur: number | string): string {
-  if (typeof valeur === 'string') {
-    return '';
-  }
-  return Number.isInteger(valeur) ? '(?:,0+)?' : '0*';
+  return typeof valeur === 'string' ? valeur : nombreSansArrondi(valeur);
 }
 
 const SEUIL_DES_MILLIERS = 1000;
@@ -205,14 +194,8 @@ function formesEcrites(valeur: number | string): string[] {
   return [forme, ...sansEspaceDesMilliers, ...sansSigne];
 }
 
-function contientLaForme(texte: string, valeur: number | string): boolean {
-  const normalise = sansEspacesNiMoinsTypographiques(texte);
-  return formesEcrites(valeur).some((forme) =>
-    new RegExp(
-      `(?<![\\d,])${echapperPourRegex(forme)}${zerosDeFinPermis(valeur)}(?!\\d|,\\d| \\d{3}(?!\\d))`,
-      'u',
-    ).test(normalise),
-  );
+function contientLaValeur(texte: string, valeur: number | string): boolean {
+  return formesEcrites(valeur).some((forme) => contientLaForme(texte, forme));
 }
 
 export function valeursAuCatalogue(
@@ -224,7 +207,7 @@ export function valeursAuCatalogue(
     .flatMap((ecran) => {
       const texte = JSON.stringify(ecran);
       return valeurs
-        .filter((valeur) => contientLaForme(texte, valeur))
+        .filter((valeur) => contientLaValeur(texte, valeur))
         .map((valeur) => `${formeFrancaise(valeur)} dans ${ecran.id}`);
     });
 }
@@ -282,7 +265,7 @@ export function valeursDevoileesParLesExplications(
     ouvertes
       .filter(
         (id) =>
-          valeurs[id] !== undefined && contientLaForme(texte, valeurs[id]),
+          valeurs[id] !== undefined && contientLaValeur(texte, valeurs[id]),
       )
       .map((id) => `${formeFrancaise(valeurs[id])} de ${id}`),
   );
@@ -335,7 +318,7 @@ export function piegesPartagesDevoilesParLesExplications(
               pieges,
               suivantesDeLEcran,
               confusion,
-            ) && contientLaForme(texte, valeur),
+            ) && contientLaValeur(texte, valeur),
         )
         .map(
           ([confusion, valeur]) => `${formeFrancaise(valeur)} (${confusion})`,
@@ -350,7 +333,7 @@ function piegesDevoilesDansLeTexte(
   seuil: number,
 ): string[] {
   return piegesReconnaissablesDe(pieges, question, seuil)
-    .filter(([, valeur]) => contientLaForme(texte, valeur))
+    .filter(([, valeur]) => contientLaValeur(texte, valeur))
     .map(
       ([confusion, valeur]) =>
         `${formeFrancaise(valeur)} (${confusion}) de ${question}`,

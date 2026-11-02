@@ -38,6 +38,11 @@ export function nombreFrancais(valeur: number, decimales: number): string {
   return sansEspacesTypographiques(nombreAffiche(valeur, decimales, decimales));
 }
 
+export function nombreSansArrondi(valeur: number): string {
+  const decimales = String(valeur).split('.').at(1)?.length ?? 0;
+  return nombreFrancais(valeur, decimales);
+}
+
 export function nombreSommable(valeur: number): string {
   return ecritEnFrancais(valeur, {
     useGrouping: false,

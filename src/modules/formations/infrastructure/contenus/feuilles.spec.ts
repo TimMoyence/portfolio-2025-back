@@ -1,5 +1,11 @@
 import { recopier } from '../../../../../test/helpers/feuille-de-cours';
-import { clicsDeRecopie, colonneRecopiee, gesteDeRecopie } from './feuilles';
+import {
+  clicsDeRecopie,
+  colonneRecopiee,
+  gesteDeRecopie,
+  gesteDeRecopieVersLaDroite,
+  ligneRecopiee,
+} from './feuilles';
 
 describe('B-21 · une colonne recopiée vers le bas comme le tableur', () => {
   const RECOPIES: readonly [string, readonly string[]][] = [
@@ -61,6 +67,57 @@ describe('QA-11 · geste de recopie d’un atelier tableur, un clic par ligne', 
   it('nomme chaque colonne recopiée jusqu’à la même ligne', () => {
     expect(gesteDeRecopie(['D2', 'E2'], 6)).toBe(
       'sélectionnez D2 et cliquez quatre fois sur « Recopier vers le bas », une ligne par clic, puis de même depuis E2',
+    );
+  });
+});
+
+describe('B102-M8 · une ligne recopiée vers la droite comme le tableur', () => {
+  it('décale les colonnes de la formule, la base figée ne bouge pas', () => {
+    const attendus = ligneRecopiee(
+      {
+        colonne: 'C',
+        premiereLigne: 3,
+        formule: '=ARRONDI(C2/$B$2*100;1)',
+        confusionSiErreur: 'reference-non-figee-en-ligne',
+      },
+      [116.7, 233.3, 483.3],
+    );
+
+    expect(
+      attendus.map(({ reference, formuleReference, valeur, forme }) => ({
+        reference,
+        formuleReference,
+        valeur,
+        forme,
+      })),
+    ).toEqual([
+      {
+        reference: 'C3',
+        formuleReference: '=ARRONDI(C2/$B$2*100;1)',
+        valeur: 116.7,
+        forme: 'references',
+      },
+      {
+        reference: 'D3',
+        formuleReference: '=ARRONDI(D2/$B$2*100;1)',
+        valeur: 233.3,
+        forme: { memeQue: 'C3' },
+      },
+      {
+        reference: 'E3',
+        formuleReference: '=ARRONDI(E2/$B$2*100;1)',
+        valeur: 483.3,
+        forme: { memeQue: 'C3' },
+      },
+    ]);
+  });
+
+  it('écrit le geste vers la droite, un clic par cellule', () => {
+    expect(clicsDeRecopie(2, 'droite')).toBe(
+      'cliquez deux fois sur « Recopier vers la droite »',
+    );
+    expect(gesteDeRecopieVersLaDroite('C3', 'E')).toBe(
+      'sélectionnez C3 et cliquez deux fois sur « Recopier vers la droite », une cellule par clic',
     );
   });
 });

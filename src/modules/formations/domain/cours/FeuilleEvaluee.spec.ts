@@ -33,6 +33,16 @@ const PLAN_CONTROLE: SheetPlanStocke = feuilleDuCours(
   PLAN_VISA_B2_03,
 ).proprietes.plan;
 
+const INDICE_EN_LIGNE = '=ARRONDI(C2/$B$2*100;1)';
+
+const PLAN_EN_LIGNE: SheetPlanStocke = {
+  ...PLAN_CONTROLE,
+  lignes: 4,
+  colonnes: 5,
+  cellules: { B2: '18', C2: '21', D2: '42', E2: '87', B3: '100' },
+  verrouillees: ['B2', 'C2', 'D2', 'E2', 'B3'],
+};
+
 const LETTRES_DU_CONTROLE = [
   'A',
   'B',
@@ -135,6 +145,60 @@ describe('evaluerLaFeuilleDuPlan', () => {
       expect(() =>
         evaluerLaFeuilleDuPlan(PLAN_CONTROLE, { I3: VISA }, { de }),
       ).toThrow(ProductionInvalideError);
+    }
+  });
+
+  it('B102-M4 · recopie une formule vers la droite en decalant ses colonnes, la base figee ne bouge pas', () => {
+    const feuille = evaluerLaFeuilleDuPlan(
+      PLAN_EN_LIGNE,
+      { C3: INDICE_EN_LIGNE },
+      { de: 'C3', sens: 'droite' },
+    );
+
+    expect(feuille.saisies).toEqual({
+      C3: INDICE_EN_LIGNE,
+      D3: '=ARRONDI(D2/$B$2*100;1)',
+    });
+    expect(feuille.affichages['D3']).toBe('233,3');
+  });
+
+  it('B102-M4 · recopie vers le bas quand le sens est bas ou absent', () => {
+    for (const recopie of [{ de: 'C3' }, { de: 'C3', sens: 'bas' as const }]) {
+      expect(
+        evaluerLaFeuilleDuPlan(PLAN_EN_LIGNE, { C3: INDICE_EN_LIGNE }, recopie)
+          .saisies['C4'],
+      ).toBe('=ARRONDI(C3/$B$2*100;1)');
+    }
+  });
+
+  it('B102-M4 · refuse une recopie vers la droite hors de la grille ou vers une cellule verrouillee', () => {
+    expect(() =>
+      evaluerLaFeuilleDuPlan(
+        PLAN_EN_LIGNE,
+        { E3: INDICE_EN_LIGNE },
+        { de: 'E3', sens: 'droite' },
+      ),
+    ).toThrow(ProductionInvalideError);
+    expect(() =>
+      evaluerLaFeuilleDuPlan(
+        { ...PLAN_EN_LIGNE, verrouillees: ['D3'] },
+        { C3: INDICE_EN_LIGNE },
+        { de: 'C3', sens: 'droite' },
+      ),
+    ).toThrow(ProductionInvalideError);
+  });
+
+  it('B102-M5 · refuse une recopie depuis une cellule verrouillee ou vide, dans les deux sens', () => {
+    for (const sens of ['bas', 'droite'] as const) {
+      for (const de of ['B3', 'D3']) {
+        expect(() =>
+          evaluerLaFeuilleDuPlan(
+            PLAN_EN_LIGNE,
+            { C3: INDICE_EN_LIGNE, E3: INDICE_EN_LIGNE },
+            { de, sens },
+          ),
+        ).toThrow(ProductionInvalideError);
+      }
     }
   });
 

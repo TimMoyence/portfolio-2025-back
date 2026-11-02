@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "47140511e1e5273ddeebcb4bf7f1bfb1da2608159b71df80a6d83f366a09337b",
+  "empreinte": "29bcc785adeff3d48ca754866c6d5ac18ce43d2fb76098802614512dd5d78f9f",
   "sujet": {
     "id": "b2-03-logique",
     "titre": "Logique : écrire et contrôler une règle",
@@ -3002,7 +3002,7 @@
             }
           }
         },
-        "notes": "• 1 min ; l’image montre l’exemple pour débuter de la page qui suit : la commenter avant de lire la page.\n• Demander : « Dans quel seul cas le client n’a-t-il pas la remise ? » Laisser venir « ni fidèle, ni 1 000 € ».",
+        "notes": "• 1 min, avant la trace écrite : faire décrire l’image, la page suivante en donne la règle.\n• Demander : « Dans quel seul cas le client n’a-t-il pas la remise ? » Laisser venir « ni fidèle, ni 1 000 € ».",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -3057,7 +3057,7 @@
             }
           }
         },
-        "notes": "• 2 min, après 1 min sur son illustration ; la trace écrite est imprimée dans le livret : on lit et on commente, on ne recopie pas.\n• Faire lire le premier client de l’exemple (fidèle, 1 500 €) : c’est la réponse au vote précédent.\n• Lien au dossier : « La règle du visa est-elle un “et” ou un “ou” ? » Un « ou ».",
+        "notes": "• 2 min après l’illustration ; la trace écrite est imprimée dans le livret : on lit et on commente, on ne recopie pas.\n• Faire lire le premier client de l’exemple (fidèle, 1 500 €) : c’est la réponse au vote précédent.\n• Lien au dossier : « La règle du visa est-elle un “et” ou un “ou” ? » Un « ou ».",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -3092,7 +3092,7 @@
             }
           }
         },
-        "notes": "• 1 min ; l’image montre l’exemple pour débuter de la page qui suit : la commenter avant de lire la page.\n• Question : « Chloé a une prime avec un an d’ancienneté. La règle est-elle violée ? » Non : la règle ne parle que des plus de trois ans.",
+        "notes": "• 1 min, avant la trace écrite : faire décrire l’image, la page suivante en donne la règle.\n• Question : « Chloé a une prime avec un an d’ancienneté. La règle est-elle violée ? » Non : la règle ne parle que des plus de trois ans.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -3146,7 +3146,7 @@
             }
           }
         },
-        "notes": "• 2 min, après 1 min sur son illustration, enchaînées sur la page 1 : 6 min pour les deux pages de la trace écrite et leurs illustrations.\n• Faire tester les bornes à voix haute : 60 jours pile, 5 000 € pile.\n• Relier au vote : « plus de trois ans » exclut trois ans pile.",
+        "notes": "• 2 min après l’illustration, enchaînées sur la page 1 : 6 min pour les deux pages et leurs illustrations.\n• Faire tester les bornes à voix haute : 60 jours pile, 5 000 € pile.\n• Relier au vote : « plus de trois ans » exclut trois ans pile.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -3814,7 +3814,7 @@
             }
           }
         },
-        "notes": "• 1 min ; l’image montre l’exemple pour débuter de la page qui suit : la commenter avant de lire la page.\n• Question : « Léo a trois ans pile. Est-il dans la règle ou dans son contraire ? » Dans le contraire.",
+        "notes": "• 1 min, avant la trace écrite : faire décrire l’image, la page suivante en donne la règle.\n• Question : « Léo a trois ans pile. Est-il dans la règle ou dans son contraire ? » Dans le contraire.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -3903,7 +3903,7 @@
             }
           }
         },
-        "notes": "• 1 min ; l’image montre l’exemple pour débuter de la page qui suit : la commenter avant de lire la page.\n• Faire vérifier sur le client à 1 300 € que la négation sans Morgan se trompe.",
+        "notes": "• 1 min, avant la trace écrite : faire décrire l’image, la page suivante en donne la règle.\n• Faire vérifier sur le client à 1 300 € que la négation sans Morgan se trompe.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -3957,7 +3957,7 @@
             }
           }
         },
-        "notes": "• 2 min, après 1 min sur son illustration, enchaînées sur la page 1 : 6 min pour les deux pages de la trace écrite et leurs illustrations.\n• Relier à la réflexion A2-01 : faire relire les réponses qui ont gardé « et ».",
+        "notes": "• 2 min après l’illustration, enchaînées sur la page 1 : 6 min pour les deux pages et leurs illustrations.\n• Relier à la réflexion A2-01 : faire relire les réponses qui ont gardé « et ».",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -4613,7 +4613,7 @@
             }
           }
         },
-        "notes": "• 1 min ; l’image montre l’exemple pour débuter de la page qui suit : la commenter avant de lire la page.\n• Question : « Faut-il vérifier les trois commerciaux pour dire que “tous ont vendu au moins 10 voiles” est faux ? » Non : Karim suffit.",
+        "notes": "• 1 min, avant la trace écrite : faire décrire l’image, la page suivante en donne la règle.\n• Question : « Faut-il vérifier les trois commerciaux pour dire que “tous ont vendu au moins 10 voiles” est faux ? » Non : Karim suffit.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -4712,7 +4712,7 @@
             }
           }
         },
-        "notes": "• 1 min ; l’image montre l’exemple pour débuter de la page qui suit : la commenter avant de lire la page.\n• Faire taper NB.SI sans guillemets sur un poste volontaire : l’erreur fixe la règle.",
+        "notes": "• 1 min, avant la trace écrite : faire décrire l’image, la page suivante en donne la règle.\n• Faire taper NB.SI sans guillemets sur un poste volontaire : l’erreur fixe la règle.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -4765,7 +4765,7 @@
             }
           }
         },
-        "notes": "• 2 min, après 1 min sur son illustration, enchaînées sur la page 1 : 6 min pour les deux pages de la trace écrite et leurs illustrations.",
+        "notes": "• 2 min après l’illustration, enchaînées sur la page 1 : 6 min pour les deux pages et leurs illustrations.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],

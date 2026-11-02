@@ -15,6 +15,7 @@ import {
   colonneDeValeurs,
   colonneRecopiee,
   gesteDeRecopie,
+  piegeDeLArrondi,
   type AttenduDeFeuille,
 } from './feuilles';
 
@@ -79,16 +80,6 @@ export const enPourcentage = (partie: number, tout: number): number =>
   auMillionieme((partie / tout) * 100);
 const partArrondie = (partie: number, tout: number): number =>
   arrondi((partie / tout) * 100, 1);
-
-function piegeDeLArrondi(
-  partie: number,
-  tout: number,
-): (readonly [number, typeof ARRONDI_OUBLIE])[] {
-  const exacte = enPourcentage(partie, tout);
-  return exacte === partArrondie(partie, tout)
-    ? []
-    : [[exacte, ARRONDI_OUBLIE]];
-}
 
 export const TOTAL_DES_CLIENTS = somme(CLIENTS);
 const PORTEURS = CLIENTS.map((clients, rang) =>
@@ -158,9 +149,10 @@ function feuilleDeRepartition({
           [arrondi(premierEffectif / total, 1), FACTEUR_CENT],
           [auMillionieme(premierEffectif / total), FACTEUR_CENT],
           [arrondi((total / premierEffectif) * 100, 1), BASE_INVERSEE],
-          ...piegeDeLArrondi(premierEffectif, total),
+          ...piegeDeLArrondi(enPourcentage(premierEffectif, total)),
         ]),
-        piegesDuRang: (rang) => piegeDeLArrondi(effectifs[rang], total),
+        piegesDuRang: (rang) =>
+          piegeDeLArrondi(enPourcentage(effectifs[rang], total)),
         confusionSiErreur: NON_FIGEE,
       },
       mapperAuMoinsUn(effectifs, (effectif) => partArrondie(effectif, total)),

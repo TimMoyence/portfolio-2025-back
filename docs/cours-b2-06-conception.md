@@ -1,22 +1,22 @@
 # B2-06 · Exponentielle et logarithme — conception de référence (gabarit v3)
 
 > Cahier des charges du cours B2-06 au gabarit v3 (`docs/cours-gabarit-v3.md`) : une séance de
-> 3 h 30 dont 30 minutes de pause, ouverte par le rappel du B2-02, du B2-04 et du B2-05, puis trois
-> notions traitées chacune par un cycle réfléchir → comprendre → s'exercer, et une mini-situation
-> CCF. Ce document ne contient aucun code exécutable ; toute divergence d'implémentation est un
-> défaut de l'implémentation. Les tests `b2-06.cours.spec.ts` relisent ce document : § 3.1, titres
+> 2 h 45 dont 30 minutes de pause, ouverte par le rappel du B2-02, du B2-04 et du B2-05, puis trois
+> notions traitées chacune par un cycle réfléchir → comprendre → s'exercer, puis un rappel espacé
+> et la fiche mémo. Ce document ne contient aucun code exécutable ; toute divergence d'implémentation
+> est un défaut de l'implémentation. Les tests `b2-06.cours.spec.ts` relisent ce document : § 3.1, titres
 > publics du § 3, § 5.9, § 8.2.
 
-| Rubrique    | Valeur                                                                                                              |
-| ----------- | ------------------------------------------------------------------------------------------------------------------- |
-| Date        | 1er octobre 2026                                                                                                    |
-| Statut      | **Référence pédagogique** : sixième cours du plan v3 (`docs/cours-bts-cg2-plan-v3.md`), cinquième au gabarit v3     |
-| Cours       | `b2-06-exponentielle-logarithme`                                                                                    |
-| Gabarit     | `v3`, déclaré par le contenu et contrôlé par les quatre règles `gabarit-*` de `verifierStructure`                   |
-| Titre servi | « Exponentielle et logarithme »                                                                                     |
-| Durée       | **180 minutes exactes** (somme des écrans), 4 actes de 49, 39, 47 et 45 minutes, plus 2 pauses de 15 min hors durée |
-| Écrans      | **34**, dont 12 écrans catalogue                                                                                    |
-| Sources     | `docs/donnees-b2-06-sources.md` (espace de travail) : programme officiel, sujet CCF de Créteil, données fictives    |
+| Rubrique    | Valeur                                                                                                             |
+| ----------- | ------------------------------------------------------------------------------------------------------------------ |
+| Date        | 1er octobre 2026                                                                                                   |
+| Statut      | **Référence pédagogique** : sixième cours du plan v3 (`docs/cours-bts-cg2-plan-v3.md`), cinquième au gabarit v3    |
+| Cours       | `b2-06-exponentielle-logarithme`                                                                                   |
+| Gabarit     | `v3`, déclaré par le contenu et contrôlé par les quatre règles `gabarit-*` de `verifierStructure`                  |
+| Titre servi | « Exponentielle et logarithme »                                                                                    |
+| Durée       | **135 minutes exactes** (somme des écrans), 4 actes de 49, 41, 37 et 8 minutes, plus 2 pauses de 15 min hors durée |
+| Écrans      | **37**, dont 19 écrans catalogue (8 illustrations)                                                                 |
+| Sources     | `docs/donnees-b2-06-sources.md` (espace de travail) : programme officiel, sujet CCF de Créteil, données fictives   |
 
 ---
 
@@ -38,9 +38,6 @@
   `PENTE` et `ORDONNEE.ORIGINE`, vues au B2-02, reviennent pour l'ajustement.
 - **La limite n'est pas au programme** : le cours décrit le sens de variation et le signe de
   x ↦ e^(kx) sans parler de limite ni d'asymptote.
-- **Mini-situation sur le modèle du sujet CCF de Créteil n° 1** : les kits de réparation de voile,
-  demande ajustée au tableur par z = ln y, puis modèle retenu f(x) = 20e^(−0,7x), demande pour un
-  prix, prix pour une demande de 400 kits, seuil et taux de baisse.
 
 ## 1. Objectifs d'apprentissage et public
 
@@ -84,7 +81,7 @@ b et notes de répartition).
 ### 1.4 Public et conditions
 
 BTS CG 2e année, 25 étudiants au plus, calculatrice autorisée, un poste par étudiant ou le livret
-papier. Séance de 3 h 30 : 180 minutes de travail, pause de 15 minutes après l'acte 1 et après
+papier. Séance de 2 h 45 : 135 minutes de travail, pause de 15 minutes après l'acte 1 et après
 l'acte 3.
 
 ## 2. Architecture
@@ -94,9 +91,9 @@ l'acte 3.
 | Acte | Rôle                                  | Notion | Minutes |
 | ---- | ------------------------------------- | ------ | ------: |
 | 1    | Rappel des cours, puis de qⁿ à e^(kx) | N1     |      49 |
-| 2    | Le logarithme et les seuils           | N2     |      39 |
-| 3    | Modèles exponentiels et ajustement    | N3     |      47 |
-| 4    | Mini-situation CCF et clôture         | —      |      45 |
+| 2    | Le logarithme et les seuils           | N2     |      41 |
+| 3    | Modèles exponentiels et ajustement    | N3     |      37 |
+| 4    | Rappel et fiche mémo                  | —      |       8 |
 
 Pause 1 (15 min) après le jalon A1-12 ; pause 2 (15 min) après le jalon A3-09. Les pauses ne sont
 pas des écrans : le formateur les annonce, la durée programmée n'en tient pas compte.
@@ -111,8 +108,8 @@ avant de montrer : le rappel de mémoire précède la synthèse.
 ### 2.3 Le cycle d'une notion
 
 Chaque notion suit : **Réfléchir** (mission, réflexion écrite ou vote non noté) → **Comprendre**
-(trace écrite en deux pages v2 `lesson` de 3 minutes, puis exemple guidé `fp-worked` corrigé étape
-par étape sur son propre écran) → **S'exercer** (exercices notés, corrigés sur place). Chaque page de
+(trace écrite en deux pages v2 `lesson` de 2 minutes, chacune précédée de ses illustrations d'une
+minute, puis exemple guidé `fp-worked` corrigé étape par étape sur son propre écran) → **S'exercer** (exercices notés, corrigés sur place). Chaque page de
 trace écrite porte trois blocs : une définition en langage courant qui dit à quoi sert la notion pour
 la gamme Sillage, un exemple pour débuter hors du dossier et une méthode ou un encadré « Au CCF »
 qui nomme les pièges.
@@ -123,15 +120,16 @@ l'écran. La correction se dévoile sur l'écran de l'exercice (`correctionSurPl
 
 ### 2.4 Règles de structure
 
-Le cours passe les règles communes et les quatre règles du gabarit v3 : 34 écrans ≤ 40,
-180 minutes ≤ 180, chaque trace écrite précédée d'une réflexion et suivie d'un exercice, chaque
-exercice avec ses trois temps et sa correction sur place, mini-situation (`fp-escape`) sans trace
-écrite après elle. Exposition continue de 6 minutes au plus.
+Le cours passe les règles communes et les quatre règles du gabarit v3 : 37 écrans ≤ 40,
+135 minutes ≤ 180, chaque trace écrite précédée d'une réflexion et suivie d'un exercice, chaque
+exercice avec ses trois temps et sa correction sur place. Exposition continue de 6 minutes au plus,
+sauf à l'acte 2 : 8 minutes pour les quatre illustrations et les deux pages, par une dérogation
+écrite dans `StructureCours.ts` (`DEROGATIONS_DES_COURS`), décidée le 30 octobre 2026.
 
 ### 2.5 Diffusion
 
 Catalogue : l'accroche, la synthèse des acquis, le dossier de la gamme Sillage, les six pages de
-trace écrite, le graphique des demandes relevées, le dossier de la mini-situation et la fiche mémo.
+trace écrite et leurs huit illustrations, le graphique des demandes relevées et la fiche mémo.
 Tout le reste est servi en séance. Aucun écran catalogue ne porte une réponse : le graphique montre
 des relevés, que l'exercice 5 donne aussi, sans leur logarithme ni leur ajustement.
 
@@ -151,39 +149,48 @@ Colonne « Brique · rendu » : valeur de la colonne `brique` ; les écrans « v
 `fp-story` avec une présentation v2. « I » = interactif. « Q » = questions fermées notées (vote,
 numérique, classement) portées par l'écran.
 
-| Rang | Identifiant                      | Min | Brique · rendu               |  I  |   Q | Diffusion |
-| ---: | -------------------------------- | --: | ---------------------------- | :-: | --: | --------- |
-|    1 | B2-06-A1-01-RAPPEL-PLACEMENT     |   3 | `fp-recall`                  |  I  |   1 | seance    |
-|    2 | B2-06-A1-02-ACCROCHE             |   1 | `fp-story` · v2 `hero`       |     |   0 | catalogue |
-|    3 | B2-06-A1-03-VOTE-ACQUIS          |   4 | `fp-vote`                    |  I  |   0 | seance    |
-|    4 | B2-06-A1-04-ACQUIS               |   2 | `fp-story` · v2 `comparison` |     |   0 | catalogue |
-|    5 | B2-06-A1-05-DOSSIER              |   2 | `fp-story` · v2 `table`      |     |   0 | catalogue |
-|    6 | B2-06-A1-06-MISSION              |   6 | `fp-pro`                     |  I  |   0 | seance    |
-|    7 | B2-06-A1-07-COURS-EXPONENTIELLE  |   3 | `fp-story` · v2 `lesson`     |     |   0 | catalogue |
-|    8 | B2-06-A1-08-COURS-MODELE-EXP     |   3 | `fp-story` · v2 `lesson`     |     |   0 | catalogue |
-|    9 | B2-06-A1-09-EXEMPLE-ABONNES      |   6 | `fp-worked`                  |  I  |   0 | seance    |
-|   10 | B2-06-A1-10-ATELIER-VENTES       |  10 | `questionnaire`              |  I  |   4 | seance    |
-|   11 | B2-06-A1-11-TABLEUR-VENTES       |   8 | `fp-sheet`                   |  I  |   0 | seance    |
-|   12 | B2-06-A1-12-JALON                |   1 | `fp-pulse`                   |     |   0 | seance    |
-|   13 | B2-06-A2-01-REFLEXION-RECIPROQUE |   5 | `fp-story` · v2 `reflection` |  I  |   0 | seance    |
-|   14 | B2-06-A2-02-COURS-LOGARITHME     |   3 | `fp-story` · v2 `lesson`     |     |   0 | catalogue |
-|   15 | B2-06-A2-03-COURS-SEUIL          |   3 | `fp-story` · v2 `lesson`     |     |   0 | catalogue |
-|   16 | B2-06-A2-04-EXEMPLE-DOUBLEMENT   |   6 | `fp-worked`                  |  I  |   0 | seance    |
-|   17 | B2-06-A2-05-ATELIER-SEUILS       |  11 | `questionnaire`              |  I  |   4 | seance    |
-|   18 | B2-06-A2-06-TABLEUR-OBJECTIFS    |  10 | `fp-sheet`                   |  I  |   0 | seance    |
-|   19 | B2-06-A2-07-JALON                |   1 | `fp-pulse`                   |     |   0 | seance    |
-|   20 | B2-06-A3-01-GRAPHIQUE            |   2 | `fp-story` · v2 `chart`      |     |   0 | catalogue |
-|   21 | B2-06-A3-02-VOTE-MODELE          |   4 | `fp-vote`                    |  I  |   0 | seance    |
-|   22 | B2-06-A3-03-COURS-MODELE         |   3 | `fp-story` · v2 `lesson`     |     |   0 | catalogue |
-|   23 | B2-06-A3-04-COURS-AJUSTEMENT     |   3 | `fp-story` · v2 `lesson`     |     |   0 | catalogue |
-|   24 | B2-06-A3-05-EXEMPLE-AJUSTEMENT   |   6 | `fp-worked`                  |  I  |   0 | seance    |
-|   25 | B2-06-A3-06-TABLEAU-LOGARITHMES  |   8 | `fp-table-build`             |  I  |   0 | seance    |
-|   26 | B2-06-A3-07-ATELIER-DEMANDE      |  10 | `questionnaire`              |  I  |   4 | seance    |
-|   27 | B2-06-A3-09-JALON                |   1 | `fp-pulse`                   |     |   0 | seance    |
-|   28 | B2-06-A4-04-RAPPEL               |   6 | `fp-spaced`                  |  I  |   0 | seance    |
-|   29 | B2-06-A4-05-FICHE-MEMO           |   2 | `fp-story` · v2 `grid`       |     |   0 | catalogue |
+| Rang | Identifiant                         | Min | Brique · rendu                 |  I  |   Q | Diffusion |
+| ---: | ----------------------------------- | --: | ------------------------------ | :-: | --: | --------- |
+|    1 | B2-06-A1-01-RAPPEL-PLACEMENT        |   3 | `fp-recall`                    |  I  |   1 | seance    |
+|    2 | B2-06-A1-02-ACCROCHE                |   1 | `fp-story` · v2 `hero`         |     |   0 | catalogue |
+|    3 | B2-06-A1-03-VOTE-ACQUIS             |   4 | `fp-vote`                      |  I  |   0 | seance    |
+|    4 | B2-06-A1-04-ACQUIS                  |   2 | `fp-story` · v2 `comparison`   |     |   0 | catalogue |
+|    5 | B2-06-A1-05-DOSSIER                 |   2 | `fp-story` · v2 `table`        |     |   0 | catalogue |
+|    6 | B2-06-A1-06-MISSION                 |   6 | `fp-pro`                       |  I  |   0 | seance    |
+|    7 | B2-06-A1-07-ILLUSTRATION-PUISSANCES |   1 | `fp-story` · v2 `illustration` |     |   0 | catalogue |
+|    8 | B2-06-A1-07-COURS-EXPONENTIELLE     |   2 | `fp-story` · v2 `lesson`       |     |   0 | catalogue |
+|    9 | B2-06-A1-08-ILLUSTRATION-MODELE     |   1 | `fp-story` · v2 `illustration` |     |   0 | catalogue |
+|   10 | B2-06-A1-08-COURS-MODELE-EXP        |   2 | `fp-story` · v2 `lesson`       |     |   0 | catalogue |
+|   11 | B2-06-A1-09-EXEMPLE-ABONNES         |   6 | `fp-worked`                    |  I  |   0 | seance    |
+|   12 | B2-06-A1-10-ATELIER-VENTES          |  10 | `questionnaire`                |  I  |   4 | seance    |
+|   13 | B2-06-A1-11-TABLEUR-VENTES          |   8 | `fp-sheet`                     |  I  |   0 | seance    |
+|   14 | B2-06-A1-12-JALON                   |   1 | `fp-pulse`                     |     |   0 | seance    |
+|   15 | B2-06-A2-01-REFLEXION-RECIPROQUE    |   5 | `fp-story` · v2 `reflection`   |  I  |   0 | seance    |
+|   16 | B2-06-A2-02-ILLUSTRATION-RECIPROQUE |   1 | `fp-story` · v2 `illustration` |     |   0 | catalogue |
+|   17 | B2-06-A2-02-ILLUSTRATION-PROPRIETES |   1 | `fp-story` · v2 `illustration` |     |   0 | catalogue |
+|   18 | B2-06-A2-02-COURS-LOGARITHME        |   2 | `fp-story` · v2 `lesson`       |     |   0 | catalogue |
+|   19 | B2-06-A2-03-ILLUSTRATION-SEUIL      |   1 | `fp-story` · v2 `illustration` |     |   0 | catalogue |
+|   20 | B2-06-A2-03-ILLUSTRATION-SENS       |   1 | `fp-story` · v2 `illustration` |     |   0 | catalogue |
+|   21 | B2-06-A2-03-COURS-SEUIL             |   2 | `fp-story` · v2 `lesson`       |     |   0 | catalogue |
+|   22 | B2-06-A2-04-EXEMPLE-DOUBLEMENT      |   6 | `fp-worked`                    |  I  |   0 | seance    |
+|   23 | B2-06-A2-05-ATELIER-SEUILS          |  11 | `questionnaire`                |  I  |   4 | seance    |
+|   24 | B2-06-A2-06-TABLEUR-OBJECTIFS       |  10 | `fp-sheet`                     |  I  |   0 | seance    |
+|   25 | B2-06-A2-07-JALON                   |   1 | `fp-pulse`                     |     |   0 | seance    |
+|   26 | B2-06-A3-01-GRAPHIQUE               |   2 | `fp-story` · v2 `chart`        |     |   0 | catalogue |
+|   27 | B2-06-A3-02-VOTE-MODELE             |   4 | `fp-vote`                      |  I  |   0 | seance    |
+|   28 | B2-06-A3-03-ILLUSTRATION-MODELES    |   1 | `fp-story` · v2 `illustration` |     |   0 | catalogue |
+|   29 | B2-06-A3-03-COURS-MODELE            |   2 | `fp-story` · v2 `lesson`       |     |   0 | catalogue |
+|   30 | B2-06-A3-04-ILLUSTRATION-AJUSTEMENT |   1 | `fp-story` · v2 `illustration` |     |   0 | catalogue |
+|   31 | B2-06-A3-04-COURS-AJUSTEMENT        |   2 | `fp-story` · v2 `lesson`       |     |   0 | catalogue |
+|   32 | B2-06-A3-05-EXEMPLE-AJUSTEMENT      |   6 | `fp-worked`                    |  I  |   0 | seance    |
+|   33 | B2-06-A3-06-TABLEAU-LOGARITHMES     |   8 | `fp-table-build`               |  I  |   0 | seance    |
+|   34 | B2-06-A3-07-ATELIER-DEMANDE         |  10 | `questionnaire`                |  I  |   4 | seance    |
+|   35 | B2-06-A3-09-JALON                   |   1 | `fp-pulse`                     |     |   0 | seance    |
+|   36 | B2-06-A4-04-RAPPEL                  |   6 | `fp-spaced`                    |  I  |   0 | seance    |
+|   37 | B2-06-A4-05-FICHE-MEMO              |   2 | `fp-story` · v2 `grid`         |     |   0 | catalogue |
 
-Rythme : 147 minutes interactives, 33 d'exposition, exposition continue de 6 minutes au plus.
+Rythme : 103 minutes interactives, 32 d'exposition, exposition continue de 8 minutes à l'acte 2,
+6 minutes aux actes 1 et 3.
 
 ### 3.2 Acte 1 — Rappel des cours, puis de qⁿ à e^(kx) (49 min)
 
@@ -198,7 +205,7 @@ Rythme : 147 minutes interactives, 33 d'exposition, exposition continue de 6 min
 #### A1-02 · `B2-06-A1-02-ACCROCHE` — 1 min · v2 `hero` · catalogue
 
 - Titre public : « Exponentielle et logarithme : croître, viser, ajuster »
-- La gamme Sillage et ses trois questions ; plan en trois notions et une mini-situation.
+- La gamme Sillage et ses trois questions ; plan en trois notions.
 
 #### A1-03 · `B2-06-A1-03-VOTE-ACQUIS` — 4 min · `fp-vote` · séance
 
@@ -229,14 +236,26 @@ Rythme : 147 minutes interactives, 33 d'exposition, exposition continue de 6 min
   suffit-elle à décrire la baisse de la demande quand le prix monte (`prix`).
 - Papier : trois lignes d'écriture dans le livret.
 
-#### A1-07 · `B2-06-A1-07-COURS-EXPONENTIELLE` — 3 min · v2 `lesson` · catalogue
+#### A1-07 · `B2-06-A1-07-ILLUSTRATION-PUISSANCES` — 1 min · v2 `illustration` · catalogue
+
+- Titre public : « Illustration : prolonger les puissances »
+- Infographie M1 : les valeurs aux rangs entiers, le rang 2,5, la courbe de eˣ, ses trois propriétés
+  et le piège e^0,4.
+
+#### A1-07 · `B2-06-A1-07-COURS-EXPONENTIELLE` — 2 min · v2 `lesson` · catalogue
 
 - Titre public : « Cours : de qⁿ à la fonction exponentielle »
 - Page 1 sur 2 : la suite géométrique ne vit qu'aux entiers, la fonction exponentielle prolonge
   qⁿ à tout x réel ; le nombre e ≈ 2,718 ; e⁰ = 1, eˣ > 0, croissante, e^(a + b) = e^a × e^b ;
   exemple pour débuter (e¹, e^0,5, e^(−1)) ; méthode et pièges.
 
-#### A1-08 · `B2-06-A1-08-COURS-MODELE-EXP` — 3 min · v2 `lesson` · catalogue
+#### A1-08 · `B2-06-A1-08-ILLUSTRATION-MODELE` — 1 min · v2 `illustration` · catalogue
+
+- Titre public : « Illustration : lire a et k »
+- Infographie M2 : deux courbes partent de a = 1 000, le signe de k donne le sens, le taux est
+  e^k − 1, la formule de tableur.
+
+#### A1-08 · `B2-06-A1-08-COURS-MODELE-EXP` — 2 min · v2 `lesson` · catalogue
 
 - Titre public : « Cours : les modèles a e^(kx) et le tableur »
 - Page 2 sur 2 : a valeur en 0, chaque unité multiplie par e^k, taux e^k − 1 ; sens selon le signe
@@ -275,7 +294,7 @@ Rythme : 147 minutes interactives, 33 d'exposition, exposition continue de 6 min
 - Titre public : « Jalon 1 : fonction exponentielle »
 - Puis pause de 15 minutes.
 
-### 3.3 Acte 2 — Le logarithme et les seuils (39 min)
+### 3.3 Acte 2 — Le logarithme et les seuils (41 min)
 
 #### A2-01 · `B2-06-A2-01-REFLEXION-RECIPROQUE` — 5 min · v2 `reflection` · séance
 
@@ -284,14 +303,34 @@ Rythme : 147 minutes interactives, 33 d'exposition, exposition continue de 6 min
   « remonte » d'une valeur de l'exponentielle à son exposant, comme la division remonte d'un
   produit. Temps « réfléchir » de N2.
 
-#### A2-02 · `B2-06-A2-02-COURS-LOGARITHME` — 3 min · v2 `lesson` · catalogue
+#### A2-02 · `B2-06-A2-02-ILLUSTRATION-RECIPROQUE` — 1 min · v2 `illustration` · catalogue
+
+- Titre public : « Illustration : ln défait l’exponentielle »
+- Infographie M3 : ÷ 4 défait × 4, ln défait eˣ, la courbe lue à l'envers, les touches ln et log.
+
+#### A2-02 · `B2-06-A2-02-ILLUSTRATION-PROPRIETES` — 1 min · v2 `illustration` · catalogue
+
+- Titre public : « Illustration : ln change × en + »
+- Infographie M4 : la règle 1, 2, 4, 8, les trois propriétés de ln et le piège ln 2 × ln 4.
+
+#### A2-02 · `B2-06-A2-02-COURS-LOGARITHME` — 2 min · v2 `lesson` · catalogue
 
 - Titre public : « Cours : le logarithme népérien »
 - Page 1 sur 2 : ln y est le nombre x tel que eˣ = y, pour y > 0 ; ln 1 = 0, ln e = 1 ; ln change
   les produits en sommes, les quotients en différences, et ln(aⁿ) = n × ln a ; exemple pour débuter (eˣ = 5) ; méthode et pièges,
   dont la touche log.
 
-#### A2-03 · `B2-06-A2-03-COURS-SEUIL` — 3 min · v2 `lesson` · catalogue
+#### A2-03 · `B2-06-A2-03-ILLUSTRATION-SEUIL` — 1 min · v2 `illustration` · catalogue
+
+- Titre public : « Illustration : passer l’exposant devant »
+- Infographie M5 : les valeurs de 1,5ⁿ, le seuil 10, les étapes jusqu'au premier entier n = 6.
+
+#### A2-03 · `B2-06-A2-03-ILLUSTRATION-SENS` — 1 min · v2 `illustration` · catalogue
+
+- Titre public : « Illustration : le sens change »
+- Infographie M6 : la courbe de ln x, 0,7ⁿ ≤ 0,2 résolue par étapes, le sens qui change, le contrôle.
+
+#### A2-03 · `B2-06-A2-03-COURS-SEUIL` — 2 min · v2 `lesson` · catalogue
 
 - Titre public : « Cours : résoudre qⁿ ≥ s avec ln »
 - Page 2 sur 2 : appliquer ln, qui garde le sens ; diviser par ln q, qui change le sens si q < 1 ;
@@ -345,13 +384,25 @@ Rythme : 147 minutes interactives, 33 d'exposition, exposition continue de 6 min
   chaque pas (`ajustement-affine-sur-y`) ; le logarithme d'un modèle exponentiel
   (`ln-produit-en-produit`).
 
-#### A3-03 · `B2-06-A3-03-COURS-MODELE` — 3 min · v2 `lesson` · catalogue
+#### A3-03 · `B2-06-A3-03-ILLUSTRATION-MODELES` — 1 min · v2 `illustration` · catalogue
+
+- Titre public : « Illustration : ajouter ou multiplier »
+- Infographie M7 : ajouter − 200 ou multiplier par 0,8, les rapports, le graphique et
+  f(x) = 500e^(−0,1x).
+
+#### A3-03 · `B2-06-A3-03-COURS-MODELE` — 2 min · v2 `lesson` · catalogue
 
 - Titre public : « Cours : reconnaître et utiliser un modèle exponentiel »
 - Page 1 sur 2 : à pas constant, des rapports constants signent un modèle exponentiel ; calculer
   f(x), puis résoudre f(x) = s par ln ; exemple pour débuter (500e^(−0,1x)) ; méthode et pièges.
 
-#### A3-04 · `B2-06-A3-04-COURS-AJUSTEMENT` — 3 min · v2 `lesson` · catalogue
+#### A3-04 · `B2-06-A3-04-ILLUSTRATION-AJUSTEMENT` — 1 min · v2 `illustration` · catalogue
+
+- Titre public : « Illustration : la courbe devient une droite »
+- Infographie M8 : les points (x ; y), le tableau z = ln y, les points (x ; z) alignés, le retour à
+  y ≈ 100e^(−0,30x) et le piège a = β.
+
+#### A3-04 · `B2-06-A3-04-COURS-AJUSTEMENT` — 2 min · v2 `lesson` · catalogue
 
 - Titre public : « Cours : ajuster par z = ln y »
 - Page 2 sur 2 : calculer z = ln y, ajuster z = αx + β par les moindres carrés, revenir à
@@ -433,12 +484,6 @@ Ajustement de z en x : z ≈ −0,0499x + 8,0026, arrondi à z = −0,05x + 8 ; 
 y ≈ 2 981e^(−0,05x). Demande à 38 € : 445,86 sacs ; prix pour 600 sacs : 32,06 €. L'ajustement
 affine de y donne y = −31x + 1 653, négatif dès 53,33 €.
 
-Mini-situation, prix x en dizaines d'euros (1 à 3,5), demande y en centaines de kits : 9,9 ; 7 ;
-4,9 ; 3,5 ; 2,4 ; 1,7. Ajustement de z = ln y : pente −0,7061, ordonnée à l'origine 3,0032,
-a = e^3,0032 ≈ 20,15. Modèle retenu f(x) = 20e^(−0,7x) : demande à 25 € 347,55 kits ; prix pour
-400 kits 22,99 € ; demande sous 200 kits dès 32,89 €, premier prix entier 33 € ; baisse de
-50,34 % pour 10 € de plus.
-
 Chaque valeur est recalculée par `b2-06.cours.spec.ts` à partir des seuls paramètres.
 
 ### 5.9 Concepts, confusions et remédiations
@@ -479,7 +524,7 @@ premier entier, choix de l'ajustement, retour au coefficient a. Obligatoires : `
 
 ## 6. Moteur de formules
 
-Le cours et la mini-situation demandent `EXP(x)` et `LN(x)`, absentes des cinq premiers cours.
+Le cours demande `EXP(x)` et `LN(x)`, absentes des cinq premiers cours.
 Elles entrent dans les deux moteurs (serveur et poste) : un seul argument, sinon `#VALEUR!` ;
 `LN` d'un nombre négatif ou nul rend `#VALEUR!`, là où le tableur affiche `#NOMBRE!`, parce que le
 jeu d'erreurs des moteurs est fermé à quatre codes (`#REF!`, `#DIV/0!`, `#NOM?`, `#VALEUR!`) ; une
@@ -490,19 +535,49 @@ partagés entre les deux moteurs couvrent ces cas.
 
 ### 8.1 Principe
 
-Aucune image : les dossiers sont rendus par `table`, les demandes relevées par `chart`, les feuilles
-par `fp-sheet`, la colonne des logarithmes par `fp-table-build`.
+Huit infographies, chacune projetée sur un écran `illustration` d'une minute placé juste avant sa
+page de trace écrite. Le reste est rendu sans image : les dossiers par `table`, les demandes relevées
+par `chart`, les feuilles par `fp-sheet`, la colonne des logarithmes par `fp-table-build`.
+
+Chaque PNG d'origine (1 536 × 1 024 px) est converti en WebP à la même taille et servi depuis
+`/assets/cours/b2-06/v1/`. Le catalogue est stocké avec le cours (`Cours.medias`) et contrôlé par la
+règle `media-sans-licence`.
 
 ### 8.2 Catalogue des médias
 
-| Id  | Écran | Fichier source (page)                                                                 | Original              | Auteur, date                                                 | Licence        | Dérivé servi                  | Attribution affichée                                                                                  |
-| --- | ----- | ------------------------------------------------------------------------------------- | --------------------- | ------------------------------------------------------------ | -------------- | ----------------------------- | ----------------------------------------------------------------------------------------------------- |
-| M1  | A1-02 | https://commons.wikimedia.org/wiki/File:Mirifici_Logarithmorum_canonis_Descriptio.jpg | JPEG 2 301 × 3 193 px | John Napier, Mirifici logarithmorum canonis descriptio, 1614 | domaine public | `napier-logarithmes-1614.jpg` | « John Napier, Mirifici logarithmorum canonis descriptio, 1614 · Wikimedia Commons (domaine public) » |
+| Id  | Écran | Fichier source (page)                                                                 | Original                     | Auteur, date                                                 | Licence        | Dérivé servi                        | Attribution affichée                                                                                  |
+| --- | ----- | ------------------------------------------------------------------------------------- | ---------------------------- | ------------------------------------------------------------ | -------------- | ----------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| M1  | A1-07 | production propre du cours                                                            | PNG 1 536 × 1 024 px, 1,6 Mo | Asili Design, 2026                                           | CC BY-SA 4.0   | `prolonger-les-puissances.webp`     | « Des puissances pour tous les nombres · Asili Design, 2026 · CC BY-SA 4.0 »                          |
+| M2  | A1-08 | production propre du cours                                                            | PNG 1 536 × 1 024 px, 1,5 Mo | Asili Design, 2026                                           | CC BY-SA 4.0   | `lire-a-et-k.webp`                  | « Lire a et k avant de calculer · Asili Design, 2026 · CC BY-SA 4.0 »                                 |
+| M3  | A2-02 | production propre du cours                                                            | PNG 1 536 × 1 024 px, 1,5 Mo | Asili Design, 2026                                           | CC BY-SA 4.0   | `ln-defait-l-exponentielle.webp`    | « ln défait l’exponentielle · Asili Design, 2026 · CC BY-SA 4.0 »                                     |
+| M4  | A2-02 | production propre du cours                                                            | PNG 1 536 × 1 024 px, 1,4 Mo | Asili Design, 2026                                           | CC BY-SA 4.0   | `ln-change-produit-en-somme.webp`   | « ln change × en + · Asili Design, 2026 · CC BY-SA 4.0 »                                              |
+| M5  | A2-03 | production propre du cours                                                            | PNG 1 536 × 1 024 px, 1,5 Mo | Asili Design, 2026                                           | CC BY-SA 4.0   | `seuil-exposant-devant.webp`        | « Passer l’exposant devant · Asili Design, 2026 · CC BY-SA 4.0 »                                      |
+| M6  | A2-03 | production propre du cours                                                            | PNG 1 536 × 1 024 px, 1,5 Mo | Asili Design, 2026                                           | CC BY-SA 4.0   | `le-sens-change.webp`               | « q < 1 : le sens change · Asili Design, 2026 · CC BY-SA 4.0 »                                        |
+| M7  | A3-03 | production propre du cours                                                            | PNG 1 536 × 1 024 px, 1,6 Mo | Asili Design, 2026                                           | CC BY-SA 4.0   | `ajouter-ou-multiplier.webp`        | « Ajouter ou multiplier ? · Asili Design, 2026 · CC BY-SA 4.0 »                                       |
+| M8  | A3-04 | production propre du cours                                                            | PNG 1 536 × 1 024 px, 1,6 Mo | Asili Design, 2026                                           | CC BY-SA 4.0   | `la-courbe-devient-une-droite.webp` | « La courbe devient une droite · Asili Design, 2026 · CC BY-SA 4.0 »                                  |
+| M9  | A1-02 | https://commons.wikimedia.org/wiki/File:Mirifici_Logarithmorum_canonis_Descriptio.jpg | JPEG 2 301 × 3 193 px        | John Napier, Mirifici logarithmorum canonis descriptio, 1614 | domaine public | `napier-logarithmes-1614.jpg`       | « John Napier, Mirifici logarithmorum canonis descriptio, 1614 · Wikimedia Commons (domaine public) » |
 
 ### 8.3 Sources des données
 
-- Gamme Sillage, ventes en ligne, capacité de l'atelier, étude de prix, machine, kits de
-  réparation, exemples guidés : données fictives créées pour ce cours.
-- Forme de la mini-situation : sujet CCF type n° 1 de l'académie de Créteil (demande ajustée par
-  f(x) = 20e^(−0,7x) au tableur, prix pour une demande de 400), recensé dans
-  `docs/programme-bts-cg-maths-officiel.md` ; détail dans `docs/donnees-b2-06-sources.md`.
+- Gamme Sillage, ventes en ligne, capacité de l'atelier, étude de prix, machine, exemples guidés :
+  données fictives créées pour ce cours.
+
+### 8.4 Illustrations livrées
+
+Brief de chaque infographie, à suivre si une image est refaite. Les exemples sont ceux des pages de
+cours ou sont inédits : aucune réponse d'exercice n'y figure. Deux images ont été retouchées à la
+main sur leur texte, jamais sur leur dessin : les graphiques montrent l'allure, seuls les nombres
+écrits font foi.
+
+| Id  | Écran                                 | Contenu de l'infographie                                                                                                                                                         |
+| --- | ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| M1  | `B2-06-A1-07-ILLUSTRATION-PUISSANCES` | « Des puissances pour tous les nombres » : e⁰ = 1, e¹ ≈ 2,718, e² ≈ 7,389, le rang 2,5, la courbe de eˣ, e^(a + b) = e^a × e^b ; piège e × 0,1 × 4 ≈ 1,087 contre e^0,4 ≈ 1,492. |
+| M2  | `B2-06-A1-08-ILLUSTRATION-MODELE`     | « Lire a et k avant de calculer » : a = 1 000, k = ± 0,02, e^0,02 ≈ 1,0202, e^(−0,02) ≈ 0,9802, taux = e^k − 1, =$H$1*EXP($H$2\*A2).                                             |
+| M3  | `B2-06-A2-02-ILLUSTRATION-RECIPROQUE` | « ln défait l'exponentielle » : 3 et 12 par × 4 et ÷ 4, 1,609 et 5 par eˣ et ln, ln 1 = 0, ln e = 1, ln 0 et ln(−3), touches ln et log.                                          |
+| M4  | `B2-06-A2-02-ILLUSTRATION-PROPRIETES` | « ln change × en + » : règle 1, 2, 4, 8, × 2 et + 0,693, les trois propriétés ; piège ln 2 × ln 4 ≈ 0,961 contre ln 8 ≈ 2,079.                                                   |
+| M5  | `B2-06-A2-03-ILLUSTRATION-SEUIL`      | « Passer l'exposant devant » : 1,5ⁿ pour n de 0 à 7, seuil 10, n ≥ ln 10 ÷ ln 1,5 ≈ 5,68, premier entier n = 6.                                                                  |
+| M6  | `B2-06-A2-03-ILLUSTRATION-SENS`       | « q < 1 : le sens change » : ln 0,7 ≈ −0,357, ln 1,5 ≈ 0,405, 0,7ⁿ ≤ 0,2, n ≥ ln 0,2 ÷ ln 0,7 ≈ 4,51, n = 5, 0,7⁴ ≈ 0,240, 0,7⁵ ≈ 0,168.                                         |
+| M7  | `B2-06-A3-03-ILLUSTRATION-MODELES`    | « Ajouter ou multiplier ? » : 1 000, 800, 600, 400 ; 1 000, 800, 640, 512 ; rapports ; f(x) = 500e^(−0,1x), f(10) ≈ 183,94, f(x) = 100 donne x ≈ 16,09.                          |
+| M8  | `B2-06-A3-04-ILLUSTRATION-AJUSTEMENT` | « La courbe devient une droite » : 100, 74, 55, 41, 30, z = ln y, z ≈ −0,30x + 4,61, a = e^4,61 ≈ 100, y ≈ 100e^(−0,30x) ; piège a = β.                                          |
+
+Texte alternatif de chaque écran : le contenu ci-dessus, rédigé en phrases.

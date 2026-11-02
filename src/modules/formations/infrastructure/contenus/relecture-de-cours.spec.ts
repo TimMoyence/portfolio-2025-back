@@ -12,9 +12,9 @@ import {
   valeursDevoileesParLesExplications,
 } from '../../../../../test/helpers/relecture-de-cours';
 import { COURS_B2_05 } from './b2-05.cours';
-import { COURS_B2_06 } from './b2-06.cours';
 import { COURS_B3_01 } from './b3-01.cours';
 import { PIEGES_B3_01, VALEURS_B3_01 } from './b3-01.donnees';
+import { CONTENUS } from './index';
 
 const COURS = buildCoursDuContenu(COURS_B3_01);
 const VALEURS: Readonly<Record<string, number | string>> = Object.fromEntries(
@@ -234,12 +234,9 @@ describe('Gardes de relecture, éprouvées par mutation du B3-01', () => {
   });
 });
 
-describe('Gardes de relecture sur les cours à feuilles exigeant une formule', () => {
-  it.each([
-    ['B2-05', COURS_B2_05],
-    ['B2-06', COURS_B2_06],
-  ])(
-    '%s · ne dévoile dans aucune correction sur place une valeur à saisir d’un écran suivant',
+describe('Gardes de relecture sur tous les cours servis', () => {
+  it.each(CONTENUS.map((contenu) => [contenu.slug, contenu] as const))(
+    'GR-M3 · %s · ne dévoile dans aucune correction sur place une valeur à saisir d’un écran suivant',
     (_, contenu) => {
       expect(
         valeursDevoileesAvantLeurEcran(buildCoursDuContenu(contenu)),

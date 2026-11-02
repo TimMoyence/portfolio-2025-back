@@ -17,8 +17,8 @@
 | Niveau      | `B1` (nouveau constructeur `moteur.coursB1`, même forme que `coursB2`)                                                         |
 | Titre servi | « Proportions et pourcentages »                                                                                                |
 | Séance      | Semaine du 26 octobre 2026, BTS CG 1re année                                                                                   |
-| Durée       | **160 minutes exactes** (somme des écrans), 4 actes de 49, 36, 37 et 38 minutes, plus 2 pauses de 15 min hors durée            |
-| Écrans      | **37**, dont 16 écrans catalogue (6 illustrations)                                                                             |
+| Durée       | **121 minutes exactes** (somme des écrans), 4 actes de 49, 36, 28 et 8 minutes, plus 2 pauses de 15 min hors durée             |
+| Écrans      | **32**, dont 15 écrans catalogue (6 illustrations)                                                                             |
 | Sources     | Programme officiel du BTS CG (module « Information chiffrée »), forme de la CCF n° 1 ; données fictives Partie Libre           |
 
 ---
@@ -166,7 +166,7 @@ Parts arrondies au dixième de pourcentage quand elles ne tombent pas juste.
 ### 3.1 Vue d'ensemble
 
 Identifiants : `B1-01-A{acte}-{rang}-{SLUG}`, conformes à `^B1-01-A[1-6]-\d{2}-[A-Z0-9-]+$` ; une
-illustration, à son arrivée, portera le rang de la page qu'elle précède. Colonne « Brique · rendu » : valeur de la
+illustration porte le rang de la page qu'elle précède. Colonne « Brique · rendu » : valeur de la
 colonne `brique` ; les écrans « v2 » sont stockés en `fp-story` avec une présentation v2. « I » =
 interactif. « Q » = questions fermées notées portées par l'écran.
 

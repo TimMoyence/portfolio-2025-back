@@ -692,6 +692,16 @@ const DEFINITIONS = {
     libelle:
       'Laisser un résultat en pleine précision au lieu de l’arrondir comme demandé, avec ARRONDI.',
   },
+  'reference-non-figee-en-ligne': {
+    concept: 'tableur',
+    libelle:
+      'Recopier vers la droite une formule dont une référence fixe n’est pas figée ($) : elle glisse d’une colonne à chaque recopie.',
+  },
+  'formule-non-recopiable-en-ligne': {
+    concept: 'tableur',
+    libelle:
+      'Écrire une formule différente à chaque colonne au lieu d’une formule recopiable vers la droite.',
+  },
 } as const satisfies Readonly<Record<string, DefinitionConfusion>>;
 
 export const CONFUSIONS = typographierEnProfondeur(DEFINITIONS);

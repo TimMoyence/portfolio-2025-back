@@ -84,9 +84,6 @@ export const NOTES_DE_L_EXEMPLE_ETAPE_PAR_ETAPE = [
   'Papier : réponses sous chaque étape du livret.',
 ] as const;
 
-export const DEUXIEME_PAGE_DE_COURS =
-  '3 min, enchaînées sur la page 1 : 6 min pour les deux pages.';
-
 export const AVANT_SA_PAGE =
   '1 min, avant la trace écrite : faire décrire l’image, la page suivante en donne la règle.';
 

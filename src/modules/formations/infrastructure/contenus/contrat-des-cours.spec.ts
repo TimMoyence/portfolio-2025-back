@@ -20,6 +20,7 @@ import {
 } from '../../domain/cours/CoursStocke';
 import { deroulePresentateur } from '../../domain/cours/DeroulePresentateur';
 import { projeterCatalogue } from '../../domain/cours/Diffusion';
+import type { SensDeRecopie } from '../../domain/cours/FeuilleEvaluee';
 import { ouvrirTirages } from '../../domain/cours/OuvertureTirages';
 import { ligneDeLaReference } from '../../domain/cours/PlansStockes';
 import { slugOption } from '../../domain/cours/QuestionStockee';
@@ -48,26 +49,38 @@ const CLES_SECRETES = [
   'valeurAttendue',
 ];
 
+interface RecopieDeLaFeuille {
+  readonly sens: SensDeRecopie;
+  readonly clics: number;
+}
+
+function recopieVers(reference: string, modele: string): RecopieDeLaFeuille {
+  const lignes = ligneDeLaReference(reference) - ligneDeLaReference(modele);
+  return lignes === 0
+    ? {
+        sens: 'droite',
+        clics: (reference.codePointAt(0) ?? 0) - (modele.codePointAt(0) ?? 0),
+      }
+    : { sens: 'bas', clics: lignes };
+}
+
 function recopiesDeLaFeuille(
   ecran: ContenuDeCours['ecrans'][number],
-): Map<string, number> {
-  const dernieres = new Map<string, number>();
+): Map<string, RecopieDeLaFeuille> {
+  const recopies = new Map<string, RecopieDeLaFeuille>();
   if (ecran.brique !== 'fp-sheet') {
-    return dernieres;
+    return recopies;
   }
   for (const { reference, forme } of ecran.proprietes.questions[0].corrige
     .attendus) {
     if (forme !== 'references') {
-      dernieres.set(
-        forme.memeQue,
-        Math.max(
-          dernieres.get(forme.memeQue) ?? 0,
-          ligneDeLaReference(reference),
-        ),
-      );
+      const recopie = recopieVers(reference, forme.memeQue);
+      if (recopie.clics > (recopies.get(forme.memeQue)?.clics ?? 0)) {
+        recopies.set(forme.memeQue, recopie);
+      }
     }
   }
-  return dernieres;
+  return recopies;
 }
 
 function consignesDeRecopieFautives(contenu: ContenuDeCours): string[] {
@@ -82,23 +95,23 @@ function consignesDeRecopieFautives(contenu: ContenuDeCours): string[] {
       .filter(
         (consigne) =>
           /recopiez/iu.test(consigne) &&
-          !/cliquez \S+ fois sur « Recopier vers le bas »/u.test(consigne),
+          !/cliquez \S+ fois sur « Recopier vers (?:le bas|la droite) »/u.test(
+            consigne,
+          ),
       )
       .map((consigne) => `${ecran.screenId} : ${consigne}`);
     const malComptees = [...recopiesDeLaFeuille(ecran)]
       .filter(
-        ([source, derniere]) =>
+        ([source, { clics, sens }]) =>
           !consignes.some(
             (consigne) =>
               new RegExp(`(?<![$A-Z])${source}(?!\\d)`, 'u').test(consigne) &&
-              consigne.includes(
-                clicsDeRecopie(derniere - ligneDeLaReference(source)),
-              ),
+              consigne.includes(clicsDeRecopie(clics, sens)),
           ),
       )
       .map(
-        ([source, derniere]) =>
-          `${ecran.screenId} : ${source} recopiée jusqu’à la ligne ${derniere}`,
+        ([source, { clics, sens }]) =>
+          `${ecran.screenId} : ${source} recopiée ${clics} fois vers ${sens}`,
       );
     return [...sansGeste, ...malComptees];
   });
@@ -185,7 +198,7 @@ describe.each(CONTENUS.map((contenu) => [contenu.slug, contenu] as const))(
     const cours = buildCoursDuContenu(contenu);
     const prefixe = prefixeDuCours(contenu);
 
-    it('ne lève aucune violation de structure, sans dérogation', () => {
+    it('ne lève aucune violation de structure, hors dérogation écrite', () => {
       expect(verifierStructure(cours)).toEqual([]);
     });
 

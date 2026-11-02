@@ -34,13 +34,15 @@ import {
 import * as moteur from './briques';
 
 const GRAVURE_DE_L_ACCROCHE = moteur.gravureDuDomainePublic({
-  id: 'M1',
+  id: 'M9',
   chemin: '/assets/cours/gravures/v1/napier-logarithmes-1614.jpg',
   pageSource:
     'https://commons.wikimedia.org/wiki/File:Mirifici_Logarithmorum_canonis_Descriptio.jpg',
   auteur: 'John Napier, Mirifici logarithmorum canonis descriptio',
   date: '1614',
 });
+
+const DOSSIER_DES_ILLUSTRATIONS = '/assets/cours/b2-06/v1';
 
 const ACTE_1: moteur.Acte = [
   {
@@ -286,15 +288,32 @@ const ACTE_1: moteur.Acte = [
       ],
     },
   },
+  moteur.ecranDIllustration(
+    {
+      screenId: 'B2-06-A1-07-ILLUSTRATION-PUISSANCES',
+      titre: 'Illustration : prolonger les puissances',
+      concepts: ['fonction-exponentielle', 'suite-geometrique'],
+    },
+    DOSSIER_DES_ILLUSTRATIONS,
+    {
+      fichier: 'prolonger-les-puissances.webp',
+      imageAlt:
+        'Infographie « Des puissances pour tous les nombres ». On connaît quelques valeurs de eˣ : e⁰ = 1, e¹ ≈ 2,718 et e² ≈ 7,389 aux rangs 0, 1 et 2 ; le rang 2,5 reste un point d’interrogation. La fonction exponentielle eˣ est définie pour tous les nombres réels : sa courbe passe par e^(−1) ≈ 0,368, e⁰ = 1, e^0,5 ≈ 1,649, e¹ ≈ 2,718 et e² ≈ 7,389. Par définition, e⁰ = 1 ; pour tout nombre réel x, eˣ > 0 ; pour tous les nombres réels a et b, e^(a + b) = e^a × e^b. Piège : e × 0,1 × 4 ≈ 1,087 est faux ; le juste est e^0,4 ≈ 1,492.',
+    },
+    [
+      moteur.AVANT_SA_PAGE,
+      'Faire lire le piège du bas : e^0,4 n’est pas e × 0,1 × 4.',
+    ],
+  ),
   moteur.ecranV2(
     {
       screenId: 'B2-06-A1-07-COURS-EXPONENTIELLE',
       titre: 'Cours : de qⁿ à la fonction exponentielle',
       diffusion: 'catalogue',
-      dureeMinutes: 3,
+      dureeMinutes: 2,
       concepts: ['fonction-exponentielle', 'suite-geometrique'],
       notes: moteur.puces(
-        '3 min ; la trace écrite est imprimée dans le livret : on lit et on commente, on ne recopie pas.',
+        moteur.PAGE_APRES_SON_ILLUSTRATION,
         'Avant l’exemple, demander : « Une suite géométrique a-t-elle une valeur au rang 2,5 ? » Non : la fonction exponentielle comble les trous.',
         'Relier au B2-04 et au B2-05 : qⁿ et (1 + t)ⁿ multiplient, ils n’ajoutent pas.',
         'Faire trouver la touche eˣ sur les calculatrices de la salle.',
@@ -336,19 +355,40 @@ const ACTE_1: moteur.Acte = [
       ],
     },
   ),
+  moteur.ecranDIllustration(
+    {
+      screenId: 'B2-06-A1-08-ILLUSTRATION-MODELE',
+      titre: 'Illustration : lire a et k',
+      concepts: [
+        'fonction-exponentielle',
+        'coefficient-multiplicateur',
+        'tableur',
+      ],
+    },
+    DOSSIER_DES_ILLUSTRATIONS,
+    {
+      fichier: 'lire-a-et-k.webp',
+      imageAlt:
+        'Infographie « Lire a et k avant de calculer ». Deux courbes partent du même point, a = 1 000 : la verte monte, k = 0,02 > 0, croissante ; la rouge descend, k = −0,02 < 0, décroissante. e^0,02 ≈ 1,0202, soit + 2,02 % ; e^(−0,02) ≈ 0,9802, soit − 1,98 %. Taux = e^k − 1. Dans un tableur, avec 1 000 en H1 et 0,02 en H2 : =$H$1*EXP($H$2*A2).',
+    },
+    [
+      moteur.AVANT_SA_PAGE,
+      'Question : « Que lit-on en 0, et que dit le signe de k ? » La valeur de départ et le sens de variation.',
+    ],
+  ),
   moteur.ecranV2(
     {
       screenId: 'B2-06-A1-08-COURS-MODELE-EXP',
       titre: 'Cours : les modèles a e^(kx) et le tableur',
       diffusion: 'catalogue',
-      dureeMinutes: 3,
+      dureeMinutes: 2,
       concepts: [
         'fonction-exponentielle',
         'coefficient-multiplicateur',
         'tableur',
       ],
       notes: moteur.puces(
-        moteur.DEUXIEME_PAGE_DE_COURS,
+        moteur.DEUXIEME_PAGE_APRES_SON_ILLUSTRATION,
         'Faire comparer k = 0,02 et le taux 2,02 % : proches, mais pas égaux ; l’écart grandit avec k.',
         'Faire taper la formule sans $ sur un poste volontaire, puis la recopier : la colonne devient fausse, l’erreur fixe la règle.',
       ),
@@ -649,15 +689,49 @@ const ACTE_2: moteur.Acte = [
       renvoi: RENVOI_AU_DOSSIER,
     },
   ),
+  moteur.ecranDIllustration(
+    {
+      screenId: 'B2-06-A2-02-ILLUSTRATION-RECIPROQUE',
+      titre: 'Illustration : ln défait l’exponentielle',
+      concepts: ['logarithme-neperien'],
+    },
+    DOSSIER_DES_ILLUSTRATIONS,
+    {
+      fichier: 'ln-defait-l-exponentielle.webp',
+      imageAlt:
+        'Infographie « ln défait l’exponentielle ». Comme ÷ 4 défait × 4 entre 3 et 12, ln défait eˣ : 1,609 donne 5 par eˣ, et 5 redonne 1,609 par ln. La courbe de eˣ lue à l’envers : on part de 5 sur l’axe vertical, on rejoint la courbe, on descend sur 1,609. ln 1 = 0 et ln e = 1 ; ln 0 et ln(−3) n’existent pas. La touche ln donne ln 5 ≈ 1,609 ; la touche log donne log 5 ≈ 0,699 : ce n’est pas la bonne.',
+    },
+    [
+      moteur.AVANT_SA_PAGE,
+      'Question : « × 4 a pour inverse ÷ 4 ; quel est l’inverse de eˣ ? » Laisser venir ln.',
+    ],
+  ),
+  moteur.ecranDIllustration(
+    {
+      screenId: 'B2-06-A2-02-ILLUSTRATION-PROPRIETES',
+      titre: 'Illustration : ln change × en +',
+      concepts: ['logarithme-neperien'],
+    },
+    DOSSIER_DES_ILLUSTRATIONS,
+    {
+      fichier: 'ln-change-produit-en-somme.webp',
+      imageAlt:
+        'Infographie « ln change × en + ». Sur une règle graduée 1, 2, 4, 8 à pas égaux, chaque pas multiplie par 2 et ajoute 0,693 au logarithme. ln(a × b) = ln a + ln b ; ln(a ÷ b) = ln a − ln b ; ln(aⁿ) = n × ln a. Piège : ln 2 × ln 4 ≈ 0,961 est faux ; le juste est ln(2 × 4) = ln 8 ≈ 2,079.',
+    },
+    [
+      moteur.AVANT_SA_PAGE,
+      'Question : « Que devient × 2 quand on passe au ln ? » Une addition de 0,693.',
+    ],
+  ),
   moteur.ecranV2(
     {
       screenId: 'B2-06-A2-02-COURS-LOGARITHME',
       titre: 'Cours : le logarithme népérien',
       diffusion: 'catalogue',
-      dureeMinutes: 3,
+      dureeMinutes: 2,
       concepts: ['logarithme-neperien'],
       notes: moteur.puces(
-        '3 min ; garder la réflexion précédente sous les yeux.',
+        '2 min après les deux illustrations ; garder la réflexion précédente sous les yeux.',
         'Faire vérifier e^(ln 5) = 5 à la calculatrice : ln défait l’exponentielle.',
         'Faire taper log 5 puis ln 5 : deux touches, deux résultats ; seule ln sert aujourd’hui.',
       ),
@@ -699,15 +773,49 @@ const ACTE_2: moteur.Acte = [
       ],
     },
   ),
+  moteur.ecranDIllustration(
+    {
+      screenId: 'B2-06-A2-03-ILLUSTRATION-SEUIL',
+      titre: 'Illustration : passer l’exposant devant',
+      concepts: ['resolution-par-logarithme'],
+    },
+    DOSSIER_DES_ILLUSTRATIONS,
+    {
+      fichier: 'seuil-exposant-devant.webp',
+      imageAlt:
+        'Infographie « Passer l’exposant devant ». Les valeurs de 1,5ⁿ pour n de 0 à 7 : 1 ; 1,50 ; 2,25 ; 3,38 ; 5,06 ; 7,59 ; 11,39 ; 17,09. Le seuil 10 est franchi entre n = 5 et n = 6. Étapes : ln(1,5ⁿ) ≥ ln 10 ; n × ln 1,5 ≥ ln 10 ; n ≥ ln 10 ÷ ln 1,5 ; ln 10 ÷ ln 1,5 ≈ 5,68 ; premier entier n = 6.',
+    },
+    [
+      moteur.AVANT_SA_PAGE,
+      'Question : « Comment trouver le rang sans tâtonner ? » On passe l’exposant devant ln.',
+    ],
+  ),
+  moteur.ecranDIllustration(
+    {
+      screenId: 'B2-06-A2-03-ILLUSTRATION-SENS',
+      titre: 'Illustration : le sens change',
+      concepts: ['resolution-par-logarithme'],
+    },
+    DOSSIER_DES_ILLUSTRATIONS,
+    {
+      fichier: 'le-sens-change.webp',
+      imageAlt:
+        'Infographie « q < 1 : le sens change ». La courbe de ln x passe par (1 ; 0) : elle est négative pour x < 1, avec ln 0,7 ≈ −0,357, et positive au-delà, avec ln 1,5 ≈ 0,405. Étapes : 0,7ⁿ ≤ 0,2 ; n × ln 0,7 ≤ ln 0,2 ; n ≥ ln 0,2 ÷ ln 0,7, le signe ≥ écrit en très gros ; ln 0,2 ÷ ln 0,7 ≈ 4,51 ; premier entier n = 5. Contrôle : 0,7⁴ ≈ 0,240 et 0,7⁵ ≈ 0,168.',
+    },
+    [
+      moteur.AVANT_SA_PAGE,
+      'Question : « Quel est le signe de ln 0,7 ? » Négatif : diviser par ln 0,7 change le sens.',
+    ],
+  ),
   moteur.ecranV2(
     {
       screenId: 'B2-06-A2-03-COURS-SEUIL',
       titre: 'Cours : résoudre qⁿ ≥ s avec ln',
       diffusion: 'catalogue',
-      dureeMinutes: 3,
+      dureeMinutes: 2,
       concepts: ['resolution-par-logarithme', 'tableur'],
       notes: moteur.puces(
-        moteur.DEUXIEME_PAGE_DE_COURS,
+        '2 min après les deux illustrations, enchaînées sur la page 1 : 8 min pour les deux pages et leurs quatre illustrations.',
         'Relier au B2-04 : le seuil se trouvait en tâtonnant ; ln le donne en une ligne.',
         'Question : « ln 0,8 est-il positif ? » Non : diviser par ln 0,8 change le sens.',
       ),
@@ -1030,15 +1138,32 @@ const ACTE_3: moteur.Acte = [
       ],
     },
   },
+  moteur.ecranDIllustration(
+    {
+      screenId: 'B2-06-A3-03-ILLUSTRATION-MODELES',
+      titre: 'Illustration : ajouter ou multiplier',
+      concepts: ['ajustement-exponentiel', 'resolution-par-logarithme'],
+    },
+    DOSSIER_DES_ILLUSTRATIONS,
+    {
+      fichier: 'ajouter-ou-multiplier.webp',
+      imageAlt:
+        'Infographie « Ajouter ou multiplier ? ». On ajoute − 200 : 1 000, 800, 600, 400, des rapports qui changent, 0,80, 0,75, 0,67. On multiplie par 0,8 : 1 000, 800, 640, 512, des rapports constants de 0,80. Sur le graphique, la droite rouge tombe à 0 au pas 5 ; la courbe verte reste au-dessus de 0. f(x) = 500e^(−0,1x) : f(10) ≈ 183,94 ; f(x) = 100 donne x ≈ 16,09.',
+    },
+    [
+      moteur.AVANT_SA_PAGE,
+      'Question : « Comment voir si on ajoute ou si on multiplie ? » On calcule les rapports successifs.',
+    ],
+  ),
   moteur.ecranV2(
     {
       screenId: 'B2-06-A3-03-COURS-MODELE',
       titre: 'Cours : reconnaître et utiliser un modèle exponentiel',
       diffusion: 'catalogue',
-      dureeMinutes: 3,
+      dureeMinutes: 2,
       concepts: ['ajustement-exponentiel', 'resolution-par-logarithme'],
       notes: moteur.puces(
-        '3 min ; la trace écrite est imprimée dans le livret.',
+        moteur.PAGE_APRES_SON_ILLUSTRATION,
         'Faire calculer au tableau deux rapports successifs du graphique : 860 ÷ 1 100 et 670 ÷ 860.',
         'Lien au dossier : « La demande des boutiques : modèle affine ou exponentiel ? »',
       ),
@@ -1079,15 +1204,32 @@ const ACTE_3: moteur.Acte = [
       ],
     },
   ),
+  moteur.ecranDIllustration(
+    {
+      screenId: 'B2-06-A3-04-ILLUSTRATION-AJUSTEMENT',
+      titre: 'Illustration : la courbe devient une droite',
+      concepts: ['ajustement-exponentiel', 'ajustement-affine'],
+    },
+    DOSSIER_DES_ILLUSTRATIONS,
+    {
+      fichier: 'la-courbe-devient-une-droite.webp',
+      imageAlt:
+        'Infographie « La courbe devient une droite ». Les points (x ; y) pour x de 0 à 4 valent 100, 74, 55, 41, 30 et dessinent une courbe. Le tableau z = ln y donne 4,605 ; 4,304 ; 4,007 ; 3,714 ; 3,401. Les points (x ; z) s’alignent sur une droite. z ≈ −0,30x + 4,61 ; y = e^β × e^(αx) ; a = e^4,61 ≈ 100 ; y ≈ 100e^(−0,30x). Piège : écrire a = β est faux.',
+    },
+    [
+      moteur.AVANT_SA_PAGE,
+      'Question : « Comment rendre droite une série qui courbe ? » On passe aux logarithmes.',
+    ],
+  ),
   moteur.ecranV2(
     {
       screenId: 'B2-06-A3-04-COURS-AJUSTEMENT',
       titre: 'Cours : ajuster par z = ln y',
       diffusion: 'catalogue',
-      dureeMinutes: 3,
+      dureeMinutes: 2,
       concepts: ['ajustement-exponentiel', 'ajustement-affine', 'tableur'],
       notes: moteur.puces(
-        moteur.DEUXIEME_PAGE_DE_COURS,
+        moteur.DEUXIEME_PAGE_APRES_SON_ILLUSTRATION,
         'Relier au B2-02 : la droite des moindres carrés est la même ; seules les ordonnées changent, z au lieu de y.',
         'Question : « β est-il le coefficient a ? » Non : a = e^β.',
       ),
@@ -1402,10 +1544,31 @@ const REMEDIATIONS: ContenuDeCours['remediations'] = {
   [SERIES_INVERSEES]: 'B2-06-A3-04-COURS-AJUSTEMENT',
 };
 
+const ILLUSTRATIONS = [
+  [
+    'M1',
+    'prolonger-les-puissances.webp',
+    'Des puissances pour tous les nombres',
+  ],
+  ['M2', 'lire-a-et-k.webp', 'Lire a et k avant de calculer'],
+  ['M3', 'ln-defait-l-exponentielle.webp', 'ln défait l’exponentielle'],
+  ['M4', 'ln-change-produit-en-somme.webp', 'ln change × en +'],
+  ['M5', 'seuil-exposant-devant.webp', 'Passer l’exposant devant'],
+  ['M6', 'le-sens-change.webp', 'q < 1 : le sens change'],
+  ['M7', 'ajouter-ou-multiplier.webp', 'Ajouter ou multiplier ?'],
+  ['M8', 'la-courbe-devient-une-droite.webp', 'La courbe devient une droite'],
+] as const;
+
+const MEDIAS = moteur.mediasDesIllustrations(
+  DOSSIER_DES_ILLUSTRATIONS,
+  ILLUSTRATIONS,
+  GRAVURE_DE_L_ACCROCHE,
+);
+
 export const COURS_B2_06 = moteur.coursB2(
   [ACTE_1, ACTE_2, ACTE_3, ACTE_4],
   REMEDIATIONS,
-  [GRAVURE_DE_L_ACCROCHE],
+  MEDIAS,
   {
     slug: 'b2-06-exponentielle-logarithme',
     titre: 'Exponentielle et logarithme',

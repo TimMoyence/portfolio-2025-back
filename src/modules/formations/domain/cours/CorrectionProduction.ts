@@ -13,7 +13,7 @@ import type {
   CorrigeFeuille,
   CorrigeTableau,
 } from './Corrige';
-import { piegesDuCorrige } from './Corrige';
+import { confusionDeLaRecopieTrahie, piegesDuCorrige } from './Corrige';
 import type { ConfusionId } from './banque/confusions';
 import type { Feuille, ResultatFormule, ValeurFormule } from './Formule';
 import {
@@ -57,7 +57,6 @@ export type SaisiesDeTableau = readonly Readonly<
 >[];
 
 const SANS_FORMULE: ConfusionId = 'valeur-saisie-sans-formule';
-const NON_RECOPIABLE: ConfusionId = 'formule-non-recopiable';
 
 type AttenduDeCellule = CorrigeFeuille['attendus'][number];
 
@@ -119,16 +118,13 @@ function valeurConforme(
   return valeur === attendu.valeur;
 }
 
-function trahitLaRecopie(attendu: AttenduDeCellule, feuille: Feuille): boolean {
-  if (attendu.forme === 'references') {
-    return false;
-  }
-  const modele = attendu.forme.memeQue;
+function trahitLaRecopie(
+  reference: string,
+  modele: string,
+  feuille: Feuille,
+): boolean {
   const formeAttendue = formeR1C1(feuille.cellules[modele] ?? '', modele);
-  const formeSaisie = formeR1C1(
-    feuille.cellules[attendu.reference] ?? '',
-    attendu.reference,
-  );
+  const formeSaisie = formeR1C1(feuille.cellules[reference] ?? '', reference);
   return formeAttendue === null || formeAttendue !== formeSaisie;
 }
 
@@ -161,7 +157,11 @@ function confusionDeLaCellule(
         )
       : null;
   }
-  return trahitLaRecopie(attendu, feuille) ? NON_RECOPIABLE : undefined;
+  const { reference, forme } = attendu;
+  return forme !== 'references' &&
+    trahitLaRecopie(reference, forme.memeQue, feuille)
+    ? confusionDeLaRecopieTrahie(reference, forme.memeQue)
+    : undefined;
 }
 
 function bilan<V extends { readonly juste: boolean }>(

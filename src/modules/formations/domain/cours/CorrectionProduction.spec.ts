@@ -12,6 +12,7 @@ import {
   corrigerFeuille,
   corrigerTableau,
 } from './CorrectionProduction';
+import { confusionsDuCorrige } from './CorrigeStocke';
 
 const PLAN = buildPlanFeuille({
   cellules: {
@@ -140,6 +141,47 @@ describe('corrigerFeuille', () => {
       juste: false,
       confusion: NON_RECOPIABLE,
     });
+  });
+
+  it('B102-M7 · nomme la recopie vers la droite trahie par une formule retapée', () => {
+    const corrige = buildCorrigeFeuille({
+      plan: PLAN,
+      attendus: [
+        {
+          ...ATTENDU_D2,
+          reference: 'D2',
+          formuleReference: '=$C2*2',
+          valeur: 794000,
+          pieges: [],
+        },
+        {
+          ...ATTENDU_D2,
+          reference: 'E2',
+          formuleReference: '=$C2*2',
+          valeur: 794000,
+          forme: { memeQue: 'D2' },
+          pieges: [],
+        },
+      ],
+    });
+
+    const correction = corrigerFeuille(corrige, {
+      D2: '=$C2*2',
+      E2: '=C2*2',
+    });
+
+    expect(correction.verdicts).toEqual([
+      { reference: 'D2', juste: true, confusion: null },
+      {
+        reference: 'E2',
+        juste: false,
+        confusion: 'formule-non-recopiable-en-ligne',
+      },
+    ]);
+    expect(confusionsDuCorrige(corrige)).toContain(
+      'formule-non-recopiable-en-ligne',
+    );
+    expect(confusionsDuCorrige(corrige)).not.toContain(NON_RECOPIABLE);
   });
 
   it('refuse une cellule vide sans lui prêter de confusion', () => {

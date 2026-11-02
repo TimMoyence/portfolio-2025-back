@@ -2,8 +2,13 @@ import type {
   AuMoinsUn,
   AuMoinsUnModifiable,
 } from '../../../../common/domain/au-moins-un';
+import { arrondi } from '../../../../common/domain/nombres/arrondi';
 import { estEntierStrictementPositif } from '../../../../common/domain/nombres/dans-les-bornes';
 import type { ConfusionId } from '../../domain/cours/banque/confusions';
+import {
+  DECALAGES_DE_RECOPIE,
+  type SensDeRecopie,
+} from '../../domain/cours/FeuilleEvaluee';
 import { decalerFormule } from '../../domain/cours/Formule';
 import { ligneDeLaReference } from '../../domain/cours/PlansStockes';
 import * as moteur from './briques';
@@ -51,12 +56,20 @@ const CLICS_EN_LETTRES = [
   'vingt',
 ] as const;
 
-export function clicsDeRecopie(clics: number): string {
+const BOUTONS_DE_RECOPIE: Readonly<Record<SensDeRecopie, string>> = {
+  bas: 'Recopier vers le bas',
+  droite: 'Recopier vers la droite',
+};
+
+export function clicsDeRecopie(
+  clics: number,
+  sens: SensDeRecopie = 'bas',
+): string {
   const enLettres = CLICS_EN_LETTRES.at(clics - 1);
   if (!estEntierStrictementPositif(clics) || enLettres === undefined) {
     throw new RangeError(`une recopie compte de 1 à 20 clics, pas ${clics}`);
   }
-  return `cliquez ${enLettres} fois sur « Recopier vers le bas »`;
+  return `cliquez ${enLettres} fois sur « ${BOUTONS_DE_RECOPIE[sens]} »`;
 }
 
 export function gesteDeRecopie(
@@ -67,6 +80,21 @@ export function gesteDeRecopie(
   const suite =
     autres.length === 0 ? '' : `, puis de même depuis ${autres.join(' et ')}`;
   return `sélectionnez ${premiere} et ${clicsDeRecopie(clics)}, une ligne par clic${suite}`;
+}
+
+export function piegeDeLArrondi(
+  exacte: number,
+): (readonly [number, 'arrondi-oublie'])[] {
+  return exacte === arrondi(exacte, 1) ? [] : [[exacte, 'arrondi-oublie']];
+}
+
+export function gesteDeRecopieVersLaDroite(
+  source: string,
+  derniereColonne: string,
+): string {
+  const clics =
+    (derniereColonne.codePointAt(0) ?? 0) - (source.codePointAt(0) ?? 0);
+  return `sélectionnez ${source} et ${clicsDeRecopie(clics, 'droite')}, une cellule par clic`;
 }
 
 export function anneesEtRangs(
@@ -105,7 +133,7 @@ export interface Recopie {
   readonly tolerance?: AttenduDeFeuille['tolerance'];
 }
 
-export function colonneRecopiee(
+function cellulesRecopiees(
   {
     colonne,
     premiereLigne,
@@ -116,9 +144,13 @@ export function colonneRecopiee(
     confusionSiErreur,
     tolerance,
   }: Recopie,
+  sens: SensDeRecopie,
   [premiere, ...suivantes]: AuMoinsUnModifiable<number | string>,
 ): AuMoinsUnModifiable<AttenduDeFeuille> {
-  const modele = `${colonne}${premiereLigne}`;
+  const [lignes, colonnes] = DECALAGES_DE_RECOPIE[sens];
+  const celluleDuRang = (rang: number): string =>
+    `${String.fromCodePoint((colonne.codePointAt(0) ?? 0) + rang * colonnes)}${premiereLigne + rang * lignes}`;
+  const modele = celluleDuRang(0);
   return [
     moteur.attendu(
       modele,
@@ -131,8 +163,8 @@ export function colonneRecopiee(
     ),
     ...suivantes.map((valeur, rang) =>
       moteur.attendu(
-        `${colonne}${premiereLigne + rang + 1}`,
-        decalerFormule(formule, rang + 1, 0),
+        celluleDuRang(rang + 1),
+        decalerFormule(formule, (rang + 1) * lignes, (rang + 1) * colonnes),
         valeur,
         { memeQue: modele },
         [...piegesDeLaRecopie, ...piegesDuRang(rang + 1)],
@@ -141,4 +173,18 @@ export function colonneRecopiee(
       ),
     ),
   ];
+}
+
+export function colonneRecopiee(
+  recopie: Recopie,
+  valeurs: AuMoinsUnModifiable<number | string>,
+): AuMoinsUnModifiable<AttenduDeFeuille> {
+  return cellulesRecopiees(recopie, 'bas', valeurs);
+}
+
+export function ligneRecopiee(
+  recopie: Recopie,
+  valeurs: AuMoinsUnModifiable<number | string>,
+): AuMoinsUnModifiable<AttenduDeFeuille> {
+  return cellulesRecopiees(recopie, 'droite', valeurs);
 }
