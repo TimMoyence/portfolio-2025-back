@@ -1,6 +1,6 @@
 import type { DeepPartial } from 'typeorm';
 import { buildContact } from '../../../../test/factories/contacts.factory';
-import { mockTypeOrmRepository } from '../../../../test/factories/formation-entities.factory';
+import { mockTypeOrmRepository } from '../../../../test/factories/formations/formation-entities.factory';
 import { ContactsRepositoryTypeORM } from './Contacts.repository.typeORM';
 import { ContactMessagesEntity } from './entities/ContactMessage.entity';
 

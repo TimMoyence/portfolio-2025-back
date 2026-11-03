@@ -6,7 +6,7 @@ import {
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
-import { RoutePublique } from '../../../common/interfaces/security/formulaire-public.decorator';
+import { RoutePublique } from '../../../common/interfaces/security/anti-robot/formulaire-public.decorator';
 import { GetPresentationInteractionsUseCase } from '../application/GetPresentationInteractions.useCase';
 import { PresentationInteractionsResponseDto } from './dto/presentation-interactions.response.dto';
 

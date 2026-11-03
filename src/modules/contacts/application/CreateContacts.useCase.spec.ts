@@ -11,8 +11,8 @@ import {
 import {
   attendreLAvertissement,
   espionnerLesAvertissements,
-} from '../../../../test/helpers/avertissements';
-import { attendreResultatEtEffetsUniques } from '../../../../test/helpers/effets-uniques';
+} from '../../../../test/helpers/depot/avertissements';
+import { attendreResultatEtEffetsUniques } from '../../../../test/helpers/temps/effets-uniques';
 
 describe('CreateContactsUseCase', () => {
   let useCase: CreateContactsUseCase;

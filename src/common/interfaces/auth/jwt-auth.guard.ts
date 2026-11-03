@@ -8,8 +8,8 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import type { Request, Response } from 'express';
-import { JwtTokenService } from '../../../modules/users/application/services/JwtTokenService';
-import type { JwtPayload } from '../../../modules/users/application/services/JwtPayload';
+import { JwtTokenService } from '../../../modules/users/application/services/jetons/JwtTokenService';
+import type { JwtPayload } from '../../../modules/users/application/services/jetons/JwtPayload';
 import type { IUsersRepository } from '../../../modules/users/domain/IUsers.repository';
 import { USERS_REPOSITORY } from '../../../modules/users/domain/token';
 import { IS_PUBLIC_KEY } from './public.decorator';

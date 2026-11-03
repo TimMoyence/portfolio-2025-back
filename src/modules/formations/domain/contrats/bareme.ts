@@ -1,7 +1,7 @@
-import type { Bareme as BaremeV1 } from '../Bareme';
-import type { Solution, Tolerance } from '../GradingCore';
+import type { Bareme as BaremeV1 } from '../notation/Bareme';
+import type { Solution, Tolerance } from '../notation/GradingCore';
 import type { ConceptId } from '../cours/banque/concepts';
-import type { CorrigeProduction } from '../cours/Corrige';
+import type { CorrigeProduction } from '../cours/correction/Corrige';
 import type { TypeQuestion } from './cours';
 
 export type { BaremeV1 };

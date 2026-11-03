@@ -1,0 +1,200 @@
+import { UnauthorizedException } from '@nestjs/common';
+import request from 'supertest';
+import {
+  applicationDeLaSuite,
+  bootstrapTestApp,
+  serveurHttpDe,
+} from '../../helpers/http/nest-test-app';
+import { RateLimitExceededError } from '../../../src/common/domain/errors/RateLimitExceededError';
+import { RolesGuard } from '../../../src/common/interfaces/auth/roles.guard';
+import { JwtAuthGuard } from '../../../src/common/interfaces/auth/jwt-auth.guard';
+import {
+  AUDIT_CREATED_RESPONSE,
+  AUDIT_REQUEST_PAYLOAD,
+  AUDIT_SUMMARY_RESULT,
+  CONTACT_CREATED_RESPONSE,
+  CONTACT_PAYLOAD,
+  createAuthUseCaseStubs,
+  createCoreUseCaseStubs,
+  moduleDesControleursDuSocle,
+  PASSWORD_RESET_DONE_RESULT,
+  PASSWORD_RESET_REQUESTED_RESULT,
+  primeCoreUseCaseStubs,
+  primePasswordUseCaseStubs,
+} from '../../factories/core-api.factory';
+import { emettreJeton } from '../../../src/common/domain/crypto/TokenHash';
+
+// eslint-disable-next-line sonarjs/no-hardcoded-passwords -- fixture de test, pas un secret reel
+const WRONG_PASSWORD = 'WrongPassword1!';
+
+describe('API coherence and connectivity (e2e http socket)', () => {
+  const coreStubs = createCoreUseCaseStubs();
+  const authStubs = createAuthUseCaseStubs();
+
+  const { authenticateUserUseCase } = authStubs;
+
+  const app = applicationDeLaSuite(async () => {
+    const moduleRef = await moduleDesControleursDuSocle(coreStubs, authStubs)
+      .overrideGuard(RolesGuard)
+      .useValue({ canActivate: () => true })
+      .overrideGuard(JwtAuthGuard)
+      .useValue({ canActivate: () => true })
+      .compile();
+
+    return bootstrapTestApp(moduleRef);
+  });
+
+  const getHttpServer = () => serveurHttpDe(app());
+
+  function validationMessages(response: request.Response): string[] {
+    const detail = response.body.detail as string | string[];
+    return Array.isArray(detail) ? detail : [String(detail)];
+  }
+
+  function expectValidationMessage(
+    response: request.Response,
+    fragment: string,
+  ): void {
+    expect(
+      validationMessages(response).some((message) =>
+        message.includes(fragment),
+      ),
+    ).toBe(true);
+  }
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+
+    primeCoreUseCaseStubs(coreStubs);
+    primePasswordUseCaseStubs(authStubs);
+  });
+
+  it('POST /api/contacts validates payload and returns contract response', async () => {
+    const response = await request(getHttpServer())
+      .post('/api/contacts')
+      .send(CONTACT_PAYLOAD)
+      .expect(201);
+
+    expect(response.body).toEqual(CONTACT_CREATED_RESPONSE);
+  });
+
+  it('POST /api/contacts consigne la provenance du message', async () => {
+    await request(getHttpServer())
+      .post('/api/contacts')
+      .set('user-agent', 'agent-de-test')
+      .set('referer', 'https://asilidesign.fr/fr/contact')
+      .send(CONTACT_PAYLOAD)
+      .expect(201);
+
+    expect(coreStubs.createContactsUseCase.execute).toHaveBeenCalledWith(
+      expect.objectContaining({
+        ip: expect.any(String) as string,
+        userAgent: 'agent-de-test',
+        referer: 'https://asilidesign.fr/fr/contact',
+      }),
+    );
+  });
+
+  it('POST /api/contacts forbids non-whitelisted fields', async () => {
+    const response = await request(getHttpServer())
+      .post('/api/contacts')
+      .send({ ...CONTACT_PAYLOAD, injected: 'forbidden' })
+      .expect(400);
+
+    expectValidationMessage(response, 'property injected should not exist');
+  });
+
+  it('POST /api/contacts refuse un message dont les conditions ne sont pas acceptées', async () => {
+    const response = await request(getHttpServer())
+      .post('/api/contacts')
+      .send({ ...CONTACT_PAYLOAD, terms: false })
+      .expect(400);
+
+    expectValidationMessage(response, 'terms must be equal to true');
+  });
+
+  it('POST /api/audits resolves locale from referer when not provided', async () => {
+    const response = await request(getHttpServer())
+      .post('/api/audits')
+      .set('referer', 'https://example.com/en/contact')
+      .send(AUDIT_REQUEST_PAYLOAD)
+      .expect(201);
+
+    expect(response.body).toEqual(AUDIT_CREATED_RESPONSE);
+  });
+
+  it('POST /api/audits refuse en 429 avec Retry-After quand la boite a atteint son plafond', async () => {
+    coreStubs.createAuditRequestsUseCase.execute.mockRejectedValueOnce(
+      new RateLimitExceededError(
+        'Trop de demandes d audit vers cette adresse.',
+        121,
+      ),
+    );
+
+    const response = await request(getHttpServer())
+      .post('/api/audits')
+      .send(AUDIT_REQUEST_PAYLOAD)
+      .expect(429);
+
+    expect(response.headers['retry-after']).toBe('121');
+    expect(response.body).toMatchObject({
+      status: 429,
+      detail: 'Trop de demandes d audit vers cette adresse.',
+    });
+  });
+
+  it('GET /api/audits/:id/summary returns summary snapshot', async () => {
+    const response = await request(getHttpServer())
+      .get('/api/audits/00000000-0000-4000-a000-000000000001/summary')
+      .expect(200);
+
+    expect(response.body).toEqual(AUDIT_SUMMARY_RESULT);
+  });
+
+  it('GET /api/audits/:id/stream exposes SSE event stream', async () => {
+    const response = await request(getHttpServer())
+      .get('/api/audits/00000000-0000-4000-a000-000000000001/stream')
+      .expect(200)
+      .expect('Content-Type', /text\/event-stream/);
+
+    expect(response.text).toContain('event: progress');
+    expect(response.text).toContain('"auditId":"audit-1"');
+  });
+
+  it('POST /api/auth/login returns 401 for invalid credentials', async () => {
+    authenticateUserUseCase.execute.mockRejectedValueOnce(
+      new UnauthorizedException('Invalid credentials'),
+    );
+
+    const response = await request(getHttpServer())
+      .post('/api/auth/login')
+      .send({
+        email: 'john@example.com',
+        password: WRONG_PASSWORD,
+      })
+      .expect(401);
+
+    expect(response.status).toBe(401);
+  });
+
+  it('POST /api/auth/forgot-password returns generic success message', async () => {
+    const response = await request(getHttpServer())
+      .post('/api/auth/forgot-password')
+      .send({ email: 'john@example.com' })
+      .expect(200);
+
+    expect(response.body).toEqual(PASSWORD_RESET_REQUESTED_RESULT);
+  });
+
+  it('POST /api/auth/reset-password confirme sans livrer l identifiant du compte', async () => {
+    const chosenCredential = 'NouveauMotDePasse1!';
+    const response = await request(getHttpServer())
+      .post('/api/auth/reset-password')
+      .send({ token: emettreJeton().brut, newPassword: chosenCredential })
+      .expect(200);
+
+    expect(response.body).toEqual({
+      message: PASSWORD_RESET_DONE_RESULT.message,
+    });
+  });
+});

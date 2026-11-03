@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { empreinteSha256 } from '../../../common/domain/crypto/empreintes';
-import { nommeAuContrat } from '../../../common/domain/registre-du-contrat';
+import { nommeAuContrat } from '../../../common/domain/liens/registre-du-contrat';
 import { LOCALES_SUPPORTEES } from '../../../common/domain/value-objects/LocaleCode';
 
 const dateTime = z

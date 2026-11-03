@@ -13,13 +13,13 @@ import {
   EVENEMENT_LIGNE,
   fluxDeJournal,
   type LigneEcrite,
-} from '../../test/helpers/flux-de-journal';
+} from '../../test/helpers/depot/flux-de-journal';
 import {
   attendreUnNavigateurEtUnReferentBornes,
   PROVENANCE_DEMESUREE,
-} from '../../test/helpers/provenance';
-import { JETON_DE_PAGE } from '../../test/helpers/referents-des-pages-a-jeton';
-import { EN_TETE_JETON } from '../modules/formations/interfaces/ParticipantToken.service';
+} from '../../test/helpers/base/provenance';
+import { JETON_DE_PAGE } from '../../test/helpers/http/referents-des-pages-a-jeton';
+import { EN_TETE_JETON } from '../modules/formations/interfaces/etudiant/ParticipantToken.service';
 import { optionsJournalHttp } from './journal-http';
 
 const JETON_FORMATEUR = 'Bearer jeton-formateur-secret';

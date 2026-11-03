@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { safeHtml } from '../../../common/domain/texte/html-escape.util';
+import { safeHtml } from '../../../common/domain/texte/nettoyage/html-escape.util';
 import type {
   IEmailVerificationNotifier,
   EmailVerificationNotificationPayload,
-} from '../domain/IEmailVerificationNotifier';
+} from '../domain/notifications/IEmailVerificationNotifier';
 import { MailerDeLienTemporaire } from './MailerDeLienTemporaire';
 
 @Injectable()

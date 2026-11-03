@@ -1,6 +1,6 @@
 import type { Diffusion } from './contrat-de-l-api';
-import type { AuMoinsUn } from '../../../../common/domain/au-moins-un';
-import type { Tolerance } from '../GradingCore';
+import type { AuMoinsUn } from '../../../../common/domain/objets/au-moins-un';
+import type { Tolerance } from '../notation/GradingCore';
 import type { ConceptId } from '../cours/banque/concepts';
 import type { ConfusionId } from '../cours/banque/confusions';
 import type {
@@ -10,8 +10,11 @@ import type {
   QuestionVote,
   RegimeVerrou,
   SocleHistorique,
-} from '../cours/Cours';
-import type { CorrigeDefi, CorrigeProduction } from '../cours/Corrige';
+} from '../cours/structure/Cours';
+import type {
+  CorrigeDefi,
+  CorrigeProduction,
+} from '../cours/correction/Corrige';
 import type {
   CardsortPlanPublic,
   EscapeParcoursPublic,

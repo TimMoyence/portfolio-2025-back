@@ -1,0 +1,105 @@
+import { buildAuditRequest } from '../../../../../../test/factories/audits/audit-requests.factory';
+import {
+  attendreScriptEchappe,
+  createMockTransporter,
+  premierMailEnvoye,
+  setSmtpEnv,
+  DEFAULT_AUDIT_ENV,
+} from '../../../../../../test/factories/mailer.factory';
+import { appliquer } from '../../../../../../test/helpers/depot/environnement';
+import { AuditNotificationMailer } from './audit-notification.mailer';
+import { htmlEmis } from '../../../../../common/domain/texte/nettoyage/html-escape.util';
+import { escapeHtml } from '../mail-rendering.util';
+import { ExpediteurDeCourriels } from '../../../../../common/infrastructure/mail/expediteur-smtp';
+
+describe('AuditNotificationMailer', () => {
+  let cleanupEnv: () => void;
+  let mockTransporter: ReturnType<typeof createMockTransporter>;
+  let mailer: AuditNotificationMailer;
+
+  beforeEach(() => {
+    mockTransporter = createMockTransporter();
+    cleanupEnv = setSmtpEnv(DEFAULT_AUDIT_ENV);
+    mailer = new AuditNotificationMailer(
+      new ExpediteurDeCourriels(mockTransporter),
+    );
+  });
+
+  afterEach(() => {
+    cleanupEnv();
+    jest.restoreAllMocks();
+  });
+
+  describe('sendAuditNotification', () => {
+    it('devrait envoyer un email de notification avec le bon payload', async () => {
+      await mailer.sendAuditNotification(
+        buildAuditRequest({
+          id: 'audit-001',
+          websiteName: 'mon-site.fr',
+          contactValue: 'client@example.com',
+        }),
+      );
+
+      expect(mockTransporter.sendMail).toHaveBeenCalledTimes(1);
+      const call = premierMailEnvoye(mockTransporter);
+      expect(call.from).toBe(DEFAULT_AUDIT_ENV.SMTP_FROM);
+      expect(call.to).toBe(DEFAULT_AUDIT_ENV.CONTACT_NOTIFICATION_TO);
+      expect(call.subject).toContain('audit SEO');
+      expect(call.text).toContain('mon-site.fr');
+      expect(call.text).toContain('EMAIL');
+      expect(call.text).toContain('client@example.com');
+      expect(call.html).toContain('mon-site.fr');
+    });
+
+    it('devrait ne rien faire sans transporter', async () => {
+      await expect(
+        new AuditNotificationMailer(
+          new ExpediteurDeCourriels(null),
+        ).sendAuditNotification(buildAuditRequest()),
+      ).resolves.toBeUndefined();
+    });
+
+    it('devrait ne rien faire si CONTACT_NOTIFICATION_TO est absent', async () => {
+      appliquer({ CONTACT_NOTIFICATION_TO: undefined });
+
+      await mailer.sendAuditNotification(buildAuditRequest());
+
+      expect(mockTransporter.sendMail).not.toHaveBeenCalled();
+    });
+
+    it('devrait echapper le HTML dans le corps de l email', async () => {
+      await mailer.sendAuditNotification(
+        buildAuditRequest({
+          websiteName: '<script>alert("xss")</script>',
+          contactValue: 'test@"evil".com',
+        }),
+      );
+
+      attendreScriptEchappe(premierMailEnvoye(mockTransporter).html);
+    });
+
+    it('devrait propager l erreur si sendMail echoue', async () => {
+      (mockTransporter.sendMail as jest.Mock).mockRejectedValue(
+        new Error('SMTP error'),
+      );
+
+      await expect(
+        mailer.sendAuditNotification(buildAuditRequest()),
+      ).rejects.toThrow('SMTP error');
+    });
+  });
+
+  describe('escapeHtml (util pure)', () => {
+    it('devrait echapper tous les caracteres HTML dangereux', () => {
+      expect(htmlEmis(escapeHtml('<script>alert("xss")</script>'))).toBe(
+        '&lt;script&gt;alert(&quot;xss&quot;)&lt;/script&gt;',
+      );
+    });
+
+    it('devrait echapper les esperluettes et les apostrophes', () => {
+      expect(htmlEmis(escapeHtml("Tom & Jerry's <adventure>"))).toBe(
+        'Tom &amp; Jerry&#39;s &lt;adventure&gt;',
+      );
+    });
+  });
+});

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import {
   escapeHtml,
   htmlEmis,
-} from '../../../common/domain/texte/html-escape.util';
+} from '../../../common/domain/texte/nettoyage/html-escape.util';
 import { estEntierPositif } from '../../../common/domain/nombres/est-entier-positif';
 import { InvalidInputError } from '../../../common/domain/errors/InvalidInputError';
 import { ResourceConflictError } from '../../../common/domain/errors/ResourceConflictError';

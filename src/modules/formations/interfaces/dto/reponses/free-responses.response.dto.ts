@@ -1,0 +1,46 @@
+import { ApiProperty } from '@nestjs/swagger';
+import { ParticipantDeSeanceResponseDto } from '../participants/participant-de-seance.response.dto';
+
+export class FreeResponseResponseDto extends ParticipantDeSeanceResponseDto {
+  @ApiProperty({ format: 'uuid' })
+  id: string;
+
+  @ApiProperty({ example: 'B2-01-S11-REFLECTION' })
+  screenId: string;
+
+  @ApiProperty({ example: 'b2-s11-c1' })
+  activityId: string;
+
+  @ApiProperty({ example: 'Je vérifie la base avant de comparer.' })
+  response: string;
+
+  @ApiProperty({
+    type: String,
+    nullable: true,
+    description: 'Première tentative d’un défi, jamais réécrite',
+  })
+  premiereReponse: string | null;
+
+  @ApiProperty({ example: 12000 })
+  dureeMs: number;
+
+  @ApiProperty({
+    type: String,
+    format: 'date-time',
+    description: 'Date du premier envoi, conservée lors d’une reprise',
+  })
+  submittedAt: Date;
+}
+
+export class FreeResponsesResponseDto {
+  @ApiProperty({
+    type: [FreeResponseResponseDto],
+    description: 'Réponses libres de la séance, non notées',
+  })
+  responses: readonly FreeResponseResponseDto[];
+}
+
+export class FreeResponseSavedResponseDto {
+  @ApiProperty({ enum: ['enregistre'], example: 'enregistre' })
+  status: 'enregistre';
+}

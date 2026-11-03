@@ -2,7 +2,7 @@ import { Column, Entity, Index } from 'typeorm';
 import {
   ColonneDeCreation,
   ColonneDeMiseAJour,
-} from '../../../../common/infrastructure/typeorm/ColonnesDeTrace';
+} from '../../../../common/infrastructure/typeorm/colonnes/ColonnesDeTrace';
 import { JetonDUtilisateur } from './jeton-d-utilisateur';
 
 @Entity({ name: 'password_reset_tokens' })

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DepotDeRequetes } from '../../../common/infrastructure/typeorm/DepotDeRequetes';
+import { DepotDeRequetes } from '../../../common/infrastructure/typeorm/depots/DepotDeRequetes';
 import { Contacts } from '../domain/Contacts';
 import { IContactsRepository } from '../domain/IContacts.repository';
 import { MessageContactResponse } from '../domain/MessageContactResponse';

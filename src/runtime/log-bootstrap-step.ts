@@ -1,4 +1,4 @@
-import { envBool } from '../config/env-readers.util';
+import { envBool } from '../config/environnement/env-readers.util';
 
 export function logBootstrapStep(message: string): void {
   if (envBool('BOOTSTRAP_DEBUG', false)) {

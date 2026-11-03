@@ -1,0 +1,79 @@
+/* eslint-disable @typescript-eslint/unbound-method */
+import { ResourceConflictError } from '../../../../common/domain/errors/ResourceConflictError';
+import { UserNotFoundError } from '../../../../common/domain/errors/auth/UserNotFoundError';
+import { SetPasswordUseCase } from './SetPassword.useCase';
+import {
+  buildUser,
+  createMockPasswordService,
+  createMockUsersRepo,
+} from '../../../../../test/factories/comptes/user.factory';
+import { createMockRefreshTokensRepo } from '../../../../../test/factories/comptes/refresh-token.factory';
+import {
+  attendreAucunMotDePasseEnregistre,
+  attendreNouveauMotDePasseEnregistre,
+  preparerNouveauMotDePasse,
+} from '../../../../../test/helpers/base/utilisateurs';
+
+const CHOSEN_CREDENTIAL = 'NewPassword123!';
+const EXISTING_HASH = 'existing-hash';
+
+describe('SetPasswordUseCase', () => {
+  let usersRepository: ReturnType<typeof createMockUsersRepo>;
+  let passwordService: ReturnType<typeof createMockPasswordService>;
+  let refreshTokensRepo: ReturnType<typeof createMockRefreshTokensRepo>;
+  let useCase: SetPasswordUseCase;
+
+  beforeEach(() => {
+    usersRepository = createMockUsersRepo();
+    passwordService = createMockPasswordService();
+    refreshTokensRepo = createMockRefreshTokensRepo();
+    useCase = new SetPasswordUseCase(
+      usersRepository,
+      passwordService,
+      refreshTokensRepo,
+    );
+  });
+
+  it('autorise un compte Google-only a definir un mot de passe', async () => {
+    const updatedUser = preparerNouveauMotDePasse(
+      usersRepository,
+      passwordService,
+      { passwordHash: null },
+    );
+
+    const result = await useCase.execute({
+      userId: 'user-1',
+      newPassword: CHOSEN_CREDENTIAL,
+    });
+
+    attendreNouveauMotDePasseEnregistre(
+      { passwordService, usersRepository, refreshTokensRepo },
+      CHOSEN_CREDENTIAL,
+      'password-set',
+    );
+    expect(result).toEqual(updatedUser);
+  });
+
+  it('rejette un compte avec mot de passe deja configure', async () => {
+    usersRepository.findById.mockResolvedValue(
+      buildUser({ id: 'user-1', passwordHash: EXISTING_HASH }),
+    );
+
+    await expect(
+      useCase.execute({ userId: 'user-1', newPassword: CHOSEN_CREDENTIAL }),
+    ).rejects.toBeInstanceOf(ResourceConflictError);
+
+    attendreAucunMotDePasseEnregistre(
+      usersRepository.update,
+      refreshTokensRepo.revokeByUserId,
+    );
+  });
+
+  it('rejette un compte inexistant', async () => {
+    usersRepository.findById.mockResolvedValue(null);
+
+    await expect(
+      useCase.execute({ userId: 'missing', newPassword: CHOSEN_CREDENTIAL }),
+    ).rejects.toBeInstanceOf(UserNotFoundError);
+  });
+});

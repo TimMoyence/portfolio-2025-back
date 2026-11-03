@@ -6,7 +6,7 @@ import {
   envBrut,
   envPort,
   envString,
-} from '../../../config/env-readers.util';
+} from '../../../config/environnement/env-readers.util';
 import { messageDErreur } from '../../domain/errors/message-d-erreur';
 
 export function createOptionalSmtpTransporter(

@@ -4,7 +4,7 @@ import type { Workbook, Worksheet } from 'exceljs';
 import {
   VALEURS_B3_01,
   type ValeursAttenduesB301,
-} from '../../../src/modules/formations/infrastructure/contenus/b3-01.donnees';
+} from '../../../src/modules/formations/infrastructure/contenus/b3/b3-01/b3-01.donnees';
 import {
   ajouterLOnglet,
   nouveauClasseur,

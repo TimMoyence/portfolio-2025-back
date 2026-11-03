@@ -1,5 +1,5 @@
-import { sansBords } from '../common/domain/texte/sans-bords';
-import type { SourceDEnv } from './env-readers.util';
+import { sansBords } from '../common/domain/texte/nettoyage/sans-bords';
+import type { SourceDEnv } from './environnement/env-readers.util';
 
 export const PREFIXE_API_PAR_DEFAUT = 'api/v1/portfolio25';
 

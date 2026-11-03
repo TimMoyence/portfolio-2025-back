@@ -7,7 +7,7 @@ import type {
   PromptEntry,
   ToolkitContent,
 } from '../../src/modules/lead-magnets/domain/ToolkitContent';
-import { sectionSurLeDepot } from './verrou-par-boite.factory';
+import { sectionSurLeDepot } from './comptes/verrou-par-boite.factory';
 
 export function buildPromptEntry(
   overrides: Partial<PromptEntry> = {},

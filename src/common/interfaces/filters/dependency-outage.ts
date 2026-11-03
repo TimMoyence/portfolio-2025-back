@@ -1,4 +1,4 @@
-import { estObjet } from '../../domain/est-objet';
+import { estObjet } from '../../domain/objets/est-objet';
 
 const CODES_RESEAU = new Set([
   'ECONNREFUSED',

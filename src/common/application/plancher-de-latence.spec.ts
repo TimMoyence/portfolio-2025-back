@@ -2,7 +2,7 @@ import {
   promesseSuspendue,
   rendueAuPlancher,
   simulerLHorlogeAChaqueTest,
-} from '../../../test/helpers/plancher-de-latence';
+} from '../../../test/helpers/temps/plancher-de-latence';
 import { aHeureFixe, avecUnPlancherDeLatence } from './plancher-de-latence';
 
 simulerLHorlogeAChaqueTest();

@@ -10,9 +10,9 @@ import {
 } from '@nestjs/swagger';
 import { ReferenceOuNul } from '../../../../../common/interfaces/dto/reference-ou-nul.decorator';
 import type { CorrigeEcranPresentateur } from '../../../domain/contrats/deroule';
-import type { FormeFormule } from '../../../domain/cours/Corrige';
-import type { ValeurFormule } from '../../../domain/cours/Formule';
-import { TableauEvalueResponseDto } from './tableau-evalue.response.dto';
+import type { FormeFormule } from '../../../domain/cours/correction/Corrige';
+import type { ValeurFormule } from '../../../domain/cours/formule/Formule';
+import { TableauEvalueResponseDto } from './evaluation/tableau-evalue.response.dto';
 
 class ToleranceResponseDto {
   @ApiProperty({ enum: TYPES_DE_TOLERANCE, enumName: 'TypeDeTolerance' })

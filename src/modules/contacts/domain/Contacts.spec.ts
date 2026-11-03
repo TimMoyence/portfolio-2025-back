@@ -1,7 +1,7 @@
 import {
   attendreUneProvenanceBornee,
   PROVENANCE_DEMESUREE,
-} from '../../../../test/helpers/provenance';
+} from '../../../../test/helpers/base/provenance';
 import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
 import { Contacts } from './Contacts';
 

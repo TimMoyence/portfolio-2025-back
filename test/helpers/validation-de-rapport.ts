@@ -1,4 +1,4 @@
-import type { TierValidationResult } from '../../src/modules/audit-requests/infrastructure/automation/report-quality-gate/tier-validators';
+import type { TierValidationResult } from '../../src/modules/audit-requests/infrastructure/automation/redaction/report-quality-gate/tier-validators';
 
 export function attendreRapportAccepte(result: TierValidationResult): void {
   expect(result.issues).toEqual([]);

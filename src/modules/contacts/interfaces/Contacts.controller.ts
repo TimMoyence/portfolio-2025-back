@@ -8,7 +8,7 @@ import {
 } from '@nestjs/swagger';
 import type { Request } from 'express';
 import { provenanceDeLaRequete } from '../../../common/interfaces/security/client-ip.util';
-import { FormulairePublic } from '../../../common/interfaces/security/formulaire-public.decorator';
+import { FormulairePublic } from '../../../common/interfaces/security/anti-robot/formulaire-public.decorator';
 import { CreateContactCommand } from '../application/dto/CreateContact.command';
 import { ContactResponseDto } from './dto/contact.response.dto';
 import { ContactRequestDto } from './dto/contact.request.dto';

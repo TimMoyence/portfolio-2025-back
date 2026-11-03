@@ -1,0 +1,191 @@
+import { Injectable } from '@nestjs/common';
+import { pieceJointePdf } from '../../../../../common/infrastructure/mail/piece-jointe';
+import { destinataireDesRapportsDAudit } from '../../../../../config/adresses-de-courriel';
+import { envString } from '../../../../../config/environnement/env-readers.util';
+import { adresseDuSite } from '../../../domain/demande/AdresseDuSite';
+import { LIBELLES_DU_NIVEAU } from '../../../domain/score/AuditReportTiers';
+import type { ClientReportMailInput } from '../../../domain/traitement/IAuditNotifier.port';
+import { rapportClientServi } from '../../../domain/traitement/RapportClientServi';
+import { pillarLabel } from '../../automation/shared/texte/pillar-labels.util';
+import { buildMailLayout } from '../mail-layout.util';
+import { MailerDAudit } from '../mailer-d-audit';
+import {
+  escapeHtml,
+  escapeUrl,
+  safeHtml,
+  slugify,
+  type EscapedHtml,
+} from '../mail-rendering.util';
+import { lignesDeVisibilite, listeDeVisibilite } from '../visibilite-google-ia';
+
+@Injectable()
+export class AuditClientReportMailer extends MailerDAudit {
+  async sendClientReport(saisie: ClientReportMailInput): Promise<void> {
+    if (!saisie.to || saisie.to.trim().length === 0) return;
+    const input = {
+      ...saisie,
+      websiteName: adresseDuSite(saisie.websiteName).hostname,
+    };
+
+    await this.envoyer({
+      to: input.to,
+      replyTo: destinataireDesRapportsDAudit(),
+      subject: `Votre audit Growth — ${input.websiteName}`,
+      text: this.buildClientReportText(input),
+      html: this.buildClientReportHtml(input),
+      attachments: input.pdfBuffer
+        ? [
+            pieceJointePdf(
+              `growth-audit-${slugify(input.websiteName)}.pdf`,
+              input.pdfBuffer,
+            ),
+          ]
+        : undefined,
+    });
+  }
+
+  private buildClientReportHtml(input: ClientReportMailInput): EscapedHtml {
+    const report = input.clientReport;
+    const greeting = input.firstName
+      ? safeHtml`Bonjour ${escapeHtml(input.firstName)},`
+      : safeHtml`Bonjour,`;
+
+    const topFindingsHtml = report.topFindings.map(
+      (finding) => safeHtml`
+          <li style="margin-bottom:8px;">
+            <strong>[${escapeHtml(LIBELLES_DU_NIVEAU[finding.severity])}] ${escapeHtml(finding.title)}</strong><br/>
+            <span>${escapeHtml(finding.impact)}</span>
+          </li>`,
+    );
+
+    const pillarsHtml = rapportClientServi(report, 'fr').pillarScorecard.map(
+      (pillar) => safeHtml`
+          <tr>
+            <td style="padding:6px 8px; border:1px solid #e5e7eb;">${escapeHtml(pillarLabel(pillar.pillar))}</td>
+            <td style="padding:6px 8px; border:1px solid #e5e7eb; text-align:right;">${pillar.score}/${pillar.target}</td>
+            <td style="padding:6px 8px; border:1px solid #e5e7eb;">${escapeHtml(pillar.statusLabel)}</td>
+          </tr>`,
+    );
+
+    const quickWinsHtml = report.quickWins.map(
+      (qw) => safeHtml`
+          <li style="margin-bottom:8px;">
+            <strong>${escapeHtml(qw.title)}</strong> — <em>Effort : ${escapeHtml(LIBELLES_DU_NIVEAU[qw.effort])}</em><br/>
+            <span>${escapeHtml(qw.businessImpact)}</span>
+          </li>`,
+    );
+
+    const bodyHtml = safeHtml`
+      <p style="margin-top:0;">${greeting}</p>
+      <p>Voici la synthèse stratégique de votre audit.</p>
+
+      <h2 style="margin:24px 0 8px 0;font-size:16px;">Executive summary</h2>
+      <p style="white-space:pre-line;color:#374151;">${escapeHtml(report.executiveSummary)}</p>
+
+      <h2 style="margin:24px 0 8px 0;font-size:16px;">Visibilité Google vs IA</h2>
+      ${listeDeVisibilite(report.googleVsAiMatrix)}
+
+      <h2 style="margin:24px 0 8px 0;font-size:16px;">Top findings</h2>
+      <ul style="padding-left:20px;color:#374151;">
+        ${topFindingsHtml.length > 0 ? topFindingsHtml : safeHtml`<li>Aucun point critique détecté.</li>`}
+      </ul>
+
+      <h2 style="margin:24px 0 8px 0;font-size:16px;">Scorecard 7 piliers</h2>
+      <table class="divider" style="width:100%;border-collapse:collapse;font-size:13px;color:#374151;">
+        <thead>
+          <tr>
+            <th style="padding:6px 8px;border:1px solid #e5e7eb;text-align:left;">Pilier</th>
+            <th style="padding:6px 8px;border:1px solid #e5e7eb;text-align:right;">Score / cible</th>
+            <th style="padding:6px 8px;border:1px solid #e5e7eb;text-align:left;">Statut</th>
+          </tr>
+        </thead>
+        <tbody>${pillarsHtml}</tbody>
+      </table>
+
+      <h2 style="margin:24px 0 8px 0;font-size:16px;">Quick wins prioritaires</h2>
+      <ul style="padding-left:20px;color:#374151;">
+        ${quickWinsHtml}
+      </ul>
+
+      <div style="margin-top:28px;padding:20px;background:#111;color:#fff;border-radius:10px;">
+        <strong style="font-size:16px;">${escapeHtml(report.cta.title)}</strong>
+        <p style="margin:6px 0 14px 0;color:#d1d5db;">${escapeHtml(report.cta.description)}</p>
+        <a
+          href="${escapeUrl(this.resolveBookingUrl())}"
+          target="_blank"
+          rel="noopener noreferrer"
+          style="display:inline-block;padding:12px 22px;background:#ffffff;color:#111;border-radius:8px;text-decoration:none;font-weight:600;"
+        >${escapeHtml(report.cta.actionLabel)}</a>
+      </div>
+
+      <p class="text-muted" style="font-size:12px;color:#6b7280;margin-top:24px;">
+        ${
+          input.pdfBuffer
+            ? safeHtml`Le rapport complet est joint à cet email.`
+            : safeHtml`Le rapport détaillé vous sera envoyé dans un second temps.`
+        }
+      </p>
+    `;
+
+    return buildMailLayout({
+      heroTitle: `Votre audit Growth — ${input.websiteName}`,
+      heroSubtitle:
+        'Synthèse stratégique 7 piliers + quick wins priorisés par impact/effort',
+      preheader: `Audit Growth Asili Design pour ${input.websiteName} — ouvrez pour voir votre scorecard.`,
+      bodyHtml,
+      showUnsubscribe: true,
+    });
+  }
+
+  private resolveBookingUrl(): string {
+    return (
+      envString('AUDIT_BOOKING_URL') ?? 'https://asilidesign.fr/fr/contact'
+    );
+  }
+
+  private buildClientReportText(input: ClientReportMailInput): string {
+    const report = input.clientReport;
+    const lines: string[] = [];
+    lines.push(`VOTRE AUDIT GROWTH — ${input.websiteName}`);
+    lines.push('');
+    lines.push(input.firstName ? `Bonjour ${input.firstName},` : 'Bonjour,');
+    lines.push('');
+    lines.push('Executive summary :');
+    lines.push(report.executiveSummary);
+    lines.push('');
+    lines.push(...lignesDeVisibilite(report.googleVsAiMatrix));
+    lines.push('');
+    lines.push('Top findings :');
+    for (const finding of report.topFindings) {
+      lines.push(
+        `- [${LIBELLES_DU_NIVEAU[finding.severity]}] ${finding.title} — ${finding.impact}`,
+      );
+    }
+    lines.push('');
+    lines.push('Scorecard 7 piliers :');
+    for (const pillar of rapportClientServi(report, 'fr').pillarScorecard) {
+      lines.push(
+        `- ${pillarLabel(pillar.pillar)}: ${pillar.score}/${pillar.target} (${pillar.statusLabel})`,
+      );
+    }
+    lines.push('');
+    lines.push('Quick wins :');
+    for (const qw of report.quickWins) {
+      lines.push(
+        `- ${qw.title} (Effort : ${LIBELLES_DU_NIVEAU[qw.effort]}) — ${qw.businessImpact}`,
+      );
+    }
+    lines.push('');
+    lines.push(`${report.cta.title} — ${report.cta.description}`);
+    lines.push(
+      `Action : ${report.cta.actionLabel} → ${this.resolveBookingUrl()}`,
+    );
+    lines.push('');
+    lines.push(
+      input.pdfBuffer
+        ? 'Le rapport complet est joint a cet email.'
+        : 'Le rapport detaille vous sera envoye dans un second temps.',
+    );
+    return lines.join('\n');
+  }
+}

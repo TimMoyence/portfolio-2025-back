@@ -5,9 +5,9 @@ import {
   createHttpResponseHost,
   type HoteDeReponseHttp,
 } from '../../../../test/factories/execution-context.factory';
-import { sousEnvironnement } from '../../../../test/helpers/environnement';
-import { attendreProbleme } from '../../../../test/helpers/reponse-probleme';
-import { espionnerLeLoggerAChaqueTest } from '../../../../test/helpers/silence-nest-logger';
+import { sousEnvironnement } from '../../../../test/helpers/depot/environnement';
+import { attendreProbleme } from '../../../../test/helpers/http/reponse-probleme';
+import { espionnerLeLoggerAChaqueTest } from '../../../../test/helpers/http/silence-nest-logger';
 
 describe('AllExceptionsFilter', () => {
   let filter: AllExceptionsFilter;

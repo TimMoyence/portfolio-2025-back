@@ -6,15 +6,15 @@ import {
 } from '@nestjs/common';
 import { DomainError } from '../../domain/errors/DomainError';
 import { DomainValidationError } from '../../domain/errors/DomainValidationError';
-import { InvalidCredentialsError } from '../../domain/errors/InvalidCredentialsError';
-import { InsufficientPermissionsError } from '../../domain/errors/InsufficientPermissionsError';
+import { InvalidCredentialsError } from '../../domain/errors/auth/InvalidCredentialsError';
+import { InsufficientPermissionsError } from '../../domain/errors/auth/InsufficientPermissionsError';
 import { InvalidInputError } from '../../domain/errors/InvalidInputError';
 import { RateLimitExceededError } from '../../domain/errors/RateLimitExceededError';
 import { ResourceConflictError } from '../../domain/errors/ResourceConflictError';
 import { ResourceNotFoundError } from '../../domain/errors/ResourceNotFoundError';
-import { TokenExpiredError } from '../../domain/errors/TokenExpiredError';
-import { TokenReuseDetectedError } from '../../domain/errors/TokenReuseDetectedError';
-import { UserNotFoundError } from '../../domain/errors/UserNotFoundError';
+import { TokenExpiredError } from '../../domain/errors/auth/TokenExpiredError';
+import { TokenReuseDetectedError } from '../../domain/errors/auth/TokenReuseDetectedError';
+import { UserNotFoundError } from '../../domain/errors/auth/UserNotFoundError';
 import { httpProblemTarget } from './http-problem-target';
 
 /**

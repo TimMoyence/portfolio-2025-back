@@ -1,8 +1,8 @@
 import {
   appliquer,
   installerVariables,
-} from '../../../../../test/helpers/environnement';
-import { htmlEmis } from '../../../../common/domain/texte/html-escape.util';
+} from '../../../../../test/helpers/depot/environnement';
+import { htmlEmis } from '../../../../common/domain/texte/nettoyage/html-escape.util';
 import { buildMailLayout } from './mail-layout.util';
 import { safeHtml } from './mail-rendering.util';
 

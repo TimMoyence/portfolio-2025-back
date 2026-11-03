@@ -1,0 +1,157 @@
+import { Injectable } from '@nestjs/common';
+import { pieceJointePdf } from '../../../../../common/infrastructure/mail/piece-jointe';
+import { destinataireDesRapportsDAudit } from '../../../../../config/adresses-de-courriel';
+import {
+  LIBELLES_DE_LA_GRAVITE,
+  LIBELLES_DU_NIVEAU,
+} from '../../../domain/score/AuditReportTiers';
+import type { ExpertReportMailInput } from '../../../domain/traitement/IAuditNotifier.port';
+import { buildMailLayout } from '../mail-layout.util';
+import { MailerDAudit } from '../mailer-d-audit';
+import {
+  escapeHtml,
+  safeHtml,
+  slugify,
+  type EscapedHtml,
+} from '../mail-rendering.util';
+import { lignesDeVisibilite, listeDeVisibilite } from '../visibilite-google-ia';
+
+@Injectable()
+export class AuditExpertReportMailer extends MailerDAudit {
+  async sendExpertReport(input: ExpertReportMailInput): Promise<void> {
+    const to = destinataireDesRapportsDAudit();
+    if (!to) return;
+
+    await this.envoyer({
+      to,
+      subject: `[Audit Expert] ${input.websiteName}`,
+      text: this.buildExpertReportText(input),
+      html: this.buildExpertReportHtml(input),
+      attachments: [
+        pieceJointePdf(
+          `growth-audit-expert-${slugify(input.websiteName)}.pdf`,
+          input.pdfBuffer,
+        ),
+      ],
+    });
+  }
+
+  private buildExpertReportHtml(input: ExpertReportMailInput): EscapedHtml {
+    const expert = input.expertReport;
+    const client = input.clientReport;
+    const contactHtml =
+      input.clientContact.method === 'PHONE'
+        ? safeHtml`<p style="margin:0 0 12px;padding:12px;background:#fff4e5;border-left:4px solid #f59e0b;color:#7c2d12;"><strong>Contact TELEPHONE — appel requis :</strong> ${escapeHtml(input.clientContact.value)}</p>`
+        : safeHtml`<p style="margin:0 0 12px;color:#374151;"><strong>Contact EMAIL :</strong> ${escapeHtml(input.clientContact.value)}</p>`;
+
+    const crossFindingsHtml = expert.crossPageFindings.slice(0, 5).map(
+      (finding) => safeHtml`
+          <li style="margin-bottom:10px;">
+            <strong>[${escapeHtml(LIBELLES_DE_LA_GRAVITE[finding.severity])}] ${escapeHtml(finding.title)}</strong><br/>
+            <span><em>Root cause :</em> ${escapeHtml(finding.rootCause)}</span><br/>
+            <span><em>Remediation :</em> ${escapeHtml(finding.remediation)}</span><br/>
+            <span><em>Affected URLs :</em> ${escapeHtml(finding.affectedUrls.join(', ') || '—')}</span>
+          </li>`,
+    );
+
+    const backlogHtml = expert.priorityBacklog.map(
+      (item) => safeHtml`
+          <li style="margin-bottom:10px;">
+            <strong>${escapeHtml(item.title)}</strong> — impact ${escapeHtml(LIBELLES_DU_NIVEAU[item.impact])} / effort ${escapeHtml(LIBELLES_DU_NIVEAU[item.effort])}<br/>
+            <em>Acceptance :</em> ${escapeHtml(item.acceptanceCriteria.join(' | ') || '—')}
+          </li>`,
+    );
+
+    const bodyHtml = safeHtml`
+      <p style="margin:0 0 12px;"><strong>Audit ID :</strong> <code style="font-family:monospace;background:#f3f4f6;padding:2px 6px;border-radius:4px;">${escapeHtml(input.auditId)}</code></p>
+      ${contactHtml}
+
+      <h2 style="margin:24px 0 8px 0;font-size:16px;">Executive summary expert</h2>
+      <p style="white-space:pre-line;color:#374151;">${escapeHtml(expert.executiveSummary)}</p>
+
+      <h2 style="margin:24px 0 8px 0;font-size:16px;">Synthese client (Google vs IA)</h2>
+      ${listeDeVisibilite(client.googleVsAiMatrix)}
+
+      <h2 style="margin:24px 0 8px 0;font-size:16px;">Draft mail client (a copier/coller)</h2>
+      <div style="padding:16px;background:#f9fafb;border:1px dashed #cbd5e1;border-radius:8px;">
+        <p style="margin:0 0 8px;color:#374151;"><strong>Subject :</strong> ${escapeHtml(expert.clientEmailDraft.subject)}</p>
+        <pre style="margin:0;white-space:pre-wrap;font-family:-apple-system,BlinkMacSystemFont,sans-serif;color:#111;font-size:14px;">${escapeHtml(expert.clientEmailDraft.body)}</pre>
+      </div>
+
+      <h2 style="margin:24px 0 8px 0;font-size:16px;">Internal notes</h2>
+      <p style="white-space:pre-line;color:#374151;">${escapeHtml(expert.internalNotes)}</p>
+
+      <h2 style="margin:24px 0 8px 0;font-size:16px;">Cross-page findings (top 5)</h2>
+      <ul style="padding-left:20px;color:#374151;">
+        ${crossFindingsHtml.length > 0 ? crossFindingsHtml : safeHtml`<li>Aucun.</li>`}
+      </ul>
+
+      <h2 style="margin:24px 0 8px 0;font-size:16px;">Priority backlog</h2>
+      <ul style="padding-left:20px;color:#374151;">
+        ${backlogHtml.length > 0 ? backlogHtml : safeHtml`<li>Aucun.</li>`}
+      </ul>
+
+      <p class="text-muted" style="font-size:12px;color:#6b7280;margin-top:24px;">
+        PDF complet en piece jointe.
+      </p>
+    `;
+
+    return buildMailLayout({
+      heroTitle: `[Audit Expert] ${input.websiteName}`,
+      heroSubtitle:
+        'Rapport technique complet + draft mail client + backlog priorisé',
+      preheader: `Audit expert livré pour ${input.websiteName} — ${expert.crossPageFindings.length} findings, ${expert.priorityBacklog.length} backlog items`,
+      bodyHtml,
+      showUnsubscribe: false,
+    });
+  }
+
+  private buildExpertReportText(input: ExpertReportMailInput): string {
+    const expert = input.expertReport;
+    const client = input.clientReport;
+    const lines: string[] = [];
+    lines.push(`[AUDIT EXPERT] ${input.websiteName}`);
+    lines.push(`Audit ID : ${input.auditId}`);
+    lines.push(
+      input.clientContact.method === 'PHONE'
+        ? `Contact TELEPHONE — appel requis : ${input.clientContact.value}`
+        : `Contact EMAIL : ${input.clientContact.value}`,
+    );
+    lines.push('');
+    lines.push('Executive summary expert :');
+    lines.push(expert.executiveSummary);
+    lines.push('');
+    lines.push('Synthese client (Google vs IA) :');
+    lines.push(
+      ...lignesDeVisibilite(client.googleVsAiMatrix).map(
+        (ligne) => `- ${ligne}`,
+      ),
+    );
+    lines.push('');
+    lines.push('--- Draft mail client (a copier/coller) ---');
+    lines.push(`Subject : ${expert.clientEmailDraft.subject}`);
+    lines.push('');
+    lines.push(expert.clientEmailDraft.body);
+    lines.push('--- fin draft ---');
+    lines.push('');
+    lines.push('Internal notes :');
+    lines.push(expert.internalNotes);
+    lines.push('');
+    lines.push('Cross-page findings (top 5) :');
+    for (const finding of expert.crossPageFindings.slice(0, 5)) {
+      lines.push(
+        `- [${LIBELLES_DE_LA_GRAVITE[finding.severity]}] ${finding.title} — root cause : ${finding.rootCause} — remediation : ${finding.remediation}`,
+      );
+    }
+    lines.push('');
+    lines.push('Priority backlog :');
+    for (const item of expert.priorityBacklog) {
+      lines.push(
+        `- ${item.title} (impact ${LIBELLES_DU_NIVEAU[item.impact]} / effort ${LIBELLES_DU_NIVEAU[item.effort]})`,
+      );
+    }
+    lines.push('');
+    lines.push('PDF complet en piece jointe.');
+    return lines.join('\n');
+  }
+}

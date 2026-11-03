@@ -1,14 +1,14 @@
-import type { Solution } from '../GradingCore';
+import type { Solution } from '../notation/GradingCore';
 import type { CadrageDuRenvoi } from './cours';
 import type {
   CoursPublic as CoursPublicActuel,
   EcranPublic as EcranPublicActuel,
-} from '../cours/CoursPublic';
+} from '../cours/structure/CoursPublic';
 import type {
   ExplicationDeCorrection,
   PieceJointeServie,
-} from '../cours/Cours';
-import type { CorrigeTire, LibellesDesOptions } from '../cours/Tirage';
+} from '../cours/structure/Cours';
+import type { CorrigeTire, LibellesDesOptions } from '../cours/tirage/Tirage';
 import type { CorrigeEcranPresentateur, ReflexionServie } from './deroule';
 import type { VotePublic } from './donnees-publiques';
 

@@ -2,15 +2,15 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { Equals, IsDate, IsOptional, IsString } from 'class-validator';
 import type { SupportedLocale } from '../../../../common/domain/value-objects/LocaleCode';
-import { AdresseEmail } from '../../../../common/interfaces/dto/adresse-email.decorator';
-import { LocaleSupportee } from '../../../../common/interfaces/dto/locale-supportee.decorator';
+import { AdresseEmail } from '../../../../common/interfaces/dto/champs/adresse-email.decorator';
+import { LocaleSupportee } from '../../../../common/interfaces/dto/champs/locale-supportee.decorator';
 import {
   AuPlusCaracteres,
   Rogne,
   TexteSaisi,
-} from '../../../../common/interfaces/dto/longueur-de-texte.decorator';
-import { TelephoneOptionnel } from '../../../../common/interfaces/dto/telephone.decorator';
-import { ChampsAntiRobotDto } from '../../../../common/interfaces/security/champs-anti-robot.dto';
+} from '../../../../common/interfaces/dto/champs/longueur-de-texte.decorator';
+import { TelephoneOptionnel } from '../../../../common/interfaces/dto/champs/telephone.decorator';
+import { ChampsAntiRobotDto } from '../../../../common/interfaces/security/anti-robot/champs-anti-robot.dto';
 
 export class ContactRequestDto extends ChampsAntiRobotDto {
   @ApiProperty({ example: 'John' })

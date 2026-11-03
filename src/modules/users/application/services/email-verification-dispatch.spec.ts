@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { Logger } from '@nestjs/common';
 import { buildConfigService } from '../../../../../test/factories/env.factory';
-import { buildUser } from '../../../../../test/factories/user.factory';
-import { createMockEmailVerificationTokensRepo } from '../../../../../test/factories/email-verification-token.factory';
+import { buildUser } from '../../../../../test/factories/comptes/user.factory';
+import { createMockEmailVerificationTokensRepo } from '../../../../../test/factories/comptes/email-verification-token.factory';
 import { createMockEmailVerificationNotifier } from '../../../../../test/factories/mailer.factory';
-import { espionnerLeLoggerAChaqueTest } from '../../../../../test/helpers/silence-nest-logger';
-import { TROIS_ENVOIS_PAR_HEURE } from '../../domain/PlafondDEnvois';
+import { espionnerLeLoggerAChaqueTest } from '../../../../../test/helpers/http/silence-nest-logger';
+import { TROIS_ENVOIS_PAR_HEURE } from '../../domain/notifications/PlafondDEnvois';
 import { TokenHash } from '../../../../common/domain/crypto/TokenHash';
 import { EnvoiDeVerificationEmail } from './email-verification-dispatch';
 

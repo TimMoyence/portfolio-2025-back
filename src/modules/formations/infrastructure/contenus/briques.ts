@@ -3,16 +3,16 @@ import {
   mapperAuMoinsUn,
   type AuMoinsUn,
   type AuMoinsUnModifiable,
-} from '../../../../common/domain/au-moins-un';
+} from '../../../../common/domain/objets/au-moins-un';
 import { somme } from '../../../../common/domain/nombres/statistiques';
 import type { ConceptId } from '../../domain/cours/banque/concepts';
 import type { ConfusionId } from '../../domain/cours/banque/confusions';
-import type { ContenuDeCours } from '../../domain/cours/CoursStocke';
+import type { ContenuDeCours } from '../../domain/cours/stockage/CoursStocke';
 import {
   slugOption,
   type numeriqueStockee,
   type voteStocke,
-} from '../../domain/cours/QuestionStockee';
+} from '../../domain/cours/stockage/QuestionStockee';
 
 type EcranDuCours = ContenuDeCours['ecrans'][number];
 type MediasDuCours = NonNullable<ContenuDeCours['medias']>;

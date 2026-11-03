@@ -1,4 +1,4 @@
-import { TelephoneOptionnel } from '../../../../common/interfaces/dto/telephone.decorator';
+import { TelephoneOptionnel } from '../../../../common/interfaces/dto/champs/telephone.decorator';
 import type { UpdateProfileCommand } from '../../application/dto/UpdateProfile.command';
 import { LONGUEUR_MAX_D_UN_TELEPHONE, NomDeCompte } from './regles-de-saisie';
 

@@ -1,14 +1,14 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import type { ValeursDeLEnv } from '../../../../config/env.validation';
-import type { IEmailVerificationNotifier } from '../../domain/IEmailVerificationNotifier';
-import type { IEmailVerificationTokensRepository } from '../../domain/IEmailVerificationTokens.repository';
+import type { ValeursDeLEnv } from '../../../../config/environnement/env.validation';
+import type { IEmailVerificationNotifier } from '../../domain/notifications/IEmailVerificationNotifier';
+import type { IEmailVerificationTokensRepository } from '../../domain/jetons/IEmailVerificationTokens.repository';
 import {
   EMAIL_VERIFICATION_NOTIFIER,
   EMAIL_VERIFICATION_TOKENS_REPOSITORY,
 } from '../../domain/token';
 import type { User } from '../../domain/User';
-import { emettreUnLienTemporaire } from './emission-de-lien-temporaire';
+import { emettreUnLienTemporaire } from './jetons/emission-de-lien-temporaire';
 
 const EMAIL_VERIFICATION_TTL_MS = 24 * 60 * 60 * 1000;
 

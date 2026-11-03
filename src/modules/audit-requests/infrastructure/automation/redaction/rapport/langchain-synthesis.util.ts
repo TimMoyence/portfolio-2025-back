@@ -1,0 +1,173 @@
+import { estObjet } from '../../../../../../common/domain/objets/est-objet';
+import { textesUniquesBornes } from '../../../../../../common/domain/texte/formats/textes-uniques-bornes';
+import type { ReportSeverity } from '../../../../domain/score/AuditReportTiers';
+import type {
+  AuditAutomationConfig,
+  AuditLlmProfile,
+} from '../../pipeline/audit.config';
+import type {
+  ExpertReportSynthesis,
+  LangchainAuditInput,
+  PerPageDetailedAnalysis,
+} from '../contracts/langchain-contracts';
+import {
+  buildFallbackClientEmailDraft,
+  buildFallbackInternalNotes,
+  mesuresDeLaPage,
+} from './langchain-fallback-report.builder';
+import { cleDePage } from '../../shared/page/cle-de-page.util';
+import { normalizeSeverity } from '../../shared/texte/severity.util';
+
+export function toEffort(value: unknown): ReportSeverity {
+  if (typeof value !== 'number' || !Number.isFinite(value)) return 'medium';
+  if (value >= 8) return 'high';
+  if (value <= 3) return 'low';
+  return 'medium';
+}
+
+export function normalizeClientEmailDraft(
+  raw: unknown,
+): { subject: string; body: string } | null {
+  if (!estObjet(raw)) return null;
+  const subject = typeof raw.subject === 'string' ? raw.subject : '';
+  const body = typeof raw.body === 'string' ? raw.body : '';
+  if (!subject.trim() || !body.trim()) return null;
+  return { subject: subject.trim(), body: body.trim() };
+}
+
+const TEXTES_PAR_RUBRIQUE_DE_PAGE = 6;
+
+function premiersTextes(valeur: unknown): string[] {
+  return Array.isArray(valeur)
+    ? textesUniquesBornes(valeur.map(String), TEXTES_PAR_RUBRIQUE_DE_PAGE)
+    : [];
+}
+
+export function projectPerPageAnalysis(
+  raw: unknown,
+): ReadonlyArray<PerPageDetailedAnalysis> {
+  if (!Array.isArray(raw)) return [];
+  return raw
+    .map((entry: unknown): PerPageDetailedAnalysis | null => {
+      if (!estObjet(entry)) return null;
+      const url = typeof entry.url === 'string' ? entry.url : '';
+      if (!url) return null;
+      const engineScores = entry.engineScores as
+        | PerPageDetailedAnalysis['engineScores']
+        | undefined;
+      if (!engineScores) return null;
+      return {
+        url,
+        title: typeof entry.title === 'string' ? entry.title : '',
+        engineScores,
+        topIssues: premiersTextes(entry.topIssues),
+        recommendations: premiersTextes(entry.recommendations),
+        evidence: premiersTextes(entry.evidence),
+      };
+    })
+    .filter((entry): entry is PerPageDetailedAnalysis => entry !== null);
+}
+
+function avecLesMesuresDesPages(
+  fiches: ReadonlyArray<PerPageDetailedAnalysis>,
+  input: LangchainAuditInput,
+): ReadonlyArray<PerPageDetailedAnalysis> {
+  const recapParCle = new Map(
+    input.pageRecaps.map((recap) => [cleDePage(recap.url), recap]),
+  );
+  const servies = new Set<string>();
+  return fiches.flatMap((fiche) => {
+    const cle = cleDePage(fiche.url);
+    const recap = cle === null ? undefined : recapParCle.get(cle);
+    if (cle === null || !recap || servies.has(cle)) return [];
+    servies.add(cle);
+    return [{ ...fiche, ...mesuresDeLaPage(recap, input.locale) }];
+  });
+}
+
+export function buildExpertSynthesis(
+  summaryText: string,
+  adminReport: Record<string, unknown>,
+  input: LangchainAuditInput,
+): ExpertReportSynthesis {
+  const executiveSummary =
+    typeof adminReport.executiveSummary === 'string' &&
+    adminReport.executiveSummary.trim().length > 0
+      ? adminReport.executiveSummary
+      : summaryText;
+
+  const perPageAnalysis = avecLesMesuresDesPages(
+    projectPerPageAnalysis(adminReport.perPageAnalysis),
+    input,
+  );
+
+  const crossPageFindings = input.deepFindings.map((finding) => ({
+    title: finding.title,
+    severity: finding.severity,
+    affectedUrls: [...finding.affectedUrls],
+    rootCause: finding.description,
+    remediation: finding.recommendation,
+  }));
+
+  const priorityBacklog = Array.isArray(adminReport.implementationBacklog)
+    ? (adminReport.implementationBacklog as Array<Record<string, unknown>>)
+        .slice(0, 12)
+        .map((entry) => ({
+          title: typeof entry.task === 'string' ? entry.task : '',
+          impact: normalizeSeverity(entry.priority),
+          effort: toEffort(entry.estimatedHours),
+          acceptanceCriteria: Array.isArray(entry.acceptanceCriteria)
+            ? (entry.acceptanceCriteria as string[]).map(String)
+            : [],
+        }))
+        .filter((entry) => entry.title.length > 0)
+    : [];
+
+  const clientEmailDraft =
+    normalizeClientEmailDraft(adminReport.clientEmailDraft) ??
+    buildFallbackClientEmailDraft(input);
+
+  const internalNotes =
+    typeof adminReport.internalNotes === 'string' &&
+    adminReport.internalNotes.trim().length > 0
+      ? adminReport.internalNotes.trim()
+      : buildFallbackInternalNotes(input);
+
+  return {
+    executiveSummary,
+    perPageAnalysis,
+    crossPageFindings,
+    priorityBacklog,
+    clientEmailDraft,
+    internalNotes,
+  };
+}
+
+function hashToPercent(value: string): number {
+  let hash = 0;
+  for (let i = 0; i < value.length; i += 1) {
+    hash = (hash << 5) - hash + value.charCodeAt(i);
+    hash |= 0;
+  }
+  return Math.abs(hash) % 100;
+}
+
+export function resolveProfile(
+  auditId: string | undefined,
+  config: AuditAutomationConfig,
+): AuditLlmProfile {
+  const configured = config.llmProfile;
+  if (configured !== 'parallel_sections_v1') {
+    return 'stability_first_sequential';
+  }
+
+  const canaryPercent = config.llmProfileCanaryPercent;
+  if (canaryPercent >= 100) return 'parallel_sections_v1';
+  if (canaryPercent <= 0) return 'stability_first_sequential';
+  if (!auditId) return 'parallel_sections_v1';
+
+  const bucket = hashToPercent(auditId);
+  return bucket < canaryPercent
+    ? 'parallel_sections_v1'
+    : 'stability_first_sequential';
+}

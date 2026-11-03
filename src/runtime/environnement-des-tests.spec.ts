@@ -6,8 +6,8 @@ import {
 import {
   installerVariables,
   poserVariables,
-} from '../../test/helpers/environnement';
-import { espionnerLeLoggerAChaqueTest } from '../../test/helpers/silence-nest-logger';
+} from '../../test/helpers/depot/environnement';
+import { espionnerLeLoggerAChaqueTest } from '../../test/helpers/http/silence-nest-logger';
 
 const PRESENTE = 'ENVIRONNEMENT_DES_TESTS_PRESENTE';
 const ABSENTE = 'ENVIRONNEMENT_DES_TESTS_ABSENTE';

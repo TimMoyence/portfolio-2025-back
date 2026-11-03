@@ -1,6 +1,9 @@
 import { Throttle } from '@nestjs/throttler';
 import { suivreParAdresse } from '../../../common/interfaces/security/client-ip.util';
-import { identiteSignee, jetonDesEntetes } from './ParticipantToken.service';
+import {
+  identiteSignee,
+  jetonDesEntetes,
+} from './etudiant/ParticipantToken.service';
 
 export const FENETRE_THROTTLE_MS = 60_000;
 export const LIMITE_CONTROLE_PAR_MINUTE = 240;

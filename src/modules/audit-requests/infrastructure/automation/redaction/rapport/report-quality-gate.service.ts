@@ -1,0 +1,740 @@
+import { Injectable } from '@nestjs/common';
+import { arrondi } from '../../../../../../common/domain/nombres/arrondi';
+import { borner } from '../../../../../../common/domain/nombres/borner';
+import { compacterBlancs } from '../../../../../../common/domain/texte/nettoyage/compacter-blancs';
+import { textesUniquesBornes } from '../../../../../../common/domain/texte/formats/textes-uniques-bornes';
+import type {
+  FindingImpact,
+  ReportSeverity,
+} from '../../../../domain/score/AuditReportTiers';
+import { AuditLocale } from '../../../../domain/traitement/audit-locale.util';
+import { nonVerifiable } from '../../../../domain/score/non-verifiable';
+import { NOMBRE_DE_PRIORITES } from '../../pipeline/audit-thresholds.config';
+import { normalizeClientEmailDraft } from './langchain-synthesis.util';
+import { hasLanguageMismatch } from '../report-quality-gate/language-check.util';
+import { validateExpertReport } from '../report-quality-gate/tier-validators';
+import type {
+  ExpertReport,
+  TechFingerprint,
+} from '../schemas/audit-report.schemas';
+import { priorityFromFinding } from '../../shared/texte/finding-priority.util';
+import { localizedText } from '../../shared/texte/locale-text.util';
+import {
+  normalizeSeverity,
+  parGraviteDecroissante,
+} from '../../shared/texte/severity.util';
+import {
+  ACTIONABLE_PILLARS,
+  type ActionablePillarKey,
+} from '../../rendu/scoring.service';
+
+const PILLAR_DEGRADED_SCORE = 65;
+
+interface PillarActionTemplate {
+  title: [string, string];
+  whyItMatters: [string, string];
+  recommendedFix: [string, string];
+  degradedHours: number;
+  standardHours: number;
+}
+
+const PILLAR_ACTION_TEMPLATES: Record<
+  ActionablePillarKey,
+  PillarActionTemplate
+> = {
+  seo: {
+    title: [
+      'Corriger la qualite SEO on-page sur les templates prioritaires',
+      'Fix on-page SEO quality on priority templates',
+    ],
+    whyItMatters: [
+      'Le deficit SEO degrade la visibilite organique et la couverture des intentions.',
+      'SEO gaps reduce organic visibility and intent coverage.',
+    ],
+    recommendedFix: [
+      'Standardiser title/meta/H1/canonical/lang sur les pages a fort potentiel.',
+      'Standardize title/meta/H1/canonical/lang on high-potential pages.',
+    ],
+    degradedHours: 8,
+    standardHours: 5,
+  },
+  performance: {
+    title: [
+      'Optimiser les pages lentes et le budget de rendu',
+      'Optimize slow pages and rendering budget',
+    ],
+    whyItMatters: [
+      'La lenteur penalise conversion, crawl budget et experience utilisateur.',
+      'Slowness hurts conversion, crawl budget, and user experience.',
+    ],
+    recommendedFix: [
+      'Prioriser cache, poids des assets, critical CSS et reduction JS.',
+      'Prioritize caching, asset weight reduction, critical CSS, and JS reduction.',
+    ],
+    degradedHours: 10,
+    standardHours: 6,
+  },
+  technical: {
+    title: [
+      "Stabiliser l'indexabilite et la conformite technique",
+      'Stabilize indexability and technical compliance',
+    ],
+    whyItMatters: [
+      'Les defauts techniques bloquent la decouverte et la consolidation SEO.',
+      'Technical defects block discovery and SEO consolidation.',
+    ],
+    recommendedFix: [
+      'Auditer robots, canonicals, statuts HTTP, sitemap et redirections.',
+      'Audit robots, canonicals, HTTP status, sitemap, and redirects.',
+    ],
+    degradedHours: 9,
+    standardHours: 6,
+  },
+  trust: {
+    title: [
+      'Renforcer les signaux de confiance et le marquage schema.org',
+      'Strengthen trust signals and schema.org coverage',
+    ],
+    whyItMatters: [
+      'Les signaux de confiance influencent CTR, conversion et perception de marque.',
+      'Trust signals influence CTR, conversion, and brand perception.',
+    ],
+    recommendedFix: [
+      'Ajouter schemas, preuves sociales, mentions legale et coherence marque.',
+      'Add schema, social proof, legal pages, and brand consistency signals.',
+    ],
+    degradedHours: 7,
+    standardHours: 4,
+  },
+  conversion: {
+    title: [
+      'Ameliorer le tunnel de conversion et les points de contact',
+      'Improve conversion funnel and contact touchpoints',
+    ],
+    whyItMatters: [
+      'Les frictions de conversion reduisent la valeur business des visites SEO.',
+      'Conversion friction reduces business value of SEO traffic.',
+    ],
+    recommendedFix: [
+      'Renforcer CTA, formulaires et navigation vers les pages commerciales.',
+      'Strengthen CTA, forms, and paths to commercial pages.',
+    ],
+    degradedHours: 8,
+    standardHours: 5,
+  },
+};
+
+type ExpertPriority = ExpertReport['priorities'][number];
+
+type DiagnosticChapters = ExpertReport['diagnosticChapters'];
+
+export interface ReportQualityGateContext {
+  locale: AuditLocale;
+  websiteName: string;
+  normalizedUrl: string;
+  quickWins: string[];
+  pillarScores: Record<string, number>;
+  deepFindings: Array<{
+    title: string;
+    description: string;
+    recommendation: string;
+    severity: ReportSeverity;
+    impact: FindingImpact;
+  }>;
+}
+
+export interface ReportQualityGateResult {
+  summaryText: string;
+  report: ExpertReport;
+  valid: boolean;
+  reasons: string[];
+  repli: boolean;
+}
+
+@Injectable()
+export class ReportQualityGateService {
+  private readonly minPriorities = NOMBRE_DE_PRIORITES.min;
+  private readonly maxPriorities = NOMBRE_DE_PRIORITES.max;
+
+  apply(
+    summaryText: string,
+    report: ExpertReport,
+    context: ReportQualityGateContext,
+  ): ReportQualityGateResult {
+    const reasons: string[] = [];
+    const locale = context.locale;
+
+    const summary = this.cleanText(summaryText);
+    const normalizedSummary =
+      summary ||
+      localizedText(
+        locale,
+        `Resume d'audit indisponible pour ${context.normalizedUrl}.`,
+        `Audit summary unavailable for ${context.normalizedUrl}.`,
+      );
+    if (!summary) {
+      reasons.push('missing_summary_text');
+    }
+
+    const normalizedReport: ExpertReport = {
+      ...report,
+      executiveSummary: this.requireText(
+        report.executiveSummary,
+        localizedText(
+          locale,
+          'Resume executif indisponible.',
+          'Executive summary unavailable.',
+        ),
+        reasons,
+        'missing_executive_summary',
+      ),
+      reportExplanation: this.requireText(
+        report.reportExplanation,
+        localizedText(
+          locale,
+          'Explication du rapport indisponible.',
+          'Report explanation unavailable.',
+        ),
+        reasons,
+        'missing_report_explanation',
+      ),
+      clientMessageTemplate: this.requireText(
+        report.clientMessageTemplate,
+        localizedText(
+          locale,
+          'Bonjour, voici les priorites a traiter en premier.',
+          'Hello, here are the top priorities to address first.',
+        ),
+        reasons,
+        'missing_client_message_template',
+      ),
+      clientLongEmail: this.requireText(
+        report.clientLongEmail,
+        normalizedSummary,
+        reasons,
+        'missing_client_long_email',
+      ),
+      strengths: this.normalizeStringArray(report.strengths),
+      diagnosticChapters: this.normalizeDiagnosticChapters(
+        report.diagnosticChapters,
+        locale,
+      ),
+      techFingerprint: this.normalizeTechFingerprint(
+        report.techFingerprint,
+        locale,
+      ),
+      urlLevelImprovements: this.normalizeUrlLevelImprovements(
+        report.urlLevelImprovements,
+      ),
+      implementationTodo: this.normalizeImplementationTodo(
+        report.implementationTodo,
+      ),
+      whatToFixThisWeek: this.normalizePlan(report.whatToFixThisWeek, locale),
+      whatToFixThisMonth: this.normalizePlan(report.whatToFixThisMonth, locale),
+      fastImplementationPlan: this.normalizeFastPlan(
+        report.fastImplementationPlan,
+      ),
+      implementationBacklog: this.normalizeBacklog(
+        report.implementationBacklog,
+      ),
+      invoiceScope: this.normalizeInvoiceScope(report.invoiceScope),
+      perPageAnalysis: Array.isArray(report.perPageAnalysis)
+        ? report.perPageAnalysis
+        : [],
+      clientEmailDraft: this.requireEmailDraft(
+        report.clientEmailDraft,
+        reasons,
+      ),
+      internalNotes:
+        typeof report.internalNotes === 'string' ? report.internalNotes : '',
+      priorities: [],
+    };
+
+    normalizedReport.priorities = this.buildPriorities(
+      report.priorities,
+      context,
+      locale,
+      reasons,
+    );
+
+    if (normalizedReport.priorities.length < this.minPriorities) {
+      reasons.push('priority_count_below_minimum');
+    }
+
+    const languageCorpus = [
+      normalizedSummary,
+      normalizedReport.executiveSummary,
+      normalizedReport.reportExplanation,
+      normalizedReport.clientMessageTemplate,
+      normalizedReport.clientLongEmail,
+      normalizedReport.diagnosticChapters.conversionAndClarity,
+      normalizedReport.diagnosticChapters.speedAndPerformance,
+      normalizedReport.diagnosticChapters.seoFoundations,
+      normalizedReport.diagnosticChapters.credibilityAndTrust,
+      normalizedReport.diagnosticChapters.techAndScalability,
+      normalizedReport.diagnosticChapters.scorecardAndBusinessOpportunities,
+      normalizedReport.techFingerprint.primaryStack,
+      ...normalizedReport.techFingerprint.evidence,
+      ...normalizedReport.techFingerprint.unknowns,
+      ...normalizedReport.priorities.flatMap((entry) => [
+        entry.title,
+        entry.whyItMatters,
+        entry.recommendedFix,
+      ]),
+    ]
+      .filter(Boolean)
+      .join(' ');
+
+    if (hasLanguageMismatch(languageCorpus, locale)) {
+      reasons.push('language_mismatch_detected');
+    }
+
+    const palier = validateExpertReport(normalizedReport);
+    reasons.push(...palier.issues);
+
+    const valid = reasons.length === 0;
+    return {
+      summaryText: normalizedSummary,
+      report: normalizedReport,
+      valid,
+      reasons: Array.from(new Set(reasons)),
+      repli: !palier.valid,
+    };
+  }
+
+  private buildPriorities(
+    basePriorities: ExpertPriority[] | undefined,
+    context: ReportQualityGateContext,
+    locale: AuditLocale,
+    reasons: string[],
+  ): ExpertPriority[] {
+    const unique = new Set<string>();
+    const priorities: ExpertPriority[] = [];
+
+    this.appendPriorities(
+      priorities,
+      unique,
+      (Array.isArray(basePriorities) ? basePriorities : []).map((entry) =>
+        this.normalizePriority(entry),
+      ),
+      null,
+    );
+
+    this.appendPriorities(
+      priorities,
+      unique,
+      [...context.deepFindings]
+        .sort(parGraviteDecroissante)
+        .map((finding) =>
+          this.normalizePriority(priorityFromFinding(finding, locale)),
+        ),
+      this.maxPriorities,
+    );
+
+    this.appendPriorities(
+      priorities,
+      unique,
+      context.quickWins.map((quickWin) =>
+        this.normalizePriority({
+          title: quickWin,
+          severity: 'medium',
+          whyItMatters: localizedText(
+            locale,
+            'Action rapide pour renforcer la base SEO technique et la conversion.',
+            'Fast action to strengthen technical SEO baseline and conversion.',
+          ),
+          recommendedFix: quickWin,
+          estimatedHours: 3,
+        }),
+      ),
+      this.maxPriorities,
+    );
+
+    this.appendPriorities(
+      priorities,
+      unique,
+      this.pillarBasedActions(context.pillarScores, locale),
+      this.maxPriorities,
+    );
+
+    this.appendPriorities(
+      priorities,
+      unique,
+      this.genericActions(locale, context.websiteName),
+      this.minPriorities,
+    );
+
+    if (priorities.length < this.minPriorities) {
+      reasons.push('priority_enrichment_exhausted');
+    }
+
+    return priorities.slice(0, this.maxPriorities);
+  }
+
+  private appendPriorities(
+    target: ExpertPriority[],
+    seenTitles: Set<string>,
+    candidates: ReadonlyArray<ExpertPriority | null>,
+    cap: number | null,
+  ): void {
+    for (const candidate of candidates) {
+      if (cap !== null && target.length >= cap) break;
+      if (!candidate) continue;
+      const key = candidate.title.toLowerCase();
+      if (seenTitles.has(key)) continue;
+      seenTitles.add(key);
+      target.push(candidate);
+    }
+  }
+
+  private pillarBasedActions(
+    pillarScores: Record<string, number>,
+    locale: AuditLocale,
+  ): ExpertPriority[] {
+    const entries = ACTIONABLE_PILLARS.map(
+      (key) => [key, pillarScores[key]] as const,
+    )
+      .filter(([, score]) => Number.isFinite(score))
+      .sort((a, b) => a[1] - b[1]);
+
+    const actions: ExpertPriority[] = [];
+
+    for (const [pillar, score] of entries) {
+      if (score >= 90) continue;
+      actions.push(this.buildPillarAction(pillar, score, locale));
+    }
+
+    return actions;
+  }
+
+  private buildPillarAction(
+    pillar: ActionablePillarKey,
+    score: number,
+    locale: AuditLocale,
+  ): ExpertPriority {
+    const template = PILLAR_ACTION_TEMPLATES[pillar];
+    const degraded = score < PILLAR_DEGRADED_SCORE;
+
+    return {
+      title: localizedText(locale, ...template.title),
+      severity: degraded ? 'high' : 'medium',
+      whyItMatters: localizedText(locale, ...template.whyItMatters),
+      recommendedFix: localizedText(locale, ...template.recommendedFix),
+      estimatedHours: degraded
+        ? template.degradedHours
+        : template.standardHours,
+    };
+  }
+
+  private genericActions(
+    locale: AuditLocale,
+    websiteName: string,
+  ): ExpertPriority[] {
+    const fr = [
+      {
+        title: `Mettre en place un tableau de bord SEO hebdomadaire pour ${websiteName}`,
+        severity: 'medium' as const,
+        whyItMatters:
+          'Le pilotage hebdomadaire permet de mesurer rapidement les regressions et gains.',
+        recommendedFix:
+          'Suivre indexation, pages critiques, performances et conversions par cohortes.',
+        estimatedHours: 3,
+      },
+      {
+        title: 'Valider chaque correction avec un protocole de QA SEO',
+        severity: 'medium' as const,
+        whyItMatters:
+          "Sans QA, les regressions techniques annulent les gains d'optimisation.",
+        recommendedFix:
+          'Ajouter checklist preprod/prod: crawl, canonicals, title/meta, logs, tracking.',
+        estimatedHours: 4,
+      },
+      {
+        title: 'Planifier un sprint mensuel de hardening SEO technique',
+        severity: 'medium' as const,
+        whyItMatters:
+          'Un sprint recurrent consolide durablement les fondations SEO.',
+        recommendedFix:
+          'Allouer un lot mensuel aux fixes indexabilite, performance et maillage interne.',
+        estimatedHours: 5,
+      },
+    ];
+
+    const en = [
+      {
+        title: `Set up a weekly SEO health dashboard for ${websiteName}`,
+        severity: 'medium' as const,
+        whyItMatters: 'Weekly tracking detects regressions and gains quickly.',
+        recommendedFix:
+          'Track indexation, critical pages, performance, and conversion cohorts.',
+        estimatedHours: 3,
+      },
+      {
+        title: 'Validate every fix with a technical SEO QA protocol',
+        severity: 'medium' as const,
+        whyItMatters:
+          'Without QA, technical regressions erase optimization gains.',
+        recommendedFix:
+          'Use preprod/prod checklists: crawl, canonicals, title/meta, logs, tracking.',
+        estimatedHours: 4,
+      },
+      {
+        title: 'Schedule a monthly technical SEO hardening sprint',
+        severity: 'medium' as const,
+        whyItMatters:
+          'A recurring sprint hardens the SEO foundation over time.',
+        recommendedFix:
+          'Reserve monthly capacity for indexability, performance, and internal-link fixes.',
+        estimatedHours: 5,
+      },
+    ];
+
+    return locale === 'en' ? en : fr;
+  }
+
+  private normalizePriority(
+    entry: Partial<ExpertPriority>,
+  ): ExpertPriority | null {
+    const title = this.cleanText(entry.title);
+    const whyItMatters = this.cleanText(entry.whyItMatters);
+    const recommendedFix =
+      this.cleanText(entry.recommendedFix) || this.cleanText(entry.title);
+
+    if (!title || !whyItMatters || !recommendedFix) {
+      return null;
+    }
+
+    return {
+      title,
+      severity: normalizeSeverity(entry.severity),
+      whyItMatters,
+      recommendedFix,
+      estimatedHours: this.normalizeHours(entry.estimatedHours, 3),
+    };
+  }
+
+  private normalizeDiagnosticChapters(
+    chapters: Partial<DiagnosticChapters> | undefined,
+    locale: AuditLocale,
+  ): DiagnosticChapters {
+    const chapitre = (
+      texte: string | undefined,
+      fr: string,
+      en: string,
+    ): string =>
+      this.cleanText(texte) ||
+      `${localizedText(locale, fr, en)}: ${nonVerifiable(locale)}.`;
+    return {
+      conversionAndClarity: chapitre(
+        chapters?.conversionAndClarity,
+        'Conversion et clarte',
+        'Conversion and clarity',
+      ),
+      speedAndPerformance: chapitre(
+        chapters?.speedAndPerformance,
+        'Vitesse et performance',
+        'Speed and performance',
+      ),
+      seoFoundations: chapitre(
+        chapters?.seoFoundations,
+        'Fondations SEO',
+        'SEO foundations',
+      ),
+      credibilityAndTrust: chapitre(
+        chapters?.credibilityAndTrust,
+        'Crédibilité et confiance',
+        'Credibility and trust',
+      ),
+      techAndScalability: chapitre(
+        chapters?.techAndScalability,
+        'Tech et scalabilité',
+        'Tech and scalability',
+      ),
+      scorecardAndBusinessOpportunities: chapitre(
+        chapters?.scorecardAndBusinessOpportunities,
+        'Scorecard et opportunités business',
+        'Scorecard and business opportunities',
+      ),
+    };
+  }
+
+  private normalizeTechFingerprint(
+    value: Partial<TechFingerprint> | undefined,
+    locale: AuditLocale,
+  ): TechFingerprint {
+    const confidence = Number(value?.confidence);
+    return {
+      primaryStack:
+        this.cleanText(value?.primaryStack) || nonVerifiable(locale),
+      confidence: Number.isFinite(confidence)
+        ? borner(arrondi(confidence, 2), 0, 1)
+        : 0,
+      evidence: this.normalizeStringArray(value?.evidence, 8),
+      alternatives: this.normalizeStringArray(value?.alternatives, 4),
+      unknowns: this.normalizeStringArray(value?.unknowns, 5),
+    };
+  }
+
+  private normalizeUrlLevelImprovements(
+    entries: ExpertReport['urlLevelImprovements'],
+  ): ExpertReport['urlLevelImprovements'] {
+    return this.normaliserLesEntrees(
+      entries,
+      (entry) => ({
+        url: this.cleanText(entry?.url),
+        issue: this.cleanText(entry?.issue),
+        recommendation: this.cleanText(entry?.recommendation),
+        impact: normalizeSeverity(entry?.impact),
+      }),
+      (entry) => entry.url && entry.issue && entry.recommendation,
+    );
+  }
+
+  private normalizeImplementationTodo(
+    entries: ExpertReport['implementationTodo'],
+  ): ExpertReport['implementationTodo'] {
+    return this.normaliserLesEntrees(
+      entries,
+      (entry, index) => ({
+        phase: this.cleanText(entry?.phase) || `Phase ${index + 1}`,
+        objective: this.cleanText(entry?.objective),
+        deliverable: this.cleanText(entry?.deliverable),
+        estimatedHours: this.normalizeHours(entry?.estimatedHours, 3),
+        dependencies: this.normalizeStringArray(entry?.dependencies),
+      }),
+      (entry) => entry.objective && entry.deliverable,
+    );
+  }
+
+  private normalizePlan(
+    entries: ExpertReport['whatToFixThisWeek'],
+    locale: AuditLocale,
+  ): ExpertReport['whatToFixThisWeek'] {
+    return this.normaliserLesEntrees(
+      entries,
+      (entry) => ({
+        task: this.cleanText(entry?.task),
+        goal:
+          this.cleanText(entry?.goal) ||
+          localizedText(
+            locale,
+            'Ameliorer les signaux SEO critiques',
+            'Improve critical SEO signals',
+          ),
+        estimatedHours: this.normalizeHours(entry?.estimatedHours, 3),
+        risk:
+          this.cleanText(entry?.risk) ||
+          localizedText(locale, 'Risque modere', 'Moderate risk'),
+        dependencies: this.normalizeStringArray(entry?.dependencies),
+      }),
+      (entry) => entry.task,
+    );
+  }
+
+  private normalizeFastPlan(
+    entries: ExpertReport['fastImplementationPlan'],
+  ): ExpertReport['fastImplementationPlan'] {
+    return this.normaliserLesEntrees(
+      entries,
+      (entry) => ({
+        task: this.cleanText(entry?.task),
+        whyItMatters: this.cleanText(entry?.whyItMatters),
+        implementationSteps: this.normalizeStringArray(
+          entry?.implementationSteps,
+        ),
+        estimatedHours: this.normalizeHours(entry?.estimatedHours, 3),
+        expectedImpact: this.cleanText(entry?.expectedImpact),
+        priority: normalizeSeverity(entry?.priority),
+      }),
+      (entry) => entry.task && entry.whyItMatters && entry.expectedImpact,
+    );
+  }
+
+  private normalizeBacklog(
+    entries: ExpertReport['implementationBacklog'],
+  ): ExpertReport['implementationBacklog'] {
+    return this.normaliserLesEntrees(
+      entries,
+      (entry) => ({
+        task: this.cleanText(entry?.task),
+        priority: normalizeSeverity(entry?.priority),
+        details: this.cleanText(entry?.details),
+        estimatedHours: this.normalizeHours(entry?.estimatedHours, 4),
+        dependencies: this.normalizeStringArray(entry?.dependencies),
+        acceptanceCriteria: this.normalizeStringArray(
+          entry?.acceptanceCriteria,
+        ),
+      }),
+      (entry) => entry.task && entry.details,
+    );
+  }
+
+  private normalizeInvoiceScope(
+    entries: ExpertReport['invoiceScope'],
+  ): ExpertReport['invoiceScope'] {
+    return this.normaliserLesEntrees(
+      entries,
+      (entry, index) => ({
+        item: this.cleanText(entry?.item) || `Lot ${index + 1}`,
+        description: this.cleanText(entry?.description),
+        estimatedHours: this.normalizeHours(entry?.estimatedHours, 3),
+      }),
+      (entry) => entry.description,
+    );
+  }
+
+  private normaliserLesEntrees<E, S>(
+    entries: readonly E[],
+    normaliser: (entry: E, index: number) => S,
+    estComplete: (entry: S) => unknown,
+  ): S[] {
+    if (!Array.isArray(entries)) return [];
+    return entries
+      .map(normaliser)
+      .filter((entry) => Boolean(estComplete(entry)));
+  }
+
+  private normalizeStringArray(
+    value: unknown,
+    max = Number.POSITIVE_INFINITY,
+  ): string[] {
+    if (!Array.isArray(value)) return [];
+    return textesUniquesBornes(
+      value.map((entry) => this.cleanText(entry)),
+      max,
+    );
+  }
+
+  private requireText(
+    value: unknown,
+    fallback: string,
+    reasons: string[],
+    reasonCode: string,
+  ): string {
+    const normalized = this.cleanText(value);
+    if (normalized) return normalized;
+    reasons.push(reasonCode);
+    return fallback;
+  }
+
+  private requireEmailDraft(
+    value: unknown,
+    reasons: string[],
+  ): ExpertReport['clientEmailDraft'] {
+    const draft = normalizeClientEmailDraft(value);
+    if (draft) return draft;
+    reasons.push('missing_client_email_draft');
+    return { subject: '', body: '' };
+  }
+
+  private cleanText(value: unknown): string {
+    return typeof value === 'string' ? compacterBlancs(value) : '';
+  }
+
+  private normalizeHours(value: unknown, fallback: number): number {
+    if (typeof value !== 'number' || !Number.isFinite(value) || value <= 0) {
+      return fallback;
+    }
+    return arrondi(value, 1);
+  }
+}

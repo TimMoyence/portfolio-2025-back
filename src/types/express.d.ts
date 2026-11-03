@@ -1,4 +1,4 @@
-import type { JwtPayload } from '../modules/users/application/services/JwtPayload';
+import type { JwtPayload } from '../modules/users/application/services/jetons/JwtPayload';
 
 /**
  * Augmentation du type Express Request pour ajouter la propriete `user`

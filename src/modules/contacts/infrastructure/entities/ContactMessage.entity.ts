@@ -1,4 +1,4 @@
-import { ColonnesDeRequete } from '../../../../common/infrastructure/typeorm/ColonnesDeProvenance';
+import { ColonnesDeRequete } from '../../../../common/infrastructure/typeorm/colonnes/ColonnesDeProvenance';
 import { Column, Entity, Index } from 'typeorm';
 
 @Entity({ name: 'contacts' })

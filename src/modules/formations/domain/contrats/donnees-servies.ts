@@ -1,12 +1,12 @@
 import { z } from 'zod';
-import { nommeAuContrat as nomme } from '../../../../common/domain/registre-du-contrat';
+import { nommeAuContrat as nomme } from '../../../../common/domain/liens/registre-du-contrat';
 import {
   presentationInitiale,
   video,
   visuel,
-} from '../cours/ProprietesStockees';
-import { auMoinsUn, texte } from '../cours/SchemasCommuns';
-import { presentationsVisuelles } from '../cours/VisualPresentation';
+} from '../cours/stockage/ProprietesStockees';
+import { auMoinsUn, texte } from '../cours/stockage/SchemasCommuns';
+import { presentationsVisuelles } from '../cours/structure/VisualPresentation';
 import { MODALITES, REGIMES_DE_VERROU } from './contrat-de-l-api';
 import { NATURES_DE_CELLULE, type DonneesParBrique } from './donnees-publiques';
 

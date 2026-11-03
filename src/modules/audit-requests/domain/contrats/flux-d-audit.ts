@@ -1,7 +1,7 @@
 import { z } from 'zod';
-import { nommeAuContrat } from '../../../../common/domain/registre-du-contrat';
-import type { RapportClientServi } from '../RapportClientServi';
-import { STATUTS_SCORE } from '../StatutScore';
+import { nommeAuContrat } from '../../../../common/domain/liens/registre-du-contrat';
+import type { RapportClientServi } from '../traitement/RapportClientServi';
+import { STATUTS_SCORE } from '../score/StatutScore';
 
 const strict = <F extends z.ZodRawShape>(forme: F) => z.object(forme).strict();
 

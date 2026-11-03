@@ -1,15 +1,15 @@
 import { ApiProperty, ApiPropertyOptional, PickType } from '@nestjs/swagger';
 import { BattementResponseDto } from '../../../../common/interfaces/dto/battement.response.dto';
 import { ReferenceOuNul } from '../../../../common/interfaces/dto/reference-ou-nul.decorator';
-import type { DonneesParEvenement } from '../../../../common/interfaces/http/flux-d-evenements.decorator';
+import type { DonneesParEvenement } from '../../../../common/interfaces/http/requete/flux-d-evenements.decorator';
 import { referenceAuContrat } from '../../../../common/interfaces/http/schemas-du-contrat';
-import type { StatutDuFluxDAudit } from '../../domain/AuditProcessing';
+import type { StatutDuFluxDAudit } from '../../domain/traitement/AuditProcessing';
 import {
   AVANCEMENT_D_AUDIT,
   RAPPORT_CLIENT_SERVI,
   type AvancementDAudit,
 } from '../../domain/contrats/flux-d-audit';
-import type { RapportClientServi } from '../../domain/RapportClientServi';
+import type { RapportClientServi } from '../../domain/traitement/RapportClientServi';
 import { AuditSummaryResponseDto } from './audit-summary.response.dto';
 
 class InstantDAuditResponseDto extends PickType(AuditSummaryResponseDto, [

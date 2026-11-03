@@ -15,7 +15,7 @@ import { ToolkitPageResponseDto } from './dto/toolkit-page.response.dto';
 import {
   FormulairePublic,
   LienPublic,
-} from '../../../common/interfaces/security/formulaire-public.decorator';
+} from '../../../common/interfaces/security/anti-robot/formulaire-public.decorator';
 import {
   JetonDuLienEnChemin,
   RefusDeLienDocumente,

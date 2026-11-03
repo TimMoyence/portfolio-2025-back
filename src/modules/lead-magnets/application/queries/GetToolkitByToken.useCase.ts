@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { LienInvalideError } from '../../../../common/domain/errors/LienInvalideError';
+import { LienInvalideError } from '../../../../common/domain/errors/auth/LienInvalideError';
 import type { ILeadMagnetRequestRepository } from '../../domain/ILeadMagnetRequestRepository';
 import type { IToolkitContentAssembler } from '../../domain/IToolkitContentAssembler';
 import type { ToolkitContent } from '../../domain/ToolkitContent';

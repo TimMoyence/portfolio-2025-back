@@ -33,7 +33,6 @@ export default tseslint.config(
             '**/*.test.ts',
             'test/**/*.ts',
             'test/**/*.{js,mjs,cjs}',
-            'src/**/__tests__/**',
             '**/*.config.{js,mjs,cjs,ts}',
             'eslint.config.mjs',
             'jest.config.{js,mjs,cjs,ts}',
@@ -100,12 +99,12 @@ export default tseslint.config(
   // exempte volontairement.
   {
     files: [
-      'src/modules/audit-requests/infrastructure/automation/langchain-*.ts',
+      'src/modules/audit-requests/infrastructure/automation/redaction/rapport/langchain-*.ts',
     ],
     ignores: [
-      'src/modules/audit-requests/infrastructure/automation/langchain-audit-report.service.ts',
-      'src/modules/audit-requests/infrastructure/automation/langchain-audit-report.service.spec.ts',
-      'src/modules/audit-requests/infrastructure/automation/langchain-fallback-report.builder.ts',
+      'src/modules/audit-requests/infrastructure/automation/redaction/rapport/langchain-audit-report.service.ts',
+      'src/modules/audit-requests/infrastructure/automation/redaction/rapport/langchain-audit-report.service.spec.ts',
+      'src/modules/audit-requests/infrastructure/automation/redaction/rapport/langchain-fallback-report.builder.ts',
     ],
     rules: {
       'no-restricted-imports': [
@@ -115,7 +114,7 @@ export default tseslint.config(
             {
               group: ['**/langchain-audit-report.service'],
               message:
-                'Les helpers langchain-* ne doivent pas importer depuis l orchestrateur. Importer les contrats via ./contracts/langchain-contracts.',
+                'Les helpers langchain-* ne doivent pas importer depuis l orchestrateur. Importer les contrats via ../contracts/langchain-contracts.',
             },
           ],
         },
@@ -132,7 +131,7 @@ export default tseslint.config(
           patterns: [
             {
               group: [
-                '**/audit-requests/infrastructure/automation/contracts/langchain-contracts',
+                '**/audit-requests/infrastructure/automation/redaction/contracts/langchain-contracts',
               ],
               message:
                 'Importer ces contrats via langchain-audit-report.service (re-export) afin de preserver un unique point d entree.',

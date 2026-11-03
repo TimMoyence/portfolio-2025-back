@@ -1,5 +1,5 @@
-import { messagesDuRefus } from '../../../../../test/helpers/validation-pipe';
-import { ChangePasswordDto } from './ChangePassword.dto';
+import { messagesDuRefus } from '../../../../../test/helpers/http/validation-pipe';
+import { ChangePasswordDto } from './mot-de-passe/ChangePassword.dto';
 import { InscriptionDto } from './Inscription.dto';
 
 /* eslint-disable sonarjs/no-hardcoded-passwords -- fixtures de test, pas des secrets reels */

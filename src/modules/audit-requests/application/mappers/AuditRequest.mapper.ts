@@ -1,5 +1,5 @@
 import { mapDomainValidation } from '../../../../common/application/mappers/map-domain-validation';
-import { AuditRequest } from '../../domain/AuditRequest';
+import { AuditRequest } from '../../domain/demande/AuditRequest';
 import { CreateAuditRequestCommand } from '../dto/CreateAuditRequest.command';
 
 export class AuditRequestMapper {

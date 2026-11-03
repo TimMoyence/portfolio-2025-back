@@ -1,14 +1,14 @@
 import { Inject, Injectable, type Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import type { ValeursDeLEnv } from '../../../../config/env.validation';
-import type { IPasswordResetNotifier } from '../../domain/IPasswordResetNotifier';
-import type { IPasswordResetTokensRepository } from '../../domain/IPasswordResetTokens.repository';
+import type { ValeursDeLEnv } from '../../../../config/environnement/env.validation';
+import type { IPasswordResetNotifier } from '../../domain/notifications/IPasswordResetNotifier';
+import type { IPasswordResetTokensRepository } from '../../domain/jetons/IPasswordResetTokens.repository';
 import {
   PASSWORD_RESET_NOTIFIER,
   PASSWORD_RESET_TOKENS_REPOSITORY,
 } from '../../domain/token';
 import type { User } from '../../domain/User';
-import { emettreUnLienTemporaire } from './emission-de-lien-temporaire';
+import { emettreUnLienTemporaire } from './jetons/emission-de-lien-temporaire';
 
 const PASSWORD_RESET_TTL_MS = 60 * 60 * 1000;
 

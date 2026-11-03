@@ -4,17 +4,17 @@ import { pieceJointeCsv } from '../../../common/infrastructure/mail/piece-jointe
 import {
   escapeHtml,
   safeHtml,
-} from '../../../common/domain/texte/html-escape.util';
-import type { EscapedHtml } from '../../../common/domain/texte/html-escape.util';
-import { conceptsFragilesLisibles } from '../domain/IFormationMailer.port';
+} from '../../../common/domain/texte/nettoyage/html-escape.util';
+import type { EscapedHtml } from '../../../common/domain/texte/nettoyage/html-escape.util';
+import { conceptsFragilesLisibles } from '../domain/bilan/IFormationMailer.port';
 import type {
   CopieEtudiant,
   IFormationMailer,
   RapportParticipant,
   RapportQuestion,
   RapportSession,
-} from '../domain/IFormationMailer.port';
-import { rapportEnCsv } from '../domain/RapportCsv';
+} from '../domain/bilan/IFormationMailer.port';
+import { rapportEnCsv } from '../domain/bilan/RapportCsv';
 import { pourcentageAffiche } from '../../../common/domain/nombres/ecriture-francaise';
 
 function verdictDe(reponse: RapportQuestion): string {

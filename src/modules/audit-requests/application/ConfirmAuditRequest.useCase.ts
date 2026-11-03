@@ -1,8 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { LienInvalideError } from '../../../common/domain/errors/LienInvalideError';
+import { LienInvalideError } from '../../../common/domain/errors/auth/LienInvalideError';
 import { TokenHash } from '../../../common/domain/crypto/TokenHash';
-import type { IAuditQueuePort } from '../domain/IAuditQueue.port';
-import type { IAuditRequestsRepository } from '../domain/IAuditRequests.repository';
+import type { IAuditQueuePort } from '../domain/traitement/IAuditQueue.port';
+import type { IAuditRequestsRepository } from '../domain/demande/IAuditRequests.repository';
 import { AUDIT_QUEUE, AUDIT_REQUESTS_REPOSITORY } from '../domain/token';
 
 export interface AuditConfirme {

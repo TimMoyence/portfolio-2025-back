@@ -2,7 +2,7 @@ import {
   buildConfigService,
   buildValidEnv,
 } from '../../../../test/factories/env.factory';
-import { validateEnv } from '../../../config/env.validation';
+import { validateEnv } from '../../../config/environnement/env.validation';
 import { loadSecurityConfig } from './security.config';
 
 describe('loadSecurityConfig', () => {

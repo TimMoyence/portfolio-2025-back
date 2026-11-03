@@ -7,7 +7,7 @@ import {
   estUnSecretValable,
   LONGUEUR_MIN_DU_SECRET,
 } from '../../../../common/domain/crypto/secret-hmac';
-import type { ValeursDeLEnv } from '../../../../config/env.validation';
+import type { ValeursDeLEnv } from '../../../../config/environnement/env.validation';
 
 const TIMING_DECOY_INPUT = 'dummy-password-for-timing-safety';
 const TIMING_DECOY_HASH_FALLBACK =

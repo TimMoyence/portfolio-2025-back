@@ -1,6 +1,6 @@
 import { readdirSync, readFileSync, statSync } from 'fs';
-import { collectFiles } from '../../test/helpers/source-tree';
-import { RACINE } from '../../test/helpers/racine';
+import { collectFiles } from '../../test/helpers/depot/source-tree';
+import { RACINE } from '../../test/helpers/depot/racine';
 import { join } from 'path';
 import {
   createSourceFile,

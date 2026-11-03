@@ -1,15 +1,15 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { enArrierePlan } from '../../../common/application/en-arriere-plan';
 import { RateLimitExceededError } from '../../../common/domain/errors/RateLimitExceededError';
-import { lienAvecJeton } from '../../../common/domain/lien-avec-jeton';
+import { lienAvecJeton } from '../../../common/domain/liens/lien-avec-jeton';
 import { urlDuSite } from '../../../config/urls-publiques';
 import { emettreJeton } from '../../../common/domain/crypto/TokenHash';
-import { adresseDuSite } from '../domain/AdresseDuSite';
-import type { IAuditNotifierPort } from '../domain/IAuditNotifier.port';
-import type { IAuditQueuePort } from '../domain/IAuditQueue.port';
-import { AuditRequestResponse } from '../domain/AuditRequestResponse';
-import type { IAuditRequestsRepository } from '../domain/IAuditRequests.repository';
-import { SelfAuditGuard } from '../domain/SelfAuditGuard';
+import { adresseDuSite } from '../domain/demande/AdresseDuSite';
+import type { IAuditNotifierPort } from '../domain/traitement/IAuditNotifier.port';
+import type { IAuditQueuePort } from '../domain/traitement/IAuditQueue.port';
+import { AuditRequestResponse } from '../domain/demande/AuditRequestResponse';
+import type { IAuditRequestsRepository } from '../domain/demande/IAuditRequests.repository';
+import { SelfAuditGuard } from '../domain/demande/SelfAuditGuard';
 import {
   AUDIT_NOTIFIER,
   AUDIT_QUEUE,

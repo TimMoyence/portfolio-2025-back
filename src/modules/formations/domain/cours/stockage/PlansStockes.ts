@@ -1,0 +1,246 @@
+import { z } from 'zod';
+import type {
+  CardsortPlanStocke,
+  EscapeParcoursStocke,
+  ProblemeStocke,
+  SheetPlanStocke,
+  TableBuildPlanStocke,
+} from '../../contrats/cours';
+import { TENTATIVES_MAX_PAR_ENIGME } from '../defis/Enigmes';
+import {
+  auMoinsUn,
+  identifiantDeQuestion,
+  signalerDoublons,
+  signaleurDe,
+  texte,
+} from './SchemasCommuns';
+
+const COLONNES_MAX = 26;
+const CODE_DE_A = 'A'.codePointAt(0) ?? 0;
+const REFERENCE_DE_CELLULE = /^[A-Z][1-9]\d{0,2}$/;
+export const NOM_DE_VARIABLE = /^[a-z][A-Za-z]*$/;
+
+export const nomDeVariable = z.string().regex(NOM_DE_VARIABLE);
+
+export const referenceDeCellule = z.string().regex(REFERENCE_DE_CELLULE);
+
+export function estReferenceDeCellule(nom: string): boolean {
+  return REFERENCE_DE_CELLULE.test(nom);
+}
+
+interface Grille {
+  readonly lignes: number;
+  readonly colonnes: number;
+}
+
+export function ligneDeLaReference(reference: string): number {
+  return Number(reference.slice(1));
+}
+
+export function estDansLaGrille(grille: Grille, reference: string): boolean {
+  const colonne = (reference.codePointAt(0) ?? 0) - CODE_DE_A + 1;
+  return (
+    colonne <= grille.colonnes && ligneDeLaReference(reference) <= grille.lignes
+  );
+}
+
+export const planFeuille = z
+  .object({
+    id: identifiantDeQuestion,
+    intitule: texte,
+    lignes: z.number().int().positive(),
+    colonnes: z.number().int().positive().max(COLONNES_MAX),
+    cellules: z.record(referenceDeCellule, z.string()),
+    verrouillees: z.array(referenceDeCellule),
+    consignes: z.array(texte),
+  })
+  .strict()
+  .superRefine((plan, contexte) => {
+    const signaler = signaleurDe(contexte);
+    const horsGrille = [
+      ...Object.keys(plan.cellules),
+      ...plan.verrouillees,
+    ].filter((reference) => !estDansLaGrille(plan, reference));
+    if (horsGrille.length > 0) {
+      signaler(
+        ['cellules'],
+        `cellules hors de la grille ${plan.lignes} × ${plan.colonnes} : ${horsGrille.join(', ')}`,
+      );
+    }
+    signalerDoublons(plan.verrouillees, ['verrouillees'], signaler);
+  }) satisfies z.ZodType<SheetPlanStocke>;
+
+const optionDeClassement = z.object({ id: texte, libelle: texte }).strict();
+
+export const planClassement = z
+  .object({
+    id: identifiantDeQuestion,
+    intitule: texte,
+    cartes: auMoinsUn(optionDeClassement),
+    categories: auMoinsUn(optionDeClassement),
+    dureeJeuMs: z.number().int().positive().optional(),
+  })
+  .strict()
+  .superRefine((plan, contexte) => {
+    const signaler = signaleurDe(contexte);
+    signalerDoublons(
+      plan.cartes.map((carte) => carte.id),
+      ['cartes'],
+      signaler,
+    );
+    signalerDoublons(
+      plan.categories.map((categorie) => categorie.id),
+      ['categories'],
+      signaler,
+    );
+  }) satisfies z.ZodType<CardsortPlanStocke>;
+
+const colonneDeTableau = z
+  .object({
+    cle: nomDeVariable,
+    intitule: texte,
+    role: z.enum(['donnee', 'saisie', 'deduite']),
+    format: z.enum(['nombre', 'booleen']).optional(),
+    decimales: z.number().int().nonnegative(),
+    valeurs: z.array(z.number()).optional(),
+    formule: texte.optional(),
+    formuleInitiale: texte.optional(),
+    soldeDe: texte.optional(),
+    totalise: z.boolean(),
+  })
+  .strict();
+
+type ColonneDeTableau = z.output<typeof colonneDeTableau>;
+
+export function estUneValeurDeVerite(valeur: number): boolean {
+  return valeur === 0 || valeur === 1;
+}
+
+function incoherenceBooleenne(colonne: ColonneDeTableau): string | null {
+  if (colonne.role === 'deduite') {
+    return `la colonne booléenne ${colonne.cle} est une donnée ou une saisie`;
+  }
+  if (colonne.totalise || colonne.soldeDe !== undefined) {
+    return `la colonne booléenne ${colonne.cle} ne se totalise ni ne se solde`;
+  }
+  if (!(colonne.valeurs ?? []).every(estUneValeurDeVerite)) {
+    return `la colonne booléenne ${colonne.cle} ne porte que 1 (vrai) ou 0 (faux)`;
+  }
+  return null;
+}
+
+function incoherenceDeColonne(
+  colonne: ColonneDeTableau,
+  echeances: number,
+): string | null {
+  if (colonne.format === 'booleen') {
+    const incoherence = incoherenceBooleenne(colonne);
+    if (incoherence !== null) {
+      return incoherence;
+    }
+  }
+  if (colonne.role === 'donnee' && colonne.valeurs?.length !== echeances) {
+    return `la colonne de donnée ${colonne.cle} doit porter ${echeances} valeurs`;
+  }
+  if (colonne.role === 'deduite' && colonne.formule === undefined) {
+    return `la colonne déduite ${colonne.cle} n'a pas de formule`;
+  }
+  if (
+    colonne.role === 'saisie' &&
+    (colonne.valeurs !== undefined || colonne.formule !== undefined)
+  ) {
+    return `la colonne saisie ${colonne.cle} ne porte ni valeur ni formule`;
+  }
+  return null;
+}
+
+export const planTableau = z
+  .object({
+    id: identifiantDeQuestion,
+    intitule: texte,
+    consignes: z.array(texte),
+    echeances: z.number().int().positive(),
+    intituleDesLignes: texte.optional(),
+    libellesLignes: z.array(texte),
+    parametres: z.record(nomDeVariable, z.number()),
+    colonnes: auMoinsUn(colonneDeTableau),
+    synthese: z.array(
+      z
+        .object({
+          libelle: texte,
+          formule: texte,
+          unite: texte.nullable(),
+          decimales: z.number().int().nonnegative(),
+        })
+        .strict(),
+    ),
+  })
+  .strict()
+  .superRefine((plan, contexte) => {
+    const signaler = signaleurDe(contexte);
+    if (plan.libellesLignes.length !== plan.echeances) {
+      signaler(
+        ['libellesLignes'],
+        `${plan.echeances} libellés de ligne sont attendus`,
+      );
+    }
+    signalerDoublons(
+      plan.colonnes.map((colonne) => colonne.cle),
+      ['colonnes'],
+      signaler,
+    );
+    plan.colonnes.forEach((colonne, rang) => {
+      const incoherence = incoherenceDeColonne(colonne, plan.echeances);
+      if (incoherence !== null) {
+        signaler(['colonnes', rang], incoherence);
+      }
+    });
+  }) satisfies z.ZodType<TableBuildPlanStocke>;
+
+export const parcoursEnigmes = z
+  .object({
+    id: identifiantDeQuestion,
+    intitule: texte,
+    delaiIndiceMs: z.number().int().nonnegative(),
+    budgetEnigmeMs: z.number().int().positive(),
+    tentativesMax: z.number().int().positive().max(TENTATIVES_MAX_PAR_ENIGME),
+    enigmes: auMoinsUn(
+      z
+        .object({
+          id: identifiantDeQuestion,
+          intitule: texte,
+          enonce: texte,
+          indice: texte,
+        })
+        .strict(),
+    ),
+  })
+  .strict()
+  .superRefine((parcours, contexte) => {
+    signalerDoublons(
+      parcours.enigmes.map((enigme) => enigme.id),
+      ['enigmes'],
+      signaleurDe(contexte),
+    );
+  }) satisfies z.ZodType<EscapeParcoursStocke>;
+
+export const dossierDeRappel = auMoinsUn(
+  z.object({ libelle: texte, valeur: texte }).strict(),
+);
+
+export const probleme = z
+  .object({
+    id: identifiantDeQuestion,
+    enonce: texte,
+    invite: texte,
+    rappel: dossierDeRappel.optional(),
+  })
+  .strict() satisfies z.ZodType<ProblemeStocke>;
+
+export const sondage = z
+  .object({ id: identifiantDeQuestion, invite: texte })
+  .strict();
+
+export const rappel = z
+  .object({ id: identifiantDeQuestion, intitule: texte })
+  .strict();

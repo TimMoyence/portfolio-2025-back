@@ -290,7 +290,7 @@ jobs:
             BACK_IMAGE="$BACK_IMAGE_VALUE" FRONT_IMAGE="$FRONT_IMAGE_VALUE" \
             docker compose -p "$PROJECT" -f "$COMPOSE_FILE" --env-file "$WORKDIR/backend.env" pull api migrate
 
-            # Dump the database before migrate: some migrations have no down, see docs/database-governance.md §5
+            # Dump the database before migrate: some migrations have no down, see docs/gouvernance/database-governance.md §5
             # The base is the one migrate reads in backend.env; the db container keeps the env it was created with
             BASE_MIGREE="$(BACK_IMAGE="$BACK_IMAGE_VALUE" FRONT_IMAGE="$FRONT_IMAGE_VALUE" \
               docker compose -p "$PROJECT" -f "$COMPOSE_FILE" --env-file "$WORKDIR/backend.env" \

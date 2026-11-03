@@ -37,7 +37,7 @@ export type PilotageDemande = { readonly screenId: string } & Omit<
   'etayageAtteint'
 >;
 
-export type { LiveSessionState } from '../ISessionStateCache.port';
+export type { LiveSessionState } from '../seance/etat/ISessionStateCache.port';
 
 export interface ControlSessionChanges {
   ecran?: number;

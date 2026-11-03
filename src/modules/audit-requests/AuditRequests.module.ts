@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { envListe } from '../../config/env-readers.util';
+import { envListe } from '../../config/environnement/env-readers.util';
 import { ConfirmAuditRequestUseCase } from './application/ConfirmAuditRequest.useCase';
 import { CreateAuditRequestsUseCase } from './application/CreateAuditRequests.useCase';
 import { GetAuditSummaryUseCase } from './application/GetAuditSummary.useCase';
 import { StreamAuditEventsUseCase } from './application/StreamAuditEvents.useCase';
-import { AUDIT_PDF_GENERATOR } from './domain/IAuditPdfGenerator';
-import { SelfAuditGuard } from './domain/SelfAuditGuard';
+import { AUDIT_PDF_GENERATOR } from './domain/traitement/IAuditPdfGenerator';
+import { SelfAuditGuard } from './domain/demande/SelfAuditGuard';
 import {
   AUDIT_AUTOMATION_CONFIG,
   AUDIT_NOTIFIER,
@@ -15,46 +15,46 @@ import {
   AUDIT_SELF_GUARD,
 } from './domain/token';
 import { AuditRequestsRepositoryTypeORM } from './infrastructure/AuditRequests.repository.typeORM';
-import { AuditClientReportMailer } from './infrastructure/mail/audit-client-report.mailer';
-import { AuditExpertReportMailer } from './infrastructure/mail/audit-expert-report.mailer';
-import { AuditConfirmationMailer } from './infrastructure/mail/audit-confirmation.mailer';
-import { AuditNotificationMailer } from './infrastructure/mail/audit-notification.mailer';
+import { AuditClientReportMailer } from './infrastructure/mail/rapports/audit-client-report.mailer';
+import { AuditExpertReportMailer } from './infrastructure/mail/rapports/audit-expert-report.mailer';
+import { AuditConfirmationMailer } from './infrastructure/mail/rapports/audit-confirmation.mailer';
+import { AuditNotificationMailer } from './infrastructure/mail/rapports/audit-notification.mailer';
 import { AuditNotifierFacade } from './infrastructure/mail/audit-notifier.facade';
 import { ExpediteurDAuditProvider } from './infrastructure/mail/expediteur-d-audit.provider';
-import { AiHeadersAnalyzerService } from './infrastructure/automation/ai-headers-analyzer.service';
-import { AuditDeliveryOrchestrator } from './infrastructure/automation/audit-delivery.orchestrator';
-import { AuditPdfGeneratorService } from './infrastructure/automation/audit-pdf-generator.service';
-import { AuditPipelineService } from './infrastructure/automation/audit-pipeline.service';
-import { AuditQueueService } from './infrastructure/automation/audit-queue.service';
-import { AuditReportHtmlRendererService } from './infrastructure/automation/audit-report-html-renderer.service';
-import { AuditWorkerService } from './infrastructure/automation/audit-worker.service';
-import { loadAuditAutomationConfig } from './infrastructure/automation/audit.config';
+import { AiHeadersAnalyzerService } from './infrastructure/automation/collecte/ia/ai-headers-analyzer.service';
+import { AuditDeliveryOrchestrator } from './infrastructure/automation/pipeline/audit-delivery.orchestrator';
+import { AuditPdfGeneratorService } from './infrastructure/automation/rendu/audit-pdf-generator.service';
+import { AuditPipelineService } from './infrastructure/automation/pipeline/audit-pipeline.service';
+import { AuditQueueService } from './infrastructure/automation/pipeline/audit-queue.service';
+import { AuditReportHtmlRendererService } from './infrastructure/automation/rendu/audit-report-html-renderer.service';
+import { AuditWorkerService } from './infrastructure/automation/pipeline/audit-worker.service';
+import { loadAuditAutomationConfig } from './infrastructure/automation/pipeline/audit.config';
 import {
   CHAT_OPENAI_FACTORY,
   DefaultChatOpenAIFactory,
-} from './infrastructure/automation/chat-openai.factory';
+} from './infrastructure/automation/redaction/llm/chat-openai.factory';
 import {
   ANTHROPIC_CHAT_FACTORY,
   DefaultAnthropicChatFactory,
-} from './infrastructure/automation/anthropic-chat.factory';
-import { CachingSectionRunner } from './infrastructure/automation/section-generators';
-import { CitationWorthinessService } from './infrastructure/automation/citation-worthiness.service';
-import { DeepUrlAnalysisService } from './infrastructure/automation/deep-url-analysis.service';
-import { HomepageAnalyzerService } from './infrastructure/automation/homepage-analyzer.service';
+} from './infrastructure/automation/redaction/llm/anthropic-chat.factory';
+import { CachingSectionRunner } from './infrastructure/automation/redaction/section-generators';
+import { CitationWorthinessService } from './infrastructure/automation/collecte/ia/citation-worthiness.service';
+import { DeepUrlAnalysisService } from './infrastructure/automation/collecte/page/deep-url-analysis.service';
+import { HomepageAnalyzerService } from './infrastructure/automation/collecte/page/homepage-analyzer.service';
 import {
   LLM_EXECUTOR,
   SharedLlmExecutor,
-} from './infrastructure/automation/llm-executor.port';
-import { LangchainAuditReportService } from './infrastructure/automation/langchain-audit-report.service';
-import { LangchainClientReportService } from './infrastructure/automation/langchain-client-report.service';
-import { LlmsTxtAnalyzerService } from './infrastructure/automation/llms-txt-analyzer.service';
-import { PageAiRecapService } from './infrastructure/automation/page-ai-recap.service';
-import { SafeFetchService } from './infrastructure/automation/safe-fetch.service';
-import { ScoringService } from './infrastructure/automation/scoring.service';
-import { SitemapDiscoveryService } from './infrastructure/automation/sitemap-discovery.service';
-import { StructuredDataQualityService } from './infrastructure/automation/structured-data-quality.service';
-import { UrlIndexabilityService } from './infrastructure/automation/url-indexability.service';
-import { ReportQualityGateService } from './infrastructure/automation/report-quality-gate.service';
+} from './infrastructure/automation/redaction/llm/llm-executor.port';
+import { LangchainAuditReportService } from './infrastructure/automation/redaction/rapport/langchain-audit-report.service';
+import { LangchainClientReportService } from './infrastructure/automation/redaction/rapport/langchain-client-report.service';
+import { LlmsTxtAnalyzerService } from './infrastructure/automation/collecte/ia/llms-txt-analyzer.service';
+import { PageAiRecapService } from './infrastructure/automation/collecte/page/page-ai-recap.service';
+import { SafeFetchService } from './infrastructure/automation/collecte/securite/safe-fetch.service';
+import { ScoringService } from './infrastructure/automation/rendu/scoring.service';
+import { SitemapDiscoveryService } from './infrastructure/automation/collecte/sitemaps/sitemap-discovery.service';
+import { StructuredDataQualityService } from './infrastructure/automation/collecte/page/structured-data-quality.service';
+import { UrlIndexabilityService } from './infrastructure/automation/collecte/ia/url-indexability.service';
+import { ReportQualityGateService } from './infrastructure/automation/redaction/rapport/report-quality-gate.service';
 import { AuditRequestEntity } from './infrastructure/entities/AuditRequest.entity';
 import { AuditsController } from './interfaces/Audits.controller';
 

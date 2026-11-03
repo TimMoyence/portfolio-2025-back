@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   type AuditProcessingStatus,
   STATUTS_D_AUDIT,
-} from '../../domain/AuditProcessing';
+} from '../../domain/traitement/AuditProcessing';
 
 export class AuditRequestResponseDto {
   @ApiProperty({ example: 'Audit request created successfully.' })

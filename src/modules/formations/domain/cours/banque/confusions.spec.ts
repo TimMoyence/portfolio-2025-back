@@ -15,7 +15,10 @@ import {
   libelleDeConfusion,
   libelleLisible,
 } from './confusions';
-import { sansTypographie, typographierEnProfondeur } from '../Typographie';
+import {
+  sansTypographie,
+  typographierEnProfondeur,
+} from '../formule/Typographie';
 
 const ERREURS_CITEES_PAR_LES_PIEGES = {
   'negation-comparaison': [

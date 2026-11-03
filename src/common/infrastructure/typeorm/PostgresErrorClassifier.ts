@@ -1,5 +1,5 @@
 import { QueryFailedError, type ObjectLiteral, type Repository } from 'typeorm';
-import { estObjet } from '../../domain/est-objet';
+import { estObjet } from '../../domain/objets/est-objet';
 
 const POSTGRES_UNIQUE_VIOLATION = '23505';
 

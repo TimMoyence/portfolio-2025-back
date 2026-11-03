@@ -19,13 +19,13 @@ import {
 } from '@nestjs/swagger';
 import type { Request } from 'express';
 import { compteConnecte } from '../../../common/interfaces/auth/compte-connecte';
-import { EvincerParticipantUseCase } from '../application/EvincerParticipant.useCase';
-import { LibererPosteUseCase } from '../application/LibererPoste.useCase';
-import { ListSessionParticipantsUseCase } from '../application/ListSessionParticipants.useCase';
-import { ReadmettreParticipantUseCase } from '../application/ReadmettreParticipant.useCase';
-import { CibleParticipantPipe } from './dto/cible-participant.params';
-import type { CibleParticipant } from './dto/cible-participant.params';
-import { SessionParticipantsResponseDto } from './dto/session-participants.response.dto';
+import { EvincerParticipantUseCase } from '../application/participants/EvincerParticipant.useCase';
+import { LibererPosteUseCase } from '../application/participants/LibererPoste.useCase';
+import { ListSessionParticipantsUseCase } from '../application/seance/lecture/ListSessionParticipants.useCase';
+import { ReadmettreParticipantUseCase } from '../application/participants/ReadmettreParticipant.useCase';
+import { CibleParticipantPipe } from './dto/participants/cible-participant.params';
+import type { CibleParticipant } from './dto/participants/cible-participant.params';
+import { SessionParticipantsResponseDto } from './dto/seance/session-participants.response.dto';
 import {
   ControleurFormateur,
   LectureDeSeance,

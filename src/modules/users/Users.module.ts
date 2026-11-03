@@ -2,13 +2,13 @@ import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import type { ValeursDeLEnv } from '../../config/env.validation';
-import { AuthenticateGoogleUserUseCase } from './application/AuthenticateGoogleUser.useCase';
-import { CreateUsersUseCase } from './application/CreateUsers.useCase';
-import { RefreshTokensUseCase } from './application/RefreshTokens.useCase';
-import { RevokeTokenUseCase } from './application/RevokeToken.useCase';
-import { VerifyEmailUseCase } from './application/VerifyEmail.useCase';
-import { ResendVerificationEmailUseCase } from './application/ResendVerificationEmail.useCase';
+import type { ValeursDeLEnv } from '../../config/environnement/env.validation';
+import { AuthenticateGoogleUserUseCase } from './application/connexion/AuthenticateGoogleUser.useCase';
+import { CreateUsersUseCase } from './application/inscription/CreateUsers.useCase';
+import { RefreshTokensUseCase } from './application/connexion/RefreshTokens.useCase';
+import { RevokeTokenUseCase } from './application/connexion/RevokeToken.useCase';
+import { VerifyEmailUseCase } from './application/inscription/VerifyEmail.useCase';
+import { ResendVerificationEmailUseCase } from './application/inscription/ResendVerificationEmail.useCase';
 import {
   EMAIL_VERIFICATION_NOTIFIER,
   EMAIL_VERIFICATION_TOKENS_REPOSITORY,
@@ -23,26 +23,26 @@ import { RefreshTokenEntity } from './infrastructure/entities/RefreshToken.entit
 import { PasswordResetTokenEntity } from './infrastructure/entities/PasswordResetToken.entity';
 import { EmailVerificationTokenEntity } from './infrastructure/entities/EmailVerificationToken.entity';
 import { UsersRepositoryTypeORM } from './infrastructure/Users.repository.typeORM';
-import { RefreshTokensRepositoryTypeORM } from './infrastructure/RefreshTokens.repository.typeORM';
-import { PasswordResetTokensRepositoryTypeORM } from './infrastructure/PasswordResetTokens.repository.typeORM';
-import { EmailVerificationTokensRepositoryTypeORM } from './infrastructure/EmailVerificationTokens.repository.typeORM';
+import { RefreshTokensRepositoryTypeORM } from './infrastructure/jetons/RefreshTokens.repository.typeORM';
+import { PasswordResetTokensRepositoryTypeORM } from './infrastructure/jetons/PasswordResetTokens.repository.typeORM';
+import { EmailVerificationTokensRepositoryTypeORM } from './infrastructure/jetons/EmailVerificationTokens.repository.typeORM';
 import { AuthAuditLogger } from './application/services/AuthAuditLogger';
 import { PasswordService } from './application/services/PasswordService';
 import { EnvoiDeVerificationEmail } from './application/services/email-verification-dispatch';
 import { EnvoiDeReinitialisation } from './application/services/password-reset-dispatch';
-import { JwtTokenService } from './application/services/JwtTokenService';
-import { AuthenticateUserUseCase } from './application/AuthenticateUser.useCase';
-import { ChangePasswordUseCase } from './application/ChangePassword.useCase';
+import { JwtTokenService } from './application/services/jetons/JwtTokenService';
+import { AuthenticateUserUseCase } from './application/connexion/AuthenticateUser.useCase';
+import { ChangePasswordUseCase } from './application/mot-de-passe/ChangePassword.useCase';
 import { AuthController } from './interfaces/Auth.controller';
 import { JwtAuthGuard } from '../../common/interfaces/auth/jwt-auth.guard';
 import { PasswordResetMailerService } from './infrastructure/PasswordResetMailer.service';
 import { VerificationMailerService } from './infrastructure/VerificationMailer.service';
-import { RequestPasswordResetUseCase } from './application/RequestPasswordReset.useCase';
-import { ResetPasswordUseCase } from './application/ResetPassword.useCase';
-import { SetPasswordUseCase } from './application/SetPassword.useCase';
-import { UpdateProfileUseCase } from './application/UpdateProfile.useCase';
-import { GetCurrentUserUseCase } from './application/GetCurrentUser.useCase';
-import { RefreshTokenCleanupService } from './infrastructure/RefreshTokenCleanup.service';
+import { RequestPasswordResetUseCase } from './application/mot-de-passe/RequestPasswordReset.useCase';
+import { ResetPasswordUseCase } from './application/mot-de-passe/ResetPassword.useCase';
+import { SetPasswordUseCase } from './application/mot-de-passe/SetPassword.useCase';
+import { UpdateProfileUseCase } from './application/inscription/UpdateProfile.useCase';
+import { GetCurrentUserUseCase } from './application/connexion/GetCurrentUser.useCase';
+import { RefreshTokenCleanupService } from './infrastructure/jetons/RefreshTokenCleanup.service';
 
 const USERS_USE_CASES = [
   CreateUsersUseCase,

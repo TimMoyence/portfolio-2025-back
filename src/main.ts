@@ -5,7 +5,7 @@ import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import { Logger } from 'nestjs-pino';
 import { AppModule } from './app.module';
-import { bornerLesCorpsDeRequete } from './common/interfaces/http/corps-de-requete';
+import { bornerLesCorpsDeRequete } from './common/interfaces/http/requete/corps-de-requete';
 import { ouvrirAuxOrigines } from './common/interfaces/http/cors';
 import { documentOpenApi } from './common/interfaces/http/document-openapi';
 import { prefixerLesRoutes } from './common/interfaces/http/prefixer-les-routes';
@@ -15,7 +15,7 @@ import {
   envPort,
   envString,
   estEnProduction,
-} from './config/env-readers.util';
+} from './config/environnement/env-readers.util';
 import { logBootstrapStep } from './runtime/log-bootstrap-step';
 
 async function bootstrap() {

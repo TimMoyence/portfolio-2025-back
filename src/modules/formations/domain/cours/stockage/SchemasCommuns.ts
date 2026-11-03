@@ -1,0 +1,85 @@
+import { TYPES_DE_TOLERANCE } from '../../contrats/contrat-de-l-api';
+import { z } from 'zod';
+import { listeEntreGuillemets } from '../../../../../common/domain/texte/formats/liste-entre-guillemets';
+import { CONCEPTS } from '../banque/concepts';
+import { CONFUSIONS, type ConfusionId } from '../banque/confusions';
+
+const LONGUEUR_MAX_IDENTIFIANT_DE_QUESTION = 60;
+const CHEMIN_DE_MEDIA =
+  /^\/assets\/cours\/[a-z0-9-]+\/v\d+\/[a-z0-9.-]+\.(webp|jpg|png|webm|vtt)$/;
+const PAGE_DE_FORMATION = /^\/formations\/[a-z0-9-]+$/;
+const EN_HTTPS = z.url({ protocol: /^https$/ });
+
+const IDENTIFIANTS_DE_CONFUSION = Object.keys(CONFUSIONS) as [
+  ConfusionId,
+  ...ConfusionId[],
+];
+
+export const texte = z.string().min(1);
+export const identifiantDeQuestion = texte.max(
+  LONGUEUR_MAX_IDENTIFIANT_DE_QUESTION,
+);
+export const concept = z.enum(CONCEPTS);
+export const concepts = z.tuple([concept], concept);
+export type EnumDesConfusions = { [K in ConfusionId]: K };
+export const confusion: z.ZodEnum<EnumDesConfusions> = z.enum(
+  IDENTIFIANTS_DE_CONFUSION,
+);
+export const media = z.union([
+  EN_HTTPS,
+  z
+    .string()
+    .regex(CHEMIN_DE_MEDIA)
+    .refine((chemin) => !chemin.includes('..'), 'chemin de média remontant'),
+]);
+export const sourceDeVideo = z.union([
+  EN_HTTPS,
+  z.string().regex(PAGE_DE_FORMATION),
+]);
+export const tolerance = z
+  .object({
+    type: z.enum(TYPES_DE_TOLERANCE),
+    valeur: z.number().nonnegative(),
+  })
+  .strict();
+
+export function auMoinsUn<T extends z.ZodType>(element: T): z.ZodTuple<[T], T> {
+  return z.tuple([element], element);
+}
+
+export type Signaleur = (
+  chemin: readonly (string | number)[],
+  message: string,
+) => void;
+
+export function signaleurDe(
+  contexte: z.RefinementCtx,
+  prefixe: readonly (string | number)[] = [],
+): Signaleur {
+  return (chemin, message) => {
+    contexte.addIssue({
+      code: 'custom',
+      path: [...prefixe, ...chemin],
+      message,
+    });
+  };
+}
+
+export function doublonsDe(valeurs: readonly string[]): readonly string[] {
+  return [
+    ...new Set(
+      valeurs.filter((valeur, rang) => valeurs.indexOf(valeur) !== rang),
+    ),
+  ];
+}
+
+export function signalerDoublons(
+  valeurs: readonly string[],
+  chemin: readonly (string | number)[],
+  signaler: Signaleur,
+): void {
+  const doublons = doublonsDe(valeurs);
+  if (doublons.length > 0) {
+    signaler(chemin, `en double : ${listeEntreGuillemets(doublons)}`);
+  }
+}

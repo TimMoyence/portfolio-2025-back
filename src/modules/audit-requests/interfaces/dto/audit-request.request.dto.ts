@@ -2,12 +2,12 @@ import { ValeurDuContrat } from '../../../../common/interfaces/dto/valeur-du-con
 import {
   METHODES_DE_CONTACT,
   type MethodeDeContact,
-} from '../../domain/AuditRequest';
+} from '../../domain/demande/AuditRequest';
 import { ApiProperty } from '@nestjs/swagger';
-import type { AuditLocale } from '../../domain/audit-locale.util';
-import { LocaleSupportee } from '../../../../common/interfaces/dto/locale-supportee.decorator';
-import { TexteSaisi } from '../../../../common/interfaces/dto/longueur-de-texte.decorator';
-import { ChampsAntiRobotDto } from '../../../../common/interfaces/security/champs-anti-robot.dto';
+import type { AuditLocale } from '../../domain/traitement/audit-locale.util';
+import { LocaleSupportee } from '../../../../common/interfaces/dto/champs/locale-supportee.decorator';
+import { TexteSaisi } from '../../../../common/interfaces/dto/champs/longueur-de-texte.decorator';
+import { ChampsAntiRobotDto } from '../../../../common/interfaces/security/anti-robot/champs-anti-robot.dto';
 
 export class AuditRequestRequestDto extends ChampsAntiRobotDto {
   @ApiProperty({ example: 'https://example.com' })

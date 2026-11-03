@@ -1,4 +1,4 @@
-import { typographierEnProfondeur } from '../Typographie';
+import { typographierEnProfondeur } from '../formule/Typographie';
 import type { ConceptId } from './concepts';
 
 interface DefinitionConfusion {

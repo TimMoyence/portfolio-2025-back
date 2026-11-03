@@ -7,7 +7,7 @@ import type {
   CorrigeTableau,
   FormeFormule,
   PiegeNumerique,
-} from '../cours/Corrige';
+} from '../cours/correction/Corrige';
 import type { Bareme, BaremeQuestionV2, BaremeV1, BaremeV2 } from './bareme';
 import type {
   CardsortPlanStocke,
@@ -53,7 +53,7 @@ import type {
   VotePublic,
   WorkedExemple,
 } from './donnees-publiques';
-import type { RegleDeNotation } from '../RegleDeNotation';
+import type { RegleDeNotation } from '../notation/RegleDeNotation';
 import type {
   ControlSessionChanges,
   EtatParticipant,
@@ -85,13 +85,16 @@ import type {
 import {
   ATTENDU_PRIX_INITIAL,
   ATTENDU_PRIX_REVISE,
-} from '../../../../../test/factories/corriges.factory';
-import { PLAN_TABLEAU } from '../../../../../test/factories/ecrans-stockes.factory';
-import { REGLE_DE_NOTATION } from '../RegleDeNotation';
-import { planDeFeuilleServi } from '../cours/FeuilleEvaluee';
-import { machineCalculee } from '../cours/MachineServie';
-import { planDeTableauServi, tableauDuCorrige } from '../cours/TableauEvalue';
-import { traceCalcule } from '../cours/TraceServi';
+} from '../../../../../test/factories/formations/cours/corriges.factory';
+import { PLAN_TABLEAU } from '../../../../../test/factories/formations/cours/ecrans-stockes.factory';
+import { REGLE_DE_NOTATION } from '../notation/RegleDeNotation';
+import { planDeFeuilleServi } from '../cours/evaluation/FeuilleEvaluee';
+import { machineCalculee } from '../cours/evaluation/MachineServie';
+import {
+  planDeTableauServi,
+  tableauDuCorrige,
+} from '../cours/evaluation/TableauEvalue';
+import { traceCalcule } from '../cours/evaluation/TraceServi';
 
 const METADONNEES = {
   concepts: ['evolutions-successives'],

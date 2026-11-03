@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { dateLongue } from '../../../common/domain/texte/date-longue';
+import { dateLongue } from '../../../common/domain/texte/formats/date-longue';
 import { couvertureDePdf } from '../../../common/infrastructure/pdf/couverture-de-pdf';
 import type {
   CheatsheetEntry,

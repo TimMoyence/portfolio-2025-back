@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
-import { AdresseEmail } from '../../../../common/interfaces/dto/adresse-email.decorator';
-import { TelephoneOptionnel } from '../../../../common/interfaces/dto/telephone.decorator';
+import { AdresseEmail } from '../../../../common/interfaces/dto/champs/adresse-email.decorator';
+import { TelephoneOptionnel } from '../../../../common/interfaces/dto/champs/telephone.decorator';
 import type { InscriptionCommand } from '../../application/dto/CreateUser.command';
 import {
   LONGUEUR_MAX_D_UN_TELEPHONE,

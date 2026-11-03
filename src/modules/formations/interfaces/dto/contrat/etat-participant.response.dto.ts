@@ -9,10 +9,10 @@ import {
   MODELES_DE_PRODUCTION,
   SCHEMAS_DE_PRODUCTION,
 } from './submit-production.request.dto';
-import { ParticipantDeSeanceResponseDto } from '../participant-de-seance.response.dto';
+import { ParticipantDeSeanceResponseDto } from '../participants/participant-de-seance.response.dto';
 import { VerdictDeReponse } from '../verdict-de-reponse.decorator';
 import { DetailVerdictResponseDto } from './verdict-production.response.dto';
-import { EtatDesEnigmesResponseDto } from './tentative-enigme.response.dto';
+import { EtatDesEnigmesResponseDto } from './defis/tentative-enigme.response.dto';
 
 @ApiExtraModels(...MODELES_DE_PRODUCTION)
 export class ReponseParticipantResponseDto {

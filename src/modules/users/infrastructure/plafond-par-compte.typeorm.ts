@@ -1,7 +1,10 @@
 import type { FindOptionsWhere, ObjectLiteral, Repository } from 'typeorm';
 import { poseeDepuisMoinsDe } from '../../../common/infrastructure/typeorm/horloge-de-la-base';
 import { enTransactionSurLaCle } from '../../../common/infrastructure/typeorm/verrou-de-transaction';
-import { plafondAtteint, type PlafondDEnvois } from '../domain/PlafondDEnvois';
+import {
+  plafondAtteint,
+  type PlafondDEnvois,
+} from '../domain/notifications/PlafondDEnvois';
 
 type EnvoiDUnCompte = ObjectLiteral & { userId: string; createdAt: Date };
 

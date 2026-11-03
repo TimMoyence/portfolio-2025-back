@@ -1,5 +1,5 @@
 import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
-import { provenanceConsignable } from '../../../common/domain/provenance';
+import { provenanceConsignable } from '../../../common/domain/liens/provenance';
 import {
   optionalPhone,
   optionalText,

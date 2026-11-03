@@ -3,7 +3,7 @@ import { Type } from 'class-transformer';
 import { IsOptional, IsString } from 'class-validator';
 import type { SupportedLocale } from '../../../../common/domain/value-objects/LocaleCode';
 import { EntierBorne } from '../../../../common/interfaces/dto/bornes-annoncees.decorator';
-import { LocaleSupportee } from '../../../../common/interfaces/dto/locale-supportee.decorator';
+import { LocaleSupportee } from '../../../../common/interfaces/dto/champs/locale-supportee.decorator';
 
 export class ArticleListQueryDto {
   @LocaleSupportee({ facultative: true, parDefaut: 'fr' })

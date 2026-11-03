@@ -2,8 +2,8 @@ import { ExecutionContext, ForbiddenException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { RolesGuard } from './roles.guard';
 import { ROLES_KEY } from './roles.decorator';
-import type { JwtPayload } from '../../../modules/users/application/services/JwtPayload';
-import { buildJwtPayload } from '../../../../test/factories/user.factory';
+import type { JwtPayload } from '../../../modules/users/application/services/jetons/JwtPayload';
+import { buildJwtPayload } from '../../../../test/factories/comptes/user.factory';
 import { createHttpExecutionContext } from '../../../../test/factories/execution-context.factory';
 
 describe('RolesGuard', () => {

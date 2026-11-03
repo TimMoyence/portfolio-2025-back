@@ -1,0 +1,399 @@
+import {
+  ATTENDU_PRIX_INITIAL,
+  buildCorrigeClassement,
+  buildCorrigeFeuille,
+  buildCorrigeTableau,
+  buildCorrigeTableDeVerite,
+  buildPlanFeuille,
+} from '../../../../../../test/factories/formations/cours/corriges.factory';
+import { attendreProductionReussie } from '../../../../../../test/helpers/formations/cours/corrections';
+import {
+  corrigerClassement,
+  corrigerFeuille,
+  corrigerTableau,
+} from './CorrectionProduction';
+import { confusionsDuCorrige } from '../stockage/CorrigeStocke';
+
+const PLAN = buildPlanFeuille({
+  cellules: {
+    A1: 'Canal',
+    B1: '2024',
+    C1: '2025',
+    A2: 'Sur-mesure',
+    B2: '483000',
+    C2: '397000',
+    A3: 'Entretien',
+    B3: '210000',
+    C3: '230000',
+  },
+  verrouillees: ['A1', 'B1', 'C1', 'A2', 'B2', 'C2', 'A3', 'B3', 'C3'],
+});
+const CORRIGE_FEUILLE = buildCorrigeFeuille({ plan: PLAN });
+const ATTENDU_D2 = CORRIGE_FEUILLE.attendus[0];
+const CORRIGE_D2 = buildCorrigeFeuille({ plan: PLAN, attendus: [ATTENDU_D2] });
+const CORRIGE_TABLEAU = buildCorrigeTableau({
+  attendus: [
+    ATTENDU_PRIX_INITIAL,
+    {
+      rang: 0,
+      cle: 'indice',
+      valeur: 108,
+      pieges: [{ valeur: 8, confusion: 'indice-lu-comme-taux' }],
+    },
+  ],
+});
+const SANS_FORMULE = 'valeur-saisie-sans-formule';
+const NON_RECOPIABLE = 'formule-non-recopiable';
+const JUSTES = { D2: '=(C2-B2)/B2', D3: '=(C3-B3)/B3' };
+
+function verdict(
+  envoi: Readonly<Record<string, string>>,
+  reference: string,
+): { readonly juste: boolean; readonly confusion: string | null } {
+  const trouve = corrigerFeuille(CORRIGE_FEUILLE, envoi).verdicts.find(
+    (candidat) => candidat.reference === reference,
+  );
+  if (trouve === undefined) {
+    throw new Error(`aucun verdict pour ${reference}`);
+  }
+  return { juste: trouve.juste, confusion: trouve.confusion };
+}
+
+describe('corrigerFeuille', () => {
+  it('accepte les formules de référence et déclare la production réussie', () => {
+    attendreProductionReussie(corrigerFeuille(CORRIGE_FEUILLE, JUSTES), 2);
+  });
+
+  it('accepte une formule équivalente qui garde la même forme recopiable', () => {
+    expect(verdict({ D2: '=C2/B2-1', D3: '=C3/B3-1' }, 'D2')).toEqual({
+      juste: true,
+      confusion: null,
+    });
+    expect(verdict({ D2: '=C2/B2-1', D3: '=C3/B3-1' }, 'D3')).toEqual({
+      juste: true,
+      confusion: null,
+    });
+  });
+
+  it('refuse une valeur tapée sans formule', () => {
+    expect(verdict({ ...JUSTES, D2: '-0,178054' }, 'D2')).toEqual({
+      juste: false,
+      confusion: SANS_FORMULE,
+    });
+  });
+
+  it('refuse une formule qui enferme la valeur attendue dans un littéral', () => {
+    expect(verdict({ ...JUSTES, D2: '=-0,178054+0*B2' }, 'D2')).toEqual({
+      juste: false,
+      confusion: SANS_FORMULE,
+    });
+  });
+
+  it('localise la cellule fausse et reconnaît son piège', () => {
+    const correction = corrigerFeuille(CORRIGE_D2, {
+      D2: '=(C2-B2)/B2*100',
+    });
+
+    expect(correction.verdicts).toEqual([
+      { reference: 'D2', juste: false, confusion: 'taux-valeur-facteur-cent' },
+    ]);
+    expect(correction.correcte).toBe(false);
+  });
+
+  it('signale la recopie incohérente quand la cellule modèle a changé de forme', () => {
+    const correction = corrigerFeuille(CORRIGE_FEUILLE, {
+      D2: '=(C2-B2)/B2*100',
+      D3: '=(C3-B3)/B3',
+    });
+
+    expect(correction.verdicts.map((cellule) => cellule.confusion)).toEqual([
+      'taux-valeur-facteur-cent',
+      NON_RECOPIABLE,
+    ]);
+  });
+
+  it('ne prend pas pour un résultat recopié le 1 d’une formule de contrôle', () => {
+    const controle = buildCorrigeFeuille({
+      plan: PLAN,
+      attendus: [
+        {
+          ...ATTENDU_D2,
+          reference: 'D2',
+          formuleReference: '=SI(ARRONDI(C2-B2;0)=-86000;1;0)',
+          valeur: 1,
+          tolerance: { type: 'absolue', valeur: 0 },
+          pieges: [],
+        },
+      ],
+    });
+
+    const correction = corrigerFeuille(controle, {
+      D2: '=SI(ARRONDI(C2-B2;0)=-86000;1;0)',
+    });
+
+    expect(correction.verdicts).toEqual([
+      { reference: 'D2', juste: true, confusion: null },
+    ]);
+  });
+
+  it('refuse une recopie juste en valeur dont la forme R1C1 diffère de sa référence', () => {
+    expect(verdict({ ...JUSTES, D3: '=(230000-210000)/B3' }, 'D3')).toEqual({
+      juste: false,
+      confusion: NON_RECOPIABLE,
+    });
+  });
+
+  it('B102-M7 · nomme la recopie vers la droite trahie par une formule retapée', () => {
+    const corrige = buildCorrigeFeuille({
+      plan: PLAN,
+      attendus: [
+        {
+          ...ATTENDU_D2,
+          reference: 'D2',
+          formuleReference: '=$C2*2',
+          valeur: 794000,
+          pieges: [],
+        },
+        {
+          ...ATTENDU_D2,
+          reference: 'E2',
+          formuleReference: '=$C2*2',
+          valeur: 794000,
+          forme: { memeQue: 'D2' },
+          pieges: [],
+        },
+      ],
+    });
+
+    const correction = corrigerFeuille(corrige, {
+      D2: '=$C2*2',
+      E2: '=C2*2',
+    });
+
+    expect(correction.verdicts).toEqual([
+      { reference: 'D2', juste: true, confusion: null },
+      {
+        reference: 'E2',
+        juste: false,
+        confusion: 'formule-non-recopiable-en-ligne',
+      },
+    ]);
+    expect(confusionsDuCorrige(corrige)).toContain(
+      'formule-non-recopiable-en-ligne',
+    );
+    expect(confusionsDuCorrige(corrige)).not.toContain(NON_RECOPIABLE);
+  });
+
+  it('refuse une cellule vide sans lui prêter de confusion', () => {
+    expect(verdict({ ...JUSTES, D2: '   ' }, 'D2')).toEqual({
+      juste: false,
+      confusion: null,
+    });
+  });
+
+  it.each([
+    ['tombe en erreur', '=(C2-B2)/B9'],
+    ['ne s’analyse pas', '=(C2-B2)/;'],
+  ])('rend la confusion déclarée quand la formule %s', (_cas, saisie) => {
+    const corrige = buildCorrigeFeuille({
+      plan: PLAN,
+      attendus: [
+        {
+          ...ATTENDU_D2,
+          confusionSiErreurFormule: 'reference-relative-non-figee',
+        },
+      ],
+    });
+
+    const correction = corrigerFeuille(corrige, { D2: saisie });
+
+    expect(correction.verdicts).toEqual([
+      {
+        reference: 'D2',
+        juste: false,
+        confusion: 'reference-relative-non-figee',
+      },
+    ]);
+  });
+
+  it('réimpose les cellules verrouillées du plan sur l’envoi de l’étudiant', () => {
+    const correction = corrigerFeuille(CORRIGE_FEUILLE, {
+      ...JUSTES,
+      B2: '1',
+      C2: '2',
+    });
+
+    expect(correction.verdicts[0]).toEqual({
+      reference: 'D2',
+      juste: true,
+      confusion: null,
+    });
+  });
+
+  describe('cellule à résultat texte ou logique', () => {
+    const PLAN_RELANCE = buildPlanFeuille({
+      lignes: 3,
+      colonnes: 4,
+      cellules: {
+        A1: 'Statut',
+        B1: 'Délai',
+        A2: 'Impayée',
+        B2: '72',
+        A3: 'Payée',
+        B3: '90',
+      },
+      verrouillees: ['A1', 'B1', 'A2', 'B2', 'A3', 'B3'],
+    });
+    const RELANCE = '=SI(ET(A2="Impayée";B2>60);"Relancer";"")';
+    const CORRIGE_RELANCE = buildCorrigeFeuille({
+      plan: PLAN_RELANCE,
+      attendus: [
+        {
+          ...ATTENDU_D2,
+          reference: 'C2',
+          formuleReference: RELANCE,
+          valeur: 'Relancer',
+          forme: 'references',
+          pieges: [],
+        },
+        {
+          ...ATTENDU_D2,
+          reference: 'C3',
+          formuleReference: '=SI(ET(A3="Impayée";B3>60);"Relancer";"")',
+          valeur: '',
+          forme: { memeQue: 'C2' },
+          pieges: [],
+        },
+        {
+          ...ATTENDU_D2,
+          reference: 'D2',
+          formuleReference: '=B2>60',
+          valeur: true,
+          forme: 'references',
+          pieges: [],
+        },
+      ],
+    });
+
+    it('accepte le texte attendu sans tenir compte de la casse ni des espaces', () => {
+      const correction = corrigerFeuille(CORRIGE_RELANCE, {
+        C2: '=SI(ET(A2="impayée";B2>60);" relancer";"")',
+        C3: '=SI(ET(A3="impayée";B3>60);" relancer";"")',
+        D2: '=B2>60',
+      });
+
+      expect(correction.verdicts.map((verdict) => verdict.juste)).toEqual([
+        true,
+        true,
+        true,
+      ]);
+    });
+
+    it('refuse un texte différent, un nombre à la place du texte et un booléen inversé', () => {
+      const correction = corrigerFeuille(CORRIGE_RELANCE, {
+        C2: '=SI(OU(A2="Impayée";B2>60);"Relance";"")',
+        C3: '=SI(B3>60;1;0)',
+        D2: '=B2<=60',
+      });
+
+      expect(correction.verdicts.map((verdict) => verdict.juste)).toEqual([
+        false,
+        false,
+        false,
+      ]);
+    });
+
+    it('refuse le texte attendu tapé sans formule ou sans référence', () => {
+      const correction = corrigerFeuille(CORRIGE_RELANCE, {
+        C2: 'Relancer',
+        C3: '=""',
+        D2: '=VRAI',
+      });
+
+      expect(correction.verdicts.map((verdict) => verdict.confusion)).toEqual([
+        SANS_FORMULE,
+        SANS_FORMULE,
+        SANS_FORMULE,
+      ]);
+    });
+  });
+});
+
+describe('corrigerTableau', () => {
+  it('accepte les valeurs attendues à la tolérance du corrigé', () => {
+    attendreProductionReussie(
+      corrigerTableau(CORRIGE_TABLEAU, [{ prix: 21.605, indice: 108 }]),
+      2,
+    );
+  });
+
+  it.each([
+    [
+      'localise la ligne fausse et reconnaît son piège',
+      { prix: 21.6, indice: 8 },
+      'indice-lu-comme-taux',
+    ],
+    [
+      'reconnaît le piège à la tolérance du corrigé',
+      { prix: 21.6, indice: 8.008 },
+      'indice-lu-comme-taux',
+    ],
+    [
+      'refuse une saisie absente sans lui prêter de confusion',
+      { prix: 21.6 },
+      null,
+    ],
+  ])('%s', (_titre, saisie, confusion) => {
+    const correction = corrigerTableau(CORRIGE_TABLEAU, [saisie]);
+
+    expect(correction.verdicts.filter((ligne) => !ligne.juste)).toEqual([
+      { rang: 0, cle: 'indice', juste: false, confusion },
+    ]);
+    expect(correction.score).toBe(0.5);
+  });
+
+  it('corrige une table de vérité case par case, le « ou » lu exclusif reconnu', () => {
+    const correction = corrigerTableau(buildCorrigeTableDeVerite(), [
+      { pEtQ: 1, pOuQ: 1 },
+      { pEtQ: 1, pOuQ: 0 },
+    ]);
+
+    expect(correction.verdicts.filter((ligne) => !ligne.juste)).toEqual([
+      { rang: 1, cle: 'pEtQ', juste: false, confusion: null },
+      { rang: 1, cle: 'pOuQ', juste: false, confusion: 'ou-lu-exclusif' },
+    ]);
+    expect(correction.score).toBe(0.5);
+  });
+});
+
+describe('corrigerClassement', () => {
+  it.each([
+    ['ambigu', 'unite-manquante-ignoree'],
+    ['taux', 'valeur-confondue-avec-taux'],
+  ])(
+    'QP-15 · la confusion d une carte mal rangée suit la case choisie (%s)',
+    (case_, confusion) => {
+      const correction = corrigerClassement(buildCorrigeClassement(), {
+        'ca-2025': case_,
+        inflation: 'ambigu',
+      });
+
+      expect(correction.verdicts).toEqual([
+        { carteId: 'ca-2025', juste: false, confusion },
+        { carteId: 'inflation', juste: true, confusion: null },
+      ]);
+    },
+  );
+
+  it('QP-15 · ne prête aucune confusion à une carte laissée hors des cases', () => {
+    const correction = corrigerClassement(buildCorrigeClassement(), {
+      inflation: 'ambigu',
+    });
+
+    expect(correction.verdicts[0]).toEqual({
+      carteId: 'ca-2025',
+      juste: false,
+      confusion: null,
+    });
+  });
+});

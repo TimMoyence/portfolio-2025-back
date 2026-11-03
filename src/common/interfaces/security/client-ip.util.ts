@@ -1,5 +1,5 @@
 import type { Request } from 'express';
-import { referentJournalisable } from '../http/url-journalisable';
+import { referentJournalisable } from '../http/requete/url-journalisable';
 
 /**
  * `req.ip` est calcule par Express en fonction de `trust proxy`

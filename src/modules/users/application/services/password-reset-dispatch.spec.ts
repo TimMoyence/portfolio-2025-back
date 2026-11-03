@@ -8,10 +8,10 @@ import {
 import {
   buildPasswordResetToken,
   createMockPasswordResetTokensRepo,
-} from '../../../../../test/factories/password-reset-token.factory';
-import { buildUser } from '../../../../../test/factories/user.factory';
-import { espionnerLeLoggerAChaqueTest } from '../../../../../test/helpers/silence-nest-logger';
-import { TROIS_ENVOIS_PAR_HEURE } from '../../domain/PlafondDEnvois';
+} from '../../../../../test/factories/comptes/password-reset-token.factory';
+import { buildUser } from '../../../../../test/factories/comptes/user.factory';
+import { espionnerLeLoggerAChaqueTest } from '../../../../../test/helpers/http/silence-nest-logger';
+import { TROIS_ENVOIS_PAR_HEURE } from '../../domain/notifications/PlafondDEnvois';
 import { TokenHash } from '../../../../common/domain/crypto/TokenHash';
 import {
   EnvoiDeReinitialisation,

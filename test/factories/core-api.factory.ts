@@ -9,24 +9,24 @@ import { StreamAuditEventsUseCase } from '../../src/modules/audit-requests/appli
 import { AuditsController } from '../../src/modules/audit-requests/interfaces/Audits.controller';
 import { CreateContactsUseCase } from '../../src/modules/contacts/application/CreateContacts.useCase';
 import { ContactsController } from '../../src/modules/contacts/interfaces/Contacts.controller';
-import { AuthenticateGoogleUserUseCase } from '../../src/modules/users/application/AuthenticateGoogleUser.useCase';
-import { AuthenticateUserUseCase } from '../../src/modules/users/application/AuthenticateUser.useCase';
-import { ChangePasswordUseCase } from '../../src/modules/users/application/ChangePassword.useCase';
-import { CreateUsersUseCase } from '../../src/modules/users/application/CreateUsers.useCase';
-import { GetCurrentUserUseCase } from '../../src/modules/users/application/GetCurrentUser.useCase';
-import { RefreshTokensUseCase } from '../../src/modules/users/application/RefreshTokens.useCase';
-import { RequestPasswordResetUseCase } from '../../src/modules/users/application/RequestPasswordReset.useCase';
-import { ResendVerificationEmailUseCase } from '../../src/modules/users/application/ResendVerificationEmail.useCase';
-import { ResetPasswordUseCase } from '../../src/modules/users/application/ResetPassword.useCase';
-import { RevokeTokenUseCase } from '../../src/modules/users/application/RevokeToken.useCase';
-import { SetPasswordUseCase } from '../../src/modules/users/application/SetPassword.useCase';
-import { UpdateProfileUseCase } from '../../src/modules/users/application/UpdateProfile.useCase';
-import { VerifyEmailUseCase } from '../../src/modules/users/application/VerifyEmail.useCase';
+import { AuthenticateGoogleUserUseCase } from '../../src/modules/users/application/connexion/AuthenticateGoogleUser.useCase';
+import { AuthenticateUserUseCase } from '../../src/modules/users/application/connexion/AuthenticateUser.useCase';
+import { ChangePasswordUseCase } from '../../src/modules/users/application/mot-de-passe/ChangePassword.useCase';
+import { CreateUsersUseCase } from '../../src/modules/users/application/inscription/CreateUsers.useCase';
+import { GetCurrentUserUseCase } from '../../src/modules/users/application/connexion/GetCurrentUser.useCase';
+import { RefreshTokensUseCase } from '../../src/modules/users/application/connexion/RefreshTokens.useCase';
+import { RequestPasswordResetUseCase } from '../../src/modules/users/application/mot-de-passe/RequestPasswordReset.useCase';
+import { ResendVerificationEmailUseCase } from '../../src/modules/users/application/inscription/ResendVerificationEmail.useCase';
+import { ResetPasswordUseCase } from '../../src/modules/users/application/mot-de-passe/ResetPassword.useCase';
+import { RevokeTokenUseCase } from '../../src/modules/users/application/connexion/RevokeToken.useCase';
+import { SetPasswordUseCase } from '../../src/modules/users/application/mot-de-passe/SetPassword.useCase';
+import { UpdateProfileUseCase } from '../../src/modules/users/application/inscription/UpdateProfile.useCase';
+import { VerifyEmailUseCase } from '../../src/modules/users/application/inscription/VerifyEmail.useCase';
 import { AuthAuditLogger } from '../../src/modules/users/application/services/AuthAuditLogger';
 import { AuthController } from '../../src/modules/users/interfaces/Auth.controller';
 import { USERS_REPOSITORY } from '../../src/modules/users/domain/token';
 import { buildConfigService, buildValidEnv } from './env.factory';
-import { createMockUsersRepo } from './user.factory';
+import { createMockUsersRepo } from './comptes/user.factory';
 
 const CORE_CONTROLLERS = [ContactsController, AuditsController, AuthController];
 

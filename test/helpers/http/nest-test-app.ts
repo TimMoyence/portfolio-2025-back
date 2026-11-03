@@ -1,0 +1,89 @@
+import type { INestApplication } from '@nestjs/common';
+import type { TestingModule } from '@nestjs/testing';
+import cookieParser from 'cookie-parser';
+import type { NextFunction, Request, Response } from 'express';
+import type { Server } from 'node:http';
+import type { AddressInfo } from 'node:net';
+import { appliquerLesTraitementsGlobaux } from '../../../src/common/interfaces/http/traitements-globaux';
+import { enregistrerLesReponsesServies } from './reponses-servies';
+
+export const ADRESSE_BOUCLE_LOCALE = '127.0.0.1';
+
+export async function ecouterEnBoucleLocale(
+  app: INestApplication,
+): Promise<number> {
+  await app.listen(0, ADRESSE_BOUCLE_LOCALE);
+  return portDe(app);
+}
+
+export function portDe(app: INestApplication): number {
+  return (serveurHttpDe(app).address() as AddressInfo).port;
+}
+
+export async function fermerApplication(app: INestApplication): Promise<void> {
+  serveurHttpDe(app).closeAllConnections();
+  await app.close();
+}
+
+export async function ouvrirApplication(
+  moduleRef: TestingModule,
+  configurer?: (app: INestApplication) => void,
+): Promise<INestApplication> {
+  const app = moduleRef.createNestApplication();
+  enregistrerLesReponsesServies(app);
+  appliquerLesTraitementsGlobaux(app);
+  configurer?.(app);
+  await ecouterEnBoucleLocale(app);
+  return app;
+}
+
+export function applicationDeLaSuite(
+  monter: () => Promise<INestApplication>,
+): () => INestApplication {
+  let app: INestApplication | undefined;
+
+  beforeAll(async () => {
+    app = await monter();
+  });
+
+  afterAll(async () => {
+    if (app) await fermerApplication(app);
+  });
+
+  return () => {
+    if (!app) throw new Error('Application de test non montée');
+    return app;
+  };
+}
+
+export function preparerChaqueRequete(
+  app: INestApplication,
+  preparer: (req: Request) => void,
+): void {
+  app.use((req: Request, _res: Response, next: NextFunction) => {
+    preparer(req);
+    next();
+  });
+}
+
+export function bootstrapTestApp(
+  moduleRef: TestingModule,
+  configure?: (app: INestApplication) => void,
+): Promise<INestApplication> {
+  return ouvrirApplication(moduleRef, (app) => {
+    configure?.(app);
+    app.setGlobalPrefix('api');
+  });
+}
+
+export function bootstrapTestAppAvecCookies(
+  moduleRef: TestingModule,
+): Promise<INestApplication> {
+  return bootstrapTestApp(moduleRef, (app) => {
+    app.use(cookieParser());
+  });
+}
+
+export function serveurHttpDe(app: INestApplication): Server {
+  return app.getHttpServer() as Server;
+}

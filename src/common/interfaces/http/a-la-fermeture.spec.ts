@@ -5,7 +5,7 @@ import {
   createHttpExecutionContext,
   type FausseReponseHttp,
 } from '../../../../test/factories/execution-context.factory';
-import { methodeDe } from '../../../../test/helpers/metadonnees-de-route';
+import { methodeDe } from '../../../../test/helpers/http/metadonnees-de-route';
 import { aLaFermeture } from './a-la-fermeture';
 
 class ControleurTemoin {

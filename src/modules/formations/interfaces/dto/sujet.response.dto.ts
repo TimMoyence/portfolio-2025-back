@@ -3,7 +3,7 @@ import type { ApiPropertyOptions } from '@nestjs/swagger';
 import { referenceAuContrat } from '../../../../common/interfaces/http/schemas-du-contrat';
 import type { TypeDEcranServi } from '../../domain/contrats/donnees-publiques';
 import { DONNEES_PAR_BRIQUE } from '../../domain/contrats/donnees-servies';
-import type { EcranPublic } from '../../domain/cours/CoursPublic';
+import type { EcranPublic } from '../../domain/cours/structure/CoursPublic';
 
 export class EcranPublicResponseDto {
   @ApiProperty({ example: 'E-OUV-RAPPEL' })

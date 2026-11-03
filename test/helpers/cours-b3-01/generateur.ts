@@ -4,7 +4,7 @@ import {
   melanger,
   type Rng,
   type Tirage,
-} from '../../../src/modules/formations/domain/cours/Aleatoire';
+} from '../../../src/modules/formations/domain/cours/tirage/Aleatoire';
 import { somme } from '../../../src/common/domain/nombres/statistiques';
 import { arrondi } from '../../../src/common/domain/nombres/arrondi';
 import {

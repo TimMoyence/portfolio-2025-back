@@ -1,11 +1,11 @@
 import { BadRequestException } from '@nestjs/common';
-import { validateBody } from '../../../../../../test/helpers/validation-pipe';
-import { ControlSessionRequestDto } from './control-session.request.dto';
-import { DeclarerJalonRequestDto } from './declarer-jalon.request.dto';
-import { OpenSessionRequestDto } from './open-session.request.dto';
-import { SubmitDefiRequestDto } from './submit-defi.request.dto';
+import { validateBody } from '../../../../../../test/helpers/http/validation-pipe';
+import { ControlSessionRequestDto } from './seance/control-session.request.dto';
+import { DeclarerJalonRequestDto } from './defis/declarer-jalon.request.dto';
+import { OpenSessionRequestDto } from './seance/open-session.request.dto';
+import { SubmitDefiRequestDto } from './defis/submit-defi.request.dto';
 import { SubmitProductionRequestDto } from './submit-production.request.dto';
-import { TenterEnigmeRequestDto } from './tenter-enigme.request.dto';
+import { TenterEnigmeRequestDto } from './defis/tenter-enigme.request.dto';
 
 const DUREE_MS = 42000;
 const QUESTION_FEUILLE = 'b2-01-a4-feuille-canaux';

@@ -1,11 +1,11 @@
 import { existsSync } from 'node:fs';
-import { buildCoursDuContenu } from '../../../../../test/factories/contenus-de-cours.factory';
+import { buildCoursDuContenu } from '../../../../../test/factories/formations/cours/contenus-de-cours.factory';
 import {
   cheminDuClasseur,
   classeursReservesDe,
   octetsDuClasseur,
-} from '../../../../../test/helpers/classeurs-reserves';
-import { CLASSEURS_B3_01 } from '../contenus/b3-01.donnees';
+} from '../../../../../test/helpers/formations/cours/classeurs-reserves';
+import { CLASSEURS_B3_01 } from '../contenus/b3/b3-01/b3-01.donnees';
 import { CONTENUS } from '../contenus';
 import { classeurATelecharger, ClasseursSurDisque } from './ClasseursSurDisque';
 

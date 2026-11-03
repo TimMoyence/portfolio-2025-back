@@ -4,7 +4,7 @@ import { TEST_MORNING_BRIEF_HMAC_SECRET as SECRET } from '../../../../test/facto
 import {
   appliquer,
   installerVariables,
-} from '../../../../test/helpers/environnement';
+} from '../../../../test/helpers/depot/environnement';
 import { LONGUEUR_MAX_DU_NONCE } from '../domain/article-contract';
 import { ArticleHmacGuard } from './article-hmac.guard';
 

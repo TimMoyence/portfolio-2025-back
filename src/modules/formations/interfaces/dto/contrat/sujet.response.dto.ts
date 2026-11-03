@@ -5,7 +5,7 @@ import {
   getSchemaPath,
 } from '@nestjs/swagger';
 import { CHAMPS_EXTRAITS_DU_CAS } from '../../../domain/contrats/cours';
-import type { PieceJointeServie } from '../../../domain/cours/Cours';
+import type { PieceJointeServie } from '../../../domain/cours/structure/Cours';
 import type {
   CoursPublic,
   CoursPublicCatalogue,

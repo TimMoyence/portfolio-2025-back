@@ -1,4 +1,4 @@
-import { mockTypeOrmRepository } from '../../../../test/factories/formation-entities.factory';
+import { mockTypeOrmRepository } from '../../../../test/factories/formations/formation-entities.factory';
 import { buildLeadMagnetRequest } from '../../../../test/factories/lead-magnet-request.factory';
 import type { LeadMagnetRequestEntity } from './entities/LeadMagnetRequest.entity';
 import { LeadMagnetRequestRepositoryTypeORM } from './LeadMagnetRequest.repository.typeorm';

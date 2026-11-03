@@ -1,5 +1,5 @@
 import { parse } from 'pg-connection-string';
-import { sansIndefinis } from '../common/domain/sans-indefinis';
+import { sansIndefinis } from '../common/domain/objets/sans-indefinis';
 import {
   envBrut,
   envPort,
@@ -7,7 +7,7 @@ import {
   envUnVrai,
   estEnProduction,
   type SourceDEnv,
-} from '../config/env-readers.util';
+} from '../config/environnement/env-readers.util';
 
 interface SslPostgres {
   readonly rejectUnauthorized: boolean;

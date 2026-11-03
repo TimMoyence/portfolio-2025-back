@@ -3,26 +3,26 @@ import { DomainValidationError } from '../../../common/domain/errors/DomainValid
 import { RateLimitExceededError } from '../../../common/domain/errors/RateLimitExceededError';
 import { TokenHash } from '../../../common/domain/crypto/TokenHash';
 import { CreateAuditRequestsUseCase } from './CreateAuditRequests.useCase';
-import type { IAuditRequestsRepository } from '../domain/IAuditRequests.repository';
-import type { IAuditNotifierPort } from '../domain/IAuditNotifier.port';
-import type { IAuditQueuePort } from '../domain/IAuditQueue.port';
-import { AuditRequestResponse } from '../domain/AuditRequestResponse';
+import type { IAuditRequestsRepository } from '../domain/demande/IAuditRequests.repository';
+import type { IAuditNotifierPort } from '../domain/traitement/IAuditNotifier.port';
+import type { IAuditQueuePort } from '../domain/traitement/IAuditQueue.port';
+import { AuditRequestResponse } from '../domain/demande/AuditRequestResponse';
 import {
   SelfAuditForbiddenError,
   SelfAuditGuard,
-} from '../domain/SelfAuditGuard';
+} from '../domain/demande/SelfAuditGuard';
 import { CreateAuditRequestCommand } from './dto/CreateAuditRequest.command';
 import {
   createMockAuditRequestsRepo,
   createMockAuditNotifier,
   createMockAuditQueue,
-} from '../../../../test/factories/audit-requests.factory';
-import { sectionSurLeDepot } from '../../../../test/factories/verrou-par-boite.factory';
+} from '../../../../test/factories/audits/audit-requests.factory';
+import { sectionSurLeDepot } from '../../../../test/factories/comptes/verrou-par-boite.factory';
 import {
   attendreLAvertissement,
   espionnerLesAvertissements,
-} from '../../../../test/helpers/avertissements';
-import { attendreResultatEtEffetsUniques } from '../../../../test/helpers/effets-uniques';
+} from '../../../../test/helpers/depot/avertissements';
+import { attendreResultatEtEffetsUniques } from '../../../../test/helpers/temps/effets-uniques';
 
 describe('CreateAuditRequestsUseCase', () => {
   let useCase: CreateAuditRequestsUseCase;

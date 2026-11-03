@@ -1,5 +1,5 @@
 import type { ConfigService } from '@nestjs/config';
-import type { ValeursDeLEnv } from '../../../config/env.validation';
+import type { ValeursDeLEnv } from '../../../config/environnement/env.validation';
 
 export interface SecurityConfig {
   suspiciousScoreThreshold: number;
