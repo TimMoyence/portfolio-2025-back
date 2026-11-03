@@ -1,8 +1,11 @@
 import { Param, type PipeTransform, Query } from '@nestjs/common';
 import { ApiNotFoundResponse } from '@nestjs/swagger';
 import { FORME_D_UN_JETON_EMIS } from '../../domain/crypto/TokenHash';
-import { MESSAGE_DE_LIEN_INVALIDE } from '../../domain/errors/LienInvalideError';
-import { jetonDeLien, PARAMETRE_DU_JETON } from '../../domain/lien-avec-jeton';
+import { MESSAGE_DE_LIEN_INVALIDE } from '../../domain/errors/auth/LienInvalideError';
+import {
+  jetonDeLien,
+  PARAMETRE_DU_JETON,
+} from '../../domain/liens/lien-avec-jeton';
 
 export const SEGMENT_DU_JETON = `:${PARAMETRE_DU_JETON}`;
 

@@ -4,7 +4,7 @@ import { expediteurDesCourriels } from '../../../config/adresses-de-courriel';
 import {
   htmlEmis,
   type EscapedHtml,
-} from '../../domain/texte/html-escape.util';
+} from '../../domain/texte/nettoyage/html-escape.util';
 import { TYPES_DE_FICHIER } from '../../domain/types/types-de-fichier';
 import { createOptionalSmtpTransporter } from './smtp-transporter.util';
 

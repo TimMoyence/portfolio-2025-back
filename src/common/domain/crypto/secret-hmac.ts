@@ -1,5 +1,5 @@
-import { envBrut } from '../../../config/env-readers.util';
-import type { CryptographicSecretKey } from '../../../config/env.validation';
+import { envBrut } from '../../../config/environnement/env-readers.util';
+import type { CryptographicSecretKey } from '../../../config/environnement/env.validation';
 import { hmacSha256 } from './empreintes';
 
 export const LONGUEUR_MIN_DU_SECRET = 32;

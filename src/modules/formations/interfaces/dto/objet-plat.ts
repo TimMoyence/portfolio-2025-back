@@ -1,4 +1,4 @@
-import { estObjet } from '../../../../common/domain/est-objet';
+import { estObjet } from '../../../../common/domain/objets/est-objet';
 
 export function entreesBornees(
   valeur: unknown,

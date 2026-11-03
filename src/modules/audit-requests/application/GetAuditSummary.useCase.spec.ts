@@ -1,7 +1,7 @@
 import { ResourceNotFoundError } from '../../../common/domain/errors/ResourceNotFoundError';
-import type { IAuditRequestsRepository } from '../domain/IAuditRequests.repository';
+import type { IAuditRequestsRepository } from '../domain/demande/IAuditRequests.repository';
 import { GetAuditSummaryUseCase } from './GetAuditSummary.useCase';
-import { createMockAuditRequestsRepo } from '../../../../test/factories/audit-requests.factory';
+import { createMockAuditRequestsRepo } from '../../../../test/factories/audits/audit-requests.factory';
 
 describe('GetAuditSummaryUseCase', () => {
   let repo: jest.Mocked<IAuditRequestsRepository>;

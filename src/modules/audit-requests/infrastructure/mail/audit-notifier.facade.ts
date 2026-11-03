@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { AuditRequest } from '../../domain/AuditRequest';
+import { AuditRequest } from '../../domain/demande/AuditRequest';
 import type {
   ClientReportMailInput,
   DemandeDeConfirmation,
   ExpertReportMailInput,
   IAuditNotifierPort,
-} from '../../domain/IAuditNotifier.port';
-import { AuditClientReportMailer } from './audit-client-report.mailer';
-import { AuditConfirmationMailer } from './audit-confirmation.mailer';
-import { AuditExpertReportMailer } from './audit-expert-report.mailer';
-import { AuditNotificationMailer } from './audit-notification.mailer';
+} from '../../domain/traitement/IAuditNotifier.port';
+import { AuditClientReportMailer } from './rapports/audit-client-report.mailer';
+import { AuditConfirmationMailer } from './rapports/audit-confirmation.mailer';
+import { AuditExpertReportMailer } from './rapports/audit-expert-report.mailer';
+import { AuditNotificationMailer } from './rapports/audit-notification.mailer';
 
 @Injectable()
 export class AuditNotifierFacade implements IAuditNotifierPort {

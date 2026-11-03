@@ -11,14 +11,14 @@ import {
   buildRapportParticipant,
   buildRapportQuestion as buildReponse,
   buildRapportSession as buildRapport,
-} from '../../../../test/factories/formation.factory';
+} from '../../../../test/factories/formations/formation.factory';
 import type {
   CopieEtudiant,
   RapportParticipant,
   RapportSession,
-} from '../domain/IFormationMailer.port';
-import { ESPACE_INSECABLE } from '../../../common/domain/texte/sans-espaces-typographiques';
-import { rapportEnCsv } from '../domain/RapportCsv';
+} from '../domain/bilan/IFormationMailer.port';
+import { ESPACE_INSECABLE } from '../../../common/domain/texte/nettoyage/sans-espaces-typographiques';
+import { rapportEnCsv } from '../domain/bilan/RapportCsv';
 import { FormationMailerService } from './FormationMailer.service';
 
 jest.mock('nodemailer', () => nodemailerSimule());

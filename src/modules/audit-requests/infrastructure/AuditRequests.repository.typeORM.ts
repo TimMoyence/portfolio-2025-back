@@ -1,8 +1,8 @@
-import type { MethodeDeContact } from '../domain/AuditRequest';
+import type { MethodeDeContact } from '../domain/demande/AuditRequest';
 import { Injectable } from '@nestjs/common';
-import { estObjet } from '../../../common/domain/est-objet';
+import { estObjet } from '../../../common/domain/objets/est-objet';
 import { boiteDeLivraison } from '../../../common/domain/value-objects/boite-de-livraison';
-import { DepotDeRequetes } from '../../../common/infrastructure/typeorm/DepotDeRequetes';
+import { DepotDeRequetes } from '../../../common/infrastructure/typeorm/depots/DepotDeRequetes';
 import {
   poseeDepuisMoinsDe,
   secondesAvantDeSortirDeLaFenetre,
@@ -12,14 +12,14 @@ import {
   AuditSnapshot,
   AuditSummarySnapshot,
   UpdateAuditStateInput,
-} from '../domain/AuditProcessing';
+} from '../domain/traitement/AuditProcessing';
 import {
   AuditRequest,
   HEURES_DE_VALIDITE_D_UNE_CONFIRMATION,
   VALIDITE_D_UNE_CONFIRMATION_MS,
-} from '../domain/AuditRequest';
-import { AuditRequestResponse } from '../domain/AuditRequestResponse';
-import type { IAuditRequestsRepository } from '../domain/IAuditRequests.repository';
+} from '../domain/demande/AuditRequest';
+import { AuditRequestResponse } from '../domain/demande/AuditRequestResponse';
+import type { IAuditRequestsRepository } from '../domain/demande/IAuditRequests.repository';
 import { LocaleCode } from '../../../common/domain/value-objects/LocaleCode';
 import { AuditRequestEntity } from './entities/AuditRequest.entity';
 

@@ -8,12 +8,12 @@ import type {
   TypeQuestion,
   ValeurProduction,
 } from './contrat-de-l-api';
-import type { AnswerValue } from '../GradingCore';
-import type { AnswerRecord as AnswerRecordServi } from '../IAnswers.repository';
+import type { AnswerValue } from '../notation/GradingCore';
+import type { AnswerRecord as AnswerRecordServi } from '../reponses/IAnswers.repository';
 import type {
   RapportQuestion as RapportQuestionServie,
   RapportSession,
-} from '../IFormationMailer.port';
+} from '../bilan/IFormationMailer.port';
 import type { ConfusionId } from '../cours/banque/confusions';
 
 export type {

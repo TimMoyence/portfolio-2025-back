@@ -2,11 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { TYPES_DE_FICHIER } from '../../../../common/domain/types/types-de-fichier';
-import { CLASSEUR_RESERVE } from '../../domain/cours/ProprietesStockees';
+import { CLASSEUR_RESERVE } from '../../domain/cours/stockage/ProprietesStockees';
 import type {
   ClasseurTelecharge,
   IClasseursDeCours,
-} from '../../domain/IClasseursDeCours.port';
+} from '../../domain/bilan/IClasseursDeCours.port';
 
 export function classeurATelecharger(
   classeur: string,

@@ -1,5 +1,5 @@
-import { schemasDesModeles } from '../../../../../test/helpers/saisies-validees';
-import type { SchemaOpenApi } from '../../../../../test/helpers/schema-openapi';
+import { schemasDesModeles } from '../../../../../test/helpers/http/saisies-validees';
+import type { SchemaOpenApi } from '../../../../../test/helpers/http/schema-openapi';
 import { ToolkitPageResponseDto } from './toolkit-page.response.dto';
 
 const REFERENCE = {

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { boiteDeLivraison } from '../../../common/domain/value-objects/boite-de-livraison';
-import { DepotEnDomaine } from '../../../common/infrastructure/typeorm/DepotEnDomaine';
+import { DepotEnDomaine } from '../../../common/infrastructure/typeorm/depots/DepotEnDomaine';
 import { poseeDepuisMoinsDe } from '../../../common/infrastructure/typeorm/horloge-de-la-base';
 import { enTransactionSurLaBoite } from '../../../common/infrastructure/typeorm/verrou-de-transaction';
 import type { ILeadMagnetRequestRepository } from '../domain/ILeadMagnetRequestRepository';

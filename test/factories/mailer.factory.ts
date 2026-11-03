@@ -1,7 +1,7 @@
 import type { createTransport, Transporter } from 'nodemailer';
-import type { IEmailVerificationNotifier } from '../../src/modules/users/domain/IEmailVerificationNotifier';
-import type { IPasswordResetNotifier } from '../../src/modules/users/domain/IPasswordResetNotifier';
-import { poserVariables } from '../helpers/environnement';
+import type { IEmailVerificationNotifier } from '../../src/modules/users/domain/notifications/IEmailVerificationNotifier';
+import type { IPasswordResetNotifier } from '../../src/modules/users/domain/notifications/IPasswordResetNotifier';
+import { poserVariables } from '../helpers/depot/environnement';
 
 export function createMockPasswordResetNotifier(): jest.Mocked<IPasswordResetNotifier> {
   return {

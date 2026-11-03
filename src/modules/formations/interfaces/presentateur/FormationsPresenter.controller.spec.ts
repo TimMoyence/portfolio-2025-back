@@ -1,0 +1,189 @@
+import type { Request } from 'express';
+import { of } from 'rxjs';
+import { buildFreeResponseRecord } from '../../../../../test/factories/formations/formation.factory';
+import { ROLES_KEY } from '../../../../common/interfaces/auth/roles.decorator';
+import type { DerouleCours } from '../../domain/cours/diffusion/DeroulePresentateur';
+import type { RapportSession } from '../../domain/bilan/IFormationMailer.port';
+import { FormationsPresenterController } from './FormationsPresenter.controller';
+import type { ControlSessionRequestDto } from '../dto/seance/control-session.request.dto';
+
+const SESSION_ID = '4d0f2a9e-0d7f-4d2f-9a3c-1f6b2a7c8d90';
+const TEACHER_ID = 'f1e2d3c4-b5a6-4978-8899-aabbccddeeff';
+
+const requeteFormateur = {
+  user: { sub: TEACHER_ID, roles: ['teacher'] },
+  once: jest.fn(),
+} as unknown as Request;
+const ACTEUR = { id: TEACHER_ID, roles: ['teacher'] };
+
+describe('FormationsPresenterController', () => {
+  const openSession = { execute: jest.fn() };
+  const controlSession = {
+    start: jest.fn(),
+    apply: jest.fn(),
+  };
+  const closeSession = { execute: jest.fn() };
+  const results = { execute: jest.fn() };
+  const streamSession = { executeForTeacher: jest.fn() };
+  const lireDeroule = { execute: jest.fn() };
+  const listFreeResponses = { execute: jest.fn() };
+  const syntheseRappels = { execute: jest.fn() };
+
+  const controller = new FormationsPresenterController(
+    openSession as never,
+    controlSession as never,
+    closeSession as never,
+    results as never,
+    streamSession as never,
+    lireDeroule as never,
+    { pourLeFormateur: jest.fn() } as never,
+    listFreeResponses as never,
+    syntheseRappels as never,
+  );
+
+  const controle = (dto: ControlSessionRequestDto): Promise<void> =>
+    controller.control(SESSION_ID, dto, requeteFormateur);
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('ouvre une session par le seul slug du cours au nom du formateur authentifie', async () => {
+    openSession.execute.mockResolvedValue({
+      sessionId: SESSION_ID,
+      code: '4271',
+    });
+
+    const reponse = await controller.open(
+      { courseSlug: 'cours-de-test' },
+      requeteFormateur,
+    );
+
+    expect(openSession.execute).toHaveBeenCalledWith({
+      courseSlug: 'cours-de-test',
+      teacherId: TEACHER_ID,
+    });
+    expect(openSession.execute.mock.calls[0][0]).not.toHaveProperty('bareme');
+    expect(reponse).toEqual({ sessionId: SESSION_ID, code: '4271' });
+  });
+
+  it('demarre la session en transmettant l identifiant de l appelant', async () => {
+    await controller.start(SESSION_ID, requeteFormateur);
+
+    expect(controlSession.start).toHaveBeenCalledWith(SESSION_ID, TEACHER_ID);
+  });
+
+  it('change l ecran courant', async () => {
+    await controle({ ecran: 4 });
+
+    expect(controlSession.apply).toHaveBeenCalledWith(SESSION_ID, TEACHER_ID, {
+      ecran: 4,
+      mode: undefined,
+      intervalle: null,
+    });
+  });
+
+  it('passe en rythme libre avec son intervalle', async () => {
+    await controle({ mode: 'libre', intervalle: { premier: 3, dernier: 9 } });
+
+    expect(controlSession.apply).toHaveBeenCalledWith(SESSION_ID, TEACHER_ID, {
+      ecran: undefined,
+      mode: 'libre',
+      intervalle: { premier: 3, dernier: 9 },
+    });
+  });
+
+  it('repasse en rythme pilote sans intervalle', async () => {
+    await controle({ mode: 'pilote' });
+
+    expect(controlSession.apply).toHaveBeenCalledWith(SESSION_ID, TEACHER_ID, {
+      ecran: undefined,
+      mode: 'pilote',
+      intervalle: null,
+    });
+  });
+
+  it('confie l ecran et le rythme a un seul appel quand les deux sont demandes', async () => {
+    await controle({ ecran: 2, mode: 'pilote' });
+
+    expect(controlSession.apply).toHaveBeenCalledTimes(1);
+    expect(controlSession.apply).toHaveBeenCalledWith(SESSION_ID, TEACHER_ID, {
+      ecran: 2,
+      mode: 'pilote',
+      intervalle: null,
+    });
+  });
+
+  it('cloture sans deriver de destinataire de l identite du formateur', async () => {
+    await controller.close(SESSION_ID, requeteFormateur);
+
+    expect(closeSession.execute).toHaveBeenCalledWith(SESSION_ID, TEACHER_ID);
+    expect(closeSession.execute.mock.calls[0]).toHaveLength(2);
+  });
+
+  it('ouvre le flux presentateur au nom de l appelant, jamais sans lui', async () => {
+    const flux = of({ data: { etat: 'en_cours' } });
+    streamSession.executeForTeacher.mockResolvedValue(flux);
+
+    await expect(
+      controller.presenterStream(SESSION_ID, requeteFormateur),
+    ).resolves.toBe(flux);
+    expect(streamSession.executeForTeacher).toHaveBeenCalledWith(
+      SESSION_ID,
+      TEACHER_ID,
+    );
+  });
+
+  it.each([
+    [
+      'confie au cas d usage la lecture du rapport avec l identite et les roles de l appelant',
+      'getResults',
+    ],
+    ['exporte le bilan JSON en reutilisant le rapport protege', 'exportReport'],
+  ] as const)('%s', async (_titre, route) => {
+    const rapport = {
+      code: '4271',
+      participants: [],
+    } as unknown as RapportSession;
+    results.execute.mockResolvedValue(rapport);
+
+    await expect(controller[route](SESSION_ID, requeteFormateur)).resolves.toBe(
+      rapport,
+    );
+    expect(results.execute).toHaveBeenCalledWith(SESSION_ID, ACTEUR);
+  });
+
+  it('rend le deroule annote en transmettant l appelant', async () => {
+    const deroule = { id: 'cours-de-test' } as unknown as DerouleCours;
+    lireDeroule.execute.mockResolvedValue(deroule);
+
+    await expect(
+      controller.getDeroule(SESSION_ID, requeteFormateur),
+    ).resolves.toBe(deroule);
+    expect(lireDeroule.execute).toHaveBeenCalledWith(SESSION_ID, ACTEUR);
+  });
+
+  it('rend les reponses libres sous la cle responses', async () => {
+    const reponses = [buildFreeResponseRecord()];
+    listFreeResponses.execute.mockResolvedValue(reponses);
+
+    await expect(
+      controller.getFreeResponses(SESSION_ID, requeteFormateur),
+    ).resolves.toEqual({ responses: reponses });
+    expect(listFreeResponses.execute).toHaveBeenCalledWith(SESSION_ID, ACTEUR);
+  });
+
+  it.each(['getResults', 'exportReport', 'getDeroule', 'getFreeResponses'])(
+    'ouvre %s a l administrateur en plus du formateur',
+    (route) => {
+      expect(
+        Reflect.getMetadata(
+          ROLES_KEY,
+          FormationsPresenterController.prototype[
+            route as keyof FormationsPresenterController
+          ],
+        ),
+      ).toEqual(['teacher', 'admin']);
+    },
+  );
+});

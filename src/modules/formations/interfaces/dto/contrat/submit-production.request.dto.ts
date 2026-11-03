@@ -20,9 +20,9 @@ import type {
   ValidationArguments,
   ValidatorConstraintInterface,
 } from 'class-validator';
-import { LONGUEUR_MAX_FORMULE } from '../../../domain/cours/Formule';
-import { estObjet } from '../../../../../common/domain/est-objet';
-import { longueurDeTexte } from '../../../../../common/domain/texte/longueur-de-texte';
+import { LONGUEUR_MAX_FORMULE } from '../../../domain/cours/formule/Formule';
+import { estObjet } from '../../../../../common/domain/objets/est-objet';
+import { longueurDeTexte } from '../../../../../common/domain/texte/formats/longueur-de-texte';
 import {
   AuPlusElements,
   DictionnaireBorne,
@@ -32,9 +32,9 @@ import {
 import {
   AuPlusCaracteres,
   TexteBorne,
-} from '../../../../../common/interfaces/dto/longueur-de-texte.decorator';
+} from '../../../../../common/interfaces/dto/champs/longueur-de-texte.decorator';
 import type { ValeurProduction } from '../../../domain/contrats/resultats';
-import { NOM_DE_VARIABLE } from '../../../domain/cours/PlansStockes';
+import { NOM_DE_VARIABLE } from '../../../domain/cours/stockage/PlansStockes';
 import { DureeDeReponse } from '../duree-de-reponse.decorator';
 import { entreesBornees } from '../objet-plat';
 

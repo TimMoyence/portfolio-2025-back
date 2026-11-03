@@ -1,0 +1,186 @@
+import { Inject, Injectable } from '@nestjs/common';
+import type { EtatDesEnigmes } from '../../domain/contrats/pilotage';
+import {
+  corrigerEnigme,
+  ecranDEnigmes,
+  enigmeOuverte,
+  enigmeVisee,
+  etatDesEnigmes,
+  progressionDesLignes,
+  tentativesRestantes,
+} from '../../domain/cours/defis/Enigmes';
+import type { ProgressionDEnigme } from '../../domain/cours/defis/Enigmes';
+import {
+  AnswerAlreadySubmittedError,
+  EnigmeDejaResolueError,
+  EnigmeInconnueError,
+  EnigmeVerrouilleeError,
+  TentativesEpuiseesError,
+} from '../../domain/errors/FormationErrors';
+import type {
+  CreateAnswerInput,
+  IAnswersRepository,
+} from '../../domain/reponses/IAnswers.repository';
+import type { IEscapeRepository } from '../../domain/progression/IEscape.repository';
+import type { IMasteryRepository } from '../../domain/progression/IMastery.repository';
+import {
+  ANSWERS_REPOSITORY,
+  ESCAPE_REPOSITORY,
+  MASTERY_REPOSITORY,
+} from '../../domain/token';
+import { EnregistrementDeReponse } from '../reponses/EnregistrementDeReponse';
+import { ParticipationEnSeance } from '../participants/ParticipationEnSeance';
+
+export interface TenterEnigmeCommand {
+  readonly sessionId: string;
+  readonly participantId: string;
+  readonly parcoursId: string;
+  readonly enigmeId: string;
+  readonly reponse: string;
+  readonly dureeMs: number;
+}
+
+export interface TenterEnigmeResult extends EtatDesEnigmes {
+  correcte: boolean;
+  fragment: string | null;
+  tentativesRestantes: number;
+}
+
+@Injectable()
+export class TenterEnigmeUseCase extends EnregistrementDeReponse {
+  constructor(
+    participation: ParticipationEnSeance,
+    @Inject(ANSWERS_REPOSITORY)
+    answers: IAnswersRepository,
+    @Inject(MASTERY_REPOSITORY)
+    mastery: IMasteryRepository,
+    @Inject(ESCAPE_REPOSITORY)
+    private readonly escape: IEscapeRepository,
+  ) {
+    super(participation, answers, mastery);
+  }
+
+  async execute(command: TenterEnigmeCommand): Promise<TenterEnigmeResult> {
+    const { cible } = await this.participation.cibleOuverteAuxProductions(
+      command.sessionId,
+      { id: command.parcoursId, trouver: ecranDEnigmes },
+      (parcoursId) => new EnigmeInconnueError(parcoursId, command.enigmeId),
+    );
+
+    const visee = enigmeVisee(cible, command.enigmeId);
+    if (visee === null) {
+      throw new EnigmeInconnueError(command.parcoursId, command.enigmeId);
+    }
+    const participant = await this.participation.participant(command);
+
+    const progression = await this.lireProgression(command);
+    if (!enigmeOuverte(cible, progression, visee.rangEnigme)) {
+      throw new EnigmeVerrouilleeError(command.enigmeId);
+    }
+    const etat = progression.find(
+      (entree) => entree.enigmeId === command.enigmeId,
+    );
+    if (etat?.resolue === true) {
+      throw new EnigmeDejaResolueError(command.enigmeId);
+    }
+
+    const verdict = corrigerEnigme(visee.corrige, command.reponse);
+    const dejaFaite = await this.escape.tentativeDejaFaite(
+      command.participantId,
+      command.enigmeId,
+      verdict.valeurNormalisee,
+      command.reponse,
+    );
+    const tentatives = dejaFaite
+      ? (etat?.tentatives ?? 0)
+      : await this.consommerUneTentative(command, cible.tentativesMax);
+
+    await this.escape.journaliser({
+      sessionId: command.sessionId,
+      participantId: command.participantId,
+      enigmeId: command.enigmeId,
+      valeurNormalisee: verdict.valeurNormalisee,
+      saisie: command.reponse,
+      correcte: verdict.correcte,
+    });
+    await this.noterLaPremiereTentative(
+      {
+        sessionId: command.sessionId,
+        participantId: command.participantId,
+        questionId: command.enigmeId,
+        concept: visee.question.concept,
+        valeur: command.reponse,
+        seed: participant.seed,
+        correcte: verdict.correcte,
+        misconception: verdict.confusion,
+        dureeMs: command.dureeMs,
+      },
+      participant.studentKey,
+    );
+    if (verdict.correcte) {
+      await this.escape.marquerResolue(command.participantId, command.enigmeId);
+    }
+    this.participation.signalerActivite(command.sessionId);
+
+    const apres: ProgressionDEnigme = {
+      enigmeId: command.enigmeId,
+      tentatives,
+      resolue: verdict.correcte,
+    };
+    return {
+      correcte: verdict.correcte,
+      fragment: verdict.correcte ? visee.corrige.fragment : null,
+      tentativesRestantes: tentativesRestantes(cible, tentatives),
+      ...etatDesEnigmes(cible, [
+        ...progression.filter(({ enigmeId }) => enigmeId !== command.enigmeId),
+        apres,
+      ]),
+    };
+  }
+
+  private async consommerUneTentative(
+    command: TenterEnigmeCommand,
+    plafond: number,
+  ): Promise<number> {
+    const tentatives = await this.escape.incrementerTentative({
+      sessionId: command.sessionId,
+      participantId: command.participantId,
+      parcoursId: command.parcoursId,
+      enigmeId: command.enigmeId,
+      plafond,
+    });
+    if (tentatives === null) {
+      throw new TentativesEpuiseesError(command.enigmeId);
+    }
+    return tentatives;
+  }
+
+  private async lireProgression(
+    command: TenterEnigmeCommand,
+  ): Promise<readonly ProgressionDEnigme[]> {
+    return progressionDesLignes(
+      await this.escape.listerProgression(
+        command.participantId,
+        command.parcoursId,
+      ),
+    );
+  }
+
+  private async noterLaPremiereTentative(
+    reponse: CreateAnswerInput,
+    studentKey: string,
+  ): Promise<void> {
+    if (
+      await this.answers.existsFor(reponse.participantId, reponse.questionId)
+    ) {
+      return;
+    }
+    try {
+      await this.enregistrerPremiereReponse(reponse, studentKey);
+    } catch (erreur) {
+      if (!(erreur instanceof AnswerAlreadySubmittedError)) {
+        throw erreur;
+      }
+    }
+  }
+}

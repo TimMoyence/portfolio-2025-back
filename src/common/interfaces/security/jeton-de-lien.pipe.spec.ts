@@ -1,4 +1,4 @@
-import { LienInvalideError } from '../../domain/errors/LienInvalideError';
+import { LienInvalideError } from '../../domain/errors/auth/LienInvalideError';
 import { JetonDeLienPipe } from './jeton-de-lien.pipe';
 
 describe('JetonDeLienPipe', () => {

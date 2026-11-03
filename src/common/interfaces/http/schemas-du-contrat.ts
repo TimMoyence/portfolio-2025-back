@@ -1,6 +1,6 @@
 import type { SchemaObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
 import { z } from 'zod';
-import { REGISTRE_DU_CONTRAT } from '../../domain/registre-du-contrat';
+import { REGISTRE_DU_CONTRAT } from '../../domain/liens/registre-du-contrat';
 
 const PREFIXE_DES_COMPOSANTS = '#/components/schemas/';
 

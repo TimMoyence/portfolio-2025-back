@@ -1,0 +1,109 @@
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import type {
+  IEscapeRepository,
+  IncrementDeTentative,
+  ProgressionEnigmeRecord,
+  TentativeEnigmeInput,
+} from '../../domain/progression/IEscape.repository';
+import { DepotEnDomaine } from '../../../../common/infrastructure/typeorm/depots/DepotEnDomaine';
+import { FormationEscapeAttemptEntity } from '../entities/reponses/FormationEscapeAttempt.entity';
+import { FormationEscapeProgressEntity } from '../entities/reponses/FormationEscapeProgress.entity';
+
+interface LigneDeTentative {
+  tentatives: number;
+}
+
+@Injectable()
+export class EscapeRepositoryTypeORM
+  extends DepotEnDomaine<FormationEscapeProgressEntity, ProgressionEnigmeRecord>
+  implements IEscapeRepository
+{
+  constructor(
+    @InjectRepository(FormationEscapeProgressEntity)
+    progression: Repository<FormationEscapeProgressEntity>,
+    @InjectRepository(FormationEscapeAttemptEntity)
+    private readonly tentatives: Repository<FormationEscapeAttemptEntity>,
+  ) {
+    super(progression);
+  }
+
+  listerProgression(
+    participantId: string,
+    parcoursId: string,
+  ): Promise<readonly ProgressionEnigmeRecord[]> {
+    return this.lister({ where: { participantId, parcoursId } });
+  }
+
+  listerProgressionDeSeance(
+    sessionId: string,
+  ): Promise<readonly ProgressionEnigmeRecord[]> {
+    return this.lister({ where: { sessionId } });
+  }
+
+  listerProgressionDuParticipant(
+    participantId: string,
+  ): Promise<readonly ProgressionEnigmeRecord[]> {
+    return this.lister({ where: { participantId } });
+  }
+
+  async incrementerTentative(
+    input: IncrementDeTentative,
+  ): Promise<number | null> {
+    const lignes: LigneDeTentative[] = await this.repo.query(
+      `INSERT INTO formation_escape_progress
+         (participant_id, enigme_id, session_id, parcours_id, tentatives)
+       VALUES ($1, $2, $3, $4, 1)
+       ON CONFLICT (participant_id, enigme_id) DO UPDATE
+         SET tentatives = formation_escape_progress.tentatives + 1
+         WHERE formation_escape_progress.tentatives < $5
+           AND formation_escape_progress.resolue_le IS NULL
+       RETURNING tentatives`,
+      [
+        input.participantId,
+        input.enigmeId,
+        input.sessionId,
+        input.parcoursId,
+        input.plafond,
+      ],
+    );
+    return lignes.length === 0 ? null : Number(lignes[0].tentatives);
+  }
+
+  async marquerResolue(participantId: string, enigmeId: string): Promise<void> {
+    await this.repo.update(
+      { participantId, enigmeId },
+      { resolueLe: new Date() },
+    );
+  }
+
+  async journaliser(input: TentativeEnigmeInput): Promise<void> {
+    await this.tentatives.save(this.tentatives.create({ ...input }));
+  }
+
+  async tentativeDejaFaite(
+    participantId: string,
+    enigmeId: string,
+    valeurNormalisee: number | null,
+    saisie: string,
+  ): Promise<boolean> {
+    const filtre =
+      valeurNormalisee === null
+        ? { participantId, enigmeId, saisie }
+        : { participantId, enigmeId, valeurNormalisee };
+    return (await this.tentatives.count({ where: filtre })) > 0;
+  }
+
+  protected toDomain(
+    ligne: FormationEscapeProgressEntity,
+  ): ProgressionEnigmeRecord {
+    return {
+      participantId: ligne.participantId,
+      parcoursId: ligne.parcoursId,
+      enigmeId: ligne.enigmeId,
+      tentatives: ligne.tentatives,
+      resolueLe: ligne.resolueLe,
+    };
+  }
+}

@@ -1,0 +1,167 @@
+import { z } from 'zod';
+import { empreinteSha256 } from '../../../../../common/domain/crypto/empreintes';
+import { enSlug } from '../../../../../common/domain/texte/nettoyage/en-slug';
+import type { NumeriqueStockee, VoteStockee } from '../../contrats/cours';
+import type { ConfusionId } from '../banque/confusions';
+import {
+  questionNumerique,
+  questionVote,
+  type QuestionNumerique,
+  type QuestionVote,
+} from '../structure/Cours';
+import {
+  auMoinsUn,
+  concept,
+  confusion,
+  identifiantDeQuestion,
+  signalerDoublons,
+  signaleurDe,
+  texte,
+  tolerance,
+} from './SchemasCommuns';
+import { sansTypographie } from '../formule/Typographie';
+
+const LONGUEUR_MAX_DU_SLUG = 40;
+const LONGUEUR_DE_L_EMPREINTE = 8;
+const SYMBOLES_NOMMES: readonly (readonly [RegExp, string])[] = [
+  [/\+/g, ' plus '],
+  [/−/g, ' moins '],
+  [/%/g, ' pct '],
+  [/€/g, ' eur '],
+];
+
+export function slugOption(libelle: string): string {
+  const brut = sansTypographie(libelle);
+  const lisible = SYMBOLES_NOMMES.reduce(
+    (courant, [symbole, mot]) => courant.replace(symbole, mot),
+    brut,
+  );
+  const tronque = enSlug(lisible, LONGUEUR_MAX_DU_SLUG);
+  const empreinte = empreinteSha256(brut.normalize('NFC')).slice(
+    0,
+    LONGUEUR_DE_L_EMPREINTE,
+  );
+  return `${tronque}-${empreinte}`;
+}
+
+const optionStockee = z
+  .object({ id: texte, libelle: texte, confusion: confusion.nullable() })
+  .strict();
+
+export const voteStocke = z
+  .object({
+    type: z.literal('vote'),
+    id: identifiantDeQuestion,
+    concept,
+    noteCompte: z.boolean(),
+    enonce: texte,
+    options: z.tuple([optionStockee, optionStockee], optionStockee),
+    segments: z.array(texte),
+  })
+  .strict()
+  .superRefine((vote, contexte) => {
+    const signaler = signaleurDe(contexte);
+    const bonnes = vote.options.filter((option) => option.confusion === null);
+    if (bonnes.length !== 1) {
+      signaler(
+        ['options'],
+        `une seule bonne option est attendue, ${bonnes.length} lue(s)`,
+      );
+    }
+    signalerDoublons(
+      vote.options.map((option) => option.id),
+      ['options'],
+      signaler,
+    );
+    signalerDoublons(
+      vote.options.map((option) => option.libelle),
+      ['options'],
+      signaler,
+    );
+  });
+
+const piegeNumerique = z.object({ valeur: z.number(), confusion }).strict();
+
+export const numeriqueStockee = z
+  .object({
+    type: z.literal('numeric'),
+    id: identifiantDeQuestion,
+    concept,
+    noteCompte: z.boolean(),
+    enonce: texte,
+    unite: texte.nullable(),
+    solution: z.number(),
+    tolerance,
+    formePubliee: texte,
+    pieges: auMoinsUn(piegeNumerique),
+  })
+  .strict();
+
+interface OptionPiege {
+  readonly id: string;
+  readonly libelle: string;
+  readonly confusion: ConfusionId;
+}
+
+function estPiege(
+  option: VoteStockee['options'][number],
+): option is OptionPiege {
+  return option.confusion !== null;
+}
+
+function definitionFixe(stockee: VoteStockee | NumeriqueStockee) {
+  return {
+    id: stockee.id,
+    concept: stockee.concept,
+    noteCompte: stockee.noteCompte,
+    donnees: () => undefined,
+    enonce: () => stockee.enonce,
+  };
+}
+
+export function questionDeVote(stockee: VoteStockee): QuestionVote {
+  const bonne = stockee.options.find((option) => option.confusion === null);
+  const pieges = stockee.options.filter(estPiege);
+  const [premier, ...suite] = pieges;
+  if (bonne === undefined || pieges.length === 0) {
+    throw new RangeError(
+      `Vote ${stockee.id} sans bonne option ou sans piège : il n'a pas été validé à la lecture`,
+    );
+  }
+  const versPiege = (piege: OptionPiege) => ({
+    confusion: piege.confusion,
+    libelle: () => piege.libelle,
+    optionId: () => piege.id,
+  });
+  return {
+    ...questionVote({
+      ...definitionFixe(stockee),
+      bonne: () => bonne.id,
+      bonneLibelle: () => bonne.libelle,
+      pieges: [versPiege(premier), ...suite.map(versPiege)],
+    }),
+    segments: stockee.segments,
+  };
+}
+
+export function questionDeNumerique(
+  stockee: NumeriqueStockee,
+): QuestionNumerique {
+  const [premier, ...suite] = stockee.pieges;
+  return {
+    ...questionNumerique({
+      ...definitionFixe(stockee),
+      unite: stockee.unite,
+      solution: () => stockee.solution,
+      tolerance: stockee.tolerance,
+      pieges: [
+        { confusion: premier.confusion, valeur: () => premier.valeur },
+        ...suite.map((piege) => ({
+          confusion: piege.confusion,
+          valeur: () => piege.valeur,
+        })),
+      ],
+    }),
+    formePubliee: stockee.formePubliee,
+  };
+}

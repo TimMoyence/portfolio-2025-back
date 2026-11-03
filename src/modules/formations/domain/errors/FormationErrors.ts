@@ -1,5 +1,5 @@
 import { DomainValidationError } from '../../../../common/domain/errors/DomainValidationError';
-import { InsufficientPermissionsError } from '../../../../common/domain/errors/InsufficientPermissionsError';
+import { InsufficientPermissionsError } from '../../../../common/domain/errors/auth/InsufficientPermissionsError';
 import { RateLimitExceededError } from '../../../../common/domain/errors/RateLimitExceededError';
 import { ResourceConflictError } from '../../../../common/domain/errors/ResourceConflictError';
 import { ResourceNotFoundError } from '../../../../common/domain/errors/ResourceNotFoundError';

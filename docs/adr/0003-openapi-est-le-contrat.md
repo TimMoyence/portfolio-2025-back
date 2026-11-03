@@ -34,5 +34,5 @@ la bonne reponse) etaient aussi recopiees au front.
   le recoit en bougeant son epingle (`contrat.json`) et en regenerant.
 - Le zod genere au front n'est pas strict : une cle que le back ajoute est retiree a la lecture,
   pas refusee. Une valeur hors contrat reste refusee, d'ou l'exigence de contraintes precises.
-- Le walker de test (`test/helpers/schema-openapi.ts`) lit `allOf`, `oneOf` et les enumerations :
+- Le walker de test (`test/helpers/http/schema-openapi.ts`) lit `allOf`, `oneOf` et les enumerations :
   une reponse servie qui sort du contrat fait rougir les tests http.

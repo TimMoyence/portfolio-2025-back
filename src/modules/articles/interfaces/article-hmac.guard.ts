@@ -10,7 +10,10 @@ import {
   hmacSha256,
 } from '../../../common/domain/crypto/empreintes';
 import { estUnSecretValable } from '../../../common/domain/crypto/secret-hmac';
-import { envBrut, envString } from '../../../config/env-readers.util';
+import {
+  envBrut,
+  envString,
+} from '../../../config/environnement/env-readers.util';
 import { trousseauHmac } from '../../../config/trousseau-hmac';
 import { LONGUEUR_MAX_DU_NONCE } from '../domain/article-contract';
 

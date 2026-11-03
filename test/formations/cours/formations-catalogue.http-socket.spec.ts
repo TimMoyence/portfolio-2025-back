@@ -1,0 +1,89 @@
+import request from 'supertest';
+import { lireCoursStocke } from '../../../src/modules/formations/domain/cours/stockage/CoursStocke';
+import { projeterCatalogue } from '../../../src/modules/formations/domain/cours/diffusion/Diffusion';
+import { tirer } from '../../../src/modules/formations/domain/cours/tirage/Tirage';
+import { buildCoursStocke } from '../../factories/formations/cours/cours-stocke.factory';
+import {
+  ecartsAuSchemaDeLaRoute,
+  installerApplicationSurCatalogue,
+} from '../../helpers/formations/cours/application-sur-catalogue';
+import {
+  clesDuCorrigeDans,
+  clesImbriquees,
+} from '../../helpers/formations/cours/cles-du-corrige';
+import {
+  routeFormations,
+  serveurHttpDe,
+} from '../../helpers/formations/seance/formations-harness';
+import { attendreVersionServie } from '../../helpers/http/schema-openapi';
+
+const COURS = lireCoursStocke(buildCoursStocke());
+const DONNEES_DU_FORMATEUR = [
+  'notes',
+  'guide',
+  'correction',
+  'interaction',
+  'correctIndex',
+  'explanation',
+];
+
+describe('Catalogue public des formations (e2e http socket)', () => {
+  const app = installerApplicationSurCatalogue(COURS);
+
+  const lire = (slug: string) =>
+    request(serveurHttpDe(app())).get(routeFormations(`/catalogue/${slug}`));
+
+  it('sert sans authentification le sujet public du cours publie', async () => {
+    const reponse = await lire(COURS.slug).expect(200);
+
+    expect(reponse.body).toEqual({
+      ...projeterCatalogue(COURS),
+      version: 1,
+      publieLe: expect.any(String),
+    });
+  });
+
+  it('verrouille au catalogue l écran stocké sans diffusion, réservé par défaut à la séance (SEC-4)', async () => {
+    const reponse = await lire(COURS.slug).expect(200);
+
+    const servis = (reponse.body as { ecrans: { id: string; type: string }[] })
+      .ecrans;
+    expect(servis.map(({ id, type }) => [id, type])).toEqual(
+      tirer(COURS, 0).sujet.ecrans.map(({ id }) => [id, 'ecran-verrouille']),
+    );
+  });
+
+  it('sert la version publiee et sa date de bascule au sitemap (H1)', async () => {
+    const reponse = await lire(COURS.slug).expect(200);
+
+    attendreVersionServie(reponse.body, 1);
+  });
+
+  it('ne livre ni donnee du formateur, ni quiz note, ni corrige', async () => {
+    const reponse = await lire(COURS.slug).expect(200);
+
+    expect({
+      donneesFormateur: DONNEES_DU_FORMATEUR.filter((cle) =>
+        clesImbriquees(reponse.body).includes(cle),
+      ),
+      clesDuCorrige: clesDuCorrigeDans(reponse.body),
+    }).toEqual({ donneesFormateur: [], clesDuCorrige: [] });
+  });
+
+  it('rend 404 pour un cours absent du catalogue', async () => {
+    const reponse = await lire('cours-inconnu').expect(404);
+
+    expect(reponse.body).toMatchObject({
+      status: 404,
+      detail: 'Cours introuvable: cours-inconnu',
+    });
+  });
+
+  it('documente exactement la forme rendue', async () => {
+    const reponse = await lire(COURS.slug).expect(200);
+
+    expect(
+      ecartsAuSchemaDeLaRoute(app(), '/catalogue/{slug}', reponse.body),
+    ).toEqual([]);
+  });
+});

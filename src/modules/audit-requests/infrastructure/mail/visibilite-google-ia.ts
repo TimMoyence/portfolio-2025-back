@@ -1,4 +1,4 @@
-import type { ClientReportSynthesis } from '../../domain/AuditReportTiers';
+import type { ClientReportSynthesis } from '../../domain/score/AuditReportTiers';
 import { escapeHtml, safeHtml, type EscapedHtml } from './mail-rendering.util';
 
 type MatriceDeVisibilite = ClientReportSynthesis['googleVsAiMatrix'];

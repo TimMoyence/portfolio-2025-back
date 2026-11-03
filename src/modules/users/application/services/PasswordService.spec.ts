@@ -3,7 +3,7 @@ import {
   buildConfigService,
   TEST_HASHING_KEY as SECRET,
 } from '../../../../../test/factories/env.factory';
-import { installerVariables } from '../../../../../test/helpers/environnement';
+import { installerVariables } from '../../../../../test/helpers/depot/environnement';
 import { PasswordService } from './PasswordService';
 
 describe('PasswordService', () => {

@@ -1,0 +1,96 @@
+import assert from 'node:assert/strict';
+import { execFileSync } from 'node:child_process';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { test } from 'node:test';
+
+import {
+  CLASSEURS_DANS_DIST,
+  FICHIER_SERVI,
+} from '../lib/classeurs-servis.mjs';
+import {
+  fichiersDeMigration,
+  migrationsChargees,
+} from '../lib/migrations-chargees.mjs';
+import { RACINE as root } from '../lib/racine.mjs';
+
+const CLASSEURS = join('src', CLASSEURS_DANS_DIST);
+
+let construit = false;
+function construire() {
+  if (!construit) {
+    execFileSync('pnpm', ['build'], { cwd: root, stdio: 'pipe' });
+    construit = true;
+  }
+}
+
+function fichiersDe(dossier) {
+  return readdirSync(dossier, { recursive: true, withFileTypes: true })
+    .filter((entree) => entree.isFile())
+    .map((entree) =>
+      join(entree.parentPath, entree.name).slice(dossier.length + 1),
+    )
+    .sort();
+}
+
+void test('le build produit les points d entree utilises par Docker et les migrations', () => {
+  construire();
+
+  for (const file of ['dist/main.js', 'dist/database/data-source.js']) {
+    assert.equal(existsSync(join(root, file)), true, file);
+  }
+
+  assert.equal(existsSync(join(root, 'dist/src/main.js')), false);
+  assert.equal(
+    existsSync(join(root, 'dist/src/database/data-source.js')),
+    false,
+  );
+
+  const chargeesEnProduction = migrationsChargees({
+    root,
+    dataSource: './dist/database/data-source.js',
+    viaTsNode: false,
+  });
+  assert.equal(chargeesEnProduction.length, fichiersDeMigration(root).length);
+});
+
+void test('le build embarque, octet pour octet, les classeurs que le serveur sert en séance', () => {
+  construire();
+  const sources = join(root, CLASSEURS);
+  const classeurs = fichiersDe(sources).filter((nom) =>
+    FICHIER_SERVI.test(nom),
+  );
+
+  assert.notEqual(classeurs.length, 0);
+  for (const classeur of classeurs) {
+    assert.deepEqual(
+      readFileSync(join(root, 'dist', CLASSEURS_DANS_DIST, classeur)),
+      readFileSync(join(sources, classeur)),
+      classeur,
+    );
+  }
+});
+
+void test('le build ne dépose à côté des classeurs ni leur manifeste ni aucun autre fichier non servi', () => {
+  construire();
+  const embarques = fichiersDe(join(root, 'dist', CLASSEURS_DANS_DIST)).filter(
+    (nom) => !/\.(js|d\.ts|js\.map)$/.test(nom),
+  );
+
+  assert.deepEqual(
+    embarques,
+    fichiersDe(join(root, CLASSEURS)).filter((nom) => FICHIER_SERVI.test(nom)),
+  );
+  assert.equal(
+    embarques.some((nom) => nom.endsWith('.json')),
+    false,
+  );
+});
+
+void test('les commandes de production utilisent les points d entree du build', () => {
+  const dockerfile = readFileSync(join(root, 'Dockerfile'), 'utf8');
+  const compose = readFileSync(join(root, 'deploy/compose.yaml'), 'utf8');
+
+  assert.match(dockerfile, /CMD \["node", "dist\/main\.js"\]/);
+  assert.match(compose, /dist\/database\/data-source\.js/);
+});

@@ -1,5 +1,5 @@
 import { DECORATORS } from '@nestjs/swagger/dist/constants';
-import { champsRefuses } from '../../../../test/helpers/validation-pipe';
+import { champsRefuses } from '../../../../test/helpers/http/validation-pipe';
 import { ValeurDuContrat } from './valeur-du-contrat.decorator';
 
 const COULEURS = ['rouge', 'vert'] as const;

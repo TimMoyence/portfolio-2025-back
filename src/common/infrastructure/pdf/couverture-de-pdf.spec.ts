@@ -2,7 +2,7 @@ import { join } from 'path';
 import {
   sourcesHorsProprietaire,
   sourcesQuiEcrivent,
-} from '../../../../test/helpers/source-tree';
+} from '../../../../test/helpers/depot/source-tree';
 
 const SOURCES = join(__dirname, '../../..');
 

@@ -2,7 +2,10 @@ import {
   createMockTransporter,
   premierMailEnvoye,
 } from '../../../../test/factories/mailer.factory';
-import { escapeHtml, safeHtml } from '../../domain/texte/html-escape.util';
+import {
+  escapeHtml,
+  safeHtml,
+} from '../../domain/texte/nettoyage/html-escape.util';
 import { ExpediteurDeCourriels, type CourrielHtml } from './expediteur-smtp';
 
 const COURRIEL: CourrielHtml = {

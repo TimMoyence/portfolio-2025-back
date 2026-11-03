@@ -1,4 +1,4 @@
-import { envString } from '../../../../config/env-readers.util';
+import { envString } from '../../../../config/environnement/env-readers.util';
 import { escapeHtml, escapeUrl, safeHtml } from './mail-rendering.util';
 import type { EscapedHtml } from './mail-rendering.util';
 

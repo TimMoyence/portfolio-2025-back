@@ -1,16 +1,16 @@
 import type {
   AuMoinsUn,
   AuMoinsUnModifiable,
-} from '../../../../common/domain/au-moins-un';
+} from '../../../../common/domain/objets/au-moins-un';
 import { arrondi } from '../../../../common/domain/nombres/arrondi';
 import { estEntierStrictementPositif } from '../../../../common/domain/nombres/dans-les-bornes';
 import type { ConfusionId } from '../../domain/cours/banque/confusions';
 import {
   DECALAGES_DE_RECOPIE,
   type SensDeRecopie,
-} from '../../domain/cours/FeuilleEvaluee';
-import { decalerFormule } from '../../domain/cours/Formule';
-import { ligneDeLaReference } from '../../domain/cours/PlansStockes';
+} from '../../domain/cours/evaluation/FeuilleEvaluee';
+import { decalerFormule } from '../../domain/cours/formule/Formule';
+import { ligneDeLaReference } from '../../domain/cours/stockage/PlansStockes';
 import * as moteur from './briques';
 
 export { avecVirgule } from '../../../../common/domain/nombres/ecriture-francaise';

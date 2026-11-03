@@ -1,6 +1,6 @@
 import { DomainValidationError } from '../errors/DomainValidationError';
 import { dansLesBornes } from '../nombres/dans-les-bornes';
-import { longueurDeTexte } from '../texte/longueur-de-texte';
+import { longueurDeTexte } from '../texte/formats/longueur-de-texte';
 import { EmailAddress } from '../value-objects/EmailAddress';
 import {
   estUneLocaleSupportee,

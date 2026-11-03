@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { safeHtml } from '../../../common/domain/texte/html-escape.util';
+import { safeHtml } from '../../../common/domain/texte/nettoyage/html-escape.util';
 import type {
   IPasswordResetNotifier,
   PasswordResetNotificationPayload,
-} from '../domain/IPasswordResetNotifier';
+} from '../domain/notifications/IPasswordResetNotifier';
 import { MailerDeLienTemporaire } from './MailerDeLienTemporaire';
 
 @Injectable()

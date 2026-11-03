@@ -5,11 +5,11 @@ API NestJS 11 du projet Portfolio 2025. Le backend suit une architecture en couc
 ## Documentation d'ingenierie
 
 - [Guide de contribution](./CONTRIBUTING.md)
-- [Standards d'ingenierie](./docs/engineering-standards.md)
-- [Gouvernance du depot](./docs/repository-governance.md)
-- [Garde-fous IA et prompt injection](./docs/ai-security-guardrails.md)
-- [Gouvernance base de donnees](./docs/database-governance.md)
-- [Matrice de coherence DDD](./docs/ddd-coherence-matrix.md)
+- [Standards d'ingenierie](./docs/gouvernance/engineering-standards.md)
+- [Gouvernance du depot](./docs/gouvernance/repository-governance.md)
+- [Garde-fous IA et prompt injection](./docs/gouvernance/ai-security-guardrails.md)
+- [Gouvernance base de donnees](./docs/gouvernance/database-governance.md)
+- [Matrice de coherence DDD](./docs/gouvernance/ddd-coherence-matrix.md)
 - [Module formations](./docs/formations.md)
 - [ADR](./docs/adr/README.md)
 
@@ -89,7 +89,7 @@ La CI GitHub complete ces garde-fous avec lint, format, typecheck, tests unitair
 ## Gouvernance depot
 
 - Le proprietaire de code est defini dans [`.github/CODEOWNERS`](./.github/CODEOWNERS).
-- Les protections distantes de `master` sont documentees dans [`docs/repository-governance.md`](./docs/repository-governance.md).
+- Les protections distantes de `master` sont documentees dans [`docs/gouvernance/repository-governance.md`](./docs/gouvernance/repository-governance.md).
 - Les decisions d'architecture sont historisees dans [`docs/adr`](./docs/adr).
 
 ## Base de donnees et migrations
@@ -100,7 +100,7 @@ Creer une migration (generee depuis les entites contre la base de `.env`, puis a
 pnpm run migration:new --name=TheNameInCamelCase
 ```
 
-`pnpm run migration:generate --name=TheNameInCamelCase` genere sans appliquer. Sur une base ou toutes les migrations sont jouees, la generation ne doit rien produire : le test `test/schema-entites-migrations.db-integration.spec.ts` echoue des qu'une entite et les migrations divergent.
+`pnpm run migration:generate --name=TheNameInCamelCase` genere sans appliquer. Sur une base ou toutes les migrations sont jouees, la generation ne doit rien produire : le test `test/socle/base/schema-entites-migrations.db-integration.spec.ts` echoue des qu'une entite et les migrations divergent.
 
 Tests d'integration base de donnees :
 
@@ -129,12 +129,12 @@ Variables d'environnement importantes :
 
 Redis est actif si et seulement si `REDIS_URL` ou `REDIS_HOST` est renseigne. Sans l'un ni l'autre (lignes absentes ou vides), la file d'audit s'execute dans le processus et le plafond des flux SSE des formations n'est tenu qu'en memoire, par instance. Configure mais injoignable, Redis fait repasser la file en execution locale apres trois erreurs, et les flux SSE des formations sont refuses en `429` ; `StreamSessionUseCase` journalise chaque refus en `warn`, avec l'erreur Redis en cause.
 
-Les details de securisation contre le prompt injection et les contenus non fiables sont documentes dans [docs/ai-security-guardrails.md](./docs/ai-security-guardrails.md).
+Les details de securisation contre le prompt injection et les contenus non fiables sont documentes dans [docs/gouvernance/ai-security-guardrails.md](./docs/gouvernance/ai-security-guardrails.md).
 
 ## Docker et deploiement
 
 - Image locale : `docker build -t ghcr.io/<owner>/portfolio-2025-back:dev .`
 - Run local containerise : copier `deploy/backend.env.example` vers `deploy/backend.env` et renseigner ses secrets (le gabarit brut est refuse par la validation d'environnement), puis `docker run --rm -p 3000:3000 --env-file deploy/backend.env ghcr.io/<owner>/portfolio-2025-back:dev`
-- Stack de production : copier `deploy/backend.env.example` vers `deploy/backend.env` et renseigner ses secrets ; ce seul fichier sert aux conteneurs et a l'interpolation de `compose.yaml`. Puis, dans l'ordre du deploiement de la CI, chaque commande prefixee par `BACK_IMAGE=<image back> FRONT_IMAGE=<image front> docker compose -p portfolio25 -f deploy/compose.yaml --env-file deploy/backend.env` : `pull`, `run --rm migrate` (qui demarre `db` et refuse une env que l'API refuserait), puis `up -d`. Un `up -d` seul lancerait `migrate` et `api` ensemble, et l'API publierait les cours avant que leurs tables existent. Sur une stack deja en service, la CI sauvegarde la base avant `migrate` ([docs/database-governance.md](./docs/database-governance.md) §5).
+- Stack de production : copier `deploy/backend.env.example` vers `deploy/backend.env` et renseigner ses secrets ; ce seul fichier sert aux conteneurs et a l'interpolation de `compose.yaml`. Puis, dans l'ordre du deploiement de la CI, chaque commande prefixee par `BACK_IMAGE=<image back> FRONT_IMAGE=<image front> docker compose -p portfolio25 -f deploy/compose.yaml --env-file deploy/backend.env` : `pull`, `run --rm migrate` (qui demarre `db` et refuse une env que l'API refuserait), puis `up -d`. Un `up -d` seul lancerait `migrate` et `api` ensemble, et l'API publierait les cours avant que leurs tables existent. Sur une stack deja en service, la CI sauvegarde la base avant `migrate` ([docs/gouvernance/database-governance.md](./docs/gouvernance/database-governance.md) §5).
 
 Le workflow [`.github/workflows/ci.yml`](./.github/workflows/ci.yml) construit l'image, publie sur GHCR et peut relancer le service `api` via SSH quand la branche `master` est mise a jour.

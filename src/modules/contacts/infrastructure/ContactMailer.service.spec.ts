@@ -7,7 +7,7 @@ import {
   moduleSmtpSimule,
   setSmtpEnv,
 } from '../../../../test/factories/mailer.factory';
-import { appliquer } from '../../../../test/helpers/environnement';
+import { appliquer } from '../../../../test/helpers/depot/environnement';
 
 jest.mock('../../../common/infrastructure/mail/smtp-transporter.util', () =>
   moduleSmtpSimule(),

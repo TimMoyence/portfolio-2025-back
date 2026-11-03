@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { AdresseEmail } from '../../../../common/interfaces/dto/adresse-email.decorator';
+import { AdresseEmail } from '../../../../common/interfaces/dto/champs/adresse-email.decorator';
 import type { LoginCommand } from '../../application/dto/Login.command';
 import { MotDePasseSaisi } from './regles-de-saisie';
 

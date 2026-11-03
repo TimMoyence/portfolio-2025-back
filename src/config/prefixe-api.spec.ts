@@ -3,7 +3,7 @@ import {
   PREFIXE_API_PAR_DEFAUT,
   prefixeApi,
 } from './prefixe-api';
-import { installerVariables } from '../../test/helpers/environnement';
+import { installerVariables } from '../../test/helpers/depot/environnement';
 
 describe('prefixeApi', () => {
   it('rend le prefixe par defaut quand API_PREFIX est absent', () => {

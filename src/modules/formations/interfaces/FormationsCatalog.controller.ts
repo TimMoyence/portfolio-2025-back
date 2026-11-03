@@ -5,8 +5,8 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { RoutePublique } from '../../../common/interfaces/security/formulaire-public.decorator';
-import { LireCoursPublicUseCase } from '../application/LireCoursPublic.useCase';
+import { RoutePublique } from '../../../common/interfaces/security/anti-robot/formulaire-public.decorator';
+import { LireCoursPublicUseCase } from '../application/cours/LireCoursPublic.useCase';
 import { CoursPublicCatalogueResponseDto } from './dto/contrat/sujet.response.dto';
 
 @ApiTags('formations')

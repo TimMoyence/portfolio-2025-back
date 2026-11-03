@@ -2,8 +2,8 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   type AuditProcessingStatus,
   STATUTS_D_AUDIT,
-} from '../../domain/AuditProcessing';
-import { PILLAR_KEYS, type ScoresDesPiliers } from '../../domain/Piliers';
+} from '../../domain/traitement/AuditProcessing';
+import { PILLAR_KEYS, type ScoresDesPiliers } from '../../domain/score/Piliers';
 
 export class AuditSummaryResponseDto {
   @ApiProperty({ example: 'f8dd820d-fc38-4f6a-83be-a833aa6be16f' })

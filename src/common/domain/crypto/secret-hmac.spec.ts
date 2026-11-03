@@ -2,7 +2,7 @@ import { TEST_FORMATION_REVIEW_TOKEN_SECRET as SECRET } from '../../../../test/f
 import {
   appliquer,
   installerVariables,
-} from '../../../../test/helpers/environnement';
+} from '../../../../test/helpers/depot/environnement';
 import {
   estUnSecretValable,
   secretHmac,

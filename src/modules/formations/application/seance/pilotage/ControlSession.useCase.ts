@@ -1,0 +1,226 @@
+import { Inject, Injectable } from '@nestjs/common';
+import { DomainValidationError } from '../../../../../common/domain/errors/DomainValidationError';
+import { estEntierPositif } from '../../../../../common/domain/nombres/est-entier-positif';
+import type { Cours } from '../../../domain/contrats/cours';
+import type {
+  ControlSessionChanges,
+  PilotageEcran,
+} from '../../../domain/contrats/pilotage';
+import { sourcesAReveler } from '../../../domain/cours/correction/Corrections';
+import type { ICatalogueCours } from '../../../domain/cours/ICatalogueCours.port';
+import {
+  ecranParId,
+  ecranRevele,
+} from '../../../domain/cours/diffusion/EcranServi';
+import { etatEnDirect } from '../../../domain/seance/etat/EtatEnDirect';
+import type { PilotageDemande } from '../../../domain/cours/diffusion/PilotageEcrans';
+import {
+  assertPilotageCompatible,
+  demandeAppliquee,
+  fusionnerPilotage,
+} from '../../../domain/cours/diffusion/PilotageEcrans';
+import type { ISessionStateCache } from '../../../domain/seance/etat/ISessionStateCache.port';
+import type {
+  ISessionsRepository,
+  SessionRecord,
+  UpdateSessionInput,
+} from '../../../domain/seance/acces/ISessions.repository';
+import {
+  InvalidStateTransitionError,
+  RevisionDeSeanceObsoleteError,
+} from '../../../domain/errors/FormationErrors';
+import { isFreeRangeValid } from '../../../domain/seance/etat/PacingMode';
+import type { FreeRange } from '../../../domain/seance/etat/PacingMode';
+import { canTransition } from '../../../domain/seance/etat/SessionState';
+import {
+  CATALOGUE_COURS,
+  SESSION_STATE_CACHE,
+  SESSIONS_REPOSITORY,
+} from '../../../domain/token';
+import { coursDeLaSeance } from '../CoursDeLaSeance';
+import { seanceNonTermineePilotablePar } from './SessionAccess';
+
+const TENTATIVES_SUR_REVISION_OBSOLETE = 5;
+
+@Injectable()
+export class ControlSessionUseCase {
+  constructor(
+    @Inject(SESSIONS_REPOSITORY)
+    private readonly sessions: ISessionsRepository,
+    @Inject(SESSION_STATE_CACHE)
+    private readonly cache: ISessionStateCache,
+    @Inject(CATALOGUE_COURS)
+    private readonly catalogue: ICatalogueCours,
+  ) {}
+
+  async apply(
+    sessionId: string,
+    teacherId: string,
+    changements: ControlSessionChanges,
+  ): Promise<void> {
+    for (
+      let tentative = 0;
+      tentative < TENTATIVES_SUR_REVISION_OBSOLETE;
+      tentative += 1
+    ) {
+      const misAJour = this.validerEtProjeter(changements);
+      const session = await seanceNonTermineePilotablePar(
+        this.sessions,
+        sessionId,
+        teacherId,
+      );
+      await this.assertDansLesBornesDuCours(session, misAJour, changements);
+      try {
+        const sessionMiseAJour = await this.sessions.update(
+          sessionId,
+          misAJour,
+          session.revision,
+        );
+        await this.publier(sessionId, sessionMiseAJour);
+        return;
+      } catch (error) {
+        if (!(error instanceof RevisionDeSeanceObsoleteError)) {
+          throw error;
+        }
+      }
+    }
+    throw new RevisionDeSeanceObsoleteError(sessionId);
+  }
+
+  private async assertDansLesBornesDuCours(
+    session: SessionRecord,
+    misAJour: UpdateSessionInput,
+    changements: ControlSessionChanges,
+  ): Promise<void> {
+    const cours = await coursDeLaSeance(this.catalogue, session);
+    const totalEcrans = cours.ecrans.length;
+    if (
+      misAJour.ecranCourant !== undefined &&
+      misAJour.ecranCourant >= totalEcrans
+    ) {
+      throw new DomainValidationError(
+        `Écran ${misAJour.ecranCourant} hors du cours : ${totalEcrans} écrans`,
+      );
+    }
+    if (
+      misAJour.intervalleLibre &&
+      !isFreeRangeValid(misAJour.intervalleLibre, totalEcrans)
+    ) {
+      throw new DomainValidationError(
+        `Intervalle de rythme libre hors du cours : ${totalEcrans} écrans`,
+      );
+    }
+    const pilotage =
+      changements.pilotage === undefined
+        ? session.pilotageEcrans
+        : this.pilotageFusionne(cours, session, changements.pilotage);
+    const revele = this.corrigesProjetes(cours, session, misAJour, pilotage);
+    if (changements.pilotage !== undefined || revele !== pilotage) {
+      misAJour.pilotageEcrans = revele;
+    }
+  }
+
+  private corrigesProjetes(
+    cours: Cours,
+    session: SessionRecord,
+    misAJour: UpdateSessionInput,
+    pilotage: Readonly<Record<string, PilotageEcran>>,
+  ): Readonly<Record<string, PilotageEcran>> {
+    if ((misAJour.modeRythme ?? session.modeRythme) !== 'pilote') {
+      return pilotage;
+    }
+    const aReveler = sourcesAReveler(
+      cours,
+      misAJour.ecranCourant ?? session.ecranCourant,
+    ).filter((source) => !ecranRevele(pilotage[source]));
+    return aReveler.reduce((courant, screenId) => {
+      const revelation: PilotageDemande = { screenId, revele: true };
+      const ecran = ecranParId(cours, screenId);
+      return fusionnerPilotage(
+        courant,
+        ecran === undefined ? revelation : demandeAppliquee(ecran, revelation),
+      );
+    }, pilotage);
+  }
+
+  private pilotageFusionne(
+    cours: Cours,
+    session: SessionRecord,
+    demande: PilotageDemande,
+  ): Readonly<Record<string, PilotageEcran>> {
+    const ecran = ecranParId(cours, demande.screenId);
+    if (ecran === undefined) {
+      throw new DomainValidationError(
+        `Écran ${demande.screenId} absent du cours de cette séance`,
+      );
+    }
+    assertPilotageCompatible(ecran, demande);
+    return fusionnerPilotage(
+      session.pilotageEcrans,
+      demandeAppliquee(ecran, demande),
+    );
+  }
+
+  private validerEtProjeter(
+    changements: ControlSessionChanges,
+  ): UpdateSessionInput {
+    if (
+      changements.ecran === undefined &&
+      changements.mode === undefined &&
+      changements.pilotage === undefined
+    ) {
+      throw new DomainValidationError(
+        'Indiquez un écran, un mode de rythme ou un pilotage d’écran à appliquer.',
+      );
+    }
+    const misAJour: UpdateSessionInput = {};
+    if (changements.ecran !== undefined) {
+      if (!estEntierPositif(changements.ecran)) {
+        throw new DomainValidationError(
+          `Numero d ecran invalide: ${changements.ecran}`,
+        );
+      }
+      misAJour.ecranCourant = changements.ecran;
+    }
+    if (changements.mode !== undefined) {
+      misAJour.modeRythme = changements.mode;
+      misAJour.intervalleLibre =
+        changements.mode === 'libre'
+          ? this.intervalleValide(changements.intervalle ?? null)
+          : null;
+    }
+    return misAJour;
+  }
+
+  private intervalleValide(intervalle: FreeRange | null): FreeRange {
+    if (intervalle === null || !isFreeRangeValid(intervalle)) {
+      throw new DomainValidationError(
+        'Intervalle de rythme libre invalide : premier et dernier écrans entiers, positifs, le premier avant le dernier',
+      );
+    }
+    return intervalle;
+  }
+
+  async start(sessionId: string, teacherId: string): Promise<void> {
+    const session = await seanceNonTermineePilotablePar(
+      this.sessions,
+      sessionId,
+      teacherId,
+    );
+    if (!canTransition(session.etat, 'en_cours')) {
+      throw new InvalidStateTransitionError(session.etat, 'en_cours');
+    }
+    const misAJour = await this.sessions.update(sessionId, {
+      etat: 'en_cours',
+    });
+    await this.publier(sessionId, misAJour);
+  }
+
+  private async publier(
+    sessionId: string,
+    session: SessionRecord,
+  ): Promise<void> {
+    const cours = await coursDeLaSeance(this.catalogue, session);
+    this.cache.publish(sessionId, etatEnDirect(session, cours));
+  }
+}

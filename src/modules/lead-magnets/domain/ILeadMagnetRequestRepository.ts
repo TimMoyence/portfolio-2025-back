@@ -1,4 +1,4 @@
-import type { VerrouParBoite } from '../../../common/domain/verrou-par-boite';
+import type { VerrouParBoite } from '../../../common/domain/liens/verrou-par-boite';
 import type { LeadMagnetRequest } from './LeadMagnetRequest';
 
 export interface ILeadMagnetRequestRepository extends VerrouParBoite<ILeadMagnetRequestRepository> {

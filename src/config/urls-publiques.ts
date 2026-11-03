@@ -1,5 +1,5 @@
-import { sansFin } from '../common/domain/texte/sans-bords';
-import { envString, type SourceDEnv } from './env-readers.util';
+import { sansFin } from '../common/domain/texte/nettoyage/sans-bords';
+import { envString, type SourceDEnv } from './environnement/env-readers.util';
 import { cheminDeLApi } from './prefixe-api';
 
 const URL_DU_SITE_PAR_DEFAUT = 'https://asilidesign.fr';

@@ -4,7 +4,7 @@ import { RouteParamtypes } from '@nestjs/common/enums/route-paramtypes.enum';
 import { DECORATORS } from '@nestjs/swagger/dist/constants';
 import Ajv from 'ajv';
 import { isDeepStrictEqual } from 'util';
-import { routesDuControleur } from '../../../../test/helpers/metadonnees-de-route';
+import { routesDuControleur } from '../../../../test/helpers/http/metadonnees-de-route';
 import {
   chargerLesSaisies,
   classeDe,
@@ -13,14 +13,14 @@ import {
   nomDe,
   schemasDesModeles,
   valideLaContrainte,
-} from '../../../../test/helpers/saisies-validees';
+} from '../../../../test/helpers/http/saisies-validees';
 import {
   estSansForme,
   estSansFormeHorsOuverts,
   type SchemaOpenApi,
   selonOpenApi30,
   variantesDe,
-} from '../../../../test/helpers/schema-openapi';
+} from '../../../../test/helpers/http/schema-openapi';
 
 const EMOJI = String.fromCodePoint(0x1f600);
 

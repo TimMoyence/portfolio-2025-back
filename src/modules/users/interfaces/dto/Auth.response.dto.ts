@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import type { AuthResult } from '../../application/AuthenticateUser.useCase';
+import type { AuthResult } from '../../application/connexion/AuthenticateUser.useCase';
 import { UserResponseDto } from './User.response.dto';
 
 export class AuthResponseDto {

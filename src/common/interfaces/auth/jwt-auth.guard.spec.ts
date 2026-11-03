@@ -5,7 +5,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { JwtTokenService } from '../../../modules/users/application/services/JwtTokenService';
+import { JwtTokenService } from '../../../modules/users/application/services/jetons/JwtTokenService';
 import type { IUsersRepository } from '../../../modules/users/domain/IUsers.repository';
 import type { User } from '../../../modules/users/domain/User';
 import { JwtAuthGuard } from './jwt-auth.guard';
@@ -14,7 +14,7 @@ import {
   buildJwtPayload,
   buildUser,
   createMockUsersRepo,
-} from '../../../../test/factories/user.factory';
+} from '../../../../test/factories/comptes/user.factory';
 import { createHttpExecutionContext } from '../../../../test/factories/execution-context.factory';
 
 describe('JwtAuthGuard', () => {

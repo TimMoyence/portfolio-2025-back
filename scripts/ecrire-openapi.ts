@@ -4,7 +4,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from '../src/app.module';
 import { documentOpenApi } from '../src/common/interfaces/http/document-openapi';
 import { prefixerLesRoutes } from '../src/common/interfaces/http/prefixer-les-routes';
-import { RACINE } from '../test/helpers/racine';
+import { RACINE } from '../test/helpers/depot/racine';
 
 async function ecrireOpenApi(): Promise<void> {
   const app = await NestFactory.create(AppModule, {

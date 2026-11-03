@@ -1,8 +1,8 @@
 import type { DataSource } from 'typeorm';
 import { ResourceConflictError } from '../../../common/domain/errors/ResourceConflictError';
 import { buildArticleWrite } from '../../../../test/factories/article.factory';
-import { mockTypeOrmRepository } from '../../../../test/factories/formation-entities.factory';
-import { verifierPanneDEcritureTransmise } from '../../../../test/helpers/pannes-d-ecriture';
+import { mockTypeOrmRepository } from '../../../../test/factories/formations/formation-entities.factory';
+import { verifierPanneDEcritureTransmise } from '../../../../test/helpers/base/pannes-d-ecriture';
 import { TypeOrmArticlesRepository } from './articles.repository';
 
 describe('TypeOrmArticlesRepository.saveArticleAndDelivery', () => {

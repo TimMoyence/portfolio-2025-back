@@ -5,18 +5,18 @@ import type { Options } from 'pino-http';
 import {
   navigateurConsignable,
   referentConsignable,
-} from '../common/domain/provenance';
+} from '../common/domain/liens/provenance';
 import {
   CENSURE,
   referentJournalisable,
   urlJournalisable,
-} from '../common/interfaces/http/url-journalisable';
-import { EN_TETE_JETON } from '../modules/formations/interfaces/ParticipantToken.service';
+} from '../common/interfaces/http/requete/url-journalisable';
+import { EN_TETE_JETON } from '../modules/formations/interfaces/etudiant/ParticipantToken.service';
 import {
   envString,
   estEnProduction,
   type SourceDEnv,
-} from './env-readers.util';
+} from './environnement/env-readers.util';
 
 const EN_TETES_SECRETS = [
   'req.headers.authorization',

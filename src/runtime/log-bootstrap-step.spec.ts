@@ -1,7 +1,7 @@
 import {
   appliquer,
   installerVariables,
-} from '../../test/helpers/environnement';
+} from '../../test/helpers/depot/environnement';
 import { logBootstrapStep } from './log-bootstrap-step';
 
 describe('logBootstrapStep', () => {

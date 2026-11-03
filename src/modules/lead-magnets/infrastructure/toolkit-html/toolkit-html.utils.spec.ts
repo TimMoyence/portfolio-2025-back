@@ -4,7 +4,7 @@ import type { EscapedHtml } from './toolkit-html.utils';
 import {
   htmlEmis,
   type FeuilleDeStyle,
-} from '../../../../common/domain/texte/html-escape.util';
+} from '../../../../common/domain/texte/nettoyage/html-escape.util';
 
 describe('buildToolkitCss', () => {
   it('produit une feuille de style inseree verbatim dans une balise style', () => {

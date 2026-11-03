@@ -1,6 +1,6 @@
-import { espionnerLeLogger } from '../../../../test/helpers/silence-nest-logger';
-import { safeHtml } from '../../../common/domain/texte/html-escape.util';
-import type { PasswordResetNotificationPayload } from '../domain/IPasswordResetNotifier';
+import { espionnerLeLogger } from '../../../../test/helpers/http/silence-nest-logger';
+import { safeHtml } from '../../../common/domain/texte/nettoyage/html-escape.util';
+import type { PasswordResetNotificationPayload } from '../domain/notifications/IPasswordResetNotifier';
 import {
   attendreScriptEchappe,
   createMockTransporter,

@@ -1,0 +1,184 @@
+import { Inject, Injectable, Logger } from '@nestjs/common';
+import { InvalidCredentialsError } from '../../../../common/domain/errors/auth/InvalidCredentialsError';
+import { CompteDejaInscritError } from '../../domain/CompteDejaInscritError';
+import type { IRefreshTokensRepository } from '../../domain/jetons/IRefreshTokens.repository';
+import type { IUsersRepository } from '../../domain/IUsers.repository';
+import { LONGUEUR_MAX_D_UN_NOM, User } from '../../domain/User';
+import {
+  GOOGLE_CLIENT_ID,
+  REFRESH_TOKENS_REPOSITORY,
+  USERS_REPOSITORY,
+} from '../../domain/token';
+import { DEFAULT_SELF_REGISTRATION_ROLES } from '../../domain/roles';
+import type { AuthResult } from './AuthenticateUser.useCase';
+import { issueAuthSession } from '../services/jetons/issue-auth-session';
+import { JwtTokenService } from '../services/jetons/JwtTokenService';
+import { UsersMapper } from '../mappers/UsersMapper';
+
+interface GoogleTokenPayload {
+  sub: string;
+  email?: string;
+  email_verified?: boolean;
+  given_name?: string;
+  family_name?: string;
+}
+
+function auPlafondDUnNom(nom: string): string {
+  const coupe = nom.trim().slice(0, LONGUEUR_MAX_D_UN_NOM);
+  const sansDemiCaractere = /[\uD800-\uDBFF]$/.test(coupe)
+    ? coupe.slice(0, -1)
+    : coupe;
+  return sansDemiCaractere.trim();
+}
+
+interface GoogleTokenTicket {
+  getPayload(): GoogleTokenPayload | undefined;
+}
+
+interface GoogleAuthClient {
+  verifyIdToken(options: {
+    idToken: string;
+    audience: string;
+  }): Promise<GoogleTokenTicket>;
+}
+
+@Injectable()
+export class AuthenticateGoogleUserUseCase {
+  private readonly logger = new Logger(AuthenticateGoogleUserUseCase.name);
+  private client?: GoogleAuthClient;
+
+  constructor(
+    @Inject(USERS_REPOSITORY) private readonly repo: IUsersRepository,
+    @Inject(REFRESH_TOKENS_REPOSITORY)
+    private readonly refreshTokensRepo: IRefreshTokensRepository,
+    private readonly jwtTokenService: JwtTokenService,
+    @Inject(GOOGLE_CLIENT_ID) private readonly googleClientId: string,
+  ) {}
+
+  async execute(idToken: string): Promise<AuthResult> {
+    const payload = await this.verifyGoogleToken(idToken);
+    const googleId = payload.sub;
+    const email = payload.email;
+
+    if (!email || !payload.email_verified) {
+      throw new InvalidCredentialsError('Google email not verified');
+    }
+
+    const authenticatedUser = await this.resolveOrCreateUser(
+      googleId,
+      email,
+      payload,
+    );
+
+    return this.signResult(authenticatedUser);
+  }
+
+  private async resolveOrCreateUser(
+    googleId: string,
+    email: string,
+    payload: GoogleTokenPayload,
+  ): Promise<User> {
+    const existant = await this.resolveExistingUser(googleId, email);
+    if (existant) {
+      return existant;
+    }
+
+    const newUser = UsersMapper.fromGoogleAuth({
+      email,
+      firstName: auPlafondDUnNom(
+        payload.given_name?.trim() || email.split('@')[0],
+      ),
+      lastName: auPlafondDUnNom(payload.family_name ?? ''),
+      googleId,
+      roles: DEFAULT_SELF_REGISTRATION_ROLES,
+      emailVerified: true,
+    });
+    try {
+      return await this.repo.create(newUser);
+    } catch (erreur) {
+      if (!(erreur instanceof CompteDejaInscritError)) {
+        throw erreur;
+      }
+      const creeEntreTemps = await this.resolveExistingUser(googleId, email);
+      if (!creeEntreTemps) {
+        throw erreur;
+      }
+      return creeEntreTemps;
+    }
+  }
+
+  private async resolveExistingUser(
+    googleId: string,
+    email: string,
+  ): Promise<User | null> {
+    const byGoogleId = await this.repo.findByGoogleId(googleId);
+    if (byGoogleId) {
+      this.ensureActive(byGoogleId);
+      return byGoogleId;
+    }
+
+    // Lier le googleId UNIQUEMENT si l'email a deja ete verifie cote local
+    // (sinon un attaquant peut s'inscrire avec l'email d'une cible sans verif
+    // puis se logger en Google avec ce meme email pour s'approprier le compte
+    // = HIGH-6 account takeover).
+    const byEmail = await this.repo.findByEmail(email);
+    if (byEmail) {
+      this.ensureActive(byEmail);
+      if (!byEmail.emailVerified) {
+        this.logger.warn(
+          `Refused Google link for unverified local account (userId=${byEmail.id ?? 'unknown'})`,
+        );
+        throw new InvalidCredentialsError(
+          'Local account email not verified — refusing Google link',
+        );
+      }
+      await this.repo.update(byEmail.id!, User.update({ googleId }));
+      await this.refreshTokensRepo.revokeByUserId(byEmail.id!);
+      byEmail.googleId = googleId;
+      return byEmail;
+    }
+
+    return null;
+  }
+
+  private async verifyGoogleToken(idToken: string) {
+    try {
+      const ticket = await this.getClient().verifyIdToken({
+        idToken,
+        audience: this.googleClientId,
+      });
+      const payload = ticket.getPayload();
+      if (!payload) {
+        throw new InvalidCredentialsError('Invalid Google token');
+      }
+      return payload;
+    } catch (error) {
+      this.logger.warn(
+        `Google token verification failed (clientId=${this.googleClientId ? 'SET' : 'EMPTY'}): ${String(error)}`,
+      );
+      throw new InvalidCredentialsError('Invalid Google token');
+    }
+  }
+
+  private getClient(): GoogleAuthClient {
+    if (!this.client) {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const { OAuth2Client } = require('google-auth-library') as {
+        OAuth2Client: new (clientId: string) => GoogleAuthClient;
+      };
+      this.client = new OAuth2Client(this.googleClientId);
+    }
+
+    return this.client;
+  }
+
+  private ensureActive(user: { isActive: boolean }): void {
+    if (!user.isActive) {
+      throw new InvalidCredentialsError('Account deactivated');
+    }
+  }
+
+  private async signResult(user: User): Promise<AuthResult> {
+    return issueAuthSession(user, this.jwtTokenService, this.refreshTokensRepo);
+  }
+}

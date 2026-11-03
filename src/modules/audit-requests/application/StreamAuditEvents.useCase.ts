@@ -1,10 +1,10 @@
 import { Inject, Injectable, Logger, MessageEvent } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { messageDErreur } from '../../../common/domain/errors/message-d-erreur';
-import { estObjet } from '../../../common/domain/est-objet';
-import type { IAuditRequestsRepository } from '../domain/IAuditRequests.repository';
-import type { AuditSnapshot } from '../domain/AuditProcessing';
-import { rapportClientServi } from '../domain/RapportClientServi';
+import { estObjet } from '../../../common/domain/objets/est-objet';
+import type { IAuditRequestsRepository } from '../domain/demande/IAuditRequests.repository';
+import type { AuditSnapshot } from '../domain/traitement/AuditProcessing';
+import { rapportClientServi } from '../domain/traitement/RapportClientServi';
 import { AUDIT_REQUESTS_REPOSITORY } from '../domain/token';
 
 const SSE_GLOBAL_TIMEOUT_MS = 30 * 60 * 1000;

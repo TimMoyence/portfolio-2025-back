@@ -6,7 +6,7 @@ import {
   HttpStatus,
   Logger,
 } from '@nestjs/common';
-import { estEnProduction } from '../../../config/env-readers.util';
+import { estEnProduction } from '../../../config/environnement/env-readers.util';
 import { messageDErreur } from '../../domain/errors/message-d-erreur';
 import {
   estDependanceInjoignable,

@@ -1,4 +1,4 @@
-import type { PacingMode } from '../../domain/PacingMode';
+import type { PacingMode } from '../../domain/seance/etat/PacingMode';
 
 export interface JoinSessionCommand {
   code: string;

@@ -1,7 +1,7 @@
 import { UnauthorizedException } from '@nestjs/common';
 import type { Request } from 'express';
-import type { JwtPayload } from '../../../modules/users/application/services/JwtPayload';
-import { buildJwtPayload } from '../../../../test/factories/user.factory';
+import type { JwtPayload } from '../../../modules/users/application/services/jetons/JwtPayload';
+import { buildJwtPayload } from '../../../../test/factories/comptes/user.factory';
 import { compteConnecte } from './compte-connecte';
 
 const requeteDe = (user?: JwtPayload) => ({ user }) as Request;

@@ -1,0 +1,54 @@
+import {
+  Inject,
+  Injectable,
+  Logger,
+  type OnApplicationBootstrap,
+} from '@nestjs/common';
+import { SynchroniserCoursUseCase } from '../../application/cours/SynchroniserCours.useCase';
+import type { ContenuAPublier } from '../../domain/cours/stockage/CoursStocke';
+import { CONTENUS_DES_COURS } from '../../domain/token';
+
+@Injectable()
+export class SynchronisationAuDemarrageService implements OnApplicationBootstrap {
+  private readonly logger = new Logger(SynchronisationAuDemarrageService.name);
+
+  constructor(
+    private readonly synchroniser: SynchroniserCoursUseCase,
+    @Inject(CONTENUS_DES_COURS)
+    private readonly contenus: readonly ContenuAPublier[],
+  ) {}
+
+  async onApplicationBootstrap(): Promise<void> {
+    try {
+      await this.publierLesCoursDuDepot();
+    } catch (erreur) {
+      const cause =
+        erreur instanceof Error ? erreur : new Error(String(erreur));
+      this.logger.error(
+        `Synchronisation des cours refusée, aucun cours publié (${this.contenus.map(({ slug }) => slug).join(', ')}) : ${cause.message}`,
+        cause.stack ?? cause.message,
+      );
+    }
+  }
+
+  private async publierLesCoursDuDepot(): Promise<void> {
+    const issues = await this.synchroniser.execute(this.contenus);
+    for (const issue of issues) {
+      switch (issue.statut) {
+        case 'publie':
+          this.logger.log(
+            `Cours ${issue.slug} publié en version ${String(issue.version)}`,
+          );
+          break;
+        case 'a-jour':
+          this.logger.log(`Cours ${issue.slug} déjà à jour`);
+          break;
+        case 'echec':
+          this.logger.error(
+            `Cours ${issue.slug} non publié : ${issue.cause.message}`,
+            issue.cause.stack ?? issue.cause.message,
+          );
+      }
+    }
+  }
+}

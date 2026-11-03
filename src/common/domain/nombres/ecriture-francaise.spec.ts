@@ -1,4 +1,4 @@
-import { ESPACE_INSECABLE as INSECABLE } from '../texte/sans-espaces-typographiques';
+import { ESPACE_INSECABLE as INSECABLE } from '../texte/nettoyage/sans-espaces-typographiques';
 import {
   avecVirgule,
   nombreAffiche,

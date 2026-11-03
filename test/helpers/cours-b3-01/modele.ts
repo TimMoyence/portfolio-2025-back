@@ -1,4 +1,4 @@
-import { estObjet } from '../../../src/common/domain/est-objet';
+import { estObjet } from '../../../src/common/domain/objets/est-objet';
 import type { Valeur } from './excel';
 
 export interface Formule {

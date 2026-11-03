@@ -1,0 +1,162 @@
+import { Inject, Injectable } from '@nestjs/common';
+import { findQuestion } from '../../domain/notation/Bareme';
+import { detailsLisibles } from '../../domain/cours/banque/confusions';
+import type { Cours } from '../../domain/contrats/cours';
+import type { EtatParticipant } from '../../domain/contrats/pilotage';
+import { cleDeJalon } from '../../domain/cours/diffusion/CleDeJalon';
+import { ecranDeDefi } from '../../domain/cours/defis/Defis';
+import {
+  ecranServi,
+  verdictServiDe,
+} from '../../domain/cours/diffusion/EcranServi';
+import {
+  ecranDEnigmes,
+  enigmeVisee,
+  etatDesEnigmes,
+  progressionDesLignes,
+  tentativesRestantes,
+} from '../../domain/cours/defis/Enigmes';
+import type {
+  AnswerRecord,
+  IAnswersRepository,
+} from '../../domain/reponses/IAnswers.repository';
+import type {
+  IEscapeRepository,
+  ProgressionEnigmeRecord,
+} from '../../domain/progression/IEscape.repository';
+import type { IFreeResponsesRepository } from '../../domain/reponses/IFreeResponses.repository';
+import type { IPulsesRepository } from '../../domain/progression/IPulses.repository';
+import type { IRappelsServisRepository } from '../../domain/progression/IRappelsServis.repository';
+import type { SessionRecord } from '../../domain/seance/acces/ISessions.repository';
+import {
+  ANSWERS_REPOSITORY,
+  ESCAPE_REPOSITORY,
+  FREE_RESPONSES_REPOSITORY,
+  PULSES_REPOSITORY,
+  RAPPELS_SERVIS_REPOSITORY,
+} from '../../domain/token';
+import { ParticipationEnSeance } from './ParticipationEnSeance';
+import type { CibleDuParticipant } from './ParticipationEnSeance';
+
+@Injectable()
+export class LireEtatParticipantUseCase {
+  constructor(
+    private readonly participation: ParticipationEnSeance,
+    @Inject(ANSWERS_REPOSITORY)
+    private readonly answers: IAnswersRepository,
+    @Inject(FREE_RESPONSES_REPOSITORY)
+    private readonly freeResponses: IFreeResponsesRepository,
+    @Inject(PULSES_REPOSITORY)
+    private readonly pulses: IPulsesRepository,
+    @Inject(ESCAPE_REPOSITORY)
+    private readonly escape: IEscapeRepository,
+    @Inject(RAPPELS_SERVIS_REPOSITORY)
+    private readonly rappels: IRappelsServisRepository,
+  ) {}
+
+  async execute(demande: CibleDuParticipant): Promise<EtatParticipant> {
+    const { sessionId, participantId } = demande;
+    const { session, cours } = await this.participation.contexte(demande);
+
+    const [reponses, libres, jalons, progressions, rappels] = await Promise.all(
+      [
+        this.answers.listerDuParticipant(sessionId, participantId),
+        this.freeResponses.listerDuParticipant(sessionId, participantId),
+        this.pulses.listerDuParticipant(
+          sessionId,
+          cleDeJalon(sessionId, participantId),
+        ),
+        this.escape.listerProgressionDuParticipant(participantId),
+        this.rappels.listerDuParticipant(participantId),
+      ],
+    );
+
+    return {
+      sessionId,
+      participantId,
+      revision: session.revision,
+      reponses: reponses.map((reponse) => this.reponseLue(session, reponse)),
+      reponsesLibres: libres
+        .filter((libre) => ecranDeDefi(cours, libre.activityId) === null)
+        .map((libre) => ({
+          activityId: libre.activityId,
+          response: libre.response,
+        })),
+      jalons: [...jalons],
+      enigmes: this.enigmesLues(session, cours, progressions),
+      defis: libres
+        .filter((libre) => ecranDeDefi(cours, libre.activityId) !== null)
+        .map((libre) => ({
+          defiId: libre.activityId,
+          premiereTentative: libre.premiereReponse ?? libre.response,
+        })),
+      rappels: {
+        questionIds: rappels.map((servi) => servi.questionId),
+      },
+    };
+  }
+
+  private reponseLue(
+    session: SessionRecord,
+    reponse: AnswerRecord,
+  ): EtatParticipant['reponses'][number] {
+    const { correcte, libelleConfusion } = verdictServiDe(
+      session,
+      findQuestion(session.bareme, reponse.questionId),
+      reponse,
+    );
+    return {
+      questionId: reponse.questionId,
+      valeur: reponse.valeur,
+      correcte,
+      score: reponse.score,
+      details:
+        reponse.details === null ? null : detailsLisibles(reponse.details),
+      libelleConfusion,
+    };
+  }
+
+  private enigmesLues(
+    session: SessionRecord,
+    cours: Cours,
+    progressions: readonly ProgressionEnigmeRecord[],
+  ): EtatParticipant['enigmes'] {
+    return cours.ecrans.flatMap((ecran) => {
+      if (ecran.brique !== 'fp-escape') {
+        return [];
+      }
+      const parcoursId = ecran.proprietes.parcours.id;
+      const cible = ecranDEnigmes(cours, parcoursId);
+      if (
+        cible === null ||
+        !ecranServi(session, cible.rang, cours.ecrans.length)
+      ) {
+        return [];
+      }
+      const lignes = progressions.filter(
+        (ligne) => ligne.parcoursId === parcoursId,
+      );
+      return [
+        {
+          parcoursId,
+          ...etatDesEnigmes(cible, progressionDesLignes(lignes)),
+          resolues: lignes
+            .filter((ligne) => ligne.resolueLe !== null)
+            .map((ligne) => ({
+              enigmeId: ligne.enigmeId,
+              fragment:
+                enigmeVisee(cible, ligne.enigmeId)?.corrige.fragment ?? '',
+            })),
+          tentativesRestantes: Object.fromEntries(
+            lignes
+              .filter((ligne) => ligne.resolueLe === null)
+              .map((ligne) => [
+                ligne.enigmeId,
+                tentativesRestantes(cible, ligne.tentatives),
+              ]),
+          ),
+        },
+      ];
+    });
+  }
+}

@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { pseudonymeDAdresse } from '../../../../common/domain/crypto/pseudonyme-d-adresse';
-import type { ValeursDeLEnv } from '../../../../config/env.validation';
+import type { ValeursDeLEnv } from '../../../../config/environnement/env.validation';
 
 type AuthEvent =
   | 'LOGIN_SUCCESS'

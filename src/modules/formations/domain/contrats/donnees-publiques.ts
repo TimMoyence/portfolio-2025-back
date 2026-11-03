@@ -1,7 +1,7 @@
 import type { MetadonneesBrique, RegimeVerrou } from './contrat-de-l-api';
-import type { AuMoinsUn } from '../../../../common/domain/au-moins-un';
-import type { CasProfessionnel } from '../cours/Cours';
-import type { ProprietesRecit } from '../cours/ProprietesStockees';
+import type { AuMoinsUn } from '../../../../common/domain/objets/au-moins-un';
+import type { CasProfessionnel } from '../cours/structure/Cours';
+import type { ProprietesRecit } from '../cours/stockage/ProprietesStockees';
 import type {
   LigneDuDossier,
   OrdreQuestions,

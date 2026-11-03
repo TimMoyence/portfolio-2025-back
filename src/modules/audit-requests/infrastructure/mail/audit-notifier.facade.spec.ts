@@ -1,0 +1,87 @@
+/* eslint-disable @typescript-eslint/unbound-method */
+import {
+  buildAuditRequest,
+  buildClientReportSynthesis,
+  buildExpertReportSynthesis,
+} from '../../../../../test/factories/audits/audit-requests.factory';
+import type { AuditClientReportMailer } from './rapports/audit-client-report.mailer';
+import type { AuditConfirmationMailer } from './rapports/audit-confirmation.mailer';
+import type { AuditExpertReportMailer } from './rapports/audit-expert-report.mailer';
+import type { AuditNotificationMailer } from './rapports/audit-notification.mailer';
+import { AuditNotifierFacade } from './audit-notifier.facade';
+
+describe('AuditNotifierFacade', () => {
+  let notificationMailer: jest.Mocked<AuditNotificationMailer>;
+  let clientReportMailer: jest.Mocked<AuditClientReportMailer>;
+  let expertReportMailer: jest.Mocked<AuditExpertReportMailer>;
+  let facade: AuditNotifierFacade;
+
+  beforeEach(() => {
+    notificationMailer = {
+      sendAuditNotification: jest.fn().mockResolvedValue(undefined),
+    } as unknown as jest.Mocked<AuditNotificationMailer>;
+    clientReportMailer = {
+      sendClientReport: jest.fn().mockResolvedValue(undefined),
+    } as unknown as jest.Mocked<AuditClientReportMailer>;
+    expertReportMailer = {
+      sendExpertReport: jest.fn().mockResolvedValue(undefined),
+    } as unknown as jest.Mocked<AuditExpertReportMailer>;
+
+    facade = new AuditNotifierFacade(
+      notificationMailer,
+      clientReportMailer,
+      expertReportMailer,
+      {
+        demanderLaConfirmation: jest.fn().mockResolvedValue(undefined),
+      } as unknown as AuditConfirmationMailer,
+    );
+  });
+
+  it('devrait deleguer sendAuditNotification au notificationMailer', async () => {
+    const request = buildAuditRequest({ id: 'audit-x' });
+
+    await facade.sendAuditNotification(request);
+
+    expect(notificationMailer.sendAuditNotification).toHaveBeenCalledTimes(1);
+    expect(notificationMailer.sendAuditNotification).toHaveBeenCalledWith(
+      request,
+    );
+    expect(clientReportMailer.sendClientReport).not.toHaveBeenCalled();
+    expect(expertReportMailer.sendExpertReport).not.toHaveBeenCalled();
+  });
+
+  it('devrait deleguer sendClientReport au clientReportMailer', async () => {
+    const input = {
+      to: 'client@example.com',
+      firstName: null,
+      websiteName: 'mon-site.fr',
+      clientReport: buildClientReportSynthesis(),
+      pdfBuffer: null,
+    };
+
+    await facade.sendClientReport(input);
+
+    expect(clientReportMailer.sendClientReport).toHaveBeenCalledTimes(1);
+    expect(clientReportMailer.sendClientReport).toHaveBeenCalledWith(input);
+    expect(notificationMailer.sendAuditNotification).not.toHaveBeenCalled();
+    expect(expertReportMailer.sendExpertReport).not.toHaveBeenCalled();
+  });
+
+  it('devrait deleguer sendExpertReport a l expertReportMailer', async () => {
+    const input = {
+      websiteName: 'mon-site.fr',
+      auditId: 'audit-42',
+      clientContact: { method: 'EMAIL' as const, value: 'client@example.com' },
+      clientReport: buildClientReportSynthesis(),
+      expertReport: buildExpertReportSynthesis(),
+      pdfBuffer: Buffer.from('pdf'),
+    };
+
+    await facade.sendExpertReport(input);
+
+    expect(expertReportMailer.sendExpertReport).toHaveBeenCalledTimes(1);
+    expect(expertReportMailer.sendExpertReport).toHaveBeenCalledWith(input);
+    expect(notificationMailer.sendAuditNotification).not.toHaveBeenCalled();
+    expect(clientReportMailer.sendClientReport).not.toHaveBeenCalled();
+  });
+});

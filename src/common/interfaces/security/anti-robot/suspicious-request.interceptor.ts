@@ -1,0 +1,107 @@
+import {
+  CallHandler,
+  ExecutionContext,
+  Inject,
+  Injectable,
+  Logger,
+  NestInterceptor,
+} from '@nestjs/common';
+import type { Request, Response } from 'express';
+import type { Observable } from 'rxjs';
+import { navigateurConsignable } from '../../../domain/liens/provenance';
+import { aLaFermeture } from '../../http/a-la-fermeture';
+import {
+  dureeEnMsDepuis,
+  instantEnNs,
+} from '../../http/requete/duree-de-requete';
+import { urlJournalisable } from '../../http/requete/url-journalisable';
+import { lireEnTete, resolveClientIpOrUnknown } from '../client-ip.util';
+import type { SecurityConfig } from '../security.config';
+import { SECURITY_CONFIG } from '../security.tokens';
+import { scoreRequest } from './suspicious-request-scorer';
+
+const LOOPBACK_IPV4 = '127.0.0.1';
+const LOOPBACK_IPS = new Set([LOOPBACK_IPV4, `::ffff:${LOOPBACK_IPV4}`, '::1']);
+
+@Injectable()
+export class SuspiciousRequestInterceptor implements NestInterceptor {
+  private readonly logger = new Logger('SuspiciousRequest');
+
+  constructor(
+    @Inject(SECURITY_CONFIG) private readonly config: SecurityConfig,
+  ) {}
+
+  intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
+    if (context.getType() !== 'http') {
+      return next.handle();
+    }
+
+    const httpCtx = context.switchToHttp();
+    const req = httpCtx.getRequest<Request>();
+
+    // Requetes loopback = trafic interne (Docker health checks, sondes).
+    // On lit l'adresse brute du socket EN PREMIER, jamais `req.ip` :
+    // depuis l'activation de `trust proxy` (src/main.ts), `req.ip` est
+    // derive de `X-Forwarded-For`. Un client pourrait donc annoncer
+    // `X-Forwarded-For: 127.0.0.1` et court-circuiter tout le scoring de
+    // suspicion. Les health checks Docker ne passent de toute facon pas
+    // par le reverse-proxy : leur adresse de socket est deja loopback.
+    const socketIp = req.socket?.remoteAddress ?? req.ip ?? '';
+    if (LOOPBACK_IPS.has(socketIp)) {
+      return next.handle();
+    }
+
+    const res = httpCtx.getResponse<Response>();
+    const startNs = instantEnNs();
+
+    const evaluateAndLog = (aborted: boolean): void => {
+      try {
+        const responseTimeMs = dureeEnMsDepuis(startNs);
+        const urlBrute = req.originalUrl || req.url;
+        const ip = this.resolveIp(req);
+        const userAgent = this.headerString(req, 'user-agent');
+        const acceptLanguage = this.headerString(req, 'accept-language');
+        const referer = this.headerString(req, 'referer');
+
+        const { score, reasons } = scoreRequest({
+          method: req.method,
+          path: urlBrute,
+          statusCode: res.statusCode,
+          userAgent,
+          acceptLanguage,
+          referer,
+          responseTimeMs,
+          aborted,
+          rateLimitHit: res.statusCode === 429,
+        });
+
+        if (score < this.config.suspiciousScoreThreshold) {
+          return;
+        }
+
+        const path = urlJournalisable(urlBrute, req.params);
+        const navigateur = navigateurConsignable(userAgent) ?? '';
+
+        this.logger.warn(
+          `[SECURITY] suspicious ip=${ip} method=${req.method} path=${path} status=${res.statusCode} score=${score} reasons=${reasons.join(',')} ua="${navigateur}" rtMs=${responseTimeMs.toFixed(1)} aborted=${aborted}`,
+        );
+      } catch (err) {
+        this.logger.warn(
+          `[SECURITY] evaluation a plante: ${String(err)}. Requete non marquee.`,
+        );
+      }
+    };
+
+    aLaFermeture(context, evaluateAndLog);
+
+    return next.handle();
+  }
+
+  private resolveIp(req: Request): string {
+    return resolveClientIpOrUnknown(req);
+  }
+
+  private headerString(req: Request, name: string): string {
+    return lireEnTete(req, name) ?? '';
+  }
+}

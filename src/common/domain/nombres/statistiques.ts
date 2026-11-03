@@ -1,4 +1,8 @@
-import { estAuMoinsUn, mapperAuMoinsUn, type AuMoinsUn } from '../au-moins-un';
+import {
+  estAuMoinsUn,
+  mapperAuMoinsUn,
+  type AuMoinsUn,
+} from '../objets/au-moins-un';
 
 export function somme(valeurs: readonly number[]): number {
   return valeurs.reduce((total, valeur) => total + valeur, 0);

@@ -1,11 +1,11 @@
 import { Logger, OnModuleDestroy } from '@nestjs/common';
 import puppeteer, { Browser } from 'puppeteer';
-import { envString } from '../../../config/env-readers.util';
+import { envString } from '../../../config/environnement/env-readers.util';
 import { messageDErreur } from '../../domain/errors/message-d-erreur';
 import {
   htmlEmis,
   type EscapedHtml,
-} from '../../domain/texte/html-escape.util';
+} from '../../domain/texte/nettoyage/html-escape.util';
 
 // La cover du toolkit deborde ces marges par marges negatives, cf. la regle
 // `.cover.page` de lead-magnets/infrastructure/toolkit-html/toolkit-html.css.ts.

@@ -20,7 +20,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { SkipThrottle, Throttle } from '@nestjs/throttler';
-import { PARAMETRE_DU_JETON } from '../../../common/domain/lien-avec-jeton';
+import { PARAMETRE_DU_JETON } from '../../../common/domain/liens/lien-avec-jeton';
 import {
   DOCUMENTATION_D_UN_JETON_DE_LIEN,
   JetonDuLienEnRequete,
@@ -30,7 +30,7 @@ import { FORME_D_UN_JETON_EMIS } from '../../../common/domain/crypto/TokenHash';
 import { ConfirmAuditRequestUseCase } from '../application/ConfirmAuditRequest.useCase';
 import { AuditConfirmeResponseDto } from './dto/audit-confirme.response.dto';
 import { Public } from '../../../common/interfaces/auth/public.decorator';
-import { FluxDEvenements } from '../../../common/interfaces/http/flux-d-evenements.decorator';
+import { FluxDEvenements } from '../../../common/interfaces/http/requete/flux-d-evenements.decorator';
 import { EVENEMENTS_DU_FLUX_D_AUDIT } from './dto/evenements-du-flux.response.dto';
 import { Observable } from 'rxjs';
 import type { Request } from 'express';
@@ -38,10 +38,13 @@ import { provenanceDeLaRequete } from '../../../common/interfaces/security/clien
 import {
   FormulairePublic,
   RoutePublique,
-} from '../../../common/interfaces/security/formulaire-public.decorator';
+} from '../../../common/interfaces/security/anti-robot/formulaire-public.decorator';
 import { CreateAuditRequestCommand } from '../application/dto/CreateAuditRequest.command';
 import { LocaleCode } from '../../../common/domain/value-objects/LocaleCode';
-import { AuditLocale, localeFromUrlPath } from '../domain/audit-locale.util';
+import {
+  AuditLocale,
+  localeFromUrlPath,
+} from '../domain/traitement/audit-locale.util';
 import { CreateAuditRequestsUseCase } from '../application/CreateAuditRequests.useCase';
 import { GetAuditSummaryUseCase } from '../application/GetAuditSummary.useCase';
 import { StreamAuditEventsUseCase } from '../application/StreamAuditEvents.useCase';

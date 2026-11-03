@@ -1,4 +1,4 @@
-import { sansEspacesTypographiques } from '../texte/sans-espaces-typographiques';
+import { sansEspacesTypographiques } from '../texte/nettoyage/sans-espaces-typographiques';
 
 export const VALEUR_ABSENTE = '—';
 

@@ -1,5 +1,5 @@
 import { BadRequestException } from '@nestjs/common';
-import { validateBody } from '../../../../../test/helpers/validation-pipe';
+import { validateBody } from '../../../../../test/helpers/http/validation-pipe';
 import { DureeDeReponse } from './duree-de-reponse.decorator';
 
 const CINQ_HEURES_MS = 5 * 60 * 60 * 1000;

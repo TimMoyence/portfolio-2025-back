@@ -1,4 +1,4 @@
-import { ColonnesDeTrace } from '../../../../common/infrastructure/typeorm/ColonnesDeTrace';
+import { ColonnesDeTrace } from '../../../../common/infrastructure/typeorm/colonnes/ColonnesDeTrace';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'users' })

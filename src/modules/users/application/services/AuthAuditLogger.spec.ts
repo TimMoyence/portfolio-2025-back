@@ -1,8 +1,8 @@
-import { espionnerLeLogger } from '../../../../../test/helpers/silence-nest-logger';
+import { espionnerLeLogger } from '../../../../../test/helpers/http/silence-nest-logger';
 import { ConfigService } from '@nestjs/config';
 import { TEST_HASHING_KEY } from '../../../../../test/factories/env.factory';
 import { pseudonymeDAdresse } from '../../../../common/domain/crypto/pseudonyme-d-adresse';
-import type { ValeursDeLEnv } from '../../../../config/env.validation';
+import type { ValeursDeLEnv } from '../../../../config/environnement/env.validation';
 import { AuthAuditLogger, AuthAuditEntry } from './AuthAuditLogger';
 
 describe('AuthAuditLogger', () => {

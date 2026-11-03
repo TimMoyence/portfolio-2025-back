@@ -2,7 +2,7 @@ import {
   escapeHtml,
   safeHtml,
   type EscapedHtml,
-} from '../../domain/texte/html-escape.util';
+} from '../../domain/texte/nettoyage/html-escape.util';
 
 export function sectionHeader(
   num: string,

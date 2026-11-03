@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ResourceNotFoundError } from '../../../common/domain/errors/ResourceNotFoundError';
-import { AuditSummarySnapshot } from '../domain/AuditProcessing';
-import type { IAuditRequestsRepository } from '../domain/IAuditRequests.repository';
+import { AuditSummarySnapshot } from '../domain/traitement/AuditProcessing';
+import type { IAuditRequestsRepository } from '../domain/demande/IAuditRequests.repository';
 import { AUDIT_REQUESTS_REPOSITORY } from '../domain/token';
 
 @Injectable()

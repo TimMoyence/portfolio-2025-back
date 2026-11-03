@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { PAGE_PRIVEE_DU_TOOLKIT } from '../../../common/domain/lien-avec-jeton';
+import { PAGE_PRIVEE_DU_TOOLKIT } from '../../../common/domain/liens/lien-avec-jeton';
 import { ExpediteurSmtp } from '../../../common/infrastructure/mail/expediteur-smtp';
 import {
   escapeHtml,
   escapeUrl,
   safeHtml,
-} from '../../../common/domain/texte/html-escape.util';
+} from '../../../common/domain/texte/nettoyage/html-escape.util';
 import { pieceJointePdf } from '../../../common/infrastructure/mail/piece-jointe';
 import { adresseDeReponse } from '../../../config/adresses-de-courriel';
 import { urlDuSite } from '../../../config/urls-publiques';

@@ -2,12 +2,12 @@ import { HttpStatus } from '@nestjs/common';
 import { DomainExceptionFilter } from './DomainExceptionFilter';
 import { DomainError } from '../../domain/errors/DomainError';
 import { ResourceNotFoundError } from '../../domain/errors/ResourceNotFoundError';
-import { UserNotFoundError } from '../../domain/errors/UserNotFoundError';
-import { InvalidCredentialsError } from '../../domain/errors/InvalidCredentialsError';
-import { InsufficientPermissionsError } from '../../domain/errors/InsufficientPermissionsError';
+import { UserNotFoundError } from '../../domain/errors/auth/UserNotFoundError';
+import { InvalidCredentialsError } from '../../domain/errors/auth/InvalidCredentialsError';
+import { InsufficientPermissionsError } from '../../domain/errors/auth/InsufficientPermissionsError';
 import { InvalidInputError } from '../../domain/errors/InvalidInputError';
-import { TokenExpiredError } from '../../domain/errors/TokenExpiredError';
-import { TokenReuseDetectedError } from '../../domain/errors/TokenReuseDetectedError';
+import { TokenExpiredError } from '../../domain/errors/auth/TokenExpiredError';
+import { TokenReuseDetectedError } from '../../domain/errors/auth/TokenReuseDetectedError';
 import { ResourceConflictError } from '../../domain/errors/ResourceConflictError';
 import { DomainValidationError } from '../../domain/errors/DomainValidationError';
 import { RateLimitExceededError } from '../../domain/errors/RateLimitExceededError';
@@ -16,7 +16,7 @@ import {
   SessionStreamLimitError,
 } from '../../../modules/formations/domain/errors/FormationErrors';
 import { createHttpResponseHost } from '../../../../test/factories/execution-context.factory';
-import { attendreProbleme } from '../../../../test/helpers/reponse-probleme';
+import { attendreProbleme } from '../../../../test/helpers/http/reponse-probleme';
 
 class UnknownDomainError extends DomainError {
   constructor() {

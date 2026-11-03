@@ -1,15 +1,15 @@
-import type { ContenuDeCours } from '../../domain/cours/CoursStocke';
-import { typographierEnProfondeur } from '../../domain/cours/Typographie';
-import { COURS_B1_01 } from './b1-01.cours';
-import { COURS_B1_02 } from './b1-02.cours';
-import { COURS_B2_01 } from './b2-01.cours';
-import { COURS_B2_02 } from './b2-02.cours';
-import { COURS_B2_03 } from './b2-03.cours';
-import { COURS_B2_04 } from './b2-04.cours';
-import { COURS_B2_05 } from './b2-05.cours';
-import { COURS_B2_06 } from './b2-06.cours';
-import { COURS_B3_01 } from './b3-01.cours';
-import { CA_HT_SAISI_EN_TEXTE } from './b3-01.donnees';
+import type { ContenuDeCours } from '../../domain/cours/stockage/CoursStocke';
+import { typographierEnProfondeur } from '../../domain/cours/formule/Typographie';
+import { COURS_B1_01 } from './b1/b1-01/b1-01.cours';
+import { COURS_B1_02 } from './b1/b1-02/b1-02.cours';
+import { COURS_B2_01 } from './b2/b2-01/b2-01.cours';
+import { COURS_B2_02 } from './b2/b2-02.cours';
+import { COURS_B2_03 } from './b2/b2-03.cours';
+import { COURS_B2_04 } from './b2/b2-04.cours';
+import { COURS_B2_05 } from './b2/b2-05/b2-05.cours';
+import { COURS_B2_06 } from './b2/b2-06/b2-06.cours';
+import { COURS_B3_01 } from './b3/b3-01/b3-01.cours';
+import { CA_HT_SAISI_EN_TEXTE } from './b3/b3-01/b3-01.donnees';
 
 const CITATIONS_LITTERALES: Readonly<
   Partial<Record<string, readonly string[]>>

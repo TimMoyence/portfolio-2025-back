@@ -1,0 +1,112 @@
+import { nombreSommable } from '../../../../common/domain/nombres/ecriture-francaise';
+import { TYPES_DE_FICHIER } from '../../../../common/domain/types/types-de-fichier';
+import type { ClasseurTelecharge } from './IClasseursDeCours.port';
+import type {
+  RapportIncident,
+  RapportQuestion,
+  RapportSession,
+} from './IFormationMailer.port';
+
+const BOM_UTF8 = '﻿';
+
+const ENTETES = [
+  'prénom',
+  'nom',
+  'email',
+  'question',
+  'concept',
+  'réponse',
+  'correcte',
+  'confusion',
+  'durée_ms',
+  'horodatage',
+];
+
+const CONCEPT_D_UNE_REPONSE_LIBRE = 'réponse libre';
+const QUESTION_D_UN_INCIDENT = 'incident';
+
+export function rapportEnCsv(rapport: RapportSession): ClasseurTelecharge {
+  const lignes = rapport.participants.flatMap((participant) => {
+    const etudiant = [participant.prenom, participant.nom, participant.email];
+    return [
+      ...participant.reponses.map((reponse) => [
+        ...etudiant,
+        reponse.questionId,
+        reponse.concept,
+        reponseDansLeCsv(reponse),
+        reponse.correcte ? 'oui' : 'non',
+        reponse.libelleConfusion ?? '',
+        String(reponse.dureeMs),
+        '',
+      ]),
+      ...participant.reponsesLibres.map((libre) => [
+        ...etudiant,
+        libre.activityId,
+        CONCEPT_D_UNE_REPONSE_LIBRE,
+        libre.reponse,
+        '',
+        '',
+        '',
+        '',
+      ]),
+      ...participant.incidents.map((incident) => [
+        ...etudiant,
+        QUESTION_D_UN_INCIDENT,
+        incident.type,
+        contexteDansLeCsv(incident.contexte),
+        '',
+        '',
+        '',
+        incident.horodatage,
+      ]),
+    ].map(ligneCsv);
+  });
+  const texte = `${BOM_UTF8}${[ENTETES.join(';'), ...lignes].join('\r\n')}`;
+  return {
+    nom: `session-${rapport.code}.csv`,
+    type: TYPES_DE_FICHIER.csv,
+    contenu: new TextEncoder().encode(texte),
+  };
+}
+
+function contexteDansLeCsv(contexte: RapportIncident['contexte']): string {
+  return Object.entries(contexte ?? {})
+    .map(([cle, valeur]) => `${cle}=${String(valeur)}`)
+    .join(', ');
+}
+
+const NOMBRE_SAISI_RE = /^-?\d+(\.\d+)?(e[+-]?\d+)?$/i;
+
+function reponseDansLeCsv(reponse: RapportQuestion): string {
+  return reponse.type === 'numeric' && NOMBRE_SAISI_RE.test(reponse.valeur)
+    ? nombreSommable(Number(reponse.valeur))
+    : reponse.reponse;
+}
+
+function ligneCsv(cellules: readonly string[]): string {
+  return cellules
+    .map((cellule) => `"${neutraliserCelluleCsv(cellule).replace(/"/g, '""')}"`)
+    .join(';');
+}
+
+const CARACTERES_FORMULE_RE = /^[=+@\t\r]/;
+const NOMBRE_NEGATIF_VALIDE_RE = /^-\d+([.,]\d+)?$/;
+
+/**
+ * CWE-1236 : neutralise une cellule CSV qu'Excel interpreterait comme une
+ * formule a l'ouverture (nom d'etudiant en `=HYPERLINK(...)`, reponse
+ * libre en `+`/`@`...), en la prefixant d'une apostrophe. Le signe moins
+ * est traite a part : les destinataires sont des comptables, `-1500` ou
+ * `-12,5` sont des montants legitimes qui doivent rester sommables — seule
+ * une cellule commencant par `-` sans etre un nombre valide (`-=1+1`,
+ * `--cmd`) est neutralisee.
+ */
+function neutraliserCelluleCsv(valeur: string): string {
+  if (CARACTERES_FORMULE_RE.test(valeur)) {
+    return `'${valeur}`;
+  }
+  if (valeur.startsWith('-') && !NOMBRE_NEGATIF_VALIDE_RE.test(valeur)) {
+    return `'${valeur}`;
+  }
+  return valeur;
+}

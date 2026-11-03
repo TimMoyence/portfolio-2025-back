@@ -1,0 +1,164 @@
+import * as fc from 'fast-check';
+import { dansLaTolerance } from '../../../../../test/helpers/formations/cours/reponses-de-cours';
+import { gradeAnswer, matchesSolution } from './AnswerGrading';
+import type { Tolerance } from './GradingCore';
+
+describe('matchesSolution', () => {
+  it('accepte une valeur exacte sans tolerance', () => {
+    expect(matchesSolution(1338.23, 1338.23)).toBe(true);
+  });
+
+  it('accepte un ecart dans la tolerance relative', () => {
+    expect(
+      matchesSolution(1338.23, 1340, { type: 'relative', valeur: 0.005 }),
+    ).toBe(true);
+  });
+
+  it('refuse un ecart hors tolerance relative', () => {
+    expect(
+      matchesSolution(1300, 1340, { type: 'relative', valeur: 0.005 }),
+    ).toBe(false);
+  });
+
+  it('accepte un ecart dans la tolerance absolue', () => {
+    expect(
+      matchesSolution(1338.2, 1338.23, { type: 'absolue', valeur: 0.05 }),
+    ).toBe(true);
+  });
+
+  it('accepte l’ecart qui atteint pile la tolerance, malgre l’arrondi des flottants', () => {
+    const auCentime = { type: 'absolue', valeur: 0.01 } as const;
+
+    expect(matchesSolution(1956.9, 1956.89, auCentime)).toBe(true);
+    expect(
+      matchesSolution(12959.24, 12959.26, { type: 'absolue', valeur: 0.02 }),
+    ).toBe(true);
+    expect(matchesSolution(1956.91, 1956.89, auCentime)).toBe(false);
+    expect(
+      matchesSolution(1340, 1333.3, { type: 'relative', valeur: 0.005 }),
+    ).toBe(false);
+  });
+
+  it('compare a la decimale demandee', () => {
+    expect(
+      matchesSolution(1338.234, 1338.231, { type: 'decimales', valeur: 2 }),
+    ).toBe(true);
+    expect(
+      matchesSolution(1338.24, 1338.23, { type: 'decimales', valeur: 2 }),
+    ).toBe(false);
+  });
+
+  it.each([
+    [1.005, 1.01, 2, true],
+    [2.675, 2.68, 2, true],
+    [-2.5, -3, 0, true],
+    [-2.5, -2, 0, false],
+  ])(
+    'arrondit %p et %p a %p decimales comme ARRONDI, la moitie loin de zero',
+    (valeur, solution, decimales, attendu) => {
+      expect(
+        matchesSolution(valeur, solution, {
+          type: 'decimales',
+          valeur: decimales,
+        }),
+      ).toBe(attendu);
+    },
+  );
+
+  it('accepte la bonne valeur que jouent les tests de seance, moities negatives comprises', () => {
+    const tolerances: fc.Arbitrary<Tolerance> = fc.oneof(
+      fc
+        .integer({ min: 0, max: 3 })
+        .map((valeur) => ({ type: 'decimales', valeur }) as const),
+      fc
+        .constantFrom(0.01, 0.05, 0.5)
+        .map((valeur) => ({ type: 'absolue', valeur }) as const),
+      fc
+        .constantFrom(0.005, 0.01)
+        .map((valeur) => ({ type: 'relative', valeur }) as const),
+    );
+
+    fc.assert(
+      fc.property(
+        fc.integer({ min: -1_000_000, max: 1_000_000 }),
+        tolerances,
+        (dixiemesDeLaDecimale, tolerance) => {
+          const decimales =
+            tolerance.type === 'decimales' ? tolerance.valeur : 2;
+          const solution = dixiemesDeLaDecimale / 10 ** (decimales + 1);
+
+          expect(
+            matchesSolution(
+              dansLaTolerance(solution, tolerance),
+              solution,
+              tolerance,
+            ),
+          ).toBe(true);
+        },
+      ),
+      { examples: [[-25, { type: 'decimales', valeur: 0 }]] },
+    );
+  });
+
+  it('gere une solution nulle en tolerance relative', () => {
+    expect(matchesSolution(0, 0, { type: 'relative', valeur: 0.005 })).toBe(
+      true,
+    );
+    expect(matchesSolution(0.1, 0, { type: 'relative', valeur: 0.005 })).toBe(
+      false,
+    );
+  });
+
+  it('compare les valeurs textuelles a l identique', () => {
+    expect(matchesSolution('b', 'b')).toBe(true);
+    expect(matchesSolution('B', 'b')).toBe(false);
+  });
+
+  it('refuse une valeur non numerique face a une solution numerique', () => {
+    expect(matchesSolution('mille', 1338.23)).toBe(false);
+  });
+});
+
+describe('gradeAnswer', () => {
+  const PIEGE_INTERET_SIMPLE = {
+    valeur: 1300,
+    misconception: 'interet-simple',
+  };
+
+  it.each([
+    [
+      'retourne correcte sans misconception quand la reponse est juste',
+      1338.23,
+      PIEGE_INTERET_SIMPLE,
+      { correcte: true, misconception: null },
+    ],
+    [
+      'identifie le piege declenche quand la reponse est fausse',
+      1300,
+      PIEGE_INTERET_SIMPLE,
+      { correcte: false, misconception: 'interet-simple' },
+    ],
+    [
+      'retourne une misconception nulle pour une erreur non prevue',
+      42,
+      PIEGE_INTERET_SIMPLE,
+      { correcte: false, misconception: null },
+    ],
+    [
+      'traite je ne sais pas comme une erreur sans misconception',
+      '__je_ne_sais_pas__',
+      PIEGE_INTERET_SIMPLE,
+      { correcte: false, misconception: null },
+    ],
+    [
+      'ne detecte pas de misconception meme si un piege textuel correspond a je ne sais pas',
+      '__je_ne_sais_pas__',
+      { valeur: '__je_ne_sais_pas__', misconception: 'renonce' },
+      { correcte: false, misconception: null },
+    ],
+  ])('%s', (_titre, reponse, piege, attendu) => {
+    expect(gradeAnswer(reponse, { valeur: 1338.23, pieges: [piege] })).toEqual(
+      attendu,
+    );
+  });
+});

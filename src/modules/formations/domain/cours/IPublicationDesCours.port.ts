@@ -1,4 +1,4 @@
-import type { ContenuAPublier } from './CoursStocke';
+import type { ContenuAPublier } from './stockage/CoursStocke';
 
 export interface IPublicationDesCours {
   empreintePubliee(slug: string): Promise<string | null>;

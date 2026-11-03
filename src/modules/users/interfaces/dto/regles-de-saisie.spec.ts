@@ -2,14 +2,14 @@ import {
   champsRefuses,
   messagesDeRefus,
   saisieRetenue,
-} from '../../../../../test/helpers/validation-pipe';
+} from '../../../../../test/helpers/http/validation-pipe';
 import { User } from '../../domain/User';
-import { ChangePasswordDto } from './ChangePassword.dto';
+import { ChangePasswordDto } from './mot-de-passe/ChangePassword.dto';
 import { InscriptionDto } from './Inscription.dto';
 import { LoginDto } from './Login.dto';
 import { MotDePasseRobuste } from './regles-de-saisie';
-import { ResetPasswordDto } from './ResetPassword.dto';
-import { SetPasswordDto } from './SetPassword.dto';
+import { ResetPasswordDto } from './mot-de-passe/ResetPassword.dto';
+import { SetPasswordDto } from './mot-de-passe/SetPassword.dto';
 import { UpdateProfileDto } from './UpdateProfile.dto';
 
 describe('prenom et nom d un compte', () => {

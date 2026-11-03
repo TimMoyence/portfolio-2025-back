@@ -71,12 +71,12 @@ import {
   htmlEmis,
   safeHtml,
   type EscapedHtml,
-} from '../../domain/texte/html-escape.util';
+} from '../../domain/texte/nettoyage/html-escape.util';
 import {
   sourcesHorsProprietaire,
   sourcesQuiEcrivent,
-} from '../../../../test/helpers/source-tree';
-import { RACINE } from '../../../../test/helpers/racine';
+} from '../../../../test/helpers/depot/source-tree';
+import { RACINE } from '../../../../test/helpers/depot/racine';
 import { buildConfigService } from '../../../../test/factories/env.factory';
 
 const read = (relativePath: string): string =>
@@ -92,7 +92,7 @@ const ECRIT_DU_HTML = new RegExp(
 );
 
 const PROPRIETAIRE_DES_ETIQUETTES =
-  'src/common/domain/texte/html-escape.util.ts';
+  'src/common/domain/texte/nettoyage/html-escape.util.ts';
 
 const SOURCES = sourcesHorsProprietaire(
   join(RACINE, 'src'),
@@ -712,7 +712,7 @@ function muter(
   return { [fichier]: texte.replace(avant, apres) };
 }
 
-const H = '../common/domain/texte/html-escape.util';
+const H = '../common/domain/texte/nettoyage/html-escape.util';
 const EXPEDITEUR = 'src/common/infrastructure/mail/expediteur-smtp.ts';
 const IMPRIMERIE = 'src/common/infrastructure/pdf/ImprimeriePdf.ts';
 
@@ -884,7 +884,7 @@ export const f = Reflect.get(M, 'createOptionalSmtpTransporter') as unknown;`,
   },
   'un require d un module du depot': {
     'src/sonde/require-local.ts': `export const f = () =>
-  require('src/common/domain/texte/html-escape.util') as unknown;`,
+  require('src/common/domain/texte/nettoyage/html-escape.util') as unknown;`,
   },
   'loadPackage de Nest': {
     'src/sonde/load-package.ts': `import { loadPackage } from '@nestjs/common/utils/load-package.util';

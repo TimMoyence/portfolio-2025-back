@@ -1,7 +1,10 @@
 import 'reflect-metadata';
 import { DataSource, type DataSourceOptions } from 'typeorm';
-import { estEnProduction, type SourceDEnv } from '../config/env-readers.util';
-import { validateEnv } from '../config/env.validation';
+import {
+  estEnProduction,
+  type SourceDEnv,
+} from '../config/environnement/env-readers.util';
+import { validateEnv } from '../config/environnement/env.validation';
 import {
   emplacementTypeOrm,
   resoudreConnexionPostgres,

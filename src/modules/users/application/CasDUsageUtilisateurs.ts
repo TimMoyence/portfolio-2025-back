@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { UserNotFoundError } from '../../../common/domain/errors/UserNotFoundError';
-import type { IRefreshTokensRepository } from '../domain/IRefreshTokens.repository';
+import { UserNotFoundError } from '../../../common/domain/errors/auth/UserNotFoundError';
+import type { IRefreshTokensRepository } from '../domain/jetons/IRefreshTokens.repository';
 import type { IUsersRepository } from '../domain/IUsers.repository';
 import { REFRESH_TOKENS_REPOSITORY, USERS_REPOSITORY } from '../domain/token';
 import { User, type CreateUserProps } from '../domain/User';

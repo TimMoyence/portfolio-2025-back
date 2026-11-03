@@ -8,10 +8,10 @@ import {
   escapeHtml,
   escapeUrl,
   safeHtml,
-} from '../../../../common/domain/texte/html-escape.util';
-import type { EscapedHtml } from '../../../../common/domain/texte/html-escape.util';
+} from '../../../../common/domain/texte/nettoyage/html-escape.util';
+import type { EscapedHtml } from '../../../../common/domain/texte/nettoyage/html-escape.util';
 import { sectionHeader } from '../../../../common/infrastructure/mail/section-header';
-import { sansDiacritiques } from '../../../../common/domain/texte/sans-diacritiques';
+import { sansDiacritiques } from '../../../../common/domain/texte/nettoyage/sans-diacritiques';
 
 function normalizeKey(raw: string): string {
   return sansDiacritiques(raw).toLowerCase().trim();

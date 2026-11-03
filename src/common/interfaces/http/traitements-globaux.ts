@@ -1,7 +1,7 @@
 import { type INestApplication, ValidationPipe } from '@nestjs/common';
 import { AllExceptionsFilter } from '../filters/all-exceptions.filter';
 import { DomainExceptionFilter } from '../filters/DomainExceptionFilter';
-import { RefusDeLOctetNulPipe } from './refus-de-l-octet-nul.pipe';
+import { RefusDeLOctetNulPipe } from './requete/refus-de-l-octet-nul.pipe';
 
 export const OPTIONS_DE_VALIDATION_GLOBALE = {
   whitelist: true,

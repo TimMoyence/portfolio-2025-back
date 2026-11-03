@@ -1,15 +1,15 @@
 import { getMetadataArgsStorage } from 'typeorm';
-import { FormationAnswerEntity } from './FormationAnswer.entity';
-import { FormationCourseContentEntity } from './FormationCourseContent.entity';
-import { FormationEscapeAttemptEntity } from './FormationEscapeAttempt.entity';
-import { FormationEscapeProgressEntity } from './FormationEscapeProgress.entity';
-import { FormationFreeResponseEntity } from './FormationFreeResponse.entity';
-import { FormationIncidentEntity } from './FormationIncident.entity';
-import { FormationParticipantEntity } from './FormationParticipant.entity';
-import { FormationRappelServiEntity } from './FormationRappelServi.entity';
-import { FormationScreenContentEntity } from './FormationScreenContent.entity';
-import { FormationSessionEntity } from './FormationSession.entity';
-import { FormationTeacherAnnotationEntity } from './FormationTeacherAnnotation.entity';
+import { FormationAnswerEntity } from './reponses/FormationAnswer.entity';
+import { FormationCourseContentEntity } from './cours/FormationCourseContent.entity';
+import { FormationEscapeAttemptEntity } from './reponses/FormationEscapeAttempt.entity';
+import { FormationEscapeProgressEntity } from './reponses/FormationEscapeProgress.entity';
+import { FormationFreeResponseEntity } from './reponses/FormationFreeResponse.entity';
+import { FormationIncidentEntity } from './seance/FormationIncident.entity';
+import { FormationParticipantEntity } from './seance/FormationParticipant.entity';
+import { FormationRappelServiEntity } from './reponses/FormationRappelServi.entity';
+import { FormationScreenContentEntity } from './cours/FormationScreenContent.entity';
+import { FormationSessionEntity } from './seance/FormationSession.entity';
+import { FormationTeacherAnnotationEntity } from './seance/FormationTeacherAnnotation.entity';
 
 type Cible = () => unknown;
 type Entite = new () => object;

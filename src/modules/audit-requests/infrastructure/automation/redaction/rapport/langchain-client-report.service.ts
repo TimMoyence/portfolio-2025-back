@@ -1,0 +1,594 @@
+import { Injectable, Logger } from '@nestjs/common';
+import { z } from 'zod';
+import { compacterBlancs } from '../../../../../../common/domain/texte/nettoyage/compacter-blancs';
+import { textesUniquesBornes } from '../../../../../../common/domain/texte/formats/textes-uniques-bornes';
+import type { AiIndexabilitySignals } from '../../../../domain/score/AiIndexability';
+import type {
+  ClientReportSynthesis,
+  FindingImpact,
+  ReportSeverity,
+} from '../../../../domain/score/AuditReportTiers';
+import type { BusinessType } from '../../../../domain/demande/BusinessType';
+import { businessTypePromptHint } from '../../../../domain/demande/BusinessType';
+import type { EngineCoverage } from '../../../../domain/score/EngineCoverage';
+import {
+  AuditLocale,
+  localeDeRedaction,
+} from '../../../../domain/traitement/audit-locale.util';
+import { nonVerifiable } from '../../../../domain/score/non-verifiable';
+import { PILLAR_KEYS } from '../../../../domain/score/Piliers';
+import { withHardTimeout } from '../llm/llm-execution.guardrails';
+import { LlmOpenAiParLaConfig } from '../llm/llm-executor.port';
+import { validateClientReport } from '../report-quality-gate/tier-validators';
+import { reportSeveritySchema } from '../schemas/audit-report.schemas';
+import { invoquerOpenAi } from '../section-generators/cacheable-section.generators';
+import { untrustedDataDisclaimer } from '../section-generators/section-prompts.builder';
+import { sanitizePromptInput } from '../../shared/texte/prompt-sanitize.util';
+import { impactLocalise } from '../../shared/texte/finding-priority.util';
+import { localizedText } from '../../shared/texte/locale-text.util';
+import { parGraviteDecroissante } from '../../shared/texte/severity.util';
+import {
+  scoreMoyenSur100,
+  scoreSur100,
+} from '../../../../domain/score/score-sur-100';
+
+const SEVERITY_LABELS_FR: Record<ReportSeverity, string> = {
+  high: 'priorite haute',
+  medium: 'priorite moyenne',
+  low: 'priorite basse',
+};
+
+const SEVERITY_LABELS_EN: Record<ReportSeverity, string> = {
+  high: 'high priority',
+  medium: 'medium priority',
+  low: 'low priority',
+};
+
+const clientReportSchema = z.object({
+  executiveSummary: z.string().min(1),
+  topFindings: z
+    .array(
+      z.object({
+        title: z.string().min(1),
+        impact: z.string().min(1),
+        severity: reportSeveritySchema,
+      }),
+    )
+    .min(1)
+    .max(5),
+  googleVsAiMatrix: z.object({
+    googleVisibility: z.object({
+      score: z.number().min(0).max(100),
+      summary: z.string().min(1),
+    }),
+    aiVisibility: z.object({
+      score: z.number().min(0).max(100),
+      summary: z.string().min(1),
+    }),
+  }),
+  pillarScorecard: z
+    .array(
+      z.object({
+        pillar: z.string().min(1),
+        score: z.number().min(0).max(100),
+        target: z.number().min(0).max(100),
+      }),
+    )
+    .min(7)
+    .max(7),
+  quickWins: z
+    .array(
+      z.object({
+        title: z.string().min(1),
+        businessImpact: z.string().min(1),
+        effort: reportSeveritySchema,
+      }),
+    )
+    .min(3)
+    .max(5),
+  cta: z.object({
+    title: z.string().min(1),
+    description: z.string().min(1),
+    actionLabel: z.string().min(1),
+  }),
+});
+
+type ClientReportZodOutput = z.infer<typeof clientReportSchema>;
+
+export interface ClientReportFinding {
+  readonly title: string;
+  readonly description: string;
+  readonly severity: ReportSeverity;
+  readonly impact: FindingImpact;
+}
+
+export interface ClientReportContext {
+  readonly locale: AuditLocale;
+  readonly websiteName: string;
+  readonly normalizedUrl: string;
+  readonly pillarScores: Record<string, number>;
+  readonly findings: ReadonlyArray<ClientReportFinding>;
+  readonly quickWins: ReadonlyArray<string>;
+  readonly aggregateAiSignals: AiIndexabilitySignals | null;
+  readonly engineCoverage: EngineCoverage | null;
+  readonly businessType?: BusinessType;
+}
+
+@Injectable()
+export class LangchainClientReportService extends LlmOpenAiParLaConfig {
+  private readonly logger = new Logger(LangchainClientReportService.name);
+
+  async generate(context: ClientReportContext): Promise<ClientReportSynthesis> {
+    const locale = localeDeRedaction(context.locale, this.config.llmLanguage);
+
+    if (!this.config.openAiApiKey) {
+      this.logger.log(
+        'Client report: OPENAI_API_KEY missing, using deterministic fallback.',
+      );
+      return this.buildFallback(context, locale);
+    }
+
+    try {
+      const llm = this.chatOpenAIFactory.create(
+        this.config.llmSummaryTimeoutMs,
+      );
+      const payload = this.buildPayload(context);
+
+      const systemBlocks = [
+        untrustedDataDisclaimer(locale),
+        this.systemPrompt(locale),
+        this.antiHallucinationPrompt(locale),
+      ];
+      if (context.businessType && context.businessType !== 'unknown') {
+        systemBlocks.push(businessTypePromptHint(context.businessType, locale));
+      }
+
+      const llmResult = await this.llmLimiter.run(() =>
+        withHardTimeout<ClientReportZodOutput>(
+          'langchain:client_report',
+          this.config.llmSummaryTimeoutMs,
+          (signal) =>
+            invoquerOpenAi(llm, clientReportSchema, {
+              systemBlocks,
+              payload,
+              signal,
+            }),
+        ),
+      );
+
+      const rapport = this.normalizeLlmResult(llmResult, context);
+      const palier = validateClientReport(rapport);
+      if (!palier.valid) {
+        this.logger.warn(
+          `Client report: quality gate: ${palier.issues.join(', ')}; using deterministic fallback.`,
+        );
+        return this.buildFallback(context, locale);
+      }
+      return rapport;
+    } catch (error) {
+      this.logger.warn(`Client report LLM failed: ${String(error)}`);
+      return this.buildFallback(context, locale);
+    }
+  }
+
+  private systemPrompt(locale: AuditLocale): string {
+    if (locale === 'fr') {
+      return [
+        'Tu rediges une synthese strategique destinee au decideur (client final), belle promesse de vente mais factuelle.',
+        '',
+        'Contraintes strictes :',
+        '- Francais uniquement',
+        '- Pas de markdown, pas de HTML',
+        `- Pas de speculation (si une donnee manque, ecris '${nonVerifiable(locale)}')`,
+        '- Executive summary en 3 phrases max, oriente impact business',
+        "- Top findings : 3-5 max, avec severity high/medium/low (doit refleter fidelement la severity source — jamais d'inflation)",
+        '- Google vs AI matrix : 2 scores 0-100 + 1 phrase chacun',
+        '- Pillar scorecard : exactement 7 piliers (seo, performance, technical, trust, conversion, aiVisibility, citationWorthiness)',
+        '- Quick wins : 3-5 max, chacun avec un impact business concret',
+        '- CTA : pousse vers un appel de 30 minutes pour approfondir',
+        '',
+        "Objectif : donner envie d'ouvrir le PDF et de nous rappeler. NE PAS inclure de details techniques.",
+      ].join('\n');
+    }
+    return [
+      'You write a strategic synthesis for the decision maker (end client), a compelling sales promise yet factual.',
+      '',
+      'Strict rules:',
+      '- English only',
+      '- No markdown, no HTML',
+      `- No speculation (if data is missing, write '${nonVerifiable(locale)}')`,
+      '- Executive summary: max 3 sentences, business-impact oriented',
+      '- Top findings: 3-5 max, severity high/medium/low (must mirror source severity — never inflate)',
+      '- Google vs AI matrix: 2 scores 0-100 + 1 sentence each',
+      '- Pillar scorecard: exactly 7 pillars (seo, performance, technical, trust, conversion, aiVisibility, citationWorthiness)',
+      '- Quick wins: 3-5 max, each with a concrete business impact',
+      '- CTA: push toward a 30-minute call to go deeper',
+      '',
+      'Goal: make the reader want to open the PDF and call us back. DO NOT include technical details.',
+    ].join('\n');
+  }
+
+  private antiHallucinationPrompt(locale: AuditLocale): string {
+    return locale === 'fr'
+      ? `Rappel: chaque affirmation doit etre verifiable depuis le payload (pillarScores, findings, quickWins, engineCoverage, aggregateAiSignals). Si la donnee n'existe pas, ecris '${nonVerifiable(locale)}'. Aucune invention.`
+      : `Reminder: every claim must be verifiable from the payload (pillarScores, findings, quickWins, engineCoverage, aggregateAiSignals). If the data is missing, write '${nonVerifiable(locale)}'. No invention.`;
+  }
+
+  private buildPayload(context: ClientReportContext): Record<string, unknown> {
+    return {
+      locale: context.locale,
+      website: sanitizePromptInput(context.websiteName),
+      normalizedUrl: sanitizePromptInput(context.normalizedUrl),
+      businessType: context.businessType ?? 'unknown',
+      pillarScores: context.pillarScores,
+      findings: context.findings.slice(0, 8).map((entry) => ({
+        title: entry.title,
+        description: entry.description,
+        severity: entry.severity,
+        impact: entry.impact,
+      })),
+      quickWins: context.quickWins.slice(0, 8),
+      aggregateAiSignals: context.aggregateAiSignals,
+      engineCoverage: context.engineCoverage,
+    };
+  }
+
+  private normalizeLlmResult(
+    result: ClientReportZodOutput,
+    context: ClientReportContext,
+  ): ClientReportSynthesis {
+    const topFindings = result.topFindings.slice(0, 5).map((finding) => ({
+      title: compacterBlancs(finding.title),
+      impact: compacterBlancs(finding.impact),
+      severity: finding.severity,
+    }));
+
+    const quickWins = result.quickWins.slice(0, 5).map((entry) => ({
+      title: compacterBlancs(entry.title),
+      businessImpact: compacterBlancs(entry.businessImpact),
+      effort: entry.effort,
+    }));
+
+    const pillarScorecard = this.ensureSevenPillars(
+      result.pillarScorecard.map((entry) => ({
+        pillar: entry.pillar,
+        score: scoreSur100(entry.score),
+        target: scoreSur100(entry.target),
+      })),
+      context,
+    );
+
+    return {
+      executiveSummary: compacterBlancs(result.executiveSummary),
+      topFindings,
+      googleVsAiMatrix: {
+        googleVisibility: {
+          score: scoreSur100(result.googleVsAiMatrix.googleVisibility.score),
+          summary: compacterBlancs(
+            result.googleVsAiMatrix.googleVisibility.summary,
+          ),
+        },
+        aiVisibility: {
+          score: scoreSur100(result.googleVsAiMatrix.aiVisibility.score),
+          summary: compacterBlancs(
+            result.googleVsAiMatrix.aiVisibility.summary,
+          ),
+        },
+      },
+      pillarScorecard,
+      quickWins,
+      cta: {
+        title: compacterBlancs(result.cta.title),
+        description: compacterBlancs(result.cta.description),
+        actionLabel: compacterBlancs(result.cta.actionLabel),
+      },
+    };
+  }
+
+  private ensureSevenPillars(
+    llmPillars: ClientReportSynthesis['pillarScorecard'],
+    context: ClientReportContext,
+  ): ClientReportSynthesis['pillarScorecard'] {
+    const byKey = new Map(
+      llmPillars.map((entry) => [entry.pillar.toLowerCase(), entry]),
+    );
+    return PILLAR_KEYS.map((pillar) => {
+      const existing = byKey.get(pillar.toLowerCase());
+      if (existing) {
+        return {
+          pillar,
+          score: existing.score,
+          target: existing.target || 85,
+        };
+      }
+      return this.pilierMesure(context, pillar);
+    });
+  }
+
+  private pilierMesure(
+    context: ClientReportContext,
+    pillar: string,
+  ): ClientReportSynthesis['pillarScorecard'][number] {
+    return {
+      pillar,
+      score: this.extractPillarScore(context.pillarScores, pillar),
+      target: 85,
+    };
+  }
+
+  private buildFallback(
+    context: ClientReportContext,
+    locale: AuditLocale,
+  ): ClientReportSynthesis {
+    const sortedFindings = [...context.findings]
+      .filter((entry) => entry.title.trim().length > 0)
+      .sort(parGraviteDecroissante);
+
+    const topFindings = sortedFindings.slice(0, 5).map((finding) => ({
+      title: finding.title,
+      impact: impactLocalise(finding, locale),
+      severity: finding.severity,
+    }));
+
+    const fallbackFinding = {
+      title: localizedText(
+        locale,
+        'Constat a valider lors de notre appel',
+        'Finding to validate during our call',
+      ),
+      impact: localizedText(
+        locale,
+        "Impact business a quantifier lors de l'echange.",
+        'Business impact to quantify during the call.',
+      ),
+      severity: 'medium' as const,
+    };
+
+    const ensuredFindings =
+      topFindings.length > 0 ? topFindings : [fallbackFinding];
+
+    const quickWins = this.buildFallbackQuickWins(context, locale);
+
+    const pillarScorecard = PILLAR_KEYS.map((pillar) =>
+      this.pilierMesure(context, pillar),
+    );
+
+    const { googleScore, aiScore } = this.buildVisibilityScores(context);
+
+    return {
+      executiveSummary: this.buildFallbackExecutiveSummary(
+        context,
+        locale,
+        sortedFindings,
+      ),
+      topFindings: ensuredFindings,
+      googleVsAiMatrix: {
+        googleVisibility: {
+          score: googleScore,
+          summary: localizedText(
+            locale,
+            'Visibilite Google evaluee sur SEO, performance et technique.',
+            'Google visibility assessed on SEO, performance and technical.',
+          ),
+        },
+        aiVisibility: {
+          score: aiScore,
+          summary: localizedText(
+            locale,
+            'Visibilite IA : score du pilier aiVisibility.',
+            'AI visibility: score of the aiVisibility pillar.',
+          ),
+        },
+      },
+      pillarScorecard,
+      quickWins,
+      cta: {
+        title: localizedText(
+          locale,
+          'Planifier un appel de 30 minutes',
+          'Schedule a 30-minute call',
+        ),
+        description: localizedText(
+          locale,
+          'Nous passons en revue les priorites et definissons un plan rapide a fort impact.',
+          'We review the priorities and define a fast, high-impact plan.',
+        ),
+        actionLabel: localizedText(locale, "Reserver l'appel", 'Book the call'),
+      },
+    };
+  }
+
+  private buildVisibilityScores(context: ClientReportContext): {
+    googleScore: number;
+    aiScore: number;
+  } {
+    return {
+      googleScore: this.averageScore([
+        context.pillarScores.seo,
+        context.pillarScores.performance,
+        context.pillarScores.technical,
+      ]),
+      aiScore: this.extractPillarScore(context.pillarScores, 'aiVisibility'),
+    };
+  }
+
+  private buildFallbackExecutiveSummary(
+    context: ClientReportContext,
+    locale: AuditLocale,
+    sortedFindings: ReadonlyArray<ClientReportFinding>,
+  ): string {
+    const topFinding = sortedFindings[0];
+    const totalFindings = sortedFindings.length;
+    const { googleScore, aiScore } = this.buildVisibilityScores(context);
+
+    const businessHint = this.resolveBusinessHint(context.businessType, locale);
+
+    if (!topFinding) {
+      return localizedText(
+        locale,
+        `Audit finalise pour ${context.websiteName}. Aucun blocage critique detecte. Visibilite Google ${googleScore}/100, IA ${aiScore}/100. ${businessHint} Un appel de 30 minutes permet de prioriser les ameliorations fines.`,
+        `Audit completed for ${context.websiteName}. No critical blocker detected. Google visibility ${googleScore}/100, AI ${aiScore}/100. ${businessHint} A 30-minute call will help prioritize fine-grained improvements.`,
+      );
+    }
+
+    const severityLabel = localizedText(
+      locale,
+      SEVERITY_LABELS_FR[topFinding.severity],
+      SEVERITY_LABELS_EN[topFinding.severity],
+    );
+
+    const remainingSentence = this.buildRemainingFindingsSentence(
+      totalFindings - 1,
+      locale,
+    );
+
+    return localizedText(
+      locale,
+      `Audit finalise pour ${context.websiteName}. Point prioritaire (${severityLabel}) : ${topFinding.title}.${remainingSentence} Visibilite Google ${googleScore}/100, IA ${aiScore}/100. ${businessHint} Un appel de 30 minutes permet de prioriser le plan.`,
+      `Audit completed for ${context.websiteName}. Priority finding (${severityLabel}): ${topFinding.title}.${remainingSentence} Google visibility ${googleScore}/100, AI ${aiScore}/100. ${businessHint} A 30-minute call will help prioritize the plan.`,
+    );
+  }
+
+  private buildRemainingFindingsSentence(
+    remainingCount: number,
+    locale: AuditLocale,
+  ): string {
+    if (remainingCount <= 0) return '';
+
+    const frPlural = remainingCount > 1 ? 's' : '';
+    const frVerb = remainingCount > 1 ? 'sont identifies' : 'est identifie';
+    const enPlural = remainingCount > 1 ? 's' : '';
+    const enVerb = remainingCount > 1 ? 'are' : 'is';
+
+    return localizedText(
+      locale,
+      ` ${remainingCount} autre${frPlural} levier${frPlural} ${frVerb} dans le rapport.`,
+      ` ${remainingCount} other lever${enPlural} ${enVerb} documented in the report.`,
+    );
+  }
+
+  private resolveBusinessHint(
+    businessType: BusinessType | undefined,
+    locale: AuditLocale,
+  ): string {
+    if (!businessType || businessType === 'unknown') return '';
+    const fr: Record<Exclude<BusinessType, 'unknown'>, string> = {
+      ecommerce:
+        'Contexte e-commerce : focus panier, fiches produits et Core Web Vitals.',
+      saas: 'Contexte SaaS : focus pricing, signup et signaux de trust.',
+      portfolio:
+        'Contexte portfolio : focus cas clients, temoignages et CTA unique.',
+      agency: 'Contexte agence : focus offres packagees et etudes de cas.',
+      media:
+        'Contexte media/editorial : focus E-E-A-T, structured data Article et cluster.',
+      service: 'Contexte service local : focus SEO local et FAQ visible.',
+    };
+    const en: Record<Exclude<BusinessType, 'unknown'>, string> = {
+      ecommerce:
+        'E-commerce context: focus on cart, product pages and Core Web Vitals.',
+      saas: 'SaaS context: focus on pricing, signup and trust signals.',
+      portfolio:
+        'Portfolio context: focus on case studies, testimonials and single CTA.',
+      agency:
+        'Agency context: focus on packaged offers and sector case studies.',
+      media:
+        'Media/editorial context: focus on E-E-A-T, Article structured data and cluster.',
+      service: 'Local service context: focus on local SEO and visible FAQ.',
+    };
+    return locale === 'fr' ? fr[businessType] : en[businessType];
+  }
+
+  private buildFallbackQuickWins(
+    context: ClientReportContext,
+    locale: AuditLocale,
+  ): ClientReportSynthesis['quickWins'] {
+    type MutableQuickWin = {
+      title: string;
+      businessImpact: string;
+      effort: 'low' | 'medium' | 'high';
+    };
+    const base: MutableQuickWin[] = textesUniquesBornes(
+      context.quickWins,
+      5,
+    ).map((title) => ({
+      title,
+      businessImpact: localizedText(
+        locale,
+        'Gain rapide sur la visibilite ou la conversion.',
+        'Quick gain on visibility or conversion.',
+      ),
+      effort: 'low' as const,
+    }));
+
+    if (base.length >= 3) return base;
+
+    const filler: MutableQuickWin[] = [
+      {
+        title: localizedText(
+          locale,
+          'Renforcer les signaux de confiance cles',
+          'Strengthen key trust signals',
+        ),
+        businessImpact: localizedText(
+          locale,
+          'Ameliore le taux de conversion sur les pages commerciales.',
+          'Improves conversion on commercial pages.',
+        ),
+        effort: 'low',
+      },
+      {
+        title: localizedText(
+          locale,
+          'Corriger les blocages techniques critiques',
+          'Fix critical technical blockers',
+        ),
+        businessImpact: localizedText(
+          locale,
+          'Securise la visibilite Google et reduit les pertes de trafic.',
+          'Secures Google visibility and reduces traffic losses.',
+        ),
+        effort: 'medium',
+      },
+      {
+        title: localizedText(
+          locale,
+          'Ameliorer la citabilite par les moteurs IA',
+          'Improve citability by AI engines',
+        ),
+        businessImpact: localizedText(
+          locale,
+          'Augmente la probabilite de citation dans ChatGPT, Perplexity et Gemini.',
+          'Raises the chance of citation in ChatGPT, Perplexity, and Gemini.',
+        ),
+        effort: 'medium',
+      },
+    ];
+
+    const merged: MutableQuickWin[] = [...base];
+    for (const entry of filler) {
+      if (merged.length >= 3) break;
+      if (merged.some((existing) => existing.title === entry.title)) continue;
+      merged.push(entry);
+    }
+    return merged.slice(0, 5);
+  }
+
+  private extractPillarScore(
+    pillarScores: Record<string, number>,
+    pillar: string,
+  ): number {
+    const raw = pillarScores[pillar];
+    if (typeof raw === 'number' && Number.isFinite(raw)) {
+      return scoreSur100(raw);
+    }
+    return 0;
+  }
+
+  private averageScore(values: Array<number | undefined>): number {
+    const numeric = values.filter(
+      (value): value is number =>
+        typeof value === 'number' && Number.isFinite(value),
+    );
+    return scoreMoyenSur100(numeric);
+  }
+}

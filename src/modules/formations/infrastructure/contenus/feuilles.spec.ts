@@ -1,4 +1,4 @@
-import { recopier } from '../../../../../test/helpers/feuille-de-cours';
+import { recopier } from '../../../../../test/helpers/formations/cours/feuille-de-cours';
 import {
   clicsDeRecopie,
   colonneRecopiee,

@@ -1,0 +1,886 @@
+import { QueryFailedError, type MigrationInterface } from 'typeorm';
+import { RetireLesGroupesDeSuivi1790600000000 } from '../../../src/migrations/1790600000000-RetireLesGroupesDeSuivi';
+import { ouvrirTirages } from '../../../src/modules/formations/domain/cours/tirage/OuvertureTirages';
+import {
+  AnswerAlreadySubmittedError,
+  GraineRepriseError,
+  ParticipantEvinceError,
+  PlaceDejaPriseError,
+  SeanceCompleteError,
+  SeedAlreadyAssignedError,
+  SessionCodeAlreadyActiveError,
+} from '../../../src/modules/formations/domain/errors/FormationErrors';
+import { SecretDeReprise } from '../../../src/modules/formations/domain/seance/acces/SecretDeReprise';
+import type { ParticipantRecord } from '../../../src/modules/formations/domain/participants/IParticipants.repository';
+import { CONTENUS } from '../../../src/modules/formations/infrastructure/contenus';
+import { FormationSessionEntity } from '../../../src/modules/formations/infrastructure/entities/seance/FormationSession.entity';
+import { buildCoursDeClasse } from '../../factories/formations/cours/cours.factory';
+import { buildBareme } from '../../factories/formations/formation.factory';
+import {
+  attendreSchemaAligneSurLesEntites,
+  describeDb,
+} from '../../helpers/base/db-integration-datasource';
+import {
+  DELAI_OUVERTURE_CONTEXTE_MS,
+  FORMATION_ENTITIES,
+  FORMATION_TABLES,
+  inscrireParticipant,
+  ouvrirContexteFormations,
+  type ContexteFormations,
+} from '../../helpers/formations/seance/formations-db';
+
+const CLE_ETUDIANT = '11111111-1111-4111-8111-111111111111';
+const AUTRE_CLE_ETUDIANT = '22222222-2222-4222-8222-222222222222';
+const FORMATEUR = '33333333-3333-4333-8333-333333333333';
+const GRAINES_A_REBOURS = [3006, 3005, 3004, 3003, 3002, 3001];
+const QUESTIONS_A_REBOURS = [
+  'Q-CAP-09',
+  'Q-CAP-07',
+  'Q-CAP-05',
+  'Q-CAP-03',
+  'Q-CAP-01',
+];
+const HORODATAGE_COMMUN = '2026-09-21T08:00:00.000Z';
+
+function cleDeRang(rang: number): string {
+  return `77777777-7777-4777-8777-${String(rang).padStart(12, '0')}`;
+}
+
+function identifiantsTries(lignes: readonly { id: string }[]): string[] {
+  return lignes
+    .map((ligne) => ligne.id)
+    .sort((gauche, droite) => (gauche < droite ? -1 : 1));
+}
+
+interface TypeColonne {
+  data_type: string;
+}
+
+interface ContrainteNommee {
+  nom: string;
+}
+
+interface ContrainteUnique extends ContrainteNommee {
+  colonnes: string[];
+}
+
+interface ClefEtrangere extends ContrainteUnique {
+  cible: string;
+  suppression: string;
+}
+
+function trierParNom<C extends ContrainteNommee>(
+  contraintes: readonly C[],
+): C[] {
+  return [...contraintes].sort((gauche, droite) =>
+    gauche.nom.localeCompare(droite.nom),
+  );
+}
+
+function colonnesTriees(
+  colonnes: readonly { databaseName: string }[],
+): string[] {
+  return colonnes
+    .map((colonne) => colonne.databaseName)
+    .sort((gauche, droite) => gauche.localeCompare(droite));
+}
+
+const SUPPRESSION_PAR_DEFAUT = 'NO ACTION';
+
+describeDb('Formations repositories (db integration)', () => {
+  let contexte: ContexteFormations;
+
+  const ouvrirSeance = (code: string) =>
+    contexte.sessions.create({
+      courseSlug: 'b1-09-interets-composes',
+      courseVersion: 1,
+      teacherId: FORMATEUR,
+      code,
+      bareme: buildBareme(),
+    });
+
+  const annulerJusquA = async (migration: string): Promise<void> => {
+    const [derniere] = await contexte.dataSource.query<{ name: string }[]>(
+      `SELECT "name" FROM "migrations" ORDER BY "timestamp" DESC LIMIT 1`,
+    );
+    await contexte.dataSource.undoLastMigration({ transaction: 'all' });
+    if (derniere.name !== migration) {
+      await annulerJusquA(migration);
+    }
+  };
+
+  const jouerSeule = async (
+    migration: MigrationInterface & { readonly name: string },
+  ): Promise<void> => {
+    const requetes = contexte.dataSource.createQueryRunner();
+    await requetes.startTransaction();
+    try {
+      await migration.up(requetes);
+      await requetes.commitTransaction();
+    } finally {
+      await requetes.release();
+    }
+    await contexte.dataSource.query(
+      `INSERT INTO "migrations" ("timestamp", "name") VALUES ($1, $2)`,
+      [Number(migration.name.slice(-13)), migration.name],
+    );
+  };
+
+  const inscrire = (sessionId: string, studentKey: string, seed: number) =>
+    inscrireParticipant(contexte.participants, {
+      sessionId,
+      studentKey,
+      prenom: 'Theo',
+      nom: 'Martin',
+      email: 'theo.martin@example.com',
+      seed,
+    });
+
+  const inscrits = async (sessionId: string): Promise<number> =>
+    (await contexte.participants.listBySession(sessionId)).length;
+
+  const repondre = (
+    sessionId: string,
+    participantId: string,
+    questionId: string,
+    correcte: boolean,
+  ) =>
+    contexte.answers.create({
+      sessionId,
+      participantId,
+      questionId,
+      concept: 'capitalisation',
+      valeur: 1338.23,
+      seed: 1001,
+      correcte,
+      misconception: correcte ? null : 'interet-simple',
+      dureeMs: 42000,
+    });
+
+  const inscrireGrainesARebours = async (
+    sessionId: string,
+  ): Promise<ParticipantRecord[]> => {
+    const inscrits: ParticipantRecord[] = [];
+    for (const [rang, seed] of GRAINES_A_REBOURS.entries()) {
+      inscrits.push(await inscrire(sessionId, cleDeRang(rang), seed));
+    }
+    return inscrits;
+  };
+
+  const repondreQuestionsARebours = async (
+    sessionId: string,
+    participantId: string,
+  ): Promise<void> => {
+    for (const questionId of QUESTIONS_A_REBOURS) {
+      await repondre(sessionId, participantId, questionId, true);
+    }
+  };
+
+  beforeAll(async () => {
+    contexte = await ouvrirContexteFormations();
+  }, DELAI_OUVERTURE_CONTEXTE_MS);
+
+  afterAll(async () => {
+    await contexte.fermer();
+  });
+
+  beforeEach(async () => {
+    await contexte.nettoyer();
+  });
+
+  it('M11 · vide les séances, la maîtrise et les versions de cours, garde le schéma, puis republie les cours du dépôt', async () => {
+    const compter = async (): Promise<Record<string, number>> =>
+      Object.fromEntries(
+        await Promise.all(
+          FORMATION_TABLES.map(async (table) => {
+            const [{ lignes }] = await contexte.dataSource.query<
+              { lignes: number }[]
+            >(`SELECT COUNT(*)::int AS "lignes" FROM "${table}"`);
+            return [table, lignes] as const;
+          }),
+        ),
+      );
+    const seance = await ouvrirSeance('7310');
+    const avant = await compter();
+
+    expect(avant['formation_sessions']).toBe(1);
+    expect(avant['formation_course_contents']).toBeGreaterThan(0);
+
+    await contexte.rejouerMigration();
+
+    expect(await compter()).toEqual(
+      Object.fromEntries(FORMATION_TABLES.map((table) => [table, 0])),
+    );
+    await contexte.synchroniser(CONTENUS);
+    await expect(contexte.sessions.findById(seance.id)).resolves.toBeNull();
+    expect((await compter())['formation_course_contents']).toBe(
+      CONTENUS.length,
+    );
+  });
+
+  it('rejoue la derniere migration formations apres un retour arriere', async () => {
+    await contexte.rejouerMigration();
+
+    const tables: Array<{ tablename: string }> =
+      await contexte.dataSource.query(
+        `SELECT tablename FROM pg_tables WHERE schemaname = 'public' AND tablename LIKE 'formation_%'`,
+      );
+
+    expect(tables).toHaveLength(FORMATION_TABLES.length);
+    expect(tables.map((table) => table.tablename)).toEqual(
+      expect.arrayContaining([...FORMATION_TABLES]),
+    );
+  });
+
+  it('rabat sur la classe entière les annotations saisies par groupe, sans en perdre le texte', async () => {
+    const seance = await ouvrirSeance('4812');
+    await annulerJusquA('RetireLesGroupesDeSuivi1790600000000');
+    await contexte.dataSource.query(
+      `INSERT INTO "formation_teacher_annotations" ("session_id", "teacher_id", "screen_id", "group_name", "note")
+       VALUES ($1, $2, 'B2-01-A2-03-ATELIER-1', 'Classe entière', 'Relancer sur la base.'),
+              ($1, $2, 'B2-01-A2-03-ATELIER-1', 'Groupe A', 'Revoir le 45,5 %.'),
+              ($1, $2, 'B2-01-A2-06-POINTS', 'Groupe B', 'Faire lire les points.')`,
+      [seance.id, FORMATEUR],
+    );
+
+    await jouerSeule(new RetireLesGroupesDeSuivi1790600000000());
+
+    await expect(
+      contexte.annotations.listBySession(seance.id, FORMATEUR),
+    ).resolves.toEqual([
+      expect.objectContaining({
+        screenId: 'B2-01-A2-03-ATELIER-1',
+        note: 'Relancer sur la base.\nGroupe A : Revoir le 45,5 %.',
+      }),
+      expect.objectContaining({
+        screenId: 'B2-01-A2-06-POINTS',
+        note: 'Groupe B : Faire lire les points.',
+      }),
+    ]);
+    const restes: Array<{ nom: string }> = await contexte.dataSource.query(
+      `SELECT table_name || '.' || column_name AS nom FROM information_schema.columns
+       WHERE table_schema = 'public' AND (table_name = 'formation_groups' OR column_name IN ('group_id', 'group_name'))`,
+    );
+    expect(restes).toEqual([]);
+    await expect(
+      contexte.annotations.save({
+        sessionId: seance.id,
+        teacherId: FORMATEUR,
+        screenId: 'B2-01-A2-06-POINTS',
+        note: 'Faire lire les points, puis les taux.',
+      }),
+    ).resolves.toEqual(
+      expect.objectContaining({
+        note: 'Faire lire les points, puis les taux.',
+      }),
+    );
+    await expect(
+      contexte.annotations.listBySession(seance.id, FORMATEUR),
+    ).resolves.toHaveLength(2);
+    await contexte.dataSource.runMigrations({ transaction: 'all' });
+  });
+
+  it('diffuse en séance un écran inséré sans diffusion explicite', async () => {
+    const [colonne]: Array<{ defaut: string | null }> =
+      await contexte.dataSource.query(
+        `SELECT column_default AS defaut FROM information_schema.columns
+         WHERE table_name = 'formation_screen_contents' AND column_name = 'diffusion'`,
+      );
+
+    expect(colonne.defaut).toBe(`'seance'::character varying`);
+  });
+
+  it('refuse un ecran de cours sans note au lieu de lui donner une note vide par defaut', async () => {
+    await contexte.rejouerMigration();
+    const [colonne]: Array<{ defaut: string | null }> =
+      await contexte.dataSource.query(
+        `SELECT column_default AS defaut FROM information_schema.columns
+         WHERE table_name = 'formation_screen_contents' AND column_name = 'notes'`,
+      );
+    const [cours]: Array<{ id: string }> = await contexte.dataSource.query(
+      `INSERT INTO "formation_course_contents" ("slug", "version", "titre", "niveau", "duree_minutes", "concepts")
+       VALUES ('cours-sans-note', 1, 'Cours sans note', 'B2', 5, '["proportion"]'::jsonb) RETURNING "id"`,
+    );
+
+    expect(colonne.defaut).toBeNull();
+    await expect(
+      contexte.dataSource.query(
+        `INSERT INTO "formation_screen_contents" ("course_id", "position", "screen_id", "brique", "duree_minutes", "concepts", "proprietes")
+         VALUES ($1, 0, 'ECRAN-SANS-NOTE', 'fp-story', 5, '["proportion"]'::jsonb, '{}'::jsonb)`,
+        [cours.id],
+      ),
+    ).rejects.toThrow('null value in column "notes"');
+  });
+
+  it('relit a l identique le bareme tire a l ouverture, graine de reference comprise', async () => {
+    const cours = buildCoursDeClasse(12);
+    const bareme = ouvrirTirages(cours);
+    const seance = await contexte.sessions.create({
+      courseSlug: cours.slug,
+      courseVersion: 1,
+      teacherId: FORMATEUR,
+      code: '4271',
+      bareme,
+    });
+
+    const relue = await contexte.sessions.findById(seance.id);
+
+    expect(relue?.bareme).toEqual(bareme);
+  });
+
+  it('liste les participants dans leur ordre d arrivee et non dans l ordre de leur graine', async () => {
+    const seance = await ouvrirSeance('4271');
+    const arrivees = await inscrireGrainesARebours(seance.id);
+    await contexte.participants.touch(arrivees[0].id);
+
+    const liste = await contexte.participants.listBySession(seance.id);
+
+    expect(liste.map((participant) => participant.id)).toEqual(
+      arrivees.map((participant) => participant.id),
+    );
+  });
+
+  it('compte les participants d une seance sans compter ceux d une autre', async () => {
+    const seance = await ouvrirSeance('4271');
+    const autre = await ouvrirSeance('5382');
+    await inscrireGrainesARebours(seance.id);
+    await inscrire(autre.id, CLE_ETUDIANT, 1001);
+
+    await expect(inscrits(seance.id)).resolves.toBe(GRAINES_A_REBOURS.length);
+    await expect(inscrits(autre.id)).resolves.toBe(1);
+  });
+
+  it('liste les reponses dans leur ordre d ecriture et non dans l ordre des questions', async () => {
+    const seance = await ouvrirSeance('4271');
+    const participant = await inscrire(seance.id, CLE_ETUDIANT, 1001);
+    await repondreQuestionsARebours(seance.id, participant.id);
+
+    const liste = await contexte.answers.listBySession(seance.id);
+
+    expect(liste.map((reponse) => reponse.questionId)).toEqual(
+      QUESTIONS_A_REBOURS,
+    );
+  });
+
+  it('departage par identifiant les inscriptions et les reponses de meme horodatage', async () => {
+    const seance = await ouvrirSeance('4271');
+    const [premier] = await inscrireGrainesARebours(seance.id);
+    await repondreQuestionsARebours(seance.id, premier.id);
+    await contexte.dataSource.query(
+      `UPDATE "formation_participants" SET "rejoint_le" = $2 WHERE "session_id" = $1`,
+      [seance.id, HORODATAGE_COMMUN],
+    );
+    await contexte.dataSource.query(
+      `UPDATE "formation_answers" SET "soumis_le" = $2 WHERE "session_id" = $1`,
+      [seance.id, HORODATAGE_COMMUN],
+    );
+
+    const participants = await contexte.participants.listBySession(seance.id);
+    const reponses = await contexte.answers.listBySession(seance.id);
+
+    expect(participants.map((participant) => participant.id)).toEqual(
+      identifiantsTries(participants),
+    );
+    expect(reponses.map((reponse) => reponse.id)).toEqual(
+      identifiantsTries(reponses),
+    );
+  });
+
+  it('refuse deux seances actives portant le meme code', async () => {
+    await ouvrirSeance('4271');
+
+    await expect(ouvrirSeance('4271')).rejects.toBeInstanceOf(
+      SessionCodeAlreadyActiveError,
+    );
+    await expect(ouvrirSeance('4271')).rejects.not.toBeInstanceOf(
+      QueryFailedError,
+    );
+  });
+
+  it('libere le code une fois la seance terminee', async () => {
+    const premiere = await ouvrirSeance('4271');
+    await contexte.sessions.update(premiere.id, {
+      etat: 'terminee',
+      fermeeLe: new Date(),
+    });
+
+    const seconde = await ouvrirSeance('4271');
+
+    expect(seconde.id).not.toEqual(premiere.id);
+  });
+
+  it('ne rend pas une seance terminee depuis findActiveByCode', async () => {
+    const terminee = await ouvrirSeance('4271');
+    await contexte.sessions.update(terminee.id, {
+      etat: 'terminee',
+      fermeeLe: new Date(),
+    });
+    const ouverte = await ouvrirSeance('5382');
+
+    await expect(
+      contexte.sessions.findActiveByCode('4271'),
+    ).resolves.toBeNull();
+    await expect(contexte.sessions.isCodeTaken('4271')).resolves.toBe(false);
+    const active = await contexte.sessions.findActiveByCode('5382');
+    expect(active?.id).toEqual(ouverte.id);
+  });
+
+  it('rend sa place au meme etudiant qui repasse, sans nouveau tirage', async () => {
+    const seance = await ouvrirSeance('4271');
+    const premier = await inscrire(seance.id, CLE_ETUDIANT, 1001);
+
+    const second = await inscrire(seance.id, CLE_ETUDIANT, 1002);
+
+    expect(second).toMatchObject({ id: premier.id, seed: 1001 });
+    await expect(inscrits(seance.id)).resolves.toBe(1);
+  });
+
+  describe('S1 · S2 · reprise, eviction et readmission sous verrou', () => {
+    const secret = SecretDeReprise.generer();
+
+    const inscrireAvecSecret = (
+      sessionId: string,
+      secretPresente: string | undefined,
+    ) =>
+      contexte.participants.inscrire({
+        sessionId,
+        studentKey: CLE_ETUDIANT,
+        prenom: 'Alice',
+        nom: 'Durand',
+        email: 'alice.durand@example.com',
+        capacite: 2,
+        empreinteDeReprise: SecretDeReprise.empreinte(secret),
+        repriseAutorisee: (empreinte) =>
+          SecretDeReprise.autorise(empreinte, secretPresente),
+        choisirGraine: () => 1001,
+      });
+
+    it('ne stocke que l empreinte du secret et refuse la place au poste qui ne le presente pas', async () => {
+      const seance = await ouvrirSeance('4271');
+      const { participant } = await inscrireAvecSecret(seance.id, undefined);
+
+      const [ligne] = await contexte.dataSource.query<
+        { empreinte: string | null }[]
+      >(
+        `SELECT "empreinte_de_reprise" AS "empreinte" FROM "formation_participants" WHERE "id" = $1`,
+        [participant.id],
+      );
+
+      expect(ligne.empreinte).toBe(SecretDeReprise.empreinte(secret));
+      expect(ligne.empreinte).not.toBe(secret);
+      await expect(
+        inscrireAvecSecret(seance.id, undefined),
+      ).rejects.toBeInstanceOf(PlaceDejaPriseError);
+      await expect(
+        inscrireAvecSecret(seance.id, secret),
+      ).resolves.toMatchObject({
+        participant: { id: participant.id },
+        nouveau: false,
+      });
+    });
+
+    it('rend la place liberee par le formateur au premier poste qui la reclame', async () => {
+      const seance = await ouvrirSeance('4271');
+      const { participant } = await inscrireAvecSecret(seance.id, undefined);
+
+      await expect(
+        contexte.participants.libererPoste(seance.id, participant.id),
+      ).resolves.toBe(true);
+
+      await expect(
+        inscrireAvecSecret(seance.id, undefined),
+      ).resolves.toMatchObject({ participant: { id: participant.id } });
+    });
+
+    it('avance a chaque liberation la generation de jeton de la place, et elle seule', async () => {
+      const seance = await ouvrirSeance('4271');
+      const { participant } = await inscrireAvecSecret(seance.id, undefined);
+      expect(participant.generationDeJeton).toBe(0);
+
+      await contexte.participants.libererPoste(seance.id, participant.id);
+      await contexte.participants.libererPoste(seance.id, participant.id);
+
+      await expect(
+        contexte.participants.findById(participant.id),
+      ).resolves.toMatchObject({ generationDeJeton: 2 });
+      await expect(
+        inscrireAvecSecret(seance.id, undefined),
+      ).resolves.toMatchObject({ participant: { generationDeJeton: 2 } });
+    });
+
+    it('refuse a l evince de revenir sous la meme cle, sans lui rendre de place', async () => {
+      const seance = await ouvrirSeance('4271');
+      const { participant } = await inscrireAvecSecret(seance.id, undefined);
+      await contexte.participants.evincer(seance.id, participant.id);
+
+      await expect(
+        inscrireAvecSecret(seance.id, secret),
+      ).rejects.toBeInstanceOf(ParticipantEvinceError);
+      await expect(inscrits(seance.id)).resolves.toBe(0);
+    });
+
+    it('traduit la graine reprise par un autre poste en GraineRepriseError, jamais en erreur SQL', async () => {
+      const seance = await ouvrirSeance('4271');
+      const evince = await inscrire(seance.id, CLE_ETUDIANT, 1001);
+      await contexte.participants.evincer(seance.id, evince.id);
+      await inscrire(seance.id, AUTRE_CLE_ETUDIANT, 1001);
+
+      await expect(
+        contexte.participants.readmettre(seance.id, evince.id, 5),
+      ).rejects.toBeInstanceOf(GraineRepriseError);
+    });
+
+    it('ne depasse pas la capacite quand deux readmissions arrivent ensemble', async () => {
+      const seance = await ouvrirSeance('4271');
+      await inscrire(seance.id, cleDeRang(0), 1001);
+      const premier = await inscrire(seance.id, cleDeRang(1), 1002);
+      const second = await inscrire(seance.id, cleDeRang(2), 1003);
+      await contexte.participants.evincer(seance.id, premier.id);
+      await contexte.participants.evincer(seance.id, second.id);
+
+      const resultats = await Promise.allSettled([
+        contexte.participants.readmettre(seance.id, premier.id, 2),
+        contexte.participants.readmettre(seance.id, second.id, 2),
+      ]);
+
+      expect(
+        resultats.filter((resultat) => resultat.status === 'fulfilled'),
+      ).toHaveLength(1);
+      expect(
+        resultats
+          .filter((resultat) => resultat.status === 'rejected')
+          .map((resultat) => resultat.reason),
+      ).toEqual([expect.any(SeanceCompleteError)]);
+      await expect(inscrits(seance.id)).resolves.toBe(2);
+    });
+  });
+
+  it('traduit un tirage deja attribue en SeedAlreadyAssignedError', async () => {
+    const seance = await ouvrirSeance('4271');
+    await inscrire(seance.id, CLE_ETUDIANT, 1001);
+
+    await expect(
+      inscrire(seance.id, AUTRE_CLE_ETUDIANT, 1001),
+    ).rejects.toBeInstanceOf(SeedAlreadyAssignedError);
+  });
+
+  it('rejette deux ecritures concurrentes sur la meme question', async () => {
+    const seance = await ouvrirSeance('4271');
+    const participant = await inscrire(seance.id, CLE_ETUDIANT, 1001);
+
+    const resultats = await Promise.allSettled([
+      repondre(seance.id, participant.id, 'Q-CAP-03', true),
+      repondre(seance.id, participant.id, 'Q-CAP-03', false),
+    ]);
+
+    const rejets = resultats.filter(
+      (resultat) => resultat.status === 'rejected',
+    );
+    expect(
+      resultats.filter((resultat) => resultat.status === 'fulfilled'),
+    ).toHaveLength(1);
+    expect(rejets).toHaveLength(1);
+    expect(rejets[0].reason).toBeInstanceOf(AnswerAlreadySubmittedError);
+    await expect(
+      contexte.answers.listBySession(seance.id),
+    ).resolves.toHaveLength(1);
+  });
+
+  it('SEC-4.1 · plafonne les reprises concurrentes d une production sans en perdre le compte', async () => {
+    const seance = await ouvrirSeance('4271');
+    const participant = await inscrire(seance.id, CLE_ETUDIANT, 1001);
+    const premiere = await repondre(
+      seance.id,
+      participant.id,
+      'Q-CAP-03',
+      false,
+    );
+
+    const reprises = await Promise.all(
+      [true, true, true].map((correcte) =>
+        contexte.answers.remplacer({ ...premiere, correcte }, 3),
+      ),
+    );
+
+    expect(reprises.filter(Boolean)).toHaveLength(2);
+    const [{ soumissions }]: Array<{ soumissions: number }> =
+      await contexte.dataSource.query(
+        `SELECT "soumissions" FROM "formation_answers" WHERE "id" = $1`,
+        [premiere.id],
+      );
+    expect(soumissions).toBe(3);
+  });
+
+  it('relit des nombres et non des chaines depuis la base', async () => {
+    const seance = await ouvrirSeance('4271');
+    const ecrit = await inscrire(seance.id, CLE_ETUDIANT, 1001);
+    await repondre(seance.id, ecrit.id, 'Q-CAP-03', true);
+
+    const participant = await contexte.participants.findById(ecrit.id);
+    const [reponse] = await contexte.answers.listBySession(seance.id);
+
+    expect(typeof participant?.seed).toBe('number');
+    expect(typeof reponse.seed).toBe('number');
+    expect(typeof reponse.dureeMs).toBe('number');
+    expect(reponse.dureeMs).toEqual(42000);
+  });
+
+  it('relit un montant decimal du jsonb en nombre et non en chaine', async () => {
+    const seance = await ouvrirSeance('4271');
+    const participant = await inscrire(seance.id, CLE_ETUDIANT, 1001);
+    await contexte.answers.create({
+      sessionId: seance.id,
+      participantId: participant.id,
+      questionId: 'Q-CAP-04',
+      concept: 'capitalisation',
+      valeur: 1480.24,
+      seed: 1001,
+      correcte: true,
+      misconception: null,
+      dureeMs: 31000,
+    });
+
+    const [reponse] = await contexte.answers.listBySession(seance.id);
+
+    expect(typeof reponse.valeur).toBe('number');
+    expect(JSON.stringify(reponse.valeur)).toBe('1480.24');
+  });
+
+  it('conserve l instant exact des horodatages relus', async () => {
+    const seance = await ouvrirSeance('4271');
+    const participant = await inscrire(seance.id, CLE_ETUDIANT, 1001);
+    const horodatage = new Date('2026-09-11T08:12:34.567Z');
+
+    await contexte.incidents.createMany([
+      {
+        sessionId: seance.id,
+        participantId: participant.id,
+        type: 'tab_hidden',
+        contexte: { onglet: 'calculatrice' },
+        horodatage,
+      },
+    ]);
+
+    const releves = await contexte.incidents.listBySession(seance.id);
+    expect(releves).toHaveLength(1);
+    expect(releves[0].horodatage).toBeInstanceOf(Date);
+    expect(releves[0].horodatage.getTime()).toBe(horodatage.getTime());
+    expect(releves[0].contexte).toEqual({ onglet: 'calculatrice' });
+  });
+
+  it('stocke les horodatages en timestamptz', async () => {
+    const colonnes: TypeColonne[] = await contexte.dataSource.query(
+      `SELECT data_type FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'formation_incidents' AND column_name = 'horodatage'`,
+    );
+
+    expect(colonnes).toEqual([{ data_type: 'timestamp with time zone' }]);
+  });
+
+  it('remplace la maitrise existante au lieu de la dupliquer', async () => {
+    await contexte.mastery.enregistrerTentative({
+      studentKey: CLE_ETUDIANT,
+      concept: 'capitalisation',
+      reussi: true,
+    });
+    await contexte.mastery.enregistrerTentative({
+      studentKey: CLE_ETUDIANT,
+      concept: 'capitalisation',
+      reussi: true,
+    });
+
+    const maitrise = await contexte.mastery.findByStudentKey(CLE_ETUDIANT);
+    expect(maitrise).toHaveLength(1);
+    expect(maitrise[0].boite).toBe(3);
+    expect(typeof maitrise[0].succes).toBe('number');
+    expect(maitrise[0].succes).toBe(2);
+  });
+
+  it('compte chaque tentative simultanee sans perte de mise a jour', async () => {
+    const tentatives = Array.from({ length: 20 }, (_, rang) =>
+      contexte.mastery.enregistrerTentative({
+        studentKey: CLE_ETUDIANT,
+        concept: 'taux-evolution',
+        reussi: rang % 2 === 0,
+      }),
+    );
+
+    await Promise.all(tentatives);
+
+    const maitrise = await contexte.mastery.findByStudentKey(CLE_ETUDIANT);
+    const ligne = maitrise.find(
+      (entree) => entree.concept === 'taux-evolution',
+    );
+    expect(ligne).toBeDefined();
+    expect(ligne!.succes + ligne!.echecs).toBe(20);
+    expect(ligne!.succes).toBe(10);
+    expect(ligne!.echecs).toBe(10);
+  });
+
+  it.each([
+    [1, true, 2],
+    [2, true, 3],
+    [3, true, 3],
+    [1, false, 1],
+    [2, false, 1],
+    [3, false, 1],
+  ] as const)(
+    'applique en base la transition de boite : boite %i, reussi %s, boite %i',
+    async (boiteDepart, reussi, boiteAttendue) => {
+      for (let montee = 1; montee < boiteDepart; montee += 1) {
+        await contexte.mastery.enregistrerTentative({
+          studentKey: CLE_ETUDIANT,
+          concept: 'controle-coherence',
+          reussi: true,
+        });
+      }
+      await contexte.mastery.enregistrerTentative({
+        studentKey: CLE_ETUDIANT,
+        concept: 'controle-coherence',
+        reussi,
+      });
+
+      const maitrise = await contexte.mastery.findByStudentKey(CLE_ETUDIANT);
+      expect(maitrise[0].boite).toBe(boiteAttendue);
+    },
+  );
+
+  it('decrit dans les entites le schema exact que produit la migration', async () => {
+    await attendreSchemaAligneSurLesEntites(contexte.dataSource);
+  });
+
+  it('declare les verrous d unicite sur les memes colonnes qu en base', async () => {
+    const enBase: ContrainteUnique[] = await contexte.dataSource.query(
+      `SELECT contrainte.conname AS nom, array_agg(colonne.attname::text ORDER BY colonne.attname) AS colonnes
+       FROM pg_constraint contrainte
+       JOIN pg_class relation ON relation.oid = contrainte.conrelid
+       JOIN pg_namespace espace ON espace.oid = relation.relnamespace
+       JOIN unnest(contrainte.conkey) AS cle(attnum) ON true
+       JOIN pg_attribute colonne ON colonne.attrelid = relation.oid AND colonne.attnum = cle.attnum
+       WHERE contrainte.contype = 'u' AND espace.nspname = 'public' AND relation.relname LIKE 'formation_%'
+       GROUP BY contrainte.conname`,
+    );
+    const declarees: ContrainteUnique[] = FORMATION_ENTITIES.flatMap((entite) =>
+      contexte.dataSource.getMetadata(entite).uniques.map((verrou) => ({
+        nom: verrou.name,
+        colonnes: colonnesTriees(verrou.columns),
+      })),
+    );
+
+    expect(enBase).toHaveLength(4);
+    expect(trierParNom(declarees)).toEqual(trierParNom(enBase));
+  });
+
+  it('declare les clefs etrangeres de la base, colonnes, cible et suppression comprises', async () => {
+    const enBase: ClefEtrangere[] = await contexte.dataSource.query(
+      `SELECT contrainte.conname AS nom, array_agg(colonne.attname::text ORDER BY colonne.attname) AS colonnes,
+              cible.relname AS cible,
+              CASE contrainte.confdeltype WHEN 'c' THEN 'CASCADE' WHEN 'n' THEN 'SET NULL' WHEN 'r' THEN 'RESTRICT' WHEN 'd' THEN 'SET DEFAULT' ELSE 'NO ACTION' END AS suppression
+       FROM pg_constraint contrainte
+       JOIN pg_class relation ON relation.oid = contrainte.conrelid
+       JOIN pg_namespace espace ON espace.oid = relation.relnamespace
+       JOIN pg_class cible ON cible.oid = contrainte.confrelid
+       JOIN unnest(contrainte.conkey) AS cle(attnum) ON true
+       JOIN pg_attribute colonne ON colonne.attrelid = relation.oid AND colonne.attnum = cle.attnum
+       WHERE contrainte.contype = 'f' AND espace.nspname = 'public' AND relation.relname LIKE 'formation_%'
+       GROUP BY contrainte.conname, cible.relname, contrainte.confdeltype`,
+    );
+    const declarees: ClefEtrangere[] = FORMATION_ENTITIES.flatMap((entite) =>
+      contexte.dataSource.getMetadata(entite).foreignKeys.map((clef) => ({
+        nom: clef.name,
+        colonnes: colonnesTriees(clef.columns),
+        cible: clef.referencedEntityMetadata.tableName,
+        suppression: clef.onDelete ?? SUPPRESSION_PAR_DEFAUT,
+      })),
+    );
+
+    expect(enBase).toHaveLength(15);
+    expect(trierParNom(declarees)).toEqual(trierParNom(enBase));
+  });
+
+  it('declare les contraintes CHECK de la base sous le meme nom', async () => {
+    const enBase: ContrainteNommee[] = await contexte.dataSource.query(
+      `SELECT contrainte.conname AS nom
+       FROM pg_constraint contrainte
+       JOIN pg_class relation ON relation.oid = contrainte.conrelid
+       JOIN pg_namespace espace ON espace.oid = relation.relnamespace
+       WHERE contrainte.contype = 'c' AND espace.nspname = 'public' AND relation.relname LIKE 'formation_%'`,
+    );
+    const declarees: ContrainteNommee[] = FORMATION_ENTITIES.flatMap((entite) =>
+      contexte.dataSource
+        .getMetadata(entite)
+        .checks.map((controle) => ({ nom: controle.name })),
+    );
+
+    expect(enBase).toHaveLength(10);
+    expect(enBase).toContainEqual({ nom: 'chk_formation_screen_diffusion' });
+    expect(trierParNom(declarees)).toEqual(trierParNom(enBase));
+  });
+
+  it('declare les index sur les memes colonnes qu en base', async () => {
+    const enBase: ContrainteUnique[] = await contexte.dataSource.query(
+      `SELECT classe_index.relname AS nom, array_agg(colonne.attname::text ORDER BY colonne.attname) AS colonnes
+       FROM pg_index index_pg
+       JOIN pg_class classe_index ON classe_index.oid = index_pg.indexrelid
+       JOIN pg_class classe_table ON classe_table.oid = index_pg.indrelid
+       JOIN pg_namespace espace ON espace.oid = classe_table.relnamespace
+       JOIN unnest(index_pg.indkey) AS cle(attnum) ON true
+       JOIN pg_attribute colonne ON colonne.attrelid = classe_table.oid AND colonne.attnum = cle.attnum
+       WHERE espace.nspname = 'public' AND classe_table.relname LIKE 'formation_%'
+         AND NOT index_pg.indisprimary
+         AND NOT EXISTS (SELECT 1 FROM pg_constraint contrainte WHERE contrainte.conindid = index_pg.indexrelid AND contrainte.contype = 'u')
+       GROUP BY classe_index.relname`,
+    );
+    const declarees: ContrainteUnique[] = FORMATION_ENTITIES.flatMap((entite) =>
+      contexte.dataSource.getMetadata(entite).indices.map((index) => ({
+        nom: index.name,
+        colonnes: colonnesTriees(index.columns),
+      })),
+    );
+
+    expect(enBase).toHaveLength(16);
+    expect(trierParNom(declarees)).toEqual(trierParNom(enBase));
+  });
+
+  it('declare le meme predicat partiel que l index du code actif', async () => {
+    const [index] = contexte.dataSource
+      .getMetadata(FormationSessionEntity)
+      .indices.filter((candidat) => candidat.isUnique);
+    const [stocke]: Array<{ predicat: string }> =
+      await contexte.dataSource.query(
+        `SELECT pg_get_expr(indpred, indrelid) AS predicat FROM pg_index WHERE indexrelid = 'uq_formation_sessions_code_active'::regclass`,
+      );
+
+    const etatsCouverts = async (predicat: string): Promise<string[]> => {
+      const lignes: Array<{ etat: string }> = await contexte.dataSource.query(
+        `SELECT etat FROM (VALUES ('attente'), ('en_cours'), ('terminee')) AS seance(etat) WHERE ${predicat} ORDER BY etat`,
+      );
+      return lignes.map((ligne) => ligne.etat);
+    };
+
+    expect(await etatsCouverts(stocke.predicat)).toEqual([
+      'attente',
+      'en_cours',
+    ]);
+    expect(await etatsCouverts(index.where ?? 'false')).toEqual(
+      await etatsCouverts(stocke.predicat),
+    );
+  });
+
+  it('efface participants et reponses avec la seance', async () => {
+    const seance = await ouvrirSeance('4271');
+    const participant = await inscrire(seance.id, CLE_ETUDIANT, 1001);
+    await repondre(seance.id, participant.id, 'Q-CAP-03', true);
+
+    await contexte.dataSource.query(
+      `DELETE FROM "formation_sessions" WHERE "id" = $1`,
+      [seance.id],
+    );
+
+    await expect(
+      contexte.participants.listBySession(seance.id),
+    ).resolves.toHaveLength(0);
+    await expect(
+      contexte.answers.listBySession(seance.id),
+    ).resolves.toHaveLength(0);
+  });
+});

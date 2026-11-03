@@ -1,4 +1,4 @@
-import { estAuMoinsUn } from '../../../src/common/domain/au-moins-un';
+import { estAuMoinsUn } from '../../../src/common/domain/objets/au-moins-un';
 import {
   mediane as medianeDesNombres,
   moyenne as moyenneDesNombres,

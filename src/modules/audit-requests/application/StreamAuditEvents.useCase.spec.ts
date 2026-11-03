@@ -1,14 +1,14 @@
 import type { MessageEvent } from '@nestjs/common';
 import { firstValueFrom, take, toArray } from 'rxjs';
-import type { IAuditRequestsRepository } from '../domain/IAuditRequests.repository';
+import type { IAuditRequestsRepository } from '../domain/demande/IAuditRequests.repository';
 import { StreamAuditEventsUseCase } from './StreamAuditEvents.useCase';
-import type { AuditSnapshot } from '../domain/AuditProcessing';
+import type { AuditSnapshot } from '../domain/traitement/AuditProcessing';
 import {
   buildAuditSnapshot,
   buildClientReportSynthesis,
   createMockAuditRequestsRepo,
-} from '../../../../test/factories/audit-requests.factory';
-import { espionnerLesAvertissements } from '../../../../test/helpers/avertissements';
+} from '../../../../test/factories/audits/audit-requests.factory';
+import { espionnerLesAvertissements } from '../../../../test/helpers/depot/avertissements';
 
 describe('StreamAuditEventsUseCase', () => {
   let useCase: StreamAuditEventsUseCase;

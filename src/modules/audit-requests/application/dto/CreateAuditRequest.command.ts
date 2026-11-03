@@ -1,1 +1,1 @@
-export type { CreateAuditRequestProps as CreateAuditRequestCommand } from '../../domain/AuditRequest';
+export type { CreateAuditRequestProps as CreateAuditRequestCommand } from '../../domain/demande/AuditRequest';

@@ -2,7 +2,7 @@ import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 import {
   ColonneAcceptationDesConditions,
   ColonneVersionDesConditions,
-} from '../../../../common/infrastructure/typeorm/ColonnesDeConsentement';
+} from '../../../../common/infrastructure/typeorm/colonnes/ColonnesDeConsentement';
 
 @Entity({ name: 'lead_magnet_requests' })
 @Index('idx_lead_magnet_requests_email_slug', ['email', 'formationSlug'])

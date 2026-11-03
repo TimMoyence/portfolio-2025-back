@@ -1,5 +1,5 @@
-import type { AnswerValue } from '../../domain/AnswerGrading';
-import type { VerdictServi } from '../../domain/cours/EcranServi';
+import type { AnswerValue } from '../../domain/notation/AnswerGrading';
+import type { VerdictServi } from '../../domain/cours/diffusion/EcranServi';
 
 export interface SubmitAnswerCommand {
   sessionId: string;

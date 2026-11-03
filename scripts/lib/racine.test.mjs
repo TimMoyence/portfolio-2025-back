@@ -22,7 +22,7 @@ const SOURCE = fileURLToPath(new URL('./racine.mjs', import.meta.url));
 const PROPRIETAIRES_DE_LA_RACINE = new Set([
   'scripts/lib/racine.mjs',
   'scripts/lib/racine.test.mjs',
-  'test/helpers/racine.ts',
+  'test/helpers/depot/racine.ts',
 ]);
 const MODULES = new Map([
   ['path', 'chemin'],
@@ -793,7 +793,7 @@ const CHEMINS_DANS_LEUR_DOSSIER = {
     "import { resolve } from 'node:path';\nexport const R = resolve(__dirname, 'x');\nexport const P = new Promise<string>((resolve) => resolve('.'));\n",
   'test/helpers/absolu.ts':
     "import { readFileSync } from 'node:fs';\nimport { resolve } from 'node:path';\nexport const P = readFileSync('/etc/hosts', 'utf8');\nexport const H = resolve('/etc', 'hosts');\n",
-  'test/helpers/environnement.ts':
+  'test/helpers/depot/environnement.ts':
     'export const U = process.env.DATABASE_URL;\n',
   'test/helpers/propriete-homonyme.ts':
     'export const F = (o: { __filename: string; __dirname: string }) => ({ __filename: o.__filename, __dirname: o.__dirname });\nexport const G = ({ __filename: f }: { __filename: string }) => f;\n',
@@ -1837,7 +1837,7 @@ void test('aucun script ni test ne calcule la racine du dépôt hors de ses prop
   for (const temoin of [
     'scripts/lib/racine.mjs',
     'src/main.ts',
-    'test/helpers/racine.ts',
+    'test/helpers/depot/racine.ts',
   ]) {
     assert.ok(sources.includes(temoin), temoin);
   }

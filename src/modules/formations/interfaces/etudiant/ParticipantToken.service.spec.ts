@@ -1,0 +1,158 @@
+/* eslint-disable @typescript-eslint/unbound-method */
+import { UnauthorizedException } from '@nestjs/common';
+import {
+  buildParticipantRecord,
+  createMockParticipantsRepo,
+} from '../../../../../test/factories/formations/formation.factory';
+import { ParticipantEvinceError } from '../../domain/errors/FormationErrors';
+import { installerSecretDeSignature } from '../../../../../test/helpers/formations/seance/env-formations';
+import { appliquer } from '../../../../../test/helpers/depot/environnement';
+import {
+  identiteSignee,
+  ParticipantTokenService,
+} from './ParticipantToken.service';
+
+const SESSION = '4d0f2a9e-0d7f-4d2f-9a3c-1f6b2a7c8d90';
+const AUTRE_SESSION = '9c8b7a6d-5e4f-4a3b-8c2d-1e0f9a8b7c6d';
+const PARTICIPANT = '8f1c3b2a-5d4e-4f6a-9b8c-7d6e5f4a3b2c';
+
+describe('ParticipantTokenService', () => {
+  const participants = createMockParticipantsRepo();
+  const service = new ParticipantTokenService(participants);
+
+  const participantALaGeneration = (generationDeJeton: number) =>
+    participants.findById.mockResolvedValue(
+      buildParticipantRecord({
+        id: PARTICIPANT,
+        sessionId: SESSION,
+        generationDeJeton,
+      }),
+    );
+
+  installerSecretDeSignature('chaque-test');
+
+  beforeEach(() => {
+    participants.findById.mockReset();
+    participantALaGeneration(0);
+  });
+
+  it('rend le participant signe et la generation de son jeton', async () => {
+    const jeton = service.sign(SESSION, PARTICIPANT, 0);
+
+    await expect(service.verifierIdentite(SESSION, jeton)).resolves.toEqual({
+      participantId: PARTICIPANT,
+      generation: 0,
+    });
+  });
+
+  it('refuse un jeton emis pour une autre session', async () => {
+    const jeton = service.sign(AUTRE_SESSION, PARTICIPANT, 0);
+
+    await expect(service.verifierIdentite(SESSION, jeton)).rejects.toThrow(
+      UnauthorizedException,
+    );
+  });
+
+  it('refuse un jeton dont le participantId a ete remplace', async () => {
+    const [, generation, empreinte] = service
+      .sign(SESSION, PARTICIPANT, 0)
+      .split('.');
+
+    await expect(
+      service.verifierIdentite(SESSION, `autre-id.${generation}.${empreinte}`),
+    ).rejects.toThrow(UnauthorizedException);
+  });
+
+  it('S1 · refuse un jeton dont la generation a ete remplacee', async () => {
+    const [id, , empreinte] = service.sign(SESSION, PARTICIPANT, 0).split('.');
+
+    await expect(
+      service.verifierIdentite(SESSION, `${id}.1.${empreinte}`),
+    ).rejects.toThrow(UnauthorizedException);
+  });
+
+  it('S1 · refuse le jeton d une generation revoquee par la liberation du poste', async () => {
+    const jeton = service.sign(SESSION, PARTICIPANT, 0);
+    participantALaGeneration(1);
+
+    await expect(service.verifierIdentite(SESSION, jeton)).rejects.toThrow(
+      UnauthorizedException,
+    );
+  });
+
+  it('S1 · accepte le jeton de la generation courante apres liberation', async () => {
+    participantALaGeneration(1);
+
+    await expect(
+      service.verifierIdentite(SESSION, service.sign(SESSION, PARTICIPANT, 1)),
+    ).resolves.toEqual({ participantId: PARTICIPANT, generation: 1 });
+  });
+
+  it('refuse le jeton d un participant absent de la seance', async () => {
+    participants.findById.mockResolvedValue(null);
+
+    await expect(
+      service.verifierIdentite(SESSION, service.sign(SESSION, PARTICIPANT, 0)),
+    ).rejects.toThrow(UnauthorizedException);
+  });
+
+  it('refuse en PARTICIPANT_EVINCE le jeton authentique d un participant evince', async () => {
+    participants.findById.mockResolvedValue(
+      buildParticipantRecord({
+        id: PARTICIPANT,
+        sessionId: SESSION,
+        evinceLe: new Date('2026-10-15T10:00:00Z'),
+      }),
+    );
+
+    await expect(
+      service.verifierIdentite(SESSION, service.sign(SESSION, PARTICIPANT, 0)),
+    ).rejects.toThrow(ParticipantEvinceError);
+  });
+
+  it('ne consulte pas le depot pour un jeton dont la signature est fausse', async () => {
+    const jeton = service.sign(SESSION, PARTICIPANT, 0);
+
+    await expect(
+      service.verifierIdentite(SESSION, jeton.slice(0, -4)),
+    ).rejects.toThrow(UnauthorizedException);
+    expect(participants.findById).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    undefined,
+    '',
+    'sans-separateur',
+    '.empreinte-orpheline',
+    'id.empreinte',
+    'id.-1.empreinte',
+    'id.1e3.empreinte',
+  ])('refuse le jeton illisible %p', async (jeton) => {
+    await expect(service.verifierIdentite(SESSION, jeton)).rejects.toThrow(
+      UnauthorizedException,
+    );
+  });
+
+  it('tire du jeton signe le participant et sa generation sans consulter le depot', () => {
+    expect(
+      identiteSignee(SESSION, service.sign(SESSION, PARTICIPANT, 3)),
+    ).toEqual({ participantId: PARTICIPANT, generation: 3 });
+    expect(participants.findById).not.toHaveBeenCalled();
+  });
+
+  it('refuse de signer quand le secret est trop court', () => {
+    appliquer({ FORMATION_REVIEW_TOKEN_SECRET: 'trop-court' });
+
+    expect(() => service.sign(SESSION, PARTICIPANT, 0)).toThrow(
+      'FORMATION_REVIEW_TOKEN_SECRET',
+    );
+  });
+
+  it('refuse de signer quand le secret est absent', () => {
+    appliquer({ FORMATION_REVIEW_TOKEN_SECRET: undefined });
+
+    expect(() => service.sign(SESSION, PARTICIPANT, 0)).toThrow(
+      'FORMATION_REVIEW_TOKEN_SECRET',
+    );
+  });
+});

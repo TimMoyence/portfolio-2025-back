@@ -1,8 +1,8 @@
-import type { Tolerance } from '../GradingCore';
-import type { ExplicationDeCorrection } from '../cours/Cours';
-import type { FormeFormule } from '../cours/Corrige';
-import type { CorrigePresentateur } from '../cours/DeroulePresentateur';
-import type { ValeurFormule } from '../cours/Formule';
+import type { Tolerance } from '../notation/GradingCore';
+import type { ExplicationDeCorrection } from '../cours/structure/Cours';
+import type { FormeFormule } from '../cours/correction/Corrige';
+import type { CorrigePresentateur } from '../cours/diffusion/DeroulePresentateur';
+import type { ValeurFormule } from '../cours/formule/Formule';
 import type { Diffusion } from './cours';
 import type { TableauEvalue } from './donnees-publiques';
 import type { CoursPublic, EcranPublic } from './tirage';

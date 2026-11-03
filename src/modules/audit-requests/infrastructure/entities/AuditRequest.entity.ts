@@ -1,12 +1,12 @@
-import { ColonnesDeRequete } from '../../../../common/infrastructure/typeorm/ColonnesDeProvenance';
+import { ColonnesDeRequete } from '../../../../common/infrastructure/typeorm/colonnes/ColonnesDeProvenance';
 import { Column, Entity, Index } from 'typeorm';
-import type { AuditProcessingStatus } from '../../domain/AuditProcessing';
-import type { ScoresDesPiliers } from '../../domain/Piliers';
+import type { AuditProcessingStatus } from '../../domain/traitement/AuditProcessing';
+import type { ScoresDesPiliers } from '../../domain/score/Piliers';
 import type {
   ClientReportSynthesis,
   ExpertReportSynthesis,
-} from '../../domain/AuditReportTiers';
-import type { EngineCoverage } from '../../domain/EngineCoverage';
+} from '../../domain/score/AuditReportTiers';
+import type { EngineCoverage } from '../../domain/score/EngineCoverage';
 
 @Entity({ name: 'audit_requests' })
 @Index('idx_audit_requests_status_created_at', [

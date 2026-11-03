@@ -5,7 +5,7 @@ API NestJS du portfolio. Les règles transverses sont dans `~/.claude/CLAUDE.md`
 ## Juges
 
 - Le contrat HTTP de ce dépôt (DTO et document OpenAPI produit par Swagger) est la source unique des types du front `portfolio-2025-front`. Le front ne réécrit jamais un type de réponse à la main : un type recopié faisait perdre 7 incidents sur 9 en production.
-- Une règle métier vit ici ; le front lit le champ servi au lieu de la recalculer. Un DTO qui change change le contrat dans le même commit, et `test/openapi-contract.e2e.spec.ts` le juge.
+- Une règle métier vit ici ; le front lit le champ servi au lieu de la recalculer. Un DTO qui change change le contrat dans le même commit, et `test/socle/http/openapi-contract.e2e.spec.ts` le juge.
 - `openapi.json` est ce contrat, commité (ADR 0003) : chaque entrée et chaque sortie y est typée précisément (listes, entiers bornés, variantes liées à leur discriminant). `pnpm openapi` le régénère dans le même commit que le DTO ; `pnpm openapi:check` refuse un écart.
 - Les imports entre `interfaces`, `application`, `domain` et `infrastructure` sont jugés par `src/runtime/dependency-rules.spec.ts`.
 

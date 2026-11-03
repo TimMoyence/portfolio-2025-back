@@ -6,7 +6,7 @@ import {
   AuMoinsCaracteres,
   AuPlusCaracteres,
   TexteSaisi,
-} from '../../../../common/interfaces/dto/longueur-de-texte.decorator';
+} from '../../../../common/interfaces/dto/champs/longueur-de-texte.decorator';
 import { LONGUEUR_MAX_D_UN_NOM } from '../../domain/User';
 
 export const LONGUEUR_MAX_D_UN_TELEPHONE = 30;

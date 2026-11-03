@@ -7,7 +7,7 @@ import {
 } from '@nestjs/swagger';
 import { Roles } from '../../../common/interfaces/auth/roles.decorator';
 import { RolesGuard } from '../../../common/interfaces/auth/roles.guard';
-import { ROLE_ADMINISTRATEUR } from '../domain/SessionOwnership';
+import { ROLE_ADMINISTRATEUR } from '../domain/seance/acces/SessionOwnership';
 import {
   LIMITE_LECTURE_FORMATEUR_PAR_MINUTE,
   LimiteParMinute,

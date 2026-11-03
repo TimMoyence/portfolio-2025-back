@@ -1,5 +1,5 @@
 import type { CookieOptions } from 'express';
-import { estEnProduction } from '../../../config/env-readers.util';
+import { estEnProduction } from '../../../config/environnement/env-readers.util';
 import { cheminDeLApi } from '../../../config/prefixe-api';
 
 export function attributsDuCookieDeRafraichissement(): CookieOptions {

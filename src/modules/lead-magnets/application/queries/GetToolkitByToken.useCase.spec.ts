@@ -5,7 +5,7 @@ import {
   createMockLeadMagnetRequestRepo,
   createMockToolkitContentAssembler,
 } from '../../../../../test/factories/lead-magnet-request.factory';
-import { LienInvalideError } from '../../../../common/domain/errors/LienInvalideError';
+import { LienInvalideError } from '../../../../common/domain/errors/auth/LienInvalideError';
 import {
   LEAD_MAGNET_REQUEST_REPOSITORY,
   TOOLKIT_CONTENT_ASSEMBLER,
