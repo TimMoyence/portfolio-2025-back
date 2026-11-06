@@ -1,26 +1,12 @@
-import {
-  lireConception,
-  piecesJointesDuDocument,
-} from '../../../../../../../test/helpers/formations/cours/conception-de-cours';
+import { lireConception } from '../../../../../../../test/helpers/formations/cours/conception-de-cours';
 import { ANOMALIES_SEMEES } from '../../../../../../../test/helpers/cours-b3-01/generateur';
 import * as fiche from '../../../../../../../test/helpers/formations/cours/fiche-de-cours';
 import * as feuille from '../../../../../../../test/helpers/formations/cours/feuille-de-cours';
-import {
-  formulesAltereesALaPublication,
-  piegesDesQuestionsSuivantesDevoilesParLesExplications,
-  piegesPartagesDevoilesParLesExplications,
-  valeursAuCatalogue,
-  valeursDevoileesAvantLeurEcran,
-  valeursDevoileesParLesExplications,
-} from '../../../../../../../test/helpers/formations/cours/relecture-de-cours';
+import * as relecture from '../../../../../../../test/helpers/formations/cours/gardes-de-relecture';
 import { arrondi } from '../../../../../../common/domain/nombres/arrondi';
 import { avecVirgule } from '../../../../../../common/domain/nombres/ecriture-francaise';
 import { sansEspacesTypographiques } from '../../../../../../common/domain/texte/nettoyage/sans-espaces-typographiques';
 import { libelleDeConfusion } from '../../../../domain/cours/banque/confusions';
-import {
-  estReservee,
-  questionsDuCours,
-} from '../../../../domain/cours/structure/Cours';
 import { tirer } from '../../../../domain/cours/tirage/Tirage';
 import { COURS_B3_01 } from './b3-01.cours';
 import {
@@ -40,7 +26,6 @@ import {
 } from '../../../../../../../test/helpers/cours-b3-01/cours-servi';
 
 const DOCUMENT = lireConception('cours-b3-01-conception.md');
-const SEUIL_D_UNE_VALEUR_RECONNAISSABLE = 10;
 const UNITES_ARRONDIES = new Set(['€', '%']);
 
 interface NumeriqueStockee {
@@ -56,15 +41,6 @@ function numeriquesStockees(): NumeriqueStockee[] {
           question.type === 'numeric' ? [question] : [],
         )
       : [],
-  );
-}
-
-function valeursReconnaissables(): (number | string)[] {
-  return Object.values(VALEURS).filter(
-    (valeur) =>
-      typeof valeur === 'string' ||
-      valeur >= SEUIL_D_UNE_VALEUR_RECONNAISSABLE ||
-      !Number.isInteger(valeur),
   );
 }
 
@@ -196,15 +172,7 @@ describe('B3-01 — valeurs servies face au jeu Norvane', () => {
   });
 
   it('tolère l’euro près pour un montant, le dixième de point pour un taux, rien pour un comptage', () => {
-    expect(
-      Object.fromEntries(
-        questionsDuCours(COURS).flatMap((question) =>
-          question.type === 'numeric'
-            ? [[question.id, question.tolerance]]
-            : [],
-        ),
-      ),
-    ).toEqual(
+    expect(relecture.tolerancesDuCours(COURS)).toEqual(
       Object.fromEntries(
         QUESTIONS_CHIFFREES_B3_01.map((id) => [id, TOLERANCES_B3_01[id]]),
       ),
@@ -265,33 +233,14 @@ describe('B3-01 — valeurs servies face au jeu Norvane', () => {
 });
 
 describe('B3-01 — pièces jointes du § 8.2', () => {
-  const jointes = COURS.ecrans.flatMap((ecran) =>
-    ecran.pieceJointe === undefined
-      ? []
-      : [
-          {
-            ecran: ecran.id.slice(6, 11),
-            diffusion: ecran.diffusion,
-            reservee: estReservee(ecran.pieceJointe),
-            fichier: estReservee(ecran.pieceJointe)
-              ? ecran.pieceJointe.classeur
-              : ecran.pieceJointe.fichier,
-          },
-        ],
-  );
+  const jointes = relecture.piecesJointesDuCours(COURS);
 
   it('joint chaque classeur à son écran, dans la diffusion prévue', () => {
-    const attendues = piecesJointesDuDocument(DOCUMENT);
-
-    expect(jointes.map(({ fichier }) => fichier)).toEqual(
+    relecture.attendreLesPiecesJointesDuDocument(
+      COURS,
+      DOCUMENT,
       Object.values(CLASSEURS_B3_01),
     );
-    expect(
-      jointes.map(({ ecran, diffusion }) => ({ ecran, diffusion })),
-    ).toEqual(attendues.map(({ ecran, diffusion }) => ({ ecran, diffusion })));
-    attendues.forEach(({ motif }, rang) => {
-      expect(jointes[rang].fichier.split('/').at(-1)).toMatch(motif);
-    });
   });
 
   it('réserve à la séance les reprises, que seul le serveur sert, et laisse l’export brut public', () => {
@@ -305,11 +254,14 @@ describe('B3-01 — pièces jointes du § 8.2', () => {
   });
 });
 
-describe('B3-01 — gardes de la relecture', () => {
-  it('V1 · sert chaque formule telle qu’Excel l’accepte, sans espace ajoutée par la typographie', () => {
-    expect(formulesAltereesALaPublication(COURS_B3_01)).toEqual([]);
-  });
+relecture.decrireLesGardesDeRelecture('B3-01', {
+  contenu: COURS_B3_01,
+  cours: COURS,
+  valeurs: VALEURS,
+  pieges: PIEGES_B3_01,
+});
 
+describe('B3-01 — énoncés et colonnes', () => {
   it('V4 · annonce dans chaque énoncé numérique l’arrondi et le symbole à omettre, ou le nombre entier', () => {
     const fautifs = numeriquesStockees()
       .filter(({ enonce, unite }) =>
@@ -321,33 +273,6 @@ describe('B3-01 — gardes de la relecture', () => {
 
     expect(numeriquesStockees()).toHaveLength(QUESTIONS_CHIFFREES_B3_01.length);
     expect(fautifs).toEqual([]);
-  });
-
-  it('ne sert au catalogue aucune valeur attendue reconnaissable', () => {
-    expect(valeursAuCatalogue(COURS, valeursReconnaissables())).toEqual([]);
-  });
-
-  it('ne dévoile dans aucune explication la valeur d’une question encore ouverte', () => {
-    expect(valeursDevoileesParLesExplications(COURS, VALEURS)).toEqual([]);
-  });
-
-  it('réserve à la dernière correction la valeur-piège d’une confusion qu’une question suivante du même écran partage', () => {
-    expect(
-      piegesPartagesDevoilesParLesExplications(COURS, PIEGES_B3_01),
-    ).toEqual([]);
-  });
-
-  it('ne dévoile dans aucune explication un piège reconnaissable d’une question suivante, du même écran ou d’un écran suivant', () => {
-    expect(
-      piegesDesQuestionsSuivantesDevoilesParLesExplications(
-        COURS,
-        PIEGES_B3_01,
-      ),
-    ).toEqual([]);
-  });
-
-  it('ne dévoile dans aucune correction sur place une valeur décimale d’un écran suivant', () => {
-    expect(valeursDevoileesAvantLeurEcran(COURS)).toEqual([]);
   });
 
   it('écrit les colonnes du classeur où elles sont : ville en E, produit_id en H, ca_ht en L', () => {

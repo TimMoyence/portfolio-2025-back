@@ -1,4 +1,5 @@
 import { sansEspacesTypographiques } from '../texte/nettoyage/sans-espaces-typographiques';
+import { auDixieme } from './arrondi';
 
 export const VALEUR_ABSENTE = '—';
 
@@ -36,6 +37,14 @@ export function pourcentageAffiche(part: number): string {
 
 export function nombreFrancais(valeur: number, decimales: number): string {
   return sansEspacesTypographiques(nombreAffiche(valeur, decimales, decimales));
+}
+
+export function enEuros(valeur: number): string {
+  return `${nombreFrancais(valeur, 0)} €`;
+}
+
+export function enPourcent(valeur: number): string {
+  return `${nombreFrancais(auDixieme(valeur), 1)} %`;
 }
 
 export function nombreSansArrondi(valeur: number): string {

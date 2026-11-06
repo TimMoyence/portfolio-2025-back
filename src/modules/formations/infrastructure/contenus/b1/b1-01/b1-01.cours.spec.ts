@@ -55,7 +55,7 @@ const TOUS_LES_PORTEURS = somme(PORTEURS);
 
 decrireLaFicheDuCours('B1-01', COURS, {
   ...FORME_DES_COURS_B1,
-  conception: 'cours-b1-01-conception.md',
+  conception: 'b1/cours-b1-01-conception.md',
   noteesParType: [3, 10, 0, 1, 1],
   enigmes: 0,
   rappels: 12,

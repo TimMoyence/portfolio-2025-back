@@ -7,6 +7,8 @@ import {
   CONCEPTS_DU_B2_05,
   CONCEPTS_DU_B2_06,
   CONCEPTS_DU_B3_01,
+  CONCEPTS_DU_B3_02,
+  CONCEPTS_DU_B2_07,
   libelleDeConcept,
 } from './concepts';
 import {
@@ -413,6 +415,18 @@ const CONFUSIONS_DU_B2_06 = {
   'ordonnee-non-exponentiee': { concept: 'ajustement-exponentiel' },
 };
 
+const CONFUSIONS_DU_B2_07 = {
+  'exposant-non-descendu': { concept: 'fonction-derivee' },
+  'constante-non-annulee': { concept: 'fonction-derivee' },
+  'valeur-et-pente-confondues': { concept: 'fonction-derivee' },
+  'derivee-de-l-exponentielle-sans-k': { concept: 'fonction-derivee' },
+  'signe-de-f-pour-variations': { concept: 'variations-d-une-fonction' },
+  'extremum-sans-changement-de-signe': { concept: 'optimisation' },
+  'abscisse-pour-extremum': { concept: 'optimisation' },
+  'bornes-oubliees': { concept: 'optimisation' },
+  'contrainte-ignoree': { concept: 'optimisation' },
+};
+
 const CONFUSIONS_DU_B3_01 = {
   'reference-absolue-ignoree': { concept: 'reference-de-cellule' },
   'identifiant-pris-pour-nombre': { concept: 'jeu-de-donnees' },
@@ -530,8 +544,30 @@ describe('CONCEPTS', () => {
     ]);
   });
 
-  it('ajoute en dernier les treize concepts de données du B3-01', () => {
-    expect(CONCEPTS.slice(44)).toEqual([...CONCEPTS_DU_B3_01]);
+  it('B207-M7 · ajoute à la suite les trois concepts de dérivée et d’optimisation du B2-07', () => {
+    const premier = CONCEPTS.indexOf('fonction-derivee');
+
+    expect(CONCEPTS.slice(premier, premier + 3)).toEqual([
+      ...CONCEPTS_DU_B2_07,
+    ]);
+    expect(CONCEPTS_DU_B2_07).toEqual([
+      'fonction-derivee',
+      'variations-d-une-fonction',
+      'optimisation',
+    ]);
+    expect(libelleDeConcept('variations-d-une-fonction')).toBe(
+      'Variations d’une fonction',
+    );
+  });
+
+  it('B302-M7 · ajoute après le B3-01 le concept de l’IA analyste du B3-02', () => {
+    expect(CONCEPTS.slice(57, 58)).toEqual([...CONCEPTS_DU_B3_02]);
+    expect(CONCEPTS_DU_B3_02).toEqual(['ia-analyste']);
+    expect(libelleDeConcept('ia-analyste')).toBe('IA analyste de données');
+  });
+
+  it('ajoute à la suite les treize concepts de données du B3-01', () => {
+    expect(CONCEPTS.slice(44, 57)).toEqual([...CONCEPTS_DU_B3_01]);
     expect(CONCEPTS_DU_B3_01).toEqual([
       'reference-de-cellule',
       'jeu-de-donnees',
@@ -694,9 +730,51 @@ describe('CONFUSIONS', () => {
     expect(CONFUSIONS['arrondi-oublie'].concept).toBe('tableur');
   });
 
-  it('B102-M7 · ajoute en dernier les deux confusions de la recopie vers la droite', () => {
-    expect(Object.keys(CONFUSIONS)).toHaveLength(140);
-    expect(Object.keys(CONFUSIONS).slice(138)).toEqual([
+  it('B302-M7 · ajoute après la recopie vers la droite les deux confusions de l’IA analyste du B3-02', () => {
+    expect(Object.keys(CONFUSIONS).slice(140, 142)).toEqual([
+      'ia-crue-sur-parole',
+      'ia-rejetee-sans-comparaison',
+    ]);
+    expect(CONFUSIONS['ia-crue-sur-parole'].concept).toBe('ia-analyste');
+    expect(CONFUSIONS['ia-rejetee-sans-comparaison'].concept).toBe(
+      'ia-analyste',
+    );
+    expect(libelleDeConfusion('ia-crue-sur-parole')).toContain(
+      'sans le comparer au sien ni lire sa méthode',
+    );
+    expect(libelleDeConfusion('ia-rejetee-sans-comparaison')).toContain(
+      'sans l’avoir comparé au sien',
+    );
+  });
+
+  it('B207-M7 · ajoute à la suite les neuf confusions de dérivée et d’optimisation du B2-07', () => {
+    const cles = Object.keys(CONFUSIONS);
+    const premiere = cles.indexOf('exposant-non-descendu');
+
+    expect(cles.slice(premiere, premiere + 9)).toEqual(
+      Object.keys(CONFUSIONS_DU_B2_07),
+    );
+    attendreDansLaBanque(CONFUSIONS_DU_B2_07);
+    expect(libelleDeConfusion('valeur-et-pente-confondues')).toContain(
+      'la pente de sa courbe',
+    );
+    expect(libelleDeConfusion('derivee-de-l-exponentielle-sans-k')).toContain(
+      '(e^(kx))′ = k e^(kx)',
+    );
+  });
+
+  it('B207-M12 · nomme dans sens-inegalite-ln-negatif toute division par un nombre négatif, ln q compris', () => {
+    const libelle = libelleDeConfusion('sens-inegalite-ln-negatif');
+
+    expect(libelle).toContain('en divisant par un nombre négatif');
+    expect(libelle).toContain('ln q');
+    expect(CONFUSIONS['sens-inegalite-ln-negatif'].concept).toBe(
+      'resolution-par-logarithme',
+    );
+  });
+
+  it('B102-M7 · ajoute après l’arrondi les deux confusions de la recopie vers la droite', () => {
+    expect(Object.keys(CONFUSIONS).slice(138, 140)).toEqual([
       'reference-non-figee-en-ligne',
       'formule-non-recopiable-en-ligne',
     ]);
@@ -709,6 +787,21 @@ describe('CONFUSIONS', () => {
     );
     expect(libelleDeConfusion('formule-non-recopiable-en-ligne')).toContain(
       'à chaque colonne',
+    );
+  });
+
+  it('B103-M8 · nomme la synthèse du TCD erronée et le rang de quartile arrondi au-dessous', () => {
+    expect(CONFUSIONS['synthese-des-valeurs-erronee'].concept).toBe(
+      'tableau-croise-dynamique',
+    );
+    expect(libelleDeConfusion('synthese-des-valeurs-erronee')).toContain(
+      'par Nombre ou par Moyenne',
+    );
+    expect(CONFUSIONS['rang-de-quartile-arrondi-par-defaut'].concept).toBe(
+      'quartiles',
+    );
+    expect(libelleDeConfusion('rang-de-quartile-arrondi-par-defaut')).toContain(
+      'toujours à l’entier supérieur',
     );
   });
 

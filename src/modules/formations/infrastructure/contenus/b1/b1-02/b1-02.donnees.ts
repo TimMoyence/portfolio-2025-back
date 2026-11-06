@@ -1,6 +1,6 @@
 import { somme } from '../../../../../../common/domain/nombres/statistiques';
 import {
-  arrondi,
+  auDixieme,
   auMillionieme,
 } from '../../../../../../common/domain/nombres/arrondi';
 import type { AuMoinsUnModifiable } from '../../../../../../common/domain/objets/au-moins-un';
@@ -58,8 +58,6 @@ export const COEFFICIENT_GLOBAL = auMillionieme(
 );
 const evolutionExacte = (depart: number, arrivee: number): number =>
   ((arrivee - depart) / depart) * 100;
-
-const auDixieme = (valeur: number): number => arrondi(valeur, 1);
 
 const CA_2025 = [184, 120, 96, 80] as const;
 const CA_2026 = [207, 123, 92, 94] as const;

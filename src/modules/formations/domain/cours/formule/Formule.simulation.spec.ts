@@ -1,4 +1,5 @@
 import * as fc from 'fast-check';
+import { avecVirgule } from '../../../../../common/domain/nombres/ecriture-francaise';
 import type { CodeErreur, Feuille, ResultatFormule } from './Formule';
 import {
   FeuilleHorsLimitesError,
@@ -83,7 +84,7 @@ const contenuGenere = fc.oneof(
     '=NB.SI(A1:C8;">0")',
     '=SI(A1="Canal";"oui";FAUX)',
   ),
-  nombreDeCellule.map((valeur) => String(valeur).replace('.', ',')),
+  nombreDeCellule.map((valeur) => avecVirgule(valeur)),
   formuleGeneree,
 );
 

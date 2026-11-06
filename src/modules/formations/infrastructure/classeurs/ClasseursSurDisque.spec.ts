@@ -6,6 +6,7 @@ import {
   octetsDuClasseur,
 } from '../../../../../test/helpers/formations/cours/classeurs-reserves';
 import { CLASSEURS_B3_01 } from '../contenus/b3/b3-01/b3-01.donnees';
+import { CLASSEUR_DES_VENTES } from '../contenus/b1/b1-03/b1-03.donnees';
 import { CONTENUS } from '../contenus';
 import { classeurATelecharger, ClasseursSurDisque } from './ClasseursSurDisque';
 
@@ -56,6 +57,10 @@ describe('ClasseursSurDisque', () => {
     expect(reserves).toEqual([
       CLASSEURS_B3_01.repriseActe2,
       CLASSEURS_B3_01.repriseActe3,
+      CLASSEUR_DES_VENTES,
+      CLASSEURS_B3_01.repriseActe2,
+      CLASSEURS_B3_01.repriseActe3,
+      CLASSEURS_B3_01.repriseActe2,
     ]);
     expect(
       reserves.filter((classeur) => !existsSync(cheminDuClasseur(classeur))),

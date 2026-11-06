@@ -10,7 +10,7 @@ import {
 } from './b3-01.donnees';
 import * as moteur from '../../briques';
 
-type UniteDeSaisie = '€' | '%' | 'lignes' | 'jours ouvrés' | 'agences';
+export type UniteDeSaisie = '€' | '%' | 'lignes' | 'jours ouvrés' | 'agences';
 
 const CONSIGNES_DE_SAISIE: Readonly<Record<UniteDeSaisie, string>> = {
   '€': 'En euros, sans le symbole, arrondi à l’euro.',
@@ -24,7 +24,7 @@ function formePubliee(valeur: number, unite: UniteDeSaisie): string {
   return `${nombreFrancais(valeur, unite === '%' ? 1 : 0)} ${unite}`;
 }
 
-function valeurDuPiege(
+export function valeurDuPiege(
   id: QuestionChiffreeB301,
   confusion: ConfusionId,
 ): readonly [number, ConfusionId] {
@@ -35,8 +35,9 @@ function valeurDuPiege(
   return [valeur, confusion];
 }
 
-export function questionChiffree(
-  id: QuestionChiffreeB301,
+export function questionChiffreeDe(
+  source: QuestionChiffreeB301,
+  id: string,
   concept: ConceptId,
   question: string,
   unite: UniteDeSaisie,
@@ -48,12 +49,22 @@ export function questionChiffree(
     concept,
     `${question} ${CONSIGNES_DE_SAISIE[unite]}`,
     unite,
-    VALEURS_B3_01[id],
-    TOLERANCES_B3_01[id],
-    formePubliee(VALEURS_B3_01[id], unite),
+    VALEURS_B3_01[source],
+    TOLERANCES_B3_01[source],
+    formePubliee(VALEURS_B3_01[source], unite),
     [
-      valeurDuPiege(id, premiere),
-      ...suite.map((confusion) => valeurDuPiege(id, confusion)),
+      valeurDuPiege(source, premiere),
+      ...suite.map((confusion) => valeurDuPiege(source, confusion)),
     ],
   );
+}
+
+export function questionChiffree(
+  id: QuestionChiffreeB301,
+  concept: ConceptId,
+  question: string,
+  unite: UniteDeSaisie,
+  confusions: AuMoinsUnModifiable<ConfusionId>,
+) {
+  return questionChiffreeDe(id, id, concept, question, unite, confusions);
 }

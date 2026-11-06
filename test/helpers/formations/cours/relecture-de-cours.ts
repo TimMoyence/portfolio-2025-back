@@ -274,7 +274,7 @@ export function valeursDevoileesParLesExplications(
 const SEUIL_D_UN_PIEGE_RECONNAISSABLE_DANS_L_ECRAN = 10;
 const SEUIL_D_UN_PIEGE_RECONNAISSABLE_HORS_DE_L_ECRAN = 100;
 
-type PiegesParQuestion = Readonly<
+export type PiegesParQuestion = Readonly<
   Record<string, Readonly<Partial<Record<string, number>>>>
 >;
 

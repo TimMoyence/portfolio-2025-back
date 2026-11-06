@@ -76,6 +76,14 @@ export const CONCEPTS_DU_B3_01 = [
   'tableau-de-bord',
 ] as const;
 
+export const CONCEPTS_DU_B3_02 = ['ia-analyste'] as const;
+
+export const CONCEPTS_DU_B2_07 = [
+  'fonction-derivee',
+  'variations-d-une-fonction',
+  'optimisation',
+] as const;
+
 export const CONCEPTS = [
   ...CONCEPTS_DU_B2_01,
   ...CONCEPTS_DU_B2_02,
@@ -84,6 +92,8 @@ export const CONCEPTS = [
   ...CONCEPTS_DU_B2_05,
   ...CONCEPTS_DU_B2_06,
   ...CONCEPTS_DU_B3_01,
+  ...CONCEPTS_DU_B3_02,
+  ...CONCEPTS_DU_B2_07,
 ] as const;
 
 export type ConceptId = (typeof CONCEPTS)[number];
@@ -146,6 +156,10 @@ const LIBELLES_DES_CONCEPTS: Readonly<Record<ConceptId, string>> = {
   'tableau-croise-dynamique': 'Tableau croisé dynamique',
   'choix-du-graphique': 'Choix du graphique',
   'tableau-de-bord': 'Tableau de bord',
+  'ia-analyste': 'IA analyste de données',
+  'fonction-derivee': 'Fonction dérivée',
+  'variations-d-une-fonction': 'Variations d’une fonction',
+  optimisation: 'Optimisation',
 };
 
 export function libelleDeConcept(id: string): string {

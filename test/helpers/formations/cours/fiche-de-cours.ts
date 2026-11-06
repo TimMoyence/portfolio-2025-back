@@ -98,6 +98,26 @@ export const CATALOGUE_ILLUSTRE_A_SIX_PAGES = [
   'A4-05',
 ] as const;
 
+const textesDesPages = (contenu: ContenuDeCours) =>
+  contenu.ecrans
+    .map((ecran) => ({ id: ecran.screenId, texte: JSON.stringify(ecran) }))
+    .filter(({ texte }) => texte.includes('"renderer":"lesson"'));
+
+export function pagesDeCours(contenu: ContenuDeCours): string[] {
+  return textesDesPages(contenu).map(({ id }) => id);
+}
+
+export function pagesSansMethodeOuAvecEncadreCcf(
+  contenu: ContenuDeCours,
+): string[] {
+  return textesDesPages(contenu)
+    .filter(
+      ({ texte }) =>
+        !texte.includes('"kind":"method"') || texte.includes('"exam"'),
+    )
+    .map(({ id }) => id);
+}
+
 export function pointsImprimes(texte: string): number[] {
   return [...texte.matchAll(/\((\d+(?:,\d+)?) points?\)/g)].map(
     ([, valeur]) => lireNombreSaisi(valeur) ?? Number.NaN,

@@ -1,6 +1,20 @@
-import { CLASSEURS_B3_01 } from './b3-01.donnees';
+import { CLASSEURS_B3_01, VALEURS_B3_01 } from './b3-01.donnees';
 import { questionChiffree } from './b3-01.questions';
 import * as moteur from '../../briques';
+
+export function voteDuMeilleurTrimestre(id: string, enonce: string) {
+  return moteur.vote(
+    id,
+    'tableau-croise-dynamique',
+    true,
+    enonce,
+    VALEURS_B3_01['b3-01-a2-meilleur-trimestre'],
+    [
+      ['T2 2026', 'tcd-filtre-ou-dates-mal-groupees'],
+      ['T2 2025', 'tcd-filtre-ou-dates-mal-groupees'],
+    ],
+  );
+}
 
 export const ACTE_2: moteur.Acte = [
   {
@@ -551,16 +565,9 @@ export const ACTE_2: moteur.Acte = [
               'tcd-filtre-ou-dates-mal-groupees',
             ],
           ),
-          moteur.vote(
+          voteDuMeilleurTrimestre(
             'b3-01-a2-meilleur-trimestre',
-            'tableau-croise-dynamique',
-            true,
             'Quel trimestre a réalisé le plus fort CA du réseau, du premier trimestre 2025 au troisième trimestre 2026 ?',
-            'T4 2025',
-            [
-              ['T2 2026', 'tcd-filtre-ou-dates-mal-groupees'],
-              ['T2 2025', 'tcd-filtre-ou-dates-mal-groupees'],
-            ],
           ),
         ],
       },
