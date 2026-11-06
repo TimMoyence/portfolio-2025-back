@@ -196,26 +196,50 @@ export function ajouterLOnglet(
   };
 }
 
-export function nouveauClasseur(): Workbook {
+export interface ExportDuClasseur {
+  readonly auteur: string;
+  readonly date: Date;
+}
+
+const EXPORT_DU_B3_01: ExportDuClasseur = {
+  auteur: AUTEUR,
+  date: DATE_DE_L_EXPORT,
+};
+
+export function nouveauClasseur({
+  auteur,
+  date,
+}: ExportDuClasseur = EXPORT_DU_B3_01): Workbook {
   const classeur = new Workbook();
-  classeur.creator = AUTEUR;
-  classeur.created = DATE_DE_L_EXPORT;
-  classeur.modified = DATE_DE_L_EXPORT;
+  classeur.creator = auteur;
+  classeur.created = date;
+  classeur.modified = date;
   return classeur;
 }
 
-async function octetsDuClasseur(publie: ClasseurAPublier): Promise<Buffer> {
-  const classeur = nouveauClasseur();
-  for (const [nom, onglet] of Object.entries(publie.classeur)) {
-    ajouterLOnglet(classeur, nom, onglet, publie.tableau);
+export async function octetsDUnClasseur(
+  classeur: Classeur,
+  exporte: ExportDuClasseur,
+  tableau?: ClasseurAPublier['tableau'],
+): Promise<Buffer> {
+  const ecrit = nouveauClasseur(exporte);
+  for (const [nom, onglet] of Object.entries(classeur)) {
+    ajouterLOnglet(ecrit, nom, onglet, tableau);
   }
-  return dateALExport(Buffer.from(await classeur.xlsx.writeBuffer()));
+  return dateALExport(Buffer.from(await ecrit.xlsx.writeBuffer()), exporte);
 }
 
-async function dateALExport(octets: Buffer): Promise<Buffer> {
+function octetsDuClasseur(publie: ClasseurAPublier): Promise<Buffer> {
+  return octetsDUnClasseur(publie.classeur, EXPORT_DU_B3_01, publie.tableau);
+}
+
+async function dateALExport(
+  octets: Buffer,
+  { date }: ExportDuClasseur,
+): Promise<Buffer> {
   const archive = await JSZip.loadAsync(octets);
   archive.forEach((_, entree) => {
-    entree.date = DATE_DE_L_EXPORT;
+    entree.date = date;
   });
   return archive.generateAsync({ type: 'nodebuffer', compression: 'DEFLATE' });
 }

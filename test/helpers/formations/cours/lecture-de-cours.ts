@@ -15,6 +15,12 @@ import { tirer } from '../../../../src/modules/formations/domain/cours/tirage/Ti
 import type { LigneDeVueDEnsemble } from './conception-de-cours';
 
 const RANG_DU_NUMERO_D_ACTE = 'B2-01-A'.length;
+const MOTS_HORS_PROGRAMME = ['limite', 'asymptote'] as const;
+
+export function motsHorsProgramme(contenu: unknown): string[] {
+  const texte = JSON.stringify(contenu).toLowerCase();
+  return MOTS_HORS_PROGRAMME.filter((mot) => texte.includes(mot));
+}
 
 export function clesDe(valeur: unknown): string[] {
   return cueillirDansArbre(valeur, (cle, element) => [cle, ...clesDe(element)]);

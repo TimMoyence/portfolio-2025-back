@@ -6,6 +6,8 @@ import {
   corrigeDeFeuille,
   decrireLaFicheDuCours,
   FORME_DES_COURS_B1,
+  pagesDeCours,
+  pagesSansMethodeOuAvecEncadreCcf,
   valeursEtPieges,
 } from '../../../../../../../test/helpers/formations/cours/fiche-de-cours';
 import {
@@ -17,6 +19,7 @@ import { valeursAuCatalogue } from '../../../../../../../test/helpers/formations
 import { buildCoursDuContenu } from '../../../../../../../test/factories/formations/cours/contenus-de-cours.factory';
 import {
   arrondi,
+  auDixieme,
   auMillionieme,
 } from '../../../../../../common/domain/nombres/arrondi';
 import { avecVirgule } from '../../../../../../common/domain/nombres/ecriture-francaise';
@@ -50,7 +53,6 @@ const APRES_HAUSSE = PRIX_DE_DEPART.map(
 );
 const APRES_SOLDES = APRES_HAUSSE.map((prix) => prix * (1 - SOLDES_DU_TABLEAU));
 
-const auDixieme = (valeur: number): number => arrondi(valeur, 1);
 const evolution = (depart: number, arrivee: number): number =>
   ((arrivee - depart) / depart) * 100;
 const indice = (valeur: number): number => (valeur / SANCTIONS_2021) * 100;
@@ -106,7 +108,7 @@ function verdictDe(
 
 decrireLaFicheDuCours('B1-02', COURS, {
   ...FORME_DES_COURS_B1,
-  conception: 'cours-b1-02-conception.md',
+  conception: 'b1/cours-b1-02-conception.md',
   noteesParType: [3, 6, 0, 2, 1],
   enigmes: 0,
   rappels: 12,
@@ -147,15 +149,8 @@ describe('B1-02 — textes relus contre les données', () => {
   });
 
   it('B102-M1 · donne à chaque page une méthode, sans encadré « Au CCF »', () => {
-    const pages = COURS_B1_02.ecrans
-      .map((ecran) => texteDe(COURS_B1_02, ecran.screenId))
-      .filter((texte) => texte.includes('"renderer":"lesson"'));
-
-    expect(pages).toHaveLength(6);
-    for (const texte of pages) {
-      expect(texte).toContain('"kind":"method"');
-      expect(texte).not.toContain('"exam"');
-    }
+    expect(pagesDeCours(COURS_B1_02)).toHaveLength(6);
+    expect(pagesSansMethodeOuAvecEncadreCcf(COURS_B1_02)).toEqual([]);
   });
 
   it('B102-M1 · ne garde ni mini-situation, ni défi, ni billet de sortie', () => {

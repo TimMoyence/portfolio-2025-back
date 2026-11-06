@@ -4,7 +4,7 @@ import type {
   PiegesB301,
   ValeursAttenduesB301,
 } from '../../../src/modules/formations/infrastructure/contenus/b3/b3-01/b3-01.donnees';
-import { arrondi } from '../../../src/common/domain/nombres/arrondi';
+import { arrondi, auDixieme } from '../../../src/common/domain/nombres/arrondi';
 import {
   comparerCommeExcel,
   dateExcel,
@@ -73,7 +73,7 @@ export interface IndicateursDAgence {
 }
 
 const euros = (montant: number): number => arrondi(montant, 0);
-const pourcent = (part: number): number => arrondi(part * 100, 1);
+const pourcent = (part: number): number => auDixieme(part * 100);
 
 function cleExcel(valeur: Valeur): string {
   return typeof valeur === 'string'

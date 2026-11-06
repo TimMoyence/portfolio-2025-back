@@ -1,3 +1,4 @@
+import type { AuMoinsUnModifiable } from '../../../../../../common/domain/objets/au-moins-un';
 import { CA_HT_SAISI_EN_TEXTE, CLASSEURS_B3_01 } from './b3-01.donnees';
 import { questionChiffree } from './b3-01.questions';
 import * as moteur from '../../briques';
@@ -10,6 +11,19 @@ export const GRAVURE_DE_L_ACCROCHE = moteur.gravureDuDomainePublic({
   auteur: 'Scientific American, machines de Herman Hollerith',
   date: '1890',
 });
+
+export const FOND_DE_LA_GRAVURE = {
+  bgImage: GRAVURE_DE_L_ACCROCHE.chemins[0],
+  bgImageAlt:
+    'Gravure du Scientific American (1890) : les machines électriques de Herman Hollerith dépouillent les cartes perforées du recensement américain',
+};
+
+export const EXPORT_BRUT_A_TELECHARGER = {
+  pieceJointe: {
+    libelle: 'Export des ventes Norvane (classeur Excel)',
+    fichier: CLASSEURS_B3_01.brut,
+  },
+};
 
 const CONFUSIONS_D_UN_IDENTIFIANT = {
   date: 'identifiant-range-sous-un-autre-type',
@@ -99,16 +113,9 @@ export const ACTE_1: moteur.Acte = [
       title: 'Expert Data : de la donnée brute à la décision',
       subtitle:
         'Lundi 12 octobre, 8 h. Nadia Ferrand, directrice commerciale de Norvane Équipement, écrit : « Voici l’export des ventes depuis janvier 2025. Qu’est-ce qui ne va pas dans mon réseau ? J’ai le comité de direction jeudi. »',
-      bgImage: GRAVURE_DE_L_ACCROCHE.chemins[0],
-      bgImageAlt:
-        'Gravure du Scientific American (1890) : les machines électriques de Herman Hollerith dépouillent les cartes perforées du recensement américain',
+      ...FOND_DE_LA_GRAVURE,
     },
-    {
-      pieceJointe: {
-        libelle: 'Export des ventes Norvane (classeur Excel)',
-        fichier: CLASSEURS_B3_01.brut,
-      },
-    },
+    EXPORT_BRUT_A_TELECHARGER,
   ),
   moteur.ecranV2(
     {
@@ -738,140 +745,16 @@ export const ACTE_1: moteur.Acte = [
       ],
     },
   ),
-  moteur.corrigeSurPlace(
+  ecranDuTriDesAnomalies(
     {
       screenId: 'B3-01-A1-13-TRI-ANOMALIES',
       titre: 'Exercice 3 — Classer les anomalies',
-      diffusion: 'seance',
-      brique: 'fp-cardsort',
-      dureeMinutes: 7,
-      concepts: ['qualite-des-donnees'],
-      notes: moteur.puces(
-        moteur.tempsDeLExercice(1, 6),
-        'Réflexion : rappeler les deux questions de la grille avant de trier.',
-        'Pièges : corriger seul une date douteuse ; renvoyer à un humain une erreur que le fichier corrige.',
-      ),
-      proprietes: {
-        modalite: 'binome',
-        ...moteur.classement(
-          {
-            id: 'b3-01-a1-anomalies',
-            intitule:
-              'Classez chaque anomalie du fichier dans la grille de la qualité des données.',
-          },
-          'qualite-des-donnees',
-          [
-            ['faux-automatique', 'Faux · correction automatique'],
-            ['faux-humain', 'Faux · à demander à un humain'],
-            ['suspect-automatique', 'Suspect · correction automatique'],
-            ['suspect-humain', 'Suspect · à demander à un humain'],
-          ],
-          [
-            {
-              id: 'ville-mal-ecrite',
-              libelle: 'Ville écrite « BORDEAUX » ou entourée d’espaces',
-              categorie: 'faux-automatique',
-              confusions: CONFUSIONS_D_UNE_ERREUR_QUE_LE_FICHIER_CORRIGE,
-              justification:
-                'erreur certaine ; SUPPRESPACE et NOMPROPRE la corrigent',
-            },
-            {
-              id: 'ca-en-texte',
-              libelle: `ca_ht stocké en texte : « ${CA_HT_SAISI_EN_TEXTE} »`,
-              categorie: 'faux-automatique',
-              confusions: CONFUSIONS_D_UNE_ERREUR_QUE_LE_FICHIER_CORRIGE,
-              justification:
-                'erreur certaine ; SUBSTITUE puis CNUM la corrigent',
-            },
-            {
-              id: 'ligne-en-double',
-              libelle: 'Ligne exportée deux fois, à l’identique',
-              categorie: 'faux-automatique',
-              confusions: CONFUSIONS_D_UNE_ERREUR_QUE_LE_FICHIER_CORRIGE,
-              justification:
-                'doublon exact : Supprimer les doublons, toutes colonnes cochées',
-            },
-            {
-              id: 'ca-mal-calcule',
-              libelle: 'ca_ht saisi sans appliquer la remise de la ligne',
-              categorie: 'faux-automatique',
-              confusions: CONFUSIONS_D_UNE_ERREUR_QUE_LE_FICHIER_CORRIGE,
-              justification: 'la bonne valeur se recalcule depuis la ligne',
-            },
-            {
-              id: 'produit-inconnu',
-              libelle: 'produit_id absent du référentiel Produits',
-              categorie: 'faux-humain',
-              confusions: CONFUSIONS_D_UNE_ERREUR_A_FAIRE_CORRIGER,
-              justification:
-                'erreur certaine, mais le bon produit n’est pas dans le fichier',
-            },
-            {
-              id: 'livraison-avant-commande',
-              libelle: 'Livraison antérieure à la commande',
-              categorie: 'faux-humain',
-              confusions: CONFUSIONS_D_UNE_ERREUR_A_FAIRE_CORRIGER,
-              justification:
-                'impossible, mais laquelle des deux dates est fausse ?',
-            },
-            {
-              id: 'date-autre-systeme',
-              libelle: 'Date « 08/04/26 » venue d’un autre système',
-              categorie: 'suspect-humain',
-              confusions: CONFUSIONS_D_UN_DOUTE,
-              justification: '8 avril ou 4 août ? Seul l’émetteur le sait',
-            },
-            {
-              id: 'quantite-negative',
-              libelle: 'Quantité négative',
-              categorie: 'suspect-humain',
-              confusions: CONFUSIONS_D_UN_DOUTE,
-              justification: 'erreur de saisie ou avoir : on demande',
-            },
-            {
-              id: 'prix-dix-fois',
-              libelle: 'Prix unitaire égal à dix fois le prix catalogue',
-              categorie: 'suspect-humain',
-              confusions: CONFUSIONS_D_UN_DOUTE,
-              justification:
-                'faute de virgule ou produit sur mesure : on demande',
-            },
-            {
-              id: 'client-en-double',
-              libelle:
-                'Deux client_id pour la même raison sociale dans la même ville',
-              categorie: 'suspect-humain',
-              confusions: CONFUSIONS_D_UN_DOUTE,
-              justification: 'doublon ou deux établissements : on demande',
-            },
-          ],
-        ),
-      },
+      questionId: 'b3-01-a1-anomalies',
     },
-    {
-      minutes: 1,
-      notes: [
-        'Corriger case par case ; finir par la case vide.',
-        'Transition : « Au travail sur le vrai fichier : exercice 4. »',
-      ],
-    },
+    ['Réflexion : rappeler les deux questions de la grille avant de trier.'],
     [
-      [
-        'faux-automatique',
-        'Ville mal écrite, nombre en texte, doublon exact, ca_ht mal calculé : l’erreur est certaine et la bonne valeur se déduit du fichier. On corrige par formule, dans une nouvelle colonne ; le doublon exact se retire par Supprimer les doublons, sur une copie.',
-      ],
-      [
-        'faux-humain',
-        'Produit inconnu, livraison avant la commande : l’erreur est certaine, mais la bonne valeur n’est pas dans le fichier. On signale et on demande.',
-      ],
-      [
-        'suspect-automatique',
-        'Case vide : une donnée douteuse ne se corrige jamais seule. Lire « 08/04/26 » jour d’abord, c’est parier sur le format.',
-      ],
-      [
-        'suspect-humain',
-        'Date d’un autre système, quantité négative, prix dix fois trop élevé, client en double : peut-être une erreur, peut-être un avoir, un produit sur mesure ou deux établissements. On signale et on demande.',
-      ],
+      'Corriger case par case ; finir par la case vide.',
+      'Transition : « Au travail sur le vrai fichier : exercice 4. »',
     ],
   ),
   moteur.corrigeSurPlace(
@@ -950,3 +833,152 @@ export const ACTE_1: moteur.Acte = [
     ],
   ),
 ];
+
+export function ecranDuTriDesAnomalies(
+  {
+    screenId,
+    titre,
+    questionId,
+  }: { screenId: string; titre: string; questionId: string },
+  reflexion: AuMoinsUnModifiable<string>,
+  notesDeCorrection: AuMoinsUnModifiable<string>,
+): moteur.Acte[number] {
+  const tri: moteur.Acte[number] = {
+    screenId,
+    titre,
+    diffusion: 'seance',
+    brique: 'fp-cardsort',
+    dureeMinutes: 7,
+    concepts: ['qualite-des-donnees'],
+    notes: moteur.puces(
+      moteur.tempsDeLExercice(1, 6),
+      ...reflexion,
+      'Pièges : corriger seul une date douteuse ; renvoyer à un humain une erreur que le fichier corrige.',
+    ),
+    proprietes: {
+      modalite: 'binome',
+      ...triDesAnomalies(questionId),
+    },
+  };
+  return moteur.corrigeSurPlace(
+    tri,
+    { minutes: 1, notes: notesDeCorrection },
+    correctionDuTriDesAnomalies(),
+  );
+}
+
+function triDesAnomalies(id: string) {
+  return moteur.classement(
+    {
+      id,
+      intitule:
+        'Classez chaque anomalie du fichier dans la grille de la qualité des données.',
+    },
+    'qualite-des-donnees',
+    [
+      ['faux-automatique', 'Faux · correction automatique'],
+      ['faux-humain', 'Faux · à demander à un humain'],
+      ['suspect-automatique', 'Suspect · correction automatique'],
+      ['suspect-humain', 'Suspect · à demander à un humain'],
+    ],
+    [
+      {
+        id: 'ville-mal-ecrite',
+        libelle: 'Ville écrite « BORDEAUX » ou entourée d’espaces',
+        categorie: 'faux-automatique',
+        confusions: CONFUSIONS_D_UNE_ERREUR_QUE_LE_FICHIER_CORRIGE,
+        justification:
+          'erreur certaine ; SUPPRESPACE et NOMPROPRE la corrigent',
+      },
+      {
+        id: 'ca-en-texte',
+        libelle: `ca_ht stocké en texte : « ${CA_HT_SAISI_EN_TEXTE} »`,
+        categorie: 'faux-automatique',
+        confusions: CONFUSIONS_D_UNE_ERREUR_QUE_LE_FICHIER_CORRIGE,
+        justification: 'erreur certaine ; SUBSTITUE puis CNUM la corrigent',
+      },
+      {
+        id: 'ligne-en-double',
+        libelle: 'Ligne exportée deux fois, à l’identique',
+        categorie: 'faux-automatique',
+        confusions: CONFUSIONS_D_UNE_ERREUR_QUE_LE_FICHIER_CORRIGE,
+        justification:
+          'doublon exact : Supprimer les doublons, toutes colonnes cochées',
+      },
+      {
+        id: 'ca-mal-calcule',
+        libelle: 'ca_ht saisi sans appliquer la remise de la ligne',
+        categorie: 'faux-automatique',
+        confusions: CONFUSIONS_D_UNE_ERREUR_QUE_LE_FICHIER_CORRIGE,
+        justification: 'la bonne valeur se recalcule depuis la ligne',
+      },
+      {
+        id: 'produit-inconnu',
+        libelle: 'produit_id absent du référentiel Produits',
+        categorie: 'faux-humain',
+        confusions: CONFUSIONS_D_UNE_ERREUR_A_FAIRE_CORRIGER,
+        justification:
+          'erreur certaine, mais le bon produit n’est pas dans le fichier',
+      },
+      {
+        id: 'livraison-avant-commande',
+        libelle: 'Livraison antérieure à la commande',
+        categorie: 'faux-humain',
+        confusions: CONFUSIONS_D_UNE_ERREUR_A_FAIRE_CORRIGER,
+        justification: 'impossible, mais laquelle des deux dates est fausse ?',
+      },
+      {
+        id: 'date-autre-systeme',
+        libelle: 'Date « 08/04/26 » venue d’un autre système',
+        categorie: 'suspect-humain',
+        confusions: CONFUSIONS_D_UN_DOUTE,
+        justification: '8 avril ou 4 août ? Seul l’émetteur le sait',
+      },
+      {
+        id: 'quantite-negative',
+        libelle: 'Quantité négative',
+        categorie: 'suspect-humain',
+        confusions: CONFUSIONS_D_UN_DOUTE,
+        justification: 'erreur de saisie ou avoir : on demande',
+      },
+      {
+        id: 'prix-dix-fois',
+        libelle: 'Prix unitaire égal à dix fois le prix catalogue',
+        categorie: 'suspect-humain',
+        confusions: CONFUSIONS_D_UN_DOUTE,
+        justification: 'faute de virgule ou produit sur mesure : on demande',
+      },
+      {
+        id: 'client-en-double',
+        libelle:
+          'Deux client_id pour la même raison sociale dans la même ville',
+        categorie: 'suspect-humain',
+        confusions: CONFUSIONS_D_UN_DOUTE,
+        justification: 'doublon ou deux établissements : on demande',
+      },
+    ],
+  );
+}
+
+function correctionDuTriDesAnomalies(): AuMoinsUnModifiable<
+  readonly [string, string]
+> {
+  return [
+    [
+      'faux-automatique',
+      'Ville mal écrite, nombre en texte, doublon exact, ca_ht mal calculé : l’erreur est certaine et la bonne valeur se déduit du fichier. On corrige par formule, dans une nouvelle colonne ; le doublon exact se retire par Supprimer les doublons, sur une copie.',
+    ],
+    [
+      'faux-humain',
+      'Produit inconnu, livraison avant la commande : l’erreur est certaine, mais la bonne valeur n’est pas dans le fichier. On signale et on demande.',
+    ],
+    [
+      'suspect-automatique',
+      'Case vide : une donnée douteuse ne se corrige jamais seule. Lire « 08/04/26 » jour d’abord, c’est parier sur le format.',
+    ],
+    [
+      'suspect-humain',
+      'Date d’un autre système, quantité négative, prix dix fois trop élevé, client en double : peut-être une erreur, peut-être un avoir, un produit sur mesure ou deux établissements. On signale et on demande.',
+    ],
+  ];
+}

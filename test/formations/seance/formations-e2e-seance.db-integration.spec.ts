@@ -36,6 +36,9 @@ import {
   COURS_B3_01,
   COURS_B1_01,
   COURS_B1_02,
+  COURS_B1_03,
+  COURS_B3_02,
+  COURS_B2_07,
 } from '../../factories/formations/cours/contenus-publies';
 import { prefixeDuCours } from '../../factories/formations/cours/contenus-de-cours.factory';
 import {
@@ -1754,6 +1757,14 @@ seanceComplete(COURS_B2_06, {
   enigmes: 0,
 });
 
+seanceComplete(COURS_B2_07, {
+  ...TRAME_DES_COURS_B2,
+  questionsNotees: 21,
+  cellulesDesFeuilles: [16],
+  exerciceEnAvance: 'B2-07-A2-06-EXEMPLE-DERIVEE',
+  enigmes: 0,
+});
+
 seanceComplete(COURS_B3_01, {
   questionsNotees: 20,
   cellulesDesFeuilles: [],
@@ -1784,4 +1795,35 @@ seanceComplete(COURS_B1_02, {
   cellulesDesFeuilles: [7, 6],
   exerciceEnAvance: 'B1-02-A2-04-EXEMPLE-PROMO',
   enigmes: 0,
+});
+
+seanceComplete(COURS_B1_03, {
+  ...TRAME_DES_COURS_B2,
+  questionsNotees: 14,
+  cellulesDesFeuilles: [12],
+  exerciceEnAvance: 'B1-03-A2-04-EXEMPLE-MARDI',
+  enigmes: 0,
+  piecesJointes: ['B1-03-A1-09-ATELIER-TCD'],
+  classeursReserves: ['B1-03-A1-09-ATELIER-TCD'],
+});
+
+seanceComplete(COURS_B3_02, {
+  questionsNotees: 17,
+  cellulesDesFeuilles: [],
+  exerciceEnAvance: 'B3-02-A1-12-EXEMPLE-RECHERCHE',
+  jalons: 0,
+  enigmes: 0,
+  piecesJointes: [
+    'B3-02-A1-02-REPRISE',
+    'B3-02-A1-09-VOTE-RELIER',
+    'B3-02-A2-11-VOTE-GRAPHIQUE',
+    'B3-02-A3-06-ANALYSE-IA',
+  ],
+  piecesJointesAuCatalogue: ['B3-02-A1-02-REPRISE'],
+  classeursReserves: [
+    'B3-02-A1-09-VOTE-RELIER',
+    'B3-02-A2-11-VOTE-GRAPHIQUE',
+    'B3-02-A3-06-ANALYSE-IA',
+  ],
+  intervalleLibre: { premier: 37, dernier: 37 },
 });

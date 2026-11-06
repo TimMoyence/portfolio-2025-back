@@ -1,3 +1,4 @@
+import type { AuMoinsUnModifiable } from '../../../../../../common/domain/objets/au-moins-un';
 import { CLASSEURS_B3_01, HISTOIRES_B3_01 } from './b3-01.donnees';
 import { questionChiffree } from './b3-01.questions';
 import * as moteur from '../../briques';
@@ -16,31 +17,7 @@ export const ACTE_3: moteur.Acte = [
       ),
     },
     'chart',
-    {
-      title: 'Rennes, loin derrière Nantes',
-      caption: 'Diapositive préparée pour le comité de direction',
-      context:
-        'Un collègue de Nadia a préparé ce graphique avec le commentaire : « Rennes vend trois fois moins que Nantes ».',
-      kind: 'bars',
-      labels: ['Rennes', 'Nantes'],
-      series: [
-        {
-          label: 'CA HT 2025',
-          values: [
-            HISTOIRES_B3_01['ca-2025-rennes'],
-            HISTOIRES_B3_01['ca-2025-nantes'],
-          ],
-          tone: 'teal',
-        },
-      ],
-      axisRanges: [[47500, 60000]],
-      axisLabels: ['47 500 à 60 000 €'],
-      unit: '€',
-      source:
-        'Export des ventes de Norvane Équipement, CA arrondi à la centaine d’euros (données fictives).',
-      description:
-        'Diagramme en barres : CA HT 2025 de Rennes et de Nantes, axe vertical de 47 500 € à 60 000 € ; barres de 51 600 € et 59 500 €.',
-    },
+    graphiqueTrompeur(),
   ),
   {
     screenId: 'B3-01-A3-02-VOTE-GRAPHIQUE',
@@ -443,24 +420,7 @@ export const ACTE_3: moteur.Acte = [
         'Transition : « Écrivez les règles des niveaux 5 et 6, puis gardez la fiche mémo. »',
       ],
     },
-    [
-      [
-        'marseille',
-        'Marseille : la marge fond. Taux de marque de 32,3 % de janvier à septembre 2025, 26,9 % sur la même période de 2026, alors que le CA dépasse l’objectif. Cause : depuis janvier, le commercial C26 accorde des remises de 18 à 30 %, quand le réseau reste entre 0 et 10 %. Action : dès octobre, toute remise au-delà de 10 % validée par la direction, contrôle confié au responsable de l’agence.',
-      ],
-      [
-        'rennes',
-        'Rennes : sous l’objectif. Taux d’atteinte de 79,0 %, le plus bas du réseau. Cause : l’informatique recule de 40,2 % par rapport à la même période de 2025, les autres catégories bougent peu, de −4 % à +2 %. Action : d’ici décembre, reprendre la perte en informatique client par client et relancer l’offre, plan confié au responsable de l’agence.',
-      ],
-      [
-        'lille',
-        'Lille : la croissance. CA de janvier à septembre 2026 en hausse de 23,1 % sur la même période de 2025, la plus forte évolution du réseau. Cause : toute la demande de l’agence progresse, chacune des catégories croît de plus de 10 %, pas une seule. Action : avant le prochain comité, décrire ce qui marche à Lille et le partager aux autres agences, travail confié au responsable de l’agence.',
-      ],
-      [
-        'strasbourg',
-        'Strasbourg : les retards. Délai médian de 8 jours ouvrés en 2026, contre 2 en 2025, et des ruptures livrées environ deux mois plus tard. Le contrat promet 5 jours ouvrés. Cause : le décrochage date de mars 2026 et touche toutes les catégories, signe d’un problème de transport à l’agence, aggravé par des ruptures de stock d’avril à juillet. Action : dès octobre, traiter le transport et le stock de Strasbourg avant de perdre ses clients, plan confié au responsable de l’agence.',
-      ],
-    ],
+    quatreHistoires(),
   ),
   {
     screenId: 'B3-01-A3-12-CAHIER-DE-REGLES',
@@ -504,7 +464,34 @@ export const ACTE_3: moteur.Acte = [
       ],
     },
   },
-  moteur.ecranV2(
+  ficheMemoDuB301(),
+];
+
+export function quatreHistoires(): AuMoinsUnModifiable<
+  readonly [string, string]
+> {
+  return [
+    [
+      'marseille',
+      'Marseille : la marge fond. Taux de marque de 32,3 % de janvier à septembre 2025, 26,9 % sur la même période de 2026, alors que le CA dépasse l’objectif. Cause : depuis janvier, le commercial C26 accorde des remises de 18 à 30 %, quand le réseau reste entre 0 et 10 %. Action : dès octobre, toute remise au-delà de 10 % validée par la direction, contrôle confié au responsable de l’agence.',
+    ],
+    [
+      'rennes',
+      'Rennes : sous l’objectif. Taux d’atteinte de 79,0 %, le plus bas du réseau. Cause : l’informatique recule de 40,2 % par rapport à la même période de 2025, les autres catégories bougent peu, de −4 % à +2 %. Action : d’ici décembre, reprendre la perte en informatique client par client et relancer l’offre, plan confié au responsable de l’agence.',
+    ],
+    [
+      'lille',
+      'Lille : la croissance. CA de janvier à septembre 2026 en hausse de 23,1 % sur la même période de 2025, la plus forte évolution du réseau. Cause : toute la demande de l’agence progresse, chacune des catégories croît de plus de 10 %, pas une seule. Action : avant le prochain comité, décrire ce qui marche à Lille et le partager aux autres agences, travail confié au responsable de l’agence.',
+    ],
+    [
+      'strasbourg',
+      'Strasbourg : les retards. Délai médian de 8 jours ouvrés en 2026, contre 2 en 2025, et des ruptures livrées environ deux mois plus tard. Le contrat promet 5 jours ouvrés. Cause : le décrochage date de mars 2026 et touche toutes les catégories, signe d’un problème de transport à l’agence, aggravé par des ruptures de stock d’avril à juillet. Action : dès octobre, traiter le transport et le stock de Strasbourg avant de perdre ses clients, plan confié au responsable de l’agence.',
+    ],
+  ];
+}
+
+function ficheMemoDuB301() {
+  return moteur.ecranV2(
     {
       screenId: 'B3-01-A3-11-FICHE-MEMO',
       titre: 'Fiche mémo : de la donnée brute à la décision',
@@ -562,5 +549,33 @@ export const ACTE_3: moteur.Acte = [
         },
       ],
     },
-  ),
-];
+  );
+}
+
+export function graphiqueTrompeur() {
+  return {
+    title: 'Rennes, loin derrière Nantes',
+    caption: 'Diapositive préparée pour le comité de direction',
+    context:
+      'Un collègue de Nadia a préparé ce graphique avec le commentaire : « Rennes vend trois fois moins que Nantes ».',
+    kind: 'bars',
+    labels: ['Rennes', 'Nantes'],
+    series: [
+      {
+        label: 'CA HT 2025',
+        values: [
+          HISTOIRES_B3_01['ca-2025-rennes'],
+          HISTOIRES_B3_01['ca-2025-nantes'],
+        ],
+        tone: 'teal',
+      },
+    ],
+    axisRanges: [[47500, 60000]],
+    axisLabels: ['47 500 à 60 000 €'],
+    unit: '€',
+    source:
+      'Export des ventes de Norvane Équipement, CA arrondi à la centaine d’euros (données fictives).',
+    description:
+      'Diagramme en barres : CA HT 2025 de Rennes et de Nantes, axe vertical de 47 500 € à 60 000 € ; barres de 51 600 € et 59 500 €.',
+  };
+}

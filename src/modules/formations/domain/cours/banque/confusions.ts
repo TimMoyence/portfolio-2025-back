@@ -471,7 +471,7 @@ const DEFINITIONS = {
   'sens-inegalite-ln-negatif': {
     concept: 'resolution-par-logarithme',
     libelle:
-      'Garder le sens de l’inégalité en divisant par ln q quand q < 1 : ln q est négatif, le sens change.',
+      'Garder le sens d’une inégalité en divisant par un nombre négatif, comme ln q quand q < 1 ou un coefficient négatif devant x : diviser par un nombre négatif change le sens.',
   },
   'ajustement-affine-sur-y': {
     concept: 'ajustement-exponentiel',
@@ -701,6 +701,71 @@ const DEFINITIONS = {
     concept: 'tableur',
     libelle:
       'Écrire une formule différente à chaque colonne au lieu d’une formule recopiable vers la droite.',
+  },
+  'ia-crue-sur-parole': {
+    concept: 'ia-analyste',
+    libelle:
+      'Reprendre un chiffre d’une IA sans le comparer au sien ni lire sa méthode : période, résumé et dénominateur restent invérifiés.',
+  },
+  'ia-rejetee-sans-comparaison': {
+    concept: 'ia-analyste',
+    libelle:
+      'Juger faux un chiffre d’une IA sans l’avoir comparé au sien : un chiffre juste se reconnaît à la comparaison, pas à sa source.',
+  },
+  'synthese-des-valeurs-erronee': {
+    concept: 'tableau-croise-dynamique',
+    libelle:
+      'Résumer le champ placé en Valeurs par Nombre ou par Moyenne, ou y placer le champ des groupes, quand la question demande la somme des montants.',
+  },
+  'rang-de-quartile-arrondi-par-defaut': {
+    concept: 'quartiles',
+    libelle:
+      'Arrondir à l’entier inférieur le rang d’un quartile : le quart et les trois quarts de l’effectif s’arrondissent toujours à l’entier supérieur.',
+  },
+  'exposant-non-descendu': {
+    concept: 'fonction-derivee',
+    libelle:
+      'Dériver k × xⁿ sans faire descendre l’exposant devant : (3x²)′ écrit 3x ou 3x² au lieu de 6x, (x³)′ écrit x² au lieu de 3x².',
+  },
+  'constante-non-annulee': {
+    concept: 'fonction-derivee',
+    libelle:
+      'Garder le nombre seul en dérivant : la dérivée d’une constante vaut 0, sa courbe est plate.',
+  },
+  'valeur-et-pente-confondues': {
+    concept: 'fonction-derivee',
+    libelle:
+      'Confondre f(a), la valeur de la fonction en a, et f′(a), la pente de sa courbe en a : on calcule l’une quand on demande l’autre.',
+  },
+  'derivee-de-l-exponentielle-sans-k': {
+    concept: 'fonction-derivee',
+    libelle:
+      'Dériver e^(kx) sans multiplier par k, ou comme une puissance de x : (e^(kx))′ = k e^(kx) et (a e^(kx))′ = a k e^(kx).',
+  },
+  'signe-de-f-pour-variations': {
+    concept: 'variations-d-une-fonction',
+    libelle:
+      'Lire le sens de variation de f dans le signe de f au lieu du signe de f′ : une fonction positive peut décroître.',
+  },
+  'extremum-sans-changement-de-signe': {
+    concept: 'optimisation',
+    libelle:
+      'Conclure à un maximum ou à un minimum dès que f′ s’annule : il faut que f′ change de signe, de + à − pour un maximum, de − à + pour un minimum.',
+  },
+  'abscisse-pour-extremum': {
+    concept: 'optimisation',
+    libelle:
+      'Donner la valeur de x qui réalise l’optimum à la place de l’optimum, ou l’inverse : le prix optimal est x, le bénéfice maximal est f(x).',
+  },
+  'bornes-oubliees': {
+    concept: 'optimisation',
+    libelle:
+      'Chercher l’optimum sans comparer les valeurs de f aux bornes de l’intervalle : le maximum peut être atteint à une borne, où f′ ne s’annule pas.',
+  },
+  'contrainte-ignoree': {
+    concept: 'optimisation',
+    libelle:
+      'Garder l’optimum trouvé sans contrainte alors qu’il sort des valeurs permises : sous contrainte, on cherche l’optimum sur le nouvel intervalle, souvent à sa borne.',
   },
 } as const satisfies Readonly<Record<string, DefinitionConfusion>>;
 

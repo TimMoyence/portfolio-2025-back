@@ -42,6 +42,7 @@ const RETIRES: Readonly<Record<string, readonly string[]>> = {
 const SANS_MINI_SITUATION: readonly string[] = [
   'b1-01-proportions-pourcentages',
   'b1-02-evolutions-coefficients-indices',
+  'b1-03-tcd-serie-une-variable',
   'b2-05-mathematiques-financieres',
   'b2-06-exponentielle-logarithme',
 ];

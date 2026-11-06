@@ -1,6 +1,7 @@
 import { buildCoursDuContenu } from '../../../../../../../test/factories/formations/cours/contenus-de-cours.factory';
 import * as fiche from '../../../../../../../test/helpers/formations/cours/fiche-de-cours';
 import * as feuille from '../../../../../../../test/helpers/formations/cours/feuille-de-cours';
+import { motsHorsProgramme } from '../../../../../../../test/helpers/formations/cours/lecture-de-cours';
 import { arrondi } from '../../../../../../common/domain/nombres/arrondi';
 import { somme } from '../../../../../../common/domain/nombres/statistiques';
 import type { CorrigeTableau } from '../../../../domain/cours/correction/Corrige';
@@ -440,10 +441,7 @@ describe('B2-06 — les trois feuilles corrigées par le moteur de formules', ()
 
 describe('B2-06 — retours de la relecture adverse', () => {
   it('ne parle ni de limite ni d’asymptote, hors programme', () => {
-    const texte = JSON.stringify(COURS_B2_06).toLowerCase();
-
-    expect(texte).not.toContain('limite');
-    expect(texte).not.toContain('asymptote');
+    expect(motsHorsProgramme(COURS_B2_06)).toEqual([]);
   });
 
   it('distingue ln de la touche log dans la trace écrite et dans l’exercice 5', () => {

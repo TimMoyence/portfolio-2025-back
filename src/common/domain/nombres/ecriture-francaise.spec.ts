@@ -1,6 +1,8 @@
 import { ESPACE_INSECABLE as INSECABLE } from '../texte/nettoyage/sans-espaces-typographiques';
 import {
   avecVirgule,
+  enEuros,
+  enPourcent,
   nombreAffiche,
   nombreFrancais,
   nombreSommable,
@@ -40,6 +42,26 @@ describe('nombreFrancais', () => {
     [-12345.6, 1, '-12 345,6'],
   ])('écrit %p avec %p décimales en %p', (valeur, decimales, attendue) => {
     expect(nombreFrancais(valeur, decimales)).toBe(attendue);
+  });
+});
+
+describe('enEuros', () => {
+  it.each([
+    [1_340_208, '1 340 208 €'],
+    [77_850.4, '77 850 €'],
+    [-27_862, '-27 862 €'],
+  ])('écrit le montant %p à l euro près : %p', (valeur, attendue) => {
+    expect(enEuros(valeur)).toBe(attendue);
+  });
+});
+
+describe('enPourcent', () => {
+  it.each([
+    [27.25, '27,3 %'],
+    [(0.1 + 0.2) * 100, '30,0 %'],
+    [-12.04, '-12,0 %'],
+  ])('écrit le taux %p au dixième de point : %p', (valeur, attendue) => {
+    expect(enPourcent(valeur)).toBe(attendue);
   });
 });
 

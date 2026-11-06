@@ -57,8 +57,10 @@ const CELLULES_DE_LA_FEUILLE: Readonly<Partial<Record<string, number>>> = {
   'b2-04-suites': 5,
   'b2-05-mathematiques-financieres': 10,
   'b2-06-exponentielle-logarithme': 13,
+  'b2-07-derivee-optimisation': 16,
   'b1-01-proportions-pourcentages': 6,
   'b1-02-evolutions-coefficients-indices': 7,
+  'b1-03-tcd-serie-une-variable': 12,
 };
 
 function instantaneDe(contenu: ContenuDeCours): { readonly empreinte: string } {
@@ -113,14 +115,27 @@ for (const contenu of CONTENUS) {
       return corrige;
     }
 
-    function corrigeDuTableau(): CorrigeTableau {
-      const corrige = corrigesDesProductions().find(
-        (candidat) => candidat.type === 'tableau',
+    function saisiesJustesDu(tableau: CorrigeTableau) {
+      const rangs = [
+        ...new Set(tableau.attendus.map((attendu) => attendu.rang)),
+      ];
+      return rangs.map((rang) =>
+        Object.fromEntries(
+          tableau.attendus
+            .filter((attendu) => attendu.rang === rang)
+            .map((attendu) => [attendu.cle, attendu.valeur]),
+        ),
       );
-      if (corrige?.type !== 'tableau') {
-        throw new Error(`le tableau du ${prefixe} n’a pas été relu de la base`);
+    }
+
+    function corrigerAvecLesAttendus(corrige: CorrigeProduction) {
+      if (corrige.type === 'feuille') {
+        return corrigerFeuille(corrige, formulesDuCorrige(corrige));
       }
-      return corrige;
+      if (corrige.type === 'tableau') {
+        return corrigerTableau(corrige, saisiesJustesDu(corrige));
+      }
+      throw new Error(`production ${corrige.type} hors feuille et tableau`);
     }
 
     it('relit tous les écrans du fichier, dans l’ordre, avec leur titre public', () => {
@@ -187,39 +202,20 @@ for (const contenu of CONTENUS) {
         }
       });
 
-      it('corrige les deux productions relues de la base sans aucune cellule à revoir', () => {
-        const feuille = corrigeDeLaFeuille();
-        const tableau = corrigeDuTableau();
-        const rangs = [
-          ...new Set(tableau.attendus.map((attendu) => attendu.rang)),
-        ];
-        const saisies = rangs.map((rang) =>
-          Object.fromEntries(
-            tableau.attendus
-              .filter((attendu) => attendu.rang === rang)
-              .map((attendu) => [attendu.cle, attendu.valeur]),
-          ),
+      it('corrige chaque feuille et chaque tableau relus de la base sans aucune case à revoir', () => {
+        const corrections = corrigesDesProductions().map(
+          corrigerAvecLesAttendus,
         );
 
-        const surFeuille = corrigerFeuille(
-          feuille,
-          Object.fromEntries(
-            feuille.attendus.map((attendu) => [
-              attendu.reference,
-              attendu.formuleReference,
-            ]),
+        expect(corrections.length).toBeGreaterThan(0);
+        expect(
+          corrections.flatMap(({ verdicts }) =>
+            verdicts.filter((verdict) => !verdict.juste),
           ),
+        ).toEqual([]);
+        expect(corrections.map(({ correcte }) => correcte)).toEqual(
+          corrections.map(() => true),
         );
-        const surTableau = corrigerTableau(tableau, saisies);
-
-        expect(surFeuille.verdicts.filter((cellule) => !cellule.juste)).toEqual(
-          [],
-        );
-        expect(surTableau.verdicts.filter((ligne) => !ligne.juste)).toEqual([]);
-        expect([surFeuille.correcte, surTableau.correcte]).toEqual([
-          true,
-          true,
-        ]);
       });
     }
 

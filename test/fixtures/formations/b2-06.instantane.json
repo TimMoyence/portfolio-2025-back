@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "f06bd504e966a6f8cfff1433485231709b082d1e777b0377ed91d5a81c17ebf8",
+  "empreinte": "50e519745df8d548fc7484940546718e35b61630450d71570edf27b4e7570328",
   "sujet": {
     "id": "b2-06-exponentielle-logarithme",
     "titre": "Exponentielle et logarithme",
@@ -3744,7 +3744,7 @@
             "confusions": [
               {
                 "id": "sens-inegalite-ln-negatif",
-                "libelle": "Garder le sens de l’inégalité en divisant par ln q quand q < 1 : ln q est négatif, le sens change."
+                "libelle": "Garder le sens d’une inégalité en divisant par un nombre négatif, comme ln q quand q < 1 ou un coefficient négatif devant x : diviser par un nombre négatif change le sens."
               }
             ]
           },
@@ -5268,7 +5268,7 @@
             "confusions": [
               {
                 "id": "sens-inegalite-ln-negatif",
-                "libelle": "Garder le sens de l’inégalité en divisant par ln q quand q < 1 : ln q est négatif, le sens change."
+                "libelle": "Garder le sens d’une inégalité en divisant par un nombre négatif, comme ln q quand q < 1 ou un coefficient négatif devant x : diviser par un nombre négatif change le sens."
               }
             ]
           },

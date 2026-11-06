@@ -487,25 +487,96 @@ export interface ImageDIllustration {
   readonly imageAlt: string;
 }
 
-export function ecranDIllustration(
+export interface ScenePourComprendre extends ImageDIllustration {
+  readonly scene: string;
+  readonly idee: string;
+  readonly pont: string;
+}
+
+const PONT_VERS_LA_NOTION = 'En maths, on écrit : ';
+
+function ecranDImage(
   { screenId, titre, concepts }: SocleNomme,
-  dossier: string,
-  { fichier, imageAlt }: ImageDIllustration,
   notes: AuMoinsUnModifiable<string>,
+  renderer: 'illustration' | 'image-left',
+  props: Readonly<Record<string, unknown>>,
+  dureeMinutes = 1,
 ): EcranDeRecit {
   return ecranV2(
     {
       screenId,
       titre,
       diffusion: 'catalogue',
-      dureeMinutes: 1,
+      dureeMinutes,
       concepts,
       notes: puces(...notes),
     },
-    'illustration',
-    { image: `${dossier}/${fichier}`, imageAlt },
+    renderer,
+    props,
   );
 }
+
+export interface TexteDeLImage {
+  readonly sousTitre?: string;
+  readonly paragraphes: AuMoinsUnModifiable<string>;
+  readonly dureeMinutes: number;
+}
+
+export function ecranDImageCommentee(
+  socle: SocleNomme,
+  dossier: string,
+  { fichier, imageAlt }: ImageDIllustration,
+  { sousTitre, paragraphes, dureeMinutes }: TexteDeLImage,
+  notes: AuMoinsUnModifiable<string>,
+): EcranDeRecit {
+  return ecranDImage(
+    socle,
+    notes,
+    'image-left',
+    {
+      title: socle.titre,
+      ...(sousTitre === undefined ? {} : { subtitle: sousTitre }),
+      image: `${dossier}/${fichier}`,
+      imageAlt,
+      paragraphs: [...paragraphes],
+    },
+    dureeMinutes,
+  );
+}
+
+export function ecranDIllustration(
+  socle: SocleNomme,
+  dossier: string,
+  { fichier, imageAlt }: ImageDIllustration,
+  notes: AuMoinsUnModifiable<string>,
+): EcranDeRecit {
+  return ecranDImage(socle, notes, 'illustration', {
+    image: `${dossier}/${fichier}`,
+    imageAlt,
+  });
+}
+
+export const commeACinqAnsDans =
+  (dossier: string) =>
+  (
+    socle: SocleNomme,
+    { fichier, imageAlt, scene, idee, pont }: ScenePourComprendre,
+    relance: string,
+  ): EcranDeRecit =>
+    ecranDImage(
+      socle,
+      [
+        '1 min : faire décrire l’image, lire l’idée, puis le pont vers la notation.',
+        relance,
+      ],
+      'image-left',
+      {
+        title: socle.titre,
+        image: `${dossier}/${fichier}`,
+        imageAlt,
+        paragraphs: [scene, idee, `${PONT_VERS_LA_NOTION}${pont}`],
+      },
+    );
 
 export function mediasDesIllustrations(
   dossier: string,

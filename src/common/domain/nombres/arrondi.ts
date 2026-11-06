@@ -1,3 +1,4 @@
+const DECIMALES_DU_DIXIEME = 1;
 const DECIMALES_DU_CENTIME = 2;
 const DECIMALES_DU_MILLIONIEME = 6;
 const CHIFFRES_SIGNIFICATIFS = 15;
@@ -13,6 +14,10 @@ export function arrondi(valeur: number, decimales: number): number {
   );
   const arrondie = (Math.sign(valeur) * Math.round(decale)) / facteur;
   return sansZeroNegatif(Number(arrondie.toPrecision(CHIFFRES_SIGNIFICATIFS)));
+}
+
+export function auDixieme(valeur: number): number {
+  return arrondi(valeur, DECIMALES_DU_DIXIEME);
 }
 
 export function auCentime(valeur: number): number {
