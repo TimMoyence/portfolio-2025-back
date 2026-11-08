@@ -41,9 +41,20 @@ function nombre(valeur: number): string {
   return JSON.stringify(valeur);
 }
 
-function canonique(valeur: unknown): string {
+const PROFONDEUR_MAX = 64;
+
+function canonique(valeur: unknown, profondeur = 0): string {
+  if (
+    valeur !== null &&
+    typeof valeur === 'object' &&
+    profondeur >= PROFONDEUR_MAX
+  ) {
+    throw new Error(
+      `Imbrication trop profonde, au plus ${PROFONDEUR_MAX} niveaux`,
+    );
+  }
   if (Array.isArray(valeur)) {
-    return `[${valeur.map(canonique).join(',')}]`;
+    return `[${valeur.map((element) => canonique(element, profondeur + 1)).join(',')}]`;
   }
   if (typeof valeur === 'string') {
     return texte(valeur);
@@ -55,7 +66,7 @@ function canonique(valeur: unknown): string {
     const objet = valeur as Record<string, unknown>;
     const champs = Object.keys(objet)
       .sort((a, b) => Number(a > b) - Number(a < b))
-      .map((cle) => `${texte(cle)}:${canonique(objet[cle])}`);
+      .map((cle) => `${texte(cle)}:${canonique(objet[cle], profondeur + 1)}`);
     return `{${champs.join(',')}}`;
   }
   return JSON.stringify(valeur);
@@ -77,9 +88,9 @@ function lireLeSchema(octets: Uint8Array = readFileSync(SCHEMA)): unknown {
   );
 }
 
-function empreinteDuSchema(): string {
+function empreinteDuSchema(octets?: Uint8Array): string {
   try {
-    return empreinte(lireLeSchema());
+    return empreinte(lireLeSchema(octets));
   } catch (erreur) {
     throw new Error(
       `JSON Schema d'ingestion illisible ou hors de la forme canonique (${SCHEMA}). ${PARTAGE}`,
@@ -130,9 +141,14 @@ describe("Empreinte du JSON Schema d'ingestion partagé avec morning-brief", () 
     expect(empreinte(modifie)).not.toBe(empreinte(original));
   });
 
-  it('refuse un fichier qui n’est pas en UTF-8', () => {
+  it('refuse un fichier qui n’est pas en UTF-8, en nommant morning-brief', () => {
     const latin1 = Buffer.from('{"title":"résumé"}', 'latin1');
-    expect(() => lireLeSchema(latin1)).toThrow(/not valid for encoding utf-8/);
+    expect(() => empreinteDuSchema(latin1)).toThrow(/illisible.*morning-brief/);
+  });
+
+  it('accepte 64 niveaux d’imbrication, la limite partagée', () => {
+    const limite = `${'['.repeat(64)}${']'.repeat(64)}`;
+    expect(canonique(analyser(limite))).toBe(limite);
   });
 
   it.each<[string, string, RegExp | SyntaxErrorConstructor]>([
@@ -146,6 +162,11 @@ describe("Empreinte du JSON Schema d'ingestion partagé avec morning-brief", () 
     ['NaN, dès la lecture', '{"a":NaN}', SyntaxError],
     ['un surrogat isolé en valeur', '{"a":"\\ud800"}', /surrogat isolé/],
     ['un surrogat isolé en clé', '{"\\udc00":1}', /surrogat isolé/],
+    [
+      '65 niveaux d’imbrication',
+      `${'['.repeat(65)}${']'.repeat(65)}`,
+      /trop profonde/,
+    ],
   ])(
     'refuse %s, que morning-brief écrirait autrement',
     (_cas, brut, attendu) => {
