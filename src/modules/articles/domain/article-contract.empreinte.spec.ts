@@ -16,10 +16,12 @@ const PARTAGE =
 const MESSAGE = `Le JSON Schema d'ingestion a changé. ${PARTAGE}`;
 
 const VECTEUR =
-  '{"b":[2,1],"a":{"d":1,"c":2.0},"z":-0.0,"k":1e2,"！":"é","😀":"\\t"}';
+  '{"b":[2,1],"a":{"d":1,"c":2.0},"z":-0.0,"k":1e2,' +
+  '"r":1.0000000000000001,"u":1e-400,"l":[true,false,null],"！":"é","😀":"\\t"}';
 
 const VECTEUR_CANONIQUE =
-  '{"a":{"c":2,"d":1},"b":[2,1],"k":100,"z":0,"😀":"\\t","！":"é"}';
+  '{"a":{"c":2,"d":1},"b":[2,1],"k":100,' +
+  '"l":[true,false,null],"r":1,"u":0,"z":0,"😀":"\\t","！":"é"}';
 
 function texte(valeur: string): string {
   if (/\p{Cs}/u.test(valeur)) {
@@ -69,8 +71,10 @@ function empreinte(document: unknown): string {
   return empreinteSha256(canonique(document));
 }
 
-function lireLeSchema(): unknown {
-  return analyser(readFileSync(SCHEMA, 'utf8'));
+function lireLeSchema(octets: Uint8Array = readFileSync(SCHEMA)): unknown {
+  return analyser(
+    new TextDecoder('utf-8', { fatal: true, ignoreBOM: true }).decode(octets),
+  );
 }
 
 function empreinteDuSchema(): string {
@@ -126,13 +130,26 @@ describe("Empreinte du JSON Schema d'ingestion partagé avec morning-brief", () 
     expect(empreinte(modifie)).not.toBe(empreinte(original));
   });
 
-  it.each([
-    ['un nombre non entier', '{"a":0.5}'],
-    ['un entier hors de la plage sûre', '{"a":9007199254740992}'],
-    ['NaN', '{"a":NaN}'],
-    ['un surrogat isolé en valeur', '{"a":"\\ud800"}'],
-    ['un surrogat isolé en clé', '{"\\udc00":1}'],
-  ])('refuse %s, que morning-brief écrirait autrement', (_cas, brut) => {
-    expect(() => canonique(analyser(brut))).toThrow();
+  it('refuse un fichier qui n’est pas en UTF-8', () => {
+    const latin1 = Buffer.from('{"title":"résumé"}', 'latin1');
+    expect(() => lireLeSchema(latin1)).toThrow(/not valid for encoding utf-8/);
   });
+
+  it.each<[string, string, RegExp | SyntaxErrorConstructor]>([
+    ['un nombre non entier', '{"a":0.5}', /entier sûr attendu/],
+    [
+      'un entier hors de la plage sûre',
+      '{"a":9007199254740992}',
+      /entier sûr attendu/,
+    ],
+    ['un exposant géant', '{"a":1e999999999999}', /entier sûr attendu/],
+    ['NaN, dès la lecture', '{"a":NaN}', SyntaxError],
+    ['un surrogat isolé en valeur', '{"a":"\\ud800"}', /surrogat isolé/],
+    ['un surrogat isolé en clé', '{"\\udc00":1}', /surrogat isolé/],
+  ])(
+    'refuse %s, que morning-brief écrirait autrement',
+    (_cas, brut, attendu) => {
+      expect(() => canonique(analyser(brut))).toThrow(attendu);
+    },
+  );
 });
