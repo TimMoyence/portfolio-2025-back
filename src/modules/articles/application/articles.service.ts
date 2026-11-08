@@ -14,6 +14,7 @@ import {
   ArticleSlug,
   DeliveryId,
 } from '../domain/article-contract';
+import { avecDatesCanoniques } from '../domain/dates-canoniques';
 import {
   type ArticleDeliveryRecord,
   type ArticleRecord,
@@ -146,7 +147,7 @@ export class ArticlesService {
       limit: query.limit + 1,
     });
     const hasNext = rows.length > query.limit;
-    const items = rows.slice(0, query.limit);
+    const items = rows.slice(0, query.limit).map(avecDatesCanoniques);
     return {
       items,
       nextCursor: hasNext ? this.encodeCursor(offset + query.limit) : null,
@@ -161,7 +162,7 @@ export class ArticlesService {
       ? await this.articles.findPublishedBySlug(slug, locale)
       : null;
     if (!article) throw new ResourceNotFoundError('Article not found');
-    return article;
+    return avecDatesCanoniques(article);
   }
 
   async feed(locale: SupportedLocale): Promise<string> {

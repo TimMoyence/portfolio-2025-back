@@ -1,5 +1,11 @@
 import { empreinteSha256 } from '../../src/common/domain/crypto/empreintes';
-import type { ArticleIngestEnvelope } from '../../src/modules/articles/domain/article-contract';
+import type {
+  ArticleIngere,
+  ArticleIngestEnvelope,
+} from '../../src/modules/articles/domain/article-contract';
+
+type ItemDeSection = ArticleIngere['sections'][number]['items'][number];
+type SourceDArticle = ArticleIngere['sources'][number];
 
 const contentMarkdown = '# Une veille IA utile\n\n' + 'x'.repeat(120);
 
@@ -56,3 +62,34 @@ export const validArticleIngestEnvelope: ArticleIngestEnvelope = {
     },
   },
 };
+
+export function buildSectionsEtSourcesDatees(dates: {
+  item: Pick<ItemDeSection, 'published_at' | 'retrieved_at'>;
+  source: Pick<SourceDArticle, 'published_at' | 'retrieved_at'>;
+}): Pick<ArticleIngere, 'sections' | 'sources'> {
+  const [section] = validArticleIngestEnvelope.article.sections;
+  const [source] = validArticleIngestEnvelope.article.sources;
+  const item = (rang: number): ItemDeSection => ({
+    entity: 'OpenAI',
+    text: `Un fait daté numéro ${rang}, assez long pour tenir le contrat.`,
+    source: 'Source',
+    url: `https://example.com/fait-${rang}`,
+    ...dates.item,
+  });
+  return {
+    sections: [
+      { ...section, items: [item(1), item(2)] },
+      { ...section, id: 'radar', kind: 'radar', items: [item(3), item(4)] },
+    ],
+    sources: [
+      { ...source, ...dates.source },
+      { ...source, url: 'https://example.com/autre-source', ...dates.source },
+    ],
+  };
+}
+
+export function itemsDe(
+  article: Pick<ArticleIngere, 'sections'>,
+): ItemDeSection[] {
+  return article.sections.flatMap((section) => section.items);
+}

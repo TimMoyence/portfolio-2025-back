@@ -7,7 +7,11 @@ import {
   buildArticleRecord,
   createMockArticlesRepository,
 } from '../../../../test/factories/article.factory';
-import { validArticleIngestEnvelope as payload } from '../../../../test/factories/article-ingest.factory';
+import {
+  buildSectionsEtSourcesDatees,
+  itemsDe,
+  validArticleIngestEnvelope as payload,
+} from '../../../../test/factories/article-ingest.factory';
 import type { ArticleRecord } from './articles.repository';
 import { ArticlesService } from './articles.service';
 
@@ -108,6 +112,73 @@ describe('ArticlesService', () => {
         lire(new ArticlesService(repository)),
       ).rejects.toBeInstanceOf(ResourceNotFoundError);
       expect(repository[lecture].mock.calls).toHaveLength(0);
+    },
+  );
+});
+
+describe('ArticlesService — lecture publique', () => {
+  const datesDe = ({
+    published_at,
+    retrieved_at,
+  }: {
+    published_at?: string | null;
+    retrieved_at?: string | null;
+  }) => ({ published_at, retrieved_at });
+
+  const articleStockeAvecDecalage = (): ArticleRecord => ({
+    ...articleRecord(),
+    ...buildSectionsEtSourcesDatees({
+      item: {
+        published_at: '2026-11-08T07:15:00+01:00',
+        retrieved_at: '2026-11-08T08:30:00+02:00',
+      },
+      source: { published_at: '2026-11-08T06:15:00+00:00', retrieved_at: null },
+    }),
+  });
+
+  it.each([
+    [
+      'GET /articles/:slug',
+      1,
+      async (service: ArticlesService) => [
+        await service.getPublishedBySlug(payload.article.slug, 'fr'),
+      ],
+    ],
+    [
+      'GET /articles',
+      2,
+      async (service: ArticlesService) =>
+        (await service.listPublished({ locale: 'fr', limit: 10 })).items,
+    ],
+  ] as const)(
+    '%s sert les dates de chaque item et de chaque source de chacun de ses %i articles en ISO UTC « Z », même stockées avec un décalage',
+    async (_route, servis, lire) => {
+      const repository = createMockArticlesRepository();
+      repository.findPublishedBySlug.mockResolvedValue(
+        articleStockeAvecDecalage(),
+      );
+      repository.listPublished.mockResolvedValue([
+        articleStockeAvecDecalage(),
+        articleStockeAvecDecalage(),
+      ]);
+
+      const articles = await lire(new ArticlesService(repository));
+
+      expect(articles).toHaveLength(servis);
+      expect(articles.flatMap(itemsDe).map(datesDe)).toEqual(
+        Array.from({ length: 4 * servis }, () => ({
+          published_at: '2026-11-08T06:15:00.000Z',
+          retrieved_at: '2026-11-08T06:30:00.000Z',
+        })),
+      );
+      expect(
+        articles.flatMap((article) => article.sources).map(datesDe),
+      ).toEqual(
+        Array.from({ length: 2 * servis }, () => ({
+          published_at: '2026-11-08T06:15:00.000Z',
+          retrieved_at: null,
+        })),
+      );
     },
   );
 });
