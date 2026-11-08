@@ -146,9 +146,18 @@ describe("Empreinte du JSON Schema d'ingestion partagé avec morning-brief", () 
     expect(() => empreinteDuSchema(latin1)).toThrow(/illisible.*morning-brief/);
   });
 
-  it('accepte 64 niveaux d’imbrication, la limite partagée', () => {
-    const limite = `${'['.repeat(64)}${']'.repeat(64)}`;
+  it.each([
+    ['de tableaux', `${'['.repeat(64)}${']'.repeat(64)}`],
+    ['d’objets et de tableaux', `${'{"k":['.repeat(32)}0${']}'.repeat(32)}`],
+  ])('accepte 64 niveaux %s, la limite partagée', (_forme, limite) => {
     expect(canonique(analyser(limite))).toBe(limite);
+  });
+
+  it('refuse une imbrication que le parseur ne suit pas, en nommant morning-brief', () => {
+    const abyssal = `${'['.repeat(1_000_000)}${']'.repeat(1_000_000)}`;
+    expect(() => empreinteDuSchema(Buffer.from(abyssal))).toThrow(
+      /illisible.*morning-brief/,
+    );
   });
 
   it.each<[string, string, RegExp | SyntaxErrorConstructor]>([
@@ -163,8 +172,13 @@ describe("Empreinte du JSON Schema d'ingestion partagé avec morning-brief", () 
     ['un surrogat isolé en valeur', '{"a":"\\ud800"}', /surrogat isolé/],
     ['un surrogat isolé en clé', '{"\\udc00":1}', /surrogat isolé/],
     [
-      '65 niveaux d’imbrication',
+      '65 niveaux de tableaux',
       `${'['.repeat(65)}${']'.repeat(65)}`,
+      /trop profonde/,
+    ],
+    [
+      '65 niveaux, un objet au fond',
+      `${'{"k":['.repeat(32)}{}${']}'.repeat(32)}`,
       /trop profonde/,
     ],
   ])(
