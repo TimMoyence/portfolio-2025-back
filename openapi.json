@@ -4828,7 +4828,25 @@
           "essential",
           "deep_dive",
           "rubric",
-          "radar"
+          "radar",
+          "brief",
+          "infos"
+        ]
+      },
+      "PublicDUneInfo": {
+        "type": "string",
+        "enum": [
+          "tous",
+          "dirigeants",
+          "developpeurs"
+        ]
+      },
+      "HorizonDUneInfo": {
+        "type": "string",
+        "enum": [
+          "aujourdhui",
+          "trimestre",
+          "a_surveiller"
         ]
       },
       "ArticleSectionItemResponseDto": {
@@ -4857,6 +4875,46 @@
           "retrieved_at": {
             "type": "string",
             "format": "date-time"
+          },
+          "title": {
+            "type": "string",
+            "example": "Claude Code laisse fuiter des secrets"
+          },
+          "figure": {
+            "type": "string",
+            "example": "23 points"
+          },
+          "for_business": {
+            "type": "string"
+          },
+          "under_the_hood": {
+            "type": "string"
+          },
+          "audience": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PublicDUneInfo"
+              }
+            ]
+          },
+          "horizon": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/HorizonDUneInfo"
+              }
+            ]
+          },
+          "episode": {
+            "type": "number",
+            "minimum": 2,
+            "example": 3
+          },
+          "recap": {
+            "type": "string"
+          },
+          "rubric": {
+            "type": "string",
+            "example": "outils-ia"
           }
         },
         "required": [
@@ -10499,7 +10557,9 @@
                         "essential",
                         "deep_dive",
                         "rubric",
-                        "radar"
+                        "radar",
+                        "brief",
+                        "infos"
                       ]
                     },
                     "title": {
@@ -10544,6 +10604,56 @@
                           },
                           "retrieved_at": {
                             "type": "string"
+                          },
+                          "title": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 160
+                          },
+                          "figure": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 40
+                          },
+                          "for_business": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 1000
+                          },
+                          "under_the_hood": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 4000
+                          },
+                          "audience": {
+                            "type": "string",
+                            "enum": [
+                              "tous",
+                              "dirigeants",
+                              "developpeurs"
+                            ]
+                          },
+                          "horizon": {
+                            "type": "string",
+                            "enum": [
+                              "aujourdhui",
+                              "trimestre",
+                              "a_surveiller"
+                            ]
+                          },
+                          "episode": {
+                            "type": "integer",
+                            "minimum": 2,
+                            "maximum": 999
+                          },
+                          "recap": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 300
+                          },
+                          "rubric": {
+                            "type": "string",
+                            "pattern": "^[a-z0-9][a-z0-9-]{1,79}$"
                           }
                         },
                         "required": [

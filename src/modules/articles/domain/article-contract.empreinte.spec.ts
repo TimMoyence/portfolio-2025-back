@@ -4,7 +4,7 @@ import { empreinteSha256 } from '../../../common/domain/crypto/empreintes';
 import { RACINE } from '../../../../test/helpers/depot/racine';
 
 const EMPREINTE =
-  'e3434e840dad92bfea0a7d1d30b42a0842134611214c7fc36b6d5d23bdfa38e5';
+  '073e9ccc7ad2c2a07119fb3046c1f7dc0011b98ad09e8cc9bd5a98be7f8caa33';
 
 const SCHEMA = join(RACINE, 'docs/contracts/article-ingest-envelope-v1.json');
 

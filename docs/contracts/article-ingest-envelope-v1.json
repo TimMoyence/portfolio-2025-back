@@ -57,7 +57,20 @@
         "source": { "type": "string", "minLength": 1, "maxLength": 160 },
         "url": { "$ref": "#/$defs/httpUrl" },
         "published_at": { "$ref": "#/$defs/dateTime" },
-        "retrieved_at": { "$ref": "#/$defs/dateTime" }
+        "retrieved_at": { "$ref": "#/$defs/dateTime" },
+        "title": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "figure": { "type": "string", "minLength": 1, "maxLength": 40 },
+        "for_business": { "type": "string", "minLength": 1, "maxLength": 1000 },
+        "under_the_hood": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        "audience": { "enum": ["tous", "dirigeants", "developpeurs"] },
+        "horizon": { "enum": ["aujourdhui", "trimestre", "a_surveiller"] },
+        "episode": { "type": "integer", "minimum": 2, "maximum": 999 },
+        "recap": { "type": "string", "minLength": 1, "maxLength": 300 },
+        "rubric": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{1,79}$" }
       }
     },
     "section": {
@@ -66,7 +79,16 @@
       "required": ["id", "kind", "title", "intro", "body", "items"],
       "properties": {
         "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{1,79}$" },
-        "kind": { "enum": ["essential", "deep_dive", "rubric", "radar"] },
+        "kind": {
+          "enum": [
+            "essential",
+            "deep_dive",
+            "rubric",
+            "radar",
+            "brief",
+            "infos"
+          ]
+        },
         "title": { "type": "string", "minLength": 1, "maxLength": 120 },
         "intro": { "type": "string", "maxLength": 4000 },
         "body": { "type": "string", "maxLength": 20000 },
