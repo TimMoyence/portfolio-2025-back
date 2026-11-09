@@ -4847,7 +4847,8 @@
           },
           "url": {
             "type": "string",
-            "format": "uri"
+            "format": "uri",
+            "pattern": "^[Hh][Tt][Tt][Pp][Ss]?://"
           },
           "published_at": {
             "type": "string",
@@ -4913,7 +4914,8 @@
           },
           "url": {
             "type": "string",
-            "format": "uri"
+            "format": "uri",
+            "pattern": "^[Hh][Tt][Tt][Pp][Ss]?://"
           },
           "published_at": {
             "type": "string",
@@ -4983,6 +4985,7 @@
           "image_url": {
             "type": "string",
             "format": "uri",
+            "pattern": "^[Hh][Tt][Tt][Pp][Ss]?://",
             "nullable": true
           },
           "image_alt": {
