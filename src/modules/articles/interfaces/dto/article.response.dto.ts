@@ -3,7 +3,10 @@ import {
   LOCALES_SUPPORTEES,
   type SupportedLocale,
 } from '../../../../common/domain/value-objects/LocaleCode';
-import { TYPES_DE_SECTION } from '../../domain/article-contract';
+import {
+  MOTIF_LIEN_HTTP,
+  TYPES_DE_SECTION,
+} from '../../domain/article-contract';
 
 export class ArticleSectionItemResponseDto {
   @ApiProperty({ example: 'Mistral AI' })
@@ -15,7 +18,7 @@ export class ArticleSectionItemResponseDto {
   @ApiProperty({ example: 'Le Monde' })
   source: string;
 
-  @ApiProperty({ format: 'uri' })
+  @ApiProperty({ format: 'uri', pattern: MOTIF_LIEN_HTTP })
   url: string;
 
   @ApiPropertyOptional({ format: 'date-time' })
@@ -49,7 +52,7 @@ export class ArticleSourceResponseDto {
   @ApiProperty({ example: 'Le Monde' })
   name: string;
 
-  @ApiProperty({ format: 'uri' })
+  @ApiProperty({ format: 'uri', pattern: MOTIF_LIEN_HTTP })
   url: string;
 
   @ApiProperty({ type: String, format: 'date-time', nullable: true })
@@ -86,7 +89,12 @@ export class ArticleSeoResponseDto {
   @ApiProperty({ type: [String] })
   keywords: string[];
 
-  @ApiProperty({ type: String, format: 'uri', nullable: true })
+  @ApiProperty({
+    type: String,
+    format: 'uri',
+    pattern: MOTIF_LIEN_HTTP,
+    nullable: true,
+  })
   image_url: string | null;
 
   @ApiProperty({ type: String, nullable: true })

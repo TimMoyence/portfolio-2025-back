@@ -9,9 +9,13 @@ const dateTime = z
     message: 'Invalid date-time',
   });
 
-const httpUrl = z.url().refine((value) => /^https?:\/\//i.test(value), {
-  message: 'Only HTTP(S) URLs are allowed',
-});
+export const MOTIF_LIEN_HTTP = '^[Hh][Tt][Tt][Pp][Ss]?://';
+
+const httpUrl = z
+  .url()
+  .refine((value) => new RegExp(MOTIF_LIEN_HTTP).test(value), {
+    message: 'Only HTTP(S) URLs are allowed',
+  });
 
 const itemSchema = z
   .object({
