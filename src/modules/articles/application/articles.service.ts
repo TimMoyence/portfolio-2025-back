@@ -36,6 +36,10 @@ function texteXml(valeur: string): string {
   return htmlEmis(escapeHtml(valeur));
 }
 
+function descriptionRss(texte: string): string {
+  return texteXml(texteXml(texte));
+}
+
 export interface ArticleListQuery {
   locale: SupportedLocale;
   tag?: string;
@@ -174,7 +178,7 @@ export class ArticlesService {
           `<link>${texteXml(articlePageUrl(locale, article.slug))}</link>` +
           `<guid isPermaLink="false">${texteXml(article.articleId)}</guid>` +
           `<pubDate>${article.publishedAt.toUTCString()}</pubDate>` +
-          `<description>${texteXml(article.excerpt)}</description></item>`,
+          `<description>${descriptionRss(article.excerpt)}</description></item>`,
       )
       .join('');
     const lastBuild = items.reduce<Date | null>(
@@ -190,7 +194,7 @@ export class ArticlesService {
       '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel>' +
       `<title>Asili Design — Articles</title>` +
       `<link>${texteXml(urlDuSite() + '/' + locale + '/articles')}</link>` +
-      `<description>${texteXml(FEED_DESCRIPTION[locale])}</description>` +
+      `<description>${descriptionRss(FEED_DESCRIPTION[locale])}</description>` +
       `<atom:link href="${texteXml(selfUrl)}" rel="self" type="application/rss+xml"/>` +
       `<language>${FEED_LANGUAGE[locale]}</language>` +
       `<lastBuildDate>${(lastBuild ?? new Date()).toUTCString()}</lastBuildDate>` +

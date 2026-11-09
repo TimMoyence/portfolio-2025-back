@@ -259,7 +259,28 @@ describe('ArticlesService.feed', () => {
     expect(xml).toContain(
       '<title>L&#39;IA &lt;vraie&gt; &amp; &quot;fausse&quot;</title>',
     );
-    expect(xml).toContain('<description>Qu&#39;en dire ?</description>');
+    expect(xml).toContain('<description>Qu&amp;#39;en dire ?</description>');
+  });
+
+  it('livre le résumé en texte aux lecteurs qui lisent la description comme du HTML', async () => {
+    const xml = await feedOf('fr', [
+      {
+        ...articleRecord(),
+        excerpt: 'Rust stabilise Vec<T> et <img src=https://t.example/p.gif>',
+      },
+    ]);
+    const description =
+      /<item>.*<description>(.*?)<\/description>/.exec(xml)?.[1] ?? '';
+    const htmlLuParLeLecteur = description
+      .replaceAll('&lt;', '<')
+      .replaceAll('&gt;', '>')
+      .replaceAll('&quot;', '"')
+      .replaceAll('&#39;', "'")
+      .replaceAll('&amp;', '&');
+
+    expect(htmlLuParLeLecteur).toBe(
+      'Rust stabilise Vec&lt;T&gt; et &lt;img src=https://t.example/p.gif&gt;',
+    );
   });
 
   it('reste un flux valide sans article publié', async () => {
