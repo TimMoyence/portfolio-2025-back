@@ -4,7 +4,9 @@ import {
   type SupportedLocale,
 } from '../../../../common/domain/value-objects/LocaleCode';
 import {
+  HORIZONS_D_UNE_INFO,
   MOTIF_LIEN_HTTP,
+  PUBLICS_D_UNE_INFO,
   TYPES_DE_SECTION,
 } from '../../domain/article-contract';
 
@@ -26,6 +28,39 @@ export class ArticleSectionItemResponseDto {
 
   @ApiPropertyOptional({ format: 'date-time' })
   retrieved_at?: string;
+
+  @ApiPropertyOptional({ example: 'Claude Code laisse fuiter des secrets' })
+  title?: string;
+
+  @ApiPropertyOptional({ example: '23 points' })
+  figure?: string;
+
+  @ApiPropertyOptional()
+  for_business?: string;
+
+  @ApiPropertyOptional()
+  under_the_hood?: string;
+
+  @ApiPropertyOptional({
+    enum: [...PUBLICS_D_UNE_INFO],
+    enumName: 'PublicDUneInfo',
+  })
+  audience?: (typeof PUBLICS_D_UNE_INFO)[number];
+
+  @ApiPropertyOptional({
+    enum: [...HORIZONS_D_UNE_INFO],
+    enumName: 'HorizonDUneInfo',
+  })
+  horizon?: (typeof HORIZONS_D_UNE_INFO)[number];
+
+  @ApiPropertyOptional({ type: Number, minimum: 2, example: 3 })
+  episode?: number;
+
+  @ApiPropertyOptional()
+  recap?: string;
+
+  @ApiPropertyOptional({ example: 'outils-ia' })
+  rubric?: string;
 }
 
 export class ArticleSectionResponseDto {

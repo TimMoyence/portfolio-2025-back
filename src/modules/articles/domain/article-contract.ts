@@ -17,6 +17,20 @@ const httpUrl = z
     message: 'Only HTTP(S) URLs are allowed',
   });
 
+export const PUBLICS_D_UNE_INFO = [
+  'tous',
+  'dirigeants',
+  'developpeurs',
+] as const;
+
+export const HORIZONS_D_UNE_INFO = [
+  'aujourdhui',
+  'trimestre',
+  'a_surveiller',
+] as const;
+
+const identifiantDeSection = z.string().regex(/^[a-z0-9][a-z0-9-]{1,79}$/);
+
 const itemSchema = z
   .object({
     entity: z.string().max(160),
@@ -25,6 +39,15 @@ const itemSchema = z
     url: httpUrl,
     published_at: dateTime.optional(),
     retrieved_at: dateTime.optional(),
+    title: z.string().min(1).max(160).optional(),
+    figure: z.string().min(1).max(40).optional(),
+    for_business: z.string().min(1).max(1000).optional(),
+    under_the_hood: z.string().min(1).max(4000).optional(),
+    audience: z.enum(PUBLICS_D_UNE_INFO).optional(),
+    horizon: z.enum(HORIZONS_D_UNE_INFO).optional(),
+    episode: z.number().int().min(2).max(999).optional(),
+    recap: z.string().min(1).max(300).optional(),
+    rubric: identifiantDeSection.optional(),
   })
   .strict();
 
@@ -33,11 +56,13 @@ export const TYPES_DE_SECTION = [
   'deep_dive',
   'rubric',
   'radar',
+  'brief',
+  'infos',
 ] as const;
 
 const sectionSchema = z
   .object({
-    id: z.string().regex(/^[a-z0-9][a-z0-9-]{1,79}$/),
+    id: identifiantDeSection,
     kind: z.enum(TYPES_DE_SECTION),
     title: z.string().min(1).max(120),
     intro: z.string().max(4000),
