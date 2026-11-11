@@ -1,10 +1,10 @@
-import { empreinteSha256 } from '../../../common/domain/crypto/empreintes';
+import { empreinteSha256 } from '../../../../common/domain/crypto/empreintes';
 import {
   ACCEPTEE_DES_DEUX_COTES,
   recitDuMatin,
   refuseeCommeParLeSchemaPartage,
   verdicts,
-} from '../../../../test/helpers/depot/schema-d-ingestion-partage';
+} from '../../../../../test/helpers/depot/schema-d-ingestion-partage';
 
 type Enveloppe = {
   article: {

@@ -11,7 +11,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { validArticleIngestEnvelope as payload } from '../../../../test/factories/article-ingest.factory';
 import { RACINE } from '../../../../test/helpers/depot/racine';
-import type { ArticleIngere } from '../domain/article-contract';
+import type { ArticleIngere } from '../domain/contrat/article-contract';
 import type { ArticleRecord } from './articles.repository';
 import { ArticlesService } from './articles.service';
 

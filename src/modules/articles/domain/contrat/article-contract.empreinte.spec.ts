@@ -1,10 +1,10 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { empreinteSha256 } from '../../../common/domain/crypto/empreintes';
-import { RACINE } from '../../../../test/helpers/depot/racine';
+import { empreinteSha256 } from '../../../../common/domain/crypto/empreintes';
+import { RACINE } from '../../../../../test/helpers/depot/racine';
 
 const EMPREINTE =
-  'd716fb58addc5a204cebd0e8f2c9aa3f811b10f20a4470b06b193ba84c39c8d4';
+  'd809b5a7347252916c0a744d3557fab03ecc58c0449df7c102d3d309e3e5d39c';
 
 const SCHEMA = join(RACINE, 'docs/contracts/article-ingest-envelope-v2.json');
 

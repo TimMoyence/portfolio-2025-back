@@ -2,7 +2,7 @@ import { schemasDeLArticleServi } from '../../../../../test/helpers/http/schemas
 import {
   MOTIF_LIEN_HTTPS,
   TYPES_DE_SECTION,
-} from '../../domain/article-contract';
+} from '../../domain/contrat/article-contract';
 
 describe('MB-19 · l API sert le récit du matin', () => {
   const schemas = schemasDeLArticleServi();

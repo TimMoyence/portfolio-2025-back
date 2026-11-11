@@ -1,5 +1,5 @@
 import { empreinteSha256 } from '../../src/common/domain/crypto/empreintes';
-import type { EnveloppeDAvantLaRefonte } from '../../src/modules/articles/domain/article-contract';
+import type { EnveloppeDAvantLaRefonte } from '../../src/modules/articles/domain/contrat/article-contract';
 
 const contentMarkdown = '# Une veille IA utile\n\n' + 'x'.repeat(120);
 

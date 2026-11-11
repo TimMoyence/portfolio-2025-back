@@ -1,5 +1,5 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
-import { TYPES_DE_SECTION } from '../modules/articles/domain/article-contract';
+import { TYPES_DE_SECTION } from '../modules/articles/domain/contrat/article-contract';
 import {
   type ArticleDAvantLaRefonte,
   enTexteSuivi,

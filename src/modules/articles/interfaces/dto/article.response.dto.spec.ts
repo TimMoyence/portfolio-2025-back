@@ -3,7 +3,7 @@ import type { SchemaOpenApi } from '../../../../../test/helpers/http/schema-open
 import {
   MOTIF_LIEN_HTTP,
   MOTIF_LIEN_HTTPS,
-} from '../../domain/article-contract';
+} from '../../domain/contrat/article-contract';
 import { PublishedArticleResponseDto } from './article.response.dto';
 
 const champsUri = (

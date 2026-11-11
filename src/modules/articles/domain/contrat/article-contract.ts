@@ -1,7 +1,10 @@
 import { z } from 'zod';
-import { empreinteSha256 } from '../../../common/domain/crypto/empreintes';
-import { nommeAuContrat } from '../../../common/domain/liens/registre-du-contrat';
-import { LOCALES_SUPPORTEES } from '../../../common/domain/value-objects/LocaleCode';
+import { empreinteSha256 } from '../../../../common/domain/crypto/empreintes';
+import { lienHttp, lienHttps } from '../../../../common/domain/liens/lien-web';
+import { dansLesBornes } from '../../../../common/domain/nombres/dans-les-bornes';
+import { longueurDeTexte } from '../../../../common/domain/texte/formats/longueur-de-texte';
+import { nommeAuContrat } from '../../../../common/domain/liens/registre-du-contrat';
+import { LOCALES_SUPPORTEES } from '../../../../common/domain/value-objects/LocaleCode';
 
 const DATE_HEURE_AVEC_FUSEAU =
   /^(\d{4})-(\d{2})-(\d{2})T([01]\d|2[0-3]):[0-5]\d:[0-5]\d(\.\d+)?(Z|[+-]([01]\d|2[0-3]):[0-5]\d)$/i;
@@ -23,25 +26,15 @@ const dateTime = z
 export const MOTIF_LIEN_HTTP = '^[Hh][Tt][Tt][Pp][Ss]?://';
 export const MOTIF_LIEN_HTTPS = '^https://';
 
-const lienDuSchema = (motif: RegExp, message: string) =>
-  z
-    .url()
-    .max(2048)
-    .refine((value) => motif.test(value), { message });
-
-const httpUrl = lienDuSchema(
-  /^https?:\/\/\S+$/,
-  'Only HTTP(S) URLs are allowed',
-);
-const httpsUrl = lienDuSchema(/^https:\/\/\S+$/, 'Only HTTPS URLs are allowed');
-
 const enCaracteres = (min: number, max?: number) =>
   z
     .string()
     .refine(
       (valeur) =>
-        [...valeur].length >= min &&
-        (max === undefined || [...valeur].length <= max),
+        dansLesBornes(longueurDeTexte(valeur), {
+          min,
+          max: max ?? Number.POSITIVE_INFINITY,
+        }),
       { message: `Entre ${min} et ${max ?? '∞'} caractères` },
     )
     .meta({
@@ -52,17 +45,23 @@ const texte = (max: number) => enCaracteres(1, max);
 const texteFacultatif = (max: number) => enCaracteres(0, max);
 
 export const UNITES_DU_GRAPHIQUE = ['', '%', '$', '€'] as const;
+export const LANGUES_TRADUITES = [
+  "l'anglais",
+  "l'allemand",
+  "l'espagnol",
+  "l'italien",
+] as const;
 
 const sourceSchema = z
   .object({
     nom: texte(160),
-    url: httpUrl,
+    url: lienHttp,
     publie_le: dateTime.nullable(),
   })
   .strict();
 
 const imageSchema = z
-  .object({ url: httpsUrl, credit: texte(160) })
+  .object({ url: lienHttps, credit: texte(160) })
   .strict()
   .nullable();
 
@@ -82,6 +81,7 @@ const graphiqueSchema = z
             libelle: texte(80),
             valeur: z.number(),
             affichage: texte(60),
+            largeur: z.number().int().min(2).max(100),
           })
           .strict(),
       )
@@ -190,7 +190,7 @@ const citationSchema = z
     kind: z.literal('citation'),
     texte: texte(600),
     auteur: texte(160),
-    traduite_de: texteFacultatif(40).nullable(),
+    traduite_de: z.enum(LANGUES_TRADUITES).nullable(),
     contexte: texteFacultatif(400),
     source: sourceSchema,
   })
@@ -239,7 +239,7 @@ const seoSchema = z
     description: texteFacultatif(160),
     canonical_path: z.string().regex(/^\/articles\/[a-z0-9-]+$/),
     keywords: z.array(z.string()),
-    image_url: httpsUrl.nullable(),
+    image_url: lienHttps.nullable(),
     image_alt: z.string().nullable(),
   })
   .strict();
@@ -314,7 +314,7 @@ const articleDAvantLaRefonte = z
         z
           .object({
             name: texte(160),
-            url: httpUrl,
+            url: lienHttp,
             published_at: dateTime.nullable(),
             retrieved_at: dateTime.nullable(),
           })
@@ -326,7 +326,7 @@ const articleDAvantLaRefonte = z
       item_count: z.number().int().min(1),
       source_count: z.number().int().min(1),
     }),
-    seo: seoSchema.extend({ image_url: httpUrl.nullable() }),
+    seo: seoSchema.extend({ image_url: lienHttp.nullable() }),
   })
   .strict()
   .superRefine(empreinteVerifiee);

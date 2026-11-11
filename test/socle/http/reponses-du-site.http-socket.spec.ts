@@ -12,7 +12,7 @@ import { AuditsController } from '../../../src/modules/audit-requests/interfaces
 import { ARTICLES_REPOSITORY } from '../../../src/modules/articles/application/articles.repository';
 import type { ArticleWrite } from '../../../src/modules/articles/application/articles.repository';
 import { ArticlesService } from '../../../src/modules/articles/application/articles.service';
-import type { ArticleIngestEnvelope } from '../../../src/modules/articles/domain/article-contract';
+import type { ArticleIngestEnvelope } from '../../../src/modules/articles/domain/contrat/article-contract';
 import { ArticleHmacGuard } from '../../../src/modules/articles/interfaces/article-hmac.guard';
 import { ArticlesController } from '../../../src/modules/articles/interfaces/articles.controller';
 import { RequestToolkitUseCase } from '../../../src/modules/lead-magnets/application/RequestToolkit.useCase';

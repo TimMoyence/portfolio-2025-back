@@ -7,7 +7,7 @@ import {
   type ArticleStatus,
   ARTICLES_REPOSITORY,
 } from './articles.repository';
-import { ArticleId } from '../domain/article-contract';
+import { ArticleId } from '../domain/contrat/article-contract';
 
 const MODERATION_LIST_LIMIT = 30;
 

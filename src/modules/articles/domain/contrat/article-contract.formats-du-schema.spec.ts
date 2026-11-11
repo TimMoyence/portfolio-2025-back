@@ -3,7 +3,7 @@ import {
   recitDuMatin,
   refuseeCommeParLeSchemaPartage,
   verdicts,
-} from '../../../../test/helpers/depot/schema-d-ingestion-partage';
+} from '../../../../../test/helpers/depot/schema-d-ingestion-partage';
 
 type Enveloppe = {
   article: {

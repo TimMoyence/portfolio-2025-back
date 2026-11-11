@@ -27,7 +27,7 @@ import { Roles } from '../../../common/interfaces/auth/roles.decorator';
 import { RolesGuard } from '../../../common/interfaces/auth/roles.guard';
 import { referenceAuContrat } from '../../../common/interfaces/http/schemas-du-contrat';
 import { RoutePublique } from '../../../common/interfaces/security/anti-robot/formulaire-public.decorator';
-import { ArticleContract } from '../domain/article-contract';
+import { ArticleContract } from '../domain/contrat/article-contract';
 import type { ArticleRecord } from '../application/articles.repository';
 import { ArticlesService } from '../application/articles.service';
 import { ArticleHmacGuard } from './article-hmac.guard';

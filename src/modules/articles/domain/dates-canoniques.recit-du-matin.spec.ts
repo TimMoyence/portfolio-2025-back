@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { RACINE } from '../../../../test/helpers/depot/racine';
-import type { ArticleIngere } from './article-contract';
+import type { ArticleIngere } from './contrat/article-contract';
 import { avecDatesCanoniques } from './dates-canoniques';
 
 function recit(

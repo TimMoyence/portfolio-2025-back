@@ -26,7 +26,7 @@ describe('MB-19 · chaque forme du récit servie décrit ses champs, requis et n
     [SourceDuRecitDto, ['nom', 'url', 'publie_le'], ['publie_le']],
     [ImageDuRecitDto, ['url', 'credit'], []],
     [FeuilletonDuRecitDto, ['date', 'rappel'], []],
-    [BarreDuRecitDto, ['libelle', 'valeur', 'affichage'], []],
+    [BarreDuRecitDto, ['libelle', 'valeur', 'affichage', 'largeur'], []],
     [GraphiqueDuRecitDto, ['titre', 'unite', 'barres'], []],
     [EditoDto, ['kind', 'texte', 'signature'], []],
     [

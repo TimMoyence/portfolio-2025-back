@@ -7,8 +7,9 @@ import {
   MOTIF_LIEN_HTTP,
   MOTIF_LIEN_HTTPS,
   type SectionDuRecit,
+  LANGUES_TRADUITES,
   UNITES_DU_GRAPHIQUE,
-} from '../../domain/article-contract';
+} from '../../domain/contrat/article-contract';
 
 export class SourceDuRecitDto {
   @ApiProperty({ example: 'TechCrunch' })
@@ -46,6 +47,9 @@ export class BarreDuRecitDto {
 
   @ApiProperty({ example: '49,1 %' })
   affichage: string;
+
+  @ApiProperty({ type: 'integer', minimum: 2, maximum: 100, example: 60 })
+  largeur: number;
 }
 
 export class GraphiqueDuRecitDto {
@@ -200,8 +204,8 @@ export class CitationDto {
   @ApiProperty()
   auteur: string;
 
-  @ApiProperty({ type: String, nullable: true, example: "l'anglais" })
-  traduite_de: string | null;
+  @ApiProperty({ enum: [...LANGUES_TRADUITES, null], nullable: true })
+  traduite_de: (typeof LANGUES_TRADUITES)[number] | null;
 
   @ApiProperty()
   contexte: string;

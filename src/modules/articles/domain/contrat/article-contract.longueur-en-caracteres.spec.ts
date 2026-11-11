@@ -3,7 +3,7 @@ import {
   recitDuMatin,
   REFUSEE_DES_DEUX_COTES,
   verdicts,
-} from '../../../../test/helpers/depot/schema-d-ingestion-partage';
+} from '../../../../../test/helpers/depot/schema-d-ingestion-partage';
 
 type Enveloppe = {
   article: {

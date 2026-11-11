@@ -1,10 +1,10 @@
-import { validArticleIngestEnvelope } from '../../../../test/factories/article-ingest.factory';
+import { validArticleIngestEnvelope } from '../../../../../test/factories/article-ingest.factory';
 import {
   ACCEPTEE_DES_DEUX_COTES,
   recitDuMatin,
   refuseeCommeParLeSchemaPartage,
   verdicts,
-} from '../../../../test/helpers/depot/schema-d-ingestion-partage';
+} from '../../../../../test/helpers/depot/schema-d-ingestion-partage';
 import { ArticleContract } from './article-contract';
 
 type Enveloppe = {

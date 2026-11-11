@@ -15,7 +15,7 @@ import {
   envString,
 } from '../../../config/environnement/env-readers.util';
 import { trousseauHmac } from '../../../config/trousseau-hmac';
-import { LONGUEUR_MAX_DU_NONCE } from '../domain/article-contract';
+import { LONGUEUR_MAX_DU_NONCE } from '../domain/contrat/article-contract';
 
 interface ArticleRequest extends Request {
   rawBody?: Buffer;

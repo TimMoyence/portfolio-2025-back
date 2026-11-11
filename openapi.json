@@ -4925,12 +4925,19 @@
           "affichage": {
             "type": "string",
             "example": "49,1 %"
+          },
+          "largeur": {
+            "type": "integer",
+            "minimum": 2,
+            "maximum": 100,
+            "example": 60
           }
         },
         "required": [
           "libelle",
           "valeur",
-          "affichage"
+          "affichage",
+          "largeur"
         ]
       },
       "GraphiqueDuRecitDto": {
@@ -5233,8 +5240,14 @@
           },
           "traduite_de": {
             "type": "string",
-            "nullable": true,
-            "example": "l'anglais"
+            "enum": [
+              "l'anglais",
+              "l'allemand",
+              "l'espagnol",
+              "l'italien",
+              null
+            ],
+            "nullable": true
           },
           "contexte": {
             "type": "string"
@@ -10942,7 +10955,7 @@
                                 "url": {
                                   "type": "string",
                                   "maxLength": 2048,
-                                  "format": "uri"
+                                  "pattern": "^https?:\\/\\/\\S+$"
                                 },
                                 "publie_le": {
                                   "nullable": true,
@@ -10963,7 +10976,7 @@
                                 "url": {
                                   "type": "string",
                                   "maxLength": 2048,
-                                  "format": "uri"
+                                  "pattern": "^https:\\/\\/\\S+$"
                                 },
                                 "credit": {
                                   "type": "string",
@@ -11014,12 +11027,18 @@
                                         "type": "string",
                                         "minLength": 1,
                                         "maxLength": 60
+                                      },
+                                      "largeur": {
+                                        "type": "integer",
+                                        "minimum": 2,
+                                        "maximum": 100
                                       }
                                     },
                                     "required": [
                                       "libelle",
                                       "valeur",
-                                      "affichage"
+                                      "affichage",
+                                      "largeur"
                                     ],
                                     "additionalProperties": false
                                   }
@@ -11110,7 +11129,7 @@
                                       "url": {
                                         "type": "string",
                                         "maxLength": 2048,
-                                        "format": "uri"
+                                        "pattern": "^https?:\\/\\/\\S+$"
                                       },
                                       "publie_le": {
                                         "nullable": true,
@@ -11131,7 +11150,7 @@
                                       "url": {
                                         "type": "string",
                                         "maxLength": 2048,
-                                        "format": "uri"
+                                        "pattern": "^https:\\/\\/\\S+$"
                                       },
                                       "credit": {
                                         "type": "string",
@@ -11241,7 +11260,7 @@
                                 "url": {
                                   "type": "string",
                                   "maxLength": 2048,
-                                  "format": "uri"
+                                  "pattern": "^https?:\\/\\/\\S+$"
                                 },
                                 "publie_le": {
                                   "nullable": true,
@@ -11306,7 +11325,7 @@
                                       "url": {
                                         "type": "string",
                                         "maxLength": 2048,
-                                        "format": "uri"
+                                        "pattern": "^https?:\\/\\/\\S+$"
                                       },
                                       "publie_le": {
                                         "nullable": true,
@@ -11367,7 +11386,7 @@
                                 "url": {
                                   "type": "string",
                                   "maxLength": 2048,
-                                  "format": "uri"
+                                  "pattern": "^https?:\\/\\/\\S+$"
                                 },
                                 "publie_le": {
                                   "nullable": true,
@@ -11412,7 +11431,13 @@
                             "traduite_de": {
                               "nullable": true,
                               "type": "string",
-                              "maxLength": 40
+                              "enum": [
+                                "l'anglais",
+                                "l'allemand",
+                                "l'espagnol",
+                                "l'italien",
+                                null
+                              ]
                             },
                             "contexte": {
                               "type": "string",
@@ -11429,7 +11454,7 @@
                                 "url": {
                                   "type": "string",
                                   "maxLength": 2048,
-                                  "format": "uri"
+                                  "pattern": "^https?:\\/\\/\\S+$"
                                 },
                                 "publie_le": {
                                   "nullable": true,
@@ -11486,7 +11511,7 @@
                                       "url": {
                                         "type": "string",
                                         "maxLength": 2048,
-                                        "format": "uri"
+                                        "pattern": "^https?:\\/\\/\\S+$"
                                       },
                                       "publie_le": {
                                         "nullable": true,
@@ -11532,7 +11557,7 @@
                         "url": {
                           "type": "string",
                           "maxLength": 2048,
-                          "format": "uri"
+                          "pattern": "^https?:\\/\\/\\S+$"
                         },
                         "publie_le": {
                           "nullable": true,
@@ -11592,7 +11617,7 @@
                         "nullable": true,
                         "type": "string",
                         "maxLength": 2048,
-                        "format": "uri"
+                        "pattern": "^https:\\/\\/\\S+$"
                       },
                       "image_alt": {
                         "nullable": true,
@@ -11759,7 +11784,7 @@
                         "url": {
                           "type": "string",
                           "maxLength": 2048,
-                          "format": "uri"
+                          "pattern": "^https?:\\/\\/\\S+$"
                         },
                         "published_at": {
                           "nullable": true,
@@ -11835,7 +11860,7 @@
                         "nullable": true,
                         "type": "string",
                         "maxLength": 2048,
-                        "format": "uri"
+                        "pattern": "^https?:\\/\\/\\S+$"
                       },
                       "image_alt": {
                         "nullable": true,
@@ -12349,7 +12374,8 @@
                         "anyOf": [
                           {
                             "type": "string",
-                            "format": "uri"
+                            "maxLength": 2048,
+                            "pattern": "^https:\\/\\/\\S+$"
                           },
                           {
                             "type": "string",
@@ -13112,7 +13138,8 @@
                             },
                             "href": {
                               "type": "string",
-                              "format": "uri"
+                              "maxLength": 2048,
+                              "pattern": "^https?:\\/\\/\\S+$"
                             },
                             "external": {
                               "type": "boolean"
@@ -13498,7 +13525,8 @@
                         "properties": {
                           "href": {
                             "type": "string",
-                            "format": "uri"
+                            "maxLength": 2048,
+                            "pattern": "^https?:\\/\\/\\S+$"
                           },
                           "label": {
                             "type": "string",
@@ -13562,7 +13590,8 @@
                         "anyOf": [
                           {
                             "type": "string",
-                            "format": "uri"
+                            "maxLength": 2048,
+                            "pattern": "^https:\\/\\/\\S+$"
                           },
                           {
                             "type": "string",
@@ -13595,7 +13624,8 @@
                         "properties": {
                           "href": {
                             "type": "string",
-                            "format": "uri"
+                            "maxLength": 2048,
+                            "pattern": "^https?:\\/\\/\\S+$"
                           },
                           "label": {
                             "type": "string",
@@ -13702,7 +13732,8 @@
                         "anyOf": [
                           {
                             "type": "string",
-                            "format": "uri"
+                            "maxLength": 2048,
+                            "pattern": "^https:\\/\\/\\S+$"
                           },
                           {
                             "type": "string",
@@ -13735,7 +13766,8 @@
                         "properties": {
                           "href": {
                             "type": "string",
-                            "format": "uri"
+                            "maxLength": 2048,
+                            "pattern": "^https?:\\/\\/\\S+$"
                           },
                           "label": {
                             "type": "string",
@@ -13792,7 +13824,8 @@
                         "anyOf": [
                           {
                             "type": "string",
-                            "format": "uri"
+                            "maxLength": 2048,
+                            "pattern": "^https:\\/\\/\\S+$"
                           },
                           {
                             "type": "string",
@@ -14237,7 +14270,8 @@
                     "anyOf": [
                       {
                         "type": "string",
-                        "format": "uri"
+                        "maxLength": 2048,
+                        "pattern": "^https:\\/\\/\\S+$"
                       },
                       {
                         "type": "string",
@@ -14271,7 +14305,8 @@
                     "anyOf": [
                       {
                         "type": "string",
-                        "format": "uri"
+                        "maxLength": 2048,
+                        "pattern": "^https:\\/\\/\\S+$"
                       },
                       {
                         "type": "string",
@@ -14283,7 +14318,8 @@
                     "anyOf": [
                       {
                         "type": "string",
-                        "format": "uri"
+                        "maxLength": 2048,
+                        "pattern": "^https:\\/\\/\\S+$"
                       },
                       {
                         "type": "string",
@@ -14306,7 +14342,8 @@
                     "anyOf": [
                       {
                         "type": "string",
-                        "format": "uri"
+                        "maxLength": 2048,
+                        "pattern": "^https:\\/\\/\\S+$"
                       },
                       {
                         "type": "string",
@@ -14322,7 +14359,8 @@
                     "anyOf": [
                       {
                         "type": "string",
-                        "format": "uri"
+                        "maxLength": 2048,
+                        "pattern": "^https:\\/\\/\\S+$"
                       },
                       {
                         "type": "string",
@@ -14341,7 +14379,8 @@
                         "anyOf": [
                           {
                             "type": "string",
-                            "format": "uri"
+                            "maxLength": 2048,
+                            "pattern": "^https:\\/\\/\\S+$"
                           },
                           {
                             "type": "string",

@@ -101,7 +101,7 @@
               "items": {
                 "type": "object",
                 "additionalProperties": false,
-                "required": ["libelle", "valeur", "affichage"],
+                "required": ["libelle", "valeur", "affichage", "largeur"],
                 "properties": {
                   "libelle": {
                     "type": "string",
@@ -113,7 +113,8 @@
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 60
-                  }
+                  },
+                  "largeur": { "type": "integer", "minimum": 2, "maximum": 100 }
                 }
               }
             }
@@ -296,7 +297,9 @@
             "auteur": { "type": "string", "minLength": 1, "maxLength": 160 },
             "traduite_de": {
               "anyOf": [
-                { "type": "string", "maxLength": 40 },
+                {
+                  "enum": ["l'anglais", "l'allemand", "l'espagnol", "l'italien"]
+                },
                 { "type": "null" }
               ]
             },

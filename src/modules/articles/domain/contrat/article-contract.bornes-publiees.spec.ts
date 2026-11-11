@@ -1,7 +1,7 @@
 import {
   referenceAuContrat,
   schemasDuContrat,
-} from '../../../common/interfaces/http/schemas-du-contrat';
+} from '../../../../common/interfaces/http/schemas-du-contrat';
 import { ArticleContract } from './article-contract';
 
 type Propriete = {

@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { schemasDesModeles } from '../../../../../test/helpers/http/saisies-validees';
 import { RACINE } from '../../../../../test/helpers/depot/racine';
-import { ArticleContract } from '../../domain/article-contract';
+import { ArticleContract } from '../../domain/contrat/article-contract';
 import { PublishedArticleResponseDto } from './article.response.dto';
 
 describe('MB-19 · la rubrique d une histoire du Shot va jusqu au site', () => {

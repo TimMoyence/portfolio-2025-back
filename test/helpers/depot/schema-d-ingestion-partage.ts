@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import Ajv2020 from 'ajv/dist/2020.js';
 import addFormats from 'ajv-formats';
-import { ArticleContract } from '../../../src/modules/articles/domain/article-contract';
+import { ArticleContract } from '../../../src/modules/articles/domain/contrat/article-contract';
 import { RACINE } from './racine';
 
 const schemaPartage: object = JSON.parse(

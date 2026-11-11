@@ -1,4 +1,4 @@
-import type { ArticleIngere } from './article-contract';
+import type { ArticleIngere } from './contrat/article-contract';
 
 type SourceDAvant = {
   name: string;

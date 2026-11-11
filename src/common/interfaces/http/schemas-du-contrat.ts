@@ -31,12 +31,28 @@ function tupleEnTableau({ zodSchema, jsonSchema }: Conversion): void {
   }
 }
 
+function avecNullDansLesEnumsNullables(noeud: unknown): void {
+  if (noeud === null || typeof noeud !== 'object') {
+    return;
+  }
+  const schema = noeud as { nullable?: unknown; enum?: unknown };
+  if (
+    schema.nullable === true &&
+    Array.isArray(schema.enum) &&
+    !schema.enum.includes(null)
+  ) {
+    schema.enum = [...(schema.enum as unknown[]), null];
+  }
+  Object.values(noeud).forEach(avecNullDansLesEnumsNullables);
+}
+
 export function schemasDuContrat(): Record<string, SchemaObject> {
   const { schemas } = z.toJSONSchema(REGISTRE_DU_CONTRAT, {
     target: 'openapi-3.0',
     uri: (id) => `${PREFIXE_DES_COMPOSANTS}${id}`,
     override: tupleEnTableau,
   });
+  avecNullDansLesEnumsNullables(schemas);
   return Object.fromEntries(
     Object.entries(schemas).map(([id, schema]) => [
       id,

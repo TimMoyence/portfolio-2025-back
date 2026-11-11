@@ -13,7 +13,7 @@ import {
   type ArticleIngestEnvelope,
   ArticleSlug,
   DeliveryId,
-} from '../domain/article-contract';
+} from '../domain/contrat/article-contract';
 import { avecDatesCanoniques } from '../domain/dates-canoniques';
 import { enTexteSuivi } from '../domain/texte-suivi';
 import {
