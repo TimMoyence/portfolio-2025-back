@@ -191,14 +191,20 @@ describe('Reponses du site public servies par les vrais controleurs', () => {
     });
   });
 
-  it('GET /api/articles/:slug sert l article publie, ses rubriques et ses sources', async () => {
+  it('MB-24 · GET /api/articles/:slug sert une édition reçue en 1.0 en texte suivi, ses sources nommées et datées', async () => {
     const reponse = await request(serveur())
       .get('/api/articles/morning-brief-2026-09-09?locale=fr')
       .expect(200);
 
     expect(reponse.body).toMatchObject({
       slug: 'morning-brief-2026-09-09',
-      sources: ARTICLE_DE_L_EDITION.article.sources,
+      sections: [],
+      content_markdown: ARTICLE_DE_L_EDITION.article.content_markdown,
+      sources: ARTICLE_DE_L_EDITION.article.sources.map((source) => ({
+        nom: source.name,
+        url: source.url,
+        publie_le: source.published_at,
+      })),
     });
   });
 
