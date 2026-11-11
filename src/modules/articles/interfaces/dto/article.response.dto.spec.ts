@@ -1,6 +1,9 @@
 import { schemasDesModeles } from '../../../../../test/helpers/http/saisies-validees';
 import type { SchemaOpenApi } from '../../../../../test/helpers/http/schema-openapi';
-import { MOTIF_LIEN_HTTP } from '../../domain/article-contract';
+import {
+  MOTIF_LIEN_HTTP,
+  MOTIF_LIEN_HTTPS,
+} from '../../domain/article-contract';
 import { PublishedArticleResponseDto } from './article.response.dto';
 
 const champsUri = (
@@ -26,15 +29,15 @@ describe('PublishedArticleResponseDto', () => {
     );
   });
 
-  it('borne les trois liens d une edition au motif du contrat d ingestion', () => {
+  it('borne les liens d une edition au motif du contrat d ingestion', () => {
     expect(
       champs
         .map(([nom, propriete]) => [nom, propriete.pattern])
         .sort(([a], [b]) => String(a).localeCompare(String(b))),
     ).toEqual([
-      ['ArticleSectionItemResponseDto.url', MOTIF_LIEN_HTTP],
       ['ArticleSeoResponseDto.image_url', MOTIF_LIEN_HTTP],
-      ['ArticleSourceResponseDto.url', MOTIF_LIEN_HTTP],
+      ['ImageDuRecitDto.url', MOTIF_LIEN_HTTPS],
+      ['SourceDuRecitDto.url', MOTIF_LIEN_HTTP],
     ]);
   });
 

@@ -8,27 +8,13 @@ describe('ArticleContract', () => {
     );
   });
 
-  it('refuse une URL non HTTP(S)', () => {
+  it('refuse une enveloppe vide', () => {
     expect(() => ArticleContract.parse({})).toThrow();
   });
 
-  const sectionIdAccepte = (id: string) => {
+  it('refuse une enveloppe 1.0 dont le Markdown ne correspond plus à son empreinte', () => {
     const payload = structuredClone(validArticleIngestEnvelope);
-    payload.article.sections[0].id = id;
-    return ArticleContract.safeParse(payload).success;
-  };
-
-  it.each(['-ab', 'a', 'a'.repeat(81), 'Ab', 'a_b'])(
-    'refuse un section.id hors du motif du producteur (%s)',
-    (id) => {
-      expect(sectionIdAccepte(id)).toBe(false);
-    },
-  );
-
-  it.each(['ab', '0-', 'a'.repeat(80), 'radar-2'])(
-    'accepte un section.id conforme au motif du producteur (%s)',
-    (id) => {
-      expect(sectionIdAccepte(id)).toBe(true);
-    },
-  );
+    payload.article.content_markdown += ' modifié';
+    expect(ArticleContract.safeParse(payload).success).toBe(false);
+  });
 });

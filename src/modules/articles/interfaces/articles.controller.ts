@@ -53,7 +53,7 @@ export class ArticlesController {
   @ApiOperation({ summary: 'Recevoir une édition Morning-Brief signée' })
   @ApiBody({
     description:
-      'Enveloppe Morning-Brief v1 (docs/contracts/article-ingest-envelope-v1.json)',
+      'Enveloppe Morning-Brief 2.0 du récit du matin (docs/contracts/article-ingest-envelope-v2.json) ; une enveloppe 1.0 est convertie en texte suivi',
     schema: referenceAuContrat(ArticleContract),
   })
   @ApiAcceptedResponse({

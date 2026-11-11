@@ -4,12 +4,12 @@ import { empreinteSha256 } from '../../../common/domain/crypto/empreintes';
 import { RACINE } from '../../../../test/helpers/depot/racine';
 
 const EMPREINTE =
-  '073e9ccc7ad2c2a07119fb3046c1f7dc0011b98ad09e8cc9bd5a98be7f8caa33';
+  'd716fb58addc5a204cebd0e8f2c9aa3f811b10f20a4470b06b193ba84c39c8d4';
 
-const SCHEMA = join(RACINE, 'docs/contracts/article-ingest-envelope-v1.json');
+const SCHEMA = join(RACINE, 'docs/contracts/article-ingest-envelope-v2.json');
 
 const PARTAGE =
-  'Il est partagé avec morning-brief (contracts/article-ingest-envelope-v1.schema.json) : ' +
+  'Il est partagé avec morning-brief (contracts/article-ingest-envelope-v2.schema.json) : ' +
   'modifier les deux copies ensemble, puis figer la nouvelle empreinte ici et dans ' +
   'tests/domain/test_schema_empreinte.py côté morning-brief.';
 

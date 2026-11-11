@@ -1,0 +1,441 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://asilidesign.fr/contracts/article-ingest-envelope-v2.schema.json",
+  "title": "Morning Brief article ingest envelope — récit du matin",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "delivery_id",
+    "producer",
+    "sent_at",
+    "article"
+  ],
+  "properties": {
+    "schema_version": { "const": "2.0" },
+    "delivery_id": {
+      "type": "string",
+      "pattern": "^mb-[0-9]{4}-[0-9]{2}-[0-9]{2}-(fr|en)$"
+    },
+    "producer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "version", "device"],
+      "properties": {
+        "name": { "const": "morning-brief" },
+        "version": { "type": "string", "minLength": 1 },
+        "device": { "type": "string", "minLength": 1 }
+      }
+    },
+    "sent_at": { "$ref": "#/$defs/dateTime" },
+    "article": { "$ref": "#/$defs/article" }
+  },
+  "$defs": {
+    "dateTime": { "type": "string", "format": "date-time" },
+    "httpsUrl": {
+      "type": "string",
+      "pattern": "^https://[^\\s]+$",
+      "maxLength": 2048
+    },
+    "httpUrl": {
+      "type": "string",
+      "pattern": "^https?://[^\\s]+$",
+      "maxLength": 2048
+    },
+    "texte": { "type": "string", "minLength": 1, "maxLength": 2000 },
+    "texteFacultatif": { "type": "string", "maxLength": 2000 },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["nom", "url", "publie_le"],
+      "properties": {
+        "nom": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "url": { "$ref": "#/$defs/httpUrl" },
+        "publie_le": {
+          "anyOf": [{ "$ref": "#/$defs/dateTime" }, { "type": "null" }]
+        }
+      }
+    },
+    "image": {
+      "anyOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["url", "credit"],
+          "properties": {
+            "url": { "$ref": "#/$defs/httpsUrl" },
+            "credit": { "type": "string", "minLength": 1, "maxLength": 160 }
+          }
+        }
+      ]
+    },
+    "feuilleton": {
+      "anyOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["date", "rappel"],
+          "properties": {
+            "date": { "type": "string", "format": "date" },
+            "rappel": { "type": "string", "maxLength": 400 }
+          }
+        }
+      ]
+    },
+    "graphique": {
+      "anyOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["titre", "unite", "barres"],
+          "properties": {
+            "titre": { "type": "string", "minLength": 1, "maxLength": 160 },
+            "unite": { "enum": ["", "%", "$", "€"] },
+            "barres": {
+              "type": "array",
+              "minItems": 3,
+              "maxItems": 12,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["libelle", "valeur", "affichage"],
+                "properties": {
+                  "libelle": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 80
+                  },
+                  "valeur": { "type": "number" },
+                  "affichage": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 60
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "section": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "texte", "signature"],
+          "properties": {
+            "kind": { "const": "edito" },
+            "texte": { "$ref": "#/$defs/texteFacultatif" },
+            "signature": { "type": "string", "maxLength": 80 }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "titre",
+            "accroche",
+            "pourquoi",
+            "contexte",
+            "faits",
+            "et_maintenant",
+            "bref",
+            "source",
+            "image",
+            "graphique",
+            "feuilleton"
+          ],
+          "properties": {
+            "kind": { "const": "sujet" },
+            "titre": { "type": "string", "minLength": 1, "maxLength": 160 },
+            "accroche": { "type": "string", "minLength": 1, "maxLength": 400 },
+            "pourquoi": { "$ref": "#/$defs/texte" },
+            "contexte": { "$ref": "#/$defs/texteFacultatif" },
+            "faits": { "$ref": "#/$defs/texte" },
+            "et_maintenant": { "$ref": "#/$defs/texteFacultatif" },
+            "bref": { "type": "string", "minLength": 1, "maxLength": 400 },
+            "source": { "$ref": "#/$defs/source" },
+            "image": { "$ref": "#/$defs/image" },
+            "graphique": { "$ref": "#/$defs/graphique" },
+            "feuilleton": { "$ref": "#/$defs/feuilleton" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "histoires"],
+          "properties": {
+            "kind": { "const": "shot" },
+            "histoires": {
+              "type": "array",
+              "minItems": 2,
+              "maxItems": 4,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "accroche",
+                  "texte",
+                  "rubrique",
+                  "source",
+                  "image",
+                  "feuilleton"
+                ],
+                "properties": {
+                  "accroche": { "type": "string", "maxLength": 120 },
+                  "texte": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 1500
+                  },
+                  "rubrique": {
+                    "anyOf": [
+                      { "type": "string", "pattern": "^[a-z][a-z_]{1,39}$" },
+                      { "type": "null" }
+                    ]
+                  },
+                  "source": { "$ref": "#/$defs/source" },
+                  "image": { "$ref": "#/$defs/image" },
+                  "feuilleton": { "$ref": "#/$defs/feuilleton" }
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "terme", "explication"],
+          "properties": {
+            "kind": { "const": "decodeur" },
+            "terme": { "type": "string", "minLength": 1, "maxLength": 80 },
+            "explication": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1000
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "nom", "texte", "source"],
+          "properties": {
+            "kind": { "const": "a_tester" },
+            "nom": { "type": "string", "minLength": 1, "maxLength": 160 },
+            "texte": { "type": "string", "minLength": 1, "maxLength": 600 },
+            "source": { "$ref": "#/$defs/source" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "lignes"],
+          "properties": {
+            "kind": { "const": "sorties" },
+            "lignes": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 6,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["produit", "version", "changement", "source"],
+                "properties": {
+                  "produit": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 80
+                  },
+                  "version": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 40
+                  },
+                  "changement": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120
+                  },
+                  "source": { "$ref": "#/$defs/source" }
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "valeur", "texte", "source"],
+          "properties": {
+            "kind": { "const": "chiffre" },
+            "valeur": { "type": "string", "minLength": 1, "maxLength": 60 },
+            "texte": { "type": "string", "minLength": 1, "maxLength": 400 },
+            "source": { "$ref": "#/$defs/source" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "texte",
+            "auteur",
+            "traduite_de",
+            "contexte",
+            "source"
+          ],
+          "properties": {
+            "kind": { "const": "citation" },
+            "texte": { "type": "string", "minLength": 1, "maxLength": 600 },
+            "auteur": { "type": "string", "minLength": 1, "maxLength": 160 },
+            "traduite_de": {
+              "anyOf": [
+                { "type": "string", "maxLength": 40 },
+                { "type": "null" }
+              ]
+            },
+            "contexte": { "type": "string", "maxLength": 400 },
+            "source": { "$ref": "#/$defs/source" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "breves"],
+          "properties": {
+            "kind": { "const": "a_part_ca" },
+            "breves": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 5,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["texte", "source"],
+                "properties": {
+                  "texte": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 400
+                  },
+                  "source": { "$ref": "#/$defs/source" }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "article": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "article_id",
+        "slug",
+        "locale",
+        "status",
+        "title",
+        "excerpt",
+        "content_markdown",
+        "reading_time_minutes",
+        "tags",
+        "published_at",
+        "updated_at",
+        "sections",
+        "sources",
+        "provenance",
+        "seo"
+      ],
+      "properties": {
+        "article_id": {
+          "type": "string",
+          "pattern": "^morning-brief-[0-9]{4}-[0-9]{2}-[0-9]{2}-(fr|en)$"
+        },
+        "slug": {
+          "type": "string",
+          "pattern": "^morning-brief-[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        },
+        "locale": { "enum": ["fr", "en"] },
+        "status": { "const": "published" },
+        "title": { "type": "string", "minLength": 1, "maxLength": 180 },
+        "excerpt": { "type": "string", "minLength": 1, "maxLength": 280 },
+        "content_markdown": { "type": "string", "minLength": 100 },
+        "reading_time_minutes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 60
+        },
+        "tags": {
+          "type": "array",
+          "maxItems": 12,
+          "items": { "type": "string", "minLength": 1, "maxLength": 40 }
+        },
+        "published_at": { "$ref": "#/$defs/dateTime" },
+        "updated_at": { "$ref": "#/$defs/dateTime" },
+        "sections": {
+          "type": "array",
+          "minItems": 2,
+          "prefixItems": [
+            {
+              "allOf": [
+                { "$ref": "#/$defs/section" },
+                { "properties": { "kind": { "const": "edito" } } }
+              ]
+            },
+            {
+              "allOf": [
+                { "$ref": "#/$defs/section" },
+                { "properties": { "kind": { "const": "sujet" } } }
+              ]
+            }
+          ],
+          "items": { "$ref": "#/$defs/section" }
+        },
+        "sources": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/source" }
+        },
+        "provenance": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["run_id", "edition_date", "content_sha256"],
+          "properties": {
+            "run_id": { "type": "string", "minLength": 1 },
+            "edition_date": { "type": "string", "format": "date" },
+            "content_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+          }
+        },
+        "seo": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "description",
+            "canonical_path",
+            "keywords",
+            "image_url",
+            "image_alt"
+          ],
+          "properties": {
+            "description": { "type": "string", "maxLength": 160 },
+            "canonical_path": {
+              "type": "string",
+              "pattern": "^/articles/[a-z0-9-]+$"
+            },
+            "keywords": { "type": "array", "items": { "type": "string" } },
+            "image_url": {
+              "anyOf": [{ "$ref": "#/$defs/httpsUrl" }, { "type": "null" }]
+            },
+            "image_alt": { "anyOf": [{ "type": "string" }, { "type": "null" }] }
+          }
+        }
+      }
+    }
+  }
+}

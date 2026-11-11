@@ -15,6 +15,7 @@ import {
   DeliveryId,
 } from '../domain/article-contract';
 import { avecDatesCanoniques } from '../domain/dates-canoniques';
+import { enTexteSuivi } from '../domain/texte-suivi';
 import {
   type ArticleDeliveryRecord,
   type ArticleRecord,
@@ -203,7 +204,10 @@ export class ArticlesService {
   }
 
   private toEntity(envelope: ArticleIngestEnvelope): ArticleWrite {
-    const article = envelope.article;
+    const article =
+      envelope.schema_version === '1.0'
+        ? enTexteSuivi(envelope.article)
+        : envelope.article;
     return {
       articleId: article.article_id,
       slug: article.slug,
