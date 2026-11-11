@@ -1,5 +1,6 @@
 import { MODALITES, REGIMES_DE_VERROU } from '../../contrats/contrat-de-l-api';
 import { z } from 'zod';
+import { lienHttps } from '../../../../../common/domain/liens/lien-web';
 import { dansLesBornes } from '../../../../../common/domain/nombres/dans-les-bornes';
 import { CHAMPS_EXTRAITS_DU_CAS } from '../../contrats/cours';
 import type {
@@ -517,7 +518,7 @@ const proprietesTrace = z
       })
       .strict()
       .optional(),
-    sourceUrl: z.url({ protocol: /^https$/ }).optional(),
+    sourceUrl: lienHttps.optional(),
     description: texte.optional(),
     descriptionPapier: texte.optional(),
     forme: z.enum(['courbes', 'barres']).optional(),

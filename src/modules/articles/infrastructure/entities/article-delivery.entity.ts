@@ -5,7 +5,7 @@ import {
   PrimaryGeneratedColumn,
   Unique,
 } from 'typeorm';
-import { LONGUEUR_MAX_DU_NONCE } from '../../domain/article-contract';
+import { LONGUEUR_MAX_DU_NONCE } from '../../domain/contrat/article-contract';
 import { ReferenceArticle } from './reference-article';
 
 @Entity({ name: 'article_deliveries' })

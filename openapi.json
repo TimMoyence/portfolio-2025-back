@@ -1016,11 +1016,11 @@
         ],
         "requestBody": {
           "required": true,
-          "description": "Enveloppe Morning-Brief v1 (docs/contracts/article-ingest-envelope-v1.json)",
+          "description": "Enveloppe Morning-Brief 2.0 du récit du matin (docs/contracts/article-ingest-envelope-v2.json) ; une enveloppe 1.0 est convertie en texte suivi",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ArticleIngestEnvelopeV1"
+                "$ref": "#/components/schemas/ArticleIngestEnvelope"
               }
             }
           }
@@ -1072,11 +1072,11 @@
         ],
         "requestBody": {
           "required": true,
-          "description": "Enveloppe Morning-Brief v1 (docs/contracts/article-ingest-envelope-v1.json)",
+          "description": "Enveloppe Morning-Brief 2.0 du récit du matin (docs/contracts/article-ingest-envelope-v2.json) ; une enveloppe 1.0 est convertie en texte suivi",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ArticleIngestEnvelopeV1"
+                "$ref": "#/components/schemas/ArticleIngestEnvelope"
               }
             }
           }
@@ -4714,11 +4714,11 @@
         "properties": {
           "article_id": {
             "type": "string",
-            "example": "morning-brief-2026-09-23-fr"
+            "example": "morning-brief-2026-11-11-fr"
           },
           "slug": {
             "type": "string",
-            "example": "morning-brief-2026-09-23"
+            "example": "morning-brief-2026-11-11"
           },
           "locale": {
             "example": "fr",
@@ -4730,7 +4730,7 @@
           },
           "title": {
             "type": "string",
-            "example": "Veille IA du 23 septembre"
+            "example": "L’IA à dix centimes"
           },
           "published_at": {
             "type": "string",
@@ -4822,175 +4822,483 @@
           "processed_at"
         ]
       },
-      "TypeDeSection": {
-        "type": "string",
-        "enum": [
-          "essential",
-          "deep_dive",
-          "rubric",
-          "radar",
-          "brief",
-          "infos"
-        ]
-      },
-      "PublicDUneInfo": {
-        "type": "string",
-        "enum": [
-          "tous",
-          "dirigeants",
-          "developpeurs"
-        ]
-      },
-      "HorizonDUneInfo": {
-        "type": "string",
-        "enum": [
-          "aujourdhui",
-          "trimestre",
-          "a_surveiller"
-        ]
-      },
-      "ArticleSectionItemResponseDto": {
+      "EditoDto": {
         "type": "object",
         "properties": {
-          "entity": {
+          "kind": {
             "type": "string",
-            "example": "Mistral AI"
+            "enum": [
+              "edito"
+            ]
           },
-          "text": {
+          "texte": {
             "type": "string"
           },
-          "source": {
+          "signature": {
             "type": "string",
-            "example": "Le Monde"
+            "example": "Tim"
+          }
+        },
+        "required": [
+          "kind",
+          "texte",
+          "signature"
+        ]
+      },
+      "SourceDuRecitDto": {
+        "type": "object",
+        "properties": {
+          "nom": {
+            "type": "string",
+            "example": "TechCrunch"
           },
           "url": {
             "type": "string",
             "format": "uri",
             "pattern": "^[Hh][Tt][Tt][Pp][Ss]?://"
           },
-          "published_at": {
+          "publie_le": {
             "type": "string",
-            "format": "date-time"
-          },
-          "retrieved_at": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "title": {
-            "type": "string",
-            "example": "Claude Code laisse fuiter des secrets"
-          },
-          "figure": {
-            "type": "string",
-            "example": "23 points"
-          },
-          "for_business": {
-            "type": "string"
-          },
-          "under_the_hood": {
-            "type": "string"
-          },
-          "audience": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/PublicDUneInfo"
-              }
-            ]
-          },
-          "horizon": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/HorizonDUneInfo"
-              }
-            ]
-          },
-          "episode": {
-            "type": "number",
-            "minimum": 2,
-            "example": 3
-          },
-          "recap": {
-            "type": "string"
-          },
-          "rubric": {
-            "type": "string",
-            "example": "outils-ia"
+            "format": "date-time",
+            "nullable": true
           }
         },
         "required": [
-          "entity",
-          "text",
-          "source",
-          "url"
+          "nom",
+          "url",
+          "publie_le"
         ]
       },
-      "ArticleSectionResponseDto": {
+      "ImageDuRecitDto": {
         "type": "object",
         "properties": {
-          "id": {
+          "url": {
             "type": "string",
-            "example": "essentiel"
+            "format": "uri",
+            "pattern": "^https://"
           },
-          "kind": {
+          "credit": {
+            "type": "string",
+            "example": "TechCrunch"
+          }
+        },
+        "required": [
+          "url",
+          "credit"
+        ]
+      },
+      "FeuilletonDuRecitDto": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date",
+            "example": "2026-11-08"
+          },
+          "rappel": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "date",
+          "rappel"
+        ]
+      },
+      "UniteDuGraphique": {
+        "type": "string",
+        "enum": [
+          "",
+          "%",
+          "$",
+          "€"
+        ]
+      },
+      "BarreDuRecitDto": {
+        "type": "object",
+        "properties": {
+          "libelle": {
+            "type": "string"
+          },
+          "valeur": {
+            "type": "number"
+          },
+          "affichage": {
+            "type": "string",
+            "example": "49,1 %"
+          },
+          "largeur": {
+            "type": "integer",
+            "minimum": 2,
+            "maximum": 100,
+            "example": 60
+          }
+        },
+        "required": [
+          "libelle",
+          "valeur",
+          "affichage",
+          "largeur"
+        ]
+      },
+      "GraphiqueDuRecitDto": {
+        "type": "object",
+        "properties": {
+          "titre": {
+            "type": "string"
+          },
+          "unite": {
             "allOf": [
               {
-                "$ref": "#/components/schemas/TypeDeSection"
+                "$ref": "#/components/schemas/UniteDuGraphique"
               }
             ]
           },
-          "title": {
-            "type": "string"
-          },
-          "intro": {
-            "type": "string"
-          },
-          "body": {
-            "type": "string"
-          },
-          "items": {
+          "barres": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/ArticleSectionItemResponseDto"
+              "$ref": "#/components/schemas/BarreDuRecitDto"
             }
           }
         },
         "required": [
-          "id",
-          "kind",
-          "title",
-          "intro",
-          "body",
-          "items"
+          "titre",
+          "unite",
+          "barres"
         ]
       },
-      "ArticleSourceResponseDto": {
+      "SujetDuJourDto": {
         "type": "object",
         "properties": {
-          "name": {
-            "type": "string",
-            "example": "Le Monde"
+          "source": {
+            "$ref": "#/components/schemas/SourceDuRecitDto"
           },
-          "url": {
-            "type": "string",
-            "format": "uri",
-            "pattern": "^[Hh][Tt][Tt][Pp][Ss]?://"
+          "image": {
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ImageDuRecitDto"
+              }
+            ]
           },
-          "published_at": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
+          "feuilleton": {
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FeuilletonDuRecitDto"
+              }
+            ]
           },
-          "retrieved_at": {
+          "kind": {
             "type": "string",
-            "format": "date-time",
-            "nullable": true
+            "enum": [
+              "sujet"
+            ]
+          },
+          "titre": {
+            "type": "string"
+          },
+          "accroche": {
+            "type": "string"
+          },
+          "pourquoi": {
+            "type": "string"
+          },
+          "contexte": {
+            "type": "string"
+          },
+          "faits": {
+            "type": "string"
+          },
+          "et_maintenant": {
+            "type": "string"
+          },
+          "bref": {
+            "type": "string"
+          },
+          "graphique": {
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/GraphiqueDuRecitDto"
+              }
+            ]
           }
         },
         "required": [
-          "name",
-          "url",
-          "published_at",
-          "retrieved_at"
+          "source",
+          "image",
+          "feuilleton",
+          "kind",
+          "titre",
+          "accroche",
+          "pourquoi",
+          "contexte",
+          "faits",
+          "et_maintenant",
+          "bref",
+          "graphique"
+        ]
+      },
+      "HistoireDuShotDto": {
+        "type": "object",
+        "properties": {
+          "source": {
+            "$ref": "#/components/schemas/SourceDuRecitDto"
+          },
+          "image": {
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ImageDuRecitDto"
+              }
+            ]
+          },
+          "feuilleton": {
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FeuilletonDuRecitDto"
+              }
+            ]
+          },
+          "accroche": {
+            "type": "string",
+            "example": "Tout le monde peut souffler :"
+          },
+          "texte": {
+            "type": "string"
+          },
+          "rubrique": {
+            "type": "string",
+            "nullable": true,
+            "example": "outils_ia"
+          }
+        },
+        "required": [
+          "source",
+          "image",
+          "feuilleton",
+          "accroche",
+          "texte",
+          "rubrique"
+        ]
+      },
+      "ShotDto": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "shot"
+            ]
+          },
+          "histoires": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HistoireDuShotDto"
+            }
+          }
+        },
+        "required": [
+          "kind",
+          "histoires"
+        ]
+      },
+      "DecodeurDto": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "decodeur"
+            ]
+          },
+          "terme": {
+            "type": "string"
+          },
+          "explication": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "terme",
+          "explication"
+        ]
+      },
+      "ATesterDto": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "a_tester"
+            ]
+          },
+          "nom": {
+            "type": "string"
+          },
+          "texte": {
+            "type": "string"
+          },
+          "source": {
+            "$ref": "#/components/schemas/SourceDuRecitDto"
+          }
+        },
+        "required": [
+          "kind",
+          "nom",
+          "texte",
+          "source"
+        ]
+      },
+      "SortieDto": {
+        "type": "object",
+        "properties": {
+          "produit": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "changement": {
+            "type": "string"
+          },
+          "source": {
+            "$ref": "#/components/schemas/SourceDuRecitDto"
+          }
+        },
+        "required": [
+          "produit",
+          "version",
+          "changement",
+          "source"
+        ]
+      },
+      "SortiesDto": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "sorties"
+            ]
+          },
+          "lignes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SortieDto"
+            }
+          }
+        },
+        "required": [
+          "kind",
+          "lignes"
+        ]
+      },
+      "ChiffreDto": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "chiffre"
+            ]
+          },
+          "valeur": {
+            "type": "string",
+            "example": "40 milliards de dollars"
+          },
+          "texte": {
+            "type": "string"
+          },
+          "source": {
+            "$ref": "#/components/schemas/SourceDuRecitDto"
+          }
+        },
+        "required": [
+          "kind",
+          "valeur",
+          "texte",
+          "source"
+        ]
+      },
+      "CitationDto": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "citation"
+            ]
+          },
+          "texte": {
+            "type": "string"
+          },
+          "auteur": {
+            "type": "string"
+          },
+          "traduite_de": {
+            "type": "string",
+            "enum": [
+              "l'anglais",
+              "l'allemand",
+              "l'espagnol",
+              "l'italien",
+              null
+            ],
+            "nullable": true
+          },
+          "contexte": {
+            "type": "string"
+          },
+          "source": {
+            "$ref": "#/components/schemas/SourceDuRecitDto"
+          }
+        },
+        "required": [
+          "kind",
+          "texte",
+          "auteur",
+          "traduite_de",
+          "contexte",
+          "source"
+        ]
+      },
+      "BreveDto": {
+        "type": "object",
+        "properties": {
+          "texte": {
+            "type": "string"
+          },
+          "source": {
+            "$ref": "#/components/schemas/SourceDuRecitDto"
+          }
+        },
+        "required": [
+          "texte",
+          "source"
+        ]
+      },
+      "APartCaDto": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "a_part_ca"
+            ]
+          },
+          "breves": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BreveDto"
+            }
+          }
+        },
+        "required": [
+          "kind",
+          "breves"
         ]
       },
       "ArticleProvenanceResponseDto": {
@@ -5001,15 +5309,7 @@
           },
           "edition_date": {
             "type": "string",
-            "example": "2026-09-23"
-          },
-          "item_count": {
-            "type": "number",
-            "example": 12
-          },
-          "source_count": {
-            "type": "number",
-            "example": 8
+            "example": "2026-11-11"
           },
           "content_sha256": {
             "type": "string",
@@ -5019,8 +5319,6 @@
         "required": [
           "run_id",
           "edition_date",
-          "item_count",
-          "source_count",
           "content_sha256"
         ]
       },
@@ -5032,7 +5330,7 @@
           },
           "canonical_path": {
             "type": "string",
-            "example": "/articles/morning-brief-2026-09-23"
+            "example": "/articles/morning-brief-2026-11-11"
           },
           "keywords": {
             "type": "array",
@@ -5064,11 +5362,11 @@
         "properties": {
           "article_id": {
             "type": "string",
-            "example": "morning-brief-2026-09-23-fr"
+            "example": "morning-brief-2026-11-11-fr"
           },
           "slug": {
             "type": "string",
-            "example": "morning-brief-2026-09-23"
+            "example": "morning-brief-2026-11-11"
           },
           "locale": {
             "example": "fr",
@@ -5080,7 +5378,7 @@
           },
           "title": {
             "type": "string",
-            "example": "Veille IA du 23 septembre"
+            "example": "L’IA à dix centimes"
           },
           "excerpt": {
             "type": "string"
@@ -5102,13 +5400,44 @@
           "sections": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/ArticleSectionResponseDto"
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/EditoDto"
+                },
+                {
+                  "$ref": "#/components/schemas/SujetDuJourDto"
+                },
+                {
+                  "$ref": "#/components/schemas/ShotDto"
+                },
+                {
+                  "$ref": "#/components/schemas/DecodeurDto"
+                },
+                {
+                  "$ref": "#/components/schemas/ATesterDto"
+                },
+                {
+                  "$ref": "#/components/schemas/SortiesDto"
+                },
+                {
+                  "$ref": "#/components/schemas/ChiffreDto"
+                },
+                {
+                  "$ref": "#/components/schemas/CitationDto"
+                },
+                {
+                  "$ref": "#/components/schemas/APartCaDto"
+                }
+              ],
+              "discriminator": {
+                "propertyName": "kind"
+              }
             }
           },
           "sources": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/ArticleSourceResponseDto"
+              "$ref": "#/components/schemas/SourceDuRecitDto"
             }
           },
           "provenance": {
@@ -10442,374 +10771,1142 @@
           "details"
         ]
       },
-      "ArticleIngestEnvelopeV1": {
-        "type": "object",
-        "properties": {
-          "schema_version": {
-            "type": "string",
-            "enum": [
-              "1.0"
-            ]
-          },
-          "delivery_id": {
-            "type": "string",
-            "pattern": "^mb-\\d{4}-\\d{2}-\\d{2}-(fr|en)$"
-          },
-          "producer": {
+      "ArticleIngestEnvelope": {
+        "anyOf": [
+          {
             "type": "object",
             "properties": {
-              "name": {
+              "schema_version": {
                 "type": "string",
                 "enum": [
-                  "morning-brief"
+                  "2.0"
                 ]
               },
-              "version": {
+              "delivery_id": {
                 "type": "string",
-                "minLength": 1
+                "pattern": "^mb-\\d{4}-\\d{2}-\\d{2}-(fr|en)$"
               },
-              "device": {
-                "type": "string",
-                "minLength": 1
-              }
-            },
-            "required": [
-              "name",
-              "version",
-              "device"
-            ],
-            "additionalProperties": false
-          },
-          "sent_at": {
-            "type": "string"
-          },
-          "article": {
-            "type": "object",
-            "properties": {
-              "article_id": {
-                "type": "string",
-                "pattern": "^morning-brief-\\d{4}-\\d{2}-\\d{2}-(fr|en)$"
-              },
-              "slug": {
-                "type": "string",
-                "pattern": "^morning-brief-\\d{4}-\\d{2}-\\d{2}$"
-              },
-              "locale": {
-                "type": "string",
-                "enum": [
-                  "fr",
-                  "en"
-                ]
-              },
-              "status": {
-                "type": "string",
-                "enum": [
-                  "published"
-                ]
-              },
-              "title": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 180
-              },
-              "excerpt": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 280
-              },
-              "content_markdown": {
-                "type": "string",
-                "minLength": 100
-              },
-              "reading_time_minutes": {
-                "type": "integer",
-                "minimum": 1,
-                "maximum": 60
-              },
-              "tags": {
-                "maxItems": 12,
-                "type": "array",
-                "items": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 40
-                }
-              },
-              "published_at": {
-                "type": "string"
-              },
-              "updated_at": {
-                "type": "string"
-              },
-              "sections": {
-                "minItems": 1,
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "id": {
-                      "type": "string",
-                      "pattern": "^[a-z0-9][a-z0-9-]{1,79}$"
-                    },
-                    "kind": {
-                      "type": "string",
-                      "enum": [
-                        "essential",
-                        "deep_dive",
-                        "rubric",
-                        "radar",
-                        "brief",
-                        "infos"
-                      ]
-                    },
-                    "title": {
-                      "type": "string",
-                      "minLength": 1,
-                      "maxLength": 120
-                    },
-                    "intro": {
-                      "type": "string",
-                      "maxLength": 4000
-                    },
-                    "body": {
-                      "type": "string",
-                      "maxLength": 20000
-                    },
-                    "items": {
-                      "maxItems": 30,
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "entity": {
-                            "type": "string",
-                            "maxLength": 160
-                          },
-                          "text": {
-                            "type": "string",
-                            "minLength": 20,
-                            "maxLength": 4000
-                          },
-                          "source": {
-                            "type": "string",
-                            "minLength": 1,
-                            "maxLength": 160
-                          },
-                          "url": {
-                            "type": "string",
-                            "format": "uri"
-                          },
-                          "published_at": {
-                            "type": "string"
-                          },
-                          "retrieved_at": {
-                            "type": "string"
-                          },
-                          "title": {
-                            "type": "string",
-                            "minLength": 1,
-                            "maxLength": 160
-                          },
-                          "figure": {
-                            "type": "string",
-                            "minLength": 1,
-                            "maxLength": 40
-                          },
-                          "for_business": {
-                            "type": "string",
-                            "minLength": 1,
-                            "maxLength": 1000
-                          },
-                          "under_the_hood": {
-                            "type": "string",
-                            "minLength": 1,
-                            "maxLength": 4000
-                          },
-                          "audience": {
-                            "type": "string",
-                            "enum": [
-                              "tous",
-                              "dirigeants",
-                              "developpeurs"
-                            ]
-                          },
-                          "horizon": {
-                            "type": "string",
-                            "enum": [
-                              "aujourdhui",
-                              "trimestre",
-                              "a_surveiller"
-                            ]
-                          },
-                          "episode": {
-                            "type": "integer",
-                            "minimum": 2,
-                            "maximum": 999
-                          },
-                          "recap": {
-                            "type": "string",
-                            "minLength": 1,
-                            "maxLength": 300
-                          },
-                          "rubric": {
-                            "type": "string",
-                            "pattern": "^[a-z0-9][a-z0-9-]{1,79}$"
-                          }
-                        },
-                        "required": [
-                          "entity",
-                          "text",
-                          "source",
-                          "url"
-                        ],
-                        "additionalProperties": false
-                      }
-                    }
-                  },
-                  "required": [
-                    "id",
-                    "kind",
-                    "title",
-                    "intro",
-                    "body",
-                    "items"
-                  ],
-                  "additionalProperties": false
-                }
-              },
-              "sources": {
-                "minItems": 1,
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "name": {
-                      "type": "string",
-                      "minLength": 1,
-                      "maxLength": 160
-                    },
-                    "url": {
-                      "type": "string",
-                      "format": "uri"
-                    },
-                    "published_at": {
-                      "nullable": true,
-                      "type": "string"
-                    },
-                    "retrieved_at": {
-                      "nullable": true,
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "name",
-                    "url",
-                    "published_at",
-                    "retrieved_at"
-                  ],
-                  "additionalProperties": false
-                }
-              },
-              "provenance": {
+              "producer": {
                 "type": "object",
                 "properties": {
-                  "run_id": {
+                  "name": {
+                    "type": "string",
+                    "enum": [
+                      "morning-brief"
+                    ]
+                  },
+                  "version": {
                     "type": "string",
                     "minLength": 1
                   },
-                  "edition_date": {
+                  "device": {
                     "type": "string",
-                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
-                  },
-                  "item_count": {
-                    "type": "integer",
-                    "minimum": 1,
-                    "maximum": 9007199254740991
-                  },
-                  "source_count": {
-                    "type": "integer",
-                    "minimum": 1,
-                    "maximum": 9007199254740991
-                  },
-                  "content_sha256": {
-                    "type": "string",
-                    "pattern": "^[a-f0-9]{64}$"
+                    "minLength": 1
                   }
                 },
                 "required": [
-                  "run_id",
-                  "edition_date",
-                  "item_count",
-                  "source_count",
-                  "content_sha256"
+                  "name",
+                  "version",
+                  "device"
                 ],
                 "additionalProperties": false
               },
-              "seo": {
+              "sent_at": {
+                "type": "string"
+              },
+              "article": {
                 "type": "object",
                 "properties": {
-                  "description": {
+                  "article_id": {
                     "type": "string",
-                    "maxLength": 160
+                    "pattern": "^morning-brief-\\d{4}-\\d{2}-\\d{2}-(fr|en)$"
                   },
-                  "canonical_path": {
+                  "slug": {
                     "type": "string",
-                    "pattern": "^\\/articles\\/[a-z0-9-]+$"
+                    "pattern": "^morning-brief-\\d{4}-\\d{2}-\\d{2}$"
                   },
-                  "keywords": {
+                  "locale": {
+                    "type": "string",
+                    "enum": [
+                      "fr",
+                      "en"
+                    ]
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "published"
+                    ]
+                  },
+                  "title": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "excerpt": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 280
+                  },
+                  "content_markdown": {
+                    "type": "string",
+                    "minLength": 100
+                  },
+                  "reading_time_minutes": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 60
+                  },
+                  "tags": {
+                    "maxItems": 12,
                     "type": "array",
                     "items": {
-                      "type": "string"
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 40
                     }
                   },
-                  "image_url": {
-                    "nullable": true,
-                    "type": "string",
-                    "format": "uri"
-                  },
-                  "image_alt": {
-                    "nullable": true,
+                  "published_at": {
                     "type": "string"
+                  },
+                  "updated_at": {
+                    "type": "string"
+                  },
+                  "sections": {
+                    "minItems": 2,
+                    "type": "array",
+                    "items": {
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "kind": {
+                              "type": "string",
+                              "enum": [
+                                "edito"
+                              ]
+                            },
+                            "texte": {
+                              "type": "string",
+                              "maxLength": 2000
+                            },
+                            "signature": {
+                              "type": "string",
+                              "maxLength": 80
+                            }
+                          },
+                          "required": [
+                            "kind",
+                            "texte",
+                            "signature"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "kind": {
+                              "type": "string",
+                              "enum": [
+                                "sujet"
+                              ]
+                            },
+                            "titre": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 160
+                            },
+                            "accroche": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 400
+                            },
+                            "pourquoi": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 2000
+                            },
+                            "contexte": {
+                              "type": "string",
+                              "maxLength": 2000
+                            },
+                            "faits": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 2000
+                            },
+                            "et_maintenant": {
+                              "type": "string",
+                              "maxLength": 2000
+                            },
+                            "bref": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 400
+                            },
+                            "source": {
+                              "type": "object",
+                              "properties": {
+                                "nom": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 160
+                                },
+                                "url": {
+                                  "type": "string",
+                                  "maxLength": 2048,
+                                  "pattern": "^https?:\\/\\/\\S+$"
+                                },
+                                "publie_le": {
+                                  "nullable": true,
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "nom",
+                                "url",
+                                "publie_le"
+                              ],
+                              "additionalProperties": false
+                            },
+                            "image": {
+                              "nullable": true,
+                              "type": "object",
+                              "properties": {
+                                "url": {
+                                  "type": "string",
+                                  "maxLength": 2048,
+                                  "pattern": "^https:\\/\\/\\S+$"
+                                },
+                                "credit": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 160
+                                }
+                              },
+                              "required": [
+                                "url",
+                                "credit"
+                              ],
+                              "additionalProperties": false
+                            },
+                            "graphique": {
+                              "nullable": true,
+                              "type": "object",
+                              "properties": {
+                                "titre": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 160
+                                },
+                                "unite": {
+                                  "type": "string",
+                                  "enum": [
+                                    "",
+                                    "%",
+                                    "$",
+                                    "€"
+                                  ]
+                                },
+                                "barres": {
+                                  "minItems": 3,
+                                  "maxItems": 12,
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "properties": {
+                                      "libelle": {
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "maxLength": 80
+                                      },
+                                      "valeur": {
+                                        "type": "number"
+                                      },
+                                      "affichage": {
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "maxLength": 60
+                                      },
+                                      "largeur": {
+                                        "type": "integer",
+                                        "minimum": 2,
+                                        "maximum": 100
+                                      }
+                                    },
+                                    "required": [
+                                      "libelle",
+                                      "valeur",
+                                      "affichage",
+                                      "largeur"
+                                    ],
+                                    "additionalProperties": false
+                                  }
+                                }
+                              },
+                              "required": [
+                                "titre",
+                                "unite",
+                                "barres"
+                              ],
+                              "additionalProperties": false
+                            },
+                            "feuilleton": {
+                              "nullable": true,
+                              "type": "object",
+                              "properties": {
+                                "date": {
+                                  "type": "string",
+                                  "format": "date",
+                                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))$"
+                                },
+                                "rappel": {
+                                  "type": "string",
+                                  "maxLength": 400
+                                }
+                              },
+                              "required": [
+                                "date",
+                                "rappel"
+                              ],
+                              "additionalProperties": false
+                            }
+                          },
+                          "required": [
+                            "kind",
+                            "titre",
+                            "accroche",
+                            "pourquoi",
+                            "contexte",
+                            "faits",
+                            "et_maintenant",
+                            "bref",
+                            "source",
+                            "image",
+                            "graphique",
+                            "feuilleton"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "kind": {
+                              "type": "string",
+                              "enum": [
+                                "shot"
+                              ]
+                            },
+                            "histoires": {
+                              "minItems": 2,
+                              "maxItems": 4,
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "accroche": {
+                                    "type": "string",
+                                    "maxLength": 120
+                                  },
+                                  "texte": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 1500
+                                  },
+                                  "rubrique": {
+                                    "nullable": true,
+                                    "type": "string",
+                                    "pattern": "^[a-z][a-z_]{1,39}$"
+                                  },
+                                  "source": {
+                                    "type": "object",
+                                    "properties": {
+                                      "nom": {
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "maxLength": 160
+                                      },
+                                      "url": {
+                                        "type": "string",
+                                        "maxLength": 2048,
+                                        "pattern": "^https?:\\/\\/\\S+$"
+                                      },
+                                      "publie_le": {
+                                        "nullable": true,
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "nom",
+                                      "url",
+                                      "publie_le"
+                                    ],
+                                    "additionalProperties": false
+                                  },
+                                  "image": {
+                                    "nullable": true,
+                                    "type": "object",
+                                    "properties": {
+                                      "url": {
+                                        "type": "string",
+                                        "maxLength": 2048,
+                                        "pattern": "^https:\\/\\/\\S+$"
+                                      },
+                                      "credit": {
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "maxLength": 160
+                                      }
+                                    },
+                                    "required": [
+                                      "url",
+                                      "credit"
+                                    ],
+                                    "additionalProperties": false
+                                  },
+                                  "feuilleton": {
+                                    "nullable": true,
+                                    "type": "object",
+                                    "properties": {
+                                      "date": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))$"
+                                      },
+                                      "rappel": {
+                                        "type": "string",
+                                        "maxLength": 400
+                                      }
+                                    },
+                                    "required": [
+                                      "date",
+                                      "rappel"
+                                    ],
+                                    "additionalProperties": false
+                                  }
+                                },
+                                "required": [
+                                  "accroche",
+                                  "texte",
+                                  "rubrique",
+                                  "source",
+                                  "image",
+                                  "feuilleton"
+                                ],
+                                "additionalProperties": false
+                              }
+                            }
+                          },
+                          "required": [
+                            "kind",
+                            "histoires"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "kind": {
+                              "type": "string",
+                              "enum": [
+                                "decodeur"
+                              ]
+                            },
+                            "terme": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 80
+                            },
+                            "explication": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 1000
+                            }
+                          },
+                          "required": [
+                            "kind",
+                            "terme",
+                            "explication"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "kind": {
+                              "type": "string",
+                              "enum": [
+                                "a_tester"
+                              ]
+                            },
+                            "nom": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 160
+                            },
+                            "texte": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 600
+                            },
+                            "source": {
+                              "type": "object",
+                              "properties": {
+                                "nom": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 160
+                                },
+                                "url": {
+                                  "type": "string",
+                                  "maxLength": 2048,
+                                  "pattern": "^https?:\\/\\/\\S+$"
+                                },
+                                "publie_le": {
+                                  "nullable": true,
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "nom",
+                                "url",
+                                "publie_le"
+                              ],
+                              "additionalProperties": false
+                            }
+                          },
+                          "required": [
+                            "kind",
+                            "nom",
+                            "texte",
+                            "source"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "kind": {
+                              "type": "string",
+                              "enum": [
+                                "sorties"
+                              ]
+                            },
+                            "lignes": {
+                              "minItems": 1,
+                              "maxItems": 6,
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "produit": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 80
+                                  },
+                                  "version": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 40
+                                  },
+                                  "changement": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 120
+                                  },
+                                  "source": {
+                                    "type": "object",
+                                    "properties": {
+                                      "nom": {
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "maxLength": 160
+                                      },
+                                      "url": {
+                                        "type": "string",
+                                        "maxLength": 2048,
+                                        "pattern": "^https?:\\/\\/\\S+$"
+                                      },
+                                      "publie_le": {
+                                        "nullable": true,
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "nom",
+                                      "url",
+                                      "publie_le"
+                                    ],
+                                    "additionalProperties": false
+                                  }
+                                },
+                                "required": [
+                                  "produit",
+                                  "version",
+                                  "changement",
+                                  "source"
+                                ],
+                                "additionalProperties": false
+                              }
+                            }
+                          },
+                          "required": [
+                            "kind",
+                            "lignes"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "kind": {
+                              "type": "string",
+                              "enum": [
+                                "chiffre"
+                              ]
+                            },
+                            "valeur": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 60
+                            },
+                            "texte": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 400
+                            },
+                            "source": {
+                              "type": "object",
+                              "properties": {
+                                "nom": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 160
+                                },
+                                "url": {
+                                  "type": "string",
+                                  "maxLength": 2048,
+                                  "pattern": "^https?:\\/\\/\\S+$"
+                                },
+                                "publie_le": {
+                                  "nullable": true,
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "nom",
+                                "url",
+                                "publie_le"
+                              ],
+                              "additionalProperties": false
+                            }
+                          },
+                          "required": [
+                            "kind",
+                            "valeur",
+                            "texte",
+                            "source"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "kind": {
+                              "type": "string",
+                              "enum": [
+                                "citation"
+                              ]
+                            },
+                            "texte": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 600
+                            },
+                            "auteur": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 160
+                            },
+                            "traduite_de": {
+                              "nullable": true,
+                              "type": "string",
+                              "enum": [
+                                "l'anglais",
+                                "l'allemand",
+                                "l'espagnol",
+                                "l'italien",
+                                null
+                              ]
+                            },
+                            "contexte": {
+                              "type": "string",
+                              "maxLength": 400
+                            },
+                            "source": {
+                              "type": "object",
+                              "properties": {
+                                "nom": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 160
+                                },
+                                "url": {
+                                  "type": "string",
+                                  "maxLength": 2048,
+                                  "pattern": "^https?:\\/\\/\\S+$"
+                                },
+                                "publie_le": {
+                                  "nullable": true,
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "nom",
+                                "url",
+                                "publie_le"
+                              ],
+                              "additionalProperties": false
+                            }
+                          },
+                          "required": [
+                            "kind",
+                            "texte",
+                            "auteur",
+                            "traduite_de",
+                            "contexte",
+                            "source"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "kind": {
+                              "type": "string",
+                              "enum": [
+                                "a_part_ca"
+                              ]
+                            },
+                            "breves": {
+                              "minItems": 1,
+                              "maxItems": 5,
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "texte": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 400
+                                  },
+                                  "source": {
+                                    "type": "object",
+                                    "properties": {
+                                      "nom": {
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "maxLength": 160
+                                      },
+                                      "url": {
+                                        "type": "string",
+                                        "maxLength": 2048,
+                                        "pattern": "^https?:\\/\\/\\S+$"
+                                      },
+                                      "publie_le": {
+                                        "nullable": true,
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "nom",
+                                      "url",
+                                      "publie_le"
+                                    ],
+                                    "additionalProperties": false
+                                  }
+                                },
+                                "required": [
+                                  "texte",
+                                  "source"
+                                ],
+                                "additionalProperties": false
+                              }
+                            }
+                          },
+                          "required": [
+                            "kind",
+                            "breves"
+                          ],
+                          "additionalProperties": false
+                        }
+                      ]
+                    }
+                  },
+                  "sources": {
+                    "minItems": 1,
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "nom": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 160
+                        },
+                        "url": {
+                          "type": "string",
+                          "maxLength": 2048,
+                          "pattern": "^https?:\\/\\/\\S+$"
+                        },
+                        "publie_le": {
+                          "nullable": true,
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "nom",
+                        "url",
+                        "publie_le"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "provenance": {
+                    "type": "object",
+                    "properties": {
+                      "run_id": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "edition_date": {
+                        "type": "string",
+                        "format": "date",
+                        "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))$"
+                      },
+                      "content_sha256": {
+                        "type": "string",
+                        "pattern": "^[a-f0-9]{64}$"
+                      }
+                    },
+                    "required": [
+                      "run_id",
+                      "edition_date",
+                      "content_sha256"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "seo": {
+                    "type": "object",
+                    "properties": {
+                      "description": {
+                        "type": "string",
+                        "maxLength": 160
+                      },
+                      "canonical_path": {
+                        "type": "string",
+                        "pattern": "^\\/articles\\/[a-z0-9-]+$"
+                      },
+                      "keywords": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "image_url": {
+                        "nullable": true,
+                        "type": "string",
+                        "maxLength": 2048,
+                        "pattern": "^https:\\/\\/\\S+$"
+                      },
+                      "image_alt": {
+                        "nullable": true,
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "description",
+                      "canonical_path",
+                      "keywords",
+                      "image_url",
+                      "image_alt"
+                    ],
+                    "additionalProperties": false
                   }
                 },
                 "required": [
-                  "description",
-                  "canonical_path",
-                  "keywords",
-                  "image_url",
-                  "image_alt"
+                  "article_id",
+                  "slug",
+                  "locale",
+                  "status",
+                  "title",
+                  "excerpt",
+                  "content_markdown",
+                  "reading_time_minutes",
+                  "tags",
+                  "published_at",
+                  "updated_at",
+                  "sections",
+                  "sources",
+                  "provenance",
+                  "seo"
                 ],
                 "additionalProperties": false
               }
             },
             "required": [
-              "article_id",
-              "slug",
-              "locale",
-              "status",
-              "title",
-              "excerpt",
-              "content_markdown",
-              "reading_time_minutes",
-              "tags",
-              "published_at",
-              "updated_at",
-              "sections",
-              "sources",
-              "provenance",
-              "seo"
+              "schema_version",
+              "delivery_id",
+              "producer",
+              "sent_at",
+              "article"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "schema_version": {
+                "type": "string",
+                "enum": [
+                  "1.0"
+                ]
+              },
+              "delivery_id": {
+                "type": "string",
+                "pattern": "^mb-\\d{4}-\\d{2}-\\d{2}-(fr|en)$"
+              },
+              "producer": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "enum": [
+                      "morning-brief"
+                    ]
+                  },
+                  "version": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "device": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": [
+                  "name",
+                  "version",
+                  "device"
+                ],
+                "additionalProperties": false
+              },
+              "sent_at": {
+                "type": "string"
+              },
+              "article": {
+                "type": "object",
+                "properties": {
+                  "article_id": {
+                    "type": "string",
+                    "pattern": "^morning-brief-\\d{4}-\\d{2}-\\d{2}-(fr|en)$"
+                  },
+                  "slug": {
+                    "type": "string",
+                    "pattern": "^morning-brief-\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "locale": {
+                    "type": "string",
+                    "enum": [
+                      "fr",
+                      "en"
+                    ]
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "published"
+                    ]
+                  },
+                  "title": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "excerpt": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 280
+                  },
+                  "content_markdown": {
+                    "type": "string",
+                    "minLength": 100
+                  },
+                  "reading_time_minutes": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 60
+                  },
+                  "tags": {
+                    "maxItems": 12,
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 40
+                    }
+                  },
+                  "published_at": {
+                    "type": "string"
+                  },
+                  "updated_at": {
+                    "type": "string"
+                  },
+                  "sections": {
+                    "minItems": 1,
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  },
+                  "sources": {
+                    "minItems": 1,
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 160
+                        },
+                        "url": {
+                          "type": "string",
+                          "maxLength": 2048,
+                          "pattern": "^https?:\\/\\/\\S+$"
+                        },
+                        "published_at": {
+                          "nullable": true,
+                          "type": "string"
+                        },
+                        "retrieved_at": {
+                          "nullable": true,
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "name",
+                        "url",
+                        "published_at",
+                        "retrieved_at"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "provenance": {
+                    "type": "object",
+                    "properties": {
+                      "run_id": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "edition_date": {
+                        "type": "string",
+                        "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                      },
+                      "content_sha256": {
+                        "type": "string",
+                        "pattern": "^[a-f0-9]{64}$"
+                      },
+                      "item_count": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 9007199254740991
+                      },
+                      "source_count": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 9007199254740991
+                      }
+                    },
+                    "required": [
+                      "run_id",
+                      "edition_date",
+                      "content_sha256",
+                      "item_count",
+                      "source_count"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "seo": {
+                    "type": "object",
+                    "properties": {
+                      "description": {
+                        "type": "string",
+                        "maxLength": 160
+                      },
+                      "canonical_path": {
+                        "type": "string",
+                        "pattern": "^\\/articles\\/[a-z0-9-]+$"
+                      },
+                      "keywords": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "image_url": {
+                        "nullable": true,
+                        "type": "string",
+                        "maxLength": 2048,
+                        "pattern": "^https?:\\/\\/\\S+$"
+                      },
+                      "image_alt": {
+                        "nullable": true,
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "description",
+                      "canonical_path",
+                      "keywords",
+                      "image_url",
+                      "image_alt"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "article_id",
+                  "slug",
+                  "locale",
+                  "status",
+                  "title",
+                  "excerpt",
+                  "content_markdown",
+                  "reading_time_minutes",
+                  "tags",
+                  "published_at",
+                  "updated_at",
+                  "sections",
+                  "sources",
+                  "provenance",
+                  "seo"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "schema_version",
+              "delivery_id",
+              "producer",
+              "sent_at",
+              "article"
             ],
             "additionalProperties": false
           }
-        },
-        "required": [
-          "schema_version",
-          "delivery_id",
-          "producer",
-          "sent_at",
-          "article"
-        ],
-        "additionalProperties": false
+        ]
       },
       "AvancementDAudit": {
         "anyOf": [
@@ -11277,7 +12374,8 @@
                         "anyOf": [
                           {
                             "type": "string",
-                            "format": "uri"
+                            "maxLength": 2048,
+                            "pattern": "^https:\\/\\/\\S+$"
                           },
                           {
                             "type": "string",
@@ -12040,7 +13138,8 @@
                             },
                             "href": {
                               "type": "string",
-                              "format": "uri"
+                              "maxLength": 2048,
+                              "pattern": "^https?:\\/\\/\\S+$"
                             },
                             "external": {
                               "type": "boolean"
@@ -12426,7 +13525,8 @@
                         "properties": {
                           "href": {
                             "type": "string",
-                            "format": "uri"
+                            "maxLength": 2048,
+                            "pattern": "^https?:\\/\\/\\S+$"
                           },
                           "label": {
                             "type": "string",
@@ -12490,7 +13590,8 @@
                         "anyOf": [
                           {
                             "type": "string",
-                            "format": "uri"
+                            "maxLength": 2048,
+                            "pattern": "^https:\\/\\/\\S+$"
                           },
                           {
                             "type": "string",
@@ -12523,7 +13624,8 @@
                         "properties": {
                           "href": {
                             "type": "string",
-                            "format": "uri"
+                            "maxLength": 2048,
+                            "pattern": "^https?:\\/\\/\\S+$"
                           },
                           "label": {
                             "type": "string",
@@ -12630,7 +13732,8 @@
                         "anyOf": [
                           {
                             "type": "string",
-                            "format": "uri"
+                            "maxLength": 2048,
+                            "pattern": "^https:\\/\\/\\S+$"
                           },
                           {
                             "type": "string",
@@ -12663,7 +13766,8 @@
                         "properties": {
                           "href": {
                             "type": "string",
-                            "format": "uri"
+                            "maxLength": 2048,
+                            "pattern": "^https?:\\/\\/\\S+$"
                           },
                           "label": {
                             "type": "string",
@@ -12720,7 +13824,8 @@
                         "anyOf": [
                           {
                             "type": "string",
-                            "format": "uri"
+                            "maxLength": 2048,
+                            "pattern": "^https:\\/\\/\\S+$"
                           },
                           {
                             "type": "string",
@@ -13165,7 +14270,8 @@
                     "anyOf": [
                       {
                         "type": "string",
-                        "format": "uri"
+                        "maxLength": 2048,
+                        "pattern": "^https:\\/\\/\\S+$"
                       },
                       {
                         "type": "string",
@@ -13199,7 +14305,8 @@
                     "anyOf": [
                       {
                         "type": "string",
-                        "format": "uri"
+                        "maxLength": 2048,
+                        "pattern": "^https:\\/\\/\\S+$"
                       },
                       {
                         "type": "string",
@@ -13211,7 +14318,8 @@
                     "anyOf": [
                       {
                         "type": "string",
-                        "format": "uri"
+                        "maxLength": 2048,
+                        "pattern": "^https:\\/\\/\\S+$"
                       },
                       {
                         "type": "string",
@@ -13234,7 +14342,8 @@
                     "anyOf": [
                       {
                         "type": "string",
-                        "format": "uri"
+                        "maxLength": 2048,
+                        "pattern": "^https:\\/\\/\\S+$"
                       },
                       {
                         "type": "string",
@@ -13250,7 +14359,8 @@
                     "anyOf": [
                       {
                         "type": "string",
-                        "format": "uri"
+                        "maxLength": 2048,
+                        "pattern": "^https:\\/\\/\\S+$"
                       },
                       {
                         "type": "string",
@@ -13269,7 +14379,8 @@
                         "anyOf": [
                           {
                             "type": "string",
-                            "format": "uri"
+                            "maxLength": 2048,
+                            "pattern": "^https:\\/\\/\\S+$"
                           },
                           {
                             "type": "string",

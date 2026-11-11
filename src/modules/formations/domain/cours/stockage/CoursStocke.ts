@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { lienHttps } from '../../../../../common/domain/liens/lien-web';
 import {
   mapperAuMoinsUn,
   type AuMoinsUn,
@@ -139,7 +140,7 @@ const mediaCatalogue = z
   .object({
     id: texte,
     chemins: auMoinsUn(media),
-    pageSource: z.url({ protocol: /^https$/ }).nullable(),
+    pageSource: lienHttps.nullable(),
     auteur: texte,
     date: texte,
     licence: texte,

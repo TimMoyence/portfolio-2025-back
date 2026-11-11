@@ -8,7 +8,7 @@ import {
 } from 'typeorm';
 import type { SupportedLocale } from '../../../../common/domain/value-objects/LocaleCode';
 import type { ArticleStatus } from '../../application/articles.repository';
-import type { ArticleIngere } from '../../domain/article-contract';
+import type { ArticleIngere } from '../../domain/contrat/article-contract';
 
 @Entity({ name: 'articles' })
 @Index('uq_articles_locale_slug', ['locale', 'slug'], { unique: true })

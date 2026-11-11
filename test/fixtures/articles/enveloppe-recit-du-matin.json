@@ -1,0 +1,228 @@
+{
+  "schema_version": "2.0",
+  "delivery_id": "mb-2026-11-11-fr",
+  "producer": {
+    "name": "morning-brief",
+    "version": "0.2.0",
+    "device": "raspberry-pi"
+  },
+  "sent_at": "2026-11-11T05:16:00Z",
+  "article": {
+    "article_id": "morning-brief-2026-11-11-fr",
+    "slug": "morning-brief-2026-11-11",
+    "locale": "fr",
+    "status": "published",
+    "title": "L'IA à dix centimes",
+    "excerpt": "Meta vend son plus petit modèle au prix d'un café.",
+    "content_markdown": "# L'IA à dix centimes\n\n*mercredi 11 novembre 2026*\n\nBonjour.\n\nMeta vend son IA au prix d'un café. Google fait l'inverse.\n\n— Tim\n\n*On vous en parlait le 8 novembre : Meta prépare Ember*\n\n## Le sujet du jour\n\n*Meta vend son plus petit modèle au prix d'un café.*\n\n**Pourquoi on en parle ?** Le prix d'entrée baisse.\n\n**Contexte :** Les grands modèles coûtent cher.\n\n**Dans les faits :** Muse Ember coûte 0,10 dollar.\n\n**Et maintenant ?** Les concurrents devront suivre.\n\n**Prix par million de tokens**\n\n- Muse Ember : 0,10 dollar\n- Gemini : 0,30 dollar\n- GPT : 0,50 dollar\n\n**Bref. L'IA devient une commodité.**\n\n[Simon Willison](https://meta.test/a)\n\n## Le Shot\n\n**Tout le monde peut souffler :** Vercel ouvre Gemini 4 Carbon. [Vercel Blog](https://vercel.test/a)\n\n**Peut mieux faire :** Un benchmark chiffre les agents. [r/MachineLearning](https://reddit.test/a)\n\n## Le décodeur\n\n**token** — Un morceau de mot, comme une syllabe facturée.\n\n## À tester ce matin\n\n**AI Gateway** — Un accès unique aux modèles. [Vercel Blog](https://gateway.test/a)\n\n## Les sorties\n\n- **Bun 1.3** — Un bundler plus rapide [Bun Blog](https://bun.test/a)\n\n## Le chiffre\n\n**40 milliards de dollars** — Le montant levé par Sumary. [TechCrunch](https://tc.test/a)\n\n## La citation\n\n« Nous livrons chaque semaine. » (traduit de l'anglais) — Claire Martin, PDG de Sumary\n\nElle décrit son rythme. [Sifted](https://sifted.test/a)\n\n## Et à part ça…\n\n- Airbus investit près de Toulouse. [Next.ink](https://next.test/a)",
+    "reading_time_minutes": 1,
+    "tags": ["morning-brief"],
+    "published_at": "2026-11-11T00:00:00Z",
+    "updated_at": "2026-11-11T00:00:00Z",
+    "sections": [
+      {
+        "kind": "edito",
+        "texte": "Meta vend son IA au prix d'un café. Google fait l'inverse.",
+        "signature": "Tim"
+      },
+      {
+        "kind": "sujet",
+        "titre": "L'IA à dix centimes",
+        "accroche": "Meta vend son plus petit modèle au prix d'un café.",
+        "pourquoi": "Le prix d'entrée baisse.",
+        "contexte": "Les grands modèles coûtent cher.",
+        "faits": "Muse Ember coûte 0,10 dollar.",
+        "et_maintenant": "Les concurrents devront suivre.",
+        "bref": "Bref. L'IA devient une commodité.",
+        "source": {
+          "nom": "Simon Willison",
+          "url": "https://meta.test/a",
+          "publie_le": "2026-11-10T09:00:00Z"
+        },
+        "image": {
+          "url": "https://cdn.meta.test/ember.jpg",
+          "credit": "Simon Willison"
+        },
+        "graphique": {
+          "titre": "Prix par million de tokens",
+          "unite": "$",
+          "barres": [
+            {
+              "libelle": "Muse Ember",
+              "valeur": 0.1,
+              "affichage": "0,10 dollar",
+              "largeur": 20
+            },
+            {
+              "libelle": "Gemini",
+              "valeur": 0.3,
+              "affichage": "0,30 dollar",
+              "largeur": 60
+            },
+            {
+              "libelle": "GPT",
+              "valeur": 0.5,
+              "affichage": "0,50 dollar",
+              "largeur": 100
+            }
+          ]
+        },
+        "feuilleton": {
+          "date": "2026-11-08",
+          "rappel": "Meta prépare Ember"
+        }
+      },
+      {
+        "kind": "shot",
+        "histoires": [
+          {
+            "accroche": "Tout le monde peut souffler :",
+            "texte": "Vercel ouvre Gemini 4 Carbon.",
+            "rubrique": "outils_ia",
+            "source": {
+              "nom": "Vercel Blog",
+              "url": "https://vercel.test/a",
+              "publie_le": null
+            },
+            "image": {
+              "url": "https://cdn.vercel.test/g.jpg",
+              "credit": "Vercel Blog"
+            },
+            "feuilleton": null
+          },
+          {
+            "accroche": "Peut mieux faire :",
+            "texte": "Un benchmark chiffre les agents.",
+            "rubrique": "modeles_ia",
+            "source": {
+              "nom": "r/MachineLearning",
+              "url": "https://reddit.test/a",
+              "publie_le": null
+            },
+            "image": null,
+            "feuilleton": null
+          }
+        ]
+      },
+      {
+        "kind": "decodeur",
+        "terme": "token",
+        "explication": "Un morceau de mot, comme une syllabe facturée."
+      },
+      {
+        "kind": "a_tester",
+        "nom": "AI Gateway",
+        "texte": "Un accès unique aux modèles.",
+        "source": {
+          "nom": "Vercel Blog",
+          "url": "https://gateway.test/a",
+          "publie_le": null
+        }
+      },
+      {
+        "kind": "sorties",
+        "lignes": [
+          {
+            "produit": "Bun",
+            "version": "1.3",
+            "changement": "Un bundler plus rapide",
+            "source": {
+              "nom": "Bun Blog",
+              "url": "https://bun.test/a",
+              "publie_le": null
+            }
+          }
+        ]
+      },
+      {
+        "kind": "chiffre",
+        "valeur": "40 milliards de dollars",
+        "texte": "Le montant levé par Sumary.",
+        "source": {
+          "nom": "TechCrunch",
+          "url": "https://tc.test/a",
+          "publie_le": null
+        }
+      },
+      {
+        "kind": "citation",
+        "texte": "Nous livrons chaque semaine.",
+        "auteur": "Claire Martin, PDG de Sumary",
+        "traduite_de": "l'anglais",
+        "contexte": "Elle décrit son rythme.",
+        "source": {
+          "nom": "Sifted",
+          "url": "https://sifted.test/a",
+          "publie_le": null
+        }
+      },
+      {
+        "kind": "a_part_ca",
+        "breves": [
+          {
+            "texte": "Airbus investit près de Toulouse.",
+            "source": {
+              "nom": "Next.ink",
+              "url": "https://next.test/a",
+              "publie_le": null
+            }
+          }
+        ]
+      }
+    ],
+    "sources": [
+      {
+        "nom": "Simon Willison",
+        "url": "https://meta.test/a",
+        "publie_le": "2026-11-10T09:00:00Z"
+      },
+      {
+        "nom": "Vercel Blog",
+        "url": "https://vercel.test/a",
+        "publie_le": null
+      },
+      {
+        "nom": "r/MachineLearning",
+        "url": "https://reddit.test/a",
+        "publie_le": null
+      },
+      {
+        "nom": "Vercel Blog",
+        "url": "https://gateway.test/a",
+        "publie_le": null
+      },
+      {
+        "nom": "Bun Blog",
+        "url": "https://bun.test/a",
+        "publie_le": null
+      },
+      {
+        "nom": "TechCrunch",
+        "url": "https://tc.test/a",
+        "publie_le": null
+      },
+      {
+        "nom": "Sifted",
+        "url": "https://sifted.test/a",
+        "publie_le": null
+      },
+      {
+        "nom": "Next.ink",
+        "url": "https://next.test/a",
+        "publie_le": null
+      }
+    ],
+    "provenance": {
+      "run_id": "morning-brief-2026-11-11-fr",
+      "edition_date": "2026-11-11",
+      "content_sha256": "d00d94ab058c71140f4e9a1e00da2a6e624b4a997780cd3304ce1bae041c54e0"
+    },
+    "seo": {
+      "description": "Meta vend son plus petit modèle au prix d'un café.",
+      "canonical_path": "/articles/morning-brief-2026-11-11",
+      "keywords": ["morning-brief"],
+      "image_url": "https://cdn.meta.test/ember.jpg",
+      "image_alt": "Simon Willison"
+    }
+  }
+}

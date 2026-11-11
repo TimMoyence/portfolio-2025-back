@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { lienHttp } from '../../../../../common/domain/liens/lien-web';
 import {
   auMoinsUn,
   media,
@@ -9,7 +10,7 @@ import {
 const strict = <F extends z.ZodRawShape>(forme: F) => z.object(forme).strict();
 
 const textes = auMoinsUn(texte);
-const lien = strict({ href: z.url(), label: texte });
+const lien = strict({ href: lienHttp, label: texte });
 const quiz = strict({
   id: texte,
   type: z.literal('quiz'),
@@ -31,7 +32,7 @@ const item = strict({
   title: texte,
   description: texte,
   back: texte.optional(),
-  href: z.url().optional(),
+  href: lienHttp.optional(),
   external: z.boolean().optional(),
 });
 const column = strict({

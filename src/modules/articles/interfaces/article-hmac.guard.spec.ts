@@ -5,7 +5,7 @@ import {
   appliquer,
   installerVariables,
 } from '../../../../test/helpers/depot/environnement';
-import { LONGUEUR_MAX_DU_NONCE } from '../domain/article-contract';
+import { LONGUEUR_MAX_DU_NONCE } from '../domain/contrat/article-contract';
 import { ArticleHmacGuard } from './article-hmac.guard';
 
 function contextFor(headers: Record<string, string>, rawBody: Buffer) {

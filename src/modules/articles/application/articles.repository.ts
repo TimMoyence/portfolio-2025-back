@@ -1,5 +1,5 @@
 import type { SupportedLocale } from '../../../common/domain/value-objects/LocaleCode';
-import type { ArticleIngere } from '../domain/article-contract';
+import type { ArticleIngere } from '../domain/contrat/article-contract';
 
 export const ARTICLES_REPOSITORY = Symbol('ARTICLES_REPOSITORY');
 

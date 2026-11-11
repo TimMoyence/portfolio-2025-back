@@ -27,7 +27,7 @@ import { Roles } from '../../../common/interfaces/auth/roles.decorator';
 import { RolesGuard } from '../../../common/interfaces/auth/roles.guard';
 import { referenceAuContrat } from '../../../common/interfaces/http/schemas-du-contrat';
 import { RoutePublique } from '../../../common/interfaces/security/anti-robot/formulaire-public.decorator';
-import { ArticleContract } from '../domain/article-contract';
+import { ArticleContract } from '../domain/contrat/article-contract';
 import type { ArticleRecord } from '../application/articles.repository';
 import { ArticlesService } from '../application/articles.service';
 import { ArticleHmacGuard } from './article-hmac.guard';
@@ -53,7 +53,7 @@ export class ArticlesController {
   @ApiOperation({ summary: 'Recevoir une édition Morning-Brief signée' })
   @ApiBody({
     description:
-      'Enveloppe Morning-Brief v1 (docs/contracts/article-ingest-envelope-v1.json)',
+      'Enveloppe Morning-Brief 2.0 du récit du matin (docs/contracts/article-ingest-envelope-v2.json) ; une enveloppe 1.0 est convertie en texte suivi',
     schema: referenceAuContrat(ArticleContract),
   })
   @ApiAcceptedResponse({

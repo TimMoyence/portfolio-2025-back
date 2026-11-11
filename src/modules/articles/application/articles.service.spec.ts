@@ -7,11 +7,11 @@ import {
   buildArticleRecord,
   createMockArticlesRepository,
 } from '../../../../test/factories/article.factory';
-import {
-  buildSectionsEtSourcesDatees,
-  itemsDe,
-  validArticleIngestEnvelope as payload,
-} from '../../../../test/factories/article-ingest.factory';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { validArticleIngestEnvelope as payload } from '../../../../test/factories/article-ingest.factory';
+import { RACINE } from '../../../../test/helpers/depot/racine';
+import type { ArticleIngere } from '../domain/contrat/article-contract';
 import type { ArticleRecord } from './articles.repository';
 import { ArticlesService } from './articles.service';
 
@@ -117,23 +117,28 @@ describe('ArticlesService', () => {
 });
 
 describe('ArticlesService — lecture publique', () => {
-  const datesDe = ({
-    published_at,
-    retrieved_at,
-  }: {
-    published_at?: string | null;
-    retrieved_at?: string | null;
-  }) => ({ published_at, retrieved_at });
+  const RECIT = JSON.parse(
+    readFileSync(
+      join(RACINE, 'test/fixtures/articles/enveloppe-recit-du-matin.json'),
+      'utf8',
+    ),
+  ).article as ArticleIngere;
+  const avecDecalage = (valeur: unknown): unknown =>
+    JSON.parse(
+      JSON.stringify(valeur).replace(
+        /"publie_le":("[^"]*"|null)/g,
+        '"publie_le":"2026-11-08T07:15:00+01:00"',
+      ),
+    );
+  const datesServies = (articles: unknown[]): unknown[] =>
+    [...JSON.stringify(articles).matchAll(/"publie_le":("[^"]*"|null)/g)].map(
+      ([, date]) => JSON.parse(date),
+    );
 
   const articleStockeAvecDecalage = (): ArticleRecord => ({
     ...articleRecord(),
-    ...buildSectionsEtSourcesDatees({
-      item: {
-        published_at: '2026-11-08T07:15:00+01:00',
-        retrieved_at: '2026-11-08T08:30:00+02:00',
-      },
-      source: { published_at: '2026-11-08T06:15:00+00:00', retrieved_at: null },
-    }),
+    sections: avecDecalage(RECIT.sections) as ArticleRecord['sections'],
+    sources: avecDecalage(RECIT.sources) as ArticleRecord['sources'],
   });
 
   it.each([
@@ -151,7 +156,7 @@ describe('ArticlesService — lecture publique', () => {
         (await service.listPublished({ locale: 'fr', limit: 10 })).items,
     ],
   ] as const)(
-    '%s sert les dates de chaque item et de chaque source de chacun de ses %i articles en ISO UTC « Z », même stockées avec un décalage',
+    '%s sert la date de chaque source de chacun de ses %i articles en ISO UTC « Z », même stockée avec un décalage',
     async (_route, servis, lire) => {
       const repository = createMockArticlesRepository();
       repository.findPublishedBySlug.mockResolvedValue(
@@ -165,24 +170,12 @@ describe('ArticlesService — lecture publique', () => {
       const articles = await lire(new ArticlesService(repository));
 
       expect(articles).toHaveLength(servis);
-      expect(articles.flatMap(itemsDe).map(datesDe)).toEqual(
-        Array.from({ length: 4 * servis }, () => ({
-          published_at: '2026-11-08T06:15:00.000Z',
-          retrieved_at: '2026-11-08T06:30:00.000Z',
-        })),
-      );
-      expect(
-        articles.flatMap((article) => article.sources).map(datesDe),
-      ).toEqual(
-        Array.from({ length: 2 * servis }, () => ({
-          published_at: '2026-11-08T06:15:00.000Z',
-          retrieved_at: null,
-        })),
-      );
+      const dates = datesServies(articles);
+      expect(dates.length).toBeGreaterThan(servis * 3);
+      expect(new Set(dates)).toEqual(new Set(['2026-11-08T06:15:00.000Z']));
     },
   );
 });
-
 describe('ArticlesService.listPublished', () => {
   const decalageLuPour = async (decalage: string): Promise<unknown> => {
     const repository = createMockArticlesRepository();

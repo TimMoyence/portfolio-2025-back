@@ -1,5 +1,6 @@
 import { TYPES_DE_TOLERANCE } from '../../contrats/contrat-de-l-api';
 import { z } from 'zod';
+import { lienHttps } from '../../../../../common/domain/liens/lien-web';
 import { listeEntreGuillemets } from '../../../../../common/domain/texte/formats/liste-entre-guillemets';
 import { CONCEPTS } from '../banque/concepts';
 import { CONFUSIONS, type ConfusionId } from '../banque/confusions';
@@ -8,7 +9,6 @@ const LONGUEUR_MAX_IDENTIFIANT_DE_QUESTION = 60;
 const CHEMIN_DE_MEDIA =
   /^\/assets\/cours\/[a-z0-9-]+\/v\d+\/[a-z0-9.-]+\.(webp|jpg|png|webm|vtt)$/;
 const PAGE_DE_FORMATION = /^\/formations\/[a-z0-9-]+$/;
-const EN_HTTPS = z.url({ protocol: /^https$/ });
 
 const IDENTIFIANTS_DE_CONFUSION = Object.keys(CONFUSIONS) as [
   ConfusionId,
@@ -26,14 +26,14 @@ export const confusion: z.ZodEnum<EnumDesConfusions> = z.enum(
   IDENTIFIANTS_DE_CONFUSION,
 );
 export const media = z.union([
-  EN_HTTPS,
+  lienHttps,
   z
     .string()
     .regex(CHEMIN_DE_MEDIA)
     .refine((chemin) => !chemin.includes('..'), 'chemin de média remontant'),
 ]);
 export const sourceDeVideo = z.union([
-  EN_HTTPS,
+  lienHttps,
   z.string().regex(PAGE_DE_FORMATION),
 ]);
 export const tolerance = z
