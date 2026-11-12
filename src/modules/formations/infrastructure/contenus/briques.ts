@@ -487,13 +487,30 @@ export interface ImageDIllustration {
   readonly imageAlt: string;
 }
 
-export interface ScenePourComprendre extends ImageDIllustration {
-  readonly scene: string;
-  readonly idee: string;
-  readonly pont: string;
+type Correspondance = readonly [dansLImage: string, dansLeCours: string];
+
+export type Correspondances = readonly [
+  Correspondance,
+  Correspondance,
+  Correspondance,
+  Correspondance?,
+];
+
+function enListe(correspondances: Correspondances): string[] {
+  return correspondances.flatMap((correspondance) =>
+    correspondance === undefined
+      ? []
+      : [`${correspondance[0]} → ${correspondance[1]}`],
+  );
 }
 
-const PONT_VERS_LA_NOTION = 'En maths, on écrit : ';
+export interface ScenePourComprendre extends ImageDIllustration {
+  readonly scene: string;
+  readonly regle: string;
+  readonly correspondances: Correspondances;
+}
+
+const REGLE_DE_LA_NOTION = 'En maths, on écrit : ';
 
 function ecranDImage(
   { screenId, titre, concepts }: SocleNomme,
@@ -519,6 +536,7 @@ function ecranDImage(
 export interface TexteDeLImage {
   readonly sousTitre?: string;
   readonly paragraphes: AuMoinsUnModifiable<string>;
+  readonly correspondances: Correspondances;
   readonly dureeMinutes: number;
 }
 
@@ -526,7 +544,7 @@ export function ecranDImageCommentee(
   socle: SocleNomme,
   dossier: string,
   { fichier, imageAlt }: ImageDIllustration,
-  { sousTitre, paragraphes, dureeMinutes }: TexteDeLImage,
+  { sousTitre, paragraphes, correspondances, dureeMinutes }: TexteDeLImage,
   notes: AuMoinsUnModifiable<string>,
 ): EcranDeRecit {
   return ecranDImage(
@@ -539,6 +557,7 @@ export function ecranDImageCommentee(
       image: `${dossier}/${fichier}`,
       imageAlt,
       paragraphs: [...paragraphes],
+      items: enListe(correspondances),
     },
     dureeMinutes,
   );
@@ -556,17 +575,17 @@ export function ecranDIllustration(
   });
 }
 
-export const commeACinqAnsDans =
+export const pourComprendreDans =
   (dossier: string) =>
   (
     socle: SocleNomme,
-    { fichier, imageAlt, scene, idee, pont }: ScenePourComprendre,
+    { fichier, imageAlt, scene, regle, correspondances }: ScenePourComprendre,
     relance: string,
   ): EcranDeRecit =>
     ecranDImage(
       socle,
       [
-        '1 min : faire décrire l’image, lire l’idée, puis le pont vers la notation.',
+        '1 min : faire décrire l’image, puis faire dire à quoi correspond chaque élément dans le cours.',
         relance,
       ],
       'image-left',
@@ -574,7 +593,8 @@ export const commeACinqAnsDans =
         title: socle.titre,
         image: `${dossier}/${fichier}`,
         imageAlt,
-        paragraphs: [scene, idee, `${PONT_VERS_LA_NOTION}${pont}`],
+        paragraphs: [scene, `${REGLE_DE_LA_NOTION}${regle}`],
+        items: enListe(correspondances),
       },
     );
 

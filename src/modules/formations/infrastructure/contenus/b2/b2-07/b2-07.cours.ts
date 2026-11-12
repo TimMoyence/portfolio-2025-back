@@ -50,7 +50,7 @@ const GRAVURE_DE_L_ACCROCHE = moteur.gravureDuDomainePublic({
 
 const DOSSIER_DES_ILLUSTRATIONS = '/assets/cours/b2-07/v1';
 
-const commeACinqAns = moteur.commeACinqAnsDans(DOSSIER_DES_ILLUSTRATIONS);
+const pourComprendre = moteur.pourComprendreDans(DOSSIER_DES_ILLUSTRATIONS);
 
 const ACTE_1: moteur.Acte = [
   moteur.ecranV2(
@@ -75,10 +75,10 @@ const ACTE_1: moteur.Acte = [
         'Première page de Nova Methodus pro Maximis et Minimis de Gottfried Wilhelm Leibniz, parue dans les Acta Eruditorum en octobre 1684, le premier texte publié sur le calcul des dérivées',
     },
   ),
-  commeACinqAns(
+  pourComprendre(
     {
       screenId: 'B2-07-A1-02-ENFANT-MULTIPLIER',
-      titre: 'Comme à cinq ans : l’exponentielle multiplie',
+      titre: 'L’exponentielle multiplie',
       concepts: ['fonction-exponentielle', 'suite-geometrique'],
     },
     {
@@ -87,15 +87,21 @@ const ACTE_1: moteur.Acte = [
         'Quatre pots alignés, semaine 0 à semaine 3 : la même plante devient chaque semaine une fois et demie plus haute, si bien que les écarts de hauteur grandissent. Entre deux pots, une flèche marquée × 1,5.',
       scene:
         'Chaque semaine, la plante devient une fois et demie plus haute que la semaine d’avant : plus elle est grande, plus elle gagne de centimètres.',
-      idee: 'À chaque pas, on multiplie toujours par le même nombre. On n’ajoute pas toujours la même quantité.',
-      pont: 'u₀ × qⁿ au B2-04, a e^(kx) au B2-06. e^k est le nombre par lequel on multiplie à chaque pas. Pour e^0,4, on calcule l’exposant d’abord, puis la touche eˣ.',
+      regle:
+        'uₙ = u₀ × qⁿ au B2-04, f(x) = a e^(kx) au B2-06. À chaque pas, on multiplie par le même nombre ; on n’ajoute pas la même quantité. Pour e^0,4, on calcule l’exposant d’abord, puis la touche eˣ.',
+      correspondances: [
+        ['La plante du pot « semaine 0 »', 'la valeur de départ u₀, ou a'],
+        ['Le numéro de la semaine', 'le rang n, ou x'],
+        ['La flèche × 1,5', 'la raison q, ou e^k'],
+        ['La hauteur atteinte', 'uₙ, ou f(x)'],
+      ],
     },
     'Question : « Ajoute-t-on ou multiplie-t-on ? » On multiplie : c’est pour cela que la courbe se redresse.',
   ),
-  commeACinqAns(
+  pourComprendre(
     {
       screenId: 'B2-07-A1-03-ENFANT-A-ET-K',
-      titre: 'Comme à cinq ans : le départ et la vitesse',
+      titre: 'Le départ et la vitesse',
       concepts: ['fonction-exponentielle'],
     },
     {
@@ -103,16 +109,21 @@ const ACTE_1: moteur.Acte = [
       imageAlt:
         'Deux ballons de même taille au départ, marqués a. À gauche, un enfant gonfle le sien, qui grossit, k > 0. À droite, l’autre ballon se dégonfle, k < 0.',
       scene:
-        'Deux ballons ont la même taille au départ : on gonfle l’un, l’autre se dégonfle tout seul.',
-      idee: 'La taille du départ, c’est a. Le signe de k dit si ça grossit ou si ça rétrécit.',
-      pont: 'f(0) = a, car e⁰ = 1. Coefficient e^k, taux e^k − 1. k > 0 : croissante ; k < 0 : décroissante. Pour 1 000e^(0,02x) : + 2,02 % par unité, pas 2 %.',
+        'Deux ballons partent de la même taille : l’un se gonfle à la pompe, l’autre se dégonfle.',
+      regle:
+        'f(x) = a e^(kx) et f(0) = a, car e⁰ = 1. Coefficient e^k, taux e^k − 1 : pour 1 000e^(0,02x), + 2,02 % par unité, pas 2 %.',
+      correspondances: [
+        ['La taille commune au départ, marquée a', 'a = f(0)'],
+        ['Le ballon qu’on gonfle, k > 0', 'f croissante'],
+        ['Le ballon qui se dégonfle, k < 0', 'f décroissante'],
+      ],
     },
     'Question : « Que lit-on en x = 0 ? » La valeur de départ a.',
   ),
-  commeACinqAns(
+  pourComprendre(
     {
       screenId: 'B2-07-A1-04-ENFANT-LN',
-      titre: 'Comme à cinq ans : ln, le bouton retour',
+      titre: 'ln, le bouton retour',
       concepts: ['logarithme-neperien'],
     },
     {
@@ -120,26 +131,40 @@ const ACTE_1: moteur.Acte = [
       imageAlt:
         'Une machine en bois : la carte 1,609 entre, la carte 5 ressort par la flèche eˣ. Dessous, une flèche repart de 5 vers 1,609 en passant par un gros bouton ln, qu’un enfant appuie.',
       scene:
-        'Une machine transforme 1,609 en 5. Son bouton retour fait le chemin à l’envers et rend 1,609.',
-      idee: 'ln défait ce qu’a fait l’exponentielle, comme la division défait la multiplication.',
-      pont: 'eˣ = y ⇔ x = ln y, pour y > 0. ln 5 ≈ 1,609, touche ln, pas log.',
+        'La machine transforme 1,609 en 5 ; son bouton retour fait le chemin inverse et rend 1,609.',
+      regle:
+        'eˣ = y ⇔ x = ln y, pour y > 0. ln défait l’exponentielle comme ÷ défait × : ln 5 ≈ 1,609, touche ln, pas log.',
+      correspondances: [
+        ['La flèche eˣ de la machine', 'la fonction exponentielle'],
+        ['Le bouton ln', 'la fonction logarithme népérien'],
+        ['La carte 1,609 qui entre', 'l’exposant x'],
+        ['La carte 5 qui ressort', 'y = eˣ'],
+      ],
     },
     'Question : « × 4 se défait par ÷ 4. Comment défaire eˣ ? » Par ln.',
   ),
-  commeACinqAns(
+  pourComprendre(
     {
       screenId: 'B2-07-A1-05-ENFANT-SEUIL',
-      titre: 'Comme à cinq ans : quand touchera-t-on la fenêtre ?',
+      titre: 'Quand touchera-t-on la fenêtre ?',
       concepts: ['resolution-par-logarithme', 'prevision'],
     },
     {
       fichier: 'plante-et-fenetre.webp',
       imageAlt:
-        'Une plante grimpante monte vers le rebord d’une fenêtre, marqué d’un trait rouge 10. Des traits de crayon marquent sa hauteur semaine après semaine ; le trait 6 dépasse le rebord.',
+        'Une plante grimpante monte vers le rebord d’une fenêtre, marqué d’un trait rouge 10. Le long de la tige, des traits numérotés de 0 à 6 marquent les semaines ; l’enfant montre le trait 6, la semaine où la tige atteint le rebord.',
       scene:
-        'La plante monte vers le rebord de la fenêtre. On voudrait savoir la semaine où elle le touche, sans attendre chaque semaine.',
-      idee: 'ln donne la réponse d’un coup. On garde toujours la semaine d’après, celle où elle a vraiment touché.',
-      pont: '1,5ⁿ ≥ 10 ⇔ n ≥ ln 10 ÷ ln 1,5 ≈ 5,68, donc n = 6. Si q < 1, ln q < 0 et diviser par ln q change le sens.',
+        'La plante monte vers le rebord de la fenêtre. Plutôt que de mesurer chaque semaine, on calcule d’un coup la semaine où elle l’atteint.',
+      regle:
+        '1,5ⁿ ≥ 10 ⇔ n ≥ ln 10 ÷ ln 1,5 ≈ 5,68, donc n = 6 : on garde l’entier juste au-dessus. Si q < 1, ln q < 0 et diviser par ln q change le sens de l’inégalité.',
+      correspondances: [
+        ['Le rebord de la fenêtre, trait 10', 'le seuil'],
+        ['La hauteur de la plante', 'qⁿ, ici 1,5ⁿ'],
+        [
+          'Le trait 6, que montre le doigt',
+          'le plus petit entier n tel que qⁿ ≥ seuil',
+        ],
+      ],
     },
     'Question : « 5,68 semaines : on répond 5 ou 6 ? » 6, l’entier juste au-dessus.',
   ),
@@ -152,7 +177,7 @@ const ACTE_1: moteur.Acte = [
     concepts: ['fonction-exponentielle', 'logarithme-neperien'],
     notes: moteur.puces(
       'Récapitulatif du cours 6 : deux votes non notés.',
-      'Revenir sur l’écran comme à cinq ans de chaque erreur : le départ et la vitesse, puis le bouton retour.',
+      'Revenir sur l’écran d’image de chaque erreur : le départ et la vitesse, puis le bouton retour.',
       ...moteur.NOTES_DU_VOTE_A_DEUX_QUESTIONS,
     ),
     proprietes: {
@@ -177,10 +202,10 @@ const ACTE_1: moteur.Acte = [
       ],
     },
   },
-  commeACinqAns(
+  pourComprendre(
     {
       screenId: 'B2-07-A1-07-ENFANT-BOUCLE',
-      titre: 'Comme à cinq ans : la boucle répète',
+      titre: 'La boucle répète',
       concepts: ['algorithme-de-seuil'],
     },
     {
@@ -188,16 +213,24 @@ const ACTE_1: moteur.Acte = [
       imageAlt:
         'Un enfant verse de l’eau dans un grand verre à moitié plein avec une cuillère, et compte sur ses doigts : trois doigts levés. Une flèche circulaire autour de la cuillère, et l’étiquette n = 3.',
       scene:
-        'Un enfant remplit un verre cuillère par cuillère, en comptant les cuillères sur ses doigts.',
-      idee: 'Une boucle refait toujours les mêmes gestes. Un compteur dit combien de fois on les a faits.',
-      pont: 'à chaque tour, n ← n + 1 puis u ← u × q : le compteur avance, la valeur est multipliée.',
+        'On verse de l’eau dans le verre, encore et encore, en comptant les tours sur ses doigts : trois doigts levés, n = 3.',
+      regle:
+        'à chaque tour, n ← n + 1 puis u ← u × q. Une boucle refait les mêmes instructions ; le compteur dit combien de fois.',
+      correspondances: [
+        [
+          'La flèche qui tourne autour de la cuillère',
+          'la boucle, qui refait les mêmes instructions',
+        ],
+        ['Les doigts levés, n = 3', 'le compteur n, le rang atteint'],
+        ['L’eau dans le verre', 'la valeur u, mise à jour à chaque tour'],
+      ],
     },
     'Question : « Que compte n ? » Le nombre de tours, donc le rang atteint.',
   ),
-  commeACinqAns(
+  pourComprendre(
     {
       screenId: 'B2-07-A1-08-ENFANT-TANT-QUE',
-      titre: 'Comme à cinq ans : Tant que veut dire pas encore',
+      titre: 'Tant que veut dire pas encore',
       concepts: ['algorithme-de-seuil'],
     },
     {
@@ -205,16 +238,27 @@ const ACTE_1: moteur.Acte = [
       imageAlt:
         'L’enfant devant le grand verre marqué d’un trait rouge plein. Il pense « pas encore… » et continue de verser. À côté, l’eau atteint le trait : il pose la cuillère, « fini ! ».',
       scene:
-        'Tant que le verre n’est pas plein, l’enfant verse encore. Dès qu’il est plein, il s’arrête.',
-      idee: 'Après « Tant que », on écrit ce qui est vrai avant d’avoir fini : le contraire de ce qu’on veut atteindre.',
-      pont: 'objectif u ≥ 1 000, boucle « Tant que u < 1 000 » ; pour descendre sous 500, « Tant que u ≥ 500 » ; à la fin, Afficher n.',
+        'Tant que l’eau n’atteint pas le trait rouge « plein », on verse encore. Dès qu’elle l’atteint, on s’arrête.',
+      regle:
+        'objectif u ≥ 1 000, boucle « Tant que u < 1 000 » ; pour descendre sous 500, « Tant que u ≥ 500 ». Après « Tant que », on écrit le contraire de l’objectif ; à la fin, Afficher n.',
+      correspondances: [
+        ['Le trait rouge « plein »', 'le seuil, ici 1 000'],
+        [
+          'La pensée « pas encore… »',
+          'la condition u < 1 000, vraie tant qu’on n’a pas fini',
+        ],
+        [
+          '« Fini ! », la cuillère posée',
+          'la sortie de la boucle, puis Afficher n',
+        ],
+      ],
     },
     'Question : « On veut dépasser 1 000. Que met-on après Tant que ? » u < 1 000, pas encore atteint.',
   ),
-  commeACinqAns(
+  pourComprendre(
     {
       screenId: 'B2-07-A1-09-ENFANT-DEUX-CHEMINS',
-      titre: 'Comme à cinq ans : deux chemins, le même rang',
+      titre: 'Deux chemins, le même rang',
       concepts: ['algorithme-de-seuil', 'resolution-par-logarithme'],
     },
     {
@@ -222,9 +266,17 @@ const ACTE_1: moteur.Acte = [
       imageAlt:
         'Une cabane en haut d’une colline. À gauche, des empreintes de pas numérotées de 1 à 6 mènent à la porte. À droite, un enfant fait un grand saut marqué ln et atterrit sur la même marche 6.',
       scene:
-        'Deux chemins mènent à la même cabane : l’un à petits pas comptés, l’autre en un grand saut.',
-      idee: 'La boucle essaie rang après rang ; ln calcule d’un coup. Les deux arrivent au même premier rang.',
-      pont: 'la boucle sur 1,5ⁿ affiche 6 ; ln 10 ÷ ln 1,5 ≈ 5,68, arrondi au-dessus, donne aussi 6.',
+        'Deux chemins mènent à la même cabane : l’un à petits pas numérotés, l’autre en un seul grand saut.',
+      regle:
+        'la boucle sur 1,5ⁿ affiche 6 ; ln 10 ÷ ln 1,5 ≈ 5,68, arrondi au-dessus, donne aussi 6. Les deux méthodes trouvent le même premier rang.',
+      correspondances: [
+        [
+          'Les pas numérotés de 1 à 6',
+          'la boucle « Tant que », rang après rang',
+        ],
+        ['Le grand saut marqué ln', 'le calcul par ln, d’un coup'],
+        ['La marche 6', 'le premier rang qui dépasse le seuil'],
+      ],
     },
     'Transition : « Le cours 6 est en place. Place à la question du jour : le prix du cabas Escale. »',
   ),
@@ -322,10 +374,10 @@ const ACTE_2: moteur.Acte = [
       ],
     },
   },
-  commeACinqAns(
+  pourComprendre(
     {
       screenId: 'B2-07-A2-03-ENFANT-PENTE',
-      titre: 'Comme à cinq ans : la pente sous le vélo',
+      titre: 'La pente sous le vélo',
       concepts: ['fonction-derivee'],
     },
     {
@@ -333,16 +385,22 @@ const ACTE_2: moteur.Acte = [
       imageAlt:
         'Une colline vue de côté et trois fois le même enfant à vélo : il monte en pédalant fort, flèche verte +, roule à plat au sommet, trait bleu 0, puis descend, flèche rouge −. Sous chaque roue, un petit segment suit la pente.',
       scene:
-        'Un enfant fait du vélo sur une colline : il monte, roule à plat tout en haut, puis descend.',
-      idee: 'À chaque endroit, la route monte, descend ou est plate. La dérivée dit de combien elle monte, juste là.',
-      pont: 'f′(a) est la pente de la courbe de f au point d’abscisse a, celle de sa tangente. f′(a) > 0 : ça monte ; f′(a) < 0 : ça descend ; f′(a) = 0 : c’est plat.',
+        'Le vélo monte la colline, roule à plat tout en haut, puis redescend.',
+      regle:
+        'f′(a) est la pente de la courbe de f au point d’abscisse a, celle de sa tangente : elle dit de combien f monte, juste là.',
+      correspondances: [
+        ['Le segment sous la roue', 'la tangente au point d’abscisse a'],
+        ['La montée, flèche verte +', 'f′(a) > 0'],
+        ['Le plat du sommet, trait bleu 0', 'f′(a) = 0'],
+        ['La descente, flèche rouge −', 'f′(a) < 0'],
+      ],
     },
     'Question : « Que vaut la pente tout en haut ? » 0 : la route est plate.',
   ),
-  commeACinqAns(
+  pourComprendre(
     {
       screenId: 'B2-07-A2-04-ENFANT-RECETTE',
-      titre: 'Comme à cinq ans : la recette des puissances',
+      titre: 'La recette des puissances',
       concepts: ['fonction-derivee'],
     },
     {
@@ -350,9 +408,20 @@ const ACTE_2: moteur.Acte = [
       imageAlt:
         'Un grand x debout sur un plongeoir : le petit 2 de son exposant saute et atterrit devant lui, on lit 2x. À côté, un caillou marqué 7 sur un sol plat, avec l’étiquette pente 0.',
       scene:
-        'Le petit 2 en haut du x saute du plongeoir et atterrit devant lui. Un caillou posé sur un sol plat, lui, ne monte jamais.',
-      idee: 'Pour dériver une puissance, l’exposant descend devant et perd un. Un nombre seul ne monte pas : sa pente vaut 0.',
-      pont: '(x²)′ = 2x ; (x³)′ = 3x² ; (x)′ = 1 ; (k)′ = 0 ; (k × u)′ = k × u′ ; (u + v)′ = u′ + v′.',
+        'Le petit 2 en haut du x saute du plongeoir et atterrit devant lui : on lit 2x. Le caillou 7, posé sur un sol plat, ne monte jamais.',
+      regle:
+        '(x²)′ = 2x ; (x³)′ = 3x² ; (x)′ = 1 ; (k)′ = 0 ; (k × u)′ = k × u′ ; (u + v)′ = u′ + v′.',
+      correspondances: [
+        [
+          'Le 2 qui saute devant le x',
+          'l’exposant, qui descend en coefficient',
+        ],
+        [
+          'Le x resté seul sur le plongeoir',
+          'l’exposant diminué de un : x¹, soit x',
+        ],
+        ['Le caillou 7 sur le sol plat', 'une constante, de dérivée nulle'],
+      ],
     },
     'Question : « Que vaut la dérivée de 7 ? » 0, le caillou ne monte pas.',
   ),
@@ -589,10 +658,10 @@ const ACTE_2: moteur.Acte = [
       ],
     },
   },
-  commeACinqAns(
+  pourComprendre(
     {
       screenId: 'B2-07-A2-09-ENFANT-EXPONENTIELLE',
-      titre: 'Comme à cinq ans : la boule de neige',
+      titre: 'La boule de neige',
       concepts: ['fonction-derivee', 'fonction-exponentielle'],
     },
     {
@@ -600,9 +669,17 @@ const ACTE_2: moteur.Acte = [
       imageAlt:
         'Une pente enneigée : un enfant pousse une boule de neige qui roule en grossissant, petite, moyenne, puis très grosse. Derrière chaque boule, des traits de vitesse de plus en plus longs.',
       scene:
-        'Une boule de neige roule dans la pente : plus elle est grosse, plus elle ramasse de neige à chaque tour.',
-      idee: 'Sa vitesse de grossir, c’est sa taille multipliée par un même nombre.',
-      pont: '(e^(kx))′ = k e^(kx), donc (a e^(kx))′ = a k e^(kx). Comme e^(kx) > 0, le signe de la dérivée est celui de a × k.',
+        'La boule de neige roule dans la pente : plus elle est grosse, plus elle ramasse de neige à chaque tour.',
+      regle:
+        '(e^(kx))′ = k e^(kx), donc (a e^(kx))′ = a k e^(kx) : la vitesse de croissance est k fois la valeur. Comme e^(kx) > 0, le signe de la dérivée est celui de a × k.',
+      correspondances: [
+        ['La taille de la boule', 'la valeur a e^(kx)'],
+        ['La neige ramassée à chaque tour', 'la dérivée a k e^(kx)'],
+        [
+          'Les traits de vitesse, plus longs derrière la plus grosse',
+          'la dérivée, proportionnelle à la valeur',
+        ],
+      ],
     },
     'Question : « Quel est le signe de la dérivée de 50e^(−0,2x) ? » Négatif : 50 × (−0,2) < 0.',
   ),
@@ -794,10 +871,10 @@ const ACTE_3: moteur.Acte = [
       ],
     },
   },
-  commeACinqAns(
+  pourComprendre(
     {
       screenId: 'B2-07-A3-02-ENFANT-PANNEAU',
-      titre: 'Comme à cinq ans : le panneau de la route',
+      titre: 'Le panneau de la route',
       concepts: ['variations-d-une-fonction'],
     },
     {
@@ -805,16 +882,24 @@ const ACTE_3: moteur.Acte = [
       imageAlt:
         'Une route de montagne qui monte puis descend. Avant la montée, un panneau vert avec une flèche montante et le signe + ; avant la descente, un panneau rouge avec une flèche descendante et le signe −. Une petite voiture jaune suit la route.',
       scene:
-        'Au bord de la route, un panneau prévient : ça monte, ou ça descend. Il ne dit pas à quelle altitude on est.',
-      idee: 'Le signe de la pente dit si on monte ou si on descend, pas si on est haut ou bas.',
-      pont: 'f′ > 0 sur un intervalle ⇒ f croissante sur cet intervalle ; f′ < 0 ⇒ f décroissante. Le signe de f ne dit rien du sens.',
+        'Au bord de la route, un panneau annonce une montée ou une descente. Il ne dit pas à quelle altitude roule la voiture.',
+      regle:
+        'f′ > 0 sur un intervalle ⇒ f croissante sur cet intervalle ; f′ < 0 ⇒ f décroissante. Le signe de f′ donne le sens ; le signe de f n’en dit rien.',
+      correspondances: [
+        ['Le panneau vert +', 'f′ > 0 : f croissante'],
+        ['Le panneau rouge −', 'f′ < 0 : f décroissante'],
+        [
+          'L’altitude de la voiture',
+          'la valeur f(x), que le signe de f′ ne donne pas',
+        ],
+      ],
     },
     'Question : « Une voiture peut-elle descendre en restant à 1 000 m d’altitude ? » Oui : descendre ne veut pas dire être en bas.',
   ),
-  commeACinqAns(
+  pourComprendre(
     {
       screenId: 'B2-07-A3-03-ENFANT-CARTE',
-      titre: 'Comme à cinq ans : la carte du trajet',
+      titre: 'La carte du trajet',
       concepts: ['variations-d-une-fonction'],
     },
     {
@@ -822,9 +907,24 @@ const ACTE_3: moteur.Acte = [
       imageAlt:
         'Une carte de balade dessinée par un enfant : le sentier part du départ, monte jusqu’à un sommet marqué d’un drapeau, puis descend vers l’arrivée. Au-dessus, de grandes flèches montante puis descendante ; sous chaque point clé, une étiquette d’altitude à remplir.',
       scene:
-        'Avant une balade, on dessine la carte : où ça monte, où ça descend, et l’altitude des points clés.',
-      idee: 'Le tableau de variation résume tout le trajet en une ligne.',
-      pont: 'une ligne x, une ligne du signe de f′, une ligne de flèches ↗ ↘ avec les valeurs de f aux bornes et là où le sens change.',
+        'Avant la balade, on dessine la carte : où le sentier monte, où il descend, et l’altitude des points clés.',
+      regle:
+        'le tableau de variation résume f en trois lignes : une ligne x, une ligne du signe de f′, une ligne de flèches ↗ ↘ avec les valeurs de f aux bornes et là où le sens change.',
+      correspondances: [
+        [
+          'Les panneaux départ et arrivée',
+          'les bornes de l’intervalle, sur la ligne x',
+        ],
+        [
+          'La flèche verte, puis la flèche rouge',
+          'la ligne des variations, ↗ puis ↘',
+        ],
+        ['Le drapeau du sommet', 'la valeur de x où f′ change de signe'],
+        [
+          'Les étiquettes « Altitude : ___ »',
+          'les valeurs de f à écrire au bout des flèches',
+        ],
+      ],
     },
     'Question : « Quelles altitudes écrit-on sur la carte ? » Celles du départ, du sommet et de l’arrivée.',
   ),
@@ -1075,10 +1175,10 @@ const ACTE_4: moteur.Acte = [
       renvoi: RENVOI_AU_DOSSIER,
     },
   ),
-  commeACinqAns(
+  pourComprendre(
     {
       screenId: 'B2-07-A4-02-ENFANT-SOMMET',
-      titre: 'Comme à cinq ans : le sommet de la colline',
+      titre: 'Le sommet de la colline',
       concepts: ['optimisation'],
     },
     {
@@ -1086,16 +1186,24 @@ const ACTE_4: moteur.Acte = [
       imageAlt:
         'L’enfant à vélo s’arrête au sommet arrondi d’une colline, un drapeau planté, étiquette sommet. Plus loin, une autre route monte, fait un petit replat, puis continue de monter ; sur le replat, un panneau barré pas un sommet.',
       scene:
-        'Le vélo arrive en haut de la colline : il a fini de monter et va commencer à descendre. Plus loin, la route fait un replat, puis remonte.',
-      idee: 'On est au sommet quand on arrête de monter et qu’on commence à descendre. Un replat où l’on continue de monter n’est pas un sommet.',
-      pont: 'si f′ s’annule en a en passant de + à −, f(a) est un maximum ; de − à + : un minimum ; sans changement de signe, pas d’extremum.',
+        'Le vélo arrive en haut de la colline : il a fini de monter et va redescendre. Plus loin, la route fait un replat, puis remonte.',
+      regle:
+        'si f′ s’annule en a en passant de + à −, f(a) est un maximum ; de − à + : un minimum ; sans changement de signe, pas d’extremum.',
+      correspondances: [
+        ['Le drapeau « sommet »', 'un maximum : f′ passe de + à −'],
+        [
+          'Le replat barré « pas un sommet »',
+          'f′ = 0 sans changement de signe : pas d’extremum',
+        ],
+        ['La hauteur du drapeau', 'la valeur du maximum, f(a)'],
+      ],
     },
     'Question : « f′ vaut 0 sur le replat : est-ce un sommet ? » Non, f′ ne change pas de signe.',
   ),
-  commeACinqAns(
+  pourComprendre(
     {
       screenId: 'B2-07-A4-03-ENFANT-BORD',
-      titre: 'Comme à cinq ans : la barrière sur le chemin',
+      titre: 'La barrière sur le chemin',
       concepts: ['optimisation'],
     },
     {
@@ -1103,9 +1211,20 @@ const ACTE_4: moteur.Acte = [
       imageAlt:
         'Une colline avec un drapeau au sommet. Sur le chemin qui monte, une barrière blanche et rouge ferme le passage avant le sommet. L’enfant, arrêté contre la barrière, lève les bras près de l’étiquette ici.',
       scene:
-        'Une barrière ferme le chemin avant le sommet. L’enfant ne peut pas aller plus loin.',
-      idee: 'Si on ne peut pas aller jusqu’au sommet, le point le plus haut qu’on peut atteindre est contre la barrière.',
-      pont: 'sur un intervalle, on compare les valeurs de f aux bornes et aux extremums. Sous contrainte, l’optimum peut être une borne.',
+        'Une barrière ferme le chemin avant le sommet : le point le plus haut qu’on peut atteindre est contre la barrière, « ici ».',
+      regle:
+        'sur un intervalle, on compare les valeurs de f aux bornes et aux extremums. Sous contrainte, l’optimum peut être une borne.',
+      correspondances: [
+        ['La barrière', 'une borne de l’intervalle, fixée par une contrainte'],
+        [
+          'Le drapeau hors d’atteinte',
+          'l’extremum situé hors de l’intervalle permis',
+        ],
+        [
+          '« Ici », contre la barrière',
+          'l’optimum sous contrainte, atteint à la borne',
+        ],
+      ],
     },
     'Question : « Où est le point le plus haut qu’il peut atteindre ? » Contre la barrière, au bord.',
   ),

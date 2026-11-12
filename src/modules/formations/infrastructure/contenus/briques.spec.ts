@@ -1,4 +1,87 @@
-import { corrigeSurPlace, pulsation, tempsDeLExercice } from './briques';
+import {
+  corrigeSurPlace,
+  pourComprendreDans,
+  pulsation,
+  tempsDeLExercice,
+} from './briques';
+
+const pourComprendre = pourComprendreDans('/assets/cours/b2-99/v1');
+const SOCLE_D_IMAGE: Parameters<typeof pourComprendre>[0] = {
+  screenId: 'B2-99-A1-02-ENFANT-VELO',
+  titre: 'La pente sous le vélo',
+  concepts: ['fonction-derivee'],
+};
+const SCENE: Parameters<typeof pourComprendre>[1] = {
+  fichier: 'velo.webp',
+  imageAlt: 'Un vélo monte une colline, roule à plat au sommet, puis descend.',
+  scene: 'Le vélo monte, roule à plat, puis redescend.',
+  regle: 'f′(a) est la pente de la tangente.',
+  correspondances: [
+    ['La montée', 'f′(a) > 0'],
+    ['Le plat du sommet', 'f′(a) = 0'],
+    ['La descente', 'f′(a) < 0'],
+  ],
+};
+
+describe('pourComprendreDans', () => {
+  it('sert la phrase, la règle, puis chaque correspondance image → cours dans l’ordre', () => {
+    expect(
+      pourComprendre(SOCLE_D_IMAGE, SCENE, 'Question : la pente en haut ?'),
+    ).toMatchObject({
+      notes:
+        '• 1 min : faire décrire l’image, puis faire dire à quoi correspond chaque élément dans le cours.\n• Question : la pente en haut ?',
+      proprietes: {
+        presentation: {
+          renderer: 'image-left',
+          props: {
+            title: 'La pente sous le vélo',
+            image: '/assets/cours/b2-99/v1/velo.webp',
+            paragraphs: [
+              'Le vélo monte, roule à plat, puis redescend.',
+              'En maths, on écrit : f′(a) est la pente de la tangente.',
+            ],
+            items: [
+              'La montée → f′(a) > 0',
+              'Le plat du sommet → f′(a) = 0',
+              'La descente → f′(a) < 0',
+            ],
+          },
+        },
+      },
+    });
+  });
+
+  it('sert la quatrième correspondance quand l’écran en donne quatre', () => {
+    const ecran = pourComprendre(
+      SOCLE_D_IMAGE,
+      {
+        ...SCENE,
+        correspondances: [
+          ['La montée', 'f′(a) > 0'],
+          ['Le plat du sommet', 'f′(a) = 0'],
+          ['La descente', 'f′(a) < 0'],
+          ['Le segment sous la roue', 'la tangente'],
+        ],
+      },
+      'Question : la pente en haut ?',
+    );
+
+    expect(ecran).toMatchObject({
+      proprietes: {
+        presentation: {
+          props: {
+            items: [
+              'La montée → f′(a) > 0',
+              'Le plat du sommet → f′(a) = 0',
+              'La descente → f′(a) < 0',
+              'Le segment sous la roue → la tangente',
+            ],
+          },
+        },
+      },
+    });
+  });
+});
 
 const SOCLE: Parameters<typeof pulsation>[0] = {
   screenId: 'B2-99-A1-09-JALON',

@@ -148,22 +148,19 @@ const ECRANS_POUR_COMPRENDRE = [
 
 describe('B1-03 — les écrans « pour comprendre »', () => {
   it.each(ECRANS_POUR_COMPRENDRE)(
-    'B103-M2 · finit l’écran %s-ENFANT-%s par le pont vers la notion, qui la nomme',
+    'B103-M2 · nomme dans la règle de l’écran %s-ENFANT-%s la notion de la page suivante',
     (rang, sujet, _page, _fichier, notions) => {
       const props = proprietesV2(COURS_B1_03, `B1-03-${rang}-ENFANT-${sujet}`);
-      const paragraphes = Array.isArray(props.paragraphs)
-        ? props.paragraphs.map(String)
-        : [];
-      const pont = paragraphes[2] ?? '';
+      const regle = Array.isArray(props.paragraphs)
+        ? String(props.paragraphs[1])
+        : '';
 
-      expect(paragraphes).toHaveLength(3);
-      expect(pont).toMatch(/^En maths, on écrit : /u);
-      expect(notions.filter((notion) => !pont.includes(notion))).toEqual([]);
+      expect(notions.filter((notion) => !regle.includes(notion))).toEqual([]);
     },
   );
 
   it.each(ECRANS_POUR_COMPRENDRE)(
-    'B103-M2 · ouvre la page %s par 1 min d’une image du quotidien, scène et idée sans un mot du cours',
+    'B103-M2 · ouvre la page %s par 1 min d’une image du quotidien, titre et phrase sans un mot du cours',
     (rang, sujet, page, fichier) => {
       const ecrans = COURS_B1_03.ecrans;
       const position = ecrans.findIndex(
@@ -173,9 +170,9 @@ describe('B1-03 — les écrans « pour comprendre »', () => {
       const presentation =
         enfant?.brique === 'fp-story' ? enfant.proprietes.presentation : null;
       const props = proprietesV2(COURS_B1_03, `B1-03-${rang}-ENFANT-${sujet}`);
-      const phrases = Array.isArray(props.paragraphs)
-        ? props.paragraphs.map(String).slice(0, 2)
-        : [];
+      const phrase = Array.isArray(props.paragraphs)
+        ? String(props.paragraphs[0])
+        : '';
 
       expect(enfant?.screenId).toBe(`B1-03-${rang}-ENFANT-${sujet}`);
       expect(enfant?.dureeMinutes).toBe(1);
@@ -183,11 +180,9 @@ describe('B1-03 — les écrans « pour comprendre »', () => {
       expect(presentation?.version === 2 && presentation.renderer).toBe(
         'image-left',
       );
-      expect(enfant?.titre).toMatch(/^Pour comprendre : /);
       expect(props.image).toBe(`/assets/cours/b1-03/v1/${fichier}.webp`);
-      expect(phrases).toHaveLength(2);
       expect(
-        [enfant?.titre ?? '', ...phrases].filter((texte) =>
+        [enfant?.titre ?? '', phrase].filter((texte) =>
           MOTS_DU_COURS.test(texte),
         ),
       ).toEqual([]);

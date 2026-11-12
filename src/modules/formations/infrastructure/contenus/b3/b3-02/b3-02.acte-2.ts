@@ -62,11 +62,15 @@ const DATES_ET_STATISTIQUES: moteur.Acte = [
       rang: 6,
       syntaxe:
         'NB.JOURS.OUVRES(début; fin) compte du lundi au vendredi, bornes comprises ; SERIE.JOUR.OUVRE(début; n) rend la date n jours ouvrés plus tard.',
-      arguments: 'deux dates, B2 et C2 ; n, 5 pour la promesse.',
       piege:
         'C2 − B2 compte le week-end ; on écrit NB.JOURS.OUVRES(B2; C2) − 1.',
       exemple:
         'du vendredi 6 au lundi 9 mars, un seul jour ouvré ; promis le 13.',
+      correspondances: [
+        ['Le 6 rouge et le 9 vert', 'les dates B2 et C2'],
+        ['Samedis et dimanches grisés', 'les jours non comptés'],
+        ['Les cinq sauts du 6 au 13', 'SERIE.JOUR.OUVRE, n = 5'],
+      ],
     },
   ),
   pageDeFormules(
@@ -83,10 +87,13 @@ const DATES_ET_STATISTIQUES: moteur.Acte = [
       rang: 7,
       syntaxe:
         'JOURSEM(date; 2) rend 1 pour lundi ; DATEDIF(début; fin; "M") compte les mois entiers ; TEMPS(h; m; s) construit une heure.',
-      arguments:
-        'des dates ; l’unité de DATEDIF entre guillemets ; trois nombres pour TEMPS.',
       piege: 'sans le 2, la semaine commence le dimanche.',
       exemple: 'du 2 janvier 2025 au 30 septembre 2026 : 20 mois.',
+      correspondances: [
+        ['Fiche « Lun = 1 … Dim = 7 »', 'JOURSEM avec l’argument 2'],
+        ['Mois entiers entre deux dates', 'DATEDIF et l’unité "M"'],
+        ['L’horloge', 'TEMPS, qui repart de zéro après 23 h'],
+      ],
     },
   ),
   pageDeFormules(
@@ -104,10 +111,14 @@ const DATES_ET_STATISTIQUES: moteur.Acte = [
       rang: 8,
       syntaxe:
         'MOYENNE(plage) ; MEDIANE(plage), la valeur du milieu. Sous conditions, une colonne d’aide SI(ET(…); délai; "").',
-      arguments: 'la colonne des valeurs, sans l’en-tête.',
       piege:
         'MEDIANE sous un filtre compte les lignes masquées ; AGREGAT(12; 5; plage) non.',
       exemple: '1, 2, 2, 3 et 40 jours : moyenne 9,6, médiane 2.',
+      correspondances: [
+        ['Le carton du milieu, entouré', 'la médiane'],
+        ['Balance penchée par 40', 'la moyenne, tirée vers le haut'],
+        ['Ligne masquée du filtre', 'comptée par MEDIANE'],
+      ],
     },
   ),
   moteur.corrigeSurPlace(
@@ -212,10 +223,13 @@ const CROISER: moteur.Acte = [
       rang: 9,
       syntaxe:
         'Ctrl + L (⌘ + T sur Mac), puis le nom T_Commandes ; une colonne se lit T_Commandes[ca_ht] ; ANNEE([@date_commande]).',
-      arguments:
-        'le nom du tableau, la colonne entre crochets, @ pour la ligne courante.',
       piege: 'une plage fixe L2:L4039 ne voit pas les lignes collées dessous.',
       exemple: '200 lignes d’octobre collées : le tableau s’étend seul.',
+      correspondances: [
+        ['Cadre rouge, plage fixe', 'aveugle aux lignes ajoutées'],
+        ['Ctrl+L et le cadre bleu', 'le tableau qui s’étire'],
+        ['[ca_ht], [@date_commande]', 'colonne, ligne en cours'],
+      ],
     },
   ),
   pageDeFormules(
@@ -234,10 +248,13 @@ const CROISER: moteur.Acte = [
       rang: 10,
       syntaxe:
         'Insertion › Tableau croisé dynamique, depuis T_Commandes : Lignes, Colonnes, Valeurs, Filtres.',
-      arguments:
-        'agence_id en lignes, categorie en colonnes, ca_ht en valeurs, annee en filtre ; dates groupées par trimestres et années.',
       piege: 'le % du total général au lieu du % de la ligne.',
       exemple: 'en % de la ligne, la ligne Rennes fait 100 %.',
+      correspondances: [
+        ['Zone Filtres, annee = 2026', 'ce que le TCD garde'],
+        ['Lignes et Colonnes', 'agence_id × categorie'],
+        ['Zone Valeurs, Somme de ca_ht', 'ce que le TCD calcule'],
+      ],
     },
   ),
   moteur.corrigeSurPlace(
@@ -357,11 +374,14 @@ const MONTRER: moteur.Acte = [
       rang: 11,
       syntaxe:
         'sélectionner la synthèse, en-têtes compris, puis Insertion › Graphiques recommandés.',
-      arguments:
-        'comparer : barres ; évolution : courbe ; composition : empilées ; répartition : histogramme ; lien : nuage.',
       piege: 'l’axe qui ne part pas de zéro grossit les écarts.',
       exemple:
         'un titre qui conclut, « Caen à 87 % de son objectif » (hors dossier).',
+      correspondances: [
+        ['Les six vignettes', 'une question, un type de graphique'],
+        ['L’axe coupé, barré', 'l’écart grossi'],
+        ['L’axe depuis 0, coché', 'l’écart à sa vraie taille'],
+      ],
     },
   ),
   moteur.corrigeSurPlace(
@@ -462,10 +482,14 @@ const DECIDER: moteur.Acte = [
       rang: 12,
       syntaxe:
         'taux de marque = SOMME(marge) ÷ SOMME(CA HT) ; évolution = valeur ÷ même période de l’an passé − 1 ; atteinte = réalisé ÷ objectif ; SOMMEPROD(plage1; plage2).',
-      arguments: 'deux SOMME.SI.ENS aux mêmes critères, au format Pourcentage.',
       piege: 'la moyenne des taux de chaque ligne.',
       exemple:
         '1 000 € à 30 % et 100 € à 60 % : 360 ÷ 1 100 = 32,7 %, pas 45 %.',
+      correspondances: [
+        ['Le calcul coché', 'somme des marges ÷ somme des CA'],
+        ['Le calcul barré', 'la moyenne des taux, fausse'],
+        ['Calculatrice SOMMEPROD', 'quantité × prix, puis somme'],
+      ],
     },
   ),
   pageDeFormules(
@@ -484,10 +508,13 @@ const DECIDER: moteur.Acte = [
       rang: 13,
       syntaxe:
         'une page : quatre indicateurs comparés, deux graphiques, des segments, une MFC par formule, =$E5<0,95.',
-      arguments:
-        'la formule de la MFC, le $ devant la colonne ; un segment par Insertion › Segment.',
       piege: 'un chiffre sans comparaison ne dit rien.',
       exemple: 'les agences sous 95 % de leur objectif passent en rouge.',
+      correspondances: [
+        ['Les quatre cartes du haut', 'indicateurs et comparaisons'],
+        ['Le segment Région relié', 'un filtre pour les deux TCD'],
+        ['Constat, cause, action', 'la recommandation au comité'],
+      ],
     },
   ),
   moteur.corrigeSurPlace(

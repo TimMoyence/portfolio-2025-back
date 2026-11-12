@@ -71,7 +71,7 @@ const GRAVURE_DE_L_ACCROCHE = moteur.gravureDuDomainePublic({
   date: '1890',
 });
 
-const pourComprendre = moteur.commeACinqAnsDans(DOSSIER_DES_IMAGES);
+const pourComprendre = moteur.pourComprendreDans(DOSSIER_DES_IMAGES);
 
 const SITE = ligneDuCanal('Site web');
 const BOUTIQUE = ligneDuCanal('Boutique');
@@ -303,17 +303,23 @@ const ACTE_1: moteur.Acte = [
   pourComprendre(
     {
       screenId: 'B1-03-A1-06-ENFANT-TAS',
-      titre: 'Pour comprendre : un tas par couleur',
+      titre: 'Un tas par couleur',
       concepts: ['tableau-croise-dynamique'],
     },
     {
       fichier: 'bonbons-tas.webp',
       scene:
-        'Tu vides ton sac de bonbons sur la table ; chaque bonbon a son prix collé dessus.',
-      idee: 'Tu fais un tas par couleur, puis tu ajoutes les prix de chaque tas.',
+        'Le sac est vidé sur la table et les bonbons sont rangés en tas, un par couleur, de tailles différentes.',
       imageAlt:
         'Dessin : un sac de bonbons vidé sur une table ; trois tas bien séparés, rouges, jaunes et verts, de tailles différentes ; des enfants autour de la table, l’un montre le tas rouge du doigt.',
-      pont: 'chaque bonbon est une vente, son prix est son montant, la couleur est le canal. Regrouper par canal, puis additionner les montants de chaque tas, c’est un TCD.',
+      regle:
+        'regrouper les ventes par canal, puis additionner les montants de chaque groupe, c’est un TCD : Somme des montants, pas Nombre.',
+      correspondances: [
+        ['Le sac vidé sur la table', 'le fichier des ventes'],
+        ['Un bonbon', 'une vente, avec son montant'],
+        ['Sa couleur', 'son canal de vente'],
+        ['Un tas par couleur', 'une ligne du TCD par canal'],
+      ],
     },
     'Question : « Compte-t-on les bonbons ou additionne-t-on leurs prix ? » Les prix : la Somme, pas le Nombre.',
   ),
@@ -369,17 +375,25 @@ const ACTE_1: moteur.Acte = [
   pourComprendre(
     {
       screenId: 'B1-03-A1-07-ENFANT-LIMONADE',
-      titre: 'Pour comprendre : calculer avec tout ce qu’on a',
+      titre: 'Calculer avec tout ce qu’on a',
       concepts: ['tableau-croise-dynamique', 'moyenne-ponderee'],
     },
     {
       fichier: 'limonade-pots.webp',
       scene:
-        'Le soir, tu vides le pot des pièces gagnées et le pot des pièces dépensées.',
-      idee: 'Tu fais ton calcul une seule fois, avec ce qu’il y a dans les deux pots.',
+        'Le soir, au stand de limonade, les deux pots sont vidés côte à côte : les pièces gagnées et les pièces dépensées pour les citrons.',
       imageAlt:
         'Dessin : un stand de limonade le soir ; deux pots en verre, l’un plein de pièces gagnées, l’autre des pièces dépensées pour les citrons ; l’enfant les vide côte à côte sur la table, un seul carnet ouvert devant lui.',
-      pont: 'les deux pots sont les sommes du TCD ; le champ calculé y prend le taux de marge, une seule fois.',
+      regle:
+        'le champ calculé prend le taux de marge une seule fois, sur les sommes du TCD, et non vente par vente.',
+      correspondances: [
+        ['Le pot des pièces gagnées', 'la somme des ventes'],
+        ['Le pot des pièces dépensées', 'la somme des coûts'],
+        [
+          'Le carnet ouvert, un seul calcul',
+          'le champ calculé, posé sur les sommes',
+        ],
+      ],
     },
     'Question : « Calcule-t-on le taux vente par vente, ou sur les pots ? » Sur les pots, les sommes.',
   ),
@@ -670,16 +684,22 @@ const ACTE_2: moteur.Acte = [
   pourComprendre(
     {
       screenId: 'B1-03-A2-02-ENFANT-FILE',
-      titre: 'Pour comprendre : ranger, puis couper',
+      titre: 'Ranger, puis couper',
       concepts: ['mediane', 'quartiles'],
     },
     {
       fichier: 'file-rubans.webp',
-      scene: 'Les enfants se rangent du plus petit au plus grand.',
-      idee: 'Un ruban coupe la file en deux moitiés, puis deux rubans coupent chaque moitié en deux.',
+      scene:
+        'Une file rangée de la plus petite taille à la plus grande ; un trait rouge la coupe en deux, puis deux traits bleus coupent chaque moitié en deux.',
       imageAlt:
         'Dessin : huit enfants rangés du plus petit au plus grand ; un ruban rouge au milieu de la file, deux rubans bleus au milieu de chaque moitié ; quatre petits groupes de deux enfants.',
-      pont: 'le ruban rouge est la médiane Me, les rubans bleus sont les quartiles Q₁ et Q₃.',
+      regle:
+        'on range la série dans l’ordre croissant, puis on la coupe : la médiane Me au milieu, les quartiles Q₁ et Q₃ au milieu de chaque moitié.',
+      correspondances: [
+        ['La file rangée par taille', 'la série rangée dans l’ordre croissant'],
+        ['Le trait rouge', 'la médiane Me'],
+        ['Les deux traits bleus', 'les quartiles Q₁ et Q₃'],
+      ],
     },
     'Question : « Que faut-il faire avant de couper ? » Ranger.',
   ),
@@ -735,16 +755,25 @@ const ACTE_2: moteur.Acte = [
   pourComprendre(
     {
       screenId: 'B1-03-A2-03-ENFANT-EQUIPES',
-      titre: 'Pour comprendre : loin du milieu ou tout près',
+      titre: 'Loin du milieu ou tout près',
       concepts: ['ecart-type', 'dispersion'],
     },
     {
       fichier: 'equipes-tailles.webp',
-      scene: 'Deux équipes ont la même taille au milieu.',
-      idee: 'Dans l’une, tous se ressemblent ; dans l’autre, il y a des géants et des tout petits.',
+      scene:
+        'Deux équipes, la même ligne pointillée : en vert, tous arrivent presque à la ligne ; en violet, du très grand au tout petit.',
       imageAlt:
         'Dessin : deux équipes de cinq enfants côte à côte, une même ligne pointillée à mi-hauteur ; à gauche, tous presque à la ligne ; à droite, un géant, un tout petit et des tailles très différentes.',
-      pont: 'l’écart type σ dit de combien chacun s’écarte de la moyenne, en général.',
+      regle:
+        'l’écart type σ dit de combien les valeurs s’écartent de la moyenne, en général.',
+      correspondances: [
+        ['La ligne pointillée', 'la moyenne, la même pour les deux équipes'],
+        ['L’équipe verte, tous près de la ligne', 'un petit écart type'],
+        [
+          'L’équipe violette, du très grand au tout petit',
+          'un grand écart type',
+        ],
+      ],
     },
     'Question : « Quelle équipe a le plus petit écart ? » Celle de gauche.',
   ),
@@ -1086,19 +1115,27 @@ const ACTE_3: moteur.Acte = [
   pourComprendre(
     {
       screenId: 'B1-03-A3-02-ENFANT-BOITE',
-      titre: 'Pour comprendre : une boîte pour ceux du milieu',
+      titre: 'Une boîte pour ceux du milieu',
       concepts: ['boite-a-moustaches'],
     },
     {
       fichier: 'file-boite.webp',
       scene:
-        'On range la file, on met dans une boîte la moitié du milieu, et deux bras vont jusqu’au plus petit et au plus grand.',
-      idee: 'Une boîte courte : ceux du milieu se ressemblent.',
+        'La file est rangée par taille ; une boîte en carton entoure la moitié du milieu, et une sangle va du plus petit au plus grand.',
       imageAlt:
         'Dessin : une file d’enfants rangés par taille ; les enfants du milieu entourés d’une grande boîte en carton ouverte ; deux bras tendus vont jusqu’au plus petit et jusqu’au plus grand.',
-      pont: 'la boîte à moustaches va de Q₁ à Q₃, les moustaches du minimum au maximum.',
+      regle:
+        'la boîte à moustaches va de Q₁ à Q₃, les moustaches du minimum au maximum.',
+      correspondances: [
+        ['La boîte en carton', 'la boîte, de Q₁ à Q₃ : la moitié centrale'],
+        ['La sangle de part et d’autre', 'les moustaches'],
+        [
+          'Le plus petit et le plus grand de la file',
+          'le minimum et le maximum',
+        ],
+      ],
     },
-    'Question : « Combien d’enfants dans la boîte ? » La moitié de la file.',
+    'Question : « Quelle part de la file tient dans la boîte ? » La moitié.',
   ),
   moteur.ecranV2(
     {
@@ -1150,17 +1187,22 @@ const ACTE_3: moteur.Acte = [
   pourComprendre(
     {
       screenId: 'B1-03-A3-03-ENFANT-BILLES',
-      titre: 'Pour comprendre : des boîtes de billes',
+      titre: 'Des boîtes de billes',
       concepts: ['moyenne', 'choix-du-resume'],
     },
     {
       fichier: 'billes-boites.webp',
       scene:
-        'Trop de billes pour les regarder une par une : on les range par grosseur dans trois boîtes.',
-      idee: 'Puis on compte chaque boîte.',
+        'Trop de billes pour les regarder une à une : on les range par grosseur dans trois boîtes, puis on compte chaque boîte.',
       imageAlt:
         'Dessin : un tapis couvert de billes de toutes tailles ; trois boîtes alignées, pour les petites, les moyennes et les grosses billes ; un enfant y range les billes.',
-      pont: 'chaque boîte est une classe [a ; b[, son nombre de billes est son effectif.',
+      regle:
+        'on regroupe la série en classes [a ; b[ et on compte l’effectif de chacune ; on lit ensuite les classes, plus chaque valeur.',
+      correspondances: [
+        ['Une bille', 'une valeur de la série'],
+        ['Une boîte : petites, moyennes ou grosses', 'une classe [a ; b['],
+        ['Le nombre de billes dans une boîte', 'l’effectif de la classe'],
+      ],
     },
     'Question : « Regarde-t-on encore chaque bille ? » Non : chaque boîte.',
   ),

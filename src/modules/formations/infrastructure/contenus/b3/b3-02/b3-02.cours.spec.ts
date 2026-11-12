@@ -32,12 +32,7 @@ const DOCUMENT = lireConception('cours-b3-02-conception.md');
 const QUESTIONS = Object.keys(SOURCES_B3_02) as QuestionChiffreeB302[];
 const SEUIL_D_UNE_VALEUR_RECONNAISSABLE = 10;
 const FICHES_RECAP = ['B3-02-A2-18-FICHE-RECAP-1', 'B3-02-A2-19-FICHE-RECAP-2'];
-const ORDRE_DU_TEXTE = [
-  'Syntaxe : ',
-  'Arguments : ',
-  'Le piège : ',
-  'Exemple : ',
-];
+const ORDRE_DU_TEXTE = ['Syntaxe : ', 'Le piège : ', 'Exemple : '];
 
 function texteDe(screenId: string): string {
   return sansEspacesTypographiques(
