@@ -4,7 +4,7 @@
 > mathématiques des BTS CG 1re année. Le B1-02 fait foi pour la forme : 32 écrans, 121 minutes,
 > 4 actes, un diagnostic, trois notions traitées chacune par un cycle réfléchir → comprendre →
 > s'exercer, puis un rappel et la fiche mémo. Nouveauté : chaque notion difficile s'ouvre sur un écran
-> « pour comprendre », une image du quotidien et une seule idée, sans un mot technique, juste avant
+> « pour comprendre », une image du quotidien mise en face du cours, élément par élément, juste avant
 > sa page de cours. Ce document ne contient aucun code exécutable ; toute divergence d'implémentation
 > est un défaut de l'implémentation. Les tests `b1-03.cours.spec.ts` relisent ce document : § 3.1,
 > titres publics du § 3, § 5.9, § 8.2.
@@ -31,9 +31,10 @@ Décisions de Tim du 6 novembre 2026, sur le cadrage :
   un seul écran « pour comprendre » (« ranger, puis couper ») : six écrans « pour comprendre », six
   pages. Pour y loger l'écran des boîtes à moustaches, les deux exercices Excel de l'acte 1 n'en font
   qu'un, de 15 minutes : l'acte 1 passe à 45 minutes, l'acte 3 à 32.
-- **L'écran « pour comprendre »** remplace l'infographie de l'exemple du B1-02 : une scène d'enfant
-  dessinée, deux phrases courtes, aucun mot du cours, une seule idée. La page qui suit pose le mot,
-  la formule et le geste au tableur. La moyenne, connue depuis le collège, se pose sur la page de la
+- **L'écran « pour comprendre »** remplace l'infographie de l'exemple du B1-02 : une scène dessinée,
+  une phrase sans mot du cours, la règle, puis ce que chaque élément de l'image devient dans le cours
+  (forme décidée par Tim le 11 novembre 2026, commune au B2-07). La page qui suit pose le mot, la
+  formule et le geste au tableur. La moyenne, connue depuis le collège, se pose sur la page de la
   médiane, sans écran à elle.
 - **Le TCD se construit dans un vrai classeur Excel**, réservé à la séance comme ceux du B3-01
   (`docs/formations.md`, pièce jointe réservée). L'étudiant y construit le TCD et le champ calculé du
@@ -112,21 +113,23 @@ corrigé étape par étape) → **S'exercer** (exercices notés, corrigés sur p
 
 ### 2.3 L'écran « pour comprendre »
 
-Brique commune `moteur.commeACinqAnsDans(dossier)` (rendu v2 `image-left`, la même qu'au B2-07),
+Brique commune `moteur.pourComprendreDans(dossier)` (rendu v2 `image-left`, la même qu'au B2-07),
 1 minute, diffusion catalogue, placé juste avant sa page et numéroté comme elle
-(`B1-03-A{acte}-{rang}-ENFANT-{SUJET}`). Décision de Tim du 6 novembre 2026 : à côté de l'image,
-l'étudiant lit trois paragraphes, la scène, l'idée, puis le pont. L'écran porte :
+(`B1-03-A{acte}-{rang}-ENFANT-{SUJET}`). Décision de Tim du 11 novembre 2026, qui remplace celle du
+6 novembre : l'image n'est pas une explication pour enfant, mais un parallèle avec le cours. À côté
+de l'image, l'étudiant lit, dans cet ordre :
 
-- un titre de la forme « Pour comprendre : … », sans le nom de la notion ;
-- la scène et l'idée, au présent, avec des mots d'enfant : bonbons, file d'enfants, billes,
-  limonade ; aucun chiffre, aucun mot du cours (moyenne, médiane, quartile, écart, tableau, champ,
-  classe, série, valeur, effectif, taux) ;
-- le pont, « En maths, on écrit : … », qui nomme la notion de la page suivante (TCD, champ calculé
+- un titre sans préfixe et sans le nom de la notion (« Un tas par couleur ») ;
+- une phrase qui décrit l'image, au ton adulte, sans chiffre ni mot du cours (moyenne, médiane,
+  quartile, écart, tableau, champ, classe, série, valeur, effectif, taux), sans « enfant » ;
+- la règle, « En maths, on écrit : … », qui nomme la notion de la page suivante (TCD, champ calculé
   et taux de marge, médiane et quartiles, écart type, boîte à moustaches, classe et effectif) ;
+- trois ou quatre correspondances « élément de l'image → ce qu'il est dans le cours », chacune
+  nommant un élément réellement dessiné ;
 - une image dessinée sans texte, qui montre la même scène (§ 8.3).
 
-Les notes formateur portent la consigne commune (décrire l'image, lire l'idée, puis le pont) et une
-question de relance propre à l'écran.
+Les notes formateur portent la consigne commune (« faire décrire l'image, puis faire dire à quoi
+correspond chaque élément dans le cours ») et une question de relance propre à l'écran.
 
 ### 2.4 Diffusion
 
@@ -225,9 +228,10 @@ au plus. Somme : 45 + 36 + 32 + 8 = 121.
 
 #### A1-06 · `B1-03-A1-06-ENFANT-TAS` — 1 min · v2 `image-left` · catalogue
 
-- Titre public : « Pour comprendre : un tas par couleur »
-- Phrases : « Tu vides ton sac de bonbons sur la table. » « Tu fais un tas par couleur, puis tu
-  comptes chaque tas. » Image `bonbons-tas.webp`.
+- Titre public : « Un tas par couleur »
+- Phrase : les bonbons du sac vidé, rangés en tas, un par couleur. Correspondances : le sac vidé →
+  le fichier des ventes ; un bonbon → une vente ; sa couleur → son canal ; un tas → une ligne du TCD.
+  Image `bonbons-tas.webp`.
 
 #### A1-06 · `B1-03-A1-06-COURS-TCD` — 2 min · v2 `lesson` · catalogue
 
@@ -238,9 +242,10 @@ au plus. Somme : 45 + 36 + 32 + 8 = 121.
 
 #### A1-07 · `B1-03-A1-07-ENFANT-LIMONADE` — 1 min · v2 `image-left` · catalogue
 
-- Titre public : « Pour comprendre : calculer avec tout ce qu’on a »
-- Phrases : « Le soir, tu vides le pot des pièces gagnées et le pot des pièces dépensées. » « Tu fais
-  ton calcul une seule fois, avec ce qu’il y a dans les deux pots. » Image `limonade-pots.webp`.
+- Titre public : « Calculer avec tout ce qu’on a »
+- Phrase : les deux pots du stand vidés côte à côte, pièces gagnées et pièces dépensées.
+  Correspondances : le pot des pièces gagnées → la somme des ventes ; le pot des pièces dépensées →
+  la somme des coûts ; le carnet, un seul calcul → le champ calculé. Image `limonade-pots.webp`.
 
 #### A1-07 · `B1-03-A1-07-COURS-CHAMP-CALCULE` — 2 min · v2 `lesson` · catalogue
 
@@ -280,9 +285,10 @@ au plus. Somme : 45 + 36 + 32 + 8 = 121.
 
 #### A2-02 · `B1-03-A2-02-ENFANT-FILE` — 1 min · v2 `image-left` · catalogue
 
-- Titre public : « Pour comprendre : ranger, puis couper »
-- Phrases : « Les enfants se rangent du plus petit au plus grand. » « Un ruban coupe la file en deux
-  moitiés, puis deux rubans coupent chaque moitié en deux. » Image `file-rubans.webp`.
+- Titre public : « Ranger, puis couper »
+- Phrase : une file rangée par taille, coupée en deux par un trait rouge, puis chaque moitié par un
+  trait bleu. Correspondances : la file rangée → la série dans l'ordre croissant ; le trait rouge →
+  Me ; les traits bleus → Q₁ et Q₃. Image `file-rubans.webp`.
 
 #### A2-02 · `B1-03-A2-02-COURS-MEDIANE-QUARTILES` — 2 min · v2 `lesson` · catalogue
 
@@ -293,9 +299,10 @@ au plus. Somme : 45 + 36 + 32 + 8 = 121.
 
 #### A2-03 · `B1-03-A2-03-ENFANT-EQUIPES` — 1 min · v2 `image-left` · catalogue
 
-- Titre public : « Pour comprendre : loin du milieu ou tout près »
-- Phrases : « Deux équipes ont la même taille au milieu. » « Dans l’une, tous se ressemblent ; dans
-  l’autre, il y a des géants et des tout petits. » Image `equipes-tailles.webp`.
+- Titre public : « Loin du milieu ou tout près »
+- Phrase : deux équipes, la même ligne pointillée ; en vert, tous presque à la ligne, en violet, du
+  très grand au tout petit. Correspondances : la ligne pointillée → la moyenne ; l'équipe verte → un
+  petit écart type ; l'équipe violette → un grand écart type. Image `equipes-tailles.webp`.
 
 #### A2-03 · `B1-03-A2-03-COURS-ECART-TYPE` — 2 min · v2 `lesson` · catalogue
 
@@ -340,9 +347,10 @@ au plus. Somme : 45 + 36 + 32 + 8 = 121.
 
 #### A3-02 · `B1-03-A3-02-ENFANT-BOITE` — 1 min · v2 `image-left` · catalogue
 
-- Titre public : « Pour comprendre : une boîte pour ceux du milieu »
-- Phrases : la moitié du milieu dans une boîte, deux bras jusqu'au plus petit et au plus grand.
-  Image `file-boite.webp`.
+- Titre public : « Une boîte pour ceux du milieu »
+- Phrase : la moitié du milieu dans une boîte, une sangle jusqu'au plus petit et au plus grand.
+  Correspondances : la boîte → de Q₁ à Q₃ ; la sangle → les moustaches ; le plus petit et le plus
+  grand → le minimum et le maximum. Image `file-boite.webp`.
 
 #### A3-02 · `B1-03-A3-02-COURS-BOITE` — 2 min · v2 `lesson` · catalogue
 
@@ -352,9 +360,10 @@ au plus. Somme : 45 + 36 + 32 + 8 = 121.
 
 #### A3-03 · `B1-03-A3-03-ENFANT-BILLES` — 1 min · v2 `image-left` · catalogue
 
-- Titre public : « Pour comprendre : des boîtes de billes »
-- Phrases : trop de billes pour les regarder une par une, trois boîtes par grosseur, on compte chaque
-  boîte. Image `billes-boites.webp`.
+- Titre public : « Des boîtes de billes »
+- Phrase : trop de billes pour les regarder une à une, trois boîtes par grosseur, on compte chaque
+  boîte. Correspondances : une bille → une valeur ; une boîte → une classe [a ; b[ ; le nombre de
+  billes d'une boîte → son effectif. Image `billes-boites.webp`.
 
 #### A3-03 · `B1-03-A3-03-COURS-CLASSES` — 2 min · v2 `lesson` · catalogue
 

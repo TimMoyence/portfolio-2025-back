@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "9a364d624689e7f287ca444858351274cf7c8b71b406c06cb13ba5e20a2d9e19",
+  "empreinte": "a9ffd8b5039c0512bf116bab50284cf04074f0819084497a0410cd602bf3f4ee",
   "sujet": {
     "id": "b3-02-formules-et-ia-analyste",
     "titre": "Toutes les formules, puis l’IA analyste",
@@ -215,9 +215,13 @@
                 "imageAlt": "Infographie : une ville en capitales entourée d’espaces passe par SUPPRESPACE puis NOMPROPRE et devient « Bordeaux ».",
                 "paragraphs": [
                   "Syntaxe : =NOMPROPRE(SUPPRESPACE(E2)) : SUPPRESPACE retire les espaces en trop, NOMPROPRE met une majuscule à chaque mot.",
-                  "Arguments : texte, une cellule ou un texte entre guillemets.",
                   "Le piège : écrire dans la colonne E elle-même ; on écrit en N.",
                   "Exemple : « ␣BORDEAUX␣ » devient « Bordeaux »."
+                ],
+                "items": [
+                  "Pastille 1, SUPPRESPACE → la fonction intérieure",
+                  "Pastille 2, NOMPROPRE → la fonction extérieure",
+                  "Colonne N à côté de E → la donnée brute gardée"
                 ]
               }
             },
@@ -251,9 +255,13 @@
                 "imageAlt": "Infographie : un montant en texte perd son symbole et son espace par deux SUBSTITUE, puis CNUM le rend nombre.",
                 "paragraphs": [
                   "Syntaxe : SUBSTITUE(texte; ancien; nouveau) remplace ; CNUM(texte) convertit en nombre ; ESTNUM(valeur) vérifie.",
-                  "Arguments : ancien entre guillemets, \" €\" puis \" \" ; nouveau, \"\" pour rien.",
                   "Le piège : CNUM avant SUBSTITUE rend #VALEUR!.",
                   "Exemple : « 1 150,00 € » devient 1150, un nombre."
+                ],
+                "items": [
+                  "Marches 1 et 2 → SUBSTITUE retire « € » et l’espace",
+                  "Marche 3 → CNUM convertit le texte en nombre",
+                  "Le VRAI d’ESTNUM → la cellule contient un nombre"
                 ]
               }
             },
@@ -287,9 +295,13 @@
                 "imageAlt": "Infographie : trois tests passent dans un entonnoir OU ; un seul vrai suffit pour marquer la ligne « À vérifier ».",
                 "paragraphs": [
                   "Syntaxe : SI(test; si_vrai; si_faux) ; OU(test1; test2; …) vrai si un test l’est, ET(…) si tous.",
-                  "Arguments : un test compare, C2<B2 ; un texte rendu va entre guillemets.",
                   "Le piège : ET au lieu de OU ne signale presque rien.",
                   "Exemple : livrée le 3 mars, commandée le 5 : « À vérifier »."
+                ],
+                "items": [
+                  "Les trois bulles → les trois tests, VRAI ou FAUX",
+                  "L’entonnoir OU → un seul VRAI suffit",
+                  "« À vérifier » → ce que rend SI quand OU est VRAI"
                 ]
               }
             },
@@ -420,9 +432,13 @@
                 "imageAlt": "Infographie : les quatre arguments de RECHERCHEV numérotés, et la ligne AG06 de la table Agences qui rend « Ouest ».",
                 "paragraphs": [
                   "Syntaxe : RECHERCHEV(clé; table; n°_colonne; FAUX) rend, sur la ligne de la clé, la colonne demandée.",
-                  "Arguments : la clé, un identifiant ; la table figée par $, clé en 1ʳᵉ colonne ; le rang de la colonne ; FAUX, l’exact.",
                   "Le piège : sans les $, la table glisse : #N/A. Encadré : RECHERCHEX en 2021 ou 365.",
                   "Exemple : AG06 dans Agences, 3ᵉ colonne : « Ouest »."
+                ],
+                "items": [
+                  "« Je cherche quoi ? » → la clé, ici F2",
+                  "« Dans quelle table ? » → la table, figée par $",
+                  "Questions 3 et 4 → le n° de colonne, puis FAUX"
                 ]
               }
             },
@@ -456,9 +472,13 @@
                 "imageAlt": "Infographie : SOMME.SI.ENS en couleurs, un entonnoir ne laisse passer que les lignes de Rennes en 2026.",
                 "paragraphs": [
                   "Syntaxe : SOMME.SI.ENS(plage_somme; plage1; critère1; …) additionne, NB.SI.ENS(plage1; critère1; …) compte, DATE(année; mois; jour).",
-                  "Arguments : les plages de même hauteur ; un critère, \"AG06\" ou \">=\"&DATE(2026; 1; 1).",
                   "Le piège : DATE dans les guillemets : Excel compare au texte et rend 0.",
                   "Exemple : Marseille au-delà de 15 % de remise : 66 lignes, avec \">0,15\"."
+                ],
+                "items": [
+                  "Bulle verte → la plage à additionner",
+                  "Bulles bleues → chaque couple plage ; critère",
+                  "Carte NB.SI.ENS → la même formule, qui compte"
                 ]
               }
             },
@@ -632,9 +652,13 @@
                 "imageAlt": "Infographie : un calendrier de mars 2026, week-end grisé, du vendredi de la commande au lundi de la livraison.",
                 "paragraphs": [
                   "Syntaxe : NB.JOURS.OUVRES(début; fin) compte du lundi au vendredi, bornes comprises ; SERIE.JOUR.OUVRE(début; n) rend la date n jours ouvrés plus tard.",
-                  "Arguments : deux dates, B2 et C2 ; n, 5 pour la promesse.",
                   "Le piège : C2 − B2 compte le week-end ; on écrit NB.JOURS.OUVRES(B2; C2) − 1.",
                   "Exemple : du vendredi 6 au lundi 9 mars, un seul jour ouvré ; promis le 13."
+                ],
+                "items": [
+                  "Le 6 rouge et le 9 vert → les dates B2 et C2",
+                  "Samedis et dimanches grisés → les jours non comptés",
+                  "Les cinq sauts du 6 au 13 → SERIE.JOUR.OUVRE, n = 5"
                 ]
               }
             },
@@ -668,9 +692,13 @@
                 "imageAlt": "Infographie : une semaine numérotée pour JOURSEM, une frise de mois pour DATEDIF, une horloge pour TEMPS.",
                 "paragraphs": [
                   "Syntaxe : JOURSEM(date; 2) rend 1 pour lundi ; DATEDIF(début; fin; \"M\") compte les mois entiers ; TEMPS(h; m; s) construit une heure.",
-                  "Arguments : des dates ; l’unité de DATEDIF entre guillemets ; trois nombres pour TEMPS.",
                   "Le piège : sans le 2, la semaine commence le dimanche.",
                   "Exemple : du 2 janvier 2025 au 30 septembre 2026 : 20 mois."
+                ],
+                "items": [
+                  "Fiche « Lun = 1 … Dim = 7 » → JOURSEM avec l’argument 2",
+                  "Mois entiers entre deux dates → DATEDIF et l’unité \"M\"",
+                  "L’horloge → TEMPS, qui repart de zéro après 23 h"
                 ]
               }
             },
@@ -704,9 +732,13 @@
                 "imageAlt": "Infographie : cinq colis dont un délai de 40 jours ; la balance de la moyenne penche, la médiane reste au milieu.",
                 "paragraphs": [
                   "Syntaxe : MOYENNE(plage) ; MEDIANE(plage), la valeur du milieu. Sous conditions, une colonne d’aide SI(ET(…); délai; \"\").",
-                  "Arguments : la colonne des valeurs, sans l’en-tête.",
                   "Le piège : MEDIANE sous un filtre compte les lignes masquées ; AGREGAT(12; 5; plage) non.",
                   "Exemple : 1, 2, 2, 3 et 40 jours : moyenne 9,6, médiane 2."
+                ],
+                "items": [
+                  "Le carton du milieu, entouré → la médiane",
+                  "Balance penchée par 40 → la moyenne, tirée vers le haut",
+                  "Ligne masquée du filtre → comptée par MEDIANE"
                 ]
               }
             },
@@ -816,9 +848,13 @@
                 "imageAlt": "Infographie : une plage fixe laisse dehors les lignes collées dessous ; le tableau T_Commandes s’étire pour les prendre.",
                 "paragraphs": [
                   "Syntaxe : Ctrl + L (⌘ + T sur Mac), puis le nom T_Commandes ; une colonne se lit T_Commandes[ca_ht] ; ANNEE([@date_commande]).",
-                  "Arguments : le nom du tableau, la colonne entre crochets, @ pour la ligne courante.",
                   "Le piège : une plage fixe L2:L4039 ne voit pas les lignes collées dessous.",
                   "Exemple : 200 lignes d’octobre collées : le tableau s’étend seul."
+                ],
+                "items": [
+                  "Cadre rouge, plage fixe → aveugle aux lignes ajoutées",
+                  "Ctrl+L et le cadre bleu → le tableau qui s’étire",
+                  "[ca_ht], [@date_commande] → colonne, ligne en cours"
                 ]
               }
             },
@@ -852,9 +888,13 @@
                 "imageAlt": "Infographie : les quatre zones du volet des champs et un TCD dont la ligne Rennes fait 100 %.",
                 "paragraphs": [
                   "Syntaxe : Insertion › Tableau croisé dynamique, depuis T_Commandes : Lignes, Colonnes, Valeurs, Filtres.",
-                  "Arguments : agence_id en lignes, categorie en colonnes, ca_ht en valeurs, annee en filtre ; dates groupées par trimestres et années.",
                   "Le piège : le % du total général au lieu du % de la ligne.",
                   "Exemple : en % de la ligne, la ligne Rennes fait 100 %."
+                ],
+                "items": [
+                  "Zone Filtres, annee = 2026 → ce que le TCD garde",
+                  "Lignes et Colonnes → agence_id × categorie",
+                  "Zone Valeurs, Somme de ca_ht → ce que le TCD calcule"
                 ]
               }
             },
@@ -1017,9 +1057,13 @@
                 "imageAlt": "Infographie : six vignettes associent une question à son graphique ; deux barres, l’axe coupé puis l’axe depuis zéro.",
                 "paragraphs": [
                   "Syntaxe : sélectionner la synthèse, en-têtes compris, puis Insertion › Graphiques recommandés.",
-                  "Arguments : comparer : barres ; évolution : courbe ; composition : empilées ; répartition : histogramme ; lien : nuage.",
                   "Le piège : l’axe qui ne part pas de zéro grossit les écarts.",
                   "Exemple : un titre qui conclut, « Caen à 87 % de son objectif » (hors dossier)."
+                ],
+                "items": [
+                  "Les six vignettes → une question, un type de graphique",
+                  "L’axe coupé, barré → l’écart grossi",
+                  "L’axe depuis 0, coché → l’écart à sa vraie taille"
                 ]
               }
             },
@@ -1133,9 +1177,13 @@
                 "imageAlt": "Infographie : deux ventes ; le ratio des sommes donne 32,7 %, la moyenne des taux 45 %, barrée.",
                 "paragraphs": [
                   "Syntaxe : taux de marque = SOMME(marge) ÷ SOMME(CA HT) ; évolution = valeur ÷ même période de l’an passé − 1 ; atteinte = réalisé ÷ objectif ; SOMMEPROD(plage1; plage2).",
-                  "Arguments : deux SOMME.SI.ENS aux mêmes critères, au format Pourcentage.",
                   "Le piège : la moyenne des taux de chaque ligne.",
                   "Exemple : 1 000 € à 30 % et 100 € à 60 % : 360 ÷ 1 100 = 32,7 %, pas 45 %."
+                ],
+                "items": [
+                  "Le calcul coché → somme des marges ÷ somme des CA",
+                  "Le calcul barré → la moyenne des taux, fausse",
+                  "Calculatrice SOMMEPROD → quantité × prix, puis somme"
                 ]
               }
             },
@@ -1169,9 +1217,13 @@
                 "imageAlt": "Infographie : une page de tableau de bord, quatre indicateurs comparés, deux graphiques, un segment relié, des taux en rouge.",
                 "paragraphs": [
                   "Syntaxe : une page : quatre indicateurs comparés, deux graphiques, des segments, une MFC par formule, =$E5<0,95.",
-                  "Arguments : la formule de la MFC, le $ devant la colonne ; un segment par Insertion › Segment.",
                   "Le piège : un chiffre sans comparaison ne dit rien.",
                   "Exemple : les agences sous 95 % de leur objectif passent en rouge."
+                ],
+                "items": [
+                  "Les quatre cartes du haut → indicateurs et comparaisons",
+                  "Le segment Région relié → un filtre pour les deux TCD",
+                  "Constat, cause, action → la recommandation au comité"
                 ]
               }
             },
@@ -2120,9 +2172,13 @@
                 "imageAlt": "Infographie : une ville en capitales entourée d’espaces passe par SUPPRESPACE puis NOMPROPRE et devient « Bordeaux ».",
                 "paragraphs": [
                   "Syntaxe : =NOMPROPRE(SUPPRESPACE(E2)) : SUPPRESPACE retire les espaces en trop, NOMPROPRE met une majuscule à chaque mot.",
-                  "Arguments : texte, une cellule ou un texte entre guillemets.",
                   "Le piège : écrire dans la colonne E elle-même ; on écrit en N.",
                   "Exemple : « ␣BORDEAUX␣ » devient « Bordeaux »."
+                ],
+                "items": [
+                  "Pastille 1, SUPPRESPACE → la fonction intérieure",
+                  "Pastille 2, NOMPROPRE → la fonction extérieure",
+                  "Colonne N à côté de E → la donnée brute gardée"
                 ]
               }
             },
@@ -2163,9 +2219,13 @@
                 "imageAlt": "Infographie : un montant en texte perd son symbole et son espace par deux SUBSTITUE, puis CNUM le rend nombre.",
                 "paragraphs": [
                   "Syntaxe : SUBSTITUE(texte; ancien; nouveau) remplace ; CNUM(texte) convertit en nombre ; ESTNUM(valeur) vérifie.",
-                  "Arguments : ancien entre guillemets, \" €\" puis \" \" ; nouveau, \"\" pour rien.",
                   "Le piège : CNUM avant SUBSTITUE rend #VALEUR!.",
                   "Exemple : « 1 150,00 € » devient 1150, un nombre."
+                ],
+                "items": [
+                  "Marches 1 et 2 → SUBSTITUE retire « € » et l’espace",
+                  "Marche 3 → CNUM convertit le texte en nombre",
+                  "Le VRAI d’ESTNUM → la cellule contient un nombre"
                 ]
               }
             },
@@ -2206,9 +2266,13 @@
                 "imageAlt": "Infographie : trois tests passent dans un entonnoir OU ; un seul vrai suffit pour marquer la ligne « À vérifier ».",
                 "paragraphs": [
                   "Syntaxe : SI(test; si_vrai; si_faux) ; OU(test1; test2; …) vrai si un test l’est, ET(…) si tous.",
-                  "Arguments : un test compare, C2<B2 ; un texte rendu va entre guillemets.",
                   "Le piège : ET au lieu de OU ne signale presque rien.",
                   "Exemple : livrée le 3 mars, commandée le 5 : « À vérifier »."
+                ],
+                "items": [
+                  "Les trois bulles → les trois tests, VRAI ou FAUX",
+                  "L’entonnoir OU → un seul VRAI suffit",
+                  "« À vérifier » → ce que rend SI quand OU est VRAI"
                 ]
               }
             },
@@ -2463,9 +2527,13 @@
                 "imageAlt": "Infographie : les quatre arguments de RECHERCHEV numérotés, et la ligne AG06 de la table Agences qui rend « Ouest ».",
                 "paragraphs": [
                   "Syntaxe : RECHERCHEV(clé; table; n°_colonne; FAUX) rend, sur la ligne de la clé, la colonne demandée.",
-                  "Arguments : la clé, un identifiant ; la table figée par $, clé en 1ʳᵉ colonne ; le rang de la colonne ; FAUX, l’exact.",
                   "Le piège : sans les $, la table glisse : #N/A. Encadré : RECHERCHEX en 2021 ou 365.",
                   "Exemple : AG06 dans Agences, 3ᵉ colonne : « Ouest »."
+                ],
+                "items": [
+                  "« Je cherche quoi ? » → la clé, ici F2",
+                  "« Dans quelle table ? » → la table, figée par $",
+                  "Questions 3 et 4 → le n° de colonne, puis FAUX"
                 ]
               }
             },
@@ -2506,9 +2574,13 @@
                 "imageAlt": "Infographie : SOMME.SI.ENS en couleurs, un entonnoir ne laisse passer que les lignes de Rennes en 2026.",
                 "paragraphs": [
                   "Syntaxe : SOMME.SI.ENS(plage_somme; plage1; critère1; …) additionne, NB.SI.ENS(plage1; critère1; …) compte, DATE(année; mois; jour).",
-                  "Arguments : les plages de même hauteur ; un critère, \"AG06\" ou \">=\"&DATE(2026; 1; 1).",
                   "Le piège : DATE dans les guillemets : Excel compare au texte et rend 0.",
                   "Exemple : Marseille au-delà de 15 % de remise : 66 lignes, avec \">0,15\"."
+                ],
+                "items": [
+                  "Bulle verte → la plage à additionner",
+                  "Bulles bleues → chaque couple plage ; critère",
+                  "Carte NB.SI.ENS → la même formule, qui compte"
                 ]
               }
             },
@@ -2805,9 +2877,13 @@
                 "imageAlt": "Infographie : un calendrier de mars 2026, week-end grisé, du vendredi de la commande au lundi de la livraison.",
                 "paragraphs": [
                   "Syntaxe : NB.JOURS.OUVRES(début; fin) compte du lundi au vendredi, bornes comprises ; SERIE.JOUR.OUVRE(début; n) rend la date n jours ouvrés plus tard.",
-                  "Arguments : deux dates, B2 et C2 ; n, 5 pour la promesse.",
                   "Le piège : C2 − B2 compte le week-end ; on écrit NB.JOURS.OUVRES(B2; C2) − 1.",
                   "Exemple : du vendredi 6 au lundi 9 mars, un seul jour ouvré ; promis le 13."
+                ],
+                "items": [
+                  "Le 6 rouge et le 9 vert → les dates B2 et C2",
+                  "Samedis et dimanches grisés → les jours non comptés",
+                  "Les cinq sauts du 6 au 13 → SERIE.JOUR.OUVRE, n = 5"
                 ]
               }
             },
@@ -2848,9 +2924,13 @@
                 "imageAlt": "Infographie : une semaine numérotée pour JOURSEM, une frise de mois pour DATEDIF, une horloge pour TEMPS.",
                 "paragraphs": [
                   "Syntaxe : JOURSEM(date; 2) rend 1 pour lundi ; DATEDIF(début; fin; \"M\") compte les mois entiers ; TEMPS(h; m; s) construit une heure.",
-                  "Arguments : des dates ; l’unité de DATEDIF entre guillemets ; trois nombres pour TEMPS.",
                   "Le piège : sans le 2, la semaine commence le dimanche.",
                   "Exemple : du 2 janvier 2025 au 30 septembre 2026 : 20 mois."
+                ],
+                "items": [
+                  "Fiche « Lun = 1 … Dim = 7 » → JOURSEM avec l’argument 2",
+                  "Mois entiers entre deux dates → DATEDIF et l’unité \"M\"",
+                  "L’horloge → TEMPS, qui repart de zéro après 23 h"
                 ]
               }
             },
@@ -2891,9 +2971,13 @@
                 "imageAlt": "Infographie : cinq colis dont un délai de 40 jours ; la balance de la moyenne penche, la médiane reste au milieu.",
                 "paragraphs": [
                   "Syntaxe : MOYENNE(plage) ; MEDIANE(plage), la valeur du milieu. Sous conditions, une colonne d’aide SI(ET(…); délai; \"\").",
-                  "Arguments : la colonne des valeurs, sans l’en-tête.",
                   "Le piège : MEDIANE sous un filtre compte les lignes masquées ; AGREGAT(12; 5; plage) non.",
                   "Exemple : 1, 2, 2, 3 et 40 jours : moyenne 9,6, médiane 2."
+                ],
+                "items": [
+                  "Le carton du milieu, entouré → la médiane",
+                  "Balance penchée par 40 → la moyenne, tirée vers le haut",
+                  "Ligne masquée du filtre → comptée par MEDIANE"
                 ]
               }
             },
@@ -3119,9 +3203,13 @@
                 "imageAlt": "Infographie : une plage fixe laisse dehors les lignes collées dessous ; le tableau T_Commandes s’étire pour les prendre.",
                 "paragraphs": [
                   "Syntaxe : Ctrl + L (⌘ + T sur Mac), puis le nom T_Commandes ; une colonne se lit T_Commandes[ca_ht] ; ANNEE([@date_commande]).",
-                  "Arguments : le nom du tableau, la colonne entre crochets, @ pour la ligne courante.",
                   "Le piège : une plage fixe L2:L4039 ne voit pas les lignes collées dessous.",
                   "Exemple : 200 lignes d’octobre collées : le tableau s’étend seul."
+                ],
+                "items": [
+                  "Cadre rouge, plage fixe → aveugle aux lignes ajoutées",
+                  "Ctrl+L et le cadre bleu → le tableau qui s’étire",
+                  "[ca_ht], [@date_commande] → colonne, ligne en cours"
                 ]
               }
             },
@@ -3162,9 +3250,13 @@
                 "imageAlt": "Infographie : les quatre zones du volet des champs et un TCD dont la ligne Rennes fait 100 %.",
                 "paragraphs": [
                   "Syntaxe : Insertion › Tableau croisé dynamique, depuis T_Commandes : Lignes, Colonnes, Valeurs, Filtres.",
-                  "Arguments : agence_id en lignes, categorie en colonnes, ca_ht en valeurs, annee en filtre ; dates groupées par trimestres et années.",
                   "Le piège : le % du total général au lieu du % de la ligne.",
                   "Exemple : en % de la ligne, la ligne Rennes fait 100 %."
+                ],
+                "items": [
+                  "Zone Filtres, annee = 2026 → ce que le TCD garde",
+                  "Lignes et Colonnes → agence_id × categorie",
+                  "Zone Valeurs, Somme de ca_ht → ce que le TCD calcule"
                 ]
               }
             },
@@ -3451,9 +3543,13 @@
                 "imageAlt": "Infographie : six vignettes associent une question à son graphique ; deux barres, l’axe coupé puis l’axe depuis zéro.",
                 "paragraphs": [
                   "Syntaxe : sélectionner la synthèse, en-têtes compris, puis Insertion › Graphiques recommandés.",
-                  "Arguments : comparer : barres ; évolution : courbe ; composition : empilées ; répartition : histogramme ; lien : nuage.",
                   "Le piège : l’axe qui ne part pas de zéro grossit les écarts.",
                   "Exemple : un titre qui conclut, « Caen à 87 % de son objectif » (hors dossier)."
+                ],
+                "items": [
+                  "Les six vignettes → une question, un type de graphique",
+                  "L’axe coupé, barré → l’écart grossi",
+                  "L’axe depuis 0, coché → l’écart à sa vraie taille"
                 ]
               }
             },
@@ -3683,9 +3779,13 @@
                 "imageAlt": "Infographie : deux ventes ; le ratio des sommes donne 32,7 %, la moyenne des taux 45 %, barrée.",
                 "paragraphs": [
                   "Syntaxe : taux de marque = SOMME(marge) ÷ SOMME(CA HT) ; évolution = valeur ÷ même période de l’an passé − 1 ; atteinte = réalisé ÷ objectif ; SOMMEPROD(plage1; plage2).",
-                  "Arguments : deux SOMME.SI.ENS aux mêmes critères, au format Pourcentage.",
                   "Le piège : la moyenne des taux de chaque ligne.",
                   "Exemple : 1 000 € à 30 % et 100 € à 60 % : 360 ÷ 1 100 = 32,7 %, pas 45 %."
+                ],
+                "items": [
+                  "Le calcul coché → somme des marges ÷ somme des CA",
+                  "Le calcul barré → la moyenne des taux, fausse",
+                  "Calculatrice SOMMEPROD → quantité × prix, puis somme"
                 ]
               }
             },
@@ -3726,9 +3826,13 @@
                 "imageAlt": "Infographie : une page de tableau de bord, quatre indicateurs comparés, deux graphiques, un segment relié, des taux en rouge.",
                 "paragraphs": [
                   "Syntaxe : une page : quatre indicateurs comparés, deux graphiques, des segments, une MFC par formule, =$E5<0,95.",
-                  "Arguments : la formule de la MFC, le $ devant la colonne ; un segment par Insertion › Segment.",
                   "Le piège : un chiffre sans comparaison ne dit rien.",
                   "Exemple : les agences sous 95 % de leur objectif passent en rouge."
+                ],
+                "items": [
+                  "Les quatre cartes du haut → indicateurs et comparaisons",
+                  "Le segment Région relié → un filtre pour les deux TCD",
+                  "Constat, cause, action → la recommandation au comité"
                 ]
               }
             },
@@ -4712,9 +4816,13 @@
                 "imageAlt": "Infographie : une ville en capitales entourée d’espaces passe par SUPPRESPACE puis NOMPROPRE et devient « Bordeaux ».",
                 "paragraphs": [
                   "Syntaxe : =NOMPROPRE(SUPPRESPACE(E2)) : SUPPRESPACE retire les espaces en trop, NOMPROPRE met une majuscule à chaque mot.",
-                  "Arguments : texte, une cellule ou un texte entre guillemets.",
                   "Le piège : écrire dans la colonne E elle-même ; on écrit en N.",
                   "Exemple : « ␣BORDEAUX␣ » devient « Bordeaux »."
+                ],
+                "items": [
+                  "Pastille 1, SUPPRESPACE → la fonction intérieure",
+                  "Pastille 2, NOMPROPRE → la fonction extérieure",
+                  "Colonne N à côté de E → la donnée brute gardée"
                 ]
               }
             },
@@ -4748,9 +4856,13 @@
                 "imageAlt": "Infographie : un montant en texte perd son symbole et son espace par deux SUBSTITUE, puis CNUM le rend nombre.",
                 "paragraphs": [
                   "Syntaxe : SUBSTITUE(texte; ancien; nouveau) remplace ; CNUM(texte) convertit en nombre ; ESTNUM(valeur) vérifie.",
-                  "Arguments : ancien entre guillemets, \" €\" puis \" \" ; nouveau, \"\" pour rien.",
                   "Le piège : CNUM avant SUBSTITUE rend #VALEUR!.",
                   "Exemple : « 1 150,00 € » devient 1150, un nombre."
+                ],
+                "items": [
+                  "Marches 1 et 2 → SUBSTITUE retire « € » et l’espace",
+                  "Marche 3 → CNUM convertit le texte en nombre",
+                  "Le VRAI d’ESTNUM → la cellule contient un nombre"
                 ]
               }
             },
@@ -4784,9 +4896,13 @@
                 "imageAlt": "Infographie : trois tests passent dans un entonnoir OU ; un seul vrai suffit pour marquer la ligne « À vérifier ».",
                 "paragraphs": [
                   "Syntaxe : SI(test; si_vrai; si_faux) ; OU(test1; test2; …) vrai si un test l’est, ET(…) si tous.",
-                  "Arguments : un test compare, C2<B2 ; un texte rendu va entre guillemets.",
                   "Le piège : ET au lieu de OU ne signale presque rien.",
                   "Exemple : livrée le 3 mars, commandée le 5 : « À vérifier »."
+                ],
+                "items": [
+                  "Les trois bulles → les trois tests, VRAI ou FAUX",
+                  "L’entonnoir OU → un seul VRAI suffit",
+                  "« À vérifier » → ce que rend SI quand OU est VRAI"
                 ]
               }
             },
@@ -4836,9 +4952,13 @@
                 "imageAlt": "Infographie : les quatre arguments de RECHERCHEV numérotés, et la ligne AG06 de la table Agences qui rend « Ouest ».",
                 "paragraphs": [
                   "Syntaxe : RECHERCHEV(clé; table; n°_colonne; FAUX) rend, sur la ligne de la clé, la colonne demandée.",
-                  "Arguments : la clé, un identifiant ; la table figée par $, clé en 1ʳᵉ colonne ; le rang de la colonne ; FAUX, l’exact.",
                   "Le piège : sans les $, la table glisse : #N/A. Encadré : RECHERCHEX en 2021 ou 365.",
                   "Exemple : AG06 dans Agences, 3ᵉ colonne : « Ouest »."
+                ],
+                "items": [
+                  "« Je cherche quoi ? » → la clé, ici F2",
+                  "« Dans quelle table ? » → la table, figée par $",
+                  "Questions 3 et 4 → le n° de colonne, puis FAUX"
                 ]
               }
             },
@@ -4872,9 +4992,13 @@
                 "imageAlt": "Infographie : SOMME.SI.ENS en couleurs, un entonnoir ne laisse passer que les lignes de Rennes en 2026.",
                 "paragraphs": [
                   "Syntaxe : SOMME.SI.ENS(plage_somme; plage1; critère1; …) additionne, NB.SI.ENS(plage1; critère1; …) compte, DATE(année; mois; jour).",
-                  "Arguments : les plages de même hauteur ; un critère, \"AG06\" ou \">=\"&DATE(2026; 1; 1).",
                   "Le piège : DATE dans les guillemets : Excel compare au texte et rend 0.",
                   "Exemple : Marseille au-delà de 15 % de remise : 66 lignes, avec \">0,15\"."
+                ],
+                "items": [
+                  "Bulle verte → la plage à additionner",
+                  "Bulles bleues → chaque couple plage ; critère",
+                  "Carte NB.SI.ENS → la même formule, qui compte"
                 ]
               }
             },
@@ -4932,9 +5056,13 @@
                 "imageAlt": "Infographie : un calendrier de mars 2026, week-end grisé, du vendredi de la commande au lundi de la livraison.",
                 "paragraphs": [
                   "Syntaxe : NB.JOURS.OUVRES(début; fin) compte du lundi au vendredi, bornes comprises ; SERIE.JOUR.OUVRE(début; n) rend la date n jours ouvrés plus tard.",
-                  "Arguments : deux dates, B2 et C2 ; n, 5 pour la promesse.",
                   "Le piège : C2 − B2 compte le week-end ; on écrit NB.JOURS.OUVRES(B2; C2) − 1.",
                   "Exemple : du vendredi 6 au lundi 9 mars, un seul jour ouvré ; promis le 13."
+                ],
+                "items": [
+                  "Le 6 rouge et le 9 vert → les dates B2 et C2",
+                  "Samedis et dimanches grisés → les jours non comptés",
+                  "Les cinq sauts du 6 au 13 → SERIE.JOUR.OUVRE, n = 5"
                 ]
               }
             },
@@ -4968,9 +5096,13 @@
                 "imageAlt": "Infographie : une semaine numérotée pour JOURSEM, une frise de mois pour DATEDIF, une horloge pour TEMPS.",
                 "paragraphs": [
                   "Syntaxe : JOURSEM(date; 2) rend 1 pour lundi ; DATEDIF(début; fin; \"M\") compte les mois entiers ; TEMPS(h; m; s) construit une heure.",
-                  "Arguments : des dates ; l’unité de DATEDIF entre guillemets ; trois nombres pour TEMPS.",
                   "Le piège : sans le 2, la semaine commence le dimanche.",
                   "Exemple : du 2 janvier 2025 au 30 septembre 2026 : 20 mois."
+                ],
+                "items": [
+                  "Fiche « Lun = 1 … Dim = 7 » → JOURSEM avec l’argument 2",
+                  "Mois entiers entre deux dates → DATEDIF et l’unité \"M\"",
+                  "L’horloge → TEMPS, qui repart de zéro après 23 h"
                 ]
               }
             },
@@ -5004,9 +5136,13 @@
                 "imageAlt": "Infographie : cinq colis dont un délai de 40 jours ; la balance de la moyenne penche, la médiane reste au milieu.",
                 "paragraphs": [
                   "Syntaxe : MOYENNE(plage) ; MEDIANE(plage), la valeur du milieu. Sous conditions, une colonne d’aide SI(ET(…); délai; \"\").",
-                  "Arguments : la colonne des valeurs, sans l’en-tête.",
                   "Le piège : MEDIANE sous un filtre compte les lignes masquées ; AGREGAT(12; 5; plage) non.",
                   "Exemple : 1, 2, 2, 3 et 40 jours : moyenne 9,6, médiane 2."
+                ],
+                "items": [
+                  "Le carton du milieu, entouré → la médiane",
+                  "Balance penchée par 40 → la moyenne, tirée vers le haut",
+                  "Ligne masquée du filtre → comptée par MEDIANE"
                 ]
               }
             },
@@ -5056,9 +5192,13 @@
                 "imageAlt": "Infographie : une plage fixe laisse dehors les lignes collées dessous ; le tableau T_Commandes s’étire pour les prendre.",
                 "paragraphs": [
                   "Syntaxe : Ctrl + L (⌘ + T sur Mac), puis le nom T_Commandes ; une colonne se lit T_Commandes[ca_ht] ; ANNEE([@date_commande]).",
-                  "Arguments : le nom du tableau, la colonne entre crochets, @ pour la ligne courante.",
                   "Le piège : une plage fixe L2:L4039 ne voit pas les lignes collées dessous.",
                   "Exemple : 200 lignes d’octobre collées : le tableau s’étend seul."
+                ],
+                "items": [
+                  "Cadre rouge, plage fixe → aveugle aux lignes ajoutées",
+                  "Ctrl+L et le cadre bleu → le tableau qui s’étire",
+                  "[ca_ht], [@date_commande] → colonne, ligne en cours"
                 ]
               }
             },
@@ -5092,9 +5232,13 @@
                 "imageAlt": "Infographie : les quatre zones du volet des champs et un TCD dont la ligne Rennes fait 100 %.",
                 "paragraphs": [
                   "Syntaxe : Insertion › Tableau croisé dynamique, depuis T_Commandes : Lignes, Colonnes, Valeurs, Filtres.",
-                  "Arguments : agence_id en lignes, categorie en colonnes, ca_ht en valeurs, annee en filtre ; dates groupées par trimestres et années.",
                   "Le piège : le % du total général au lieu du % de la ligne.",
                   "Exemple : en % de la ligne, la ligne Rennes fait 100 %."
+                ],
+                "items": [
+                  "Zone Filtres, annee = 2026 → ce que le TCD garde",
+                  "Lignes et Colonnes → agence_id × categorie",
+                  "Zone Valeurs, Somme de ca_ht → ce que le TCD calcule"
                 ]
               }
             },
@@ -5187,9 +5331,13 @@
                 "imageAlt": "Infographie : six vignettes associent une question à son graphique ; deux barres, l’axe coupé puis l’axe depuis zéro.",
                 "paragraphs": [
                   "Syntaxe : sélectionner la synthèse, en-têtes compris, puis Insertion › Graphiques recommandés.",
-                  "Arguments : comparer : barres ; évolution : courbe ; composition : empilées ; répartition : histogramme ; lien : nuage.",
                   "Le piège : l’axe qui ne part pas de zéro grossit les écarts.",
                   "Exemple : un titre qui conclut, « Caen à 87 % de son objectif » (hors dossier)."
+                ],
+                "items": [
+                  "Les six vignettes → une question, un type de graphique",
+                  "L’axe coupé, barré → l’écart grossi",
+                  "L’axe depuis 0, coché → l’écart à sa vraie taille"
                 ]
               }
             },
@@ -5239,9 +5387,13 @@
                 "imageAlt": "Infographie : deux ventes ; le ratio des sommes donne 32,7 %, la moyenne des taux 45 %, barrée.",
                 "paragraphs": [
                   "Syntaxe : taux de marque = SOMME(marge) ÷ SOMME(CA HT) ; évolution = valeur ÷ même période de l’an passé − 1 ; atteinte = réalisé ÷ objectif ; SOMMEPROD(plage1; plage2).",
-                  "Arguments : deux SOMME.SI.ENS aux mêmes critères, au format Pourcentage.",
                   "Le piège : la moyenne des taux de chaque ligne.",
                   "Exemple : 1 000 € à 30 % et 100 € à 60 % : 360 ÷ 1 100 = 32,7 %, pas 45 %."
+                ],
+                "items": [
+                  "Le calcul coché → somme des marges ÷ somme des CA",
+                  "Le calcul barré → la moyenne des taux, fausse",
+                  "Calculatrice SOMMEPROD → quantité × prix, puis somme"
                 ]
               }
             },
@@ -5275,9 +5427,13 @@
                 "imageAlt": "Infographie : une page de tableau de bord, quatre indicateurs comparés, deux graphiques, un segment relié, des taux en rouge.",
                 "paragraphs": [
                   "Syntaxe : une page : quatre indicateurs comparés, deux graphiques, des segments, une MFC par formule, =$E5<0,95.",
-                  "Arguments : la formule de la MFC, le $ devant la colonne ; un segment par Insertion › Segment.",
                   "Le piège : un chiffre sans comparaison ne dit rien.",
                   "Exemple : les agences sous 95 % de leur objectif passent en rouge."
+                ],
+                "items": [
+                  "Les quatre cartes du haut → indicateurs et comparaisons",
+                  "Le segment Région relié → un filtre pour les deux TCD",
+                  "Constat, cause, action → la recommandation au comité"
                 ]
               }
             },

@@ -2,7 +2,7 @@
 
 > Cahier des charges du cours B2-07 au gabarit v3 (`docs/cours/cours-gabarit-v3.md`) : une séance de
 > 2 h 45 dont 30 minutes de pause, ouverte par un récapitulatif du B2-06 et de la boucle « Tant que »
-> expliqués « comme à cinq ans », puis trois notions traitées chacune par un cycle réfléchir →
+> expliqués par des images mises en face du cours, puis trois notions traitées chacune par un cycle réfléchir →
 > comprendre → s'exercer, puis un rappel espacé et la fiche mémo. Ce document ne contient aucun code
 > exécutable ; toute divergence d'implémentation est un défaut de l'implémentation. Les tests
 > `b2-07.cours.spec.ts` relisent ce document : § 3.1, titres publics du § 3, § 5.9, § 8.2.
@@ -15,7 +15,7 @@
 | Gabarit     | `v3`, déclaré par le contenu et contrôlé par les quatre règles `gabarit-*` de `verifierStructure`                         |
 | Titre servi | « Dérivée et optimisation »                                                                                               |
 | Durée       | **135 minutes exactes** (somme des écrans), 5 actes de 12, 46, 25, 44 et 8 minutes, plus 2 pauses de 15 min hors durée    |
-| Écrans      | **39**, dont 21 écrans catalogue (14 écrans « comme à cinq ans »)                                                         |
+| Écrans      | **39**, dont 21 écrans catalogue (14 écrans d'image)                                                                      |
 | Sources     | Devoir maison « Réviser B2-01 à B2-07 », exercice 7 et son encadré « Méthode » ; fiches B2-04 et B2-06 ; données fictives |
 
 ---
@@ -24,17 +24,18 @@
 
 - **Un récapitulatif de 12 minutes avant la dérivée** (décision de Tim du 6 novembre 2026). Le devoir
   maison a montré que le B2-06 et la boucle « Tant que » ne sont pas acquis. L'acte 1 les reprend en
-  sept écrans d'une seule idée chacun, écrits pour un enfant de cinq ans qui découvrirait le cours :
-  une image du quotidien, une phrase sans jargon, puis le pont vers la vraie notation. Un vote non
-  noté les vérifie ; aucun exercice noté.
+  sept écrans d'une seule idée chacun : une image du quotidien, une phrase qui la décrit, la règle
+  du cours, puis la liste de ce que chaque élément de l'image devient dans le cours (décision de Tim
+  du 11 novembre 2026, qui remplace les écrans « comme à cinq ans »). Un vote non noté les vérifie ;
+  aucun exercice noté.
 - **Une question de gestion : le prix du cabas Escale.** Atelier Rivage lance un cabas en toile de
   voile vendu en ligne. Hélène Garnier doit fixer son prix entre 12 € et 28 € : la demande
   hebdomadaire vaut 360 − 12x cabas, chaque cabas coûte 8 € à fabriquer, et l'atelier n'en coud que
   120 par semaine. Bénéfice B(x) = (x − 8)(360 − 12x) = −12x² + 456x − 2 880.
 - **Trois notions** : la dérivée, pente de la courbe, dérivée de e^(kx) comprise (N1) ; le signe de la
   dérivée et le tableau de variation (N2) ; l'extremum, le prix optimal et l'optimum sous contrainte
-  (N3). Chaque notion s'ouvre, comme le récapitulatif, sur des écrans « comme à cinq ans » placés avant
-  sa trace écrite.
+  (N3). Chaque notion s'ouvre, comme le récapitulatif, sur des écrans d'image placés avant sa trace
+  écrite.
 - **Périmètre des dérivées** : celui de l'encadré du devoir maison (k, x, x², x³, k × u, u + v), plus
   la dérivée de e^(kx), décidée par Tim le 6 novembre 2026 pour relier le cours au B2-06. Elle entre
   dans N1, comme une recette de plus, et sert deux exercices : la variation des ventes du B2-06 et le
@@ -85,25 +86,35 @@ l'acte 3.
 
 ### 2.1 Les cinq actes
 
-| Acte | Rôle                                                       | Notion | Minutes |
-| ---- | ---------------------------------------------------------- | ------ | ------: |
-| 1    | Avant la dérivée : le B2-06 et la boucle, comme à cinq ans | —      |      12 |
-| 2    | La dérivée, pente de la courbe, et la dérivée de e^(kx)    | N1     |      46 |
-| 3    | Le signe de la dérivée et les variations                   | N2     |      25 |
-| 4    | L'extremum et le prix optimal                              | N3     |      44 |
-| 5    | Rappel et fiche mémo                                       | —      |       8 |
+| Acte | Rôle                                                    | Notion | Minutes |
+| ---- | ------------------------------------------------------- | ------ | ------: |
+| 1    | Avant la dérivée : le B2-06 et la boucle, en images     | —      |      12 |
+| 2    | La dérivée, pente de la courbe, et la dérivée de e^(kx) | N1     |      46 |
+| 3    | Le signe de la dérivée et les variations                | N2     |      25 |
+| 4    | L'extremum et le prix optimal                           | N3     |      44 |
+| 5    | Rappel et fiche mémo                                    | —      |       8 |
 
 Pause 1 (15 min) après le jalon A2-12 ; pause 2 (15 min) après le jalon A3-07.
 
-### 2.2 Les écrans « comme à cinq ans »
+### 2.2 Les écrans d'image
 
-Quatorze écrans d'une minute, rendu v2 `image-left`, diffusés au catalogue. Chacun porte une seule
-idée, toujours dans le même ordre :
+Quatorze écrans d'une minute, brique commune `moteur.pourComprendreDans(dossier)` (rendu v2
+`image-left`, la même qu'au B1-03), diffusés au catalogue. Décision de Tim du 11 novembre 2026 :
+l'image n'est pas une explication pour enfant, mais un parallèle avec la réalité du cours. Chaque
+écran porte une seule idée, toujours dans le même ordre :
 
-1. **l'image du quotidien** (sous-titre et illustration) : une scène qu'un enfant connaît ;
-2. **l'idée**, en une ou deux phrases sans aucun mot technique ;
-3. **le pont** : « En maths, on écrit… », la notation du cours, avec un exemple chiffré qui n'est la
-   réponse d'aucun exercice.
+1. **le titre**, sans préfixe, qui nomme l'image (« La pente sous le vélo ») ;
+2. **l'image et sa phrase** : ce qu'on voit, au ton adulte, sans mot du cours (ni dérivée,
+   tangente, exponentielle, logarithme, fonction, suite, boucle, algorithme, extremum, maximum,
+   minimum, variation) ; elle peut citer un chiffre ou un signe dessiné (× 1,5 ; 1,609 ; 2x) ;
+3. **la règle** : « En maths, on écrit : … », la notation du cours, avec un exemple chiffré qui n'est
+   la réponse d'aucun exercice ;
+4. **les correspondances** : trois ou quatre lignes « élément de l'image → ce qu'il est dans le
+   cours », chacune nommant un élément réellement dessiné.
+
+Le mot « enfant » n'apparaît dans aucun texte servi de ces écrans, hors texte alternatif de l'image.
+Les notes formateur portent la consigne commune (« faire décrire l'image, puis faire dire à quoi
+correspond chaque élément dans le cours ») et une question de relance propre à l'écran.
 
 Ils ne sont pas des traces écrites : la trace écrite (`lesson`) qui les suit donne la règle complète.
 Sept ouvrent le cours (quatre pour l'exponentielle et le logarithme, trois pour la boucle), sept
@@ -111,8 +122,8 @@ précèdent les traces écrites des trois notions.
 
 ### 2.3 Le cycle d'une notion
 
-Chaque notion suit : **Réfléchir** (mission, vote non noté ou réflexion écrite) → écrans « comme à cinq
-ans » → **Comprendre** (une trace écrite v2 `lesson` de 2 minutes, parfois suivie d'un exemple guidé
+Chaque notion suit : **Réfléchir** (mission, vote non noté ou réflexion écrite) → écrans d'image →
+**Comprendre** (une trace écrite v2 `lesson` de 2 minutes, parfois suivie d'un exemple guidé
 `fp-worked` corrigé étape par étape sur son propre écran) → **S'exercer** (exercices notés corrigés sur
 place). N1 tient deux cycles : les polynômes, puis l'exponentielle. Les traces écrites partent de
 l'exemple de l'encadré du devoir maison, f(x) = −2x² + 40x + 5.
@@ -129,7 +140,7 @@ exercice, chaque exercice avec ses trois temps et sa correction sur place. Expos
 
 ### 2.5 Diffusion
 
-Catalogue : l'accroche, les quatorze écrans « comme à cinq ans », le dossier du cabas Escale, les
+Catalogue : l'accroche, les quatorze écrans d'image, le dossier du cabas Escale, les
 quatre traces écrites et la fiche mémo. Tout le reste est servi en séance. Aucun écran catalogue ne
 porte une réponse : leurs exemples sont ceux du devoir maison ou des valeurs inédites.
 
@@ -190,7 +201,7 @@ Identifiants : `B2-07-A{acte}-{rang}-{SLUG}`, conformes à `^B2-07-A[1-6]-\d{2}-
 
 Rythme : 105 minutes interactives, 30 d'exposition, exposition continue de 5 minutes au plus.
 
-### 3.2 Acte 1 — Avant la dérivée : le B2-06 et la boucle, comme à cinq ans (12 min)
+### 3.2 Acte 1 — Avant la dérivée : le B2-06 et la boucle, en images (12 min)
 
 #### A1-01 · `B2-07-A1-01-ACCROCHE` — 1 min · v2 `hero` · catalogue
 
@@ -200,31 +211,35 @@ Rythme : 105 minutes interactives, 30 d'exposition, exposition continue de 5 min
 
 #### A1-02 · `B2-07-A1-02-ENFANT-MULTIPLIER` — 1 min · v2 `image-left` · catalogue
 
-- Titre public : « Comme à cinq ans : l’exponentielle multiplie »
-- Image : une plante qui grandit de la même part chaque semaine. L'idée : à chaque pas, on multiplie
-  toujours par le même nombre, on n'ajoute pas. Le pont : u₀ × qⁿ au B2-04, a e^(kx) au B2-06 ; e^k est
-  le multiplicateur d'un pas ; e^0,4 se calcule « exposant d'abord ».
+- Titre public : « L’exponentielle multiplie »
+- Image : une plante une fois et demie plus haute chaque semaine. Correspondances : le pot
+  « semaine 0 » → u₀ ou a ; le numéro de la semaine → n ou x ; la flèche × 1,5 → q ou e^k ; la
+  hauteur atteinte → uₙ ou f(x). Règle : uₙ = u₀ × qⁿ au B2-04, f(x) = a e^(kx) au B2-06 ; on
+  multiplie à chaque pas, on n'ajoute pas ; e^0,4 se calcule « exposant d'abord ».
 
 #### A1-03 · `B2-07-A1-03-ENFANT-A-ET-K` — 1 min · v2 `image-left` · catalogue
 
-- Titre public : « Comme à cinq ans : le départ et la vitesse »
-- Image : deux ballons de même taille, l'un qu'on gonfle, l'autre qui se dégonfle. L'idée : a est la
-  taille au départ ; k dit si ça grossit (k > 0) ou si ça rétrécit (k < 0). Le pont : f(0) = a car
-  e⁰ = 1 ; coefficient e^k, taux e^k − 1 ; 1 000e^(0,02x) : + 2,02 % par unité, pas 2 %.
+- Titre public : « Le départ et la vitesse »
+- Image : deux ballons de même taille, l'un qu'on gonfle, l'autre qui se dégonfle. Correspondances :
+  la taille commune marquée a → a = f(0) ; le ballon gonflé, k > 0 → f croissante ; le ballon qui se
+  dégonfle, k < 0 → f décroissante. Règle : f(0) = a car e⁰ = 1 ; coefficient e^k, taux e^k − 1 ;
+  1 000e^(0,02x) : + 2,02 % par unité, pas 2 %.
 
 #### A1-04 · `B2-07-A1-04-ENFANT-LN` — 1 min · v2 `image-left` · catalogue
 
-- Titre public : « Comme à cinq ans : ln, le bouton retour »
-- Image : une machine qui transforme 1,609 en 5, et son bouton « retour » qui rend 1,609. L'idée : ln
-  défait ce qu'a fait l'exponentielle, comme ÷ défait ×. Le pont : eˣ = y ⇔ x = ln y, pour y > 0 ;
-  touche ln, pas log.
+- Titre public : « ln, le bouton retour »
+- Image : une machine qui transforme 1,609 en 5, et son bouton « retour » qui rend 1,609.
+  Correspondances : la flèche eˣ → la fonction exponentielle ; le bouton ln → le logarithme
+  népérien ; la carte 1,609 → l'exposant x ; la carte 5 → y = eˣ. Règle : eˣ = y ⇔ x = ln y, pour
+  y > 0 ; ln défait eˣ comme ÷ défait × ; touche ln, pas log.
 
 #### A1-05 · `B2-07-A1-05-ENFANT-SEUIL` — 1 min · v2 `image-left` · catalogue
 
-- Titre public : « Comme à cinq ans : quand touchera-t-on la fenêtre ? »
-- Image : la plante qui monte vers le rebord d'une fenêtre. L'idée : ln donne d'un coup la semaine où
-  elle touche, sans compter semaine par semaine ; on prend toujours la semaine d'après. Le pont :
-  1,5ⁿ ≥ 10 ⇔ n ≥ ln 10 ÷ ln 1,5 ≈ 5,68, donc n = 6 ; si q < 1, ln q < 0 et le sens change.
+- Titre public : « Quand touchera-t-on la fenêtre ? »
+- Image : la plante qui monte vers le rebord d'une fenêtre. Correspondances : le rebord, trait 10 →
+  le seuil ; la hauteur de la plante → 1,5ⁿ ; le trait 6, que montre le doigt → le plus petit n
+  tel que qⁿ ≥ seuil. Règle : 1,5ⁿ ≥ 10 ⇔ n ≥ ln 10 ÷ ln 1,5 ≈ 5,68, donc n = 6, l'entier juste
+  au-dessus ; si q < 1, ln q < 0 et le sens change.
 
 #### A1-06 · `B2-07-A1-06-VOTE-EXPONENTIELLE` — 4 min · `fp-vote` · séance
 
@@ -234,24 +249,26 @@ Rythme : 105 minutes interactives, 30 d'exposition, exposition continue de 5 min
 
 #### A1-07 · `B2-07-A1-07-ENFANT-BOUCLE` — 1 min · v2 `image-left` · catalogue
 
-- Titre public : « Comme à cinq ans : la boucle répète »
-- Image : un enfant remplit un verre cuillère par cuillère et compte sur ses doigts. L'idée : une
-  boucle refait les mêmes gestes ; un compteur n dit combien de fois. Le pont : n ← n + 1 ;
-  u ← u × q, répétés.
+- Titre public : « La boucle répète »
+- Image : on verse de l'eau dans un verre en comptant les tours sur ses doigts, n = 3.
+  Correspondances : la flèche qui tourne autour de la cuillère → la boucle ; les doigts levés → le
+  compteur n ; l'eau dans le verre → la valeur u. Règle : à chaque tour, n ← n + 1 puis u ← u × q.
 
 #### A1-08 · `B2-07-A1-08-ENFANT-TANT-QUE` — 1 min · v2 `image-left` · catalogue
 
-- Titre public : « Comme à cinq ans : Tant que veut dire pas encore »
-- Image : « Tant que le verre n'est pas plein, je verse encore. » L'idée : on écrit après « Tant
-  que » ce qui est vrai avant d'avoir fini, le contraire de l'objectif. Le pont : objectif u ≥ 1 000,
-  boucle « Tant que u < 1 000 » ; pour descendre sous 500, « Tant que u ≥ 500 » ; à la fin, Afficher n.
+- Titre public : « Tant que veut dire pas encore »
+- Image : tant que l'eau n'atteint pas le trait « plein », on verse encore. Correspondances : le
+  trait « plein » → le seuil ; « pas encore… » → la condition u < 1 000 ; « fini ! » → la sortie de
+  la boucle, puis Afficher n. Règle : objectif u ≥ 1 000, boucle « Tant que u < 1 000 » ; pour
+  descendre sous 500, « Tant que u ≥ 500 » ; après « Tant que », le contraire de l'objectif.
 
 #### A1-09 · `B2-07-A1-09-ENFANT-DEUX-CHEMINS` — 1 min · v2 `image-left` · catalogue
 
-- Titre public : « Comme à cinq ans : deux chemins, le même rang »
-- Image : deux chemins vers la même cabane, l'un à petits pas comptés, l'autre en un saut. L'idée :
-  la boucle essaie rang après rang, ln calcule d'un coup ; les deux trouvent le même premier rang. Le
-  pont : la boucle sur 1,5ⁿ affiche 6 ; ln 10 ÷ ln 1,5 ≈ 5,68, arrondi au-dessus, donne 6.
+- Titre public : « Deux chemins, le même rang »
+- Image : deux chemins vers la même cabane, l'un à petits pas numérotés, l'autre en un saut.
+  Correspondances : les pas de 1 à 6 → la boucle « Tant que » ; le saut marqué ln → le calcul par
+  ln ; la marche 6 → le premier rang qui dépasse le seuil. Règle : la boucle sur 1,5ⁿ affiche 6 ;
+  ln 10 ÷ ln 1,5 ≈ 5,68, arrondi au-dessus, donne 6.
 
 ### 3.3 Acte 2 — La dérivée, pente de la courbe (46 min)
 
@@ -270,17 +287,18 @@ Rythme : 105 minutes interactives, 30 d'exposition, exposition continue de 5 min
 
 #### A2-03 · `B2-07-A2-03-ENFANT-PENTE` — 1 min · v2 `image-left` · catalogue
 
-- Titre public : « Comme à cinq ans : la pente sous le vélo »
-- Image : un vélo sur une colline. L'idée : à chaque endroit, la route monte, descend ou est plate ;
-  la dérivée dit combien elle monte à cet endroit. Le pont : f′(a) est la pente de la courbe au point
-  d'abscisse a ; f′(a) > 0 ça monte, f′(a) < 0 ça descend, f′(a) = 0 c'est plat.
+- Titre public : « La pente sous le vélo »
+- Image : un vélo qui monte, roule à plat au sommet, puis descend. Correspondances : le segment sous
+  la roue → la tangente ; la montée + → f′(a) > 0 ; le plat 0 → f′(a) = 0 ; la descente − →
+  f′(a) < 0. Règle : f′(a) est la pente de la courbe au point d'abscisse a, celle de sa tangente.
 
 #### A2-04 · `B2-07-A2-04-ENFANT-RECETTE` — 1 min · v2 `image-left` · catalogue
 
-- Titre public : « Comme à cinq ans : la recette des puissances »
-- Image : un petit 2 qui saute devant le x, comme un enfant d'un plongeoir. L'idée : pour dériver une
-  puissance, l'exposant descend devant et perd un ; un nombre seul ne monte pas, sa pente vaut 0. Le
-  pont : (x²)′ = 2x, (x³)′ = 3x², (k)′ = 0, (k × u)′ = k × u′, (u + v)′ = u′ + v′.
+- Titre public : « La recette des puissances »
+- Image : le petit 2 qui saute du plongeoir devant le x ; un caillou 7 sur un sol plat.
+  Correspondances : le 2 qui saute → l'exposant, qui descend en coefficient ; le x resté seul →
+  l'exposant diminué de un ; le caillou 7 → une constante, de dérivée nulle. Règle : (x²)′ = 2x,
+  (x³)′ = 3x², (x)′ = 1, (k)′ = 0, (k × u)′ = k × u′, (u + v)′ = u′ + v′.
 
 #### A2-05 · `B2-07-A2-05-COURS-DERIVEE` — 2 min · v2 `lesson` · catalogue
 
@@ -316,9 +334,10 @@ Rythme : 105 minutes interactives, 30 d'exposition, exposition continue de 5 min
 
 #### A2-09 · `B2-07-A2-09-ENFANT-EXPONENTIELLE` — 1 min · v2 `image-left` · catalogue
 
-- Titre public : « Comme à cinq ans : la boule de neige »
-- Image : une boule de neige qui roule et grossit. L'idée : plus elle est grosse, plus elle grossit
-  vite ; sa vitesse, c'est sa taille fois un même nombre. Le pont : (e^(kx))′ = k e^(kx), donc
+- Titre public : « La boule de neige »
+- Image : une boule de neige qui roule et grossit. Correspondances : la taille de la boule → la
+  valeur a e^(kx) ; la neige ramassée à chaque tour → la dérivée a k e^(kx) ; les traits de vitesse
+  → la dérivée, proportionnelle à la valeur. Règle : (e^(kx))′ = k e^(kx), donc
   (a e^(kx))′ = a k e^(kx) ; e^(kx) > 0, le signe de la dérivée est celui de a × k.
 
 #### A2-10 · `B2-07-A2-10-COURS-DERIVEE-EXP` — 2 min · v2 `lesson` · catalogue
@@ -356,17 +375,20 @@ Rythme : 105 minutes interactives, 30 d'exposition, exposition continue de 5 min
 
 #### A3-02 · `B2-07-A3-02-ENFANT-PANNEAU` — 1 min · v2 `image-left` · catalogue
 
-- Titre public : « Comme à cinq ans : le panneau de la route »
-- Image : des panneaux « ça monte » et « ça descend » au bord d'une route de montagne. L'idée : le
-  signe de la pente dit si on monte ou si on descend, pas si on est haut ou bas. Le pont : f′ > 0 sur
-  I ⇒ f croissante sur I ; f′ < 0 sur I ⇒ f décroissante sur I.
+- Titre public : « Le panneau de la route »
+- Image : des panneaux « ça monte » et « ça descend » au bord d'une route de montagne.
+  Correspondances : le panneau vert + → f′ > 0, f croissante ; le panneau rouge − → f′ < 0, f
+  décroissante ; l'altitude de la voiture → f(x), que le signe de f′ ne donne pas. Règle : f′ > 0
+  sur I ⇒ f croissante sur I ; f′ < 0 sur I ⇒ f décroissante sur I.
 
 #### A3-03 · `B2-07-A3-03-ENFANT-CARTE` — 1 min · v2 `image-left` · catalogue
 
-- Titre public : « Comme à cinq ans : la carte du trajet »
+- Titre public : « La carte du trajet »
 - Image : la carte d'une balade, avec les montées, les descentes et l'altitude des points clés.
-  L'idée : le tableau de variation résume le trajet en une ligne. Le pont : ligne x, ligne signe de
-  f′, ligne des flèches ↗ ↘ avec les valeurs aux bornes et aux changements.
+  Correspondances : départ et arrivée → les bornes, sur la ligne x ; les flèches verte et rouge → la
+  ligne des variations ; le drapeau → le x où f′ change de signe ; les étiquettes d'altitude → les
+  valeurs de f. Règle : ligne x, ligne signe de f′, ligne des flèches ↗ ↘ avec les valeurs aux bornes
+  et aux changements.
 
 #### A3-04 · `B2-07-A3-04-COURS-VARIATIONS` — 2 min · v2 `lesson` · catalogue
 
@@ -405,19 +427,19 @@ Rythme : 105 minutes interactives, 30 d'exposition, exposition continue de 5 min
 
 #### A4-02 · `B2-07-A4-02-ENFANT-SOMMET` — 1 min · v2 `image-left` · catalogue
 
-- Titre public : « Comme à cinq ans : le sommet de la colline »
+- Titre public : « Le sommet de la colline »
 - Image : le vélo au sommet, entre la montée et la descente ; plus loin, un replat où la route continue
-  de monter. L'idée : on est au sommet quand on arrête de monter et qu'on commence à descendre ; un
-  replat n'est pas un sommet. Le pont : f′ s'annule en a en passant de + à − : f(a) est un maximum ;
-  de − à + : un minimum.
+  de monter. Correspondances : le drapeau « sommet » → un maximum, f′ passe de + à − ; le replat barré
+  → f′ = 0 sans changement de signe, pas d'extremum ; la hauteur du drapeau → f(a). Règle : f′
+  s'annule en a en passant de + à − : f(a) est un maximum ; de − à + : un minimum.
 
 #### A4-03 · `B2-07-A4-03-ENFANT-BORD` — 1 min · v2 `image-left` · catalogue
 
-- Titre public : « Comme à cinq ans : la barrière sur le chemin »
-- Image : une barrière ferme le chemin avant le sommet. L'idée : si on ne peut pas aller jusqu'au
-  sommet, le point le plus haut qu'on peut atteindre est contre la barrière. Le pont : sur un
-  intervalle, on compare les valeurs aux bornes et aux extremums ; sous contrainte, l'optimum peut
-  être une borne.
+- Titre public : « La barrière sur le chemin »
+- Image : une barrière ferme le chemin avant le sommet. Correspondances : la barrière → une borne
+  fixée par une contrainte ; le drapeau hors d'atteinte → l'extremum hors de l'intervalle permis ;
+  « ici » → l'optimum sous contrainte, à la borne. Règle : sur un intervalle, on compare les valeurs
+  aux bornes et aux extremums ; sous contrainte, l'optimum peut être une borne.
 
 #### A4-04 · `B2-07-A4-04-COURS-OPTIMUM` — 2 min · v2 `lesson` · catalogue
 
@@ -487,7 +509,7 @@ Rythme : 105 minutes interactives, 30 d'exposition, exposition continue de 5 min
 
 ## 4. Mode papier
 
-Le livret étudiant reprend, dans l'ordre des écrans, les écrans « comme à cinq ans », les traces
+Le livret étudiant reprend, dans l'ordre des écrans, les écrans d'image, les traces
 écrites, les énoncés et un cadre de réponse par question ; il ne contient aucune bonne réponse. Les
 formules s'écrivent sur la copie, le tableau de variation se dessine à la main, les exponentielles se
 calculent à la touche eˣ.
@@ -562,7 +584,7 @@ signe de f′ et sens de f, extremum sans changement de signe, maximum au bord. 
 
 ### 8.1 Principe
 
-Quatorze illustrations « comme à cinq ans », une par écran `image-left`, en style d'album jeunesse :
+Quatorze illustrations, une par écran d'image `image-left`, en style d'album jeunesse :
 une scène, très peu de texte, aucune réponse d'exercice. Chaque PNG d'origine (1 536 × 1 024 px) est
 converti en WebP à la même taille et servi depuis `/assets/cours/b2-07/v1/`. Les mini-prompts sont dans
 `illustrations-b2-07/prompts.md` (espace de travail). Le front publie le cours quand les quatorze WebP

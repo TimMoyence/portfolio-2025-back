@@ -133,9 +133,13 @@ export const ACTE_1: moteur.Acte = [
       rang: 1,
       syntaxe:
         '=NOMPROPRE(SUPPRESPACE(E2)) : SUPPRESPACE retire les espaces en trop, NOMPROPRE met une majuscule à chaque mot.',
-      arguments: 'texte, une cellule ou un texte entre guillemets.',
       piege: 'écrire dans la colonne E elle-même ; on écrit en N.',
       exemple: '« ␣BORDEAUX␣ » devient « Bordeaux ».',
+      correspondances: [
+        ['Pastille 1, SUPPRESPACE', 'la fonction intérieure'],
+        ['Pastille 2, NOMPROPRE', 'la fonction extérieure'],
+        ['Colonne N à côté de E', 'la donnée brute gardée'],
+      ],
     },
   ),
   pageDeFormules(
@@ -153,10 +157,13 @@ export const ACTE_1: moteur.Acte = [
       rang: 2,
       syntaxe:
         'SUBSTITUE(texte; ancien; nouveau) remplace ; CNUM(texte) convertit en nombre ; ESTNUM(valeur) vérifie.',
-      arguments:
-        'ancien entre guillemets, " €" puis " " ; nouveau, "" pour rien.',
       piege: 'CNUM avant SUBSTITUE rend #VALEUR!.',
       exemple: `« ${CA_HT_SAISI_EN_TEXTE} » devient 1150, un nombre.`,
+      correspondances: [
+        ['Marches 1 et 2', 'SUBSTITUE retire « € » et l’espace'],
+        ['Marche 3', 'CNUM convertit le texte en nombre'],
+        ['Le VRAI d’ESTNUM', 'la cellule contient un nombre'],
+      ],
     },
   ),
   pageDeFormules(
@@ -174,9 +181,13 @@ export const ACTE_1: moteur.Acte = [
       rang: 3,
       syntaxe:
         'SI(test; si_vrai; si_faux) ; OU(test1; test2; …) vrai si un test l’est, ET(…) si tous.',
-      arguments: 'un test compare, C2<B2 ; un texte rendu va entre guillemets.',
       piege: 'ET au lieu de OU ne signale presque rien.',
       exemple: 'livrée le 3 mars, commandée le 5 : « À vérifier ».',
+      correspondances: [
+        ['Les trois bulles', 'les trois tests, VRAI ou FAUX'],
+        ['L’entonnoir OU', 'un seul VRAI suffit'],
+        ['« À vérifier »', 'ce que rend SI quand OU est VRAI'],
+      ],
     },
   ),
   moteur.corrigeSurPlace(
@@ -289,11 +300,14 @@ export const ACTE_1: moteur.Acte = [
       rang: 4,
       syntaxe:
         'RECHERCHEV(clé; table; n°_colonne; FAUX) rend, sur la ligne de la clé, la colonne demandée.',
-      arguments:
-        'la clé, un identifiant ; la table figée par $, clé en 1re colonne ; le rang de la colonne ; FAUX, l’exact.',
       piege:
         'sans les $, la table glisse : #N/A. Encadré : RECHERCHEX en 2021 ou 365.',
       exemple: 'AG06 dans Agences, 3e colonne : « Ouest ».',
+      correspondances: [
+        ['« Je cherche quoi ? »', 'la clé, ici F2'],
+        ['« Dans quelle table ? »', 'la table, figée par $'],
+        ['Questions 3 et 4', 'le n° de colonne, puis FAUX'],
+      ],
     },
   ),
   pageDeFormules(
@@ -311,10 +325,13 @@ export const ACTE_1: moteur.Acte = [
       rang: 5,
       syntaxe:
         'SOMME.SI.ENS(plage_somme; plage1; critère1; …) additionne, NB.SI.ENS(plage1; critère1; …) compte, DATE(année; mois; jour).',
-      arguments:
-        'les plages de même hauteur ; un critère, "AG06" ou ">="&DATE(2026; 1; 1).',
       piege: 'DATE dans les guillemets : Excel compare au texte et rend 0.',
       exemple: `Marseille au-delà de 15 % de remise : ${DEFIS_B3_01['remises-marseille']} lignes, avec ">0,15".`,
+      correspondances: [
+        ['Bulle verte', 'la plage à additionner'],
+        ['Bulles bleues', 'chaque couple plage ; critère'],
+        ['Carte NB.SI.ENS', 'la même formule, qui compte'],
+      ],
     },
   ),
   moteur.corrigeEtapeParEtape(

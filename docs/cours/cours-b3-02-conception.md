@@ -4,7 +4,8 @@
 > Le B3-01 s’est arrêté à l’écran 12 (`B3-01-A1-12-EXEMPLE-NETTOYAGE`) : trop de notions d’un coup,
 > pas assez d’explications. Le B3-02 reprend le fil rouge Norvane Équipement là où la classe l’a
 > laissé et enseigne **tout** le référentiel Excel du B3-01, formule par formule : chaque page donne
-> la syntaxe, chaque argument, un exemple chiffré et le piège courant ; chaque exercice se fait pas à
+> la syntaxe, un exemple chiffré, le piège courant et, en face de l’infographie, ce que chaque élément
+> dessiné devient dans Excel ; chaque exercice se fait pas à
 > pas, formules écrites en entier. Une fiche récap rassemble toutes les formules. Puis une heure où
 > l’étudiant confie l’analyse à une IA, la guide par son cahier de règles et vérifie ses chiffres
 > contre les siens. Ce document ne contient aucun code exécutable ; toute divergence
@@ -45,8 +46,8 @@ Ce qui en découle :
   additionner. Acte 2 (63 min) : dates, statistiques, tableau structuré, TCD, graphiques, ratios,
   tableau de bord, deux fiches récap. Acte 3 (60 min) : l’IA analyste.
 - **Tout tient par des pages de 2 minutes.** Treize pages, une par famille de formules ou par outil,
-  chacune une image commentée : l’infographie, et à côté la syntaxe, les arguments, le piège et
-  l’exemple chiffré. Trois pages au plus d’affilée (6 minutes d’exposition), précédées d’un vote et
+  chacune une image commentée : l’infographie, et à côté la syntaxe, le piège, l’exemple chiffré,
+  puis ce que chaque élément dessiné devient dans Excel. Trois pages au plus d’affilée (6 minutes d’exposition), précédées d’un vote et
   suivies d’un exercice.
 - **Exercices allégés, guidés pas à pas.** Chaque consigne numérote les étapes et écrit chaque
   formule en entier, une espace après chaque point-virgule pour qu’elle passe à la ligne sur un
@@ -145,15 +146,21 @@ une somme sous conditions) est le plus long. Chaque exercice annonce
 ### 2.3 La page de formules
 
 Image commentée (`moteur.ecranDImageCommentee`, rendu v2 `image-left`), décision de Tim du
-6 novembre 2026 : l’infographie de la page à gauche, et à côté, en texte court, quatre paragraphes
-toujours dans cet ordre :
+6 novembre 2026, revue le 11 et le 12 novembre 2026 : l’infographie de la page à gauche, et à côté,
+en texte court, trois paragraphes toujours dans cet ordre, puis trois correspondances :
 
-| Paragraphe    | Contenu                                                            |
-| ------------- | ------------------------------------------------------------------ |
-| `Syntaxe :`   | La syntaxe de chaque formule de la page et ce qu’elle rend         |
-| `Arguments :` | Ce que chaque argument attend, en une phrase                       |
-| `Le piège :`  | Le piège courant, en une phrase                                    |
-| `Exemple :`   | L’exemple chiffré, dessiné dans l’infographie, repris en une ligne |
+| Bloc            | Contenu                                                             |
+| --------------- | ------------------------------------------------------------------- |
+| `Syntaxe :`     | La syntaxe de chaque formule de la page et ce qu’elle rend          |
+| `Le piège :`    | Le piège courant, en une phrase                                     |
+| `Exemple :`     | L’exemple chiffré, dessiné dans l’infographie, repris en une ligne  |
+| Correspondances | Trois lignes « élément de l’infographie → ce qu’il est dans Excel » |
+
+Les correspondances, la même forme qu’aux écrans d’image du B1-03 et du B2-07, remplacent l’ancien
+paragraphe `Arguments :`, qu’elles reprennent. Chacune tient sur une ligne, nomme un élément
+réellement dessiné, ne redit pas l’exemple et ne donne aucune réponse d’exercice. Avec les quatre
+paragraphes et la liste, sept pages sur treize dépassaient la toile, mesuré le 12 novembre 2026. Les
+notes formateur de ces pages ne changent pas.
 
 Les chemins de menu complets, les variantes et les formules entières vont aux notes du formateur,
 pour que la page tienne sur la toile 1280 × 720 à l’échelle 0,8. Une page d’outil (tableau structuré,
@@ -290,20 +297,20 @@ les chemins de menu complets vont aux notes du formateur.
 #### A1-05 · `B3-02-A1-05-FORMULES-TEXTE` — 2 min · v2 `image-left` · catalogue
 
 - Titre public : « Formules : SUPPRESPACE et NOMPROPRE »
-- Syntaxe `=SUPPRESPACE(texte)`, `=NOMPROPRE(texte)` ; argument `texte` ; exemple
+- Syntaxe `=SUPPRESPACE(texte)`, `=NOMPROPRE(texte)` ; correspondances des pastilles 1 et 2 ; exemple
   `=NOMPROPRE(SUPPRESPACE("  BORDEAUX "))` rend « Bordeaux » ; piège : écrire dans la colonne brute,
   compter les lignes avec l’en-tête, dédoublonner sur une seule colonne.
 
 #### A1-06 · `B3-02-A1-06-FORMULES-NOMBRE` — 2 min · v2 `image-left` · catalogue
 
 - Titre public : « Formules : SUBSTITUE, CNUM et ESTNUM »
-- Syntaxe et arguments ; exemple « 1 150,00 € » → 1150 ; piège : `CNUM` avant `SUBSTITUE`, espace
+- Syntaxe et correspondances ; exemple « 1 150,00 € » → 1150 ; piège : `CNUM` avant `SUBSTITUE`, espace
   insécable `UNICAR(160)`, `SOMME` qui ignore un montant en texte.
 
 #### A1-07 · `B3-02-A1-07-FORMULES-CONTROLE` — 2 min · v2 `image-left` · catalogue
 
 - Titre public : « Formules : SI, OU et ET »
-- Syntaxe, arguments, exemple sur une ligne inventée et dite telle ; piège : `ET` au lieu de `OU`,
+- Syntaxe, correspondances, exemple sur une ligne inventée et dite telle ; piège : `ET` au lieu de `OU`,
   guillemets oubliés, contrôle posé sur des données déjà corrigées.
 
 #### A1-08 · `B3-02-A1-08-ATELIER-NETTOYAGE` — 15 min · `questionnaire` · séance
@@ -331,7 +338,7 @@ les chemins de menu complets vont aux notes du formateur.
 #### A1-11 · `B3-02-A1-11-FORMULES-SOMME-SI` — 2 min · v2 `image-left` · catalogue
 
 - Titre public : « Formules : SOMME.SI.ENS, NB.SI.ENS et DATE »
-- Syntaxe et arguments ; exemple : les lignes de Marseille à plus de 15 % de remise, compte du
+- Syntaxe et correspondances ; exemple : les lignes de Marseille à plus de 15 % de remise, compte du
   B3-01 (`DEFIS_B3_01`) ; piège : `DATE` dans les guillemets, `">15"` pour un taux, période oubliée.
 
 #### A1-12 · `B3-02-A1-12-EXEMPLE-RECHERCHE` — 4 min · `fp-worked` · séance

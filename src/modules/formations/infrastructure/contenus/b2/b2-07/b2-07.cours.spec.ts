@@ -55,7 +55,7 @@ const partDesRevisions =
   COUT_DES_PANNES / (-K_DES_REVISIONS * COUT_DES_REVISIONS);
 const semainesOptimales = Math.log(partDesRevisions) / K_DES_REVISIONS;
 
-const ECRANS_ENFANT_DU_RECAP = [
+const ECRANS_D_IMAGE_DU_RECAP = [
   'B2-07-A1-02-ENFANT-MULTIPLIER',
   'B2-07-A1-03-ENFANT-A-ET-K',
   'B2-07-A1-04-ENFANT-LN',
@@ -118,7 +118,7 @@ fiche.decrireLaFicheDuCours('B2-07', COURS, {
   ],
 });
 
-describe('B2-07 — le récapitulatif du cours 6 et de la boucle, comme à cinq ans', () => {
+describe('B2-07 — le récapitulatif du cours 6 et de la boucle, en images', () => {
   it('B207-M2 · récapitule en douze minutes, sept écrans d’une idée et un vote, sans aucune question notée', () => {
     const recap = COURS.ecrans.filter((ecran) =>
       ecran.id.startsWith('B2-07-A1-'),
@@ -131,7 +131,7 @@ describe('B2-07 — le récapitulatif du cours 6 et de la boucle, comme à cinq 
       recap
         .filter((ecran) => ecran.id.includes('-ENFANT-'))
         .map(({ id }) => id),
-    ).toEqual(ECRANS_ENFANT_DU_RECAP);
+    ).toEqual(ECRANS_D_IMAGE_DU_RECAP);
     expect(recap.map((ecran) => ecran.brique)).toContain('fp-vote');
     expect(
       recap.flatMap((ecran) => questionsDe(ecran)).filter((q) => q.noteCompte),
@@ -149,27 +149,20 @@ describe('B2-07 — le récapitulatif du cours 6 et de la boucle, comme à cinq 
     expect(scene).toContain('une fois et demie plus haute');
   });
 
-  it('B207-M2 · montre sur chaque écran comme à cinq ans une image, l’idée, puis le pont vers la notation', () => {
+  it('B207-M2 · montre sur chaque écran d’image une image du cours, décrite pour qui ne la voit pas', () => {
     const ecrans = identifiants().filter((id) => id.includes('-ENFANT-'));
 
-    expect(ecrans).toHaveLength(14);
     for (const ecran of ecrans) {
-      const { title, image, imageAlt, paragraphs } = feuille.proprietesV2(
-        COURS_B2_07,
-        ecran,
-      );
+      const { image, imageAlt } = feuille.proprietesV2(COURS_B2_07, ecran);
 
-      expect(title).toEqual(expect.stringMatching(/^Comme à cinq ans : /u));
       expect(COURS.medias.map(({ chemins }) => chemins[0])).toContain(image);
       expect(String(imageAlt).length).toBeGreaterThan(40);
-      expect(paragraphs).toHaveLength(3);
-      expect((paragraphs as string[])[2]).toMatch(/^En maths, on écrit/u);
     }
   });
 });
 
-describe('B2-07 — chaque notion s’ouvre sur ses écrans comme à cinq ans', () => {
-  it('B207-M3 · place un écran comme à cinq ans juste avant chacune des quatre traces écrites', () => {
+describe('B2-07 — chaque notion s’ouvre sur ses écrans d’image', () => {
+  it('B207-M3 · place un écran d’image juste avant chacune des quatre traces écrites', () => {
     const ids = identifiants();
     const precedents = ids
       .map((id, rang) => [id, ids[rang - 1]] as const)
@@ -183,7 +176,7 @@ describe('B2-07 — chaque notion s’ouvre sur ses écrans comme à cinq ans', 
     ]);
   });
 
-  it('B207-M3 · donne à la dérivée de e^(kx) son écran comme à cinq ans et sa recette, dans la notion 1', () => {
+  it('B207-M3 · donne à la dérivée de e^(kx) son écran d’image et sa recette, dans la notion 1', () => {
     expect(
       feuille.texteDeLEcran(COURS_B2_07, 'B2-07-A2-09-ENFANT-EXPONENTIELLE'),
     ).toContain('(e^(kx))′ = k e^(kx)');

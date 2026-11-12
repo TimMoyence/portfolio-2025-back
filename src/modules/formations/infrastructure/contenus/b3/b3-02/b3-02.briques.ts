@@ -9,9 +9,9 @@ type SocleDeLaPage = Pick<
 export interface PageDeFormules {
   readonly rang: number;
   readonly syntaxe: string;
-  readonly arguments: string;
   readonly piege: string;
   readonly exemple: string;
+  readonly correspondances: moteur.Correspondances;
 }
 
 interface Infographie {
@@ -140,10 +140,10 @@ export function pageDeFormules(
       sousTitre: `Formules pas à pas · page ${page.rang} sur ${PAGES_DE_FORMULES}`,
       paragraphes: [
         `Syntaxe : ${page.syntaxe}`,
-        `Arguments : ${page.arguments}`,
         `Le piège : ${page.piege}`,
         `Exemple : ${page.exemple}`,
       ],
+      correspondances: page.correspondances,
       dureeMinutes: DUREE_D_UNE_PAGE,
     },
     notes,

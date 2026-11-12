@@ -15,6 +15,7 @@ import {
   sansEspacesTypographiques,
 } from '../../../../src/common/domain/texte/nettoyage/sans-espaces-typographiques';
 import { corrigeDeFeuille, ecranDuContenu } from './fiche-de-cours';
+import { solutionsNumeriques } from './lecture-de-cours';
 import { arrondi } from '../../../../src/common/domain/nombres/arrondi';
 
 function valeursASaisirDe(
@@ -196,6 +197,30 @@ function formesEcrites(valeur: number | string): string[] {
 
 function contientLaValeur(texte: string, valeur: number | string): boolean {
   return formesEcrites(valeur).some((forme) => contientLaForme(texte, forme));
+}
+
+const PLUS_GRAND_REPERE_DESSINE = 9;
+
+export const CORRESPONDANCE = /^\S.* → \S.*$/u;
+
+export function solutionsDansLesTextes(
+  cours: Cours,
+  textes: readonly string[],
+): string[] {
+  return Object.values(solutionsNumeriques(cours))
+    .map(([solution]) => solution)
+    .filter(
+      (solution) =>
+        !(
+          Number.isInteger(solution) &&
+          solution >= 0 &&
+          solution <= PLUS_GRAND_REPERE_DESSINE
+        ),
+    )
+    .filter((solution) =>
+      textes.some((texte) => contientLaValeur(texte, solution)),
+    )
+    .map(formeFrancaise);
 }
 
 export function valeursAuCatalogue(

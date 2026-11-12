@@ -98,3 +98,14 @@ export function proprietesV2(
   }
   return { ...props };
 }
+
+const textes = (valeur: unknown): string[] =>
+  Array.isArray(valeur) ? valeur.map(String) : [];
+
+export function texteDeLImage(
+  contenu: ContenuDeCours,
+  screenId: string,
+): { readonly paragraphes: string[]; readonly correspondances: string[] } {
+  const { paragraphs, items } = proprietesV2(contenu, screenId);
+  return { paragraphes: textes(paragraphs), correspondances: textes(items) };
+}

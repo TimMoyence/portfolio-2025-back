@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "59025119e9e28f9f2e6de420eddbc8b3d1d54d00ceefe793ba6cbc866fc5b3c1",
+  "empreinte": "3b57f7389a7cf1316c6add392b63e1fb4914c7c64a114d7b96abefd46ed179de",
   "sujet": {
     "id": "b1-03-tcd-serie-une-variable",
     "titre": "Traiter un fichier : TCD et série à une variable",
@@ -226,7 +226,7 @@
       {
         "id": "B1-03-A1-06-ENFANT-TAS",
         "type": "fp-story",
-        "titre": "Pour comprendre : un tas par couleur",
+        "titre": "Un tas par couleur",
         "duree": 1,
         "interactif": false,
         "donnees": {
@@ -237,13 +237,18 @@
               "screenId": "B1-03-A1-06-ENFANT-TAS",
               "renderer": "image-left",
               "props": {
-                "title": "Pour comprendre : un tas par couleur",
+                "title": "Un tas par couleur",
                 "image": "/assets/cours/b1-03/v1/bonbons-tas.webp",
                 "imageAlt": "Dessin : un sac de bonbons vidé sur une table ; trois tas bien séparés, rouges, jaunes et verts, de tailles différentes ; des enfants autour de la table, l’un montre le tas rouge du doigt.",
                 "paragraphs": [
-                  "Tu vides ton sac de bonbons sur la table ; chaque bonbon a son prix collé dessus.",
-                  "Tu fais un tas par couleur, puis tu ajoutes les prix de chaque tas.",
-                  "En maths, on écrit : chaque bonbon est une vente, son prix est son montant, la couleur est le canal. Regrouper par canal, puis additionner les montants de chaque tas, c’est un TCD."
+                  "Le sac est vidé sur la table et les bonbons sont rangés en tas, un par couleur, de tailles différentes.",
+                  "En maths, on écrit : regrouper les ventes par canal, puis additionner les montants de chaque groupe, c’est un TCD : Somme des montants, pas Nombre."
+                ],
+                "items": [
+                  "Le sac vidé sur la table → le fichier des ventes",
+                  "Un bonbon → une vente, avec son montant",
+                  "Sa couleur → son canal de vente",
+                  "Un tas par couleur → une ligne du TCD par canal"
                 ]
               }
             },
@@ -317,7 +322,7 @@
       {
         "id": "B1-03-A1-07-ENFANT-LIMONADE",
         "type": "fp-story",
-        "titre": "Pour comprendre : calculer avec tout ce qu’on a",
+        "titre": "Calculer avec tout ce qu’on a",
         "duree": 1,
         "interactif": false,
         "donnees": {
@@ -328,13 +333,17 @@
               "screenId": "B1-03-A1-07-ENFANT-LIMONADE",
               "renderer": "image-left",
               "props": {
-                "title": "Pour comprendre : calculer avec tout ce qu’on a",
+                "title": "Calculer avec tout ce qu’on a",
                 "image": "/assets/cours/b1-03/v1/limonade-pots.webp",
                 "imageAlt": "Dessin : un stand de limonade le soir ; deux pots en verre, l’un plein de pièces gagnées, l’autre des pièces dépensées pour les citrons ; l’enfant les vide côte à côte sur la table, un seul carnet ouvert devant lui.",
                 "paragraphs": [
-                  "Le soir, tu vides le pot des pièces gagnées et le pot des pièces dépensées.",
-                  "Tu fais ton calcul une seule fois, avec ce qu’il y a dans les deux pots.",
-                  "En maths, on écrit : les deux pots sont les sommes du TCD ; le champ calculé y prend le taux de marge, une seule fois."
+                  "Le soir, au stand de limonade, les deux pots sont vidés côte à côte : les pièces gagnées et les pièces dépensées pour les citrons.",
+                  "En maths, on écrit : le champ calculé prend le taux de marge une seule fois, sur les sommes du TCD, et non vente par vente."
+                ],
+                "items": [
+                  "Le pot des pièces gagnées → la somme des ventes",
+                  "Le pot des pièces dépensées → la somme des coûts",
+                  "Le carnet ouvert, un seul calcul → le champ calculé, posé sur les sommes"
                 ]
               }
             },
@@ -615,7 +624,7 @@
       {
         "id": "B1-03-A2-02-ENFANT-FILE",
         "type": "fp-story",
-        "titre": "Pour comprendre : ranger, puis couper",
+        "titre": "Ranger, puis couper",
         "duree": 1,
         "interactif": false,
         "donnees": {
@@ -626,13 +635,17 @@
               "screenId": "B1-03-A2-02-ENFANT-FILE",
               "renderer": "image-left",
               "props": {
-                "title": "Pour comprendre : ranger, puis couper",
+                "title": "Ranger, puis couper",
                 "image": "/assets/cours/b1-03/v1/file-rubans.webp",
                 "imageAlt": "Dessin : huit enfants rangés du plus petit au plus grand ; un ruban rouge au milieu de la file, deux rubans bleus au milieu de chaque moitié ; quatre petits groupes de deux enfants.",
                 "paragraphs": [
-                  "Les enfants se rangent du plus petit au plus grand.",
-                  "Un ruban coupe la file en deux moitiés, puis deux rubans coupent chaque moitié en deux.",
-                  "En maths, on écrit : le ruban rouge est la médiane Me, les rubans bleus sont les quartiles Q₁ et Q₃."
+                  "Une file rangée de la plus petite taille à la plus grande ; un trait rouge la coupe en deux, puis deux traits bleus coupent chaque moitié en deux.",
+                  "En maths, on écrit : on range la série dans l’ordre croissant, puis on la coupe : la médiane Me au milieu, les quartiles Q₁ et Q₃ au milieu de chaque moitié."
+                ],
+                "items": [
+                  "La file rangée par taille → la série rangée dans l’ordre croissant",
+                  "Le trait rouge → la médiane Me",
+                  "Les deux traits bleus → les quartiles Q₁ et Q₃"
                 ]
               }
             },
@@ -706,7 +719,7 @@
       {
         "id": "B1-03-A2-03-ENFANT-EQUIPES",
         "type": "fp-story",
-        "titre": "Pour comprendre : loin du milieu ou tout près",
+        "titre": "Loin du milieu ou tout près",
         "duree": 1,
         "interactif": false,
         "donnees": {
@@ -717,13 +730,17 @@
               "screenId": "B1-03-A2-03-ENFANT-EQUIPES",
               "renderer": "image-left",
               "props": {
-                "title": "Pour comprendre : loin du milieu ou tout près",
+                "title": "Loin du milieu ou tout près",
                 "image": "/assets/cours/b1-03/v1/equipes-tailles.webp",
                 "imageAlt": "Dessin : deux équipes de cinq enfants côte à côte, une même ligne pointillée à mi-hauteur ; à gauche, tous presque à la ligne ; à droite, un géant, un tout petit et des tailles très différentes.",
                 "paragraphs": [
-                  "Deux équipes ont la même taille au milieu.",
-                  "Dans l’une, tous se ressemblent ; dans l’autre, il y a des géants et des tout petits.",
-                  "En maths, on écrit : l’écart type σ dit de combien chacun s’écarte de la moyenne, en général."
+                  "Deux équipes, la même ligne pointillée : en vert, tous arrivent presque à la ligne ; en violet, du très grand au tout petit.",
+                  "En maths, on écrit : l’écart type σ dit de combien les valeurs s’écartent de la moyenne, en général."
+                ],
+                "items": [
+                  "La ligne pointillée → la moyenne, la même pour les deux équipes",
+                  "L’équipe verte, tous près de la ligne → un petit écart type",
+                  "L’équipe violette, du très grand au tout petit → un grand écart type"
                 ]
               }
             },
@@ -1357,7 +1374,7 @@
       {
         "id": "B1-03-A3-02-ENFANT-BOITE",
         "type": "fp-story",
-        "titre": "Pour comprendre : une boîte pour ceux du milieu",
+        "titre": "Une boîte pour ceux du milieu",
         "duree": 1,
         "interactif": false,
         "donnees": {
@@ -1368,13 +1385,17 @@
               "screenId": "B1-03-A3-02-ENFANT-BOITE",
               "renderer": "image-left",
               "props": {
-                "title": "Pour comprendre : une boîte pour ceux du milieu",
+                "title": "Une boîte pour ceux du milieu",
                 "image": "/assets/cours/b1-03/v1/file-boite.webp",
                 "imageAlt": "Dessin : une file d’enfants rangés par taille ; les enfants du milieu entourés d’une grande boîte en carton ouverte ; deux bras tendus vont jusqu’au plus petit et jusqu’au plus grand.",
                 "paragraphs": [
-                  "On range la file, on met dans une boîte la moitié du milieu, et deux bras vont jusqu’au plus petit et au plus grand.",
-                  "Une boîte courte : ceux du milieu se ressemblent.",
+                  "La file est rangée par taille ; une boîte en carton entoure la moitié du milieu, et une sangle va du plus petit au plus grand.",
                   "En maths, on écrit : la boîte à moustaches va de Q₁ à Q₃, les moustaches du minimum au maximum."
+                ],
+                "items": [
+                  "La boîte en carton → la boîte, de Q₁ à Q₃ : la moitié centrale",
+                  "La sangle de part et d’autre → les moustaches",
+                  "Le plus petit et le plus grand de la file → le minimum et le maximum"
                 ]
               }
             },
@@ -1447,7 +1468,7 @@
       {
         "id": "B1-03-A3-03-ENFANT-BILLES",
         "type": "fp-story",
-        "titre": "Pour comprendre : des boîtes de billes",
+        "titre": "Des boîtes de billes",
         "duree": 1,
         "interactif": false,
         "donnees": {
@@ -1458,13 +1479,17 @@
               "screenId": "B1-03-A3-03-ENFANT-BILLES",
               "renderer": "image-left",
               "props": {
-                "title": "Pour comprendre : des boîtes de billes",
+                "title": "Des boîtes de billes",
                 "image": "/assets/cours/b1-03/v1/billes-boites.webp",
                 "imageAlt": "Dessin : un tapis couvert de billes de toutes tailles ; trois boîtes alignées, pour les petites, les moyennes et les grosses billes ; un enfant y range les billes.",
                 "paragraphs": [
-                  "Trop de billes pour les regarder une par une : on les range par grosseur dans trois boîtes.",
-                  "Puis on compte chaque boîte.",
-                  "En maths, on écrit : chaque boîte est une classe [a ; b[, son nombre de billes est son effectif."
+                  "Trop de billes pour les regarder une à une : on les range par grosseur dans trois boîtes, puis on compte chaque boîte.",
+                  "En maths, on écrit : on regroupe la série en classes [a ; b[ et on compte l’effectif de chacune ; on lit ensuite les classes, plus chaque valeur."
+                ],
+                "items": [
+                  "Une bille → une valeur de la série",
+                  "Une boîte : petites, moyennes ou grosses → une classe [a ; b[",
+                  "Le nombre de billes dans une boîte → l’effectif de la classe"
                 ]
               }
             },
@@ -2231,7 +2256,7 @@
       {
         "id": "B1-03-A1-06-ENFANT-TAS",
         "type": "fp-story",
-        "titre": "Pour comprendre : un tas par couleur",
+        "titre": "Un tas par couleur",
         "duree": 1,
         "interactif": false,
         "donnees": {
@@ -2242,13 +2267,18 @@
               "screenId": "B1-03-A1-06-ENFANT-TAS",
               "renderer": "image-left",
               "props": {
-                "title": "Pour comprendre : un tas par couleur",
+                "title": "Un tas par couleur",
                 "image": "/assets/cours/b1-03/v1/bonbons-tas.webp",
                 "imageAlt": "Dessin : un sac de bonbons vidé sur une table ; trois tas bien séparés, rouges, jaunes et verts, de tailles différentes ; des enfants autour de la table, l’un montre le tas rouge du doigt.",
                 "paragraphs": [
-                  "Tu vides ton sac de bonbons sur la table ; chaque bonbon a son prix collé dessus.",
-                  "Tu fais un tas par couleur, puis tu ajoutes les prix de chaque tas.",
-                  "En maths, on écrit : chaque bonbon est une vente, son prix est son montant, la couleur est le canal. Regrouper par canal, puis additionner les montants de chaque tas, c’est un TCD."
+                  "Le sac est vidé sur la table et les bonbons sont rangés en tas, un par couleur, de tailles différentes.",
+                  "En maths, on écrit : regrouper les ventes par canal, puis additionner les montants de chaque groupe, c’est un TCD : Somme des montants, pas Nombre."
+                ],
+                "items": [
+                  "Le sac vidé sur la table → le fichier des ventes",
+                  "Un bonbon → une vente, avec son montant",
+                  "Sa couleur → son canal de vente",
+                  "Un tas par couleur → une ligne du TCD par canal"
                 ]
               }
             },
@@ -2261,7 +2291,7 @@
             }
           }
         },
-        "notes": "• 1 min : faire décrire l’image, lire l’idée, puis le pont vers la notation.\n• Question : « Compte-t-on les bonbons ou additionne-t-on leurs prix ? » Les prix : la Somme, pas le Nombre.",
+        "notes": "• 1 min : faire décrire l’image, puis faire dire à quoi correspond chaque élément dans le cours.\n• Question : « Compte-t-on les bonbons ou additionne-t-on leurs prix ? » Les prix : la Somme, pas le Nombre.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -2336,7 +2366,7 @@
       {
         "id": "B1-03-A1-07-ENFANT-LIMONADE",
         "type": "fp-story",
-        "titre": "Pour comprendre : calculer avec tout ce qu’on a",
+        "titre": "Calculer avec tout ce qu’on a",
         "duree": 1,
         "interactif": false,
         "donnees": {
@@ -2347,13 +2377,17 @@
               "screenId": "B1-03-A1-07-ENFANT-LIMONADE",
               "renderer": "image-left",
               "props": {
-                "title": "Pour comprendre : calculer avec tout ce qu’on a",
+                "title": "Calculer avec tout ce qu’on a",
                 "image": "/assets/cours/b1-03/v1/limonade-pots.webp",
                 "imageAlt": "Dessin : un stand de limonade le soir ; deux pots en verre, l’un plein de pièces gagnées, l’autre des pièces dépensées pour les citrons ; l’enfant les vide côte à côte sur la table, un seul carnet ouvert devant lui.",
                 "paragraphs": [
-                  "Le soir, tu vides le pot des pièces gagnées et le pot des pièces dépensées.",
-                  "Tu fais ton calcul une seule fois, avec ce qu’il y a dans les deux pots.",
-                  "En maths, on écrit : les deux pots sont les sommes du TCD ; le champ calculé y prend le taux de marge, une seule fois."
+                  "Le soir, au stand de limonade, les deux pots sont vidés côte à côte : les pièces gagnées et les pièces dépensées pour les citrons.",
+                  "En maths, on écrit : le champ calculé prend le taux de marge une seule fois, sur les sommes du TCD, et non vente par vente."
+                ],
+                "items": [
+                  "Le pot des pièces gagnées → la somme des ventes",
+                  "Le pot des pièces dépensées → la somme des coûts",
+                  "Le carnet ouvert, un seul calcul → le champ calculé, posé sur les sommes"
                 ]
               }
             },
@@ -2366,7 +2400,7 @@
             }
           }
         },
-        "notes": "• 1 min : faire décrire l’image, lire l’idée, puis le pont vers la notation.\n• Question : « Calcule-t-on le taux vente par vente, ou sur les pots ? » Sur les pots, les sommes.",
+        "notes": "• 1 min : faire décrire l’image, puis faire dire à quoi correspond chaque élément dans le cours.\n• Question : « Calcule-t-on le taux vente par vente, ou sur les pots ? » Sur les pots, les sommes.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -2780,7 +2814,7 @@
       {
         "id": "B1-03-A2-02-ENFANT-FILE",
         "type": "fp-story",
-        "titre": "Pour comprendre : ranger, puis couper",
+        "titre": "Ranger, puis couper",
         "duree": 1,
         "interactif": false,
         "donnees": {
@@ -2791,13 +2825,17 @@
               "screenId": "B1-03-A2-02-ENFANT-FILE",
               "renderer": "image-left",
               "props": {
-                "title": "Pour comprendre : ranger, puis couper",
+                "title": "Ranger, puis couper",
                 "image": "/assets/cours/b1-03/v1/file-rubans.webp",
                 "imageAlt": "Dessin : huit enfants rangés du plus petit au plus grand ; un ruban rouge au milieu de la file, deux rubans bleus au milieu de chaque moitié ; quatre petits groupes de deux enfants.",
                 "paragraphs": [
-                  "Les enfants se rangent du plus petit au plus grand.",
-                  "Un ruban coupe la file en deux moitiés, puis deux rubans coupent chaque moitié en deux.",
-                  "En maths, on écrit : le ruban rouge est la médiane Me, les rubans bleus sont les quartiles Q₁ et Q₃."
+                  "Une file rangée de la plus petite taille à la plus grande ; un trait rouge la coupe en deux, puis deux traits bleus coupent chaque moitié en deux.",
+                  "En maths, on écrit : on range la série dans l’ordre croissant, puis on la coupe : la médiane Me au milieu, les quartiles Q₁ et Q₃ au milieu de chaque moitié."
+                ],
+                "items": [
+                  "La file rangée par taille → la série rangée dans l’ordre croissant",
+                  "Le trait rouge → la médiane Me",
+                  "Les deux traits bleus → les quartiles Q₁ et Q₃"
                 ]
               }
             },
@@ -2810,7 +2848,7 @@
             }
           }
         },
-        "notes": "• 1 min : faire décrire l’image, lire l’idée, puis le pont vers la notation.\n• Question : « Que faut-il faire avant de couper ? » Ranger.",
+        "notes": "• 1 min : faire décrire l’image, puis faire dire à quoi correspond chaque élément dans le cours.\n• Question : « Que faut-il faire avant de couper ? » Ranger.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -2885,7 +2923,7 @@
       {
         "id": "B1-03-A2-03-ENFANT-EQUIPES",
         "type": "fp-story",
-        "titre": "Pour comprendre : loin du milieu ou tout près",
+        "titre": "Loin du milieu ou tout près",
         "duree": 1,
         "interactif": false,
         "donnees": {
@@ -2896,13 +2934,17 @@
               "screenId": "B1-03-A2-03-ENFANT-EQUIPES",
               "renderer": "image-left",
               "props": {
-                "title": "Pour comprendre : loin du milieu ou tout près",
+                "title": "Loin du milieu ou tout près",
                 "image": "/assets/cours/b1-03/v1/equipes-tailles.webp",
                 "imageAlt": "Dessin : deux équipes de cinq enfants côte à côte, une même ligne pointillée à mi-hauteur ; à gauche, tous presque à la ligne ; à droite, un géant, un tout petit et des tailles très différentes.",
                 "paragraphs": [
-                  "Deux équipes ont la même taille au milieu.",
-                  "Dans l’une, tous se ressemblent ; dans l’autre, il y a des géants et des tout petits.",
-                  "En maths, on écrit : l’écart type σ dit de combien chacun s’écarte de la moyenne, en général."
+                  "Deux équipes, la même ligne pointillée : en vert, tous arrivent presque à la ligne ; en violet, du très grand au tout petit.",
+                  "En maths, on écrit : l’écart type σ dit de combien les valeurs s’écartent de la moyenne, en général."
+                ],
+                "items": [
+                  "La ligne pointillée → la moyenne, la même pour les deux équipes",
+                  "L’équipe verte, tous près de la ligne → un petit écart type",
+                  "L’équipe violette, du très grand au tout petit → un grand écart type"
                 ]
               }
             },
@@ -2915,7 +2957,7 @@
             }
           }
         },
-        "notes": "• 1 min : faire décrire l’image, lire l’idée, puis le pont vers la notation.\n• Question : « Quelle équipe a le plus petit écart ? » Celle de gauche.",
+        "notes": "• 1 min : faire décrire l’image, puis faire dire à quoi correspond chaque élément dans le cours.\n• Question : « Quelle équipe a le plus petit écart ? » Celle de gauche.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -3906,7 +3948,7 @@
       {
         "id": "B1-03-A3-02-ENFANT-BOITE",
         "type": "fp-story",
-        "titre": "Pour comprendre : une boîte pour ceux du milieu",
+        "titre": "Une boîte pour ceux du milieu",
         "duree": 1,
         "interactif": false,
         "donnees": {
@@ -3917,13 +3959,17 @@
               "screenId": "B1-03-A3-02-ENFANT-BOITE",
               "renderer": "image-left",
               "props": {
-                "title": "Pour comprendre : une boîte pour ceux du milieu",
+                "title": "Une boîte pour ceux du milieu",
                 "image": "/assets/cours/b1-03/v1/file-boite.webp",
                 "imageAlt": "Dessin : une file d’enfants rangés par taille ; les enfants du milieu entourés d’une grande boîte en carton ouverte ; deux bras tendus vont jusqu’au plus petit et jusqu’au plus grand.",
                 "paragraphs": [
-                  "On range la file, on met dans une boîte la moitié du milieu, et deux bras vont jusqu’au plus petit et au plus grand.",
-                  "Une boîte courte : ceux du milieu se ressemblent.",
+                  "La file est rangée par taille ; une boîte en carton entoure la moitié du milieu, et une sangle va du plus petit au plus grand.",
                   "En maths, on écrit : la boîte à moustaches va de Q₁ à Q₃, les moustaches du minimum au maximum."
+                ],
+                "items": [
+                  "La boîte en carton → la boîte, de Q₁ à Q₃ : la moitié centrale",
+                  "La sangle de part et d’autre → les moustaches",
+                  "Le plus petit et le plus grand de la file → le minimum et le maximum"
                 ]
               }
             },
@@ -3936,7 +3982,7 @@
             }
           }
         },
-        "notes": "• 1 min : faire décrire l’image, lire l’idée, puis le pont vers la notation.\n• Question : « Combien d’enfants dans la boîte ? » La moitié de la file.",
+        "notes": "• 1 min : faire décrire l’image, puis faire dire à quoi correspond chaque élément dans le cours.\n• Question : « Quelle part de la file tient dans la boîte ? » La moitié.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -4010,7 +4056,7 @@
       {
         "id": "B1-03-A3-03-ENFANT-BILLES",
         "type": "fp-story",
-        "titre": "Pour comprendre : des boîtes de billes",
+        "titre": "Des boîtes de billes",
         "duree": 1,
         "interactif": false,
         "donnees": {
@@ -4021,13 +4067,17 @@
               "screenId": "B1-03-A3-03-ENFANT-BILLES",
               "renderer": "image-left",
               "props": {
-                "title": "Pour comprendre : des boîtes de billes",
+                "title": "Des boîtes de billes",
                 "image": "/assets/cours/b1-03/v1/billes-boites.webp",
                 "imageAlt": "Dessin : un tapis couvert de billes de toutes tailles ; trois boîtes alignées, pour les petites, les moyennes et les grosses billes ; un enfant y range les billes.",
                 "paragraphs": [
-                  "Trop de billes pour les regarder une par une : on les range par grosseur dans trois boîtes.",
-                  "Puis on compte chaque boîte.",
-                  "En maths, on écrit : chaque boîte est une classe [a ; b[, son nombre de billes est son effectif."
+                  "Trop de billes pour les regarder une à une : on les range par grosseur dans trois boîtes, puis on compte chaque boîte.",
+                  "En maths, on écrit : on regroupe la série en classes [a ; b[ et on compte l’effectif de chacune ; on lit ensuite les classes, plus chaque valeur."
+                ],
+                "items": [
+                  "Une bille → une valeur de la série",
+                  "Une boîte : petites, moyennes ou grosses → une classe [a ; b[",
+                  "Le nombre de billes dans une boîte → l’effectif de la classe"
                 ]
               }
             },
@@ -4040,7 +4090,7 @@
             }
           }
         },
-        "notes": "• 1 min : faire décrire l’image, lire l’idée, puis le pont vers la notation.\n• Question : « Regarde-t-on encore chaque bille ? » Non : chaque boîte.",
+        "notes": "• 1 min : faire décrire l’image, puis faire dire à quoi correspond chaque élément dans le cours.\n• Question : « Regarde-t-on encore chaque bille ? » Non : chaque boîte.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -5053,7 +5103,7 @@
       {
         "id": "B1-03-A1-06-ENFANT-TAS",
         "type": "fp-story",
-        "titre": "Pour comprendre : un tas par couleur",
+        "titre": "Un tas par couleur",
         "duree": 1,
         "interactif": false,
         "donnees": {
@@ -5064,13 +5114,18 @@
               "screenId": "B1-03-A1-06-ENFANT-TAS",
               "renderer": "image-left",
               "props": {
-                "title": "Pour comprendre : un tas par couleur",
+                "title": "Un tas par couleur",
                 "image": "/assets/cours/b1-03/v1/bonbons-tas.webp",
                 "imageAlt": "Dessin : un sac de bonbons vidé sur une table ; trois tas bien séparés, rouges, jaunes et verts, de tailles différentes ; des enfants autour de la table, l’un montre le tas rouge du doigt.",
                 "paragraphs": [
-                  "Tu vides ton sac de bonbons sur la table ; chaque bonbon a son prix collé dessus.",
-                  "Tu fais un tas par couleur, puis tu ajoutes les prix de chaque tas.",
-                  "En maths, on écrit : chaque bonbon est une vente, son prix est son montant, la couleur est le canal. Regrouper par canal, puis additionner les montants de chaque tas, c’est un TCD."
+                  "Le sac est vidé sur la table et les bonbons sont rangés en tas, un par couleur, de tailles différentes.",
+                  "En maths, on écrit : regrouper les ventes par canal, puis additionner les montants de chaque groupe, c’est un TCD : Somme des montants, pas Nombre."
+                ],
+                "items": [
+                  "Le sac vidé sur la table → le fichier des ventes",
+                  "Un bonbon → une vente, avec son montant",
+                  "Sa couleur → son canal de vente",
+                  "Un tas par couleur → une ligne du TCD par canal"
                 ]
               }
             },
@@ -5144,7 +5199,7 @@
       {
         "id": "B1-03-A1-07-ENFANT-LIMONADE",
         "type": "fp-story",
-        "titre": "Pour comprendre : calculer avec tout ce qu’on a",
+        "titre": "Calculer avec tout ce qu’on a",
         "duree": 1,
         "interactif": false,
         "donnees": {
@@ -5155,13 +5210,17 @@
               "screenId": "B1-03-A1-07-ENFANT-LIMONADE",
               "renderer": "image-left",
               "props": {
-                "title": "Pour comprendre : calculer avec tout ce qu’on a",
+                "title": "Calculer avec tout ce qu’on a",
                 "image": "/assets/cours/b1-03/v1/limonade-pots.webp",
                 "imageAlt": "Dessin : un stand de limonade le soir ; deux pots en verre, l’un plein de pièces gagnées, l’autre des pièces dépensées pour les citrons ; l’enfant les vide côte à côte sur la table, un seul carnet ouvert devant lui.",
                 "paragraphs": [
-                  "Le soir, tu vides le pot des pièces gagnées et le pot des pièces dépensées.",
-                  "Tu fais ton calcul une seule fois, avec ce qu’il y a dans les deux pots.",
-                  "En maths, on écrit : les deux pots sont les sommes du TCD ; le champ calculé y prend le taux de marge, une seule fois."
+                  "Le soir, au stand de limonade, les deux pots sont vidés côte à côte : les pièces gagnées et les pièces dépensées pour les citrons.",
+                  "En maths, on écrit : le champ calculé prend le taux de marge une seule fois, sur les sommes du TCD, et non vente par vente."
+                ],
+                "items": [
+                  "Le pot des pièces gagnées → la somme des ventes",
+                  "Le pot des pièces dépensées → la somme des coûts",
+                  "Le carnet ouvert, un seul calcul → le champ calculé, posé sur les sommes"
                 ]
               }
             },
@@ -5266,7 +5325,7 @@
       {
         "id": "B1-03-A2-02-ENFANT-FILE",
         "type": "fp-story",
-        "titre": "Pour comprendre : ranger, puis couper",
+        "titre": "Ranger, puis couper",
         "duree": 1,
         "interactif": false,
         "donnees": {
@@ -5277,13 +5336,17 @@
               "screenId": "B1-03-A2-02-ENFANT-FILE",
               "renderer": "image-left",
               "props": {
-                "title": "Pour comprendre : ranger, puis couper",
+                "title": "Ranger, puis couper",
                 "image": "/assets/cours/b1-03/v1/file-rubans.webp",
                 "imageAlt": "Dessin : huit enfants rangés du plus petit au plus grand ; un ruban rouge au milieu de la file, deux rubans bleus au milieu de chaque moitié ; quatre petits groupes de deux enfants.",
                 "paragraphs": [
-                  "Les enfants se rangent du plus petit au plus grand.",
-                  "Un ruban coupe la file en deux moitiés, puis deux rubans coupent chaque moitié en deux.",
-                  "En maths, on écrit : le ruban rouge est la médiane Me, les rubans bleus sont les quartiles Q₁ et Q₃."
+                  "Une file rangée de la plus petite taille à la plus grande ; un trait rouge la coupe en deux, puis deux traits bleus coupent chaque moitié en deux.",
+                  "En maths, on écrit : on range la série dans l’ordre croissant, puis on la coupe : la médiane Me au milieu, les quartiles Q₁ et Q₃ au milieu de chaque moitié."
+                ],
+                "items": [
+                  "La file rangée par taille → la série rangée dans l’ordre croissant",
+                  "Le trait rouge → la médiane Me",
+                  "Les deux traits bleus → les quartiles Q₁ et Q₃"
                 ]
               }
             },
@@ -5357,7 +5420,7 @@
       {
         "id": "B1-03-A2-03-ENFANT-EQUIPES",
         "type": "fp-story",
-        "titre": "Pour comprendre : loin du milieu ou tout près",
+        "titre": "Loin du milieu ou tout près",
         "duree": 1,
         "interactif": false,
         "donnees": {
@@ -5368,13 +5431,17 @@
               "screenId": "B1-03-A2-03-ENFANT-EQUIPES",
               "renderer": "image-left",
               "props": {
-                "title": "Pour comprendre : loin du milieu ou tout près",
+                "title": "Loin du milieu ou tout près",
                 "image": "/assets/cours/b1-03/v1/equipes-tailles.webp",
                 "imageAlt": "Dessin : deux équipes de cinq enfants côte à côte, une même ligne pointillée à mi-hauteur ; à gauche, tous presque à la ligne ; à droite, un géant, un tout petit et des tailles très différentes.",
                 "paragraphs": [
-                  "Deux équipes ont la même taille au milieu.",
-                  "Dans l’une, tous se ressemblent ; dans l’autre, il y a des géants et des tout petits.",
-                  "En maths, on écrit : l’écart type σ dit de combien chacun s’écarte de la moyenne, en général."
+                  "Deux équipes, la même ligne pointillée : en vert, tous arrivent presque à la ligne ; en violet, du très grand au tout petit.",
+                  "En maths, on écrit : l’écart type σ dit de combien les valeurs s’écartent de la moyenne, en général."
+                ],
+                "items": [
+                  "La ligne pointillée → la moyenne, la même pour les deux équipes",
+                  "L’équipe verte, tous près de la ligne → un petit écart type",
+                  "L’équipe violette, du très grand au tout petit → un grand écart type"
                 ]
               }
             },
@@ -5487,7 +5554,7 @@
       {
         "id": "B1-03-A3-02-ENFANT-BOITE",
         "type": "fp-story",
-        "titre": "Pour comprendre : une boîte pour ceux du milieu",
+        "titre": "Une boîte pour ceux du milieu",
         "duree": 1,
         "interactif": false,
         "donnees": {
@@ -5498,13 +5565,17 @@
               "screenId": "B1-03-A3-02-ENFANT-BOITE",
               "renderer": "image-left",
               "props": {
-                "title": "Pour comprendre : une boîte pour ceux du milieu",
+                "title": "Une boîte pour ceux du milieu",
                 "image": "/assets/cours/b1-03/v1/file-boite.webp",
                 "imageAlt": "Dessin : une file d’enfants rangés par taille ; les enfants du milieu entourés d’une grande boîte en carton ouverte ; deux bras tendus vont jusqu’au plus petit et jusqu’au plus grand.",
                 "paragraphs": [
-                  "On range la file, on met dans une boîte la moitié du milieu, et deux bras vont jusqu’au plus petit et au plus grand.",
-                  "Une boîte courte : ceux du milieu se ressemblent.",
+                  "La file est rangée par taille ; une boîte en carton entoure la moitié du milieu, et une sangle va du plus petit au plus grand.",
                   "En maths, on écrit : la boîte à moustaches va de Q₁ à Q₃, les moustaches du minimum au maximum."
+                ],
+                "items": [
+                  "La boîte en carton → la boîte, de Q₁ à Q₃ : la moitié centrale",
+                  "La sangle de part et d’autre → les moustaches",
+                  "Le plus petit et le plus grand de la file → le minimum et le maximum"
                 ]
               }
             },
@@ -5577,7 +5648,7 @@
       {
         "id": "B1-03-A3-03-ENFANT-BILLES",
         "type": "fp-story",
-        "titre": "Pour comprendre : des boîtes de billes",
+        "titre": "Des boîtes de billes",
         "duree": 1,
         "interactif": false,
         "donnees": {
@@ -5588,13 +5659,17 @@
               "screenId": "B1-03-A3-03-ENFANT-BILLES",
               "renderer": "image-left",
               "props": {
-                "title": "Pour comprendre : des boîtes de billes",
+                "title": "Des boîtes de billes",
                 "image": "/assets/cours/b1-03/v1/billes-boites.webp",
                 "imageAlt": "Dessin : un tapis couvert de billes de toutes tailles ; trois boîtes alignées, pour les petites, les moyennes et les grosses billes ; un enfant y range les billes.",
                 "paragraphs": [
-                  "Trop de billes pour les regarder une par une : on les range par grosseur dans trois boîtes.",
-                  "Puis on compte chaque boîte.",
-                  "En maths, on écrit : chaque boîte est une classe [a ; b[, son nombre de billes est son effectif."
+                  "Trop de billes pour les regarder une à une : on les range par grosseur dans trois boîtes, puis on compte chaque boîte.",
+                  "En maths, on écrit : on regroupe la série en classes [a ; b[ et on compte l’effectif de chacune ; on lit ensuite les classes, plus chaque valeur."
+                ],
+                "items": [
+                  "Une bille → une valeur de la série",
+                  "Une boîte : petites, moyennes ou grosses → une classe [a ; b[",
+                  "Le nombre de billes dans une boîte → l’effectif de la classe"
                 ]
               }
             },
