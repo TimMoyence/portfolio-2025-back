@@ -6,7 +6,7 @@ import {
   tireurSequentiel,
 } from '../../../../../test/factories/formations/cours/cours.factory';
 import {
-  buildCorrectionDeReponses,
+  buildCorrectionDExemple,
   buildCoursDeBriques,
   buildEcranDeBrique,
   buildQuestionnaireCorrigeSurPlace,
@@ -533,7 +533,7 @@ describe('SubmitAnswerUseCase', () => {
   describe('question corrigée par un écran projeté', () => {
     const numerique = buildEcranDeBrique('fp-numeric', { screenId: 'E-NUM' });
     const cours = lireCoursStocke(
-      buildCoursDeBriques([numerique, buildCorrectionDeReponses('E-NUM')]),
+      buildCoursDeBriques([numerique, buildCorrectionDExemple('E-NUM')]),
     );
     const [question] = questionsDe(cours.ecrans[0]);
 

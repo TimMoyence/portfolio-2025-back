@@ -11,6 +11,7 @@ import {
   valeursDevoileesAvantLeurEcran,
   valeursDevoileesParLesExplications,
 } from '../../../../../../test/helpers/formations/cours/relecture-de-cours';
+import { ecranDuCours } from '../../../../../../test/helpers/formations/cours/lecture-de-cours';
 import { COURS_B2_05 } from '../b2/b2-05/b2-05.cours';
 import { COURS_B3_01 } from '../b3/b3-01/b3-01.cours';
 import { PIEGES_B3_01 } from '../b3/b3-01/b3-01.donnees';
@@ -18,7 +19,7 @@ import { CONTENUS } from '../index';
 import {
   COURS_B3_01_SERVI as COURS,
   VALEURS_B3_01_PAR_QUESTION as VALEURS,
-} from '../../../../../../test/helpers/cours-b3-01/cours-servi';
+} from '../../../../../../test/helpers/formations/b3/b3-01/cours-servi';
 
 const allonger = (reference: string, ajout: string) =>
   buildCoursAvecExplicationAllongee(COURS, reference, ajout);
@@ -219,10 +220,9 @@ describe('Gardes de relecture, éprouvées par mutation du B3-01', () => {
   );
 
   it('valeursAuCatalogue · ignore un écran verrouillé, dont seul le titre est servi', () => {
-    expect(
-      COURS.ecrans.find(({ id }) => id === 'B3-01-A2-08-VOTE-NOUVELLES-LIGNES')
-        ?.titre,
-    ).toBe('Vote : 200 lignes de plus');
+    expect(ecranDuCours(COURS, 'B3-01-A2-08-VOTE-NOUVELLES-LIGNES').titre).toBe(
+      'Vote : 200 lignes de plus',
+    );
     expect(valeursAuCatalogue(COURS, [200])).toEqual([]);
   });
 

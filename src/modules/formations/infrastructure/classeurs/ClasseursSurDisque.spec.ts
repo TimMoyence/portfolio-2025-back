@@ -7,6 +7,8 @@ import {
 } from '../../../../../test/helpers/formations/cours/classeurs-reserves';
 import { CLASSEURS_B3_01 } from '../contenus/b3/b3-01/b3-01.donnees';
 import { CLASSEUR_DES_VENTES } from '../contenus/b1/b1-03/b1-03.donnees';
+import { NOTE_B3_03 } from '../contenus/b3/b3-03/b3-03.donnees';
+import { PIECES_JOINTES_B3_04 } from '../contenus/b3/b3-04/b3-04.donnees';
 import { CONTENUS } from '../contenus';
 import { classeurATelecharger, ClasseursSurDisque } from './ClasseursSurDisque';
 
@@ -61,6 +63,9 @@ describe('ClasseursSurDisque', () => {
       CLASSEURS_B3_01.repriseActe2,
       CLASSEURS_B3_01.repriseActe3,
       CLASSEURS_B3_01.repriseActe2,
+      NOTE_B3_03.reservee,
+      PIECES_JOINTES_B3_04.contacts.reservee,
+      PIECES_JOINTES_B3_04.envoi,
     ]);
     expect(
       reserves.filter((classeur) => !existsSync(cheminDuClasseur(classeur))),

@@ -1,18 +1,43 @@
+import { auMillionieme } from '../../../../src/common/domain/nombres/arrondi';
+import { avecLesProduits } from '../../../../src/modules/formations/domain/cours/structure/ArbrePondere';
+
 const IMAGE = 'https://images.example.test/deck/illustration.jpeg';
+
+export function buildArbreDeDeuxGenerations(
+  enTete: number,
+  sousP: number,
+  overrides: Readonly<Record<string, unknown>> = {},
+): Record<string, unknown> {
+  return {
+    title: 'Un arbre pondéré',
+    branches: avecLesProduits([
+      {
+        evenement: 'P',
+        probabilite: enTete,
+        branches: [
+          { evenement: 'R', probabilite: sousP },
+          { evenement: 'R̄', probabilite: auMillionieme(1 - sousP) },
+        ],
+      },
+      { evenement: 'P̄', probabilite: auMillionieme(1 - enTete) },
+    ]),
+    description: 'Deux générations, produits en bout de chemin.',
+    ...overrides,
+  };
+}
 
 const ELEMENT = {
   title: 'Unité',
   description: 'Lire l’unité avant le nombre.',
 };
 
-export function buildQuizAffiche(
+export function buildReflexion(
   overrides: Readonly<Record<string, unknown>> = {},
 ): Record<string, unknown> {
   return {
-    id: 'quiz-1',
-    type: 'quiz',
-    question: 'Que vérifier avant de comparer deux courbes ?',
-    options: ['Les unités et l’échelle', 'La couleur', 'La taille du titre'],
+    id: 'reflexion-1',
+    type: 'reflection',
+    question: 'Que faut-il demander avant de comparer ?',
     ...overrides,
   };
 }
@@ -40,7 +65,6 @@ export const PRESENTATIONS_VISUELLES_VALIDES: Readonly<
       },
     ],
   },
-  quiz: { questionData: buildQuizAffiche() },
   chart: {
     title: 'Chiffre d’affaires',
     labels: ['2024', '2025'],
@@ -104,14 +128,7 @@ export const PRESENTATIONS_VISUELLES_VALIDES: Readonly<
     columns: [{ label: 'Écart', items: ['En euros'] }],
   },
   stats: { title: 'Repères', stats: [{ value: '27,6 %', label: 'Taux' }] },
-  reflection: {
-    promptData: {
-      id: 'reflexion-1',
-      type: 'reflection',
-      question: 'Que faut-il demander avant de comparer ?',
-    },
-  },
-  quote: { quote: 'Un chiffre sans unité ne dit rien.' },
+  reflection: { promptData: buildReflexion() },
   table: {
     title: 'Rapprochement',
     columns: [{ key: 'ligne', label: 'Ligne' }],
@@ -122,23 +139,6 @@ export const PRESENTATIONS_VISUELLES_VALIDES: Readonly<
   illustration: {
     image: IMAGE,
     imageAlt: 'Schéma de l’exemple : cinq factures triées, médiane au milieu',
-  },
-  cta: {
-    title: 'Pour aller plus loin',
-    description: 'La boîte à outils du contrôle.',
-    ctaLabel: 'Ouvrir',
-    ctaHref: '/formations/ia-solopreneurs/toolkit',
-  },
-  guide: { title: 'Méthode', items: [ELEMENT] },
-  'answer-review': {
-    title: 'Correction de l’atelier',
-    source: { screenId: 'B2-01-A2-03-ATELIER-1' },
-    explications: [
-      {
-        reference: 'b2-01-a2-evolution-marge',
-        texte: 'Un écart entre deux taux se lit en points.',
-      },
-    ],
   },
   'sort-review': {
     title: 'Correction du tri',

@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { libelleOuCle } from '../../../../../common/domain/objets/libelle-ou-cle';
 import { pieceJointePdf } from '../../../../../common/infrastructure/mail/piece-jointe';
 import { destinataireDesRapportsDAudit } from '../../../../../config/adresses-de-courriel';
 import { envString } from '../../../../../config/environnement/env-readers.util';
@@ -95,10 +96,7 @@ const TEXTES = {
       `Asili Design Growth audit for ${site} — open to see your scorecard.`,
     niveau: (niveau: ReportSeverity) =>
       ({ high: 'High', medium: 'Medium', low: 'Low' })[niveau],
-    nomDuPilier: (pilier: string) =>
-      Object.hasOwn(PILIERS_EN_ANGLAIS, pilier)
-        ? PILIERS_EN_ANGLAIS[pilier as PillarKey]
-        : pilier,
+    nomDuPilier: (pilier: string) => libelleOuCle(PILIERS_EN_ANGLAIS, pilier),
   },
 } as const satisfies Record<AuditLocale, unknown>;
 

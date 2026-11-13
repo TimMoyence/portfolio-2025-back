@@ -162,11 +162,6 @@ export const PARCOURS_ENIGMES = {
 
 const PROPRIETES_PAR_BRIQUE: Readonly<Record<string, Record<string, unknown>>> =
   {
-    'fp-quote': {
-      texte: 'Un chiffre sans unité ne dit rien.',
-      auteur: null,
-      source: null,
-    },
     'fp-story': {
       titre: 'Capsule',
       paragraphes: ['Regardez la capsule.'],
@@ -525,25 +520,6 @@ function fabriqueDeCorrection(
       ...overrides,
     });
 }
-
-export const buildCorrectionDeReponses = fabriqueDeCorrection(
-  'fp-story',
-  1,
-  (source, screenId) => ({
-    presentation: {
-      version: 2,
-      screenId,
-      renderer: 'answer-review',
-      props: {
-        title: 'Correction',
-        source: { screenId: source },
-        explications: [
-          { reference: 'b2-01-a1-diagnostic', texte: 'Réponse expliquée.' },
-        ],
-      },
-    },
-  }),
-);
 
 export const buildCorrectionDExemple = fabriqueDeCorrection(
   'fp-worked',

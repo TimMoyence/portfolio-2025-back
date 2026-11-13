@@ -63,6 +63,14 @@ export function statutsEnEchec(
     .filter((statut) => statut !== attendu);
 }
 
+export async function chronometrer<T>(
+  action: () => Promise<T>,
+): Promise<[T, number]> {
+  const debut = performance.now();
+  const resultat = await action();
+  return [resultat, performance.now() - debut];
+}
+
 export type MethodeHttp = 'get' | 'post' | 'patch' | 'put' | 'delete';
 
 export interface SeanceDeTest {

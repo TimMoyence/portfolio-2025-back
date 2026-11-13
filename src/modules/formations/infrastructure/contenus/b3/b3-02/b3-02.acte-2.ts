@@ -1,18 +1,17 @@
 import { CLASSEURS_B3_01 } from '../b3-01/b3-01.donnees';
-import { graphiqueTrompeur } from '../b3-01/b3-01.acte-3';
+import {
+  graphiqueTrompeur,
+  voteDesTrenteSecondes,
+} from '../b3-01/b3-01.acte-3';
 import { voteDuMeilleurTrimestre } from '../b3-01/b3-01.acte-2';
 import {
   MEILLEUR_TRIMESTRE_B3_02,
   questionChiffreeB302,
 } from './b3-02.donnees';
-import {
-  pageDeFormules,
-  type PieceReservee,
-  voteQuiOuvre,
-} from './b3-02.briques';
+import { pageDeFormules } from './b3-02.briques';
 import * as moteur from '../../briques';
 
-const REPRISE_ET_T_COMMANDES: PieceReservee = {
+const REPRISE_ET_T_COMMANDES: moteur.PieceReservee = {
   libelle: 'Classeur de reprise avec T_Commandes',
   classeur: CLASSEURS_B3_01.repriseActe3,
   reprend: [
@@ -24,7 +23,7 @@ const REPRISE_ET_T_COMMANDES: PieceReservee = {
 };
 
 const DATES_ET_STATISTIQUES: moteur.Acte = [
-  voteQuiOuvre(
+  moteur.voteQuiOuvre(
     {
       screenId: 'B3-02-A2-01-VOTE-DELAI',
       titre: 'Vote : vendredi, lundi',
@@ -35,17 +34,19 @@ const DATES_ET_STATISTIQUES: moteur.Acte = [
         'Faire dire ce que promet le contrat de Norvane : une livraison en 5 jours ouvrés.',
       ),
     },
-    moteur.vote(
-      'b3-02-a2-delai',
-      'calcul-sur-dates',
-      false,
-      'Norvane compte ses délais de livraison en jours ouvrés. Commandé un vendredi, un colis arrive le lundi suivant : quel délai compte-t-on ?',
-      '1 jour ouvré',
-      [
-        ['3 jours ouvrés', 'jours-calendaires-pour-ouvres'],
-        ['2 jours ouvrés', 'bornes-comptees-dans-le-delai'],
-      ],
-    ),
+    [
+      moteur.vote(
+        'b3-02-a2-delai',
+        'calcul-sur-dates',
+        false,
+        'Norvane compte ses délais de livraison en jours ouvrés. Commandé un vendredi, un colis arrive le lundi suivant : quel délai compte-t-on ?',
+        '1 jour ouvré',
+        [
+          ['3 jours ouvrés', 'jours-calendaires-pour-ouvres'],
+          ['2 jours ouvrés', 'bornes-comptees-dans-le-delai'],
+        ],
+      ),
+    ],
   ),
   pageDeFormules(
     {
@@ -186,7 +187,7 @@ const DATES_ET_STATISTIQUES: moteur.Acte = [
 ];
 
 const CROISER: moteur.Acte = [
-  voteQuiOuvre(
+  moteur.voteQuiOuvre(
     {
       screenId: 'B3-02-A2-06-VOTE-NOUVELLES-LIGNES',
       titre: 'Vote : 200 lignes de plus',
@@ -197,17 +198,19 @@ const CROISER: moteur.Acte = [
         'Révélation : coller trois lignes sous les données ; =SOMME(L2:L4039) ne bouge pas.',
       ),
     },
-    moteur.vote(
-      'b3-02-a2-nouvelles-lignes',
-      'tableau-croise-dynamique',
-      false,
-      'L’export d’octobre ajoute 200 lignes, collées sous les données. =SOMME(L2:L4039) les additionne-t-elle ?',
-      'Non : elles sont hors de la plage',
-      [
-        ['Oui, dès qu’on les colle', 'plage-fixe-au-lieu-de-tableau'],
-        ['Oui, après un recalcul', 'plage-fixe-au-lieu-de-tableau'],
-      ],
-    ),
+    [
+      moteur.vote(
+        'b3-02-a2-nouvelles-lignes',
+        'tableau-croise-dynamique',
+        false,
+        'L’export d’octobre ajoute 200 lignes, collées sous les données. =SOMME(L2:L4039) les additionne-t-elle ?',
+        'Non : elles sont hors de la plage',
+        [
+          ['Oui, dès qu’on les colle', 'plage-fixe-au-lieu-de-tableau'],
+          ['Oui, après un recalcul', 'plage-fixe-au-lieu-de-tableau'],
+        ],
+      ),
+    ],
   ),
   pageDeFormules(
     {
@@ -332,7 +335,7 @@ const MONTRER: moteur.Acte = [
     'chart',
     graphiqueTrompeur(),
   ),
-  voteQuiOuvre(
+  moteur.voteQuiOuvre(
     {
       screenId: 'B3-02-A2-11-VOTE-GRAPHIQUE',
       titre: 'Vote : que décidez-vous ?',
@@ -343,20 +346,22 @@ const MONTRER: moteur.Acte = [
         'Temps « réfléchir » des graphiques : vote non noté ; révélation : redessiner au tableau les deux barres depuis zéro.',
       ),
     },
-    moteur.vote(
-      'b3-02-a2-graphique',
-      'choix-du-graphique',
-      false,
-      'Le collègue de Nadia écrit sous son graphique : « Rennes vend trois fois moins que Nantes ». A-t-il raison ?',
-      'Non : l’axe ne part pas de zéro',
-      [
+    [
+      moteur.vote(
+        'b3-02-a2-graphique',
+        'choix-du-graphique',
+        false,
+        'Le collègue de Nadia écrit sous son graphique : « Rennes vend trois fois moins que Nantes ». A-t-il raison ?',
+        'Non : l’axe ne part pas de zéro',
         [
-          'Oui, la barre est trois fois plus basse',
-          'axe-tronque-lu-comme-ecart',
+          [
+            'Oui, la barre est trois fois plus basse',
+            'axe-tronque-lu-comme-ecart',
+          ],
+          ['On ne peut pas le dire', 'axe-tronque-lu-comme-ecart'],
         ],
-        ['On ne peut pas le dire', 'axe-tronque-lu-comme-ecart'],
-      ],
-    ),
+      ),
+    ],
     REPRISE_ET_T_COMMANDES,
   ),
   pageDeFormules(
@@ -443,7 +448,7 @@ const MONTRER: moteur.Acte = [
 ];
 
 const DECIDER: moteur.Acte = [
-  voteQuiOuvre(
+  moteur.voteQuiOuvre(
     {
       screenId: 'B3-02-A2-14-VOTE-TRENTE-SECONDES',
       titre: 'Vote : trente secondes',
@@ -454,18 +459,12 @@ const DECIDER: moteur.Acte = [
         'Faire dire ce que Nadia fera de chaque option devant le comité.',
       ),
     },
-    moteur.vote(
-      'b3-02-a2-trente-secondes',
-      'tableau-de-bord',
-      false,
-      'Nadia a trente secondes avant d’entrer au comité. Que lui montrez-vous d’abord ?',
-      'Quatre chiffres, chacun avec sa comparaison',
-      [
-        ['Le tableau de toutes les lignes', 'detail-au-lieu-de-synthese'],
-        ['Dix graphiques', 'graphique-sans-question'],
-        ['Quatre chiffres, sans comparaison', 'kpi-sans-contexte'],
-      ],
-    ),
+    [
+      voteDesTrenteSecondes(
+        'b3-02-a2-trente-secondes',
+        'Nadia a trente secondes avant d’entrer au comité. Que lui montrez-vous d’abord ?',
+      ),
+    ],
   ),
   pageDeFormules(
     {

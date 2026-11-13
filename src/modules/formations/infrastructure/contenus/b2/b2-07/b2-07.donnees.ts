@@ -50,9 +50,6 @@ export const ABSCISSE_POUR_EXTREMUM = 'abscisse-pour-extremum';
 export const BORNES_OUBLIEES = 'bornes-oubliees';
 export const CONTRAINTE_IGNOREE = 'contrainte-ignoree';
 
-export const DONNEES_FICTIVES =
-  'Données fictives Atelier Rivage, créées pour ce cours.';
-
 export const RENVOI_AU_DOSSIER = 'B2-07-A2-01-DOSSIER';
 
 const COUT_UNITAIRE = 8;

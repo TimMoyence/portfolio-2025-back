@@ -23,8 +23,8 @@ export function buildEcransStockesConformes(): EcranDeCoursBrut[] {
       titre: 'Diagnostic',
       dureeMinutes: 3,
     }),
-    buildEcranDeBrique('fp-quote', {
-      screenId: 'B2-01-A1-02-CITATION',
+    buildEcranDeBrique('fp-pro', {
+      screenId: 'B2-01-A1-02-CAS',
       titre: 'Un chiffre à lire',
       diffusion: 'catalogue',
       dureeMinutes: 2,
@@ -91,14 +91,14 @@ export function recomposer(cours: Cours, ecrans: AuMoinsUn<Ecran>): Cours {
   };
 }
 
-export function buildEcranDeCitation(
+export function buildEcranDeCas(
   id: string,
   dureeMinutes: number,
   overrides: Partial<EcranDeCoursBrut> = {},
 ): Ecran {
   const lu = lireEcranStocke(
-    buildEcranDeBrique('fp-quote', {
-      titre: `Citation ${id}`,
+    buildEcranDeBrique('fp-pro', {
+      titre: `Cas ${id}`,
       dureeMinutes: 1,
       ...overrides,
     }),

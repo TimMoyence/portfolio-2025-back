@@ -104,45 +104,42 @@ const ACTE_1: moteur.Acte = [
         'Diagrammes circulaires de William Playfair (1801) : la part de chaque territoire dans un tout, les premiers camemberts publiés',
     },
   ),
-  {
-    screenId: 'B1-01-A1-03-VOTE-DIAGNOSTIC',
-    titre: 'Vote : deux pourcentages du lycée',
-    diffusion: 'seance',
-    brique: 'fp-vote',
-    dureeMinutes: 4,
-    concepts: ['pourcentage', 'taux-evolution'],
-    notes: moteur.puces(
-      'Diagnostic : deux votes non notés, sans calculatrice. Repérer au pupitre les postes sous 50 %.',
-      ...moteur.NOTES_DU_VOTE_A_DEUX_QUESTIONS,
-    ),
-    proprietes: {
-      modalite: 'solo',
-      questions: [
-        moteur.vote(
-          'b1-01-a1-diagnostic-pourcentage',
-          'pourcentage',
-          false,
-          'Combien font 15 % de 80 € ?',
-          '12 €',
-          [
-            ['65 €', ADDITIF],
-            ['1 200 €', FACTEUR_CENT],
-          ],
-        ),
-        moteur.vote(
-          'b1-01-a1-diagnostic-evolution',
-          'taux-evolution',
-          false,
-          'Un prix passe de 50 € à 60 €. De combien a-t-il augmenté, en % ?',
-          '+ 20 %',
-          [
-            ['+ 10 %', 'ecart-absolu-au-lieu-du-taux'],
-            ['+ 16,7 %', 'base-arrivee'],
-          ],
-        ),
-      ],
+  moteur.voteQuiOuvre(
+    {
+      screenId: 'B1-01-A1-03-VOTE-DIAGNOSTIC',
+      titre: 'Vote : deux pourcentages du lycée',
+      dureeMinutes: 4,
+      concepts: ['pourcentage', 'taux-evolution'],
+      notes: moteur.puces(
+        'Diagnostic : deux votes non notés, sans calculatrice. Repérer au pupitre les postes sous 50 %.',
+        ...moteur.NOTES_DU_VOTE_A_DEUX_QUESTIONS,
+      ),
     },
-  },
+    [
+      moteur.vote(
+        'b1-01-a1-diagnostic-pourcentage',
+        'pourcentage',
+        false,
+        'Combien font 15 % de 80 € ?',
+        '12 €',
+        [
+          ['65 €', ADDITIF],
+          ['1 200 €', FACTEUR_CENT],
+        ],
+      ),
+      moteur.vote(
+        'b1-01-a1-diagnostic-evolution',
+        'taux-evolution',
+        false,
+        'Un prix passe de 50 € à 60 €. De combien a-t-il augmenté, en % ?',
+        '+ 20 %',
+        [
+          ['+ 10 %', 'ecart-absolu-au-lieu-du-taux'],
+          ['+ 16,7 %', 'base-arrivee'],
+        ],
+      ),
+    ],
+  ),
   moteur.ecranV2(
     {
       screenId: RENVOI_AU_DOSSIER,
@@ -1029,36 +1026,33 @@ const ACTE_2: moteur.Acte = [
 ];
 
 const ACTE_3: moteur.Acte = [
-  {
-    screenId: 'B1-01-A3-01-VOTE-POURCENTAGES',
-    titre: 'Vote : de quel pourcentage parle-t-on ?',
-    diffusion: 'seance',
-    brique: 'fp-vote',
-    dureeMinutes: 5,
-    concepts: ['point-de-pourcentage', 'pourcentage'],
-    notes: moteur.notesDuVoteQuiOuvreLaNotion(3),
-    proprietes: {
-      modalite: 'solo',
-      questions: [
-        moteur.vote(
-          'b1-01-a3-points',
-          'point-de-pourcentage',
-          false,
-          'La part des ventes en ligne de Partie Libre passe de 18 % à 24 % du chiffre d’affaires. Quelle phrase est juste ?',
-          'Elle gagne 6 points',
-          [['Elle augmente de 6 %', POINTS_POUR_POURCENTAGE]],
-        ),
-        moteur.vote(
-          'b1-01-a3-marque',
-          'pourcentage',
-          false,
-          'Une console achetée 150 € HT est revendue 240 € HT. La marge, 90 €, représente quel pourcentage du prix de vente ?',
-          '37,5 %',
-          [['60 %', MARQUE_POUR_MARGE]],
-        ),
-      ],
+  moteur.voteQuiOuvre(
+    {
+      screenId: 'B1-01-A3-01-VOTE-POURCENTAGES',
+      titre: 'Vote : de quel pourcentage parle-t-on ?',
+      dureeMinutes: 5,
+      concepts: ['point-de-pourcentage', 'pourcentage'],
+      notes: moteur.notesDuVoteQuiOuvreLaNotion(3),
     },
-  },
+    [
+      moteur.vote(
+        'b1-01-a3-points',
+        'point-de-pourcentage',
+        false,
+        'La part des ventes en ligne de Partie Libre passe de 18 % à 24 % du chiffre d’affaires. Quelle phrase est juste ?',
+        'Elle gagne 6 points',
+        [['Elle augmente de 6 %', POINTS_POUR_POURCENTAGE]],
+      ),
+      moteur.vote(
+        'b1-01-a3-marque',
+        'pourcentage',
+        false,
+        'Une console achetée 150 € HT est revendue 240 € HT. La marge, 90 €, représente quel pourcentage du prix de vente ?',
+        '37,5 %',
+        [['60 %', MARQUE_POUR_MARGE]],
+      ),
+    ],
+  ),
   moteur.ecranDIllustration(
     {
       screenId: 'B1-01-A3-02-ILLUSTRATION-CODE',

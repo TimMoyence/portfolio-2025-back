@@ -4,6 +4,10 @@ import { activitesLibres } from '../../../src/modules/formations/domain/cours/di
 import { buildCoursB2_01 } from '../../factories/formations/cours/cours-b2-01.factory';
 import { describeDb } from '../../helpers/base/db-integration-datasource';
 import {
+  ecranDuCours,
+  rangDuCours,
+} from '../../helpers/formations/cours/lecture-de-cours';
+import {
   attendreRefus,
   CODE_HTTP,
   installerBancDeSeance,
@@ -20,14 +24,10 @@ const PARCOURS_DU_COFFRE = 'b2-01-a6-coffre';
 const PREMIERE_ENIGME = 'b2-01-a6-e1-mix';
 const { OK, CREE, SANS_CONTENU, CONFLIT } = CODE_HTTP;
 
-function rang(id: string): number {
-  return COURS.ecrans.findIndex((ecran) => ecran.id === id);
-}
+const rang = (id: string): number => rangDuCours(COURS, id);
 
-function ecranDuSujet(reponse: Response, id: string): EcranPublic | undefined {
-  return (reponse.body as { ecrans: EcranPublic[] }).ecrans.find(
-    (ecran) => ecran.id === id,
-  );
+function ecranDuSujet(reponse: Response, id: string): EcranPublic {
+  return ecranDuCours(reponse.body as { ecrans: EcranPublic[] }, id);
 }
 
 describeDb(
@@ -79,13 +79,13 @@ describeDb(
       });
       const complete = await lireEcran(seance, ATELIER);
 
-      expect(avant?.correction).toBeUndefined();
+      expect(avant.correction).toBeUndefined();
       expect(premiere?.type).toBe('questionnaire');
       expect(
-        premiere?.correction?.explications?.map(({ reference }) => reference),
+        premiere.correction?.explications?.map(({ reference }) => reference),
       ).toEqual(['b2-01-a2-evolution-marge']);
       expect(
-        complete?.correction?.questions.map(({ questionId, bonneReponse }) => [
+        complete.correction?.questions.map(({ questionId, bonneReponse }) => [
           questionId,
           questionId === 'b2-01-a2-part-marketplace' ? bonneReponse : 'vote',
         ]),
@@ -94,7 +94,7 @@ describeDb(
         ['b2-01-a2-part-marketplace', '45,5'],
         ['b2-01-a2-population-reference', 'vote'],
       ]);
-      expect(complete?.correction?.explications).toHaveLength(3);
+      expect(complete.correction?.explications).toHaveLength(3);
     });
 
     it('ferme l étape des points dès que sa correction se dévoile, sans la rouvrir au retour arrière', async () => {
@@ -129,8 +129,8 @@ describeDb(
         )
         .send({ enigmeId: PREMIERE_ENIGME, reponse: '12', dureeMs: 30000 });
 
-      expect(corrige?.correction?.ecranId).toBe(COFFRE);
-      expect(corrige?.correction?.explications?.[0]?.reference).toBe(
+      expect(corrige.correction?.ecranId).toBe(COFFRE);
+      expect(corrige.correction?.explications?.[0]?.reference).toBe(
         PREMIERE_ENIGME,
       );
       attendreRefus(refus, CONFLIT, 'PHASE_FERMEE');
@@ -149,13 +149,13 @@ describeDb(
       await piloter(seance, { pilotage: { screenId: FEUILLE, revele: true } });
       const apres = await lireSujet(seance);
 
-      expect(ecranDuSujet(avant, DIAGNOSTIC)?.correction).toBeUndefined();
-      expect(ecranDuSujet(avant, FEUILLE)?.correction).toBeUndefined();
-      expect(ecranDuSujet(apres, DIAGNOSTIC)?.correction).toMatchObject({
+      expect(ecranDuSujet(avant, DIAGNOSTIC).correction).toBeUndefined();
+      expect(ecranDuSujet(avant, FEUILLE).correction).toBeUndefined();
+      expect(ecranDuSujet(apres, DIAGNOSTIC).correction).toMatchObject({
         ecranId: DIAGNOSTIC,
         questions: [{ questionId: expect.any(String) as string }],
       });
-      expect(ecranDuSujet(apres, FEUILLE)?.correction).toMatchObject({
+      expect(ecranDuSujet(apres, FEUILLE).correction).toMatchObject({
         ecranId: FEUILLE,
         corrige: { type: 'feuille' },
       });

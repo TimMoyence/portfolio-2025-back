@@ -1,5 +1,6 @@
 import { randomInt } from 'node:crypto';
 import { ResourceConflictError } from '../../../../../common/domain/errors/ResourceConflictError';
+import { sansLesCles } from '../../../../../common/domain/objets/sans-les-cles';
 import type { BaremeTirage } from '../../notation/Bareme';
 import { solutionsIdentiques } from '../../notation/Bareme';
 import type { BaremeQuestionV2, BaremeV2 } from '../../contrats/bareme';
@@ -120,9 +121,7 @@ function ecartsA(
   solutions: Readonly<Record<string, Solution>>,
   communes: Readonly<Record<string, Solution>>,
 ): Readonly<Record<string, Solution>> {
-  return Object.fromEntries(
-    Object.entries(solutions).filter(([id]) => !Object.hasOwn(communes, id)),
-  );
+  return sansLesCles(solutions, Object.keys(communes));
 }
 
 function questionsBaremeV2(cours: Cours): readonly BaremeQuestionV2[] {

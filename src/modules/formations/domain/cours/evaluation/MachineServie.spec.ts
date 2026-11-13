@@ -1,5 +1,6 @@
 import { buildCoursDuContenu } from '../../../../../../test/factories/formations/cours/contenus-de-cours.factory';
 import { COURS_B2_01 } from '../../../../../../test/factories/formations/cours/contenus-publies';
+import { ecranDuCours } from '../../../../../../test/helpers/formations/cours/lecture-de-cours';
 import { ProductionInvalideError } from '../../errors/FormationErrors';
 import {
   evaluerLaMachine,
@@ -132,11 +133,9 @@ describe('machineCalculee', () => {
   });
 
   it('est servie au tirage du B2-01 dans la définition de la machine', () => {
-    const ecran = tirer(COURS, 0).sujet.ecrans.find(
-      ({ id }) => id === ECRAN_MACHINE,
-    );
+    const ecran = ecranDuCours(tirer(COURS, 0).sujet, ECRAN_MACHINE);
 
-    expect(ecran?.donnees).toMatchObject({
+    expect(ecran.donnees).toMatchObject({
       definition: { sorties: machineCalculee(machineDuB201()).sorties },
     });
   });

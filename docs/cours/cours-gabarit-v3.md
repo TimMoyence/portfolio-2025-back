@@ -6,11 +6,11 @@ Gabarit commun aux douze cours B2-01 → B2-12 (plan du 2026-09-26). Un cours le
 sans gabarit déclaré (B2-01 à ce jour) garde les seules règles communes de `verifierStructure`.
 
 Premier cours conforme : B2-02 « Séries statistiques : résumer, relier, prévoir »
-(`docs/cours/cours-b2-02-conception.md`).
+(`docs/cours/b2/cours-b2-02-conception.md`).
 
 Ce document distingue deux choses :
 
-- les **règles vérifiées** par `src/modules/formations/domain/cours/structure/StructureGabarit.ts`, que
+- les **règles vérifiées** par `src/modules/formations/domain/cours/structure/gabarit/StructureGabarit.ts`, que
   `verifierStructure` applique à tout cours v3 — un contenu qui les enfreint ne se publie pas ;
 - les **conventions de conception**, que rien ne vérifie : la relecture de la fiche de conception
   les tient.
@@ -155,4 +155,4 @@ plus, les manipulations se faisant dans Excel. La valeur `b3` tient dans la colo
 (`varchar(20)`) sans migration.
 
 Premier cours conforme : B3-01 « Expert Data : de la donnée brute à la décision »
-(`docs/cours/cours-b3-01-conception.md`).
+(`docs/cours/b3/cours-b3-01-conception.md`).

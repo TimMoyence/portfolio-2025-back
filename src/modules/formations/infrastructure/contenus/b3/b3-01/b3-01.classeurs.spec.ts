@@ -1,5 +1,6 @@
 import { mkdirSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { nomServi } from '../../../../../../common/domain/types/types-de-fichier';
 import {
   classeursPublies,
   datesSansFormatDeDate,
@@ -10,17 +11,17 @@ import {
   ouvrirClasseur,
   relireClasseur,
   type ClasseurAPublier,
-} from '../../../../../../../test/helpers/cours-b3-01/classeurs';
+} from '../../../../../../../test/helpers/formations/b3/b3-01/classeurs';
 import {
   colonnesCalculeesDuGenerateur,
   ecrireLeCorrigeFormateur,
   lireLeCorrigeRecalcule,
-} from '../../../../../../../test/helpers/cours-b3-01/corrige';
+} from '../../../../../../../test/helpers/formations/b3/b3-01/corrige';
 import {
   GRAINE_B3_01,
   genererJeuB301,
-} from '../../../../../../../test/helpers/cours-b3-01/generateur';
-import { ongletDe } from '../../../../../../../test/helpers/cours-b3-01/modele';
+} from '../../../../../../../test/helpers/formations/b3/b3-01/generateur';
+import { ongletDe } from '../../../../../../../test/helpers/formations/b3/b3-01/modele';
 import { RACINE } from '../../../../../../../test/helpers/depot/racine';
 import { CLASSEURS_B3_01, VALEURS_B3_01 } from './b3-01.donnees';
 
@@ -33,7 +34,6 @@ const DOSSIER_D_ESSAI = join(RACINE, '.tmp/b3-01/ecriture');
 const DOSSIER_DE_REECRITURE = join(RACINE, '.tmp/b3-01/reecriture');
 const DELAI_D_ECRITURE_MS = 120_000;
 const DELAI_DE_LECTURE_MS = 30_000;
-const LONGUEUR_DU_SUFFIXE = 8;
 
 const jeu = genererJeuB301(GRAINE_B3_01);
 const publies = classeursPublies(jeu);
@@ -43,8 +43,6 @@ const fichierPublie = (publie: ClasseurAPublier): string =>
   )?.fichier ?? '';
 const cheminDe = (publie: ClasseurAPublier): string =>
   join(DOSSIER_DES_CLASSEURS, fichierPublie(publie));
-const nomAttendu = (base: string, empreinte: string): string =>
-  `${base}.${empreinte.slice(0, LONGUEUR_DU_SUFFIXE)}.xlsx`;
 const classeursDuDossier = (dossier: string): Set<string> =>
   new Set(readdirSync(dossier).filter((nom) => nom.endsWith('.xlsx')));
 
@@ -63,7 +61,7 @@ describe('classeurs du B3-01', () => {
 
     for (const publie of publies) {
       expect(fichierPublie(publie)).toBe(
-        nomAttendu(publie.base, empreinteDuFichier(cheminDe(publie))),
+        nomServi(publie.base, empreinteDuFichier(cheminDe(publie)), 'xlsx'),
       );
     }
     const fichiers = Object.fromEntries(
@@ -131,12 +129,16 @@ describe('classeurs du B3-01', () => {
       expect(classeursDuDossier(DOSSIER_D_ESSAI)).toEqual(
         new Set(classeurs.map(({ fichier }) => fichier)),
       );
-      for (const { fichier, empreinte } of classeurs) {
+      for (const { role, fichier, empreinte } of classeurs) {
         expect(empreinteDuFichier(join(DOSSIER_D_ESSAI, fichier))).toBe(
           empreinte,
         );
-        expect(fichier).toMatch(
-          new RegExp(`\\.${empreinte.slice(0, LONGUEUR_DU_SUFFIXE)}\\.xlsx$`),
+        expect(fichier).toBe(
+          nomServi(
+            publies.find((publie) => publie.role === role)?.base ?? '',
+            empreinte,
+            'xlsx',
+          ),
         );
       }
       rmSync(DOSSIER_D_ESSAI, { recursive: true, force: true });

@@ -169,47 +169,44 @@ export const ACTE_1: moteur.Acte = [
       ],
     },
   ),
-  {
-    screenId: 'B3-01-A1-04-VOTE-PART-ET-CLE',
-    titre: 'Vote : le fichier et Dupont, Bordeaux',
-    diffusion: 'seance',
-    brique: 'fp-vote',
-    dureeMinutes: 3,
-    concepts: ['qualite-des-donnees', 'cle-et-relation'],
-    notes: moteur.puces(
-      'Temps « réfléchir » du niveau 1 : deux votes non notés.',
-      'Première question sans révélation : la réponse tombe à la correction de l’exercice 4 ; noter au tableau la répartition des votes.',
-      'Deuxième question, sans débat : la révélation suit.',
-    ),
-    proprietes: {
-      modalite: 'solo',
-      questions: [
-        moteur.vote(
-          'b3-01-a1-part-douteuse',
-          'qualite-des-donnees',
-          false,
-          'Dans un export commercial d’environ 4 000 lignes, quelle part des lignes est fausse ou douteuse, à votre avis ?',
-          'Environ 15 % des lignes',
-          [
-            ['Moins de 1 % des lignes', 'part-douteuse-estimee-sans-mesure'],
-            ['Environ 5 % des lignes', 'part-douteuse-estimee-sans-mesure'],
-            ['Plus de 30 % des lignes', 'part-douteuse-estimee-sans-mesure'],
-          ],
-        ),
-        moteur.vote(
-          'b3-01-a1-cle-client',
-          'cle-et-relation',
-          false,
-          '« Dupont – Bordeaux » suffit-il à identifier un client de Norvane ?',
-          'Non : il faut un identifiant attribué par le système',
-          [
-            ['Oui : le nom et la ville suffisent', 'libelle-pris-pour-cle'],
-            ['Non : il faut aussi le code postal', 'libelle-pris-pour-cle'],
-          ],
-        ),
-      ],
+  moteur.voteQuiOuvre(
+    {
+      screenId: 'B3-01-A1-04-VOTE-PART-ET-CLE',
+      titre: 'Vote : le fichier et Dupont, Bordeaux',
+      dureeMinutes: 3,
+      concepts: ['qualite-des-donnees', 'cle-et-relation'],
+      notes: moteur.puces(
+        'Temps « réfléchir » du niveau 1 : deux votes non notés.',
+        'Première question sans révélation : la réponse tombe à la correction de l’exercice 4 ; noter au tableau la répartition des votes.',
+        'Deuxième question, sans débat : la révélation suit.',
+      ),
     },
-  },
+    [
+      moteur.vote(
+        'b3-01-a1-part-douteuse',
+        'qualite-des-donnees',
+        false,
+        'Dans un export commercial d’environ 4 000 lignes, quelle part des lignes est fausse ou douteuse, à votre avis ?',
+        'Environ 15 % des lignes',
+        [
+          ['Moins de 1 % des lignes', 'part-douteuse-estimee-sans-mesure'],
+          ['Environ 5 % des lignes', 'part-douteuse-estimee-sans-mesure'],
+          ['Plus de 30 % des lignes', 'part-douteuse-estimee-sans-mesure'],
+        ],
+      ),
+      moteur.vote(
+        'b3-01-a1-cle-client',
+        'cle-et-relation',
+        false,
+        '« Dupont – Bordeaux » suffit-il à identifier un client de Norvane ?',
+        'Non : il faut un identifiant attribué par le système',
+        [
+          ['Oui : le nom et la ville suffisent', 'libelle-pris-pour-cle'],
+          ['Non : il faut aussi le code postal', 'libelle-pris-pour-cle'],
+        ],
+      ),
+    ],
+  ),
   moteur.ecranV2(
     {
       screenId: 'B3-01-A1-05-COURS-DONNEE',
@@ -542,34 +539,31 @@ export const ACTE_1: moteur.Acte = [
       ],
     ],
   ),
-  {
-    screenId: 'B3-01-A1-09-VOTE-CA-TEXTE',
-    titre: 'Vote : un CA aligné à gauche',
-    diffusion: 'seance',
-    brique: 'fp-vote',
-    dureeMinutes: 2,
-    concepts: ['nettoyage'],
-    notes: moteur.puces(
-      'Temps « réfléchir » du niveau 2 : vote non noté, 1 min de vote et 1 min de révélation.',
-      'Faire repérer dans le fichier une cellule de ca_ht alignée à gauche : l’indice d’un texte.',
-    ),
-    proprietes: {
-      modalite: 'solo',
-      questions: [
-        moteur.vote(
-          'b3-01-a1-ca-texte',
-          'nettoyage',
-          false,
-          `Dans la colonne ca_ht, une cellule affiche « ${CA_HT_SAISI_EN_TEXTE} », alignée à gauche. Que fait =SOMME(L:L) de cette cellule ?`,
-          'Elle l’ignore, sans aucun message',
-          [
-            ['Elle l’ajoute au total', 'texte-pris-pour-nombre'],
-            ['Elle affiche une erreur #VALEUR!', 'texte-pris-pour-nombre'],
-          ],
-        ),
-      ],
+  moteur.voteQuiOuvre(
+    {
+      screenId: 'B3-01-A1-09-VOTE-CA-TEXTE',
+      titre: 'Vote : un CA aligné à gauche',
+      dureeMinutes: 2,
+      concepts: ['nettoyage'],
+      notes: moteur.puces(
+        'Temps « réfléchir » du niveau 2 : vote non noté, 1 min de vote et 1 min de révélation.',
+        'Faire repérer dans le fichier une cellule de ca_ht alignée à gauche : l’indice d’un texte.',
+      ),
     },
-  },
+    [
+      moteur.vote(
+        'b3-01-a1-ca-texte',
+        'nettoyage',
+        false,
+        `Dans la colonne ca_ht, une cellule affiche « ${CA_HT_SAISI_EN_TEXTE} », alignée à gauche. Que fait =SOMME(L:L) de cette cellule ?`,
+        'Elle l’ignore, sans aucun message',
+        [
+          ['Elle l’ajoute au total', 'texte-pris-pour-nombre'],
+          ['Elle affiche une erreur #VALEUR!', 'texte-pris-pour-nombre'],
+        ],
+      ),
+    ],
+  ),
   moteur.ecranV2(
     {
       screenId: 'B3-01-A1-10-COURS-GRILLE',

@@ -211,6 +211,23 @@ export const DELAI_OUVERTURE_CONTEXTE_MS = 60_000;
 
 export const VERSION_PUBLIEE_SUR_BASE_NEUVE = 1;
 
+export function contexteFormationsDeLaSuite(): () => ContexteFormations {
+  let contexte: ContexteFormations | undefined;
+
+  beforeAll(async () => {
+    contexte = await ouvrirContexteFormations();
+  }, DELAI_OUVERTURE_CONTEXTE_MS);
+
+  afterAll(async () => contexte?.fermer());
+
+  return () => {
+    if (contexte === undefined) {
+      throw new Error('contexte des formations non ouvert');
+    }
+    return contexte;
+  };
+}
+
 export async function ouvrirContexteFormations(): Promise<ContexteFormations> {
   const dataSource = new DataSource(buildFormationsOptions());
   await initialiserEtMigrer(dataSource);

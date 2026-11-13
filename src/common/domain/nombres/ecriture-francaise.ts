@@ -1,5 +1,5 @@
 import { sansEspacesTypographiques } from '../texte/nettoyage/sans-espaces-typographiques';
-import { auDixieme } from './arrondi';
+import { auDixieme, auMillionieme } from './arrondi';
 
 export const VALEUR_ABSENTE = '—';
 
@@ -50,6 +50,21 @@ export function enPourcent(valeur: number): string {
 export function nombreSansArrondi(valeur: number): string {
   const decimales = String(valeur).split('.').at(1)?.length ?? 0;
   return nombreFrancais(valeur, decimales);
+}
+
+const CENT = 100;
+const DECIMALES_D_UN_POURCENTAGE = 2;
+
+export function ecrituresEnPourcentage(part: number): readonly string[] {
+  const pourcentage = auMillionieme(part * CENT);
+  const aDeuxDecimales = pourcentage.toFixed(DECIMALES_D_UN_POURCENTAGE);
+  const nombres = new Set([
+    nombreSansArrondi(pourcentage),
+    ...(Number(aDeuxDecimales) === pourcentage
+      ? [aDeuxDecimales.replace('.', ',')]
+      : []),
+  ]);
+  return [...nombres].flatMap((nombre) => [`${nombre} %`, `${nombre}%`]);
 }
 
 export function nombreSommable(valeur: number): string {

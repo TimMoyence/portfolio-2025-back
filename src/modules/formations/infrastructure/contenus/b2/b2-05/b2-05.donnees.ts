@@ -69,9 +69,6 @@ export const ANNUITE_POUR_AMORTISSEMENT =
 export const TOTAL_REMBOURSE = 'cout-credit-confondu-avec-total-rembourse';
 export const VPM_NON_SIGNE = 'capital-de-vpm-non-signe';
 
-export const DONNEES_FICTIVES =
-  'Données fictives Atelier Rivage, créées pour ce cours.';
-
 export const RENVOI_AU_DOSSIER = 'B2-05-A1-05-DOSSIER';
 
 const annuiteConstante = (

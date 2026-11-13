@@ -9,7 +9,10 @@ import { projeterCatalogue } from '../../../../src/modules/formations/domain/cou
 import { contientLaForme } from '../../../../src/modules/formations/domain/cours/confidentialite/GardeConfidentialite';
 import { tirer } from '../../../../src/modules/formations/domain/cours/tirage/Tirage';
 import { typographier } from '../../../../src/modules/formations/domain/cours/formule/Typographie';
-import { nombreSansArrondi } from '../../../../src/common/domain/nombres/ecriture-francaise';
+import {
+  ecrituresEnPourcentage,
+  nombreSansArrondi,
+} from '../../../../src/common/domain/nombres/ecriture-francaise';
 import {
   sansEspacesNiMoinsTypographiques,
   sansEspacesTypographiques,
@@ -43,6 +46,16 @@ function valeursASaisirDe(
     .filter((valeur) => !Number.isInteger(arrondi(valeur, 2)));
 }
 
+function formesDUneValeurASaisir(valeur: number): (number | string)[] {
+  const ecritures = [...new Set([valeur, arrondi(valeur, 2)])];
+  const avecEtSansSigne = [
+    ...new Set(ecritures.flatMap((ecriture) => [ecriture, Math.abs(ecriture)])),
+  ];
+  return Math.abs(valeur) < 1
+    ? [...ecritures, ...avecEtSansSigne.flatMap(ecrituresEnPourcentage)]
+    : ecritures;
+}
+
 export function valeursDevoileesAvantLeurEcran(cours: Cours): string[] {
   const { solutions } = tirer(cours, 0);
   const ordre = cours.ecrans.map(({ id }) => id);
@@ -53,20 +66,21 @@ export function valeursDevoileesAvantLeurEcran(cours: Cours): string[] {
     ),
   );
 
-  return cours.ecrans.flatMap((ecran) =>
-    valeursASaisirDe(ecran, solutions).flatMap((valeur) => {
-      const arrondie = arrondi(valeur, 2);
-      return ordre
-        .slice(0, ordre.indexOf(ecran.id))
-        .filter((anterieur) =>
-          contientLaValeur(corrections.get(anterieur) ?? '', arrondie),
-        )
-        .map(
-          (anterieur) =>
-            `${formeFrancaise(arrondie)} de ${ecran.id} dans ${anterieur}`,
-        );
-    }),
-  );
+  return cours.ecrans.flatMap((ecran) => {
+    const anterieurs = ordre.slice(0, ordre.indexOf(ecran.id));
+    return valeursASaisirDe(ecran, solutions)
+      .flatMap(formesDUneValeurASaisir)
+      .flatMap((forme) =>
+        anterieurs
+          .filter((anterieur) =>
+            contientLaValeur(corrections.get(anterieur) ?? '', forme),
+          )
+          .map(
+            (anterieur) =>
+              `${formeFrancaise(forme)} de ${ecran.id} dans ${anterieur}`,
+          ),
+      );
+  });
 }
 
 export function colonnesVidesDeLaFeuille(

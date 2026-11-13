@@ -44,19 +44,10 @@ export interface FreeRange {
   dernier: number;
 }
 
-export const MODALITES = Object.freeze([
-  'solo',
-  'binome',
-  'groupe',
-  'classe',
-] as const);
+export const MODALITES = Object.freeze(['solo', 'binome'] as const);
 export type Modalite = (typeof MODALITES)[number];
 
-export const REGIMES_DE_VERROU = Object.freeze([
-  'ouvert',
-  'focus',
-  'examen',
-] as const);
+export const REGIMES_DE_VERROU = Object.freeze(['ouvert', 'focus'] as const);
 export type RegimeVerrou = (typeof REGIMES_DE_VERROU)[number];
 
 export interface MetadonneesBrique {

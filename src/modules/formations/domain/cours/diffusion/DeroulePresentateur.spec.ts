@@ -14,6 +14,7 @@ import {
   EXPLICATIONS_SUR_PLACE,
 } from '../../../../../../test/factories/formations/cours/ecrans-stockes.factory';
 import { buildCoursDuContenu } from '../../../../../../test/factories/formations/cours/contenus-de-cours.factory';
+import { ecranDuCours } from '../../../../../../test/helpers/formations/cours/lecture-de-cours';
 import {
   CONTENUS,
   COURS_B2_01,
@@ -36,13 +37,12 @@ import { tirer } from '../tirage/Tirage';
 describe('deroulePresentateur', () => {
   const cours = buildCoursDeTest();
   const deroule = deroulePresentateur(cours, 424);
-  const ecran = (id: string): EcranDeroule =>
-    deroule.ecrans.find((candidat) => candidat.id === id)!;
+  const ecran = (id: string): EcranDeroule => ecranDuCours(deroule, id);
 
   it('sert au pupitre la pièce jointe publique d un écran du catalogue', () => {
     const avecClasseur = lireCoursStocke(
       buildCoursDeBriques([
-        buildEcranDeBrique('fp-quote'),
+        buildEcranDeBrique('fp-pro'),
         buildEcranAPieceJointe('fp-story', buildPieceJointe(), {
           diffusion: 'catalogue',
         }),
@@ -88,7 +88,7 @@ describe('deroulePresentateur', () => {
     expect(ecran('E-OUV').notes).toBe('Rappel');
     expect(ecran('E-OUV').seuil).toBeCloseTo(0.6);
     expect(ecran('E-NUM').seuil).toBe(REGLE_DE_NOTATION.seuilQuestionProbleme);
-    expect(ecran('E-CITATION').seuil).toBeNull();
+    expect(ecran('E-CAS').seuil).toBeNull();
     expect(ecran('E-FIN').seuil).toBe(REGLE_DE_NOTATION.seuilQuestionProbleme);
     expect(
       ecran('E-PRATIQUE').corriges.map((corrige) => corrige.questionId),
@@ -206,11 +206,11 @@ describe('deroulePresentateur (affichage d une feuille corrigée, F-37)', () => 
   });
 
   it('remplit au pupitre le tableau de la toile, coefficients et évolution réelle calculés par le serveur', () => {
-    const toile = deroulePresentateur(
-      buildCoursDuContenu(COURS_B2_01),
-      0,
-    ).ecrans.find(({ id }) => id === 'B2-01-A4-05-INDICE-TOILE');
-    if (toile?.corrigeEcran?.type !== 'tableau') {
+    const toile = ecranDuCours(
+      deroulePresentateur(buildCoursDuContenu(COURS_B2_01), 0),
+      'B2-01-A4-05-INDICE-TOILE',
+    );
+    if (toile.corrigeEcran?.type !== 'tableau') {
       throw new Error('corrigé de tableau attendu sur l indice de la toile');
     }
     const { lignes, synthese } = toile.corrigeEcran.tableauCorrige;
@@ -291,7 +291,7 @@ describe('deroulePresentateur (corrigés au déroulé, B22)', () => {
 
   it('porte la diffusion et le titre de chaque écran', () => {
     expect(deroule.ecrans.every((e) => e.diffusion === 'seance')).toBe(true);
-    expect(ecran('fp-quote').titre).toBe('Écran fp-quote');
+    expect(ecran('fp-pro').titre).toBe('Écran fp-pro');
   });
 
   it('M4 · corrige les productions, les énigmes et les défis, et aucun vote', () => {
@@ -373,7 +373,7 @@ describe('deroulePresentateur (corrigés au déroulé, B22)', () => {
       ],
     });
     expect(ecran('fp-vote').corrigeEcran).toBeNull();
-    expect(ecran('fp-quote').corrigeEcran).toBeNull();
+    expect(ecran('fp-pro').corrigeEcran).toBeNull();
   });
 
   it('M4 · ne sert aucune prose sous la correction d un vote des cours servis', () => {

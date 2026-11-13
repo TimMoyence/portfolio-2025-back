@@ -6,7 +6,8 @@ import { test } from 'node:test';
 
 import {
   CLASSEURS_DANS_DIST,
-  FICHIER_SERVI,
+  extensionsServies,
+  fichierServi,
 } from '../lib/classeurs-servis.mjs';
 import {
   fichiersDeMigration,
@@ -57,9 +58,8 @@ void test('le build produit les points d entree utilises par Docker et les migra
 void test('le build embarque, octet pour octet, les classeurs que le serveur sert en séance', () => {
   construire();
   const sources = join(root, CLASSEURS);
-  const classeurs = fichiersDe(sources).filter((nom) =>
-    FICHIER_SERVI.test(nom),
-  );
+  const servi = fichierServi(root);
+  const classeurs = fichiersDe(sources).filter((nom) => servi.test(nom));
 
   assert.notEqual(classeurs.length, 0);
   for (const classeur of classeurs) {
@@ -77,14 +77,31 @@ void test('le build ne dépose à côté des classeurs ni leur manifeste ni aucu
     (nom) => !/\.(js|d\.ts|js\.map)$/.test(nom),
   );
 
+  const servi = fichierServi(root);
   assert.deepEqual(
     embarques,
-    fichiersDe(join(root, CLASSEURS)).filter((nom) => FICHIER_SERVI.test(nom)),
+    fichiersDe(join(root, CLASSEURS)).filter((nom) => servi.test(nom)),
   );
   assert.equal(
     embarques.some((nom) => nom.endsWith('.json')),
     false,
   );
+});
+
+void test('TXT-02 la copie du build ne retient que les extensions de TYPES_DE_FICHIER', () => {
+  construire();
+  const servi = fichierServi(root);
+
+  for (const extension of extensionsServies(root)) {
+    assert.equal(servi.test(`b3-03/note.0c1d2e3f.${extension}`), true);
+  }
+  for (const extension of ['xlsm', 'exe', 'js', 'json']) {
+    assert.equal(
+      servi.test(`b3-03/note.0c1d2e3f.${extension}`),
+      false,
+      extension,
+    );
+  }
 });
 
 void test('les commandes de production utilisent les points d entree du build', () => {

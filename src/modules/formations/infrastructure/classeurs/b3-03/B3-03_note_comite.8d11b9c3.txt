@@ -1,0 +1,63 @@
+﻿NOTE AU COMITÉ DE DIRECTION
+
+Analyse des ventes du réseau Norvane Équipement, janvier à septembre 2026
+
+De : Nadia Ferrand, directrice commerciale. À : comité de direction. Le 8 décembre 2026.
+
+1. CONTEXTE ET DONNÉES
+
+1.1 Origine des données
+
+L’analyse porte sur l’export des commandes des agences du réseau, de janvier 2025 à septembre 2026.  Après nettoyage, la base compte 4 098 lignes de commande.
+
+1.2 Lignes signalées
+
+Au total, 85 lignes douteuses sont signalées à vérifier.  Aucune n’est corrigée sans validation, aucune n’est supprimée.
+
+2. LES CHIFFRES CLÉS
+
+2.1 Chiffre d’affaires
+
+De janvier à septembre 2026, le réseau réalise 575 046 € de chiffre d’affaires HT, en hausse de 8,6 % sur les mêmes mois de 2025.
+
+2.2 Objectifs
+
+Au total, 3 agences restent sous leur objectif cumulé.  Rennes atteint 79,0 % de ses objectifs de janvier à septembre, le taux le plus bas du réseau.
+
+2.3 Taux de marque
+
+Marseille dégage un taux de marque de 26,9 % en 2026, contre 32,3 % sur les mêmes mois de 2025, alors que son chiffre d’affaires dépasse l’objectif.
+
+3. DÉLAIS ET RETARDS
+
+3.1 Délai médian
+
+À Strasbourg, le délai médian de livraison passe de 2 jours ouvrés en 2025 à 8 en 2026.  Celui du réseau reste à 3.
+
+3.2 Retards
+
+En 2026, 99 lignes de commande sont livrées après leur date promise.
+
+4. CE QUE DISENT LES DONNÉES
+
+- Marseille : 66 lignes portent une remise de plus de 15 %, la marge fond.
+
+- Rennes : l’informatique recule de 40,2 %, les autres catégories bougent peu.
+
+- Lille : le chiffre d’affaires progresse de 23,1 %.
+
+- Strasbourg : les clients attendent leur livraison plus longtemps que dans le reste du réseau.
+
+5. RECOMMANDATIONS
+
+5.1 Les remises de Marseille
+
+Dès janvier, toute remise au-delà de 10 % est validée par la direction ; le contrôle est confié au responsable de l’agence de Marseille.
+
+5.2 Les livraisons de Strasbourg
+
+D’ici mars, le responsable de Strasbourg traite le transport et le stock avant de perdre ses clients.
+
+6. ANNEXE : MÉTHODE
+
+Les chiffres de cette note viennent du classeur de reprise nettoyé.  Chaque taux est un ratio de sommes, chaque délai une médiane, sur la même période que sa comparaison.

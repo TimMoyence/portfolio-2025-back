@@ -10,7 +10,7 @@ import {
 import { valeurDuPiege } from '../b3-01/b3-01.questions';
 import { quatreHistoires } from '../b3-01/b3-01.acte-3';
 import { REPRISE_NETTOYEE } from './b3-02.acte-1';
-import { voteQuiOuvre } from './b3-02.briques';
+
 import * as moteur from '../../briques';
 
 const piege = (id: QuestionChiffreeB301, confusion: ConfusionId): number =>
@@ -34,7 +34,7 @@ const REJETEE_SANS_COMPARAISON = {
 } as const;
 
 const AUDIT: moteur.Acte = [
-  voteQuiOuvre(
+  moteur.voteQuiOuvre(
     {
       screenId: 'B3-02-A3-01-VOTE-IA',
       titre: 'Vote : le chiffre d’une IA',
@@ -45,20 +45,25 @@ const AUDIT: moteur.Acte = [
         'Révélation : le 10 est la moyenne des délais ; votre médiane de l’exercice 4 vaut moins. Ni la croire, ni la jeter : comparer et lire la méthode.',
       ),
     },
-    moteur.vote(
-      'b3-02-a3-chiffre-ia',
-      'ia-analyste',
-      false,
-      'Vous confiez la reprise nettoyée à une IA. Elle annonce : « Délai de livraison de Strasbourg en 2026 : 10 jours ouvrés. » Que faites-vous ?',
-      'Je le compare au mien et je lis sa méthode',
-      [
-        ['Je le reprends tel quel : elle a tout calculé', 'ia-crue-sur-parole'],
+    [
+      moteur.vote(
+        'b3-02-a3-chiffre-ia',
+        'ia-analyste',
+        false,
+        'Vous confiez la reprise nettoyée à une IA. Elle annonce : « Délai de livraison de Strasbourg en 2026 : 10 jours ouvrés. » Que faites-vous ?',
+        'Je le compare au mien et je lis sa méthode',
         [
-          'Je le jette : une IA se trompe toujours',
-          'ia-rejetee-sans-comparaison',
+          [
+            'Je le reprends tel quel : elle a tout calculé',
+            'ia-crue-sur-parole',
+          ],
+          [
+            'Je le jette : une IA se trompe toujours',
+            'ia-rejetee-sans-comparaison',
+          ],
         ],
-      ],
-    ),
+      ),
+    ],
   ),
   moteur.ecranV2(
     {

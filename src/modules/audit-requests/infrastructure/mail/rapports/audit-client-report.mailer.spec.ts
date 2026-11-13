@@ -194,6 +194,32 @@ describe('AuditClientReportMailer', () => {
     expect(mockTransporter.sendMail).not.toHaveBeenCalled();
   });
 
+  it('REF-03 · nomme en anglais chaque pilier connu, et par sa clé un pilier inconnu', async () => {
+    await envoyerRapport(buildMailer(), {
+      locale: 'en',
+      clientReport: {
+        ...CLIENT,
+        pillarScorecard: [
+          ...CLIENT.pillarScorecard,
+          { ...CLIENT.pillarScorecard[0], pillar: 'toString' },
+        ],
+      },
+    });
+
+    const { html, text } = sentMail();
+    for (const libelle of [
+      'SEO',
+      'Conversion',
+      'AI citability',
+      'AI visibility',
+      'Tech & scalability',
+    ]) {
+      expect(String(text)).toContain(`- ${libelle}: `);
+    }
+    expect(String(text)).toContain('- toString: ');
+    expect(String(html)).toContain('>AI visibility</td>');
+  });
+
   it('VIS-01 · redige en anglais le rapport d un audit demande depuis la page anglaise', async () => {
     await envoyerRapport(buildMailer(), {
       firstName: 'Jane',

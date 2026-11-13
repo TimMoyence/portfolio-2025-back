@@ -1,10 +1,6 @@
 import { z } from 'zod';
 import { nommeAuContrat as nomme } from '../../../../common/domain/liens/registre-du-contrat';
-import {
-  presentationInitiale,
-  video,
-  visuel,
-} from '../cours/stockage/ProprietesStockees';
+import { video, visuel } from '../cours/stockage/ProprietesStockees';
 import { auMoinsUn, texte } from '../cours/stockage/SchemasCommuns';
 import { presentationsVisuelles } from '../cours/structure/VisualPresentation';
 import { MODALITES, REGIMES_DE_VERROU } from './contrat-de-l-api';
@@ -57,10 +53,7 @@ const prereglages = z.array(
 const animation = z.array(valeursParCle);
 
 const presentation = nomme(
-  z.union([
-    presentationInitiale,
-    presentationsVisuelles({ version: z.literal(2), screenId: texte }),
-  ]),
+  presentationsVisuelles({ version: z.literal(2), screenId: texte }),
   'PresentationServie',
 );
 
@@ -239,15 +232,6 @@ const donneesDeVote: SchemasParBrique['fp-vote'] = strict({
 });
 
 const DONNEES: SchemasParBrique = {
-  'fp-quote': strict({
-    citation: strict({
-      id: z.string(),
-      texte: z.string(),
-      auteur: z.string().nullable(),
-      source: z.string().nullable(),
-      metadonnees,
-    }),
-  }),
   'fp-story': strict({ recit }),
   'fp-pro': strict({
     cas: strict({
@@ -344,7 +328,7 @@ const DONNEES: SchemasParBrique = {
     intitule: z.string(),
     consigne: z.string().optional(),
     regime: z.enum(REGIMES_DE_VERROU),
-    ordre: z.enum(['fixe', 'melange']),
+    ordre: z.literal('fixe'),
     questions: z.array(
       z.discriminatedUnion('brique', [
         strict({ brique: z.literal('fp-numeric'), donnees: donneesNumeriques }),

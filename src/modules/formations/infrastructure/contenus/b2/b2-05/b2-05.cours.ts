@@ -9,7 +9,6 @@ import {
   AUTRES_LIGNES_D_AMORTISSEMENT,
   CAPITAL_INITIAL,
   CONCEPTS_DU_COURS,
-  DONNEES_FICTIVES,
   ECART_DE_L_ANNUITE_ARRONDIE,
   DUREE_DE_L_EMPRUNT,
   DUREE_DE_L_EMPRUNT_TYPE,
@@ -106,40 +105,37 @@ const ACTE_1: moteur.Acte = [
         'Le Prêteur et sa femme, de Quentin Metsys (1514) : un changeur pèse les pièces sur sa table de comptes',
     },
   ),
-  {
-    screenId: 'B2-05-A1-03-VOTE-ACQUIS',
-    titre: 'Vote : deux rappels, B2-01 et B2-04',
-    diffusion: 'seance',
-    brique: 'fp-vote',
-    dureeMinutes: 4,
-    concepts: ['evolution-reciproque', 'somme-de-termes'],
-    notes: moteur.puces(
-      'Rappel rapide : deux votes non notés, un par cours.',
-      'Dire où chaque acquis resservira : la réciproque pour actualiser, le nombre de termes pour les annuités.',
-      ...moteur.NOTES_DU_VOTE_A_DEUX_QUESTIONS,
-    ),
-    proprietes: {
-      modalite: 'solo',
-      questions: [
-        moteur.vote(
-          'b2-05-a1-rappel-reciproque',
-          'evolution-reciproque',
-          false,
-          'Rappel du B2-01. Un prix augmente de 25 %. Par quel nombre faut-il multiplier le nouveau prix pour retrouver le prix de départ ?',
-          'Par 1 ÷ 1,25 = 0,8',
-          [['Par 0,75, soit une baisse de 25 %', 'reciproque-meme-taux']],
-        ),
-        moteur.vote(
-          'b2-05-a1-rappel-termes',
-          'somme-de-termes',
-          false,
-          'Rappel du B2-04. Combien de termes additionne-t-on du rang 0 au rang 4 inclus ?',
-          'Cinq termes : 4 − 0 + 1',
-          [['Quatre termes : 4 − 0', 'nombre-de-termes-decale']],
-        ),
-      ],
+  moteur.voteQuiOuvre(
+    {
+      screenId: 'B2-05-A1-03-VOTE-ACQUIS',
+      titre: 'Vote : deux rappels, B2-01 et B2-04',
+      dureeMinutes: 4,
+      concepts: ['evolution-reciproque', 'somme-de-termes'],
+      notes: moteur.puces(
+        'Rappel rapide : deux votes non notés, un par cours.',
+        'Dire où chaque acquis resservira : la réciproque pour actualiser, le nombre de termes pour les annuités.',
+        ...moteur.NOTES_DU_VOTE_A_DEUX_QUESTIONS,
+      ),
     },
-  },
+    [
+      moteur.vote(
+        'b2-05-a1-rappel-reciproque',
+        'evolution-reciproque',
+        false,
+        'Rappel du B2-01. Un prix augmente de 25 %. Par quel nombre faut-il multiplier le nouveau prix pour retrouver le prix de départ ?',
+        'Par 1 ÷ 1,25 = 0,8',
+        [['Par 0,75, soit une baisse de 25 %', 'reciproque-meme-taux']],
+      ),
+      moteur.vote(
+        'b2-05-a1-rappel-termes',
+        'somme-de-termes',
+        false,
+        'Rappel du B2-04. Combien de termes additionne-t-on du rang 0 au rang 4 inclus ?',
+        'Cinq termes : 4 − 0 + 1',
+        [['Quatre termes : 4 − 0', 'nombre-de-termes-decale']],
+      ),
+    ],
+  ),
   moteur.ecranV2(
     {
       screenId: 'B2-05-A1-04-ACQUIS',
@@ -240,7 +236,7 @@ const ACTE_1: moteur.Acte = [
             'Combien le placement et l’épargne rapporteront-ils, et combien l’emprunt coûtera-t-il ?',
         },
       ],
-      note: DONNEES_FICTIVES,
+      note: moteur.DONNEES_FICTIVES_DU_B2,
     },
   ),
   {
@@ -1000,41 +996,38 @@ const ACTE_3: moteur.Acte = [
         'Annuité = intérêts + amortissement, environ 12 950,46 € chaque année',
       reading:
         'Chaque année, la barre a la même hauteur : l’annuité. Les intérêts baissent, car ils portent sur un capital restant dû de plus en plus petit ; l’amortissement monte d’autant.',
-      source: `Emprunt type. ${DONNEES_FICTIVES}`,
+      source: `Emprunt type. ${moteur.DONNEES_FICTIVES_DU_B2}`,
       description:
         'Dix barres de même hauteur totale. La part des intérêts part de 5 000 € en année 1 et descend jusqu’à 617 € environ en année 10 ; la part de l’amortissement monte de 7 950 € environ à 12 334 € environ.',
     },
   ),
-  {
-    screenId: 'B2-05-A3-02-VOTE-EMPRUNT',
-    titre: 'Vote : rembourser et payer les intérêts',
-    diffusion: 'seance',
-    brique: 'fp-vote',
-    dureeMinutes: 4,
-    concepts: ['tableau-d-amortissement', 'cout-du-credit'],
-    notes: moteur.notesDuVoteQuiOuvreLaNotion(3),
-    proprietes: {
-      modalite: 'solo',
-      questions: [
-        moteur.vote(
-          'b2-05-a3-rembourse',
-          'tableau-d-amortissement',
-          false,
-          'Une annuité de 13 000 € contient 2 000 € d’intérêts. Quelle part du capital emprunté rembourse-t-elle ?',
-          '11 000 € : l’annuité moins les intérêts',
-          [['13 000 € : toute l’annuité', ANNUITE_POUR_AMORTISSEMENT]],
-        ),
-        moteur.vote(
-          'b2-05-a3-cout-vote',
-          'cout-du-credit',
-          false,
-          'On emprunte 10 000 € et l’on rembourse 11 200 € en tout. Combien le crédit a-t-il coûté ?',
-          '1 200 € : le total remboursé moins le capital',
-          [['11 200 € : le total remboursé', TOTAL_REMBOURSE]],
-        ),
-      ],
+  moteur.voteQuiOuvre(
+    {
+      screenId: 'B2-05-A3-02-VOTE-EMPRUNT',
+      titre: 'Vote : rembourser et payer les intérêts',
+      dureeMinutes: 4,
+      concepts: ['tableau-d-amortissement', 'cout-du-credit'],
+      notes: moteur.notesDuVoteQuiOuvreLaNotion(3),
     },
-  },
+    [
+      moteur.vote(
+        'b2-05-a3-rembourse',
+        'tableau-d-amortissement',
+        false,
+        'Une annuité de 13 000 € contient 2 000 € d’intérêts. Quelle part du capital emprunté rembourse-t-elle ?',
+        '11 000 € : l’annuité moins les intérêts',
+        [['13 000 € : toute l’annuité', ANNUITE_POUR_AMORTISSEMENT]],
+      ),
+      moteur.vote(
+        'b2-05-a3-cout-vote',
+        'cout-du-credit',
+        false,
+        'On emprunte 10 000 € et l’on rembourse 11 200 € en tout. Combien le crédit a-t-il coûté ?',
+        '1 200 € : le total remboursé moins le capital',
+        [['11 200 € : le total remboursé', TOTAL_REMBOURSE]],
+      ),
+    ],
+  ),
   moteur.ecranDIllustration(
     {
       screenId: 'B2-05-A3-03-ILLUSTRATION-ANNUITE',

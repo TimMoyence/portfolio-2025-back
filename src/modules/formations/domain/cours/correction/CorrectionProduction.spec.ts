@@ -6,7 +6,7 @@ import {
   buildCorrigeTableDeVerite,
   buildPlanFeuille,
 } from '../../../../../../test/factories/formations/cours/corriges.factory';
-import { attendreProductionReussie } from '../../../../../../test/helpers/formations/cours/corrections';
+import { attendreProductionReussie } from '../../../../../../test/helpers/formations/cours/corrige/corrections';
 import {
   corrigerClassement,
   corrigerFeuille,

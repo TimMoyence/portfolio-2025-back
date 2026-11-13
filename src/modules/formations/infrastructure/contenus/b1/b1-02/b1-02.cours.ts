@@ -107,42 +107,39 @@ const ACTE_1: moteur.Acte = [
         'Graphique de William Playfair (1822) : le prix du blé en barres et les salaires en courbe, de 1565 à 1821, une évolution suivie sur deux siècles et demi',
     },
   ),
-  {
-    screenId: 'B1-02-A1-03-VOTE-DIAGNOSTIC',
-    titre: 'Vote : par quel nombre multiplier ?',
-    diffusion: 'seance',
-    brique: 'fp-vote',
-    dureeMinutes: 4,
-    concepts: ['coefficient-multiplicateur'],
-    notes: moteur.notesDuVoteQuiOuvreLaNotion(1),
-    proprietes: {
-      modalite: 'solo',
-      questions: [
-        moteur.vote(
-          'b1-02-a1-vote-hausse',
-          'coefficient-multiplicateur',
-          false,
-          'Un prix augmente de 5 %. Par quel nombre le multiplier ?',
-          '1,05',
-          [
-            ['0,05', COEFFICIENT_POUR_TAUX],
-            ['1,5', FACTEUR_CENT],
-          ],
-        ),
-        moteur.vote(
-          'b1-02-a1-vote-remise',
-          'coefficient-multiplicateur',
-          false,
-          'Une remise de 30 % sur un prix : par quel nombre le multiplier ?',
-          '0,70',
-          [
-            ['0,30', COEFFICIENT_POUR_TAUX],
-            ['1,30', SENS],
-          ],
-        ),
-      ],
+  moteur.voteQuiOuvre(
+    {
+      screenId: 'B1-02-A1-03-VOTE-DIAGNOSTIC',
+      titre: 'Vote : par quel nombre multiplier ?',
+      dureeMinutes: 4,
+      concepts: ['coefficient-multiplicateur'],
+      notes: moteur.notesDuVoteQuiOuvreLaNotion(1),
     },
-  },
+    [
+      moteur.vote(
+        'b1-02-a1-vote-hausse',
+        'coefficient-multiplicateur',
+        false,
+        'Un prix augmente de 5 %. Par quel nombre le multiplier ?',
+        '1,05',
+        [
+          ['0,05', COEFFICIENT_POUR_TAUX],
+          ['1,5', FACTEUR_CENT],
+        ],
+      ),
+      moteur.vote(
+        'b1-02-a1-vote-remise',
+        'coefficient-multiplicateur',
+        false,
+        'Une remise de 30 % sur un prix : par quel nombre le multiplier ?',
+        '0,70',
+        [
+          ['0,30', COEFFICIENT_POUR_TAUX],
+          ['1,30', SENS],
+        ],
+      ),
+    ],
+  ),
   moteur.ecranV2(
     {
       screenId: RENVOI_AU_DOSSIER,
@@ -1005,39 +1002,36 @@ const ACTE_2: moteur.Acte = [
 ];
 
 const ACTE_3: moteur.Acte = [
-  {
-    screenId: 'B1-02-A3-01-VOTE-INDICES',
-    titre: 'Vote : que dit un indice ?',
-    diffusion: 'seance',
-    brique: 'fp-vote',
-    dureeMinutes: 5,
-    concepts: ['indice-base-100', 'taux-moyen'],
-    notes: moteur.notesDuVoteQuiOuvreLaNotion(3),
-    proprietes: {
-      modalite: 'solo',
-      questions: [
-        moteur.vote(
-          'b1-02-a3-indice',
-          'indice-base-100',
-          false,
-          'L’indice d’un prix vaut 130, base 100 en 2020. Que signifie-t-il ?',
-          '+ 30 % depuis 2020',
-          [
-            ['+ 130 % depuis 2020', INDICE_POUR_TAUX],
-            ['Le prix vaut 130 €', INDICE_POUR_VALEUR],
-          ],
-        ),
-        moteur.vote(
-          'b1-02-a3-moyen',
-          'taux-moyen',
-          false,
-          'Une valeur augmente de 21 % en deux ans. Quel taux constant, chaque année, donne le même résultat ?',
-          '+ 10 % par an',
-          [['+ 10,5 % par an', TAUX_MOYEN_DIVISE]],
-        ),
-      ],
+  moteur.voteQuiOuvre(
+    {
+      screenId: 'B1-02-A3-01-VOTE-INDICES',
+      titre: 'Vote : que dit un indice ?',
+      dureeMinutes: 5,
+      concepts: ['indice-base-100', 'taux-moyen'],
+      notes: moteur.notesDuVoteQuiOuvreLaNotion(3),
     },
-  },
+    [
+      moteur.vote(
+        'b1-02-a3-indice',
+        'indice-base-100',
+        false,
+        'L’indice d’un prix vaut 130, base 100 en 2020. Que signifie-t-il ?',
+        '+ 30 % depuis 2020',
+        [
+          ['+ 130 % depuis 2020', INDICE_POUR_TAUX],
+          ['Le prix vaut 130 €', INDICE_POUR_VALEUR],
+        ],
+      ),
+      moteur.vote(
+        'b1-02-a3-moyen',
+        'taux-moyen',
+        false,
+        'Une valeur augmente de 21 % en deux ans. Quel taux constant, chaque année, donne le même résultat ?',
+        '+ 10 % par an',
+        [['+ 10,5 % par an', TAUX_MOYEN_DIVISE]],
+      ),
+    ],
+  ),
   moteur.ecranDIllustration(
     {
       screenId: 'B1-02-A3-02-ILLUSTRATION-TICKET',

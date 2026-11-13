@@ -1,4 +1,5 @@
 import { CONTENUS } from '..';
+import { presentationDe } from '../../../domain/cours/structure/Cours';
 
 const RETIRES: Readonly<Record<string, readonly string[]>> = {
   'b1-01-proportions-pourcentages': [
@@ -43,6 +44,8 @@ const SANS_MINI_SITUATION: readonly string[] = [
   'b1-01-proportions-pourcentages',
   'b1-02-evolutions-coefficients-indices',
   'b1-03-tcd-serie-une-variable',
+  'b1-04-series-deux-variables',
+  'b1-05-logique-conditions',
   'b2-05-mathematiques-financieres',
   'b2-06-exponentielle-logarithme',
 ];
@@ -85,11 +88,8 @@ describe.each(CONTENUS.map((contenu) => [contenu.slug, contenu] as const))(
 
     it('M1 · ouvre sur une accroche sans liste de puces', () => {
       const accroches = contenu.ecrans.flatMap((ecran) => {
-        const presentation =
-          ecran.brique === 'fp-story' ? ecran.proprietes.presentation : null;
-        return presentation?.version === 2 && presentation.renderer === 'hero'
-          ? [presentation.props]
-          : [];
+        const presentation = presentationDe(ecran);
+        return presentation?.renderer === 'hero' ? [presentation.props] : [];
       });
 
       expect(accroches).toHaveLength(1);

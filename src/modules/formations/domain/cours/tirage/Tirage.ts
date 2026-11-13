@@ -1,8 +1,9 @@
 import type { AuMoinsUn } from '../../../../../common/domain/objets/au-moins-un';
+import { sansLesCles } from '../../../../../common/domain/objets/sans-les-cles';
 import { auMillionieme } from '../../../../../common/domain/nombres/arrondi';
 import { valeursAmbigues } from '../../notation/GradingCore';
 import type { AnswerValue, Solution } from '../../notation/GradingCore';
-import type { Cours, Ecran, Question } from '../../contrats/cours';
+import type { Cours, Ecran } from '../../contrats/cours';
 import {
   type MetadonneesBrique,
   type NumeriquePublic,
@@ -71,7 +72,6 @@ export type LibellesDesOptions = Readonly<
 type BriqueRuntime = Exclude<Ecran['brique'], 'questionnaire'>;
 
 export const PROPRIETE_PAR_BRIQUE: Readonly<Record<BriqueRuntime, string>> = {
-  'fp-quote': 'citation',
   'fp-story': 'recit',
   'fp-pro': 'cas',
   'fp-worked': 'exemple',
@@ -183,10 +183,6 @@ function projeterEcran(
   resoluPar: readonly string[],
   contexte: Contexte,
 ): EcranPublic {
-  const attachee = questionAttachee(ecran);
-  if (attachee !== undefined) {
-    enregistrerQuestion(attachee, contexte);
-  }
   const ecranCorrige = ecranCorrigePar(ecran);
   return {
     id: ecran.id,
@@ -216,35 +212,6 @@ function pieceJointeServie(ecran: Ecran): {
     return { pieceJointe: { libelle: pieceJointe.libelle, reservee: true } };
   }
   return ecran.diffusion === 'catalogue' ? { pieceJointe } : {};
-}
-
-function questionAttachee(ecran: Ecran): QuestionVote | undefined {
-  switch (ecran.brique) {
-    case 'fp-numeric':
-    case 'fp-vote':
-    case 'fp-recall':
-      return undefined;
-    default:
-      return ecran.question;
-  }
-}
-
-function enregistrerQuestion(question: Question, contexte: Contexte): void {
-  switch (question.type) {
-    case 'numeric':
-      enregistrerNumerique(question, contexte);
-      return;
-    case 'vote':
-      enregistrerVoteAttache(question, contexte);
-      return;
-    case 'feuille':
-    case 'tableau':
-    case 'classement':
-    case 'enigme':
-      return;
-    default:
-      return question satisfies never;
-  }
 }
 
 function enregistrerNumerique(
@@ -278,32 +245,6 @@ function enregistrerNumerique(
   return { enonce: tiree.enonce, unite: tiree.unite };
 }
 
-function enregistrerVoteAttache(
-  question: QuestionVote,
-  contexte: Contexte,
-): void {
-  const tiree = question.generer(contexte.tirage);
-  contexte.solutions.push([
-    question.id,
-    {
-      valeur: tiree.bonne,
-      pieges: tiree.pieges.map((piege) => ({
-        valeur: piege.optionId ?? piege.libelle,
-        misconception: piege.confusion,
-      })),
-    },
-  ]);
-  contexte.corriges.push([question.id, corrige(tiree.bonne, tiree.pieges)]);
-  const libelles: Record<string, string> = {
-    [tiree.bonne]: tiree.bonneLibelle ?? tiree.bonne,
-  };
-  for (const piege of tiree.pieges) {
-    libelles[piege.optionId ?? piege.libelle] = piege.libelle;
-  }
-  contexte.libellesOptions.push([question.id, libelles]);
-  contexte.enonces.push([question.id, tiree.enonce]);
-}
-
 function metadonnees(ecran: Ecran): MetadonneesBrique {
   return {
     concepts: [...ecran.concepts],
@@ -314,15 +255,10 @@ function metadonnees(ecran: Ecran): MetadonneesBrique {
   };
 }
 
-function proprietesPubliques(
+const proprietesPubliques = (
   proprietes: Readonly<Record<string, unknown>>,
-): Readonly<Record<string, unknown>> {
-  return Object.fromEntries(
-    Object.entries(proprietes).filter(
-      ([cle]) => !PROPRIETES_RESERVEES_AU_FORMATEUR.includes(cle),
-    ),
-  );
-}
+): Readonly<Record<string, unknown>> =>
+  sansLesCles(proprietes, PROPRIETES_RESERVEES_AU_FORMATEUR);
 
 function donneesDe(ecran: Ecran, contexte: Contexte): Donnees {
   switch (ecran.brique) {
@@ -416,7 +352,6 @@ function donneesDeBrique(
     case 'fp-spaced':
       enregistrerBanque(ecran.banque, contexte);
       return { rappel: { ...ecran.proprietes.rappel, metadonnees: communes } };
-    case 'fp-quote':
     case 'fp-story':
     case 'fp-pro':
       return {
@@ -461,16 +396,12 @@ function tirerQuestionnaire(
   contexte: Contexte,
 ): Donnees {
   const communes = metadonnees(ecran);
-  const questions =
-    ecran.ordre === 'fixe'
-      ? ecran.questions
-      : melanger(ecran.questions, contexte.rng);
   return {
     intitule: ecran.intitule,
     ...(ecran.consigne === undefined ? {} : { consigne: ecran.consigne }),
     regime: ecran.regime,
     ordre: ecran.ordre,
-    questions: questions.map((question) =>
+    questions: ecran.questions.map((question) =>
       projeterQuestion(question, communes, contexte),
     ),
   };

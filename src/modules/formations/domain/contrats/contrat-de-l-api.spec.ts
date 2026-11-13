@@ -43,8 +43,8 @@ const LISTES_FERMEES: readonly (readonly [
   ['ETATS_PULSE', ETATS_PULSE, ['perdu', 'ca-va', 'clair']],
   ['PHASES_DE_VOTE', PHASES_DE_VOTE, ['question-1', 'question-2']],
   ['PACING_MODES', PACING_MODES, ['pilote', 'libre']],
-  ['MODALITES', MODALITES, ['solo', 'binome', 'groupe', 'classe']],
-  ['REGIMES_DE_VERROU', REGIMES_DE_VERROU, ['ouvert', 'focus', 'examen']],
+  ['MODALITES', MODALITES, ['solo', 'binome']],
+  ['REGIMES_DE_VERROU', REGIMES_DE_VERROU, ['ouvert', 'focus']],
 ];
 
 describe('contrats — listes fermées servies par l API', () => {
@@ -72,8 +72,8 @@ describe('contrats — listes fermées servies par l API', () => {
       Egaux<EtatPulse, 'perdu' | 'ca-va' | 'clair'>,
       Egaux<VotePhase, 'question-1' | 'question-2'>,
       Egaux<PacingMode, 'pilote' | 'libre'>,
-      Egaux<Modalite, 'solo' | 'binome' | 'groupe' | 'classe'>,
-      Egaux<RegimeVerrou, 'ouvert' | 'focus' | 'examen'>,
+      Egaux<Modalite, 'solo' | 'binome'>,
+      Egaux<RegimeVerrou, 'ouvert' | 'focus'>,
     ] = [true, true, true, true, true, true, true];
 
     expect(unionsExactes).not.toContain(false);

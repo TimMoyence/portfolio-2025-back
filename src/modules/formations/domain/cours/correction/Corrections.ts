@@ -1,22 +1,14 @@
 import type { Cours, Ecran } from '../../contrats/cours';
-import { estReservee } from '../structure/Cours';
+import { estReservee, presentationDe } from '../structure/Cours';
 
 export function ecranCorrigePar(ecran: Ecran): string | null {
   if (ecran.brique === 'fp-worked') {
     return ecran.proprietes.corrigeDe ?? null;
   }
-  if (ecran.brique !== 'fp-story') {
-    return null;
-  }
-  const presentation = ecran.proprietes.presentation;
-  if (
-    presentation?.version === 2 &&
-    (presentation.renderer === 'sort-review' ||
-      presentation.renderer === 'answer-review')
-  ) {
-    return presentation.props.source.screenId;
-  }
-  return null;
+  const presentation = presentationDe(ecran);
+  return presentation?.renderer === 'sort-review'
+    ? presentation.props.source.screenId
+    : null;
 }
 
 export function ecransReprisPar(ecran: Ecran): readonly string[] {

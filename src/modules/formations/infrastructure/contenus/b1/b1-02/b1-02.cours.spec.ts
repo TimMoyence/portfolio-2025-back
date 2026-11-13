@@ -1,19 +1,21 @@
 import {
   attendreLaFeuille,
   attendreLesNumeriques,
-  CATALOGUE_ILLUSTRE_A_SIX_PAGES,
+  CATALOGUE_ILLUSTRE_JUSQU_A_LA_PAGE_A4_02,
   corrigeDe,
   corrigeDeFeuille,
   decrireLaFicheDuCours,
   FORME_DES_COURS_B1,
   pagesDeCours,
   pagesSansMethodeOuAvecEncadreCcf,
+  rangDuContenu,
   valeursEtPieges,
 } from '../../../../../../../test/helpers/formations/cours/fiche-de-cours';
 import {
   attendusDeColonne,
   recopier,
   texteDeLEcran as texteDe,
+  reponsesDejaMontrees,
 } from '../../../../../../../test/helpers/formations/cours/feuille-de-cours';
 import { valeursAuCatalogue } from '../../../../../../../test/helpers/formations/cours/relecture-de-cours';
 import { buildCoursDuContenu } from '../../../../../../../test/factories/formations/cours/contenus-de-cours.factory';
@@ -113,10 +115,7 @@ decrireLaFicheDuCours('B1-02', COURS, {
   enigmes: 0,
   rappels: 12,
   options: 19,
-  catalogue: [
-    ...CATALOGUE_ILLUSTRE_A_SIX_PAGES.filter((code) => !code.startsWith('A4-')),
-    'A4-02',
-  ],
+  catalogue: CATALOGUE_ILLUSTRE_JUSQU_A_LA_PAGE_A4_02,
   ateliersNotes: ['A1-09 (10)', 'A2-06 (10)'],
   remediations: 18,
   corrigesSurPlace: [
@@ -173,8 +172,9 @@ describe('B1-02 — textes relus contre les données', () => {
     'B102-M14 · projette 1 min l’infographie avant la page %s de 2 min',
     (page, sujet, rang, fichier) => {
       const ecrans = COURS_B1_02.ecrans;
-      const position = ecrans.findIndex(
-        (ecran) => ecran.screenId === `B1-02-${rang}-COURS-${page}`,
+      const position = rangDuContenu(
+        COURS_B1_02,
+        `B1-02-${rang}-COURS-${page}`,
       );
       const illustration = ecrans[position - 1];
 
@@ -216,16 +216,11 @@ describe('B1-02 — textes relus contre les données', () => {
   ])(
     'B102-M10 · ne montre aucune réponse de %s dans un écran antérieur',
     (ecran, reponses) => {
-      const ecrans = COURS_B1_02.ecrans.map(({ screenId }) => screenId);
-      const anterieurs = ecrans
-        .slice(0, ecrans.indexOf(`B1-02-${ecran}`))
-        .map((screenId) => texteDe(COURS_B1_02, screenId))
-        .join(' ');
       const ecrites = reponses.map((reponse) => avecVirgule(reponse));
 
-      expect(ecrites.filter((ecrite) => anterieurs.includes(ecrite))).toEqual(
-        [],
-      );
+      expect(
+        reponsesDejaMontrees(COURS_B1_02, `B1-02-${ecran}`, ecrites),
+      ).toEqual([]);
       expect(
         ecrites.filter((ecrite) =>
           texteDe(COURS_B1_02, `B1-02-${ecran}`).includes(ecrite),

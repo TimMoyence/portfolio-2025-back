@@ -5,7 +5,24 @@ import {
   gesteDeRecopie,
   gesteDeRecopieVersLaDroite,
   ligneRecopiee,
+  piegeDeLArrondi,
 } from './feuilles';
+
+describe('REF-01 · le piège de l’arrondi oublié', () => {
+  it.each([
+    [12.34, undefined, [[12.34, 'arrondi-oublie']]],
+    [12.3, undefined, []],
+    [-0.9615, 3, [[-0.9615, 'arrondi-oublie']]],
+    [-0.962, 3, []],
+    [1.005, 2, [[1.005, 'arrondi-oublie']]],
+    [0, 2, []],
+  ] as const)(
+    'nomme l’arrondi oublié de %s au nombre de décimales demandé (%s, une par défaut)',
+    (exacte, decimales, pieges) => {
+      expect(piegeDeLArrondi(exacte, decimales)).toEqual(pieges);
+    },
+  );
+});
 
 describe('B-21 · une colonne recopiée vers le bas comme le tableur', () => {
   const RECOPIES: readonly [string, readonly string[]][] = [

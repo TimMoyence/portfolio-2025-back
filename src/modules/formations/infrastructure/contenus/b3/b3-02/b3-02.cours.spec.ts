@@ -2,10 +2,18 @@ import { lireConception } from '../../../../../../../test/helpers/formations/cou
 import * as fiche from '../../../../../../../test/helpers/formations/cours/fiche-de-cours';
 import * as feuille from '../../../../../../../test/helpers/formations/cours/feuille-de-cours';
 import * as relecture from '../../../../../../../test/helpers/formations/cours/gardes-de-relecture';
+import {
+  debutsDe,
+  ORDRE_DU_TEXTE,
+} from '../../../../../../../test/helpers/formations/cours/serie-de-pages';
+import { ecranDuCours } from '../../../../../../../test/helpers/formations/cours/lecture-de-cours';
 import { buildCoursDuContenu } from '../../../../../../../test/factories/formations/cours/contenus-de-cours.factory';
 import { nombreFrancais } from '../../../../../../common/domain/nombres/ecriture-francaise';
 import { sansEspacesTypographiques } from '../../../../../../common/domain/texte/nettoyage/sans-espaces-typographiques';
-import { estReservee } from '../../../../domain/cours/structure/Cours';
+import {
+  estReservee,
+  presentationDe,
+} from '../../../../domain/cours/structure/Cours';
 import { tirer } from '../../../../domain/cours/tirage/Tirage';
 import {
   CLASSEURS_B3_01,
@@ -28,11 +36,10 @@ import {
 } from './b3-02.briques';
 
 const COURS = buildCoursDuContenu(COURS_B3_02);
-const DOCUMENT = lireConception('cours-b3-02-conception.md');
+const DOCUMENT = lireConception('b3/cours-b3-02-conception.md');
 const QUESTIONS = Object.keys(SOURCES_B3_02) as QuestionChiffreeB302[];
 const SEUIL_D_UNE_VALEUR_RECONNAISSABLE = 10;
 const FICHES_RECAP = ['B3-02-A2-18-FICHE-RECAP-1', 'B3-02-A2-19-FICHE-RECAP-2'];
-const ORDRE_DU_TEXTE = ['Syntaxe : ', 'Le piège : ', 'Exemple : '];
 
 function texteDe(screenId: string): string {
   return sansEspacesTypographiques(
@@ -49,9 +56,8 @@ function proprietesDe(screenId: string) {
 }
 
 function explicationDe(screenId: string, reference: string): string {
-  const ecran = COURS.ecrans.find((candidat) => candidat.id === screenId);
   return sansEspacesTypographiques(
-    ecran?.correctionSurPlace?.explications.find(
+    ecranDuCours(COURS, screenId).correctionSurPlace?.explications.find(
       (explication) => explication.reference === reference,
     )?.texte ?? '',
   );
@@ -80,7 +86,7 @@ function pagesDeFormules() {
 }
 
 fiche.decrireLaFicheDuCours('B3-02', COURS, {
-  conception: 'cours-b3-02-conception.md',
+  conception: 'b3/cours-b3-02-conception.md',
   ecrans: 40,
   dureeMinutes: 180,
   minutesParActe: [57, 63, 60, 0, 0, 0],
@@ -203,10 +209,7 @@ describe('B3-02 — les valeurs du B3-01, servies telles quelles', () => {
   it('B302-M3 · cite dans les corrections de son écran chaque piège reconnaissable de la question, tel que le B3-01 le calcule', () => {
     const corrections = (screenId: string): string =>
       sansEspacesTypographiques(
-        (
-          COURS.ecrans.find((ecran) => ecran.id === screenId)
-            ?.correctionSurPlace?.explications ?? []
-        )
+        (ecranDuCours(COURS, screenId).correctionSurPlace?.explications ?? [])
           .map((explication) => explication.texte)
           .join(' '),
       );
@@ -264,14 +267,10 @@ describe('B3-02 — les pages de formules', () => {
         COURS_B3_02,
         ecran.screenId,
       ) as { image: string; paragraphs: string[] };
-      const presentation =
-        ecran.brique === 'fp-story' ? ecran.proprietes.presentation : null;
       return {
-        rendu: presentation?.version === 2 ? presentation.renderer : null,
+        rendu: presentationDe(ecran)?.renderer,
         image,
-        debuts: paragraphs.map((paragraphe) =>
-          paragraphe.slice(0, paragraphe.indexOf(':') + 2),
-        ),
+        debuts: debutsDe(paragraphs),
       };
     });
 

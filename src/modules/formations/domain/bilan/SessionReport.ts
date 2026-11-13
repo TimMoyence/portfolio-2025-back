@@ -3,6 +3,7 @@ import {
   TOUTES_LES_DECIMALES,
 } from '../../../../common/domain/nombres/ecriture-francaise';
 import { moyenneOu } from '../../../../common/domain/nombres/statistiques';
+import { libelleOuCle } from '../../../../common/domain/objets/libelle-ou-cle';
 import type { QuestionDeBareme } from '../notation/Bareme';
 import {
   questionsAAgreger,
@@ -231,13 +232,13 @@ function reponsesLibresDe(
     }));
 }
 
-const LIBELLE_PAR_TYPE: Readonly<Record<string, string>> = {
+const LIBELLE_PAR_TYPE: Readonly<Record<ValeurProduction['type'], string>> = {
   feuille: 'Feuille',
   tableau: 'Tableau',
   classement: 'Classement',
 };
 
-const UNITE_PAR_TYPE: Readonly<Record<string, string>> = {
+const UNITE_PAR_TYPE: Readonly<Record<ValeurProduction['type'], string>> = {
   feuille: 'cellules justes',
   tableau: 'lignes justes',
   classement: 'cartes bien placées',
@@ -247,12 +248,12 @@ function productionLisible(
   valeur: ValeurProduction,
   details: readonly DetailProduction[] | null,
 ): string {
-  const titre = LIBELLE_PAR_TYPE[valeur.type] ?? valeur.type;
+  const titre = LIBELLE_PAR_TYPE[valeur.type];
   if (estNeSaitPas(valeur) || details === null) {
     return `${titre} : ${LIBELLE_NE_SAIT_PAS.toLowerCase()}`;
   }
   const justes = details.filter((detail) => detail.juste).length;
-  return `${titre} : ${justes}/${details.length} ${UNITE_PAR_TYPE[valeur.type] ?? 'attendus justes'}`;
+  return `${titre} : ${justes}/${details.length} ${UNITE_PAR_TYPE[valeur.type]}`;
 }
 
 function reponseLisible(
@@ -268,12 +269,9 @@ function reponseLisible(
   if (typeof reponse.valeur === 'number') {
     return nombreAffiche(reponse.valeur, TOUTES_LES_DECIMALES);
   }
-  const valeur = reponse.valeur;
-  if (!Object.hasOwn(libelles, reponse.questionId)) {
-    return valeur;
-  }
-  const options = libelles[reponse.questionId];
-  return Object.hasOwn(options, valeur) ? options[valeur] : valeur;
+  return Object.hasOwn(libelles, reponse.questionId)
+    ? libelleOuCle(libelles[reponse.questionId], reponse.valeur)
+    : reponse.valeur;
 }
 
 function libellesDuTirage(

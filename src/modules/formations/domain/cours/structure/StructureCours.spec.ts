@@ -1,5 +1,4 @@
 import {
-  buildCorrectionDeReponses,
   buildCorrectionDExemple,
   buildEcranDeBrique,
   buildEcranDeTableau,
@@ -16,7 +15,7 @@ import {
   buildCoursConforme,
   buildEcranDAtelier,
   buildEcranDeFicheMemo,
-  buildEcranDeCitation,
+  buildEcranDeCas,
   buildEcranDExemple,
   lireEcranStocke,
   recomposer,
@@ -85,7 +84,7 @@ describe('verifierStructure', () => {
   it('accepte un cours de lecture sans rappel, exit ticket ni interaction', () => {
     expect(
       verifierStructure(
-        recomposer(base, [buildEcranDeCitation('B2-01-A1-01-LECTURE', 8)]),
+        recomposer(base, [buildEcranDeCas('B2-01-A1-01-LECTURE', 8)]),
       ),
     ).toEqual([]);
   });
@@ -94,8 +93,8 @@ describe('verifierStructure', () => {
     const avec = (secondes: number): Cours =>
       recomposer(base, [
         ouverture,
-        buildEcranDeCitation('B2-01-A1-05-A', 2),
-        buildEcranDeCitation('B2-01-A1-06-B', secondes),
+        buildEcranDeCas('B2-01-A1-05-A', 2),
+        buildEcranDeCas('B2-01-A1-06-B', secondes),
         citation,
         atelier,
         cloture,
@@ -111,7 +110,7 @@ describe('verifierStructure', () => {
     );
     const cours = recomposer(base, [
       ouverture,
-      buildEcranDeCitation('B2-01-A1-05-A', 4),
+      buildEcranDeCas('B2-01-A1-05-A', 4),
       jalon,
       citation,
       atelier,
@@ -264,10 +263,7 @@ describe('verifierStructure', () => {
       ]);
     });
 
-    it('refuse un champ que le cas renvoyé ne porte pas', () => {
-      expect(
-        regles(cadrer(cas.id, { extrait: { champs: ['consequence'] } })),
-      ).toEqual(['cadrage-du-renvoi']);
+    it('refuse un champ de cas renvoyé vers un écran qui n’est pas un cas', () => {
       expect(
         regles(cadrer(tableau.id, { extrait: { champs: ['situation'] } })),
       ).toEqual(['cadrage-du-renvoi']);
@@ -314,7 +310,7 @@ describe('verifierStructure', () => {
     const blocDeHuitMinutes = (slug: string, ecran: string): Cours => ({
       ...recomposer(base, [
         ouverture,
-        buildEcranDeCitation(ecran, 8),
+        buildEcranDeCas(ecran, 8),
         atelier,
         cloture,
       ]),
@@ -345,7 +341,7 @@ describe('verifierStructure', () => {
     const avec = (interaction: number): Cours =>
       recomposer(base, [
         { ...ouverture, dureeMinutes: interaction },
-        buildEcranDeCitation('B2-01-A1-05-EXPO', 100),
+        buildEcranDeCas('B2-01-A1-05-EXPO', 100),
       ]);
 
     expect(regles(avec(30))).not.toContain('ratio-interaction');
@@ -356,7 +352,7 @@ describe('verifierStructure', () => {
     const avec = (duree: number): Cours =>
       recomposer(base, [
         ouverture,
-        buildEcranDeCitation('B2-01-A1-05-DUREE', duree),
+        buildEcranDeCas('B2-01-A1-05-DUREE', duree),
         atelier,
         cloture,
       ]);
@@ -371,7 +367,7 @@ describe('verifierStructure', () => {
     (duree) => {
       const ecranFautif = recomposer(base, [
         ouverture,
-        buildEcranDeCitation('B2-01-A1-05-DUREE', duree),
+        buildEcranDeCas('B2-01-A1-05-DUREE', duree),
         atelier,
         cloture,
       ]);
@@ -468,7 +464,7 @@ describe('verifierStructure — questions fermees en atelier', () => {
       { ...atelier, id: 'B2-01-A1-00-ATELIER-0', dureeMinutes: 8 },
       citation,
       ouverture,
-      buildEcranDeCitation('B2-01-A1-05-ENTRE', 1),
+      buildEcranDeCas('B2-01-A1-05-ENTRE', 1),
       cloture,
     ]);
 
@@ -479,6 +475,9 @@ describe('verifierStructure — questions fermees en atelier', () => {
     ).toEqual([ouverture.id]);
   });
 
+  const correctionDUneMinute = (source: string) =>
+    buildCorrectionDExemple(source, undefined, { dureeMinutes: 1 });
+
   const ateliersEnSuite = (
     premier: number,
     second: number,
@@ -488,10 +487,10 @@ describe('verifierStructure — questions fermees en atelier', () => {
       ouverture,
       citation,
       buildEcranDAtelier('B2-01-A2-03-ATELIER', premier, 'b2-01-a2-q1'),
-      lireEcranStocke(buildCorrectionDeReponses('B2-01-A2-03-ATELIER')),
+      lireEcranStocke(correctionDUneMinute('B2-01-A2-03-ATELIER')),
       ...entre,
       buildEcranDAtelier('B2-01-A2-04-ATELIER-SUITE', second, 'b2-01-a2-q2'),
-      lireEcranStocke(buildCorrectionDeReponses('B2-01-A2-04-ATELIER-SUITE')),
+      lireEcranStocke(correctionDUneMinute('B2-01-A2-04-ATELIER-SUITE')),
       cloture,
     ]);
 
@@ -509,7 +508,7 @@ describe('verifierStructure — questions fermees en atelier', () => {
       ouverture,
       citation,
       buildEcranDAtelier('B2-01-A2-03-ATELIER', 7, 'b2-01-a2-q1'),
-      lireEcranStocke(buildCorrectionDeReponses('B2-01-A2-03-ATELIER')),
+      lireEcranStocke(buildCorrectionDExemple('B2-01-A2-03-ATELIER')),
       cloture,
     ]);
 
@@ -525,7 +524,7 @@ describe('verifierStructure — questions fermees en atelier', () => {
   it('G01 · refuse deux temps trop courts separes par un ecran d exposition', () => {
     expect(
       ateliersFautifs(
-        ateliersEnSuite(6, 6, [buildEcranDeCitation('B2-01-A2-03-PAUSE', 1)]),
+        ateliersEnSuite(6, 6, [buildEcranDeCas('B2-01-A2-03-PAUSE', 1)]),
       ),
     ).toEqual(['B2-01-A2-03-ATELIER', 'B2-01-A2-04-ATELIER-SUITE']);
   });
@@ -551,7 +550,7 @@ describe('verifierStructure — ecrans de correction', () => {
       ouverture,
       citation,
       atelier,
-      lireEcranStocke(buildCorrectionDeReponses(atelier.id)),
+      lireEcranStocke(buildCorrectionDExemple(atelier.id)),
       exemple,
       lireEcranStocke(buildCorrectionDExemple(exemple.id)),
       cloture,
@@ -564,7 +563,7 @@ describe('verifierStructure — ecrans de correction', () => {
     expect(
       fautifs(
         avecCorrection(
-          lireEcranStocke(buildCorrectionDeReponses(atelier.id)),
+          lireEcranStocke(buildCorrectionDExemple(atelier.id)),
           true,
         ),
       ),
@@ -588,7 +587,7 @@ describe('verifierStructure — ecrans de correction', () => {
 
   it('refuse une correction diffusee au catalogue', () => {
     const correction = lireEcranStocke(
-      buildCorrectionDeReponses(atelier.id, undefined, {
+      buildCorrectionDExemple(atelier.id, undefined, {
         diffusion: 'catalogue',
       }),
     );

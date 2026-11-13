@@ -69,7 +69,7 @@ function rangDuSeuil(suite: (rang: number) => number, seuil: number): number {
 }
 
 decrireLaFicheDuCours('B2-04', COURS, {
-  conception: 'cours-b2-04-conception.md',
+  conception: 'b2/cours-b2-04-conception.md',
   ecrans: 36,
   dureeMinutes: 166,
   minutesParActe: [49, 39, 37, 41, 0, 0],

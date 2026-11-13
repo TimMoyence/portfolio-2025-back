@@ -69,7 +69,7 @@ function corrigeDuTableauDesLogarithmes(): CorrigeTableau {
 }
 
 fiche.decrireLaFicheDuCours('B2-06', COURS, {
-  conception: 'cours-b2-06-conception.md',
+  conception: 'b2/cours-b2-06-conception.md',
   ecrans: 37,
   dureeMinutes: 135,
   minutesParActe: [49, 41, 37, 8, 0, 0],

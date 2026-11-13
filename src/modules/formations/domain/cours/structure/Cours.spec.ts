@@ -19,6 +19,7 @@ import type { Cours, Ecran } from '../../contrats/cours';
 import { creerRng, creerTirage } from '../tirage/Aleatoire';
 import {
   estInteractif,
+  presentationDe,
   questionNumerique,
   questionsDe,
   questionsDuCours,
@@ -26,13 +27,7 @@ import {
 } from './Cours';
 import { lireCoursStocke } from '../stockage/CoursStocke';
 
-const EXPOSITIONS = [
-  'fp-quote',
-  'fp-pro',
-  'fp-concept4',
-  'fp-plot',
-  'fp-pulse',
-];
+const EXPOSITIONS = ['fp-pro', 'fp-concept4', 'fp-plot', 'fp-pulse'];
 
 function ecranV3(brique: string): Ecran {
   return lireCoursStocke(buildCoursDeBriques([buildEcranDeBrique(brique)]))
@@ -113,7 +108,7 @@ describe('estInteractif (§ 2.6.1)', () => {
     },
   );
 
-  it('compte un récit comme interactif s il porte un quiz ou une réflexion v2', () => {
+  it('compte un récit comme interactif s il porte une réflexion', () => {
     expect(estInteractif(lireCoursStocke(buildCoursStocke()).ecrans[0])).toBe(
       true,
     );
@@ -144,6 +139,39 @@ describe('estInteractif (§ 2.6.1)', () => {
     ).ecrans[0];
 
     expect(estInteractif(ecran)).toBe(true);
+  });
+});
+
+describe('presentationDe', () => {
+  it('lit la présentation d un récit et rend null pour toute autre brique', () => {
+    const recit = recitDeRendu('stats', {
+      title: 'Repères',
+      stats: [{ value: '27,6 %', label: 'Taux' }],
+    });
+    const cas = lireCoursStocke(
+      buildCoursDeBriques([buildEcranDeBrique('fp-pro')]),
+    ).ecrans[0];
+
+    expect(presentationDe(recit)).toMatchObject({
+      renderer: 'stats',
+      props: { title: 'Repères' },
+    });
+    expect(presentationDe(cas)).toBeNull();
+  });
+
+  it('rend null pour un récit stocké sans présentation', () => {
+    const recit = lireCoursStocke(
+      buildCoursStocke({
+        ecrans: [
+          buildEcranStocke({
+            proprietes: { titre: 'Repères', paragraphes: ['Un récit lu.'] },
+          }),
+        ],
+      }),
+    ).ecrans[0];
+
+    expect(recit.brique).toBe('fp-story');
+    expect(presentationDe(recit)).toBeNull();
   });
 });
 

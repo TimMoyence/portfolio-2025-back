@@ -15,7 +15,6 @@ import {
   CONTRAINTE_IGNOREE,
   COUT_MINIMAL,
   DERIVEE_DE_G,
-  DONNEES_FICTIVES,
   EXPOSANT,
   FORMULE_DE_LA_PENTE,
   FORMULE_DU_BENEFICE,
@@ -51,6 +50,19 @@ const GRAVURE_DE_L_ACCROCHE = moteur.gravureDuDomainePublic({
 const DOSSIER_DES_ILLUSTRATIONS = '/assets/cours/b2-07/v1';
 
 const pourComprendre = moteur.pourComprendreDans(DOSSIER_DES_ILLUSTRATIONS);
+
+export const VELO_SUR_LA_COLLINE = {
+  fichier: 'velo-sur-la-colline.webp',
+  imageAlt:
+    'Une colline vue de côté et trois fois le même enfant à vélo : il monte en pédalant fort, flèche verte +, roule à plat au sommet, trait bleu 0, puis descend, flèche rouge −. Sous chaque roue, un petit segment suit la pente.',
+  scene: 'Le vélo monte la colline, roule à plat tout en haut, puis redescend.',
+  correspondances: [
+    ['Le segment sous la roue', 'la tangente au point d’abscisse a'],
+    ['La montée, flèche verte +', 'f′(a) > 0'],
+    ['Le plat du sommet, trait bleu 0', 'f′(a) = 0'],
+    ['La descente, flèche rouge −', 'f′(a) < 0'],
+  ],
+} as const;
 
 const ACTE_1: moteur.Acte = [
   moteur.ecranV2(
@@ -168,40 +180,37 @@ const ACTE_1: moteur.Acte = [
     },
     'Question : « 5,68 semaines : on répond 5 ou 6 ? » 6, l’entier juste au-dessus.',
   ),
-  {
-    screenId: 'B2-07-A1-06-VOTE-EXPONENTIELLE',
-    titre: 'Vote : l’exponentielle et ln, deux questions',
-    diffusion: 'seance',
-    brique: 'fp-vote',
-    dureeMinutes: 4,
-    concepts: ['fonction-exponentielle', 'logarithme-neperien'],
-    notes: moteur.puces(
-      'Récapitulatif du cours 6 : deux votes non notés.',
-      'Revenir sur l’écran d’image de chaque erreur : le départ et la vitesse, puis le bouton retour.',
-      ...moteur.NOTES_DU_VOTE_A_DEUX_QUESTIONS,
-    ),
-    proprietes: {
-      modalite: 'solo',
-      questions: [
-        moteur.vote(
-          'b2-07-a1-vote-taux',
-          'fonction-exponentielle',
-          false,
-          'Un stock suit le modèle 1 000e^(−0,05x). De quel pourcentage évolue-t-il à chaque unité ?',
-          'De e^(−0,05) − 1, soit environ −4,88 %',
-          [['De −5 %, la valeur de k', K_POUR_TAUX]],
-        ),
-        moteur.vote(
-          'b2-07-a1-vote-ln',
-          'logarithme-neperien',
-          false,
-          'Quelle est la solution de eˣ = 6 ?',
-          'x = ln 6, soit environ 1,79',
-          [['x = 6 ÷ e, soit environ 2,21', SEUIL_PAR_DIVISION]],
-        ),
-      ],
+  moteur.voteQuiOuvre(
+    {
+      screenId: 'B2-07-A1-06-VOTE-EXPONENTIELLE',
+      titre: 'Vote : l’exponentielle et ln, deux questions',
+      dureeMinutes: 4,
+      concepts: ['fonction-exponentielle', 'logarithme-neperien'],
+      notes: moteur.puces(
+        'Récapitulatif du cours 6 : deux votes non notés.',
+        'Revenir sur l’écran d’image de chaque erreur : le départ et la vitesse, puis le bouton retour.',
+        ...moteur.NOTES_DU_VOTE_A_DEUX_QUESTIONS,
+      ),
     },
-  },
+    [
+      moteur.vote(
+        'b2-07-a1-vote-taux',
+        'fonction-exponentielle',
+        false,
+        'Un stock suit le modèle 1 000e^(−0,05x). De quel pourcentage évolue-t-il à chaque unité ?',
+        'De e^(−0,05) − 1, soit environ −4,88 %',
+        [['De −5 %, la valeur de k', K_POUR_TAUX]],
+      ),
+      moteur.vote(
+        'b2-07-a1-vote-ln',
+        'logarithme-neperien',
+        false,
+        'Quelle est la solution de eˣ = 6 ?',
+        'x = ln 6, soit environ 1,79',
+        [['x = 6 ÷ e, soit environ 2,21', SEUIL_PAR_DIVISION]],
+      ),
+    ],
+  ),
   pourComprendre(
     {
       screenId: 'B2-07-A1-07-ENFANT-BOUCLE',
@@ -326,7 +335,7 @@ const ACTE_2: moteur.Acte = [
             'Quel prix rapporte le bénéfice le plus élevé ? Ce prix reste-t-il le bon si l’atelier ne peut pas coudre toute la demande ?',
         },
       ],
-      note: DONNEES_FICTIVES,
+      note: moteur.DONNEES_FICTIVES_DU_B2,
     },
   ),
   {
@@ -381,19 +390,9 @@ const ACTE_2: moteur.Acte = [
       concepts: ['fonction-derivee'],
     },
     {
-      fichier: 'velo-sur-la-colline.webp',
-      imageAlt:
-        'Une colline vue de côté et trois fois le même enfant à vélo : il monte en pédalant fort, flèche verte +, roule à plat au sommet, trait bleu 0, puis descend, flèche rouge −. Sous chaque roue, un petit segment suit la pente.',
-      scene:
-        'Le vélo monte la colline, roule à plat tout en haut, puis redescend.',
+      ...VELO_SUR_LA_COLLINE,
       regle:
         'f′(a) est la pente de la courbe de f au point d’abscisse a, celle de sa tangente : elle dit de combien f monte, juste là.',
-      correspondances: [
-        ['Le segment sous la roue', 'la tangente au point d’abscisse a'],
-        ['La montée, flèche verte +', 'f′(a) > 0'],
-        ['Le plat du sommet, trait bleu 0', 'f′(a) = 0'],
-        ['La descente, flèche rouge −', 'f′(a) < 0'],
-      ],
     },
     'Question : « Que vaut la pente tout en haut ? » 0 : la route est plate.',
   ),
@@ -620,44 +619,41 @@ const ACTE_2: moteur.Acte = [
       ],
     ],
   ),
-  {
-    screenId: 'B2-07-A2-08-VOTE-EXPONENTIELLE',
-    titre: 'Vote : à quelle vitesse croît une exponentielle ?',
-    diffusion: 'seance',
-    brique: 'fp-vote',
-    dureeMinutes: 4,
-    concepts: ['fonction-derivee', 'fonction-exponentielle'],
-    notes: moteur.puces(
-      'Temps « réfléchir » de la dérivée de l’exponentielle : votes non notés.',
-      ...moteur.NOTES_DU_VOTE_A_DEUX_QUESTIONS,
-    ),
-    proprietes: {
-      modalite: 'solo',
-      questions: [
-        moteur.vote(
-          'b2-07-a2-vote-vitesse',
-          'fonction-exponentielle',
-          false,
-          'Les ventes en ligne du B2-06 suivent V(x) = 400e^(0,06x). Gagnent-elles plus de sacs par mois en décembre qu’en janvier ?',
-          'Oui : plus les ventes sont grandes, plus elles grandissent vite',
-          [
-            [
-              'Non : elles gagnent autant de sacs chaque mois',
-              AJOUTER_POUR_MULTIPLIER,
-            ],
-          ],
-        ),
-        moteur.vote(
-          'b2-07-a2-vote-derivee',
-          'fonction-derivee',
-          false,
-          'Quelle est la dérivée de eˣ ?',
-          'eˣ elle-même',
-          [['x × e^(x − 1), comme une puissance', SANS_K]],
-        ),
-      ],
+  moteur.voteQuiOuvre(
+    {
+      screenId: 'B2-07-A2-08-VOTE-EXPONENTIELLE',
+      titre: 'Vote : à quelle vitesse croît une exponentielle ?',
+      dureeMinutes: 4,
+      concepts: ['fonction-derivee', 'fonction-exponentielle'],
+      notes: moteur.puces(
+        'Temps « réfléchir » de la dérivée de l’exponentielle : votes non notés.',
+        ...moteur.NOTES_DU_VOTE_A_DEUX_QUESTIONS,
+      ),
     },
-  },
+    [
+      moteur.vote(
+        'b2-07-a2-vote-vitesse',
+        'fonction-exponentielle',
+        false,
+        'Les ventes en ligne du B2-06 suivent V(x) = 400e^(0,06x). Gagnent-elles plus de sacs par mois en décembre qu’en janvier ?',
+        'Oui : plus les ventes sont grandes, plus elles grandissent vite',
+        [
+          [
+            'Non : elles gagnent autant de sacs chaque mois',
+            AJOUTER_POUR_MULTIPLIER,
+          ],
+        ],
+      ),
+      moteur.vote(
+        'b2-07-a2-vote-derivee',
+        'fonction-derivee',
+        false,
+        'Quelle est la dérivée de eˣ ?',
+        'eˣ elle-même',
+        [['x × e^(x − 1), comme une puissance', SANS_K]],
+      ),
+    ],
+  ),
   pourComprendre(
     {
       screenId: 'B2-07-A2-09-ENFANT-EXPONENTIELLE',
@@ -798,13 +794,7 @@ const ACTE_2: moteur.Acte = [
         ],
       },
     },
-    {
-      minutes: 2,
-      notes: [
-        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE_SOUS_SON_SCORE,
-        'Transition : jalon 1, puis pause de 15 minutes.',
-      ],
-    },
+    moteur.CORRECTION_AVANT_LA_PREMIERE_PAUSE,
     [
       [
         'b2-07-a2-derivee-ventes',
@@ -841,36 +831,33 @@ const ACTE_2: moteur.Acte = [
 ];
 
 const ACTE_3: moteur.Acte = [
-  {
-    screenId: 'B2-07-A3-01-VOTE-SIGNE',
-    titre: 'Vote : que dit le signe de la pente ?',
-    diffusion: 'seance',
-    brique: 'fp-vote',
-    dureeMinutes: 4,
-    concepts: ['variations-d-une-fonction', 'fonction-derivee'],
-    notes: moteur.notesDuVoteQuiOuvreLaNotion(2),
-    proprietes: {
-      modalite: 'solo',
-      questions: [
-        moteur.vote(
-          'b2-07-a3-vote-monte',
-          'variations-d-une-fonction',
-          false,
-          'Au prix de 15 €, la pente de la courbe du bénéfice est positive. Si Hélène monte un peu le prix, que fait le bénéfice ?',
-          'Il augmente, puisque la courbe monte à cet endroit',
-          [['On ne peut pas savoir sans calculer B', VALEUR_POUR_PENTE]],
-        ),
-        moteur.vote(
-          'b2-07-a3-vote-descend',
-          'variations-d-une-fonction',
-          false,
-          'Sur un intervalle, B′(x) est négatif. Que peut-on dire de B ?',
-          'B décroît sur cet intervalle',
-          [['B est négatif : l’atelier perd de l’argent', SIGNE_DE_F]],
-        ),
-      ],
+  moteur.voteQuiOuvre(
+    {
+      screenId: 'B2-07-A3-01-VOTE-SIGNE',
+      titre: 'Vote : que dit le signe de la pente ?',
+      dureeMinutes: 4,
+      concepts: ['variations-d-une-fonction', 'fonction-derivee'],
+      notes: moteur.notesDuVoteQuiOuvreLaNotion(2),
     },
-  },
+    [
+      moteur.vote(
+        'b2-07-a3-vote-monte',
+        'variations-d-une-fonction',
+        false,
+        'Au prix de 15 €, la pente de la courbe du bénéfice est positive. Si Hélène monte un peu le prix, que fait le bénéfice ?',
+        'Il augmente, puisque la courbe monte à cet endroit',
+        [['On ne peut pas savoir sans calculer B', VALEUR_POUR_PENTE]],
+      ),
+      moteur.vote(
+        'b2-07-a3-vote-descend',
+        'variations-d-une-fonction',
+        false,
+        'Sur un intervalle, B′(x) est négatif. Que peut-on dire de B ?',
+        'B décroît sur cet intervalle',
+        [['B est négatif : l’atelier perd de l’argent', SIGNE_DE_F]],
+      ),
+    ],
+  ),
   pourComprendre(
     {
       screenId: 'B2-07-A3-02-ENFANT-PANNEAU',
@@ -1097,13 +1084,7 @@ const ACTE_3: moteur.Acte = [
         ],
       },
     },
-    {
-      minutes: 2,
-      notes: [
-        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE_SOUS_SON_SCORE,
-        'Transition : jalon 2, puis pause de 15 minutes.',
-      ],
-    },
+    moteur.CORRECTION_AVANT_LA_SECONDE_PAUSE,
     [
       [
         'b2-07-a3-signe',

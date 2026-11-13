@@ -1,25 +1,14 @@
-import {
-  attendreLaFeuille,
-  attendreLesNumeriques,
-  CATALOGUE_ILLUSTRE_A_SIX_PAGES,
-  corrigeDeFeuille,
-  decrireLaFicheDuCours,
-  FORME_DES_COURS_B1,
-  pagesDeCours,
-  pagesSansMethodeOuAvecEncadreCcf,
-} from '../../../../../../../test/helpers/formations/cours/fiche-de-cours';
+import { COURS_B1_03 } from './b1-03.cours';
+import * as fiche from '../../../../../../../test/helpers/formations/cours/fiche-de-cours';
 import { lireConception } from '../../../../../../../test/helpers/formations/cours/conception-de-cours';
-import {
-  proprietesV2,
-  texteDeLEcran as texteDe,
-} from '../../../../../../../test/helpers/formations/cours/feuille-de-cours';
+import * as feuilleDeCours from '../../../../../../../test/helpers/formations/cours/feuille-de-cours';
 import { valeursAuCatalogue } from '../../../../../../../test/helpers/formations/cours/relecture-de-cours';
+import { ecranDuCours } from '../../../../../../../test/helpers/formations/cours/lecture-de-cours';
 import { buildCoursDuContenu } from '../../../../../../../test/factories/formations/cours/contenus-de-cours.factory';
 import { auDixieme } from '../../../../../../common/domain/nombres/arrondi';
 import { nombreFrancais } from '../../../../../../common/domain/nombres/ecriture-francaise';
 import { estReservee } from '../../../../domain/cours/structure/Cours';
 import { corrigerFeuille } from '../../../../domain/cours/correction/CorrectionProduction';
-import { COURS_B1_03 } from './b1-03.cours';
 import {
   CLASSES_DE_NANTES,
   CLASSEUR_DES_VENTES,
@@ -102,8 +91,8 @@ const REPONSES_DES_EXERCICES = [
 const MOTS_DU_COURS =
   /moyenne|médiane|quartile|écart|tableau|champ|classe|série|valeur|effectif|taux|\d/i;
 
-decrireLaFicheDuCours('B1-03', COURS, {
-  ...FORME_DES_COURS_B1,
+fiche.decrireLaFicheDuCours('B1-03', COURS, {
+  ...fiche.FORME_DES_COURS_B1,
   conception: 'b1/cours-b1-03-conception.md',
   minutesParActe: [45, 36, 32, 8, 0, 0],
   rythme: { expositionContinueMax: 6, interactives: 94, exposition: 27 },
@@ -111,10 +100,7 @@ decrireLaFicheDuCours('B1-03', COURS, {
   enigmes: 0,
   rappels: 12,
   options: 22,
-  catalogue: [
-    ...CATALOGUE_ILLUSTRE_A_SIX_PAGES.filter((code) => !code.startsWith('A4-')),
-    'A4-02',
-  ],
+  catalogue: fiche.CATALOGUE_ILLUSTRE_JUSQU_A_LA_PAGE_A4_02,
   ateliersNotes: ['A1-09 (15)', 'A2-05 (8)', 'A3-06 (13)'],
   remediations: 17,
   corrigesSurPlace: [
@@ -147,50 +133,15 @@ const ECRANS_POUR_COMPRENDRE = [
 ] as const;
 
 describe('B1-03 — les écrans « pour comprendre »', () => {
-  it.each(ECRANS_POUR_COMPRENDRE)(
-    'B103-M2 · nomme dans la règle de l’écran %s-ENFANT-%s la notion de la page suivante',
-    (rang, sujet, _page, _fichier, notions) => {
-      const props = proprietesV2(COURS_B1_03, `B1-03-${rang}-ENFANT-${sujet}`);
-      const regle = Array.isArray(props.paragraphs)
-        ? String(props.paragraphs[1])
-        : '';
-
-      expect(notions.filter((notion) => !regle.includes(notion))).toEqual([]);
-    },
-  );
-
-  it.each(ECRANS_POUR_COMPRENDRE)(
-    'B103-M2 · ouvre la page %s par 1 min d’une image du quotidien, titre et phrase sans un mot du cours',
-    (rang, sujet, page, fichier) => {
-      const ecrans = COURS_B1_03.ecrans;
-      const position = ecrans.findIndex(
-        (ecran) => ecran.screenId === `B1-03-${rang}-COURS-${page}`,
-      );
-      const enfant = ecrans[position - 1];
-      const presentation =
-        enfant?.brique === 'fp-story' ? enfant.proprietes.presentation : null;
-      const props = proprietesV2(COURS_B1_03, `B1-03-${rang}-ENFANT-${sujet}`);
-      const phrase = Array.isArray(props.paragraphs)
-        ? String(props.paragraphs[0])
-        : '';
-
-      expect(enfant?.screenId).toBe(`B1-03-${rang}-ENFANT-${sujet}`);
-      expect(enfant?.dureeMinutes).toBe(1);
-      expect(ecrans[position]?.dureeMinutes).toBe(2);
-      expect(presentation?.version === 2 && presentation.renderer).toBe(
-        'image-left',
-      );
-      expect(props.image).toBe(`/assets/cours/b1-03/v1/${fichier}.webp`);
-      expect(
-        [enfant?.titre ?? '', phrase].filter((texte) =>
-          MOTS_DU_COURS.test(texte),
-        ),
-      ).toEqual([]);
-    },
+  feuilleDeCours.decrireLesEcransPourComprendre(
+    'B1-03',
+    COURS_B1_03,
+    ECRANS_POUR_COMPRENDRE,
+    MOTS_DU_COURS,
   );
 
   it('B103-M2 · garde une seule page par notion, chacune avec sa méthode et sans encadré « Au CCF »', () => {
-    expect(pagesDeCours(COURS_B1_03).map((id) => id.slice(12))).toEqual([
+    expect(fiche.pagesDeCours(COURS_B1_03).map((id) => id.slice(12))).toEqual([
       'COURS-TCD',
       'COURS-CHAMP-CALCULE',
       'COURS-MEDIANE-QUARTILES',
@@ -198,13 +149,16 @@ describe('B1-03 — les écrans « pour comprendre »', () => {
       'COURS-BOITE',
       'COURS-CLASSES',
     ]);
-    expect(pagesSansMethodeOuAvecEncadreCcf(COURS_B1_03)).toEqual([]);
+    expect(fiche.pagesSansMethodeOuAvecEncadreCcf(COURS_B1_03)).toEqual([]);
   });
 });
 
 describe('B1-03 — le fichier des ventes et son TCD', () => {
   it('B103-M3 · signale au dossier les données fictives et décrit le fichier de l’exercice', () => {
-    const dossier = texteDe(COURS_B1_03, 'B1-03-A1-04-DOSSIER');
+    const dossier = feuilleDeCours.texteDeLEcran(
+      COURS_B1_03,
+      'B1-03-A1-04-DOSSIER',
+    );
     const [premiere] = VENTES_D_OCTOBRE;
 
     expect(dossier).toContain('Données fictives');
@@ -215,12 +169,10 @@ describe('B1-03 — le fichier des ventes et son TCD', () => {
   });
 
   it('B103-M3 · joint à l’exercice 1 le classeur des ventes, réservé à la séance, sans écran repris', () => {
-    const exercice = COURS.ecrans.find(
-      (ecran) => ecran.id === 'B1-03-A1-09-ATELIER-TCD',
-    );
-    const piece = exercice?.pieceJointe;
+    const exercice = ecranDuCours(COURS, 'B1-03-A1-09-ATELIER-TCD');
+    const piece = exercice.pieceJointe;
 
-    expect(exercice?.diffusion).toBe('seance');
+    expect(exercice.diffusion).toBe('seance');
     expect(piece !== undefined && estReservee(piece)).toBe(true);
     expect(piece).toEqual(
       expect.objectContaining({ classeur: CLASSEUR_DES_VENTES, reprend: [] }),
@@ -228,7 +180,7 @@ describe('B1-03 — le fichier des ventes et son TCD', () => {
   });
 
   it('B103-M4 · recalcule depuis les ventes les réponses et les pièges de l’exercice 1', () => {
-    attendreLesNumeriques(COURS, {
+    fiche.attendreLesNumeriques(COURS, {
       'b1-03-a1-ca-site': [
         SITE_WEB.ca,
         SITE_WEB.ventes,
@@ -299,7 +251,7 @@ describe('B1-03 — les paniers de septembre, à côté du fichier d’octobre',
   ])(
     'B103-M4 · date de septembre les paniers de %s, que le fichier d’octobre ne contient pas',
     (ecran) => {
-      const texte = texteDe(COURS_B1_03, ecran);
+      const texte = feuilleDeCours.texteDeLEcran(COURS_B1_03, ecran);
 
       expect(texte).toContain('septembre');
       expect(texte).not.toContain('octobre');
@@ -307,8 +259,14 @@ describe('B1-03 — les paniers de septembre, à côté du fichier d’octobre',
   );
 
   it('B103-M5 · présente chaque colonne de la feuille comme toutes les commandes de la semaine, pas un tirage', () => {
-    const feuille = texteDe(COURS_B1_03, 'B1-03-A2-06-TABLEUR-PANIERS');
-    const comparer = texteDe(COURS_B1_03, 'B1-03-A3-06-ATELIER-COMPARER');
+    const feuille = feuilleDeCours.texteDeLEcran(
+      COURS_B1_03,
+      'B1-03-A2-06-TABLEUR-PANIERS',
+    );
+    const comparer = feuilleDeCours.texteDeLEcran(
+      COURS_B1_03,
+      'B1-03-A3-06-ATELIER-COMPARER',
+    );
 
     expect(feuille).toContain('toutes les commandes de la dernière semaine');
     expect(feuille).not.toMatch(/tir[ée]s? de|échantillon/i);
@@ -337,7 +295,8 @@ describe('B1-03 — les paniers au tableur', () => {
     F6: '=ARRONDI(ECARTYPEP(C2:C22);1)',
     F7: '=F5-F4',
   };
-  const corrige = () => corrigeDeFeuille(COURS, 'b1-03-a2-tableur-paniers');
+  const corrige = () =>
+    fiche.corrigeDeFeuille(COURS, 'b1-03-a2-tableur-paniers');
   const verdictDe = (
     envoi: Readonly<Record<string, string>>,
     cellule: string,
@@ -364,7 +323,7 @@ describe('B1-03 — les paniers au tableur', () => {
     ];
     const [site, nantes] = [resume(SITE), resume(NANTES)];
 
-    attendreLaFeuille(
+    fiche.attendreLaFeuille(
       corrige(),
       Object.fromEntries(
         site.flatMap((valeurs, rang) => [
@@ -377,8 +336,7 @@ describe('B1-03 — les paniers au tableur', () => {
 
   it('B103-M5 · intitule la feuille comme le titre de son écran', () => {
     expect(corrige().plan.intitule).toBe(
-      COURS.ecrans.find((ecran) => ecran.id === 'B1-03-A2-06-TABLEUR-PANIERS')
-        ?.titre,
+      ecranDuCours(COURS, 'B1-03-A2-06-TABLEUR-PANIERS').titre,
     );
   });
 
@@ -417,18 +375,17 @@ describe('B1-03 — confidentialité des réponses', () => {
   ])(
     'B103-M7 · ne montre aucune réponse de %s dans un écran antérieur',
     (ecran, reponses) => {
-      const ecrans = COURS_B1_03.ecrans.map(({ screenId }) => screenId);
-      const anterieurs = ecrans
-        .slice(0, ecrans.indexOf(`B1-03-${ecran}`))
-        .map((screenId) => texteDe(COURS_B1_03, screenId))
-        .join(' ');
       const ecrites = reponses.map((reponse) =>
         typeof reponse === 'number' ? nombreFrancais(reponse, 1) : reponse,
       );
 
-      expect(ecrites.filter((ecrite) => anterieurs.includes(ecrite))).toEqual(
-        [],
-      );
+      expect(
+        feuilleDeCours.reponsesDejaMontrees(
+          COURS_B1_03,
+          `B1-03-${ecran}`,
+          ecrites,
+        ),
+      ).toEqual([]);
     },
   );
 });

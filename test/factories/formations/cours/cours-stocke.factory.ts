@@ -2,39 +2,20 @@ import type {
   ContenuDeCoursBrut,
   EcranDeCoursBrut,
 } from '../../../../src/modules/formations/domain/cours/stockage/CoursStocke';
-import { buildQuizAffiche } from './presentation-visuelle.factory';
+import { buildReflexion } from './presentation-visuelle.factory';
 
-const ECRAN_QUIZ = 'B2-01-S03-PREDICTION';
-
-export function buildQuizNote(
-  overrides: Readonly<Record<string, unknown>> = {},
-): Record<string, unknown> {
-  return {
-    ...buildQuizAffiche(),
-    concept: 'proportion',
-    optionIds: ['o1', 'o2', 'o3'],
-    correctIndex: 0,
-    confusions: ['raisonnement-additif', 'taux-valeur-facteur-cent'],
-    noteCompte: true,
-    context: 'Avant de commenter la pente, vérifiez le repère.',
-    explanation: 'Les valeurs, l’unité et l’échelle.',
-    nextAction: 'Le prochain écran montre le piège de l’échelle.',
-    ...overrides,
-  };
-}
+const ECRAN_DE_REFLEXION = 'B2-01-S03-PREDICTION';
 
 function proprietesParDefaut(): Record<string, unknown> {
   return {
     presentation: {
       version: 2,
-      screenId: ECRAN_QUIZ,
-      renderer: 'quiz',
-      props: { questionData: buildQuizAffiche() },
+      screenId: ECRAN_DE_REFLEXION,
+      renderer: 'reflection',
+      props: { promptData: buildReflexion() },
     },
-    interaction: buildQuizNote(),
     correction: {
-      correctIndex: 0,
-      explanation: 'Une forme ne suffit jamais.',
+      expected: 'Les valeurs, l’unité et l’échelle.',
       nextAction: 'Lire l’axe avant de conclure.',
     },
   };
@@ -44,7 +25,7 @@ export function buildEcranStocke(
   overrides: Partial<EcranDeCoursBrut> = {},
 ): EcranDeCoursBrut {
   return {
-    screenId: ECRAN_QUIZ,
+    screenId: ECRAN_DE_REFLEXION,
     brique: 'fp-story',
     dureeMinutes: 3,
     concepts: ['proportion'],

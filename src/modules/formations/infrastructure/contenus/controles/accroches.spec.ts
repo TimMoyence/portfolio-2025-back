@@ -1,16 +1,13 @@
 import { CONTENUS } from '..';
+import { presentationDe } from '../../../domain/cours/structure/Cours';
 
 function champDeLAccroche(
   contenu: (typeof CONTENUS)[number],
   champ: 'bgImage' | 'bgImageAlt',
 ): unknown {
   return contenu.ecrans.flatMap((ecran) => {
-    const presentation =
-      ecran.brique === 'fp-story' ? ecran.proprietes.presentation : null;
-    const props =
-      presentation?.version === 2 && presentation.renderer === 'hero'
-        ? presentation.props
-        : null;
+    const presentation = presentationDe(ecran);
+    const props = presentation?.renderer === 'hero' ? presentation.props : null;
     return typeof props === 'object' && props !== null && champ in props
       ? [Object.entries(props).find(([cle]) => cle === champ)?.[1]]
       : [];

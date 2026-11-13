@@ -1,3 +1,5 @@
+import { sansIndefinis } from '../../../../../common/domain/objets/sans-indefinis';
+import { sansLesCles } from '../../../../../common/domain/objets/sans-les-cles';
 import type { Cours, Ecran } from '../../contrats/cours';
 import type {
   PilotageDemande,
@@ -132,12 +134,7 @@ const CLES_NON_PILOTABLES: readonly string[] = ['screenId', 'etayageAtteint'];
 function sansClesNonPilotables(
   pilotage: PilotageEcran | PilotageDemande,
 ): Omit<PilotageEcran, 'etayageAtteint'> {
-  return Object.fromEntries(
-    Object.entries(pilotage).filter(
-      ([cle, valeur]) =>
-        valeur !== undefined && !CLES_NON_PILOTABLES.includes(cle),
-    ),
-  );
+  return sansLesCles(sansIndefinis(pilotage), CLES_NON_PILOTABLES);
 }
 
 export function demandeAppliquee(

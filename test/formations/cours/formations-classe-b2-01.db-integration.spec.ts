@@ -12,7 +12,10 @@ import { tirer } from '../../../src/modules/formations/domain/cours/tirage/Tirag
 import type { TirageDuCours } from '../../../src/modules/formations/domain/cours/tirage/Tirage';
 import { EN_TETE_JETON } from '../../../src/modules/formations/interfaces/etudiant/ParticipantToken.service';
 import { describeDb } from '../../helpers/base/db-integration-datasource';
-import { statutsEnEchec } from '../../helpers/formations/seance/formations-banc-seance';
+import {
+  chronometrer,
+  statutsEnEchec,
+} from '../../helpers/formations/seance/formations-banc-seance';
 import { VERSION_PUBLIEE_SUR_BASE_NEUVE } from '../../helpers/formations/seance/formations-db';
 import {
   EN_TETE_IDENTITE,
@@ -25,7 +28,7 @@ import {
   estProduction,
   productionJuste,
   reponseDEnigme,
-} from '../../helpers/formations/cours/reponses-de-cours';
+} from '../../helpers/formations/cours/corrige/reponses-de-cours';
 import { silenceNestLogger } from '../../helpers/http/silence-nest-logger';
 
 const SLUG = 'b2-01-traitement-information-chiffree';
@@ -57,12 +60,6 @@ const mesures: string[] = [];
 
 function mesurer(libelle: string, observe: string): void {
   mesures.push(`${libelle} : ${observe}`);
-}
-
-async function chronometrer<T>(action: () => Promise<T>): Promise<[T, number]> {
-  const debut = performance.now();
-  const resultat = await action();
-  return [resultat, performance.now() - debut];
 }
 
 function centile(durees: readonly number[], fraction: number): number {

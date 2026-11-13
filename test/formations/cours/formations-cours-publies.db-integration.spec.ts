@@ -1,5 +1,3 @@
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
 import type { Cours } from '../../../src/modules/formations/domain/contrats/cours';
 import type {
   CorrigeFeuille,
@@ -11,17 +9,12 @@ import {
   corrigerTableau,
 } from '../../../src/modules/formations/domain/cours/correction/CorrectionProduction';
 import { questionsDuCours } from '../../../src/modules/formations/domain/cours/structure/Cours';
-import type { ContenuDeCours } from '../../../src/modules/formations/domain/cours/stockage/CoursStocke';
-import { deroulePresentateur } from '../../../src/modules/formations/domain/cours/diffusion/DeroulePresentateur';
-import { projeterCatalogue } from '../../../src/modules/formations/domain/cours/diffusion/Diffusion';
-import { empreinteCanonique } from '../../../src/modules/formations/domain/cours/confidentialite/EmpreinteCanonique';
 import {
   evaluerFeuille,
   type ValeurFormule,
 } from '../../../src/modules/formations/domain/cours/formule/Formule';
 import { ouvrirTirages } from '../../../src/modules/formations/domain/cours/tirage/OuvertureTirages';
 import { verifierStructure } from '../../../src/modules/formations/domain/cours/structure/StructureCours';
-import { tirer } from '../../../src/modules/formations/domain/cours/tirage/Tirage';
 import { CONTENUS } from '../../../src/modules/formations/infrastructure/contenus';
 import {
   buildCoursDuContenu,
@@ -31,12 +24,15 @@ import { tireurSequentiel } from '../../factories/formations/cours/cours.factory
 import { describeDb } from '../../helpers/base/db-integration-datasource';
 import { formulesDuCorrige } from '../../helpers/formations/cours/feuille-de-cours';
 import {
+  empreinteServie,
+  lireLInstantane,
+} from '../../helpers/formations/cours/instantane-de-cours';
+import {
   DELAI_OUVERTURE_CONTEXTE_MS,
   ouvrirContexteFormations,
   type ContexteFormations,
 } from '../../helpers/formations/seance/formations-db';
 
-const GRAINE_DE_REFERENCE = 0;
 const DECIMALES_COMPAREES = 5;
 
 function attendreLaMemeValeur(
@@ -58,26 +54,21 @@ const CELLULES_DE_LA_FEUILLE: Readonly<Partial<Record<string, number>>> = {
   'b2-05-mathematiques-financieres': 10,
   'b2-06-exponentielle-logarithme': 13,
   'b2-07-derivee-optimisation': 16,
+  'b2-08-derivees-composees-fonctions-economiques': 11,
   'b1-01-proportions-pourcentages': 6,
   'b1-02-evolutions-coefficients-indices': 7,
   'b1-03-tcd-serie-une-variable': 12,
+  'b1-04-series-deux-variables': 4,
+  'b1-05-logique-conditions': 12,
 };
 
-function instantaneDe(contenu: ContenuDeCours): { readonly empreinte: string } {
-  return JSON.parse(
-    readFileSync(
-      join(
-        __dirname,
-        '../..',
-        `fixtures/formations/${prefixeDuCours(contenu).toLowerCase()}.instantane.json`,
-      ),
-      'utf8',
-    ),
-  ) as { readonly empreinte: string };
-}
+const TABLEAUX_SANS_FEUILLE: Readonly<Partial<Record<string, number>>> = {
+  'b2-09-probabilites-conditionnelles': 1,
+};
 
 for (const contenu of CONTENUS) {
   const cellulesDeLaFeuille = CELLULES_DE_LA_FEUILLE[contenu.slug];
+  const tableauxSansFeuille = TABLEAUX_SANS_FEUILLE[contenu.slug];
   const prefixe = prefixeDuCours(contenu);
 
   describeDb(`cours ${prefixe} publié en base`, () => {
@@ -161,13 +152,7 @@ for (const contenu of CONTENUS) {
 
     it('ouvre un barème v2 et sert le même instantané que le fichier livré', () => {
       expect(ouvrirTirages(cours, tireurSequentiel(1)).version).toBe(2);
-      expect(
-        empreinteCanonique({
-          sujet: tirer(cours, GRAINE_DE_REFERENCE).sujet,
-          deroule: deroulePresentateur(cours, GRAINE_DE_REFERENCE),
-          catalogue: projeterCatalogue(cours),
-        }),
-      ).toBe(instantaneDe(contenu).empreinte);
+      expect(empreinteServie(cours)).toBe(lireLInstantane(contenu).empreinte);
     });
 
     it('relit la pièce jointe de chaque écran telle que le fichier la déclare', () => {
@@ -178,11 +163,24 @@ for (const contenu of CONTENUS) {
       );
     });
 
-    if (cellulesDeLaFeuille === undefined) {
+    if (
+      cellulesDeLaFeuille === undefined &&
+      tableauxSansFeuille === undefined
+    ) {
       it('ne déclare aucune production feuille ou tableau à recalculer', () => {
         expect(corrigesDesProductions()).toEqual([]);
       });
-    } else {
+    }
+
+    if (tableauxSansFeuille !== undefined) {
+      it('relit des tableaux, sans aucune feuille de calcul', () => {
+        expect(corrigesDesProductions().map(({ type }) => type)).toEqual(
+          Array.from({ length: tableauxSansFeuille }, () => 'tableau'),
+        );
+      });
+    }
+
+    if (cellulesDeLaFeuille !== undefined) {
       it('recalcule depuis la base chaque valeur du corrigé de la feuille (AC-11)', () => {
         const corrige = corrigeDeLaFeuille();
         const formules = formulesDuCorrige(corrige);
@@ -201,7 +199,12 @@ for (const contenu of CONTENUS) {
           );
         }
       });
+    }
 
+    if (
+      cellulesDeLaFeuille !== undefined ||
+      tableauxSansFeuille !== undefined
+    ) {
       it('corrige chaque feuille et chaque tableau relus de la base sans aucune case à revoir', () => {
         const corrections = corrigesDesProductions().map(
           corrigerAvecLesAttendus,
@@ -229,7 +232,7 @@ for (const contenu of CONTENUS) {
         contexte.dataSource.query(
           `INSERT INTO "formation_screen_contents"
            ("course_id", "position", "screen_id", "titre", "diffusion", "brique", "duree_minutes", "concepts", "notes", "proprietes")
-         VALUES ($1, 99, $2, 'Diffusion inconnue', 'partout', 'fp-quote', 1, '["proportion"]'::jsonb, 'Action : projeter.', '{}'::jsonb)`,
+         VALUES ($1, 99, $2, 'Diffusion inconnue', 'partout', 'fp-pro', 1, '["proportion"]'::jsonb, 'Action : projeter.', '{}'::jsonb)`,
           [id, `${prefixe}-A9-99-DIFFUSION`],
         ),
       ).rejects.toThrow('chk_formation_screen_diffusion');

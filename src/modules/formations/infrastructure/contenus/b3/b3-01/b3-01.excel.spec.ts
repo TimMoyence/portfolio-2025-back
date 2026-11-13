@@ -5,13 +5,14 @@ import {
   estJourOuvre,
   mediane,
   montantEnTexte,
+  moyenne,
   montantTexteVersNombre,
   nbJoursOuvres,
   nomPropre,
   serieJourOuvre,
   somme,
   supprEspace,
-} from '../../../../../../../test/helpers/cours-b3-01/excel';
+} from '../../../../../../../test/helpers/formations/b3/b3-01/excel';
 
 const VENDREDI_9_OCTOBRE = dateExcel(2026, 10, 9);
 const SAMEDI_10_OCTOBRE = dateExcel(2026, 10, 10);
@@ -54,6 +55,16 @@ describe('fonctions de classeur à la façon d’Excel', () => {
 
   it('additionne sans les textes ni les booléens, comme SOMME sur une plage', () => {
     expect(somme([1, '1 250,00 €', 3, null, true])).toBe(4);
+  });
+
+  it('rend 0 en somme, #DIV/0! en moyenne et #NOMBRE! en médiane sur une plage sans nombre', () => {
+    const sansNombre = ['texte', null, true];
+
+    expect(somme(sansNombre)).toBe(0);
+    expect(() => moyenne(sansNombre)).toThrow('#DIV/0!');
+    expect(() => mediane(sansNombre)).toThrow('#NOMBRE!');
+    expect(() => moyenne([])).toThrow('#DIV/0!');
+    expect(moyenne([2, 'x', 4])).toBe(3);
   });
 
   it('classe tout texte au-dessus de tout nombre et une cellule vide comme zéro ou texte vide', () => {

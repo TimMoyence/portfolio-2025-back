@@ -70,8 +70,8 @@ function ecranDeBrique<B extends Ecran['brique']>(
 }
 
 describe('stockage multi-briques (B1)', () => {
-  it('M7 · connaît les seize briques et le questionnaire, sans billet de sortie', () => {
-    expect(BRIQUES_STOCKEES).toHaveLength(17);
+  it('M7 · connaît les quinze briques et le questionnaire, sans billet de sortie', () => {
+    expect(BRIQUES_STOCKEES).toHaveLength(16);
     expect(BRIQUES_STOCKEES).toContain('fp-recall');
     expect(BRIQUES_STOCKEES).not.toContain('fp-exit');
   });
@@ -589,7 +589,7 @@ describe('stockage multi-briques (B1)', () => {
       ['à la diffusion inconnue', { diffusion: 'publique' }],
     ])('refuse à la lecture un écran %s', (_cas, champs) => {
       expect(() =>
-        lireEcran({ ...buildEcranDeBrique('fp-quote'), ...champs } as never),
+        lireEcran({ ...buildEcranDeBrique('fp-pro'), ...champs } as never),
       ).toThrow(ContenuDeCoursInvalideError);
     });
 
@@ -623,11 +623,11 @@ describe('stockage multi-briques (B1)', () => {
 
     it('publie un contenu dont chaque écran porte titre, diffusion et description', () => {
       const cours = lireContenuAPublier(
-        buildContenuPubliable([buildEcranDeBrique('fp-quote')]),
+        buildContenuPubliable([buildEcranDeBrique('fp-pro')]),
       );
 
       expect(cours.ecrans[0]).toMatchObject({
-        titre: 'Écran fp-quote',
+        titre: 'Écran fp-pro',
         diffusion: 'seance',
       });
     });
@@ -639,7 +639,7 @@ describe('stockage multi-briques (B1)', () => {
       expect(() =>
         lireContenuAPublier(
           buildContenuPubliable([
-            { ...buildEcranDeBrique('fp-quote'), ...champs } as never,
+            { ...buildEcranDeBrique('fp-pro'), ...champs } as never,
           ]),
         ),
       ).toThrow(ContenuDeCoursInvalideError);
@@ -790,7 +790,7 @@ describe('stockage multi-briques (B1)', () => {
   });
 
   describe('remédiations et médias persistés (B17)', () => {
-    const ecran = buildEcranDeBrique('fp-quote');
+    const ecran = buildEcranDeBrique('fp-pro');
     const media = {
       id: 'M1',
       chemins: ['/assets/cours/b2-01/v3/playfair-ecosse-1786.webp'],
@@ -936,7 +936,7 @@ describe('stockage multi-briques (B1)', () => {
       ).not.toHaveProperty('renvoi');
     });
 
-    it.each(['fp-story', 'fp-vote', 'fp-quote', 'questionnaire'])(
+    it.each(['fp-story', 'fp-vote', 'fp-pro', 'questionnaire'])(
       'porte la pièce jointe d un écran %s hors des propriétés de la brique',
       (brique) => {
         const ecran = lireEcran(buildEcranAPieceJointe(brique));

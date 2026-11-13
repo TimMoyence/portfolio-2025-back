@@ -49,14 +49,19 @@ describe('ecranDeRappel', () => {
         concepts: ['proportion'],
         ecrans: [
           {
-            id: 'E-CITATION',
+            id: 'E-CAS',
             titre: null,
             diffusion: 'catalogue',
-            brique: 'fp-quote',
+            brique: 'fp-pro',
             dureeMinutes: 2,
             concepts: ['proportion'],
             notes: 'Accroche',
-            proprietes: { texte: 'x', auteur: null, source: null },
+            proprietes: {
+              metier: 'x',
+              situation: 'x',
+              geste: null,
+              consequence: null,
+            },
           },
         ],
         remediations: {},

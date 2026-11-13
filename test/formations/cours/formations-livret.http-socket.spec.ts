@@ -3,7 +3,7 @@ import { lireCoursStocke } from '../../../src/modules/formations/domain/cours/st
 import { deroulePresentateur } from '../../../src/modules/formations/domain/cours/diffusion/DeroulePresentateur';
 import { GRAINE_DU_CATALOGUE } from '../../../src/modules/formations/domain/cours/diffusion/Diffusion';
 import { tirer } from '../../../src/modules/formations/domain/cours/tirage/Tirage';
-import { clesDuCorrigeDans } from '../../helpers/formations/cours/cles-du-corrige';
+import { clesDuCorrigeDans } from '../../helpers/formations/cours/corrige/cles-du-corrige';
 import { buildCoursStocke } from '../../factories/formations/cours/cours-stocke.factory';
 import {
   ecartsAuSchemaDeLaRoute,

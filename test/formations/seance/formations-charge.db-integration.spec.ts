@@ -1,4 +1,3 @@
-import { performance } from 'node:perf_hooks';
 import type { Test } from 'supertest';
 import { avecVirgule } from '../../../src/common/domain/nombres/ecriture-francaise';
 import type { ResultatsDeSeance } from '../../../src/modules/formations/domain/contrats/resultats';
@@ -10,6 +9,7 @@ import { EN_TETE_JETON } from '../../../src/modules/formations/interfaces/etudia
 import { creerCatalogueDeTest } from '../../factories/formations/cours/cours.factory';
 import { describeDb } from '../../helpers/base/db-integration-datasource';
 import {
+  chronometrer,
   CODE_HTTP,
   FORMATEUR_DE_TEST,
   installerBancDeSeance,
@@ -96,12 +96,6 @@ function exigerCroissance(
       ? dansLeBudget(budget)
       : `${pourcentage(observe)} pour un budget de ${budget}`,
   ).toBe(dansLeBudget(budget));
-}
-
-async function chronometrer<T>(action: () => Promise<T>): Promise<[T, number]> {
-  const depart = performance.now();
-  const valeur = await action();
-  return [valeur, performance.now() - depart];
 }
 
 function memoireStabilisee(): number {

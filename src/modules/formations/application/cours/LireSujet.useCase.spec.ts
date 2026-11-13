@@ -14,13 +14,14 @@ import {
   createMockSessionsRepo,
 } from '../../../../../test/factories/formations/formation.factory';
 import {
-  buildCorrectionDeReponses,
+  buildCorrectionDExemple,
   buildCoursDeBriques,
   buildEcranDeBrique,
   buildQuestionnaireCorrigeSurPlace,
   EXPLICATIONS_SUR_PLACE,
 } from '../../../../../test/factories/formations/cours/ecrans-stockes.factory';
 import { verifierIntrouvables } from '../../../../../test/helpers/formations/seance/gardes-de-seance';
+import { rangDuCours } from '../../../../../test/helpers/formations/cours/lecture-de-cours';
 import type { Cours } from '../../domain/contrats/cours';
 import type { CoursPublic } from '../../domain/contrats/tirage';
 import { lireCoursStocke } from '../../domain/cours/stockage/CoursStocke';
@@ -122,9 +123,7 @@ describe('LireSujetUseCase', () => {
   });
 
   describe('sur l exemple travaille projete', () => {
-    const RANG_DE_L_EXEMPLE = TIRAGE.sujet.ecrans.findIndex(
-      ({ id }) => id === 'E-REM',
-    );
+    const RANG_DE_L_EXEMPLE = rangDuCours(TIRAGE.sujet, 'E-REM');
     const exempleServi = async () => {
       const sujet = await demander();
       return sujet.ecrans[RANG_DE_L_EXEMPLE].donnees as {
@@ -280,7 +279,7 @@ describe('LireSujetUseCase — écrans de correction (SEC-1)', () => {
     screenId: 'B2-01-A2-03-ATELIER-1',
   });
   const CORRIGE = lireCoursStocke(
-    buildCoursDeBriques([ATELIER, buildCorrectionDeReponses(ATELIER.screenId)]),
+    buildCoursDeBriques([ATELIER, buildCorrectionDExemple(ATELIER.screenId)]),
   );
   const tirage = tirer(CORRIGE, SEED);
   const session = (diffusion: Partial<SessionRecord>) =>
@@ -304,8 +303,8 @@ describe('LireSujetUseCase — écrans de correction (SEC-1)', () => {
     await expect(correctionServie()).resolves.toEqual({
       id: `${ATELIER.screenId}-CORRECTION`,
       type: 'ecran-verrouille',
-      titre: 'Écran fp-story',
-      duree: 1,
+      titre: 'Écran fp-worked',
+      duree: 2,
       interactif: false,
       donnees: {},
       ecranCorrige: ATELIER.screenId,
@@ -322,7 +321,7 @@ describe('LireSujetUseCase — écrans de correction (SEC-1)', () => {
 
     const servi = await correctionServie();
 
-    expect(servi.type).toBe('fp-story');
+    expect(servi.type).toBe('fp-worked');
     expect(servi.correction).toMatchObject({
       ecranId: ATELIER.screenId,
       questions: [
@@ -351,12 +350,10 @@ describe('LireSujetUseCase — correction de l écran source révélé (T9)', ()
   const FEUILLE = buildEcranDeBrique('fp-sheet', {
     screenId: 'B2-01-A4-02-FEUILLE',
   });
-  const CITATION = buildEcranDeBrique('fp-quote', {
-    screenId: 'B2-01-A1-02-CITATION',
+  const CAS = buildEcranDeBrique('fp-pro', {
+    screenId: 'B2-01-A1-02-CAS',
   });
-  const SOURCES = lireCoursStocke(
-    buildCoursDeBriques([RAPPEL, FEUILLE, CITATION]),
-  );
+  const SOURCES = lireCoursStocke(buildCoursDeBriques([RAPPEL, FEUILLE, CAS]));
   const tirage = tirer(SOURCES, SEED);
   let sessions: ReturnType<typeof createMockSessionsRepo>;
   let sut: LireSujetUseCase;

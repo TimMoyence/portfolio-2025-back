@@ -2,6 +2,7 @@ import { MODALITES, REGIMES_DE_VERROU } from '../../contrats/contrat-de-l-api';
 import { z } from 'zod';
 import { lienHttps } from '../../../../../common/domain/liens/lien-web';
 import { dansLesBornes } from '../../../../../common/domain/nombres/dans-les-bornes';
+import { NOM_SERVI } from '../../../../../common/domain/types/types-de-fichier';
 import { CHAMPS_EXTRAITS_DU_CAS } from '../../contrats/cours';
 import type {
   CorrigeClassement,
@@ -37,7 +38,6 @@ import {
 import {
   auMoinsUn,
   concept,
-  confusion,
   identifiantDeQuestion,
   media,
   signalerDoublons,
@@ -68,14 +68,12 @@ const cadrageDuRenvoi = z
   .strict()
   .transform(({ extrait }) => (extrait === undefined ? {} : { extrait }));
 
-const CLASSEUR_SUFFIXE_DE_SON_EMPREINTE = String.raw`([A-Za-z0-9_-]+)\.[0-9a-f]{8}\.(xlsx|csv|pdf)`;
-
-const FICHIER_DE_PIECE_JOINTE = new RegExp(
-  String.raw`^/assets/cours/[a-z0-9-]+/${CLASSEUR_SUFFIXE_DE_SON_EMPREINTE}$`,
+export const FICHIER_DE_PIECE_JOINTE = new RegExp(
+  String.raw`^/assets/cours/[a-z0-9-]+/${NOM_SERVI}$`,
 );
 
 export const CLASSEUR_RESERVE = new RegExp(
-  String.raw`^[a-z0-9-]+/${CLASSEUR_SUFFIXE_DE_SON_EMPREINTE}$`,
+  String.raw`^[a-z0-9-]+/${NOM_SERVI}$`,
 );
 
 const pieceJointe = z.union([
@@ -94,57 +92,7 @@ const pieceJointe = z.union([
     .strict(),
 ]);
 
-const quizNote = z
-  .object({
-    id: texte,
-    type: z.literal('quiz'),
-    concept,
-    question: texte,
-    options: z.array(texte).min(2),
-    optionIds: z.array(texte),
-    correctIndex: rang,
-    confusions: z.tuple([confusion], confusion),
-    noteCompte: z.boolean(),
-    context: texte.optional(),
-    explanation: texte.optional(),
-    nextAction: texte.optional(),
-  })
-  .strict()
-  .superRefine((quiz, contexte) => {
-    const signaler = signaleurDe(contexte);
-    if (quiz.optionIds.length !== quiz.options.length) {
-      signaler(['optionIds'], 'un identifiant par option est attendu');
-    }
-    signalerDoublons(quiz.optionIds, ['optionIds'], signaler);
-    if (quiz.correctIndex >= quiz.options.length) {
-      signaler(['correctIndex'], 'la bonne réponse désigne une option absente');
-    }
-    if (quiz.confusions.length !== quiz.options.length - 1) {
-      signaler(['confusions'], 'une confusion par option piège est attendue');
-    }
-  });
-
-export type QuizNote = z.output<typeof quizNote>;
-
-const correctionDeQuiz = z
-  .object({ correctIndex: rang, explanation: texte, nextAction: texte })
-  .strict();
-
-const correction = z.union([
-  correctionDeQuiz,
-  z.object({ expected: texte, nextAction: texte }).strict(),
-  z.object({ nestedQuiz: correctionDeQuiz }).strict(),
-]);
-
-export const presentationInitiale = z
-  .object({
-    version: z.literal(1),
-    screenId: texte,
-    renderer: texte,
-    title: texte.optional(),
-    subtitle: texte.optional(),
-  })
-  .strict();
+const correction = z.object({ expected: texte, nextAction: texte }).strict();
 
 const presentationDuDeck = z
   .object({
@@ -177,54 +125,6 @@ const presentationDuDeck = z
     };
   });
 
-type PresentationStockee =
-  | z.output<typeof presentationInitiale>
-  | z.output<typeof presentationDuDeck>;
-
-interface QuizAffiche {
-  readonly id: string;
-  readonly question: string;
-  readonly options: readonly string[];
-}
-
-function quizAffiche(
-  presentation: PresentationStockee | undefined,
-): QuizAffiche | undefined {
-  if (presentation?.version !== 2) {
-    return undefined;
-  }
-  if (presentation.renderer === 'quiz') {
-    return presentation.props.questionData;
-  }
-  if (presentation.renderer === 'image-left') {
-    return presentation.props.nestedQuiz;
-  }
-  return undefined;
-}
-
-function rangCorrige(
-  corrige: z.output<typeof correction> | undefined,
-): number | undefined {
-  if (corrige === undefined || 'expected' in corrige) {
-    return undefined;
-  }
-  return 'nestedQuiz' in corrige
-    ? corrige.nestedQuiz.correctIndex
-    : corrige.correctIndex;
-}
-
-function afficheLeQuizNote(
-  affiche: QuizAffiche,
-  note: QuizNote | undefined,
-): boolean {
-  return (
-    note !== undefined &&
-    note.id === affiche.id &&
-    note.question === affiche.question &&
-    JSON.stringify(note.options) === JSON.stringify(affiche.options)
-  );
-}
-
 export const visuel = z
   .object({
     src: media,
@@ -238,7 +138,7 @@ export const video = z
   .object({
     src: media,
     srcPoste: media.optional(),
-    type: z.enum(['video/webm', 'video/mp4']),
+    type: z.literal('video/webm'),
     titre: texte,
     poster: media.optional(),
     transcript: texte,
@@ -248,7 +148,7 @@ export const video = z
       .object({ src: media, srclang: texte, libelle: texte })
       .strict()
       .optional(),
-    preload: z.enum(['none', 'metadata']).optional(),
+    preload: z.literal('none').optional(),
   })
   .strict();
 
@@ -256,10 +156,7 @@ const proprietesRecitStockees = z
   .object({
     titre: texte.optional(),
     paragraphes: z.array(texte).min(1).optional(),
-    presentation: z
-      .union([presentationInitiale, presentationDuDeck])
-      .optional(),
-    interaction: quizNote.optional(),
+    presentation: presentationDuDeck.optional(),
     correction: correction.optional(),
     visuel: visuel.optional(),
     video: video.optional(),
@@ -270,29 +167,13 @@ const proprietesRecitStockees = z
   })
   .strict()
   .superRefine((proprietes, contexte) => {
-    const signaler = signaleurDe(contexte);
-    const { presentation, interaction } = proprietes;
     if (
-      presentation === undefined &&
+      proprietes.presentation === undefined &&
       (proprietes.titre === undefined || proprietes.paragraphes === undefined)
     ) {
-      signaler(
+      signaleurDe(contexte)(
         ['presentation'],
         'écran sans présentation ni titre et paragraphes à afficher',
-      );
-    }
-    const affiche = quizAffiche(presentation);
-    if (affiche !== undefined && !afficheLeQuizNote(affiche, interaction)) {
-      signaler(
-        ['interaction'],
-        'le quiz affiché et le quiz noté diffèrent (identifiant, question ou options)',
-      );
-    }
-    const corrige = rangCorrige(proprietes.correction);
-    if (corrige !== undefined && corrige !== interaction?.correctIndex) {
-      signaler(
-        ['correction'],
-        'la correction désigne une autre bonne réponse que le quiz noté',
       );
     }
   });
@@ -340,15 +221,6 @@ const parametreCurseur = z
   .refine(({ min, max, pas }) => (max - min) / pas <= POINTS_MAX_D_UN_TRACE, {
     message: `un curseur sert au plus ${POINTS_MAX_D_UN_TRACE} positions`,
   });
-
-const proprietesCitation = z
-  .object({
-    texte,
-    auteur: texte.nullable(),
-    source: texte.nullable(),
-    ...communes,
-  })
-  .strict();
 
 const questionLibre = z
   .object({
@@ -840,14 +712,13 @@ const proprietesQuestionnaire = z
     intitule: texte,
     consigne: texte.optional(),
     regime: z.enum(REGIMES_DE_VERROU),
-    ordre: z.enum(['fixe', 'melange']),
+    ordre: z.literal('fixe'),
     questions: auMoinsUn(z.union([voteStocke, numeriqueStockee])),
     ...communes,
   })
   .strict();
 
 export const PROPRIETES_STOCKEES = {
-  'fp-quote': proprietesCitation,
   'fp-story': proprietesRecitStockees,
   'fp-pro': proprietesCas,
   'fp-worked': proprietesExemple,

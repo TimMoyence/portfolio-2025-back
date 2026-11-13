@@ -1,5 +1,4 @@
 import {
-  buildCorrectionDeReponses,
   buildCorrectionDExemple,
   buildCoursAPiecesJointes,
   buildCoursDeBriques,
@@ -14,14 +13,14 @@ const QUESTIONNAIRE = buildEcranDeBrique('questionnaire', {
 const EXERCICE = buildEcranDeBrique('fp-worked', {
   screenId: 'B2-01-A2-06-POINTS',
 });
-const CITATION = buildEcranDeBrique('fp-quote');
+const CAS = buildEcranDeBrique('fp-pro');
 
 const cours = lireCoursStocke(
   buildCoursDeBriques([
     QUESTIONNAIRE,
-    buildCorrectionDeReponses(QUESTIONNAIRE.screenId),
+    buildCorrectionDExemple(QUESTIONNAIRE.screenId),
     EXERCICE,
-    CITATION,
+    CAS,
     buildCorrectionDExemple(EXERCICE.screenId),
   ]),
 );

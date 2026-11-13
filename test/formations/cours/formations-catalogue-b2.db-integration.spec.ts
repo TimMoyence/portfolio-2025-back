@@ -8,18 +8,14 @@ import { tirer } from '../../../src/modules/formations/domain/cours/tirage/Tirag
 import { FormationCourseContentEntity } from '../../../src/modules/formations/infrastructure/entities/cours/FormationCourseContent.entity';
 import { FormationScreenContentEntity } from '../../../src/modules/formations/infrastructure/entities/cours/FormationScreenContent.entity';
 import { COURS_B2_01 } from '../../factories/formations/cours/contenus-publies';
-import {
-  buildEcranStockeAvec,
-  buildQuizNote,
-} from '../../factories/formations/cours/cours-stocke.factory';
+import { buildEcranStockeAvec } from '../../factories/formations/cours/cours-stocke.factory';
 import { buildBareme } from '../../factories/formations/formation.factory';
 import { describeDb } from '../../helpers/base/db-integration-datasource';
+import { ecranDuContenu } from '../../helpers/formations/cours/fiche-de-cours';
 import {
-  DELAI_OUVERTURE_CONTEXTE_MS,
+  contexteFormationsDeLaSuite,
   inscrireParticipant,
-  ouvrirContexteFormations,
   VERSION_PUBLIEE_SUR_BASE_NEUVE,
-  type ContexteFormations,
 } from '../../helpers/formations/seance/formations-db';
 
 const SLUG_B2 = COURS_B2_01.slug;
@@ -27,9 +23,10 @@ const FORMATEUR = 'a1111111-1111-4111-8111-111111111111';
 const VERSION_PUBLIEE = VERSION_PUBLIEE_SUR_BASE_NEUVE;
 const NOMBRE_ECRANS = COURS_B2_01.ecrans.length;
 const COURS_DE_REFERENCE = lireContenuAPublier(COURS_B2_01);
-const NOMBRE_QUESTIONS = COURS_DE_REFERENCE.ecrans.filter(
-  (ecran) => ecran.question !== undefined,
-).length;
+const porteUneQuestion = (ecran: { readonly brique: string }): boolean =>
+  'question' in ecran;
+const NOMBRE_QUESTIONS =
+  COURS_DE_REFERENCE.ecrans.filter(porteUneQuestion).length;
 const RUBRIQUE_A_DIRE_DES_NOTES = /À dire : (.+?)(?= [A-ZÉ][\p{L}’' ]* : |$)/gu;
 
 function aDireDesNotes(notes: string): string[] {
@@ -39,21 +36,21 @@ function aDireDesNotes(notes: string): string[] {
 }
 
 describeDb('catalogue B2 migré', () => {
-  let contexte: ContexteFormations;
+  const contexte = contexteFormationsDeLaSuite();
 
   const ecransDeLaVersion = async (
     version: number,
   ): Promise<FormationScreenContentEntity[]> => {
-    const course = await contexte.dataSource
-      .getRepository(FormationCourseContentEntity)
+    const course = await contexte()
+      .dataSource.getRepository(FormationCourseContentEntity)
       .findOneByOrFail({ slug: SLUG_B2, version });
-    return contexte.dataSource
-      .getRepository(FormationScreenContentEntity)
+    return contexte()
+      .dataSource.getRepository(FormationScreenContentEntity)
       .find({ where: { courseId: course.id }, order: { position: 'ASC' } });
   };
 
   const ouvrirSeanceB2 = (code: string, courseVersion = VERSION_PUBLIEE) =>
-    contexte.sessions.create({
+    contexte().sessions.create({
       courseSlug: SLUG_B2,
       courseVersion,
       teacherId: FORMATEUR,
@@ -62,7 +59,7 @@ describeDb('catalogue B2 migré', () => {
     });
 
   const coursDeLaVersion = async (version: number) => {
-    const cours = await contexte.catalogue.trouver(SLUG_B2, version);
+    const cours = await contexte().catalogue.trouver(SLUG_B2, version);
     if (cours === null) throw new Error(`Version ${version} absente`);
     return cours;
   };
@@ -74,12 +71,6 @@ describeDb('catalogue B2 migré', () => {
       deroule: deroulePresentateur(cours, 0),
     };
   };
-
-  beforeAll(async () => {
-    contexte = await ouvrirContexteFormations();
-  }, DELAI_OUVERTURE_CONTEXTE_MS);
-
-  afterAll(async () => contexte.fermer());
 
   it('installe tous les écrans dans un ordre stable, sans doublon ni contenu de remplissage', async () => {
     const ecrans = await ecransDeLaVersion(VERSION_PUBLIEE);
@@ -100,7 +91,7 @@ describeDb('catalogue B2 migré', () => {
         .map((ecran) => [ecran.screenId, ecran.notes]),
     ).toEqual([['B2-01-A1-07-PLAN', '']]);
     expect(
-      ecrans.find((ecran) => ecran.screenId === 'B2-01-A1-03-MISSION')?.notes,
+      ecranDuContenu({ slug: SLUG_B2, ecrans }, 'B2-01-A1-03-MISSION').notes,
     ).toMatch(/^• /);
     expect(
       ecrans.filter((ecran) => ecran.proprietes['interaction'] !== undefined),
@@ -148,7 +139,7 @@ describeDb('catalogue B2 migré', () => {
   });
 
   it('garde la version publiée immuable et permet une nouvelle version du même cours', async () => {
-    const { dataSource, catalogue, sessions } = contexte;
+    const { dataSource, catalogue, sessions } = contexte();
     const course = await dataSource
       .getRepository(FormationCourseContentEntity)
       .findOneByOrFail({ slug: SLUG_B2, version: VERSION_PUBLIEE });
@@ -211,21 +202,17 @@ describeDb('catalogue B2 migré', () => {
 
     expect(lus.map((cours) => cours.ecrans.length)).toEqual([NOMBRE_ECRANS]);
     expect(
-      lus.map((cours) => cours.ecrans.filter((ecran) => ecran.question).length),
+      lus.map((cours) => cours.ecrans.filter(porteUneQuestion).length),
     ).toEqual([NOMBRE_QUESTIONS]);
   });
 
   it('refuse à la lecture un contenu stocké hors contrat au lieu de le rafistoler', async () => {
-    const { dataSource, catalogue } = contexte;
+    const { dataSource, catalogue } = contexte();
     const [cours]: Array<{ id: string }> = await dataSource.query(
       `INSERT INTO "formation_course_contents" ("slug", "version", "titre", "niveau", "duree_minutes", "concepts")
        VALUES ('cours-hors-contrat', 1, 'Cours hors contrat', 'B2', 3, '["proportion"]'::jsonb) RETURNING "id"`,
     );
-    const ecran = buildEcranStockeAvec({
-      interaction: buildQuizNote({
-        confusions: ['raisonnement-additif', 'unite-oubliee'],
-      }),
-    });
+    const ecran = buildEcranStockeAvec({ remarque: 'hors contrat' });
     await dataSource.query(
       `INSERT INTO "formation_screen_contents" ("course_id", "position", "screen_id", "brique", "duree_minutes", "concepts", "notes", "proprietes")
        VALUES ($1, 0, $2, $3, $4, $5::jsonb, $6, $7::jsonb)`,
@@ -277,8 +264,8 @@ describeDb('catalogue B2 migré', () => {
   });
 
   it('ne sert ni interaction ni rubrique à dire hors du deck au poste étudiant ni au catalogue public', async () => {
-    const ecrans = await contexte.dataSource
-      .getRepository(FormationScreenContentEntity)
+    const ecrans = await contexte()
+      .dataSource.getRepository(FormationScreenContentEntity)
       .find();
     const rubriquesADire = ecrans.flatMap((ecran) =>
       aDireDesNotes(ecran.notes),
@@ -290,7 +277,7 @@ describeDb('catalogue B2 migré', () => {
     );
     const publics = [
       ...sujets,
-      await new LireCoursPublicUseCase(contexte.catalogue).execute(SLUG_B2),
+      await new LireCoursPublicUseCase(contexte().catalogue).execute(SLUG_B2),
     ];
     const complets = publics.map((contenu) => JSON.stringify(contenu));
     const horsDuDeck = publics.map((contenu) =>
@@ -311,7 +298,7 @@ describeDb('catalogue B2 migré', () => {
   });
 
   it('persiste une réponse libre de façon idempotente par participant et activité', async () => {
-    const { participants, freeResponses } = contexte;
+    const { participants, freeResponses } = contexte();
     const session = await ouvrirSeanceB2('8364');
     const participant = await inscrireParticipant(participants, {
       sessionId: session.id,
@@ -360,7 +347,7 @@ describeDb('catalogue B2 migré', () => {
   });
 
   it('synchronise les annotations formateur par écran', async () => {
-    const { annotations } = contexte;
+    const { annotations } = contexte();
     const session = await ouvrirSeanceB2('9473');
     const annotation = {
       sessionId: session.id,

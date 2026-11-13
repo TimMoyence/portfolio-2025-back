@@ -1,7 +1,4 @@
-import {
-  buildQuizAffiche,
-  PRESENTATIONS_VISUELLES_VALIDES,
-} from '../../../../../../test/factories/formations/cours/presentation-visuelle.factory';
+import { PRESENTATIONS_VISUELLES_VALIDES } from '../../../../../../test/factories/formations/cours/presentation-visuelle.factory';
 import { parseVisualPresentation } from './VisualPresentation';
 
 describe('contrat visuel du catalogue', () => {
@@ -15,8 +12,8 @@ describe('contrat visuel du catalogue', () => {
     },
   );
 
-  it('L4 · couvre chacun des vingt rendus du deck, corrections de tri et de réponses comprises', () => {
-    expect(Object.keys(PRESENTATIONS_VISUELLES_VALIDES)).toHaveLength(20);
+  it('L4 · couvre chacun des quinze rendus du deck, correction de tri comprise', () => {
+    expect(Object.keys(PRESENTATIONS_VISUELLES_VALIDES)).toHaveLength(15);
   });
 
   describe('illustration', () => {
@@ -140,30 +137,6 @@ describe('contrat visuel du catalogue', () => {
     });
   });
 
-  it('refuse une correction de réponses sans explication', () => {
-    expect(() =>
-      parseVisualPresentation({
-        renderer: 'answer-review',
-        props: {
-          ...PRESENTATIONS_VISUELLES_VALIDES['answer-review'],
-          explications: [],
-        },
-      }),
-    ).toThrow();
-  });
-
-  it('refuse une correction de réponses sans écran source', () => {
-    expect(() =>
-      parseVisualPresentation({
-        renderer: 'answer-review',
-        props: {
-          ...PRESENTATIONS_VISUELLES_VALIDES['answer-review'],
-          source: undefined,
-        },
-      }),
-    ).toThrow();
-  });
-
   it.each([
     ['rangée dans une catégorie absente', { category: 'inconnue' }],
     ['portant une clé inconnue', { intrus: true }],
@@ -188,14 +161,14 @@ describe('contrat visuel du catalogue', () => {
     ).toThrow();
   });
 
-  it('refuse une correction glissée dans un quiz étudiant', () => {
-    expect(() =>
-      parseVisualPresentation({
-        renderer: 'quiz',
-        props: { questionData: buildQuizAffiche({ correctIndex: 0 }) },
-      }),
-    ).toThrow();
-  });
+  it.each(['quiz', 'quote', 'cta', 'guide', 'answer-review'])(
+    'refuse le rendu %s, qu’aucun cours n’écrivait',
+    (renderer) => {
+      expect(() =>
+        parseVisualPresentation({ renderer, props: { title: 'Titre' } }),
+      ).toThrow();
+    },
+  );
 
   describe('médias du même domaine (B14)', () => {
     const imageADroite = (image: string) => ({
