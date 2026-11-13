@@ -2,7 +2,7 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import { enArrierePlan } from '../../../common/application/en-arriere-plan';
 import { RateLimitExceededError } from '../../../common/domain/errors/RateLimitExceededError';
 import { lienAvecJeton } from '../../../common/domain/liens/lien-avec-jeton';
-import { urlDuSite } from '../../../config/urls-publiques';
+import { pageDuSite } from '../../../config/urls-publiques';
 import { emettreJeton } from '../../../common/domain/crypto/TokenHash';
 import { adresseDuSite } from '../domain/demande/AdresseDuSite';
 import type { IAuditNotifierPort } from '../domain/traitement/IAuditNotifier.port';
@@ -69,7 +69,7 @@ export class CreateAuditRequestsUseCase {
           to: request.contactValue,
           hote: adresseDuSite(request.websiteName).hostname,
           lien: lienAvecJeton(
-            `${urlDuSite()}/${request.locale}/growth-audit`,
+            pageDuSite(request.locale, 'growth-audit'),
             jeton.brut,
           ),
           locale: request.locale,

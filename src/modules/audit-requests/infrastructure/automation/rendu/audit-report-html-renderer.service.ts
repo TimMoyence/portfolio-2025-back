@@ -28,7 +28,7 @@ import type {
   EscapedHtml,
   FeuilleDeStyle,
 } from '../../../../../common/domain/texte/nettoyage/html-escape.util';
-import { sectionHeader } from '../../../../../common/infrastructure/mail/section-header';
+import { sectionHeader } from '../../../../../common/infrastructure/mail/corps/section-header';
 import { couvertureDePdf } from '../../../../../common/infrastructure/pdf/couverture-de-pdf';
 
 @Injectable()

@@ -1,4 +1,4 @@
-import { validArticleIngestEnvelope } from '../../../../../test/factories/article-ingest.factory';
+import { validArticleIngestEnvelope } from '../../../../../test/factories/diffusion/article-ingest.factory';
 import {
   ACCEPTEE_DES_DEUX_COTES,
   recitDuMatin,

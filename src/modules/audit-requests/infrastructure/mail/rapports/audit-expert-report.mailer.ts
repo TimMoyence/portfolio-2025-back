@@ -70,7 +70,7 @@ export class AuditExpertReportMailer extends MailerDAudit {
       <p style="white-space:pre-line;color:#374151;">${escapeHtml(expert.executiveSummary)}</p>
 
       <h2 style="margin:24px 0 8px 0;font-size:16px;">Synthese client (Google vs IA)</h2>
-      ${listeDeVisibilite(client.googleVsAiMatrix)}
+      ${listeDeVisibilite(client.googleVsAiMatrix, 'fr')}
 
       <h2 style="margin:24px 0 8px 0;font-size:16px;">Draft mail client (a copier/coller)</h2>
       <div style="padding:16px;background:#f9fafb;border:1px dashed #cbd5e1;border-radius:8px;">
@@ -103,6 +103,7 @@ export class AuditExpertReportMailer extends MailerDAudit {
       preheader: `Audit expert livré pour ${input.websiteName} — ${expert.crossPageFindings.length} findings, ${expert.priorityBacklog.length} backlog items`,
       bodyHtml,
       showUnsubscribe: false,
+      locale: 'fr',
     });
   }
 
@@ -123,7 +124,7 @@ export class AuditExpertReportMailer extends MailerDAudit {
     lines.push('');
     lines.push('Synthese client (Google vs IA) :');
     lines.push(
-      ...lignesDeVisibilite(client.googleVsAiMatrix).map(
+      ...lignesDeVisibilite(client.googleVsAiMatrix, 'fr').map(
         (ligne) => `- ${ligne}`,
       ),
     );

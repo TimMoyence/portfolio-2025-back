@@ -1,4 +1,5 @@
 import { mapDomainValidation } from '../../../../common/application/mappers/map-domain-validation';
+import type { SupportedLocale } from '../../../../common/domain/value-objects/LocaleCode';
 import { User } from '../../domain/User';
 import type { CreateUserCommand } from '../dto/CreateUser.command';
 import type { UpdateProfileCommand } from '../dto/UpdateProfile.command';
@@ -18,6 +19,7 @@ export class UsersMapper {
         isActive: command.isActive ?? true,
         roles: command.roles ?? [],
         updatedOrCreatedBy: command.updatedOrCreatedBy ?? null,
+        locale: command.locale,
       }),
     );
   }
@@ -28,6 +30,7 @@ export class UsersMapper {
         firstName: command.firstName,
         lastName: command.lastName,
         phone: command.phone,
+        locale: command.locale,
         updatedOrCreatedBy: 'self-update',
       }),
     );
@@ -40,6 +43,7 @@ export class UsersMapper {
     googleId: string;
     roles: string[];
     emailVerified?: boolean;
+    locale?: SupportedLocale;
   }): User {
     return mapDomainValidation(() =>
       User.create({
@@ -49,6 +53,7 @@ export class UsersMapper {
         googleId: props.googleId,
         roles: props.roles,
         emailVerified: props.emailVerified ?? true,
+        locale: props.locale,
         updatedOrCreatedBy: 'google-oauth',
       }),
     );

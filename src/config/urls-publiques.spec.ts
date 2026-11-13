@@ -1,4 +1,24 @@
-import { urlDuSite, urlPubliqueDeLApi } from './urls-publiques';
+import { pageDuSite, urlDuSite, urlPubliqueDeLApi } from './urls-publiques';
+
+describe('pageDuSite', () => {
+  it.each([
+    [
+      'fr',
+      'articles/veille-ia',
+      'https://asilidesign.fr/fr/articles/veille-ia',
+    ],
+    [
+      'en',
+      'newsletter/confirm',
+      'https://asilidesign.fr/en/newsletter/confirm',
+    ],
+  ] as const)(
+    'place la page sous le prefixe de sa langue %s, a l adresse du site',
+    (locale, chemin, attendue) => {
+      expect(pageDuSite(locale, chemin)).toBe(attendue);
+    },
+  );
+});
 
 describe('urlDuSite', () => {
   it.each([

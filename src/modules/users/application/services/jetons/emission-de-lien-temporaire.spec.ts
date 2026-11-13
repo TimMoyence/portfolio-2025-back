@@ -79,6 +79,7 @@ describe('emettreUnLienTemporaire', () => {
       lastName: user.lastName,
       url: `https://asilidesign.fr/lien?token=${jetonBrut}`,
       expiresInMinutes: 90,
+      locale: 'fr',
     });
     expect(enregistre).toEqual({
       userId: 'user-9',
@@ -89,6 +90,27 @@ describe('emettreUnLienTemporaire', () => {
       lien.expiresInMinutes * 60_000,
     );
   });
+
+  it.each([
+    ['en', 'https://asilidesign.fr/fr/lien', 'https://asilidesign.fr/en/lien'],
+    ['fr', 'https://asilidesign.fr/en/lien', 'https://asilidesign.fr/lien'],
+    ['en', 'https://asilidesign.fr/lien', 'https://asilidesign.fr/en/lien'],
+  ] as const)(
+    'CPT-02 · ecrit le lien %s depuis %s sous sa seule langue',
+    async (locale, adresseDeBase, attendue) => {
+      const canal = { ...canalSimule(), adresseDeBase };
+
+      await emettreUnLienTemporaire(
+        buildUser({ id: 'user-9', locale }),
+        'user-9',
+        canal,
+        new Logger('test'),
+      );
+
+      const [lien] = canal.envoyer.mock.calls[0];
+      expect(lien.url.split('?')[0]).toBe(attendue);
+    },
+  );
 
   it('rend la main sans attendre la fin de l envoi du courriel', async () => {
     const canal = canalSimule();

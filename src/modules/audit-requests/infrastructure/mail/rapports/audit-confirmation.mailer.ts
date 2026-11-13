@@ -44,6 +44,7 @@ export class AuditConfirmationMailer extends MailerDAudit {
         textes.avertissement,
       ].join('\n'),
       html: buildMailLayout({
+        locale: demande.locale,
         heroTitle: textes.titre,
         preheader: textes.intro(demande.hote),
         bodyHtml: safeHtml`

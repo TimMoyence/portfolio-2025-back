@@ -1,5 +1,5 @@
 import { ArticleContract } from './article-contract';
-import { validArticleIngestEnvelope } from '../../../../../test/factories/article-ingest.factory';
+import { validArticleIngestEnvelope } from '../../../../../test/factories/diffusion/article-ingest.factory';
 
 describe('ArticleContract', () => {
   it('normalise une enveloppe publiée et vérifie le hash du Markdown', () => {

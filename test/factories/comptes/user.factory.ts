@@ -23,6 +23,7 @@ export function buildUser(overrides?: Partial<User>): User {
   user.roles = [];
   user.googleId = null;
   user.emailVerified = true;
+  user.locale = 'fr';
   user.createdAt = new Date('2026-01-01');
   user.updatedAt = new Date('2026-01-01');
   user.updatedOrCreatedBy = null;

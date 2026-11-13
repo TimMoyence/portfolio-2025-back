@@ -5,8 +5,10 @@ import {
   optionalText,
   requireBoolean,
   requireEmail,
+  requireLocale,
   requireText,
 } from '../../../common/domain/validation/domain-validators';
+import type { SupportedLocale } from '../../../common/domain/value-objects/LocaleCode';
 
 export const LONGUEUR_MAX_D_UN_NOM = 50;
 
@@ -21,6 +23,7 @@ export interface CreateUserProps {
   updatedOrCreatedBy?: string | null;
   googleId?: string | null;
   emailVerified?: boolean;
+  locale?: SupportedLocale;
 }
 
 export type UpdateUserProps = Partial<
@@ -38,6 +41,7 @@ export class User {
   roles: string[];
   googleId: string | null;
   emailVerified: boolean;
+  locale: SupportedLocale;
   createdAt: Date;
   updatedAt: Date;
   updatedOrCreatedBy: string | null;
@@ -69,6 +73,7 @@ export class User {
     user.roles = Array.isArray(props.roles) ? props.roles : [];
     user.googleId = props.googleId ?? null;
     user.emailVerified = props.emailVerified ?? false;
+    user.locale = requireLocale(props.locale ?? 'fr', 'user locale');
     user.createdAt = new Date();
     user.updatedAt = new Date();
     user.updatedOrCreatedBy = optionalMetadata(props.updatedOrCreatedBy);
@@ -97,6 +102,10 @@ export class User {
 
     if (props.roles !== undefined) {
       partial.roles = props.roles;
+    }
+
+    if (props.locale !== undefined) {
+      partial.locale = requireLocale(props.locale, 'user locale');
     }
 
     if (props.updatedOrCreatedBy !== undefined) {

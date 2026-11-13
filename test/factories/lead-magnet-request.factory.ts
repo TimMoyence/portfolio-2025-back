@@ -1,4 +1,7 @@
-import { LeadMagnetRequest } from '../../src/modules/lead-magnets/domain/LeadMagnetRequest';
+import {
+  type CreateLeadMagnetRequestProps,
+  LeadMagnetRequest,
+} from '../../src/modules/lead-magnets/domain/LeadMagnetRequest';
 import type { ILeadMagnetRequestRepository } from '../../src/modules/lead-magnets/domain/ILeadMagnetRequestRepository';
 import type { ILeadMagnetNotifier } from '../../src/modules/lead-magnets/domain/ILeadMagnetNotifier';
 import type { IToolkitPdfGenerator } from '../../src/modules/lead-magnets/domain/IToolkitPdfGenerator';
@@ -26,7 +29,9 @@ export function buildPromptEntry(
 }
 
 export function buildLeadMagnetRequest(
-  overrides?: Partial<LeadMagnetRequest>,
+  overrides?: Partial<CreateLeadMagnetRequestProps> & {
+    accessToken?: string;
+  },
 ): LeadMagnetRequest {
   const request = LeadMagnetRequest.create({
     firstName: 'Marie',

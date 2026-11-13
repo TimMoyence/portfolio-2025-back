@@ -46,6 +46,7 @@ describe('AuditClientReportMailer', () => {
       websiteName: 'mon-site.fr',
       clientReport: buildClientReportConforme(),
       pdfBuffer: null,
+      locale: 'fr',
       ...parametres,
     });
 
@@ -191,5 +192,23 @@ describe('AuditClientReportMailer', () => {
     await envoyerRapport(buildMailer(), { to: '' });
 
     expect(mockTransporter.sendMail).not.toHaveBeenCalled();
+  });
+
+  it('VIS-01 · redige en anglais le rapport d un audit demande depuis la page anglaise', async () => {
+    await envoyerRapport(buildMailer(), {
+      firstName: 'Jane',
+      locale: 'en',
+    });
+
+    const { subject, html, text } = sentMail();
+    expect(subject).toBe('Your Growth audit — mon-site.fr');
+    expect(String(html)).toContain('lang="en"');
+    expect(String(html)).toContain('Hello Jane,');
+    expect(String(html)).toContain('Google vs AI visibility');
+    expect(String(html)).toContain('Stop receiving this type of email');
+    expect(String(text)).toContain('7-pillar scorecard:');
+    expect(`${String(html)}${String(text)}`).not.toMatch(
+      /Bonjour|Votre audit|Pilier|Visibilité|Ne plus recevoir|lang="fr"/,
+    );
   });
 });

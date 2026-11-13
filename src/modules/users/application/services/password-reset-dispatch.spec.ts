@@ -73,6 +73,7 @@ describe('EnvoiDeReinitialisation', () => {
         lastName: titulaire.lastName,
         resetUrl: `https://asilidesign.fr/reset-password?token=${jetonBrut}`,
         expiresInMinutes: 60,
+        locale: 'fr',
       });
       expect(tokensRepo.remplacerLesJetonsActifs).toHaveBeenCalledWith(
         {

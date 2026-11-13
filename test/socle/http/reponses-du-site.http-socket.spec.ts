@@ -38,8 +38,9 @@ import { PresentationsController } from '../../../src/modules/presentations/inte
 import {
   buildArticleRecord,
   createMockArticlesRepository,
-} from '../../factories/article.factory';
-import { validArticleIngestEnvelope } from '../../factories/article-ingest.factory';
+  createMockArticlesRepositorySansLivraison,
+} from '../../factories/diffusion/article.factory';
+import { validArticleIngestEnvelope } from '../../factories/diffusion/article-ingest.factory';
 import { buildAuditAutomationConfig } from '../../factories/audits/audit-config.factory';
 import {
   buildAuditSnapshot,
@@ -126,9 +127,7 @@ function serveurDeLaSuite(
 async function ecritureDeLArticle(
   envelope: ArticleIngestEnvelope,
 ): Promise<ArticleWrite> {
-  const depot = createMockArticlesRepository();
-  depot.findDeliveryByDeliveryOrIdempotency.mockResolvedValue(null);
-  depot.findDeliveryByNonce.mockResolvedValue(null);
+  const depot = createMockArticlesRepositorySansLivraison();
   await new ArticlesService(depot).ingest(envelope, 'idempotence-1', 'nonce-1');
   const [ecrite] = depot.saveArticleAndDelivery.mock.calls[0];
   return ecrite;

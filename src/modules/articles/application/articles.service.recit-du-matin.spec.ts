@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { createMockArticlesRepository } from '../../../../test/factories/article.factory';
-import { validArticleIngestEnvelope } from '../../../../test/factories/article-ingest.factory';
+import { createMockArticlesRepositorySansLivraison } from '../../../../test/factories/diffusion/article.factory';
+import { validArticleIngestEnvelope } from '../../../../test/factories/diffusion/article-ingest.factory';
 import { RACINE } from '../../../../test/helpers/depot/racine';
 import { ArticlesService } from './articles.service';
 
@@ -13,9 +13,7 @@ const RECIT = JSON.parse(
 ) as { article: { sections: unknown[]; sources: unknown[] } };
 
 async function stocker(enveloppe: unknown) {
-  const repository = createMockArticlesRepository();
-  repository.findDeliveryByDeliveryOrIdempotency.mockResolvedValue(null);
-  repository.findDeliveryByNonce.mockResolvedValue(null);
+  const repository = createMockArticlesRepositorySansLivraison();
   await new ArticlesService(repository).ingest(enveloppe, 'cle-1', 'nonce-1');
   return repository.saveArticleAndDelivery.mock.calls[0][0];
 }

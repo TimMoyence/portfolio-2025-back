@@ -128,6 +128,16 @@ describe('CreateUsersUseCase', () => {
       ).toHaveBeenCalledTimes(1);
     });
 
+    it('CPT-01 · enregistre la langue des emails choisie a l inscription', async () => {
+      repo.create.mockResolvedValue(buildUser({ id: 'uuid', locale: 'en' }));
+
+      await rendueAuPlancher(useCase.inscrire({ ...candidat, locale: 'en' }));
+
+      expect(repo.create).toHaveBeenCalledWith(
+        expect.objectContaining({ locale: 'en' }),
+      );
+    });
+
     it('hache le mot de passe, enregistre les champs saisis et envoie le courriel de vérification', async () => {
       repo.create.mockResolvedValue(
         buildUser({ id: 'uuid', email: candidat.email, emailVerified: false }),

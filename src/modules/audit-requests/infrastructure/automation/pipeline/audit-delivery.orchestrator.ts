@@ -224,6 +224,7 @@ export class AuditDeliveryOrchestrator {
           websiteName: context.websiteName,
           clientReport,
           pdfBuffer,
+          locale: context.locale,
         }),
         `Client report email failed for audit ${audit.id}`,
         this.logger,

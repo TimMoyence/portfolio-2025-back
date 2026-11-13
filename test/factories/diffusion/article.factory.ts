@@ -1,11 +1,12 @@
 import type {
   ArticleDeliveryRecord,
+  ArticleDeliveryWrite,
   ArticleModerationRepository,
   ArticleRecord,
   ArticlesRepository,
   ArticleStatus,
   ArticleWrite,
-} from '../../src/modules/articles/application/articles.repository';
+} from '../../../src/modules/articles/application/articles.repository';
 import { validArticleIngestEnvelope } from './article-ingest.factory';
 
 export function buildArticleWrite(
@@ -62,6 +63,27 @@ export function buildArticleDeliveryRecord(
     receivedAt: new Date('2026-09-23T04:15:00.000Z'),
     ...overrides,
   };
+}
+
+export function buildArticleDeliveryWrite(
+  overrides: Partial<ArticleDeliveryWrite> = {},
+): ArticleDeliveryWrite {
+  return {
+    deliveryId: 'mb-2026-09-23-fr',
+    idempotencyKey: 'idempotency-1',
+    nonce: 'nonce-1',
+    status: 'accepted',
+    attempts: 1,
+    processedAt: new Date('2026-09-23T04:15:00.000Z'),
+    ...overrides,
+  };
+}
+
+export function createMockArticlesRepositorySansLivraison(): jest.Mocked<ArticlesRepository> {
+  const depot = createMockArticlesRepository();
+  depot.findDeliveryByDeliveryOrIdempotency.mockResolvedValue(null);
+  depot.findDeliveryByNonce.mockResolvedValue(null);
+  return depot;
 }
 
 export function createMockArticlesRepository(): jest.Mocked<ArticlesRepository> {

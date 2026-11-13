@@ -7,6 +7,11 @@ import {
   type ArticleStatus,
   ARTICLES_REPOSITORY,
 } from './articles.repository';
+import {
+  DELAI_AVANT_ENVOI_MS,
+  DIFFUSIONS_REPOSITORY,
+  type IDiffusionsRepository,
+} from './diffusion/diffusions.repository';
 import { ArticleId } from '../domain/contrat/article-contract';
 
 const MODERATION_LIST_LIMIT = 30;
@@ -25,6 +30,8 @@ export class ArticleModerationService {
   constructor(
     @Inject(ARTICLES_REPOSITORY)
     private readonly articles: ArticleModerationRepository,
+    @Inject(DIFFUSIONS_REPOSITORY)
+    private readonly diffusions: IDiffusionsRepository,
   ) {}
 
   async list(): Promise<ModerationView[]> {
@@ -36,8 +43,16 @@ export class ArticleModerationService {
     return this.changerLeStatut(articleId, 'withdrawn');
   }
 
-  restore(articleId: string): Promise<ModerationView> {
-    return this.changerLeStatut(articleId, 'published');
+  async restore(articleId: string): Promise<ModerationView> {
+    const { id, status } = await this.find(articleId);
+    const vue = await this.changerLeStatut(articleId, 'published');
+    if (status === 'withdrawn') {
+      await this.diffusions.reprogrammer(
+        id,
+        new Date(Date.now() + DELAI_AVANT_ENVOI_MS),
+      );
+    }
+    return vue;
   }
 
   private async changerLeStatut(

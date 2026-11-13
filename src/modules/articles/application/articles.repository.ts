@@ -45,6 +45,10 @@ export interface ArticleDeliveryRecord {
   receivedAt: Date;
 }
 
+export interface DiffusionProgrammee {
+  readonly envoiApres: Date;
+}
+
 export interface ArticleDeliveryWrite {
   deliveryId: string;
   idempotencyKey: string;
@@ -72,6 +76,7 @@ export interface ArticlesRepository {
   saveArticleAndDelivery(
     article: ArticleWrite,
     delivery: ArticleDeliveryWrite,
+    diffusion: DiffusionProgrammee | null,
   ): Promise<void>;
   listPublished(params: PagePubliee): Promise<ArticleRecord[]>;
   findPublishedBySlug(

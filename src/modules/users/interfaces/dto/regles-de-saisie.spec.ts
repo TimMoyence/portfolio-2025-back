@@ -10,7 +10,7 @@ import { LoginDto } from './Login.dto';
 import { MotDePasseRobuste } from './regles-de-saisie';
 import { ResetPasswordDto } from './mot-de-passe/ResetPassword.dto';
 import { SetPasswordDto } from './mot-de-passe/SetPassword.dto';
-import { UpdateProfileDto } from './UpdateProfile.dto';
+import { UpdateProfileDto } from './profil/UpdateProfile.dto';
 
 describe('prenom et nom d un compte', () => {
   const secretRobuste = 'StrongPassword123!';

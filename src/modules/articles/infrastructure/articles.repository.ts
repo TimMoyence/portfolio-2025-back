@@ -6,12 +6,14 @@ import type { SupportedLocale } from '../../../common/domain/value-objects/Local
 import {
   type ArticleDeliveryRecord,
   type ArticleDeliveryWrite,
+  type DiffusionProgrammee,
   type ArticleRecord,
   type ArticleStatus,
   type ArticleWrite,
   type ArticlesRepository,
   type PagePubliee,
 } from '../application/articles.repository';
+import { ArticleBroadcastEntity } from './entities/article-broadcast.entity';
 import { ArticleDeliveryEntity } from './entities/article-delivery.entity';
 import { ArticleEntity } from './entities/article.entity';
 import { PostgresErrorClassifier } from '../../../common/infrastructure/typeorm/PostgresErrorClassifier';
@@ -55,6 +57,7 @@ export class TypeOrmArticlesRepository
   async saveArticleAndDelivery(
     article: ArticleWrite,
     delivery: ArticleDeliveryWrite,
+    diffusion: DiffusionProgrammee | null = null,
   ): Promise<void> {
     try {
       await this.dataSource.transaction(async (manager) => {
@@ -67,6 +70,12 @@ export class TypeOrmArticlesRepository
             articleRecordId: articleRecord.id,
           }),
         );
+        if (diffusion !== null) {
+          await manager.getRepository(ArticleBroadcastEntity).insert({
+            articleRecordId: articleRecord.id,
+            sendAfter: diffusion.envoiApres,
+          });
+        }
       });
     } catch (error) {
       if (this.isUniqueViolation(error)) {

@@ -60,11 +60,15 @@ describe('AuthenticateGoogleUserUseCase', () => {
     });
   });
 
-  it('lie le googleId, coupe les sessions ouvertes avant, puis ouvre la sienne quand le user est trouve par email', async () => {
-    const user = buildUser({ googleId: null });
+  function compteTrouveParEmail(user: ReturnType<typeof buildUser>): void {
     repo.findByGoogleId.mockResolvedValue(null);
     repo.findByEmail.mockResolvedValue(user);
     repo.update.mockResolvedValue({ ...user, googleId: 'google-sub-123' });
+  }
+
+  it('lie le googleId, coupe les sessions ouvertes avant, puis ouvre la sienne quand le user est trouve par email', async () => {
+    const user = buildUser({ googleId: null });
+    compteTrouveParEmail(user);
 
     const result = await useCase.execute('valid-id-token');
 
@@ -78,6 +82,27 @@ describe('AuthenticateGoogleUserUseCase', () => {
     expect(
       refreshTokensRepo.revokeByUserId.mock.invocationCallOrder[0],
     ).toBeLessThan(refreshTokensRepo.create.mock.invocationCallOrder[0]);
+  });
+
+  it('CPT-01 · cree le compte Google dans la langue de la page de connexion', async () => {
+    repo.findByGoogleId.mockResolvedValue(null);
+    repo.findByEmail.mockResolvedValue(null);
+    repo.create.mockResolvedValue(buildUser({ id: 'new-user', locale: 'en' }));
+
+    await useCase.execute('valid-id-token', 'en');
+
+    expect(repo.create.mock.calls[0][0].locale).toBe('en');
+  });
+
+  it('CPT-04 · ne change pas la langue du compte qu un compte Google rejoint', async () => {
+    compteTrouveParEmail(buildUser({ googleId: null, locale: 'fr' }));
+
+    const result = await useCase.execute('valid-id-token', 'en');
+
+    expect(result.user.locale).toBe('fr');
+    expect(
+      repo.update.mock.calls.every(([, donnees]) => !('locale' in donnees)),
+    ).toBe(true);
   });
 
   it('cree un nouveau compte quand aucun user existant', async () => {

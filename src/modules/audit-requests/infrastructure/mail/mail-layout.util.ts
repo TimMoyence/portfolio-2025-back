@@ -1,6 +1,8 @@
 import { envString } from '../../../../config/environnement/env-readers.util';
+import { pageDuSite } from '../../../../config/urls-publiques';
 import { escapeHtml, escapeUrl, safeHtml } from './mail-rendering.util';
 import type { EscapedHtml } from './mail-rendering.util';
+import type { AuditLocale } from '../../domain/traitement/audit-locale.util';
 
 export interface MailLayoutInput {
   readonly heroTitle: string;
@@ -9,7 +11,13 @@ export interface MailLayoutInput {
   readonly preheader?: string;
   readonly showUnsubscribe?: boolean;
   readonly unsubscribeUrl?: string;
+  readonly locale: AuditLocale;
 }
+
+const LIBELLE_DU_DESABONNEMENT: Readonly<Record<AuditLocale, EscapedHtml>> = {
+  fr: safeHtml`Ne plus recevoir ce type d'email`,
+  en: safeHtml`Stop receiving this type of email`,
+};
 
 const LOGO_ALT = 'Asili Design — Tim Moyence';
 const BRAND_FOOTER_ADDRESS = 'Asili Design — Bordeaux, France';
@@ -22,11 +30,9 @@ function logoDeLaMarque(): string {
   );
 }
 
-function resolveUnsubscribeUrl(explicit?: string): string {
+function resolveUnsubscribeUrl(locale: AuditLocale, explicit?: string): string {
   if (explicit && explicit.trim().length > 0) return explicit.trim();
-  return (
-    envString('AUDIT_UNSUBSCRIBE_URL') ?? 'https://asilidesign.fr/fr/contact'
-  );
+  return envString('AUDIT_UNSUBSCRIBE_URL') ?? pageDuSite(locale, 'contact');
 }
 
 export function buildMailLayout(input: MailLayoutInput): EscapedHtml {
@@ -40,12 +46,12 @@ export function buildMailLayout(input: MailLayoutInput): EscapedHtml {
 
   const unsubscribeHtml = input.showUnsubscribe
     ? safeHtml`<p style="margin:12px 0 0 0;font-size:11px;color:#9ca3af;text-align:center;">
-        <a href="${escapeUrl(resolveUnsubscribeUrl(input.unsubscribeUrl))}" style="color:#9ca3af;text-decoration:underline;">Ne plus recevoir ce type d'email</a>
+        <a href="${escapeUrl(resolveUnsubscribeUrl(input.locale, input.unsubscribeUrl))}" style="color:#9ca3af;text-decoration:underline;">${LIBELLE_DU_DESABONNEMENT[input.locale]}</a>
       </p>`
     : safeHtml``;
 
   return safeHtml`<!DOCTYPE html>
-<html lang="fr">
+<html lang="${escapeHtml(input.locale)}">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -70,7 +76,7 @@ export function buildMailLayout(input: MailLayoutInput): EscapedHtml {
 </head>
 <body class="bg-surface" style="margin:0;padding:0;background:#f5f5f7;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;color:#111827;-webkit-font-smoothing:antialiased;">
 ${preheader}
-<div role="article" aria-roledescription="email" lang="fr" style="padding:24px 12px;">
+<div role="article" aria-roledescription="email" lang="${escapeHtml(input.locale)}" style="padding:24px 12px;">
   <div style="max-width:640px;margin:0 auto;">
     <!-- Header logo -->
     <div style="padding:12px 24px 20px 24px;text-align:center;">

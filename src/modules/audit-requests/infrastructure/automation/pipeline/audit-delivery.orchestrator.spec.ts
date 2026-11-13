@@ -137,6 +137,15 @@ describe('AuditDeliveryOrchestrator', () => {
       expect(clientCall.firstName).toBe('Client');
     });
 
+    it('VIS-01 · envoie le rapport client dans la langue de la demande', async () => {
+      repo.findById.mockResolvedValue(baseSnapshot);
+
+      await runForAudit({ locale: 'en' });
+      await flushPromises();
+
+      expect(notifier.sendClientReport.mock.calls[0][0].locale).toBe('en');
+    });
+
     describe('P0.6 — extraction firstName depuis email', () => {
       it('deduit le prenom depuis tim.moyence@outlook.fr', async () => {
         repo.findById.mockResolvedValue(baseSnapshot);

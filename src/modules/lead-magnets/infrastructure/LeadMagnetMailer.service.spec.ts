@@ -66,4 +66,26 @@ describe('LeadMagnetMailerService', () => {
       `https://asilidesign.fr/formations/ia-solopreneurs/toolkit/${accessToken}\n`,
     );
   });
+
+  it('VIS-02 · redige en anglais le mail d une demande anglaise et annonce un guide en francais', async () => {
+    await new LeadMagnetMailerService().sendToolkitEmail(
+      buildLeadMagnetRequest({
+        firstName: 'Jane',
+        termsLocale: 'en',
+        accessToken: randomUUID(),
+      }),
+      PDF,
+    );
+
+    const { subject, text, html } = mailSimule();
+    expect(subject).toBe('Your personalised AI guide, Jane');
+    expect(String(text)).toContain('Hello Jane,');
+    expect(String(text)).toContain(
+      'The guide and its online page are in French.',
+    );
+    expect(String(html)).toContain('View my personalised guide online');
+    expect(`${String(text)}${String(html)}`).not.toMatch(
+      /Bonjour|Votre guide|piece jointe|Repondez/,
+    );
+  });
 });

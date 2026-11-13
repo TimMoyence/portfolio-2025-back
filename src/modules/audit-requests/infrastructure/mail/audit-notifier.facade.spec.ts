@@ -57,6 +57,7 @@ describe('AuditNotifierFacade', () => {
       websiteName: 'mon-site.fr',
       clientReport: buildClientReportSynthesis(),
       pdfBuffer: null,
+      locale: 'fr' as const,
     };
 
     await facade.sendClientReport(input);

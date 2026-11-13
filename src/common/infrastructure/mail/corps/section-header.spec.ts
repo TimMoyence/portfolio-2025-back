@@ -2,7 +2,7 @@ import {
   htmlEmis,
   safeHtml,
   type EscapedHtml,
-} from '../../domain/texte/nettoyage/html-escape.util';
+} from '../../../domain/texte/nettoyage/html-escape.util';
 import { sectionHeader } from './section-header';
 
 describe('sectionHeader', () => {
