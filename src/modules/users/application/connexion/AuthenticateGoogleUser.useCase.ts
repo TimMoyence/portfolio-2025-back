@@ -14,6 +14,7 @@ import type { AuthResult } from './AuthenticateUser.useCase';
 import { issueAuthSession } from '../services/jetons/issue-auth-session';
 import { JwtTokenService } from '../services/jetons/JwtTokenService';
 import { UsersMapper } from '../mappers/UsersMapper';
+import type { SupportedLocale } from '../../../../common/domain/value-objects/LocaleCode';
 
 interface GoogleTokenPayload {
   sub: string;
@@ -55,7 +56,10 @@ export class AuthenticateGoogleUserUseCase {
     @Inject(GOOGLE_CLIENT_ID) private readonly googleClientId: string,
   ) {}
 
-  async execute(idToken: string): Promise<AuthResult> {
+  async execute(
+    idToken: string,
+    locale?: SupportedLocale,
+  ): Promise<AuthResult> {
     const payload = await this.verifyGoogleToken(idToken);
     const googleId = payload.sub;
     const email = payload.email;
@@ -68,6 +72,7 @@ export class AuthenticateGoogleUserUseCase {
       googleId,
       email,
       payload,
+      locale,
     );
 
     return this.signResult(authenticatedUser);
@@ -77,6 +82,7 @@ export class AuthenticateGoogleUserUseCase {
     googleId: string,
     email: string,
     payload: GoogleTokenPayload,
+    locale: SupportedLocale | undefined,
   ): Promise<User> {
     const existant = await this.resolveExistingUser(googleId, email);
     if (existant) {
@@ -92,6 +98,7 @@ export class AuthenticateGoogleUserUseCase {
       googleId,
       roles: DEFAULT_SELF_REGISTRATION_ROLES,
       emailVerified: true,
+      locale,
     });
     try {
       return await this.repo.create(newUser);

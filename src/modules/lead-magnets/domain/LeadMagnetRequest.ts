@@ -4,6 +4,7 @@ import {
   requireText,
   requireValidDate,
 } from '../../../common/domain/validation/domain-validators';
+import type { SupportedLocale } from '../../../common/domain/value-objects/LocaleCode';
 
 export interface CreateLeadMagnetRequestProps {
   firstName: string;
@@ -20,7 +21,7 @@ export class LeadMagnetRequest {
   email: string;
   formationSlug: string;
   termsVersion: string;
-  termsLocale: string;
+  termsLocale: SupportedLocale;
   termsAcceptedAt: Date;
   accessToken?: string;
   createdAt?: Date;

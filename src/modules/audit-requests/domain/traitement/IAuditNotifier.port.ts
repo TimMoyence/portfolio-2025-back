@@ -12,6 +12,7 @@ export interface ClientReportMailInput {
   readonly websiteName: string;
   readonly clientReport: ClientReportSynthesis;
   readonly pdfBuffer: Buffer | null;
+  readonly locale: AuditLocale;
 }
 
 export interface ExpertReportMailInput {

@@ -8,14 +8,14 @@ const MATRICE = {
 
 describe('visibilité Google vs IA', () => {
   it('écrit une ligne de texte par moteur', () => {
-    expect(lignesDeVisibilite(MATRICE)).toEqual([
+    expect(lignesDeVisibilite(MATRICE, 'fr')).toEqual([
       'Google : 55/100 — Bien indexé',
       'IA : 42/100 — Peu <cité>',
     ]);
   });
 
   it('rend une liste HTML dont les résumés sont échappés', () => {
-    const html = htmlEmis(listeDeVisibilite(MATRICE));
+    const html = htmlEmis(listeDeVisibilite(MATRICE, 'fr'));
 
     expect(html).toContain(
       '<li><strong>Google :</strong> 55/100 — Bien indexé</li>',

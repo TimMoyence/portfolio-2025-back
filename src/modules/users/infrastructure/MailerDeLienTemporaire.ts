@@ -1,63 +1,59 @@
+import type { EscapedHtml } from '../../../common/domain/texte/nettoyage/html-escape.util';
+import type { SupportedLocale } from '../../../common/domain/value-objects/LocaleCode';
+import { corpsAvecBouton } from '../../../common/infrastructure/mail/corps/corps-avec-bouton';
 import { ExpediteurSmtp } from '../../../common/infrastructure/mail/expediteur-smtp';
-import {
-  escapeHtml,
-  escapeUrl,
-  safeHtml,
-  type EscapedHtml,
-} from '../../../common/domain/texte/nettoyage/html-escape.util';
 
 export interface LienTemporaire {
-  destinataire: { email: string; firstName: string; lastName: string };
+  destinataire: {
+    email: string;
+    firstName: string;
+    lastName: string;
+    locale: SupportedLocale;
+  };
   sujet: string;
   titre: EscapedHtml;
-  introTexte: string;
-  introHtml: EscapedHtml;
+  intro: string;
   lien: string;
   expireEnMinutes: number;
-  libelleBouton: EscapedHtml;
-  avertissementTexte: string;
-  avertissementHtml: EscapedHtml;
+  bouton: string;
+  avertissement: string;
 }
+
+const SALUTATION: Readonly<Record<SupportedLocale, (nom: string) => string>> = {
+  fr: (nom) => `Bonjour ${nom},`,
+  en: (nom) => `Hello ${nom},`,
+};
+
+const VALIDITE: Readonly<Record<SupportedLocale, (minutes: number) => string>> =
+  {
+    fr: (minutes) => `Ce lien est valide ${minutes} minutes.`,
+    en: (minutes) => `This link is valid for ${minutes} minutes.`,
+  };
+
+export type RedactionDUnLien = Pick<
+  LienTemporaire,
+  'sujet' | 'titre' | 'intro' | 'bouton' | 'avertissement'
+>;
 
 export abstract class MailerDeLienTemporaire extends ExpediteurSmtp {
   protected async envoyerLien(contenu: LienTemporaire): Promise<void> {
-    const { destinataire, lien } = contenu;
-    const fullName =
-      `${destinataire.firstName} ${destinataire.lastName}`.trim();
+    const { destinataire } = contenu;
+    const nom = `${destinataire.firstName} ${destinataire.lastName}`.trim();
 
     await this.envoyer({
       to: destinataire.email,
       subject: contenu.sujet,
-      text: [
-        `Bonjour ${fullName},`,
-        '',
-        contenu.introTexte,
-        `Ce lien est valide ${contenu.expireEnMinutes} minutes :`,
-        lien,
-        '',
-        contenu.avertissementTexte,
-      ].join('\n'),
-      html: safeHtml`
-        <div style="font-family:Arial,Helvetica,sans-serif; background:#f7f7f7; padding:24px;">
-          <div style="max-width:600px; margin:0 auto; background:#ffffff; border-radius:8px; padding:24px;">
-            <h2 style="margin-top:0; color:#111;">${contenu.titre}</h2>
-            <p>Bonjour ${escapeHtml(fullName)},</p>
-            <p>
-              ${contenu.introHtml}
-              Ce lien est valide <strong>${contenu.expireEnMinutes} minutes</strong>.
-            </p>
-            <p style="margin:24px 0;">
-              <a href="${escapeUrl(lien)}" style="display:inline-block; background:#0f172a; color:#fff; text-decoration:none; padding:12px 18px; border-radius:8px;">
-                ${contenu.libelleBouton}
-              </a>
-            </p>
-            <p style="word-break:break-all; color:#334155;">${escapeHtml(lien)}</p>
-            <p style="font-size:12px; color:#64748b; margin-top:24px;">
-              ${contenu.avertissementHtml}
-            </p>
-          </div>
-        </div>
-      `,
+      ...corpsAvecBouton({
+        titre: contenu.titre,
+        paragraphes: [
+          SALUTATION[destinataire.locale](nom),
+          contenu.intro,
+          VALIDITE[destinataire.locale](contenu.expireEnMinutes),
+        ],
+        bouton: contenu.bouton,
+        lien: contenu.lien,
+        pied: contenu.avertissement,
+      }),
     });
   }
 }

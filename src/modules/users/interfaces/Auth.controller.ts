@@ -69,8 +69,8 @@ import { ResendVerificationDto } from './dto/ResendVerification.dto';
 import { ResetPasswordDto } from './dto/mot-de-passe/ResetPassword.dto';
 import { SetPasswordDto } from './dto/mot-de-passe/SetPassword.dto';
 import { AuthResponseDto } from './dto/Auth.response.dto';
-import { UpdateProfileDto } from './dto/UpdateProfile.dto';
-import { UserResponseDto } from './dto/User.response.dto';
+import { UpdateProfileDto } from './dto/profil/UpdateProfile.dto';
+import { UserResponseDto } from './dto/profil/User.response.dto';
 import { compteConnecte } from '../../../common/interfaces/auth/compte-connecte';
 import { RoutePublique } from '../../../common/interfaces/security/anti-robot/formulaire-public.decorator';
 import { messageDErreur } from '../../../common/domain/errors/message-d-erreur';
@@ -149,7 +149,7 @@ export class AuthController {
     return this.ouvrirSession(
       echange,
       { succes: 'GOOGLE_AUTH_SUCCESS', echec: 'GOOGLE_AUTH_FAILURE' },
-      () => this.authenticateGoogleUserUseCase.execute(dto.idToken),
+      () => this.authenticateGoogleUserUseCase.execute(dto.idToken, dto.locale),
     );
   }
 

@@ -10,7 +10,7 @@ import {
   safeHtml,
 } from '../../../../common/domain/texte/nettoyage/html-escape.util';
 import type { EscapedHtml } from '../../../../common/domain/texte/nettoyage/html-escape.util';
-import { sectionHeader } from '../../../../common/infrastructure/mail/section-header';
+import { sectionHeader } from '../../../../common/infrastructure/mail/corps/section-header';
 import { sansDiacritiques } from '../../../../common/domain/texte/nettoyage/sans-diacritiques';
 
 function normalizeKey(raw: string): string {

@@ -46,6 +46,8 @@ export function buildProductionSecrets(): Record<string, string> {
   return {
     ...SECRETS_REQUIS,
     MORNING_BRIEF_HMAC_KEYS: TEST_MORNING_BRIEF_HMAC_KEYS,
+    SMTP_USER: 'cle-smtp@smtp-brevo.com',
+    SMTP_PASS: 'xsmtpsib-cle-de-test',
   };
 }
 
@@ -58,6 +60,8 @@ export function buildProductionEnv(
     DB_HOST: 'db',
     DB_NAME: undefined,
     POSTGRES_DB: 'portfolio',
+    SMTP_HOST: 'smtp-relay.brevo.com',
+    SMTP_FROM: 'no-reply@asilidesign.fr',
     ...overrides,
   });
 }

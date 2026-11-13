@@ -2,7 +2,7 @@ import type { Response } from 'express';
 import {
   buildArticleRecord,
   createMockArticlesService,
-} from '../../../../test/factories/article.factory';
+} from '../../../../test/factories/diffusion/article.factory';
 import { ArticlesController } from './articles.controller';
 
 function controleurAvec(

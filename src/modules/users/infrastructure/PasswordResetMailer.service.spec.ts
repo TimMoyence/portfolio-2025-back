@@ -27,6 +27,7 @@ function buildPayload(
     lastName: 'Dupont',
     resetUrl: 'https://app.local/reset?token=abc123',
     expiresInMinutes: 30,
+    locale: 'fr',
     ...overrides,
   };
 }
@@ -158,13 +159,11 @@ describe('PasswordResetMailerService', () => {
             destinataire: payload,
             sujet: 'Reinitialisation de votre mot de passe',
             titre: safeHtml`Reinitialisation du mot de passe`,
-            introTexte: `Demande de ${payload.firstName}.`,
-            introHtml: `Demande de ${payload.firstName}.` as never,
+            intro: `Demande de ${payload.firstName}.`,
             lien: payload.resetUrl,
             expireEnMinutes: payload.expiresInMinutes,
-            libelleBouton: safeHtml`Reinitialiser mon mot de passe`,
-            avertissementTexte: '',
-            avertissementHtml: safeHtml``,
+            bouton: 'Reinitialiser mon mot de passe',
+            avertissement: '',
           });
         }
       }

@@ -1,4 +1,5 @@
 import type { createTransport, Transporter } from 'nodemailer';
+import type { BudgetDesEnvois } from '../../src/common/application/budget-des-envois';
 import type { IEmailVerificationNotifier } from '../../src/modules/users/domain/notifications/IEmailVerificationNotifier';
 import type { IPasswordResetNotifier } from '../../src/modules/users/domain/notifications/IPasswordResetNotifier';
 import { poserVariables } from '../helpers/depot/environnement';
@@ -84,9 +85,36 @@ export function mailSimule(): MailEnvoye {
   return premierMailEnvoye({ sendMail: envoiSmtpSimule });
 }
 
+export function viderLeSmtpSimuleAChaqueTest(): void {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+}
+
+export function attendreLeMailAvecSonLien(attendu: {
+  readonly sujet: string;
+  readonly bouton: string;
+  readonly lien: string;
+}): MailEnvoye {
+  const mail = mailSimule();
+  expect(mail.subject).toBe(attendu.sujet);
+  expect(mail.html).toContain(attendu.bouton);
+  expect(mail.html).toContain(attendu.lien);
+  expect(mail.text).toContain(attendu.lien);
+  return mail;
+}
+
 export function attendreScriptEchappe(html: string): void {
   expect(html).not.toContain('<script>');
   expect(html).toContain('&lt;script&gt;');
+}
+
+export function createMockBudgetDesEnvois(
+  restant = 250,
+): jest.Mocked<BudgetDesEnvois> {
+  return {
+    restantPourLaDiffusion: jest.fn().mockResolvedValue(restant),
+  };
 }
 
 export const DEFAULT_SMTP_ENV = {

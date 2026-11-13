@@ -13,6 +13,7 @@ describe('buildMailLayout (P2.7 / P6.6)', () => {
   const baseInput = {
     heroTitle: 'Test title',
     bodyHtml: safeHtml`<p>body content</p>`,
+    locale: 'fr' as const,
   };
 
   installerVariables(

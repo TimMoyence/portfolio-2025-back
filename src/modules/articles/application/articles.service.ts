@@ -22,10 +22,23 @@ import {
   type ArticleWrite,
   ARTICLES_REPOSITORY,
   type ArticlesRepository,
+  type DiffusionProgrammee,
 } from './articles.repository';
+import { DELAI_AVANT_ENVOI_MS } from './diffusion/diffusions.repository';
 import { Inject } from '@nestjs/common';
 import { urlDuSite, urlPubliqueDeLApi } from '../../../config/urls-publiques';
 import { articlePageUrl } from './article-settings';
+
+const FRAICHEUR_MAX_MS = 24 * 60 * 60_000;
+
+function diffusionALaReception(
+  publieLe: Date,
+  recuLe: Date,
+): DiffusionProgrammee | null {
+  return recuLe.getTime() - publieLe.getTime() > FRAICHEUR_MAX_MS
+    ? null
+    : { envoiApres: new Date(recuLe.getTime() + DELAI_AVANT_ENVOI_MS) };
+}
 
 const FEED_LANGUAGE = { fr: 'fr-FR', en: 'en' } as const;
 const FEED_DESCRIPTION = {
@@ -115,7 +128,11 @@ export class ArticlesService {
       processedAt: receivedAt,
     } as const;
 
-    await this.articles.saveArticleAndDelivery(article, delivery);
+    await this.articles.saveArticleAndDelivery(
+      article,
+      delivery,
+      diffusionALaReception(article.publishedAt, receivedAt),
+    );
 
     return {
       delivery_id: envelope.delivery_id,

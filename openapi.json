@@ -838,6 +838,118 @@
         ]
       }
     },
+    "/api/v1/portfolio25/newsletter/subscribe": {
+      "post": {
+        "operationId": "NewsletterController_subscribe",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubscribeNewsletterRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AbonnementNewsletterResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation echouee"
+          },
+          "429": {
+            "description": "Trop de requetes"
+          }
+        },
+        "summary": "S abonner a la newsletter (double opt-in)",
+        "tags": [
+          "newsletter"
+        ]
+      }
+    },
+    "/api/v1/portfolio25/newsletter/confirm": {
+      "post": {
+        "operationId": "NewsletterController_confirm",
+        "parameters": [
+          {
+            "name": "token",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConfirmationNewsletterResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Lien invalide ou expiré."
+          },
+          "429": {
+            "description": "Trop de requetes"
+          }
+        },
+        "summary": "Confirmer un abonnement par son lien",
+        "tags": [
+          "newsletter"
+        ]
+      }
+    },
+    "/api/v1/portfolio25/newsletter/unsubscribe": {
+      "post": {
+        "operationId": "NewsletterController_unsubscribe",
+        "parameters": [
+          {
+            "name": "token",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DesabonnementNewsletterResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Lien invalide ou expiré."
+          },
+          "429": {
+            "description": "Trop de requetes"
+          }
+        },
+        "summary": "Se desabonner par son lien, depuis la page ou en un clic (RFC 8058)",
+        "tags": [
+          "newsletter"
+        ]
+      }
+    },
     "/api/v1/portfolio25/presentations/{slug}/interactions": {
       "get": {
         "operationId": "PresentationsController_getInteractions",
@@ -3460,6 +3572,14 @@
           "password"
         ]
       },
+      "Locale": {
+        "type": "string",
+        "enum": [
+          "fr",
+          "en"
+        ],
+        "description": "Langue des emails du compte."
+      },
       "UserResponseDto": {
         "type": "object",
         "properties": {
@@ -3519,6 +3639,15 @@
             "type": "boolean",
             "example": true,
             "description": "Indique si l'adresse email a ete verifiee."
+          },
+          "locale": {
+            "example": "fr",
+            "description": "Langue des emails du compte.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Locale"
+              }
+            ]
           }
         },
         "required": [
@@ -3533,7 +3662,8 @@
           "updatedAt",
           "updatedOrCreatedBy",
           "hasPassword",
-          "emailVerified"
+          "emailVerified",
+          "locale"
         ]
       },
       "AuthResponseDto": {
@@ -3564,6 +3694,15 @@
             "type": "string",
             "description": "Google ID token reçu du client GIS",
             "minLength": 1
+          },
+          "locale": {
+            "example": "fr",
+            "default": "fr",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Locale"
+              }
+            ]
           }
         },
         "required": [
@@ -3686,6 +3825,15 @@
             "nullable": true,
             "pattern": "^$|^[\\s().-]*(?:\\+[\\s().-]*(?:\\d[\\s().-]*){6,15}|0[\\s().-]*0[\\s().-]*(?:\\d[\\s().-]*){6,15}|(?!0[\\s().-]*0)(?:\\d[\\s().-]*){6,15})$",
             "maxLength": 30
+          },
+          "locale": {
+            "example": "fr",
+            "default": "fr",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Locale"
+              }
+            ]
           }
         },
         "required": [
@@ -3731,15 +3879,16 @@
             "nullable": true,
             "pattern": "^$|^[\\s().-]*(?:\\+[\\s().-]*(?:\\d[\\s().-]*){6,15}|0[\\s().-]*0[\\s().-]*(?:\\d[\\s().-]*){6,15}|(?!0[\\s().-]*0)(?:\\d[\\s().-]*){6,15})$",
             "maxLength": 30
+          },
+          "locale": {
+            "example": "fr",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Locale"
+              }
+            ]
           }
         }
-      },
-      "Locale": {
-        "type": "string",
-        "enum": [
-          "fr",
-          "en"
-        ]
       },
       "ContactRequestDto": {
         "type": "object",
@@ -4595,6 +4744,93 @@
           "prompts",
           "workflows",
           "templates"
+        ]
+      },
+      "SubscribeNewsletterRequestDto": {
+        "type": "object",
+        "properties": {
+          "website": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "Champ piège anti-robot, doit rester vide"
+          },
+          "formFillDurationMs": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Durée de saisie en ms, mesurée par le poste sur une horloge monotone"
+          },
+          "email": {
+            "type": "string",
+            "pattern": "^(?=[^@]{1,64}@)(?=.{1,254}$)[A-Za-z0-9!#$%&'*+/=?^_`{|}~\\u00A1-\\u00AC\\u00AE-\\u05FF\\u0606-\\u061B\\u061D-\\u06DC\\u06DE-\\u070E\\u0710-\\u088F\\u0892-\\u08E1\\u08E3-\\u167F\\u1681-\\u180D\\u180F-\\u1FFF\\u2010-\\u2027\\u2030-\\u205E\\u2065\\u2070-\\u2FFF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFEFE\\uFF00-\\uFFEF-]+(?:\\.[A-Za-z0-9!#$%&'*+/=?^_`{|}~\\u00A1-\\u00AC\\u00AE-\\u05FF\\u0606-\\u061B\\u061D-\\u06DC\\u06DE-\\u070E\\u0710-\\u088F\\u0892-\\u08E1\\u08E3-\\u167F\\u1681-\\u180D\\u180F-\\u1FFF\\u2010-\\u2027\\u2030-\\u205E\\u2065\\u2070-\\u2FFF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFEFE\\uFF00-\\uFFEF-]+)*@(?:[A-Za-z0-9\\u00A1-\\u00AC\\u00AE-\\u05FF\\u0606-\\u061B\\u061D-\\u06DC\\u06DE-\\u070E\\u0710-\\u088F\\u0892-\\u08E1\\u08E3-\\u167F\\u1681-\\u180D\\u180F-\\u1FFF\\u2010-\\u2027\\u2030-\\u205E\\u2065\\u2070-\\u2FFF\\u3001-\\uD7FF\\uF900-\\uFEFE\\uFF00\\uFF5F-\\uFFF8\\uFFFC-\\uFFFF](?:[A-Za-z0-9\\u00A1-\\u00AC\\u00AE-\\u05FF\\u0606-\\u061B\\u061D-\\u06DC\\u06DE-\\u070E\\u0710-\\u088F\\u0892-\\u08E1\\u08E3-\\u167F\\u1681-\\u180D\\u180F-\\u1FFF\\u2010-\\u2027\\u2030-\\u205E\\u2065\\u2070-\\u2FFF\\u3001-\\uD7FF\\uF900-\\uFEFE\\uFF00\\uFF5F-\\uFFF8\\uFFFC-\\uFFFF-]{0,61}[A-Za-z0-9\\u00A1-\\u00AC\\u00AE-\\u05FF\\u0606-\\u061B\\u061D-\\u06DC\\u06DE-\\u070E\\u0710-\\u088F\\u0892-\\u08E1\\u08E3-\\u167F\\u1681-\\u180D\\u180F-\\u1FFF\\u2010-\\u2027\\u2030-\\u205E\\u2065\\u2070-\\u2FFF\\u3001-\\uD7FF\\uF900-\\uFEFE\\uFF00\\uFF5F-\\uFFF8\\uFFFC-\\uFFFF])?\\.)+(?:[A-Za-z\\u00A1-\\u00A8\\u00AA-\\u00AC\\u00AE-\\u05FF\\u0606-\\u061B\\u061D-\\u06DC\\u06DE-\\u070E\\u0710-\\u088F\\u0892-\\u08E1\\u08E3-\\u167F\\u1681-\\u180D\\u180F-\\u1FFF\\u2010-\\u2027\\u2030-\\u205E\\u2065\\u2070-\\u2FFF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFEFE\\uFF00\\uFF5F-\\uFFEF]{2,63}|xn--[A-Za-z0-9-]{2,59})$",
+            "example": "jane@example.com"
+          },
+          "locale": {
+            "example": "fr",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Locale"
+              }
+            ]
+          },
+          "termsVersion": {
+            "type": "string",
+            "example": "2026-04-10",
+            "minLength": 1,
+            "maxLength": 50
+          }
+        },
+        "required": [
+          "email",
+          "locale",
+          "termsVersion"
+        ]
+      },
+      "AbonnementNewsletterResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Si cette adresse peut recevoir la newsletter, un email de confirmation vient de partir."
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "ConfirmationNewsletterResponseDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "confirmed"
+            ]
+          },
+          "locale": {
+            "type": "string",
+            "enum": [
+              "fr",
+              "en"
+            ]
+          }
+        },
+        "required": [
+          "status",
+          "locale"
+        ]
+      },
+      "DesabonnementNewsletterResponseDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "unsubscribed"
+            ]
+          }
+        },
+        "required": [
+          "status"
         ]
       },
       "PollInteractionDto": {

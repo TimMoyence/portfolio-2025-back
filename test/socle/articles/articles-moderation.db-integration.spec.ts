@@ -3,7 +3,7 @@ import type { DataSource } from 'typeorm';
 import { TypeOrmArticlesRepository } from '../../../src/modules/articles/infrastructure/articles.repository';
 import { ArticleDeliveryEntity } from '../../../src/modules/articles/infrastructure/entities/article-delivery.entity';
 import { ArticleEntity } from '../../../src/modules/articles/infrastructure/entities/article.entity';
-import { buildArticleWrite } from '../../factories/article.factory';
+import { buildArticleWrite } from '../../factories/diffusion/article.factory';
 import {
   describeDb,
   destroyDbIntegrationDataSource,

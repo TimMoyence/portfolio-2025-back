@@ -7,6 +7,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { LoggerModule } from 'nestjs-pino';
 import { join } from 'path';
 import { EffacementDesProvenancesService } from './common/infrastructure/typeorm/colonnes/EffacementDesProvenances.service';
+import { EnvoisDuJourModule } from './common/infrastructure/mail/envois-du-jour/EnvoisDuJour.module';
 import { HealthModule } from './common/interfaces/health/health.module';
 import { SecurityModule } from './common/interfaces/security/security.module';
 import { validateEnv } from './config/environnement/env.validation';
@@ -18,6 +19,7 @@ import { AuditRequestsModule } from './modules/audit-requests/AuditRequests.modu
 import { ContactsModule } from './modules/contacts/Contacts.module';
 import { FormationsModule } from './modules/formations/Formations.module';
 import { LeadMagnetsModule } from './modules/lead-magnets/LeadMagnets.module';
+import { NewsletterModule } from './modules/newsletter/Newsletter.module';
 import { PresentationsModule } from './modules/presentations/Presentations.module';
 import { UsersModule } from './modules/users/Users.module';
 import { logBootstrapStep } from './runtime/log-bootstrap-step';
@@ -35,6 +37,7 @@ import { logBootstrapStep } from './runtime/log-bootstrap-step';
       },
     ]),
     ScheduleModule.forRoot(),
+    EnvoisDuJourModule,
     TypeOrmModule.forRootAsync({
       useFactory: async (): Promise<TypeOrmModuleOptions> => {
         logBootstrapStep('typeorm factory start');
@@ -49,6 +52,7 @@ import { logBootstrapStep } from './runtime/log-bootstrap-step';
     ContactsModule,
     AuditRequestsModule,
     LeadMagnetsModule,
+    NewsletterModule,
     PresentationsModule,
     ArticlesModule,
     FormationsModule,

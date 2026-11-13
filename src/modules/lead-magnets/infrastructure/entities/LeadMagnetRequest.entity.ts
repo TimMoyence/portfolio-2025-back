@@ -1,4 +1,5 @@
 import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
+import type { SupportedLocale } from '../../../../common/domain/value-objects/LocaleCode';
 import {
   ColonneAcceptationDesConditions,
   ColonneVersionDesConditions,
@@ -27,7 +28,7 @@ export class LeadMagnetRequestEntity {
   termsVersion: string;
 
   @Column({ name: 'terms_locale', type: 'varchar', length: 10 })
-  termsLocale: string;
+  termsLocale: SupportedLocale;
 
   @ColonneAcceptationDesConditions()
   termsAcceptedAt: Date;

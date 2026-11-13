@@ -3,6 +3,8 @@ import request from 'supertest';
 import { ArticleModerationService } from '../../../src/modules/articles/application/article-moderation.service';
 import { ARTICLES_REPOSITORY } from '../../../src/modules/articles/application/articles.repository';
 import { ArticlesService } from '../../../src/modules/articles/application/articles.service';
+import { DIFFUSIONS_REPOSITORY } from '../../../src/modules/articles/application/diffusion/diffusions.repository';
+import { createMockDiffusionsRepository } from '../../factories/diffusion/diffusion.factory';
 import { ArticleHmacGuard } from '../../../src/modules/articles/interfaces/article-hmac.guard';
 import { ArticleModerationController } from '../../../src/modules/articles/interfaces/article-moderation.controller';
 import { ArticlesController } from '../../../src/modules/articles/interfaces/articles.controller';
@@ -10,7 +12,7 @@ import { PREFIXE_API_PAR_DEFAUT } from '../../../src/config/prefixe-api';
 import {
   ArticlesEnMemoire,
   buildArticleRecord,
-} from '../../factories/article.factory';
+} from '../../factories/diffusion/article.factory';
 import {
   applicationDeLaSuite,
   serveurHttpDe,
@@ -55,6 +57,10 @@ describe('Modération des articles (admin)', () => {
       providers: [
         ArticleModerationService,
         { provide: ARTICLES_REPOSITORY, useValue: articles },
+        {
+          provide: DIFFUSIONS_REPOSITORY,
+          useValue: createMockDiffusionsRepository(),
+        },
       ],
     }).compile();
 

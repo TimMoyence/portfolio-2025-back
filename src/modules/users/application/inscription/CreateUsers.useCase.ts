@@ -62,6 +62,7 @@ export class CreateUsersUseCase {
           lastName: dto.lastName,
           phone: dto.phone,
           updatedOrCreatedBy: 'self-registration',
+          locale: dto.locale,
         },
         passwordHash,
       ),

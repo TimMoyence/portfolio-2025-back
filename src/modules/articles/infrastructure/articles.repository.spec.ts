@@ -1,6 +1,9 @@
 import type { DataSource } from 'typeorm';
 import { ResourceConflictError } from '../../../common/domain/errors/ResourceConflictError';
-import { buildArticleWrite } from '../../../../test/factories/article.factory';
+import {
+  buildArticleDeliveryWrite,
+  buildArticleWrite,
+} from '../../../../test/factories/diffusion/article.factory';
 import { mockTypeOrmRepository } from '../../../../test/factories/formations/formation-entities.factory';
 import { verifierPanneDEcritureTransmise } from '../../../../test/helpers/base/pannes-d-ecriture';
 import { TypeOrmArticlesRepository } from './articles.repository';
@@ -14,14 +17,10 @@ describe('TypeOrmArticlesRepository.saveArticleAndDelivery', () => {
   );
 
   const enregistrer = () =>
-    depot.saveArticleAndDelivery(buildArticleWrite(), {
-      deliveryId: 'mb-2026-09-23-fr',
-      idempotencyKey: 'idempotency-1',
-      nonce: 'nonce-1',
-      status: 'accepted',
-      attempts: 1,
-      processedAt: new Date('2026-09-23T04:15:00.000Z'),
-    });
+    depot.saveArticleAndDelivery(
+      buildArticleWrite(),
+      buildArticleDeliveryWrite(),
+    );
 
   beforeEach(() => transaction.mockReset());
 

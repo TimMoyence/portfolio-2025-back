@@ -2,7 +2,8 @@ import { ResourceNotFoundError } from '../../../common/domain/errors/ResourceNot
 import {
   ArticlesEnMemoire,
   buildArticleRecord,
-} from '../../../../test/factories/article.factory';
+} from '../../../../test/factories/diffusion/article.factory';
+import { createMockDiffusionsRepository } from '../../../../test/factories/diffusion/diffusion.factory';
 import { ArticleModerationService } from './article-moderation.service';
 
 const ARTICLE_ID = 'morning-brief-2026-09-23-fr';
@@ -10,7 +11,13 @@ const ARTICLE_ID = 'morning-brief-2026-09-23-fr';
 function setup() {
   const store = new ArticlesEnMemoire();
   store.articles.set('record-1', buildArticleRecord());
-  return { store, moderation: new ArticleModerationService(store) };
+  return {
+    store,
+    moderation: new ArticleModerationService(
+      store,
+      createMockDiffusionsRepository(),
+    ),
+  };
 }
 
 describe('ArticleModerationService', () => {

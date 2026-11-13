@@ -1,5 +1,7 @@
+import { ColonneDeLangue } from '../../../../common/infrastructure/typeorm/colonnes/ColonneDeLangue';
 import { ColonnesDeTrace } from '../../../../common/infrastructure/typeorm/colonnes/ColonnesDeTrace';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import type { SupportedLocale } from '../../../../common/domain/value-objects/LocaleCode';
 
 @Entity({ name: 'users' })
 export class UsersEntity extends ColonnesDeTrace {
@@ -32,4 +34,7 @@ export class UsersEntity extends ColonnesDeTrace {
 
   @Column({ name: 'email_verified', type: 'boolean', default: false })
   emailVerified: boolean;
+
+  @ColonneDeLangue('fr')
+  locale: SupportedLocale;
 }

@@ -1,3 +1,13 @@
+export function figerLHeureAChaqueTest(maintenant: Date): void {
+  beforeEach(() => {
+    jest.useFakeTimers({ now: maintenant.getTime() });
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+}
+
 export async function sousUneDureeDe(
   dureeMs: number,
   action: () => Promise<unknown>,

@@ -105,11 +105,11 @@ describe('Renderers HTML — garanties non observables par le compilateur', () =
   it('trouve chaque source qui ecrit une balise HTML ou le tag safeHtml', () => {
     expect(RENDERERS).toEqual(
       expect.arrayContaining([
-        'src/common/infrastructure/mail/section-header.ts',
+        'src/common/infrastructure/mail/corps/corps-avec-bouton.ts',
+        'src/common/infrastructure/mail/corps/section-header.ts',
         'src/common/infrastructure/pdf/couverture-de-pdf.ts',
         'src/modules/contacts/infrastructure/ContactMailer.service.ts',
         'src/modules/lead-magnets/infrastructure/ToolkitHtmlRenderer.service.ts',
-        'src/modules/users/infrastructure/MailerDeLienTemporaire.ts',
         'src/modules/users/infrastructure/PasswordResetMailer.service.ts',
         'src/modules/users/infrastructure/VerificationMailer.service.ts',
       ]),

@@ -58,6 +58,7 @@ Contact        : ${contactMethod} — ${contactValue}
       preheader: `Nouvelle demande pour ${websiteName} (${contactMethod})`,
       bodyHtml,
       showUnsubscribe: false,
+      locale: 'fr',
     });
   }
 }

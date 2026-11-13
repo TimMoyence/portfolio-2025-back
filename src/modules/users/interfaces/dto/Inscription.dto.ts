@@ -1,6 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
+import type { SupportedLocale } from '../../../../common/domain/value-objects/LocaleCode';
 import { AdresseEmail } from '../../../../common/interfaces/dto/champs/adresse-email.decorator';
+import { LocaleSupportee } from '../../../../common/interfaces/dto/champs/locale-supportee.decorator';
 import { TelephoneOptionnel } from '../../../../common/interfaces/dto/champs/telephone.decorator';
 import type { InscriptionCommand } from '../../application/dto/CreateUser.command';
 import {
@@ -27,4 +29,7 @@ export class InscriptionDto implements InscriptionCommand {
 
   @TelephoneOptionnel('+11234567890', LONGUEUR_MAX_D_UN_TELEPHONE)
   phone?: string | null;
+
+  @LocaleSupportee({ facultative: true, parDefaut: 'fr' })
+  locale?: SupportedLocale;
 }

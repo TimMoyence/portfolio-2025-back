@@ -110,6 +110,15 @@ describe('validateEnv', () => {
       expect(() => validateEnv(env)).not.toThrow();
     });
 
+    it.each(['SMTP_HOST', 'SMTP_USER', 'SMTP_PASS'])(
+      'ENV-01 · refuse de demarrer en production sans %s, la diffusion compterait des envois jamais partis',
+      (variable) => {
+        const env = buildProductionEnv({ [variable]: undefined });
+
+        expect(() => validateEnv(env)).toThrow(variable);
+      },
+    );
+
     it('devrait accepter l’absence de SMTP_FROM quand SMTP n’est pas configure', () => {
       const env = buildValidEnv();
 
@@ -574,6 +583,31 @@ describe('validateEnv', () => {
     ['devrait coercer PORT en number', { PORT: '8080' }, 'PORT', 8080],
   ] as const)('%s', (_titre, overrides, cle, attendu) => {
     expect(validateEnv(buildValidEnv(overrides))[cle]).toBe(attendu);
+  });
+
+  describe('plafond des envois du jour', () => {
+    it('NL-16 · vaut 300 mails dont 50 reserves sans reglage', () => {
+      const env = validateEnv(buildValidEnv());
+
+      expect([
+        env.NEWSLETTER_PLAFOND_DU_JOUR,
+        env.NEWSLETTER_RESERVE_DU_JOUR,
+      ]).toEqual([300, 50]);
+    });
+
+    it.each([
+      ['une reserve egale au plafond', '300', '300'],
+      ['une reserve negative', '300', '-1'],
+      ['une reserve non entiere', '300', '1.5'],
+      ['une reserve au-dessus d un plafond baisse', '40', '50'],
+    ])('NL-16 · refuse de demarrer avec %s', (_cas, plafond, reserve) => {
+      const env = buildValidEnv({
+        NEWSLETTER_PLAFOND_DU_JOUR: plafond,
+        NEWSLETTER_RESERVE_DU_JOUR: reserve,
+      });
+
+      expect(() => validateEnv(env)).toThrow('NEWSLETTER_RESERVE_DU_JOUR');
+    });
   });
 
   describe('reglages de l audit, bornes et valeurs par defaut tenus par audit.config', () => {

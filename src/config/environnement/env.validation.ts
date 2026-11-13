@@ -98,25 +98,20 @@ function findDuplicateCryptographicSecret(
   return null;
 }
 
-function addSmtpIssues(
-  env: {
-    SMTP_HOST?: string;
-    SMTP_USER?: string;
-    SMTP_PASS?: string;
-    SMTP_FROM?: string;
-  },
-  ctx: z.RefinementCtx,
-): void {
-  // Un transporter SMTP n'est cree que si HOST/PORT/USER/PASS sont
-  // renseignes (cf. `createOptionalSmtpTransporter`), le port valant 587
-  // par defaut une fois l'environnement valide. Dans ce cas, les mailers
-  // enverront reellement — et sans expediteur, nodemailer recoit
-  // `from: undefined` et echoue a l'envoi, en production, bien apres le
-  // demarrage. On refuse donc de demarrer plutot que de laisser passer
-  // une configuration qui ne peut pas fonctionner.
-  //
-  // Hors de ce cas, les mailers sont no-op : exiger un expediteur
-  // bloquerait inutilement les environnements de dev et de CI.
+const RELAIS_SMTP = ['SMTP_HOST', 'SMTP_USER', 'SMTP_PASS'] as const;
+
+function addSmtpIssues(env: EnvLue, ctx: z.RefinementCtx): void {
+  if (estEnProduction(env)) {
+    for (const variable of RELAIS_SMTP.filter((nom) => !env[nom]?.trim())) {
+      ctx.addIssue({
+        code: 'custom',
+        path: [variable],
+        message:
+          'est requis en production : sans relais SMTP, la diffusion ' +
+          'marquerait servis des abonnes jamais ecrits',
+      });
+    }
+  }
   const smtpConfigured = Boolean(
     env.SMTP_HOST && env.SMTP_USER && env.SMTP_PASS,
   );
@@ -298,6 +293,8 @@ const formeDeLEnv = z.object({
   SMTP_DKIM_DOMAIN: z.string().optional(),
   SMTP_DKIM_SELECTOR: z.string().optional(),
   SMTP_DKIM_PRIVATE_KEY: z.string().optional(),
+  NEWSLETTER_PLAFOND_DU_JOUR: z.coerce.number().int().positive().default(300),
+  NEWSLETTER_RESERVE_DU_JOUR: z.coerce.number().int().min(0).default(50),
   CONTACT_NOTIFICATION_TO: z.string().optional(),
   AUDIT_REPORT_TO: z.string().optional(),
   AUDIT_SELF_DOMAINS: z.string().optional(),
@@ -340,6 +337,14 @@ const envSchema = formeDeLEnv.superRefine((env, ctx) => {
   }
 
   addSmtpIssues(env, ctx);
+
+  if (env.NEWSLETTER_RESERVE_DU_JOUR >= env.NEWSLETTER_PLAFOND_DU_JOUR) {
+    ctx.addIssue({
+      code: 'custom',
+      path: ['NEWSLETTER_RESERVE_DU_JOUR'],
+      message: 'doit rester sous NEWSLETTER_PLAFOND_DU_JOUR',
+    });
+  }
 
   addEmplacementSauvegardeIssues(env, ctx);
 

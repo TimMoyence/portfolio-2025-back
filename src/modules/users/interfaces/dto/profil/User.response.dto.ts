@@ -1,5 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { User } from '../../domain/User';
+import {
+  LOCALES_SUPPORTEES,
+  type SupportedLocale,
+} from '../../../../../common/domain/value-objects/LocaleCode';
+import { User } from '../../../domain/User';
 
 export class UserResponseDto {
   @ApiProperty({ example: '08bcd3fe-0d1d-4db6-9ee4-5a6a65c13c45' })
@@ -48,6 +52,14 @@ export class UserResponseDto {
   })
   emailVerified: boolean;
 
+  @ApiProperty({
+    enum: LOCALES_SUPPORTEES,
+    enumName: 'Locale',
+    example: 'fr',
+    description: 'Langue des emails du compte.',
+  })
+  locale: SupportedLocale;
+
   static fromDomain(user: User): UserResponseDto {
     const dto = new UserResponseDto();
     dto.id = user.id ?? '';
@@ -63,6 +75,7 @@ export class UserResponseDto {
     dto.hasPassword =
       typeof user.passwordHash === 'string' && user.passwordHash.length > 0;
     dto.emailVerified = user.emailVerified ?? false;
+    dto.locale = user.locale;
     return dto;
   }
 }

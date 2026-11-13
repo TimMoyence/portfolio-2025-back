@@ -39,6 +39,10 @@ describe('UpdateProfileUseCase', () => {
     expect(result).toBe(updatedUser);
   };
 
+  it('CPT-03 · modifie la langue des emails du compte depuis le profil', async () => {
+    await mettreAJour({ locale: 'fr' }, { locale: 'en' });
+  });
+
   it('devrait mettre a jour le profil quand l utilisateur existe', async () => {
     await mettreAJour(
       { firstName: 'Jean' },

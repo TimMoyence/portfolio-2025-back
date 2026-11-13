@@ -7,7 +7,7 @@ import { ArticlesService } from '../../../src/modules/articles/application/artic
 import { PREFIXE_API_PAR_DEFAUT } from '../../../src/config/prefixe-api';
 import { ArticleHmacGuard } from '../../../src/modules/articles/interfaces/article-hmac.guard';
 import { ArticlesController } from '../../../src/modules/articles/interfaces/articles.controller';
-import { createMockArticlesService } from '../../factories/article.factory';
+import { createMockArticlesService } from '../../factories/diffusion/article.factory';
 import {
   ecouterEnBoucleLocale,
   fermerApplication,

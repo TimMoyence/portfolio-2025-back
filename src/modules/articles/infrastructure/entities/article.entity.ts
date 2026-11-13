@@ -7,6 +7,7 @@ import {
   Unique,
 } from 'typeorm';
 import type { SupportedLocale } from '../../../../common/domain/value-objects/LocaleCode';
+import { ColonneDeLangue } from '../../../../common/infrastructure/typeorm/colonnes/ColonneDeLangue';
 import type { ArticleStatus } from '../../application/articles.repository';
 import type { ArticleIngere } from '../../domain/contrat/article-contract';
 
@@ -24,7 +25,7 @@ export class ArticleEntity {
   @Column({ type: 'varchar', length: 120 })
   slug: string;
 
-  @Column({ type: 'varchar', length: 2 })
+  @ColonneDeLangue()
   locale: SupportedLocale;
 
   @Column({ type: 'varchar', length: 20, default: 'published' })
