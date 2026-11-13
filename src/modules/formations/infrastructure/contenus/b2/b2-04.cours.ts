@@ -55,9 +55,6 @@ const DERNIER_RANG_DE_LA_BOUTIQUE = 7;
 const NON_FIGEE = 'reference-relative-non-figee';
 const TAUX_POUR_RAISON = 'coefficient-confondu-avec-taux';
 
-const DONNEES_FICTIVES =
-  'Données fictives Atelier Rivage, créées pour ce cours.';
-
 const GRAVURE_DE_L_ACCROCHE = moteur.gravureDuDomainePublic({
   id: 'M6',
   chemin: '/assets/cours/gravures/v1/fibonacci-liber-abbaci.jpg',
@@ -336,50 +333,47 @@ const ACTE_1: moteur.Acte = [
         'Page manuscrite du Liber abbaci de Fibonacci : le problème des lapins, la suite qui ajoute à chaque terme les deux précédents',
     },
   ),
-  {
-    screenId: 'B2-04-A1-03-VOTE-ACQUIS',
-    titre: 'Vote : deux rappels, B2-02 et B2-03',
-    diffusion: 'seance',
-    brique: 'fp-vote',
-    dureeMinutes: 4,
-    concepts: ['ajustement-affine', 'negation'],
-    notes: moteur.puces(
-      'Rappel rapide : deux votes non notés, un par cours précédent.',
-      'Dire où chaque acquis resservira : la pente dans l’hypothèse A, la négation dans la boucle « Tant que ».',
-      ...moteur.NOTES_DU_VOTE_A_DEUX_QUESTIONS,
-    ),
-    proprietes: {
-      modalite: 'solo',
-      questions: [
-        moteur.vote(
-          'b2-04-a1-rappel-pente',
-          'ajustement-affine',
-          false,
-          'Rappel du B2-02. La droite d’ajustement du chiffre d’affaires d’Atelier Rivage s’écrit y = 43,9x + 564,4, où x est le rang de l’année et y le chiffre d’affaires en k€. Que mesure le nombre 43,9 ?',
-          'La hausse moyenne du chiffre d’affaires par an, en k€',
-          [
-            [
-              'Le chiffre d’affaires de départ, quand x vaut 0',
-              'pente-ordonnee-inversees',
-            ],
-          ],
-        ),
-        moteur.vote(
-          'b2-04-a1-rappel-negation',
-          'negation',
-          false,
-          'Rappel du B2-03. Quel est le contraire de « le chiffre d’affaires est inférieur à 1 200 k€ » ?',
-          'Le chiffre d’affaires est supérieur ou égal à 1 200 k€',
-          [
-            [
-              'Le chiffre d’affaires est supérieur à 1 200 k€',
-              'negation-comparaison',
-            ],
-          ],
-        ),
-      ],
+  moteur.voteQuiOuvre(
+    {
+      screenId: 'B2-04-A1-03-VOTE-ACQUIS',
+      titre: 'Vote : deux rappels, B2-02 et B2-03',
+      dureeMinutes: 4,
+      concepts: ['ajustement-affine', 'negation'],
+      notes: moteur.puces(
+        'Rappel rapide : deux votes non notés, un par cours précédent.',
+        'Dire où chaque acquis resservira : la pente dans l’hypothèse A, la négation dans la boucle « Tant que ».',
+        ...moteur.NOTES_DU_VOTE_A_DEUX_QUESTIONS,
+      ),
     },
-  },
+    [
+      moteur.vote(
+        'b2-04-a1-rappel-pente',
+        'ajustement-affine',
+        false,
+        'Rappel du B2-02. La droite d’ajustement du chiffre d’affaires d’Atelier Rivage s’écrit y = 43,9x + 564,4, où x est le rang de l’année et y le chiffre d’affaires en k€. Que mesure le nombre 43,9 ?',
+        'La hausse moyenne du chiffre d’affaires par an, en k€',
+        [
+          [
+            'Le chiffre d’affaires de départ, quand x vaut 0',
+            'pente-ordonnee-inversees',
+          ],
+        ],
+      ),
+      moteur.vote(
+        'b2-04-a1-rappel-negation',
+        'negation',
+        false,
+        'Rappel du B2-03. Quel est le contraire de « le chiffre d’affaires est inférieur à 1 200 k€ » ?',
+        'Le chiffre d’affaires est supérieur ou égal à 1 200 k€',
+        [
+          [
+            'Le chiffre d’affaires est supérieur à 1 200 k€',
+            'negation-comparaison',
+          ],
+        ],
+      ),
+    ],
+  ),
   moteur.ecranV2(
     {
       screenId: 'B2-04-A1-04-ACQUIS',
@@ -454,7 +448,7 @@ const ACTE_1: moteur.Acte = [
         { key: 'taux', label: 'Hausse sur un an (%)' },
       ],
       rows: LIGNES_DE_L_HISTORIQUE,
-      note: `Taux moyen annuel de 2020 à 2025 : (826 ÷ 610)^(1/5) − 1, soit 6,25 % par an (méthode du B2-01). ${DONNEES_FICTIVES}`,
+      note: `Taux moyen annuel de 2020 à 2025 : (826 ÷ 610)^(1/5) − 1, soit 6,25 % par an (méthode du B2-01). ${moteur.DONNEES_FICTIVES_DU_B2}`,
     },
   ),
   {
@@ -1233,46 +1227,43 @@ const ACTE_3: moteur.Acte = [
         'A : suite arithmétique, points alignés · B : suite géométrique, courbe qui se redresse',
       reading:
         'Les deux courbes partent du même point, puis s’écartent de plus en plus. En 2030, aucune n’atteint encore le seuil de 1 200 k€ : il faut prolonger les deux suites.',
-      source: `Hypothèses du plan d’Atelier Rivage. ${DONNEES_FICTIVES} L’axe vertical est tronqué : il commence à 800 k€.`,
+      source: `Hypothèses du plan d’Atelier Rivage. ${moteur.DONNEES_FICTIVES_DU_B2} L’axe vertical est tronqué : il commence à 800 k€.`,
       description:
         'Deux courbes de 2025 à 2030, partant de 826. L’hypothèse A est une droite qui monte jusqu’à 1 046. L’hypothèse B est une courbe au-dessus de la droite dès 2026, qui monte jusqu’à 1 105 environ.',
     },
   ),
-  {
-    screenId: 'B2-04-A3-02-VOTE-SEUIL',
-    titre: 'Vote : s’arrêter et additionner',
-    diffusion: 'seance',
-    brique: 'fp-vote',
-    dureeMinutes: 4,
-    concepts: ['algorithme-de-seuil', 'somme-de-termes'],
-    notes: moteur.notesDuVoteQuiOuvreLaNotion(3),
-    proprietes: {
-      modalite: 'solo',
-      questions: [
-        moteur.vote(
-          'b2-04-a3-arret',
-          'algorithme-de-seuil',
-          false,
-          'Un compteur part de 100. On lui ajoute 30 tant qu’il est strictement inférieur à 200. Sur quelle valeur s’arrête-t-il ?',
-          'Sur 220 : la première valeur qui n’est plus inférieure à 200',
-          [
-            [
-              'Sur 190 : la dernière valeur encore inférieure à 200',
-              'seuil-mal-arrondi',
-            ],
-          ],
-        ),
-        moteur.vote(
-          'b2-04-a3-nombre-de-termes',
-          'somme-de-termes',
-          false,
-          'On additionne les chiffres d’affaires des années 2026 à 2030 incluses. Combien de nombres additionne-t-on ?',
-          'Cinq nombres : un par année, de 2026 à 2030',
-          [['Quatre nombres : 2030 − 2026 = 4', 'nombre-de-termes-decale']],
-        ),
-      ],
+  moteur.voteQuiOuvre(
+    {
+      screenId: 'B2-04-A3-02-VOTE-SEUIL',
+      titre: 'Vote : s’arrêter et additionner',
+      dureeMinutes: 4,
+      concepts: ['algorithme-de-seuil', 'somme-de-termes'],
+      notes: moteur.notesDuVoteQuiOuvreLaNotion(3),
     },
-  },
+    [
+      moteur.vote(
+        'b2-04-a3-arret',
+        'algorithme-de-seuil',
+        false,
+        'Un compteur part de 100. On lui ajoute 30 tant qu’il est strictement inférieur à 200. Sur quelle valeur s’arrête-t-il ?',
+        'Sur 220 : la première valeur qui n’est plus inférieure à 200',
+        [
+          [
+            'Sur 190 : la dernière valeur encore inférieure à 200',
+            'seuil-mal-arrondi',
+          ],
+        ],
+      ),
+      moteur.vote(
+        'b2-04-a3-nombre-de-termes',
+        'somme-de-termes',
+        false,
+        'On additionne les chiffres d’affaires des années 2026 à 2030 incluses. Combien de nombres additionne-t-on ?',
+        'Cinq nombres : un par année, de 2026 à 2030',
+        [['Quatre nombres : 2030 − 2026 = 4', 'nombre-de-termes-decale']],
+      ),
+    ],
+  ),
   moteur.ecranDIllustration(
     {
       screenId: 'B2-04-A3-03-ILLUSTRATION-TIRELIRE',
@@ -1801,7 +1792,7 @@ const ACTE_4: moteur.Acte = [
             'Sur 10 points : question tableur, 3 points ; quatre énigmes, 2, 2, 1,5 et 1,5 points.',
         },
       ],
-      note: DONNEES_FICTIVES,
+      note: moteur.DONNEES_FICTIVES_DU_B2,
     },
   ),
   moteur.corrigeSurPlace(

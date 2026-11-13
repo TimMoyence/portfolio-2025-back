@@ -117,7 +117,7 @@ const LIGNES_DE_L_EMPRUNT = tableauDAmortissement(
 );
 
 decrireLaFicheDuCours('B2-05', COURS, {
-  conception: 'cours-b2-05-conception.md',
+  conception: 'b2/cours-b2-05-conception.md',
   ecrans: 33,
   dureeMinutes: 133,
   minutesParActe: [49, 39, 37, 8, 0, 0],

@@ -1,5 +1,5 @@
 import { buildCoursB2_01 } from '../../../../../test/factories/formations/cours/cours-b2-01.factory';
-import { attendreProductionReussie } from '../../../../../test/helpers/formations/cours/corrections';
+import { attendreProductionReussie } from '../../../../../test/helpers/formations/cours/corrige/corrections';
 import type {
   CorrigeFeuille,
   CorrigeTableau,

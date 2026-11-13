@@ -1,18 +1,4 @@
-import type { AuMoinsUnModifiable } from '../../../../../../common/domain/objets/au-moins-un';
 import * as moteur from '../../briques';
-
-type SocleDeLaPage = Pick<
-  moteur.SocleDEcran,
-  'screenId' | 'titre' | 'concepts'
-> & { readonly notes: AuMoinsUnModifiable<string> };
-
-export interface PageDeFormules {
-  readonly rang: number;
-  readonly syntaxe: string;
-  readonly piege: string;
-  readonly exemple: string;
-  readonly correspondances: moteur.Correspondances;
-}
 
 interface Infographie {
   readonly id: string;
@@ -118,7 +104,6 @@ export const INFOGRAPHIES: readonly Infographie[] = [
 ];
 
 export const PAGES_DE_FORMULES = INFOGRAPHIES.length;
-const DUREE_D_UNE_PAGE = 2;
 
 function infographieDeLaPage(rang: number): Infographie {
   const infographie = INFOGRAPHIES.at(rang - 1);
@@ -129,53 +114,19 @@ function infographieDeLaPage(rang: number): Infographie {
 }
 
 export function pageDeFormules(
-  { notes, ...socle }: SocleDeLaPage,
-  page: PageDeFormules,
+  { notes, ...socle }: moteur.SocleDeLaPage,
+  page: moteur.PageDeSerie,
 ): moteur.EcranDeRecit {
   return moteur.ecranDImageCommentee(
     socle,
     DOSSIER_DES_INFOGRAPHIES,
     infographieDeLaPage(page.rang),
-    {
-      sousTitre: `Formules pas à pas · page ${page.rang} sur ${PAGES_DE_FORMULES}`,
-      paragraphes: [
-        `Syntaxe : ${page.syntaxe}`,
-        `Le piège : ${page.piege}`,
-        `Exemple : ${page.exemple}`,
-      ],
-      correspondances: page.correspondances,
-      dureeMinutes: DUREE_D_UNE_PAGE,
-    },
+    moteur.texteDeLaPage(
+      { nom: 'Formules pas à pas', pages: PAGES_DE_FORMULES },
+      page,
+    ),
     notes,
   );
-}
-
-type SocleDuVote = Pick<
-  moteur.SocleDEcran,
-  'screenId' | 'titre' | 'dureeMinutes' | 'concepts' | 'notes'
->;
-
-export interface PieceReservee {
-  readonly libelle: string;
-  readonly classeur: string;
-  readonly reprend: string[];
-}
-
-export function voteQuiOuvre(
-  socle: SocleDuVote,
-  question: moteur.VoteDuCours,
-  pieceJointe?: PieceReservee,
-): moteur.Acte[number] {
-  return {
-    ...socle,
-    diffusion: 'seance',
-    brique: 'fp-vote',
-    proprietes: {
-      modalite: 'solo',
-      ...(pieceJointe === undefined ? {} : { pieceJointe }),
-      questions: [question],
-    },
-  };
 }
 
 export const MEDIAS_DES_INFOGRAPHIES = (

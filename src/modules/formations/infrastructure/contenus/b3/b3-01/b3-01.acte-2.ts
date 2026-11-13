@@ -17,45 +17,42 @@ export function voteDuMeilleurTrimestre(id: string, enonce: string) {
 }
 
 export const ACTE_2: moteur.Acte = [
-  {
-    screenId: 'B3-01-A2-01-VOTE-FAMILLE',
-    titre: 'Vote : quelle famille de problème ?',
-    diffusion: 'seance',
-    brique: 'fp-vote',
-    dureeMinutes: 3,
-    concepts: ['recherche-dans-une-table', 'agregation-conditionnelle'],
-    notes: moteur.puces(
-      'Ouvrir d’abord le classeur de reprise, tous, y compris ceux qui ont tout réussi : les résultats se compareront sur la même base.',
-      'Montrer l’onglet Quarantaine : les lignes à demander, chacune avec son motif. Les dates ISO, que DATEVAL convertit sans ambiguïté, n’y sont plus ; les produits inconnus et les prix hors norme, que le contrôle de l’exercice 4 ne voyait pas, y sont.',
-      'Temps « réfléchir » du niveau 3 : vote non noté, 2 min de vote et 1 min de révélation.',
-      'Faire dire les deux familles dans l’ordre : on cherche la catégorie, puis on additionne.',
-    ),
-    proprietes: {
-      modalite: 'solo',
-      pieceJointe: {
-        libelle: 'Classeur de reprise de l’acte 2',
-        classeur: CLASSEURS_B3_01.repriseActe2,
-        reprend: ['B3-01-A1-13-TRI-ANOMALIES', 'B3-01-A1-14-ATELIER-NETTOYAGE'],
-      },
-      questions: [
-        moteur.vote(
-          'b3-01-a2-famille',
-          'agregation-conditionnelle',
-          false,
-          'Nadia demande « le CA de Rennes en informatique en 2026 ». De quelle famille de problème s’agit-il ?',
-          'Additionner sous conditions, après avoir cherché la catégorie',
-          [
-            [
-              'Chercher une valeur dans une table',
-              'famille-de-probleme-mal-nommee',
-            ],
-            ['Compter les lignes de Rennes', 'famille-de-probleme-mal-nommee'],
-            ['Regrouper toutes les ventes de Rennes', 'periode-mal-delimitee'],
-          ],
-        ),
-      ],
+  moteur.voteQuiOuvre(
+    {
+      screenId: 'B3-01-A2-01-VOTE-FAMILLE',
+      titre: 'Vote : quelle famille de problème ?',
+      dureeMinutes: 3,
+      concepts: ['recherche-dans-une-table', 'agregation-conditionnelle'],
+      notes: moteur.puces(
+        'Ouvrir d’abord le classeur de reprise, tous, y compris ceux qui ont tout réussi : les résultats se compareront sur la même base.',
+        'Montrer l’onglet Quarantaine : les lignes à demander, chacune avec son motif. Les dates ISO, que DATEVAL convertit sans ambiguïté, n’y sont plus ; les produits inconnus et les prix hors norme, que le contrôle de l’exercice 4 ne voyait pas, y sont.',
+        'Temps « réfléchir » du niveau 3 : vote non noté, 2 min de vote et 1 min de révélation.',
+        'Faire dire les deux familles dans l’ordre : on cherche la catégorie, puis on additionne.',
+      ),
     },
-  },
+    [
+      moteur.vote(
+        'b3-01-a2-famille',
+        'agregation-conditionnelle',
+        false,
+        'Nadia demande « le CA de Rennes en informatique en 2026 ». De quelle famille de problème s’agit-il ?',
+        'Additionner sous conditions, après avoir cherché la catégorie',
+        [
+          [
+            'Chercher une valeur dans une table',
+            'famille-de-probleme-mal-nommee',
+          ],
+          ['Compter les lignes de Rennes', 'famille-de-probleme-mal-nommee'],
+          ['Regrouper toutes les ventes de Rennes', 'periode-mal-delimitee'],
+        ],
+      ),
+    ],
+    {
+      libelle: 'Classeur de reprise de l’acte 2',
+      classeur: CLASSEURS_B3_01.repriseActe2,
+      reprend: ['B3-01-A1-13-TRI-ANOMALIES', 'B3-01-A1-14-ATELIER-NETTOYAGE'],
+    },
+  ),
   moteur.ecranV2(
     {
       screenId: 'B3-01-A2-02-FAMILLES',
@@ -262,34 +259,31 @@ export const ACTE_2: moteur.Acte = [
       ],
     ],
   ),
-  {
-    screenId: 'B3-01-A2-05-VOTE-DELAI',
-    titre: 'Vote : vendredi, lundi',
-    diffusion: 'seance',
-    brique: 'fp-vote',
-    dureeMinutes: 2,
-    concepts: ['calcul-sur-dates'],
-    notes: moteur.puces(
-      'Temps « réfléchir » de la manipulation du temps : vote non noté, 1 min de vote et 1 min de révélation.',
-      'Faire dire ce que promet le contrat de Norvane : une livraison en 5 jours ouvrés.',
-    ),
-    proprietes: {
-      modalite: 'solo',
-      questions: [
-        moteur.vote(
-          'b3-01-a2-delai',
-          'calcul-sur-dates',
-          false,
-          'Le contrat de Norvane compte les délais en jours ouvrés. Une commande passée un vendredi est livrée le lundi suivant. Quel délai compte-t-on ?',
-          '1 jour ouvré',
-          [
-            ['3 jours ouvrés', 'jours-calendaires-pour-ouvres'],
-            ['2 jours ouvrés', 'bornes-comptees-dans-le-delai'],
-          ],
-        ),
-      ],
+  moteur.voteQuiOuvre(
+    {
+      screenId: 'B3-01-A2-05-VOTE-DELAI',
+      titre: 'Vote : vendredi, lundi',
+      dureeMinutes: 2,
+      concepts: ['calcul-sur-dates'],
+      notes: moteur.puces(
+        'Temps « réfléchir » de la manipulation du temps : vote non noté, 1 min de vote et 1 min de révélation.',
+        'Faire dire ce que promet le contrat de Norvane : une livraison en 5 jours ouvrés.',
+      ),
     },
-  },
+    [
+      moteur.vote(
+        'b3-01-a2-delai',
+        'calcul-sur-dates',
+        false,
+        'Le contrat de Norvane compte les délais en jours ouvrés. Une commande passée un vendredi est livrée le lundi suivant. Quel délai compte-t-on ?',
+        '1 jour ouvré',
+        [
+          ['3 jours ouvrés', 'jours-calendaires-pour-ouvres'],
+          ['2 jours ouvrés', 'bornes-comptees-dans-le-delai'],
+        ],
+      ),
+    ],
+  ),
   moteur.ecranV2(
     {
       screenId: 'B3-01-A2-06-COURS-TEMPS-STATS',
@@ -406,34 +400,31 @@ export const ACTE_2: moteur.Acte = [
       ],
     ],
   ),
-  {
-    screenId: 'B3-01-A2-08-VOTE-NOUVELLES-LIGNES',
-    titre: 'Vote : 200 lignes de plus',
-    diffusion: 'seance',
-    brique: 'fp-vote',
-    dureeMinutes: 2,
-    concepts: ['tableau-croise-dynamique'],
-    notes: moteur.puces(
-      'Temps « réfléchir » du niveau 4 : vote non noté, 1 min de vote et 1 min de révélation.',
-      'Faire dire ce qui arrivera au tableau de bord quand l’export d’octobre sera collé sous celui de septembre.',
-    ),
-    proprietes: {
-      modalite: 'solo',
-      questions: [
-        moteur.vote(
-          'b3-01-a2-nouvelles-lignes',
-          'tableau-croise-dynamique',
-          false,
-          'On colle 200 lignes d’octobre sous le tableau. Les formules écrites sur A2:A4039 les prennent-elles en compte ?',
-          'Non, elles restent hors de la plage',
-          [
-            ['Oui', 'plage-fixe-au-lieu-de-tableau'],
-            ['Seulement après recalcul', 'plage-fixe-au-lieu-de-tableau'],
-          ],
-        ),
-      ],
+  moteur.voteQuiOuvre(
+    {
+      screenId: 'B3-01-A2-08-VOTE-NOUVELLES-LIGNES',
+      titre: 'Vote : 200 lignes de plus',
+      dureeMinutes: 2,
+      concepts: ['tableau-croise-dynamique'],
+      notes: moteur.puces(
+        'Temps « réfléchir » du niveau 4 : vote non noté, 1 min de vote et 1 min de révélation.',
+        'Faire dire ce qui arrivera au tableau de bord quand l’export d’octobre sera collé sous celui de septembre.',
+      ),
     },
-  },
+    [
+      moteur.vote(
+        'b3-01-a2-nouvelles-lignes',
+        'tableau-croise-dynamique',
+        false,
+        'On colle 200 lignes d’octobre sous le tableau. Les formules écrites sur A2:A4039 les prennent-elles en compte ?',
+        'Non, elles restent hors de la plage',
+        [
+          ['Oui', 'plage-fixe-au-lieu-de-tableau'],
+          ['Seulement après recalcul', 'plage-fixe-au-lieu-de-tableau'],
+        ],
+      ),
+    ],
+  ),
   moteur.ecranV2(
     {
       screenId: 'B3-01-A2-09-COURS-TCD',

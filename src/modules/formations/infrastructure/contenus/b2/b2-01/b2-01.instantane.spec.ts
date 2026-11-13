@@ -1,4 +1,5 @@
 import { lireLInstantane } from '../../../../../../../test/helpers/formations/cours/instantane-de-cours';
+import { ecranDuCours } from '../../../../../../../test/helpers/formations/cours/lecture-de-cours';
 import { COURS_B2_01 } from './b2-01.cours';
 
 describe('instantané du B2-01 livré au front', () => {
@@ -21,12 +22,10 @@ describe('instantané du B2-01 livré au front', () => {
 
   it('R1 · R3 · sert à l écran 5 sa correction suivante et le cadrage de son renvoi', () => {
     const livre = lireLInstantane(COURS_B2_01);
-    const tri = livre.sujet.ecrans.find(
-      ({ id }) => id === 'B2-01-A1-05-ANATOMIE',
-    );
+    const tri = ecranDuCours(livre.sujet, 'B2-01-A1-05-ANATOMIE');
 
-    expect(tri?.resoluPar).toEqual(['B2-01-A1-05-CORRECTION']);
-    expect(tri?.cadrageDuRenvoi).toEqual({
+    expect(tri.resoluPar).toEqual(['B2-01-A1-05-CORRECTION']);
+    expect(tri.cadrageDuRenvoi).toEqual({
       extrait: { lignes: [0, 1, 2, 3, 4, 5] },
     });
   });

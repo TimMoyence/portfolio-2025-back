@@ -7,7 +7,6 @@ import {
   AUTRES_LOGARITHMES,
   CONCEPTS_DU_COURS,
   DEMANDES,
-  DONNEES_FICTIVES,
   FORMULE_DE_L_EXPOSANT,
   FORMULE_DES_VENTES,
   FORMULE_DU_MOIS_EXACT,
@@ -103,40 +102,37 @@ const ACTE_1: moteur.Acte = [
         'Page de titre de Mirifici logarithmorum canonis descriptio de John Napier (1614), le livre qui publie les premiers logarithmes',
     },
   ),
-  {
-    screenId: 'B2-06-A1-03-VOTE-ACQUIS',
-    titre: 'Vote : deux rappels, B2-04 et B2-02',
-    diffusion: 'seance',
-    brique: 'fp-vote',
-    dureeMinutes: 4,
-    concepts: ['suite-geometrique', 'ajustement-affine'],
-    notes: moteur.puces(
-      'Rappel rapide : deux votes non notés, un par cours.',
-      'Dire où chaque acquis resservira : la raison devient le coefficient e^k, PENTE ajuste z = ln y.',
-      ...moteur.NOTES_DU_VOTE_A_DEUX_QUESTIONS,
-    ),
-    proprietes: {
-      modalite: 'solo',
-      questions: [
-        moteur.vote(
-          'b2-06-a1-rappel-suite',
-          'suite-geometrique',
-          false,
-          'Rappel du B2-04. Une suite géométrique a pour premier terme 100 et pour raison 0,9. Comment évoluent ses termes ?',
-          'Ils baissent de 10 % à chaque rang',
-          [['Ils baissent de 0,9 à chaque rang', 'nature-de-suite-confondue']],
-        ),
-        moteur.vote(
-          'b2-06-a1-rappel-pente',
-          'ajustement-affine',
-          false,
-          'Rappel du B2-02. Les x sont en A2:A7, les y en B2:B7. Quelle formule donne la pente de la droite d’ajustement de y en x ?',
-          '=PENTE(B2:B7;A2:A7)',
-          [['=PENTE(A2:A7;B2:B7)', SERIES_INVERSEES]],
-        ),
-      ],
+  moteur.voteQuiOuvre(
+    {
+      screenId: 'B2-06-A1-03-VOTE-ACQUIS',
+      titre: 'Vote : deux rappels, B2-04 et B2-02',
+      dureeMinutes: 4,
+      concepts: ['suite-geometrique', 'ajustement-affine'],
+      notes: moteur.puces(
+        'Rappel rapide : deux votes non notés, un par cours.',
+        'Dire où chaque acquis resservira : la raison devient le coefficient e^k, PENTE ajuste z = ln y.',
+        ...moteur.NOTES_DU_VOTE_A_DEUX_QUESTIONS,
+      ),
     },
-  },
+    [
+      moteur.vote(
+        'b2-06-a1-rappel-suite',
+        'suite-geometrique',
+        false,
+        'Rappel du B2-04. Une suite géométrique a pour premier terme 100 et pour raison 0,9. Comment évoluent ses termes ?',
+        'Ils baissent de 10 % à chaque rang',
+        [['Ils baissent de 0,9 à chaque rang', 'nature-de-suite-confondue']],
+      ),
+      moteur.vote(
+        'b2-06-a1-rappel-pente',
+        'ajustement-affine',
+        false,
+        'Rappel du B2-02. Les x sont en A2:A7, les y en B2:B7. Quelle formule donne la pente de la droite d’ajustement de y en x ?',
+        '=PENTE(B2:B7;A2:A7)',
+        [['=PENTE(A2:A7;B2:B7)', SERIES_INVERSEES]],
+      ),
+    ],
+  ),
   moteur.ecranV2(
     {
       screenId: 'B2-06-A1-04-ACQUIS',
@@ -236,7 +232,7 @@ const ACTE_1: moteur.Acte = [
             'À quel rythme croissent les ventes en ligne ? Quand dépasseront-elles la capacité de l’atelier ? Quel modèle décrit la demande des boutiques selon le prix ?',
         },
       ],
-      note: DONNEES_FICTIVES,
+      note: moteur.DONNEES_FICTIVES_DU_B2,
     },
   ),
   {
@@ -1103,41 +1099,38 @@ const ACTE_3: moteur.Acte = [
         'La demande perd-elle le même nombre de sacs à chaque hausse de 5 € ?',
       reading:
         'La demande baisse quand le prix monte : 240 sacs perdus entre 20 € et 25 €, 95 entre 40 € et 45 €.',
-      source: `Étude de prix de la gamme Sillage. ${DONNEES_FICTIVES}`,
+      source: `Étude de prix de la gamme Sillage. ${moteur.DONNEES_FICTIVES_DU_B2}`,
       description:
         'Six points reliés : 1 100 sacs à 20 €, 860 à 25 €, 670 à 30 €, 520 à 35 €, 410 à 40 € et 315 à 45 €.',
     },
   ),
-  {
-    screenId: 'B2-06-A3-02-VOTE-MODELE',
-    titre: 'Vote : quel modèle pour la demande ?',
-    diffusion: 'seance',
-    brique: 'fp-vote',
-    dureeMinutes: 4,
-    concepts: ['ajustement-exponentiel', 'logarithme-neperien'],
-    notes: moteur.notesDuVoteQuiOuvreLaNotion(3),
-    proprietes: {
-      modalite: 'solo',
-      questions: [
-        moteur.vote(
-          'b2-06-a3-vote-modele',
-          'ajustement-exponentiel',
-          false,
-          'Une demande perd à peu près 22 % à chaque hausse de 5 € du prix. Quel modèle choisir ?',
-          'Un modèle exponentiel, de la forme a e^(kx)',
-          [['Une droite, de la forme mx + p', AJUSTEMENT_DE_Y]],
-        ),
-        moteur.vote(
-          'b2-06-a3-vote-ln',
-          'logarithme-neperien',
-          false,
-          'Si y = a e^(kx), que vaut ln y ?',
-          'ln y = ln a + kx',
-          [['ln y = ln a × kx', LN_EN_PRODUIT]],
-        ),
-      ],
+  moteur.voteQuiOuvre(
+    {
+      screenId: 'B2-06-A3-02-VOTE-MODELE',
+      titre: 'Vote : quel modèle pour la demande ?',
+      dureeMinutes: 4,
+      concepts: ['ajustement-exponentiel', 'logarithme-neperien'],
+      notes: moteur.notesDuVoteQuiOuvreLaNotion(3),
     },
-  },
+    [
+      moteur.vote(
+        'b2-06-a3-vote-modele',
+        'ajustement-exponentiel',
+        false,
+        'Une demande perd à peu près 22 % à chaque hausse de 5 € du prix. Quel modèle choisir ?',
+        'Un modèle exponentiel, de la forme a e^(kx)',
+        [['Une droite, de la forme mx + p', AJUSTEMENT_DE_Y]],
+      ),
+      moteur.vote(
+        'b2-06-a3-vote-ln',
+        'logarithme-neperien',
+        false,
+        'Si y = a e^(kx), que vaut ln y ?',
+        'ln y = ln a + kx',
+        [['ln y = ln a × kx', LN_EN_PRODUIT]],
+      ),
+    ],
+  ),
   moteur.ecranDIllustration(
     {
       screenId: 'B2-06-A3-03-ILLUSTRATION-MODELES',

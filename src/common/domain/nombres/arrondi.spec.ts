@@ -1,4 +1,10 @@
-import { arrondi, auCentime, auDixieme, auMillionieme } from './arrondi';
+import {
+  arrondi,
+  auCentime,
+  auDixieme,
+  auMillieme,
+  auMillionieme,
+} from './arrondi';
 
 describe('arrondi', () => {
   it('arrondit au nombre de décimales demandé', () => {
@@ -20,10 +26,12 @@ describe('arrondi', () => {
     expect(Object.is(arrondi(-0.004, 2), 0)).toBe(true);
   });
 
-  it('arrondit au dixième, au centime et au millionième', () => {
+  it('arrondit au dixième, au centime, au millième et au millionième', () => {
     expect(String(auDixieme(12.25))).toBe('12.3');
     expect(String(auDixieme((0.1 + 0.2) * 100))).toBe('30');
     expect(String(auCentime(1053.2249))).toBe('1053.22');
+    expect(String(auMillieme(-0.9615))).toBe('-0.962');
+    expect(String(auMillieme(2 / 3))).toBe('0.667');
     expect(String(auMillionieme(1 / 3))).toBe('0.333333');
   });
 });

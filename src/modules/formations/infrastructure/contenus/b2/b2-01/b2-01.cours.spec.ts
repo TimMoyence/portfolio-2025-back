@@ -17,12 +17,15 @@ import {
   confusionsDuTri,
   corrigeDe,
   decrireLaFicheDuCours,
+  ecranDuContenu,
   valeursEtPieges,
   type CoupleDeTri,
 } from '../../../../../../../test/helpers/formations/cours/fiche-de-cours';
 import {
   clesDe,
+  ecranDuCours,
   ecransCorrigesSurPlace,
+  rangDuCours,
 } from '../../../../../../../test/helpers/formations/cours/lecture-de-cours';
 import {
   arrondi,
@@ -31,7 +34,10 @@ import {
 import type { Ecran } from '../../../../domain/contrats/cours';
 import { cueillirDansArbre } from '../../../../domain/cours/confidentialite/ArbreDeValeurs';
 import type { CorrigeProduction } from '../../../../domain/cours/correction/Corrige';
-import { estInteractif } from '../../../../domain/cours/structure/Cours';
+import {
+  estInteractif,
+  presentationDe,
+} from '../../../../domain/cours/structure/Cours';
 import { lireCoursStocke } from '../../../../domain/cours/stockage/CoursStocke';
 import { deroulePresentateur } from '../../../../domain/cours/diffusion/DeroulePresentateur';
 import { activitesLibres } from '../../../../domain/cours/diffusion/EcranServi';
@@ -39,16 +45,9 @@ import { projeterCatalogue } from '../../../../domain/cours/diffusion/Diffusion'
 import { tirer } from '../../../../domain/cours/tirage/Tirage';
 import { COURS_B2_01 } from './b2-01.cours';
 
-const DOCUMENT = lireConception('cours-b2-01-conception.md');
+const DOCUMENT = lireConception('b2/cours-b2-01-conception.md');
 const COURS = buildCoursDuContenu(COURS_B2_01, VERSION_PUBLIEE_DE_TEST);
 
-function ecranDuCours(screenId: string): Ecran {
-  const trouve = COURS.ecrans.find((candidat) => candidat.id === screenId);
-  if (trouve === undefined) {
-    throw new Error(`écran absent du cours : ${screenId}`);
-  }
-  return trouve;
-}
 const LONGUEUR_MIN_D_UN_TEXTE_COMPARE = 12;
 const CLES_NON_TEXTUELLES = new Set(['id', 'formuleReference', 'transcript']);
 
@@ -92,13 +91,9 @@ function justificationsPropres(
 
 function correctionDuTri(triId: string): string | null {
   const correction = COURS.ecrans.find((ecran) => {
-    if (ecran.brique !== 'fp-story') {
-      return false;
-    }
-    const presentation = ecran.proprietes.presentation;
+    const presentation = presentationDe(ecran);
     return (
-      presentation?.version === 2 &&
-      presentation.renderer === 'sort-review' &&
+      presentation?.renderer === 'sort-review' &&
       presentation.props.source?.screenId === triId
     );
   });
@@ -110,7 +105,7 @@ function vaut(valeur: number, cible: number): boolean {
 }
 
 decrireLaFicheDuCours('B2-01', COURS, {
-  conception: 'cours-b2-01-conception.md',
+  conception: 'b2/cours-b2-01-conception.md',
   ecrans: 56,
   dureeMinutes: 202,
   minutesParActe: [32, 34, 36, 38, 43, 19],
@@ -156,9 +151,9 @@ describe('B2-01 — fichier de données', () => {
   });
 
   it('publie les arrondis d’affichage des attendus de A4-02 sans fuite (A2-06, capsule A4-01)', () => {
-    const ecrans = tirer(COURS, 0).sujet.ecrans;
+    const { sujet } = tirer(COURS, 0);
     const publie = (id: string): string =>
-      JSON.stringify(ecrans.find((ecran) => ecran.id === id)?.donnees);
+      JSON.stringify(ecranDuCours(sujet, id).donnees);
 
     expect(publie('B2-01-A2-06-POINTS')).toContain('25,30 %');
     expect(publie('B2-01-A4-01-CAPSULE')).toContain('0,35');
@@ -208,11 +203,9 @@ describe('B2-01 — fichier de données', () => {
   });
 
   it('T13 · pose dans l énoncé de la moyenne pondérée le CA et le taux de chaque canal', () => {
-    const ecran = COURS.ecrans.find(
-      (candidat) => candidat.id === 'B2-01-A5-03-MOYENNE-PONDEREE',
-    );
+    const ecran = ecranDuCours(COURS, 'B2-01-A5-03-MOYENNE-PONDEREE');
     const enonce =
-      ecran?.brique === 'fp-worked' ? ecran.proprietes.exemple.enonce : '';
+      ecran.brique === 'fp-worked' ? ecran.proprietes.exemple.enonce : '';
 
     for (const donnee of [
       '483 000',
@@ -334,28 +327,24 @@ describe('B2-01 — fichier de données', () => {
   });
 
   it('présente la diapositive de Samir comme un graphique réglable', () => {
-    const graphique = COURS.ecrans.find(
-      (ecran) => ecran.id === 'B2-01-A2-02-ORIGINE-AXE',
-    );
-    const graphiqueBrut = COURS_B2_01.ecrans.find(
-      (ecran) => ecran.screenId === 'B2-01-A2-02-ORIGINE-AXE',
+    const graphique = ecranDuCours(COURS, 'B2-01-A2-02-ORIGINE-AXE');
+    const graphiqueBrut = ecranDuContenu(
+      COURS_B2_01,
+      'B2-01-A2-02-ORIGINE-AXE',
     );
     const proprietesGraphique =
-      graphiqueBrut !== undefined && 'proprietes' in graphiqueBrut
-        ? graphiqueBrut.proprietes
-        : null;
-    const atelierBrut = COURS_B2_01.ecrans.find(
-      (ecran) => ecran.screenId === 'B2-01-A2-03-ATELIER-1-SUITE',
+      'proprietes' in graphiqueBrut ? graphiqueBrut.proprietes : null;
+    const atelierBrut = ecranDuContenu(
+      COURS_B2_01,
+      'B2-01-A2-03-ATELIER-1-SUITE',
     );
     const proprietesBrutes =
-      atelierBrut !== undefined && 'proprietes' in atelierBrut
-        ? atelierBrut.proprietes
-        : null;
+      'proprietes' in atelierBrut ? atelierBrut.proprietes : null;
 
-    expect(graphique?.titre).toBe(
+    expect(graphique.titre).toBe(
       'La diapositive de Samir — l’origine de l’axe',
     );
-    expect(graphique?.notes).toContain(
+    expect(graphique.notes).toContain(
       'Faire comparer « Axe de Samir » et « Axe à zéro » : à l’écran, chacun bascule de l’un à l’autre ; sur le livret, les deux figures sont côte à côte.',
     );
     expect(proprietesGraphique).toEqual(
@@ -570,7 +559,7 @@ describe('B2-01 — retours de QA', () => {
   const JEU = 'B2-01-A2-07-JEU-COMPARABLE';
   const MACHINE = 'B2-01-A3-02-MACHINE-COEFFICIENTS';
   const RECOMMANDATION = 'B2-01-A5-08-RECOMMANDATION';
-  const ecran = ecranDuCours;
+  const ecran = (screenId: string): Ecran => ecranDuCours(COURS, screenId);
 
   it('titre chacun de ses écrans', () => {
     expect(COURS.ecrans.every(({ titre }) => titre !== null)).toBe(true);
@@ -610,9 +599,7 @@ describe('B2-01 — retours de QA', () => {
     const deroule = deroulePresentateur(COURS, 0);
 
     expect(ecran(AUDIT).renvoi).toBe(DIAPOSITIVE);
-    expect(deroule.ecrans.find(({ id }) => id === AUDIT)?.renvoi).toBe(
-      DIAPOSITIVE,
-    );
+    expect(ecranDuCours(deroule, AUDIT).renvoi).toBe(DIAPOSITIVE);
   });
 
   it('E14 · donne au pupitre la réponse attendue sous la forme publiée, arrondi compris', () => {
@@ -691,18 +678,13 @@ describe('B2-01 — retours de QA', () => {
   });
 
   it('RET-18 · fait suivre le mini-jeu comparable de sa correction, comme le tri de l’acte 1', () => {
-    const rangDuJeu = COURS.ecrans.findIndex(({ id }) => id === JEU);
+    const rangDuJeu = rangDuCours(COURS, JEU);
     const correction = COURS.ecrans[rangDuJeu + 1];
-    const presentation =
-      correction?.brique === 'fp-story'
-        ? correction.proprietes.presentation
-        : undefined;
+    const presentation = presentationDe(correction);
 
-    expect(correction?.diffusion).toBe('seance');
+    expect(correction.diffusion).toBe('seance');
     expect(
-      presentation?.version === 2 &&
-        presentation.renderer === 'sort-review' &&
-        presentation.props.source,
+      presentation?.renderer === 'sort-review' && presentation.props.source,
     ).toEqual({ screenId: JEU, sortId: 'b2-01-a2-comparable' });
   });
 
@@ -741,15 +723,8 @@ describe('B2-01 — retours de QA', () => {
   });
 
   it('R3 · justifie chaque contrôle autrement qu en répétant sa catégorie', () => {
-    const correction = ecran(CORRECTION_CONTROLE);
-    const presentation =
-      correction.brique === 'fp-story'
-        ? correction.proprietes.presentation
-        : undefined;
-    if (
-      presentation?.version !== 2 ||
-      presentation.renderer !== 'sort-review'
-    ) {
+    const presentation = presentationDe(ecran(CORRECTION_CONTROLE));
+    if (presentation?.renderer !== 'sort-review') {
       throw new Error('la correction n est pas un rendu sort-review');
     }
     const libelles = new Set(
@@ -764,10 +739,10 @@ describe('B2-01 — retours de QA', () => {
   });
 
   it('R4 · montre à l étudiant, à côté de la recommandation, le dossier chiffré depuis le début', () => {
-    const ecrans = tirer(COURS, 0).sujet.ecrans;
-    const recommandation = ecrans.find(({ id }) => id === RECOMMANDATION);
+    const { sujet } = tirer(COURS, 0);
+    const recommandation = ecranDuCours(sujet, RECOMMANDATION);
     const servie = JSON.stringify(
-      ecrans.find(({ id }) => id === recommandation?.renvoi)?.donnees,
+      ecranDuCours(sujet, recommandation.renvoi ?? '').donnees,
     );
 
     for (const chiffre of [
@@ -783,15 +758,15 @@ describe('B2-01 — retours de QA', () => {
     ]) {
       expect(servie).toContain(chiffre);
     }
-    expect(recommandation?.renvoi).toBe('B2-01-A5-08-DOSSIER-COMITE');
-    expect(JSON.stringify(recommandation?.donnees)).not.toContain('"rappel"');
+    expect(recommandation.renvoi).toBe('B2-01-A5-08-DOSSIER-COMITE');
+    expect(JSON.stringify(recommandation.donnees)).not.toContain('"rappel"');
   });
 
   it.each([
     [TRI, CORRECTION],
     [CONTROLE, CORRECTION_CONTROLE],
   ])('L4 · place la correction du tri %s juste après lui', (tri, suite) => {
-    const rangDuTri = COURS.ecrans.findIndex(({ id }) => id === tri);
+    const rangDuTri = rangDuCours(COURS, tri);
 
     expect(COURS.ecrans[rangDuTri + 1]?.id).toBe(suite);
   });
@@ -803,21 +778,16 @@ describe('B2-01 — retours de QA', () => {
     'L4 · range chaque carte du tri %s dans la catégorie de son corrigé',
     (idDuTri, idDeLaCorrection) => {
       const tri = ecran(idDuTri);
-      const correction = ecran(idDeLaCorrection);
       if (
         tri.brique !== 'fp-cardsort' ||
-        tri.production.corrige.type !== 'classement' ||
-        correction.brique !== 'fp-story'
+        tri.production.corrige.type !== 'classement'
       ) {
-        throw new Error('tri ou correction de brique inattendue');
+        throw new Error('tri de brique inattendue');
       }
       const { plan } = tri.proprietes;
       const { attendus } = tri.production.corrige;
-      const presentation = correction.proprietes.presentation;
-      if (
-        presentation?.version !== 2 ||
-        presentation.renderer !== 'sort-review'
-      ) {
+      const presentation = presentationDe(ecran(idDeLaCorrection));
+      if (presentation?.renderer !== 'sort-review') {
         throw new Error('la correction n est pas un rendu sort-review');
       }
 
@@ -850,13 +820,8 @@ describe('B2-01 — retours de QA du 2026-09-24', () => {
   const SUITE_DE_L_ATELIER_1 = 'B2-01-A2-03-ATELIER-1-SUITE';
 
   function titresDuPlan(): string[] {
-    const plan = ecranDuCours(PLAN);
-    const presentation =
-      plan.brique === 'fp-story' ? plan.proprietes.presentation : undefined;
-    if (
-      presentation?.version !== 2 ||
-      presentation.renderer !== 'method-path'
-    ) {
+    const presentation = presentationDe(ecranDuCours(COURS, PLAN));
+    if (presentation?.renderer !== 'method-path') {
       throw new Error('le plan n est pas un rendu method-path');
     }
     return presentation.props.steps.map(({ title }) => title);
@@ -867,22 +832,26 @@ describe('B2-01 — retours de QA du 2026-09-24', () => {
 
     expect(rangs.indexOf(PLAN)).toBe(3);
     expect(rangs.indexOf(PLAN)).toBe(rangs.indexOf(MISSION) + 1);
-    expect(ecranDuCours(MISSION).notes).toContain('six actes');
+    expect(ecranDuCours(COURS, MISSION).notes).toContain('six actes');
   });
 
   it('R2 · nomme au jalon 1 l acte 2 comme le plan le nomme', () => {
     const acte2 = titresDuPlan()[1];
 
     expect(acte2).toBe('Acte 2 · Auditer');
-    expect(ecranDuCours(JALON_1).notes).toContain('« Acte 2 · Auditer :');
+    expect(ecranDuCours(COURS, JALON_1).notes).toContain(
+      '« Acte 2 · Auditer :',
+    );
   });
 
   it('R5 · laisse l axe réglable en plein écran, sans diapositive commentée', () => {
-    expect(ecranDuCours('B2-01-A2-02-ORIGINE-AXE').renvoi).toBeUndefined();
+    expect(
+      ecranDuCours(COURS, 'B2-01-A2-02-ORIGINE-AXE').renvoi,
+    ).toBeUndefined();
   });
 
   it('R6 · retire le récapitulatif de l axe à zéro et reloge sa lecture chiffrée dans les notes', () => {
-    const notes = ecranDuCours(SUITE_DE_L_ATELIER_1).notes;
+    const notes = ecranDuCours(COURS, SUITE_DE_L_ATELIER_1).notes;
 
     expect(COURS.ecrans.some(({ id }) => id.startsWith('B2-01-A2-04'))).toBe(
       false,
@@ -913,15 +882,11 @@ describe('B2-01 — retours de QA du 2026-09-24', () => {
   });
 
   it('R7 · ne garde du tableau de bord, à l écran des points, que la ligne du taux de marge', () => {
-    const tableau = ecranDuCours('B2-01-A1-04-TABLEAU-DE-BORD');
-    const presentation =
-      tableau.brique === 'fp-story'
-        ? tableau.proprietes.presentation
-        : undefined;
+    const presentation = presentationDe(
+      ecranDuCours(COURS, 'B2-01-A1-04-TABLEAU-DE-BORD'),
+    );
     const lignes =
-      presentation?.version === 2 && presentation.renderer === 'table'
-        ? presentation.props.rows
-        : [];
+      presentation?.renderer === 'table' ? presentation.props.rows : [];
 
     expect(lignes[3]).toMatchObject({ indicateur: 'Taux de marge' });
   });
@@ -948,11 +913,13 @@ describe('B2-01 — retours de QA du 2026-09-24', () => {
       ],
     ],
   ])('%s', (_, id, animation) => {
-    expect(ecranDuCours(id)).toMatchObject({ proprietes: { animation } });
+    expect(ecranDuCours(COURS, id)).toMatchObject({
+      proprietes: { animation },
+    });
   });
 
   it('donne au livret papier de la diapositive de Samir une consigne d interprétation', () => {
-    expect(ecranDuCours('B2-01-A2-02-ORIGINE-AXE')).toMatchObject({
+    expect(ecranDuCours(COURS, 'B2-01-A2-02-ORIGINE-AXE')).toMatchObject({
       proprietes: {
         descriptionPapier:
           'Comparez les deux figures : à gauche l’axe de Samir part de 284 000 €, à droite il part de 0 €. Sous chacune, le rapport des hauteurs est indiqué : expliquez pourquoi il change alors que les montants, eux, ne bougent pas.',
@@ -961,7 +928,7 @@ describe('B2-01 — retours de QA du 2026-09-24', () => {
   });
 
   it('donne au livret papier du simulateur une consigne de lecture et non de réglage', () => {
-    expect(ecranDuCours('B2-01-A5-04-SIMULATEUR-MIX')).toMatchObject({
+    expect(ecranDuCours(COURS, 'B2-01-A5-04-SIMULATEUR-MIX')).toMatchObject({
       proprietes: {
         descriptionPapier:
           'Lisez sur la figure la part de la marketplace qui garde le taux de 2024 (27,6 %), puis calculez le taux de marge de la marketplace qui redonnerait 27,6 % avec la part de 2025 (45,5 %).',

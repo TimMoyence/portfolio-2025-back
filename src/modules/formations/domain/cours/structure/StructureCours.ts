@@ -13,6 +13,7 @@ import type { Gabarit } from './Cours';
 import {
   estInteractif,
   estReservee,
+  presentationDe,
   questionsDe,
   questionsDuCours,
 } from './Cours';
@@ -27,7 +28,7 @@ import {
   controlerCycle,
   controlerMiniSituation,
   controlerTempsDesExercices,
-} from './StructureGabarit';
+} from './gabarit/StructureGabarit';
 import { tirer } from '../tirage/Tirage';
 
 export const REGLES_STRUCTURE = [
@@ -80,6 +81,17 @@ const DEROGATIONS_DES_COURS: ReadonlyMap<string, readonly Derogation[]> =
           ecran: 'B2-04-A3-01-GRAPHIQUE',
           raison:
             'Le graphique public sert 958 (b2-04-a1-u3) et 983,78 (b2-04-a2-v3) : points gardés tels quels, décidé par Tim le 2 novembre 2026.',
+        },
+      ],
+    ],
+    [
+      'b1-04-series-deux-variables',
+      [
+        {
+          regle: 'confidentialite',
+          ecran: 'B1-04-A3-05-NUAGE-ANNALE',
+          raison:
+            'Le nuage de l’annale sert 85,4, observé en 2014 et 2016, égal par hasard à la prévision 2018 par D (b1-04-a3-annale-2018) : points gardés tels quels, décidé par Tim le 13 novembre 2026.',
         },
       ],
     ],
@@ -246,12 +258,9 @@ function controlerCloture({ cours }: Analyse): readonly Manquement[] {
 }
 
 function estFicheMemo(ecran: Ecran): boolean {
-  const presentation =
-    ecran.brique === 'fp-story' ? ecran.proprietes.presentation : undefined;
+  const presentation = presentationDe(ecran);
   return (
-    presentation?.version === 2 &&
-    presentation.renderer === 'grid' &&
-    presentation.props.imprimable === true
+    presentation?.renderer === 'grid' && presentation.props.imprimable === true
   );
 }
 
@@ -446,22 +455,11 @@ function lignesDuTableau(ecran: Ecran): number | null {
     return null;
   }
   const presentation = ecran.proprietes.presentation;
-  if (presentation?.version !== 2 || presentation.renderer !== 'table') {
+  if (presentation?.renderer !== 'table') {
     return null;
   }
   const lignes: unknown = presentation.props['rows'];
   return Array.isArray(lignes) ? lignes.length : null;
-}
-
-function champsDuCas(ecran: Ecran): ReadonlySet<string> | null {
-  if (ecran.brique !== 'fp-pro') {
-    return null;
-  }
-  return new Set(
-    Object.entries(ecran.proprietes)
-      .filter(([, valeur]) => typeof valeur === 'string' && valeur !== '')
-      .map(([champ]) => champ),
-  );
 }
 
 function defautsDuCadrage(ecran: Ecran, cible: Ecran | undefined): string[] {
@@ -473,16 +471,14 @@ function defautsDuCadrage(ecran: Ecran, cible: Ecran | undefined): string[] {
   const lignesAbsentes = (extrait?.lignes ?? []).filter(
     (ligne) => nombreDeLignes === null || ligne >= nombreDeLignes,
   );
-  const champs = champsDuCas(cible);
-  const champsAbsents = (extrait?.champs ?? []).filter(
-    (champ) => champs === null || !champs.has(champ),
-  );
+  const champsAbsents =
+    cible.brique === 'fp-pro' ? [] : (extrait?.champs ?? []);
   return [
     ...lignesAbsentes.map(
       (ligne) => `la ligne ${ligne} n'existe pas dans le tableau renvoyé`,
     ),
     ...champsAbsents.map(
-      (champ) => `le champ « ${champ} » est absent du cas renvoyé`,
+      (champ) => `le champ « ${champ} » vise un écran qui n’est pas un cas`,
     ),
   ];
 }
@@ -701,12 +697,9 @@ function defautDeCorrectionSurPlace(ecran: Ecran): string | null {
     .map((explication) => explication.reference)
     .join(', ');
   const questions = ecran.questions.map((question) => question.id).join(', ');
-  if (references !== questions) {
-    return `ses explications (${references}) ne suivent pas ses questions (${questions}) une à une`;
-  }
-  return ecran.ordre === 'fixe'
+  return references === questions
     ? null
-    : 'ses questions sont mélangées alors que la correction les dévoile dans l ordre';
+    : `ses explications (${references}) ne suivent pas ses questions (${questions}) une à une`;
 }
 
 function controlerCorrectionsSurPlace({

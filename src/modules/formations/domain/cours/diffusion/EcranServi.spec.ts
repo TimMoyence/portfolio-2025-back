@@ -6,8 +6,16 @@ import {
 } from '../../../../../../test/factories/formations/cours/cours.factory';
 import { collectFiles } from '../../../../../../test/helpers/depot/source-tree';
 import {
+  ecranDuContenu,
+  rangDuContenu,
+} from '../../../../../../test/helpers/formations/cours/fiche-de-cours';
+import {
+  ecranDuCours,
+  rangDuCours,
+} from '../../../../../../test/helpers/formations/cours/lecture-de-cours';
+import { tirer } from '../tirage/Tirage';
+import {
   buildCasAQuestionsLibres,
-  buildCorrectionDeReponses,
   buildCorrectionDExemple,
   buildCoursAPiecesJointes,
   buildCoursDeBriques,
@@ -195,6 +203,19 @@ describe('ecranParId', () => {
   it('ne rend rien pour un ecran inconnu', () => {
     expect(ecranParId(buildCoursDeTest(), 'E-INCONNU')).toBeUndefined();
   });
+
+  it('lit aussi le sujet tiré, sans recopier la recherche', () => {
+    const { sujet } = tirer(buildCoursDeTest(), 0);
+
+    expect(ecranParId(sujet, 'E-NUM')).toBe(sujet.ecrans[2]);
+    expect(ecranDuCours(sujet, 'E-NUM')).toBe(sujet.ecrans[2]);
+  });
+
+  it('fait lever par ecranDuCours un id absent, là où une recherche muette rendrait un vide', () => {
+    expect(() => ecranDuCours(buildCoursDeTest(), 'E-INCONNU')).toThrow(
+      'écran absent du cours : E-INCONNU',
+    );
+  });
 });
 
 describe('rangDeLEcran', () => {
@@ -204,6 +225,30 @@ describe('rangDeLEcran', () => {
 
   it('rend moins un pour un ecran inconnu', () => {
     expect(rangDeLEcran(buildCoursDeTest(), 'E-INCONNU')).toBe(-1);
+  });
+
+  it('lit aussi le sujet tiré, et rangDuCours lève là où moins un ferait lire le premier écran', () => {
+    const { sujet } = tirer(buildCoursDeTest(), 0);
+
+    expect(rangDeLEcran(sujet, 'E-NUM')).toBe(2);
+    expect(rangDuCours(sujet, 'E-NUM')).toBe(2);
+    expect(() => rangDuCours(sujet, 'E-INCONNU')).toThrow(
+      'écran absent du cours : E-INCONNU',
+    );
+  });
+
+  it('range un écran stocké par son screenId, et lève sur un screenId absent', () => {
+    const contenu = buildCoursDeBriques([
+      buildEcranDeBrique('fp-pro'),
+      buildEcranDeBrique('fp-vote'),
+    ]);
+    const [, second] = contenu.ecrans;
+
+    expect(rangDuContenu(contenu, second.screenId)).toBe(1);
+    expect(ecranDuContenu(contenu, second.screenId)).toBe(second);
+    expect(() => rangDuContenu(contenu, 'E-INCONNU')).toThrow(
+      `écran E-INCONNU absent de ${contenu.slug}`,
+    );
   });
 });
 
@@ -295,8 +340,8 @@ describe('assertCorrectionNonProjetee (SEC-1)', () => {
   const cours = lireCoursStocke(
     buildCoursDeBriques([
       ATELIER,
-      buildCorrectionDeReponses(ATELIER.screenId),
-      buildEcranDeBrique('fp-quote'),
+      buildCorrectionDExemple(ATELIER.screenId),
+      buildEcranDeBrique('fp-pro'),
     ]),
   );
   const seance = (

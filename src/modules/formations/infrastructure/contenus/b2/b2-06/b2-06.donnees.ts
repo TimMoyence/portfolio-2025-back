@@ -1,6 +1,6 @@
 import type { AuMoinsUnModifiable } from '../../../../../../common/domain/objets/au-moins-un';
 import {
-  arrondi,
+  auMillieme,
   auMillionieme,
 } from '../../../../../../common/domain/nombres/arrondi';
 import type { ConceptId } from '../../../../domain/cours/banque/concepts';
@@ -58,9 +58,6 @@ export const SEUIL_MAL_ARRONDI = 'seuil-mal-arrondi';
 export const AJUSTEMENT_DE_Y = 'ajustement-affine-sur-y';
 export const ORDONNEE_NON_EXPONENTIEE = 'ordonnee-non-exponentiee';
 export const SERIES_INVERSEES = 'pente-ordonnee-inversees';
-
-export const DONNEES_FICTIVES =
-  'Données fictives Atelier Rivage, créées pour ce cours.';
 
 export const RENVOI_AU_DOSSIER = 'B2-06-A1-05-DOSSIER';
 
@@ -216,8 +213,6 @@ export const ATTENDUS_DES_OBJECTIFS: AuMoinsUnModifiable<AttenduDeFeuille> = [
 ];
 
 type AttenduDeTableau = Parameters<typeof moteur.questionDeTableau>[2][number];
-
-const auMillieme = (valeur: number): number => arrondi(valeur, 3);
 
 export const [PREMIER_LOGARITHME, ...AUTRES_LOGARITHMES] =
   DEMANDES.map<AttenduDeTableau>((demande, rang) => ({

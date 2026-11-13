@@ -179,11 +179,6 @@ const CONFUSIONS_AJOUTEES_PAR_LA_V3 = {
     libelle:
       'Croire qu’une hausse du total fait mécaniquement baisser un taux.',
   },
-  'baisse-attribuee-aux-taux-locaux': {
-    concept: 'moyenne-ponderee',
-    libelle:
-      'Attribuer la baisse d’un taux global à la baisse des taux de chaque composante, sans regarder les poids.',
-  },
   'axe-tronque-lu-comme-ecart': {
     concept: 'lecture-graphique',
     libelle:
@@ -270,16 +265,6 @@ const CONFUSIONS_AJOUTEES_PAR_LA_V3 = {
 };
 
 const CONFUSIONS_DU_B2_02 = {
-  'role-statistique-confondu': {
-    concept: 'serie-statistique',
-    libelle:
-      'Confondre la population étudiée, le caractère observé et l’effectif d’une série.',
-  },
-  'effectif-cumule-confondu': {
-    concept: 'serie-statistique',
-    libelle:
-      'Confondre l’effectif (ou la fréquence) d’une classe et l’effectif cumulé jusqu’à cette classe.',
-  },
   'moyenne-lue-comme-mediane': {
     concept: 'mediane',
     libelle:
@@ -310,11 +295,6 @@ const CONFUSIONS_DU_B2_02 = {
     libelle:
       'Calculer un quartile à partir de la médiane (sa moitié, ou la médiane plus la moitié) au lieu de chercher la valeur qui laisse un quart de l’effectif en dessous.',
   },
-  'convention-de-quartile-ignoree': {
-    concept: 'quartiles',
-    libelle:
-      'Comparer des quartiles obtenus par deux conventions différentes (programme, tableur) sans le signaler.',
-  },
   'boite-lue-comme-effectif': {
     concept: 'boite-a-moustaches',
     libelle:
@@ -340,20 +320,10 @@ const CONFUSIONS_DU_B2_02 = {
     libelle:
       'Conclure que deux séries de même moyenne se ressemblent, sans regarder leur dispersion.',
   },
-  'moyenne-des-moyennes': {
-    concept: 'moyenne',
-    libelle:
-      'Faire la moyenne simple de moyennes calculées sur des groupes d’effectifs différents.',
-  },
   'centre-de-classe-oublie': {
     concept: 'moyenne',
     libelle:
       'Calculer la moyenne de données groupées avec une borne des classes au lieu de leur centre.',
-  },
-  'histogramme-classes-inegales': {
-    concept: 'histogramme',
-    libelle:
-      'Lire la hauteur d’un histogramme à classes d’amplitudes inégales comme un effectif, au lieu d’une densité.',
   },
 };
 
@@ -427,15 +397,54 @@ const CONFUSIONS_DU_B2_07 = {
   'contrainte-ignoree': { concept: 'optimisation' },
 };
 
+const CONCEPTS_ATTENDUS_DU_B2_08 = [
+  'derivees-composees',
+  'fonctions-economiques',
+  'resolution-approchee',
+];
+
+const CONFUSIONS_DU_B2_08 = {
+  'produit-derive-terme-a-terme': { concept: 'derivees-composees' },
+  'quotient-signe-inverse': { concept: 'derivees-composees' },
+  'quotient-sans-carre': { concept: 'derivees-composees' },
+  'u-prime-oublie': { concept: 'derivees-composees' },
+  'cout-moyen-et-marginal-confondus': { concept: 'fonctions-economiques' },
+  'recette-sans-prix': { concept: 'fonctions-economiques' },
+  'nombre-de-solutions-sans-variations': { concept: 'resolution-approchee' },
+  'balayage-mal-encadre': { concept: 'resolution-approchee' },
+  'dichotomie-mauvaise-moitie': { concept: 'resolution-approchee' },
+};
+
+const CONCEPTS_ATTENDUS_DU_B2_09 = [
+  'probabilite-d-un-evenement',
+  'probabilite-conditionnelle',
+  'probabilites-totales',
+  'independance',
+];
+
+const CONFUSIONS_DU_B2_09 = {
+  'complementaire-oublie': { concept: 'probabilite-d-un-evenement' },
+  'reunion-sans-intersection': { concept: 'probabilite-d-un-evenement' },
+  'intersection-pour-conditionnelle': {
+    concept: 'probabilite-conditionnelle',
+  },
+  'conditionnelle-inversee': { concept: 'probabilite-conditionnelle' },
+  'mauvais-total-du-tableau': { concept: 'probabilite-conditionnelle' },
+  'condition-ignoree': { concept: 'probabilite-conditionnelle' },
+  'branches-additionnees': { concept: 'probabilite-conditionnelle' },
+  'totales-sans-ponderation': { concept: 'probabilites-totales' },
+  'totales-incompletes': { concept: 'probabilites-totales' },
+  'independance-et-incompatibilite-confondues': { concept: 'independance' },
+  'independance-sans-calcul': { concept: 'independance' },
+};
+
 const CONFUSIONS_DU_B3_01 = {
   'reference-absolue-ignoree': { concept: 'reference-de-cellule' },
   'identifiant-pris-pour-nombre': { concept: 'jeu-de-donnees' },
   'lignes-comptees-pour-commandes': { concept: 'granularite' },
   'libelle-pris-pour-cle': { concept: 'cle-et-relation' },
   'suspect-corrige-sans-validation': { concept: 'qualite-des-donnees' },
-  'suppression-au-lieu-de-signalement': { concept: 'qualite-des-donnees' },
   'texte-pris-pour-nombre': { concept: 'nettoyage' },
-  'casse-non-normalisee': { concept: 'nettoyage' },
   'doublons-supprimes-sur-une-colonne': { concept: 'nettoyage' },
   'plage-recherche-non-figee': { concept: 'recherche-dans-une-table' },
   'critere-mal-ecrit': { concept: 'agregation-conditionnelle' },
@@ -525,8 +534,8 @@ describe('CONCEPTS', () => {
     expect(CONCEPTS.slice(0, 14)).toEqual([...CONCEPTS_DU_B2_01]);
   });
 
-  it('ajoute à la suite les treize concepts du B2-02, les quatre de deux variables en dernier', () => {
-    expect(CONCEPTS.slice(14, 27)).toEqual([...CONCEPTS_DU_B2_02]);
+  it('ajoute à la suite les douze concepts du B2-02, les quatre de deux variables en dernier', () => {
+    expect(CONCEPTS.slice(14, 26)).toEqual([...CONCEPTS_DU_B2_02]);
     expect(CONCEPTS_DU_B2_02).toEqual([
       'serie-statistique',
       'moyenne',
@@ -535,7 +544,6 @@ describe('CONCEPTS', () => {
       'dispersion',
       'ecart-type',
       'boite-a-moustaches',
-      'histogramme',
       'choix-du-resume',
       'nuage-de-points',
       'correlation',
@@ -561,13 +569,13 @@ describe('CONCEPTS', () => {
   });
 
   it('B302-M7 · ajoute après le B3-01 le concept de l’IA analyste du B3-02', () => {
-    expect(CONCEPTS.slice(57, 58)).toEqual([...CONCEPTS_DU_B3_02]);
+    expect(CONCEPTS.slice(56, 57)).toEqual([...CONCEPTS_DU_B3_02]);
     expect(CONCEPTS_DU_B3_02).toEqual(['ia-analyste']);
     expect(libelleDeConcept('ia-analyste')).toBe('IA analyste de données');
   });
 
   it('ajoute à la suite les treize concepts de données du B3-01', () => {
-    expect(CONCEPTS.slice(44, 57)).toEqual([...CONCEPTS_DU_B3_01]);
+    expect(CONCEPTS.slice(43, 56)).toEqual([...CONCEPTS_DU_B3_01]);
     expect(CONCEPTS_DU_B3_01).toEqual([
       'reference-de-cellule',
       'jeu-de-donnees',
@@ -589,7 +597,7 @@ describe('CONCEPTS', () => {
   });
 
   it('ajoute à la suite les quatre concepts d’exponentielle et de logarithme du B2-06', () => {
-    expect(CONCEPTS.slice(40, 44)).toEqual([...CONCEPTS_DU_B2_06]);
+    expect(CONCEPTS.slice(39, 43)).toEqual([...CONCEPTS_DU_B2_06]);
     expect(CONCEPTS_DU_B2_06).toEqual([
       'fonction-exponentielle',
       'logarithme-neperien',
@@ -599,7 +607,7 @@ describe('CONCEPTS', () => {
   });
 
   it('ajoute à la suite les cinq concepts de mathématiques financières du B2-05', () => {
-    expect(CONCEPTS.slice(35, 40)).toEqual([...CONCEPTS_DU_B2_05]);
+    expect(CONCEPTS.slice(34, 39)).toEqual([...CONCEPTS_DU_B2_05]);
     expect(CONCEPTS_DU_B2_05).toEqual([
       'interets-composes',
       'valeur-actuelle',
@@ -610,7 +618,7 @@ describe('CONCEPTS', () => {
   });
 
   it('ajoute à la suite les quatre concepts de suites du B2-04', () => {
-    expect(CONCEPTS.slice(31, 35)).toEqual([...CONCEPTS_DU_B2_04]);
+    expect(CONCEPTS.slice(30, 34)).toEqual([...CONCEPTS_DU_B2_04]);
     expect(CONCEPTS_DU_B2_04).toEqual([
       'suite-arithmetique',
       'suite-geometrique',
@@ -620,7 +628,7 @@ describe('CONCEPTS', () => {
   });
 
   it('ajoute à la suite les quatre concepts de logique du B2-03', () => {
-    expect(CONCEPTS.slice(27, 31)).toEqual([...CONCEPTS_DU_B2_03]);
+    expect(CONCEPTS.slice(26, 30)).toEqual([...CONCEPTS_DU_B2_03]);
     expect(CONCEPTS_DU_B2_03).toEqual([
       'proposition',
       'connecteur',
@@ -676,62 +684,62 @@ describe('CONFUSIONS', () => {
     }
   });
 
-  it('ajoute les dix-sept confusions du B2-02 aux trente-huit du B2-01', () => {
-    expect(Object.keys(CONFUSIONS).slice(38, 55)).toEqual(
+  it('ajoute les douze confusions du B2-02 aux trente-sept du B2-01', () => {
+    expect(Object.keys(CONFUSIONS).slice(37, 49)).toEqual(
       Object.keys(CONFUSIONS_DU_B2_02),
     );
     attendreDansLaBanque(CONFUSIONS_DU_B2_02);
   });
 
   it('ajoute en dernier les sept confusions de deux variables, sans retirer celles de la v1', () => {
-    expect(Object.keys(CONFUSIONS).slice(55, 62)).toEqual(
+    expect(Object.keys(CONFUSIONS).slice(49, 56)).toEqual(
       Object.keys(CONFUSIONS_DES_DEUX_VARIABLES),
     );
     attendreDansLaBanque(CONFUSIONS_DES_DEUX_VARIABLES);
   });
 
   it('ajoute à la suite les onze confusions de logique du B2-03', () => {
-    expect(Object.keys(CONFUSIONS).slice(62, 73)).toEqual(
+    expect(Object.keys(CONFUSIONS).slice(56, 67)).toEqual(
       Object.keys(CONFUSIONS_DU_B2_03),
     );
     attendreDansLaBanque(CONFUSIONS_DU_B2_03);
   });
 
   it('ajoute à la suite les six confusions de suites du B2-04', () => {
-    expect(Object.keys(CONFUSIONS).slice(73, 79)).toEqual(
+    expect(Object.keys(CONFUSIONS).slice(67, 73)).toEqual(
       Object.keys(CONFUSIONS_DU_B2_04),
     );
     attendreDansLaBanque(CONFUSIONS_DU_B2_04);
   });
 
   it('ajoute à la suite les neuf confusions d’exponentielle et de logarithme du B2-06', () => {
-    expect(Object.keys(CONFUSIONS).slice(87, 96)).toEqual(
+    expect(Object.keys(CONFUSIONS).slice(81, 90)).toEqual(
       Object.keys(CONFUSIONS_DU_B2_06),
     );
     attendreDansLaBanque(CONFUSIONS_DU_B2_06);
   });
 
-  it('ajoute à la suite les trente-trois confusions de données du B3-01', () => {
-    expect(Object.keys(CONFUSIONS).slice(96, 129)).toEqual(
+  it('ajoute à la suite les trente et une confusions de données du B3-01', () => {
+    expect(Object.keys(CONFUSIONS).slice(90, 121)).toEqual(
       Object.keys(CONFUSIONS_DU_B3_01),
     );
     attendreDansLaBanque(CONFUSIONS_DU_B3_01);
   });
 
   it('QP-15 · ajoute à la suite les huit confusions qui nomment une carte rangée dans une mauvaise case', () => {
-    expect(Object.keys(CONFUSIONS).slice(129, 137)).toEqual(
+    expect(Object.keys(CONFUSIONS).slice(121, 129)).toEqual(
       Object.keys(CONFUSIONS_DES_TRIS),
     );
     attendreDansLaBanque(CONFUSIONS_DES_TRIS);
   });
 
   it('ajoute après les tris la confusion d’arrondi du B1-01', () => {
-    expect(Object.keys(CONFUSIONS).slice(137, 138)).toEqual(['arrondi-oublie']);
+    expect(Object.keys(CONFUSIONS).slice(129, 130)).toEqual(['arrondi-oublie']);
     expect(CONFUSIONS['arrondi-oublie'].concept).toBe('tableur');
   });
 
   it('B302-M7 · ajoute après la recopie vers la droite les deux confusions de l’IA analyste du B3-02', () => {
-    expect(Object.keys(CONFUSIONS).slice(140, 142)).toEqual([
+    expect(Object.keys(CONFUSIONS).slice(132, 134)).toEqual([
       'ia-crue-sur-parole',
       'ia-rejetee-sans-comparaison',
     ]);
@@ -763,6 +771,76 @@ describe('CONFUSIONS', () => {
     );
   });
 
+  it('B208-06 · ajoute à la suite les trois concepts des dérivées composées, des fonctions économiques et des solutions approchées', () => {
+    const concepts: readonly string[] = CONCEPTS;
+    const premier = concepts.indexOf('derivees-composees');
+
+    expect(concepts.slice(premier, premier + 3)).toEqual(
+      CONCEPTS_ATTENDUS_DU_B2_08,
+    );
+    expect(libelleDeConcept('fonctions-economiques')).toBe(
+      'Coûts, recette, offre et demande',
+    );
+  });
+
+  it('B208-06 · ajoute à la suite les neuf confusions du B2-08, chacune nommant la bonne règle', () => {
+    const cles = Object.keys(CONFUSIONS);
+    const premiere = cles.indexOf('produit-derive-terme-a-terme');
+
+    expect(cles.slice(premiere, premiere + 9)).toEqual(
+      Object.keys(CONFUSIONS_DU_B2_08),
+    );
+    attendreDansLaBanque(CONFUSIONS_DU_B2_08);
+    expect(libelleDeConfusion('produit-derive-terme-a-terme')).toContain(
+      '(uv)′ = u′v + uv′',
+    );
+    expect(libelleDeConfusion('quotient-signe-inverse')).toContain('u′v − uv′');
+    expect(libelleDeConfusion('u-prime-oublie')).toContain('(e^u)′ = u′e^u');
+    expect(libelleDeConfusion('cout-moyen-et-marginal-confondus')).toContain(
+      'C(q) ÷ q',
+    );
+    expect(libelleDeConfusion('dichotomie-mauvaise-moitie')).toContain(
+      'change de signe',
+    );
+  });
+
+  it('B209-06 · ajoute à la suite les quatre concepts des probabilités conditionnelles', () => {
+    const concepts: readonly string[] = CONCEPTS;
+    const premier = concepts.indexOf('probabilite-d-un-evenement');
+
+    expect(concepts.slice(premier, premier + 4)).toEqual(
+      CONCEPTS_ATTENDUS_DU_B2_09,
+    );
+    expect(libelleDeConcept('probabilite-conditionnelle')).toBe(
+      'Probabilité conditionnelle P_A(B)',
+    );
+  });
+
+  it('B209-06 · ajoute à la suite les onze confusions du B2-09, chacune nommant la bonne règle', () => {
+    const cles = Object.keys(CONFUSIONS);
+    const premiere = cles.indexOf('complementaire-oublie');
+
+    expect(cles.slice(premiere, premiere + 11)).toEqual(
+      Object.keys(CONFUSIONS_DU_B2_09),
+    );
+    attendreDansLaBanque(CONFUSIONS_DU_B2_09);
+    expect(libelleDeConfusion('complementaire-oublie')).toContain(
+      'P(Ā) = 1 − P(A)',
+    );
+    expect(libelleDeConfusion('intersection-pour-conditionnelle')).toContain(
+      'P(A ∩ B) = P(A) × P_A(B)',
+    );
+    expect(libelleDeConfusion('mauvais-total-du-tableau')).toContain(
+      'effectif de A ∩ B ÷ effectif de A',
+    );
+    expect(libelleDeConfusion('totales-sans-ponderation')).toContain(
+      'P(B) = P(A) × P_A(B) + P(Ā) × P_Ā(B)',
+    );
+    expect(
+      libelleDeConfusion('independance-et-incompatibilite-confondues'),
+    ).toContain('P(A ∩ B) = P(A) × P(B)');
+  });
+
   it('B207-M12 · nomme dans sens-inegalite-ln-negatif toute division par un nombre négatif, ln q compris', () => {
     const libelle = libelleDeConfusion('sens-inegalite-ln-negatif');
 
@@ -774,7 +852,7 @@ describe('CONFUSIONS', () => {
   });
 
   it('B102-M7 · ajoute après l’arrondi les deux confusions de la recopie vers la droite', () => {
-    expect(Object.keys(CONFUSIONS).slice(138, 140)).toEqual([
+    expect(Object.keys(CONFUSIONS).slice(130, 132)).toEqual([
       'reference-non-figee-en-ligne',
       'formule-non-recopiable-en-ligne',
     ]);
@@ -803,6 +881,18 @@ describe('CONFUSIONS', () => {
     expect(libelleDeConfusion('rang-de-quartile-arrondi-par-defaut')).toContain(
       'toujours à l’entier supérieur',
     );
+  });
+
+  it('B105-M6 · nomme l’implication jugée fausse dès que sa condition l’est', () => {
+    expect(Object.keys(CONFUSIONS)).toContain(
+      'implication-fausse-si-premisse-fausse',
+    );
+    expect(CONFUSIONS['implication-fausse-si-premisse-fausse'].concept).toBe(
+      'connecteur',
+    );
+    expect(
+      libelleDeConfusion('implication-fausse-si-premisse-fausse'),
+    ).toContain('que lorsque P est vraie et Q fausse');
   });
 
   it('B102-M7 · garde tels quels les libellés de la recopie vers le bas', () => {
@@ -860,7 +950,6 @@ describe('CONFUSIONS', () => {
     expect(libelleDeConfusion('espaces-non-supprimes')).toContain(
       'SUPPRESPACE',
     );
-    expect(libelleDeConfusion('casse-non-normalisee')).toContain('Power Query');
     expect(libelleDeConfusion('type-de-variable-confondu')).not.toContain(
       'identifiant',
     );
@@ -894,13 +983,13 @@ describe('CONFUSIONS', () => {
   });
 
   it('ajoute à la suite les huit confusions de mathématiques financières du B2-05', () => {
-    expect(Object.keys(CONFUSIONS).slice(79, 87)).toEqual(
+    expect(Object.keys(CONFUSIONS).slice(73, 81)).toEqual(
       Object.keys(CONFUSIONS_DU_B2_05),
     );
     attendreDansLaBanque(CONFUSIONS_DU_B2_05);
   });
 
-  it('conserve les huit confusions existantes et ajoute les trente de la V3 (§ 5.9)', () => {
+  it('conserve les huit confusions existantes et ajoute les vingt-neuf de la V3 (§ 5.9)', () => {
     attendreDansLaBanque(CONFUSIONS_AJOUTEES_PAR_LA_V3);
     expect(Object.keys(CONFUSIONS).slice(0, 8)).toEqual([
       'hausse-baisse-symetriques',

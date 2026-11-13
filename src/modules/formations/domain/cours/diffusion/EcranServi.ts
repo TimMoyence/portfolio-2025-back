@@ -261,11 +261,17 @@ export function pieceJointeServieAuPoste(
   return pieceJointe;
 }
 
-export function ecranParId(cours: Cours, screenId: string): Ecran | undefined {
+export function ecranParId<E extends { readonly id: string } = Ecran>(
+  cours: { readonly ecrans: readonly E[] },
+  screenId: string,
+): E | undefined {
   return cours.ecrans.find((ecran) => ecran.id === screenId);
 }
 
-export function rangDeLEcran(cours: Cours, screenId: string): number {
+export function rangDeLEcran(
+  cours: { readonly ecrans: readonly { readonly id: string }[] },
+  screenId: string,
+): number {
   return cours.ecrans.findIndex((ecran) => ecran.id === screenId);
 }
 
@@ -309,7 +315,7 @@ function reflexionDuRecit(
   ecran: Extract<Ecran, { readonly brique: 'fp-story' }>,
 ): readonly string[] {
   const presentation = ecran.proprietes.presentation;
-  if (presentation?.version !== 2 || presentation.renderer !== 'reflection') {
+  if (presentation?.renderer !== 'reflection') {
     return [];
   }
   return [presentation.props.promptData.id];

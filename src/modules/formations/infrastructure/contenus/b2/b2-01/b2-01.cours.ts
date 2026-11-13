@@ -1128,51 +1128,48 @@ const CONSIGNE_DE_L_ATELIER_2 =
   'Calculatrice autorisée. Base 100 = moyenne annuelle 2019. Taux annuels moyens de l’Insee : 2020 : 0,5 % ; 2021 : 1,6 % ; 2022 : 5,2 % ; 2023 : 4,9 % ; 2024 : 2,0 % ; 2025 : 0,9 %.';
 
 const ACTE_3: moteur.Acte = [
-  {
-    screenId: 'B2-01-A3-01-VOTE-HAUSSE-BAISSE',
-    titre: 'Vote : +10 %, puis −10 %',
-    diffusion: 'seance',
-    brique: 'fp-vote',
-    dureeMinutes: 8,
-    concepts: ['evolutions-successives'],
-    notes: moteur.puces(
-      'Vote 1 individuel, sans calculatrice.',
-      'Puis question 2, sans débat entre les deux ; la révélation suit.',
-      'Pièges : « identique » (+10 % puis −10 % s’annuleraient) ; « 12 % » (remises additionnées). Contrôles : 110 × 0,90 = 99 ; 4 000 × 0,882 = 3 528 € HT.',
-      'Relance CG : une seconde remise « sur le net » reste une réduction commerciale, pas un escompte.',
-    ),
-    proprietes: {
-      modalite: 'solo',
-      questions: [
-        moteur.vote(
-          'b2-01-a3-sac-v1',
-          'evolutions-successives',
-          true,
-          'Atelier Rivage augmente de 10 % le prix de son sac étanche en mars, puis le baisse de 10 % en septembre. Par rapport au prix de départ, le prix final est…',
-          'Inférieur de 1 % au prix de départ',
-          [
-            ['Identique au prix de départ', 'hausse-baisse-symetriques'],
-            [
-              'Supérieur de 1 % au prix de départ',
-              'coefficient-global-mal-interprete',
-            ],
-          ],
-          ['Inférieur', '1 %'],
-        ),
-        moteur.vote(
-          'b2-01-a3-remise-v2',
-          'evolutions-successives',
-          true,
-          'Une voile au prix catalogue de 4 000 € HT bénéficie d’une remise de 10 %, puis d’une seconde remise de 2 % calculée sur le net. De quel pourcentage le net commercial est-il inférieur au prix catalogue ?',
-          '11,8 %',
-          [
-            ['12 %', 'taux-successifs-additionnes'],
-            ['88,2 %', 'coefficient-confondu-avec-taux'],
-          ],
-        ),
-      ],
+  moteur.voteQuiOuvre(
+    {
+      screenId: 'B2-01-A3-01-VOTE-HAUSSE-BAISSE',
+      titre: 'Vote : +10 %, puis −10 %',
+      dureeMinutes: 8,
+      concepts: ['evolutions-successives'],
+      notes: moteur.puces(
+        'Vote 1 individuel, sans calculatrice.',
+        'Puis question 2, sans débat entre les deux ; la révélation suit.',
+        'Pièges : « identique » (+10 % puis −10 % s’annuleraient) ; « 12 % » (remises additionnées). Contrôles : 110 × 0,90 = 99 ; 4 000 × 0,882 = 3 528 € HT.',
+        'Relance CG : une seconde remise « sur le net » reste une réduction commerciale, pas un escompte.',
+      ),
     },
-  },
+    [
+      moteur.vote(
+        'b2-01-a3-sac-v1',
+        'evolutions-successives',
+        true,
+        'Atelier Rivage augmente de 10 % le prix de son sac étanche en mars, puis le baisse de 10 % en septembre. Par rapport au prix de départ, le prix final est…',
+        'Inférieur de 1 % au prix de départ',
+        [
+          ['Identique au prix de départ', 'hausse-baisse-symetriques'],
+          [
+            'Supérieur de 1 % au prix de départ',
+            'coefficient-global-mal-interprete',
+          ],
+        ],
+        ['Inférieur', '1 %'],
+      ),
+      moteur.vote(
+        'b2-01-a3-remise-v2',
+        'evolutions-successives',
+        true,
+        'Une voile au prix catalogue de 4 000 € HT bénéficie d’une remise de 10 %, puis d’une seconde remise de 2 % calculée sur le net. De quel pourcentage le net commercial est-il inférieur au prix catalogue ?',
+        '11,8 %',
+        [
+          ['12 %', 'taux-successifs-additionnes'],
+          ['88,2 %', 'coefficient-confondu-avec-taux'],
+        ],
+      ),
+    ],
+  ),
   {
     screenId: 'B2-01-A3-02-MACHINE-COEFFICIENTS',
     titre: 'La machine à coefficients',
@@ -2377,58 +2374,52 @@ const ACTE_5: moteur.Acte = [
       ],
     },
   ),
-  {
-    screenId: 'B2-01-A5-02-VOTE-PARADOXE',
-    titre: 'Vote : le paradoxe du taux global',
-    diffusion: 'seance',
-    brique: 'fp-vote',
-    dureeMinutes: 8,
-    concepts: ['moyenne-ponderee'],
-    notes: moteur.puces(
-      'Vote 1 (2 min), vote 2 sur le lycée (2 min), révélation et commentaire des deux corrections (4 min).',
-      'Grille du commentaire : un argument complet associe taux stables, poids modifiés et un exemple chiffré.',
-      'Transition : « Faites varier la part de la marketplace. »',
-    ),
-    proprietes: {
-      modalite: 'solo',
-      questions: [
-        moteur.vote(
-          'b2-01-a5-paradoxe-v1',
-          'moyenne-ponderee',
-          true,
-          'Entre 2024 et 2025, chaque canal d’Atelier Rivage garde exactement le même taux de marge brute (36 %, 28 % et 16 %). Pourtant, le taux global passe de 27,6 % à 25,3 %. Comment l’expliquez-vous ?',
-          'Le poids des canaux dans le CA a changé.',
-          [
-            [
-              'Taux locaux stables, taux global stable : c’est une erreur.',
-              'moyenne-simple-des-taux',
-            ],
-            [
-              'Plus de CA fait toujours baisser un taux.',
-              'hausse-base-baisse-taux',
-            ],
-          ],
-        ),
-        moteur.vote(
-          'b2-01-a5-paradoxe-v2',
-          'moyenne-ponderee',
-          true,
-          'Dans un lycée qui ne prépare que deux BTS, le taux de réussite reste de 90 % en CG et de 70 % en MCO d’une session à l’autre. Pourtant, le taux de réussite global du lycée baisse. Comment l’expliquez-vous ?',
-          'Les candidats de MCO pèsent davantage dans l’ensemble des candidats.',
-          [
-            [
-              'C’est impossible : le taux global est la moyenne de 90 % et 70 %.',
-              'moyenne-simple-des-taux',
-            ],
-            [
-              'Il y a eu plus de candidats au total.',
-              'hausse-base-baisse-taux',
-            ],
-          ],
-        ),
-      ],
+  moteur.voteQuiOuvre(
+    {
+      screenId: 'B2-01-A5-02-VOTE-PARADOXE',
+      titre: 'Vote : le paradoxe du taux global',
+      dureeMinutes: 8,
+      concepts: ['moyenne-ponderee'],
+      notes: moteur.puces(
+        'Vote 1 (2 min), vote 2 sur le lycée (2 min), révélation et commentaire des deux corrections (4 min).',
+        'Grille du commentaire : un argument complet associe taux stables, poids modifiés et un exemple chiffré.',
+        'Transition : « Faites varier la part de la marketplace. »',
+      ),
     },
-  },
+    [
+      moteur.vote(
+        'b2-01-a5-paradoxe-v1',
+        'moyenne-ponderee',
+        true,
+        'Entre 2024 et 2025, chaque canal d’Atelier Rivage garde exactement le même taux de marge brute (36 %, 28 % et 16 %). Pourtant, le taux global passe de 27,6 % à 25,3 %. Comment l’expliquez-vous ?',
+        'Le poids des canaux dans le CA a changé.',
+        [
+          [
+            'Taux locaux stables, taux global stable : c’est une erreur.',
+            'moyenne-simple-des-taux',
+          ],
+          [
+            'Plus de CA fait toujours baisser un taux.',
+            'hausse-base-baisse-taux',
+          ],
+        ],
+      ),
+      moteur.vote(
+        'b2-01-a5-paradoxe-v2',
+        'moyenne-ponderee',
+        true,
+        'Dans un lycée qui ne prépare que deux BTS, le taux de réussite reste de 90 % en CG et de 70 % en MCO d’une session à l’autre. Pourtant, le taux de réussite global du lycée baisse. Comment l’expliquez-vous ?',
+        'Les candidats de MCO pèsent davantage dans l’ensemble des candidats.',
+        [
+          [
+            'C’est impossible : le taux global est la moyenne de 90 % et 70 %.',
+            'moyenne-simple-des-taux',
+          ],
+          ['Il y a eu plus de candidats au total.', 'hausse-base-baisse-taux'],
+        ],
+      ),
+    ],
+  ),
   {
     screenId: 'B2-01-A5-04-SIMULATEUR-MIX',
     titre: 'Simulateur : la part de la marketplace',

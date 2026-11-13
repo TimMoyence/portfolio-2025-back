@@ -13,11 +13,12 @@ import {
 } from '../../../../../../test/factories/formations/cours/questions-stockees.factory';
 import {
   buildCoursConforme,
-  buildEcranDeCitation,
+  buildEcranDeCas,
   fuitesDeConfidentialite as fuites,
   lireEcranStocke,
   recomposer,
 } from '../../../../../../test/factories/formations/cours/structure.factory';
+import { buildArbreDeDeuxGenerations } from '../../../../../../test/factories/formations/cours/presentation-visuelle.factory';
 import type { Cours, Ecran } from '../../contrats/cours';
 import type { NumeriqueStockee } from '../../contrats/cours';
 
@@ -33,9 +34,14 @@ function texteDe(
   texte: string,
   diffusion: 'catalogue' | 'seance' = 'seance',
 ): Ecran {
-  return buildEcranDeCitation(id, 1, {
+  return buildEcranDeCas(id, 1, {
     diffusion,
-    proprietes: { texte, auteur: null, source: null },
+    proprietes: {
+      metier: 'Contrôleur de gestion',
+      situation: texte,
+      geste: null,
+      consequence: null,
+    },
   });
 }
 
@@ -120,10 +126,10 @@ describe('garde confidentialite — volet exact', () => {
 
   it('rejoue le volet catalogue sur le titre d un ecran verrouille, visible au catalogue (§ 6.4, point 3)', () => {
     const verrouille = autourDeLAtelier(
-      buildEcranDeCitation(APRES, 1, { titre: 'Pourquoi 45,5 % ?' }),
+      buildEcranDeCas(APRES, 1, { titre: 'Pourquoi 45,5 % ?' }),
     );
     const catalogue = autourDeLAtelier(
-      buildEcranDeCitation(APRES, 1, {
+      buildEcranDeCas(APRES, 1, {
         titre: 'Pourquoi 45,5 % ?',
         diffusion: 'catalogue',
       }),
@@ -135,12 +141,13 @@ describe('garde confidentialite — volet exact', () => {
 
   it('garde les donnees d un ecran verrouille hors du volet catalogue', () => {
     const cours = autourDeLAtelier(
-      buildEcranDeCitation(APRES, 1, {
+      buildEcranDeCas(APRES, 1, {
         titre: 'Un titre neutre',
         proprietes: {
-          texte: 'La marketplace pèse 45,5 % du CA.',
-          auteur: null,
-          source: null,
+          metier: 'Contrôleur de gestion',
+          situation: 'La marketplace pèse 45,5 % du CA.',
+          geste: null,
+          consequence: null,
         },
       }),
     );
@@ -247,6 +254,7 @@ describe('garde confidentialite — volet exact', () => {
   function graphiqueAvant(
     renderer: string,
     props: Readonly<Record<string, unknown>>,
+    exercice: Ecran = atelier,
   ): Cours {
     const graphique = lireEcranStocke(
       buildEcranDeBrique('fp-story', {
@@ -257,7 +265,7 @@ describe('garde confidentialite — volet exact', () => {
         },
       }),
     );
-    return recomposer(base, [ouverture, graphique, atelier, cloture]);
+    return recomposer(base, [ouverture, graphique, exercice, cloture]);
   }
 
   it('refuse les valeurs d un graphique arrondies a la precision de la question', () => {
@@ -300,6 +308,33 @@ describe('garde confidentialite — volet exact', () => {
 
   it('accepte un nuage dont aucune coordonnée ne donne la réponse', () => {
     expect(fuites(graphiqueAvant('scatter', NUAGE))).toEqual([]);
+  });
+
+  const exerciceDeProbabilite = atelierAvec({
+    unite: null,
+    solution: 0.125,
+    tolerance: { type: 'absolue', valeur: 0.0005 },
+    formePubliee: '0,125',
+    pieges: [{ valeur: 0.375, confusion: 'base-inversee' }],
+  });
+  const arbre = buildArbreDeDeuxGenerations;
+
+  it('CONF-02 refuse un arbre dont un produit donne la réponse à 3 chiffres d’une question qui le suit', () => {
+    expect(
+      fuites(graphiqueAvant('arbre', arbre(0.5, 0.25), exerciceDeProbabilite)),
+    ).toEqual([AVANT]);
+  });
+
+  it('CONF-02 refuse un arbre dont une branche donne la réponse à 3 chiffres d’une question qui le suit', () => {
+    expect(
+      fuites(graphiqueAvant('arbre', arbre(0.125, 0.4), exerciceDeProbabilite)),
+    ).toEqual([AVANT]);
+  });
+
+  it('CONF-02 accepte un arbre dont aucune branche ni aucun produit ne donne la réponse', () => {
+    expect(
+      fuites(graphiqueAvant('arbre', arbre(0.35, 0.24), exerciceDeProbabilite)),
+    ).toEqual([]);
   });
 });
 

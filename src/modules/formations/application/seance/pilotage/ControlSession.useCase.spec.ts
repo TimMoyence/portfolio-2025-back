@@ -12,7 +12,7 @@ import {
   createMockSessionStateCache,
 } from '../../../../../../test/factories/formations/formation.factory';
 import {
-  buildCorrectionDeReponses,
+  buildCorrectionDExemple,
   buildCoursDeBriques,
   buildEcranDeBrique,
   buildQuestionnaireCorrigeSurPlace,
@@ -461,9 +461,9 @@ describe('ControlSessionUseCase — révélation par l écran de correction (SEC
   const COURS_CORRIGE = lireCoursStocke(
     buildCoursDeBriques(
       [
-        buildEcranDeBrique('fp-quote'),
+        buildEcranDeBrique('fp-pro'),
         ATELIER,
-        buildCorrectionDeReponses(ATELIER.screenId),
+        buildCorrectionDExemple(ATELIER.screenId),
       ],
       { slug: COURS_SLUG },
     ),
@@ -520,9 +520,9 @@ describe('ControlSessionUseCase — révélation par l écran de correction (SEC
         lireCoursStocke(
           buildCoursDeBriques(
             [
-              buildEcranDeBrique('fp-quote'),
+              buildEcranDeBrique('fp-pro'),
               vote,
-              buildCorrectionDeReponses(vote.screenId),
+              buildCorrectionDExemple(vote.screenId),
             ],
             { slug: COURS_SLUG },
           ),

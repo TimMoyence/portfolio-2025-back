@@ -1,11 +1,16 @@
 import { buildCoursDuContenu } from '../../../../../test/factories/formations/cours/contenus-de-cours.factory';
 import { texteDeLImage } from '../../../../../test/helpers/formations/cours/feuille-de-cours';
+import { estUnEcranDImage } from '../../../../../test/helpers/formations/cours/recit-en-images';
 import {
   CORRESPONDANCE,
   solutionsDansLesTextes,
 } from '../../../../../test/helpers/formations/cours/relecture-de-cours';
 import { COURS_B1_03 } from './b1/b1-03/b1-03.cours';
+import { COURS_B1_04 } from './b1/b1-04/b1-04.cours';
+import { COURS_B1_05 } from './b1/b1-05/b1-05.cours';
 import { COURS_B2_07 } from './b2/b2-07/b2-07.cours';
+import { COURS_B2_08 } from './b2/b2-08/b2-08.cours';
+import { COURS_B2_09 } from './b2/b2-09/b2-09.cours';
 
 const CONSIGNE_DE_L_ECRAN =
   '• 1 min : faire décrire l’image, puis faire dire à quoi correspond chaque élément dans le cours.\n• ';
@@ -21,10 +26,34 @@ const COURS = [
     /dérivée|tangente|exponentielle|logarithme|fonction|suite|boucle|algorithme|extremum|maximum|minimum|variation/iu,
   ],
   [
+    'B2-08',
+    COURS_B2_08,
+    8,
+    /dérivée|tangente|exponentielle|logarithme|fonction|produit|quotient|composée|coût|marginal|solution|dichotomie|balayage|extremum|maximum|minimum|variation/iu,
+  ],
+  [
+    'B2-09',
+    COURS_B2_09,
+    8,
+    /probabilit|événement|conditionnel|arbre|branche|tableau|intersection|réunion|contraire|indépendan|incompatible|partition|\d/iu,
+  ],
+  [
     'B1-03',
     COURS_B1_03,
     6,
     /moyenne|médiane|quartile|écart|tableau|champ|classe|série|valeur|effectif|taux|\d/iu,
+  ],
+  [
+    'B1-04',
+    COURS_B1_04,
+    6,
+    /nuage|point moyen|droite|moindres|corrélation|coefficient|ajustement|causalité|interpol|extrapol|seuil|série|\d/iu,
+  ],
+  [
+    'B1-05',
+    COURS_B1_05,
+    6,
+    /connecteur|vérité|implication|équivalen|négation|prédicat|quantificateur|pour tout|il existe|morgan|proposition|\d/iu,
   ],
 ] as const;
 
@@ -38,7 +67,7 @@ interface EcranDImage {
 
 function ecransDImage(contenu: (typeof COURS)[number][1]): EcranDImage[] {
   return contenu.ecrans
-    .filter(({ screenId }) => screenId.includes('-ENFANT-'))
+    .filter(({ screenId }) => estUnEcranDImage(screenId))
     .map(({ screenId, titre, notes }) => {
       return {
         id: screenId,

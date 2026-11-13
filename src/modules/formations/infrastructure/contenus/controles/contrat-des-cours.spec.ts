@@ -6,7 +6,11 @@ import {
   prefixeDuCours,
 } from '../../../../../../test/factories/formations/cours/contenus-de-cours.factory';
 import { tireurSequentiel } from '../../../../../../test/factories/formations/cours/cours.factory';
-import { clesDe } from '../../../../../../test/helpers/formations/cours/lecture-de-cours';
+import { ecranDuContenu } from '../../../../../../test/helpers/formations/cours/fiche-de-cours';
+import {
+  clesDe,
+  ecranDuCours,
+} from '../../../../../../test/helpers/formations/cours/lecture-de-cours';
 import { cueillirDansArbre } from '../../../domain/cours/confidentialite/ArbreDeValeurs';
 import { CONFUSIONS } from '../../../domain/cours/banque/confusions';
 import { matchesSolution } from '../../../domain/notation/GradingCore';
@@ -162,8 +166,8 @@ function attendusDuTri(
   contenu: ContenuDeCoursBrut,
   screenId: string,
 ): { carteId: string; pieges: PiegeDeClassement[] }[] {
-  const tri = contenu.ecrans.find((ecran) => ecran.screenId === screenId);
-  const [question] = tri?.proprietes.questions as {
+  const tri = ecranDuContenu(contenu, screenId);
+  const [question] = tri.proprietes.questions as {
     corrige: {
       attendus: { carteId: string; pieges: PiegeDeClassement[] }[];
     };
@@ -239,12 +243,10 @@ describe.each(CONTENUS.map((contenu) => [contenu.slug, contenu] as const))(
       for (const { screenId, proprietes } of trisDu(contenu)) {
         const ancienne = buildContenuDuCours(contenu);
         ecritParUneVersionPassee(ancienne, screenId);
-        const relu = lireCoursStocke(ancienne).ecrans.find(
-          (ecran) => ecran.id === screenId,
-        );
+        const relu = ecranDuCours(lireCoursStocke(ancienne), screenId);
 
         expect(
-          relu?.brique === 'fp-cardsort' && relu.production.corrige,
+          relu.brique === 'fp-cardsort' && relu.production.corrige,
         ).toEqual({
           ...proprietes.questions[0].corrige,
           attendus: proprietes.questions[0].corrige.attendus.map((attendu) => ({

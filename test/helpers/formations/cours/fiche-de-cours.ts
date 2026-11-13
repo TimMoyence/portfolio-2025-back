@@ -15,19 +15,23 @@ import {
   type ValeurFormule,
 } from '../../../../src/modules/formations/domain/cours/formule/Formule';
 import { tirer } from '../../../../src/modules/formations/domain/cours/tirage/Tirage';
+import { TOLERANCE_NULLE } from '../../../../src/modules/formations/infrastructure/contenus/briques';
 import { fuitesDeConfidentialite } from '../../../factories/formations/cours/structure.factory';
 import {
   lireConception,
   mediasDuDocument,
   remediationsDuDocument,
   titresPublics,
+  valeursAttendues,
   vueDEnsemble,
 } from './conception-de-cours';
+import { tolerancesDuCours } from './gardes-de-relecture';
 import {
   alignees,
   ateliersNotes,
   ecransCorrigesSurPlace,
   minutesParActe,
+  nombresDe,
   rythmeDuCours,
   solutionsDesEnigmes,
   solutionsNumeriques,
@@ -51,6 +55,8 @@ export interface FicheAttendue {
   readonly catalogue: readonly string[];
   readonly corrigesSurPlace?: readonly string[];
   readonly gabarit?: Gabarit;
+  readonly valeurs?: Readonly<Record<string, number>>;
+  readonly comptages?: readonly string[];
 }
 
 export const FORME_DES_COURS_B1 = {
@@ -97,6 +103,11 @@ export const CATALOGUE_ILLUSTRE_A_SIX_PAGES = [
   'A4-01',
   'A4-05',
 ] as const;
+
+export const CATALOGUE_ILLUSTRE_JUSQU_A_LA_PAGE_A4_02 = [
+  ...CATALOGUE_ILLUSTRE_A_SIX_PAGES.filter((code) => !code.startsWith('A4-')),
+  'A4-02',
+];
 
 const textesDesPages = (contenu: ContenuDeCours) =>
   contenu.ecrans
@@ -242,6 +253,20 @@ export function decrireLaFicheDuCours(
         })),
       ).toEqual(mediasDuDocument(document));
     });
+
+    if (attendu.valeurs !== undefined) {
+      const { valeurs } = attendu;
+      it('tient les valeurs du § 5.1 de la conception', () => {
+        expect(valeursAttendues(document)).toEqual(valeurs);
+      });
+    }
+
+    if (attendu.comptages !== undefined) {
+      const { comptages } = attendu;
+      it('note chaque comptage à tolérance nulle', () => {
+        expect(tolerancesDuCours(cours)).toEqual(tolerancesNullesDe(comptages));
+      });
+    }
   });
 
   if (attendu.corrigesSurPlace !== undefined) {
@@ -272,14 +297,28 @@ export function corrigeDeFeuille(cours: Cours, id: string): CorrigeFeuille {
   return corrige;
 }
 
-export function ecranDuContenu(contenu: ContenuDeCours, screenId: string) {
-  const ecran = contenu.ecrans.find(
+interface ContenuDEcrans<E extends { readonly screenId: string }> {
+  readonly slug: string;
+  readonly ecrans: readonly E[];
+}
+
+export function rangDuContenu<E extends { readonly screenId: string }>(
+  contenu: ContenuDEcrans<E>,
+  screenId: string,
+): number {
+  const rang = contenu.ecrans.findIndex(
     (candidat) => candidat.screenId === screenId,
   );
-  if (ecran === undefined) {
+  if (rang < 0) {
     throw new Error(`écran ${screenId} absent de ${contenu.slug}`);
   }
-  return ecran;
+  return rang;
+}
+
+export function ecranDuContenu<
+  E extends { readonly screenId: string } = ContenuDeCours['ecrans'][number],
+>(contenu: ContenuDEcrans<E>, screenId: string): E {
+  return contenu.ecrans[rangDuContenu(contenu, screenId)];
 }
 
 export interface CoupleDeTri {
@@ -355,13 +394,11 @@ export function valeursEtPieges(attendu: {
   return [attendu.valeur, ...attendu.pieges.map((piege) => piege.valeur)];
 }
 
-function nombres(valeurs: readonly ValeurFormule[]): number[] {
-  return valeurs.filter((valeur) => typeof valeur === 'number');
-}
+type SolutionsChiffrees = Readonly<Record<string, readonly number[]>>;
 
 function attendreAlignees(
-  lues: Readonly<Record<string, readonly number[]>>,
-  calculees: Readonly<Record<string, readonly number[]>>,
+  lues: SolutionsChiffrees,
+  calculees: SolutionsChiffrees,
 ): void {
   expect(new Set(Object.keys(lues))).toEqual(new Set(Object.keys(calculees)));
   for (const [id, valeurs] of Object.entries(calculees)) {
@@ -369,18 +406,30 @@ function attendreAlignees(
   }
 }
 
-export function attendreLesNumeriques(
-  cours: Cours,
-  calculees: Readonly<Record<string, readonly number[]>>,
-): void {
-  attendreAlignees(solutionsNumeriques(cours), calculees);
+const attendreAligneesSur =
+  (lire: (cours: Cours) => SolutionsChiffrees) =>
+  (cours: Cours, calculees: SolutionsChiffrees): void => {
+    attendreAlignees(lire(cours), calculees);
+  };
+
+export const attendreLesNumeriques = attendreAligneesSur(solutionsNumeriques);
+
+export const attendreLesEnigmes = attendreAligneesSur(solutionsDesEnigmes);
+
+function tolerancesNullesDe(
+  questions: readonly string[],
+): Readonly<Record<string, typeof TOLERANCE_NULLE>> {
+  return Object.fromEntries(questions.map((id) => [id, TOLERANCE_NULLE]));
 }
 
-export function attendreLesEnigmes(
-  cours: Cours,
-  calculees: Readonly<Record<string, readonly number[]>>,
-): void {
-  attendreAlignees(solutionsDesEnigmes(cours), calculees);
+export function comptagesDe<Id extends string>(
+  questions: readonly Id[],
+  valeurs: Readonly<Record<Id, number>>,
+  pieges: Readonly<Record<Id, Readonly<Record<string, number>>>>,
+): Readonly<Record<string, readonly number[]>> {
+  return Object.fromEntries(
+    questions.map((id) => [id, [valeurs[id], ...Object.values(pieges[id])]]),
+  );
 }
 
 export function attendreLaFeuille(
@@ -397,13 +446,13 @@ export function attendreLaFeuille(
     Object.fromEntries(
       numeriques.map((attendu) => [
         attendu.reference,
-        nombres(valeursEtPieges(attendu)),
+        nombresDe(valeursEtPieges(attendu)),
       ]),
     ),
     Object.fromEntries(
       numeriques.map((attendu) => [
         attendu.reference,
-        nombres(calculees[attendu.reference] ?? []),
+        nombresDe(calculees[attendu.reference] ?? []),
       ]),
     ),
   );

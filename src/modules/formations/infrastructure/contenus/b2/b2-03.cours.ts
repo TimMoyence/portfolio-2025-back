@@ -1,3 +1,4 @@
+import { implique } from '../../../../../common/domain/logique/implique';
 import {
   exigerAuMoinsUn,
   type AuMoinsUnModifiable,
@@ -6,6 +7,7 @@ import type { ConceptId } from '../../../domain/cours/banque/concepts';
 import type { ContenuDeCours } from '../../../domain/cours/stockage/CoursStocke';
 import { decalerFormule } from '../../../domain/cours/formule/Formule';
 import * as moteur from '../briques';
+import { GRAVURE_DE_BOOLE as GRAVURE_DE_L_ACCROCHE } from '../gravures';
 import { gesteDeRecopie } from '../feuilles';
 
 const CONCEPTS_DU_COURS = [
@@ -93,22 +95,10 @@ const LIGNES_DES_FACTURES = FACTURES.map((ligne) => ({
   tva: ligne.tva,
 }));
 
-const DONNEES_FICTIVES =
-  'Données fictives Atelier Rivage, créées pour ce cours.';
-
 const CONSIGNE_DES_REGLES =
   'Relance : impayée depuis plus de 60 jours. Visa : au moins 5 000 € HT, ou hors de France.';
 
 const RENVOI_AUX_FACTURES = 'B2-03-A1-04-FACTURES';
-
-const GRAVURE_DE_L_ACCROCHE = moteur.gravureDuDomainePublic({
-  id: 'M7',
-  chemin: '/assets/cours/gravures/v1/boole-lois-de-la-pensee-1854.jpg',
-  pageSource:
-    'https://commons.wikimedia.org/wiki/File:An_Investigation_of_the_Laws_of_Thought_(1854,_Boole,_investigationofl00boolrich).djvu',
-  auteur: 'George Boole, An Investigation of the Laws of Thought',
-  date: '1854',
-});
 
 const DOSSIER_DES_ILLUSTRATIONS = '/assets/cours/b2-03/v1';
 
@@ -219,7 +209,7 @@ const [PREMIERE_CASE, ...AUTRES_CASES] = LIGNES_DE_LA_TABLE.flatMap(
     const p = HORS_DE_FRANCE[rang];
     const q = GROS_MONTANT[rang];
     const ou = verite(p || q);
-    const implication = verite(!p || q);
+    const implication = verite(implique(p, q));
     return [
       { rang, cle: 'nonP', valeur: verite(!p), pieges: [] },
       { rang, cle: 'pEtQ', valeur: verite(p && q), pieges: [] },
@@ -345,44 +335,41 @@ const ACTE_1: moteur.Acte = [
         'Factures d’Atelier Rivage aux clients professionnels, situation au jour du contrôle.',
       columns: [...COLONNES_DES_FACTURES],
       rows: LIGNES_DES_FACTURES,
-      note: `Délai : jours depuis l’émission, jusqu’au paiement ou au jour du contrôle. Clients étrangers : entreprises de l’Union européenne. ${DONNEES_FICTIVES}`,
+      note: `Délai : jours depuis l’émission, jusqu’au paiement ou au jour du contrôle. Clients étrangers : entreprises de l’Union européenne. ${moteur.DONNEES_FICTIVES_DU_B2}`,
     },
   ),
-  {
-    screenId: 'B2-03-A1-05-VOTE-OU',
-    titre: 'Vote : « ou » et « plus de »',
-    diffusion: 'seance',
-    brique: 'fp-vote',
-    dureeMinutes: 5,
-    concepts: ['connecteur', 'proposition'],
-    notes: moteur.notesDuVoteQuiOuvreLaNotion(1),
-    proprietes: {
-      modalite: 'solo',
-      questions: [
-        moteur.vote(
-          'b2-03-a1-ou-inclusif',
-          'connecteur',
-          false,
-          'Règle d’une boutique : « remise si le client est fidèle ou si la commande atteint 1 000 € ». Un client fidèle commande pour 1 500 €. A-t-il la remise ?',
-          'Oui : il remplit au moins une des deux conditions',
-          [
-            [
-              'Non : il remplit les deux conditions, il faut en choisir une',
-              'ou-lu-exclusif',
-            ],
-          ],
-        ),
-        moteur.vote(
-          'b2-03-a1-plus-de',
-          'proposition',
-          false,
-          'Règle de paie : « prime pour plus de trois ans d’ancienneté ». Léo a exactement trois ans d’ancienneté. Touche-t-il la prime ?',
-          'Non : « plus de trois ans » exclut trois ans tout juste',
-          [['Oui : trois ans suffisent', 'borne-stricte-large']],
-        ),
-      ],
+  moteur.voteQuiOuvre(
+    {
+      screenId: 'B2-03-A1-05-VOTE-OU',
+      titre: 'Vote : « ou » et « plus de »',
+      dureeMinutes: 5,
+      concepts: ['connecteur', 'proposition'],
+      notes: moteur.notesDuVoteQuiOuvreLaNotion(1),
     },
-  },
+    [
+      moteur.vote(
+        'b2-03-a1-ou-inclusif',
+        'connecteur',
+        false,
+        'Règle d’une boutique : « remise si le client est fidèle ou si la commande atteint 1 000 € ». Un client fidèle commande pour 1 500 €. A-t-il la remise ?',
+        'Oui : il remplit au moins une des deux conditions',
+        [
+          [
+            'Non : il remplit les deux conditions, il faut en choisir une',
+            'ou-lu-exclusif',
+          ],
+        ],
+      ),
+      moteur.vote(
+        'b2-03-a1-plus-de',
+        'proposition',
+        false,
+        'Règle de paie : « prime pour plus de trois ans d’ancienneté ». Léo a exactement trois ans d’ancienneté. Touche-t-il la prime ?',
+        'Non : « plus de trois ans » exclut trois ans tout juste',
+        [['Oui : trois ans suffisent', 'borne-stricte-large']],
+      ),
+    ],
+  ),
   moteur.ecranDIllustration(
     {
       screenId: 'B2-03-A1-06-ILLUSTRATION-CONNECTEURS',
@@ -927,46 +914,43 @@ const ACTE_2: moteur.Acte = [
 ];
 
 const ACTE_3: moteur.Acte = [
-  {
-    screenId: 'B2-03-A3-01-VOTE-TOUTES',
-    titre: 'Vote : « toutes » et « il existe »',
-    diffusion: 'seance',
-    brique: 'fp-vote',
-    dureeMinutes: 5,
-    concepts: ['quantificateur'],
-    notes: moteur.notesDuVoteQuiOuvreLaNotion(3),
-    proprietes: {
-      modalite: 'solo',
-      questions: [
-        moteur.vote(
-          'b2-03-a3-toutes',
-          'quantificateur',
-          false,
-          'Hélène : « toutes nos factures hors de France ont un numéro de TVA ». Que suffit-il de trouver pour prouver qu’elle a tort ?',
-          'Une seule facture hors de France sans numéro de TVA',
-          [
-            [
-              'Que toutes les factures hors de France soient sans numéro',
-              'negation-pour-tout-en-aucun',
-            ],
-          ],
-        ),
-        moteur.vote(
-          'b2-03-a3-il-existe',
-          'quantificateur',
-          false,
-          'Marc : « il existe une facture de plus de 90 jours ». Qu’affirme le contraire de sa phrase ?',
-          'Toutes les factures ont au plus 90 jours',
-          [
-            [
-              'Il existe une facture d’au plus 90 jours',
-              'negation-il-existe-gardee',
-            ],
-          ],
-        ),
-      ],
+  moteur.voteQuiOuvre(
+    {
+      screenId: 'B2-03-A3-01-VOTE-TOUTES',
+      titre: 'Vote : « toutes » et « il existe »',
+      dureeMinutes: 5,
+      concepts: ['quantificateur'],
+      notes: moteur.notesDuVoteQuiOuvreLaNotion(3),
     },
-  },
+    [
+      moteur.vote(
+        'b2-03-a3-toutes',
+        'quantificateur',
+        false,
+        'Hélène : « toutes nos factures hors de France ont un numéro de TVA ». Que suffit-il de trouver pour prouver qu’elle a tort ?',
+        'Une seule facture hors de France sans numéro de TVA',
+        [
+          [
+            'Que toutes les factures hors de France soient sans numéro',
+            'negation-pour-tout-en-aucun',
+          ],
+        ],
+      ),
+      moteur.vote(
+        'b2-03-a3-il-existe',
+        'quantificateur',
+        false,
+        'Marc : « il existe une facture de plus de 90 jours ». Qu’affirme le contraire de sa phrase ?',
+        'Toutes les factures ont au plus 90 jours',
+        [
+          [
+            'Il existe une facture d’au plus 90 jours',
+            'negation-il-existe-gardee',
+          ],
+        ],
+      ),
+    ],
+  ),
   moteur.ecranDIllustration(
     {
       screenId: 'B2-03-A3-02-ILLUSTRATION-PREDICATS',
@@ -1299,7 +1283,7 @@ const ACTE_4: moteur.Acte = [
         label: `${LETTRES_DU_FICHIER[rang]} · ${colonne.label}`,
       })),
       rows: LIGNES_DES_FACTURES,
-      note: `Relance : facture impayée dont le délai dépasse 60 jours ; indemnité forfaitaire de 40 €, due pour tout retard (Code de commerce), réclamée avec chaque relance. Visa (procédure interne fictive) : montant HT d’au moins 5 000 € ou client hors de France. ${DONNEES_FICTIVES}`,
+      note: `Relance : facture impayée dont le délai dépasse 60 jours ; indemnité forfaitaire de 40 €, due pour tout retard (Code de commerce), réclamée avec chaque relance. Visa (procédure interne fictive) : montant HT d’au moins 5 000 € ou client hors de France. ${moteur.DONNEES_FICTIVES_DU_B2}`,
     },
   ),
   moteur.corrigeSurPlace(

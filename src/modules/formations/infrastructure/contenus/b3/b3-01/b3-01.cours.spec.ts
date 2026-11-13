@@ -1,8 +1,9 @@
 import { lireConception } from '../../../../../../../test/helpers/formations/cours/conception-de-cours';
-import { ANOMALIES_SEMEES } from '../../../../../../../test/helpers/cours-b3-01/generateur';
+import { ANOMALIES_SEMEES } from '../../../../../../../test/helpers/formations/b3/b3-01/generateur';
 import * as fiche from '../../../../../../../test/helpers/formations/cours/fiche-de-cours';
 import * as feuille from '../../../../../../../test/helpers/formations/cours/feuille-de-cours';
 import * as relecture from '../../../../../../../test/helpers/formations/cours/gardes-de-relecture';
+import { ecranDuCours } from '../../../../../../../test/helpers/formations/cours/lecture-de-cours';
 import { arrondi } from '../../../../../../common/domain/nombres/arrondi';
 import { avecVirgule } from '../../../../../../common/domain/nombres/ecriture-francaise';
 import { sansEspacesTypographiques } from '../../../../../../common/domain/texte/nettoyage/sans-espaces-typographiques';
@@ -23,9 +24,9 @@ import { CONTENUS } from '../../index';
 import {
   COURS_B3_01_SERVI as COURS,
   VALEURS_B3_01_PAR_QUESTION as VALEURS,
-} from '../../../../../../../test/helpers/cours-b3-01/cours-servi';
+} from '../../../../../../../test/helpers/formations/b3/b3-01/cours-servi';
 
-const DOCUMENT = lireConception('cours-b3-01-conception.md');
+const DOCUMENT = lireConception('b3/cours-b3-01-conception.md');
 const UNITES_ARRONDIES = new Set(['€', '%']);
 
 interface NumeriqueStockee {
@@ -99,14 +100,13 @@ function remediationDe(confusion: string): string | undefined {
 }
 
 function explicationsDe(screenId: string): string[] {
-  const ecran = COURS.ecrans.find((candidat) => candidat.id === screenId);
-  return (ecran?.correctionSurPlace?.explications ?? []).map((explication) =>
-    sansEspacesTypographiques(explication.texte),
-  );
+  return (
+    ecranDuCours(COURS, screenId).correctionSurPlace?.explications ?? []
+  ).map((explication) => sansEspacesTypographiques(explication.texte));
 }
 
 fiche.decrireLaFicheDuCours('B3-01', COURS, {
-  conception: 'cours-b3-01-conception.md',
+  conception: 'b3/cours-b3-01-conception.md',
   ecrans: 36,
   dureeMinutes: 176,
   minutesParActe: [60, 61, 55, 0, 0, 0],
@@ -162,12 +162,7 @@ describe('B3-01 — valeurs servies face au jeu Norvane', () => {
   it('sert les quinze valeurs attendues et leurs pièges, dans l’ordre du § 5.1', () => {
     fiche.attendreLesNumeriques(
       COURS,
-      Object.fromEntries(
-        QUESTIONS_CHIFFREES_B3_01.map((id) => [
-          id,
-          [VALEURS_B3_01[id], ...Object.values(PIEGES_B3_01[id])],
-        ]),
-      ),
+      fiche.comptagesDe(QUESTIONS_CHIFFREES_B3_01, VALEURS_B3_01, PIEGES_B3_01),
     );
   });
 
@@ -1373,11 +1368,9 @@ describe('B3-01 — actes 2 et 3 : consignes et corrections exactes', () => {
 
 describe('B3-01 — retours de la relecture du 11/10', () => {
   it('R-04 · A1-12 · rappelle au-dessus des étapes le rôle et la syntaxe de chaque formule, sans souffler la réponse', () => {
-    const exemple = COURS.ecrans.find(
-      (ecran) => ecran.id === 'B3-01-A1-12-EXEMPLE-NETTOYAGE',
-    );
+    const exemple = ecranDuCours(COURS, 'B3-01-A1-12-EXEMPLE-NETTOYAGE');
     const rappel =
-      exemple?.brique === 'fp-worked'
+      exemple.brique === 'fp-worked'
         ? (exemple.proprietes.exemple.rappel ?? [])
         : [];
 

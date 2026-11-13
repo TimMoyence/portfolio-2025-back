@@ -93,7 +93,7 @@ describe('LireCoursPublicUseCase', () => {
   it('verrouille au catalogue les écrans réservés à la séance (B19)', async () => {
     const v3 = lireCoursStocke(
       buildCoursDeBriques([
-        buildEcranDeBrique('fp-quote', { diffusion: 'catalogue' }),
+        buildEcranDeBrique('fp-pro', { diffusion: 'catalogue' }),
         buildEcranDeBrique('fp-cardsort'),
       ]),
     );
@@ -101,7 +101,7 @@ describe('LireCoursPublicUseCase', () => {
 
     const { ecrans } = await sut.execute(v3.slug);
 
-    expect(ecrans[0].type).toBe('fp-quote');
+    expect(ecrans[0].type).toBe('fp-pro');
     expect(ecrans[1]).toEqual({
       id: 'B2-01-A1-01-FP-CARDSORT',
       type: 'ecran-verrouille',

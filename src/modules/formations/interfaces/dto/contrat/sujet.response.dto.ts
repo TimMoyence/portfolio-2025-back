@@ -5,6 +5,7 @@ import {
   getSchemaPath,
 } from '@nestjs/swagger';
 import { CHAMPS_EXTRAITS_DU_CAS } from '../../../domain/contrats/cours';
+import { FICHIER_DE_PIECE_JOINTE } from '../../../domain/cours/stockage/ProprietesStockees';
 import type { PieceJointeServie } from '../../../domain/cours/structure/Cours';
 import type {
   CoursPublic,
@@ -47,6 +48,7 @@ class PieceJointePubliqueResponseDto {
   @ApiProperty({
     description: 'Chemin public du fichier',
     example: '/assets/cours/b3-01/B3-01_export_ventes.d4f2ceab.xlsx',
+    pattern: FICHIER_DE_PIECE_JOINTE.source,
   })
   fichier: string;
 }

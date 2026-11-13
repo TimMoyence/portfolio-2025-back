@@ -84,8 +84,11 @@ export function gesteDeRecopie(
 
 export function piegeDeLArrondi(
   exacte: number,
+  decimales = 1,
 ): (readonly [number, 'arrondi-oublie'])[] {
-  return exacte === arrondi(exacte, 1) ? [] : [[exacte, 'arrondi-oublie']];
+  return exacte === arrondi(exacte, decimales)
+    ? []
+    : [[exacte, 'arrondi-oublie']];
 }
 
 export function gesteDeRecopieVersLaDroite(

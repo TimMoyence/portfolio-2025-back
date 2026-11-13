@@ -15,7 +15,9 @@ import {
   recopier,
   texteDeLEcran,
 } from '../../../../../../test/helpers/formations/cours/feuille-de-cours';
+import { ecranDuCours } from '../../../../../../test/helpers/formations/cours/lecture-de-cours';
 import type { Ecran } from '../../../domain/contrats/cours';
+import { presentationDe } from '../../../domain/cours/structure/Cours';
 import type { CorrigeFeuille } from '../../../domain/cours/correction/Corrige';
 import { corrigerFeuille } from '../../../domain/cours/correction/CorrectionProduction';
 import { evaluerCellule } from '../../../domain/cours/formule/Formule';
@@ -98,7 +100,7 @@ const aViser: Regle = (facture) =>
   grosMontant(facture) || horsDeFrance(facture);
 
 decrireLaFicheDuCours('B2-03', COURS, {
-  conception: 'cours-b2-03-conception.md',
+  conception: 'b2/cours-b2-03-conception.md',
   ecrans: 31,
   dureeMinutes: 136,
   minutesParActe: [36, 33, 23, 44, 0, 0],
@@ -303,29 +305,15 @@ describe('B2-03 — les deux feuilles corrigées par le moteur de formules', () 
 });
 
 describe('B2-03 — retours de Tim du 15 octobre 2026', () => {
-  function ecranNomme(screenId: string): Ecran {
-    const trouve = COURS.ecrans.find((candidat) => candidat.id === screenId);
-    if (trouve === undefined) {
-      throw new Error(`écran absent du B2-03 : ${screenId}`);
-    }
-    return trouve;
-  }
-
-  function presentationV2(ecran: Ecran) {
-    const presentation =
-      ecran.brique === 'fp-story' ? ecran.proprietes.presentation : undefined;
-    return presentation?.version === 2 ? presentation : null;
-  }
-
   function blocsDe(ecran: Ecran): readonly string[] | null {
-    const presentation = presentationV2(ecran);
+    const presentation = presentationDe(ecran);
     return presentation?.renderer === 'lesson'
       ? presentation.props.blocks.map(({ kind }) => kind)
       : null;
   }
 
   function imageDe(ecran: Ecran | undefined): string | null {
-    const presentation = ecran === undefined ? null : presentationV2(ecran);
+    const presentation = ecran === undefined ? null : presentationDe(ecran);
     return presentation?.renderer === 'illustration'
       ? presentation.props.image
       : null;
@@ -360,7 +348,7 @@ describe('B2-03 — retours de Tim du 15 octobre 2026', () => {
 
   it('ne renvoie la trace écrite à aucune table que ses pages ne portent plus', () => {
     const traceEcrite = JSON.stringify(
-      lecons.map((lecon) => presentationV2(lecon)?.props),
+      lecons.map((lecon) => presentationDe(lecon)?.props),
     );
     const renvois = COURS.ecrans.flatMap((ecran) =>
       JSON.stringify(ecran)
@@ -378,7 +366,7 @@ describe('B2-03 — retours de Tim du 15 octobre 2026', () => {
   });
 
   it('pose la mission sans geste ni conséquence, avec ses deux questions', () => {
-    const mission = ecranNomme('B2-03-A1-03-MISSION');
+    const mission = ecranDuCours(COURS, 'B2-03-A1-03-MISSION');
     const proprietes = mission.brique === 'fp-pro' ? mission.proprietes : null;
 
     expect(proprietes?.geste).toBeNull();
@@ -390,7 +378,7 @@ describe('B2-03 — retours de Tim du 15 octobre 2026', () => {
   });
 
   it('n’affiche plus de consigne au-dessus des deux questions de l’exercice 5', () => {
-    const exercice = ecranNomme('B2-03-A3-05-ATELIER-QUANTIF');
+    const exercice = ecranDuCours(COURS, 'B2-03-A3-05-ATELIER-QUANTIF');
 
     expect(exercice.brique).toBe('questionnaire');
     expect(exercice).not.toHaveProperty('consigne');

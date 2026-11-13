@@ -4,9 +4,9 @@ import {
   mapperAuMoinsUn,
   type AuMoinsUn,
 } from '../../../../../common/domain/objets/au-moins-un';
+import { sansLesCles } from '../../../../../common/domain/objets/sans-les-cles';
 import {
   DIFFUSIONS,
-  type CadrageDuRenvoi,
   type Cours,
   type Diffusion,
   type Ecran,
@@ -17,17 +17,13 @@ import type { ConfusionId } from '../banque/confusions';
 import { confusionsDuCorrige } from './CorrigeStocke';
 import {
   GABARITS,
+  presentationDe,
   questionsDe,
-  questionVote,
-  type CorrectionSurPlace,
-  type Modalite,
-  type PieceJointe,
-  type QuestionVote,
+  type ReglagesDEcran,
 } from '../structure/Cours';
 import {
   PROPRIETES_STOCKEES,
   type ProductionStockee,
-  type QuizNote,
 } from './ProprietesStockees';
 import { questionDeNumerique, questionDeVote } from './QuestionStockee';
 import {
@@ -100,7 +96,6 @@ function schemaDEcran<B extends BriqueStockee>(brique: B) {
 
 const ecranStocke = z
   .discriminatedUnion('brique', [
-    schemaDEcran('fp-quote'),
     schemaDEcran('fp-story'),
     schemaDEcran('fp-pro'),
     schemaDEcran('fp-worked'),
@@ -119,14 +114,8 @@ const ecranStocke = z
     schemaDEcran('questionnaire'),
   ])
   .superRefine((ecran, contexte) => {
-    if (ecran.brique !== 'fp-story') {
-      return;
-    }
-    const presentation = ecran.proprietes.presentation;
-    if (
-      presentation !== undefined &&
-      presentation.screenId !== ecran.screenId
-    ) {
+    const presentation = presentationDe(ecran);
+    if (presentation !== null && presentation.screenId !== ecran.screenId) {
       signaleurDe(contexte)(
         ['proprietes', 'presentation', 'screenId'],
         `présentation rattachée à ${presentation.screenId} et non à ${ecran.screenId}`,
@@ -149,13 +138,9 @@ const mediaCatalogue = z
   .strict() satisfies z.ZodType<MediaCatalogue>;
 
 function estGraphiqueSansDescription(ecran: EcranStocke): boolean {
-  if (ecran.brique !== 'fp-story') {
-    return false;
-  }
-  const presentation = ecran.proprietes.presentation;
+  const presentation = presentationDe(ecran);
   return (
-    presentation?.version === 2 &&
-    presentation.renderer === 'chart' &&
+    presentation?.renderer === 'chart' &&
     presentation.props.description === undefined
   );
 }
@@ -198,7 +183,7 @@ function controlerChampsPublics(
   });
 }
 
-const coursStocke = z
+export const coursStocke = z
   .object({
     slug: texte,
     titre: texte,
@@ -223,26 +208,6 @@ const coursAPublier = coursStocke.superRefine(controlerChampsPublics);
 
 export type ContenuDeCours = z.input<typeof coursStocke>;
 
-function questionDuQuiz(quiz: QuizNote): QuestionVote {
-  const rangsDesPieges = quiz.options
-    .map((_, rangOption) => rangOption)
-    .filter((rangOption) => rangOption !== quiz.correctIndex);
-  return questionVote({
-    id: quiz.id,
-    concept: quiz.concept,
-    noteCompte: quiz.noteCompte,
-    donnees: () => undefined,
-    enonce: () => quiz.question,
-    bonne: () => quiz.optionIds[quiz.correctIndex],
-    bonneLibelle: () => quiz.options[quiz.correctIndex],
-    pieges: mapperAuMoinsUn(quiz.confusions, (confusionDuPiege, rangPiege) => ({
-      confusion: confusionDuPiege,
-      libelle: () => quiz.options[rangsDesPieges[rangPiege]],
-      optionId: () => quiz.optionIds[rangsDesPieges[rangPiege]],
-    })),
-  });
-}
-
 function versProduction(stockee: ProductionStockee): QuestionProduction {
   const [premiere, ...suite] = confusionsDuCorrige(stockee.corrige);
   const confusions: AuMoinsUn<ConfusionId> = [premiere, ...suite];
@@ -256,21 +221,13 @@ function versProduction(stockee: ProductionStockee): QuestionProduction {
   };
 }
 
-interface SocleDEcran extends Communes {
+interface SocleDEcran extends ReglagesDEcran {
   readonly id: string;
   readonly titre: string | null;
   readonly diffusion: Diffusion;
   readonly dureeMinutes: number;
   readonly concepts: Ecran['concepts'];
   readonly notes: string;
-}
-
-interface Communes {
-  readonly modalite?: Modalite;
-  readonly renvoi?: string;
-  readonly cadrageDuRenvoi?: CadrageDuRenvoi;
-  readonly correctionSurPlace?: CorrectionSurPlace;
-  readonly pieceJointe?: PieceJointe;
 }
 
 const CLES_COMMUNES: readonly string[] = [
@@ -282,7 +239,6 @@ const CLES_COMMUNES: readonly string[] = [
 ];
 
 type BriqueDExposition =
-  | 'fp-quote'
   | 'fp-pro'
   | 'fp-concept4'
   | 'fp-plot'
@@ -299,7 +255,7 @@ function socleDe(
     cadrageDuRenvoi,
     correctionSurPlace,
     pieceJointe,
-  }: Communes,
+  }: ReglagesDEcran,
 ): SocleDEcran {
   return {
     id: ecran.screenId,
@@ -320,11 +276,7 @@ function versExposition(
   ecran: Extract<EcranStocke, { readonly brique: BriqueDExposition }>,
   socle: SocleDEcran,
 ): Ecran {
-  const proprietes = Object.fromEntries(
-    Object.entries(ecran.proprietes).filter(
-      ([cle]) => !CLES_COMMUNES.includes(cle),
-    ),
-  );
+  const proprietes = sansLesCles(ecran.proprietes, CLES_COMMUNES);
   return { ...socle, brique: ecran.brique, proprietes } as Ecran;
 }
 
@@ -349,13 +301,10 @@ function versEcranDeRecit(
 ): Ecran {
   const { modalite, renvoi, cadrageDuRenvoi, pieceJointe, ...proprietes } =
     ecran.proprietes;
-  const { interaction } = proprietes;
   return {
     ...socleDe(ecran, { modalite, renvoi, cadrageDuRenvoi, pieceJointe }),
     brique: ecran.brique,
     proprietes,
-    question:
-      interaction === undefined ? undefined : questionDuQuiz(interaction),
   };
 }
 
@@ -415,7 +364,6 @@ function versEcran(ecran: EcranStocke): Ecran {
   }
   const socle = socleDe(ecran, ecran.proprietes);
   switch (ecran.brique) {
-    case 'fp-quote':
     case 'fp-pro':
     case 'fp-concept4':
     case 'fp-plot':
@@ -566,9 +514,7 @@ function sansLeGuideDUneVersionPassee(
   }
   return {
     ...ecran,
-    proprietes: Object.fromEntries(
-      Object.entries(ecran.proprietes).filter(([cle]) => cle !== 'guide'),
-    ),
+    proprietes: sansLesCles(ecran.proprietes, ['guide']),
   };
 }
 

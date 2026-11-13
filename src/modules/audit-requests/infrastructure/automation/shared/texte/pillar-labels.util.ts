@@ -1,3 +1,4 @@
+import { libelleOuCle } from '../../../../../../common/domain/objets/libelle-ou-cle';
 import type { PillarKey } from '../../../../domain/score/Piliers';
 
 const PILLAR_LABELS: Readonly<Record<PillarKey, string>> = {
@@ -10,8 +11,5 @@ const PILLAR_LABELS: Readonly<Record<PillarKey, string>> = {
   citationWorthiness: 'Citabilité IA',
 };
 
-export function pillarLabel(pillar: string): string {
-  return Object.hasOwn(PILLAR_LABELS, pillar)
-    ? PILLAR_LABELS[pillar as PillarKey]
-    : pillar;
-}
+export const pillarLabel = (pillar: string): string =>
+  libelleOuCle(PILLAR_LABELS, pillar);

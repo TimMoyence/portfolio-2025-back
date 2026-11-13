@@ -1,4 +1,3 @@
-import { buildQuizNote } from '../../../../../test/factories/formations/cours/cours-stocke.factory';
 import { buildEcranDeBrique } from '../../../../../test/factories/formations/cours/ecrans-stockes.factory';
 import {
   buildCourseContentEntity,
@@ -57,7 +56,7 @@ function coursAvecProprietes(
 }
 
 describe('CoursCatalogueRepositoryTypeORM', () => {
-  it('lit la version courante et construit la question notée du quiz stocké', async () => {
+  it('lit la version courante et ses écrans stockés', async () => {
     const entite = buildCourseContentEntity();
     const { sut } = catalogueLisant(entite);
 
@@ -66,12 +65,12 @@ describe('CoursCatalogueRepositoryTypeORM', () => {
     expect(courant?.version).toBe(2);
     expect(courant?.cours.ecrans[0]).toMatchObject({
       id: 'B2-01-S03-PREDICTION',
-      question: { id: 'quiz-1', type: 'vote' },
+      brique: 'fp-story',
     });
   });
 
   it('lit le titre, la diffusion, les remédiations et les médias d une version 3', async () => {
-    const ecran = buildEcranDeBrique('fp-quote');
+    const ecran = buildEcranDeBrique('fp-pro');
     const media = {
       id: 'M4',
       chemins: ['/assets/cours/b2-01/v3/pacioli-1495.webp'],
@@ -99,7 +98,7 @@ describe('CoursCatalogueRepositoryTypeORM', () => {
     const cours = await sut.trouver(SLUG, 3);
 
     expect(cours?.ecrans[0]).toMatchObject({
-      titre: 'Écran fp-quote',
+      titre: 'Écran fp-pro',
       diffusion: 'seance',
     });
     expect(cours?.remediations).toEqual({ 'base-arrivee': ecran.screenId });
@@ -187,24 +186,8 @@ describe('CoursCatalogueRepositoryTypeORM', () => {
 
   it.each([
     [
-      'une confusion inconnue',
-      coursAvecProprietes({
-        interaction: buildQuizNote({
-          confusions: ['raisonnement-additif', 'unite-oubliee'],
-        }),
-      }),
-    ],
-    [
-      'un quiz sans concept',
-      coursAvecProprietes({
-        interaction: buildQuizNote({ concept: undefined }),
-      }),
-    ],
-    [
-      'un quiz sans identifiants d options',
-      coursAvecProprietes({
-        interaction: buildQuizNote({ optionIds: undefined }),
-      }),
+      'une propriété d écran hors contrat',
+      coursAvecProprietes({ remarque: 'hors contrat' }),
     ],
     ['un cours sans écran', buildCourseContentEntity({ ecrans: [] })],
     [

@@ -15,8 +15,6 @@ import type { ConceptId } from '../banque/concepts';
 import type { ConfusionId } from '../banque/confusions';
 import type { ProprietesRecit } from '../stockage/ProprietesStockees';
 
-export type { Modalite, RegimeVerrou } from '../../contrats/contrat-de-l-api';
-
 interface QuestionLibre {
   readonly id: string;
   readonly question: string;
@@ -178,11 +176,6 @@ export type CasProfessionnel = {
 };
 
 interface ProprietesDesExpositionsHistoriques {
-  readonly 'fp-quote': {
-    readonly texte: string;
-    readonly auteur: string | null;
-    readonly source: string | null;
-  };
   readonly 'fp-story': ProprietesRecit;
   readonly 'fp-pro': CasProfessionnel;
   readonly 'fp-concept4': {
@@ -211,13 +204,15 @@ interface ProprietesDesExpositionsHistoriques {
   };
 }
 
-export interface SocleHistorique {
+export interface SocleHistorique extends ReglagesDEcran {
   readonly id: string;
   readonly dureeMinutes: number;
   readonly concepts: AuMoinsUn<ConceptId>;
   readonly notes: string;
+}
+
+export interface ReglagesDEcran {
   readonly modalite?: Modalite;
-  readonly question?: QuestionVote;
   readonly renvoi?: string;
   readonly cadrageDuRenvoi?: CadrageDuRenvoi;
   readonly correctionSurPlace?: CorrectionSurPlace;
@@ -282,32 +277,32 @@ export interface Cours {
   readonly remediations: Readonly<Partial<Record<ConfusionId, string>>>;
 }
 
-function recitInteractif(
-  ecran: Extract<EcranDuContrat, { readonly brique: 'fp-story' }>,
-): boolean {
-  const presentation = ecran.proprietes.presentation;
-  return (
-    ecran.question !== undefined ||
-    (presentation?.version === 2 && presentation.renderer === 'reflection')
-  );
+interface Recit<P> {
+  readonly brique: 'fp-story';
+  readonly proprietes: { readonly presentation?: P };
+}
+
+type EcranDeBrique<P> = Recit<P> | { readonly brique: string };
+
+const estUnRecit = <P>(ecran: EcranDeBrique<P>): ecran is Recit<P> =>
+  ecran.brique === 'fp-story';
+
+export function presentationDe<P>(ecran: EcranDeBrique<P>): P | null {
+  return estUnRecit(ecran) ? (ecran.proprietes.presentation ?? null) : null;
 }
 
 export function estInteractif(ecran: EcranDuContrat): boolean {
   switch (ecran.brique) {
     case 'fp-story':
-      return recitInteractif(ecran);
+      return ecran.proprietes.presentation?.renderer === 'reflection';
     case 'fp-pro':
-      return (
-        ecran.question !== undefined ||
-        ecran.proprietes.questionsLibres !== undefined
-      );
+      return ecran.proprietes.questionsLibres !== undefined;
     case 'fp-worked':
       return ecran.proprietes.pilote !== true;
-    case 'fp-quote':
     case 'fp-concept4':
     case 'fp-plot':
     case 'fp-pulse':
-      return ecran.question !== undefined;
+      return false;
     default:
       return true;
   }
@@ -335,7 +330,7 @@ export function questionsDe(
     case 'fp-spaced':
       return ecran.banque;
     default:
-      return ecran.question === undefined ? [] : [ecran.question];
+      return [];
   }
 }
 

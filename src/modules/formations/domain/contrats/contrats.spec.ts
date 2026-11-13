@@ -588,10 +588,10 @@ describe('Contrats figés du cours B2-01 V3 (§ 9, lot 0)', () => {
         medias: [media],
       } satisfies Cours;
       const diffusions: Diffusion[] = ['catalogue', 'seance'];
-      const ordres: OrdreQuestions[] = ['fixe', 'melange'];
+      const ordres: OrdreQuestions[] = ['fixe'];
 
       expect(cours.medias[0].licence).toBe('domaine public');
-      expect([...diffusions, ...ordres]).toHaveLength(4);
+      expect([...diffusions, ...ordres]).toHaveLength(3);
     });
 
     it('stocke les questions notées sans rien révéler au sujet', () => {
@@ -1108,15 +1108,6 @@ describe('Contrats figés du cours B2-01 V3 (§ 9, lot 0)', () => {
         metadonnees: METADONNEES,
       } satisfies PulseSondage;
       const donnees = {
-        'fp-quote': {
-          citation: {
-            id: 'b2-01-citation',
-            texte: 'Un chiffre sans base ne dit rien.',
-            auteur: null,
-            source: null,
-            metadonnees: METADONNEES,
-          },
-        },
         'fp-story': { recit },
         'fp-pro': {
           cas: {
@@ -1193,7 +1184,7 @@ describe('Contrats figés du cours B2-01 V3 (§ 9, lot 0)', () => {
         donnees['fp-escape'].parcours satisfies EscapeParcoursPublic,
       ];
 
-      expect(Object.keys(donnees)).toHaveLength(18);
+      expect(Object.keys(donnees)).toHaveLength(17);
       expect(colonne.role).toBe('deduite');
       expect(spaced.boite).toBe(1);
       expect(plans.map((entree) => entree.id)).toHaveLength(3);

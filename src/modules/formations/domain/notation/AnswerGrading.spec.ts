@@ -1,5 +1,5 @@
 import * as fc from 'fast-check';
-import { dansLaTolerance } from '../../../../../test/helpers/formations/cours/reponses-de-cours';
+import { dansLaTolerance } from '../../../../../test/helpers/formations/cours/corrige/reponses-de-cours';
 import { gradeAnswer, matchesSolution } from './AnswerGrading';
 import type { Tolerance } from './GradingCore';
 

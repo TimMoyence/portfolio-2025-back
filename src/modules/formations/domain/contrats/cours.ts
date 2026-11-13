@@ -1,4 +1,4 @@
-import type { Diffusion } from './contrat-de-l-api';
+import type { Diffusion, RegimeVerrou } from './contrat-de-l-api';
 import type { AuMoinsUn } from '../../../../common/domain/objets/au-moins-un';
 import type { Tolerance } from '../notation/GradingCore';
 import type { ConceptId } from '../cours/banque/concepts';
@@ -8,7 +8,6 @@ import type {
   Ecran as EcranActuel,
   QuestionNumerique,
   QuestionVote,
-  RegimeVerrou,
   SocleHistorique,
 } from '../cours/structure/Cours';
 import type {
@@ -29,7 +28,7 @@ export {
   type Diffusion,
   type TypeQuestion,
 } from './contrat-de-l-api';
-export type OrdreQuestions = 'fixe' | 'melange';
+export type OrdreQuestions = 'fixe';
 
 export type SheetPlanStocke = Omit<
   SheetPlanPublic,
@@ -69,7 +68,6 @@ type Prereglages = readonly {
 type Animation = readonly Readonly<Record<string, number>>[];
 
 export interface ProprietesExposition {
-  readonly 'fp-quote': ProprietesActuelles<'fp-quote'>;
   readonly 'fp-story': ProprietesActuelles<'fp-story'>;
   readonly 'fp-pro': ProprietesActuelles<'fp-pro'>;
   readonly 'fp-worked': {
@@ -104,12 +102,7 @@ export interface ProprietesExposition {
   };
 }
 
-export const CHAMPS_EXTRAITS_DU_CAS = [
-  'metier',
-  'situation',
-  'geste',
-  'consequence',
-] as const;
+export const CHAMPS_EXTRAITS_DU_CAS = ['situation'] as const;
 
 export interface CadrageDuRenvoi {
   readonly extrait?: {
@@ -132,7 +125,7 @@ type EcranExposition = {
 
 export type Ecran =
   | EcranExposition
-  | (Omit<EcranCommun, 'question'> & {
+  | (EcranCommun & {
       readonly brique: 'fp-numeric';
       readonly question: QuestionNumerique;
       readonly seuil?: number;

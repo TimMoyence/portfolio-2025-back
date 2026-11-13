@@ -2,8 +2,11 @@ import { buildCoursDuContenu } from '../../../../../../../test/factories/formati
 import * as fiche from '../../../../../../../test/helpers/formations/cours/fiche-de-cours';
 import * as feuille from '../../../../../../../test/helpers/formations/cours/feuille-de-cours';
 import { motsHorsProgramme } from '../../../../../../../test/helpers/formations/cours/lecture-de-cours';
+import {
+  imagesMalDecrites,
+  recapitulatifDe,
+} from '../../../../../../../test/helpers/formations/cours/recit-en-images';
 import { corrigerFeuille } from '../../../../domain/cours/correction/CorrectionProduction';
-import { questionsDe } from '../../../../domain/cours/structure/Cours';
 import { COURS_B2_07 } from './b2-07.cours';
 
 const COURS = buildCoursDuContenu(COURS_B2_07);
@@ -68,7 +71,7 @@ const ECRANS_D_IMAGE_DU_RECAP = [
 const identifiants = (): string[] => COURS.ecrans.map((ecran) => ecran.id);
 
 fiche.decrireLaFicheDuCours('B2-07', COURS, {
-  conception: 'cours-b2-07-conception.md',
+  conception: 'b2/cours-b2-07-conception.md',
   ecrans: 39,
   dureeMinutes: 135,
   minutesParActe: [12, 46, 25, 44, 8, 0],
@@ -120,22 +123,12 @@ fiche.decrireLaFicheDuCours('B2-07', COURS, {
 
 describe('B2-07 — le récapitulatif du cours 6 et de la boucle, en images', () => {
   it('B207-M2 · récapitule en douze minutes, sept écrans d’une idée et un vote, sans aucune question notée', () => {
-    const recap = COURS.ecrans.filter((ecran) =>
-      ecran.id.startsWith('B2-07-A1-'),
-    );
+    const recap = recapitulatifDe(COURS, COURS_B2_07, 'B2-07-A1-');
 
-    expect(recap.reduce((total, ecran) => total + ecran.dureeMinutes, 0)).toBe(
-      12,
-    );
-    expect(
-      recap
-        .filter((ecran) => ecran.id.includes('-ENFANT-'))
-        .map(({ id }) => id),
-    ).toEqual(ECRANS_D_IMAGE_DU_RECAP);
-    expect(recap.map((ecran) => ecran.brique)).toContain('fp-vote');
-    expect(
-      recap.flatMap((ecran) => questionsDe(ecran)).filter((q) => q.noteCompte),
-    ).toEqual([]);
+    expect(recap.minutes).toBe(12);
+    expect(recap.ecransDImage).toEqual(ECRANS_D_IMAGE_DU_RECAP);
+    expect(recap.briques).toContain('fp-vote');
+    expect(recap.notees).toEqual([]);
   });
 
   it('B207-M2 · la scène de la plante multiplie par 1,5, comme sa flèche et son pont, sans lui ajouter une fois et demie sa taille', () => {
@@ -150,14 +143,7 @@ describe('B2-07 — le récapitulatif du cours 6 et de la boucle, en images', ()
   });
 
   it('B207-M2 · montre sur chaque écran d’image une image du cours, décrite pour qui ne la voit pas', () => {
-    const ecrans = identifiants().filter((id) => id.includes('-ENFANT-'));
-
-    for (const ecran of ecrans) {
-      const { image, imageAlt } = feuille.proprietesV2(COURS_B2_07, ecran);
-
-      expect(COURS.medias.map(({ chemins }) => chemins[0])).toContain(image);
-      expect(String(imageAlt).length).toBeGreaterThan(40);
-    }
+    expect(imagesMalDecrites(COURS, COURS_B2_07)).toEqual([]);
   });
 });
 

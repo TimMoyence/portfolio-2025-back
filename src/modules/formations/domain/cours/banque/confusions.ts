@@ -105,11 +105,6 @@ const DEFINITIONS = {
     libelle:
       'Croire qu’une hausse du total fait mécaniquement baisser un taux.',
   },
-  'baisse-attribuee-aux-taux-locaux': {
-    concept: 'moyenne-ponderee',
-    libelle:
-      'Attribuer la baisse d’un taux global à la baisse des taux de chaque composante, sans regarder les poids.',
-  },
   'axe-tronque-lu-comme-ecart': {
     concept: 'lecture-graphique',
     libelle:
@@ -193,16 +188,6 @@ const DEFINITIONS = {
     libelle:
       'Écrire une formule différente à chaque ligne au lieu d’une formule recopiable.',
   },
-  'role-statistique-confondu': {
-    concept: 'serie-statistique',
-    libelle:
-      'Confondre la population étudiée, le caractère observé et l’effectif d’une série.',
-  },
-  'effectif-cumule-confondu': {
-    concept: 'serie-statistique',
-    libelle:
-      'Confondre l’effectif (ou la fréquence) d’une classe et l’effectif cumulé jusqu’à cette classe.',
-  },
   'moyenne-lue-comme-mediane': {
     concept: 'mediane',
     libelle:
@@ -233,11 +218,6 @@ const DEFINITIONS = {
     libelle:
       'Calculer un quartile à partir de la médiane (sa moitié, ou la médiane plus la moitié) au lieu de chercher la valeur qui laisse un quart de l’effectif en dessous.',
   },
-  'convention-de-quartile-ignoree': {
-    concept: 'quartiles',
-    libelle:
-      'Comparer des quartiles obtenus par deux conventions différentes (programme, tableur) sans le signaler.',
-  },
   'boite-lue-comme-effectif': {
     concept: 'boite-a-moustaches',
     libelle:
@@ -263,20 +243,10 @@ const DEFINITIONS = {
     libelle:
       'Conclure que deux séries de même moyenne se ressemblent, sans regarder leur dispersion.',
   },
-  'moyenne-des-moyennes': {
-    concept: 'moyenne',
-    libelle:
-      'Faire la moyenne simple de moyennes calculées sur des groupes d’effectifs différents.',
-  },
   'centre-de-classe-oublie': {
     concept: 'moyenne',
     libelle:
       'Calculer la moyenne de données groupées avec une borne des classes au lieu de leur centre.',
-  },
-  'histogramme-classes-inegales': {
-    concept: 'histogramme',
-    libelle:
-      'Lire la hauteur d’un histogramme à classes d’amplitudes inégales comme un effectif, au lieu d’une densité.',
   },
   'point-moyen-confondu': {
     concept: 'nuage-de-points',
@@ -508,20 +478,10 @@ const DEFINITIONS = {
     libelle:
       'Corriger seul une donnée douteuse, ou une erreur certaine dont la bonne valeur n’est pas dans le fichier, au lieu de la signaler à qui peut la vérifier.',
   },
-  'suppression-au-lieu-de-signalement': {
-    concept: 'qualite-des-donnees',
-    libelle:
-      'Supprimer une ligne douteuse au lieu de la mettre de côté avec son motif.',
-  },
   'texte-pris-pour-nombre': {
     concept: 'nettoyage',
     libelle:
       'Additionner une colonne dont certains nombres sont du texte : la somme les ignore sans prévenir.',
-  },
-  'casse-non-normalisee': {
-    concept: 'nettoyage',
-    libelle:
-      'Laisser une même ville s’écrire « Bordeaux » et « BORDEAUX » : Excel les confond, mais Power Query et les autres outils en comptent deux.',
   },
   'doublons-supprimes-sur-une-colonne': {
     concept: 'nettoyage',
@@ -766,6 +726,266 @@ const DEFINITIONS = {
     concept: 'optimisation',
     libelle:
       'Garder l’optimum trouvé sans contrainte alors qu’il sort des valeurs permises : sous contrainte, on cherche l’optimum sur le nouvel intervalle, souvent à sa borne.',
+  },
+  'produit-derive-terme-a-terme': {
+    concept: 'derivees-composees',
+    libelle:
+      'Dériver un produit en multipliant les dérivées, u′ × v′ : la dérivée d’un produit est (uv)′ = u′v + uv′.',
+  },
+  'quotient-signe-inverse': {
+    concept: 'derivees-composees',
+    libelle:
+      'Écrire uv′ − u′v au numérateur de la dérivée d’un quotient : on écrit u′v − uv′, la dérivée du numérateur en premier.',
+  },
+  'quotient-sans-carre': {
+    concept: 'derivees-composees',
+    libelle:
+      'Oublier le carré du dénominateur : (u/v)′ = (u′v − uv′)/v², avec v² et non v.',
+  },
+  'u-prime-oublie': {
+    concept: 'derivees-composees',
+    libelle:
+      'Dériver e^u ou ln u sans multiplier par u′ : (e^u)′ = u′e^u et (ln u)′ = u′/u.',
+  },
+  'cout-moyen-et-marginal-confondus': {
+    concept: 'fonctions-economiques',
+    libelle:
+      'Confondre le coût moyen, C(q) ÷ q, coût d’une unité en moyenne, et le coût marginal, C′(q), coût d’une unité de plus.',
+  },
+  'recette-sans-prix': {
+    concept: 'fonctions-economiques',
+    libelle:
+      'Prendre la quantité vendue pour la recette : la recette vaut prix × quantité, R(p) = p × D(p).',
+  },
+  'nombre-de-solutions-sans-variations': {
+    concept: 'resolution-approchee',
+    libelle:
+      'Compter les solutions de f(x) = k sans regarder les variations de f : sur un intervalle où f est strictement monotone, k compris entre les valeurs aux bornes est atteint une seule fois.',
+  },
+  'balayage-mal-encadre': {
+    concept: 'resolution-approchee',
+    libelle:
+      'Lire l’encadrement d’un balayage du mauvais côté : la valeur approchée par défaut est la borne où f(x) − k n’a pas encore changé de signe.',
+  },
+  'dichotomie-mauvaise-moitie': {
+    concept: 'resolution-approchee',
+    libelle:
+      'Garder la mauvaise moitié en dichotomie : on garde la moitié aux bornes de laquelle f(x) − k change de signe.',
+  },
+  'complementaire-oublie': {
+    concept: 'probabilite-d-un-evenement',
+    libelle:
+      'Prendre une autre branche au lieu du complément : les branches issues d’un même nœud somment à 1, P(Ā) = 1 − P(A).',
+  },
+  'reunion-sans-intersection': {
+    concept: 'probabilite-d-un-evenement',
+    libelle:
+      'Additionner P(A) et P(B) sans retirer la part commune : P(A ∪ B) = P(A) + P(B) − P(A ∩ B).',
+  },
+  'intersection-pour-conditionnelle': {
+    concept: 'probabilite-conditionnelle',
+    libelle:
+      'Confondre P_A(B), la part de B parmi A, et P(A ∩ B), la part de A et B parmi tous : P(A ∩ B) = P(A) × P_A(B).',
+  },
+  'conditionnelle-inversee': {
+    concept: 'probabilite-conditionnelle',
+    libelle:
+      'Confondre P_A(B) et P_B(A) : la condition est l’événement par lequel on divise.',
+  },
+  'mauvais-total-du-tableau': {
+    concept: 'probabilite-conditionnelle',
+    libelle:
+      'Diviser par l’effectif total au lieu de l’effectif de la condition : P_A(B) = effectif de A ∩ B ÷ effectif de A.',
+  },
+  'condition-ignoree': {
+    concept: 'probabilite-conditionnelle',
+    libelle:
+      'Répondre P(B) quand la question pose une condition : « parmi les A » restreint l’univers à A.',
+  },
+  'branches-additionnees': {
+    concept: 'probabilite-conditionnelle',
+    libelle:
+      'Additionner les probabilités le long d’un chemin : on multiplie le long d’un chemin, on additionne les chemins.',
+  },
+  'totales-sans-ponderation': {
+    concept: 'probabilites-totales',
+    libelle:
+      'Additionner les probabilités conditionnelles sans les pondérer : P(B) = P(A) × P_A(B) + P(Ā) × P_Ā(B).',
+  },
+  'totales-incompletes': {
+    concept: 'probabilites-totales',
+    libelle:
+      'Ne garder qu’un chemin vers B : les probabilités totales somment tous les chemins d’une partition qui mènent à B.',
+  },
+  'independance-et-incompatibilite-confondues': {
+    concept: 'independance',
+    libelle:
+      'Croire indépendants deux événements qui ne peuvent pas arriver ensemble : indépendants veut dire P(A ∩ B) = P(A) × P(B).',
+  },
+  'independance-sans-calcul': {
+    concept: 'independance',
+    libelle:
+      'Conclure à l’indépendance, ou à la dépendance, sans calcul : on compare P(A ∩ B) à P(A) × P(B), ou P_A(B) à P(B).',
+  },
+  'recherche-mal-saisie': {
+    concept: 'texte-brut',
+    libelle:
+      'Chercher un autre motif que celui à remplacer : ^p seul au lieu de ^p^p, une espace au lieu de deux, un tiret seul au lieu de ^p suivi d’un tiret.',
+  },
+  'paragraphe-vide-pour-espacer': {
+    concept: 'mise-en-forme-des-paragraphes',
+    libelle:
+      'Espacer deux paragraphes par une ligne vide au lieu de l’espacement avant ou après.',
+  },
+  'espace-pour-aligner': {
+    concept: 'mise-en-forme-des-paragraphes',
+    libelle:
+      'Aligner ou décaler un paragraphe par des espaces ou des tabulations au lieu d’un retrait ou d’un alignement.',
+  },
+  'saut-de-page-par-entrees': {
+    concept: 'mise-en-forme-des-paragraphes',
+    libelle:
+      'Passer à la page suivante par des Entrée répétées : la page se décale dès qu’on ajoute une ligne au-dessus.',
+  },
+  'style-pour-un-mot-isole': {
+    concept: 'mise-en-forme-des-caracteres',
+    libelle:
+      'Créer ou appliquer un style de paragraphe pour marquer un seul mot, qu’une mise en forme directe suffit à marquer.',
+  },
+  'mise-en-forme-directe-au-lieu-du-style': {
+    concept: 'styles-et-theme',
+    libelle:
+      'Mettre un titre en forme à la main au lieu d’un style : il n’entre ni dans le volet de navigation, ni dans la table des matières, ni dans les signets du PDF.',
+  },
+  'niveaux-de-titre-confondus': {
+    concept: 'styles-et-theme',
+    libelle:
+      'Donner le même niveau de style à tous les titres : Titre 1 pour les parties, Titre 2 pour leurs sous-parties.',
+  },
+  'couleur-hors-du-theme': {
+    concept: 'styles-et-theme',
+    libelle:
+      'Choisir une couleur ou une police à la main au lieu de celles du thème : elles ne suivent plus quand le thème change.',
+  },
+  'premiere-page-non-differenciee': {
+    concept: 'mise-en-page',
+    libelle:
+      'Laisser l’en-tête et le numéro sur la page de titre au lieu de cocher Première page différente.',
+  },
+  'saut-de-page-au-lieu-de-section': {
+    concept: 'mise-en-page',
+    libelle:
+      'Changer l’orientation d’une seule page après un simple saut de page : tout le document bascule, il fallait un saut de section.',
+  },
+  'niveau-de-reglage-confondu': {
+    concept: 'mise-en-page',
+    libelle:
+      'Chercher un réglage au mauvais niveau : la police est un réglage du caractère, l’alignement du paragraphe, la marge et l’orientation de la section.',
+  },
+  'numero-de-page-tape': {
+    concept: 'mise-en-page',
+    libelle:
+      'Taper le numéro de page au lieu d’insérer son champ : il ne change pas d’une page à l’autre.',
+  },
+  'pdf-imprime-au-lieu-d-enregistre': {
+    concept: 'export-pdf',
+    libelle:
+      'Imprimer vers un PDF au lieu de l’enregistrer : les signets et les liens sont perdus.',
+  },
+  'texte-d-ia-repris-sans-relecture': {
+    concept: 'ia-redactrice',
+    libelle:
+      'Reprendre le texte d’une IA sans le relire contre sa source : un chiffre changé ou un fait inventé passe dans le document.',
+  },
+  'texte-d-ia-rejete-sans-relecture': {
+    concept: 'ia-redactrice',
+    libelle:
+      'Rejeter le texte d’une IA sans l’avoir comparé à sa source : des phrases justes sont perdues.',
+  },
+  'ecart-d-ia-mal-nomme': {
+    concept: 'ia-redactrice',
+    libelle:
+      'Voir l’écart d’un texte d’IA sans nommer sa nature : chiffre changé, fait inventé ou sens inversé.',
+  },
+  'lettre-recopiee-a-la-main': {
+    concept: 'source-de-publipostage',
+    libelle:
+      'Recopier la lettre pour chaque destinataire et y changer le nom à la main, au lieu de fusionner une lettre type avec la liste.',
+  },
+  'ligne-d-en-tete-comptee': {
+    concept: 'source-de-publipostage',
+    libelle:
+      'Compter la ligne d’en-tête du tableur parmi les destinataires : elle nomme les champs, elle n’est pas une lettre.',
+  },
+  'champ-tape-a-la-main': {
+    concept: 'champ-de-fusion',
+    libelle:
+      'Taper « «nom» » ou « [Nom] » au clavier : le texte reste tel quel dans chaque lettre, rien ne se fusionne.',
+  },
+  'piece-de-la-lettre-confondue': {
+    concept: 'champ-de-fusion',
+    libelle:
+      'Confondre ce qui est commun à toutes les lettres, ce qui vient d’une colonne de la liste et ce qui dépend d’une condition.',
+  },
+  'format-du-nombre-ignore': {
+    concept: 'champ-de-fusion',
+    libelle:
+      'Laisser un montant fusionné sans format : Word l’écrit comme le stocke le tableur, sans espace des milliers ni symbole €.',
+  },
+  'filtre-sur-le-mauvais-champ': {
+    concept: 'regle-de-fusion',
+    libelle:
+      'Filtrer sur une autre colonne que celle du critère : la ville du client au lieu de son agence.',
+  },
+  'source-modifiee-pour-filtrer': {
+    concept: 'regle-de-fusion',
+    libelle:
+      'Supprimer des lignes du classeur pour ne garder que certains destinataires, au lieu de filtrer dans Word.',
+  },
+  'condition-inversee': {
+    concept: 'regle-de-fusion',
+    libelle:
+      'Inverser le texte si vrai et le texte sinon d’une règle Si…Alors…Sinon : chaque formule d’appel tombe sur l’autre civilité.',
+  },
+  'fusion-sans-apercu': {
+    concept: 'fusion-et-pdf',
+    libelle:
+      'Fusionner, imprimer ou envoyer sans avoir parcouru l’aperçu des résultats ni vérifié les erreurs.',
+  },
+  'correction-au-mauvais-endroit': {
+    concept: 'fusion-et-pdf',
+    libelle:
+      'Corriger lettre par lettre dans le document fusionné ce qui vient de la liste, du champ ou de la règle.',
+  },
+  'lettre-type-exportee-au-lieu-de-fusionnee': {
+    concept: 'fusion-et-pdf',
+    libelle:
+      'Enregistrer la lettre type en PDF : on obtient une lettre aux champs vides ou au premier destinataire, pas les lettres fusionnées.',
+  },
+  'pdf-de-toutes-les-lettres-a-chacun': {
+    concept: 'fusion-et-pdf',
+    libelle:
+      'Joindre à un client le PDF de toutes les lettres fusionnées : il reçoit les données des autres clients.',
+  },
+  'destinataires-en-copie': {
+    concept: 'e-mailing',
+    libelle:
+      'Envoyer un seul courriel, toutes les adresses en copie : chacun voit les autres destinataires et lit la même lettre.',
+  },
+  'champ-a-mal-choisi': {
+    concept: 'e-mailing',
+    libelle:
+      'Régler le champ À sur une autre colonne que celle des adresses e-mail.',
+  },
+  'format-de-message-texte-brut': {
+    concept: 'e-mailing',
+    libelle:
+      'Envoyer la lettre en texte brut : sa mise en forme se perd dans le courriel.',
+  },
+  'implication-fausse-si-premisse-fausse': {
+    concept: 'connecteur',
+    libelle:
+      'Croire qu’une implication, si P alors Q, est fausse dès que sa condition P est fausse, alors qu’elle n’est fausse que lorsque P est vraie et Q fausse.',
   },
 } as const satisfies Readonly<Record<string, DefinitionConfusion>>;
 

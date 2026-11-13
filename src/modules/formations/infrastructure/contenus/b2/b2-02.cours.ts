@@ -1,6 +1,7 @@
 import type { ConceptId } from '../../../domain/cours/banque/concepts';
 import type { ContenuDeCours } from '../../../domain/cours/stockage/CoursStocke';
 import * as moteur from '../briques';
+import { GRAVURE_DE_GALTON as GRAVURE_DE_L_ACCROCHE } from '../gravures';
 
 const CONCEPTS_DU_COURS = [
   'serie-statistique',
@@ -68,15 +69,6 @@ const CA_RIVAGE = [610, 652, 694, 736, 790, 826] as const;
 
 const ANNEES_FIBRE = [2020, 2021, 2022, 2023, 2024] as const;
 const FIBRE_EN_MILLIONS = ['10,3', '14,5', '18,1', '21,4', '24,4'] as const;
-
-const GRAVURE_DE_L_ACCROCHE = moteur.gravureDuDomainePublic({
-  id: 'M7',
-  chemin: '/assets/cours/gravures/v1/galton-correlation-1875.jpg',
-  pageSource:
-    'https://commons.wikimedia.org/wiki/File:Galton%27s_correlation_diagram_1875.jpg',
-  auteur: 'Francis Galton',
-  date: '1875',
-});
 
 const DOSSIER_DES_ILLUSTRATIONS = '/assets/cours/b2-02/v2';
 
@@ -631,59 +623,56 @@ const ACTE_2: moteur.Acte = [
         'Nuage de six points : en abscisse les rangs 1 à 6, des années 2020 à 2025 ; en ordonnée le chiffre d’affaires, de 610 à 826 milliers d’euros. Les points montent régulièrement, presque alignés.',
     },
   ),
-  {
-    screenId: 'B2-02-A2-02-VOTE-CORRELATION',
-    titre: 'Vote : deux séries qui montent ensemble',
-    diffusion: 'seance',
-    brique: 'fp-vote',
-    dureeMinutes: 8,
-    concepts: ['correlation'],
-    notes: moteur.puces(
-      'Temps « réfléchir » de la notion 2 : vote non noté.',
-      ...moteur.NOTES_DU_VOTE_A_DEUX_QUESTIONS,
-    ),
-    proprietes: {
-      modalite: 'solo',
-      questions: [
-        moteur.vote(
-          'b2-02-a2-glaces',
-          'correlation',
-          false,
-          'Mois par mois, les ventes de voiles d’Atelier Rivage et celles du glacier voisin montent et descendent ensemble. Que peut-on conclure ?',
-          'Rien sur une cause : la saison fait varier les deux ventes',
-          [
-            [
-              'Les glaces font vendre des voiles',
-              'correlation-prise-pour-causalite',
-            ],
-            [
-              'Les voiles font vendre des glaces',
-              'correlation-prise-pour-causalite',
-            ],
-          ],
-          ['saison'],
-        ),
-        moteur.vote(
-          'b2-02-a2-formation',
-          'correlation',
-          false,
-          'De 2020 à 2025, les heures de formation des salariés d’Atelier Rivage et son chiffre d’affaires ont augmenté ensemble. Hélène conclut : « la formation fait notre chiffre d’affaires ». Que lui répondre ?',
-          'Les deux séries suivent le temps : leur lien ne prouve pas une cause',
-          [
-            [
-              'Elle a raison : les deux séries montent ensemble',
-              'correlation-prise-pour-causalite',
-            ],
-            [
-              'Elle a raison si le lien entre les séries est très fort',
-              'correlation-prise-pour-causalite',
-            ],
-          ],
-          ['temps'],
-        ),
-      ],
+  moteur.voteQuiOuvre(
+    {
+      screenId: 'B2-02-A2-02-VOTE-CORRELATION',
+      titre: 'Vote : deux séries qui montent ensemble',
+      dureeMinutes: 8,
+      concepts: ['correlation'],
+      notes: moteur.puces(
+        'Temps « réfléchir » de la notion 2 : vote non noté.',
+        ...moteur.NOTES_DU_VOTE_A_DEUX_QUESTIONS,
+      ),
     },
-  },
+    [
+      moteur.vote(
+        'b2-02-a2-glaces',
+        'correlation',
+        false,
+        'Mois par mois, les ventes de voiles d’Atelier Rivage et celles du glacier voisin montent et descendent ensemble. Que peut-on conclure ?',
+        'Rien sur une cause : la saison fait varier les deux ventes',
+        [
+          [
+            'Les glaces font vendre des voiles',
+            'correlation-prise-pour-causalite',
+          ],
+          [
+            'Les voiles font vendre des glaces',
+            'correlation-prise-pour-causalite',
+          ],
+        ],
+        ['saison'],
+      ),
+      moteur.vote(
+        'b2-02-a2-formation',
+        'correlation',
+        false,
+        'De 2020 à 2025, les heures de formation des salariés d’Atelier Rivage et son chiffre d’affaires ont augmenté ensemble. Hélène conclut : « la formation fait notre chiffre d’affaires ». Que lui répondre ?',
+        'Les deux séries suivent le temps : leur lien ne prouve pas une cause',
+        [
+          [
+            'Elle a raison : les deux séries montent ensemble',
+            'correlation-prise-pour-causalite',
+          ],
+          [
+            'Elle a raison si le lien entre les séries est très fort',
+            'correlation-prise-pour-causalite',
+          ],
+        ],
+        ['temps'],
+      ),
+    ],
+  ),
   moteur.ecranV2(
     {
       screenId: 'B2-02-A2-03-COURS-NUAGE',
@@ -922,7 +911,7 @@ const ACTE_2: moteur.Acte = [
             'Quel est le coefficient de corrélation linéaire r entre x et y ? Arrondir au millième.',
             null,
             0.999055,
-            { type: 'decimales', valeur: 3 },
+            moteur.TROIS_DECIMALES,
             '0,999',
             [[43.885714, 'correlation-lue-comme-pente']],
           ),

@@ -1,5 +1,8 @@
 import { z } from 'zod';
 import { lienHttp } from '../../../../../common/domain/liens/lien-web';
+import { auMillionieme } from '../../../../../common/domain/nombres/arrondi';
+import { avecVirgule } from '../../../../../common/domain/nombres/ecriture-francaise';
+import { BRANCHE_A_DEDUIRE, produitDuChemin } from './ArbrePondere';
 import {
   auMoinsUn,
   media,
@@ -11,14 +14,6 @@ const strict = <F extends z.ZodRawShape>(forme: F) => z.object(forme).strict();
 
 const textes = auMoinsUn(texte);
 const lien = strict({ href: lienHttp, label: texte });
-const quiz = strict({
-  id: texte,
-  type: z.literal('quiz'),
-  question: texte,
-  options: z.array(texte).min(2),
-  context: texte.optional(),
-  competency: texte.optional(),
-});
 const reflection = strict({
   id: texte,
   type: z.literal('reflection'),
@@ -37,7 +32,7 @@ const item = strict({
 });
 const column = strict({
   label: texte,
-  tone: z.enum(['danger', 'warning', 'info', 'neutral', 'success']).optional(),
+  tone: z.enum(['warning', 'info', 'success']).optional(),
   items: textes,
 });
 const series = strict({
@@ -114,6 +109,105 @@ const nuageDePoints = strict({
     signaler(['meanPoint'], 'point moyen hors des axes');
   }
 });
+const probabiliteDeBranche = z.union([
+  z.number(),
+  z.literal(BRANCHE_A_DEDUIRE),
+]);
+const brancheFinale = strict({
+  evenement: texte,
+  probabilite: probabiliteDeBranche,
+  produit: probabiliteDeBranche.optional(),
+});
+const brancheDeTete = strict({
+  evenement: texte,
+  probabilite: probabiliteDeBranche,
+  branches: z.array(brancheFinale).optional(),
+});
+type BrancheDArbre = z.infer<typeof brancheFinale>;
+
+function controlerNoeud(
+  nom: string,
+  branches: readonly BrancheDArbre[],
+  signaler: (message: string) => void,
+): void {
+  if (branches.length < 2) {
+    signaler(`nœud « ${nom} » : un nœud porte au moins deux branches`);
+  }
+  for (const { evenement, probabilite } of branches) {
+    if (
+      probabilite !== BRANCHE_A_DEDUIRE &&
+      !(probabilite > 0 && probabilite < 1)
+    ) {
+      signaler(
+        `nœud « ${nom} », branche « ${evenement} » : une probabilité de branche est strictement entre 0 et 1`,
+      );
+    }
+  }
+  const connues = branches.flatMap(({ probabilite }) =>
+    probabilite === BRANCHE_A_DEDUIRE ? [] : [probabilite],
+  );
+  const aDeduire = branches.length - connues.length;
+  const somme = auMillionieme(connues.reduce((total, p) => total + p, 0));
+  if (aDeduire > 1) {
+    signaler(`nœud « ${nom} » : deux branches « ? », une seule se déduit`);
+  } else if (aDeduire === 1 && somme >= 1) {
+    signaler(
+      `nœud « ${nom} » : la somme connue atteint 1, le « ? » vaudrait 0`,
+    );
+  } else if (aDeduire === 0 && somme !== 1) {
+    signaler(
+      `nœud « ${nom} » : ses branches somment à ${avecVirgule(somme)} au lieu de 1`,
+    );
+  }
+}
+
+function controlerLesProduits(
+  branches: readonly z.infer<typeof brancheDeTete>[],
+  signaler: (message: string) => void,
+): void {
+  const chemins = branches.flatMap((branche) =>
+    (branche.branches ?? []).map((feuille) => ({
+      nom: `${branche.evenement} → ${feuille.evenement}`,
+      saisi: feuille.produit,
+      calcule: produitDuChemin(branche.probabilite, feuille.probabilite),
+    })),
+  );
+  const affiches = chemins.filter(({ saisi }) => saisi !== undefined);
+  if (affiches.length > 0 && affiches.length < chemins.length) {
+    signaler('les produits s’affichent au bout de tous les chemins ou d’aucun');
+  }
+  for (const { nom, saisi, calcule } of affiches) {
+    if (calcule === BRANCHE_A_DEDUIRE && saisi !== BRANCHE_A_DEDUIRE) {
+      signaler(
+        `chemin « ${nom} » : il traverse un « ? », son produit reste blanc`,
+      );
+    } else if (calcule !== BRANCHE_A_DEDUIRE && saisi !== calcule) {
+      signaler(
+        `chemin « ${nom} » : le produit vaut ${avecVirgule(calcule)}, pas ${saisi === BRANCHE_A_DEDUIRE ? '« ? »' : avecVirgule(saisi ?? 0)}`,
+      );
+    }
+  }
+}
+
+const arbrePondere = strict({
+  ...titled,
+  branches: z.array(brancheDeTete),
+  reading: texte.optional(),
+  description: texte,
+}).superRefine(({ branches }, contexte) => {
+  const signaler = signaleurDe(contexte);
+  controlerNoeud('racine', branches, (message) =>
+    signaler(['branches'], message),
+  );
+  for (const [position, branche] of branches.entries()) {
+    if (branche.branches !== undefined) {
+      controlerNoeud(branche.evenement, branche.branches, (message) =>
+        signaler(['branches', position, 'branches'], message),
+      );
+    }
+  }
+  controlerLesProduits(branches, (message) => signaler(['branches'], message));
+});
 const BLOCS_MAXIMUM_D_UNE_LECON = 4;
 const blocDeLecon = strict({
   kind: z.enum(['definition', 'property', 'method', 'example', 'exam']),
@@ -145,11 +239,6 @@ const correctionDeTri = strict({
     }
   }
 });
-const correctionDeReponses = strict({
-  ...titled,
-  source: strict({ screenId: texte }),
-  explications: auMoinsUn(strict({ reference: texte, texte })),
-});
 const image = {
   ...titled,
   image: media,
@@ -158,6 +247,67 @@ const image = {
   items: textes.optional(),
   sourceLink: lien.optional(),
 };
+const pastille = z.number().int().min(1).max(4);
+const passage = strict({
+  text: texte,
+  bold: z.boolean().optional(),
+  italic: z.boolean().optional(),
+  underline: z.boolean().optional(),
+  tone: z.enum(['accent', 'alert', 'muted']).optional(),
+  field: z.boolean().optional(),
+});
+const paragrapheDePage = strict({
+  style: z.enum([
+    'title',
+    'subtitle',
+    'heading1',
+    'heading2',
+    'normal',
+    'list',
+    'empty',
+  ]),
+  align: z.enum(['center', 'right', 'justify']).optional(),
+  indent: z.boolean().optional(),
+  runs: z.array(passage),
+  marker: pastille.optional(),
+}).refine(({ style, runs }) => (style === 'empty') === (runs.length === 0), {
+  message: 'un paragraphe vide ne porte aucun texte, un autre en porte',
+});
+const tableauDePage = strict({
+  style: z.literal('table'),
+  rows: z.array(textes).min(2),
+  marker: pastille.optional(),
+});
+const blocDePage = z.union([paragrapheDePage, tableauDePage]);
+const pageDessinee = strict({
+  ...titled,
+  page: strict({
+    orientation: z.enum(['portrait', 'landscape']),
+    marks: z.boolean().optional(),
+    marginMarker: pastille.optional(),
+    header: blocDePage.optional(),
+    footer: blocDePage.optional(),
+    blocks: auMoinsUn(blocDePage),
+  }),
+  pageAlt: texte,
+  paragraphs: textes,
+  items: z.array(texte).min(3).max(4),
+}).superRefine(({ page, items }, contexte) => {
+  const posees = [
+    page.marginMarker,
+    page.header?.marker,
+    ...page.blocks.map(({ marker }) => marker),
+    page.footer?.marker,
+  ]
+    .filter((marker) => marker !== undefined)
+    .sort((premiere, seconde) => premiere - seconde);
+  if (posees.join() !== items.map((_, rang) => rang + 1).join()) {
+    signaleurDe(contexte)(
+      ['page'],
+      `les pastilles vont de 1 à ${items.length}, une fois chacune, une par correspondance : la page porte ${posees.join(', ')}`,
+    );
+  }
+});
 
 export function presentationsVisuelles<S extends z.ZodRawShape>(socle: S) {
   const rendu = <R extends string, P extends z.ZodType>(
@@ -188,7 +338,6 @@ export function presentationsVisuelles<S extends z.ZodRawShape>(socle: S) {
         ),
       }),
     ),
-    rendu('quiz', strict({ questionData: quiz })),
     rendu(
       'chart',
       strict({
@@ -209,6 +358,7 @@ export function presentationsVisuelles<S extends z.ZodRawShape>(socle: S) {
     ),
     rendu('boxplot', boiteAMoustaches),
     rendu('scatter', nuageDePoints),
+    rendu('arbre', arbrePondere),
     rendu(
       'lesson',
       strict({
@@ -237,15 +387,6 @@ export function presentationsVisuelles<S extends z.ZodRawShape>(socle: S) {
     ),
     rendu('reflection', strict({ promptData: reflection })),
     rendu(
-      'quote',
-      strict({
-        quote: texte,
-        author: texte.optional(),
-        role: texte.optional(),
-        context: texte.optional(),
-      }),
-    ),
-    rendu(
       'table',
       strict({
         ...titled,
@@ -255,36 +396,11 @@ export function presentationsVisuelles<S extends z.ZodRawShape>(socle: S) {
         sourceLink: lien.optional(),
       }),
     ),
-    rendu('image-left', strict({ ...image, nestedQuiz: quiz.optional() })),
+    rendu('image-left', strict(image)),
     rendu('image-right', strict(image)),
+    rendu('page', pageDessinee),
     rendu('illustration', strict({ image: media, imageAlt: texte })),
-    rendu(
-      'cta',
-      strict({
-        title: texte,
-        description: texte,
-        ctaLabel: texte,
-        ctaHref: texte,
-      }),
-    ),
-    rendu(
-      'guide',
-      strict({
-        ...titled,
-        context: texte.optional(),
-        takeaway: texte.optional(),
-        nextAction: texte.optional(),
-        items: auMoinsUn(
-          strict({
-            title: texte,
-            description: texte,
-            detail: texte.optional(),
-          }),
-        ),
-      }),
-    ),
     rendu('sort-review', correctionDeTri),
-    rendu('answer-review', correctionDeReponses),
   ]);
 }
 

@@ -1,4 +1,5 @@
 import type { Test } from 'supertest';
+import { questionsDe } from '../../../src/modules/formations/domain/cours/structure/Cours';
 import {
   buildCoursDeClasse,
   creerCatalogueDeTest,
@@ -112,7 +113,7 @@ describeDb('Capacite et eviction (B28, db integration)', () => {
         participant.jeton,
       )
       .send({
-        questionId: COURS.ecrans[0].question!.id,
+        questionId: questionsDe(COURS.ecrans[0])[0].id,
         valeur: 1,
         dureeMs: 1000,
       });

@@ -3,6 +3,21 @@ import { CLASSEURS_B3_01, HISTOIRES_B3_01 } from './b3-01.donnees';
 import { questionChiffree } from './b3-01.questions';
 import * as moteur from '../../briques';
 
+export function voteDesTrenteSecondes(id: string, enonce: string) {
+  return moteur.vote(
+    id,
+    'tableau-de-bord',
+    false,
+    enonce,
+    'Quatre chiffres, chacun avec sa comparaison',
+    [
+      ['Le tableau de toutes les lignes', 'detail-au-lieu-de-synthese'],
+      ['Dix graphiques', 'graphique-sans-question'],
+      ['Quatre chiffres, sans comparaison', 'kpi-sans-contexte'],
+    ],
+  );
+}
+
 export const ACTE_3: moteur.Acte = [
   moteur.ecranV2(
     {
@@ -19,45 +34,42 @@ export const ACTE_3: moteur.Acte = [
     'chart',
     graphiqueTrompeur(),
   ),
-  {
-    screenId: 'B3-01-A3-02-VOTE-GRAPHIQUE',
-    titre: 'Vote : que décidez-vous ?',
-    diffusion: 'seance',
-    brique: 'fp-vote',
-    dureeMinutes: 2,
-    concepts: ['choix-du-graphique'],
-    notes: moteur.puces(
-      'Ouvrir d’abord le classeur de reprise de l’acte 3, tous, y compris ceux qui ont tout réussi.',
-      'Temps « réfléchir » du niveau 5 : vote non noté, 1 min de vote et 1 min de révélation.',
-      'Révélation : redessiner au tableau les deux barres depuis zéro.',
-    ),
-    proprietes: {
-      modalite: 'solo',
-      pieceJointe: {
-        libelle: 'Classeur de reprise de l’acte 3',
-        classeur: CLASSEURS_B3_01.repriseActe3,
-        reprend: [
-          'B3-01-A1-13-TRI-ANOMALIES',
-          'B3-01-A1-14-ATELIER-NETTOYAGE',
-          'B3-01-A2-04-ATELIER-RECHERCHE',
-          'B3-01-A2-07-ATELIER-DELAIS-MARGE',
+  moteur.voteQuiOuvre(
+    {
+      screenId: 'B3-01-A3-02-VOTE-GRAPHIQUE',
+      titre: 'Vote : que décidez-vous ?',
+      dureeMinutes: 2,
+      concepts: ['choix-du-graphique'],
+      notes: moteur.puces(
+        'Ouvrir d’abord le classeur de reprise de l’acte 3, tous, y compris ceux qui ont tout réussi.',
+        'Temps « réfléchir » du niveau 5 : vote non noté, 1 min de vote et 1 min de révélation.',
+        'Révélation : redessiner au tableau les deux barres depuis zéro.',
+      ),
+    },
+    [
+      moteur.vote(
+        'b3-01-a3-graphique',
+        'choix-du-graphique',
+        false,
+        'D’après le graphique de l’écran précédent, Rennes a-t-elle vendu trois fois moins que Nantes en 2025 ?',
+        'Non : l’axe est tronqué',
+        [
+          ['Oui', 'axe-tronque-lu-comme-ecart'],
+          ['Impossible à dire', 'axe-tronque-lu-comme-ecart'],
         ],
-      },
-      questions: [
-        moteur.vote(
-          'b3-01-a3-graphique',
-          'choix-du-graphique',
-          false,
-          'D’après le graphique de l’écran précédent, Rennes a-t-elle vendu trois fois moins que Nantes en 2025 ?',
-          'Non : l’axe est tronqué',
-          [
-            ['Oui', 'axe-tronque-lu-comme-ecart'],
-            ['Impossible à dire', 'axe-tronque-lu-comme-ecart'],
-          ],
-        ),
+      ),
+    ],
+    {
+      libelle: 'Classeur de reprise de l’acte 3',
+      classeur: CLASSEURS_B3_01.repriseActe3,
+      reprend: [
+        'B3-01-A1-13-TRI-ANOMALIES',
+        'B3-01-A1-14-ATELIER-NETTOYAGE',
+        'B3-01-A2-04-ATELIER-RECHERCHE',
+        'B3-01-A2-07-ATELIER-DELAIS-MARGE',
       ],
     },
-  },
+  ),
   moteur.ecranV2(
     {
       screenId: 'B3-01-A3-03-COURS-GRAPHIQUES',
@@ -158,35 +170,24 @@ export const ACTE_3: moteur.Acte = [
       ],
     ],
   ),
-  {
-    screenId: 'B3-01-A3-06-VOTE-TRENTE-SECONDES',
-    titre: 'Vote : trente secondes',
-    diffusion: 'seance',
-    brique: 'fp-vote',
-    dureeMinutes: 2,
-    concepts: ['tableau-de-bord'],
-    notes: moteur.puces(
-      'Temps « réfléchir » du niveau 6 : vote non noté, 1 min de vote et 1 min de révélation.',
-      'Faire dire ce que Nadia fera de chaque option devant le comité.',
-    ),
-    proprietes: {
-      modalite: 'solo',
-      questions: [
-        moteur.vote(
-          'b3-01-a3-trente-secondes',
-          'tableau-de-bord',
-          false,
-          'Nadia a trente secondes avant le comité. Que doit-elle voir d’abord ?',
-          'Quatre chiffres, chacun avec sa comparaison',
-          [
-            ['Le tableau de toutes les lignes', 'detail-au-lieu-de-synthese'],
-            ['Dix graphiques', 'graphique-sans-question'],
-            ['Quatre chiffres, sans comparaison', 'kpi-sans-contexte'],
-          ],
-        ),
-      ],
+  moteur.voteQuiOuvre(
+    {
+      screenId: 'B3-01-A3-06-VOTE-TRENTE-SECONDES',
+      titre: 'Vote : trente secondes',
+      dureeMinutes: 2,
+      concepts: ['tableau-de-bord'],
+      notes: moteur.puces(
+        'Temps « réfléchir » du niveau 6 : vote non noté, 1 min de vote et 1 min de révélation.',
+        'Faire dire ce que Nadia fera de chaque option devant le comité.',
+      ),
     },
-  },
+    [
+      voteDesTrenteSecondes(
+        'b3-01-a3-trente-secondes',
+        'Nadia a trente secondes avant le comité. Que doit-elle voir d’abord ?',
+      ),
+    ],
+  ),
   moteur.ecranV2(
     {
       screenId: 'B3-01-A3-07-COURS-DASHBOARD',

@@ -6,7 +6,6 @@ import {
 import { buildPlanFeuille } from '../../../../../../test/factories/formations/cours/corriges.factory';
 import {
   BRIQUES_STOCKEES,
-  buildCorrectionDeReponses,
   buildCorrectionDExemple,
   buildCoursDeBriques,
   buildEcranDeBrique,
@@ -17,7 +16,8 @@ import { buildVoteStocke } from '../../../../../../test/factories/formations/cou
 import {
   clesDuCorrigeDans,
   clesSecretesDans,
-} from '../../../../../../test/helpers/formations/cours/cles-du-corrige';
+} from '../../../../../../test/helpers/formations/cours/corrige/cles-du-corrige';
+import { ecranDuCours } from '../../../../../../test/helpers/formations/cours/lecture-de-cours';
 import type { Ecran } from '../../contrats/cours';
 import type { Tolerance } from '../../notation/GradingCore';
 import type { AuMoinsUn } from '../../../../../common/domain/objets/au-moins-un';
@@ -63,15 +63,9 @@ const CAS_NUMERIQUES_AMBIGUS: readonly {
   },
 ];
 
-function ecranDe(tirage: ReturnType<typeof tirer>, id: string) {
-  const ecran = tirage.sujet.ecrans.find((candidat) => candidat.id === id);
-  if (!ecran) throw new Error(`ecran ${id} absent`);
-  return ecran;
-}
-
 function optionsDe(tirage: ReturnType<typeof tirer>, id: string) {
   return (
-    ecranDe(tirage, id).donnees as {
+    ecranDuCours(tirage.sujet, id).donnees as {
       question: { options: { id: string; libelle: string }[] };
     }
   ).question.options;
@@ -87,7 +81,9 @@ describe('tirer', () => {
   it('fait varier les donnees d une graine a l autre', () => {
     const enonces = new Set(
       Array.from({ length: 20 }, (_, graine) =>
-        JSON.stringify(ecranDe(tirer(cours, graine), 'E-NUM').donnees),
+        JSON.stringify(
+          ecranDuCours(tirer(cours, graine).sujet, 'E-NUM').donnees,
+        ),
       ),
     );
     expect(enonces.size).toBeGreaterThan(1);
@@ -101,10 +97,11 @@ describe('tirer', () => {
     }
   });
 
-  it('melange les questions d un questionnaire selon la graine', () => {
+  it('sert les questions d un questionnaire dans l ordre écrit, quelle que soit la graine', () => {
     const ordres = new Set(
       Array.from({ length: 50 }, (_, graine) => {
-        const donnees = ecranDe(tirer(cours, graine), 'E-PRATIQUE').donnees as {
+        const donnees = ecranDuCours(tirer(cours, graine).sujet, 'E-PRATIQUE')
+          .donnees as {
           questions: { donnees: { question: { id: string } } }[];
         };
         return donnees.questions
@@ -112,7 +109,7 @@ describe('tirer', () => {
           .join(',');
       }),
     );
-    expect(ordres.size).toBeGreaterThan(1);
+    expect(ordres.size).toBe(1);
   });
 
   it('ne livre ni corrige, ni piege, ni confusion, ni note dans le sujet', () => {
@@ -164,7 +161,7 @@ describe('tirer', () => {
   });
 
   it('porte les metadonnees de brique sans confusion ciblee', () => {
-    const donnees = ecranDe(tirer(cours, 1), 'E-NUM').donnees as {
+    const donnees = ecranDuCours(tirer(cours, 1).sujet, 'E-NUM').donnees as {
       question: { metadonnees: Record<string, unknown> };
     };
     expect(donnees.question.metadonnees).toEqual({
@@ -177,41 +174,34 @@ describe('tirer', () => {
   });
 
   it('projette une brique d exposition sous sa propriete', () => {
-    const donnees = ecranDe(tirer(cours, 1), 'E-CONCEPT').donnees as {
+    const donnees = ecranDuCours(tirer(cours, 1).sujet, 'E-CONCEPT')
+      .donnees as {
       definition: { id: string; calcul: string };
     };
     expect(donnees.definition.id).toBe('E-CONCEPT');
     expect(donnees.definition.calcul).toBe('prix*(1+taux/100)');
   });
 
-  it('garde au formateur l interaction du quiz et sa rubrique a dire', () => {
+  it('garde au formateur la rubrique à dire de ses notes', () => {
     const aDire = 'La bonne reponse est la moyenne ponderee.';
-    const ecranQuiz = {
-      id: 'E-QUIZ',
-      brique: 'fp-quote',
+    const cas = {
+      id: 'E-CAS',
+      brique: 'fp-pro',
       dureeMinutes: 3,
       concepts: ['proportion'],
       notes: `Objectif : conclure. À dire : ${aDire}`,
       proprietes: {
-        texte: 'Quel taux global ?',
-        auteur: null,
-        source: null,
-        interaction: {
-          type: 'quiz',
-          id: 'quiz-taux-global',
-          question: 'Quel taux global ?',
-          options: ['La moyenne simple', 'La moyenne ponderee'],
-          context: aDire,
-          competency: 'taux-global',
-        },
+        metier: 'Contrôleur de gestion',
+        situation: 'Quel taux global ?',
+        geste: null,
+        consequence: null,
       },
     } as unknown as Ecran;
 
     const sujet = JSON.stringify(
-      tirer(buildCoursDeTest({ ecrans: [ecranQuiz] }), 0).sujet,
+      tirer(buildCoursDeTest({ ecrans: [cas] }), 0).sujet,
     );
 
-    expect(sujet).not.toContain('"interaction"');
     expect(sujet).not.toContain(aDire);
   });
 
@@ -441,7 +431,7 @@ describe('tirer (briques de la V3)', () => {
 
   it('mélange les cartes par un générateur dérivé sans toucher aux autres tirages', () => {
     const avecCartes = coursDe(['fp-cardsort', 'fp-spaced', 'fp-vote']);
-    const sansCartes = coursDe(['fp-quote', 'fp-pro', 'fp-vote']);
+    const sansCartes = coursDe(['fp-story', 'fp-pro', 'fp-vote']);
     const ordres = new Set<string>();
     for (let graine = 0; graine < 40; graine += 1) {
       const tirage = tirer(avecCartes, graine);
@@ -474,10 +464,10 @@ describe('tirer (briques de la V3)', () => {
     const cours = lireCoursStocke(
       buildCoursDeBriques([
         rappel,
-        buildEcranDeBrique('fp-quote'),
+        buildEcranDeBrique('fp-pro'),
         exercice,
         buildCorrectionDExemple(exercice.screenId),
-        buildCorrectionDeReponses(exercice.screenId, 'B2-01-A2-06-REPONSES'),
+        buildCorrectionDExemple(exercice.screenId, 'B2-01-A2-06-REPONSES'),
       ]),
     );
 

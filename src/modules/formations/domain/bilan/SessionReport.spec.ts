@@ -1,4 +1,4 @@
-import { COURS_B3_01_SERVI } from '../../../../../test/helpers/cours-b3-01/cours-servi';
+import { COURS_B3_01_SERVI } from '../../../../../test/helpers/formations/b3/b3-01/cours-servi';
 import {
   buildCoursAuTirageEnErreur,
   buildCoursDeTest,
@@ -399,6 +399,28 @@ describe('buildRapportSession', () => {
             reponse: 'revenu au prix de départ',
             libelleConfusion: libelleDeConfusion(CONFUSION),
           },
+        ]),
+      );
+    });
+
+    it('REF-03 · garde telle quelle une option hors du tirage, une clé héritée ou une question sans options', () => {
+      const lues = rapportDuTirage([
+        ecriteAuTirage({
+          questionId: 'Q-TEST-VOTE',
+          valeur: 'option-inconnue',
+        }),
+        ecriteAuTirage({ questionId: 'Q-TEST-RAPPEL', valeur: 'toString' }),
+        ecriteAuTirage({ questionId: 'Q-HORS-COURS', valeur: 'texte libre' }),
+      ]).participants[0].reponses.map(({ questionId, reponse }) => ({
+        questionId,
+        reponse,
+      }));
+
+      expect(lues).toEqual(
+        expect.arrayContaining([
+          { questionId: 'Q-TEST-VOTE', reponse: 'option-inconnue' },
+          { questionId: 'Q-TEST-RAPPEL', reponse: 'toString' },
+          { questionId: 'Q-HORS-COURS', reponse: 'texte libre' },
         ]),
       );
     });

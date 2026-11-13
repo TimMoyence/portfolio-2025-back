@@ -1,8 +1,14 @@
+import {
+  mapperAuMoinsUn,
+  type AuMoinsUn,
+} from '../../../../common/domain/objets/au-moins-un';
 import type { ContenuDeCours } from '../../domain/cours/stockage/CoursStocke';
 import { typographierEnProfondeur } from '../../domain/cours/formule/Typographie';
 import { COURS_B1_01 } from './b1/b1-01/b1-01.cours';
 import { COURS_B1_02 } from './b1/b1-02/b1-02.cours';
 import { COURS_B1_03 } from './b1/b1-03/b1-03.cours';
+import { COURS_B1_04 } from './b1/b1-04/b1-04.cours';
+import { COURS_B1_05 } from './b1/b1-05/b1-05.cours';
 import { COURS_B2_01 } from './b2/b2-01/b2-01.cours';
 import { COURS_B2_02 } from './b2/b2-02.cours';
 import { COURS_B2_03 } from './b2/b2-03.cours';
@@ -10,9 +16,13 @@ import { COURS_B2_04 } from './b2/b2-04.cours';
 import { COURS_B2_05 } from './b2/b2-05/b2-05.cours';
 import { COURS_B2_06 } from './b2/b2-06/b2-06.cours';
 import { COURS_B2_07 } from './b2/b2-07/b2-07.cours';
+import { COURS_B2_08 } from './b2/b2-08/b2-08.cours';
+import { COURS_B2_09 } from './b2/b2-09/b2-09.cours';
 import { COURS_B3_01 } from './b3/b3-01/b3-01.cours';
 import { CA_HT_SAISI_EN_TEXTE } from './b3/b3-01/b3-01.donnees';
 import { COURS_B3_02 } from './b3/b3-02/b3-02.cours';
+import { COURS_B3_03 } from './b3/b3-03/b3-03.cours';
+import { COURS_B3_04 } from './b3/b3-04/b3-04.cours';
 
 const CITATIONS_LITTERALES: Readonly<
   Partial<Record<string, readonly string[]>>
@@ -29,30 +39,26 @@ function publiable(contenu: ContenuDeCours): ContenuDeCours {
   return typographierEnProfondeur(contenu, citationsLitteralesDe(contenu.slug));
 }
 
-export const CONTENUS: readonly [
-  ContenuDeCours,
-  ContenuDeCours,
-  ContenuDeCours,
-  ContenuDeCours,
-  ContenuDeCours,
-  ContenuDeCours,
-  ContenuDeCours,
-  ContenuDeCours,
-  ContenuDeCours,
-  ContenuDeCours,
-  ContenuDeCours,
-  ContenuDeCours,
-] = [
-  publiable(COURS_B2_01),
-  publiable(COURS_B2_02),
-  publiable(COURS_B2_03),
-  publiable(COURS_B2_04),
-  publiable(COURS_B2_05),
-  publiable(COURS_B2_06),
-  publiable(COURS_B3_01),
-  publiable(COURS_B1_01),
-  publiable(COURS_B1_02),
-  publiable(COURS_B1_03),
-  publiable(COURS_B3_02),
-  publiable(COURS_B2_07),
-];
+export const CONTENUS: AuMoinsUn<ContenuDeCours> = mapperAuMoinsUn(
+  [
+    COURS_B2_01,
+    COURS_B2_02,
+    COURS_B2_03,
+    COURS_B2_04,
+    COURS_B2_05,
+    COURS_B2_06,
+    COURS_B3_01,
+    COURS_B1_01,
+    COURS_B1_02,
+    COURS_B1_03,
+    COURS_B3_02,
+    COURS_B2_07,
+    COURS_B3_03,
+    COURS_B1_04,
+    COURS_B1_05,
+    COURS_B3_04,
+    COURS_B2_08,
+    COURS_B2_09,
+  ],
+  publiable,
+);

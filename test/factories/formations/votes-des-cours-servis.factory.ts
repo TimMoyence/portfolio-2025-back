@@ -7,6 +7,7 @@ import type {
   PilotageEcran,
   PilotageServi,
 } from '../../../src/modules/formations/domain/contrats/pilotage';
+import { ecranParId } from '../../../src/modules/formations/domain/cours/diffusion/EcranServi';
 import { ouvrirTirages } from '../../../src/modules/formations/domain/cours/tirage/OuvertureTirages';
 import type { SessionRecord } from '../../../src/modules/formations/domain/seance/acces/ISessions.repository';
 import { buildCoursDuContenu } from './cours/contenus-de-cours.factory';
@@ -64,7 +65,7 @@ export function questionsDuVoteJumele(
   cours: Cours,
   ecranId: string,
 ): { readonly principale: string; readonly jumelle: string } {
-  const ecran = cours.ecrans.find(({ id }) => id === ecranId);
+  const ecran = ecranParId(cours, ecranId);
   if (ecran?.brique !== 'fp-vote' || ecran.questionJumelle === undefined) {
     throw new Error(`vote jumelé absent de ${cours.slug} : ${ecranId}`);
   }

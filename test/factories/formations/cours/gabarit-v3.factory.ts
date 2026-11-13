@@ -2,7 +2,7 @@ import type { EcranDeCoursBrut } from '../../../../src/modules/formations/domain
 import type { Cours } from '../../../../src/modules/formations/domain/contrats/cours';
 import { lireCoursStocke } from '../../../../src/modules/formations/domain/cours/stockage/CoursStocke';
 import {
-  buildCorrectionDeReponses,
+  buildCorrectionDExemple,
   buildCoursDeBriques,
   buildEcranDeBrique,
   buildProprietesStockees,
@@ -110,11 +110,11 @@ export function buildEcransV3Conformes(): EcranDeCoursBrut[] {
     buildReflexionV3(IDS_V3.reflexion),
     buildLeconV3(IDS_V3.lecon),
     buildExerciceV3(IDS_V3.exercice),
-    buildCorrectionDeReponses(IDS_V3.exercice, IDS_V3.correction, {
+    buildCorrectionDExemple(IDS_V3.exercice, IDS_V3.correction, {
       dureeMinutes: 4,
     }),
     buildMiniSituationV3(IDS_V3.miniSituation),
-    buildCorrectionDeReponses(IDS_V3.miniSituation, IDS_V3.correctionFinale, {
+    buildCorrectionDExemple(IDS_V3.miniSituation, IDS_V3.correctionFinale, {
       dureeMinutes: 3,
     }),
     cloture,

@@ -8,7 +8,11 @@ import { TYPES_QUESTION } from '../contrats/contrat-de-l-api';
 import type { ResumeBareme } from '../contrats/resultats';
 import type { QuestionAAgreger } from '../bilan/ResultatsSeance';
 import { CONCEPTS, type ConceptId } from '../cours/banque/concepts';
-import { rangDeLaQuestion, seuilDe } from '../cours/diffusion/EcranServi';
+import {
+  ecranParId,
+  rangDeLaQuestion,
+  seuilDe,
+} from '../cours/diffusion/EcranServi';
 import { NE_SAIT_PAS } from './GradingCore';
 
 type QuestionType = 'numeric' | 'vote' | 'asn' | 'order';
@@ -163,7 +167,10 @@ export function questionsAAgreger(
 ): readonly QuestionAAgreger[] {
   return questionsDuBareme(bareme).map((question) => {
     const enrichie = questionDuBareme(bareme, question.id, cours);
-    const ecran = cours?.ecrans.find(({ id }) => id === enrichie?.ecranId);
+    const ecran =
+      cours === null || enrichie === null
+        ? undefined
+        : ecranParId(cours, enrichie.ecranId);
     return {
       id: question.id,
       type: enrichie?.type ?? typeAgregeable(question.type),

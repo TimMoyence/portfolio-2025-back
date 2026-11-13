@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import type { Cours } from '../../../../src/modules/formations/domain/contrats/cours';
 import type { DerouleCours } from '../../../../src/modules/formations/domain/contrats/deroule';
 import type { CoursPublic } from '../../../../src/modules/formations/domain/contrats/tirage';
 import type { ContenuDeCours } from '../../../../src/modules/formations/domain/cours/stockage/CoursStocke';
@@ -23,20 +24,31 @@ export interface Instantane {
 const GRAINE_DE_REFERENCE = 0;
 
 export function cheminDeLInstantane(contenu: ContenuDeCours): string {
+  const cours = prefixeDuCours(contenu).toLowerCase();
   return join(
     __dirname,
     '../../../fixtures/formations',
-    `${prefixeDuCours(contenu).toLowerCase()}.instantane.json`,
+    contenu.niveau.toLowerCase(),
+    `${cours}.instantane.json`,
   );
 }
 
-export function construireLInstantane(contenu: ContenuDeCours): Instantane {
-  const cours = buildCoursDuContenu(contenu);
-  const projection = {
+function projectionServie(
+  cours: Cours,
+): Omit<Instantane, 'graine' | 'empreinte'> {
+  return {
     sujet: tirer(cours, GRAINE_DE_REFERENCE).sujet,
     deroule: deroulePresentateur(cours, GRAINE_DE_REFERENCE),
     catalogue: projeterCatalogue(cours),
   };
+}
+
+export function empreinteServie(cours: Cours): string {
+  return empreinteCanonique(projectionServie(cours));
+}
+
+export function construireLInstantane(contenu: ContenuDeCours): Instantane {
+  const projection = projectionServie(buildCoursDuContenu(contenu));
   return {
     graine: GRAINE_DE_REFERENCE,
     empreinte: empreinteCanonique(projection),

@@ -10,7 +10,7 @@ import {
   nomPropre,
   partiesDeDate,
   supprEspace,
-} from '../../../../../../../test/helpers/cours-b3-01/excel';
+} from '../../../../../../../test/helpers/formations/b3/b3-01/excel';
 import {
   lignesDesValeursAttendues,
   lireConception,
@@ -19,20 +19,20 @@ import {
   ANOMALIES_SEMEES,
   GRAINE_B3_01,
   genererJeuB301,
-} from '../../../../../../../test/helpers/cours-b3-01/generateur';
+} from '../../../../../../../test/helpers/formations/b3/b3-01/generateur';
 import {
   nombreDe,
   ongletDe,
   texteDe,
   valeurDe,
   type Ligne,
-} from '../../../../../../../test/helpers/cours-b3-01/modele';
+} from '../../../../../../../test/helpers/formations/b3/b3-01/modele';
 import {
   caParTrimestre,
   calculerValeursB301,
   indicateursParAgence,
   medianesDUneListeTropLarge,
-} from '../../../../../../../test/helpers/cours-b3-01/valeurs';
+} from '../../../../../../../test/helpers/formations/b3/b3-01/valeurs';
 import {
   CA_HT_SAISI_EN_TEXTE,
   DEFIS_B3_01,
@@ -538,7 +538,7 @@ describe('jeu Norvane du B3-01', () => {
 
   it('reporte au § 5.1 de la conception chaque valeur attendue et chaque piège, à sa valeur', () => {
     const lignes = lignesDesValeursAttendues(
-      lireConception('cours-b3-01-conception.md'),
+      lireConception('b3/cours-b3-01-conception.md'),
     );
     const valeurs = lignes
       .filter((cellules) => cellules.length === 3)

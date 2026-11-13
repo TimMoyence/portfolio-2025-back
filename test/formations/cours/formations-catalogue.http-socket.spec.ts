@@ -7,10 +7,8 @@ import {
   ecartsAuSchemaDeLaRoute,
   installerApplicationSurCatalogue,
 } from '../../helpers/formations/cours/application-sur-catalogue';
-import {
-  clesDuCorrigeDans,
-  clesImbriquees,
-} from '../../helpers/formations/cours/cles-du-corrige';
+import { clesDuCorrigeDans } from '../../helpers/formations/cours/corrige/cles-du-corrige';
+import { clesDe } from '../../helpers/formations/cours/lecture-de-cours';
 import {
   routeFormations,
   serveurHttpDe,
@@ -64,7 +62,7 @@ describe('Catalogue public des formations (e2e http socket)', () => {
 
     expect({
       donneesFormateur: DONNEES_DU_FORMATEUR.filter((cle) =>
-        clesImbriquees(reponse.body).includes(cle),
+        clesDe(reponse.body).includes(cle),
       ),
       clesDuCorrige: clesDuCorrigeDans(reponse.body),
     }).toEqual({ donneesFormateur: [], clesDuCorrige: [] });

@@ -9,6 +9,7 @@ import {
   buildCoursDeBriques,
   buildEcranDeBrique,
 } from '../../../../../../test/factories/formations/cours/ecrans-stockes.factory';
+import { ecranDuCours } from '../../../../../../test/helpers/formations/cours/lecture-de-cours';
 import type { Ecran } from '../../contrats/cours';
 import { lireCoursStocke } from '../stockage/CoursStocke';
 import type { PilotageEcran } from '../../contrats/pilotage';
@@ -31,17 +32,9 @@ import {
 const COURS = buildCoursDeTest();
 const EXEMPLE = COURS.ecrans[5];
 const NUMERIQUE = COURS.ecrans[2];
-const CITATION = COURS.ecrans[1];
+const CAS_SANS_CORRIGE = COURS.ecrans[1];
 
-function ecranDuCours(id: string): Ecran {
-  const ecran = buildCoursAvecProductions().ecrans.find(
-    (candidat) => candidat.id === id,
-  );
-  if (ecran === undefined) {
-    throw new Error(`écran absent de la factory : ${id}`);
-  }
-  return ecran;
-}
+const AVEC_PRODUCTIONS = buildCoursAvecProductions();
 
 function refusePar(
   refus: new (...args: never[]) => Error,
@@ -73,9 +66,9 @@ function ouverte(
   });
 }
 
-const QUESTIONNAIRE = ecranDuCours('E-PRATIQUE');
-const FEUILLE = ecranDuCours('E-FEUILLE');
-const MACHINE = COURS.ecrans.find(({ id }) => id === 'E-CONCEPT') as Ecran;
+const QUESTIONNAIRE = ecranDuCours(AVEC_PRODUCTIONS, 'E-PRATIQUE');
+const FEUILLE = ecranDuCours(AVEC_PRODUCTIONS, 'E-FEUILLE');
+const MACHINE = ecranDuCours(COURS, 'E-CONCEPT');
 
 describe('assertPilotageCompatible', () => {
   it.each<[string, Ecran, PilotageDemande, boolean]>([
@@ -129,8 +122,8 @@ describe('assertPilotageCompatible', () => {
     ],
     [
       'R1 · refuse une révélation sur un écran sans corrigé',
-      CITATION,
-      { screenId: 'E-CITATION', revele: true },
+      CAS_SANS_CORRIGE,
+      { screenId: 'E-CAS', revele: true },
       false,
     ],
     [
@@ -165,12 +158,12 @@ describe('assertPilotageCompatible', () => {
 describe('pilotage des écrans de la QA B2', () => {
   const cours = lireCoursStocke(
     buildCoursDeBriques(
-      ['fp-plot', 'fp-table-build', 'fp-quote', 'fp-recall'].map((brique) =>
+      ['fp-plot', 'fp-table-build', 'fp-pro', 'fp-recall'].map((brique) =>
         buildEcranDeBrique(brique),
       ),
     ),
   );
-  const [TRACE, TABLEAU, CITATION_STOCKEE, RAPPEL] = cours.ecrans;
+  const [TRACE, TABLEAU, CAS_STOCKE, RAPPEL] = cours.ecrans;
   const CAS = lireCoursStocke(buildCoursDeBriques([buildCasAQuestionsLibres()]))
     .ecrans[0];
 
@@ -245,8 +238,8 @@ describe('pilotage des écrans de la QA B2', () => {
   it('révèle un écran à réponses libres et refuse un écran sans réponse', () => {
     expect([
       accepte(CAS, { screenId: CAS.id, revele: true }),
-      accepte(CITATION_STOCKEE, {
-        screenId: CITATION_STOCKEE.id,
+      accepte(CAS_STOCKE, {
+        screenId: CAS_STOCKE.id,
         revele: true,
       }),
     ]).toEqual([true, false]);
@@ -254,8 +247,8 @@ describe('pilotage des écrans de la QA B2', () => {
 
   it('F10 · accepte la projection des résultats sur tout écran', () => {
     expect(
-      accepte(CITATION_STOCKEE, {
-        screenId: CITATION_STOCKEE.id,
+      accepte(CAS_STOCKE, {
+        screenId: CAS_STOCKE.id,
         resultatsProjetes: true,
       }),
     ).toBe(true);
@@ -263,7 +256,7 @@ describe('pilotage des écrans de la QA B2', () => {
 
   it('F02 · affiche tout de suite les options d un rappel et refuse ailleurs', () => {
     expect(
-      [RAPPEL, CITATION_STOCKEE].map((ecran) =>
+      [RAPPEL, CAS_STOCKE].map((ecran) =>
         accepte(ecran, { screenId: ecran.id, optionsAffichees: true }),
       ),
     ).toEqual([true, false]);

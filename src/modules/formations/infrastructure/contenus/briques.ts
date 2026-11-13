@@ -8,6 +8,7 @@ import { somme } from '../../../../common/domain/nombres/statistiques';
 import type { ConceptId } from '../../domain/cours/banque/concepts';
 import type { ConfusionId } from '../../domain/cours/banque/confusions';
 import type { ContenuDeCours } from '../../domain/cours/stockage/CoursStocke';
+import type { VisualPresentation } from '../../domain/cours/structure/VisualPresentation';
 import {
   slugOption,
   type numeriqueStockee,
@@ -56,6 +57,7 @@ export const TOLERANCE_NULLE = { type: 'absolue', valeur: 0 } as const;
 export const A_L_UNITE = { type: 'decimales', valeur: 0 } as const;
 export const UNE_DECIMALE = { type: 'decimales', valeur: 1 } as const;
 export const DEUX_DECIMALES = { type: 'decimales', valeur: 2 } as const;
+export const TROIS_DECIMALES = { type: 'decimales', valeur: 3 } as const;
 
 export function puces(...lignes: AuMoinsUnModifiable<string>): string {
   return lignes.map((ligne) => `• ${ligne}`).join('\n');
@@ -67,11 +69,49 @@ export const NOTES_DU_VOTE_A_DEUX_QUESTIONS = [
   'Papier : vote à main levée sur chaque question.',
 ] as const;
 
-export function notesDuVoteQuiOuvreLaNotion(notion: 1 | 2 | 3): string {
+function notesDuVote(temps: string): string {
   return puces(
-    `Temps « réfléchir » de la notion ${notion} : votes non notés.`,
+    `Temps « réfléchir » ${temps} : votes non notés.`,
     ...NOTES_DU_VOTE_A_DEUX_QUESTIONS,
   );
+}
+
+export function notesDuVoteQuiOuvreLaNotion(notion: 1 | 2 | 3): string {
+  return notesDuVote(`de la notion ${notion}`);
+}
+
+export function notesDuVoteQuiRelanceLaNotion(notion: 1 | 2 | 3): string {
+  return notesDuVote(`du second cycle de la notion ${notion}`);
+}
+
+type SocleDuVote = Pick<
+  SocleDEcran,
+  'screenId' | 'titre' | 'dureeMinutes' | 'concepts' | 'notes'
+>;
+
+export interface PieceReservee {
+  readonly libelle: string;
+  readonly classeur: string;
+  readonly reprend: string[];
+}
+
+type EcranDeVote = Extract<EcranDuCours, { readonly brique: 'fp-vote' }>;
+
+export function voteQuiOuvre(
+  socle: SocleDuVote,
+  questions: EcranDeVote['proprietes']['questions'],
+  pieceJointe?: PieceReservee,
+): EcranDuCours {
+  return {
+    ...socle,
+    diffusion: 'seance',
+    brique: 'fp-vote',
+    proprietes: {
+      modalite: 'solo',
+      ...(pieceJointe === undefined ? {} : { pieceJointe }),
+      questions,
+    },
+  };
 }
 
 export const PAUSE_HORS_DUREE = 'Pause de 15 minutes, hors durée programmée.';
@@ -291,13 +331,19 @@ export interface TempsDeCorrection {
   readonly notes: AuMoinsUnModifiable<string>;
 }
 
-export const CORRECTION_AVANT_LA_PREMIERE_PAUSE: TempsDeCorrection = {
-  minutes: 2,
-  notes: [
-    CORRIGER_PAR_LA_MOINS_REUSSIE_SOUS_SON_SCORE,
-    'Transition : jalon 1, puis pause de 15 minutes.',
-  ],
-};
+function correctionAvantLaPause(jalon: 1 | 2): TempsDeCorrection {
+  return {
+    minutes: 2,
+    notes: [
+      CORRIGER_PAR_LA_MOINS_REUSSIE_SOUS_SON_SCORE,
+      `Transition : jalon ${jalon}, puis pause de 15 minutes.`,
+    ],
+  };
+}
+
+export const CORRECTION_AVANT_LA_PREMIERE_PAUSE = correctionAvantLaPause(1);
+
+export const CORRECTION_AVANT_LA_SECONDE_PAUSE = correctionAvantLaPause(2);
 
 function annoncerLaCorrection(notes: string, minutes: number): string {
   return notes.replace(
@@ -343,6 +389,66 @@ export function corrigeSurPlace<E extends EcranDuCours>(
 
 export function strategie(id: string, libelle: string, fausse = false) {
   return { id, libelle, fausse };
+}
+
+type EcranDeDefi = Extract<EcranDuCours, { readonly brique: 'fp-challenge' }>;
+
+export interface DefiDeConsigne {
+  readonly screenId: string;
+  readonly titre: string;
+  readonly aRelire: string;
+  readonly probleme: EcranDeDefi['proprietes']['probleme'];
+  readonly strategies: readonly ReturnType<typeof strategie>[];
+  readonly pourquoiLaFausse: string;
+  readonly explication: string;
+}
+
+export function defiDeConsigne({
+  screenId,
+  titre,
+  aRelire,
+  probleme,
+  strategies,
+  pourquoiLaFausse,
+  explication,
+}: DefiDeConsigne): EcranDeDefi {
+  return corrigeSurPlace<EcranDeDefi>(
+    {
+      screenId,
+      titre,
+      diffusion: 'seance',
+      brique: 'fp-challenge',
+      dureeMinutes: 5,
+      concepts: ['ia-redactrice'],
+      notes: puces(
+        tempsDeLExercice(1, 4),
+        `Réflexion : faire relire ${aRelire}.`,
+        'La consigne écrite ici sert telle quelle à l’écran suivant.',
+      ),
+      proprietes: {
+        modalite: 'solo',
+        probleme,
+        corrige: {
+          type: 'defi',
+          strategies: [
+            strategie(
+              'role',
+              'Rôle : « Tu es assistant de la directrice commerciale de Norvane Équipement. »',
+            ),
+            ...strategies,
+          ],
+        },
+      },
+    },
+    {
+      minutes: 2,
+      notes: [
+        `Révéler les stratégies ; demander pourquoi la dernière est fausse : ${pourquoiLaFausse}`,
+        'Transition : « Votre IA au travail. »',
+      ],
+    },
+    [['consigne', explication]],
+  );
 }
 
 export function attendu(
@@ -515,7 +621,7 @@ const REGLE_DE_LA_NOTION = 'En maths, on écrit : ';
 function ecranDImage(
   { screenId, titre, concepts }: SocleNomme,
   notes: AuMoinsUnModifiable<string>,
-  renderer: 'illustration' | 'image-left',
+  renderer: 'illustration' | 'image-left' | 'page',
   props: Readonly<Record<string, unknown>>,
   dureeMinutes = 1,
 ): EcranDeRecit {
@@ -540,28 +646,116 @@ export interface TexteDeLImage {
   readonly dureeMinutes: number;
 }
 
-export function ecranDImageCommentee(
+export interface Serie {
+  readonly nom: string;
+  readonly pages: number;
+}
+
+export interface PageDeSerie {
+  readonly rang: number;
+  readonly syntaxe: string;
+  readonly piege: string;
+  readonly exemple: string;
+  readonly correspondances: Correspondances;
+}
+
+export type SocleDeLaPage = SocleNomme & {
+  readonly notes: AuMoinsUnModifiable<string>;
+};
+
+const DUREE_D_UNE_PAGE_DE_SERIE = 2;
+
+export function texteDeLaPage(
+  { nom, pages }: Serie,
+  { rang, syntaxe, piege, exemple, correspondances }: PageDeSerie,
+): TexteDeLImage {
+  return {
+    sousTitre: `${nom} · page ${rang} sur ${pages}`,
+    paragraphes: [
+      `Syntaxe : ${syntaxe}`,
+      `Le piège : ${piege}`,
+      `Exemple : ${exemple}`,
+    ],
+    correspondances,
+    dureeMinutes: DUREE_D_UNE_PAGE_DE_SERIE,
+  };
+}
+
+function ecranCommente(
   socle: SocleNomme,
-  dossier: string,
-  { fichier, imageAlt }: ImageDIllustration,
+  renderer: 'image-left' | 'page',
+  visuel: Readonly<Record<string, unknown>>,
   { sousTitre, paragraphes, correspondances, dureeMinutes }: TexteDeLImage,
   notes: AuMoinsUnModifiable<string>,
 ): EcranDeRecit {
   return ecranDImage(
     socle,
     notes,
-    'image-left',
+    renderer,
     {
       title: socle.titre,
       ...(sousTitre === undefined ? {} : { subtitle: sousTitre }),
-      image: `${dossier}/${fichier}`,
-      imageAlt,
+      ...visuel,
       paragraphs: [...paragraphes],
       items: enListe(correspondances),
     },
     dureeMinutes,
   );
 }
+
+export function ecranDImageCommentee(
+  socle: SocleNomme,
+  dossier: string,
+  { fichier, imageAlt }: ImageDIllustration,
+  texte: TexteDeLImage,
+  notes: AuMoinsUnModifiable<string>,
+): EcranDeRecit {
+  return ecranCommente(
+    socle,
+    'image-left',
+    { image: `${dossier}/${fichier}`, imageAlt },
+    texte,
+    notes,
+  );
+}
+
+export type PageDeWord = Extract<
+  VisualPresentation,
+  { readonly renderer: 'page' }
+>['props']['page'];
+
+type ParagrapheDePage = Extract<
+  PageDeWord['blocks'][number],
+  { readonly runs: unknown }
+>;
+
+export const paragraphe = (
+  runs: ParagrapheDePage['runs'],
+  marker?: ParagrapheDePage['marker'],
+): ParagrapheDePage => ({
+  style: 'normal',
+  runs,
+  ...(marker === undefined ? {} : { marker }),
+});
+
+export interface PageDessinee {
+  readonly page: PageDeWord;
+  readonly pageAlt: string;
+}
+
+export const pageDessineeDeLaSerie =
+  (serie: Serie) =>
+  (
+    { notes, ...socle }: SocleDeLaPage,
+    { page, pageAlt, ...texte }: PageDessinee & PageDeSerie,
+  ): EcranDeRecit =>
+    ecranCommente(
+      socle,
+      'page',
+      { page, pageAlt },
+      texteDeLaPage(serie, texte),
+      notes,
+    );
 
 export function ecranDIllustration(
   socle: SocleNomme,
@@ -727,5 +921,7 @@ function coursDuNiveau(niveau: string) {
 }
 
 export const coursB2 = coursDuNiveau('B2');
+export const DONNEES_FICTIVES_DU_B2 =
+  'Données fictives Atelier Rivage, créées pour ce cours.';
 export const coursB3 = coursDuNiveau('B3');
 export const coursB1 = coursDuNiveau('B1');

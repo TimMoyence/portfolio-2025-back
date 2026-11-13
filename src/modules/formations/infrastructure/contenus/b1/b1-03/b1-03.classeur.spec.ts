@@ -1,6 +1,4 @@
-import { createHash } from 'node:crypto';
-import { mkdirSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { readdirSync } from 'node:fs';
 import {
   empreinteDuFichier,
   octetsDUnClasseur,
@@ -8,13 +6,18 @@ import {
   relireClasseur,
   type ExportDuClasseur,
   type OngletCanonique,
-} from '../../../../../../../test/helpers/cours-b3-01/classeurs';
-import { dateExcel } from '../../../../../../../test/helpers/cours-b3-01/excel';
+} from '../../../../../../../test/helpers/formations/b3/b3-01/classeurs';
+import { dateExcel } from '../../../../../../../test/helpers/formations/b3/b3-01/excel';
 import type {
   Classeur,
   Onglet,
-} from '../../../../../../../test/helpers/cours-b3-01/modele';
-import { cheminDuClasseur } from '../../../../../../../test/helpers/formations/cours/classeurs-reserves';
+} from '../../../../../../../test/helpers/formations/b3/b3-01/modele';
+import {
+  cheminDuClasseur,
+  ecrireLeFichierServi,
+  empreinteDe,
+  nomServiDe,
+} from '../../../../../../../test/helpers/formations/cours/classeurs-reserves';
 import {
   CANAUX,
   CLASSEUR_DES_VENTES,
@@ -26,7 +29,6 @@ import {
 
 const ONGLET = 'Ventes';
 const BASE = 'B1-03_ventes_octobre';
-const LONGUEUR_DU_SUFFIXE = 8;
 const DELAI_MS = 60_000;
 const EXPORT: ExportDuClasseur = {
   auteur: 'Partie Libre — service gestion',
@@ -54,19 +56,13 @@ const VENTES: Onglet = {
 const CLASSEUR: Classeur = { [ONGLET]: VENTES };
 
 const DOSSIER = cheminDuClasseur('b1-03');
-const sha256 = (octets: Buffer): string =>
-  createHash('sha256').update(octets).digest('hex');
-
 async function ecrireLeClasseur(): Promise<void> {
-  mkdirSync(DOSSIER, { recursive: true });
-  const octets = await octetsDUnClasseur(CLASSEUR, EXPORT);
-  const fichier = `${BASE}.${sha256(octets).slice(0, LONGUEUR_DU_SUFFIXE)}.xlsx`;
-  for (const ancien of readdirSync(DOSSIER)) {
-    if (ancien !== fichier) {
-      rmSync(join(DOSSIER, ancien));
-    }
-  }
-  writeFileSync(join(DOSSIER, fichier), octets);
+  ecrireLeFichierServi(
+    DOSSIER,
+    BASE,
+    await octetsDUnClasseur(CLASSEUR, EXPORT),
+    'xlsx',
+  );
 }
 
 function tcdRelu(onglet: OngletCanonique) {
@@ -95,10 +91,10 @@ describe('B1-03 — le classeur des ventes d’octobre', () => {
       const octets = await octetsDUnClasseur(CLASSEUR, EXPORT);
 
       expect(empreinteDuFichier(cheminDuClasseur(CLASSEUR_DES_VENTES))).toBe(
-        sha256(octets),
+        empreinteDe(octets),
       );
       expect(CLASSEUR_DES_VENTES).toBe(
-        `b1-03/${BASE}.${sha256(octets).slice(0, LONGUEUR_DU_SUFFIXE)}.xlsx`,
+        `b1-03/${nomServiDe(BASE, octets, 'xlsx')}`,
       );
       expect(readdirSync(DOSSIER)).toEqual([CLASSEUR_DES_VENTES.split('/')[1]]);
     },

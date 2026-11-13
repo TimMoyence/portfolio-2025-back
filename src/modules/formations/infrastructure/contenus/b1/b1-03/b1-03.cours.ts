@@ -180,36 +180,33 @@ const ACTE_1: moteur.Acte = [
         'Gravure du Scientific American (1890) : les machines électriques de Herman Hollerith, qui trient et comptent les cartes perforées du recensement américain',
     },
   ),
-  {
-    screenId: 'B1-03-A1-03-VOTE-DIAGNOSTIC',
-    titre: 'Vote : regrouper, puis calculer',
-    diffusion: 'seance',
-    brique: 'fp-vote',
-    dureeMinutes: 4,
-    concepts: ['tableau-croise-dynamique', 'moyenne-ponderee'],
-    notes: moteur.notesDuVoteQuiOuvreLaNotion(1),
-    proprietes: {
-      modalite: 'solo',
-      questions: [
-        moteur.vote(
-          'b1-03-a1-vote-regrouper',
-          'tableau-croise-dynamique',
-          false,
-          `Le fichier d’octobre compte ${NOMBRE_DE_VENTES} ventes. Pour connaître le chiffre d’affaires de chaque canal, que faire ?`,
-          'Regrouper les ventes par canal et additionner leurs montants',
-          [['Compter les ventes de chaque canal', SYNTHESE_ERRONEE]],
-        ),
-        moteur.vote(
-          'b1-03-a1-vote-taux',
-          'moyenne-ponderee',
-          false,
-          'Deux ventes : l’une à 50 % de marge sur 10 € de coût, l’autre à 10 % de marge sur 100 € de coût. Quel est le taux de marge des deux ventes ensemble ?',
-          'Environ 13,6 %',
-          [['30 %, la moyenne des deux taux', MOYENNE_SIMPLE]],
-        ),
-      ],
+  moteur.voteQuiOuvre(
+    {
+      screenId: 'B1-03-A1-03-VOTE-DIAGNOSTIC',
+      titre: 'Vote : regrouper, puis calculer',
+      dureeMinutes: 4,
+      concepts: ['tableau-croise-dynamique', 'moyenne-ponderee'],
+      notes: moteur.notesDuVoteQuiOuvreLaNotion(1),
     },
-  },
+    [
+      moteur.vote(
+        'b1-03-a1-vote-regrouper',
+        'tableau-croise-dynamique',
+        false,
+        `Le fichier d’octobre compte ${NOMBRE_DE_VENTES} ventes. Pour connaître le chiffre d’affaires de chaque canal, que faire ?`,
+        'Regrouper les ventes par canal et additionner leurs montants',
+        [['Compter les ventes de chaque canal', SYNTHESE_ERRONEE]],
+      ),
+      moteur.vote(
+        'b1-03-a1-vote-taux',
+        'moyenne-ponderee',
+        false,
+        'Deux ventes : l’une à 50 % de marge sur 10 € de coût, l’autre à 10 % de marge sur 100 € de coût. Quel est le taux de marge des deux ventes ensemble ?',
+        'Environ 13,6 %',
+        [['30 %, la moyenne des deux taux', MOYENNE_SIMPLE]],
+      ),
+    ],
+  ),
   moteur.ecranV2(
     {
       screenId: RENVOI_AU_DOSSIER,
@@ -1082,36 +1079,33 @@ const CLASSES_DE_L_EXEMPLE = [
 ] as const;
 
 const ACTE_3: moteur.Acte = [
-  {
-    screenId: 'B1-03-A3-01-VOTE-COMPARER',
-    titre: 'Vote : comparer sans tout relire',
-    diffusion: 'seance',
-    brique: 'fp-vote',
-    dureeMinutes: 5,
-    concepts: ['boite-a-moustaches', 'moyenne'],
-    notes: moteur.notesDuVoteQuiOuvreLaNotion(3),
-    proprietes: {
-      modalite: 'solo',
-      questions: [
-        moteur.vote(
-          'b1-03-a3-vote-boite',
-          'boite-a-moustaches',
-          false,
-          'Une série est coupée en quatre parts par ses quartiles et sa médiane. Sur un dessin, la part du haut est très longue. Contient-elle plus de valeurs que les autres ?',
-          'Non, autant que chacune des trois autres parts',
-          [['Oui, puisqu’elle est plus longue', BOITE_EFFECTIF]],
-        ),
-        moteur.vote(
-          'b1-03-a3-vote-centre',
-          'moyenne',
-          false,
-          'Des paniers groupés par tranches : 30 paniers entre 20 € et 40 €. Pour calculer une moyenne, quel montant prendre pour eux ?',
-          '30 €, le milieu de la tranche',
-          [['20 €, le début de la tranche', CENTRE_OUBLIE]],
-        ),
-      ],
+  moteur.voteQuiOuvre(
+    {
+      screenId: 'B1-03-A3-01-VOTE-COMPARER',
+      titre: 'Vote : comparer sans tout relire',
+      dureeMinutes: 5,
+      concepts: ['boite-a-moustaches', 'moyenne'],
+      notes: moteur.notesDuVoteQuiOuvreLaNotion(3),
     },
-  },
+    [
+      moteur.vote(
+        'b1-03-a3-vote-boite',
+        'boite-a-moustaches',
+        false,
+        'Une série est coupée en quatre parts par ses quartiles et sa médiane. Sur un dessin, la part du haut est très longue. Contient-elle plus de valeurs que les autres ?',
+        'Non, autant que chacune des trois autres parts',
+        [['Oui, puisqu’elle est plus longue', BOITE_EFFECTIF]],
+      ),
+      moteur.vote(
+        'b1-03-a3-vote-centre',
+        'moyenne',
+        false,
+        'Des paniers groupés par tranches : 30 paniers entre 20 € et 40 €. Pour calculer une moyenne, quel montant prendre pour eux ?',
+        '30 €, le milieu de la tranche',
+        [['20 €, le début de la tranche', CENTRE_OUBLIE]],
+      ),
+    ],
+  ),
   pourComprendre(
     {
       screenId: 'B1-03-A3-02-ENFANT-BOITE',

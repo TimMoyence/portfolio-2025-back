@@ -146,6 +146,17 @@ export function lignesDesValeursAttendues(document: string): string[][] {
     .map(cellules);
 }
 
+export function valeursAttendues(
+  document: string,
+): Readonly<Record<string, number>> {
+  return Object.fromEntries(
+    lignesDesValeursAttendues(document).map((ligne) => [
+      ligne[0].replaceAll('`', ''),
+      Number(ligne.at(-1)),
+    ]),
+  );
+}
+
 export function mediasDuDocument(document: string): MediaDuDocument[] {
   return lignesDeSection(document, '### 8.2', ['### 8.3'])
     .filter((ligne) => /^\| M\d/.test(ligne))

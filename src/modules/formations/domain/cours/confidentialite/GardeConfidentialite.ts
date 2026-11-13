@@ -1,5 +1,6 @@
 import { auMillionieme } from '../../../../../common/domain/nombres/arrondi';
 import {
+  ecrituresEnPourcentage,
   nombreFrancais,
   nombreSansArrondi,
 } from '../../../../../common/domain/nombres/ecriture-francaise';
@@ -8,6 +9,7 @@ import { tronquer } from '../../../../../common/domain/texte/formats/tronquer';
 import type { Cours, Ecran, Question } from '../../contrats/cours';
 import type { EcranPublic, TirageDuCours } from '../../contrats/tirage';
 import { estObjet } from '../../../../../common/domain/objets/est-objet';
+import { sansLesCles } from '../../../../../common/domain/objets/sans-les-cles';
 import { cueillirDansArbre, cueillirSous } from './ArbreDeValeurs';
 import type { CorrigeProduction } from '../correction/Corrige';
 import { questionsDe } from '../structure/Cours';
@@ -34,7 +36,18 @@ const SUITE_D_UN_ENTIER = /^(?:\d|,\d| \d{3}(?!\d))/u;
 const FIN_DE_GROUPE_DE_MILLIERS = /^\d{3}(?!\d)/u;
 const DEBUT_DE_GROUPE_DE_MILLIERS = /(?:^|[^\d,])\d{1,3} $/u;
 const LONGUEUR_D_UN_DEBUT_DE_GROUPE = 5;
-const NOMBRE_ET_SON_UNITE = /^[+−-]?\s?(\d+(?:\s\d{3})*(?:,\d+)?)\s?[^\d\s]+$/u;
+const NOMBRE_ET_SON_UNITE = /^[+−-]?\s?(\d+(?:\s\d{3})*(?:,\d+)?)[^\d:;,(]*$/u;
+const NOMBRE_EN_POURCENTAGE = /\d\s?%/u;
+const MARQUES_DE_CONCLUSION = ['soit', '=', '≈', 'environ'] as const;
+const PARENTHESE_FINALE = /\s\([^()]*\)$/u;
+const POINT_FINAL = /\s?[.!?;:…]$/u;
+const DEBUT_D_UNITE = /^\s?[\p{L}€$£%]/u;
+const PREMIER_MOT = /^\s(\p{L}+)/u;
+const MOTS_DE_LIAISON: ReadonlySet<string> = new Set(
+  'de des du et ou à au aux en la le les un une sur par pour soit donc car avec sans environ puis'.split(
+    ' ',
+  ),
+);
 const TYPE_D_ECRAN_VERROUILLE = 'ecran-verrouille';
 
 interface Contexte {
@@ -77,7 +90,11 @@ function precedeLeNombre(forme: string, avant: string): boolean {
   );
 }
 
-export function contientLaForme(texte: string, forme: string): boolean {
+export function contientLaForme(
+  texte: string,
+  forme: string,
+  suiteAdmise: (suite: string) => boolean = () => true,
+): boolean {
   const source = sansEspacesNiMoinsTypographiques(texte);
   const cible = sansEspacesNiMoinsTypographiques(forme);
   let depart = source.indexOf(cible);
@@ -87,7 +104,11 @@ export function contientLaForme(texte: string, forme: string): boolean {
       depart,
     );
     const suite = source.slice(depart + cible.length);
-    if (!precedeLeNombre(cible, avant) && !prolongeLeNombre(cible, suite)) {
+    if (
+      !precedeLeNombre(cible, avant) &&
+      !prolongeLeNombre(cible, suite) &&
+      suiteAdmise(suite)
+    ) {
       return true;
     }
     depart = source.indexOf(cible, depart + 1);
@@ -123,14 +144,6 @@ function chiffresSignificatifs(valeur: number): number {
   return fin - debut;
 }
 
-function sansLaQuestion(
-  objet: Readonly<Record<string, unknown>>,
-): Readonly<Record<string, unknown>> {
-  return Object.fromEntries(
-    Object.entries(objet).filter(([cle]) => !CLES_DE_LA_QUESTION.includes(cle)),
-  );
-}
-
 function chainesDe(valeur: unknown, exclue: string | null): string[] {
   const retenir = (
     _cle: string,
@@ -140,18 +153,23 @@ function chainesDe(valeur: unknown, exclue: string | null): string[] {
       return [element];
     }
     if (exclue !== null && estObjet(element) && element.id === exclue) {
-      return cueillirDansArbre(sansLaQuestion(element), retenir);
+      return cueillirDansArbre(
+        sansLesCles(element, CLES_DE_LA_QUESTION),
+        retenir,
+      );
     }
     return null;
   };
   return cueillirSous('donnees', valeur, retenir);
 }
 
-const CLES_DES_NOMBRES_DU_NUAGE: readonly string[] = [
+const CLES_DES_NOMBRES_DES_GRAPHIQUES: readonly string[] = [
   'x',
   'y',
   'slope',
   'intercept',
+  'probabilite',
+  'produit',
 ];
 
 function nombresDe(elements: readonly unknown[]): number[] {
@@ -165,7 +183,7 @@ function valeursDesGraphiques(valeur: unknown): number[] {
     if (cle === 'values' && Array.isArray(element)) {
       return nombresDe(element);
     }
-    return CLES_DES_NOMBRES_DU_NUAGE.includes(cle)
+    return CLES_DES_NOMBRES_DES_GRAPHIQUES.includes(cle)
       ? nombresDe([element])
       : null;
   });
@@ -176,22 +194,27 @@ interface Portee {
   readonly limite: number;
   readonly exclue: string;
   readonly decimales?: number;
+  readonly enPourcentage?: boolean;
 }
 
 function textesDeLEcran(
   ecran: EcranPublic,
   exclue: string | null,
-  decimales: number | undefined,
+  portee: Portee,
 ): string[] {
   const titre = ecran.titre === null ? [] : [ecran.titre];
   if (ecran.type === TYPE_D_ECRAN_VERROUILLE) {
     return titre;
   }
+  const { decimales } = portee;
+  const facteurs = portee.enPourcentage ? [1, FACTEUR_DE_POURCENTAGE] : [1];
   const valeurs =
     decimales === undefined
       ? []
-      : valeursDesGraphiques(ecran.donnees).map((valeur) =>
-          nombreFrancais(valeur, decimales),
+      : valeursDesGraphiques(ecran.donnees).flatMap((valeur) =>
+          facteurs.map((facteur) =>
+            nombreFrancais(valeur * facteur, decimales),
+          ),
         );
   return [...titre, ...chainesDe(ecran.donnees, exclue), ...valeurs];
 }
@@ -204,7 +227,7 @@ function textesVisibles(
     const ecran =
       position <= portee.limite ? servi : contexte.catalogue[position];
     const exclue = position === portee.rang ? portee.exclue : null;
-    return textesDeLEcran(ecran, exclue, portee.decimales).map((texte) => ({
+    return textesDeLEcran(ecran, exclue, portee).map((texte) => ({
       ecran: ecran.id,
       texte,
     }));
@@ -233,18 +256,89 @@ function signaler(
   }));
 }
 
-function formesDeLaReponse(forme: string): readonly string[] {
-  const nombre = NOMBRE_ET_SON_UNITE.exec(
-    sansEspacesNiMoinsTypographiques(forme),
-  )?.[1];
-  if (nombre === undefined) {
-    return [forme];
+const formeLue = (forme: string): string =>
+  sansEspacesNiMoinsTypographiques(forme).trimEnd().replace(POINT_FINAL, '');
+
+function conclusionDe(ecrite: string): string {
+  const sansParenthese = ecrite.replace(PARENTHESE_FINALE, '');
+  const enMinuscules = sansParenthese.toLowerCase();
+  const fin = Math.max(
+    ...MARQUES_DE_CONCLUSION.map((marque) => {
+      const debut = enMinuscules.lastIndexOf(marque);
+      return debut === -1 ? -1 : debut + marque.length;
+    }),
+  );
+  return sansParenthese.slice(Math.max(fin, 0)).trim();
+}
+
+function nombreLu(forme: string): string | undefined {
+  const ecrite = formeLue(forme);
+  return [ecrite, conclusionDe(ecrite)].find((texte) =>
+    NOMBRE_ET_SON_UNITE.test(texte),
+  );
+}
+
+const nombreDeLaReponse = (forme: string): string | undefined =>
+  NOMBRE_ET_SON_UNITE.exec(nombreLu(forme) ?? '')?.[1];
+
+function estEnPourcentage(forme: string): boolean {
+  const lu = nombreLu(forme);
+  return lu === undefined
+    ? formeLue(forme).endsWith('%')
+    : NOMBRE_EN_POURCENTAGE.test(lu);
+}
+
+interface FormeCherchee {
+  readonly ecrite: string;
+  readonly suiteAdmise?: (suite: string) => boolean;
+}
+
+const sansUniteQuiSuit = (suite: string): boolean =>
+  !DEBUT_D_UNITE.test(suite) ||
+  MOTS_DE_LIAISON.has(PREMIER_MOT.exec(suite)?.[1] ?? '');
+
+const uniteDeLaQuestion = (contexte: Contexte, questionId: string): unknown =>
+  cueillirDansArbre(contexte.sujet, (_, noeud) =>
+    estObjet(noeud) && noeud.id === questionId && 'unite' in noeud
+      ? [noeud.unite]
+      : null,
+  )[0];
+
+function autreEcriture(
+  valeur: number,
+  enPourcentage: boolean,
+): readonly FormeCherchee[] {
+  if (enPourcentage) {
+    return [
+      {
+        ecrite: nombreSansArrondi(
+          auMillionieme(valeur / FACTEUR_DE_POURCENTAGE),
+        ),
+        suiteAdmise: sansUniteQuiSuit,
+      },
+    ];
   }
-  const valeur = lireNombreSaisi(nombre);
-  return valeur !== null &&
+  return Math.abs(valeur) < 1
+    ? ecrituresEnPourcentage(valeur).map((ecrite) => ({ ecrite }))
+    : [];
+}
+
+function formesDeLaReponse(
+  forme: string,
+  enPourcentage: boolean,
+): readonly FormeCherchee[] {
+  const nombre = nombreDeLaReponse(forme);
+  const valeur = nombre === undefined ? null : lireNombreSaisi(nombre);
+  return nombre !== undefined &&
+    valeur !== null &&
     chiffresSignificatifs(valeur) >= CHIFFRES_SIGNIFICATIFS_MINIMUM
-    ? [forme, nombre]
-    : [forme];
+    ? [
+        ...[forme, nombre, nombreSansArrondi(valeur)].map((ecrite) => ({
+          ecrite,
+        })),
+        ...autreEcriture(valeur, enPourcentage),
+      ]
+    : [{ ecrite: forme }];
 }
 
 function fuitesDeForme(
@@ -252,19 +346,28 @@ function fuitesDeForme(
   cible: QuestionPlacee,
   forme: string,
 ): readonly Manquement[] {
+  const enPourcentage =
+    estEnPourcentage(forme) ||
+    uniteDeLaQuestion(contexte, cible.question.id) === '%';
   const textes = textesVisibles(contexte, {
     rang: cible.rang,
     limite: cible.rang,
     exclue: cible.question.id,
-    decimales: decimalesDe(forme),
+    decimales: decimalesDe(nombreDeLaReponse(forme) ?? forme),
+    enPourcentage,
   });
-  const formes = formesDeLaReponse(forme);
+  const formes =
+    cible.ecran.brique === 'fp-spaced'
+      ? [{ ecrite: forme }]
+      : formesDeLaReponse(forme, enPourcentage);
   return signaler(
     cible,
     'exact',
     `« ${forme} »`,
     textes.filter((texte) =>
-      formes.some((ecrite) => contientLaForme(texte.texte, ecrite)),
+      formes.some(({ ecrite, suiteAdmise }) =>
+        contientLaForme(texte.texte, ecrite, suiteAdmise),
+      ),
     ),
   );
 }

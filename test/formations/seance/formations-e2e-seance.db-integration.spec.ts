@@ -39,13 +39,20 @@ import {
   COURS_B1_03,
   COURS_B3_02,
   COURS_B2_07,
+  COURS_B2_08,
+  COURS_B2_09,
+  COURS_B1_04,
+  COURS_B1_05,
+  COURS_B3_03,
+  COURS_B3_04,
 } from '../../factories/formations/cours/contenus-publies';
 import { prefixeDuCours } from '../../factories/formations/cours/contenus-de-cours.factory';
 import {
   classeursReservesDe,
   octetsDuClasseur,
 } from '../../helpers/formations/cours/classeurs-reserves';
-import { clesSecretesDans } from '../../helpers/formations/cours/cles-du-corrige';
+import { clesSecretesDans } from '../../helpers/formations/cours/corrige/cles-du-corrige';
+import { ecranDuCours } from '../../helpers/formations/cours/lecture-de-cours';
 import { describeDb } from '../../helpers/base/db-integration-datasource';
 import {
   CODE_HTTP,
@@ -73,7 +80,7 @@ import {
   productionVide,
   reponseDEnigme,
   valeurPiegee,
-} from '../../helpers/formations/cours/reponses-de-cours';
+} from '../../helpers/formations/cours/corrige/reponses-de-cours';
 import { silenceNestLogger } from '../../helpers/http/silence-nest-logger';
 
 const VERSION_COURS = VERSION_PUBLIEE_SUR_BASE_NEUVE;
@@ -108,9 +115,7 @@ function piecesJointesAttendues(
   ids: readonly string[],
 ): [string, unknown][] {
   return ids.map((id) => {
-    const pieceJointe = cours.ecrans.find(
-      (ecran) => ecran.id === id,
-    )?.pieceJointe;
+    const { pieceJointe } = ecranDuCours(cours, id);
     return [
       id,
       pieceJointe !== undefined && estReservee(pieceJointe)
@@ -348,18 +353,17 @@ function seanceComplete(
         ids: readonly string[],
       ): [string, unknown][] => piecesJointesAttendues(cours, ids);
 
-      const ecranDuSujet = async (
-        ecranId: string,
-      ): Promise<EcranPublic | undefined> =>
-        (
+      const ecranDuSujet = async (ecranId: string): Promise<EcranPublic> =>
+        ecranDuCours(
           (
             await poste(
               'get',
               `/sessions/${sessionId}/sujet`,
               postes[0].jeton,
             ).expect(OK)
-          ).body as { ecrans: EcranPublic[] }
-        ).ecrans.find((servi) => servi.id === ecranId);
+          ).body as { ecrans: EcranPublic[] },
+          ecranId,
+        );
 
       const productionDe = (ecran: Ecran): QuestionProduction => {
         const question = questionsDe(ecran).find(estProduction);
@@ -935,7 +939,7 @@ function seanceComplete(
               .slice(0, devoilees)
               .map((explication) => explication.reference),
           );
-          const correction = (await ecranDuSujet(ecran.id))?.correction;
+          const correction = (await ecranDuSujet(ecran.id)).correction;
 
           expect({
             ecran: ecran.id,
@@ -1154,12 +1158,7 @@ function seanceComplete(
             await repondre(unPoste, questionDOuverture()).expect(CREE);
           }
 
-          const exercice = cours.ecrans.find(
-            ({ id }) => id === attendu.exerciceEnAvance,
-          );
-          if (exercice === undefined) {
-            throw new Error(`Ecrans du ${PREFIXE} mal identifies`);
-          }
+          const exercice = ecranDuCours(cours, attendu.exerciceEnAvance);
           const enAvance = [
             await repondre(postes[1], questionsDe(ecranDe('questionnaire'))[0]),
             ...(ecranFacultatif('fp-spaced') === undefined
@@ -1765,6 +1764,22 @@ seanceComplete(COURS_B2_07, {
   enigmes: 0,
 });
 
+seanceComplete(COURS_B2_08, {
+  ...TRAME_DES_COURS_B2,
+  questionsNotees: 19,
+  cellulesDesFeuilles: [11],
+  exerciceEnAvance: 'B2-08-A2-05-EXEMPLE-PRODUIT',
+  enigmes: 0,
+});
+
+seanceComplete(COURS_B2_09, {
+  ...TRAME_DES_COURS_B2,
+  questionsNotees: 17,
+  cellulesDesFeuilles: [],
+  exerciceEnAvance: 'B2-09-A2-06-EXEMPLE-ARBRE',
+  enigmes: 0,
+});
+
 seanceComplete(COURS_B3_01, {
   questionsNotees: 20,
   cellulesDesFeuilles: [],
@@ -1807,6 +1822,22 @@ seanceComplete(COURS_B1_03, {
   classeursReserves: ['B1-03-A1-09-ATELIER-TCD'],
 });
 
+seanceComplete(COURS_B1_04, {
+  ...TRAME_DES_COURS_B2,
+  questionsNotees: 12,
+  cellulesDesFeuilles: [4, 6],
+  exerciceEnAvance: 'B1-04-A2-04-EXEMPLE-TOURS',
+  enigmes: 0,
+});
+
+seanceComplete(COURS_B1_05, {
+  ...TRAME_DES_COURS_B2,
+  questionsNotees: 15,
+  cellulesDesFeuilles: [12],
+  exerciceEnAvance: 'B1-05-A2-04-EXEMPLE-PRIME',
+  enigmes: 0,
+});
+
 seanceComplete(COURS_B3_02, {
   questionsNotees: 17,
   cellulesDesFeuilles: [],
@@ -1826,4 +1857,32 @@ seanceComplete(COURS_B3_02, {
     'B3-02-A3-06-ANALYSE-IA',
   ],
   intervalleLibre: { premier: 37, dernier: 37 },
+});
+
+seanceComplete(COURS_B3_03, {
+  questionsNotees: 13,
+  cellulesDesFeuilles: [],
+  exerciceEnAvance: 'B3-03-A1-11-EXEMPLE-STYLE',
+  jalons: 0,
+  enigmes: 0,
+  piecesJointes: ['B3-03-A1-02-ACCROCHE', 'B3-03-A1-03-VOTE-LIGNES-VIDES'],
+  piecesJointesAuCatalogue: ['B3-03-A1-02-ACCROCHE'],
+  classeursReserves: ['B3-03-A1-03-VOTE-LIGNES-VIDES'],
+  intervalleLibre: { premier: 32, dernier: 32 },
+});
+
+seanceComplete(COURS_B3_04, {
+  questionsNotees: 13,
+  cellulesDesFeuilles: [],
+  exerciceEnAvance: 'B3-04-A1-10-EXEMPLE-CHAMPS',
+  jalons: 0,
+  enigmes: 0,
+  piecesJointes: [
+    'B3-04-A1-02-ACCROCHE',
+    'B3-04-A1-03-VOTE-LETTRES',
+    'B3-04-A3-04-ATELIER-ENVOI',
+  ],
+  piecesJointesAuCatalogue: ['B3-04-A1-02-ACCROCHE'],
+  classeursReserves: ['B3-04-A1-03-VOTE-LETTRES', 'B3-04-A3-04-ATELIER-ENVOI'],
+  intervalleLibre: { premier: 27, dernier: 27 },
 });

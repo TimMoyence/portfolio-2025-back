@@ -7,6 +7,7 @@ import {
   monterEnregistrement,
   type DependancesDEnregistrement,
 } from '../../../../../test/helpers/formations/seance/enregistrement-de-reponse';
+import { rangDuCours } from '../../../../../test/helpers/formations/cours/lecture-de-cours';
 import type { CorrigeFeuille } from '../../domain/cours/correction/Corrige';
 import { ecranDeProduction } from '../../domain/cours/evaluation/ProductionSoumise';
 import type { PilotageEcran } from '../../domain/contrats/pilotage';
@@ -14,8 +15,7 @@ import { PhaseFermeeError } from '../../domain/errors/FormationErrors';
 import { SubmitProductionUseCase } from '../reponses/SubmitProduction.useCase';
 
 const COURS = buildCoursB2_01();
-const rang = (screenId: string): number =>
-  COURS.ecrans.findIndex((ecran) => ecran.id === screenId);
+const rang = (screenId: string): number => rangDuCours(COURS, screenId);
 const RANG_DU_TABLEAU = rang('B2-01-A4-05-INDICE-TOILE');
 const FEUILLE = 'b2-01-a4-feuille-canaux';
 const TABLEAU = 'b2-01-a4-indice-toile';

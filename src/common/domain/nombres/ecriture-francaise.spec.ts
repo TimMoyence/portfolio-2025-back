@@ -3,6 +3,7 @@ import {
   avecVirgule,
   enEuros,
   enPourcent,
+  ecrituresEnPourcentage,
   nombreAffiche,
   nombreFrancais,
   nombreSommable,
@@ -63,6 +64,20 @@ describe('enPourcent', () => {
   ])('écrit le taux %p au dixième de point : %p', (valeur, attendue) => {
     expect(enPourcent(valeur)).toBe(attendue);
   });
+});
+
+describe('ecrituresEnPourcentage', () => {
+  it.each([
+    [0.425, ['42,5 %', '42,5%', '42,50 %', '42,50%']],
+    [0.12345, ['12,345 %', '12,345%']],
+    [0, ['0 %', '0%', '0,00 %', '0,00%']],
+    [0.1 + 0.2, ['30 %', '30%', '30,00 %', '30,00%']],
+  ])(
+    'PCT-01 · écrit la part %p en pourcentage au millionième, et à deux décimales quand elles valent autant : %p',
+    (part, attendues) => {
+      expect(ecrituresEnPourcentage(part)).toEqual(attendues);
+    },
+  );
 });
 
 describe('pourcentageAffiche', () => {

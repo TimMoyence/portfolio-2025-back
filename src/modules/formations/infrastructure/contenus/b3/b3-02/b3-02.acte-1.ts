@@ -10,14 +10,10 @@ import {
   FOND_DE_LA_GRAVURE,
 } from '../b3-01/b3-01.acte-1';
 import { questionChiffreeB302 } from './b3-02.donnees';
-import {
-  pageDeFormules,
-  type PieceReservee,
-  voteQuiOuvre,
-} from './b3-02.briques';
+import { pageDeFormules } from './b3-02.briques';
 import * as moteur from '../../briques';
 
-export const REPRISE_NETTOYEE: PieceReservee = {
+export const REPRISE_NETTOYEE: moteur.PieceReservee = {
   libelle: 'Classeur de reprise nettoyé',
   classeur: CLASSEURS_B3_01.repriseActe2,
   reprend: ['B3-02-A1-03-TRI-ANOMALIES', 'B3-02-A1-08-ATELIER-NETTOYAGE'],
@@ -98,7 +94,7 @@ export const ACTE_1: moteur.Acte = [
       'Transition : « Les formules qui corrigent le faux certain : un vote d’abord. »',
     ],
   ),
-  voteQuiOuvre(
+  moteur.voteQuiOuvre(
     {
       screenId: 'B3-02-A1-04-VOTE-ESPACES',
       titre: 'Vote : des espaces invisibles',
@@ -109,14 +105,16 @@ export const ACTE_1: moteur.Acte = [
         'Révélation : taper la formule dans le classeur brut, en E783 ; Excel rend FAUX.',
       ),
     },
-    moteur.vote(
-      'b3-02-a1-espaces',
-      'nettoyage',
-      false,
-      'La cellule E783 contient le mot Bordeaux entouré d’une espace de chaque côté. Que rend la formule =E783="Bordeaux" ?',
-      'FAUX : les deux espaces font partie du texte',
-      [['VRAI : Excel ignore les espaces', 'espaces-non-supprimes']],
-    ),
+    [
+      moteur.vote(
+        'b3-02-a1-espaces',
+        'nettoyage',
+        false,
+        'La cellule E783 contient le mot Bordeaux entouré d’une espace de chaque côté. Que rend la formule =E783="Bordeaux" ?',
+        'FAUX : les deux espaces font partie du texte',
+        [['VRAI : Excel ignore les espaces', 'espaces-non-supprimes']],
+      ),
+    ],
   ),
   pageDeFormules(
     {
@@ -260,7 +258,7 @@ export const ACTE_1: moteur.Acte = [
       ],
     ],
   ),
-  voteQuiOuvre(
+  moteur.voteQuiOuvre(
     {
       screenId: 'B3-02-A1-09-VOTE-RELIER',
       titre: 'Vote : où lire la catégorie ?',
@@ -272,17 +270,19 @@ export const ACTE_1: moteur.Acte = [
         'Temps « réfléchir » de la recherche : vote non noté, 1 min de vote et 1 min de révélation.',
       ),
     },
-    moteur.vote(
-      'b3-02-a1-relier',
-      'cle-et-relation',
-      false,
-      'Une ligne de Commandes porte produit_id = P012, sans catégorie. Où lire sa catégorie ?',
-      'Dans l’onglet Produits, sur la ligne de P012',
-      [
-        ['Dans le libellé du produit', 'libelle-pris-pour-cle'],
-        ['Dans la ville du client', 'libelle-pris-pour-cle'],
-      ],
-    ),
+    [
+      moteur.vote(
+        'b3-02-a1-relier',
+        'cle-et-relation',
+        false,
+        'Une ligne de Commandes porte produit_id = P012, sans catégorie. Où lire sa catégorie ?',
+        'Dans l’onglet Produits, sur la ligne de P012',
+        [
+          ['Dans le libellé du produit', 'libelle-pris-pour-cle'],
+          ['Dans la ville du client', 'libelle-pris-pour-cle'],
+        ],
+      ),
+    ],
     REPRISE_NETTOYEE,
   ),
   pageDeFormules(

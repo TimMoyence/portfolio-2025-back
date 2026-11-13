@@ -1,4 +1,5 @@
 import * as fc from 'fast-check';
+import { ecranDuCours } from '../../../../../../../test/helpers/formations/cours/lecture-de-cours';
 import {
   buildContenuAPublierB2_01,
   buildContenuB2_01,
@@ -194,9 +195,10 @@ describe('B2-01 — simulation du tirage et de l’ouverture', () => {
 
     for (let valeur = 1; valeur <= SEANCES_SIMULEES; valeur += 1) {
       const tirage = tirer(COURS, valeur);
-      const questionnaire = tirage.sujet.ecrans.find(
-        ({ id }) => id === 'B2-01-A2-03-ATELIER-1',
-      )?.donnees;
+      const questionnaire = ecranDuCours(
+        tirage.sujet,
+        'B2-01-A2-03-ATELIER-1',
+      ).donnees;
       const servi = JSON.stringify(tirage.sujet);
       const premier = tirage.sujet.ecrans[0].donnees as {
         readonly question: { readonly options: readonly { id: string }[] };

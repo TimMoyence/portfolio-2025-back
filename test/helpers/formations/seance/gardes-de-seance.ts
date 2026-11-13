@@ -21,7 +21,14 @@ export interface ContexteDeGardeSeance {
   readonly effetsInterdits?: () => ReadonlyArray<EffetInterdit>;
 }
 
-function attendreSansEffet(effets?: () => ReadonlyArray<EffetInterdit>) {
+type ErreurAttendue = new (...args: never[]) => Error;
+
+async function refuserSansEffet(
+  execution: Promise<unknown>,
+  erreur: ErreurAttendue,
+  effets?: () => ReadonlyArray<EffetInterdit>,
+): Promise<void> {
+  await expect(execution).rejects.toThrow(erreur);
   for (const effet of effets?.() ?? []) {
     expect(effet).not.toHaveBeenCalled();
   }
@@ -39,10 +46,11 @@ export function verifierGardesDuFormateur(
   it('refuse un formateur qui n est pas proprietaire de la seance', async () => {
     const { executerPar, effetsInterdits } = contexte();
 
-    await expect(executerPar('autre-teacher-uuid')).rejects.toThrow(
+    await refuserSansEffet(
+      executerPar('autre-teacher-uuid'),
       SessionNotOwnedError,
+      effetsInterdits,
     );
-    attendreSansEffet(effetsInterdits);
   });
 
   verifierSeanceIntrouvable(() => {
@@ -81,23 +89,37 @@ export function verifierActionSurParticipant(
     const { action, executerPar, cache } = contexte();
     action.mockResolvedValue(false);
 
-    await expect(executerPar('teacher-uuid')).rejects.toThrow(
+    await refuserSansEffet(
+      executerPar('teacher-uuid'),
       ParticipantNotFoundError,
+      () => (cache ? [cache.signalerActivite] : []),
     );
-    attendreSansEffet(() => (cache ? [cache.signalerActivite] : []));
+  });
+}
+
+function verifierIntrouvable<C extends ContexteDeSeanceIntrouvable>(
+  titre: string,
+  erreur: ErreurAttendue,
+  rendreIntrouvable: (contexte: C) => unknown,
+  contexte: () => C,
+): void {
+  it(titre, async () => {
+    const courant = contexte();
+    rendreIntrouvable(courant);
+
+    await refuserSansEffet(courant.executer(), erreur, courant.effetsInterdits);
   });
 }
 
 export function verifierSeanceIntrouvable(
   contexte: () => ContexteDeSeanceIntrouvable,
 ): void {
-  it('signale une seance introuvable', async () => {
-    const { sessions, executer, effetsInterdits } = contexte();
-    sessions.findById.mockResolvedValue(null);
-
-    await expect(executer()).rejects.toThrow(SessionNotFoundError);
-    attendreSansEffet(effetsInterdits);
-  });
+  verifierIntrouvable(
+    'signale une seance introuvable',
+    SessionNotFoundError,
+    ({ sessions }) => sessions.findById.mockResolvedValue(null),
+    contexte,
+  );
 }
 
 export interface ContexteDIntrouvables extends ContexteDeSeanceIntrouvable {
@@ -108,14 +130,12 @@ export function verifierIntrouvables(
   contexte: () => ContexteDIntrouvables,
 ): void {
   verifierSeanceIntrouvable(contexte);
-
-  it('signale un participant introuvable', async () => {
-    const { participants, executer, effetsInterdits } = contexte();
-    participants.findById.mockResolvedValue(null);
-
-    await expect(executer()).rejects.toThrow(ParticipantNotFoundError);
-    attendreSansEffet(effetsInterdits);
-  });
+  verifierIntrouvable(
+    'signale un participant introuvable',
+    ParticipantNotFoundError,
+    ({ participants }) => participants.findById.mockResolvedValue(null),
+    contexte,
+  );
 }
 
 export interface ContexteDActivite {
@@ -201,7 +221,6 @@ export function verifierGardesDeSeance(
       buildSessionRecord({ courseSlug, ...etat }),
     );
 
-    await expect(executer()).rejects.toThrow(erreur);
-    attendreSansEffet(effetsInterdits);
+    await refuserSansEffet(executer(), erreur, effetsInterdits);
   });
 }

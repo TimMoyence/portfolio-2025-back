@@ -1,3 +1,5 @@
+import { libelleOuCle } from '../../../../../common/domain/objets/libelle-ou-cle';
+
 export const CONCEPTS_DU_B2_01 = [
   'proportion',
   'pourcentage',
@@ -23,7 +25,6 @@ export const CONCEPTS_DU_B2_02 = [
   'dispersion',
   'ecart-type',
   'boite-a-moustaches',
-  'histogramme',
   'choix-du-resume',
   'nuage-de-points',
   'correlation',
@@ -78,10 +79,41 @@ export const CONCEPTS_DU_B3_01 = [
 
 export const CONCEPTS_DU_B3_02 = ['ia-analyste'] as const;
 
+export const CONCEPTS_DU_B3_03 = [
+  'texte-brut',
+  'mise-en-forme-des-caracteres',
+  'styles-et-theme',
+  'mise-en-forme-des-paragraphes',
+  'mise-en-page',
+  'export-pdf',
+  'ia-redactrice',
+] as const;
+
+export const CONCEPTS_DU_B3_04 = [
+  'source-de-publipostage',
+  'champ-de-fusion',
+  'regle-de-fusion',
+  'fusion-et-pdf',
+  'e-mailing',
+] as const;
+
 export const CONCEPTS_DU_B2_07 = [
   'fonction-derivee',
   'variations-d-une-fonction',
   'optimisation',
+] as const;
+
+const CONCEPTS_DU_B2_08 = [
+  'derivees-composees',
+  'fonctions-economiques',
+  'resolution-approchee',
+] as const;
+
+const CONCEPTS_DU_B2_09 = [
+  'probabilite-d-un-evenement',
+  'probabilite-conditionnelle',
+  'probabilites-totales',
+  'independance',
 ] as const;
 
 export const CONCEPTS = [
@@ -93,7 +125,11 @@ export const CONCEPTS = [
   ...CONCEPTS_DU_B2_06,
   ...CONCEPTS_DU_B3_01,
   ...CONCEPTS_DU_B3_02,
+  ...CONCEPTS_DU_B3_03,
+  ...CONCEPTS_DU_B3_04,
   ...CONCEPTS_DU_B2_07,
+  ...CONCEPTS_DU_B2_08,
+  ...CONCEPTS_DU_B2_09,
 ] as const;
 
 export type ConceptId = (typeof CONCEPTS)[number];
@@ -120,7 +156,6 @@ const LIBELLES_DES_CONCEPTS: Readonly<Record<ConceptId, string>> = {
   dispersion: 'Dispersion',
   'ecart-type': 'Écart-type',
   'boite-a-moustaches': 'Boîte à moustaches',
-  histogramme: 'Histogramme',
   'choix-du-resume': 'Choix du résumé statistique',
   'nuage-de-points': 'Nuage de points',
   correlation: 'Corrélation',
@@ -157,13 +192,30 @@ const LIBELLES_DES_CONCEPTS: Readonly<Record<ConceptId, string>> = {
   'choix-du-graphique': 'Choix du graphique',
   'tableau-de-bord': 'Tableau de bord',
   'ia-analyste': 'IA analyste de données',
+  'texte-brut': 'Importer et nettoyer un texte brut',
+  'mise-en-forme-des-caracteres': 'Mise en forme des caractères',
+  'styles-et-theme': 'Styles et thème',
+  'mise-en-forme-des-paragraphes': 'Mise en forme des paragraphes',
+  'mise-en-page': 'Mise en page et numérotation',
+  'export-pdf': 'Export en PDF',
+  'ia-redactrice': 'IA rédactrice',
+  'source-de-publipostage': 'Lettre type et liste des destinataires',
+  'champ-de-fusion': 'Champs de fusion',
+  'regle-de-fusion': 'Filtres et règles de fusion',
+  'fusion-et-pdf': 'Fusion et PDF',
+  'e-mailing': 'E-mailing',
   'fonction-derivee': 'Fonction dérivée',
   'variations-d-une-fonction': 'Variations d’une fonction',
   optimisation: 'Optimisation',
+  'derivees-composees':
+    'Dérivées d’un produit, d’un quotient, de e^u et de ln u',
+  'fonctions-economiques': 'Coûts, recette, offre et demande',
+  'resolution-approchee': 'Solutions approchées de f(x) = k',
+  'probabilite-d-un-evenement': 'Probabilité d’un événement',
+  'probabilite-conditionnelle': 'Probabilité conditionnelle P_A(B)',
+  'probabilites-totales': 'Probabilités totales',
+  independance: 'Indépendance de deux événements',
 };
 
-export function libelleDeConcept(id: string): string {
-  return Object.hasOwn(LIBELLES_DES_CONCEPTS, id)
-    ? LIBELLES_DES_CONCEPTS[id as ConceptId]
-    : id;
-}
+export const libelleDeConcept = (id: string): string =>
+  libelleOuCle(LIBELLES_DES_CONCEPTS, id);

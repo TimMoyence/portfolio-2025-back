@@ -234,15 +234,6 @@ type QuestionDeQuestionnaire =
     };
 
 export interface DonneesParBrique {
-  readonly 'fp-quote': {
-    readonly citation: {
-      readonly id: string;
-      readonly texte: string;
-      readonly auteur: string | null;
-      readonly source: string | null;
-      readonly metadonnees: MetadonneesBrique;
-    };
-  };
   readonly 'fp-story': { readonly recit: StoryRecit };
   readonly 'fp-pro': {
     readonly cas: CasProfessionnel & {

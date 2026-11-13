@@ -7,10 +7,15 @@ import type {
 } from '../../../../src/modules/formations/domain/contrats/cours';
 import {
   estInteractif,
+  presentationDe,
   questionsDe,
   questionsDuCours,
 } from '../../../../src/modules/formations/domain/cours/structure/Cours';
 import { cueillirDansArbre } from '../../../../src/modules/formations/domain/cours/confidentialite/ArbreDeValeurs';
+import {
+  ecranParId,
+  rangDeLEcran,
+} from '../../../../src/modules/formations/domain/cours/diffusion/EcranServi';
 import { tirer } from '../../../../src/modules/formations/domain/cours/tirage/Tirage';
 import type { LigneDeVueDEnsemble } from './conception-de-cours';
 
@@ -22,16 +27,40 @@ export function motsHorsProgramme(contenu: unknown): string[] {
   return MOTS_HORS_PROGRAMME.filter((mot) => texte.includes(mot));
 }
 
+export const nombresDe = (valeurs: readonly unknown[]): number[] =>
+  valeurs.filter((valeur) => typeof valeur === 'number');
+
 export function clesDe(valeur: unknown): string[] {
   return cueillirDansArbre(valeur, (cle, element) => [cle, ...clesDe(element)]);
 }
 
-export function renduDe(ecran: Ecran): string | null {
-  if (ecran.brique !== 'fp-story') {
-    return null;
+const absentDuCours = (screenId: string): Error =>
+  new Error(`écran absent du cours : ${screenId}`);
+
+export function ecranDuCours<E extends { readonly id: string }>(
+  cours: { readonly ecrans: readonly E[] },
+  screenId: string,
+): E {
+  const ecran = ecranParId(cours, screenId);
+  if (ecran === undefined) {
+    throw absentDuCours(screenId);
   }
-  const presentation = ecran.proprietes.presentation;
-  return presentation?.version === 2 ? presentation.renderer : null;
+  return ecran;
+}
+
+export function rangDuCours(
+  cours: { readonly ecrans: readonly { readonly id: string }[] },
+  screenId: string,
+): number {
+  const rang = rangDeLEcran(cours, screenId);
+  if (rang < 0) {
+    throw absentDuCours(screenId);
+  }
+  return rang;
+}
+
+export function renduDe(ecran: Ecran): string | null {
+  return presentationDe(ecran)?.renderer ?? null;
 }
 
 export function ecransCorrigesSurPlace(cours: Cours): readonly string[] {

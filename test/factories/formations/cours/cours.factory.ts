@@ -490,14 +490,15 @@ export function buildCoursDuBaremeV1(): Cours {
       {
         ...EN_CATALOGUE,
         id: 'E-OUVERTURE',
-        brique: 'fp-quote',
+        brique: 'fp-pro',
         dureeMinutes: 2,
         concepts: ['coefficient-multiplicateur'],
         notes: 'Accroche',
         proprietes: {
-          texte: 'Le temps travaille pour qui epargne.',
-          auteur: null,
-          source: null,
+          metier: 'Conseiller en épargne',
+          situation: 'Le temps travaille pour qui épargne.',
+          geste: null,
+          consequence: null,
         },
       },
       {
@@ -536,15 +537,16 @@ export function buildCoursDeTest(overrides: Partial<Cours> = {}): Cours {
       },
       {
         ...EN_CATALOGUE,
-        id: 'E-CITATION',
-        brique: 'fp-quote',
+        id: 'E-CAS',
+        brique: 'fp-pro',
         dureeMinutes: 3,
         concepts: ['proportion'],
         notes: 'Accroche',
         proprietes: {
-          texte: 'Les chiffres parlent.',
-          auteur: null,
-          source: null,
+          metier: 'Assistant de gestion',
+          situation: 'Les chiffres parlent.',
+          geste: null,
+          consequence: null,
         },
       },
       {
@@ -598,7 +600,7 @@ export function buildCoursDeTest(overrides: Partial<Cours> = {}): Cours {
         intitule: 'Pratique',
         consigne: 'Répondez aux trois questions.',
         regime: 'focus',
-        ordre: 'melange',
+        ordre: 'fixe',
         questions: [
           numeriqueTest('Q-TEST-NUM-2'),
           numeriqueTest('Q-TEST-NUM-3'),

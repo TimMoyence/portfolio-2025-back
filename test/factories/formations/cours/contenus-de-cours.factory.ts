@@ -16,6 +16,35 @@ export function buildContenuDuCours(
   return structuredClone({ ...contenu, version });
 }
 
+export function buildContenuAvecSolution(
+  contenu: ContenuDeCours,
+  questionId: string,
+  solution: number,
+  formePubliee: string,
+): ContenuDeCours {
+  const copie = structuredClone(contenu);
+  let remplacees = 0;
+  const remplacer = (noeud: unknown): void => {
+    if (Array.isArray(noeud)) {
+      noeud.forEach(remplacer);
+      return;
+    }
+    if (typeof noeud !== 'object' || noeud === null) {
+      return;
+    }
+    if ('id' in noeud && noeud.id === questionId && 'solution' in noeud) {
+      Object.assign(noeud, { solution, formePubliee });
+      remplacees += 1;
+    }
+    Object.values(noeud).forEach(remplacer);
+  };
+  remplacer(copie);
+  if (remplacees !== 1) {
+    throw new Error(`${questionId} : ${remplacees} question(s) au lieu d’une`);
+  }
+  return copie;
+}
+
 export function buildCoursDuContenu(
   contenu: ContenuDeCours,
   version = VERSION_PUBLIEE_DE_TEST,

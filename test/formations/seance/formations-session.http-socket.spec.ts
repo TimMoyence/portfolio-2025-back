@@ -127,7 +127,7 @@ function construireCoursSentinelle(solution: number): Cours {
 const COURS_SENTINELLE = construireCoursSentinelle(TEMOIN.solution);
 
 const RANG_DE_LA_SENTINELLE = COURS_SENTINELLE.ecrans.findIndex(
-  (ecran) => ecran.question?.id === TEMOIN.question,
+  (ecran) => 'question' in ecran && ecran.question.id === TEMOIN.question,
 );
 
 const QUESTIONS_DU_COURS_DE_CLASSE = 12;

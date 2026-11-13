@@ -6,8 +6,10 @@ import {
   corrigeDe,
   decrireLaFicheDuCours,
   decrireLaMiniSituation,
+  rangDuContenu,
   valeursEtPieges,
 } from '../../../../../../test/helpers/formations/cours/fiche-de-cours';
+import { texteDeLEcran as texteDe } from '../../../../../../test/helpers/formations/cours/feuille-de-cours';
 import {
   exigerAuMoinsUn,
   type AuMoinsUn,
@@ -67,7 +69,7 @@ const premierRangAtteignant = (
 ): number => Math.ceil((seuil - ordonnee) / pente);
 
 decrireLaFicheDuCours('B2-02', COURS, {
-  conception: 'cours-b2-02-conception.md',
+  conception: 'b2/cours-b2-02-conception.md',
   ecrans: 35,
   dureeMinutes: 166,
   minutesParActe: [44, 47, 31, 44, 0, 0],
@@ -119,15 +121,8 @@ function corrigeDeLaFeuilleFibre() {
   return corrige;
 }
 
-function texteDeLEcran(screenId: string): string {
-  const ecran = COURS_B2_02.ecrans.find(
-    (candidat) => candidat.screenId === screenId,
-  );
-  if (ecran === undefined) {
-    throw new Error(`écran ${screenId} absent du B2-02`);
-  }
-  return JSON.stringify(ecran);
-}
+const texteDeLEcran = (screenId: string): string =>
+  texteDe(COURS_B2_02, screenId);
 
 const ILLUSTRATION_DE_CHAQUE_TRACE_ECRITE: Readonly<Record<string, string>> = {
   'B2-02-A1-06-COURS-RESUMER': 'cinq-factures.webp',
@@ -139,10 +134,8 @@ const ILLUSTRATION_DE_CHAQUE_TRACE_ECRITE: Readonly<Record<string, string>> = {
 };
 
 function proprietesDeLEcranQuiSuit(screenId: string): unknown {
-  const rang = COURS_B2_02.ecrans.findIndex(
-    (ecran) => ecran.screenId === screenId,
-  );
-  return COURS_B2_02.ecrans[rang + 1]?.proprietes;
+  return COURS_B2_02.ecrans[rangDuContenu(COURS_B2_02, screenId) + 1]
+    ?.proprietes;
 }
 
 describe('B2-02 — illustration de l’exemple de chaque trace écrite', () => {

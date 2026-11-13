@@ -3,7 +3,6 @@ import {
   buildEcranDeVoteJumele,
 } from '../../../../../../test/factories/formations/cours/cours.factory';
 import {
-  buildCorrectionDeReponses,
   buildCorrectionDExemple,
   buildCoursDeBriques,
   buildEcranAPieceJointe,
@@ -52,7 +51,7 @@ describe('projeterCatalogue (B19)', () => {
   it('sert en clair les écrans du catalogue et verrouille les écrans de séance', () => {
     const cours = lireCoursStocke(
       buildCoursDeBriques([
-        buildEcranDeBrique('fp-quote', { diffusion: 'catalogue' }),
+        buildEcranDeBrique('fp-pro', { diffusion: 'catalogue' }),
         buildEcranDeBrique('fp-recall'),
       ]),
     );
@@ -216,9 +215,9 @@ describe('correctionServie', () => {
   const cours = lireCoursStocke(
     buildCoursDeBriques([
       QUESTIONNAIRE,
-      buildCorrectionDeReponses(QUESTIONNAIRE.screenId),
+      buildCorrectionDExemple(QUESTIONNAIRE.screenId),
       buildEcranDeBrique('fp-cardsort'),
-      buildCorrectionDeReponses(
+      buildCorrectionDExemple(
         'B2-01-A1-01-FP-CARDSORT',
         'B2-01-A1-01-CORRECTION-TRI',
       ),

@@ -1,6 +1,7 @@
 import type { SchemaObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
 import { z } from 'zod';
 import { REGISTRE_DU_CONTRAT } from '../../domain/liens/registre-du-contrat';
+import { sansLesCles } from '../../domain/objets/sans-les-cles';
 
 const PREFIXE_DES_COMPOSANTS = '#/components/schemas/';
 
@@ -56,9 +57,7 @@ export function schemasDuContrat(): Record<string, SchemaObject> {
   return Object.fromEntries(
     Object.entries(schemas).map(([id, schema]) => [
       id,
-      Object.fromEntries(
-        Object.entries(schema).filter(([motCle]) => motCle !== '$id'),
-      ) as SchemaObject,
+      sansLesCles(schema, ['$id']) as SchemaObject,
     ]),
   );
 }
