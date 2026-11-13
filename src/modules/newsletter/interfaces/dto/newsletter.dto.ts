@@ -7,6 +7,7 @@ import { AdresseEmail } from '../../../../common/interfaces/dto/champs/adresse-e
 import { VersionDesConditions } from '../../../../common/interfaces/dto/champs/conditions-acceptees.decorator';
 import { LocaleSupportee } from '../../../../common/interfaces/dto/champs/locale-supportee.decorator';
 import { ChampsAntiRobotDto } from '../../../../common/interfaces/security/anti-robot/champs-anti-robot.dto';
+import { REPONSES_D_ABONNEMENT } from '../../application/SubscribeNewsletter.useCase';
 
 export class SubscribeNewsletterRequestDto extends ChampsAntiRobotDto {
   @ApiProperty({ example: 'jane@example.com' })
@@ -22,8 +23,9 @@ export class SubscribeNewsletterRequestDto extends ChampsAntiRobotDto {
 
 export class AbonnementNewsletterResponseDto {
   @ApiProperty({
-    example:
-      'Si cette adresse peut recevoir la newsletter, un email de confirmation vient de partir.',
+    example: REPONSES_D_ABONNEMENT.fr.message,
+    description:
+      'La même réponse pour toute adresse, dans la langue de la demande.',
   })
   message: string;
 }

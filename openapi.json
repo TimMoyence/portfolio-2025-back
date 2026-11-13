@@ -4790,7 +4790,8 @@
         "properties": {
           "message": {
             "type": "string",
-            "example": "Si cette adresse peut recevoir la newsletter, un email de confirmation vient de partir."
+            "example": "Si cette adresse peut recevoir la newsletter, un email de confirmation vient de partir. Si vous ne recevez rien d’ici quelques minutes, réessayez dans 10 minutes.",
+            "description": "La même réponse pour toute adresse, dans la langue de la demande."
           }
         },
         "required": [

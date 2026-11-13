@@ -7,7 +7,7 @@ import {
   simulerLHorlogeAChaqueTest,
 } from '../../../../test/helpers/temps/plancher-de-latence';
 import {
-  REPONSE_D_ABONNEMENT,
+  REPONSES_D_ABONNEMENT,
   SubscribeNewsletterUseCase,
 } from './SubscribeNewsletter.useCase';
 
@@ -28,7 +28,7 @@ describe('SubscribeNewsletterUseCase · adresse neuve', () => {
       ),
     );
 
-    expect(reponse).toEqual(REPONSE_D_ABONNEMENT);
+    expect(reponse).toEqual(REPONSES_D_ABONNEMENT.en);
     expect(depot.creer.mock.calls).toEqual([
       [
         expect.objectContaining({

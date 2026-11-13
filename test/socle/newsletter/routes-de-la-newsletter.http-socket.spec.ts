@@ -1,6 +1,6 @@
 import request from 'supertest';
 import { MESSAGE_DE_LIEN_INVALIDE } from '../../../src/common/domain/errors/auth/LienInvalideError';
-import { REPONSE_D_ABONNEMENT } from '../../../src/modules/newsletter/application/SubscribeNewsletter.useCase';
+import { REPONSES_D_ABONNEMENT } from '../../../src/modules/newsletter/application/SubscribeNewsletter.useCase';
 import {
   buildAbonne,
   buildLienDeConfirmation,
@@ -25,7 +25,7 @@ describe('Routes de la newsletter servies par le vrai contrôleur', () => {
       })
       .expect(202);
 
-    expect(reponse.body).toEqual(REPONSE_D_ABONNEMENT);
+    expect(reponse.body).toEqual(REPONSES_D_ABONNEMENT.en);
     const [[abonne]] = depot.creer.mock.calls;
     expect(abonne.locale).toBe('en');
     expect(abonne.termsAcceptedAt.getTime()).toBeGreaterThanOrEqual(avant);

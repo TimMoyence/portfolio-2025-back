@@ -3,7 +3,7 @@ import {
   redemanderUnAbonnement,
 } from '../../../../../test/factories/diffusion/attentes-de-l-abonnement';
 import { simulerLHorlogeAChaqueTest } from '../../../../../test/helpers/temps/plancher-de-latence';
-import { REPONSE_D_ABONNEMENT } from '../SubscribeNewsletter.useCase';
+import { REPONSES_D_ABONNEMENT } from '../SubscribeNewsletter.useCase';
 
 const MAINTENANT = new Date('2026-11-12T10:00:00.000Z');
 const IL_Y_A_UNE_HEURE = new Date('2026-11-12T09:00:00.000Z');
@@ -24,7 +24,7 @@ describe('SubscribeNewsletterUseCase · déjà abonné', () => {
       { email: 'Jane.Doe+news@Gmail.com', locale: 'en' },
     );
 
-    expect(reponse).toEqual(REPONSE_D_ABONNEMENT);
+    expect(reponse).toEqual(REPONSES_D_ABONNEMENT.en);
     expect(mailer.envoyerDejaAbonne.mock.calls).toEqual([
       [
         {

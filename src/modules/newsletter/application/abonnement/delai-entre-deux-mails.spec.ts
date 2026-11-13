@@ -4,7 +4,7 @@ import {
 } from '../../../../../test/factories/diffusion/attentes-de-l-abonnement';
 import { simulerLHorlogeAChaqueTest } from '../../../../../test/helpers/temps/plancher-de-latence';
 import type { StatutDAbonnement } from '../../domain/NewsletterSubscriber';
-import { REPONSE_D_ABONNEMENT } from '../SubscribeNewsletter.useCase';
+import { REPONSES_D_ABONNEMENT } from '../SubscribeNewsletter.useCase';
 
 const MAINTENANT = new Date('2026-11-12T10:00:00.000Z');
 const MINUTE_MS = 60_000;
@@ -39,7 +39,7 @@ describe('SubscribeNewsletterUseCase · délai entre deux mails', () => {
       'en',
     );
 
-    expect(reponse).toEqual(REPONSE_D_ABONNEMENT);
+    expect(reponse).toEqual(REPONSES_D_ABONNEMENT.en);
     expect(languesDesMails).toEqual(['en']);
     attendreSeulementLHeureDuMailNotee(depot, abonne, MAINTENANT);
   });
@@ -47,7 +47,7 @@ describe('SubscribeNewsletterUseCase · délai entre deux mails', () => {
   it('NL-10 · ne renvoie rien avant 10 minutes, toutes langues, avec la meme reponse', async () => {
     const { depot, mailer, reponse } = await redemanderApres(9, 'en');
 
-    expect(reponse).toEqual(REPONSE_D_ABONNEMENT);
+    expect(reponse).toEqual(REPONSES_D_ABONNEMENT.en);
     expect(depot.enregistrerLeLien.mock.calls).toEqual([]);
     expect(mailer.envoyerLaConfirmation.mock.calls).toEqual([]);
     expect(depot.mettreAJour.mock.calls).toEqual([]);

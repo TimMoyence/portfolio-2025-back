@@ -1,5 +1,6 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { enArrierePlan } from '../../../common/application/en-arriere-plan';
+import type { SupportedLocale } from '../../../common/domain/value-objects/LocaleCode';
 import { aHeureFixe } from '../../../common/application/plancher-de-latence';
 import type { INewsletterMailer } from '../domain/INewsletterMailer';
 import type { INewsletterRepository } from '../domain/INewsletterRepository';
@@ -25,10 +26,22 @@ function dansLeDelai(abonne: NewsletterSubscriber, maintenant: Date): boolean {
   );
 }
 
-export const REPONSE_D_ABONNEMENT = {
-  message:
-    'Si cette adresse peut recevoir la newsletter, un email de confirmation vient de partir. Si vous ne recevez rien d’ici quelques minutes, réessayez dans 10 minutes.',
-} as const;
+export interface ReponseDAbonnement {
+  readonly message: string;
+}
+
+export const REPONSES_D_ABONNEMENT: Readonly<
+  Record<SupportedLocale, ReponseDAbonnement>
+> = {
+  fr: {
+    message:
+      'Si cette adresse peut recevoir la newsletter, un email de confirmation vient de partir. Si vous ne recevez rien d’ici quelques minutes, réessayez dans 10 minutes.',
+  },
+  en: {
+    message:
+      'If this address can receive the newsletter, a confirmation email has just been sent. If you receive nothing within a few minutes, try again in 10 minutes.',
+  },
+};
 
 @Injectable()
 export class SubscribeNewsletterUseCase {
@@ -41,12 +54,10 @@ export class SubscribeNewsletterUseCase {
     private readonly mailer: INewsletterMailer,
   ) {}
 
-  execute(
-    commande: SubscribeNewsletterCommand,
-  ): Promise<typeof REPONSE_D_ABONNEMENT> {
+  execute(commande: SubscribeNewsletterCommand): Promise<ReponseDAbonnement> {
     return aHeureFixe(
       () => this.inscrire(commande),
-      REPONSE_D_ABONNEMENT,
+      REPONSES_D_ABONNEMENT[commande.locale],
       'Newsletter subscription failed',
       this.logger,
     );
@@ -54,7 +65,7 @@ export class SubscribeNewsletterUseCase {
 
   private async inscrire(
     commande: SubscribeNewsletterCommand,
-  ): Promise<typeof REPONSE_D_ABONNEMENT> {
+  ): Promise<ReponseDAbonnement> {
     const demande = demandeDAbonnement(commande, new Date());
     const envoi = await this.depot.sousVerrouDeLaBoite(demande.email, (depot) =>
       preparerLEnvoi(depot, demande),
@@ -62,7 +73,7 @@ export class SubscribeNewsletterUseCase {
     if (envoi !== null) {
       enArrierePlan(envoi(this.mailer), 'Newsletter email failed', this.logger);
     }
-    return REPONSE_D_ABONNEMENT;
+    return REPONSES_D_ABONNEMENT[commande.locale];
   }
 }
 
