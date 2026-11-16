@@ -337,6 +337,10 @@ describe('etapesCollees', () => {
       'Étape 1 : tapez.\n\nÉtape 2 : lisez.',
     ],
     ['un blanc en bord d’étape', 'Étape 1 : tapez. \nÉtape 2 : lisez.'],
+    [
+      'une liste en ligne qui ne commence pas à 1',
+      'Suite.\n2. Tracer. 3. Lire.',
+    ],
   ])('signale %s', (_, texte) => {
     expect(etapesCollees({ consigne: texte })).toHaveLength(1);
   });
@@ -350,6 +354,11 @@ describe('etapesCollees', () => {
     ['des coordonnées', 'Points (1 ; 4), (2 ; 5), (3 ; 9).'],
     ['un argument de fonction', 'JOURSEM(date; 2) rend 1 pour lundi.'],
     ['une numérotation citée', 'Chaque partie numérotée « 1. », « 2. »…'],
+    ['deux numéros qui ne se suivent pas', 'Lot 2) livré, lot 7) en attente.'],
+    [
+      'un renvoi en prose à une étape',
+      'S’arrêter sur le tri (étape 2) et sur l’effet (étape 4).',
+    ],
     [
       'une transcription à paragraphes',
       '[Plan 1] Le titre.\n\n[Plan 2] La formule.',

@@ -194,13 +194,22 @@ export function formulesAltereesALaPublication(
 
 const ETAPE = /Étape \d/u;
 const ETAPE_EN_COURS_DE_LIGNE = /.Étape \d/u;
-const LISTE_NUMEROTEE_EN_LIGNE = /(?:^|\s)1[.)]\s+\p{L}.*\s2[.)]\s+\p{L}/u;
+const POINT_NUMEROTE = /(?:^|\s)(\d+)[.)]\s+\p{L}/gu;
 const LUS_D_UN_TRAIT = new Set(['imageAlt', 'alt']);
+
+function listeNumeroteeEnLigne(ligne: string): boolean {
+  const numeros = [...ligne.matchAll(POINT_NUMEROTE)].map(([, numero]) =>
+    Number(numero),
+  );
+  return numeros.some(
+    (numero, rang) => rang > 0 && numero === numeros[rang - 1] + 1,
+  );
+}
 
 function ligneCollee(ligne: string, aDesEtapes: boolean): boolean {
   return (
     ETAPE_EN_COURS_DE_LIGNE.test(ligne) ||
-    LISTE_NUMEROTEE_EN_LIGNE.test(ligne) ||
+    listeNumeroteeEnLigne(ligne) ||
     (aDesEtapes && (ligne === '' || ligne.trim() !== ligne))
   );
 }
