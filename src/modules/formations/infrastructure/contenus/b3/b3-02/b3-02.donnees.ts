@@ -20,8 +20,6 @@ export const SOURCES_B3_02 = {
   'b3-02-a2-delai-strasbourg': 'b3-01-a2-delai-strasbourg',
   'b3-02-a2-retards': 'b3-01-a2-retards',
   'b3-02-a2-part-info-rennes': 'b3-01-a2-part-info-rennes',
-  'b3-02-a2-agences-sous-objectif': 'b3-01-a3-agences-sous-objectif',
-  'b3-02-a2-atteinte-rennes': 'b3-01-a3-atteinte-rennes',
   'b3-02-a2-evolution': 'b3-01-a3-evolution',
   'b3-02-a2-ca-2026': 'b3-01-a3-ca-2026',
   'b3-02-a2-marge-marseille': 'b3-01-a3-marge-marseille',

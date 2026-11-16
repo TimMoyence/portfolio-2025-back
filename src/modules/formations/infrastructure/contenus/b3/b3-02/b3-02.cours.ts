@@ -46,7 +46,6 @@ const REMEDIATIONS: ContenuDeCours['remediations'] = {
   'tcd-filtre-ou-dates-mal-groupees': TCD,
   'axe-tronque-lu-comme-ecart': GRAPHIQUES,
   'graphique-sans-question': GRAPHIQUES,
-  'objectif-annuel-pour-cumul': RATIOS,
   'evolution-sur-annee-pleine': RATIOS,
   'moyenne-simple-des-taux': RATIOS,
   'marque-confondue-avec-marge': RATIOS,

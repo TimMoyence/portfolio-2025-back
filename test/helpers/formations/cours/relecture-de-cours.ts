@@ -192,6 +192,33 @@ export function formulesAltereesALaPublication(
   });
 }
 
+const ETAPE = /Étape \d/u;
+const ETAPE_EN_COURS_DE_LIGNE = /.Étape \d/u;
+const LISTE_NUMEROTEE_EN_LIGNE = /(?:^|\s)1[.)]\s+\p{L}.*\s2[.)]\s+\p{L}/u;
+const LUS_D_UN_TRAIT = new Set(['imageAlt', 'alt']);
+
+function ligneCollee(ligne: string, aDesEtapes: boolean): boolean {
+  return (
+    ETAPE_EN_COURS_DE_LIGNE.test(ligne) ||
+    LISTE_NUMEROTEE_EN_LIGNE.test(ligne) ||
+    (aDesEtapes && (ligne === '' || ligne.trim() !== ligne))
+  );
+}
+
+export function etapesCollees(valeur: unknown): string[] {
+  return cueillirSous('', valeur, (cle, element) => {
+    if (LUS_D_UN_TRAIT.has(cle)) {
+      return [];
+    }
+    return typeof element === 'string' ? [element] : null;
+  }).flatMap((texte) =>
+    texte
+      .split('\n')
+      .filter((ligne) => ligneCollee(ligne, ETAPE.test(texte)))
+      .map((ligne) => `«${ligne}»`),
+  );
+}
+
 export function formeFrancaise(valeur: number | string): string {
   return typeof valeur === 'string' ? valeur : nombreSansArrondi(valeur);
 }

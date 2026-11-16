@@ -12,8 +12,51 @@ describe('contrat visuel du catalogue', () => {
     },
   );
 
-  it('L4 · couvre chacun des quinze rendus du deck, correction de tri comprise', () => {
-    expect(Object.keys(PRESENTATIONS_VISUELLES_VALIDES)).toHaveLength(15);
+  it('L4 · couvre chacun des seize rendus du deck, correction de tri et prompt compris', () => {
+    expect(Object.keys(PRESENTATIONS_VISUELLES_VALIDES)).toHaveLength(16);
+  });
+
+  describe('prompt (B3-02, écran de l’IA analyste)', () => {
+    const PROMPT = {
+      renderer: 'prompt',
+      props: PRESENTATIONS_VISUELLES_VALIDES.prompt,
+    };
+    const refusDe = (props: Readonly<Record<string, unknown>>): string => {
+      try {
+        parseVisualPresentation({ ...PROMPT, props });
+      } catch (erreur) {
+        return String(erreur);
+      }
+      return 'accepté';
+    };
+
+    it('B3 · garde les retours à la ligne du texte servi', () => {
+      expect(JSON.stringify(parseVisualPresentation(PROMPT))).toContain(
+        '\\nDonnées : le classeur joint.\\n',
+      );
+    });
+
+    it('B3 · accepte un prompt sans sous-titre', () => {
+      expect(
+        refusDe({
+          title: PROMPT.props['title'],
+          prompt: PROMPT.props['prompt'],
+        }),
+      ).toBe('accepté');
+    });
+
+    it('B3 · refuse un prompt vide, le titre restant juste', () => {
+      const refus = refusDe({ ...PROMPT.props, prompt: '' });
+
+      expect(refus).not.toBe('accepté');
+      expect(refus).toContain('"prompt"');
+    });
+
+    it('B3 · refuse une saisie sur l’écran du prompt', () => {
+      expect(
+        refusDe({ ...PROMPT.props, placeholder: 'Votre réponse' }),
+      ).toContain('placeholder');
+    });
   });
 
   describe('illustration', () => {

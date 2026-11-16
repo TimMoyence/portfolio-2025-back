@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "590df69832ef903fd805c741e353d817be7a9d3862a09dac86da6e5943614c3b",
+  "empreinte": "e263cf762ed149b7a8d90ea739ed3679c1c62bd0c856d704700c14db0695f02e",
   "sujet": {
     "id": "b2-07-derivee-optimisation",
     "titre": "Dérivée et optimisation",
@@ -1891,7 +1891,7 @@
                   {
                     "title": "Rédiger au CCF",
                     "description": "Quelles quatre étapes ?",
-                    "back": "1. Calculer f′(x). 2. Résoudre f′(x) = 0. 3. Étudier le signe de f′(x). 4. Dresser le tableau de variation et conclure par le x et la valeur."
+                    "back": "1. Calculer f′(x).\n2. Résoudre f′(x) = 0.\n3. Étudier le signe de f′(x).\n4. Dresser le tableau de variation et conclure par le x et la valeur."
                   },
                   {
                     "title": "Tableur",
@@ -5330,7 +5330,7 @@
                   {
                     "title": "Rédiger au CCF",
                     "description": "Quelles quatre étapes ?",
-                    "back": "1. Calculer f′(x). 2. Résoudre f′(x) = 0. 3. Étudier le signe de f′(x). 4. Dresser le tableau de variation et conclure par le x et la valeur."
+                    "back": "1. Calculer f′(x).\n2. Résoudre f′(x) = 0.\n3. Étudier le signe de f′(x).\n4. Dresser le tableau de variation et conclure par le x et la valeur."
                   },
                   {
                     "title": "Tableur",
@@ -6445,7 +6445,7 @@
                   {
                     "title": "Rédiger au CCF",
                     "description": "Quelles quatre étapes ?",
-                    "back": "1. Calculer f′(x). 2. Résoudre f′(x) = 0. 3. Étudier le signe de f′(x). 4. Dresser le tableau de variation et conclure par le x et la valeur."
+                    "back": "1. Calculer f′(x).\n2. Résoudre f′(x) = 0.\n3. Étudier le signe de f′(x).\n4. Dresser le tableau de variation et conclure par le x et la valeur."
                   },
                   {
                     "title": "Tableur",

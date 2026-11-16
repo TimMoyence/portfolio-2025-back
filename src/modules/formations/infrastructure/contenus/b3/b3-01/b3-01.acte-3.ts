@@ -466,9 +466,7 @@ export const ACTE_3: moteur.Acte = [
   ficheMemoDuB301(),
 ];
 
-export function quatreHistoires(): AuMoinsUnModifiable<
-  readonly [string, string]
-> {
+function quatreHistoires(): AuMoinsUnModifiable<readonly [string, string]> {
   return [
     [
       'marseille',

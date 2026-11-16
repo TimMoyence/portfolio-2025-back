@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "cee61f7d78a0ec94a20ea38150a7211aeeb58387ae5f1bc252f35937d8300ca4",
+  "empreinte": "49a4da4092e7acb6063b05d74f4098cee9733bac15fa4cf98a51694a131b1ebc",
   "sujet": {
     "id": "b3-03-traitement-de-texte",
     "titre": "Traitement de texte : mettre en forme et mettre en page",
@@ -303,7 +303,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 1 — Importer et nettoyer la note",
-          "consigne": "Étape 1 : dans un document Word vierge, Insertion › Objet › Texte d’un fichier, choisissez la note brute ; enregistrez le document sous le nom Note_comite.docx. Étape 2 : Accueil › ¶ pour afficher les marques. Étape 3 : Ctrl + H, Rechercher ^p^p, Remplacer par ^p, Remplacer tout ; notez le nombre de remplacements annoncé. Étape 4 : Rechercher deux espaces, Remplacer par une espace, Remplacer tout ; notez le nombre annoncé. Relancez chaque remplacement : Word doit annoncer 0.",
+          "consigne": "Étape 1 : dans un document Word vierge, Insertion › Objet › Texte d’un fichier, choisissez la note brute ; enregistrez le document sous le nom Note_comite.docx.\nÉtape 2 : Accueil › ¶ pour afficher les marques.\nÉtape 3 : Ctrl + H, Rechercher ^p^p, Remplacer par ^p, Remplacer tout ; notez le nombre de remplacements annoncé.\nÉtape 4 : Rechercher deux espaces, Remplacer par une espace, Remplacer tout ; notez le nombre annoncé. Relancez chaque remplacement : Word doit annoncer 0.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -716,7 +716,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 2 — Les styles de la note",
-          "consigne": "Dans Note_comite.docx. Étape 1 : la première ligne en style Titre, la deuxième en Sous-titre. Étape 2 : chaque ligne qui commence par un numéro suivi d’un point et d’une espace, comme « 1. », en Titre 1, l’annexe comprise ; Maj + F3 pour retirer les capitales. Étape 3 : chaque ligne numérotée « 1.1 », « 2.3 »…, en Titre 2. Étape 4 : Création › Thèmes, choisissez un thème. Étape 5 : Affichage › Volet de navigation, comptez les titres de chaque niveau.",
+          "consigne": "Dans Note_comite.docx.\nÉtape 1 : la première ligne en style Titre, la deuxième en Sous-titre.\nÉtape 2 : chaque ligne qui commence par un numéro suivi d’un point et d’une espace, comme « 1. », en Titre 1, l’annexe comprise ; Maj + F3 pour retirer les capitales.\nÉtape 3 : chaque ligne numérotée « 1.1 », « 2.3 »…, en Titre 2.\nÉtape 4 : Création › Thèmes, choisissez un thème.\nÉtape 5 : Affichage › Volet de navigation, comptez les titres de chaque niveau.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -1059,7 +1059,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 4 — Les paragraphes de la note",
-          "consigne": "Dans Note_comite.docx. Étape 1 : modifiez le style Normal : justifié, 6 points après, interligne 1,15. Étape 2 : Ctrl + H, Rechercher ^p- suivi d’une espace, Remplacer par ^p, Remplacer tout ; notez le nombre annoncé. Étape 3 : sélectionnez les lignes de la partie 4, Accueil › Puces. Étape 4 : modifiez le style Titre 2 : Paragraphe › Enchaînements, cochez Paragraphes solidaires.",
+          "consigne": "Dans Note_comite.docx.\nÉtape 1 : modifiez le style Normal : justifié, 6 points après, interligne 1,15.\nÉtape 2 : Ctrl + H, Rechercher ^p- suivi d’une espace, Remplacer par ^p, Remplacer tout ; notez le nombre annoncé.\nÉtape 3 : sélectionnez les lignes de la partie 4, Accueil › Puces.\nÉtape 4 : modifiez le style Titre 2 : Paragraphe › Enchaînements, cochez Paragraphes solidaires.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -1374,7 +1374,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 5 — En-tête, pied et mise en page",
-          "consigne": "Dans Note_comite.docx. Étape 1 : curseur juste après le sous-titre, Ctrl + Entrée : la page 1 devient la page de titre. Étape 2 : Insertion › En-tête, tapez « Norvane Équipement · Note au comité », alignez à droite ; cochez Première page différente. Étape 3 : Insertion › Numéro de page › Bas de page › Page X sur Y. Étape 4 : curseur au début du titre de l’annexe, Mise en page › Sauts › Page suivante, puis Orientation › Paysage. Étape 5 : Mise en page › Marges › Normales sur tout le document.",
+          "consigne": "Dans Note_comite.docx.\nÉtape 1 : curseur juste après le sous-titre, Ctrl + Entrée : la page 1 devient la page de titre.\nÉtape 2 : Insertion › En-tête, tapez « Norvane Équipement · Note au comité », alignez à droite ; cochez Première page différente.\nÉtape 3 : Insertion › Numéro de page › Bas de page › Page X sur Y.\nÉtape 4 : curseur au début du titre de l’annexe, Mise en page › Sauts › Page suivante, puis Orientation › Paysage.\nÉtape 5 : Mise en page › Marges › Normales sur tout le document.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -1610,7 +1610,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 7 — Le PDF du comité",
-          "consigne": "Étape 1 : Fichier › Enregistrer sous, type PDF, nom Note_comite.pdf. Étape 2 : Options, cochez Créer des signets à l’aide de : Titres, OK, Enregistrer. Étape 3 : ouvrez le PDF, affichez le volet des signets.",
+          "consigne": "Étape 1 : Fichier › Enregistrer sous, type PDF, nom Note_comite.pdf.\nÉtape 2 : Options, cochez Créer des signets à l’aide de : Titres, OK, Enregistrer.\nÉtape 3 : ouvrez le PDF, affichez le volet des signets.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -2455,7 +2455,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 1 — Importer et nettoyer la note",
-          "consigne": "Étape 1 : dans un document Word vierge, Insertion › Objet › Texte d’un fichier, choisissez la note brute ; enregistrez le document sous le nom Note_comite.docx. Étape 2 : Accueil › ¶ pour afficher les marques. Étape 3 : Ctrl + H, Rechercher ^p^p, Remplacer par ^p, Remplacer tout ; notez le nombre de remplacements annoncé. Étape 4 : Rechercher deux espaces, Remplacer par une espace, Remplacer tout ; notez le nombre annoncé. Relancez chaque remplacement : Word doit annoncer 0.",
+          "consigne": "Étape 1 : dans un document Word vierge, Insertion › Objet › Texte d’un fichier, choisissez la note brute ; enregistrez le document sous le nom Note_comite.docx.\nÉtape 2 : Accueil › ¶ pour afficher les marques.\nÉtape 3 : Ctrl + H, Rechercher ^p^p, Remplacer par ^p, Remplacer tout ; notez le nombre de remplacements annoncé.\nÉtape 4 : Rechercher deux espaces, Remplacer par une espace, Remplacer tout ; notez le nombre annoncé. Relancez chaque remplacement : Word doit annoncer 0.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -2981,7 +2981,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 2 — Les styles de la note",
-          "consigne": "Dans Note_comite.docx. Étape 1 : la première ligne en style Titre, la deuxième en Sous-titre. Étape 2 : chaque ligne qui commence par un numéro suivi d’un point et d’une espace, comme « 1. », en Titre 1, l’annexe comprise ; Maj + F3 pour retirer les capitales. Étape 3 : chaque ligne numérotée « 1.1 », « 2.3 »…, en Titre 2. Étape 4 : Création › Thèmes, choisissez un thème. Étape 5 : Affichage › Volet de navigation, comptez les titres de chaque niveau.",
+          "consigne": "Dans Note_comite.docx.\nÉtape 1 : la première ligne en style Titre, la deuxième en Sous-titre.\nÉtape 2 : chaque ligne qui commence par un numéro suivi d’un point et d’une espace, comme « 1. », en Titre 1, l’annexe comprise ; Maj + F3 pour retirer les capitales.\nÉtape 3 : chaque ligne numérotée « 1.1 », « 2.3 »…, en Titre 2.\nÉtape 4 : Création › Thèmes, choisissez un thème.\nÉtape 5 : Affichage › Volet de navigation, comptez les titres de chaque niveau.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -3499,7 +3499,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 4 — Les paragraphes de la note",
-          "consigne": "Dans Note_comite.docx. Étape 1 : modifiez le style Normal : justifié, 6 points après, interligne 1,15. Étape 2 : Ctrl + H, Rechercher ^p- suivi d’une espace, Remplacer par ^p, Remplacer tout ; notez le nombre annoncé. Étape 3 : sélectionnez les lignes de la partie 4, Accueil › Puces. Étape 4 : modifiez le style Titre 2 : Paragraphe › Enchaînements, cochez Paragraphes solidaires.",
+          "consigne": "Dans Note_comite.docx.\nÉtape 1 : modifiez le style Normal : justifié, 6 points après, interligne 1,15.\nÉtape 2 : Ctrl + H, Rechercher ^p- suivi d’une espace, Remplacer par ^p, Remplacer tout ; notez le nombre annoncé.\nÉtape 3 : sélectionnez les lignes de la partie 4, Accueil › Puces.\nÉtape 4 : modifiez le style Titre 2 : Paragraphe › Enchaînements, cochez Paragraphes solidaires.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -3933,7 +3933,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 5 — En-tête, pied et mise en page",
-          "consigne": "Dans Note_comite.docx. Étape 1 : curseur juste après le sous-titre, Ctrl + Entrée : la page 1 devient la page de titre. Étape 2 : Insertion › En-tête, tapez « Norvane Équipement · Note au comité », alignez à droite ; cochez Première page différente. Étape 3 : Insertion › Numéro de page › Bas de page › Page X sur Y. Étape 4 : curseur au début du titre de l’annexe, Mise en page › Sauts › Page suivante, puis Orientation › Paysage. Étape 5 : Mise en page › Marges › Normales sur tout le document.",
+          "consigne": "Dans Note_comite.docx.\nÉtape 1 : curseur juste après le sous-titre, Ctrl + Entrée : la page 1 devient la page de titre.\nÉtape 2 : Insertion › En-tête, tapez « Norvane Équipement · Note au comité », alignez à droite ; cochez Première page différente.\nÉtape 3 : Insertion › Numéro de page › Bas de page › Page X sur Y.\nÉtape 4 : curseur au début du titre de l’annexe, Mise en page › Sauts › Page suivante, puis Orientation › Paysage.\nÉtape 5 : Mise en page › Marges › Normales sur tout le document.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -4355,7 +4355,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 7 — Le PDF du comité",
-          "consigne": "Étape 1 : Fichier › Enregistrer sous, type PDF, nom Note_comite.pdf. Étape 2 : Options, cochez Créer des signets à l’aide de : Titres, OK, Enregistrer. Étape 3 : ouvrez le PDF, affichez le volet des signets.",
+          "consigne": "Étape 1 : Fichier › Enregistrer sous, type PDF, nom Note_comite.pdf.\nÉtape 2 : Options, cochez Créer des signets à l’aide de : Titres, OK, Enregistrer.\nÉtape 3 : ouvrez le PDF, affichez le volet des signets.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [

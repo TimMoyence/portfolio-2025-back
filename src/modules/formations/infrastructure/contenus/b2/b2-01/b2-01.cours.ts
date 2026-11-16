@@ -2927,7 +2927,7 @@ const ACTE_5: moteur.Acte = [
         enonce:
           'Mercredi, 17 h. Samir annonce qu’il proposera demain d’investir 40 000 € pour doubler les ventes de la marketplace. Hélène vous demande votre recommandation écrite, fondée sur le dossier.',
         invite:
-          'Rédigez trois phrases structurées : 1) le constat chiffré et son unité ; 2) le mécanisme expliqué par les poids, ainsi que ce qui reste à prouver ; 3) la décision proposée, sa limite et le contrôle prioritaire.',
+          'Rédigez trois phrases structurées :\n1) le constat chiffré et son unité ;\n2) le mécanisme expliqué par les poids, ainsi que ce qui reste à prouver ;\n3) la décision proposée, sa limite et le contrôle prioritaire.',
       },
       corrige: {
         type: 'defi',

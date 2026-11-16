@@ -200,7 +200,7 @@ export const ACTE_2: moteur.Acte = [
       proprietes: {
         intitule: 'Exercice 4 — Les paragraphes de la note',
         consigne:
-          'Dans Note_comite.docx. Étape 1 : modifiez le style Normal : justifié, 6 points après, interligne 1,15. Étape 2 : Ctrl + H, Rechercher ^p- suivi d’une espace, Remplacer par ^p, Remplacer tout ; notez le nombre annoncé. Étape 3 : sélectionnez les lignes de la partie 4, Accueil › Puces. Étape 4 : modifiez le style Titre 2 : Paragraphe › Enchaînements, cochez Paragraphes solidaires.',
+          'Dans Note_comite.docx.\nÉtape 1 : modifiez le style Normal : justifié, 6 points après, interligne 1,15.\nÉtape 2 : Ctrl + H, Rechercher ^p- suivi d’une espace, Remplacer par ^p, Remplacer tout ; notez le nombre annoncé.\nÉtape 3 : sélectionnez les lignes de la partie 4, Accueil › Puces.\nÉtape 4 : modifiez le style Titre 2 : Paragraphe › Enchaînements, cochez Paragraphes solidaires.',
         regime: 'focus',
         ordre: 'fixe',
         questions: [
@@ -427,7 +427,7 @@ export const ACTE_2: moteur.Acte = [
       proprietes: {
         intitule: 'Exercice 5 — En-tête, pied et mise en page',
         consigne:
-          'Dans Note_comite.docx. Étape 1 : curseur juste après le sous-titre, Ctrl + Entrée : la page 1 devient la page de titre. Étape 2 : Insertion › En-tête, tapez « Norvane Équipement · Note au comité », alignez à droite ; cochez Première page différente. Étape 3 : Insertion › Numéro de page › Bas de page › Page X sur Y. Étape 4 : curseur au début du titre de l’annexe, Mise en page › Sauts › Page suivante, puis Orientation › Paysage. Étape 5 : Mise en page › Marges › Normales sur tout le document.',
+          'Dans Note_comite.docx.\nÉtape 1 : curseur juste après le sous-titre, Ctrl + Entrée : la page 1 devient la page de titre.\nÉtape 2 : Insertion › En-tête, tapez « Norvane Équipement · Note au comité », alignez à droite ; cochez Première page différente.\nÉtape 3 : Insertion › Numéro de page › Bas de page › Page X sur Y.\nÉtape 4 : curseur au début du titre de l’annexe, Mise en page › Sauts › Page suivante, puis Orientation › Paysage.\nÉtape 5 : Mise en page › Marges › Normales sur tout le document.',
         regime: 'focus',
         ordre: 'fixe',
         questions: [
@@ -679,7 +679,7 @@ export const ACTE_2: moteur.Acte = [
       proprietes: {
         intitule: 'Exercice 7 — Le PDF du comité',
         consigne:
-          'Étape 1 : Fichier › Enregistrer sous, type PDF, nom Note_comite.pdf. Étape 2 : Options, cochez Créer des signets à l’aide de : Titres, OK, Enregistrer. Étape 3 : ouvrez le PDF, affichez le volet des signets.',
+          'Étape 1 : Fichier › Enregistrer sous, type PDF, nom Note_comite.pdf.\nÉtape 2 : Options, cochez Créer des signets à l’aide de : Titres, OK, Enregistrer.\nÉtape 3 : ouvrez le PDF, affichez le volet des signets.',
         regime: 'focus',
         ordre: 'fixe',
         questions: [

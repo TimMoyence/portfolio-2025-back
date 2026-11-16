@@ -8,7 +8,11 @@ import {
   MEILLEUR_TRIMESTRE_B3_02,
   questionChiffreeB302,
 } from './b3-02.donnees';
-import { pageDeFormules } from './b3-02.briques';
+import {
+  DOSSIER_DES_INFOGRAPHIES,
+  FICHES_RECAP_A4,
+  pageDeFormules,
+} from './b3-02.briques';
 import * as moteur from '../../briques';
 
 const REPRISE_ET_T_COMMANDES: moteur.PieceReservee = {
@@ -138,7 +142,7 @@ const DATES_ET_STATISTIQUES: moteur.Acte = [
       proprietes: {
         intitule: 'Exercice 4 — Délais et retards',
         consigne:
-          'Dans l’onglet Commandes du classeur de reprise. Étape 1 : en P1 tapez delai, en P2 =NB.JOURS.OUVRES(B2;C2)-1. Étape 2 : en Q1 date_promise, en Q2 =SERIE.JOUR.OUVRE(B2;5), au format Date. Étape 3 : en R1 aide, en R2 =SI(ET(F2="AG12"; B2>=DATE(2026; 1; 1)); P2; "") ; recopiez P2:R2 jusqu’en ligne 4039. Étape 4 : la médiane, =MEDIANE(R2:R4039). Étape 5 : les retards, =NB.SI.ENS(P2:P4039; ">5"; B2:B4039; ">="&DATE(2026; 1; 1)) : un délai de plus de 5 jours ouvrés dépasse la date promise.',
+          'Dans l’onglet Commandes du classeur de reprise.\nÉtape 1 : en P1 tapez delai, en P2 =NB.JOURS.OUVRES(B2;C2)-1 ✓ telle quelle.\nÉtape 2 : en Q1 date_promise, en Q2 =SERIE.JOUR.OUVRE(B2;5) ✓ telle quelle, au format Date.\nÉtape 3 : en R1 aide, en R2 =SI(ET(F2="AG12"; B2>=DATE(2026; 1; 1)); P2; "") ✓ telle quelle ; recopiez P2:R2 jusqu’en ligne 4039.\nÉtape 4 : la médiane, dans une cellule vide, =MEDIANE(R2:R4039) ✓ telle quelle.\nÉtape 5 : les retards, dans une cellule vide, =NB.SI.ENS(P2:P4039; ">5"; B2:B4039; ">="&DATE(2026; 1; 1)) ✓ telle quelle : un délai de plus de 5 jours ouvrés dépasse la date promise.',
         regime: 'focus',
         ordre: 'fixe',
         questions: [
@@ -276,7 +280,7 @@ const CROISER: moteur.Acte = [
       proprietes: {
         intitule: 'Exercice 5 — Le TCD de la direction',
         consigne:
-          'Dans le classeur de reprise. Étape 1 : cliquez dans Commandes, Ctrl + L (⌘ + T sur Mac), nommez le tableau T_Commandes. Étape 2 : en S1 tapez annee, en S2 =ANNEE([@date_commande]) : la colonne se remplit seule. Étape 3 : premier TCD depuis T_Commandes : agence_id en Lignes, categorie en Colonnes, ca_ht en Valeurs affiché en % du total de la ligne, annee en Filtres sur 2026. Étape 4 : second TCD, sur une autre feuille : date_commande en Lignes, groupée par Trimestres et Années, ca_ht en Valeurs, sans filtre. Étape 5 : répondez.',
+          'Dans le classeur de reprise.\nÉtape 1 : cliquez dans Commandes, Ctrl + L (⌘ + T sur Mac), nommez le tableau T_Commandes.\nÉtape 2 : en S1 tapez annee, en S2 =ANNEE([@date_commande]) ✓ telle quelle : la colonne se remplit seule.\nÉtape 3 : premier TCD depuis T_Commandes : agence_id en Lignes, categorie en Colonnes, ca_ht en Valeurs affiché en % du total de la ligne, annee en Filtres sur 2026.\nÉtape 4 : second TCD, sur une autre feuille : date_commande en Lignes, groupée par Trimestres et Années, ca_ht en Valeurs, sans filtre.\nÉtape 5 : répondez.',
         regime: 'focus',
         ordre: 'fixe',
         questions: [
@@ -342,7 +346,7 @@ const MONTRER: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['choix-du-graphique'],
       notes: moteur.puces(
-        'Ouvrir d’abord le classeur de reprise avec T_Commandes, tous : les exercices 6 et 7 s’y font.',
+        'Ouvrir d’abord le classeur de reprise avec T_Commandes, tous : l’exercice 6 s’y fait.',
         'Temps « réfléchir » des graphiques : vote non noté ; révélation : redessiner au tableau les deux barres depuis zéro.',
       ),
     },
@@ -372,7 +376,7 @@ const MONTRER: moteur.Acte = [
       notes: [
         '2 min ; faire dire la question avant le type de graphique.',
         'Répartition : Insertion › Insérer un graphique statistique › Histogramme (sur Mac, icône Statistiques). À éviter : la 3D, le camembert de plus de cinq parts, le double axe. Axe : clic droit › Mise en forme de l’axe › Minimum : 0.',
-        'Transition : « CA et objectif par agence : exercice 6. »',
+        'Transition : « Nadia a trente secondes : un vote. »',
       ],
     },
     {
@@ -388,62 +392,6 @@ const MONTRER: moteur.Acte = [
         ['L’axe depuis 0, coché', 'l’écart à sa vraie taille'],
       ],
     },
-  ),
-  moteur.corrigeSurPlace(
-    {
-      screenId: 'B3-02-A2-13-ATELIER-GRAPHIQUES',
-      titre: 'Exercice 6 — CA et objectif par agence',
-      diffusion: 'seance',
-      brique: 'questionnaire',
-      dureeMinutes: 6,
-      concepts: ['choix-du-graphique', 'tableau-de-bord'],
-      notes: moteur.puces(
-        moteur.tempsDeLExercice(1, 5),
-        'Réflexion : faire dire où vit l’objectif, dans une autre table que les ventes, d’où la synthèse par SOMME.SI.ENS.',
-        'Pièges : comparer neuf mois de ventes à tous les objectifs ; oublier la période des deux côtés.',
-      ),
-      proprietes: {
-        intitule: 'Exercice 6 — CA et objectif par agence',
-        consigne:
-          'Dans le classeur de reprise avec T_Commandes, sur une feuille Synthèse. Étape 1 : en A1 à D1, les en-têtes agence_id, ca, objectif, atteinte ; en A2 à A13, les douze agence_id, de AG01 à AG12. Étape 2 : en B2, =SOMME.SI.ENS(T_Commandes[ca_ht]; T_Commandes[agence_id]; A2; T_Commandes[annee]; 2026). Étape 3 : en C2, l’objectif des mêmes mois, =SOMME.SI.ENS(Objectifs!$C$2:$C$253; Objectifs!$A$2:$A$253; A2; Objectifs!$B$2:$B$253; ">="&DATE(2026; 1; 1)). Étape 4 : en D2, =B2/C2 au format Pourcentage ; recopiez B2:D2 jusqu’en ligne 13. Étape 5 : sélectionnez A1:C13, Insertion › Histogramme groupé ; un titre qui conclut, l’axe vertical depuis 0.',
-        regime: 'focus',
-        ordre: 'fixe',
-        questions: [
-          questionChiffreeB302(
-            'b3-02-a2-agences-sous-objectif',
-            'tableau-de-bord',
-            'Combien d’agences ont un CA de janvier à septembre 2026 sous leur objectif cumulé des mêmes mois ?',
-            'agences',
-            ['objectif-annuel-pour-cumul', 'periode-mal-delimitee'],
-          ),
-          questionChiffreeB302(
-            'b3-02-a2-atteinte-rennes',
-            'tableau-de-bord',
-            'Quel est le taux d’atteinte de Rennes (AG06), de janvier à septembre 2026 ?',
-            '%',
-            ['objectif-annuel-pour-cumul', 'periode-mal-delimitee'],
-          ),
-        ],
-      },
-    },
-    {
-      minutes: 2,
-      notes: [
-        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE_SOUS_SON_SCORE,
-        'Projeter un graphique réussi : titre qui conclut, légende, axe depuis zéro.',
-        'Transition : « Nadia a trente secondes : un vote. »',
-      ],
-    },
-    [
-      [
-        'b3-02-a2-agences-sous-objectif',
-        '3 agences restent sous leur objectif cumulé de janvier à septembre 2026 : la colonne D, sous 100 %, les désigne.',
-      ],
-      [
-        'b3-02-a2-atteinte-rennes',
-        'CA de Rennes ÷ objectif cumulé de Rennes, ses objectifs mensuels de janvier à septembre 2026 : 79,0 %, le taux le plus bas du réseau. Comparé à tous les objectifs de la table, vingt et un mois, le CA de neuf mois paraît sous l’objectif dans les 12 agences, et Rennes tombe à 33,8 %. Sans critère de date, ni sur les ventes ni sur les objectifs : 7 agences sous l’objectif, et Rennes à 90,8 %.',
-      ],
-    ],
   ),
 ];
 
@@ -500,7 +448,7 @@ const DECIDER: moteur.Acte = [
         '2 min ; montrer la règle =$E5<0,95 appliquée de A5 à la dernière agence ; barres de données sur les seules cellules des agences.',
         'Chemins complets : Nouvelle règle › Utiliser une formule pour déterminer pour quelles cellules le format sera appliqué (sur Mac, Style Classique d’abord) ; segment sur Mac par Analyse du tableau croisé dynamique › Segment, Connexions de rapport pour en relier plusieurs. Un segment ne filtre pas les cellules calculées par formule.',
         'Recommandation hors dossier : Caen, panier moyen −12 % ; deux gros clients passés en ligne ; un contrat-cadre avant la fin du trimestre.',
-        'Transition : « Le tableau de bord Direction : exercice 7. »',
+        'Transition : « Le tableau de bord Direction : exercice 6. »',
       ],
     },
     {
@@ -519,20 +467,24 @@ const DECIDER: moteur.Acte = [
   moteur.corrigeSurPlace(
     {
       screenId: 'B3-02-A2-17-ATELIER-DASHBOARD',
-      titre: 'Exercice 7 — Le tableau de bord Direction',
+      titre: 'Exercice 6 — Le tableau de bord Direction',
       diffusion: 'seance',
       brique: 'questionnaire',
-      dureeMinutes: 8,
-      concepts: ['tableau-de-bord', 'indicateur-statistique'],
+      dureeMinutes: 10,
+      concepts: [
+        'tableau-de-bord',
+        'indicateur-statistique',
+        'choix-du-graphique',
+      ],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(1, 7),
-        'Réflexion : faire dire chaque indicateur et sa comparaison avant de construire.',
-        'Pièges : neuf mois comparés à douze ; toute la table au lieu de 2026 ; moyenne des taux ; marge divisée par le coût d’achat.',
+        moteur.tempsDeLExercice(1, 9),
+        'Réflexion : faire dire chaque indicateur et sa comparaison avant de construire, puis la question à laquelle répond le graphique.',
+        'Pièges : neuf mois comparés à douze ; toute la table au lieu de 2026 ; moyenne des taux ; marge divisée par le coût d’achat ; l’axe qui ne part pas de zéro.',
       ),
       proprietes: {
-        intitule: 'Exercice 7 — Le tableau de bord Direction',
+        intitule: 'Exercice 6 — Le tableau de bord Direction',
         consigne:
-          'Dans le classeur de reprise avec T_Commandes, sur un onglet Dashboard. Étape 1 : en B1, le CA 2026, =SOMME.SI.ENS(T_Commandes[ca_ht]; T_Commandes[annee]; 2026). Étape 2 : en B2, le CA de janvier à septembre 2025, =SOMME.SI.ENS(T_Commandes[ca_ht]; T_Commandes[annee]; 2025; T_Commandes[date_commande]; "<="&DATE(2025; 9; 30)) ; en B3, l’évolution, =B1/B2-1, au format Pourcentage. Étape 3 : en B4, le taux de marque de Marseille, =SOMME.SI.ENS(T_Commandes[marge]; T_Commandes[agence_id]; "AG09"; T_Commandes[annee]; 2026)/SOMME.SI.ENS(T_Commandes[ca_ht]; T_Commandes[agence_id]; "AG09"; T_Commandes[annee]; 2026), au format Pourcentage. Étape 4 : un TCD de la marge par agence, la marge en barres de données, et un segment region relié au TCD. Étape 5 : répondez.',
+          'Dans le classeur de reprise avec T_Commandes, sur un onglet Dashboard.\nÉtape 1 : en B1, le CA 2026, =SOMME.SI.ENS(T_Commandes[ca_ht]; T_Commandes[annee]; 2026) ✓ telle quelle.\nÉtape 2 : en B2, le CA de janvier à septembre 2025, =SOMME.SI.ENS(T_Commandes[ca_ht]; T_Commandes[annee]; 2025; T_Commandes[date_commande]; "<="&DATE(2025; 9; 30)) ✓ telle quelle ; en B3, l’évolution, =B1/B2-1 ✓ telle quelle, au format Pourcentage.\nÉtape 3 : en B4, le taux de marque de Marseille, =SOMME.SI.ENS(T_Commandes[marge]; T_Commandes[agence_id]; "AG09"; T_Commandes[annee]; 2026)/SOMME.SI.ENS(T_Commandes[ca_ht]; T_Commandes[agence_id]; "AG09"; T_Commandes[annee]; 2026) ✓ telle quelle, au format Pourcentage.\nÉtape 4 : un TCD de la marge par agence, la marge en barres de données, et un segment region relié au TCD.\nÉtape 5 : cliquez dans le TCD, Analyse du tableau croisé dynamique › Graphique croisé dynamique › Histogramme groupé ; un titre qui conclut, l’axe vertical depuis 0.\nÉtape 6 : répondez.',
         regime: 'focus',
         ordre: 'fixe',
         questions: [
@@ -568,6 +520,7 @@ const DECIDER: moteur.Acte = [
       minutes: 2,
       notes: [
         moteur.CORRIGER_PAR_LA_MOINS_REUSSIE_SOUS_SON_SCORE,
+        'Projeter l’histogramme réussi : titre qui conclut, axe depuis zéro.',
         'Règle 6 du cahier : « Je montre la méthode de chaque chiffre et le nombre de lignes retenues. »',
         'Transition : « Toutes les formules sur une page, à garder. »',
       ],
@@ -593,38 +546,7 @@ const DECIDER: moteur.Acte = [
       titre: 'Fiche récap 1 : nettoyer, chercher, additionner',
       concepts: ['nettoyage', 'recherche-dans-une-table'],
     },
-    [
-      {
-        title: 'Texte',
-        description:
-          'SUPPRESPACE(texte), NOMPROPRE(texte), MAJUSCULE, MINUSCULE ; NBCAR(texte) compte les caractères. Piège : écrire dans la colonne brute.',
-      },
-      {
-        title: 'Nombre et date en texte',
-        description:
-          'SUBSTITUE(texte; ancien; nouveau), puis CNUM(texte) ; ESTNUM(valeur) ; DATEVAL(texte) ; UNICAR(160). Power Query rejoue le nettoyage. Piège : CNUM d’abord, #VALEUR!.',
-      },
-      {
-        title: 'Doublons',
-        description:
-          'Données › Supprimer les doublons, toutes les colonnes cochées, sur une copie. Piège : la dernière ligne compte l’en-tête.',
-      },
-      {
-        title: 'Comparer et signaler',
-        description:
-          'SI(test; si_vrai; si_faux), OU(…), ET(…), SI.CONDITIONS(test1; valeur1; …). Piège : ET au lieu de OU.',
-      },
-      {
-        title: 'Chercher',
-        description:
-          'RECHERCHEV(clé; table; n°_colonne; FAUX), table figée par $ ; INDEX(colonne; EQUIV(clé; colonne_clé; 0)) ; RECHERCHEX, 2021 ou 365. Piège : #N/A à la recopie.',
-      },
-      {
-        title: 'Additionner, compter',
-        description:
-          'SOMME.SI.ENS(plage_somme; plage1; critère1; …), NB.SI.ENS(plage1; critère1; …), critère ">="&DATE(2026; 1; 1). Piège : DATE dans les guillemets rend 0.',
-      },
-    ],
+    FICHES_RECAP_A4[0],
   ),
   ficheRecap(
     {
@@ -632,38 +554,7 @@ const DECIDER: moteur.Acte = [
       titre: 'Fiche récap 2 : dater, résumer, croiser, montrer',
       concepts: ['calcul-sur-dates', 'tableau-de-bord'],
     },
-    [
-      {
-        title: 'Dates',
-        description:
-          'NB.JOURS.OUVRES(début;fin) − 1 ; SERIE.JOUR.OUVRE(début;n) ; JOURSEM(date;2) ; DATEDIF(début;fin;"M") ; TEMPS(h;m;s) ; ANNEE(date). Piège : C2 − B2 compte le week-end.',
-      },
-      {
-        title: 'Résumer',
-        description:
-          'MOYENNE, MEDIANE, AGREGAT(12;5;plage) sous filtre, ECARTYPE.STANDARD(plage). Piège : la moyenne tirée par une valeur extrême.',
-      },
-      {
-        title: 'Classer, filtrer',
-        description:
-          'EQUATION.RANG(valeur;plage), GRANDE.VALEUR(plage;k), filtre automatique ; TRIER, FILTRE, UNIQUE, 2021 ou 365. Piège : un filtre resté actif.',
-      },
-      {
-        title: 'Croiser',
-        description:
-          'Tableau structuré, Ctrl + L, T_Commandes[ca_ht] ; tableau croisé dynamique, % du total de la ligne, trimestres et années. Piège : la plage fixe.',
-      },
-      {
-        title: 'Ratios',
-        description:
-          'Taux de marque = marge ÷ CA HT ; évolution = valeur ÷ an passé − 1 ; atteinte = réalisé ÷ objectif ; SOMMEPROD(plage1;plage2). Piège : la moyenne des taux.',
-      },
-      {
-        title: 'Montrer',
-        description:
-          'Le graphique d’après la question, axe depuis zéro ; barres de données, MFC par formule, segments ; $ fige à la recopie, F4. Piège : un chiffre sans comparaison.',
-      },
-    ],
+    FICHES_RECAP_A4[1],
   ),
 ];
 
@@ -673,7 +564,7 @@ function ficheRecap(
     titre,
     concepts,
   }: Pick<moteur.SocleDEcran, 'screenId' | 'titre' | 'concepts'>,
-  items: readonly { readonly title: string; readonly description: string }[],
+  fiche: (typeof FICHES_RECAP_A4)[number],
 ): moteur.EcranDeRecit {
   return moteur.ecranV2(
     {
@@ -683,17 +574,20 @@ function ficheRecap(
       dureeMinutes: 1,
       concepts,
       notes: moteur.puces(
-        '1 min : la fiche s’imprime et se garde pour le cas pratique de fin de module.',
+        '1 min : la fiche A4 se télécharge en PDF et se garde pour le cas pratique de fin de module.',
         'Une carte par famille de problème : nommer la famille d’abord, la formule ensuite.',
       ),
     },
-    'grid',
+    'illustration',
     {
-      title: titre,
-      subtitle:
-        'Une carte par famille : chaque formule, sa syntaxe, son piège. « 2021 ou 365 » : Excel 2021 ou 365 seulement.',
-      imprimable: true,
-      items,
+      image: `${DOSSIER_DES_INFOGRAPHIES}/${fiche.fichier}`,
+      imageAlt: fiche.imageAlt,
+    },
+    {
+      pieceJointe: {
+        libelle: `${fiche.titre.split(' : ')[0]} (PDF)`,
+        fichier: fiche.pdf,
+      },
     },
   );
 }

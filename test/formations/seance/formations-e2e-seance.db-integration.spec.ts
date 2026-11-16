@@ -177,7 +177,7 @@ interface AttenduDuCours {
   readonly intervalleLibre: {
     readonly premier: number;
     readonly dernier: number;
-  };
+  } | null;
 }
 
 function seanceComplete(
@@ -962,6 +962,17 @@ function seanceComplete(
       const jouerRythmeLibre = async (): Promise<void> => {
         const { intervalleLibre } = attendu;
         const libres = [...activitesLibres(cours).keys()];
+        if (intervalleLibre === null) {
+          expect(
+            cours.ecrans
+              .filter(
+                (ecran) =>
+                  libres.includes(ecran.id) && ecran.brique !== 'fp-worked',
+              )
+              .map((ecran) => ecran.id),
+          ).toEqual([]);
+          return;
+        }
         const dedans = cours.ecrans.find(
           (ecran) =>
             libres.includes(ecran.id) &&
@@ -1839,7 +1850,7 @@ seanceComplete(COURS_B1_05, {
 });
 
 seanceComplete(COURS_B3_02, {
-  questionsNotees: 17,
+  questionsNotees: 14,
   cellulesDesFeuilles: [],
   exerciceEnAvance: 'B3-02-A1-12-EXEMPLE-RECHERCHE',
   jalons: 0,
@@ -1848,15 +1859,21 @@ seanceComplete(COURS_B3_02, {
     'B3-02-A1-02-REPRISE',
     'B3-02-A1-09-VOTE-RELIER',
     'B3-02-A2-11-VOTE-GRAPHIQUE',
-    'B3-02-A3-06-ANALYSE-IA',
+    'B3-02-A2-18-FICHE-RECAP-1',
+    'B3-02-A2-19-FICHE-RECAP-2',
+    'B3-02-A3-04-PROMPT-TOUS-ENSEMBLE',
   ],
-  piecesJointesAuCatalogue: ['B3-02-A1-02-REPRISE'],
+  piecesJointesAuCatalogue: [
+    'B3-02-A1-02-REPRISE',
+    'B3-02-A2-18-FICHE-RECAP-1',
+    'B3-02-A2-19-FICHE-RECAP-2',
+  ],
   classeursReserves: [
     'B3-02-A1-09-VOTE-RELIER',
     'B3-02-A2-11-VOTE-GRAPHIQUE',
-    'B3-02-A3-06-ANALYSE-IA',
+    'B3-02-A3-04-PROMPT-TOUS-ENSEMBLE',
   ],
-  intervalleLibre: { premier: 37, dernier: 37 },
+  intervalleLibre: null,
 });
 
 seanceComplete(COURS_B3_03, {

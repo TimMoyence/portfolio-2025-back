@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "a0f30638e2c413a237d92dbd6e3dcfbe19f2fcc31b55d425ecd7382ee1288e64",
+  "empreinte": "1b4c93d14661340fd7829278dd53acdf2a1f2d0575cb6c5b94c7abf765abb8ea",
   "sujet": {
     "id": "b2-01-traitement-information-chiffree",
     "titre": "Lire, contrôler et décider avec l’information chiffrée",
@@ -7129,7 +7129,7 @@
           "probleme": {
             "id": "b2-01-a5-recommandation",
             "enonce": "Mercredi, 17 h. Samir annonce qu’il proposera demain d’investir 40 000 € pour doubler les ventes de la marketplace. Hélène vous demande votre recommandation écrite, fondée sur le dossier.",
-            "invite": "Rédigez trois phrases structurées : 1) le constat chiffré et son unité ; 2) le mécanisme expliqué par les poids, ainsi que ce qui reste à prouver ; 3) la décision proposée, sa limite et le contrôle prioritaire.",
+            "invite": "Rédigez trois phrases structurées :\n1) le constat chiffré et son unité ;\n2) le mécanisme expliqué par les poids, ainsi que ce qui reste à prouver ;\n3) la décision proposée, sa limite et le contrôle prioritaire.",
             "strategies": [],
             "metadonnees": {
               "concepts": ["moyenne-ponderee"],
@@ -16418,7 +16418,7 @@
           "probleme": {
             "id": "b2-01-a5-recommandation",
             "enonce": "Mercredi, 17 h. Samir annonce qu’il proposera demain d’investir 40 000 € pour doubler les ventes de la marketplace. Hélène vous demande votre recommandation écrite, fondée sur le dossier.",
-            "invite": "Rédigez trois phrases structurées : 1) le constat chiffré et son unité ; 2) le mécanisme expliqué par les poids, ainsi que ce qui reste à prouver ; 3) la décision proposée, sa limite et le contrôle prioritaire.",
+            "invite": "Rédigez trois phrases structurées :\n1) le constat chiffré et son unité ;\n2) le mécanisme expliqué par les poids, ainsi que ce qui reste à prouver ;\n3) la décision proposée, sa limite et le contrôle prioritaire.",
             "strategies": [],
             "metadonnees": {
               "concepts": ["moyenne-ponderee"],

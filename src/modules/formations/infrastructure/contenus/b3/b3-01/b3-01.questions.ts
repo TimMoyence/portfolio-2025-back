@@ -24,7 +24,7 @@ function formePubliee(valeur: number, unite: UniteDeSaisie): string {
   return `${nombreFrancais(valeur, unite === '%' ? 1 : 0)} ${unite}`;
 }
 
-export function valeurDuPiege(
+function valeurDuPiege(
   id: QuestionChiffreeB301,
   confusion: ConfusionId,
 ): readonly [number, ConfusionId] {
