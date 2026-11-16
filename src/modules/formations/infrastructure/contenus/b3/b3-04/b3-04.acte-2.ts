@@ -4,7 +4,7 @@ import {
   VALEURS_B3_04,
 } from './b3-04.donnees';
 import { pageDuFournil } from '../b3-03/b3-03.briques';
-import { champ, pageDePublipostage } from './b3-04.briques';
+import { champ } from './b3-04.briques';
 import * as moteur from '../../briques';
 
 const LES_SIX_REGLES = [
@@ -53,7 +53,7 @@ export const ACTE_2: moteur.Acte = [
       ),
     ],
   ),
-  pageDePublipostage(
+  moteur.pageDessinee(
     {
       screenId: 'B3-04-A2-02-PAGE-FILTRER',
       titre: 'Page : filtrer les destinataires',
@@ -64,7 +64,6 @@ export const ACTE_2: moteur.Acte = [
       ],
     },
     {
-      rang: 5,
       page: pageDuFournil({
         blocks: [
           {
@@ -100,7 +99,7 @@ export const ACTE_2: moteur.Acte = [
       ],
     },
   ),
-  pageDePublipostage(
+  moteur.pageDessinee(
     {
       screenId: 'B3-04-A2-03-PAGE-REGLE',
       titre: 'Page : une règle Si…Alors…Sinon',
@@ -111,7 +110,6 @@ export const ACTE_2: moteur.Acte = [
       ],
     },
     {
-      rang: 6,
       page: pageDuFournil({
         blocks: [
           {
@@ -233,7 +231,7 @@ export const ACTE_2: moteur.Acte = [
       ),
     ],
   ),
-  pageDePublipostage(
+  moteur.pageDessinee(
     {
       screenId: 'B3-04-A2-06-PAGE-APERCU',
       titre: 'Page : l’aperçu des résultats',
@@ -244,7 +242,6 @@ export const ACTE_2: moteur.Acte = [
       ],
     },
     {
-      rang: 7,
       page: pageDuFournil({
         blocks: [
           {
@@ -279,7 +276,7 @@ export const ACTE_2: moteur.Acte = [
       ],
     },
   ),
-  pageDePublipostage(
+  moteur.pageDessinee(
     {
       screenId: 'B3-04-A2-07-PAGE-FUSION',
       titre: 'Page : fusionner en documents individuels',
@@ -289,7 +286,6 @@ export const ACTE_2: moteur.Acte = [
       ],
     },
     {
-      rang: 8,
       page: pageDuFournil({
         blocks: [
           moteur.paragraphe([{ text: 'Café du Quai' }], 1),
@@ -315,7 +311,7 @@ export const ACTE_2: moteur.Acte = [
       ],
     },
   ),
-  pageDePublipostage(
+  moteur.pageDessinee(
     {
       screenId: 'B3-04-A2-08-PAGE-PDF',
       titre: 'Page : le PDF d’une lettre, le PDF de toutes',
@@ -326,7 +322,6 @@ export const ACTE_2: moteur.Acte = [
       ],
     },
     {
-      rang: 9,
       page: pageDuFournil({
         blocks: [
           moteur.paragraphe(

@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "3b57f7389a7cf1316c6add392b63e1fb4914c7c64a114d7b96abefd46ed179de",
+  "empreinte": "bf185faa993fb763b5aa6581daaaa0fe551d45c48f47915e08ebc0b14a03209c",
   "sujet": {
     "id": "b1-03-tcd-serie-une-variable",
     "titre": "Traiter un fichier : TCD et série à une variable",
@@ -277,7 +277,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Le TCD : un tas par catégorie, puis on additionne",
-                "subtitle": "Trace écrite · notion 1 · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -372,7 +371,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Le champ calculé : un taux sur les sommes",
-                "subtitle": "Trace écrite · notion 1 · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -674,7 +672,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Médiane et quartiles : ranger, puis couper",
-                "subtitle": "Trace écrite · notion 2 · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -769,7 +766,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "L’écart type : de combien on s’écarte du centre",
-                "subtitle": "Trace écrite · notion 2 · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -1424,7 +1420,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "La boîte à moustaches : cinq nombres, quatre quarts",
-                "subtitle": "Trace écrite · notion 3 · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -1518,7 +1513,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Les classes : un grand fichier en quelques boîtes",
-                "subtitle": "Trace écrite · notion 3 · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -2314,7 +2308,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Le TCD : un tas par catégorie, puis on additionne",
-                "subtitle": "Trace écrite · notion 1 · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -2423,7 +2416,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Le champ calculé : un taux sur les sommes",
-                "subtitle": "Trace écrite · notion 1 · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -2871,7 +2863,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Médiane et quartiles : ranger, puis couper",
-                "subtitle": "Trace écrite · notion 2 · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -2980,7 +2971,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "L’écart type : de combien on s’écarte du centre",
-                "subtitle": "Trace écrite · notion 2 · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -4005,7 +3995,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "La boîte à moustaches : cinq nombres, quatre quarts",
-                "subtitle": "Trace écrite · notion 3 · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -4113,7 +4102,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Les classes : un grand fichier en quelques boîtes",
-                "subtitle": "Trace écrite · notion 3 · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -5154,7 +5142,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Le TCD : un tas par catégorie, puis on additionne",
-                "subtitle": "Trace écrite · notion 1 · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -5249,7 +5236,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Le champ calculé : un taux sur les sommes",
-                "subtitle": "Trace écrite · notion 1 · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -5375,7 +5361,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Médiane et quartiles : ranger, puis couper",
-                "subtitle": "Trace écrite · notion 2 · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -5470,7 +5455,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "L’écart type : de combien on s’écarte du centre",
-                "subtitle": "Trace écrite · notion 2 · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -5604,7 +5588,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "La boîte à moustaches : cinq nombres, quatre quarts",
-                "subtitle": "Trace écrite · notion 3 · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -5698,7 +5681,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Les classes : un grand fichier en quelques boîtes",
-                "subtitle": "Trace écrite · notion 3 · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",

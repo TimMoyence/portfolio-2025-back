@@ -440,7 +440,6 @@ const ACTE_2: moteur.Acte = [
     'lesson',
     {
       title: 'La dérivée : la pente de la courbe en chaque point',
-      subtitle: 'Trace écrite · notion 1 · page 1 sur 2',
       blocks: [
         {
           kind: 'definition',
@@ -694,7 +693,6 @@ const ACTE_2: moteur.Acte = [
     'lesson',
     {
       title: 'Dériver a e^(kx) : la recette de l’exponentielle',
-      subtitle: 'Trace écrite · notion 1 · page 2 sur 2',
       blocks: [
         {
           kind: 'property',
@@ -930,7 +928,6 @@ const ACTE_3: moteur.Acte = [
     'lesson',
     {
       title: 'Le signe de f′ donne le sens de f',
-      subtitle: 'Trace écrite · notion 2',
       blocks: [
         {
           kind: 'property',
@@ -1224,7 +1221,6 @@ const ACTE_4: moteur.Acte = [
     'lesson',
     {
       title: 'Extremum et optimum : le sommet ou le bord',
-      subtitle: 'Trace écrite · notion 3',
       blocks: [
         {
           kind: 'definition',

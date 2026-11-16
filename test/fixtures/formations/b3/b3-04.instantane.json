@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "b027b471cadf830ab7966058ffceb4c7effe7d5a7ffd4cbd8daaa03e4e13e4e2",
+  "empreinte": "ef7443bf89683b163444b8dce4224db93d9b60bcc0a9c8dc12fc88b940b9b0dc",
   "sujet": {
     "id": "b3-04-publipostage",
     "titre": "Publipostage et e-mailing",
@@ -142,7 +142,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : les trois pièces du publipostage",
-                "subtitle": "Publipostage · page 1 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -224,7 +223,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : lier la liste du tableur",
-                "subtitle": "Publipostage · page 2 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -380,7 +378,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : insérer les champs de fusion",
-                "subtitle": "Publipostage · page 3 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -470,7 +467,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : le format d’un montant",
-                "subtitle": "Publipostage · page 4 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -775,7 +771,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : filtrer les destinataires",
-                "subtitle": "Publipostage · page 5 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -856,7 +851,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : une règle Si…Alors…Sinon",
-                "subtitle": "Publipostage · page 6 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -1019,7 +1013,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : l’aperçu des résultats",
-                "subtitle": "Publipostage · page 7 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -1115,7 +1108,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : fusionner en documents individuels",
-                "subtitle": "Publipostage · page 8 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -1197,7 +1189,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : le PDF d’une lettre, le PDF de toutes",
-                "subtitle": "Publipostage · page 9 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -1491,7 +1482,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : chemin 1, l’e-mailing depuis Word",
-                "subtitle": "Publipostage · page 10 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -1572,7 +1562,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : chemin 2, la lettre en PDF joint",
-                "subtitle": "Publipostage · page 11 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -1762,7 +1751,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Une IA qui écrit la lettre type",
-                "subtitle": "L’IA rédactrice · le publipostage",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -2215,7 +2203,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : les trois pièces du publipostage",
-                "subtitle": "Publipostage · page 1 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -2304,7 +2291,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : lier la liste du tableur",
-                "subtitle": "Publipostage · page 2 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -2561,7 +2547,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : insérer les champs de fusion",
-                "subtitle": "Publipostage · page 3 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -2658,7 +2643,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : le format d’un montant",
-                "subtitle": "Publipostage · page 4 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -3172,7 +3156,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : filtrer les destinataires",
-                "subtitle": "Publipostage · page 5 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -3260,7 +3243,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : une règle Si…Alors…Sinon",
-                "subtitle": "Publipostage · page 6 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -3515,7 +3497,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : l’aperçu des résultats",
-                "subtitle": "Publipostage · page 7 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -3618,7 +3599,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : fusionner en documents individuels",
-                "subtitle": "Publipostage · page 8 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -3707,7 +3687,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : le PDF d’une lettre, le PDF de toutes",
-                "subtitle": "Publipostage · page 9 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -4194,7 +4173,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : chemin 1, l’e-mailing depuis Word",
-                "subtitle": "Publipostage · page 10 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -4282,7 +4260,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : chemin 2, la lettre en PDF joint",
-                "subtitle": "Publipostage · page 11 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -4576,7 +4553,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Une IA qui écrit la lettre type",
-                "subtitle": "L’IA rédactrice · le publipostage",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -5055,7 +5031,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : les trois pièces du publipostage",
-                "subtitle": "Publipostage · page 1 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -5137,7 +5112,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : lier la liste du tableur",
-                "subtitle": "Publipostage · page 2 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -5235,7 +5209,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : insérer les champs de fusion",
-                "subtitle": "Publipostage · page 3 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -5325,7 +5298,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : le format d’un montant",
-                "subtitle": "Publipostage · page 4 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -5447,7 +5419,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : filtrer les destinataires",
-                "subtitle": "Publipostage · page 5 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -5528,7 +5499,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : une règle Si…Alors…Sinon",
-                "subtitle": "Publipostage · page 6 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -5635,7 +5605,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : l’aperçu des résultats",
-                "subtitle": "Publipostage · page 7 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -5731,7 +5700,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : fusionner en documents individuels",
-                "subtitle": "Publipostage · page 8 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -5813,7 +5781,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : le PDF d’une lettre, le PDF de toutes",
-                "subtitle": "Publipostage · page 9 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -5983,7 +5950,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : chemin 1, l’e-mailing depuis Word",
-                "subtitle": "Publipostage · page 10 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -6064,7 +6030,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : chemin 2, la lettre en PDF joint",
-                "subtitle": "Publipostage · page 11 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -6174,7 +6139,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Une IA qui écrit la lettre type",
-                "subtitle": "L’IA rédactrice · le publipostage",
                 "blocks": [
                   {
                     "kind": "definition",

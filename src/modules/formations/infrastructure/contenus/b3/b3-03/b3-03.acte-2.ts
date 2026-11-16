@@ -6,7 +6,6 @@ import {
 import {
   COLLER_LE_TEXTE_SEUL,
   EN_TETE_INVENTE,
-  pageDeTraitementDeTexte,
   pageDuFournil,
 } from './b3-03.briques';
 import * as moteur from '../../briques';
@@ -69,7 +68,7 @@ export const ACTE_2: moteur.Acte = [
       ),
     ],
   ),
-  pageDeTraitementDeTexte(
+  moteur.pageDessinee(
     {
       screenId: 'B3-03-A2-02-PAGE-PARAGRAPHES',
       titre: 'Page : aligner, retirer, espacer',
@@ -80,7 +79,6 @@ export const ACTE_2: moteur.Acte = [
       ],
     },
     {
-      rang: 6,
       page: pageDuFournil({
         blocks: [
           {
@@ -127,7 +125,7 @@ export const ACTE_2: moteur.Acte = [
       ],
     },
   ),
-  pageDeTraitementDeTexte(
+  moteur.pageDessinee(
     {
       screenId: 'B3-03-A2-03-PAGE-LISTES-ET-SAUTS',
       titre: 'Page : listes à puces et sauts de page',
@@ -138,7 +136,6 @@ export const ACTE_2: moteur.Acte = [
       ],
     },
     {
-      rang: 7,
       page: pageDuFournil({
         marks: true,
         blocks: [
@@ -271,7 +268,7 @@ export const ACTE_2: moteur.Acte = [
       ),
     ],
   ),
-  pageDeTraitementDeTexte(
+  moteur.pageDessinee(
     {
       screenId: 'B3-03-A2-06-PAGE-EN-TETE-PIED',
       titre: 'Page : en-tête et pied de page',
@@ -282,7 +279,6 @@ export const ACTE_2: moteur.Acte = [
       ],
     },
     {
-      rang: 8,
       page: {
         orientation: 'portrait',
         header: {
@@ -322,7 +318,7 @@ export const ACTE_2: moteur.Acte = [
       ],
     },
   ),
-  pageDeTraitementDeTexte(
+  moteur.pageDessinee(
     {
       screenId: 'B3-03-A2-07-PAGE-MISE-EN-PAGE',
       titre: 'Page : marges, orientation et sections',
@@ -333,7 +329,6 @@ export const ACTE_2: moteur.Acte = [
       ],
     },
     {
-      rang: 9,
       page: {
         orientation: 'landscape',
         marginMarker: 1,
@@ -370,7 +365,7 @@ export const ACTE_2: moteur.Acte = [
       ],
     },
   ),
-  pageDeTraitementDeTexte(
+  moteur.pageDessinee(
     {
       screenId: 'B3-03-A2-08-PAGE-NUMEROS',
       titre: 'Page : numéroter « Page X sur Y »',
@@ -381,7 +376,6 @@ export const ACTE_2: moteur.Acte = [
       ],
     },
     {
-      rang: 10,
       page: {
         orientation: 'portrait',
         header: { ...EN_TETE_INVENTE, marker: 3 },
@@ -619,7 +613,7 @@ export const ACTE_2: moteur.Acte = [
       ),
     ],
   ),
-  pageDeTraitementDeTexte(
+  moteur.pageDessinee(
     {
       screenId: 'B3-03-A2-12-PAGE-PDF',
       titre: 'Page : enregistrer en PDF',
@@ -630,7 +624,6 @@ export const ACTE_2: moteur.Acte = [
       ],
     },
     {
-      rang: 11,
       page: pageDuFournil({
         blocks: [
           {

@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "808e0666072332625f4a635d42b59d4055f2999ad5974493ebaf166982fe4648",
+  "empreinte": "c79b7be7d8b3d9806c4b48d781da509a9a2333b9eb5216188157141e5ab045af",
   "sujet": {
     "id": "b2-02-series-statistiques",
     "titre": "Séries statistiques : résumer, relier, prévoir",
@@ -310,7 +310,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Le centre d’une série : moyenne et médiane",
-                "subtitle": "Trace écrite · notion 1 · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -396,7 +395,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "La régularité d’une série : l’écart-type",
-                "subtitle": "Trace écrite · notion 1 · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -776,7 +774,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Nuage de points et point moyen",
-                "subtitle": "Trace écrite · notion 2 · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -861,7 +858,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Le coefficient de corrélation r",
-                "subtitle": "Trace écrite · notion 2 · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -1337,7 +1333,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "La droite des moindres carrés",
-                "subtitle": "Trace écrite · notion 3 · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -1423,7 +1418,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Prévoir avec la droite, et ses limites",
-                "subtitle": "Trace écrite · notion 3 · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "method",
@@ -2440,7 +2434,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Le centre d’une série : moyenne et médiane",
-                "subtitle": "Trace écrite · notion 1 · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -2540,7 +2533,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "La régularité d’une série : l’écart-type",
-                "subtitle": "Trace écrite · notion 1 · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -3146,7 +3138,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Nuage de points et point moyen",
-                "subtitle": "Trace écrite · notion 2 · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -3245,7 +3236,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Le coefficient de corrélation r",
-                "subtitle": "Trace écrite · notion 2 · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -4091,7 +4081,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "La droite des moindres carrés",
-                "subtitle": "Trace écrite · notion 3 · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -4191,7 +4180,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Prévoir avec la droite, et ses limites",
-                "subtitle": "Trace écrite · notion 3 · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "method",
@@ -5728,7 +5716,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Le centre d’une série : moyenne et médiane",
-                "subtitle": "Trace écrite · notion 1 · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -5814,7 +5801,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "La régularité d’une série : l’écart-type",
-                "subtitle": "Trace écrite · notion 1 · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -5998,7 +5984,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Nuage de points et point moyen",
-                "subtitle": "Trace écrite · notion 2 · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -6083,7 +6068,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Le coefficient de corrélation r",
-                "subtitle": "Trace écrite · notion 2 · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -6208,7 +6192,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "La droite des moindres carrés",
-                "subtitle": "Trace écrite · notion 3 · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -6294,7 +6277,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Prévoir avec la droite, et ses limites",
-                "subtitle": "Trace écrite · notion 3 · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "method",

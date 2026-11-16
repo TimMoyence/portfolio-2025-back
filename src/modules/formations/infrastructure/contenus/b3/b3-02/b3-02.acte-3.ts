@@ -80,7 +80,6 @@ const AUDIT: moteur.Acte = [
     'lesson',
     {
       title: 'Une IA qui analyse vos données',
-      subtitle: 'L’IA analyste · page 1 sur 2',
       blocks: [
         {
           kind: 'definition',
@@ -127,7 +126,6 @@ const AUDIT: moteur.Acte = [
     'lesson',
     {
       title: 'Le cahier de règles de l’analyste',
-      subtitle: 'L’IA analyste · page 2 sur 2',
       blocks: [
         {
           kind: 'definition',

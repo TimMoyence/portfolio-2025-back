@@ -15,26 +15,17 @@ export const pagesDessineesDe = (contenu: ContenuDeCours) =>
 
 export const serieServie = (contenu: ContenuDeCours) =>
   pagesDessineesDe(contenu).map(({ screenId, dureeMinutes }) => {
-    const { paragraphs, subtitle } = proprietesV2(contenu, screenId) as {
+    const { paragraphs } = proprietesV2(contenu, screenId) as {
       paragraphs: string[];
-      subtitle: string;
     };
     return {
       dureeMinutes,
-      subtitle,
       debuts: debutsDe(paragraphs),
     };
   });
 
-export const serieAttendue = ({
-  nom,
-  pages,
-}: {
-  readonly nom: string;
-  readonly pages: number;
-}) =>
-  Array.from({ length: pages }, (_, rang) => ({
+export const serieAttendue = (pages: number) =>
+  Array.from({ length: pages }, () => ({
     dureeMinutes: DUREE_D_UNE_PAGE,
-    subtitle: `${nom} · page ${rang + 1} sur ${pages}`,
     debuts: ORDRE_DU_TEXTE,
   }));

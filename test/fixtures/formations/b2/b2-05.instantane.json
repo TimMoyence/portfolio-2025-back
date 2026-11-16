@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "5ee10f7b1af61a7221b76cdd2dad997b5c857c50479d9c231a357e07b8801c64",
+  "empreinte": "89ecb25e7d028b3e92102d9791704ed4a727dfb5a631a7c900bb7f0b1b6e9a76",
   "sujet": {
     "id": "b2-05-mathematiques-financieres",
     "titre": "Mathématiques financières : placer, emprunter",
@@ -340,7 +340,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Intérêts composés : les intérêts rapportent à leur tour",
-                "subtitle": "Trace écrite · notion 1 · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -426,7 +425,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Valeur actuelle : ce qu’il faut placer aujourd’hui",
-                "subtitle": "Trace écrite · notion 1 · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -830,7 +828,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Suite d’annuités : additionner des versements placés",
-                "subtitle": "Trace écrite · notion 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -1287,7 +1284,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Emprunter : intérêts, amortissement, annuité",
-                "subtitle": "Trace écrite · notion 3 · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -1373,7 +1369,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Coût du crédit et tableau d’amortissement au tableur",
-                "subtitle": "Trace écrite · notion 3 · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -2371,7 +2366,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Intérêts composés : les intérêts rapportent à leur tour",
-                "subtitle": "Trace écrite · notion 1 · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -2471,7 +2465,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Valeur actuelle : ce qu’il faut placer aujourd’hui",
-                "subtitle": "Trace écrite · notion 1 · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -3195,7 +3188,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Suite d’annuités : additionner des versements placés",
-                "subtitle": "Trace écrite · notion 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -4017,7 +4009,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Emprunter : intérêts, amortissement, annuité",
-                "subtitle": "Trace écrite · notion 3 · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -4117,7 +4108,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Coût du crédit et tableau d’amortissement au tableur",
-                "subtitle": "Trace écrite · notion 3 · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -5554,7 +5544,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Intérêts composés : les intérêts rapportent à leur tour",
-                "subtitle": "Trace écrite · notion 1 · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -5640,7 +5629,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Valeur actuelle : ce qu’il faut placer aujourd’hui",
-                "subtitle": "Trace écrite · notion 1 · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -5759,7 +5747,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Suite d’annuités : additionner des versements placés",
-                "subtitle": "Trace écrite · notion 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -5948,7 +5935,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Emprunter : intérêts, amortissement, annuité",
-                "subtitle": "Trace écrite · notion 3 · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -6034,7 +6020,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Coût du crédit et tableau d’amortissement au tableur",
-                "subtitle": "Trace écrite · notion 3 · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",

@@ -264,7 +264,6 @@ const ACTE_1: moteur.Acte = [
     'lesson',
     {
       title: 'Taux et coefficient : multiplier, pas ajouter',
-      subtitle: 'Trace écrite · notion 1 · page 1 sur 2',
       blocks: [
         {
           kind: 'definition',
@@ -329,7 +328,6 @@ const ACTE_1: moteur.Acte = [
     'lesson',
     {
       title: 'HT, TTC, remise : toujours un coefficient',
-      subtitle: 'Trace écrite · notion 1 · page 2 sur 2',
       blocks: [
         {
           kind: 'definition',
@@ -647,7 +645,6 @@ const ACTE_2: moteur.Acte = [
     'lesson',
     {
       title: 'Évolutions successives : on multiplie',
-      subtitle: 'Trace écrite · notion 2 · page 1 sur 2',
       blocks: [
         {
           kind: 'definition',
@@ -710,7 +707,6 @@ const ACTE_2: moteur.Acte = [
     'lesson',
     {
       title: 'Évolution réciproque : revenir au départ',
-      subtitle: 'Trace écrite · notion 2 · page 2 sur 2',
       blocks: [
         {
           kind: 'definition',
@@ -1064,7 +1060,6 @@ const ACTE_3: moteur.Acte = [
     'lesson',
     {
       title: 'Indice base 100 : comparer à une année',
-      subtitle: 'Trace écrite · notion 3 · page 1 sur 2',
       blocks: [
         {
           kind: 'definition',
@@ -1129,7 +1124,6 @@ const ACTE_3: moteur.Acte = [
     'lesson',
     {
       title: 'Taux moyen : la même hausse chaque année',
-      subtitle: 'Trace écrite · notion 3 · page 2 sur 2',
       blocks: [
         {
           kind: 'definition',

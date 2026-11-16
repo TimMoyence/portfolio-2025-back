@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "a9ffd8b5039c0512bf116bab50284cf04074f0819084497a0410cd602bf3f4ee",
+  "empreinte": "8289199bbedad3bbc5059c44a2e618a85e0fb7abd1c91197efb87c674fa551ad",
   "sujet": {
     "id": "b3-02-formules-et-ia-analyste",
     "titre": "Toutes les formules, puis l’IA analyste",
@@ -210,7 +210,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Formules : SUPPRESPACE et NOMPROPRE",
-                "subtitle": "Formules pas à pas · page 1 sur 13",
                 "image": "/assets/cours/b3-02/v1/nettoyer-le-texte.webp",
                 "imageAlt": "Infographie : une ville en capitales entourée d’espaces passe par SUPPRESPACE puis NOMPROPRE et devient « Bordeaux ».",
                 "paragraphs": [
@@ -250,7 +249,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Formules : SUBSTITUE, CNUM et ESTNUM",
-                "subtitle": "Formules pas à pas · page 2 sur 13",
                 "image": "/assets/cours/b3-02/v1/convertir-un-montant.webp",
                 "imageAlt": "Infographie : un montant en texte perd son symbole et son espace par deux SUBSTITUE, puis CNUM le rend nombre.",
                 "paragraphs": [
@@ -290,7 +288,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Formules : SI, OU et ET",
-                "subtitle": "Formules pas à pas · page 3 sur 13",
                 "image": "/assets/cours/b3-02/v1/signaler-par-si-ou.webp",
                 "imageAlt": "Infographie : trois tests passent dans un entonnoir OU ; un seul vrai suffit pour marquer la ligne « À vérifier ».",
                 "paragraphs": [
@@ -427,7 +424,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Formule : RECHERCHEV",
-                "subtitle": "Formules pas à pas · page 4 sur 13",
                 "image": "/assets/cours/b3-02/v1/recherchev-quatre-arguments.webp",
                 "imageAlt": "Infographie : les quatre arguments de RECHERCHEV numérotés, et la ligne AG06 de la table Agences qui rend « Ouest ».",
                 "paragraphs": [
@@ -467,7 +463,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Formules : SOMME.SI.ENS, NB.SI.ENS et DATE",
-                "subtitle": "Formules pas à pas · page 5 sur 13",
                 "image": "/assets/cours/b3-02/v1/additionner-sous-conditions.webp",
                 "imageAlt": "Infographie : SOMME.SI.ENS en couleurs, un entonnoir ne laisse passer que les lignes de Rennes en 2026.",
                 "paragraphs": [
@@ -647,7 +642,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Formules : NB.JOURS.OUVRES et SERIE.JOUR.OUVRE",
-                "subtitle": "Formules pas à pas · page 6 sur 13",
                 "image": "/assets/cours/b3-02/v1/jours-ouvres.webp",
                 "imageAlt": "Infographie : un calendrier de mars 2026, week-end grisé, du vendredi de la commande au lundi de la livraison.",
                 "paragraphs": [
@@ -687,7 +681,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Formules : JOURSEM, DATEDIF et TEMPS",
-                "subtitle": "Formules pas à pas · page 7 sur 13",
                 "image": "/assets/cours/b3-02/v1/calendrier-joursem-datedif-temps.webp",
                 "imageAlt": "Infographie : une semaine numérotée pour JOURSEM, une frise de mois pour DATEDIF, une horloge pour TEMPS.",
                 "paragraphs": [
@@ -727,7 +720,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Formules : MOYENNE, MEDIANE et la médiane sous conditions",
-                "subtitle": "Formules pas à pas · page 8 sur 13",
                 "image": "/assets/cours/b3-02/v1/moyenne-ou-mediane.webp",
                 "imageAlt": "Infographie : cinq colis dont un délai de 40 jours ; la balance de la moyenne penche, la médiane reste au milieu.",
                 "paragraphs": [
@@ -843,7 +835,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Outil : le tableau structuré et ANNEE",
-                "subtitle": "Formules pas à pas · page 9 sur 13",
                 "image": "/assets/cours/b3-02/v1/tableau-structure.webp",
                 "imageAlt": "Infographie : une plage fixe laisse dehors les lignes collées dessous ; le tableau T_Commandes s’étire pour les prendre.",
                 "paragraphs": [
@@ -883,7 +874,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Outil : le tableau croisé dynamique",
-                "subtitle": "Formules pas à pas · page 10 sur 13",
                 "image": "/assets/cours/b3-02/v1/tcd-quatre-zones.webp",
                 "imageAlt": "Infographie : les quatre zones du volet des champs et un TCD dont la ligne Rennes fait 100 %.",
                 "paragraphs": [
@@ -1052,7 +1042,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Outil : le graphique qui répond à une question",
-                "subtitle": "Formules pas à pas · page 11 sur 13",
                 "image": "/assets/cours/b3-02/v1/graphique-qui-repond.webp",
                 "imageAlt": "Infographie : six vignettes associent une question à son graphique ; deux barres, l’axe coupé puis l’axe depuis zéro.",
                 "paragraphs": [
@@ -1172,7 +1161,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Formules : taux de marque, évolution, taux d’atteinte et SOMMEPROD",
-                "subtitle": "Formules pas à pas · page 12 sur 13",
                 "image": "/assets/cours/b3-02/v1/ratios-de-sommes.webp",
                 "imageAlt": "Infographie : deux ventes ; le ratio des sommes donne 32,7 %, la moyenne des taux 45 %, barrée.",
                 "paragraphs": [
@@ -1212,7 +1200,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Outil : tableau de bord, MFC et segments",
-                "subtitle": "Formules pas à pas · page 13 sur 13",
                 "image": "/assets/cours/b3-02/v1/tableau-de-bord.webp",
                 "imageAlt": "Infographie : une page de tableau de bord, quatre indicateurs comparés, deux graphiques, un segment relié, des taux en rouge.",
                 "paragraphs": [
@@ -1455,7 +1442,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Une IA qui analyse vos données",
-                "subtitle": "L’IA analyste · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -1512,7 +1498,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Le cahier de règles de l’analyste",
-                "subtitle": "L’IA analyste · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -2167,7 +2152,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Formules : SUPPRESPACE et NOMPROPRE",
-                "subtitle": "Formules pas à pas · page 1 sur 13",
                 "image": "/assets/cours/b3-02/v1/nettoyer-le-texte.webp",
                 "imageAlt": "Infographie : une ville en capitales entourée d’espaces passe par SUPPRESPACE puis NOMPROPRE et devient « Bordeaux ».",
                 "paragraphs": [
@@ -2214,7 +2198,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Formules : SUBSTITUE, CNUM et ESTNUM",
-                "subtitle": "Formules pas à pas · page 2 sur 13",
                 "image": "/assets/cours/b3-02/v1/convertir-un-montant.webp",
                 "imageAlt": "Infographie : un montant en texte perd son symbole et son espace par deux SUBSTITUE, puis CNUM le rend nombre.",
                 "paragraphs": [
@@ -2261,7 +2244,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Formules : SI, OU et ET",
-                "subtitle": "Formules pas à pas · page 3 sur 13",
                 "image": "/assets/cours/b3-02/v1/signaler-par-si-ou.webp",
                 "imageAlt": "Infographie : trois tests passent dans un entonnoir OU ; un seul vrai suffit pour marquer la ligne « À vérifier ».",
                 "paragraphs": [
@@ -2522,7 +2504,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Formule : RECHERCHEV",
-                "subtitle": "Formules pas à pas · page 4 sur 13",
                 "image": "/assets/cours/b3-02/v1/recherchev-quatre-arguments.webp",
                 "imageAlt": "Infographie : les quatre arguments de RECHERCHEV numérotés, et la ligne AG06 de la table Agences qui rend « Ouest ».",
                 "paragraphs": [
@@ -2569,7 +2550,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Formules : SOMME.SI.ENS, NB.SI.ENS et DATE",
-                "subtitle": "Formules pas à pas · page 5 sur 13",
                 "image": "/assets/cours/b3-02/v1/additionner-sous-conditions.webp",
                 "imageAlt": "Infographie : SOMME.SI.ENS en couleurs, un entonnoir ne laisse passer que les lignes de Rennes en 2026.",
                 "paragraphs": [
@@ -2872,7 +2852,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Formules : NB.JOURS.OUVRES et SERIE.JOUR.OUVRE",
-                "subtitle": "Formules pas à pas · page 6 sur 13",
                 "image": "/assets/cours/b3-02/v1/jours-ouvres.webp",
                 "imageAlt": "Infographie : un calendrier de mars 2026, week-end grisé, du vendredi de la commande au lundi de la livraison.",
                 "paragraphs": [
@@ -2919,7 +2898,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Formules : JOURSEM, DATEDIF et TEMPS",
-                "subtitle": "Formules pas à pas · page 7 sur 13",
                 "image": "/assets/cours/b3-02/v1/calendrier-joursem-datedif-temps.webp",
                 "imageAlt": "Infographie : une semaine numérotée pour JOURSEM, une frise de mois pour DATEDIF, une horloge pour TEMPS.",
                 "paragraphs": [
@@ -2966,7 +2944,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Formules : MOYENNE, MEDIANE et la médiane sous conditions",
-                "subtitle": "Formules pas à pas · page 8 sur 13",
                 "image": "/assets/cours/b3-02/v1/moyenne-ou-mediane.webp",
                 "imageAlt": "Infographie : cinq colis dont un délai de 40 jours ; la balance de la moyenne penche, la médiane reste au milieu.",
                 "paragraphs": [
@@ -3198,7 +3175,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Outil : le tableau structuré et ANNEE",
-                "subtitle": "Formules pas à pas · page 9 sur 13",
                 "image": "/assets/cours/b3-02/v1/tableau-structure.webp",
                 "imageAlt": "Infographie : une plage fixe laisse dehors les lignes collées dessous ; le tableau T_Commandes s’étire pour les prendre.",
                 "paragraphs": [
@@ -3245,7 +3221,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Outil : le tableau croisé dynamique",
-                "subtitle": "Formules pas à pas · page 10 sur 13",
                 "image": "/assets/cours/b3-02/v1/tcd-quatre-zones.webp",
                 "imageAlt": "Infographie : les quatre zones du volet des champs et un TCD dont la ligne Rennes fait 100 %.",
                 "paragraphs": [
@@ -3538,7 +3513,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Outil : le graphique qui répond à une question",
-                "subtitle": "Formules pas à pas · page 11 sur 13",
                 "image": "/assets/cours/b3-02/v1/graphique-qui-repond.webp",
                 "imageAlt": "Infographie : six vignettes associent une question à son graphique ; deux barres, l’axe coupé puis l’axe depuis zéro.",
                 "paragraphs": [
@@ -3774,7 +3748,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Formules : taux de marque, évolution, taux d’atteinte et SOMMEPROD",
-                "subtitle": "Formules pas à pas · page 12 sur 13",
                 "image": "/assets/cours/b3-02/v1/ratios-de-sommes.webp",
                 "imageAlt": "Infographie : deux ventes ; le ratio des sommes donne 32,7 %, la moyenne des taux 45 %, barrée.",
                 "paragraphs": [
@@ -3821,7 +3794,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Outil : tableau de bord, MFC et segments",
-                "subtitle": "Formules pas à pas · page 13 sur 13",
                 "image": "/assets/cours/b3-02/v1/tableau-de-bord.webp",
                 "imageAlt": "Infographie : une page de tableau de bord, quatre indicateurs comparés, deux graphiques, un segment relié, des taux en rouge.",
                 "paragraphs": [
@@ -4206,7 +4178,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Une IA qui analyse vos données",
-                "subtitle": "L’IA analyste · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -4270,7 +4241,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Le cahier de règles de l’analyste",
-                "subtitle": "L’IA analyste · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -4811,7 +4781,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Formules : SUPPRESPACE et NOMPROPRE",
-                "subtitle": "Formules pas à pas · page 1 sur 13",
                 "image": "/assets/cours/b3-02/v1/nettoyer-le-texte.webp",
                 "imageAlt": "Infographie : une ville en capitales entourée d’espaces passe par SUPPRESPACE puis NOMPROPRE et devient « Bordeaux ».",
                 "paragraphs": [
@@ -4851,7 +4820,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Formules : SUBSTITUE, CNUM et ESTNUM",
-                "subtitle": "Formules pas à pas · page 2 sur 13",
                 "image": "/assets/cours/b3-02/v1/convertir-un-montant.webp",
                 "imageAlt": "Infographie : un montant en texte perd son symbole et son espace par deux SUBSTITUE, puis CNUM le rend nombre.",
                 "paragraphs": [
@@ -4891,7 +4859,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Formules : SI, OU et ET",
-                "subtitle": "Formules pas à pas · page 3 sur 13",
                 "image": "/assets/cours/b3-02/v1/signaler-par-si-ou.webp",
                 "imageAlt": "Infographie : trois tests passent dans un entonnoir OU ; un seul vrai suffit pour marquer la ligne « À vérifier ».",
                 "paragraphs": [
@@ -4947,7 +4914,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Formule : RECHERCHEV",
-                "subtitle": "Formules pas à pas · page 4 sur 13",
                 "image": "/assets/cours/b3-02/v1/recherchev-quatre-arguments.webp",
                 "imageAlt": "Infographie : les quatre arguments de RECHERCHEV numérotés, et la ligne AG06 de la table Agences qui rend « Ouest ».",
                 "paragraphs": [
@@ -4987,7 +4953,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Formules : SOMME.SI.ENS, NB.SI.ENS et DATE",
-                "subtitle": "Formules pas à pas · page 5 sur 13",
                 "image": "/assets/cours/b3-02/v1/additionner-sous-conditions.webp",
                 "imageAlt": "Infographie : SOMME.SI.ENS en couleurs, un entonnoir ne laisse passer que les lignes de Rennes en 2026.",
                 "paragraphs": [
@@ -5051,7 +5016,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Formules : NB.JOURS.OUVRES et SERIE.JOUR.OUVRE",
-                "subtitle": "Formules pas à pas · page 6 sur 13",
                 "image": "/assets/cours/b3-02/v1/jours-ouvres.webp",
                 "imageAlt": "Infographie : un calendrier de mars 2026, week-end grisé, du vendredi de la commande au lundi de la livraison.",
                 "paragraphs": [
@@ -5091,7 +5055,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Formules : JOURSEM, DATEDIF et TEMPS",
-                "subtitle": "Formules pas à pas · page 7 sur 13",
                 "image": "/assets/cours/b3-02/v1/calendrier-joursem-datedif-temps.webp",
                 "imageAlt": "Infographie : une semaine numérotée pour JOURSEM, une frise de mois pour DATEDIF, une horloge pour TEMPS.",
                 "paragraphs": [
@@ -5131,7 +5094,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Formules : MOYENNE, MEDIANE et la médiane sous conditions",
-                "subtitle": "Formules pas à pas · page 8 sur 13",
                 "image": "/assets/cours/b3-02/v1/moyenne-ou-mediane.webp",
                 "imageAlt": "Infographie : cinq colis dont un délai de 40 jours ; la balance de la moyenne penche, la médiane reste au milieu.",
                 "paragraphs": [
@@ -5187,7 +5149,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Outil : le tableau structuré et ANNEE",
-                "subtitle": "Formules pas à pas · page 9 sur 13",
                 "image": "/assets/cours/b3-02/v1/tableau-structure.webp",
                 "imageAlt": "Infographie : une plage fixe laisse dehors les lignes collées dessous ; le tableau T_Commandes s’étire pour les prendre.",
                 "paragraphs": [
@@ -5227,7 +5188,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Outil : le tableau croisé dynamique",
-                "subtitle": "Formules pas à pas · page 10 sur 13",
                 "image": "/assets/cours/b3-02/v1/tcd-quatre-zones.webp",
                 "imageAlt": "Infographie : les quatre zones du volet des champs et un TCD dont la ligne Rennes fait 100 %.",
                 "paragraphs": [
@@ -5326,7 +5286,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Outil : le graphique qui répond à une question",
-                "subtitle": "Formules pas à pas · page 11 sur 13",
                 "image": "/assets/cours/b3-02/v1/graphique-qui-repond.webp",
                 "imageAlt": "Infographie : six vignettes associent une question à son graphique ; deux barres, l’axe coupé puis l’axe depuis zéro.",
                 "paragraphs": [
@@ -5382,7 +5341,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Formules : taux de marque, évolution, taux d’atteinte et SOMMEPROD",
-                "subtitle": "Formules pas à pas · page 12 sur 13",
                 "image": "/assets/cours/b3-02/v1/ratios-de-sommes.webp",
                 "imageAlt": "Infographie : deux ventes ; le ratio des sommes donne 32,7 %, la moyenne des taux 45 %, barrée.",
                 "paragraphs": [
@@ -5422,7 +5380,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Outil : tableau de bord, MFC et segments",
-                "subtitle": "Formules pas à pas · page 13 sur 13",
                 "image": "/assets/cours/b3-02/v1/tableau-de-bord.webp",
                 "imageAlt": "Infographie : une page de tableau de bord, quatre indicateurs comparés, deux graphiques, un segment relié, des taux en rouge.",
                 "paragraphs": [
@@ -5588,7 +5545,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Une IA qui analyse vos données",
-                "subtitle": "L’IA analyste · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -5645,7 +5601,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Le cahier de règles de l’analyste",
-                "subtitle": "L’IA analyste · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",

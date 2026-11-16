@@ -223,7 +223,6 @@ export const ACTE_1: moteur.Acte = [
     'lesson',
     {
       title: 'Lire un jeu de données avant de calculer',
-      subtitle: 'Trace écrite · niveau 1 · page 1 sur 2',
       blocks: [
         {
           kind: 'definition',
@@ -276,7 +275,6 @@ export const ACTE_1: moteur.Acte = [
     'lesson',
     {
       title: 'Des tables reliées par des clés',
-      subtitle: 'Trace écrite · niveau 1 · page 2 sur 2',
       blocks: [
         {
           kind: 'definition',
@@ -580,7 +578,6 @@ export const ACTE_1: moteur.Acte = [
     'lesson',
     {
       title: 'La grille de la qualité des données',
-      subtitle: 'Trace écrite · niveau 2 · page 1 sur 2',
       blocks: [
         {
           kind: 'definition',
@@ -630,7 +627,6 @@ export const ACTE_1: moteur.Acte = [
     'lesson',
     {
       title: 'Les outils du nettoyage',
-      subtitle: 'Trace écrite · niveau 2 · page 2 sur 2',
       blocks: [
         {
           kind: 'method',

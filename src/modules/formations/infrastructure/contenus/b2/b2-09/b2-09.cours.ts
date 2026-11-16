@@ -423,7 +423,6 @@ const ACTE_2: moteur.Acte = [
     'lesson',
     {
       title: 'L’arbre pondéré et P_A(B)',
-      subtitle: 'Trace écrite · notion 1 · page 1 sur 2',
       blocks: [
         {
           kind: 'definition',
@@ -677,7 +676,6 @@ const ACTE_2: moteur.Acte = [
     'lesson',
     {
       title: 'Du tableau croisé à P_A(B)',
-      subtitle: 'Trace écrite · notion 1 · page 2 sur 2',
       blocks: [
         {
           kind: 'property',
@@ -836,7 +834,6 @@ const ACTE_3: moteur.Acte = [
     'lesson',
     {
       title: 'Les probabilités totales',
-      subtitle: 'Trace écrite · notion 2 · page 1 sur 2',
       blocks: [
         {
           kind: 'definition',
@@ -1076,7 +1073,6 @@ const ACTE_3: moteur.Acte = [
     'lesson',
     {
       title: 'Remonter l’arbre : P_B(A)',
-      subtitle: 'Trace écrite · notion 2 · page 2 sur 2',
       blocks: [
         {
           kind: 'property',
@@ -1329,7 +1325,6 @@ const ACTE_4: moteur.Acte = [
     'lesson',
     {
       title: 'Justifier l’indépendance',
-      subtitle: 'Trace écrite · notion 3',
       blocks: [
         {
           kind: 'definition',

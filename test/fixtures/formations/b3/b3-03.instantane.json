@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "02ddbe11e6bb577f75afb9a291e09ae09612be17aa8e1068b5c220a280fff370",
+  "empreinte": "cee61f7d78a0ec94a20ea38150a7211aeeb58387ae5f1bc252f35937d8300ca4",
   "sujet": {
     "id": "b3-03-traitement-de-texte",
     "titre": "Traitement de texte : mettre en forme et mettre en page",
@@ -137,7 +137,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : importer un texte brut",
-                "subtitle": "Traitement de texte · page 1 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "marks": true,
@@ -227,7 +226,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : afficher les marques et nettoyer",
-                "subtitle": "Traitement de texte · page 2 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "marks": true,
@@ -384,7 +382,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : mettre en forme les caractères",
-                "subtitle": "Traitement de texte · page 3 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -493,7 +490,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : appliquer et modifier un style",
-                "subtitle": "Traitement de texte · page 4 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -590,7 +586,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : changer de thème",
-                "subtitle": "Traitement de texte · page 5 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -872,7 +867,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : aligner, retirer, espacer",
-                "subtitle": "Traitement de texte · page 6 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -965,7 +959,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : listes à puces et sauts de page",
-                "subtitle": "Traitement de texte · page 7 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "marks": true,
@@ -1151,7 +1144,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : en-tête et pied de page",
-                "subtitle": "Traitement de texte · page 8 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -1233,7 +1225,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : marges, orientation et sections",
-                "subtitle": "Traitement de texte · page 9 sur 11",
                 "page": {
                   "orientation": "landscape",
                   "marginMarker": 1,
@@ -1306,7 +1297,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : numéroter « Page X sur Y »",
-                "subtitle": "Traitement de texte · page 10 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -1539,7 +1529,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : enregistrer en PDF",
-                "subtitle": "Traitement de texte · page 11 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -1754,7 +1743,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Une IA qui rédige",
-                "subtitle": "L’IA rédactrice · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -1811,7 +1799,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Relire, puis mettre en page",
-                "subtitle": "L’IA rédactrice · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "method",
@@ -2288,7 +2275,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : importer un texte brut",
-                "subtitle": "Traitement de texte · page 1 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "marks": true,
@@ -2385,7 +2371,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : afficher les marques et nettoyer",
-                "subtitle": "Traitement de texte · page 2 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "marks": true,
@@ -2634,7 +2619,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : mettre en forme les caractères",
-                "subtitle": "Traitement de texte · page 3 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -2750,7 +2734,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : appliquer et modifier un style",
-                "subtitle": "Traitement de texte · page 4 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -2854,7 +2837,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : changer de thème",
-                "subtitle": "Traitement de texte · page 5 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -3311,7 +3293,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : aligner, retirer, espacer",
-                "subtitle": "Traitement de texte · page 6 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -3411,7 +3392,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : listes à puces et sauts de page",
-                "subtitle": "Traitement de texte · page 7 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "marks": true,
@@ -3702,7 +3682,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : en-tête et pied de page",
-                "subtitle": "Traitement de texte · page 8 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -3791,7 +3770,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : marges, orientation et sections",
-                "subtitle": "Traitement de texte · page 9 sur 11",
                 "page": {
                   "orientation": "landscape",
                   "marginMarker": 1,
@@ -3871,7 +3849,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : numéroter « Page X sur Y »",
-                "subtitle": "Traitement de texte · page 10 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -4290,7 +4267,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : enregistrer en PDF",
-                "subtitle": "Traitement de texte · page 11 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -4605,7 +4581,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Une IA qui rédige",
-                "subtitle": "L’IA rédactrice · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -4669,7 +4644,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Relire, puis mettre en page",
-                "subtitle": "L’IA rédactrice · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "method",
@@ -5201,7 +5175,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : importer un texte brut",
-                "subtitle": "Traitement de texte · page 1 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "marks": true,
@@ -5291,7 +5264,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : afficher les marques et nettoyer",
-                "subtitle": "Traitement de texte · page 2 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "marks": true,
@@ -5392,7 +5364,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : mettre en forme les caractères",
-                "subtitle": "Traitement de texte · page 3 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -5501,7 +5472,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : appliquer et modifier un style",
-                "subtitle": "Traitement de texte · page 4 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -5598,7 +5568,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : changer de thème",
-                "subtitle": "Traitement de texte · page 5 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -5713,7 +5682,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : aligner, retirer, espacer",
-                "subtitle": "Traitement de texte · page 6 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -5806,7 +5774,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : listes à puces et sauts de page",
-                "subtitle": "Traitement de texte · page 7 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "marks": true,
@@ -5930,7 +5897,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : en-tête et pied de page",
-                "subtitle": "Traitement de texte · page 8 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -6012,7 +5978,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : marges, orientation et sections",
-                "subtitle": "Traitement de texte · page 9 sur 11",
                 "page": {
                   "orientation": "landscape",
                   "marginMarker": 1,
@@ -6085,7 +6050,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : numéroter « Page X sur Y »",
-                "subtitle": "Traitement de texte · page 10 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -6194,7 +6158,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : enregistrer en PDF",
-                "subtitle": "Traitement de texte · page 11 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -6360,7 +6323,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Une IA qui rédige",
-                "subtitle": "L’IA rédactrice · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -6417,7 +6379,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Relire, puis mettre en page",
-                "subtitle": "L’IA rédactrice · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "method",

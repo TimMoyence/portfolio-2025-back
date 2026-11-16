@@ -6,12 +6,7 @@ import {
   VALEURS_B3_04,
 } from './b3-04.donnees';
 import { pageDuFournil } from '../b3-03/b3-03.briques';
-import {
-  champ,
-  FOND_DU_FACTEUR,
-  lettreDuFournil,
-  pageDePublipostage,
-} from './b3-04.briques';
+import { champ, FOND_DU_FACTEUR, lettreDuFournil } from './b3-04.briques';
 import * as moteur from '../../briques';
 
 const CONFONDUE = 'piece-de-la-lettre-confondue';
@@ -95,7 +90,7 @@ export const ACTE_1: moteur.Acte = [
     ],
     CONTACTS_RESERVES,
   ),
-  pageDePublipostage(
+  moteur.pageDessinee(
     {
       screenId: 'B3-04-A1-04-PAGE-PUBLIPOSTAGE',
       titre: 'Page : les trois pièces du publipostage',
@@ -106,7 +101,6 @@ export const ACTE_1: moteur.Acte = [
       ],
     },
     {
-      rang: 1,
       page: lettreDuFournil(
         moteur.paragraphe(
           [{ text: 'Merci pour votre fidélité au fournil cette saison.' }],
@@ -137,7 +131,7 @@ export const ACTE_1: moteur.Acte = [
       ],
     },
   ),
-  pageDePublipostage(
+  moteur.pageDessinee(
     {
       screenId: 'B3-04-A1-05-PAGE-SOURCE',
       titre: 'Page : lier la liste du tableur',
@@ -148,7 +142,6 @@ export const ACTE_1: moteur.Acte = [
       ],
     },
     {
-      rang: 2,
       page: pageDuFournil({
         blocks: [
           {
@@ -270,7 +263,7 @@ export const ACTE_1: moteur.Acte = [
       ),
     ],
   ),
-  pageDePublipostage(
+  moteur.pageDessinee(
     {
       screenId: 'B3-04-A1-08-PAGE-CHAMPS',
       titre: 'Page : insérer les champs de fusion',
@@ -281,7 +274,6 @@ export const ACTE_1: moteur.Acte = [
       ],
     },
     {
-      rang: 3,
       page: lettreDuFournil(
         moteur.paragraphe(
           [
@@ -311,7 +303,7 @@ export const ACTE_1: moteur.Acte = [
       ],
     },
   ),
-  pageDePublipostage(
+  moteur.pageDessinee(
     {
       screenId: 'B3-04-A1-09-PAGE-FORMAT',
       titre: 'Page : le format d’un montant',
@@ -322,7 +314,6 @@ export const ACTE_1: moteur.Acte = [
       ],
     },
     {
-      rang: 4,
       page: pageDuFournil({
         blocks: [
           moteur.paragraphe(

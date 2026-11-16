@@ -103,8 +103,6 @@ export const INFOGRAPHIES: readonly Infographie[] = [
   },
 ];
 
-export const PAGES_DE_FORMULES = INFOGRAPHIES.length;
-
 function infographieDeLaPage(rang: number): Infographie {
   const infographie = INFOGRAPHIES.at(rang - 1);
   if (infographie === undefined) {
@@ -114,18 +112,14 @@ function infographieDeLaPage(rang: number): Infographie {
 }
 
 export function pageDeFormules(
-  { notes, ...socle }: moteur.SocleDeLaPage,
-  page: moteur.PageDeSerie,
+  socle: moteur.SocleDeLaPage,
+  { rang, ...page }: moteur.PageDeSerie & { readonly rang: number },
 ): moteur.EcranDeRecit {
   return moteur.ecranDImageCommentee(
     socle,
     DOSSIER_DES_INFOGRAPHIES,
-    infographieDeLaPage(page.rang),
-    moteur.texteDeLaPage(
-      { nom: 'Formules pas à pas', pages: PAGES_DE_FORMULES },
-      page,
-    ),
-    notes,
+    infographieDeLaPage(rang),
+    page,
   );
 }
 

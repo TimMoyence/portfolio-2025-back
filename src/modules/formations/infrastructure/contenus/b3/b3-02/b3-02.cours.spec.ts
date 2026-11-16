@@ -29,11 +29,7 @@ import {
   type QuestionChiffreeB302,
   VALEURS_B3_02,
 } from './b3-02.donnees';
-import {
-  DOSSIER_DES_INFOGRAPHIES,
-  INFOGRAPHIES,
-  PAGES_DE_FORMULES,
-} from './b3-02.briques';
+import { DOSSIER_DES_INFOGRAPHIES, INFOGRAPHIES } from './b3-02.briques';
 
 const COURS = buildCoursDuContenu(COURS_B3_02);
 const DOCUMENT = lireConception('b3/cours-b3-02-conception.md');
@@ -261,7 +257,7 @@ describe('B3-02 — les valeurs du B3-01, servies telles quelles', () => {
 });
 
 describe('B3-02 — les pages de formules', () => {
-  it(`B302-M2 · montre sur chacune des ${PAGES_DE_FORMULES} pages son infographie à gauche, et à côté la syntaxe, les arguments, le piège puis l’exemple chiffré`, () => {
+  it(`B302-M2 · montre sur chacune des ${INFOGRAPHIES.length} pages son infographie à gauche, et à côté la syntaxe, les arguments, le piège puis l’exemple chiffré`, () => {
     const pages = pagesDeFormules().map((ecran) => {
       const { image, paragraphs } = feuille.proprietesV2(
         COURS_B3_02,
@@ -286,21 +282,6 @@ describe('B3-02 — les pages de formules', () => {
   it('B302-M2 · garde à chaque page de formules ses 2 minutes', () => {
     expect(pagesDeFormules().map(({ dureeMinutes }) => dureeMinutes)).toEqual(
       INFOGRAPHIES.map(() => 2),
-    );
-  });
-
-  it('B302-M2 · numérote les pages dans l’ordre du cours', () => {
-    expect(
-      pagesDeFormules().map(
-        ({ screenId }) =>
-          feuille.proprietesV2(COURS_B3_02, screenId)['subtitle'],
-      ),
-    ).toEqual(
-      Array.from(
-        { length: PAGES_DE_FORMULES },
-        (_, rang) =>
-          `Formules pas à pas · page ${rang + 1} sur ${PAGES_DE_FORMULES}`,
-      ),
     );
   });
 

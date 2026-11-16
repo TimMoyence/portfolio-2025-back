@@ -336,7 +336,6 @@ const ACTE_1: moteur.Acte = [
     'lesson',
     {
       title: 'Le TCD : un tas par catégorie, puis on additionne',
-      subtitle: 'Trace écrite · notion 1 · page 1 sur 2',
       blocks: [
         {
           kind: 'definition',
@@ -410,7 +409,6 @@ const ACTE_1: moteur.Acte = [
     'lesson',
     {
       title: 'Le champ calculé : un taux sur les sommes',
-      subtitle: 'Trace écrite · notion 1 · page 2 sur 2',
       blocks: [
         {
           kind: 'definition',
@@ -716,7 +714,6 @@ const ACTE_2: moteur.Acte = [
     'lesson',
     {
       title: 'Médiane et quartiles : ranger, puis couper',
-      subtitle: 'Trace écrite · notion 2 · page 1 sur 2',
       blocks: [
         {
           kind: 'definition',
@@ -789,7 +786,6 @@ const ACTE_2: moteur.Acte = [
     'lesson',
     {
       title: 'L’écart type : de combien on s’écarte du centre',
-      subtitle: 'Trace écrite · notion 2 · page 2 sur 2',
       blocks: [
         {
           kind: 'definition',
@@ -1146,7 +1142,6 @@ const ACTE_3: moteur.Acte = [
     'lesson',
     {
       title: 'La boîte à moustaches : cinq nombres, quatre quarts',
-      subtitle: 'Trace écrite · notion 3 · page 1 sur 2',
       blocks: [
         {
           kind: 'definition',
@@ -1215,7 +1210,6 @@ const ACTE_3: moteur.Acte = [
     'lesson',
     {
       title: 'Les classes : un grand fichier en quelques boîtes',
-      subtitle: 'Trace écrite · notion 3 · page 2 sur 2',
       blocks: [
         {
           kind: 'definition',

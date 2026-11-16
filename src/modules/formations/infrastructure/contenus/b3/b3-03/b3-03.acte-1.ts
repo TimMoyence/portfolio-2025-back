@@ -8,7 +8,6 @@ import {
 import {
   COLLER_LE_TEXTE_SEUL,
   FOND_DE_LA_MACHINE_A_ECRIRE,
-  pageDeTraitementDeTexte,
   pageDuFournil,
 } from './b3-03.briques';
 import * as moteur from '../../briques';
@@ -97,7 +96,7 @@ export const ACTE_1: moteur.Acte = [
     ],
     NOTE_RESERVEE,
   ),
-  pageDeTraitementDeTexte(
+  moteur.pageDessinee(
     {
       screenId: 'B3-03-A1-04-PAGE-IMPORTER',
       titre: 'Page : importer un texte brut',
@@ -108,7 +107,6 @@ export const ACTE_1: moteur.Acte = [
       ],
     },
     {
-      rang: 1,
       page: pageDuFournil({
         marks: true,
         blocks: [
@@ -139,7 +137,7 @@ export const ACTE_1: moteur.Acte = [
       ],
     },
   ),
-  pageDeTraitementDeTexte(
+  moteur.pageDessinee(
     {
       screenId: 'B3-03-A1-05-PAGE-NETTOYER',
       titre: 'Page : afficher les marques et nettoyer',
@@ -151,7 +149,6 @@ export const ACTE_1: moteur.Acte = [
       ],
     },
     {
-      rang: 2,
       page: pageDuFournil({
         marks: true,
         blocks: [
@@ -263,7 +260,7 @@ export const ACTE_1: moteur.Acte = [
       ),
     ],
   ),
-  pageDeTraitementDeTexte(
+  moteur.pageDessinee(
     {
       screenId: 'B3-03-A1-08-PAGE-CARACTERES',
       titre: 'Page : mettre en forme les caractères',
@@ -274,7 +271,6 @@ export const ACTE_1: moteur.Acte = [
       ],
     },
     {
-      rang: 3,
       page: pageDuFournil({
         blocks: [
           moteur.paragraphe(
@@ -320,7 +316,7 @@ export const ACTE_1: moteur.Acte = [
       ],
     },
   ),
-  pageDeTraitementDeTexte(
+  moteur.pageDessinee(
     {
       screenId: 'B3-03-A1-09-PAGE-STYLES',
       titre: 'Page : appliquer et modifier un style',
@@ -331,7 +327,6 @@ export const ACTE_1: moteur.Acte = [
       ],
     },
     {
-      rang: 4,
       page: pageDuFournil({
         blocks: [
           {
@@ -373,7 +368,7 @@ export const ACTE_1: moteur.Acte = [
       ],
     },
   ),
-  pageDeTraitementDeTexte(
+  moteur.pageDessinee(
     {
       screenId: 'B3-03-A1-10-PAGE-THEME',
       titre: 'Page : changer de thème',
@@ -384,7 +379,6 @@ export const ACTE_1: moteur.Acte = [
       ],
     },
     {
-      rang: 5,
       page: pageDuFournil({
         blocks: [
           {

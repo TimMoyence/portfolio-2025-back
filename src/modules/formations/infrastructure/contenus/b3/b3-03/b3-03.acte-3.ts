@@ -79,7 +79,6 @@ const AUDIT: moteur.Acte = [
     'lesson',
     {
       title: 'Une IA qui rédige',
-      subtitle: 'L’IA rédactrice · page 1 sur 2',
       blocks: [
         {
           kind: 'definition',
@@ -126,7 +125,6 @@ const AUDIT: moteur.Acte = [
     'lesson',
     {
       title: 'Relire, puis mettre en page',
-      subtitle: 'L’IA rédactrice · page 2 sur 2',
       blocks: [
         {
           kind: 'method',

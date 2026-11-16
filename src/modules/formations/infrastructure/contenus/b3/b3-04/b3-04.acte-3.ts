@@ -3,7 +3,7 @@ import {
   CLASSEUR_D_ENVOI,
 } from './b3-04.donnees';
 import { COLLER_LE_TEXTE_SEUL, pageDuFournil } from '../b3-03/b3-03.briques';
-import { champ, pageDePublipostage } from './b3-04.briques';
+import { champ } from './b3-04.briques';
 import * as moteur from '../../briques';
 
 const REPRIS = 'texte-d-ia-repris-sans-relecture';
@@ -60,7 +60,7 @@ const ENVOYER: moteur.Acte = [
       ),
     ],
   ),
-  pageDePublipostage(
+  moteur.pageDessinee(
     {
       screenId: 'B3-04-A3-02-PAGE-E-MAILING',
       titre: 'Page : chemin 1, l’e-mailing depuis Word',
@@ -71,7 +71,6 @@ const ENVOYER: moteur.Acte = [
       ],
     },
     {
-      rang: 10,
       page: pageDuFournil({
         blocks: [
           {
@@ -108,7 +107,7 @@ const ENVOYER: moteur.Acte = [
       ],
     },
   ),
-  pageDePublipostage(
+  moteur.pageDessinee(
     {
       screenId: 'B3-04-A3-03-PAGE-PDF-JOINT',
       titre: 'Page : chemin 2, la lettre en PDF joint',
@@ -119,7 +118,6 @@ const ENVOYER: moteur.Acte = [
       ],
     },
     {
-      rang: 11,
       page: pageDuFournil({
         blocks: [
           moteur.paragraphe(
@@ -287,7 +285,6 @@ const FAIRE_ECRIRE: moteur.Acte = [
     'lesson',
     {
       title: 'Une IA qui écrit la lettre type',
-      subtitle: 'L’IA rédactrice · le publipostage',
       blocks: [
         {
           kind: 'definition',

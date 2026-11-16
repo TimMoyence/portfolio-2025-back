@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "0f8f4a8ecb061c841492134f04a7b56656f05fe3e676e9f60a4b00bba7f2edad",
+  "empreinte": "40266927e7463a364b3879a82c8ebca80c0382cc84d167ae1c3d42622ce006f2",
   "sujet": {
     "id": "b1-05-logique-conditions",
     "titre": "Logique : conditions et contrôles",
@@ -266,7 +266,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Et, ou, non : « ou » accepte les deux",
-                "subtitle": "Trace écrite · notion 1 · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -361,7 +360,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Implication et équivalence : un seul cas faux",
-                "subtitle": "Trace écrite · notion 1 · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -749,7 +747,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Les lois de Morgan : nier, puis échanger",
-                "subtitle": "Trace écrite · notion 2 · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -844,7 +841,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Prédicats et négation : la borne change de camp",
-                "subtitle": "Trace écrite · notion 2 · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -1314,7 +1310,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Pour tout, il existe : un contre-exemple suffit",
-                "subtitle": "Trace écrite · notion 3 · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -1408,7 +1403,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "L’ordre des quantificateurs : le second dépend du premier",
-                "subtitle": "Trace écrite · notion 3 · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -2228,7 +2222,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Et, ou, non : « ou » accepte les deux",
-                "subtitle": "Trace écrite · notion 1 · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -2337,7 +2330,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Implication et équivalence : un seul cas faux",
-                "subtitle": "Trace écrite · notion 1 · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -2901,7 +2893,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Les lois de Morgan : nier, puis échanger",
-                "subtitle": "Trace écrite · notion 2 · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -3010,7 +3001,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Prédicats et négation : la borne change de camp",
-                "subtitle": "Trace écrite · notion 2 · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -3881,7 +3871,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Pour tout, il existe : un contre-exemple suffit",
-                "subtitle": "Trace écrite · notion 3 · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -3989,7 +3978,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "L’ordre des quantificateurs : le second dépend du premier",
-                "subtitle": "Trace écrite · notion 3 · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -5094,7 +5082,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Et, ou, non : « ou » accepte les deux",
-                "subtitle": "Trace écrite · notion 1 · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -5189,7 +5176,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Implication et équivalence : un seul cas faux",
-                "subtitle": "Trace écrite · notion 1 · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -5323,7 +5309,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Les lois de Morgan : nier, puis échanger",
-                "subtitle": "Trace écrite · notion 2 · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -5418,7 +5403,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Prédicats et négation : la borne change de camp",
-                "subtitle": "Trace écrite · notion 2 · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -5552,7 +5536,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Pour tout, il existe : un contre-exemple suffit",
-                "subtitle": "Trace écrite · notion 3 · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -5646,7 +5629,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "L’ordre des quantificateurs : le second dépend du premier",
-                "subtitle": "Trace écrite · notion 3 · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",

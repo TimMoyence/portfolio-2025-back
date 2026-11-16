@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "c25400dff24673c213a639dcfc7ad0727829e7b31553014a6e59ca8da15ffe89",
+  "empreinte": "129e6c71f7f0ec6a021ffd800382c5161bd753ee83d66c1474b639e06ee99855",
   "sujet": {
     "id": "b1-01-proportions-pourcentages",
     "titre": "Proportions et pourcentages",
@@ -270,7 +270,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Proportion : la partie sur le tout",
-                "subtitle": "Trace écrite · notion 1 · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -354,7 +353,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Population de référence : parmi qui ?",
-                "subtitle": "Trace écrite · notion 1 · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -728,7 +726,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Proportion de proportion : une partie d’une partie",
-                "subtitle": "Trace écrite · notion 2 · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -812,7 +809,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Taux global : la moyenne pondérée",
-                "subtitle": "Trace écrite · notion 2 · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -1243,7 +1239,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Une part ou une évolution ? Les points",
-                "subtitle": "Trace écrite · notion 3 · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -1326,7 +1321,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Une marge, deux taux",
-                "subtitle": "Trace écrite · notion 3 · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -2069,7 +2063,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Proportion : la partie sur le tout",
-                "subtitle": "Trace écrite · notion 1 · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -2167,7 +2160,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Population de référence : parmi qui ?",
-                "subtitle": "Trace écrite · notion 1 · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -2794,7 +2786,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Proportion de proportion : une partie d’une partie",
-                "subtitle": "Trace écrite · notion 2 · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -2892,7 +2883,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Taux global : la moyenne pondérée",
-                "subtitle": "Trace écrite · notion 2 · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -3654,7 +3644,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Une part ou une évolution ? Les points",
-                "subtitle": "Trace écrite · notion 3 · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -3751,7 +3740,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Une marge, deux taux",
-                "subtitle": "Trace écrite · notion 3 · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -4685,7 +4673,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Proportion : la partie sur le tout",
-                "subtitle": "Trace écrite · notion 1 · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -4769,7 +4756,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Population de référence : parmi qui ?",
-                "subtitle": "Trace écrite · notion 1 · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -4892,7 +4878,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Proportion de proportion : une partie d’une partie",
-                "subtitle": "Trace écrite · notion 2 · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -4976,7 +4961,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Taux global : la moyenne pondérée",
-                "subtitle": "Trace écrite · notion 2 · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -5100,7 +5084,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Une part ou une évolution ? Les points",
-                "subtitle": "Trace écrite · notion 3 · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -5183,7 +5166,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Une marge, deux taux",
-                "subtitle": "Trace écrite · notion 3 · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",

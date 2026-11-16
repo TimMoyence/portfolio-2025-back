@@ -537,7 +537,6 @@ const ACTE_1: moteur.Acte = [
     'lesson',
     {
       title: 'Suites arithmétiques : ajouter toujours le même nombre',
-      subtitle: 'Trace écrite · notion 1 · page 1 sur 2',
       blocks: [
         {
           kind: 'definition',
@@ -603,7 +602,6 @@ const ACTE_1: moteur.Acte = [
     'lesson',
     {
       title: 'Raison, graphique et tableur',
-      subtitle: 'Trace écrite · notion 1 · page 2 sur 2',
       blocks: [
         {
           kind: 'property',
@@ -924,7 +922,6 @@ const ACTE_2: moteur.Acte = [
     'lesson',
     {
       title: 'Suites géométriques : multiplier toujours par le même nombre',
-      subtitle: 'Trace écrite · notion 2',
       blocks: [
         {
           kind: 'definition',
@@ -1298,7 +1295,6 @@ const ACTE_3: moteur.Acte = [
     'lesson',
     {
       title: 'Chercher un seuil : la boucle « Tant que »',
-      subtitle: 'Trace écrite · notion 3 · page 1 sur 2',
       blocks: [
         {
           kind: 'definition',
@@ -1362,7 +1358,6 @@ const ACTE_3: moteur.Acte = [
     'lesson',
     {
       title: 'Cumul : additionner des termes consécutifs',
-      subtitle: 'Trace écrite · notion 3 · page 2 sur 2',
       blocks: [
         {
           kind: 'definition',

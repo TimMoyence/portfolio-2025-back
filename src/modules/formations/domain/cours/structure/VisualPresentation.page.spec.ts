@@ -52,7 +52,6 @@ const page = (contenu: Bloc, items: readonly string[]) => ({
   renderer: 'page',
   props: {
     title: 'Page : en-tête et pied de page',
-    subtitle: 'Traitement de texte · page 6 sur 11',
     page: contenu,
     pageAlt:
       'Une page portrait : un en-tête aligné à droite, un titre de niveau 1, un pied centré « Page 2 sur 5 ».',

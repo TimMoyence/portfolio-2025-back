@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "94ceb1bfc092873d8e8aac1dac3bd9612470ddc91ec4fbdca6a4b34ed6d60f56",
+  "empreinte": "838b283c0cde1cf48b8ec27cc2409f621e1ea0c891b114e8f5367ce651e59c6d",
   "sujet": {
     "id": "b1-04-series-deux-variables",
     "titre": "Séries à deux variables : ajuster et prévoir",
@@ -263,7 +263,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Le nuage de points : un mois, un point",
-                "subtitle": "Trace écrite · notion 1 · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -358,7 +357,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "La droite des moindres carrés : les y d’abord",
-                "subtitle": "Trace écrite · notion 1 · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -845,7 +843,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Le coefficient de corrélation : la distance à 1, pas le signe",
-                "subtitle": "Trace écrite · notion 2 · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -939,7 +936,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Liaison n’est pas causalité : chercher le troisième",
-                "subtitle": "Trace écrite · notion 2 · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -1486,7 +1482,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Prévoir par la droite : le rang, pas l’année",
-                "subtitle": "Trace écrite · notion 3 · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -1581,7 +1576,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Atteindre un seuil : résoudre, puis arrondir au-dessus",
-                "subtitle": "Trace écrite · notion 3 · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -2412,7 +2406,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Le nuage de points : un mois, un point",
-                "subtitle": "Trace écrite · notion 1 · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -2521,7 +2514,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "La droite des moindres carrés : les y d’abord",
-                "subtitle": "Trace écrite · notion 1 · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -3128,7 +3120,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Le coefficient de corrélation : la distance à 1, pas le signe",
-                "subtitle": "Trace écrite · notion 2 · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -3236,7 +3227,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Liaison n’est pas causalité : chercher le troisième",
-                "subtitle": "Trace écrite · notion 2 · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -4087,7 +4077,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Prévoir par la droite : le rang, pas l’année",
-                "subtitle": "Trace écrite · notion 3 · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -4196,7 +4185,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Atteindre un seuil : résoudre, puis arrondir au-dessus",
-                "subtitle": "Trace écrite · notion 3 · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -5286,7 +5274,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Le nuage de points : un mois, un point",
-                "subtitle": "Trace écrite · notion 1 · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -5381,7 +5368,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "La droite des moindres carrés : les y d’abord",
-                "subtitle": "Trace écrite · notion 1 · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -5515,7 +5501,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Le coefficient de corrélation : la distance à 1, pas le signe",
-                "subtitle": "Trace écrite · notion 2 · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -5609,7 +5594,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Liaison n’est pas causalité : chercher le troisième",
-                "subtitle": "Trace écrite · notion 2 · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -5743,7 +5727,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Prévoir par la droite : le rang, pas l’année",
-                "subtitle": "Trace écrite · notion 3 · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -5838,7 +5821,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Atteindre un seuil : résoudre, puis arrondir au-dessus",
-                "subtitle": "Trace écrite · notion 3 · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
