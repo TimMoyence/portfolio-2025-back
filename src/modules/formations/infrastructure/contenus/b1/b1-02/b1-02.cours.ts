@@ -41,6 +41,7 @@ import {
 } from './b1-02.donnees';
 import * as moteur from '../../briques';
 import { auMillionieme } from '../../../../../../common/domain/nombres/arrondi';
+import { partEnPourcent } from '../../../../../../common/domain/nombres/statistiques';
 
 const GRAVURE_DE_L_ACCROCHE = moteur.gravureDuDomainePublic({
   id: 'M7',
@@ -948,7 +949,9 @@ const ACTE_2: moteur.Acte = [
             'evolution-reciproque',
             'Quelle hausse ramènerait les ventes de cartes à leur niveau de départ, arrondie au dixième ?',
             '%',
-            auMillionieme((1 / (1 - BAISSE_DES_CARTES) - 1) * 100),
+            auMillionieme(
+              partEnPourcent(BAISSE_DES_CARTES, 1 - BAISSE_DES_CARTES),
+            ),
             moteur.UNE_DECIMALE,
             '66,7 %',
             [

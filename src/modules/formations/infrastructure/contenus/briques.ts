@@ -37,6 +37,12 @@ type EcranDePulsation = Extract<EcranDuCours, { readonly brique: 'fp-pulse' }>;
 export type VoteDuCours = z.input<typeof voteStocke>;
 type NumeriqueDuCours = z.input<typeof numeriqueStockee>;
 export type Piege = readonly [string, ConfusionId];
+export type PiegeChiffre = readonly [number, ConfusionId];
+
+export const enPiege = ([valeur, confusion]: PiegeChiffre) => ({
+  valeur,
+  confusion,
+});
 type EcranDeTableau = Extract<
   EcranDuCours,
   { readonly brique: 'fp-table-build' }
@@ -197,7 +203,7 @@ export function numerique(
   solution: number,
   tolerance: NumeriqueDuCours['tolerance'],
   formePubliee: string,
-  pieges: AuMoinsUnModifiable<readonly [number, ConfusionId]>,
+  pieges: AuMoinsUnModifiable<PiegeChiffre>,
 ): NumeriqueDuCours {
   return {
     type: 'numeric',
@@ -209,10 +215,7 @@ export function numerique(
     solution,
     tolerance,
     formePubliee,
-    pieges: mapperAuMoinsUn(pieges, ([valeur, confusion]) => ({
-      valeur,
-      confusion,
-    })),
+    pieges: mapperAuMoinsUn(pieges, enPiege),
   };
 }
 
@@ -456,7 +459,7 @@ export function attendu(
   formuleReference: string,
   valeur: number | string,
   forme: 'references' | { readonly memeQue: string },
-  pieges: readonly (readonly [number, ConfusionId])[] = [],
+  pieges: readonly PiegeChiffre[] = [],
   confusionSiErreurFormule: ConfusionId | null = null,
   tolerance:
     | typeof TOLERANCE_RELATIVE
@@ -470,10 +473,7 @@ export function attendu(
     tolerance,
     forme,
     confusionSiErreurFormule,
-    pieges: pieges.map(([valeurDuPiege, confusion]) => ({
-      valeur: valeurDuPiege,
-      confusion,
-    })),
+    pieges: pieges.map(enPiege),
   };
 }
 
@@ -486,7 +486,7 @@ export function enigme(
   tolerance: NumeriqueDuCours['tolerance'],
   formePubliee: string,
   fragment: string,
-  pieges: AuMoinsUnModifiable<readonly [number, ConfusionId]>,
+  pieges: AuMoinsUnModifiable<PiegeChiffre>,
 ) {
   return {
     type: 'enigme' as const,
@@ -505,10 +505,7 @@ export function enigme(
         formePubliee,
       },
       fragment,
-      pieges: mapperAuMoinsUn(pieges, ([valeurDuPiege, confusion]) => ({
-        valeur: valeurDuPiege,
-        confusion,
-      })),
+      pieges: mapperAuMoinsUn(pieges, enPiege),
     },
   };
 }

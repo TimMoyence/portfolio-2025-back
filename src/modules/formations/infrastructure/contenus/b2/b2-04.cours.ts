@@ -2,7 +2,11 @@ import {
   arrondi,
   auMillionieme,
 } from '../../../../../common/domain/nombres/arrondi';
-import { somme } from '../../../../../common/domain/nombres/statistiques';
+import {
+  croissanceComposee,
+  partEnPourcent,
+  somme,
+} from '../../../../../common/domain/nombres/statistiques';
 import type { AuMoinsUnModifiable } from '../../../../../common/domain/objets/au-moins-un';
 import type { ConceptId } from '../../../domain/cours/banque/concepts';
 import type { ContenuDeCours } from '../../../domain/cours/stockage/CoursStocke';
@@ -71,11 +75,13 @@ const RENVOI_A_LA_BOUTIQUE = 'B2-04-A4-01-SITUATION-BOUTIQUE';
 
 const hypotheseA = (rang: number): number => CA_DE_DEPART + RAISON_A * rang;
 const hypotheseB = (rang: number): number =>
-  auMillionieme(CA_DE_DEPART * (1 + TAUX_B) ** rang);
+  auMillionieme(croissanceComposee(CA_DE_DEPART, TAUX_B, rang));
 const ecartBMoinsA = (rang: number): number =>
   auMillionieme(hypotheseB(rang) - hypotheseA(rang));
 const boutique = (rang: number): number =>
-  auMillionieme(CA_DE_LA_BOUTIQUE * (1 + TAUX_DE_LA_BOUTIQUE) ** rang);
+  auMillionieme(
+    croissanceComposee(CA_DE_LA_BOUTIQUE, TAUX_DE_LA_BOUTIQUE, rang),
+  );
 const seuilDeLaBoutiqueAtteint = (rang: number): string =>
   boutique(rang) >= SEUIL_DE_LA_BOUTIQUE ? 'Oui' : 'Non';
 
@@ -89,7 +95,10 @@ const LIGNES_DE_L_HISTORIQUE = CA_OBSERVE.map((ca, rang) => {
     annee: String(PREMIERE_ANNEE_OBSERVEE + rang),
     ca: String(ca),
     hausse: rang === 0 ? '—' : `+${ca - precedent}`,
-    taux: rang === 0 ? '—' : `+${avecVirgule((ca / precedent - 1) * 100, 1)} %`,
+    taux:
+      rang === 0
+        ? '—'
+        : `+${avecVirgule(partEnPourcent(ca - precedent, precedent), 1)} %`,
   };
 });
 

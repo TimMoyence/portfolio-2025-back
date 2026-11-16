@@ -1,9 +1,26 @@
 import {
   corrigeSurPlace,
+  enPiege,
   pourComprendreDans,
   pulsation,
   tempsDeLExercice,
 } from './briques';
+
+describe('enPiege', () => {
+  it('écrit un piège chiffré en objet, sa valeur puis sa confusion', () => {
+    expect(enPiege([12.5, 'base-inversee'])).toStrictEqual({
+      valeur: 12.5,
+      confusion: 'base-inversee',
+    });
+  });
+
+  it('garde une valeur nulle ou négative telle quelle', () => {
+    expect(enPiege([-0.5, 'base-inversee'])).toStrictEqual({
+      valeur: -0.5,
+      confusion: 'base-inversee',
+    });
+  });
+});
 
 const pourComprendre = pourComprendreDans('/assets/cours/b2-99/v1');
 const SOCLE_D_IMAGE: Parameters<typeof pourComprendre>[0] = {

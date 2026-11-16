@@ -1,5 +1,4 @@
 import { CONCEPTS_DU_B2_01 } from '../../../../domain/cours/banque/concepts';
-import type { ConfusionId } from '../../../../domain/cours/banque/confusions';
 import type { ContenuDeCours } from '../../../../domain/cours/stockage/CoursStocke';
 import * as moteur from '../../briques';
 import { gesteDeRecopie } from '../../feuilles';
@@ -1869,7 +1868,7 @@ function ligneDeTableau(
   prix: number,
   piegeDePrix: number | null,
   indice: number,
-  piegesDIndice: readonly (readonly [number, ConfusionId])[],
+  piegesDIndice: readonly moteur.PiegeChiffre[],
 ) {
   return [
     {
@@ -1890,10 +1889,7 @@ function ligneDeTableau(
       rang,
       cle: 'indice',
       valeur: indice,
-      pieges: piegesDIndice.map(([valeur, confusion]) => ({
-        valeur,
-        confusion,
-      })),
+      pieges: piegesDIndice.map(moteur.enPiege),
     },
   ];
 }
