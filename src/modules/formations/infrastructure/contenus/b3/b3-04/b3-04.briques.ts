@@ -1,11 +1,6 @@
 import { pageDuFournil } from '../b3-03/b3-03.briques';
 import * as moteur from '../../briques';
 
-export const pageDePublipostage = moteur.pageDessineeDeLaSerie({
-  nom: 'Publipostage',
-  pages: 11,
-});
-
 export const champ = (nom: string) => ({ text: `«${nom}»`, field: true });
 
 export const lettreDuFournil = (

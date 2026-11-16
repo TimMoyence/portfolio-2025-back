@@ -266,7 +266,6 @@ const ACTE_1: moteur.Acte = [
     'lesson',
     {
       title: 'Proportion : la partie sur le tout',
-      subtitle: 'Trace écrite · notion 1 · page 1 sur 2',
       blocks: [
         {
           kind: 'definition',
@@ -331,7 +330,6 @@ const ACTE_1: moteur.Acte = [
     'lesson',
     {
       title: 'Population de référence : parmi qui ?',
-      subtitle: 'Trace écrite · notion 1 · page 2 sur 2',
       blocks: [
         {
           kind: 'definition',
@@ -650,7 +648,6 @@ const ACTE_2: moteur.Acte = [
     'lesson',
     {
       title: 'Proportion de proportion : une partie d’une partie',
-      subtitle: 'Trace écrite · notion 2 · page 1 sur 2',
       blocks: [
         {
           kind: 'definition',
@@ -714,7 +711,6 @@ const ACTE_2: moteur.Acte = [
     'lesson',
     {
       title: 'Taux global : la moyenne pondérée',
-      subtitle: 'Trace écrite · notion 2 · page 2 sur 2',
       blocks: [
         {
           kind: 'definition',
@@ -1087,7 +1083,6 @@ const ACTE_3: moteur.Acte = [
     'lesson',
     {
       title: 'Une part ou une évolution ? Les points',
-      subtitle: 'Trace écrite · notion 3 · page 1 sur 2',
       blocks: [
         {
           kind: 'definition',
@@ -1151,7 +1146,6 @@ const ACTE_3: moteur.Acte = [
     'lesson',
     {
       title: 'Une marge, deux taux',
-      subtitle: 'Trace écrite · notion 3 · page 2 sur 2',
       blocks: [
         {
           kind: 'definition',

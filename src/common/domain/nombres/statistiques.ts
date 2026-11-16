@@ -19,6 +19,31 @@ export function moyenneOu<R>(
   return estAuMoinsUn(valeurs) ? moyenne(valeurs) : siVide;
 }
 
+const CENT = 100;
+
+export function partEnPourcent(part: number, base: number): number {
+  if (base === 0) {
+    throw new RangeError(`Aucun pourcentage d’une base nulle : part ${part}.`);
+  }
+  return (part / base) * CENT;
+}
+
+export function croissanceComposee(
+  depart: number,
+  taux: number,
+  periodes: number,
+): number {
+  return depart * (1 + taux) ** periodes;
+}
+
+export function croissanceContinue(
+  depart: number,
+  k: number,
+  temps: number,
+): number {
+  return depart * Math.exp(k * temps);
+}
+
 export function proportion<T>(
   liste: AuMoinsUn<T>,
   retenir: (element: T) => boolean,

@@ -2,6 +2,7 @@ import {
   ecartTypePopulation,
   mediane,
   moyenne,
+  partEnPourcent,
   somme,
 } from '../../../../../../common/domain/nombres/statistiques';
 import { auDixieme } from '../../../../../../common/domain/nombres/arrondi';
@@ -115,9 +116,9 @@ function genererLesVentes(): readonly Vente[] {
 export const VENTES_D_OCTOBRE = genererLesVentes();
 
 export const tauxDeMarge = (ca: number, cout: number): number =>
-  ((ca - cout) / cout) * 100;
+  partEnPourcent(ca - cout, cout);
 export const tauxDeMarque = (ca: number, cout: number): number =>
-  ((ca - cout) / ca) * 100;
+  partEnPourcent(ca - cout, ca);
 
 export interface LigneDuTcd {
   readonly canal: Canal | 'Total général';

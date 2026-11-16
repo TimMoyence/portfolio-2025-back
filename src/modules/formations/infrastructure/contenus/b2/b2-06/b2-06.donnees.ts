@@ -3,6 +3,10 @@ import {
   auMillieme,
   auMillionieme,
 } from '../../../../../../common/domain/nombres/arrondi';
+import {
+  croissanceComposee,
+  croissanceContinue,
+} from '../../../../../../common/domain/nombres/statistiques';
 import type { ConceptId } from '../../../../domain/cours/banque/concepts';
 import * as moteur from '../../briques';
 import {
@@ -62,11 +66,11 @@ export const SERIES_INVERSEES = 'pente-ordonnee-inversees';
 export const RENVOI_AU_DOSSIER = 'B2-06-A1-05-DOSSIER';
 
 const ventes = (mois: number): number =>
-  auMillionieme(VENTES_DE_JANVIER * Math.exp(K_DES_VENTES * mois));
+  auMillionieme(croissanceContinue(VENTES_DE_JANVIER, K_DES_VENTES, mois));
 const ventesLuesCommeProduit = (mois: number): number =>
   auMillionieme(VENTES_DE_JANVIER * Math.E * K_DES_VENTES * mois);
 const ventesAuTauxK = (mois: number): number =>
-  auMillionieme(VENTES_DE_JANVIER * (1 + K_DES_VENTES) ** mois);
+  auMillionieme(croissanceComposee(VENTES_DE_JANVIER, K_DES_VENTES, mois));
 const TAUX_MENSUEL = auMillionieme(Math.exp(K_DES_VENTES) - 1);
 const PIEGES_DU_TAUX = [
   [auMillionieme(TAUX_MENSUEL + 1), TAUX_POUR_COEFFICIENT],

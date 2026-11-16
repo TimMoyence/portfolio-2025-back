@@ -5,7 +5,7 @@ import {
   solutionsDansLesTextes,
 } from '../../../../../../../test/helpers/formations/cours/relecture-de-cours';
 import { COURS_B3_02 } from './b3-02.cours';
-import { PAGES_DE_FORMULES } from './b3-02.briques';
+import { INFOGRAPHIES } from './b3-02.briques';
 
 const CORRESPONDANCES_PAR_PAGE = 3;
 const CARACTERES_D_UNE_LIGNE = 55;
@@ -22,7 +22,7 @@ const pages = COURS_B3_02.ecrans
 
 describe('B3-02 — chaque page de formules met son infographie en face d’Excel', () => {
   it('IMG-4 · sert 3 correspondances d’une ligne infographie → Excel à la place des arguments', () => {
-    expect(pages).toHaveLength(PAGES_DE_FORMULES);
+    expect(pages).toHaveLength(INFOGRAPHIES.length);
     expect(
       pages
         .filter(

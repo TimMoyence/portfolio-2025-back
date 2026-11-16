@@ -5,7 +5,10 @@ import {
   type AuMoinsUnModifiable,
 } from '../../../../../../common/domain/objets/au-moins-un';
 import type { ConfusionId } from '../../../../domain/cours/banque/confusions';
-import { somme } from '../../../../../../common/domain/nombres/statistiques';
+import {
+  partEnPourcent,
+  somme,
+} from '../../../../../../common/domain/nombres/statistiques';
 import {
   arrondi,
   auMillionieme,
@@ -77,9 +80,9 @@ export const ACHAT_DE_LA_MANETTE = 24;
 export const VENTE_DE_LA_MANETTE = 39;
 
 export const enPourcentage = (partie: number, tout: number): number =>
-  auMillionieme((partie / tout) * 100);
+  auMillionieme(partEnPourcent(partie, tout));
 const partArrondie = (partie: number, tout: number): number =>
-  arrondi((partie / tout) * 100, 1);
+  arrondi(partEnPourcent(partie, tout), 1);
 
 export const TOTAL_DES_CLIENTS = somme(CLIENTS);
 const PORTEURS = CLIENTS.map((clients, rang) =>
@@ -148,7 +151,7 @@ function feuilleDeRepartition({
         piegesDuModele: piegesDistincts([
           [arrondi(premierEffectif / total, 1), FACTEUR_CENT],
           [auMillionieme(premierEffectif / total), FACTEUR_CENT],
-          [arrondi((total / premierEffectif) * 100, 1), BASE_INVERSEE],
+          [partArrondie(total, premierEffectif), BASE_INVERSEE],
           ...piegeDeLArrondi(enPourcentage(premierEffectif, total)),
         ]),
         piegesDuRang: (rang) =>

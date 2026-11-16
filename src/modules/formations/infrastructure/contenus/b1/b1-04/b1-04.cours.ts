@@ -299,7 +299,6 @@ const ACTE_1: moteur.Acte = [
     'lesson',
     {
       title: 'Le nuage de points : un mois, un point',
-      subtitle: 'Trace écrite · notion 1 · page 1 sur 2',
       blocks: [
         {
           kind: 'definition',
@@ -369,7 +368,6 @@ const ACTE_1: moteur.Acte = [
     'lesson',
     {
       title: 'La droite des moindres carrés : les y d’abord',
-      subtitle: 'Trace écrite · notion 1 · page 2 sur 2',
       blocks: [
         {
           kind: 'definition',
@@ -620,7 +618,6 @@ const ACTE_2: moteur.Acte = [
     'lesson',
     {
       title: 'Le coefficient de corrélation : la distance à 1, pas le signe',
-      subtitle: 'Trace écrite · notion 2 · page 1 sur 2',
       blocks: [
         {
           kind: 'definition',
@@ -689,7 +686,6 @@ const ACTE_2: moteur.Acte = [
     'lesson',
     {
       title: 'Liaison n’est pas causalité : chercher le troisième',
-      subtitle: 'Trace écrite · notion 2 · page 2 sur 2',
       blocks: [
         {
           kind: 'definition',
@@ -984,7 +980,6 @@ const ACTE_3: moteur.Acte = [
     'lesson',
     {
       title: 'Prévoir par la droite : le rang, pas l’année',
-      subtitle: 'Trace écrite · notion 3 · page 1 sur 2',
       blocks: [
         {
           kind: 'definition',
@@ -1056,7 +1051,6 @@ const ACTE_3: moteur.Acte = [
     'lesson',
     {
       title: 'Atteindre un seuil : résoudre, puis arrondir au-dessus',
-      subtitle: 'Trace écrite · notion 3 · page 2 sur 2',
       blocks: [
         {
           kind: 'definition',

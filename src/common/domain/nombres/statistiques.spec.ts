@@ -1,11 +1,66 @@
 import {
+  croissanceComposee,
+  croissanceContinue,
   ecartTypePopulation,
   mediane,
   moyenne,
   moyenneOu,
+  partEnPourcent,
   proportion,
   somme,
 } from './statistiques';
+
+describe('croissanceComposee', () => {
+  it('applique le taux une fois par période', () => {
+    expect(croissanceComposee(1000, 0.1, 2)).toBeCloseTo(1210, 9);
+  });
+
+  it('rend la valeur de départ à la période zéro', () => {
+    expect(croissanceComposee(1000, 0.1, 0)).toBe(1000);
+  });
+
+  it('rend la valeur de départ pour un taux nul', () => {
+    expect(croissanceComposee(1000, 0, 5)).toBe(1000);
+  });
+
+  it('fait baisser la valeur pour un taux négatif', () => {
+    expect(croissanceComposee(1000, -0.5, 2)).toBe(250);
+  });
+});
+
+describe('croissanceContinue', () => {
+  it('multiplie la valeur de départ par e^(k·t)', () => {
+    expect(croissanceContinue(1000, 0.5, 2)).toBeCloseTo(1000 * Math.E, 9);
+  });
+
+  it('rend la valeur de départ au temps zéro', () => {
+    expect(croissanceContinue(1000, 0.5, 0)).toBe(1000);
+  });
+
+  it('décroît pour un k négatif', () => {
+    expect(croissanceContinue(1000, -1, 1)).toBeCloseTo(1000 / Math.E, 9);
+  });
+});
+
+describe('partEnPourcent', () => {
+  it('rapporte la part à sa base, en pour cent', () => {
+    expect(partEnPourcent(30, 120)).toBe(25);
+  });
+
+  it('rend un pourcentage négatif pour une baisse', () => {
+    expect(partEnPourcent(-30, 120)).toBe(-25);
+  });
+
+  it('rend zéro pour une part nulle', () => {
+    expect(partEnPourcent(0, 120)).toBe(0);
+  });
+
+  it('refuse une base nulle, qui ne donne aucun pourcentage', () => {
+    expect(() => partEnPourcent(30, 0)).toThrow(
+      new RangeError('Aucun pourcentage d’une base nulle : part 30.'),
+    );
+  });
+});
 
 describe('somme', () => {
   it('vaut zéro pour une liste vide', () => {

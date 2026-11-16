@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "18c93996d33cab5e345fb12b7d4ac20fd0f5a793fcb67c9c15663bbdd22cba70",
+  "empreinte": "deb27a57a9d8f938d4768bd274d7b956be1ea7e67ddf9b9ed6b3cbe80e7343d8",
   "sujet": {
     "id": "b2-04-suites",
     "titre": "Suites : modéliser une évolution régulière",
@@ -353,7 +353,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Suites arithmétiques : ajouter toujours le même nombre",
-                "subtitle": "Trace écrite · notion 1 · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -439,7 +438,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Raison, graphique et tableur",
-                "subtitle": "Trace écrite · notion 1 · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "property",
@@ -838,7 +836,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Suites géométriques : multiplier toujours par le même nombre",
-                "subtitle": "Trace écrite · notion 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -1340,7 +1337,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Chercher un seuil : la boucle « Tant que »",
-                "subtitle": "Trace écrite · notion 3 · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -1425,7 +1421,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Cumul : additionner des termes consécutifs",
-                "subtitle": "Trace écrite · notion 3 · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -2634,7 +2629,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Suites arithmétiques : ajouter toujours le même nombre",
-                "subtitle": "Trace écrite · notion 1 · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -2734,7 +2728,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Raison, graphique et tableur",
-                "subtitle": "Trace écrite · notion 1 · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "property",
@@ -3386,7 +3379,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Suites géométriques : multiplier toujours par le même nombre",
-                "subtitle": "Trace écrite · notion 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -4260,7 +4252,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Chercher un seuil : la boucle « Tant que »",
-                "subtitle": "Trace écrite · notion 3 · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -4359,7 +4350,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Cumul : additionner des termes consécutifs",
-                "subtitle": "Trace écrite · notion 3 · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -6267,7 +6257,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Suites arithmétiques : ajouter toujours le même nombre",
-                "subtitle": "Trace écrite · notion 1 · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -6353,7 +6342,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Raison, graphique et tableur",
-                "subtitle": "Trace écrite · notion 1 · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "property",
@@ -6471,7 +6459,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Suites géométriques : multiplier toujours par le même nombre",
-                "subtitle": "Trace écrite · notion 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -6645,7 +6632,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Chercher un seuil : la boucle « Tant que »",
-                "subtitle": "Trace écrite · notion 3 · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -6730,7 +6716,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Cumul : additionner des termes consécutifs",
-                "subtitle": "Trace écrite · notion 3 · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",

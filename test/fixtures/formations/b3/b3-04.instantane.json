@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "b027b471cadf830ab7966058ffceb4c7effe7d5a7ffd4cbd8daaa03e4e13e4e2",
+  "empreinte": "fea8b3b337242905eaf2e538e173be934b5e0a95fbbcc4c45bcd751161909d4b",
   "sujet": {
     "id": "b3-04-publipostage",
     "titre": "Publipostage et e-mailing",
@@ -142,7 +142,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : les trois pièces du publipostage",
-                "subtitle": "Publipostage · page 1 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -224,7 +223,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : lier la liste du tableur",
-                "subtitle": "Publipostage · page 2 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -299,7 +297,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 1 — La lettre type et sa liste",
-          "consigne": "Étape 1 : enregistrez le classeur des contacts dans votre dossier, puis fermez-le. Étape 2 : dans un document Word vierge, Publipostage › Démarrer la fusion et le publipostage › Lettres ; enregistrez-le sous le nom Lettre_clients.docx. Étape 3 : Sélection des destinataires › Utiliser une liste existante, le classeur des contacts, l’onglet Contacts, case « La première ligne de données contient les en-têtes de colonnes » cochée. Étape 4 : Modifier la liste des destinataires, comptez les destinataires. Étape 5 : tapez la date et l’objet de la lettre : « Objet : votre activité avec Norvane depuis janvier ».",
+          "consigne": "Étape 1 : enregistrez le classeur des contacts dans votre dossier, puis fermez-le.\nÉtape 2 : dans un document Word vierge, Publipostage › Démarrer la fusion et le publipostage › Lettres ; enregistrez-le sous le nom Lettre_clients.docx.\nÉtape 3 : Sélection des destinataires › Utiliser une liste existante, le classeur des contacts, l’onglet Contacts, case « La première ligne de données contient les en-têtes de colonnes » cochée.\nÉtape 4 : Modifier la liste des destinataires, comptez les destinataires.\nÉtape 5 : tapez la date et l’objet de la lettre : « Objet : votre activité avec Norvane depuis janvier ».",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -380,7 +378,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : insérer les champs de fusion",
-                "subtitle": "Publipostage · page 3 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -470,7 +467,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : le format d’un montant",
-                "subtitle": "Publipostage · page 4 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -608,7 +604,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 2 — Les champs de la lettre",
-          "consigne": "Dans Lettre_clients.docx. Étape 1 : le bloc d’adresse de l’exemple guidé, en haut à droite. Étape 2 : tapez « Madame, Monsieur, » ; elle deviendra une règle à l’exercice 4. Étape 3 : écrivez le corps : « De janvier à septembre 2026, votre entreprise a réalisé » puis le champ ca_2026, puis « de chiffre d’affaires HT avec notre agence de », le champ agence et un point. Étape 4 : Alt + F9, donnez au champ ca_2026 le format \\# \"# ##0,00 €\", Alt + F9, F9. Étape 5 : signez « Nadia Ferrand, directrice commerciale », puis Aperçu des résultats.",
+          "consigne": "Dans Lettre_clients.docx.\nÉtape 1 : le bloc d’adresse de l’exemple guidé, en haut à droite.\nÉtape 2 : tapez « Madame, Monsieur, » ; elle deviendra une règle à l’exercice 4.\nÉtape 3 : écrivez le corps : « De janvier à septembre 2026, votre entreprise a réalisé » puis le champ ca_2026, puis « de chiffre d’affaires HT avec notre agence de », le champ agence et un point.\nÉtape 4 : Alt + F9, donnez au champ ca_2026 le format \\# \"# ##0,00 €\", Alt + F9, F9.\nÉtape 5 : signez « Nadia Ferrand, directrice commerciale », puis Aperçu des résultats.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -775,7 +771,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : filtrer les destinataires",
-                "subtitle": "Publipostage · page 5 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -856,7 +851,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : une règle Si…Alors…Sinon",
-                "subtitle": "Publipostage · page 6 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -940,7 +934,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 4 — Les lettres de Rennes",
-          "consigne": "Dans Lettre_clients.docx. Étape 1 : Modifier la liste des destinataires › Filtrer, champ agence, Égal à, Rennes ; comptez les destinataires retenus. Étape 2 : sélectionnez « Madame, Monsieur » sans sa virgule, puis Règles › Si…Alors…Sinon : champ civilite, Égal à, Mme ; texte si vrai « Chère Madame », texte sinon « Cher Monsieur » ; la virgule suit la règle : la formule d’appel ne porte jamais le nom. Étape 3 : Aperçu des résultats, parcourez trois lettres. Étape 4 : Terminer et fusionner › Modifier des documents individuels › Tous ; dans le document qui s’ouvre, Ctrl + F, cherchez « Chère Madame » et lisez le nombre de résultats. Fermez ce document sans l’enregistrer.",
+          "consigne": "Dans Lettre_clients.docx.\nÉtape 1 : Modifier la liste des destinataires › Filtrer, champ agence, Égal à, Rennes ; comptez les destinataires retenus.\nÉtape 2 : sélectionnez « Madame, Monsieur » sans sa virgule, puis Règles › Si…Alors…Sinon : champ civilite, Égal à, Mme ; texte si vrai « Chère Madame », texte sinon « Cher Monsieur » ; la virgule suit la règle : la formule d’appel ne porte jamais le nom.\nÉtape 3 : Aperçu des résultats, parcourez trois lettres.\nÉtape 4 : Terminer et fusionner › Modifier des documents individuels › Tous ; dans le document qui s’ouvre, Ctrl + F, cherchez « Chère Madame » et lisez le nombre de résultats. Fermez ce document sans l’enregistrer.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -1019,7 +1013,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : l’aperçu des résultats",
-                "subtitle": "Publipostage · page 7 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -1115,7 +1108,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : fusionner en documents individuels",
-                "subtitle": "Publipostage · page 8 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -1197,7 +1189,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : le PDF d’une lettre, le PDF de toutes",
-                "subtitle": "Publipostage · page 9 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -1276,7 +1267,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 5 — Fusionner et enregistrer en PDF",
-          "consigne": "Dans Lettre_clients.docx, filtre de Rennes en place. Étape 1 : Vérification des erreurs › Simuler la fusion ; corrigez dans la lettre type ce qu’elle signale. Étape 2 : Terminer et fusionner › Modifier des documents individuels › Tous ; enregistrez le document obtenu sous Lettres_Rennes.docx, puis Fichier › Enregistrer sous › PDF : Lettres_Rennes.pdf. Étape 3 : revenez à Lettre_clients.docx, Aperçu des résultats, Rechercher un destinataire : CL001. Étape 4 : Terminer et fusionner › Modifier des documents individuels › Enregistrement en cours ; enregistrez la lettre en PDF sous Lettre_CL001.pdf.",
+          "consigne": "Dans Lettre_clients.docx, filtre de Rennes en place.\nÉtape 1 : Vérification des erreurs › Simuler la fusion ; corrigez dans la lettre type ce qu’elle signale.\nÉtape 2 : Terminer et fusionner › Modifier des documents individuels › Tous ; enregistrez le document obtenu sous Lettres_Rennes.docx, puis Fichier › Enregistrer sous › PDF : Lettres_Rennes.pdf.\nÉtape 3 : revenez à Lettre_clients.docx, Aperçu des résultats, Rechercher un destinataire : CL001.\nÉtape 4 : Terminer et fusionner › Modifier des documents individuels › Enregistrement en cours ; enregistrez la lettre en PDF sous Lettre_CL001.pdf.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -1491,7 +1482,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : chemin 1, l’e-mailing depuis Word",
-                "subtitle": "Publipostage · page 10 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -1572,7 +1562,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : chemin 2, la lettre en PDF joint",
-                "subtitle": "Publipostage · page 11 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -1651,7 +1640,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 7 — Envoyer à vous et à votre binôme",
-          "consigne": "Étape 1 : enregistrez le classeur d’envoi B3-04_envoi, ouvrez-le dans Excel ; remplacez votre.adresse@ecole.example par votre adresse et adresse.du.binome@ecole.example par celle de votre binôme ; enregistrez et fermez. Étape 2 : dans Lettre_clients.docx, Sélection des destinataires › Utiliser une liste existante, B3-04_envoi, onglet Contacts ; la lettre type ne change pas. Modifier la liste des destinataires : deux destinataires, deux courriels au plus. Étape 3, Chemin 1 (Outlook classique pour Windows) : Terminer et fusionner › Envoyer des messages électroniques ; À : email ; Objet : « Votre activité avec Norvane depuis janvier » ; Format : HTML ; Tous ; OK. Étape 3, Chemin 2 (sans Outlook classique) : Aperçu des résultats sur votre ligne, Modifier des documents individuels › Enregistrement en cours, enregistrez la lettre en PDF ; dans votre messagerie, écrivez-vous un courriel, objet « Votre activité avec Norvane depuis janvier », lettre en pièce jointe ; faites de même pour votre binôme avec sa lettre.",
+          "consigne": "Étape 1 : enregistrez le classeur d’envoi B3-04_envoi, ouvrez-le dans Excel ; remplacez votre.adresse@ecole.example par votre adresse et adresse.du.binome@ecole.example par celle de votre binôme ; enregistrez et fermez.\nÉtape 2 : dans Lettre_clients.docx, Sélection des destinataires › Utiliser une liste existante, B3-04_envoi, onglet Contacts ; la lettre type ne change pas. Modifier la liste des destinataires : deux destinataires, deux courriels au plus.\nÉtape 3, Chemin 1 (Outlook classique pour Windows) : Terminer et fusionner › Envoyer des messages électroniques ; À : email ; Objet : « Votre activité avec Norvane depuis janvier » ; Format : HTML ; Tous ; OK.\nÉtape 3, Chemin 2 (sans Outlook classique) : Aperçu des résultats sur votre ligne, Modifier des documents individuels › Enregistrement en cours, enregistrez la lettre en PDF ; dans votre messagerie, écrivez-vous un courriel, objet « Votre activité avec Norvane depuis janvier », lettre en pièce jointe ; faites de même pour votre binôme avec sa lettre.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -1762,7 +1751,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Une IA qui écrit la lettre type",
-                "subtitle": "L’IA rédactrice · le publipostage",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -2215,7 +2203,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : les trois pièces du publipostage",
-                "subtitle": "Publipostage · page 1 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -2304,7 +2291,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : lier la liste du tableur",
-                "subtitle": "Publipostage · page 2 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -2386,7 +2372,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 1 — La lettre type et sa liste",
-          "consigne": "Étape 1 : enregistrez le classeur des contacts dans votre dossier, puis fermez-le. Étape 2 : dans un document Word vierge, Publipostage › Démarrer la fusion et le publipostage › Lettres ; enregistrez-le sous le nom Lettre_clients.docx. Étape 3 : Sélection des destinataires › Utiliser une liste existante, le classeur des contacts, l’onglet Contacts, case « La première ligne de données contient les en-têtes de colonnes » cochée. Étape 4 : Modifier la liste des destinataires, comptez les destinataires. Étape 5 : tapez la date et l’objet de la lettre : « Objet : votre activité avec Norvane depuis janvier ».",
+          "consigne": "Étape 1 : enregistrez le classeur des contacts dans votre dossier, puis fermez-le.\nÉtape 2 : dans un document Word vierge, Publipostage › Démarrer la fusion et le publipostage › Lettres ; enregistrez-le sous le nom Lettre_clients.docx.\nÉtape 3 : Sélection des destinataires › Utiliser une liste existante, le classeur des contacts, l’onglet Contacts, case « La première ligne de données contient les en-têtes de colonnes » cochée.\nÉtape 4 : Modifier la liste des destinataires, comptez les destinataires.\nÉtape 5 : tapez la date et l’objet de la lettre : « Objet : votre activité avec Norvane depuis janvier ».",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -2561,7 +2547,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : insérer les champs de fusion",
-                "subtitle": "Publipostage · page 3 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -2658,7 +2643,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : le format d’un montant",
-                "subtitle": "Publipostage · page 4 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -2810,7 +2794,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 2 — Les champs de la lettre",
-          "consigne": "Dans Lettre_clients.docx. Étape 1 : le bloc d’adresse de l’exemple guidé, en haut à droite. Étape 2 : tapez « Madame, Monsieur, » ; elle deviendra une règle à l’exercice 4. Étape 3 : écrivez le corps : « De janvier à septembre 2026, votre entreprise a réalisé » puis le champ ca_2026, puis « de chiffre d’affaires HT avec notre agence de », le champ agence et un point. Étape 4 : Alt + F9, donnez au champ ca_2026 le format \\# \"# ##0,00 €\", Alt + F9, F9. Étape 5 : signez « Nadia Ferrand, directrice commerciale », puis Aperçu des résultats.",
+          "consigne": "Dans Lettre_clients.docx.\nÉtape 1 : le bloc d’adresse de l’exemple guidé, en haut à droite.\nÉtape 2 : tapez « Madame, Monsieur, » ; elle deviendra une règle à l’exercice 4.\nÉtape 3 : écrivez le corps : « De janvier à septembre 2026, votre entreprise a réalisé » puis le champ ca_2026, puis « de chiffre d’affaires HT avec notre agence de », le champ agence et un point.\nÉtape 4 : Alt + F9, donnez au champ ca_2026 le format \\# \"# ##0,00 €\", Alt + F9, F9.\nÉtape 5 : signez « Nadia Ferrand, directrice commerciale », puis Aperçu des résultats.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -3172,7 +3156,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : filtrer les destinataires",
-                "subtitle": "Publipostage · page 5 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -3260,7 +3243,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : une règle Si…Alors…Sinon",
-                "subtitle": "Publipostage · page 6 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -3351,7 +3333,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 4 — Les lettres de Rennes",
-          "consigne": "Dans Lettre_clients.docx. Étape 1 : Modifier la liste des destinataires › Filtrer, champ agence, Égal à, Rennes ; comptez les destinataires retenus. Étape 2 : sélectionnez « Madame, Monsieur » sans sa virgule, puis Règles › Si…Alors…Sinon : champ civilite, Égal à, Mme ; texte si vrai « Chère Madame », texte sinon « Cher Monsieur » ; la virgule suit la règle : la formule d’appel ne porte jamais le nom. Étape 3 : Aperçu des résultats, parcourez trois lettres. Étape 4 : Terminer et fusionner › Modifier des documents individuels › Tous ; dans le document qui s’ouvre, Ctrl + F, cherchez « Chère Madame » et lisez le nombre de résultats. Fermez ce document sans l’enregistrer.",
+          "consigne": "Dans Lettre_clients.docx.\nÉtape 1 : Modifier la liste des destinataires › Filtrer, champ agence, Égal à, Rennes ; comptez les destinataires retenus.\nÉtape 2 : sélectionnez « Madame, Monsieur » sans sa virgule, puis Règles › Si…Alors…Sinon : champ civilite, Égal à, Mme ; texte si vrai « Chère Madame », texte sinon « Cher Monsieur » ; la virgule suit la règle : la formule d’appel ne porte jamais le nom.\nÉtape 3 : Aperçu des résultats, parcourez trois lettres.\nÉtape 4 : Terminer et fusionner › Modifier des documents individuels › Tous ; dans le document qui s’ouvre, Ctrl + F, cherchez « Chère Madame » et lisez le nombre de résultats. Fermez ce document sans l’enregistrer.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -3515,7 +3497,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : l’aperçu des résultats",
-                "subtitle": "Publipostage · page 7 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -3618,7 +3599,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : fusionner en documents individuels",
-                "subtitle": "Publipostage · page 8 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -3707,7 +3687,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : le PDF d’une lettre, le PDF de toutes",
-                "subtitle": "Publipostage · page 9 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -3793,7 +3772,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 5 — Fusionner et enregistrer en PDF",
-          "consigne": "Dans Lettre_clients.docx, filtre de Rennes en place. Étape 1 : Vérification des erreurs › Simuler la fusion ; corrigez dans la lettre type ce qu’elle signale. Étape 2 : Terminer et fusionner › Modifier des documents individuels › Tous ; enregistrez le document obtenu sous Lettres_Rennes.docx, puis Fichier › Enregistrer sous › PDF : Lettres_Rennes.pdf. Étape 3 : revenez à Lettre_clients.docx, Aperçu des résultats, Rechercher un destinataire : CL001. Étape 4 : Terminer et fusionner › Modifier des documents individuels › Enregistrement en cours ; enregistrez la lettre en PDF sous Lettre_CL001.pdf.",
+          "consigne": "Dans Lettre_clients.docx, filtre de Rennes en place.\nÉtape 1 : Vérification des erreurs › Simuler la fusion ; corrigez dans la lettre type ce qu’elle signale.\nÉtape 2 : Terminer et fusionner › Modifier des documents individuels › Tous ; enregistrez le document obtenu sous Lettres_Rennes.docx, puis Fichier › Enregistrer sous › PDF : Lettres_Rennes.pdf.\nÉtape 3 : revenez à Lettre_clients.docx, Aperçu des résultats, Rechercher un destinataire : CL001.\nÉtape 4 : Terminer et fusionner › Modifier des documents individuels › Enregistrement en cours ; enregistrez la lettre en PDF sous Lettre_CL001.pdf.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -4194,7 +4173,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : chemin 1, l’e-mailing depuis Word",
-                "subtitle": "Publipostage · page 10 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -4282,7 +4260,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : chemin 2, la lettre en PDF joint",
-                "subtitle": "Publipostage · page 11 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -4368,7 +4345,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 7 — Envoyer à vous et à votre binôme",
-          "consigne": "Étape 1 : enregistrez le classeur d’envoi B3-04_envoi, ouvrez-le dans Excel ; remplacez votre.adresse@ecole.example par votre adresse et adresse.du.binome@ecole.example par celle de votre binôme ; enregistrez et fermez. Étape 2 : dans Lettre_clients.docx, Sélection des destinataires › Utiliser une liste existante, B3-04_envoi, onglet Contacts ; la lettre type ne change pas. Modifier la liste des destinataires : deux destinataires, deux courriels au plus. Étape 3, Chemin 1 (Outlook classique pour Windows) : Terminer et fusionner › Envoyer des messages électroniques ; À : email ; Objet : « Votre activité avec Norvane depuis janvier » ; Format : HTML ; Tous ; OK. Étape 3, Chemin 2 (sans Outlook classique) : Aperçu des résultats sur votre ligne, Modifier des documents individuels › Enregistrement en cours, enregistrez la lettre en PDF ; dans votre messagerie, écrivez-vous un courriel, objet « Votre activité avec Norvane depuis janvier », lettre en pièce jointe ; faites de même pour votre binôme avec sa lettre.",
+          "consigne": "Étape 1 : enregistrez le classeur d’envoi B3-04_envoi, ouvrez-le dans Excel ; remplacez votre.adresse@ecole.example par votre adresse et adresse.du.binome@ecole.example par celle de votre binôme ; enregistrez et fermez.\nÉtape 2 : dans Lettre_clients.docx, Sélection des destinataires › Utiliser une liste existante, B3-04_envoi, onglet Contacts ; la lettre type ne change pas. Modifier la liste des destinataires : deux destinataires, deux courriels au plus.\nÉtape 3, Chemin 1 (Outlook classique pour Windows) : Terminer et fusionner › Envoyer des messages électroniques ; À : email ; Objet : « Votre activité avec Norvane depuis janvier » ; Format : HTML ; Tous ; OK.\nÉtape 3, Chemin 2 (sans Outlook classique) : Aperçu des résultats sur votre ligne, Modifier des documents individuels › Enregistrement en cours, enregistrez la lettre en PDF ; dans votre messagerie, écrivez-vous un courriel, objet « Votre activité avec Norvane depuis janvier », lettre en pièce jointe ; faites de même pour votre binôme avec sa lettre.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -4576,7 +4553,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Une IA qui écrit la lettre type",
-                "subtitle": "L’IA rédactrice · le publipostage",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -5055,7 +5031,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : les trois pièces du publipostage",
-                "subtitle": "Publipostage · page 1 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -5137,7 +5112,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : lier la liste du tableur",
-                "subtitle": "Publipostage · page 2 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -5235,7 +5209,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : insérer les champs de fusion",
-                "subtitle": "Publipostage · page 3 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -5325,7 +5298,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : le format d’un montant",
-                "subtitle": "Publipostage · page 4 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -5447,7 +5419,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : filtrer les destinataires",
-                "subtitle": "Publipostage · page 5 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -5528,7 +5499,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : une règle Si…Alors…Sinon",
-                "subtitle": "Publipostage · page 6 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -5635,7 +5605,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : l’aperçu des résultats",
-                "subtitle": "Publipostage · page 7 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -5731,7 +5700,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : fusionner en documents individuels",
-                "subtitle": "Publipostage · page 8 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -5813,7 +5781,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : le PDF d’une lettre, le PDF de toutes",
-                "subtitle": "Publipostage · page 9 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -5983,7 +5950,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : chemin 1, l’e-mailing depuis Word",
-                "subtitle": "Publipostage · page 10 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -6064,7 +6030,6 @@
               "renderer": "page",
               "props": {
                 "title": "Page : chemin 2, la lettre en PDF joint",
-                "subtitle": "Publipostage · page 11 sur 11",
                 "page": {
                   "orientation": "portrait",
                   "header": {
@@ -6174,7 +6139,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Une IA qui écrit la lettre type",
-                "subtitle": "L’IA rédactrice · le publipostage",
                 "blocks": [
                   {
                     "kind": "definition",

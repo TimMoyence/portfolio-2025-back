@@ -316,7 +316,7 @@ describe('B2-01 — fichier de données', () => {
     expect(
       textes
         .filter((texte) => texte.length >= LONGUEUR_MIN_D_UN_TEXTE_COMPARE)
-        .filter((texte) => !reference.includes(texte)),
+        .filter((texte) => !reference.includes(texte.replace(/\s+/gu, ' '))),
     ).toEqual([]);
     expect(capsule).toHaveLength(11);
     expect(

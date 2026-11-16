@@ -96,6 +96,23 @@ const DEROGATIONS_DES_COURS: ReadonlyMap<string, readonly Derogation[]> =
       ],
     ],
     [
+      'b3-02-formules-et-ia-analyste',
+      [
+        {
+          regle: 'exposition-continue',
+          ecran: 'B3-02-A3-02-COURS-IA-ANALYSTE',
+          raison:
+            'Les deux pages de l’IA, l’écran « L’IA analyste, tous ensemble » où le formateur lance le prompt devant la classe, puis la fiche mémo : 39 min sans saisie, décidé par Tim le 16 novembre 2026.',
+        },
+        {
+          regle: 'gabarit-cycle',
+          ecran: 'B3-02-A3-02-COURS-IA-ANALYSTE',
+          raison:
+            'Les leçons de l’IA mènent à l’écran « L’IA analyste, tous ensemble », un prompt lancé par le formateur, sans exercice noté : décidé par Tim le 16 novembre 2026.',
+        },
+      ],
+    ],
+    [
       'b2-06-exponentielle-logarithme',
       [
         {

@@ -37,6 +37,12 @@ type EcranDePulsation = Extract<EcranDuCours, { readonly brique: 'fp-pulse' }>;
 export type VoteDuCours = z.input<typeof voteStocke>;
 type NumeriqueDuCours = z.input<typeof numeriqueStockee>;
 export type Piege = readonly [string, ConfusionId];
+export type PiegeChiffre = readonly [number, ConfusionId];
+
+export const enPiege = ([valeur, confusion]: PiegeChiffre) => ({
+  valeur,
+  confusion,
+});
 type EcranDeTableau = Extract<
   EcranDuCours,
   { readonly brique: 'fp-table-build' }
@@ -197,7 +203,7 @@ export function numerique(
   solution: number,
   tolerance: NumeriqueDuCours['tolerance'],
   formePubliee: string,
-  pieges: AuMoinsUnModifiable<readonly [number, ConfusionId]>,
+  pieges: AuMoinsUnModifiable<PiegeChiffre>,
 ): NumeriqueDuCours {
   return {
     type: 'numeric',
@@ -209,10 +215,7 @@ export function numerique(
     solution,
     tolerance,
     formePubliee,
-    pieges: mapperAuMoinsUn(pieges, ([valeur, confusion]) => ({
-      valeur,
-      confusion,
-    })),
+    pieges: mapperAuMoinsUn(pieges, enPiege),
   };
 }
 
@@ -456,7 +459,7 @@ export function attendu(
   formuleReference: string,
   valeur: number | string,
   forme: 'references' | { readonly memeQue: string },
-  pieges: readonly (readonly [number, ConfusionId])[] = [],
+  pieges: readonly PiegeChiffre[] = [],
   confusionSiErreurFormule: ConfusionId | null = null,
   tolerance:
     | typeof TOLERANCE_RELATIVE
@@ -470,10 +473,7 @@ export function attendu(
     tolerance,
     forme,
     confusionSiErreurFormule,
-    pieges: pieges.map(([valeurDuPiege, confusion]) => ({
-      valeur: valeurDuPiege,
-      confusion,
-    })),
+    pieges: pieges.map(enPiege),
   };
 }
 
@@ -486,7 +486,7 @@ export function enigme(
   tolerance: NumeriqueDuCours['tolerance'],
   formePubliee: string,
   fragment: string,
-  pieges: AuMoinsUnModifiable<readonly [number, ConfusionId]>,
+  pieges: AuMoinsUnModifiable<PiegeChiffre>,
 ) {
   return {
     type: 'enigme' as const,
@@ -505,10 +505,7 @@ export function enigme(
         formePubliee,
       },
       fragment,
-      pieges: mapperAuMoinsUn(pieges, ([valeurDuPiege, confusion]) => ({
-        valeur: valeurDuPiege,
-        confusion,
-      })),
+      pieges: mapperAuMoinsUn(pieges, enPiege),
     },
   };
 }
@@ -639,20 +636,7 @@ function ecranDImage(
   );
 }
 
-export interface TexteDeLImage {
-  readonly sousTitre?: string;
-  readonly paragraphes: AuMoinsUnModifiable<string>;
-  readonly correspondances: Correspondances;
-  readonly dureeMinutes: number;
-}
-
-export interface Serie {
-  readonly nom: string;
-  readonly pages: number;
-}
-
 export interface PageDeSerie {
-  readonly rang: number;
   readonly syntaxe: string;
   readonly piege: string;
   readonly exemple: string;
@@ -665,28 +649,11 @@ export type SocleDeLaPage = SocleNomme & {
 
 const DUREE_D_UNE_PAGE_DE_SERIE = 2;
 
-export function texteDeLaPage(
-  { nom, pages }: Serie,
-  { rang, syntaxe, piege, exemple, correspondances }: PageDeSerie,
-): TexteDeLImage {
-  return {
-    sousTitre: `${nom} · page ${rang} sur ${pages}`,
-    paragraphes: [
-      `Syntaxe : ${syntaxe}`,
-      `Le piège : ${piege}`,
-      `Exemple : ${exemple}`,
-    ],
-    correspondances,
-    dureeMinutes: DUREE_D_UNE_PAGE_DE_SERIE,
-  };
-}
-
 function ecranCommente(
-  socle: SocleNomme,
+  { notes, ...socle }: SocleDeLaPage,
   renderer: 'image-left' | 'page',
   visuel: Readonly<Record<string, unknown>>,
-  { sousTitre, paragraphes, correspondances, dureeMinutes }: TexteDeLImage,
-  notes: AuMoinsUnModifiable<string>,
+  { syntaxe, piege, exemple, correspondances }: PageDeSerie,
 ): EcranDeRecit {
   return ecranDImage(
     socle,
@@ -694,28 +661,29 @@ function ecranCommente(
     renderer,
     {
       title: socle.titre,
-      ...(sousTitre === undefined ? {} : { subtitle: sousTitre }),
       ...visuel,
-      paragraphs: [...paragraphes],
+      paragraphs: [
+        `Syntaxe : ${syntaxe}`,
+        `Le piège : ${piege}`,
+        `Exemple : ${exemple}`,
+      ],
       items: enListe(correspondances),
     },
-    dureeMinutes,
+    DUREE_D_UNE_PAGE_DE_SERIE,
   );
 }
 
 export function ecranDImageCommentee(
-  socle: SocleNomme,
+  socle: SocleDeLaPage,
   dossier: string,
   { fichier, imageAlt }: ImageDIllustration,
-  texte: TexteDeLImage,
-  notes: AuMoinsUnModifiable<string>,
+  page: PageDeSerie,
 ): EcranDeRecit {
   return ecranCommente(
     socle,
     'image-left',
     { image: `${dossier}/${fichier}`, imageAlt },
-    texte,
-    notes,
+    page,
   );
 }
 
@@ -743,19 +711,10 @@ export interface PageDessinee {
   readonly pageAlt: string;
 }
 
-export const pageDessineeDeLaSerie =
-  (serie: Serie) =>
-  (
-    { notes, ...socle }: SocleDeLaPage,
-    { page, pageAlt, ...texte }: PageDessinee & PageDeSerie,
-  ): EcranDeRecit =>
-    ecranCommente(
-      socle,
-      'page',
-      { page, pageAlt },
-      texteDeLaPage(serie, texte),
-      notes,
-    );
+export const pageDessinee = (
+  socle: SocleDeLaPage,
+  { page, pageAlt, ...texte }: PageDessinee & PageDeSerie,
+): EcranDeRecit => ecranCommente(socle, 'page', { page, pageAlt }, texte);
 
 export function ecranDIllustration(
   socle: SocleNomme,

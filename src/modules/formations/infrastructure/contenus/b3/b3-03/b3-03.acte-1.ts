@@ -8,7 +8,6 @@ import {
 import {
   COLLER_LE_TEXTE_SEUL,
   FOND_DE_LA_MACHINE_A_ECRIRE,
-  pageDeTraitementDeTexte,
   pageDuFournil,
 } from './b3-03.briques';
 import * as moteur from '../../briques';
@@ -97,7 +96,7 @@ export const ACTE_1: moteur.Acte = [
     ],
     NOTE_RESERVEE,
   ),
-  pageDeTraitementDeTexte(
+  moteur.pageDessinee(
     {
       screenId: 'B3-03-A1-04-PAGE-IMPORTER',
       titre: 'Page : importer un texte brut',
@@ -108,7 +107,6 @@ export const ACTE_1: moteur.Acte = [
       ],
     },
     {
-      rang: 1,
       page: pageDuFournil({
         marks: true,
         blocks: [
@@ -139,7 +137,7 @@ export const ACTE_1: moteur.Acte = [
       ],
     },
   ),
-  pageDeTraitementDeTexte(
+  moteur.pageDessinee(
     {
       screenId: 'B3-03-A1-05-PAGE-NETTOYER',
       titre: 'Page : afficher les marques et nettoyer',
@@ -151,7 +149,6 @@ export const ACTE_1: moteur.Acte = [
       ],
     },
     {
-      rang: 2,
       page: pageDuFournil({
         marks: true,
         blocks: [
@@ -198,7 +195,7 @@ export const ACTE_1: moteur.Acte = [
       proprietes: {
         intitule: 'Exercice 1 — Importer et nettoyer la note',
         consigne:
-          'Étape 1 : dans un document Word vierge, Insertion › Objet › Texte d’un fichier, choisissez la note brute ; enregistrez le document sous le nom Note_comite.docx. Étape 2 : Accueil › ¶ pour afficher les marques. Étape 3 : Ctrl + H, Rechercher ^p^p, Remplacer par ^p, Remplacer tout ; notez le nombre de remplacements annoncé. Étape 4 : Rechercher deux espaces, Remplacer par une espace, Remplacer tout ; notez le nombre annoncé. Relancez chaque remplacement : Word doit annoncer 0.',
+          'Étape 1 : dans un document Word vierge, Insertion › Objet › Texte d’un fichier, choisissez la note brute ; enregistrez le document sous le nom Note_comite.docx.\nÉtape 2 : Accueil › ¶ pour afficher les marques.\nÉtape 3 : Ctrl + H, Rechercher ^p^p, Remplacer par ^p, Remplacer tout ; notez le nombre de remplacements annoncé.\nÉtape 4 : Rechercher deux espaces, Remplacer par une espace, Remplacer tout ; notez le nombre annoncé. Relancez chaque remplacement : Word doit annoncer 0.',
         regime: 'focus',
         ordre: 'fixe',
         questions: [
@@ -263,7 +260,7 @@ export const ACTE_1: moteur.Acte = [
       ),
     ],
   ),
-  pageDeTraitementDeTexte(
+  moteur.pageDessinee(
     {
       screenId: 'B3-03-A1-08-PAGE-CARACTERES',
       titre: 'Page : mettre en forme les caractères',
@@ -274,7 +271,6 @@ export const ACTE_1: moteur.Acte = [
       ],
     },
     {
-      rang: 3,
       page: pageDuFournil({
         blocks: [
           moteur.paragraphe(
@@ -320,7 +316,7 @@ export const ACTE_1: moteur.Acte = [
       ],
     },
   ),
-  pageDeTraitementDeTexte(
+  moteur.pageDessinee(
     {
       screenId: 'B3-03-A1-09-PAGE-STYLES',
       titre: 'Page : appliquer et modifier un style',
@@ -331,7 +327,6 @@ export const ACTE_1: moteur.Acte = [
       ],
     },
     {
-      rang: 4,
       page: pageDuFournil({
         blocks: [
           {
@@ -373,7 +368,7 @@ export const ACTE_1: moteur.Acte = [
       ],
     },
   ),
-  pageDeTraitementDeTexte(
+  moteur.pageDessinee(
     {
       screenId: 'B3-03-A1-10-PAGE-THEME',
       titre: 'Page : changer de thème',
@@ -384,7 +379,6 @@ export const ACTE_1: moteur.Acte = [
       ],
     },
     {
-      rang: 5,
       page: pageDuFournil({
         blocks: [
           {
@@ -504,7 +498,7 @@ export const ACTE_1: moteur.Acte = [
       proprietes: {
         intitule: 'Exercice 2 — Les styles de la note',
         consigne:
-          'Dans Note_comite.docx. Étape 1 : la première ligne en style Titre, la deuxième en Sous-titre. Étape 2 : chaque ligne qui commence par un numéro suivi d’un point et d’une espace, comme « 1. », en Titre 1, l’annexe comprise ; Maj + F3 pour retirer les capitales. Étape 3 : chaque ligne numérotée « 1.1 », « 2.3 »…, en Titre 2. Étape 4 : Création › Thèmes, choisissez un thème. Étape 5 : Affichage › Volet de navigation, comptez les titres de chaque niveau.',
+          'Dans Note_comite.docx.\nÉtape 1 : la première ligne en style Titre, la deuxième en Sous-titre.\nÉtape 2 : chaque ligne qui commence par un numéro suivi d’un point et d’une espace, comme « 1. », en Titre 1, l’annexe comprise ; Maj + F3 pour retirer les capitales.\nÉtape 3 : chaque ligne numérotée « 1.1 », « 2.3 »…, en Titre 2.\nÉtape 4 : Création › Thèmes, choisissez un thème.\nÉtape 5 : Affichage › Volet de navigation, comptez les titres de chaque niveau.',
         regime: 'focus',
         ordre: 'fixe',
         questions: [

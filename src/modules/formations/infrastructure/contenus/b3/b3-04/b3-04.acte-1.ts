@@ -6,12 +6,7 @@ import {
   VALEURS_B3_04,
 } from './b3-04.donnees';
 import { pageDuFournil } from '../b3-03/b3-03.briques';
-import {
-  champ,
-  FOND_DU_FACTEUR,
-  lettreDuFournil,
-  pageDePublipostage,
-} from './b3-04.briques';
+import { champ, FOND_DU_FACTEUR, lettreDuFournil } from './b3-04.briques';
 import * as moteur from '../../briques';
 
 const CONFONDUE = 'piece-de-la-lettre-confondue';
@@ -95,7 +90,7 @@ export const ACTE_1: moteur.Acte = [
     ],
     CONTACTS_RESERVES,
   ),
-  pageDePublipostage(
+  moteur.pageDessinee(
     {
       screenId: 'B3-04-A1-04-PAGE-PUBLIPOSTAGE',
       titre: 'Page : les trois pièces du publipostage',
@@ -106,7 +101,6 @@ export const ACTE_1: moteur.Acte = [
       ],
     },
     {
-      rang: 1,
       page: lettreDuFournil(
         moteur.paragraphe(
           [{ text: 'Merci pour votre fidélité au fournil cette saison.' }],
@@ -137,7 +131,7 @@ export const ACTE_1: moteur.Acte = [
       ],
     },
   ),
-  pageDePublipostage(
+  moteur.pageDessinee(
     {
       screenId: 'B3-04-A1-05-PAGE-SOURCE',
       titre: 'Page : lier la liste du tableur',
@@ -148,7 +142,6 @@ export const ACTE_1: moteur.Acte = [
       ],
     },
     {
-      rang: 2,
       page: pageDuFournil({
         blocks: [
           {
@@ -198,7 +191,7 @@ export const ACTE_1: moteur.Acte = [
       proprietes: {
         intitule: 'Exercice 1 — La lettre type et sa liste',
         consigne:
-          'Étape 1 : enregistrez le classeur des contacts dans votre dossier, puis fermez-le. Étape 2 : dans un document Word vierge, Publipostage › Démarrer la fusion et le publipostage › Lettres ; enregistrez-le sous le nom Lettre_clients.docx. Étape 3 : Sélection des destinataires › Utiliser une liste existante, le classeur des contacts, l’onglet Contacts, case « La première ligne de données contient les en-têtes de colonnes » cochée. Étape 4 : Modifier la liste des destinataires, comptez les destinataires. Étape 5 : tapez la date et l’objet de la lettre : « Objet : votre activité avec Norvane depuis janvier ».',
+          'Étape 1 : enregistrez le classeur des contacts dans votre dossier, puis fermez-le.\nÉtape 2 : dans un document Word vierge, Publipostage › Démarrer la fusion et le publipostage › Lettres ; enregistrez-le sous le nom Lettre_clients.docx.\nÉtape 3 : Sélection des destinataires › Utiliser une liste existante, le classeur des contacts, l’onglet Contacts, case « La première ligne de données contient les en-têtes de colonnes » cochée.\nÉtape 4 : Modifier la liste des destinataires, comptez les destinataires.\nÉtape 5 : tapez la date et l’objet de la lettre : « Objet : votre activité avec Norvane depuis janvier ».',
         regime: 'focus',
         ordre: 'fixe',
         questions: [
@@ -270,7 +263,7 @@ export const ACTE_1: moteur.Acte = [
       ),
     ],
   ),
-  pageDePublipostage(
+  moteur.pageDessinee(
     {
       screenId: 'B3-04-A1-08-PAGE-CHAMPS',
       titre: 'Page : insérer les champs de fusion',
@@ -281,7 +274,6 @@ export const ACTE_1: moteur.Acte = [
       ],
     },
     {
-      rang: 3,
       page: lettreDuFournil(
         moteur.paragraphe(
           [
@@ -311,7 +303,7 @@ export const ACTE_1: moteur.Acte = [
       ],
     },
   ),
-  pageDePublipostage(
+  moteur.pageDessinee(
     {
       screenId: 'B3-04-A1-09-PAGE-FORMAT',
       titre: 'Page : le format d’un montant',
@@ -322,7 +314,6 @@ export const ACTE_1: moteur.Acte = [
       ],
     },
     {
-      rang: 4,
       page: pageDuFournil({
         blocks: [
           moteur.paragraphe(
@@ -449,7 +440,7 @@ export const ACTE_1: moteur.Acte = [
       proprietes: {
         intitule: 'Exercice 2 — Les champs de la lettre',
         consigne:
-          'Dans Lettre_clients.docx. Étape 1 : le bloc d’adresse de l’exemple guidé, en haut à droite. Étape 2 : tapez « Madame, Monsieur, » ; elle deviendra une règle à l’exercice 4. Étape 3 : écrivez le corps : « De janvier à septembre 2026, votre entreprise a réalisé » puis le champ ca_2026, puis « de chiffre d’affaires HT avec notre agence de », le champ agence et un point. Étape 4 : Alt + F9, donnez au champ ca_2026 le format \\# "# ##0,00 €", Alt + F9, F9. Étape 5 : signez « Nadia Ferrand, directrice commerciale », puis Aperçu des résultats.',
+          'Dans Lettre_clients.docx.\nÉtape 1 : le bloc d’adresse de l’exemple guidé, en haut à droite.\nÉtape 2 : tapez « Madame, Monsieur, » ; elle deviendra une règle à l’exercice 4.\nÉtape 3 : écrivez le corps : « De janvier à septembre 2026, votre entreprise a réalisé » puis le champ ca_2026, puis « de chiffre d’affaires HT avec notre agence de », le champ agence et un point.\nÉtape 4 : Alt + F9, donnez au champ ca_2026 le format \\# "# ##0,00 €", Alt + F9, F9.\nÉtape 5 : signez « Nadia Ferrand, directrice commerciale », puis Aperçu des résultats.',
         regime: 'focus',
         ordre: 'fixe',
         questions: [

@@ -1,16 +1,13 @@
 import {
   defiDeConsigne,
-  pageDessineeDeLaSerie,
+  pageDessinee,
   paragraphe,
   strategie,
-  texteDeLaPage,
   type PageDeSerie,
   type PageDeWord,
 } from './briques';
 
-const SERIE = { nom: 'Traitement de texte', pages: 11 };
 const PAGE: PageDeSerie = {
-  rang: 3,
   syntaxe: 'Accueil › Gras.',
   piege: 'souligner un titre.',
   exemple: '« record » en gras.',
@@ -38,39 +35,25 @@ describe('paragraphe', () => {
   });
 });
 
-describe('texteDeLaPage', () => {
-  it('numérote la page dans sa série et écrit la syntaxe, le piège puis l’exemple, en deux minutes', () => {
-    expect(texteDeLaPage(SERIE, PAGE)).toStrictEqual({
-      sousTitre: 'Traitement de texte · page 3 sur 11',
-      paragraphes: [
-        'Syntaxe : Accueil › Gras.',
-        'Le piège : souligner un titre.',
-        'Exemple : « record » en gras.',
-      ],
-      correspondances: PAGE.correspondances,
-      dureeMinutes: 2,
-    });
-  });
-});
-
-describe('pageDessineeDeLaSerie', () => {
-  it('sert la page dessinée au catalogue, avec le texte de la série et une ligne par pastille', () => {
+describe('pageDessinee', () => {
+  it('sert la page dessinée au catalogue en deux minutes, sans sous-titre, avec la syntaxe, le piège puis l’exemple et une ligne par pastille', () => {
     const page: PageDeWord = {
       orientation: 'portrait',
       blocks: [paragraphe([{ text: 'Bilan' }], 1)],
     };
 
-    expect(
-      pageDessineeDeLaSerie(SERIE)(
-        {
-          screenId: 'B3-03-A1-08-PAGE',
-          titre: 'Page : le gras',
-          concepts: ['mise-en-forme-des-caracteres'],
-          notes: ['2 min.'],
-        },
-        { ...PAGE, page, pageAlt: 'Une page portrait.' },
-      ),
-    ).toMatchObject({
+    const ecran = pageDessinee(
+      {
+        screenId: 'B3-03-A1-08-PAGE',
+        titre: 'Page : le gras',
+        concepts: ['mise-en-forme-des-caracteres'],
+        notes: ['2 min.'],
+      },
+      { ...PAGE, page, pageAlt: 'Une page portrait.' },
+    );
+
+    expect(ecran.proprietes.presentation?.props).not.toHaveProperty('subtitle');
+    expect(ecran).toMatchObject({
       diffusion: 'catalogue',
       dureeMinutes: 2,
       notes: '• 2 min.',
@@ -79,9 +62,13 @@ describe('pageDessineeDeLaSerie', () => {
           renderer: 'page',
           props: {
             title: 'Page : le gras',
-            subtitle: 'Traitement de texte · page 3 sur 11',
             page,
             pageAlt: 'Une page portrait.',
+            paragraphs: [
+              'Syntaxe : Accueil › Gras.',
+              'Le piège : souligner un titre.',
+              'Exemple : « record » en gras.',
+            ],
             items: [
               'Pastille 1 → le gras',
               'Pastille 2 → l’italique',

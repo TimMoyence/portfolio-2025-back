@@ -4,7 +4,7 @@ import {
   VALEURS_B3_04,
 } from './b3-04.donnees';
 import { pageDuFournil } from '../b3-03/b3-03.briques';
-import { champ, pageDePublipostage } from './b3-04.briques';
+import { champ } from './b3-04.briques';
 import * as moteur from '../../briques';
 
 const LES_SIX_REGLES = [
@@ -53,7 +53,7 @@ export const ACTE_2: moteur.Acte = [
       ),
     ],
   ),
-  pageDePublipostage(
+  moteur.pageDessinee(
     {
       screenId: 'B3-04-A2-02-PAGE-FILTRER',
       titre: 'Page : filtrer les destinataires',
@@ -64,7 +64,6 @@ export const ACTE_2: moteur.Acte = [
       ],
     },
     {
-      rang: 5,
       page: pageDuFournil({
         blocks: [
           {
@@ -100,7 +99,7 @@ export const ACTE_2: moteur.Acte = [
       ],
     },
   ),
-  pageDePublipostage(
+  moteur.pageDessinee(
     {
       screenId: 'B3-04-A2-03-PAGE-REGLE',
       titre: 'Page : une règle Si…Alors…Sinon',
@@ -111,7 +110,6 @@ export const ACTE_2: moteur.Acte = [
       ],
     },
     {
-      rang: 6,
       page: pageDuFournil({
         blocks: [
           {
@@ -168,7 +166,7 @@ export const ACTE_2: moteur.Acte = [
       proprietes: {
         intitule: 'Exercice 4 — Les lettres de Rennes',
         consigne:
-          'Dans Lettre_clients.docx. Étape 1 : Modifier la liste des destinataires › Filtrer, champ agence, Égal à, Rennes ; comptez les destinataires retenus. Étape 2 : sélectionnez « Madame, Monsieur » sans sa virgule, puis Règles › Si…Alors…Sinon : champ civilite, Égal à, Mme ; texte si vrai « Chère Madame », texte sinon « Cher Monsieur » ; la virgule suit la règle : la formule d’appel ne porte jamais le nom. Étape 3 : Aperçu des résultats, parcourez trois lettres. Étape 4 : Terminer et fusionner › Modifier des documents individuels › Tous ; dans le document qui s’ouvre, Ctrl + F, cherchez « Chère Madame » et lisez le nombre de résultats. Fermez ce document sans l’enregistrer.',
+          'Dans Lettre_clients.docx.\nÉtape 1 : Modifier la liste des destinataires › Filtrer, champ agence, Égal à, Rennes ; comptez les destinataires retenus.\nÉtape 2 : sélectionnez « Madame, Monsieur » sans sa virgule, puis Règles › Si…Alors…Sinon : champ civilite, Égal à, Mme ; texte si vrai « Chère Madame », texte sinon « Cher Monsieur » ; la virgule suit la règle : la formule d’appel ne porte jamais le nom.\nÉtape 3 : Aperçu des résultats, parcourez trois lettres.\nÉtape 4 : Terminer et fusionner › Modifier des documents individuels › Tous ; dans le document qui s’ouvre, Ctrl + F, cherchez « Chère Madame » et lisez le nombre de résultats. Fermez ce document sans l’enregistrer.',
         regime: 'focus',
         ordre: 'fixe',
         questions: [
@@ -233,7 +231,7 @@ export const ACTE_2: moteur.Acte = [
       ),
     ],
   ),
-  pageDePublipostage(
+  moteur.pageDessinee(
     {
       screenId: 'B3-04-A2-06-PAGE-APERCU',
       titre: 'Page : l’aperçu des résultats',
@@ -244,7 +242,6 @@ export const ACTE_2: moteur.Acte = [
       ],
     },
     {
-      rang: 7,
       page: pageDuFournil({
         blocks: [
           {
@@ -279,7 +276,7 @@ export const ACTE_2: moteur.Acte = [
       ],
     },
   ),
-  pageDePublipostage(
+  moteur.pageDessinee(
     {
       screenId: 'B3-04-A2-07-PAGE-FUSION',
       titre: 'Page : fusionner en documents individuels',
@@ -289,7 +286,6 @@ export const ACTE_2: moteur.Acte = [
       ],
     },
     {
-      rang: 8,
       page: pageDuFournil({
         blocks: [
           moteur.paragraphe([{ text: 'Café du Quai' }], 1),
@@ -315,7 +311,7 @@ export const ACTE_2: moteur.Acte = [
       ],
     },
   ),
-  pageDePublipostage(
+  moteur.pageDessinee(
     {
       screenId: 'B3-04-A2-08-PAGE-PDF',
       titre: 'Page : le PDF d’une lettre, le PDF de toutes',
@@ -326,7 +322,6 @@ export const ACTE_2: moteur.Acte = [
       ],
     },
     {
-      rang: 9,
       page: pageDuFournil({
         blocks: [
           moteur.paragraphe(
@@ -379,7 +374,7 @@ export const ACTE_2: moteur.Acte = [
       proprietes: {
         intitule: 'Exercice 5 — Fusionner et enregistrer en PDF',
         consigne:
-          'Dans Lettre_clients.docx, filtre de Rennes en place. Étape 1 : Vérification des erreurs › Simuler la fusion ; corrigez dans la lettre type ce qu’elle signale. Étape 2 : Terminer et fusionner › Modifier des documents individuels › Tous ; enregistrez le document obtenu sous Lettres_Rennes.docx, puis Fichier › Enregistrer sous › PDF : Lettres_Rennes.pdf. Étape 3 : revenez à Lettre_clients.docx, Aperçu des résultats, Rechercher un destinataire : CL001. Étape 4 : Terminer et fusionner › Modifier des documents individuels › Enregistrement en cours ; enregistrez la lettre en PDF sous Lettre_CL001.pdf.',
+          'Dans Lettre_clients.docx, filtre de Rennes en place.\nÉtape 1 : Vérification des erreurs › Simuler la fusion ; corrigez dans la lettre type ce qu’elle signale.\nÉtape 2 : Terminer et fusionner › Modifier des documents individuels › Tous ; enregistrez le document obtenu sous Lettres_Rennes.docx, puis Fichier › Enregistrer sous › PDF : Lettres_Rennes.pdf.\nÉtape 3 : revenez à Lettre_clients.docx, Aperçu des résultats, Rechercher un destinataire : CL001.\nÉtape 4 : Terminer et fusionner › Modifier des documents individuels › Enregistrement en cours ; enregistrez la lettre en PDF sous Lettre_CL001.pdf.',
         regime: 'focus',
         ordre: 'fixe',
         questions: [

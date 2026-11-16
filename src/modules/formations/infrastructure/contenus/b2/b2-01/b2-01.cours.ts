@@ -1,5 +1,4 @@
 import { CONCEPTS_DU_B2_01 } from '../../../../domain/cours/banque/concepts';
-import type { ConfusionId } from '../../../../domain/cours/banque/confusions';
 import type { ContenuDeCours } from '../../../../domain/cours/stockage/CoursStocke';
 import * as moteur from '../../briques';
 import { gesteDeRecopie } from '../../feuilles';
@@ -1869,7 +1868,7 @@ function ligneDeTableau(
   prix: number,
   piegeDePrix: number | null,
   indice: number,
-  piegesDIndice: readonly (readonly [number, ConfusionId])[],
+  piegesDIndice: readonly moteur.PiegeChiffre[],
 ) {
   return [
     {
@@ -1890,10 +1889,7 @@ function ligneDeTableau(
       rang,
       cle: 'indice',
       valeur: indice,
-      pieges: piegesDIndice.map(([valeur, confusion]) => ({
-        valeur,
-        confusion,
-      })),
+      pieges: piegesDIndice.map(moteur.enPiege),
     },
   ];
 }
@@ -2931,7 +2927,7 @@ const ACTE_5: moteur.Acte = [
         enonce:
           'Mercredi, 17 h. Samir annonce qu’il proposera demain d’investir 40 000 € pour doubler les ventes de la marketplace. Hélène vous demande votre recommandation écrite, fondée sur le dossier.',
         invite:
-          'Rédigez trois phrases structurées : 1) le constat chiffré et son unité ; 2) le mécanisme expliqué par les poids, ainsi que ce qui reste à prouver ; 3) la décision proposée, sa limite et le contrôle prioritaire.',
+          'Rédigez trois phrases structurées :\n1) le constat chiffré et son unité ;\n2) le mécanisme expliqué par les poids, ainsi que ce qui reste à prouver ;\n3) la décision proposée, sa limite et le contrôle prioritaire.',
       },
       corrige: {
         type: 'defi',

@@ -347,7 +347,6 @@ const ACTE_2: moteur.Acte = [
     'lesson',
     {
       title: 'Dériver un produit et un quotient',
-      subtitle: 'Trace écrite · notion 1 · page 1 sur 2',
       blocks: [
         {
           kind: 'property',
@@ -586,7 +585,6 @@ const ACTE_2: moteur.Acte = [
     'lesson',
     {
       title: 'Dériver e^u et ln u, à la main ou au calcul formel',
-      subtitle: 'Trace écrite · notion 1 · page 2 sur 2',
       blocks: [
         {
           kind: 'property',
@@ -843,7 +841,6 @@ const ACTE_3: moteur.Acte = [
     'lesson',
     {
       title: 'Coût total, coût moyen, coût marginal',
-      subtitle: 'Trace écrite · notion 2 · page 1 sur 2',
       blocks: [
         {
           kind: 'definition',
@@ -1094,7 +1091,6 @@ const ACTE_3: moteur.Acte = [
     'lesson',
     {
       title: 'Recette, offre, demande et prix d’équilibre',
-      subtitle: 'Trace écrite · notion 2 · page 2 sur 2',
       blocks: [
         {
           kind: 'definition',
@@ -1356,7 +1352,6 @@ const ACTE_4: moteur.Acte = [
     'lesson',
     {
       title: 'Résoudre f(x) = k : combien de solutions, et où',
-      subtitle: 'Trace écrite · notion 3',
       blocks: [
         {
           kind: 'property',

@@ -165,7 +165,6 @@ export const ACTE_2: moteur.Acte = [
     'lesson',
     {
       title: 'Chercher dans une table, additionner sous conditions',
-      subtitle: 'Trace écrite · niveau 3 · page 1 sur 2',
       blocks: [
         {
           kind: 'method',
@@ -302,7 +301,6 @@ export const ACTE_2: moteur.Acte = [
     'lesson',
     {
       title: 'Le temps et les indicateurs',
-      subtitle: 'Trace écrite · niveau 3 · page 2 sur 2',
       blocks: [
         {
           kind: 'property',
@@ -442,7 +440,6 @@ export const ACTE_2: moteur.Acte = [
     'lesson',
     {
       title: 'Tableau structuré et tableau croisé dynamique',
-      subtitle: 'Trace écrite · niveau 4',
       blocks: [
         {
           kind: 'method',

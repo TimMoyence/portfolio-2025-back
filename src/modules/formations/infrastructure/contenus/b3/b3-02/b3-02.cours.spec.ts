@@ -14,6 +14,7 @@ import {
   estReservee,
   presentationDe,
 } from '../../../../domain/cours/structure/Cours';
+import { verifierStructure } from '../../../../domain/cours/structure/StructureCours';
 import { tirer } from '../../../../domain/cours/tirage/Tirage';
 import {
   CLASSEURS_B3_01,
@@ -21,6 +22,7 @@ import {
   TOLERANCES_B3_01,
   VALEURS_B3_01,
 } from '../b3-01/b3-01.donnees';
+import { LES_SIX_REGLES } from './b3-02.acte-3';
 import { COURS_B3_02 } from './b3-02.cours';
 import {
   MEILLEUR_TRIMESTRE_B3_02,
@@ -31,8 +33,8 @@ import {
 } from './b3-02.donnees';
 import {
   DOSSIER_DES_INFOGRAPHIES,
+  FICHES_RECAP_A4,
   INFOGRAPHIES,
-  PAGES_DE_FORMULES,
 } from './b3-02.briques';
 
 const COURS = buildCoursDuContenu(COURS_B3_02);
@@ -51,8 +53,10 @@ function formulesSansEspaces(screenId: string): string {
   return texteDe(screenId).replaceAll('; ', ';');
 }
 
-function proprietesDe(screenId: string) {
-  return fiche.ecranDuContenu(COURS_B3_02, screenId).proprietes;
+function notesDe(screenId: string): string {
+  return sansEspacesTypographiques(
+    fiche.ecranDuContenu(COURS_B3_02, screenId).notes,
+  );
 }
 
 function explicationDe(screenId: string, reference: string): string {
@@ -87,24 +91,22 @@ function pagesDeFormules() {
 
 fiche.decrireLaFicheDuCours('B3-02', COURS, {
   conception: 'b3/cours-b3-02-conception.md',
-  ecrans: 40,
-  dureeMinutes: 180,
-  minutesParActe: [57, 63, 60, 0, 0, 0],
-  rythme: { expositionContinueMax: 6, interactives: 141, exposition: 39 },
+  ecrans: 36,
+  dureeMinutes: 156,
+  minutesParActe: [57, 57, 42, 0, 0, 0],
+  rythme: { expositionContinueMax: 39, interactives: 87, exposition: 69 },
   ateliersNotes: [
     'A1-03 (8)',
     'A1-08 (15)',
     'A1-13 (13)',
     'A2-05 (9)',
     'A2-09 (9)',
-    'A2-13 (8)',
-    'A2-17 (10)',
-    'A3-04 (11)',
+    'A2-17 (12)',
   ],
-  noteesParType: [2, 13, 2, 0, 0],
+  noteesParType: [2, 11, 1, 0, 0],
   enigmes: 0,
   rappels: 0,
-  remediations: 31,
+  remediations: 30,
   options: 9,
   catalogue: [
     'A1-02',
@@ -135,11 +137,7 @@ fiche.decrireLaFicheDuCours('B3-02', COURS, {
     'B3-02-A1-13-ATELIER-RECHERCHE',
     'B3-02-A2-05-ATELIER-DELAIS',
     'B3-02-A2-09-ATELIER-TCD',
-    'B3-02-A2-13-ATELIER-GRAPHIQUES',
     'B3-02-A2-17-ATELIER-DASHBOARD',
-    'B3-02-A3-04-AUDIT-RAPPORT-IA',
-    'B3-02-A3-05-DEFI-CONSIGNE',
-    'B3-02-A3-07-RECOMMANDATIONS',
   ],
 });
 
@@ -244,7 +242,7 @@ describe('B3-02 — les valeurs du B3-01, servies telles quelles', () => {
     expect(consigne).not.toContain('même formule');
   });
 
-  it('B302-M3 · écrit en entier les formules de l’évolution et du taux de marque de l’exercice 7', () => {
+  it('B302-M3 · écrit en entier les formules de l’évolution et du taux de marque de l’exercice 6', () => {
     const consigne = formulesSansEspaces('B3-02-A2-17-ATELIER-DASHBOARD');
 
     expect(consigne).toContain('-1');
@@ -252,16 +250,10 @@ describe('B3-02 — les valeurs du B3-01, servies telles quelles', () => {
       '=SOMME.SI.ENS(T_Commandes[marge];T_Commandes[agence_id];\\"AG09\\";T_Commandes[annee];2026)/SOMME.SI.ENS(T_Commandes[ca_ht];T_Commandes[agence_id];\\"AG09\\";T_Commandes[annee];2026)',
     );
   });
-
-  it('écrit les en-têtes de la synthèse de l’exercice 6 avant d’en tirer le graphique', () => {
-    expect(texteDe('B3-02-A2-13-ATELIER-GRAPHIQUES')).toContain(
-      'en A1 à D1, les en-têtes agence_id, ca, objectif, atteinte',
-    );
-  });
 });
 
 describe('B3-02 — les pages de formules', () => {
-  it(`B302-M2 · montre sur chacune des ${PAGES_DE_FORMULES} pages son infographie à gauche, et à côté la syntaxe, les arguments, le piège puis l’exemple chiffré`, () => {
+  it(`B302-M2 · montre sur chacune des ${INFOGRAPHIES.length} pages son infographie à gauche, et à côté la syntaxe, les arguments, le piège puis l’exemple chiffré`, () => {
     const pages = pagesDeFormules().map((ecran) => {
       const { image, paragraphs } = feuille.proprietesV2(
         COURS_B3_02,
@@ -286,21 +278,6 @@ describe('B3-02 — les pages de formules', () => {
   it('B302-M2 · garde à chaque page de formules ses 2 minutes', () => {
     expect(pagesDeFormules().map(({ dureeMinutes }) => dureeMinutes)).toEqual(
       INFOGRAPHIES.map(() => 2),
-    );
-  });
-
-  it('B302-M2 · numérote les pages dans l’ordre du cours', () => {
-    expect(
-      pagesDeFormules().map(
-        ({ screenId }) =>
-          feuille.proprietesV2(COURS_B3_02, screenId)['subtitle'],
-      ),
-    ).toEqual(
-      Array.from(
-        { length: PAGES_DE_FORMULES },
-        (_, rang) =>
-          `Formules pas à pas · page ${rang + 1} sur ${PAGES_DE_FORMULES}`,
-      ),
     );
   });
 
@@ -354,9 +331,6 @@ describe('B3-02 — les pages de formules', () => {
     ];
 
     expect(formules.filter((formule) => !recap.includes(formule))).toEqual([]);
-    expect(
-      FICHES_RECAP.map((screenId) => proprietesV2De(screenId)['imprimable']),
-    ).toEqual([true, true]);
   });
 
   it('écrit les colonnes du classeur où elles sont : agence_id en F, produit_id en H, ca_ht en L', () => {
@@ -370,10 +344,6 @@ describe('B3-02 — les pages de formules', () => {
   });
 });
 
-function proprietesV2De(screenId: string): Readonly<Record<string, unknown>> {
-  return feuille.proprietesV2(COURS_B3_02, screenId);
-}
-
 describe('B3-02 — pièces jointes du § 8.2', () => {
   const jointes = relecture.piecesJointesDuCours(COURS);
 
@@ -382,6 +352,7 @@ describe('B3-02 — pièces jointes du § 8.2', () => {
       CLASSEURS_B3_01.brut,
       CLASSEURS_B3_01.repriseActe2,
       CLASSEURS_B3_01.repriseActe3,
+      ...FICHES_RECAP_A4.map(({ pdf }) => pdf),
       CLASSEURS_B3_01.repriseActe2,
     ]);
   });
@@ -392,7 +363,9 @@ describe('B3-02 — pièces jointes du § 8.2', () => {
         { ecran: 'A1-02', reservee: false },
         { ecran: 'A1-09', reservee: true },
         { ecran: 'A2-11', reservee: true },
-        { ecran: 'A3-06', reservee: true },
+        { ecran: 'A2-18', reservee: false },
+        { ecran: 'A2-19', reservee: false },
+        { ecran: 'A3-04', reservee: true },
       ],
     );
     expect(
@@ -412,125 +385,225 @@ describe('B3-02 — pièces jointes du § 8.2', () => {
           'B3-02-A2-05-ATELIER-DELAIS',
         ],
       ],
-      ['A3-06', ['B3-02-A1-03-TRI-ANOMALIES', 'B3-02-A1-08-ATELIER-NETTOYAGE']],
+      ['A3-04', ['B3-02-A1-03-TRI-ANOMALIES', 'B3-02-A1-08-ATELIER-NETTOYAGE']],
     ]);
   });
 });
 
-describe('B3-02 — l’IA analyste', () => {
-  it('B302-M7 · range au rapport d’IA deux chiffres justes, valeurs du B3-01, et six faux, pièges du B3-01', () => {
-    const proprietes = proprietesDe('B3-02-A3-04-AUDIT-RAPPORT-IA');
-    const cartes =
-      'plan' in proprietes && 'cartes' in proprietes.plan
-        ? proprietes.plan.cartes
-        : [];
-    const attendus =
-      'questions' in proprietes && proprietes.questions[0].type === 'classement'
-        ? proprietes.questions[0].corrige.attendus
-        : [];
-    const categorieDe = (carte: string) =>
-      attendus.find(({ carteId }) => carteId === carte)?.categorieId;
-    const ecrit = (valeur: number, decimales: number) =>
-      sansEspacesTypographiques(nombreFrancais(valeur, decimales));
-    const libelles = Object.fromEntries(
-      cartes.map(({ id, libelle }) => [id, sansEspacesTypographiques(libelle)]),
+describe('B3-02 — l’IA analyste, tous ensemble', () => {
+  const PROMPT = 'B3-02-A3-04-PROMPT-TOUS-ENSEMBLE';
+  const prompt = (): string =>
+    sansEspacesTypographiques(
+      (feuille.proprietesV2(COURS_B3_02, PROMPT) as { prompt: string }).prompt,
     );
 
-    expect(cartes.map(({ id }) => [id, categorieDe(id)])).toEqual([
-      ['atteinte-rennes', 'juste'],
-      ['retards', 'juste'],
-      ['ca-rennes-info', 'periode'],
-      ['evolution', 'periode'],
-      ['delai-strasbourg', 'resume'],
-      ['marge-moyenne', 'resume'],
-      ['part-info', 'denominateur'],
-      ['marge-cout', 'denominateur'],
+  it('B3 · sert après les deux pages de cours un prompt seul, en séance, 30 min, rien à saisir', () => {
+    const ecrans = COURS_B3_02.ecrans.map(({ screenId }) => screenId);
+    const rang = ecrans.indexOf(PROMPT);
+    const ecran = fiche.ecranDuContenu(COURS_B3_02, PROMPT);
+
+    expect(ecrans.slice(rang - 2, rang + 2)).toEqual([
+      'B3-02-A3-02-COURS-IA-ANALYSTE',
+      'B3-02-A3-03-COURS-CAHIER-DE-REGLES',
+      PROMPT,
+      'B3-02-A3-08-FICHE-MEMO',
     ]);
-    expect(libelles['atteinte-rennes']).toContain(
-      ecrit(VALEURS_B3_01['b3-01-a3-atteinte-rennes'], 1),
-    );
-    expect(libelles['retards']).toContain(
-      ecrit(VALEURS_B3_01['b3-01-a2-retards'], 0),
-    );
-    expect(libelles['ca-rennes-info']).toContain(
-      ecrit(
-        PIEGES_B3_02['b3-02-a1-ca-rennes-info']['periode-mal-delimitee'] ??
-          Number.NaN,
-        0,
-      ),
-    );
-    expect(libelles['marge-cout']).toContain(
-      ecrit(
-        PIEGES_B3_02['b3-02-a2-marge-marseille'][
-          'marque-confondue-avec-marge'
-        ] ?? Number.NaN,
-        1,
-      ),
-    );
-    expect(libelles['part-info']).toContain(
-      ecrit(
-        PIEGES_B3_02['b3-02-a2-part-info-rennes'][
-          'pourcentage-du-mauvais-total'
-        ] ?? Number.NaN,
-        1,
-      ),
-    );
+    expect({
+      titre: ecran.titre,
+      diffusion: ecran.diffusion,
+      dureeMinutes: ecran.dureeMinutes,
+      brique: ecran.brique,
+      rendu: presentationDe(ecran)?.renderer,
+    }).toEqual({
+      titre: 'L’IA analyste, tous ensemble',
+      diffusion: 'seance',
+      dureeMinutes: 30,
+      brique: 'fp-story',
+      rendu: 'prompt',
+    });
   });
 
-  it('B302-M7 · fait déclarer l’outil, puis noter le chiffre de l’IA face au sien pour chacune des sept questions sources', () => {
-    const proprietes = proprietesDe('B3-02-A3-06-ANALYSE-IA');
-    const ids =
-      'questionsLibres' in proprietes
-        ? (proprietes.questionsLibres ?? []).map(({ id }) => id)
-        : [];
+  it('B3 · donne à l’IA son rôle, les six onglets, les définitions absentes du classeur, les six règles mot pour mot et le format', () => {
+    const texte = prompt();
 
-    const texte = texteDe('B3-02-A3-06-ANALYSE-IA');
-
-    expect(ids).toEqual([
-      'b3-02-a3-analyse:outil',
-      'b3-02-a3-analyse:chiffres',
-      'b3-02-a3-analyse:ecarts',
-    ]);
     expect(
       [
-        '1. CA de Rennes en informatique',
-        '2. délai médian de Strasbourg',
-        '3. retards',
-        '4. part de l’informatique à Rennes',
-        '5. atteinte de Rennes',
-        '6. évolution du CA',
-        '7. taux de marque de Marseille',
-      ].filter((question) => !texte.includes(question)),
+        'Tu es analyste data pour Norvane Équipement, un réseau de 12 agences.',
+        'Commandes (colonnes A à M)',
+        'Quarantaine',
+        'Clients',
+        'Agences',
+        'Produits',
+        'Objectifs',
+        'date promise = 5 jours ouvrés après date_commande',
+        'délai = jours ouvrés entre date_commande et date_livraison, jour de commande exclu, sans jours fériés',
+        'marge = ca_ht − quantite × cout_unitaire',
+        ...LES_SIX_REGLES,
+        'Un tableau : question, chiffre, méthode ou code, lignes retenues.',
+      ]
+        .map(sansEspacesTypographiques)
+        .filter((attendu) => !texte.includes(attendu)),
     ).toEqual([]);
-    expect(texte).toContain('binôme');
   });
 
-  it('B302-M7 · donne à l’IA la reprise nettoyée, pas l’export brut', () => {
-    const proprietes = proprietesDe('B3-02-A3-06-ANALYSE-IA');
-
-    expect('pieceJointe' in proprietes ? proprietes.pieceJointe : null).toEqual(
-      expect.objectContaining({ classeur: CLASSEURS_B3_01.repriseActe2 }),
+  it('B3 · pose six questions, chacune au périmètre et à l’unité de la question d’exercice dont les notes donnent la valeur', () => {
+    expect(
+      prompt()
+        .split('\n')
+        .filter((ligne) => /^Q\d\. /.test(ligne)),
+    ).toEqual(
+      [
+        'Q1. CA HT de Rennes (AG06) en informatique, de janvier à septembre 2026, en euros.',
+        'Q2. Délai médian de livraison de Strasbourg (AG12) en 2026, en jours ouvrés.',
+        'Q3. Nombre de lignes du réseau commandées en 2026 et livrées après leur date promise.',
+        'Q4. Part de l’informatique dans le CA HT de Rennes (AG06), de janvier à septembre 2026, en %.',
+        'Q5. Évolution du CA HT du réseau de janvier à septembre 2026 par rapport aux mêmes mois de 2025, en %.',
+        'Q6. Taux de marque de Marseille (AG09), marge ÷ CA HT, de janvier à septembre 2026, en %.',
+      ].map(sansEspacesTypographiques),
     );
   });
 
-  it('B302-M7 · garde parmi les stratégies de la consigne une seule fausse : tout corriger', () => {
-    const proprietes = proprietesDe('B3-02-A3-05-DEFI-CONSIGNE');
-    const strategies =
-      'corrige' in proprietes && proprietes.corrige.type === 'defi'
-        ? proprietes.corrige.strategies
-        : [];
+  it('B3 · ne renvoie l’IA ni à un exercice, ni à la séance, ni à un compte', () => {
+    expect(prompt()).toContain('Norvane Équipement');
+    expect(prompt()).not.toMatch(/exercice|séance|binôme|compte/iu);
+  });
+
+  it('B3 · donne dans les notes les six chiffres de référence, valeurs du B3-01', () => {
+    const notes = notesDe(PROMPT);
+    const references = [
+      `Q1 : ${nombreFrancais(VALEURS_B3_01['b3-01-a2-ca-rennes-info'], 0)} €`,
+      `Q2 : ${VALEURS_B3_01['b3-01-a2-delai-strasbourg']} jours ouvrés`,
+      `Q3 : ${VALEURS_B3_01['b3-01-a2-retards']} lignes`,
+      `Q4 : ${nombreFrancais(VALEURS_B3_01['b3-01-a2-part-info-rennes'], 1)} %`,
+      `Q5 : +${nombreFrancais(VALEURS_B3_01['b3-01-a3-evolution'], 1)} %`,
+      `Q6 : ${nombreFrancais(VALEURS_B3_01['b3-01-a3-marge-marseille'], 1)} %`,
+    ].map(sansEspacesTypographiques);
 
     expect(
-      strategies.filter(({ fausse }) => fausse).map(({ id }) => id),
-    ).toEqual(['tout-corriger']);
-    expect(strategies.map(({ id }) => id)).toEqual([
-      'role',
-      'donnees',
-      'regles',
-      'questions',
-      'format',
-      'tout-corriger',
+      references.filter((reference) => !notes.includes(reference)),
+    ).toEqual([]);
+  });
+});
+
+describe('B3-02 — le cours allégé', () => {
+  const RETIRES = [
+    'B3-02-A2-13-ATELIER-GRAPHIQUES',
+    'B3-02-A3-04-AUDIT-RAPPORT-IA',
+    'B3-02-A3-05-DEFI-CONSIGNE',
+    'B3-02-A3-06-ANALYSE-IA',
+    'B3-02-A3-07-RECOMMANDATIONS',
+  ];
+  const toutLeTexte = sansEspacesTypographiques(
+    JSON.stringify(COURS_B3_02.ecrans),
+  );
+
+  it('B1 · ne sert plus les cinq écrans retirés', () => {
+    const servis = COURS_B3_02.ecrans.map(({ screenId }) => screenId);
+
+    expect(servis).toContain('B3-02-A2-17-ATELIER-DASHBOARD');
+    expect(RETIRES.filter((retire) => servis.includes(retire))).toEqual([]);
+  });
+
+  it('B2 · numérote ses exercices de 1 à 6, le tableau de bord en dernier', () => {
+    const titres = COURS_B3_02.ecrans
+      .map(({ titre }) => titre ?? '')
+      .filter((titre) => titre.startsWith('Exercice '));
+
+    expect(titres.map((titre) => titre.split(' —')[0])).toEqual([
+      'Exercice 1',
+      'Exercice 2',
+      'Exercice 3',
+      'Exercice 4',
+      'Exercice 5',
+      'Exercice 6',
     ]);
+    expect(titres.at(-1)).toBe('Exercice 6 — Le tableau de bord Direction');
+  });
+
+  it('B2 · ne renvoie, dans aucun texte ni aucune note, à un écran retiré ou à son activité', () => {
+    const renvois = [
+      /exercices? (?:[7-9]|10)\b/iu,
+      /exercices 6 et 7/iu,
+      /exercices 3 à 7/iu,
+      /CA et objectif par agence/iu,
+      /binôme/iu,
+      /rapport d’une IA à auditer/iu,
+      /consigne qui évite/iu,
+      /une heure (?:où|pour)/iu,
+      /enchaînées sur le cahier de règles : 6 min d’exposition au plus/iu,
+    ];
+
+    expect(toutLeTexte).toContain('Exercice 6');
+    expect(
+      renvois.filter((renvoi) => renvoi.test(toutLeTexte)).map(String),
+    ).toEqual([]);
+  });
+
+  it('B2 · annonce une demi-heure avec une IA, tous ensemble, dans l’accroche servie et dans sa note', () => {
+    expect(texteDe('B3-02-A1-02-REPRISE')).toContain(
+      'une demi-heure avec une IA, tous ensemble',
+    );
+    expect(notesDe('B3-02-A1-02-REPRISE')).toContain(
+      'une demi-heure avec une IA, tous ensemble',
+    );
+  });
+
+  it('B2 · fait annoncer à chaque transition touchée l’écran qui la suit', () => {
+    expect({
+      outilGraphiques: notesDe('B3-02-A2-12-OUTIL-GRAPHIQUES'),
+      outilTableauDeBord: notesDe('B3-02-A2-16-OUTIL-TABLEAU-DE-BORD'),
+      cahierDeRegles: notesDe('B3-02-A3-03-COURS-CAHIER-DE-REGLES'),
+      prompt: notesDe('B3-02-A3-04-PROMPT-TOUS-ENSEMBLE'),
+    }).toEqual({
+      outilGraphiques: expect.stringContaining(
+        'Transition : « Nadia a trente secondes : un vote. »',
+      ),
+      outilTableauDeBord: expect.stringContaining(
+        'Transition : « Le tableau de bord Direction : exercice 6. »',
+      ),
+      cahierDeRegles: expect.stringContaining(
+        'Transition : « L’IA analyste, tous ensemble : le prompt. »',
+      ),
+      prompt: expect.stringContaining(
+        'Transition : « Gardez la fiche mémo de l’IA analyste. »',
+      ),
+    });
+  });
+
+  it('B2 · retire la remédiation objectif-annuel-pour-cumul, qu’aucune question ne porte plus', () => {
+    expect(COURS_B3_02.remediations).toHaveProperty(
+      'evolution-sur-annee-pleine',
+    );
+    expect(COURS_B3_02.remediations).not.toHaveProperty(
+      'objectif-annuel-pour-cumul',
+    );
+  });
+
+  it('B4 · tient sa structure par deux dérogations sur la première leçon de l’IA, et aucune autre', () => {
+    const sansDerogation = verifierStructure(COURS, [])
+      .map(({ regle, ecran }) => `${regle} · ${ecran}`)
+      .sort((premiere, seconde) => premiere.localeCompare(seconde));
+
+    expect(verifierStructure(COURS)).toEqual([]);
+    expect(sansDerogation).toEqual([
+      'exposition-continue · B3-02-A3-02-COURS-IA-ANALYSTE',
+      'gabarit-cycle · B3-02-A3-02-COURS-IA-ANALYSTE',
+    ]);
+  });
+
+  it('B6 · fait tirer à l’exercice 6 un histogramme de son TCD, titre qui conclut, axe depuis 0, et le corrige', () => {
+    const ecran = fiche.ecranDuContenu(
+      COURS_B3_02,
+      'B3-02-A2-17-ATELIER-DASHBOARD',
+    );
+
+    expect(texteDe('B3-02-A2-17-ATELIER-DASHBOARD')).toContain(
+      'Graphique croisé dynamique › Histogramme groupé ; un titre qui conclut, l’axe vertical depuis 0',
+    );
+    expect(ecran.concepts).toContain('choix-du-graphique');
+    expect(notesDe('B3-02-A2-17-ATELIER-DASHBOARD')).toContain(
+      'Projeter l’histogramme réussi : titre qui conclut, axe depuis zéro.',
+    );
   });
 });
 

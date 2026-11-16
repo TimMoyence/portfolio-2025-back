@@ -322,7 +322,6 @@ const ACTE_1: moteur.Acte = [
     'lesson',
     {
       title: 'Intérêts composés : les intérêts rapportent à leur tour',
-      subtitle: 'Trace écrite · notion 1 · page 1 sur 2',
       blocks: [
         {
           kind: 'definition',
@@ -389,7 +388,6 @@ const ACTE_1: moteur.Acte = [
     'lesson',
     {
       title: 'Valeur actuelle : ce qu’il faut placer aujourd’hui',
-      subtitle: 'Trace écrite · notion 1 · page 2 sur 2',
       blocks: [
         {
           kind: 'definition',
@@ -700,7 +698,6 @@ const ACTE_2: moteur.Acte = [
     'lesson',
     {
       title: 'Suite d’annuités : additionner des versements placés',
-      subtitle: 'Trace écrite · notion 2',
       blocks: [
         {
           kind: 'definition',
@@ -1063,7 +1060,6 @@ const ACTE_3: moteur.Acte = [
     'lesson',
     {
       title: 'Emprunter : intérêts, amortissement, annuité',
-      subtitle: 'Trace écrite · notion 3 · page 1 sur 2',
       blocks: [
         {
           kind: 'definition',
@@ -1131,7 +1127,6 @@ const ACTE_3: moteur.Acte = [
     'lesson',
     {
       title: 'Coût du crédit et tableau d’amortissement au tableur',
-      subtitle: 'Trace écrite · notion 3 · page 2 sur 2',
       blocks: [
         {
           kind: 'definition',

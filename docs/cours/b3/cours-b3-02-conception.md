@@ -6,23 +6,23 @@
 > laissé et enseigne **tout** le référentiel Excel du B3-01, formule par formule : chaque page donne
 > la syntaxe, un exemple chiffré, le piège courant et, en face de l’infographie, ce que chaque élément
 > dessiné devient dans Excel ; chaque exercice se fait pas à
-> pas, formules écrites en entier. Une fiche récap rassemble toutes les formules. Puis une heure où
-> l’étudiant confie l’analyse à une IA, la guide par son cahier de règles et vérifie ses chiffres
-> contre les siens. Ce document ne contient aucun code exécutable ; toute divergence
+> pas, formules écrites en entier. Deux fiches récap A4 rassemblent toutes les formules. Puis une demi-heure où
+> le formateur lance devant la classe le prompt de l’analyste, fondé sur le cahier de règles, et où
+> chacun vérifie les chiffres de l’IA contre les siens. Ce document ne contient aucun code exécutable ; toute divergence
 > d’implémentation est un défaut de l’implémentation.
 
-| Rubrique    | Valeur                                                                                                      |
-| ----------- | ----------------------------------------------------------------------------------------------------------- |
-| Date        | 6 novembre 2026                                                                                             |
-| Statut      | **Conception validée le 6 novembre 2026** (réponses de Tim au cadrage, § 0)                                 |
-| Cours       | `b3-02-formules-et-ia-analyste`                                                                             |
-| Gabarit     | `b3` (`docs/cours/cours-gabarit-v3.md` § 8)                                                                 |
-| Niveau      | `B3` (`moteur.coursB3`)                                                                                     |
-| Titre servi | « Toutes les formules, puis l’IA analyste »                                                                 |
-| Séance      | **Mardi 17 novembre 2026, 8 h 30 – 12 h**, B3GSP                                                            |
-| Durée       | **180 minutes exactes** : 120 de tableur (actes 1 et 2, 57 et 63 min), 60 d’IA (acte 3), 2 pauses de 15 min |
-| Écrans      | **40**, dont 20 écrans catalogue                                                                            |
-| Sources     | Jeu fictif Norvane Équipement du B3-01 (graine 20 261 013), ses trois classeurs réutilisés tels quels       |
+| Rubrique    | Valeur                                                                                                |
+| ----------- | ----------------------------------------------------------------------------------------------------- |
+| Date        | 6 novembre 2026                                                                                       |
+| Statut      | **Conception validée le 6 novembre 2026**, allégée le 16 novembre 2026 (décisions de Tim, § 0)        |
+| Cours       | `b3-02-formules-et-ia-analyste`                                                                       |
+| Gabarit     | `b3` (`docs/cours/cours-gabarit-v3.md` § 8)                                                           |
+| Niveau      | `B3` (`moteur.coursB3`)                                                                               |
+| Titre servi | « Toutes les formules, puis l’IA analyste »                                                           |
+| Séance      | **Mardi 17 novembre 2026, 8 h 30 – 12 h**, B3GSP                                                      |
+| Durée       | **156 minutes** : 114 de tableur (actes 1 et 2, 57 et 57 min), 42 d’IA (acte 3), 2 pauses de 15 min   |
+| Écrans      | **36**, dont 20 écrans catalogue                                                                      |
+| Sources     | Jeu fictif Norvane Équipement du B3-01 (graine 20 261 013), ses trois classeurs réutilisés tels quels |
 
 ---
 
@@ -31,7 +31,8 @@
 Réponses de Tim au cadrage, transmises le 6 novembre 2026 :
 
 - **Q1, l’IA** : au choix de l’étudiant, parmi les IA qui exécutent du code sur un fichier ; il
-  déclare l’outil dans le runtime et travaille en binôme s’il n’a pas de compte.
+  déclare l’outil dans le runtime et travaille en binôme s’il n’a pas de compte. Remplacé le
+  16 novembre 2026 : le formateur lance le prompt sur son compte, tous ensemble.
 - **Q2, le contenu** : « Il faut garder et que le référentiel soit compris et appliqué. Donc TOUT le
   référentiel Excel. Avec une fiche récap pour TOUTES les formules. Ensuite on fait l’IA. » Rien de
   ce que le B3-01 enseignait après l’écran 12 n’est abandonné.
@@ -40,11 +41,20 @@ Réponses de Tim au cadrage, transmises le 6 novembre 2026 :
 - **Q4, le fichier de l’IA** : la reprise nettoyée. Les écarts attendus ne viennent plus du
   nettoyage, mais de l’analyse : période, résumé statistique, dénominateur.
 
+Allègement décidé par Tim le 16 novembre 2026 : quarante écrans, c’était trop.
+
+- **Retirés** : l’exercice « CA et objectif par agence », l’audit du rapport d’IA, la consigne
+  écrite par l’étudiant, l’IA au travail en binôme et les recommandations au comité. Le tableau
+  de bord devient l’exercice 6 et gagne une étape graphique, qui porte le point « Graphique ».
+- **Remplacés** par un écran sans saisie, « L’IA analyste, tous ensemble » : le prompt complet à
+  copier, que le formateur lance sur son compte devant la classe.
+- **Fiches récap** : de vraies fiches A4 au gabarit des fiches de révision, en image et en PDF.
+
 Ce qui en découle :
 
-- **2 h de tableur, puis 1 h d’IA.** Acte 1 (57 min) : classer, nettoyer, contrôler, relier,
-  additionner. Acte 2 (63 min) : dates, statistiques, tableau structuré, TCD, graphiques, ratios,
-  tableau de bord, deux fiches récap. Acte 3 (60 min) : l’IA analyste.
+- **Près de 2 h de tableur, puis une demi-heure d’IA.** Acte 1 (57 min) : classer, nettoyer,
+  contrôler, relier, additionner. Acte 2 (57 min) : dates, statistiques, tableau structuré, TCD, graphiques, ratios,
+  tableau de bord, deux fiches récap. Acte 3 (42 min) : l’IA analyste, tous ensemble.
 - **Tout tient par des pages de 2 minutes.** Treize pages, une par famille de formules ou par outil,
   chacune une image commentée : l’infographie, et à côté la syntaxe, le piège, l’exemple chiffré,
   puis ce que chaque élément dessiné devient dans Excel. Trois pages au plus d’affilée (6 minutes d’exposition), précédées d’un vote et
@@ -60,14 +70,12 @@ Ce qui en découle :
 - **Ce qui est repris du B3-01** : A1-13 (tri des anomalies, mêmes cartes), A1-14 (nettoyage et
   contrôle), A2-02 (les familles, dans la fiche récap), A2-04 (recherche et agrégation), A2-06 et
   A2-07 (dates, médiane, retards), A2-08 à A2-11 (tableau structuré, TCD), A3-01 à A3-05 (graphique
-  trompeur, choix du graphique, CA et objectif), A3-06 à A3-09 (tableau de bord, MFC, segments, taux
-  de marque), A3-10 (recommandations et leurs quatre histoires), A3-12 (cahier de règles) et A3-11
+  trompeur, choix du graphique), A3-06 à A3-09 (tableau de bord, MFC, segments, taux
+  de marque), A3-12 (cahier de règles) et A3-11
   (fiche mémo).
-- **L’IA en position de data scientist.** Elle reçoit la reprise nettoyée et la consigne de
-  l’étudiant, fondée sur son cahier de règles. L’exercice 8 apprend à auditer un rapport d’IA écrit
-  pour le cours (noté) ; l’analyse en direct confronte ensuite les chiffres de la vraie IA à ceux des
-  exercices 3 à 7 (réponses libres) ; l’IA rédige enfin deux recommandations que l’étudiant garde ou
-  corrige (exercice 10).
+- **L’IA en position de data scientist.** Elle reçoit la reprise nettoyée et le prompt de
+  l’analyste, fondé sur le cahier de règles, que le formateur lance devant la classe ; ses six
+  chiffres se comparent à ceux des exercices 3 à 6.
 
 ## 1. Objectifs d’apprentissage et public
 
@@ -85,7 +93,7 @@ cas pratique d’1 heure à la dernière séance, tableur sur 8 points sur 20.
 | `SERIE.JOUR.OUVRE`, `NB.JOURS.OUVRES`    | A2-05        | A2-02         |
 | `DATEDIF`, `JOURSEM`, `TEMPS`            | —            | A2-03         |
 | TCD, filtres, segments, regroupements    | A2-09        | A2-07, A2-08  |
-| Graphique : créer, légender, options     | A2-13        | A2-12         |
+| Graphique : créer, légender, options     | A2-17        | A2-12         |
 | Mise en forme conditionnelle             | A2-17        | A2-16         |
 | Calculer par pourcentage                 | A2-09, A2-17 | A2-15         |
 
@@ -104,8 +112,8 @@ cas pratique d’1 heure à la dernière séance, tableur sur 8 points sur 20.
 6. choisir et construire le graphique qui répond à une question, axe depuis zéro ;
 7. calculer un taux de marque, une évolution, un taux d’atteinte, et assembler un tableau de bord
    (KPI en contexte, MFC, segments) ;
-8. écrire une consigne d’analyse à une IA à partir de son cahier de règles, vérifier ses chiffres
-   contre les siens et nommer la cause de chaque écart.
+8. lire le prompt d’analyse d’une IA fondé sur le cahier de règles, vérifier ses chiffres contre
+   les siens et nommer la cause de chaque écart.
 
 ### 1.3 Acquis du B3-01
 
@@ -120,8 +128,9 @@ cas pratique d’1 heure à la dernière séance, tableur sur 8 points sur 20.
 
 B3GSP, Bachelor 3e année. Un poste par étudiant avec Excel 2019 ou plus récent, en français
 (séparateur `;`), et une IA qui exécute du code sur un fichier (ChatGPT, Claude, Le Chat, Copilot…),
-au compte de l’étudiant ; sans compte, le binôme. Pas de mode papier. Séance de 3 h 30 : 180 minutes
-de travail, pause de 15 minutes après l’acte 1 (9 h 27) et après l’acte 2 (10 h 45).
+sur le compte du formateur, qui lance le prompt devant la classe. Pas de mode papier. Séance de
+3 h 30 : 156 minutes de travail, pause de 15 minutes après l’acte 1 (9 h 27) et après l’acte 2
+(10 h 39).
 
 ## 2. Architecture
 
@@ -130,10 +139,11 @@ de travail, pause de 15 minutes après l’acte 1 (9 h 27) et après l’acte 2 
 | Acte | Rôle                                      | Formules ou outils                                                                                                                                                          | Minutes |
 | ---- | ----------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------: |
 | 1    | Nettoyer, contrôler, relier, additionner  | `SUPPRESPACE`, `NOMPROPRE`, `SUBSTITUE`, `CNUM`, `ESTNUM`, `SI`, `OU`, `ET`, `RECHERCHEV`, `SOMME.SI.ENS`, `NB.SI.ENS`, `DATE`                                              |      57 |
-| 2    | Dater, résumer, croiser, montrer, décider | `NB.JOURS.OUVRES`, `SERIE.JOUR.OUVRE`, `JOURSEM`, `DATEDIF`, `TEMPS`, `MOYENNE`, `MEDIANE`, `ANNEE`, tableau structuré, TCD, graphiques, `SOMMEPROD`, ratios, MFC, segments |      63 |
-| 3    | L’IA analyste                             | consigne, cahier de règles, audit, recommandations                                                                                                                          |      60 |
+| 2    | Dater, résumer, croiser, montrer, décider | `NB.JOURS.OUVRES`, `SERIE.JOUR.OUVRE`, `JOURSEM`, `DATEDIF`, `TEMPS`, `MOYENNE`, `MEDIANE`, `ANNEE`, tableau structuré, TCD, graphiques, `SOMMEPROD`, ratios, MFC, segments |      57 |
+| 3    | L’IA analyste                             | cahier de règles, prompt de l’analyste lancé tous ensemble                                                                                                                  |      42 |
 
-Horaires indicatifs : acte 1 de 8 h 30 à 9 h 27, acte 2 de 9 h 42 à 10 h 45, acte 3 de 11 h à 12 h.
+Horaires indicatifs : acte 1 de 8 h 30 à 9 h 27, acte 2 de 9 h 42 à 10 h 39, acte 3 de 10 h 54 à
+11 h 36.
 
 ### 2.2 Le cycle d’une famille de formules
 
@@ -175,15 +185,15 @@ rendu `lesson` à quatre blocs.
 | `B3-01_export_ventes.dfa709a7.xlsx`  | A1-02     | catalogue | —                          |
 | `B3-01_reprise_acte_2.e6fc9b7d.xlsx` | A1-09     | seance    | A1-03, A1-08               |
 | `B3-01_reprise_acte_3.72ace752.xlsx` | A2-11     | seance    | A1-03, A1-08, A1-13, A2-05 |
-| `B3-01_reprise_acte_2.e6fc9b7d.xlsx` | A3-06     | seance    | A1-03, A1-08               |
+| `B3-01_reprise_acte_2.e6fc9b7d.xlsx` | A3-04     | seance    | A1-03, A1-08               |
 
 Tout le monde ouvre la reprise, y compris ceux qui ont tout réussi : les résultats se comparent sur
 une même base. Les exercices 3 à 5 se font dans la reprise de l’acte 2, colonnes ajoutées par
 l’étudiant (N `region`, O `categorie`, P `delai`, Q `date_promise`, R colonne d’aide de la médiane,
 puis, à l’exercice 5, le tableau `T_Commandes` et sa colonne calculée S `annee`) ; les retards se
 comptent sur `delai` par `NB.SI.ENS` (`">5"`, équivalent à « après la date promise » pour une
-commande passée un jour ouvré, comme toutes celles de la reprise) ; les
-exercices 6 et 7 dans la reprise de l’acte 3, dont `T_Commandes` porte déjà `annee`, `region`,
+commande passée un jour ouvré, comme toutes celles de la reprise) ; l’exercice
+6 dans la reprise de l’acte 3, dont `T_Commandes` porte déjà `annee`, `region`,
 `categorie`, `cout`, `marge`, `delai_ouvre`, `date_promise` et `en_retard`. L’IA reçoit la reprise
 de l’acte 2 : la reprise nettoyée.
 
@@ -217,51 +227,48 @@ B3-01, importées. L’étudiant saisit le nombre seul ; l’énoncé le rappell
 
 Identifiants : `B3-02-A{acte}-{rang}-{SLUG}`. « I » = interactif. « Q » = questions fermées notées.
 
-| Rang | Identifiant                         | Min | Brique · rendu               |  I  |   Q | Diffusion |
-| ---: | ----------------------------------- | --: | ---------------------------- | :-: | --: | --------- |
-|    1 | B3-02-A1-01-RAPPEL-GRILLE           |   2 | `fp-recall`                  |  I  |   1 | seance    |
-|    2 | B3-02-A1-02-REPRISE                 |   1 | `fp-story` · v2 `hero`       |     |   0 | catalogue |
-|    3 | B3-02-A1-03-TRI-ANOMALIES           |   8 | `fp-cardsort`                |  I  |   1 | seance    |
-|    4 | B3-02-A1-04-VOTE-ESPACES            |   2 | `fp-vote`                    |  I  |   0 | seance    |
-|    5 | B3-02-A1-05-FORMULES-TEXTE          |   2 | `fp-story` · v2 `image-left` |     |   0 | catalogue |
-|    6 | B3-02-A1-06-FORMULES-NOMBRE         |   2 | `fp-story` · v2 `image-left` |     |   0 | catalogue |
-|    7 | B3-02-A1-07-FORMULES-CONTROLE       |   2 | `fp-story` · v2 `image-left` |     |   0 | catalogue |
-|    8 | B3-02-A1-08-ATELIER-NETTOYAGE       |  15 | `questionnaire`              |  I  |   3 | seance    |
-|    9 | B3-02-A1-09-VOTE-RELIER             |   2 | `fp-vote`                    |  I  |   0 | seance    |
-|   10 | B3-02-A1-10-FORMULE-RECHERCHE       |   2 | `fp-story` · v2 `image-left` |     |   0 | catalogue |
-|   11 | B3-02-A1-11-FORMULES-SOMME-SI       |   2 | `fp-story` · v2 `image-left` |     |   0 | catalogue |
-|   12 | B3-02-A1-12-EXEMPLE-RECHERCHE       |   4 | `fp-worked`                  |  I  |   0 | seance    |
-|   13 | B3-02-A1-13-ATELIER-RECHERCHE       |  13 | `questionnaire`              |  I  |   2 | seance    |
-|   14 | B3-02-A2-01-VOTE-DELAI              |   2 | `fp-vote`                    |  I  |   0 | seance    |
-|   15 | B3-02-A2-02-FORMULES-JOURS-OUVRES   |   2 | `fp-story` · v2 `image-left` |     |   0 | catalogue |
-|   16 | B3-02-A2-03-FORMULES-CALENDRIER     |   2 | `fp-story` · v2 `image-left` |     |   0 | catalogue |
-|   17 | B3-02-A2-04-FORMULES-MEDIANE        |   2 | `fp-story` · v2 `image-left` |     |   0 | catalogue |
-|   18 | B3-02-A2-05-ATELIER-DELAIS          |   9 | `questionnaire`              |  I  |   2 | seance    |
-|   19 | B3-02-A2-06-VOTE-NOUVELLES-LIGNES   |   2 | `fp-vote`                    |  I  |   0 | seance    |
-|   20 | B3-02-A2-07-OUTIL-TABLEAU-STRUCTURE |   2 | `fp-story` · v2 `image-left` |     |   0 | catalogue |
-|   21 | B3-02-A2-08-OUTIL-TCD               |   2 | `fp-story` · v2 `image-left` |     |   0 | catalogue |
-|   22 | B3-02-A2-09-ATELIER-TCD             |   9 | `questionnaire`              |  I  |   2 | seance    |
-|   23 | B3-02-A2-10-GRAPHIQUE-TROMPEUR      |   1 | `fp-story` · v2 `chart`      |     |   0 | catalogue |
-|   24 | B3-02-A2-11-VOTE-GRAPHIQUE          |   2 | `fp-vote`                    |  I  |   0 | seance    |
-|   25 | B3-02-A2-12-OUTIL-GRAPHIQUES        |   2 | `fp-story` · v2 `image-left` |     |   0 | catalogue |
-|   26 | B3-02-A2-13-ATELIER-GRAPHIQUES      |   8 | `questionnaire`              |  I  |   2 | seance    |
-|   27 | B3-02-A2-14-VOTE-TRENTE-SECONDES    |   2 | `fp-vote`                    |  I  |   0 | seance    |
-|   28 | B3-02-A2-15-FORMULES-RATIOS         |   2 | `fp-story` · v2 `image-left` |     |   0 | catalogue |
-|   29 | B3-02-A2-16-OUTIL-TABLEAU-DE-BORD   |   2 | `fp-story` · v2 `image-left` |     |   0 | catalogue |
-|   30 | B3-02-A2-17-ATELIER-DASHBOARD       |  10 | `questionnaire`              |  I  |   3 | seance    |
-|   31 | B3-02-A2-18-FICHE-RECAP-1           |   1 | `fp-story` · v2 `grid`       |     |   0 | catalogue |
-|   32 | B3-02-A2-19-FICHE-RECAP-2           |   1 | `fp-story` · v2 `grid`       |     |   0 | catalogue |
-|   33 | B3-02-A3-01-VOTE-IA                 |   3 | `fp-vote`                    |  I  |   0 | seance    |
-|   34 | B3-02-A3-02-COURS-IA-ANALYSTE       |   3 | `fp-story` · v2 `lesson`     |     |   0 | catalogue |
-|   35 | B3-02-A3-03-COURS-CAHIER-DE-REGLES  |   3 | `fp-story` · v2 `lesson`     |     |   0 | catalogue |
-|   36 | B3-02-A3-04-AUDIT-RAPPORT-IA        |  11 | `fp-cardsort`                |  I  |   1 | seance    |
-|   37 | B3-02-A3-05-DEFI-CONSIGNE           |   7 | `fp-challenge`               |  I  |   0 | seance    |
-|   38 | B3-02-A3-06-ANALYSE-IA              |  18 | `fp-pro`                     |  I  |   0 | seance    |
-|   39 | B3-02-A3-07-RECOMMANDATIONS         |  12 | `fp-pro`                     |  I  |   0 | seance    |
-|   40 | B3-02-A3-08-FICHE-MEMO              |   3 | `fp-story` · v2 `grid`       |     |   0 | catalogue |
+| Rang | Identifiant                         | Min | Brique · rendu                 |  I  |   Q | Diffusion |
+| ---: | ----------------------------------- | --: | ------------------------------ | :-: | --: | --------- |
+|    1 | B3-02-A1-01-RAPPEL-GRILLE           |   2 | `fp-recall`                    |  I  |   1 | seance    |
+|    2 | B3-02-A1-02-REPRISE                 |   1 | `fp-story` · v2 `hero`         |     |   0 | catalogue |
+|    3 | B3-02-A1-03-TRI-ANOMALIES           |   8 | `fp-cardsort`                  |  I  |   1 | seance    |
+|    4 | B3-02-A1-04-VOTE-ESPACES            |   2 | `fp-vote`                      |  I  |   0 | seance    |
+|    5 | B3-02-A1-05-FORMULES-TEXTE          |   2 | `fp-story` · v2 `image-left`   |     |   0 | catalogue |
+|    6 | B3-02-A1-06-FORMULES-NOMBRE         |   2 | `fp-story` · v2 `image-left`   |     |   0 | catalogue |
+|    7 | B3-02-A1-07-FORMULES-CONTROLE       |   2 | `fp-story` · v2 `image-left`   |     |   0 | catalogue |
+|    8 | B3-02-A1-08-ATELIER-NETTOYAGE       |  15 | `questionnaire`                |  I  |   3 | seance    |
+|    9 | B3-02-A1-09-VOTE-RELIER             |   2 | `fp-vote`                      |  I  |   0 | seance    |
+|   10 | B3-02-A1-10-FORMULE-RECHERCHE       |   2 | `fp-story` · v2 `image-left`   |     |   0 | catalogue |
+|   11 | B3-02-A1-11-FORMULES-SOMME-SI       |   2 | `fp-story` · v2 `image-left`   |     |   0 | catalogue |
+|   12 | B3-02-A1-12-EXEMPLE-RECHERCHE       |   4 | `fp-worked`                    |  I  |   0 | seance    |
+|   13 | B3-02-A1-13-ATELIER-RECHERCHE       |  13 | `questionnaire`                |  I  |   2 | seance    |
+|   14 | B3-02-A2-01-VOTE-DELAI              |   2 | `fp-vote`                      |  I  |   0 | seance    |
+|   15 | B3-02-A2-02-FORMULES-JOURS-OUVRES   |   2 | `fp-story` · v2 `image-left`   |     |   0 | catalogue |
+|   16 | B3-02-A2-03-FORMULES-CALENDRIER     |   2 | `fp-story` · v2 `image-left`   |     |   0 | catalogue |
+|   17 | B3-02-A2-04-FORMULES-MEDIANE        |   2 | `fp-story` · v2 `image-left`   |     |   0 | catalogue |
+|   18 | B3-02-A2-05-ATELIER-DELAIS          |   9 | `questionnaire`                |  I  |   2 | seance    |
+|   19 | B3-02-A2-06-VOTE-NOUVELLES-LIGNES   |   2 | `fp-vote`                      |  I  |   0 | seance    |
+|   20 | B3-02-A2-07-OUTIL-TABLEAU-STRUCTURE |   2 | `fp-story` · v2 `image-left`   |     |   0 | catalogue |
+|   21 | B3-02-A2-08-OUTIL-TCD               |   2 | `fp-story` · v2 `image-left`   |     |   0 | catalogue |
+|   22 | B3-02-A2-09-ATELIER-TCD             |   9 | `questionnaire`                |  I  |   2 | seance    |
+|   23 | B3-02-A2-10-GRAPHIQUE-TROMPEUR      |   1 | `fp-story` · v2 `chart`        |     |   0 | catalogue |
+|   24 | B3-02-A2-11-VOTE-GRAPHIQUE          |   2 | `fp-vote`                      |  I  |   0 | seance    |
+|   25 | B3-02-A2-12-OUTIL-GRAPHIQUES        |   2 | `fp-story` · v2 `image-left`   |     |   0 | catalogue |
+|   26 | B3-02-A2-14-VOTE-TRENTE-SECONDES    |   2 | `fp-vote`                      |  I  |   0 | seance    |
+|   27 | B3-02-A2-15-FORMULES-RATIOS         |   2 | `fp-story` · v2 `image-left`   |     |   0 | catalogue |
+|   28 | B3-02-A2-16-OUTIL-TABLEAU-DE-BORD   |   2 | `fp-story` · v2 `image-left`   |     |   0 | catalogue |
+|   29 | B3-02-A2-17-ATELIER-DASHBOARD       |  12 | `questionnaire`                |  I  |   3 | seance    |
+|   30 | B3-02-A2-18-FICHE-RECAP-1           |   1 | `fp-story` · v2 `illustration` |     |   0 | catalogue |
+|   31 | B3-02-A2-19-FICHE-RECAP-2           |   1 | `fp-story` · v2 `illustration` |     |   0 | catalogue |
+|   32 | B3-02-A3-01-VOTE-IA                 |   3 | `fp-vote`                      |  I  |   0 | seance    |
+|   33 | B3-02-A3-02-COURS-IA-ANALYSTE       |   3 | `fp-story` · v2 `lesson`       |     |   0 | catalogue |
+|   34 | B3-02-A3-03-COURS-CAHIER-DE-REGLES  |   3 | `fp-story` · v2 `lesson`       |     |   0 | catalogue |
+|   35 | B3-02-A3-04-PROMPT-TOUS-ENSEMBLE    |  30 | `fp-story` · v2 `prompt`       |     |   0 | seance    |
+|   36 | B3-02-A3-08-FICHE-MEMO              |   3 | `fp-story` · v2 `grid`         |     |   0 | catalogue |
 
-Somme : 57 + 63 + 60 = 180. Rythme : 141 minutes interactives, 39 d’exposition, exposition continue
-de 6 minutes au plus (A1-05 à A1-07, A2-02 à A2-04, A3-02 + A3-03). Dix-sept questions notées. Les
+Somme : 57 + 57 + 42 = 156. Rythme : 87 minutes interactives, 69 d’exposition, exposition continue
+de 6 minutes au plus (A1-05 à A1-07, A2-02 à A2-04), sauf à l’acte 3 : 39 minutes de A3-02 à A3-08,
+par dérogation (décision de Tim, 16 novembre 2026). Quatorze questions notées. Les
 pages tiennent sur une toile de 1 280 × 720 à l’échelle 0,8 au moins : chaque bloc reste court,
 les chemins de menu complets vont aux notes du formateur.
 
@@ -353,7 +360,7 @@ les chemins de menu complets vont aux notes du formateur.
 - Temps : réflexion 1 min · travail 10 min · correction 2 min.
 - `b3-02-a1-ca-rennes-info`, `b3-02-a1-ca-ouest`. Règles dites : 1 et 3, puis pause.
 
-### 3.3 Acte 2 — Dater, résumer, croiser, montrer, décider (63 min)
+### 3.3 Acte 2 — Dater, résumer, croiser, montrer, décider (57 min)
 
 #### A2-01 · `B3-02-A2-01-VOTE-DELAI` — 2 min · `fp-vote` · séance
 
@@ -418,12 +425,6 @@ les chemins de menu complets vont aux notes du formateur.
 
 - Titre public : « Outil : le graphique qui répond à une question »
 
-#### A2-13 · `B3-02-A2-13-ATELIER-GRAPHIQUES` — 8 min · `questionnaire` · séance
-
-- Titre public : « Exercice 6 — CA et objectif par agence »
-- Temps : réflexion 1 min · travail 5 min · correction 2 min.
-- `b3-02-a2-agences-sous-objectif`, `b3-02-a2-atteinte-rennes`.
-
 #### A2-14 · `B3-02-A2-14-VOTE-TRENTE-SECONDES` — 2 min · `fp-vote` · séance
 
 - Titre public : « Vote : trente secondes »
@@ -440,28 +441,35 @@ les chemins de menu complets vont aux notes du formateur.
 
 - Titre public : « Outil : tableau de bord, MFC et segments »
 
-#### A2-17 · `B3-02-A2-17-ATELIER-DASHBOARD` — 10 min · `questionnaire` · séance
+#### A2-17 · `B3-02-A2-17-ATELIER-DASHBOARD` — 12 min · `questionnaire` · séance
 
-- Titre public : « Exercice 7 — Le tableau de bord Direction »
-- Temps : réflexion 1 min · travail 7 min · correction 2 min.
+- Titre public : « Exercice 6 — Le tableau de bord Direction »
+- Temps : réflexion 1 min · travail 9 min · correction 2 min.
+- Étape graphique : un histogramme de la marge par agence, tiré du TCD, titre qui conclut, axe
+  depuis 0 ; elle porte le point « Graphique » du cahier des charges, pratiqué sans question propre
+  (décision de Tim, 16 novembre 2026). La correction projette l’histogramme réussi.
 - `b3-02-a2-evolution`, `b3-02-a2-ca-2026`, `b3-02-a2-marge-marseille`. Règle dite : 6.
 
-#### A2-18 · `B3-02-A2-18-FICHE-RECAP-1` — 1 min · v2 `grid` · catalogue
+#### A2-18 · `B3-02-A2-18-FICHE-RECAP-1` — 1 min · v2 `illustration` · catalogue
 
 - Titre public : « Fiche récap 1 : nettoyer, chercher, additionner »
-- Six cartes : texte, nombre et date en texte, doublons, comparer et signaler, chercher, additionner
-  et compter. Chaque carte donne, pour chaque formule, sa syntaxe et le piège de la famille. Elle
-  porte aussi les formules que le B3-01 ne faisait que citer : `INDEX` et `EQUIV`, `RECHERCHEX`,
-  `SI.CONDITIONS`, `DATEVAL`, `NBCAR`, `MAJUSCULE`, `MINUSCULE`, Power Query. Imprimable.
+- Une fiche A4 au gabarit des fiches de révision, montrée en image et offerte en PDF public
+  « Fiche récap 1 (PDF) » (décision de Tim, 16 novembre 2026). Six cartes : nettoyer le texte, du
+  texte au nombre, supprimer les doublons, signaler, chercher, additionner sous conditions ; puis les
+  pièges et les formules au tableur. Elle porte aussi les formules que le B3-01 ne faisait que
+  citer : `INDEX` et `EQUIV`, `RECHERCHEX`, `SI.CONDITIONS`, `DATEVAL`, `NBCAR`, `MAJUSCULE`,
+  `MINUSCULE`, Power Query. Son texte alternatif reprend tout le texte de la fiche.
 
-#### A2-19 · `B3-02-A2-19-FICHE-RECAP-2` — 1 min · v2 `grid` · catalogue
+#### A2-19 · `B3-02-A2-19-FICHE-RECAP-2` — 1 min · v2 `illustration` · catalogue
 
 - Titre public : « Fiche récap 2 : dater, résumer, croiser, montrer »
-- Six cartes : dates, résumer, classer et filtrer, croiser, ratios, montrer ; avec `EQUATION.RANG`,
-  `GRANDE.VALEUR`, `TRIER`, `FILTRE`, `UNIQUE`, `ECARTYPE.STANDARD`, `AGREGAT`. Une seule fiche de
-  douze cartes ne tenait pas sur la toile : les cartes se chevauchaient. Imprimable.
+- Une fiche A4 au gabarit des fiches de révision, montrée en image et offerte en PDF public
+  « Fiche récap 2 (PDF) ». Six cartes : jours ouvrés, calendrier, moyenne ou médiane, tableau
+  structuré, tableau croisé dynamique, ratios et tableau de bord ; avec `EQUATION.RANG`,
+  `GRANDE.VALEUR`, `TRIER`, `FILTRE`, `UNIQUE`, `ECARTYPE.STANDARD`, `AGREGAT`. Son exemple de
+  jours ouvrés (jeudi, mardi) ne donne pas la réponse du vote A2-01.
 
-### 3.4 Acte 3 — L’IA analyste (60 min)
+### 3.4 Acte 3 — L’IA analyste (42 min)
 
 #### A3-01 · `B3-02-A3-01-VOTE-IA` — 3 min · `fp-vote` · séance
 
@@ -481,38 +489,18 @@ les chemins de menu complets vont aux notes du formateur.
 - Titre public : « Cours : le cahier de règles de l’analyste »
 - Les six règles du § 2.5 et les trois contrôles : recompter, refaire un chiffre, lire la méthode.
 
-#### A3-04 · `B3-02-A3-04-AUDIT-RAPPORT-IA` — 11 min · `fp-cardsort` · séance
+#### A3-04 · `B3-02-A3-04-PROMPT-TOUS-ENSEMBLE` — 30 min · v2 `prompt` · séance
 
-- Titre public : « Exercice 8 — Auditer le rapport d’une IA »
-- Temps : réflexion 2 min · travail 7 min · correction 2 min.
-- Le rapport d’une IA sur la reprise nettoyée, écrit pour ce cours et dit tel. Huit affirmations à
-  classer en quatre cases : juste (le chiffre de l’exercice) ; faux, période (règle 3) ; faux, résumé
-  (règle 4) ; faux, dénominateur (règle 5). Les chiffres faux sont des pièges du B3-01, importés.
-
-#### A3-05 · `B3-02-A3-05-DEFI-CONSIGNE` — 7 min · `fp-challenge` · séance
-
-- Titre public : « Exercice 9 — Votre consigne à l’IA »
-- Temps : réflexion 1 min · travail 4 min · correction 2 min.
-- L’étudiant écrit sa consigne ; il la compare aux cinq parties de référence et à une consigne
-  fausse, qui fait tout corriger.
-
-#### A3-06 · `B3-02-A3-06-ANALYSE-IA` — 18 min · `fp-pro` · séance
-
-- Titre public : « L’IA au travail : ses chiffres contre les vôtres »
-- Pièce jointe réservée : la reprise de l’acte 2. L’étudiant donne le fichier et sa consigne à son IA,
-  lui pose sept questions des exercices 3 à 7, celles dont l’écart relève des règles 3 à 5 :
-  `ca-rennes-info`, `delai-strasbourg`, `retards`, `part-info-rennes`, `atteinte-rennes`,
-  `evolution`, `marge-marseille`. Il note, pour chacune, son chiffre, celui de l’IA et la règle en
-  cause. Trois réponses libres, pour que l’écran tienne sans défiler : l’outil (et le binôme s’il y
-  a lieu), les sept lignes de chiffres, puis le bilan des écarts.
-
-#### A3-07 · `B3-02-A3-07-RECOMMANDATIONS` — 12 min · `fp-pro` · séance
-
-- Titre public : « Exercice 10 — Vos recommandations au comité »
-- Temps : réflexion 1 min · travail 9 min · correction 2 min.
-- L’IA propose deux recommandations ; l’étudiant les garde ou les corrige, constat chiffré → cause →
-  action, et dit ce qu’il lui confierait. Correction sur place : les quatre histoires du B3-01,
-  importées.
+- Titre public : « L’IA analyste, tous ensemble »
+- Un écran sans saisie (décision de Tim, 16 novembre 2026) : le prompt complet de l’analyste, à
+  copier, que le formateur lance sur son compte avec la reprise nettoyée (pièce jointe réservée).
+  Rôle ; données (six onglets) et les définitions que la reprise ne porte pas (date promise, délai
+  ouvré, marge) ; les six règles du § 2.5 ; six questions au périmètre des exercices 3 à 6 :
+  `ca-rennes-info`, `delai-strasbourg`, `retards`, `part-info-rennes`, `evolution`,
+  `marge-marseille` ; le format de réponse. Les notes donnent les six chiffres de référence, tirés de
+  `VALEURS_B3_01`.
+- Dérogations `exposition-continue` et `gabarit-cycle`, portées par A3-02 : de A3-02 à A3-08,
+  39 minutes sans saisie.
 
 #### A3-08 · `B3-02-A3-08-FICHE-MEMO` — 3 min · v2 `grid` · catalogue
 
@@ -532,26 +520,20 @@ Chaque valeur, chaque tolérance et chaque piège sont importés de `b3-01.donne
 `b3-01.donnees.spec.ts` recalcule depuis la graine ; `b3-02.cours.spec.ts` vérifie que chaque
 question du B3-02 sert ceux de sa question source.
 
-| Question B3-02                   | Question source B3-01            |    Valeur |
-| -------------------------------- | -------------------------------- | --------: |
-| `b3-02-a1-lignes-uniques`        | `b3-01-a1-lignes-uniques`        |     4 098 |
-| `b3-02-a1-ca-total`              | `b3-01-a1-ca-total`              | 1 340 208 |
-| `b3-02-a1-a-verifier`            | `b3-01-a1-a-verifier`            |        85 |
-| `b3-02-a1-ca-rennes-info`        | `b3-01-a2-ca-rennes-info`        |     8 342 |
-| `b3-02-a1-ca-ouest`              | `b3-01-a2-ca-ouest`              |    77 850 |
-| `b3-02-a2-delai-strasbourg`      | `b3-01-a2-delai-strasbourg`      |         8 |
-| `b3-02-a2-retards`               | `b3-01-a2-retards`               |        99 |
-| `b3-02-a2-part-info-rennes`      | `b3-01-a2-part-info-rennes`      |      27,2 |
-| `b3-02-a2-meilleur-trimestre`    | `b3-01-a2-meilleur-trimestre`    |   T4 2025 |
-| `b3-02-a2-agences-sous-objectif` | `b3-01-a3-agences-sous-objectif` |         3 |
-| `b3-02-a2-atteinte-rennes`       | `b3-01-a3-atteinte-rennes`       |      79,0 |
-| `b3-02-a2-evolution`             | `b3-01-a3-evolution`             |       8,6 |
-| `b3-02-a2-ca-2026`               | `b3-01-a3-ca-2026`               |   575 046 |
-| `b3-02-a2-marge-marseille`       | `b3-01-a3-marge-marseille`       |      26,9 |
-
-Le rapport d’IA de l’exercice 8 cite deux valeurs justes (79,0 % et 99 lignes) et six pièges du
-B3-01 : 27 862 € (période), −22,1 % (année pleine), 10 jours (moyenne), 28,7 % (moyenne des taux),
-1,5 % (total du réseau), 36,9 % (marge de Marseille ÷ coût d’achat).
+| Question B3-02                | Question source B3-01         |    Valeur |
+| ----------------------------- | ----------------------------- | --------: |
+| `b3-02-a1-lignes-uniques`     | `b3-01-a1-lignes-uniques`     |     4 098 |
+| `b3-02-a1-ca-total`           | `b3-01-a1-ca-total`           | 1 340 208 |
+| `b3-02-a1-a-verifier`         | `b3-01-a1-a-verifier`         |        85 |
+| `b3-02-a1-ca-rennes-info`     | `b3-01-a2-ca-rennes-info`     |     8 342 |
+| `b3-02-a1-ca-ouest`           | `b3-01-a2-ca-ouest`           |    77 850 |
+| `b3-02-a2-delai-strasbourg`   | `b3-01-a2-delai-strasbourg`   |         8 |
+| `b3-02-a2-retards`            | `b3-01-a2-retards`            |        99 |
+| `b3-02-a2-part-info-rennes`   | `b3-01-a2-part-info-rennes`   |      27,2 |
+| `b3-02-a2-meilleur-trimestre` | `b3-01-a2-meilleur-trimestre` |   T4 2025 |
+| `b3-02-a2-evolution`          | `b3-01-a3-evolution`          |       8,6 |
+| `b3-02-a2-ca-2026`            | `b3-01-a3-ca-2026`            |   575 046 |
+| `b3-02-a2-marge-marseille`    | `b3-01-a3-marge-marseille`    |      26,9 |
 
 ### 5.2 Concepts, confusions et remédiations
 
@@ -583,7 +565,6 @@ Concepts : ceux du B3-01, plus `ia-analyste`. Deux confusions nouvelles, `ia-cru
 | `tcd-filtre-ou-dates-mal-groupees`         | tableau-croise-dynamique  | Lire un TCD au filtre oublié ou aux dates sans années.                 | B3-02-A2-08-OUTIL-TCD               |
 | `axe-tronque-lu-comme-ecart`               | lecture-graphique         | Juger un écart à la hauteur des barres d’un axe tronqué.               | B3-02-A2-12-OUTIL-GRAPHIQUES        |
 | `graphique-sans-question`                  | choix-du-graphique        | Choisir un graphique avant sa question.                                | B3-02-A2-12-OUTIL-GRAPHIQUES        |
-| `objectif-annuel-pour-cumul`               | tableau-de-bord           | Comparer neuf mois à tous les objectifs.                               | B3-02-A2-15-FORMULES-RATIOS         |
 | `evolution-sur-annee-pleine`               | tableau-de-bord           | Comparer neuf mois de 2026 à douze mois de 2025.                       | B3-02-A2-15-FORMULES-RATIOS         |
 | `moyenne-simple-des-taux`                  | moyenne-ponderee          | Faire la moyenne simple de taux.                                       | B3-02-A2-15-FORMULES-RATIOS         |
 | `marque-confondue-avec-marge`              | pourcentage               | Diviser la marge par le coût d’achat pour un taux de marque.           | B3-02-A2-15-FORMULES-RATIOS         |
@@ -596,7 +577,7 @@ Concepts : ceux du B3-01, plus `ia-analyste`. Deux confusions nouvelles, `ia-cru
 
 Aucune brique ni règle nouvelle du moteur : le cours s’écrit avec `contenus/briques.ts` et passe
 `verifierStructure` au gabarit `b3`. Le B3-01 exporte ce que le B3-02 réutilise (tri des anomalies,
-graphique trompeur, quatre histoires, question chiffrée d’une question source) ; son contenu publié
+graphique trompeur, question chiffrée d’une question source) ; son contenu publié
 et son instantané ne changent pas.
 
 ## 7. Front
@@ -612,7 +593,8 @@ Treize infographies, une par page de formules ou d’outil, briefées dans
 `illustrations-b3-02/prompts.md` : chacune est l’image de sa page, rendue en image commentée
 (décision de Tim, 6 novembre 2026). Chaque PNG d’origine (1 536 × 1 024 px) est converti en WebP de
 même taille et servi depuis `/assets/cours/b3-02/v1/`. L’accroche reprend la gravure du B3-01. Les
-fiches récap restent sans image.
+deux fiches récap sont des fiches A4 au gabarit des fiches de révision, rendues en PNG puis
+WebP et servies avec leur PDF (décision de Tim, 16 novembre 2026).
 
 ### 8.2 Catalogue des médias
 
@@ -621,7 +603,9 @@ fiches récap restent sans image.
 | `B3-01_export_ventes.<empreinte>.xlsx`  | export brut                 | A1-02 | catalogue | front, `/assets/cours/b3-01/` |
 | `B3-01_reprise_acte_2.<empreinte>.xlsx` | reprise nettoyée            | A1-09 | seance    | API, poste et pupitre         |
 | `B3-01_reprise_acte_3.<empreinte>.xlsx` | reprise et `T_Commandes`    | A2-11 | seance    | API, poste et pupitre         |
-| `B3-01_reprise_acte_2.<empreinte>.xlsx` | reprise nettoyée, pour l’IA | A3-06 | seance    | API, poste et pupitre         |
+| `b3-02-fiche-recap-1.<empreinte>.pdf`   | fiche récap 1, A4           | A2-18 | catalogue | front, `/assets/cours/b3-02/` |
+| `b3-02-fiche-recap-2.<empreinte>.pdf`   | fiche récap 2, A4           | A2-19 | catalogue | front, `/assets/cours/b3-02/` |
+| `B3-01_reprise_acte_2.<empreinte>.xlsx` | reprise nettoyée, pour l’IA | A3-04 | seance    | API, poste et pupitre         |
 
 | Id  | Écran | Fichier source (page)                                                                                   | Original             | Auteur, date                                            | Licence        | Dérivé servi                            | Attribution affichée                                                                             |
 | --- | ----- | ------------------------------------------------------------------------------------------------------- | -------------------- | ------------------------------------------------------- | -------------- | --------------------------------------- | ------------------------------------------------------------------------------------------------ |
@@ -638,11 +622,12 @@ fiches récap restent sans image.
 | M12 | A2-12 | production propre du cours                                                                              | PNG 1 536 × 1 024 px | Asili Design, 2026                                      | CC BY-SA 4.0   | `graphique-qui-repond.webp`             | « D’abord la question · Asili Design, 2026 · CC BY-SA 4.0 »                                      |
 | M13 | A2-15 | production propre du cours                                                                              | PNG 1 536 × 1 024 px | Asili Design, 2026                                      | CC BY-SA 4.0   | `ratios-de-sommes.webp`                 | « Un taux, c’est un ratio de sommes · Asili Design, 2026 · CC BY-SA 4.0 »                        |
 | M14 | A2-16 | production propre du cours                                                                              | PNG 1 536 × 1 024 px | Asili Design, 2026                                      | CC BY-SA 4.0   | `tableau-de-bord.webp`                  | « Lu en trente secondes · Asili Design, 2026 · CC BY-SA 4.0 »                                    |
+| M15 | A2-18 | production propre du cours                                                                              | PNG 1 270 × 1 797 px | Asili Design, 2026                                      | CC BY-SA 4.0   | `fiche-recap-1.webp`                    | « Fiche récap 1 : nettoyer, chercher, additionner · Asili Design, 2026 · CC BY-SA 4.0 »          |
+| M16 | A2-19 | production propre du cours                                                                              | PNG 1 270 × 1 797 px | Asili Design, 2026                                      | CC BY-SA 4.0   | `fiche-recap-2.webp`                    | « Fiche récap 2 : dater, résumer, croiser, montrer · Asili Design, 2026 · CC BY-SA 4.0 »         |
 | M1  | A1-02 | https://commons.wikimedia.org/wiki/File:1890_Census_Hollerith_Electrical_Counting_Machines_Sci_Amer.jpg | JPEG 622 × 480 px    | Scientific American, machines de Herman Hollerith, 1890 | domaine public | `hollerith-recensement-1890.jpg`        | « Scientific American, machines de Herman Hollerith, 1890 · Wikimedia Commons (domaine public) » |
 
 ### 8.3 Sources
 
 - Norvane Équipement et toutes ses données : données fictives générées pour le B3-01.
-- Le rapport d’IA de l’exercice 8 : écrit pour ce cours, dit tel à l’écran.
 - Programme « Outils informatiques du manager » B3 2026-27 et cahier des charges de l’évaluation
   2026-27 (documents de l’école, non versionnés).

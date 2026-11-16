@@ -400,6 +400,7 @@ export function presentationsVisuelles<S extends z.ZodRawShape>(socle: S) {
     rendu('image-right', strict(image)),
     rendu('page', pageDessinee),
     rendu('illustration', strict({ image: media, imageAlt: texte })),
+    rendu('prompt', strict({ ...titled, prompt: texte })),
     rendu('sort-review', correctionDeTri),
   ]);
 }

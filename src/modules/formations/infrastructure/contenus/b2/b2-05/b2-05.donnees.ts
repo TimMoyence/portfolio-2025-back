@@ -2,6 +2,7 @@ import {
   auCentime,
   auMillionieme,
 } from '../../../../../../common/domain/nombres/arrondi';
+import { croissanceComposee } from '../../../../../../common/domain/nombres/statistiques';
 import type { AuMoinsUnModifiable } from '../../../../../../common/domain/objets/au-moins-un';
 import type { ConceptId } from '../../../../domain/cours/banque/concepts';
 import * as moteur from '../../briques';
@@ -78,7 +79,7 @@ const annuiteConstante = (
 ): number => (capital * taux) / (1 - (1 + taux) ** -duree);
 
 const placement = (rang: number): number =>
-  auMillionieme(TRESORERIE * (1 + TAUX_DU_PLACEMENT) ** rang);
+  auMillionieme(croissanceComposee(TRESORERIE, TAUX_DU_PLACEMENT, rang));
 const interetsDuPlacement = (rang: number): number =>
   auMillionieme(placement(rang) - placement(rang - 1));
 

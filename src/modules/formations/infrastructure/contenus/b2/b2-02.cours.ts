@@ -271,7 +271,6 @@ const ACTE_1: moteur.Acte = [
     'lesson',
     {
       title: 'Le centre d’une série : moyenne et médiane',
-      subtitle: 'Trace écrite · notion 1 · page 1 sur 2',
       blocks: [
         {
           kind: 'definition',
@@ -335,7 +334,6 @@ const ACTE_1: moteur.Acte = [
     'lesson',
     {
       title: 'La régularité d’une série : l’écart-type',
-      subtitle: 'Trace écrite · notion 1 · page 2 sur 2',
       blocks: [
         {
           kind: 'definition',
@@ -690,7 +688,6 @@ const ACTE_2: moteur.Acte = [
     'lesson',
     {
       title: 'Nuage de points et point moyen',
-      subtitle: 'Trace écrite · notion 2 · page 1 sur 2',
       blocks: [
         {
           kind: 'definition',
@@ -753,7 +750,6 @@ const ACTE_2: moteur.Acte = [
     'lesson',
     {
       title: 'Le coefficient de corrélation r',
-      subtitle: 'Trace écrite · notion 2 · page 2 sur 2',
       blocks: [
         {
           kind: 'definition',
@@ -1114,7 +1110,6 @@ const ACTE_3: moteur.Acte = [
     'lesson',
     {
       title: 'La droite des moindres carrés',
-      subtitle: 'Trace écrite · notion 3 · page 1 sur 2',
       blocks: [
         {
           kind: 'definition',
@@ -1178,7 +1173,6 @@ const ACTE_3: moteur.Acte = [
     'lesson',
     {
       title: 'Prévoir avec la droite, et ses limites',
-      subtitle: 'Trace écrite · notion 3 · page 2 sur 2',
       blocks: [
         {
           kind: 'method',

@@ -4,6 +4,7 @@ import {
 } from '../../../../../../test/factories/formations/cours/contenus-de-cours.factory';
 import type { ContenuDeCours } from '../../../domain/cours/stockage/CoursStocke';
 import {
+  etapesCollees,
   formulesAltereesALaPublication,
   piegesDesQuestionsSuivantesDevoilesParLesExplications,
   piegesPartagesDevoilesParLesExplications,
@@ -313,5 +314,58 @@ describe('formulesAltereesALaPublication', () => {
         avecTexte('Critère ">="&DATE(2026 ;1;1) en date_commande.'),
       ),
     ).toEqual(['DATE(2026 ;1;1)']);
+  });
+});
+
+describe('etapesCollees', () => {
+  it.each(CONTENUS.map((contenu) => [contenu.slug, contenu] as const))(
+    'B5 · %s · pose chaque étape et chaque point d’une liste numérotée sur sa propre ligne',
+    (_, contenu) => {
+      expect(etapesCollees(contenu)).toEqual([]);
+    },
+  );
+
+  it.each([
+    ['une étape en cours de ligne', 'Dans le classeur. Étape 1 : tapez.'],
+    ['une liste numérotée en ligne', '1. Calculer f′(x). 2. Résoudre.'],
+    [
+      'une liste à parenthèses en ligne',
+      'Rédigez : 1) le constat ; 2) la décision.',
+    ],
+    [
+      'une ligne vide entre deux étapes',
+      'Étape 1 : tapez.\n\nÉtape 2 : lisez.',
+    ],
+    ['un blanc en bord d’étape', 'Étape 1 : tapez. \nÉtape 2 : lisez.'],
+    [
+      'une liste en ligne qui ne commence pas à 1',
+      'Suite.\n2. Tracer. 3. Lire.',
+    ],
+  ])('signale %s', (_, texte) => {
+    expect(etapesCollees({ consigne: texte })).toHaveLength(1);
+  });
+
+  it.each([
+    [
+      'des étapes une par ligne',
+      'Dans le classeur.\nÉtape 1 : tapez.\nÉtape 2 : lisez.',
+    ],
+    ['une liste numérotée une par ligne', '1. Calculer.\n2. Résoudre.'],
+    ['des coordonnées', 'Points (1 ; 4), (2 ; 5), (3 ; 9).'],
+    ['un argument de fonction', 'JOURSEM(date; 2) rend 1 pour lundi.'],
+    ['une numérotation citée', 'Chaque partie numérotée « 1. », « 2. »…'],
+    ['deux numéros qui ne se suivent pas', 'Lot 2) livré, lot 7) en attente.'],
+    [
+      'un renvoi en prose à une étape',
+      'S’arrêter sur le tri (étape 2) et sur l’effet (étape 4).',
+    ],
+    [
+      'une transcription à paragraphes',
+      '[Plan 1] Le titre.\n\n[Plan 2] La formule.',
+    ],
+    ['un texte alternatif, lu d’un trait', '1. Le texte. 2. Le nombre.'],
+  ])('laisse %s', (cas, texte) => {
+    const cle = cas.startsWith('un texte alternatif') ? 'imageAlt' : 'consigne';
+    expect(etapesCollees({ [cle]: texte })).toEqual([]);
   });
 });

@@ -67,14 +67,14 @@ export const ACTE_1: moteur.Acte = [
       concepts: ['jeu-de-donnees'],
       notes: moteur.puces(
         'Faire télécharger l’export brut ; ceux qui l’ont gardé de la séance 1 repartent de leur fichier.',
-        'Annoncer la séance : deux heures de formules, une par une, avec un exercice guidé après chaque famille ; une fiche récap ; puis une heure où une IA fait le travail et où l’on vérifie ses chiffres.',
+        'Annoncer la séance : deux heures de formules, une par une, avec un exercice guidé après chaque famille ; deux fiches récap ; puis une demi-heure avec une IA, tous ensemble : le formateur lance le prompt, la classe vérifie ses chiffres.',
       ),
     },
     'hero',
     {
       title: 'Toutes les formules, puis l’IA analyste',
       subtitle:
-        'Mardi 17 novembre, 8 h 30. Nadia Ferrand attend toujours l’analyse de son export. On reprend là où on s’est arrêtés : le nettoyage. Deux heures pour savoir faire, formule par formule ; une heure pour faire faire à une IA, et vérifier. Données fictives.',
+        'Mardi 17 novembre, 8 h 30. Nadia Ferrand attend toujours l’analyse de son export. On reprend là où on s’est arrêtés : le nettoyage. Deux heures pour savoir faire, formule par formule ; une demi-heure avec une IA, tous ensemble, pour la faire travailler et vérifier. Données fictives.',
       ...FOND_DE_LA_GRAVURE,
     },
     EXPORT_BRUT_A_TELECHARGER,
@@ -86,7 +86,8 @@ export const ACTE_1: moteur.Acte = [
       questionId: 'b3-02-a1-anomalies',
     },
     [
-      'Réflexion : pour chaque carte, deux questions dans l’ordre. 1. L’erreur est-elle certaine ? 2. La bonne valeur est-elle dans le fichier ?',
+      'Réflexion, question 1 sur chaque carte : l’erreur est-elle certaine ?',
+      'Réflexion, question 2 : la bonne valeur est-elle dans le fichier ?',
     ],
     [
       'Corriger case par case ; finir par la case vide.',
@@ -204,7 +205,7 @@ export const ACTE_1: moteur.Acte = [
       proprietes: {
         intitule: 'Exercice 2 — Nettoyer et contrôler l’export',
         consigne:
-          'Dans le classeur brut. Étape 1 : effacez tout filtre (Données › Effacer), puis copiez l’onglet Commandes (clic droit sur l’onglet › Déplacer ou copier › Créer une copie) ; on travaille sur la copie. Étape 2 : tapez en N2 =NOMPROPRE(SUPPRESPACE(E2)) et en O2 =CNUM(SUBSTITUE(SUBSTITUE(L2;" €";"");" ";"")) ; recopiez les deux jusqu’en bas par un double-clic sur la poignée. Étape 3 : Données › Supprimer les doublons, toutes les colonnes cochées, case « Mes données ont des en-têtes » cochée. Étape 4 : tapez en P2 =SI(OU(C2<B2;I2<=0;G2="");"À vérifier";"OK") et recopiez-la. Étape 5 : comptez ; filtrez la colonne P sur « À vérifier » : la barre d’état d’Excel affiche le nombre de lignes visibles.',
+          'Dans le classeur brut.\nÉtape 1 : effacez tout filtre (Données › Effacer), puis copiez l’onglet Commandes (clic droit sur l’onglet › Déplacer ou copier › Créer une copie) ; on travaille sur la copie.\nÉtape 2 : tapez en N2 =NOMPROPRE(SUPPRESPACE(E2)) ✓ telle quelle et en O2 =CNUM(SUBSTITUE(SUBSTITUE(L2;" €";"");" ";"")) ✓ telle quelle ; recopiez les deux jusqu’en bas par un double-clic sur la poignée.\nÉtape 3 : Données › Supprimer les doublons, toutes les colonnes cochées, case « Mes données ont des en-têtes » cochée.\nÉtape 4 : tapez en P2 =SI(OU(C2<B2;I2<=0;G2="");"À vérifier";"OK") ✓ telle quelle et recopiez-la.\nÉtape 5 : comptez ; filtrez la colonne P sur « À vérifier » : la barre d’état d’Excel affiche le nombre de lignes visibles.',
         regime: 'focus',
         ordre: 'fixe',
         questions: [
@@ -374,7 +375,7 @@ export const ACTE_1: moteur.Acte = [
               id: 'region',
               intitule: 'La région',
               raisonnement:
-                'En N1, tapez region ; en N2, =RECHERCHEV(F2;Agences!$A$2:$D$13;3;FAUX), puis double-clic sur la poignée. agence_id est en F, la région est la 3e colonne d’Agences.',
+                'En N1, tapez region ; en N2, =RECHERCHEV(F2;Agences!$A$2:$D$13;3;FAUX) ✓ telle quelle, puis double-clic sur la poignée. agence_id est en F, la région est la 3e colonne d’Agences.',
               invite:
                 'Quelle formule ramène la région de l’agence de la ligne 2 ?',
             },
@@ -382,7 +383,7 @@ export const ACTE_1: moteur.Acte = [
               id: 'categorie',
               intitule: 'La catégorie',
               raisonnement:
-                'En O1, tapez categorie ; en O2, =RECHERCHEV(H2;Produits!$A$2:$E$41;3;FAUX), recopiée. produit_id est en H, la catégorie est la 3e colonne de Produits.',
+                'En O1, tapez categorie ; en O2, =RECHERCHEV(H2;Produits!$A$2:$E$41;3;FAUX) ✓ telle quelle, recopiée. produit_id est en H, la catégorie est la 3e colonne de Produits.',
               invite:
                 'Quelle formule ramène la catégorie du produit de la ligne 2 ?',
             },
@@ -390,7 +391,7 @@ export const ACTE_1: moteur.Acte = [
               id: 'somme',
               intitule: 'La somme sous conditions',
               raisonnement:
-                '=SOMME.SI.ENS(L2:L4039;F2:F4039;"AG01";O2:O4039;"Mobilier";B2:B4039;">="&DATE(2026;1;1)) : trois couples plage ; critère, la date hors des guillemets.',
+                'Dans une cellule vide, =SOMME.SI.ENS(L2:L4039;F2:F4039;"AG01";O2:O4039;"Mobilier";B2:B4039;">="&DATE(2026;1;1)) ✓ telle quelle : trois couples plage ; critère, la date hors des guillemets.',
               invite:
                 'Quelle formule additionne le CA de Lille en mobilier depuis le 1er janvier 2026 ?',
             },
@@ -423,7 +424,7 @@ export const ACTE_1: moteur.Acte = [
       proprietes: {
         intitule: 'Exercice 3 — Relier et additionner',
         consigne:
-          'Dans l’onglet Commandes du classeur de reprise, où l’exemple guidé a ajouté region en N et categorie en O. Étape 1 : vérifiez que N2 et O2 sont recopiées jusqu’en ligne 4039. Étape 2 : pour Rennes, tapez =SOMME.SI.ENS(L2:L4039; F2:F4039; "AG06"; O2:O4039; "Informatique"; B2:B4039; ">="&DATE(2026; 1; 1)). Étape 3 : pour toute la région Ouest, toutes catégories, tapez =SOMME.SI.ENS(L2:L4039; N2:N4039; "Ouest"; B2:B4039; ">="&DATE(2026; 1; 1)). Excel accepte l’espace après chaque point-virgule. Étape 4 : répondez.',
+          'Dans l’onglet Commandes du classeur de reprise, où l’exemple guidé a ajouté region en N et categorie en O.\nÉtape 1 : vérifiez que N2 et O2 sont recopiées jusqu’en ligne 4039.\nÉtape 2 : pour Rennes, dans une cellule vide, tapez =SOMME.SI.ENS(L2:L4039; F2:F4039; "AG06"; O2:O4039; "Informatique"; B2:B4039; ">="&DATE(2026; 1; 1)) ✓ telle quelle.\nÉtape 3 : pour toute la région Ouest, toutes catégories, dans une cellule vide, tapez =SOMME.SI.ENS(L2:L4039; N2:N4039; "Ouest"; B2:B4039; ">="&DATE(2026; 1; 1)) ✓ telle quelle. Excel accepte l’espace après chaque point-virgule.\nÉtape 4 : répondez.',
         regime: 'focus',
         ordre: 'fixe',
         questions: [

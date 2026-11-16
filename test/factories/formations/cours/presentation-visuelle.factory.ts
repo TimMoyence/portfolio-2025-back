@@ -140,6 +140,12 @@ export const PRESENTATIONS_VISUELLES_VALIDES: Readonly<
     image: IMAGE,
     imageAlt: 'Schéma de l’exemple : cinq factures triées, médiane au milieu',
   },
+  prompt: {
+    title: 'L’IA analyste, tous ensemble',
+    subtitle: 'Le professeur lance ce prompt ; la classe compare.',
+    prompt:
+      'Tu es analyste de données.\nDonnées : le classeur joint.\nQuestion 1 : le CA HT de Rennes ?',
+  },
   'sort-review': {
     title: 'Correction du tri',
     source: { screenId: 'B2-01-A1-05-ANATOMIE', sortId: 'b2-01-a1-anatomie' },

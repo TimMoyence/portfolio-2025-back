@@ -17,11 +17,6 @@ export const pageDuFournil = (
   ...page,
 });
 
-export const pageDeTraitementDeTexte = moteur.pageDessineeDeLaSerie({
-  nom: 'Traitement de texte',
-  pages: 11,
-});
-
 export const GRAVURE_DE_LA_MACHINE_A_ECRIRE = moteur.gravureDuDomainePublic({
   id: 'M1',
   chemin: '/assets/cours/gravures/v1/machine-a-ecrire-1872.jpg',

@@ -3,7 +3,7 @@ import {
   CLASSEUR_D_ENVOI,
 } from './b3-04.donnees';
 import { COLLER_LE_TEXTE_SEUL, pageDuFournil } from '../b3-03/b3-03.briques';
-import { champ, pageDePublipostage } from './b3-04.briques';
+import { champ } from './b3-04.briques';
 import * as moteur from '../../briques';
 
 const REPRIS = 'texte-d-ia-repris-sans-relecture';
@@ -60,7 +60,7 @@ const ENVOYER: moteur.Acte = [
       ),
     ],
   ),
-  pageDePublipostage(
+  moteur.pageDessinee(
     {
       screenId: 'B3-04-A3-02-PAGE-E-MAILING',
       titre: 'Page : chemin 1, l’e-mailing depuis Word',
@@ -71,7 +71,6 @@ const ENVOYER: moteur.Acte = [
       ],
     },
     {
-      rang: 10,
       page: pageDuFournil({
         blocks: [
           {
@@ -108,7 +107,7 @@ const ENVOYER: moteur.Acte = [
       ],
     },
   ),
-  pageDePublipostage(
+  moteur.pageDessinee(
     {
       screenId: 'B3-04-A3-03-PAGE-PDF-JOINT',
       titre: 'Page : chemin 2, la lettre en PDF joint',
@@ -119,7 +118,6 @@ const ENVOYER: moteur.Acte = [
       ],
     },
     {
-      rang: 11,
       page: pageDuFournil({
         blocks: [
           moteur.paragraphe(
@@ -163,7 +161,7 @@ const ENVOYER: moteur.Acte = [
       ),
       proprietes: {
         intitule: 'Exercice 7 — Envoyer à vous et à votre binôme',
-        consigne: `Étape 1 : enregistrez le classeur d’envoi B3-04_envoi, ouvrez-le dans Excel ; remplacez ${ADRESSES_DE_REMPLISSAGE_B3_04[0]} par votre adresse et ${ADRESSES_DE_REMPLISSAGE_B3_04[1]} par celle de votre binôme ; enregistrez et fermez. Étape 2 : dans Lettre_clients.docx, Sélection des destinataires › Utiliser une liste existante, B3-04_envoi, onglet Contacts ; la lettre type ne change pas. Modifier la liste des destinataires : deux destinataires, deux courriels au plus. Étape 3, Chemin 1 (Outlook classique pour Windows) : Terminer et fusionner › Envoyer des messages électroniques ; À : email ; Objet : « ${OBJET} » ; Format : HTML ; Tous ; OK. Étape 3, Chemin 2 (sans Outlook classique) : Aperçu des résultats sur votre ligne, Modifier des documents individuels › Enregistrement en cours, enregistrez la lettre en PDF ; dans votre messagerie, écrivez-vous un courriel, objet « ${OBJET} », lettre en pièce jointe ; faites de même pour votre binôme avec sa lettre.`,
+        consigne: `Étape 1 : enregistrez le classeur d’envoi B3-04_envoi, ouvrez-le dans Excel ; remplacez ${ADRESSES_DE_REMPLISSAGE_B3_04[0]} par votre adresse et ${ADRESSES_DE_REMPLISSAGE_B3_04[1]} par celle de votre binôme ; enregistrez et fermez.\nÉtape 2 : dans Lettre_clients.docx, Sélection des destinataires › Utiliser une liste existante, B3-04_envoi, onglet Contacts ; la lettre type ne change pas. Modifier la liste des destinataires : deux destinataires, deux courriels au plus.\nÉtape 3, Chemin 1 (Outlook classique pour Windows) : Terminer et fusionner › Envoyer des messages électroniques ; À : email ; Objet : « ${OBJET} » ; Format : HTML ; Tous ; OK.\nÉtape 3, Chemin 2 (sans Outlook classique) : Aperçu des résultats sur votre ligne, Modifier des documents individuels › Enregistrement en cours, enregistrez la lettre en PDF ; dans votre messagerie, écrivez-vous un courriel, objet « ${OBJET} », lettre en pièce jointe ; faites de même pour votre binôme avec sa lettre.`,
         regime: 'focus',
         ordre: 'fixe',
         pieceJointe: CLASSEUR_D_ENVOI,
@@ -287,7 +285,6 @@ const FAIRE_ECRIRE: moteur.Acte = [
     'lesson',
     {
       title: 'Une IA qui écrit la lettre type',
-      subtitle: 'L’IA rédactrice · le publipostage',
       blocks: [
         {
           kind: 'definition',

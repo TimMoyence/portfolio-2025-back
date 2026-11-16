@@ -1,11 +1,11 @@
 {
   "graine": 0,
-  "empreinte": "a9ffd8b5039c0512bf116bab50284cf04074f0819084497a0410cd602bf3f4ee",
+  "empreinte": "27e458a600c19420ee7fa09f9ea9bfed5e293e057a6016f63fa6f654bc69b182",
   "sujet": {
     "id": "b3-02-formules-et-ia-analyste",
     "titre": "Toutes les formules, puis l’IA analyste",
     "niveau": "B3",
-    "duree": 180,
+    "duree": 156,
     "concepts": [
       "reference-de-cellule",
       "jeu-de-donnees",
@@ -73,7 +73,7 @@
               "renderer": "hero",
               "props": {
                 "title": "Toutes les formules, puis l’IA analyste",
-                "subtitle": "Mardi 17 novembre, 8 h 30. Nadia Ferrand attend toujours l’analyse de son export. On reprend là où on s’est arrêtés : le nettoyage. Deux heures pour savoir faire, formule par formule ; une heure pour faire faire à une IA, et vérifier. Données fictives.",
+                "subtitle": "Mardi 17 novembre, 8 h 30. Nadia Ferrand attend toujours l’analyse de son export. On reprend là où on s’est arrêtés : le nettoyage. Deux heures pour savoir faire, formule par formule ; une demi-heure avec une IA, tous ensemble, pour la faire travailler et vérifier. Données fictives.",
                 "bgImage": "/assets/cours/gravures/v1/hollerith-recensement-1890.jpg",
                 "bgImageAlt": "Gravure du Scientific American (1890) : les machines électriques de Herman Hollerith dépouillent les cartes perforées du recensement américain"
               }
@@ -210,7 +210,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Formules : SUPPRESPACE et NOMPROPRE",
-                "subtitle": "Formules pas à pas · page 1 sur 13",
                 "image": "/assets/cours/b3-02/v1/nettoyer-le-texte.webp",
                 "imageAlt": "Infographie : une ville en capitales entourée d’espaces passe par SUPPRESPACE puis NOMPROPRE et devient « Bordeaux ».",
                 "paragraphs": [
@@ -250,7 +249,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Formules : SUBSTITUE, CNUM et ESTNUM",
-                "subtitle": "Formules pas à pas · page 2 sur 13",
                 "image": "/assets/cours/b3-02/v1/convertir-un-montant.webp",
                 "imageAlt": "Infographie : un montant en texte perd son symbole et son espace par deux SUBSTITUE, puis CNUM le rend nombre.",
                 "paragraphs": [
@@ -290,7 +288,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Formules : SI, OU et ET",
-                "subtitle": "Formules pas à pas · page 3 sur 13",
                 "image": "/assets/cours/b3-02/v1/signaler-par-si-ou.webp",
                 "imageAlt": "Infographie : trois tests passent dans un entonnoir OU ; un seul vrai suffit pour marquer la ligne « À vérifier ».",
                 "paragraphs": [
@@ -323,7 +320,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 2 — Nettoyer et contrôler l’export",
-          "consigne": "Dans le classeur brut. Étape 1 : effacez tout filtre (Données › Effacer), puis copiez l’onglet Commandes (clic droit sur l’onglet › Déplacer ou copier › Créer une copie) ; on travaille sur la copie. Étape 2 : tapez en N2 =NOMPROPRE(SUPPRESPACE(E2)) et en O2 =CNUM(SUBSTITUE(SUBSTITUE(L2;\" €\";\"\");\" \";\"\")) ; recopiez les deux jusqu’en bas par un double-clic sur la poignée. Étape 3 : Données › Supprimer les doublons, toutes les colonnes cochées, case « Mes données ont des en-têtes » cochée. Étape 4 : tapez en P2 =SI(OU(C2<B2;I2<=0;G2=\"\");\"À vérifier\";\"OK\") et recopiez-la. Étape 5 : comptez ; filtrez la colonne P sur « À vérifier » : la barre d’état d’Excel affiche le nombre de lignes visibles.",
+          "consigne": "Dans le classeur brut.\nÉtape 1 : effacez tout filtre (Données › Effacer), puis copiez l’onglet Commandes (clic droit sur l’onglet › Déplacer ou copier › Créer une copie) ; on travaille sur la copie.\nÉtape 2 : tapez en N2 =NOMPROPRE(SUPPRESPACE(E2)) ✓ telle quelle et en O2 =CNUM(SUBSTITUE(SUBSTITUE(L2;\" €\";\"\");\" \";\"\")) ✓ telle quelle ; recopiez les deux jusqu’en bas par un double-clic sur la poignée.\nÉtape 3 : Données › Supprimer les doublons, toutes les colonnes cochées, case « Mes données ont des en-têtes » cochée.\nÉtape 4 : tapez en P2 =SI(OU(C2<B2;I2<=0;G2=\"\");\"À vérifier\";\"OK\") ✓ telle quelle et recopiez-la.\nÉtape 5 : comptez ; filtrez la colonne P sur « À vérifier » : la barre d’état d’Excel affiche le nombre de lignes visibles.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -427,7 +424,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Formule : RECHERCHEV",
-                "subtitle": "Formules pas à pas · page 4 sur 13",
                 "image": "/assets/cours/b3-02/v1/recherchev-quatre-arguments.webp",
                 "imageAlt": "Infographie : les quatre arguments de RECHERCHEV numérotés, et la ligne AG06 de la table Agences qui rend « Ouest ».",
                 "paragraphs": [
@@ -467,7 +463,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Formules : SOMME.SI.ENS, NB.SI.ENS et DATE",
-                "subtitle": "Formules pas à pas · page 5 sur 13",
                 "image": "/assets/cours/b3-02/v1/additionner-sous-conditions.webp",
                 "imageAlt": "Infographie : SOMME.SI.ENS en couleurs, un entonnoir ne laisse passer que les lignes de Rennes en 2026.",
                 "paragraphs": [
@@ -520,19 +515,19 @@
               {
                 "id": "region",
                 "intitule": "La région",
-                "raisonnement": "En N1, tapez region ; en N2, =RECHERCHEV(F2;Agences!$A$2:$D$13;3;FAUX), puis double-clic sur la poignée. agence_id est en F, la région est la 3ᵉ colonne d’Agences.",
+                "raisonnement": "En N1, tapez region ; en N2, =RECHERCHEV(F2;Agences!$A$2:$D$13;3;FAUX) ✓ telle quelle, puis double-clic sur la poignée. agence_id est en F, la région est la 3ᵉ colonne d’Agences.",
                 "invite": "Quelle formule ramène la région de l’agence de la ligne 2 ?"
               },
               {
                 "id": "categorie",
                 "intitule": "La catégorie",
-                "raisonnement": "En O1, tapez categorie ; en O2, =RECHERCHEV(H2;Produits!$A$2:$E$41;3;FAUX), recopiée. produit_id est en H, la catégorie est la 3ᵉ colonne de Produits.",
+                "raisonnement": "En O1, tapez categorie ; en O2, =RECHERCHEV(H2;Produits!$A$2:$E$41;3;FAUX) ✓ telle quelle, recopiée. produit_id est en H, la catégorie est la 3ᵉ colonne de Produits.",
                 "invite": "Quelle formule ramène la catégorie du produit de la ligne 2 ?"
               },
               {
                 "id": "somme",
                 "intitule": "La somme sous conditions",
-                "raisonnement": "=SOMME.SI.ENS(L2:L4039;F2:F4039;\"AG01\";O2:O4039;\"Mobilier\";B2:B4039;\">=\"&DATE(2026;1;1)) : trois couples plage ; critère, la date hors des guillemets.",
+                "raisonnement": "Dans une cellule vide, =SOMME.SI.ENS(L2:L4039;F2:F4039;\"AG01\";O2:O4039;\"Mobilier\";B2:B4039;\">=\"&DATE(2026;1;1)) ✓ telle quelle : trois couples plage ; critère, la date hors des guillemets.",
                 "invite": "Quelle formule additionne le CA de Lille en mobilier depuis le 1ᵉʳ janvier 2026 ?"
               }
             ],
@@ -558,7 +553,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 3 — Relier et additionner",
-          "consigne": "Dans l’onglet Commandes du classeur de reprise, où l’exemple guidé a ajouté region en N et categorie en O. Étape 1 : vérifiez que N2 et O2 sont recopiées jusqu’en ligne 4039. Étape 2 : pour Rennes, tapez =SOMME.SI.ENS(L2:L4039; F2:F4039; \"AG06\"; O2:O4039; \"Informatique\"; B2:B4039; \">=\"&DATE(2026; 1; 1)). Étape 3 : pour toute la région Ouest, toutes catégories, tapez =SOMME.SI.ENS(L2:L4039; N2:N4039; \"Ouest\"; B2:B4039; \">=\"&DATE(2026; 1; 1)). Excel accepte l’espace après chaque point-virgule. Étape 4 : répondez.",
+          "consigne": "Dans l’onglet Commandes du classeur de reprise, où l’exemple guidé a ajouté region en N et categorie en O.\nÉtape 1 : vérifiez que N2 et O2 sont recopiées jusqu’en ligne 4039.\nÉtape 2 : pour Rennes, dans une cellule vide, tapez =SOMME.SI.ENS(L2:L4039; F2:F4039; \"AG06\"; O2:O4039; \"Informatique\"; B2:B4039; \">=\"&DATE(2026; 1; 1)) ✓ telle quelle.\nÉtape 3 : pour toute la région Ouest, toutes catégories, dans une cellule vide, tapez =SOMME.SI.ENS(L2:L4039; N2:N4039; \"Ouest\"; B2:B4039; \">=\"&DATE(2026; 1; 1)) ✓ telle quelle. Excel accepte l’espace après chaque point-virgule.\nÉtape 4 : répondez.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -647,7 +642,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Formules : NB.JOURS.OUVRES et SERIE.JOUR.OUVRE",
-                "subtitle": "Formules pas à pas · page 6 sur 13",
                 "image": "/assets/cours/b3-02/v1/jours-ouvres.webp",
                 "imageAlt": "Infographie : un calendrier de mars 2026, week-end grisé, du vendredi de la commande au lundi de la livraison.",
                 "paragraphs": [
@@ -687,7 +681,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Formules : JOURSEM, DATEDIF et TEMPS",
-                "subtitle": "Formules pas à pas · page 7 sur 13",
                 "image": "/assets/cours/b3-02/v1/calendrier-joursem-datedif-temps.webp",
                 "imageAlt": "Infographie : une semaine numérotée pour JOURSEM, une frise de mois pour DATEDIF, une horloge pour TEMPS.",
                 "paragraphs": [
@@ -727,7 +720,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Formules : MOYENNE, MEDIANE et la médiane sous conditions",
-                "subtitle": "Formules pas à pas · page 8 sur 13",
                 "image": "/assets/cours/b3-02/v1/moyenne-ou-mediane.webp",
                 "imageAlt": "Infographie : cinq colis dont un délai de 40 jours ; la balance de la moyenne penche, la médiane reste au milieu.",
                 "paragraphs": [
@@ -760,7 +752,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 4 — Délais et retards",
-          "consigne": "Dans l’onglet Commandes du classeur de reprise. Étape 1 : en P1 tapez delai, en P2 =NB.JOURS.OUVRES(B2;C2)-1. Étape 2 : en Q1 date_promise, en Q2 =SERIE.JOUR.OUVRE(B2;5), au format Date. Étape 3 : en R1 aide, en R2 =SI(ET(F2=\"AG12\"; B2>=DATE(2026; 1; 1)); P2; \"\") ; recopiez P2:R2 jusqu’en ligne 4039. Étape 4 : la médiane, =MEDIANE(R2:R4039). Étape 5 : les retards, =NB.SI.ENS(P2:P4039; \">5\"; B2:B4039; \">=\"&DATE(2026; 1; 1)) : un délai de plus de 5 jours ouvrés dépasse la date promise.",
+          "consigne": "Dans l’onglet Commandes du classeur de reprise.\nÉtape 1 : en P1 tapez delai, en P2 =NB.JOURS.OUVRES(B2;C2)-1 ✓ telle quelle.\nÉtape 2 : en Q1 date_promise, en Q2 =SERIE.JOUR.OUVRE(B2;5) ✓ telle quelle, au format Date.\nÉtape 3 : en R1 aide, en R2 =SI(ET(F2=\"AG12\"; B2>=DATE(2026; 1; 1)); P2; \"\") ✓ telle quelle ; recopiez P2:R2 jusqu’en ligne 4039.\nÉtape 4 : la médiane, dans une cellule vide, =MEDIANE(R2:R4039) ✓ telle quelle.\nÉtape 5 : les retards, dans une cellule vide, =NB.SI.ENS(P2:P4039; \">5\"; B2:B4039; \">=\"&DATE(2026; 1; 1)) ✓ telle quelle : un délai de plus de 5 jours ouvrés dépasse la date promise.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -843,7 +835,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Outil : le tableau structuré et ANNEE",
-                "subtitle": "Formules pas à pas · page 9 sur 13",
                 "image": "/assets/cours/b3-02/v1/tableau-structure.webp",
                 "imageAlt": "Infographie : une plage fixe laisse dehors les lignes collées dessous ; le tableau T_Commandes s’étire pour les prendre.",
                 "paragraphs": [
@@ -883,7 +874,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Outil : le tableau croisé dynamique",
-                "subtitle": "Formules pas à pas · page 10 sur 13",
                 "image": "/assets/cours/b3-02/v1/tcd-quatre-zones.webp",
                 "imageAlt": "Infographie : les quatre zones du volet des champs et un TCD dont la ligne Rennes fait 100 %.",
                 "paragraphs": [
@@ -916,7 +906,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 5 — Le TCD de la direction",
-          "consigne": "Dans le classeur de reprise. Étape 1 : cliquez dans Commandes, Ctrl + L (⌘ + T sur Mac), nommez le tableau T_Commandes. Étape 2 : en S1 tapez annee, en S2 =ANNEE([@date_commande]) : la colonne se remplit seule. Étape 3 : premier TCD depuis T_Commandes : agence_id en Lignes, categorie en Colonnes, ca_ht en Valeurs affiché en % du total de la ligne, annee en Filtres sur 2026. Étape 4 : second TCD, sur une autre feuille : date_commande en Lignes, groupée par Trimestres et Années, ca_ht en Valeurs, sans filtre. Étape 5 : répondez.",
+          "consigne": "Dans le classeur de reprise.\nÉtape 1 : cliquez dans Commandes, Ctrl + L (⌘ + T sur Mac), nommez le tableau T_Commandes.\nÉtape 2 : en S1 tapez annee, en S2 =ANNEE([@date_commande]) ✓ telle quelle : la colonne se remplit seule.\nÉtape 3 : premier TCD depuis T_Commandes : agence_id en Lignes, categorie en Colonnes, ca_ht en Valeurs affiché en % du total de la ligne, annee en Filtres sur 2026.\nÉtape 4 : second TCD, sur une autre feuille : date_commande en Lignes, groupée par Trimestres et Années, ca_ht en Valeurs, sans filtre.\nÉtape 5 : répondez.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -1052,7 +1042,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Outil : le graphique qui répond à une question",
-                "subtitle": "Formules pas à pas · page 11 sur 13",
                 "image": "/assets/cours/b3-02/v1/graphique-qui-repond.webp",
                 "imageAlt": "Infographie : six vignettes associent une question à son graphique ; deux barres, l’axe coupé puis l’axe depuis zéro.",
                 "paragraphs": [
@@ -1075,55 +1064,6 @@
               "regime": "ouvert"
             }
           }
-        }
-      },
-      {
-        "id": "B3-02-A2-13-ATELIER-GRAPHIQUES",
-        "type": "questionnaire",
-        "titre": "Exercice 6 — CA et objectif par agence",
-        "duree": 8,
-        "interactif": true,
-        "donnees": {
-          "intitule": "Exercice 6 — CA et objectif par agence",
-          "consigne": "Dans le classeur de reprise avec T_Commandes, sur une feuille Synthèse. Étape 1 : en A1 à D1, les en-têtes agence_id, ca, objectif, atteinte ; en A2 à A13, les douze agence_id, de AG01 à AG12. Étape 2 : en B2, =SOMME.SI.ENS(T_Commandes[ca_ht]; T_Commandes[agence_id]; A2; T_Commandes[annee]; 2026). Étape 3 : en C2, l’objectif des mêmes mois, =SOMME.SI.ENS(Objectifs!$C$2:$C$253; Objectifs!$A$2:$A$253; A2; Objectifs!$B$2:$B$253; \">=\"&DATE(2026; 1; 1)). Étape 4 : en D2, =B2/C2 au format Pourcentage ; recopiez B2:D2 jusqu’en ligne 13. Étape 5 : sélectionnez A1:C13, Insertion › Histogramme groupé ; un titre qui conclut, l’axe vertical depuis 0.",
-          "regime": "focus",
-          "ordre": "fixe",
-          "questions": [
-            {
-              "brique": "fp-numeric",
-              "donnees": {
-                "question": {
-                  "id": "b3-02-a2-agences-sous-objectif",
-                  "enonce": "Combien d’agences ont un CA de janvier à septembre 2026 sous leur objectif cumulé des mêmes mois ? Saisissez un nombre entier.",
-                  "unite": "agences",
-                  "metadonnees": {
-                    "concepts": ["choix-du-graphique", "tableau-de-bord"],
-                    "misconceptionsCiblees": [],
-                    "dureeMinutes": 8,
-                    "modalite": "solo",
-                    "regime": "focus"
-                  }
-                }
-              }
-            },
-            {
-              "brique": "fp-numeric",
-              "donnees": {
-                "question": {
-                  "id": "b3-02-a2-atteinte-rennes",
-                  "enonce": "Quel est le taux d’atteinte de Rennes (AG06), de janvier à septembre 2026 ? En %, sans le symbole, arrondi au dixième de point.",
-                  "unite": "%",
-                  "metadonnees": {
-                    "concepts": ["choix-du-graphique", "tableau-de-bord"],
-                    "misconceptionsCiblees": [],
-                    "dureeMinutes": 8,
-                    "modalite": "solo",
-                    "regime": "focus"
-                  }
-                }
-              }
-            }
-          ]
         }
       },
       {
@@ -1172,7 +1112,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Formules : taux de marque, évolution, taux d’atteinte et SOMMEPROD",
-                "subtitle": "Formules pas à pas · page 12 sur 13",
                 "image": "/assets/cours/b3-02/v1/ratios-de-sommes.webp",
                 "imageAlt": "Infographie : deux ventes ; le ratio des sommes donne 32,7 %, la moyenne des taux 45 %, barrée.",
                 "paragraphs": [
@@ -1212,7 +1151,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Outil : tableau de bord, MFC et segments",
-                "subtitle": "Formules pas à pas · page 13 sur 13",
                 "image": "/assets/cours/b3-02/v1/tableau-de-bord.webp",
                 "imageAlt": "Infographie : une page de tableau de bord, quatre indicateurs comparés, deux graphiques, un segment relié, des taux en rouge.",
                 "paragraphs": [
@@ -1240,12 +1178,12 @@
       {
         "id": "B3-02-A2-17-ATELIER-DASHBOARD",
         "type": "questionnaire",
-        "titre": "Exercice 7 — Le tableau de bord Direction",
-        "duree": 10,
+        "titre": "Exercice 6 — Le tableau de bord Direction",
+        "duree": 12,
         "interactif": true,
         "donnees": {
-          "intitule": "Exercice 7 — Le tableau de bord Direction",
-          "consigne": "Dans le classeur de reprise avec T_Commandes, sur un onglet Dashboard. Étape 1 : en B1, le CA 2026, =SOMME.SI.ENS(T_Commandes[ca_ht]; T_Commandes[annee]; 2026). Étape 2 : en B2, le CA de janvier à septembre 2025, =SOMME.SI.ENS(T_Commandes[ca_ht]; T_Commandes[annee]; 2025; T_Commandes[date_commande]; \"<=\"&DATE(2025; 9; 30)) ; en B3, l’évolution, =B1/B2-1, au format Pourcentage. Étape 3 : en B4, le taux de marque de Marseille, =SOMME.SI.ENS(T_Commandes[marge]; T_Commandes[agence_id]; \"AG09\"; T_Commandes[annee]; 2026)/SOMME.SI.ENS(T_Commandes[ca_ht]; T_Commandes[agence_id]; \"AG09\"; T_Commandes[annee]; 2026), au format Pourcentage. Étape 4 : un TCD de la marge par agence, la marge en barres de données, et un segment region relié au TCD. Étape 5 : répondez.",
+          "intitule": "Exercice 6 — Le tableau de bord Direction",
+          "consigne": "Dans le classeur de reprise avec T_Commandes, sur un onglet Dashboard.\nÉtape 1 : en B1, le CA 2026, =SOMME.SI.ENS(T_Commandes[ca_ht]; T_Commandes[annee]; 2026) ✓ telle quelle.\nÉtape 2 : en B2, le CA de janvier à septembre 2025, =SOMME.SI.ENS(T_Commandes[ca_ht]; T_Commandes[annee]; 2025; T_Commandes[date_commande]; \"<=\"&DATE(2025; 9; 30)) ✓ telle quelle ; en B3, l’évolution, =B1/B2-1 ✓ telle quelle, au format Pourcentage.\nÉtape 3 : en B4, le taux de marque de Marseille, =SOMME.SI.ENS(T_Commandes[marge]; T_Commandes[agence_id]; \"AG09\"; T_Commandes[annee]; 2026)/SOMME.SI.ENS(T_Commandes[ca_ht]; T_Commandes[agence_id]; \"AG09\"; T_Commandes[annee]; 2026) ✓ telle quelle, au format Pourcentage.\nÉtape 4 : un TCD de la marge par agence, la marge en barres de données, et un segment region relié au TCD.\nÉtape 5 : cliquez dans le TCD, Analyse du tableau croisé dynamique › Graphique croisé dynamique › Histogramme groupé ; un titre qui conclut, l’axe vertical depuis 0.\nÉtape 6 : répondez.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -1257,9 +1195,13 @@
                   "enonce": "De combien le CA de janvier à septembre 2026 a-t-il évolué par rapport aux mêmes mois de 2025 ? En %, sans le symbole, arrondi au dixième de point.",
                   "unite": "%",
                   "metadonnees": {
-                    "concepts": ["tableau-de-bord", "indicateur-statistique"],
+                    "concepts": [
+                      "tableau-de-bord",
+                      "indicateur-statistique",
+                      "choix-du-graphique"
+                    ],
                     "misconceptionsCiblees": [],
-                    "dureeMinutes": 10,
+                    "dureeMinutes": 12,
                     "modalite": "solo",
                     "regime": "focus"
                   }
@@ -1274,9 +1216,13 @@
                   "enonce": "Quel est le CA HT cumulé du réseau, de janvier à septembre 2026 ? En euros, sans le symbole, arrondi à l’euro.",
                   "unite": "€",
                   "metadonnees": {
-                    "concepts": ["tableau-de-bord", "indicateur-statistique"],
+                    "concepts": [
+                      "tableau-de-bord",
+                      "indicateur-statistique",
+                      "choix-du-graphique"
+                    ],
                     "misconceptionsCiblees": [],
-                    "dureeMinutes": 10,
+                    "dureeMinutes": 12,
                     "modalite": "solo",
                     "regime": "focus"
                   }
@@ -1291,9 +1237,13 @@
                   "enonce": "Quel est le taux de marque de Marseille (AG09), marge ÷ CA HT, de janvier à septembre 2026 ? En %, sans le symbole, arrondi au dixième de point.",
                   "unite": "%",
                   "metadonnees": {
-                    "concepts": ["tableau-de-bord", "indicateur-statistique"],
+                    "concepts": [
+                      "tableau-de-bord",
+                      "indicateur-statistique",
+                      "choix-du-graphique"
+                    ],
                     "misconceptionsCiblees": [],
-                    "dureeMinutes": 10,
+                    "dureeMinutes": 12,
                     "modalite": "solo",
                     "regime": "focus"
                   }
@@ -1315,37 +1265,10 @@
             "presentation": {
               "version": 2,
               "screenId": "B3-02-A2-18-FICHE-RECAP-1",
-              "renderer": "grid",
+              "renderer": "illustration",
               "props": {
-                "title": "Fiche récap 1 : nettoyer, chercher, additionner",
-                "subtitle": "Une carte par famille : chaque formule, sa syntaxe, son piège. « 2021 ou 365 » : Excel 2021 ou 365 seulement.",
-                "items": [
-                  {
-                    "title": "Texte",
-                    "description": "SUPPRESPACE(texte), NOMPROPRE(texte), MAJUSCULE, MINUSCULE ; NBCAR(texte) compte les caractères. Piège : écrire dans la colonne brute."
-                  },
-                  {
-                    "title": "Nombre et date en texte",
-                    "description": "SUBSTITUE(texte; ancien; nouveau), puis CNUM(texte) ; ESTNUM(valeur) ; DATEVAL(texte) ; UNICAR(160). Power Query rejoue le nettoyage. Piège : CNUM d’abord, #VALEUR!."
-                  },
-                  {
-                    "title": "Doublons",
-                    "description": "Données › Supprimer les doublons, toutes les colonnes cochées, sur une copie. Piège : la dernière ligne compte l’en-tête."
-                  },
-                  {
-                    "title": "Comparer et signaler",
-                    "description": "SI(test; si_vrai; si_faux), OU(…), ET(…), SI.CONDITIONS(test1; valeur1; …). Piège : ET au lieu de OU."
-                  },
-                  {
-                    "title": "Chercher",
-                    "description": "RECHERCHEV(clé; table; n°_colonne; FAUX), table figée par $ ; INDEX(colonne; EQUIV(clé; colonne_clé; 0)) ; RECHERCHEX, 2021 ou 365. Piège : #N/A à la recopie."
-                  },
-                  {
-                    "title": "Additionner, compter",
-                    "description": "SOMME.SI.ENS(plage_somme; plage1; critère1; …), NB.SI.ENS(plage1; critère1; …), critère \">=\"&DATE(2026; 1; 1). Piège : DATE dans les guillemets rend 0."
-                  }
-                ],
-                "imprimable": true
+                "image": "/assets/cours/b3-02/v1/fiche-recap-1.webp",
+                "imageAlt": "Fiche récap 1 sur 2 : nettoyer, chercher, additionner. Nommer la famille du problème, puis écrire sa formule, toujours dans une nouvelle colonne. 1. Nettoyer le texte : SUPPRESPACE(texte) puis NOMPROPRE(texte), « BORDEAUX » entouré d’espaces devient « Bordeaux » ; MAJUSCULE et MINUSCULE changent toute la casse ; NBCAR(texte) compte les caractères, espaces compris. 2. Du texte au nombre : SUBSTITUE deux fois, puis CNUM, « 1 250,00 € » devient 1250,00 puis le nombre 1250 ; un texte se cale à gauche, un nombre à droite ; ESTNUM(valeur) le vérifie. UNICAR(160) : l’espace insécable ; DATEVAL(texte) : une date en texte ; Power Query rejoue le nettoyage. 3. Supprimer les doublons : Données › Supprimer les doublons, toutes les colonnes cochées, sur une copie de l’onglet ; des trois lignes de la commande 41 (Sac 2 80, Lampe 1 35, Sac 2 80), seule la ligne identique partout part, la lampe reste. 4. Signaler : SI(OU(…)), une anomalie suffit ; ET(…), il les faut toutes ; remise 80 % et client C041, ou remise 10 % et client vide : « À vérifier » par OU, « OK » par ET. On signale, on ne corrige pas : la ligne douteuse reste ; SI.CONDITIONS pour plusieurs cas. 5. Chercher : RECHERCHEV(clé;$table$;n°;FAUX), colonne 1 produit, 2 libellé, 3 catégorie : P07 rend Textile (P07 Nappe Textile, P12 Lampe Déco). La clé en première colonne, FAUX pour l’exact. Sinon INDEX(colonne;EQUIV(clé;colonne_clé;0)) ; RECHERCHEX dans Excel 2021 ou 365. 6. Additionner sous conditions : SOMME.SI.ENS(somme;plage1;critère1;…), Lyon 2026 200 et 300 gardées, Lyon 2025 150 et Nice 2026 90 écartées : 500. NB.SI.ENS compte les lignes. Critère de date : \">=\"&DATE(2026;1;1), la date hors des guillemets, jointe par &. Les pièges : =CNUM(A2) sur « 120 € » donne #VALEUR!, SUBSTITUE d’abord, puis CNUM donne 120 ; \">=DATE(2026;1;1)\" dans les guillemets, la somme vaut 0 ; RECHERCHEV(H2;A2:C41;3;FAUX) recopiée sans $, la table glisse et #N/A gagne le bas, d’où $A$2:$C$41 ; doublons cochés sur « cde » seule, 2 lignes sur 3 partent, toutes les colonnes cochées, seule la copie exacte part. Au tableur : =NOMPROPRE(SUPPRESPACE(E2)) ; =CNUM(SUBSTITUE(SUBSTITUE(L2;\" €\";\"\");\" \";\"\")) ; =SI(OU(K2>0,5;D2=\"\");\"À vérifier\";\"OK\"), une seule anomalie suffit à signaler la ligne ; =RECHERCHEV(H2;Produits!$A$2:$E$41;3;FAUX), la catégorie du produit, table figée ; =INDEX($C$2:$C$41;EQUIV(H2;$A$2:$A$41;0)) ; =SOMME.SI.ENS(D:D;B:B;\"Lyon\";C:C;\">=\"&DATE(2026;1;1)), le CA de Lyon depuis le 1ᵉʳ janvier 2026."
               }
             },
             "metadonnees": {
@@ -1356,6 +1279,10 @@
               "regime": "ouvert"
             }
           }
+        },
+        "pieceJointe": {
+          "libelle": "Fiche récap 1 (PDF)",
+          "fichier": "/assets/cours/b3-02/b3-02-fiche-recap-1.d5d022d7.pdf"
         }
       },
       {
@@ -1370,37 +1297,10 @@
             "presentation": {
               "version": 2,
               "screenId": "B3-02-A2-19-FICHE-RECAP-2",
-              "renderer": "grid",
+              "renderer": "illustration",
               "props": {
-                "title": "Fiche récap 2 : dater, résumer, croiser, montrer",
-                "subtitle": "Une carte par famille : chaque formule, sa syntaxe, son piège. « 2021 ou 365 » : Excel 2021 ou 365 seulement.",
-                "items": [
-                  {
-                    "title": "Dates",
-                    "description": "NB.JOURS.OUVRES(début;fin) − 1 ; SERIE.JOUR.OUVRE(début;n) ; JOURSEM(date;2) ; DATEDIF(début;fin;\"M\") ; TEMPS(h;m;s) ; ANNEE(date). Piège : C2 − B2 compte le week-end."
-                  },
-                  {
-                    "title": "Résumer",
-                    "description": "MOYENNE, MEDIANE, AGREGAT(12;5;plage) sous filtre, ECARTYPE.STANDARD(plage). Piège : la moyenne tirée par une valeur extrême."
-                  },
-                  {
-                    "title": "Classer, filtrer",
-                    "description": "EQUATION.RANG(valeur;plage), GRANDE.VALEUR(plage;k), filtre automatique ; TRIER, FILTRE, UNIQUE, 2021 ou 365. Piège : un filtre resté actif."
-                  },
-                  {
-                    "title": "Croiser",
-                    "description": "Tableau structuré, Ctrl + L, T_Commandes[ca_ht] ; tableau croisé dynamique, % du total de la ligne, trimestres et années. Piège : la plage fixe."
-                  },
-                  {
-                    "title": "Ratios",
-                    "description": "Taux de marque = marge ÷ CA HT ; évolution = valeur ÷ an passé − 1 ; atteinte = réalisé ÷ objectif ; SOMMEPROD(plage1;plage2). Piège : la moyenne des taux."
-                  },
-                  {
-                    "title": "Montrer",
-                    "description": "Le graphique d’après la question, axe depuis zéro ; barres de données, MFC par formule, segments ; $ fige à la recopie, F4. Piège : un chiffre sans comparaison."
-                  }
-                ],
-                "imprimable": true
+                "image": "/assets/cours/b3-02/v1/fiche-recap-2.webp",
+                "imageAlt": "Fiche récap 2 sur 2 : dater, résumer, croiser, montrer. Compter en jours ouvrés, choisir le bon résumé, croiser par un tableau, montrer un chiffre comparé. 1. Compter en jours ouvrés : commande le jeudi, livraison le mardi, fin − début = 5 jours mais NB.JOURS.OUVRES − 1 = 3 jours. NB.JOURS.OUVRES(début;fin) − 1 ; SERIE.JOUR.OUVRE(début;5) : la date promise, 5 jours ouvrés plus tard, week-ends sautés. 2. Lire le calendrier : pour lun. 9/11/2026, JOURSEM(date;2) rend 1 et ANNEE(date) rend 2026 ; DATEDIF(15/1/2026;15/4/2026;\"M\") rend 3 mois. Avec 2 en second argument, lundi vaut 1 et dimanche 7. TEMPS(h;m;s) construit une durée. 3. Moyenne ou médiane ? Délais : 2, 2, 3, 3 et 60 jours, un colis à 60 jours : moyenne 14, médiane 3. MEDIANE(plage) pour un délai typique. MOYENNE suit la valeur extrême, MEDIANE reste au milieu. AGREGAT(12;5;plage) : la médiane sous filtre ; ECARTYPE.STANDARD(plage) : la dispersion. 4. Tableau structuré : Ctrl + L (⌘ + T sur Mac), T_Ventes[montant] ; sous 12/03/2025 80 2025 et 04/02/2026 120 2026, la ligne collée 09/11/2026 60 2026 entre seule. Une formule de colonne se recopie seule : =ANNEE([@[date_vente]]). Classer : EQUATION.RANG, GRANDE.VALEUR ; TRIER, FILTRE, UNIQUE (2021 ou 365). 5. Le tableau croisé dynamique : Filtres annee = 2026, Lignes ville, Colonnes categorie, Valeurs montant en % ligne. Afficher les valeurs › % du total de la ligne : chaque ligne fait 100 %, la part de chaque catégorie dans la ville. Les dates se groupent par Trimestres et Années. 6. Ratios et tableau de bord : vente 1, marge 10 € et CA 20 € ; vente 2, marge 20 € et CA 200 € : 30 ÷ 220, le ratio des sommes, 13,6 %. Taux de marque = Σ marges ÷ Σ CA HT ; un indicateur, toujours avec sa comparaison. Évolution = valeur ÷ même période − 1 ; atteinte = réalisé ÷ objectif ; SOMMEPROD(qtés;prix). Axe depuis 0, barres de données, MFC par formule, segments. Les pièges : du jeudi au mardi, fin − début = 5 jours, alors que NB.JOURS.OUVRES − 1 = 3 jours ouvrés ; délais 2, 2, 3, 3, 60 : 14 jours en moyenne, la médiane : 3 jours, le délai habituel ; taux de 50 % et 10 % : 30 % en moyenne, faux, marges 10 € et 20 €, CA 20 € et 200 € : 30 ÷ 220 ≈ 13,6 % ; 9 mois de 2026 ÷ 12 mois de 2025 − 1, faux, janvier-septembre ÷ janvier-septembre : la même période. Au tableur : =NB.JOURS.OUVRES(B2;C2)-1, le délai en jours ouvrés après la commande ; =SERIE.JOUR.OUVRE(B2;5), la date promise ; =MEDIANE(D2:D200), le délai typique ; =ANNEE([@[date_vente]]), l’année recopiée seule ; =SOMME.SI.ENS(T_Ventes[montant];T_Ventes[annee];2026), le CA 2026 même quand le tableau grandit ; =SOMME(T_Ventes[marge])/SOMME(T_Ventes[montant]), le taux de marque sur les sommes."
               }
             },
             "metadonnees": {
@@ -1411,6 +1311,10 @@
               "regime": "ouvert"
             }
           }
+        },
+        "pieceJointe": {
+          "libelle": "Fiche récap 2 (PDF)",
+          "fichier": "/assets/cours/b3-02/b3-02-fiche-recap-2.227e5d62.pdf"
         }
       },
       {
@@ -1455,7 +1359,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Une IA qui analyse vos données",
-                "subtitle": "L’IA analyste · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -1512,7 +1415,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Le cahier de règles de l’analyste",
-                "subtitle": "L’IA analyste · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -1556,133 +1458,28 @@
         }
       },
       {
-        "id": "B3-02-A3-04-AUDIT-RAPPORT-IA",
-        "type": "fp-cardsort",
-        "titre": "Exercice 8 — Auditer le rapport d’une IA",
-        "duree": 11,
-        "interactif": true,
+        "id": "B3-02-A3-04-PROMPT-TOUS-ENSEMBLE",
+        "type": "fp-story",
+        "titre": "L’IA analyste, tous ensemble",
+        "duree": 30,
+        "interactif": false,
         "donnees": {
-          "plan": {
-            "id": "b3-02-a3-audit",
-            "intitule": "Le rapport d’une IA sur la reprise nettoyée, écrit pour ce cours. Comparez chaque affirmation à vos résultats et rangez-la.",
-            "cartes": [
-              {
-                "id": "delai-strasbourg",
-                "libelle": "Délai de livraison de Strasbourg en 2026 : 10 jours ouvrés, la moyenne des délais."
-              },
-              {
-                "id": "marge-moyenne",
-                "libelle": "Taux de marque de Marseille en 2026 : 28,7 %, la moyenne des taux de chaque ligne."
-              },
-              {
-                "id": "evolution",
-                "libelle": "Évolution du CA 2026 : -22,1 %, janvier-septembre 2026 ÷ toute l’année 2025 − 1."
-              },
-              {
-                "id": "marge-cout",
-                "libelle": "Taux de marque de Marseille en 2026 : 36,9 %, la marge divisée par le coût d’achat."
-              },
-              {
-                "id": "atteinte-rennes",
-                "libelle": "Taux d’atteinte de Rennes de janvier à septembre 2026 : 79,0 %, CA ÷ objectifs des mêmes mois."
-              },
-              {
-                "id": "retards",
-                "libelle": "Lignes commandées en 2026 et livrées après leur date promise : 99."
-              },
-              {
-                "id": "part-info",
-                "libelle": "Part de l’informatique dans le CA de Rennes en 2026 : 1,5 %, divisée par le CA du réseau."
-              },
-              {
-                "id": "ca-rennes-info",
-                "libelle": "CA de Rennes en informatique en 2026 : 27 862 €, toutes les lignes de Rennes en informatique additionnées."
+          "recit": {
+            "id": "B3-02-A3-04-PROMPT-TOUS-ENSEMBLE",
+            "presentation": {
+              "version": 2,
+              "screenId": "B3-02-A3-04-PROMPT-TOUS-ENSEMBLE",
+              "renderer": "prompt",
+              "props": {
+                "title": "L’IA analyste, tous ensemble",
+                "subtitle": "Le formateur colle ce prompt dans son IA, avec le classeur ; la classe compare ses chiffres aux vôtres.",
+                "prompt": "Rôle\nTu es analyste data pour Norvane Équipement, un réseau de 12 agences.\n\nDonnées\nLe classeur joint, la reprise nettoyée de l’export des ventes :\n- Commandes (colonnes A à M) : une ligne par produit commandé ; date_commande, date_livraison, agence_id, produit_id, quantite, ca_ht ;\n- Quarantaine : les lignes douteuses, à laisser de côté ;\n- Clients ; Agences (agence_id, ville, region) ; Produits (produit_id, categorie, cout_unitaire) ; Objectifs.\nDéfinitions :\n- date promise = 5 jours ouvrés après date_commande ;\n- délai = jours ouvrés entre date_commande et date_livraison, jour de commande exclu, sans jours fériés ;\n- marge = ca_ht − quantite × cout_unitaire, cout_unitaire pris dans Produits.\n\nRègles\n1. Je relie les tables par un identifiant, jamais par un libellé.\n2. Je corrige seul ce qui est faux et certain ; je signale ce qui est douteux, je ne supprime rien.\n3. J’écris la période dans chaque critère, la même pour le chiffre et pour sa comparaison.\n4. Pour un délai typique je prends la médiane ; pour un taux, le ratio des sommes.\n5. J’écris le dénominateur de chaque pourcentage.\n6. Je montre la méthode de chaque chiffre et le nombre de lignes retenues.\n\nQuestions\nQ1. CA HT de Rennes (AG06) en informatique, de janvier à septembre 2026, en euros.\nQ2. Délai médian de livraison de Strasbourg (AG12) en 2026, en jours ouvrés.\nQ3. Nombre de lignes du réseau commandées en 2026 et livrées après leur date promise.\nQ4. Part de l’informatique dans le CA HT de Rennes (AG06), de janvier à septembre 2026, en %.\nQ5. Évolution du CA HT du réseau de janvier à septembre 2026 par rapport aux mêmes mois de 2025, en %.\nQ6. Taux de marque de Marseille (AG09), marge ÷ CA HT, de janvier à septembre 2026, en %.\n\nFormat\nUn tableau : question, chiffre, méthode ou code, lignes retenues."
               }
-            ],
-            "categories": [
-              {
-                "id": "juste",
-                "libelle": "Juste : le même chiffre que le mien"
-              },
-              {
-                "id": "periode",
-                "libelle": "Faux : la période (règle 3)"
-              },
-              {
-                "id": "resume",
-                "libelle": "Faux : le résumé (règle 4)"
-              },
-              {
-                "id": "denominateur",
-                "libelle": "Faux : le dénominateur (règle 5)"
-              }
-            ],
+            },
             "metadonnees": {
               "concepts": ["ia-analyste"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 11,
-              "modalite": "binome",
-              "regime": "ouvert"
-            }
-          }
-        }
-      },
-      {
-        "id": "B3-02-A3-05-DEFI-CONSIGNE",
-        "type": "fp-challenge",
-        "titre": "Exercice 9 — Votre consigne à l’IA",
-        "duree": 7,
-        "interactif": true,
-        "donnees": {
-          "probleme": {
-            "id": "b3-02-a3-consigne",
-            "enonce": "Vous allez confier le classeur de reprise nettoyé à une IA, pour qu’elle refasse les analyses des exercices 3 à 7. Écrivez la consigne que vous lui donnerez.",
-            "invite": "En cinq parties : le rôle, les données, vos règles, les questions avec leur période et leur unité, le format de la réponse.",
-            "strategies": [],
-            "metadonnees": {
-              "concepts": ["ia-analyste"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 7,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
-        }
-      },
-      {
-        "id": "B3-02-A3-06-ANALYSE-IA",
-        "type": "fp-pro",
-        "titre": "L’IA au travail : ses chiffres contre les vôtres",
-        "duree": 18,
-        "interactif": true,
-        "donnees": {
-          "cas": {
-            "id": "B3-02-A3-06-ANALYSE-IA",
-            "metier": "Analyste data — Norvane Équipement (réseau de 12 agences)",
-            "situation": "Nadia veut savoir si une IA peut refaire vos analyses. Sept questions, de janvier à septembre 2026 : 1. CA de Rennes en informatique ; 2. délai médian de Strasbourg ; 3. retards ; 4. part de l’informatique à Rennes ; 5. atteinte de Rennes ; 6. évolution du CA ; 7. taux de marque de Marseille.",
-            "geste": "Donnez le classeur nettoyé et votre consigne à l’IA de votre choix, posez les sept questions, puis notez son chiffre, le vôtre et la règle en cause.",
-            "consequence": "Un écart que vous ne savez pas expliquer, vous ne pouvez ni le confier ni le présenter.",
-            "questionsLibres": [
-              {
-                "id": "b3-02-a3-analyse:outil",
-                "question": "Quelle IA avez-vous utilisée, et avec qui si vous étiez en binôme ?",
-                "placeholder": "IA : … · binôme : …"
-              },
-              {
-                "id": "b3-02-a3-analyse:chiffres",
-                "question": "Une ligne par question, de 1 à 7 : le chiffre de l’IA, le vôtre (exercices 3 à 7), la règle en cause s’ils diffèrent.",
-                "placeholder": "1. IA : … · moi : … · règle : …"
-              },
-              {
-                "id": "b3-02-a3-analyse:ecarts",
-                "question": "Votre bilan : combien de chiffres justes sur sept, et l’écart le plus grave, avec sa cause.",
-                "placeholder": "… justes sur 7 · écart le plus grave : …"
-              }
-            ],
-            "metadonnees": {
-              "concepts": ["ia-analyste"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 18,
+              "dureeMinutes": 30,
               "modalite": "solo",
               "regime": "ouvert"
             }
@@ -1691,46 +1488,6 @@
         "pieceJointe": {
           "libelle": "Classeur de reprise nettoyé",
           "reservee": true
-        }
-      },
-      {
-        "id": "B3-02-A3-07-RECOMMANDATIONS",
-        "type": "fp-pro",
-        "titre": "Exercice 10 — Vos recommandations au comité",
-        "duree": 12,
-        "interactif": true,
-        "donnees": {
-          "cas": {
-            "id": "B3-02-A3-07-RECOMMANDATIONS",
-            "metier": "Analyste data — Norvane Équipement (réseau de 12 agences)",
-            "situation": "Jeudi, Nadia présente le réseau au comité de direction. Demandez à votre IA deux recommandations tirées du classeur, puis gardez-les ou corrigez-les.",
-            "geste": "Pour chacune : un constat chiffré, vérifié contre vos résultats, sa cause trouvée dans le détail, une action précise, datée, confiée à quelqu’un.",
-            "consequence": "Une recommandation sans chiffre vérifié ne convainc pas ; sans cause, elle traite le symptôme ; sans action, elle ne change rien.",
-            "questionsLibres": [
-              {
-                "id": "b3-02-a3-recommandations:recommandation-1",
-                "question": "Recommandation 1 : constat chiffré → cause → action, telle que vous la présenteriez.",
-                "placeholder": "Constat : … Cause : … Action : …"
-              },
-              {
-                "id": "b3-02-a3-recommandations:recommandation-2",
-                "question": "Recommandation 2 : constat chiffré → cause → action, telle que vous la présenteriez.",
-                "placeholder": "Constat : … Cause : … Action : …"
-              },
-              {
-                "id": "b3-02-a3-recommandations:confier",
-                "question": "Ce que vous confieriez à l’IA au prochain export, et ce que vous vérifieriez toujours vous-même.",
-                "placeholder": "Je confie : … Je vérifie : …"
-              }
-            ],
-            "metadonnees": {
-              "concepts": ["tableau-de-bord", "ia-analyste"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 12,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
         }
       },
       {
@@ -1794,7 +1551,7 @@
     "id": "b3-02-formules-et-ia-analyste",
     "titre": "Toutes les formules, puis l’IA analyste",
     "niveau": "B3",
-    "duree": 180,
+    "duree": 156,
     "concepts": [
       "reference-de-cellule",
       "jeu-de-donnees",
@@ -1904,7 +1661,7 @@
               "renderer": "hero",
               "props": {
                 "title": "Toutes les formules, puis l’IA analyste",
-                "subtitle": "Mardi 17 novembre, 8 h 30. Nadia Ferrand attend toujours l’analyse de son export. On reprend là où on s’est arrêtés : le nettoyage. Deux heures pour savoir faire, formule par formule ; une heure pour faire faire à une IA, et vérifier. Données fictives.",
+                "subtitle": "Mardi 17 novembre, 8 h 30. Nadia Ferrand attend toujours l’analyse de son export. On reprend là où on s’est arrêtés : le nettoyage. Deux heures pour savoir faire, formule par formule ; une demi-heure avec une IA, tous ensemble, pour la faire travailler et vérifier. Données fictives.",
                 "bgImage": "/assets/cours/gravures/v1/hollerith-recensement-1890.jpg",
                 "bgImageAlt": "Gravure du Scientific American (1890) : les machines électriques de Herman Hollerith dépouillent les cartes perforées du recensement américain"
               }
@@ -1922,7 +1679,7 @@
           "libelle": "Export des ventes Norvane (classeur Excel)",
           "fichier": "/assets/cours/b3-01/B3-01_export_ventes.dfa709a7.xlsx"
         },
-        "notes": "• Faire télécharger l’export brut ; ceux qui l’ont gardé de la séance 1 repartent de leur fichier.\n• Annoncer la séance : deux heures de formules, une par une, avec un exercice guidé après chaque famille ; une fiche récap ; puis une heure où une IA fait le travail et où l’on vérifie ses chiffres.",
+        "notes": "• Faire télécharger l’export brut ; ceux qui l’ont gardé de la séance 1 repartent de leur fichier.\n• Annoncer la séance : deux heures de formules, une par une, avec un exercice guidé après chaque famille ; deux fiches récap ; puis une demi-heure avec une IA, tous ensemble : le formateur lance le prompt, la classe vérifie ses chiffres.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -2009,7 +1766,7 @@
             }
           }
         },
-        "notes": "• Temps : réflexion 1 min · travail 6 min · correction 1 min\n• Réflexion : pour chaque carte, deux questions dans l’ordre. 1. L’erreur est-elle certaine ? 2. La bonne valeur est-elle dans le fichier ?\n• Pièges : corriger seul une date douteuse ; renvoyer à un humain une erreur que le fichier corrige.\n• Corriger case par case ; finir par la case vide.\n• Règle 2 du cahier : « Je corrige seul ce qui est faux et certain ; je signale ce qui est douteux, je ne supprime rien. »\n• Transition : « Les formules qui corrigent le faux certain : un vote d’abord. »",
+        "notes": "• Temps : réflexion 1 min · travail 6 min · correction 1 min\n• Réflexion, question 1 sur chaque carte : l’erreur est-elle certaine ?\n• Réflexion, question 2 : la bonne valeur est-elle dans le fichier ?\n• Pièges : corriger seul une date douteuse ; renvoyer à un humain une erreur que le fichier corrige.\n• Corriger case par case ; finir par la case vide.\n• Règle 2 du cahier : « Je corrige seul ce qui est faux et certain ; je signale ce qui est douteux, je ne supprime rien. »\n• Transition : « Les formules qui corrigent le faux certain : un vote d’abord. »",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [],
@@ -2167,7 +1924,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Formules : SUPPRESPACE et NOMPROPRE",
-                "subtitle": "Formules pas à pas · page 1 sur 13",
                 "image": "/assets/cours/b3-02/v1/nettoyer-le-texte.webp",
                 "imageAlt": "Infographie : une ville en capitales entourée d’espaces passe par SUPPRESPACE puis NOMPROPRE et devient « Bordeaux ».",
                 "paragraphs": [
@@ -2214,7 +1970,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Formules : SUBSTITUE, CNUM et ESTNUM",
-                "subtitle": "Formules pas à pas · page 2 sur 13",
                 "image": "/assets/cours/b3-02/v1/convertir-un-montant.webp",
                 "imageAlt": "Infographie : un montant en texte perd son symbole et son espace par deux SUBSTITUE, puis CNUM le rend nombre.",
                 "paragraphs": [
@@ -2261,7 +2016,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Formules : SI, OU et ET",
-                "subtitle": "Formules pas à pas · page 3 sur 13",
                 "image": "/assets/cours/b3-02/v1/signaler-par-si-ou.webp",
                 "imageAlt": "Infographie : trois tests passent dans un entonnoir OU ; un seul vrai suffit pour marquer la ligne « À vérifier ».",
                 "paragraphs": [
@@ -2301,7 +2055,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 2 — Nettoyer et contrôler l’export",
-          "consigne": "Dans le classeur brut. Étape 1 : effacez tout filtre (Données › Effacer), puis copiez l’onglet Commandes (clic droit sur l’onglet › Déplacer ou copier › Créer une copie) ; on travaille sur la copie. Étape 2 : tapez en N2 =NOMPROPRE(SUPPRESPACE(E2)) et en O2 =CNUM(SUBSTITUE(SUBSTITUE(L2;\" €\";\"\");\" \";\"\")) ; recopiez les deux jusqu’en bas par un double-clic sur la poignée. Étape 3 : Données › Supprimer les doublons, toutes les colonnes cochées, case « Mes données ont des en-têtes » cochée. Étape 4 : tapez en P2 =SI(OU(C2<B2;I2<=0;G2=\"\");\"À vérifier\";\"OK\") et recopiez-la. Étape 5 : comptez ; filtrez la colonne P sur « À vérifier » : la barre d’état d’Excel affiche le nombre de lignes visibles.",
+          "consigne": "Dans le classeur brut.\nÉtape 1 : effacez tout filtre (Données › Effacer), puis copiez l’onglet Commandes (clic droit sur l’onglet › Déplacer ou copier › Créer une copie) ; on travaille sur la copie.\nÉtape 2 : tapez en N2 =NOMPROPRE(SUPPRESPACE(E2)) ✓ telle quelle et en O2 =CNUM(SUBSTITUE(SUBSTITUE(L2;\" €\";\"\");\" \";\"\")) ✓ telle quelle ; recopiez les deux jusqu’en bas par un double-clic sur la poignée.\nÉtape 3 : Données › Supprimer les doublons, toutes les colonnes cochées, case « Mes données ont des en-têtes » cochée.\nÉtape 4 : tapez en P2 =SI(OU(C2<B2;I2<=0;G2=\"\");\"À vérifier\";\"OK\") ✓ telle quelle et recopiez-la.\nÉtape 5 : comptez ; filtrez la colonne P sur « À vérifier » : la barre d’état d’Excel affiche le nombre de lignes visibles.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -2522,7 +2276,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Formule : RECHERCHEV",
-                "subtitle": "Formules pas à pas · page 4 sur 13",
                 "image": "/assets/cours/b3-02/v1/recherchev-quatre-arguments.webp",
                 "imageAlt": "Infographie : les quatre arguments de RECHERCHEV numérotés, et la ligne AG06 de la table Agences qui rend « Ouest ».",
                 "paragraphs": [
@@ -2569,7 +2322,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Formules : SOMME.SI.ENS, NB.SI.ENS et DATE",
-                "subtitle": "Formules pas à pas · page 5 sur 13",
                 "image": "/assets/cours/b3-02/v1/additionner-sous-conditions.webp",
                 "imageAlt": "Infographie : SOMME.SI.ENS en couleurs, un entonnoir ne laisse passer que les lignes de Rennes en 2026.",
                 "paragraphs": [
@@ -2629,19 +2381,19 @@
               {
                 "id": "region",
                 "intitule": "La région",
-                "raisonnement": "En N1, tapez region ; en N2, =RECHERCHEV(F2;Agences!$A$2:$D$13;3;FAUX), puis double-clic sur la poignée. agence_id est en F, la région est la 3ᵉ colonne d’Agences.",
+                "raisonnement": "En N1, tapez region ; en N2, =RECHERCHEV(F2;Agences!$A$2:$D$13;3;FAUX) ✓ telle quelle, puis double-clic sur la poignée. agence_id est en F, la région est la 3ᵉ colonne d’Agences.",
                 "invite": "Quelle formule ramène la région de l’agence de la ligne 2 ?"
               },
               {
                 "id": "categorie",
                 "intitule": "La catégorie",
-                "raisonnement": "En O1, tapez categorie ; en O2, =RECHERCHEV(H2;Produits!$A$2:$E$41;3;FAUX), recopiée. produit_id est en H, la catégorie est la 3ᵉ colonne de Produits.",
+                "raisonnement": "En O1, tapez categorie ; en O2, =RECHERCHEV(H2;Produits!$A$2:$E$41;3;FAUX) ✓ telle quelle, recopiée. produit_id est en H, la catégorie est la 3ᵉ colonne de Produits.",
                 "invite": "Quelle formule ramène la catégorie du produit de la ligne 2 ?"
               },
               {
                 "id": "somme",
                 "intitule": "La somme sous conditions",
-                "raisonnement": "=SOMME.SI.ENS(L2:L4039;F2:F4039;\"AG01\";O2:O4039;\"Mobilier\";B2:B4039;\">=\"&DATE(2026;1;1)) : trois couples plage ; critère, la date hors des guillemets.",
+                "raisonnement": "Dans une cellule vide, =SOMME.SI.ENS(L2:L4039;F2:F4039;\"AG01\";O2:O4039;\"Mobilier\";B2:B4039;\">=\"&DATE(2026;1;1)) ✓ telle quelle : trois couples plage ; critère, la date hors des guillemets.",
                 "invite": "Quelle formule additionne le CA de Lille en mobilier depuis le 1ᵉʳ janvier 2026 ?"
               }
             ],
@@ -2674,7 +2426,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 3 — Relier et additionner",
-          "consigne": "Dans l’onglet Commandes du classeur de reprise, où l’exemple guidé a ajouté region en N et categorie en O. Étape 1 : vérifiez que N2 et O2 sont recopiées jusqu’en ligne 4039. Étape 2 : pour Rennes, tapez =SOMME.SI.ENS(L2:L4039; F2:F4039; \"AG06\"; O2:O4039; \"Informatique\"; B2:B4039; \">=\"&DATE(2026; 1; 1)). Étape 3 : pour toute la région Ouest, toutes catégories, tapez =SOMME.SI.ENS(L2:L4039; N2:N4039; \"Ouest\"; B2:B4039; \">=\"&DATE(2026; 1; 1)). Excel accepte l’espace après chaque point-virgule. Étape 4 : répondez.",
+          "consigne": "Dans l’onglet Commandes du classeur de reprise, où l’exemple guidé a ajouté region en N et categorie en O.\nÉtape 1 : vérifiez que N2 et O2 sont recopiées jusqu’en ligne 4039.\nÉtape 2 : pour Rennes, dans une cellule vide, tapez =SOMME.SI.ENS(L2:L4039; F2:F4039; \"AG06\"; O2:O4039; \"Informatique\"; B2:B4039; \">=\"&DATE(2026; 1; 1)) ✓ telle quelle.\nÉtape 3 : pour toute la région Ouest, toutes catégories, dans une cellule vide, tapez =SOMME.SI.ENS(L2:L4039; N2:N4039; \"Ouest\"; B2:B4039; \">=\"&DATE(2026; 1; 1)) ✓ telle quelle. Excel accepte l’espace après chaque point-virgule.\nÉtape 4 : répondez.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -2872,7 +2624,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Formules : NB.JOURS.OUVRES et SERIE.JOUR.OUVRE",
-                "subtitle": "Formules pas à pas · page 6 sur 13",
                 "image": "/assets/cours/b3-02/v1/jours-ouvres.webp",
                 "imageAlt": "Infographie : un calendrier de mars 2026, week-end grisé, du vendredi de la commande au lundi de la livraison.",
                 "paragraphs": [
@@ -2919,7 +2670,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Formules : JOURSEM, DATEDIF et TEMPS",
-                "subtitle": "Formules pas à pas · page 7 sur 13",
                 "image": "/assets/cours/b3-02/v1/calendrier-joursem-datedif-temps.webp",
                 "imageAlt": "Infographie : une semaine numérotée pour JOURSEM, une frise de mois pour DATEDIF, une horloge pour TEMPS.",
                 "paragraphs": [
@@ -2966,7 +2716,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Formules : MOYENNE, MEDIANE et la médiane sous conditions",
-                "subtitle": "Formules pas à pas · page 8 sur 13",
                 "image": "/assets/cours/b3-02/v1/moyenne-ou-mediane.webp",
                 "imageAlt": "Infographie : cinq colis dont un délai de 40 jours ; la balance de la moyenne penche, la médiane reste au milieu.",
                 "paragraphs": [
@@ -3006,7 +2755,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 4 — Délais et retards",
-          "consigne": "Dans l’onglet Commandes du classeur de reprise. Étape 1 : en P1 tapez delai, en P2 =NB.JOURS.OUVRES(B2;C2)-1. Étape 2 : en Q1 date_promise, en Q2 =SERIE.JOUR.OUVRE(B2;5), au format Date. Étape 3 : en R1 aide, en R2 =SI(ET(F2=\"AG12\"; B2>=DATE(2026; 1; 1)); P2; \"\") ; recopiez P2:R2 jusqu’en ligne 4039. Étape 4 : la médiane, =MEDIANE(R2:R4039). Étape 5 : les retards, =NB.SI.ENS(P2:P4039; \">5\"; B2:B4039; \">=\"&DATE(2026; 1; 1)) : un délai de plus de 5 jours ouvrés dépasse la date promise.",
+          "consigne": "Dans l’onglet Commandes du classeur de reprise.\nÉtape 1 : en P1 tapez delai, en P2 =NB.JOURS.OUVRES(B2;C2)-1 ✓ telle quelle.\nÉtape 2 : en Q1 date_promise, en Q2 =SERIE.JOUR.OUVRE(B2;5) ✓ telle quelle, au format Date.\nÉtape 3 : en R1 aide, en R2 =SI(ET(F2=\"AG12\"; B2>=DATE(2026; 1; 1)); P2; \"\") ✓ telle quelle ; recopiez P2:R2 jusqu’en ligne 4039.\nÉtape 4 : la médiane, dans une cellule vide, =MEDIANE(R2:R4039) ✓ telle quelle.\nÉtape 5 : les retards, dans une cellule vide, =NB.SI.ENS(P2:P4039; \">5\"; B2:B4039; \">=\"&DATE(2026; 1; 1)) ✓ telle quelle : un délai de plus de 5 jours ouvrés dépasse la date promise.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -3198,7 +2947,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Outil : le tableau structuré et ANNEE",
-                "subtitle": "Formules pas à pas · page 9 sur 13",
                 "image": "/assets/cours/b3-02/v1/tableau-structure.webp",
                 "imageAlt": "Infographie : une plage fixe laisse dehors les lignes collées dessous ; le tableau T_Commandes s’étire pour les prendre.",
                 "paragraphs": [
@@ -3245,7 +2993,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Outil : le tableau croisé dynamique",
-                "subtitle": "Formules pas à pas · page 10 sur 13",
                 "image": "/assets/cours/b3-02/v1/tcd-quatre-zones.webp",
                 "imageAlt": "Infographie : les quatre zones du volet des champs et un TCD dont la ligne Rennes fait 100 %.",
                 "paragraphs": [
@@ -3285,7 +3032,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 5 — Le TCD de la direction",
-          "consigne": "Dans le classeur de reprise. Étape 1 : cliquez dans Commandes, Ctrl + L (⌘ + T sur Mac), nommez le tableau T_Commandes. Étape 2 : en S1 tapez annee, en S2 =ANNEE([@date_commande]) : la colonne se remplit seule. Étape 3 : premier TCD depuis T_Commandes : agence_id en Lignes, categorie en Colonnes, ca_ht en Valeurs affiché en % du total de la ligne, annee en Filtres sur 2026. Étape 4 : second TCD, sur une autre feuille : date_commande en Lignes, groupée par Trimestres et Années, ca_ht en Valeurs, sans filtre. Étape 5 : répondez.",
+          "consigne": "Dans le classeur de reprise.\nÉtape 1 : cliquez dans Commandes, Ctrl + L (⌘ + T sur Mac), nommez le tableau T_Commandes.\nÉtape 2 : en S1 tapez annee, en S2 =ANNEE([@date_commande]) ✓ telle quelle : la colonne se remplit seule.\nÉtape 3 : premier TCD depuis T_Commandes : agence_id en Lignes, categorie en Colonnes, ca_ht en Valeurs affiché en % du total de la ligne, annee en Filtres sur 2026.\nÉtape 4 : second TCD, sur une autre feuille : date_commande en Lignes, groupée par Trimestres et Années, ca_ht en Valeurs, sans filtre.\nÉtape 5 : répondez.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -3484,7 +3231,7 @@
           "libelle": "Classeur de reprise avec T_Commandes",
           "reservee": true
         },
-        "notes": "• Ouvrir d’abord le classeur de reprise avec T_Commandes, tous : les exercices 6 et 7 s’y font.\n• Temps « réfléchir » des graphiques : vote non noté ; révélation : redessiner au tableau les deux barres depuis zéro.",
+        "notes": "• Ouvrir d’abord le classeur de reprise avec T_Commandes, tous : l’exercice 6 s’y fait.\n• Temps « réfléchir » des graphiques : vote non noté ; révélation : redessiner au tableau les deux barres depuis zéro.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -3538,7 +3285,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Outil : le graphique qui répond à une question",
-                "subtitle": "Formules pas à pas · page 11 sur 13",
                 "image": "/assets/cours/b3-02/v1/graphique-qui-repond.webp",
                 "imageAlt": "Infographie : six vignettes associent une question à son graphique ; deux barres, l’axe coupé puis l’axe depuis zéro.",
                 "paragraphs": [
@@ -3562,121 +3308,13 @@
             }
           }
         },
-        "notes": "• 2 min ; faire dire la question avant le type de graphique.\n• Répartition : Insertion › Insérer un graphique statistique › Histogramme (sur Mac, icône Statistiques). À éviter : la 3D, le camembert de plus de cinq parts, le double axe. Axe : clic droit › Mise en forme de l’axe › Minimum : 0.\n• Transition : « CA et objectif par agence : exercice 6. »",
+        "notes": "• 2 min ; faire dire la question avant le type de graphique.\n• Répartition : Insertion › Insérer un graphique statistique › Histogramme (sur Mac, icône Statistiques). À éviter : la 3D, le camembert de plus de cinq parts, le double axe. Axe : clic droit › Mise en forme de l’axe › Minimum : 0.\n• Transition : « Nadia a trente secondes : un vote. »",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
         "questions": [],
         "corrigeEcran": null,
         "reflexion": null
-      },
-      {
-        "id": "B3-02-A2-13-ATELIER-GRAPHIQUES",
-        "type": "questionnaire",
-        "titre": "Exercice 6 — CA et objectif par agence",
-        "duree": 8,
-        "interactif": true,
-        "donnees": {
-          "intitule": "Exercice 6 — CA et objectif par agence",
-          "consigne": "Dans le classeur de reprise avec T_Commandes, sur une feuille Synthèse. Étape 1 : en A1 à D1, les en-têtes agence_id, ca, objectif, atteinte ; en A2 à A13, les douze agence_id, de AG01 à AG12. Étape 2 : en B2, =SOMME.SI.ENS(T_Commandes[ca_ht]; T_Commandes[agence_id]; A2; T_Commandes[annee]; 2026). Étape 3 : en C2, l’objectif des mêmes mois, =SOMME.SI.ENS(Objectifs!$C$2:$C$253; Objectifs!$A$2:$A$253; A2; Objectifs!$B$2:$B$253; \">=\"&DATE(2026; 1; 1)). Étape 4 : en D2, =B2/C2 au format Pourcentage ; recopiez B2:D2 jusqu’en ligne 13. Étape 5 : sélectionnez A1:C13, Insertion › Histogramme groupé ; un titre qui conclut, l’axe vertical depuis 0.",
-          "regime": "focus",
-          "ordre": "fixe",
-          "questions": [
-            {
-              "brique": "fp-numeric",
-              "donnees": {
-                "question": {
-                  "id": "b3-02-a2-agences-sous-objectif",
-                  "enonce": "Combien d’agences ont un CA de janvier à septembre 2026 sous leur objectif cumulé des mêmes mois ? Saisissez un nombre entier.",
-                  "unite": "agences",
-                  "metadonnees": {
-                    "concepts": ["choix-du-graphique", "tableau-de-bord"],
-                    "misconceptionsCiblees": [],
-                    "dureeMinutes": 8,
-                    "modalite": "solo",
-                    "regime": "focus"
-                  }
-                }
-              }
-            },
-            {
-              "brique": "fp-numeric",
-              "donnees": {
-                "question": {
-                  "id": "b3-02-a2-atteinte-rennes",
-                  "enonce": "Quel est le taux d’atteinte de Rennes (AG06), de janvier à septembre 2026 ? En %, sans le symbole, arrondi au dixième de point.",
-                  "unite": "%",
-                  "metadonnees": {
-                    "concepts": ["choix-du-graphique", "tableau-de-bord"],
-                    "misconceptionsCiblees": [],
-                    "dureeMinutes": 8,
-                    "modalite": "solo",
-                    "regime": "focus"
-                  }
-                }
-              }
-            }
-          ]
-        },
-        "notes": "• Temps : réflexion 1 min · travail 5 min · correction 2 min\n• Réflexion : faire dire où vit l’objectif, dans une autre table que les ventes, d’où la synthèse par SOMME.SI.ENS.\n• Pièges : comparer neuf mois de ventes à tous les objectifs ; oublier la période des deux côtés.\n• Corriger question par question, en commençant par la moins réussie (score sous chaque correction).\n• Projeter un graphique réussi : titre qui conclut, légende, axe depuis zéro.\n• Transition : « Nadia a trente secondes : un vote. »",
-        "diffusion": "seance",
-        "seuil": 0.7,
-        "corriges": [
-          {
-            "questionId": "b3-02-a2-agences-sous-objectif",
-            "bonneReponse": "3 agences",
-            "optionId": null,
-            "confusions": [
-              {
-                "id": "objectif-annuel-pour-cumul",
-                "libelle": "Comparer un cumul de neuf mois à tous les objectifs de l’agence, sans filtrer la période."
-              },
-              {
-                "id": "periode-mal-delimitee",
-                "libelle": "Agréger plus large que la question en oubliant une de ses conditions : la table entière au lieu des seuls mois demandés, ou toutes les ventes d’une agence au lieu de celles de la catégorie et de la période demandées."
-              }
-            ]
-          },
-          {
-            "questionId": "b3-02-a2-atteinte-rennes",
-            "bonneReponse": "79,0 %",
-            "optionId": null,
-            "confusions": [
-              {
-                "id": "objectif-annuel-pour-cumul",
-                "libelle": "Comparer un cumul de neuf mois à tous les objectifs de l’agence, sans filtrer la période."
-              },
-              {
-                "id": "periode-mal-delimitee",
-                "libelle": "Agréger plus large que la question en oubliant une de ses conditions : la table entière au lieu des seuls mois demandés, ou toutes les ventes d’une agence au lieu de celles de la catégorie et de la période demandées."
-              }
-            ]
-          }
-        ],
-        "questions": [
-          {
-            "id": "b3-02-a2-agences-sous-objectif",
-            "enonce": "Combien d’agences ont un CA de janvier à septembre 2026 sous leur objectif cumulé des mêmes mois ? Saisissez un nombre entier.",
-            "options": null
-          },
-          {
-            "id": "b3-02-a2-atteinte-rennes",
-            "enonce": "Quel est le taux d’atteinte de Rennes (AG06), de janvier à septembre 2026 ? En %, sans le symbole, arrondi au dixième de point.",
-            "options": null
-          }
-        ],
-        "corrigeEcran": null,
-        "reflexion": null,
-        "explications": [
-          {
-            "reference": "b3-02-a2-agences-sous-objectif",
-            "texte": "3 agences restent sous leur objectif cumulé de janvier à septembre 2026 : la colonne D, sous 100 %, les désigne."
-          },
-          {
-            "reference": "b3-02-a2-atteinte-rennes",
-            "texte": "CA de Rennes ÷ objectif cumulé de Rennes, ses objectifs mensuels de janvier à septembre 2026 : 79,0 %, le taux le plus bas du réseau. Comparé à tous les objectifs de la table, vingt et un mois, le CA de neuf mois paraît sous l’objectif dans les 12 agences, et Rennes tombe à 33,8 %. Sans critère de date, ni sur les ventes ni sur les objectifs : 7 agences sous l’objectif, et Rennes à 90,8 %."
-          }
-        ]
       },
       {
         "id": "B3-02-A2-14-VOTE-TRENTE-SECONDES",
@@ -3774,7 +3412,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Formules : taux de marque, évolution, taux d’atteinte et SOMMEPROD",
-                "subtitle": "Formules pas à pas · page 12 sur 13",
                 "image": "/assets/cours/b3-02/v1/ratios-de-sommes.webp",
                 "imageAlt": "Infographie : deux ventes ; le ratio des sommes donne 32,7 %, la moyenne des taux 45 %, barrée.",
                 "paragraphs": [
@@ -3821,7 +3458,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Outil : tableau de bord, MFC et segments",
-                "subtitle": "Formules pas à pas · page 13 sur 13",
                 "image": "/assets/cours/b3-02/v1/tableau-de-bord.webp",
                 "imageAlt": "Infographie : une page de tableau de bord, quatre indicateurs comparés, deux graphiques, un segment relié, des taux en rouge.",
                 "paragraphs": [
@@ -3845,7 +3481,7 @@
             }
           }
         },
-        "notes": "• 2 min ; montrer la règle =$E5<0,95 appliquée de A5 à la dernière agence ; barres de données sur les seules cellules des agences.\n• Chemins complets : Nouvelle règle › Utiliser une formule pour déterminer pour quelles cellules le format sera appliqué (sur Mac, Style Classique d’abord) ; segment sur Mac par Analyse du tableau croisé dynamique › Segment, Connexions de rapport pour en relier plusieurs. Un segment ne filtre pas les cellules calculées par formule.\n• Recommandation hors dossier : Caen, panier moyen −12 % ; deux gros clients passés en ligne ; un contrat-cadre avant la fin du trimestre.\n• Transition : « Le tableau de bord Direction : exercice 7. »",
+        "notes": "• 2 min ; montrer la règle =$E5<0,95 appliquée de A5 à la dernière agence ; barres de données sur les seules cellules des agences.\n• Chemins complets : Nouvelle règle › Utiliser une formule pour déterminer pour quelles cellules le format sera appliqué (sur Mac, Style Classique d’abord) ; segment sur Mac par Analyse du tableau croisé dynamique › Segment, Connexions de rapport pour en relier plusieurs. Un segment ne filtre pas les cellules calculées par formule.\n• Recommandation hors dossier : Caen, panier moyen −12 % ; deux gros clients passés en ligne ; un contrat-cadre avant la fin du trimestre.\n• Transition : « Le tableau de bord Direction : exercice 6. »",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -3856,12 +3492,12 @@
       {
         "id": "B3-02-A2-17-ATELIER-DASHBOARD",
         "type": "questionnaire",
-        "titre": "Exercice 7 — Le tableau de bord Direction",
-        "duree": 10,
+        "titre": "Exercice 6 — Le tableau de bord Direction",
+        "duree": 12,
         "interactif": true,
         "donnees": {
-          "intitule": "Exercice 7 — Le tableau de bord Direction",
-          "consigne": "Dans le classeur de reprise avec T_Commandes, sur un onglet Dashboard. Étape 1 : en B1, le CA 2026, =SOMME.SI.ENS(T_Commandes[ca_ht]; T_Commandes[annee]; 2026). Étape 2 : en B2, le CA de janvier à septembre 2025, =SOMME.SI.ENS(T_Commandes[ca_ht]; T_Commandes[annee]; 2025; T_Commandes[date_commande]; \"<=\"&DATE(2025; 9; 30)) ; en B3, l’évolution, =B1/B2-1, au format Pourcentage. Étape 3 : en B4, le taux de marque de Marseille, =SOMME.SI.ENS(T_Commandes[marge]; T_Commandes[agence_id]; \"AG09\"; T_Commandes[annee]; 2026)/SOMME.SI.ENS(T_Commandes[ca_ht]; T_Commandes[agence_id]; \"AG09\"; T_Commandes[annee]; 2026), au format Pourcentage. Étape 4 : un TCD de la marge par agence, la marge en barres de données, et un segment region relié au TCD. Étape 5 : répondez.",
+          "intitule": "Exercice 6 — Le tableau de bord Direction",
+          "consigne": "Dans le classeur de reprise avec T_Commandes, sur un onglet Dashboard.\nÉtape 1 : en B1, le CA 2026, =SOMME.SI.ENS(T_Commandes[ca_ht]; T_Commandes[annee]; 2026) ✓ telle quelle.\nÉtape 2 : en B2, le CA de janvier à septembre 2025, =SOMME.SI.ENS(T_Commandes[ca_ht]; T_Commandes[annee]; 2025; T_Commandes[date_commande]; \"<=\"&DATE(2025; 9; 30)) ✓ telle quelle ; en B3, l’évolution, =B1/B2-1 ✓ telle quelle, au format Pourcentage.\nÉtape 3 : en B4, le taux de marque de Marseille, =SOMME.SI.ENS(T_Commandes[marge]; T_Commandes[agence_id]; \"AG09\"; T_Commandes[annee]; 2026)/SOMME.SI.ENS(T_Commandes[ca_ht]; T_Commandes[agence_id]; \"AG09\"; T_Commandes[annee]; 2026) ✓ telle quelle, au format Pourcentage.\nÉtape 4 : un TCD de la marge par agence, la marge en barres de données, et un segment region relié au TCD.\nÉtape 5 : cliquez dans le TCD, Analyse du tableau croisé dynamique › Graphique croisé dynamique › Histogramme groupé ; un titre qui conclut, l’axe vertical depuis 0.\nÉtape 6 : répondez.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -3873,9 +3509,13 @@
                   "enonce": "De combien le CA de janvier à septembre 2026 a-t-il évolué par rapport aux mêmes mois de 2025 ? En %, sans le symbole, arrondi au dixième de point.",
                   "unite": "%",
                   "metadonnees": {
-                    "concepts": ["tableau-de-bord", "indicateur-statistique"],
+                    "concepts": [
+                      "tableau-de-bord",
+                      "indicateur-statistique",
+                      "choix-du-graphique"
+                    ],
                     "misconceptionsCiblees": [],
-                    "dureeMinutes": 10,
+                    "dureeMinutes": 12,
                     "modalite": "solo",
                     "regime": "focus"
                   }
@@ -3890,9 +3530,13 @@
                   "enonce": "Quel est le CA HT cumulé du réseau, de janvier à septembre 2026 ? En euros, sans le symbole, arrondi à l’euro.",
                   "unite": "€",
                   "metadonnees": {
-                    "concepts": ["tableau-de-bord", "indicateur-statistique"],
+                    "concepts": [
+                      "tableau-de-bord",
+                      "indicateur-statistique",
+                      "choix-du-graphique"
+                    ],
                     "misconceptionsCiblees": [],
-                    "dureeMinutes": 10,
+                    "dureeMinutes": 12,
                     "modalite": "solo",
                     "regime": "focus"
                   }
@@ -3907,9 +3551,13 @@
                   "enonce": "Quel est le taux de marque de Marseille (AG09), marge ÷ CA HT, de janvier à septembre 2026 ? En %, sans le symbole, arrondi au dixième de point.",
                   "unite": "%",
                   "metadonnees": {
-                    "concepts": ["tableau-de-bord", "indicateur-statistique"],
+                    "concepts": [
+                      "tableau-de-bord",
+                      "indicateur-statistique",
+                      "choix-du-graphique"
+                    ],
                     "misconceptionsCiblees": [],
-                    "dureeMinutes": 10,
+                    "dureeMinutes": 12,
                     "modalite": "solo",
                     "regime": "focus"
                   }
@@ -3918,7 +3566,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 1 min · travail 7 min · correction 2 min\n• Réflexion : faire dire chaque indicateur et sa comparaison avant de construire.\n• Pièges : neuf mois comparés à douze ; toute la table au lieu de 2026 ; moyenne des taux ; marge divisée par le coût d’achat.\n• Corriger question par question, en commençant par la moins réussie (score sous chaque correction).\n• Règle 6 du cahier : « Je montre la méthode de chaque chiffre et le nombre de lignes retenues. »\n• Transition : « Toutes les formules sur une page, à garder. »",
+        "notes": "• Temps : réflexion 1 min · travail 9 min · correction 2 min\n• Réflexion : faire dire chaque indicateur et sa comparaison avant de construire, puis la question à laquelle répond le graphique.\n• Pièges : neuf mois comparés à douze ; toute la table au lieu de 2026 ; moyenne des taux ; marge divisée par le coût d’achat ; l’axe qui ne part pas de zéro.\n• Corriger question par question, en commençant par la moins réussie (score sous chaque correction).\n• Projeter l’histogramme réussi : titre qui conclut, axe depuis zéro.\n• Règle 6 du cahier : « Je montre la méthode de chaque chiffre et le nombre de lignes retenues. »\n• Transition : « Toutes les formules sur une page, à garder. »",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -4010,37 +3658,10 @@
             "presentation": {
               "version": 2,
               "screenId": "B3-02-A2-18-FICHE-RECAP-1",
-              "renderer": "grid",
+              "renderer": "illustration",
               "props": {
-                "title": "Fiche récap 1 : nettoyer, chercher, additionner",
-                "subtitle": "Une carte par famille : chaque formule, sa syntaxe, son piège. « 2021 ou 365 » : Excel 2021 ou 365 seulement.",
-                "items": [
-                  {
-                    "title": "Texte",
-                    "description": "SUPPRESPACE(texte), NOMPROPRE(texte), MAJUSCULE, MINUSCULE ; NBCAR(texte) compte les caractères. Piège : écrire dans la colonne brute."
-                  },
-                  {
-                    "title": "Nombre et date en texte",
-                    "description": "SUBSTITUE(texte; ancien; nouveau), puis CNUM(texte) ; ESTNUM(valeur) ; DATEVAL(texte) ; UNICAR(160). Power Query rejoue le nettoyage. Piège : CNUM d’abord, #VALEUR!."
-                  },
-                  {
-                    "title": "Doublons",
-                    "description": "Données › Supprimer les doublons, toutes les colonnes cochées, sur une copie. Piège : la dernière ligne compte l’en-tête."
-                  },
-                  {
-                    "title": "Comparer et signaler",
-                    "description": "SI(test; si_vrai; si_faux), OU(…), ET(…), SI.CONDITIONS(test1; valeur1; …). Piège : ET au lieu de OU."
-                  },
-                  {
-                    "title": "Chercher",
-                    "description": "RECHERCHEV(clé; table; n°_colonne; FAUX), table figée par $ ; INDEX(colonne; EQUIV(clé; colonne_clé; 0)) ; RECHERCHEX, 2021 ou 365. Piège : #N/A à la recopie."
-                  },
-                  {
-                    "title": "Additionner, compter",
-                    "description": "SOMME.SI.ENS(plage_somme; plage1; critère1; …), NB.SI.ENS(plage1; critère1; …), critère \">=\"&DATE(2026; 1; 1). Piège : DATE dans les guillemets rend 0."
-                  }
-                ],
-                "imprimable": true
+                "image": "/assets/cours/b3-02/v1/fiche-recap-1.webp",
+                "imageAlt": "Fiche récap 1 sur 2 : nettoyer, chercher, additionner. Nommer la famille du problème, puis écrire sa formule, toujours dans une nouvelle colonne. 1. Nettoyer le texte : SUPPRESPACE(texte) puis NOMPROPRE(texte), « BORDEAUX » entouré d’espaces devient « Bordeaux » ; MAJUSCULE et MINUSCULE changent toute la casse ; NBCAR(texte) compte les caractères, espaces compris. 2. Du texte au nombre : SUBSTITUE deux fois, puis CNUM, « 1 250,00 € » devient 1250,00 puis le nombre 1250 ; un texte se cale à gauche, un nombre à droite ; ESTNUM(valeur) le vérifie. UNICAR(160) : l’espace insécable ; DATEVAL(texte) : une date en texte ; Power Query rejoue le nettoyage. 3. Supprimer les doublons : Données › Supprimer les doublons, toutes les colonnes cochées, sur une copie de l’onglet ; des trois lignes de la commande 41 (Sac 2 80, Lampe 1 35, Sac 2 80), seule la ligne identique partout part, la lampe reste. 4. Signaler : SI(OU(…)), une anomalie suffit ; ET(…), il les faut toutes ; remise 80 % et client C041, ou remise 10 % et client vide : « À vérifier » par OU, « OK » par ET. On signale, on ne corrige pas : la ligne douteuse reste ; SI.CONDITIONS pour plusieurs cas. 5. Chercher : RECHERCHEV(clé;$table$;n°;FAUX), colonne 1 produit, 2 libellé, 3 catégorie : P07 rend Textile (P07 Nappe Textile, P12 Lampe Déco). La clé en première colonne, FAUX pour l’exact. Sinon INDEX(colonne;EQUIV(clé;colonne_clé;0)) ; RECHERCHEX dans Excel 2021 ou 365. 6. Additionner sous conditions : SOMME.SI.ENS(somme;plage1;critère1;…), Lyon 2026 200 et 300 gardées, Lyon 2025 150 et Nice 2026 90 écartées : 500. NB.SI.ENS compte les lignes. Critère de date : \">=\"&DATE(2026;1;1), la date hors des guillemets, jointe par &. Les pièges : =CNUM(A2) sur « 120 € » donne #VALEUR!, SUBSTITUE d’abord, puis CNUM donne 120 ; \">=DATE(2026;1;1)\" dans les guillemets, la somme vaut 0 ; RECHERCHEV(H2;A2:C41;3;FAUX) recopiée sans $, la table glisse et #N/A gagne le bas, d’où $A$2:$C$41 ; doublons cochés sur « cde » seule, 2 lignes sur 3 partent, toutes les colonnes cochées, seule la copie exacte part. Au tableur : =NOMPROPRE(SUPPRESPACE(E2)) ; =CNUM(SUBSTITUE(SUBSTITUE(L2;\" €\";\"\");\" \";\"\")) ; =SI(OU(K2>0,5;D2=\"\");\"À vérifier\";\"OK\"), une seule anomalie suffit à signaler la ligne ; =RECHERCHEV(H2;Produits!$A$2:$E$41;3;FAUX), la catégorie du produit, table figée ; =INDEX($C$2:$C$41;EQUIV(H2;$A$2:$A$41;0)) ; =SOMME.SI.ENS(D:D;B:B;\"Lyon\";C:C;\">=\"&DATE(2026;1;1)), le CA de Lyon depuis le 1ᵉʳ janvier 2026."
               }
             },
             "metadonnees": {
@@ -4052,7 +3673,11 @@
             }
           }
         },
-        "notes": "• 1 min : la fiche s’imprime et se garde pour le cas pratique de fin de module.\n• Une carte par famille de problème : nommer la famille d’abord, la formule ensuite.",
+        "pieceJointe": {
+          "libelle": "Fiche récap 1 (PDF)",
+          "fichier": "/assets/cours/b3-02/b3-02-fiche-recap-1.d5d022d7.pdf"
+        },
+        "notes": "• 1 min : la fiche A4 se télécharge en PDF et se garde pour le cas pratique de fin de module.\n• Une carte par famille de problème : nommer la famille d’abord, la formule ensuite.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -4072,37 +3697,10 @@
             "presentation": {
               "version": 2,
               "screenId": "B3-02-A2-19-FICHE-RECAP-2",
-              "renderer": "grid",
+              "renderer": "illustration",
               "props": {
-                "title": "Fiche récap 2 : dater, résumer, croiser, montrer",
-                "subtitle": "Une carte par famille : chaque formule, sa syntaxe, son piège. « 2021 ou 365 » : Excel 2021 ou 365 seulement.",
-                "items": [
-                  {
-                    "title": "Dates",
-                    "description": "NB.JOURS.OUVRES(début;fin) − 1 ; SERIE.JOUR.OUVRE(début;n) ; JOURSEM(date;2) ; DATEDIF(début;fin;\"M\") ; TEMPS(h;m;s) ; ANNEE(date). Piège : C2 − B2 compte le week-end."
-                  },
-                  {
-                    "title": "Résumer",
-                    "description": "MOYENNE, MEDIANE, AGREGAT(12;5;plage) sous filtre, ECARTYPE.STANDARD(plage). Piège : la moyenne tirée par une valeur extrême."
-                  },
-                  {
-                    "title": "Classer, filtrer",
-                    "description": "EQUATION.RANG(valeur;plage), GRANDE.VALEUR(plage;k), filtre automatique ; TRIER, FILTRE, UNIQUE, 2021 ou 365. Piège : un filtre resté actif."
-                  },
-                  {
-                    "title": "Croiser",
-                    "description": "Tableau structuré, Ctrl + L, T_Commandes[ca_ht] ; tableau croisé dynamique, % du total de la ligne, trimestres et années. Piège : la plage fixe."
-                  },
-                  {
-                    "title": "Ratios",
-                    "description": "Taux de marque = marge ÷ CA HT ; évolution = valeur ÷ an passé − 1 ; atteinte = réalisé ÷ objectif ; SOMMEPROD(plage1;plage2). Piège : la moyenne des taux."
-                  },
-                  {
-                    "title": "Montrer",
-                    "description": "Le graphique d’après la question, axe depuis zéro ; barres de données, MFC par formule, segments ; $ fige à la recopie, F4. Piège : un chiffre sans comparaison."
-                  }
-                ],
-                "imprimable": true
+                "image": "/assets/cours/b3-02/v1/fiche-recap-2.webp",
+                "imageAlt": "Fiche récap 2 sur 2 : dater, résumer, croiser, montrer. Compter en jours ouvrés, choisir le bon résumé, croiser par un tableau, montrer un chiffre comparé. 1. Compter en jours ouvrés : commande le jeudi, livraison le mardi, fin − début = 5 jours mais NB.JOURS.OUVRES − 1 = 3 jours. NB.JOURS.OUVRES(début;fin) − 1 ; SERIE.JOUR.OUVRE(début;5) : la date promise, 5 jours ouvrés plus tard, week-ends sautés. 2. Lire le calendrier : pour lun. 9/11/2026, JOURSEM(date;2) rend 1 et ANNEE(date) rend 2026 ; DATEDIF(15/1/2026;15/4/2026;\"M\") rend 3 mois. Avec 2 en second argument, lundi vaut 1 et dimanche 7. TEMPS(h;m;s) construit une durée. 3. Moyenne ou médiane ? Délais : 2, 2, 3, 3 et 60 jours, un colis à 60 jours : moyenne 14, médiane 3. MEDIANE(plage) pour un délai typique. MOYENNE suit la valeur extrême, MEDIANE reste au milieu. AGREGAT(12;5;plage) : la médiane sous filtre ; ECARTYPE.STANDARD(plage) : la dispersion. 4. Tableau structuré : Ctrl + L (⌘ + T sur Mac), T_Ventes[montant] ; sous 12/03/2025 80 2025 et 04/02/2026 120 2026, la ligne collée 09/11/2026 60 2026 entre seule. Une formule de colonne se recopie seule : =ANNEE([@[date_vente]]). Classer : EQUATION.RANG, GRANDE.VALEUR ; TRIER, FILTRE, UNIQUE (2021 ou 365). 5. Le tableau croisé dynamique : Filtres annee = 2026, Lignes ville, Colonnes categorie, Valeurs montant en % ligne. Afficher les valeurs › % du total de la ligne : chaque ligne fait 100 %, la part de chaque catégorie dans la ville. Les dates se groupent par Trimestres et Années. 6. Ratios et tableau de bord : vente 1, marge 10 € et CA 20 € ; vente 2, marge 20 € et CA 200 € : 30 ÷ 220, le ratio des sommes, 13,6 %. Taux de marque = Σ marges ÷ Σ CA HT ; un indicateur, toujours avec sa comparaison. Évolution = valeur ÷ même période − 1 ; atteinte = réalisé ÷ objectif ; SOMMEPROD(qtés;prix). Axe depuis 0, barres de données, MFC par formule, segments. Les pièges : du jeudi au mardi, fin − début = 5 jours, alors que NB.JOURS.OUVRES − 1 = 3 jours ouvrés ; délais 2, 2, 3, 3, 60 : 14 jours en moyenne, la médiane : 3 jours, le délai habituel ; taux de 50 % et 10 % : 30 % en moyenne, faux, marges 10 € et 20 €, CA 20 € et 200 € : 30 ÷ 220 ≈ 13,6 % ; 9 mois de 2026 ÷ 12 mois de 2025 − 1, faux, janvier-septembre ÷ janvier-septembre : la même période. Au tableur : =NB.JOURS.OUVRES(B2;C2)-1, le délai en jours ouvrés après la commande ; =SERIE.JOUR.OUVRE(B2;5), la date promise ; =MEDIANE(D2:D200), le délai typique ; =ANNEE([@[date_vente]]), l’année recopiée seule ; =SOMME.SI.ENS(T_Ventes[montant];T_Ventes[annee];2026), le CA 2026 même quand le tableau grandit ; =SOMME(T_Ventes[marge])/SOMME(T_Ventes[montant]), le taux de marque sur les sommes."
               }
             },
             "metadonnees": {
@@ -4114,7 +3712,11 @@
             }
           }
         },
-        "notes": "• 1 min : la fiche s’imprime et se garde pour le cas pratique de fin de module.\n• Une carte par famille de problème : nommer la famille d’abord, la formule ensuite.",
+        "pieceJointe": {
+          "libelle": "Fiche récap 2 (PDF)",
+          "fichier": "/assets/cours/b3-02/b3-02-fiche-recap-2.227e5d62.pdf"
+        },
+        "notes": "• 1 min : la fiche A4 se télécharge en PDF et se garde pour le cas pratique de fin de module.\n• Une carte par famille de problème : nommer la famille d’abord, la formule ensuite.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -4206,7 +3808,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Une IA qui analyse vos données",
-                "subtitle": "L’IA analyste · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -4247,7 +3848,7 @@
             }
           }
         },
-        "notes": "• 3 min, enchaînées sur le cahier de règles : 6 min d’exposition au plus.\n• Chacun utilise l’IA de son choix, pourvu qu’elle exécute du code sur un fichier ; sans compte, on travaille en binôme.",
+        "notes": "• 3 min, enchaînées sur le cahier de règles, puis sur le prompt lancé tous ensemble.\n• Le formateur lance le prompt sur son propre compte, avec une IA qui exécute du code sur un fichier ; la classe lit et compare.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -4270,7 +3871,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Le cahier de règles de l’analyste",
-                "subtitle": "L’IA analyste · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -4312,7 +3912,7 @@
             }
           }
         },
-        "notes": "• 3 min ; chaque règle a été dite à la correction d’un exercice : faire retrouver lequel.\n• Transition : « Le rapport d’une IA à auditer : exercice 8. »",
+        "notes": "• 3 min ; chaque règle a été dite à la correction d’un exercice : faire retrouver lequel.\n• Transition : « L’IA analyste, tous ensemble : le prompt. »",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -4321,255 +3921,28 @@
         "reflexion": null
       },
       {
-        "id": "B3-02-A3-04-AUDIT-RAPPORT-IA",
-        "type": "fp-cardsort",
-        "titre": "Exercice 8 — Auditer le rapport d’une IA",
-        "duree": 11,
-        "interactif": true,
+        "id": "B3-02-A3-04-PROMPT-TOUS-ENSEMBLE",
+        "type": "fp-story",
+        "titre": "L’IA analyste, tous ensemble",
+        "duree": 30,
+        "interactif": false,
         "donnees": {
-          "plan": {
-            "id": "b3-02-a3-audit",
-            "intitule": "Le rapport d’une IA sur la reprise nettoyée, écrit pour ce cours. Comparez chaque affirmation à vos résultats et rangez-la.",
-            "cartes": [
-              {
-                "id": "delai-strasbourg",
-                "libelle": "Délai de livraison de Strasbourg en 2026 : 10 jours ouvrés, la moyenne des délais."
-              },
-              {
-                "id": "marge-moyenne",
-                "libelle": "Taux de marque de Marseille en 2026 : 28,7 %, la moyenne des taux de chaque ligne."
-              },
-              {
-                "id": "evolution",
-                "libelle": "Évolution du CA 2026 : -22,1 %, janvier-septembre 2026 ÷ toute l’année 2025 − 1."
-              },
-              {
-                "id": "marge-cout",
-                "libelle": "Taux de marque de Marseille en 2026 : 36,9 %, la marge divisée par le coût d’achat."
-              },
-              {
-                "id": "atteinte-rennes",
-                "libelle": "Taux d’atteinte de Rennes de janvier à septembre 2026 : 79,0 %, CA ÷ objectifs des mêmes mois."
-              },
-              {
-                "id": "retards",
-                "libelle": "Lignes commandées en 2026 et livrées après leur date promise : 99."
-              },
-              {
-                "id": "part-info",
-                "libelle": "Part de l’informatique dans le CA de Rennes en 2026 : 1,5 %, divisée par le CA du réseau."
-              },
-              {
-                "id": "ca-rennes-info",
-                "libelle": "CA de Rennes en informatique en 2026 : 27 862 €, toutes les lignes de Rennes en informatique additionnées."
+          "recit": {
+            "id": "B3-02-A3-04-PROMPT-TOUS-ENSEMBLE",
+            "presentation": {
+              "version": 2,
+              "screenId": "B3-02-A3-04-PROMPT-TOUS-ENSEMBLE",
+              "renderer": "prompt",
+              "props": {
+                "title": "L’IA analyste, tous ensemble",
+                "subtitle": "Le formateur colle ce prompt dans son IA, avec le classeur ; la classe compare ses chiffres aux vôtres.",
+                "prompt": "Rôle\nTu es analyste data pour Norvane Équipement, un réseau de 12 agences.\n\nDonnées\nLe classeur joint, la reprise nettoyée de l’export des ventes :\n- Commandes (colonnes A à M) : une ligne par produit commandé ; date_commande, date_livraison, agence_id, produit_id, quantite, ca_ht ;\n- Quarantaine : les lignes douteuses, à laisser de côté ;\n- Clients ; Agences (agence_id, ville, region) ; Produits (produit_id, categorie, cout_unitaire) ; Objectifs.\nDéfinitions :\n- date promise = 5 jours ouvrés après date_commande ;\n- délai = jours ouvrés entre date_commande et date_livraison, jour de commande exclu, sans jours fériés ;\n- marge = ca_ht − quantite × cout_unitaire, cout_unitaire pris dans Produits.\n\nRègles\n1. Je relie les tables par un identifiant, jamais par un libellé.\n2. Je corrige seul ce qui est faux et certain ; je signale ce qui est douteux, je ne supprime rien.\n3. J’écris la période dans chaque critère, la même pour le chiffre et pour sa comparaison.\n4. Pour un délai typique je prends la médiane ; pour un taux, le ratio des sommes.\n5. J’écris le dénominateur de chaque pourcentage.\n6. Je montre la méthode de chaque chiffre et le nombre de lignes retenues.\n\nQuestions\nQ1. CA HT de Rennes (AG06) en informatique, de janvier à septembre 2026, en euros.\nQ2. Délai médian de livraison de Strasbourg (AG12) en 2026, en jours ouvrés.\nQ3. Nombre de lignes du réseau commandées en 2026 et livrées après leur date promise.\nQ4. Part de l’informatique dans le CA HT de Rennes (AG06), de janvier à septembre 2026, en %.\nQ5. Évolution du CA HT du réseau de janvier à septembre 2026 par rapport aux mêmes mois de 2025, en %.\nQ6. Taux de marque de Marseille (AG09), marge ÷ CA HT, de janvier à septembre 2026, en %.\n\nFormat\nUn tableau : question, chiffre, méthode ou code, lignes retenues."
               }
-            ],
-            "categories": [
-              {
-                "id": "juste",
-                "libelle": "Juste : le même chiffre que le mien"
-              },
-              {
-                "id": "periode",
-                "libelle": "Faux : la période (règle 3)"
-              },
-              {
-                "id": "resume",
-                "libelle": "Faux : le résumé (règle 4)"
-              },
-              {
-                "id": "denominateur",
-                "libelle": "Faux : le dénominateur (règle 5)"
-              }
-            ],
+            },
             "metadonnees": {
               "concepts": ["ia-analyste"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 11,
-              "modalite": "binome",
-              "regime": "ouvert"
-            }
-          }
-        },
-        "notes": "• Temps : réflexion 2 min · travail 7 min · correction 2 min\n• Réflexion : faire ressortir ses propres résultats des exercices 3 à 7 avant de lire le rapport.\n• Le rapport est écrit pour ce cours, chiffres tirés du classeur de reprise : le dire.\n• Corriger case par case ; demander à chaque fois quel chiffre de la séance tranche.\n• Transition : « À vous d’écrire la consigne qui évite ces erreurs : exercice 9. »",
-        "diffusion": "seance",
-        "seuil": 0.7,
-        "corriges": [],
-        "questions": [
-          {
-            "id": "b3-02-a3-audit",
-            "enonce": "Le rapport d’une IA sur la reprise nettoyée, écrit pour ce cours. Comparez chaque affirmation à vos résultats et rangez-la.",
-            "options": null
-          }
-        ],
-        "corrigeEcran": {
-          "type": "classement",
-          "attendus": [
-            {
-              "carteId": "atteinte-rennes",
-              "categorieId": "juste",
-              "justification": "le chiffre de l’exercice 6, sur les mêmes mois"
-            },
-            {
-              "carteId": "retards",
-              "categorieId": "juste",
-              "justification": "le chiffre de l’exercice 4"
-            },
-            {
-              "carteId": "ca-rennes-info",
-              "categorieId": "periode",
-              "justification": "2025 additionné à 2026 : la période manque"
-            },
-            {
-              "carteId": "evolution",
-              "categorieId": "periode",
-              "justification": "neuf mois comparés à douze"
-            },
-            {
-              "carteId": "delai-strasbourg",
-              "categorieId": "resume",
-              "justification": "la moyenne tirée par les ruptures, au lieu de la médiane"
-            },
-            {
-              "carteId": "marge-moyenne",
-              "categorieId": "resume",
-              "justification": "une moyenne de taux, au lieu du ratio des sommes"
-            },
-            {
-              "carteId": "part-info",
-              "categorieId": "denominateur",
-              "justification": "divisée par le réseau, au lieu de Rennes"
-            },
-            {
-              "carteId": "marge-cout",
-              "categorieId": "denominateur",
-              "justification": "divisée par le coût d’achat : c’est le taux de marge"
-            }
-          ]
-        },
-        "reflexion": null,
-        "explications": [
-          {
-            "reference": "juste",
-            "texte": "Le taux d’atteinte de Rennes et les retards de 2026 sont vos chiffres des exercices 6 et 4 : comparés, ils se confirment. Les juger faux sans comparer, c’est rejeter l’IA par principe."
-          },
-          {
-            "reference": "periode",
-            "texte": "Le CA de Rennes en informatique additionne 2025 et 2026 ; l’évolution compare neuf mois de 2026 à toute l’année 2025. Règle 3 : la période dans chaque critère, la même pour le chiffre et pour sa comparaison."
-          },
-          {
-            "reference": "resume",
-            "texte": "Le délai moyen de Strasbourg est tiré par les ruptures livrées deux mois plus tard ; le taux de marque moyen fait peser les petites lignes autant que les grosses. Règle 4 : la médiane pour un délai typique, le ratio des sommes pour un taux."
-          },
-          {
-            "reference": "denominateur",
-            "texte": "La part de l’informatique divisée par le réseau, et la marge divisée par le coût d’achat, répondent à d’autres questions. Règle 5 : écrire le dénominateur de chaque pourcentage."
-          }
-        ]
-      },
-      {
-        "id": "B3-02-A3-05-DEFI-CONSIGNE",
-        "type": "fp-challenge",
-        "titre": "Exercice 9 — Votre consigne à l’IA",
-        "duree": 7,
-        "interactif": true,
-        "donnees": {
-          "probleme": {
-            "id": "b3-02-a3-consigne",
-            "enonce": "Vous allez confier le classeur de reprise nettoyé à une IA, pour qu’elle refasse les analyses des exercices 3 à 7. Écrivez la consigne que vous lui donnerez.",
-            "invite": "En cinq parties : le rôle, les données, vos règles, les questions avec leur période et leur unité, le format de la réponse.",
-            "strategies": [],
-            "metadonnees": {
-              "concepts": ["ia-analyste"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 7,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
-        },
-        "notes": "• Temps : réflexion 1 min · travail 4 min · correction 2 min\n• Réflexion : faire relire la page de la consigne en cinq parties et le cahier de règles.\n• La consigne écrite ici sert telle quelle à l’écran suivant.\n• Révéler les stratégies ; demander pourquoi la dernière est fausse : elle fait corriger le douteux, et ne dit ni période, ni unité, ni format.\n• Transition : « Votre IA au travail. »",
-        "diffusion": "seance",
-        "seuil": null,
-        "corriges": [],
-        "questions": [],
-        "corrigeEcran": {
-          "type": "defi",
-          "strategies": [
-            {
-              "id": "role",
-              "libelle": "Rôle : « Tu es analyste data pour Norvane Équipement, un réseau de 12 agences. »",
-              "fausse": false
-            },
-            {
-              "id": "donnees",
-              "libelle": "Données : « Onglet Commandes, une ligne par produit commandé, clés agence_id et produit_id ; référentiels Agences, Produits, Objectifs ; onglet Quarantaine à laisser de côté. »",
-              "fausse": false
-            },
-            {
-              "id": "regles",
-              "libelle": "Règles : les six règles du cahier, mot pour mot.",
-              "fausse": false
-            },
-            {
-              "id": "questions",
-              "libelle": "Questions : une par ligne, avec sa période et son unité, « CA HT de Rennes en informatique, de janvier à septembre 2026, en euros ».",
-              "fausse": false
-            },
-            {
-              "id": "format",
-              "libelle": "Format : « Un tableau question, chiffre, méthode ou code, lignes retenues. »",
-              "fausse": false
-            },
-            {
-              "id": "tout-corriger",
-              "libelle": "« Analyse ce fichier, corrige toutes les erreurs et donne-moi les chiffres clés. »",
-              "fausse": true
-            }
-          ]
-        },
-        "reflexion": null,
-        "explications": [
-          {
-            "reference": "consigne",
-            "texte": "Une bonne consigne tient en cinq parties : rôle, données, règles, questions avec leur période et leur unité, format de réponse. « Corrige toutes les erreurs » est la consigne fausse : elle laisse l’IA trancher le douteux, contre la règle 2, et ne dit ni période ni dénominateur."
-          }
-        ]
-      },
-      {
-        "id": "B3-02-A3-06-ANALYSE-IA",
-        "type": "fp-pro",
-        "titre": "L’IA au travail : ses chiffres contre les vôtres",
-        "duree": 18,
-        "interactif": true,
-        "donnees": {
-          "cas": {
-            "id": "B3-02-A3-06-ANALYSE-IA",
-            "metier": "Analyste data — Norvane Équipement (réseau de 12 agences)",
-            "situation": "Nadia veut savoir si une IA peut refaire vos analyses. Sept questions, de janvier à septembre 2026 : 1. CA de Rennes en informatique ; 2. délai médian de Strasbourg ; 3. retards ; 4. part de l’informatique à Rennes ; 5. atteinte de Rennes ; 6. évolution du CA ; 7. taux de marque de Marseille.",
-            "geste": "Donnez le classeur nettoyé et votre consigne à l’IA de votre choix, posez les sept questions, puis notez son chiffre, le vôtre et la règle en cause.",
-            "consequence": "Un écart que vous ne savez pas expliquer, vous ne pouvez ni le confier ni le présenter.",
-            "questionsLibres": [
-              {
-                "id": "b3-02-a3-analyse:outil",
-                "question": "Quelle IA avez-vous utilisée, et avec qui si vous étiez en binôme ?",
-                "placeholder": "IA : … · binôme : …"
-              },
-              {
-                "id": "b3-02-a3-analyse:chiffres",
-                "question": "Une ligne par question, de 1 à 7 : le chiffre de l’IA, le vôtre (exercices 3 à 7), la règle en cause s’ils diffèrent.",
-                "placeholder": "1. IA : … · moi : … · règle : …"
-              },
-              {
-                "id": "b3-02-a3-analyse:ecarts",
-                "question": "Votre bilan : combien de chiffres justes sur sept, et l’écart le plus grave, avec sa cause.",
-                "placeholder": "… justes sur 7 · écart le plus grave : …"
-              }
-            ],
-            "metadonnees": {
-              "concepts": ["ia-analyste"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 18,
+              "dureeMinutes": 30,
               "modalite": "solo",
               "regime": "ouvert"
             }
@@ -4579,78 +3952,13 @@
           "libelle": "Classeur de reprise nettoyé",
           "reservee": true
         },
-        "notes": "• 18 min : 2 pour ouvrir l’IA et lui donner le fichier, 12 pour poser les sept questions, 4 pour noter les écarts.\n• Sans compte, en binôme sur le poste du voisin ; si aucune IA ne répond, le formateur projette la sienne et la classe dicte la consigne.\n• Passer dans les rangs : faire demander à l’IA sa méthode quand son chiffre diffère.",
+        "notes": "• 30 min : 3 pour ouvrir l’IA sur le compte du formateur et lui donner le classeur, 2 pour coller le prompt, 15 pour la laisser calculer et lire sa méthode, 10 pour comparer avec la classe.\n• Chiffres de référence, ceux des exercices 3 à 6 : Q1 : 8 342 € ; Q2 : 8 jours ouvrés ; Q3 : 99 lignes ; Q4 : 27,2 % ; Q5 : +8,6 % ; Q6 : 26,9 %.\n• Quand un chiffre de l’IA diffère, faire dire la règle en cause, puis demander à l’IA sa méthode.\n• Transition : « Gardez la fiche mémo de l’IA analyste. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
         "questions": [],
         "corrigeEcran": null,
         "reflexion": null
-      },
-      {
-        "id": "B3-02-A3-07-RECOMMANDATIONS",
-        "type": "fp-pro",
-        "titre": "Exercice 10 — Vos recommandations au comité",
-        "duree": 12,
-        "interactif": true,
-        "donnees": {
-          "cas": {
-            "id": "B3-02-A3-07-RECOMMANDATIONS",
-            "metier": "Analyste data — Norvane Équipement (réseau de 12 agences)",
-            "situation": "Jeudi, Nadia présente le réseau au comité de direction. Demandez à votre IA deux recommandations tirées du classeur, puis gardez-les ou corrigez-les.",
-            "geste": "Pour chacune : un constat chiffré, vérifié contre vos résultats, sa cause trouvée dans le détail, une action précise, datée, confiée à quelqu’un.",
-            "consequence": "Une recommandation sans chiffre vérifié ne convainc pas ; sans cause, elle traite le symptôme ; sans action, elle ne change rien.",
-            "questionsLibres": [
-              {
-                "id": "b3-02-a3-recommandations:recommandation-1",
-                "question": "Recommandation 1 : constat chiffré → cause → action, telle que vous la présenteriez.",
-                "placeholder": "Constat : … Cause : … Action : …"
-              },
-              {
-                "id": "b3-02-a3-recommandations:recommandation-2",
-                "question": "Recommandation 2 : constat chiffré → cause → action, telle que vous la présenteriez.",
-                "placeholder": "Constat : … Cause : … Action : …"
-              },
-              {
-                "id": "b3-02-a3-recommandations:confier",
-                "question": "Ce que vous confieriez à l’IA au prochain export, et ce que vous vérifieriez toujours vous-même.",
-                "placeholder": "Je confie : … Je vérifie : …"
-              }
-            ],
-            "metadonnees": {
-              "concepts": ["tableau-de-bord", "ia-analyste"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 12,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
-        },
-        "notes": "• Temps : réflexion 1 min · travail 9 min · correction 2 min\n• Réflexion : faire relire la synthèse de l’exercice 6 et le tableau de bord de l’exercice 7 : ce qui sort de l’ordinaire.\n• Rouen, troisième agence sous l’objectif, recule un peu sans cause qui ressorte du détail : à surveiller, pas une histoire.\n• Révéler la correction : les quatre histoires du réseau s’affichent ensemble ; les commenter une à une, en demandant qui l’avait trouvée, seul ou avec l’IA.\n• Transition : « Gardez la fiche mémo de l’IA analyste. »",
-        "diffusion": "seance",
-        "seuil": null,
-        "corriges": [],
-        "questions": [],
-        "corrigeEcran": null,
-        "reflexion": null,
-        "explications": [
-          {
-            "reference": "marseille",
-            "texte": "Marseille : la marge fond. Taux de marque de 32,3 % de janvier à septembre 2025, 26,9 % sur la même période de 2026, alors que le CA dépasse l’objectif. Cause : depuis janvier, le commercial C26 accorde des remises de 18 à 30 %, quand le réseau reste entre 0 et 10 %. Action : dès octobre, toute remise au-delà de 10 % validée par la direction, contrôle confié au responsable de l’agence."
-          },
-          {
-            "reference": "rennes",
-            "texte": "Rennes : sous l’objectif. Taux d’atteinte de 79,0 %, le plus bas du réseau. Cause : l’informatique recule de 40,2 % par rapport à la même période de 2025, les autres catégories bougent peu, de −4 % à +2 %. Action : d’ici décembre, reprendre la perte en informatique client par client et relancer l’offre, plan confié au responsable de l’agence."
-          },
-          {
-            "reference": "lille",
-            "texte": "Lille : la croissance. CA de janvier à septembre 2026 en hausse de 23,1 % sur la même période de 2025, la plus forte évolution du réseau. Cause : toute la demande de l’agence progresse, chacune des catégories croît de plus de 10 %, pas une seule. Action : avant le prochain comité, décrire ce qui marche à Lille et le partager aux autres agences, travail confié au responsable de l’agence."
-          },
-          {
-            "reference": "strasbourg",
-            "texte": "Strasbourg : les retards. Délai médian de 8 jours ouvrés en 2026, contre 2 en 2025, et des ruptures livrées environ deux mois plus tard. Le contrat promet 5 jours ouvrés. Cause : le décrochage date de mars 2026 et touche toutes les catégories, signe d’un problème de transport à l’agence, aggravé par des ruptures de stock d’avril à juillet. Action : dès octobre, traiter le transport et le stock de Strasbourg avant de perdre ses clients, plan confié au responsable de l’agence."
-          }
-        ]
       },
       {
         "id": "B3-02-A3-08-FICHE-MEMO",
@@ -4720,7 +4028,7 @@
     "id": "b3-02-formules-et-ia-analyste",
     "titre": "Toutes les formules, puis l’IA analyste",
     "niveau": "B3",
-    "duree": 180,
+    "duree": 156,
     "concepts": [
       "reference-de-cellule",
       "jeu-de-donnees",
@@ -4761,7 +4069,7 @@
               "renderer": "hero",
               "props": {
                 "title": "Toutes les formules, puis l’IA analyste",
-                "subtitle": "Mardi 17 novembre, 8 h 30. Nadia Ferrand attend toujours l’analyse de son export. On reprend là où on s’est arrêtés : le nettoyage. Deux heures pour savoir faire, formule par formule ; une heure pour faire faire à une IA, et vérifier. Données fictives.",
+                "subtitle": "Mardi 17 novembre, 8 h 30. Nadia Ferrand attend toujours l’analyse de son export. On reprend là où on s’est arrêtés : le nettoyage. Deux heures pour savoir faire, formule par formule ; une demi-heure avec une IA, tous ensemble, pour la faire travailler et vérifier. Données fictives.",
                 "bgImage": "/assets/cours/gravures/v1/hollerith-recensement-1890.jpg",
                 "bgImageAlt": "Gravure du Scientific American (1890) : les machines électriques de Herman Hollerith dépouillent les cartes perforées du recensement américain"
               }
@@ -4811,7 +4119,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Formules : SUPPRESPACE et NOMPROPRE",
-                "subtitle": "Formules pas à pas · page 1 sur 13",
                 "image": "/assets/cours/b3-02/v1/nettoyer-le-texte.webp",
                 "imageAlt": "Infographie : une ville en capitales entourée d’espaces passe par SUPPRESPACE puis NOMPROPRE et devient « Bordeaux ».",
                 "paragraphs": [
@@ -4851,7 +4158,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Formules : SUBSTITUE, CNUM et ESTNUM",
-                "subtitle": "Formules pas à pas · page 2 sur 13",
                 "image": "/assets/cours/b3-02/v1/convertir-un-montant.webp",
                 "imageAlt": "Infographie : un montant en texte perd son symbole et son espace par deux SUBSTITUE, puis CNUM le rend nombre.",
                 "paragraphs": [
@@ -4891,7 +4197,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Formules : SI, OU et ET",
-                "subtitle": "Formules pas à pas · page 3 sur 13",
                 "image": "/assets/cours/b3-02/v1/signaler-par-si-ou.webp",
                 "imageAlt": "Infographie : trois tests passent dans un entonnoir OU ; un seul vrai suffit pour marquer la ligne « À vérifier ».",
                 "paragraphs": [
@@ -4947,7 +4252,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Formule : RECHERCHEV",
-                "subtitle": "Formules pas à pas · page 4 sur 13",
                 "image": "/assets/cours/b3-02/v1/recherchev-quatre-arguments.webp",
                 "imageAlt": "Infographie : les quatre arguments de RECHERCHEV numérotés, et la ligne AG06 de la table Agences qui rend « Ouest ».",
                 "paragraphs": [
@@ -4987,7 +4291,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Formules : SOMME.SI.ENS, NB.SI.ENS et DATE",
-                "subtitle": "Formules pas à pas · page 5 sur 13",
                 "image": "/assets/cours/b3-02/v1/additionner-sous-conditions.webp",
                 "imageAlt": "Infographie : SOMME.SI.ENS en couleurs, un entonnoir ne laisse passer que les lignes de Rennes en 2026.",
                 "paragraphs": [
@@ -5051,7 +4354,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Formules : NB.JOURS.OUVRES et SERIE.JOUR.OUVRE",
-                "subtitle": "Formules pas à pas · page 6 sur 13",
                 "image": "/assets/cours/b3-02/v1/jours-ouvres.webp",
                 "imageAlt": "Infographie : un calendrier de mars 2026, week-end grisé, du vendredi de la commande au lundi de la livraison.",
                 "paragraphs": [
@@ -5091,7 +4393,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Formules : JOURSEM, DATEDIF et TEMPS",
-                "subtitle": "Formules pas à pas · page 7 sur 13",
                 "image": "/assets/cours/b3-02/v1/calendrier-joursem-datedif-temps.webp",
                 "imageAlt": "Infographie : une semaine numérotée pour JOURSEM, une frise de mois pour DATEDIF, une horloge pour TEMPS.",
                 "paragraphs": [
@@ -5131,7 +4432,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Formules : MOYENNE, MEDIANE et la médiane sous conditions",
-                "subtitle": "Formules pas à pas · page 8 sur 13",
                 "image": "/assets/cours/b3-02/v1/moyenne-ou-mediane.webp",
                 "imageAlt": "Infographie : cinq colis dont un délai de 40 jours ; la balance de la moyenne penche, la médiane reste au milieu.",
                 "paragraphs": [
@@ -5187,7 +4487,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Outil : le tableau structuré et ANNEE",
-                "subtitle": "Formules pas à pas · page 9 sur 13",
                 "image": "/assets/cours/b3-02/v1/tableau-structure.webp",
                 "imageAlt": "Infographie : une plage fixe laisse dehors les lignes collées dessous ; le tableau T_Commandes s’étire pour les prendre.",
                 "paragraphs": [
@@ -5227,7 +4526,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Outil : le tableau croisé dynamique",
-                "subtitle": "Formules pas à pas · page 10 sur 13",
                 "image": "/assets/cours/b3-02/v1/tcd-quatre-zones.webp",
                 "imageAlt": "Infographie : les quatre zones du volet des champs et un TCD dont la ligne Rennes fait 100 %.",
                 "paragraphs": [
@@ -5326,7 +4624,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Outil : le graphique qui répond à une question",
-                "subtitle": "Formules pas à pas · page 11 sur 13",
                 "image": "/assets/cours/b3-02/v1/graphique-qui-repond.webp",
                 "imageAlt": "Infographie : six vignettes associent une question à son graphique ; deux barres, l’axe coupé puis l’axe depuis zéro.",
                 "paragraphs": [
@@ -5352,14 +4649,6 @@
         }
       },
       {
-        "id": "B3-02-A2-13-ATELIER-GRAPHIQUES",
-        "type": "ecran-verrouille",
-        "titre": "Exercice 6 — CA et objectif par agence",
-        "duree": 8,
-        "interactif": false,
-        "donnees": {}
-      },
-      {
         "id": "B3-02-A2-14-VOTE-TRENTE-SECONDES",
         "type": "ecran-verrouille",
         "titre": "Vote : trente secondes",
@@ -5382,7 +4671,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Formules : taux de marque, évolution, taux d’atteinte et SOMMEPROD",
-                "subtitle": "Formules pas à pas · page 12 sur 13",
                 "image": "/assets/cours/b3-02/v1/ratios-de-sommes.webp",
                 "imageAlt": "Infographie : deux ventes ; le ratio des sommes donne 32,7 %, la moyenne des taux 45 %, barrée.",
                 "paragraphs": [
@@ -5422,7 +4710,6 @@
               "renderer": "image-left",
               "props": {
                 "title": "Outil : tableau de bord, MFC et segments",
-                "subtitle": "Formules pas à pas · page 13 sur 13",
                 "image": "/assets/cours/b3-02/v1/tableau-de-bord.webp",
                 "imageAlt": "Infographie : une page de tableau de bord, quatre indicateurs comparés, deux graphiques, un segment relié, des taux en rouge.",
                 "paragraphs": [
@@ -5450,8 +4737,8 @@
       {
         "id": "B3-02-A2-17-ATELIER-DASHBOARD",
         "type": "ecran-verrouille",
-        "titre": "Exercice 7 — Le tableau de bord Direction",
-        "duree": 10,
+        "titre": "Exercice 6 — Le tableau de bord Direction",
+        "duree": 12,
         "interactif": false,
         "donnees": {}
       },
@@ -5467,37 +4754,10 @@
             "presentation": {
               "version": 2,
               "screenId": "B3-02-A2-18-FICHE-RECAP-1",
-              "renderer": "grid",
+              "renderer": "illustration",
               "props": {
-                "title": "Fiche récap 1 : nettoyer, chercher, additionner",
-                "subtitle": "Une carte par famille : chaque formule, sa syntaxe, son piège. « 2021 ou 365 » : Excel 2021 ou 365 seulement.",
-                "items": [
-                  {
-                    "title": "Texte",
-                    "description": "SUPPRESPACE(texte), NOMPROPRE(texte), MAJUSCULE, MINUSCULE ; NBCAR(texte) compte les caractères. Piège : écrire dans la colonne brute."
-                  },
-                  {
-                    "title": "Nombre et date en texte",
-                    "description": "SUBSTITUE(texte; ancien; nouveau), puis CNUM(texte) ; ESTNUM(valeur) ; DATEVAL(texte) ; UNICAR(160). Power Query rejoue le nettoyage. Piège : CNUM d’abord, #VALEUR!."
-                  },
-                  {
-                    "title": "Doublons",
-                    "description": "Données › Supprimer les doublons, toutes les colonnes cochées, sur une copie. Piège : la dernière ligne compte l’en-tête."
-                  },
-                  {
-                    "title": "Comparer et signaler",
-                    "description": "SI(test; si_vrai; si_faux), OU(…), ET(…), SI.CONDITIONS(test1; valeur1; …). Piège : ET au lieu de OU."
-                  },
-                  {
-                    "title": "Chercher",
-                    "description": "RECHERCHEV(clé; table; n°_colonne; FAUX), table figée par $ ; INDEX(colonne; EQUIV(clé; colonne_clé; 0)) ; RECHERCHEX, 2021 ou 365. Piège : #N/A à la recopie."
-                  },
-                  {
-                    "title": "Additionner, compter",
-                    "description": "SOMME.SI.ENS(plage_somme; plage1; critère1; …), NB.SI.ENS(plage1; critère1; …), critère \">=\"&DATE(2026; 1; 1). Piège : DATE dans les guillemets rend 0."
-                  }
-                ],
-                "imprimable": true
+                "image": "/assets/cours/b3-02/v1/fiche-recap-1.webp",
+                "imageAlt": "Fiche récap 1 sur 2 : nettoyer, chercher, additionner. Nommer la famille du problème, puis écrire sa formule, toujours dans une nouvelle colonne. 1. Nettoyer le texte : SUPPRESPACE(texte) puis NOMPROPRE(texte), « BORDEAUX » entouré d’espaces devient « Bordeaux » ; MAJUSCULE et MINUSCULE changent toute la casse ; NBCAR(texte) compte les caractères, espaces compris. 2. Du texte au nombre : SUBSTITUE deux fois, puis CNUM, « 1 250,00 € » devient 1250,00 puis le nombre 1250 ; un texte se cale à gauche, un nombre à droite ; ESTNUM(valeur) le vérifie. UNICAR(160) : l’espace insécable ; DATEVAL(texte) : une date en texte ; Power Query rejoue le nettoyage. 3. Supprimer les doublons : Données › Supprimer les doublons, toutes les colonnes cochées, sur une copie de l’onglet ; des trois lignes de la commande 41 (Sac 2 80, Lampe 1 35, Sac 2 80), seule la ligne identique partout part, la lampe reste. 4. Signaler : SI(OU(…)), une anomalie suffit ; ET(…), il les faut toutes ; remise 80 % et client C041, ou remise 10 % et client vide : « À vérifier » par OU, « OK » par ET. On signale, on ne corrige pas : la ligne douteuse reste ; SI.CONDITIONS pour plusieurs cas. 5. Chercher : RECHERCHEV(clé;$table$;n°;FAUX), colonne 1 produit, 2 libellé, 3 catégorie : P07 rend Textile (P07 Nappe Textile, P12 Lampe Déco). La clé en première colonne, FAUX pour l’exact. Sinon INDEX(colonne;EQUIV(clé;colonne_clé;0)) ; RECHERCHEX dans Excel 2021 ou 365. 6. Additionner sous conditions : SOMME.SI.ENS(somme;plage1;critère1;…), Lyon 2026 200 et 300 gardées, Lyon 2025 150 et Nice 2026 90 écartées : 500. NB.SI.ENS compte les lignes. Critère de date : \">=\"&DATE(2026;1;1), la date hors des guillemets, jointe par &. Les pièges : =CNUM(A2) sur « 120 € » donne #VALEUR!, SUBSTITUE d’abord, puis CNUM donne 120 ; \">=DATE(2026;1;1)\" dans les guillemets, la somme vaut 0 ; RECHERCHEV(H2;A2:C41;3;FAUX) recopiée sans $, la table glisse et #N/A gagne le bas, d’où $A$2:$C$41 ; doublons cochés sur « cde » seule, 2 lignes sur 3 partent, toutes les colonnes cochées, seule la copie exacte part. Au tableur : =NOMPROPRE(SUPPRESPACE(E2)) ; =CNUM(SUBSTITUE(SUBSTITUE(L2;\" €\";\"\");\" \";\"\")) ; =SI(OU(K2>0,5;D2=\"\");\"À vérifier\";\"OK\"), une seule anomalie suffit à signaler la ligne ; =RECHERCHEV(H2;Produits!$A$2:$E$41;3;FAUX), la catégorie du produit, table figée ; =INDEX($C$2:$C$41;EQUIV(H2;$A$2:$A$41;0)) ; =SOMME.SI.ENS(D:D;B:B;\"Lyon\";C:C;\">=\"&DATE(2026;1;1)), le CA de Lyon depuis le 1ᵉʳ janvier 2026."
               }
             },
             "metadonnees": {
@@ -5508,6 +4768,10 @@
               "regime": "ouvert"
             }
           }
+        },
+        "pieceJointe": {
+          "libelle": "Fiche récap 1 (PDF)",
+          "fichier": "/assets/cours/b3-02/b3-02-fiche-recap-1.d5d022d7.pdf"
         }
       },
       {
@@ -5522,37 +4786,10 @@
             "presentation": {
               "version": 2,
               "screenId": "B3-02-A2-19-FICHE-RECAP-2",
-              "renderer": "grid",
+              "renderer": "illustration",
               "props": {
-                "title": "Fiche récap 2 : dater, résumer, croiser, montrer",
-                "subtitle": "Une carte par famille : chaque formule, sa syntaxe, son piège. « 2021 ou 365 » : Excel 2021 ou 365 seulement.",
-                "items": [
-                  {
-                    "title": "Dates",
-                    "description": "NB.JOURS.OUVRES(début;fin) − 1 ; SERIE.JOUR.OUVRE(début;n) ; JOURSEM(date;2) ; DATEDIF(début;fin;\"M\") ; TEMPS(h;m;s) ; ANNEE(date). Piège : C2 − B2 compte le week-end."
-                  },
-                  {
-                    "title": "Résumer",
-                    "description": "MOYENNE, MEDIANE, AGREGAT(12;5;plage) sous filtre, ECARTYPE.STANDARD(plage). Piège : la moyenne tirée par une valeur extrême."
-                  },
-                  {
-                    "title": "Classer, filtrer",
-                    "description": "EQUATION.RANG(valeur;plage), GRANDE.VALEUR(plage;k), filtre automatique ; TRIER, FILTRE, UNIQUE, 2021 ou 365. Piège : un filtre resté actif."
-                  },
-                  {
-                    "title": "Croiser",
-                    "description": "Tableau structuré, Ctrl + L, T_Commandes[ca_ht] ; tableau croisé dynamique, % du total de la ligne, trimestres et années. Piège : la plage fixe."
-                  },
-                  {
-                    "title": "Ratios",
-                    "description": "Taux de marque = marge ÷ CA HT ; évolution = valeur ÷ an passé − 1 ; atteinte = réalisé ÷ objectif ; SOMMEPROD(plage1;plage2). Piège : la moyenne des taux."
-                  },
-                  {
-                    "title": "Montrer",
-                    "description": "Le graphique d’après la question, axe depuis zéro ; barres de données, MFC par formule, segments ; $ fige à la recopie, F4. Piège : un chiffre sans comparaison."
-                  }
-                ],
-                "imprimable": true
+                "image": "/assets/cours/b3-02/v1/fiche-recap-2.webp",
+                "imageAlt": "Fiche récap 2 sur 2 : dater, résumer, croiser, montrer. Compter en jours ouvrés, choisir le bon résumé, croiser par un tableau, montrer un chiffre comparé. 1. Compter en jours ouvrés : commande le jeudi, livraison le mardi, fin − début = 5 jours mais NB.JOURS.OUVRES − 1 = 3 jours. NB.JOURS.OUVRES(début;fin) − 1 ; SERIE.JOUR.OUVRE(début;5) : la date promise, 5 jours ouvrés plus tard, week-ends sautés. 2. Lire le calendrier : pour lun. 9/11/2026, JOURSEM(date;2) rend 1 et ANNEE(date) rend 2026 ; DATEDIF(15/1/2026;15/4/2026;\"M\") rend 3 mois. Avec 2 en second argument, lundi vaut 1 et dimanche 7. TEMPS(h;m;s) construit une durée. 3. Moyenne ou médiane ? Délais : 2, 2, 3, 3 et 60 jours, un colis à 60 jours : moyenne 14, médiane 3. MEDIANE(plage) pour un délai typique. MOYENNE suit la valeur extrême, MEDIANE reste au milieu. AGREGAT(12;5;plage) : la médiane sous filtre ; ECARTYPE.STANDARD(plage) : la dispersion. 4. Tableau structuré : Ctrl + L (⌘ + T sur Mac), T_Ventes[montant] ; sous 12/03/2025 80 2025 et 04/02/2026 120 2026, la ligne collée 09/11/2026 60 2026 entre seule. Une formule de colonne se recopie seule : =ANNEE([@[date_vente]]). Classer : EQUATION.RANG, GRANDE.VALEUR ; TRIER, FILTRE, UNIQUE (2021 ou 365). 5. Le tableau croisé dynamique : Filtres annee = 2026, Lignes ville, Colonnes categorie, Valeurs montant en % ligne. Afficher les valeurs › % du total de la ligne : chaque ligne fait 100 %, la part de chaque catégorie dans la ville. Les dates se groupent par Trimestres et Années. 6. Ratios et tableau de bord : vente 1, marge 10 € et CA 20 € ; vente 2, marge 20 € et CA 200 € : 30 ÷ 220, le ratio des sommes, 13,6 %. Taux de marque = Σ marges ÷ Σ CA HT ; un indicateur, toujours avec sa comparaison. Évolution = valeur ÷ même période − 1 ; atteinte = réalisé ÷ objectif ; SOMMEPROD(qtés;prix). Axe depuis 0, barres de données, MFC par formule, segments. Les pièges : du jeudi au mardi, fin − début = 5 jours, alors que NB.JOURS.OUVRES − 1 = 3 jours ouvrés ; délais 2, 2, 3, 3, 60 : 14 jours en moyenne, la médiane : 3 jours, le délai habituel ; taux de 50 % et 10 % : 30 % en moyenne, faux, marges 10 € et 20 €, CA 20 € et 200 € : 30 ÷ 220 ≈ 13,6 % ; 9 mois de 2026 ÷ 12 mois de 2025 − 1, faux, janvier-septembre ÷ janvier-septembre : la même période. Au tableur : =NB.JOURS.OUVRES(B2;C2)-1, le délai en jours ouvrés après la commande ; =SERIE.JOUR.OUVRE(B2;5), la date promise ; =MEDIANE(D2:D200), le délai typique ; =ANNEE([@[date_vente]]), l’année recopiée seule ; =SOMME.SI.ENS(T_Ventes[montant];T_Ventes[annee];2026), le CA 2026 même quand le tableau grandit ; =SOMME(T_Ventes[marge])/SOMME(T_Ventes[montant]), le taux de marque sur les sommes."
               }
             },
             "metadonnees": {
@@ -5563,6 +4800,10 @@
               "regime": "ouvert"
             }
           }
+        },
+        "pieceJointe": {
+          "libelle": "Fiche récap 2 (PDF)",
+          "fichier": "/assets/cours/b3-02/b3-02-fiche-recap-2.227e5d62.pdf"
         }
       },
       {
@@ -5588,7 +4829,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Une IA qui analyse vos données",
-                "subtitle": "L’IA analyste · page 1 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -5645,7 +4885,6 @@
               "renderer": "lesson",
               "props": {
                 "title": "Le cahier de règles de l’analyste",
-                "subtitle": "L’IA analyste · page 2 sur 2",
                 "blocks": [
                   {
                     "kind": "definition",
@@ -5689,34 +4928,10 @@
         }
       },
       {
-        "id": "B3-02-A3-04-AUDIT-RAPPORT-IA",
+        "id": "B3-02-A3-04-PROMPT-TOUS-ENSEMBLE",
         "type": "ecran-verrouille",
-        "titre": "Exercice 8 — Auditer le rapport d’une IA",
-        "duree": 11,
-        "interactif": false,
-        "donnees": {}
-      },
-      {
-        "id": "B3-02-A3-05-DEFI-CONSIGNE",
-        "type": "ecran-verrouille",
-        "titre": "Exercice 9 — Votre consigne à l’IA",
-        "duree": 7,
-        "interactif": false,
-        "donnees": {}
-      },
-      {
-        "id": "B3-02-A3-06-ANALYSE-IA",
-        "type": "ecran-verrouille",
-        "titre": "L’IA au travail : ses chiffres contre les vôtres",
-        "duree": 18,
-        "interactif": false,
-        "donnees": {}
-      },
-      {
-        "id": "B3-02-A3-07-RECOMMANDATIONS",
-        "type": "ecran-verrouille",
-        "titre": "Exercice 10 — Vos recommandations au comité",
-        "duree": 12,
+        "titre": "L’IA analyste, tous ensemble",
+        "duree": 30,
         "interactif": false,
         "donnees": {}
       },

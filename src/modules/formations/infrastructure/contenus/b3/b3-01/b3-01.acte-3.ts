@@ -86,7 +86,6 @@ export const ACTE_3: moteur.Acte = [
     'lesson',
     {
       title: 'Un graphique répond à une question',
-      subtitle: 'Trace écrite · niveau 5',
       blocks: [
         {
           kind: 'method',
@@ -204,7 +203,6 @@ export const ACTE_3: moteur.Acte = [
     'lesson',
     {
       title: 'L’anatomie d’un tableau de bord',
-      subtitle: 'Trace écrite · niveau 6',
       blocks: [
         {
           kind: 'definition',
@@ -468,9 +466,7 @@ export const ACTE_3: moteur.Acte = [
   ficheMemoDuB301(),
 ];
 
-export function quatreHistoires(): AuMoinsUnModifiable<
-  readonly [string, string]
-> {
+function quatreHistoires(): AuMoinsUnModifiable<readonly [string, string]> {
   return [
     [
       'marseille',

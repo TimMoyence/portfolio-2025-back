@@ -4,6 +4,7 @@ import {
   auCentime,
   auMillionieme,
 } from '../../../../../../common/domain/nombres/arrondi';
+import { croissanceContinue } from '../../../../../../common/domain/nombres/statistiques';
 import type { ConceptId } from '../../../../domain/cours/banque/concepts';
 import type { ConfusionId } from '../../../../domain/cours/banque/confusions';
 import {
@@ -88,16 +89,16 @@ const VENTES_EN_BOUTIQUE = 900;
 const K_EN_BOUTIQUE = -0.04;
 const MOIS_EN_BOUTIQUE = 10;
 const ventes = (mois: number): number =>
-  VENTES_DE_JANVIER * Math.exp(K_DES_VENTES * mois);
+  croissanceContinue(VENTES_DE_JANVIER, K_DES_VENTES, mois);
 const enBoutique = (mois: number): number =>
-  VENTES_EN_BOUTIQUE * Math.exp(K_EN_BOUTIQUE * mois);
+  croissanceContinue(VENTES_EN_BOUTIQUE, K_EN_BOUTIQUE, mois);
 
 const COUT_DES_PANNES = 50;
 const COUT_DES_REVISIONS = 2000;
 const K_DES_REVISIONS = -0.1;
 const cout = (semaines: number): number =>
   COUT_DES_PANNES * semaines +
-  COUT_DES_REVISIONS * Math.exp(K_DES_REVISIONS * semaines);
+  croissanceContinue(COUT_DES_REVISIONS, K_DES_REVISIONS, semaines);
 const PART_DES_REVISIONS =
   COUT_DES_PANNES / (-K_DES_REVISIONS * COUT_DES_REVISIONS);
 const SEMAINES_OPTIMALES = Math.log(PART_DES_REVISIONS) / K_DES_REVISIONS;

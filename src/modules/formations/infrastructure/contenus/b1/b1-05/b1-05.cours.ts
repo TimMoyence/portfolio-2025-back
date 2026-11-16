@@ -252,7 +252,6 @@ const ACTE_1: moteur.Acte = [
     'lesson',
     {
       title: 'Et, ou, non : « ou » accepte les deux',
-      subtitle: 'Trace écrite · notion 1 · page 1 sur 2',
       blocks: [
         {
           kind: 'definition',
@@ -325,7 +324,6 @@ const ACTE_1: moteur.Acte = [
     'lesson',
     {
       title: 'Implication et équivalence : un seul cas faux',
-      subtitle: 'Trace écrite · notion 1 · page 2 sur 2',
       blocks: [
         {
           kind: 'definition',
@@ -640,7 +638,6 @@ const ACTE_2: moteur.Acte = [
     'lesson',
     {
       title: 'Les lois de Morgan : nier, puis échanger',
-      subtitle: 'Trace écrite · notion 2 · page 1 sur 2',
       blocks: [
         {
           kind: 'definition',
@@ -710,7 +707,6 @@ const ACTE_2: moteur.Acte = [
     'lesson',
     {
       title: 'Prédicats et négation : la borne change de camp',
-      subtitle: 'Trace écrite · notion 2 · page 2 sur 2',
       blocks: [
         {
           kind: 'definition',
@@ -1024,7 +1020,6 @@ const ACTE_3: moteur.Acte = [
     'lesson',
     {
       title: 'Pour tout, il existe : un contre-exemple suffit',
-      subtitle: 'Trace écrite · notion 3 · page 1 sur 2',
       blocks: [
         {
           kind: 'definition',
@@ -1093,7 +1088,6 @@ const ACTE_3: moteur.Acte = [
     'lesson',
     {
       title: 'L’ordre des quantificateurs : le second dépend du premier',
-      subtitle: 'Trace écrite · notion 3 · page 2 sur 2',
       blocks: [
         {
           kind: 'definition',

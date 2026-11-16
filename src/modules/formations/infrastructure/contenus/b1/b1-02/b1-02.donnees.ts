@@ -1,4 +1,7 @@
-import { somme } from '../../../../../../common/domain/nombres/statistiques';
+import {
+  partEnPourcent,
+  somme,
+} from '../../../../../../common/domain/nombres/statistiques';
 import {
   auDixieme,
   auMillionieme,
@@ -57,7 +60,7 @@ export const COEFFICIENT_GLOBAL = auMillionieme(
   (1 + HAUSSE_DE_2026) * (1 + HAUSSE_DE_2027),
 );
 const evolutionExacte = (depart: number, arrivee: number): number =>
-  ((arrivee - depart) / depart) * 100;
+  partEnPourcent(arrivee - depart, depart);
 
 const CA_2025 = [184, 120, 96, 80] as const;
 const CA_2026 = [207, 123, 92, 94] as const;
@@ -99,11 +102,14 @@ export const EVOLUTION_DU_CA = {
         formule: FORMULE_DU_TAUX,
         piegesDuModele: [
           [
-            auDixieme(((ARRIVEES[0] - DEPARTS[0]) / ARRIVEES[0]) * 100),
+            auDixieme(partEnPourcent(ARRIVEES[0] - DEPARTS[0], ARRIVEES[0])),
             BASE_ARRIVEE,
           ],
           [ARRIVEES[0] - DEPARTS[0], ECART],
-          [auDixieme((ARRIVEES[0] / DEPARTS[0]) * 100), COEFFICIENT_POUR_TAUX],
+          [
+            auDixieme(partEnPourcent(ARRIVEES[0], DEPARTS[0])),
+            COEFFICIENT_POUR_TAUX,
+          ],
         ],
         piegesDuRang: (rang) =>
           piegeDeLArrondi(evolutionExacte(DEPARTS[rang], ARRIVEES[rang])),
@@ -133,7 +139,7 @@ const [SANCTIONS_2021, SANCTIONS_2022, , SANCTIONS_2024] = SANCTIONS;
 const EVOLUTIONS_DE_2021_A_2024 = 3;
 
 const indiceExact = (sanctions: number): number =>
-  (sanctions / SANCTIONS_2021) * 100;
+  partEnPourcent(sanctions, SANCTIONS_2021);
 const [INDICE_2022, INDICE_2023, INDICE_2024] = SANCTIONS.slice(1).map(
   (sanctions) => auDixieme(indiceExact(sanctions)),
 );
@@ -152,7 +158,9 @@ const FORMULES_DE_L_ANNALE = {
 };
 
 const piegesDeLaRecopie = (rang: number): readonly Piege[] => {
-  const baseGlissee = auDixieme((SANCTIONS[rang + 1] / SANCTIONS[rang]) * 100);
+  const baseGlissee = auDixieme(
+    partEnPourcent(SANCTIONS[rang + 1], SANCTIONS[rang]),
+  );
   return [
     [baseGlissee, NON_FIGEE_EN_LIGNE],
     ...piegeDeLArrondi(indiceExact(SANCTIONS[rang + 1])),
@@ -204,7 +212,9 @@ export const SANCTIONS_DE_LA_CNIL = {
         ...piegeDeLArrondi(TAUX_2022_2024),
         [SANCTIONS_2024 - SANCTIONS_2022, ECART],
         [
-          auDixieme(((SANCTIONS_2024 - SANCTIONS_2022) / SANCTIONS_2024) * 100),
+          auDixieme(
+            partEnPourcent(SANCTIONS_2024 - SANCTIONS_2022, SANCTIONS_2024),
+          ),
           BASE_ARRIVEE,
         ],
       ],

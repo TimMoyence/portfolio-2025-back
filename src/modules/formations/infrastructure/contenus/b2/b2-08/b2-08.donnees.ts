@@ -5,6 +5,7 @@ import {
 } from '../../../../../../common/domain/nombres/arrondi';
 import type { ConceptId } from '../../../../domain/cours/banque/concepts';
 import type { ConfusionId } from '../../../../domain/cours/banque/confusions';
+import { croissanceContinue } from '../../../../../../common/domain/nombres/statistiques';
 import {
   avecVirgule,
   colonneDeValeurs,
@@ -79,7 +80,8 @@ const MINIMUM_DU_MARGINAL = 2;
 const K_DE_LA_DEMANDE = -0.04;
 const K_DE_L_OFFRE = 0.05;
 const RAPPORT_DEMANDE_SUR_OFFRE = 900 / 100;
-const demande = (p: number): number => 900 * Math.exp(K_DE_LA_DEMANDE * p);
+const demande = (p: number): number =>
+  croissanceContinue(900, K_DE_LA_DEMANDE, p);
 const recette = (p: number): number => p * demande(p);
 const PRIX_D_EQUILIBRE_EXACT =
   Math.log(RAPPORT_DEMANDE_SUR_OFFRE) / (K_DE_L_OFFRE - K_DE_LA_DEMANDE);

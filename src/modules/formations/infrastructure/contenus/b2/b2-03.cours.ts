@@ -403,7 +403,6 @@ const ACTE_1: moteur.Acte = [
     'lesson',
     {
       title: 'Propositions et connecteurs : non, et, ou',
-      subtitle: 'Trace écrite · notion 1 · page 1 sur 2',
       blocks: [
         {
           kind: 'definition',
@@ -459,7 +458,6 @@ const ACTE_1: moteur.Acte = [
     'lesson',
     {
       title: 'Implication et réciproque',
-      subtitle: 'Trace écrite · notion 1 · page 2 sur 2',
       blocks: [
         {
           kind: 'definition',
@@ -682,7 +680,6 @@ const ACTE_2: moteur.Acte = [
     'lesson',
     {
       title: 'La négation : nier une condition',
-      subtitle: 'Trace écrite · notion 2 · page 1 sur 2',
       blocks: [
         {
           kind: 'definition',
@@ -736,7 +733,6 @@ const ACTE_2: moteur.Acte = [
     'lesson',
     {
       title: 'Les lois de Morgan : nier « et », nier « ou »',
-      subtitle: 'Trace écrite · notion 2 · page 2 sur 2',
       blocks: [
         {
           kind: 'definition',
@@ -983,7 +979,6 @@ const ACTE_3: moteur.Acte = [
     'lesson',
     {
       title: 'Prédicats et quantificateurs',
-      subtitle: 'Trace écrite · notion 3 · page 1 sur 2',
       blocks: [
         {
           kind: 'definition',
@@ -1045,7 +1040,6 @@ const ACTE_3: moteur.Acte = [
     'lesson',
     {
       title: 'Quantificateurs au tableur',
-      subtitle: 'Trace écrite · notion 3 · page 2 sur 2',
       blocks: [
         {
           kind: 'method',

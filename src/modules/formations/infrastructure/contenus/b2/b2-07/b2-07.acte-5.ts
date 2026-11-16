@@ -165,7 +165,7 @@ export const ACTE_5: moteur.Acte = [
       {
         title: 'Rédiger au CCF',
         description: 'Quelles quatre étapes ?',
-        back: '1. Calculer f′(x). 2. Résoudre f′(x) = 0. 3. Étudier le signe de f′(x). 4. Dresser le tableau de variation et conclure par le x et la valeur.',
+        back: '1. Calculer f′(x).\n2. Résoudre f′(x) = 0.\n3. Étudier le signe de f′(x).\n4. Dresser le tableau de variation et conclure par le x et la valeur.',
       },
       {
         title: 'Tableur',
