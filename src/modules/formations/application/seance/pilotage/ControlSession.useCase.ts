@@ -25,10 +25,7 @@ import type {
   SessionRecord,
   UpdateSessionInput,
 } from '../../../domain/seance/acces/ISessions.repository';
-import {
-  InvalidStateTransitionError,
-  RevisionDeSeanceObsoleteError,
-} from '../../../domain/errors/FormationErrors';
+import { InvalidStateTransitionError } from '../../../domain/errors/FormationErrors';
 import { isFreeRangeValid } from '../../../domain/seance/etat/PacingMode';
 import type { FreeRange } from '../../../domain/seance/etat/PacingMode';
 import { canTransition } from '../../../domain/seance/etat/SessionState';
@@ -38,9 +35,7 @@ import {
   SESSIONS_REPOSITORY,
 } from '../../../domain/token';
 import { coursDeLaSeance } from '../CoursDeLaSeance';
-import { seanceNonTermineePilotablePar } from './SessionAccess';
-
-const TENTATIVES_SUR_REVISION_OBSOLETE = 5;
+import { ecrireSurLaRevisionLue } from './SessionAccess';
 
 @Injectable()
 export class ControlSessionUseCase {
@@ -58,33 +53,17 @@ export class ControlSessionUseCase {
     teacherId: string,
     changements: ControlSessionChanges,
   ): Promise<void> {
-    for (
-      let tentative = 0;
-      tentative < TENTATIVES_SUR_REVISION_OBSOLETE;
-      tentative += 1
-    ) {
-      const misAJour = this.validerEtProjeter(changements);
-      const session = await seanceNonTermineePilotablePar(
-        this.sessions,
-        sessionId,
-        teacherId,
-      );
-      await this.assertDansLesBornesDuCours(session, misAJour, changements);
-      try {
-        const sessionMiseAJour = await this.sessions.update(
-          sessionId,
-          misAJour,
-          session.revision,
-        );
-        await this.publier(sessionId, sessionMiseAJour);
-        return;
-      } catch (error) {
-        if (!(error instanceof RevisionDeSeanceObsoleteError)) {
-          throw error;
-        }
-      }
-    }
-    throw new RevisionDeSeanceObsoleteError(sessionId);
+    const projection = this.validerEtProjeter(changements);
+    const sessionMiseAJour = await ecrireSurLaRevisionLue(
+      this.sessions,
+      { sessionId, teacherId },
+      async (session) => {
+        const misAJour = { ...projection };
+        await this.assertDansLesBornesDuCours(session, misAJour, changements);
+        return misAJour;
+      },
+    );
+    await this.publier(sessionId, sessionMiseAJour);
   }
 
   private async assertDansLesBornesDuCours(
@@ -202,17 +181,16 @@ export class ControlSessionUseCase {
   }
 
   async start(sessionId: string, teacherId: string): Promise<void> {
-    const session = await seanceNonTermineePilotablePar(
+    const misAJour = await ecrireSurLaRevisionLue(
       this.sessions,
-      sessionId,
-      teacherId,
+      { sessionId, teacherId },
+      (session) => {
+        if (!canTransition(session.etat, 'en_cours')) {
+          throw new InvalidStateTransitionError(session.etat, 'en_cours');
+        }
+        return Promise.resolve({ etat: 'en_cours' });
+      },
     );
-    if (!canTransition(session.etat, 'en_cours')) {
-      throw new InvalidStateTransitionError(session.etat, 'en_cours');
-    }
-    const misAJour = await this.sessions.update(sessionId, {
-      etat: 'en_cours',
-    });
     await this.publier(sessionId, misAJour);
   }
 

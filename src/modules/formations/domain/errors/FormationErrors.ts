@@ -354,7 +354,7 @@ export class RevisionDeSeanceObsoleteError extends ResourceConflictError {
 
   constructor(sessionId: string) {
     super(
-      `Le pilotage de la séance ${sessionId} a changé depuis sa lecture : la commande a été rejouée sur l’état à jour.`,
+      `Le pilotage de la séance ${sessionId} a changé à chaque relecture : la commande n’est pas passée, réessaie.`,
     );
   }
 }

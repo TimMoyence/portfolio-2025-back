@@ -28,6 +28,7 @@ import {
 import { installerVariables } from '../../../../../../test/helpers/depot/environnement';
 import { verifierSeanceIntrouvable } from '../../../../../../test/helpers/formations/seance/gardes-de-seance';
 import {
+  RevisionDeSeanceObsoleteError,
   SessionClosedError,
   SessionNotOwnedError,
 } from '../../../domain/errors/FormationErrors';
@@ -82,11 +83,19 @@ describe('CloseSessionUseCase', () => {
     );
   });
 
-  it('marque la session terminee', async () => {
+  it('marque la session terminee sur la revision lue, qu un demarrage concurrent rend obsolete', async () => {
+    sessions.findById.mockResolvedValue(
+      buildSessionRecord({
+        teacherId: TEACHER_ID,
+        courseSlug: COURS.slug,
+        revision: 4,
+      }),
+    );
     await sut.execute('session-uuid', TEACHER_ID);
     expect(sessions.update).toHaveBeenCalledWith(
       'session-uuid',
       expect.objectContaining({ etat: 'terminee' }),
+      4,
     );
   });
 
@@ -186,9 +195,38 @@ describe('CloseSessionUseCase', () => {
     ]);
   });
 
-  it('vide le cache d etat', async () => {
+  it('cloture la seance quand un pilotage concurrent a avance la revision entre la lecture et l ecriture', async () => {
+    const enCours = { teacherId: TEACHER_ID, courseSlug: COURS.slug };
+    sessions.findById
+      .mockResolvedValueOnce(buildSessionRecord({ ...enCours, revision: 4 }))
+      .mockResolvedValue(buildSessionRecord({ ...enCours, revision: 5 }));
+    sessions.update
+      .mockRejectedValueOnce(new RevisionDeSeanceObsoleteError('session-uuid'))
+      .mockResolvedValue(
+        buildSessionRecord({ ...enCours, etat: 'terminee', revision: 6 }),
+      );
+
     await sut.execute('session-uuid', TEACHER_ID);
-    expect(cache.drop).toHaveBeenCalledWith('session-uuid');
+
+    expect(sessions.update).toHaveBeenLastCalledWith(
+      'session-uuid',
+      expect.objectContaining({ etat: 'terminee' }),
+      5,
+    );
+    expect(cache.drop).toHaveBeenCalledWith('session-uuid', 6);
+  });
+
+  it('vide le cache d etat en lui laissant la revision de la cloture comme plancher', async () => {
+    sessions.update.mockResolvedValue(
+      buildSessionRecord({
+        etat: 'terminee',
+        revision: 5,
+        teacherId: TEACHER_ID,
+        courseSlug: COURS.slug,
+      }),
+    );
+    await sut.execute('session-uuid', TEACHER_ID);
+    expect(cache.drop).toHaveBeenCalledWith('session-uuid', 5);
   });
 
   it('refuse de cloturer deux fois', async () => {

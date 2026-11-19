@@ -25,10 +25,42 @@ describe('SessionStateCacheService', () => {
     expect(sut.read('session-uuid')?.ecranCourant).toBe(7);
   });
 
+  it('garde l etat de revision plus recente quand une publication plus ancienne arrive apres', () => {
+    sut.publish('session-uuid', { ...etat, revision: 8, ecranCourant: 4 });
+    sut.publish('session-uuid', { ...etat, revision: 7, ecranCourant: 3 });
+
+    expect(sut.read('session-uuid')).toMatchObject({
+      revision: 8,
+      ecranCourant: 4,
+    });
+  });
+
+  it('garde comme plancher la revision publiee quand le retrait en porte une plus ancienne', () => {
+    sut.publish('session-uuid', { ...etat, revision: 6, etat: 'en_cours' });
+    sut.drop('session-uuid', 5);
+    sut.publish('session-uuid', { ...etat, revision: 5, etat: 'terminee' });
+    expect(sut.read('session-uuid')).toBeNull();
+
+    sut.publish('session-uuid', { ...etat, revision: 6, etat: 'en_cours' });
+    expect(sut.read('session-uuid')?.revision).toBe(6);
+  });
+
   it('oublie une session retiree', () => {
     sut.publish('session-uuid', etat);
-    sut.drop('session-uuid');
+    sut.drop('session-uuid', etat.revision);
     expect(sut.read('session-uuid')).toBeNull();
+  });
+
+  it('refuse apres le retrait une lecture anterieure a la revision du retrait, et garde celle qui la suit', () => {
+    sut.drop('session-uuid', 5);
+    sut.publish('session-uuid', { ...etat, revision: 4, etat: 'en_cours' });
+    expect(sut.read('session-uuid')).toBeNull();
+
+    sut.publish('session-uuid', { ...etat, revision: 5, etat: 'terminee' });
+    expect(sut.read('session-uuid')).toMatchObject({
+      revision: 5,
+      etat: 'terminee',
+    });
   });
 
   it('ne compte aucune activite sur une session inconnue', () => {
@@ -48,7 +80,7 @@ describe('SessionStateCacheService', () => {
 
   it('remet l activite a zero quand la session est retiree', () => {
     sut.signalerActivite('session-uuid');
-    sut.drop('session-uuid');
+    sut.drop('session-uuid', 0);
     expect(sut.activite('session-uuid')).toBe(0);
   });
 

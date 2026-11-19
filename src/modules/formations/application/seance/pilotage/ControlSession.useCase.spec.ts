@@ -418,12 +418,47 @@ describe('ControlSessionUseCase', () => {
     const demarrer = (teacherId = TEACHER_ID) =>
       b.sut.start(SESSION, teacherId);
 
-    it('demarre une session en attente', async () => {
-      b.seanceLue({ etat: 'attente' });
+    it('demarre une session en attente sur la revision lue, qu une cloture concurrente rend obsolete', async () => {
+      b.seanceLue({ etat: 'attente', revision: 3 });
       await demarrer();
-      expect(b.sessions.update).toHaveBeenCalledWith(SESSION, {
-        etat: 'en_cours',
-      });
+      expect(b.sessions.update).toHaveBeenCalledWith(
+        SESSION,
+        { etat: 'en_cours' },
+        3,
+      );
+    });
+
+    const conflitPuisRelecture = (
+      relue: Parameters<typeof buildSessionRecord>[0],
+    ): void => {
+      b.sessions.findById
+        .mockResolvedValueOnce(
+          buildSessionRecord({ etat: 'attente', revision: 3 }),
+        )
+        .mockResolvedValue(buildSessionRecord({ revision: 4, ...relue }));
+      b.sessions.update.mockRejectedValueOnce(
+        new RevisionDeSeanceObsoleteError(SESSION),
+      );
+    };
+
+    it('demarre la seance quand un pilotage concurrent a avance la revision entre la lecture et l ecriture', async () => {
+      b.seanceLue({ etat: 'attente', revision: 3 });
+      conflitPuisRelecture({ etat: 'attente' });
+
+      await demarrer();
+
+      expect(b.sessions.update).toHaveBeenLastCalledWith(
+        SESSION,
+        { etat: 'en_cours' },
+        4,
+      );
+    });
+
+    it('refuse de demarrer une seance qu une cloture concurrente a terminee, sans la rouvrir', async () => {
+      conflitPuisRelecture({ etat: 'terminee' });
+
+      await expect(demarrer()).rejects.toThrow(SessionClosedError);
+      expect(b.sessions.update).toHaveBeenCalledTimes(1);
     });
 
     it('publie l etat dans le cache apres avoir demarre la session', async () => {

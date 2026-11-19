@@ -14,7 +14,7 @@ import {
 import { enArrierePlan } from '../../../../../common/application/en-arriere-plan';
 import { envString } from '../../../../../config/environnement/env-readers.util';
 import { GetSessionResultsUseCase } from './GetSessionResults.useCase';
-import { seanceNonTermineePilotablePar } from './SessionAccess';
+import { ecrireSurLaRevisionLue } from './SessionAccess';
 
 @Injectable()
 export class CloseSessionUseCase {
@@ -35,14 +35,13 @@ export class CloseSessionUseCase {
     teacherId: string,
     destinataireFormateur?: string,
   ): Promise<void> {
-    await seanceNonTermineePilotablePar(this.sessions, sessionId, teacherId);
+    const misAJour = await ecrireSurLaRevisionLue(
+      this.sessions,
+      { sessionId, teacherId },
+      () => Promise.resolve({ etat: 'terminee', fermeeLe: new Date() }),
+    );
 
-    const misAJour = await this.sessions.update(sessionId, {
-      etat: 'terminee',
-      fermeeLe: new Date(),
-    });
-
-    this.cache.drop(sessionId);
+    this.cache.drop(sessionId, misAJour.revision);
 
     const bilan = await this.results.bilanDe(misAJour);
 
